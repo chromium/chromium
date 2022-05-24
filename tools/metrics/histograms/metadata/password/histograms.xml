@@ -2877,6 +2877,26 @@ chromium-metrics-reviews@google.com.
   <summary>The number of credentials shown in the Touch To Fill sheet.</summary>
 </histogram>
 
+<histogram name="PasswordManager.TouchToFill.ObservedSuccessfulSubmission"
+    units="Boolean" expires_after="2022-10-30">
+  <owner>ioanap@chromium.org</owner>
+  <owner>fhorschig@chromium.org</owner>
+  <owner>kolos@chromium.org</owner>
+  <summary>
+    Measures whether a credential filling by Touch To Fill leads to a successful
+    submission or not (submission failed, or the submission could not be
+    associated with filling by Touch To Fill). A submission after filling is
+    considered successful iff the filled and submitted usernames coincide, the
+    timestamps are within one minute and a user hasn't modified any field after
+    filling. Otherwise, it is reported as 'no successful submission observed'.
+    The metric is used to compare a login success rate when automated submission
+    is enabled and disabled. Due to stale or wrong credentials, the success rate
+    will be degraded independently of automated submission. Recorded when the
+    password manager has classified a login submission (succeeded or failed) or
+    a user has modified a field after Touch-To-Fill.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.TouchToFill.Outcome"
     enum="TouchToFill.Outcome" expires_after="2022-10-23">
   <owner>ioanap@chromium.org</owner>
