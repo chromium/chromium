@@ -33,7 +33,6 @@ const char kPreventElisionExtensionId[] = "jknemblkbdhdcpllfgbfekkdciegfboi";
 
 namespace safe_browsing {
 
-const char kDelayedWarningsHistogram[] = "SafeBrowsing.DelayedWarnings.Event";
 const char kDelayedWarningsTimeOnPageHistogram[] =
     "SafeBrowsing.DelayedWarnings.TimeOnPage";
 
@@ -102,7 +101,6 @@ SafeBrowsingUserInteractionObserver::SafeBrowsingUserInteractionObserver(
   if (permission_request_manager) {
     permission_request_manager->AddObserver(this);
   }
-  RecordUMA(DelayedWarningEvent::kPageLoaded);
 }
 
 SafeBrowsingUserInteractionObserver::~SafeBrowsingUserInteractionObserver() {
@@ -193,7 +191,6 @@ void SafeBrowsingUserInteractionObserver::DidFinishNavigation(
   // result, the page should remain unchanged on downloads. Record a metric and
   // ignore this cancelled navigation.
   if (handle->IsDownload()) {
-    RecordUMA(DelayedWarningEvent::kDownloadCancelled);
     return;
   }
   // Now ignore other kinds of navigations that don't commit (e.g. 204 response
@@ -206,9 +203,6 @@ void SafeBrowsingUserInteractionObserver::DidFinishNavigation(
 }
 
 void SafeBrowsingUserInteractionObserver::Detach() {
-  if (!interstitial_shown_) {
-    RecordUMA(DelayedWarningEvent::kWarningNotShown);
-  }
   base::TimeDelta time_on_page = clock_->Now() - creation_time_;
   if (IsUrlElisionDisabled(
           Profile::FromBrowserContext(web_contents()->GetBrowserContext()),
@@ -274,7 +268,6 @@ void SafeBrowsingUserInteractionObserver::OnPasswordSaveOrAutofillDenied() {
     return;
   }
   password_save_or_autofill_denied_metric_recorded_ = true;
-  RecordUMA(DelayedWarningEvent::kPasswordSaveOrAutofillDenied);
 }
 
 void SafeBrowsingUserInteractionObserver::OnDesktopCaptureRequest() {
@@ -302,14 +295,6 @@ void SafeBrowsingUserInteractionObserver::SetClockForTesting(
 base::Time SafeBrowsingUserInteractionObserver::GetCreationTimeForTesting()
     const {
   return creation_time_;
-}
-
-void SafeBrowsingUserInteractionObserver::RecordUMA(DelayedWarningEvent event) {
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-  if (!IsUrlElisionDisabled(profile, suspicious_site_reporter_extension_id_)) {
-    base::UmaHistogramEnumeration(kDelayedWarningsHistogram, event);
-  }
 }
 
 bool IsAllowedModifier(const content::NativeWebKeyboardEvent& event) {
@@ -351,7 +336,6 @@ bool SafeBrowsingUserInteractionObserver::HandleMouseEvent(
   // the user clicks.
   if (!kDelayedWarningsEnableMouseClicks.Get()) {
     if (!mouse_click_with_no_warning_recorded_) {
-      RecordUMA(DelayedWarningEvent::kWarningNotTriggeredOnMouseClick);
       mouse_click_with_no_warning_recorded_ = true;
     }
     return false;
@@ -367,7 +351,6 @@ void SafeBrowsingUserInteractionObserver::ShowInterstitial(
   DCHECK(!interstitial_shown_);
   interstitial_shown_ = true;
   CleanUp();
-  RecordUMA(event);
   ui_manager_->StartDisplayingBlockingPage(resource_);
   Detach();
   // DO NOT add code past this point. |this| is destroyed.

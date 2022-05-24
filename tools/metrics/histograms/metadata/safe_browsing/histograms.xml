@@ -923,6 +923,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SafeBrowsing.DelayedWarnings.Event"
     enum="SafeBrowsingDelayedWarningEvent" expires_after="2021-08-22">
+  <obsolete>
+    Removed in M103 as this histogram is no longer needed.
+  </obsolete>
   <owner>meacer@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
