@@ -189,13 +189,10 @@ uint32_t WaylandEventSource::OnKeyboardKeyEvent(
 
 void WaylandEventSource::OnPointerFocusChanged(WaylandWindow* window,
                                                const gfx::PointF& location) {
-  // Save new pointer location.
-  pointer_location_ = location;
-
   bool focused = !!window;
   if (focused) {
-    if (SurfaceSubmissionInPixelCoordinates())
-      pointer_location_.Scale(1.0f / window->window_scale());
+    // Save new pointer location.
+    pointer_location_ = location;
     window_manager_->SetPointerFocusedWindow(window);
   }
 
@@ -236,12 +233,6 @@ void WaylandEventSource::OnPointerButtonEvent(EventType type,
 
 void WaylandEventSource::OnPointerMotionEvent(const gfx::PointF& location) {
   pointer_location_ = location;
-
-  if (SurfaceSubmissionInPixelCoordinates()) {
-    if (WaylandWindow* window =
-            window_manager_->GetCurrentPointerFocusedWindow())
-      pointer_location_.Scale(1.0f / window->window_scale());
-  }
 
   int flags = pointer_flags_ | keyboard_modifiers_;
   MouseEvent event(ET_MOUSE_MOVED, pointer_location_, pointer_location_,
@@ -339,26 +330,24 @@ void WaylandEventSource::OnPointerAxisStopEvent(uint32_t axis) {
 }
 
 void WaylandEventSource::OnTouchPressEvent(WaylandWindow* window,
-                                           const gfx::PointF& location,
+                                           const gfx::PointF& orig_location,
                                            base::TimeTicks timestamp,
                                            PointerId id) {
+  auto location = connection_->MaybeConvertLocation(orig_location, window);
+
   DCHECK(window);
   HandleTouchFocusChange(window, true);
 
-  gfx::PointF loc =
-      SurfaceSubmissionInPixelCoordinates()
-          ? gfx::ScalePoint(location, 1.f / window->window_scale())
-          : location;
   // Make sure this touch point wasn't present before.
-  auto success =
-      touch_points_.try_emplace(id, std::make_unique<TouchPoint>(loc, window));
+  auto success = touch_points_.try_emplace(
+      id, std::make_unique<TouchPoint>(location, window));
   if (!success.second) {
     LOG(WARNING) << "Touch down fired with wrong id";
     return;
   }
 
   PointerDetails details(EventPointerType::kTouch, id);
-  TouchEvent event(ET_TOUCH_PRESSED, loc, loc, timestamp, details,
+  TouchEvent event(ET_TOUCH_PRESSED, location, location, timestamp, details,
                    keyboard_modifiers_);
   DispatchEvent(&event);
 }
@@ -406,14 +395,9 @@ void WaylandEventSource::OnTouchMotionEvent(const gfx::PointF& location,
     LOG(WARNING) << "Touch event fired with wrong id";
     return;
   }
-
-  gfx::PointF loc =
-      SurfaceSubmissionInPixelCoordinates()
-          ? gfx::ScalePoint(location, 1.f / it->second->window->window_scale())
-          : location;
-  it->second->last_known_location = loc;
+  it->second->last_known_location = location;
   PointerDetails details(EventPointerType::kTouch, id);
-  TouchEvent event(ET_TOUCH_MOVED, loc, loc, timestamp, details,
+  TouchEvent event(ET_TOUCH_MOVED, location, location, timestamp, details,
                    keyboard_modifiers_);
   DispatchEvent(&event);
 }
@@ -449,6 +433,11 @@ std::vector<PointerId> WaylandEventSource::GetActiveTouchPointIds() {
   return pointer_ids;
 }
 
+const WaylandWindow* WaylandEventSource::GetTouchTarget(PointerId id) const {
+  const auto it = touch_points_.find(id);
+  return it == touch_points_.end() ? nullptr : it->second->window;
+}
+
 void WaylandEventSource::OnPinchEvent(EventType event_type,
                                       const gfx::Vector2dF& delta,
                                       base::TimeTicks timestamp,
@@ -475,7 +464,8 @@ void WaylandEventSource::SetRelativePointerMotionEnabled(bool enabled) {
 
 void WaylandEventSource::OnRelativePointerMotion(const gfx::Vector2dF& delta) {
   DCHECK(relative_pointer_location_.has_value());
-
+  // TODO(oshima): Investigate if we need to scale the delta
+  // when surface_submission_in_pixel_coordinates is on.
   relative_pointer_location_ = *relative_pointer_location_ + delta;
   OnPointerMotionEvent(*relative_pointer_location_);
 }
@@ -488,6 +478,10 @@ bool WaylandEventSource::IsPointerButtonPressed(EventFlags button) const {
 void WaylandEventSource::OnPointerStylusToolChanged(
     EventPointerType pointer_type) {
   last_pointer_stylus_tool_ = pointer_type;
+}
+
+const WaylandWindow* WaylandEventSource::GetPointerTarget() const {
+  return window_manager_->GetCurrentPointerFocusedWindow();
 }
 
 void WaylandEventSource::ResetPointerFlags() {

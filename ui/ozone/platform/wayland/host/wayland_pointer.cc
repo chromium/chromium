@@ -54,7 +54,9 @@ void WaylandPointer::Enter(void* data,
   WaylandWindow* window = wl::RootWindowFromWlSurface(surface);
   gfx::PointF location{static_cast<float>(wl_fixed_to_double(surface_x)),
                        static_cast<float>(wl_fixed_to_double(surface_y))};
-  pointer->delegate_->OnPointerFocusChanged(window, location);
+
+  pointer->delegate_->OnPointerFocusChanged(
+      window, pointer->connection_->MaybeConvertLocation(location, window));
 }
 
 // static
@@ -80,7 +82,10 @@ void WaylandPointer::Motion(void* data,
   WaylandPointer* pointer = static_cast<WaylandPointer*>(data);
   gfx::PointF location(wl_fixed_to_double(surface_x),
                        wl_fixed_to_double(surface_y));
-  pointer->delegate_->OnPointerMotionEvent(location);
+  const WaylandWindow* target = pointer->delegate_->GetPointerTarget();
+
+  pointer->delegate_->OnPointerMotionEvent(
+      pointer->connection_->MaybeConvertLocation(location, target));
 }
 
 // static

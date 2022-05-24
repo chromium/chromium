@@ -624,6 +624,16 @@ base::TimeTicks WaylandConnection::ConvertPresentationTime(uint32_t tv_sec_hi,
   return now + base::Microseconds(delta_us);
 }
 
+const gfx::PointF WaylandConnection::MaybeConvertLocation(
+    const gfx::PointF& location,
+    const WaylandWindow* window) const {
+  if (!surface_submission_in_pixel_coordinates_)
+    return location;
+  gfx::PointF converted(location);
+  converted.Scale(1.0f / window->window_scale());
+  return converted;
+}
+
 // static
 void WaylandConnection::GlobalRemove(void* data,
                                      wl_registry* registry,

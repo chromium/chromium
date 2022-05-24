@@ -136,7 +136,8 @@ void WaylandDataDevice::OnEnter(void* data,
   DCHECK(self->new_offer_);
   self->drag_delegate_->OnDragOffer(std::move(self->new_offer_));
 
-  gfx::PointF point(wl_fixed_to_double(x), wl_fixed_to_double(y));
+  gfx::PointF point = self->connection()->MaybeConvertLocation(
+      gfx::PointF(wl_fixed_to_double(x), wl_fixed_to_double(y)), window);
   self->drag_delegate_->OnDragEnter(window, point, serial);
 
   self->connection()->ScheduleFlush();
@@ -149,7 +150,9 @@ void WaylandDataDevice::OnMotion(void* data,
                                  wl_fixed_t y) {
   auto* self = static_cast<WaylandDataDevice*>(data);
   if (self->drag_delegate_) {
-    gfx::PointF point(wl_fixed_to_double(x), wl_fixed_to_double(y));
+    gfx::PointF point = self->connection()->MaybeConvertLocation(
+        gfx::PointF(wl_fixed_to_double(x), wl_fixed_to_double(y)),
+        self->drag_delegate_->GetDragTarget());
     self->drag_delegate_->OnDragMotion(point);
   }
 }

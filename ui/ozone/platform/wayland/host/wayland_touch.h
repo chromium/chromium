@@ -75,6 +75,7 @@ class WaylandTouch::Delegate {
   virtual void OnTouchCancelEvent() = 0;
   virtual void OnTouchFocusChanged(WaylandWindow* window) = 0;
   virtual std::vector<PointerId> GetActiveTouchPointIds() = 0;
+  virtual const WaylandWindow* GetTouchTarget(PointerId id) const = 0;
 };
 
 }  // namespace ui

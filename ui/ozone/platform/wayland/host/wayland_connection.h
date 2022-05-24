@@ -291,6 +291,9 @@ class WaylandConnection {
            tablet_layout_state_ == display::TabletState::kEnteringTabletMode;
   }
 
+  const gfx::PointF MaybeConvertLocation(const gfx::PointF& location,
+                                         const WaylandWindow* window) const;
+
  private:
   friend class WaylandConnectionTestApi;
 

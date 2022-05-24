@@ -4,6 +4,7 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_touch.h"
 
+#include "base/logging.h"
 #include "base/time/time.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -47,7 +48,8 @@ void WaylandTouch::Down(void* data,
                                                     serial);
 
   WaylandWindow* window = wl::RootWindowFromWlSurface(surface);
-  gfx::PointF location(wl_fixed_to_double(x), wl_fixed_to_double(y));
+  gfx::PointF location = touch->connection_->MaybeConvertLocation(
+      gfx::PointF(wl_fixed_to_double(x), wl_fixed_to_double(y)), window);
   base::TimeTicks timestamp = base::TimeTicks() + base::Milliseconds(time);
   touch->delegate_->OnTouchPressEvent(window, location, timestamp, id);
 }
@@ -72,8 +74,13 @@ void WaylandTouch::Motion(void* data,
                           wl_fixed_t y) {
   WaylandTouch* touch = static_cast<WaylandTouch*>(data);
   DCHECK(touch);
-
-  gfx::PointF location(wl_fixed_to_double(x), wl_fixed_to_double(y));
+  const WaylandWindow* target = touch->delegate_->GetTouchTarget(id);
+  if (!target) {
+    LOG(WARNING) << "Touch event fired with wrong id";
+    return;
+  }
+  gfx::PointF location = touch->connection_->MaybeConvertLocation(
+      gfx::PointF(wl_fixed_to_double(x), wl_fixed_to_double(y)), target);
   base::TimeTicks timestamp = base::TimeTicks() + base::Milliseconds(time);
   touch->delegate_->OnTouchMotionEvent(location, timestamp, id);
 }

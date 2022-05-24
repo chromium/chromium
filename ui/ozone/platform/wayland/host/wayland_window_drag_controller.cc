@@ -216,6 +216,8 @@ void WaylandWindowDragController::OnDragEnter(WaylandWindow* window,
   DCHECK(data_source_);
   DCHECK(data_offer_);
 
+  drag_target_window_ = window;
+
   // Forward focus change event to the input delegate, so other components, such
   // as WaylandScreen, are able to properly retrieve focus related info during
   // window dragging sesstions.
@@ -243,6 +245,8 @@ void WaylandWindowDragController::OnDragEnter(WaylandWindow* window,
 }
 
 void WaylandWindowDragController::OnDragMotion(const gfx::PointF& location) {
+  DCHECK(drag_target_window_);
+
   DCHECK_GE(state_, State::kAttached);
   DVLOG(2) << "OnMotion. location=" << location.ToString();
 
@@ -268,6 +272,8 @@ void WaylandWindowDragController::OnDragMotion(const gfx::PointF& location) {
 
 void WaylandWindowDragController::OnDragLeave() {
   DCHECK_GE(state_, State::kAttached);
+
+  drag_target_window_ = nullptr;
 
   // In order to guarantee ET_MOUSE_RELEASED event is delivered once the DND
   // session finishes, the focused window is not reset here. This is similar to
@@ -328,6 +334,12 @@ void WaylandWindowDragController::OnDragDrop() {
   DCHECK(data_offer_);
   data_offer_->FinishOffer();
   data_offer_.reset();
+
+  drag_target_window_ = nullptr;
+}
+
+const WaylandWindow* WaylandWindowDragController::GetDragTarget() const {
+  return drag_target_window_;
 }
 
 // This function is called when either 'cancelled' or 'finished' data source

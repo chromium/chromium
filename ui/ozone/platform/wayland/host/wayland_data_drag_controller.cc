@@ -292,16 +292,10 @@ void WaylandDataDragController::OnDragMotion(const gfx::PointF& location) {
     last_drag_location_ = location;
     return;
   }
-
-  gfx::PointF pointer_location(location);
-  if (connection_->surface_submission_in_pixel_coordinates())
-    pointer_location.Scale(1.0f / window_->window_scale());
-
   DCHECK(data_offer_);
   int available_operations =
       DndActionsToDragOperations(data_offer_->source_actions());
-  int client_operations =
-      window_->OnDragMotion(pointer_location, available_operations);
+  int client_operations = window_->OnDragMotion(location, available_operations);
 
   data_offer_->SetDndActions(DragOperationsToDndActions(client_operations));
 }
@@ -365,6 +359,10 @@ void WaylandDataDragController::OnDataSourceFinish(bool completed) {
   offered_exchange_data_provider_.reset();
   data_device_->ResetDragDelegate();
   state_ = State::kIdle;
+}
+
+const WaylandWindow* WaylandDataDragController::GetDragTarget() const {
+  return window_;
 }
 
 void WaylandDataDragController::OnDataSourceSend(const std::string& mime_type,
@@ -474,12 +472,8 @@ void WaylandDataDragController::PropagateOnDragEnter(
     std::unique_ptr<OSExchangeData> data) {
   DCHECK(window_);
   {
-    gfx::PointF pointer_location(location);
-    if (connection_->surface_submission_in_pixel_coordinates())
-      pointer_location.Scale(1.0f / window_->window_scale());
-
     window_->OnDragEnter(
-        pointer_location, std::move(data),
+        location, std::move(data),
         DndActionsToDragOperations(data_offer_->source_actions()));
   }
   OnDragMotion(location);

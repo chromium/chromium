@@ -126,6 +126,7 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   void OnDragMotion(const gfx::PointF& location) override;
   void OnDragLeave() override;
   void OnDragDrop() override;
+  const WaylandWindow* GetDragTarget() const override;
 
   // WaylandDataSource::Delegate:
   void OnDataSourceFinish(bool completed) override;

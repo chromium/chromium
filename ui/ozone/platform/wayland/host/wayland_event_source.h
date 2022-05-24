@@ -112,6 +112,7 @@ class WaylandEventSource : public PlatformEventSource,
   const gfx::PointF& GetPointerLocation() const override;
   bool IsPointerButtonPressed(EventFlags button) const override;
   void OnPointerStylusToolChanged(EventPointerType pointer_type) override;
+  const WaylandWindow* GetPointerTarget() const override;
 
   // WaylandTouch::Delegate
   void OnTouchPressEvent(WaylandWindow* window,
@@ -125,6 +126,7 @@ class WaylandEventSource : public PlatformEventSource,
   void OnTouchCancelEvent() override;
   void OnTouchFocusChanged(WaylandWindow* window) override;
   std::vector<PointerId> GetActiveTouchPointIds() override;
+  const WaylandWindow* GetTouchTarget(PointerId id) const override;
 
   // WaylandZwpPointerGesture::Delegate:
   void OnPinchEvent(EventType event_type,
