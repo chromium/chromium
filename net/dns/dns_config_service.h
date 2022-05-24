@@ -42,14 +42,6 @@ class NET_EXPORT_PRIVATE DnsConfigService {
   // reading system DNS settings is not supported on the current platform.
   static std::unique_ptr<DnsConfigService> CreateSystemService();
 
-  // On detecting config change, will post and wait `config_change_delay` before
-  // triggering refreshes. Will trigger refreshes synchronously on nullopt.
-  // Useful for platforms where multiple changes may be made and detected before
-  // the config is stabilized and ready to be read.
-  explicit DnsConfigService(base::FilePath::StringPieceType hosts_file_path,
-                            absl::optional<base::TimeDelta>
-                                config_change_delay = base::Milliseconds(50));
-
   DnsConfigService(const DnsConfigService&) = delete;
   DnsConfigService& operator=(const DnsConfigService&) = delete;
 
@@ -167,6 +159,14 @@ class NET_EXPORT_PRIVATE DnsConfigService {
 
     const base::FilePath hosts_file_path_;
   };
+
+  // On detecting config change, will post and wait `config_change_delay` before
+  // triggering refreshes. Will trigger refreshes synchronously on nullopt.
+  // Useful for platforms where multiple changes may be made and detected before
+  // the config is stabilized and ready to be read.
+  explicit DnsConfigService(base::FilePath::StringPieceType hosts_file_path,
+                            absl::optional<base::TimeDelta>
+                                config_change_delay = base::Milliseconds(50));
 
   // Immediately attempts to read the current configuration.
   virtual void ReadConfigNow() = 0;
