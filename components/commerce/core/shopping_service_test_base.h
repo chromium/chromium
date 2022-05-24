@@ -65,6 +65,13 @@ class MockOptGuideDecider
       const uint64_t product_cluster_id,
       const std::string& country_code);
 
+  OptimizationMetadata BuildMerchantTrustResponse(
+      const float star_rating,
+      const uint32_t count_rating,
+      const std::string& details_page_url,
+      const bool has_return_policy,
+      const bool contains_sensitive_content);
+
  private:
   absl::optional<GURL> response_url_;
   absl::optional<OptimizationType> optimization_type_;

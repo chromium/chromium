@@ -14,6 +14,7 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/metrics/metrics_utils.h"
+#include "components/commerce/core/proto/merchant_trust.pb.h"
 #include "components/commerce/core/proto/price_tracking.pb.h"
 #include "components/commerce/core/shopping_bookmark_model_observer.h"
 #include "components/commerce/core/web_wrapper.h"
@@ -25,6 +26,9 @@ namespace commerce {
 
 ProductInfo::ProductInfo() = default;
 ProductInfo::~ProductInfo() = default;
+MerchantInfo::MerchantInfo() = default;
+MerchantInfo::MerchantInfo(MerchantInfo&&) = default;
+MerchantInfo::~MerchantInfo() = default;
 
 ShoppingService::ShoppingService(
     bookmarks::BookmarkModel* bookmark_model,
@@ -42,6 +46,9 @@ ShoppingService::ShoppingService(
     if (IsProductInfoApiEnabled() || IsPDPMetricsRecordingEnabled()) {
       types.push_back(
           optimization_guide::proto::OptimizationType::PRICE_TRACKING);
+    }
+    if (IsMerchantInfoApiEnabled()) {
+      types.push_back(optimization_guide::proto::MERCHANT_TRUST_SIGNALS_V2);
     }
 
     opt_guide_->RegisterOptimizationTypes(types);
@@ -97,12 +104,31 @@ void ShoppingService::GetProductInfoForUrl(const GURL& url,
                      weak_ptr_factory_.GetWeakPtr(), url, std::move(callback)));
 }
 
+void ShoppingService::GetMerchantInfoForUrl(const GURL& url,
+                                            MerchantInfoCallback callback) {
+  if (!opt_guide_)
+    return;
+
+  // Crash if this API is used without a valid experiment.
+  CHECK(IsMerchantInfoApiEnabled());
+
+  opt_guide_->CanApplyOptimization(
+      url,
+      optimization_guide::proto::OptimizationType::MERCHANT_TRUST_SIGNALS_V2,
+      base::BindOnce(&ShoppingService::HandleOptGuideMerchantInfoResponse,
+                     weak_ptr_factory_.GetWeakPtr(), url, std::move(callback)));
+}
+
 bool ShoppingService::IsProductInfoApiEnabled() {
   return base::FeatureList::IsEnabled(kShoppingList);
 }
 
 bool ShoppingService::IsPDPMetricsRecordingEnabled() {
   return base::FeatureList::IsEnabled(commerce::kShoppingPDPMetrics);
+}
+
+bool ShoppingService::IsMerchantInfoApiEnabled() {
+  return base::FeatureList::IsEnabled(kCommerceMerchantViewer);
 }
 
 void ShoppingService::HandleOptGuideProductInfoResponse(
@@ -152,6 +178,65 @@ void ShoppingService::HandleOptGuideProductInfoResponse(
   }
 
   std::move(callback).Run(url, info);
+}
+
+void ShoppingService::HandleOptGuideMerchantInfoResponse(
+    const GURL& url,
+    MerchantInfoCallback callback,
+    optimization_guide::OptimizationGuideDecision decision,
+    const optimization_guide::OptimizationMetadata& metadata) {
+  // If optimization guide returns negative, return a negative signal with an
+  // empty data object.
+  if (decision != optimization_guide::OptimizationGuideDecision::kTrue) {
+    std::move(callback).Run(url, absl::nullopt);
+    return;
+  }
+
+  absl::optional<MerchantInfo> info;
+
+  if (metadata.any_metadata().has_value()) {
+    absl::optional<commerce::MerchantTrustSignalsV2> parsed_any =
+        optimization_guide::ParsedAnyMetadata<commerce::MerchantTrustSignalsV2>(
+            metadata.any_metadata().value());
+    commerce::MerchantTrustSignalsV2 merchant_data = parsed_any.value();
+    if (parsed_any.has_value() && merchant_data.IsInitialized()) {
+      info.emplace();
+
+      if (merchant_data.has_merchant_star_rating()) {
+        info->star_rating = merchant_data.merchant_star_rating();
+      }
+
+      if (merchant_data.has_merchant_count_rating()) {
+        info->count_rating = merchant_data.merchant_count_rating();
+      }
+
+      if (merchant_data.has_merchant_details_page_url()) {
+        info->details_page_url =
+            GURL(merchant_data.merchant_details_page_url());
+      }
+
+      if (merchant_data.has_has_return_policy()) {
+        info->has_return_policy = merchant_data.has_return_policy();
+      }
+
+      if (merchant_data.has_non_personalized_familiarity_score()) {
+        info->non_personalized_familiarity_score =
+            merchant_data.non_personalized_familiarity_score();
+      }
+
+      if (merchant_data.has_contains_sensitive_content()) {
+        info->contains_sensitive_content =
+            merchant_data.contains_sensitive_content();
+      }
+
+      if (merchant_data.has_proactive_message_disabled()) {
+        info->proactive_message_disabled =
+            merchant_data.proactive_message_disabled();
+      }
+    }
+  }
+
+  std::move(callback).Run(url, std::move(info));
 }
 
 void ShoppingService::Shutdown() {}

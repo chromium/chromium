@@ -8,6 +8,7 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/proto/merchant_trust.pb.h"
 #include "components/commerce/core/proto/price_tracking.pb.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/hints.pb.h"
@@ -85,6 +86,30 @@ OptimizationMetadata MockOptGuideDecider::BuildPriceTrackingResponse(
   Any any;
   any.set_type_url(price_tracking_data.GetTypeName());
   price_tracking_data.SerializeToString(any.mutable_value());
+  meta.set_any_metadata(any);
+
+  return meta;
+}
+
+OptimizationMetadata MockOptGuideDecider::BuildMerchantTrustResponse(
+    const float star_rating,
+    const uint32_t count_rating,
+    const std::string& details_page_url,
+    const bool has_return_policy,
+    const bool contains_sensitive_content) {
+  OptimizationMetadata meta;
+
+  MerchantTrustSignalsV2 merchant_trust_data;
+  merchant_trust_data.set_merchant_star_rating(star_rating);
+  merchant_trust_data.set_merchant_count_rating(count_rating);
+  merchant_trust_data.set_merchant_details_page_url(details_page_url);
+  merchant_trust_data.set_has_return_policy(has_return_policy);
+  merchant_trust_data.set_contains_sensitive_content(
+      contains_sensitive_content);
+
+  Any any;
+  any.set_type_url(merchant_trust_data.GetTypeName());
+  merchant_trust_data.SerializeToString(any.mutable_value());
   meta.set_any_metadata(any);
 
   return meta;

@@ -51,10 +51,30 @@ struct ProductInfo {
   std::string country_code;
 };
 
+// Information returned by the merchant info APIs.
+struct MerchantInfo {
+  MerchantInfo();
+  MerchantInfo(const MerchantInfo&) = delete;
+  MerchantInfo& operator=(const MerchantInfo&) = delete;
+  MerchantInfo(MerchantInfo&&);
+  MerchantInfo& operator=(MerchantInfo&&) = default;
+  ~MerchantInfo();
+
+  float star_rating;
+  uint32_t count_rating;
+  GURL details_page_url;
+  bool has_return_policy;
+  float non_personalized_familiarity_score;
+  bool contains_sensitive_content;
+  bool proactive_message_disabled;
+};
+
 // Callbacks for querying a single URL or observing information from all
 // navigated urls.
 using ProductInfoCallback =
     base::OnceCallback<void(const GURL&, const absl::optional<ProductInfo>&)>;
+using MerchantInfoCallback =
+    base::OnceCallback<void(const GURL&, absl::optional<MerchantInfo>)>;
 
 class ShoppingService : public KeyedService, public base::SupportsUserData {
  public:
@@ -69,6 +89,8 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
   void GetProductInfoForUrl(const GURL& url, ProductInfoCallback callback);
+
+  void GetMerchantInfoForUrl(const GURL& url, MerchantInfoCallback callback);
 
   void Shutdown() override;
 
@@ -101,9 +123,19 @@ class ShoppingService : public KeyedService, public base::SupportsUserData {
       optimization_guide::OptimizationGuideDecision decision,
       const optimization_guide::OptimizationMetadata& metadata);
 
+  // Whether APIs like |GetMerchantInfoForURL| are enabled and allowed to be
+  // used.
+  bool IsMerchantInfoApiEnabled();
+
   void HandleOptGuideProductInfoResponse(
       const GURL& url,
       ProductInfoCallback callback,
+      optimization_guide::OptimizationGuideDecision decision,
+      const optimization_guide::OptimizationMetadata& metadata);
+
+  void HandleOptGuideMerchantInfoResponse(
+      const GURL& url,
+      MerchantInfoCallback callback,
       optimization_guide::OptimizationGuideDecision decision,
       const optimization_guide::OptimizationMetadata& metadata);
 

@@ -69,7 +69,10 @@ static_library("metrics") {
 
 proto_library("proto") {
   proto_in_dir = "//"
-  sources = [ "proto/price_tracking.proto" ]
+  sources = [
+    "proto/merchant_trust.proto",
+    "proto/price_tracking.proto",
+  ]
 }
 
 if (is_android) {
