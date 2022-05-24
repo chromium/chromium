@@ -24,8 +24,9 @@ public class SplitMonochromeApplication extends SplitChromeApplication {
         @Override
         public void onCreate() {
             super.onCreate();
-            // TODO(crbug.com/1126301): This matches logic in MonochromeApplication.java.
-            // Deduplicate if chrome split launches.
+            if (getApplication().isWebViewProcess()) {
+                WebViewApkApplication.checkForAppRecovery();
+            }
             if (!VersionInfo.isStableBuild() && getApplication().isWebViewProcess()) {
                 WebViewApkApplication.postDeveloperUiLauncherIconTask();
             }

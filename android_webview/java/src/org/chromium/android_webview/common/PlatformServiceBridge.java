@@ -120,4 +120,11 @@ public abstract class PlatformServiceBridge {
     public String getFirstPartyVariationsHeadersEnabledPackageId() {
         return "";
     }
+
+    /**
+     * Checks if app recovery mitigations are currently required and initializes SafeMode if needed.
+     * This should only be called from the ":webview_service" process. All other processes should
+     * query SafeModeController to receive mitigation steps.
+     */
+    public void checkForAppRecovery() {}
 }
