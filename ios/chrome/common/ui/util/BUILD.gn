@@ -42,7 +42,10 @@ source_set("image_util") {
     "image_util.mm",
   ]
   deps = [ "//ui/gfx:resize_image_dimensions" ]
-  frameworks = [ "UIKit.framework" ]
+  frameworks = [
+    "UIKit.framework",
+    "CoreImage.framework",
+  ]
 }
 
 source_set("unit_tests") {

@@ -11,6 +11,7 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/common/ui/util/image_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -24,6 +25,18 @@ constexpr CGFloat kCellLabelsWidthProportion = 3.f;
 
 // Minimum cell height when the cell has 2 lines.
 constexpr CGFloat kChromeTableViewTwoLinesCellHeight = 58.f;
+
+// Offset of the background image used to create the elevated effect.
+constexpr CGFloat kBackgroundImageOffset = 1;
+
+// Background image color alpha.
+constexpr CGFloat kBackgroundColorAlpha = 0.1;
+
+// Background image corner radius.
+constexpr CGFloat kBackgroundCornerRadius = 7;
+
+// Background blur radius.
+constexpr CGFloat kBackgroundBlurRadius = 3;
 
 }  // namespace
 
@@ -45,12 +58,17 @@ constexpr CGFloat kChromeTableViewTwoLinesCellHeight = 58.f;
   cell.textLabel.text = self.text;
   [cell setDetailText:self.detailText];
 
-  // Update the icon image, if one is present.
-  UIImage* iconImage = nil;
-  if ([self.iconImageName length]) {
-    iconImage = [UIImage imageNamed:self.iconImageName];
+  if (self.symbolImage) {
+    [cell setSymbolImage:self.symbolImage
+         backgroundColor:self.symbolBackgroundColor];
+  } else {
+    // Update the icon image, if one is present.
+    UIImage* iconImage = nil;
+    if ([self.iconImageName length]) {
+      iconImage = [UIImage imageNamed:self.iconImageName];
+      [cell setIconImage:iconImage];
+    }
   }
-  [cell setIconImage:iconImage];
   [cell setTextLayoutConstraintAxis:self.textLayoutConstraintAxis];
 }
 
@@ -158,6 +176,38 @@ constexpr CGFloat kChromeTableViewTwoLinesCellHeight = 58.f;
                   self.traitCollection.preferredContentSizeCategory)];
   }
   return self;
+}
+
+- (void)setSymbolImage:(UIImage*)image
+       backgroundColor:(UIColor*)backgroundColor {
+  BOOL hidden = (image == nil);
+  _iconImageView.hidden = hidden;
+  if (hidden) {
+    _iconVisibleConstraint.active = NO;
+    _iconHiddenConstraint.active = YES;
+  } else {
+    _iconImageView.backgroundColor = backgroundColor;
+    _iconImageView.layer.cornerRadius = kBackgroundCornerRadius;
+    CGFloat centerPoint = kTableViewIconImageSize / 2;
+
+    UIImage* blurredImage = BlurredImageWithImage(image, kBackgroundBlurRadius);
+    UIImageView* backgroundImageView =
+        [[UIImageView alloc] initWithImage:blurredImage];
+    backgroundImageView.center =
+        CGPointMake(centerPoint, centerPoint + kBackgroundImageOffset);
+    backgroundImageView.tintColor =
+        [UIColor.blackColor colorWithAlphaComponent:kBackgroundColorAlpha];
+    [_iconImageView addSubview:backgroundImageView];
+
+    UIImageView* foregroundImageView =
+        [[UIImageView alloc] initWithImage:image];
+    foregroundImageView.center = CGPointMake(centerPoint, centerPoint);
+    foregroundImageView.tintColor = UIColor.whiteColor;
+    [_iconImageView addSubview:foregroundImageView];
+
+    _iconHiddenConstraint.active = NO;
+    _iconVisibleConstraint.active = YES;
+  }
 }
 
 - (void)setIconImage:(UIImage*)image {
