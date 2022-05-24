@@ -110,7 +110,7 @@ class CTSConfig:
 
   def get_additional_apks(self, platform):
     return [
-        apk for r in self._config[platform]['test_runs']
+        apk['apk'] for r in self._config[platform]['test_runs']
         for apk in r.get('additional_apks', [])
     ]
 

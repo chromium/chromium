@@ -80,14 +80,21 @@ CONFIG_DATA['json'] = """{
       {
         "apk": "p2/test1.apk",
         "additional_apks": [
-          "p2/additional_apk_a_1.apk"
+          {
+            "apk": "p2/additional_apk_a_1.apk"
+          }
         ]
       },
       {
         "apk": "p2/test2.apk",
         "additional_apks": [
-          "p2/additional_apk_b_1.apk",
-          "p2/additional_apk_b_2.apk"
+          {
+            "apk": "p2/additional_apk_b_1.apk",
+            "forced_queryable": true
+          },
+          {
+            "apk": "p2/additional_apk_b_2.apk"
+          }
         ]
       }
     ]

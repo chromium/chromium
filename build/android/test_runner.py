@@ -426,6 +426,13 @@ def AddInstrumentationTestOptions(parser):
       type=_RealPath,
       help='Additional apk that must be installed on '
            'the device when the tests are run')
+  parser.add_argument('--forced-queryable-additional-apk',
+                      action='append',
+                      dest='forced_queryable_additional_apks',
+                      default=[],
+                      type=_RealPath,
+                      help='Configures an additional-apk to be forced '
+                      'to be queryable by other APKs.')
   parser.add_argument(
       '-A', '--annotation',
       dest='annotation_str',

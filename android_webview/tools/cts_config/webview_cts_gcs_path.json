@@ -98,8 +98,12 @@
         "apk": "android-cts/repository/testcases/CtsAssistTestCases.apk",
         "voice_service": "android.assist.service/.MainInteractionService",
         "additional_apks": [
-          "android-cts/repository/testcases/CtsAssistApp.apk",
-          "android-cts/repository/testcases/CtsAssistService.apk"
+          {
+            "apk": "android-cts/repository/testcases/CtsAssistApp.apk"
+          },
+          {
+            "apk": "android-cts/repository/testcases/CtsAssistService.apk"
+          }
         ],
         "includes": [
           {
@@ -148,8 +152,12 @@
         "apk": "android-cts/testcases/CtsAssistTestCases.apk",
         "voice_service": "android.assist.service/.MainInteractionService",
         "additional_apks": [
-          "android-cts/testcases/CtsAssistApp.apk",
-          "android-cts/testcases/CtsAssistService.apk"
+          {
+            "apk": "android-cts/testcases/CtsAssistApp.apk"
+          },
+          {
+            "apk": "android-cts/testcases/CtsAssistService.apk"
+          }
         ],
         "includes": [
           {
@@ -183,8 +191,12 @@
         "apk": "android-cts/testcases/CtsAssistTestCases.apk",
         "voice_service": "android.assist.service/.MainInteractionService",
         "additional_apks": [
-          "android-cts/testcases/CtsAssistApp.apk",
-          "android-cts/testcases/CtsAssistService.apk"
+          {
+            "apk": "android-cts/testcases/CtsAssistApp.apk"
+          },
+          {
+            "apk": "android-cts/testcases/CtsAssistService.apk"
+          }
         ],
         "includes": [
           {
@@ -229,8 +241,12 @@
         "apk": "android-cts/testcases/CtsAssistTestCases.apk",
         "voice_service": "android.assist.service/.MainInteractionService",
         "additional_apks": [
-          "android-cts/testcases/CtsAssistApp.apk",
-          "android-cts/testcases/CtsAssistService.apk"
+          {
+            "apk": "android-cts/testcases/CtsAssistApp.apk"
+          },
+          {
+            "apk": "android-cts/testcases/CtsAssistService.apk"
+          }
         ],
         "includes": [
           {
@@ -298,8 +314,12 @@
         "apk": "android-cts/testcases/CtsAssistTestCases.apk",
         "voice_service": "android.assist.service/.MainInteractionService",
         "additional_apks": [
-          "android-cts/testcases/CtsAssistApp.apk",
-          "android-cts/testcases/CtsAssistService.apk"
+          {
+            "apk": "android-cts/testcases/CtsAssistApp.apk"
+          },
+          {
+            "apk": "android-cts/testcases/CtsAssistService.apk"
+          }
         ],
         "includes": [
           {
@@ -366,12 +386,30 @@
       {
         "apk": "android-cts/testcases/CtsAssistTestCases.apk",
         "additional_apks": [
-          "android-cts/testcases/CtsAssistApp.apk",
-          "android-cts/testcases/CtsAssistService.apk"
+          {
+            "apk": "android-cts/testcases/CtsAssistApp.apk"
+          },
+          {
+            "apk": "android-cts/testcases/CtsAssistService.apk"
+          }
         ],
         "includes": [
           {
             "match": "android.assist.cts.WebViewTest#testWebView"
+          }
+        ]
+      },
+      {
+        "apk": "android-cts/testcases/CtsInputMethodTestCases.apk",
+        "additional_apks": [
+          {
+            "apk": "android-cts/testcases/CtsMockInputMethod.apk",
+            "forced_queryable": true
+          }
+        ],
+        "includes": [
+          {
+            "match": "android.view.inputmethod.cts.KeyboardVisibilityControlTest#testShowHideKeyboardOnWebView"
           }
         ]
       }
@@ -434,12 +472,39 @@
       {
         "apk": "android-cts/testcases/CtsAssistTestCases.apk",
         "additional_apks": [
-          "android-cts/testcases/CtsAssistApp.apk",
-          "android-cts/testcases/CtsAssistService.apk"
+          {
+            "apk": "android-cts/testcases/CtsAssistApp.apk"
+          },
+          {
+            "apk": "android-cts/testcases/CtsAssistService.apk"
+          }
         ],
         "includes": [
           {
             "match": "android.assist.cts.WebViewTest#testWebView"
+          }
+        ]
+      },
+      {
+        "apk": "android-cts/testcases/CtsInputMethodTestCases.apk",
+        "additional_apks": [
+          {
+            "apk": "android-cts/testcases/CtsMockInputMethod.apk",
+            "forced_queryable": true
+          }
+        ],
+        "includes": [
+          {
+            "match": "android.view.inputmethod.cts.KeyboardVisibilityControlTest#testShowHideKeyboardOnWebView"
+          },
+          {
+            "match": "android.view.inputmethod.cts.InputMethodServiceTest#testBatchEdit_commitAndSetComposingRegion_webView"
+          },
+          {
+            "match": "android.view.inputmethod.cts.InputMethodServiceTest#testBatchEdit_commitSpaceThenSetComposingRegion_webView"
+          },
+          {
+            "match": "android.view.inputmethod.cts.InputMethodServiceTest#testBatchEdit_commitSpaceThenSetComposingRegion_webView"
           }
         ]
       }

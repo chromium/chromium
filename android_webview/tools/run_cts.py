@@ -158,11 +158,14 @@ def RunCTS(test_runner_args,
     local_test_runner_args += ['--use-voice-interaction-service', voice_service]
 
   if additional_apks:
-    for s in additional_apks:
-      local_test_runner_args += [
-          '--additional-apk',
-          os.path.join(local_cts_dir, s)
-      ]
+    for additional_apk in additional_apks:
+      additional_apk_tmp = os.path.join(local_cts_dir, additional_apk['apk'])
+      local_test_runner_args += ['--additional-apk', additional_apk_tmp]
+
+      if additional_apk.get('forced_queryable', False):
+        local_test_runner_args += [
+            '--forced-queryable-additional-apk', additional_apk_tmp
+        ]
 
   if json_results_file:
     local_test_runner_args += ['--json-results-file=%s' %

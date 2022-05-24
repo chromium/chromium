@@ -25,7 +25,18 @@ Android release basis by editing
         {
           "apk": "location of the test apk in the cts zip file",
           "additional_apks": [
-            "<optional list of additional apks that need to be installed for the test to run>"
+            // optional list of additional apks that need to be installed
+            // for the test to run
+            {
+              "apk": "location of the additional apk in the cts zip file",
+            },
+            {
+              "apk": "location of the additional apk in the cts zip file",
+              // An optional boolean flag to indicate if the APK should
+              // be queryable by other APKs
+              // Only usable from Android 11+
+              "forced_queryable": true
+            }
           ]
         },
         {
