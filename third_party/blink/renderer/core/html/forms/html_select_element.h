@@ -92,9 +92,9 @@ class CORE_EXPORT HTMLSelectElement final
   using Node::remove;
   void remove(int index);
 
-  String value() const;
-  void setValue(const String&, bool send_events = false);
-  String valueForBinding() const { return value(); }
+  String Value() const;
+  void SetValue(const String&, bool send_events = false);
+  String valueForBinding() const { return Value(); }
   void setValueForBinding(const String&);
   String SuggestedValue() const;
   void SetSuggestedValue(const String&);

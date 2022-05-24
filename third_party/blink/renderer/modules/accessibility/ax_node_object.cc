@@ -2500,9 +2500,9 @@ RGBA32 AXNodeObject::ColorValue() const {
   if (!EqualIgnoringASCIICase(type, "color"))
     return AXObject::ColorValue();
 
-  // HTMLInputElement::value always returns a string parseable by Color.
+  // HTMLInputElement::Value always returns a string parseable by Color.
   Color color;
-  bool success = color.SetFromString(input->value());
+  bool success = color.SetFromString(input->Value());
   DCHECK(success);
   return color.Rgb();
 }
@@ -2979,7 +2979,7 @@ String AXNodeObject::GetValueForControl() const {
         input->type() != input_type_names::kRadio &&
         input->type() != input_type_names::kReset &&
         input->type() != input_type_names::kSubmit) {
-      return input->value();
+      return input->Value();
     }
   }
 
@@ -3180,14 +3180,14 @@ bool AXNodeObject::OnNativeSetValueAction(const String& string) {
 
   auto* html_input_element = DynamicTo<HTMLInputElement>(*GetNode());
   if (html_input_element && layout_object->IsTextFieldIncludingNG()) {
-    html_input_element->setValue(
+    html_input_element->SetValue(
         string, TextFieldEventBehavior::kDispatchInputAndChangeEvent);
     return true;
   }
 
   if (auto* text_area_element = DynamicTo<HTMLTextAreaElement>(*GetNode())) {
     DCHECK(layout_object->IsTextAreaIncludingNG());
-    text_area_element->setValue(
+    text_area_element->SetValue(
         string, TextFieldEventBehavior::kDispatchInputAndChangeEvent);
     return true;
   }
@@ -4907,7 +4907,7 @@ String AXNodeObject::NativeTextAlternative(
       name_sources->push_back(NameSource(*found_text_alternative, kValueAttr));
       name_sources->back().type = name_from;
     }
-    String value = input_element->value();
+    String value = input_element->Value();
     if (!value.IsNull()) {
       text_alternative = value;
       if (name_sources) {
@@ -4973,7 +4973,7 @@ String AXNodeObject::NativeTextAlternative(
       name_sources->back().type = name_from;
     }
     name_from = ax::mojom::blink::NameFrom::kAttribute;
-    String value = input_element->value();
+    String value = input_element->Value();
     if (!value.IsNull()) {
       text_alternative = value;
       if (name_sources) {
@@ -5053,7 +5053,7 @@ String AXNodeObject::NativeTextAlternative(
     name_from = ax::mojom::blink::NameFrom::kValue;
 
     String displayed_file_path = GetValueForControl();
-    String upload_button_text = input_element->UploadButton()->value();
+    String upload_button_text = input_element->UploadButton()->Value();
     if (!displayed_file_path.IsEmpty()) {
       text_alternative = displayed_file_path + ", " + upload_button_text;
     } else {
@@ -5474,7 +5474,7 @@ String AXNodeObject::Description(
           DescriptionSource(found_description, kValueAttr));
       description_sources->back().type = description_from;
     }
-    String value = input_element->value();
+    String value = input_element->Value();
     if (!value.IsNull()) {
       description = value;
       if (description_sources) {

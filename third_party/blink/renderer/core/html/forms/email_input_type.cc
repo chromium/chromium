@@ -204,11 +204,11 @@ bool EmailInputType::TypeMismatchFor(const String& value) const {
 }
 
 bool EmailInputType::TypeMismatch() const {
-  return TypeMismatchFor(GetElement().value());
+  return TypeMismatchFor(GetElement().Value());
 }
 
 String EmailInputType::TypeMismatchText() const {
-  String invalid_address = FindInvalidAddress(GetElement().value());
+  String invalid_address = FindInvalidAddress(GetElement().Value());
   DCHECK(!invalid_address.IsNull());
   if (invalid_address.IsEmpty()) {
     return GetLocale().QueryString(
@@ -301,7 +301,7 @@ String EmailInputType::ConvertFromVisibleValue(
 }
 
 String EmailInputType::VisibleValue() const {
-  String value = GetElement().value();
+  String value = GetElement().Value();
   if (!GetElement().Multiple())
     return ConvertEmailAddressToUnicode(value);
 

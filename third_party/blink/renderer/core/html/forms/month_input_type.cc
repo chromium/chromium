@@ -58,7 +58,7 @@ const AtomicString& MonthInputType::FormControlType() const {
 
 double MonthInputType::ValueAsDate() const {
   DateComponents date;
-  if (!ParseToDateComponents(GetElement().value(), &date))
+  if (!ParseToDateComponents(GetElement().Value(), &date))
     return DateComponents::InvalidMilliseconds();
   double msec = date.MillisecondsSinceEpoch();
   DCHECK(std::isfinite(msec));

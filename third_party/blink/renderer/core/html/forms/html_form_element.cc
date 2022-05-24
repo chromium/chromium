@@ -586,7 +586,7 @@ FormData* HTMLFormElement::ConstructEntryList(
       control->AppendToFormData(form_data);
     if (auto* input = DynamicTo<HTMLInputElement>(element)) {
       if (input->type() == input_type_names::kPassword &&
-          !input->value().IsEmpty())
+          !input->Value().IsEmpty())
         form_data.SetContainsPasswordData(true);
     }
   }

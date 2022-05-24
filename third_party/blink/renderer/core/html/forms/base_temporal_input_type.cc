@@ -69,11 +69,11 @@ double BaseTemporalInputType::ValueAsDate() const {
 void BaseTemporalInputType::SetValueAsDate(
     const absl::optional<base::Time>& value,
     ExceptionState&) const {
-  GetElement().setValue(SerializeWithDate(value));
+  GetElement().SetValue(SerializeWithDate(value));
 }
 
 double BaseTemporalInputType::ValueAsDouble() const {
-  const Decimal value = ParseToNumber(GetElement().value(), Decimal::Nan());
+  const Decimal value = ParseToNumber(GetElement().Value(), Decimal::Nan());
   return value.IsFinite() ? value.ToDouble()
                           : DateComponents::InvalidMilliseconds();
 }
@@ -91,7 +91,7 @@ bool BaseTemporalInputType::TypeMismatchFor(const String& value) const {
 }
 
 bool BaseTemporalInputType::TypeMismatch() const {
-  return TypeMismatchFor(GetElement().value());
+  return TypeMismatchFor(GetElement().Value());
 }
 
 String BaseTemporalInputType::ValueNotEqualText(const Decimal& value) const {
@@ -188,7 +188,7 @@ String BaseTemporalInputType::LocalizeValue(
 }
 
 String BaseTemporalInputType::VisibleValue() const {
-  return LocalizeValue(GetElement().value());
+  return LocalizeValue(GetElement().Value());
 }
 
 String BaseTemporalInputType::SanitizeValue(

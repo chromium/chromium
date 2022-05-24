@@ -63,7 +63,7 @@ void BaseCheckableInputType::RestoreFormControlState(
 
 void BaseCheckableInputType::AppendToFormData(FormData& form_data) const {
   if (GetElement().checked())
-    form_data.AppendFromElement(GetElement().GetName(), GetElement().value());
+    form_data.AppendFromElement(GetElement().GetName(), GetElement().Value());
 }
 
 void BaseCheckableInputType::HandleKeydownEvent(KeyboardEvent& event) {

@@ -115,12 +115,12 @@ const AtomicString& HTMLTextAreaElement::FormControlType() const {
 }
 
 FormControlState HTMLTextAreaElement::SaveFormControlState() const {
-  return is_dirty_ ? FormControlState(value()) : FormControlState();
+  return is_dirty_ ? FormControlState(Value()) : FormControlState();
 }
 
 void HTMLTextAreaElement::RestoreFormControlState(
     const FormControlState& state) {
-  setValue(state[0]);
+  SetValue(state[0]);
 }
 
 int HTMLTextAreaElement::scrollWidth() {
@@ -163,7 +163,7 @@ void HTMLTextAreaElement::ChildrenChanged(const ChildrenChange& change) {
   HTMLElement::ChildrenChanged(change);
   SetLastChangeWasNotUserEdit();
   if (is_dirty_)
-    SetInnerEditorValue(value());
+    SetInnerEditorValue(Value());
   else
     SetNonDirtyValue(defaultValue(), TextControlSetValueSelection::kClamp);
 }
@@ -280,7 +280,7 @@ void HTMLTextAreaElement::AppendToFormData(FormData& form_data) {
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kForm);
 
   const String& text =
-      (wrap_ == kHardWrap) ? ValueWithHardLineBreaks() : value();
+      (wrap_ == kHardWrap) ? ValueWithHardLineBreaks() : Value();
   form_data.AppendFromElement(GetName(), text);
 
   const AtomicString& dirname_attr_value =
@@ -355,7 +355,7 @@ void HTMLTextAreaElement::SubtreeHasChanged() {
   AddPlaceholderBreakElementIfNecessary();
   SetValueBeforeFirstUserEditIfNotSet();
   UpdateValue();
-  CheckIfValueWasReverted(value());
+  CheckIfValueWasReverted(Value());
   SetNeedsValidityCheck();
   SetAutofillState(WebAutofillState::kNotFilled);
   UpdatePlaceholderVisibility();
@@ -435,16 +435,16 @@ void HTMLTextAreaElement::UpdateValue() {
   UpdatePlaceholderVisibility();
 }
 
-String HTMLTextAreaElement::value() const {
+String HTMLTextAreaElement::Value() const {
   return value_;
 }
 
 void HTMLTextAreaElement::setValueForBinding(const String& value) {
   if (GetAutofillState() != WebAutofillState::kAutofilled) {
-    setValue(value);
+    SetValue(value);
   } else {
-    String old_value = this->value();
-    setValue(value);
+    String old_value = this->Value();
+    SetValue(value);
     if (Page* page = GetDocument().GetPage()) {
       page->GetChromeClient().JavaScriptChangedAutofilledValue(*this,
                                                                old_value);
@@ -452,7 +452,7 @@ void HTMLTextAreaElement::setValueForBinding(const String& value) {
   }
 }
 
-void HTMLTextAreaElement::setValue(const String& value,
+void HTMLTextAreaElement::SetValue(const String& value,
                                    TextFieldEventBehavior event_behavior,
                                    TextControlSetValueSelection selection) {
   SetValueCommon(value, event_behavior, selection);
@@ -481,7 +481,7 @@ void HTMLTextAreaElement::SetValueCommon(
 
   // Return early because we don't want to trigger other side effects when the
   // value isn't changing. This is interoperable.
-  if (normalized_value == value())
+  if (normalized_value == Value())
     return;
 
   // selectionStart and selectionEnd values can be changed by
@@ -568,12 +568,12 @@ String HTMLTextAreaElement::validationMessage() const {
     return GetLocale().QueryString(IDS_FORM_VALIDATION_VALUE_MISSING);
 
   if (TooLong()) {
-    return GetLocale().ValidationMessageTooLongText(value().length(),
+    return GetLocale().ValidationMessageTooLongText(Value().length(),
                                                     maxLength());
   }
 
   if (TooShort()) {
-    return GetLocale().ValidationMessageTooShortText(value().length(),
+    return GetLocale().ValidationMessageTooShortText(Value().length(),
                                                      minLength());
   }
 
@@ -589,7 +589,7 @@ bool HTMLTextAreaElement::ValueMissing(const String* value) const {
   // For textarea elements, the value is missing only if it is mutable.
   // https://html.spec.whatwg.org/multipage/form-elements.html#attr-textarea-required
   return IsRequiredFormControl() && !IsDisabledOrReadOnly() &&
-         (value ? *value : this->value()).IsEmpty();
+         (value ? *value : this->Value()).IsEmpty();
 }
 
 bool HTMLTextAreaElement::TooLong() const {
@@ -613,7 +613,7 @@ bool HTMLTextAreaElement::TooLong(const String* value,
   if (max < 0)
     return false;
   unsigned len =
-      value ? ComputeLengthForAPIValue(*value) : this->value().length();
+      value ? ComputeLengthForAPIValue(*value) : this->Value().length();
   return len > static_cast<unsigned>(max);
 }
 
@@ -629,7 +629,7 @@ bool HTMLTextAreaElement::TooShort(const String* value,
     return false;
   // An empty string is excluded from minlength check.
   unsigned len =
-      value ? ComputeLengthForAPIValue(*value) : this->value().length();
+      value ? ComputeLengthForAPIValue(*value) : this->Value().length();
   return len > 0 && len < static_cast<unsigned>(min);
 }
 
@@ -710,7 +710,7 @@ void HTMLTextAreaElement::CloneNonAttributePropertiesFrom(
     const Element& source,
     CloneChildrenFlag flag) {
   const auto& source_element = To<HTMLTextAreaElement>(source);
-  SetValueCommon(source_element.value(),
+  SetValueCommon(source_element.Value(),
                  TextFieldEventBehavior::kDispatchNoEvent,
                  TextControlSetValueSelection::kSetSelectionToEnd);
   is_dirty_ = source_element.is_dirty_;

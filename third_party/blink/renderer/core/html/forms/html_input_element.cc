@@ -204,11 +204,11 @@ bool HTMLInputElement::IsValidValue(const String& value) const {
 }
 
 bool HTMLInputElement::TooLong() const {
-  return TooLong(value(), kCheckDirtyFlag);
+  return TooLong(Value(), kCheckDirtyFlag);
 }
 
 bool HTMLInputElement::TooShort() const {
-  return TooShort(value(), kCheckDirtyFlag);
+  return TooShort(Value(), kCheckDirtyFlag);
 }
 
 bool HTMLInputElement::TypeMismatch() const {
@@ -216,7 +216,7 @@ bool HTMLInputElement::TypeMismatch() const {
 }
 
 bool HTMLInputElement::ValueMissing() const {
-  return input_type_->ValueMissing(value());
+  return input_type_->ValueMissing(Value());
 }
 
 bool HTMLInputElement::HasBadInput() const {
@@ -224,7 +224,7 @@ bool HTMLInputElement::HasBadInput() const {
 }
 
 bool HTMLInputElement::PatternMismatch() const {
-  return input_type_->PatternMismatch(value());
+  return input_type_->PatternMismatch(Value());
 }
 
 bool HTMLInputElement::TooLong(const String& value,
@@ -238,11 +238,11 @@ bool HTMLInputElement::TooShort(const String& value,
 }
 
 bool HTMLInputElement::RangeUnderflow() const {
-  return input_type_->RangeUnderflow(value());
+  return input_type_->RangeUnderflow(Value());
 }
 
 bool HTMLInputElement::RangeOverflow() const {
-  return input_type_->RangeOverflow(value());
+  return input_type_->RangeOverflow(Value());
 }
 
 String HTMLInputElement::validationMessage() const {
@@ -269,7 +269,7 @@ double HTMLInputElement::Maximum() const {
 }
 
 bool HTMLInputElement::StepMismatch() const {
-  return input_type_->StepMismatch(value());
+  return input_type_->StepMismatch(Value());
 }
 
 bool HTMLInputElement::GetAllowedValueStep(Decimal* step) const {
@@ -547,7 +547,7 @@ void HTMLInputElement::UpdateType() {
       String new_value = SanitizeValue(non_attribute_value_);
       if (!EqualIgnoringNullity(new_value, non_attribute_value_)) {
         if (HasDirtyValue())
-          setValue(new_value);
+          SetValue(new_value);
         else
           SetNonDirtyValue(new_value);
       }
@@ -1121,7 +1121,7 @@ void HTMLInputElement::CloneNonAttributePropertiesFrom(const Element& source,
   input_type_view_->UpdateView();
 }
 
-String HTMLInputElement::value() const {
+String HTMLInputElement::Value() const {
   switch (input_type_->GetValueMode()) {
     case ValueMode::kFilename:
       return input_type_->ValueInFilenameValueMode();
@@ -1139,7 +1139,7 @@ String HTMLInputElement::value() const {
 }
 
 String HTMLInputElement::ValueOrDefaultLabel() const {
-  String value = this->value();
+  String value = this->Value();
   if (!value.IsNull())
     return value;
   return input_type_->DefaultLabel();
@@ -1147,7 +1147,7 @@ String HTMLInputElement::ValueOrDefaultLabel() const {
 
 void HTMLInputElement::SetValueForUser(const String& value) {
   // Call setValue and make it send a change event.
-  setValue(value, TextFieldEventBehavior::kDispatchChangeEvent);
+  SetValue(value, TextFieldEventBehavior::kDispatchChangeEvent);
 }
 
 void HTMLInputElement::SetSuggestedValue(const String& value) {
@@ -1193,10 +1193,10 @@ void HTMLInputElement::setValueForBinding(const String& value,
   }
 
   if (GetAutofillState() != WebAutofillState::kAutofilled) {
-    setValue(value);
+    SetValue(value);
   } else {
-    String old_value = this->value();
-    setValue(value);
+    String old_value = this->Value();
+    SetValue(value);
     if (Page* page = GetDocument().GetPage()) {
       page->GetChromeClient().JavaScriptChangedAutofilledValue(*this,
                                                                old_value);
@@ -1204,7 +1204,7 @@ void HTMLInputElement::setValueForBinding(const String& value,
   }
 }
 
-void HTMLInputElement::setValue(const String& value,
+void HTMLInputElement::SetValue(const String& value,
                                 TextFieldEventBehavior event_behavior,
                                 TextControlSetValueSelection selection) {
   input_type_->WarnIfValueIsInvalidAndElementIsVisible(value);
@@ -1221,7 +1221,7 @@ void HTMLInputElement::setValue(const String& value,
 
   EventQueueScope scope;
   String sanitized_value = SanitizeValue(value);
-  bool value_changed = sanitized_value != this->value();
+  bool value_changed = sanitized_value != this->Value();
 
   SetLastChangeWasNotUserEdit();
   needs_to_update_view_value_ = true;
@@ -1256,7 +1256,7 @@ void HTMLInputElement::SetNonAttributeValueByUserEdit(
 }
 
 void HTMLInputElement::SetNonDirtyValue(const String& new_value) {
-  setValue(new_value);
+  SetValue(new_value);
   has_dirty_value_ = false;
 }
 
@@ -1312,7 +1312,7 @@ Decimal HTMLInputElement::RatioValue() const {
   DCHECK_EQ(type(), input_type_names::kRange);
   const StepRange step_range(CreateStepRange(kRejectAny));
   const Decimal old_value =
-      ParseToDecimalForNumberType(value(), step_range.DefaultValue());
+      ParseToDecimalForNumberType(Value(), step_range.DefaultValue());
   return step_range.ProportionFromValue(step_range.ClampValue(old_value));
 }
 
@@ -1627,11 +1627,11 @@ String HTMLInputElement::LocalizeValue(const String& proposed_value) const {
 }
 
 bool HTMLInputElement::IsInRange() const {
-  return willValidate() && input_type_->IsInRange(value());
+  return willValidate() && input_type_->IsInRange(Value());
 }
 
 bool HTMLInputElement::IsOutOfRange() const {
-  return willValidate() && input_type_->IsOutOfRange(value());
+  return willValidate() && input_type_->IsOutOfRange(Value());
 }
 
 bool HTMLInputElement::IsRequiredFormControl() const {
@@ -2189,7 +2189,7 @@ bool HTMLInputElement::IsDraggedSlider() const {
 
 void HTMLInputElement::MaybeReportPiiMetrics() {
   // Don't report metrics if the field is empty.
-  if (value().IsEmpty())
+  if (Value().IsEmpty())
     return;
 
   // Report the PII types derived from autofill field semantic type prediction.
@@ -2211,9 +2211,9 @@ void HTMLInputElement::MaybeReportPiiMetrics() {
   // For Email, we add a length limitation (based on
   // https://www.rfc-editor.org/errata_search.php?rfc=3696) in addition to
   // matching with the pattern given by the HTML standard.
-  if (value().length() <= kMaxEmailFieldLength &&
+  if (Value().length() <= kMaxEmailFieldLength &&
       EmailInputType::IsValidEmailAddress(GetDocument().EnsureEmailRegexp(),
-                                          value())) {
+                                          Value())) {
     UseCounter::Count(GetDocument(),
                       WebFeature::kEmailFieldFilled_PatternMatch);
   }

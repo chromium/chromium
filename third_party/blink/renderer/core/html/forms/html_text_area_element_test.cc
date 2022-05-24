@@ -63,11 +63,11 @@ TEST_P(HTMLTextAreaElementTest, ValueWithHardLineBreaks) {
   RunDocumentLifecycle();
   EXPECT_TRUE(textarea.ValueWithHardLineBreaks().IsEmpty());
 
-  textarea.setValue("12345678");
+  textarea.SetValue("12345678");
   RunDocumentLifecycle();
   EXPECT_EQ("1234\n5678", textarea.ValueWithHardLineBreaks());
 
-  textarea.setValue("1234567890\n");
+  textarea.SetValue("1234567890\n");
   RunDocumentLifecycle();
   EXPECT_EQ("1234\n5678\n90\n", textarea.ValueWithHardLineBreaks());
 
@@ -98,7 +98,7 @@ TEST_P(HTMLTextAreaElementTest, ValueWithHardLineBreaksRtl) {
 
 #define LTO "\xE2\x80\xAD"
 #define RTO "\xE2\x80\xAE"
-  textarea.setValue(
+  textarea.SetValue(
       String::FromUTF8(RTO "Hebrew" LTO " English " RTO "Arabic" LTO));
   // This textarea is rendered as:
   //    -----------------

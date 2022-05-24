@@ -151,7 +151,7 @@ void SliderThumbElement::SetPositionFromPoint(const LayoutPoint& point) {
   }
 
   String value_string = SerializeForNumberType(value);
-  if (value_string == input->value())
+  if (value_string == input->Value())
     return;
 
   // FIXME: This is no longer being set from renderer. Consider updating the

@@ -52,7 +52,7 @@ bool URLInputType::TypeMismatchFor(const String& value) const {
 }
 
 bool URLInputType::TypeMismatch() const {
-  return TypeMismatchFor(GetElement().value());
+  return TypeMismatchFor(GetElement().Value());
 }
 
 String URLInputType::TypeMismatchText() const {

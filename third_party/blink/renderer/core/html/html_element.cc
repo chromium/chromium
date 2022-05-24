@@ -1312,7 +1312,7 @@ absl::optional<TextDirection> HTMLElement::ResolveAutoDirectionality(
   is_deferred = false;
   if (auto* input_element = DynamicTo<HTMLInputElement>(*this)) {
     bool has_strong_directionality;
-    return DetermineDirectionality(input_element->value(),
+    return DetermineDirectionality(input_element->Value(),
                                    &has_strong_directionality);
   }
 

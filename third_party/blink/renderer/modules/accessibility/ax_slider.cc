@@ -73,10 +73,10 @@ AccessibilityOrientation AXSlider::Orientation() const {
 bool AXSlider::OnNativeSetValueAction(const String& value) {
   HTMLInputElement* input = GetInputElement();
 
-  if (input->value() == value)
+  if (input->Value() == value)
     return false;
 
-  input->setValue(value, TextFieldEventBehavior::kDispatchInputAndChangeEvent);
+  input->SetValue(value, TextFieldEventBehavior::kDispatchInputAndChangeEvent);
 
   // Fire change event manually, as SliderThumbElement::StopDragging does.
   input->DispatchFormControlChangeEvent();

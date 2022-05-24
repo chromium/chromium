@@ -44,17 +44,17 @@ class CORE_EXPORT HTMLTextAreaElement final : public TextControlElement {
 
   bool ShouldWrapText() const { return wrap_ != kNoWrap; }
 
-  String value() const override;
-  void setValue(
+  String Value() const override;
+  void SetValue(
       const String&,
       TextFieldEventBehavior = TextFieldEventBehavior::kDispatchNoEvent,
       TextControlSetValueSelection =
           TextControlSetValueSelection::kSetSelectionToEnd) override;
-  String valueForBinding() const { return value(); }
+  String valueForBinding() const { return Value(); }
   void setValueForBinding(const String&);
   String defaultValue() const;
   void setDefaultValue(const String&);
-  int textLength() const { return value().length(); }
+  int textLength() const { return Value().length(); }
 
   void SetSuggestedValue(const String& value) override;
 
@@ -89,7 +89,7 @@ class CORE_EXPORT HTMLTextAreaElement final : public TextControlElement {
   bool SupportsPlaceholder() const override { return true; }
   String GetPlaceholderValue() const final;
   void UpdatePlaceholderText() override;
-  bool IsEmptyValue() const override { return value().IsEmpty(); }
+  bool IsEmptyValue() const override { return Value().IsEmpty(); }
 
   bool IsOptionalFormControl() const override {
     return !IsRequiredFormControl();

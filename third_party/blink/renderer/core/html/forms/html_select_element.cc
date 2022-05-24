@@ -277,7 +277,7 @@ void HTMLSelectElement::remove(int option_index) {
     option->remove(IGNORE_EXCEPTION_FOR_TESTING);
 }
 
-String HTMLSelectElement::value() const {
+String HTMLSelectElement::Value() const {
   if (HTMLOptionElement* option = SelectedOption())
     return option->value();
   return "";
@@ -285,10 +285,10 @@ String HTMLSelectElement::value() const {
 
 void HTMLSelectElement::setValueForBinding(const String& value) {
   if (GetAutofillState() != WebAutofillState::kAutofilled) {
-    setValue(value);
+    SetValue(value);
   } else {
-    String old_value = this->value();
-    setValue(value);
+    String old_value = this->Value();
+    SetValue(value);
     if (Page* page = GetDocument().GetPage()) {
       page->GetChromeClient().JavaScriptChangedAutofilledValue(*this,
                                                                old_value);
@@ -296,7 +296,7 @@ void HTMLSelectElement::setValueForBinding(const String& value) {
   }
 }
 
-void HTMLSelectElement::setValue(const String& value, bool send_events) {
+void HTMLSelectElement::SetValue(const String& value, bool send_events) {
   HTMLOptionElement* option = nullptr;
   // Find the option with value() matching the given parameter and make it the
   // current selection.

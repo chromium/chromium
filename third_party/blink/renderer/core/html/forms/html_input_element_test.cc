@@ -276,7 +276,7 @@ TEST_F(HTMLInputElementTest, RepaintAfterClearingFile) {
   ASSERT_TRUE(input->GetLayoutObject());
   EXPECT_FALSE(input->GetLayoutObject()->ShouldCheckForPaintInvalidation());
 
-  input->setValue("");
+  input->SetValue("");
   GetDocument().UpdateStyleAndLayoutTree();
 
   ASSERT_TRUE(input->GetLayoutObject());
@@ -328,15 +328,15 @@ TEST_P(HTMLInputElementPasswordFieldResetTest, PasswordFieldReset) {
   TestElement().setType(GetParam().new_type);
   GetDocument().UpdateStyleAndLayoutTree();
 
-  TestElement().setValue(GetParam().temporary_value);
+  TestElement().SetValue(GetParam().temporary_value);
   GetDocument().UpdateStyleAndLayoutTree();
 
   EXPECT_CALL(chrome_client(),
               PasswordFieldReset(Truly([this](const HTMLInputElement& e) {
-                return e.isSameNode(&TestElement()) && e.value().IsEmpty();
+                return e.isSameNode(&TestElement()) && e.Value().IsEmpty();
               })))
       .Times(GetParam().expected_call ? 1 : 0);
-  TestElement().setValue("");
+  TestElement().SetValue("");
   GetDocument().UpdateStyleAndLayoutTree();
 }
 

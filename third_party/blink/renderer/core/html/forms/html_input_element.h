@@ -138,13 +138,13 @@ class CORE_EXPORT HTMLInputElement
 
   void setType(const AtomicString&);
 
-  String value() const override;
-  void setValue(
+  String Value() const override;
+  void SetValue(
       const String&,
       TextFieldEventBehavior = TextFieldEventBehavior::kDispatchNoEvent,
       TextControlSetValueSelection =
           TextControlSetValueSelection::kSetSelectionToEnd) override;
-  String valueForBinding() const { return value(); }
+  String valueForBinding() const { return Value(); }
   void setValueForBinding(const String&, ExceptionState&);
   void SetValueForUser(const String&);
   // Update the value, and clear hasDirtyValue() flag.

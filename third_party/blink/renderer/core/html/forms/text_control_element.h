@@ -121,8 +121,8 @@ class CORE_EXPORT TextControlElement : public HTMLFormControlElementWithState {
   void CheckIfValueWasReverted(const String&);
   void ClearValueBeforeFirstUserEdit();
 
-  virtual String value() const = 0;
-  virtual void setValue(
+  virtual String Value() const = 0;
+  virtual void SetValue(
       const String&,
       TextFieldEventBehavior = TextFieldEventBehavior::kDispatchNoEvent,
       TextControlSetValueSelection =

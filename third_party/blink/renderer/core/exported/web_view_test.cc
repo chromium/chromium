@@ -3257,7 +3257,7 @@ TEST_F(WebViewTest, TouchDoesntSelectEmptyTextarea) {
   auto* text_area_element = To<HTMLTextAreaElement>(static_cast<Node*>(
       web_view->MainFrameImpl()->GetDocument().GetElementById(
           blanklinestextbox)));
-  text_area_element->setValue("hello");
+  text_area_element->SetValue("hello");
 
   // Long-press past last word of textbox.
   EXPECT_TRUE(SimulateGestureAtElementById(
@@ -3994,53 +3994,53 @@ TEST_F(WebViewTest, ChooseValueFromDateTimeChooser) {
   auto* input_element = To<HTMLInputElement>(document->getElementById("date"));
   OpenDateTimeChooser(web_view_impl, input_element);
   GetExternalDateTimeChooser(web_view_impl)->ResponseHandler(true, 0);
-  EXPECT_EQ("1970-01-01", input_element->value());
+  EXPECT_EQ("1970-01-01", input_element->Value());
 
   OpenDateTimeChooser(web_view_impl, input_element);
   GetExternalDateTimeChooser(web_view_impl)
       ->ResponseHandler(true, std::numeric_limits<double>::quiet_NaN());
-  EXPECT_EQ("", input_element->value());
+  EXPECT_EQ("", input_element->Value());
 
   input_element =
       To<HTMLInputElement>(document->getElementById("datetimelocal"));
   OpenDateTimeChooser(web_view_impl, input_element);
   GetExternalDateTimeChooser(web_view_impl)->ResponseHandler(true, 0);
-  EXPECT_EQ("1970-01-01T00:00", input_element->value());
+  EXPECT_EQ("1970-01-01T00:00", input_element->Value());
 
   OpenDateTimeChooser(web_view_impl, input_element);
   GetExternalDateTimeChooser(web_view_impl)
       ->ResponseHandler(true, std::numeric_limits<double>::quiet_NaN());
-  EXPECT_EQ("", input_element->value());
+  EXPECT_EQ("", input_element->Value());
 
   input_element = To<HTMLInputElement>(document->getElementById("month"));
   OpenDateTimeChooser(web_view_impl, input_element);
   GetExternalDateTimeChooser(web_view_impl)->ResponseHandler(true, 0);
-  EXPECT_EQ("1970-01", input_element->value());
+  EXPECT_EQ("1970-01", input_element->Value());
 
   OpenDateTimeChooser(web_view_impl, input_element);
   GetExternalDateTimeChooser(web_view_impl)
       ->ResponseHandler(true, std::numeric_limits<double>::quiet_NaN());
-  EXPECT_EQ("", input_element->value());
+  EXPECT_EQ("", input_element->Value());
 
   input_element = To<HTMLInputElement>(document->getElementById("time"));
   OpenDateTimeChooser(web_view_impl, input_element);
   GetExternalDateTimeChooser(web_view_impl)->ResponseHandler(true, 0);
-  EXPECT_EQ("00:00", input_element->value());
+  EXPECT_EQ("00:00", input_element->Value());
 
   OpenDateTimeChooser(web_view_impl, input_element);
   GetExternalDateTimeChooser(web_view_impl)
       ->ResponseHandler(true, std::numeric_limits<double>::quiet_NaN());
-  EXPECT_EQ("", input_element->value());
+  EXPECT_EQ("", input_element->Value());
 
   input_element = To<HTMLInputElement>(document->getElementById("week"));
   OpenDateTimeChooser(web_view_impl, input_element);
   GetExternalDateTimeChooser(web_view_impl)->ResponseHandler(true, 0);
-  EXPECT_EQ("1970-W01", input_element->value());
+  EXPECT_EQ("1970-W01", input_element->Value());
 
   OpenDateTimeChooser(web_view_impl, input_element);
   GetExternalDateTimeChooser(web_view_impl)
       ->ResponseHandler(true, std::numeric_limits<double>::quiet_NaN());
-  EXPECT_EQ("", input_element->value());
+  EXPECT_EQ("", input_element->Value());
 
   // Clear the WebViewClient from the webViewHelper to avoid use-after-free in
   // the WebViewHelper destructor.

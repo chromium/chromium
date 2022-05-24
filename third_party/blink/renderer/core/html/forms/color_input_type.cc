@@ -116,7 +116,7 @@ String ColorInputType::SanitizeValue(const String& proposed_value) const {
 
 Color ColorInputType::ValueAsColor() const {
   Color color;
-  bool success = color.SetFromString(GetElement().value());
+  bool success = color.SetFromString(GetElement().Value());
   DCHECK(success);
   return color;
 }
@@ -236,7 +236,7 @@ void ColorInputType::UpdateView() {
     return;
 
   color_swatch->SetInlineStyleProperty(CSSPropertyID::kBackgroundColor,
-                                       GetElement().value());
+                                       GetElement().Value());
 }
 
 HTMLElement* ColorInputType::ShadowColorSwatch() const {

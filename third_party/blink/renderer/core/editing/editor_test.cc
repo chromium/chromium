@@ -63,7 +63,7 @@ TEST_F(EditorTest, copyGeneratedPassword) {
 
   const String kPasswordValue = "secret";
   element.Focus();
-  element.setValue(kPasswordValue);
+  element.SetValue(kPasswordValue);
   element.SetSelectionRange(0, kPasswordValue.length());
 
   Editor& editor = GetDocument().GetFrame()->GetEditor();
@@ -121,7 +121,7 @@ TEST_F(EditorTest, ReplaceSelection) {
   Editor& editor = GetDocument().GetFrame()->GetEditor();
   editor.ReplaceSelection("NEW");
 
-  EXPECT_EQ("HENEWLLO", text_control.value());
+  EXPECT_EQ("HENEWLLO", text_control.Value());
 }
 
 // http://crbug.com/263819
@@ -151,7 +151,7 @@ TEST_F(EditorTest, RedoWithDisconnectedInput) {
   auto& input = *To<HTMLInputElement>(GetElementById("target"));
   input.Focus();
   GetDocument().execCommand("insertText", false, "xyz", ASSERT_NO_EXCEPTION);
-  ASSERT_EQ("xyz", input.value());
+  ASSERT_EQ("xyz", input.Value());
   ASSERT_EQ(0, SizeOfRedoStack());
   ASSERT_EQ(1, SizeOfUndoStack());
 
@@ -188,7 +188,7 @@ TEST_F(EditorTest, UndoWithDisconnectedInput) {
   auto& input = *To<HTMLInputElement>(GetElementById("target"));
   input.Focus();
   GetDocument().execCommand("insertText", false, "xyz", ASSERT_NO_EXCEPTION);
-  ASSERT_EQ("xyz", input.value());
+  ASSERT_EQ("xyz", input.Value());
   ASSERT_EQ(0, SizeOfRedoStack());
   ASSERT_EQ(1, SizeOfUndoStack());
 

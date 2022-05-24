@@ -1790,7 +1790,7 @@ void Internals::setAutofilledValue(Element* element,
   }
 
   if (auto* select = DynamicTo<HTMLSelectElement>(*element)) {
-    select->setValue(value.IsEmpty()
+    select->SetValue(value.IsEmpty()
                          ? String()  // Null string resets the autofill state.
                          : value,
                      true /* send_events */);

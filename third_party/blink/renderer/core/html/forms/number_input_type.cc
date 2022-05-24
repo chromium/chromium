@@ -112,19 +112,19 @@ void NumberInputType::SetValue(const String& sanitized_value,
 }
 
 double NumberInputType::ValueAsDouble() const {
-  return ParseToDoubleForNumberType(GetElement().value());
+  return ParseToDoubleForNumberType(GetElement().Value());
 }
 
 void NumberInputType::SetValueAsDouble(double new_value,
                                        TextFieldEventBehavior event_behavior,
                                        ExceptionState& exception_state) const {
-  GetElement().setValue(SerializeForNumberType(new_value), event_behavior);
+  GetElement().SetValue(SerializeForNumberType(new_value), event_behavior);
 }
 
 void NumberInputType::SetValueAsDecimal(const Decimal& new_value,
                                         TextFieldEventBehavior event_behavior,
                                         ExceptionState& exception_state) const {
-  GetElement().setValue(SerializeForNumberType(new_value), event_behavior);
+  GetElement().SetValue(SerializeForNumberType(new_value), event_behavior);
 }
 
 bool NumberInputType::TypeMismatchFor(const String& value) const {
@@ -132,7 +132,7 @@ bool NumberInputType::TypeMismatchFor(const String& value) const {
 }
 
 bool NumberInputType::TypeMismatch() const {
-  DCHECK(!TypeMismatchFor(GetElement().value()));
+  DCHECK(!TypeMismatchFor(GetElement().Value()));
   return false;
 }
 
@@ -295,7 +295,7 @@ String NumberInputType::LocalizeValue(const String& proposed_value) const {
 }
 
 String NumberInputType::VisibleValue() const {
-  return LocalizeValue(GetElement().value());
+  return LocalizeValue(GetElement().Value());
 }
 
 String NumberInputType::ConvertFromVisibleValue(
