@@ -642,6 +642,20 @@ async function cros_test() {
   RunTest(test_code);
 }
 
+IN_PROC_BROWSER_TEST_F(CrosWindowBrowserTest, CrosAcceleratorEventIdl) {
+  const char test_code[] = R"(
+async function cros_test() {
+  assert_true(chromeos.CrosAcceleratorEvent !== undefined, 'event');
+  let accelerator_event = new chromeos.CrosAcceleratorEvent();
+  assert_equals(accelerator_event.type, 'acceleratordown', 'event type');
+  assert_true(accelerator_event.bubbles, 'bubbles');
+  assert_false(accelerator_event.cancelable, 'cancelable');
+}
+  )";
+
+  RunTest(test_code);
+}
+
 IN_PROC_BROWSER_TEST_F(CrosWindowExtensionBrowserTest, StartEvent) {
   auto* provider = SystemExtensionsProvider::Get(browser()->profile());
   auto& install_manager = provider->install_manager();

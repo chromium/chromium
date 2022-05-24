@@ -8,7 +8,9 @@
 #include "third_party/blink/renderer/bindings/extensions_chromeos/v8/v8_chrome_os.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/extensions/chromeos/chromeos.h"
+#include "third_party/blink/renderer/extensions/chromeos/event_interface_chromeos_names.h"
 #include "third_party/blink/renderer/extensions/chromeos/event_target_chromeos_names.h"
+#include "third_party/blink/renderer/extensions/chromeos/event_type_chromeos_names.h"
 #include "third_party/blink/renderer/extensions/chromeos/system_extensions/window_management/cros_window_management.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_global_scope.h"
 #include "third_party/blink/renderer/platform/bindings/extensions_registry.h"
@@ -53,11 +55,15 @@ void ChromeOSExtensions::Initialize() {
   // Static strings need to be initialized here, before
   // CoreInitializer::Initialize().
   const unsigned kChromeOSStaticStringsCount =
-      event_target_names::kChromeOSNamesCount;
+      event_target_names::kChromeOSNamesCount +
+      event_type_names::kChromeOSNamesCount +
+      event_interface_names::kChromeOSNamesCount;
   StringImpl::ReserveStaticStringsCapacityForSize(
       kChromeOSStaticStringsCount + StringImpl::AllStaticStrings().size());
 
   event_target_names::InitChromeOS();
+  event_type_names::InitChromeOS();
+  event_interface_names::InitChromeOS();
 }
 
 void ChromeOSExtensions::InitServiceWorkerGlobalScope(

@@ -2,7 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-interface ChromeOS {
+[
+    // Use `Global` to be able to expose other interfaces to ChromeOS. This is
+    // not the intended use of Global.
+    // TODO(yukishiino): Replace with a more appropriate extended attribute.
+    Global=ChromeOSExtensions
+] interface ChromeOS {
   [RuntimeEnabled=BlinkExtensionChromeOSWindowManagement,CallWith=ExecutionContext]
   readonly attribute CrosWindowManagement windowManagement;
   [RuntimeEnabled=BlinkExtensionChromeOSHID,CallWith=ExecutionContext]

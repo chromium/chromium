@@ -1,0 +1,13 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Fired when an accelerator is pressed and released.
+// TODO(b/221123297): Add remaining attributes and change the constructor
+// to take a Init dictionary.
+[
+    RuntimeEnabled=BlinkExtensionChromeOSWindowManagement,
+    Exposed=ChromeOSExtensions
+] interface CrosAcceleratorEvent : Event {
+   constructor();
+};
