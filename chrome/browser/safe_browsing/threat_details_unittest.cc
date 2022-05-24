@@ -194,12 +194,11 @@ class MockSafeBrowsingUIManager : public SafeBrowsingUIManager {
   MockSafeBrowsingUIManager& operator=(const MockSafeBrowsingUIManager&) =
       delete;
 
-  // When the report is sent, this is called.
-  void SendThreatDetails(
-      content::BrowserContext* browser_context,
-      std::unique_ptr<ClientSafeBrowsingReportRequest> report) override {
+  // When the serialized report is sent, this is called.
+  void SendSerializedThreatDetails(content::BrowserContext* browser_context,
+                                   const std::string& serialized) override {
     report_sent_ = true;
-    report->SerializeToString(&serialized_);
+    serialized_ = serialized;
   }
 
   const std::string& GetSerialized() { return serialized_; }

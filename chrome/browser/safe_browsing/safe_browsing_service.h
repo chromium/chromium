@@ -27,8 +27,6 @@
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/browser/safe_browsing_service_interface.h"
 #include "components/safe_browsing/core/browser/db/util.h"
-#include "components/safe_browsing/core/browser/ping_manager.h"
-#include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -178,11 +176,9 @@ class SafeBrowsingService : public SafeBrowsingServiceInterface,
   virtual base::CallbackListSubscription RegisterStateCallback(
       const base::RepeatingClosure& callback);
 
-  // Sends download report to backend. The returned object provides details on
-  // whether the report was successful.
-  virtual PingManager::ReportThreatDetailsResult SendDownloadReport(
-      Profile* profile,
-      std::unique_ptr<ClientSafeBrowsingReportRequest> report);
+  // Sends serialized download report to backend.
+  virtual void SendSerializedDownloadReport(Profile* profile,
+                                            const std::string& report);
 
   // Create the default v4 protocol config struct. This just calls into a helper
   // function, but it's still useful so that TestSafeBrowsingService can

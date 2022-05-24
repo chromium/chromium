@@ -86,9 +86,8 @@ class TestSafeBrowsingService : public SafeBrowsingService,
   // SafeBrowsingService overrides
   ~TestSafeBrowsingService() override;
   SafeBrowsingUIManager* CreateUIManager() override;
-  PingManager::ReportThreatDetailsResult SendDownloadReport(
-      Profile* profile,
-      std::unique_ptr<ClientSafeBrowsingReportRequest> report) override;
+  void SendSerializedDownloadReport(Profile* profile,
+                                    const std::string& report) override;
 
   // ServicesDelegate::ServicesCreator:
   bool CanCreateDatabaseManager() override;
@@ -163,9 +162,8 @@ class TestSafeBrowsingUIManager : public SafeBrowsingUIManager {
   TestSafeBrowsingUIManager& operator=(const TestSafeBrowsingUIManager&) =
       delete;
 
-  void SendThreatDetails(
-      content::BrowserContext* browser_context,
-      std::unique_ptr<ClientSafeBrowsingReportRequest> report) override;
+  void SendSerializedThreatDetails(content::BrowserContext* browser_context,
+                                   const std::string& serialized) override;
   std::list<std::string>* GetThreatDetails();
 
  protected:

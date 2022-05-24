@@ -105,14 +105,16 @@ int AwSafeBrowsingUIManager::GetErrorUiType(
   return client->GetErrorUiType();
 }
 
-void AwSafeBrowsingUIManager::SendThreatDetails(
+void AwSafeBrowsingUIManager::SendSerializedThreatDetails(
     content::BrowserContext* browser_context,
-    std::unique_ptr<safe_browsing::ClientSafeBrowsingReportRequest> report) {
+    const std::string& serialized) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  DVLOG(1) << "Sending threat details";
-  safe_browsing::AwPingManagerFactory::GetForBrowserContext(browser_context)
-      ->ReportThreatDetails(std::move(report));
+  if (!serialized.empty()) {
+    DVLOG(1) << "Sending serialized threat details";
+    safe_browsing::AwPingManagerFactory::GetForBrowserContext(browser_context)
+        ->ReportThreatDetails(serialized);
+  }
 }
 
 safe_browsing::BaseBlockingPage*

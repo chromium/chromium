@@ -859,7 +859,20 @@ void ThreatDetails::OnCacheCollectionReady() {
   MaybeFillReferrerChain();
 
   // Send the report, using the SafeBrowsingService.
-  ui_manager_->SendThreatDetails(browser_context_, std::move(report_));
+  std::string serialized;
+  if (!report_->SerializeToString(&serialized)) {
+    DLOG(ERROR) << "Unable to serialize the threat report.";
+    AllDone();
+    return;
+  }
+
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&WebUIInfoSingleton::AddToCSBRRsSent,
+                     base::Unretained(WebUIInfoSingleton::GetInstance()),
+                     std::move(report_)));
+
+  ui_manager_->SendSerializedThreatDetails(browser_context_, serialized);
 
   AllDone();
 }

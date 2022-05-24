@@ -446,12 +446,12 @@ void SafeBrowsingService::RefreshState() {
   services_delegate_->RefreshState(enabled_by_prefs_);
 }
 
-PingManager::ReportThreatDetailsResult SafeBrowsingService::SendDownloadReport(
+void SafeBrowsingService::SendSerializedDownloadReport(
     Profile* profile,
-    std::unique_ptr<ClientSafeBrowsingReportRequest> report) {
+    const std::string& report) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return ChromePingManagerFactory::GetForBrowserContext(profile)
-      ->ReportThreatDetails(std::move(report));
+  ChromePingManagerFactory::GetForBrowserContext(profile)->ReportThreatDetails(
+      report);
 }
 
 void SafeBrowsingService::CreateTriggerManager() {

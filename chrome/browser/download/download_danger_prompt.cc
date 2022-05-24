@@ -53,8 +53,21 @@ void DownloadDangerPrompt::SendSafeBrowsingDownloadReport(
       safe_browsing::DownloadProtectionService::GetDownloadPingToken(&download);
   if (!token.empty())
     report->set_token(token);
+  std::string serialized_report;
+  if (report->SerializeToString(&serialized_report)) {
+    sb_service->SendSerializedDownloadReport(profile, serialized_report);
 
-  sb_service->SendDownloadReport(profile, std::move(report));
+    // The following is to log this ClientSafeBrowsingReportRequest on any open
+    // chrome://safe-browsing pages.
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &safe_browsing::WebUIInfoSingleton::AddToCSBRRsSent,
+            base::Unretained(safe_browsing::WebUIInfoSingleton::GetInstance()),
+            std::move(report)));
+  } else {
+    DLOG(ERROR) << "Unable to serialize the threat report.";
+  }
 }
 
 void DownloadDangerPrompt::RecordDownloadDangerPrompt(

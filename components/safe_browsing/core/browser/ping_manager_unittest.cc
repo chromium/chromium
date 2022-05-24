@@ -32,9 +32,9 @@ class PingManagerTest : public testing::Test {
           "&key=%s", base::EscapeQueryParamValue(key, true).c_str());
     }
 
-    ping_manager_.reset(new PingManager(
-        safe_browsing::GetTestV4ProtocolConfig(), nullptr, nullptr,
-        base::BindRepeating([]() { return false; }), nullptr, nullptr));
+    ping_manager_.reset(
+        new PingManager(safe_browsing::GetTestV4ProtocolConfig(), nullptr,
+                        nullptr, base::BindRepeating([]() { return false; })));
   }
 
   PingManager* ping_manager() { return ping_manager_.get(); }
@@ -211,14 +211,6 @@ TEST_F(PingManagerTest, TestThreatDetailsUrl) {
       "client=unittest&appver=1.0&pver=4.0" +
           key_param_,
       ping_manager()->ThreatDetailsUrl().spec());
-}
-
-TEST_F(PingManagerTest, TestReportThreatDetails_EmptyReport) {
-  std::unique_ptr<ClientSafeBrowsingReportRequest> report =
-      std::make_unique<ClientSafeBrowsingReportRequest>();
-  PingManager::ReportThreatDetailsResult result =
-      ping_manager()->ReportThreatDetails(std::move(report));
-  EXPECT_EQ(result, PingManager::ReportThreatDetailsResult::EMPTY_REPORT);
 }
 
 }  // namespace safe_browsing

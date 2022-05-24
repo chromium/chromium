@@ -253,19 +253,23 @@ AndroidTelemetryService::GetReport(download::DownloadItem* item) {
 void AndroidTelemetryService::MaybeSendApkDownloadReport(
     content::BrowserContext* browser_context,
     std::unique_ptr<ClientSafeBrowsingReportRequest> report) {
-  PingManager::ReportThreatDetailsResult result =
-      ChromePingManagerFactory::GetForBrowserContext(browser_context)
-          ->ReportThreatDetails(std::move(report));
-
-  if (result == PingManager::ReportThreatDetailsResult::SUCCESS) {
-    RecordApkDownloadTelemetryOutcome(ApkDownloadTelemetryOutcome::SENT);
-  } else if (result ==
-             PingManager::ReportThreatDetailsResult::SERIALIZATION_ERROR) {
+  std::string serialized;
+  if (!report->SerializeToString(&serialized)) {
+    DLOG(ERROR) << "Unable to serialize the APK download telemetry report.";
     RecordApkDownloadTelemetryOutcome(
         ApkDownloadTelemetryOutcome::NOT_SENT_FAILED_TO_SERIALIZE);
-  } else {
-    NOTREACHED() << "Unhandled PingManager::ReportThreatDetailsResult type";
+    return;
   }
+  ChromePingManagerFactory::GetForBrowserContext(browser_context)
+      ->ReportThreatDetails(serialized);
+
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&WebUIInfoSingleton::AddToCSBRRsSent,
+                     base::Unretained(WebUIInfoSingleton::GetInstance()),
+                     std::move(report)));
+
+  RecordApkDownloadTelemetryOutcome(ApkDownloadTelemetryOutcome::SENT);
 }
 
 }  // namespace safe_browsing

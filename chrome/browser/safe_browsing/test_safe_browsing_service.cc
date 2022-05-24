@@ -85,12 +85,10 @@ SafeBrowsingUIManager* TestSafeBrowsingService::CreateUIManager() {
   return SafeBrowsingService::CreateUIManager();
 }
 
-PingManager::ReportThreatDetailsResult
-TestSafeBrowsingService::SendDownloadReport(
+void TestSafeBrowsingService::SendSerializedDownloadReport(
     Profile* profile,
-    std::unique_ptr<ClientSafeBrowsingReportRequest> report) {
-  report->SerializeToString(&serialized_download_report_);
-  return PingManager::ReportThreatDetailsResult::SUCCESS;
+    const std::string& report) {
+  serialized_download_report_ = report;
 }
 
 const scoped_refptr<SafeBrowsingDatabaseManager>&
@@ -207,11 +205,9 @@ TestSafeBrowsingUIManager::TestSafeBrowsingUIManager(
           std::move(blocking_page_factory),
           GURL(chrome::kChromeUINewTabURL)) {}
 
-void TestSafeBrowsingUIManager::SendThreatDetails(
+void TestSafeBrowsingUIManager::SendSerializedThreatDetails(
     content::BrowserContext* browser_context,
-    std::unique_ptr<ClientSafeBrowsingReportRequest> report) {
-  std::string serialized;
-  report->SerializeToString(&serialized);
+    const std::string& serialized) {
   details_.push_back(serialized);
 }
 

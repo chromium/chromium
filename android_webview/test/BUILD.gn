@@ -570,7 +570,6 @@ test("android_webview_unittests") {
     "//components/optimization_guide/core:bloomfilter",
     "//components/prefs:prefs",
     "//components/prefs:test_support",
-    "//components/safe_browsing/content/browser/web_ui",
     "//components/safe_browsing/core/browser",
     "//components/safe_browsing/core/common",
     "//components/tracing:background_tracing_utils",

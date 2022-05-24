@@ -289,17 +289,18 @@ const GURL SafeBrowsingUIManager::default_safe_page() const {
 
 // If the user had opted-in to send ThreatDetails, this gets called
 // when the report is ready.
-void SafeBrowsingUIManager::SendThreatDetails(
+void SafeBrowsingUIManager::SendSerializedThreatDetails(
     content::BrowserContext* browser_context,
-    std::unique_ptr<ClientSafeBrowsingReportRequest> report) {
+    const std::string& serialized) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (shut_down_)
     return;
 
-  DVLOG(1) << "Sending threat details.";
-  delegate_->GetPingManager(browser_context)
-      ->ReportThreatDetails(std::move(report));
+  if (!serialized.empty()) {
+    DVLOG(1) << "Sending serialized threat details.";
+    delegate_->GetPingManager(browser_context)->ReportThreatDetails(serialized);
+  }
 }
 
 void SafeBrowsingUIManager::OnBlockingPageDone(
