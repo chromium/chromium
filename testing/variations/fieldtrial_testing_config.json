@@ -1639,6 +1639,21 @@
             ]
         }
     ],
+    "BatchImageDecoding": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "BatchImageDecoding"
+                    ]
+                }
+            ]
+        }
+    ],
     "BatchSimpleURLLoader": [
         {
             "platforms": [
