@@ -83,7 +83,7 @@ class CrostiniUnsupportedActionNotifierTest
  public:
   CrostiniUnsupportedActionNotifierTest()
       : notifier(std::make_unique<NiceMock<MockDelegate>>()) {}
-  virtual ~CrostiniUnsupportedActionNotifierTest() = default;
+  ~CrostiniUnsupportedActionNotifierTest() override = default;
 
   MockDelegate& get_delegate() {
     auto* ptr = notifier.get_delegate_for_testing();

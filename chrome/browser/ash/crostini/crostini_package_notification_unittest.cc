@@ -31,7 +31,7 @@ constexpr char kNotificationId[] = "notification_id";
 
 class CrostiniPackageNotificationTest : public testing::Test {
  public:
-  CrostiniPackageNotificationTest() {}
+  CrostiniPackageNotificationTest() = default;
 
   void SetUp() override {
     DBusThreadManager::Initialize();

@@ -274,10 +274,9 @@ void CrostiniPackageService::OnVmShutdown(const std::string& vm_name) {
   // which invalidates the iterators. To avoid this, we record all the
   // containers that just shut down before removing any notifications.
   std::vector<ContainerId> to_remove;
-  for (auto iter = running_notifications_.begin();
-       iter != running_notifications_.end(); iter++) {
-    if (iter->first.vm_name == vm_name) {
-      to_remove.push_back(iter->first);
+  for (auto& running_notification : running_notifications_) {
+    if (running_notification.first.vm_name == vm_name) {
+      to_remove.push_back(running_notification.first);
     }
   }
   for (auto iter : to_remove) {

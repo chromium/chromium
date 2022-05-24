@@ -41,8 +41,8 @@ enum class InstallSource {
 
 }  // namespace
 
-TerminaInstaller::TerminaInstaller() {}
-TerminaInstaller::~TerminaInstaller() {}
+TerminaInstaller::TerminaInstaller() = default;
+TerminaInstaller::~TerminaInstaller() = default;
 
 void TerminaInstaller::Cancel() {
   weak_ptr_factory_.InvalidateWeakPtrs();

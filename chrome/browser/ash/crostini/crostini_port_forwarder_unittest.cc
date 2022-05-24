@@ -40,7 +40,7 @@ class CrostiniPortForwarderTest : public testing::Test {
   CrostiniPortForwarderTest& operator=(const CrostiniPortForwarderTest&) =
       delete;
 
-  ~CrostiniPortForwarderTest() override {}
+  ~CrostiniPortForwarderTest() override = default;
 
   void SetUp() override {
     chromeos::DBusThreadManager::Initialize();

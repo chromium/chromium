@@ -175,7 +175,7 @@ class CrostiniManager : public KeyedService,
   // Observer class for the Crostini restart flow.
   class RestartObserver {
    public:
-    virtual ~RestartObserver() {}
+    virtual ~RestartObserver() = default;
     virtual void OnStageStarted(mojom::InstallerState stage) {}
     virtual void OnComponentLoaded(CrostiniResult result) {}
     virtual void OnDiskImageCreated(bool success,
