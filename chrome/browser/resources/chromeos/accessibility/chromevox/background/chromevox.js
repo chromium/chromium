@@ -57,10 +57,6 @@ ChromeVox.isStickyPrefOn = false;
  */
 ChromeVox.stickyOverride = null;
 /**
- * @type {number}
- */
-ChromeVox.typingEcho = 0;
-/**
  * @type {Object<string, constants.Point>}
  */
 ChromeVox.position = {};

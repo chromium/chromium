@@ -194,9 +194,10 @@ export class CommandHandler extends CommandHandlerInterface {
       }
         return false;
       case 'cycleTypingEcho': {
-        ChromeVox.typingEcho = TypingEcho.cycle(ChromeVox.typingEcho);
+        ChromeVoxState.instance.typingEcho =
+            TypingEcho.cycle(ChromeVoxState.instance.typingEcho);
         let announce = '';
-        switch (ChromeVox.typingEcho) {
+        switch (ChromeVoxState.instance.typingEcho) {
           case TypingEcho.CHARACTER:
             announce = Msgs.getMsg('character_echo');
             break;

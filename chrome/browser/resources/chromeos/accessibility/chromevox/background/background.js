@@ -70,15 +70,6 @@ export class Background extends ChromeVoxState {
       get: () => this.earcons_,
     });
 
-    Object.defineProperty(ChromeVox, 'typingEcho', {
-      get() {
-        return parseInt(localStorage['typingEcho'], 10) || 0;
-      },
-      set(value) {
-        localStorage['typingEcho'] = value;
-      }
-    });
-
     chrome.clipboard.onClipboardDataChanged.addListener(() => {
       this.onClipboardDataChanged_();
     });
@@ -181,6 +172,16 @@ export class Background extends ChromeVoxState {
   /** @override */
   set pageSel(newPageSel) {
     this.pageSel_ = newPageSel;
+  }
+
+  /** @override */
+  get typingEcho() {
+    return parseInt(localStorage['typingEcho'], 10) || 0;
+  }
+
+  /** @override */
+  set typingEcho(newTypingEcho) {
+    localStorage['typingEcho'] = value;
   }
 
   /**

@@ -94,6 +94,12 @@ ChromeVoxState.prototype = {
   /** @param {cursors.Range} */
   set pageSel(newPageSel) {},
 
+  /** @return {number} */
+  get typingEcho() {},
+
+  /** @param {number} newTypingEcho */
+  set typingEcho(newTypingEcho) {},
+
   /**
    * Navigate to the given range - it both sets the range and outputs it.
    * @param {!cursors.Range} range The new range.

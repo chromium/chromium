@@ -356,8 +356,9 @@ export class ChromeVoxEditableTextBase {
       if (this.start + 1 === evt.start && this.end === this.value.length &&
           evt.end === this.value.length) {
         // Autocomplete: the user typed one character of autocompleted text.
-        if (ChromeVox.typingEcho === TypingEcho.CHARACTER ||
-            ChromeVox.typingEcho === TypingEcho.CHARACTER_AND_WORD) {
+        if (ChromeVoxState.instance.typingEcho === TypingEcho.CHARACTER ||
+            ChromeVoxState.instance.typingEcho ===
+                TypingEcho.CHARACTER_AND_WORD) {
           this.speak(this.value.substr(this.start, 1), evt.triggeredByUser);
         }
         this.speak(this.value.substr(evt.start));
@@ -577,8 +578,9 @@ export class ChromeVoxEditableTextBase {
       }
       utterance = inserted;
     } else if (insertedLen === 1) {
-      if ((ChromeVox.typingEcho === TypingEcho.WORD ||
-           ChromeVox.typingEcho === TypingEcho.CHARACTER_AND_WORD) &&
+      if ((ChromeVoxState.instance.typingEcho === TypingEcho.WORD ||
+           ChromeVoxState.instance.typingEcho ===
+               TypingEcho.CHARACTER_AND_WORD) &&
           this.isWordBreakChar(inserted) && prefixLen > 0 &&
           !this.isWordBreakChar(evt.value.substr(prefixLen - 1, 1))) {
         // Speak previous word.
@@ -593,8 +595,9 @@ export class ChromeVoxEditableTextBase {
           triggeredByUser = false;  // Implies QUEUE_MODE_QUEUE.
         }
       } else if (
-          ChromeVox.typingEcho === TypingEcho.CHARACTER ||
-          ChromeVox.typingEcho === TypingEcho.CHARACTER_AND_WORD) {
+          ChromeVoxState.instance.typingEcho === TypingEcho.CHARACTER ||
+          ChromeVoxState.instance.typingEcho ===
+              TypingEcho.CHARACTER_AND_WORD) {
         utterance = inserted;
       }
     } else if (deletedLen > 1 && !autocompleteSuffix) {
