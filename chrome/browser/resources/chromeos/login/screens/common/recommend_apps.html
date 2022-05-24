@@ -2,6 +2,7 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
+<link rel="import" href="chrome://resources/html/load_time_data.html">
 <link rel="import" href="chrome://resources/html/polymer.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_checkbox/cr_checkbox.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
@@ -49,9 +50,10 @@
         [[i18nDynamic(locale, 'recommendAppsScreenTitle')]]
       </h1>
       <div slot="subtitle">
-        [[i18nDynamic(locale, 'recommendAppsScreenDescription', appCount_)]]
+        [[i18nDynamic(locale, 'recommendAppsScreenDescription')]]
       </div>
-      <div id="app-list-view-container" slot="content">
+      <div id="app-list-view-container" slot="content"
+          hidden="[[isOobeNewRecommendAppsEnabled_]]">
         <div id="selectAllButton">
           <a class="oobe-local-link focus-on-show" is="action-link"
               on-click="onSelectAll_">

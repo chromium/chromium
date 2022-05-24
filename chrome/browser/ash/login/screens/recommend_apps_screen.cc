@@ -4,10 +4,15 @@
 
 #include "chrome/browser/ash/login/screens/recommend_apps_screen.h"
 
+#include "ash/constants/ash_features.h"
+#include "chrome/browser/apps/app_discovery_service/app_discovery_service_factory.h"
+#include "chrome/browser/apps/app_discovery_service/play_extras.h"
 #include "chrome/browser/ash/login/screens/recommend_apps/recommend_apps_fetcher.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/chromeos/login/recommend_apps_screen_handler.h"
+#include "chrome/common/chrome_features.h"
 #include "components/user_manager/user_manager.h"
 
 namespace ash {
@@ -80,8 +85,19 @@ void RecommendAppsScreen::ShowImpl() {
   if (view_)
     view_->Show();
 
-  recommend_apps_fetcher_ = RecommendAppsFetcher::Create(this);
-  recommend_apps_fetcher_->Start();
+  if (features::IsOobeNewRecommendAppsEnabled() &&
+      base::FeatureList::IsEnabled(::features::kAppDiscoveryForOobe)) {
+    Profile* profile = ProfileManager::GetActiveUserProfile();
+    app_discovery_service_ =
+        apps::AppDiscoveryServiceFactory::GetForProfile(profile);
+    app_discovery_service_->GetApps(
+        apps::ResultType::kRecommendedArcApps,
+        base::BindOnce(&RecommendAppsScreen::OnRecommendationsDownloaded,
+                       weak_factory_.GetWeakPtr()));
+  } else {
+    recommend_apps_fetcher_ = RecommendAppsFetcher::Create(this);
+    recommend_apps_fetcher_->Start();
+  }
 }
 
 void RecommendAppsScreen::HideImpl() {
@@ -91,6 +107,51 @@ void RecommendAppsScreen::HideImpl() {
 void RecommendAppsScreen::OnLoadSuccess(base::Value app_list) {
   if (view_)
     view_->OnLoadSuccess(std::move(app_list));
+}
+
+void RecommendAppsScreen::OnRecommendationsDownloaded(
+    const std::vector<apps::Result>& results,
+    apps::DiscoveryError error) {
+  switch (error) {
+    case apps::DiscoveryError::kSuccess:
+      UnpackResultAndShow(results);
+      break;
+    case apps::DiscoveryError::kErrorRequestFailed:
+      OnLoadError();
+      break;
+    case apps::DiscoveryError::kErrorMalformedData:
+      OnParseResponseError();
+      break;
+  }
+}
+
+void RecommendAppsScreen::UnpackResultAndShow(
+    const std::vector<apps::Result>& results) {
+  if (!view_)
+    return;
+  base::Value::List app_list;
+  for (const auto& app_result : results) {
+    base::Value::Dict app_info;
+    app_info.Set("title", base::Value(app_result.GetAppTitle()));
+    auto* play_extras = app_result.GetSourceExtras()->AsPlayExtras();
+    app_info.Set("icon_url", base::Value(play_extras->GetIconUrl().spec()));
+    app_info.Set("category", base::Value(play_extras->GetCategory()));
+    app_info.Set("description", base::Value(play_extras->GetDescription()));
+    app_info.Set("content_rating",
+                 base::Value(play_extras->GetContentRating()));
+    app_info.Set("content_rating_icon",
+                 base::Value(play_extras->GetContentRatingIconUrl().spec()));
+    app_info.Set("in_app_purchases",
+                 base::Value(play_extras->GetHasInAppPurchases()));
+    app_info.Set("was_installed",
+                 base::Value(play_extras->GetWasPreviouslyInstalled()));
+    app_info.Set("contains_ads", base::Value(play_extras->GetContainsAds()));
+    app_info.Set("package_name", base::Value(play_extras->GetPackageName()));
+    app_info.Set("optimized_for_chrome",
+                 base::Value(play_extras->GetOptimizedForChrome()));
+    app_list.Append(std::move(app_info));
+  }
+  view_->OnLoadSuccess(base::Value(std::move(app_list)));
 }
 
 void RecommendAppsScreen::OnLoadError() {

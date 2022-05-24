@@ -123,6 +123,25 @@ OobeTypes.SecurityTokenPinDialogParameters;
  *   package_name: string,
  * }}
  */
+OobeTypes.RecommendedAppsOldExpectedAppData;
+
+/**
+ * Data type that is expected for each app that is shown on the RecommendApps
+ * screen.
+ * @typedef {{
+ *   title: string,
+ *   icon_url: string,
+ *   category: string,
+ *   description: string,
+ *   content_rating: number,
+ *   content_rating_icon: string,
+ *   in_app_purchases: boolean,
+ *   was_installed: boolean,
+ *   contains_ads: boolean,
+ *   package_name: string,
+ *   optimized_for_chrome: boolean,
+ * }}
+ */
 OobeTypes.RecommendedAppsExpectedAppData;
 
 /**

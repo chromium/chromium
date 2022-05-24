@@ -9,6 +9,8 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/weak_ptr.h"
+#include "chrome/browser/apps/app_discovery_service/app_discovery_service.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/screens/recommend_apps/recommend_apps_fetcher_delegate.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
@@ -73,13 +75,20 @@ class RecommendAppsScreen : public BaseScreen,
   void ShowImpl() override;
   void HideImpl() override;
 
+  void OnRecommendationsDownloaded(const std::vector<apps::Result>& result,
+                                   apps::DiscoveryError error);
+  void UnpackResultAndShow(const std::vector<apps::Result>& result);
+
   RecommendAppsScreenView* view_;
   ScreenExitCallback exit_callback_;
 
   std::unique_ptr<RecommendAppsFetcher> recommend_apps_fetcher_;
+  base::raw_ptr<apps::AppDiscoveryService> app_discovery_service_ = nullptr;
 
   // Skip the screen for testing if set to true.
   bool skip_for_testing_ = false;
+
+  base::WeakPtrFactory<RecommendAppsScreen> weak_factory_{this};
 };
 
 }  // namespace ash

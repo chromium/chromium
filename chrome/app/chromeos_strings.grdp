@@ -1298,13 +1298,14 @@
     No thanks
   </message>
 
-  <message name="IDS_LOGIN_RECOMMEND_APPS_SCREEN_TITLE" desc="The title of the dialog that recommend apps to user">
+  <!-- TODO(crbug.com/1261902): Clean-up old strings once feature is launched. -->
+  <message name="IDS_LOGIN_RECOMMEND_APPS_OLD_SCREEN_TITLE" desc="The title of the dialog that recommend apps to user">
     Find apps for work and play
   </message>
-  <message name="IDS_LOGIN_RECOMMEND_APPS_SCREEN_DESCRIPTION" desc="The description of the 'Recommend Apps' section">
+  <message name="IDS_LOGIN_RECOMMEND_APPS_OLD_SCREEN_DESCRIPTION" desc="The description of the 'Recommend Apps' section">
     Get creative, be productive, and stay entertained with apps on the Google Play Store
   </message>
-  <message name="IDS_LOGIN_RECOMMEND_APPS_SELECT_ALL" desc="The label on the button that selects all recommended apps">
+  <message name="IDS_LOGIN_RECOMMEND_APPS_OLD_SELECT_ALL" desc="The label on the button that selects all recommended apps">
     Select all
   </message>
   <message name="IDS_LOGIN_RECOMMEND_APPS_DO_IT_LATER" desc="The label on the button that skips installing any recomended apps">
@@ -1313,9 +1314,35 @@
   <message name="IDS_LOGIN_RECOMMEND_APPS_DONE" desc="The label on the button that installs the user selected apps">
     Done
   </message>
+
+  <message name="IDS_LOGIN_RECOMMEND_APPS_SCREEN_TITLE" desc="The title of the dialog that recommend apps to user">
+    Install apps for your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> from the Google Play Store
+  </message>
+  <message name="IDS_LOGIN_RECOMMEND_APPS_SCREEN_DESCRIPTION" desc="The description of the 'Recommend Apps' section">
+    Find the apps you need, from productivity to entertainment, on the Google Play Store. You can install apps anytime.
+  </message>
+  <message name="IDS_LOGIN_RECOMMEND_APPS_SELECT_ALL" desc="The label on the button that selects all recommended apps">
+    Select and install popular apps
+  </message>
+  <message name="IDS_LOGIN_RECOMMEND_APPS_SCREEN_IN_APP_PURCHASES" desc="Part of an app description message.">
+    In-app purchases
+  </message>
+  <message name="IDS_LOGIN_RECOMMEND_APPS_SCREEN_WAS_INSTALLED" desc="Part of an app description message.">
+    Installed on your other devices
+  </message>
+  <message name="IDS_LOGIN_RECOMMEND_APPS_SCREEN_CONTAINS_ADS" desc="Part of an app description message.">
+    Contains ads
+  </message>
+  <message name="IDS_LOGIN_RECOMMEND_APPS_SKIP" desc="The label on the button that skips installing any recomended apps">
+    Skip
+  </message>
+  <message name="IDS_LOGIN_RECOMMEND_APPS_INSTALL" desc="The label on the button that installs the user selected apps">
+    Install
+  </message>
   <message name="IDS_LOGIN_RECOMMEND_APPS_SCREEN_LOADING" desc="Message shown while the recommended app list is being downloaded.">
     Please wait...
   </message>
+
   <message name="IDS_LOGIN_APP_DOWNLOADING_SCREEN_TITLE" desc="The title of the dialog that tells the user the selected Android Apps are downloading.">
     Apps downloading
   </message>

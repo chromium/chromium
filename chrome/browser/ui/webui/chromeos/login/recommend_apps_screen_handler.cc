@@ -17,6 +17,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/chromeos/devicetype_utils.h"
 
 namespace {
 
@@ -84,14 +85,40 @@ RecommendAppsScreenHandler::~RecommendAppsScreenHandler() {
 
 void RecommendAppsScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
-  builder->Add("recommendAppsScreenTitle",
-               IDS_LOGIN_RECOMMEND_APPS_SCREEN_TITLE);
+  // TODO(crbug.com/1261902): Clean-up old strings once feature is launched.
+  builder->Add("recommendAppsLoading", IDS_LOGIN_RECOMMEND_APPS_SCREEN_LOADING);
+  if (!features::IsOobeNewRecommendAppsEnabled()) {
+    builder->Add("recommendAppsScreenTitle",
+                 IDS_LOGIN_RECOMMEND_APPS_OLD_SCREEN_TITLE);
+    builder->Add("recommendAppsScreenDescription",
+                 IDS_LOGIN_RECOMMEND_APPS_OLD_SCREEN_DESCRIPTION);
+    builder->Add("recommendAppsSkip", IDS_LOGIN_RECOMMEND_APPS_DO_IT_LATER);
+    builder->Add("recommendAppsInstall", IDS_LOGIN_RECOMMEND_APPS_DONE);
+    builder->Add("recommendAppsSelectAll",
+                 IDS_LOGIN_RECOMMEND_APPS_OLD_SELECT_ALL);
+    return;
+  }
+  builder->AddF("recommendAppsScreenTitle",
+                IDS_LOGIN_RECOMMEND_APPS_SCREEN_TITLE,
+                ui::GetChromeOSDeviceName());
   builder->Add("recommendAppsScreenDescription",
                IDS_LOGIN_RECOMMEND_APPS_SCREEN_DESCRIPTION);
-  builder->Add("recommendAppsSkip", IDS_LOGIN_RECOMMEND_APPS_DO_IT_LATER);
-  builder->Add("recommendAppsInstall", IDS_LOGIN_RECOMMEND_APPS_DONE);
-  builder->Add("recommendAppsLoading", IDS_LOGIN_RECOMMEND_APPS_SCREEN_LOADING);
+  builder->Add("recommendAppsSkip", IDS_LOGIN_RECOMMEND_APPS_SKIP);
+  builder->Add("recommendAppsInstall", IDS_LOGIN_RECOMMEND_APPS_INSTALL);
   builder->Add("recommendAppsSelectAll", IDS_LOGIN_RECOMMEND_APPS_SELECT_ALL);
+  builder->Add("recommendAppsInAppPurchases",
+               IDS_LOGIN_RECOMMEND_APPS_SCREEN_IN_APP_PURCHASES);
+  builder->Add("recommendAppsWasInstalled",
+               IDS_LOGIN_RECOMMEND_APPS_SCREEN_WAS_INSTALLED);
+  builder->Add("recommendAppsContainsAds",
+               IDS_LOGIN_RECOMMEND_APPS_SCREEN_CONTAINS_ADS);
+}
+
+void RecommendAppsScreenHandler::GetAdditionalParameters(
+    base::Value::Dict* dict) {
+  dict->Set("isOobeNewRecommendAppsEnabled",
+            features::IsOobeNewRecommendAppsEnabled());
+  BaseScreenHandler::GetAdditionalParameters(dict);
 }
 
 void RecommendAppsScreenHandler::RegisterMessages() {

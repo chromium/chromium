@@ -58,6 +58,7 @@ class RecommendAppsScreenHandler : public BaseScreenHandler,
   // BaseScreenHandler:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
+  void GetAdditionalParameters(base::Value::Dict* dict) override;
   void RegisterMessages() override;
 
   // RecommendAppsScreenView:

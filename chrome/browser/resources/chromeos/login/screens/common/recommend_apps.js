@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,7 +13,7 @@
  * UI mode for the dialog.
  * @enum {string}
  */
- const RecommendAppsUiState = {
+const RecommendAppsUiState = {
   LOADING: 'loading',
   LIST: 'list',
 };
@@ -23,6 +23,7 @@
  * @extends {PolymerElement}
  * @implements {LoginScreenBehaviorInterface}
  * @implements {MultiStepBehaviorInterface}
+ * @implements {OobeI18nBehaviorInterface}
  */
 const RecommendAppsElementBase = Polymer.mixinBehaviors(
   [OobeI18nBehavior, OobeDialogHostBehavior, LoginScreenBehavior, MultiStepBehavior],
@@ -58,6 +59,18 @@ class RecommendAppsElement extends RecommendAppsElementBase {
       appsSelected_: {
         type: Number,
         value: 0,
+      },
+
+      /**
+       * If new version of screen available.
+       * @private
+       */
+      isOobeNewRecommendAppsEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('isOobeNewRecommendAppsEnabled');
+        },
+        readOnly: true,
       },
     };
   }
@@ -121,6 +134,11 @@ class RecommendAppsElement extends RecommendAppsElementBase {
    * It is assumed that |loadAppList| is called only once after |setWebview|.
    */
   loadAppList(appList) {
+    if (this.isOobeNewRecommendAppsEnabled_) {
+      // TODO(dkuzmin): finish UI changes of a new layout.
+      this.setUIStep(RecommendAppsUiState.LIST);
+      return;
+    }
     this.appCount_ = appList.length;
 
     const appListView = this.$.appView;
@@ -197,7 +215,10 @@ class RecommendAppsElement extends RecommendAppsElementBase {
    */
   onSelectAll_() {
     const appListView = this.$.appView;
-    appListView.executeScript({code: 'selectAll();'});
+    if (!this.isOobeNewRecommendAppsEnabled_) {
+      appListView.executeScript({code: 'selectAll();'});
+      return;
+    }
   }
 
   canProceed_(appsSelected) {
