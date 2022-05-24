@@ -15,18 +15,18 @@
 // YES if the state is incognito.
 @property(nonatomic) BOOL isOffTheRecord;
 
-// Tells the consumer to replace its current set of items with |items| and
-// update the selected item ID to be |selectedItemID|. It's an error to pass
-// an |items| array containing items without unique IDs.
+// Tells the consumer to replace its current set of items with `items` and
+// update the selected item ID to be `selectedItemID`. It's an error to pass
+// an `items` array containing items without unique IDs.
 - (void)populateItems:(NSArray<TabSwitcherItem*>*)items
        selectedItemID:(NSString*)selectedItemID;
 
-// Tells the consumer to replace the item with ID |itemID| with |item|.
-// It's an error if |item|'s ID duplicates any other item's ID besides |itemID|.
-// The consumer should ignore this call if |itemID| has not yet been inserted.
+// Tells the consumer to replace the item with ID `itemID` with `item`.
+// It's an error if `item`'s ID duplicates any other item's ID besides `itemID`.
+// The consumer should ignore this call if `itemID` has not yet been inserted.
 - (void)replaceItemID:(NSString*)itemID withItem:(TabSwitcherItem*)item;
 
-// Tells the consumer to update the selected item ID to be |selectedItemID|.
+// Tells the consumer to update the selected item ID to be `selectedItemID`.
 - (void)selectItemWithID:(NSString*)selectedItemID;
 
 @end

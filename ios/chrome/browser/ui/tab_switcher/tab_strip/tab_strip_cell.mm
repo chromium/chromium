@@ -107,7 +107,7 @@ const CGFloat kFontSize = 14.0;
 
 #pragma mark - Private
 
-// Updates this tab's style based on the value of |selected| and the current
+// Updates this tab's style based on the value of `selected` and the current
 // incognito style.
 - (UIView*)resizeableBackgroundImageForStateSelected:(BOOL)selected {
   // Style the background image first.

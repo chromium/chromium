@@ -37,10 +37,10 @@ const CGFloat kNewTabButtonBottomImageInset = -2.0;
 @property(nonatomic, strong) UIButton* buttonNewTab;
 // The local model backing the collection view.
 @property(nonatomic, strong) NSMutableArray<TabSwitcherItem*>* items;
-// Identifier of the selected item. This value is disregarded if |self.items| is
+// Identifier of the selected item. This value is disregarded if `self.items` is
 // empty.
 @property(nonatomic, copy) NSString* selectedItemID;
-// Index of the selected item in |items|.
+// Index of the selected item in `items`.
 @property(nonatomic, readonly) NSUInteger selectedIndex;
 // Constraints that are used when the button needs to be kept next to the last
 // cell.
@@ -172,14 +172,14 @@ const CGFloat kNewTabButtonBottomImageInset = -2.0;
 - (void)replaceItemID:(NSString*)itemID withItem:(TabSwitcherItem*)item {
   if ([self indexOfItemWithID:itemID] == NSNotFound)
     return;
-  // Consistency check: |item|'s ID is either |itemID| or not in |items|.
+  // Consistency check: `item`'s ID is either `itemID` or not in `items`.
   DCHECK([item.identifier isEqualToString:itemID] ||
          [self indexOfItemWithID:item.identifier] == NSNotFound);
   NSUInteger index = [self indexOfItemWithID:itemID];
   self.items[index] = item;
   TabStripCell* cell = (TabStripCell*)[self.collectionView
       cellForItemAtIndexPath:CreateIndexPath(index)];
-  // |cell| may be nil if it is scrolled offscreen.
+  // `cell` may be nil if it is scrolled offscreen.
   if (cell)
     [self configureCell:cell withItem:item];
 }
@@ -209,8 +209,8 @@ const CGFloat kNewTabButtonBottomImageInset = -2.0;
 
 #pragma mark - Private
 
-// Configures |cell|'s title synchronously, and favicon asynchronously with
-// information from |item|. Updates the |cell|'s theme to this view controller's
+// Configures `cell`'s title synchronously, and favicon asynchronously with
+// information from `item`. Updates the `cell`'s theme to this view controller's
 // theme.
 - (void)configureCell:(TabStripCell*)cell withItem:(TabSwitcherItem*)item {
   if (item) {
@@ -230,8 +230,8 @@ const CGFloat kNewTabButtonBottomImageInset = -2.0;
   }
 }
 
-// Returns the index in |self.items| of the first item whose identifier is
-// |identifier|.
+// Returns the index in `self.items` of the first item whose identifier is
+// `identifier`.
 - (NSUInteger)indexOfItemWithID:(NSString*)identifier {
   auto selectedTest =
       ^BOOL(TabSwitcherItem* item, NSUInteger index, BOOL* stop) {

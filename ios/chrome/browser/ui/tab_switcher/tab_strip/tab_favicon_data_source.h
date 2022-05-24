@@ -12,7 +12,7 @@
 @protocol TabFaviconDataSource
 
 // Requests the receiver to provide a favicon image corresponding to
-// |identifier|. |completion| is called with the image if it exists.
+// `identifier`. `completion` is called with the image if it exists.
 - (void)faviconForIdentifier:(NSString*)identifier
                   completion:(void (^)(UIImage*))completion;
 
