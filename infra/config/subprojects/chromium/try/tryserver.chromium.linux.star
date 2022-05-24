@@ -679,6 +679,7 @@ try_.builder(
             condition = builder_config.rts_condition.ALWAYS,
         ),
     ),
+    cores = 16,
     builderless = False,
     experiments = {"chromium_rts.ml_model": 100},
 )
