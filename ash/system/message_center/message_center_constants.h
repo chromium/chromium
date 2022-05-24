@@ -117,6 +117,9 @@ constexpr int kInlineSettingsExpandAndCollapseAnimationDuration = 200;
 constexpr int kGeneralExpandAnimationDuration = 300;
 constexpr int kGeneralCollapseAnimationDuration = 200;
 
+// Animation durations for adding / removing grouped child views
+constexpr int kSlideOutGroupedNotificationAnimationDurationMs = 200;
+
 }  // namespace ash
 
 #endif  // ASH_SYSTEM_MESSAGE_CENTER_MESSAGE_CENTER_CONSTANTS_H_

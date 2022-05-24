@@ -2693,6 +2693,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Ash.Notification.GroupNotification.SlideOut.AnimationSmoothness"
+    units="%" expires_after="2023-03-03">
+  <owner>amehfooz@chromium.org</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Animation smoothness of the slide out part of the animation when a grouped
+    notification is removed. Emmitted when a grouped notification is removed by
+    clicking on it's close button.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Notification.GroupNotificationAdded"
     enum="GroupNotificationType" expires_after="2023-03-03">
   <owner>leandre@chromium.org</owner>

@@ -18,6 +18,7 @@
 #include "ash/system/message_center/unified_message_list_view.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/layer_animation_stopped_waiter.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -192,10 +193,8 @@ class AshNotificationViewTest : public AshTestBase, public views::ViewObserver {
                                int data_point_count = 1) {
     ui::Compositor* compositor = view->layer()->GetCompositor();
 
-    // Wait for the animation to finish.
-    while (view->layer()->GetAnimator()->is_animating()) {
-      EXPECT_TRUE(ui::WaitForNextFrameToBePresented(compositor));
-    }
+    LayerAnimationStoppedWaiter animation_waiter;
+    animation_waiter.Wait(view->layer());
 
     // Force a frame then wait, ensuring there is one more frame presented after
     // animation finishes to allow animation throughput data to be passed from
@@ -943,6 +942,41 @@ TEST_F(AshNotificationViewTest, InlineSettingsAnimationsRecordSmoothness) {
       histograms, GetMainRightView(notification_view),
       "Ash.NotificationView.MainRightView.FadeIn.AnimationSmoothness",
       /*data_point_count=*/2);
+}
+
+TEST_F(AshNotificationViewTest,
+       GroupNotificationSlideOutAnimationRecordSmoothness) {
+  base::HistogramTester histograms;
+
+  message_center::MessageCenter::Get()->RemoveAllNotifications(
+      /*by_user=*/true, message_center::MessageCenter::RemoveType::ALL);
+
+  auto notification = CreateTestNotification();
+
+  GetPrimaryUnifiedSystemTray()->ShowBubble();
+  auto* notification_view =
+      GetNotificationViewFromMessageCenter(notification->id());
+  MakeNotificationGroupParent(
+      notification_view,
+      2 * message_center_style::kMaxGroupedNotificationsInCollapsedState);
+
+  notification_view->ToggleExpand();
+  EXPECT_TRUE(notification_view->IsExpanded());
+
+  // Enable animations.
+  ui::ScopedAnimationDurationScaleMode duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  auto* child_view = GetFirstGroupedChildNotificationView(notification_view);
+  notification_view->RemoveGroupNotification(child_view->notification_id());
+
+  base::HistogramTester histogram;
+
+  // The child view should slide out before being deleted and the smoothness
+  // should be recorded.
+  CheckSmoothnessRecorded(
+      histograms, child_view,
+      "Ash.Notification.GroupNotification.SlideOut.AnimationSmoothness");
 }
 
 TEST_F(AshNotificationViewTest, RecordExpandButtonClickAction) {

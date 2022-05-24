@@ -276,7 +276,6 @@ class MESSAGE_CENTER_EXPORT MessageView
   // MessageViewFactory parlance.
   bool is_nested_ = false;
 
-  bool is_grouped_ = false;
   // True if the slide is disabled forcibly.
   bool disable_slide_ = false;
 

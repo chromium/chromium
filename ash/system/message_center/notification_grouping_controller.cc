@@ -266,12 +266,6 @@ void NotificationGroupingController::RemoveGroupedChild(
   const std::string parent_id =
       grouped_notification_list_->GetParentForChild(notification_id);
 
-  MessageView* parent_view =
-      GetActiveNotificationViewController()->GetMessageViewForNotificationId(
-          parent_id);
-  if (parent_view)
-    parent_view->RemoveGroupNotification(notification_id);
-
   // Remove parent notification if we are removing the last child notification
   // in a grouped notification.
   auto grouped_notifications =

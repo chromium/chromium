@@ -270,11 +270,13 @@ class ASH_EXPORT AshNotificationView
 
   // Cached background color to avoid unnecessary update.
   SkColor background_color_ = SK_ColorTRANSPARENT;
+
   // Whether the notification associated with this view is a parent or child
   // in a grouped notification. Used to update visibility of UI elements
   // specific to each type of notification.
   bool is_grouped_parent_view_ = false;
   bool is_grouped_child_view_ = false;
+
   // Whether this view is shown in a notification popup.
   bool shown_in_popup_ = false;
 

@@ -718,12 +718,42 @@ void AshNotificationView::RemoveGroupNotification(
   if (!to_be_deleted)
     return;
 
-  grouped_notifications_container_->RemoveChildViewT(to_be_deleted);
-  total_grouped_notifications_--;
-  left_content_->SetVisible(total_grouped_notifications_ == 0);
-  UpdateGroupedNotificationsVisibility();
-  expand_button_->UpdateGroupedNotificationsCount(total_grouped_notifications_);
-  PreferredSizeChanged();
+  auto on_notification_slid_out = base::BindRepeating(
+      [](base::WeakPtr<AshNotificationView> self,
+         const std::string& notification_id) {
+        if (!self || !self->grouped_notifications_container_)
+          return;
+
+        views::View* to_be_deleted =
+            self->FindGroupNotificationView(notification_id);
+        if (!to_be_deleted)
+          return;
+
+        self->grouped_notifications_container_->RemoveChildViewT(to_be_deleted);
+
+        self->total_grouped_notifications_--;
+        self->left_content_->SetVisible(self->total_grouped_notifications_ ==
+                                        0);
+        self->expand_button_->UpdateGroupedNotificationsCount(
+            self->total_grouped_notifications_);
+
+        self->PreferredSizeChanged();
+      },
+      weak_factory_.GetWeakPtr(), notification_id);
+
+  // If the removed notification has a layer transform it has already been slid
+  // out (For example user swiped it by dragging). We only need to animate a
+  // slide out if there is no transform.
+  if (to_be_deleted->layer()->transform().IsIdentity()) {
+    message_center_utils::SlideOutView(
+        to_be_deleted, on_notification_slid_out,
+        /*delay_in_ms=*/0,
+        /*duration_in_ms=*/kSlideOutGroupedNotificationAnimationDurationMs,
+        gfx::Tween::LINEAR,
+        "Ash.Notification.GroupNotification.SlideOut.AnimationSmoothness");
+  } else {
+    on_notification_slid_out.Run();
+  }
 }
 
 const char* AshNotificationView::GetClassName() const {
