@@ -585,10 +585,6 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   (*s_allowlist)[ash::ambient::prefs::kAmbientModeAnimationPlaybackSpeed] =
       settings_api::PrefType::PREF_TYPE_NUMBER;
 
-  // Dark Mode.
-  (*s_allowlist)[ash::prefs::kDarkModeScheduleType] =
-      settings_api::PrefType::PREF_TYPE_NUMBER;
-
   // Google Assistant.
   (*s_allowlist)[chromeos::assistant::prefs::kAssistantConsentStatus] =
       settings_api::PrefType::PREF_TYPE_NUMBER;
