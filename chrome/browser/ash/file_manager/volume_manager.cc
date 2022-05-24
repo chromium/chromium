@@ -11,6 +11,7 @@
 
 #include "ash/components/disks/disk.h"
 #include "ash/components/disks/disk_mount_manager.h"
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
@@ -401,7 +402,8 @@ std::unique_ptr<Volume> Volume::CreateForFuseBoxMTP(
   volume->volume_id_ = util::kFuseBox;
   volume->volume_id_.append(kMtpVolumeIdPrefix + label);
   volume->volume_label_ = label;
-  volume->volume_label_.insert(0, "fusebox ");
+  if (ash::features::IsFileManagerFuseBoxDebugEnabled())
+    volume->volume_label_.insert(0, "fusebox ");
   return volume;
 }
 
