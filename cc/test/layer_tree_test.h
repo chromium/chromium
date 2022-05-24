@@ -149,6 +149,7 @@ class LayerTreeTest : public testing::Test, public TestHooks {
     initial_root_bounds_ = bounds;
   }
 
+  virtual void CleanupBeforeDestroy() {}
   virtual void AfterTest() {}
   virtual void WillBeginTest();
   virtual void BeginTest() = 0;

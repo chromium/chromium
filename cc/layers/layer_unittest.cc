@@ -1641,6 +1641,10 @@ TEST_F(LayerTest, SetLayerTreeHostNotUsingLayerListsManagesElementId) {
   // Layer should now be registered by element id.
   EXPECT_EQ(test_layer, layer_tree_host_->LayerByElementId(element_id));
 
+  // We're expected to remove the animations before calling
+  // SetLayerTreeHost(nullptr).
+  animation_host_->RemoveAnimationTimeline(timeline);
+
   test_layer->SetLayerTreeHost(nullptr);
   // Layer should have been un-registered.
   EXPECT_EQ(nullptr, layer_tree_host_->LayerByElementId(element_id));

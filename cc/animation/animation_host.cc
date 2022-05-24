@@ -179,6 +179,7 @@ void AnimationHost::RemoveElementId(ElementId element_id) {
   scoped_refptr<ElementAnimations> element_animations =
       GetElementAnimationsForElementId(element_id);
   if (element_animations) {
+    DCHECK(!element_animations->HasTickingKeyframeEffect());
     element_animations->RemoveKeyframeEffects();
   }
 }
@@ -187,6 +188,26 @@ void AnimationHost::RegisterAnimationForElement(ElementId element_id,
                                                 Animation* animation) {
   DCHECK(element_id);
   DCHECK(animation);
+#if DCHECK_IS_ON()
+  for (const auto& keyframe_model :
+       animation->keyframe_effect()->keyframe_models()) {
+    KeyframeModel* cc_keyframe_model =
+        KeyframeModel::ToCcKeyframeModel(keyframe_model.get());
+    ElementId model_element_id = cc_keyframe_model->element_id()
+                                     ? cc_keyframe_model->element_id()
+                                     : element_id;
+    DCHECK(cc_keyframe_model->affects_active_elements() ||
+           cc_keyframe_model->affects_pending_elements());
+    DCHECK(!cc_keyframe_model->affects_active_elements() ||
+           mutator_host_client()->IsElementInPropertyTrees(
+               model_element_id, ElementListType::ACTIVE));
+    // Test thread_instance_ because LayerTreeHost has no pending tree.
+    DCHECK(thread_instance_ == ThreadInstance::MAIN ||
+           !cc_keyframe_model->affects_pending_elements() ||
+           mutator_host_client()->IsElementInPropertyTrees(
+               model_element_id, ElementListType::PENDING));
+  }
+#endif
 
   scoped_refptr<ElementAnimations> element_animations =
       GetElementAnimationsForElementId(element_id);

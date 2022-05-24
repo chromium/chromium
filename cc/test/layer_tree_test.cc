@@ -1129,6 +1129,7 @@ void LayerTreeTest::RunTest(CompositorMode mode) {
       base::BindOnce(&LayerTreeTest::DoBeginTest, base::Unretained(this)));
 
   base::RunLoop().Run();
+  CleanupBeforeDestroy();
   DestroyLayerTreeHost();
 
   timeout_.Cancel();
