@@ -289,8 +289,7 @@ void ExtensionMessagePort::RevalidatePort() {
 void ExtensionMessagePort::DispatchOnConnect(
     const std::string& channel_name,
     std::unique_ptr<base::DictionaryValue> source_tab,
-    int source_frame_id,
-    const ExtensionApiFrameIdMap::DocumentId& source_document_id,
+    const ExtensionApiFrameIdMap::FrameData& source_frame,
     int guest_process_id,
     int guest_render_frame_routing_id,
     const MessagingEndpoint& source_endpoint,
@@ -300,9 +299,9 @@ void ExtensionMessagePort::DispatchOnConnect(
   SendToPort(base::BindRepeating(
       &ExtensionMessagePort::BuildDispatchOnConnectIPC,
       // Called synchronously.
-      base::Unretained(this), channel_name, source_tab.get(), source_frame_id,
-      source_document_id, guest_process_id, guest_render_frame_routing_id,
-      source_endpoint, target_extension_id, source_url, source_origin));
+      base::Unretained(this), channel_name, source_tab.get(), source_frame,
+      guest_process_id, guest_render_frame_routing_id, source_endpoint,
+      target_extension_id, source_url, source_origin));
 }
 
 void ExtensionMessagePort::DispatchOnDisconnect(
@@ -524,8 +523,7 @@ void ExtensionMessagePort::SendToIPCTarget(const IPCTarget& target,
 std::unique_ptr<IPC::Message> ExtensionMessagePort::BuildDispatchOnConnectIPC(
     const std::string& channel_name,
     const base::DictionaryValue* source_tab,
-    int source_frame_id,
-    const ExtensionApiFrameIdMap::DocumentId& source_document_id,
+    const ExtensionApiFrameIdMap::FrameData& source_frame,
     int guest_process_id,
     int guest_render_frame_routing_id,
     const MessagingEndpoint& source_endpoint,
@@ -536,7 +534,7 @@ std::unique_ptr<IPC::Message> ExtensionMessagePort::BuildDispatchOnConnectIPC(
   ExtensionMsg_TabConnectionInfo source;
 
   // Source document ID should exist if and only if there is a source tab.
-  DCHECK_EQ(!!source_tab, !!source_document_id);
+  DCHECK_EQ(!!source_tab, !!source_frame.document_id);
   if (source_tab) {
     std::unique_ptr<base::Value> source_tab_value =
         base::Value::ToUniquePtrValue(source_tab->Clone());
@@ -544,9 +542,10 @@ std::unique_ptr<IPC::Message> ExtensionMessagePort::BuildDispatchOnConnectIPC(
     // remove this cast.
     source.tab.Swap(
         static_cast<base::DictionaryValue*>(source_tab_value.get()));
-    source.document_id = source_document_id.ToString();
+    source.document_id = source_frame.document_id.ToString();
+    source.document_lifecycle = ToString(source_frame.document_lifecycle);
   }
-  source.frame_id = source_frame_id;
+  source.frame_id = source_frame.frame_id;
 
   ExtensionMsg_ExternalConnectionInfo info;
   info.target_id = target_extension_id;

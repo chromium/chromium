@@ -149,6 +149,9 @@ IPC_STRUCT_BEGIN(ExtensionMsg_TabConnectionInfo)
 
   // The unique ID of the document of the frame that initiated the connection.
   IPC_STRUCT_MEMBER(std::string, document_id)
+
+  // The lifecycle of the frame that initiated the connection.
+  IPC_STRUCT_MEMBER(std::string, document_lifecycle)
 IPC_STRUCT_END()
 
 // Struct containing information about the destination of tab.connect().

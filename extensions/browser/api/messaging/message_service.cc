@@ -149,8 +149,7 @@ struct MessageService::MessageChannel {
 struct MessageService::OpenChannelParams {
   ChannelEndpoint source;
   std::unique_ptr<base::DictionaryValue> source_tab;
-  int source_frame_id;
-  ExtensionApiFrameIdMap::DocumentId source_document_id;
+  ExtensionApiFrameIdMap::FrameData source_frame;
   std::unique_ptr<MessagePort> receiver;
   PortId receiver_port_id;
   MessagingEndpoint source_endpoint;
@@ -162,24 +161,21 @@ struct MessageService::OpenChannelParams {
   bool include_guest_process_info;
 
   // Takes ownership of receiver.
-  OpenChannelParams(
-      const ChannelEndpoint& source,
-      std::unique_ptr<base::DictionaryValue> source_tab,
-      int source_frame_id,
-      const ExtensionApiFrameIdMap::DocumentId& source_document_id,
-      MessagePort* receiver,
-      const PortId& receiver_port_id,
-      const MessagingEndpoint& source_endpoint,
-      std::unique_ptr<MessagePort> opener_port,
-      const std::string& target_extension_id,
-      const GURL& source_url,
-      absl::optional<url::Origin> source_origin,
-      const std::string& channel_name,
-      bool include_guest_process_info)
+  OpenChannelParams(const ChannelEndpoint& source,
+                    std::unique_ptr<base::DictionaryValue> source_tab,
+                    const ExtensionApiFrameIdMap::FrameData& source_frame,
+                    MessagePort* receiver,
+                    const PortId& receiver_port_id,
+                    const MessagingEndpoint& source_endpoint,
+                    std::unique_ptr<MessagePort> opener_port,
+                    const std::string& target_extension_id,
+                    const GURL& source_url,
+                    absl::optional<url::Origin> source_origin,
+                    const std::string& channel_name,
+                    bool include_guest_process_info)
       : source(source),
         source_tab(std::move(source_tab)),
-        source_frame_id(source_frame_id),
-        source_document_id(source_document_id),
+        source_frame(source_frame),
         receiver(receiver),
         receiver_port_id(receiver_port_id),
         source_endpoint(source_endpoint),
@@ -345,8 +341,7 @@ void MessageService::OpenChannelToExtension(
         WebContents::FromRenderFrameHost(source_render_frame_host);
   }
 
-  int source_frame_id = -1;
-  ExtensionApiFrameIdMap::DocumentId source_document_id;
+  ExtensionApiFrameIdMap::FrameData source_frame;
   bool include_guest_process_info = false;
 
   // Get information about the opener's tab, if applicable.
@@ -359,10 +354,8 @@ void MessageService::OpenChannelToExtension(
 
   if (source_tab.get()) {
     DCHECK(source_render_frame_host);
-    source_frame_id =
-        ExtensionApiFrameIdMap::GetFrameId(source_render_frame_host);
-    source_document_id =
-        ExtensionApiFrameIdMap::GetDocumentId(source_render_frame_host);
+    source_frame = ExtensionApiFrameIdMap::Get()->GetFrameData(
+        source_render_frame_host->GetGlobalId());
   } else {
     // Check to see if it was a WebView making the request.
     // Sending messages from WebViews to extensions breaks webview isolation,
@@ -376,8 +369,8 @@ void MessageService::OpenChannelToExtension(
 
   std::unique_ptr<OpenChannelParams> params =
       std::make_unique<OpenChannelParams>(
-          source, std::move(source_tab), source_frame_id, source_document_id,
-          nullptr, source_port_id.GetOppositePortId(), source_endpoint,
+          source, std::move(source_tab), source_frame, nullptr,
+          source_port_id.GetOppositePortId(), source_endpoint,
           std::move(opener_port), target_extension_id, source_url,
           std::move(source_origin), channel_name, include_guest_process_info);
   pending_incognito_channels_[params->receiver_port_id.GetChannelId()] =
@@ -573,9 +566,7 @@ void MessageService::OpenChannelToTab(const ChannelEndpoint& source,
           std::unique_ptr<base::DictionaryValue>(),  // Source tab doesn't make
                                                      // sense
                                                      // for opening to tabs.
-          -1,  // If there is no tab, then there is no frame either.
-          ExtensionApiFrameIdMap::DocumentId(),  // If there is no frame, there
-                                                 // is no document either.
+          ExtensionApiFrameIdMap::FrameData(),       // There is no frame.
           receiver.release(), receiver_port_id,
           MessagingEndpoint::ForExtension(extension_id), std::move(opener_port),
           extension_id,
@@ -659,9 +650,8 @@ void MessageService::OpenChannelImpl(BrowserContext* browser_context,
   // Send the connect event to the receiver.  Give it the opener's port ID (the
   // opener has the opposite port ID).
   channel->receiver->DispatchOnConnect(
-      params->channel_name, std::move(params->source_tab),
-      params->source_frame_id, params->source_document_id, guest_process_id,
-      guest_render_frame_routing_id, params->source_endpoint,
+      params->channel_name, std::move(params->source_tab), params->source_frame,
+      guest_process_id, guest_render_frame_routing_id, params->source_endpoint,
       params->target_extension_id, params->source_url, params->source_origin);
 
   // Report the event to the event router, if the target is an extension.
