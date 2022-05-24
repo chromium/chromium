@@ -148,21 +148,7 @@ NSInteger kFeedSymbolPointSize = 17;
   self.container.translatesAutoresizingMaskIntoConstraints = NO;
 
   [self configureMenuButton:self.menuButton];
-
-  if (IsWebChannelsEnabled()) {
-    if ([self.feedControlDelegate shouldFeedBeVisible]) {
-      [self addViewsForVisibleFeed];
-    } else {
-      [self addViewsForHiddenFeed];
-    }
-
-    if (![self.ntpDelegate isGoogleDefaultSearchEngine]) {
-      [self addCustomSearchEngineView];
-    }
-  } else {
-    self.titleLabel = [self createTitleLabel];
-    [self.container addSubview:self.titleLabel];
-  }
+  [self configureHeaderViews];
 
   [self.container addSubview:self.menuButton];
   [self.view addSubview:self.container];
@@ -172,7 +158,8 @@ NSInteger kFeedSymbolPointSize = 17;
 #pragma mark - Public
 
 - (void)toggleBackgroundBlur:(BOOL)blurred animated:(BOOL)animated {
-  if (UIAccessibilityIsReduceTransparencyEnabled() || !IsWebChannelsEnabled() ||
+  if (UIAccessibilityIsReduceTransparencyEnabled() ||
+      ![self.feedControlDelegate isFollowingFeedAvailable] ||
       !self.blurBackgroundView) {
     return;
   }
@@ -200,19 +187,20 @@ NSInteger kFeedSymbolPointSize = 17;
 }
 
 - (CGFloat)feedHeaderHeight {
-  return IsWebChannelsEnabled() ? kWebChannelsHeaderHeight
-                                : kDiscoverFeedHeaderHeight;
+  return [self.feedControlDelegate isFollowingFeedAvailable]
+             ? kWebChannelsHeaderHeight
+             : kDiscoverFeedHeaderHeight;
 }
 
 - (CGFloat)customSearchEngineViewHeight {
-  return
-      [self.ntpDelegate isGoogleDefaultSearchEngine] || !IsWebChannelsEnabled()
-          ? 0
-          : kCustomSearchEngineLabelHeight;
+  return [self.ntpDelegate isGoogleDefaultSearchEngine] ||
+                 ![self.feedControlDelegate isFollowingFeedAvailable]
+             ? 0
+             : kCustomSearchEngineLabelHeight;
 }
 
 - (void)updateFollowingSegmentDotForUnseenContent:(BOOL)hasUnseenContent {
-  DCHECK(IsWebChannelsEnabled());
+  DCHECK([self.feedControlDelegate isFollowingFeedAvailable]);
 
   // Don't show the dot if the user is already on the Following feed.
   if ([self.feedControlDelegate selectedFeed] == FeedTypeFollowing) {
@@ -229,7 +217,7 @@ NSInteger kFeedSymbolPointSize = 17;
 }
 
 - (void)updateForDefaultSearchEngineChanged {
-  if (!IsWebChannelsEnabled()) {
+  if (![self.feedControlDelegate isFollowingFeedAvailable]) {
     [self.titleLabel setText:[self feedHeaderTitleText]];
     [self.titleLabel setNeedsDisplay];
     return;
@@ -244,7 +232,7 @@ NSInteger kFeedSymbolPointSize = 17;
 }
 
 - (void)updateForFeedVisibilityChanged {
-  if (!IsWebChannelsEnabled()) {
+  if (![self.feedControlDelegate isFollowingFeedAvailable]) {
     [self.titleLabel setText:[self feedHeaderTitleText]];
     [self.titleLabel setNeedsDisplay];
     return;
@@ -261,6 +249,14 @@ NSInteger kFeedSymbolPointSize = 17;
   [self applyHeaderConstraints];
 }
 
+- (void)updateForFollowingFeedVisibilityChanged {
+  [self removeViewsForHiddenFeed];
+  [self removeViewsForVisibleFeed];
+  [self.titleLabel removeFromSuperview];
+  [self configureHeaderViews];
+  [self applyHeaderConstraints];
+}
+
 #pragma mark - Setters
 
 // Sets |followingFeedSortType| and recreates the sort menu to assign the active
@@ -273,6 +269,23 @@ NSInteger kFeedSymbolPointSize = 17;
 }
 
 #pragma mark - Private
+
+- (void)configureHeaderViews {
+  if ([self.feedControlDelegate isFollowingFeedAvailable]) {
+    if ([self.feedControlDelegate shouldFeedBeVisible]) {
+      [self addViewsForVisibleFeed];
+    } else {
+      [self addViewsForHiddenFeed];
+    }
+
+    if (![self.ntpDelegate isGoogleDefaultSearchEngine]) {
+      [self addCustomSearchEngineView];
+    }
+  } else {
+    self.titleLabel = [self createTitleLabel];
+    [self.container addSubview:self.titleLabel];
+  }
+}
 
 // Creates sort menu with its content and active sort type.
 - (UIMenu*)createSortMenu {
@@ -317,7 +330,7 @@ NSInteger kFeedSymbolPointSize = 17;
   menuButton.accessibilityIdentifier = kNTPFeedHeaderMenuButtonIdentifier;
   menuButton.accessibilityLabel =
       l10n_util::GetNSString(IDS_IOS_DISCOVER_FEED_MENU_ACCESSIBILITY_LABEL);
-  if (IsWebChannelsEnabled()) {
+  if ([self.feedControlDelegate isFollowingFeedAvailable]) {
     [menuButton setImage:DefaultSymbolTemplateWithPointSize(
                              kEllipsisFeedSymbol, kFeedSymbolPointSize)
                 forState:UIControlStateNormal];
@@ -341,7 +354,7 @@ NSInteger kFeedSymbolPointSize = 17;
 
 // Configures and returns the feed header's sorting button.
 - (UIButton*)createSortButton {
-  DCHECK(IsWebChannelsEnabled());
+  DCHECK([self.feedControlDelegate isFollowingFeedAvailable]);
 
   UIButton* sortButton = [[UIButton alloc] init];
 
@@ -496,7 +509,7 @@ NSInteger kFeedSymbolPointSize = 17;
         constraintEqualToAnchor:self.container.centerYAnchor],
   ]];
 
-  if (IsWebChannelsEnabled()) {
+  if ([self.feedControlDelegate isFollowingFeedAvailable]) {
     [self.feedHeaderConstraints addObjectsFromArray:@[
       // Set menu button size.
       [self.menuButton.heightAnchor constraintEqualToConstant:kButtonSize],
@@ -734,7 +747,7 @@ NSInteger kFeedSymbolPointSize = 17;
 
 // The title text for the Discover feed header based on user prefs.
 - (NSString*)feedHeaderTitleText {
-  DCHECK(!IsWebChannelsEnabled());
+  DCHECK(![self.feedControlDelegate isFollowingFeedAvailable]);
 
   // Set the title based on the default search engine.
   NSString* feedHeaderTitleText =

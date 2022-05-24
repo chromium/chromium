@@ -61,6 +61,9 @@
 // Updates the header for when the user turns the feed off from the header menu.
 - (void)updateForFeedVisibilityChanged;
 
+// Updates the header for when the Following Feed visibility has changed.
+- (void)updateForFollowingFeedVisibilityChanged;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_FEED_HEADER_VIEW_CONTROLLER_H_
