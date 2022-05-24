@@ -109,10 +109,6 @@ BluetoothHidDetectorImpl::GetBluetoothHidDetectionStatus() {
 
 void BluetoothHidDetectorImpl::PerformStartBluetoothHidDetection(
     InputDevicesStatus input_devices_status) {
-  DCHECK(input_devices_status.pointer_is_missing ||
-         input_devices_status.keyboard_is_missing)
-      << " StartBluetoothHidDetection() called when neither pointer or "
-      << "keyboard is missing";
   DCHECK_EQ(kNotStarted, state_);
   HID_LOG(EVENT) << "Starting Bluetooth HID detection, pointer missing: "
                  << input_devices_status.pointer_is_missing

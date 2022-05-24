@@ -75,7 +75,10 @@ BluetoothHidDetector::BluetoothHidDetector() {
   DCHECK(ash::features::IsOobeHidDetectionRevampEnabled());
 }
 
-BluetoothHidDetector::~BluetoothHidDetector() = default;
+BluetoothHidDetector::~BluetoothHidDetector() {
+  DCHECK(!delegate_) << " Bluetooth HID detection must be stopped before "
+                     << "BluetoothHidDetector is destroyed.";
+}
 
 void BluetoothHidDetector::StartBluetoothHidDetection(
     Delegate* delegate,
