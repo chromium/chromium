@@ -9,11 +9,6 @@ import("//testing/test.gni")
 
 assert(is_chromeos_ash, "Non ChromeOS builds must not depend on //chromeos/ash")
 
-# Used by targets that compile into the implementation.
-config("chromeos_implementation") {
-  defines = [ "CHROMEOS_IMPLEMENTATION" ]
-}
-
 mojom("mojom") {
   sources = [ "userspace_swap.mojom" ]
 
@@ -24,11 +19,10 @@ mojom("mojom") {
 }
 
 component("userspace_swap") {
-  configs += [ ":chromeos_implementation" ]
+  defines = [ "IS_USERSPACE_SWAP_IMPL" ]
   deps = [
     ":mojom",
     "//base",
-    "//chromeos:chromeos_export",
     "//chromeos/ash/components/memory",
     "//chromeos/dbus",
     "//chromeos/dbus/constants",

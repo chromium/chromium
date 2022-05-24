@@ -8,11 +8,11 @@
 #include <list>
 #include <memory>
 
+#include "base/component_export.h"
 #include "base/files/file_descriptor_watcher_posix.h"
 #include "base/files/scoped_file.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/platform_thread.h"
-#include "chromeos/chromeos_export.h"
 
 struct uffd_msg;
 
@@ -41,7 +41,7 @@ namespace userspace_swap {
 // first before observing the Remove event you could potentially restore stale
 // memory when the correct action after the MADV_DONTNEED would be to zero the
 // range.
-class CHROMEOS_EXPORT UserfaultFDHandler {
+class COMPONENT_EXPORT(USERSPACE_SWAP) UserfaultFDHandler {
  public:
   // PagefaultFlags are passed in the Pagefault Handler.
   enum PagefaultFlags {
@@ -101,7 +101,7 @@ class CHROMEOS_EXPORT UserfaultFDHandler {
 //
 // NOTE: All operations on a UserfaultFD expect page aligned addresses and
 // page multiple lengths.
-class CHROMEOS_EXPORT UserfaultFD {
+class COMPONENT_EXPORT(USERSPACE_SWAP) UserfaultFD {
  public:
   enum Features {
     // kFeatureRemap will subscribe to Remap callbacks.

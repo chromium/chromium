@@ -8,17 +8,10 @@ import("//testing/test.gni")
 
 assert(is_chromeos_ash, "Non ChromeOS builds must not depend on //chromeos/ash")
 
-# Used by targets that compile into the implementation.
-config("chromeos_implementation") {
-  defines = [ "CHROMEOS_IMPLEMENTATION" ]
-}
-
 component("memory") {
   defines = [ "IS_ASH_MEMORY_IMPL" ]
-  configs += [ ":chromeos_implementation" ]
   deps = [
     "//base",
-    "//chromeos:chromeos_export",
     "//chromeos/dbus",
     "//chromeos/dbus/constants",
     "//chromeos/dbus/resourced:resourced",

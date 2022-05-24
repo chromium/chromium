@@ -87,13 +87,13 @@ bool MlockMapping(void* addr, size_t size) {
   return mlock(addr, size) == 0;
 }
 
-CHROMEOS_EXPORT void LockMainProgramText() {
+COMPONENT_EXPORT(ASH_MEMORY) void LockMainProgramText() {
   if (base::FeatureList::IsEnabled(kCrOSLockMainProgramText)) {
     MlockAllText();
   }
 }
 
-CHROMEOS_EXPORT void UpdateMemoryParameters() {
+COMPONENT_EXPORT(ASH_MEMORY) void UpdateMemoryParameters() {
   ConfigureSwap();
 }
 
@@ -101,8 +101,8 @@ namespace memory {
 
 namespace internal {
 
-CHROMEOS_EXPORT bool ParseZramMmStat(const std::string& input,
-                                     ZramMmStat* zram_mm_stat) {
+COMPONENT_EXPORT(ASH_MEMORY)
+bool ParseZramMmStat(const std::string& input, ZramMmStat* zram_mm_stat) {
   std::vector<std::string> zram_mm_stat_list = base::SplitString(
       input, " ", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
@@ -153,8 +153,8 @@ CHROMEOS_EXPORT bool ParseZramMmStat(const std::string& input,
   return status;
 }
 
-CHROMEOS_EXPORT bool ParseZramBdStat(const std::string& input,
-                                     ZramBdStat* zram_bd_stat) {
+COMPONENT_EXPORT(ASH_MEMORY)
+bool ParseZramBdStat(const std::string& input, ZramBdStat* zram_bd_stat) {
   std::vector<std::string> zram_bd_stat_list = base::SplitString(
       input, " ", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
@@ -169,8 +169,8 @@ CHROMEOS_EXPORT bool ParseZramBdStat(const std::string& input,
          base::StringToUint64(zram_bd_stat_list[2], &zram_bd_stat->bd_writes);
 }
 
-CHROMEOS_EXPORT bool ParseZramIoStat(const std::string& input,
-                                     ZramIoStat* zram_io_stat) {
+COMPONENT_EXPORT(ASH_MEMORY)
+bool ParseZramIoStat(const std::string& input, ZramIoStat* zram_io_stat) {
   std::vector<std::string> zram_io_stat_list = base::SplitString(
       input, " ", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 

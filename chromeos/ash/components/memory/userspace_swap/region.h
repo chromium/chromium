@@ -10,10 +10,10 @@
 #include <ostream>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/numerics/checked_math.h"
 #include "base/strings/string_piece.h"
-#include "chromeos/chromeos_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
@@ -73,8 +73,8 @@ class Region {
     return base::span<T>(reinterpret_cast<T*>(address), length);
   }
 
-  struct iovec CHROMEOS_EXPORT AsIovec() const;
-  base::StringPiece CHROMEOS_EXPORT AsStringPiece() const;
+  struct iovec COMPONENT_EXPORT(USERSPACE_SWAP) AsIovec() const;
+  base::StringPiece COMPONENT_EXPORT(USERSPACE_SWAP) AsStringPiece() const;
 
   bool operator<(const Region& other) const {
     // Because the standard library treats equality as !less(a,b) &&
@@ -103,13 +103,13 @@ class Region {
   //  be set, before will contain the part before the intersection, intersection
   //  will contain an area equal to range, and after will contain the portion
   //  which doesn't intersect after range.
-  CHROMEOS_EXPORT RegionOverlap
-  CalculateRegionOverlap(const Region& range) const;
+  COMPONENT_EXPORT(USERSPACE_SWAP)
+  RegionOverlap CalculateRegionOverlap(const Region& range) const;
 
   friend std::ostream& operator<<(std::ostream& os, const Region& region);
 };
 
-struct CHROMEOS_EXPORT RegionOverlap {
+struct COMPONENT_EXPORT(USERSPACE_SWAP) RegionOverlap {
   RegionOverlap();
   ~RegionOverlap();
 

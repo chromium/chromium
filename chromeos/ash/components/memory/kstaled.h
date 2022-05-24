@@ -5,9 +5,9 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_MEMORY_KSTALED_H_
 #define CHROMEOS_ASH_COMPONENTS_MEMORY_KSTALED_H_
 
+#include "base/component_export.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
-#include "chromeos/chromeos_export.h"
 
 namespace ash {
 
@@ -19,7 +19,7 @@ extern const base::FeatureParam<int> kKstaledRatio;
 
 // InitializeKstaled will attempt to configure kstaled with the experimental
 // parameters for this user.
-CHROMEOS_EXPORT void InitializeKstaled();
+COMPONENT_EXPORT(ASH_MEMORY) void InitializeKstaled();
 
 }  // namespace ash
 

@@ -7,13 +7,13 @@
 
 #include <cstddef>
 
+#include "base/component_export.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "chromeos/chromeos_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
@@ -23,7 +23,7 @@ namespace ash {
 // locked as they are faulted in. If the running kernel does not support
 // mlock2, it was added in kernel 4.4, it will fall back to mlock where it
 // will lock all pages immediately by faulting them in.
-CHROMEOS_EXPORT bool MlockMapping(void* addr, size_t length);
+COMPONENT_EXPORT(ASH_MEMORY) bool MlockMapping(void* addr, size_t length);
 
 // A feature which controls the locking the main program text.
 extern const base::Feature kCrOSLockMainProgramText;
@@ -33,14 +33,14 @@ extern const base::Feature kCrOSLockMainProgramText;
 extern const base::FeatureParam<int> kCrOSLockMainProgramTextMaxSize;
 
 // Lock main program text segments fully.
-CHROMEOS_EXPORT void LockMainProgramText();
+COMPONENT_EXPORT(ASH_MEMORY) void LockMainProgramText();
 
 // It should be called when some memory configuration is changed.
-CHROMEOS_EXPORT void UpdateMemoryParameters();
+COMPONENT_EXPORT(ASH_MEMORY) void UpdateMemoryParameters();
 
 namespace memory {
 
-class CHROMEOS_EXPORT ZramMetrics
+class COMPONENT_EXPORT(ASH_MEMORY) ZramMetrics
     : public base::RefCountedThreadSafe<ZramMetrics> {
  public:
   static constexpr base::TimeDelta kZramMetricsPeriod = base::Seconds(10);
@@ -134,14 +134,14 @@ struct ZramIoStat {
 
 namespace internal {
 
-CHROMEOS_EXPORT bool ParseZramMmStat(const std::string& input,
-                                     ZramMmStat* zram_mm_stat);
+COMPONENT_EXPORT(ASH_MEMORY)
+bool ParseZramMmStat(const std::string& input, ZramMmStat* zram_mm_stat);
 
-CHROMEOS_EXPORT bool ParseZramBdStat(const std::string& input,
-                                     ZramBdStat* zram_bd_stat);
+COMPONENT_EXPORT(ASH_MEMORY)
+bool ParseZramBdStat(const std::string& input, ZramBdStat* zram_bd_stat);
 
-CHROMEOS_EXPORT bool ParseZramIoStat(const std::string& input,
-                                     ZramIoStat* zram_io_stat);
+COMPONENT_EXPORT(ASH_MEMORY)
+bool ParseZramIoStat(const std::string& input, ZramIoStat* zram_io_stat);
 
 }  // namespace internal
 

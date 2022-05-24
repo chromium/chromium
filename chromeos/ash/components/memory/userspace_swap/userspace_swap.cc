@@ -343,7 +343,8 @@ UserspaceSwapConfig::UserspaceSwapConfig(const UserspaceSwapConfig& other) =
     default;
 
 // Static
-CHROMEOS_EXPORT const UserspaceSwapConfig& UserspaceSwapConfig::Get() {
+COMPONENT_EXPORT(USERSPACE_SWAP)
+const UserspaceSwapConfig& UserspaceSwapConfig::Get() {
   static UserspaceSwapConfig config = []() -> UserspaceSwapConfig {
     UserspaceSwapConfig config = {};
 
@@ -412,7 +413,7 @@ std::ostream& operator<<(std::ostream& out, const UserspaceSwapConfig& c) {
 
 // KernelSupportsUserspaceSwap will test for all features necessary to enable
 // userspace swap.
-CHROMEOS_EXPORT bool KernelSupportsUserspaceSwap() {
+COMPONENT_EXPORT(USERSPACE_SWAP) bool KernelSupportsUserspaceSwap() {
 #if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) || \
     !defined(PA_HAS_64_BITS_POINTERS)
   // We currently only support 64bit partition alloc.
@@ -454,7 +455,8 @@ RendererSwapData::RendererSwapData() = default;
 RendererSwapData::~RendererSwapData() = default;
 
 // static
-CHROMEOS_EXPORT std::unique_ptr<RendererSwapData> RendererSwapData::Create(
+COMPONENT_EXPORT(USERSPACE_SWAP)
+std::unique_ptr<RendererSwapData> RendererSwapData::Create(
     int render_process_host_id,
     base::ProcessId pid,
     std::unique_ptr<UserfaultFD> uffd,
@@ -466,20 +468,21 @@ CHROMEOS_EXPORT std::unique_ptr<RendererSwapData> RendererSwapData::Create(
       swap_remap_area, std::move(remote));
 }
 
-CHROMEOS_EXPORT bool UserspaceSwapSupportedAndEnabled() {
+COMPONENT_EXPORT(USERSPACE_SWAP) bool UserspaceSwapSupportedAndEnabled() {
   static bool enabled = UserspaceSwapConfig::Get().enabled;
   static bool supported = KernelSupportsUserspaceSwap();
   return supported && enabled;
 }
 
-CHROMEOS_EXPORT bool SwapRenderer(RendererSwapData* data,
-                                  size_t size_limit_bytes) {
+COMPONENT_EXPORT(USERSPACE_SWAP)
+bool SwapRenderer(RendererSwapData* data, size_t size_limit_bytes) {
   RendererSwapDataImpl* impl = reinterpret_cast<RendererSwapDataImpl*>(data);
   VLOG(1) << "SwapRenderer for rphid " << impl->render_process_host_id();
   return impl->Swap(size_limit_bytes);
 }
 
-CHROMEOS_EXPORT bool GetPartitionAllocSuperPagesInUse(
+COMPONENT_EXPORT(USERSPACE_SWAP)
+bool GetPartitionAllocSuperPagesInUse(
     int32_t max_superpages,
     std::vector<::userspace_swap::mojom::MemoryRegionPtr>& regions) {
   regions.clear();
@@ -536,19 +539,19 @@ CHROMEOS_EXPORT bool GetPartitionAllocSuperPagesInUse(
         // !defined(PA_HAS_64_BITS_POINTERS)
 }
 
-CHROMEOS_EXPORT uint64_t GetGlobalMemoryReclaimed() {
+COMPONENT_EXPORT(USERSPACE_SWAP) uint64_t GetGlobalMemoryReclaimed() {
   return g_global_reclaimed_bytes.load();
 }
 
-CHROMEOS_EXPORT uint64_t GetGlobalSwapDiskspaceUsed() {
+COMPONENT_EXPORT(USERSPACE_SWAP) uint64_t GetGlobalSwapDiskspaceUsed() {
   return g_global_disk_usage_bytes.load();
 }
 
-CHROMEOS_EXPORT void DisableSwapGlobally() {
+COMPONENT_EXPORT(USERSPACE_SWAP) void DisableSwapGlobally() {
   g_global_swap_allowed = false;
 }
 
-CHROMEOS_EXPORT bool IsSwapAllowedGlobally() {
+COMPONENT_EXPORT(USERSPACE_SWAP) bool IsSwapAllowedGlobally() {
   return g_global_swap_allowed;
 }
 

@@ -5,12 +5,12 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_MEMORY_USERSPACE_SWAP_SWAP_STORAGE_H_
 #define CHROMEOS_ASH_COMPONENTS_MEMORY_USERSPACE_SWAP_SWAP_STORAGE_H_
 
+#include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "chromeos/ash/components/memory/userspace_swap/region.h"
-#include "chromeos/chromeos_export.h"
 
 namespace ash {
 namespace memory {
@@ -18,7 +18,7 @@ namespace userspace_swap {
 
 // SwapFile is the implementation for a disk backed swap file. This class is
 // thread safe as synchronization is handled internally where necessary.
-class CHROMEOS_EXPORT SwapFile {
+class COMPONENT_EXPORT(USERSPACE_SWAP) SwapFile {
  public:
   SwapFile(const SwapFile&) = delete;
   SwapFile& operator=(const SwapFile&) = delete;

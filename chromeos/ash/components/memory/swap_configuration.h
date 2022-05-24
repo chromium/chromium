@@ -5,9 +5,9 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_MEMORY_SWAP_CONFIGURATION_H_
 #define CHROMEOS_ASH_COMPONENTS_MEMORY_SWAP_CONFIGURATION_H_
 
+#include "base/component_export.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
-#include "chromeos/chromeos_export.h"
 
 namespace ash {
 
@@ -31,7 +31,7 @@ extern const base::FeatureParam<int> kCrOSExtraFreeMb;
 
 // Configure swap will configure any swap related experiments that this user may
 // be opted into.
-CHROMEOS_EXPORT void ConfigureSwap();
+COMPONENT_EXPORT(ASH_MEMORY) void ConfigureSwap();
 
 }  // namespace ash
 

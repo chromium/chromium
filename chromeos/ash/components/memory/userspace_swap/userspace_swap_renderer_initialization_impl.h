@@ -6,15 +6,15 @@
 #define CHROMEOS_ASH_COMPONENTS_MEMORY_USERSPACE_SWAP_USERSPACE_SWAP_RENDERER_INITIALIZATION_IMPL_H_
 
 #include "base/callback_forward.h"
+#include "base/component_export.h"
 #include "base/files/scoped_file.h"
-#include "chromeos/chromeos_export.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 
 namespace ash {
 namespace memory {
 namespace userspace_swap {
 
-class CHROMEOS_EXPORT UserspaceSwapRendererInitializationImpl {
+class COMPONENT_EXPORT(USERSPACE_SWAP) UserspaceSwapRendererInitializationImpl {
  public:
   UserspaceSwapRendererInitializationImpl();
 

@@ -9,14 +9,14 @@
 #include <unistd.h>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/files/scoped_file.h"
-#include "chromeos/chromeos_export.h"
 
 namespace ash {
 namespace memory {
 
 // Pagemap fetches pagemap entries from procfs for a process.
-class CHROMEOS_EXPORT Pagemap {
+class COMPONENT_EXPORT(ASH_MEMORY) Pagemap {
  public:
   // For more information on the Pagemap layout see the kernel documentation at
   // https://www.kernel.org/doc/Documentation/vm/pagemap.txt

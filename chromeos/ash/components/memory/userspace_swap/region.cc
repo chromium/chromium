@@ -17,16 +17,17 @@ namespace memory {
 namespace userspace_swap {
 
 // AsIovec will return the iovec representation of this Region.
-struct iovec CHROMEOS_EXPORT Region::AsIovec() const {
+struct iovec COMPONENT_EXPORT(USERSPACE_SWAP) Region::AsIovec() const {
   return {.iov_base = reinterpret_cast<void*>(address), .iov_len = length};
 }
 
-base::StringPiece CHROMEOS_EXPORT Region::AsStringPiece() const {
+base::StringPiece COMPONENT_EXPORT(
+    USERSPACE_SWAP) Region::AsStringPiece() const {
   return base::StringPiece(reinterpret_cast<char*>(address), length);
 }
 
-RegionOverlap CHROMEOS_EXPORT
-Region::CalculateRegionOverlap(const Region& range) const {
+RegionOverlap COMPONENT_EXPORT(USERSPACE_SWAP) Region::CalculateRegionOverlap(
+    const Region& range) const {
   RegionOverlap overlap;
 
   // We have four possible situations here related to how a region actually fits
@@ -76,8 +77,9 @@ Region::CalculateRegionOverlap(const Region& range) const {
 }
 
 // Easily print a region to a stream, useful for debugging.
-std::ostream& CHROMEOS_EXPORT operator<<(std::ostream& os,
-                                         const Region& region) {
+std::ostream& COMPONENT_EXPORT(USERSPACE_SWAP) operator<<(
+    std::ostream& os,
+    const Region& region) {
   os << "[" << reinterpret_cast<void*>(region.address) << "-"
      << reinterpret_cast<void*>(region.address + region.length) << "]";
   return os;

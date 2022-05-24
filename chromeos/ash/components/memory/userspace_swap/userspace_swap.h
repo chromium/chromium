@@ -9,12 +9,12 @@
 #include <cstdint>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/process/process_handle.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/memory/userspace_swap/region.h"
 #include "chromeos/ash/components/memory/userspace_swap/userspace_swap.mojom.h"
-#include "chromeos/chromeos_export.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom.h"
 
@@ -39,7 +39,7 @@ class SwapFile;
 
 // UserspaceSwapConfig is a structure which contains all configuration values
 // for userspace swap.
-struct CHROMEOS_EXPORT UserspaceSwapConfig {
+struct COMPONENT_EXPORT(USERSPACE_SWAP) UserspaceSwapConfig {
   UserspaceSwapConfig();
   UserspaceSwapConfig(const UserspaceSwapConfig& other);
 
@@ -117,31 +117,31 @@ struct CHROMEOS_EXPORT UserspaceSwapConfig {
 // swap. These features are userfaultfd(2) and mremap(2) with MREMAP_DONTUNMAP
 // support this method is the source of truth for the browser UserspaceSwap and
 // the rendererer UserspaceSwapImpl.
-CHROMEOS_EXPORT bool KernelSupportsUserspaceSwap();
+COMPONENT_EXPORT(USERSPACE_SWAP) bool KernelSupportsUserspaceSwap();
 
 // Returns true if there is kernel support for userspace swap and the feature is
 // enabled.
-CHROMEOS_EXPORT bool UserspaceSwapSupportedAndEnabled();
+COMPONENT_EXPORT(USERSPACE_SWAP) bool UserspaceSwapSupportedAndEnabled();
 
 // GetGlobalSwapDiskspaceUsed returns the number of bytes currently on disk for
 // ALL renderers.
-CHROMEOS_EXPORT uint64_t GetGlobalSwapDiskspaceUsed();
+COMPONENT_EXPORT(USERSPACE_SWAP) uint64_t GetGlobalSwapDiskspaceUsed();
 
 // GetGlobalMemoryReclaimed returns the number of bytes (physical memory) which
 // has been reclaimed by userspace swap. This number may not match what is on
 // disk due to encryption and compression.
-CHROMEOS_EXPORT uint64_t GetGlobalMemoryReclaimed();
+COMPONENT_EXPORT(USERSPACE_SWAP) uint64_t GetGlobalMemoryReclaimed();
 
 // DisableSwapGlobally is the global swap kill switch, it prevents any further
 // swapping.
-CHROMEOS_EXPORT void DisableSwapGlobally();
+COMPONENT_EXPORT(USERSPACE_SWAP) void DisableSwapGlobally();
 
 // Returns true if swap is allowed (globally).
-CHROMEOS_EXPORT bool IsSwapAllowedGlobally();
+COMPONENT_EXPORT(USERSPACE_SWAP) bool IsSwapAllowedGlobally();
 
 // RendererSwapData is attached to a ProcessNode and owned by the ProcessNode on
 // the PerformanceManager graph.
-class CHROMEOS_EXPORT RendererSwapData {
+class COMPONENT_EXPORT(USERSPACE_SWAP) RendererSwapData {
  public:
   virtual ~RendererSwapData();
 
@@ -181,12 +181,13 @@ class CHROMEOS_EXPORT RendererSwapData {
 // SwapRenderer will initiate a swap on the renderer belonging to the
 // RendererSwapData |data|. |size_limit_bytes| is a limit imposed by the system
 // based on settings.
-CHROMEOS_EXPORT bool SwapRenderer(RendererSwapData* data,
-                                  size_t size_limit_bytes);
+COMPONENT_EXPORT(USERSPACE_SWAP)
+bool SwapRenderer(RendererSwapData* data, size_t size_limit_bytes);
 
 // GetPartitionAllocSuperPagesInUse will return |max_superpages| worth of
 // regions that are currently allocated by partition alloc.
-CHROMEOS_EXPORT bool GetPartitionAllocSuperPagesInUse(
+COMPONENT_EXPORT(USERSPACE_SWAP)
+bool GetPartitionAllocSuperPagesInUse(
     int32_t max_superpages,
     std::vector<::userspace_swap::mojom::MemoryRegionPtr>& regions);
 
