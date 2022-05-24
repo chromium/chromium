@@ -5,6 +5,7 @@
 package org.chromium.components.browser_ui.widget.tile;
 
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.widget.FrameLayout;
@@ -13,6 +14,7 @@ import android.widget.TextView;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.components.browser_ui.widget.R;
 import org.chromium.components.browser_ui.widget.RoundedCornerOutlineProvider;
 
@@ -76,6 +78,13 @@ public class TileView extends FrameLayout {
      */
     public void setIconDrawable(Drawable icon) {
         mIconView.setImageDrawable(icon);
+    }
+
+    /**
+     * Applies or clears icon tint.
+     */
+    public void setIconTint(ColorStateList color) {
+        ApiCompatibilityUtils.setImageTintList(mIconView, color);
     }
 
     /** Shows or hides the offline badge to reflect the offline availability. */

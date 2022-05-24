@@ -55,6 +55,7 @@ public class SuggestionsTileView extends TileView {
     public void renderIcon(Tile tile) {
         setIconDrawable(tile.getIcon());
         setIconViewLayoutParams(tile);
+        setIconTint(tile.getIconTint());
     }
 
     public void renderOfflineBadge(Tile tile) {
