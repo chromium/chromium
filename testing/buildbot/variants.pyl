@@ -910,8 +910,8 @@
   'CROS_ATLAS_RELEASE_DEV': {
     'skylab': {
       'cros_board': 'atlas',
-      'cros_chrome_version': '103.0.5045.0',
-      'cros_img': 'atlas-release/R103-14794.0.0',
+      'cros_chrome_version': '103.0.5060.15',
+      'cros_img': 'atlas-release/R103-14816.17.0',
     },
     'enabled': False,
     'identifier': 'ATLAS_RELEASE_DEV',
@@ -928,8 +928,8 @@
   'CROS_ATLAS_RELEASE_STABLE': {
     'skylab': {
       'cros_board': 'atlas',
-      'cros_chrome_version': '101.0.4951.59',
-      'cros_img': 'atlas-release/R101-14588.98.0',
+      'cros_chrome_version': '101.0.4951.72',
+      'cros_img': 'atlas-release/R101-14588.123.0',
     },
     'enabled': True,
     'identifier': 'ATLAS_RELEASE_STABLE',
@@ -964,8 +964,8 @@
   'CROS_EVE_RELEASE_STABLE': {
     'skylab': {
       'cros_board': 'eve',
-      'cros_chrome_version': '101.0.4951.59',
-      'cros_img': 'eve-release/R101-14588.98.0',
+      'cros_chrome_version': '101.0.4951.72',
+      'cros_img': 'eve-release/R101-14588.123.0',
     },
     'enabled': True,
     'identifier': 'EVE_RELEASE_STABLE',
@@ -991,8 +991,8 @@
   'CROS_HANA_RELEASE_DEV': {
     'skylab': {
       'cros_board': 'hana',
-      'cros_chrome_version': '103.0.5045.0',
-      'cros_img': 'hana-release/R103-14794.0.0',
+      'cros_chrome_version': '103.0.5060.15',
+      'cros_img': 'hana-release/R103-14816.17.0',
     },
     'enabled': False,
     'identifier': 'HANA_RELEASE_LKGM',
@@ -1009,8 +1009,8 @@
   'CROS_HANA_RELEASE_STABLE': {
     'skylab': {
       'cros_board': 'hana',
-      'cros_chrome_version': '101.0.4951.59',
-      'cros_img': 'hana-release/R101-14588.98.0',
+      'cros_chrome_version': '101.0.4951.72',
+      'cros_img': 'hana-release/R101-14588.123.0',
     },
     'enabled': True,
     'identifier': 'HANA_RELEASE_LKGM',
@@ -1027,8 +1027,8 @@
   'CROS_JACUZZI_RELEASE_DEV': {
     'skylab': {
       'cros_board': 'jacuzzi',
-      'cros_chrome_version': '103.0.5045.0',
-      'cros_img': 'jacuzzi-release/R103-14794.0.0',
+      'cros_chrome_version': '103.0.5060.15',
+      'cros_img': 'jacuzzi-release/R103-14816.17.0',
     },
     'enabled': False,
     'identifier': 'JACUZZI_RELEASE_DEV',
@@ -1045,8 +1045,8 @@
   'CROS_JACUZZI_RELEASE_STABLE': {
     'skylab': {
       'cros_board': 'jacuzzi',
-      'cros_chrome_version': '100.0.4896.133',
-      'cros_img': 'jacuzzi-release/R100-14526.89.0',
+      'cros_chrome_version': '101.0.4951.72',
+      'cros_img': 'jacuzzi-release/R101-14588.123.0',
     },
     'enabled': True,
     'identifier': 'JACUZZI_RELEASE_STABLE',
@@ -1072,8 +1072,8 @@
   'CROS_OCTOPUS_RELEASE_DEV': {
     'skylab': {
       'cros_board': 'octopus',
-      'cros_chrome_version': '103.0.5037.0',
-      'cros_img': 'octopus-release/R103-14767.0.0',
+      'cros_chrome_version': '103.0.5060.15',
+      'cros_img': 'octopus-release/R103-14816.17.0',
     },
     'enabled': False,
     'identifier': 'OCTOPUS_RELEASE_DEV',
@@ -1090,8 +1090,8 @@
   'CROS_OCTOPUS_RELEASE_STABLE': {
     'skylab': {
       'cros_board': 'octopus',
-      'cros_chrome_version': '101.0.4951.59',
-      'cros_img': 'octopus-release/R101-14588.98.0',
+      'cros_chrome_version': '101.0.4951.72',
+      'cros_img': 'octopus-release/R101-14588.123.0',
     },
     'enabled': True,
     'identifier': 'OCTOPUS_RELEASE_STABLE',
@@ -1108,8 +1108,8 @@
   'CROS_STRONGBAD_RELEASE_DEV': {
     'skylab': {
       'cros_board': 'strongbad',
-      'cros_chrome_version': '103.0.5045.0',
-      'cros_img': 'strongbad-release/R103-14794.0.0',
+      'cros_chrome_version': '103.0.5060.15',
+      'cros_img': 'strongbad-release/R103-14816.17.0',
     },
     'enabled': False,
     'identifier': 'strongbad_RELEASE_DEV',
@@ -1126,8 +1126,8 @@
   'CROS_STRONGBAD_RELEASE_STABLE': {
     'skylab': {
       'cros_board': 'strongbad',
-      'cros_chrome_version': '101.0.4951.59',
-      'cros_img': 'strongbad-release/R101-14588.98.0',
+      'cros_chrome_version': '101.0.4951.72',
+      'cros_img': 'strongbad-release/R101-14588.123.0',
     },
     'enabled': True,
     'identifier': 'STRONGBAD_RELEASE_STABLE',
