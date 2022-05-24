@@ -4927,6 +4927,10 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      FEATURE_VALUE_TYPE(
          chromeos::features::kDriveFsBidirectionalNativeMessaging)},
+    {"drive-fs-chrome-networking",
+     flag_descriptions::kDriveFsChromeNetworkingName,
+     flag_descriptions::kDriveFsChromeNetworkingDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kDriveFsChromeNetworking)},
     {"files-archivemount", flag_descriptions::kFilesArchivemountName,
      flag_descriptions::kFilesArchivemountDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kFilesArchivemount)},

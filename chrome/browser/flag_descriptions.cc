@@ -4609,6 +4609,12 @@ const char kDriveFsBidirectionalNativeMessagingName[] =
 const char kDriveFsBidirectionalNativeMessagingDescription[] =
     "Enable enhanced native messaging host to communicate with DriveFS.";
 
+const char kDriveFsChromeNetworkingName[] =
+    "Enable the DriveFS / Chrome Network Service bridge";
+const char kDriveFsChromeNetworkingDescription[] =
+    "Enable the bridge bewteen DriveFS and the Chrome Network Service for "
+    "communication with the Drive backend.";
+
 const char kEnableAppReinstallZeroStateName[] =
     "Enable Zero State App Reinstall Suggestions.";
 const char kEnableAppReinstallZeroStateDescription[] =

@@ -499,6 +499,10 @@ const base::Feature kDriveFsBidirectionalNativeMessaging{
 const base::Feature kDriveFsMirroring{"DriveFsMirroring",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables access to Chrome's Network Service for DriveFS.
+const base::Feature kDriveFsChromeNetworking{"DriveFsChromeNetworking",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables authenticating to Wi-Fi networks using EAP-GTC.
 const base::Feature kEapGtcWifiAuthentication{
     "EapGtcWifiAuthentication", base::FEATURE_DISABLED_BY_DEFAULT};

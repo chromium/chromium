@@ -204,6 +204,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kDriveFsBidirectionalNativeMessaging;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kDriveFsMirroring;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kDriveFsChromeNetworking;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kEapGtcWifiAuthentication;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kEcheSWA;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kEcheSWADebugMode;

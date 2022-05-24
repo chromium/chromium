@@ -1410,6 +1410,11 @@
     "expiry_milestone": 104
   },
   {
+    "name": "drive-fs-chrome-networking",
+    "owners": [ "travislane@google.com" ],
+    "expiry_milestone": 108
+  },
+  {
     "name": "durable-client-hints-cache",
     "owners": [ "abeyad", "aarontag"],
     "expiry_milestone": 110

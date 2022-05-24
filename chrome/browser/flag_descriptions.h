@@ -2628,6 +2628,9 @@ extern const char kQuickSettingsPWANotificationsDescription[];
 extern const char kDriveFsBidirectionalNativeMessagingName[];
 extern const char kDriveFsBidirectionalNativeMessagingDescription[];
 
+extern const char kDriveFsChromeNetworkingName[];
+extern const char kDriveFsChromeNetworkingDescription[];
+
 extern const char kEnableAppReinstallZeroStateName[];
 extern const char kEnableAppReinstallZeroStateDescription[];
 
