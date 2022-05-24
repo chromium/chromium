@@ -150,8 +150,16 @@ public class SendTabToSelfCoordinator {
     }
 
     private void showDeviceList() {
-        mController.requestShowContent(
-                new DevicePickerBottomSheetContent(mContext, mUrl, mTitle, mController), true);
+        List<TargetDeviceInfo> targetDevices = SendTabToSelfAndroidBridge.getAllTargetDeviceInfos(
+                Profile.getLastUsedRegularProfile());
+        if (targetDevices.isEmpty()) {
+            mController.requestShowContent(
+                    new NoTargetDeviceBottomSheetContent(mContext), /*animate=*/true);
+        } else {
+            mController.requestShowContent(new DevicePickerBottomSheetContent(mContext, mUrl,
+                                                   mTitle, mController, targetDevices),
+                    /*animate=*/true);
+        }
     }
 
     private boolean shouldOfferSignInPromo() {

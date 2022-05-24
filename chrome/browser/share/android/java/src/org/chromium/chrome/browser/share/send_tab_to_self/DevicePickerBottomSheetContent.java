@@ -21,7 +21,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import org.chromium.base.IntentUtils;
-import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
@@ -43,9 +42,8 @@ import java.util.List;
 
 /**
  * Bottom sheet content to display a list of devices a user can send a tab to after they have
- * chosen to share it with themselves through the SendTabToSelfFeature. If the user is signed-out
- * or no target devices are available, a prompt will be shown indicating to the user that
- * they must sign in to use the feature.
+ * chosen to share it with themselves through the send-tab-to-self feature.
+ * TODO(crbug.com/1219434): Make this and other helper UI bits package-private.
  */
 public class DevicePickerBottomSheetContent implements BottomSheetContent, OnItemClickListener {
     private final Context mContext;
@@ -59,12 +57,12 @@ public class DevicePickerBottomSheetContent implements BottomSheetContent, OnIte
 
     private static final int ACCOUNT_AVATAR_SIZE_DP = 24;
 
-    public DevicePickerBottomSheetContent(
-            Context context, String url, String title, BottomSheetController controller) {
+    public DevicePickerBottomSheetContent(Context context, String url, String title,
+            BottomSheetController controller, List<TargetDeviceInfo> targetDevices) {
         mContext = context;
         mController = controller;
         mProfile = Profile.getLastUsedRegularProfile();
-        mAdapter = new DevicePickerBottomSheetAdapter(mProfile);
+        mAdapter = new DevicePickerBottomSheetAdapter(targetDevices);
         mUrl = url;
         mTitle = title;
 
@@ -80,22 +78,6 @@ public class DevicePickerBottomSheetContent implements BottomSheetContent, OnIte
     }
 
     private void createContentView() {
-        List<TargetDeviceInfo> targetDeviceList =
-                SendTabToSelfAndroidBridge.getAllTargetDeviceInfos(mProfile);
-
-        // First check if sharing is unavailable, e.g. because there are no target devices. If so,
-        // show send_tab_to_self_feature_unavailable_prompt.
-        if (targetDeviceList.isEmpty()) {
-            mContentView = (ViewGroup) LayoutInflater.from(mContext).inflate(
-                    R.layout.send_tab_to_self_feature_unavailable_prompt, null);
-            mToolbarView.setVisibility(View.GONE);
-            // TODO(crbug.com/1298185): This is cumulating both signed-out and single device users.
-            // Those should be recorded separately instead.
-            RecordUserAction.record("SharingHubAndroid.SendTabToSelf.NoTargetDevices");
-            return;
-        }
-
-        // Sharing is available.
         mContentView = (ViewGroup) LayoutInflater.from(mContext).inflate(
                 R.layout.send_tab_to_self_device_picker_list, null);
         ListView listView = mContentView.findViewById(R.id.device_picker_list);
