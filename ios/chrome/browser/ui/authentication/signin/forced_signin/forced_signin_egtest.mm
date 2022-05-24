@@ -470,7 +470,8 @@ std::unique_ptr<net::test_server::HttpResponse> PageHttpResponse(
 
 // Tests turning on sync for an account different from the one that is
 // currently signed in.
-- (void)testSignInWithOneAccountStartSyncWithAnotherAccount {
+// TODO(crbug.com/1328822): flaky.
+- (void)DISABLED_testSignInWithOneAccountStartSyncWithAnotherAccount {
   FakeChromeIdentity* fakeIdentity1 = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity1];
   FakeChromeIdentity* fakeIdentity2 = [FakeChromeIdentity fakeIdentity2];
