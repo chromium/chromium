@@ -5,9 +5,9 @@
 syntax = "proto2";
 
 import "components/sync/protocol/web_app_specifics.proto";
+import "chrome/browser/ash/system_web_apps/types/system_web_app_data.proto";
 import "chrome/browser/web_applications/proto/web_app_launch_handler.proto";
 import "chrome/browser/web_applications/proto/web_app_share_target.proto";
-import "chrome/browser/web_applications/system_web_apps/system_web_app_data.proto";
 
 option optimize_for = LITE_RUNTIME;
 
@@ -73,7 +73,7 @@ message ChromeOSDataProto {
 }
 
 message ClientDataProto {
-  optional SystemWebAppDataProto system_web_app_data = 1;
+  optional ash.SystemWebAppDataProto system_web_app_data = 1;
 }
 
 // Properties for a WebApp's shortcuts menu item.

@@ -13,7 +13,7 @@ proto_library("proto") {
     "web_app_translations.proto",
   ]
   link_deps = [
-    "//chrome/browser/web_applications/system_web_apps:proto",
+    "//chrome/browser/ash/system_web_apps/types:proto",
     "//components/sync/protocol",
   ]
 }

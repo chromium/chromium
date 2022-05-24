@@ -6,7 +6,7 @@ syntax = "proto2";
 
 option optimize_for = LITE_RUNTIME;
 
-package web_app;
+package ash;
 
 // Properties for System Web Apps.
 message SystemWebAppDataProto {

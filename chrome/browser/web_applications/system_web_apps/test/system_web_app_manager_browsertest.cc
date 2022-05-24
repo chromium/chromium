@@ -1159,7 +1159,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerInstallAllAppsBrowserTest,
   // defined.
   for (const auto& type_and_info : app_map) {
     EXPECT_TRUE(SystemWebAppDataProto_SystemWebAppType_IsValid(
-        static_cast<SystemWebAppDataProto_SystemWebAppType>(
+        static_cast<ash::SystemWebAppDataProto_SystemWebAppType>(
             type_and_info.first)))
         << "Please make sure you have added a corresponding entry to "
            "SystemWebAppDataProto when adding a new System Web App.";

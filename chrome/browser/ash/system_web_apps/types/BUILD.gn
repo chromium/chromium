@@ -3,10 +3,16 @@
 # found in the LICENSE file.
 
 import("//chrome/browser/buildflags.gni")
+import("//third_party/protobuf/proto_library.gni")
 
 # TODO(crbug.com/1321984): Make SystemWebAppManager an ash-only object and
 # move all the GN dependees under `if (is_chromeos_ash)` section.
 # assert(is_chromeos_ash)
+
+proto_library("proto") {
+  proto_in_dir = "//"
+  sources = [ "system_web_app_data.proto" ]
+}
 
 source_set("types") {
   sources = [
