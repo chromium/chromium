@@ -205,6 +205,13 @@ class AutofillAgent::DeferringAutofillDriver : public mojom::AutofillDriver {
   void DidEndTextFieldEditing() override {
     DeferMsg(&mojom::AutofillDriver::DidEndTextFieldEditing);
   }
+  void JavaScriptChangedAutofilledValue(
+      const FormData& form,
+      const FormFieldData& field,
+      const std::u16string& old_value) override {
+    DeferMsg(&mojom::AutofillDriver::JavaScriptChangedAutofilledValue, form,
+             field, old_value);
+  }
 
   AutofillAgent* agent_ = nullptr;
   base::WeakPtrFactory<DeferringAutofillDriver> weak_ptr_factory_{this};
@@ -1170,7 +1177,15 @@ void AutofillAgent::AjaxSucceeded() {
 void AutofillAgent::JavaScriptChangedAutofilledValue(
     const blink::WebFormControlElement& element,
     const blink::WebString& old_value) {
-  // TODO(crbug.com/1314360): Send event to browser.
+  if (old_value == element.Value())
+    return;
+  FormData form;
+  FormFieldData field;
+  if (FindFormAndFieldForFormControlElement(element, field_data_manager_.get(),
+                                            &form, &field)) {
+    GetAutofillDriver().JavaScriptChangedAutofilledValue(form, field,
+                                                         old_value.Utf16());
+  }
 }
 
 void AutofillAgent::OnProvisionallySaveForm(

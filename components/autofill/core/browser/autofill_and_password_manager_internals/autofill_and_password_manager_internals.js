@@ -255,6 +255,7 @@ function setUpLogDisplayConfig() {
     'AutofillServer',
     'Metrics',
     'AddressProfileFormImport',
+    'WebsiteModifiedFieldValue',
   ];
   const logDiv = document.getElementById('log-entries');
   const autoScrollInput = document.getElementById('enable-autoscroll');

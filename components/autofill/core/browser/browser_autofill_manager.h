@@ -251,6 +251,10 @@ class BrowserAutofillManager : public AutofillManager,
   void OnDidEndTextFieldEditing() override;
   void OnHidePopup() override;
   void SelectFieldOptionsDidChange(const FormData& form) override;
+  void JavaScriptChangedAutofilledValue(
+      const FormData& form,
+      const FormFieldData& field,
+      const std::u16string& old_value) override;
   void PropagateAutofillPredictions(
       const std::vector<FormStructure*>& forms) override;
   void Reset() override;

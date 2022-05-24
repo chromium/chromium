@@ -1485,6 +1485,47 @@ void BrowserAutofillManager::SelectFieldOptionsDidChange(const FormData& form) {
     TriggerRefill(form);
 }
 
+void BrowserAutofillManager::JavaScriptChangedAutofilledValue(
+    const FormData& form,
+    const FormFieldData& field,
+    const std::u16string& old_value) {
+  // Log to chrome://autofill-internals that a field's value was set by
+  // JavaScript.
+  if (log_manager()) {
+    auto StructureOfString = [](std::u16string str) {
+      for (auto& c : str) {
+        if (base::IsAsciiAlpha(c)) {
+          c = 'a';
+        } else if (base::IsAsciiDigit(c)) {
+          c = '0';
+        } else if (base::IsAsciiWhitespace(c)) {
+          c = ' ';
+        } else {
+          c = '$';
+        }
+      }
+      return str;
+    };
+    std::string field_number = "unknown";
+    for (size_t i = 0; i < form.fields.size(); ++i) {
+      if (form.fields[i].global_id() == field.global_id()) {
+        field_number = base::StringPrintf("Field %zu", i);
+      }
+    }
+    LogBuffer change;
+    change << Tag{"div"} << Attrib{"class", "form"};
+    change << field << Br{};
+    change << "Old value structure: '"
+           << StructureOfString(old_value.substr(0, 80)) << "'" << Br{};
+    change << "New value structure: '"
+           << StructureOfString(field.value.substr(0, 80)) << "'";
+    log_manager()->Log() << LoggingScope::kWebsiteModifiedFieldValue
+                         << LogMessage::kJavaScriptChangedAutofilledValue
+                         << Br{} << Tag{"table"} << Tr{} << field_number
+                         << std::move(change);
+  }
+}
+
 void BrowserAutofillManager::PropagateAutofillPredictions(
     const std::vector<FormStructure*>& forms) {
   client()->PropagateAutofillPredictions(driver(), forms);

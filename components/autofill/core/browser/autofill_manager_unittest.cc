@@ -91,6 +91,12 @@ class MockAutofillManager : public AutofillManager {
               (const FormData& form),
               (override));
   MOCK_METHOD(void,
+              JavaScriptChangedAutofilledValue,
+              (const FormData& form,
+               const FormFieldData& field,
+               const std::u16string& old_value),
+              (override));
+  MOCK_METHOD(void,
               PropagateAutofillPredictions,
               (const std::vector<FormStructure*>& forms),
               (override));

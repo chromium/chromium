@@ -532,6 +532,29 @@ void ContentAutofillRouter::SelectFieldOptionsDidChange(
   target->SelectFieldOptionsDidChangeImpl(browser_form);
 }
 
+void ContentAutofillRouter::JavaScriptChangedAutofilledValue(
+    ContentAutofillDriver* source,
+    const FormData& form,
+    const FormFieldData& field,
+    const std::u16string& old_value) {
+  if (!base::FeatureList::IsEnabled(features::kAutofillAcrossIframes)) {
+    source->JavaScriptChangedAutofilledValueImpl(form, field, old_value);
+    return;
+  }
+
+  some_rfh_for_debugging_ = source->render_frame_host()->GetGlobalId();
+
+  form_forest_.UpdateTreeOfRendererForm(form, source);
+
+  TriggerReparseExcept(source);
+
+  const FormData& browser_form =
+      form_forest_.GetBrowserFormOfRendererForm(form);
+  auto* target = DriverOfFrame(browser_form.host_frame);
+  AFCHECK(target, return);
+  target->JavaScriptChangedAutofilledValueImpl(browser_form, field, old_value);
+}
+
 void ContentAutofillRouter::FillFormForAssistant(
     ContentAutofillDriver* source,
     const AutofillableData& fill_data,

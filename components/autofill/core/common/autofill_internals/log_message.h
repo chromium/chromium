@@ -53,7 +53,10 @@ class LogBuffer;
   T(CardUploadDecisionUploadNotOffered, "Credit card upload was not offered.") \
   T(SuggestionSuppressed, "Autofill suggestion(s) suppressed.")                \
   T(Rationalization, "Rationalization: ")                                      \
-  T(ProcessingServerData, "Processing server data.")
+  T(ProcessingServerData, "Processing server data.")                           \
+  T(JavaScriptChangedAutofilledValue,                                          \
+    "JavaScript set value of autofilled "                                      \
+    "field: ")
 
 // Log messages for chrome://autofill-internals.
 

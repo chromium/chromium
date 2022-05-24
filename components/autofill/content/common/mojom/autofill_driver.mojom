@@ -86,6 +86,15 @@ interface AutofillDriver {
 
   // Sent when a text field is done editing.
   DidEndTextFieldEditing();
+
+  // Sent when |field| was in autofilled state but JavaScript modified the
+  // value. Note that from a renderer's perspective, modifying the value with
+  // JavaScript leads to a state where the field is not considered autofilled
+  // anymore. So this notification won't be sent again until the field gets
+  // autofilled again.
+  JavaScriptChangedAutofilledValue(FormData form,
+                     FormFieldData field,
+                     mojo_base.mojom.String16 old_value);
 };
 
 // There is one instance of this interface per web contents in the browser

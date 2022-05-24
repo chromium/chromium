@@ -209,6 +209,10 @@ class ContentAutofillRouter {
   void DidEndTextFieldEditing(ContentAutofillDriver* source_driver);
   void SelectFieldOptionsDidChange(ContentAutofillDriver* source_driver,
                                    const FormData& form);
+  void JavaScriptChangedAutofilledValue(ContentAutofillDriver* source,
+                                        const FormData& form,
+                                        const FormFieldData& field,
+                                        const std::u16string& old_value);
 
   // Event called by Autofill Assistant as if it was called by the renderer.
   void FillFormForAssistant(ContentAutofillDriver* source_driver,

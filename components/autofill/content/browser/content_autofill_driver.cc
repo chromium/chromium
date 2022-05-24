@@ -377,6 +377,13 @@ void ContentAutofillDriver::SelectFieldOptionsDidChangeImpl(
   autofill_manager_->SelectFieldOptionsDidChange(form);
 }
 
+void ContentAutofillDriver::JavaScriptChangedAutofilledValueImpl(
+    const FormData& form,
+    const FormFieldData& field,
+    const std::u16string& old_value) {
+  autofill_manager_->JavaScriptChangedAutofilledValue(form, field, old_value);
+}
+
 void ContentAutofillDriver::FillFormForAssistantImpl(
     const AutofillableData& fill_data,
     const FormData& form,
@@ -548,6 +555,19 @@ void ContentAutofillDriver::SelectFieldOptionsDidChange(
     return;
   GetAutofillRouter().SelectFieldOptionsDidChange(
       this, GetFormWithFrameAndFormMetaData(raw_form));
+}
+
+void ContentAutofillDriver::JavaScriptChangedAutofilledValue(
+    const FormData& raw_form,
+    const FormFieldData& raw_field,
+    const std::u16string& old_value) {
+  if (!bad_message::CheckFrameNotPrerendering(render_frame_host_))
+    return;
+  FormData form = raw_form;
+  FormFieldData field = raw_field;
+  SetFrameAndFormMetaData(form, &field);
+  GetAutofillRouter().JavaScriptChangedAutofilledValue(this, form, field,
+                                                       old_value);
 }
 
 void ContentAutofillDriver::FillFormForAssistant(

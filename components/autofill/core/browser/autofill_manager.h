@@ -195,6 +195,16 @@ class AutofillManager
   // Invoked when the options of a select element in the |form| changed.
   virtual void SelectFieldOptionsDidChange(const FormData& form) = 0;
 
+  // Invoked after JavaScript set the value of |field| in |form|. Only called
+  // if |field| was in autofilled state. Note that from a renderer's
+  // perspective, modifying the value with JavaScript leads to a state where
+  // the field is not considered autofilled anymore. So this notification won't
+  // be sent again until the field gets autofilled again.
+  virtual void JavaScriptChangedAutofilledValue(
+      const FormData& form,
+      const FormFieldData& field,
+      const std::u16string& old_value) = 0;
+
   // Invoked when the field type predictions are downloaded from the autofill
   // server.
   virtual void PropagateAutofillPredictions(

@@ -148,6 +148,11 @@ void AndroidAutofillManager::OnHidePopup() {
 void AndroidAutofillManager::SelectFieldOptionsDidChange(const FormData& form) {
 }
 
+void AndroidAutofillManager::JavaScriptChangedAutofilledValue(
+    const FormData& form,
+    const FormFieldData& field,
+    const std::u16string& old_value) {}
+
 void AndroidAutofillManager::PropagateAutofillPredictions(
     const std::vector<FormStructure*>& forms) {
   has_server_prediction_ = true;

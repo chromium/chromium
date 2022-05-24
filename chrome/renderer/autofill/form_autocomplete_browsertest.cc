@@ -96,6 +96,11 @@ class FakeContentAutofillDriver : public mojom::AutofillDriver {
     select_control_changed_ = std::make_unique<FormFieldData>(field);
   }
 
+  void JavaScriptChangedAutofilledValue(
+      const FormData& form,
+      const FormFieldData& field,
+      const std::u16string& old_value) override {}
+
   void AskForValuesToFill(int32_t query_id,
                           const FormData& form,
                           const FormFieldData& field,

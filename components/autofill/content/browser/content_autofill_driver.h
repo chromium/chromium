@@ -237,6 +237,10 @@ class ContentAutofillDriver : public AutofillDriver,
   void DidPreviewAutofillFormData() override;
   void DidEndTextFieldEditing() override;
   void SelectFieldOptionsDidChange(const FormData& form) override;
+  void JavaScriptChangedAutofilledValue(
+      const FormData& form,
+      const FormFieldData& field,
+      const std::u16string& old_value) override;
 
   // Implementations of the mojom::AutofillDriver functions called by the
   // renderer. These functions are called by ContentAutofillRouter.
@@ -272,6 +276,9 @@ class ContentAutofillDriver : public AutofillDriver,
   void DidPreviewAutofillFormDataImpl();
   void DidEndTextFieldEditingImpl();
   void SelectFieldOptionsDidChangeImpl(const FormData& form);
+  void JavaScriptChangedAutofilledValueImpl(const FormData& form,
+                                            const FormFieldData& field,
+                                            const std::u16string& old_value);
 
   // Triggers filling of |fill_data| into |raw_form| and |raw_field|. This event
   // is called only by Autofill Assistant on the browser side and provides the
