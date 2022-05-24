@@ -79,6 +79,19 @@ class ScopedThrottlingToken;
 struct OriginPolicy;
 class URLLoaderFactory;
 
+// When a request matches a pervasive payload url and checksum a value from this
+// enum will be logged to the "Network.CacheTransparency.CacheNotUsed"
+// histogram. These values are persisted to logs. Entries should not be
+// renumbered and numeric values should never be reused. This is exposed in the
+// header file for use in tests.
+enum class CacheTransparencyCacheNotUsedReason {
+  kTryingSingleKeyedCache = 0,
+  kIncompatibleRequestType = 1,
+  kIncompatibleRequestLoadFlags = 2,
+  kIncompatibleRequestHeaders = 3,
+  kMaxValue = kIncompatibleRequestHeaders,
+};
+
 class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
     : public mojom::URLLoader,
       public net::URLRequest::Delegate,
