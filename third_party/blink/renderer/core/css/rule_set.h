@@ -83,15 +83,10 @@ class StyleSheetContents;
 // selectors from a single rule match the same element we can see that as one
 // match for the rule. It computes some information about the wrapped selector
 // and makes it accessible cheaply.
-class CORE_EXPORT RuleData : public GarbageCollected<RuleData> {
- public:
-  static RuleData* MaybeCreate(StyleRule*,
-                               unsigned selector_index,
-                               unsigned position,
-                               AddRuleFlags,
-                               const ContainerQuery*,
-                               const StyleScope*);
+class CORE_EXPORT RuleData {
+  DISALLOW_NEW();
 
+ public:
   // The `extra_specificity` parameter is added to the specificity of the
   // RuleData. This is useful for @scope, where inner selectors must gain
   // additional specificity from the <scope-start> of the enclosing @scope.
@@ -194,66 +189,60 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
 
   const RuleFeatureSet& Features() const { return features_; }
 
-  const HeapVector<Member<const RuleData>>* IdRules(
-      const AtomicString& key) const {
+  const HeapVector<RuleData>* IdRules(const AtomicString& key) const {
     auto it = id_rules_.find(key);
     return it != id_rules_.end() ? it->value : nullptr;
   }
-  const HeapVector<Member<const RuleData>>* ClassRules(
-      const AtomicString& key) const {
+  const HeapVector<RuleData>* ClassRules(const AtomicString& key) const {
     auto it = class_rules_.find(key);
     return it != class_rules_.end() ? it->value : nullptr;
   }
   bool HasAnyAttrRules() const { return !attr_rules_.IsEmpty(); }
-  const HeapVector<Member<const RuleData>>* AttrRules(
-      const AtomicString& key) const {
+  const HeapVector<RuleData>* AttrRules(const AtomicString& key) const {
     auto it = attr_rules_.find(key);
     return it != attr_rules_.end() ? it->value : nullptr;
   }
-  bool CanIgnoreEntireList(const HeapVector<Member<const RuleData>>* list,
+  bool CanIgnoreEntireList(const HeapVector<RuleData>* list,
                            const AtomicString& key,
                            const AtomicString& value) const;
-  const HeapVector<Member<const RuleData>>* TagRules(
-      const AtomicString& key) const {
+  const HeapVector<RuleData>* TagRules(const AtomicString& key) const {
     auto it = tag_rules_.find(key);
     return it != tag_rules_.end() ? it->value : nullptr;
   }
-  const HeapVector<Member<const RuleData>>* UAShadowPseudoElementRules(
+  const HeapVector<RuleData>* UAShadowPseudoElementRules(
       const AtomicString& key) const {
     auto it = ua_shadow_pseudo_element_rules_.find(key);
     return it != ua_shadow_pseudo_element_rules_.end() ? it->value : nullptr;
   }
-  const HeapVector<Member<const RuleData>>* LinkPseudoClassRules() const {
+  const HeapVector<RuleData>* LinkPseudoClassRules() const {
     return &link_pseudo_class_rules_;
   }
-  const HeapVector<Member<const RuleData>>* CuePseudoRules() const {
+  const HeapVector<RuleData>* CuePseudoRules() const {
     return &cue_pseudo_rules_;
   }
-  const HeapVector<Member<const RuleData>>* FocusPseudoClassRules() const {
+  const HeapVector<RuleData>* FocusPseudoClassRules() const {
     return &focus_pseudo_class_rules_;
   }
-  const HeapVector<Member<const RuleData>>* FocusVisiblePseudoClassRules()
-      const {
+  const HeapVector<RuleData>* FocusVisiblePseudoClassRules() const {
     return &focus_visible_pseudo_class_rules_;
   }
-  const HeapVector<Member<const RuleData>>*
-  SpatialNavigationInterestPseudoClassRules() const {
+  const HeapVector<RuleData>* SpatialNavigationInterestPseudoClassRules()
+      const {
     return &spatial_navigation_interest_class_rules_;
   }
-  const HeapVector<Member<const RuleData>>* UniversalRules() const {
+  const HeapVector<RuleData>* UniversalRules() const {
     return &universal_rules_;
   }
-  const HeapVector<Member<const RuleData>>* ShadowHostRules() const {
+  const HeapVector<RuleData>* ShadowHostRules() const {
     return &shadow_host_rules_;
   }
-  const HeapVector<Member<const RuleData>>* PartPseudoRules() const {
+  const HeapVector<RuleData>* PartPseudoRules() const {
     return &part_pseudo_rules_;
   }
-  const HeapVector<Member<const RuleData>>* VisitedDependentRules() const {
+  const HeapVector<RuleData>* VisitedDependentRules() const {
     return &visited_dependent_rules_;
   }
-  const HeapVector<Member<const RuleData>>* SelectorFragmentAnchorRules()
-      const {
+  const HeapVector<RuleData>* SelectorFragmentAnchorRules() const {
     return &selector_fragment_anchor_rules_;
   }
   const HeapVector<Member<StyleRulePage>>& PageRules() const {
@@ -279,7 +268,7 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
       const {
     return scroll_timeline_rules_;
   }
-  const HeapVector<Member<const RuleData>>* SlottedPseudoElementRules() const {
+  const HeapVector<RuleData>* SlottedPseudoElementRules() const {
     return &slotted_pseudo_element_rules_;
   }
 
@@ -352,14 +341,14 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
 
  private:
   FRIEND_TEST_ALL_PREFIXES(RuleSetTest, RuleCountNotIncreasedByInvalidRuleData);
+  FRIEND_TEST_ALL_PREFIXES(RuleSetTest, RuleDataPositionLimit);
   friend class RuleSetCascadeLayerTest;
 
-  using RuleMap =
-      HeapHashMap<AtomicString, Member<HeapVector<Member<const RuleData>>>>;
+  using RuleMap = HeapHashMap<AtomicString, Member<HeapVector<RuleData>>>;
   using SubstringMatcherMap =
       HashMap<AtomicString, std::unique_ptr<base::SubstringSetMatcher>>;
 
-  void AddToRuleSet(const AtomicString& key, RuleMap&, const RuleData*);
+  void AddToRuleSet(const AtomicString& key, RuleMap&, const RuleData&);
   void AddPageRule(StyleRulePage*);
   void AddViewportRule(StyleRuleViewport*);
   void AddFontFaceRule(StyleRuleFontFace*);
@@ -377,7 +366,7 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
                      const ContainerQuery*,
                      CascadeLayer*,
                      const StyleScope*);
-  bool FindBestRuleSetAndAdd(const CSSSelector&, RuleData*);
+  bool FindBestRuleSetAndAdd(const CSSSelector&, const RuleData&);
   void AddRule(StyleRule*,
                unsigned selector_index,
                AddRuleFlags,
@@ -437,17 +426,17 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   SubstringMatcherMap attr_substring_matchers_;
   RuleMap tag_rules_;
   RuleMap ua_shadow_pseudo_element_rules_;
-  HeapVector<Member<const RuleData>> link_pseudo_class_rules_;
-  HeapVector<Member<const RuleData>> cue_pseudo_rules_;
-  HeapVector<Member<const RuleData>> focus_pseudo_class_rules_;
-  HeapVector<Member<const RuleData>> focus_visible_pseudo_class_rules_;
-  HeapVector<Member<const RuleData>> spatial_navigation_interest_class_rules_;
-  HeapVector<Member<const RuleData>> universal_rules_;
-  HeapVector<Member<const RuleData>> shadow_host_rules_;
-  HeapVector<Member<const RuleData>> part_pseudo_rules_;
-  HeapVector<Member<const RuleData>> slotted_pseudo_element_rules_;
-  HeapVector<Member<const RuleData>> visited_dependent_rules_;
-  HeapVector<Member<const RuleData>> selector_fragment_anchor_rules_;
+  HeapVector<RuleData> link_pseudo_class_rules_;
+  HeapVector<RuleData> cue_pseudo_rules_;
+  HeapVector<RuleData> focus_pseudo_class_rules_;
+  HeapVector<RuleData> focus_visible_pseudo_class_rules_;
+  HeapVector<RuleData> spatial_navigation_interest_class_rules_;
+  HeapVector<RuleData> universal_rules_;
+  HeapVector<RuleData> shadow_host_rules_;
+  HeapVector<RuleData> part_pseudo_rules_;
+  HeapVector<RuleData> slotted_pseudo_element_rules_;
+  HeapVector<RuleData> visited_dependent_rules_;
+  HeapVector<RuleData> selector_fragment_anchor_rules_;
   RuleFeatureSet features_;
   HeapVector<Member<StyleRulePage>> page_rules_;
   HeapVector<Member<StyleRuleFontFace>> font_face_rules_;
@@ -477,7 +466,7 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   HeapVector<Interval<StyleScope>> scope_intervals_;
 
 #ifndef NDEBUG
-  HeapVector<Member<const RuleData>> all_rules_;
+  HeapVector<RuleData> all_rules_;
 #endif
 };
 

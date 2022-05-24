@@ -209,7 +209,7 @@ struct CumulativeRulePerfData {
 };
 
 using SelectorStatisticsRuleMap =
-    HashMap<Member<const RuleData>, CumulativeRulePerfData>;
+    HashMap<const RuleData*, CumulativeRulePerfData>;
 SelectorStatisticsRuleMap& GetSelectorStatisticsRuleMap() {
   DEFINE_STATIC_LOCAL(SelectorStatisticsRuleMap, rule_map, {});
   return rule_map;
@@ -331,7 +331,7 @@ static bool RulesApplicableInCurrentTreeScope(
 
 template <bool perf_trace_enabled>
 void ElementRuleCollector::CollectMatchingRulesForListInternal(
-    const HeapVector<Member<const RuleData>>* rules,
+    const HeapVector<RuleData>* rules,
     const MatchRequest& match_request,
     const RuleSet* rule_set,
     const CSSStyleSheet* style_sheet,
@@ -365,12 +365,12 @@ void ElementRuleCollector::CollectMatchingRulesForListInternal(
   for (const auto& rule_data : *rules) {
     if (perf_trace_enabled) {
       selector_statistics_collector.EndCollectionForCurrentRule();
-      selector_statistics_collector.BeginCollectionForRule(rule_data);
+      selector_statistics_collector.BeginCollectionForRule(&rule_data);
     }
 
     if (can_use_fast_reject_ &&
         selector_filter_.FastRejectSelector<RuleData::kMaximumIdentifierCount>(
-            rule_data->DescendantSelectorIdentifierHashes())) {
+            rule_data.DescendantSelectorIdentifierHashes())) {
       fast_rejected++;
       if (perf_trace_enabled)
         selector_statistics_collector.SetWasFastRejected();
@@ -379,10 +379,10 @@ void ElementRuleCollector::CollectMatchingRulesForListInternal(
 
     // Don't return cross-origin rules if we did not explicitly ask for them
     // through SetSameOriginOnly.
-    if (same_origin_only_ && !rule_data->HasDocumentSecurityOrigin())
+    if (same_origin_only_ && !rule_data.HasDocumentSecurityOrigin())
       continue;
 
-    const auto& selector = rule_data->Selector();
+    const auto& selector = rule_data.Selector();
     if (UNLIKELY(part_request && part_request->for_shadow_pseudo)) {
       if (!selector.IsAllowedAfterPart()) {
         DCHECK_EQ(selector.GetPseudoType(), CSSSelector::kPseudoPart);
@@ -394,9 +394,9 @@ void ElementRuleCollector::CollectMatchingRulesForListInternal(
 
     SelectorChecker::MatchResult result;
     context.selector = &selector;
-    context.style_scope = scope_seeker.Seek(rule_data->GetPosition());
+    context.style_scope = scope_seeker.Seek(rule_data.GetPosition());
     context.is_inside_visited_link =
-        rule_data->LinkMatchType() == CSSSelector::kMatchVisited;
+        rule_data.LinkMatchType() == CSSSelector::kMatchVisited;
     DCHECK(!context.is_inside_visited_link ||
            inside_link_ != EInsideLink::kNotInsideLink);
     if (!checker.Match(context, result)) {
@@ -409,7 +409,7 @@ void ElementRuleCollector::CollectMatchingRulesForListInternal(
       continue;
     }
     const ContainerQuery* container_query =
-        container_query_seeker.Seek(rule_data->GetPosition());
+        container_query_seeker.Seek(rule_data.GetPosition());
     if (container_query) {
       result_.SetDependsOnContainerQueries();
 
@@ -425,7 +425,7 @@ void ElementRuleCollector::CollectMatchingRulesForListInternal(
         if (!EvaluateAndAddContainerQueries(*container_query,
                                             style_recalc_context_, result_)) {
           rejected++;
-          if (AffectsAnimations(*rule_data))
+          if (AffectsAnimations(rule_data))
             result_.SetConditionallyAffectsAnimations();
           continue;
         }
@@ -444,16 +444,15 @@ void ElementRuleCollector::CollectMatchingRulesForListInternal(
     // cache line as the StyleRule, to reduce the impact further. Also, consider
     // just taking empty rules out of the RuleSet altogether, although that
     // would entail doing something to get them back for debug mode.
-    StyleRule* rule = rule_data->Rule();
+    StyleRule* rule = rule_data.Rule();
     if (!rule->ShouldConsiderForMatchingRules(include_empty_rules_))
       continue;
 
     matched++;
     if (perf_trace_enabled)
       selector_statistics_collector.SetDidMatch();
-    unsigned layer_order =
-        layer_seeker.SeekLayerOrder(rule_data->GetPosition());
-    DidMatchRule(rule_data, layer_order, container_query, result.proximity,
+    unsigned layer_order = layer_seeker.SeekLayerOrder(rule_data.GetPosition());
+    DidMatchRule(&rule_data, layer_order, container_query, result.proximity,
                  result, style_sheet, style_sheet_index);
   }
 
@@ -474,7 +473,7 @@ void ElementRuleCollector::CollectMatchingRulesForListInternal(
 }
 
 void ElementRuleCollector::CollectMatchingRulesForList(
-    const HeapVector<Member<const RuleData>>* rules,
+    const HeapVector<RuleData>* rules,
     const MatchRequest& match_request,
     const RuleSet* rule_set,
     const CSSStyleSheet* style_sheet,
@@ -627,7 +626,7 @@ void ElementRuleCollector::CollectMatchingRules(
               : attribute_name;
       for (const auto bundle : match_request.AllRuleSets()) {
         if (bundle.rule_set->HasAnyAttrRules()) {
-          const HeapVector<Member<const RuleData>>* list =
+          const HeapVector<RuleData>* list =
               bundle.rule_set->AttrRules(lower_name);
           if (list && !bundle.rule_set->CanIgnoreEntireList(
                           list, lower_name, attributes[attr_idx].Value())) {
@@ -927,8 +926,9 @@ void ElementRuleCollector::DumpAndClearRulesPerfMap() {
   GetSelectorStatisticsRuleMap().clear();
 }
 
-static inline bool CompareRules(const MatchedRule& matched_rule1,
-                                const MatchedRule& matched_rule2) {
+inline bool ElementRuleCollector::CompareRules(
+    const MatchedRule& matched_rule1,
+    const MatchedRule& matched_rule2) {
   unsigned layer1 = matched_rule1.LayerOrder();
   unsigned layer2 = matched_rule2.LayerOrder();
   if (layer1 != layer2)
