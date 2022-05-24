@@ -19,6 +19,7 @@
 #include "base/time/time.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
@@ -198,6 +199,17 @@ void ShelfShutdownConfirmationBubble::OnThemeChanged() {
       AshColorProvider::ContentLayerType::kButtonLabelColor);
   cancel_->SetEnabledTextColors(button_color);
   confirm_->SetEnabledTextColors(button_color);
+}
+
+void ShelfShutdownConfirmationBubble::GetAccessibleNodeData(
+    ui::AXNodeData* node_data) {
+  node_data->role = ax::mojom::Role::kDialog;
+  node_data->SetName(title_->GetText());
+}
+
+std::u16string ShelfShutdownConfirmationBubble::GetAccessibleWindowTitle()
+    const {
+  return title_->GetText();
 }
 
 void ShelfShutdownConfirmationBubble::OnCancelled() {
