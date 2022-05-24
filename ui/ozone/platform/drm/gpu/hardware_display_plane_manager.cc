@@ -523,6 +523,7 @@ void HardwareDisplayPlaneManager::ResetModesetStateForCrtc(uint32_t crtc_id) {
 ui::HardwareCapabilities HardwareDisplayPlaneManager::GetHardwareCapabilities(
     uint32_t crtc_id) {
   ui::HardwareCapabilities hc;
+  hc.is_valid = true;
   hc.num_overlay_capable_planes = std::count_if(
       planes_.begin(), planes_.end(),
       [crtc_id](const std::unique_ptr<HardwareDisplayPlane>& plane) {

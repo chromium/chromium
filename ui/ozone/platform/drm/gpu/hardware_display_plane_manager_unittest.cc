@@ -1186,12 +1186,12 @@ TEST_P(HardwareDisplayPlaneManagerTest, GetHardwareCapabilities) {
                              plane_properties_, property_names_, use_atomic_);
 
   for (int i = 0; i < 4; ++i) {
+    auto hc =
+        fake_drm_->plane_manager()->GetHardwareCapabilities(kCrtcIdBase + i);
+    EXPECT_TRUE(hc.is_valid);
     // Legacy doesn't support OVERLAY planes.
     int expected_planes = use_atomic_ ? 7 : 1;
-    EXPECT_EQ(fake_drm_->plane_manager()
-                  ->GetHardwareCapabilities(kCrtcIdBase + i)
-                  .num_overlay_capable_planes,
-              expected_planes);
+    EXPECT_EQ(hc.num_overlay_capable_planes, expected_planes);
   }
 
   {
@@ -1212,16 +1212,17 @@ TEST_P(HardwareDisplayPlaneManagerTest, GetHardwareCapabilities) {
   }
 
   for (int i = 0; i < 4; ++i) {
+    auto hc =
+        fake_drm_->plane_manager()->GetHardwareCapabilities(kCrtcIdBase + i);
+
+    EXPECT_TRUE(hc.is_valid);
     // Legacy doesn't support OVERLAY planes.
     int expected_planes = use_atomic_ ? 7 : 1;
     // First two CRTCs have the newly added plane available.
     if (i == 0 || i == 1) {
       expected_planes++;
     }
-    EXPECT_EQ(fake_drm_->plane_manager()
-                  ->GetHardwareCapabilities(kCrtcIdBase + i)
-                  .num_overlay_capable_planes,
-              expected_planes);
+    EXPECT_EQ(hc.num_overlay_capable_planes, expected_planes);
   }
 }
 

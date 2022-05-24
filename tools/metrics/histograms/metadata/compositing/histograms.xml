@@ -328,15 +328,25 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Compositing.Display.OverlayProcessorOzone.MaxOverlaysSupported"
-    units="units" expires_after="2022-11-30">
+    name="Compositing.Display.OverlayProcessorOzone.HardwareCapabilitiesIsValid"
+    enum="Boolean" expires_after="2022-11-30">
   <owner>khaslett@chromium.org</owner>
   <owner>kylechar@chromium.org</owner>
   <summary>
     This is logged every time a new HardwareCapabilities is received from DRM
+    when display configuration may have changed. True iff the response received
+    is valid.
+  </summary>
+</histogram>
+
+<histogram name="Compositing.Display.OverlayProcessorOzone.MaxPlanesSupported"
+    units="units" expires_after="2022-11-30">
+  <owner>khaslett@chromium.org</owner>
+  <owner>kylechar@chromium.org</owner>
+  <summary>
+    This is logged every time a valid HardwareCapabilities is received from DRM
     when display configuration may have changed. It records the number of
-    overlay planes we have available in addition to the primary plane on this
-    device.
+    overlay planes we have available on this device including the primary plane.
   </summary>
 </histogram>
 
@@ -377,21 +387,30 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Compositing.Display.OverlayProcessorUsingStrategy.NumOverlays{Counted}"
+    units="overlay candidates" expires_after="2022-11-30">
+  <owner>khaslett@chromium.org</owner>
+  <owner>kylechar@chromium.org</owner>
+  <summary>Logged once per frame, the number of overlays {Counted}</summary>
+  <token key="Counted">
+    <variant name="Attempted"
+        summary="attempted. This is only logged when using the
+                 AttemptMultipleOverlays path."/>
+    <variant name="Failed"
+        summary="failed. This is only logged when using the
+                 AttemptMultipleOverlays path."/>
+    <variant name="Promoted" summary="promoted."/>
+  </token>
+</histogram>
+
+<histogram
+    name="Compositing.Display.OverlayProcessorUsingStrategy.NumQuadsConsidered"
     units="units" expires_after="2022-11-30">
   <owner>khaslett@chromium.org</owner>
   <owner>kylechar@chromium.org</owner>
   <summary>
-    Logged zero or one times per frame, the number of overlays {Counted} when
-    using the AttemptMultipleOverlays codepath.
-
-    Note: NumOverlaysFailed and NumOverlaysPromoted are only logged when
-    NumOverlaysAttempted &gt; 0.
+    Logged once per frame, the number of quads considered for promotion to
+    overlay.
   </summary>
-  <token key="Counted">
-    <variant name="Attempted" summary="attempted"/>
-    <variant name="Failed" summary="failed"/>
-    <variant name="Promoted" summary="promoted"/>
-  </token>
 </histogram>
 
 <histogram

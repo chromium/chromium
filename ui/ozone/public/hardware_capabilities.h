@@ -10,6 +10,8 @@
 namespace ui {
 
 struct HardwareCapabilities {
+  // Whether this is a valid response from the HardwareDisplayPlaneManager.
+  bool is_valid = false;
   // Number of planes available to the current CRTC(s).
   // This is specifically the count of non-CURSOR planes, because some boards
   // may have extra PRIMARY planes that could be used for overlays.

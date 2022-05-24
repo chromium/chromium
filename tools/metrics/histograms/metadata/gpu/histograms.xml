@@ -1746,12 +1746,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Viz.DisplayCompositor.OverlayStrategy"
-    enum="OverlayStrategies" expires_after="2022-11-20">
-  <owner>dcastagna@chromium.org</owner>
-  <owner>hoegsberg@chromium.org</owner>
+    enum="OverlayStrategies" expires_after="2022-11-30">
+  <owner>khaslett@chromium.org</owner>
+  <owner>kylechar@chromium.org</owner>
   <summary>
-    Overlay strategies used to promote Hardware Overlays, per frame. Recorded
-    every time a frame is rendered by the display compositor.
+    Overlay strategies used to promote Hardware Overlays, once or more per
+    frame. Recorded every time a frame is rendered by the display compositor, or
+    once per overlay promoted if multiple were promoted.
   </summary>
 </histogram>
 
