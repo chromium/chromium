@@ -1127,8 +1127,7 @@ void BookmarkAllTabs(Browser* browser) {
   base::RecordAction(UserMetricsAction("BookmarkAllTabs"));
   RecordBookmarkAllTabsWithTabsCount(browser->profile(),
                                      browser->tab_strip_model()->count());
-  // We record the profile that invoked this option.
-  RecordBookmarksAdded(browser->profile());
+
   chrome::ShowBookmarkAllTabsDialog(browser);
 }
 

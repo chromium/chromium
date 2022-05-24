@@ -52,12 +52,14 @@ BookmarkEditorView::BookmarkEditorView(
     Profile* profile,
     const BookmarkNode* parent,
     const EditDetails& details,
-    BookmarkEditor::Configuration configuration)
+    BookmarkEditor::Configuration configuration,
+    BookmarkEditor::OnSaveCallback on_save_callback)
     : profile_(profile),
       parent_(parent),
       details_(details),
       bb_model_(BookmarkModelFactory::GetForBrowserContext(profile)),
-      show_tree_(configuration == SHOW_TREE) {
+      show_tree_(configuration == SHOW_TREE),
+      on_save_callback_(std::move(on_save_callback)) {
   DCHECK(profile);
   DCHECK(bb_model_);
   DCHECK(bb_model_->client()->CanBeEditedByUser(parent));
@@ -466,24 +468,27 @@ void BookmarkEditorView::ApplyEdits(EditorNode* parent) {
   if (!show_tree_) {
     BookmarkEditor::ApplyEditsWithNoFolderChange(
         bb_model_, parent_, details_, new_title, new_url);
-    return;
+  } else {
+    // Create the new folders and update the titles.
+    const BookmarkNode* new_parent = nullptr;
+    ApplyNameChangesAndCreateNewFolders(
+        bb_model_->root_node(), tree_model_->GetRoot(), parent, &new_parent);
+
+    BookmarkEditor::ApplyEditsWithPossibleFolderChange(
+        bb_model_, new_parent, details_, new_title, new_url);
+
+    BookmarkExpandedStateTracker::Nodes expanded_nodes;
+    UpdateExpandedNodes(tree_model_->GetRoot(), &expanded_nodes);
+    bb_model_->expanded_state_tracker()->SetExpandedNodes(expanded_nodes);
+
+    // Remove the folders that were removed. This has to be done after all the
+    // other changes have been committed.
+    bookmarks::DeleteBookmarkFolders(bb_model_, deletes_);
   }
 
-  // Create the new folders and update the titles.
-  const BookmarkNode* new_parent = nullptr;
-  ApplyNameChangesAndCreateNewFolders(
-      bb_model_->root_node(), tree_model_->GetRoot(), parent, &new_parent);
-
-  BookmarkEditor::ApplyEditsWithPossibleFolderChange(
-      bb_model_, new_parent, details_, new_title, new_url);
-
-  BookmarkExpandedStateTracker::Nodes expanded_nodes;
-  UpdateExpandedNodes(tree_model_->GetRoot(), &expanded_nodes);
-  bb_model_->expanded_state_tracker()->SetExpandedNodes(expanded_nodes);
-
-  // Remove the folders that were removed. This has to be done after all the
-  // other changes have been committed.
-  bookmarks::DeleteBookmarkFolders(bb_model_, deletes_);
+  // Once all required bookmarks updates have been called, call the configured
+  // callback.
+  std::move(on_save_callback_).Run();
 }
 
 void BookmarkEditorView::ApplyNameChangesAndCreateNewFolders(

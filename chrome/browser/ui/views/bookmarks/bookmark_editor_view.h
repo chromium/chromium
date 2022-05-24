@@ -75,7 +75,8 @@ class BookmarkEditorView : public BookmarkEditor,
   BookmarkEditorView(Profile* profile,
                      const bookmarks::BookmarkNode* parent,
                      const EditDetails& details,
-                     BookmarkEditor::Configuration configuration);
+                     BookmarkEditor::Configuration configuration,
+                     BookmarkEditor::OnSaveCallback on_save_callback);
   BookmarkEditorView(const BookmarkEditorView&) = delete;
   BookmarkEditorView& operator=(const BookmarkEditorView&) = delete;
   ~BookmarkEditorView() override;
@@ -264,6 +265,10 @@ class BookmarkEditorView : public BookmarkEditor,
 
   // List of deleted bookmark folders.
   std::vector<int64_t> deletes_;
+
+  // Any extra logic that should be run after the save button is clicked,
+  // defined by the caller of BookmarkEditor::Show.
+  BookmarkEditor::OnSaveCallback on_save_callback_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_BOOKMARKS_BOOKMARK_EDITOR_VIEW_H_

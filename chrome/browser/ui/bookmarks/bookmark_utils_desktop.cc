@@ -7,6 +7,8 @@
 #include <iterator>
 #include <numeric>
 
+#include "base/bind.h"
+#include "base/callback.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/strings/string_number_conversions.h"
@@ -14,6 +16,7 @@
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/bookmarks/bookmark_editor.h"
+#include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator.h"
@@ -389,7 +392,13 @@ void ShowBookmarkAllTabsDialog(Browser* browser) {
   GetURLsAndFoldersForOpenTabs(browser, &(details.bookmark_data.children));
   DCHECK(!details.bookmark_data.children.empty());
   BookmarkEditor::Show(browser->window()->GetNativeWindow(), profile, details,
-                       BookmarkEditor::SHOW_TREE);
+                       BookmarkEditor::SHOW_TREE,
+                       base::BindOnce(
+                           [](const Profile* profile) {
+                             // We record the profile that invoked this option.
+                             RecordBookmarksAdded(profile);
+                           },
+                           base::Unretained(profile)));
 }
 
 bool HasBookmarkURLs(const std::vector<const BookmarkNode*>& selection) {
