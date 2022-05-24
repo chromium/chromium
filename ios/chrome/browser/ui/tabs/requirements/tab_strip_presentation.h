@@ -15,7 +15,7 @@
 // visible or not visible.
 - (BOOL)isTabStripFullyVisible;
 
-// Asks the implementer to show the given |tabStripView|.
+// Asks the implementer to show the given `tabStripView`.
 - (void)showTabStripView:(UIView<TabStripContaining>*)tabStripView;
 
 @end

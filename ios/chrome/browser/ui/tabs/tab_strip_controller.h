@@ -38,11 +38,11 @@ class Browser;
 // Pan gesture handler for the tab strip.
 @property(nonatomic, weak) ViewRevealingVerticalPanHandler* panGestureHandler;
 
-// Animatee for this tab strip. It is not added to the |panGestureHandler| as
+// Animatee for this tab strip. It is not added to the `panGestureHandler` as
 // it needs to be run in sync with BVC.
 @property(nonatomic, readonly, strong) id<ViewRevealingAnimatee> animatee;
 
-// Designated initializer, |dispatcher| is not retained.
+// Designated initializer, `dispatcher` is not retained.
 - (instancetype)initWithBrowser:(Browser*)browser
                           style:(TabStripStyle)style NS_DESIGNATED_INITIALIZER;
 

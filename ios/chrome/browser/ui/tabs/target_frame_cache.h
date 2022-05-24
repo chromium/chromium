@@ -19,10 +19,10 @@ class TargetFrameCache {
   void AddFrame(UIView* view, CGRect rect);
   void RemoveFrame(UIView* view);
 
-  // Gets the cached target frame for |view|.
+  // Gets the cached target frame for `view`.
   CGRect GetFrame(UIView* view);
 
-  // Returns whether |view| has a cached target frame.
+  // Returns whether `view` has a cached target frame.
   bool HasFrame(UIView* view);
 
  private:

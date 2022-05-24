@@ -34,7 +34,7 @@ const CGFloat kPositionCoefficient = 0.25;
 - (void)animateFrom:(CGPoint)originPoint withCompletion:(void (^)())completion {
   CGPoint origin = [self convertPoint:originPoint fromView:nil];
 
-  // Position the content view so it sits at the bottom of |self|.
+  // Position the content view so it sits at the bottom of `self`.
   CGRect frame = self.contentView.frame;
   CGFloat offset = self.frame.size.height - frame.size.height;
   frame.origin.y = offset;
@@ -43,7 +43,7 @@ const CGFloat kPositionCoefficient = 0.25;
   self.backgroundColor = UIColor.clearColor;
 
   // Translate the content view part of the way from the center of this view to
-  // |originPoint|.
+  // `originPoint`.
   CGFloat dx = kPositionCoefficient * (origin.x - self.contentView.center.x);
   CGFloat dy = kPositionCoefficient * (origin.y - self.contentView.center.y);
 
