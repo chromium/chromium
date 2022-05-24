@@ -3471,6 +3471,14 @@ should be able to be added at any place in this file.
   <description>Please enter the description of this user action.</description>
 </action>
 
+<action name="AppList_CreateFolder">
+  <owner>jamescook@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <description>
+    User created a folder in the Chrome OS app launcher.
+  </description>
+</action>
+
 <action name="AppList_CurrentWindowToHomeLauncher">
   <owner>newcomer@chromium.org</owner>
   <owner>sammiequon@chromium.org</owner>
@@ -3485,6 +3493,14 @@ should be able to be added at any place in this file.
   <description>
     User tried to hide the current window to display the home launcher by
     swiping up on the shelf.
+  </description>
+</action>
+
+<action name="AppList_DeleteFolder">
+  <owner>jamescook@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <description>
+    User deleted a folder in the Chrome OS app launcher.
   </description>
 </action>
 

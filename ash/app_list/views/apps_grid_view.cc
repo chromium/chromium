@@ -44,6 +44,7 @@
 #include "base/guid.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -2501,6 +2502,10 @@ bool AppsGridView::MoveItemToFolder(AppListItem* item,
     return false;
   }
 
+  if (*is_new_folder)
+    base::RecordAction(base::UserMetricsAction("AppList_CreateFolder"));
+
+  MaybeRecordFolderDeleteUserAction(source_folder_id);
   RecordAppMovingTypeMetrics(move_type);
   return true;
 }
@@ -2533,6 +2538,19 @@ void AppsGridView::ReparentItemForReorder(AppListItem* item,
     if (moving_to_new_page)
       EnsurePageBreakBeforeItem(item_id);
   }
+
+  MaybeRecordFolderDeleteUserAction(source_folder_id);
+}
+
+void AppsGridView::MaybeRecordFolderDeleteUserAction(
+    const std::string& folder_id) {
+  // Ignore the top-level grid (which isn't a folder and can't be deleted).
+  if (folder_id.empty())
+    return;
+
+  // If the folder disappeared from the model, record a user action.
+  if (!model_->FindFolderItem(folder_id))
+    base::RecordAction(base::UserMetricsAction("AppList_DeleteFolder"));
 }
 
 void AppsGridView::CancelContextMenusOnCurrentPage() {

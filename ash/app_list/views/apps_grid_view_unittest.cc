@@ -62,6 +62,7 @@
 #include "base/test/bind.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -1830,6 +1831,69 @@ TEST_P(AppsGridViewClamshellTest, CheckFolderWithMultiplePagesContents) {
     EXPECT_EQ(0, GetSelectedPage(folder_apps_grid_view()));
   }
   EXPECT_TRUE(folder_apps_grid_view()->IsInFolder());
+}
+
+TEST_F(AppsGridViewTest, CreatingFolderRecordsUserAction) {
+  base::UserActionTester user_actions;
+
+  // Create two apps, then drag the second on top of the first to create a
+  // folder.
+  model_->PopulateApps(2);
+  UpdateLayout();
+  InitiateDragForItemAtCurrentPageAt(AppsGridView::MOUSE, /*row=*/0,
+                                     /*column=*/1, apps_grid_view_);
+  gfx::Point to = GetItemRectOnCurrentPageAt(0, 0).CenterPoint();
+  UpdateDrag(AppsGridView::MOUSE, to, apps_grid_view_, /*steps=*/10);
+  EndDrag(apps_grid_view_, /*cancel=*/false);
+
+  // Both items are in the folder.
+  AppListItem* item_0 = model_->FindItem("Item 0");
+  AppListItem* item_1 = model_->FindItem("Item 1");
+  EXPECT_TRUE(item_0->IsInFolder());
+  EXPECT_TRUE(item_1->IsInFolder());
+
+  // User action was recorded.
+  EXPECT_EQ(1, user_actions.GetActionCount("AppList_CreateFolder"));
+}
+
+TEST_F(AppsGridViewTest, DeletingFolderRecordsUserAction) {
+  base::UserActionTester user_actions;
+
+  // Create a single-item folder and open it.
+  AppListFolderItem* folder =
+      model_->CreateSingleItemFolder("folder_id", "Item 0");
+  std::string folder_id = folder->id();
+  test_api_->Update();
+  test_api_->PressItemAt(0);
+
+  // Drag the app out of the folder.
+  AppsGridViewTestApi folder_grid_test_api(folder_apps_grid_view());
+  AppListItemView* drag_view = InitiateDragForItemAtCurrentPageAt(
+      AppsGridView::MOUSE, 0, 0, folder_apps_grid_view());
+  gfx::Point empty_space =
+      app_list_folder_view()->GetLocalBounds().bottom_center() +
+      gfx::Vector2d(0, drag_view->height());
+  UpdateDrag(AppsGridView::MOUSE, empty_space, folder_apps_grid_view(),
+             /*steps=*/10);
+  // Fire the reparent timer that should be started when an item is dragged out
+  // of folder bounds.
+  ASSERT_TRUE(folder_apps_grid_view()->FireFolderItemReparentTimerForTest());
+
+  // Calculate the coordinates for the drop point. Note that we we are dropping
+  // into the app list view not the folder view. The (0,1) spot is empty.
+  gfx::Point drop_point = GetItemRectOnCurrentPageAt(0, 1).CenterPoint();
+  views::View::ConvertPointToTarget(apps_grid_view_, folder_apps_grid_view(),
+                                    &drop_point);
+  UpdateDrag(AppsGridView::MOUSE, drop_point, folder_apps_grid_view(),
+             /*steps=*/5);
+  EndDrag(folder_apps_grid_view(), /*cancel=*/false);
+
+  // Item is in top-level grid and folder is deleted.
+  EXPECT_EQ("Item 0", model_->GetModelContent());
+  EXPECT_FALSE(model_->FindFolderItem(folder_id));
+
+  // User action was recorded.
+  EXPECT_EQ(1, user_actions.GetActionCount("AppList_DeleteFolder"));
 }
 
 TEST_P(AppsGridViewDragTest, MouseDragItemOutOfFolder) {
