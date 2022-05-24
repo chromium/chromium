@@ -935,6 +935,7 @@ crbug.com/711807 external/wpt/css/CSS2/normal-flow/replaced-intrinsic-001.xht [ 
 crbug.com/711807 external/wpt/css/CSS2/normal-flow/replaced-intrinsic-002.xht [ Failure ]
 
 #### external/wpt/css/css-sizing
+crbug.com/1322062 external/wpt/css/css-sizing/aspect-ratio/fieldset-element-001.html [ Failure ]
 crbug.com/1261306 external/wpt/css/css-sizing/aspect-ratio/flex-aspect-ratio-004.html [ Failure ]
 crbug.com/970201 external/wpt/css/css-sizing/slice-intrinsic-size.html [ Failure ]
 crbug.com/970201 external/wpt/css/css-sizing/clone-intrinsic-size.html [ Failure ]
@@ -3209,11 +3210,6 @@ crbug.com/626703 [ Mac10.15 ] external/wpt/css/mediaqueries/mq-invalid-media-typ
 crbug.com/626703 [ Mac11 ] external/wpt/css/mediaqueries/mq-invalid-media-type-layer-001.html [ Failure ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/css/mediaqueries/mq-invalid-media-type-layer-001.html [ Failure ]
 crbug.com/626703 [ Win ] external/wpt/css/mediaqueries/mq-invalid-media-type-layer-001.html [ Failure ]
-crbug.com/626703 [ Linux ] external/wpt/css/css-sizing/aspect-ratio/fieldset-element-001.html [ Failure ]
-crbug.com/626703 [ Mac10.15 ] external/wpt/css/css-sizing/aspect-ratio/fieldset-element-001.html [ Failure ]
-crbug.com/626703 [ Mac11 ] external/wpt/css/css-sizing/aspect-ratio/fieldset-element-001.html [ Failure ]
-crbug.com/626703 [ Mac11-arm64 ] external/wpt/css/css-sizing/aspect-ratio/fieldset-element-001.html [ Failure ]
-crbug.com/626703 [ Win ] external/wpt/css/css-sizing/aspect-ratio/fieldset-element-001.html [ Failure ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/webrtc/RTCPeerConnection-videoDetectorTest.html [ Failure Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/fetch/metadata/generated/css-images.https.sub.tentative.html [ Skip Timeout ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/fetch/metadata/generated/css-images.https.sub.tentative.html [ Skip Timeout ]
