@@ -715,14 +715,19 @@ class CONTENT_EXPORT FrameTreeNode {
   // fenced frame's FrameTree. Note that this could be a field in FrameTree for
   // the MPArch version but for the shadow DOM version we need to keep it here
   // since the fenced frame root is not a main frame for the latter. The value
-  // of the nonce will be the same for all of the the frames inside a fenced
+  // of the nonce will be the same for all of the the iframes inside a fenced
   // frame tree. If there is a nested fenced frame it will have a different
   // nonce than its parent fenced frame. The nonce will stay the same across
-  // navigations because it is always used in conjunction with other fields of
-  // the keys. If the navigation is same-origin/site then the same network stack
-  // partition/storage will be reused and if it's cross-origin/site then other
-  // parts of the key will change and so, even with the same nonce, another
-  // partition will be used.
+  // navigations initiated from the fenced frame tree because it is always used
+  // in conjunction with other fields of the keys and would be good to access
+  // the same storage across same-origin navigations. If the navigation is
+  // same-origin/site then the same network stack partition/storage will be
+  // reused and if it's cross-origin/site then other parts of the key will
+  // change and so, even with the same nonce, another partition will be used.
+  // But if the navigation is initiated from the embedder, the nonce will be
+  // reinitialized irrespective of same or cross origin such that there is no
+  // privacy leak via storage shared between two embedder initiated navigations.
+  // Note that this reinitialization is only implemented for MPArch.
   absl::optional<base::UnguessableToken> fenced_frame_nonce_;
 
   const RenderFrameHostImpl::FencedFrameStatus fenced_frame_status_ =
