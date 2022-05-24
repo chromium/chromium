@@ -1237,18 +1237,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Network.Shill.Cellular.OutOfCreditsReason"
-    enum="NetworkCellularOutOfCreditsReason" expires_after="2022-12-30">
-  <owner>ejcaruso@chromium.org</owner>
-  <owner>cros-network-metrics@google.com</owner>
-  <summary>
-    Chrome OS cellular network metric that tracks the number of out-of-credits
-    detected based on the cause that triggered the out-of-credits.
-
-    NOTE: This metric was expired from 2021-12-01 to 2022-04-01.
-  </summary>
-</histogram>
-
 <histogram name="Network.Shill.Cellular.PortalAttemptsToOnline" units="units"
     expires_after="2022-12-30">
   <owner>ejcaruso@chromium.org</owner>
