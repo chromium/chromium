@@ -162,7 +162,7 @@ void ProjectorUiController::HideAnnotationTray() {
     projector_annotation_tray->HideAnnotationTray();
   }
 
-  should_enable_annotation_tray_button_.reset();
+  canvas_initialized_state_.reset();
   current_root_ = nullptr;
 }
 
@@ -187,17 +187,9 @@ void ProjectorUiController::ResetTools() {
   }
 }
 
-// TODO(b/232419423): Rename this function.
 void ProjectorUiController::OnCanvasInitialized(bool success) {
-  should_enable_annotation_tray_button_ = success;
-
-  if (auto* projector_annotation_tray =
-          GetProjectorAnnotationTrayForRoot(current_root_)) {
-    projector_annotation_tray->SetEnabled(
-        *should_enable_annotation_tray_button_);
-    if (!*should_enable_annotation_tray_button_)
-      projector_annotation_tray->OnCanvasInitializationFailed();
-  }
+  canvas_initialized_state_ = success;
+  UpdateTrayEnabledState();
 }
 
 void ProjectorUiController::OnRecordedWindowChangingRoot(
@@ -207,8 +199,8 @@ void ProjectorUiController::OnRecordedWindowChangingRoot(
   SetProjectorAnnotationTrayVisibility(current_root_, /*visible=*/false);
   SetProjectorAnnotationTrayVisibility(new_root, /*visible=*/true);
   current_root_ = new_root;
-  if (should_enable_annotation_tray_button_)
-    OnCanvasInitialized(*should_enable_annotation_tray_button_);
+  if (canvas_initialized_state_)
+    UpdateTrayEnabledState();
 }
 
 void ProjectorUiController::OnProjectorSessionActiveStateChanged(bool active) {
@@ -224,5 +216,12 @@ ProjectorMarkerColor ProjectorUiController::GetMarkerColorForMetrics(
       {kProjectorRedPenColor, ProjectorMarkerColor::kRed},
       {kProjectorYellowPenColor, ProjectorMarkerColor::kYellow}};
   return marker_colors_map[color];
+}
+
+void ProjectorUiController::UpdateTrayEnabledState() {
+  if (auto* projector_annotation_tray =
+          GetProjectorAnnotationTrayForRoot(current_root_)) {
+    projector_annotation_tray->SetTrayEnabled(*canvas_initialized_state_);
+  }
 }
 }  // namespace ash

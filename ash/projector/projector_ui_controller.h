@@ -60,12 +60,17 @@ class ASH_EXPORT ProjectorUiController : public ProjectorSessionObserver {
 
   ProjectorMarkerColor GetMarkerColorForMetrics(SkColor color);
 
+  void UpdateTrayEnabledState();
+
   bool annotator_enabled_ = false;
 
   // The current root window in which the video recording is happening.
   aura::Window* current_root_ = nullptr;
 
-  absl::optional<bool> should_enable_annotation_tray_button_;
+  // True if the canvas is initialized successfully, false if it failed to
+  // initialize. An absent value indicates that the initialization has not
+  // completed.
+  absl::optional<bool> canvas_initialized_state_;
 
   base::ScopedObservation<ProjectorSession, ProjectorSessionObserver>
       projector_session_observation_{this};

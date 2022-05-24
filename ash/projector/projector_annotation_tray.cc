@@ -261,8 +261,12 @@ void ProjectorAnnotationTray::HideAnnotationTray() {
   ResetTray();
 }
 
-void ProjectorAnnotationTray::OnCanvasInitializationFailed() {
-  // Set icon color to kIconColorPrimary with 30% opacity.
+void ProjectorAnnotationTray::SetTrayEnabled(bool enabled) {
+  SetEnabled(enabled);
+  if (enabled)
+    return;
+
+  // For disabled state, set icon color to kIconColorPrimary with 30% opacity.
   SkColor disabled_icon_color =
       SkColorSetA(AshColorProvider::Get()->GetContentLayerColor(
                       AshColorProvider::ContentLayerType::kIconColorPrimary),
