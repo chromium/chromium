@@ -244,6 +244,14 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
             'eligibleForAccountStorage_)',
       },
 
+      isPasswordNotesEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('enablePasswordNotes');
+        },
+        reflectToAttribute: true,
+      },
+
       isUnifiedPasswordManagerEnabled_: {
         type: Boolean,
         value() {

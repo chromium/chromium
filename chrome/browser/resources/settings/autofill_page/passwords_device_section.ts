@@ -192,6 +192,14 @@ export class PasswordsDeviceSectionElement extends
         type: String,
         value: '',
       },
+
+      isPasswordNotesEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('enablePasswordNotes');
+        },
+        reflectToAttribute: true,
+      },
     };
   }
 
