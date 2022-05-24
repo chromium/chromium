@@ -8,7 +8,6 @@
 
 #include <memory>
 #include <string>
-#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -17,8 +16,7 @@
 #include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/command_line.h"
-#include "base/files/file_path.h"
-#include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -27,10 +25,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/enrollment/auto_enrollment_controller.h"
-#include "chrome/browser/ash/policy/enrollment/private_membership/psm_rlwe_dmserver_client.h"
-#include "chrome/browser/ash/policy/enrollment/private_membership/psm_rlwe_dmserver_client_impl.h"
-#include "chrome/browser/ash/policy/enrollment/private_membership/testing_private_membership_rlwe_client.h"
-#include "chrome/browser/ash/policy/enrollment/private_membership/testing_psm_rlwe_id_provider.h"
+#include "chrome/browser/ash/policy/enrollment/private_membership/fake_psm_rlwe_dmserver_client.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_device_state.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/pref_names.h"
@@ -48,14 +43,14 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/private_membership/src/internal/testing/regression_test_data/regression_test_data.pb.h"
-#include "third_party/shell-encryption/src/testing/status_testing.h"
 
 namespace em = enterprise_management;
-namespace psm_rlwe = private_membership::rlwe;
 
 // An enum for PSM execution result values.
 using PsmExecutionResult = em::DeviceRegisterRequest::PsmExecutionResult;
+
+// A struct reporesents the PSM execution result params.
+using PsmResultHolder = policy::PsmRlweDmserverClient::ResultHolder;
 
 namespace policy {
 
@@ -85,32 +80,6 @@ using ::testing::InSequence;
 using ::testing::Mock;
 using ::testing::SaveArg;
 
-// Number of test cases exist in cros_test_data.binarypb file, which is part of
-// private_membership third_party library.
-const int kNumberOfPsmTestCases = 10;
-
-// Invalid test case index which acts as a dummy value when the PSM (private set
-// membership) is disabled.
-const int kInvalidPsmTestCaseIndex = -1;
-
-// PrivateSetMembership regression tests maximum file size which is 4MB.
-const size_t kMaxFileSizeInBytes = 4 * 1024 * 1024;
-
-bool ParseProtoFromFile(const base::FilePath& file_path,
-                        google::protobuf::MessageLite* out_proto) {
-  if (!out_proto) {
-    return false;
-  }
-
-  std::string file_content;
-  if (!base::ReadFileToStringWithMaxSize(file_path, &file_content,
-                                         kMaxFileSizeInBytes)) {
-    return false;
-  }
-
-  return out_proto->ParseFromString(file_content);
-}
-
 enum class AutoEnrollmentProtocol { kFRE = 0, kInitialEnrollment = 1 };
 
 enum class PsmState { kEnabled = 0, kDisabled = 1 };
@@ -128,11 +97,8 @@ struct AutoEnrollmentClientImplTestState final {
   PsmState psm_state;
 };
 
-// The integer parameter represents the index of PSM test case.
 class AutoEnrollmentClientImplTest
-    : public testing::Test,
-      public ::testing::WithParamInterface<
-          std::tuple<AutoEnrollmentClientImplTestState, int>> {
+    : public testing::TestWithParam<AutoEnrollmentClientImplTestState> {
  public:
   AutoEnrollmentClientImplTest(const AutoEnrollmentClientImplTest&) = delete;
   AutoEnrollmentClientImplTest& operator=(const AutoEnrollmentClientImplTest&) =
@@ -156,12 +122,10 @@ class AutoEnrollmentClientImplTest
   }
 
   AutoEnrollmentProtocol GetAutoEnrollmentProtocol() const {
-    return std::get<0>(GetParam()).auto_enrollment_protocol;
+    return GetParam().auto_enrollment_protocol;
   }
 
-  PsmState GetPsmState() const { return std::get<0>(GetParam()).psm_state; }
-
-  int GetPsmTestCaseIndex() const { return std::get<1>(GetParam()); }
+  PsmState GetPsmState() const { return GetParam().psm_state; }
 
   std::string GetAutoEnrollmentProtocolUmaSuffix() const {
     return GetAutoEnrollmentProtocol() ==
@@ -192,17 +156,19 @@ class AutoEnrollmentClientImplTest
       // PSM has to be enabled whenever creating a client for initial
       // enrollment.
       DCHECK_EQ(GetPsmState(), PsmState::kEnabled);
-      DCHECK(psm_rlwe_test_client_factory_);
+
+      // Store a non-owned smart pointer of FakePsmRlweDmserverClient in
+      // `fake_psm_rlwe_dmserver_client_ptr_`.
+      auto fake_psm_rlwe_dmserver_client =
+          std::make_unique<FakePsmRlweDmserverClient>();
+      fake_psm_rlwe_dmserver_client_ptr_ = fake_psm_rlwe_dmserver_client.get();
 
       client_ =
           AutoEnrollmentClientImpl::FactoryImpl().CreateForInitialEnrollment(
               progress_callback, service_.get(), local_state_,
               shared_url_loader_factory_, kSerialNumber, kBrandCode,
               power_initial, power_limit,
-              std::make_unique<PsmRlweDmserverClientImpl>(
-                  service_.get(), shared_url_loader_factory_,
-                  psm_rlwe_test_client_factory_.get(),
-                  testing_psm_rlwe_id_provider_.get()));
+              std::move(fake_psm_rlwe_dmserver_client));
     }
   }
 
@@ -557,17 +523,9 @@ class AutoEnrollmentClientImplTest
     return static_cast<AutoEnrollmentClientImpl*>(client_.release());
   }
 
-  // Sets which PSM RLWE client will be created, depending on the factory. It is
-  // only used for PSM during creating the client for initial enrollment.
-  std::unique_ptr<TestingPrivateMembershipRlweClient::FactoryImpl>
-      psm_rlwe_test_client_factory_;
-
-  // Sets the PSM RLWE ID directly for testing.
-  std::unique_ptr<TestingPsmRlweIdProvider> testing_psm_rlwe_id_provider_;
-
-  base::HistogramTester histogram_tester_;
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  base::HistogramTester histogram_tester_;
   ScopedTestingLocalState scoped_testing_local_state_;
   TestingPrefServiceSimple* local_state_;
   testing::StrictMock<MockJobCreationHandler> job_creation_handler_;
@@ -582,6 +540,10 @@ class AutoEnrollmentClientImplTest
       DeviceManagementService::JobConfiguration::TYPE_INVALID;
   DeviceManagementService::JobConfiguration::JobType state_retrieval_job_type_ =
       DeviceManagementService::JobConfiguration::TYPE_INVALID;
+
+  // Sets the final result of PSM protocol for testing.
+  base::raw_ptr<FakePsmRlweDmserverClient> fake_psm_rlwe_dmserver_client_ptr_ =
+      nullptr;
 
  private:
   em::DeviceManagementResponse GetAutoEnrollmentResponse(
@@ -1522,13 +1484,11 @@ TEST_P(AutoEnrollmentClientImplTest, NetworkFailureThenRequireUpdatedModulus) {
 // PSM is disabed to test only Hash dance for FRE case extensively instead. That
 // is because PSM is running only for initial enrollment, and Hash dance for FRE
 // use case.
-INSTANTIATE_TEST_SUITE_P(
-    FRE,
-    AutoEnrollmentClientImplTest,
-    testing::Combine(testing::Values(AutoEnrollmentClientImplTestState(
-                         AutoEnrollmentProtocol::kFRE,
-                         PsmState::kDisabled)),
-                     testing::Values(kInvalidPsmTestCaseIndex)));
+INSTANTIATE_TEST_SUITE_P(FRE,
+                         AutoEnrollmentClientImplTest,
+                         testing::Values(AutoEnrollmentClientImplTestState(
+                             AutoEnrollmentProtocol::kFRE,
+                             PsmState::kDisabled)));
 
 using AutoEnrollmentClientImplFREToInitialEnrollmentTest =
     AutoEnrollmentClientImplTest;
@@ -1640,17 +1600,15 @@ TEST_P(AutoEnrollmentClientImplFREToInitialEnrollmentTest,
 // PSM is disabed to test only Hash dance for FRE case extensively instead. That
 // is because PSM is running only for initial enrollment, and Hash dance for FRE
 // use case.
-INSTANTIATE_TEST_SUITE_P(
-    FREToInitialEnrollment,
-    AutoEnrollmentClientImplFREToInitialEnrollmentTest,
-    testing::Combine(testing::Values(AutoEnrollmentClientImplTestState(
-                         AutoEnrollmentProtocol::kFRE,
-                         PsmState::kDisabled)),
-                     testing::Values(kInvalidPsmTestCaseIndex)));
+INSTANTIATE_TEST_SUITE_P(FREToInitialEnrollment,
+                         AutoEnrollmentClientImplFREToInitialEnrollmentTest,
+                         testing::Values(AutoEnrollmentClientImplTestState(
+                             AutoEnrollmentProtocol::kFRE,
+                             PsmState::kDisabled)));
 
-// This class is used to test any PSM related test cases only. Therefore, the
-// PsmState param has to be kEnabled.
-class PsmHelperTest : public AutoEnrollmentClientImplTest {
+// This class is used to test PSM for initial enrollment test cases only.
+// Therefore, the PsmState param has to be kEnabled.
+class PsmHelperInitialEnrollmentTest : public AutoEnrollmentClientImplTest {
  protected:
   // Indicates the state of the PSM protocol.
   enum class StateDiscoveryResult {
@@ -1664,8 +1622,8 @@ class PsmHelperTest : public AutoEnrollmentClientImplTest {
     kSuccessHasServerSideState = 2,
   };
 
-  PsmHelperTest() {}
-  ~PsmHelperTest() {
+  PsmHelperInitialEnrollmentTest() {}
+  ~PsmHelperInitialEnrollmentTest() {
     // Flush any deletion tasks.
     base::RunLoop().RunUntilIdle();
   }
@@ -1681,115 +1639,15 @@ class PsmHelperTest : public AutoEnrollmentClientImplTest {
               nullptr);
     ASSERT_EQ(local_state_->GetUserPref(prefs::kEnrollmentPsmResult), nullptr);
 
-    // Create PSM test case, before setting up the base class, to construct the
-    // PSM RLWE testing client factory and its RLWE ID.
-    CreatePsmTestCase();
-
-    // Set up the base class AutoEnrollmentClientImplTest after creating the PSM
-    // RLWE client factory for testing in |psm_rlwe_test_client_factory_|, and
-    // PSM RLWE ID provider in |testing_psm_rlwe_id_provider_|.
     AutoEnrollmentClientImplTest::SetUp();
   }
 
-  void CreatePsmTestCase() {
-    // Verify PSM test case index is valid.
-    ASSERT_GE(GetPsmTestCaseIndex(), 0);
-
-    // Retrieve the PSM test case.
-    base::FilePath src_root_dir;
-    EXPECT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &src_root_dir));
-    const base::FilePath kPsmTestDataPath =
-        src_root_dir.AppendASCII("third_party")
-            .AppendASCII("private_membership")
-            .AppendASCII("src")
-            .AppendASCII("internal")
-            .AppendASCII("testing")
-            .AppendASCII("regression_test_data")
-            .AppendASCII("test_data.binarypb");
-    EXPECT_TRUE(base::PathExists(kPsmTestDataPath));
-    psm_rlwe::PrivateMembershipRlweClientRegressionTestData test_data;
-    EXPECT_TRUE(ParseProtoFromFile(kPsmTestDataPath, &test_data));
-    EXPECT_EQ(test_data.test_cases_size(), kNumberOfPsmTestCases);
-    psm_test_case_ = test_data.test_cases(GetPsmTestCaseIndex());
-
-    std::vector<private_membership::rlwe::RlwePlaintextId> plaintext_ids{
-        psm_test_case_.plaintext_id()};
-
-    // Sets the PSM RLWE client factory to testing client.
-    psm_rlwe_test_client_factory_ =
-        std::make_unique<TestingPrivateMembershipRlweClient::FactoryImpl>(
-            psm_test_case_.ec_cipher_key(), psm_test_case_.seed(),
-            plaintext_ids);
-
-    // Sets the PSM RLWE ID.
-    testing_psm_rlwe_id_provider_ = std::make_unique<TestingPsmRlweIdProvider>(
-        psm_test_case_.plaintext_id());
-  }
-
-  void ServerWillReplyWithPsmOprfResponse() {
-    em::DeviceManagementResponse response = GetPsmOprfResponse();
-
-    ServerWillReplyForPsm(net::OK, DeviceManagementService::kSuccess, response);
-  }
-
-  void ServerWillReplyWithPsmQueryResponse() {
-    em::DeviceManagementResponse response = GetPsmQueryResponse();
-
-    ServerWillReplyForPsm(net::OK, DeviceManagementService::kSuccess, response);
-  }
-
-  void ServerWillReplyWithEmptyPsmResponse() {
-    em::DeviceManagementResponse dummy_response;
-    ServerWillReplyForPsm(net::OK, DeviceManagementService::kSuccess,
-                          dummy_response);
-  }
-
-  void ServerWillFailForPsm(int net_error, int response_code) {
-    em::DeviceManagementResponse dummy_response;
-    ServerWillReplyForPsm(net_error, response_code, dummy_response);
-  }
-
-  // Mocks the server reply and captures the job type in |psm_last_job_type_|,
-  // and the request in |psm_last_request_|.
-  void ServerWillReplyForPsm(int net_error,
-                             int response_code,
-                             const em::DeviceManagementResponse& response) {
-    EXPECT_CALL(job_creation_handler_, OnJobCreation)
-        .WillOnce(DoAll(
-            service_->CaptureJobType(&psm_last_job_type_),
-            service_->CaptureRequest(&psm_last_request_),
-            service_->SendJobResponseAsync(net_error, response_code, response)))
-        .RetiresOnSaturation();
-  }
-
-  // Holds the full control of the given job in |job| and captures the job type
-  // in |psm_last_job_type_|, and its request in |psm_last_request_|.
-  void ServerWillReplyAsyncForPsm(DeviceManagementService::JobForTesting* job) {
-    EXPECT_CALL(job_creation_handler_, OnJobCreation)
-        .WillOnce(DoAll(service_->CaptureJobType(&psm_last_job_type_),
-                        service_->CaptureRequest(&psm_last_request_),
-                        SaveArg<0>(job)));
-  }
-
-  void ServerReplyForPsmAsyncJobWithOprfResponse(
-      DeviceManagementService::JobForTesting* job) {
-    em::DeviceManagementResponse response = GetPsmOprfResponse();
-    service_->SendJobOKNow(job, response);
-  }
-
-  void ServerReplyForPsmAsyncJobWithQueryResponse(
-      DeviceManagementService::JobForTesting* job) {
-    em::DeviceManagementResponse response = GetPsmQueryResponse();
-    service_->SendJobOKNow(job, response);
-  }
-
-  void ServerFailsForAsyncJob(DeviceManagementService::JobForTesting* job) {
-    service_->SendJobResponseNow(job, net::OK,
-                                 DeviceManagementService::kServiceUnavailable);
-  }
-
-  const em::PrivateSetMembershipRequest& psm_request() const {
-    return psm_last_request_.private_set_membership_request();
+  void PsmWillReplyWith(PsmResult psm_result,
+                        absl::optional<bool> membership_result = absl::nullopt,
+                        absl::optional<base::Time>
+                            membership_determination_time = absl::nullopt) {
+    fake_psm_rlwe_dmserver_client_ptr_->WillReplyWith(PsmResultHolder(
+        psm_result, membership_result, membership_determination_time));
   }
 
   // Returns the PSM execution result that has been stored in
@@ -1825,95 +1683,44 @@ class PsmHelperTest : public AutoEnrollmentClientImplTest {
                : StateDiscoveryResult::kSuccessNoServerSideState;
   }
 
-  // Returns the expected membership result for the current private set
-  // membership test case.
-  bool GetExpectedMembershipResult() const {
-    return psm_test_case_.is_positive_membership_expected();
-  }
-
-  // Expects a sample for kUMAPsmResult to be recorded once with value
-  // |protocol_result|.
-  // If |success_time_recorded| is true it expects one sample
-  // for kUMAPsmSuccessTime. Otherwise, expects no sample to be recorded for
-  // kUMAPsmSuccessTime.
-  void ExpectPsmHistograms(PsmResult protocol_result,
-                           bool success_time_recorded) const {
-    histogram_tester_.ExpectBucketCount(
-        kUMAPsmResult + GetAutoEnrollmentProtocolUmaSuffix(), protocol_result,
-        /*expected_count=*/1);
-    histogram_tester_.ExpectTotalCount(kUMAPsmSuccessTime,
-                                       success_time_recorded ? 1 : 0);
-  }
-
-  // Expects a sample |dm_status| for kUMAPsmDmServerRequestStatus with count
-  // |dm_status_count|.
-  void ExpectPsmRequestStatusHistogram(DeviceManagementStatus dm_status,
-                                       int dm_status_count) const {
-    histogram_tester_.ExpectBucketCount(
-        kUMAPsmDmServerRequestStatus + GetAutoEnrollmentProtocolUmaSuffix(),
-        dm_status, dm_status_count);
-  }
-
-  // Expects one sample for |kUMAPsmNetworkErrorCode| which has value of
-  // |network_error|.
-  void ExpectPsmNetworkErrorHistogram(int network_error) const {
-    histogram_tester_.ExpectBucketCount(
-        kUMAPsmNetworkErrorCode + GetAutoEnrollmentProtocolUmaSuffix(),
-        network_error, /*expected_count=*/1);
-  }
-
-  void VerifyPsmLastRequestJobType() const {
-    EXPECT_EQ(DeviceManagementService::JobConfiguration::
-                  TYPE_PSM_HAS_DEVICE_STATE_REQUEST,
-              psm_last_job_type_);
-  }
-
-  void VerifyPsmRlweOprfRequest() const {
-    EXPECT_EQ(psm_test_case_.expected_oprf_request().SerializeAsString(),
-              psm_request().rlwe_request().oprf_request().SerializeAsString());
-  }
-
-  void VerifyPsmRlweQueryRequest() const {
-    EXPECT_EQ(psm_test_case_.expected_query_request().SerializeAsString(),
-              psm_request().rlwe_request().query_request().SerializeAsString());
-  }
-
-  // Disallow copy constructor and assignment operator.
-  PsmHelperTest(const PsmHelperTest&) = delete;
-  PsmHelperTest& operator=(const PsmHelperTest&) = delete;
-
- private:
-  em::DeviceManagementResponse GetPsmOprfResponse() const {
-    em::DeviceManagementResponse response;
-    em::PrivateSetMembershipResponse* psm_response =
-        response.mutable_private_set_membership_response();
-
-    *psm_response->mutable_rlwe_response()->mutable_oprf_response() =
-        psm_test_case_.oprf_response();
-    return response;
-  }
-
-  em::DeviceManagementResponse GetPsmQueryResponse() const {
-    em::DeviceManagementResponse response;
-    em::PrivateSetMembershipResponse* psm_response =
-        response.mutable_private_set_membership_response();
-
-    *psm_response->mutable_rlwe_response()->mutable_query_response() =
-        psm_test_case_.query_response();
-    return response;
-  }
-
-  psm_rlwe::PrivateMembershipRlweClientRegressionTestData::TestCase
-      psm_test_case_;
-  DeviceManagementService::JobConfiguration::JobType psm_last_job_type_ =
-      DeviceManagementService::JobConfiguration::TYPE_INVALID;
-  em::DeviceManagementRequest psm_last_request_;
+  // Style guide requires the class to be non-copyable/non-movable by default.
+  PsmHelperInitialEnrollmentTest(const PsmHelperInitialEnrollmentTest&) =
+      delete;
+  PsmHelperInitialEnrollmentTest& operator=(
+      const PsmHelperInitialEnrollmentTest&) = delete;
 };
 
-TEST_P(PsmHelperTest, MembershipRetrievedSuccessfully) {
-  InSequence sequence;
+TEST_P(PsmHelperInitialEnrollmentTest,
+       RetryLogicAfterNetworkFailureForRlweQueryResponse) {
+  PsmWillReplyWith(PsmResult::kServerError);
 
-  const bool kExpectedMembershipResult = GetExpectedMembershipResult();
+  client()->Start();
+  base::RunLoop().RunUntilIdle();
+
+  const StateDiscoveryResult kExpectedStateResult =
+      StateDiscoveryResult::kFailure;
+  const PsmExecutionResult kExpectedPsmExecutionResult =
+      em::DeviceRegisterRequest::PSM_RESULT_ERROR;
+  EXPECT_EQ(GetStateDiscoveryResult(), kExpectedStateResult);
+  EXPECT_EQ(GetPsmExecutionResult(), kExpectedPsmExecutionResult);
+  EXPECT_TRUE(GetPsmDeterminationTimestamp().is_null());
+
+  // Verify that PSM cached membership result hasn't changed.
+
+  client()->Retry();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(GetStateDiscoveryResult(), kExpectedStateResult);
+  EXPECT_EQ(GetPsmExecutionResult(), kExpectedPsmExecutionResult);
+  EXPECT_TRUE(GetPsmDeterminationTimestamp().is_null());
+
+  // Verify initial enrollment state retrieval.
+  EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_SERVER_ERROR);
+}
+
+TEST_P(PsmHelperInitialEnrollmentTest,
+       RetryLogicAfterMembershipSuccessfullyRetrieved) {
+  const bool kExpectedMembershipResult = false;
   const base::TimeDelta kOneSecondTimeDelta = base::Seconds(1);
   const base::Time kExpectedPsmDeterminationTimestamp =
       base::Time::NowFromSystemTime() + kOneSecondTimeDelta;
@@ -1921,193 +1728,9 @@ TEST_P(PsmHelperTest, MembershipRetrievedSuccessfully) {
   // Advance the time forward one second.
   task_environment_.FastForwardBy(kOneSecondTimeDelta);
 
-  ServerWillReplyWithPsmOprfResponse();
-  ServerWillReplyWithPsmQueryResponse();
-
-  // Fail for DeviceInitialEnrollmentStateRequest if the device has a
-  // server-backed state.
-  if (kExpectedMembershipResult)
-    ServerWillFail(net::OK, DeviceManagementService::kServiceUnavailable);
-
-  client()->Start();
-
-  // TODO(crbug.com/1143634) Remove all usages of RunUntilIdle for all PSM
-  // tests, after removing support of Hash dance from client side.
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_EQ(GetStateDiscoveryResult(),
-            kExpectedMembershipResult
-                ? StateDiscoveryResult::kSuccessHasServerSideState
-                : StateDiscoveryResult::kSuccessNoServerSideState);
-  EXPECT_EQ(
-      GetPsmExecutionResult(),
-      kExpectedMembershipResult
-          ? em::DeviceRegisterRequest::PSM_RESULT_SUCCESSFUL_WITH_STATE
-          : em::DeviceRegisterRequest::PSM_RESULT_SUCCESSFUL_WITHOUT_STATE);
-  EXPECT_EQ(kExpectedPsmDeterminationTimestamp, GetPsmDeterminationTimestamp());
-  ExpectPsmHistograms(PsmResult::kSuccessfulDetermination,
-                      /*success_time_recorded=*/true);
-  ExpectPsmRequestStatusHistogram(DM_STATUS_SUCCESS,
-                                  /*dm_status_count=*/2);
-  VerifyPsmRlweQueryRequest();
-  VerifyPsmLastRequestJobType();
-
-  // Verify initial enrollment state retrieval.
-  if (kExpectedMembershipResult) {
-    EXPECT_EQ(failed_job_type_, GetExpectedStateRetrievalJobType());
-    EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_SERVER_ERROR);
-  } else {
-    EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_NO_ENROLLMENT);
-  }
-}
-
-TEST_P(PsmHelperTest, EmptyRlweQueryResponse) {
-  InSequence sequence;
-  ServerWillReplyWithPsmOprfResponse();
-  ServerWillReplyWithEmptyPsmResponse();
-
-  client()->Start();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(GetStateDiscoveryResult(), StateDiscoveryResult::kFailure);
-  EXPECT_EQ(GetPsmExecutionResult(),
-            em::DeviceRegisterRequest::PSM_RESULT_ERROR);
-  EXPECT_TRUE(GetPsmDeterminationTimestamp().is_null());
-  ExpectPsmHistograms(PsmResult::kEmptyQueryResponseError,
-                      /*success_time_recorded=*/false);
-  ExpectPsmRequestStatusHistogram(DM_STATUS_SUCCESS,
-                                  /*dm_status_count=*/2);
-  VerifyPsmRlweQueryRequest();
-  VerifyPsmLastRequestJobType();
-
-  // Verify initial enrollment state retrieval.
-  EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_NO_ENROLLMENT);
-}
-
-TEST_P(PsmHelperTest, EmptyRlweOprfResponse) {
-  InSequence sequence;
-  ServerWillReplyWithEmptyPsmResponse();
-
-  client()->Start();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(GetStateDiscoveryResult(), StateDiscoveryResult::kFailure);
-  EXPECT_EQ(GetPsmExecutionResult(),
-            em::DeviceRegisterRequest::PSM_RESULT_ERROR);
-  EXPECT_TRUE(GetPsmDeterminationTimestamp().is_null());
-  ExpectPsmHistograms(PsmResult::kEmptyOprfResponseError,
-                      /*success_time_recorded=*/false);
-  ExpectPsmRequestStatusHistogram(DM_STATUS_SUCCESS,
-                                  /*dm_status_count=*/1);
-  VerifyPsmRlweOprfRequest();
-  VerifyPsmLastRequestJobType();
-
-  // Verify initial enrollment state retrieval.
-  EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_NO_ENROLLMENT);
-}
-
-TEST_P(PsmHelperTest, ConnectionErrorForRlweQueryResponse) {
-  InSequence sequence;
-  ServerWillReplyWithPsmOprfResponse();
-  ServerWillFailForPsm(net::ERR_FAILED, DeviceManagementService::kSuccess);
-
-  client()->Start();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(GetStateDiscoveryResult(), StateDiscoveryResult::kFailure);
-  EXPECT_EQ(GetPsmExecutionResult(),
-            em::DeviceRegisterRequest::PSM_RESULT_ERROR);
-  EXPECT_TRUE(GetPsmDeterminationTimestamp().is_null());
-  ExpectPsmHistograms(PsmResult::kConnectionError,
-                      /*success_time_recorded=*/false);
-  ExpectPsmRequestStatusHistogram(DM_STATUS_SUCCESS,
-                                  /*dm_status_count=*/1);
-  ExpectPsmRequestStatusHistogram(DM_STATUS_REQUEST_FAILED,
-                                  /*dm_status_count=*/1);
-  ExpectPsmNetworkErrorHistogram(-net::ERR_FAILED);
-  VerifyPsmRlweQueryRequest();
-  VerifyPsmLastRequestJobType();
-
-  // Verify initial enrollment state retrieval.
-  EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_CONNECTION_ERROR);
-}
-
-TEST_P(PsmHelperTest, ConnectionErrorForRlweOprfResponse) {
-  InSequence sequence;
-  ServerWillFailForPsm(net::ERR_FAILED, DeviceManagementService::kSuccess);
-
-  client()->Start();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(GetStateDiscoveryResult(), StateDiscoveryResult::kFailure);
-  EXPECT_EQ(GetPsmExecutionResult(),
-            em::DeviceRegisterRequest::PSM_RESULT_ERROR);
-  EXPECT_TRUE(GetPsmDeterminationTimestamp().is_null());
-  ExpectPsmHistograms(PsmResult::kConnectionError,
-                      /*success_time_recorded=*/false);
-  ExpectPsmRequestStatusHistogram(DM_STATUS_REQUEST_FAILED,
-                                  /*dm_status_count=*/1);
-  ExpectPsmNetworkErrorHistogram(-net::ERR_FAILED);
-  VerifyPsmRlweOprfRequest();
-  VerifyPsmLastRequestJobType();
-
-  // Verify initial enrollment state retrieval.
-  EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_CONNECTION_ERROR);
-}
-
-TEST_P(PsmHelperTest, NetworkFailureForRlweOprfResponse) {
-  InSequence sequence;
-  ServerWillFailForPsm(net::OK, net::ERR_CONNECTION_CLOSED);
-
-  client()->Start();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(GetStateDiscoveryResult(), StateDiscoveryResult::kFailure);
-  EXPECT_EQ(GetPsmExecutionResult(),
-            em::DeviceRegisterRequest::PSM_RESULT_ERROR);
-  EXPECT_TRUE(GetPsmDeterminationTimestamp().is_null());
-  ExpectPsmHistograms(PsmResult::kServerError,
-                      /*success_time_recorded=*/false);
-  ExpectPsmRequestStatusHistogram(DM_STATUS_HTTP_STATUS_ERROR,
-                                  /*dm_status_count=*/1);
-  VerifyPsmLastRequestJobType();
-
-  // Verify initial enrollment state retrieval.
-  EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_SERVER_ERROR);
-}
-
-TEST_P(PsmHelperTest, NetworkFailureForRlweQueryResponse) {
-  InSequence sequence;
-  ServerWillReplyWithPsmOprfResponse();
-  ServerWillFailForPsm(net::OK, net::ERR_CONNECTION_CLOSED);
-
-  client()->Start();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(GetStateDiscoveryResult(), StateDiscoveryResult::kFailure);
-  EXPECT_EQ(GetPsmExecutionResult(),
-            em::DeviceRegisterRequest::PSM_RESULT_ERROR);
-  EXPECT_TRUE(GetPsmDeterminationTimestamp().is_null());
-  ExpectPsmHistograms(PsmResult::kServerError,
-                      /*success_time_recorded=*/false);
-  ExpectPsmRequestStatusHistogram(DM_STATUS_SUCCESS,
-                                  /*dm_status_count=*/1);
-  ExpectPsmRequestStatusHistogram(DM_STATUS_HTTP_STATUS_ERROR,
-                                  /*dm_status_count=*/1);
-  VerifyPsmRlweQueryRequest();
-  VerifyPsmLastRequestJobType();
-
-  // Verify initial enrollment state retrieval.
-  EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_SERVER_ERROR);
-}
-
-TEST_P(PsmHelperTest, RetryLogicAfterMembershipSuccessfullyRetrieved) {
-  InSequence sequence;
-
-  const bool kExpectedMembershipResult = GetExpectedMembershipResult();
-  const base::TimeDelta kOneSecondTimeDelta = base::Seconds(1);
-  const base::Time kExpectedPsmDeterminationTimestamp =
-      base::Time::NowFromSystemTime() + kOneSecondTimeDelta;
-
-  // Advance the time forward one second.
-  task_environment_.FastForwardBy(kOneSecondTimeDelta);
-
-  ServerWillReplyWithPsmOprfResponse();
-  ServerWillReplyWithPsmQueryResponse();
+  PsmWillReplyWith(PsmResult::kSuccessfulDetermination,
+                   kExpectedMembershipResult,
+                   kExpectedPsmDeterminationTimestamp);
 
   // Fail for DeviceInitialEnrollmentStateRequest if the device has a
   // server-backed state.
@@ -2130,8 +1753,7 @@ TEST_P(PsmHelperTest, RetryLogicAfterMembershipSuccessfullyRetrieved) {
           : em::DeviceRegisterRequest::PSM_RESULT_SUCCESSFUL_WITHOUT_STATE);
   EXPECT_EQ(kExpectedPsmDeterminationTimestamp, GetPsmDeterminationTimestamp());
 
-  // Verify that none of the PSM requests have been sent again. And its cached
-  // membership result hasn't changed.
+  // Verify that PSM cached membership result hasn't changed.
 
   // Fail for DeviceInitialEnrollmentStateRequest with connection error, if the
   // device has a server-backed state.
@@ -2142,12 +1764,6 @@ TEST_P(PsmHelperTest, RetryLogicAfterMembershipSuccessfullyRetrieved) {
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(GetStateDiscoveryResult(), expected_state_result);
-  ExpectPsmHistograms(PsmResult::kSuccessfulDetermination,
-                      /*success_time_recorded=*/true);
-  ExpectPsmRequestStatusHistogram(DM_STATUS_SUCCESS,
-                                  /*dm_status_count=*/2);
-  VerifyPsmRlweQueryRequest();
-  VerifyPsmLastRequestJobType();
 
   // Verify initial enrollment state retrieval.
   if (kExpectedMembershipResult) {
@@ -2158,101 +1774,14 @@ TEST_P(PsmHelperTest, RetryLogicAfterMembershipSuccessfullyRetrieved) {
   }
 }
 
-TEST_P(PsmHelperTest, RetryLogicAfterNetworkFailureForRlweQueryResponse) {
-  InSequence sequence;
-  ServerWillReplyWithPsmOprfResponse();
-  ServerWillFailForPsm(net::OK, net::ERR_CONNECTION_CLOSED);
-
-  client()->Start();
-  base::RunLoop().RunUntilIdle();
-
-  const StateDiscoveryResult kExpectedStateResult =
-      StateDiscoveryResult::kFailure;
-  const PsmExecutionResult kExpectedPsmExecutionResult =
-      em::DeviceRegisterRequest::PSM_RESULT_ERROR;
-  EXPECT_EQ(GetStateDiscoveryResult(), kExpectedStateResult);
-  EXPECT_EQ(GetPsmExecutionResult(), kExpectedPsmExecutionResult);
-  EXPECT_TRUE(GetPsmDeterminationTimestamp().is_null());
-
-  // Verify that none of the PSM requests have been sent again. And its cached
-  // membership result hasn't changed.
-
-  client()->Retry();
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_EQ(GetStateDiscoveryResult(), kExpectedStateResult);
-  EXPECT_EQ(GetPsmExecutionResult(), kExpectedPsmExecutionResult);
-  EXPECT_TRUE(GetPsmDeterminationTimestamp().is_null());
-  ExpectPsmHistograms(PsmResult::kServerError,
-                      /*success_time_recorded=*/false);
-  ExpectPsmRequestStatusHistogram(DM_STATUS_SUCCESS,
-                                  /*dm_status_count=*/1);
-  ExpectPsmRequestStatusHistogram(DM_STATUS_HTTP_STATUS_ERROR,
-                                  /*dm_status_count=*/1);
-  VerifyPsmRlweQueryRequest();
-  VerifyPsmLastRequestJobType();
-
-  // Verify initial enrollment state retrieval.
-  EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_SERVER_ERROR);
-}
-
-TEST_P(PsmHelperTest, CancelAndDeleteSoonWithPendingRequest) {
-  DeviceManagementService::JobForTesting psm_rlwe_oprf_job;
-
-  // Expect one request to be captured when available in |psm_rlwe_oprf_job|.
-  ServerWillReplyAsyncForPsm(&psm_rlwe_oprf_job);
-
-  // Verify that the PSM RLWE OPRF request has not been captured yet.
-  EXPECT_FALSE(psm_rlwe_oprf_job.IsActive());
-
-  client()->Start();
-  base::RunLoop().RunUntilIdle();
-
-  // Verify the PSM RLWE OPRF request has been captured.
-  ASSERT_TRUE(psm_rlwe_oprf_job.IsActive());
-  VerifyPsmRlweOprfRequest();
-  VerifyPsmLastRequestJobType();
-  EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_PENDING);
-
-  // Cancel any running jobs and delete the client by `CancelAndDeleteSoon()`
-  // while PSM RLWE OPRF request is in flight.
-  EXPECT_TRUE(base::CurrentThread::Get()->IsIdleForTesting());
-  release_client()->CancelAndDeleteSoon();
-
-  // Verify the client has been deleted immediately and inexistence of any
-  // pending jobs.
-  EXPECT_TRUE(base::CurrentThread::Get()->IsIdleForTesting());
-  EXPECT_FALSE(psm_rlwe_oprf_job.IsActive());
-  EXPECT_EQ(state_, AUTO_ENROLLMENT_STATE_PENDING);
-}
-
-// PSM is enabled to test initial enrollment case extensively only.
-// Note that: PSM is running only for initial enrollment, and Hash dance for FRE
-// use case.
-INSTANTIATE_TEST_SUITE_P(
-    Psm,
-    PsmHelperTest,
-    testing::Combine(testing::Values(AutoEnrollmentClientImplTestState(
-                         AutoEnrollmentProtocol::kInitialEnrollment,
-                         PsmState::kEnabled)),
-                     ::testing::Range(0, kNumberOfPsmTestCases)));
-
-using PsmHelperInitialEnrollmentTest = PsmHelperTest;
-
 TEST_P(PsmHelperInitialEnrollmentTest, PsmSucceedAndStateRetrievalSucceed) {
-  InSequence sequence;
-
-  const bool kExpectedMembershipResult = GetExpectedMembershipResult();
+  const bool kExpectedMembershipResult = true;
   const base::TimeDelta kOneSecondTimeDelta = base::Seconds(1);
   const base::Time kExpectedPsmDeterminationTimestamp =
       base::Time::NowFromSystemTime() + kOneSecondTimeDelta;
 
   // Advance the time forward one second.
   task_environment_.FastForwardBy(kOneSecondTimeDelta);
-
-  // Succeed for both PSM RLWE requests.
-  ServerWillReplyWithPsmOprfResponse();
-  ServerWillReplyWithPsmQueryResponse();
 
   // Succeed for DeviceInitialEnrollmentStateRequest if the device has a
   // server-backed state.
@@ -2264,26 +1793,24 @@ TEST_P(PsmHelperInitialEnrollmentTest, PsmSucceedAndStateRetrievalSucceed) {
         em::DeviceInitialEnrollmentStateResponse::CHROME_ENTERPRISE);
   }
 
+  PsmWillReplyWith(PsmResult::kSuccessfulDetermination,
+                   kExpectedMembershipResult,
+                   kExpectedPsmDeterminationTimestamp);
+
   client()->Start();
   base::RunLoop().RunUntilIdle();
 
   // Verify PSM result.
   EXPECT_EQ(GetStateDiscoveryResult(),
-            GetExpectedMembershipResult()
+            kExpectedMembershipResult
                 ? StateDiscoveryResult::kSuccessHasServerSideState
                 : StateDiscoveryResult::kSuccessNoServerSideState);
   EXPECT_EQ(
       GetPsmExecutionResult(),
-      GetExpectedMembershipResult()
+      kExpectedMembershipResult
           ? em::DeviceRegisterRequest::PSM_RESULT_SUCCESSFUL_WITH_STATE
           : em::DeviceRegisterRequest::PSM_RESULT_SUCCESSFUL_WITHOUT_STATE);
   EXPECT_EQ(kExpectedPsmDeterminationTimestamp, GetPsmDeterminationTimestamp());
-  ExpectPsmHistograms(PsmResult::kSuccessfulDetermination,
-                      /*success_time_recorded=*/true);
-  ExpectPsmRequestStatusHistogram(DM_STATUS_SUCCESS,
-                                  /*dm_status_count=*/2);
-  VerifyPsmRlweQueryRequest();
-  VerifyPsmLastRequestJobType();
 
   // Verify initial enrollment state retrieval.
   if (kExpectedMembershipResult) {
@@ -2298,9 +1825,7 @@ TEST_P(PsmHelperInitialEnrollmentTest, PsmSucceedAndStateRetrievalSucceed) {
 }
 
 TEST_P(PsmHelperInitialEnrollmentTest, PsmSucceedAndStateRetrievalFailed) {
-  InSequence sequence;
-
-  const bool kExpectedMembershipResult = GetExpectedMembershipResult();
+  const bool kExpectedMembershipResult = true;
   const base::TimeDelta kOneSecondTimeDelta = base::Seconds(1);
   const base::Time kExpectedPsmDeterminationTimestamp =
       base::Time::NowFromSystemTime() + kOneSecondTimeDelta;
@@ -2308,35 +1833,28 @@ TEST_P(PsmHelperInitialEnrollmentTest, PsmSucceedAndStateRetrievalFailed) {
   // Advance the time forward one second.
   task_environment_.FastForwardBy(kOneSecondTimeDelta);
 
-  // Succeed for both PSM RLWE requests.
-  ServerWillReplyWithPsmOprfResponse();
-  ServerWillReplyWithPsmQueryResponse();
-
   // Fail for DeviceInitialEnrollmentStateRequest if the device has a
   // server-backed state.
-  if (kExpectedMembershipResult)
-    ServerWillFail(net::OK, DeviceManagementService::kServiceUnavailable);
+  ServerWillFail(net::OK, DeviceManagementService::kServiceUnavailable);
+
+  PsmWillReplyWith(PsmResult::kSuccessfulDetermination,
+                   kExpectedMembershipResult,
+                   kExpectedPsmDeterminationTimestamp);
 
   client()->Start();
   base::RunLoop().RunUntilIdle();
 
   // Verify PSM result.
   EXPECT_EQ(GetStateDiscoveryResult(),
-            GetExpectedMembershipResult()
+            kExpectedMembershipResult
                 ? StateDiscoveryResult::kSuccessHasServerSideState
                 : StateDiscoveryResult::kSuccessNoServerSideState);
   EXPECT_EQ(
       GetPsmExecutionResult(),
-      GetExpectedMembershipResult()
+      kExpectedMembershipResult
           ? em::DeviceRegisterRequest::PSM_RESULT_SUCCESSFUL_WITH_STATE
           : em::DeviceRegisterRequest::PSM_RESULT_SUCCESSFUL_WITHOUT_STATE);
   EXPECT_EQ(kExpectedPsmDeterminationTimestamp, GetPsmDeterminationTimestamp());
-  ExpectPsmHistograms(PsmResult::kSuccessfulDetermination,
-                      /*success_time_recorded=*/true);
-  ExpectPsmRequestStatusHistogram(DM_STATUS_SUCCESS,
-                                  /*dm_status_count=*/2);
-  VerifyPsmRlweQueryRequest();
-  VerifyPsmLastRequestJobType();
 
   // Verify initial enrollment state retrieval.
   if (kExpectedMembershipResult) {
@@ -2348,15 +1866,13 @@ TEST_P(PsmHelperInitialEnrollmentTest, PsmSucceedAndStateRetrievalFailed) {
 }
 
 // PSM is enabled to test initial enrollment case extensively only.
-// Note that: PSM is running only for initial enrollment, and Hash dance for FRE
-// use case.
-INSTANTIATE_TEST_SUITE_P(
-    PsmForInitialEnrollment,
-    PsmHelperInitialEnrollmentTest,
-    testing::Combine(testing::Values(AutoEnrollmentClientImplTestState(
-                         AutoEnrollmentProtocol::kInitialEnrollment,
-                         PsmState::kEnabled)),
-                     ::testing::Range(0, kNumberOfPsmTestCases)));
+// Note that: PSM is running only for initial enrollment, and Hash dance for
+// FRE use case.
+INSTANTIATE_TEST_SUITE_P(PsmForInitialEnrollment,
+                         PsmHelperInitialEnrollmentTest,
+                         testing::Values(AutoEnrollmentClientImplTestState(
+                             AutoEnrollmentProtocol::kInitialEnrollment,
+                             PsmState::kEnabled)));
 
 }  // namespace
 }  // namespace policy
