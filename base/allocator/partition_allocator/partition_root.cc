@@ -12,6 +12,7 @@
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/bits.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/thread_annotations.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
@@ -563,7 +564,7 @@ void DCheckIfManagedByPartitionAllocBRPPool(uintptr_t address) {
 }  // namespace internal
 
 template <bool thread_safe>
-[[noreturn]] NOINLINE void PartitionRoot<thread_safe>::OutOfMemory(
+[[noreturn]] PA_NOINLINE void PartitionRoot<thread_safe>::OutOfMemory(
     size_t size) {
   const size_t virtual_address_space_size =
       total_size_of_super_pages.load(std::memory_order_relaxed) +
@@ -988,7 +989,7 @@ void* PartitionRoot<thread_safe>::ReallocWithFlags(unsigned int flags,
   return result;
 #else
   bool no_hooks = flags & AllocFlags::kNoHooks;
-  if (UNLIKELY(!ptr)) {
+  if (PA_UNLIKELY(!ptr)) {
     return no_hooks
                ? AllocWithFlagsNoHooks(flags, new_size,
                                        internal::PartitionPageSize())
@@ -996,7 +997,7 @@ void* PartitionRoot<thread_safe>::ReallocWithFlags(unsigned int flags,
                      flags, new_size, internal::PartitionPageSize(), type_name);
   }
 
-  if (UNLIKELY(!new_size)) {
+  if (PA_UNLIKELY(!new_size)) {
     Free(ptr);
     return nullptr;
   }
@@ -1010,11 +1011,11 @@ void* PartitionRoot<thread_safe>::ReallocWithFlags(unsigned int flags,
   const bool hooks_enabled = PartitionAllocHooks::AreHooksEnabled();
   bool overridden = false;
   size_t old_usable_size;
-  if (UNLIKELY(!no_hooks && hooks_enabled)) {
+  if (PA_UNLIKELY(!no_hooks && hooks_enabled)) {
     overridden = PartitionAllocHooks::ReallocOverrideHookIfEnabled(
         &old_usable_size, ptr);
   }
-  if (LIKELY(!overridden)) {
+  if (PA_LIKELY(!overridden)) {
     // |ptr| may have been allocated in another root.
     SlotSpan* slot_span = SlotSpan::FromObject(ptr);
     auto* old_root = PartitionRoot::FromSlotSpan(slot_span);
@@ -1026,7 +1027,7 @@ void* PartitionRoot<thread_safe>::ReallocWithFlags(unsigned int flags,
       PA_DCHECK(IsValidSlotSpan(slot_span));
       old_usable_size = slot_span->GetUsableSize(old_root);
 
-      if (UNLIKELY(slot_span->bucket->is_direct_mapped())) {
+      if (PA_UNLIKELY(slot_span->bucket->is_direct_mapped())) {
         tried_in_place_for_direct_map = true;
         // We may be able to perform the realloc in place by changing the
         // accessibility of memory pages and, if reducing the size, decommitting
@@ -1035,14 +1036,14 @@ void* PartitionRoot<thread_safe>::ReallocWithFlags(unsigned int flags,
       }
     }
     if (success) {
-      if (UNLIKELY(!no_hooks && hooks_enabled)) {
+      if (PA_UNLIKELY(!no_hooks && hooks_enabled)) {
         PartitionAllocHooks::ReallocObserverHookIfEnabled(ptr, ptr, new_size,
                                                           type_name);
       }
       return ptr;
     }
 
-    if (LIKELY(!tried_in_place_for_direct_map)) {
+    if (PA_LIKELY(!tried_in_place_for_direct_map)) {
       if (old_root->TryReallocInPlaceForNormalBuckets(ptr, slot_span, new_size))
         return ptr;
     }
