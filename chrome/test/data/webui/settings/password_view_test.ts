@@ -75,24 +75,26 @@ suite('PasswordViewTest', function() {
     PasswordManagerImpl.setInstance(passwordManager);
   });
 
-  test('Valid site and username displays an entry', async function() {
-    const passwordList = [
-      createPasswordEntry({url: SITE, username: USERNAME, id: ID}),
-    ];
+  [{url: SITE, username: USERNAME}, {url: SITE, username: ''}].forEach(
+      item =>
+          test('Valid site and username displays an entry', async function() {
+            const passwordList = [
+              createPasswordEntry(
+                  {url: item.url, username: item.username, id: ID}),
+            ];
 
-    passwordManager.setPlaintextPassword(PASSWORD);
-    passwordManager.data.passwords = passwordList;
-    const page = document.createElement('password-view');
-    document.body.appendChild(page);
-    const params = new URLSearchParams({
-      username: USERNAME,
-      site: SITE,
-    });
-    Router.getInstance().navigateTo(routes.PASSWORD_VIEW, params);
+            passwordManager.data.passwords = passwordList;
+            const page = document.createElement('password-view');
+            document.body.appendChild(page);
+            const params = new URLSearchParams({
+              username: item.username,
+              site: item.url,
+            });
+            Router.getInstance().navigateTo(routes.PASSWORD_VIEW, params);
 
-    await flushTasks();
-    assertVisibilityOfPageElements(page, /*visibility=*/ true);
-  });
+            await flushTasks();
+            assertVisibilityOfPageElements(page, /*visibility=*/ true);
+          }));
 
   test(
       'Invalid site and username does not display an entry ' +

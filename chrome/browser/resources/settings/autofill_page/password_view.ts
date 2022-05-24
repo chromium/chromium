@@ -154,12 +154,9 @@ export class PasswordViewElement extends PasswordViewElementBase {
       return;
     }
 
-    const username = queryParameters.get(PasswordViewPageUrlParams.USERNAME);
-    if (!username) {
-      return;
-    }
+    this.username =
+        queryParameters.get(PasswordViewPageUrlParams.USERNAME) || '';
     this.site = site;
-    this.username = username;
   }
 
   override onPasswordRemoveDialogPasswordsRemoved(
@@ -325,7 +322,7 @@ export class PasswordViewElement extends PasswordViewElementBase {
     this.credential = null;
     this.password_ = '';
     this.isPasswordVisible_ = false;
-    if (!this.savedPasswords.length || !this.site || !this.username) {
+    if (!this.savedPasswords.length || !this.site) {
       return;
     }
 
