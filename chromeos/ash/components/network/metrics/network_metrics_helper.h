@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_NETWORK_METRICS_NETWORK_METRICS_HELPER_H_
-#define CHROMEOS_NETWORK_METRICS_NETWORK_METRICS_HELPER_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_NETWORK_METRICS_NETWORK_METRICS_HELPER_H_
+#define CHROMEOS_ASH_COMPONENTS_NETWORK_METRICS_NETWORK_METRICS_HELPER_H_
 
 #include "base/component_export.h"
 #include "chromeos/network/network_state_handler.h"
@@ -61,4 +61,4 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkMetricsHelper {
 
 }  // namespace chromeos
 
-#endif  // CHROMEOS_NETWORK_METRICS_NETWORK_METRICS_HELPER_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_METRICS_NETWORK_METRICS_HELPER_H_

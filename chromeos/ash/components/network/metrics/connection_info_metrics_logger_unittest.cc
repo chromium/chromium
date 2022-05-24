@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/network/metrics/connection_info_metrics_logger.h"
+#include "chromeos/ash/components/network/metrics/connection_info_metrics_logger.h"
 
 #include <memory>
 
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "chromeos/ash/components/network/metrics/connection_results.h"
+#include "chromeos/ash/components/network/metrics/network_metrics_helper.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
-#include "chromeos/network/metrics/connection_results.h"
-#include "chromeos/network/metrics/network_metrics_helper.h"
 #include "chromeos/network/network_connection_handler.h"
 #include "chromeos/network/network_handler_test_helper.h"
 #include "chromeos/network/network_state_handler.h"

@@ -13,6 +13,7 @@ include_rules = [
   "+chromeos/components/feature_usage",
   "+chromeos/components/onc",
   "+chromeos/login/login_state",
+  "+chromeos/network",
   "+chromeos/services/network_config/public",
   "+components/account_id",
   "+components/certificate_matching",

@@ -8,6 +8,7 @@ include_rules = [
   "+ash/constants",
   "+base",
   "+base/component_export.h",
+  "+chromeos/ash/components/network",
   "+chromeos/test",
   "+chromeos/dbus",
   "+chromeos/components/feature_usage",

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_NETWORK_METRICS_CONNECTION_RESULTS_H_
-#define CHROMEOS_NETWORK_METRICS_CONNECTION_RESULTS_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_NETWORK_METRICS_CONNECTION_RESULTS_H_
+#define CHROMEOS_ASH_COMPONENTS_NETWORK_METRICS_CONNECTION_RESULTS_H_
 
 #include <string>
 
@@ -133,4 +133,4 @@ UserInitiatedConnectResult NetworkConnectionErrorToConnectResult(
 
 }  // namespace chromeos
 
-#endif  // CHROMEOS_NETWORK_METRICS_CONNECTION_RESULTS_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_METRICS_CONNECTION_RESULTS_H_

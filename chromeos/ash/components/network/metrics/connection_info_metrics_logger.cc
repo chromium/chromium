@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/network/metrics/connection_info_metrics_logger.h"
+#include "chromeos/ash/components/network/metrics/connection_info_metrics_logger.h"
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
-#include "chromeos/network/metrics/network_metrics_helper.h"
+#include "chromeos/ash/components/network/metrics/network_metrics_helper.h"
 #include "chromeos/network/network_connection_handler.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"

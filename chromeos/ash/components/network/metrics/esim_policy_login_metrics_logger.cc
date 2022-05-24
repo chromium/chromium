@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/network/metrics/esim_policy_login_metrics_logger.h"
+#include "chromeos/ash/components/network/metrics/esim_policy_login_metrics_logger.h"
 
 #include "base/metrics/histogram_macros.h"
 #include "chromeos/network/managed_network_configuration_handler.h"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/network/metrics/connection_results.h"
+#include "chromeos/ash/components/network/metrics/connection_results.h"
 
 #include "chromeos/network/network_connection_handler.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"

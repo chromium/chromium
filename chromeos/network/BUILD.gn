@@ -8,8 +8,13 @@ import("//third_party/protobuf/proto_library.gni")
 
 assert(is_chromeos, "Non-Chrome-OS builds must not depend on //chromeos")
 
-component("network") {
+config("network_config") {
   defines = [ "IS_CHROMEOS_NETWORK_IMPL" ]
+}
+
+component("network") {
+  configs += [ ":network_config" ]
+  public_deps = [ "//chromeos/ash/components/network/metrics" ]
   deps = [
     "//ash/constants",
     "//base",
@@ -39,6 +44,10 @@ component("network") {
     "//skia",
     "//url",
   ]
+
+  # Allow circular dependency from sub-directories of
+  # chromeos/ash/components/network.
+  allow_circular_includes_from = [ "//chromeos/ash/components/network/metrics" ]
   sources = [
     "auto_connect_handler.cc",
     "auto_connect_handler.h",
@@ -86,16 +95,6 @@ component("network") {
     "managed_network_configuration_handler_impl.h",
     "managed_state.cc",
     "managed_state.h",
-    "metrics/connection_info_metrics_logger.cc",
-    "metrics/connection_info_metrics_logger.h",
-    "metrics/connection_results.cc",
-    "metrics/connection_results.h",
-    "metrics/esim_policy_login_metrics_logger.cc",
-    "metrics/esim_policy_login_metrics_logger.h",
-    "metrics/network_metrics_helper.cc",
-    "metrics/network_metrics_helper.h",
-    "metrics/vpn_network_metrics_helper.cc",
-    "metrics/vpn_network_metrics_helper.h",
     "network_activation_handler.h",
     "network_activation_handler_impl.cc",
     "network_activation_handler_impl.h",
@@ -267,6 +266,7 @@ source_set("unit_tests") {
     "//base:i18n",
     "//base/test:test_support",
     "//chromeos:test_utils",
+    "//chromeos/ash/components/network/metrics:unit_tests",
     "//chromeos/components/feature_usage",
     "//chromeos/components/onc",
     "//chromeos/components/onc:test_support",
@@ -309,10 +309,6 @@ source_set("unit_tests") {
     "geolocation_handler_unittest.cc",
     "managed_cellular_pref_handler_unittest.cc",
     "managed_network_configuration_handler_unittest.cc",
-    "metrics/connection_info_metrics_logger_unittest.cc",
-    "metrics/esim_policy_login_metrics_logger_unittest.cc",
-    "metrics/network_metrics_helper_unittest.cc",
-    "metrics/vpn_network_metrics_helper_unittest.cc",
     "network_cert_loader_unittest.cc",
     "network_cert_migrator_unittest.cc",
     "network_configuration_handler_unittest.cc",

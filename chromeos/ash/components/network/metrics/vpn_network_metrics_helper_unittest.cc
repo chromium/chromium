@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/network/metrics/vpn_network_metrics_helper.h"
+#include "chromeos/ash/components/network/metrics/vpn_network_metrics_helper.h"
 
 #include <memory>
 #include <utility>

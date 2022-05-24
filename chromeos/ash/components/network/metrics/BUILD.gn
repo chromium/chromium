@@ -1,0 +1,53 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //chromeos/ash")
+
+source_set("metrics") {
+  # Due to circular dependency, others should depend on via chromeos/network.
+  visibility = [ "//chromeos/network" ]
+
+  configs += [ "//chromeos/network:network_config" ]
+  deps = [
+    "//base",
+    "//chromeos/login/login_state",
+    "//chromeos/services/network_config/public/mojom",
+  ]
+  sources = [
+    "connection_info_metrics_logger.cc",
+    "connection_info_metrics_logger.h",
+    "connection_results.cc",
+    "connection_results.h",
+    "esim_policy_login_metrics_logger.cc",
+    "esim_policy_login_metrics_logger.h",
+    "network_metrics_helper.cc",
+    "network_metrics_helper.h",
+    "vpn_network_metrics_helper.cc",
+    "vpn_network_metrics_helper.h",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  deps = [
+    "//ash/constants",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/dbus/shill",
+    "//chromeos/login/login_state",
+    "//chromeos/network",
+    "//chromeos/network:test_support",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//testing/gtest",
+  ]
+  sources = [
+    "connection_info_metrics_logger_unittest.cc",
+    "esim_policy_login_metrics_logger_unittest.cc",
+    "network_metrics_helper_unittest.cc",
+    "vpn_network_metrics_helper_unittest.cc",
+  ]
+}
