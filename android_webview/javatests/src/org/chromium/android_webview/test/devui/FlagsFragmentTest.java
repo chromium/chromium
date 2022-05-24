@@ -224,6 +224,21 @@ public class FlagsFragmentTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
+    public void testSearchMatchingNameAndDescriptionWithIndividualWordsInQuery() throws Throwable {
+        CallbackHelper helper = getFlagUiSearchBarListener();
+
+        int searchBarChangeCount = helper.getCallCount();
+        // The "verbose" part matches the name, and the "logcat" part matches the description.
+        onView(withId(R.id.flag_search_bar)).perform(replaceText("verbose logcat"));
+        helper.waitForCallback(searchBarChangeCount, 1);
+        onView(allOf(withId(R.id.flag_name), withText(AwSwitches.WEBVIEW_VERBOSE_LOGGING)))
+                .check(matches(isDisplayed()));
+        onView(withId(R.id.flags_list)).check(matches(withCount(1)));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
     public void testCaseInsensitive() throws Throwable {
         CallbackHelper helper = getFlagUiSearchBarListener();
 
