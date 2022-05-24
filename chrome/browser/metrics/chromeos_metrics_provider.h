@@ -84,9 +84,9 @@ class ChromeOSMetricsProvider : public metrics::MetricsProvider {
   void UpdateMultiProfileUserCount(
       metrics::SystemProfileProto* system_profile_proto);
 
-  // Sets the full hardware class, then calls the callback.
-  void SetFullHardwareClass(base::OnceClosure callback,
-                            std::string full_hardware_class);
+  // Invoked when StatisticsProvider finishes loading to read the full hardware
+  // class from StatisticsProvider and calls the callback.
+  void OnMachineStatisticsLoaded(base::OnceClosure callback);
 
   // Sets the cellular device variant, then calls the callback.
   void SetCellularDeviceVariant(base::OnceClosure callback,

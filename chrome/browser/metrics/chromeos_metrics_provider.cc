@@ -72,14 +72,6 @@ void IncrementPrefValue(const char* path) {
   pref->SetInteger(path, value + 1);
 }
 
-// Called on a background thread to load hardware class information.
-std::string GetFullHardwareClassOnBackgroundThread() {
-  std::string full_hardware_class;
-  chromeos::system::StatisticsProvider::GetInstance()->GetMachineStatistic(
-      "hardware_class", &full_hardware_class);
-  return full_hardware_class;
-}
-
 // Called on a background thread to load cellular device variant
 // using ConfigFS.
 std::string GetCellularDeviceVariantOnBackgroundThread() {
@@ -113,7 +105,7 @@ ChromeOSMetricsProvider::ChromeOSMetricsProvider(
     profile_provider_ = std::make_unique<metrics::ProfileProvider>();
 }
 
-ChromeOSMetricsProvider::~ChromeOSMetricsProvider() {}
+ChromeOSMetricsProvider::~ChromeOSMetricsProvider() = default;
 
 // static
 void ChromeOSMetricsProvider::RegisterPrefs(PrefRegistrySimple* registry) {
@@ -183,16 +175,10 @@ void ChromeOSMetricsProvider::OnRecordingDisabled() {
 
 void ChromeOSMetricsProvider::InitTaskGetFullHardwareClass(
     base::OnceClosure callback) {
-  // Run the (potentially expensive) task in the background to avoid blocking
-  // the UI thread.
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE,
-      {base::MayBlock(), base::WithBaseSyncPrimitives(),
-       base::TaskPriority::BEST_EFFORT,
-       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce(&GetFullHardwareClassOnBackgroundThread),
-      base::BindOnce(&ChromeOSMetricsProvider::SetFullHardwareClass,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  chromeos::system::StatisticsProvider::GetInstance()
+      ->ScheduleOnMachineStatisticsLoaded(
+          base::BindOnce(&ChromeOSMetricsProvider::OnMachineStatisticsLoaded,
+                         weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void ChromeOSMetricsProvider::InitTaskGetArcFeatures(
@@ -384,10 +370,10 @@ void ChromeOSMetricsProvider::UpdateMultiProfileUserCount(
   }
 }
 
-void ChromeOSMetricsProvider::SetFullHardwareClass(
-    base::OnceClosure callback,
-    std::string full_hardware_class) {
-  full_hardware_class_ = full_hardware_class;
+void ChromeOSMetricsProvider::OnMachineStatisticsLoaded(
+    base::OnceClosure callback) {
+  chromeos::system::StatisticsProvider::GetInstance()->GetMachineStatistic(
+      "hardware_class", &full_hardware_class_);
 
   // Structured metrics needs to know when full hardware class is available
   // since events should have full hardware class populated. Notify structured
