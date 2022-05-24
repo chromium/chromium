@@ -194,11 +194,12 @@ static ThreadSpecific<PriorityObserverMap>& PriorityObservers() {
   return map;
 }
 
-ResourceLoadPriority AdjustPriorityWithPriorityHint(
+ResourceLoadPriority AdjustPriorityWithPriorityHintAndRenderBlocking(
     ResourceLoadPriority priority_so_far,
     ResourceType type,
     const ResourceRequestHead& resource_request,
     FetchParameters::DeferOption defer_option,
+    RenderBlockingBehavior render_blocking_behavior,
     bool is_link_preload) {
   mojom::blink::FetchPriorityHint fetch_priority_hint =
       resource_request.GetFetchPriorityHint();
@@ -231,6 +232,13 @@ ResourceLoadPriority AdjustPriorityWithPriorityHint(
 
       DCHECK_LE(new_priority, priority_so_far);
       break;
+  }
+
+  // Render-blocking is a signal that the resource is important, so we bump it
+  // to at least kHigh.
+  if (render_blocking_behavior == RenderBlockingBehavior::kBlocking &&
+      new_priority < ResourceLoadPriority::kHigh) {
+    new_priority = ResourceLoadPriority::kHigh;
   }
 
   return new_priority;
@@ -400,6 +408,7 @@ ResourceLoadPriority ResourceFetcher::ComputeLoadPriority(
     ResourcePriority::VisibilityStatus visibility,
     FetchParameters::DeferOption defer_option,
     FetchParameters::SpeculativePreloadType speculative_preload_type,
+    RenderBlockingBehavior render_blocking_behavior,
     bool is_link_preload) {
   DCHECK(!resource_request.PriorityHasBeenSet() ||
          type == ResourceType::kImage);
@@ -470,8 +479,9 @@ ResourceLoadPriority ResourceFetcher::ComputeLoadPriority(
     }
   }
 
-  priority = AdjustPriorityWithPriorityHint(priority, type, resource_request,
-                                            defer_option, is_link_preload);
+  priority = AdjustPriorityWithPriorityHintAndRenderBlocking(
+      priority, type, resource_request, defer_option, render_blocking_behavior,
+      is_link_preload);
 
   if (properties_->IsSubframeDeprioritizationEnabled()) {
     if (properties_->IsOutermostMainFrame()) {
@@ -873,7 +883,8 @@ absl::optional<ResourceRequestBlockedReason> ResourceFetcher::PrepareRequest(
     computed_load_priority = ComputeLoadPriority(
         resource_type, params.GetResourceRequest(),
         ResourcePriority::kNotVisible, params.Defer(),
-        params.GetSpeculativePreloadType(), params.IsLinkPreload());
+        params.GetSpeculativePreloadType(), params.GetRenderBlockingBehavior(),
+        params.IsLinkPreload());
   }
 
   DCHECK_NE(computed_load_priority, ResourceLoadPriority::kUnresolved);
@@ -2229,10 +2240,7 @@ void ResourceFetcher::EmulateLoadStartedForInspector(
   resource_request.SetRequestDestination(request_destination);
   if (!resource_request.PriorityHasBeenSet()) {
     resource_request.SetPriority(ComputeLoadPriority(
-        resource->GetType(), resource_request, ResourcePriority::kNotVisible,
-        FetchParameters::DeferOption::kNoDefer,
-        FetchParameters::SpeculativePreloadType::kNotSpeculative,
-        false /* is_link_preload */));
+        resource->GetType(), resource_request, ResourcePriority::kNotVisible));
   }
   resource_request.SetReferrerString(Referrer::NoReferrer());
   resource_request.SetReferrerPolicy(network::mojom::ReferrerPolicy::kNever);

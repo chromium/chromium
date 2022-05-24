@@ -14305,4 +14305,36 @@ TEST_F(WebFrameTest, FrameOwnerColorScheme) {
             mojom::blink::ColorScheme::kDark);
 }
 
+TEST_F(WebFrameSimTest, RenderBlockingPromotesResource) {
+  ScopedBlockingAttributeForTest enabled_scope(true);
+
+  SimRequest main_request("https://example.com/", "text/html");
+  SimSubresourceRequest script_request("https://example.com/script.js",
+                                       "text/javascript");
+
+  LoadURL("https://example.com/");
+  main_request.Write(R"HTML(
+    <!doctype html>
+    <script defer fetchpriority="low" src="script.js"></script>
+  )HTML");
+
+  Resource* script = GetDocument().Fetcher()->AllResources().at(
+      ToKURL("https://example.com/script.js"));
+
+  // Script is fetched at the low priority due to `fetchpriority="low"`.
+  ASSERT_TRUE(script);
+  EXPECT_EQ(ResourceLoadPriority::kLow,
+            script->GetResourceRequest().Priority());
+
+  main_request.Complete(R"HTML(
+    <script defer fetchpriority="low" blocking="render" src="script.js"></script>
+  )HTML");
+
+  // `blocking=render` promotes the priority to high.
+  EXPECT_EQ(ResourceLoadPriority::kHigh,
+            script->GetResourceRequest().Priority());
+
+  script_request.Complete();
+}
+
 }  // namespace blink

@@ -294,9 +294,11 @@ class PLATFORM_EXPORT ResourceFetcher
       ResourcePriority::VisibilityStatus visibility_statue,
       FetchParameters::DeferOption defer_option,
       FetchParameters::SpeculativePreloadType speculative_preload_type,
+      RenderBlockingBehavior render_blocking_behavior,
       bool is_link_preload) {
     return ComputeLoadPriority(type, request, visibility_statue, defer_option,
-                               speculative_preload_type, is_link_preload);
+                               speculative_preload_type,
+                               render_blocking_behavior, is_link_preload);
   }
 
   void SetThrottleOptionOverride(
@@ -339,6 +341,7 @@ class PLATFORM_EXPORT ResourceFetcher
       FetchParameters::DeferOption = FetchParameters::DeferOption::kNoDefer,
       FetchParameters::SpeculativePreloadType =
           FetchParameters::SpeculativePreloadType::kNotSpeculative,
+      RenderBlockingBehavior = RenderBlockingBehavior::kNonBlocking,
       bool is_link_preload = false);
 
   // |virtual_time_pauser| is an output parameter. PrepareRequest may
