@@ -223,7 +223,7 @@ group("gn_all") {
     }
   }
 
-  if (!is_ios && !is_android) {
+  if (!is_ios && !is_android && !is_fuchsia) {
     deps += [ "//components/viz/demo:viz_demo" ]
     if (!use_libfuzzer) {
       # TODO(crbug.com/1241949): libcronet.$version.so fails to link in libfuzzer builds.
