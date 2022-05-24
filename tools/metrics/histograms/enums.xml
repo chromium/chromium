@@ -15407,6 +15407,7 @@ Called by update_protocol_commands_enum.py.-->
   <int value="195" label="Fastboot mode requested by user-mode"/>
   <int value="196"
       label="User requested recovery for training memory and rebooting."/>
+  <int value="200" label="User requested network based recovery"/>
   <int value="255" label="Unspecified/unknown error in user-mode"/>
 </enum>
 
