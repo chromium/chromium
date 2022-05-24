@@ -68,7 +68,7 @@ class MODULES_EXPORT AudioWorkletProcessorDefinition final
   bool is_synchronized_ = false;
 
   // The definition is per global scope. The active instance of
-  // |AudioProcessorWorklet| should be passed into these to perform JS function.
+  // AudioProcessorWorklet should be passed into these to perform JS function.
   Member<V8BlinkAudioWorkletProcessorConstructor> constructor_;
   Member<V8BlinkAudioWorkletProcessCallback> process_;
 

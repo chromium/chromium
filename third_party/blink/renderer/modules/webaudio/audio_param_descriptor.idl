@@ -6,11 +6,7 @@
 dictionary AudioParamDescriptor {
     required DOMString name;
     float defaultValue = 0;
-
-    // TODO(hongchan): These numbers are minimum/maximum number possible for 
-    // |float| type. Remove this comment when the spec is fixed.
     float minValue = -3.4028235e38;
     float maxValue = 3.4028235e38;
-
     AutomationRate automationRate = "a-rate";
 };

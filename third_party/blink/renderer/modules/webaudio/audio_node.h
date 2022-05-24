@@ -135,10 +135,7 @@ class MODULES_EXPORT AudioNode : public EventTargetWithInlineData,
   void SendLogMessage(const String& message);
 
   Member<BaseAudioContext> context_;
-
-  // Needed in the destructor, where |context_| is not guaranteed to be alive.
   scoped_refptr<DeferredTaskHandler> deferred_task_handler_;
-
   scoped_refptr<AudioHandler> handler_;
 
   // Represents audio node graph with Oilpan references. N-th HeapHashSet

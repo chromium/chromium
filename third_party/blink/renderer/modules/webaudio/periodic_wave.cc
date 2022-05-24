@@ -113,11 +113,11 @@ PeriodicWave* PeriodicWave::Create(BaseAudioContext* context,
       imag_coef.resize(real_coef.size());
     }
   } else if (options->hasImag()) {
-    // |real| not given, but we have |imag|.
+    // `real()` not given, but we have `imag()`.
     imag_coef = options->imag();
     real_coef.resize(imag_coef.size());
   } else {
-    // Neither |real| nor |imag| given.  Return an object that would
+    // Neither `real()` nor `imag()` given.  Return an object that would
     // generate a sine wave, which means real = [0,0], and imag = [0, 1]
     real_coef.resize(2);
     imag_coef.resize(2);

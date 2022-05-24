@@ -96,7 +96,7 @@ AudioScheduledSourceHandler::UpdateSchedulingInfo(size_t quantum_frame_size,
     SetPlaybackState(PLAYING_STATE);
     // Determine the offset of the true start time from the starting frame.
     // NOTE: start_frame_offset is usually negative, but may not be because of
-    // the rounding that may happen in computing |start_frame| above.
+    // the rounding that may happen in computing `start_frame` above.
     start_frame_offset = start_time_ * sample_rate - start_frame;
   } else {
     start_frame_offset = 0;
@@ -189,8 +189,9 @@ void AudioScheduledSourceHandler::Start(double when,
   // the variables being set here.
   MutexLocker process_locker(process_lock_);
 
-  // If |when| < currentTime, the source must start now according to the spec.
-  // So just set startTime to currentTime in this case to start the source now.
+  // If `when` < `currentTime()`, the source must start now according to the
+  // spec. So just set `start_time_` to `currentTime()` in this case to start
+  // the source now.
   start_time_ = std::max(when, Context()->currentTime());
 
   SetPlaybackState(SCHEDULED_STATE);

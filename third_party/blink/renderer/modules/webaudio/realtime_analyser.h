@@ -96,11 +96,11 @@ class RealtimeAnalyser final {
   std::unique_ptr<FFTFrame> analysis_frame_;
   void DoFFTAnalysis();
 
-  // Convert the contents of magnitudeBuffer to byte values, saving the result
-  // in |destination|.
+  // Convert the contents of `magnitude_buffer_` to byte values, saving the
+  // result in `destination`.
   void ConvertToByteData(DOMUint8Array* destination);
 
-  // Convert magnidue buffer to dB, saving the result in |destination|
+  // Convert `magnitude_buffer_` to dB, saving the result in `destination`
   void ConvertFloatToDb(DOMFloat32Array* destination);
 
   // doFFTAnalysis() stores the floating-point magnitude analysis data here.

@@ -50,7 +50,7 @@ AudioNode::AudioNode(BaseAudioContext& context)
 
 AudioNode::~AudioNode() {
   // The graph lock is required to destroy the handler. And we can't use
-  // |context_| to touch it, since that object may also be a dead heap object.
+  // `context_` to touch it, since that object may also be a dead heap object.
   {
     DeferredTaskHandler::GraphAutoLocker locker(*deferred_task_handler_);
     handler_ = nullptr;
@@ -493,7 +493,7 @@ void AudioNode::disconnect(AudioParam* destination_param,
   unsigned number_of_disconnections = 0;
 
   // Check if the node output is connected the destination AudioParam.
-  // Disconnect if connected and increase |numberOfDisconnectios| by 1.
+  // Disconnect if connected and increase `number_of_disconnections` by 1.
   for (unsigned output_index = 0; output_index < Handler().NumberOfOutputs();
        ++output_index) {
     if (DisconnectFromOutputIfConnected(output_index, *destination_param)) {

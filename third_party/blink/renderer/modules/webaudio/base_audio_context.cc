@@ -122,7 +122,7 @@ void BaseAudioContext::Initialize() {
     destination_node_->Handler().Initialize();
     // TODO(crbug.com/863951).  The audio thread needs some things from the
     // destination handler like the currentTime.  But the audio thread
-    // shouldn't access the |destination_node_| since it's an Oilpan object.
+    // shouldn't access the `destination_node_` since it's an Oilpan object.
     // Thus, get the destination handler, a non-oilpan object, so we can get
     // the items directly from the handler instead of through the destination
     // node.
@@ -862,7 +862,7 @@ void BaseAudioContext::NotifyWorkletIsReady() {
   DCHECK(audioWorklet()->IsReady());
 
   {
-    // |audio_worklet_thread_| is constantly peeked by the rendering thread,
+    // `audio_worklet_thread_` is constantly peeked by the rendering thread,
     // So we protect it with the graph lock.
     GraphAutoLocker locker(this);
 
@@ -885,7 +885,7 @@ void BaseAudioContext::UpdateWorkletGlobalScopeOnRenderingThread() {
   DCHECK(!IsMainThread());
 
   if (TryLock()) {
-    // Even when |audio_worklet_thread_| is successfully assigned, the current
+    // Even when `audio_worklet_thread_` is successfully assigned, the current
     // render thread could still be a thread of AudioOutputDevice.  Updates the
     // the global scope only when the thread affinity is correct.
     if (audio_worklet_thread_ && audio_worklet_thread_->IsCurrentThread()) {

@@ -264,10 +264,10 @@ void ScriptProcessorNode::DispatchEvent(double playback_time,
     AudioBuffer* backing_input_buffer =
         input_buffers_.at(double_buffer_index).Get();
 
-    // The backing buffer can be |nullptr|, when the number of input channels
+    // The backing buffer can be `nullptr`, when the number of input channels
     // is 0.
     if (backing_input_buffer) {
-      // Also the author code might have transferred |external_input_buffer| to
+      // Also the author code might have transferred `external_input_buffer_` to
       // other threads or replaced it with a different AudioBuffer object. Then
       // re-create a new buffer instance.
       if (IsAudioBufferDetached(external_input_buffer_) ||
@@ -341,7 +341,7 @@ bool ScriptProcessorNode::HasPendingActivity() const {
     return false;
   }
 
-  // If |onaudioprocess| event handler is defined, the node should not be
+  // If `.onaudioprocess` event handler is defined, the node should not be
   // GCed even if it is out of scope.
   if (HasEventListeners(event_type_names::kAudioprocess)) {
     return true;

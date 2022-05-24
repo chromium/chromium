@@ -76,8 +76,8 @@ IIRFilterNode::IIRFilterNode(BaseAudioContext& context,
                                       is_filter_stable));
 
   // Histogram of the IIRFilter order.  createIIRFilter ensures that the length
-  // of |feedbackCoef| is in the range [1, IIRFilter::kMaxOrder + 1].  The order
-  // is one less than the length of this vector.
+  // of `feedback_coef` is in the range [1, IIRFilter::kMaxOrder + 1].  The
+  // order is one less than the length of this vector.
   base::UmaHistogramSparse("WebAudio.IIRFilterNode.Order",
                            feedback_coef.size() - 1);
 }
@@ -192,7 +192,7 @@ void IIRFilterNode::getFrequencyResponse(
   size_t frequency_hz_length = frequency_hz->length();
 
   // All the arrays must have the same length.  Just verify that all
-  // the arrays have the same length as the |frequency_hz| array.
+  // the arrays have the same length as the `frequency_hz` array.
   if (mag_response->length() != frequency_hz_length) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidAccessError,

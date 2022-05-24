@@ -163,7 +163,7 @@ void AudioWorkletGlobalScope::registerProcessor(
   // parameterDescriptorSequence to the node name to parameter descriptor map
   // of the associated BaseAudioContext.
   if (object_proxy_) {
-    // TODO(crbug.com/1223178): |object_proxy_| is designed to outlive the
+    // TODO(crbug.com/1223178): `object_proxy_` is designed to outlive the
     // global scope, so we don't need to null check but the unit test is not
     // able to replicate the cross-thread messaging logic yet, so we skip this
     // call in unit tests.
@@ -178,7 +178,7 @@ AudioWorkletProcessor* AudioWorkletGlobalScope::CreateProcessor(
   DCHECK(IsContextThread());
 
   // The registered definition is already checked by AudioWorkletNode
-  // construction process, so the |definition| here must be valid.
+  // construction process, so the `definition` here must be valid.
   AudioWorkletProcessorDefinition* definition = FindDefinition(name);
   DCHECK(definition);
 
@@ -194,7 +194,7 @@ AudioWorkletProcessor* AudioWorkletGlobalScope::CreateProcessor(
   DCHECK(!processor_creation_params_);
   // There is no way to pass additional constructor arguments that are not
   // described in Web IDL, the static constructor will look up
-  // |processor_creation_params_| in the global scope to perform the
+  // `processor_creation_params_` in the global scope to perform the
   // construction properly.
   base::AutoReset<std::unique_ptr<ProcessorCreationParams>>
       processor_creation_extra_param(

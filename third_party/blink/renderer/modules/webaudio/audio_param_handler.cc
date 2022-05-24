@@ -224,7 +224,7 @@ void AudioParamHandler::CalculateSampleAccurateValues(
   CalculateFinalValues(values, number_of_values, IsAudioRate());
 }
 
-// Replace NaN values in |values| with |default_value|.
+// Replace NaN values in `values` with `default_value`.
 static void HandleNaNValues(float* values,
                             unsigned number_of_values,
                             float default_value) {
@@ -323,7 +323,7 @@ void AudioParamHandler::CalculateFinalValues(float* values,
       summing_bus_->SumFrom(*connection_bus);
     }
 
-    // If we're not sample accurate, duplicate the first element of |values| to
+    // If we're not sample accurate, duplicate the first element of `values` to
     // all of the elements.
     if (!sample_accurate) {
       for (unsigned k = 0; k < number_of_values; ++k) {
@@ -354,7 +354,7 @@ void AudioParamHandler::CalculateFinalValues(float* values,
 void AudioParamHandler::CalculateTimelineValues(float* values,
                                                 unsigned number_of_values) {
   // Calculate values for this render quantum.  Normally
-  // |numberOfValues| will equal to
+  // `number_of_values` will equal to
   // GetDeferredTaskHandler().RenderQuantumFrames() (the render quantum size).
   double sample_rate = DestinationHandler().SampleRate();
   size_t start_frame = DestinationHandler().CurrentSampleFrame();

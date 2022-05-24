@@ -557,8 +557,9 @@ void AudioBufferSourceHandler::StartSource(double when,
   grain_offset_ = grain_offset;
   grain_duration_ = grain_duration;
 
-  // If |when| < currentTime, the source must start now according to the spec.
-  // So just set startTime to currentTime in this case to start the source now.
+  // If `when` < `currentTime()`, the source must start now according to the
+  // spec.  So just set `start_time_` to `currentTime()` in this case to start
+  // the source now.
   start_time_ = std::max(when, Context()->currentTime());
 
   if (Buffer()) {
@@ -571,7 +572,7 @@ void AudioBufferSourceHandler::StartSource(double when,
 void AudioBufferSourceHandler::SetLoop(bool looping) {
   DCHECK(IsMainThread());
 
-  // This synchronizes with |Process()|.
+  // This synchronizes with `Process()`.
   MutexLocker process_locker(process_lock_);
 
   is_looping_ = looping;
@@ -581,7 +582,7 @@ void AudioBufferSourceHandler::SetLoop(bool looping) {
 void AudioBufferSourceHandler::SetLoopStart(double loop_start) {
   DCHECK(IsMainThread());
 
-  // This synchronizes with |Process()|.
+  // This synchronizes with `Process()`.
   MutexLocker process_locker(process_lock_);
 
   loop_start_ = loop_start;
@@ -590,7 +591,7 @@ void AudioBufferSourceHandler::SetLoopStart(double loop_start) {
 void AudioBufferSourceHandler::SetLoopEnd(double loop_end) {
   DCHECK(IsMainThread());
 
-  // This synchronizes with |Process()|.
+  // This synchronizes with `Process()`.
   MutexLocker process_locker(process_lock_);
 
   loop_end_ = loop_end;
@@ -643,13 +644,13 @@ bool AudioBufferSourceHandler::PropagatesSilence() const {
     return true;
   }
 
-  // Protect |shared_buffer_| with tryLock because it can be accessed by the
+  // Protect `shared_buffer_` with tryLock because it can be accessed by the
   // main thread.
   MutexTryLocker try_locker(process_lock_);
   if (try_locker.Locked()) {
     return !shared_buffer_.get();
   } else {
-    // Can't get lock. Assume |shared_buffer_| exists, so return false to
+    // Can't get lock. Assume `shared_buffer_` exists, so return false to
     // indicate this node is (or might be) outputting non-zero samples.
     return false;
   }

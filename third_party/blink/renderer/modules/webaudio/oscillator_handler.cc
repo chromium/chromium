@@ -250,11 +250,11 @@ static float DoInterpolation(double virtual_read_index,
   unsigned read_index_0 = static_cast<unsigned>(virtual_read_index);
 
   // Consider a typical sample rate of 44100 Hz and max periodic wave
-  // size of 4096.  The relationship between |incr| and the frequency
-  // of the oscillator is |incr| = freq * 4096/44100. Or freq =
-  // |incr|*44100/4096 = 10.8*|incr|.
+  // size of 4096.  The relationship between `incr` and the frequency
+  // of the oscillator is `incr` = freq * 4096/44100. Or freq =
+  // `incr`*44100/4096 = 10.8*`incr`.
   //
-  // For the |incr| thresholds below, this means that we use linear
+  // For the `incr` thresholds below, this means that we use linear
   // interpolation for all freq >= 3.2 Hz, 3-point Lagrange
   // for freq >= 1.7 Hz and 5-point Lagrange for every thing else.
   //

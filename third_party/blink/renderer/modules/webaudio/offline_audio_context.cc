@@ -388,7 +388,7 @@ void OfflineAudioContext::FireCompletionEvent() {
 bool OfflineAudioContext::HandlePreRenderTasks(
     const AudioIOPosition* output_position,
     const AudioCallbackMetric* metric) {
-  // TODO(hongchan, rtoy): passing |nullptr| as an argument is not a good
+  // TODO(hongchan): passing `nullptr` as an argument is not a good
   // pattern. Consider rewriting this method/interface.
   DCHECK_EQ(output_position, nullptr);
   DCHECK_EQ(metric, nullptr);
@@ -410,7 +410,7 @@ void OfflineAudioContext::HandlePostRenderTasks() {
   DCHECK(IsAudioThread());
 
   // OfflineGraphAutoLocker here locks the audio graph for the same reason
-  // above in |handlePreOfflineRenderTasks|.
+  // above in `HandlePreRenderTasks()`.
   {
     OfflineGraphAutoLocker locker(this);
 
@@ -444,7 +444,7 @@ void OfflineAudioContext::ResolveSuspendOnMainThread(size_t frame) {
     // If the context is going away, m_scheduledSuspends could have had all its
     // entries removed.  Check for that here.
     if (scheduled_suspends_.size()) {
-      // |frame| must exist in the map.
+      // `frame` must exist in the map.
       DCHECK(scheduled_suspends_.Contains(frame));
 
       SuspendMap::iterator it = scheduled_suspends_.find(frame);

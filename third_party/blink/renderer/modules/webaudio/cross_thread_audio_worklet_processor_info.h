@@ -11,7 +11,7 @@
 
 namespace blink {
 
-// A class for shallow repackage of |AudioParamDescriptor|. This is created only
+// A class for shallow repackage of AudioParamDescriptor. This is created only
 // when requested when the synchronization between AudioWorkletMessagingProxy
 // and AudioWorkletGlobalScope.
 class CrossThreadAudioParamInfo {
@@ -39,7 +39,7 @@ class CrossThreadAudioParamInfo {
   const String name_;
 };
 
-// A class for shallow repackage of |AudioWorkletProcessorDefinition|. This is
+// A class for shallow repackage of AudioWorkletProcessorDefinition. This is
 // created only when requested when the synchronization between
 // AudioWorkletMessagingProxy and AudioWorkletGlobalScope.
 class CrossThreadAudioWorkletProcessorInfo {

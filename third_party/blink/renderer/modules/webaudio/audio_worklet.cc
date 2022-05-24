@@ -66,8 +66,8 @@ bool AudioWorklet::IsReady() {
 }
 
 bool AudioWorklet::NeedsToCreateGlobalScope() {
-  // This is a callback from |Worklet::FetchAndInvokeScript| call, which only
-  // can be triggered by Worklet.addModule() call.
+  // This is a callback from `Worklet::FetchAndInvokeScript()` call, which only
+  // can be triggered by `Worklet.addModule()` call.
   UseCounter::Count(GetExecutionContext(), WebFeature::kAudioWorkletAddModule);
 
   return GetNumberOfGlobalScopes() == 0;

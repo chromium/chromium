@@ -109,12 +109,12 @@ void ScriptProcessorHandler::Process(uint32_t frames_to_process) {
                      "ScriptProcessorHandler::Process");
 
   // As in other AudioNodes, ScriptProcessorNode uses an AudioBus for its input
-  // and output (i.e. |input_bus| and |output_bus|). Additionally, there is a
+  // and output (i.e. `input_bus` and `output_bus`). Additionally, there is a
   // double-buffering for input and output that are exposed directly to
-  // JavaScript (i.e. |inputBuffer| and |outputBuffer| in
-  // |AudioProcessingEvent|). This node is the producer for |inputBuffer| and
-  // the consumer for |outputBuffer|. The |AudioProcessingEvent| is the
-  // consumer of |inputBuffer| and the producer for |outputBuffer|.
+  // JavaScript (i.e. `.inputBuffer` and `.outputBuffer` in
+  // AudioProcessingEvent). This node is the producer for `.inputBuffer` and the
+  // consumer for `.outputBuffer`. The AudioProcessingEvent is the consumer of
+  // `.inputBuffer` and the producer for `.outputBuffer`.
 
   scoped_refptr<AudioBus> input_bus = Input(0).Bus();
   AudioBus* output_bus = Output(0).Bus();
@@ -134,15 +134,15 @@ void ScriptProcessorHandler::Process(uint32_t frames_to_process) {
       buffer_read_write_index_ + frames_to_process <= BufferSize();
 
   if (internal_input_bus_->NumberOfChannels()) {
-    // If the number of input channels is zero, the zero length |inputBuffer|
-    // is fine.
+    // If the number of input channels is zero, the zero length input buffer is
+    // fine.
     buffers_are_good = buffers_are_good && shared_input_buffer &&
                        BufferSize() == shared_input_buffer->length();
   }
 
   DCHECK(buffers_are_good);
 
-  // |BufferSize()| should be evenly divisible by |frames_to_process|.
+  // `BufferSize()` should be evenly divisible by `frames_to_process`.
   DCHECK_GT(frames_to_process, 0u);
   DCHECK_GE(BufferSize(), frames_to_process);
   DCHECK_EQ(BufferSize() % frames_to_process, 0u);
@@ -170,8 +170,8 @@ void ScriptProcessorHandler::Process(uint32_t frames_to_process) {
                  "ScriptProcessorHandler::Process - data copy under lock",
                  "double_buffer_index", double_buffer_index);
 
-    // It is possible that the length of |internal_input_bus_| and
-    // |input_bus| can be different. See crbug.com/1189528.
+    // It is possible that the length of `internal_input_bus_` and
+    // `input_bus` can be different. See crbug.com/1189528.
     for (uint32_t i = 0; i < number_of_input_channels; ++i) {
       internal_input_bus_->SetChannelMemory(
           i,
@@ -201,7 +201,7 @@ void ScriptProcessorHandler::Process(uint32_t frames_to_process) {
                        TRACE_EVENT_SCOPE_THREAD, "buffer_read_write_index_",
                        buffer_read_write_index_);
 
-  // Fire an event and swap buffers when |buffer_read_write_index_| wraps back
+  // Fire an event and swap buffers when `buffer_read_write_index_` wraps back
   // around to 0. It means the current input and output buffers are full.
   if (!buffer_read_write_index_) {
     if (Context()->HasRealtimeConstraint()) {
@@ -243,8 +243,8 @@ void ScriptProcessorHandler::FireProcessEvent(uint32_t double_buffer_index) {
   // Avoid firing the event if the document has already gone away.
   if (GetNode()) {
     // Calculate a playbackTime with the buffersize which needs to be processed
-    // each time onaudioprocess is called.  The outputBuffer being passed to JS
-    // will be played after exhuasting previous outputBuffer by
+    // each time onaudioprocess is called.  The `.outputBuffer` being passed to
+    // JS will be played after exhuasting previous `.outputBuffer` by
     // double-buffering.
     double playback_time = (Context()->CurrentSampleFrame() + buffer_size_) /
                            static_cast<double>(Context()->sampleRate());

@@ -347,8 +347,8 @@ void AudioHandler::ProcessIfNecessary(uint32_t frames_to_process) {
     }
 
     if (!silent_inputs) {
-      // Update |last_non_silent_time| AFTER processing this block.
-      // Doing it before causes |PropagateSilence()| to be one render
+      // Update `last_non_silent_time_` AFTER processing this block.
+      // Doing it before causes `PropagateSilence()` to be one render
       // quantum longer than necessary.
       last_non_silent_time_ =
           (Context()->CurrentSampleFrame() + frames_to_process) /

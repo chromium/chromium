@@ -230,7 +230,7 @@ AudioContext::AudioContext(Document& document,
   //
   // TODO(hongchan): Due to the incompatible constructor between
   // AudioDestinationNode and RealtimeAudioDestinationNode, casting directly
-  // from |destination()| is impossible. This is a temporary workaround until
+  // from `destination()` is impossible. This is a temporary workaround until
   // the refactoring is completed.
   RealtimeAudioDestinationHandler& destination_handler =
       static_cast<RealtimeAudioDestinationHandler&>(
@@ -267,7 +267,7 @@ void AudioContext::Uninitialize() {
 AudioContext::~AudioContext() {
   // TODO(crbug.com/945379) Disable this DCHECK for now.  It's not terrible if
   // the autoplay metrics aren't recorded in some odd situations.  haraken@ said
-  // that we shouldn't get here without also calling |Uninitialize()|, but it
+  // that we shouldn't get here without also calling `Uninitialize()`, but it
   // can happen.  Until that is fixed, disable this DCHECK.
 
   // DCHECK(!autoplay_status_.has_value());

@@ -164,7 +164,7 @@ class MODULES_EXPORT BaseAudioContext
                                 V8DecodeSuccessCallback*,
                                 ExceptionState&);
 
-  // Handles the promise and callbacks when |decodeAudioData| is finished
+  // Handles the promise and callbacks when `.decodeAudioData()` is finished
   // decoding.
   void HandleDecodeAudioData(AudioBuffer*,
                              ScriptPromiseResolver*,
@@ -237,11 +237,11 @@ class MODULES_EXPORT BaseAudioContext
   // Called at the start of each render quantum.
   //
   // For an AudioContext:
-  //   - |output_position| must be a valid pointer to an AudioIOPosition
+  //   - `output_position` must be a valid pointer to an AudioIOPosition
   //   - The return value is ignored.
   //
   // For an OfflineAudioContext, we have the following conditions:
-  //   - |output_position| must be nullptr because there is no defined
+  //   - `output_position` must be nullptr because there is no defined
   //   AudioIOPosition.
   //   - The return value indicates whether the context needs to be suspended or
   //   not after rendering.
@@ -370,9 +370,9 @@ class MODULES_EXPORT BaseAudioContext
   // Returns the Document wich wich the instance is associated.
   Document* GetDocument() const;
 
-  // The audio thread relies on the main thread to perform some operations
-  // over the objects that it owns and controls; |ScheduleMainThreadCleanup()|
-  // posts the task to initiate those.
+  // The audio thread relies on the main thread to perform some operations over
+  // the objects that it owns and controls; this method posts the task to
+  // initiate those.
   void ScheduleMainThreadCleanup();
 
   // Handles promise resolving, stopping and finishing up of audio source nodes
@@ -398,7 +398,7 @@ class MODULES_EXPORT BaseAudioContext
   // Listener for the PannerNodes
   Member<AudioListener> listener_;
 
-  // Set to |true| by the audio thread when it posts a main-thread task to
+  // Set to `true` by the audio thread when it posts a main-thread task to
   // perform delayed state sync'ing updates that needs to be done on the main
   // thread. Cleared by the main thread task once it has run.
   bool has_posted_cleanup_task_ = false;
@@ -428,7 +428,7 @@ class MODULES_EXPORT BaseAudioContext
   // It is somewhat arbitrary and could be increased if necessary.
   enum { kMaxNumberOfChannels = 32 };
 
-  // The handler associated with the above |destination_node_|.
+  // The handler associated with the above `destination_node_`.
   scoped_refptr<AudioDestinationHandler> destination_handler_;
 
   Member<AudioWorklet> audio_worklet_;

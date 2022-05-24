@@ -136,7 +136,7 @@ class AudioScheduledSourceHandler
   // Number of extra frames to use when determining if a source node can be
   // stopped.  This should be at least one rendering quantum, but we add one
   // more quantum for good measure.  This doesn't need to be extra precise, just
-  // more than one rendering quantum.  See |handleStoppableSourceNode()|.
+  // more than one rendering quantum.  See `HandleStoppableSourceNode()`.
   // FIXME: Expose the rendering quantum somehow instead of hardwiring a value
   // here.
   static const int kExtraStopFrames = 256;

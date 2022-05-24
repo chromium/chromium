@@ -127,7 +127,7 @@ MediaStreamAudioDestinationNode* MediaStreamAudioDestinationNode::Create(
   if (!context->CheckExecutionContextAndThrowIfNecessary(exception_state)) {
     return nullptr;
   }
-  // Default to stereo; |options| will update it appropriately if needed.
+  // Default to stereo; `options` will update it appropriately if needed.
   MediaStreamAudioDestinationNode* node =
       MakeGarbageCollected<MediaStreamAudioDestinationNode>(*context, 2);
 

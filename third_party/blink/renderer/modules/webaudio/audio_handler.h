@@ -241,7 +241,7 @@ class MODULES_EXPORT AudioHandler : public ThreadSafeRefCounted<AudioHandler> {
   // See http://crbug.com/404527 for the detail.
   UntracedMember<BaseAudioContext> context_;
 
-  // Legal to access even when |context_| may be gone, such as during the
+  // Legal to access even when `context_` may be gone, such as during the
   // destructor.
   const scoped_refptr<DeferredTaskHandler> deferred_task_handler_;
 

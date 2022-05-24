@@ -51,9 +51,9 @@ class AudioBufferSourceHandler final : public AudioScheduledSourceHandler {
              double grain_duration,
              ExceptionState&);
 
-  // Note: the attribute was originally exposed as |.looping|, but to be more
+  // Note: the attribute was originally exposed as `.looping`, but to be more
   // consistent in naming with <audio> and with how it's described in the
-  // specification, the proper attribute name is |.loop|. The old attribute is
+  // specification, the proper attribute name is `.loop`. The old attribute is
   // kept for backwards compatibility.
   bool Loop() const { return is_looping_; }
   void SetLoop(bool looping);
@@ -92,9 +92,9 @@ class AudioBufferSourceHandler final : public AudioScheduledSourceHandler {
   //     Maximum number of frames to process; this can be less that a render
   //     quantum.
   //   start_time_offset -
-  //     Actual start time relative to the |destination_frame_offset|.  This
-  //     should be the \sart_time_offset| value returned by
-  //     |UpdateSchedulingInfo|.
+  //     Actual start time relative to the `destination_frame_offset`.  This
+  //     should be the `start_time_offset` value returned by
+  //     `UpdateSchedulingInfo`.
   bool RenderFromBuffer(AudioBus* output_bus,
                         unsigned destination_frame_offset,
                         uint32_t number_of_frames,
@@ -138,8 +138,8 @@ class AudioBufferSourceHandler final : public AudioScheduledSourceHandler {
   // A process lock must be used to protect access.
   bool did_set_looping_ = false;
 
-  // A process lock must be used to protect access to both |loop_start_| and
-  // |loop_end_|.
+  // A process lock must be used to protect access to both `loop_start_` and
+  // `loop_end_`.
   double loop_start_ = 0;
   double loop_end_ = 0;
 
@@ -164,7 +164,7 @@ class AudioBufferSourceHandler final : public AudioScheduledSourceHandler {
   // The minimum playbackRate value ever used for this source.
   double min_playback_rate_ = 1.0;
 
-  // True if the |buffer| attribute has ever been set to a non-null
+  // True if the `buffer` attribute has ever been set to a non-null
   // value.  Defaults to false.
   bool buffer_has_been_set_ = false;
 };

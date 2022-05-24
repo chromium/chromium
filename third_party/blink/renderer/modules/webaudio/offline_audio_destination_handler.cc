@@ -107,7 +107,7 @@ void OfflineAudioDestinationHandler::StartRendering() {
   }
 
   // Rendering is already started, which implicitly means we resume the
-  // rendering by calling |doOfflineRendering| on the render thread.
+  // rendering by calling `DoOfflineRendering()` on the render thread.
   PostCrossThreadTask(
       *render_thread_task_runner_, FROM_HERE,
       CrossThreadBindOnce(&OfflineAudioDestinationHandler::DoOfflineRendering,

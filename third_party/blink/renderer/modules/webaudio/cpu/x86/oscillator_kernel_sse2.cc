@@ -13,13 +13,13 @@ namespace blink {
 static __m128 WrapVirtualIndexVector(__m128 x,
                                      __m128 wave_size,
                                      __m128 inv_wave_size) {
-  // Wrap the virtual index |x| to the range 0 to wave_size - 1.  This is done
-  // by computing x - floor(x/wave_size)*wave_size.
+  // Wrap the virtual index `x` to the range 0 to wave_size - 1.  This is done
+  // by computing `x` - floor(`x`/`wave_size`)*`wave_size`.
   //
   // But there's no SSE2 SIMD instruction for this, so we do it the following
   // way.
 
-  // f = truncate(x/wave_size), truncating towards 0.
+  // `f` = truncate(`x`/`wave_size`), truncating towards 0.
   const __m128 r = _mm_mul_ps(x, inv_wave_size);
   __m128i f = _mm_cvttps_epi32(r);
 
@@ -158,13 +158,13 @@ std::tuple<int, double> OscillatorHandler::ProcessKRateVector(
 static __m128d WrapVirtualIndexVectorPd(__m128d x,
                                         __m128d wave_size,
                                         __m128d inv_wave_size) {
-  // Wrap the virtual index |x| to the range 0 to wave_size - 1.  This is done
-  // by computing x - floor(x/wave_size)*wave_size.
+  // Wrap the virtual index `x` to the range 0 to wave_size - 1.  This is done
+  // by computing `x` - floor(`x`/`wave_size`)*`wave_size`.
   //
   // But there's no SSE2 SIMD instruction for this, so we do it the following
   // way.
 
-  // f = truncate(x/wave_size), truncating towards 0.
+  // `f` = truncate(`x`/`wave_size`), truncating towards 0.
   const __m128d r = _mm_mul_pd(x, inv_wave_size);
   __m128i f = _mm_cvttpd_epi32(r);
 

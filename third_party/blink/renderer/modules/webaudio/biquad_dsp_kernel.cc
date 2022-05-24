@@ -194,7 +194,7 @@ void BiquadDSPKernel::GetFrequencyResponse(BiquadDSPKernel& kernel,
                                            float* mag_response,
                                            float* phase_response) {
   // Only allow on the main thread because we don't want the audio thread to be
-  // updating |kernel| while we're computing the response.
+  // updating `kernel` while we're computing the response.
   DCHECK(IsMainThread());
 
   DCHECK_GE(n_frequencies, 0);

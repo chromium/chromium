@@ -91,7 +91,7 @@ class MODULES_EXPORT OfflineAudioContext final : public BaseAudioContext {
   // OfflineAudioContext is not affected by Autoplay, so this MUST do nothing.
   void NotifySourceNodeStart() final {}
 
-  // The HashMap with 'zero' key is needed because |currentSampleFrame| can be
+  // The HashMap with 'zero' key is needed because `CurrentSampleFrame()` can be
   // zero.
   using SuspendMap = HeapHashMap<size_t,
                                  Member<ScriptPromiseResolver>,
@@ -115,17 +115,17 @@ class MODULES_EXPORT OfflineAudioContext final : public BaseAudioContext {
   // main thread and accessed by the audio thread with the graph lock.
   //
   // The map consists of key-value pairs of:
-  // { size_t quantizedFrame: ScriptPromiseResolver resolver }
+  // { size_t quantized_frame: ScriptPromiseResolver resolver }
   //
-  // Note that |quantizedFrame| is a unique key, since you can have only one
+  // Note that `quantized_frame` is a unique key, since you can have only one
   // suspend scheduled for a certain frame. Accessing to this must be
   // protected by the offline context lock.
   SuspendMap scheduled_suspends_;
 
-  // Protects |scheduled_suspend_frames_|.
+  // Protects `scheduled_suspend_frames_`.
   Mutex suspend_frames_lock_;
 
-  // Holds copies of |quantizedFrame| in |schedueld_suspends_| to ensure
+  // Holds copies of `quantized_frame` in `schedueld_suspends_` to ensure
   // a safe access from the audio thread.
   HashSet<size_t,
           WTF::DefaultHash<size_t>::Hash,
