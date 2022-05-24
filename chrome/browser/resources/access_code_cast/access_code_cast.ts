@@ -13,6 +13,7 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import {isWindows} from 'chrome://resources/js/cr.m.js';
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PluralStringProxyImpl} from 'chrome://resources/js/plural_string_proxy.js';
@@ -84,17 +85,19 @@ export class AccessCodeCastElement extends AccessCodeCastElementBase {
   private canCast: boolean;
   private inputEnabledStartTime: number;
   private inputLabel: string;
-  private state: PageState;
-  private submitDisabled: boolean;
+  private isWin: boolean;
+  private managedFootnote: string;
   private qrScannerEnabled: boolean;
   private rememberDevices: boolean;
-  private managedFootnote: string;
+  private state: PageState;
+  private submitDisabled: boolean;
 
   constructor() {
     super();
     this.listenerIds = [];
     this.router = BrowserProxy.getInstance().callbackRouter;
     this.inputLabel = this.i18n('inputLabel');
+    this.isWin = isWindows;
 
     this.createManagedFootnote(
         loadTimeData.getInteger('rememberedDeviceDuration'));
