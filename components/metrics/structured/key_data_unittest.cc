@@ -62,6 +62,8 @@ constexpr char kValueTwo[] = "value two";
 constexpr char kValueOneHash[] = "805B8790DC69B773";
 constexpr char kValueTwoHash[] = "87CEF12FB15E0B3A";
 
+constexpr int kKeyRotationPeriod = 90;
+
 std::string HashToHex(const uint64_t hash) {
   return base::HexEncode(&hash, sizeof(uint64_t));
 }
@@ -161,8 +163,8 @@ class KeyDataTest : public testing::Test {
 TEST_F(KeyDataTest, GeneratesKeysForProjects) {
   // Make key data and use two keys, in order to generate them.
   MakeKeyData();
-  key_data_->Id(kProjectOneHash);
-  key_data_->Id(kProjectTwoHash);
+  key_data_->Id(kProjectOneHash, kKeyRotationPeriod);
+  key_data_->Id(kProjectTwoHash, kKeyRotationPeriod);
   SaveKeyData();
 
   const std::string key_one = GetKey(kProjectOneHash).key();
@@ -186,7 +188,7 @@ TEST_F(KeyDataTest, GeneratesDistinctKeys) {
     // disk.
     ResetState();
     MakeKeyData();
-    key_data_->Id(kProjectOneHash);
+    key_data_->Id(kProjectOneHash, kKeyRotationPeriod);
     SaveKeyData();
 
     keys.insert(GetKey(kProjectOneHash).key());
@@ -201,7 +203,7 @@ TEST_F(KeyDataTest, GeneratesDistinctKeys) {
 TEST_F(KeyDataTest, ReuseExistingKeys) {
   // Create a file with one key.
   MakeKeyData();
-  const uint64_t id_one = key_data_->Id(kProjectOneHash);
+  const uint64_t id_one = key_data_->Id(kProjectOneHash, kKeyRotationPeriod);
   SaveKeyData();
   ExpectKeyValidation(/*valid=*/0, /*created=*/1, /*rotated=*/0);
   const std::string key_one = GetKey(kProjectOneHash).key();
@@ -211,7 +213,7 @@ TEST_F(KeyDataTest, ReuseExistingKeys) {
 
   // Open the file again and check we use the same key.
   MakeKeyData();
-  const uint64_t id_two = key_data_->Id(kProjectOneHash);
+  const uint64_t id_two = key_data_->Id(kProjectOneHash, kKeyRotationPeriod);
   ExpectKeyValidation(/*valid=*/1, /*created=*/1, /*rotated=*/0);
   SaveKeyData();
   const std::string key_two = GetKey(kProjectOneHash).key();
@@ -224,8 +226,10 @@ TEST_F(KeyDataTest, ReuseExistingKeys) {
 // value.
 TEST_F(KeyDataTest, DifferentEventsDifferentHashes) {
   MakeKeyData();
-  EXPECT_NE(key_data_->HmacMetric(kProjectOneHash, kMetricOneHash, "value"),
-            key_data_->HmacMetric(kProjectTwoHash, kMetricOneHash, "value"));
+  EXPECT_NE(key_data_->HmacMetric(kProjectOneHash, kMetricOneHash, "value",
+                                  kKeyRotationPeriod),
+            key_data_->HmacMetric(kProjectTwoHash, kMetricOneHash, "value",
+                                  kKeyRotationPeriod));
   ExpectNoErrors();
 }
 
@@ -233,8 +237,10 @@ TEST_F(KeyDataTest, DifferentEventsDifferentHashes) {
 // value.
 TEST_F(KeyDataTest, DifferentMetricsDifferentHashes) {
   MakeKeyData();
-  EXPECT_NE(key_data_->HmacMetric(kProjectOneHash, kMetricOneHash, "value"),
-            key_data_->HmacMetric(kProjectOneHash, kMetricTwoHash, "value"));
+  EXPECT_NE(key_data_->HmacMetric(kProjectOneHash, kMetricOneHash, "value",
+                                  kKeyRotationPeriod),
+            key_data_->HmacMetric(kProjectOneHash, kMetricTwoHash, "value",
+                                  kKeyRotationPeriod));
   ExpectNoErrors();
 }
 
@@ -242,52 +248,56 @@ TEST_F(KeyDataTest, DifferentMetricsDifferentHashes) {
 // metric.
 TEST_F(KeyDataTest, DifferentValuesDifferentHashes) {
   MakeKeyData();
-  EXPECT_NE(key_data_->HmacMetric(kProjectOneHash, kMetricOneHash, "first"),
-            key_data_->HmacMetric(kProjectOneHash, kMetricOneHash, "second"));
+  EXPECT_NE(key_data_->HmacMetric(kProjectOneHash, kMetricOneHash, "first",
+                                  kKeyRotationPeriod),
+            key_data_->HmacMetric(kProjectOneHash, kMetricOneHash, "second",
+                                  kKeyRotationPeriod));
   ExpectNoErrors();
 }
 
 // Ensure that KeyData::UserId is the expected value of SHA256(key).
 TEST_F(KeyDataTest, CheckUserIDs) {
-  SetupKey(kProjectOneHash, kKey, Today(), 90);
+  SetupKey(kProjectOneHash, kKey, Today(), kKeyRotationPeriod);
 
   MakeKeyData();
-  EXPECT_EQ(HashToHex(key_data_->Id(kProjectOneHash)), kUserId);
-  EXPECT_NE(HashToHex(key_data_->Id(kProjectTwoHash)), kUserId);
+  EXPECT_EQ(HashToHex(key_data_->Id(kProjectOneHash, kKeyRotationPeriod)),
+            kUserId);
+  EXPECT_NE(HashToHex(key_data_->Id(kProjectTwoHash, kKeyRotationPeriod)),
+            kUserId);
   ExpectKeyValidation(/*valid=*/1, /*created=*/1, /*rotated=*/0);
   ExpectNoErrors();
 }
 
 // Ensure that KeyData::Hash returns expected values for a known key and value.
 TEST_F(KeyDataTest, CheckHashes) {
-  SetupKey(kProjectOneHash, kKey, Today(), 90);
+  SetupKey(kProjectOneHash, kKey, Today(), kKeyRotationPeriod);
 
   MakeKeyData();
   EXPECT_EQ(HashToHex(key_data_->HmacMetric(kProjectOneHash, kMetricOneHash,
-                                            kValueOne)),
+                                            kValueOne, kKeyRotationPeriod)),
             kValueOneHash);
   EXPECT_EQ(HashToHex(key_data_->HmacMetric(kProjectOneHash, kMetricTwoHash,
-                                            kValueTwo)),
+                                            kValueTwo, kKeyRotationPeriod)),
             kValueTwoHash);
   ExpectKeyValidation(/*valid=*/2, /*created=*/0, /*rotated=*/0);
   ExpectNoErrors();
 }
 
-// Check that keys for a event are correctly rotated after the default 90 day
-// rotation period.
+// Check that keys for a event are correctly rotated after a given rotation
+// period.
 TEST_F(KeyDataTest, KeysRotated) {
   const int start_day = Today();
-  SetupKey(kProjectOneHash, kKey, start_day, 90);
+  SetupKey(kProjectOneHash, kKey, start_day, kKeyRotationPeriod);
 
   MakeKeyData();
-  const uint64_t first_id = key_data_->Id(kProjectOneHash);
+  const uint64_t first_id = key_data_->Id(kProjectOneHash, kKeyRotationPeriod);
   EXPECT_EQ(key_data_->LastKeyRotation(kProjectOneHash), start_day);
   ExpectKeyValidation(/*valid=*/1, /*created=*/0, /*rotated=*/0);
 
   {
-    // Advancing by 50 days, the key should not be rotated.
-    time_.Advance(base::Days(50));
-    EXPECT_EQ(key_data_->Id(kProjectOneHash), first_id);
+    // Advancing by |kKeyRotationPeriod|-1 days, the key should not be rotated.
+    time_.Advance(base::Days(kKeyRotationPeriod - 1));
+    EXPECT_EQ(key_data_->Id(kProjectOneHash, kKeyRotationPeriod), first_id);
     EXPECT_EQ(key_data_->LastKeyRotation(kProjectOneHash), start_day);
     SaveKeyData();
 
@@ -296,32 +306,69 @@ TEST_F(KeyDataTest, KeysRotated) {
   }
 
   {
-    // Advancing by another 50 days, the key should be rotated and the last
-    // rotation day should be incremented by 90.
-    time_.Advance(base::Days(50));
-    EXPECT_NE(key_data_->Id(kProjectOneHash), first_id);
+    // Advancing by another |key_rotation_period|+1 days, the key should be
+    // rotated and the last rotation day should be incremented by
+    // |key_rotation_period|.
+    time_.Advance(base::Days(kKeyRotationPeriod + 1));
+    EXPECT_NE(key_data_->Id(kProjectOneHash, kKeyRotationPeriod), first_id);
     SaveKeyData();
 
-    EXPECT_EQ(GetKey(kProjectOneHash).last_rotation(), start_day + 90);
-    EXPECT_EQ(key_data_->LastKeyRotation(kProjectOneHash), start_day + 90);
+    int expected_last_key_rotation = start_day + 2 * kKeyRotationPeriod;
+    EXPECT_EQ(GetKey(kProjectOneHash).last_rotation(),
+              expected_last_key_rotation);
+    EXPECT_EQ(key_data_->LastKeyRotation(kProjectOneHash),
+              expected_last_key_rotation);
     ExpectKeyValidation(/*valid=*/2, /*created=*/0, /*rotated=*/1);
 
-    // The rotation period could change here if it were ever updated in the xml.
-    // This test relies on it being 90 days.
-    ASSERT_EQ(GetKey(kProjectOneHash).rotation_period(), 90);
+    ASSERT_EQ(GetKey(kProjectOneHash).rotation_period(), kKeyRotationPeriod);
   }
 
   {
-    // Advancing by 453 days, the last rotation day should now 6 periods of 90
-    // days ahead.
-    time_.Advance(base::Days(453));
-    key_data_->Id(kProjectOneHash);
+    // Advancing by |2* kKeyRotationPeriod| days, the last rotation day should
+    // now 4 periods of |kKeyRotationPeriod| days ahead.
+    time_.Advance(base::Days(kKeyRotationPeriod * 2));
+    key_data_->Id(kProjectOneHash, kKeyRotationPeriod);
     SaveKeyData();
 
-    EXPECT_EQ(GetKey(kProjectOneHash).last_rotation(), start_day + 6 * 90);
-    EXPECT_EQ(key_data_->LastKeyRotation(kProjectOneHash), start_day + 6 * 90);
+    int expected_last_key_rotation = start_day + 4 * kKeyRotationPeriod;
+    EXPECT_EQ(GetKey(kProjectOneHash).last_rotation(),
+              expected_last_key_rotation);
+    EXPECT_EQ(key_data_->LastKeyRotation(kProjectOneHash),
+              expected_last_key_rotation);
     ExpectKeyValidation(/*valid=*/2, /*created=*/0, /*rotated=*/2);
   }
+}
+
+// Check that keys with updated rotations are correctly rotated.
+TEST_F(KeyDataTest, KeysWithUpdatedRotations) {
+  int first_key_rotation_period = 60;
+
+  const int start_day = Today();
+  SetupKey(kProjectOneHash, kKey, start_day, first_key_rotation_period);
+
+  MakeKeyData();
+  const uint64_t first_id =
+      key_data_->Id(kProjectOneHash, first_key_rotation_period);
+  EXPECT_EQ(key_data_->LastKeyRotation(kProjectOneHash), start_day);
+  ExpectKeyValidation(/*valid=*/1, /*created=*/0, /*rotated=*/0);
+
+  // Advance days by |new_key_rotation_period| + 1. This should fall within the
+  // rotation of the |new_key_rotation_period| but outside
+  // |first_key_rotation_period|.
+  int new_key_rotation_period = 50;
+  time_.Advance(base::Days(new_key_rotation_period + 1));
+  const uint64_t second_id =
+      key_data_->Id(kProjectOneHash, new_key_rotation_period);
+  EXPECT_NE(first_id, second_id);
+  SaveKeyData();
+
+  // Key should have been rotated with new_key_rotation_period.
+  int expected_last_key_rotation = start_day + new_key_rotation_period;
+  EXPECT_EQ(GetKey(kProjectOneHash).last_rotation(),
+            expected_last_key_rotation);
+  EXPECT_EQ(key_data_->LastKeyRotation(kProjectOneHash),
+            expected_last_key_rotation);
+  ExpectKeyValidation(/*valid=*/1, /*created=*/0, /*rotated=*/1);
 }
 
 }  // namespace structured

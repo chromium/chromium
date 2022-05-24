@@ -23,9 +23,6 @@ namespace {
 // The expected size of a key, in bytes.
 constexpr size_t kKeySize = 32;
 
-// The default maximum number of days before rotating keys.
-constexpr int kDefaultRotationPeriod = 90;
-
 // Generates a key, which is the string representation of
 // base::UnguessableToken, and is of size |kKeySize| bytes.
 std::string GenerateKey() {
@@ -92,7 +89,8 @@ void KeyData::WriteNowForTest() {
 //---------------
 
 absl::optional<std::string> KeyData::ValidateAndGetKey(
-    const uint64_t project_name_hash) {
+    const uint64_t project_name_hash,
+    int key_rotation_period) {
   if (!is_initialized_) {
     NOTREACHED();
     return absl::nullopt;
@@ -103,20 +101,26 @@ absl::optional<std::string> KeyData::ValidateAndGetKey(
 
   // Generate or rotate key.
   const int last_rotation = key.last_rotation();
+
   if (key.key().empty() || last_rotation == 0) {
     LogKeyValidation(KeyValidationState::kCreated);
     // If the key is empty, generate a new one. Set the last rotation to a
-    // uniformly selected day between today and |kDefaultRotationPeriod| days
+    // uniformly selected day between today and |key_rotation_period| days
     // ago, to uniformly distribute users amongst rotation cohorts.
-    const int rotation_seed = base::RandInt(0, kDefaultRotationPeriod - 1);
-    UpdateKey(&key, now - rotation_seed, kDefaultRotationPeriod);
-  } else if (now - last_rotation > kDefaultRotationPeriod) {
+    const int rotation_seed = base::RandInt(0, key_rotation_period - 1);
+    UpdateKey(&key, now - rotation_seed, key_rotation_period);
+  } else if (now - last_rotation > key_rotation_period) {
     LogKeyValidation(KeyValidationState::kRotated);
-    // If the key is outdated, generate a new one. Update the last rotation such
-    // that the user stays in the same cohort.
+
+    // If the key is outdated, generate a new one. Update the last rotation
+    // such that the user stays in the same cohort.
+    //
+    // Note that if the max key rotation period has changed, the new rotation
+    // period will be used to calculate whether the key should be rotated or
+    // not.
     const int new_last_rotation =
-        now - (now - last_rotation) % kDefaultRotationPeriod;
-    UpdateKey(&key, new_last_rotation, kDefaultRotationPeriod);
+        now - (now - last_rotation) % key_rotation_period;
+    UpdateKey(&key, new_last_rotation, key_rotation_period);
   } else {
     LogKeyValidation(KeyValidationState::kValid);
   }
@@ -131,11 +135,11 @@ absl::optional<std::string> KeyData::ValidateAndGetKey(
 }
 
 void KeyData::UpdateKey(KeyProto* key,
-                        const int last_rotation,
-                        const int rotation_period) {
+                        int last_key_rotation,
+                        int key_rotation_period) {
   key->set_key(GenerateKey());
-  key->set_last_rotation(last_rotation);
-  key->set_rotation_period(rotation_period);
+  key->set_last_rotation(last_key_rotation);
+  key->set_rotation_period(key_rotation_period);
   proto_->QueueWrite();
 }
 
@@ -143,11 +147,13 @@ void KeyData::UpdateKey(KeyProto* key,
 // IDs and hashing
 //----------------
 
-uint64_t KeyData::Id(const uint64_t project_name_hash) {
+uint64_t KeyData::Id(const uint64_t project_name_hash,
+                     int key_rotation_period) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Retrieve the key for |project_name_hash|.
-  const absl::optional<std::string> key = ValidateAndGetKey(project_name_hash);
+  const absl::optional<std::string> key =
+      ValidateAndGetKey(project_name_hash, key_rotation_period);
   if (!key) {
     NOTREACHED();
     return 0u;
@@ -161,11 +167,13 @@ uint64_t KeyData::Id(const uint64_t project_name_hash) {
 
 uint64_t KeyData::HmacMetric(const uint64_t project_name_hash,
                              const uint64_t metric_name_hash,
-                             const std::string& value) {
+                             const std::string& value,
+                             int key_rotation_period) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Retrieve the key for |project_name_hash|.
-  const absl::optional<std::string> key = ValidateAndGetKey(project_name_hash);
+  const absl::optional<std::string> key =
+      ValidateAndGetKey(project_name_hash, key_rotation_period);
   if (!key) {
     NOTREACHED();
     return 0u;

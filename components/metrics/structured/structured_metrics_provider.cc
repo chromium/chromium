@@ -411,7 +411,7 @@ void StructuredMetricsProvider::RecordEventFromEventBase(
   switch (event.id_type()) {
     case IdType::kProjectId:
       event_proto->set_profile_event_id(
-          key_data->Id(event.project_name_hash()));
+          key_data->Id(event.project_name_hash(), event.key_rotation_period()));
       break;
     case IdType::kUmaId:
       // TODO(crbug.com/1148168): Unimplemented.
@@ -447,7 +447,8 @@ void StructuredMetricsProvider::RecordEventFromEventBase(
     switch (metric.type) {
       case EventBase::MetricType::kHmac:
         metric_proto->set_value_hmac(key_data->HmacMetric(
-            event.project_name_hash(), metric.name_hash, metric.hmac_value));
+            event.project_name_hash(), metric.name_hash, metric.hmac_value,
+            event.key_rotation_period()));
         break;
       case EventBase::MetricType::kInt:
         metric_proto->set_value_int64(metric.int_value);
