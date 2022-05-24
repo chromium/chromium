@@ -29,6 +29,10 @@
 #include "url/android/gurl_android.h"
 #endif
 
+#if defined(SUPPORT_PEDALS_VECTOR_ICONS)
+#include "components/omnibox/browser/vector_icons.h"  // nogncheck
+#endif
+
 namespace history_clusters {
 
 namespace {
@@ -83,6 +87,12 @@ class HistoryClustersAction : public OmniboxAction {
   int32_t GetID() const override {
     return static_cast<int32_t>(OmniboxActionId::HISTORY_CLUSTERS);
   }
+
+#if defined(SUPPORT_PEDALS_VECTOR_ICONS)
+  const gfx::VectorIcon& GetVectorIcon() const override {
+    return omnibox::kJourneysIcon;
+  }
+#endif
 
 #if BUILDFLAG(IS_ANDROID)
   base::android::ScopedJavaGlobalRef<jobject> GetJavaObject() const override {

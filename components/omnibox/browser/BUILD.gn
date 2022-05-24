@@ -53,6 +53,7 @@ aggregate_vector_icons("omnibox_vector_icons") {
     "https_valid_in_chip.icon",
     "incognito.icon",
     "install_desktop.icon",
+    "journeys.icon",
     "keyword_search.icon",
     "offline_pin.icon",
     "page.icon",
