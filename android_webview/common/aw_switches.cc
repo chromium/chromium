@@ -82,4 +82,7 @@ const char kWebViewMPArchFencedFrames[] = "webview-mparch-fenced-frames";
 // PrivacySandboxAdsAPIsOverride and SharedStorageAPI.
 const char kWebViewShadowDOMFencedFrames[] = "webview-shadow-dom-fenced-frames";
 
+// Enables WebView to check for app recovery mitigations.
+const char kWebViewEnableAppRecovery[] = "webview-enable-app-recovery";
+
 }  // namespace switches

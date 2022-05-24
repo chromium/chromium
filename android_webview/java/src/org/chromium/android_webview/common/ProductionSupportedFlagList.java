@@ -105,6 +105,8 @@ public final class ProductionSupportedFlagList {
             Flag.commandLine(AwSwitches.WEBVIEW_SHADOW_DOM_FENCED_FRAMES,
                     "Enables ShadowDOM-based fenced frames. Also implies SharedStorageAPI, "
                             + "and PrivacySandboxAdsAPIsOverride"),
+            Flag.commandLine(AwSwitches.WEBVIEW_ENABLE_APP_RECOVERY,
+                    "Enables WebView to check for app recovery mitigations."),
             Flag.baseFeature(GpuFeatures.WEBVIEW_VULKAN,
                     "Use Vulkan for composite. Requires Android device and OS support. May crash "
                             + "if enabled on unsupported device."),

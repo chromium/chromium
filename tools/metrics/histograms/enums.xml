@@ -59453,6 +59453,7 @@ from previous Chrome versions.
   <int value="1140776731" label="WebViewForceDarkModeMatchTheme:disabled"/>
   <int value="1140903063" label="FuseBox:enabled"/>
   <int value="1141918949" label="ContextualSearchLongpressPanelHelp:enabled"/>
+  <int value="1142147693" label="webview-enable-app-recovery"/>
   <int value="1142515376" label="enable-nacl"/>
   <int value="1142752111" label="CellularUseAttachApn:disabled"/>
   <int value="1142788238" label="FontCacheScaling:disabled"/>
