@@ -88,8 +88,11 @@ WGPUTexture SharedImageRepresentationDawnOzone::BeginAccess(
   // RenderAttachment for clears.
   WGPUDawnTextureInternalUsageDescriptor internalDesc = {};
   internalDesc.chain.sType = WGPUSType_DawnTextureInternalUsageDescriptor;
-  internalDesc.internalUsage =
-      WGPUTextureUsage_CopySrc | WGPUTextureUsage_RenderAttachment;
+  internalDesc.internalUsage = WGPUTextureUsage_CopySrc;
+  // No write access to multi-planar pixmaps.
+  if (pixmap_->GetNumberOfPlanes() == 1) {
+    internalDesc.internalUsage |= WGPUTextureUsage_RenderAttachment;
+  }
   texture_descriptor.nextInChain =
       reinterpret_cast<WGPUChainedStruct*>(&internalDesc);
 
