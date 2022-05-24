@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/gmock_callback_support.h"
 #include "base/test/values_test_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
@@ -20,8 +21,9 @@
 namespace extensions {
 namespace {
 
-using device::mojom::UsbOpenDeviceError;
-using testing::_;
+using ::base::test::RunOnceCallback;
+using ::device::mojom::UsbOpenDeviceError;
+using ::testing::_;
 
 constexpr char kManifest[] =
     R"(
@@ -46,13 +48,6 @@ constexpr char kPolicySetting[] = R"(
         "urls": ["%s"]
       }
     ])";
-
-// TODO(crbug/1314031): To migrate to base::test::RunCallback.
-ACTION_TEMPLATE(InvokeCallback,
-                HAS_1_TEMPLATE_PARAMS(int, k),
-                AND_1_VALUE_PARAMS(p1)) {
-  std::move(*std::get<k>(args)).Run(p1);
-}
 
 class ChromeUsbApiTest : public ExtensionBrowserTest {
  public:
@@ -182,8 +177,8 @@ IN_PROC_BROWSER_TEST_F(ChromeUsbApiTest, FindDevicesByPolicy) {
   extensions::ResultCatcher result_catcher;
   const Extension* extension = LoadExtension(dir.UnpackedPath());
 
-  EXPECT_CALL(mock_device_, OpenInternal(_))
-      .WillOnce(InvokeCallback<0>(UsbOpenDeviceError::OK));
+  EXPECT_CALL(mock_device_, Open)
+      .WillOnce(RunOnceCallback<0>(UsbOpenDeviceError::OK));
 
   // Run the test.
   SetUpPolicy(extension);
