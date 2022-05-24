@@ -743,18 +743,20 @@ source_set("unit_tests") {
   if (is_android) {
     sources += [
       "built_in_backend_to_android_backend_migrator_unittest.cc",
-      "capabilities_service_impl_unittest.cc",
-      "password_scripts_fetcher_impl_unittests.cc",
       "password_store_backend_metrics_recorder_unittest.cc",
       "password_store_backend_migration_decorator_unittest.cc",
       "password_store_proxy_backend_unittest.cc",
-      "saved_passwords_capabilities_fetcher_unittest.cc",
     ]
   }
   if (is_ios) {
     sources += [ "login_database_ios_unittest.cc" ]
   } else {
-    sources += [ "http_credentials_cleaner_unittest.cc" ]
+    sources += [
+      "capabilities_service_impl_unittest.cc",
+      "http_credentials_cleaner_unittest.cc",
+      "password_scripts_fetcher_impl_unittests.cc",
+      "saved_passwords_capabilities_fetcher_unittest.cc",
+    ]
   }
 
   if (is_win || is_mac || is_linux || is_chromeos) {
@@ -826,7 +828,7 @@ source_set("unit_tests") {
     "//url",
   ]
 
-  if (is_android) {
+  if (!is_ios) {
     deps += [
       "//components/autofill_assistant/browser/public:public",
       "//components/autofill_assistant/browser/public:unit_test_support",
