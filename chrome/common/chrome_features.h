@@ -160,6 +160,8 @@ extern const base::Feature kCryptohomeUserDataAuthKillswitch;
 
 #if BUILDFLAG(IS_CHROMEOS)
 COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kCrosPrivacyHub;
+COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kDataLeakPreventionPolicy;
 
 COMPONENT_EXPORT(CHROME_FEATURES)

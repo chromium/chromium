@@ -54829,6 +54829,7 @@ from previous Chrome versions.
   <int value="-1915854488" label="enable-offline-pages"/>
   <int value="-1913801713"
       label="UploadCrashReportsUsingJobScheduler:disabled"/>
+  <int value="-1913734393" label="CrosPrivacyHub:disabled"/>
   <int value="-1912999136" label="enable-automatic-password-saving:enabled"/>
   <int value="-1911918596" label="WebviewAccelerateSmallCanvases:disabled"/>
   <int value="-1911316813" label="BlockTabUnders:disabled"/>
@@ -59190,6 +59191,7 @@ from previous Chrome versions.
   <int value="968715406"
       label="enable-experimental-accessibility-magnifier-new-focus-following"/>
   <int value="969340095" label="EnableDspHotword:disabled"/>
+  <int value="970344161" label="CrosPrivacyHub:enabled"/>
   <int value="972228058" label="SyncUSSSessions:disabled"/>
   <int value="973601997" label="SafeBrowsingUseLocalBlacklistsV2:disabled"/>
   <int value="975104092" label="show-taps"/>

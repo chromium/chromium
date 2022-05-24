@@ -5651,6 +5651,9 @@ const char kCrOSEnforceSystemAecNsAgcName[] =
 const char kCrOSEnforceSystemAecNsAgcDescription[] =
     "Enforces using the system variants in CrAS of the AEC, NS and AGC.";
 
+const char kCrosPrivacyHubName[] = "Enable ChromeOS Privacy Hub";
+const char kCrosPrivacyHubDescription[] = "Enables ChromeOS Privacy Hub.";
+
 const char kDefaultCalculatorWebAppName[] = "Default install Calculator PWA";
 const char kDefaultCalculatorWebAppDescription[] =
     "Enable default installing of the calculator PWA instead of the deprecated "
