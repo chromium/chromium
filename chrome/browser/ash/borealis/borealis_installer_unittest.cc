@@ -23,8 +23,8 @@
 #include "chrome/browser/ash/borealis/infra/described.h"
 #include "chrome/browser/ash/borealis/testing/apps.h"
 #include "chrome/browser/ash/borealis/testing/callback_factory.h"
-#include "chrome/browser/ash/borealis/testing/dbus.h"
 #include "chrome/browser/ash/borealis/testing/features.h"
+#include "chrome/browser/ash/guest_os/dbus_test_helper.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/common/chrome_features.h"
@@ -57,7 +57,7 @@ class MockObserver : public BorealisInstaller::Observer {
 };
 
 class BorealisInstallerTest : public testing::Test,
-                              protected FakeVmServicesHelper {
+                              protected guest_os::FakeVmServicesHelper {
  public:
   BorealisInstallerTest() = default;
   ~BorealisInstallerTest() override = default;

@@ -19,7 +19,7 @@
 #include "chrome/browser/ash/borealis/borealis_window_manager.h"
 #include "chrome/browser/ash/borealis/borealis_window_manager_test_helper.h"
 #include "chrome/browser/ash/borealis/testing/apps.h"
-#include "chrome/browser/ash/borealis/testing/dbus.h"
+#include "chrome/browser/ash/guest_os/dbus_test_helper.h"
 #include "chrome/browser/ash/guest_os/guest_os_stability_monitor.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/cicerone/fake_cicerone_client.h"
@@ -35,7 +35,7 @@
 namespace borealis {
 
 class BorealisContextTest : public testing::Test,
-                            protected FakeVmServicesHelper {
+                            protected guest_os::FakeVmServicesHelper {
  public:
   BorealisContextTest()
       : new_window_provider_(std::make_unique<ash::TestNewWindowDelegate>()) {

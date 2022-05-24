@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/borealis/testing/dbus.h"
+#include "chrome/browser/ash/guest_os/dbus_test_helper.h"
 
 #include "chromeos/ash/components/dbus/cicerone/fake_cicerone_client.h"
 #include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
@@ -10,7 +10,7 @@
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/dlcservice/fake_dlcservice_client.h"
 
-namespace borealis {
+namespace guest_os {
 
 BasicDBusHelper::BasicDBusHelper() {
   chromeos::DBusThreadManager::Initialize();
@@ -79,4 +79,4 @@ FakeVmServicesHelper::FakeVmServicesHelper()
       FakeDlcserviceHelper(this),
       FakeConciergeHelper(this) {}
 
-}  // namespace borealis
+}  // namespace guest_os

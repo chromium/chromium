@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_BOREALIS_TESTING_DBUS_H_
-#define CHROME_BROWSER_ASH_BOREALIS_TESTING_DBUS_H_
+#ifndef CHROME_BROWSER_ASH_GUEST_OS_DBUS_TEST_HELPER_H_
+#define CHROME_BROWSER_ASH_GUEST_OS_DBUS_TEST_HELPER_H_
 
 namespace ash {
 class FakeCiceroneClient;
@@ -15,7 +15,7 @@ namespace chromeos {
 class FakeDlcserviceClient;
 }  // namespace chromeos
 
-namespace borealis {
+namespace guest_os {
 
 class BasicDBusHelper {
  public:
@@ -58,6 +58,10 @@ class FakeConciergeHelper {
   ash::FakeConciergeClient* FakeConciergeClient();
 };
 
+// A class for less boilerplate in VM tests. Have your fixture inherit from this
+// class, and the dbus services common to most VMs get initialised with fakes
+// during before your test and torn down correctly after.
+// You can access the fakes with e.g. this->FakeConciergeClient.
 class FakeVmServicesHelper : public BasicDBusHelper,
                              public FakeCiceroneHelper,
                              public FakeSeneschalHelper,
@@ -67,6 +71,6 @@ class FakeVmServicesHelper : public BasicDBusHelper,
   FakeVmServicesHelper();
 };
 
-}  // namespace borealis
+}  // namespace guest_os
 
-#endif  // CHROME_BROWSER_ASH_BOREALIS_TESTING_DBUS_H_
+#endif  // CHROME_BROWSER_ASH_GUEST_OS_DBUS_TEST_HELPER_H_

@@ -11,7 +11,7 @@
 #include "chrome/browser/ash/borealis/borealis_disk_manager.h"
 #include "chrome/browser/ash/borealis/borealis_metrics.h"
 #include "chrome/browser/ash/borealis/testing/callback_factory.h"
-#include "chrome/browser/ash/borealis/testing/dbus.h"
+#include "chrome/browser/ash/guest_os/dbus_test_helper.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/cicerone/fake_cicerone_client.h"
@@ -62,7 +62,8 @@ class DiskManagerMock : public BorealisDiskManager {
 using CallbackFactory =
     NiceCallbackFactory<void(BorealisStartupResult, std::string)>;
 
-class BorealisTasksTest : public testing::Test, protected FakeVmServicesHelper {
+class BorealisTasksTest : public testing::Test,
+                          protected guest_os::FakeVmServicesHelper {
  public:
   BorealisTasksTest() = default;
   ~BorealisTasksTest() override = default;
