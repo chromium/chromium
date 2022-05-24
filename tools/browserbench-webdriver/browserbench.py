@@ -7,10 +7,16 @@ from selenium import webdriver
 
 import json
 import selenium
+import subprocess
 import sys
 import time
+import traceback
 
 DEFAULT_STP_DRIVER_PATH = '/Applications/Safari Technology Preview.app/Contents/MacOS/safaridriver'
+
+# Maximum number of times the benchmark will be run before giving up.
+MAX_ATTEMPTS = 6
+
 
 class BrowserBench(object):
   def __init__(self, name, version):
@@ -60,13 +66,38 @@ class BrowserBench(object):
         try:
           return BrowserBench._CreateSafariDriver(optargs)
         except selenium.common.exceptions.SessionNotCreatedException as e:
-          print('Connecting to Safari failed, will try again ', e)
+          traceback.print_exc(e)
+          print('Connecting to Safari failed, will try again')
           time.sleep(5)
       print('Failed to connect to Safari, this likely means Safari is running '
             ' something else')
       return None
     else:
       return None
+
+  @staticmethod
+  def _KillBrowser(optargs):
+    if optargs.browser == 'safari' or optargs.browser == 'stp':
+      print('Killing browser')
+      subprocess.run([
+          'killall', 'Safari'
+          if optargs.browser == 'safari' else 'Safari Technology Preview'
+      ])
+      # Sleep for a little bit to ensure the kill happened.
+      time.sleep(5)
+      print('Continuing after kill')
+      return
+    # This logic is primarily for Safari, which seems to occasionally hang. Will
+    # implement for Chrome if necessary.
+    print('Not handling kill of chrome, if this is hit and test fails, '
+          'implement it')
+
+  def _CreateDriverAndRun(self, optargs):
+    driver = BrowserBench._CreateDriver(optargs)
+    if not driver:
+      raise Exception('failed to create driver')
+    driver.set_window_size(900, 780)
+    return self.RunAndExtractMeasurements(driver, optargs)
 
   def _ConvertMeasurementsToSkiaFormat(self, measurements):
     '''
@@ -174,13 +205,27 @@ class BrowserBench(object):
 
     self.UpdateParseArgs(optargs)
 
-    driver = BrowserBench._CreateDriver(optargs)
-    if not driver:
-      sys.stderr.write('Could not create a driver. Aborting.\n')
-      sys.exit(1)
-    driver.set_window_size(900, 780)
+    run_count = 0
+    measurements = False
+    # Try running the benchmark a number of times. For whatever reason either
+    # Safari or safaridriver does not always complete (based on exceptions it
+    # seems the http connection to safari is prematurely closing).
+    while not measurements and run_count < MAX_ATTEMPTS:
+      run_count += 1
+      try:
+        measurements = self._CreateDriverAndRun(optargs)
+      except Exception as e:
+        if run_count < MAX_ATTEMPTS:
+          sys.stderr.write('Got exception running, will try again')
+          traceback.print_exc()
+        else:
+          sys.stderr.write(
+              'Got exception running, retried too many times, giving up')
+          raise e
+      # When rerunning, first try killing the browser in hopes of state
+      # resetting.
+      BrowserBench._KillBrowser(optargs)
 
-    measurements = self.RunAndExtractMeasurements(driver, optargs)
     self._ProduceOutput(measurements, extra_key_values)
 
   def AddExtraParserOptions(self, parser):
