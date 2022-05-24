@@ -1302,9 +1302,10 @@ TEST_F(NavigationControllerTest, ReloadWithGuest) {
                                                     url1);
   ASSERT_TRUE(controller.GetVisibleEntry());
 
-  // Make the entry believe its RenderProcessHost is a guest.
+  // Ensure the entry's SiteInstance and RenderProcessHost are for a guest.
   NavigationEntryImpl* entry1 = controller.GetVisibleEntry();
-  ASSERT_EQ(entry1->site_instance(), guest_instance);
+  ASSERT_EQ(entry1->site_instance()->GetStoragePartitionConfig(),
+            kGuestPartitionConfig);
   ASSERT_TRUE(entry1->site_instance()->IsGuest());
   ASSERT_TRUE(entry1->site_instance()->GetProcess()->IsForGuestsOnly());
 
