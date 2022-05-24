@@ -790,7 +790,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Audio.Encoder.CodecType" enum="WebRtcAudioCodecs"
-    expires_after="2022-09-18">
+    expires_after="2022-11-20">
   <owner>aleloi@chromium.org</owner>
   <summary>
     Histogram of audio codec usage. Every sample corresponds to 5 seconds of
@@ -852,7 +852,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.Audio.TargetBitrateInKbps" units="kbps"
-    expires_after="2022-09-18">
+    expires_after="2022-11-20">
   <owner>hlundin@chromium.org</owner>
   <summary>
     The target bitrate in kbps that the audio codec should try to produce on
@@ -916,7 +916,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.BWE.InitialBandwidthEstimate" units="kbps"
-    expires_after="2022-09-18">
+    expires_after="2022-11-20">
   <owner>holmer@chromium.org</owner>
   <summary>The bandwidth estimate 2 seconds into a WebRTC call.</summary>
 </histogram>

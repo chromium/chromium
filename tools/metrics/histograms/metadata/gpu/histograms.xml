@@ -1746,7 +1746,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Viz.DisplayCompositor.OverlayStrategy"
-    enum="OverlayStrategies" expires_after="2022-09-18">
+    enum="OverlayStrategies" expires_after="2022-11-20">
   <owner>dcastagna@chromium.org</owner>
   <owner>hoegsberg@chromium.org</owner>
   <summary>

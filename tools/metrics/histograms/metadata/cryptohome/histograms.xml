@@ -287,7 +287,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Cryptohome.LECredential"
-    enum="CryptohomeLECredError" expires_after="2022-09-18">
+    enum="CryptohomeLECredError" expires_after="2022-11-20">
 <!-- Name completed by histogram_suffixes name="LECredentialOps" -->
 
   <owner>pmalani@chromium.org</owner>
