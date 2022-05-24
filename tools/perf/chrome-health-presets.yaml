@@ -18,7 +18,6 @@ presets:
           - AllRecipes_cold
       - benchmark: loading.mobile
         configs:
-          - android-pixel2-perf
           - android-pixel4-perf
         stories:
           - Amazon
@@ -29,7 +28,6 @@ presets:
           - mac-m1_mini_2020-perf
           - linux-perf
           - win-10-perf
-          - android-pixel2-perf
           - android-pixel4-perf
         stories:
           - Speedometer2
@@ -51,7 +49,6 @@ presets:
           - motionmark_ramp_suits
       - benchmark: rendering.mobile
         configs:
-          - android-pixel2-perf
           - android-pixel4-perf
         stories:
           - motionmark_ramp_canvas_arcs
@@ -71,7 +68,6 @@ presets:
           - mac-m1_mini_2020-perf
           - linux-perf
           - win-10-perf
-          - android-pixel2-perf
           - android-pixel4-perf
         stories:
           - Speedometer2
@@ -95,7 +91,6 @@ presets:
           - motionmark_ramp_suits
       - benchmark: rendering.mobile
         configs:
-          - android-pixel2-perf
           - android-pixel4-perf
         stories:
           - motionmark_ramp_canvas_arcs
@@ -120,7 +115,6 @@ presets:
           - AllRecipes_cold
       - benchmark: loading.mobile
         configs:
-          - android-pixel2-perf
           - android-pixel4-perf
         stories:
           - Amazon
@@ -235,7 +229,6 @@ presets:
           - yahoo.co.jp_warm
       - benchmark: loading.mobile
         configs:
-          - android-pixel2-perf
           - android-pixel4-perf
         stories:
           - 58Pic
