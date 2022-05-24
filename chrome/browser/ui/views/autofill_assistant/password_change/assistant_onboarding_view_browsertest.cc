@@ -61,12 +61,11 @@ class AssistantOnboardingViewBrowserTest : public DialogBrowserTest {
 
   // Creates controller and view and calls their `Show()` method.
   void ShowUi(const std::string& name) override {
-    controller_ = AssistantOnboardingController::Create(model_);
+    controller_ = AssistantOnboardingController::Create(
+        model_, browser()->tab_strip_model()->GetActiveWebContents());
     // We do not use the factory function here to test `AssistantOnboardingView`
     // directly.
-    view_ = new AssistantOnboardingView(
-        controller()->GetWeakPtr(),
-        browser()->tab_strip_model()->GetActiveWebContents());
+    view_ = new AssistantOnboardingView(controller()->GetWeakPtr());
     controller()->Show(prompt(), callback().Get());
   }
 

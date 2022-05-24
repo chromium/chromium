@@ -65,13 +65,14 @@ void ApcOnboardingCoordinatorImpl::PerformOnboarding(Callback callback) {
 std::unique_ptr<AssistantOnboardingController>
 ApcOnboardingCoordinatorImpl::CreateOnboardingController(
     const AssistantOnboardingInformation& onboarding_information) {
-  return AssistantOnboardingController::Create(onboarding_information);
+  return AssistantOnboardingController::Create(onboarding_information,
+                                               web_contents_);
 }
 
 base::WeakPtr<AssistantOnboardingPrompt>
 ApcOnboardingCoordinatorImpl::CreateOnboardingPrompt(
     base::WeakPtr<AssistantOnboardingController> controller) {
-  return AssistantOnboardingPrompt::Create(controller, web_contents_);
+  return AssistantOnboardingPrompt::Create(controller);
 }
 
 bool ApcOnboardingCoordinatorImpl::IsOnboardingAlreadyAccepted() {

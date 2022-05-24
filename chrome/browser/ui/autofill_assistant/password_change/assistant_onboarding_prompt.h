@@ -20,14 +20,13 @@ class AssistantOnboardingPrompt {
   // Factory function to create onboarding prompts on desktop platforms. The
   // actual implementation is in the `assistant_onboarding_view.cc` file.
   static base::WeakPtr<AssistantOnboardingPrompt> Create(
-      base::WeakPtr<AssistantOnboardingController> controller,
-      content::WebContents* web_contents);
+      base::WeakPtr<AssistantOnboardingController> controller);
 
   AssistantOnboardingPrompt() = default;
   virtual ~AssistantOnboardingPrompt() = default;
 
   // Shows the view of the prompt.
-  virtual void Show() = 0;
+  virtual void Show(content::WebContents* web_contents) = 0;
 
   // Notifies that view that the controller was destroyed so that the view can
   // close.

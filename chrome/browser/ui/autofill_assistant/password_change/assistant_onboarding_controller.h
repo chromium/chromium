@@ -12,6 +12,10 @@
 #include "base/memory/weak_ptr.h"
 #include "url/gurl.h"
 
+namespace content {
+class WebContents;
+}  // namespace content
+
 class AssistantOnboardingPrompt;
 
 // Holds information for the consent dialog.
@@ -52,7 +56,8 @@ class AssistantOnboardingController {
   // Factory function to create controller that is defined in the file
   // `assistant_onboarding_controller_impl.cc`.
   static std::unique_ptr<AssistantOnboardingController> Create(
-      const AssistantOnboardingInformation& onboarding_information);
+      const AssistantOnboardingInformation& onboarding_information,
+      content::WebContents* web_contents);
 
   AssistantOnboardingController() = default;
   virtual ~AssistantOnboardingController() = default;
@@ -71,6 +76,9 @@ class AssistantOnboardingController {
   // Depending on the type of the view, this can be due to closing a window,
   // closing a sidepanel, etc.
   virtual void OnClose() = 0;
+
+  // Navigates to the website that contains more information about Assistant.
+  virtual void OnLearnMoreClicked() = 0;
 
   // Provides the "model" behind the controller by returning a struct
   // specifying the consent text.

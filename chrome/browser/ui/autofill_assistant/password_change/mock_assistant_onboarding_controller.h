@@ -22,6 +22,7 @@ class MockAssistantOnboardingController : public AssistantOnboardingController {
   MOCK_METHOD(void, OnAccept, (), (override));
   MOCK_METHOD(void, OnCancel, (), (override));
   MOCK_METHOD(void, OnClose, (), (override));
+  MOCK_METHOD(void, OnLearnMoreClicked, (), (override));
   MOCK_METHOD(const AssistantOnboardingInformation&,
               GetOnboardingInformation,
               (),

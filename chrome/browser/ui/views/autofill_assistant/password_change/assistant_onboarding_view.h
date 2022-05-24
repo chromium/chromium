@@ -40,16 +40,15 @@ class AssistantOnboardingView : public views::DialogDelegateView,
     CONSENT_TEXT,
   };
 
-  AssistantOnboardingView(
-      base::WeakPtr<AssistantOnboardingController> controller,
-      content::WebContents* web_contents);
+  explicit AssistantOnboardingView(
+      base::WeakPtr<AssistantOnboardingController> controller);
   ~AssistantOnboardingView() override;
 
   AssistantOnboardingView(const AssistantOnboardingView&) = delete;
   AssistantOnboardingView& operator=(const AssistantOnboardingView&) = delete;
 
   // AssistantOnboardingPrompt:
-  void Show() override;
+  void Show(content::WebContents* web_contents) override;
   void OnControllerGone() override;
 
   // Returns a weak pointer to itself.
@@ -64,9 +63,6 @@ class AssistantOnboardingView : public views::DialogDelegateView,
 
   // The controller belonging to this view.
   base::WeakPtr<AssistantOnboardingController> controller_;
-
-  // The `WebContents` for which the dialog is supposed to show.
-  raw_ptr<content::WebContents> web_contents_;
 
   // Factory for weak pointers to this view.
   base::WeakPtrFactory<AssistantOnboardingView> weak_ptr_factory_{this};

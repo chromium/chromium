@@ -27,6 +27,10 @@
 #include "ui/views/style/typography.h"
 #include "ui/views/view_class_properties.h"
 
+namespace content {
+class WebContents;
+}  // namespace content
+
 namespace {
 
 // Ratios of element width and dialog width.
@@ -42,26 +46,24 @@ constexpr int kChildSpacing = 10;
 
 // Factory function to create onboarding prompts on desktop platforms.
 base::WeakPtr<AssistantOnboardingPrompt> AssistantOnboardingPrompt::Create(
-    base::WeakPtr<AssistantOnboardingController> controller,
-    content::WebContents* web_contents) {
-  return (new AssistantOnboardingView(controller, web_contents))->GetWeakPtr();
+    base::WeakPtr<AssistantOnboardingController> controller) {
+  return (new AssistantOnboardingView(controller))->GetWeakPtr();
 }
 
 AssistantOnboardingView::AssistantOnboardingView(
-    base::WeakPtr<AssistantOnboardingController> controller,
-    content::WebContents* web_contents)
-    : controller_(controller), web_contents_(web_contents) {
+    base::WeakPtr<AssistantOnboardingController> controller)
+    : controller_(controller) {
   DCHECK(controller_);
 }
 
 AssistantOnboardingView::~AssistantOnboardingView() = default;
 
-void AssistantOnboardingView::Show() {
+void AssistantOnboardingView::Show(content::WebContents* web_contents) {
   DCHECK(controller_);
 
   InitDelegate();
   InitDialog();
-  constrained_window::ShowWebModalDialogViews(this, web_contents_);
+  constrained_window::ShowWebModalDialogViews(this, web_contents);
 }
 
 void AssistantOnboardingView::OnControllerGone() {
@@ -169,10 +171,9 @@ void AssistantOnboardingView::InitDialog() {
   std::u16string consent_text = base::ReplaceStringPlaceholders(
       controller_->GetOnboardingInformation().consent_text,
       controller_->GetOnboardingInformation().learn_more_title, &offset);
-  // TODO(crbug.com/1322387): Add proper callback to controller.
   views::StyledLabel::RangeStyleInfo link_style =
-      views::StyledLabel::RangeStyleInfo::CreateForLink(
-          base::DoNothingAs<void()>());
+      views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
+          &AssistantOnboardingController::OnLearnMoreClicked, controller_));
 
   // The actual consent text with the "Learn more" link.
   AddChildView(

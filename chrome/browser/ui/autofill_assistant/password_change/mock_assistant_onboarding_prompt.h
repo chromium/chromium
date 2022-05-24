@@ -9,13 +9,17 @@
 #include "chrome/browser/ui/autofill_assistant/password_change/assistant_onboarding_prompt.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
+namespace content {
+class WebContents;
+}  // namespace content
+
 // Mocked AssistantOnboardingPrompt used in unit tests.
 class MockAssistantOnboardingPrompt : public AssistantOnboardingPrompt {
  public:
   MockAssistantOnboardingPrompt();
   ~MockAssistantOnboardingPrompt() override;
 
-  MOCK_METHOD(void, Show, (), (override));
+  MOCK_METHOD(void, Show, (content::WebContents*), (override));
   MOCK_METHOD(void, OnControllerGone, (), (override));
 
   base::WeakPtr<AssistantOnboardingPrompt> GetWeakPtr() {

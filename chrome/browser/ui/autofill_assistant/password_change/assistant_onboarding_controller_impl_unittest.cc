@@ -17,8 +17,10 @@ using ::testing::StrictMock;
 class AssistantOnboardingControllerImplTest : public ::testing::Test {
  public:
   AssistantOnboardingControllerImplTest() {
-    controller_ =
-        AssistantOnboardingController::Create(AssistantOnboardingInformation());
+    // Create controller without `WebContents` here - the version with
+    // `WebContents` is tested in the browsertest.
+    controller_ = AssistantOnboardingController::Create(
+        AssistantOnboardingInformation(), /*web_contents=*/nullptr);
   }
   ~AssistantOnboardingControllerImplTest() override = default;
 
