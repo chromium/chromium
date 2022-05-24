@@ -40,6 +40,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/table_layout.h"
 #include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
 
 namespace ash {
 namespace {
@@ -927,14 +928,23 @@ void CalendarView::OpenEventList() {
       calendar_utils::GetMonthDayYear(selected_date.value())));
   scroll_view_->NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged,
                                          /*send_native_event=*/true);
+
   event_list_view_ = AddChildView(
       std::make_unique<CalendarEventListView>(calendar_view_controller_.get()));
+  event_list_view_->SetProperty(views::kViewIgnoredByLayoutKey, true);
   event_list_view_->SetFocusBehavior(FocusBehavior::NEVER);
-  event_list_view_->SetBounds(scroll_view_->GetVisibleRect().x(),
-                              scroll_view_->GetVisibleRect().bottom(),
+
+  // Set the bounds of the EventListView to be flush with the bottom of the
+  // scroll view. Only the position will be animated, so give the view its final
+  // bounds.
+  event_list_view_->SetBounds(scroll_view_->x(),
+                              scroll_view_->y() +
+                                  calendar_view_controller_->row_height() +
+                                  kContentVerticalPadding,
                               scroll_view_->GetVisibleRect().width(),
                               scroll_view_->GetVisibleRect().height() -
-                                  calendar_view_controller_->row_height());
+                                  kExpandedCalendarViewHeightScale *
+                                      calendar_view_controller_->row_height());
 
   if (!should_months_animate_) {
     OnOpenEventListAnimationComplete();
@@ -949,13 +959,8 @@ void CalendarView::OpenEventList() {
   month_moving.Translate(moving_up_location);
 
   gfx::Transform list_view_moving;
-
-  list_view_moving.Translate(
-      gfx::Vector2dF(0, -event_list_view_->GetBoundsInScreen().y() +
-                            scroll_view_->GetBoundsInScreen().bottom() -
-                            scroll_view_->GetVisibleRect().height() +
-                            calendar_view_controller_->row_height() +
-                            kContentVerticalPadding));
+  list_view_moving.Translate(gfx::Vector2dF(0, event_list_view_->height()));
+  event_list_view_->SetTransform(list_view_moving);
 
   // Tracks animation smoothness. For now, we only track animation smoothness
   // for 1 month and 1 label since all 2 month views and 2 label views are
@@ -971,20 +976,10 @@ void CalendarView::OpenEventList() {
   views::AnimationBuilder()
       .SetPreemptionStrategy(
           ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
-      .OnEnded(base::BindOnce(
-          [](base::WeakPtr<CalendarView> calendar_view) {
-            if (!calendar_view)
-              return;
-            calendar_view->OnOpenEventListAnimationComplete();
-          },
-          weak_factory_.GetWeakPtr()))
-      .OnAborted(base::BindOnce(
-          [](base::WeakPtr<CalendarView> calendar_view) {
-            if (!calendar_view)
-              return;
-            calendar_view->OnOpenEventListAnimationComplete();
-          },
-          weak_factory_.GetWeakPtr()))
+      .OnEnded(base::BindOnce(&CalendarView::OnOpenEventListAnimationComplete,
+                              weak_factory_.GetWeakPtr()))
+      .OnAborted(base::BindOnce(&CalendarView::OnOpenEventListAnimationComplete,
+                                weak_factory_.GetWeakPtr()))
       .Once()
       .SetDuration(calendar_utils::kAnimationDurationForMoving)
       .SetTransform(current_month_, month_moving, gfx::Tween::EASE_OUT_2)
@@ -995,8 +990,7 @@ void CalendarView::OpenEventList() {
       .SetTransform(next_next_month_, month_moving, gfx::Tween::EASE_OUT_2)
       .At(base::Milliseconds(0))
       .SetDuration(kAnimationDurationForEventsMoving)
-      .SetTransform(event_list_view_, std::move(list_view_moving),
-                    gfx::Tween::EASE_OUT_2);
+      .SetTransform(event_list_view_, gfx::Transform(), gfx::Tween::EASE_OUT_2);
 }
 
 void CalendarView::CloseEventList() {
@@ -1011,20 +1005,9 @@ void CalendarView::CloseEventList() {
   scroll_view_->SetVerticalScrollBarMode(
       views::ScrollView::ScrollBarMode::kHiddenButEnabled);
 
-  // The position of the `event_list_view_` is on the most top the calendar view
-  // after the height of the `scroll_view_` is set to max. This init set it to
-  // the correct position.
-  const int init_position =
-      event_list_view_->GetBoundsInScreen().y() - GetBoundsInScreen().y();
-  gfx::Transform list_view_moving_init;
-  list_view_moving_init.Translate(0, init_position);
-
-  // Then based on the `event_list_view_`'s position, move it
-  // out of the visible view.
+  // Move EventListView off the bottom of the CalendarView.
   gfx::Transform list_view_moving;
-  list_view_moving.Translate(gfx::Vector2dF(
-      0, scroll_view_->GetVisibleRect().height() -
-             calendar_view_controller_->row_height() + init_position));
+  list_view_moving.Translate(gfx::Vector2dF(0, event_list_view_->height()));
 
   auto event_list_reporter = calendar_metrics::CreateAnimationReporter(
       event_list_view_, kCloseEventListAnimationHistogram);
@@ -1032,23 +1015,12 @@ void CalendarView::CloseEventList() {
   views::AnimationBuilder()
       .SetPreemptionStrategy(
           ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
-      .OnEnded(base::BindOnce(
-          [](base::WeakPtr<CalendarView> calendar_view) {
-            if (!calendar_view)
-              return;
-            calendar_view->OnCloseEventListAnimationComplete();
-          },
-          weak_factory_.GetWeakPtr()))
-      .OnAborted(base::BindOnce(
-          [](base::WeakPtr<CalendarView> calendar_view) {
-            if (!calendar_view)
-              return;
-            calendar_view->OnCloseEventListAnimationComplete();
-          },
-          weak_factory_.GetWeakPtr()))
+      .OnEnded(base::BindOnce(&CalendarView::OnCloseEventListAnimationComplete,
+                              weak_factory_.GetWeakPtr()))
+      .OnAborted(
+          base::BindOnce(&CalendarView::OnCloseEventListAnimationComplete,
+                         weak_factory_.GetWeakPtr()))
       .Once()
-      .SetTransform(event_list_view_, std::move(list_view_moving_init))
-      .Then()
       .SetDuration(kAnimationDurationForClosingEvents)
       .SetTransform(event_list_view_, std::move(list_view_moving),
                     gfx::Tween::FAST_OUT_SLOW_IN);
@@ -1514,7 +1486,7 @@ void CalendarView::OnOpenEventListAnimationComplete() {
                                  PositionOfSelectedDate());
   scroll_view_->ClipHeightTo(0, kExpandedCalendarViewHeightScale *
                                     calendar_view_controller_->row_height());
-  event_list_view_->SetTransform(gfx::Transform());
+
   if (!should_months_animate_)
     months_animation_restart_timer_.Reset();
   scroll_view_->SetVerticalScrollBarMode(
