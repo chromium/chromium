@@ -107,7 +107,7 @@ export class OnboardingNetworkPage extends OnboardingNetworkPageBase {
       },
 
       /**
-       * Set to true to show the 'connect' button instead of 'disconnect'.
+       * Tracks whether network shows connect button or disconnect button.
        * @protected
        */
       networkShowConnect_: {
@@ -315,10 +315,7 @@ export class OnboardingNetworkPage extends OnboardingNetworkPageBase {
    * @protected
    */
   getDialogTitle_() {
-    // TODO(gavindodd): Is disconnect ever needed? Currently it is not used as
-    // networkShowConnect_ is always true.
     if (this.networkName_ && !this.networkShowConnect_) {
-      // TODO(gavindodd): Confirm other i18n strings don't need HTMLEscape
       return this.i18n('internetConfigName', HTMLEscape(this.networkName_));
     }
     const type = this.i18n('OncType' + this.networkType_);
