@@ -8,4 +8,5 @@ include_rules = [
   "+crypto",
   "+net",
   "+testing",
+  "+third_party/abseil-cpp/absl",
 ]

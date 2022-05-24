@@ -1,0 +1,4 @@
+include_rules = [
+  # Allow string_view.h since absl::string_view is widely used in QUICHE API.
+  "+third_party/abseil-cpp/absl/strings",
+]
