@@ -176,6 +176,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Bonjour, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">Entrée de texte</translation>
+<translation id="1982717156487272186">Afficher les données de la semaine précédente</translation>
 <translation id="1989113344093894667">Impossible de capturer le contenu</translation>
 <translation id="1990046457226896323">Les fichiers de synthèse textuelle ont été téléchargés</translation>
 <translation id="1993072747612765854">En savoir plus sur la dernière mise à jour de <ph name="SYSTEM_APP_NAME" /></translation>
@@ -623,6 +624,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, note <ph name="RATING_SCORE" /></translation>
 <translation id="4633185660152240791">{0,plural, =1{Restaurez la version antérieure de l'appareil dans un délai d'un jour}one{Restaurez la version antérieure de l'appareil dans un délai de # jour}other{Restaurez la version antérieure de l'appareil dans un délai de # jours}}</translation>
 <translation id="4642092649622328492">Effectuer une capture d'écran partielle</translation>
+<translation id="4644727592819780893">La surface de capture est trop petite pour remplir l'aperçu de la caméra</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, recommandation d'application</translation>
 <translation id="4657775630156561295">La suggestion suivante sera supprimée de l'historique des suggestions de votre compte :
 
@@ -780,6 +782,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="5673434351075758678">De « <ph name="FROM_LOCALE" />  à « <ph name="TO_LOCALE" /> » après la synchronisation de vos paramètres.</translation>
 <translation id="5675363643668471212">Élément d'étagère</translation>
 <translation id="5677928146339483299">Bloqué</translation>
+<translation id="5678564054339031017">Afficher les données de la semaine suivante</translation>
 <translation id="5679050765726761783">Un adaptateur d'alimentation à faible consommation est branché</translation>
 <translation id="5682642926269496722">L'Assistant Google n'est pas accessible pour le compte d'utilisateur actuel.</translation>
 <translation id="5689633613396158040">Le mode Éclairage nocturne permet de regarder l'écran plus facilement lorsque l'éclairage est faible. Touchez l'écran pour modifier l'heure à laquelle le mode Éclairage nocturne s'active ou se désactive complètement.</translation>
