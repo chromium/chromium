@@ -305,6 +305,9 @@ class Browser : public TabStripModelObserver,
     // User-set title of this browser window, if there is one.
     std::string user_title;
 
+    // Title if this is a picture in picture browser window.
+    std::string picture_in_picture_window_title;
+
     // Only applied when not in forced app mode. True if the browser is
     // resizeable.
     bool can_resize = true;
@@ -1267,6 +1270,8 @@ class Browser : public TabStripModelObserver,
   bool window_has_shown_;
 
   std::string user_title_;
+
+  std::string picture_in_picture_window_title_;
 
   // Controls both signin and sync consent.
   SigninViewController signin_view_controller_;

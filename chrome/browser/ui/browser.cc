@@ -493,6 +493,7 @@ Browser::Browser(const CreateParams& params)
       command_controller_(new chrome::BrowserCommandController(this)),
       window_has_shown_(false),
       user_title_(params.user_title),
+      picture_in_picture_window_title_(params.picture_in_picture_window_title),
       signin_view_controller_(this),
       breadcrumb_manager_browser_agent_(
           breadcrumbs::IsEnabled()
@@ -702,6 +703,9 @@ std::u16string Browser::GetWindowTitleForCurrentTab(
     bool include_app_name) const {
   if (!user_title_.empty())
     return base::UTF8ToUTF16(user_title_);
+  if (!picture_in_picture_window_title_.empty()) {
+    return base::UTF8ToUTF16(picture_in_picture_window_title_);
+  }
   return GetWindowTitleFromWebContents(
       include_app_name, tab_strip_model_->GetActiveWebContents());
 }

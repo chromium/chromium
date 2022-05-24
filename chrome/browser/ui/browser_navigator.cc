@@ -273,6 +273,8 @@ std::pair<Browser*, int> GetBrowserAndTabForDisposition(
                                              profile, params.user_gesture);
         browser_params.trusted_source = params.trusted_source;
         browser_params.initial_bounds = params.window_bounds;
+        browser_params.picture_in_picture_window_title =
+            params.source_contents->GetLastCommittedURL().GetContent();
         return {Browser::Create(browser_params), -1};
       }
 #else   // !IS_CHROMEOS_LACROS
