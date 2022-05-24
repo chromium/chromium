@@ -3862,8 +3862,9 @@ void HostResolverManager::PushDnsTasks(bool proc_task_allowed,
     case SecureDnsMode::kSecure:
       DCHECK(!allow_cache ||
              out_tasks->front() == TaskType::SECURE_CACHE_LOOKUP);
-      DCHECK(dns_client_->CanUseSecureDnsTransactions());
-      if (dns_tasks_allowed)
+      // Policy misconfiguration can put us in secure DNS mode without any DoH
+      // servers to query. See https://crbug.com/1326526.
+      if (dns_tasks_allowed && dns_client_->CanUseSecureDnsTransactions())
         out_tasks->push_back(TaskType::SECURE_DNS);
       break;
     case SecureDnsMode::kAutomatic:
