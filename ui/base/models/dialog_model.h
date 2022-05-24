@@ -211,8 +211,9 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
     Builder& AddExtraLink(ui::DialogModelLabel::Link link);
 
     // Adds body text. See DialogModel::AddBodyText().
-    Builder& AddBodyText(const DialogModelLabel& label) {
-      model_->AddBodyText(label);
+    Builder& AddBodyText(const DialogModelLabel& label,
+                         ElementIdentifier id = ElementIdentifier()) {
+      model_->AddBodyText(label, id);
       return *this;
     }
 
@@ -287,7 +288,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
   DialogModelHost* host() { return host_; }
 
   // Adds body text at the end of the dialog model.
-  void AddBodyText(const DialogModelLabel& label);
+  void AddBodyText(const DialogModelLabel& label, ElementIdentifier id);
 
   // Adds a checkbox ([checkbox] label) at the end of the dialog model.
   void AddCheckbox(ElementIdentifier id,

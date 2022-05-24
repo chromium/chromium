@@ -566,6 +566,7 @@ void BubbleDialogModelHost::AddOrUpdateBodyText(
   std::unique_ptr<View> view =
       CreateViewForLabel(model_field->label(GetPassKey()));
   DialogModelHostField info{model_field, view.get(), nullptr};
+  view->SetProperty(kElementIdentifierKey, model_field->id(GetPassKey()));
   AddDialogModelHostField(std::move(view), info);
 }
 

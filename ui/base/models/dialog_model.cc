@@ -97,8 +97,10 @@ DialogModel::DialogModel(base::PassKey<Builder>,
 
 DialogModel::~DialogModel() = default;
 
-void DialogModel::AddBodyText(const DialogModelLabel& label) {
-  AddField(std::make_unique<DialogModelBodyText>(GetPassKey(), this, label));
+void DialogModel::AddBodyText(const DialogModelLabel& label,
+                              ElementIdentifier id) {
+  AddField(
+      std::make_unique<DialogModelBodyText>(GetPassKey(), this, label, id));
 }
 
 void DialogModel::AddCheckbox(ElementIdentifier id,

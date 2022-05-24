@@ -179,9 +179,9 @@ void DialogModelButton::OnPressed(base::PassKey<DialogModelHost>,
 
 DialogModelBodyText::DialogModelBodyText(base::PassKey<DialogModel> pass_key,
                                          DialogModel* model,
-                                         const DialogModelLabel& label)
-    : DialogModelField(pass_key, model, kBodyText, ElementIdentifier(), {}),
-      label_(label) {}
+                                         const DialogModelLabel& label,
+                                         ElementIdentifier id)
+    : DialogModelField(pass_key, model, kBodyText, id, {}), label_(label) {}
 
 DialogModelBodyText::~DialogModelBodyText() = default;
 

@@ -226,7 +226,8 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelBodyText : public DialogModelField {
   // fields.
   DialogModelBodyText(base::PassKey<DialogModel> pass_key,
                       DialogModel* model,
-                      const DialogModelLabel& label);
+                      const DialogModelLabel& label,
+                      ElementIdentifier id);
   DialogModelBodyText(const DialogModelBodyText&) = delete;
   DialogModelBodyText& operator=(const DialogModelBodyText&) = delete;
   ~DialogModelBodyText() override;

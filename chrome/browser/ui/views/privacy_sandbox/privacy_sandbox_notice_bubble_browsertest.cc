@@ -24,6 +24,7 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/styled_label.h"
+#include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
@@ -84,6 +85,11 @@ class PrivacySandboxNoticeBubbleBrowserTest : public DialogBrowserTest {
     // Shutting down the browser test will naturally shut the bubble, verify
     // expectations before that happens.
     testing::Mock::VerifyAndClearExpectations(mock_service());
+  }
+
+  ui::TrackedElement* GetElement(ui::ElementIdentifier id) {
+    return ui::ElementTracker::GetElementTracker()->GetFirstMatchingElement(
+        id, browser()->window()->GetElementContext());
   }
 
  private:
@@ -187,7 +193,7 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxNoticeBubbleBrowserTest,
 // TODO(crbug.com/1321587, crbug.com/1327190): Update how the link is accessed
 // after the API for DialogModel is added.
 IN_PROC_BROWSER_TEST_F(PrivacySandboxNoticeBubbleBrowserTest,
-                       DISABLED_OpenLearnMoreNotice) {
+                       OpenLearnMoreNotice) {
   EXPECT_CALL(
       *mock_service(),
       PromptActionOccurred(PrivacySandboxService::PromptAction::kNoticeShown));
@@ -200,7 +206,11 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxNoticeBubbleBrowserTest,
           PrivacySandboxService::PromptAction::kNoticeClosedNoInteraction))
       .Times(0);
 
-  auto* bubble = ShowBubble(browser());
-  // TODO(crbug.com/1321587): Get the link from the bubble and click on it.
-  VerifyBubbleWasClosed(bubble);
+  ShowBubble(browser());
+  auto* view = GetElement(kPrivacySandboxLearnMoreTextForTesting)
+                   ->AsA<views::TrackedElementViews>()
+                   ->view();
+  static_cast<views::StyledLabel*>(view)->ClickLinkForTesting();
+  // TODO(crbug.com/1321587): Bubble should be closed. Figure out why opening
+  // settings page doesn't take over the focus (only in tests).
 }

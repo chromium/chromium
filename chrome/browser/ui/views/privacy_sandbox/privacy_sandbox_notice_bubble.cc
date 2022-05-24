@@ -78,6 +78,8 @@ class PrivacySandboxNoticeBubbleModelDelegate : public ui::DialogModelDelegate {
 
 }  // namespace
 
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kPrivacySandboxLearnMoreTextForTesting);
+
 // static
 void ShowPrivacySandboxNoticeBubble(Browser* browser) {
   auto bubble_delegate_unique =
@@ -94,13 +96,16 @@ void ShowPrivacySandboxNoticeBubble(Browser* browser) {
                        IDR_PRIVACY_SANDBOX_CONFIRMATION_BANNER)),
                    ui::ImageModel::FromImageSkia(*bundle.GetImageSkiaNamed(
                        IDR_PRIVACY_SANDBOX_CONFIRMATION_BANNER_DARK)))
-          .AddBodyText(ui::DialogModelLabel::CreateWithLink(
-              IDS_PRIVACY_SANDBOX_BUBBLE_NOTICE_DESCRIPTION,
-              ui::DialogModelLabel::Link(
-                  IDS_PRIVACY_SANDBOX_BUBBLE_NOTICE_DESCRIPTION_ESTIMATES_INTERESTS_LINK,
-                  base::BindRepeating(&PrivacySandboxNoticeBubbleModelDelegate::
-                                          OnLearnMoreLinkPressed,
-                                      base::Unretained(bubble_delegate)))))
+          .AddBodyText(
+              ui::DialogModelLabel::CreateWithLink(
+                  IDS_PRIVACY_SANDBOX_BUBBLE_NOTICE_DESCRIPTION,
+                  ui::DialogModelLabel::Link(
+                      IDS_PRIVACY_SANDBOX_BUBBLE_NOTICE_DESCRIPTION_ESTIMATES_INTERESTS_LINK,
+                      base::BindRepeating(
+                          &PrivacySandboxNoticeBubbleModelDelegate::
+                              OnLearnMoreLinkPressed,
+                          base::Unretained(bubble_delegate)))),
+              kPrivacySandboxLearnMoreTextForTesting)
           .AddOkButton(
               base::BindRepeating(
                   &PrivacySandboxNoticeBubbleModelDelegate::OnOkButtonPressed,
