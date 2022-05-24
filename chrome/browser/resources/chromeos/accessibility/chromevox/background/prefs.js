@@ -9,6 +9,7 @@
  */
 import {ConsoleTts} from '/chromevox/background/console_tts.js';
 import {EventStreamLogger} from '/chromevox/background/logging/event_stream_logger.js';
+import {LogUrlWatcher} from '/chromevox/background/logging/log_url_watcher.js';
 
 /**
  * This object has default values of preferences and contains the common
@@ -55,6 +56,7 @@ export class ChromeVoxPrefs {
         localStorage[pref] = ChromeVoxPrefs.DEFAULT_PREFS[pref];
       }
     }
+    this.enableOrDisableLogUrlWatcher_();
   }
 
   /**
@@ -94,6 +96,17 @@ export class ChromeVoxPrefs {
     } else if (key === 'enableEventStreamLogging') {
       EventStreamLogger.instance.notifyEventStreamFilterChangedAll(value);
     }
+    this.enableOrDisableLogUrlWatcher_();
+  }
+
+  enableOrDisableLogUrlWatcher_() {
+    for (const pref of Object.values(ChromeVoxPrefs.loggingPrefs)) {
+      if (localStorage[pref]) {
+        LogUrlWatcher.create();
+        return;
+      }
+    }
+    LogUrlWatcher.destroy();
   }
 }
 

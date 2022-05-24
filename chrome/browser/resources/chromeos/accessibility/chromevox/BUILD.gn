@@ -110,6 +110,7 @@ chromevox_es6_modules = [
   "background/keyboard_handler.js",
   "background/live_regions.js",
   "background/logging/event_stream_logger.js",
+  "background/logging/log_url_watcher.js",
   "background/math_handler.js",
   "background/media_automation_handler.js",
   "background/page_load_sound_handler.js",
