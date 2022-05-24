@@ -63,7 +63,8 @@ class CORE_EXPORT RuleFeatureSet {
 
   enum SelectorPreMatch { kSelectorNeverMatches, kSelectorMayMatch };
 
-  SelectorPreMatch CollectFeaturesFromRuleData(const RuleData*);
+  SelectorPreMatch CollectFeaturesFromRuleData(const RuleData*,
+                                               const StyleScope*);
 
   // Methods for accessing the data in this object.
   bool UsesFirstLineRules() const { return metadata_.uses_first_line_rules; }
@@ -268,7 +269,7 @@ class CORE_EXPORT RuleFeatureSet {
   DescendantInvalidationSet& EnsureTypeRuleInvalidationSet();
   DescendantInvalidationSet& EnsurePartInvalidationSet();
 
-  void UpdateInvalidationSets(const RuleData*);
+  void UpdateInvalidationSets(const RuleData*, const StyleScope*);
 
   struct InvalidationSetFeatures {
     DISALLOW_NEW();

@@ -111,10 +111,43 @@ bool AffectsAnimations(const RuleData& rule_data) {
   return false;
 }
 
-// Sequentially scans a sorted list of RuleSet::LayerInterval and seeks for the
-// cascade layer for a rule (given by its position). SeekLayerOrder() must be
-// called with non-decreasing rule positions, so that we only need to go through
-// the layer list at most once for all SeekLayerOrder() calls.
+// Sequentially scans a sorted list of RuleSet::Interval<T> and seeks
+// for the value for a rule (given by its position). Seek() must be called
+// with non-decreasing rule positions, so that we only need to go
+// through the layer list at most once for all Seek() calls.
+template <class T>
+class Seeker {
+  STACK_ALLOCATED();
+
+ public:
+  explicit Seeker(const HeapVector<RuleSet::Interval<T>>& intervals)
+      : intervals_(intervals), iter_(intervals_.begin()) {}
+
+  const T* Seek(unsigned rule_position) {
+#if DCHECK_IS_ON()
+    DCHECK_GE(rule_position, last_rule_position_);
+    last_rule_position_ = rule_position;
+#endif
+
+    while (iter_ != intervals_.end() &&
+           iter_->start_position <= rule_position) {
+      ++iter_;
+    }
+    if (iter_ == intervals_.begin())
+      return nullptr;
+    return std::prev(iter_)->value;
+  }
+
+ private:
+  const HeapVector<RuleSet::Interval<T>>& intervals_;
+  const RuleSet::Interval<T>* iter_;
+#if DCHECK_IS_ON()
+  unsigned last_rule_position_ = 0;
+#endif
+};
+
+// A wrapper around Seeker<CascadeLayer> that also translates through the layer
+// map.
 class CascadeLayerSeeker {
   STACK_ALLOCATED();
 
@@ -123,25 +156,20 @@ class CascadeLayerSeeker {
                      Element* vtt_originating_element,
                      const CSSStyleSheet* style_sheet,
                      const RuleSet* rule_set)
-      : layers_(rule_set->LayerIntervals()),
-        layer_iter_(layers_.begin()),
+      : seeker_(rule_set->LayerIntervals()),
         layer_map_(FindLayerMap(scope, vtt_originating_element, style_sheet)) {}
 
   unsigned SeekLayerOrder(unsigned rule_position) {
-#if DCHECK_IS_ON()
-    DCHECK_GE(rule_position, last_rule_position_);
-    last_rule_position_ = rule_position;
-#endif
-
-    if (!layer_map_)
+    if (!layer_map_) {
       return CascadeLayerMap::kImplicitOuterLayerOrder;
+    }
 
-    while (layer_iter_ != layers_.end() &&
-           layer_iter_->start_position <= rule_position)
-      ++layer_iter_;
-    if (layer_iter_ == layers_.begin())
+    const CascadeLayer* layer = seeker_.Seek(rule_position);
+    if (layer == nullptr) {
       return CascadeLayerMap::kImplicitOuterLayerOrder;
-    return layer_map_->GetLayerOrder(*std::prev(layer_iter_)->layer);
+    } else {
+      return layer_map_->GetLayerOrder(*layer);
+    }
   }
 
  private:
@@ -165,12 +193,8 @@ class CascadeLayerSeeker {
     return document->GetStyleEngine().GetUserCascadeLayerMap();
   }
 
-  const HeapVector<RuleSet::LayerInterval>& layers_;
-  const RuleSet::LayerInterval* layer_iter_;
+  Seeker<CascadeLayer> seeker_;
   const CascadeLayerMap* layer_map_ = nullptr;
-#if DCHECK_IS_ON()
-  unsigned last_rule_position_ = 0;
-#endif
 };
 
 // The below `rule_map` is designed to aggregate the following values per-rule
@@ -327,6 +351,9 @@ void ElementRuleCollector::CollectMatchingRulesForListInternal(
 
   CascadeLayerSeeker layer_seeker(
       context.scope, context.vtt_originating_element, style_sheet, rule_set);
+  Seeker<ContainerQuery> container_query_seeker(
+      rule_set->ContainerQueryIntervals());
+  Seeker<StyleScope> scope_seeker(rule_set->ScopeIntervals());
 
   unsigned rejected = 0;
   unsigned fast_rejected = 0;
@@ -367,7 +394,7 @@ void ElementRuleCollector::CollectMatchingRulesForListInternal(
 
     SelectorChecker::MatchResult result;
     context.selector = &selector;
-    context.style_scope = rule_data->GetStyleScope();
+    context.style_scope = scope_seeker.Seek(rule_data->GetPosition());
     context.is_inside_visited_link =
         rule_data->LinkMatchType() == CSSSelector::kMatchVisited;
     DCHECK(!context.is_inside_visited_link ||
@@ -381,7 +408,9 @@ void ElementRuleCollector::CollectMatchingRulesForListInternal(
       rejected++;
       continue;
     }
-    if (auto* container_query = rule_data->GetContainerQuery()) {
+    const ContainerQuery* container_query =
+        container_query_seeker.Seek(rule_data->GetPosition());
+    if (container_query) {
       result_.SetDependsOnContainerQueries();
 
       // If we are matching pseudo elements like a ::before rule when computing
@@ -424,8 +453,8 @@ void ElementRuleCollector::CollectMatchingRulesForListInternal(
       selector_statistics_collector.SetDidMatch();
     unsigned layer_order =
         layer_seeker.SeekLayerOrder(rule_data->GetPosition());
-    DidMatchRule(rule_data, layer_order, result.proximity, result, style_sheet,
-                 style_sheet_index);
+    DidMatchRule(rule_data, layer_order, container_query, result.proximity,
+                 result, style_sheet, style_sheet_index);
   }
 
   if (perf_trace_enabled) {
@@ -810,6 +839,7 @@ void ElementRuleCollector::SortAndTransferMatchedRules(
 void ElementRuleCollector::DidMatchRule(
     const RuleData* rule_data,
     unsigned layer_order,
+    const ContainerQuery* container_query,
     unsigned proximity,
     const SelectorChecker::MatchResult& result,
     const CSSStyleSheet* style_sheet,
@@ -865,8 +895,7 @@ void ElementRuleCollector::DidMatchRule(
         DCHECK(result.custom_highlight_name);
         style_->SetHasCustomHighlightName(result.custom_highlight_name);
       }
-    } else if (dynamic_pseudo == kPseudoIdFirstLine &&
-               rule_data->GetContainerQuery()) {
+    } else if (dynamic_pseudo == kPseudoIdFirstLine && container_query) {
       style_->SetFirstLineDependsOnContainerQueries(true);
     }
   } else {

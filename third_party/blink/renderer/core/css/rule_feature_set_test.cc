@@ -71,7 +71,7 @@ class RuleFeatureSetTest : public testing::Test {
           style_rule, indices[i], 0, kRuleHasNoSpecialState,
           nullptr /* container_query */, style_scope);
       DCHECK(rule_data);
-      if (set.CollectFeaturesFromRuleData(rule_data))
+      if (set.CollectFeaturesFromRuleData(rule_data, style_scope))
         result = RuleFeatureSet::SelectorPreMatch::kSelectorMayMatch;
     }
     return result;
@@ -1730,7 +1730,6 @@ RefTestData ref_not_equal_test_data[] = {
 
 class RuleFeatureSetRefTest : public RuleFeatureSetTest {
  public:
-
   void Run(const RefTestData& data) {
     RuleFeatureSet main_set;
     RuleFeatureSet ref_set;

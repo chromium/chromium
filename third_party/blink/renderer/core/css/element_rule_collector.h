@@ -220,6 +220,7 @@ class CORE_EXPORT ElementRuleCollector {
              MatchResult&);
   void DidMatchRule(const RuleData*,
                     unsigned layer_order,
+                    const ContainerQuery*,
                     unsigned proximity,
                     const SelectorChecker::MatchResult&,
                     const CSSStyleSheet* style_sheet,

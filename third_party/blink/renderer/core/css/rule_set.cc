@@ -53,6 +53,11 @@ using base::SubstringSetMatcher;
 
 namespace blink {
 
+template <class T>
+static void AddRuleToIntervals(const T* value,
+                               unsigned position,
+                               HeapVector<RuleSet::Interval<T>>& intervals);
+
 static inline ValidPropertyFilter DetermineValidPropertyFilter(
     const AddRuleFlags add_rule_flags,
     const CSSSelector& selector) {
@@ -104,28 +109,12 @@ RuleData* RuleData::MaybeCreate(StyleRule* rule,
     return nullptr;
   if (position >= (1 << RuleData::kPositionBits))
     return nullptr;
-  if (container_query || style_scope) {
-    return MakeGarbageCollected<ExtendedRuleData>(
-        base::PassKey<RuleData>(), rule, selector_index, position,
-        add_rule_flags, container_query, style_scope);
-  }
-  return MakeGarbageCollected<RuleData>(rule, selector_index, position,
-                                        add_rule_flags);
+  return MakeGarbageCollected<RuleData>(
+      rule, selector_index, position,
+      (style_scope ? style_scope->Specificity() : 0), add_rule_flags);
 }
 
 RuleData::RuleData(StyleRule* rule,
-                   unsigned selector_index,
-                   unsigned position,
-                   AddRuleFlags add_rule_flags)
-    : RuleData(Type::kNormal,
-               rule,
-               selector_index,
-               position,
-               0 /* extra_specificity */,
-               add_rule_flags) {}
-
-RuleData::RuleData(Type type,
-                   StyleRule* rule,
                    unsigned selector_index,
                    unsigned position,
                    unsigned extra_specificity,
@@ -140,7 +129,6 @@ RuleData::RuleData(Type type,
       valid_property_filter_(
           static_cast<std::underlying_type_t<ValidPropertyFilter>>(
               DetermineValidPropertyFilter(add_rule_flags, Selector()))),
-      type_(static_cast<unsigned>(type)),
       descendant_selector_identifier_hashes_() {
   SelectorFilter::CollectIdentifierHashes(
       Selector(), descendant_selector_identifier_hashes_,
@@ -397,7 +385,7 @@ void RuleSet::AddRule(StyleRule* rule,
     return;
   }
   ++rule_count_;
-  if (features_.CollectFeaturesFromRuleData(rule_data) ==
+  if (features_.CollectFeaturesFromRuleData(rule_data, style_scope) ==
       RuleFeatureSet::kSelectorNeverMatches)
     return;
 
@@ -421,6 +409,9 @@ void RuleSet::AddRule(StyleRule* rule,
   }
 
   AddRuleToLayerIntervals(cascade_layer, rule_data->GetPosition());
+  AddRuleToIntervals(container_query, rule_data->GetPosition(),
+                     container_query_intervals_);
+  AddRuleToIntervals(style_scope, rule_data->GetPosition(), scope_intervals_);
 }
 
 void RuleSet::AddRuleToLayerIntervals(const CascadeLayer* cascade_layer,
@@ -429,8 +420,8 @@ void RuleSet::AddRuleToLayerIntervals(const CascadeLayer* cascade_layer,
   // interval's layer. Note that the implicit outer layer may also be
   // represented by a nullptr.
   const CascadeLayer* last_interval_layer =
-      layer_intervals_.size() ? layer_intervals_.back().layer.Get()
-                              : implicit_outer_layer_.Get();
+      layer_intervals_.IsEmpty() ? implicit_outer_layer_.Get()
+                                 : layer_intervals_.back().value.Get();
   if (!cascade_layer)
     cascade_layer = implicit_outer_layer_;
   if (cascade_layer == last_interval_layer)
@@ -438,7 +429,21 @@ void RuleSet::AddRuleToLayerIntervals(const CascadeLayer* cascade_layer,
 
   if (!cascade_layer)
     cascade_layer = EnsureImplicitOuterLayer();
-  layer_intervals_.push_back(LayerInterval(cascade_layer, position));
+  layer_intervals_.push_back(Interval<CascadeLayer>(cascade_layer, position));
+}
+
+// Similar to AddRuleToLayerIntervals, but for container queries and @style
+// scopes.
+template <class T>
+static void AddRuleToIntervals(const T* value,
+                               unsigned position,
+                               HeapVector<RuleSet::Interval<T>>& intervals) {
+  const T* last_value =
+      intervals.IsEmpty() ? nullptr : intervals.back().value.Get();
+  if (value == last_value)
+    return;
+
+  intervals.push_back(RuleSet::Interval<T>(value, position));
 }
 
 void RuleSet::AddPageRule(StyleRulePage* rule) {
@@ -808,68 +813,24 @@ bool RuleSet::DidMediaQueryResultsChange(
   return evaluator.DidResultsChange(media_query_set_results_);
 }
 
-const ContainerQuery* RuleData::GetContainerQuery() const {
-  if (auto* extended = DynamicTo<ExtendedRuleData>(this))
-    return extended->container_query_;
-  return nullptr;
-}
-
-const StyleScope* RuleData::GetStyleScope() const {
-  if (auto* extended = DynamicTo<ExtendedRuleData>(this))
-    return extended->style_scope_;
-  return nullptr;
-}
-
 const CascadeLayer* RuleSet::GetLayerForTest(const RuleData& rule) const {
   if (!layer_intervals_.size() ||
       layer_intervals_[0].start_position > rule.GetPosition())
     return implicit_outer_layer_;
   for (unsigned i = 1; i < layer_intervals_.size(); ++i) {
     if (layer_intervals_[i].start_position > rule.GetPosition())
-      return layer_intervals_[i - 1].layer;
+      return layer_intervals_[i - 1].value;
   }
-  return layer_intervals_.back().layer;
+  return layer_intervals_.back().value;
 }
 
 void RuleData::Trace(Visitor* visitor) const {
-  switch (static_cast<Type>(type_)) {
-    case Type::kNormal:
-      TraceAfterDispatch(visitor);
-      break;
-    case Type::kExtended:
-      To<ExtendedRuleData>(*this).TraceAfterDispatch(visitor);
-      break;
-  }
-}
-
-void RuleData::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(rule_);
 }
 
-ExtendedRuleData::ExtendedRuleData(base::PassKey<RuleData>,
-                                   StyleRule* rule,
-                                   unsigned selector_index,
-                                   unsigned position,
-                                   AddRuleFlags flags,
-                                   const ContainerQuery* container_query,
-                                   const StyleScope* style_scope)
-    : RuleData(Type::kExtended,
-               rule,
-               selector_index,
-               position,
-               (style_scope ? style_scope->Specificity() : 0),
-               flags),
-      container_query_(container_query),
-      style_scope_(style_scope) {}
-
-void ExtendedRuleData::TraceAfterDispatch(Visitor* visitor) const {
-  RuleData::TraceAfterDispatch(visitor);
-  visitor->Trace(container_query_);
-  visitor->Trace(style_scope_);
-}
-
-void RuleSet::LayerInterval::Trace(Visitor* visitor) const {
-  visitor->Trace(layer);
+template <class T>
+void RuleSet::Interval<T>::Trace(Visitor* visitor) const {
+  visitor->Trace(value);
 }
 
 void RuleSet::Trace(Visitor* visitor) const {
@@ -898,6 +859,8 @@ void RuleSet::Trace(Visitor* visitor) const {
   visitor->Trace(scroll_timeline_rules_);
   visitor->Trace(implicit_outer_layer_);
   visitor->Trace(layer_intervals_);
+  visitor->Trace(container_query_intervals_);
+  visitor->Trace(scope_intervals_);
 #ifndef NDEBUG
   visitor->Trace(all_rules_);
 #endif

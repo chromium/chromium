@@ -478,7 +478,7 @@ TEST(RuleSetTest, NoStyleScope) {
   const HeapVector<Member<const RuleData>>* rules = rule_set.IdRules("b");
   ASSERT_TRUE(rules);
   ASSERT_EQ(1u, rules->size());
-  EXPECT_FALSE(rules->at(0)->GetStyleScope());
+  EXPECT_EQ(0u, rule_set.ScopeIntervals().size());
 }
 
 TEST(RuleSetTest, StyleScope) {
@@ -489,7 +489,7 @@ TEST(RuleSetTest, StyleScope) {
   const HeapVector<Member<const RuleData>>* rules = rule_set.IdRules("b");
   ASSERT_TRUE(rules);
   ASSERT_EQ(1u, rules->size());
-  EXPECT_TRUE(rules->at(0)->GetStyleScope());
+  EXPECT_EQ(1u, rule_set.ScopeIntervals().size());
 }
 
 TEST(RuleSetTest, NestedStyleScope) {
@@ -513,15 +513,24 @@ TEST(RuleSetTest, NestedStyleScope) {
   ASSERT_EQ(1u, a_rules->size());
   ASSERT_EQ(1u, b_rules->size());
 
-  EXPECT_TRUE(a_rules->at(0)->GetStyleScope());
-  EXPECT_FALSE(a_rules->at(0)->GetStyleScope()->Parent());
+  ASSERT_EQ(2u, rule_set.ScopeIntervals().size());
 
-  EXPECT_TRUE(b_rules->at(0)->GetStyleScope());
-  EXPECT_EQ(a_rules->at(0)->GetStyleScope(),
-            b_rules->at(0)->GetStyleScope()->Parent());
+  EXPECT_EQ(a_rules->at(0)->GetPosition(),
+            rule_set.ScopeIntervals()[0].start_position);
+  const StyleScope* a_rule_scope = rule_set.ScopeIntervals()[0].value;
 
-  ASSERT_TRUE(b_rules->at(0)->GetStyleScope()->Parent());
-  EXPECT_FALSE(b_rules->at(0)->GetStyleScope()->Parent()->Parent());
+  EXPECT_EQ(b_rules->at(0)->GetPosition(),
+            rule_set.ScopeIntervals()[1].start_position);
+  const StyleScope* b_rule_scope = rule_set.ScopeIntervals()[1].value;
+
+  EXPECT_NE(nullptr, a_rule_scope);
+  EXPECT_EQ(nullptr, a_rule_scope->Parent());
+
+  EXPECT_NE(nullptr, b_rule_scope);
+  EXPECT_EQ(a_rule_scope, b_rule_scope->Parent());
+
+  EXPECT_NE(nullptr, b_rule_scope->Parent());
+  EXPECT_EQ(nullptr, b_rule_scope->Parent()->Parent());
 }
 
 class RuleSetCascadeLayerTest : public SimTest {

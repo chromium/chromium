@@ -678,17 +678,18 @@ InvalidationSet* RuleFeatureSet::InvalidationSetForSimpleSelector(
   return nullptr;
 }
 
-void RuleFeatureSet::UpdateInvalidationSets(const RuleData* rule_data) {
+void RuleFeatureSet::UpdateInvalidationSets(const RuleData* rule_data,
+                                            const StyleScope* style_scope) {
   InvalidationSetFeatures features;
   FeatureInvalidationType feature_invalidation_type =
-      UpdateInvalidationSetsForComplex(rule_data->Selector(),
-                                       rule_data->GetStyleScope(), features,
-                                       kSubject, CSSSelector::kPseudoUnknown);
+      UpdateInvalidationSetsForComplex(rule_data->Selector(), style_scope,
+                                       features, kSubject,
+                                       CSSSelector::kPseudoUnknown);
   if (feature_invalidation_type ==
       FeatureInvalidationType::kRequiresSubtreeInvalidation) {
     features.invalidation_flags.SetWholeSubtreeInvalid(true);
   }
-  if (const StyleScope* style_scope = rule_data->GetStyleScope())
+  if (style_scope)
     UpdateFeaturesFromStyleScope(*style_scope, features);
   UpdateRuleSetInvalidation(features);
 }
@@ -1166,7 +1167,8 @@ void RuleFeatureSet::AddFeaturesToInvalidationSets(
 }
 
 RuleFeatureSet::SelectorPreMatch RuleFeatureSet::CollectFeaturesFromRuleData(
-    const RuleData* rule_data) {
+    const RuleData* rule_data,
+    const StyleScope* style_scope) {
   CHECK(is_alive_);
   FeatureMetadata metadata;
   const unsigned max_direct_adjacent_selectors = 0;
@@ -1178,7 +1180,7 @@ RuleFeatureSet::SelectorPreMatch RuleFeatureSet::CollectFeaturesFromRuleData(
 
   metadata_.Add(metadata);
 
-  UpdateInvalidationSets(rule_data);
+  UpdateInvalidationSets(rule_data, style_scope);
   return kSelectorMayMatch;
 }
 

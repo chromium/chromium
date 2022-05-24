@@ -85,13 +85,6 @@ class StyleSheetContents;
 // and makes it accessible cheaply.
 class CORE_EXPORT RuleData : public GarbageCollected<RuleData> {
  public:
-  enum class Type {
-    kNormal = 0,
-    kExtended = 1,
-    // Note that the above values are stored in a 1-bit field.
-    // See RuleData::type_.
-  };
-
   static RuleData* MaybeCreate(StyleRule*,
                                unsigned selector_index,
                                unsigned position,
@@ -99,18 +92,18 @@ class CORE_EXPORT RuleData : public GarbageCollected<RuleData> {
                                const ContainerQuery*,
                                const StyleScope*);
 
+  // The `extra_specificity` parameter is added to the specificity of the
+  // RuleData. This is useful for @scope, where inner selectors must gain
+  // additional specificity from the <scope-start> of the enclosing @scope.
+  // https://drafts.csswg.org/css-cascade-6/#scope-atrule
   RuleData(StyleRule*,
            unsigned selector_index,
            unsigned position,
+           unsigned extra_specificity,
            AddRuleFlags);
 
-  bool IsExtended() const {
-    return static_cast<Type>(type_) == Type::kExtended;
-  }
   unsigned GetPosition() const { return position_; }
   StyleRule* Rule() const { return rule_; }
-  const ContainerQuery* GetContainerQuery() const;
-  const StyleScope* GetStyleScope() const;
   const CSSSelector& Selector() const {
     return rule_->SelectorList().SelectorAt(selector_index_);
   }
@@ -138,7 +131,6 @@ class CORE_EXPORT RuleData : public GarbageCollected<RuleData> {
   }
 
   void Trace(Visitor*) const;
-  void TraceAfterDispatch(blink::Visitor* visitor) const;
 
   // This number is picked fairly arbitrary. If lowered, be aware that there
   // might be sites and extensions using style rules with selector lists
@@ -150,18 +142,6 @@ class CORE_EXPORT RuleData : public GarbageCollected<RuleData> {
   // need to. Some simple testing showed <100,000 RuleData's on large sites.
   static constexpr size_t kPositionBits = 18;
 
- protected:
-  // The `extra_specificity` parameter is added to the specificity of the
-  // RuleData. This is useful for @scope, where inner selectors must gain
-  // additional specificity from the <scope-start> of the enclosing @scope.
-  // https://drafts.csswg.org/css-cascade-6/#scope-atrule
-  RuleData(Type type,
-           StyleRule*,
-           unsigned selector_index,
-           unsigned position,
-           unsigned extra_specificity,
-           AddRuleFlags);
-
  private:
   Member<StyleRule> rule_;
   unsigned selector_index_ : kSelectorIndexBits;
@@ -172,37 +152,9 @@ class CORE_EXPORT RuleData : public GarbageCollected<RuleData> {
   unsigned link_match_type_ : 2;
   unsigned has_document_security_origin_ : 1;
   unsigned valid_property_filter_ : 3;
-  unsigned type_ : 1;  // RuleData::Type
-  // 31 bits above
+  // 30 bits above
   // Use plain array instead of a Vector to minimize memory overhead.
   unsigned descendant_selector_identifier_hashes_[kMaximumIdentifierCount];
-};
-
-// Big websites can have a large number of RuleData objects (30k+). This class
-// exists to avoid allocating unnecessary memory for "rare" fields.
-class CORE_EXPORT ExtendedRuleData : public RuleData {
- public:
-  // Do not create ExtendedRuleData objects directly; RuleData::MaybeCreate
-  // will decide if ExtendedRuleData is needed or not.
-  ExtendedRuleData(base::PassKey<RuleData>,
-                   StyleRule*,
-                   unsigned selector_index,
-                   unsigned position,
-                   AddRuleFlags,
-                   const ContainerQuery*,
-                   const StyleScope*);
-  void TraceAfterDispatch(Visitor*) const;
-
- private:
-  friend class RuleData;
-
-  Member<const ContainerQuery> container_query_;
-  Member<const StyleScope> style_scope_;
-};
-
-template <>
-struct DowncastTraits<ExtendedRuleData> {
-  static bool AllowFrom(const RuleData& data) { return data.IsExtended(); }
 };
 
 }  // namespace blink
@@ -356,23 +308,40 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
 
   bool DidMediaQueryResultsChange(const MediaQueryEvaluator& evaluator) const;
 
-  // We use a vector of LayerInterval to represent that rules with positions
-  // between start_position (inclusive) and the next LayerInterval's
-  // start_position (exclusive) belong to the given layer.
-  class LayerInterval {
+  // We use a vector of Interval<T> to represent that rules with positions
+  // between start_position (inclusive) and the next Interval<T>'s
+  // start_position (exclusive) share some property:
+  //
+  //   - If T = CascadeLayer, belong to the given layer.
+  //   - If T = ContainerQuery, are predicated on the given container query.
+  //   - If T = StyleScope, are declared in the given @style scope.
+  //
+  // We do this instead of putting the data directly onto the RuleData,
+  // because most rules don't need these fields and websites can have a large
+  // number of RuleData objects (30k+). Since neighboring rules tend to have the
+  // same values for these (often nullptr), we save memory and cache space at
+  // the cost of a some extra seeking through these lists when matching rules.
+  template <class T>
+  class Interval {
     DISALLOW_NEW();
 
    public:
-    LayerInterval(const CascadeLayer* passed_layer, unsigned passed_position)
-        : layer(passed_layer), start_position(passed_position) {}
-    const Member<const CascadeLayer> layer;
+    Interval(const T* passed_value, unsigned passed_position)
+        : value(passed_value), start_position(passed_position) {}
+    const Member<const T> value;
     const unsigned start_position = 0;
 
     void Trace(Visitor*) const;
   };
 
-  const HeapVector<LayerInterval>& LayerIntervals() const {
+  const HeapVector<Interval<CascadeLayer>>& LayerIntervals() const {
     return layer_intervals_;
+  }
+  const HeapVector<Interval<ContainerQuery>>& ContainerQueryIntervals() const {
+    return container_query_intervals_;
+  }
+  const HeapVector<Interval<StyleScope>>& ScopeIntervals() const {
+    return scope_intervals_;
   }
 
 #ifndef NDEBUG
@@ -501,7 +470,11 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   // nullptr if the stylesheet doesn't explicitly declare any layer.
   Member<CascadeLayer> implicit_outer_layer_;
   // Empty vector if the stylesheet doesn't explicitly declare any layer.
-  HeapVector<LayerInterval> layer_intervals_;
+  HeapVector<Interval<CascadeLayer>> layer_intervals_;
+  // Empty vector if the stylesheet doesn't use any container queries.
+  HeapVector<Interval<ContainerQuery>> container_query_intervals_;
+  // Empty vector if the stylesheet doesn't use any @scopes.
+  HeapVector<Interval<StyleScope>> scope_intervals_;
 
 #ifndef NDEBUG
   HeapVector<Member<const RuleData>> all_rules_;
@@ -510,6 +483,11 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
 
 }  // namespace blink
 
-WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::RuleSet::LayerInterval)
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
+    blink::RuleSet::Interval<blink::CascadeLayer>)
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
+    blink::RuleSet::Interval<blink::ContainerQuery>)
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(
+    blink::RuleSet::Interval<blink::StyleScope>)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RULE_SET_H_
