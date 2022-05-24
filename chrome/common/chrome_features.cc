@@ -803,7 +803,7 @@ const base::Feature kPrerenderFallbackToPreconnect{
     "PrerenderFallbackToPreconnect", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kPrivacyGuide{"PrivacyGuide",
-                                  base::FEATURE_DISABLED_BY_DEFAULT};
+                                  base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kPrivacyGuide2{"PrivacyGuide2",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
