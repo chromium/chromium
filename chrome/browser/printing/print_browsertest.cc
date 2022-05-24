@@ -311,6 +311,8 @@ class PrintPreviewObserver : PrintPreviewUI::TestDelegate {
   // PrintPreviewUI::TestDelegate:
   void DidRenderPreviewPage(content::WebContents* preview_dialog) override {
     ++rendered_page_count_;
+    DVLOG(2) << "Rendered preview page " << rendered_page_count_
+             << " of a total expected " << expected_rendered_page_count_;
     CHECK_LE(rendered_page_count_, expected_rendered_page_count_);
     if (rendered_page_count_ == expected_rendered_page_count_ && run_loop_) {
       run_loop_->Quit();
@@ -3054,6 +3056,49 @@ IN_PROC_BROWSER_TEST_P(PrintBackendPrintBrowserTestService, StartPrinting) {
   // RenderPrintedDocument() once XPS print pipeline is added.
   EXPECT_EQ(render_printed_page_result(), mojom::ResultCode::kSuccess);
   EXPECT_EQ(render_printed_page_count(), 1);
+#else
+  EXPECT_EQ(render_printed_document_result(), mojom::ResultCode::kSuccess);
+#endif
+  EXPECT_EQ(document_done_result(), mojom::ResultCode::kSuccess);
+  EXPECT_TRUE(stop_invoked());
+}
+
+// TODO(crbug.com/1326580):  Enable once multipage printing doesn't get stuck
+// because of insufficient rendered preview pages due to forced N-up.
+IN_PROC_BROWSER_TEST_P(PrintBackendPrintBrowserTestService,
+                       DISABLED_StartPrintingMultipage) {
+  AddPrinter("printer1");
+  SetPrinterNameForSubsequentContexts("printer1");
+
+  ASSERT_TRUE(embedded_test_server()->Started());
+  GURL url(embedded_test_server()->GetURL("/printing/multipage.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  SetUpPrintViewManager(web_contents);
+
+  // The test will succeed to start the print job, render 3 pages of document
+  // content, and complete with document done.  Wait for a call to `Stop()` to
+  // ensure print job wrap-up finished cleanly before completing the test.
+  // This results in a total of 6 expected calls for Windows GDI printing, or
+  // 4 expected calls for all other cases.
+#if BUILDFLAG(IS_WIN)
+  // TODO(crbug.com/1008222)  Include Windows coverage of
+  // RenderPrintedDocument() once XPS print pipeline is added.
+  SetNumExpectedMessages(/*num=*/6);
+#else
+  SetNumExpectedMessages(/*num=*/4);
+#endif
+  PrintAfterPreviewIsReadyAndLoaded();
+
+  EXPECT_EQ(start_printing_result(), mojom::ResultCode::kSuccess);
+#if BUILDFLAG(IS_WIN)
+  // TODO(crbug.com/1008222)  Include Windows coverage of
+  // RenderPrintedDocument() once XPS print pipeline is added.
+  EXPECT_EQ(render_printed_page_result(), mojom::ResultCode::kSuccess);
+  EXPECT_EQ(render_printed_page_count(), 3);
 #else
   EXPECT_EQ(render_printed_document_result(), mojom::ResultCode::kSuccess);
 #endif
