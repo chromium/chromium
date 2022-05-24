@@ -1177,7 +1177,8 @@ TEST_F(IDNSpoofCheckerTest, GetSimilarTopDomain) {
       {u"tesł.net", "test.net"},
       {u"łest.net", "test.net"},
       {u"łesł.net", "test.net"},
-  };
+      // Test case for https://crbug.com/1207187
+      {u"စ2.com", "o2.com"}};
   for (const TestCase& test_case : kTestCases) {
     const TopDomainEntry entry =
         IDNSpoofChecker().GetSimilarTopDomain(test_case.hostname);
