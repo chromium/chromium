@@ -13,8 +13,8 @@ const base::Feature kTestFeature{"TestFeature",
 const base::Feature kSharedHighlightingIOS{"SharedHighlightingIOS",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kEnableFREDefaultBrowserScreenTesting{
-    "EnableFREDefaultBrowserScreenTesting", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kEnableFREDefaultBrowserPromoScreen{
+    "EnableFREDefaultBrowserPromoScreen", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kEnableFREUIModuleIOS{"EnableFREUIModuleIOSV3",
                                           base::FEATURE_ENABLED_BY_DEFAULT};

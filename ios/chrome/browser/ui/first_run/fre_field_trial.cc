@@ -91,9 +91,9 @@ constexpr base::FeatureParam<NewDefaultBrowserPromoFRE>::Option
         {NewDefaultBrowserPromoFRE::kShortDelay,
          kFREDefaultBrowserPromoShortDelayParam}};
 
-// Parameter for kEnableFREDefaultBrowserScreenTesting feature.
+// Parameter for kEnableFREDefaultBrowserPromoScreen feature.
 constexpr base::FeatureParam<NewDefaultBrowserPromoFRE>
-    kNewDefaultBrowserPromoFREParam{&kEnableFREDefaultBrowserScreenTesting,
+    kNewDefaultBrowserPromoFREParam{&kEnableFREDefaultBrowserPromoScreen,
                                     kFREDefaultBrowserPromoParam,
                                     NewDefaultBrowserPromoFRE::kDefaultDelay,
                                     &kNewDefaultBrowserPromoFREOptions};
@@ -143,7 +143,7 @@ namespace fre_field_trial {
 
 NewDefaultBrowserPromoFRE GetFREDefaultBrowserScreenPromoFRE() {
   if (base::FeatureList::IsEnabled(kEnableFREUIModuleIOS) &&
-      base::FeatureList::IsEnabled(kEnableFREDefaultBrowserScreenTesting)) {
+      base::FeatureList::IsEnabled(kEnableFREDefaultBrowserPromoScreen)) {
     return kNewDefaultBrowserPromoFREParam.Get();
   }
   return NewDefaultBrowserPromoFRE::kDisabled;
@@ -270,7 +270,7 @@ int CreateNewMICeAndDefaultBrowserFRETrial(
         signin::kNewMobileIdentityConsistencyFRE.name,
         base::FeatureList::OVERRIDE_DISABLE_FEATURE, trial.get());
     feature_list->RegisterFieldTrialOverride(
-        kEnableFREDefaultBrowserScreenTesting.name,
+        kEnableFREDefaultBrowserPromoScreen.name,
         base::FeatureList::OVERRIDE_DISABLE_FEATURE, trial.get());
     return kCurrentTrialVersion;
   }
@@ -282,7 +282,7 @@ int CreateNewMICeAndDefaultBrowserFRETrial(
         signin::kNewMobileIdentityConsistencyFRE.name,
         base::FeatureList::OVERRIDE_DISABLE_FEATURE, trial.get());
     feature_list->RegisterFieldTrialOverride(
-        kEnableFREDefaultBrowserScreenTesting.name,
+        kEnableFREDefaultBrowserPromoScreen.name,
         base::FeatureList::OVERRIDE_DISABLE_FEATURE, trial.get());
     return kCurrentTrialVersion;
   }
@@ -296,7 +296,7 @@ int CreateNewMICeAndDefaultBrowserFRETrial(
         signin::kNewMobileIdentityConsistencyFRE.name,
         base::FeatureList::OVERRIDE_DISABLE_FEATURE, trial.get());
     feature_list->RegisterFieldTrialOverride(
-        kEnableFREDefaultBrowserScreenTesting.name,
+        kEnableFREDefaultBrowserPromoScreen.name,
         base::FeatureList::OVERRIDE_ENABLE_FEATURE, trial.get());
     return kCurrentTrialVersion;
   }
@@ -307,7 +307,7 @@ int CreateNewMICeAndDefaultBrowserFRETrial(
         signin::kNewMobileIdentityConsistencyFRE.name,
         base::FeatureList::OVERRIDE_ENABLE_FEATURE, trial.get());
     feature_list->RegisterFieldTrialOverride(
-        kEnableFREDefaultBrowserScreenTesting.name,
+        kEnableFREDefaultBrowserPromoScreen.name,
         base::FeatureList::OVERRIDE_DISABLE_FEATURE, trial.get());
   }
   return kCurrentTrialVersion;
