@@ -6,12 +6,17 @@
 
 #import "base/callback.h"
 #import "base/strings/sys_string_conversions.h"
+#import "net/base/net_errors.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-@implementation FakeNativeTaskBridge
+@implementation FakeNativeTaskBridge {
+  void (^_startDownloadBlock)(NSURL*);
+  BOOL _observingDownloadProgress;
+  NativeDownloadTaskCompleteCallback _completeCallback;
+}
 
 @synthesize download = _download;
 @synthesize progress = _progress;
@@ -30,7 +35,9 @@
 }
 
 - (void)cancel {
-  [super cancel];
+  if (_startDownloadBlock) {
+    _startDownloadBlock(nil);
+  }
   _progress = [NSProgress progressWithTotalUnitCount:0];
 }
 
@@ -38,13 +45,17 @@
      progressCallback:(NativeDownloadTaskProgressCallback)progressCallback
      responseCallback:(NativeDownloadTaskResponseCallback)responseCallback
      completeCallback:(NativeDownloadTaskCompleteCallback)completeCallback {
-  [super startDownload:path
-      progressCallback:std::move(progressCallback)
-      responseCallback:std::move(responseCallback)
-      completeCallback:std::move(completeCallback)];
+  _completeCallback = std::move(completeCallback);
+  [self startObservingDownloadProgress];
+  _startDownloadBlock(self.urlForDownload);
+  _startDownloadBlock = nil;
 
   // Simulates completing a download progress
   _progress = [NSProgress progressWithTotalUnitCount:100];
+}
+
+- (void)dealloc {
+  [self stopObservingDownloadProgress];
 }
 
 #pragma mark - Private methods
@@ -54,17 +65,51 @@
   // startDownload:progressionHandler:completionHandler method, the block is
   // initialized.
   __weak FakeNativeTaskBridge* weakSelf = self;
-  [super download:_download
-      decideDestinationUsingResponse:_response
-                   suggestedFilename:_suggestedFilename
-                   completionHandler:^void(NSURL* url) {
-                     [weakSelf destinationDecided:url];
-                   }];
+  void (^handler)(NSURL* destination) = ^void(NSURL* url) {
+    [weakSelf destinationDecided:url];
+  };
+
+  if (self.urlForDownload) {
+    // Resuming a download.
+    [self startObservingDownloadProgress];
+    handler(self.urlForDownload);
+  } else {
+    _startDownloadBlock = handler;
+  }
 }
 
 - (void)destinationDecided:(NSURL*)url API_AVAILABLE(ios(15)) {
   _calledStartDownloadBlock = YES;
   [self downloadDidFinish:_download];
+}
+
+#pragma mark - Private methods
+
+- (void)startObservingDownloadProgress {
+  DCHECK(!_observingDownloadProgress);
+
+  _observingDownloadProgress = YES;
+  [self.progress addObserver:self
+                  forKeyPath:@"fractionCompleted"
+                     options:NSKeyValueObservingOptionNew
+                     context:nil];
+}
+
+- (void)stopObservingDownloadProgress {
+  if (_observingDownloadProgress) {
+    _observingDownloadProgress = NO;
+    [self.progress removeObserver:self
+                       forKeyPath:@"fractionCompleted"
+                          context:nil];
+  }
+}
+
+- (void)downloadDidFinish:(WKDownload*)download API_AVAILABLE(ios(15)) {
+  [self stopObservingDownloadProgress];
+  if (!_completeCallback.is_null()) {
+    web::DownloadResult download_result(net::OK);
+    std::move(_completeCallback).Run(download_result);
+  }
 }
 
 @end

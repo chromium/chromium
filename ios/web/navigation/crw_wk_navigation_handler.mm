@@ -1043,8 +1043,17 @@ bool IsFailedHttpsUpgrade(NSError* error,
                                                           delegate:self]];
 }
 
-- (void)onDownloadNativeTaskBridgeReadyForDownload:
+// Used to set response url, content length, mimetype and http response headers
+// in CRWWkNavigationHandler so method can interact with WKWebView. Returns NO
+// if the download cannot be started.
+- (BOOL)onDownloadNativeTaskBridgeReadyForDownload:
     (DownloadNativeTaskBridge*)bridge API_AVAILABLE(ios(15)) {
+  __attribute__((objc_precise_lifetime))
+  DownloadNativeTaskBridge* nativeTaskBridge = bridge;
+  [_nativeTaskBridges removeObject:bridge];
+  if (!self.webStateImpl)
+    return NO;
+
   const GURL responseURL = net::GURLWithNSURL(bridge.response.URL);
   const int64_t contentLength = bridge.response.expectedContentLength;
   const std::string MIMEType =
@@ -1066,8 +1075,7 @@ bool IsFailedHttpsUpgrade(NSError* error,
       ->CreateNativeDownloadTask(self.webStateImpl, [NSUUID UUID].UUIDString,
                                  responseURL, HTTPMethod, contentDisposition,
                                  contentLength, MIMEType, bridge);
-
-  [_nativeTaskBridges removeObject:bridge];
+  return YES;
 }
 
 - (void)resumeDownloadNativeTask:(NSData*)data
