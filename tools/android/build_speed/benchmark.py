@@ -446,11 +446,13 @@ def main():
     parser = argparse.ArgumentParser(
         description=__doc__ + _list_benchmarks(),
         formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument('benchmark',
-                        nargs='+',
-                        metavar='BENCHMARK',
-                        choices=list(_all_benchmark_and_suite_names()),
-                        help='Names of benchmark(s) or suites(s) to run.')
+    parser.add_argument(
+        'benchmark',
+        nargs='*',
+        metavar='BENCHMARK',
+        # Allow empty to just test `gn gen` speed.
+        choices=list(_all_benchmark_and_suite_names()) + [[]],
+        help='Names of benchmark(s) or suites(s) to run.')
     parser.add_argument('--bundle',
                         action='store_true',
                         help='Switch the default target from apk to bundle.')
