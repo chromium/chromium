@@ -39,8 +39,6 @@ void RunCallbackOnIOThread(
     std::unique_ptr<SafeBrowsingApiHandler::URLCheckCallbackMeta> callback,
     SBThreatType threat_type,
     const ThreatMetadata& metadata) {
-  CHECK(callback);              // Remove after fixing crbug.com/889972
-  CHECK(!callback->is_null());  // Remove after fixing crbug.com/889972
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(std::move(*callback), threat_type, metadata));
 }
@@ -126,17 +124,12 @@ void OnUrlCheckDoneOnIOThread(jlong callback_id,
 
   std::unique_ptr<SafeBrowsingApiHandler::URLCheckCallbackMeta> callback =
       std::move((*pending_callbacks)[callback_id]);
-  CHECK(callback);  // Remove after fixing crbug.com/889972
   pending_callbacks->erase(callback_id);
 
   if (result_status != RESULT_STATUS_SUCCESS) {
     if (result_status == RESULT_STATUS_TIMEOUT) {
-      CHECK(!callback->is_null());  // Remove after fixing crbug.com/889972
-
       ReportUmaResult(UMA_STATUS_TIMEOUT);
     } else {
-      CHECK(!callback->is_null());  // Remove after fixing crbug.com/889972
-
       DCHECK_EQ(result_status, RESULT_STATUS_INTERNAL_ERROR);
       ReportUmaResult(UMA_STATUS_INTERNAL_ERROR);
     }
@@ -146,13 +139,9 @@ void OnUrlCheckDoneOnIOThread(jlong callback_id,
 
   // Shortcut for safe, so we don't have to parse JSON.
   if (metadata == "{}") {
-    CHECK(!callback->is_null());  // Remove after fixing crbug.com/889972
-
     ReportUmaResult(UMA_STATUS_SAFE);
     std::move(*callback).Run(SB_THREAT_TYPE_SAFE, ThreatMetadata());
   } else {
-    CHECK(!callback->is_null());  // Remove after fixing crbug.com/889972
-
     // Unsafe, assuming we can parse the JSON.
     SBThreatType worst_threat;
     ThreatMetadata threat_metadata;
