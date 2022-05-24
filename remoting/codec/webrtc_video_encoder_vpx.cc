@@ -143,7 +143,7 @@ void SetVp9CodecOptions(vpx_codec_ctx_t* codec, bool lossless_encode) {
   // Request the lowest-CPU usage that VP9 supports, which depends on whether
   // we are encoding lossy or lossless.
   // Note that this knob uses the same parameter name as VP8.
-  int cpu_used = lossless_encode ? 5 : 8;
+  int cpu_used = lossless_encode ? 5 : 6;
   vpx_codec_err_t ret = vpx_codec_control(codec, VP8E_SET_CPUUSED, cpu_used);
   DCHECK_EQ(VPX_CODEC_OK, ret) << "Failed to set CPUUSED";
 
