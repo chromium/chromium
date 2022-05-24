@@ -137,7 +137,7 @@ constexpr void InsertionSort(BidirIt first, BidirIt last, const Compare& comp) {
 // sorted vector as the backing store. Do not use directly.
 //
 // The use of "value" in this is like std::map uses, meaning it's the thing
-// contained (in the case of map it's a <Kay, Mapped> pair). The Key is how
+// contained (in the case of map it's a <Key, Mapped> pair). The Key is how
 // things are looked up. In the case of a set, Key == Value. In the case of
 // a map, the Key is a component of a Value.
 //
