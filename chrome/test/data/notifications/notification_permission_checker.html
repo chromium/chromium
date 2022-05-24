@@ -3,38 +3,33 @@
 <script>
 
 function getNotificationPermission() {
-  sendResultToTest(Notification.permission);
+  return Notification.permission;
 }
 
 async function getServiceWorkerNotificationPermission() {
-  sendResultToTest(
-      await sendMessage('getServiceWorkerNotificationPermission'));
+  return sendMessage('getServiceWorkerNotificationPermission');
 }
 
 async function queryNotificationPermission() {
   let result = await navigator.permissions.query({name: 'notifications'});
-  sendResultToTest(result.state);
+  return result.state;
 }
 
 async function queryServiceWorkerNotificationPermission() {
-  sendResultToTest(
-      await sendMessage('queryServiceWorkerNotificationPermission'));
+  return sendMessage('queryServiceWorkerNotificationPermission');
 }
 
 async function getPushPermission() {
   let sw = await getServiceWorkerRegistration();
-  let result = await sw.pushManager.permissionState({userVisibleOnly:true});
-  sendResultToTest(result);
+  return sw.pushManager.permissionState({userVisibleOnly:true});
 }
 
 async function getServiceWorkerPushPermission() {
-  sendResultToTest(await sendMessage('getServiceWorkerPushPermission'));
+  return sendMessage('getServiceWorkerPushPermission');
 }
 
-function requestNotificationPermission() {
-  Notification.requestPermission()
-      .then(permission => sendResultToTest(permission))
-      .catch(() => sendResultToTest('error'));
+async function requestNotificationPermission() {
+  return Notification.requestPermission();
 }
 
 async function requestPushPermission() {
@@ -47,9 +42,8 @@ async function requestPushPermission() {
       new TextEncoder().encode(
         String.fromCharCode(...dummy_application_server_key)),
   };
-  sw.pushManager.subscribe(options)
-      .then(sub => sendResultToTest(sub.toJSON()))
-      .catch(e => sendResultToTest(e));
+
+  return sw.pushManager.subscribe(options);
 }
 
 // Sends a message to the service worker and returns a promise that resolves
@@ -71,16 +65,6 @@ function getServiceWorkerRegistration() {
   return GetActivatedServiceWorker(
       'notification_permission_checker_worker.js',
       location.pathname);
-}
-
-// Sends a result back to the main test logic.
-function sendResultToTest(result) {
-  // Convert the result to a string.
-  var stringResult = "" + result;
-  window.document.title = stringResult;
-  if (typeof stringResult != "string")
-    stringResult = JSON.stringify(result);
-  window.domAutomationController.send(stringResult);
 }
 </script>
 
