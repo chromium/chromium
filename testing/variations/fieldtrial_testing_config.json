@@ -3972,6 +3972,72 @@
             ]
         }
     ],
+    "HappinessTrackingPersonalizationAvatar": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "prob": "0.01",
+                        "survey_cycle_length": "90",
+                        "survey_start_date_ms": "1653548400",
+                        "trigger_id": "JUanXwTKV0jBnuKU19R0V3H9stME"
+                    },
+                    "enable_features": [
+                        "HappinessTrackingPersonalizationAvatar"
+                    ]
+                }
+            ]
+        }
+    ],
+    "HappinessTrackingPersonalizationScreensaver": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "prob": "0.01",
+                        "survey_cycle_length": "90",
+                        "survey_start_date_ms": "1653548400",
+                        "trigger_id": "1dEvSx6iU0jBnuKU19R0P6uwwNZ4"
+                    },
+                    "enable_features": [
+                        "HappinessTrackingPersonalizationScreensaver"
+                    ]
+                }
+            ]
+        }
+    ],
+    "HappinessTrackingPersonalizationWallpaper": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "prob": "0.05",
+                        "survey_cycle_length": "90",
+                        "survey_start_date_ms": "1653548400",
+                        "trigger_id": "PaBNFUU6d0jBnuKU19R0RAjzNxg5"
+                    },
+                    "enable_features": [
+                        "HappinessTrackingPersonalizationWallpaper"
+                    ]
+                }
+            ]
+        }
+    ],
     "HappinessTrackingSystemPerformance": [
         {
             "platforms": [
