@@ -16,6 +16,7 @@
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/models/dialog_model_field.h"
 #include "ui/views/accessibility/accessibility_paint_checks.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/checkbox.h"
@@ -26,6 +27,7 @@
 #include "ui/views/controls/separator.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/controls/theme_tracking_image_view.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/fill_layout.h"
@@ -417,6 +419,21 @@ void BubbleDialogModelHost::OnWidgetInitialized() {
     DCHECK(GetExtraView());
     AddDialogModelHostFieldForExistingView(
         {model_->extra_button(GetPassKey()), GetExtraView(), nullptr});
+  }
+
+  if (const ui::ImageModel& banner = model_->banner(GetPassKey());
+      !banner.IsEmpty()) {
+    const ui::ImageModel& dark_mode_banner =
+        model_->dark_mode_banner(GetPassKey());
+    auto banner_view = std::make_unique<ThemeTrackingImageView>(
+        banner.Rasterize(contents_view_->GetColorProvider()),
+        (dark_mode_banner.IsEmpty() ? banner : dark_mode_banner)
+            .Rasterize(contents_view_->GetColorProvider()),
+        base::BindRepeating(&views::BubbleDialogDelegate::GetBackgroundColor,
+                            base::Unretained(this)));
+    // The banner is supposed to be purely decorative.
+    banner_view->GetViewAccessibility().OverrideIsIgnored(true);
+    GetBubbleFrameView()->SetHeaderView(std::move(banner_view));
   }
 }
 
