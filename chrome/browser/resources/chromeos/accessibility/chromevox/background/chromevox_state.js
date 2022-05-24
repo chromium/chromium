@@ -31,6 +31,19 @@ ChromeVoxStateObserver = class {
 };
 
 ChromeVoxState = class {
+  /** @param {ChromeVoxStateObserver} observer */
+  static addObserver(observer) {
+    ChromeVoxState.observers.push(observer);
+  }
+
+  /** @param {ChromeVoxStateObserver} observer */
+  static removeObserver(observer) {
+    const index = ChromeVoxState.observers.indexOf(observer);
+    if (index > -1) {
+      ChromeVoxState.observers.splice(index, 1);
+    }
+  }
+
   /** @return {cursors.Range} */
   get currentRange() {
     return this.getCurrentRange();
@@ -123,19 +136,6 @@ ChromeVoxState.isReadingContinuously;
 
 /** @type {!Array<ChromeVoxStateObserver>} */
 ChromeVoxState.observers = [];
-
-/** @param {ChromeVoxStateObserver} observer */
-ChromeVoxState.addObserver = function(observer) {
-  ChromeVoxState.observers.push(observer);
-};
-
-/** @param {ChromeVoxStateObserver} observer */
-ChromeVoxState.removeObserver = function(observer) {
-  const index = ChromeVoxState.observers.indexOf(observer);
-  if (index > -1) {
-    ChromeVoxState.observers.splice(index, 1);
-  }
-};
 
 BridgeHelper.registerHandler(
     BridgeTargets.CHROMEVOX_STATE, BridgeActions.CLEAR_CURRENT_RANGE,
