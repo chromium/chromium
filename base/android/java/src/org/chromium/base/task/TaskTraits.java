@@ -100,13 +100,6 @@ public class TaskTraits {
         mExtensionData = other.mExtensionData;
     }
 
-    // Exposed to allow changing the priority of UiThreadTaskTraits.DEFAULT for the experiment being
-    // tracked in crbug.com/1259560. SHOULD NOT BE CALLED FOR ANY OTHER REASON and will be removed
-    // once that experiment is concluded.
-    public void setTaskPriorityToUserBlockingForUiThreadDefaultTaskPriorityExperiment() {
-        mPriority = TaskPriority.USER_BLOCKING;
-    }
-
     public TaskTraits taskPriority(int taskPriority) {
         TaskTraits taskTraits = new TaskTraits(this);
         taskTraits.mPriority = taskPriority;

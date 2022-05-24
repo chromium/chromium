@@ -58,9 +58,6 @@ public class CachedFeatureFlags {
                     .put(ChromeFeatureList.EARLY_LIBRARY_LOAD, true)
                     .put(ChromeFeatureList.ELASTIC_OVERSCROLL, true)
                     .put(ChromeFeatureList.ELIDE_PRIORITIZATION_OF_PRE_NATIVE_BOOTSTRAP_TASKS, true)
-                    .put(ChromeFeatureList
-                                    .GIVE_JAVA_UI_THREAD_DEFAULT_TASK_TRAITS_USER_BLOCKING_PRIORITY,
-                            false)
                     .put(ChromeFeatureList.IMMERSIVE_UI_MODE, false)
                     .put(ChromeFeatureList.OMNIBOX_ANDROID_AUXILIARY_SEARCH, false)
                     .put(ChromeFeatureList.SWAP_PIXEL_FORMAT_TO_FIX_CONVERT_FROM_TRANSLUCENT, true)

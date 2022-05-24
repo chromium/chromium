@@ -430,15 +430,6 @@ const base::Feature kFlashDeprecationWarning{"FlashDeprecationWarning",
 const base::Feature kGeoLanguage{"GeoLanguage",
                                  base::FEATURE_DISABLED_BY_DEFAULT};
 
-#if BUILDFLAG(IS_ANDROID)
-// Gives Java tasks that are posted with the UiThreadTaskTraits.DEFAULT traits
-// user-blocking priority rather than their default user-visible priority.
-// See crbug.com/1259560.
-const base::Feature kGiveJavaUiThreadDefaultTaskTraitsUserBlockingPriority{
-    "GiveJavaUiThreadDefaultTaskTraitsUserBlockingPriority",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-#endif
-
 #if !BUILDFLAG(IS_ANDROID)
 // Enables or disables the Happiness Tracking System demo mode for Desktop
 // Chrome.

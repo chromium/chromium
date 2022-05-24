@@ -91,8 +91,6 @@ public class ChromeCachedFlags {
                 add(ChromeFeatureList.ELASTIC_OVERSCROLL);
                 add(ChromeFeatureList.ELIDE_PRIORITIZATION_OF_PRE_NATIVE_BOOTSTRAP_TASKS);
                 add(ChromeFeatureList.FEED_LOADING_PLACEHOLDER);
-                add(ChromeFeatureList
-                                .GIVE_JAVA_UI_THREAD_DEFAULT_TASK_TRAITS_USER_BLOCKING_PRIORITY);
                 add(ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS);
                 add(ChromeFeatureList.IMMERSIVE_UI_MODE);
                 add(ChromeFeatureList.INSTANT_START);

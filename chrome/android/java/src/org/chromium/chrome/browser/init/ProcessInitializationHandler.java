@@ -114,7 +114,6 @@ import org.chromium.content_public.browser.BrowserTaskExecutor;
 import org.chromium.content_public.browser.ChildProcessLauncherHelper;
 import org.chromium.content_public.browser.ContactsPicker;
 import org.chromium.content_public.browser.ContactsPickerListener;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.PhotoPicker;
@@ -182,13 +181,6 @@ public class ProcessInitializationHandler {
      * Performs the shared class initialization.
      */
     protected void handlePreNativeInitialization() {
-        if (CachedFeatureFlags.isEnabled(
-                    ChromeFeatureList
-                            .GIVE_JAVA_UI_THREAD_DEFAULT_TASK_TRAITS_USER_BLOCKING_PRIORITY)) {
-            UiThreadTaskTraits.DEFAULT
-                    .setTaskPriorityToUserBlockingForUiThreadDefaultTaskPriorityExperiment();
-        }
-
         BrowserTaskExecutor.register();
         // This function controls whether BrowserTaskExecutor posts pre-native bootstrap tasks at
         // the front or back of the Looper's queue.
