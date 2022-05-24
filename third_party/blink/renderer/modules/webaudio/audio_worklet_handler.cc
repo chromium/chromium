@@ -53,7 +53,7 @@ AudioWorkletHandler::AudioWorkletHandler(
   for (unsigned i = 0; i < options->numberOfInputs(); ++i) {
     AddInput();
   }
-  // The number of inputs does not change after the construnction, so it is
+  // The number of inputs does not change after the construction, so it is
   // safe to reserve the array capacity and size.
   inputs_.ReserveInitialCapacity(options->numberOfInputs());
   inputs_.resize(options->numberOfInputs());

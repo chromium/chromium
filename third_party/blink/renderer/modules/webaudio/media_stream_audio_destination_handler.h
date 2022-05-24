@@ -25,7 +25,7 @@ class MediaStreamAudioDestinationHandler final
       uint32_t number_of_channels);
   ~MediaStreamAudioDestinationHandler() override;
 
-  // AudioHandler.
+  // AudioHandler
   void Process(uint32_t frames_to_process) override;
   void SetChannelCount(unsigned, ExceptionState&) override;
 
@@ -34,7 +34,7 @@ class MediaStreamAudioDestinationHandler final
   bool RequiresTailProcessing() const final { return false; }
 
   // This node has no outputs, so we need methods that are different from the
-  // ones provided by AudioBasicInspectorHnadler, which assume an output.
+  // ones provided by AudioBasicInspectorHandler, which assume an output.
   void PullInputs(uint32_t frames_to_process) override;
   void CheckNumberOfChannelsForInput(AudioNodeInput*) override;
 
@@ -43,6 +43,7 @@ class MediaStreamAudioDestinationHandler final
 
  private:
   MediaStreamAudioDestinationHandler(AudioNode&, uint32_t number_of_channels);
+
   // As an audio source, we will never propagate silence.
   bool PropagatesSilence() const override { return false; }
 

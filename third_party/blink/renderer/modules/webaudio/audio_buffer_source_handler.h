@@ -126,7 +126,7 @@ class AudioBufferSourceHandler final : public AudioScheduledSourceHandler {
     }
   }
 
-  // If m_isLooping is false, then this node will be done playing and become
+  // If `is_looping_` is false, then this node will be done playing and become
   // inactive after it reaches the end of the sample data in the buffer.  If
   // true, it will wrap around to the start of the buffer each time it reaches
   // the end.
@@ -143,16 +143,16 @@ class AudioBufferSourceHandler final : public AudioScheduledSourceHandler {
   double loop_start_ = 0;
   double loop_end_ = 0;
 
-  // m_virtualReadIndex is a sample-frame index into our buffer representing the
-  // current playback position.  Since it's floating-point, it has sub-sample
-  // accuracy.
+  // `virtual_read_index_` is a sample-frame index into our buffer representing
+  // the current playback position.  Since it's floating-point, it has
+  // sub-sample accuracy.
   double virtual_read_index_ = 0;
 
   // Granular playback
   bool is_grain_ = false;
   double grain_offset_ = 0.0;  // in seconds
   double grain_duration_;      // in seconds
-  // True if grainDuration is given explicitly (via 3 arg start method).
+  // True if `grain_duration_` is given explicitly (via 3 arg start method).
   bool is_duration_given_;
 
   // Compute playback rate (k-rate) by incorporating the sample rate

@@ -14,8 +14,9 @@
 
 namespace blink {
 
-// WebAudioCapturerSource ignores the channel count beyond 8, so we set the
-// block here to avoid anything can cause the crash.
+// Channel counts greater than 8 are ignored by some audio tracks/sinks (see
+// WebAudioMediaStreamSource), so we set a limit here to avoid anything that
+// could cause a crash.
 static const uint32_t kMaxChannelCount = 8;
 
 MediaStreamAudioDestinationHandler::MediaStreamAudioDestinationHandler(
@@ -86,7 +87,7 @@ void MediaStreamAudioDestinationHandler::SetChannelCount(
   DCHECK(IsMainThread());
 
   // Currently the maximum channel count supported for this node is 8,
-  // which is constrained by m_source (WebAudioCapturereSource). Although
+  // which is constrained by source_ (WebAudioMediaStreamSource). Although
   // it has its own safety check for the excessive channels, throwing an
   // exception here is useful to developers.
   if (channel_count < 1 || channel_count > MaxChannelCount()) {
@@ -100,7 +101,7 @@ void MediaStreamAudioDestinationHandler::SetChannelCount(
   }
 
   // Synchronize changes in the channel count with process() which
-  // needs to update m_mixBus.
+  // needs to update mix_bus_.
   MutexLocker locker(process_lock_);
 
   AudioHandler::SetChannelCount(channel_count, exception_state);

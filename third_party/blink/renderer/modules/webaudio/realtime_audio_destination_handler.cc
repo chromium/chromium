@@ -170,7 +170,7 @@ void RealtimeAudioDestinationHandler::Render(
   AudioContext* context = static_cast<AudioContext*>(Context());
 
   // A sanity check for the associated context, but this does not guarantee the
-  // safe execution of the subsequence operations because the hanlder holds
+  // safe execution of the subsequence operations because the handler holds
   // the context as |UntracedMember| and it can go away anytime.
   DCHECK(context);
   if (!context) {

@@ -222,7 +222,7 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
 
   AudioParamTimeline timeline_;
 
-  // The destination node used to get necessary information like the smaple rate
+  // The destination node used to get necessary information like the sample rate
   // and context time.
   scoped_refptr<AudioDestinationHandler> destination_handler_;
 

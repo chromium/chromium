@@ -233,8 +233,8 @@ void OfflineAudioDestinationHandler::NotifyComplete() {
 
   render_thread_.reset();
 
-  // If the execution context has been destroyed, there's no where to
-  // send the notification, so just return.
+  // If the execution context has been destroyed, there's nowhere to send the
+  // notification, so just return.
   if (IsExecutionContextDestroyed()) {
     return;
   }

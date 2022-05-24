@@ -32,7 +32,7 @@ class OscillatorHandler final : public AudioScheduledSourceHandler {
     CUSTOM = 4
   };
 
-  // Breakpoints where we deicde to do linear interoplation, 3-point
+  // Breakpoints where we decide to do linear interpolation, 3-point
   // interpolation or 5-point interpolation.  See DoInterpolation().
   static constexpr float kInterpolate2Point = 0.3;
   static constexpr float kInterpolate3Point = 0.16;

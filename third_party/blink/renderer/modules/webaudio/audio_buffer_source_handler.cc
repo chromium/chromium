@@ -295,9 +295,9 @@ bool AudioBufferSourceHandler::RenderFromBuffer(
       read_index += frames_this_time;
       frames_to_process -= frames_this_time;
 
-      // It can happen that framesThisTime is 0. DCHECK that we will actually
-      // exit the loop in this case.  framesThisTime is 0 only if
-      // readIndex >= endFrame;
+      // It can happen that `frames_this_time` is 0. DCHECK that we will
+      // actually exit the loop in this case.  `frames_this_time` is 0 only if
+      // `read_index` >= `end_frame`.
       DCHECK(frames_this_time ? true : read_index >= end_frame);
 
       // Wrap-around.

@@ -22,7 +22,7 @@
 
 namespace blink {
 
-// Breakpoints where we deicde to do linear interoplation, 3-point
+// Breakpoints where we decide to do linear interpolation, 3-point
 // interpolation or 5-point interpolation.  See DoInterpolation().
 constexpr float kInterpolate2Point = 0.3;
 constexpr float kInterpolate3Point = 0.16;
@@ -42,7 +42,7 @@ OscillatorHandler::OscillatorHandler(AudioNode& node,
       detune_values_(GetDeferredTaskHandler().RenderQuantumFrames()) {
   if (wave_table) {
     // A PeriodicWave overrides any value for the oscillator type,
-    // forcing the type to be 'custom".
+    // forcing the type to be "custom".
     SetPeriodicWave(wave_table);
   } else {
     if (oscillator_type == "sine") {
