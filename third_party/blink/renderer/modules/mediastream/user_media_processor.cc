@@ -709,8 +709,9 @@ void UserMediaProcessor::SelectAudioSettings(
                                     current_request_info_->request_id()));
   auto settings = SelectSettingsAudioCapture(
       capabilities, user_media_request->AudioConstraints(),
+      current_request_info_->stream_controls()->audio.stream_type,
       user_media_request->ShouldDisableHardwareNoiseSuppression(),
-      true /* is_reconfiguration_allowed */);
+      /*is_reconfiguration_allowed=*/true);
   if (!settings.HasValue()) {
     String failed_constraint_name = String(settings.failed_constraint_name());
     MediaStreamRequestResult result =
