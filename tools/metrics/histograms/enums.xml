@@ -4031,6 +4031,9 @@ Unknown properties are collapsed to zero. -->
 </enum>
 
 <enum name="ArcCustomTabsSessionEndReason">
+  <obsolete>
+    Removed as of 05/2022
+  </obsolete>
   <int value="0" label="Closed"/>
   <int value="1" label="Forwarded to a normal tab"/>
 </enum>

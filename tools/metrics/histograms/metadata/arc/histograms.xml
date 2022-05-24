@@ -815,8 +815,11 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Arc.CustomTabs.SessionEndReason"
     enum="ArcCustomTabsSessionEndReason" expires_after="2020-08-23">
+  <obsolete>
+    Removed as of 05/2022
+  </obsolete>
   <owner>hashimoto@google.com</owner>
-  <owner>shihuis@google.com</owner>
+  <owner>shiihuis@google.com</owner>
   <summary>
     Reason why a custom tab session ended. Recorded when a session ends.
   </summary>
@@ -824,12 +827,18 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Arc.CustomTabs.SessionLifetime2.All" units="ms"
     expires_after="2020-10-04">
+  <obsolete>
+    Removed as of 05/2022
+  </obsolete>
   <owner>hashimoto@google.com</owner>
   <summary>Lifetime of each session. Recorded when a session ends.</summary>
 </histogram>
 
 <histogram name="Arc.CustomTabs.SessionLifetime2.Closed" units="ms"
     expires_after="2020-05-31">
+  <obsolete>
+    Removed as of 05/2022
+  </obsolete>
   <owner>hashimoto@google.com</owner>
   <summary>
     Lifetime of each session. Recorded when a session is closed.
@@ -838,6 +847,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Arc.CustomTabs.SessionLifetime2.ForwardedToNormalTab"
     units="ms" expires_after="2020-05-31">
+  <obsolete>
+    Removed as of 05/2022
+  </obsolete>
   <owner>hashimoto@google.com</owner>
   <summary>
     Lifetime of each session. Recorded when a session ends because the tab was
