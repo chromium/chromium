@@ -192,9 +192,9 @@ TEST_F(ProcfsStatCpuParserTest, IncorrectCoreSpecifier) {
       "cpu-100 1 2 3 4 5 6 7 8 9 0",
       "cpu1a 1 2 3 4 5 6 7 8 9 0",
       "cpu1- 1 2 3 4 5 6 7 8 9 0",
-      u8"cpu\U0001f41b 1 2 3 4 5 6 7 8 9 0",
-      u8"cpu1\U0001f41b 1 2 3 4 5 6 7 8 9 0",
-      u8"cpu\U0001f41b1 1 2 3 4 5 6 7 8 9 0",
+      "cpu\U0001f41b 1 2 3 4 5 6 7 8 9 0",
+      "cpu1\U0001f41b 1 2 3 4 5 6 7 8 9 0",
+      "cpu\U0001f41b1 1 2 3 4 5 6 7 8 9 0",
   };
 
   for (const char* test_case : test_cases) {
@@ -219,9 +219,9 @@ TEST_F(ProcfsStatCpuParserTest, InvalidFirstNumber) {
       "cpu0 123456789012345678901 2 3 4 5 6 7 8 9 10",
       "cpu0 -123456789012345678901 2 3 4 5 6 7 8 9 10",
       "cpu0 18446744073709551616 2 3 4 5 6 7 8 9 10",
-      u8"cpu0 \U0001f41b 2 3 4 5 6 7 8 9 10",
-      u8"cpu0 1\U0001f41b 2 3 4 5 6 7 8 9 10",
-      u8"cpu0 \U0001f41b1 2 3 4 5 6 7 8 9 10",
+      "cpu0 \U0001f41b 2 3 4 5 6 7 8 9 10",
+      "cpu0 1\U0001f41b 2 3 4 5 6 7 8 9 10",
+      "cpu0 \U0001f41b1 2 3 4 5 6 7 8 9 10",
   };
 
   for (const char* test_case : test_cases) {
@@ -262,9 +262,9 @@ TEST_F(ProcfsStatCpuParserTest, InvalidNumberSkipped) {
       {"cpu0 1 2 3 4 5 6 7 a 9 10", 7},
       {"cpu0 1 2 3 4 5 6 7 8 a 10", 8},
       {"cpu0 1 2 3 4 5 6 7 8 9 a", 9},
-      {u8"cpu0 1 \U0001f41b 3 4 5 6 7 8 9 10", 1},
-      {u8"cpu0 1 2 3\U0001f41b 4 5 6 7 8 9 10", 2},
-      {u8"cpu0 1 2 3 \U0001f41b4 5 6 7 8 9 10", 3},
+      {"cpu0 1 \U0001f41b 3 4 5 6 7 8 9 10", 1},
+      {"cpu0 1 2 3\U0001f41b 4 5 6 7 8 9 10", 2},
+      {"cpu0 1 2 3 \U0001f41b4 5 6 7 8 9 10", 3},
   };
 
   for (const TestCase& test_case : test_cases) {
