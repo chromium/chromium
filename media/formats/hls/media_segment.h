@@ -17,6 +17,7 @@ class MEDIA_EXPORT MediaSegment {
                types::DecimalInteger media_sequence_number,
                types::DecimalInteger discontinuity_sequence_number,
                GURL uri,
+               absl::optional<types::ByteRange> byte_range,
                bool has_discontinuity,
                bool is_gap);
   ~MediaSegment();
@@ -43,6 +44,10 @@ class MEDIA_EXPORT MediaSegment {
   // `gap` is true, in which case this URI should not be used.
   const GURL& GetUri() const { return uri_; }
 
+  // If this media segment is a subrange of its resource, this indicates the
+  // range.
+  absl::optional<types::ByteRange> GetByteRange() const { return byte_range_; }
+
   // Whether there is a decoding discontinuity between the previous media
   // segment and this one.
   bool HasDiscontinuity() const { return has_discontinuity_; }
@@ -56,6 +61,7 @@ class MEDIA_EXPORT MediaSegment {
   types::DecimalInteger media_sequence_number_;
   types::DecimalInteger discontinuity_sequence_number_;
   GURL uri_;
+  absl::optional<types::ByteRange> byte_range_;
   bool has_discontinuity_;
   bool is_gap_;
 };

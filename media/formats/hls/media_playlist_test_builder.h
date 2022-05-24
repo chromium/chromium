@@ -12,6 +12,8 @@
 #include "media/formats/hls/media_playlist.h"
 #include "media/formats/hls/media_segment.h"
 #include "media/formats/hls/playlist_test_builder.h"
+#include "media/formats/hls/types.h"
+#include "url/gurl.h"
 
 namespace media::hls {
 
@@ -133,6 +135,22 @@ inline void HasUri(GURL uri,
                    const base::Location& from,
                    const MediaSegment& segment) {
   EXPECT_EQ(segment.GetUri(), uri) << from.ToString();
+}
+
+// Checks that the latest media segment has the given byte range.
+inline void HasByteRange(absl::optional<types::ByteRange> range,
+                         const base::Location& from,
+                         const MediaSegment& segment) {
+  ASSERT_EQ(segment.GetByteRange().has_value(), range.has_value())
+      << from.ToString();
+  if (range.has_value()) {
+    EXPECT_EQ(segment.GetByteRange()->GetOffset(), range->GetOffset())
+        << from.ToString();
+    EXPECT_EQ(segment.GetByteRange()->GetLength(), range->GetLength())
+        << from.ToString();
+    EXPECT_EQ(segment.GetByteRange()->GetEnd(), range->GetEnd())
+        << from.ToString();
+  }
 }
 
 // Checks the latest media segment's `HasDiscontinuity` property against the

@@ -475,4 +475,24 @@ TEST(HlsTagsTest, ParseXDiscontinuitySequenceTag) {
   RunDecimalIntegerTagTest(&XDiscontinuitySequenceTag::number);
 }
 
+TEST(HlsTagsTest, ParseXByteRangeTag) {
+  RunTagIdenficationTest<XByteRangeTag>("#EXT-X-BYTERANGE:12@34\n", "12@34");
+
+  auto tag = OkTest<XByteRangeTag>("12");
+  EXPECT_EQ(tag.range.length, 12u);
+  EXPECT_EQ(tag.range.offset, absl::nullopt);
+  tag = OkTest<XByteRangeTag>("12@34");
+  EXPECT_EQ(tag.range.length, 12u);
+  EXPECT_EQ(tag.range.offset, 34u);
+
+  ErrorTest<XByteRangeTag>("FOOBAR", ParseStatusCode::kMalformedTag);
+  ErrorTest<XByteRangeTag>("12@", ParseStatusCode::kMalformedTag);
+  ErrorTest<XByteRangeTag>("@34", ParseStatusCode::kMalformedTag);
+  ErrorTest<XByteRangeTag>("@", ParseStatusCode::kMalformedTag);
+  ErrorTest<XByteRangeTag>(" 12@34", ParseStatusCode::kMalformedTag);
+  ErrorTest<XByteRangeTag>("12@34 ", ParseStatusCode::kMalformedTag);
+  ErrorTest<XByteRangeTag>("", ParseStatusCode::kMalformedTag);
+  ErrorTest<XByteRangeTag>(absl::nullopt, ParseStatusCode::kMalformedTag);
+}
+
 }  // namespace media::hls

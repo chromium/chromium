@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <limits>
 
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
@@ -227,7 +228,8 @@ ParseStatus::Or<DecimalResolution> DecimalResolution::Parse(
                            .height = std::move(height).value()};
 }
 
-ParseStatus::Or<ByteRange> ByteRange::Parse(SourceString source_str) {
+ParseStatus::Or<ByteRangeExpression> ByteRangeExpression::Parse(
+    SourceString source_str) {
   // If this ByteRange has an offset, it will be separated from the length by
   // '@'.
   const auto at_index = source_str.Str().find_first_of('@');
@@ -251,7 +253,22 @@ ParseStatus::Or<ByteRange> ByteRange::Parse(SourceString source_str) {
     offset = std::move(offset_result).value();
   }
 
-  return ByteRange{.length = std::move(length).value(), .offset = offset};
+  return ByteRangeExpression{.length = std::move(length).value(),
+                             .offset = offset};
+}
+
+absl::optional<ByteRange> ByteRange::Validate(DecimalInteger length,
+                                              DecimalInteger offset) {
+  if (length == 0) {
+    return absl::nullopt;
+  }
+
+  // Ensure that `length+offset` won't overflow `DecimalInteger`
+  if (std::numeric_limits<DecimalInteger>::max() - offset < length) {
+    return absl::nullopt;
+  }
+
+  return ByteRange(length, offset);
 }
 
 ParseStatus::Or<base::StringPiece> ParseQuotedString(

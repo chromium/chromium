@@ -44,6 +44,8 @@ enum class ParseStatusCode : StatusCodeType {
   kMediaSegmentBeforeMediaSequenceTag,
   kMediaSegmentBeforeDiscontinuitySequenceTag,
   kDiscontinuityTagBeforeDiscontinuitySequenceTag,
+  kByteRangeRequiresOffset,
+  kByteRangeInvalid,
 };
 
 struct ParseStatusTraits {

@@ -189,6 +189,14 @@ struct MEDIA_EXPORT XDiscontinuitySequenceTag {
   types::DecimalInteger number;
 };
 
+// Represents the contents of the #EXT-X-BYTERANGE tag.
+struct MEDIA_EXPORT XByteRangeTag {
+  static constexpr auto kName = MediaPlaylistTagName::kXByteRange;
+  static ParseStatus::Or<XByteRangeTag> Parse(TagItem);
+
+  types::ByteRangeExpression range;
+};
+
 }  // namespace media::hls
 
 #endif  // MEDIA_FORMATS_HLS_TAGS_H_

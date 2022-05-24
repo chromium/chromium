@@ -638,27 +638,27 @@ TEST(HlsTypesTest, ParseDecimalResolution) {
   error_test("18446744073709551616x18446744073709551616");
 }
 
-TEST(HlsTypesTest, ParseByteRange) {
+TEST(HlsTypesTest, ParseByteRangeExpression) {
   const auto error_test = [](base::StringPiece input,
                              const base::Location& from =
                                  base::Location::Current()) {
-    auto result =
-        types::ByteRange::Parse(SourceString::CreateForTesting(input));
+    auto result = types::ByteRangeExpression::Parse(
+        SourceString::CreateForTesting(input));
     ASSERT_TRUE(result.has_error());
     auto error = std::move(result).error();
     EXPECT_EQ(error.code(), ParseStatusCode::kFailedToParseByteRange)
         << from.ToString();
   };
-  const auto ok_test = [](base::StringPiece input, types::ByteRange expected,
-                          const base::Location& from =
-                              base::Location::Current()) {
-    auto result =
-        types::ByteRange::Parse(SourceString::CreateForTesting(input));
-    ASSERT_TRUE(result.has_value());
-    auto value = std::move(result).value();
-    EXPECT_EQ(value.length, expected.length);
-    EXPECT_EQ(value.offset, expected.offset);
-  };
+  const auto ok_test =
+      [](base::StringPiece input, types::ByteRangeExpression expected,
+         const base::Location& from = base::Location::Current()) {
+        auto result = types::ByteRangeExpression::Parse(
+            SourceString::CreateForTesting(input));
+        ASSERT_TRUE(result.has_value());
+        auto value = std::move(result).value();
+        EXPECT_EQ(value.length, expected.length);
+        EXPECT_EQ(value.offset, expected.offset);
+      };
 
   // Empty string is not allowed
   error_test("");
@@ -689,26 +689,65 @@ TEST(HlsTypesTest, ParseByteRange) {
   error_test("\"12@34\"");
 
   // Test some valid inputs
-  ok_test("0", types::ByteRange{.length = 0, .offset = absl::nullopt});
-  ok_test("12", types::ByteRange{.length = 12, .offset = absl::nullopt});
-  ok_test("12@0", types::ByteRange{.length = 12, .offset = 0});
-  ok_test("12@34", types::ByteRange{.length = 12, .offset = 34});
-  ok_test("0@34", types::ByteRange{.length = 0, .offset = 34});
-  ok_test("0@0", types::ByteRange{.length = 0, .offset = 0});
+  ok_test("0",
+          types::ByteRangeExpression{.length = 0, .offset = absl::nullopt});
+  ok_test("12",
+          types::ByteRangeExpression{.length = 12, .offset = absl::nullopt});
+  ok_test("12@0", types::ByteRangeExpression{.length = 12, .offset = 0});
+  ok_test("12@34", types::ByteRangeExpression{.length = 12, .offset = 34});
+  ok_test("0@34", types::ByteRangeExpression{.length = 0, .offset = 34});
+  ok_test("0@0", types::ByteRangeExpression{.length = 0, .offset = 0});
 
-  // Test max supported values
-  ok_test("18446744073709551615@0",
-          types::ByteRange{.length = 18446744073709551615u, .offset = 0});
+  // Test max supported values. These are valid ByteRangeExpressions, but not
+  // necessarily valid ByteRanges.
+  ok_test(
+      "18446744073709551615@0",
+      types::ByteRangeExpression{.length = 18446744073709551615u, .offset = 0});
   error_test("18446744073709551616@0");
-  ok_test("0@18446744073709551615",
-          types::ByteRange{.length = 0, .offset = 18446744073709551615u});
+  ok_test(
+      "0@18446744073709551615",
+      types::ByteRangeExpression{.length = 0, .offset = 18446744073709551615u});
   error_test("0@18446744073709551616");
   ok_test("18446744073709551615@18446744073709551615",
-          types::ByteRange{.length = 18446744073709551615u,
-                           .offset = 18446744073709551615u});
+          types::ByteRangeExpression{.length = 18446744073709551615u,
+                                     .offset = 18446744073709551615u});
   error_test("18446744073709551616@18446744073709551615");
   error_test("18446744073709551615@18446744073709551616");
   error_test("18446744073709551616@18446744073709551616");
+}
+
+TEST(HlsTypesTest, ValidateByteRange) {
+  // Any non-empty range where `ByteRange::GetEnd()` doesn't overflow
+  // `DecimalInteger` is valid.
+  constexpr auto ok_test =
+      [](types::DecimalInteger length, types::DecimalInteger offset,
+         const base::Location& from = base::Location::Current()) {
+        const auto result = types::ByteRange::Validate(length, offset);
+        EXPECT_TRUE(result.has_value()) << from.ToString();
+      };
+  constexpr auto error_test =
+      [](types::DecimalInteger length, types::DecimalInteger offset,
+         const base::Location& from = base::Location::Current()) {
+        const auto result = types::ByteRange::Validate(length, offset);
+        EXPECT_FALSE(result.has_value()) << from.ToString();
+      };
+
+  ok_test(1, 1);
+  ok_test(1, 0);
+
+  // Empty range is not allowed
+  error_test(0, 0);
+  error_test(0, 1);
+  error_test(0, 18446744073709551615u);
+
+  // Overflowing range is not allowed
+  ok_test(18446744073709551615u, 0);
+  error_test(18446744073709551615u, 1);
+  error_test(1, 18446744073709551615u);
+  error_test(18446744073709551615u, 18446744073709551615u);
+  error_test(9223372036854775808u, 9223372036854775808u);
+  ok_test(9223372036854775808u, 9223372036854775807u);
+  ok_test(9223372036854775807u, 9223372036854775808u);
 }
 
 }  // namespace media::hls

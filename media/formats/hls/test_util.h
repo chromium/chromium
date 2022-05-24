@@ -16,6 +16,11 @@ inline types::VariableName CreateVarName(base::StringPiece name) {
       .value();
 }
 
+inline types::ByteRange CreateByteRange(types::DecimalInteger length,
+                                        types::DecimalInteger offset) {
+  return types::ByteRange::Validate(length, offset).value();
+}
+
 }  // namespace media::hls
 
 #endif

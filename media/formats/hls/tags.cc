@@ -454,4 +454,19 @@ ParseStatus::Or<XDiscontinuitySequenceTag> XDiscontinuitySequenceTag::Parse(
   return ParseDecimalIntegerTag(tag, &XDiscontinuitySequenceTag::number);
 }
 
+ParseStatus::Or<XByteRangeTag> XByteRangeTag::Parse(TagItem tag) {
+  DCHECK(tag.GetName() == ToTagName(XByteRangeTag::kName));
+  if (!tag.GetContent().has_value()) {
+    return ParseStatusCode::kMalformedTag;
+  }
+
+  auto range = types::ByteRangeExpression::Parse(*tag.GetContent());
+  if (range.has_error()) {
+    return ParseStatus(ParseStatusCode::kMalformedTag)
+        .AddCause(std::move(range).error());
+  }
+
+  return XByteRangeTag{.range = std::move(range).value()};
+}
+
 }  // namespace media::hls

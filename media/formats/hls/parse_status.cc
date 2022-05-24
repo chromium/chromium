@@ -47,6 +47,8 @@ base::StringPiece ParseStatusCodeToString(ParseStatusCode code) {
     PARSE_STATUS_CODE_CASE(kMediaSegmentBeforeMediaSequenceTag);
     PARSE_STATUS_CODE_CASE(kMediaSegmentBeforeDiscontinuitySequenceTag);
     PARSE_STATUS_CODE_CASE(kDiscontinuityTagBeforeDiscontinuitySequenceTag);
+    PARSE_STATUS_CODE_CASE(kByteRangeRequiresOffset);
+    PARSE_STATUS_CODE_CASE(kByteRangeInvalid);
   }
 
   NOTREACHED();

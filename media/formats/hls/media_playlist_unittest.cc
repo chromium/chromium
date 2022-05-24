@@ -13,6 +13,7 @@
 #include "media/formats/hls/multivariant_playlist.h"
 #include "media/formats/hls/parse_status.h"
 #include "media/formats/hls/tags.h"
+#include "media/formats/hls/test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -745,6 +746,209 @@ TEST(HlsMediaPlaylistTest, XDiscontinuitySequenceTag) {
   fork.ExpectSegment(HasDiscontinuitySequenceNumber, 6);
   fill_playlist(fork, 11, 6);
   fork.ExpectOk();
+}
+
+TEST(HlsMediaPlaylistTest, XByteRangeTag) {
+  MediaPlaylistTestBuilder builder;
+  builder.AppendLine("#EXTM3U");
+  builder.AppendLine("#EXT-X-TARGETDURATION:10");
+
+  // EXT-X-BYTERANGE content must be a valid ByteRange
+  {
+    for (base::StringPiece x :
+         {"", ":", ": 12@34", ":12@34 ", ":12@", ":12@{$offset}"}) {
+      auto fork = builder;
+      fork.AppendLine("#EXT-X-BYTERANGE", x);
+      fork.AppendLine("#EXTINF:9.2,\t");
+      fork.AppendLine("segment.ts");
+      fork.ExpectError(ParseStatusCode::kMalformedTag);
+    }
+  }
+  // EXT-X-BYTERANGE may not appear twice per-segment.
+  // TODO(https://crbug.com/1328528): Some players support this, using only the
+  // final occurrence.
+  {
+    auto fork = builder;
+    fork.AppendLine("#EXT-X-BYTERANGE:12@34");
+    fork.AppendLine("#EXT-X-BYTERANGE:34@56");
+    fork.AppendLine("#EXTINF:9.2,\t");
+    fork.AppendLine("segment.ts");
+    fork.ExpectError(ParseStatusCode::kPlaylistHasDuplicateTags);
+  }
+  // Offset is required if this is the first media segment.
+  // TODO(https://crbug.com/1328528): Some players support this, default offset
+  // to 0.
+  {
+    auto fork = builder;
+    fork.AppendLine("#EXT-X-BYTERANGE:12");
+    fork.AppendLine("#EXTINF:9.2,\t");
+    fork.AppendLine("segment.ts");
+    fork.ExpectError(ParseStatusCode::kByteRangeRequiresOffset);
+
+    fork = builder;
+    fork.AppendLine("#EXT-X-BYTERANGE:12@34");
+    fork.AppendLine("#EXTINF:9.2,\t");
+    fork.AppendLine("segment.ts");
+    fork.ExpectAdditionalSegment();
+    fork.ExpectSegment(HasByteRange, CreateByteRange(12, 34));
+    fork.ExpectOk();
+  }
+  // Offset is required if the previous media segment is not a byterange.
+  {
+    auto fork = builder;
+    fork.AppendLine("#EXTINF:9.2,\t");
+    fork.AppendLine("segment.ts");
+    fork.AppendLine("#EXT-X-BYTERANGE:12");
+    fork.AppendLine("#EXTINF:9.2,\t");
+    fork.AppendLine("segment.ts");
+    fork.ExpectError(ParseStatusCode::kByteRangeRequiresOffset);
+
+    fork = builder;
+    fork.AppendLine("#EXTINF:9.2,\t");
+    fork.AppendLine("segment.ts");
+    fork.ExpectAdditionalSegment();
+    fork.ExpectSegment(HasUri, GURL("http://localhost/segment.ts"));
+    fork.ExpectSegment(HasByteRange, absl::nullopt);
+    fork.AppendLine("#EXT-X-BYTERANGE:12@34");
+    fork.AppendLine("#EXTINF:9.2,\t");
+    fork.AppendLine("segment.ts");
+    fork.ExpectAdditionalSegment();
+    fork.ExpectSegment(HasUri, GURL("http://localhost/segment.ts"));
+    fork.ExpectSegment(HasByteRange, CreateByteRange(12, 34));
+    fork.ExpectOk();
+  }
+  // Offset is required if the previous media segment is a byterange of a
+  // different resource.
+  // TODO(https://crbug.com/1328528): Some players support this.
+  {
+    auto fork = builder;
+    fork.AppendLine("#EXT-X-BYTERANGE:12@34");
+    fork.AppendLine("#EXTINF:9.2,\t");
+    fork.AppendLine("segment1.ts");
+    fork.AppendLine("#EXT-X-BYTERANGE:56");
+    fork.AppendLine("#EXTINF:9.2,\t");
+    fork.AppendLine("segment2.ts");
+    fork.ExpectError(ParseStatusCode::kByteRangeRequiresOffset);
+
+    fork = builder;
+    fork.AppendLine("#EXT-X-BYTERANGE:12@34");
+    fork.AppendLine("#EXTINF:9.2,\t");
+    fork.AppendLine("segment1.ts");
+    fork.ExpectAdditionalSegment();
+    fork.ExpectSegment(HasUri, GURL("http://localhost/segment1.ts"));
+    fork.ExpectSegment(HasByteRange, CreateByteRange(12, 34));
+    fork.AppendLine("#EXT-X-BYTERANGE:56@78");
+    fork.AppendLine("#EXTINF:9.2,\t");
+    fork.AppendLine("segment2.ts");
+    fork.ExpectAdditionalSegment();
+    fork.ExpectSegment(HasUri, GURL("http://localhost/segment2.ts"));
+    fork.ExpectSegment(HasByteRange, CreateByteRange(56, 78));
+    fork.ExpectOk();
+  }
+  // Offset is required even if a prior segment is a byterange of the same
+  // resource, but not the immediately previous segment.
+  {
+    auto fork = builder;
+    fork.AppendLine("#EXT-X-BYTERANGE:12@34");
+    fork.AppendLine("#EXTINF:9.2,\t");
+    fork.AppendLine("segment1.ts");
+    fork.AppendLine("#EXTINF:9.2,\t");
+    fork.AppendLine("segment2.ts");
+    fork.AppendLine("#EXT-X-BYTERANGE:45");
+    fork.AppendLine("#EXTINF:9.2,\t");
+    fork.AppendLine("segment1.ts");
+    fork.ExpectError(ParseStatusCode::kByteRangeRequiresOffset);
+
+    fork = builder;
+    fork.AppendLine("#EXT-X-BYTERANGE:12@34");
+    fork.AppendLine("#EXTINF:9.2,\t");
+    fork.AppendLine("segment1.ts");
+    fork.ExpectAdditionalSegment();
+    fork.ExpectSegment(HasUri, GURL("http://localhost/segment1.ts"));
+    fork.ExpectSegment(HasByteRange, CreateByteRange(12, 34));
+    fork.AppendLine("#EXTINF:9.2,\t");
+    fork.AppendLine("segment2.ts");
+    fork.ExpectAdditionalSegment();
+    fork.ExpectSegment(HasUri, GURL("http://localhost/segment2.ts"));
+    fork.ExpectSegment(HasByteRange, absl::nullopt);
+    fork.AppendLine("#EXT-X-BYTERANGE:56@78");
+    fork.AppendLine("#EXTINF:9.2,\t");
+    fork.AppendLine("segment1.ts");
+    fork.ExpectAdditionalSegment();
+    fork.ExpectSegment(HasUri, GURL("http://localhost/segment1.ts"));
+    fork.ExpectSegment(HasByteRange, CreateByteRange(56, 78));
+    fork.ExpectOk();
+  }
+  // Offset can be elided if the previous segment is a byterange of the same
+  // resource.
+  {
+    auto fork = builder;
+    fork.AppendLine("#EXT-X-BYTERANGE:12@34");
+    fork.AppendLine("#EXTINF:9.2,\t");
+    fork.AppendLine("segment1.ts");
+    fork.ExpectAdditionalSegment();
+    fork.ExpectSegment(HasUri, GURL("http://localhost/segment1.ts"));
+    fork.ExpectSegment(HasByteRange, CreateByteRange(12, 34));
+    fork.AppendLine("#EXT-X-BYTERANGE:56");
+    fork.AppendLine("#EXTINF:9.2,\t");
+    fork.AppendLine("segment1.ts");
+    fork.ExpectAdditionalSegment();
+    fork.ExpectSegment(HasUri, GURL("http://localhost/segment1.ts"));
+    fork.ExpectSegment(HasByteRange, CreateByteRange(56, 46));
+
+    // If an explicit offset is given (even it it's eligible to be elided), it
+    // must be used.
+    fork.AppendLine("#EXT-X-BYTERANGE:78@99999");
+    fork.AppendLine("#EXTINF:9.2,\t");
+    fork.AppendLine("segment1.ts");
+    fork.ExpectAdditionalSegment();
+    fork.ExpectSegment(HasUri, GURL("http://localhost/segment1.ts"));
+    fork.ExpectSegment(HasByteRange, CreateByteRange(78, 99999));
+    fork.ExpectOk();
+  }
+  // Range given by tag may not be empty or overflow a uint64, even across
+  // segments.
+  {
+    auto fork = builder;
+    fork.AppendLine("#EXT-X-BYTERANGE:0@0");
+    fork.AppendLine("#EXTINF:9.2,\t");
+    fork.AppendLine("segment1.ts");
+    fork.ExpectError(ParseStatusCode::kByteRangeInvalid);
+
+    fork = builder;
+    fork.AppendLine("#EXT-X-BYTERANGE:18446744073709551615@1");
+    fork.AppendLine("#EXTINF:9.2,\t");
+    fork.AppendLine("segment1.ts");
+    fork.ExpectError(ParseStatusCode::kByteRangeInvalid);
+
+    fork = builder;
+    fork.AppendLine("#EXT-X-BYTERANGE:1@18446744073709551615");
+    fork.AppendLine("#EXTINF:9.2,\t");
+    fork.AppendLine("segment1.ts");
+    fork.ExpectError(ParseStatusCode::kByteRangeInvalid);
+
+    fork = builder;
+    fork.AppendLine(
+        "#EXT-X-BYTERANGE:18446744073709551615@18446744073709551615");
+    fork.AppendLine("#EXTINF:9.2,\t");
+    fork.AppendLine("segment1.ts");
+    fork.ExpectError(ParseStatusCode::kByteRangeInvalid);
+
+    fork = builder;
+    fork.AppendLine("#EXT-X-BYTERANGE:1@18446744073709551614");
+    fork.AppendLine("#EXTINF:9.2,\t");
+    fork.AppendLine("segment1.ts");
+    fork.ExpectAdditionalSegment();
+    fork.ExpectSegment(HasByteRange, CreateByteRange(1, 18446744073709551614u));
+    fork.ExpectOk();
+
+    // Since the previous segment ends at uint64_t::max, an additional
+    // contiguous byterange would overflow.
+    fork.AppendLine("#EXT-X-BYTERANGE:1");
+    fork.AppendLine("#EXTINF:9.2,\t");
+    fork.AppendLine("segment1.ts");
+    fork.ExpectError(ParseStatusCode::kByteRangeInvalid);
+  }
 }
 
 }  // namespace media::hls

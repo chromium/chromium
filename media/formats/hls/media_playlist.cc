@@ -56,6 +56,7 @@ ParseStatus::Or<MediaPlaylist> MediaPlaylist::Parse(
   absl::optional<InfTag> inf_tag;
   absl::optional<XGapTag> gap_tag;
   absl::optional<XDiscontinuityTag> discontinuity_tag;
+  absl::optional<XByteRangeTag> byterange_tag;
   absl::optional<XPlaylistTypeTag> playlist_type_tag;
   absl::optional<XEndListTag> end_list_tag;
   absl::optional<XIFramesOnlyTag> i_frames_only_tag;
@@ -199,6 +200,15 @@ ParseStatus::Or<MediaPlaylist> MediaPlaylist::Parse(
           discontinuity_sequence_number = discontinuity_sequence_tag->number;
           break;
         }
+        case MediaPlaylistTagName::kXByteRange: {
+          // TODO(https://crbug.com/1328528): Investigate supporting aspects of
+          // this tag not described by the spec
+          auto error = ParseUniqueTag(*tag, byterange_tag);
+          if (error.has_value()) {
+            return std::move(error).value();
+          }
+          break;
+        }
       }
 
       continue;
@@ -228,14 +238,43 @@ ParseStatus::Or<MediaPlaylist> MediaPlaylist::Parse(
     const types::DecimalInteger media_sequence_number =
         (media_sequence_tag ? media_sequence_tag->number : 0) + segments.size();
 
+    absl::optional<types::ByteRange> byterange;
+    if (byterange_tag.has_value()) {
+      auto range = byterange_tag->range;
+
+      // If this media segment had an EXT-X-BYTERANGE tag without an offset, the
+      // previous media segment must have been a byterange of the same resource.
+      // In that case, the offset is that of the byte following the previous
+      // media segment.
+      types::DecimalInteger offset;
+      if (range.offset.has_value()) {
+        offset = range.offset.value();
+      } else if (segments.empty()) {
+        return ParseStatusCode::kByteRangeRequiresOffset;
+      } else if (!segments.back().GetByteRange().has_value()) {
+        return ParseStatusCode::kByteRangeRequiresOffset;
+      } else if (segments.back().GetUri() != segment_uri) {
+        return ParseStatusCode::kByteRangeRequiresOffset;
+      } else {
+        offset = segments.back().GetByteRange()->GetEnd();
+      }
+
+      byterange = types::ByteRange::Validate(range.length, offset);
+      if (!byterange) {
+        return ParseStatusCode::kByteRangeInvalid;
+      }
+    }
+
     segments.emplace_back(inf_tag->duration, media_sequence_number,
                           discontinuity_sequence_number, std::move(segment_uri),
-                          discontinuity_tag.has_value(), gap_tag.has_value());
+                          byterange, discontinuity_tag.has_value(),
+                          gap_tag.has_value());
 
     // Reset per-segment tags
     inf_tag.reset();
     gap_tag.reset();
     discontinuity_tag.reset();
+    byterange_tag.reset();
   }
 
   if (!target_duration_tag.has_value()) {
