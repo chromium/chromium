@@ -80,16 +80,11 @@ scoped_refptr<DisplayItemList> MakeNoopDisplayItemList() {
 }
 
 // Creates a bitmap of |size| filled with pixels of |color|.
-SkBitmap MakeSolidColorBitmap(gfx::Size size, SkColor color) {
+SkBitmap MakeSolidColorBitmap(gfx::Size size, SkColor4f color) {
   SkBitmap bitmap;
   bitmap.allocPixels(SkImageInfo::MakeN32Premul(size.width(), size.height()));
   bitmap.eraseColor(color);
   return bitmap;
-}
-
-// TODO(https://bugs.chromium.org/p/skia/issues/detail?id=13329)
-SkBitmap MakeSolidColorBitmap(gfx::Size size, SkColor4f color) {
-  return MakeSolidColorBitmap(size, color.toSkColor());
 }
 
 // Creates a SkImage filled with magenta and a 30x40 green rectangle.
@@ -414,8 +409,8 @@ TEST_F(OopPixelTest, DrawColorWithTargetColorSpace) {
   RasterOptions options(rect.size());
   options.target_color_params.color_space = target_color_space;
 
-  SkBitmap expected =
-      MakeSolidColorBitmap(rect.size(), SkColorSetARGB(255, 38, 15, 221));
+  SkBitmap expected = MakeSolidColorBitmap(
+      rect.size(), SkColor4f::FromColor(SkColorSetARGB(255, 38, 15, 221)));
 
   auto actual = Raster(display_item_list, options);
   ExpectEquals(actual, expected);
@@ -499,8 +494,7 @@ TEST_F(OopPixelTest, DrawRecordPaintFilterTranslatedBounds) {
       SkImageInfo::MakeN32Premul(output_size.width(), output_size.height());
   SkBitmap expected;
   expected.allocPixels(ii, ii.minRowBytes());
-  // TODO(https://bugs.chromium.org/p/skia/issues/detail?id=13329)
-  expected.eraseColor(SkColors::kWhite.toSkColor());
+  expected.eraseColor(SkColors::kWhite);
   expected.erase(
       SkColors::kGreen.toSkColor(),
       SkIRect::MakeLTRB(output_size.width() / 2, output_size.height() / 2,
@@ -689,7 +683,6 @@ TEST_F(OopPixelTest, DrawImageWithTargetColorSpace) {
                comparator);
 
   // Verify some conversion occurred here and that actual != bitmap.
-  // TODO(https://bugs.chromium.org/p/skia/issues/detail?id=13329)
   EXPECT_NE(actual.getColor(0, 0), SkColors::kMagenta.toSkColor());
 }
 
@@ -1469,8 +1462,9 @@ TEST_F(OopPixelTest, DrawRectTransformOptionsFullRaster) {
   options.post_scale = 2.f;
 
   auto actual = Raster(display_item_list, options);
-  auto expected = MakeSolidColorBitmap(options.resource_size,
-                                       SkColorSetARGB(255, 64, 128, 32));
+  auto expected = MakeSolidColorBitmap(
+      options.resource_size,
+      SkColor4f::FromColor(SkColorSetARGB(255, 64, 128, 32)));
 
   ExpectEquals(actual, expected);
 }
@@ -1526,8 +1520,9 @@ TEST_F(OopPixelTest, DrawRectColorSpace) {
   display_item_list->EndPaintOfUnpaired(options.full_raster_rect);
   display_item_list->Finalize();
 
-  SkBitmap expected = MakeSolidColorBitmap(options.resource_size,
-                                           SkColorSetARGB(255, 117, 251, 76));
+  SkBitmap expected = MakeSolidColorBitmap(
+      options.resource_size,
+      SkColor4f::FromColor(SkColorSetARGB(255, 117, 251, 76)));
 
   auto actual = Raster(display_item_list, options);
   ExpectEquals(actual, expected);
