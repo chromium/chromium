@@ -615,7 +615,7 @@ ci.builder(
     name = "linux-lacros-builder-rel",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(
-            config = "chromium",
+            config = "chromium_no_telemetry_dependencies",
             apply_configs = [
                 "chromeos",
             ],
@@ -648,7 +648,7 @@ ci.thin_tester(
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         gclient_config = builder_config.gclient_config(
-            config = "chromium",
+            config = "chromium_no_telemetry_dependencies",
             apply_configs = [
                 "use_clang_coverage",
                 "chromeos",
