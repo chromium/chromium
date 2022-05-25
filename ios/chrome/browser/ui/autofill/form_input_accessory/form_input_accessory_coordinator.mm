@@ -6,10 +6,13 @@
 
 #include <vector>
 
+#include "base/bind.h"
 #include "base/ios/ios_util.h"
 #include "base/mac/foundation_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/time/time.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/feature_engagement/public/event_constants.h"
@@ -63,9 +66,13 @@
 #endif
 
 namespace {
-// Delay between the time the view is shown, and the time the password
-// suggestion tip is shown.
-const NSTimeInterval kPasswordSuggestionTipDelay = 1.5f;
+// Delay between the time the view is shown, and the time the suggestion label
+// is highlighted.
+constexpr base::TimeDelta kPasswordSuggestionHighlightDelay = base::Seconds(1);
+
+// Delay between the time the suggestion label is highlighted, and the time the
+// password suggestion tip is shown.
+constexpr base::TimeDelta kPasswordSuggestionTipDelay = base::Seconds(0.5);
 
 // Additional vertical offset for the IPH, so that it doesn't appear below the
 // Autofill strip at the top of the keyboard.
@@ -132,6 +139,18 @@ BubbleViewType BubbleTypeFromFeature() {
 // potential IPH bubble.
 @property(nonatomic, strong) UILayoutGuide* layoutGuide;
 
+// The browser state. May return null after the coordinator has been stopped
+// (thus the returned value must be checked for null).
+@property(nonatomic, readonly) ChromeBrowserState* browserState;
+
+// The tracker for feature engagement. May return null after the coordinator has
+// been stopped (thus the returned value must be checked for null).
+@property(nonatomic, readonly)
+    feature_engagement::Tracker* featureEngagementTracker;
+
+// The layout guide center to use to coordinate views.
+@property(nonatomic, readonly) LayoutGuideCenter* layoutGuideCenter;
+
 @end
 
 @implementation FormInputAccessoryCoordinator
@@ -163,16 +182,17 @@ BubbleViewType BubbleTypeFromFeature() {
       [[FormInputAccessoryViewController alloc]
           initWithManualFillAccessoryViewControllerDelegate:self];
   self.formInputAccessoryViewController.layoutGuideCenter =
-      [self layoutGuideCenter];
+      self.layoutGuideCenter;
 
+  DCHECK(self.browserState);
   auto passwordStore = IOSChromePasswordStoreFactory::GetForBrowserState(
-      self.browser->GetBrowserState(), ServiceAccessType::EXPLICIT_ACCESS);
+      self.browserState, ServiceAccessType::EXPLICIT_ACCESS);
 
   // There is no personal data manager in OTR (incognito). Get the original
   // one for manual fallback.
   autofill::PersonalDataManager* personalDataManager =
       autofill::PersonalDataManagerFactory::GetForBrowserState(
-          self.browser->GetBrowserState()->GetOriginalChromeBrowserState());
+          self.browserState->GetOriginalChromeBrowserState());
 
   __weak id<SecurityAlertCommands> securityAlertHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), SecurityAlertCommands);
@@ -189,7 +209,7 @@ BubbleViewType BubbleTypeFromFeature() {
   [self.formInputAccessoryViewController.view
       addGestureRecognizer:self.formInputAccessoryTapRecognizer];
 
-  self.layoutGuide = [[self layoutGuideCenter]
+  self.layoutGuide = [self.layoutGuideCenter
       makeLayoutGuideNamed:kAutofillFirstSuggestionGuide];
   [self.baseViewController.view addLayoutGuide:self.layoutGuide];
 }
@@ -303,22 +323,21 @@ BubbleViewType BubbleTypeFromFeature() {
   // The engagement tracker can change during testing (in feature engagement app
   // interface), therefore we retrive it here instead of storing it in the
   // mediator.
-  feature_engagement::Tracker* engagementTracker =
-      feature_engagement::TrackerFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
-  engagementTracker->NotifyEvent(
-      feature_engagement::events::kPasswordSuggestionsShown);
+  feature_engagement::Tracker* tracker = self.featureEngagementTracker;
+  if (tracker) {
+    tracker->NotifyEvent(feature_engagement::events::kPasswordSuggestionsShown);
+  }
 }
 
 - (void)notifyPasswordSuggestionSelected {
   // The engagement tracker can change during testing (in feature engagement app
   // interface), therefore we retrive it here instead of storing it in the
   // mediator.
-  feature_engagement::Tracker* engagementTracker =
-      feature_engagement::TrackerFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
-  engagementTracker->NotifyEvent(
-      feature_engagement::events::kPasswordSuggestionSelected);
+  feature_engagement::Tracker* tracker = self.featureEngagementTracker;
+  if (tracker) {
+    tracker->NotifyEvent(
+        feature_engagement::events::kPasswordSuggestionSelected);
+  }
 }
 
 - (void)showPasswordSuggestionIPHIfNeeded {
@@ -328,56 +347,12 @@ BubbleViewType BubbleTypeFromFeature() {
     return;
   }
 
-  // At this point, `self.layoutGuide` is usually not yet updated, since the
-  // view it matches has just been added to the hierarchy. Wait for it to be
-  // updated.
-  dispatch_after(
-      dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.05 * NSEC_PER_SEC)),
-      dispatch_get_main_queue(), ^{
-        self.bubblePresenter = [self newBubbleViewControllerPresenter];
-
-        // Get the anchor point for the bubble.
-        CGRect anchorFrame = self.layoutGuide.layoutFrame;
-        CGPoint anchorPoint =
-            CGPointMake(CGRectGetMidX(anchorFrame),
-                        CGRectGetMinY(anchorFrame) + kIPHVerticalOffset);
-
-        // Discard if it doesn't fit in the view as it is currently shown.
-        if (![self.bubblePresenter canPresentInView:self.baseViewController.view
-                                        anchorPoint:anchorPoint]) {
-          self.bubblePresenter = nil;
-          return;
-        }
-
-        // Early return if the engagement tracker won't display the IPH.
-        const base::Feature& feature =
-            feature_engagement::kIPHPasswordSuggestionsFeature;
-        if (!feature_engagement::TrackerFactory::GetForBrowserState(
-                 self.browser->GetBrowserState())
-                 ->ShouldTriggerHelpUI(feature)) {
-          self.bubblePresenter = nil;
-          return;
-        }
-
-        // Show the highlight suggestion.
-        [self.formInputAccessoryViewController animateSuggestionLabel];
-
-        // Present the bubble.
-        __weak __typeof(self) weakSelf = self;
-        dispatch_after(
-            dispatch_time(
-                DISPATCH_TIME_NOW,
-                (int64_t)(kPasswordSuggestionTipDelay * NSEC_PER_SEC)),
-            dispatch_get_main_queue(), ^{
-              __typeof(self) strongSelf = weakSelf;
-              if (strongSelf) {
-                [strongSelf.bubblePresenter
-                    presentInViewController:strongSelf.baseViewController
-                                       view:strongSelf.baseViewController.view
-                                anchorPoint:anchorPoint];
-              }
-            });
-      });
+  __weak __typeof(self) weakSelf = self;
+  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE, base::BindOnce(^{
+        [weakSelf tryPresentingBubble];
+      }),
+      kPasswordSuggestionHighlightDelay);
 }
 
 #pragma mark - ManualFillAccessoryViewControllerDelegate
@@ -546,6 +521,32 @@ BubbleViewType BubbleTypeFromFeature() {
 
 #pragma mark - Private
 
+- (ChromeBrowserState*)browserState {
+  return self.browser ? self.browser->GetBrowserState() : nullptr;
+}
+
+- (feature_engagement::Tracker*)featureEngagementTracker {
+  ChromeBrowserState* browserState = self.browserState;
+  if (!browserState)
+    return nullptr;
+  feature_engagement::Tracker* tracker =
+      feature_engagement::TrackerFactory::GetForBrowserState(browserState);
+  DCHECK(tracker);
+  return tracker;
+}
+
+- (LayoutGuideCenter*)layoutGuideCenter {
+  SceneState* sceneState =
+      SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
+  LayoutGuideSceneAgent* layoutGuideSceneAgent =
+      [LayoutGuideSceneAgent agentFromScene:sceneState];
+  if (self.browserState && self.browserState->IsOffTheRecord()) {
+    return layoutGuideSceneAgent.incognitoLayoutGuideCenter;
+  } else {
+    return layoutGuideSceneAgent.layoutGuideCenter;
+  }
+}
+
 // Shows confirmation dialog before opening Other passwords.
 - (void)showConfirmationDialogToUseOtherPassword {
   WebStateList* webStateList = self.browser->GetWebStateList();
@@ -592,23 +593,22 @@ BubbleViewType BubbleTypeFromFeature() {
 
 // Returns a new bubble view controller presenter for password suggestion tip.
 - (BubbleViewControllerPresenter*)newBubbleViewControllerPresenter {
+  // Prepare the main arguments for the BubbleViewControllerPresenter
+  // initializer.
   NSString* text = l10n_util::GetNSString(IDS_IOS_PASSWORD_SUGGESTIONS_TIP);
   NSString* title =
       l10n_util::GetNSString(IDS_IOS_PASSWORD_SUGGESTIONS_TIP_TITLE);
   UIImage* image = [UIImage imageNamed:@"password_suggestion_icon"];
   BubbleViewType bubbleType = BubbleTypeFromFeature();
-  const base::Feature& feature =
-      feature_engagement::kIPHPasswordSuggestionsFeature;
+
+  // Prepare the dismissal callback.
   __weak __typeof(self) weakSelf = self;
   ProceduralBlockWithSnoozeAction dismissalCallback =
       ^(feature_engagement::Tracker::SnoozeAction snoozeAction) {
-        __typeof(self) strongSelf = weakSelf;
-        if (strongSelf) {
-          feature_engagement::TrackerFactory::GetForBrowserState(
-              strongSelf.browser->GetBrowserState())
-              ->DismissedWithSnooze(feature, snoozeAction);
-        }
+        [weakSelf IPHDidDismissWithSnoozeAction:snoozeAction];
       };
+
+  // Create the BubbleViewControllerPresenter.
   BubbleViewControllerPresenter* bubbleViewControllerPresenter =
       [[BubbleViewControllerPresenter alloc]
                initWithText:text
@@ -621,17 +621,60 @@ BubbleViewType BubbleTypeFromFeature() {
   return bubbleViewControllerPresenter;
 }
 
-// Returns the layout guide center to use to coordinate views.
-- (LayoutGuideCenter*)layoutGuideCenter {
-  SceneState* sceneState =
-      SceneStateBrowserAgent::FromBrowser(self.browser)->GetSceneState();
-  LayoutGuideSceneAgent* layoutGuideSceneAgent =
-      [LayoutGuideSceneAgent agentFromScene:sceneState];
-  if (self.browser->GetBrowserState()->IsOffTheRecord()) {
-    return layoutGuideSceneAgent.incognitoLayoutGuideCenter;
-  } else {
-    return layoutGuideSceneAgent.layoutGuideCenter;
+- (void)IPHDidDismissWithSnoozeAction:
+    (feature_engagement::Tracker::SnoozeAction)snoozeAction {
+  feature_engagement::Tracker* tracker = self.featureEngagementTracker;
+  if (tracker) {
+    const base::Feature& feature =
+        feature_engagement::kIPHPasswordSuggestionsFeature;
+    tracker->DismissedWithSnooze(feature, snoozeAction);
   }
+  self.bubblePresenter = nil;
+}
+
+// Checks if the bubble should be presented and acts on it.
+- (void)tryPresentingBubble {
+  BubbleViewControllerPresenter* bubblePresenter =
+      [self newBubbleViewControllerPresenter];
+
+  // Get the anchor point for the bubble.
+  CGRect anchorFrame = self.layoutGuide.layoutFrame;
+  CGPoint anchorPoint =
+      CGPointMake(CGRectGetMidX(anchorFrame),
+                  CGRectGetMinY(anchorFrame) + kIPHVerticalOffset);
+
+  // Discard if it doesn't fit in the view as it is currently shown.
+  if (![bubblePresenter canPresentInView:self.baseViewController.view
+                             anchorPoint:anchorPoint]) {
+    return;
+  }
+
+  // Early return if the engagement tracker won't display the IPH.
+  feature_engagement::Tracker* tracker = self.featureEngagementTracker;
+  const base::Feature& feature =
+      feature_engagement::kIPHPasswordSuggestionsFeature;
+  if (!tracker || !tracker->ShouldTriggerHelpUI(feature)) {
+    return;
+  }
+
+  // Show the highlight suggestion now.
+  [self.formInputAccessoryViewController animateSuggestionLabel];
+
+  // Present the bubble after the delay.
+  self.bubblePresenter = bubblePresenter;
+  __weak __typeof(self) weakSelf = self;
+  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE, base::BindOnce(^{
+        [weakSelf presentBubbleAtAnchorPoint:anchorPoint];
+      }),
+      kPasswordSuggestionTipDelay);
+}
+
+// Actually presents the bubble.
+- (void)presentBubbleAtAnchorPoint:(CGPoint)anchorPoint {
+  [self.bubblePresenter presentInViewController:self.baseViewController
+                                           view:self.baseViewController.view
+                                    anchorPoint:anchorPoint];
 }
 
 @end
