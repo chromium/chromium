@@ -161,7 +161,8 @@ public class OverlayPanelContent {
         }
 
         @Override
-        public boolean shouldIgnoreNavigation(NavigationHandle navigationHandle, GURL escapedUrl) {
+        public boolean shouldIgnoreNavigation(NavigationHandle navigationHandle, GURL escapedUrl,
+                boolean applyUserGestureCarryover) {
             // If either of the required params for the delegate are null, do not call the
             // delegate and ignore the navigation.
             if (mExternalNavHandler == null || navigationHandle == null) return true;

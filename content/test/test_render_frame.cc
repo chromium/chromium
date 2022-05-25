@@ -213,6 +213,10 @@ class MockFrameHost : public mojom::FrameHost {
 
   void DidStopLoading() override {}
 
+#if BUILDFLAG(IS_ANDROID)
+  void UpdateUserGestureCarryoverInfo() override {}
+#endif
+
  private:
   mojom::DidCommitProvisionalLoadParamsPtr last_commit_params_;
   mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>

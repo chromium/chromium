@@ -403,6 +403,9 @@ class CONTENT_EXPORT RenderFrameImpl
                         const int32_t flags) override;
 
   // blink::mojom::ResourceLoadInfoNotifier implementation:
+#if BUILDFLAG(IS_ANDROID)
+  void NotifyUpdateUserGestureCarryoverInfo() override;
+#endif
   void NotifyResourceRedirectReceived(
       const net::RedirectInfo& redirect_info,
       network::mojom::URLResponseHeadPtr redirect_response) override;
