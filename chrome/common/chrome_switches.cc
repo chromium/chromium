@@ -400,6 +400,10 @@ const char kPackExtension[]                 = "pack-extension";
 // Optional PEM private key to use in signing packaged .crx.
 const char kPackExtensionKey[]              = "pack-extension-key";
 
+// Causes the browser process to crash very early in startup, just before
+// crashpad (or breakpad) is initialized.
+const char kPreCrashpadCrashTest[] = "pre-crashpad-crash-test";
+
 // Used to mock the response received from the Web Permission Prediction
 // Service. Used for testing.
 const char kPredictionServiceMockLikelihood[] =

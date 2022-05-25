@@ -16,6 +16,7 @@
 #include "base/dcheck_is_on.h"
 #include "base/files/file_path.h"
 #include "base/i18n/rtl.h"
+#include "base/immediate_crash.h"
 #include "base/lazy_instance.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
@@ -1240,6 +1241,13 @@ void ChromeMainDelegate::PreSandboxStartup() {
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
   // Zygote needs to call InitCrashReporter() in RunZygote().
   if (process_type != switches::kZygoteProcess) {
+    if (command_line.HasSwitch(switches::kPreCrashpadCrashTest)) {
+      // Crash for the purposes of testing the handling of crashes that happen
+      // before crashpad is initialized. Please leave this check immediately
+      // before the crashpad initialization; the amount of memory used at this
+      // point is important to the test.
+      IMMEDIATE_CRASH();
+    }
 #if BUILDFLAG(IS_ANDROID)
     crash_reporter::InitializeCrashpad(process_type.empty(), process_type);
     if (process_type.empty()) {
