@@ -51,7 +51,8 @@ bool ThemeSelectionScreen::MaybeSkip(WizardContext* context) {
       ProfileManager::GetActiveUserProfile()->GetPrefs()->FindPreference(
           prefs::kDarkModeScheduleType);
   if (pref->IsManaged() || pref->IsRecommended() ||
-      !chromeos::features::IsOobeThemeSelectionEnabled()) {
+      !chromeos::features::IsOobeThemeSelectionEnabled() ||
+      !features::IsDarkLightModeEnabled()) {
     exit_callback_.Run(Result::kNotApplicable);
     return true;
   }

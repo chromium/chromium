@@ -89,6 +89,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/system_clock/system_clock_client.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/dbus/shill/fake_shill_manager_client.h"
@@ -3249,7 +3250,9 @@ class WizardControllerThemeSelectionEnabledTest
     : public WizardControllerThemeSelectionDefaultSettingsTest {
  public:
   WizardControllerThemeSelectionEnabledTest() {
-    feature_list_.InitAndEnableFeature(features::kEnableOobeThemeSelection);
+    feature_list_.InitWithFeatures({features::kEnableOobeThemeSelection,
+                                    chromeos::features::kDarkLightMode},
+                                   {});
   }
 
   base::test::ScopedFeatureList feature_list_;
