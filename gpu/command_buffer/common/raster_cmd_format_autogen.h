@@ -388,7 +388,10 @@ struct BeginRasterCHROMIUMImmediate {
 
   void SetHeader() { header.SetCmdByTotalSize<ValueType>(ComputeSize()); }
 
-  void Init(GLuint _sk_color,
+  void Init(GLfloat _r,
+            GLfloat _g,
+            GLfloat _b,
+            GLfloat _a,
             GLboolean _needs_clear,
             GLuint _msaa_sample_count,
             gpu::raster::MsaaMode _msaa_mode,
@@ -396,7 +399,10 @@ struct BeginRasterCHROMIUMImmediate {
             GLboolean _visible,
             const GLbyte* _mailbox) {
     SetHeader();
-    sk_color = _sk_color;
+    r = _r;
+    g = _g;
+    b = _b;
+    a = _a;
     needs_clear = _needs_clear;
     msaa_sample_count = _msaa_sample_count;
     msaa_mode = _msaa_mode;
@@ -406,14 +412,17 @@ struct BeginRasterCHROMIUMImmediate {
   }
 
   void* Set(void* cmd,
-            GLuint _sk_color,
+            GLfloat _r,
+            GLfloat _g,
+            GLfloat _b,
+            GLfloat _a,
             GLboolean _needs_clear,
             GLuint _msaa_sample_count,
             gpu::raster::MsaaMode _msaa_mode,
             GLboolean _can_use_lcd_text,
             GLboolean _visible,
             const GLbyte* _mailbox) {
-    static_cast<ValueType*>(cmd)->Init(_sk_color, _needs_clear,
+    static_cast<ValueType*>(cmd)->Init(_r, _g, _b, _a, _needs_clear,
                                        _msaa_sample_count, _msaa_mode,
                                        _can_use_lcd_text, _visible, _mailbox);
     const uint32_t size = ComputeSize();
@@ -421,7 +430,10 @@ struct BeginRasterCHROMIUMImmediate {
   }
 
   gpu::CommandHeader header;
-  uint32_t sk_color;
+  float r;
+  float g;
+  float b;
+  float a;
   uint32_t needs_clear;
   uint32_t msaa_sample_count;
   uint32_t msaa_mode;
@@ -429,24 +441,31 @@ struct BeginRasterCHROMIUMImmediate {
   uint32_t visible;
 };
 
-static_assert(sizeof(BeginRasterCHROMIUMImmediate) == 28,
-              "size of BeginRasterCHROMIUMImmediate should be 28");
+static_assert(sizeof(BeginRasterCHROMIUMImmediate) == 40,
+              "size of BeginRasterCHROMIUMImmediate should be 40");
 static_assert(offsetof(BeginRasterCHROMIUMImmediate, header) == 0,
               "offset of BeginRasterCHROMIUMImmediate header should be 0");
-static_assert(offsetof(BeginRasterCHROMIUMImmediate, sk_color) == 4,
-              "offset of BeginRasterCHROMIUMImmediate sk_color should be 4");
-static_assert(offsetof(BeginRasterCHROMIUMImmediate, needs_clear) == 8,
-              "offset of BeginRasterCHROMIUMImmediate needs_clear should be 8");
+static_assert(offsetof(BeginRasterCHROMIUMImmediate, r) == 4,
+              "offset of BeginRasterCHROMIUMImmediate r should be 4");
+static_assert(offsetof(BeginRasterCHROMIUMImmediate, g) == 8,
+              "offset of BeginRasterCHROMIUMImmediate g should be 8");
+static_assert(offsetof(BeginRasterCHROMIUMImmediate, b) == 12,
+              "offset of BeginRasterCHROMIUMImmediate b should be 12");
+static_assert(offsetof(BeginRasterCHROMIUMImmediate, a) == 16,
+              "offset of BeginRasterCHROMIUMImmediate a should be 16");
 static_assert(
-    offsetof(BeginRasterCHROMIUMImmediate, msaa_sample_count) == 12,
-    "offset of BeginRasterCHROMIUMImmediate msaa_sample_count should be 12");
-static_assert(offsetof(BeginRasterCHROMIUMImmediate, msaa_mode) == 16,
-              "offset of BeginRasterCHROMIUMImmediate msaa_mode should be 16");
+    offsetof(BeginRasterCHROMIUMImmediate, needs_clear) == 20,
+    "offset of BeginRasterCHROMIUMImmediate needs_clear should be 20");
 static_assert(
-    offsetof(BeginRasterCHROMIUMImmediate, can_use_lcd_text) == 20,
-    "offset of BeginRasterCHROMIUMImmediate can_use_lcd_text should be 20");
-static_assert(offsetof(BeginRasterCHROMIUMImmediate, visible) == 24,
-              "offset of BeginRasterCHROMIUMImmediate visible should be 24");
+    offsetof(BeginRasterCHROMIUMImmediate, msaa_sample_count) == 24,
+    "offset of BeginRasterCHROMIUMImmediate msaa_sample_count should be 24");
+static_assert(offsetof(BeginRasterCHROMIUMImmediate, msaa_mode) == 28,
+              "offset of BeginRasterCHROMIUMImmediate msaa_mode should be 28");
+static_assert(
+    offsetof(BeginRasterCHROMIUMImmediate, can_use_lcd_text) == 32,
+    "offset of BeginRasterCHROMIUMImmediate can_use_lcd_text should be 32");
+static_assert(offsetof(BeginRasterCHROMIUMImmediate, visible) == 36,
+              "offset of BeginRasterCHROMIUMImmediate visible should be 36");
 
 struct RasterCHROMIUM {
   typedef RasterCHROMIUM ValueType;

@@ -373,10 +373,10 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
     constexpr SkColor4f background_color = SkColors::kTransparent;
     constexpr GLuint msaa_sample_count = -1;
     constexpr bool can_use_lcd_text = true;
-    ri->BeginRasterCHROMIUM(
-        background_color.toSkColor(), needs_clear, msaa_sample_count,
-        gpu::raster::kNoMSAA, can_use_lcd_text,
-        /*visible=*/true, gfx::ColorSpace::CreateSRGB(), backing->mailbox.name);
+    ri->BeginRasterCHROMIUM(background_color, needs_clear, msaa_sample_count,
+                            gpu::raster::kNoMSAA, can_use_lcd_text,
+                            /*visible=*/true, gfx::ColorSpace::CreateSRGB(),
+                            backing->mailbox.name);
     constexpr gfx::Vector2dF post_translate(0.f, 0.f);
     constexpr gfx::Vector2dF post_scale(1.f, 1.f);
     DummyImageProvider image_provider;

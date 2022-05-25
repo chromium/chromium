@@ -105,9 +105,9 @@ TEST_F(RasterInProcessCommandBufferTest, AllowedBetweenBeginEndRasterCHROMIUM) {
 
   // Call BeginRasterCHROMIUM.
   ri_->BeginRasterCHROMIUM(
-      /*sk_color=*/0, /*needs_clear=*/true, /*msaa_sample_count=*/0,
-      gpu::raster::kNoMSAA, /*can_use_lcd_text=*/false, /*visible=*/true,
-      color_space, mailbox.name);
+      /*sk_color_4f=*/{0, 0, 0, 0}, /*needs_clear=*/true,
+      /*msaa_sample_count=*/0, gpu::raster::kNoMSAA,
+      /*can_use_lcd_text=*/false, /*visible=*/true, color_space, mailbox.name);
   EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), ri_->GetError());
 
   // Should flag an error this command is not allowed between a Begin and

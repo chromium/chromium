@@ -429,7 +429,7 @@ SharedImageRepresentationRaster::ScopedReadAccess::ScopedReadAccess(
     base::PassKey<SharedImageRepresentationRaster> pass_key,
     SharedImageRepresentationRaster* representation,
     const cc::PaintOpBuffer* paint_op_buffer,
-    const absl::optional<SkColor>& clear_color)
+    const absl::optional<SkColor4f>& clear_color)
     : ScopedAccessBase(representation),
       paint_op_buffer_(paint_op_buffer),
       clear_color_(clear_color) {}
@@ -450,7 +450,7 @@ SharedImageRepresentationRaster::ScopedWriteAccess::~ScopedWriteAccess() {
 
 std::unique_ptr<SharedImageRepresentationRaster::ScopedReadAccess>
 SharedImageRepresentationRaster::BeginScopedReadAccess() {
-  absl::optional<SkColor> clear_color;
+  absl::optional<SkColor4f> clear_color;
   auto* paint_op_buffer = BeginReadAccess(clear_color);
   if (!paint_op_buffer)
     return nullptr;
@@ -464,7 +464,7 @@ SharedImageRepresentationRaster::BeginScopedWriteAccess(
     scoped_refptr<SharedContextState> context_state,
     int final_msaa_count,
     const SkSurfaceProps& surface_props,
-    const absl::optional<SkColor>& clear_color,
+    const absl::optional<SkColor4f>& clear_color,
     bool visible) {
   return std::make_unique<ScopedWriteAccess>(
       base::PassKey<SharedImageRepresentationRaster>(), this,

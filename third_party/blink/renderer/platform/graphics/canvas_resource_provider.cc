@@ -1460,7 +1460,7 @@ void CanvasResourceProvider::RasterRecordOOP(
 
   const bool can_use_lcd_text =
       GetSkImageInfo().alphaType() == kOpaque_SkAlphaType;
-  ri->BeginRasterCHROMIUM(background_color.toSkColor(), needs_clear,
+  ri->BeginRasterCHROMIUM(background_color, needs_clear,
                           /*msaa_sample_count=*/oopr_uses_dmsaa_ ? 1 : 0,
                           oopr_uses_dmsaa_ ? gpu::raster::MsaaMode::kDMSAA
                                            : gpu::raster::MsaaMode::kNoMSAA,

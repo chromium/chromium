@@ -769,7 +769,10 @@ class RasterDecoderImpl final : public RasterDecoder,
                                             const volatile GLbyte* mailboxes);
 
   void DoLoseContextCHROMIUM(GLenum current, GLenum other);
-  void DoBeginRasterCHROMIUM(GLuint sk_color,
+  void DoBeginRasterCHROMIUM(GLfloat r,
+                             GLfloat g,
+                             GLfloat b,
+                             GLfloat a,
                              GLboolean needs_clear,
                              GLuint msaa_sample_count,
                              MsaaMode msaa_mode,
@@ -3214,7 +3217,10 @@ void RasterDecoderImpl::DoClearPaintCacheINTERNAL() {
   paint_cache_->PurgeAll();
 }
 
-void RasterDecoderImpl::DoBeginRasterCHROMIUM(GLuint sk_color,
+void RasterDecoderImpl::DoBeginRasterCHROMIUM(GLfloat r,
+                                              GLfloat g,
+                                              GLfloat b,
+                                              GLfloat a,
                                               GLboolean needs_clear,
                                               GLuint msaa_sample_count,
                                               MsaaMode msaa_mode,
@@ -3306,10 +3312,11 @@ void RasterDecoderImpl::DoBeginRasterCHROMIUM(GLuint sk_color,
     surface_props = skia::LegacyDisplayGlobals::GetSkSurfaceProps(flags);
   }
 
+  SkColor4f sk_color_4f = {r, g, b, a};
   if (shared_image_raster_) {
-    absl::optional<SkColor> clear_color;
+    absl::optional<SkColor4f> clear_color;
     if (needs_clear)
-      clear_color.emplace(sk_color);
+      clear_color.emplace(sk_color_4f);
     scoped_shared_image_raster_write_ =
         shared_image_raster_->BeginScopedWriteAccess(
             shared_context_state_, final_msaa_count, surface_props, clear_color,
@@ -3366,7 +3373,7 @@ void RasterDecoderImpl::DoBeginRasterCHROMIUM(GLuint sk_color,
   // and so any extra pixels outside the raster area that get sampled may be
   // incorrect.
   if (needs_clear) {
-    raster_canvas_->drawColor(sk_color, SkBlendMode::kSrc);
+    raster_canvas_->drawColor(sk_color_4f, SkBlendMode::kSrc);
     shared_image_->SetCleared();
   }
   DCHECK(shared_image_->IsCleared());

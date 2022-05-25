@@ -87,6 +87,11 @@ SkBitmap MakeSolidColorBitmap(gfx::Size size, SkColor color) {
   return bitmap;
 }
 
+// TODO(https://bugs.chromium.org/p/skia/issues/detail?id=13329)
+SkBitmap MakeSolidColorBitmap(gfx::Size size, SkColor4f color) {
+  return MakeSolidColorBitmap(size, color.toSkColor());
+}
+
 // Creates a SkImage filled with magenta and a 30x40 green rectangle.
 sk_sp<SkImage> MakeSkImage(const gfx::Size& size,
                            sk_sp<SkColorSpace> color_space = nullptr) {
@@ -96,9 +101,9 @@ sk_sp<SkImage> MakeSkImage(const gfx::Size& size,
       SkBitmap::kZeroPixels_AllocFlag);
 
   SkCanvas canvas(bitmap, SkSurfaceProps{});
-  canvas.drawColor(SK_ColorMAGENTA);
+  canvas.drawColor(SkColors::kMagenta);
   SkPaint green;
-  green.setColor(SK_ColorGREEN);
+  green.setColor(SkColors::kGreen);
   canvas.drawRect(SkRect::MakeXYWH(10, 20, 30, 40), green);
 
   return SkImage::MakeFromBitmap(bitmap);
@@ -154,7 +159,7 @@ class OopPixelTest : public testing::Test,
       playback_rect = gfx::Rect(playback_size);
     }
 
-    SkColor background_color = SK_ColorBLACK;
+    SkColor4f background_color = SkColors::kBlack;
     int msaa_sample_count = 0;
     bool use_lcd_text = false;
     PlaybackImageProvider::RasterMode image_provider_raster_mode =
@@ -168,7 +173,7 @@ class OopPixelTest : public testing::Test,
     TargetColorParams target_color_params;
     bool requires_clear = false;
     bool preclear = false;
-    SkColor preclear_color;
+    SkColor4f preclear_color;
     raw_ptr<ImageDecodeCache> image_cache = nullptr;
     std::vector<scoped_refptr<DisplayItemList>> additional_lists;
     raw_ptr<PaintShader> shader_with_animated_images = nullptr;
@@ -216,8 +221,9 @@ class OopPixelTest : public testing::Test,
 
     if (options.preclear) {
       raster_implementation->BeginRasterCHROMIUM(
-          options.preclear_color, /*needs_clear=*/options.preclear,
-          options.msaa_sample_count, msaa_mode, options.use_lcd_text,
+          options.preclear_color,
+          /*needs_clear=*/options.preclear, options.msaa_sample_count,
+          msaa_mode, options.use_lcd_text,
           /*visible=*/true, options.target_color_params.color_space,
           mailbox.name);
       raster_implementation->EndRasterCHROMIUM();
@@ -228,8 +234,9 @@ class OopPixelTest : public testing::Test,
     // the BeginRasterCHROMIUM call above, and we want to test that it is indeed
     // cleared, so set |needs_clear| to false here.
     raster_implementation->BeginRasterCHROMIUM(
-        options.background_color, /*needs_clear=*/!options.preclear,
-        options.msaa_sample_count, msaa_mode, options.use_lcd_text,
+        options.background_color,
+        /*needs_clear=*/!options.preclear, options.msaa_sample_count, msaa_mode,
+        options.use_lcd_text,
         /*visible=*/true, options.target_color_params.color_space,
         mailbox.name);
     size_t max_op_size_limit =
@@ -388,7 +395,7 @@ TEST_F(OopPixelTest, DrawColor) {
   display_item_list->EndPaintOfUnpaired(rect);
   display_item_list->Finalize();
 
-  SkBitmap expected = MakeSolidColorBitmap(rect.size(), SK_ColorBLUE);
+  SkBitmap expected = MakeSolidColorBitmap(rect.size(), SkColors::kBlue);
 
   auto actual = Raster(display_item_list, rect.size());
   ExpectEquals(actual, expected);
@@ -466,7 +473,7 @@ TEST_F(OopPixelTest, DrawRecordPaintFilterTranslatedBounds) {
   // green, but its record bounds are configured to clip it to the bottom right
   // quarter of the output.
   PaintFlags internal_flags;
-  internal_flags.setColor(SK_ColorGREEN);
+  internal_flags.setColor4f(SkColors::kGreen);
   sk_sp<PaintOpBuffer> filter_buffer(new PaintOpBuffer);
   filter_buffer->push<DrawRectOp>(
       SkRect::MakeLTRB(output_size.width() / 2.f, 0.f, output_size.width(),
@@ -492,9 +499,10 @@ TEST_F(OopPixelTest, DrawRecordPaintFilterTranslatedBounds) {
       SkImageInfo::MakeN32Premul(output_size.width(), output_size.height());
   SkBitmap expected;
   expected.allocPixels(ii, ii.minRowBytes());
-  expected.eraseColor(SK_ColorWHITE);
+  // TODO(https://bugs.chromium.org/p/skia/issues/detail?id=13329)
+  expected.eraseColor(SkColors::kWhite.toSkColor());
   expected.erase(
-      SK_ColorGREEN,
+      SkColors::kGreen.toSkColor(),
       SkIRect::MakeLTRB(output_size.width() / 2, output_size.height() / 2,
                         output_size.width(), output_size.height()));
 
@@ -615,7 +623,7 @@ TEST_F(OopPixelTest, DrawRecordShaderTranslatedTileRect) {
   // tiling starts from the origin, so starting at 2,1 in the offset_rect
   // below cuts off part of that, leaving two green i's.
   PaintFlags internal_flags;
-  internal_flags.setColor(SK_ColorGREEN);
+  internal_flags.setColor4f(SkColors::kGreen);
   sk_sp<PaintOpBuffer> shader_buffer(new PaintOpBuffer);
   shader_buffer->push<DrawRectOp>(SkRect::MakeXYWH(x_offset, y_offset, 1, 2),
                                   internal_flags);
@@ -681,7 +689,8 @@ TEST_F(OopPixelTest, DrawImageWithTargetColorSpace) {
                comparator);
 
   // Verify some conversion occurred here and that actual != bitmap.
-  EXPECT_NE(actual.getColor(0, 0), SK_ColorMAGENTA);
+  // TODO(https://bugs.chromium.org/p/skia/issues/detail?id=13329)
+  EXPECT_NE(actual.getColor(0, 0), SkColors::kMagenta.toSkColor());
 }
 
 TEST_F(OopPixelTest, DrawImageWithSourceColorSpace) {
@@ -823,9 +832,9 @@ TEST_F(OopPixelTest, DrawMailboxBackedImage) {
   expected_bitmap.allocPixels(backing_info);
 
   SkCanvas canvas(expected_bitmap, SkSurfaceProps{});
-  canvas.drawColor(SK_ColorMAGENTA);
+  canvas.drawColor(SkColors::kMagenta);
   SkPaint green;
-  green.setColor(SK_ColorGREEN);
+  green.setColor(SkColors::kGreen);
   canvas.drawRect(SkRect::MakeXYWH(1, 2, 3, 4), green);
 
   auto* ri = raster_context_provider_->RasterInterface();
@@ -866,13 +875,13 @@ TEST_F(OopPixelTest, Preclear) {
   options.resource_size = rect.size();
   options.full_raster_rect = rect;
   options.playback_rect = rect;
-  options.background_color = SK_ColorMAGENTA;
+  options.background_color = SkColors::kMagenta;
   options.preclear = true;
-  options.preclear_color = SK_ColorGREEN;
+  options.preclear_color = SkColors::kGreen;
 
   auto actual = Raster(display_item_list, options);
 
-  auto expected = MakeSolidColorBitmap(rect.size(), SK_ColorGREEN);
+  auto expected = MakeSolidColorBitmap(rect.size(), SkColors::kGreen);
   ExpectEquals(actual, expected);
 }
 
@@ -894,12 +903,12 @@ TEST_P(OopClearPixelTest, ClearingOpaqueCorner) {
   } else {
     options.playback_rect = options.full_raster_rect;
   }
-  options.background_color = SK_ColorGREEN;
+  options.background_color = SkColors::kGreen;
   float arbitrary_scale = 0.25f;
   options.post_scale = arbitrary_scale;
   options.requires_clear = false;
   options.preclear = true;
-  options.preclear_color = SK_ColorRED;
+  options.preclear_color = SkColors::kRed;
 
   // Make a non-empty but noop display list to avoid early outs.
   auto display_item_list = MakeNoopDisplayItemList();
@@ -942,12 +951,12 @@ TEST_F(OopPixelTest, ClearingOpaqueCornerExactEdge) {
   options.content_size = gfx::Size(options.full_raster_rect.right(),
                                    options.full_raster_rect.bottom());
   options.playback_rect = options.full_raster_rect;
-  options.background_color = SK_ColorGREEN;
+  options.background_color = SkColors::kGreen;
   float arbitrary_scale = 0.25f;
   options.post_scale = arbitrary_scale;
   options.requires_clear = false;
   options.preclear = true;
-  options.preclear_color = SK_ColorRED;
+  options.preclear_color = SkColors::kRed;
 
   // Make a non-empty but noop display list to avoid early outs.
   auto display_item_list = MakeNoopDisplayItemList();
@@ -983,10 +992,10 @@ TEST_F(OopPixelTest, ClearingOpaqueCornerPartialRaster) {
                                    options.full_raster_rect.bottom());
   options.playback_rect =
       gfx::Rect(arbitrary_offset.x() + 5, arbitrary_offset.y() + 3, 2, 3);
-  options.background_color = SK_ColorGREEN;
+  options.background_color = SkColors::kGreen;
   options.requires_clear = false;
   options.preclear = true;
-  options.preclear_color = SK_ColorRED;
+  options.preclear_color = SkColors::kRed;
 
   // Verify this is internal.
   EXPECT_NE(options.playback_rect.right(), options.full_raster_rect.right());
@@ -1031,11 +1040,11 @@ TEST_P(OopClearPixelTest, ClearingOpaqueLeftEdge) {
     options.playback_rect = options.full_raster_rect;
   }
 
-  options.background_color = SK_ColorGREEN;
+  options.background_color = SkColors::kGreen;
   options.post_translate = gfx::Vector2dF(0.3f, 0.7f);
   options.requires_clear = false;
   options.preclear = true;
-  options.preclear_color = SK_ColorRED;
+  options.preclear_color = SkColors::kRed;
 
   // Make a non-empty but noop display list to avoid early outs.
   auto display_item_list = MakeNoopDisplayItemList();
@@ -1085,12 +1094,12 @@ TEST_P(OopClearPixelTest, ClearingOpaqueRightEdge) {
     options.playback_rect = options.full_raster_rect;
   }
 
-  options.background_color = SK_ColorGREEN;
+  options.background_color = SkColors::kGreen;
   float arbitrary_scale = 0.25f;
   options.post_scale = arbitrary_scale;
   options.requires_clear = false;
   options.preclear = true;
-  options.preclear_color = SK_ColorRED;
+  options.preclear_color = SkColors::kRed;
 
   // Make a non-empty but noop display list to avoid early outs.
   auto display_item_list = MakeNoopDisplayItemList();
@@ -1140,11 +1149,11 @@ TEST_P(OopClearPixelTest, ClearingOpaqueTopEdge) {
   } else {
     options.playback_rect = options.full_raster_rect;
   }
-  options.background_color = SK_ColorGREEN;
+  options.background_color = SkColors::kGreen;
   options.post_translate = gfx::Vector2dF(0.3f, 0.7f);
   options.requires_clear = false;
   options.preclear = true;
-  options.preclear_color = SK_ColorRED;
+  options.preclear_color = SkColors::kRed;
 
   // Make a non-empty but noop display list to avoid early outs.
   auto display_item_list = MakeNoopDisplayItemList();
@@ -1195,12 +1204,12 @@ TEST_P(OopClearPixelTest, ClearingOpaqueBottomEdge) {
   } else {
     options.playback_rect = options.full_raster_rect;
   }
-  options.background_color = SK_ColorGREEN;
+  options.background_color = SkColors::kGreen;
   float arbitrary_scale = 0.25f;
   options.post_scale = arbitrary_scale;
   options.requires_clear = false;
   options.preclear = true;
-  options.preclear_color = SK_ColorRED;
+  options.preclear_color = SkColors::kRed;
 
   // Make a non-empty but noop display list to avoid early outs.
   auto display_item_list = MakeNoopDisplayItemList();
@@ -1240,13 +1249,13 @@ TEST_F(OopPixelTest, ClearingOpaqueInternal) {
   // Very large content rect to make this an internal tile.
   options.content_size = gfx::Size(1000, 1000);
   options.playback_rect = options.full_raster_rect;
-  options.background_color = SK_ColorGREEN;
+  options.background_color = SkColors::kGreen;
   options.post_translate = gfx::Vector2dF(0.3f, 0.7f);
   float arbitrary_scale = 1.2345f;
   options.post_scale = arbitrary_scale;
   options.requires_clear = false;
   options.preclear = true;
-  options.preclear_color = SK_ColorRED;
+  options.preclear_color = SkColors::kRed;
 
   // Make a non-empty but noop display list to avoid early outs.
   auto display_item_list = MakeNoopDisplayItemList();
@@ -1275,12 +1284,12 @@ TEST_F(OopPixelTest, ClearingTransparentCorner) {
   options.content_size = gfx::Size(options.full_raster_rect.right(),
                                    options.full_raster_rect.bottom());
   options.playback_rect = options.full_raster_rect;
-  options.background_color = SK_ColorTRANSPARENT;
+  options.background_color = SkColors::kTransparent;
   float arbitrary_scale = 3.7f;
   options.post_scale = arbitrary_scale;
   options.requires_clear = true;
   options.preclear = true;
-  options.preclear_color = SK_ColorRED;
+  options.preclear_color = SkColors::kRed;
 
   // Make a non-empty but noop display list to avoid early outs.
   auto display_item_list = MakeNoopDisplayItemList();
@@ -1296,7 +1305,7 @@ TEST_F(OopPixelTest, ClearingTransparentCorner) {
       SkBitmap::kZeroPixels_AllocFlag);
 
   SkCanvas canvas(bitmap, SkSurfaceProps{});
-  canvas.drawColor(SK_ColorTRANSPARENT);
+  canvas.drawColor(SkColors::kTransparent);
 
   ExpectEquals(oop_result, bitmap);
 }
@@ -1310,12 +1319,12 @@ TEST_F(OopPixelTest, ClearingTransparentInternalTile) {
   options.full_raster_rect = gfx::Rect(arbitrary_offset, options.resource_size);
   options.content_size = gfx::Size(1000, 1000);
   options.playback_rect = options.full_raster_rect;
-  options.background_color = SK_ColorTRANSPARENT;
+  options.background_color = SkColors::kTransparent;
   float arbitrary_scale = 3.7f;
   options.post_scale = arbitrary_scale;
   options.requires_clear = true;
   options.preclear = true;
-  options.preclear_color = SK_ColorRED;
+  options.preclear_color = SkColors::kRed;
 
   // Note that clearing of the tile should supersede any early outs due to an
   // empty display list. This is due to the fact that partial raster may in fact
@@ -1334,7 +1343,7 @@ TEST_F(OopPixelTest, ClearingTransparentInternalTile) {
       SkBitmap::kZeroPixels_AllocFlag);
 
   SkCanvas canvas(bitmap, SkSurfaceProps{});
-  canvas.drawColor(SK_ColorTRANSPARENT);
+  canvas.drawColor(SkColors::kTransparent);
 
   ExpectEquals(oop_result, bitmap);
 }
@@ -1348,12 +1357,12 @@ TEST_F(OopPixelTest, ClearingTransparentCornerPartialRaster) {
                                    options.full_raster_rect.bottom());
   options.playback_rect =
       gfx::Rect(arbitrary_offset.x() + 5, arbitrary_offset.y() + 3, 2, 4);
-  options.background_color = SK_ColorTRANSPARENT;
+  options.background_color = SkColors::kTransparent;
   float arbitrary_scale = 0.23f;
   options.post_scale = arbitrary_scale;
   options.requires_clear = true;
   options.preclear = true;
-  options.preclear_color = SK_ColorRED;
+  options.preclear_color = SkColors::kRed;
 
   // Make a non-empty but noop display list to avoid early outs.
   auto display_item_list = MakeNoopDisplayItemList();
@@ -1372,7 +1381,7 @@ TEST_F(OopPixelTest, ClearingTransparentCornerPartialRaster) {
   canvas.drawColor(options.preclear_color);
   canvas.translate(-arbitrary_offset.x(), -arbitrary_offset.y());
   canvas.clipRect(gfx::RectToSkRect(options.playback_rect));
-  canvas.drawColor(SK_ColorTRANSPARENT, SkBlendMode::kSrc);
+  canvas.drawColor(SkColors::kTransparent, SkBlendMode::kSrc);
 
   ExpectEquals(oop_result, bitmap);
 }
@@ -1395,7 +1404,7 @@ TEST_F(OopPixelTest, DrawRectPlaybackRect) {
   options.content_size = gfx::Size(options.full_raster_rect.right(),
                                    options.full_raster_rect.bottom());
   options.playback_rect = gfx::Rect(4, 2, 5, 6);
-  options.background_color = SK_ColorMAGENTA;
+  options.background_color = SkColors::kMagenta;
 
   auto actual = Raster(display_item_list, options);
   ExpectEquals(actual, FILE_PATH_LITERAL("oop_draw_rect_playback_rect.png"));
@@ -1423,7 +1432,7 @@ TEST_F(OopPixelTest, DrawRectScaleTransformOptions) {
   options.content_size = {25, 25};
   options.full_raster_rect = {5, 5, 20, 20};
   options.playback_rect = {5, 5, 13, 9};
-  options.background_color = SK_ColorCYAN;
+  options.background_color = SkColors::kCyan;
   options.post_translate = {0.5f, 0.25f};
   options.post_scale = 2.f;
 
@@ -1455,7 +1464,7 @@ TEST_F(OopPixelTest, DrawRectTransformOptionsFullRaster) {
   options.full_raster_rect = {5, 5, 20, 20};
   options.playback_rect = {5, 5, 20, 20};
   options.preclear = true;
-  options.preclear_color = SK_ColorRED;
+  options.preclear_color = SkColors::kRed;
   options.post_translate = {0.5f, 0.25f};
   options.post_scale = 2.f;
 
@@ -1490,7 +1499,7 @@ TEST_F(OopPixelTest, DrawRectQueryMiddleOfDisplayList) {
   options.content_size = {20, 20};
   options.full_raster_rect = {0, 10, 1, 10};
   options.playback_rect = {0, 10, 1, 10};
-  options.background_color = SK_ColorGRAY;
+  options.background_color = SkColors::kGray;
   options.post_translate = {0.f, 0.f};
   options.post_scale = 2.f;
 
@@ -1511,7 +1520,7 @@ TEST_F(OopPixelTest, DrawRectColorSpace) {
   display_item_list->StartPaint();
   PaintFlags flags;
   flags.setStyle(PaintFlags::kFill_Style);
-  flags.setColor(SK_ColorGREEN);
+  flags.setColor4f(SkColors::kGreen);
   display_item_list->push<DrawRectOp>(
       gfx::RectToSkRect(gfx::Rect(options.resource_size)), flags);
   display_item_list->EndPaintOfUnpaired(options.full_raster_rect);
@@ -1730,7 +1739,7 @@ class OopTextBlobPixelTest
         kTopLeft_GrSurfaceOrigin, &surface_props);
 
     SkCanvas* canvas = surface->getCanvas();
-    canvas->clear(SK_ColorBLACK);
+    canvas->clear(SkColors::kBlack);
     DrawExpectedToCanvas(*canvas);
     surface->flushAndSubmit();
 
@@ -1769,7 +1778,7 @@ class OopTextBlobPixelTest
     }
 
     SkPaint text_paint;
-    text_paint.setColor(SK_ColorGREEN);
+    text_paint.setColor(SkColors::kGreen);
     if (filter && (strategy == TextBlobStrategy::kDirect ||
                    strategy == TextBlobStrategy::kDrawRecord)) {
       text_paint.setImageFilter(std::move(filter));
@@ -1868,7 +1877,7 @@ class OopTextBlobPixelTest
 
     PaintFlags text_flags;
     text_flags.setStyle(PaintFlags::kFill_Style);
-    text_flags.setColor(SK_ColorGREEN);
+    text_flags.setColor4f(SkColors::kGreen);
     if (filter && (strategy == TextBlobStrategy::kDirect ||
                    strategy == TextBlobStrategy::kDrawRecord)) {
       // If there's a filter, the only PaintFlags that are available for these
@@ -2044,7 +2053,7 @@ TEST_F(OopPixelTest, DrawTextMultipleRasterCHROMIUM) {
   display_item_list->StartPaint();
   PaintFlags flags;
   flags.setStyle(PaintFlags::kFill_Style);
-  flags.setColor(SK_ColorGREEN);
+  flags.setColor4f(SkColors::kGreen);
   display_item_list->push<DrawTextBlobOp>(BuildTextBlob(sk_typeface_1), 0.0f,
                                           kTextBlobY, flags);
   display_item_list->EndPaintOfUnpaired(options.full_raster_rect);
@@ -2085,7 +2094,7 @@ TEST_F(OopPixelTest, DrawTextBlobPersistentShaderCache) {
   display_item_list->StartPaint();
   PaintFlags flags;
   flags.setStyle(PaintFlags::kFill_Style);
-  flags.setColor(SK_ColorGREEN);
+  flags.setColor4f(SkColors::kGreen);
   display_item_list->push<DrawTextBlobOp>(BuildTextBlob(), 0.0f, kTextBlobY,
                                           flags);
   display_item_list->EndPaintOfUnpaired(options.full_raster_rect);
@@ -2096,11 +2105,11 @@ TEST_F(OopPixelTest, DrawTextBlobPersistentShaderCache) {
   // Perform the same operations on a software SkCanvas to produce an expected
   // bitmap.
   SkBitmap expected =
-      MakeSolidColorBitmap(options.resource_size, SK_ColorBLACK);
+      MakeSolidColorBitmap(options.resource_size, SkColors::kBlack);
   SkCanvas canvas(expected, SkSurfaceProps{});
-  canvas.drawColor(SK_ColorBLACK);
+  canvas.drawColor(SkColors::kBlack);
   SkPaint paint;
-  paint.setColor(SK_ColorGREEN);
+  paint.setColor(SkColors::kGreen);
   canvas.drawTextBlob(BuildTextBlob(), 0, kTextBlobY, paint);
 
   // Allow 1% of pixels to be off by 1 due to differences between software and
@@ -2254,9 +2263,9 @@ TEST_F(OopPixelTest, ReadbackImagePixels) {
   expected_bitmap.allocPixels(dest_info);
 
   SkCanvas canvas(expected_bitmap, SkSurfaceProps{});
-  canvas.drawColor(SK_ColorMAGENTA);
+  canvas.drawColor(SkColors::kMagenta);
   SkPaint green;
-  green.setColor(SK_ColorGREEN);
+  green.setColor(SkColors::kGreen);
   canvas.drawRect(SkRect::MakeXYWH(1, 2, 3, 4), green);
 
   auto* ri = raster_context_provider_->RasterInterface();
@@ -2387,11 +2396,11 @@ class OopPathPixelTest : public OopPixelTest,
     display_item_list->push<DrawColorOp>(SkColors::kWhite, SkBlendMode::kSrc);
     PaintFlags flags;
     flags.setStyle(PaintFlags::kFill_Style);
-    flags.setColor(SK_ColorGREEN);
+    flags.setColor4f(SkColors::kGreen);
     SkPath path;
     path.addCircle(20, 20, 10);
     display_item_list->push<DrawPathOp>(path, flags);
-    flags.setColor(SK_ColorBLUE);
+    flags.setColor4f(SkColors::kBlue);
     display_item_list->push<DrawRectOp>(SkRect::MakeWH(10, 10), flags);
     display_item_list->EndPaintOfUnpaired(options.full_raster_rect);
     display_item_list->Finalize();
@@ -2423,7 +2432,7 @@ TEST_F(OopPixelTest, RecordShaderExceedsMaxTextureSize) {
   shader_record->push<DrawColorOp>(SkColors::kWhite, SkBlendMode::kSrc);
   PaintFlags flags;
   flags.setStyle(PaintFlags::kFill_Style);
-  flags.setColor(SK_ColorGREEN);
+  flags.setColor4f(SkColors::kGreen);
   shader_record->push<DrawRectOp>(rect, flags);
   auto shader = PaintShader::MakePaintRecord(
       shader_record, rect, SkTileMode::kRepeat, SkTileMode::kRepeat, nullptr);

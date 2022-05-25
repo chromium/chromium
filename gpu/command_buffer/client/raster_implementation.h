@@ -147,7 +147,7 @@ class RASTER_EXPORT RasterImplementation : public RasterInterface,
                                   const gpu::Mailbox yuva_plane_mailboxes[],
                                   const gpu::Mailbox& source_mailbox) override;
 
-  void BeginRasterCHROMIUM(GLuint sk_color,
+  void BeginRasterCHROMIUM(SkColor4f sk_color_4f,
                            GLboolean needs_clear,
                            GLuint msaa_sample_count,
                            MsaaMode msaa_mode,
@@ -438,11 +438,11 @@ class RASTER_EXPORT RasterImplementation : public RasterInterface,
   std::vector<size_t> temp_raster_offsets_;
 
   struct RasterProperties {
-    RasterProperties(SkColor background_color,
+    RasterProperties(SkColor4f background_color,
                      bool can_use_lcd_text,
                      sk_sp<SkColorSpace> color_space);
     ~RasterProperties();
-    SkColor background_color = SK_ColorWHITE;
+    SkColor4f background_color = SkColors::kWhite;
     bool can_use_lcd_text = false;
     sk_sp<SkColorSpace> color_space;
   };
