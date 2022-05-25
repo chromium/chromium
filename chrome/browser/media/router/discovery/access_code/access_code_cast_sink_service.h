@@ -97,6 +97,10 @@ class AccessCodeCastSinkService : public KeyedService,
         AccessCodeCastDeviceRemovedAfterRouteEndsExpirationDisabled);
     FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
                              AddExistingSinkToMediaRouterWithRoute);
+    FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
+                             TestChangeNetworkWithRouteActive);
+    FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
+                             TestChangeNetworkWithRouteActiveExpiration);
     // media_router::MediaRoutesObserver:
     void OnRoutesUpdated(const std::vector<MediaRoute>& routes) override;
 
@@ -160,6 +164,10 @@ class AccessCodeCastSinkService : public KeyedService,
                            TestChangeEnabledPref);
   FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
                            TestChangeDurationPref);
+  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
+                           TestChangeNetworkWithRouteActive);
+  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastSinkServiceTest,
+                           TestChangeNetworkWithRouteActiveExpiration);
 
   // Constructor used for testing.
   AccessCodeCastSinkService(
@@ -186,10 +194,14 @@ class AccessCodeCastSinkService : public KeyedService,
   void OpenChannelIfNecessary(const MediaSinkInternal& sink,
                               AddSinkResultCallback add_sink_callback,
                               bool has_sink);
+  void OpenChannelWithParams(std::unique_ptr<net::BackoffEntry> backoff_entry,
+                             const MediaSinkInternal& sink,
+                             base::OnceCallback<void(bool)> channel_opened_cb,
+                             cast_channel::CastSocketOpenParams open_params);
 
   // Returns a MediaRoute if the given |sink_id| corresponds to a route
   // currently active in the media router.
-  absl::optional<const MediaRoute::Id> HasActiveRoute(
+  absl::optional<const MediaRoute::Id> GetActiveRouteId(
       const MediaSink::Id& sink_id);
 
   void InitAllStoredDevices();
@@ -198,6 +210,9 @@ class AccessCodeCastSinkService : public KeyedService,
 
   base::TimeDelta CalculateDurationTillExpiration(const MediaSink::Id& sink_id);
   void OnExpiration(const MediaSinkInternal& sink);
+
+  // It is the responsibility of the caller to ensure that no active routes
+  // remain before this function is called.
   void RemoveMediaSinkFromRouter(const MediaSinkInternal* sink);
 
   const base::Value::List FetchStoredDevices();
@@ -271,7 +286,9 @@ class AccessCodeCastSinkService : public KeyedService,
   std::map<MediaSink::Id, std::unique_ptr<base::OneShotTimer>>
       current_session_expiration_timers_;
 
-  // Set of devices that have expired but still have an open route.
+  // Set of devices that have expired but still have an open route. These
+  // devices are removed from the media router AND removed from the pref
+  // service.
   std::set<MediaSink::Id> pending_expirations_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
