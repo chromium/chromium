@@ -10,7 +10,9 @@
 // but uses the partition allocator for the backing store of the collections.
 
 #include <string.h>
+
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
+#include "base/check_op.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"

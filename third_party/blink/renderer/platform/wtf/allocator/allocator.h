@@ -5,28 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_ALLOCATOR_ALLOCATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_ALLOCATOR_ALLOCATOR_H_
 
-#include <atomic>
-
-#include "base/allocator/buildflags.h"
-#include "base/check_op.h"
+#include "base/check.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 #include "third_party/blink/renderer/platform/wtf/type_traits.h"
-
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-#if !BUILDFLAG(IS_APPLE)
-// FastMalloc() defers to malloc() in this case, and including its header
-// ensures that the compiler knows that malloc() is "special", e.g. that it
-// returns properly-aligned, distinct memory locations.
-#include <malloc.h>
-#elif BUILDFLAG(IS_APPLE)
-// malloc.h doesn't exist on Apple OSes (it's in malloc/malloc.h), but the
-// definitions we want are actually in stdlib.h.
-#include <stdlib.h>
-#endif  // BUILDFLAG(IS_APPLE)
-#else
-#include "base/allocator/partition_allocator/partition_alloc.h"
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 namespace WTF {
 
