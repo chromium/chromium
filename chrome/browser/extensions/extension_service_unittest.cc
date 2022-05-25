@@ -4585,6 +4585,43 @@ TEST_F(ExtensionServiceTest, ExternalExtensionRemainsDisabledIfIgnored) {
   }
 }
 
+// Test that if an external extension becomes force-installed, it's enabled
+// (even if the user hasn't acknowledged the prompt).
+TEST_F(ExtensionServiceTest, ExternalExtensionBecomesEnabledIfForceInstalled) {
+  FeatureSwitch::ScopedOverride prompt_override(
+      FeatureSwitch::prompt_for_external_extensions(), true);
+  InitializeEmptyExtensionServiceWithTestingPrefs();
+
+  // Initially, the extension is installed externally and is disabled.
+  MockExternalProvider* provider =
+      AddMockExternalProvider(ManifestLocation::kExternalPref);
+  provider->UpdateOrAddExtension(good_crx, "1.0.0.0",
+                                 data_dir().AppendASCII("good.crx"));
+  WaitForExternalExtensionInstalled();
+
+  EXPECT_TRUE(registry()->disabled_extensions().Contains(good_crx));
+  ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
+  EXPECT_FALSE(prefs->IsExternalExtensionAcknowledged(good_crx));
+  EXPECT_EQ(disable_reason::DISABLE_EXTERNAL_EXTENSION,
+            prefs->GetDisableReasons(good_crx));
+
+  // Make the extension force-installed now. It should flip from disabled to
+  // enabled.
+  TestManagementPolicyProvider policy_provider(
+      TestManagementPolicyProvider::MUST_REMAIN_ENABLED);
+  GetManagementPolicy()->RegisterProvider(&policy_provider);
+  {
+    ManagementPrefUpdater pref(profile_->GetTestingPrefService());
+    // Mark good.crx for force-installation.
+    pref.SetIndividualExtensionAutoInstalled(
+        good_crx, "http://example.com/update_url", true);
+  }
+
+  EXPECT_TRUE(registry()->enabled_extensions().Contains(good_crx));
+  EXPECT_TRUE(prefs->IsExternalExtensionAcknowledged(good_crx));
+  EXPECT_EQ(disable_reason::DISABLE_NONE, prefs->GetDisableReasons(good_crx));
+}
+
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 // This tests if pre-installed apps are installed correctly.
 TEST_F(ExtensionServiceTest, PreinstalledAppsInstall) {

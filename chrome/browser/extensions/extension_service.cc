@@ -260,9 +260,11 @@ bool ExtensionService::OnExternalExtensionUpdateUrlFound(
       extension_prefs_->SetInstallLocation(info.extension_id,
                                            info.download_location);
 
-      // If the extension was disabled by user or was disabled due to
-      // a permissions increase, and it must remain enabled, remove those
-      // disable reasons.
+      // If the extension was due to any of the following reasons, and it must
+      // remain enabled, remove those reasons:
+      // - Disabled by the user.
+      // - User hasn't accepted a permissions increase.
+      // - User hasn't accepted an external extension's prompt.
       if (registry_->disabled_extensions().GetByID(info.extension_id) &&
           system_->management_policy()->MustRemainEnabled(
               registry_->GetExtensionById(info.extension_id,
@@ -271,6 +273,7 @@ bool ExtensionService::OnExternalExtensionUpdateUrlFound(
         int disable_reasons =
             extension_prefs_->GetDisableReasons(info.extension_id);
         disable_reasons &= (~(disable_reason::DISABLE_USER_ACTION |
+                              disable_reason::DISABLE_EXTERNAL_EXTENSION |
                               disable_reason::DISABLE_PERMISSIONS_INCREASE));
         extension_prefs_->ReplaceDisableReasons(info.extension_id,
                                                 disable_reasons);
@@ -1220,6 +1223,18 @@ void ExtensionService::CheckManagementPolicy() {
     // related disable reasons.
     if (!profile()->IsChild()) {
       disable_reasons &= (~disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED);
+    }
+
+    if (system_->management_policy()->MustRemainEnabled(extension.get(),
+                                                        nullptr)) {
+      // Extensions installed from the Windows Registry should re-enable when
+      // they become force-installed. Normally this is handled in
+      // OnExternalExtensionUpdateUrlFound(), but already-broken browsers (from
+      // previous Chromium versions) also need to be fixed here.
+      //
+      // TODO(crbug.com/1114778): This won't be needed after a few milestones.
+      // It should be safe to remove in M107.
+      disable_reasons &= (~disable_reason::DISABLE_EXTERNAL_EXTENSION);
     }
 
     extension_prefs_->ReplaceDisableReasons(extension->id(), disable_reasons);
