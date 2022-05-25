@@ -30,6 +30,9 @@ class ExistingTabGroupSubMenuModel : public ExistingBaseSubMenuModel {
   // |model|; |model| must outlive this instance.
   static bool ShouldShowSubmenu(TabStripModel* model, int context_index);
 
+  // ExistingBaseSubMenuModel:
+  std::u16string GetLabelAt(int index) const override;
+
  private:
   // ExistingBaseSubMenuModel
   void ExecuteExistingCommand(int target_index) override;

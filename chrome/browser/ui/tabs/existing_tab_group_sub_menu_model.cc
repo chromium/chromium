@@ -18,6 +18,7 @@
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/accelerators/menu_label_accelerator_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
@@ -92,6 +93,11 @@ bool ExistingTabGroupSubMenuModel::ShouldShowSubmenu(TabStripModel* model,
     }
   }
   return false;
+}
+
+std::u16string ExistingTabGroupSubMenuModel::GetLabelAt(int index) const {
+  return ui::EscapeMenuLabelAmpersands(
+      ExistingBaseSubMenuModel::GetLabelAt(index));
 }
 
 void ExistingTabGroupSubMenuModel::ExecuteExistingCommand(int target_index) {
