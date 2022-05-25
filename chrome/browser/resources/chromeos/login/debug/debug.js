@@ -14,6 +14,51 @@
 
 // #import {MessageType, ProblemType} from 'chrome://resources/cr_components/chromeos/quick_unlock/setup_pin_keyboard.m.js';
 
+const createAssistantData = (isMinor) => {
+  const data = {};
+  data['valuePropTitle'] =
+      'Value ' + (isMinor ? 'minor ' : 'regular') + ' prop title';
+  data['valuePropNextButton'] = 'Value prop next button';
+  data['valuePropSkipButton'] = 'Value prop skip button';
+  data['valuePropFooter'] = 'Value prop footer';
+  data['equalWeightButtons'] = isMinor;
+  return data;
+};
+
+const createAssistantZippy = (type, isMinor) => {
+  const zippy = {};
+  zippy['isMinorMode'] = isMinor;
+  zippy['title'] = 'Zippy ' + (isMinor ? 'minor ' : 'regular') + ' title';
+  zippy['identity'] = 'Zippy identity';
+  zippy['intro'] = 'Zippy intro';
+  zippy['name'] = 'Zippy ' + type + ' name';
+  zippy['description'] = 'Zippy ' + type + ' description';
+  zippy['popupLink'] = 'Zippy popup link';
+  zippy['learnMoreDialogTitle'] = 'Zippy learn more dialog title';
+  zippy['learnMoreDialogContent'] = 'Zippy learn more dialog content';
+  zippy['learnMoreDialogButton'] = 'Zippy learn more dialog button';
+  if (type === 'WAA') {
+    if (isMinor) {
+      zippy['iconUri'] =
+          'https://www.gstatic.com/myactivity/icon/icon_fp_history_blue.svg';
+    } else {
+      zippy['iconUri'] =
+          'https://ssl.gstatic.com/identity/boq/consentflowtexts/icon_web_and_app_activity_grey600_72-fb2e66730dca510849d22bee9f0f29ba.png';
+    }
+  } else if (type === 'DA') {
+    if (isMinor) {
+      zippy['iconUri'] =
+          'https://www.gstatic.com/myactivity/icon/icon_fp_chromebook_blue.svg';
+    } else {
+      zippy['iconUri'] =
+          'https://ssl.gstatic.com/identity/boq/consentflowtexts/icon_device_information_vertical_grey600_72-be6f9c8691213019712cfa4106a509e0.png';
+    }
+  } else {
+    console.error('### Uknown zippy type ' + type);
+  }
+  return zippy;
+};
+
 cr.define('cr.ui.login.debug', function() {
   const DEBUG_BUTTON_STYLE = `
       height:20px;
@@ -1263,6 +1308,36 @@ cr.define('cr.ui.login.debug', function() {
           id: 'loading',
           trigger: (screen) => {
             (screen.$).card.showStep('loading');
+          },
+        },
+        {
+          id: 'value_prop',
+          trigger: (screen) => {
+            (screen.$).card.onReload();
+            (screen.$).card.showStep('value-prop');
+            (screen.$).card.reloadContent(
+                createAssistantData(/*isMinor=*/ false));
+
+            const zippies = [[]];
+            zippies[0].push(createAssistantZippy('WAA', /*isMinor=*/ false));
+            zippies[0].push(createAssistantZippy('DA', /*isMinor=*/ false));
+
+            (screen.$).card.addSettingZippy('settings', zippies);
+          },
+        },
+        {
+          id: 'value_prop_minor',
+          trigger: (screen) => {
+            (screen.$).card.onReload();
+            (screen.$).card.showStep('value-prop');
+            (screen.$).card.reloadContent(
+                createAssistantData(/*isMinor=*/ true));
+
+            const zippies = [[]];
+            zippies[0].push(createAssistantZippy('WAA', /*isMinor=*/ true));
+            zippies[0].push(createAssistantZippy('DA', /*isMinor=*/ true));
+
+            (screen.$).card.addSettingZippy('settings', zippies);
           },
         },
         {
