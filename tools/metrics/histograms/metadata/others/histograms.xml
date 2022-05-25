@@ -190,6 +190,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="AccessCodeCast.Discovery.RememberedDevicesCount"
+    units="cast devices" expires_after="2023-01-01">
+  <owner>bzielinski@google.com</owner>
+  <owner>cros-edu-eng@google.com</owner>
+  <summary>
+    The count of cast devices which have been successfully remembered via the
+    access code cast sink service. Recorded when the browser starts, and any
+    time the network changes. Logged only on desktop platforms.
+  </summary>
+</histogram>
+
 <histogram name="AccessCodeCast.Ui.AccessCodeInputTime" units="ms"
     expires_after="2023-01-01">
   <owner>bzielinski@google.com</owner>

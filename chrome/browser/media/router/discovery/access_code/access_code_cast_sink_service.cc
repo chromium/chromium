@@ -21,6 +21,7 @@
 #include "chrome/browser/media/router/providers/cast/dual_media_sink_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "components/access_code_cast/common/access_code_cast_metrics.h"
 #include "components/media_router/browser/media_router.h"
 #include "components/media_router/browser/media_router_factory.h"
 #include "components/media_router/common/discovery/media_sink_internal.h"
@@ -434,6 +435,8 @@ void AccessCodeCastSinkService::StoreSinkInPrefs(
 
 void AccessCodeCastSinkService::InitAllStoredDevices() {
   auto validated_devices = FetchAndValidateStoredDevices();
+  // Record in all instances, even if the number of saved devices is zero.
+  AccessCodeCastMetrics::RecordRememberedDevicesCount(validated_devices.size());
   if (validated_devices.empty()) {
     // We don't need anymore logging here since it is already handled in the
     // ValidateStoredDevices function.

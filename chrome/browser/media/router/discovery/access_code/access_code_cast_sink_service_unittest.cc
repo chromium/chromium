@@ -534,6 +534,9 @@ TEST_F(AccessCodeCastSinkServiceTest, TestFetchAndAddStoredDevices) {
   access_code_cast_sink_service_->StoreSinkInPrefs(&cast_sink2);
   access_code_cast_sink_service_->StoreSinkInPrefs(&cast_sink3);
 
+  // Initialize histogram tester so we can ensure metrics are being collected.
+  base::HistogramTester histogram_tester;
+
   FastForwardUiAndIoTasks();
 
   std::vector<MediaSinkInternal> cast_sinks_ethernet;
@@ -554,6 +557,10 @@ TEST_F(AccessCodeCastSinkServiceTest, TestFetchAndAddStoredDevices) {
   FastForwardUiAndIoTasks();
 
   access_code_cast_sink_service_->InitAllStoredDevices();
+
+  // Test to ensure that the count of remembered devices was properly logged.
+  histogram_tester.ExpectBucketCount(
+      "AccessCodeCast.Discovery.RememberedDevicesCount", 3, 1);
 
   // GetNetworkId() is run on the IO thread, so we must run RunUntilIdle and
   // RunAllTasks for that task to finish before we can continue with the

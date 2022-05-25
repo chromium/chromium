@@ -82,6 +82,7 @@ class AccessCodeCastMetrics {
   static const char kHistogramDialogCloseReason[];
   static const char kHistogramDialogLoadTime[];
   static const char kHistogramDialogOpenLocation[];
+  static const char kHistogramRememberedDevicesCount[];
 
   // Records metrics relating to starting a cast session (route). Mode is
   // media_router::MediaCastMode.
@@ -101,6 +102,10 @@ class AccessCodeCastMetrics {
   // Records where the user clicked to open the AccessCodeCast dialog.
   static void RecordDialogOpenLocation(
       AccessCodeCastDialogOpenLocation location);
+
+  // Records the count of cast devices which are currently being remembered
+  // being the AccessCodeCastSinkService.
+  static void RecordRememberedDevicesCount(int count);
 };
 
 #endif  // COMPONENTS_ACCESS_CODE_CAST_COMMON_ACCESS_CODE_CAST_METRICS_H_

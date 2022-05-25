@@ -22,6 +22,8 @@ const char AccessCodeCastMetrics::kHistogramDialogLoadTime[] =
     "AccessCodeCast.Ui.DialogLoadTime";
 const char AccessCodeCastMetrics::kHistogramDialogOpenLocation[] =
     "AccessCodeCast.Ui.DialogOpenLocation";
+const char AccessCodeCastMetrics::kHistogramRememberedDevicesCount[] =
+    "AccessCodeCast.Discovery.RememberedDevicesCount";
 
 // static
 void AccessCodeCastMetrics::OnCastSessionResult(int route_request_result_code,
@@ -57,4 +59,9 @@ void AccessCodeCastMetrics::RecordDialogLoadTime(base::TimeDelta load_time) {
 void AccessCodeCastMetrics::RecordDialogOpenLocation(
     AccessCodeCastDialogOpenLocation location) {
   base::UmaHistogramEnumeration(kHistogramDialogOpenLocation, location);
+}
+
+// static
+void AccessCodeCastMetrics::RecordRememberedDevicesCount(int count) {
+  base::UmaHistogramCounts100(kHistogramRememberedDevicesCount, count);
 }

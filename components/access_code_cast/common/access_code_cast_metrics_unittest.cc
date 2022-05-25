@@ -126,3 +126,24 @@ TEST(AccessCodeCastMetricsTest, RecordDialogCloseReason) {
 
   histogram_tester.ExpectTotalCount("AccessCodeCast.Ui.DialogCloseReason", 3);
 }
+
+TEST(AccessCodeCastMetricsTest, RecordRememberedDevicesCount) {
+  base::HistogramTester histogram_tester;
+
+  AccessCodeCastMetrics::RecordRememberedDevicesCount(0);
+  histogram_tester.ExpectBucketCount(
+      "AccessCodeCast.Discovery.RememberedDevicesCount", 0, 1);
+
+  AccessCodeCastMetrics::RecordRememberedDevicesCount(1);
+  histogram_tester.ExpectBucketCount(
+      "AccessCodeCast.Discovery.RememberedDevicesCount", 1, 1);
+
+  AccessCodeCastMetrics::RecordRememberedDevicesCount(100);
+  histogram_tester.ExpectBucketCount(
+      "AccessCodeCast.Discovery.RememberedDevicesCount", 100, 1);
+
+  // Over 100 should be reported as 100.
+  AccessCodeCastMetrics::RecordRememberedDevicesCount(500);
+  histogram_tester.ExpectBucketCount(
+      "AccessCodeCast.Discovery.RememberedDevicesCount", 100, 2);
+}
