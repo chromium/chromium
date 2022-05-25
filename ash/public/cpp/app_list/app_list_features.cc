@@ -48,7 +48,7 @@ const base::Feature kLauncherLacrosIntegration{
 const base::Feature kFeedbackOnContinueSectionRemove{
     "FeedbackOnContinueSectionRemove", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kCompactBubbleLauncher{"CompactBubbleLauncher",
-                                           base::FEATURE_DISABLED_BY_DEFAULT};
+                                           base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kLauncherPlayStoreSearch{"LauncherPlayStoreSearch",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
