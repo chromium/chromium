@@ -325,7 +325,7 @@
       "jds@google.com",
       "chrome-voice@google.com"
     ],
-    "expiry_milestone": 103
+    "expiry_milestone": 110
   },
   {
     "name": "assistant-consent-simplified-text",
@@ -333,7 +333,7 @@
       "jds@google.com",
       "chrome-voice@google.com"
     ],
-    "expiry_milestone": 103
+    "expiry_milestone": 110
   },
   {
     "name": "assistant-consent-v2",
@@ -341,7 +341,7 @@
       "basiaz@google.com",
       "chrome-voice@google.com"
     ],
-    "expiry_milestone": 103
+    "expiry_milestone": 110
   },
   {
     "name": "assistant-intent-page-url",
@@ -350,7 +350,7 @@
       "basiaz@google.com",
       "chrome-voice@google.com"
     ],
-    "expiry_milestone": 103
+    "expiry_milestone": 110
   },
   {
     "name": "assistant-intent-translate-info",
@@ -359,7 +359,7 @@
       "basiaz@google.com",
       "chrome-voice@google.com"
     ],
-    "expiry_milestone": 103
+    "expiry_milestone": 110
   },
   {
     "name": "audio-settings-page",
@@ -4415,7 +4415,7 @@
       "basiaz@google.com",
       "chrome-voice@google.com"
     ],
-    "expiry_milestone": 103
+    "expiry_milestone": 110
   },
   {
     "name": "omnibox-blur-with-escape",
@@ -5823,7 +5823,7 @@
       "basiaz@google.com",
       "chrome-voice@google.com"
     ],
-    "expiry_milestone": 103
+    "expiry_milestone": 110
   },
   {
     "name": "translate-force-trigger-on-english",
@@ -5839,7 +5839,7 @@
       "basiaz@google.com",
       "chrome-voice@google.com"
     ],
-    "expiry_milestone": 103
+    "expiry_milestone": 110
   },
   {
     "name": "translate-message-ui",
