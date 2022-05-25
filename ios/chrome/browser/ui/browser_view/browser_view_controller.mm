@@ -532,7 +532,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     browserContainerViewController:
         (BrowserContainerViewController*)browserContainerViewController
                         dispatcher:(CommandDispatcher*)dispatcher
-                  prerenderService:(PrerenderService*)prerenderService {
+                  prerenderService:(PrerenderService*)prerenderService
+                   bubblePresenter:(BubblePresenter*)bubblePresenter {
   self = [super initWithNibName:nil bundle:base::mac::FrameworkBundle()];
   if (self) {
     DCHECK(factory);
@@ -543,6 +544,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     _dependencyFactory = factory;
     // TODO(crbug.com/1328039): Remove all use of the prerender service from BVC
     _prerenderService = prerenderService;
+    _bubblePresenter = bubblePresenter;
     self.textZoomHandler =
         HandlerForProtocol(self.commandDispatcher, TextZoomCommands);
     [self.commandDispatcher
@@ -894,7 +896,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 }
 
 - (void)userEnteredTabSwitcher {
-  [self.bubblePresenter userEnteredTabSwitcher];
+  [_bubblePresenter userEnteredTabSwitcher];
 }
 
 - (void)openNewTabFromOriginPoint:(CGPoint)originPoint
@@ -1171,8 +1173,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     self.tabStripView = nil;
   }
 
-  [self.commandDispatcher stopDispatchingToTarget:self.bubblePresenter];
-  self.bubblePresenter = nil;
+  [self.commandDispatcher stopDispatchingToTarget:_bubblePresenter];
+  [_bubblePresenter stop];
+  _bubblePresenter = nil;
 
   [self.commandDispatcher stopDispatchingToTarget:self];
   self.browser->GetWebStateList()->RemoveObserver(_webStateListObserver.get());
@@ -1293,15 +1296,12 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   // Install fake status bar for iPad iOS7
   [self installFakeStatusBar];
 
-  // TODO(crbug.com/1272534): Move BubblePresenter to BrowserCoordinator.
-  self.bubblePresenter =
-      [[BubblePresenter alloc] initWithBrowserState:self.browserState
-                                           delegate:self
-                                 rootViewController:self];
-  self.bubblePresenter.toolbarHandler =
+  _bubblePresenter.delegate = self;
+  _bubblePresenter.rootViewController = self;
+  _bubblePresenter.toolbarHandler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), ToolbarCommands);
   [self.browser->GetCommandDispatcher()
-      startDispatchingToTarget:self.bubblePresenter
+      startDispatchingToTarget:_bubblePresenter
                    forProtocol:@protocol(HelpCommands)];
 
   [self buildToolbarAndTabStrip];
@@ -1813,7 +1813,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   self.popupMenuCoordinator =
       [[PopupMenuCoordinator alloc] initWithBaseViewController:self
                                                        browser:self.browser];
-  self.popupMenuCoordinator.bubblePresenter = self.bubblePresenter;
+  self.popupMenuCoordinator.bubblePresenter = _bubblePresenter;
   self.popupMenuCoordinator.UIUpdater = _toolbarCoordinatorAdaptor;
   [self.popupMenuCoordinator start];
 
@@ -2984,17 +2984,17 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
 - (web::WebState*)currentWebStateForBubblePresenter:
     (BubblePresenter*)bubblePresenter {
-  DCHECK(bubblePresenter == self.bubblePresenter);
+  DCHECK(bubblePresenter == _bubblePresenter);
   return self.currentWebState;
 }
 
 - (BOOL)rootViewVisibleForBubblePresenter:(BubblePresenter*)bubblePresenter {
-  DCHECK(bubblePresenter == self.bubblePresenter);
+  DCHECK(bubblePresenter == _bubblePresenter);
   return self.viewVisible;
 }
 
 - (BOOL)isTabScrolledToTopForBubblePresenter:(BubblePresenter*)bubblePresenter {
-  DCHECK(bubblePresenter == self.bubblePresenter);
+  DCHECK(bubblePresenter == _bubblePresenter);
 
   // If NTP exists, use NTP coordinator's scroll offset.
   if (self.isNTPActiveForCurrentWebState) {
@@ -3797,24 +3797,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   [self addURLsToReadingList:command.URLs];
 }
 
-// TODO(crbug.com/1272534): Move this command implementation to
-// BrowserCoordinator, which should be owning bubblePresenter.
-- (void)showReadingListIPH {
-  [self.bubblePresenter presentReadingListBottomToolbarTipBubble];
-}
-
-// TODO(crbug.com/1272534): Move this command implementation to
-// BrowserCoordinator, which should be owning bubblePresenter.
-- (void)showFollowWhileBrowsingIPH {
-  [self.bubblePresenter presentFollowWhileBrowsingTipBubble];
-}
-
-// TODO(crbug.com/1272534): Move this command implementation to
-// BrowserCoordinator, which should be owning bubblePresenter.
-- (void)showDefaultSiteViewIPH {
-  [self.bubblePresenter presentDefaultSiteViewTipBubble];
-}
-
 - (void)preloadVoiceSearch {
   // Preload VoiceSearchController and views and view controllers needed
   // for voice search.
@@ -3902,7 +3884,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   [self.nonModalPromoScheduler logPopupMenuEntered];
 
   if (type == PopupMenuCommandTypeToolsMenu) {
-    [self.bubblePresenter toolsMenuDisplayed];
+    [_bubblePresenter toolsMenuDisplayed];
   }
 }
 
@@ -4530,7 +4512,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
       newTabPageCoordinator.panGestureHandler = self.thumbStripPanHandler;
       newTabPageCoordinator.toolbarDelegate = self.toolbarInterface;
       newTabPageCoordinator.webState = webState;
-      newTabPageCoordinator.bubblePresenter = self.bubblePresenter;
+      newTabPageCoordinator.bubblePresenter = _bubblePresenter;
       newTabPageCoordinator.selectedFeed = NTPHelper->GetNextNTPFeedType();
       newTabPageCoordinator.shouldScrollIntoFeed =
           NTPHelper->GetNextNTPScrolledToFeed();
@@ -4566,7 +4548,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
                                                           browser:self.browser];
     _ntpCoordinator.panGestureHandler = self.thumbStripPanHandler;
     _ntpCoordinator.toolbarDelegate = self.toolbarInterface;
-    _ntpCoordinator.bubblePresenter = self.bubblePresenter;
+    _ntpCoordinator.bubblePresenter = _bubblePresenter;
   }
   return _ntpCoordinator;
 }

@@ -44,6 +44,7 @@
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller.h"
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller_dependency_factory.h"
 #import "ios/chrome/browser/ui/browser_view/tab_lifecycle_mediator.h"
+#import "ios/chrome/browser/ui/bubble/bubble_presenter.h"
 #import "ios/chrome/browser/ui/commands/activity_service_commands.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
@@ -298,6 +299,7 @@
   std::unique_ptr<base::ScopedObservation<WebStateList, WebStateListObserver>>
       _scopedWebStateListObservation;
   PrerenderService* _prerenderService;
+  BubblePresenter* _bubblePresenter;
 }
 
 #pragma mark - ChromeCoordinator
@@ -475,13 +477,17 @@
     _prerenderService->SetDelegate(self);
   }
 
+  _bubblePresenter =
+      [[BubblePresenter alloc] initWithBrowserState:browserState];
+
   _viewController = [[BrowserViewController alloc]
                      initWithBrowser:self.browser
                    dependencyFactory:factory
       browserContainerViewController:self.browserContainerCoordinator
                                          .viewController
                           dispatcher:self.dispatcher
-                    prerenderService:_prerenderService];
+                    prerenderService:_prerenderService
+                     bubblePresenter:_bubblePresenter];
   WebNavigationBrowserAgent::FromBrowser(self.browser)
       ->SetDelegate(_viewController);
 
@@ -835,6 +841,18 @@
       initWithBaseViewController:self.viewController
                          browser:self.browser];
   [self.readingListCoordinator start];
+}
+
+- (void)showReadingListIPH {
+  [_bubblePresenter presentReadingListBottomToolbarTipBubble];
+}
+
+- (void)showFollowWhileBrowsingIPH {
+  [_bubblePresenter presentFollowWhileBrowsingTipBubble];
+}
+
+- (void)showDefaultSiteViewIPH {
+  [_bubblePresenter presentDefaultSiteViewTipBubble];
 }
 
 - (void)showDownloadsFolder {

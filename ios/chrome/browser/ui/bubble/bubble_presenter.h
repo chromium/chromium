@@ -20,8 +20,6 @@ class ChromeBrowserState;
 // Initializes a BubblePresenter whose bubbles are presented on the
 // |rootViewController|.
 - (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState
-                            delegate:(id<BubblePresenterDelegate>)delegate
-                  rootViewController:(UIViewController*)rootViewController
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
@@ -30,7 +28,11 @@ class ChromeBrowserState;
 @property(nonatomic, strong, readonly)
     BubbleViewControllerPresenter* incognitoTabTipBubblePresenter;
 
+@property(nonatomic, weak) id<BubblePresenterDelegate> delegate;
+@property(nonatomic, weak) UIViewController* rootViewController;
 @property(nonatomic, weak) id<ToolbarCommands> toolbarHandler;
+
+- (void)stop;
 
 // Notifies the presenter that the user entered the tab switcher.
 - (void)userEnteredTabSwitcher;

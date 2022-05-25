@@ -4,31 +4,31 @@
 
 #import "ios/chrome/browser/ui/bubble/bubble_presenter.h"
 
-#include "base/bind.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/user_metrics.h"
-#include "base/metrics/user_metrics_action.h"
-#include "components/feature_engagement/public/event_constants.h"
-#include "components/feature_engagement/public/feature_constants.h"
-#include "components/feature_engagement/public/tracker.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/chrome_url_constants.h"
-#include "ios/chrome/browser/feature_engagement/tracker_factory.h"
+#import "base/bind.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
+#import "components/feature_engagement/public/event_constants.h"
+#import "components/feature_engagement/public/feature_constants.h"
+#import "components/feature_engagement/public/tracker.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/chrome_url_constants.h"
+#import "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/ui/bubble/bubble_presenter_delegate.h"
 #import "ios/chrome/browser/ui/bubble/bubble_util.h"
 #import "ios/chrome/browser/ui/bubble/bubble_view_controller_presenter.h"
 #import "ios/chrome/browser/ui/commands/toolbar_commands.h"
 #import "ios/chrome/browser/ui/util/named_guide.h"
 #import "ios/chrome/browser/ui/util/named_guide_util.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
+#import "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#include "ios/chrome/grit/ios_chromium_strings.h"
-#include "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/grit/ios_chromium_strings.h"
+#import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
 #import "ios/web/public/web_state.h"
-#include "ui/base/device_form_factor.h"
-#include "ui/base/l10n/l10n_util.h"
+#import "ui/base/device_form_factor.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -68,8 +68,6 @@ const CGFloat kBubblePresentationDelay = 1;
     BubbleViewControllerPresenter* defaultPageModeTipBubblePresenter;
 
 @property(nonatomic, assign) ChromeBrowserState* browserState;
-@property(nonatomic, weak) id<BubblePresenterDelegate> delegate;
-@property(nonatomic, weak) UIViewController* rootViewController;
 
 @end
 
@@ -77,16 +75,16 @@ const CGFloat kBubblePresentationDelay = 1;
 
 #pragma mark - Public
 
-- (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState
-                            delegate:(id<BubblePresenterDelegate>)delegate
-                  rootViewController:(UIViewController*)rootViewController {
+- (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState {
   self = [super init];
   if (self) {
     _browserState = browserState;
-    _delegate = delegate;
-    _rootViewController = rootViewController;
   }
   return self;
+}
+
+- (void)stop {
+  _browserState = nil;
 }
 
 - (void)showHelpBubbleIfEligible {
@@ -484,7 +482,9 @@ presentBubbleForFeature:(const base::Feature&)feature
 
 // Returns whether the tab can present a bubble tip.
 - (BOOL)canPresentBubble {
-  DCHECK(self.browserState);
+  // If BubblePresenter has been stopped, do not present the bubble.
+  if (!self.browserState)
+    return NO;
   // If the BVC is not visible, do not present the bubble.
   if (![self.delegate rootViewVisibleForBubblePresenter:self])
     return NO;
@@ -524,12 +524,7 @@ bubblePresenterForFeature:(const base::Feature&)feature
   __weak BubblePresenter* weakSelf = self;
   ProceduralBlockWithSnoozeAction dismissalCallback =
       ^(feature_engagement::Tracker::SnoozeAction snoozeAction) {
-        BubblePresenter* strongSelf = weakSelf;
-        if (strongSelf) {
-          feature_engagement::TrackerFactory::GetForBrowserState(
-              strongSelf.browserState)
-              ->DismissedWithSnooze(feature, snoozeAction);
-        }
+        [weakSelf featureDismissed:feature withSnooze:snoozeAction];
       };
 
   BubbleViewControllerPresenter* bubbleViewControllerPresenter =
@@ -539,6 +534,15 @@ bubblePresenterForFeature:(const base::Feature&)feature
                                         dismissalCallback:dismissalCallback];
 
   return bubbleViewControllerPresenter;
+}
+
+- (void)featureDismissed:(const base::Feature&)feature
+              withSnooze:
+                  (feature_engagement::Tracker::SnoozeAction)snoozeAction {
+  if (!self.browserState)
+    return;
+  feature_engagement::TrackerFactory::GetForBrowserState(self.browserState)
+      ->DismissedWithSnooze(feature, snoozeAction);
 }
 
 @end

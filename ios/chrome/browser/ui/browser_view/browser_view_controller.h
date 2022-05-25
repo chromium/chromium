@@ -24,6 +24,7 @@
 class Browser;
 @class BrowserContainerViewController;
 @class BrowserViewControllerDependencyFactory;
+@class BubblePresenter;
 @class CommandDispatcher;
 @protocol CRWResponderInputView;
 @class DefaultBrowserPromoNonModalScheduler;
@@ -64,6 +65,7 @@ class PrerenderService;
         (BrowserContainerViewController*)browserContainerViewController
                         dispatcher:(CommandDispatcher*)dispatcher
                   prerenderService:(PrerenderService*)prerenderService
+                   bubblePresenter:(BubblePresenter*)bubblePresenter
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithNibName:(NSString*)nibNameOrNil
