@@ -1497,7 +1497,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.ImageDecoders.Png.FirstDecode.Area" units="pixels"
-    expires_after="2022-09-25">
+    expires_after="2023-03-31">
   <owner>nigeltao@chromium.org</owner>
   <owner>scroggo@google.com</owner>
   <summary>
@@ -1508,7 +1508,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.ImageDecoders.{Type}.{Index}Decode.Time" units="ms"
-    expires_after="2022-06-30">
+    expires_after="2023-03-31">
   <owner>nigeltao@chromium.org</owner>
   <owner>scroggo@google.com</owner>
   <summary>
