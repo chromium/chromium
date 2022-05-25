@@ -302,14 +302,15 @@ export class ChromeVoxBackground {
 
   /**
    * Initializes classic background object.
+   * @param {!ChromeVoxState} chromeVoxState The new background object.
    */
-  static init() {
+  static init(chromeVoxState) {
     // Create the background page object and export a function window['speak']
     // so that other background pages can access it. Also export the prefs
     // object for access by the options page.
     const background = new ChromeVoxBackground();
 
-    ChromeVoxState.backgroundTts = background.backgroundTts_;
+    chromeVoxState.backgroundTts = background.backgroundTts_;
     BridgeHelper.registerHandler(
         BridgeConstants.ChromeVoxBackground.TARGET,
         BridgeConstants.ChromeVoxBackground.Action.GET_CURRENT_VOICE,

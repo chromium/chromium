@@ -39,8 +39,8 @@ export class Background extends ChromeVoxState {
   constructor() {
     super();
 
-    // Initialize legacy background page first.
-    ChromeVoxBackground.init();
+    /** @private {TtsBackground} */
+    this.backgroundTts_ = null;
 
     /** @private {cursors.Range} */
     this.currentRange_ = null;
@@ -52,7 +52,7 @@ export class Background extends ChromeVoxState {
     this.lastClipboardEvent_;
 
     /** @private {cursors.Range} */
-    this.pageSel_;
+    this.pageSel_ = null;
 
     /** @private {cursors.Range} */
     this.previousRange_ = null;
@@ -65,6 +65,9 @@ export class Background extends ChromeVoxState {
 
   /** @private */
   init_() {
+    // Initialize legacy background page first.
+    ChromeVoxBackground.init(this);
+
     // Read-only earcons.
     Object.defineProperty(ChromeVox, 'earcons', {
       get: () => this.earcons_,
@@ -112,6 +115,11 @@ export class Background extends ChromeVoxState {
       return this.currentRange_;
     }
     return null;
+  }
+
+  /** @override */
+  get backgroundTts() {
+    return this.backgroundTts_;
   }
 
   /** @override */
@@ -168,6 +176,11 @@ export class Background extends ChromeVoxState {
     let url = root.docUrl;
     url = url.substring(0, url.indexOf('#')) || url;
     ChromeVox.position[url] = position;
+  }
+
+  /** @override */
+  set backgroundTts(newBackgroundTts) {
+    this.backgroundTts_ = newBackgroundTts;
   }
 
   /** @override */

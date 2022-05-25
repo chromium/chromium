@@ -57,6 +57,11 @@ ChromeVoxState = class {
     return null;
   }
 
+  /** @return {TtsBackground} */
+  get backgroundTts() {
+    return null;
+  }
+
   /** @return {cursors.Range} */
   get pageSel() {
     return null;
@@ -75,6 +80,12 @@ ChromeVoxState = class {
    * @abstract
    */
   setCurrentRange(newRange, opt_fromEditing) {}
+
+  /**
+   * @param {TtsBackground}
+   * @abstract
+   */
+  set backgroundTts(newBackgroundTts) {}
 
   /**
    * @param {cursors.Range}
@@ -125,12 +136,6 @@ ChromeVoxState = class {
 /** @type {ChromeVoxState} */
 ChromeVoxState.instance;
 
-/**
- * Holds the un-composite tts object.
- * @type {Object}
- */
-ChromeVoxState.backgroundTts;
-
 /** @type {boolean} */
 ChromeVoxState.isReadingContinuously;
 
@@ -142,4 +147,5 @@ BridgeHelper.registerHandler(
     () => ChromeVoxState.instance.setCurrentRange(null));
 BridgeHelper.registerHandler(
     BridgeTargets.CHROMEVOX_STATE, BridgeActions.UPDATE_PUNCTUATION_ECHO,
-    (echo) => ChromeVoxState.backgroundTts.updatePunctuationEcho(echo));
+    (echo) =>
+        ChromeVoxState.instance.backgroundTts.updatePunctuationEcho(echo));

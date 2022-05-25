@@ -217,7 +217,8 @@ export class CommandHandler extends CommandHandlerInterface {
         return false;
       case 'cyclePunctuationEcho':
         ChromeVox.tts.speak(
-            Msgs.getMsg(ChromeVoxState.backgroundTts.cyclePunctuationEcho()),
+            Msgs.getMsg(
+                ChromeVoxState.instance.backgroundTts.cyclePunctuationEcho()),
             QueueMode.FLUSH);
         return false;
       case 'reportIssue':
