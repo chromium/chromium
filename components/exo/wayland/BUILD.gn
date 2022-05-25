@@ -145,7 +145,7 @@ source_set("wayland") {
     deps += [ "//ui/events/keycodes:xkb" ]
   }
 
-  if (is_chromecast) {
+  if (is_castos) {
     defines += [ "USE_FULLSCREEN_SHELL" ]
     sources += [
       "zwp_fullscreen_shell.cc",

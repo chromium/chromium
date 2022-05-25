@@ -6,5 +6,5 @@ import("//build/config/compiler/compiler.gni")
 
 # Please keep features in alphabetical order.
 declare_args() {
-  enable_captive_portal_detection = !is_android && !is_chromecast && !is_ios
+  enable_captive_portal_detection = !is_android && !is_ios && !is_castos
 }

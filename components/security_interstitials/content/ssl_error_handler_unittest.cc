@@ -457,7 +457,7 @@ class SSLErrorAssistantProtoTest : public content::RenderViewHostTestHarness {
 
     RunCaptivePortalTest();
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMECAST)
+#if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
     // On platforms where captive portal detection is enabled, timer should
     // start for captive portal detection.
     EXPECT_TRUE(error_handler()->IsTimerRunningForTesting());
@@ -476,9 +476,8 @@ class SSLErrorAssistantProtoTest : public content::RenderViewHostTestHarness {
     EXPECT_FALSE(delegate()->captive_portal_interstitial_shown());
     EXPECT_FALSE(delegate()->suggested_url_checked());
 #else
-    // On Android and Chromecast there is no custom captive portal detection
-    // logic, so the timer should not start and an SSL interstitial should be
-    // shown immediately.
+    // When there is no custom captive portal detection logic, the timer should
+    // not start and an SSL interstitial should be shown immediately.
     EXPECT_FALSE(error_handler()->IsTimerRunningForTesting());
     EXPECT_FALSE(delegate()->captive_portal_checked());
     EXPECT_TRUE(delegate()->ssl_interstitial_shown());

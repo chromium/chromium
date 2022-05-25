@@ -8,11 +8,11 @@ import("//build/config/gclient_args.gni")
 declare_args() {
   # Enables Native Client support.
   # Temporarily disable nacl on arm64 linux to get rid of compilation errors.
-  # Intentionally and permanently disable nacl om arm64 mac.
+  # Intentionally and permanently disable nacl on arm64 mac.
   # TODO: When mipsel-nacl-clang is available, drop the exclusion.
   enable_nacl =
       checkout_nacl && target_os != "ios" && !is_android && !is_fuchsia &&
-      !is_chromecast && current_cpu != "mipsel" && current_cpu != "mips64el" &&
+      !is_castos && current_cpu != "mipsel" && current_cpu != "mips64el" &&
       target_cpu != "arm64" && !(is_win && host_os != "win") &&
       !(is_mac && (host_os != "mac" || target_cpu != "x64"))
 }

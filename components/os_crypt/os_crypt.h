@@ -82,7 +82,7 @@ COMPONENT_EXPORT(OS_CRYPT) void UseMockKeyForTesting(bool use_mock);
 COMPONENT_EXPORT(OS_CRYPT) void SetLegacyEncryptionForTesting(bool legacy);
 COMPONENT_EXPORT(OS_CRYPT) void ResetStateForTesting();
 #endif  // BUILDFLAG(IS_WIN)
-#if (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMECAST))
+#if (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS))
 COMPONENT_EXPORT(OS_CRYPT)
 void UseMockKeyStorageForTesting(
     base::OnceCallback<std::unique_ptr<KeyStorageLinux>()>
@@ -90,7 +90,7 @@ void UseMockKeyStorageForTesting(
 COMPONENT_EXPORT(OS_CRYPT) void ClearCacheForTesting();
 COMPONENT_EXPORT(OS_CRYPT)
 void SetEncryptionPasswordForTesting(const std::string& password);
-#endif  // (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMECAST))
+#endif  // (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS))
 }  // namespace OSCrypt
 
 // The OSCryptImpl class gives access to simple encryption and decryption of
@@ -201,7 +201,7 @@ class COMPONENT_EXPORT(OS_CRYPT) OSCryptImpl {
   void ResetStateForTesting();
 #endif
 
-#if (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMECAST))
+#if (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS))
   // For unit testing purposes, inject methods to be used.
   // |storage_provider_factory| provides the desired |KeyStorage|
   // implementation. If the provider returns |nullptr|, a hardcoded password
@@ -217,7 +217,7 @@ class COMPONENT_EXPORT(OS_CRYPT) OSCryptImpl {
 
   // Sets the password with which the encryption key is derived, e.g. "peanuts".
   void SetEncryptionPasswordForTesting(const std::string& password);
-#endif  // (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMECAST))
+#endif  // (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS))
  private:
 #if BUILDFLAG(IS_APPLE)
   // Generates a newly allocated SymmetricKey object based on the password found

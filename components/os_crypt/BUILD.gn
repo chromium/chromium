@@ -54,7 +54,7 @@ component("os_crypt") {
     defines += [ "ALLOW_RUNTIME_CONFIGURABLE_KEY_STORAGE" ]
   }
 
-  if ((is_posix || is_fuchsia) && !is_apple && (!is_linux || is_chromecast)) {
+  if ((is_posix || is_fuchsia) && !is_apple && !(is_linux && !is_castos)) {
     sources += [ "os_crypt_posix.cc" ]
   }
 
@@ -71,7 +71,7 @@ component("os_crypt") {
     libs = [ "crypt32.lib" ]
   }
 
-  if (is_linux && !is_chromecast) {
+  if (is_linux && !is_castos) {
     sources += [
       "key_storage_config_linux.cc",
       "key_storage_config_linux.h",
@@ -127,7 +127,7 @@ static_library("test_support") {
     "//base",
     "//testing/gtest",
   ]
-  if (is_linux && !is_chromecast) {
+  if (is_linux && !is_castos) {
     sources += [
       "os_crypt_mocker_linux.cc",
       "os_crypt_mocker_linux.h",
@@ -165,7 +165,7 @@ source_set("unit_tests") {
     sources += [ "keychain_password_mac_unittest.mm" ]
   }
 
-  if (is_linux && !is_chromecast) {
+  if (is_linux && !is_castos) {
     sources += [
       "key_storage_linux_unittest.cc",
       "key_storage_util_linux_unittest.cc",
