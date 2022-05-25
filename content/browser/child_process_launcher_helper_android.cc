@@ -216,15 +216,6 @@ JNI_ChildProcessLauncherHelperImpl_ServiceGroupImportanceEnabled(JNIEnv* env) {
          SiteIsolationPolicy::ArePreloadedIsolatedOriginsEnabled();
 }
 
-static jboolean JNI_ChildProcessLauncherHelperImpl_IsNetworkSandboxEnabled(
-    JNIEnv* env) {
-  // We may want to call ContentBrowserClient::ShouldSandboxNetworkService,
-  // but that needs to be called on the UI thread. This function is called on
-  // the launcher thread, not UI thread. Hence we use
-  // sandbox::policy::features::IsNetworkSandboxEnabled.
-  return sandbox::policy::features::IsNetworkSandboxEnabled();
-}
-
 // static
 bool ChildProcessLauncherHelper::TerminateProcess(const base::Process& process,
                                                   int exit_code) {

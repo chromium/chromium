@@ -379,10 +379,9 @@ public final class ChildProcessLauncherHelperImpl {
                 // We only support sandboxed utility processes now.
                 assert ContentSwitches.SWITCH_UTILITY_PROCESS.equals(processType);
 
-                // Network Service:
-                if (ContentSwitches.NETWORK_SANDBOX_TYPE.equals(ContentSwitchUtils.getSwitchValue(
+                if (ContentSwitches.NONE_SANDBOX_TYPE.equals(ContentSwitchUtils.getSwitchValue(
                             commandLine, ContentSwitches.SWITCH_SERVICE_SANDBOX_TYPE))) {
-                    sandboxed = ChildProcessLauncherHelperImplJni.get().isNetworkSandboxEnabled();
+                    sandboxed = false;
                 }
             }
         }
@@ -867,6 +866,5 @@ public final class ChildProcessLauncherHelperImpl {
                 int reverseRank);
 
         boolean serviceGroupImportanceEnabled();
-        boolean isNetworkSandboxEnabled();
     }
 }
