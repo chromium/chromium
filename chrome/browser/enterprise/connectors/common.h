@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/supports_user_data.h"
+#include "components/download/public/common/download_danger_type.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "content/public/browser/download_manager_delegate.h"
 #include "url/gurl.h"
@@ -216,6 +217,11 @@ bool ContainsMalwareVerdict(const ContentAnalysisResponse& response);
 
 // Returns whether device info should be reported for the profile.
 bool IncludeDeviceInfo(Profile* profile, bool per_profile);
+
+// Returns whether the download danger type implies the user should be allowed
+// to review the download.
+bool ShouldPromptReviewForDownload(Profile* profile,
+                                   download::DownloadDangerType danger_type);
 
 }  // namespace enterprise_connectors
 

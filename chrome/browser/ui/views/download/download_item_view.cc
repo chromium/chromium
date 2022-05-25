@@ -35,6 +35,7 @@
 #include "chrome/browser/download/drag_download_item.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_dialog.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_downloads_delegate.h"
+#include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/icon_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
@@ -851,34 +852,13 @@ void DownloadItemView::UpdateLabels() {
 }
 
 void DownloadItemView::UpdateButtons() {
-  bool prompt_to_scan = false, prompt_to_discard = false,
-       prompt_to_review = false;
+  bool prompt_to_scan = false, prompt_to_discard = false;
+  bool prompt_to_review = enterprise_connectors::ShouldPromptReviewForDownload(
+      model_->profile(), model_->GetDangerType());
   if (is_download_warning(mode_)) {
     const auto danger_type = model_->GetDangerType();
     prompt_to_scan =
         danger_type == download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING;
-
-    if (danger_type ==
-            download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING ||
-        danger_type == download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK) {
-      prompt_to_review =
-          enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
-              model_->profile())
-              ->HasCustomInfoToDisplay(
-                  enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED,
-                  kDlpTag);
-    } else if (danger_type == download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE ||
-               danger_type == download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL ||
-               danger_type ==
-                   download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT) {
-      prompt_to_review =
-          enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(
-              model_->profile())
-              ->HasCustomInfoToDisplay(
-                  enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED,
-                  kMalwareTag);
-    }
-
     prompt_to_discard =
         !prompt_to_review && !prompt_to_scan &&
         !ChromeDownloadManagerDelegate::IsDangerTypeBlocked(danger_type);
@@ -1307,7 +1287,10 @@ void DownloadItemView::DropdownButtonPressed(const ui::Event& event) {
 }
 
 void DownloadItemView::ReviewButtonPressed() {
+  // Disable every button on the download so the user has to use the review
+  // dialog to review their sensitive data/malware violation.
   review_button_->SetEnabled(false);
+  dropdown_button_->SetEnabled(false);
 
   auto danger_type = model_->GetDangerType();
   auto state =

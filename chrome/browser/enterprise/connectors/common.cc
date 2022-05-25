@@ -7,6 +7,8 @@
 #include "base/notreached.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
+#include "chrome/browser/enterprise/connectors/connectors_service.h"
+#include "chrome/browser/profiles/profile.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -17,6 +19,11 @@
 #endif
 
 namespace enterprise_connectors {
+
+namespace {
+constexpr char kDlpTag[] = "dlp";
+constexpr char kMalwareTag[] = "malware";
+}  // namespace
 
 AnalysisSettings::AnalysisSettings() = default;
 AnalysisSettings::AnalysisSettings(AnalysisSettings&&) = default;
@@ -184,7 +191,7 @@ void RunSavePackageScanningCallback(download::DownloadItem* item,
 bool ContainsMalwareVerdict(const ContentAnalysisResponse& response) {
   const auto& results = response.results();
   return std::any_of(results.begin(), results.end(), [](const auto& result) {
-    return result.tag() == "malware" && !result.triggered_rules().empty();
+    return result.tag() == kMalwareTag && !result.triggered_rules().empty();
   });
 }
 
@@ -198,6 +205,24 @@ bool IncludeDeviceInfo(Profile* profile, bool per_profile) {
 #else
   return !per_profile;
 #endif
+}
+
+bool ShouldPromptReviewForDownload(Profile* profile,
+                                   download::DownloadDangerType danger_type) {
+  if (danger_type == download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING ||
+      danger_type == download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK) {
+    return ConnectorsServiceFactory::GetForBrowserContext(profile)
+        ->HasCustomInfoToDisplay(
+            enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED, kDlpTag);
+  } else if (danger_type == download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE ||
+             danger_type == download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL ||
+             danger_type == download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT) {
+    return ConnectorsServiceFactory::GetForBrowserContext(profile)
+        ->HasCustomInfoToDisplay(
+            enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED,
+            kMalwareTag);
+  }
+  return false;
 }
 
 }  // namespace enterprise_connectors
