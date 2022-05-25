@@ -229,7 +229,6 @@ void HTMLParserScriptRunner::
 //
 // but currently does more than specced, because historically this and
 // ExecutePendingParserBlockingScriptAndDispatchEvent() was the same method.
-// TODO(hiroshige): Make this spec-conformant.
 void HTMLParserScriptRunner::ExecutePendingDeferredScriptAndDispatchEvent(
     PendingScript* pending_script) {
   // Stop watching loads before executeScript to prevent recursion if the script
@@ -243,24 +242,7 @@ void HTMLParserScriptRunner::ExecutePendingDeferredScriptAndDispatchEvent(
     Microtask::PerformCheckpoint(V8PerIsolateData::MainThreadIsolate());
   }
 
-  {
-    // The following code corresponds to:
-    //
-    // <spec href="https://html.spec.whatwg.org/C/#scriptEndTag"
-    // step="B.7">Increment the parser's script nesting level by one (it should
-    // be zero before this step, so this sets it to one).</spec>
-    //
-    // but this shouldn't be executed here according to the
-    // #execute-the-script-block spec.
-    HTMLParserReentryPermit::ScriptNestingLevelIncrementer
-        nesting_level_incrementer =
-            reentry_permit_->IncrementScriptNestingLevel();
-
-    DCHECK(IsExecutingScript());
-    DoExecuteScript(pending_script, DocumentURLForScriptExecution(document_));
-  }
-
-  DCHECK(!IsExecutingScript());
+  DoExecuteScript(pending_script, DocumentURLForScriptExecution(document_));
 }
 
 void HTMLParserScriptRunner::PendingScriptFinished(
