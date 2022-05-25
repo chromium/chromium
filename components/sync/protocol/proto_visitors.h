@@ -365,7 +365,6 @@ VISIT_PROTO_FIELDS(const sync_pb::DataTypeContext& proto) {
 VISIT_PROTO_FIELDS(const sync_pb::DataTypeProgressMarker& proto) {
   VISIT(data_type_id);
   VISIT_BYTES(token);
-  VISIT(notification_hint);
   VISIT(get_update_triggers);
   VISIT(gc_directive);
 }

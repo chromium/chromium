@@ -259,13 +259,6 @@ ModelTypeSet NudgeTracker::GetRefreshRequestedTypes() const {
   return result;
 }
 
-void NudgeTracker::SetLegacyNotificationHint(
-    ModelType type,
-    sync_pb::DataTypeProgressMarker* progress) const {
-  DCHECK(type_trackers_.find(type) != type_trackers_.end());
-  type_trackers_.find(type)->second->SetLegacyNotificationHint(progress);
-}
-
 sync_pb::SyncEnums::GetUpdatesOrigin NudgeTracker::GetOrigin() const {
   for (const auto& [type, tracker] : type_trackers_) {
     if (!tracker->IsBlocked() && (tracker->HasPendingInvalidation() ||

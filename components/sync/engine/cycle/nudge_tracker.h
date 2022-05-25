@@ -18,10 +18,6 @@
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace sync_pb {
-class DataTypeProgressMarker;
-}  // namespace sync_pb
-
 namespace syncer {
 
 // A class to track the outstanding work required to bring the client back into
@@ -137,13 +133,6 @@ class NudgeTracker {
   // used by the DownloadUpdatesCommand to dump lots of useful per-type state
   // information into the GetUpdate request before sending it off to the server.
   void FillProtoMessage(ModelType type, sync_pb::GetUpdateTriggers* msg) const;
-
-  // Fills a ProgressMarker with single legacy notification hint expected by the
-  // sync server.  Newer servers will rely on the data set by FillProtoMessage()
-  // instead of this.
-  void SetLegacyNotificationHint(
-      ModelType type,
-      sync_pb::DataTypeProgressMarker* progress) const;
 
   // Flips the flag if we're due for a retry.
   void SetSyncCycleStartTime(base::TimeTicks now);

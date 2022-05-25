@@ -44,13 +44,8 @@ message DataTypeProgressMarker {
   reserved 3;
   reserved "timestamp_token_for_migration";
 
-  // An opaque-to-the-client string of bytes, received through a notification,
-  // that the server may interpret as a hint about the location of the latest
-  // version of the data for this type.
-  //
-  // Deprecated in M29.  We should use the repeated field version in the
-  // PerClientTypeState instead.
-  optional string notification_hint = 4 [deprecated = true];
+  reserved 4;
+  reserved "notification_hint";
 
   // This field will be included only in GetUpdates with origin GU_TRIGGER.
   optional GetUpdateTriggers get_update_triggers = 5;

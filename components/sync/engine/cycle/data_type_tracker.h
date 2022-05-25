@@ -17,7 +17,6 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sync_pb {
-class DataTypeProgressMarker;
 class GetUpdateTriggers;
 }  // namespace sync_pb
 
@@ -121,10 +120,6 @@ class DataTypeTracker {
 
   // Returns true if this type is requesting a sync to resolve conflict issue.
   bool IsSyncRequiredToResolveConflict() const;
-
-  // Fills in the legacy invalidaiton payload information fields.
-  void SetLegacyNotificationHint(
-      sync_pb::DataTypeProgressMarker* progress) const;
 
   // Fills some type-specific contents of a GetUpdates request protobuf.  These
   // messages provide the server with the information it needs to decide how to
