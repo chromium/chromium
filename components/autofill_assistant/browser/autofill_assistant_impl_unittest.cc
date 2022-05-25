@@ -37,10 +37,14 @@ class AutofillAssistantImpTest : public testing::Test {
     mock_dependencies_ = mock_common_dependencies.get();
     ON_CALL(*mock_dependencies_, GetCountryCode).WillByDefault(Return("US"));
     ON_CALL(*mock_dependencies_, GetLocale).WillByDefault(Return("en-US"));
+    ON_CALL(*mock_dependencies_, IsSupervisedUser).WillByDefault(Return(false));
 
+    // As long as the `BrowserContext` is only passed as an argument during
+    // `CommonDependencies` calls, we do not need to set up a test environment
+    // for it.
     service_ = std::make_unique<AutofillAssistantImpl>(
-        std::move(mock_request_sender), std::move(mock_common_dependencies),
-        GURL(kScriptServerUrl));
+        /* browser_context= */ nullptr, std::move(mock_request_sender),
+        std::move(mock_common_dependencies), GURL(kScriptServerUrl));
   }
   ~AutofillAssistantImpTest() override = default;
 
@@ -135,6 +139,20 @@ TEST_F(AutofillAssistantImpTest, GetCapabilitiesByHashPrefix) {
               std::vector<AutofillAssistant::CapabilitiesInfo>{
                   {"http://exampleA.com", {{"EXPERIMENT_IDS", "3345172"}}},
                   {"http://exampleB.com", {}}})));
+
+  service_->GetCapabilitiesByHashPrefix(16, {1339}, "DUMMY_INTENT",
+                                        mock_response_callback_.Get());
+}
+
+TEST_F(AutofillAssistantImpTest,
+       GetCapabilitiesByHashPrefixDoesNotExecuteForSupervisedUsers) {
+  EXPECT_CALL(*mock_dependencies_, IsSupervisedUser).WillOnce(Return(true));
+
+  EXPECT_CALL(*mock_request_sender_, OnSendRequest).Times(0);
+
+  EXPECT_CALL(
+      mock_response_callback_,
+      Run(net::HTTP_OK, std::vector<AutofillAssistant::CapabilitiesInfo>()));
 
   service_->GetCapabilitiesByHashPrefix(16, {1339}, "DUMMY_INTENT",
                                         mock_response_callback_.Get());

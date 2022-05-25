@@ -8,11 +8,14 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "components/autofill_assistant/browser/public/autofill_assistant.h"
 #include "components/autofill_assistant/browser/public/external_script_controller.h"
 #include "components/autofill_assistant/browser/service/service_request_sender.h"
-#include "components/version_info/version_info.h"
-#include "content/public/browser/browser_context.h"
+
+namespace content {
+class BrowserContext;
+}  // namespace content
 
 namespace autofill_assistant {
 
@@ -24,7 +27,8 @@ class AutofillAssistantImpl : public autofill_assistant::AutofillAssistant {
       content::BrowserContext* browser_context,
       std::unique_ptr<CommonDependencies> dependencies);
 
-  AutofillAssistantImpl(std::unique_ptr<ServiceRequestSender> request_sender,
+  AutofillAssistantImpl(content::BrowserContext* browser_context,
+                        std::unique_ptr<ServiceRequestSender> request_sender,
                         std::unique_ptr<CommonDependencies> dependencies,
                         const GURL& script_server_url);
   ~AutofillAssistantImpl() override;
@@ -43,6 +47,10 @@ class AutofillAssistantImpl : public autofill_assistant::AutofillAssistant {
       ExternalActionDelegate* action_extension_delegate) override;
 
  private:
+  // The `BrowserContext` for which this `AutofillAssistantImpl` was created
+  // and which must outlive it.
+  const raw_ptr<content::BrowserContext> browser_context_;
+
   // The request sender responsible for communicating with a remote endpoint.
   std::unique_ptr<ServiceRequestSender> request_sender_;
 
