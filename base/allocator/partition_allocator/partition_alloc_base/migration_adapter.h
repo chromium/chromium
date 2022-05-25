@@ -25,7 +25,6 @@ class LazyInstance;
 template <typename Type>
 struct LazyInstanceTraitsBase;
 
-BASE_EXPORT std::string StringPrintf(const char* format, ...);
 BASE_EXPORT void TerminateBecauseOutOfMemory(size_t size);
 
 #if BUILDFLAG(IS_ANDROID)
@@ -68,7 +67,6 @@ namespace partition_alloc::internal::base {
 using ::base::LapTimer;
 using ::base::LazyInstance;
 using ::base::LazyInstanceTraitsBase;
-using ::base::StringPrintf;
 using ::base::TerminateBecauseOutOfMemory;
 
 #if BUILDFLAG(IS_MAC)

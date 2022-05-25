@@ -15,6 +15,7 @@
 
 #include "base/allocator/partition_allocator/partition_alloc_base/debug/alias.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/immediate_crash.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/strings/stringprintf.h"
 #include "base/base_export.h"
 #include "build/build_config.h"
 
@@ -200,13 +201,14 @@ BASE_EXPORT std::string SystemErrorCodeToString(SystemErrorCode error_code) {
     size_t whitespace_pos = message.find_last_not_of("\n\r ");
     if (whitespace_pos != std::string::npos)
       message.erase(whitespace_pos + 1);
-    return message + base::StringPrintf(" (0x%lX)", error_code);
+    return message + base::TruncatingStringPrintf(" (0x%lX)", error_code);
   }
-  return base::StringPrintf("Error (0x%lX) while retrieving error. (0x%lX)",
-                            GetLastError(), error_code);
+  return base::TruncatingStringPrintf(
+      "Error (0x%lX) while retrieving error. (0x%lX)", GetLastError(),
+      error_code);
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   return base::safe_strerror(error_code) +
-         base::StringPrintf(" (%d)", error_code);
+         base::TruncatingStringPrintf(" (%d)", error_code);
 #endif  // BUILDFLAG(IS_WIN)
 }
 

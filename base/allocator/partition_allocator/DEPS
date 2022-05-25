@@ -28,7 +28,6 @@ include_rules = [
 include_rules += [
     "+base/allocator/allocator_shim_default_dispatch_to_partition_alloc.h",
     "+base/debug/proc_maps_linux.h",
-    "+base/strings/stringprintf.h",
     "+base/system/sys_info.h",
     "+base/test/gtest_util.h",
     "+base/timer/lap_timer.h",

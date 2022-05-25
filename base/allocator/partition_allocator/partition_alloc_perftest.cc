@@ -10,11 +10,11 @@
 
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/logging.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/strings/stringprintf.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/threading/platform_thread_for_testing.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/time/time.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/thread_cache.h"
-#include "base/strings/stringprintf.h"
 #include "base/timer/lap_timer.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -27,14 +27,6 @@
 #endif
 
 namespace partition_alloc::internal {
-
-namespace base {
-
-// TODO(https://crbug.com/1288247): Remove these 'using' declarations once
-// the migration to the new namespaces gets done.
-using ::base::StringPrintf;
-
-}  // namespace base
 
 namespace {
 
@@ -379,9 +371,9 @@ void RunTest(int thread_count,
       break;
   }
 
-  std::string name =
-      base::StringPrintf("%s%s_%s_%d", kMetricPrefixMemoryAllocation,
-                         story_base_name, alloc_type_str, thread_count);
+  std::string name = base::TruncatingStringPrintf(
+      "%s%s_%s_%d", kMetricPrefixMemoryAllocation, story_base_name,
+      alloc_type_str, thread_count);
 
   DisplayResults(name + "_total", total_laps_per_second);
   DisplayResults(name + "_worst", min_laps_per_second);

@@ -110,6 +110,8 @@ target(partition_alloc_target_type, "partition_alloc") {
     "partition_alloc_base/rand_util.cc",
     "partition_alloc_base/rand_util.h",
     "partition_alloc_base/scoped_clear_last_error.h",
+    "partition_alloc_base/strings/stringprintf.cc",
+    "partition_alloc_base/strings/stringprintf.h",
     "partition_alloc_base/sys_byteorder.h",
     "partition_alloc_base/thread_annotations.h",
     "partition_alloc_base/threading/platform_thread.cc",
