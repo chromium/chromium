@@ -142,7 +142,7 @@ bool ParseAttributionFilterData(
 
 bool ParseAttributionAggregatableSource(
     const String& json_string,
-    mojom::blink::AttributionAggregatableSource& source) {
+    WTF::HashMap<String, absl::uint128>& aggregation_keys) {
   // TODO(apaseltiner): Consider applying a max stack depth to this.
   std::unique_ptr<JSONValue> json = ParseJSON(json_string);
   if (!json)
@@ -166,7 +166,7 @@ bool ParseAttributionAggregatableSource(
   base::UmaHistogramCounts100("Conversions.AggregatableKeysPerSource",
                               num_keys);
 
-  source.keys.ReserveCapacityForSize(num_keys);
+  aggregation_keys.ReserveCapacityForSize(num_keys);
 
   for (wtf_size_t i = 0; i < num_keys; ++i) {
     JSONValue* value = array->at(i);
@@ -187,7 +187,7 @@ bool ParseAttributionAggregatableSource(
     if (!ParseAttributionAggregatableKey(object, &key))
       return false;
 
-    source.keys.insert(std::move(key_id), key);
+    aggregation_keys.insert(std::move(key_id), key);
   }
 
   return true;

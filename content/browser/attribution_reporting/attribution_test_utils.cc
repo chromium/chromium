@@ -733,22 +733,6 @@ AttributionReport ReportBuilder::BuildAggregatableAttribution() const {
           contributions_, aggregatable_attribution_report_id_, report_time_));
 }
 
-AggregatableSourceMojoBuilder::AggregatableSourceMojoBuilder() = default;
-
-AggregatableSourceMojoBuilder::~AggregatableSourceMojoBuilder() = default;
-
-AggregatableSourceMojoBuilder& AggregatableSourceMojoBuilder::AddKey(
-    std::string key_id,
-    absl::uint128 key) {
-  aggregatable_source_.keys.emplace(std::move(key_id), key);
-  return *this;
-}
-
-blink::mojom::AttributionAggregatableSourcePtr
-AggregatableSourceMojoBuilder::Build() const {
-  return aggregatable_source_.Clone();
-}
-
 bool operator==(const AttributionTrigger::EventTriggerData& a,
                 const AttributionTrigger::EventTriggerData& b) {
   const auto tie = [](const AttributionTrigger::EventTriggerData& t) {

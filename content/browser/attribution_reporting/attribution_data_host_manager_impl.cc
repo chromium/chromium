@@ -285,7 +285,7 @@ void AttributionDataHostManagerImpl::SourceDataAvailable(
 
   absl::optional<AttributionAggregatableSource> aggregatable_source =
       AttributionAggregatableSource::FromKeys(
-          std::move(data->aggregatable_source->keys));
+          std::move(data->aggregation_keys));
   if (!aggregatable_source.has_value()) {
     RecordSourceDataHandleStatus(DataHandleStatus::kInvalidData);
     mojo::ReportBadMessage("AttributionDataHost: Invalid aggregatable source.");

@@ -140,11 +140,9 @@ TEST_F(AttributionDataHostManagerImplTest, SourceDataHost_SourceRegistered) {
     source_data->priority = 20;
     source_data->debug_key = blink::mojom::AttributionDebugKey::New(789);
     source_data->filter_data = blink::mojom::AttributionFilterData::New();
-    source_data->aggregatable_source =
-        AggregatableSourceMojoBuilder()
-            .AddKey(/*key_id=*/"key",
-                    absl::MakeUint128(/*high=*/5, /*low=*/345))
-            .Build();
+    source_data->aggregation_keys = {
+        {"key", absl::MakeUint128(/*high=*/5, /*low=*/345)},
+    };
     data_host_remote.data_host->SourceDataAvailable(std::move(source_data));
     data_host_remote.data_host.FlushForTesting();
   }
@@ -211,8 +209,6 @@ TEST_F(AttributionDataHostManagerImplTest,
     source_data->reporting_origin =
         url::Origin::Create(GURL(test_case.reporting_origin));
     source_data->filter_data = blink::mojom::AttributionFilterData::New();
-    source_data->aggregatable_source =
-        blink::mojom::AttributionAggregatableSource::New();
     data_host_remote.data_host->SourceDataAvailable(std::move(source_data));
     data_host_remote.data_host.FlushForTesting();
 
@@ -256,8 +252,6 @@ TEST_F(AttributionDataHostManagerImplTest,
         url::Origin::Create(GURL("https://reporter.example"));
     source_data->filter_data =
         blink::mojom::AttributionFilterData::New(test_case.AsMap());
-    source_data->aggregatable_source =
-        blink::mojom::AttributionAggregatableSource::New();
     data_host_remote->SourceDataAvailable(std::move(source_data));
     data_host_remote.FlushForTesting();
 
@@ -315,8 +309,6 @@ TEST_F(AttributionDataHostManagerImplTest,
         url::Origin::Create(GURL("https://reporter.example"));
     source_data->filter_data =
         blink::mojom::AttributionFilterData::New(test_case.filter_data);
-    source_data->aggregatable_source =
-        blink::mojom::AttributionAggregatableSource::New();
     data_host_remote->SourceDataAvailable(std::move(source_data));
     data_host_remote.FlushForTesting();
 
@@ -366,8 +358,6 @@ TEST_F(AttributionDataHostManagerImplTest,
     source_data->destination = destination_origin;
     source_data->reporting_origin = reporting_origin;
     source_data->filter_data = blink::mojom::AttributionFilterData::New();
-    source_data->aggregatable_source =
-        blink::mojom::AttributionAggregatableSource::New();
     data_host_remote.data_host->SourceDataAvailable(source_data.Clone());
     data_host_remote.data_host.FlushForTesting();
 
@@ -404,15 +394,13 @@ TEST_F(AttributionDataHostManagerImplTest,
     size_t key_count;
     size_t key_size;
 
-    blink::mojom::AttributionAggregatableSourcePtr GetAggregatableSource()
-        const {
-      AggregatableSourceMojoBuilder builder;
+    base::flat_map<std::string, absl::uint128> GetAggregationKeys() const {
+      base::flat_map<std::string, absl::uint128> keys;
       for (size_t i = 0u; i < key_count; ++i) {
         std::string key(key_size, 'A' + i);
-        builder.AddKey(std::move(key),
-                       absl::MakeUint128(/*high=*/i, /*low=*/i));
+        keys.emplace(std::move(key), absl::MakeUint128(/*high=*/i, /*low=*/i));
       }
-      return builder.Build();
+      return keys;
     }
   };
 
@@ -448,7 +436,7 @@ TEST_F(AttributionDataHostManagerImplTest,
     source_data->reporting_origin =
         url::Origin::Create(GURL("https://reporter.example"));
     source_data->filter_data = blink::mojom::AttributionFilterData::New();
-    source_data->aggregatable_source = test_case.GetAggregatableSource();
+    source_data->aggregation_keys = test_case.GetAggregationKeys();
     data_host_remote->SourceDataAvailable(std::move(source_data));
     data_host_remote.FlushForTesting();
 
@@ -905,8 +893,6 @@ TEST_F(AttributionDataHostManagerImplTest,
       source_data->destination = destination_origin;
       source_data->reporting_origin = reporting_origin;
       source_data->filter_data = blink::mojom::AttributionFilterData::New();
-      source_data->aggregatable_source =
-          blink::mojom::AttributionAggregatableSource::New();
 
       data_host_remote.data_host->SourceDataAvailable(std::move(source_data));
       data_host_remote.data_host.FlushForTesting();
@@ -962,8 +948,6 @@ TEST_F(AttributionDataHostManagerImplTest,
     source_data->destination = destination_origin;
     source_data->reporting_origin = reporting_origin;
     source_data->filter_data = blink::mojom::AttributionFilterData::New();
-    source_data->aggregatable_source =
-        blink::mojom::AttributionAggregatableSource::New();
 
     data_host_remote.data_host->SourceDataAvailable(source_data.Clone());
     data_host_remote.data_host.FlushForTesting();
@@ -1054,11 +1038,9 @@ TEST_F(AttributionDataHostManagerImplTest,
     source_data->priority = 20;
     source_data->debug_key = blink::mojom::AttributionDebugKey::New(789);
     source_data->filter_data = blink::mojom::AttributionFilterData::New();
-    source_data->aggregatable_source =
-        AggregatableSourceMojoBuilder()
-            .AddKey(/*key_id=*/"key",
-                    absl::MakeUint128(/*high=*/5, /*low=*/345))
-            .Build();
+    source_data->aggregation_keys = {
+        {"key", absl::MakeUint128(/*high=*/5, /*low=*/345)},
+    };
     data_host_remote.data_host->SourceDataAvailable(source_data.Clone());
     data_host_remote.data_host.FlushForTesting();
 
@@ -1517,8 +1499,6 @@ TEST_F(AttributionDataHostManagerImplTest, SourceThenTrigger_TriggerDelayed) {
   source_data->reporting_origin =
       url::Origin::Create(GURL("https://report1.test"));
   source_data->filter_data = blink::mojom::AttributionFilterData::New();
-  source_data->aggregatable_source =
-      blink::mojom::AttributionAggregatableSource::New();
   source_data_host_remote->SourceDataAvailable(std::move(source_data));
   source_data_host_remote.FlushForTesting();
 
@@ -1606,8 +1586,6 @@ TEST_F(AttributionDataHostManagerImplTest, InsecureNavigationOrigin_Dropped) {
     source_data->reporting_origin =
         url::Origin::Create(GURL("https://reporter.example"));
     source_data->filter_data = blink::mojom::AttributionFilterData::New();
-    source_data->aggregatable_source =
-        blink::mojom::AttributionAggregatableSource::New();
     source_data_host_remote->SourceDataAvailable(std::move(source_data));
     source_data_host_remote.FlushForTesting();
 
@@ -1747,8 +1725,6 @@ TEST_F(AttributionDataHostManagerImplTest,
   source_data->reporting_origin =
       url::Origin::Create(GURL("https://reporter.example"));
   source_data->filter_data = blink::mojom::AttributionFilterData::New();
-  source_data->aggregatable_source =
-      blink::mojom::AttributionAggregatableSource::New();
   data_host_remote1->SourceDataAvailable(source_data.Clone());
   data_host_remote1.FlushForTesting();
 

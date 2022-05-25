@@ -24,24 +24,6 @@ namespace blink::attribution_response_parsing {
 
 namespace {
 
-class AggregatableSourceBuilder {
- public:
-  AggregatableSourceBuilder() = default;
-  ~AggregatableSourceBuilder() = default;
-
-  AggregatableSourceBuilder& AddKey(String key_id, absl::uint128 key) {
-    source_.keys.insert(std::move(key_id), key);
-    return *this;
-  }
-
-  mojom::blink::AttributionAggregatableSourcePtr Build() const {
-    return source_.Clone();
-  }
-
- private:
-  mojom::blink::AttributionAggregatableSource source_;
-};
-
 class AttributionFilterDataBuilder {
  public:
   AttributionFilterDataBuilder() = default;
@@ -105,46 +87,39 @@ TEST(AttributionResponseParsingTest, ParseAttributionAggregatableSource) {
     String description;
     String header;
     bool valid;
-    mojom::blink::AttributionAggregatableSourcePtr source;
+    WTF::HashMap<String, absl::uint128> expected;
   } kTestCases[] = {
-      {"Empty header", "", false,
-       mojom::blink::AttributionAggregatableSource::New()},
-      {"Invalid JSON", "{", false,
-       mojom::blink::AttributionAggregatableSource::New()},
-      {"Not an array", "{}", false,
-       mojom::blink::AttributionAggregatableSource::New()},
-      {"Missing id field", R"([{"key_piece":"0x159"}])", false,
-       mojom::blink::AttributionAggregatableSource::New()},
-      {"Missing key_piece field", R"([{"id":"key"}])", false,
-       mojom::blink::AttributionAggregatableSource::New()},
-      {"Invalid key", R"([{"id":"key","key_piece":"0xG59"}])", false,
-       mojom::blink::AttributionAggregatableSource::New()},
-      {"One valid key", R"([{"id":"key","key_piece":"0x159"}])", true,
-       AggregatableSourceBuilder()
-           .AddKey(/*key_id=*/"key", absl::MakeUint128(/*high=*/0, /*low=*/345))
-           .Build()},
+      {"Empty header", "", false, {}},
+      {"Invalid JSON", "{", false, {}},
+      {"Not an array", "{}", false, {}},
+      {"Missing id field", R"([{"key_piece":"0x159"}])", false, {}},
+      {"Missing key_piece field", R"([{"id":"key"}])", false, {}},
+      {"Invalid key", R"([{"id":"key","key_piece":"0xG59"}])", false, {}},
+      {"One valid key",
+       R"([{"id":"key","key_piece":"0x159"}])",
+       true,
+       {{"key", absl::MakeUint128(/*high=*/0, /*low=*/345)}}},
       {"Two valid keys",
        R"([{"id":"key1","key_piece":"0x159"},
            {"id":"key2","key_piece":"0x50000000000000159"}])",
        true,
-       AggregatableSourceBuilder()
-           .AddKey(/*key_id=*/"key1",
-                   absl::MakeUint128(/*high=*/0, /*low=*/345))
-           .AddKey(/*key_id=*/"key2",
-                   absl::MakeUint128(/*high=*/5, /*low=*/345))
-           .Build()},
+       {
+           {"key1", absl::MakeUint128(/*high=*/0, /*low=*/345)},
+           {"key2", absl::MakeUint128(/*high=*/5, /*low=*/345)},
+       }},
       {"Second key invalid",
        R"([{"id":"key1","key_piece":"0x159"},
            {"id":"key2","key_piece":""}])",
-       false, mojom::blink::AttributionAggregatableSource::New()},
+       false,
+       {}},
   };
 
   for (const auto& test_case : kTestCases) {
-    auto source = mojom::blink::AttributionAggregatableSource::New();
-    bool valid = ParseAttributionAggregatableSource(test_case.header, *source);
+    WTF::HashMap<String, absl::uint128> actual;
+    bool valid = ParseAttributionAggregatableSource(test_case.header, actual);
     EXPECT_EQ(test_case.valid, valid) << test_case.description;
     if (test_case.valid)
-      EXPECT_EQ(test_case.source, source) << test_case.description;
+      EXPECT_EQ(test_case.expected, actual) << test_case.description;
   }
 }
 
@@ -173,16 +148,17 @@ TEST(AttributionResponseParsingTest,
       return builder.ToString();
     }
 
-    mojom::blink::AttributionAggregatableSourcePtr GetSource() const {
-      AggregatableSourceBuilder builder;
+    WTF::HashMap<String, absl::uint128> GetAggregationKeys() const {
+      WTF::HashMap<String, absl::uint128> aggregation_keys;
       if (!valid)
-        return builder.Build();
+        return aggregation_keys;
 
       for (wtf_size_t i = 0u; i < key_count; ++i) {
-        builder.AddKey(GetKey(i), absl::MakeUint128(/*high=*/0, /*low=*/1));
+        aggregation_keys.insert(GetKey(i),
+                                absl::MakeUint128(/*high=*/0, /*low=*/1));
       }
 
-      return builder.Build();
+      return aggregation_keys;
     }
 
    private:
@@ -208,12 +184,14 @@ TEST(AttributionResponseParsingTest,
   };
 
   for (const auto& test_case : kTestCases) {
-    auto source = mojom::blink::AttributionAggregatableSource::New();
+    WTF::HashMap<String, absl::uint128> actual;
     bool valid =
-        ParseAttributionAggregatableSource(test_case.GetHeader(), *source);
+        ParseAttributionAggregatableSource(test_case.GetHeader(), actual);
     EXPECT_EQ(test_case.valid, valid) << test_case.description;
-    if (test_case.valid)
-      EXPECT_EQ(test_case.GetSource(), source) << test_case.description;
+    if (test_case.valid) {
+      EXPECT_EQ(test_case.GetAggregationKeys(), actual)
+          << test_case.description;
+    }
   }
 }
 
@@ -657,7 +635,7 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
               /*priority=*/0,
               /*debug_key=*/nullptr,
               /*filter_data=*/AttributionFilterDataBuilder().Build(),
-              /*aggregatable_source=*/nullptr),
+              /*aggregation_keys=*/WTF::HashMap<String, absl::uint128>()),
       },
       {
           "missing_source_event_id",
@@ -696,7 +674,7 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
               /*priority=*/0,
               /*debug_key=*/nullptr,
               /*filter_data=*/AttributionFilterDataBuilder().Build(),
-              /*aggregatable_source=*/nullptr),
+              /*aggregation_keys=*/WTF::HashMap<String, absl::uint128>()),
       },
       {
           "destination_not_string",
@@ -730,7 +708,7 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
               /*priority=*/5,
               /*debug_key=*/nullptr,
               /*filter_data=*/AttributionFilterDataBuilder().Build(),
-              /*aggregatable_source=*/nullptr),
+              /*aggregation_keys=*/WTF::HashMap<String, absl::uint128>()),
       },
       {
           "priority_not_string",
@@ -748,7 +726,7 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
               /*priority=*/0,
               /*debug_key=*/nullptr,
               /*filter_data=*/AttributionFilterDataBuilder().Build(),
-              /*aggregatable_source=*/nullptr),
+              /*aggregation_keys=*/WTF::HashMap<String, absl::uint128>()),
       },
       {
           "invalid_priority",
@@ -766,7 +744,7 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
               /*priority=*/0,
               /*debug_key=*/nullptr,
               /*filter_data=*/AttributionFilterDataBuilder().Build(),
-              /*aggregatable_source=*/nullptr),
+              /*aggregation_keys=*/WTF::HashMap<String, absl::uint128>()),
       },
       {
           "valid_expiry",
@@ -784,7 +762,7 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
               /*priority=*/0,
               /*debug_key=*/nullptr,
               /*filter_data=*/AttributionFilterDataBuilder().Build(),
-              /*aggregatable_source=*/nullptr),
+              /*aggregation_keys=*/WTF::HashMap<String, absl::uint128>()),
       },
       {
           "expiry_not_string",
@@ -802,7 +780,7 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
               /*priority=*/0,
               /*debug_key=*/nullptr,
               /*filter_data=*/AttributionFilterDataBuilder().Build(),
-              /*aggregatable_source=*/nullptr),
+              /*aggregation_keys=*/WTF::HashMap<String, absl::uint128>()),
       },
       {
           "invalid_expiry",
@@ -820,7 +798,7 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
               /*priority=*/0,
               /*debug_key=*/nullptr,
               /*filter_data=*/AttributionFilterDataBuilder().Build(),
-              /*aggregatable_source=*/nullptr),
+              /*aggregation_keys=*/WTF::HashMap<String, absl::uint128>()),
       },
       {
           "valid_debug_key",
@@ -838,7 +816,7 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
               /*priority=*/0,
               /*debug_key=*/mojom::blink::AttributionDebugKey::New(5),
               /*filter_data=*/AttributionFilterDataBuilder().Build(),
-              /*aggregatable_source=*/nullptr),
+              /*aggregation_keys=*/WTF::HashMap<String, absl::uint128>()),
       },
       {
           "valid_filter_data",
@@ -859,7 +837,7 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
               AttributionFilterDataBuilder()
                   .AddFilter("SOURCE_TYPE", {})
                   .Build(),
-              /*aggregatable_source=*/nullptr),
+              /*aggregation_keys=*/WTF::HashMap<String, absl::uint128>()),
       },
       {
           "invalid_source_type_key_in_filter_data",
@@ -886,7 +864,7 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
               /*priority=*/0,
               /*debug_key=*/nullptr,
               /*filter_data=*/AttributionFilterDataBuilder().Build(),
-              /*aggregatable_source=*/nullptr),
+              /*aggregation_keys=*/WTF::HashMap<String, absl::uint128>()),
       },
   };
 
@@ -926,8 +904,8 @@ TEST(AttributionResponseParsingTest, ParseSourceRegistrationHeader) {
 
       // This field is not populated by `ParseSourceRegistrationHeader()`, but
       // check it for equality with the test case anyway.
-      EXPECT_EQ(test_case.expected->aggregatable_source,
-                source_data.aggregatable_source)
+      EXPECT_EQ(test_case.expected->aggregation_keys,
+                source_data.aggregation_keys)
           << test_case.description;
     }
   }
@@ -1292,10 +1270,9 @@ TEST(AttributionResponseParsingTest, SourceAggregatableKeysHistogram) {
 
   for (const auto& test_case : kTestCases) {
     base::HistogramTester histograms;
-    mojom::blink::AttributionAggregatableSource aggregatable_source;
+    WTF::HashMap<String, absl::uint128> aggregation_keys;
     ParseAttributionAggregatableSource(
-        make_aggregatable_source_with_keys(test_case.size),
-        aggregatable_source);
+        make_aggregatable_source_with_keys(test_case.size), aggregation_keys);
     histograms.ExpectUniqueSample("Conversions.AggregatableKeysPerSource",
                                   test_case.size, test_case.expected);
   }

@@ -20,12 +20,6 @@ struct AttributionFilterData {
   map<string, array<string>> filter_values;
 };
 
-// Defines a list of named histogram contributions.
-struct AttributionAggregatableSource {
-  // Map of key id to the key.
-  map<string, mojo_base.mojom.Uint128> keys;
-};
-
 // Struct containing the trigger-side aggregatable data.
 struct AttributionAggregatableTriggerData {
   mojo_base.mojom.Uint128 key;
@@ -66,8 +60,7 @@ struct AttributionSourceData {
 
   AttributionFilterData filter_data;
 
-  // Contains source-side aggregatable key pieces.
-  AttributionAggregatableSource aggregatable_source;
+  map<string, mojo_base.mojom.Uint128> aggregation_keys;
 };
 
 // Deduplication key set by a reporting origin which prevents duplicate triggers

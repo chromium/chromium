@@ -53,10 +53,6 @@
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom.h"
 #include "url/origin.h"
 
-namespace absl {
-class uint128;
-}  // namespace absl
-
 namespace mojo {
 
 template <typename Interface>
@@ -614,21 +610,6 @@ class ReportBuilder {
   AttributionReport::AggregatableAttributionData::Id
       aggregatable_attribution_report_id_{0};
   std::vector<AggregatableHistogramContribution> contributions_;
-};
-
-// Helper class to construct a `blink::mojom::AttributionAggregatableSource`
-// for testing.
-class AggregatableSourceMojoBuilder {
- public:
-  AggregatableSourceMojoBuilder();
-  ~AggregatableSourceMojoBuilder();
-
-  AggregatableSourceMojoBuilder& AddKey(std::string key_id, absl::uint128 key);
-
-  blink::mojom::AttributionAggregatableSourcePtr Build() const;
-
- private:
-  blink::mojom::AttributionAggregatableSource aggregatable_source_;
 };
 
 bool operator==(const AttributionTrigger::EventTriggerData& a,

@@ -13,6 +13,10 @@
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
+namespace absl {
+class uint128;
+}  // namespace absl
+
 namespace blink {
 
 class ResourceResponse;
@@ -36,7 +40,7 @@ namespace attribution_response_parsing {
 // Returns whether parsing was successful.
 CORE_EXPORT bool ParseAttributionAggregatableSource(
     const String& json_string,
-    mojom::blink::AttributionAggregatableSource& source);
+    WTF::HashMap<String, absl::uint128>& aggregation_keys);
 
 // Parses a debug key, which is a 64-bit unsigned integer encoded as a base-10
 // string. Returns `nullptr` on failure.

@@ -441,14 +441,11 @@ void AttributionSrcLoader::ResourceClient::HandleSourceRegistration(
     return;
   }
 
-  source_data->aggregatable_source =
-      mojom::blink::AttributionAggregatableSource::New();
-
   const AtomicString& aggregatable_source_json = response.HttpHeaderField(
       http_names::kAttributionReportingRegisterAggregatableSource);
   if (!aggregatable_source_json.IsNull() &&
       !attribution_response_parsing::ParseAttributionAggregatableSource(
-          aggregatable_source_json, *source_data->aggregatable_source)) {
+          aggregatable_source_json, source_data->aggregation_keys)) {
     loader_->LogAuditIssue(AttributionReportingIssueType::kInvalidHeader,
                            aggregatable_source_json,
                            /*element=*/nullptr, request_id);

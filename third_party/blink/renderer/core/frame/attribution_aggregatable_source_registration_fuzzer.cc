@@ -9,9 +9,11 @@
 #include "testing/libfuzzer/proto/json.pb.h"
 #include "testing/libfuzzer/proto/json_proto_converter.h"
 #include "testing/libfuzzer/proto/lpm_interface.h"
+#include "third_party/abseil-cpp/absl/numeric/int128.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom-blink.h"
 #include "third_party/blink/renderer/core/frame/attribution_response_parsing.h"
 #include "third_party/blink/renderer/platform/testing/blink_fuzzer_test_support.h"
+#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -26,7 +28,7 @@ DEFINE_PROTO_FUZZER(const json_proto::JsonValue& json_value) {
     std::cout << native_input << std::endl;
 
   const String input(native_input.c_str());
-  mojom::blink::AttributionAggregatableSource output;
+  WTF::HashMap<String, absl::uint128> output;
   attribution_response_parsing::ParseAttributionAggregatableSource(input,
                                                                    output);
 }
