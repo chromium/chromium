@@ -127,23 +127,29 @@ window.onload =
       }
     },
 
-    // Uncached icon test. Default icons are 16 pixels. 32 or 64 are supported.
-    async function defaultResolution() {
-      const pixels = 48;
+    // Verify uncached default icon resolutions. Supported sizes: 16, 32, 64.
+    async function uncachedDefaultResolutions() {
       const port = (await chrome.test.getConfig()).testServer.port;
-      const favicon = new Favicon({
-        pageUrl: `http://www.unvisited.com:${
-            port}/extensions/favicon/test_file.html`,
-        size: pixels
+      const pixelsAndExpected =
+          [[30, 16], [48, 32], [128, 64], [32, 32], [10, 16]];
+      const promises = pixelsAndExpected.map(requestAndExpect => {
+        return new Promise((resolve, reject) => {
+          const [pixels, expected] = requestAndExpect;
+          const favicon = new Favicon({
+            pageUrl: `http://www.unvisited.com:${
+                port}/extensions/favicon/test_file.html`,
+            size: pixels
+          });
+          const image = new Image();
+          image.src = favicon.getUrl();
+          image.onload = () => {
+            chrome.test.assertEq(expected, image.height);
+            chrome.test.assertEq(expected, image.width);
+            resolve();
+          }
+        });
       });
-      const image = new Image();
-      image.src = favicon.getUrl();
-      image.onload = function() {
-        const expected = 16;
-        chrome.test.assertEq(expected, this.height);
-        chrome.test.assertEq(expected, this.width);
-        chrome.test.succeed();
-      }
+      Promise.all(promises).then(() => chrome.test.succeed());
     },
 
     // We can't use the page's favicon file
