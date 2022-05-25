@@ -39,12 +39,12 @@ constexpr int kTitleFontSize = 20;
 // About description style.
 constexpr int kDescriptionFontSize = 13;
 
-// About Beta style.
-constexpr int kBetaFontSize = 11;
-constexpr int kBetaCornerRadius = 4;
-constexpr int kBetaHeight = 16;
-constexpr int kBetaSidePadding = 4;
-constexpr int kBetaLeftMargin = 12;
+// About Alpha style.
+constexpr int kAlphaFontSize = 11;
+constexpr int kAlphaCornerRadius = 4;
+constexpr int kAlphaHeight = 16;
+constexpr int kAlphaSidePadding = 4;
+constexpr int kAlphaLeftMargin = 12;
 
 // Misc spacing.
 constexpr int kBorderRow1 = 16;
@@ -98,7 +98,7 @@ void EducationalView::Init(views::View* parent) {
     AddChildView(std::move(banner));
   }
   {
-    // |Game Control [beta]| title tag.
+    // |Game Control [Alpha]| title tag.
     auto container_view = std::make_unique<views::View>();
     container_view->SetLayoutManager(std::make_unique<views::FlexLayout>())
         ->SetOrientation(views::LayoutOrientation::kHorizontal)
@@ -115,24 +115,24 @@ void EducationalView::Init(views::View* parent) {
                       gfx::Font::Weight::MEDIUM));
     container_view->AddChildView(std::move(game_control));
 
-    auto* beta_label = ash::login_views_utils::CreateBubbleLabel(
-        l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_EDUCATIONAL_BETA),
+    auto* alpha_label = ash::login_views_utils::CreateBubbleLabel(
+        l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_RELEASE_ALPHA),
         /*view_defining_max_width=*/nullptr, /*color=*/
         arc::GetCrOSColor(cros_styles::ColorName::kTextColorSelection),
         /*font_list=*/
         gfx::FontList({ash::login_views_utils::kGoogleSansFont},
-                      gfx::Font::FontStyle::NORMAL, kBetaFontSize,
+                      gfx::Font::FontStyle::NORMAL, kAlphaFontSize,
                       gfx::Font::Weight::MEDIUM));
-    beta_label->SetHorizontalAlignment(gfx::ALIGN_CENTER);
-    beta_label->SetPreferredSize(
-        gfx::Size(beta_label->GetPreferredSize().width() + 2 * kBetaSidePadding,
-                  kBetaHeight));
-    beta_label->SetBackground(views::CreateRoundedRectBackground(
+    alpha_label->SetHorizontalAlignment(gfx::ALIGN_CENTER);
+    alpha_label->SetPreferredSize(gfx::Size(
+        alpha_label->GetPreferredSize().width() + 2 * kAlphaSidePadding,
+        kAlphaHeight));
+    alpha_label->SetBackground(views::CreateRoundedRectBackground(
         arc::GetCrOSColor(cros_styles::ColorName::kHighlightColor),
-        kBetaCornerRadius));
-    beta_label->SetProperty(views::kMarginsKey,
-                            gfx::Insets::TLBR(0, kBetaLeftMargin, 0, 0));
-    container_view->AddChildView(std::move(beta_label));
+        kAlphaCornerRadius));
+    alpha_label->SetProperty(views::kMarginsKey,
+                             gfx::Insets::TLBR(0, kAlphaLeftMargin, 0, 0));
+    container_view->AddChildView(std::move(alpha_label));
     container_view->SetProperty(
         views::kMarginsKey,
         gfx::Insets::TLBR(kBorderRow1, kBorderSides, 0, kBorderSides));
