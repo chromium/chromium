@@ -199,21 +199,29 @@ void StyleCascade::Apply(CascadeFilter filter) {
 
   ApplyCascadeAffecting(resolver);
 
-  // Affects the computed value of 'color', hence needs to happen before
-  // high-priority properties.
-  LookupAndApply(GetCSSPropertyColorScheme(), resolver);
+  if (map_.NativeBitset().Has(CSSPropertyID::kColorScheme)) {
+    // Affects the computed value of 'color', hence needs to happen before
+    // high-priority properties.
+    LookupAndApply(GetCSSPropertyColorScheme(), resolver);
+  }
 
-  // Affects the computed value of 'font-size', hence needs to happen before
-  // high-priority properties.
-  LookupAndApply(GetCSSPropertyMathDepth(), resolver);
+  if (map_.NativeBitset().Has(CSSPropertyID::kMathDepth)) {
+    // Affects the computed value of 'font-size', hence needs to happen before
+    // high-priority properties.
+    LookupAndApply(GetCSSPropertyMathDepth(), resolver);
+  }
 
-  // -webkit-mask-image needs to be applied before -webkit-mask-composite,
-  // otherwise -webkit-mask-composite has no effect.
-  LookupAndApply(GetCSSPropertyWebkitMaskImage(), resolver);
+  if (map_.NativeBitset().Has(CSSPropertyID::kWebkitMaskImage)) {
+    // -webkit-mask-image needs to be applied before -webkit-mask-composite,
+    // otherwise -webkit-mask-composite has no effect.
+    LookupAndApply(GetCSSPropertyWebkitMaskImage(), resolver);
+  }
 
-  // Affects the computed value of color when it is inherited and forced-color-
-  // adjust is set to preserve-parent-color.
-  LookupAndApply(GetCSSPropertyForcedColorAdjust(), resolver);
+  if (map_.NativeBitset().Has(CSSPropertyID::kForcedColorAdjust)) {
+    // Affects the computed value of color when it is inherited and
+    // forced-color- adjust is set to preserve-parent-color.
+    LookupAndApply(GetCSSPropertyForcedColorAdjust(), resolver);
+  }
 
   ApplyHighPriority(resolver);
 
@@ -394,8 +402,12 @@ void StyleCascade::ApplyCascadeAffecting(CascadeResolver& resolver) {
   auto direction = state_.Style()->Direction();
   auto writing_mode = state_.Style()->GetWritingMode();
 
-  LookupAndApply(GetCSSPropertyDirection(), resolver);
-  LookupAndApply(GetCSSPropertyWritingMode(), resolver);
+  if (map_.NativeBitset().Has(CSSPropertyID::kDirection)) {
+    LookupAndApply(GetCSSPropertyDirection(), resolver);
+  }
+  if (map_.NativeBitset().Has(CSSPropertyID::kWritingMode)) {
+    LookupAndApply(GetCSSPropertyWritingMode(), resolver);
+  }
 
   if (depends_on_cascade_affecting_property_) {
     if (direction != state_.Style()->Direction() ||
