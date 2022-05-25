@@ -3067,8 +3067,11 @@ group("gpu_pytype") {
 
   data = [
     "//content/test/gpu/run_pytype.py",
+    "//content/test/gpu/validate_tag_consistency.py",
 
     "//build/util/lib/results/",
+    "//content/test/gpu/flake_suppressor/",
+    "//testing/unexpected_passes_common/",
   ]
 
   data_deps = [

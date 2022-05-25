@@ -138,6 +138,14 @@ def main():
                    args.output_file, sink_client)
     sys.exit(0)
 
+  # Strangely, pytype won't complain if you tell it to analyze a directory that
+  # doesn't exist, which could potentially lead to code not being analyzed if
+  # it's added here but not added to the isolate. So, ensure that everything we
+  # expect to analyze actually exists.
+  for f in FILES_AND_DIRECTORIES_TO_CHECK:
+    if not os.path.exists(os.path.join(GPU_DIR, f)):
+      raise RuntimeError('Requested file or directory %s does not exist.' % f)
+
   # pytype looks for a 'python' or 'python3' executable in PATH, so make sure
   # that the Python 3 executable from vpython is in the path.
   executable_dir = os.path.dirname(sys.executable)
