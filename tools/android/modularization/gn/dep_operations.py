@@ -12,7 +12,7 @@ import os
 import pathlib
 import subprocess
 import sys
-from typing import Dict, List, Optional, Set
+from typing import Dict, List, Optional, Set, Tuple
 
 import json_gn_editor
 import utils
@@ -26,8 +26,6 @@ _SRC_PATH = git_metadata_utils.get_chromium_src_path()
 sys.path.append(str(_SRC_PATH / 'build' / 'android'))
 from pylib import constants
 
-_AUTONINJA_PATH = os.path.join(_SRC_PATH, 'third_party', 'depot_tools',
-                               'autoninja')
 _GIT_IGNORE_STR = '(git ignored file) '
 
 
@@ -58,11 +56,13 @@ def _split_deps(existing_dep: str, new_deps: List[str], root: pathlib.Path,
     return None
 
 
-def _remove_deps(deps: List[str], out_dir: str, root: pathlib.Path, path: str,
-                 dryrun: bool, targets: List[str],
-                 inline_mode: bool) -> Optional[OperationResult]:
+def _remove_deps(*, deps: List[str], out_dir: str, root: pathlib.Path,
+                 path: str, dryrun: bool, targets: List[str],
+                 inline_mode: bool, target_name_filter: Optional[str]
+                 ) -> Tuple[Optional[OperationResult], str]:
     with json_gn_editor.BuildFile(path, root, dryrun=dryrun) as build_file:
-        if build_file.remove_deps(deps, out_dir, targets, inline_mode):
+        if build_file.remove_deps(deps, out_dir, targets, target_name_filter,
+                                  inline_mode):
             return OperationResult(path=os.path.relpath(path, start=root),
                                    git_ignored=utils.is_git_ignored(
                                        root, path),
@@ -91,20 +91,20 @@ def _split(args: argparse.Namespace, build_filepaths: List[str],
     return results
 
 
-def _get_project_json(out_dir: str) -> Dict[str, dict]:
+def _get_project_json_contents(out_dir: str) -> str:
     project_json_path = os.path.join(out_dir, 'project.json')
     with open(project_json_path) as f:
-        return json.load(f)
+        return f.read()
 
 
-def _calculate_targets_for_file(relpath: str, arg_targets: List[str],
+def _calculate_targets_for_file(relpath: str, arg_extra_targets: List[str],
                                 all_targets: Set[str]) -> Optional[List[str]]:
     if os.path.basename(relpath) != 'BUILD.gn':
         # Build all targets when we are dealing with build files that might be
         # imported by other build files (e.g. config.gni or other_name.gn).
         return []
     dirpath = os.path.dirname(relpath)
-    extra_targets = []
+    file_extra_targets = []
     for full_target_name in all_targets:
         target_dir, short_target_name = full_target_name.split(':', 1)
         # __ is used for sub-targets in GN, only focus on top-level ones. Also
@@ -112,8 +112,8 @@ def _calculate_targets_for_file(relpath: str, arg_targets: List[str],
         # base:feature_list_buildflags(//build/toolchain/linux:clang_x64)
         if (target_dir == dirpath and '__' not in short_target_name
                 and '(' not in short_target_name):
-            extra_targets.append(full_target_name)
-    targets = arg_targets + extra_targets
+            file_extra_targets.append(full_target_name)
+    targets = arg_extra_targets + file_extra_targets
     return targets or None
 
 
@@ -139,7 +139,21 @@ def _remove(args: argparse.Namespace, build_filepaths: List[str],
     logging.info(f'Running "gn gen" in output directory: {out_dir}')
     subprocess_utils.run_command(['gn', 'gen', '-C', out_dir, '--ide=json'])
 
-    project_json = _get_project_json(out_dir)
+    if args.all_java_deps:
+        assert not args.dep, '--all-java-target does not support passing deps.'
+        assert args.file, '--all-java-target requires passing --file.'
+        logging.info(f'Finding java deps under {out_dir}.')
+        all_java_deps = subprocess_utils.run_command([
+            _SRC_PATH / 'build' / 'android' / 'list_java_targets.py',
+            '--gn-labels', '-C', out_dir
+        ]).split('\n')
+        logging.info(f'Found {len(all_java_deps)} java deps.')
+        args.dep += all_java_deps
+    else:
+        assert args.dep, 'At least one explicit dep is required.'
+
+    project_json_contents = _get_project_json_contents(out_dir)
+    project_json = json.loads(project_json_contents)
     # The input file names have a // prefix. (e.g. //android_webview/BUILD.gn)
     known_build_files = set(
         name[2:] for name in project_json['build_settings']['gen_input_files'])
@@ -147,12 +161,14 @@ def _remove(args: argparse.Namespace, build_filepaths: List[str],
     known_target_names = set(name[2:]
                              for name in project_json['targets'].keys())
 
-    unknown_targets = [t for t in args.targets if t not in known_target_names]
+    unknown_targets = [
+        t for t in args.extra_build_targets if t not in known_target_names
+    ]
     assert not unknown_targets, f'Cannot build {unknown_targets} in {out_dir}.'
 
     logging.info('Building all targets in preparation for removing deps')
     # Avoid capturing stdout/stderr to see the progress of the full build.
-    subprocess.run([_AUTONINJA_PATH, '-C', out_dir], check=True)
+    subprocess.run(['autoninja', '-C', out_dir], check=True)
 
     results = []
     for idx, filepath in enumerate(build_filepaths):
@@ -175,7 +191,8 @@ def _remove(args: argparse.Namespace, build_filepaths: List[str],
                     skipped=True,
                     skip_reason='Not in the list of known build files.')
             else:
-                targets = _calculate_targets_for_file(relpath, args.targets,
+                targets = _calculate_targets_for_file(relpath,
+                                                      args.extra_build_targets,
                                                       known_target_names)
                 if targets is None:
                     operation_result = OperationResult(
@@ -183,19 +200,20 @@ def _remove(args: argparse.Namespace, build_filepaths: List[str],
                         skipped=True,
                         skip_reason='Could not find any valid targets.')
                 else:
-                    operation_result = _remove_deps(args.dep, out_dir, root,
-                                                    filepath, args.dryrun,
-                                                    targets, should_inline)
+                    operation_result = _remove_deps(
+                        deps=args.dep,
+                        out_dir=out_dir,
+                        root=root,
+                        path=filepath,
+                        dryrun=args.dryrun,
+                        targets=targets,
+                        inline_mode=should_inline,
+                        target_name_filter=args.target_name_filter)
             if operation_result:
                 logging.info(operation_result)
                 results.append(operation_result)
         # Use blank except: to show this for KeyboardInterrupt as well.
         except:
-            # When interrupted, the last build file may be restored along with
-            # its timestamp, which means an explicit `gn gen` is required to
-            # avoid build failures caused by the interrupted remove operation.
-            logging.error('Exiting... (running final "gn gen")')
-            subprocess_utils.run_command(['gn', 'gen', '-C', out_dir])
             logging.error(
                 f'Encountered error while processing {filepath}. Append the '
                 'following args to resume from this file once the error is '
@@ -246,16 +264,29 @@ def main():
         parents=[common_args_parser],
         help='Remove one or more deps if the build still succeeds. Removing '
         'one dep at a time is recommended.')
-    remove_parser.add_argument('dep',
-                               nargs='+',
-                               help='One of the deps to be removed.')
+    remove_parser.add_argument(
+        'dep',
+        nargs='*',
+        help='One or more deps to be removed. Zero when other options are used.'
+    )
     remove_parser.add_argument(
         '-C',
         '--output-directory',
         metavar='OUT',
         help='If outdir is not provided, will attempt to guess.')
     remove_parser.add_argument(
-        '--targets',
+        '--target-name-filter',
+        help='This will cause the script to only remove deps from targets that '
+        'match the filter provided. The filter should be a valid python regex '
+        'string and is used in a re.search on the full GN target names, e.g. '
+        're.search(pattern, "//base:base_java").')
+    remove_parser.add_argument(
+        '--all-java-deps',
+        action='store_true',
+        help='This will attempt to remove all known java deps. This option '
+        'requires no explicit deps to be passed.')
+    remove_parser.add_argument(
+        '--extra-build-targets',
         metavar='T',
         nargs='*',
         default=[],
@@ -271,6 +302,7 @@ def main():
     remove_parser.set_defaults(command=_remove)
 
     args = parser.parse_args()
+
     if args.quiet:
         level = logging.WARNING
     elif args.verbose:
