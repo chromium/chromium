@@ -83,6 +83,9 @@ class AwProxyingRestrictedCookieManager
   bool AllowCookies(const GURL& url,
                     const net::SiteForCookies& site_for_cookies) const;
 
+  // TODO(https://crbug.com/1296161): Delete this function.
+  void ConvertPartitionedCookiesToUnpartitioned(const GURL& url) override;
+
  private:
   AwProxyingRestrictedCookieManager(
       mojo::PendingRemote<network::mojom::RestrictedCookieManager>

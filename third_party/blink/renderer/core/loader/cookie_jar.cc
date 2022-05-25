@@ -4,9 +4,15 @@
 
 #include "third_party/blink/renderer/core/loader/cookie_jar.h"
 
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
+#include "net/base/features.h"
+#include "net/cookies/parsed_cookie.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/common/origin_trials/trial_token.h"
+#include "third_party/blink/public/common/origin_trials/trial_token_result.h"
+#include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -30,6 +36,30 @@ void LogCookieHistogram(const char* prefix,
 bool ContainsTruncatingChar(UChar c) {
   // equivalent to '\x00', '\x0D', or '\x0A'
   return c == '\0' || c == '\r' || c == '\n';
+}
+
+bool ValidPartitionedCookiesOriginTrial(const ResourceResponse& response) {
+  // This should never be called if partitioned cookies are disabled.
+  DCHECK(base::FeatureList::IsEnabled(net::features::kPartitionedCookies));
+
+  if (!response.HttpHeaderFields().Contains("origin-trial"))
+    return false;
+
+  blink::TrialTokenValidator validator;
+  base::Time now(base::Time::Now());
+
+  GURL url(response.ResponseUrl());
+  if (!validator.IsTrialPossibleOnOrigin(url))
+    return false;
+
+  url::Origin origin = url::Origin::Create(url);
+  url::Origin third_party_origins[] = {origin};
+  StringUTF8Adaptor token_adaptor(response.HttpHeaderField("origin-trial"));
+  TrialTokenResult result = validator.ValidateToken(
+      token_adaptor.AsStringPiece(), origin, third_party_origins, now);
+
+  return result.Status() == blink::OriginTrialTokenStatus::kSuccess &&
+         result.ParsedToken()->feature_name() == "PartitionedCookies";
 }
 
 }  // namespace
@@ -113,6 +143,21 @@ bool CookieJar::RequestRestrictedCookieManagerIfNeeded() {
     return true;
   }
   return false;
+}
+
+void CookieJar::CheckPartitionedCookiesOriginTrial(
+    const ResourceResponse& response) {
+  if (!response.HasPartitionedCookie() ||
+      !base::FeatureList::IsEnabled(net::features::kPartitionedCookies)) {
+    return;
+  }
+  if (!ValidPartitionedCookiesOriginTrial(response)) {
+    base::ElapsedTimer timer;
+    bool requested = RequestRestrictedCookieManagerIfNeeded();
+    LogCookieHistogram("Blink.CookiesEnabledTime.", requested,
+                        timer.Elapsed());
+    backend_->ConvertPartitionedCookiesToUnpartitioned(response.ResponseUrl());
+  }
 }
 
 }  // namespace blink

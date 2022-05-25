@@ -1357,9 +1357,6 @@ const base::Feature kNoForcedFrameUpdatesForWebTests{
 const base::Feature kElementSuperRareData{"ElementSuperRareData",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kClientHintsPartitionedCookies{
-    "ClientHintsPartitionedCookies", base::FEATURE_DISABLED_BY_DEFAULT};
-
 const base::Feature kDurableClientHintsCache{"DurableClientHintsCache",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
 

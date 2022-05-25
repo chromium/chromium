@@ -2150,6 +2150,8 @@ TEST_P(PartitionedCookiesURLRequestHttpJobTest,
   ASSERT_TRUE(req->is_pending());
   delegate.RunUntilComplete();
 
+  ASSERT_TRUE(req->HasPartitionedCookie());
+
   {  // Test request from the same top-level site.
     TestDelegate delegate;
     std::unique_ptr<URLRequest> req(context->CreateRequest(

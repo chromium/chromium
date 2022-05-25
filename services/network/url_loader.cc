@@ -1406,6 +1406,8 @@ mojom::URLResponseHeadPtr URLLoader::BuildResponseHead() const {
   response->client_address_space =
       private_network_access_checker_.ClientAddressSpace();
 
+  response->has_partitioned_cookie = url_request_->HasPartitionedCookie();
+
   return response;
 }
 

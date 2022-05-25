@@ -76,8 +76,6 @@ ClientHintToPolicyFeatureMap MakeClientHintToPolicyFeatureMap() {
        mojom::PermissionsPolicyFeature::kClientHintUAFull},
       {network::mojom::WebClientHintsType::kUAWoW64,
        mojom::PermissionsPolicyFeature::kClientHintUAWoW64},
-      {network::mojom::WebClientHintsType::kPartitionedCookies,
-       mojom::PermissionsPolicyFeature::kClientHintPartitionedCookies},
       {network::mojom::WebClientHintsType::kSaveData,
        mojom::PermissionsPolicyFeature::kClientHintSaveData},
   };

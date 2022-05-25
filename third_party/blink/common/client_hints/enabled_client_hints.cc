@@ -6,7 +6,6 @@
 
 #include "base/feature_list.h"
 #include "base/time/time.h"
-#include "net/base/features.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/client_hints.h"
 #include "third_party/blink/public/common/features.h"
@@ -85,10 +84,6 @@ bool IsDisabledByFeature(const WebClientHintsType type) {
               features::kClientHintsViewportWidth_DEPRECATED))
         return true;
       break;
-    case WebClientHintsType::kPartitionedCookies:
-      if (!base::FeatureList::IsEnabled(net::features::kPartitionedCookies))
-        return true;
-      break;
     case WebClientHintsType::kSaveData:
       if (!base::FeatureList::IsEnabled(features::kClientHintsSaveData))
         return true;
@@ -159,10 +154,6 @@ void EnabledClientHints::SetIsEnabled(
   if (enabled && type == WebClientHintsType::kFullUserAgent) {
     enabled = IsOriginTrialEnabled(url, third_party_url, response_headers,
                                    "SendFullUserAgentAfterReduction");
-  }
-  if (enabled && type == WebClientHintsType::kPartitionedCookies) {
-    enabled = IsOriginTrialEnabled(url, third_party_url, response_headers,
-                                   "PartitionedCookies");
   }
   SetIsEnabled(type, enabled);
 }
