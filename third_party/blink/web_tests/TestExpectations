@@ -6684,7 +6684,7 @@ crbug.com/1313894 [ Mac10.14 ] rootscroller/root-scroller-paint-order.html [ Fai
 crbug.com/1314130 [ Mac ] fast/events/touch/gesture/touch-gesture-scroll-listbox.html [ Failure Pass ]
 
 # Temporarily disabled to unblock https://crrev.com/c/3666176
-crbug.com/1329040 http/tests/devtools/sources/snippet-overrides.js [ Timeout Pass ]
+crbug.com/1329040 http/tests/devtools/sources/snippet-overrides.js [ Pass Timeout ]
 crbug.com/1329040 http/tests/devtools/sources/debugger/network-uisourcecode-provider.js [ Failure Pass ]
 
 # Sheriff 2022-04-07
