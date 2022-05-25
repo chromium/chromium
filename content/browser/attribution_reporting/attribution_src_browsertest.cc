@@ -608,6 +608,10 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
 
   EXPECT_TRUE(ExecJs(web_contents(),
                      JsReplace("createAttributionSrcImg($1);", register_url)));
+
+  // If a data host were registered, it would arrive in the browser process
+  // before the navigation finished.
+  EXPECT_TRUE(NavigateToURL(web_contents(), page_url));
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionSrcBrowserTest,
