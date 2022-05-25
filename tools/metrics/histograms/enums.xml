@@ -33358,7 +33358,7 @@ Called by update_extension_histograms.py.-->
   <int value="524" label="IMAGEWRITER_WRITEFROMFILE"/>
   <int value="525" label="IMAGEWRITER_CANCELWRITE"/>
   <int value="526" label="IMAGEWRITER_DESTROYPARTITIONS"/>
-  <int value="527" label="FEEDBACKPRIVATE_GETSTRINGS"/>
+  <int value="527" label="DELETED_FEEDBACKPRIVATE_GETSTRINGS"/>
   <int value="528" label="DELETED_LOGPRIVATE_GETHISTORICAL"/>
   <int value="529" label="VIRTUALKEYBOARDPRIVATE_MOVECURSOR"/>
   <int value="530" label="METRICSPRIVATE_GETVARIATIONPARAMS"/>
@@ -34202,7 +34202,7 @@ Called by update_extension_histograms.py.-->
   <int value="1327" label="AUTOTESTPRIVATE_IMPORTCROSTINI"/>
   <int value="1328" label="ACCESSIBILITY_PRIVATE_SETVIRTUALKEYBOARDVISIBLE"/>
   <int value="1329" label="AUTOTESTPRIVATE_SHOWVIRTUALKEYBOARDIFENABLED"/>
-  <int value="1330" label="FEEDBACKPRIVATE_LOGINFEEDBACKCOMPLETE"/>
+  <int value="1330" label="DELETED_FEEDBACKPRIVATE_LOGINFEEDBACKCOMPLETE"/>
   <int value="1331" label="FILEMANAGERPRIVATE_SEARCHFILES"/>
   <int value="1332" label="MANAGEMENT_INSTALLREPLACEMENTWEBAPP"/>
   <int value="1333" label="FILEMANAGERPRIVATE_GETANDROIDPICKERAPPS"/>
@@ -34539,6 +34539,8 @@ Called by update_extension_histograms.py.-->
   <int value="1654" label="FILEMANAGERPRIVATE_CANCELMOUNTING"/>
   <int value="1655" label="AUTOMATIONINTERNAL_DISABLEDESKTOP"/>
   <int value="1656" label="ACCESSIBILITY_PRIVATE_INSTALLPUMPKINFORDICTATION"/>
+  <int value="1657" label="BOOKMARKMANAGERPRIVATE_OPENINNEWTAB"/>
+  <int value="1658" label="BOOKMARKMANAGERPRIVATE_OPENINNEWWINDOW"/>
 </enum>
 
 <enum name="ExtensionIconState">

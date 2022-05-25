@@ -19,9 +19,15 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/bookmarks/bookmark_api_constants.h"
 #include "chrome/browser/extensions/api/bookmarks/bookmark_api_helpers.h"
+#include "chrome/browser/extensions/chrome_extension_function_details.h"
+#include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/bookmarks/bookmark_drag_drop.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
+#include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/window_sizer/window_sizer.h"
 #include "chrome/browser/undo/bookmark_undo_service_factory.h"
 #include "chrome/common/extensions/api/bookmark_manager_private.h"
 #include "chrome/common/extensions/extension_constants.h"
@@ -65,6 +71,8 @@ namespace Paste = api::bookmark_manager_private::Paste;
 namespace RemoveTrees = api::bookmark_manager_private::RemoveTrees;
 namespace SortChildren = api::bookmark_manager_private::SortChildren;
 namespace StartDrag = api::bookmark_manager_private::StartDrag;
+namespace OpenInNewTab = api::bookmark_manager_private::OpenInNewTab;
+namespace OpenInNewWindow = api::bookmark_manager_private::OpenInNewWindow;
 
 namespace {
 
@@ -566,6 +574,82 @@ BookmarkManagerPrivateRedoFunction::RunOnReady() {
 
   BookmarkUndoServiceFactory::GetForProfile(GetProfile())->undo_manager()->
       Redo();
+  return NoArguments();
+}
+
+ExtensionFunction::ResponseValue
+BookmarkManagerPrivateOpenInNewTabFunction::RunOnReady() {
+  std::unique_ptr<OpenInNewTab::Params> params(
+      OpenInNewTab::Params::Create(args()));
+  if (!params)
+    return BadMessage();
+
+  std::string error;
+  const BookmarkNode* node = GetBookmarkNodeFromId(params->id, &error);
+  if (!node)
+    return Error(error);
+  if (!node->is_url())
+    return Error("Cannot open a folder in a new tab.");
+
+  ExtensionTabUtil::OpenTabParams options;
+  options.url = std::make_unique<std::string>(node->url().spec());
+  options.active = std::make_unique<bool>(params->active);
+
+  std::unique_ptr<base::DictionaryValue> result(
+      extensions::ExtensionTabUtil::OpenTab(this, options, user_gesture(),
+                                            &error));
+  if (!result)
+    return Error(error);
+
+  return NoArguments();
+}
+
+ExtensionFunction::ResponseValue
+BookmarkManagerPrivateOpenInNewWindowFunction::RunOnReady() {
+  std::unique_ptr<OpenInNewWindow::Params> params(
+      OpenInNewWindow::Params::Create(args()));
+  if (!params)
+    return BadMessage();
+
+  Profile* calling_profile = Profile::FromBrowserContext(browser_context());
+
+  BookmarkModel* model =
+      BookmarkModelFactory::GetForBrowserContext(calling_profile);
+  std::vector<const BookmarkNode*> nodes;
+  if (!GetNodesFromVector(model, params->id_list, &nodes)) {
+    return Error(bookmark_keys::kBookmarkNodesNotFoundFromIdListError,
+                 base::JoinString(params->id_list, ", "));
+  }
+
+  std::vector<GURL> urls;
+  urls.reserve(nodes.size());
+  for (const auto* node : nodes) {
+    if (!node->is_url())
+      return Error("Cannot open a folder in a new window.");
+    urls.push_back(node->url());
+  }
+
+  DCHECK(!calling_profile->IsOffTheRecord());
+  Profile* window_profile =
+      params->incognito
+          ? calling_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)
+          : calling_profile;
+
+  bool first_tab = true;
+  for (auto& url : urls) {
+    NavigateParams navigate_params(window_profile, url,
+                                   ui::PAGE_TRANSITION_LINK);
+    navigate_params.window_action = NavigateParams::WindowAction::SHOW_WINDOW;
+    navigate_params.disposition =
+        first_tab ? WindowOpenDisposition::NEW_WINDOW
+                  : WindowOpenDisposition::NEW_FOREGROUND_TAB;
+    if (params->incognito)
+      navigate_params.disposition = WindowOpenDisposition::OFF_THE_RECORD;
+    Navigate(&navigate_params);
+
+    first_tab = false;
+  }
+
   return NoArguments();
 }
 

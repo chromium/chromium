@@ -132,7 +132,7 @@ class BookmarkManagerPrivateDragEventRouter
 
 class ClipboardBookmarkManagerFunction : public extensions::BookmarksFunction {
  protected:
-  ~ClipboardBookmarkManagerFunction() override {}
+  ~ClipboardBookmarkManagerFunction() override = default;
 
   ResponseValue CopyOrCut(bool cut, const std::vector<std::string>& id_list);
 };
@@ -144,7 +144,7 @@ class BookmarkManagerPrivateCopyFunction
                              BOOKMARKMANAGERPRIVATE_COPY)
 
  protected:
-  ~BookmarkManagerPrivateCopyFunction() override {}
+  ~BookmarkManagerPrivateCopyFunction() override = default;
 
   // BookmarksFunction:
   ResponseValue RunOnReady() override;
@@ -157,7 +157,7 @@ class BookmarkManagerPrivateCutFunction
                              BOOKMARKMANAGERPRIVATE_CUT)
 
  protected:
-  ~BookmarkManagerPrivateCutFunction() override {}
+  ~BookmarkManagerPrivateCutFunction() override = default;
 
   // BookmarksFunction:
   ResponseValue RunOnReady() override;
@@ -170,7 +170,7 @@ class BookmarkManagerPrivatePasteFunction
                              BOOKMARKMANAGERPRIVATE_PASTE)
 
  protected:
-  ~BookmarkManagerPrivatePasteFunction() override {}
+  ~BookmarkManagerPrivatePasteFunction() override = default;
 
   // BookmarksFunction:
   ResponseValue RunOnReady() override;
@@ -183,7 +183,7 @@ class BookmarkManagerPrivateCanPasteFunction
                              BOOKMARKMANAGERPRIVATE_CANPASTE)
 
  protected:
-  ~BookmarkManagerPrivateCanPasteFunction() override {}
+  ~BookmarkManagerPrivateCanPasteFunction() override = default;
 
   // BookmarksFunction:
   ResponseValue RunOnReady() override;
@@ -196,7 +196,7 @@ class BookmarkManagerPrivateSortChildrenFunction
                              BOOKMARKMANAGERPRIVATE_SORTCHILDREN)
 
  protected:
-  ~BookmarkManagerPrivateSortChildrenFunction() override {}
+  ~BookmarkManagerPrivateSortChildrenFunction() override = default;
 
   // BookmarksFunction:
   ResponseValue RunOnReady() override;
@@ -209,7 +209,7 @@ class BookmarkManagerPrivateStartDragFunction
                              BOOKMARKMANAGERPRIVATE_STARTDRAG)
 
  protected:
-  ~BookmarkManagerPrivateStartDragFunction() override {}
+  ~BookmarkManagerPrivateStartDragFunction() override = default;
 
   // BookmarksFunction:
   ResponseValue RunOnReady() override;
@@ -222,7 +222,7 @@ class BookmarkManagerPrivateDropFunction
                              BOOKMARKMANAGERPRIVATE_DROP)
 
  protected:
-  ~BookmarkManagerPrivateDropFunction() override {}
+  ~BookmarkManagerPrivateDropFunction() override = default;
 
   // BookmarksFunction:
   ResponseValue RunOnReady() override;
@@ -235,7 +235,7 @@ class BookmarkManagerPrivateGetSubtreeFunction
                              BOOKMARKMANAGERPRIVATE_GETSUBTREE)
 
  protected:
-  ~BookmarkManagerPrivateGetSubtreeFunction() override {}
+  ~BookmarkManagerPrivateGetSubtreeFunction() override = default;
 
   // BookmarksFunction:
   ResponseValue RunOnReady() override;
@@ -248,7 +248,7 @@ class BookmarkManagerPrivateRemoveTreesFunction
                              BOOKMARKMANAGERPRIVATE_REMOVETREES)
 
  protected:
-  ~BookmarkManagerPrivateRemoveTreesFunction() override {}
+  ~BookmarkManagerPrivateRemoveTreesFunction() override = default;
 
   // BookmarksFunction:
   ResponseValue RunOnReady() override;
@@ -261,7 +261,7 @@ class BookmarkManagerPrivateUndoFunction
                              BOOKMARKMANAGERPRIVATE_UNDO)
 
  protected:
-  ~BookmarkManagerPrivateUndoFunction() override {}
+  ~BookmarkManagerPrivateUndoFunction() override = default;
 
   // BookmarksFunction:
   ResponseValue RunOnReady() override;
@@ -274,7 +274,33 @@ class BookmarkManagerPrivateRedoFunction
                              BOOKMARKMANAGERPRIVATE_REDO)
 
  protected:
-  ~BookmarkManagerPrivateRedoFunction() override {}
+  ~BookmarkManagerPrivateRedoFunction() override = default;
+
+  // BookmarksFunction:
+  ResponseValue RunOnReady() override;
+};
+
+class BookmarkManagerPrivateOpenInNewTabFunction
+    : public extensions::BookmarksFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("bookmarkManagerPrivate.openInNewTab",
+                             BOOKMARKMANAGERPRIVATE_OPENINNEWTAB)
+
+ protected:
+  ~BookmarkManagerPrivateOpenInNewTabFunction() override = default;
+
+  // BookmarksFunction:
+  ResponseValue RunOnReady() override;
+};
+
+class BookmarkManagerPrivateOpenInNewWindowFunction
+    : public extensions::BookmarksFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("bookmarkManagerPrivate.openInNewWindow",
+                             BOOKMARKMANAGERPRIVATE_OPENINNEWWINDOW)
+
+ protected:
+  ~BookmarkManagerPrivateOpenInNewWindowFunction() override = default;
 
   // BookmarksFunction:
   ResponseValue RunOnReady() override;

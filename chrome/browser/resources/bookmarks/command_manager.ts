@@ -285,9 +285,9 @@ export class BookmarksCommandManagerElement extends
         });
       case Command.OPEN_NEW_TAB:
       case Command.OPEN_NEW_WINDOW:
-        return this.expandUrls_(itemIds).length > 0;
+        return this.expandIds_(itemIds).length > 0;
       case Command.OPEN_INCOGNITO:
-        return this.expandUrls_(itemIds).length > 0 &&
+        return this.expandIds_(itemIds).length > 0 &&
             state.prefs.incognitoAvailability !==
             IncognitoAvailability.DISABLED;
       case Command.SORT:
@@ -377,14 +377,14 @@ export class BookmarksCommandManagerElement extends
       case Command.OPEN_NEW_TAB:
       case Command.OPEN_NEW_WINDOW:
       case Command.OPEN_INCOGNITO:
-        this.openUrls_(this.expandUrls_(itemIds), command);
+        this.openBookmarkIds_(this.expandIds_(itemIds), command);
         break;
       case Command.OPEN:
         if (this.isFolder_(itemIds)) {
           const folderId = Array.from(itemIds)[0]!;
           this.dispatch(selectFolder(folderId, state.nodes));
         } else {
-          this.openUrls_(this.expandUrls_(itemIds), command);
+          this.openBookmarkIds_(Array.from(itemIds), command);
         }
         break;
       case Command.SELECT_ALL:
@@ -491,71 +491,72 @@ export class BookmarksCommandManagerElement extends
   }
 
   /**
-   * Open the given |urls| in response to a |command|. May show a confirmation
+   * Open the given |ids| in response to a |command|. May show a confirmation
    * dialog before opening large numbers of URLs.
    */
-  private openUrls_(urls: Array<string>, command: Command) {
+  private openBookmarkIds_(ids: string[], command: Command) {
     assert(
         command === Command.OPEN || command === Command.OPEN_NEW_TAB ||
         command === Command.OPEN_NEW_WINDOW ||
         command === Command.OPEN_INCOGNITO);
 
-    if (urls.length === 0) {
+    if (ids.length === 0) {
       return;
     }
 
-    const openUrlsCallback = function() {
+    const openBookmarkIdsCallback = function() {
       const incognito = command === Command.OPEN_INCOGNITO;
       if (command === Command.OPEN_NEW_WINDOW || incognito) {
-        chrome.windows.create({url: urls, incognito: incognito});
+        chrome.bookmarkManagerPrivate.openInNewWindow(ids, incognito);
       } else {
         if (command === Command.OPEN) {
-          chrome.tabs.create({url: urls.shift(), active: true});
+          chrome.bookmarkManagerPrivate.openInNewTab(
+              ids.shift()!, /*active=*/ true);
         }
-        urls.forEach(function(url) {
-          chrome.tabs.create({url: url, active: false});
+        ids.forEach(function(id) {
+          chrome.bookmarkManagerPrivate.openInNewTab(id, /*active=*/ false);
         });
       }
     };
 
-    if (urls.length <= OPEN_CONFIRMATION_LIMIT) {
-      openUrlsCallback();
+    if (ids.length <= OPEN_CONFIRMATION_LIMIT) {
+      openBookmarkIdsCallback();
       return;
     }
 
-    this.confirmOpenCallback_ = openUrlsCallback;
+    this.confirmOpenCallback_ = openBookmarkIdsCallback;
     const dialog = this.$.openDialog.get();
     dialog.querySelector('[slot=body]')!.textContent =
-        loadTimeData.getStringF('openDialogBody', urls.length);
+        loadTimeData.getStringF('openDialogBody', ids.length);
 
     DialogFocusManager.getInstance().showDialog(this.$.openDialog.get());
   }
 
   /**
-   * Returns all URLs in the given set of nodes and their immediate children.
+   * Returns all ids in the given set of nodes and their immediate children.
    * Note that these will be ordered by insertion order into the |itemIds|
-   * set, and that it is possible to duplicate a URL by passing in both the
+   * set, and that it is possible to duplicate a id by passing in both the
    * parent ID and child ID.
    */
-  private expandUrls_(itemIds: Set<string>): string[] {
-    const urls: string[] = [];
+  private expandIds_(itemIds: Set<string>): string[] {
+    const result: string[] = [];
     const nodes = this.getState().nodes;
 
-    itemIds.forEach(function(id) {
-      const node = nodes[id]!;
+    itemIds.forEach(function(itemId) {
+      const node = nodes[itemId]!;
       if (node.url) {
-        urls.push(node.url);
+        result.push(node.id);
       } else {
-        node.children!.forEach(function(childId) {
-          const childNode = nodes[childId]!;
-          if (childNode.url) {
-            urls.push(childNode.url);
+        node.children!.forEach(function(child) {
+          const childNode = nodes[child]!;
+          if (childNode.id) {
+            result.push(childNode.id);
           }
         });
       }
     });
 
-    return urls;
+    return result;
   }
 
   private containsMatchingNode_(
@@ -654,16 +655,16 @@ export class BookmarksCommandManagerElement extends
     const multipleNodes = this.menuIds_.size > 1 ||
         this.containsMatchingNode_(this.menuIds_, node => !node.url);
 
-    const urls = this.expandUrls_(this.menuIds_);
-    if (urls.length === 0) {
-      return loadTimeData.getStringF(case0, urls.length);
+    const ids = this.expandIds_(this.menuIds_);
+    if (ids.length === 0) {
+      return loadTimeData.getStringF(case0, ids.length);
     }
 
-    if (urls.length === 1 && !multipleNodes) {
+    if (ids.length === 1 && !multipleNodes) {
       return loadTimeData.getString(case1);
     }
 
-    return loadTimeData.getStringF(caseOther, urls.length);
+    return loadTimeData.getStringF(caseOther, ids.length);
   }
 
   private getCommandSublabel_(command: Command): string {
@@ -673,8 +674,8 @@ export class BookmarksCommandManagerElement extends
         });
     switch (command) {
       case Command.OPEN_NEW_TAB:
-        const urls = this.expandUrls_(this.menuIds_);
-        return multipleNodes && urls.length > 0 ? String(urls.length) : '';
+        const ids = this.expandIds_(this.menuIds_);
+        return multipleNodes && ids.length > 0 ? String(ids.length) : '';
       default:
         return '';
     }

@@ -259,6 +259,42 @@
         "type": "function",
         "description": "Performs a redo of last undone change to the bookmark model.",
         "parameters": []
+      },
+      {
+        "name": "openInNewTab",
+        "type": "function",
+        "description": "Opens the given bookmark in a new tab.",
+        "parameters": [
+          {
+            "name": "id",
+            "description": "One string-valued id.",
+            "type": "string"
+          },
+          {
+            "name": "active",
+            "description": "Whether this tab should be active.",
+            "type": "boolean"
+          }
+        ]
+      },
+      {
+        "name": "openInNewWindow",
+        "type": "function",
+        "description": "Opens the given bookmarks in a new window.",
+        "parameters": [
+          {
+            "name": "idList",
+            "description": "An array of string-valued ids.",
+            "type": "array",
+            "items": {"type": "string"},
+            "minItems": 1
+          },
+          {
+            "name": "incognito",
+            "description": "Whether the new window should be an incognito window.",
+            "type": "boolean"
+          }
+        ]
       }
     ],
     "events": [

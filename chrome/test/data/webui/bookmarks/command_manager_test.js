@@ -264,12 +264,12 @@ suite('<bookmarks-command-manager>', function() {
     assertDeepEquals(['11', '12'], lastDelete);
   });
 
-  test('expandUrls_ expands one level of URLs', function() {
-    let urls = commandManager.expandUrls_(new Set(['1']));
-    assertDeepEquals(['http://13/'], urls);
+  test('expandIds_ expands one level of IDs', function() {
+    let ids = commandManager.expandIds_(new Set(['1']));
+    assertDeepEquals(['13'], ids);
 
-    urls = commandManager.expandUrls_(new Set(['11', '12', '13']));
-    assertDeepEquals(['http://111/', 'http://121/', 'http://13/'], urls);
+    ids = commandManager.expandIds_(new Set(['11', '12', '13']));
+    assertDeepEquals(['111', '121', '13'], ids);
   });
 
   test('shift-enter opens URLs in new window', function() {
