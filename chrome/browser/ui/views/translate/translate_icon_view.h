@@ -29,7 +29,6 @@ class TranslateIconView : public PageActionIconView {
  protected:
   // PageActionIconView:
   void OnExecuting(PageActionIconView::ExecuteSource execute_source) override;
-  void OnPressed(bool activated) override;
   const gfx::VectorIcon& GetVectorIcon() const override;
   std::u16string GetTextForTooltipAndAccessibleName() const override;
 };

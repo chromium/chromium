@@ -62,10 +62,10 @@ enum TranslateBubbleUiEvent {
   TARGET_LANGUAGE_MENU_CLICKED = 17,
 
   // The user activated the translate page action icon.
-  PAGE_ACTION_ICON_ACTIVATED = 18,
+  // [DEPRECATED] PAGE_ACTION_ICON_ACTIVATED = 18,
 
   // The user deactivated the translate page action icon.
-  PAGE_ACTION_ICON_DEACTIVATED = 19,
+  // [DEPRECATED] PAGE_ACTION_ICON_DEACTIVATED = 19,
 
   // The translate bubble was shown to the user.
   BUBBLE_SHOWN = 20,
