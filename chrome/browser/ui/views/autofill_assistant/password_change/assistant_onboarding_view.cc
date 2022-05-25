@@ -21,6 +21,7 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/separator.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_provider.h"
@@ -163,8 +164,10 @@ void AssistantOnboardingView::InitDialog() {
           .SetID(static_cast<int>(DialogViewID::DESCRIPTION))
           .Build());
 
-  // TODO(crbug.com/1322387): Add a separator. `views::Separator` currently
-  // does not support horizontal lines.
+  AddChildView(views::Builder<views::Separator>()
+                   .SetPreferredLength(dialog_width)
+                   .SetOrientation(views::Separator::Orientation::kHorizontal)
+                   .Build());
 
   // Get the offset of the "Learn more" text to create a link style.
   size_t offset = 0;
