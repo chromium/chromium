@@ -7337,10 +7337,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-    {"android-detailed-language-settings",
-     flag_descriptions::kAndroidDetailedLanguageSettingsName,
-     flag_descriptions::kAndroidDetailedLanguageSettingsDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(language::kDetailedLanguageSettings)},
     {"android-force-app-language-prompt",
      flag_descriptions::kAndroidForceAppLanguagePromptName,
      flag_descriptions::kAndroidForceAppLanguagePromptDescription, kOsAndroid,

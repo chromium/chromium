@@ -2988,11 +2988,6 @@ const char kAImageReaderDescription[] =
     " This feature is only available for android P+ devices. Disabling it also "
     " disables SurfaceControl.";
 
-const char kAndroidDetailedLanguageSettingsName[] =
-    "Detailed Language Settings";
-const char kAndroidDetailedLanguageSettingsDescription[] =
-    "Enable the new detailed language settings page";
-
 const char kAndroidForceAppLanguagePromptName[] =
     "Force second run app language prompt";
 const char kAndroidForceAppLanguagePromptDescription[] =
