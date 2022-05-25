@@ -185,7 +185,9 @@ void DeviceSettingsService::GetOwnershipStatusAsync(
   if (GetOwnershipStatus() != OWNERSHIP_UNKNOWN) {
     // Report status immediately.
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), GetOwnershipStatus()));
+        FROM_HERE,
+        base::BindOnce(&DeviceSettingsService::ValidateOwnershipStatusAndNotify,
+                       weak_factory_.GetWeakPtr(), std::move(callback)));
   } else {
     // If the key hasn't been loaded yet, enqueue the callback to be fired when
     // the next SessionManagerOperation completes. If no operation is pending,
@@ -194,6 +196,18 @@ void DeviceSettingsService::GetOwnershipStatusAsync(
     if (pending_operations_.empty())
       EnqueueLoad(false);
   }
+}
+
+void DeviceSettingsService::ValidateOwnershipStatusAndNotify(
+    OwnershipStatusCallback callback) {
+  if (GetOwnershipStatus() == OWNERSHIP_UNKNOWN) {
+    // OwnerKeySet() could be called upon user sign-in while event was in queue,
+    // which resets status to OWNERSHIP_UNKNOWN.
+    // We need to retry the logic in this case.
+    GetOwnershipStatusAsync(std::move(callback));
+    return;
+  }
+  std::move(callback).Run(GetOwnershipStatus());
 }
 
 bool DeviceSettingsService::HasPrivateOwnerKey() {

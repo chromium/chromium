@@ -246,6 +246,10 @@ class DeviceSettingsService : public chromeos::SessionManagerClient::Observer {
                                      SessionManagerOperation* operation,
                                      Status status);
 
+  // Helper method for GetOwnershipStatusAsync to avoid data race upon
+  // user sign-in.
+  void ValidateOwnershipStatusAndNotify(OwnershipStatusCallback callback);
+
   // Run OwnershipStatusChanged() for observers.
   void NotifyOwnershipStatusChanged() const;
 

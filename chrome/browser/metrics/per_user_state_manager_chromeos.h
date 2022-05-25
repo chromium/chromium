@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/metrics/profile_pref_names.h"
 #include "chrome/browser/profiles/profile.h"
@@ -168,6 +169,18 @@ class PerUserStateManagerChromeOS
   // owned.
   virtual bool IsDeviceOwned() const;
 
+  // These methods are protected to avoid dependency on DeviceSettingsService
+  // during testing.
+
+  // Ensures that ownership status is known before proceeding with using
+  // profile prefs.
+  virtual void WaitForOwnershipStatus();
+
+  // Loads appropriate prefs from |current_user_| and creates new log storage
+  // using profile prefs.
+  void InitializeProfileMetricsState(
+      ash::DeviceSettingsService::OwnershipStatus status);
+
  private:
   // Possible states for |this|.
   enum class State {
@@ -196,10 +209,6 @@ class PerUserStateManagerChromeOS
 
   // ash::SessionTerminationManager::Observer:
   void OnSessionWillBeTerminated() override;
-
-  // Loads appropriate prefs from |current_user_| and creates new log storage
-  // using profile prefs.
-  void InitializeProfileMetricsState();
 
   // Updates the current user ID to |new_user_id|. Updates both the profile pref
   // as well as local state pref.
