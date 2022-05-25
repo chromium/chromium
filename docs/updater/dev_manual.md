@@ -7,14 +7,14 @@ including tips and tricks.
 [TOC]
 
 ## Bots & Lab
->**_NOTE:_** Knowledge in this section may become out-of-dated as LUCI evolves
+>**_NOTE:_** Knowledge in this section may become out-of-date as LUCI evolves
 quickly.
 ### Adding Builders
 * Update files as needed:
   * `testing/buildbot/chromium.updater.json`
   * `testing/buildbot/waterfalls.pyl`
   * `infra/config/subprojects/chromium/ci/chromium.updater.star`
-* Run command to generate LUCI config files:
+* Run the following command to generate LUCI config files:
     ```
     lucicfg infra\config\main.star
     ```
