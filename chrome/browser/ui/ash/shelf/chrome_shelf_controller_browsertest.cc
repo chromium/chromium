@@ -2216,10 +2216,8 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTestNoDefaultBrowser,
 // icon's context menu works as expected.
 IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, CloseSystemAppByShelfContextMenu) {
   // Prepare for launching the setting app.
-  auto& system_web_app_manager =
-      web_app::WebAppProvider::GetForTest(browser()->profile())
-          ->system_web_app_manager();
-  system_web_app_manager.InstallSystemAppsForTesting();
+  web_app::SystemWebAppManager::GetForTest(browser()->profile())
+      ->InstallSystemAppsForTesting();
 
   // Record the default shelf item count.
   const int default_item_count = shelf_model()->item_count();
@@ -2394,9 +2392,8 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, DISABLED_V1AppNavigation) {
 // Ensure opening settings and task manager windows create new shelf items.
 IN_PROC_BROWSER_TEST_F(ShelfWebAppBrowserTest, SettingsAndTaskManagerWindows) {
   // Install the Settings App.
-  web_app::WebAppProvider::GetForTest(browser()->profile())
-      ->system_web_app_manager()
-      .InstallSystemAppsForTesting();
+  web_app::SystemWebAppManager::GetForTest(browser()->profile())
+      ->InstallSystemAppsForTesting();
   chrome::SettingsWindowManager* settings_manager =
       chrome::SettingsWindowManager::GetInstance();
 
@@ -3114,9 +3111,8 @@ class FilesSystemWebAppPinnedTest : public ShelfPlatformAppBrowserTest {
 
   void WaitForSystemAppsSynchronized() {
     base::RunLoop run_loop;
-    WebAppProvider::GetForSystemWebApps(browser()->profile())
-        ->system_web_app_manager()
-        .on_apps_synchronized()
+    web_app::SystemWebAppManager::Get(browser()->profile())
+        ->on_apps_synchronized()
         .Post(FROM_HERE, run_loop.QuitClosure());
     run_loop.Run();
   }

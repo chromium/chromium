@@ -39,9 +39,7 @@ class AppPlatformMetricsBrowserTest : public InProcessBrowserTest {
   }
 
   AppId InstallSystemWebApp() {
-    web_app::WebAppProvider::GetForSystemWebApps(profile())
-        ->system_web_app_manager()
-        .InstallSystemAppsForTesting();
+    web_app::SystemWebAppManager::Get(profile())->InstallSystemAppsForTesting();
 
     return *web_app::GetAppIdForSystemWebApp(profile(),
                                              ash::SystemWebAppType::HELP);

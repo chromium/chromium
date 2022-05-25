@@ -812,22 +812,19 @@ TestSystemWebAppInstallation::CreateWebAppProviderWithNoSystemWebApps(
 
 void TestSystemWebAppInstallation::WaitForAppInstall() {
   base::RunLoop run_loop;
-  WebAppProvider::GetForTest(profile_)
-      ->system_web_app_manager()
-      .on_apps_synchronized()
-      .Post(FROM_HERE, base::BindLambdaForTesting([&]() {
-              // Wait one execution loop for on_apps_synchronized() to be
-              // called on all listeners.
-              base::ThreadTaskRunnerHandle::Get()->PostTask(
-                  FROM_HERE, run_loop.QuitClosure());
-            }));
+  SystemWebAppManager::GetForTest(profile_)->on_apps_synchronized().Post(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
+        // Wait one execution loop for on_apps_synchronized() to be
+        // called on all listeners.
+        base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                      run_loop.QuitClosure());
+      }));
   run_loop.Run();
 }
 
 AppId TestSystemWebAppInstallation::GetAppId() {
-  return WebAppProvider::GetForTest(profile_)
-      ->system_web_app_manager()
-      .GetAppIdForSystemApp(type_.value())
+  return SystemWebAppManager::GetForTest(profile_)
+      ->GetAppIdForSystemApp(type_.value())
       .value();
 }
 

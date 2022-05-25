@@ -127,8 +127,6 @@ class WebAppProvider : public KeyedService {
 
   WebAppTranslationManager& translation_manager();
 
-  SystemWebAppManager& system_web_app_manager();
-
   // Manage all OS hooks that need to be deployed during Web Apps install
   OsIntegrationManager& os_integration_manager();
   const OsIntegrationManager& os_integration_manager() const;
@@ -153,6 +151,9 @@ class WebAppProvider : public KeyedService {
   }
 
  protected:
+  // TODO(crbug.com/1321984): Delete system_web_app_manager_.
+  friend class SystemWebAppManager;
+
   virtual void StartImpl();
 
   void CreateSubsystems(Profile* profile);

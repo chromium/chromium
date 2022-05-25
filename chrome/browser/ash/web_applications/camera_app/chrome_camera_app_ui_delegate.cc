@@ -199,9 +199,8 @@ void ChromeCameraAppUIDelegate::SetLaunchDirectory() {
   auto my_files_folder_path =
       file_manager::util::GetMyFilesFolderForProfile(profile);
 
-  auto* provider = web_app::WebAppProvider::GetForSystemWebApps(profile);
   absl::optional<web_app::AppId> app_id =
-      provider->system_web_app_manager().GetAppIdForSystemApp(
+      web_app::SystemWebAppManager::Get(profile)->GetAppIdForSystemApp(
           ash::SystemWebAppType::CAMERA);
 
   // The launch directory is passed here rather than

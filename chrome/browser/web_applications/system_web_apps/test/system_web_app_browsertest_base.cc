@@ -31,8 +31,9 @@ SystemWebAppBrowserTestBase::SystemWebAppBrowserTestBase(bool install_mock) {
 SystemWebAppBrowserTestBase::~SystemWebAppBrowserTestBase() = default;
 
 SystemWebAppManager& SystemWebAppBrowserTestBase::GetManager() {
-  return WebAppProvider::GetForSystemWebApps(browser()->profile())
-      ->system_web_app_manager();
+  auto* swa_manager = SystemWebAppManager::Get(browser()->profile());
+  DCHECK(swa_manager);
+  return *swa_manager;
 }
 
 ash::SystemWebAppType SystemWebAppBrowserTestBase::GetMockAppType() {

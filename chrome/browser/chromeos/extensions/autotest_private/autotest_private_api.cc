@@ -2085,13 +2085,13 @@ AutotestPrivateWaitForSystemWebAppsInstallFunction::
 ExtensionFunction::ResponseAction
 AutotestPrivateWaitForSystemWebAppsInstallFunction::Run() {
   Profile* profile = Profile::FromBrowserContext(browser_context());
-  web_app::WebAppProvider* provider =
-      web_app::WebAppProvider::GetForTest(profile);
+  web_app::SystemWebAppManager* swa_manager =
+      web_app::SystemWebAppManager::GetForTest(profile);
 
-  if (!provider)
-    return RespondNow(Error("Web Apps are not available for profile."));
+  if (!swa_manager)
+    return RespondNow(Error("System Web Apps are not available for profile."));
 
-  provider->system_web_app_manager().on_apps_synchronized().Post(
+  swa_manager->on_apps_synchronized().Post(
       FROM_HERE,
       base::BindOnce(
           &AutotestPrivateWaitForSystemWebAppsInstallFunction::Respond, this,
@@ -2112,16 +2112,16 @@ AutotestPrivateGetRegisteredSystemWebAppsFunction::
 ExtensionFunction::ResponseAction
 AutotestPrivateGetRegisteredSystemWebAppsFunction::Run() {
   Profile* profile = Profile::FromBrowserContext(browser_context());
-  web_app::WebAppProvider* provider =
-      web_app::WebAppProvider::GetForTest(profile);
+  web_app::SystemWebAppManager* swa_manager =
+      web_app::SystemWebAppManager::GetForTest(profile);
 
-  if (!provider)
-    return RespondNow(Error("Web Apps are not available for profile."));
+  if (!swa_manager)
+    return RespondNow(Error("System Web Apps are not available for profile."));
 
   std::vector<api::autotest_private::SystemApp> result;
 
   for (const auto& type_and_info :
-       provider->system_web_app_manager().GetRegisteredSystemAppsForTesting()) {
+       swa_manager->GetRegisteredSystemAppsForTesting()) {
     api::autotest_private::SystemApp system_app;
     ash::SystemWebAppDelegate* delegate = type_and_info.second.get();
     system_app.internal_name = delegate->GetInternalName();
@@ -2230,13 +2230,14 @@ AutotestPrivateLaunchSystemWebAppFunction::Run() {
            << params->app_name << " url: " << params->url;
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
-  auto* provider = web_app::WebAppProvider::GetForTest(profile);
-  if (!provider)
-    return RespondNow(Error("Web Apps not enabled for profile."));
+  web_app::SystemWebAppManager* swa_manager =
+      web_app::SystemWebAppManager::GetForTest(profile);
+  if (!swa_manager)
+    return RespondNow(Error("System Web Apps not enabled for profile."));
 
   absl::optional<ash::SystemWebAppType> app_type;
   for (const auto& type_and_info :
-       provider->system_web_app_manager().GetRegisteredSystemAppsForTesting()) {
+       swa_manager->GetRegisteredSystemAppsForTesting()) {
     if (type_and_info.second->GetInternalName() == params->app_name) {
       app_type = type_and_info.first;
       break;

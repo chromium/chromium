@@ -59,9 +59,8 @@ IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest, UserFeedbackDisallowed) {
 // opened and the os_feedback is used when the feature kOsFeedback is enabled.
 IN_PROC_BROWSER_TEST_F(ShowFeedbackPageBrowserTest,
                        OsFeedbackIsOpenedWhenFeatureEnabled) {
-  web_app::WebAppProvider::GetForTest(browser()->profile())
-      ->system_web_app_manager()
-      .InstallSystemAppsForTesting();
+  web_app::SystemWebAppManager::GetForTest(browser()->profile())
+      ->InstallSystemAppsForTesting();
 
   base::HistogramTester histogram_tester;
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());

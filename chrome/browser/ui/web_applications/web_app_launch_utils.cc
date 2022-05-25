@@ -227,7 +227,8 @@ std::unique_ptr<AppBrowserController> MaybeCreateAppBrowserController(
         GetSystemWebAppTypeForAppId(browser->profile(), app_id);
     if (system_app_type) {
       system_app =
-          provider->system_web_app_manager().GetSystemApp(*system_app_type);
+          SystemWebAppManager::GetForLocalAppsUnchecked(browser->profile())
+              ->GetSystemApp(*system_app_type);
     }
     const bool has_tab_strip =
         !browser->is_type_app_popup() &&
@@ -307,6 +308,11 @@ content::WebContents* NavigateWebAppUsingParams(const std::string& app_id,
     AppBrowserController* app_controller = browser->app_controller();
     WebAppProvider* web_app_provider =
         WebAppProvider::GetForLocalAppsUnchecked(browser->profile());
+    DCHECK(web_app_provider);
+    SystemWebAppManager* swa_manager =
+        SystemWebAppManager::GetForLocalAppsUnchecked(browser->profile());
+    DCHECK(swa_manager);
+
     TRACE_EVENT_INSTANT(
         "system_apps", "BadNavigate", [&](perfetto::EventContext ctx) {
           auto* bad_navigate =
@@ -322,9 +328,7 @@ content::WebContents* NavigateWebAppUsingParams(const std::string& app_id,
           bad_navigate->set_web_app_provider_registry_ready(
               web_app_provider->on_registry_ready().is_signaled());
           bad_navigate->set_system_web_app_manager_synchronized(
-              web_app_provider->system_web_app_manager()
-                  .on_apps_synchronized()
-                  .is_signaled());
+              swa_manager->on_apps_synchronized().is_signaled());
         });
     UMA_HISTOGRAM_ENUMERATION("WebApp.SystemApps.BadNavigate.Type",
                               capturing_system_app_type.value());

@@ -20,9 +20,8 @@ using ChromeContentBrowserClientTabletModePartTest = ::InProcessBrowserTest;
 IN_PROC_BROWSER_TEST_F(ChromeContentBrowserClientTabletModePartTest,
                        SettingsWindowFontSize) {
   // Install the Settings App.
-  web_app::WebAppProvider::GetForTest(browser()->profile())
-      ->system_web_app_manager()
-      .InstallSystemAppsForTesting();
+  web_app::SystemWebAppManager::GetForTest(browser()->profile())
+      ->InstallSystemAppsForTesting();
 
   const blink::web_pref::WebPreferences kDefaultPrefs;
   const int kDefaultFontSize = kDefaultPrefs.default_font_size;

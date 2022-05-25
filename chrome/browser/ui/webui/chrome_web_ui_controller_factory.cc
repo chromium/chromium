@@ -1043,9 +1043,9 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   if (url.host_piece() == chrome::kChromeUIAssistantOptInHost)
     return &NewWebUI<chromeos::AssistantOptInUI>;
   if (url.host_piece() == ash::kChromeUICameraAppHost) {
-    auto* provider = web_app::WebAppProvider::GetForSystemWebApps(profile);
-    if (provider && provider->system_web_app_manager().IsAppEnabled(
-                        ash::SystemWebAppType::CAMERA)) {
+    auto* swa_manager = web_app::SystemWebAppManager::Get(profile);
+    if (swa_manager &&
+        swa_manager->IsAppEnabled(ash::SystemWebAppType::CAMERA)) {
       return &NewComponentUI<ash::CameraAppUI, ChromeCameraAppUIDelegate>;
     }
   }

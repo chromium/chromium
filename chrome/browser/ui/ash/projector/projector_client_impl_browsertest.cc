@@ -183,9 +183,8 @@ IN_PROC_BROWSER_TEST_F(ProjectorClientTest, AppUrlsValid) {
 
 IN_PROC_BROWSER_TEST_F(ProjectorClientTest, OpenProjectorApp) {
   auto* profile = browser()->profile();
-  web_app::WebAppProvider::GetForTest(profile)
-      ->system_web_app_manager()
-      .InstallSystemAppsForTesting();
+  web_app::SystemWebAppManager::GetForTest(profile)
+      ->InstallSystemAppsForTesting();
 
   client()->OpenProjectorApp();
   web_app::FlushSystemWebAppLaunchesForTesting(profile);
@@ -203,9 +202,8 @@ IN_PROC_BROWSER_TEST_F(ProjectorClientTest, OpenProjectorApp) {
 
 IN_PROC_BROWSER_TEST_F(ProjectorClientTest, MinimizeProjectorApp) {
   auto* profile = browser()->profile();
-  web_app::WebAppProvider::GetForTest(profile)
-      ->system_web_app_manager()
-      .InstallSystemAppsForTesting();
+  web_app::SystemWebAppManager::GetForTest(profile)
+      ->InstallSystemAppsForTesting();
 
   client()->OpenProjectorApp();
   web_app::FlushSystemWebAppLaunchesForTesting(profile);
@@ -227,9 +225,8 @@ IN_PROC_BROWSER_TEST_F(ProjectorClientTest, MinimizeProjectorApp) {
 
 IN_PROC_BROWSER_TEST_F(ProjectorClientTest, CloseProjectorApp) {
   auto* profile = browser()->profile();
-  web_app::WebAppProvider::GetForTest(profile)
-      ->system_web_app_manager()
-      .InstallSystemAppsForTesting();
+  web_app::SystemWebAppManager::GetForTest(profile)
+      ->InstallSystemAppsForTesting();
 
   client()->OpenProjectorApp();
   web_app::FlushSystemWebAppLaunchesForTesting(profile);
@@ -341,9 +338,8 @@ class ProjectorClientManagedTest
 IN_PROC_BROWSER_TEST_P(ProjectorClientManagedTest,
                        CantOpenProjectorAppWithoutPolicy) {
   auto* profile = browser()->profile();
-  web_app::WebAppProvider::GetForTest(profile)
-      ->system_web_app_manager()
-      .InstallSystemAppsForTesting();
+  web_app::SystemWebAppManager::GetForTest(profile)
+      ->InstallSystemAppsForTesting();
 
   client()->OpenProjectorApp();
   web_app::FlushSystemWebAppLaunchesForTesting(profile);
@@ -358,9 +354,8 @@ IN_PROC_BROWSER_TEST_P(ProjectorClientManagedTest,
 IN_PROC_BROWSER_TEST_P(ProjectorClientManagedTest, DisableThenEnablePolicy) {
   auto* profile = browser()->profile();
   profile->GetPrefs()->SetBoolean(GetPolicy(), true);
-  web_app::WebAppProvider::GetForTest(profile)
-      ->system_web_app_manager()
-      .InstallSystemAppsForTesting();
+  web_app::SystemWebAppManager::GetForTest(profile)
+      ->InstallSystemAppsForTesting();
 
   client()->OpenProjectorApp();
   web_app::FlushSystemWebAppLaunchesForTesting(profile);

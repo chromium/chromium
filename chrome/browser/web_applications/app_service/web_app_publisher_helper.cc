@@ -275,11 +275,13 @@ void WebAppPublisherHelper::BadgeManagerDelegate::OnAppBadgeUpdated(
 
 WebAppPublisherHelper::WebAppPublisherHelper(Profile* profile,
                                              WebAppProvider* provider,
+                                             SystemWebAppManager* swa_manager,
                                              apps::AppType app_type,
                                              Delegate* delegate,
                                              bool observe_media_requests)
     : profile_(profile),
       provider_(provider),
+      swa_manager_(swa_manager),
       app_type_(app_type),
       delegate_(delegate) {
   DCHECK(profile_);
@@ -1607,11 +1609,10 @@ void WebAppPublisherHelper::UpdateAppDisabledMode(apps::App& app) {
   app.show_in_shelf = true;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  auto system_app_type =
-      provider_->system_web_app_manager().GetSystemAppTypeForAppId(app.app_id);
+  DCHECK(swa_manager_);
+  auto system_app_type = swa_manager_->GetSystemAppTypeForAppId(app.app_id);
   if (system_app_type.has_value()) {
-    auto* system_app =
-        provider_->system_web_app_manager().GetSystemApp(*system_app_type);
+    auto* system_app = swa_manager_->GetSystemApp(*system_app_type);
     DCHECK(system_app);
     app.show_in_launcher = system_app->ShouldShowInLauncher();
     app.show_in_search = system_app->ShouldShowInSearch();
@@ -1632,11 +1633,10 @@ void WebAppPublisherHelper::UpdateAppDisabledMode(apps::mojom::AppPtr& app) {
   app->show_in_shelf = apps::mojom::OptionalBool::kTrue;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  auto system_app_type =
-      provider_->system_web_app_manager().GetSystemAppTypeForAppId(app->app_id);
+  DCHECK(swa_manager_);
+  auto system_app_type = swa_manager_->GetSystemAppTypeForAppId(app->app_id);
   if (system_app_type.has_value()) {
-    auto* system_app =
-        provider_->system_web_app_manager().GetSystemApp(*system_app_type);
+    auto* system_app = swa_manager_->GetSystemApp(*system_app_type);
     DCHECK(system_app);
     app->show_in_launcher = system_app->ShouldShowInLauncher()
                                 ? apps::mojom::OptionalBool::kTrue

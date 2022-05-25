@@ -269,9 +269,8 @@ class AppServiceSystemWebAppItemBrowserTest
 
 IN_PROC_BROWSER_TEST_P(AppServiceSystemWebAppItemBrowserTest, Activate) {
   Profile* const profile = browser()->profile();
-  auto& system_web_app_manager =
-      web_app::WebAppProvider::GetForTest(profile)->system_web_app_manager();
-  system_web_app_manager.InstallSystemAppsForTesting();
+  web_app::SystemWebAppManager::GetForTest(profile)
+      ->InstallSystemAppsForTesting();
   const web_app::AppId app_id = web_app::kHelpAppId;
 
   // Wait for app service to see the newly installed apps.

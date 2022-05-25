@@ -536,7 +536,7 @@ void ChromeNewWindowClient::CloseCameraApp() {
 
 bool ChromeNewWindowClient::IsCameraAppEnabled() {
   Profile* const profile = ProfileManager::GetActiveUserProfile();
-  auto* provider = web_app::WebAppProvider::GetForSystemWebApps(profile);
-  return provider && provider->system_web_app_manager().IsAppEnabled(
-                         ash::SystemWebAppType::CAMERA);
+  auto* swa_manager = web_app::SystemWebAppManager::Get(profile);
+  return swa_manager &&
+         swa_manager->IsAppEnabled(ash::SystemWebAppType::CAMERA);
 }

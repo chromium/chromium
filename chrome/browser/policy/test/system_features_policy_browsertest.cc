@@ -139,9 +139,8 @@ class SystemFeaturesPolicyTest : public PolicyTest {
   }
 
   void InstallSWAs() {
-    web_app::WebAppProvider::GetForTest(browser()->profile())
-        ->system_web_app_manager()
-        .InstallSystemAppsForTesting();
+    web_app::SystemWebAppManager::GetForTest(browser()->profile())
+        ->InstallSystemAppsForTesting();
   }
 
   void InstallPWA(const GURL& app_url, const char* app_id) {

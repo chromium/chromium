@@ -32,6 +32,7 @@
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_system_web_app_delegate_map_utils.h"
@@ -241,6 +242,37 @@ SystemWebAppManager::SystemWebAppManager(Profile* profile)
 }
 
 SystemWebAppManager::~SystemWebAppManager() = default;
+
+// static
+SystemWebAppManager* SystemWebAppManager::Get(Profile* profile) {
+  WebAppProvider* provider = WebAppProvider::GetForSystemWebApps(profile);
+  if (!provider)
+    return nullptr;
+
+  provider->CheckIsConnected();
+  return provider->system_web_app_manager_.get();
+}
+
+// static
+SystemWebAppManager* SystemWebAppManager::GetForLocalAppsUnchecked(
+    Profile* profile) {
+  WebAppProvider* provider = WebAppProvider::GetForLocalAppsUnchecked(profile);
+  if (!provider)
+    return nullptr;
+
+  provider->CheckIsConnected();
+  return provider->system_web_app_manager_.get();
+}
+
+// static
+SystemWebAppManager* SystemWebAppManager::GetForTest(Profile* profile) {
+  WebAppProvider* provider = WebAppProvider::GetForTest(profile);
+  if (!provider)
+    return nullptr;
+
+  provider->CheckIsConnected();
+  return provider->system_web_app_manager_.get();
+}
 
 void SystemWebAppManager::StopBackgroundTasks() {
   for (auto& task : tasks_) {

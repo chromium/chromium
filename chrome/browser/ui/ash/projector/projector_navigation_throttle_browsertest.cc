@@ -58,9 +58,8 @@ class ProjectorNavigationThrottleTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-    web_app::WebAppProvider::GetForTest(profile())
-        ->system_web_app_manager()
-        .InstallSystemAppsForTesting();
+    web_app::SystemWebAppManager::GetForTest(profile())
+        ->InstallSystemAppsForTesting();
 
     base::Time start_time;
     ASSERT_TRUE(base::Time::FromUTCString(kStartTime, &start_time));
@@ -280,9 +279,8 @@ class ProjectorNavigationThrottleDisabledTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-    web_app::WebAppProvider::GetForTest(profile())
-        ->system_web_app_manager()
-        .InstallSystemAppsForTesting();
+    web_app::SystemWebAppManager::GetForTest(profile())
+        ->InstallSystemAppsForTesting();
   }
 
  protected:

@@ -936,10 +936,8 @@ class AppServiceAppWindowSystemWebAppBrowserTest
 
 IN_PROC_BROWSER_TEST_P(AppServiceAppWindowSystemWebAppBrowserTest,
                        SystemWebAppWindow) {
-  auto& system_web_app_manager =
-      web_app::WebAppProvider::GetForTest(browser()->profile())
-          ->system_web_app_manager();
-  system_web_app_manager.InstallSystemAppsForTesting();
+  web_app::SystemWebAppManager::GetForTest(browser()->profile())
+      ->InstallSystemAppsForTesting();
 
   const std::string app_id = web_app::kOsSettingsAppId;
   web_app::LaunchWebAppBrowser(browser()->profile(), app_id);

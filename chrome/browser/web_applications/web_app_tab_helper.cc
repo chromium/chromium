@@ -84,9 +84,11 @@ void WebAppTabHelper::ReadyToCommitNavigation(
   // If navigating to a System Web App (including navigation in sub frames), let
   // SystemWebAppManager perform tab-secific setup for navigations in System Web
   // Apps.
-  if (provider_->system_web_app_manager().IsSystemWebApp(GetAppId())) {
-    provider_->system_web_app_manager().OnReadyToCommitNavigation(
-        GetAppId(), navigation_handle);
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  auto* swa_manager = SystemWebAppManager::GetForLocalAppsUnchecked(profile);
+  if (swa_manager && swa_manager->IsSystemWebApp(GetAppId())) {
+    swa_manager->OnReadyToCommitNavigation(GetAppId(), navigation_handle);
   }
 }
 

@@ -77,18 +77,16 @@ namespace web_app {
 absl::optional<ash::SystemWebAppType> GetSystemWebAppTypeForAppId(
     Profile* profile,
     const AppId& app_id) {
-  auto* provider = WebAppProvider::GetForSystemWebApps(profile);
-  return provider ? provider->system_web_app_manager().GetSystemAppTypeForAppId(
-                        app_id)
-                  : absl::optional<ash::SystemWebAppType>();
+  auto* swa_manager = SystemWebAppManager::Get(profile);
+  return swa_manager ? swa_manager->GetSystemAppTypeForAppId(app_id)
+                     : absl::nullopt;
 }
 
 absl::optional<AppId> GetAppIdForSystemWebApp(Profile* profile,
                                               ash::SystemWebAppType app_type) {
-  auto* provider = WebAppProvider::GetForSystemWebApps(profile);
-  return provider
-             ? provider->system_web_app_manager().GetAppIdForSystemApp(app_type)
-             : absl::optional<AppId>();
+  auto* swa_manager = SystemWebAppManager::Get(profile);
+  return swa_manager ? swa_manager->GetAppIdForSystemApp(app_type)
+                     : absl::nullopt;
 }
 
 absl::optional<apps::AppLaunchParams> CreateSystemWebAppLaunchParams(
@@ -191,11 +189,15 @@ Browser* LaunchSystemWebAppImpl(Profile* profile,
     return nullptr;
   }
 
-  auto* provider = WebAppProvider::GetForSystemWebApps(profile);
+  SystemWebAppManager* swa_manager = SystemWebAppManager::Get(profile);
+  if (!swa_manager)
+    return nullptr;
+
+  auto* provider = WebAppProvider::GetForLocalAppsUnchecked(profile);
   if (!provider)
     return nullptr;
 
-  auto* system_app = provider->system_web_app_manager().GetSystemApp(app_type);
+  auto* system_app = swa_manager->GetSystemApp(app_type);
 
 #if BUILDFLAG(IS_CHROMEOS)
   DCHECK(url.DeprecatedGetOriginAsURL() == provider->registrar()
@@ -303,12 +305,9 @@ bool IsBrowserForSystemWebApp(Browser* browser, ash::SystemWebAppType type) {
 absl::optional<ash::SystemWebAppType> GetCapturingSystemAppForURL(
     Profile* profile,
     const GURL& url) {
-  auto* provider = WebAppProvider::GetForSystemWebApps(profile);
-
-  if (!provider)
-    return absl::nullopt;
-
-  return provider->system_web_app_manager().GetCapturingSystemAppForURL(url);
+  SystemWebAppManager* swa_manager = SystemWebAppManager::Get(profile);
+  return swa_manager ? swa_manager->GetCapturingSystemAppForURL(url)
+                     : absl::nullopt;
 }
 
 gfx::Size GetSystemWebAppMinimumWindowSize(Browser* browser) {

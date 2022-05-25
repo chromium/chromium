@@ -176,9 +176,8 @@ class SaveCardBubbleViewsFullFormBrowserTest
     ASSERT_TRUE(SetupClients());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // Install the Settings App.
-    web_app::WebAppProvider::GetForTest(GetProfile(0))
-        ->system_web_app_manager()
-        .InstallSystemAppsForTesting();
+    web_app::SystemWebAppManager::GetForTest(GetProfile(0))
+        ->InstallSystemAppsForTesting();
 #endif
 
     // It's important to use the blank tab here and not some arbitrary page.

@@ -89,10 +89,11 @@ content::WebContents* WebAppLaunchProcess::Run() {
   // DCHECK on the basic scope.
   DCHECK(provider_.registrar().IsUrlInAppScope(launch_url, params_.app_id) ||
          GetSystemWebAppTypeForAppId(&profile_, params_.app_id) &&
-             provider_.system_web_app_manager().GetSystemApp(
-                 *GetSystemWebAppTypeForAppId(&profile_, params_.app_id)) &&
-             provider_.system_web_app_manager()
-                 .GetSystemApp(
+             SystemWebAppManager::GetForLocalAppsUnchecked(&profile_)
+                 ->GetSystemApp(
+                     *GetSystemWebAppTypeForAppId(&profile_, params_.app_id)) &&
+             SystemWebAppManager::GetForLocalAppsUnchecked(&profile_)
+                 ->GetSystemApp(
                      *GetSystemWebAppTypeForAppId(&profile_, params_.app_id))
                  ->IsUrlInSystemAppScope(launch_url));
 #endif

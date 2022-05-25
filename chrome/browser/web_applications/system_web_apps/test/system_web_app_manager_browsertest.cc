@@ -1129,9 +1129,8 @@ class SystemWebAppManagerInstallAllAppsBrowserTest
   // resets the OnAppsSynchronized signal, and starts a new synchronize request.
   void WaitForSystemAppsSynchronized() {
     base::RunLoop run_loop;
-    WebAppProvider::GetForSystemWebApps(browser()->profile())
-        ->system_web_app_manager()
-        .on_apps_synchronized()
+    SystemWebAppManager::Get(browser()->profile())
+        ->on_apps_synchronized()
         .Post(FROM_HERE, run_loop.QuitClosure());
     run_loop.Run();
   }
@@ -1561,9 +1560,8 @@ class SystemWebAppManagerBackgroundTaskTest
 
   void WaitForSystemAppsBackgroundTasksStart() {
     base::RunLoop run_loop;
-    WebAppProvider::GetForSystemWebApps(browser()->profile())
-        ->system_web_app_manager()
-        .on_tasks_started()
+    SystemWebAppManager::Get(browser()->profile())
+        ->on_tasks_started()
         .Post(FROM_HERE, run_loop.QuitClosure());
 
     run_loop.Run();

@@ -90,11 +90,8 @@ class AppLauncher : public ProfileObserver,
  private:
   explicit AppLauncher(Profile* profile) : profile_(profile) {
     profile->AddObserver(this);
-    web_app::WebAppProvider::GetForSystemWebApps(profile)
-        ->system_web_app_manager()
-        .on_apps_synchronized()
-        .Post(FROM_HERE,
-              base::BindOnce(&AppLauncher::LaunchHelpApp, AsWeakPtr()));
+    web_app::SystemWebAppManager::Get(profile)->on_apps_synchronized().Post(
+        FROM_HERE, base::BindOnce(&AppLauncher::LaunchHelpApp, AsWeakPtr()));
   }
 
   ~AppLauncher() override { this->profile_->RemoveObserver(this); }

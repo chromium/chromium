@@ -530,25 +530,21 @@ class SystemWebAppManagerMultiDesktopLaunchBrowserTest
   void WaitForSystemWebAppInstall(Profile* profile) {
     base::RunLoop run_loop;
 
-    web_app::WebAppProvider::GetForSystemWebApps(profile)
-        ->system_web_app_manager()
-        .on_apps_synchronized()
-        .Post(FROM_HERE, base::BindLambdaForTesting([&]() {
-                // Wait one execution loop for
-                // on_apps_synchronized() to be called on all
-                // listeners.
-                base::ThreadTaskRunnerHandle::Get()->PostTask(
-                    FROM_HERE, run_loop.QuitClosure());
-              }));
+    web_app::SystemWebAppManager::Get(profile)->on_apps_synchronized().Post(
+        FROM_HERE, base::BindLambdaForTesting([&]() {
+          // Wait one execution loop for
+          // on_apps_synchronized() to be called on all
+          // listeners.
+          base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                        run_loop.QuitClosure());
+        }));
     run_loop.Run();
   }
 
   AppId GetAppId(Profile* profile) {
-    SystemWebAppManager& manager =
-        web_app::WebAppProvider::GetForSystemWebApps(profile)
-            ->system_web_app_manager();
     absl::optional<AppId> app_id =
-        manager.GetAppIdForSystemApp(installation_->GetType());
+        web_app::SystemWebAppManager::Get(profile)->GetAppIdForSystemApp(
+            installation_->GetType());
     CHECK(app_id.has_value());
     return *app_id;
   }

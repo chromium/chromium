@@ -95,6 +95,7 @@ WebApps::WebApps(apps::AppServiceProxy* proxy)
 #endif
       publisher_helper_(profile_,
                         provider_,
+                        SystemWebAppManager::GetForLocalAppsUnchecked(profile_),
                         app_type_,
                         this,
                         ShouldObserveMediaRequests()) {
@@ -394,9 +395,8 @@ void WebApps::GetMenuModel(const std::string& app_id,
     ash::SystemWebAppType swa_type =
         web_app->client_data().system_web_app_data->system_app_type;
 
-    auto* system_app = WebAppProvider::GetForSystemWebApps(profile())
-                           ->system_web_app_manager()
-                           .GetSystemApp(swa_type);
+    auto* system_app =
+        SystemWebAppManager::Get(profile())->GetSystemApp(swa_type);
     if (system_app && system_app->ShouldShowNewWindowMenuOption()) {
       apps::AddCommandItem(menu_type == apps::mojom::MenuType::kAppList
                                ? ash::LAUNCH_NEW

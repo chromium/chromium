@@ -204,11 +204,6 @@ WebAppTranslationManager& WebAppProvider::translation_manager() {
   return *translation_manager_;
 }
 
-SystemWebAppManager& WebAppProvider::system_web_app_manager() {
-  CheckIsConnected();
-  return *system_web_app_manager_;
-}
-
 OsIntegrationManager& WebAppProvider::os_integration_manager() {
   CheckIsConnected();
   return *os_integration_manager_;

@@ -718,10 +718,8 @@ IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, WindowedWebApp) {
 IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, TabbedSystemWebApp) {
   // Make sure we can use crosh.
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
-  DCHECK(web_app::WebAppProvider::GetForSystemWebApps(profile));
-  web_app::WebAppProvider::GetForSystemWebApps(profile)
-      ->system_web_app_manager()
-      .InstallSystemAppsForTesting();
+  DCHECK(web_app::SystemWebAppManager::Get(profile));
+  web_app::SystemWebAppManager::Get(profile)->InstallSystemAppsForTesting();
 
   Browser* browser = nullptr;
   aura::Window* window = nullptr;

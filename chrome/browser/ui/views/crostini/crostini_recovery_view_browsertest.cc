@@ -141,9 +141,8 @@ IN_PROC_BROWSER_TEST_F(CrostiniRecoveryViewBrowserTest, Cancel) {
   SetUncleanStartup();
   RegisterApp();
   // Ensure Terminal System App is installed.
-  web_app::WebAppProvider::GetForTest(browser()->profile())
-      ->system_web_app_manager()
-      .InstallSystemAppsForTesting();
+  web_app::SystemWebAppManager::GetForTest(browser()->profile())
+      ->InstallSystemAppsForTesting();
 
   // First app should fail with 'cancelled for recovery'.
   crostini::LaunchCrostiniApp(

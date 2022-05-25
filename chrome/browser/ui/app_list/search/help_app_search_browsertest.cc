@@ -134,9 +134,8 @@ INSTANTIATE_TEST_SUITE_P(ProductivityLauncher,
 // the Discover page.
 IN_PROC_BROWSER_TEST_P(HelpAppSearchBrowserTest,
                        ClickingDiscoverTabSuggestionChipLaunchesHelpApp) {
-  web_app::WebAppProvider::GetForTest(GetProfile())
-      ->system_web_app_manager()
-      .InstallSystemAppsForTesting();
+  web_app::SystemWebAppManager::GetForTest(GetProfile())
+      ->InstallSystemAppsForTesting();
   GetProfile()->GetPrefs()->SetInteger(
       prefs::kDiscoverTabSuggestionChipTimesLeftToShow, 3);
 
@@ -180,9 +179,8 @@ IN_PROC_BROWSER_TEST_P(HelpAppSearchBrowserTest,
 // left to show it.
 IN_PROC_BROWSER_TEST_P(HelpAppSearchBrowserTest,
                        AppListSearchHasReleaseNotesSuggestionChip) {
-  web_app::WebAppProvider::GetForTest(GetProfile())
-      ->system_web_app_manager()
-      .InstallSystemAppsForTesting();
+  web_app::SystemWebAppManager::GetForTest(GetProfile())
+      ->InstallSystemAppsForTesting();
   GetProfile()->GetPrefs()->SetInteger(
       prefs::kReleaseNotesSuggestionChipTimesLeftToShow, 3);
 
@@ -206,9 +204,8 @@ IN_PROC_BROWSER_TEST_P(HelpAppSearchBrowserTest,
 // the chip is shown.
 IN_PROC_BROWSER_TEST_P(HelpAppSearchBrowserTest,
                        ReleaseNotesDecreasesTimesShownOnAppListOpen) {
-  web_app::WebAppProvider::GetForTest(GetProfile())
-      ->system_web_app_manager()
-      .InstallSystemAppsForTesting();
+  web_app::SystemWebAppManager::GetForTest(GetProfile())
+      ->InstallSystemAppsForTesting();
   GetProfile()->GetPrefs()->SetInteger(
       prefs::kReleaseNotesSuggestionChipTimesLeftToShow, 3);
   ash::AppListTestApi app_list_test_api;
@@ -233,9 +230,8 @@ IN_PROC_BROWSER_TEST_P(HelpAppSearchBrowserTest,
 IN_PROC_BROWSER_TEST_P(
     HelpAppSearchBrowserTest,
     ReleaseNotesDecreasesTimesShownOnAppListOpenInTabletMode) {
-  web_app::WebAppProvider::GetForTest(GetProfile())
-      ->system_web_app_manager()
-      .InstallSystemAppsForTesting();
+  web_app::SystemWebAppManager::GetForTest(GetProfile())
+      ->InstallSystemAppsForTesting();
   GetProfile()->GetPrefs()->SetInteger(
       prefs::kReleaseNotesSuggestionChipTimesLeftToShow, 3);
   ash::AppListTestApi app_list_test_api;
@@ -266,9 +262,8 @@ IN_PROC_BROWSER_TEST_P(
 // the What's New page.
 IN_PROC_BROWSER_TEST_P(HelpAppSearchBrowserTest,
                        ClickingReleaseNotesSuggestionChipLaunchesHelpApp) {
-  web_app::WebAppProvider::GetForTest(GetProfile())
-      ->system_web_app_manager()
-      .InstallSystemAppsForTesting();
+  web_app::SystemWebAppManager::GetForTest(GetProfile())
+      ->InstallSystemAppsForTesting();
   GetProfile()->GetPrefs()->SetInteger(
       prefs::kReleaseNotesSuggestionChipTimesLeftToShow, 3);
 
@@ -306,9 +301,8 @@ IN_PROC_BROWSER_TEST_P(HelpAppSearchBrowserTest,
 IN_PROC_BROWSER_TEST_P(HelpAppSearchBrowserTest,
                        HelpAppProviderProvidesListResults) {
   // Need this because it sets up the icon.
-  web_app::WebAppProvider::GetForTest(GetProfile())
-      ->system_web_app_manager()
-      .InstallSystemAppsForTesting();
+  web_app::SystemWebAppManager::GetForTest(GetProfile())
+      ->InstallSystemAppsForTesting();
   // Add some searchable content to the help app search handler.
   std::vector<ash::help_app::mojom::SearchConceptPtr> search_concepts;
   auto search_concept = ash::help_app::mojom::SearchConcept::New(
@@ -384,9 +378,8 @@ class HelpAppSwaSearchBrowserTest : public HelpAppSearchBrowserTestBase,
 
 // Test that Help App shows up normally even when suggestion chip should show.
 IN_PROC_BROWSER_TEST_P(HelpAppSwaSearchBrowserTest, AppListSearchHasApp) {
-  web_app::WebAppProvider::GetForTest(GetProfile())
-      ->system_web_app_manager()
-      .InstallSystemAppsForTesting();
+  web_app::SystemWebAppManager::GetForTest(GetProfile())
+      ->InstallSystemAppsForTesting();
   GetProfile()->GetPrefs()->SetInteger(
       prefs::kReleaseNotesSuggestionChipTimesLeftToShow, 3);
 
@@ -406,9 +399,8 @@ IN_PROC_BROWSER_TEST_P(HelpAppSwaSearchBrowserTest, AppListSearchHasApp) {
 
 IN_PROC_BROWSER_TEST_P(HelpAppSwaSearchBrowserTest, Launch) {
   Profile* profile = browser()->profile();
-  auto& system_web_app_manager =
-      web_app::WebAppProvider::GetForTest(profile)->system_web_app_manager();
-  system_web_app_manager.InstallSystemAppsForTesting();
+  web_app::SystemWebAppManager::GetForTest(profile)
+      ->InstallSystemAppsForTesting();
   const web_app::AppId app_id = web_app::kHelpAppId;
 
   ShowAppListAndWaitForZeroStateResults(

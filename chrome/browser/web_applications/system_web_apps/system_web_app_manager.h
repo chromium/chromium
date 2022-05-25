@@ -77,6 +77,24 @@ class SystemWebAppManager {
   SystemWebAppManager& operator=(const SystemWebAppManager&) = delete;
   virtual ~SystemWebAppManager();
 
+  // On Chrome OS: returns the SystemWebAppManager that hosts System Web Apps in
+  // Ash; In Lacros, returns nullptr (unless
+  // EnableSystemWebAppInLacrosForTesting). On other platforms, always returns a
+  // SystemWebAppManager.
+  static SystemWebAppManager* Get(Profile* profile);
+
+  // Returns the SystemWebAppManager object for the current process.
+  // Avoid using this function where possible and prefer `Get` which guarantees
+  // it is being called from the correct process. Only use
+  // `GetForLocalAppsUnchecked` if the calling code is shared between Ash/Lacros
+  // and expects that some SystemWebAppManager always exists. In Lacros, this
+  // function returns an empty SWA manager with no concrete apps.
+  static SystemWebAppManager* GetForLocalAppsUnchecked(Profile* profile);
+
+  // Returns the SystemWebAppManager for tests, regardless of whether this is
+  // running in Lacros/Ash. Blocks if the web app registry is not yet ready.
+  static SystemWebAppManager* GetForTest(Profile* profile);
+
   void SetSubsystems(
       ExternallyManagedAppManager* externally_managed_app_manager,
       WebAppRegistrar* registrar,

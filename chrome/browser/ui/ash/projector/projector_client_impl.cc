@@ -270,11 +270,11 @@ void ProjectorClientImpl::MaybeSwitchDriveIntegrationServiceObservation() {
 
 void ProjectorClientImpl::OnEnablementPolicyChanged() {
   Profile* profile = ProfileManager::GetActiveUserProfile();
-  web_app::SystemWebAppManager& manager =
-      web_app::WebAppProvider::GetForSystemWebApps(profile)
-          ->system_web_app_manager();
+  web_app::SystemWebAppManager* swa_manager =
+      web_app::SystemWebAppManager::Get(profile);
   const bool is_installed =
-      manager.IsSystemWebApp(ash::kChromeUITrustedProjectorSwaAppId);
+      swa_manager &&
+      swa_manager->IsSystemWebApp(ash::kChromeUITrustedProjectorSwaAppId);
   // We can't enable or disable the app if it's not already installed.
   if (!is_installed)
     return;
