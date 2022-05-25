@@ -34,6 +34,7 @@
 #include "components/autofill_assistant/browser/trigger_context.h"
 #include "components/autofill_assistant/browser/web/mock_web_controller.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/test_browser_context.h"
 #include "content/shell/browser/shell.h"
 #include "net/http/http_status_code.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -75,12 +76,7 @@ class MockJsFlowExecutorImplDelegate : public JsFlowExecutorImpl::Delegate {
 
 class JsFlowExecutorImplTest : public BaseBrowserTest {
  public:
-  void SetUpOnMainThread() override {
-    BaseBrowserTest::SetUpOnMainThread();
-
-    flow_executor_ = std::make_unique<JsFlowExecutorImpl>(
-        shell()->web_contents(), &mock_delegate_);
-  }
+  void SetUpOnMainThread() override { BaseBrowserTest::SetUpOnMainThread(); }
 
   // Overload, ignore result value, just return the client status.
   ClientStatus RunTest(const std::string& js_flow) {
@@ -92,7 +88,13 @@ class JsFlowExecutorImplTest : public BaseBrowserTest {
                        std::unique_ptr<base::Value>& result_value) {
     ClientStatus status;
     base::RunLoop run_loop;
-    flow_executor_->Start(
+
+    // Needs to be created inside the RunLoop since we are creating a dummy
+    // WebContents and navigating to a new url.
+    JsFlowExecutorImpl flow_executor = JsFlowExecutorImpl(
+        shell()->web_contents()->GetBrowserContext(), &mock_delegate_);
+
+    flow_executor.Start(
         js_flow, base::BindOnce(&JsFlowExecutorImplTest::OnFlowFinished,
                                 base::Unretained(this), run_loop.QuitClosure(),
                                 &status, std::ref(result_value)));
@@ -112,7 +114,6 @@ class JsFlowExecutorImplTest : public BaseBrowserTest {
 
  protected:
   NiceMock<MockJsFlowExecutorImplDelegate> mock_delegate_;
-  std::unique_ptr<JsFlowExecutorImpl> flow_executor_;
 };
 
 IN_PROC_BROWSER_TEST_F(JsFlowExecutorImplTest, SmokeTest) {
@@ -385,37 +386,6 @@ IN_PROC_BROWSER_TEST_F(JsFlowExecutorImplTest,
       result);
   EXPECT_EQ(result, nullptr);
   EXPECT_EQ(status.proto_status(), INVALID_ACTION);
-}
-
-IN_PROC_BROWSER_TEST_F(JsFlowExecutorImplTest, StartWhileAlreadyRunningFails) {
-  EXPECT_CALL(mock_delegate_, RunNativeAction)
-      .WillOnce(WithArg<2>([&](auto callback) {
-        // Starting a second flow while the first one is running should fail.
-        EXPECT_EQ(RunTest(std::string()).proto_status(), INVALID_ACTION);
-
-        // The first flow should be able to finish successfully.
-        std::move(callback).Run(ClientStatus(ACTION_APPLIED), nullptr);
-      }));
-
-  std::unique_ptr<base::Value> result;
-  ClientStatus status = RunTest(
-      R"(
-      let [status, result] = await runNativeAction(1, "dGVzdA==" /*test*/);
-      return status;
-      )",
-      result);
-  EXPECT_EQ(status.proto_status(), ACTION_APPLIED);
-  EXPECT_EQ(*result, base::Value(2));
-}
-
-IN_PROC_BROWSER_TEST_F(JsFlowExecutorImplTest,
-                       EnvironmentIsPreservedBetweenRuns) {
-  EXPECT_EQ(RunTest("globalFlowState.i = 5;").proto_status(), ACTION_APPLIED);
-
-  std::unique_ptr<base::Value> result;
-  EXPECT_EQ(RunTest("return globalFlowState.i;", result).proto_status(),
-            ACTION_APPLIED);
-  EXPECT_EQ(*result, base::Value(5));
 }
 
 class JsFlowExecutorImplScriptExecutorTest : public BaseBrowserTest {

@@ -14,6 +14,9 @@
 #include "components/autofill_assistant/browser/js_flow_util.h"
 #include "components/autofill_assistant/browser/parse_jspb.h"
 #include "components/autofill_assistant/browser/web/web_controller_util.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/web_contents.h"
 
 namespace autofill_assistant {
 namespace {
@@ -115,14 +118,21 @@ absl::optional<std::string> ConvertActionToBytes(const base::Value* action,
 
 }  // namespace
 
-JsFlowExecutorImpl::JsFlowExecutorImpl(content::WebContents* web_contents,
+JsFlowExecutorImpl::JsFlowExecutorImpl(content::BrowserContext* browser_context,
                                        Delegate* delegate)
     : delegate_(delegate),
+      // To execute the JS flow we create a dummy WebContents.
+      dummy_web_contents_(content::WebContents::Create(
+          content::WebContents::CreateParams(browser_context))),
       devtools_client_(std::make_unique<DevtoolsClient>(
-          content::DevToolsAgentHost::GetOrCreateFor(web_contents),
+          content::DevToolsAgentHost::GetOrCreateFor(dummy_web_contents_.get()),
           base::FeatureList::IsEnabled(
               autofill_assistant::features::
-                  kAutofillAssistantFullJsFlowStackTraces))) {}
+                  kAutofillAssistantFullJsFlowStackTraces))) {
+  // Navigate to a blank page to connect to a frame tree.
+  dummy_web_contents_->GetController().LoadURLWithParams(
+      content::NavigationController::LoadURLParams(GURL("about:blank")));
+}
 
 JsFlowExecutorImpl::~JsFlowExecutorImpl() = default;
 
@@ -387,6 +397,8 @@ void JsFlowExecutorImpl::RunCallback(
   if (!status.ok() && result_value) {
     VLOG(1) << "Flow failed with " << status
             << " and result: " << *result_value;
+  } else if (!status.ok()) {
+    VLOG(1) << "Flow failed with " << status;
   }
 
   std::move(callback_).Run(status, std::move(result_value));
