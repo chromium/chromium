@@ -829,6 +829,45 @@ absl::optional<std::string> ProcessCrlDistributionPoints(
   return rv;
 }
 
+absl::optional<std::string> ProcessAuthorityInfoAccess(
+    net::der::Input extension_data) {
+  std::vector<net::AuthorityInfoAccessDescription> access_descriptions;
+  if (!net::ParseAuthorityInfoAccess(extension_data, &access_descriptions))
+    return absl::nullopt;
+
+  std::string rv;
+  for (const auto& access_description : access_descriptions) {
+    net::GeneralNames name;
+    net::CertErrors unused_errors;
+    if (!net::ParseGeneralName(access_description.access_location,
+                               net::GeneralNames::IP_ADDRESS_ONLY, &name,
+                               &unused_errors)) {
+      return absl::nullopt;
+    }
+
+    absl::optional<std::string> s = ProcessGeneralNames(name);
+    if (!s)
+      return absl::nullopt;
+    std::u16string location_str = base::UTF8ToUTF16(*s);
+    if (access_description.access_method_oid ==
+        net::der::Input(net::kAdOcspOid)) {
+      rv += l10n_util::GetStringFUTF8(IDS_CERT_OCSP_RESPONDER_FORMAT,
+                                      location_str);
+    } else if (access_description.access_method_oid ==
+               net::der::Input(net::kAdCaIssuersOid)) {
+      rv += l10n_util::GetStringFUTF8(IDS_CERT_CA_ISSUERS_FORMAT, location_str);
+    } else {
+      rv += l10n_util::GetStringFUTF8(
+          IDS_CERT_UNKNOWN_OID_INFO_FORMAT,
+          base::UTF8ToUTF16(
+              GetOidTextOrNumeric(access_description.access_method_oid)),
+          location_str);
+    }
+  }
+
+  return rv;
+}
+
 }  // namespace
 
 X509CertificateModel::X509CertificateModel(
@@ -1090,6 +1129,8 @@ absl::optional<std::string> X509CertificateModel::ProcessExtensionData(
     return ProcessCertificatePolicies(extension.value);
   if (extension.oid == net::der::Input(net::kCrlDistributionPointsOid))
     return ProcessCrlDistributionPoints(extension.value);
+  if (extension.oid == net::der::Input(net::kAuthorityInfoAccessOid))
+    return ProcessAuthorityInfoAccess(extension.value);
   return ProcessRawBytes(extension.value);
 }
 

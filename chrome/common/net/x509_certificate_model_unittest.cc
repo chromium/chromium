@@ -123,6 +123,10 @@ TEST_P(X509CertificateModel, GetGoogleCertFields) {
       "Step-Up (OID.2.16.840.1.113730.4.1)\n",
       extensions[2].value);
   EXPECT_EQ("Authority Information Access", extensions[3].name);
+  EXPECT_EQ(
+      "notcrit\nOCSP Responder: URI: http://ocsp.thawte.com\nCA Issuers: URI: "
+      "http://www.thawte.com/repository/Thawte_SGC_CA.crt\n",
+      extensions[3].value);
 }
 
 TEST_P(X509CertificateModel, GetNDNCertFields) {
@@ -306,6 +310,12 @@ TEST_P(X509CertificateModel, GlobalsignComCert) {
       "E4 78 30\n",
       extensions[1].value);
 
+  EXPECT_EQ("Authority Information Access", extensions[2].name);
+  EXPECT_EQ(
+      "notcrit\nCA Issuers: "
+      "URI: http://secure.globalsign.net/cacert/SHA256extendval1.crt\n",
+      extensions[2].value);
+
   EXPECT_EQ("CRL Distribution Points", extensions[3].name);
   EXPECT_EQ("notcrit\nURI: http://crl.globalsign.net/SHA256ExtendVal1.crl\n",
             extensions[3].value);
@@ -347,6 +357,12 @@ TEST_P(X509CertificateModel, DiginotarCert) {
 
   auto extensions = model.GetExtensions("critical", "notcrit");
   ASSERT_EQ(7U, extensions.size());
+
+  EXPECT_EQ("Authority Information Access", extensions[0].name);
+  EXPECT_EQ(
+      "notcrit\nOCSP Responder: "
+      "URI: http://validation.diginotar.nl\n",
+      extensions[0].value);
 
   EXPECT_EQ("Certificate Basic Constraints", extensions[2].name);
   EXPECT_EQ(
@@ -512,6 +528,37 @@ TEST_P(X509CertificateModel, CrlDpReasons) {
       "Name: CN = CRL2\n\nUnused,Affiliation Changed,Superseded,Cessation of "
       "Operation,Certificate on Hold\n",
       *extension_value);
+}
+
+TEST_P(X509CertificateModel, AuthorityInfoAccessNonstandardOidAndLocationType) {
+  base::FilePath certs_dir = net::GetTestCertsDirectory();
+  std::unique_ptr<net::CertBuilder> builder =
+      net::CertBuilder::FromFile(certs_dir.AppendASCII("ok_cert.pem"), nullptr);
+  ASSERT_TRUE(builder);
+
+  // SEQUENCE {
+  //  SEQUENCE {
+  //    OBJECT_IDENTIFIER { 1.4.9.20 }
+  //    [1 PRIMITIVE] { "foo@example.com" }
+  //  }
+  // }
+  const uint8_t kAIA[] = {0x30, 0x18, 0x30, 0x16, 0x06, 0x03, 0x2c, 0x09, 0x14,
+                          0x81, 0x0f, 0x66, 0x6f, 0x6f, 0x40, 0x65, 0x78, 0x61,
+                          0x6d, 0x70, 0x6c, 0x65, 0x2e, 0x63, 0x6f, 0x6d};
+  builder->SetExtension(net::der::Input(net::kAuthorityInfoAccessOid),
+                        std::string(kAIA, kAIA + sizeof(kAIA)));
+
+  x509_certificate_model::X509CertificateModel model(
+      bssl::UpRef(builder->GetCertBuffer()), GetParam());
+  ASSERT_TRUE(model.is_valid());
+
+  auto extensions = model.GetExtensions("critical", "notcrit");
+
+  auto extension_value =
+      FindExtension(extensions, "Authority Information Access");
+  ASSERT_TRUE(extension_value);
+  EXPECT_EQ("notcrit\nOID.1.4.9.20: Email Address: foo@example.com\n",
+            *extension_value);
 }
 
 TEST_P(X509CertificateModel, SubjectIA5StringInvalidCharacters) {
