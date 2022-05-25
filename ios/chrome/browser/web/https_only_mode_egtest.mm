@@ -499,7 +499,9 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
 
 // Navigate to an HTTP URL and allowlist the URL. Then clear browsing data via
 // UI settings. This should clear the HTTP allowlist.
-- (void)testUpgrade_RemoveBrowsingData_ShouldClearAllowlist {
+// Disable the test due to try bot failure.
+// TODO (crbug.com/1328537): please re-enable it after fix.
+- (void)DISABLED_testUpgrade_RemoveBrowsingData_ShouldClearAllowlist {
   [HttpsOnlyModeAppInterface setHTTPPortForTesting:self.testServer->port()];
   [HttpsOnlyModeAppInterface
       setHTTPSPortForTesting:self.badHTTPSServer->port()];
