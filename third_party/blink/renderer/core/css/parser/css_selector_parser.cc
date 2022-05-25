@@ -564,6 +564,9 @@ bool IsSimpleSelectorValidAfterPseudoElement(
 bool IsPseudoClassValidWithinHasArgument(CSSParserSelector& selector) {
   DCHECK_EQ(selector.Match(), CSSSelector::kPseudoClass);
   switch (selector.GetPseudoType()) {
+    // TODO(blee@igalia.com) Additional limitations may be added later after
+    // related issues are resolved in csswg. (e.g. issues/7211, issues/7212)
+
     // Limited nested :has() to avoid increasing :has() invalidation complexity.
     case CSSSelector::kPseudoHas:
       return false;

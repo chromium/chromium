@@ -4300,7 +4300,7 @@ void Element::setEditContext(EditContext* edit_context) {
 
 struct Element::AffectedByPseudoStateChange {
   bool children_or_siblings{true};
-  bool ancestors_or_siblings{false};
+  bool ancestors_or_siblings{true};
 
   AffectedByPseudoStateChange(CSSSelector::PseudoType pseudo_type,
                               Element& element) {
@@ -4332,27 +4332,18 @@ struct Element::AffectedByPseudoStateChange {
         ancestors_or_siblings =
             element.AncestorsOrSiblingsAffectedByActiveInHas();
         break;
-
-      case CSSSelector::kPseudoAnyLink:
-      case CSSSelector::kPseudoChecked:
-      case CSSSelector::kPseudoDefault:
-      case CSSSelector::kPseudoDisabled:
-      case CSSSelector::kPseudoEnabled:
-      case CSSSelector::kPseudoIndeterminate:
-      case CSSSelector::kPseudoInRange:
-      case CSSSelector::kPseudoInvalid:
-      case CSSSelector::kPseudoLink:
-      case CSSSelector::kPseudoOutOfRange:
-      case CSSSelector::kPseudoOptional:
-      case CSSSelector::kPseudoPlaceholderShown:
-      case CSSSelector::kPseudoReadOnly:
-      case CSSSelector::kPseudoReadWrite:
-      case CSSSelector::kPseudoRequired:
-      case CSSSelector::kPseudoTarget:
-      case CSSSelector::kPseudoValid:
-        ancestors_or_siblings = true;
-        break;
       default:
+        // Activate :has() invalidation for all allowed pseudo classes.
+        //
+        // IsPseudoClassValidWithinHasArgument() in css_selector_parser.cc
+        // maintains the disallowed pseudo classes inside :has().
+        // If a :has() argument contains any of the disallowed pseudo,
+        // CSSSelectorParser will drop the argument. If the argument is
+        // dropped, RuleFeatureSet will not maintain the pseudo type for
+        // :has() invalidation. So, StyleEngine will not do :has()
+        // invalidation for the disallowed pseudo type changes even if
+        // the Element::PseudoStateChanged() was called with the disallowed
+        // pseudo type.
         break;
     }
   }
