@@ -204,6 +204,20 @@ static_assert(net::HttpResponseInfo::CONNECTION_INFO_QUIC_DRAFT_25 == 35,
               "ConnectionInfo enum is stable");
 static_assert(net::HttpResponseInfo::CONNECTION_INFO_QUIC_DRAFT_27 == 36,
               "ConnectionInfo enum is stable");
+static_assert(net::HttpResponseInfo::CONNECTION_INFO_QUIC_DRAFT_28 == 37,
+              "ConnectionInfo enum is stable");
+static_assert(net::HttpResponseInfo::CONNECTION_INFO_QUIC_DRAFT_29 == 38,
+              "ConnectionInfo enum is stable");
+static_assert(net::HttpResponseInfo::CONNECTION_INFO_QUIC_T051 == 39,
+              "ConnectionInfo enum is stable");
+static_assert(net::HttpResponseInfo::CONNECTION_INFO_QUIC_RFC_V1 == 40,
+              "ConnectionInfo enum is stable");
+static_assert(net::HttpResponseInfo::CONNECTION_INFO_QUIC_2_DRAFT_1 == 41,
+              "ConnectionInfo enum is stable");
+// The following assert needs to be changed every time a new value is added.
+// It exists to prevent us from forgetting to add new values above.
+static_assert(net::HttpResponseInfo::NUM_OF_CONNECTION_INFOS == 42,
+              "Please add new values above and update this assert");
 
 // Copy headers out of a cache entry and into a protobuf. The callback is
 // guaranteed to be run.
