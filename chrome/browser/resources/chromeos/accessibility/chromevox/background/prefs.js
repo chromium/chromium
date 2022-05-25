@@ -215,11 +215,14 @@ ChromeVoxPrefs.loggingPrefs = {
 ChromeVoxPrefs.instance = new ChromeVoxPrefs();
 
 BridgeHelper.registerHandler(
-    BridgeTargets.CHROMEVOX_PREFS, BridgeActions.GET_PREFS,
+    BridgeConstants.ChromeVoxPrefs.TARGET,
+    BridgeConstants.ChromeVoxPrefs.Action.GET_PREFS,
     () => ChromeVoxPrefs.instance.getPrefs());
 BridgeHelper.registerHandler(
-    BridgeTargets.CHROMEVOX_PREFS, BridgeActions.SET_LOGGING_PREFS,
+    BridgeConstants.ChromeVoxPrefs.TARGET,
+    BridgeConstants.ChromeVoxPrefs.Action.SET_LOGGING_PREFS,
     ({key, value}) => ChromeVoxPrefs.instance.setLoggingPrefs(key, value));
 BridgeHelper.registerHandler(
-    BridgeTargets.CHROMEVOX_PREFS, BridgeActions.SET_PREF,
+    BridgeConstants.ChromeVoxPrefs.TARGET,
+    BridgeConstants.ChromeVoxPrefs.Action.SET_PREF,
     ({key, value}) => ChromeVoxPrefs.instance.setPref(key, value));

@@ -70,7 +70,8 @@ BackgroundBridge.ChromeVoxPrefs = {
    */
   async getPrefs() {
     return BridgeHelper.sendMessage(
-        BridgeTargets.CHROMEVOX_PREFS, BridgeActions.GET_PREFS);
+        BridgeConstants.ChromeVoxPrefs.TARGET,
+        BridgeConstants.ChromeVoxPrefs.Action.GET_PREFS);
   },
 
   /**
@@ -81,8 +82,8 @@ BackgroundBridge.ChromeVoxPrefs = {
    */
   async setLoggingPrefs(key, value) {
     return BridgeHelper.sendMessage(
-        BridgeTargets.CHROMEVOX_PREFS, BridgeActions.SET_LOGGING_PREFS,
-        {key, value});
+        BridgeConstants.ChromeVoxPrefs.TARGET,
+        BridgeConstants.ChromeVoxPrefs.Action.SET_LOGGING_PREFS, {key, value});
   },
 
   /**
@@ -93,7 +94,8 @@ BackgroundBridge.ChromeVoxPrefs = {
    */
   async setPref(key, value) {
     return BridgeHelper.sendMessage(
-        BridgeTargets.CHROMEVOX_PREFS, BridgeActions.SET_PREF, {key, value});
+        BridgeConstants.ChromeVoxPrefs.TARGET,
+        Bridgeconstants.ChromeVoxPrefs.Action.SET_PREF, {key, value});
   },
 };
 

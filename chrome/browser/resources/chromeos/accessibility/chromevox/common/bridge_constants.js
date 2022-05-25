@@ -13,7 +13,6 @@ goog.provide('BridgeTargets');
 
 /** @enum {string} */
 BridgeTargets = {
-  CHROMEVOX_PREFS: 'ChromeVoxPrefs',
   CHROMEVOX_STATE: 'ChromeVoxState',
   EVENT_STREAM_LOGGER: 'EventStreamLogger',
   GESTURE_COMMAND_HANDLER: 'GestureCommandHandler',
@@ -57,6 +56,17 @@ BridgeConstants = {
     },
   },
 
+  ChromeVoxPrefs: {
+    /** @public {BridgeTarget} */
+    TARGET: 'ChromeVoxPrefs',
+    /** @enum {string} */
+    Action: {
+      GET_PREFS: 'getPrefs',
+      SET_LOGGING_PREFS: 'setLoggingPrefs',
+      SET_PREF: 'setPref',
+    },
+  },
+
   CommandHandler: {
     /** @public {BridgeTarget} */
     TARGET: 'CommandHandler',
@@ -91,7 +101,6 @@ BridgeActions = {
   FOCUS_TAB: 'focusTab',
   GET_ACTIONS_FOR_CURRENT_NODE: 'getActionsForCurrentNode',
   GET_LOGS: 'getLogs',
-  GET_PREFS: 'getPrefs',
   GET_TAB_MENU_DATA: 'getTabMenuData',
   INCREMENTAL_SEARCH: 'incrementalSearch',
   NODE_MENU_CALLBACK: 'nodeMenuCallback',
@@ -100,8 +109,6 @@ BridgeActions = {
   PERFORM_CUSTOM_ACTION_ON_CURRENT_NODE: 'performCustomActionOnCurrentNode',
   PERFORM_STANDARD_ACTION_ON_CURRENT_NODE: 'performStandardActionOnCurrentNode',
   SET_ENABLED: 'setEnabled',
-  SET_LOGGING_PREFS: 'setLoggingPrefs',
-  SET_PREF: 'setPref',
   SET_RANGE_TO_I_SEARCH_NODE: 'setRangeToISearchNode',
   UPDATE_PUNCTUATION_ECHO: 'updatePunctuationEcho',
   WAIT_FOR_PANEL_COLLAPSE: 'waitForPanelCollapse',
@@ -113,6 +120,7 @@ BridgeActions = {
  *           BridgeConstants.BrailleBackground.Action |
  *           BridgeConstants.BrailleCommandHandler.Action |
  *           BridgeConstants.ChromeVoxBackground.Action |
+ *           BridgeConstants.ChromeVoxPrefs.Action |
  *           BridgeConstants.CommandHandler.Action |
  *           BridgeConstants.EventSourceState.Action}
  */
