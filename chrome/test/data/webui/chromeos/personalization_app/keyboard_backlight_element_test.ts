@@ -5,8 +5,8 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {KeyboardBacklight, KeyboardBacklightActionName, KeyboardBacklightObserver, SetBacklightColorAction} from 'chrome://personalization/trusted/personalization_app.js';
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {KeyboardBacklight, KeyboardBacklightActionName, KeyboardBacklightObserver, SetBacklightColorAction, SetWallpaperColorAction} from 'chrome://personalization/trusted/personalization_app.js';
+import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
 import {TestKeyboardBacklightProvider} from './test_keyboard_backlight_interface_provider.js';
@@ -99,5 +99,18 @@ suite('KeyboardBacklightTest', function() {
             KeyboardBacklightActionName.SET_BACKLIGHT_COLOR) as
         SetBacklightColorAction;
     assertEquals(keyboardBacklightProvider.backlightColor, backlightColor);
+  });
+
+  test('sets wallpaper color in store on first load', async () => {
+    personalizationStore.expectAction(
+        KeyboardBacklightActionName.SET_WALLPAPER_COLOR);
+    keyboardBacklightElement = initElement(KeyboardBacklight);
+    await keyboardBacklightProvider.whenCalled('setKeyboardBacklightObserver');
+    const wallpaperColor = {value: 0x123456};
+    keyboardBacklightProvider.fireOnWallpaperColorChanged(wallpaperColor);
+    const action = await personalizationStore.waitForAction(
+                       KeyboardBacklightActionName.SET_WALLPAPER_COLOR) as
+        SetWallpaperColorAction;
+    assertDeepEquals(wallpaperColor, action.wallpaperColor);
   });
 });

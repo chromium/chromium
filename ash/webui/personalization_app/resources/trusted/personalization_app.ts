@@ -65,7 +65,7 @@ export {TopicSourceItem} from './ambient/topic_source_item_element.js';
 export {TopicSourceList} from './ambient/topic_source_list_element.js';
 export {AmbientZeroState} from './ambient/zero_state_element.js';
 export {IFrameApi} from './iframe_api.js';
-export {KeyboardBacklightActionName, KeyboardBacklightActions, SetBacklightColorAction, setBacklightColorAction} from './keyboard_backlight/keyboard_backlight_actions.js';
+export {KeyboardBacklightActionName, KeyboardBacklightActions, SetBacklightColorAction, setBacklightColorAction, SetWallpaperColorAction, setWallpaperColorAction} from './keyboard_backlight/keyboard_backlight_actions.js';
 export {KeyboardBacklight} from './keyboard_backlight/keyboard_backlight_element.js';
 export {setKeyboardBacklightProviderForTesting} from './keyboard_backlight/keyboard_backlight_interface_provider.js';
 export {KeyboardBacklightObserver} from './keyboard_backlight/keyboard_backlight_observer.js';

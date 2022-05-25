@@ -35,7 +35,9 @@ KeyboardBacklightColorController* GetKeyboardBacklightColorController() {
 
 PersonalizationAppKeyboardBacklightProviderImpl::
     PersonalizationAppKeyboardBacklightProviderImpl(content::WebUI* web_ui)
-    : profile_(Profile::FromWebUI(web_ui)) {}
+    : profile_(Profile::FromWebUI(web_ui)) {
+  wallpaper_controller_observation_.Observe(WallpaperController::Get());
+}
 
 PersonalizationAppKeyboardBacklightProviderImpl::
     ~PersonalizationAppKeyboardBacklightProviderImpl() = default;
@@ -58,6 +60,9 @@ void PersonalizationAppKeyboardBacklightProviderImpl::
 
   // Call it once to get the status of color preset.
   NotifyBacklightColorChanged();
+
+  // Call it once to get the wallpaper extracted color.
+  OnWallpaperColorsChanged();
 }
 
 void PersonalizationAppKeyboardBacklightProviderImpl::SetBacklightColor(
@@ -74,6 +79,14 @@ void PersonalizationAppKeyboardBacklightProviderImpl::SetBacklightColor(
       ->SetUserPerformedAction();
 
   NotifyBacklightColorChanged();
+}
+
+void PersonalizationAppKeyboardBacklightProviderImpl::
+    OnWallpaperColorsChanged() {
+  DCHECK(keyboard_backlight_observer_remote_.is_bound());
+  keyboard_backlight_observer_remote_->OnWallpaperColorChanged(
+      ConvertBacklightColorToSkColor(
+          personalization_app::mojom::BacklightColor::kWallpaper));
 }
 
 void PersonalizationAppKeyboardBacklightProviderImpl::

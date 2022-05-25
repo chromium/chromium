@@ -7,6 +7,7 @@ module ash.personalization_app.mojom;
 import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/string16.mojom";
+import "skia/public/mojom/skcolor.mojom";
 import "url/mojom/url.mojom";
 
 // This should be kept in sync with |ash::WallpaperLayout|
@@ -560,6 +561,9 @@ const uint32 kPurpleColor = 0xC58AF9;
 interface KeyboardBacklightObserver {
   // Notifies the JS side about the current state of the backlight color.
   OnBacklightColorChanged(BacklightColor color);
+
+  // Notifies the JS side the current wallpaper-extracted color.
+  OnWallpaperColorChanged(skia.mojom.SkColor wallpaper_color);
 };
 
 // Provides APIs to expose keyboard backlight settings.

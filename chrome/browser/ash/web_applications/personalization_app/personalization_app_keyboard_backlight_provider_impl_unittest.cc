@@ -15,6 +15,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_web_ui.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkColor.h"
 
 namespace ash {
 namespace personalization_app {
@@ -28,6 +29,10 @@ class TestKeyboardBacklightObserver
  public:
   void OnBacklightColorChanged(mojom::BacklightColor backlight_color) override {
     backlight_color_ = backlight_color;
+  }
+
+  void OnWallpaperColorChanged(SkColor wallpaper_color) override {
+    wallpaper_color_ = wallpaper_color;
   }
 
   mojo::PendingRemote<
@@ -45,11 +50,17 @@ class TestKeyboardBacklightObserver
     return backlight_color_;
   }
 
+  SkColor wallpaper_color() {
+    keyboard_backlight_observer_receiver_.FlushForTesting();
+    return wallpaper_color_;
+  }
+
  private:
   mojo::Receiver<ash::personalization_app::mojom::KeyboardBacklightObserver>
       keyboard_backlight_observer_receiver_{this};
 
   mojom::BacklightColor backlight_color_ = mojom::BacklightColor::kWallpaper;
+  SkColor wallpaper_color_ = SK_ColorTRANSPARENT;
 };
 
 }  // namespace
@@ -115,6 +126,11 @@ class PersonalizationAppKeyboardBacklightProviderImplTest
     return test_keyboard_backlight_observer_.backlight_color();
   }
 
+  SkColor ObservedWallpaperColor() {
+    keyboard_backlight_provider_remote_.FlushForTesting();
+    return test_keyboard_backlight_observer_.wallpaper_color();
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   user_manager::ScopedUserManager scoped_user_manager_;
@@ -138,6 +154,16 @@ TEST_F(PersonalizationAppKeyboardBacklightProviderImplTest,
 
   // Verify JS side is notified.
   EXPECT_EQ(mojom::BacklightColor::kBlue, ObservedBacklightColor());
+}
+
+TEST_F(PersonalizationAppKeyboardBacklightProviderImplTest,
+       ObserveWallpaperColor) {
+  SetKeyboardBacklightObserver();
+  keyboard_backlight_provider_remote()->FlushForTesting();
+  keyboard_backlight_provider()->OnWallpaperColorsChanged();
+
+  // Verify JS side is notified.
+  EXPECT_EQ(SK_ColorTRANSPARENT, ObservedWallpaperColor());
 }
 
 }  // namespace personalization_app

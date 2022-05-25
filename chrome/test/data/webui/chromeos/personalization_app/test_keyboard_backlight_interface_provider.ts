@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {BacklightColor, KeyboardBacklightObserverInterface, KeyboardBacklightObserverRemote, KeyboardBacklightProviderInterface} from 'chrome://personalization/trusted/personalization_app.js';
+import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestKeyboardBacklightProvider extends
@@ -32,5 +33,10 @@ export class TestKeyboardBacklightProvider extends
   fireOnBacklightColorChanged(backlightColor: BacklightColor) {
     this.keyboardBacklightObserverRemote!.onBacklightColorChanged(
         backlightColor);
+  }
+
+  fireOnWallpaperColorChanged(wallpaperColor: SkColor) {
+    this.keyboardBacklightObserverRemote!.onWallpaperColorChanged(
+        wallpaperColor);
   }
 }

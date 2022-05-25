@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
+
 import {Actions} from '../personalization_actions.js';
 import {BacklightColor} from '../personalization_app.mojom-webui.js';
 import {ReducerFunction} from '../personalization_reducers.js';
@@ -21,9 +23,21 @@ export function backlightColorReducer(
   }
 }
 
+export function wallpaperColorReducer(
+    state: SkColor|null, action: Actions, _: PersonalizationState): SkColor|
+    null {
+  switch (action.name) {
+    case KeyboardBacklightActionName.SET_WALLPAPER_COLOR:
+      return action.wallpaperColor;
+    default:
+      return state;
+  }
+}
+
 export const keyboardBacklightReducers: {
   [K in keyof KeyboardBacklightState]:
       ReducerFunction<KeyboardBacklightState[K]>
 } = {
   backlightColor: backlightColorReducer,
+  wallpaperColor: wallpaperColorReducer,
 };

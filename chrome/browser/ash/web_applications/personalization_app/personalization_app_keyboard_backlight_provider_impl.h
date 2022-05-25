@@ -5,8 +5,11 @@
 #ifndef CHROME_BROWSER_ASH_WEB_APPLICATIONS_PERSONALIZATION_APP_PERSONALIZATION_APP_KEYBOARD_BACKLIGHT_PROVIDER_IMPL_H_
 #define CHROME_BROWSER_ASH_WEB_APPLICATIONS_PERSONALIZATION_APP_PERSONALIZATION_APP_KEYBOARD_BACKLIGHT_PROVIDER_IMPL_H_
 
+#include "ash/public/cpp/wallpaper/wallpaper_controller.h"
+#include "ash/public/cpp/wallpaper/wallpaper_controller_observer.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "ash/webui/personalization_app/personalization_app_keyboard_backlight_provider.h"
+#include "base/scoped_observation.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -19,7 +22,8 @@ class WebUI;
 namespace ash::personalization_app {
 
 class PersonalizationAppKeyboardBacklightProviderImpl
-    : public PersonalizationAppKeyboardBacklightProvider {
+    : public PersonalizationAppKeyboardBacklightProvider,
+      public WallpaperControllerObserver {
  public:
   explicit PersonalizationAppKeyboardBacklightProviderImpl(
       content::WebUI* web_ui);
@@ -45,6 +49,9 @@ class PersonalizationAppKeyboardBacklightProviderImpl
   void SetBacklightColor(
       ash::personalization_app::mojom::BacklightColor backlight_color) override;
 
+  // WallpaperControllerObserver:
+  void OnWallpaperColorsChanged() override;
+
  private:
   // Notify webUI the current state of backlight color.
   void NotifyBacklightColorChanged();
@@ -57,6 +64,9 @@ class PersonalizationAppKeyboardBacklightProviderImpl
 
   mojo::Remote<ash::personalization_app::mojom::KeyboardBacklightObserver>
       keyboard_backlight_observer_remote_;
+
+  base::ScopedObservation<WallpaperController, WallpaperControllerObserver>
+      wallpaper_controller_observation_{this};
 };
 
 }  // namespace ash::personalization_app
