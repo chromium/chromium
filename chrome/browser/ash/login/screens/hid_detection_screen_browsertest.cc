@@ -97,6 +97,11 @@ class HIDDetectionScreenChromeboxTest : public OobeBaseTest {
                                         hid_type, count);
   }
 
+  void AssertHidDisconnectedCount(HidType hid_type, int count) {
+    histogram_tester_.ExpectBucketCount(
+        "OOBE.HidDetectionScreen.HidDisconnected", hid_type, count);
+  }
+
   test::HIDControllerMixin hid_controller_{&mixin_host_};
 
  private:
@@ -138,6 +143,8 @@ IN_PROC_BROWSER_TEST_F(HIDDetectionScreenChromeboxTest, MouseKeyboardStates) {
   // Remove generic devices, add usb devices.
   hid_controller_.RemoveDevices();
   test::OobeJS().ExpectDisabledPath(kHidContinueButton);
+  AssertHidDisconnectedCount(HidType::kSerialKeyboard, /*count=*/1);
+  AssertHidDisconnectedCount(HidType::kSerialPointer, /*count=*/1);
 
   hid_controller_.ConnectUSBDevices();
   // TODO(crbug/1173782): use screen or JS state instead of handler()
@@ -150,6 +157,8 @@ IN_PROC_BROWSER_TEST_F(HIDDetectionScreenChromeboxTest, MouseKeyboardStates) {
   // Remove usb devices, add bluetooth devices.
   hid_controller_.RemoveDevices();
   test::OobeJS().ExpectDisabledPath(kHidContinueButton);
+  AssertHidDisconnectedCount(HidType::kUsbKeyboard, /*count=*/1);
+  AssertHidDisconnectedCount(HidType::kUsbPointer, /*count=*/1);
 
   hid_controller_.ConnectBTDevices();
   EXPECT_EQ("paired", handler()->mouse_state_for_test());
@@ -157,6 +166,53 @@ IN_PROC_BROWSER_TEST_F(HIDDetectionScreenChromeboxTest, MouseKeyboardStates) {
   test::OobeJS().ExpectEnabledPath(kHidContinueButton);
   AssertHidConnectedCount(HidType::kBluetoothKeyboard, /*count=*/1);
   AssertHidConnectedCount(HidType::kBluetoothPointer, /*count=*/1);
+
+  // Remove bluetooth devices.
+  hid_controller_.RemoveDevices();
+  AssertHidDisconnectedCount(HidType::kBluetoothKeyboard, /*count=*/1);
+  AssertHidDisconnectedCount(HidType::kBluetoothPointer, /*count=*/1);
+};
+
+IN_PROC_BROWSER_TEST_F(HIDDetectionScreenChromeboxTest,
+                       AddRemoveDevicesAfterScreen) {
+  // NOTE: State strings match those in hid_detection_screen.cc.
+  // No devices added yet
+  EXPECT_EQ("searching", handler()->mouse_state_for_test());
+  EXPECT_EQ("searching", handler()->keyboard_state_for_test());
+  test::OobeJS().ExpectDisabledPath(kHidContinueButton);
+
+  // Generic connection types. Unlike the pointing device, which may be a tablet
+  // or touchscreen, the keyboard only reports usb and bluetooth states.
+  hid_controller_.AddMouse(device::mojom::InputDeviceType::TYPE_SERIO);
+  test::OobeJS().ExpectEnabledPath(kHidContinueButton);
+  AssertHidConnectedCount(HidType::kSerialPointer, /*count=*/1);
+
+  hid_controller_.AddKeyboard(device::mojom::InputDeviceType::TYPE_SERIO);
+  EXPECT_EQ("connected", handler()->mouse_state_for_test());
+  EXPECT_EQ("usb", handler()->keyboard_state_for_test());
+  test::OobeJS().ExpectEnabledPath(kHidContinueButton);
+  AssertHidConnectedCount(HidType::kSerialKeyboard, /*count=*/1);
+
+  ContinueToWelcomeScreen();
+
+  hid_controller_.RemoveDevices();
+
+  AssertHidDisconnectedCount(HidType::kSerialKeyboard, /*count=*/0);
+  AssertHidDisconnectedCount(HidType::kSerialPointer, /*count=*/0);
+
+  // Re-add the generic keyboard/mouse and make sure the count doesn't increase.
+  hid_controller_.AddKeyboard(device::mojom::InputDeviceType::TYPE_SERIO);
+  hid_controller_.AddMouse(device::mojom::InputDeviceType::TYPE_SERIO);
+
+  AssertHidConnectedCount(HidType::kSerialPointer, /*count=*/1);
+  AssertHidConnectedCount(HidType::kSerialKeyboard, /*count=*/1);
+
+  hid_controller_.RemoveDevices();
+
+  // Make sure a not yet added device type also doesn't increment the count.
+  hid_controller_.ConnectUSBDevices();
+  AssertHidConnectedCount(HidType::kUsbKeyboard, /*count=*/0);
+  AssertHidConnectedCount(HidType::kUsbPointer, /*count=*/0);
 }
 
 // Test that if there is any Bluetooth device connected on HID screen, the

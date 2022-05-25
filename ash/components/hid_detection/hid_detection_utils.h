@@ -36,6 +36,9 @@ bool IsDeviceTouchscreen(const device::mojom::InputDeviceInfo& device);
 // Record each HID that is connected while the HID detection screen is shown.
 void RecordHidConnected(const device::mojom::InputDeviceInfo& device);
 
+// Record each HID that is disconnected while the HID detection screen is shown.
+void RecordHidDisconnected(const device::mojom::InputDeviceInfo& device);
+
 }  // namespace ash::hid_detection
 
 #endif  // ASH_COMPONENTS_HID_DETECTION_HID_DETECTION_UTILS_H_
