@@ -84,16 +84,7 @@ ContentToVisibleTimeReporter::TabWasShown(
                                    gfx::PresentationFeedback::Failure());
   }
   DCHECK(!tab_switch_start_state_);
-
-  // Invalidate previously issued callbacks, to avoid accessing a null
-  // |tab_switch_start_state_|.
-  //
-  // TODO(crbug.com/1289266): Make sure that TabWasShown() is never called twice
-  // without a call to TabWasHidden() in-between, and remove this mitigation.
-  weak_ptr_factory_.InvalidateWeakPtrs();
-
-  has_saved_frames_ = has_saved_frames;
-  tab_switch_start_state_ = std::move(start_state);
+  ResetTabSwitchStartState(std::move(start_state), has_saved_frames);
 
   // |tab_switch_start_state_| is only reset by RecordHistogramsAndTraceEvents
   // once the metrics have been emitted.
@@ -118,13 +109,18 @@ ContentToVisibleTimeReporter::TabWasShown(bool has_saved_frames,
 }
 
 void ContentToVisibleTimeReporter::TabWasHidden() {
-  if (tab_switch_start_state_) {
+  if (tab_switch_start_state_ &&
+      (!IsTabSwitchMetric2FeatureEnabled() ||
+       tab_switch_start_state_->show_reason_tab_switching)) {
     RecordHistogramsAndTraceEvents(TabSwitchResult::kIncomplete,
                                    true /* show_reason_tab_switching */,
                                    false /* show_reason_bfcache_restore */,
                                    gfx::PresentationFeedback::Failure());
-    weak_ptr_factory_.InvalidateWeakPtrs();
   }
+
+  // No matter what the show reason, clear `tab_switch_start_state_` which is no
+  // longer valid.
+  ResetTabSwitchStartState();
 }
 
 bool ContentToVisibleTimeReporter::IsTabSwitchMetric2FeatureEnabled() {
@@ -240,8 +236,23 @@ void ContentToVisibleTimeReporter::RecordHistogramsAndTraceEvents(
   }
 
   // Reset tab switch information.
-  has_saved_frames_ = false;
-  tab_switch_start_state_.reset();
+  ResetTabSwitchStartState();
+}
+
+void ContentToVisibleTimeReporter::ResetTabSwitchStartState(
+    mojom::RecordContentToVisibleTimeRequestPtr state,
+    bool has_saved_frames) {
+  if (tab_switch_start_state_) {
+    // Invalidate previously issued callbacks, to avoid accessing
+    // `tab_switch_start_state_` which is about to be deleted.
+    //
+    // TODO(crbug.com/1289266): Make sure that TabWasShown() is never called
+    // twice without a call to TabWasHidden() in-between, and remove this
+    // mitigation.
+    weak_ptr_factory_.InvalidateWeakPtrs();
+  }
+  tab_switch_start_state_ = std::move(state);
+  has_saved_frames_ = has_saved_frames;
 }
 
 }  // namespace blink

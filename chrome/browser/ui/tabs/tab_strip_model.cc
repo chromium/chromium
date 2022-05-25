@@ -2060,6 +2060,20 @@ TabStripSelectionChange TabStripModel::SetSelection(
   if (!triggered_by_other_operation &&
       (selection.active_tab_changed() || selection.selection_changed())) {
     if (selection.active_tab_changed()) {
+      // Start measuring the tab switch compositing time. This must be the first
+      // thing in this block so that the start time is saved before any changes
+      // that might affect compositing.
+      if (selection.new_contents) {
+        auto input_event_timestamp =
+            tab_switch_event_latency_recorder_.input_event_timestamp();
+        // input_event_timestamp may be null in some cases, e.g. in tests.
+        selection.new_contents->SetTabSwitchStartTime(
+            !input_event_timestamp.is_null() ? input_event_timestamp
+                                             : base::TimeTicks::Now(),
+            resource_coordinator::ResourceCoordinatorTabHelper::IsLoaded(
+                selection.new_contents));
+      }
+
       if (base::FeatureList::IsEnabled(media::kEnableTabMuting)) {
         // Show the in-product help dialog pointing users to the tab mute button
         // if the user backgrounds an audible tab.
@@ -2073,17 +2087,11 @@ TabStripSelectionChange TabStripModel::SetSelection(
         }
       }
 
-      auto now = base::TimeTicks::Now();
-      if (selection.new_contents) {
-        auto input_event_timestamp =
-            tab_switch_event_latency_recorder_.input_event_timestamp();
-        // input_event_timestamp may be null in some cases, e.g. in tests.
-        selection.new_contents->SetTabSwitchStartTime(
-            !input_event_timestamp.is_null() ? input_event_timestamp : now,
-            resource_coordinator::ResourceCoordinatorTabHelper::IsLoaded(
-                selection.new_contents));
-      }
-      tab_switch_event_latency_recorder_.OnWillChangeActiveTab(now);
+      // Record the time to this point. This must be the last thing in this
+      // block so that all work done when the active tab changes is included in
+      // the measurement.
+      tab_switch_event_latency_recorder_.OnWillChangeActiveTab(
+          base::TimeTicks::Now());
     }
     TabStripModelChange change;
     auto visibility_tracker = InstallRenderWigetVisibilityTracker(selection);

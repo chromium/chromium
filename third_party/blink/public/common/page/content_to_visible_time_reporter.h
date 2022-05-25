@@ -72,6 +72,12 @@ class BLINK_COMMON_EXPORT ContentToVisibleTimeReporter {
       bool show_reason_bfcache_restore,
       const gfx::PresentationFeedback& feedback);
 
+  // Saves the given `state` and `has_saved_frames`, and invalidates all
+  // existing callbacks that might reference the old state.
+  void ResetTabSwitchStartState(
+      mojom::RecordContentToVisibleTimeRequestPtr state = nullptr,
+      bool has_saved_frames = false);
+
   // Whether there was a saved frame for the last tab switch.
   bool has_saved_frames_;
 
