@@ -5,9 +5,10 @@
 import("//chrome/common/features.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
-import("//tools/polymer/html_to_js.gni")
+import("//tools/polymer/html_to_wrapper.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
+import("./commander.gni")
 
 preprocess_folder = "preprocessed"
 
@@ -22,23 +23,16 @@ generate_grd("build_grd") {
 }
 
 preprocess_if_expr("preprocess") {
-  in_folder = "./"
+  in_folder = "."
   out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = [
-    "browser_proxy.ts",
-    "types.ts",
-  ]
+  in_files = ts_files
 }
 
 preprocess_if_expr("preprocess_generated") {
-  deps = [ ":web_components" ]
+  deps = [ ":html_wrapper_files" ]
   in_folder = target_gen_dir
   out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = [
-    "app.ts",
-    "icons.ts",
-    "option.ts",
-  ]
+  in_files = html_wrapper_files
 }
 
 grit("resources") {
@@ -57,25 +51,15 @@ grit("resources") {
   output_dir = "$root_gen_dir/chrome"
 }
 
-html_to_js("web_components") {
-  js_files = [
-    "app.ts",
-    "option.ts",
-    "icons.ts",
-  ]
+html_to_wrapper("html_wrapper_files") {
+  in_files = html_files + icons_html_files
 }
 
 ts_library("build_ts") {
   root_dir = "$target_gen_dir/$preprocess_folder"
   out_dir = "$target_gen_dir/tsc"
   tsconfig_base = "tsconfig_base.json"
-  in_files = [
-    "app.ts",
-    "browser_proxy.ts",
-    "icons.ts",
-    "option.ts",
-    "types.ts",
-  ]
+  in_files = ts_files + html_wrapper_files
   definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
   deps = [
     "//third_party/polymer/v3_0:library",
