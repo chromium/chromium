@@ -56422,6 +56422,7 @@ from previous Chrome versions.
       label="OmniboxUIExperimentRevealSteadyStateUrlPathQueryAndRefOnHover:enabled"/>
   <int value="-897069393"
       label="kAutofillRationalizeRepeatedServerPredictions:disabled"/>
+  <int value="-896040242" label="PrefetchFontLookupTables:enabled"/>
   <int value="-895071695" label="DesktopScreenshots:enabled"/>
   <int value="-894774400" label="FiltersInRecentsV2:enabled"/>
   <int value="-894214299" label="fill-on-account-select:enabled"/>
@@ -59720,6 +59721,7 @@ from previous Chrome versions.
   <int value="1305792241" label="SafeBrowsingEnhancedProtection:disabled"/>
   <int value="1307003774" label="AutofillEnableCompanyName:disabled"/>
   <int value="1308537004" label="force-pnacl-subzero"/>
+  <int value="1308583017" label="PrefetchFontLookupTables:disabled"/>
   <int value="1310000273" label="ReleaseNotesNotificationAllChannels:disabled"/>
   <int value="1310316934" label="OptimizationGuideModelDownloading:enabled"/>
   <int value="1311443340" label="DriveFsChromeNetworking:enabled"/>

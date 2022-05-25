@@ -1469,6 +1469,11 @@ const base::Feature kSubstringSetTreeForAttributeBuckets{
 const base::Feature kPendingBeaconAPI{"PendingBeaconAPI",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+const base::Feature kPrefetchFontLookupTables{
+    "PrefetchFontLookupTables", base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
+
 const base::Feature kSimulateClickOnAXFocus {
   "SimulateClickOnAXFocus",
 #if BUILDFLAG(IS_WIN)

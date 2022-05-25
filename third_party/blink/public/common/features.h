@@ -758,6 +758,11 @@ BLINK_COMMON_EXPORT extern const base::Feature
 // https://github.com/darrenw/docs/blob/main/explainers/beacon_api.md
 BLINK_COMMON_EXPORT extern const base::Feature kPendingBeaconAPI;
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+// If enabled, font lookup tables will be prefetched on renderer startup.
+BLINK_COMMON_EXPORT extern const base::Feature kPrefetchFontLookupTables;
+#endif
+
 // TODO(accessibility): This flag is set to accommodate JAWS on Windows so they
 // can adjust to us not simulating click events on a focus action. It should be
 // disabled by default (and removed) before 5/17/2023.
