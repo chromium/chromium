@@ -16,6 +16,9 @@ import static org.mockito.Mockito.when;
 import android.app.PendingIntent;
 import android.app.PendingIntent.CanceledException;
 
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.CommonStatusCodes;
+import com.google.android.gms.common.api.Status;
 import com.google.common.base.Optional;
 
 import org.junit.Assert;
@@ -41,6 +44,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.loading_modal.LoadingModalDialogCoordinator;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerError;
+import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelper.PasswordCheckBackendException;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
@@ -82,6 +86,20 @@ public class PasswordManagerHelperTest {
             "PasswordManager.PasswordCheckup.GetIntent.Success";
     private static final String PASSWORD_CHECKUP_GET_INTENT_ERROR_HISTOGRAM =
             "PasswordManager.PasswordCheckup.GetIntent.Error";
+    private static final String PASSWORD_CHECKUP_GET_INTENT_API_ERROR_HISTOGRAM =
+            "PasswordManager.PasswordCheckup.GetIntent.APIError";
+
+    private static final String PASSWORD_CHECKUP_RUN_PASSWORD_CHECKUP_ERROR_HISTOGRAM =
+            "PasswordManager.PasswordCheckup.RunPasswordCheckup.Error";
+    private static final String PASSWORD_CHECKUP_RUN_PASSWORD_CHECKUP_API_ERROR_HISTOGRAM =
+            "PasswordManager.PasswordCheckup.RunPasswordCheckup.APIError";
+
+    private static final String PASSWORD_CHECKUP_GET_BREACHED_CREDENTIALS_COUNT_ERROR_HISTOGRAM =
+            "PasswordManager.PasswordCheckup.GetBreachedCredentialsCount.Error";
+    private static final String
+            PASSWORD_CHECKUP_GET_BREACHED_CREDENTIALS_COUNT_API_ERROR_HISTOGRAM =
+                    "PasswordManager.PasswordCheckup.GetBreachedCredentialsCount.APIError";
+
     private static final String PASSWORD_CHECKUP_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM =
             "PasswordManager.PasswordCheckup.Launch.Success";
 
@@ -299,7 +317,7 @@ public class PasswordManagerHelperTest {
                 mSyncServiceMock, mModalDialogManagerSupplier);
 
         verify(mPasswordCheckupClientHelperMock)
-                .getPasswordCheckupPendingIntent(eq(PasswordCheckReferrer.SAFETY_CHECK),
+                .getPasswordCheckupIntent(eq(PasswordCheckReferrer.SAFETY_CHECK),
                         eq(Optional.of(TEST_EMAIL_ADDRESS)), any(Callback.class),
                         any(Callback.class));
     }
@@ -313,7 +331,7 @@ public class PasswordManagerHelperTest {
                 mSyncServiceMock, mModalDialogManagerSupplier);
 
         verify(mPasswordCheckupClientHelperMock)
-                .getPasswordCheckupPendingIntent(eq(PasswordCheckReferrer.SAFETY_CHECK),
+                .getPasswordCheckupIntent(eq(PasswordCheckReferrer.SAFETY_CHECK),
                         eq(Optional.absent()), any(Callback.class), any(Callback.class));
     }
 
@@ -355,7 +373,36 @@ public class PasswordManagerHelperTest {
     @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
     public void testRecordsErrorMetricsForPasswordCheckupIntent() {
         chooseToSyncPasswordsWithoutCustomPassphrase();
-        returnErrorWhenFetchingIntentForPasswordCheckup(CredentialManagerError.API_ERROR);
+        returnErrorWhenFetchingIntentForPasswordCheckup(
+                new PasswordCheckBackendException("", CredentialManagerError.UNCATEGORIZED));
+
+        PasswordManagerHelper.showPasswordCheckup(ContextUtils.getApplicationContext(),
+                PasswordCheckReferrer.SAFETY_CHECK, mPasswordCheckupClientHelperMock,
+                mSyncServiceMock, mModalDialogManagerSupplier);
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        PASSWORD_CHECKUP_GET_INTENT_ERROR_HISTOGRAM,
+                        CredentialManagerError.UNCATEGORIZED));
+        Assert.assertEquals(0,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        PASSWORD_CHECKUP_GET_INTENT_API_ERROR_HISTOGRAM));
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        PASSWORD_CHECKUP_GET_INTENT_SUCCESS_HISTOGRAM, 0));
+        Assert.assertEquals(0,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        PASSWORD_CHECKUP_GET_INTENT_LATENCY_HISTOGRAM));
+        Assert.assertEquals(0,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        PASSWORD_CHECKUP_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
+    public void testRecordsApiErrorMetricsForPasswordCheckupIntent() {
+        chooseToSyncPasswordsWithoutCustomPassphrase();
+        returnErrorWhenFetchingIntentForPasswordCheckup(
+                new ApiException(new Status(CommonStatusCodes.DEVELOPER_ERROR)));
 
         PasswordManagerHelper.showPasswordCheckup(ContextUtils.getApplicationContext(),
                 PasswordCheckReferrer.SAFETY_CHECK, mPasswordCheckupClientHelperMock,
@@ -366,6 +413,10 @@ public class PasswordManagerHelperTest {
                         CredentialManagerError.API_ERROR));
         Assert.assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
+                        PASSWORD_CHECKUP_GET_INTENT_API_ERROR_HISTOGRAM,
+                        CommonStatusCodes.DEVELOPER_ERROR));
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
                         PASSWORD_CHECKUP_GET_INTENT_SUCCESS_HISTOGRAM, 0));
         Assert.assertEquals(0,
                 RecordHistogram.getHistogramTotalCountForTesting(
@@ -373,6 +424,84 @@ public class PasswordManagerHelperTest {
         Assert.assertEquals(0,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         PASSWORD_CHECKUP_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
+    public void testRecordsErrorMetricsForRunPasswordCheckup() {
+        chooseToSyncPasswordsWithoutCustomPassphrase();
+        returnErrorWhenRunningPasswordCheckup(
+                new PasswordCheckBackendException("", CredentialManagerError.UNCATEGORIZED));
+
+        PasswordManagerHelper.runPasswordCheckupInBackground(PasswordCheckReferrer.SAFETY_CHECK,
+                mPasswordCheckupClientHelperMock, Optional.of(TEST_EMAIL_ADDRESS),
+                mock(Callback.class), mock(Callback.class));
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        PASSWORD_CHECKUP_RUN_PASSWORD_CHECKUP_ERROR_HISTOGRAM,
+                        CredentialManagerError.UNCATEGORIZED));
+        Assert.assertEquals(0,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        PASSWORD_CHECKUP_RUN_PASSWORD_CHECKUP_API_ERROR_HISTOGRAM));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
+    public void testRecordsApiErrorMetricsForRunPasswordCheckup() {
+        chooseToSyncPasswordsWithoutCustomPassphrase();
+        returnErrorWhenRunningPasswordCheckup(
+                new ApiException(new Status(CommonStatusCodes.DEVELOPER_ERROR)));
+
+        PasswordManagerHelper.runPasswordCheckupInBackground(PasswordCheckReferrer.SAFETY_CHECK,
+                mPasswordCheckupClientHelperMock, Optional.of(TEST_EMAIL_ADDRESS),
+                mock(Callback.class), mock(Callback.class));
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        PASSWORD_CHECKUP_RUN_PASSWORD_CHECKUP_ERROR_HISTOGRAM,
+                        CredentialManagerError.API_ERROR));
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        PASSWORD_CHECKUP_RUN_PASSWORD_CHECKUP_API_ERROR_HISTOGRAM,
+                        CommonStatusCodes.DEVELOPER_ERROR));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
+    public void testRecordsErrorMetricsForGetBreachedCredentialsCount() {
+        chooseToSyncPasswordsWithoutCustomPassphrase();
+        returnErrorWhenGettingBreachedCredentialsCount(
+                new PasswordCheckBackendException("", CredentialManagerError.UNCATEGORIZED));
+
+        PasswordManagerHelper.getBreachedCredentialsCount(PasswordCheckReferrer.SAFETY_CHECK,
+                mPasswordCheckupClientHelperMock, Optional.of(TEST_EMAIL_ADDRESS),
+                mock(Callback.class), mock(Callback.class));
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        PASSWORD_CHECKUP_GET_BREACHED_CREDENTIALS_COUNT_ERROR_HISTOGRAM,
+                        CredentialManagerError.UNCATEGORIZED));
+        Assert.assertEquals(0,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        PASSWORD_CHECKUP_GET_BREACHED_CREDENTIALS_COUNT_API_ERROR_HISTOGRAM));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
+    public void testRecordsApiErrorMetricsForGetBreachedCredentialsCount() {
+        chooseToSyncPasswordsWithoutCustomPassphrase();
+        returnErrorWhenGettingBreachedCredentialsCount(
+                new ApiException(new Status(CommonStatusCodes.DEVELOPER_ERROR)));
+
+        PasswordManagerHelper.getBreachedCredentialsCount(PasswordCheckReferrer.SAFETY_CHECK,
+                mPasswordCheckupClientHelperMock, Optional.of(TEST_EMAIL_ADDRESS),
+                mock(Callback.class), mock(Callback.class));
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        PASSWORD_CHECKUP_GET_BREACHED_CREDENTIALS_COUNT_ERROR_HISTOGRAM,
+                        CredentialManagerError.API_ERROR));
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        PASSWORD_CHECKUP_GET_BREACHED_CREDENTIALS_COUNT_API_ERROR_HISTOGRAM,
+                        CommonStatusCodes.DEVELOPER_ERROR));
     }
 
     @Test
@@ -391,9 +520,6 @@ public class PasswordManagerHelperTest {
         Assert.assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         PASSWORD_CHECKUP_GET_INTENT_SUCCESS_HISTOGRAM, 1));
-        Assert.assertEquals(0,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        PASSWORD_CHECKUP_GET_INTENT_ERROR_HISTOGRAM));
         Assert.assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         PASSWORD_CHECKUP_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM, 0));
@@ -444,7 +570,8 @@ public class PasswordManagerHelperTest {
     public void testDismissesLoadingDialogOnPasswordCheckupIntentGetError()
             throws CanceledException {
         chooseToSyncPasswordsWithoutCustomPassphrase();
-        returnErrorWhenFetchingIntentForPasswordCheckup(CredentialManagerError.API_ERROR);
+        returnErrorWhenFetchingIntentForPasswordCheckup(
+                new PasswordCheckBackendException("", CredentialManagerError.UNCATEGORIZED));
 
         PasswordManagerHelper.launchPasswordCheckup(PasswordCheckReferrer.SAFETY_CHECK,
                 mPasswordCheckupClientHelperMock, Optional.of(TEST_EMAIL_ADDRESS),
@@ -962,7 +1089,8 @@ public class PasswordManagerHelperTest {
     public void testRecordsCheckupLoadingDialogMetricsOnIntentFetchError()
             throws CanceledException {
         chooseToSyncPasswordsWithoutCustomPassphrase();
-        returnErrorWhenFetchingIntentForPasswordCheckup(CredentialManagerError.API_ERROR);
+        returnErrorWhenFetchingIntentForPasswordCheckup(
+                new PasswordCheckBackendException("", CredentialManagerError.UNCATEGORIZED));
         when(mLoadingModalDialogCoordinator.getState())
                 .thenReturn(LoadingModalDialogCoordinator.State.PENDING);
 
@@ -999,6 +1127,30 @@ public class PasswordManagerHelperTest {
                         PasswordManagerHelper.LoadingDialogOutcome.NOT_SHOWN_LOADED));
     }
 
+    @Test
+    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
+    public void testRecordsErrorMetricsWhenRunPasswordCheckupFails() {
+        Exception expectedException =
+                new PasswordCheckBackendException("", CredentialManagerError.UNCATEGORIZED);
+        returnErrorWhenRunningPasswordCheckup(expectedException);
+
+        PasswordManagerHelper.runPasswordCheckupInBackground(PasswordCheckReferrer.SAFETY_CHECK,
+                mPasswordCheckupClientHelperMock, Optional.of(TEST_EMAIL_ADDRESS),
+                mock(Callback.class), mock(Callback.class));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)
+    public void testRecordsErrorMetricsWhenGetBreachedCredentialsCountFails() {
+        Exception expectedException =
+                new PasswordCheckBackendException("", CredentialManagerError.UNCATEGORIZED);
+        returnErrorWhenGettingBreachedCredentialsCount(expectedException);
+
+        PasswordManagerHelper.getBreachedCredentialsCount(PasswordCheckReferrer.SAFETY_CHECK,
+                mPasswordCheckupClientHelperMock, Optional.of(TEST_EMAIL_ADDRESS),
+                mock(Callback.class), mock(Callback.class));
+    }
+
     private void chooseToSyncPasswordsWithoutCustomPassphrase() {
         when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(true);
         when(mSyncServiceMock.getChosenDataTypes())
@@ -1025,7 +1177,7 @@ public class PasswordManagerHelperTest {
             return true;
         })
                 .when(mPasswordCheckupClientHelperMock)
-                .getPasswordCheckupPendingIntent(eq(PasswordCheckReferrer.SAFETY_CHECK),
+                .getPasswordCheckupIntent(eq(PasswordCheckReferrer.SAFETY_CHECK),
                         eq(Optional.of(TEST_EMAIL_ADDRESS)), any(Callback.class),
                         any(Callback.class));
     }
@@ -1041,15 +1193,38 @@ public class PasswordManagerHelperTest {
                         eq(TEST_EMAIL_ADDRESS), any(Callback.class), any(Callback.class));
     }
 
-    private void returnErrorWhenFetchingIntentForPasswordCheckup(
-            @CredentialManagerError int error) {
+    private void returnErrorWhenFetchingIntentForPasswordCheckup(Exception error) {
         doAnswer(invocation -> {
-            Callback<Integer> cb = invocation.getArgument(3);
+            Callback<Exception> cb = invocation.getArgument(3);
             cb.onResult(error);
             return true;
         })
                 .when(mPasswordCheckupClientHelperMock)
-                .getPasswordCheckupPendingIntent(eq(PasswordCheckReferrer.SAFETY_CHECK),
+                .getPasswordCheckupIntent(eq(PasswordCheckReferrer.SAFETY_CHECK),
+                        eq(Optional.of(TEST_EMAIL_ADDRESS)), any(Callback.class),
+                        any(Callback.class));
+    }
+
+    private void returnErrorWhenRunningPasswordCheckup(Exception error) {
+        doAnswer(invocation -> {
+            Callback<Exception> cb = invocation.getArgument(3);
+            cb.onResult(error);
+            return true;
+        })
+                .when(mPasswordCheckupClientHelperMock)
+                .runPasswordCheckupInBackground(eq(PasswordCheckReferrer.SAFETY_CHECK),
+                        eq(Optional.of(TEST_EMAIL_ADDRESS)), any(Callback.class),
+                        any(Callback.class));
+    }
+
+    private void returnErrorWhenGettingBreachedCredentialsCount(Exception error) {
+        doAnswer(invocation -> {
+            Callback<Exception> cb = invocation.getArgument(3);
+            cb.onResult(error);
+            return true;
+        })
+                .when(mPasswordCheckupClientHelperMock)
+                .getBreachedCredentialsCount(eq(PasswordCheckReferrer.SAFETY_CHECK),
                         eq(Optional.of(TEST_EMAIL_ADDRESS)), any(Callback.class),
                         any(Callback.class));
     }

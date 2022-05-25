@@ -11,6 +11,7 @@ import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.ResolvableApiException;
 
 import org.chromium.base.Log;
+import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerError;
 
 /**
  * Collection of utilities used by classes interacting with the password manager backend
@@ -29,6 +30,17 @@ class PasswordManagerAndroidBackendUtil {
             return AndroidBackendErrorType.EXTERNAL_ERROR;
         }
         return AndroidBackendErrorType.UNCATEGORIZED;
+    }
+
+    static @CredentialManagerError int getPasswordCheckupBackendError(Exception exception) {
+        if (exception instanceof PasswordCheckupClientHelper.PasswordCheckBackendException) {
+            return ((PasswordCheckupClientHelper.PasswordCheckBackendException) exception)
+                    .errorCode;
+        }
+        if (exception instanceof ApiException) {
+            return CredentialManagerError.API_ERROR;
+        }
+        return CredentialManagerError.UNCATEGORIZED;
     }
 
     static int getApiErrorCode(Exception exception) {

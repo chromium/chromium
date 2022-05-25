@@ -74310,6 +74310,11 @@ Called by update_net_trust_anchors.py.-->
   <int value="11004" label="ACCESS_DENIED"/>
   <int value="11005" label="AUTH_ERROR_RESOLVABLE"/>
   <int value="11006" label="AUTH_ERROR_UNRESOLVABLE"/>
+  <int value="43502" label="CHROME_SYNC_API_CALL_ERROR"/>
+  <int value="43504" label="ERROR_WHILE_DOING_LEAK_CHECK_SERVICE_GRPC"/>
+  <int value="43507" label="REQUIRED_SYNCED_ACCOUNT_MISSING"/>
+  <int value="43508" label="LEAK_CHECK_SERVICE_AUTH_ERROR"/>
+  <int value="43509" label="LEAK_CHECK_SERVICE_RESOURCE_EXHAUSTED"/>
 </enum>
 
 <enum name="PasswordStoreAndroidBackendError">

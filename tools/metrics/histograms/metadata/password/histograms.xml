@@ -29,6 +29,13 @@ chromium-metrics-reviews@google.com.
   <variant name=".WithoutCustomPassphrase" summary="regularly encrypted"/>
 </variants>
 
+<variants name="PasswordCheckupOperation">
+  <variant name="GetBreachedCredentialsCount"
+      summary="get breached credentials count"/>
+  <variant name="GetIntent" summary="get password checkup UI intent"/>
+  <variant name="RunPasswordCheckup" summary="run password checkup"/>
+</variants>
+
 <variants name="PasswordManagerSetting">
   <variant name="AutoSignIn" summary="auto sign in preference"/>
   <variant name="OfferToSavePasswords"
@@ -1948,18 +1955,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="PasswordManager.PasswordCheckup.GetIntent.Error"
-    enum="CredentialManagerError" expires_after="M105">
-  <owner>ioanap@chromium.org</owner>
-  <owner>vsemeniuk@google.com</owner>
-  <summary>
-    Records the error encountered while attempting to fetch the Password Checkup
-    launch intent from Google Play Services. This is recorded either before
-    making the actual request (if the preconditions are not met) or after the
-    asynchronous call comes back with an error.
-  </summary>
-</histogram>
-
 <histogram name="PasswordManager.PasswordCheckup.GetIntent.Latency" units="ms"
     expires_after="M105">
   <owner>ioanap@chromium.org</owner>
@@ -1994,6 +1989,34 @@ chromium-metrics-reviews@google.com.
     Services returns. Metric will not be reported when the Loading dialog is
     cancelled by user or timed out.
   </summary>
+</histogram>
+
+<histogram name="PasswordManager.PasswordCheckup.{Operation}.APIError"
+    enum="PasswordStoreAndroidBackendAPIError" expires_after="M105">
+  <owner>ioanap@chromium.org</owner>
+  <owner>maxan@google.com</owner>
+  <summary>
+    Records the error code returned by the GMS Password Checkup 1P API while
+    attempting to {Operation}. This is recorded after the asynchronous call
+    comes back with an error. This is only recorded for GMS API errors on
+    Android.
+  </summary>
+  <token key="Operation" variants="PasswordCheckupOperation"/>
+</histogram>
+
+<histogram name="PasswordManager.PasswordCheckup.{Operation}.Error"
+    enum="CredentialManagerError" expires_after="M105">
+  <owner>ioanap@chromium.org</owner>
+  <owner>maxan@google.com</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    Records the backend error code encountered while attempting to {Operation}.
+    If the code is equal to 2 (API_ERROR), GMS 1P API error code is additionally
+    reported. This is recorded either before making the actual request (if the
+    preconditions are not met) or after the asynchronous call comes back with an
+    error. This is currently only recorded on Android.
+  </summary>
+  <token key="Operation" variants="PasswordCheckupOperation"/>
 </histogram>
 
 <histogram name="PasswordManager.PasswordDropdownItemSelected"

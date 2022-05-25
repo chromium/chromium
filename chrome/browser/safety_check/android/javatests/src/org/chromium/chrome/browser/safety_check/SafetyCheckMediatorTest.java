@@ -109,7 +109,7 @@ public class SafetyCheckMediatorTest {
 
     private Callback<Void> mRunPasswordCheckSuccessfullyCallback;
 
-    private Callback<Integer> mRunPasswordCheckFailedCallback;
+    private Callback<Exception> mRunPasswordCheckFailedCallback;
 
     private boolean mUseNewApi;
 
@@ -132,7 +132,7 @@ public class SafetyCheckMediatorTest {
         }
         if (hasError) {
             assertNotNull(mRunPasswordCheckFailedCallback);
-            mRunPasswordCheckFailedCallback.onResult(null);
+            mRunPasswordCheckFailedCallback.onResult(new Exception());
         } else {
             assertNotNull(mRunPasswordCheckSuccessfullyCallback);
             mRunPasswordCheckSuccessfullyCallback.onResult(null);
@@ -171,7 +171,7 @@ public class SafetyCheckMediatorTest {
                 return null;
             })
                     .when(mPasswordCheckupHelper)
-                    .getNumberOfBreachedCredentials(anyInt(), any(), any(Callback.class), any());
+                    .getBreachedCredentialsCount(anyInt(), any(), any(Callback.class), any());
             when(mPasswordStoreBridge.getPasswordStoreCredentialsCount()).thenReturn(passwordCount);
         } else {
             doAnswer(invocation -> {
@@ -195,7 +195,7 @@ public class SafetyCheckMediatorTest {
             return null;
         })
                 .when(mPasswordCheckupHelper)
-                .getNumberOfBreachedCredentials(anyInt(), any(), any(Callback.class), any());
+                .getBreachedCredentialsCount(anyInt(), any(), any(Callback.class), any());
     }
 
     private void captureRunPasswordCheckCallback() {
@@ -206,7 +206,7 @@ public class SafetyCheckMediatorTest {
             return null;
         })
                 .when(mPasswordCheckupHelper)
-                .runPasswordCheckup(anyInt(), any(), any(Callback.class), any(Callback.class));
+                .runPasswordCheckupInBackground(anyInt(), any(), any(Callback.class), any());
     }
 
     @Before

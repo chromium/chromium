@@ -22,7 +22,8 @@ public interface CredentialManagerLauncher {
      * in enums.xml.
      */
     @IntDef({CredentialManagerError.NO_CONTEXT, CredentialManagerError.NO_ACCOUNT_NAME,
-            CredentialManagerError.API_ERROR, CredentialManagerError.COUNT})
+            CredentialManagerError.API_ERROR, CredentialManagerError.UNCATEGORIZED,
+            CredentialManagerError.COUNT})
     @Retention(RetentionPolicy.SOURCE)
     public @interface CredentialManagerError {
         // There is no application context.
@@ -31,7 +32,9 @@ public interface CredentialManagerLauncher {
         int NO_ACCOUNT_NAME = 1;
         // Error encountered after calling the API to fetch the launch intent.
         int API_ERROR = 2;
-        int COUNT = 3;
+        // Error is not categorized.
+        int UNCATEGORIZED = 3;
+        int COUNT = 4;
     }
 
     /**
