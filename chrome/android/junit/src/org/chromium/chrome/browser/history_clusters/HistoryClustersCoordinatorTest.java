@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListLayout;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.favicon.LargeIconBridgeJni;
+import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.display.DisplayAndroidManager;
 
 /** Unit tests for HistoryClustersCoordinator. */
@@ -69,6 +70,8 @@ public class HistoryClustersCoordinatorTest {
     private HistoryClustersBridge mHistoryClustersBridge;
     @Mock
     LargeIconBridge.Natives mMockLargeIconBridgeJni;
+    @Mock
+    private TemplateUrlService mTemplateUrlService;
 
     private ActivityScenario<ChromeTabbedActivity> mActivityScenario;
     private HistoryClustersCoordinator mHistoryClustersCoordinator;
@@ -83,8 +86,8 @@ public class HistoryClustersCoordinatorTest {
 
         mActivityScenario = ActivityScenario.launch(ChromeTabbedActivity.class);
         mActivityScenario.onActivity(activity -> {
-            mHistoryClustersCoordinator = new HistoryClustersCoordinator(
-                    mProfile, activity, () -> mIntent, () -> mTab, (url) -> new Intent());
+            mHistoryClustersCoordinator = new HistoryClustersCoordinator(mProfile, activity,
+                    () -> mIntent, () -> mTab, (url) -> new Intent(), mTemplateUrlService);
         });
     }
 

@@ -113,7 +113,9 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
         if (historyClustersEnabled) {
             mHistoryClustersCoordinator = new HistoryClustersCoordinator(
                     Profile.getLastUsedRegularProfile(), activity, null, tabSupplier,
-                    (url) -> HistoryContentManager.createOpenUrlIntent(url, mActivity));
+                    (url)
+                            -> HistoryContentManager.createOpenUrlIntent(url, mActivity),
+                    TemplateUrlServiceFactory.get());
             if (!TextUtils.isEmpty(historyClustersQuery)) {
                 mHistoryClustersCoordinator.setQuery(historyClustersQuery);
             }

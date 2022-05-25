@@ -30,6 +30,7 @@ import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar.SearchDelegate;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.favicon.LargeIconBridge;
+import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.DeviceFormFactor;
@@ -62,6 +63,7 @@ class HistoryClustersMediator implements SearchDelegate {
     private Function<GURL, Intent> mOpenUrlIntentCreator;
     private CallbackController mCallbackController = new CallbackController();
     private Clock mClock;
+    private final TemplateUrlService mTemplateUrlService;
 
     /**
      * Create a new HistoryClustersMediator.
@@ -81,12 +83,14 @@ class HistoryClustersMediator implements SearchDelegate {
      * @param openUrlIntentCreator Function that creates an intent that opens the given url in the
      *         correct main browsing activity.
      * @param clock Provider of the current time in ms relative to the unix epoch.
+     * @param templateUrlService Service that allows us to generate a URL for a given search query.
      */
     HistoryClustersMediator(@NonNull HistoryClustersBridge historyClustersBridge,
             LargeIconBridge largeIconBridge, @NonNull Context context, @NonNull Resources resources,
             @NonNull ModelList modelList, @NonNull PropertyModel toolbarModel,
             Supplier<Intent> historyActivityIntentFactory, @Nullable Supplier<Tab> tabSupplier,
-            boolean isSeparateActivity, Function<GURL, Intent> openUrlIntentCreator, Clock clock) {
+            boolean isSeparateActivity, Function<GURL, Intent> openUrlIntentCreator, Clock clock,
+            TemplateUrlService templateUrlService) {
         mHistoryClustersBridge = historyClustersBridge;
         mLargeIconBridge = largeIconBridge;
         mModelList = modelList;
@@ -100,6 +104,7 @@ class HistoryClustersMediator implements SearchDelegate {
         mIsSeparateActivity = isSeparateActivity;
         mOpenUrlIntentCreator = openUrlIntentCreator;
         mClock = clock;
+        mTemplateUrlService = templateUrlService;
     }
 
     // SearchDelegate implementation.
@@ -154,6 +159,14 @@ class HistoryClustersMediator implements SearchDelegate {
         mContext.startActivity(historyActivityIntent);
     }
 
+    void onRelatedSearchesChipClicked(String searchQuery) {
+        if (!mTemplateUrlService.isLoaded()) {
+            return;
+        }
+
+        navigateToItemUrl(new GURL(mTemplateUrlService.getUrlForSearchQuery(searchQuery)));
+    }
+
     private void queryComplete(HistoryClustersResult result) {
         boolean isQueryless = result.getQuery().isEmpty();
         for (HistoryCluster cluster : result.getClusters()) {
@@ -170,7 +183,8 @@ class HistoryClustersMediator implements SearchDelegate {
                 continue;
             }
 
-            List<ListItem> visitItems = new ArrayList<>(cluster.getVisits().size());
+            List<ListItem> visitsAndRelatedSearches =
+                    new ArrayList<>(cluster.getVisits().size() + 1);
             for (ClusterVisit visit : cluster.getVisits()) {
                 PropertyModel visitModel =
                         new PropertyModel(HistoryClustersItemProperties.ALL_KEYS);
@@ -190,12 +204,26 @@ class HistoryClustersMediator implements SearchDelegate {
                             });
                 }
 
-                visitItems.add(new ListItem(ItemType.VISIT, visitModel));
+                visitsAndRelatedSearches.add(new ListItem(ItemType.VISIT, visitModel));
             }
 
-            mModelList.addAll(visitItems);
+            List<String> relatedSearches = cluster.getRelatedSearches();
+            if (!relatedSearches.isEmpty()) {
+                PropertyModel relatedSearchesModel =
+                        new PropertyModel(HistoryClustersItemProperties.ALL_KEYS);
+                relatedSearchesModel.set(
+                        HistoryClustersItemProperties.RELATED_SEARCHES, relatedSearches);
+                relatedSearchesModel.set(HistoryClustersItemProperties.CHIP_CLICK_HANDLER,
+                        this::onRelatedSearchesChipClicked);
+                ListItem relatedSearchesItem =
+                        new ListItem(ItemType.RELATED_SEARCHES, relatedSearchesModel);
+                visitsAndRelatedSearches.add(relatedSearchesItem);
+            }
+
+            mModelList.addAll(visitsAndRelatedSearches);
+
             clusterModel.set(HistoryClustersItemProperties.CLICK_HANDLER,
-                    (v) -> hideCluster(cluster, clusterModel, visitItems));
+                    v -> hideCluster(cluster, clusterModel, visitsAndRelatedSearches));
             Drawable chevron = UiUtils.getTintedDrawable(mContext,
                     R.drawable.ic_expand_more_black_24dp, R.color.default_icon_color_tint_list);
             clusterModel.set(HistoryClustersItemProperties.END_BUTTON_DRAWABLE, chevron);
@@ -206,27 +234,27 @@ class HistoryClustersMediator implements SearchDelegate {
 
     @VisibleForTesting
     void hideCluster(
-            HistoryCluster cluster, PropertyModel clusterModel, List<ListItem> visitItems) {
+            HistoryCluster cluster, PropertyModel clusterModel, List<ListItem> itemsToHide) {
         clusterModel.set(HistoryClustersItemProperties.CLICK_HANDLER,
-                (v) -> showCluster(cluster, clusterModel, visitItems));
+                (v) -> showCluster(cluster, clusterModel, itemsToHide));
         Drawable chevron = UiUtils.getTintedDrawable(mContext, R.drawable.ic_expand_less_black_24dp,
                 R.color.default_icon_color_tint_list);
         clusterModel.set(HistoryClustersItemProperties.END_BUTTON_DRAWABLE, chevron);
 
-        for (ListItem item : visitItems) {
+        for (ListItem item : itemsToHide) {
             item.model.set(HistoryClustersItemProperties.VISIBILITY, View.GONE);
         }
     }
 
     @VisibleForTesting
     void showCluster(
-            HistoryCluster cluster, PropertyModel clusterModel, List<ListItem> visitItems) {
+            HistoryCluster cluster, PropertyModel clusterModel, List<ListItem> itemsToShow) {
         clusterModel.set(HistoryClustersItemProperties.CLICK_HANDLER,
-                (v) -> hideCluster(cluster, clusterModel, visitItems));
+                (v) -> hideCluster(cluster, clusterModel, itemsToShow));
         Drawable chevron = UiUtils.getTintedDrawable(mContext, R.drawable.ic_expand_more_black_24dp,
                 R.color.default_icon_color_tint_list);
         clusterModel.set(HistoryClustersItemProperties.END_BUTTON_DRAWABLE, chevron);
-        for (ListItem item : visitItems) {
+        for (ListItem item : itemsToShow) {
             item.model.set(HistoryClustersItemProperties.VISIBILITY, View.VISIBLE);
         }
     }

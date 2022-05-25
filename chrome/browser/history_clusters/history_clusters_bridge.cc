@@ -135,7 +135,8 @@ void HistoryClustersBridge::ClustersQueryDone(
             base::android::ConvertUTF16ToJavaString(env, label),
             base::android::ToJavaIntArray(env, label_match_starts),
             base::android::ToJavaIntArray(env, label_match_ends),
-            visit_time.ToJavaTime());
+            visit_time.ToJavaTime(),
+            base::android::ToJavaArrayOfStrings(env, cluster.related_searches));
     j_clusters.push_back(j_cluster);
   }
   ScopedJavaLocalRef<jclass> cluster_type = base::android::GetClass(

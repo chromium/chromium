@@ -9,14 +9,27 @@ import android.view.View.OnClickListener;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.base.Callback;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.List;
 
 class HistoryClustersItemProperties {
+    @IntDef({HistoryClustersItemProperties.ItemType.VISIT, ItemType.CLUSTER,
+            ItemType.RELATED_SEARCHES})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface ItemType {
+        int VISIT = 1;
+        int CLUSTER = 2;
+        int RELATED_SEARCHES = 3;
+    }
+
+    static final WritableObjectPropertyKey<Callback<String>> CHIP_CLICK_HANDLER =
+            new WritableObjectPropertyKey<>();
     static final WritableObjectPropertyKey<OnClickListener> CLICK_HANDLER =
             new WritableObjectPropertyKey<>();
     static final WritableObjectPropertyKey<Drawable> END_BUTTON_DRAWABLE =
@@ -24,17 +37,12 @@ class HistoryClustersItemProperties {
     static final WritableObjectPropertyKey<Drawable> ICON_DRAWABLE =
             new WritableObjectPropertyKey<>();
     static final WritableObjectPropertyKey<String> LABEL = new WritableObjectPropertyKey<>();
+    static final WritableObjectPropertyKey<List<String>> RELATED_SEARCHES =
+            new WritableObjectPropertyKey<>();
     static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>();
     static final WritableObjectPropertyKey<String> URL = new WritableObjectPropertyKey<>();
     static final WritableIntPropertyKey VISIBILITY = new WritableIntPropertyKey();
 
-    static final PropertyKey[] ALL_KEYS = {
-            CLICK_HANDLER, END_BUTTON_DRAWABLE, ICON_DRAWABLE, LABEL, TITLE, URL, VISIBILITY};
-
-    @IntDef({HistoryClustersItemProperties.ItemType.VISIT, ItemType.CLUSTER})
-    @Retention(RetentionPolicy.SOURCE)
-    @interface ItemType {
-        int VISIT = 1;
-        int CLUSTER = 2;
-    }
+    static final PropertyKey[] ALL_KEYS = {CHIP_CLICK_HANDLER, CLICK_HANDLER, END_BUTTON_DRAWABLE,
+            ICON_DRAWABLE, LABEL, RELATED_SEARCHES, TITLE, URL, VISIBILITY};
 }

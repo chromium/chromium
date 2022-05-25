@@ -12,6 +12,8 @@ import org.chromium.components.browser_ui.widget.selectable_list.SelectableListL
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.List;
+
 class HistoryClustersViewBinder {
     public static void bindVisitView(PropertyModel model, View view, PropertyKey key) {
         HistoryClustersItemView itemView = (HistoryClustersItemView) view;
@@ -67,6 +69,22 @@ class HistoryClustersViewBinder {
             clusterView.setLabel(model.get(HistoryClustersItemProperties.LABEL));
         } else if (key == HistoryClustersItemProperties.TITLE) {
             clusterView.setTitle(model.get(HistoryClustersItemProperties.TITLE));
+        }
+    }
+
+    public static void bindRelatedSearchesView(PropertyModel model, View view, PropertyKey key) {
+        HistoryClustersRelatedSearchesChipLayout relatedSearchesChipLayout =
+                (HistoryClustersRelatedSearchesChipLayout) view;
+        if (key == HistoryClustersItemProperties.CHIP_CLICK_HANDLER) {
+            relatedSearchesChipLayout.setOnChipClickHandler(
+                    model.get(HistoryClustersItemProperties.CHIP_CLICK_HANDLER));
+        } else if (key == HistoryClustersItemProperties.RELATED_SEARCHES) {
+            List<String> relatedSearches =
+                    model.get(HistoryClustersItemProperties.RELATED_SEARCHES);
+            relatedSearchesChipLayout.setRelatedSearches(relatedSearches);
+        } else if (key == HistoryClustersItemProperties.VISIBILITY) {
+            relatedSearchesChipLayout.setVisibility(
+                    model.get(HistoryClustersItemProperties.VISIBILITY));
         }
     }
 }

@@ -27,6 +27,7 @@ import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemV
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListLayout;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.favicon.LargeIconBridge;
+import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -63,7 +64,7 @@ public class HistoryClustersCoordinator implements OnMenuItemClickListener {
      */
     public HistoryClustersCoordinator(@NonNull Profile profile, @NonNull Context context,
             Supplier<Intent> historyActivityIntentFactory, @Nullable Supplier<Tab> tabSupplier,
-            Function<GURL, Intent> openUrlIntentCreator) {
+            Function<GURL, Intent> openUrlIntentCreator, TemplateUrlService templateUrlService) {
         mContext = context;
         mModelList = new ModelList();
         mToolbarModel = new PropertyModel.Builder(HistoryClustersToolbarProperties.ALL_KEYS)
@@ -73,7 +74,7 @@ public class HistoryClustersCoordinator implements OnMenuItemClickListener {
         mMediator = new HistoryClustersMediator(HistoryClustersBridge.getForProfile(profile),
                 new LargeIconBridge(profile), context, context.getResources(), mModelList,
                 mToolbarModel, historyActivityIntentFactory, tabSupplier, tabSupplier == null,
-                openUrlIntentCreator, System::currentTimeMillis);
+                openUrlIntentCreator, System::currentTimeMillis, templateUrlService);
     }
 
     public void destroy() {
@@ -111,6 +112,8 @@ public class HistoryClustersCoordinator implements OnMenuItemClickListener {
                 ItemType.VISIT, this::buildVisitView, HistoryClustersViewBinder::bindVisitView);
         mAdapter.registerType(ItemType.CLUSTER, this::buildClusterView,
                 HistoryClustersViewBinder::bindClusterView);
+        mAdapter.registerType(ItemType.RELATED_SEARCHES, this::buildRelatedSearchesView,
+                HistoryClustersViewBinder::bindRelatedSearchesView);
 
         LayoutInflater layoutInflater = LayoutInflater.from(mContext);
         mActivityContentView = (ViewGroup) layoutInflater.inflate(
@@ -154,6 +157,11 @@ public class HistoryClustersCoordinator implements OnMenuItemClickListener {
                 (SelectableItemView<ClusterVisit>) LayoutInflater.from(parent.getContext())
                         .inflate(R.layout.history_cluster_visit, parent, false);
         return itemView;
+    }
+
+    private View buildRelatedSearchesView(ViewGroup parent) {
+        return (HistoryClustersRelatedSearchesChipLayout) LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.history_clusters_related_searches_view, parent, false);
     }
 
     @Override

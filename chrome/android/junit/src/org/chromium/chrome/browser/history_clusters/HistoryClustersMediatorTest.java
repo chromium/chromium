@@ -16,7 +16,6 @@ import static org.robolectric.Shadows.shadowOf;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.graphics.drawable.Drawable;
 import android.view.View;
 
 import org.junit.Before;
@@ -39,6 +38,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.history_clusters.HistoryClustersItemProperties.ItemType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.favicon.LargeIconBridge;
+import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -48,6 +48,7 @@ import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -81,9 +82,9 @@ public class HistoryClustersMediatorTest {
     @Mock
     private Function<GURL, Intent> mUrlIntentCreator;
     @Mock
-    private Drawable mDrawable;
-    @Mock
     private HistoryClustersMediator.Clock mClock;
+    @Mock
+    private TemplateUrlService mTemplateUrlService;
 
     private ClusterVisit mVisit1;
     private ClusterVisit mVisit2;
@@ -109,14 +110,14 @@ public class HistoryClustersMediatorTest {
         mToolbarModel = new PropertyModel(HistoryClustersToolbarProperties.ALL_KEYS);
         mMediator = new HistoryClustersMediator(mBridge, mLargeIconBridge, mContext, mResources,
                 mModelList, mToolbarModel, mHistoryActivityIntentFactory, mTabSupplier, false,
-                mUrlIntentCreator, mClock);
+                mUrlIntentCreator, mClock, mTemplateUrlService);
         mVisit1 = new ClusterVisit(1.0F, mGurl1, "Title 1");
         mVisit2 = new ClusterVisit(1.0F, mGurl2, "Title 2");
         mVisit3 = new ClusterVisit(1.0F, mGurl3, "Title 3");
         mCluster1 = new HistoryCluster(Arrays.asList("foo"), Arrays.asList(mVisit1, mVisit2),
-                "label1", new ArrayList<>(), 456L);
+                "label1", new ArrayList<>(), 456L, Arrays.asList("search 1", "search 2"));
         mCluster2 = new HistoryCluster(Arrays.asList("bar", "baz"), Arrays.asList(mVisit3),
-                "label2", new ArrayList<>(), 123L);
+                "label2", new ArrayList<>(), 123L, Collections.emptyList());
         mHistoryClustersResultWithQuery = new HistoryClustersResult(
                 Arrays.asList(mCluster1, mCluster2), "query", false, false);
         mHistoryClustersResultEmptyQuery =
@@ -138,7 +139,7 @@ public class HistoryClustersMediatorTest {
 
         fulfillPromise(promise, mHistoryClustersResultWithQuery);
 
-        assertEquals(mModelList.size(), 5);
+        assertEquals(mModelList.size(), 6);
         ListItem clusterItem = mModelList.get(0);
         assertEquals(clusterItem.type, ItemType.CLUSTER);
         PropertyModel clusterModel = clusterItem.model;
@@ -155,6 +156,13 @@ public class HistoryClustersMediatorTest {
         assertTrue(visitModel.getAllSetProperties().containsAll(
                 Arrays.asList(HistoryClustersItemProperties.CLICK_HANDLER,
                         HistoryClustersItemProperties.TITLE, HistoryClustersItemProperties.URL)));
+
+        ListItem relatedSearchesItem = mModelList.get(3);
+        assertEquals(relatedSearchesItem.type, ItemType.RELATED_SEARCHES);
+        PropertyModel relatedSearchesModel = relatedSearchesItem.model;
+        assertTrue(relatedSearchesModel.getAllSetProperties().containsAll(
+                Arrays.asList(HistoryClustersItemProperties.CHIP_CLICK_HANDLER,
+                        HistoryClustersItemProperties.RELATED_SEARCHES)));
     }
     @Test
     public void testEmptyQuery() {
@@ -226,9 +234,10 @@ public class HistoryClustersMediatorTest {
 
     @Test
     public void testNavigateSeparateActivity() {
-        HistoryClustersMediator standaloneMediator = new HistoryClustersMediator(mBridge,
-                mLargeIconBridge, mContext, mResources, mModelList, mToolbarModel,
-                mHistoryActivityIntentFactory, mTabSupplier, true, mUrlIntentCreator, mClock);
+        HistoryClustersMediator standaloneMediator =
+                new HistoryClustersMediator(mBridge, mLargeIconBridge, mContext, mResources,
+                        mModelList, mToolbarModel, mHistoryActivityIntentFactory, mTabSupplier,
+                        true, mUrlIntentCreator, mClock, mTemplateUrlService);
         standaloneMediator.navigateToItemUrl(mMockGurl);
 
         verify(mUrlIntentCreator).apply(mMockGurl);
