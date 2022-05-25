@@ -149,10 +149,9 @@ absl::optional<cros::mojom::CameraClientType> TokenManager::AuthenticateClient(
     const base::UnguessableToken& token) {
   base::AutoLock l(client_token_map_lock_);
   if (type == cros::mojom::CameraClientType::UNKNOWN) {
-    for (const auto& client_token_map_pair : client_token_map_) {
-      const auto& token_set = client_token_map_pair.second;
+    for (const auto& [client_type, token_set] : client_token_map_) {
       if (token_set.find(token) != token_set.end()) {
-        return client_token_map_pair.first;
+        return client_type;
       }
     }
     return absl::nullopt;

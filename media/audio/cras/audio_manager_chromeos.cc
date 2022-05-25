@@ -235,15 +235,15 @@ void AudioManagerChromeOS::GetAudioDeviceNamesImpl(
     dev_idx_map[dev_index_of(device.id)].push_back(device);
   }
 
-  for (const auto& item : dev_idx_map) {
-    if (1 == item.second.size()) {
-      const AudioDevice& device = item.second.front();
+  for (const auto& [dev_idx, device_list] : dev_idx_map) {
+    if (1 == device_list.size()) {
+      const AudioDevice& device = device_list.front();
       device_names->emplace_back(device.display_name,
                                  base::NumberToString(device.id));
     } else {
       // Create virtual device name for audio nodes that share the same device
       // index.
-      ProcessVirtualDeviceName(device_names, item.second);
+      ProcessVirtualDeviceName(device_names, device_list);
     }
   }
 }

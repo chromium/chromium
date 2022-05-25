@@ -651,8 +651,7 @@ bool VTVideoDecodeAccelerator::OnMemoryDump(
 
   // Dump output pictures (decoded frames for which PictureReady() has been
   // called already).
-  for (const auto& it : picture_info_map_) {
-    PictureInfo* picture_info = it.second.get();
+  for (const auto& [texture_id, picture_info] : picture_info_map_) {
     for (const auto& gl_image : picture_info->gl_images) {
       std::string dump_name =
           base::StringPrintf("media/vt_video_decode_accelerator_%d/picture_%d",

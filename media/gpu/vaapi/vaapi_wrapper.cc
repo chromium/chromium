@@ -1531,9 +1531,7 @@ VideoEncodeAccelerator::SupportedProfiles
 VaapiWrapper::GetSupportedEncodeProfiles() {
   VideoEncodeAccelerator::SupportedProfiles profiles;
 
-  for (const auto& media_to_va_profile_map_entry : GetProfileCodecMap()) {
-    const VideoCodecProfile media_profile = media_to_va_profile_map_entry.first;
-    const VAProfile va_profile = media_to_va_profile_map_entry.second;
+  for (const auto& [media_profile, va_profile] : GetProfileCodecMap()) {
     DCHECK(va_profile != VAProfileNone);
 
     const VASupportedProfiles::ProfileInfo* profile_info =
@@ -1565,9 +1563,7 @@ VideoDecodeAccelerator::SupportedProfiles
 VaapiWrapper::GetSupportedDecodeProfiles() {
   VideoDecodeAccelerator::SupportedProfiles profiles;
 
-  for (const auto& media_to_va_profile_map_entry : GetProfileCodecMap()) {
-    const VideoCodecProfile media_profile = media_to_va_profile_map_entry.first;
-    const VAProfile va_profile = media_to_va_profile_map_entry.second;
+  for (const auto& [media_profile, va_profile] : GetProfileCodecMap()) {
     DCHECK(va_profile != VAProfileNone);
 
     const VASupportedProfiles::ProfileInfo* profile_info =

@@ -40,8 +40,8 @@ AudioOutputDispatcherImpl::~AudioOutputDispatcherImpl() {
   DCHECK(audio_manager()->GetTaskRunner()->BelongsToCurrentThread());
 
   // Stop all active streams.
-  for (auto& iter : proxy_to_physical_map_) {
-    StopPhysicalStream(iter.second);
+  for (const auto& [proxy, stream] : proxy_to_physical_map_) {
+    StopPhysicalStream(stream);
   }
 
   // Close all idle streams immediately.  The |close_timer_| will handle

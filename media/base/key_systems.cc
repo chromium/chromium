@@ -373,8 +373,8 @@ KeySystemsImpl* KeySystemsImpl::GetInstance() {
 }
 
 KeySystemsImpl::KeySystemsImpl() {
-  for (const auto& entry : kMimeTypeToCodecsMap)
-    RegisterMimeType(entry.mime_type, entry.codecs);
+  for (const auto& [mime_type, codecs] : kMimeTypeToCodecsMap)
+    RegisterMimeType(mime_type, codecs);
 
   UpdateSupportedKeySystems();
 }
