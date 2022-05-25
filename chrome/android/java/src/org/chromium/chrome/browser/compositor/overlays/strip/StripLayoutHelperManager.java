@@ -69,10 +69,10 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
 
     // Model selector buttons constants.
     private static final float MODEL_SELECTOR_BUTTON_Y_OFFSET_DP = 10.f;
-    private static final float MODEL_SELECTOR_BUTTON_END_PADDING_DP = 6.f;
-    private static final float MODEL_SELECTOR_BUTTON_START_PADDING_DP = 3.f;
+    private static final float MODEL_SELECTOR_BUTTON_PADDING_DP = 12.f;
     private static final float MODEL_SELECTOR_BUTTON_WIDTH_DP = 24.f;
     private static final float MODEL_SELECTOR_BUTTON_HEIGHT_DP = 24.f;
+    private static final float MODEL_SELECTOR_BUTTON_CLICK_SLOP_DP = 12.f;
 
     // External influences
     private TabModelSelector mTabModelSelector;
@@ -270,6 +270,7 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
                 R.drawable.btn_tabstrip_switch_normal, R.drawable.location_bar_incognito_badge,
                 R.drawable.location_bar_incognito_badge);
         mModelSelectorButton.setY(MODEL_SELECTOR_BUTTON_Y_OFFSET_DP);
+        mModelSelectorButton.setClickSlop(MODEL_SELECTOR_BUTTON_CLICK_SLOP_DP);
 
         Resources res = context.getResources();
         mHeight = res.getDimension(R.dimen.tab_strip_height) / res.getDisplayMetrics().density;
@@ -383,9 +384,9 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
         }
         if (!LocalizationUtils.isLayoutRtl()) {
             mModelSelectorButton.setX(
-                    mWidth - MODEL_SELECTOR_BUTTON_WIDTH_DP - MODEL_SELECTOR_BUTTON_END_PADDING_DP);
+                    mWidth - MODEL_SELECTOR_BUTTON_WIDTH_DP - MODEL_SELECTOR_BUTTON_PADDING_DP);
         } else {
-            mModelSelectorButton.setX(MODEL_SELECTOR_BUTTON_END_PADDING_DP);
+            mModelSelectorButton.setX(MODEL_SELECTOR_BUTTON_PADDING_DP);
         }
 
         updateStripScrim();
@@ -415,8 +416,7 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
     }
 
     private float getModelSelectorButtonWidthWithPadding() {
-        return MODEL_SELECTOR_BUTTON_WIDTH_DP + MODEL_SELECTOR_BUTTON_END_PADDING_DP
-                + MODEL_SELECTOR_BUTTON_START_PADDING_DP;
+        return MODEL_SELECTOR_BUTTON_WIDTH_DP + (MODEL_SELECTOR_BUTTON_PADDING_DP * 2);
     }
 
     public TintedCompositorButton getNewTabButton() {

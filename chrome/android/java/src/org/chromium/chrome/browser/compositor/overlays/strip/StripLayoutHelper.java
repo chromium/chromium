@@ -95,10 +95,11 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     private static final float REORDER_EDGE_SCROLL_MAX_SPEED_DP = 1000.f;
     private static final float REORDER_EDGE_SCROLL_START_MIN_DP = 87.4f;
     private static final float REORDER_EDGE_SCROLL_START_MAX_DP = 18.4f;
-    private static final float NEW_TAB_BUTTON_Y_OFFSET_DP = 6.f;
-    private static final float NEW_TAB_BUTTON_CLICK_SLOP_DP = 4.f;
-    private static final float NEW_TAB_BUTTON_WIDTH_DP = 58.f;
-    private static final float NEW_TAB_BUTTON_HEIGHT_DP = 32.5f;
+    private static final float NEW_TAB_BUTTON_Y_OFFSET_DP = 10.f;
+    private static final float NEW_TAB_BUTTON_CLICK_SLOP_DP = 12.f;
+    private static final float NEW_TAB_BUTTON_WIDTH_DP = 24.f;
+    private static final float NEW_TAB_BUTTON_HEIGHT_DP = 24.f;
+    private static final float NEW_TAB_BUTTON_PADDING_DP = 12.f;
     static final float FADE_FULL_OPACITY_THRESHOLD_DP = 24.f;
     private static final float TAB_WIDTH_SMALL = 108.f;
 
@@ -191,8 +192,12 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         mNewTabButtonWidth = NEW_TAB_BUTTON_WIDTH_DP;
         mModelSelectorButton = modelSelectorButton;
 
-        mRightMargin = LocalizationUtils.isLayoutRtl() ? 0 : mNewTabButtonWidth;
-        mLeftMargin = LocalizationUtils.isLayoutRtl() ? mNewTabButtonWidth : 0;
+        mRightMargin = LocalizationUtils.isLayoutRtl()
+                ? 0
+                : mNewTabButtonWidth + NEW_TAB_BUTTON_PADDING_DP;
+        mLeftMargin = LocalizationUtils.isLayoutRtl()
+                ? mNewTabButtonWidth + NEW_TAB_BUTTON_PADDING_DP
+                : 0;
         mMinTabWidth = TabUiFeatureUtilities.getTabMinWidth();
 
         mMaxTabWidth = MAX_TAB_WIDTH_DP;
@@ -206,7 +211,7 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
             }
         };
         mNewTabButton = new TintedCompositorButton(context, NEW_TAB_BUTTON_WIDTH_DP,
-                NEW_TAB_BUTTON_HEIGHT_DP, newTabClickHandler, R.drawable.btn_tabstrip_new_tab);
+                NEW_TAB_BUTTON_HEIGHT_DP, newTabClickHandler, R.drawable.ic_new_tab_button);
 
         mNewTabButton.setTintResources(R.color.new_tab_button_tint_list,
                 R.color.new_tab_button_pressed_tint_list, R.color.modern_white,
@@ -373,9 +378,9 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
      */
     public void setEndMargin(float margin) {
         if (LocalizationUtils.isLayoutRtl()) {
-            mLeftMargin = margin + mNewTabButtonWidth;
+            mLeftMargin = margin + mNewTabButtonWidth + NEW_TAB_BUTTON_PADDING_DP;
         } else {
-            mRightMargin = margin + mNewTabButtonWidth;
+            mRightMargin = margin + mNewTabButtonWidth + NEW_TAB_BUTTON_PADDING_DP;
         }
     }
 

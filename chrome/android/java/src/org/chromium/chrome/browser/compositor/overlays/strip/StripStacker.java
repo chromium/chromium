@@ -81,8 +81,8 @@ public abstract class StripStacker {
             float stripLeftMargin, float stripRightMargin, float stripWidth,
             float mNewTabButtonWidth) {
         return LocalizationUtils.isLayoutRtl()
-                ? computeNewTabButtonOffsetRtl(indexOrderedTabs, tabOverlapWidth, stripLeftMargin,
-                        stripRightMargin, stripWidth, mNewTabButtonWidth)
+                ? computeNewTabButtonOffsetRtl(indexOrderedTabs, stripLeftMargin, stripRightMargin,
+                        stripWidth, mNewTabButtonWidth)
                 : computeNewTabButtonOffsetLtr(indexOrderedTabs, tabOverlapWidth, stripLeftMargin,
                         stripRightMargin, stripWidth);
     }
@@ -99,16 +99,12 @@ public abstract class StripStacker {
 
         rightEdge = Math.min(rightEdge + tabOverlapWidth, stripWidth - stripRightMargin);
 
-        // Adjust the right edge by the tab overlap width so that the new tab button is nestled
-        // closer to the tab.
-        rightEdge -= tabOverlapWidth / 2;
-
         // The draw X position for the new tab button is the rightEdge of the tab strip.
         return rightEdge;
     }
 
     private float computeNewTabButtonOffsetRtl(StripLayoutTab[] indexOrderedTabs,
-            float tabOverlapWidth, float stripLeftMargin, float stripRightMargin, float stripWidth,
+            float stripLeftMargin, float stripRightMargin, float stripWidth,
             float newTabButtonWidth) {
         float leftEdge = stripWidth - stripRightMargin;
 
@@ -117,10 +113,6 @@ public abstract class StripStacker {
         }
 
         leftEdge = Math.max(leftEdge, stripLeftMargin);
-
-        // Adjust the left edge by the tab overlap width so that the new tab button is nestled
-        // closer to the tab.
-        leftEdge += tabOverlapWidth / 2;
 
         // The draw X position for the new tab button is the left edge of the tab strip minus
         // the new tab button width.
