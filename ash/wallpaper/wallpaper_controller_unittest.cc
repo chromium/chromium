@@ -3095,33 +3095,26 @@ TEST_P(WallpaperControllerTest, AddFirstWallpaperAnimationEndCallback) {
   std::unique_ptr<aura::Window> test_window(
       CreateTestWindow(gfx::Rect(0, 0, 100, 100)));
 
-  bool is_first_callback_run = false;
-  controller_->AddFirstWallpaperAnimationEndCallback(
-      base::BindLambdaForTesting(
-          [&is_first_callback_run]() { is_first_callback_run = true; }),
-      test_window.get());
+  base::RunLoop test_loop;
+  controller_->AddFirstWallpaperAnimationEndCallback(test_loop.QuitClosure(),
+                                                     test_window.get());
   // The callback is not run because the first wallpaper hasn't been set.
-  RunAllTasksUntilIdle();
-  EXPECT_FALSE(is_first_callback_run);
+  task_environment()->RunUntilIdle();
+  EXPECT_FALSE(test_loop.AnyQuitCalled());
 
   // Set the first wallpaper.
   controller_->ShowDefaultWallpaperForTesting();
-  bool is_second_callback_run = false;
-  controller_->AddFirstWallpaperAnimationEndCallback(
-      base::BindLambdaForTesting(
-          [&is_second_callback_run]() { is_second_callback_run = true; }),
-      test_window.get());
-  RunAllTasksUntilIdle();
+  controller_->AddFirstWallpaperAnimationEndCallback(test_loop.QuitClosure(),
+                                                     test_window.get());
+  task_environment()->RunUntilIdle();
   // Neither callback is run because the animation of the first wallpaper
   // hasn't finished yet.
-  EXPECT_FALSE(is_first_callback_run);
-  EXPECT_FALSE(is_second_callback_run);
+  EXPECT_FALSE(test_loop.AnyQuitCalled());
 
   // Force the animation to complete. The two callbacks are both run.
   RunDesktopControllerAnimation();
-  RunAllTasksUntilIdle();
-  EXPECT_TRUE(is_first_callback_run);
-  EXPECT_TRUE(is_second_callback_run);
+  test_loop.Run();
+  EXPECT_TRUE(test_loop.AnyQuitCalled());
 
   // The callback added after the first wallpaper animation is run right away.
   bool is_third_callback_run = false;
@@ -3129,7 +3122,6 @@ TEST_P(WallpaperControllerTest, AddFirstWallpaperAnimationEndCallback) {
       base::BindLambdaForTesting(
           [&is_third_callback_run]() { is_third_callback_run = true; }),
       test_window.get());
-  RunAllTasksUntilIdle();
   EXPECT_TRUE(is_third_callback_run);
 }
 
