@@ -23,7 +23,7 @@
                 "apply_configs": [
                   "checkout_pgo_profiles"
                 ],
-                "config": "chromium_no_telemetry_dependencies"
+                "config": "chromium"
               }
             }
           }
