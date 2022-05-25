@@ -315,7 +315,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Arc.AppCount" units="units" expires_after="2022-04-24">
   <owner>elijahtaylor@google.com</owner>
-  <owner>shihuis@google.com</owner>
+  <owner>fahdi@google.com</owner>
   <summary>
     The number of ARC apps open at any given time. Collected every 5 minutes.
     This indicates both how many users are engaging with apps and, when they do
@@ -407,7 +407,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Arc.AppsInstalledAtStartup" units="App Count"
     expires_after="M99">
   <owner>elijahtaylor@google.com</owner>
-  <owner>shihuis@google.com</owner>
   <summary>
     Total number of ARC apps installed on a device measured at startup. Note:
     This includes launchable apps that are installed by default, such as Play
@@ -597,7 +596,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Arc.boot_progress{AndroidBootProgressEvents}" units="ms"
     expires_after="M81">
   <owner>elijahtaylor@google.com</owner>
-  <owner>shihuis@google.com</owner>
+  <owner>arc-core@google.com</owner>
   <summary>
     The relative time of a boot progress event since the ARC starts.
     {AndroidBootProgressEvents}
@@ -815,7 +814,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Arc.CumulativeUseTime" units="seconds"
     expires_after="2022-05-01">
   <owner>elijahtaylor@google.com</owner>
-  <owner>shihuis@google.com</owner>
+  <owner>fahdi@google.com</owner>
   <summary>
     ARC use time. The use time is incremented in regular intervals while android
     container is active. Reported at most once a day, at which point accumulated
@@ -833,7 +832,6 @@ chromium-metrics-reviews@google.com.
     Removed as of 05/2022
   </obsolete>
   <owner>hashimoto@google.com</owner>
-  <owner>shiihuis@google.com</owner>
   <summary>
     Reason why a custom tab session ended. Recorded when a session ends.
   </summary>
@@ -1249,7 +1247,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Arc.IntentHelper.OpenType" enum="ArcIntentHelperOpenType"
     expires_after="2020-08-16">
   <owner>hashimoto@google.com</owner>
-  <owner>shihuis@google.com</owner>
+  <owner>arc-core@google.com</owner>
   <summary>
     Types of things opened via ARC IntentHelperHost interface. Recorded when one
     of the &quot;open&quot; methods of the interface is called.
@@ -1897,7 +1895,6 @@ chromium-metrics-reviews@google.com.
 <histogram name="Arc.StateByUserType{ArcUserTypes}" enum="ArcEnableState"
     expires_after="2022-03-25">
   <owner>elijahtaylor@google.com</owner>
-  <owner>shihuis@google.com</owner>
   <owner>khmel@google.com</owner>
   <summary>
     Similar to &quot;Arc.State&quot; metric but has separation by user type.
