@@ -46,6 +46,7 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
@@ -146,6 +147,7 @@ public class StartSurfaceFinaleTest {
     @LargeTest
     @Feature({"StartSurface"})
     @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS + "/omnibox_focused_on_new_tab/true"})
+    @DisabledTest(message = "This test blocks http://crrev/c/3665321")
     public void testOmnibox_FocusedOnNewTabInSingleSurface() {
         if (!mImmediateReturn) {
             StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());
@@ -201,6 +203,7 @@ public class StartSurfaceFinaleTest {
     // clang-format off
     @CommandLineFlags.Add({START_SURFACE_TEST_BASE_PARAMS + "/show_last_active_tab_only/true" +
         "/exclude_mv_tiles/true/omnibox_focused_on_new_tab/true"})
+    @DisabledTest(message = "This test blocks http://crrev/c/3665321")
     public void testOmnibox_FocusedOnNewTabInSingleSurfaceV2() {
         // clang-format on
         if (!mImmediateReturn) {
