@@ -195,6 +195,10 @@ public class ContextualSearchUnbatchedTest extends ContextualSearchInstrumentati
     @ParameterAnnotations.UseMethodParameter(ContextualSearchManagerTest.FeatureParamProvider.class)
     public void testTapWithLanguage(@EnabledFeature int enabledFeature) throws Exception {
         // Resolving a German word should trigger translation.
+        mFakeServer.setExpectations("german",
+                new ResolvedSearchTerm.Builder(false, 200, "Deutsche", "Deutsche")
+                        .setContextLanguage("de")
+                        .build());
         simulateResolveSearch("german");
 
         // Make sure we tried to trigger translate.

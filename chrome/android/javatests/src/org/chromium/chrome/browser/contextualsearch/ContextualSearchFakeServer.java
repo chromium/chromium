@@ -13,6 +13,7 @@ import androidx.annotation.VisibleForTesting;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.junit.Assert;
 
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayContentDelegate;
@@ -71,6 +72,9 @@ class ContextualSearchFakeServer
     private ContextualSearchContext mSearchContext;
 
     private boolean mDidEverCallWebContentsOnShow;
+
+    /** An expected search, to be returned by this fake server when non-null. */
+    private FakeResolveSearch mExpectedFakeResolveSearch;
 
     /**
      * Provides access to the test host so this fake server can drive actions when simulating a
@@ -541,6 +545,7 @@ class ContextualSearchFakeServer
         mActuallyLoadALiveSerp = false;
         mIsExactResolve = false;
         mSearchContext = null;
+        mExpectedFakeResolveSearch = null;
     }
 
     /**
@@ -575,6 +580,16 @@ class ContextualSearchFakeServer
     @VisibleForTesting
     ContextualSearchContext getSearchContext() {
         return mSearchContext;
+    }
+
+    /**
+     * Sets the result of the resolve request that this fake server is expected to return.
+     * @param nodeId the node that will trigger this resolve when selected.
+     * @param resolvedSearchTermResponse the response from this fake server to return from
+     *      the fake resolve request.
+     */
+    void setExpectations(String nodeId, ResolvedSearchTerm resolvedSearchTermResponse) {
+        mExpectedFakeResolveSearch = new FakeResolveSearch(nodeId, resolvedSearchTermResponse);
     }
 
     //============================================================================================
@@ -656,6 +671,8 @@ class ContextualSearchFakeServer
         registerFakeResolveSearch(new FakeResolveSearch("term", "Term"));
         registerFakeResolveSearch(new FakeResolveSearch("resolution", "Resolution"));
 
+        // These resolved searches are effectively deprecated.
+        // Use setExpectations() instead.
         ResolvedSearchTerm germanSearchTerm =
                 new ResolvedSearchTerm.Builder(false, 200, "Deutsche", "Deutsche")
                         .setContextLanguage("de")
@@ -707,7 +724,13 @@ class ContextualSearchFakeServer
      * @return The FakeResolveSearch with the given ID.
      */
     public FakeResolveSearch getFakeResolveSearch(String id) {
-        return mFakeResolveSearches.get(id);
+        if (mExpectedFakeResolveSearch != null) {
+            Assert.assertEquals("The expectations node ID does not match the given node!",
+                    mExpectedFakeResolveSearch.getNodeId(), id);
+            return mExpectedFakeResolveSearch;
+        } else {
+            return mFakeResolveSearches.get(id);
+        }
     }
 
     /**

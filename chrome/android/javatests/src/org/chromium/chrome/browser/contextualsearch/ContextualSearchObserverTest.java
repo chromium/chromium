@@ -255,7 +255,6 @@ public class ContextualSearchObserverTest extends ContextualSearchInstrumentatio
 
         Assert.assertEquals("States".length(), observer.getFirstShownLength());
         Assert.assertEquals("United States".length(), observer.getLastShownLength());
-        Assert.assertEquals("United States".length(), observer.getLastShownLength());
         Assert.assertEquals(2, observer.getShowCount());
         Assert.assertEquals(1, observer.getHideCount());
         TestThreadUtils.runOnUiThreadBlocking(() -> mManager.removeObserver(observer));
