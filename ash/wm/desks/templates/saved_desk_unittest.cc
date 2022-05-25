@@ -3703,6 +3703,8 @@ TEST_F(SavedDeskTest, AdminTemplate) {
 using DeskSaveAndRecallTest = SavedDeskTest;
 
 TEST_F(DeskSaveAndRecallTest, SaveDeskForLater) {
+  base::HistogramTester histogram_tester;
+
   UpdateDisplay("800x600,800x600");
 
   constexpr char16_t kDeskName[] = u"Save for later";
@@ -3739,6 +3741,8 @@ TEST_F(DeskSaveAndRecallTest, SaveDeskForLater) {
 
   // Verify that the desk has been removed.
   EXPECT_EQ(1ul, desks_controller->desks().size());
+
+  histogram_tester.ExpectTotalCount(kNewSaveAndRecallHistogramName, 1);
 }
 
 TEST_F(DeskSaveAndRecallTest, SaveDeskForLaterWithSingleDesk) {
@@ -3799,6 +3803,27 @@ TEST_F(DeskSaveAndRecallTest, RecallSavedDesk) {
 
   // Verify that the saved desk has been deleted.
   EXPECT_TRUE(GetAllEntries().empty());
+}
+
+TEST_F(DeskSaveAndRecallTest, DeleteSaveAndRecallRecordsMetric) {
+  base::HistogramTester histogram_tester;
+
+  UpdateDisplay("800x600");
+
+  const base::GUID uuid = base::GUID::GenerateRandomV4();
+  AddEntry(uuid, "saved_desk", base::Time::Now(),
+           DeskTemplateType::kSaveAndRecall);
+
+  OpenOverviewAndShowTemplatesGrid();
+
+  EXPECT_EQ(1ul, desk_model()->GetEntryCount());
+
+  // Delete the saved desk.
+  DeleteTemplate(uuid, /*expected_current_item_count=*/1);
+  EXPECT_EQ(0ul, desk_model()->GetEntryCount());
+
+  // Assert that histogram metrics were recorded.
+  histogram_tester.ExpectTotalCount(kDeleteSaveAndRecallHistogramName, 1);
 }
 
 }  // namespace ash

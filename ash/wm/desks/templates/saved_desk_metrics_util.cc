@@ -15,16 +15,22 @@ void RecordLoadTemplateHistogram() {
   base::UmaHistogramBoolean(kLoadTemplateGridHistogramName, true);
 }
 
-void RecordDeleteTemplateHistogram() {
-  base::UmaHistogramBoolean(kDeleteTemplateHistogramName, true);
+void RecordDeleteSavedDeskHistogram(DeskTemplateType type) {
+  base::UmaHistogramBoolean(type == DeskTemplateType::kTemplate
+                                ? kDeleteTemplateHistogramName
+                                : kDeleteSaveAndRecallHistogramName,
+                            true);
 }
 
 void RecordLaunchTemplateHistogram() {
   base::UmaHistogramBoolean(kLaunchTemplateHistogramName, true);
 }
 
-void RecordNewTemplateHistogram() {
-  base::UmaHistogramBoolean(kNewTemplateHistogramName, true);
+void RecordNewSavedDeskHistogram(DeskTemplateType type) {
+  base::UmaHistogramBoolean(type == DeskTemplateType::kTemplate
+                                ? kNewTemplateHistogramName
+                                : kNewSaveAndRecallHistogramName,
+                            true);
 }
 
 void RecordAddOrUpdateTemplateStatusHistogram(

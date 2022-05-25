@@ -58,8 +58,10 @@ class ASH_EXPORT SavedDeskPresenter : desks_storage::DeskModelObserver {
   void GetAllEntries(const base::GUID& item_to_focus,
                      aura::Window* const root_window);
 
-  // Calls the DeskModel to delete the template with the provided uuid.
-  void DeleteEntry(const std::string& template_uuid);
+  // Calls the DeskModel to delete the saved desk with the provided `uuid`. Will
+  // record histogram if `record_for_type` is specified.
+  void DeleteEntry(const std::string& uuid,
+                   absl::optional<DeskTemplateType> record_for_type);
 
   // Launches the desk template with 'template_uuid' as a new desk. `delay` is
   // the time between each app launch, used for debugging.
@@ -100,8 +102,9 @@ class ASH_EXPORT SavedDeskPresenter : desks_storage::DeskModelObserver {
                        const std::vector<const DeskTemplate*>& entries);
 
   // Callback after deleting an entry. Will then call `RemoveUIEntries` to
-  // update the UI by removing the deleted template.
-  void OnDeleteEntry(const std::string& template_uuid,
+  // update the UI by removing the deleted saved desk.
+  void OnDeleteEntry(const std::string& uuid,
+                     absl::optional<DeskTemplateType> record_for_type,
                      desks_storage::DeskModel::DeleteEntryStatus status);
 
   // Launches DeskTemplate after retrieval from storage.

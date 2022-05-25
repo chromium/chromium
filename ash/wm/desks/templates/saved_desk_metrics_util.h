@@ -10,7 +10,7 @@
 
 namespace ash {
 
-// Histogram names.
+// Histogram names for desk templates.
 constexpr char kLoadTemplateGridHistogramName[] =
     "Ash.DeskTemplate.LoadTemplateGrid";
 constexpr char kDeleteTemplateHistogramName[] =
@@ -33,11 +33,17 @@ constexpr char kUnsupportedAppDialogShowHistogramName[] =
 constexpr char kReplaceTemplateHistogramName[] =
     "Ash.DeskTemplate.ReplaceTemplate";
 
+// Histogram names for Save & Recall.
+constexpr char kNewSaveAndRecallHistogramName[] =
+    "Ash.DeskTemplate.NewSaveAndRecall";
+constexpr char kDeleteSaveAndRecallHistogramName[] =
+    "Ash.DeskTemplate.DeleteSaveAndRecall";
+
 // Wrappers calls base::uma with correct histogram name.
 void RecordLoadTemplateHistogram();
-void RecordDeleteTemplateHistogram();
+void RecordDeleteSavedDeskHistogram(DeskTemplateType type);
 void RecordLaunchTemplateHistogram();
-void RecordNewTemplateHistogram();
+void RecordNewSavedDeskHistogram(DeskTemplateType type);
 void RecordAddOrUpdateTemplateStatusHistogram(
     desks_storage::DeskModel::AddOrUpdateEntryStatus status);
 void RecordUserTemplateCountHistogram(size_t entry_count,

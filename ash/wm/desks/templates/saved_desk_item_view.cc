@@ -302,8 +302,11 @@ void SavedDeskItemView::MaybeRemoveNameNumber() {
 
 void SavedDeskItemView::ReplaceTemplate(const std::string& uuid) {
   // Make sure we delete the template we are replacing first, so that we don't
-  // get template name collisions.
-  saved_desk_util::GetSavedDeskPresenter()->DeleteEntry(uuid);
+  // get template name collisions. Passing `nullopt` as `record_for_type` since
+  // we only record the delete operation when the user specifically deletes an
+  // entry.
+  saved_desk_util::GetSavedDeskPresenter()->DeleteEntry(
+      uuid, /*record_for_type=*/absl::nullopt);
   UpdateTemplateName();
   RecordReplaceTemplateHistogram();
 }
@@ -628,7 +631,7 @@ SavedDeskItemView* SavedDeskItemView::FindOtherTemplateWithName(
 
 void SavedDeskItemView::OnDeleteTemplate() {
   saved_desk_util::GetSavedDeskPresenter()->DeleteEntry(
-      desk_template_->uuid().AsLowercaseString());
+      desk_template_->uuid().AsLowercaseString(), desk_template_->type());
 }
 
 void SavedDeskItemView::OnDeleteButtonPressed() {

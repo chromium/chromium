@@ -132,12 +132,14 @@ void SavedDeskPresenter::GetAllEntries(const base::GUID& item_to_focus,
       item_to_focus, root_window));
 }
 
-void SavedDeskPresenter::DeleteEntry(const std::string& template_uuid) {
+void SavedDeskPresenter::DeleteEntry(
+    const std::string& uuid,
+    absl::optional<DeskTemplateType> record_for_type) {
   weak_ptr_factory_.InvalidateWeakPtrs();
   GetDeskModel()->DeleteEntry(
-      template_uuid,
+      uuid,
       base::BindOnce(&SavedDeskPresenter::OnDeleteEntry,
-                     weak_ptr_factory_.GetWeakPtr(), template_uuid));
+                     weak_ptr_factory_.GetWeakPtr(), uuid, record_for_type));
 }
 
 void SavedDeskPresenter::LaunchDeskTemplate(const std::string& template_uuid,
@@ -252,14 +254,16 @@ void SavedDeskPresenter::OnGetAllEntries(
 }
 
 void SavedDeskPresenter::OnDeleteEntry(
-    const std::string& template_uuid,
+    const std::string& uuid,
+    absl::optional<DeskTemplateType> record_for_type,
     desks_storage::DeskModel::DeleteEntryStatus status) {
   if (status != desks_storage::DeskModel::DeleteEntryStatus::kOk)
     return;
 
-  RecordDeleteTemplateHistogram();
+  if (record_for_type)
+    RecordDeleteSavedDeskHistogram(*record_for_type);
   RecordUserTemplateCountHistogram(GetEntryCount(), GetMaxEntryCount());
-  RemoveUIEntries({template_uuid});
+  RemoveUIEntries({uuid});
 }
 
 void SavedDeskPresenter::OnGetTemplateForDeskLaunch(
@@ -318,8 +322,11 @@ void SavedDeskPresenter::OnNewDeskCreatedForTemplate(
       overview_session_->GetGridWithRootWindow(root_window)->desks_bar_view());
   desks_bar_view->NudgeDeskName(desk_index);
 
-  if (delete_template_on_launch)
-    DeleteEntry(template_uuid);
+  if (delete_template_on_launch) {
+    // Passing nullopt as type since this indicates that we don't want to record
+    // the `delete` metric for this operation.
+    DeleteEntry(template_uuid, /*record_for_type=*/absl::nullopt);
+  }
 }
 
 void SavedDeskPresenter::OnAddOrUpdateEntry(
@@ -394,7 +401,7 @@ void SavedDeskPresenter::OnAddOrUpdateEntry(
                                    DeskCloseType::kCloseAllWindows);
     }
 
-    RecordNewTemplateHistogram();
+    RecordNewSavedDeskHistogram(desk_template->type());
     RecordUserTemplateCountHistogram(GetEntryCount(), GetMaxEntryCount());
   }
 
