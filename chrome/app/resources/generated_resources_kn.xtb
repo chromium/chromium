@@ -1974,7 +1974,7 @@
 <translation id="2836269494620652131">ಕ್ರ್ಯಾಷ್</translation>
 <translation id="2836635946302913370">ಈ ಬಳಕೆದಾರರ ಹೆಸರಿನೊಂದಿಗೆ ಸೈನ್ ಇನ್ ಮಾಡುವುದನ್ನು ನಿಮ್ಮ ನಿರ್ವಾಹಕರ ಮೂಲಕ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ.</translation>
 <translation id="283669119850230892">ನೆಟ್‌ವರ್ಕ್ <ph name="NETWORK_ID" /> ಅನ್ನು ಬಳಸಲು, ಮೊದಲು ನಿಮ್ಮ ಸಂಪರ್ಕವನ್ನು ಕೆಳಗಿನ ಇಂಟರ್‌ನೆಟ್‌ಗೆ ಸಂಪೂರ್ಣಗೊಳಿಸಿ.</translation>
-<translation id="2838379631617906747">ಸ್ಥಾಪಿಸಲಾಗುತ್ತಿದೆ</translation>
+<translation id="2838379631617906747">ಇನ್‌ಸ್ಟಾಲ್ ಆಗುತ್ತಿದೆ</translation>
 <translation id="2839032553903800133">ಅಧಿಸೂಚನೆಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="2841013758207633010">ಸಮಯ</translation>
 <translation id="2841837950101800123">ಪೂರೈಕೆದಾರರು</translation>
@@ -7271,7 +7271,7 @@
 <translation id="8104088837833760645">eSIM ಪ್ರೊಫೈಲ್ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ</translation>
 <translation id="8105368624971345109">ಆಫ್ ಮಾಡು</translation>
 <translation id="8105541061909542455">{NUM_APPS,plural, =1{ಬೆಂಬಲಿಸದ ಆ್ಯಪ್}one{ಬೆಂಬಲಿಸದ ಆ್ಯಪ್‌ಗಳು}other{ಬೆಂಬಲಿಸದ ಆ್ಯಪ್‌ಗಳು}}</translation>
-<translation id="8107015733319732394">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ನಲ್ಲಿ Google Play Store  ಅನ್ನು ಸ್ಥಾಪಿಸಲಾಗುತ್ತಿದೆ. ಇದು ಕೆಲವು ನಿಮಿಷಗಳನ್ನು ತೆಗೆದುಕೊಳ್ಳಬಹುದು.</translation>
+<translation id="8107015733319732394">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ನಲ್ಲಿ Google Play Store ಇನ್‌ಸ್ಟಾಲ್ ಆಗುತ್ತಿದೆ. ಇದು ಕೆಲವು ನಿಮಿಷಗಳನ್ನು ತೆಗೆದುಕೊಳ್ಳಬಹುದು.</translation>
 <translation id="810728361871746125">ಡಿಸ್‌ಪ್ಲೇ ರೆಸಲ್ಯೂಷನ್</translation>
 <translation id="8108526232944491552">{COUNT,plural, =0{ಯಾವುದೇ ಥರ್ಡ್ ಪಾರ್ಟಿ ಕುಕೀಗಳಿಲ್ಲ}=1{1 ಥರ್ಡ್ ಪಾರ್ಟಿ ಕುಕೀಯನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ}one{# ಥರ್ಡ್ ಪಾರ್ಟಿ ಕುಕೀಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ}other{# ಥರ್ಡ್ ಪಾರ್ಟಿ ಕುಕೀಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ}}</translation>
 <translation id="8109109153262930486">ಡೀಫಾಲ್ಟ್ ಅವತಾರ್</translation>
