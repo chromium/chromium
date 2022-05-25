@@ -297,6 +297,10 @@ bool AwMainDelegate::BasicStartupComplete(int* exit_code) {
     // ML model delivery via Optimization Guide component.
     // TODO(crbug.com/1292622): Enable the feature on Webview.
     features.DisableIfNotSet(::translate::kTFLiteLanguageDetectionEnabled);
+
+    // Have the network service in the browser process even if we have separate
+    // renderer processes. See also: switches::kInProcessGPU above.
+    features.EnableIfNotSet(::features::kNetworkServiceInProcess);
   }
 
   android_webview::RegisterPathProvider();
