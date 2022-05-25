@@ -13,6 +13,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/profiles/profile_observer.h"
+#include "extensions/buildflags/buildflags.h"
 
 class Profile;
 
@@ -28,6 +29,10 @@ class PageLoadMetricsObserver;
 class PageLoadTrackerDecoratorHelper;
 class PerformanceManagerFeatureObserverClient;
 class PerformanceManagerLifetime;
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+class ExtensionWatcher;
+#endif
 
 namespace policies {
 class HighEfficiencyModePolicyHelper;
@@ -99,6 +104,10 @@ class ChromeBrowserMainExtraPartsPerformanceManager
   // Needed to maintain the PageNode::IsLoading() property.
   std::unique_ptr<performance_manager::PageLoadTrackerDecoratorHelper>
       page_load_tracker_decorator_helper_;
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  std::unique_ptr<performance_manager::ExtensionWatcher> extension_watcher_;
+#endif
 
 #if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<performance_manager::policies::HighEfficiencyModePolicyHelper>

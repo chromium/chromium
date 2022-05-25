@@ -42,6 +42,10 @@
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/performance_manager/extension_watcher.h"
+#endif
+
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/performance_manager/mechanisms/page_freezer.h"
 #include "chrome/browser/performance_manager/policies/high_efficiency_mode_policy.h"
@@ -194,6 +198,10 @@ void ChromeBrowserMainExtraPartsPerformanceManager::PostCreateThreads() {
       std::make_unique<performance_manager::PageLiveStateDecoratorHelper>();
   page_load_tracker_decorator_helper_ =
       std::make_unique<performance_manager::PageLoadTrackerDecoratorHelper>();
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  extension_watcher_ =
+      std::make_unique<performance_manager::ExtensionWatcher>();
+#endif
 
 #if !BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(
@@ -214,6 +222,9 @@ void ChromeBrowserMainExtraPartsPerformanceManager::PostMainMessageLoopRun() {
   g_browser_process->profile_manager()->RemoveObserver(this);
   profile_observations_.RemoveAllObservations();
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  extension_watcher_.reset();
+#endif
   page_load_tracker_decorator_helper_.reset();
   page_live_state_data_helper_.reset();
   page_load_metrics_observer_.reset();

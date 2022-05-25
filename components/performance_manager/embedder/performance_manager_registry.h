@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "components/performance_manager/public/graph/page_node.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 
@@ -60,6 +61,10 @@ class PerformanceManagerRegistry {
   // should only be called once for a given |web_contents|.
   virtual void CreatePageNodeForWebContents(
       content::WebContents* web_contents) = 0;
+
+  // Sets the page type for a WebContents.
+  virtual void SetPageType(content::WebContents* web_contents,
+                           PageType type) = 0;
 
   // Must be invoked for a NavigationHandle when it is committed, allowing the
   // PM the opportunity to apply NavigationThrottles. Typically wired up to

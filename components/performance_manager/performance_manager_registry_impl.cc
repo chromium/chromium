@@ -9,6 +9,7 @@
 
 #include "base/observer_list.h"
 #include "components/performance_manager/embedder/binders.h"
+#include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/performance_manager_tab_helper.h"
 #include "components/performance_manager/public/mojom/coordination_unit.mojom.h"
 #include "components/performance_manager/public/performance_manager.h"
@@ -132,6 +133,22 @@ void PerformanceManagerRegistryImpl::CreatePageNodeForWebContents(
 
   for (auto& observer : observers_)
     observer.OnPageNodeCreatedForWebContents(web_contents);
+}
+
+void PerformanceManagerRegistryImpl::SetPageType(
+    content::WebContents* web_contents,
+    PageType type) {
+  PerformanceManagerTabHelper* tab_helper =
+      PerformanceManagerTabHelper::FromWebContents(web_contents);
+  DCHECK(tab_helper);
+
+  PerformanceManager::CallOnGraph(
+      FROM_HERE,
+      // Unretained() is safe because PerformanceManagerTabHelper owns the
+      // PageNodeImpl and deletes it by posting a task to the PerformanceManager
+      // sequence, which will be sequenced after the task posted here.
+      base::BindOnce(&PageNodeImpl::SetType,
+                     base::Unretained(tab_helper->primary_page_node()), type));
 }
 
 PerformanceManagerRegistryImpl::Throttles

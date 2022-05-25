@@ -13,7 +13,6 @@
 #include "chrome/browser/performance_manager/mechanisms/page_loader.h"
 #include "components/performance_manager/graph/graph_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
-#include "components/performance_manager/public/decorators/tab_properties_decorator.h"
 #include "components/performance_manager/public/persistence/site_data/feature_usage.h"
 #include "components/performance_manager/public/persistence/site_data/site_data_reader.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
@@ -164,10 +163,9 @@ TEST_F(BackgroundTabLoadingPolicyTest,
     to_load.push_back(page_node_and_notification_permission);
     EXPECT_CALL(*loader(), LoadPageNode(to_load.back().page_node.get()));
 
-    // Set |is_tab| property as this is a requirement to pass the PageNode to
+    // Mark the PageNode as a tab as this is a requirement to pass it to
     // ScheduleLoadForRestoredTabs().
-    TabPropertiesDecorator::SetIsTabForTesting(to_load.back().page_node.get(),
-                                               true);
+    page_nodes.back()->SetType(PageType::kTab);
   }
 
   policy()->ScheduleLoadForRestoredTabs(to_load);
@@ -189,10 +187,9 @@ TEST_F(BackgroundTabLoadingPolicyTest,
     to_load.push_back(page_node_and_notification_permission);
     EXPECT_CALL(*loader(), LoadPageNode(to_load.back().page_node.get()));
 
-    // Set |is_tab| property as this is a requirement to pass the PageNode to
+    // Mark the PageNode as a tab as this is a requirement to pass it to
     // ScheduleLoadForRestoredTabs().
-    TabPropertiesDecorator::SetIsTabForTesting(to_load.back().page_node.get(),
-                                               true);
+    page_nodes.back()->SetType(PageType::kTab);
   }
 
   policy()->ScheduleLoadForRestoredTabs(to_load);
@@ -213,10 +210,9 @@ TEST_F(BackgroundTabLoadingPolicyTest, AllLoadingSlotsUsed) {
         page_nodes.back().get()->GetWeakPtr(), false);
     to_load.push_back(page_node_and_notification_permission);
 
-    // Set |is_tab| property as this is a requirement to pass the PageNode to
+    // Mark the PageNode as a tab as this is a requirement to pass it to
     // ScheduleLoadForRestoredTabs().
-    TabPropertiesDecorator::SetIsTabForTesting(to_load.back().page_node.get(),
-                                               true);
+    page_nodes.back()->SetType(PageType::kTab);
   }
   PageNodeImpl* page_node_impl = page_nodes[0].get();
 
@@ -254,9 +250,9 @@ TEST_F(BackgroundTabLoadingPolicyTest, LoadingStateLoadedBusy) {
       page_node_and_notification_permission_to_load_vector{
           page_node_and_notification_permission};
 
-  // Set |is_tab| property as this is a requirement to pass the PageNode to
+  // Mark the PageNode as a tab as this is a requirement to pass it to
   // ScheduleLoadForRestoredTabs().
-  TabPropertiesDecorator::SetIsTabForTesting(page_node.get(), true);
+  page_node->SetType(PageType::kTab);
 
   EXPECT_CALL(*loader(), LoadPageNode(page_node.get()));
   policy()->ScheduleLoadForRestoredTabs(
@@ -461,11 +457,10 @@ TEST_F(BackgroundTabLoadingPolicyTest, ScoreAndScheduleTabLoad) {
 
   to_load.push_back(notification);
 
-  for (auto page_node_and_permission : to_load) {
-    // Set |is_tab| property as this is a requirement to pass the PageNode
-    // to ScheduleLoadForRestoredTabs().
-    TabPropertiesDecorator::SetIsTabForTesting(
-        page_node_and_permission.page_node.get(), true);
+  for (auto& page_node : page_nodes) {
+    // Mark the PageNode as a tab as this is a requirement to pass it to
+    // ScheduleLoadForRestoredTabs().
+    page_node->SetType(PageType::kTab);
   }
 
   // Test that tabs are loaded in the expected order:
@@ -505,10 +500,9 @@ TEST_F(BackgroundTabLoadingPolicyTest, OnMemoryPressure) {
         page_nodes.back().get()->GetWeakPtr(), false);
     to_load.push_back(page_node_and_permisssion);
 
-    // Set |is_tab| property as this is a requirement to pass the PageNode to
+    // Mark the PageNode as a tab as this is a requirement to pass it to
     // ScheduleLoadForRestoredTabs().
-    TabPropertiesDecorator::SetIsTabForTesting(to_load.back().page_node.get(),
-                                               true);
+    page_nodes.back()->SetType(PageType::kTab);
   }
   // Use 1 loading slot so only one PageNode loads at a time.
   policy()->SetMaxSimultaneousLoadsForTesting(1);

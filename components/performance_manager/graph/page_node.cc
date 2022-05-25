@@ -22,6 +22,19 @@ const char* PageNode::ToString(PageNode::EmbeddingType embedding_type) {
 }
 
 // static
+const char* PageNode::ToString(PageType type) {
+  switch (type) {
+    case PageType::kTab:
+      return "kTab";
+    case PageType::kExtension:
+      return "kExtension";
+    case PageType::kUnknown:
+      return "kUnknown";
+  }
+  NOTREACHED();
+}
+
+// static
 const char* PageNode::ToString(PageNode::LoadingState loading_state) {
   switch (loading_state) {
     case LoadingState::kLoadingNotStarted:

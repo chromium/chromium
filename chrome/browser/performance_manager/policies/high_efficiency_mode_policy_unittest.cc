@@ -9,7 +9,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/performance_manager/policies/high_efficiency_mode_policy_helper.h"
 #include "chrome/browser/performance_manager/test_support/page_discarding_utils.h"
-#include "components/performance_manager/public/decorators/tab_properties_decorator.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/prefs/testing_pref_service.h"
@@ -29,7 +28,7 @@ class HighEfficiencyModeTest
     policy_ = policy.get();
     graph()->PassToGraph(std::move(policy));
 
-    TabPropertiesDecorator::SetIsTabForTesting(page_node(), true);
+    page_node()->SetType(PageType::kTab);
   }
 
   void TearDown() override {
@@ -67,7 +66,7 @@ TEST_F(HighEfficiencyModeTest, DiscardAfterBackgrounded) {
 }
 
 TEST_F(HighEfficiencyModeTest, DontDiscardIfPageIsNotATab) {
-  TabPropertiesDecorator::SetIsTabForTesting(page_node(), false);
+  page_node()->SetType(PageType::kUnknown);
   policy()->OnHighEfficiencyModeChanged(true);
   page_node()->SetIsVisible(true);
   page_node()->SetIsVisible(false);

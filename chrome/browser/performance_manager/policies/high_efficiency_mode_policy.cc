@@ -6,7 +6,6 @@
 
 #include "base/containers/contains.h"
 #include "chrome/browser/performance_manager/policies/page_discarding_helper.h"
-#include "components/performance_manager/public/decorators/tab_properties_decorator.h"
 #include "components/performance_manager/public/features.h"
 
 namespace performance_manager::policies {
@@ -48,7 +47,7 @@ void HighEfficiencyModePolicy::OnPageNodeAdded(const PageNode* page_node) {
 
 void HighEfficiencyModePolicy::OnBeforePageNodeRemoved(
     const PageNode* page_node) {
-  if (!TabPropertiesDecorator::Data::FromPageNode(page_node)->IsInTabStrip()) {
+  if (page_node->GetType() != PageType::kTab) {
     DCHECK(!base::Contains(active_discard_timers_, page_node));
     return;
   }
@@ -57,7 +56,7 @@ void HighEfficiencyModePolicy::OnBeforePageNodeRemoved(
 }
 
 void HighEfficiencyModePolicy::OnIsVisibleChanged(const PageNode* page_node) {
-  if (!TabPropertiesDecorator::Data::FromPageNode(page_node)->IsInTabStrip())
+  if (page_node->GetType() != PageType::kTab)
     return;
 
   // If the page is made visible, any existing timers that refer to it should be
@@ -91,9 +90,7 @@ void HighEfficiencyModePolicy::OnHighEfficiencyModeChanged(bool enabled) {
   if (high_efficiency_mode_enabled_) {
     DCHECK(active_discard_timers_.empty());
     for (const PageNode* page_node : graph_->GetAllPageNodes()) {
-      if (TabPropertiesDecorator::Data::FromPageNode(page_node)
-              ->IsInTabStrip() &&
-          !page_node->IsVisible()) {
+      if (page_node->GetType() == PageType::kTab && !page_node->IsVisible()) {
         base::TimeDelta time_before_discard =
             time_before_discard_ -
             page_node->GetTimeSinceLastVisibilityChange();

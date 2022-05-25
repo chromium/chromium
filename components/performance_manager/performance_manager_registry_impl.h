@@ -75,6 +75,7 @@ class PerformanceManagerRegistryImpl
   // PerformanceManagerRegistry:
   void CreatePageNodeForWebContents(
       content::WebContents* web_contents) override;
+  void SetPageType(content::WebContents* web_contents, PageType type) override;
   Throttles CreateThrottlesForNavigation(
       content::NavigationHandle* handle) override;
   void NotifyBrowserContextAdded(

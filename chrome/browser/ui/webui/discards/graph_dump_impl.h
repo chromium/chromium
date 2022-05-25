@@ -127,6 +127,8 @@ class DiscardsGraphDumpImpl : public discards::mojom::GraphDump,
       const performance_manager::FrameNode* previous_embedder,
       EmbeddingType previous_embedding_type) override;
   // Ignored.
+  void OnTypeChanged(const performance_manager::PageNode* page_node) override {}
+  // Ignored.
   void OnIsVisibleChanged(
       const performance_manager::PageNode* page_node) override {}
   // Ignored.
