@@ -227,26 +227,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Compositing.Display.Draw.Occlusion.Drawing.Area.Saved2"
-    units="px" expires_after="M77">
-  <owner>yiyix@chromium.org</owner>
-  <summary>
-    It records the total drawing area skipped to show on screen as a result of
-    applying draw occlusion. This is logged once per frame, when the frame is
-    drawn.
-  </summary>
-</histogram>
-
-<histogram name="Compositing.Display.Draw.Occlusion.Percentage.Saved" units="%"
-    expires_after="M77">
-  <owner>yiyix@chromium.org</owner>
-  <summary>
-    It records the percentage of total area drawing skipped by draw occlusion of
-    the total area of damage rects in a compositor frame. This is logged once
-    per frame, when the frame is drawn.
-  </summary>
-</histogram>
-
 <histogram name="Compositing.Display.DrawToSwapUs" units="microseconds"
     expires_after="2022-10-02">
   <owner>backer@chromium.org</owner>
@@ -571,22 +551,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Time spent updating layers, in microseconds. Recorded when layers are
     updated (in a renderer process).
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
-  </summary>
-</histogram>
-
-<histogram name="Compositing.Renderer.LayerTreeImpl.CalculateDrawPropertiesUs"
-    units="microseconds" expires_after="M81">
-  <owner>schenney@chromium.org</owner>
-  <owner>paint-dev@chromium.org</owner>
-  <summary>
-    Time spent updating layer draw properties, in microseconds. Recorded when a
-    LayerTreeImpl's draw properties are updated (in a renderer process).
 
     Warning: This metric may include reports from clients with low-resolution
     clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports

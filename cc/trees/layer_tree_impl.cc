@@ -1578,11 +1578,14 @@ bool LayerTreeImpl::UpdateDrawProperties(
         this, &render_surface_list_, output_update_layer_list_for_testing);
 
     if (const char* client_name = GetClientNameForMetrics()) {
-      UMA_HISTOGRAM_COUNTS_1M(
-          base::StringPrintf(
-              "Compositing.%s.LayerTreeImpl.CalculateDrawPropertiesUs",
-              client_name),
-          timer.Elapsed().InMicroseconds());
+      // This metric is only recorded for the Browser.
+      if (settings().single_thread_proxy_scheduler) {
+        UMA_HISTOGRAM_COUNTS_1M(
+            base::StringPrintf(
+                "Compositing.%s.LayerTreeImpl.CalculateDrawPropertiesUs",
+                client_name),
+            timer.Elapsed().InMicroseconds());
+      }
       UMA_HISTOGRAM_COUNTS_100(
           base::StringPrintf("Compositing.%s.NumRenderSurfaces", client_name),
           base::saturated_cast<int>(render_surface_list_.size()));
