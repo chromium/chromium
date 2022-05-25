@@ -41,6 +41,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
+#include "base/strings/string_util_win.h"
 #endif
 
 using content::DesktopMediaID;
@@ -262,8 +263,13 @@ class NativeDesktopMediaListTest : public ChromeViewsTestBase {
       delete;
 
   void TearDown() override {
-    for (size_t i = 0; i < desktop_widgets_.size(); i++)
-      desktop_widgets_[i].reset();
+#if BUILDFLAG(IS_WIN)
+    if (window_open_)
+      DestroyTestWindow(window_info_);
+#endif  // BUILDFLAG(IS_WIN
+
+    for (auto& desktop_widget : desktop_widgets_)
+      desktop_widget.reset();
 
     ChromeViewsTestBase::TearDown();
   }
@@ -339,14 +345,55 @@ class NativeDesktopMediaListTest : public ChromeViewsTestBase {
     window_list_.erase(window_list_.begin() + i);
     native_aura_id_map_.erase(native_id);
   }
-
 #endif  // defined(USE_AURA)
 
-  void AddWindowsAndVerify(bool has_view_dialog) {
-    window_capturer_ = new FakeWindowCapturer();
+  void CreateCapturerAndModel() {
+    webrtc::DesktopCaptureOptions options =
+        content::desktop_capture::CreateDesktopCaptureOptions();
+
+#if BUILDFLAG(IS_WIN)
+    // This option should always be false on Windows so we avoid a potential
+    // deadlock.
+    EXPECT_FALSE(options.enumerate_current_process_windows());
+#endif  // BUILDFLAG(IS_WIN)
+
+    window_capturer_ = new FakeWindowCapturer(options);
+
+    // Only set `add_current_process_windows` if we're using real test windows.
+    // The tests that use fake windows will have their expectations fail if
+    // `model_` picks up other windows on the system.
+    bool add_current_process_windows = false;
+#if BUILDFLAG(IS_WIN)
+    add_current_process_windows = window_open_;
+#endif  // BUILDFLAG(IS_WIN)
     model_ = std::make_unique<NativeDesktopMediaList>(
         DesktopMediaList::Type::kWindow,
-        base::WrapUnique(window_capturer_.get()));
+        base::WrapUnique(window_capturer_.get()), add_current_process_windows);
+  }
+
+  void UpdateModel() {
+    base::RunLoop run_loop;
+    base::OnceClosure update_callback =
+        base::BindLambdaForTesting([&]() { run_loop.Quit(); });
+    model_->Update(std::move(update_callback));
+    run_loop.Run();
+  }
+
+  DesktopMediaList::Source GetSourceFromModel(content::DesktopMediaID::Id id) {
+    int source_count = model_->GetSourceCount();
+    DesktopMediaList::Source source;
+    for (int i = 0; i < source_count; i++) {
+      source = model_->GetSource(i);
+      if (source.id.id == id) {
+        return source;
+      }
+    }
+
+    return DesktopMediaList::Source();
+  }
+
+  void AddWindowsAndVerify(bool has_view_dialog) {
+    CreateCapturerAndModel();
 
     // Set update period to reduce the time it takes to run tests.
     model_->SetUpdatePeriod(base::Milliseconds(20));
@@ -410,6 +457,13 @@ class NativeDesktopMediaListTest : public ChromeViewsTestBase {
     testing::Mock::VerifyAndClearExpectations(&observer_);
   }
 
+#if BUILDFLAG(IS_WIN)
+  void CreateRealWindow() {
+    window_open_ = true;
+    window_info_ = CreateTestWindow();
+  }
+#endif  // BUILDFLAG(IS_WIN)
+
  protected:
   // Must be listed before |model_|, so it's destroyed last.
   MockObserver observer_;
@@ -421,6 +475,11 @@ class NativeDesktopMediaListTest : public ChromeViewsTestBase {
   std::vector<std::unique_ptr<views::Widget>> desktop_widgets_;
   std::map<DesktopMediaID::Id, DesktopMediaID::Id> native_aura_id_map_;
   std::unique_ptr<NativeDesktopMediaList> model_;
+
+#if BUILDFLAG(IS_WIN)
+  bool window_open_ = false;
+  WindowInfo window_info_;
+#endif  // BUILDFLAG(IS_WIN)
 };
 
 TEST_F(NativeDesktopMediaListTest, Windows) {
@@ -614,10 +673,7 @@ TEST_F(NativeDesktopMediaListTest, MoveWindow) {
 // This test verifies that webrtc::DesktopCapturer::CaptureFrame() is not
 // called when the thumbnail size is empty.
 TEST_F(NativeDesktopMediaListTest, EmptyThumbnail) {
-  window_capturer_ = new FakeWindowCapturer();
-  model_ = std::make_unique<NativeDesktopMediaList>(
-      DesktopMediaList::Type::kWindow,
-      base::WrapUnique(window_capturer_.get()));
+  CreateCapturerAndModel();
   model_->SetThumbnailSize(gfx::Size());
 
   // Set update period to reduce the time it takes to run tests.
@@ -685,5 +741,44 @@ TEST_F(NativeDesktopMediaListTest, GetSourceListAvoidsDeadlock) {
   window_thread.task_runner()->PostTask(
       FROM_HERE, base::BindOnce(&DestroyTestWindow, info));
   window_thread.Stop();
+}
+
+TEST_F(NativeDesktopMediaListTest, CollectsCurrentProcessWindows) {
+  // We need a real window so we can ensure windows owned by the current
+  // process are picked up by `model_` even if they aren't enumerated by the
+  // capturer.
+  CreateRealWindow();
+  CreateCapturerAndModel();
+  UpdateModel();
+
+  // Ensure that `model_` is finding and adding the window to it's sources, and
+  // not getting it from the capturer.
+  webrtc::DesktopCapturer::SourceList source_list;
+  EXPECT_TRUE(window_capturer_->GetSourceList(&source_list));
+  EXPECT_EQ(source_list.size(), 0ull);
+
+  content::DesktopMediaID::Id window_id =
+      reinterpret_cast<intptr_t>(window_info_.hwnd);
+  DesktopMediaList::Source source = GetSourceFromModel(window_id);
+  EXPECT_EQ(source.id.id, window_id);
+  EXPECT_STREQ(base::as_wcstr(source.name.c_str()), kWideWindowTitle);
+}
+
+TEST_F(NativeDesktopMediaListTest, MinimizedCurrentProcessWindows) {
+  CreateRealWindow();
+  CreateCapturerAndModel();
+
+  webrtc::DesktopCapturer::SourceList source_list;
+  EXPECT_TRUE(window_capturer_->GetSourceList(&source_list));
+  EXPECT_EQ(source_list.size(), 0ull);
+
+  // If we minimize the window it should not appear in `model_`s sources.
+  ::ShowWindow(window_info_.hwnd, SW_MINIMIZE);
+  UpdateModel();
+  DesktopMediaList::Source source =
+      GetSourceFromModel(reinterpret_cast<intptr_t>(window_info_.hwnd));
+
+  // We expect the source is not found.
+  EXPECT_EQ(source.id.id, content::DesktopMediaID::kNullId);
 }
 #endif  // BUILDFLAG(IS_WIN)
