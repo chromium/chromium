@@ -18,6 +18,9 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.view.View;
 
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -85,13 +88,20 @@ public class HistoryClustersMediatorTest {
     private HistoryClustersMediator.Clock mClock;
     @Mock
     private TemplateUrlService mTemplateUrlService;
+    @Mock
+    private RecyclerView mRecyclerView;
+    @Mock
+    private LinearLayoutManager mLayoutManager;
 
     private ClusterVisit mVisit1;
     private ClusterVisit mVisit2;
     private ClusterVisit mVisit3;
+    private ClusterVisit mVisit4;
     private HistoryCluster mCluster1;
     private HistoryCluster mCluster2;
+    private HistoryCluster mCluster3;
     private HistoryClustersResult mHistoryClustersResultWithQuery;
+    private HistoryClustersResult mHistoryClustersFollowupResultWithQuery;
     private HistoryClustersResult mHistoryClustersResultEmptyQuery;
     private ModelList mModelList;
     private PropertyModel mToolbarModel;
@@ -106,6 +116,7 @@ public class HistoryClustersMediatorTest {
         doReturn(mResources).when(mContext).getResources();
         doReturn(ITEM_URL_SPEC).when(mMockGurl).getSpec();
         doReturn(mIntent).when(mUrlIntentCreator).apply(mMockGurl);
+        doReturn(mLayoutManager).when(mRecyclerView).getLayoutManager();
         mModelList = new ModelList();
         mToolbarModel = new PropertyModel(HistoryClustersToolbarProperties.ALL_KEYS);
         mMediator = new HistoryClustersMediator(mBridge, mLargeIconBridge, mContext, mResources,
@@ -114,12 +125,17 @@ public class HistoryClustersMediatorTest {
         mVisit1 = new ClusterVisit(1.0F, mGurl1, "Title 1");
         mVisit2 = new ClusterVisit(1.0F, mGurl2, "Title 2");
         mVisit3 = new ClusterVisit(1.0F, mGurl3, "Title 3");
+        mVisit4 = new ClusterVisit(1.0F, mGurl3, "Title 4");
         mCluster1 = new HistoryCluster(Arrays.asList("foo"), Arrays.asList(mVisit1, mVisit2),
                 "label1", new ArrayList<>(), 456L, Arrays.asList("search 1", "search 2"));
         mCluster2 = new HistoryCluster(Arrays.asList("bar", "baz"), Arrays.asList(mVisit3),
                 "label2", new ArrayList<>(), 123L, Collections.emptyList());
+        mCluster3 = new HistoryCluster(Arrays.asList("key"), Arrays.asList(mVisit4), "label3",
+                new ArrayList<>(), 789L, Collections.EMPTY_LIST);
         mHistoryClustersResultWithQuery = new HistoryClustersResult(
-                Arrays.asList(mCluster1, mCluster2), "query", false, false);
+                Arrays.asList(mCluster1, mCluster2), "query", true, false);
+        mHistoryClustersFollowupResultWithQuery =
+                new HistoryClustersResult(Arrays.asList(mCluster3), "query", false, true);
         mHistoryClustersResultEmptyQuery =
                 new HistoryClustersResult(Arrays.asList(mCluster1, mCluster2), "", false, false);
     }
@@ -134,7 +150,7 @@ public class HistoryClustersMediatorTest {
         Promise<HistoryClustersResult> promise = new Promise<>();
         doReturn(promise).when(mBridge).queryClusters("query");
 
-        mMediator.query("query");
+        mMediator.startQuery("query");
         assertEquals(mModelList.size(), 0);
 
         fulfillPromise(promise, mHistoryClustersResultWithQuery);
@@ -169,7 +185,7 @@ public class HistoryClustersMediatorTest {
         Promise<HistoryClustersResult> promise = new Promise<>();
         doReturn(promise).when(mBridge).queryClusters("");
 
-        mMediator.query("");
+        mMediator.startQuery("");
         fulfillPromise(promise, mHistoryClustersResultEmptyQuery);
 
         assertEquals(mModelList.size(), 2);
@@ -296,6 +312,30 @@ public class HistoryClustersMediatorTest {
         doReturn(TimeUnit.SECONDS.toMillis(1)).when(mClock).currentTimeMillis();
         timeString = mMediator.getTimeString(0L);
         assertEquals(timeString, justNowString);
+    }
+
+    @Test
+    public void testScrolling() {
+        Promise<HistoryClustersResult> promise = new Promise();
+        doReturn(promise).when(mBridge).queryClusters("query");
+        Promise<HistoryClustersResult> secondPromise = new Promise();
+        doReturn(secondPromise).when(mBridge).loadMoreClusters("query");
+        doReturn(3).when(mLayoutManager).findLastVisibleItemPosition();
+
+        mMediator.startQuery("query");
+        fulfillPromise(promise, mHistoryClustersResultWithQuery);
+
+        mMediator.onScrolled(mRecyclerView, 1, 1);
+        ShadowLooper.idleMainLooper();
+
+        verify(mBridge).loadMoreClusters("query");
+        fulfillPromise(secondPromise, mHistoryClustersFollowupResultWithQuery);
+
+        doReturn(4).when(mLayoutManager).findLastVisibleItemPosition();
+        mMediator.onScrolled(mRecyclerView, 1, 1);
+        // There should have been no further calls to loadMoreClusters since the current result
+        // specifies that it has no more data.
+        verify(mBridge).loadMoreClusters("query");
     }
 
     private <T> void fulfillPromise(Promise<T> promise, T result) {

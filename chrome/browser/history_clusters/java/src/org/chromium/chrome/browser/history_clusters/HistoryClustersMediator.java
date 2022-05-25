@@ -16,6 +16,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.CallbackController;
 import org.chromium.base.ContextUtils;
@@ -43,7 +45,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-class HistoryClustersMediator implements SearchDelegate {
+class HistoryClustersMediator extends RecyclerView.OnScrollListener implements SearchDelegate {
+    @VisibleForTesting
+
+    // The number of items past the last visible one we want to have loaded at any give point.
+    static final int REMAINING_ITEM_BUFFER_SIZE = 25;
+
     interface Clock {
         long currentTimeMillis();
     }
@@ -111,13 +118,27 @@ class HistoryClustersMediator implements SearchDelegate {
     @Override
     public void onSearchTextChanged(String query) {
         mModelList.clear();
-        query(query);
+        startQuery(query);
     }
 
     @Override
     public void onEndSearch() {
         mModelList.clear();
-        query("");
+        startQuery("");
+    }
+
+    // OnScrollListener implementation
+    @Override
+    public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+        LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+        if (layoutManager.findLastVisibleItemPosition()
+                > (mModelList.size() - REMAINING_ITEM_BUFFER_SIZE)) {
+            mPromise.then(result -> {
+                if (result.canLoadMore()) {
+                    continueQuery(result.getQuery());
+                }
+            });
+        }
     }
 
     void destroy() {
@@ -129,8 +150,13 @@ class HistoryClustersMediator implements SearchDelegate {
         mToolbarModel.set(HistoryClustersToolbarProperties.QUERY_STATE, QueryState.forQuery(query));
     }
 
-    void query(String query) {
+    void startQuery(String query) {
         mPromise = mHistoryClustersBridge.queryClusters(query);
+        mPromise.then(mCallbackController.makeCancelable(this::queryComplete));
+    }
+
+    void continueQuery(String query) {
+        mPromise = mHistoryClustersBridge.loadMoreClusters(query);
         mPromise.then(mCallbackController.makeCancelable(this::queryComplete));
     }
 
@@ -180,6 +206,8 @@ class HistoryClustersMediator implements SearchDelegate {
             if (isQueryless) {
                 clusterModel.set(HistoryClustersItemProperties.CLICK_HANDLER,
                         (v) -> startSearch(cluster.getLabel()));
+                clusterModel.set(HistoryClustersItemProperties.END_BUTTON_DRAWABLE, null);
+                clusterModel.set(HistoryClustersItemProperties.LABEL, null);
                 continue;
             }
 
@@ -192,6 +220,7 @@ class HistoryClustersMediator implements SearchDelegate {
                 visitModel.set(HistoryClustersItemProperties.URL, visit.getGURL().getHost());
                 visitModel.set(HistoryClustersItemProperties.CLICK_HANDLER,
                         (v) -> navigateToItemUrl(visit.getGURL()));
+                visitModel.set(HistoryClustersItemProperties.VISIBILITY, View.VISIBLE);
                 if (mLargeIconBridge != null) {
                     mLargeIconBridge.getLargeIconForUrl(visit.getGURL(), mFaviconSize,
                             (Bitmap icon, int fallbackColor, boolean isFallbackColorDefault,

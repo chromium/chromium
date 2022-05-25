@@ -46,7 +46,7 @@ class HistoryClusterView extends SelectableItemView<HistoryCluster> {
     }
 
     void setIconDrawable(Drawable drawable) {
-        mStartIconView.setImageDrawable(drawable);
+        super.setStartIconDrawable(drawable);
     }
 
     void setEndButtonDrawable(Drawable drawable) {

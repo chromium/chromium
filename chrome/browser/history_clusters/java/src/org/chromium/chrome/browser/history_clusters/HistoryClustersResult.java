@@ -27,4 +27,8 @@ class HistoryClustersResult {
     public String getQuery() {
         return mQuery;
     }
+
+    public boolean canLoadMore() {
+        return mCanLoadMore;
+    }
 }

@@ -36,6 +36,6 @@ class HistoryClustersItemView extends SelectableItemView<ClusterVisit> {
     }
 
     void setIconDrawable(Drawable drawable) {
-        mStartIconView.setImageDrawable(drawable);
+        super.setStartIconDrawable(drawable);
     }
 }
