@@ -241,7 +241,7 @@ GREYLayoutConstraint* BelowConstraint() {
 #pragma mark - Welcome Screen Tests
 
 // Checks that the Welcome screen is displayed correctly.
-- (void)testWelcomeScreenUI {
+- (void)DISABLED_testWelcomeScreenUI {
   [self verifyWelcomeScreenIsDisplayed];
 
   // Validate the Title text.
@@ -269,7 +269,7 @@ GREYLayoutConstraint* BelowConstraint() {
 
 // Checks that the Welcome screen is displayed correctly when enterprise is
 // enabled.
-- (void)testWelcomeScreenUIForEnterprise {
+- (void)DISABLED_testWelcomeScreenUIForEnterprise {
   AppLaunchConfiguration config = self.appConfigurationForTestCase;
 
   // Configure the policy to force sign-in.
@@ -998,7 +998,7 @@ GREYLayoutConstraint* BelowConstraint() {
 
 // Tests that metrics collection is enabled when the checkmark is checked on
 // the Welcome screen.
-- (void)testMetricsEnabled {
+- (void)DISABLED_testMetricsEnabled {
   // Verify the metrics collection pref is disabled prior to going through the
   // Welcome screen.
   GREYAssertFalse(
@@ -1030,7 +1030,7 @@ GREYLayoutConstraint* BelowConstraint() {
 
 // Tests that metrics collection is disabled when the checkmark is unchecked on
 // the Welcome screen.
-- (void)testMetricsDisabled {
+- (void)DISABLED_testMetricsDisabled {
   // Verify the metrics collection pref is disabled prior to going through the
   // Welcome screen.
   GREYAssertFalse(
