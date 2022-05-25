@@ -94,11 +94,13 @@ class BASE_EXPORT PlatformThread {
   // ThreadMain method will be called on the newly created thread.
   class BASE_EXPORT Delegate {
    public:
+#if BUILDFLAG(IS_APPLE)
     // The interval at which the thread expects to have work to do. Zero if
     // unknown. (Example: audio buffer duration for real-time audio.) Is used to
     // optimize the thread real-time behavior. Is called on the newly created
     // thread before ThreadMain().
     virtual TimeDelta GetRealtimePeriod();
+#endif
 
     virtual void ThreadMain() = 0;
 
@@ -250,15 +252,6 @@ class BASE_EXPORT PlatformThread {
  private:
   static void SetCurrentThreadPriorityImpl(ThreadPriority priority);
 };
-
-namespace internal {
-
-// Initializes the "ThreadPriorities" feature. The feature state is only taken
-// into account after this initialization. This initialization must be
-// synchronized with calls to PlatformThread::SetCurrentThreadPriority().
-void InitializeThreadPrioritiesFeature();
-
-}  // namespace internal
 
 }  // namespace base
 

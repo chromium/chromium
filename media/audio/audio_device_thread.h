@@ -11,6 +11,7 @@
 #include "base/sync_socket.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_checker.h"
+#include "build/buildflag.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/media_export.h"
 
@@ -82,7 +83,9 @@ class MEDIA_EXPORT AudioDeviceThread : public base::PlatformThread::Delegate {
   ~AudioDeviceThread() override;
 
  private:
+#if BUILDFLAG(IS_APPLE)
   base::TimeDelta GetRealtimePeriod() final;
+#endif
   void ThreadMain() final;
 
   const raw_ptr<Callback> callback_;

@@ -28,6 +28,7 @@
 #include "base/task/sequence_manager/sequence_manager_impl.h"
 #include "base/task/sequence_manager/thread_controller_power_monitor.h"
 #include "base/threading/hang_watcher.h"
+#include "base/threading/platform_thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -730,6 +731,9 @@ void ChromeMainDelegate::PostFieldTrialInitialization() {
   base::internal::TimerBase::InitializeFeatures();
   base::InitializeCpuReductionExperiment();
   base::sequence_manager::internal::SequenceManagerImpl::InitializeFeatures();
+#if BUILDFLAG(IS_MAC)
+  base::PlatformThread::InitializeOptimizedRealtimeThreadingFeature();
+#endif
 }
 
 #if BUILDFLAG(IS_WIN)

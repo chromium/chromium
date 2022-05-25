@@ -54,6 +54,10 @@ void InitThreading() {
   }
 }
 
+TimeDelta PlatformThread::Delegate::GetRealtimePeriod() {
+  return TimeDelta();
+}
+
 // static
 void PlatformThread::YieldCurrentThread() {
   // Don't use sched_yield(), as it can lead to 10ms delays.

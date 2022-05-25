@@ -83,7 +83,7 @@ void* ThreadFunc(void* params) {
 
 #if BUILDFLAG(IS_APPLE)
     PlatformThread::SetCurrentThreadRealtimePeriodValue(
-        PlatformThread::GetRealtimePeriod(delegate));
+        delegate->GetRealtimePeriod());
 #endif
 
     // Threads on linux/android may inherit their priority from the thread

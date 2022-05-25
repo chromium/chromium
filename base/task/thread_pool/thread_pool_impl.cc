@@ -124,7 +124,6 @@ void ThreadPoolImpl::Start(const ThreadPoolInstance::InitParams& init_params,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!started_);
 
-  internal::InitializeThreadPrioritiesFeature();
   PooledSequencedTaskRunner::InitializeFeatures();
   task_leeway_.store(kTaskLeewayParam.Get(), std::memory_order_relaxed);
 
