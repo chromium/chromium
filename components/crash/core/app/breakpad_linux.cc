@@ -26,6 +26,7 @@
 #include <string>
 #include <tuple>
 
+#include "base/allocator/partition_allocator/oom.h"
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/debug/dump_without_crashing.h"
@@ -36,7 +37,6 @@
 #include "base/path_service.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/posix/global_descriptors.h"
-#include "base/process/memory.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -724,7 +724,7 @@ bool CrashDone(const MinidumpDescriptor& minidump,
   info.distro_length = my_strlen(base::g_linux_distro);
   info.upload = upload;
   info.process_start_time = g_process_start_time;
-  info.oom_size = base::g_oom_size;
+  info.oom_size = partition_alloc::g_oom_size;
   info.pid = g_pid;
   info.crash_keys = crash_reporter::internal::GetCrashKeyStorage();
   HandleCrashDump(info);
@@ -1065,8 +1065,8 @@ class NonBrowserCrashHandler : public google_breakpad::CrashGenerationClient {
     iov[2].iov_len = sizeof(fds[0]);
     iov[3].iov_base = &g_process_start_time;
     iov[3].iov_len = sizeof(g_process_start_time);
-    iov[4].iov_base = &base::g_oom_size;
-    iov[4].iov_len = sizeof(base::g_oom_size);
+    iov[4].iov_base = &partition_alloc::g_oom_size;
+    iov[4].iov_len = sizeof(partition_alloc::g_oom_size);
     google_breakpad::SerializedNonAllocatingMap* serialized_map;
     iov[5].iov_len = crash_reporter::internal::GetCrashKeyStorage()->Serialize(
         const_cast<const google_breakpad::SerializedNonAllocatingMap**>(

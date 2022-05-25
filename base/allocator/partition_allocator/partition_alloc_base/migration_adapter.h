@@ -25,8 +25,6 @@ class LazyInstance;
 template <typename Type>
 struct LazyInstanceTraitsBase;
 
-BASE_EXPORT void TerminateBecauseOutOfMemory(size_t size);
-
 #if BUILDFLAG(IS_ANDROID)
 template <typename CharT, typename Traits>
 class BasicStringPiece;
@@ -67,7 +65,6 @@ namespace partition_alloc::internal::base {
 using ::base::LapTimer;
 using ::base::LazyInstance;
 using ::base::LazyInstanceTraitsBase;
-using ::base::TerminateBecauseOutOfMemory;
 
 #if BUILDFLAG(IS_MAC)
 template <typename CFT>
