@@ -2214,6 +2214,23 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PasswordManager.PasswordStoreAndroidBackend.APIError.{SyncErrorStatus}"
+    enum="PasswordStoreAndroidBackendAPIError" expires_after="2022-06-30">
+  <owner>fhorschig@chromium.org</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    The error codes returned by the GMS Core ChromeSync 1P API when
+    {SyncErrorStatus} is returned by SyncService.GetAuthError(). Recorded when
+    the asynchronous job has returned.
+  </summary>
+  <token key="SyncErrorStatus">
+    <variant name="NoAuthError" summary="no error"/>
+    <variant name="PersistentAuthError" summary="a persistent auth error"/>
+    <variant name="TransientAuthError" summary="a transient auth error"/>
+  </token>
+</histogram>
+
+<histogram
     name="PasswordManager.PasswordStoreAndroidBackend.ClearAllLocalPasswords.LoginsToRemove"
     units="count" expires_after="2022-09-11">
   <owner>fhorschig@chromium.org</owner>

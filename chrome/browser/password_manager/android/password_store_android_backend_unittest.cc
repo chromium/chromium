@@ -574,6 +574,98 @@ TEST_F(PasswordStoreAndroidBackendTest, OnExternalError) {
   histogram_tester.ExpectBucketCount(kAPIErrorMetric, 11004, 1);
 }
 
+TEST_F(PasswordStoreAndroidBackendTest,
+       OnExternalErrorInCombinationWithNoSyncError) {
+  backend().InitBackend(PasswordStoreAndroidBackend::RemoteChangesReceived(),
+                        base::RepeatingClosure(), base::DoNothing());
+
+  syncer::TestSyncService sync_service;
+  backend().OnSyncServiceInitialized(&sync_service);
+
+  ASSERT_FALSE(sync_service.GetAuthError().IsTransientError());
+  ASSERT_FALSE(sync_service.GetAuthError().IsPersistentError());
+
+  const JobId kJobId{1337};
+  base::HistogramTester histogram_tester;
+  base::MockCallback<LoginsOrErrorReply> mock_reply;
+  EXPECT_CALL(*bridge(), GetAllLogins).WillOnce(Return(kJobId));
+  backend().GetAllLoginsAsync(mock_reply.Get());
+  EXPECT_CALL(mock_reply,
+              Run(ExpectError(PasswordStoreBackendError::kUnspecified)));
+  AndroidBackendError error{AndroidBackendErrorType::kExternalError};
+  error.api_error_code = absl::optional<int>(11004);
+  consumer().OnError(kJobId, std::move(error));
+  RunUntilIdle();
+
+  constexpr char kAPIErrorMetric[] =
+      "PasswordManager.PasswordStoreAndroidBackend.APIError.NoAuthError";
+
+  histogram_tester.ExpectBucketCount(kAPIErrorMetric, 11004, 1);
+}
+
+TEST_F(PasswordStoreAndroidBackendTest,
+       OnExternalErrorInCombinationWithTransientSyncError) {
+  backend().InitBackend(PasswordStoreAndroidBackend::RemoteChangesReceived(),
+                        base::RepeatingClosure(), base::DoNothing());
+
+  syncer::TestSyncService sync_service;
+  backend().OnSyncServiceInitialized(&sync_service);
+
+  GoogleServiceAuthError transient_error(
+      GoogleServiceAuthError::CONNECTION_FAILED);
+  ASSERT_TRUE(transient_error.IsTransientError());
+  sync_service.SetAuthError(transient_error);
+
+  const JobId kJobId{1337};
+  base::HistogramTester histogram_tester;
+  base::MockCallback<LoginsOrErrorReply> mock_reply;
+  EXPECT_CALL(*bridge(), GetAllLogins).WillOnce(Return(kJobId));
+  backend().GetAllLoginsAsync(mock_reply.Get());
+  EXPECT_CALL(mock_reply,
+              Run(ExpectError(PasswordStoreBackendError::kUnspecified)));
+  AndroidBackendError error{AndroidBackendErrorType::kExternalError};
+  error.api_error_code = absl::optional<int>(11004);
+  consumer().OnError(kJobId, std::move(error));
+  RunUntilIdle();
+
+  constexpr char kAPIErrorMetric[] =
+      "PasswordManager.PasswordStoreAndroidBackend.APIError.TransientAuthError";
+
+  histogram_tester.ExpectBucketCount(kAPIErrorMetric, 11004, 1);
+}
+
+TEST_F(PasswordStoreAndroidBackendTest,
+       OnExternalErrorInCombinationWithPersistentSyncError) {
+  backend().InitBackend(PasswordStoreAndroidBackend::RemoteChangesReceived(),
+                        base::RepeatingClosure(), base::DoNothing());
+
+  syncer::TestSyncService sync_service;
+  backend().OnSyncServiceInitialized(&sync_service);
+
+  GoogleServiceAuthError persistent_error(
+      GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS);
+  ASSERT_TRUE(persistent_error.IsPersistentError());
+  sync_service.SetAuthError(persistent_error);
+
+  const JobId kJobId{1337};
+  base::HistogramTester histogram_tester;
+  base::MockCallback<LoginsOrErrorReply> mock_reply;
+  EXPECT_CALL(*bridge(), GetAllLogins).WillOnce(Return(kJobId));
+  backend().GetAllLoginsAsync(mock_reply.Get());
+  EXPECT_CALL(mock_reply,
+              Run(ExpectError(PasswordStoreBackendError::kUnspecified)));
+  AndroidBackendError error{AndroidBackendErrorType::kExternalError};
+  error.api_error_code = absl::optional<int>(11004);
+  consumer().OnError(kJobId, std::move(error));
+  RunUntilIdle();
+
+  constexpr char kAPIErrorMetric[] =
+      "PasswordManager.PasswordStoreAndroidBackend.APIError."
+      "PersistentAuthError";
+
+  histogram_tester.ExpectBucketCount(kAPIErrorMetric, 11004, 1);
+}
+
 TEST_F(PasswordStoreAndroidBackendTest, DisableAutoSignInForOrigins) {
   EnableSyncForTestAccount();
   base::HistogramTester histogram_tester;

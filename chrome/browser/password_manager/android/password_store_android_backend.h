@@ -227,6 +227,8 @@ class PasswordStoreAndroidBackend
   // This object is the proxy to the JNI bridge that performs the API requests.
   std::unique_ptr<PasswordStoreAndroidBackendBridge> bridge_;
 
+  raw_ptr<syncer::SyncService> sync_service_ = nullptr;
+
   // Delegate to obtain sync status, and syncing account.
   std::unique_ptr<SyncDelegate> sync_delegate_;
 
