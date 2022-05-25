@@ -905,14 +905,4 @@ bool RestrictedCookieManager::ValidateAccessToCookiesAt(
   return false;
 }
 
-void RestrictedCookieManager::ConvertPartitionedCookiesToUnpartitioned(
-    const GURL& url) {
-  DCHECK(base::FeatureList::IsEnabled(net::features::kPartitionedCookies));
-  if (base::FeatureList::IsEnabled(
-          net::features::kPartitionedCookiesBypassOriginTrial)) {
-    return;
-  }
-  cookie_store_->ConvertPartitionedCookiesToUnpartitioned(url);
-}
-
 }  // namespace network

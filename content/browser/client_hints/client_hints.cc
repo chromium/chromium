@@ -458,8 +458,9 @@ const std::string SerializeHeaderString(const T& value) {
 }
 
 // Returns true iff the `url` is embedded inside a frame that has the
-// corresponding Sec-CH-UA-Reduced or Sec-CH-UA-Full client hint and thus, is
-// enrolled in the UserAgentReduction or SendFullUserAgentAfterReduction
+// corresponding Sec-CH-UA-Reduced, Sec-CH-UA-Full, or
+// Sec-CH-Partitioned-Cookies client hint and thus, is enrolled in the
+// UserAgentReduction, SendFullUserAgentAfterReduction, or PartitionedCookies
 // Origin Trial.
 //
 // TODO(crbug.com/1258063): Remove when the UserAgentReduction and
@@ -509,7 +510,8 @@ void RemoveAllClientHintsExceptOriginTrialHints(
 
   for (auto it = accept_ch->begin(); it != accept_ch->end();) {
     if (*it == WebClientHintsType::kUAReduced ||
-        *it == WebClientHintsType::kFullUserAgent) {
+        *it == WebClientHintsType::kFullUserAgent ||
+        *it == WebClientHintsType::kPartitionedCookies) {
       ++it;
     } else {
       it = accept_ch->erase(it);
@@ -584,6 +586,9 @@ struct ClientHintsExtendedData {
       is_embedder_ua_full = IsOriginTrialHintEnabledForFrame(
           trial_origin, outermost_main_frame_origin, frame_tree_node, delegate,
           WebClientHintsType::kFullUserAgent);
+      is_embedder_partitioned_cookies = IsOriginTrialHintEnabledForFrame(
+          trial_origin, outermost_main_frame_origin, frame_tree_node, delegate,
+          WebClientHintsType::kPartitionedCookies);
     }
 
     // Record the time spent getting the client hints.
@@ -608,6 +613,12 @@ struct ClientHintsExtendedData {
   // receive the full User-Agent header, so we want to also send the full
   // User-Agent for the embedded request as well.
   bool is_embedder_ua_full = false;
+  // If true, one of the ancestor requests in the path to this request had
+  // Sec-CH-Partitioned-Cookies in their Accept-CH cache. Only appplies to
+  // embedded requests (top-level requests will always set this to false).
+  //
+  // If the embedder of the
+  bool is_embedder_partitioned_cookies = false;
   url::Origin resource_origin;
   bool is_outermost_main_frame = false;
   url::Origin outermost_main_frame_origin;
@@ -617,7 +628,8 @@ struct ClientHintsExtendedData {
 
 bool SkipPermissionPolicyCheck(WebClientHintsType type) {
   return type == WebClientHintsType::kUAReduced ||
-         type == WebClientHintsType::kFullUserAgent;
+         type == WebClientHintsType::kFullUserAgent ||
+         type == WebClientHintsType::kPartitionedCookies;
 }
 
 bool IsClientHintEnabled(const ClientHintsExtendedData& data,
@@ -626,7 +638,9 @@ bool IsClientHintEnabled(const ClientHintsExtendedData& data,
          (type == WebClientHintsType::kUAReduced &&
           data.is_embedder_ua_reduced) ||
          (type == WebClientHintsType::kFullUserAgent &&
-          data.is_embedder_ua_full);
+          data.is_embedder_ua_full) ||
+         (type == WebClientHintsType::kPartitionedCookies &&
+          data.is_embedder_partitioned_cookies);
 }
 
 bool IsClientHintAllowed(const ClientHintsExtendedData& data,
@@ -935,6 +949,11 @@ void AddRequestClientHintsHeaders(
     AddPrefersColorSchemeHeader(headers, frame_tree_node);
   }
 
+  if (ShouldAddClientHint(data, WebClientHintsType::kPartitionedCookies)) {
+    SetHeaderToString(headers, WebClientHintsType::kPartitionedCookies,
+                      SerializeHeaderString(true));
+  }
+
   if (ShouldAddClientHint(data, WebClientHintsType::kSaveData))
     AddSaveDataHeader(headers, context);
 
@@ -1073,6 +1092,15 @@ ParseAndPersistAcceptCHForNavigation(
       enabled_hints.GetEnabledHints();
   PersistAcceptCH(origin, frame_tree_node->GetParentOrOuterDocument(), delegate,
                   persisted_hints);
+  if (std::find(persisted_hints.begin(), persisted_hints.end(),
+                WebClientHintsType::kPartitionedCookies) ==
+      persisted_hints.end()) {
+    if (auto* cookie_manager = frame_tree_node->current_frame_host()
+                                   ->GetStoragePartition()
+                                   ->GetCookieManagerForBrowserProcess()) {
+      cookie_manager->ConvertPartitionedCookiesToUnpartitioned(origin.GetURL());
+    }
+  }
   return persisted_hints;
 }
 
@@ -1104,6 +1132,10 @@ std::vector<WebClientHintsType> LookupAcceptCHForCommit(
   if (data.is_embedder_ua_full &&
       !base::Contains(hints, WebClientHintsType::kFullUserAgent)) {
     hints.push_back(WebClientHintsType::kFullUserAgent);
+  }
+  if (data.is_embedder_partitioned_cookies &&
+      !base::Contains(hints, WebClientHintsType::kPartitionedCookies)) {
+    hints.push_back(WebClientHintsType::kPartitionedCookies);
   }
   return hints;
 }

@@ -7303,14 +7303,6 @@ TEST_F(URLLoaderTest, RecordRadioWakeupTrigger_IntervalTooShort) {
 
 #endif  // BUILDFLAG(IS_ANDROID)
 
-TEST_F(URLLoaderTest, HasPartitionedCookie) {
-  TestURLLoaderClient loader_client;
-  ResourceRequest request = CreateResourceRequest(
-      "GET", test_server()->GetURL("/set-cookie?a=b;Partitioned;"));
-  EXPECT_EQ(net::OK, LoadRequest(request));
-  EXPECT_TRUE(client_.response_head()->has_partitioned_cookie);
-}
-
 class URLLoaderCacheTransparencyTest : public URLLoaderTest {
  public:
   void SetUp() override {

@@ -8416,13 +8416,6 @@ Document::PendingJavascriptUrl::PendingJavascriptUrl(
 
 Document::PendingJavascriptUrl::~PendingJavascriptUrl() = default;
 
-void Document::CheckPartitionedCookiesOriginTrial(
-    const ResourceResponse& response) {
-  // if (!cookie_jar_)
-  //   return;
-  cookie_jar_->CheckPartitionedCookiesOriginTrial(response);
-}
-
 template class CORE_TEMPLATE_EXPORT Supplement<Document>;
 
 }  // namespace blink

@@ -33,7 +33,8 @@ TEST(ClientHintsTest, FindClientHintsToRemoveLegacy) {
           "sec-ch-prefers-color-scheme", "sec-ch-ua-bitness",
           "sec-ch-ua-reduced", "sec-ch-viewport-height", "sec-ch-device-memory",
           "sec-ch-dpr", "sec-ch-width", "sec-ch-viewport-width",
-          "sec-ch-ua-full-version-list", "sec-ch-ua-full", "sec-ch-ua-wow64"));
+          "sec-ch-ua-full-version-list", "sec-ch-ua-full", "sec-ch-ua-wow64",
+          "sec-ch-partitioned-cookies"));
 }
 
 // Checks that the removed header list includes legacy headers but not the
@@ -53,6 +54,6 @@ TEST(ClientHintsTest, FindClientHintsToRemoveNoLegacy) {
           "sec-ch-ua-bitness", "sec-ch-ua-reduced", "sec-ch-viewport-height",
           "sec-ch-device-memory", "sec-ch-dpr", "sec-ch-width",
           "sec-ch-viewport-width", "sec-ch-ua-full-version-list",
-          "sec-ch-ua-full", "sec-ch-ua-wow64"));
+          "sec-ch-ua-full", "sec-ch-ua-wow64", "sec-ch-partitioned-cookies"));
 }
 }  // namespace blink

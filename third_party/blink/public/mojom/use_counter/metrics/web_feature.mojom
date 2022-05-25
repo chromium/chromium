@@ -3478,7 +3478,7 @@ enum WebFeature {
   kV8UDPSocket_RemotePort_AttributeGetter = 4157,
   kV8UDPSocket_Writable_AttributeGetter = 4158,
   kAbortSignalTimeout = 4159,
-  kOBSOLETE_ClientHintsPartitionedCookies = 4160,
+  kClientHintsPartitionedCookies = 4160,
   kV8Document_Prerendering_AttributeGetter = 4161,
   kV8Document_Onprerenderingchange_AttributeGetter = 4162,
   kV8Document_Onprerenderingchange_AttributeSetter = 4163,

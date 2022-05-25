@@ -406,6 +406,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            blink::features::kClientHintThirdPartyDelegation},
           {"UserAgentReduction", blink::features::kReduceUserAgent},
           {"UserAgentFull", blink::features::kFullUserAgent},
+          {"ClientHintPartitiondCookies",
+           blink::features::kClientHintsPartitionedCookies},
           {"WindowPlacement", blink::features::kWindowPlacement},
           {"WindowPlacementFullscreenOnScreensChange",
            blink::features::kWindowPlacementFullscreenOnScreensChange},

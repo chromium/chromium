@@ -812,9 +812,6 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
 
   base::WeakPtr<URLRequest> GetWeakPtr();
 
-  bool HasPartitionedCookie() { return has_partitioned_cookie_; }
-  void SetHasPartitionedCookie() { has_partitioned_cookie_ = true; }
-
  protected:
   // Allow the URLRequestJob class to control the is_pending() flag.
   void set_is_pending(bool value) { is_pending_ = value; }
@@ -1066,11 +1063,6 @@ class NET_EXPORT URLRequest : public base::SupportsUserData {
   bool upgrade_if_insecure_;
 
   bool send_client_certs_ = true;
-
-  // This boolean is set to true if the response has a Set-Cookie header with
-  // the Partitioned attribute.
-  // TODO(https://crbug.com/1296161): Delete this field.
-  bool has_partitioned_cookie_ = false;
 
   // Idempotency of the request.
   Idempotency idempotency_ = DEFAULT_IDEMPOTENCY;
