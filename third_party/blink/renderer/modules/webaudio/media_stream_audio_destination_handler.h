@@ -51,8 +51,6 @@ class MediaStreamAudioDestinationHandler final
 
   // MediaStreamSource is held alive by MediaStreamAudioDestinationNode.
   // Accessed by main thread and during audio thread processing.
-  //
-  // TODO: try to avoid such access during audio thread processing.
   CrossThreadWeakPersistent<MediaStreamSource> source_;
 
   // This synchronizes dynamic changes to the channel count with

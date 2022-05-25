@@ -34,10 +34,6 @@ void GainHandler::Process(uint32_t frames_to_process) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("webaudio.audionode"),
                "GainHandler::Process");
 
-  // FIXME: for some cases there is a nice optimization to avoid processing
-  // here, and let the gain change happen in the summing junction input of the
-  // AudioNode we're connected to.  Then we can avoid all of the following:
-
   AudioBus* output_bus = Output(0).Bus();
   DCHECK(output_bus);
 
@@ -82,9 +78,6 @@ void GainHandler::ProcessOnlyAudioParams(uint32_t frames_to_process) {
   gain_->CalculateSampleAccurateValues(values, frames_to_process);
 }
 
-// FIXME: this can go away when we do mixing with gain directly in summing
-// junction of AudioNodeInput
-//
 // As soon as we know the channel count of our input, we can lazily initialize.
 // Sometimes this may be called more than once with different channel counts, in
 // which case we must safely uninitialize and then re-initialize with the new

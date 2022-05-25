@@ -243,7 +243,7 @@ void AudioScheduledSourceHandler::Finish() {
 
 void AudioScheduledSourceHandler::NotifyEnded() {
   // NotifyEnded is always called when the node is finished, even if
-  // htere are no event listeners.  We always dispatch the event and
+  // there are no event listeners.  We always dispatch the event and
   // let DispatchEvent take are of sending the event to the right
   // place,
   DCHECK(IsMainThread());

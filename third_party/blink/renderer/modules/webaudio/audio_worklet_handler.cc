@@ -227,8 +227,8 @@ void AudioWorkletHandler::FinishProcessorOnRenderThread() {
                             AsWeakPtr(), error_state));
   }
 
-  // TODO(hongchan): After this point, The handler has no more pending activity
-  // and ready for GC.
+  // After this point, the handler has no more pending activity and is ready for
+  // GC.
   Context()->NotifySourceNodeFinishedProcessing(this);
   processor_.Clear();
   tail_time_ = 0;

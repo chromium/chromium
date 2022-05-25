@@ -43,7 +43,7 @@ class MediaStreamAudioSourceHandler final : public AudioHandler {
 
   std::unique_ptr<AudioSourceProvider> audio_source_provider_;
 
-  // Protects source_number_of_channels_
+  // Protects `source_number_of_channels_`
   Mutex process_lock_;
 
   unsigned source_number_of_channels_ = 0;
