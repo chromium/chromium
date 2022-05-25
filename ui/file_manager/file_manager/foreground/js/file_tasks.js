@@ -1010,8 +1010,7 @@ export class FileTasks {
 
         this.directoryModel_.changeDirectoryEntry(displayRoot);
       } catch (error) {
-        console.warn(`Cannot resolve display root after mounting: ${
-            error.stack || error}`);
+        console.error('Cannot resolve display root after mounting:', error);
       }
     } catch (error) {
       // No need to display an error message if user canceled mounting or
@@ -1032,7 +1031,8 @@ export class FileTasks {
       item.state = ProgressItemState.ERROR;
       this.progressCenter_.updateItem(item);
 
-      console.warn(`Cannot mount '${url}': ${error.stack || error}`);
+      console.error('Cannot mount (redacted):', error);
+      console.debug(`Cannot mount '${url}':`, error);
     }
   }
 

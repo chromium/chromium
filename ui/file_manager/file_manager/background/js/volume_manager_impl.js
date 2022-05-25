@@ -254,7 +254,7 @@ export class VolumeManagerImpl extends EventTarget {
 
           case VolumeManagerCommon.VolumeError.ALREADY_MOUNTED: {
             console.warn(
-                `Cannot mount (REDACTED): Already mounted as '${volumeId}'`);
+                `Cannot mount (redacted): Already mounted as '${volumeId}'`);
             console.debug(`Cannot mount '${sourcePath}': Already mounted as '${
                 volumeId}'`);
             const navigationEvent =
@@ -268,8 +268,8 @@ export class VolumeManagerImpl extends EventTarget {
           case VolumeManagerCommon.VolumeError.NEED_PASSWORD:
           case VolumeManagerCommon.VolumeError.CANCELLED:
           default:
-            console.warn(`Cannot mount (REDACTED): ${status}`);
-            console.debug(`Cannot mount '${sourcePath}': ${status}`);
+            console.error('Cannot mount (redacted):', status);
+            console.debug(`Cannot mount '${sourcePath}':`, status);
             this.finishRequest_(requestKey, status);
             return;
         }
