@@ -17,6 +17,9 @@
 #include "base/bind.h"
 #include "base/path_service.h"
 #include "base/scoped_observation.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece_forward.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/repeating_test_future.h"
@@ -673,74 +676,111 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryBrowserTest, DeleteItemViaBackspaceKey) {
   EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
 }
 
-IN_PROC_BROWSER_TEST_F(ClipboardHistoryBrowserTest,
-                       ShouldPasteHistoryAsPlainText) {
-  using ClipboardHistoryPasteType =
-      ash::ClipboardHistoryControllerImpl::ClipboardHistoryPasteType;
+class ClipboardHistoryPasteTypeBrowserTest
+    : public ClipboardHistoryBrowserTest {
+ public:
+  ClipboardHistoryPasteTypeBrowserTest() = default;
+  ~ClipboardHistoryPasteTypeBrowserTest() override = default;
 
-  // Increase delay interval before restoring the clipboard buffer following
-  // a paste event as this test has exhibited flakiness due to the amount of
-  // time it takes a paste event to reach the web contents under test. Remove
-  // this code when possible (https://crbug.com/1303131).
-  GetClipboardHistoryController()->set_buffer_restoration_delay_for_test(
-      base::Milliseconds(500));
+ protected:
+  // ClipboardHistoryBrowserTest:
+  void SetUpOnMainThread() override {
+    ClipboardHistoryBrowserTest::SetUpOnMainThread();
+    // Increase delay interval before restoring the clipboard buffer following
+    // a paste event as this test has exhibited flakiness due to the amount of
+    // time it takes a paste event to reach the web contents under test. Remove
+    // this code when possible (https://crbug.com/1303131).
+    GetClipboardHistoryController()->set_buffer_restoration_delay_for_test(
+        base::Milliseconds(500));
 
-  // Create a browser and cache its active web contents.
-  auto* browser = CreateBrowser(
-      ash::ProfileHelper::Get()->GetProfileByAccountId(account_id1_));
-  auto* web_contents = browser->tab_strip_model()->GetActiveWebContents();
-  ASSERT_TRUE(web_contents);
+    // Create a browser and cache its active web contents.
+    auto* browser = CreateBrowser(
+        ash::ProfileHelper::Get()->GetProfileByAccountId(account_id1_));
+    web_contents_ = browser->tab_strip_model()->GetActiveWebContents();
+    ASSERT_TRUE(web_contents_);
 
-  // Load the web contents synchronously.
-  // The contained script:
-  //  - Listens for paste events and caches the last pasted data.
-  //  - Notifies observers of paste events by changing document title.
-  //  - Provides an API to expose the last pasted data.
-  ASSERT_TRUE(content::NavigateToURL(web_contents, GURL(R"(data:text/html,
-    <!DOCTYPE html>
-    <html>
-      <body>
-        <script>
+    // Load the web contents synchronously.
+    // The contained script:
+    //  - Listens for paste events and caches the last pasted data.
+    //  - Notifies observers of paste events by changing document title.
+    //  - Provides an API to expose the last pasted data.
+    ASSERT_TRUE(content::NavigateToURL(web_contents_, GURL(R"(data:text/html,
+      <!DOCTYPE html>
+      <html>
+        <body>
+          <script>
 
-          let lastPaste = undefined;
-          let lastPasteId = 1;
+            let lastPaste = undefined;
+            let lastPasteId = 1;
 
-          window.addEventListener('paste', e => {
-            e.stopPropagation();
-            e.preventDefault();
+            window.addEventListener('paste', e => {
+              e.stopPropagation();
+              e.preventDefault();
 
-            const clipboardData = e.clipboardData || window.clipboardData;
-            lastPaste = clipboardData.types.map((type) => {
-              return `${type}: ${clipboardData.getData(type)}`;
+              const clipboardData = e.clipboardData || window.clipboardData;
+              lastPaste = clipboardData.types.map((type) => {
+                return `${type}: ${clipboardData.getData(type)}`;
+              });
+
+              document.title = `Paste ${lastPasteId++}`;
             });
 
-            document.title = `Paste ${lastPasteId++}`;
-          });
+            window.getLastPaste = () => {
+              return lastPaste || [];
+            };
 
-          window.getLastPaste = () => {
-            return lastPaste || [];
-          };
+          </script>
+        </body>
+      </html>
+    )")));
 
-        </script>
-      </body>
-    </html>
-  )")));
+    ASSERT_TRUE(GetLastPaste().empty());
+  }
 
-  // Cache a function to return all valid data formats for the last paste.
-  auto GetLastPaste = [&]() {
+  // Waits for a paste event to propagate to the web contents and confirms that
+  // the expected `text` is pasted, formatted according to `paste_plain_text`.
+  void WaitForWebContentsPaste(base::StringPiece text, bool paste_plain_text) {
+    // The web contents will update its page title once it receives a paste
+    // event.
+    std::ignore =
+        content::TitleWatcher(
+            web_contents_,
+            base::StrCat({u"Paste ", base::NumberToString16(paste_num_++)}))
+            .WaitAndGetTitle();
+
+    auto last_paste = GetLastPaste();
+    ASSERT_EQ(last_paste.size(), paste_plain_text ? 1u : 2u);
+    EXPECT_EQ(last_paste[0].GetString(), base::StrCat({"text/plain: ", text}));
+    if (!paste_plain_text) {
+      EXPECT_EQ(last_paste[1].GetString(),
+                base::StrCat({"text/html: <span>", text, "</span>"}));
+    }
+  }
+
+ private:
+  // Returns all valid data formats for the last paste.
+  base::Value::List GetLastPaste() {
     auto result = content::EvalJs(
-        web_contents, "(function() { return window.getLastPaste(); })();");
-    EXPECT_EQ(result.error, "");
+        web_contents_, "(function() { return window.getLastPaste(); })();");
+    EXPECT_TRUE(result.error.empty());
     auto paste_list_value = result.ExtractList();
     EXPECT_TRUE(paste_list_value.is_list());
     return std::move(paste_list_value.GetList());
   };
 
+  content::WebContents* web_contents_ = nullptr;
+  int paste_num_ = 1;
+};
+
+IN_PROC_BROWSER_TEST_F(ClipboardHistoryPasteTypeBrowserTest,
+                       PlainAndRichTextPastes) {
+  using ClipboardHistoryPasteType =
+      ash::ClipboardHistoryControllerImpl::ClipboardHistoryPasteType;
+
   // Confirm initial state.
   base::HistogramTester histogram_tester;
   histogram_tester.ExpectTotalCount("Ash.ClipboardHistory.PasteType",
                                     /*count=*/0);
-  ASSERT_TRUE(GetLastPaste().empty());
 
   // Write some things to the clipboard.
   SetClipboardTextAndHtml("A", "<span>A</span>");
@@ -761,16 +801,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryBrowserTest,
   PressAndRelease(ui::KeyboardCode::VKEY_RETURN);
   EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
 
-  // Wait for the paste event to propagate to the web contents.
-  // The web contents will notify us a paste occurred by updating page title.
-  std::ignore =
-      content::TitleWatcher(web_contents, u"Paste 1").WaitAndGetTitle();
-
-  // Confirm the expected paste data.
-  base::Value::List last_paste = GetLastPaste();
-  ASSERT_EQ(last_paste.size(), 2u);
-  EXPECT_EQ(last_paste[0].GetString(), "text/plain: A");
-  EXPECT_EQ(last_paste[1].GetString(), "text/html: <span>A</span>");
+  WaitForWebContentsPaste("A", /*paste_plain_text=*/false);
   histogram_tester.ExpectBucketCount(
       "Ash.ClipboardHistory.PasteType",
       ClipboardHistoryPasteType::kRichTextKeystroke,
@@ -793,16 +824,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryBrowserTest,
   PressAndRelease(ui::KeyboardCode::VKEY_RETURN, ui::EF_ALT_DOWN);
   EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
 
-  // Wait for the paste event to propagate to the web contents.
-  // The web contents will notify us a paste occurred by updating page title.
-  std::ignore =
-      content::TitleWatcher(web_contents, u"Paste 2").WaitAndGetTitle();
-
-  // Confirm the expected paste data.
-  last_paste = GetLastPaste();
-  ASSERT_EQ(last_paste.size(), 2u);
-  EXPECT_EQ(last_paste[0].GetString(), "text/plain: A");
-  EXPECT_EQ(last_paste[1].GetString(), "text/html: <span>A</span>");
+  WaitForWebContentsPaste("A", /*paste_plain_text=*/false);
   histogram_tester.ExpectBucketCount(
       "Ash.ClipboardHistory.PasteType",
       ClipboardHistoryPasteType::kRichTextKeystroke,
@@ -823,15 +845,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryBrowserTest,
   PressAndRelease(ui::KeyboardCode::VKEY_RETURN, ui::EF_SHIFT_DOWN);
   EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
 
-  // Wait for the paste event to propagate to the web contents.
-  // The web contents will notify us a paste occurred by updating page title.
-  std::ignore =
-      content::TitleWatcher(web_contents, u"Paste 3").WaitAndGetTitle();
-
-  // Confirm the expected paste data.
-  last_paste = GetLastPaste();
-  ASSERT_EQ(last_paste.size(), 1u);
-  EXPECT_EQ(last_paste[0].GetString(), "text/plain: A");
+  WaitForWebContentsPaste("A", /*paste_plain_text=*/true);
   histogram_tester.ExpectBucketCount(
       "Ash.ClipboardHistory.PasteType",
       ClipboardHistoryPasteType::kPlainTextKeystroke,
@@ -852,16 +866,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryBrowserTest,
   ShowContextMenuViaAccelerator(/*wait_for_selection=*/false);
   EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
 
-  // Wait for the paste event to propagate to the web contents.
-  // The web contents will notify us a paste occurred by updating page title.
-  std::ignore =
-      content::TitleWatcher(web_contents, u"Paste 4").WaitAndGetTitle();
-
-  // Confirm the expected paste data.
-  last_paste = GetLastPaste();
-  ASSERT_EQ(last_paste.size(), 2u);
-  EXPECT_EQ(last_paste[0].GetString(), "text/plain: A");
-  EXPECT_EQ(last_paste[1].GetString(), "text/html: <span>A</span>");
+  WaitForWebContentsPaste("A", /*paste_plain_text=*/false);
   histogram_tester.ExpectBucketCount(
       "Ash.ClipboardHistory.PasteType",
       ClipboardHistoryPasteType::kRichTextAccelerator,
@@ -885,16 +890,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryBrowserTest,
   GetEventGenerator()->ClickLeftButton();
   EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
 
-  // Wait for the paste event to propagate to the web contents.
-  // The web contents will notify us a paste occurred by updating page title.
-  std::ignore =
-      content::TitleWatcher(web_contents, u"Paste 5").WaitAndGetTitle();
-
-  // Confirm the expected paste data.
-  last_paste = GetLastPaste();
-  ASSERT_EQ(last_paste.size(), 2u);
-  EXPECT_EQ(last_paste[0].GetString(), "text/plain: A");
-  EXPECT_EQ(last_paste[1].GetString(), "text/html: <span>A</span>");
+  WaitForWebContentsPaste("A", /*paste_plain_text=*/false);
   histogram_tester.ExpectBucketCount("Ash.ClipboardHistory.PasteType",
                                      ClipboardHistoryPasteType::kRichTextMouse,
                                      /*expected_count=*/1);
@@ -918,15 +914,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryBrowserTest,
   GetEventGenerator()->set_flags(ui::EF_NONE);
   EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
 
-  // Wait for the paste event to propagate to the web contents.
-  // The web contents will notify us a paste occurred by updating page title.
-  std::ignore =
-      content::TitleWatcher(web_contents, u"Paste 6").WaitAndGetTitle();
-
-  // Confirm the expected paste data.
-  last_paste = GetLastPaste();
-  ASSERT_EQ(last_paste.size(), 1u);
-  EXPECT_EQ(last_paste[0].GetString(), "text/plain: A");
+  WaitForWebContentsPaste("A", /*paste_plain_text=*/true);
   histogram_tester.ExpectBucketCount("Ash.ClipboardHistory.PasteType",
                                      ClipboardHistoryPasteType::kPlainTextMouse,
                                      /*expected_count=*/1);
