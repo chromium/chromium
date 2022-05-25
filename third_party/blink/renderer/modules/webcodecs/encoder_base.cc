@@ -409,13 +409,16 @@ const char* EncoderBase<Traits>::Request::TraceNameFromType() {
 }
 
 template <typename Traits>
-void EncoderBase<Traits>::Request::StartTracingVideoEncode(bool is_keyframe) {
+void EncoderBase<Traits>::Request::StartTracingVideoEncode(
+    bool is_keyframe,
+    base::TimeDelta timestamp) {
 #if DCHECK_IS_ON()
   DCHECK(!is_tracing);
   is_tracing = true;
 #endif
-  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(kCategory, TraceNameFromType(), this,
-                                    "key_frame", is_keyframe);
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN2(kCategory, TraceNameFromType(), this,
+                                    "key_frame", is_keyframe, "timestamp",
+                                    timestamp);
 }
 
 template <typename Traits>

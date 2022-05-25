@@ -15,6 +15,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "media/base/limits.h"
@@ -713,6 +714,8 @@ scoped_refptr<VideoFrame> ReadbackTextureBackedFrameToMemorySync(
     VideoFramePool* pool) {
   DCHECK(ri);
 
+  TRACE_EVENT2("media", "ReadbackTextureBackedFrameToMemorySync", "timestamp",
+               txt_frame.timestamp(), "gr_ctx", !!gr_context);
   VideoPixelFormat format = ReadbackFormat(txt_frame);
   if (format == PIXEL_FORMAT_UNKNOWN) {
     DLOG(ERROR) << "Readback is not possible for this frame: "

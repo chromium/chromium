@@ -94,7 +94,7 @@ class MODULES_EXPORT EncoderBase
     void StartTracing();
 
     // Starts an async encode trace.
-    void StartTracingVideoEncode(bool is_keyframe);
+    void StartTracingVideoEncode(bool is_keyframe, base::TimeDelta timestamp);
 
     // Ends the async trace event associated with |this|.
     void EndTracing(bool aborted = false);

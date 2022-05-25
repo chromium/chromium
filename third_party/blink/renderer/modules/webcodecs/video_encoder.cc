@@ -641,10 +641,11 @@ void VideoEncoder::ProcessEncode(Request* request) {
   DCHECK_EQ(request->type, Request::Type::kEncode);
   DCHECK_GT(requested_encodes_, 0u);
 
+  auto frame = request->input->frame();
   bool keyframe = request->encodeOpts->hasKeyFrameNonNull() &&
                   request->encodeOpts->keyFrameNonNull();
   active_encodes_++;
-  request->StartTracingVideoEncode(keyframe);
+  request->StartTracingVideoEncode(keyframe, frame->timestamp());
 
   auto done_callback = [](VideoEncoder* self, Request* req,
                           media::EncoderStatus status) {
@@ -662,8 +663,6 @@ void VideoEncoder::ProcessEncode(Request* request) {
     req->EndTracing();
     self->ProcessRequests();
   };
-
-  scoped_refptr<media::VideoFrame> frame = request->input->frame();
 
   // Currently underlying encoders can't handle frame backed by textures,
   // so let's readback pixel data to CPU memory.
@@ -689,6 +688,8 @@ void VideoEncoder::ProcessEncode(Request* request) {
              base::TimeDelta timestamp, media::VideoFrameMetadata metadata,
              media::VideoEncoder::EncoderStatusCB done_callback,
              scoped_refptr<media::VideoFrame> frame) {
+            TRACE_EVENT_NESTABLE_ASYNC_END0(
+                "media", "CopyRGBATextureToVideoFrame", self);
             if (!self || self->reset_count_ != reset_count || !frame)
               return;
 
@@ -732,6 +733,9 @@ void VideoEncoder::ProcessEncode(Request* request) {
           gfx::ColorSpace::PrimaryID::BT709, gfx::ColorSpace::TransferID::SRGB,
           gfx::ColorSpace::MatrixID::SMPTE170M,
           gfx::ColorSpace::RangeID::LIMITED);
+
+      TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("media", "CopyRGBATextureToVideoFrame",
+                                        this, "timestamp", frame->timestamp());
       if (accelerated_frame_pool_->CopyRGBATextureToVideoFrame(
               format, frame->coded_size(), frame->ColorSpace(), origin,
               frame->mailbox_holder(0), dst_color_space,
@@ -743,6 +747,9 @@ void VideoEncoder::ProcessEncode(Request* request) {
         request->input->close();
         return;
       }
+
+      TRACE_EVENT_NESTABLE_ASYNC_END0("media", "CopyRGBATextureToVideoFrame",
+                                      this);
 
       // Error occurred, fall through to normal readback path below.
       blocking_request_in_progress_ = false;

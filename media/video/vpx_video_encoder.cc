@@ -540,7 +540,7 @@ void VpxVideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
     }
   }
 
-  TRACE_EVENT0("media", "vpx_codec_encode");
+  TRACE_EVENT1("media", "vpx_codec_encode", "timestamp", frame->timestamp());
   auto vpx_error = vpx_codec_encode(codec_.get(), &vpx_image_, timestamp_us,
                                     duration_us, flags, deadline);
 

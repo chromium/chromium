@@ -380,7 +380,7 @@ void Av1VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
     return;
   }
 
-  TRACE_EVENT0("media", "aom_codec_encode");
+  TRACE_EVENT1("media", "aom_codec_encode", "timestamp", frame->timestamp());
   // Use artificial timestamps, so the encoder will not be misled by frame's
   // fickle timestamps when doing rate control.
   auto error =

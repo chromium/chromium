@@ -328,7 +328,8 @@ void OpenH264VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
   }
 
   SFrameBSInfo frame_info = {};
-  TRACE_EVENT0("media", "OpenH264::EncodeFrame");
+  TRACE_EVENT1("media", "OpenH264::EncodeFrame", "timestamp",
+               frame->timestamp());
   if (int err = codec_->EncodeFrame(&picture, &frame_info)) {
     std::move(done_cb).Run(
         EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode,
