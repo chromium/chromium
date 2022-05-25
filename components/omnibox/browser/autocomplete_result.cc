@@ -39,6 +39,7 @@
 #include "components/url_formatter/url_fixer.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
+#include "ui/base/device_form_factor.h"
 #include "ui/base/l10n/l10n_util.h"
 
 using metrics::OmniboxEventProto;
@@ -87,6 +88,11 @@ size_t AutocompleteResult::GetMaxMatches(bool is_zero_suggest) {
 #elif BUILDFLAG(IS_IOS)
   constexpr size_t kDefaultMaxAutocompleteMatches = 6;
   constexpr size_t kDefaultMaxZeroSuggestMatches = 6;
+  // By default, iPad has the same max as iPhone. `kMaxZeroSuggestMatchesOnIPad`
+  // defines a hard limit on the number of ZPS suggestions on iPad, so if an
+  // experiment defines MaxZeroSuggestMatches to 15, it would be 15 on iPhone
+  // and 10 on iPad.
+  constexpr size_t kMaxZeroSuggestMatchesOnIPad = 10;
 #else
   constexpr size_t kDefaultMaxAutocompleteMatches = 8;
   constexpr size_t kDefaultMaxZeroSuggestMatches = 8;
@@ -110,6 +116,11 @@ size_t AutocompleteResult::GetMaxMatches(bool is_zero_suggest) {
         OmniboxFieldTrial::kMaxZeroSuggestMatchesParam,
         kDefaultMaxZeroSuggestMatches);
     DCHECK(kMaxAutocompletePositionValue > field_trial_value);
+#if BUILDFLAG(IS_IOS)
+    if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+      field_trial_value = MIN(field_trial_value, kMaxZeroSuggestMatchesOnIPad);
+    }
+#endif
     return field_trial_value;
   }
 
