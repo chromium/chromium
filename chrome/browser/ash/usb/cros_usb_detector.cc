@@ -22,6 +22,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/arc/arc_util.h"
+#include "chrome/browser/ash/bruschetta/bruschetta_features.h"
+#include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
@@ -302,6 +304,17 @@ void ShowNotificationForDevice(const std::string& guid,
     vm_names_in_notification.emplace_back(vm_name);
     settings_sub_page =
         chromeos::settings::mojom::kArcVmUsbPreferencesSubpagePath;
+  }
+
+  if (bruschetta::BruschettaFeatures::Get()->IsEnabled()) {
+    vm_name = l10n_util::GetStringUTF16(IDS_BRUSCHETTA_NAME);
+    rich_notification_data.buttons.emplace_back(
+        message_center::ButtonInfo(l10n_util::GetStringFUTF16(
+            IDS_CROSUSB_NOTIFICATION_BUTTON_CONNECT_TO_VM, vm_name)));
+    vm_names.emplace_back(bruschetta::kBruschettaVmName);
+    vm_names_in_notification.emplace_back(vm_name);
+    settings_sub_page =
+        chromeos::settings::mojom::kBruschettaUsbPreferencesSubpagePath;
   }
 
   DCHECK(vm_names_in_notification.size());

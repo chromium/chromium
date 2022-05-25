@@ -20,6 +20,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_move_support.h"
 #include "chrome/browser/ash/arc/arc_util.h"
+#include "chrome/browser/ash/bruschetta/fake_bruschetta_features.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
@@ -389,6 +390,19 @@ TEST_F(CrosUsbDetectorTest, NotificationShown) {
   notification = display_service_->GetNotification(notification_id);
   ASSERT_TRUE(notification);
   EXPECT_EQ(notification->buttons().size(), 2u);
+  device_manager_.RemoveDevice(device);
+  base::RunLoop().RunUntilIdle();
+
+  // Now should have 3 buttons when Bruschetta is enabled.
+  bruschetta::FakeBruschettaFeatures bruschetta_features;
+  bruschetta_features.set_enabled(true);
+  device_manager_.AddDevice(device);
+  base::RunLoop().RunUntilIdle();
+  notification = display_service_->GetNotification(notification_id);
+  ASSERT_TRUE(notification);
+  EXPECT_EQ(notification->buttons().size(), 3u);
+  device_manager_.RemoveDevice(device);
+  base::RunLoop().RunUntilIdle();
 }
 
 TEST_F(CrosUsbDetectorTest, UsbNotificationClicked) {

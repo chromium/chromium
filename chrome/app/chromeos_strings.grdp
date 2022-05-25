@@ -4957,6 +4957,11 @@
     Resize Linux disk
   </message>
 
+  <!-- Bruschetta -->
+  <message name="IDS_BRUSCHETTA_NAME" desc="Bruschetta" translateable="false">
+    Bruschetta
+  </message>
+
   <!-- Time limit notification -->
   <message name="IDS_SCREEN_TIME_NOTIFICATION_TITLE" desc="The title of the notification when screen usage limit reaches before locking the device.">
     Almost time for a break
