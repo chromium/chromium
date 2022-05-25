@@ -12,14 +12,18 @@ import androidx.annotation.Nullable;
 
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
+import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 
 /** Bottom sheet view for displaying the Privacy Sandbox notice. */
 public class PrivacySandboxBottomSheetNotice implements BottomSheetContent {
     private final BottomSheetController mBottomSheetController;
+    private final BottomSheetObserver mBottomSheetObserver;
     private final Context mContext;
     private final SettingsLauncher mSettingsLauncher;
 
+    private boolean mOpenedSettings;
     private View mContentView;
 
     PrivacySandboxBottomSheetNotice(Context context, BottomSheetController bottomSheetController,
@@ -27,24 +31,57 @@ public class PrivacySandboxBottomSheetNotice implements BottomSheetContent {
         mBottomSheetController = bottomSheetController;
         mContext = context;
         mSettingsLauncher = settingsLauncher;
+        mOpenedSettings = false;
 
         mContentView = LayoutInflater.from(context).inflate(
                 R.layout.privacy_sandbox_notice_bottom_sheet, null);
 
+        mBottomSheetObserver = new EmptyBottomSheetObserver() {
+            @Override
+            public void onSheetClosed(@BottomSheetController.StateChangeReason int reason) {
+                if (mOpenedSettings) {
+                    // Action already recorded.
+                    return;
+                }
+                if (reason == BottomSheetController.StateChangeReason.TAP_SCRIM
+                        || reason == BottomSheetController.StateChangeReason.BACK_PRESS
+                        || reason == BottomSheetController.StateChangeReason.INTERACTION_COMPLETE) {
+                    PrivacySandboxBridge.promptActionOccurred(PromptAction.NOTICE_ACKNOWLEDGE);
+                } else {
+                    // The sheet was closed by a non-user action.
+                    PrivacySandboxBridge.promptActionOccurred(
+                            PromptAction.NOTICE_CLOSED_NO_INTERACTION);
+                }
+            }
+        };
+
         View ackButton = mContentView.findViewById(R.id.ack_button);
         ackButton.setOnClickListener((v) -> {
-            PrivacySandboxBridge.promptActionOccurred(PromptAction.NOTICE_ACKNOWLEDGE);
             mBottomSheetController.hideContent(this, /* animate= */ true,
                     BottomSheetController.StateChangeReason.INTERACTION_COMPLETE);
         });
         View settingsButton = mContentView.findViewById(R.id.settings_button);
         settingsButton.setOnClickListener((v) -> {
+            mOpenedSettings = true;
             PrivacySandboxBridge.promptActionOccurred(PromptAction.NOTICE_OPEN_SETTINGS);
             mBottomSheetController.hideContent(this, /* animate= */ true,
                     BottomSheetController.StateChangeReason.INTERACTION_COMPLETE);
             PrivacySandboxSettingsFragmentV3.launchPrivacySandboxSettings(
                     mContext, mSettingsLauncher, PrivacySandboxReferrer.PRIVACY_SANDBOX_NOTICE);
         });
+    }
+
+    public void showNotice() {
+        // Reset whether the user opened settings.
+        mOpenedSettings = false;
+        if (!mBottomSheetController.requestShowContent(this, /* animate= */ true)) {
+            mBottomSheetController.hideContent(
+                    this, /* animate= */ false, BottomSheetController.StateChangeReason.NONE);
+            destroy();
+            return;
+        }
+        PrivacySandboxBridge.promptActionOccurred(PromptAction.NOTICE_SHOWN);
+        mBottomSheetController.addObserver(mBottomSheetObserver);
     }
 
     // BottomSheetContent implementation.
@@ -66,7 +103,9 @@ public class PrivacySandboxBottomSheetNotice implements BottomSheetContent {
     }
 
     @Override
-    public void destroy() {}
+    public void destroy() {
+        mBottomSheetController.removeObserver(mBottomSheetObserver);
+    }
 
     @Override
     public int getPriority() {

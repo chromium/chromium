@@ -39,7 +39,6 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -107,6 +106,7 @@ public final class PrivacySandboxDialogTest {
         mBottomSheetController = sActivityTestRule.getActivity()
                                          .getRootUiCoordinatorForTesting()
                                          .getBottomSheetController();
+        PrivacySandboxDialogController.resetShowNewNoticeForTesting();
     }
 
     @After
@@ -187,7 +187,6 @@ public final class PrivacySandboxDialogTest {
 
     @Test
     @SmallTest
-    @DisabledTest(message = "https://crbug.com/1300632")
     public void testControllerIncognito() throws IOException {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             PrivacySandboxDialogController.maybeLaunchPrivacySandboxDialog(
@@ -247,7 +246,7 @@ public final class PrivacySandboxDialogTest {
     public void testControllerShowsNotice() throws IOException, InterruptedException {
         mFakePrivacySandboxBridge.setRequiredPromptType(PromptType.NOTICE);
         launchDialog();
-        // Verify that the consent is shown and the action is recorded.
+        // Verify that the notice is shown and the action is recorded.
         onViewWaiting(withId(R.id.privacy_sandbox_notice_title));
         assertEquals("Last dialog action", PromptAction.NOTICE_SHOWN,
                 (int) mFakePrivacySandboxBridge.getLastPromptAction());
@@ -264,6 +263,37 @@ public final class PrivacySandboxDialogTest {
         assertEquals("Last dialog action", PromptAction.NOTICE_OPEN_SETTINGS,
                 (int) mFakePrivacySandboxBridge.getLastPromptAction());
         onView(withId(R.id.privacy_sandbox_notice_title)).check(doesNotExist());
+        Context ctx = (Context) sActivityTestRule.getActivity();
+        Mockito.verify(mSettingsLauncher)
+                .launchSettingsActivity(
+                        eq(ctx), eq(PrivacySandboxSettingsFragmentV3.class), any(Bundle.class));
+    }
+
+    @Test
+    @SmallTest
+    public void testControllerShowsBottomSheet() {
+        PrivacySandboxDialogController.setShowNewNoticeForTesting(true);
+        mFakePrivacySandboxBridge.setRequiredPromptType(PromptType.NOTICE);
+        launchDialog();
+        // Verify that the notice is shown and the action is recorded.
+        onViewWaiting(withId(R.id.privacy_sandbox_notice_sheet_title));
+        onViewWaiting(withId(R.id.ack_button));
+        assertEquals("Last dialog action", PromptAction.NOTICE_SHOWN,
+                (int) mFakePrivacySandboxBridge.getLastPromptAction());
+        // Acknowledge the notice and verify it worked correctly.
+        onView(withText(R.string.privacy_sandbox_dialog_acknowledge_button)).perform(click());
+        assertEquals("Last dialog action", PromptAction.NOTICE_ACKNOWLEDGE,
+                (int) mFakePrivacySandboxBridge.getLastPromptAction());
+        onView(withId(R.id.privacy_sandbox_notice_sheet_title)).check(doesNotExist());
+
+        launchDialog();
+        // Click on the settings button and verify it worked correctly.
+        onViewWaiting(withId(R.id.privacy_sandbox_notice_sheet_title));
+        onViewWaiting(withId(R.id.settings_button));
+        onView(withText(R.string.privacy_sandbox_dialog_settings_button)).perform(click());
+        assertEquals("Last dialog action", PromptAction.NOTICE_OPEN_SETTINGS,
+                (int) mFakePrivacySandboxBridge.getLastPromptAction());
+        onView(withId(R.id.privacy_sandbox_notice_sheet_title)).check(doesNotExist());
         Context ctx = (Context) sActivityTestRule.getActivity();
         Mockito.verify(mSettingsLauncher)
                 .launchSettingsActivity(

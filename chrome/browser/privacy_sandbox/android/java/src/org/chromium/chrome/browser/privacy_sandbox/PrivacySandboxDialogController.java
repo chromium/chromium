@@ -21,6 +21,7 @@ import java.lang.ref.WeakReference;
  */
 public class PrivacySandboxDialogController {
     private static WeakReference<Dialog> sDialog;
+    private static Boolean sShowNew;
 
     /**
      * Launches an appropriate dialog if necessary and returns whether that happened.
@@ -40,10 +41,9 @@ public class PrivacySandboxDialogController {
             case PromptType.NOTICE:
                 if (showNewNotice()) {
                     if (bottomSheetController == null) return false;
-                    PrivacySandboxBottomSheetNotice bottomSheet =
-                            new PrivacySandboxBottomSheetNotice(
-                                    context, bottomSheetController, settingsLauncher);
-                    bottomSheetController.requestShowContent(bottomSheet, /* animate= */ true);
+                    new PrivacySandboxBottomSheetNotice(
+                            context, bottomSheetController, settingsLauncher)
+                            .showNotice();
                 } else {
                     dialog = new PrivacySandboxDialogNotice(context, settingsLauncher);
                     dialog.show();
@@ -63,6 +63,7 @@ public class PrivacySandboxDialogController {
     }
 
     static boolean showNewNotice() {
+        if (sShowNew != null && sShowNew) return true;
         // Must match privacy_sandbox::kPrivacySandboxSettings3NewNotice.
         final String newNoticeParam = "new-notice";
         // Must match the default value for this param.
@@ -76,5 +77,15 @@ public class PrivacySandboxDialogController {
     @VisibleForTesting
     static Dialog getDialogForTesting() {
         return sDialog != null ? sDialog.get() : null;
+    }
+
+    @VisibleForTesting
+    static void resetShowNewNoticeForTesting() {
+        sShowNew = null;
+    }
+
+    @VisibleForTesting
+    static void setShowNewNoticeForTesting(boolean showNew) {
+        sShowNew = showNew;
     }
 }
