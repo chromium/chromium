@@ -230,7 +230,7 @@ files. You can follow the steps below for easier review.
 
 3. Request review of the CL and tell the reviewer to compare the patch sets that
    were uploaded in step 1 and step 2 to see the differences of the rebaselines.
-   
+
 ## Kinds of expectations files
 
 * [TestExpectations](../../third_party/blink/web_tests/TestExpectations): The
@@ -301,10 +301,10 @@ The syntax of a line is roughly:
   `Bug(username)`.
 * If no modifiers are specified, the test applies to all of the configurations
   applicable to that file.
-* If specified, modifiers must be one of `Fuchsia`, `Mac`, `Mac10.12`,
-  `Mac10.13`, `Mac10.14`, `Mac10.15`, `Mac11`, `Mac11-arm64`, `Linux`, `Trusty`,
-  `Win`, `Win7`, `Win10.20h2`, `Win11`, and, optionally, `Release`, or `Debug`. Check the
-  top of
+* If specified, modifiers must be one of `Fuchsia`, `Mac`, `Mac10.13`,
+  `Mac10.14`, `Mac10.15`, `Mac11`, `Mac11-arm64`, `Mac12`, `Mac12-arm64`,
+  `Linux`, `Trusty`, `Win`, `Win7`, `Win10.20h2`, `Win11`, and, optionally,
+  `Release`, or `Debug`. Check the top of
   [TestExpectations](../../third_party/blink/web_tests/TestExpectations) or the
   `ALL_SYSTEMS` macro in
   [third_party/blink/tools/blinkpy/web_tests/port/base.py](../../third_party/blink/tools/blinkpy/web_tests/port/base.py)
