@@ -153,7 +153,7 @@ void SegmentSelectorImpl::OnPlatformInitialized(
     for (const SegmentId segment_id : config_->segment_ids) {
       experimental_group_recorder_.emplace_back(
           std::make_unique<ExperimentalGroupRecorder>(
-              segment_database_, field_trial_register_,
+              segment_result_provider_.get(), field_trial_register_,
               config_->segmentation_key, segment_id));
     }
   }

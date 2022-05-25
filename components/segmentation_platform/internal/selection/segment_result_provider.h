@@ -77,7 +77,7 @@ class SegmentResultProvider {
     // The segment ID to fetch result for.
     SegmentId segment_id = SegmentId::OPTIMIZATION_TARGET_UNKNOWN;
 
-    // The key is used for recording metrics only.
+    // The key is needed for computing segment from discrete mapping.
     std::string segmentation_key;
 
     // Ignores model results stored in database and executes them to fetch
