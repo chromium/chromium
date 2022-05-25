@@ -2604,6 +2604,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Memory.StackSamplingProfiler.StackSampleSize" units="KB"
+    expires_after="M110">
+  <owner>iby@chromium.org</owner>
+  <owner>cros-telemetry@google.com</owner>
+  <summary>
+    The size of the stack copied during a stack-sampled metric capture. One
+    sample per 199 stack captures. Only recorded by clients in the stack-sampled
+    metrics experiment. ChromeOS only.
+  </summary>
+</histogram>
+
 <histogram name="Memory.Swap.Worker" units="KB" expires_after="M85">
   <owner>hajimehoshi@chromium.org</owner>
   <owner>kenjibaheux@google.com</owner>

@@ -11,6 +11,7 @@
 
 #include "base/base_export.h"
 #include "base/memory/aligned_memory.h"
+#include "build/build_config.h"
 
 namespace base {
 
@@ -41,6 +42,21 @@ class BASE_EXPORT StackBuffer {
 
   // Size in bytes.
   size_t size() const { return size_; }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Tell the kernel that we no longer need the data currently in the upper
+  // parts of the buffer and that the kernel may discard it to free up space.
+  // Specifically, the bytes from |(uint8_t*)buffer + retained_bytes| to the
+  // end of the buffer may be discarded, while the bytes from |buffer| to
+  // |(uint8_t*)buffer + retained_bytes - 1| will not be affected.
+  // The program can still write to that part of the buffer, but should not read
+  // from that part of buffer until after the next write. (The contents of that
+  // part of the buffer are undefined.)
+  // After calling this function, there may be a page fault on the next write to
+  // that area, so it should only be called when parts of the buffer were
+  // written to and will probably not be written to again soon.
+  void MarkUpperBufferContentsAsUnneeded(size_t retained_bytes);
+#endif
 
  private:
   // The size in bytes of the requested buffer allocation.

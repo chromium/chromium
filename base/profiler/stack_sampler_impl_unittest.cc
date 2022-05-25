@@ -20,6 +20,7 @@
 #include "base/profiler/stack_sampling_profiler_test_util.h"
 #include "base/profiler/suspendable_thread_delegate.h"
 #include "base/profiler/unwinder.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -100,6 +101,8 @@ class DelegateInvokingStackCopier : public StackCopier {
                  TimeTicks* timestamp,
                  RegisterContext* thread_context,
                  Delegate* delegate) override {
+    *stack_top = reinterpret_cast<uintptr_t>(stack_buffer->buffer()) +
+                 10;  // Make msan happy.
     delegate->OnStackCopy();
     return true;
   }
@@ -279,6 +282,54 @@ TEST(StackSamplerImplTest, CopyStack) {
 
   EXPECT_EQ(stack, stack_copy);
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+TEST(StackSamplerImplTest, RecordStackFramesUMAMetric) {
+  HistogramTester histogram_tester;
+  ModuleCache module_cache;
+  std::vector<uintptr_t> stack;
+  constexpr size_t UIntPtrsPerKilobyte = 1024 / sizeof(uintptr_t);
+  // kExpectedSizeKB needs to be a fairly large number of kilobytes. The buckets
+  // in UmaHistogramMemoryKB are big enough that small values are in the same
+  // bucket as zero and less than zero, and testing that we added a sample in
+  // that bucket means that the test won't fail if, for example, the
+  // |stack_top - stack_bottom| subtraction was reversed and got a negative
+  // value.
+  constexpr int kExpectedSizeKB = 2048;
+  for (uintptr_t i = 0; i <= (kExpectedSizeKB * UIntPtrsPerKilobyte) + 1; i++) {
+    stack.push_back(i);
+  }
+  InjectModuleForContextInstructionPointer(stack, &module_cache);
+  std::vector<uintptr_t> stack_copy;
+  StackSamplerImpl stack_sampler_impl(
+      std::make_unique<TestStackCopier>(stack),
+      MakeUnwindersFactory(std::make_unique<TestUnwinder>(&stack_copy)),
+      &module_cache);
+
+  stack_sampler_impl.Initialize();
+
+  std::unique_ptr<StackBuffer> stack_buffer =
+      std::make_unique<StackBuffer>(stack.size() * sizeof(uintptr_t));
+  TestProfileBuilder profile_builder(&module_cache);
+
+  for (uint32_t i = 0; i < StackSamplerImpl::kUMAHistogramDownsampleAmount - 1;
+       i++) {
+    stack_sampler_impl.RecordStackFrames(stack_buffer.get(), &profile_builder,
+                                         PlatformThread::CurrentId());
+
+    // Should have no new samples in the
+    // Memory.StackSamplingProfiler.StackSampleSize histogram.
+    histogram_tester.ExpectUniqueSample(
+        "Memory.StackSamplingProfiler.StackSampleSize", kExpectedSizeKB, 0);
+  }
+
+  stack_sampler_impl.RecordStackFrames(stack_buffer.get(), &profile_builder,
+                                       PlatformThread::CurrentId());
+
+  histogram_tester.ExpectUniqueSample(
+      "Memory.StackSamplingProfiler.StackSampleSize", kExpectedSizeKB, 1);
+}
+#endif  // #if BUILDFLAG(IS_CHROMEOS)
 
 TEST(StackSamplerImplTest, CopyStackTimestamp) {
   ModuleCache module_cache;
