@@ -63,7 +63,7 @@ class CastComponent final : public WebComponent,
         application_context;
     absl::optional<std::vector<fuchsia::web::UrlRequestRewriteRule>>
         initial_url_rewrite_rules;
-    absl::optional<fuchsia::web::FrameMediaSettings> media_settings;
+    absl::optional<uint64_t> media_session_id;
   };
 
   // See WebComponent documentation for details of |debug_name| and |runner|.
@@ -138,7 +138,7 @@ class CastComponent final : public WebComponent,
   std::unique_ptr<ApiBindingsClient> api_bindings_client_;
   std::unique_ptr<ApplicationControllerImpl> application_controller_;
   chromium::cast::ApplicationContextPtr application_context_;
-  fuchsia::web::FrameMediaSettings media_settings_;
+  uint64_t media_session_id_ = 0;
   zx::eventpair headless_view_token_;
   base::MessagePumpForIO::ZxHandleWatchController headless_disconnect_watch_;
 };

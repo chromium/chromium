@@ -86,8 +86,8 @@ class WEB_ENGINE_EXPORT FrameImpl : public fuchsia::web::Frame,
   FrameImpl(const FrameImpl&) = delete;
   FrameImpl& operator=(const FrameImpl&) = delete;
 
-  const fuchsia::web::FrameMediaSettings& media_settings() const {
-    return media_settings_;
+  absl::optional<uint64_t> media_session_id() const {
+    return media_session_id_;
   }
 
   FramePermissionController* permission_controller() {
@@ -273,8 +273,7 @@ class WEB_ENGINE_EXPORT FrameImpl : public fuchsia::web::Frame,
       SetUrlRequestRewriteRulesCallback callback) override;
   void EnableHeadlessRendering() override;
   void DisableHeadlessRendering() override;
-  void SetMediaSettings(
-      fuchsia::web::FrameMediaSettings media_settings) override;
+  void SetMediaSessionId(uint64_t session_id) override;
   void ForceContentDimensions(
       std::unique_ptr<fuchsia::ui::gfx::vec2> web_dips) override;
   void SetPermissionState(fuchsia::web::PermissionDescriptor permission,
@@ -388,7 +387,9 @@ class WEB_ENGINE_EXPORT FrameImpl : public fuchsia::web::Frame,
   FramePermissionController permission_controller_;
   std::unique_ptr<NavigationPolicyHandler> navigation_policy_handler_;
 
-  fuchsia::web::FrameMediaSettings media_settings_;
+  // Session ID to use for fuchsia.media.AudioConsumer. Set with
+  // SetMediaSessionId().
+  absl::optional<uint64_t> media_session_id_;
 
   // Stored settings for web contents in the current Frame.
   fuchsia::web::ContentAreaSettings content_area_settings_;

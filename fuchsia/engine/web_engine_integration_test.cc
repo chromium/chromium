@@ -12,7 +12,6 @@
 
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/mem_buffer_util.h"
-#include "base/fuchsia/process_context.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
@@ -58,6 +57,32 @@ class WebEngineIntegrationTest : public WebEngineIntegrationTestBase {
   }
 
   void RunPermissionTest(bool grant);
+};
+
+// Configures the default filtered service directory with a fake AudioConsumer
+// service for testing.
+class WebEngineIntegrationMediaTest : public WebEngineIntegrationTest {
+ protected:
+  WebEngineIntegrationMediaTest()
+      : fake_audio_consumer_service_(filtered_service_directory()
+                                         .outgoing_directory()
+                                         ->GetOrCreateDirectory("svc")),
+        fake_audio_device_enumerator_(filtered_service_directory()
+                                          .outgoing_directory()
+                                          ->GetOrCreateDirectory("svc")) {}
+
+  // Returns a CreateContextParams that has AUDIO feature, and the "testdata"
+  // content directory provider configured.
+  fuchsia::web::CreateContextParams ContextParamsWithAudioAndTestData() {
+    fuchsia::web::CreateContextParams create_params =
+        TestContextParamsWithTestData();
+    *create_params.mutable_features() |=
+        fuchsia::web::ContextFeatureFlags::AUDIO;
+    return create_params;
+  }
+
+  media::FakeAudioConsumerService fake_audio_consumer_service_;
+  media::FakeAudioDeviceEnumerator fake_audio_device_enumerator_;
 };
 
 class WebEngineIntegrationUserAgentTest : public WebEngineIntegrationTest {
@@ -319,74 +344,11 @@ TEST_F(WebEngineIntegrationTest, ContentDirectoryProvider) {
   navigation_listener()->RunUntilUrlAndTitleEquals(kUrl, kTitle);
 }
 
-// Configures the default filtered service directory with a fake AudioConsumer
-// service for testing.
-class WebEngineIntegrationMediaTest : public WebEngineIntegrationTest {
- protected:
-  WebEngineIntegrationMediaTest()
-      : fake_audio_consumer_service_(filtered_service_directory()
-                                         .outgoing_directory()
-                                         ->GetOrCreateDirectory("svc")) {
-    auto* outgoing_directory =
-        filtered_service_directory().outgoing_directory();
-
-    // Publish fake AudioDeviceEnumerator.
-    outgoing_directory
-        ->RemovePublicService<fuchsia::media::AudioDeviceEnumerator>();
-    fake_audio_device_enumerator_.emplace(
-        outgoing_directory->GetOrCreateDirectory("svc"));
-
-    // Intercept `fuchsia::media::Audio` connections in order to count them.
-    outgoing_directory->RemovePublicService<fuchsia::media::Audio>();
-    zx_status_t status = outgoing_directory->AddPublicService(
-        fidl::InterfaceRequestHandler<fuchsia::media::Audio>(
-            [this](auto request) {
-              ++num_audio_connections_;
-              base::ComponentContextForProcess()->svc()->Connect(
-                  std::move(request));
-            }));
-    ZX_CHECK(status == ZX_OK, status) << "AddPublicService";
-  }
-
-  // Returns a CreateContextParams that has AUDIO feature, and the "testdata"
-  // content directory provider configured.
-  fuchsia::web::CreateContextParams ContextParamsWithAudioAndTestData() {
-    fuchsia::web::CreateContextParams create_params =
-        TestContextParamsWithTestData();
-    *create_params.mutable_features() |=
-        fuchsia::web::ContextFeatureFlags::AUDIO;
-    return create_params;
-  }
-
-  media::FakeAudioConsumerService fake_audio_consumer_service_;
-  absl::optional<media::FakeAudioDeviceEnumerator>
-      fake_audio_device_enumerator_;
-
-  size_t num_audio_connections_ = 0;
-};
-
-TEST_F(WebEngineIntegrationMediaTest, PlayAudioToAudioRenderer) {
+TEST_F(WebEngineIntegrationMediaTest, PlayAudio) {
   CreateContextAndFrame(ContextParamsWithAudioAndTestData());
 
-  ASSERT_NO_FATAL_FAILURE(LoadUrlAndExpectResponse(
-      "fuchsia-dir://testdata/play_audio.html",
-      cr_fuchsia::CreateLoadUrlParamsWithUserActivation()));
-
-  navigation_listener()->RunUntilTitleEquals("ended");
-
-  EXPECT_EQ(num_audio_connections_, 1U);
-  EXPECT_EQ(fake_audio_consumer_service_.num_instances(), 0U);
-}
-
-TEST_F(WebEngineIntegrationMediaTest, PlayAudioToAudioConsumer) {
-  CreateContextAndFrame(ContextParamsWithAudioAndTestData());
-
-  // Send `FrameMediaSettings` with `audio_consumer_session_id`. This enables
-  // `AudioConsumer`.
   static const uint16_t kTestMediaSessionId = 43;
-  fuchsia::web::FrameMediaSettings media_settings;
-  media_settings.set_audio_consumer_session_id(kTestMediaSessionId);
-  frame_->SetMediaSettings(std::move(media_settings));
+  frame_->SetMediaSessionId(kTestMediaSessionId);
 
   ASSERT_NO_FATAL_FAILURE(LoadUrlAndExpectResponse(
       "fuchsia-dir://testdata/play_audio.html",
@@ -394,7 +356,6 @@ TEST_F(WebEngineIntegrationMediaTest, PlayAudioToAudioConsumer) {
 
   navigation_listener()->RunUntilTitleEquals("ended");
 
-  EXPECT_EQ(num_audio_connections_, 0U);
   ASSERT_EQ(fake_audio_consumer_service_.num_instances(), 1U);
 
   auto pos = fake_audio_consumer_service_.instance(0)->GetMediaPosition();
@@ -415,29 +376,40 @@ TEST_F(WebEngineIntegrationMediaTest, PlayAudio_NoFlag) {
       TestContextParamsWithTestData();
   CreateContextAndFrame(std::move(create_params));
 
+  bool is_requested = false;
+  zx_status_t status =
+      filtered_service_directory()
+          .outgoing_directory()
+          ->RemovePublicService<fuchsia::media::SessionAudioConsumerFactory>();
+  ZX_CHECK(status == ZX_OK, status) << "RemovePublicService";
+  status = filtered_service_directory().outgoing_directory()->AddPublicService(
+      fidl::InterfaceRequestHandler<
+          fuchsia::media::SessionAudioConsumerFactory>(
+          [&is_requested](auto request) { is_requested = true; }));
+  ZX_CHECK(status == ZX_OK, status) << "AddPublicService";
+
+  static const uint16_t kTestMediaSessionId = 1;
+  frame_->SetMediaSessionId(kTestMediaSessionId);
+
   ASSERT_NO_FATAL_FAILURE(LoadUrlAndExpectResponse(
       "fuchsia-dir://testdata/play_audio.html",
       cr_fuchsia::CreateLoadUrlParamsWithUserActivation()));
 
-  // The file is still expected to play to the end.
-  navigation_listener()->RunUntilTitleEquals("ended");
-
-  EXPECT_EQ(fake_audio_consumer_service_.num_instances(), 0U);
-  EXPECT_EQ(num_audio_connections_, 0U);
+  navigation_listener()->RunUntilTitleEquals("media element error");
+  EXPECT_FALSE(is_requested);
 }
 
 TEST_F(WebEngineIntegrationMediaTest, PlayVideo) {
   CreateContextAndFrame(ContextParamsWithAudioAndTestData());
+
+  static const uint16_t kTestMediaSessionId = 1;
+  frame_->SetMediaSessionId(kTestMediaSessionId);
 
   ASSERT_NO_FATAL_FAILURE(LoadUrlAndExpectResponse(
       kAutoplayVp9OpusToEndUrl,
       cr_fuchsia::CreateLoadUrlParamsWithUserActivation()));
 
   navigation_listener()->RunUntilTitleEquals("ended");
-
-  // Audio should be sent to AudioRenderer (created though `fuchsia.web.Audio`).
-  EXPECT_EQ(num_audio_connections_, 1U);
-  EXPECT_EQ(fake_audio_consumer_service_.num_instances(), 0U);
 }
 
 void WebEngineIntegrationTest::RunPermissionTest(bool grant) {
@@ -629,13 +601,12 @@ TEST_F(MAYBE_VulkanWebEngineIntegrationTest,
        HardwareVideoDecoderFlag_Provided) {
   // Check that the CodecFactory service is requested.
   base::RunLoop codec_connected_run_loop;
-  auto* outgoing_directory = filtered_service_directory().outgoing_directory();
-  outgoing_directory->RemovePublicService<fuchsia::mediacodec::CodecFactory>();
-  zx_status_t status = outgoing_directory->AddPublicService(
-      fidl::InterfaceRequestHandler<fuchsia::mediacodec::CodecFactory>(
-          [&codec_connected_run_loop](auto request) {
-            codec_connected_run_loop.Quit();
-          }));
+  zx_status_t status =
+      filtered_service_directory().outgoing_directory()->AddPublicService(
+          fidl::InterfaceRequestHandler<fuchsia::mediacodec::CodecFactory>(
+              [&codec_connected_run_loop](auto request) {
+                codec_connected_run_loop.Quit();
+              }));
   ZX_CHECK(status == ZX_OK, status) << "AddPublicService";
 
   // The VULKAN flag is required for hardware video decoders to be available.
@@ -645,6 +616,9 @@ TEST_F(MAYBE_VulkanWebEngineIntegrationTest,
       fuchsia::web::ContextFeatureFlags::VULKAN |
       fuchsia::web::ContextFeatureFlags::HARDWARE_VIDEO_DECODER;
   CreateContextAndFrame(std::move(create_params));
+
+  static const uint16_t kTestMediaSessionId = 1;
+  frame_->SetMediaSessionId(kTestMediaSessionId);
 
   ASSERT_NO_FATAL_FAILURE(LoadUrlAndExpectResponse(
       kAutoplayVp9OpusToEndUrl,
@@ -657,16 +631,18 @@ TEST_F(MAYBE_VulkanWebEngineIntegrationTest,
 // The video should use software decoders and still play.
 TEST_F(WebEngineIntegrationMediaTest, HardwareVideoDecoderFlag_NotProvided) {
   bool is_requested = false;
-  auto* outgoing_directory = filtered_service_directory().outgoing_directory();
-  outgoing_directory->RemovePublicService<fuchsia::mediacodec::CodecFactory>();
-  zx_status_t status = outgoing_directory->AddPublicService(
-      fidl::InterfaceRequestHandler<fuchsia::mediacodec::CodecFactory>(
-          [&is_requested](auto request) { is_requested = true; }));
+  zx_status_t status =
+      filtered_service_directory().outgoing_directory()->AddPublicService(
+          fidl::InterfaceRequestHandler<fuchsia::mediacodec::CodecFactory>(
+              [&is_requested](auto request) { is_requested = true; }));
   ZX_CHECK(status == ZX_OK, status) << "AddPublicService";
 
   fuchsia::web::CreateContextParams create_params =
       ContextParamsWithAudioAndTestData();
   CreateContextAndFrame(std::move(create_params));
+
+  static const uint16_t kTestMediaSessionId = 1;
+  frame_->SetMediaSessionId(kTestMediaSessionId);
 
   ASSERT_NO_FATAL_FAILURE(LoadUrlAndExpectResponse(
       kAutoplayVp9OpusToEndUrl,

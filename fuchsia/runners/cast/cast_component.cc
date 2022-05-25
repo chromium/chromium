@@ -64,7 +64,7 @@ bool CastComponent::Params::AreComplete() const {
     return false;
   if (!initial_url_rewrite_rules)
     return false;
-  if (!media_settings)
+  if (!media_session_id)
     return false;
   return true;
 }
@@ -85,7 +85,7 @@ CastComponent::CastComponent(base::StringPiece debug_name,
           std::move(params.initial_url_rewrite_rules.value())),
       api_bindings_client_(std::move(params.api_bindings_client)),
       application_context_(params.application_context.Bind()),
-      media_settings_(std::move(params.media_settings.value())),
+      media_session_id_(params.media_session_id.value()),
       headless_disconnect_watch_(FROM_HERE) {
   base::AutoReset<bool> constructor_active_reset(&constructor_active_, true);
 }
@@ -146,7 +146,7 @@ void CastComponent::StartComponent() {
   });
   OnRewriteRulesReceived(std::move(initial_url_rewrite_rules_));
 
-  frame()->SetMediaSettings(std::move(media_settings_));
+  frame()->SetMediaSessionId(media_session_id_);
   frame()->ConfigureInputTypes(fuchsia::web::InputTypes::ALL,
                                fuchsia::web::AllowInputState::DENY);
   if (application_config_.has_initial_min_console_log_severity()) {

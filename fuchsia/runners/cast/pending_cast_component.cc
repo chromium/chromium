@@ -110,29 +110,10 @@ void PendingCastComponent::OnApplicationConfigReceived(
     ZX_LOG(ERROR, status) << "ApplicationContext disconnected.";
     delegate_->CancelPendingComponent(this);
   });
-
-  if (params_.application_config.has_audio_renderer_usage()) {
-    DCHECK(!params_.media_settings);
-    params_.media_settings = fuchsia::web::FrameMediaSettings{};
-    params_.media_settings->set_renderer_usage(
-        params_.application_config.audio_renderer_usage());
-  } else {
-    // If `audio_renderer_usage` is not specified then `AudioConsumer` is used
-    // for that app. We need to fetch `session_id` in that case.
-    application_context_->GetMediaSessionId([this](uint64_t session_id) {
-      DCHECK(!params_.media_settings);
-      if (session_id == 0) {
-        DLOG(ERROR) << "GetMediaSessionId() returned 0 for an app with "
-                       "unspecified `audio_renderer_usage`.";
-        delegate_->CancelPendingComponent(this);
-        return;
-      }
-
-      params_.media_settings = fuchsia::web::FrameMediaSettings{};
-      params_.media_settings->set_audio_consumer_session_id(session_id);
-      MaybeLaunchComponent();
-    });
-  }
+  application_context_->GetMediaSessionId([this](uint64_t session_id) {
+    params_.media_session_id = session_id;
+    MaybeLaunchComponent();
+  });
 }
 
 void PendingCastComponent::OnApiBindingsInitialized() {

@@ -638,7 +638,6 @@ test("web_engine_integration_tests") {
       ] ]
   use_cfv2 = false
   additional_manifest_fragments = [
-    "//build/config/fuchsia/test/audio_capabilities.test-cmx",
     "//build/config/fuchsia/test/network_capabilities.test-cmx",
     "//build/config/fuchsia/test/read_debug_data.test-cmx",
     "//build/config/fuchsia/test/vulkan_capabilities.test-cmx",
