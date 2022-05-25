@@ -4075,11 +4075,12 @@
                 {
                     "name": "Enabled",
                     "params": {
+                        "AllocationSamplingMultiplier": "1500",
                         "AllocationSamplingRange": "16",
-                        "MaxAllocations": "70",
-                        "MaxMetadata": "255",
+                        "MaxAllocations": "50",
+                        "MaxMetadata": "210",
                         "ProcessSamplingBoost2": "10",
-                        "ProcessSamplingProbability": "0.015"
+                        "ProcessSamplingProbability": "0.01"
                     },
                     "enable_features": [
                         "GwpAsanMalloc",
