@@ -2867,7 +2867,7 @@ def _FindMissingSecurityOwners(input_api,
                     f'per-file {pattern}=file://{required_owners_file}',
                 ]
             }
-        to_check[owners_file][pattern]['files'].append(file)
+        to_check[owners_file][pattern]['files'].append(file.LocalPath())
         files_to_review.append(file.LocalPath())
 
     # Only enforce security OWNERS rules for a directory if that directory has a
@@ -2940,7 +2940,7 @@ def _FindMissingSecurityOwners(input_api,
         missing_lines = []
         files = []
         for _, entry in patterns.items():
-            files.extend(f.LocalPath() for f in entry['files'])
+            files.extend(entry['files'])
             missing_lines.extend(entry['rules'])
         if missing_lines:
             joined_missing_lines = '\n'.join(line for line in missing_lines)
