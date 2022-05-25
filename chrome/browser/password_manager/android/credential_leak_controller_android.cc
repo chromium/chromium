@@ -20,21 +20,23 @@
 using password_manager::CreateDialogTraits;
 using password_manager::PasswordChangeSuccessTracker;
 using password_manager::metrics_util::LeakDialogDismissalReason;
+using password_manager::metrics_util::LeakDialogMetricsRecorder;
 using password_manager::metrics_util::LeakDialogType;
-using password_manager::metrics_util::LogLeakDialogTypeAndDismissalReason;
 
 CredentialLeakControllerAndroid::CredentialLeakControllerAndroid(
     password_manager::CredentialLeakType leak_type,
     const GURL& origin,
     const std::u16string& username,
     PasswordChangeSuccessTracker* password_change_success_tracker,
-    ui::WindowAndroid* window_android)
+    ui::WindowAndroid* window_android,
+    std::unique_ptr<LeakDialogMetricsRecorder> metrics_recorder)
     : leak_type_(leak_type),
       origin_(origin),
       username_(username),
       password_change_success_tracker_(password_change_success_tracker),
       window_android_(window_android),
-      leak_dialog_traits_(CreateDialogTraits(leak_type)) {}
+      leak_dialog_traits_(CreateDialogTraits(leak_type)),
+      metrics_recorder_(std::move(metrics_recorder)) {}
 
 CredentialLeakControllerAndroid::~CredentialLeakControllerAndroid() = default;
 
@@ -44,8 +46,7 @@ void CredentialLeakControllerAndroid::ShowDialog() {
 }
 
 void CredentialLeakControllerAndroid::OnCancelDialog() {
-  LogLeakDialogTypeAndDismissalReason(
-      password_manager::GetLeakDialogType(leak_type_),
+  metrics_recorder_->LogLeakDialogTypeAndDismissalReason(
       LeakDialogDismissalReason::kClickedClose);
   delete this;
 }
@@ -76,7 +77,7 @@ void CredentialLeakControllerAndroid::OnAcceptDialog() {
       break;
   }
 
-  LogLeakDialogTypeAndDismissalReason(dialog_type, dismissal_reason);
+  metrics_recorder_->LogLeakDialogTypeAndDismissalReason(dismissal_reason);
 
   // |window_android_| might be null in tests.
   if (!window_android_) {
@@ -108,8 +109,7 @@ void CredentialLeakControllerAndroid::OnAcceptDialog() {
 }
 
 void CredentialLeakControllerAndroid::OnCloseDialog() {
-  LogLeakDialogTypeAndDismissalReason(
-      password_manager::GetLeakDialogType(leak_type_),
+  metrics_recorder_->LogLeakDialogTypeAndDismissalReason(
       LeakDialogDismissalReason::kNoDirectInteraction);
   delete this;
 }

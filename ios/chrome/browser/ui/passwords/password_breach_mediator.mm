@@ -27,14 +27,17 @@ using password_manager::GetAcceptButtonLabel;
 using password_manager::GetCancelButtonLabel;
 using password_manager::GetDescription;
 using password_manager::GetLeakDialogType;
-using password_manager::GetTitle;
 using password_manager::GetPasswordCheckupURL;
+using password_manager::GetTitle;
 using password_manager::ShouldCheckPasswords;
 using password_manager::metrics_util::LeakDialogDismissalReason;
+using password_manager::metrics_util::LeakDialogMetricsRecorder;
 using password_manager::metrics_util::LeakDialogType;
-using password_manager::metrics_util::LogLeakDialogTypeAndDismissalReason;
 
-@interface PasswordBreachMediator ()
+@interface PasswordBreachMediator () {
+  // Metrics recorder for UMA and UKM
+  std::unique_ptr<LeakDialogMetricsRecorder> recorder;
+}
 
 // Leak type of the dialog.
 @property(nonatomic, assign) LeakDialogType leakType;
@@ -54,6 +57,8 @@ using password_manager::metrics_util::LogLeakDialogTypeAndDismissalReason;
 
 - (instancetype)initWithConsumer:(id<PasswordBreachConsumer>)consumer
                        presenter:(id<PasswordBreachPresenter>)presenter
+                metrics_recorder:
+                    (std::unique_ptr<LeakDialogMetricsRecorder>)metrics_recorder
                         leakType:(CredentialLeakType)leakType {
   self = [super init];
   if (self) {
@@ -61,6 +66,8 @@ using password_manager::metrics_util::LogLeakDialogTypeAndDismissalReason;
     _credentialLeakType = leakType;
     _leakType = GetLeakDialogType(leakType);
     _dismissReason = LeakDialogDismissalReason::kNoDirectInteraction;
+
+    recorder = std::move(metrics_recorder);
 
     if (base::FeatureList::IsEnabled(
             password_manager::features::
@@ -96,7 +103,7 @@ using password_manager::metrics_util::LogLeakDialogTypeAndDismissalReason;
 }
 
 - (void)disconnect {
-  LogLeakDialogTypeAndDismissalReason(self.leakType, self.dismissReason);
+  recorder->LogLeakDialogTypeAndDismissalReason(self.dismissReason);
 }
 
 #pragma mark - ConfirmationAlertActionHandler

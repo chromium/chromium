@@ -12,18 +12,20 @@
 using password_manager::CreateDialogTraits;
 using password_manager::CredentialLeakType;
 using password_manager::metrics_util::LeakDialogDismissalReason;
-using password_manager::metrics_util::LogLeakDialogTypeAndDismissalReason;
+using password_manager::metrics_util::LeakDialogMetricsRecorder;
 
 CredentialLeakDialogControllerImpl::CredentialLeakDialogControllerImpl(
     PasswordsLeakDialogDelegate* delegate,
     CredentialLeakType leak_type,
     const GURL& url,
-    const std::u16string& username)
+    const std::u16string& username,
+    std::unique_ptr<LeakDialogMetricsRecorder> metrics_recorder)
     : delegate_(delegate),
       leak_type_(leak_type),
       leak_dialog_traits_(CreateDialogTraits(leak_type)),
       url_(url),
-      username_(username) {}
+      username_(username),
+      metrics_recorder_(std::move(metrics_recorder)) {}
 
 CredentialLeakDialogControllerImpl::~CredentialLeakDialogControllerImpl() {
   ResetDialog();
@@ -41,35 +43,30 @@ bool CredentialLeakDialogControllerImpl::IsShowingAccountChooser() const {
 }
 
 void CredentialLeakDialogControllerImpl::OnCancelDialog() {
-  LogLeakDialogTypeAndDismissalReason(
-      password_manager::GetLeakDialogType(leak_type_),
+  metrics_recorder_->LogLeakDialogTypeAndDismissalReason(
       LeakDialogDismissalReason::kClickedClose);
   delegate_->OnLeakDialogHidden();
 }
 
 void CredentialLeakDialogControllerImpl::OnAcceptDialog() {
   if (ShouldOfferAutomatedPasswordChange()) {
-    delegate_->StartAutomatedPasswordChange(url_, username_);
-    LogLeakDialogTypeAndDismissalReason(
-        password_manager::GetLeakDialogType(leak_type_),
+    metrics_recorder_->LogLeakDialogTypeAndDismissalReason(
         LeakDialogDismissalReason::kClickedChangePasswordAutomatically);
+    delegate_->StartAutomatedPasswordChange(url_, username_);
   } else if (ShouldCheckPasswords()) {
-    LogLeakDialogTypeAndDismissalReason(
-        password_manager::GetLeakDialogType(leak_type_),
+    metrics_recorder_->LogLeakDialogTypeAndDismissalReason(
         LeakDialogDismissalReason::kClickedCheckPasswords);
     delegate_->NavigateToPasswordCheckup(
         password_manager::PasswordCheckReferrer::kPasswordBreachDialog);
   } else {
-    LogLeakDialogTypeAndDismissalReason(
-        password_manager::GetLeakDialogType(leak_type_),
+    metrics_recorder_->LogLeakDialogTypeAndDismissalReason(
         LeakDialogDismissalReason::kClickedOk);
   }
   delegate_->OnLeakDialogHidden();
 }
 
 void CredentialLeakDialogControllerImpl::OnCloseDialog() {
-  LogLeakDialogTypeAndDismissalReason(
-      password_manager::GetLeakDialogType(leak_type_),
+  metrics_recorder_->LogLeakDialogTypeAndDismissalReason(
       LeakDialogDismissalReason::kNoDirectInteraction);
   delegate_->OnLeakDialogHidden();
 }

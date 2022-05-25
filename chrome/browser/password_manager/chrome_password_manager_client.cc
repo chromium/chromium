@@ -66,6 +66,7 @@
 #include "components/password_manager/core/browser/hsts_query.h"
 #include "components/password_manager/core/browser/http_auth_manager.h"
 #include "components/password_manager/core/browser/http_auth_manager_impl.h"
+#include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
 #include "components/password_manager/core/browser/password_change_success_tracker.h"
 #include "components/password_manager/core/browser/password_form.h"
@@ -650,9 +651,13 @@ void ChromePasswordManagerClient::NotifyUserCredentialsWereLeaked(
     HideSavePasswordInfobar(web_contents());
   }
 
+  auto metrics_recorder = std::make_unique<
+      password_manager::metrics_util::LeakDialogMetricsRecorder>(
+      web_contents()->GetMainFrame()->GetPageUkmSourceId(),
+      password_manager::GetLeakDialogType(leak_type));
   (new CredentialLeakControllerAndroid(
        leak_type, url, username, GetPasswordChangeSuccessTracker(),
-       web_contents()->GetTopLevelNativeWindow()))
+       web_contents()->GetTopLevelNativeWindow(), std::move(metrics_recorder)))
       ->ShowDialog();
 #else   // !BUILDFLAG(IS_ANDROID)
   PasswordsClientUIDelegate* manage_passwords_ui_controller =

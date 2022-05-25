@@ -73115,6 +73115,13 @@ Called by update_net_trust_anchors.py.-->
   <int value="4" label="Clicked Change password automatically"/>
 </enum>
 
+<enum name="PasswordLeakDetectionDialogType">
+  <int value="0" label="Password checkup offered"/>
+  <int value="1" label="Manual password change offered"/>
+  <int value="2" label="Password checkup and manual password change offered"/>
+  <int value="3" label="Automatic and manual password change offered"/>
+</enum>
+
 <enum name="PasswordLeakDetectionError">
   <int value="0" label="Not signed in"/>
   <int value="1" label="Token request error"/>

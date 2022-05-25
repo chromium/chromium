@@ -15187,6 +15187,29 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="PasswordManager.LeakWarningDialog">
+  <owner>jkeitel@google.com</owner>
+  <owner>chrome-duplex@google.com</owner>
+  <summary>
+    Metrics related to leak warnings shown on login and password reset. Leak
+    warning dialogs in Chrome aim to inform users about leaked credentials and
+    advise to change them. We collect type of the dialog that is shown and the
+    response of the user to it.
+  </summary>
+  <metric name="PasswordLeakDetectionDialogDismissalReason"
+      enum="PasswordLeakDetectionDialogDismissalReason">
+    <summary>
+      Records the response to the password leak dialog.
+    </summary>
+  </metric>
+  <metric name="PasswordLeakDetectionDialogType"
+      enum="PasswordLeakDetectionDialogType">
+    <summary>
+      Records the type of the password leak dialog.
+    </summary>
+  </metric>
+</event>
+
 <event name="PasswordManager.PasswordChangeFlowDuration">
   <owner>kolos@chromium.org</owner>
   <owner>jkeitel@google.com</owner>
