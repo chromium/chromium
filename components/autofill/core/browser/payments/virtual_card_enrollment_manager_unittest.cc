@@ -14,6 +14,7 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_art_image.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/virtual_card_enrollment_metrics.h"
 #include "components/autofill/core/browser/payments/payments_requests/update_virtual_card_enrollment_request.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
@@ -253,6 +254,7 @@ TEST_F(VirtualCardEnrollmentManagerTest, OnRiskDataLoadedForVirtualCard) {
 
 TEST_F(VirtualCardEnrollmentManagerTest, OnDidGetDetailsForEnrollResponse) {
   base::HistogramTester histogram_tester;
+  TestAutofillClock test_autofill_clock(AutofillClock::Now());
   const TestLegalMessageLine google_legal_message =
       TestLegalMessageLine("google_test_legal_message");
   const TestLegalMessageLine issuer_legal_message =
@@ -269,6 +271,9 @@ TEST_F(VirtualCardEnrollmentManagerTest, OnDidGetDetailsForEnrollResponse) {
 #else
     for (bool make_image_present : {true, false}) {
 #endif  // BUILDFLAG(IS_IOS)
+      virtual_card_enrollment_manager_
+          ->get_details_for_enrollment_request_sent_timestamp_ =
+          AutofillClock::Now();
       payments::PaymentsClient::GetDetailsForEnrollmentResponseDetails
           response = std::move(SetUpOnDidGetDetailsForEnrollResponse(
               google_legal_message, issuer_legal_message, make_image_present));
@@ -284,6 +289,8 @@ TEST_F(VirtualCardEnrollmentManagerTest, OnDidGetDetailsForEnrollResponse) {
             state->virtual_card_enrollment_fields.credit_card.network(),
             network_image);
       }
+
+      test_autofill_clock.Advance(base::Milliseconds(5));
 
       virtual_card_enrollment_manager_->OnDidGetDetailsForEnrollResponse(
           AutofillClient::PaymentsRpcResult::kSuccess, response);
@@ -313,6 +320,12 @@ TEST_F(VirtualCardEnrollmentManagerTest, OnDidGetDetailsForEnrollResponse) {
           "Autofill.VirtualCard.GetDetailsForEnrollment.Result." +
               VirtualCardEnrollmentSourceToMetricSuffix(source),
           /*sample=*/true, make_image_present ? 1 : 2);
+      histogram_tester.ExpectBucketCount(
+          "Autofill.VirtualCard.GetDetailsForEnrollment.Latency." +
+              VirtualCardEnrollmentSourceToMetricSuffix(source) +
+              PaymentsRpcResultToMetricsSuffix(
+                  AutofillClient::PaymentsRpcResult::kSuccess),
+          /*sample=*/5, make_image_present ? 1 : 2);
     }
   }
 }

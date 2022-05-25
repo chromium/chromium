@@ -9,6 +9,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
 
 namespace autofill {
@@ -71,6 +72,17 @@ void LogGetDetailsForEnrollmentRequestResult(VirtualCardEnrollmentSource source,
       base::StrCat({"Autofill.VirtualCard.GetDetailsForEnrollment.Result.",
                     VirtualCardEnrollmentSourceToMetricSuffix(source)}),
       succeeded);
+}
+
+void LogGetDetailsForEnrollmentRequestLatency(
+    VirtualCardEnrollmentSource source,
+    AutofillClient::PaymentsRpcResult result,
+    base::TimeDelta latency) {
+  base::UmaHistogramMediumTimes(
+      "Autofill.VirtualCard.GetDetailsForEnrollment.Latency." +
+          VirtualCardEnrollmentSourceToMetricSuffix(source) +
+          PaymentsRpcResultToMetricsSuffix(result),
+      latency);
 }
 
 void LogUpdateVirtualCardEnrollmentRequestAttempt(

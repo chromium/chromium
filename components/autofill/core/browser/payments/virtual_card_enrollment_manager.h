@@ -323,6 +323,9 @@ class VirtualCardEnrollmentManager {
   // metric. |save_card_bubble_accepted_timestamp_| will then be reset.
   absl::optional<base::Time> save_card_bubble_accepted_timestamp_;
 
+  // The timestamp when a GetDetailsForEnrollment request is sent.
+  absl::optional<base::Time> get_details_for_enrollment_request_sent_timestamp_;
+
   base::WeakPtrFactory<VirtualCardEnrollmentManager> weak_ptr_factory_{this};
 };
 
