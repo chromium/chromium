@@ -25,10 +25,10 @@ RemotingSender::RemotingSender(
     mojo::ScopedDataPipeConsumerHandle pipe,
     mojo::PendingReceiver<media::mojom::RemotingDataStreamSender> stream_sender,
     base::OnceClosure error_callback)
-    : FrameSender(cast_environment,
-                  transport,
-                  config,
-                  media::cast::NewFixedCongestionControl(config.max_bitrate)),
+    : frame_sender_(media::cast::FrameSender::Create(cast_environment,
+                                                     config,
+                                                     transport,
+                                                     this)),
       clock_(cast_environment->Clock()),
       error_callback_(std::move(error_callback)),
       data_pipe_reader_(new media::MojoDataPipeReader(std::move(pipe))),
@@ -67,14 +67,13 @@ int RemotingSender::GetNumberOfFramesInEncoder() const {
   return 0;
 }
 
-base::TimeDelta RemotingSender::GetInFlightMediaDuration() const {
+base::TimeDelta RemotingSender::GetEncoderBacklogDuration() const {
   NOTREACHED();
   return base::TimeDelta();
 }
 
-void RemotingSender::OnCancelSendingFrames() {
-  // One or more frames were canceled. This may allow pending input operations
-  // to complete.
+void RemotingSender::OnFrameCanceled(media::cast::FrameId frame_id) {
+  // The frame cancellation may allow for the next input task to complete.
   ProcessNextInputTask();
 }
 
@@ -121,40 +120,41 @@ void RemotingSender::TrySendFrame() {
   }
 
   // If there would be too many frames in-flight, do not proceed.
-  if (GetUnacknowledgedFrameCount() >= media::cast::kMaxUnackedFrames) {
+  if (frame_sender_->GetUnacknowledgedFrameCount() >=
+      media::cast::kMaxUnackedFrames) {
     VLOG(1) << "Cannot send frame now because too many frames are in flight.";
     return;
   }
 
-  const bool is_first_frame_to_be_sent = last_send_time_.is_null();
-  const media::cast::FrameId frame_id = is_first_frame_to_be_sent
-                                            ? media::cast::FrameId::first()
-                                            : (last_sent_frame_id_ + 1);
-
-  base::TimeTicks last_frame_reference_time = last_send_time_;
+  const bool is_first_frame = (next_frame_id_ == media::cast::FrameId::first());
   auto remoting_frame = std::make_unique<media::cast::SenderEncodedFrame>();
-  remoting_frame->frame_id = frame_id;
+  remoting_frame->frame_id = next_frame_id_;
   if (flow_restart_pending_) {
     remoting_frame->dependency = media::cast::EncodedFrame::KEY;
     flow_restart_pending_ = false;
   } else {
-    DCHECK(!is_first_frame_to_be_sent);
+    DCHECK(!is_first_frame);
     remoting_frame->dependency = media::cast::EncodedFrame::DEPENDENT;
   }
   remoting_frame->referenced_frame_id =
       remoting_frame->dependency == media::cast::EncodedFrame::KEY
-          ? frame_id
-          : frame_id - 1;
+          ? next_frame_id_
+          : next_frame_id_ - 1;
   remoting_frame->reference_time = clock_->NowTicks();
   remoting_frame->encode_completion_time = remoting_frame->reference_time;
+
+  base::TimeTicks last_frame_reference_time;
   media::cast::RtpTimeTicks last_frame_rtp_timestamp;
-  if (is_first_frame_to_be_sent) {
+  if (is_first_frame) {
     last_frame_reference_time = remoting_frame->reference_time;
     last_frame_rtp_timestamp =
         media::cast::RtpTimeTicks() - media::cast::RtpTimeDelta::FromTicks(1);
   } else {
-    last_frame_rtp_timestamp = GetRecordedRtpTimestamp(frame_id - 1);
+    last_frame_reference_time = frame_sender_->LastSendTime();
+    last_frame_rtp_timestamp =
+        frame_sender_->GetRecordedRtpTimestamp(next_frame_id_ - 1);
   }
+
   // Ensure each successive frame's RTP timestamp is unique, but otherwise just
   // base it on the reference time.
   remoting_frame->rtp_timestamp =
@@ -165,8 +165,8 @@ void RemotingSender::TrySendFrame() {
                    media::cast::kRemotingRtpTimebase));
   remoting_frame->data.swap(next_frame_data_);
 
-  SendEncodedFrame(0, std::move(remoting_frame));
-
+  frame_sender_->EnqueueFrame(std::move(remoting_frame));
+  next_frame_id_++;
   OnInputTaskComplete();
 }
 

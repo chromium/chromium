@@ -161,6 +161,8 @@ H264VideoToolboxEncoder::H264VideoToolboxEncoder(
     StatusChangeCallback status_change_cb)
     : cast_environment_(cast_environment),
       video_config_(video_config),
+      average_bitrate_((video_config_.min_bitrate + video_config_.max_bitrate) /
+                       2),
       status_change_cb_(std::move(status_change_cb)),
       next_frame_id_(FrameId::first()),
       encode_next_frame_as_keyframe_(false),
@@ -300,11 +302,8 @@ void H264VideoToolboxEncoder::ConfigureCompressionSession() {
                               240);
   session_property_setter.Set(
       kVTCompressionPropertyKey_MaxKeyFrameIntervalDuration, 240);
-  // TODO(jfroy): implement better bitrate control
-  //              https://crbug.com/425352
-  session_property_setter.Set(
-      kVTCompressionPropertyKey_AverageBitRate,
-      (video_config_.min_bitrate + video_config_.max_bitrate) / 2);
+  session_property_setter.Set(kVTCompressionPropertyKey_AverageBitRate,
+                              average_bitrate_);
   session_property_setter.Set(
       kVTCompressionPropertyKey_ExpectedFrameRate,
       static_cast<int>(video_config_.max_frame_rate + 0.5));
@@ -500,7 +499,7 @@ void H264VideoToolboxEncoder::CompressionCallback(void* encoder_opaque,
   auto* encoder = reinterpret_cast<H264VideoToolboxEncoder*>(encoder_opaque);
   std::unique_ptr<InProgressH264VTFrameEncode> request(
       reinterpret_cast<InProgressH264VTFrameEncode*>(request_opaque));
-  bool keyframe = false;
+  bool is_keyframe = false;
   bool has_frame_data = false;
 
   if (status != noErr) {
@@ -518,8 +517,8 @@ void H264VideoToolboxEncoder::CompressionCallback(void* encoder_opaque,
     // If the NotSync key is not present, it implies Sync, which indicates a
     // keyframe (at least I think, VT documentation is, erm, sparse). Could
     // alternatively use kCMSampleAttachmentKey_DependsOnOthers == false.
-    keyframe = !CFDictionaryContainsKey(sample_attachments,
-                                        kCMSampleAttachmentKey_NotSync);
+    is_keyframe = !CFDictionaryContainsKey(sample_attachments,
+                                           kCMSampleAttachmentKey_NotSync);
     has_frame_data = true;
   }
 
@@ -531,7 +530,7 @@ void H264VideoToolboxEncoder::CompressionCallback(void* encoder_opaque,
   encoded_frame->frame_id = frame_id;
   encoded_frame->reference_time = request->reference_time;
   encoded_frame->rtp_timestamp = request->rtp_timestamp;
-  if (keyframe) {
+  if (is_keyframe) {
     encoded_frame->dependency = EncodedFrame::KEY;
     encoded_frame->referenced_frame_id = frame_id;
   } else {
@@ -549,12 +548,13 @@ void H264VideoToolboxEncoder::CompressionCallback(void* encoder_opaque,
   }
 
   if (has_frame_data) {
-    video_toolbox::CopySampleBufferToAnnexBBuffer(sbuf, keyframe,
+    video_toolbox::CopySampleBufferToAnnexBBuffer(sbuf, is_keyframe,
                                                   &encoded_frame->data);
   }
 
   encoded_frame->encode_completion_time =
       encoder->cast_environment_->Clock()->NowTicks();
+  encoded_frame->encoder_bitrate = encoder->average_bitrate_;
   encoder->cast_environment_->GetTaskRunner(CastEnvironment::MAIN)
       ->PostTask(FROM_HERE,
                  base::BindOnce(std::move(request->frame_encoded_callback),

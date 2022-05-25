@@ -2148,7 +2148,7 @@ static_library("browser") {
     "//components/metrics:ui",
     "//components/metrics/demographics",
     "//components/metrics_services_manager",
-    "//components/mirroring/service:mirroring_service",
+    "//components/mirroring/service:features",
     "//components/navigation_interception",
     "//components/navigation_metrics",
     "//components/net_log",

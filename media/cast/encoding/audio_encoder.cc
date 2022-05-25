@@ -57,11 +57,13 @@ class AudioEncoder::ImplBase
            int num_channels,
            int sampling_rate,
            int samples_per_frame,
+           int bitrate,
            FrameEncodedCallback callback)
       : cast_environment_(cast_environment),
         codec_(codec),
         num_channels_(num_channels),
         samples_per_frame_(samples_per_frame),
+        bitrate_(bitrate),
         callback_(std::move(callback)),
         operational_status_(STATUS_UNINITIALIZED),
         frame_duration_(base::Seconds(static_cast<double>(samples_per_frame_) /
@@ -156,7 +158,7 @@ class AudioEncoder::ImplBase
         // by the signal duration.
         audio_frame->encoder_utilization =
             (base::TimeTicks::Now() - start_time) / frame_duration_;
-
+        audio_frame->encoder_bitrate = bitrate_;
         TRACE_EVENT_NESTABLE_ASYNC_END1(
             "cast.stream", "Audio Encode", TRACE_ID_LOCAL(audio_frame.get()),
             "encoder_utilization", audio_frame->encoder_utilization);
@@ -192,6 +194,7 @@ class AudioEncoder::ImplBase
   const Codec codec_;
   const int num_channels_;
   const int samples_per_frame_;
+  const int bitrate_;
   const FrameEncodedCallback callback_;
 
   // Subclass' ctor is expected to set this to STATUS_INITIALIZED.
@@ -241,6 +244,7 @@ class AudioEncoder::OpusImpl final : public AudioEncoder::ImplBase {
                  num_channels,
                  sampling_rate,
                  sampling_rate / kDefaultFramesPerSecond, /* 10 ms frames */
+                 bitrate,
                  std::move(callback)),
         encoder_memory_(new uint8_t[opus_encoder_get_size(num_channels)]),
         opus_encoder_(reinterpret_cast<OpusEncoder*>(encoder_memory_.get())),
@@ -347,6 +351,7 @@ class AudioEncoder::AppleAacImpl final : public AudioEncoder::ImplBase {
                  num_channels,
                  sampling_rate,
                  kAccessUnitSamples,
+                 bitrate,
                  std::move(callback)),
         input_buffer_(AudioBus::Create(num_channels, kAccessUnitSamples)),
         input_bus_(AudioBus::CreateWrapper(num_channels)),
@@ -540,7 +545,7 @@ class AudioEncoder::AppleAacImpl final : public AudioEncoder::ImplBase {
     // Reset the buffer size field to the buffer capacity.
     converter_abl_.mBuffers[0].mDataByteSize = max_access_unit_size_;
 
-    // Encode the current input buffer. This is a sychronous call.
+    // Encode the current input buffer. This is a synchronous call.
     OSStatus oserr;
     UInt32 io_num_packets = 1;
     AudioStreamPacketDescription packet_description;
@@ -692,6 +697,7 @@ class AudioEncoder::Pcm16Impl final : public AudioEncoder::ImplBase {
                  num_channels,
                  sampling_rate,
                  sampling_rate / kDefaultFramesPerSecond, /* 10 ms frames */
+                 0 /* bitrate, which is unused for the PCM16 implementation */,
                  std::move(callback)),
         buffer_(new int16_t[num_channels * samples_per_frame_]) {
     if (ImplBase::operational_status_ != STATUS_UNINITIALIZED)
