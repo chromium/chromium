@@ -819,6 +819,24 @@ void PaymentRequest::OnUserCancelled() {
   ResetAndDeleteThis();
 }
 
+void PaymentRequest::OnUserOptedOut() {
+  // This should only be called for SPC.
+  DCHECK(spec_->IsSecurePaymentConfirmationRequested());
+
+  // If |client_| is not bound, then the object is already being destroyed as
+  // a result of a renderer event.
+  if (!client_.is_bound())
+    return;
+
+  RecordFirstAbortReason(JourneyLogger::ABORT_REASON_ABORTED_BY_USER);
+
+  // This sends an error to the renderer, which informs the API user.
+  client_->OnError(mojom::PaymentErrorReason::USER_OPT_OUT,
+                   errors::kSpcUserOptedOut);
+
+  ResetAndDeleteThis();
+}
+
 void PaymentRequest::ReadyToCommitNavigation(
     content::NavigationHandle* navigation_handle) {
   auto navigation_in_frame_will_destroy_or_cache_document_in_frame =

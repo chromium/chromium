@@ -46,6 +46,10 @@ class PaymentRequestDialog {
 
   // Confirms payment. Used only in tests.
   virtual void ConfirmPaymentForTesting() = 0;
+
+  // Clicks the opt-out link. Returns true if the link was visible to the user,
+  // false otherwise. Used only in tests.
+  virtual bool ClickOptOutForTesting() = 0;
 };
 
 }  // namespace payments

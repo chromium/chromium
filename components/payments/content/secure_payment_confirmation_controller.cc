@@ -155,6 +155,8 @@ void SecurePaymentConfirmationController::
       base::BindOnce(&SecurePaymentConfirmationController::OnConfirm,
                      weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&SecurePaymentConfirmationController::OnCancel,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&SecurePaymentConfirmationController::OnOptOut,
                      weak_ptr_factory_.GetWeakPtr()));
 
   // For automated testing, SPC can be placed in an 'autoaccept' or
@@ -220,6 +222,10 @@ void SecurePaymentConfirmationController::ConfirmPaymentForTesting() {
   OnConfirm();
 }
 
+bool SecurePaymentConfirmationController::ClickOptOutForTesting() {
+  return view_->ClickOptOutForTesting();
+}
+
 void SecurePaymentConfirmationController::OnInitialized(
     InitializationTask* initialization_task) {
   if (--number_of_initialization_tasks_ == 0)
@@ -234,6 +240,16 @@ void SecurePaymentConfirmationController::OnCancel() {
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(&PaymentRequest::OnUserCancelled, request_));
+}
+
+void SecurePaymentConfirmationController::OnOptOut() {
+  CloseDialog();
+
+  if (!request_)
+    return;
+
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(&PaymentRequest::OnUserOptedOut, request_));
 }
 
 void SecurePaymentConfirmationController::OnConfirm() {

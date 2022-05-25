@@ -183,6 +183,18 @@ bool PaymentRequestTestController::ConfirmPayment() {
   return true;
 }
 
+bool PaymentRequestTestController::ClickOptOut() {
+  if (!delegate_)
+    return false;
+
+  // TODO(crbug.com/1325854): Add support for no-matching-creds dialog.
+  PaymentRequestDialog* dialog = delegate_->GetDialogForTesting();
+  if (!dialog)
+    return false;
+
+  return dialog->ClickOptOutForTesting();
+}
+
 bool PaymentRequestTestController::ClickPaymentHandlerCloseButton() {
   return CloseDialog();
 }

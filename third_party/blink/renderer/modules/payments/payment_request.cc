@@ -1515,6 +1515,10 @@ void PaymentRequest::OnError(PaymentErrorReason error,
       exception_code = DOMExceptionCode::kNotAllowedError;
       break;
 
+    case PaymentErrorReason::USER_OPT_OUT:
+      exception_code = DOMExceptionCode::kAbortError;
+      break;
+
     case PaymentErrorReason::UNKNOWN:
       break;
   }

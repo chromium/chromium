@@ -54,6 +54,7 @@ enum PaymentErrorReason {
   ALREADY_SHOWING,
   INVALID_DATA_FROM_RENDERER,
   NOT_ALLOWED_ERROR,
+  USER_OPT_OUT,
 };
 
 enum CanMakePaymentQueryResult {

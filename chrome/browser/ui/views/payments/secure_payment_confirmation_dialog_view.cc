@@ -84,7 +84,8 @@ void SecurePaymentConfirmationDialogView::ShowDialog(
     content::WebContents* web_contents,
     base::WeakPtr<SecurePaymentConfirmationModel> model,
     VerifyCallback verify_callback,
-    CancelCallback cancel_callback) {
+    CancelCallback cancel_callback,
+    OptOutCallback opt_out_callback) {
   DCHECK(model);
   model_ = model;
 
@@ -97,6 +98,7 @@ void SecurePaymentConfirmationDialogView::ShowDialog(
 
   verify_callback_ = std::move(verify_callback);
   cancel_callback_ = std::move(cancel_callback);
+  opt_out_callback_ = std::move(opt_out_callback);
 
   SetAcceptCallback(
       base::BindOnce(&SecurePaymentConfirmationDialogView::OnDialogAccepted,
@@ -144,9 +146,15 @@ void SecurePaymentConfirmationDialogView::OnDialogCancelled() {
 }
 
 void SecurePaymentConfirmationDialogView::OnDialogClosed() {
-  std::move(cancel_callback_).Run();
-  RecordAuthenticationDialogResult(
-      SecurePaymentConfirmationAuthenticationDialogResult::kClosed);
+  // We can reach OnDialogClosed either when the user cancels out of the
+  // WebAuthn dialog after clicking 'Verify', or when the user chooses to
+  // opt-out. We should only run the cancellation callback in the former case;
+  // in the latter the opt-out callback will trigger from OnOptOutClicked.
+  if (!opt_out_clicked_) {
+    std::move(cancel_callback_).Run();
+    RecordAuthenticationDialogResult(
+        SecurePaymentConfirmationAuthenticationDialogResult::kClosed);
+  }
 
   if (observer_for_test_) {
     observer_for_test_->OnDialogClosed();
@@ -154,7 +162,15 @@ void SecurePaymentConfirmationDialogView::OnDialogClosed() {
 }
 
 void SecurePaymentConfirmationDialogView::OnOptOutClicked() {
-  // TODO(crbug.com/1325854): Handle opt-out clicks.
+  opt_out_clicked_ = true;
+
+  if (observer_for_test_) {
+    observer_for_test_->OnOptOutClicked();
+  }
+
+  std::move(opt_out_callback_).Run();
+  RecordAuthenticationDialogResult(
+      SecurePaymentConfirmationAuthenticationDialogResult::kOptOut);
 }
 
 void SecurePaymentConfirmationDialogView::OnModelUpdated() {
@@ -218,6 +234,13 @@ void SecurePaymentConfirmationDialogView::UpdateLabelView(
 void SecurePaymentConfirmationDialogView::HideDialog() {
   if (GetWidget())
     GetWidget()->Close();
+}
+
+bool SecurePaymentConfirmationDialogView::ClickOptOutForTesting() {
+  if (!model_->opt_out_link_visible())
+    return false;
+  OnOptOutClicked();
+  return true;
 }
 
 bool SecurePaymentConfirmationDialogView::ShouldShowCloseButton() const {

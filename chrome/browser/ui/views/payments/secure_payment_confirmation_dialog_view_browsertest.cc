@@ -50,6 +50,7 @@ class SecurePaymentConfirmationDialogViewTest
   enum DialogEvent : int {
     DIALOG_OPENED,
     DIALOG_CLOSED,
+    OPT_OUT_CLICKED,
   };
 
   // UiBrowserTest:
@@ -217,6 +218,7 @@ class SecurePaymentConfirmationDialogViewTest
 
     EXPECT_TRUE(confirm_pressed_);
     EXPECT_FALSE(cancel_pressed_);
+    EXPECT_FALSE(opt_out_clicked_);
 
     histogram_tester_.ExpectTotalCount(
         "PaymentRequest.SecurePaymentConfirmation.Funnel."
@@ -236,6 +238,7 @@ class SecurePaymentConfirmationDialogViewTest
 
     EXPECT_TRUE(cancel_pressed_);
     EXPECT_FALSE(confirm_pressed_);
+    EXPECT_FALSE(opt_out_clicked_);
 
     histogram_tester_.ExpectTotalCount(
         "PaymentRequest.SecurePaymentConfirmation.Funnel."
@@ -255,6 +258,7 @@ class SecurePaymentConfirmationDialogViewTest
 
     EXPECT_FALSE(cancel_pressed_);
     EXPECT_FALSE(confirm_pressed_);
+    EXPECT_FALSE(opt_out_clicked_);
 
     histogram_tester_.ExpectTotalCount(
         "PaymentRequest.SecurePaymentConfirmation.Funnel."
@@ -264,6 +268,37 @@ class SecurePaymentConfirmationDialogViewTest
         "PaymentRequest.SecurePaymentConfirmation.Funnel."
         "AuthenticationDialogResult",
         SecurePaymentConfirmationAuthenticationDialogResult::kClosed, 1);
+  }
+
+  void ClickOptOutAndWait() {
+    ResetEventWaiter(DialogEvent::OPT_OUT_CLICKED);
+
+    ui::MouseEvent pressed_event(
+        ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(), ui::EventTimeForNow(),
+        ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+    ui::MouseEvent released_event(ui::ET_MOUSE_RELEASED, gfx::Point(),
+                                  gfx::Point(), ui::EventTimeForNow(),
+                                  ui::EF_LEFT_MOUSE_BUTTON,
+                                  ui::EF_LEFT_MOUSE_BUTTON);
+
+    views::View* opt_out_link = test_delegate_->dialog_view()->GetExtraView();
+    opt_out_link->OnMousePressed(pressed_event);
+    opt_out_link->OnMouseReleased(pressed_event);
+
+    event_waiter_->Wait();
+
+    EXPECT_FALSE(cancel_pressed_);
+    EXPECT_FALSE(confirm_pressed_);
+    EXPECT_TRUE(opt_out_clicked_);
+
+    histogram_tester_.ExpectTotalCount(
+        "PaymentRequest.SecurePaymentConfirmation.Funnel."
+        "AuthenticationDialogResult",
+        1);
+    histogram_tester_.ExpectBucketCount(
+        "PaymentRequest.SecurePaymentConfirmation.Funnel."
+        "AuthenticationDialogResult",
+        SecurePaymentConfirmationAuthenticationDialogResult::kOptOut, 1);
   }
 
   void ResetEventWaiter(DialogEvent event) {
@@ -286,6 +321,12 @@ class SecurePaymentConfirmationDialogViewTest
 
   void OnCancelButtonPressed() override { cancel_pressed_ = true; }
 
+  void OnOptOutClicked() override {
+    opt_out_clicked_ = true;
+    if (event_waiter_)
+      event_waiter_->OnEvent(DialogEvent::OPT_OUT_CLICKED);
+  }
+
  protected:
   std::unique_ptr<autofill::EventWaiter<DialogEvent>> event_waiter_;
 
@@ -297,6 +338,7 @@ class SecurePaymentConfirmationDialogViewTest
 
   bool confirm_pressed_ = false;
   bool cancel_pressed_ = false;
+  bool opt_out_clicked_ = false;
 
   base::HistogramTester histogram_tester_;
 
@@ -571,6 +613,8 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDialogViewTest,
   InvokeSecurePaymentConfirmationUI();
 
   ExpectViewMatchesModel();
+
+  ClickOptOutAndWait();
 }
 
 }  // namespace payments

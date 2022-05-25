@@ -36,7 +36,7 @@ void TestSecurePaymentConfirmationPaymentRequestDelegate::ShowDialog(
   if (rfh && rfh->IsActive()) {
     dialog_view_->ShowDialog(content::WebContents::FromRenderFrameHost(rfh),
                              model_->GetWeakPtr(), base::DoNothing(),
-                             base::DoNothing());
+                             base::DoNothing(), base::DoNothing());
   }
 }
 

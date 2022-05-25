@@ -98,6 +98,10 @@ class PaymentRequestTestController {
   // available.
   bool ConfirmPayment();
 
+  // Clicks opt-out on the dialog, if available. Returns true if the opt-out
+  // link was available, false if not.
+  bool ClickOptOut();
+
   // Returns true when running on Android M or L.
   bool IsAndroidMarshmallowOrLollipop();
 
