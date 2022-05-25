@@ -1919,18 +1919,22 @@ bool AutomationInternalCustomBindings::GetFocusInternal(
   if (!focus)
     return false;
 
-  // If the focused node is the owner of a child tree, that indicates
-  // a node within the child tree is the one that actually has focus. This
-  // doesn't apply to portals: portals have a child tree, but nothing in the
-  // tree can have focus.
-  std::string child_tree_id_str;
-  std::string child_tree_node_app_id_str;
-  while ((focus->GetStringAttribute(ax::mojom::StringAttribute::kChildTreeId,
-                                    &child_tree_id_str) ||
-          focus->GetStringAttribute(
-              ax::mojom::StringAttribute::kChildTreeNodeAppId,
-              &child_tree_node_app_id_str)) &&
-         focus->GetRole() != ax::mojom::Role::kPortal) {
+  while (true) {
+    // If the focused node is the owner of a child tree, that indicates
+    // a node within the child tree is the one that actually has focus. This
+    // doesn't apply to portals: portals have a child tree, but nothing in the
+    // tree can have focus.
+    if (focus->GetRole() == ax::mojom::Role::kPortal)
+      break;
+
+    const std::string& child_tree_id_str =
+        focus->GetStringAttribute(ax::mojom::StringAttribute::kChildTreeId);
+    const std::string& child_tree_node_app_id_str = focus->GetStringAttribute(
+        ax::mojom::StringAttribute::kChildTreeNodeAppId);
+
+    if (child_tree_id_str.empty() && child_tree_node_app_id_str.empty())
+      break;
+
     AutomationAXTreeWrapper* child_tree_wrapper = nullptr;
 
     if (!child_tree_node_app_id_str.empty()) {
@@ -1942,11 +1946,7 @@ bool AutomationInternalCustomBindings::GetFocusInternal(
         ui::AXNode* child_app_node = child_app_nodes[0];
         auto* wrapper = GetAutomationAXTreeWrapperFromTreeID(
             child_app_node->tree()->GetAXTreeID());
-
-        // TODO: figure out why this condition seems necessary (otherwise, we
-        // loop forever).
-        if (wrapper != tree_wrapper)
-          child_tree_wrapper = wrapper;
+        child_tree_wrapper = wrapper;
       }
     }
 
