@@ -26,21 +26,6 @@ class SettingZippy extends Polymer.Element {
         value: false,
       },
 
-      expandStyle: {
-        type: Boolean,
-        value: false,
-      },
-
-      toggleStyle: {
-        type: Boolean,
-        value: false,
-      },
-
-      popupStyle: {
-        type: Boolean,
-        value: false,
-      },
-
       cardStyle: {
         type: Boolean,
         value: false,

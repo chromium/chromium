@@ -4,9 +4,7 @@
 
 <link rel="import" href="chrome://resources/html/polymer.html">
 
-<link rel="import" href="chrome://resources/cr_elements/cr_expand_button/cr_expand_button.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_toggle/cr_toggle.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-collapse/iron-collapse.html">
 
 <link rel="import" href="../components/common_styles/common_styles.html">
 
@@ -15,13 +13,8 @@
 <dom-module id="setting-zippy">
   <template>
     <style include="oobe-common-styles assistant-common-styles">
-      #container:not([expandStyle]) {
+      #container {
         padding-top: 8px;
-      }
-
-      #container[expandStyle] {
-        align-items: center;
-        height: 48px;
       }
 
       .sub-title {
@@ -48,12 +41,6 @@
 
       .line {
         background-color: var(--cros-color-primary);
-      }
-
-      cr-expand-button {
-        padding-inline-end: 8px;
-        /* Overrides default value 12px for cr-icon-button */
-        --cr-section-vertical-padding: 0;
       }
 
       .toggle {
@@ -96,49 +83,23 @@
         margin: 10px;
       }
     </style>
-    <template is="dom-if" if="[[expandStyle]]">
-      <cr-expand-button expanded="{{expanded_}}">
-        <div id="container" class="flex layout horizontal"
-            expandStyle$="[[expandStyle]]">
-          <div class="icon">
-            <webview class="icon-view" src="[[iconSrc]]" tabindex="-1">
-            </webview>
-          </div>
-          <div>
-            <div class="sub-title">
-              <slot name="title"></slot>
-            </div>
-            <div class="content">
-              <slot name="content"></slot>
-            </div>
-          </div>
+    <div id="container" class="flex layout horizontal"
+        cardStyle$="[[cardStyle]]">
+      <div class="icon">
+        <webview class="icon-view" src="[[iconSrc]]" tabindex="-1"></webview>
+      </div>
+      <div>
+        <div class="sub-title">
+          <slot name="title"></slot>
         </div>
-      </cr-expand-button>
-      <iron-collapse opened="[[expanded_]]">
-        <div class="content indent">
-          <slot name="additional"></slot>
-        </div>
-      </iron-collapse>
-    </template>
-    <template is="dom-if" if="[[!expandStyle]]">
-      <div id="container" class="flex layout horizontal"
-          expandStyle$="[[expandStyle]]" cardStyle$="[[cardStyle]]">
-        <div class="icon">
-          <webview class="icon-view" src="[[iconSrc]]" tabindex="-1"></webview>
-        </div>
-        <div>
-          <div class="sub-title">
-            <slot name="title"></slot>
-          </div>
-          <div id="description" class="content">
-            <slot name="content"></slot>
-          </div>
-        </div>
-        <div class="toggle">
-          <slot name="toggle"></slot>
+        <div id="description" class="content">
+          <slot name="content"></slot>
         </div>
       </div>
-    </template>
+      <div class="toggle">
+        <slot name="toggle"></slot>
+      </div>
+    </div>
     <div class="line" hidden="[[hideLine]]"></div>
   </template>
   <script src="setting_zippy.js"></script>
