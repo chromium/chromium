@@ -1184,7 +1184,14 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest, Audio_WebM) {
                                             video_mp4_hevc_codecs()));
 }
 
-IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest, Video_MP4) {
+// TODO(crbug.com/1329017): Re-enable this test
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_Video_MP4 DISABLED_Video_MP4
+#else
+#define MAYBE_Video_MP4 Video_MP4
+#endif
+IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest,
+                       MAYBE_Video_MP4) {
   // Valid video types.
   EXPECT_WV_PROPRIETARY(
       IsSupportedByKeySystem(kWidevine, kVideoMP4MimeType, video_mp4_codecs()));
@@ -1550,9 +1557,15 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesTest,
                                         video_webm_codecs()));
 }
 
+// TODO(crbug.com/1329017): Re-enable this test
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_Basic DISABLED_Basic
+#else
+#define MAYBE_Basic Basic
+#endif
 IN_PROC_BROWSER_TEST_F(
     EncryptedMediaSupportedTypesClearKeyCdmRegisteredWithWrongPathTest,
-    Basic) {
+    MAYBE_Basic) {
   // External Clear Key will not be supported because Clear Key CDM is
   // registered with the wrong path.
   EXPECT_UNSUPPORTED(IsSupportedByKeySystem(
