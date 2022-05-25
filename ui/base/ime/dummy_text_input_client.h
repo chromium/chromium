@@ -73,7 +73,7 @@ class DummyTextInputClient : public TextInputClient {
   gfx::Range GetAutocorrectRange() const override;
   gfx::Rect GetAutocorrectCharacterBounds() const override;
   bool SetAutocorrectRange(const gfx::Range& range) override;
-  absl::optional<GrammarFragment> GetGrammarFragmentAtCursor() override;
+  absl::optional<GrammarFragment> GetGrammarFragmentAtCursor() const override;
   bool ClearGrammarFragments(const gfx::Range& range) override;
   bool AddGrammarFragments(
       const std::vector<GrammarFragment>& fragments) override;

@@ -360,7 +360,8 @@ bool TextInput::SetAutocorrectRange(const gfx::Range& range) {
   return false;
 }
 
-absl::optional<ui::GrammarFragment> TextInput::GetGrammarFragmentAtCursor() {
+absl::optional<ui::GrammarFragment> TextInput::GetGrammarFragmentAtCursor()
+    const {
   // TODO(https://crbug.com/1201454): Implement this method.
   NOTIMPLEMENTED_LOG_ONCE();
   return absl::nullopt;

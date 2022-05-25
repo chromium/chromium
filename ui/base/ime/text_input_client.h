@@ -268,7 +268,7 @@ class COMPONENT_EXPORT(UI_BASE_IME) TextInputClient {
 
   // Returns the grammar fragment which contains the current cursor. If
   // non-existent, returns nullopt.
-  virtual absl::optional<GrammarFragment> GetGrammarFragmentAtCursor();
+  virtual absl::optional<GrammarFragment> GetGrammarFragmentAtCursor() const;
 
   // Clears all the grammar fragments in |range|, returns whether the operation
   // is successful. Should return true if the there is no fragment in the range.

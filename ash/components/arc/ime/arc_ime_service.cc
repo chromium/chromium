@@ -646,8 +646,8 @@ bool ArcImeService::SetAutocorrectRange(const gfx::Range& range) {
   return false;
 }
 
-absl::optional<ui::GrammarFragment>
-ArcImeService::GetGrammarFragmentAtCursor() {
+absl::optional<ui::GrammarFragment> ArcImeService::GetGrammarFragmentAtCursor()
+    const {
   // TODO(https://crbug.com/1201454): Implement this method.
   NOTIMPLEMENTED_LOG_ONCE();
   return absl::nullopt;

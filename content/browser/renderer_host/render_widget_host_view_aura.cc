@@ -1672,7 +1672,7 @@ bool RenderWidgetHostViewAura::SetAutocorrectRange(
 }
 
 absl::optional<ui::GrammarFragment>
-RenderWidgetHostViewAura::GetGrammarFragmentAtCursor() {
+RenderWidgetHostViewAura::GetGrammarFragmentAtCursor() const {
   if (!text_input_manager_ || !text_input_manager_->GetActiveWidget())
     return absl::nullopt;
   gfx::Range selection_range;

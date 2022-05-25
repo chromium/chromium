@@ -179,7 +179,7 @@ bool DummyTextInputClient::SetAutocorrectRange(
 }
 
 absl::optional<GrammarFragment>
-DummyTextInputClient::GetGrammarFragmentAtCursor() {
+DummyTextInputClient::GetGrammarFragmentAtCursor() const {
   for (const auto& fragment : grammar_fragments_) {
     if (fragment.range.Contains(cursor_range_)) {
       return fragment;
