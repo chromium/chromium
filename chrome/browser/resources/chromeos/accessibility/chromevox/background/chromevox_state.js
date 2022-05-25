@@ -151,9 +151,11 @@ ChromeVoxState.instance;
 ChromeVoxState.observers = [];
 
 BridgeHelper.registerHandler(
-    BridgeTargets.CHROMEVOX_STATE, BridgeActions.CLEAR_CURRENT_RANGE,
+    BridgeConstants.ChromeVoxState.TARGET,
+    BridgeConstants.ChromeVoxState.Action.CLEAR_CURRENT_RANGE,
     () => ChromeVoxState.instance.setCurrentRange(null));
 BridgeHelper.registerHandler(
-    BridgeTargets.CHROMEVOX_STATE, BridgeActions.UPDATE_PUNCTUATION_ECHO,
+    BridgeConstants.ChromeVoxState.TARGET,
+    BridgeConstants.ChromeVoxState.Action.UPDATE_PUNCTUATION_ECHO,
     (echo) =>
         ChromeVoxState.instance.backgroundTts.updatePunctuationEcho(echo));

@@ -13,7 +13,6 @@ goog.provide('BridgeTargets');
 
 /** @enum {string} */
 BridgeTargets = {
-  CHROMEVOX_STATE: 'ChromeVoxState',
   EVENT_STREAM_LOGGER: 'EventStreamLogger',
   LOG_STORE: 'LogStore',
   PANEL: 'Panel',
@@ -66,6 +65,16 @@ BridgeConstants = {
     },
   },
 
+  ChromeVoxState: {
+    /** @public {BridgeTarget} */
+    TARGET: 'ChromeVoxState',
+    /** @enum {string} */
+    Action: {
+      CLEAR_CURRENT_RANGE: 'clearCurrentRange',
+      UPDATE_PUNCTUATION_ECHO: 'updatePunctuationEcho',
+    },
+  },
+
   CommandHandler: {
     /** @public {BridgeTarget} */
     TARGET: 'CommandHandler',
@@ -99,7 +108,6 @@ BridgeConstants = {
  */
 BridgeActions = {
   ADD_MENU_ITEM: 'addMenuItem',
-  CLEAR_CURRENT_RANGE: 'clearCurrentRange',
   CLEAR_LOG: 'clearLog',
   CREATE: 'create',
   CREATE_ALL_NODE_MENU_BACKGROUNDS: 'createAllNodeMenuBackgrounds',
@@ -117,7 +125,6 @@ BridgeActions = {
   PERFORM_CUSTOM_ACTION_ON_CURRENT_NODE: 'performCustomActionOnCurrentNode',
   PERFORM_STANDARD_ACTION_ON_CURRENT_NODE: 'performStandardActionOnCurrentNode',
   SET_RANGE_TO_I_SEARCH_NODE: 'setRangeToISearchNode',
-  UPDATE_PUNCTUATION_ECHO: 'updatePunctuationEcho',
   WAIT_FOR_PANEL_COLLAPSE: 'waitForPanelCollapse',
 };
 
@@ -128,6 +135,7 @@ BridgeActions = {
  *           BridgeConstants.BrailleCommandHandler.Action |
  *           BridgeConstants.ChromeVoxBackground.Action |
  *           BridgeConstants.ChromeVoxPrefs.Action |
+ *           BridgeConstants.ChromeVoxState.Action |
  *           BridgeConstants.CommandHandler.Action |
  *           BridgeConstants.EventSourceState.Action |
  *           BridgeConstants.GestureCommandHandler.Action}

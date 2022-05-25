@@ -103,7 +103,8 @@ BackgroundBridge.ChromeVoxState = {
   /** @return {!Promise} */
   async clearCurrentRange() {
     return BridgeHelper.sendMessage(
-        BridgeTargets.CHROMEVOX_STATE, BridgeActions.CLEAR_CURRENT_RANGE);
+        BridgeConstants.ChromeVoxState.TARGET,
+        BridgeConstants.ChromeVoxState.Action.CLEAR_CURRENT_RANGE);
   },
 
   /**
@@ -115,7 +116,8 @@ BackgroundBridge.ChromeVoxState = {
    */
   async updatePunctuationEcho(punctuationEcho) {
     return BridgeHelper.sendMessage(
-        BridgeTargets.CHROMEVOX_STATE, BridgeActions.UPDATE_PUNCTUATION_ECHO,
+        BridgeConstants.ChromeVoxState.TARGET,
+        BridgeConstants.ChromeVoxState.Action.UPDATE_PUNCTUATION_ECHO,
         punctuationEcho);
   },
 };
