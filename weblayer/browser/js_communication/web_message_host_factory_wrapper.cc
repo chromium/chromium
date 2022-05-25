@@ -16,11 +16,6 @@
 #include "weblayer/public/js_communication/web_message_host_factory.h"
 #include "weblayer/public/js_communication/web_message_reply_proxy.h"
 
-// This is required to load the PostMessage macro.
-#if BUILDFLAG(IS_WIN)
-#include "base/win/windows_types.h"
-#endif
-
 namespace weblayer {
 namespace {
 

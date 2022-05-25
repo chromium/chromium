@@ -40,7 +40,7 @@
 #endif  // defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
 
 #if BUILDFLAG(IS_WIN)
-#include "base/win/win_handle_types.h"
+#include "base/win/windows_types.h"
 #endif
 
 namespace cc {
