@@ -18,7 +18,10 @@ namespace ash {
 class AppsContainerViewTest : public AshTestBase {
  public:
   AppsContainerViewTest() {
-    features_.InitAndEnableFeature(features::kProductivityLauncher);
+    // These tests primarily exercise the "hide continue section" behavior.
+    features_.InitWithFeatures({features::kProductivityLauncher,
+                                features::kLauncherHideContinueSection},
+                               {});
   }
   ~AppsContainerViewTest() override = default;
 

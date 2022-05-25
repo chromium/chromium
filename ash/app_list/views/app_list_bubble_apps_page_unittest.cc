@@ -261,6 +261,9 @@ TEST_F(AppListBubbleAppsPageTest, ContinueSectionVisibleByDefault) {
 }
 
 TEST_F(AppListBubbleAppsPageTest, CanHideContinueSection) {
+  base::test::ScopedFeatureList feature_list(
+      features::kLauncherHideContinueSection);
+
   // Show the app list with enough items to make the continue section and
   // recent apps visible.
   auto* helper = GetAppListTestHelper();
@@ -285,6 +288,9 @@ TEST_F(AppListBubbleAppsPageTest, CanHideContinueSection) {
 }
 
 TEST_F(AppListBubbleAppsPageTest, CanShowContinueSectionByClickingButton) {
+  base::test::ScopedFeatureList feature_list(
+      features::kLauncherHideContinueSection);
+
   // Simulate a user with the continue section hidden on startup.
   Shell::Get()->app_list_controller()->SetHideContinueSection(true);
 
