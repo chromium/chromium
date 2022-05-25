@@ -26,11 +26,6 @@ config("compiler") {
   }
 }
 
-# Settings for executables.
-config("executable_config") {
-  ldflags = [ "-pie" ]
-}
-
 # Files required to run on Fuchsia on isolated swarming clients.
 group("deployment_resources") {
   data = [

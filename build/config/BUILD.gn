@@ -308,8 +308,6 @@ config("executable_config") {
     configs += [ "//build/config/gcc:executable_config" ]
     if (is_chromecast) {
       configs += [ "//build/config/chromecast:executable_config" ]
-    } else if (is_fuchsia) {
-      configs += [ "//build/config/fuchsia:executable_config" ]
     }
   }
 
