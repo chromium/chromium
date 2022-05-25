@@ -61,6 +61,7 @@ suite('PasswordViewTest', function() {
   const SITE = 'site1.com';
   const USERNAME = 'user1';
   const PASSWORD = 'p455w0rd';
+  const NOTE = 'some note';
   const ID = 0;
 
   let passwordManager: TestPasswordManagerProxy;
@@ -80,7 +81,7 @@ suite('PasswordViewTest', function() {
           test('Valid site and username displays an entry', async function() {
             const passwordList = [
               createPasswordEntry(
-                  {url: item.url, username: item.username, id: ID}),
+                  {url: item.url, username: item.username, id: ID, note: NOTE}),
             ];
 
             passwordManager.data.passwords = passwordList;
@@ -94,7 +95,30 @@ suite('PasswordViewTest', function() {
 
             await flushTasks();
             assertVisibilityOfPageElements(page, /*visibility=*/ true);
+            assertEquals(
+                NOTE,
+                page.shadowRoot!.querySelector('settings-textarea')!.value);
           }));
+
+  test('Empty note shows placeholder text', async function() {
+    const passwordList = [
+      createPasswordEntry({url: SITE, username: USERNAME, id: ID}),
+    ];
+
+    passwordManager.data.passwords = passwordList;
+    const page = document.createElement('password-view');
+    document.body.appendChild(page);
+    const params = new URLSearchParams({
+      username: USERNAME,
+      site: SITE,
+    });
+    Router.getInstance().navigateTo(routes.PASSWORD_VIEW, params);
+
+    await flushTasks();
+    assertEquals(
+        'No note added',
+        page.shadowRoot!.querySelector('settings-textarea')!.value);
+  });
 
   test(
       'Invalid site and username does not display an entry ' +

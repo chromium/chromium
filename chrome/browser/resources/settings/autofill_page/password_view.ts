@@ -178,6 +178,14 @@ export class PasswordViewElement extends PasswordViewElementBase {
     return this.isPasswordVisible_ ? 'icon-visibility-off' : 'icon-visibility';
   }
 
+  private getNoteClass_(): string {
+    return this.credential!.note ? '' : 'empty-note';
+  }
+
+  private getNoteValue_(): string {
+    return this.credential!.note || this.i18n('passwordNoNoteAdded');
+  }
+
   /**
    * Show the password or a placeholder with 10 characters when password is not
    * set.

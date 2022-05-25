@@ -619,6 +619,9 @@
   <message name="IDS_SETTINGS_PASSWORDS_NOTE" desc="Label for the password note when viewing or editing a password.">
     Note
   </message>
+  <message name="IDS_SETTINGS_PASSWORDS_NO_NOTE_ADDED" desc="Label for the password note when the note is empty.">
+    No note added
+  </message>
   <message name="IDS_SETTINGS_PASSWORDS_NOTE_CHARACTER_COUNT" desc="Warning for the password note when the user exceeds or is about to exceed the character limit.">
     <ph name="CHARACTER_COUNT">$1<ex>950</ex></ph>/<ph name="CHARACTER_LIMIT">$2<ex>1000</ex></ph>
   </message>
