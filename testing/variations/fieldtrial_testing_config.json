@@ -4487,7 +4487,6 @@
                         "snooze_params": "max_limit:1,snooze_interval:14"
                     },
                     "enable_features": [
-                        "BubbleRichIPH",
                         "IPH_PasswordSuggestions"
                     ]
                 }
