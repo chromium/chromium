@@ -142,6 +142,10 @@ class ContextualSearchFakeServer
         return mContentsObserver.isVisible();
     }
 
+    WebContentsObserver getContentsObserver() {
+        return mContentsObserver;
+    }
+
     //============================================================================================
     // FakeSearch
     //============================================================================================

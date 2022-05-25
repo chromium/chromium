@@ -1436,10 +1436,12 @@ public class ContextualSearchInstrumentationBase {
      * Expands the panel and asserts that it did actually expand.
      */
     protected void expandPanelAndAssert() throws TimeoutException {
-        TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> mPanel.animatePanelToState(PanelState.EXPANDED,
-                                StateChangeReason.UNKNOWN, PANEL_INTERACTION_RETRY_DELAY_MS));
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mManager.setVisibilityStateForTesting(true);
+            mFakeServer.getContentsObserver().wasShown();
+            mPanel.animatePanelToState(PanelState.EXPANDED, StateChangeReason.UNKNOWN,
+                    PANEL_INTERACTION_RETRY_DELAY_MS);
+        });
         waitForPanelToExpand();
     }
 

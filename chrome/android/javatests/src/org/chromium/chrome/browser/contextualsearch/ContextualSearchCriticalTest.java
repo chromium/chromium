@@ -23,7 +23,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -60,16 +59,16 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
     @SmallTest
     @Feature({"ContextualSearch"})
     @ParameterAnnotations.UseMethodParameter(ContextualSearchManagerTest.FeatureParamProvider.class)
-    @FlakyTest(message = "High priority test.  See https://crbug.com/1058297")
+    // Previously disabled:  https://crbug.com/1058297
     public void testResolveCausesOneLowPriorityRequest(@EnabledFeature int enabledFeature)
             throws Exception {
         mFakeServer.reset();
-        simulateResolveSearch("states");
+        simulateSlowResolveSearch("states");
 
         // We should not make a second-request until we get a good response from the first-request.
         assertLoadedNoUrl();
         Assert.assertEquals(0, mFakeServer.getLoadedUrlCount());
-        fakeResponse(false, 200, "states", "United States Intelligence", "alternate-term", false);
+        simulateSlowResolveFinished();
         assertLoadedLowPriorityUrl();
         Assert.assertEquals(1, mFakeServer.getLoadedUrlCount());
 
@@ -92,12 +91,10 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
     @SmallTest
     @Feature({"ContextualSearch"})
     @ParameterAnnotations.UseMethodParameter(ContextualSearchManagerTest.FeatureParamProvider.class)
-    @DisabledTest(
-            message = "TODO:donnd fix and reeenable once expanding resolve works for base tests.")
-    public void
-    testPrefetchFailoverRequestMadeAfterOpen(@EnabledFeature int enabledFeature) throws Exception {
+    public void testPrefetchFailoverRequestMadeAfterOpen(@EnabledFeature int enabledFeature)
+            throws Exception {
         mFakeServer.reset();
-        triggerResolve("states");
+        simulateSlowResolveSearch("states");
 
         // We should not make a SERP request until we get a good response from the resolve request.
         assertLoadedNoUrl();
@@ -184,11 +181,8 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
     @SmallTest
     @Feature({"ContextualSearch"})
     @ParameterAnnotations.UseMethodParameter(ContextualSearchManagerTest.FeatureParamProvider.class)
-    //   @DisableIf.Build(supported_abis_includes = "arm64-v8a", message = "crbug.com/765403")
-    @DisabledTest(
-            message = "TODO:donnd fix and reeenable once expanding resolve works for base tests.")
-    public void
-    testSearchTermResolutionError(@EnabledFeature int enabledFeature) throws Exception {
+    // Previously disabled: crbug.com/765403
+    public void testSearchTermResolutionError(@EnabledFeature int enabledFeature) throws Exception {
         simulateSlowResolveSearch("states");
         assertSearchTermRequested();
         fakeResponse(false, 403, "", "", "", false);
@@ -209,10 +203,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
     @Feature({"ContextualSearch"})
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     @ParameterAnnotations.UseMethodParameter(ContextualSearchManagerTest.FeatureParamProvider.class)
-    @DisabledTest(
-            message = "TODO:donnd fix and reeenable once expanding resolve works for base tests.")
-    public void
-    testResolveContentVisibility(@EnabledFeature int enabledFeature) throws Exception {
+    public void testResolveContentVisibility(@EnabledFeature int enabledFeature) throws Exception {
         // Simulate a resolving search and make sure Content is not visible.
         simulateResolveSearch();
         assertWebContentsCreatedButNeverMadeVisible();
@@ -235,7 +226,7 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
     @Feature({"ContextualSearch"})
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     @ParameterAnnotations.UseMethodParameter(ContextualSearchManagerTest.FeatureParamProvider.class)
-    @DisabledTest(message = "http://crbug.com/1296677")
+    // Previously disabled: http://crbug.com/1296677
     public void testNonResolveContentVisibility(@EnabledFeature int enabledFeature)
             throws Exception {
         // Simulate a non-resolve search and make sure no Content is created.
@@ -497,10 +488,8 @@ public class ContextualSearchCriticalTest extends ContextualSearchInstrumentatio
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     //  @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.O, message = "crbug.com/1184410")
     @ParameterAnnotations.UseMethodParameter(ContextualSearchManagerTest.FeatureParamProvider.class)
-    @DisabledTest(
-            message = "TODO:donnd fix and reeenable once expanding resolve works for base tests.")
-    public void
-    testTapExpandNotRemovedFromHistory(@EnabledFeature int enabledFeature) throws Exception {
+    public void testTapExpandNotRemovedFromHistory(@EnabledFeature int enabledFeature)
+            throws Exception {
         // Simulate a resolving search and make sure a URL was loaded.
         simulateResolveSearch();
         Assert.assertEquals(1, mFakeServer.getLoadedUrlCount());

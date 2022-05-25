@@ -2136,6 +2136,11 @@ public class ContextualSearchManager
         return mIsBottomSheetVisible || mIsAccessibilityModeEnabled;
     }
 
+    @VisibleForTesting
+    public void setVisibilityStateForTesting(boolean isVisible) {
+        getOverlayContentDelegate().onVisibilityChanged(isVisible);
+    }
+
     @NativeMethods
     interface Natives {
         long init(ContextualSearchManager caller);
