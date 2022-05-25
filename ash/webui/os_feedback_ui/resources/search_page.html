@@ -9,6 +9,16 @@
     width: 514px;
   }
 
+  #desciptionHeader {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+  }
+
+  #desciptionHeader a {
+    margin: 0 0 0 auto;
+  }
+
   #helpContentFrame {
     display: flex;
   }
@@ -25,7 +35,13 @@
   </div>
   <div id="content">
     <div id="descriptionPane">
-      <p id="descriptionTitle">[[i18n('descriptionLabel')]]</p>
+      <div id="desciptionHeader">
+        <p id="descriptionTitle">[[i18n('descriptionLabel')]]</p>
+        <a id="feedbackWritingGuidance" href="[[feedbackWritingGuidanceUrl_()]]"
+            target="_blank">
+          How to write good feedback?
+        </a>
+      </div>
       <textarea id="descriptionText" aria-labelledby="descriptionTitle"
           aria-required="true" on-input="handleInputChanged_">
       </textarea>

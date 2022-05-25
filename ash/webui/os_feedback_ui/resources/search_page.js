@@ -232,6 +232,16 @@ export class SearchPageElement extends SearchPageElementBase {
   }
 
   /**
+   * @returns {string}
+   * @protected
+   */
+  feedbackWritingGuidanceUrl_() {
+    // TODO(xiangdongkong): append ?hl={the application locale} to the url.
+    const url = 'https://support.google.com/chromebook/answer/2982029';
+    return url;
+  }
+
+  /**
    * @param {!Event} e
    * @private
    */

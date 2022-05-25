@@ -52,6 +52,20 @@ export function searchPageTestSuite() {
     assertTrue(!!title);
     assertEquals('Send feedback', title.textContent.trim());
 
+    // Verify the descriptionTitle is in the page.
+    const descriptionTitle = page.shadowRoot.querySelector('#descriptionTitle');
+    assertTrue(!!descriptionTitle);
+    assertEquals('Description', descriptionTitle.textContent.trim());
+
+    // Verify the feedback writing guidance link is in the page.
+    const writingGuidanceLink =
+        page.shadowRoot.querySelector('#feedbackWritingGuidance');
+    assertTrue(!!writingGuidanceLink);
+    assertEquals('_blank', writingGuidanceLink.target);
+    assertEquals(
+        'https://support.google.com/chromebook/answer/2982029',
+        writingGuidanceLink.href);
+
     // Verify the help content is not in the page. For security reason, help
     // contents fetched online can't be displayed in trusted context.
     const helpContent = page.shadowRoot.querySelector('help-content');
