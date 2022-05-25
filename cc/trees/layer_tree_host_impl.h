@@ -93,7 +93,6 @@ class MemoryHistory;
 class MutatorEvents;
 class MutatorHost;
 class PageScaleAnimation;
-class PendingTreeRasterDurationHistogramTimer;
 class RasterTilePriorityQueue;
 class RasterBufferProvider;
 class RasterQueryQueue;
@@ -1198,9 +1197,6 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   bool prefers_reduced_motion_ = false;
 
   bool may_throttle_if_undrawn_frames_ = true;
-
-  std::unique_ptr<PendingTreeRasterDurationHistogramTimer>
-      pending_tree_raster_duration_timer_;
 
   // These completion states to be transfered to the main thread when we
   // begin main frame. The pair represents a request id and the completion (ie

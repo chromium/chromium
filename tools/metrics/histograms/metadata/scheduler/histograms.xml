@@ -302,27 +302,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Scheduling.Renderer.PendingTreeRasterDuration"
-    units="microseconds" expires_after="2020-02-16">
-  <owner>khushalsagar@chromium.org</owner>
-  <summary>
-    Time between starting raster work on the pending tree and when it is ready
-    to activate. Unlike PendingTreeDuration which - includes the time to commit
-    to this tree, the raster duration and the time for which the pending tree
-    waits before it can be activated - this only measures the time taken to
-    rasterize tiles required for activation.
-
-    The interval is recorded each time we are notifed that a pending tree is
-    ready for activation.
-
-    Warning: This metric may include reports from clients with low-resolution
-    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
-    will cause this metric to have an abnormal distribution. When considering
-    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
-  </summary>
-</histogram>
-
 <histogram base="true" name="ThreadPool.NumTasksBeforeDetach" units="tasks"
     expires_after="M85">
   <owner>fdoray@chromium.org</owner>
