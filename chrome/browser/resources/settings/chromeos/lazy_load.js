@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 // Uncomment as these modules are migrated to Polymer 3.
+import './crostini_page/bruschetta_subpage.js';
 import './crostini_page/crostini_arc_adb.js';
 import './crostini_page/crostini_arc_adb_confirmation_dialog.js';
 import './crostini_page/crostini_confirmation_dialog.js';

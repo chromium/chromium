@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ash/bruschetta/bruschetta_features.h"
 #include "chrome/browser/ash/crostini/crostini_disk.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
@@ -234,6 +235,9 @@ CrostiniSection::~CrostiniSection() = default;
 
 void CrostiniSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"bruschettaPageLabel", IDS_SETTINGS_BRUSCHETTA_LABEL},
+      {"bruschettaSharedUsbDevicesDescription",
+       IDS_SETTINGS_BRUSCHETTA_SHARED_USB_DEVICES_DESCRIPTION},
       {"crostiniPageTitle", IDS_SETTINGS_CROSTINI_TITLE},
       {"crostiniPageLabel", IDS_SETTINGS_CROSTINI_LABEL},
       {"crostiniEnable", IDS_SETTINGS_TURN_ON},
@@ -412,6 +416,9 @@ void CrostiniSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean(
       "allowCrostini",
       crostini::CrostiniFeatures::Get()->IsAllowedNow(profile_));
+  // Should the Bruschetta subpage be enabled?
+  html_source->AddBoolean("enableBruschetta",
+                          bruschetta::BruschettaFeatures::Get()->IsEnabled());
 
   html_source->AddString(
       "crostiniSubtext",
@@ -574,6 +581,20 @@ void CrostiniSection::RegisterHierarchy(HierarchyGenerator* generator) const {
                                    mojom::SearchResultIcon::kPenguin,
                                    mojom::SearchResultDefaultRank::kMedium,
                                    mojom::kCrostiniExtraContainersSubpagePath);
+
+  // Bruschetta subpage.
+  generator->RegisterTopLevelSubpage(IDS_SETTINGS_BRUSCHETTA_LABEL,
+                                     mojom::Subpage::kBruschettaDetails,
+                                     mojom::SearchResultIcon::kDeveloperTags,
+                                     mojom::SearchResultDefaultRank::kMedium,
+                                     mojom::kBruschettaDetailsSubpagePath);
+  // USB preferences.
+  generator->RegisterNestedSubpage(
+      IDS_SETTINGS_GUEST_OS_SHARED_USB_DEVICES_LABEL,
+      mojom::Subpage::kBruschettaUsbPreferences,
+      mojom::Subpage::kBruschettaDetails, mojom::SearchResultIcon::kPenguin,
+      mojom::SearchResultDefaultRank::kMedium,
+      mojom::kBruschettaUsbPreferencesSubpagePath);
 }
 
 bool CrostiniSection::IsExportImportAllowed() const {

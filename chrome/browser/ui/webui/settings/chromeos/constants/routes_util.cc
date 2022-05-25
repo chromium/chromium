@@ -84,6 +84,8 @@ bool IsOSSettingsSubPage(const std::string& sub_page) {
       chromeos::settings::mojom::kCrostiniDevelopAndroidAppsSubpagePath,
       chromeos::settings::mojom::kCrostiniPortForwardingSubpagePath,
       chromeos::settings::mojom::kCrostiniExtraContainersSubpagePath,
+      chromeos::settings::mojom::kBruschettaDetailsSubpagePath,
+      chromeos::settings::mojom::kBruschettaUsbPreferencesSubpagePath,
 
       // Date and Time section.
       chromeos::settings::mojom::kDateAndTimeSectionPath,

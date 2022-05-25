@@ -262,6 +262,8 @@ Polymer({
     this.addFocusConfig(r.CROSTINI_SHARED_PATHS, '#crostini-shared-paths');
     this.addFocusConfig(
         r.CROSTINI_SHARED_USB_DEVICES, '#crostini-shared-usb-devices');
+    this.addFocusConfig(
+        r.BRUSCHETTA_SHARED_USB_DEVICES, '#bruschetta-shared-usb-devices');
     this.addFocusConfig(r.CROSTINI_EXPORT_IMPORT, '#crostini-export-import');
     this.addFocusConfig(r.CROSTINI_ANDROID_ADB, '#crostini-enable-arc-adb');
     this.addFocusConfig(
@@ -418,6 +420,11 @@ Polymer({
   /** @private */
   onSharedUsbDevicesClick_() {
     Router.getInstance().navigateTo(routes.CROSTINI_SHARED_USB_DEVICES);
+  },
+
+  /** @private */
+  onBruschettaSharedUsbDevicesClick_() {
+    Router.getInstance().navigateTo(routes.BRUSCHETTA_SHARED_USB_DEVICES);
   },
 
   /** @private */

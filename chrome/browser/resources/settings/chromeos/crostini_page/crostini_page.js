@@ -23,6 +23,7 @@ import './crostini_export_import.js';
 import './crostini_extra_containers.js';
 import './crostini_port_forwarding.js';
 import './crostini_subpage.js';
+import './bruschetta_subpage.js';
 
 import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
 import {loadTimeData} from '//resources/js/load_time_data.m.js';
@@ -89,6 +90,14 @@ Polymer({
               routes.CROSTINI_SHARED_USB_DEVICES.path,
               '#crostini .subpage-arrow');
         }
+        if (routes.BRUSCHETTA_DETAILS) {
+          map.set(routes.BRUSCHETTA_DETAILS.path, '#crostini .subpage-arrow');
+        }
+        if (routes.BRUSCHETTA_SHARED_USB_DEVICES) {
+          map.set(
+              routes.BRUSCHETTA_SHARED_USB_DEVICES.path,
+              '#crostini .subpage-arrow');
+        }
         return map;
       },
     },
@@ -109,6 +118,11 @@ Polymer({
       type: Object,
       value: () => new Set([chromeos.settings.mojom.Setting.kSetUpCrostini]),
     },
+
+    enableBruschetta_: {
+      type: Boolean,
+      value: loadTimeData.getBoolean('enableBruschetta'),
+    }
   },
 
   attached() {
@@ -155,6 +169,13 @@ Polymer({
 
     if (this.getPref('crostini.enabled.value')) {
       Router.getInstance().navigateTo(routes.CROSTINI_DETAILS);
+    }
+  },
+
+  /** @private */
+  onBruschettaSubpageTap_(event) {
+    if (this.enableBruschetta_) {
+      Router.getInstance().navigateTo(routes.BRUSCHETTA_DETAILS);
     }
   },
 });

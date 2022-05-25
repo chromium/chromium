@@ -71719,6 +71719,8 @@ Called by update_net_trust_anchors.py.-->
   <int value="804" label="Crostini Develop Android Apps"/>
   <int value="805" label="Crostini Port Forwarding"/>
   <int value="806" label="Crostini Extra Containers"/>
+  <int value="850" label="Bruschetta Details"/>
+  <int value="851" label="Bruschetta USB Preferences"/>
   <int value="1000" label="Time Zone"/>
   <int value="1100" label="Manage Other People V2"/>
   <int value="1101" label="Security And Sign In V2"/>

@@ -36,6 +36,8 @@ import {Route} from '../router.js';
  *   BLUETOOTH: !Route,
  *   BLUETOOTH_DEVICES: !Route,
  *   BLUETOOTH_DEVICE_DETAIL: !Route,
+ *   BRUSCHETTA_DETAILS: !Route,
+ *   BRUSCHETTA_SHARED_USB_DEVICES: !Route,
  *   CHANGE_PICTURE: !Route,
  *   CUPS_PRINTERS: !Route,
  *   DARK_MODE: !Route,

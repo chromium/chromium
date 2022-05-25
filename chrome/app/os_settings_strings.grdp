@@ -1936,6 +1936,15 @@ Press an assigned switch or key to remove assignment.
     Shut down
   </message>
 
+  <!-- Bruschetta sub-page -->
+  <!-- TODO(b/233129383): Finalize and translate these strings -->
+  <message name="IDS_SETTINGS_BRUSCHETTA_LABEL" translateable="false" desc="Label for the Bruschetta sub-page.">
+    Bruschetta
+  </message>
+  <message name="IDS_SETTINGS_BRUSCHETTA_SHARED_USB_DEVICES_DESCRIPTION" translateable="false" desc="Description for managing shared USB devices.">
+    Give Bruschetta permission to access USB devices. Bruschetta won't remember a USB device after it's removed.
+  </message>
+
   <!-- Android apps page (OS settings) -->
   <message name="IDS_SETTINGS_ANDROID_APPS_LABEL" desc="The text associated with the primary section setting.">
     Google Play Store

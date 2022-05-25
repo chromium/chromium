@@ -108,7 +108,8 @@ Polymer({
     return {
       crostini: 'termina',
       pluginVm: 'PvmDefault',
-      arcvm: 'arcvm'
+      arcvm: 'arcvm',
+      bruschetta: 'bru'
     }[this.guestOsType];
   },
 
