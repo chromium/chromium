@@ -1,9 +1,10 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2020 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Updates the Fuchsia SDK to the given revision. Should be used in a 'hooks_os'
-entry so that it only runs when .gclient's target_os includes 'fuchsia'."""
+"""Updates the Fuchsia images to the given revision. Should be used in a
+'hooks_os' entry so that it only runs when .gclient's target_os includes
+'fuchsia'."""
 
 import argparse
 import itertools
@@ -17,14 +18,107 @@ import tarfile
 
 from common import GetHostOsFromPlatform, GetHostArchFromPlatform, \
                    DIR_SOURCE_ROOT, IMAGES_ROOT
-from update_sdk import DownloadAndUnpackFromCloudStorage, \
-                       GetOverrideCloudStorageBucket, GetSdkHash, \
-                       MakeCleanDirectory, SDK_SIGNATURE_FILE
+
+sys.path.append(os.path.join(DIR_SOURCE_ROOT, 'build'))
+import find_depot_tools
+
+IMAGE_SIGNATURE_FILE = '.hash'
 
 
-def GetSdkSignature(sdk_hash, boot_images):
-  return 'gn:{sdk_hash}:{boot_images}:'.format(sdk_hash=sdk_hash,
-                                               boot_images=boot_images)
+def DownloadAndUnpackFromCloudStorage(url, output_dir):
+  """Fetches a tarball from GCS and uncompresses it to |output_dir|."""
+
+  # Pass the compressed stream directly to 'tarfile'; don't bother writing it
+  # to disk first.
+  cmd = [
+      os.path.join(find_depot_tools.DEPOT_TOOLS_PATH, 'gsutil.py'), 'cp', url,
+      '-'
+  ]
+  logging.debug('Running "%s"', ' '.join(cmd))
+  task = subprocess.Popen(cmd, stderr=subprocess.PIPE, stdout=subprocess.PIPE)
+  try:
+    tarfile.open(mode='r|gz', fileobj=task.stdout).extractall(path=output_dir)
+  except tarfile.ReadError as exc:
+    task.wait()
+    stderr = task.stderr.read()
+    raise subprocess.CalledProcessError(
+        task.returncode, cmd,
+        "Failed to read a tarfile from gsutil.py.\n{}".format(
+            stderr if stderr else "")) from exc
+  task.wait()
+  if task.returncode:
+    raise subprocess.CalledProcessError(task.returncode, cmd,
+                                        task.stderr.read())
+
+
+# TODO(crbug.com/1138433): Investigate whether we can deprecate
+# use of sdk_bucket.txt.
+def GetOverrideCloudStorageBucket():
+  """Read bucket entry from sdk_bucket.txt"""
+  return ReadFile('sdk-bucket.txt').strip()
+
+
+def MakeCleanDirectory(directory_name):
+  if (os.path.exists(directory_name)):
+    shutil.rmtree(directory_name)
+  os.mkdir(directory_name)
+
+
+def ReadFile(filename):
+  """Read a file in this directory."""
+  with open(os.path.join(os.path.dirname(__file__), filename), 'r') as f:
+    return f.read()
+
+
+def StrExpansion():
+  return lambda str_value: str_value
+
+
+def VarLookup(local_scope):
+  return lambda var_name: local_scope['vars'][var_name]
+
+
+def GetImageHashList(bucket):
+  """Read filename entries from sdk-hash-files.list (one per line), substitute
+  {platform} in each entry if present, and read from each filename."""
+  assert (GetHostOsFromPlatform() == 'linux')
+  filenames = [
+      line.strip() for line in ReadFile('sdk-hash-files.list').replace(
+          '{platform}', 'linux_internal').splitlines()
+  ]
+  image_hashes = [ReadFile(filename).strip() for filename in filenames]
+  return image_hashes
+
+
+def ParseDepsDict(deps_content):
+  local_scope = {}
+  global_scope = {
+      'Str': StrExpansion(),
+      'Var': VarLookup(local_scope),
+      'deps_os': {},
+  }
+  exec(deps_content, global_scope, local_scope)
+  return local_scope
+
+
+def ParseDepsFile(filename):
+  with open(filename, 'rb') as f:
+    deps_content = f.read()
+  return ParseDepsDict(deps_content)
+
+
+def GetImageHash(bucket):
+  """Gets the hash identifier of the newest generation of images."""
+  if bucket == 'fuchsia-sdk':
+    hashes = GetImageHashList(bucket)
+    return max(hashes)
+  deps_file = os.path.join(DIR_SOURCE_ROOT, 'DEPS')
+  return ParseDepsFile(deps_file)['vars']['fuchsia_version'].split(':')[1]
+
+
+def GetImageSignature(image_hash, boot_images):
+  return 'gn:{image_hash}:{boot_images}:'.format(image_hash=image_hash,
+                                                 boot_images=boot_images)
 
 
 def GetAllImages(boot_image_names):
@@ -48,7 +142,7 @@ def GetAllImages(boot_image_names):
   return images_to_download
 
 
-def DownloadSdkBootImages(bucket, sdk_hash, boot_image_names, image_root_dir):
+def DownloadBootImages(bucket, image_hash, boot_image_names, image_root_dir):
   images_to_download = GetAllImages(boot_image_names)
   for image_to_download in images_to_download:
     device_type = image_to_download[0]
@@ -66,15 +160,11 @@ def DownloadSdkBootImages(bucket, sdk_hash, boot_image_names, image_root_dir):
     else:
       type_arch_connector = '-'
 
-    images_tarball_url = 'gs://{bucket}/development/{sdk_hash}/images/'\
+    images_tarball_url = 'gs://{bucket}/development/{image_hash}/images/'\
         '{device_type}{type_arch_connector}{arch}.tgz'.format(
-            bucket=bucket, sdk_hash=sdk_hash, device_type=device_type,
+            bucket=bucket, image_hash=image_hash, device_type=device_type,
             type_arch_connector=type_arch_connector, arch=arch)
     DownloadAndUnpackFromCloudStorage(images_tarball_url, image_output_dir)
-
-
-def GetNewSignature(sdk_hash, boot_images):
-  return GetSdkSignature(sdk_hash, boot_images)
 
 
 def main():
@@ -107,28 +197,28 @@ def main():
   if not args.boot_images:
     return 0
 
-  # Check whether there's SDK support for this platform.
+  # Check whether there's Fuchsia support for this platform.
   GetHostOsFromPlatform()
 
   # Use the bucket in sdk-bucket.txt if an entry exists.
   # Otherwise use the default bucket.
   bucket = GetOverrideCloudStorageBucket() or args.default_bucket
 
-  sdk_hash = GetSdkHash(bucket)
-  if not sdk_hash:
+  image_hash = GetImageHash(bucket)
+  if not image_hash:
     return 1
 
-  signature_filename = os.path.join(args.image_root_dir, SDK_SIGNATURE_FILE)
+  signature_filename = os.path.join(args.image_root_dir, IMAGE_SIGNATURE_FILE)
   current_signature = (open(signature_filename, 'r').read().strip()
                        if os.path.exists(signature_filename) else '')
-  new_signature = GetNewSignature(sdk_hash, args.boot_images)
+  new_signature = GetImageSignature(image_hash, args.boot_images)
   if current_signature != new_signature:
-    logging.info('Downloading Fuchsia images %s...' % sdk_hash)
+    logging.info('Downloading Fuchsia images %s...' % image_hash)
     MakeCleanDirectory(args.image_root_dir)
 
     try:
-      DownloadSdkBootImages(bucket, sdk_hash, args.boot_images,
-                            args.image_root_dir)
+      DownloadBootImages(bucket, image_hash, args.boot_images,
+                         args.image_root_dir)
       with open(signature_filename, 'w') as f:
         f.write(new_signature)
 
