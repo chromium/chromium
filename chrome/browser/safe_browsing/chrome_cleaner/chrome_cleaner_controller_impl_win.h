@@ -20,6 +20,7 @@
 #include "chrome/browser/safe_browsing/chrome_cleaner/chrome_cleaner_scanner_results_win.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/chrome_prompt_actions_win.h"
 #include "components/component_updater/component_updater_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace safe_browsing {
 
@@ -73,13 +74,15 @@ class ChromeCleanerControllerImpl : public ChromeCleanerController {
   void OnReporterSequenceStarted() override;
   void OnReporterSequenceDone(SwReporterInvocationResult result) override;
   void RequestUserInitiatedScan(Profile* profile) override;
-  void OnSwReporterReady(SwReporterInvocationSequence&& invocations) override;
+  void OnSwReporterReady(const std::string& prompt_seed,
+                         SwReporterInvocationSequence&& invocations) override;
   void Scan(const SwReporterInvocation& reporter_invocation) override;
   void ReplyWithUserResponse(Profile* profile,
                              UserResponse user_response) override;
   void Reboot() override;
   bool IsAllowedByPolicy() override;
   bool IsReportingManagedByPolicy(Profile* profile) override;
+  std::string GetIncomingPromptSeed() override;
 
   static void ResetInstanceForTesting();
   // Passing in a nullptr as |delegate| resets the delegate to a default
@@ -157,6 +160,9 @@ class ChromeCleanerControllerImpl : public ChromeCleanerController {
   // than once. Special care must be taken that the invocations are not sent
   // to a |ReporterRunner| more than once.
   std::unique_ptr<SwReporterInvocationSequence> cached_reporter_invocations_;
+
+  // The prompt seed specified in the component manifest.
+  absl::optional<std::string> manifest_prompt_seed_;
 
   THREAD_CHECKER(thread_checker_);
 

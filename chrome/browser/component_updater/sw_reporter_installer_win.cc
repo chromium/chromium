@@ -16,6 +16,7 @@
 #include "base/base64.h"
 #include "base/base_paths.h"
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
@@ -53,6 +54,7 @@
 #include "components/variations/variations_associated_data.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // For ::GetTickCount()
 #include <windows.h>
@@ -126,40 +128,52 @@ std::string GenerateSessionId() {
 // Add |behaviour_flag| to |supported_behaviours| if |behaviour_name| is found
 // in the dictionary. Returns false on error.
 bool GetOptionalBehaviour(
-    const base::Value* invocation_params,
+    const base::Value::Dict& invocation_params,
     base::StringPiece behaviour_name,
     SwReporterInvocation::Behaviours behaviour_flag,
     SwReporterInvocation::Behaviours* supported_behaviours) {
-  DCHECK(invocation_params);
   DCHECK(supported_behaviours);
 
   // Parameters enabling behaviours are optional, but if present must be
   // boolean.
-  const base::Value* value = invocation_params->FindPath(behaviour_name);
+  const base::Value* value = invocation_params.Find(behaviour_name);
   if (value) {
-    if (!value->is_bool()) {
+    const absl::optional<bool> enabled = value->GetIfBool();
+    if (!enabled.has_value()) {
       ReportConfigurationError(kBadParams);
       return false;
     }
-    if (value->GetBool())
+    if (*enabled)
       *supported_behaviours |= behaviour_flag;
   }
   return true;
 }
 
 // Reads the command-line params and an UMA histogram suffix from the manifest
-// and adds the invocations to be run to |out_sequence|.
-// Returns whether the manifest was successfully read.
-bool ExtractInvocationSequenceFromManifest(
+// and schedules an invocation sequence of the software reporter if successful.
+void ScheduleSoftwareReporterWithManifest(
     const base::FilePath& exe_path,
-    base::Value manifest,
-    safe_browsing::SwReporterInvocationSequence* out_sequence) {
-  // Allow an empty or missing |parameter_list| list, but log an error if
-  // |parameter_list| cannot be parsed as a list.
-  base::Value* parameter_list = manifest.FindPath("launch_params");
-  if (parameter_list && !parameter_list->is_list()) {
-    ReportConfigurationError(kBadParams);
-    return false;
+    const base::Version& version,
+    base::Value::Dict manifest,
+    OnComponentReadyCallback ready_callback) {
+  safe_browsing::SwReporterInvocationSequence invocations(version);
+
+  const std::string* prompt_seed = manifest.FindString("prompt_seed");
+  if (!prompt_seed) {
+    ReportConfigurationError(kMissingPromptSeed);
+    return;
+  }
+
+  // Allow an empty or missing "launch_params" list, but log an error if it
+  // cannot be parsed as a list.
+  const base::Value::List* parameter_list = nullptr;
+  const base::Value* launch_params = manifest.Find("launch_params");
+  if (launch_params) {
+    parameter_list = launch_params->GetIfList();
+    if (!parameter_list) {
+      ReportConfigurationError(kBadParams);
+      return;
+    }
   }
 
   // Use a random session id to link reporter invocations together.
@@ -167,21 +181,23 @@ bool ExtractInvocationSequenceFromManifest(
 
   // If there are no launch parameters, create a single invocation with default
   // behaviour.
-  if (!parameter_list || parameter_list->GetListDeprecated().empty()) {
+  if (!parameter_list || parameter_list->empty()) {
     base::CommandLine command_line(exe_path);
     command_line.AppendSwitchASCII(chrome_cleaner::kSessionIdSwitch,
                                    session_id);
-    out_sequence->PushInvocation(
+    invocations.PushInvocation(
         SwReporterInvocation(command_line)
             .WithSupportedBehaviours(
                 SwReporterInvocation::BEHAVIOURS_ENABLED_BY_DEFAULT));
-    return true;
+    ready_callback.Run(*prompt_seed, std::move(invocations));
+    return;
   }
 
-  for (const auto& invocation_params : parameter_list->GetListDeprecated()) {
-    if (!invocation_params.is_dict()) {
+  for (const base::Value& entry : *parameter_list) {
+    const base::Value::Dict* invocation_params = entry.GetIfDict();
+    if (!invocation_params) {
       ReportConfigurationError(kBadParams);
-      return false;
+      return;
     }
 
     // Max length of the registry and histogram suffix. Fairly arbitrary: the
@@ -191,30 +207,31 @@ bool ExtractInvocationSequenceFromManifest(
 
     // The suffix must be an alphanumeric string. (Empty is fine as long as the
     // "suffix" key is present.)
-    const std::string* suffix = invocation_params.FindStringPath("suffix");
+    const std::string* suffix = invocation_params->FindString("suffix");
     if (!suffix || !ValidateString(*suffix, std::string(), kMaxSuffixLength)) {
       ReportConfigurationError(kBadParams);
-      return false;
+      return;
     }
 
     // Build a command line for the reporter out of the executable path and the
     // arguments from the manifest. (The "arguments" key must be present, but
     // it's ok if it's an empty list or a list of empty strings.)
-    const base::Value* arguments = invocation_params.FindListPath("arguments");
+    const base::Value::List* arguments =
+        invocation_params->FindList("arguments");
     if (!arguments) {
       ReportConfigurationError(kBadParams);
-      return false;
+      return;
     }
 
     std::vector<std::wstring> argv = {exe_path.value()};
-    for (const auto& value : arguments->GetListDeprecated()) {
-      if (!value.is_string()) {
+    for (const base::Value& value : *arguments) {
+      const std::string* argument = value.GetIfString();
+      if (!argument) {
         ReportConfigurationError(kBadParams);
-        return false;
+        return;
       }
-      std::string argument = value.GetString();
-      if (!argument.empty())
-        argv.push_back(base::UTF8ToWide(argument));
+      if (!argument->empty())
+        argv.push_back(base::UTF8ToWide(*argument));
     }
 
     base::CommandLine command_line(argv);
@@ -224,24 +241,25 @@ bool ExtractInvocationSequenceFromManifest(
     // Add the histogram suffix to the command-line as well, so that the
     // reporter will add the same suffix to registry keys where it writes
     // metrics.
-    if (!suffix->empty())
+    if (!suffix->empty()) {
       command_line.AppendSwitchASCII(chrome_cleaner::kRegistrySuffixSwitch,
                                      *suffix);
-
-    SwReporterInvocation::Behaviours supported_behaviours = 0;
-    if (!GetOptionalBehaviour(&invocation_params, "prompt",
-                              SwReporterInvocation::BEHAVIOUR_TRIGGER_PROMPT,
-                              &supported_behaviours)) {
-      return false;
     }
 
-    out_sequence->PushInvocation(
+    SwReporterInvocation::Behaviours supported_behaviours = 0;
+    if (!GetOptionalBehaviour(*invocation_params, "prompt",
+                              SwReporterInvocation::BEHAVIOUR_TRIGGER_PROMPT,
+                              &supported_behaviours)) {
+      return;
+    }
+
+    invocations.PushInvocation(
         SwReporterInvocation(command_line)
             .WithSuffix(*suffix)
             .WithSupportedBehaviours(supported_behaviours));
   }
 
-  return true;
+  ready_callback.Run(*prompt_seed, std::move(invocations));
 }
 
 void ReportOnDemandUpdateSucceededHistogram(bool value) {
@@ -283,14 +301,12 @@ void SwReporterInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
     base::Value manifest) {
-  safe_browsing::SwReporterInvocationSequence invocations(version);
-  const base::FilePath exe_path(install_dir.Append(kSwReporterExeName));
-  if (ExtractInvocationSequenceFromManifest(exe_path, std::move(manifest),
-                                            &invocations)) {
-    // Unless otherwise specified by a unit test, This will post
-    // |safe_browsing::OnSwReporterReady| to the UI thread.
-    on_component_ready_callback_.Run(std::move(invocations));
-  }
+  ScheduleSoftwareReporterWithManifest(
+      install_dir.Append(kSwReporterExeName), version,
+      std::move(manifest.GetDict()),
+      // Unless otherwise specified by a unit test, This will post
+      // |safe_browsing::OnSwReporterReady| to the UI thread.
+      on_component_ready_callback_);
 }
 
 base::FilePath SwReporterInstallerPolicy::GetRelativeInstallDir() const {
@@ -376,20 +392,25 @@ void RegisterSwReporterComponent(ComponentUpdateService* cus) {
 
   // Once the component is ready and browser startup is complete, run
   // |safe_browsing::OnSwReporterReady|.
-  auto lambda = [](safe_browsing::SwReporterInvocationSequence&& invocations) {
-    content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
-        ->PostTask(
-            FROM_HERE,
-            base::BindOnce(
-                &safe_browsing::ChromeCleanerController::OnSwReporterReady,
-                base::Unretained(
-                    safe_browsing::ChromeCleanerController::GetInstance()),
-                std::move(invocations)));
-  };
+  using ChromeCleanerController = safe_browsing::ChromeCleanerController;
+  OnComponentReadyCallback ready_callback = base::BindRepeating(
+      [](const std::string& prompt_seed,
+         safe_browsing::SwReporterInvocationSequence&& invocations) {
+        // Unretained is safe since ChromeCleanerController is a leaked global
+        // singleton.
+        content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
+            ->PostTask(
+                FROM_HERE,
+                base::BindOnce(
+                    &ChromeCleanerController::OnSwReporterReady,
+                    base::Unretained(ChromeCleanerController::GetInstance()),
+                    prompt_seed, std::move(invocations)));
+      });
 
   // Install the component.
   auto installer = base::MakeRefCounted<ComponentInstaller>(
-      std::make_unique<SwReporterInstallerPolicy>(base::BindRepeating(lambda)));
+      std::make_unique<SwReporterInstallerPolicy>(std::move(ready_callback)));
+
   installer->Register(cus, runner.Release());
 }
 

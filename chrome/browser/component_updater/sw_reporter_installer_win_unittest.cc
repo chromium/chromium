@@ -62,8 +62,11 @@ class SwReporterInstallerTest : public ::testing::Test {
   SwReporterInstallerTest& operator=(const SwReporterInstallerTest&) = delete;
 
  protected:
-  void SwReporterComponentReady(SwReporterInvocationSequence&& invocations) {
-    ASSERT_TRUE(extracted_invocations_.container().empty());
+  void SwReporterComponentReady(const std::string& prompt_seed,
+                                SwReporterInvocationSequence&& invocations) {
+    ASSERT_TRUE(extracted_invocations_.container().empty())
+        << "SwReporterComponentReady called more than once.";
+    extracted_prompt_seed_ = prompt_seed;
     extracted_invocations_ = std::move(invocations);
   }
 
@@ -102,8 +105,8 @@ class SwReporterInstallerTest : public ::testing::Test {
   }
 
   // Expects that the SwReporter was launched exactly once, with a session-id
-  // switch.
-  void ExpectDefaultInvocation() const {
+  // switch and the given |expected_prompt_seed|.
+  void ExpectDefaultInvocation(const std::string& expected_prompt_seed) const {
     EXPECT_EQ(default_version_, extracted_invocations_.version());
     ASSERT_EQ(1U, extracted_invocations_.container().size());
 
@@ -119,15 +122,18 @@ class SwReporterInstallerTest : public ::testing::Test {
     EXPECT_TRUE(invocation.suffix().empty());
     EXPECT_EQ(SwReporterInvocation::BEHAVIOURS_ENABLED_BY_DEFAULT,
               invocation.supported_behaviours());
+    EXPECT_EQ(extracted_prompt_seed_, expected_prompt_seed);
   }
 
   // Expects that the SwReporter was launched exactly once, with the given
-  // |expected_suffix|, a session-id, and one |expected_additional_argument| on
-  // the command-line.  (|expected_additional_argument| mainly exists to test
-  // that arguments are included at all, so there is no need to test for
-  // combinations of multiple arguments and switches in this function.)
+  // |expected_suffix| and |expected_prompt_seed|, a session-id, and optionally
+  // one |expected_additional_argument| on the command-line.
+  // (|expected_additional_argument| mainly exists to test that arguments are
+  // included at all, so there is no need to test for combinations of multiple
+  // arguments and switches in this function.)
   void ExpectInvocationFromManifest(
       const std::string& expected_suffix,
+      const std::string& expected_prompt_seed,
       const std::wstring& expected_additional_argument) {
     EXPECT_EQ(default_version_, extracted_invocations_.version());
     ASSERT_EQ(1U, extracted_invocations_.container().size());
@@ -160,6 +166,8 @@ class SwReporterInstallerTest : public ::testing::Test {
 
     EXPECT_EQ(0U, invocation.supported_behaviours());
     histograms_.ExpectTotalCount(kErrorHistogramName, 0);
+
+    EXPECT_EQ(extracted_prompt_seed_, expected_prompt_seed);
   }
 
   // Expects that the SwReporter was launched with the given |expected_suffix|,
@@ -191,10 +199,11 @@ class SwReporterInstallerTest : public ::testing::Test {
     EXPECT_EQ(expected_behaviours, invocation.supported_behaviours());
   }
 
-  void ExpectLaunchError() {
+  void ExpectLaunchError(SoftwareReporterConfigurationError error) {
     // The SwReporter should not be launched, and an error should be logged.
     EXPECT_TRUE(extracted_invocations_.container().empty());
-    histograms_.ExpectUniqueSample(kErrorHistogramName, kBadParams, 1);
+    EXPECT_TRUE(extracted_prompt_seed_.empty());
+    histograms_.ExpectUniqueSample(kErrorHistogramName, error, 1);
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -213,6 +222,9 @@ class SwReporterInstallerTest : public ::testing::Test {
 
   // Invocations captured by |SwReporterComponentReady|.
   SwReporterInvocationSequence extracted_invocations_;
+
+  // Prompt seed captured by |SwReporterComponentReady|.
+  std::string extracted_prompt_seed_;
 };
 
 TEST_F(SwReporterInstallerTest, MissingManifest) {
@@ -220,7 +232,7 @@ TEST_F(SwReporterInstallerTest, MissingManifest) {
   ExpectEmptyAttributes(policy);
   policy.ComponentReady(default_version_, default_path_,
                         base::Value(base::Value::Type::DICTIONARY));
-  ExpectDefaultInvocation();
+  ExpectLaunchError(kMissingPromptSeed);
 }
 
 TEST_F(SwReporterInstallerTest, MissingTag) {
@@ -261,14 +273,17 @@ TEST_F(SwReporterInstallerTest, ValidTag) {
 TEST_F(SwReporterInstallerTest, SingleInvocation) {
   SwReporterInstallerPolicy policy(on_component_ready_callback_);
 
-  static constexpr char kTestManifest[] =
-      "{\"launch_params\": ["
-      "  {"
-      "    \"arguments\": [\"--engine=experimental\", \"random argument\"],"
-      "    \"suffix\": \"TestSuffix\","
-      "    \"prompt\": false"
-      "  }"
-      "]}";
+  static constexpr char kTestManifest[] = R"json(
+      {
+        "launch_params": [
+          {
+            "arguments": ["--engine=experimental", "random argument"],
+            "suffix": "TestSuffix",
+            "prompt": false
+          }
+        ],
+        "prompt_seed": "20220421SEED123"
+      })json";
   policy.ComponentReady(default_version_, default_path_,
                         *base::JSONReader::Read(kTestManifest));
 
@@ -292,38 +307,43 @@ TEST_F(SwReporterInstallerTest, SingleInvocation) {
   EXPECT_EQ(L"random argument", invocation.command_line().GetArgs()[0]);
   EXPECT_EQ("TestSuffix", invocation.suffix());
   EXPECT_EQ(0U, invocation.supported_behaviours());
+
+  EXPECT_EQ("20220421SEED123", extracted_prompt_seed_);
+
   histograms_.ExpectTotalCount(kErrorHistogramName, 0);
 }
 
 TEST_F(SwReporterInstallerTest, MultipleInvocations) {
   SwReporterInstallerPolicy policy(on_component_ready_callback_);
 
-  static constexpr char kTestManifest[] =
-      "{\"launch_params\": ["
-      "  {"
-      "    \"arguments\": [\"--engine=experimental\"],"
-      "    \"suffix\": \"TestSuffix\","
-      "    \"prompt\": false,"
-      "    \"allow-reporter-logs\": true"
-      "  },"
-      "  {"
-      "    \"arguments\": [\"--engine=second\"],"
-      "    \"suffix\": \"SecondSuffix\","
-      "    \"prompt\": true,"
-      "    \"allow-reporter-logs\": false"
-      "  },"
-      "  {"
-      "    \"arguments\": [\"--engine=third\"],"
-      "    \"suffix\": \"ThirdSuffix\""
-      "  },"
-      "  {"
-      "    \"arguments\": [\"--engine=fourth\"],"
-      "    \"suffix\": \"FourthSuffix\","
-      "    \"prompt\": true,"
-      "    \"allow-reporter-logs\": true"
-      "  }"
-
-      "]}";
+  static constexpr char kTestManifest[] = R"json(
+      {
+        "launch_params": [
+          {
+            "arguments": ["--engine=experimental"],
+            "suffix": "TestSuffix",
+            "prompt": false,
+            "allow-reporter-logs": true
+          },
+          {
+            "arguments": ["--engine=second"],
+            "suffix": "SecondSuffix",
+            "prompt": true,
+            "allow-reporter-logs": false
+          },
+          {
+            "arguments": ["--engine=third"],
+            "suffix": "ThirdSuffix"
+          },
+          {
+            "arguments": ["--engine=fourth"],
+            "suffix": "FourthSuffix",
+            "prompt": true,
+            "allow-reporter-logs": true
+          }
+        ],
+        "prompt_seed": "20220421SEED123"
+      })json";
   policy.ComponentReady(default_version_, default_path_,
                         *base::JSONReader::Read(kTestManifest));
 
@@ -351,131 +371,149 @@ TEST_F(SwReporterInstallerTest, MultipleInvocations) {
       &out_session_id);
   EXPECT_EQ(first_session_id, out_session_id);
 
+  EXPECT_EQ("20220421SEED123", extracted_prompt_seed_);
+
   histograms_.ExpectTotalCount(kErrorHistogramName, 0);
 }
 
 TEST_F(SwReporterInstallerTest, MissingSuffix) {
   SwReporterInstallerPolicy policy(on_component_ready_callback_);
 
-  static constexpr char kTestManifest[] =
-      "{\"launch_params\": ["
-      "  {"
-      "    \"arguments\": [\"random argument\"]"
-      "  }"
-      "]}";
+  static constexpr char kTestManifest[] = R"json(
+      {
+        "launch_params": [
+          {
+            "arguments": ["random argument"]
+          }
+        ],
+        "prompt_seed": "20220421SEED123"
+      })json";
   policy.ComponentReady(default_version_, default_path_,
                         *base::JSONReader::Read(kTestManifest));
-
-  ExpectLaunchError();
+  ExpectLaunchError(kBadParams);
 }
 
 TEST_F(SwReporterInstallerTest, EmptySuffix) {
   SwReporterInstallerPolicy policy(on_component_ready_callback_);
 
-  static constexpr char kTestManifest[] =
-      "{\"launch_params\": ["
-      "  {"
-      "    \"suffix\": \"\","
-      "    \"arguments\": [\"random argument\"]"
-      "  }"
-      "]}";
+  static constexpr char kTestManifest[] = R"json(
+      {
+        "launch_params": [
+          {
+            "suffix": "",
+            "arguments": ["random argument"]
+          }
+        ],
+        "prompt_seed": "20220421SEED123"
+      })json";
   policy.ComponentReady(default_version_, default_path_,
                         *base::JSONReader::Read(kTestManifest));
-
-  ExpectInvocationFromManifest("", L"random argument");
+  ExpectInvocationFromManifest("", "20220421SEED123", L"random argument");
 }
 
 TEST_F(SwReporterInstallerTest, MissingSuffixAndArgs) {
   SwReporterInstallerPolicy policy(on_component_ready_callback_);
 
-  static constexpr char kTestManifest[] =
-      "{\"launch_params\": ["
-      "  {"
-      "  }"
-      "]}";
+  static constexpr char kTestManifest[] = R"json(
+      {
+        "launch_params": [
+          {
+          }
+        ],
+        "prompt_seed": "20220421SEED123"
+      })json";
   policy.ComponentReady(default_version_, default_path_,
                         *base::JSONReader::Read(kTestManifest));
-
-  ExpectLaunchError();
+  ExpectLaunchError(kBadParams);
 }
 
 TEST_F(SwReporterInstallerTest, EmptySuffixAndArgs) {
   SwReporterInstallerPolicy policy(on_component_ready_callback_);
 
-  static constexpr char kTestManifest[] =
-      "{\"launch_params\": ["
-      "  {"
-      "    \"suffix\": \"\","
-      "    \"arguments\": []"
-      "  }"
-      "]}";
+  static constexpr char kTestManifest[] = R"json(
+      {
+        "launch_params": [
+          {
+            "suffix": "",
+            "arguments": []
+          }
+        ],
+        "prompt_seed": "20220421SEED123"
+      })json";
   policy.ComponentReady(default_version_, default_path_,
                         *base::JSONReader::Read(kTestManifest));
-
-  ExpectInvocationFromManifest("", {});
+  ExpectInvocationFromManifest("", "20220421SEED123", {});
 }
 
 TEST_F(SwReporterInstallerTest, EmptySuffixAndArgsWithEmptyString) {
   SwReporterInstallerPolicy policy(on_component_ready_callback_);
 
-  static constexpr char kTestManifest[] =
-      "{\"launch_params\": ["
-      "  {"
-      "    \"suffix\": \"\","
-      "    \"arguments\": [\"\"]"
-      "  }"
-      "]}";
+  static constexpr char kTestManifest[] = R"json(
+      {
+        "launch_params": [
+          {
+            "suffix": "",
+            "arguments": [""]
+          }
+        ],
+        "prompt_seed": "20220421SEED123"
+      })json";
   policy.ComponentReady(default_version_, default_path_,
                         *base::JSONReader::Read(kTestManifest));
-
-  ExpectInvocationFromManifest("", {});
+  ExpectInvocationFromManifest("", "20220421SEED123", {});
 }
 
 TEST_F(SwReporterInstallerTest, MissingArguments) {
   SwReporterInstallerPolicy policy(on_component_ready_callback_);
 
-  static constexpr char kTestManifest[] =
-      "{\"launch_params\": ["
-      "  {"
-      "    \"suffix\": \"TestSuffix\""
-      "  }"
-      "]}";
+  static constexpr char kTestManifest[] = R"json(
+      {
+        "launch_params": [
+          {
+            "suffix": "TestSuffix"
+          }
+        ],
+        "prompt_seed": "20220421SEED123"
+      })json";
   policy.ComponentReady(default_version_, default_path_,
                         *base::JSONReader::Read(kTestManifest));
-
-  ExpectLaunchError();
+  ExpectLaunchError(kBadParams);
 }
 
 TEST_F(SwReporterInstallerTest, EmptyArguments) {
   SwReporterInstallerPolicy policy(on_component_ready_callback_);
 
-  static constexpr char kTestManifest[] =
-      "{\"launch_params\": ["
-      "  {"
-      "    \"suffix\": \"TestSuffix\","
-      "    \"arguments\": []"
-      "  }"
-      "]}";
+  static constexpr char kTestManifest[] = R"json(
+      {
+        "launch_params": [
+          {
+            "suffix": "TestSuffix",
+            "arguments": []
+          }
+        ],
+        "prompt_seed": "20220421SEED123"
+      })json";
   policy.ComponentReady(default_version_, default_path_,
                         *base::JSONReader::Read(kTestManifest));
-
-  ExpectInvocationFromManifest("TestSuffix", {});
+  ExpectInvocationFromManifest("TestSuffix", "20220421SEED123", {});
 }
 
 TEST_F(SwReporterInstallerTest, EmptyArgumentsWithEmptyString) {
   SwReporterInstallerPolicy policy(on_component_ready_callback_);
 
-  static constexpr char kTestManifest[] =
-      "{\"launch_params\": ["
-      "  {"
-      "    \"suffix\": \"TestSuffix\","
-      "    \"arguments\": [\"\"]"
-      "  }"
-      "]}";
+  static constexpr char kTestManifest[] = R"json(
+      {
+        "launch_params": [
+          {
+            "suffix": "TestSuffix",
+            "arguments": [""]
+          }
+        ],
+        "prompt_seed": "20220421SEED123"
+      })json";
   policy.ComponentReady(default_version_, default_path_,
                         *base::JSONReader::Read(kTestManifest));
-
-  ExpectInvocationFromManifest("TestSuffix", {});
+  ExpectInvocationFromManifest("TestSuffix", "20220421SEED123", {});
 }
 
 TEST_F(SwReporterInstallerTest, EmptyManifest) {
@@ -484,74 +522,107 @@ TEST_F(SwReporterInstallerTest, EmptyManifest) {
   static constexpr char kTestManifest[] = "{}";
   policy.ComponentReady(default_version_, default_path_,
                         *base::JSONReader::Read(kTestManifest));
-  ExpectDefaultInvocation();
+  ExpectLaunchError(kMissingPromptSeed);
+}
+
+TEST_F(SwReporterInstallerTest, MissingLaunchParams) {
+  SwReporterInstallerPolicy policy(on_component_ready_callback_);
+
+  static constexpr char kTestManifest[] = R"json(
+      {
+        "prompt_seed": "20220421SEED123"
+      })json";
+  policy.ComponentReady(default_version_, default_path_,
+                        *base::JSONReader::Read(kTestManifest));
+  ExpectDefaultInvocation("20220421SEED123");
 }
 
 TEST_F(SwReporterInstallerTest, EmptyLaunchParams) {
   SwReporterInstallerPolicy policy(on_component_ready_callback_);
 
-  static constexpr char kTestManifest[] = "{\"launch_params\": []}";
+  static constexpr char kTestManifest[] = R"json(
+      {
+        "launch_params": [],
+        "prompt_seed": "20220421SEED123"
+      })json";
   policy.ComponentReady(default_version_, default_path_,
                         *base::JSONReader::Read(kTestManifest));
-  ExpectDefaultInvocation();
+  ExpectDefaultInvocation("20220421SEED123");
+}
+
+TEST_F(SwReporterInstallerTest, MissingPromptSeed) {
+  SwReporterInstallerPolicy policy(on_component_ready_callback_);
+
+  static constexpr char kTestManifest[] = R"json(
+      {
+        "launch_params": [
+          {
+            "arguments": ["--engine=experimental"],
+            "suffix": "TestSuffix"
+          }
+        ]
+      })json";
+  policy.ComponentReady(default_version_, default_path_,
+                        *base::JSONReader::Read(kTestManifest));
+  ExpectLaunchError(kMissingPromptSeed);
 }
 
 TEST_F(SwReporterInstallerTest, BadSuffix) {
   SwReporterInstallerPolicy policy(on_component_ready_callback_);
 
-  static constexpr char kTestManifest[] =
-      "{\"launch_params\": ["
-      "  {"
-      "    \"arguments\": [\"--engine=experimental\"],"
-      "    \"suffix\": \"invalid whitespace characters\""
-      "  }"
-      "]}";
+  static constexpr char kTestManifest[] = R"json(
+      {
+        "launch_params": [
+          {
+            "arguments": ["--engine=experimental"],
+            "suffix": "invalid whitespace characters"
+          }
+        ],
+        "prompt_seed": "20220421SEED123"
+      })json";
   policy.ComponentReady(default_version_, default_path_,
                         *base::JSONReader::Read(kTestManifest));
-
-  // The SwReporter should not be launched, and an error should be logged.
-  EXPECT_TRUE(extracted_invocations_.container().empty());
-  histograms_.ExpectUniqueSample(kErrorHistogramName, kBadParams, 1);
+  ExpectLaunchError(kBadParams);
 }
 
 TEST_F(SwReporterInstallerTest, SuffixTooLong) {
   SwReporterInstallerPolicy policy(on_component_ready_callback_);
 
-  static constexpr char kTestManifest[] =
-      "{\"launch_params\": ["
-      "  {"
-      "    \"arguments\": [\"--engine=experimental\"],"
-      "    \"suffix\": \"%s\""
-      "  }"
-      "]}";
+  static constexpr char kTestManifest[] = R"json(
+      {
+        "launch_params": [
+          {
+            "arguments": ["--engine=experimental"],
+            "suffix": "%s"
+          }
+        ],
+        "prompt_seed": "20220421SEED123"
+      })json";
   std::string suffix_too_long(500, 'x');
   std::string manifest =
       base::StringPrintf(kTestManifest, suffix_too_long.c_str());
   policy.ComponentReady(default_version_, default_path_,
                         *base::JSONReader::Read(manifest));
-
-  // The SwReporter should not be launched, and an error should be logged.
-  EXPECT_TRUE(extracted_invocations_.container().empty());
-  histograms_.ExpectUniqueSample(kErrorHistogramName, kBadParams, 1);
+  ExpectLaunchError(kBadParams);
 }
 
 TEST_F(SwReporterInstallerTest, BadTypesInManifest_ArgumentsIsNotAList) {
   SwReporterInstallerPolicy policy(on_component_ready_callback_);
 
   // This has a string instead of a list for "arguments".
-  static constexpr char kTestManifest[] =
-      "{\"launch_params\": ["
-      "  {"
-      "    \"arguments\": \"--engine=experimental\","
-      "    \"suffix\": \"TestSuffix\""
-      "  }"
-      "]}";
+  static constexpr char kTestManifest[] = R"json(
+      {
+        "launch_params": [
+          {
+            "arguments": "--engine=experimental",
+            "suffix": "TestSuffix"
+          }
+        ],
+        "prompt_seed": "20220421SEED123"
+      })json";
   policy.ComponentReady(default_version_, default_path_,
                         *base::JSONReader::Read(kTestManifest));
-
-  // The SwReporter should not be launched, and an error should be logged.
-  EXPECT_TRUE(extracted_invocations_.container().empty());
-  histograms_.ExpectUniqueSample(kErrorHistogramName, kBadParams, 1);
+  ExpectLaunchError(kBadParams);
 }
 
 TEST_F(SwReporterInstallerTest, BadTypesInManifest_InvocationParamsIsNotAList) {
@@ -559,82 +630,108 @@ TEST_F(SwReporterInstallerTest, BadTypesInManifest_InvocationParamsIsNotAList) {
 
   // This has the invocation parameters as direct children of "launch_params",
   // instead of using a list.
-  static constexpr char kTestManifest[] =
-      "{\"launch_params\": "
-      "  {"
-      "    \"arguments\": [\"--engine=experimental\"],"
-      "    \"suffix\": \"TestSuffix\""
-      "  }"
-      "}";
+  static constexpr char kTestManifest[] = R"json(
+      {
+        "launch_params": {
+            "arguments": ["--engine=experimental"],
+            "suffix": "TestSuffix"
+        },
+        "prompt_seed": "20220421SEED123"
+      })json";
   policy.ComponentReady(default_version_, default_path_,
                         *base::JSONReader::Read(kTestManifest));
-
-  // The SwReporter should not be launched, and an error should be logged.
-  EXPECT_TRUE(extracted_invocations_.container().empty());
-  histograms_.ExpectUniqueSample(kErrorHistogramName, kBadParams, 1);
+  ExpectLaunchError(kBadParams);
 }
 
 TEST_F(SwReporterInstallerTest, BadTypesInManifest_SuffixIsAList) {
   SwReporterInstallerPolicy policy(on_component_ready_callback_);
 
   // This has a list for suffix as well as for arguments.
-  static constexpr char kTestManifest[] =
-      "{\"launch_params\": ["
-      "  {"
-      "    \"arguments\": [\"--engine=experimental\"],"
-      "    \"suffix\": [\"TestSuffix\"]"
-      "  }"
-      "]}";
+  static constexpr char kTestManifest[] = R"json(
+      {
+        "launch_params": [
+          {
+            "arguments": ["--engine=experimental"],
+            "suffix": ["TestSuffix"]
+          }
+        ],
+        "prompt_seed": "20220421SEED123"
+      })json";
   policy.ComponentReady(default_version_, default_path_,
                         *base::JSONReader::Read(kTestManifest));
-
-  // The SwReporter should not be launched, and an error should be logged.
-  EXPECT_TRUE(extracted_invocations_.container().empty());
-  histograms_.ExpectUniqueSample(kErrorHistogramName, kBadParams, 1);
+  ExpectLaunchError(kBadParams);
 }
 
 TEST_F(SwReporterInstallerTest, BadTypesInManifest_PromptIsNotABoolean) {
   SwReporterInstallerPolicy policy(on_component_ready_callback_);
 
   // This has an int instead of a bool for prompt.
-  static constexpr char kTestManifest[] =
-      "{\"launch_params\": ["
-      "  {"
-      "    \"arguments\": [\"--engine=experimental\"],"
-      "    \"suffix\": \"TestSuffix\","
-      "    \"prompt\": 1"
-      "  }"
-      "]}";
+  static constexpr char kTestManifest[] = R"json(
+      {
+        "launch_params": [
+          {
+            "arguments": ["--engine=experimental"],
+            "suffix": "TestSuffix",
+            "prompt": 1
+          }
+        ],
+        "prompt_seed": "20220421SEED123"
+      })json";
   policy.ComponentReady(default_version_, default_path_,
                         *base::JSONReader::Read(kTestManifest));
-
-  // The SwReporter should not be launched, and an error should be logged.
-  EXPECT_TRUE(extracted_invocations_.container().empty());
-  histograms_.ExpectUniqueSample(kErrorHistogramName, kBadParams, 1);
+  ExpectLaunchError(kBadParams);
 }
 
 TEST_F(SwReporterInstallerTest, BadTypesInManifest_LaunchParamsIsScalar) {
   SwReporterInstallerPolicy policy(on_component_ready_callback_);
 
-  static constexpr char kTestManifest[] = "{\"launch_params\": 0}";
+  static constexpr char kTestManifest[] = R"json(
+      {
+        "launch_params": 0,
+        "prompt_seed": "20220421SEED123"
+      })json";
   policy.ComponentReady(default_version_, default_path_,
                         *base::JSONReader::Read(kTestManifest));
-
-  // The SwReporter should not be launched, and an error should be logged.
-  EXPECT_TRUE(extracted_invocations_.container().empty());
-  histograms_.ExpectUniqueSample(kErrorHistogramName, kBadParams, 1);
+  ExpectLaunchError(kBadParams);
 }
 
 TEST_F(SwReporterInstallerTest, BadTypesInManifest_LaunchParamsIsDict) {
   SwReporterInstallerPolicy policy(on_component_ready_callback_);
 
-  static constexpr char kTestManifest[] = "{\"launch_params\": {}}";
+  static constexpr char kTestManifest[] = R"json(
+      {
+        "launch_params": {},
+        "prompt_seed": "20220421SEED123"
+      })json";
   policy.ComponentReady(default_version_, default_path_,
                         *base::JSONReader::Read(kTestManifest));
+  ExpectLaunchError(kBadParams);
+}
 
-  // The SwReporter should not be launched, and an error should be logged.
-  EXPECT_TRUE(extracted_invocations_.container().empty());
-  histograms_.ExpectUniqueSample(kErrorHistogramName, kBadParams, 1);
+TEST_F(SwReporterInstallerTest, BadTypesInManifest_PromptSeedIsList) {
+  SwReporterInstallerPolicy policy(on_component_ready_callback_);
+
+  static constexpr char kTestManifest[] = R"json(
+      {
+        "launch_params": [],
+        "prompt_seed": ["20220421SEED123"]
+      })json";
+  policy.ComponentReady(default_version_, default_path_,
+                        *base::JSONReader::Read(kTestManifest));
+  ExpectLaunchError(kMissingPromptSeed);
+}
+
+TEST_F(SwReporterInstallerTest, BadTypesInManifest_PromptSeedIsInt) {
+  SwReporterInstallerPolicy policy(on_component_ready_callback_);
+
+  static constexpr char kTestManifest[] = R"json(
+      {
+        "launch_params": [],
+        "prompt_seed": 20220421
+      })json";
+  policy.ComponentReady(default_version_, default_path_,
+                        *base::JSONReader::Read(kTestManifest));
+  ExpectLaunchError(kMissingPromptSeed);
 }
 
 class SwReporterOnDemandFetcherTest : public ::testing::Test,

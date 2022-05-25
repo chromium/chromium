@@ -11,8 +11,9 @@ MockChromeCleanerController::MockChromeCleanerController() = default;
 MockChromeCleanerController::~MockChromeCleanerController() = default;
 
 void MockChromeCleanerController::OnSwReporterReady(
+    const std::string& prompt_seed,
     SwReporterInvocationSequence&& sequence) {
-  MockedOnSwReporterReady(sequence);
+  MockedOnSwReporterReady(prompt_seed, sequence);
 }
 
 }  // namespace safe_browsing

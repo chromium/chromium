@@ -42,11 +42,13 @@ enum SoftwareReporterConfigurationError {
   kBadTag = 0,
   kBadParams = 1,
   kMissingParams = 2,
-  kMaxValue = kMissingParams
+  kMissingPromptSeed = 3,
+  kMaxValue = kMissingPromptSeed
 };
 
 // Callback for running the software reporter after it is downloaded.
 using OnComponentReadyCallback = base::RepeatingCallback<void(
+    const std::string& prompt_seed,
     safe_browsing::SwReporterInvocationSequence&& invocations)>;
 
 class SwReporterInstallerPolicy : public ComponentInstallerPolicy {

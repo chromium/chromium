@@ -401,7 +401,8 @@ bool ShouldShowPromptForPeriodicRun() {
   // Don't show the prompt again if it's been shown before for this profile and
   // for the current variations seed. The seed preference will be updated once
   // the prompt is shown.
-  const std::string incoming_seed = GetIncomingSRTSeed();
+  const std::string incoming_seed =
+      GetCleanerController()->GetIncomingPromptSeed();
   const std::string old_seed = prefs->GetString(prefs::kSwReporterPromptSeed);
   if (!incoming_seed.empty() && incoming_seed == old_seed) {
     RecordPromptNotShownWithReasonHistogram(NO_PROMPT_REASON_ALREADY_PROMPTED);
@@ -632,14 +633,6 @@ class ReporterRunner {
             SwReporterInvocation::BEHAVIOUR_TRIGGER_PROMPT)) {
       RecordPromptNotShownWithReasonHistogram(
           NO_PROMPT_REASON_BEHAVIOUR_NOT_SUPPORTED);
-      return;
-    }
-
-    if (!IsUserInitiated(invocation_type_) && !IsSRTPromptFeatureEnabled()) {
-      // Knowing about disabled field trial is more important than reporter not
-      // finding anything to remove, so check this case first.
-      RecordPromptNotShownWithReasonHistogram(
-          NO_PROMPT_REASON_FEATURE_NOT_ENABLED);
       return;
     }
 

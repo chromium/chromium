@@ -6990,24 +6990,6 @@
             ]
         }
     ],
-    "SRTPromptFieldTrial": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "NewCleanerUIExperiment",
-                    "params": {
-                        "Seed": "20171002"
-                    },
-                    "enable_features": [
-                        "InBrowserCleanerUI"
-                    ]
-                }
-            ]
-        }
-    ],
     "SafeBrowsingCSDAndroid": [
         {
             "platforms": [

@@ -9,7 +9,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -56,8 +55,6 @@ class ChromeCleanerPromptUserTest
   }
 
   void SetUpInProcessBrowserTestFixture() override {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        kChromeCleanupInBrowserPromptFeature, {{"Seed", incoming_seed_}});
 // dialog_controller_ expects that the cleaner controller would be on
 // scanning state.
 #if DCHECK_IS_ON()
@@ -65,6 +62,9 @@ class ChromeCleanerPromptUserTest
         .WillOnce(Return(ChromeCleanerController::State::kScanning));
 #endif
     EXPECT_CALL(mock_cleaner_controller_, AddObserver(_));
+    EXPECT_CALL(mock_cleaner_controller_, GetIncomingPromptSeed())
+        .WillRepeatedly(Return(incoming_seed_));
+
     dialog_controller_ =
         new ChromeCleanerDialogControllerImpl(&mock_cleaner_controller_);
     dialog_controller_->SetPromptDelegateForTests(&mock_delegate_);
@@ -90,8 +90,6 @@ class ChromeCleanerPromptUserTest
 
   std::string old_seed_;
   std::string incoming_seed_;
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_P(ChromeCleanerPromptUserTest,

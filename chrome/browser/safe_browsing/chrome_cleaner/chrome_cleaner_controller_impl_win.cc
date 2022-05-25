@@ -349,9 +349,12 @@ void ChromeCleanerControllerImpl::OnReporterSequenceDone(
 }
 
 void ChromeCleanerControllerImpl::OnSwReporterReady(
+    const std::string& prompt_seed,
     SwReporterInvocationSequence&& invocations) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!invocations.container().empty());
+
+  manifest_prompt_seed_ = prompt_seed;
 
   SwReporterInvocationType invocation_type =
       SwReporterInvocationType::kPeriodicRun;
@@ -501,6 +504,14 @@ bool ChromeCleanerControllerImpl::IsReportingManagedByPolicy(Profile* profile) {
   return !IsAllowedByPolicy() ||
          (profile_prefs && profile_prefs->IsManagedPreference(
                                prefs::kSwReporterReportingEnabled));
+}
+
+std::string ChromeCleanerControllerImpl::GetIncomingPromptSeed() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  // This should only be called after OnSwReporterReady, which records the
+  // prompt seed.
+  DCHECK(manifest_prompt_seed_);
+  return *manifest_prompt_seed_;
 }
 
 ChromeCleanerControllerImpl::ChromeCleanerControllerImpl()
