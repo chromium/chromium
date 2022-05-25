@@ -12,7 +12,10 @@ namespace policy {
 namespace {
 
 std::map<std::string, std::string> GetChromeAppToWebAppMapping() {
-  return std::map<std::string, std::string>();
+  return std::map<std::string, std::string>({
+      {"ejjicmeblgpmajnghnpcppodonldlgfn",
+       "https://calendar.google.com/calendar/installwebapp?usp=chrome_default"},
+  });
 }
 
 }  // namespace
