@@ -803,24 +803,16 @@ URLLoader::URLLoader(
     if (checksum.has_value()) {
       CacheTransparencyCacheNotUsedReason cache_not_used_reason =
           CacheTransparencyCacheNotUsedReason::kTryingSingleKeyedCache;
-      DVLOG(2) << "Found pervasive payload: " << request.url.spec();
       if (request.method != net::HttpRequestHeaders::kGetMethod) {
-        DVLOG(2) << "Not using single-keyed-cache; method is "
-                 << request.method;
         cache_not_used_reason =
             CacheTransparencyCacheNotUsedReason::kIncompatibleRequestType;
       } else if (HasFlagsIncompatibleWithSingleKeyedCache(request_load_flags)) {
-        DVLOG(2) << "Not using single-keyed-cache; flags are "
-                 << request_load_flags;
         cache_not_used_reason =
             CacheTransparencyCacheNotUsedReason::kIncompatibleRequestLoadFlags;
       } else if (HasHeadersIncompatibleWithSingleKeyedCache(request.headers)) {
-        DVLOG(2) << "Not using single-keyed-cache; headers are\n"
-                 << request.headers.ToString();
         cache_not_used_reason =
             CacheTransparencyCacheNotUsedReason::kIncompatibleRequestHeaders;
       } else {
-        DVLOG(2) << "Trying single-keyed cache";
         request_load_flags |= net::LOAD_USE_SINGLE_KEYED_CACHE;
 
         url_request_->set_expected_response_checksum(checksum.value());
