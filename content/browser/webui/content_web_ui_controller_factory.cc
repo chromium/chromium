@@ -6,10 +6,6 @@
 
 #include "build/build_config.h"
 #include "content/browser/metrics/histograms_internals_ui.h"
-#include "content/browser/prerender/prerender_internals_ui.h"
-#include "content/browser/process_internals/process_internals_ui.h"
-#include "content/browser/quota/quota_internals_ui.h"
-#include "content/browser/tracing/tracing_ui.h"
 #include "content/browser/ukm_internals_ui.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
@@ -27,12 +23,6 @@ WebUI::TypeID ContentWebUIControllerFactory::GetWebUIType(
     return WebUI::kNoWebUI;
 
   if (url.host_piece() == kChromeUIHistogramHost ||
-#if !BUILDFLAG(IS_ANDROID)
-      url.host_piece() == kChromeUITracingHost ||
-#endif
-      url.host_piece() == kChromeUIPrerenderInternalsHost ||
-      url.host_piece() == kChromeUIProcessInternalsHost ||
-      url.host_piece() == kChromeUIQuotaInternalsHost ||
       url.host_piece() == kChromeUIUkmHost) {
     return const_cast<ContentWebUIControllerFactory*>(this);
   }
@@ -52,16 +42,6 @@ ContentWebUIControllerFactory::CreateWebUIControllerForURL(WebUI* web_ui,
     return nullptr;
   if (url.host_piece() == kChromeUIHistogramHost)
     return std::make_unique<HistogramsInternalsUI>(web_ui);
-#if !BUILDFLAG(IS_ANDROID)
-  if (url.host_piece() == kChromeUITracingHost)
-    return std::make_unique<TracingUI>(web_ui);
-#endif
-  if (url.host_piece() == kChromeUIPrerenderInternalsHost)
-    return std::make_unique<PrerenderInternalsUI>(web_ui);
-  if (url.host_piece() == kChromeUIProcessInternalsHost)
-    return std::make_unique<ProcessInternalsUI>(web_ui);
-  if (url.host_piece() == kChromeUIQuotaInternalsHost)
-    return std::make_unique<QuotaInternalsUI>(web_ui);
   if (url.host_piece() == kChromeUIUkmHost)
     return std::make_unique<UkmInternalsUI>(web_ui);
   return nullptr;
