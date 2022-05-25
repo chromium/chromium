@@ -5,12 +5,17 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_USER_NOTE_USER_NOTE_UI_COORDINATOR_H_
 #define CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_USER_NOTE_USER_NOTE_UI_COORDINATOR_H_
 
+#include <memory>
+
+#include "base/scoped_observation.h"
+#include "base/unguessable_token.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_user_data.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "components/user_notes/interfaces/user_notes_ui.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/views/view.h"
+#include "ui/views/view_observer.h"
 
 namespace user_notes {
 class UserNoteInstance;
@@ -19,8 +24,21 @@ class UserNoteInstance;
 class SidePanelRegistry;
 class UserNoteView;
 
+namespace user_notes {
+class UserNoteInstance;
+}
+
+namespace views {
+class ScrollView;
+}
+
+namespace base {
+class UnguessableToken;
+}
+
 class UserNoteUICoordinator : public user_notes::UserNotesUI,
                               public TabStripModelObserver,
+                              public views::ViewObserver,
                               public BrowserUserData<UserNoteUICoordinator> {
  public:
   explicit UserNoteUICoordinator(Browser* browser);
@@ -53,14 +71,21 @@ class UserNoteUICoordinator : public user_notes::UserNotesUI,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
 
+  // views::ViewObserver:
+  void OnViewBoundsChanged(views::View* observed_view) override;
+
  private:
   friend class BrowserUserData<UserNoteUICoordinator>;
 
   void CreateSidePanelEntry(SidePanelRegistry* global_registry);
+  void ScrollToNote();
   std::unique_ptr<views::View> CreateUserNotesView();
 
-  Browser* browser_;
-  views::View* scroll_contents_view_;
+  raw_ptr<Browser> browser_;
+  raw_ptr<views::ScrollView> scroll_view_ = nullptr;
+  base::ScopedObservation<views::View, views::ViewObserver>
+      scoped_view_observer_{this};
+  base::UnguessableToken scroll_to_note_id_ = base::UnguessableToken::Null();
 
   BROWSER_USER_DATA_KEY_DECL();
 };
