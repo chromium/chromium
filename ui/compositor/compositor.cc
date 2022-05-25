@@ -755,6 +755,11 @@ void Compositor::NotifyThroughputTrackerResults(
     ReportMetricsForTracker(pair.first, std::move(pair.second));
 }
 
+void Compositor::ReportEventLatency(
+    std::vector<cc::EventLatencyTracker::LatencyData> latencies) {
+  // TODO(crbug.com/1321193): Report EventLatency as appropriate.
+}
+
 void Compositor::DidReceiveCompositorFrameAck() {
   ++activated_frame_count_;
   for (auto& observer : observer_list_)

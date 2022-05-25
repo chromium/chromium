@@ -387,6 +387,13 @@ void LayerTreeView::RunPaintBenchmark(int repeat_count,
     delegate_->RunPaintBenchmark(repeat_count, result);
 }
 
+void LayerTreeView::ReportEventLatency(
+    std::vector<cc::EventLatencyTracker::LatencyData> latencies) {
+  // EventLatency metrics for the renderers are reported in
+  // `CompositorFrameReporter`, so this functions should not be called.
+  NOTREACHED();
+}
+
 void LayerTreeView::DidRunBeginMainFrame() {
   if (!delegate_ || !web_main_thread_scheduler_)
     return;

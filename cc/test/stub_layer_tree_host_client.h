@@ -6,6 +6,7 @@
 #define CC_TEST_STUB_LAYER_TREE_HOST_CLIENT_H_
 
 #include <memory>
+#include <vector>
 
 #include "cc/paint/element_id.h"
 #include "cc/trees/layer_tree_host_client.h"
@@ -53,6 +54,8 @@ class StubLayerTreeHostClient : public LayerTreeHostClient {
   void DidPresentCompositorFrame(
       uint32_t frame_token,
       const gfx::PresentationFeedback& feedback) override {}
+  void ReportEventLatency(
+      std::vector<EventLatencyTracker::LatencyData> latencies) override {}
 };
 
 }  // namespace cc
