@@ -58,6 +58,8 @@
 namespace chromeos {
 
 CoreOobeHandler::CoreOobeHandler(const std::string& display_type) {
+  is_oobe_display_ = display_type == OobeUI::kOobeDisplay;
+
   ash::TabletMode::Get()->AddObserver(this);
 
   OobeConfiguration::Get()->AddAndFireObserver(this);
@@ -74,12 +76,6 @@ CoreOobeHandler::CoreOobeHandler(const std::string& display_type) {
 #endif
   UpdateClientAreaSize(
       display::Screen::GetScreen()->GetPrimaryDisplay().size());
-
-  bool has_api_keys_configured = google_apis::HasAPIKeyConfigured() &&
-                                 google_apis::HasOAuthClientConfigured();
-  CallJS("cr.ui.Oobe.showAPIKeysNotice",
-         !has_api_keys_configured && (display_type == OobeUI::kOobeDisplay ||
-                                      display_type == OobeUI::kLoginDisplay));
 
   // Don't show version label on the stable and beta channels by default.
   version_info::Channel channel = chrome::GetChannel();
@@ -113,8 +109,12 @@ void CoreOobeHandler::DeclareLocalizedValues(
   // Strings for Asset Identifier shown in version string.
   builder->Add("assetIdLabel", IDS_OOBE_ASSET_ID_LABEL);
 
-  builder->AddF("missingAPIKeysNotice", IDS_LOGIN_API_KEYS_NOTICE,
-                base::ASCIIToUTF16(google_apis::kAPIKeysDevelopersHowToURL));
+  const bool has_api_keys_configured = google_apis::HasAPIKeyConfigured() &&
+                                       google_apis::HasOAuthClientConfigured();
+  if (!has_api_keys_configured && is_oobe_display_) {
+    builder->AddF("missingAPIKeysNotice", IDS_LOGIN_API_KEYS_NOTICE,
+                  base::ASCIIToUTF16(google_apis::kAPIKeysDevelopersHowToURL));
+  }
 
   builder->Add("playAnimationAriaLabel", IDS_OOBE_PLAY_ANIMATION_MESSAGE);
   builder->Add("pauseAnimationAriaLabel", IDS_OOBE_PAUSE_ANIMATION_MESSAGE);

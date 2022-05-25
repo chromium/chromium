@@ -127,6 +127,8 @@ class CoreOobeHandler : public BaseWebUIHandler,
 
   // Help application used for help dialogs.
   scoped_refptr<HelpAppLauncher> help_app_;
+
+  bool is_oobe_display_ = false;
 };
 
 }  // namespace chromeos

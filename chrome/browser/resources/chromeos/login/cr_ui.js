@@ -74,14 +74,6 @@ cr.define('cr.ui', function() {
     }
 
     /**
-     * Updates missing API keys message visibility.
-     * @param {boolean} show True if the message should be visible.
-     */
-    static showAPIKeysNotice(show) {
-      $('api-keys-notice-container').hidden = !show;
-    }
-
-    /**
      * Toggles system info visibility.
      */
     static toggleSystemInfo() {
@@ -316,10 +308,14 @@ cr.define('cr.ui', function() {
         document.documentElement.setAttribute(attribute, localizedString);
       }
 
+      const missingApiId = 'missingAPIKeysNotice';
+      if (!loadTimeData.valueExists(missingApiId)) {
+        return;
+      }
       // Update this standalone div in the main document.
-      const notice = loadTimeData.getValue('missingAPIKeysNotice');
       const apiKeysNoticeDiv = $('api-keys-notice');
-      apiKeysNoticeDiv.textContent = notice;
+      apiKeysNoticeDiv.textContent = loadTimeData.getValue(missingApiId);
+      $('api-keys-notice-container').hidden = false;
     }
 
     /**
