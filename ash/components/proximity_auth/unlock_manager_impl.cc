@@ -64,6 +64,48 @@ const int kNumDurationMetricBuckets = 100;
 const char kGetRemoteStatusNone[] = "none";
 const char kGetRemoteStatusSuccess[] = "success";
 
+// The subset of SmartLockStates that represent the first non-trival status
+// shown to the user. Entries persisted to UMA histograms; do not reorder or
+// delete enum values.
+enum class FirstSmartLockStatus {
+  kBluetoothDisabled = 0,
+  kPhoneNotLockable = 1,
+  kPhoneNotFound = 2,
+  kPhoneNotAuthenticated = 3,
+  kPhoneFoundLockedAndDistant = 4,
+  kPhoneFoundLockedAndProximate = 5,
+  kPhoneFoundUnlockedAndDistant = 6,
+  kPhoneAuthenticated = 7,
+  kPrimaryUserAbsent = 8,
+  kMaxValue = kPrimaryUserAbsent
+};
+
+absl::optional<FirstSmartLockStatus> GetFirstSmartLockStatus(
+    SmartLockState state) {
+  switch (state) {
+    case SmartLockState::kBluetoothDisabled:
+      return FirstSmartLockStatus::kBluetoothDisabled;
+    case SmartLockState::kPhoneNotLockable:
+      return FirstSmartLockStatus::kPhoneNotLockable;
+    case SmartLockState::kPhoneNotFound:
+      return FirstSmartLockStatus::kPhoneNotFound;
+    case SmartLockState::kPhoneNotAuthenticated:
+      return FirstSmartLockStatus::kPhoneNotAuthenticated;
+    case SmartLockState::kPhoneFoundLockedAndDistant:
+      return FirstSmartLockStatus::kPhoneFoundLockedAndDistant;
+    case SmartLockState::kPhoneFoundLockedAndProximate:
+      return FirstSmartLockStatus::kPhoneFoundLockedAndProximate;
+    case SmartLockState::kPhoneFoundUnlockedAndDistant:
+      return FirstSmartLockStatus::kPhoneFoundUnlockedAndDistant;
+    case SmartLockState::kPhoneAuthenticated:
+      return FirstSmartLockStatus::kPhoneAuthenticated;
+    case SmartLockState::kPrimaryUserAbsent:
+      return FirstSmartLockStatus::kPrimaryUserAbsent;
+    default:
+      return absl::nullopt;
+  }
+}
+
 // Returns the remote device's security settings state, for metrics,
 // corresponding to a remote status update.
 metrics::RemoteSecuritySettingsState GetRemoteSecuritySettingsState(
@@ -664,11 +706,7 @@ void UnlockManagerImpl::UpdateLockScreen() {
   PA_LOG(INFO) << "Updating Smart Lock state from " << smartlock_state_
                << " to " << new_state;
 
-  if (new_state != SmartLockState::kInactive &&
-      new_state != SmartLockState::kConnectingToPhone) {
-    RecordFirstStatusShownToUser(
-        new_state == SmartLockState::kPhoneAuthenticated /* unlockable */);
-  }
+  RecordFirstStatusShownToUser(new_state);
 
   proximity_auth_client_->UpdateSmartLockState(new_state);
   smartlock_state_ = new_state;
@@ -830,13 +868,18 @@ void UnlockManagerImpl::RecordFirstRemoteStatusReceived(bool unlockable) {
             histogram_status_suffix,
         authentication_to_receive_first_remote_status_duration);
   }
-
-  // TODO(crbug.com/905438): Implement similar SignIn metrics.
 }
 
-void UnlockManagerImpl::RecordFirstStatusShownToUser(bool unlockable) {
-  if (has_user_been_shown_first_status_)
+void UnlockManagerImpl::RecordFirstStatusShownToUser(SmartLockState new_state) {
+  absl::optional<FirstSmartLockStatus> first_status =
+      GetFirstSmartLockStatus(new_state);
+  if (!first_status.has_value()) {
     return;
+  }
+
+  if (has_user_been_shown_first_status_) {
+    return;
+  }
   has_user_been_shown_first_status_ = true;
 
   if (show_lock_screen_time_.is_null()) {
@@ -846,8 +889,12 @@ void UnlockManagerImpl::RecordFirstStatusShownToUser(bool unlockable) {
     return;
   }
 
-  const std::string histogram_status_suffix =
-      GetHistogramStatusSuffix(unlockable);
+  base::UmaHistogramEnumeration("SmartLock.FirstStatusToUser",
+                                first_status.value());
+
+  const std::string histogram_status_suffix = GetHistogramStatusSuffix(
+      /*unlockable=*/(first_status ==
+                      FirstSmartLockStatus::kPhoneAuthenticated));
 
   base::Time now = base::DefaultClock::GetInstance()->Now();
   base::TimeDelta show_lock_screen_to_show_first_status_to_user_duration =
@@ -864,8 +911,6 @@ void UnlockManagerImpl::RecordFirstStatusShownToUser(bool unlockable) {
             histogram_status_suffix,
         show_lock_screen_to_show_first_status_to_user_duration);
   }
-
-  // TODO(crbug.com/905438): Implement similar SignIn metrics.
 }
 
 void UnlockManagerImpl::ResetPerformanceMetricsTimestamps() {

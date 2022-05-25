@@ -196,9 +196,10 @@ class UnlockManagerImpl : public UnlockManager,
   // whether it's unlockable) being received.
   void RecordFirstRemoteStatusReceived(bool unlockable);
 
-  // Records UMA performance metrics for the first status shown to the user
+  // Records a UMA metric for the first status shown to the user as well
+  // as performance metrics for how long it takes to show that first status
   // (regardless of whether it's unlockable/green).
-  void RecordFirstStatusShownToUser(bool unlockable);
+  void RecordFirstStatusShownToUser(ash::SmartLockState new_state);
 
   // Clears the timers for beginning a scan and fetching remote status.
   void ResetPerformanceMetricsTimestamps();

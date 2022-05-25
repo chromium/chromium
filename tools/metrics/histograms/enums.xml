@@ -42295,6 +42295,18 @@ Called by update_permissions_policy_enum.py.-->
   <int value="14" label="Close welcome+sign-in without sign-in"/>
 </enum>
 
+<enum name="FirstSmartLockStatus">
+  <int value="0" label="Bluetooth disabled"/>
+  <int value="1" label="Phone not lockable"/>
+  <int value="2" label="Phone not found"/>
+  <int value="3" label="Phone not authenticated"/>
+  <int value="4" label="Phone found but locked and distant"/>
+  <int value="5" label="Phone found and nearby but locked"/>
+  <int value="6" label="Phone found and unlocked but distant"/>
+  <int value="7" label="Phone authenticated, ready to unlock Chromebook"/>
+  <int value="8" label="Primary user absent"/>
+</enum>
+
 <enum name="FirstUserActionType">
   <summary>
     Types of actions a user can perform upon startup or unbackgrounding.
