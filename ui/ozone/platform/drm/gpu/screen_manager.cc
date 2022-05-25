@@ -31,6 +31,7 @@
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/linux/gbm_buffer.h"
+#include "ui/ozone/common/features.h"
 #include "ui/ozone/platform/drm/common/drm_util.h"
 #include "ui/ozone/platform/drm/gpu/crtc_controller.h"
 #include "ui/ozone/platform/drm/gpu/drm_device.h"
@@ -174,8 +175,16 @@ std::string GenerateConfigurationLogForController(
   base::Value::Dict drm_config;
   drm_config.Set(device_name, std::move(drm_device));
   std::string drm_config_log;
-  bool json_status = base::JSONWriter::Write(drm_config, &drm_config_log);
+  const int json_writer_options = IsPrettyPrintDrmModesetConfigLogsEnabled()
+                                      ? base::JSONWriter::OPTIONS_PRETTY_PRINT
+                                      : 0;
+  bool json_status = base::JSONWriter::WriteWithOptions(
+      drm_config, json_writer_options, &drm_config_log);
   DCHECK(json_status);
+  DCHECK(!drm_config_log.empty());
+  // Remove trailing newline
+  if (json_writer_options)
+    drm_config_log.pop_back();
   return drm_config_log;
 }
 

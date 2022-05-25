@@ -4,6 +4,7 @@
 // found in the LICENSE file.
 
 #include "ui/ozone/common/features.h"
+
 #include "build/chromeos_buildflags.h"
 
 namespace ui {
@@ -24,6 +25,11 @@ const base::Feature kWaylandSurfaceSubmissionInPixelCoordinates{
 #endif
 };
 
+// This debug/dev flag pretty-prints DRM modeset configuration logs for ease
+// of reading. For more information, see: http://b/233006802
+const base::Feature kPrettyPrintDrmModesetConfigLogs{
+    "PrettyPrintDrmModesetConfigLogs", base::FEATURE_DISABLED_BY_DEFAULT};
+
 bool IsWaylandSurfaceSubmissionInPixelCoordinatesEnabled() {
   return base::FeatureList::IsEnabled(
       kWaylandSurfaceSubmissionInPixelCoordinates);
@@ -31,6 +37,10 @@ bool IsWaylandSurfaceSubmissionInPixelCoordinatesEnabled() {
 
 bool IsWaylandOverlayDelegationEnabled() {
   return base::FeatureList::IsEnabled(kWaylandOverlayDelegation);
+}
+
+bool IsPrettyPrintDrmModesetConfigLogsEnabled() {
+  return base::FeatureList::IsEnabled(kPrettyPrintDrmModesetConfigLogs);
 }
 
 }  // namespace ui
