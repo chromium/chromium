@@ -13,6 +13,7 @@ android_library_with_tflite(
     srcs = [
         "//tensorflow_lite_support/java/src/java/org/tensorflow/lite/task/text/nlclassifier:nl_classifier_src",
         "//tensorflow_lite_support/java/src/java/org/tensorflow/lite/task/text/qa:bert_question_answerer_src",
+        "//tensorflow_lite_support/java/src/java/org/tensorflow/lite/task/text/searcher:text_searcher_src",
     ],
     javacopts = ["-source 7 -target 7"],
     manifest = "AndroidManifest.xml",

@@ -1,4 +1,3 @@
-# Placeholder for internal Python strict test compatibility macro.
 # Placeholder for internal Python strict library compatibility macro.
 
 package(
@@ -18,22 +17,5 @@ py_library(
         ":color_space_type",
         # build rule placeholder: numpy dep,
         "//tensorflow_lite_support/python/task/vision/core/pybinds:image_utils",
-    ],
-)
-
-py_test(
-    name = "tensor_image_test",
-    srcs = ["tensor_image_test.py"],
-    data = [
-        "//tensorflow_lite_support/cc/test/testdata/task/vision:test_images",
-    ],
-    deps = [
-        ":color_space_type",
-        ":tensor_image",
-        # build rule placeholder: numpy dep,
-        # build rule placeholder: tensorflow dep,
-        "//tensorflow_lite_support/python/task/vision/core/pybinds:image_utils",
-        "//tensorflow_lite_support/python/test:test_util",
-        "@absl_py//absl/testing:parameterized",
     ],
 )

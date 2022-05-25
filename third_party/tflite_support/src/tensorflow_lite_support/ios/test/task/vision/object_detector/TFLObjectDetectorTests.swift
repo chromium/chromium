@@ -17,14 +17,14 @@ import XCTest
 
 @testable import TFLObjectDetector
 
-class TFLObjectDetectorTests: XCTestCase {
+class ObjectDetectorTests: XCTestCase {
 
-  static let bundle = Bundle(for: TFLObjectDetectorTests.self)
+  static let bundle = Bundle(for: ObjectDetectorTests.self)
   static let modelPath = bundle.path(
     forResource: "coco_ssd_mobilenet_v1_1.0_quant_2018_06_29",
-    ofType: "tflite")!
+    ofType: "tflite")
 
-  func verifyDetectionResult(_ detectionResult: TFLDetectionResult) {
+  func verifyDetectionResult(_ detectionResult: DetectionResult) {
     XCTAssertGreaterThan(detectionResult.detections.count, 0)
 
     self.verifyDetection(
@@ -53,7 +53,7 @@ class TFLObjectDetectorTests: XCTestCase {
   }
 
   func verifyDetection(
-    _ detection: TFLDetection, expectedBoundingBox: CGRect,
+    _ detection: Detection, expectedBoundingBox: CGRect,
     expectedFirstScore: Float,
     expectedFirstLabel: String
   ) {
@@ -73,52 +73,50 @@ class TFLObjectDetectorTests: XCTestCase {
     XCTAssertEqual(
       detection.categories[0].label,
       expectedFirstLabel)
-    XCTAssertEqualWithAccuracy(
+    XCTAssertEqual(
       detection.categories[0].score,
       expectedFirstScore, accuracy: 0.001)
   }
 
   func testSuccessfullInferenceOnMLImageWithUIImage() throws {
 
-    let modelPath = try XCTUnwrap(TFLObjectDetectorTests.modelPath)
+    let modelPath = try XCTUnwrap(ObjectDetectorTests.modelPath)
 
-    let objectDetectorOptions = TFLObjectDetectorOptions(modelPath: modelPath)
-    XCTAssertNotNil(objectDetectorOptions)
+    let objectDetectorOptions = ObjectDetectorOptions(modelPath: modelPath)
 
     let objectDetector =
-      try TFLObjectDetector.objectDetector(options: objectDetectorOptions!)
+      try ObjectDetector.detector(options: objectDetectorOptions)
 
     let gmlImage = try XCTUnwrap(
       MLImage.imageFromBundle(
         class: type(of: self),
         filename: "cats_and_dogs",
         type: "jpg"))
-    let detectionResults: TFLDetectionResult =
-      try objectDetector.detect(gmlImage: gmlImage)
+    let detectionResults: DetectionResult =
+      try objectDetector.detect(mlImage: gmlImage)
 
     self.verifyDetectionResult(detectionResults)
   }
 
   func testModelOptionsWithMaxResults() throws {
 
-    let modelPath = try XCTUnwrap(TFLObjectDetectorTests.modelPath)
+    let modelPath = try XCTUnwrap(ObjectDetectorTests.modelPath)
 
-    let objectDetectorOptions = TFLObjectDetectorOptions(modelPath: modelPath)
-    XCTAssertNotNil(objectDetectorOptions)
+    let objectDetectorOptions = ObjectDetectorOptions(modelPath: modelPath)
 
     let maxResults = 3
-    objectDetectorOptions!.classificationOptions.maxResults = maxResults
+    objectDetectorOptions.classificationOptions.maxResults = maxResults
 
     let objectDetector =
-      try TFLObjectDetector.objectDetector(options: objectDetectorOptions!)
+      try ObjectDetector.detector(options: objectDetectorOptions)
 
     let gmlImage = try XCTUnwrap(
       MLImage.imageFromBundle(
         class: type(of: self),
         filename: "cats_and_dogs",
         type: "jpg"))
-    let detectionResult: TFLDetectionResult = try objectDetector.detect(
-      gmlImage: gmlImage)
+    let detectionResult: DetectionResult = try objectDetector.detect(
+      mlImage: gmlImage)
 
     XCTAssertLessThanOrEqual(detectionResult.detections.count, maxResults)
 

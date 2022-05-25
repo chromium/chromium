@@ -29,6 +29,12 @@ typedef struct TfLiteClassifications {
   // useful for multi-head models.
   int head_index;
 
+  // The name of the classifier head, which is the corresponding tensor metadata
+  // name. See
+  // https://github.com/tensorflow/tflite-support/blob/710e323265bfb71fdbdd72b3516e00cff15c0326/tensorflow_lite_support/metadata/metadata_schema.fbs#L545
+  // This will always be NULL for vision APIs.
+  char* head_name;
+
   // Number of predicted classes which can be used to traverse the array of
   // predicted classes.
   int size;

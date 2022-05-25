@@ -19,8 +19,6 @@
 + (TFLCategory *)categoryWithCCategory:(TfLiteCategory *)cCategory {
   if (cCategory == nil) return nil;
 
-  TFLCategory *category = [[TFLCategory alloc] init];
-
   NSString* displayName;
   NSString* label;
 

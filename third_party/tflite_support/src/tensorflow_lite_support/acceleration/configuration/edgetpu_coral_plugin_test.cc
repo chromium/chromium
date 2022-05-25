@@ -21,7 +21,7 @@ limitations under the License.
 #include "tensorflow/lite/interpreter.h"
 #include "tensorflow/lite/kernels/register.h"
 #include "tensorflow/lite/model.h"
-#include "tensorflow_lite_support/examples/task/vision/desktop/utils/image_utils.h"
+#include "tensorflow_lite_support/cc/task/vision/utils/image_utils.h"
 
 namespace tflite {
 namespace delegates {

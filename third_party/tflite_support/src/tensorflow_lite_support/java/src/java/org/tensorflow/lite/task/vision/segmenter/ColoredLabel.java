@@ -22,7 +22,7 @@ import androidx.annotation.RequiresApi;
 
 import com.google.auto.value.AutoValue;
 
-import org.tensorflow.lite.annotations.UsedByReflection;
+import org.tensorflow.lite.task.core.annotations.UsedByReflection;
 
 /** Represents a label associated with a color for display purposes. */
 @AutoValue

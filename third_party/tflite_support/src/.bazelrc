@@ -113,11 +113,6 @@ build --define=allow_oversize_protos=true
 build --spawn_strategy=local
 build -c opt
 
-# Adding "--cxxopt=-D_GLIBCXX_USE_CXX11_ABI=0" creates parity with TF
-# compilation options. It also addresses memory use due to
-# copy-on-write semantics of std::strings of the older ABI.
-build --cxxopt=-D_GLIBCXX_USE_CXX11_ABI=0
-
 # Make Bazel print out all options from rc files.
 build --announce_rc
 
@@ -137,11 +132,6 @@ build --define=grpc_no_ares=true
 # TODO: Remove this line once TF doesn't depend on Bazel wrapping all library
 # archives in -whole_archive -no_whole_archive.
 build --noincompatible_remove_legacy_whole_archive
-
-# These are bazel 2.0's incompatible flags. Tensorflow needs to use bazel 2.0.0
-# to use cc_shared_library, as part of the Tensorflow Build Improvements RFC:
-# https://github.com/tensorflow/community/pull/179
-build --noincompatible_prohibit_aapt1
 
 # Build TF with C++ 17 features.
 build:c++17 --cxxopt=-std=c++1z

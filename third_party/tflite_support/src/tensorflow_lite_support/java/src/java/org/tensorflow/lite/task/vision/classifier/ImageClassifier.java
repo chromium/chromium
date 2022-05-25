@@ -21,13 +21,13 @@ import android.os.ParcelFileDescriptor;
 
 import com.google.android.odml.image.MlImage;
 
-import org.tensorflow.lite.annotations.UsedByReflection;
 import org.tensorflow.lite.support.image.MlImageAdapter;
 import org.tensorflow.lite.support.image.TensorImage;
 import org.tensorflow.lite.task.core.BaseOptions;
 import org.tensorflow.lite.task.core.TaskJniUtils;
 import org.tensorflow.lite.task.core.TaskJniUtils.EmptyHandleProvider;
 import org.tensorflow.lite.task.core.TaskJniUtils.FdAndOptionsHandleProvider;
+import org.tensorflow.lite.task.core.annotations.UsedByReflection;
 import org.tensorflow.lite.task.core.vision.ImageProcessingOptions;
 import org.tensorflow.lite.task.vision.core.BaseVisionTaskApi;
 import org.tensorflow.lite.task.vision.core.BaseVisionTaskApi.InferenceProvider;

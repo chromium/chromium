@@ -20,102 +20,117 @@
 NS_ASSUME_NONNULL_BEGIN
 
 /**
- * Specifies the type of output segmentation mask to be returned as a result
- * of the image segmentation operation. This allows specifying the type of
- * post-processing to perform on the raw model results
- *
- * @seealso TfLiteSegmentationResult for more.
+ * Specifies the type of the output segmentation mask to be returned as the
+ * result of the image segmentation operation. This directs the
+ * `TFLImageSegmenter` to choose the type of post-processing to be performed on
+ * the raw model results.
  */
 typedef NS_ENUM(NSUInteger, TFLOutputType) {
   /** Unspecified output type. */
-  TFLUnspecifiedOutputType,
+  TFLOutputTypeUnspecified,
 
   /**
    * Gives a single output mask where each pixel represents the class which
    * the pixel in the original image was predicted to belong to.
    */
-  TFLCategoryMaskOutputType,
+  TFLOutputTypeCategoryMask,
 
   /**
    * Gives a list of output masks where, for each mask, each pixel represents
    * the prediction confidence, usually in the [0, 1] range.
    */
-  TFLConfidenceMasksOutputType,
+  TFLOutputTypeConfidenceMasks,
 
-};
+} NS_SWIFT_NAME(OutputType);
 
 /**
- * Options to configure TFLImageSegmenter.
+ * Options to configure `TFLImageSegmenter`.
  */
+NS_SWIFT_NAME(ImageSegmenterOptions)
 @interface TFLImageSegmenterOptions : NSObject
 
 /**
  * Base options that is used for creation of any type of task.
- * @seealso TFLBaseOptions
+ * @discussion Please see `TFLBaseOptions` for more details.
  */
 @property(nonatomic, copy) TFLBaseOptions* baseOptions;
 
 /**
  * Specifies the type of output segmentation mask to be returned as a result
  * of the image segmentation operation.
- * @seealso TFLOutputType
  */
-@property(nonatomic, assign) TFLOutputType outputType;
+@property(nonatomic) TFLOutputType outputType;
 
-/** Display names local for display names*/
+/**
+ * Display names local for display names
+ */
 @property(nonatomic, copy) NSString* displayNamesLocale;
 
 /**
- * Initializes TFLImageSegmenterOptions with the model path set to the specified
- * path to a model file.
- * @description The external model file, must be a single standalone TFLite
+ * Initializes a new `TFLImageSegmenterOptions` with the absolute path to the
+ * model file stored locally on the device, set to the given the model path.
+ * .
+ * @discussion The external model file, must be a single standalone TFLite
  * file. It could be packed with TFLite Model Metadata[1] and associated files
  * if exist. Fail to provide the necessary metadata and associated files might
  * result in errors. Check the
  * [documentation](https://www.tensorflow.org/lite/convert/metadata) for each
  * task about the specific requirement.
  *
- * @param modelPath Path to a TFLite model file.
+ * @param modelPath An absolute path to a TensorFlow Lite model file stored
+ * locally on the device.
  *
- * @return An instance of TFLImageSegmenterOptions set to the specified
- * modelPath.
+ * @return An instance of `TFLImageSegmenterOptions` initialized to the given
+ * model path.
  */
-- (nullable instancetype)initWithModelPath:(nonnull NSString*)modelPath;
+- (instancetype)initWithModelPath:(NSString*)modelPath;
 
 @end
 
+NS_SWIFT_NAME(ImageSegmenter)
 @interface TFLImageSegmenter : NSObject
 
 /**
- * Creates TFLImageSegmenter from a model file and specified options .
+ * Creates a new instance of `TFLImageSegmenter` from the given
+ * `TFLImageSegmenterOptions`.
  *
- * @param options TFLImageSegmenterOptions instance with the necessary
- * properties set.
+ * @param options The options to use for configuring the `TFLImageSegmenter`.
+ * @param error An optional error parameter populated when there is an error in
+ * initializing the image segmenter.
  *
- * @return A TFLImageSegmenter instance.
+ * @return A new instance of `TFLImageSegmenter` with the given options. `nil`
+ * if there is an error in initializing the image segmenter.
  */
 + (nullable instancetype)imageSegmenterWithOptions:
                              (nonnull TFLImageSegmenterOptions*)options
                                              error:(NSError**)error
-    NS_SWIFT_NAME(imageSegmenter(options:));
-
-/**
- * Performs image segmentation on a GMLImage input, returns the segmentation
- * results.
- *
- * @param image input to the model.
- *
- * @return Segmentation Result of type TFLSegmentationResult holds the
- * segmentation masks returned by the image segmentation task.
- */
-- (nullable TFLSegmentationResult*)segmentWithGMLImage:(GMLImage*)image
-                                                 error:
-                                                     (NSError* _Nullable*)error
-    NS_SWIFT_NAME(segment(gmlImage:));
-
-- (instancetype)init NS_UNAVAILABLE;
+    NS_SWIFT_NAME(segmenter(options:));
 
 + (instancetype)new NS_UNAVAILABLE;
+
+/**
+ * Performs segmentation on the given GMLImage.
+ *
+ * @discussion This method currently supports segmentation of only the following
+ * types of images:
+ * 1. RGB and RGBA images for `GMLImageSourceTypeImage`.
+ * 2. kCVPixelFormatType_32BGRA for `GMLImageSourceTypePixelBuffer` and
+ *    `GMLImageSourceTypeSampleBuffer`. If you are using `AVCaptureSession` to
+ * setup camera and get the frames for inference, you must request for this
+ * format from AVCaptureVideoDataOutput. Otherwise your segmentation results
+ * will be wrong.
+ *
+ * @param image An image to be segmented, represented as a `GMLImage`.
+ *
+ * @return A TFLSegmentationResult that holds the segmentation masks returned by
+ * the image segmentation task. `nil` if there is an error encountered during
+ * segmentation. Please see `TFLSegmentationResult` for more details.
+ */
+- (nullable TFLSegmentationResult*)segmentWithGMLImage:(GMLImage*)image
+                                                 error:(NSError**)error
+    NS_SWIFT_NAME(segment(mlImage:));
+
+- (instancetype)init NS_UNAVAILABLE;
 
 @end
 

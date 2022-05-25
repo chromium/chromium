@@ -34,7 +34,7 @@ typedef struct Categories {
   Category* categories;
 } Categories;
 
-void NLClassifierCategoriesDelete(Categories* categories);
+void TfLiteNLClassifierCategoriesDelete(Categories* categories);
 
 #ifdef __cplusplus
 }  // extern "C"

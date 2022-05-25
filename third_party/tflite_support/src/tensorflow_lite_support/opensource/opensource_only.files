@@ -19,7 +19,6 @@ tensorflow_lite_support/third_party/google_toolbox_for_mac.BUILD:
 tensorflow_lite_support/third_party/icu.BUILD:
 tensorflow_lite_support/third_party/leveldb.BUILD:
 tensorflow_lite_support/third_party/libyuv.BUILD:
-tensorflow_lite_support/third_party/libzip.BUILD:
 tensorflow_lite_support/third_party/pybind11.BUILD:
 tensorflow_lite_support/third_party/python_runtime/BUILD:
 tensorflow_lite_support/third_party/six.BUILD:
@@ -45,7 +44,10 @@ tensorflow_lite_support/tools/pip_package/build_pip_package.sh:
 tensorflow_lite_support/tools/pip_package/metadata_writers.__init__.py:
 tensorflow_lite_support/tools/pip_package/setup.py:
 tensorflow_lite_support/tools/pip_package/simple_console_for_windows.py:
+tensorflow_lite_support/tools/pip_package/task.__init__.py:
+tensorflow_lite_support/tools/pip_package/task_audio.__init__.py:
 tensorflow_lite_support/tools/pip_package/task_core.__init__.py:
 tensorflow_lite_support/tools/pip_package/task_processor.__init__.py:
+tensorflow_lite_support/tools/pip_package/task_text.__init__.py:
 tensorflow_lite_support/tools/pip_package/task_vision.__init__.py:
 tensorflow_lite_support/tools/pip_package/tflite_support.__init__.py:

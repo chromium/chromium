@@ -24,7 +24,7 @@ NS_SWIFT_NAME(CpuSettings)
  * @discussion This property hould be greater than 0 or equal to -1. Setting  it
  * to -1 has the effect to let TFLite runtime set the value.
  */
-@property(nonatomic, assign) int numThreads;
+@property(nonatomic) int numThreads;
 
 @end
 

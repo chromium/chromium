@@ -299,11 +299,6 @@ absl::Status ValidateConvertFormats(FrameBuffer::Format from_format,
       return absl::InvalidArgumentError(
           "Grayscale format does not convert to other formats.");
     case FrameBuffer::Format::kRGB:
-      if (to_format == FrameBuffer::Format::kRGBA) {
-        return absl::InvalidArgumentError(
-            "RGB format does not convert to RGBA");
-      }
-      return absl::OkStatus();
     case FrameBuffer::Format::kRGBA:
     case FrameBuffer::Format::kNV12:
     case FrameBuffer::Format::kNV21:

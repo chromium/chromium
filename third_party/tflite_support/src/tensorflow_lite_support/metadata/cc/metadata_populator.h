@@ -31,6 +31,8 @@ namespace metadata {
 // Provides an interface to pack TFLite ModelMetadata [1] and corresponding
 // associated files into a TFLite FlatBuffer.
 //
+// This class is NOT thread-safe.
+//
 // [1]: https://www.tensorflow.org/lite/convert/metadata
 class ModelMetadataPopulator {
  public:

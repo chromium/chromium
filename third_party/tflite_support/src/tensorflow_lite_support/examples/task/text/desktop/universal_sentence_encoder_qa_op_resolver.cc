@@ -15,7 +15,7 @@ limitations under the License.
 #include "tensorflow_lite_support/examples/task/text/desktop/universal_sentence_encoder_qa_op_resolver.h"
 
 #include "absl/memory/memory.h"  // from @com_google_absl
-#include "tensorflow/lite/kernels/register.h"
+#include "tensorflow/lite/core/shims/cc/kernels/register.h"
 
 namespace tflite {
 namespace ops {
@@ -32,7 +32,8 @@ namespace text {
 
 // Creates custom op resolver for USE QA task.
 std::unique_ptr<tflite::OpResolver> CreateQACustomOpResolver() {
-  auto resolver = absl::make_unique<tflite::ops::builtin::BuiltinOpResolver>();
+  auto resolver =
+      absl::make_unique<tflite_shims::ops::builtin::BuiltinOpResolver>();
   resolver->AddCustom(
       "TFSentencepieceTokenizeOp",
       ::tflite::ops::custom::Register_SENTENCEPIECE_TOKENIZER());

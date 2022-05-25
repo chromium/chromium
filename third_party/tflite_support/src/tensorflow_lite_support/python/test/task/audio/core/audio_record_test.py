@@ -13,27 +13,26 @@
 # limitations under the License.
 """Tests for audio_record."""
 
-from unittest import mock
-
 import numpy as np
-from numpy import testing
-
+import tensorflow as tf
 import unittest
 from tensorflow_lite_support.python.task.audio.core import audio_record
+
+_mock = unittest.mock
 
 _CHANNELS = 2
 _SAMPLING_RATE = 16000
 _BUFFER_SIZE = 15600
 
 
-class AudioRecordTest(unittest.TestCase):
+class AudioRecordTest(tf.test.TestCase):
 
   def setUp(self):
     super().setUp()
 
     # Mock sounddevice.InputStream
-    with mock.patch("sounddevice.InputStream") as mock_input_stream_new_method:
-      self.mock_input_stream = mock.MagicMock()
+    with _mock.patch("sounddevice.InputStream") as mock_input_stream_new_method:
+      self.mock_input_stream = _mock.MagicMock()
       mock_input_stream_new_method.return_value = self.mock_input_stream
       self.record = audio_record.AudioRecord(_CHANNELS, _SAMPLING_RATE,
                                              _BUFFER_SIZE)
@@ -72,13 +71,13 @@ class AudioRecordTest(unittest.TestCase):
 
     # Assert read data of a single chunk.
     recorded_audio_data = self.record.read(chunk_size)
-    testing.assert_almost_equal(recorded_audio_data, input_data[-1])
+    self.assertAllClose(recorded_audio_data, input_data[-1])
 
     # Assert read all data in buffer.
     recorded_audio_data = self.record.read(chunk_size * 2)
     print(input_data[-2].shape)
     expected_data = np.concatenate(input_data[-2:])
-    testing.assert_almost_equal(recorded_audio_data, expected_data)
+    self.assertAllClose(recorded_audio_data, expected_data)
 
   def test_read_fails_with_invalid_sample_size(self):
     callback_fn = self.init_args["callback"]
@@ -93,4 +92,4 @@ class AudioRecordTest(unittest.TestCase):
 
 
 if __name__ == "__main__":
-  unittest.main()
+  tf.test.main()

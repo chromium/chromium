@@ -62,6 +62,9 @@ objc_library(
         "sources/TFLSegmentationResult.h",
     ],
     module_name = "TFLSegmentationResult",
+    deps = [
+        "//tensorflow_lite_support/ios:TFLCommonUtils",
+    ],
 )
 
 objc_library(

@@ -28,8 +28,8 @@ cc_test_with_tflite(
         "//tensorflow_lite_support/c/task/processor:classification_result",
         "//tensorflow_lite_support/c/task/vision/core:frame_buffer",
         "//tensorflow_lite_support/cc/port:gtest_main",
+        "//tensorflow_lite_support/cc/task/vision/utils:image_utils",
         "//tensorflow_lite_support/cc/test:test_utils",
-        "//tensorflow_lite_support/examples/task/vision/desktop/utils:image_utils",
     ],
 )
 
@@ -50,8 +50,8 @@ cc_test_with_tflite(
         "//tensorflow_lite_support/c/task/processor:detection_result",
         "//tensorflow_lite_support/c/task/vision/core:frame_buffer",
         "//tensorflow_lite_support/cc/port:gtest_main",
+        "//tensorflow_lite_support/cc/task/vision/utils:image_utils",
         "//tensorflow_lite_support/cc/test:test_utils",
-        "//tensorflow_lite_support/examples/task/vision/desktop/utils:image_utils",
     ],
 )
 
@@ -71,7 +71,7 @@ cc_test_with_tflite(
         "//tensorflow_lite_support/c/task/processor:segmentation_result",
         "//tensorflow_lite_support/c/task/vision/core:frame_buffer",
         "//tensorflow_lite_support/cc/port:gtest_main",
+        "//tensorflow_lite_support/cc/task/vision/utils:image_utils",
         "//tensorflow_lite_support/cc/test:test_utils",
-        "//tensorflow_lite_support/examples/task/vision/desktop/utils:image_utils",
     ],
 )

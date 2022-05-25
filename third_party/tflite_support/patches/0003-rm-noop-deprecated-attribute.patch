@@ -1,6 +1,6 @@
-From 758683d39012410890eb4599e1df5d315e76361e Mon Sep 17 00:00:00 2001
+From 9e135eeb8ce9afb6919588bfa0cad0e8b9c77c92 Mon Sep 17 00:00:00 2001
 From: Robert Ogden <robertogden@chromium.org>
-Date: Wed, 13 Apr 2022 10:56:42 -0700
+Date: Wed, 25 May 2022 10:53:14 -0700
 Subject: [PATCH 3/9] rm noop deprecated attribute
 
 ---
@@ -22,5 +22,5 @@ index 7c2143201daa9..b7af66044b129 100644
    int input_tensor_index = 0;
    int output_score_tensor_index = 0;
 -- 
-2.35.1.1178.g4f1659d476-goog
+2.36.1.124.g0e6072fb45-goog
 

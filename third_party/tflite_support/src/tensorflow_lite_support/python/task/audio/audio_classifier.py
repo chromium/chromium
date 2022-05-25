@@ -83,7 +83,7 @@ class AudioClassifier(object):
       RuntimeError: If other types of error occurred.
     """
     classifier = _CppAudioClassifier.create_from_options(
-        options.base_options, options.classification_options)
+        options.base_options, options.classification_options.to_pb2())
     return cls(options, classifier)
 
   def create_input_tensor_audio(self) -> tensor_audio.TensorAudio:
@@ -122,8 +122,10 @@ class AudioClassifier(object):
       ValueError: If any of the input arguments is invalid.
       RuntimeError: If failed to run audio classification.
     """
-    return self._classifier.classify(
+    classification_result = self._classifier.classify(
         _CppAudioBuffer(audio.buffer, audio.buffer_size, audio.format))
+    return classifications_pb2.ClassificationResult.create_from_pb2(
+        classification_result)
 
   @property
   def required_input_buffer_size(self) -> int:
@@ -132,5 +134,9 @@ class AudioClassifier(object):
 
   @property
   def required_audio_format(self) -> _CppAudioFormat:
-    """Gets the required audio format for the model."""
+    """Gets the required audio format for the model.
+
+    Raises:
+      RuntimeError: If failed to get the required audio format.
+    """
     return self._classifier.get_required_audio_format()

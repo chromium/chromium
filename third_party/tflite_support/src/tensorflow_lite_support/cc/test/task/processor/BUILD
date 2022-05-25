@@ -25,8 +25,8 @@ cc_test_with_tflite(
         "//tensorflow_lite_support/cc/port:gtest_main",
         "//tensorflow_lite_support/cc/task/core:task_utils",
         "//tensorflow_lite_support/cc/task/vision/utils:frame_buffer_common_utils",
+        "//tensorflow_lite_support/cc/task/vision/utils:image_utils",
         "//tensorflow_lite_support/cc/test:test_utils",
-        "//tensorflow_lite_support/examples/task/vision/desktop/utils:image_utils",
         "@com_google_absl//absl/status",
     ],
 )

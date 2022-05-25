@@ -79,8 +79,8 @@ class ObjectDetector(object):
         `ObjectDetectorOptions` such as missing the model.
       RuntimeError: If other types of error occurred.
     """
-    detector = _CppObjectDetector.create_from_options(options.base_options,
-                                                      options.detection_options)
+    detector = _CppObjectDetector.create_from_options(
+        options.base_options, options.detection_options.to_pb2())
     return cls(options, detector)
 
   def detect(self,
@@ -98,5 +98,5 @@ class ObjectDetector(object):
       RuntimeError: If object detection failed to run.
     """
     image_data = image_utils.ImageData(image.buffer)
-
-    return self._detector.detect(image_data)
+    detection_result = self._detector.detect(image_data)
+    return detections_pb2.DetectionResult.create_from_pb2(detection_result)

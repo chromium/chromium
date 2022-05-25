@@ -259,7 +259,110 @@ And `/tmp/segmentation-output.jpg` should contain the segmentation mask:
 
 ![segmentation-output](g3doc/segmentation-output.png)
 
+## ImageEmbedder
+
+#### Prerequisites
+
+You will need:
+
+*   a TFLite image embedder model (e.g. [mobilenet v3][5], a generic image
+    embedder trained on ImageNet),
+*   two PNG, JPEG or GIF image to extract embeddings from.
+
+#### Usage
+
+The ImageEmbedder demo tool takes two images as inputs, and outputs the
+[cosine similarity][6] between their embeddings.
+
+In the console, run:
+
+```bash
+# Download the model:
+curl \
+ -L 'https://tfhub.dev/google/lite-model/imagenet/mobilenet_v3_small_100_224/feature_vector/5/metadata/1?lite-format=tflite' \
+ -o /tmp/mobilenet_v3_embedder.tflite
+
+# Run the embedder tool:
+bazel run -c opt \
+tensorflow_lite_support/examples/task/vision/desktop:image_embedder_demo -- \
+--model_path=/tmp/mobilenet_v3_embedder.tflite \
+--l2_normalize \
+--first_image_path=$(pwd)/tensorflow_lite_support/cc/test/testdata/task/vision/burger.jpg \
+--second_image_path=$(pwd)/tensorflow_lite_support/cc/test/testdata/task/vision/burger_crop.jpg
+```
+
+#### Results
+
+In the console, you should get:
+
+```
+Cosine similarity: 0.932738
+```
+
+## ImageSearcher
+
+#### Prerequisites
+
+You will need:
+
+*   a TFLite image embedder model (e.g. [mobilenet v3][5], a generic image
+    embedder trained on ImageNet),
+*   an index built from that embedder model using [Model Maker][7].
+
+Model Maker also provides the ability to add the index directly to the embedder
+model metadata. The demo also supports this : just omit the `--index_path`
+argument.
+
+#### Usage
+
+In this example, we'll be using a test index built from the mobilenet v3
+embedder model, which only contains 5 embeddings extracted from images of a
+burger, a cat, a dog, a bird and a car.
+
+In the console, run:
+
+```bash
+# Download the model:
+curl \
+ -L 'https://tfhub.dev/google/lite-model/imagenet/mobilenet_v3_small_100_224/feature_vector/5/metadata/1?lite-format=tflite' \
+ -o /tmp/mobilenet_v3_embedder.tflite
+
+# Run the searcher tool:
+bazel run -c opt \
+tensorflow_lite_support/examples/task/vision/desktop:image_searcher_demo -- \
+--model_path=/tmp/mobilenet_v3_embedder.tflite \
+--l2_normalize \
+--index_path=$(pwd)/third_party/tensorflow_lite_support/cc/test/testdata/task/vision/searcher_index.ldb \
+--image_path=$(pwd)/third_party/tensorflow_lite_support/cc/test/testdata/task/vision/burger_crop.jpg
+```
+
+#### Results
+
+In the console, you should get:
+
+```
+Results:
+ Rank#0:
+  metadata: burger
+  distance: 0.13452
+ Rank#1:
+  metadata: car
+  distance: 1.81935
+ Rank#2:
+  metadata: bird
+  distance: 1.96617
+ Rank#3:
+  metadata: dog
+  distance: 2.05610
+ Rank#4:
+  metadata: cat
+  distance: 2.06347
+```
+
 [1]: https://tfhub.dev/google/lite-model/aiy/vision/classifier/birds_V1/3
 [2]: https://tfhub.dev/tensorflow/lite-model/ssd_mobilenet_v1/1/metadata/2
 [3]: https://tfhub.dev/tensorflow/lite-model/deeplabv3/1/metadata/2
 [4]: https://coral.ai/docs/edgetpu/inference/
+[5]: https://tfhub.dev/google/lite-model/imagenet/mobilenet_v3_small_100_224/feature_vector/5/metadata/1
+[6]: https://en.wikipedia.org/wiki/Cosine_similarity
+[7]: https://www.tensorflow.org/lite/api_docs/python/tflite_model_maker/searcher

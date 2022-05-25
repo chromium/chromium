@@ -16,16 +16,15 @@
 import enum
 
 from absl.testing import parameterized
-# TODO(b/220067158): Change to import tensorflow and leverage tf.test once
-# fixed the dependency issue.
-import unittest
+import numpy as np
+import tensorflow as tf
 
+import unittest
 from tensorflow_lite_support.python.task.audio import audio_embedder
 from tensorflow_lite_support.python.task.audio.core import audio_record
 from tensorflow_lite_support.python.task.audio.core import tensor_audio
 from tensorflow_lite_support.python.task.core.proto import base_options_pb2
 from tensorflow_lite_support.python.task.processor.proto import embedding_options_pb2
-from tensorflow_lite_support.python.test import base_test
 from tensorflow_lite_support.python.test import test_util
 
 _mock = unittest.mock
@@ -41,7 +40,7 @@ class ModelFileType(enum.Enum):
   FILE_NAME = 2
 
 
-class AudioEmbedderTest(parameterized.TestCase, base_test.BaseTestCase):
+class AudioEmbedderTest(parameterized.TestCase, tf.test.TestCase):
 
   def setUp(self):
     super().setUp()
@@ -100,11 +99,11 @@ class AudioEmbedderTest(parameterized.TestCase, base_test.BaseTestCase):
     self.assertEqual(record.buffer_size, 15600)
 
   @parameterized.parameters((_YAMNET_EMBEDDING_MODEL_FILE, False, False,
-                             ModelFileType.FILE_NAME, 1024, 0.091439),
+                             ModelFileType.FILE_NAME, 1024, 0.091439, 0),
                             (_YAMNET_EMBEDDING_MODEL_FILE, True, True,
-                             ModelFileType.FILE_CONTENT, 1024, 0.092382))
+                             ModelFileType.FILE_CONTENT, 1024, 0.092382, 0))
   def test_embed(self, model_name, l2_normalize, quantize, model_file_type,
-                 embedding_length, expected_similarity):
+                 embedding_length, expected_similarity, expected_first_value):
     # Create embedder.
     model_path = test_util.get_test_data_path(model_name)
     if model_file_type is ModelFileType.FILE_NAME:
@@ -137,26 +136,25 @@ class AudioEmbedderTest(parameterized.TestCase, base_test.BaseTestCase):
     result1 = embedder.embed(tensor1)
 
     # Check embedding sizes.
-    def _check_embedding_size(result):
-      self.assertLen(result.embeddings, 1)
-      feature_vector = result.embeddings[0].feature_vector
-      if quantize:
-        self.assertLen(feature_vector.value_string, embedding_length)
-      else:
-        self.assertLen(feature_vector.value_float, embedding_length)
-
-    _check_embedding_size(result0)
-    _check_embedding_size(result1)
-
+    self.assertLen(result0.embeddings, 1)
     result0_feature_vector = result0.embeddings[0].feature_vector
+    self.assertLen(result1.embeddings, 1)
     result1_feature_vector = result1.embeddings[0].feature_vector
 
+    self.assertLen(result0_feature_vector.value, embedding_length)
+    self.assertLen(result1_feature_vector.value, embedding_length)
+
     if quantize:
-      self.assertLen(result0_feature_vector.value_string, 1024)
-      self.assertLen(result1_feature_vector.value_string, 1024)
+      self.assertEqual(result0_feature_vector.value.dtype, np.uint8)
     else:
-      self.assertLen(result0_feature_vector.value_float, 1024)
-      self.assertLen(result1_feature_vector.value_float, 1024)
+      self.assertEqual(result1_feature_vector.value.dtype, float)
+
+    self.assertLen(result0_feature_vector.value, 1024)
+    self.assertLen(result1_feature_vector.value, 1024)
+
+    # Check embedding value.
+    self.assertAlmostEqual(result0_feature_vector.value[0],
+                           expected_first_value)
 
     # Checks cosine similarity.
     similarity = embedder.cosine_similarity(result0_feature_vector,
@@ -176,4 +174,4 @@ class AudioEmbedderTest(parameterized.TestCase, base_test.BaseTestCase):
 
 
 if __name__ == "__main__":
-  unittest.main()
+  tf.test.main()

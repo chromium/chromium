@@ -13,12 +13,9 @@
  limitations under the License.
  ==============================================================================*/
 #import "tensorflow_lite_support/ios/task/processor/sources/TFLSegmentationResult.h"
+#import "tensorflow_lite_support/ios/sources/TFLCommonUtils.h"
 
-@implementation TFLCategoryMask {
-  NSInteger _width;
-  NSInteger _height;
-  UInt8* _mask;
-}
+@implementation TFLCategoryMask
 
 - (instancetype)initWithWidth:(NSInteger)width
                        height:(NSInteger)height
@@ -28,8 +25,11 @@
     _width = width;
     _height = height;
     if (mask != NULL) {
-      _mask = malloc(width * height * sizeof(UInt8));
-      memcpy(_mask, mask, width * height * sizeof(UInt8));
+      _mask = [TFLCommonUtils mallocWithSize:width * height * sizeof(UInt8)
+                                       error:nil];
+      if (_mask) {
+        memcpy(_mask, mask, width * height * sizeof(UInt8));
+      }
     }
   }
   return self;
@@ -47,11 +47,7 @@
 
 @end
 
-@implementation TFLConfidenceMask {
-  NSInteger _width;
-  NSInteger _height;
-  float* _mask;
-}
+@implementation TFLConfidenceMask
 
 - (instancetype)initWithWidth:(NSInteger)width
                        height:(NSInteger)height
@@ -61,8 +57,11 @@
     _width = width;
     _height = height;
     if (mask != NULL) {
-      _mask = malloc(width * height * sizeof(float));
-      memcpy(_mask, mask, width * height * sizeof(float));
+      _mask = [TFLCommonUtils mallocWithSize:width * height * sizeof(float)
+                                       error:nil];
+      if (_mask) {
+        memcpy(_mask, mask, width * height * sizeof(float));
+      }
     }
   }
   return self;
@@ -81,22 +80,66 @@
 @end
 
 @implementation TFLColoredLabel
-@synthesize r;
-@synthesize g;
-@synthesize b;
-@synthesize label;
-@synthesize displayName;
+
+- (instancetype)initWithRed:(NSUInteger)r
+                      green:(NSUInteger)g
+                       blue:(NSUInteger)b
+                      label:(NSString*)label
+                displayName:(NSString*)displayName {
+  self = [super init];
+  if (self) {
+    _r = r;
+    _g = g;
+    _b = b;
+    _label = label;
+    _displayName = displayName;
+  }
+  return self;
+}
 
 @end
 
 @implementation TFLSegmentation
-@synthesize confidenceMasks;
-@synthesize categoryMask;
-@synthesize coloredLabels;
+
+- (instancetype)
+    initWithConfidenceMasks:(NSArray<TFLConfidenceMask*>*)confidenceMasks
+              coloredLabels:(NSArray<TFLColoredLabel*>*)coloredLabels {
+  return [self initWithConfidenceMasks:confidenceMasks
+                          categoryMask:nil
+                         coloredLabels:coloredLabels];
+}
+
+- (instancetype)initWithCategoryMask:(TFLCategoryMask*)categoryMask
+                       coloredLabels:(NSArray<TFLColoredLabel*>*)coloredLabels {
+  return [self initWithConfidenceMasks:nil
+                          categoryMask:categoryMask
+                         coloredLabels:coloredLabels];
+}
+
+- (instancetype)
+    initWithConfidenceMasks:(NSArray<TFLConfidenceMask*>*)confidenceMasks
+               categoryMask:(TFLCategoryMask*)categoryMask
+              coloredLabels:(NSArray<TFLColoredLabel*>*)coloredLabels {
+  self = [super init];
+  if (self) {
+    _confidenceMasks = confidenceMasks;
+    _categoryMask = categoryMask;
+    _coloredLabels = coloredLabels;
+  }
+  return self;
+}
 
 @end
 
 @implementation TFLSegmentationResult
-@synthesize segmentations;
 
+- (instancetype)initWithSegmentations:
+    (NSArray<TFLSegmentation*>*)segmentations {
+  self = [super init];
+  if (self) {
+    _segmentations = segmentations;
+  }
+
+  return self;
+}
 @end

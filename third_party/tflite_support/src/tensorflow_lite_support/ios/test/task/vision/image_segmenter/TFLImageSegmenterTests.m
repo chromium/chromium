@@ -52,8 +52,8 @@ NSInteger const deepLabV3SegmentationHeight = 257;
   // test method in the class.
   [super setUp];
   self.modelPath =
-      [[NSBundle bundleForClass:[self class]] pathForResource:@"deeplabv3"
-                                                       ofType:@"tflite"];
+      [[NSBundle bundleForClass:self.class] pathForResource:@"deeplabv3"
+                                                     ofType:@"tflite"];
   XCTAssertNotNil(self.modelPath);
 }
 
@@ -216,7 +216,7 @@ NSInteger const deepLabV3SegmentationHeight = 257;
   XCTAssertNotNil(imageSegmenter);
 
   GMLImage* gmlImage =
-      [GMLImage imageFromBundleWithClass:[self class]
+      [GMLImage imageFromBundleWithClass:self.class
                                 fileName:@"segmentation_input_rotation0"
                                   ofType:@"jpg"];
   XCTAssertNotNil(gmlImage);
@@ -236,7 +236,7 @@ NSInteger const deepLabV3SegmentationHeight = 257;
   XCTAssertTrue(segmentationResult.segmentations[0].categoryMask.mask != nil);
 
   GMLImage* goldenImage =
-      [GMLImage imageFromBundleWithClass:[self class]
+      [GMLImage imageFromBundleWithClass:self.class
                                 fileName:@"segmentation_golden_rotation0"
                                   ofType:@"png"];
 

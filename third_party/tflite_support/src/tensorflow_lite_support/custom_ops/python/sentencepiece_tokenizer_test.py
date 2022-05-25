@@ -13,7 +13,6 @@
 # limitations under the License.
 # ==============================================================================
 
-# Lint as: python3
 """Tests for sentencepiece_tokenizer."""
 
 import os

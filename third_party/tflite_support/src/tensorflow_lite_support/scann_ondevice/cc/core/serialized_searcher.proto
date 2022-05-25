@@ -23,7 +23,9 @@ enum DistanceMeasure {
 }
 
 message PartitionerProto {
-  message Leaf { repeated float dimension = 1 [packed = true]; }
+  message Leaf {
+    repeated float dimension = 1 [packed = true];
+  }
 
   repeated Leaf leaf = 1;
 
@@ -33,9 +35,13 @@ message PartitionerProto {
 }
 
 message AsymmetricHashingProto {
-  message CodebookEntry { repeated float dimension = 1 [packed = true]; }
+  message CodebookEntry {
+    repeated float dimension = 1 [packed = true];
+  }
 
-  message SubspaceCodebook { repeated CodebookEntry entry = 1; }
+  message SubspaceCodebook {
+    repeated CodebookEntry entry = 1;
+  }
 
   repeated SubspaceCodebook subspace = 1;
 
@@ -50,7 +56,9 @@ message AsymmetricHashingProto {
   optional LookupType lookup_type = 3 [default = FLOAT];
 }
 message IndexerProto {
-  oneof indexer { AsymmetricHashingProto asymmetric_hashing = 1; }
+  oneof indexer {
+    AsymmetricHashingProto asymmetric_hashing = 1;
+  }
 }
 message ScannOnDeviceConfig {
   optional DistanceMeasure query_distance = 1 [default = UNSPECIFIED];

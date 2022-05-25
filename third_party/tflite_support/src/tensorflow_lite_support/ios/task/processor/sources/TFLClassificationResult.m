@@ -17,13 +17,20 @@ limitations under the License.
 @implementation TFLClassifications
 
 - (instancetype)initWithHeadIndex:(NSInteger)headIndex
+                         headName:(nullable NSString*)headName
                        categories:(NSArray<TFLCategory*>*)categories {
   self = [super init];
   if (self) {
     _headIndex = headIndex;
+    _headName = headName;
     _categories = categories;
   }
   return self;
+}
+
+- (instancetype)initWithHeadIndex:(NSInteger)headIndex
+                       categories:(NSArray<TFLCategory*>*)categories {
+  return [self initWithHeadIndex:headIndex headName:nil categories:categories];
 }
 
 @end

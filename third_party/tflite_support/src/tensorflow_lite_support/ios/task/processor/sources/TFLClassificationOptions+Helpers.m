@@ -101,8 +101,8 @@
   return YES;
 }
 
-- (void)deleteCStringArraysOfClassificationOptions:
-    (TfLiteClassificationOptions *)cClassificationOptions {
+- (void)deleteAllocatedMemoryOfClassificationOptions:
+    (TfLiteClassificationOptions*)cClassificationOptions {
   if (self.labelAllowList) {
     [TFLClassificationOptions deleteCStringsArray:cClassificationOptions->label_allowlist.list
                                             count:cClassificationOptions->label_allowlist.length];
@@ -112,5 +112,8 @@
     [TFLClassificationOptions deleteCStringsArray:cClassificationOptions->label_denylist.list
                                             count:cClassificationOptions->label_denylist.length];
   }
+
+  free(cClassificationOptions->display_names_local);
 }
+
 @end

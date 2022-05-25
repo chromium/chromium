@@ -2,7 +2,7 @@ Pod::Spec.new do |s|
   s.name             = 'TensorFlowLiteTaskText'
   s.version          = '${TFLS_BUILD_VERSION}'
   s.authors          = 'Google Inc.'
-  s.license          = { :type => 'Apache' }
+  s.license          = { :type => 'Apache',:file => "LICENSE" }
   s.homepage         = 'https://github.com/tensorflow/tflite-support'
   s.source           = { :http => '${TFLS_DOWNLOAD_URL}' }
   s.summary          = 'TensorFlow Lite Task Library - Text'
@@ -21,9 +21,9 @@ Pod::Spec.new do |s|
     objc_dir + '{nlclassifier,qa}/Sources/*.h'
   ]
 
-  cc_dir = 'tensorflow_lite_support/cc/task/text/'
+  c_dir = 'tensorflow_lite_support/c/task/text/'
   s.source_files = [
-    cc_dir + '{nlclassifier,qa}/*_c_api*.h',
+    c_dir + '*.h',
     objc_dir + 'apis/*.h',
     objc_dir + '{nlclassifier,qa}/Sources/*.{h,m,mm}'
   ]
@@ -31,8 +31,7 @@ Pod::Spec.new do |s|
   s.pod_target_xcconfig = {
     'HEADER_SEARCH_PATHS' =>
       '"${PODS_TARGET_SRCROOT}" ' +
-      '"${PODS_TARGET_SRCROOT}/' + cc_dir + 'nlclassifier" ' +
-      '"${PODS_TARGET_SRCROOT}/' + cc_dir + 'qa" ' +
+      '"${PODS_TARGET_SRCROOT}/' + c_dir + '" ' +
       '"${PODS_TARGET_SRCROOT}/' + objc_dir + 'apis" ' +
       '"${PODS_TARGET_SRCROOT}/' + objc_dir + 'nlclassifier/Sources" ' +
       '"${PODS_TARGET_SRCROOT}/' + objc_dir + 'qa/Sources"',

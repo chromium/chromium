@@ -13,7 +13,6 @@
 # limitations under the License.
 # ==============================================================================
 
-# Lint as: python3
 """Python class that implements Sentencepiece tokenizer.
 
 It follows TF.text designers design.

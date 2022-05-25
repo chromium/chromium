@@ -70,7 +70,7 @@ NS_ASSUME_NONNULL_BEGIN
     [ret setValue:[NSNumber numberWithDouble:cCategory.score]
            forKey:[NSString stringWithUTF8String:cCategory.text]];
   }
-  NLClassifierCategoriesDelete(cCategories);
+  TfLiteNLClassifierCategoriesDelete(cCategories);
   return ret;
 }
 @end

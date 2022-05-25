@@ -14,7 +14,7 @@
 """Tests for tensor_audio."""
 from absl.testing import parameterized
 import numpy as np
-from numpy import testing
+import tensorflow as tf
 
 import unittest
 from tensorflow_lite_support.python.task.audio.core import audio_record
@@ -30,7 +30,7 @@ _SAMPLE_RATE = 16000
 _BUFFER_SIZE = 15600
 
 
-class TensorAudioTest(parameterized.TestCase, unittest.TestCase):
+class TensorAudioTest(parameterized.TestCase, tf.test.TestCase):
 
   def setUp(self):
     super().setUp()
@@ -69,7 +69,7 @@ class TensorAudioTest(parameterized.TestCase, unittest.TestCase):
     self.assertEqual(audio_format.sample_rate, _SAMPLE_RATE)
     self.assertEqual(self.test_tensor_audio.buffer_size, _BUFFER_SIZE)
     self.assertIsInstance(audio_buffer, np.ndarray)
-    testing.assert_almost_equal(audio_buffer, array)
+    self.assertAllClose(audio_buffer, array)
 
   def test_load_from_array_succeeds_with_larger_input_size_and_default_params(
       self):
@@ -84,7 +84,7 @@ class TensorAudioTest(parameterized.TestCase, unittest.TestCase):
     self.assertEqual(audio_format.sample_rate, _SAMPLE_RATE)
     self.assertEqual(self.test_tensor_audio.buffer_size, _BUFFER_SIZE)
     self.assertIsInstance(audio_buffer, np.ndarray)
-    testing.assert_almost_equal(audio_buffer, array[_BUFFER_SIZE:])
+    self.assertAllClose(audio_buffer, array[_BUFFER_SIZE:])
 
   @parameterized.parameters((0, 15600), (7800, 15600))
   def test_load_from_array_succeeds_with_larger_input_size_and_params_specified(
@@ -100,7 +100,7 @@ class TensorAudioTest(parameterized.TestCase, unittest.TestCase):
     self.assertEqual(audio_format.sample_rate, _SAMPLE_RATE)
     self.assertEqual(self.test_tensor_audio.buffer_size, _BUFFER_SIZE)
     self.assertIsInstance(audio_buffer, np.ndarray)
-    testing.assert_almost_equal(audio_buffer, array[offset:offset + size])
+    self.assertAllClose(audio_buffer, array[offset:offset + size])
 
   def test_load_from_array_succeeds_with_smaller_input_size_and_default_params(
       self):
@@ -116,7 +116,7 @@ class TensorAudioTest(parameterized.TestCase, unittest.TestCase):
     self.assertEqual(audio_format.sample_rate, _SAMPLE_RATE)
     self.assertEqual(self.test_tensor_audio.buffer_size, _BUFFER_SIZE)
     self.assertIsInstance(audio_buffer, np.ndarray)
-    testing.assert_almost_equal(audio_buffer[-input_length:], array)
+    self.assertAllClose(audio_buffer[-input_length:], array)
 
   @parameterized.parameters((0, 4000), (3900, 100))
   def test_load_from_array_succeeds_with_smaller_input_size_and_params_specified(
@@ -132,8 +132,7 @@ class TensorAudioTest(parameterized.TestCase, unittest.TestCase):
     self.assertEqual(audio_format.sample_rate, _SAMPLE_RATE)
     self.assertEqual(self.test_tensor_audio.buffer_size, _BUFFER_SIZE)
     self.assertIsInstance(audio_buffer, np.ndarray)
-    testing.assert_almost_equal(audio_buffer[-size:],
-                                array[offset:offset + size])
+    self.assertAllClose(audio_buffer[-size:], array[offset:offset + size])
 
   @parameterized.parameters((7800, 15600), (0, 20000))
   def test_load_from_array_fails_with_invalid_offset_size(self, offset, size):
@@ -177,7 +176,7 @@ class TensorAudioTest(parameterized.TestCase, unittest.TestCase):
     self.test_tensor_audio.load_from_audio_record(record)
 
     # Assert read all data in the float buffer.
-    testing.assert_almost_equal(self.test_tensor_audio.buffer, expected_data)
+    self.assertAllClose(self.test_tensor_audio.buffer, expected_data)
 
   @_mock.patch("sounddevice.InputStream", return_value=_mock.MagicMock())
   def test_load_from_audio_record_fails_with_invalid_buffer_size(self, _):
@@ -213,4 +212,4 @@ class TensorAudioTest(parameterized.TestCase, unittest.TestCase):
 
 
 if __name__ == "__main__":
-  unittest.main()
+  tf.test.main()

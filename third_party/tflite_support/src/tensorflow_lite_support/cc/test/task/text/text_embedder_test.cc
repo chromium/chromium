@@ -126,6 +126,38 @@ TEST_F(CreateFromOptionsTest, FailsWithMissingModel) {
           absl::StrCat(support::TfLiteSupportStatus::kInvalidArgumentError))));
 }
 
+TEST(EmbedTest, SucceedsWithMobileBertModel) {
+  TextEmbedderOptions options = GetBasicOptions(kMobileBert);
+  // No Embedding options means all head get a default option.
+  SUPPORT_ASSERT_OK_AND_ASSIGN(std::unique_ptr<TextEmbedder> text_embedder,
+                               TextEmbedder::CreateFromOptions(options));
+
+  SUPPORT_ASSERT_OK_AND_ASSIGN(
+      auto result0,
+      text_embedder->Embed("it's a charming and often affecting journey"));
+  EXPECT_EQ(result0.embeddings_size(), 1);
+  EXPECT_EQ(result0.embeddings(0).feature_vector().value_float_size(), 512);
+
+  EXPECT_NEAR(result0.embeddings(0).feature_vector().value_float(0), 19.9016f,
+              kValueDiffTolerance);
+
+  SUPPORT_ASSERT_OK_AND_ASSIGN(
+      auto result1, text_embedder->Embed("what a great and fantastic trip"));
+  EXPECT_EQ(result1.embeddings_size(), 1);
+  EXPECT_EQ(result1.embeddings(0).feature_vector().value_float_size(), 512);
+
+  EXPECT_NEAR(result1.embeddings(0).feature_vector().value_float(0), 22.626251f,
+              kValueDiffTolerance);
+
+  // Check cosine similarity.
+  SUPPORT_ASSERT_OK_AND_ASSIGN(
+      double similarity,
+      TextEmbedder::CosineSimilarity(result0.embeddings(0).feature_vector(),
+                                     result1.embeddings(0).feature_vector()));
+  double expected_similarity = 0.969514;
+  EXPECT_NEAR(similarity, expected_similarity, kSimilarityTolerancy);
+}
+
 TEST(EmbedTest, SucceedsWithRegexModel) {
   TextEmbedderOptions options = GetBasicOptions(kRegexOneEmbeddingModel);
   // No Embedding options means all head get a default option.

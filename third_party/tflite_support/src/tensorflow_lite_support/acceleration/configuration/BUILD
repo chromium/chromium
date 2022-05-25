@@ -89,7 +89,7 @@ cc_test(
     ],
     deps = [
         ":edgetpu_coral_plugin",
-        "//tensorflow_lite_support/examples/task/vision/desktop/utils:image_utils",
+        "//tensorflow_lite_support/cc/task/vision/utils:image_utils",
         "@com_google_googletest//:gtest_main",
         "@org_tensorflow//tensorflow/lite:framework",
         "@org_tensorflow//tensorflow/lite/c:common",

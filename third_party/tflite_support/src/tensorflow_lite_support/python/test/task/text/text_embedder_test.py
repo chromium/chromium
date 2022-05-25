@@ -16,8 +16,9 @@
 import enum
 
 from absl.testing import parameterized
-
+import numpy as np
 import tensorflow as tf
+
 from tensorflow_lite_support.python.task.core.proto import base_options_pb2
 from tensorflow_lite_support.python.task.processor.proto import embedding_options_pb2
 from tensorflow_lite_support.python.task.text import text_embedder
@@ -29,6 +30,7 @@ _TextEmbedderOptions = text_embedder.TextEmbedderOptions
 
 _REGEX_MODEL = "regex_one_embedding_with_metadata.tflite"
 _BERT_MODEL = "mobilebert_embedding_with_metadata.tflite"
+_USE_MODEL = "universal_sentence_encoder_qa_with_metadata.tflite"
 
 
 class ModelFileType(enum.Enum):
@@ -69,13 +71,18 @@ class TextEmbedderTest(parameterized.TestCase, tf.test.TestCase):
       self.assertIsInstance(embedder, _TextEmbedder)
 
   @parameterized.parameters(
-      (_REGEX_MODEL, False, False, ModelFileType.FILE_NAME, 16, 0.999937),
-      (_REGEX_MODEL, True, True, ModelFileType.FILE_NAME, 16, 0.999878),
-      (_BERT_MODEL, False, False, ModelFileType.FILE_CONTENT, 512, 0.969514),
-      (_BERT_MODEL, True, True, ModelFileType.FILE_CONTENT, 512, 0.966984),
+      (_REGEX_MODEL, False, False, ModelFileType.FILE_NAME, 16, 0.999937,
+       0.03093561),
+      (_REGEX_MODEL, True, True, ModelFileType.FILE_NAME, 16, 0.999878, 70),
+      (_BERT_MODEL, False, False, ModelFileType.FILE_CONTENT, 512, 0.969514,
+       19.901617),
+      (_BERT_MODEL, True, True, ModelFileType.FILE_CONTENT, 512, 0.966984, 7),
+      (_USE_MODEL, False, False, ModelFileType.FILE_NAME, 100, 0.851961,
+       1.4229515),
+      (_USE_MODEL, True, True, ModelFileType.FILE_CONTENT, 100, 0.852664, 16),
   )
   def test_embed(self, model_name, l2_normalize, quantize, model_file_type,
-                 embedding_length, expected_similarity):
+                 embedding_length, expected_similarity, expected_first_value):
     # Create embedder.
     model_path = test_util.get_test_data_path(model_name)
     if model_file_type is ModelFileType.FILE_NAME:
@@ -99,16 +106,28 @@ class TextEmbedderTest(parameterized.TestCase, tf.test.TestCase):
     result1 = embedder.embed("what a great and fantastic trip")
 
     # Check embedding sizes.
-    def _check_embedding_size(result):
-      self.assertLen(result.embeddings, 1)
-      feature_vector = result.embeddings[0].feature_vector
-      if quantize:
-        self.assertLen(feature_vector.value_string, embedding_length)
-      else:
-        self.assertLen(feature_vector.value_float, embedding_length)
+    self.assertLen(result0.embeddings, 1)
+    result0_feature_vector = result0.embeddings[0].feature_vector
+    self.assertLen(result1.embeddings, 1)
+    result1_feature_vector = result1.embeddings[0].feature_vector
 
-    _check_embedding_size(result0)
-    _check_embedding_size(result1)
+    self.assertLen(result0_feature_vector.value, embedding_length)
+    self.assertLen(result1_feature_vector.value, embedding_length)
+
+    if quantize:
+      self.assertEqual(result0_feature_vector.value.dtype, np.uint8)
+    else:
+      self.assertEqual(result1_feature_vector.value.dtype, float)
+
+    # Check embedding value.
+    self.assertAlmostEqual(
+        result0_feature_vector.value[0], expected_first_value, places=3)
+
+    # Checks cosine similarity.
+    similarity = embedder.cosine_similarity(
+        result0.embeddings[0].feature_vector,
+        result1.embeddings[0].feature_vector)
+    self.assertAlmostEqual(similarity, expected_similarity, places=4)
 
   def test_get_embedding_dimension(self):
     options = _TextEmbedderOptions(_BaseOptions(file_name=self.model_path))

@@ -8,10 +8,6 @@ package(
 py_library(
     name = "audio_record",
     srcs = ["audio_record.py"],
-    deps = [
-        # build rule placeholder: numpy dep,
-        # build rule placeholder: sounddevice dep,
-    ],
 )
 
 py_library(

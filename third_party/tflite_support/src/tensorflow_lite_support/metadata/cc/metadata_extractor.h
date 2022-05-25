@@ -146,9 +146,9 @@ class ModelMetadataExtractor {
   // Pointer to the extracted ModelMetadata, if any.
   const tflite::ModelMetadata* model_metadata_{nullptr};
   // The files associated with the ModelMetadata, as a map with the filename
-  // (corresponding to a basename, e.g. "labels.txt") as key and the file
-  // contents as value.
-  absl::flat_hash_map<std::string, std::string> associated_files_;
+  // (corresponding to a basename, e.g. "labels.txt") as key and a pointer to
+  // the file contents as value.
+  absl::flat_hash_map<std::string, absl::string_view> associated_files_;
 };
 
 }  // namespace metadata

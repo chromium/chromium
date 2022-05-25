@@ -121,6 +121,10 @@ static_library("tflite_support") {
     "src/tensorflow_lite_support/cc/utils/common_utils.h",
     "src/tensorflow_lite_support/metadata/cc/metadata_extractor.cc",
     "src/tensorflow_lite_support/metadata/cc/metadata_extractor.h",
+    "src/tensorflow_lite_support/metadata/cc/utils/zip_readonly_mem_file.cc",
+    "src/tensorflow_lite_support/metadata/cc/utils/zip_readonly_mem_file.h",
+    "src/tensorflow_lite_support/metadata/cc/utils/zip_writable_mem_file.cc",
+    "src/tensorflow_lite_support/metadata/cc/utils/zip_writable_mem_file.h",
   ]
 
   deps = [
@@ -136,6 +140,7 @@ static_library("tflite_support") {
     "//third_party/tflite:tflite-config-proto",
     "//third_party/tflite:tflite_public_headers",
     "//third_party/utf",
+    "//third_party/zlib:minizip",
   ]
 
   public_deps = [

@@ -83,3 +83,34 @@ cc_test(
         "@org_tensorflow//tensorflow/lite/core/shims:cc_shims_test_util",
     ],
 )
+
+cc_test(
+    name = "text_searcher_test",
+    srcs = ["text_searcher_test.cc"],
+    data = [
+        "//tensorflow_lite_support/cc/test/testdata/task/text:mobilebert_embedding_with_metadata",
+        "//tensorflow_lite_support/cc/test/testdata/task/text:regex_embedding_with_metadata",
+        "//tensorflow_lite_support/cc/test/testdata/task/text:test_indices",
+        "//tensorflow_lite_support/cc/test/testdata/task/text:test_searchers",
+        "//tensorflow_lite_support/cc/test/testdata/task/text:universal_sentence_encoder_qa",
+    ],
+    deps = [
+        "//tensorflow_lite_support/cc:common",
+        "//tensorflow_lite_support/cc/port:gtest_main",
+        "//tensorflow_lite_support/cc/port:statusor",
+        "//tensorflow_lite_support/cc/task/core/proto:base_options_cc_proto",
+        "//tensorflow_lite_support/cc/task/processor/proto:embedding_options_cc_proto",
+        "//tensorflow_lite_support/cc/task/processor/proto:search_options_cc_proto",
+        "//tensorflow_lite_support/cc/task/processor/proto:search_result_cc_proto",
+        "//tensorflow_lite_support/cc/task/text:text_searcher",
+        "//tensorflow_lite_support/cc/task/text/proto:text_searcher_options_cc_proto",
+        "//tensorflow_lite_support/cc/test:test_utils",
+        "//tensorflow_lite_support/examples/task/text/desktop:universal_sentence_encoder_qa_op_resolver",
+        "@com_google_absl//absl/flags:flag",
+        "@com_google_absl//absl/status",
+        "@com_google_absl//absl/strings",
+        "@com_google_absl//absl/strings:cord",
+        "@org_tensorflow//tensorflow/lite/core/api:op_resolver",
+        "@org_tensorflow//tensorflow/lite/core/shims:cc_shims_test_util",
+    ],
+)

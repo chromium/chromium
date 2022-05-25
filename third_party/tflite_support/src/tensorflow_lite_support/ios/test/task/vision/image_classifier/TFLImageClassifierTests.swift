@@ -17,22 +17,21 @@ import XCTest
 
 @testable import TFLImageClassifier
 
-class TFLImageClassifierTests: XCTestCase {
+class ImageClassifierTests: XCTestCase {
 
-  static let bundle = Bundle(for: TFLImageClassifierTests.self)
+  static let bundle = Bundle(for: ImageClassifierTests.self)
   static let modelPath = bundle.path(
     forResource: "mobilenet_v2_1.0_224",
     ofType: "tflite")
 
   func testSuccessfullInferenceOnMLImageWithUIImage() throws {
 
-    let modelPath = try XCTUnwrap(TFLImageClassifierTests.modelPath)
+    let modelPath = try XCTUnwrap(ImageClassifierTests.modelPath)
 
-    let imageClassifierOptions = TFLImageClassifierOptions(modelPath: modelPath)
-    XCTAssertNotNil(imageClassifierOptions)
+    let imageClassifierOptions = ImageClassifierOptions(modelPath: modelPath)
 
     let imageClassifier =
-      try TFLImageClassifier.imageClassifier(options: imageClassifierOptions!)
+      try ImageClassifier.classifier(options: imageClassifierOptions)
 
     let gmlImage = try XCTUnwrap(
       MLImage.imageFromBundle(
@@ -40,8 +39,8 @@ class TFLImageClassifierTests: XCTestCase {
         filename: "burger",
         type: "jpg"))
 
-    let classificationResults: TFLClassificationResult =
-      try imageClassifier.classify(gmlImage: gmlImage)
+    let classificationResults: ClassificationResult =
+      try imageClassifier.classify(mlImage: gmlImage)
 
     XCTAssertNotNil(classificationResults)
     XCTAssertEqual(classificationResults.classifications.count, 1)
@@ -54,16 +53,15 @@ class TFLImageClassifierTests: XCTestCase {
 
   func testModelOptionsWithMaxResults() throws {
 
-    let modelPath = try XCTUnwrap(TFLImageClassifierTests.modelPath)
+    let modelPath = try XCTUnwrap(ImageClassifierTests.modelPath)
 
-    let imageClassifierOptions = TFLImageClassifierOptions(modelPath: modelPath)
-    XCTAssertNotNil(imageClassifierOptions)
+    let imageClassifierOptions = ImageClassifierOptions(modelPath: modelPath)
 
     let maxResults = 3
-    imageClassifierOptions!.classificationOptions.maxResults = maxResults
+    imageClassifierOptions.classificationOptions.maxResults = maxResults
 
     let imageClassifier =
-      try TFLImageClassifier.imageClassifier(options: imageClassifierOptions!)
+      try ImageClassifier.classifier(options: imageClassifierOptions)
 
     let gmlImage = try XCTUnwrap(
       MLImage.imageFromBundle(
@@ -71,8 +69,8 @@ class TFLImageClassifierTests: XCTestCase {
         filename: "burger",
         type: "jpg"))
 
-    let classificationResults: TFLClassificationResult = try imageClassifier.classify(
-      gmlImage: gmlImage)
+    let classificationResults: ClassificationResult = try imageClassifier.classify(
+      mlImage: gmlImage)
 
     XCTAssertNotNil(classificationResults)
     XCTAssertEqual(classificationResults.classifications.count, 1)
@@ -86,13 +84,12 @@ class TFLImageClassifierTests: XCTestCase {
 
   func testInferenceWithBoundingBox() throws {
 
-    let modelPath = try XCTUnwrap(TFLImageClassifierTests.modelPath)
+    let modelPath = try XCTUnwrap(ImageClassifierTests.modelPath)
 
-    let imageClassifierOptions = TFLImageClassifierOptions(modelPath: modelPath)
-    XCTAssertNotNil(imageClassifierOptions)
+    let imageClassifierOptions = ImageClassifierOptions(modelPath: modelPath)
 
     let imageClassifier =
-      try TFLImageClassifier.imageClassifier(options: imageClassifierOptions!)
+      try ImageClassifier.classifier(options: imageClassifierOptions)
 
     let gmlImage = try XCTUnwrap(
       MLImage.imageFromBundle(
@@ -102,7 +99,7 @@ class TFLImageClassifierTests: XCTestCase {
 
     let roi = CGRect(x: 406, y: 110, width: 148, height: 153)
     let classificationResults =
-      try imageClassifier.classify(gmlImage: gmlImage, regionOfInterest: roi)
+      try imageClassifier.classify(mlImage: gmlImage, regionOfInterest: roi)
 
     XCTAssertNotNil(classificationResults)
     XCTAssertEqual(classificationResults.classifications.count, 1)
@@ -116,13 +113,12 @@ class TFLImageClassifierTests: XCTestCase {
 
   func testInferenceWithRGBAImage() throws {
 
-    let modelPath = try XCTUnwrap(TFLImageClassifierTests.modelPath)
+    let modelPath = try XCTUnwrap(ImageClassifierTests.modelPath)
 
-    let imageClassifierOptions = TFLImageClassifierOptions(modelPath: modelPath)
-    XCTAssertNotNil(imageClassifierOptions)
+    let imageClassifierOptions = ImageClassifierOptions(modelPath: modelPath)
 
     let imageClassifier =
-      try TFLImageClassifier.imageClassifier(options: imageClassifierOptions!)
+      try ImageClassifier.classifier(options: imageClassifierOptions)
 
     let gmlImage = try XCTUnwrap(
       MLImage.imageFromBundle(
@@ -131,7 +127,7 @@ class TFLImageClassifierTests: XCTestCase {
         type: "png"))
 
     let classificationResults =
-      try imageClassifier.classify(gmlImage: gmlImage)
+      try imageClassifier.classify(mlImage: gmlImage)
 
     XCTAssertNotNil(classificationResults)
     XCTAssertEqual(classificationResults.classifications.count, 1)

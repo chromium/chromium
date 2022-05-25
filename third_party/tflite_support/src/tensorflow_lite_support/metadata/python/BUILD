@@ -22,6 +22,7 @@ py_library(
     srcs_version = "PY3",
     visibility = ["//visibility:public"],
     deps = [
+        # build rule placeholder: numpy dep,
         "//tensorflow_lite_support/metadata:metadata_schema_py",
         "//tensorflow_lite_support/metadata:schema_py",
         "//tensorflow_lite_support/metadata/cc/python:_pywrap_metadata_version",

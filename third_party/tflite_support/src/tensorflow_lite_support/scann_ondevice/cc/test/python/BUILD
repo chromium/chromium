@@ -2,7 +2,7 @@ load("@org_tensorflow//tensorflow:tensorflow.bzl", "pybind_extension")
 
 package(
     default_visibility = [
-        "//tensorflow_lite_support/python/model_maker/core/utils:__subpackages__",
+        "//tensorflow_lite_support:internal",
     ],
     licenses = ["notice"],
 )
@@ -13,7 +13,7 @@ pybind_extension(
     module_name = "leveldb_testing_utils",
     visibility = [
         "//nlp/sage/learning/asqp:__subpackages__",
-        "//tensorflow_lite_support/python/model_maker/core/utils:__subpackages__",
+        "//tensorflow_lite_support:internal",
     ],
     deps = [
         "@com_google_absl//absl/memory",
