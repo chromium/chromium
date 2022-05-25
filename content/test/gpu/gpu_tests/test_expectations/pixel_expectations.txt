@@ -408,6 +408,8 @@ crbug.com/1307787 [ linux skia-renderer-vulkan ] Pixel_VulkanSwiftShader_WebGPUC
 # Vulkan Swiftshader WebGPU unaccelerated OffscreenCanvas missing source image
 crbug.com/1307787 [ linux skia-renderer-vulkan ] Pixel_VulkanSwiftShader_WebGPUImportVideoFrameUnacceleratedOffscreenCanvas [ Failure ]
 
+crbug.com/1203317 [ android android-shield-android-tv no-passthrough ] Pixel_OffscreenCanvasWebGLPaintAfterResize [ RetryOnFailure ]
+
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
 #######################################################################
