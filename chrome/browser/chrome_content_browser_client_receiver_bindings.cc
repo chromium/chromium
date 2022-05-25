@@ -222,7 +222,7 @@ void ChromeContentBrowserClient::ExposeInterfacesToRenderer(
         ui_task_runner);
   }
 
-#if BUILDFLAG(SAFE_BROWSING_DB_LOCAL) || BUILDFLAG(SAFE_BROWSING_DB_REMOTE)
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   if (safe_browsing_service_) {
     content::ResourceContext* resource_context =
         render_process_host->GetBrowserContext()->GetResourceContext();

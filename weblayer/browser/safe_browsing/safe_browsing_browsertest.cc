@@ -117,56 +117,51 @@ class SafeBrowsingErrorNavigationObserver : public NavigationObserver {
   base::RunLoop run_loop_;
 };
 
-void RunCallbackOnIOThread(
-    std::unique_ptr<safe_browsing::SafeBrowsingApiHandler::URLCheckCallbackMeta>
-        callback,
-    safe_browsing::SBThreatType threat_type,
-    const safe_browsing::ThreatMetadata& metadata) {
+typedef safe_browsing::SafeBrowsingApiHandler::URLCheckCallbackMeta
+    CallbackWithThreatAndMeta;
+
+void RunCallbackOnIOThread(std::unique_ptr<CallbackWithThreatAndMeta> callback,
+                           safe_browsing::SBThreatType threat_type,
+                           const safe_browsing::ThreatMetadata& metadata) {
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(std::move(*callback), threat_type, metadata));
 }
 
 }  // namespace
 
-class FakeSafeBrowsingApiHandler
-    : public safe_browsing::SafeBrowsingApiHandler {
+class TestUrlCheckInterceptor : public safe_browsing::UrlCheckInterceptor {
  public:
-  // SafeBrowsingApiHandler
-  void StartURLCheck(
-      std::unique_ptr<URLCheckCallbackMeta> callback,
-      const GURL& url,
-      const safe_browsing::SBThreatTypeSet& threat_types) override {
-    RunCallbackOnIOThread(std::move(callback), GetSafeBrowsingRestriction(url),
+  void Add(const GURL& url, safe_browsing::SBThreatType threat_type) {
+    map_[url] = threat_type;
+  }
+
+  void Clear() { map_.clear(); }
+
+  // safe_browsing::UrlCheckInterceptor
+  void Check(std::unique_ptr<CallbackWithThreatAndMeta> callback,
+             const GURL& url) const override {
+    RunCallbackOnIOThread(std::move(callback), Find(url),
                           safe_browsing::ThreatMetadata());
   }
-  bool StartCSDAllowlistCheck(const GURL& url) override { return false; }
-  bool StartHighConfidenceAllowlistCheck(const GURL& url) override {
-    return false;
-  }
-
-  void AddRestriction(const GURL& url,
-                      const safe_browsing::SBThreatType& threat_type) {
-    restrictions_[url] = threat_type;
-  }
-
-  void ClearRestrictions() { restrictions_.clear(); }
+  ~TestUrlCheckInterceptor() override{};
 
  private:
-  safe_browsing::SBThreatType GetSafeBrowsingRestriction(const GURL& url) {
-    auto restrictions_iter = restrictions_.find(url);
-    if (restrictions_iter == restrictions_.end()) {
-      // if the url is not in restrictions assume it's safe.
-      return safe_browsing::SB_THREAT_TYPE_SAFE;
-    }
-    return restrictions_iter->second;
+  safe_browsing::SBThreatType Find(const GURL& url) const {
+    auto it = map_.find(url);
+    if (it != map_.end())
+      return it->second;
+
+    // If the url is not in the map assume it is safe.
+    return safe_browsing::SB_THREAT_TYPE_SAFE;
   }
 
-  std::map<GURL, safe_browsing::SBThreatType> restrictions_;
+  std::map<GURL, safe_browsing::SBThreatType> map_;
 };
 
 class SafeBrowsingBrowserTest : public WebLayerBrowserTest {
  public:
-  SafeBrowsingBrowserTest() : fake_handler_(new FakeSafeBrowsingApiHandler()) {}
+  SafeBrowsingBrowserTest()
+      : url_check_interceptor_(std::make_unique<TestUrlCheckInterceptor>()) {}
 
   SafeBrowsingBrowserTest(const SafeBrowsingBrowserTest&) = delete;
   SafeBrowsingBrowserTest& operator=(const SafeBrowsingBrowserTest&) = delete;
@@ -184,11 +179,14 @@ class SafeBrowsingBrowserTest : public WebLayerBrowserTest {
 
   void TearDown() override {
     profile()->SetGoogleAccountAccessTokenFetchDelegate(nullptr);
+    safe_browsing::SafeBrowsingApiHandler::GetInstance()
+        ->SetInterceptorForTesting(nullptr);
   }
 
   void InitializeOnMainThread() {
     NavigateAndWaitForCompletion(GURL("about:blank"), shell());
-    safe_browsing::SafeBrowsingApiHandler::SetInstance(fake_handler_.get());
+    safe_browsing::SafeBrowsingApiHandler::GetInstance()
+        ->SetInterceptorForTesting(url_check_interceptor_.get());
 
     // Some tests need to be able to navigate to URLs on domains that are not
     // explicitly localhost (e.g., so that realtime URL lookups occur on these
@@ -221,7 +219,7 @@ class SafeBrowsingBrowserTest : public WebLayerBrowserTest {
 
   void NavigateWithThreatType(const safe_browsing::SBThreatType& threatType,
                               bool expect_interstitial) {
-    fake_handler_->AddRestriction(url_, threatType);
+    url_check_interceptor_->Add(url_, threatType);
     Navigate(url_, expect_interstitial);
   }
 
@@ -244,7 +242,7 @@ class SafeBrowsingBrowserTest : public WebLayerBrowserTest {
     GURL page_with_script_url =
         embedded_test_server()->GetURL("/simple_page_with_script.html");
     GURL script_url = embedded_test_server()->GetURL("/script.js");
-    fake_handler_->AddRestriction(script_url, threat_type);
+    url_check_interceptor_->Add(script_url, threat_type);
     Navigate(page_with_script_url, expect_interstitial);
   }
 
@@ -281,7 +279,7 @@ class SafeBrowsingBrowserTest : public WebLayerBrowserTest {
     crash_observer.Wait();
   }
 
-  std::unique_ptr<FakeSafeBrowsingApiHandler> fake_handler_;
+  std::unique_ptr<TestUrlCheckInterceptor> url_check_interceptor_;
   GURL url_;
 
   ProfileImpl* profile() {
@@ -343,8 +341,8 @@ IN_PROC_BROWSER_TEST_F(SafeBrowsingBrowserTest, CheckNavigationErrorType) {
   for (auto threat_type : threat_types) {
     SafeBrowsingErrorNavigationObserver observer(url_, shell());
 
-    fake_handler_->ClearRestrictions();
-    fake_handler_->AddRestriction(url_, threat_type);
+    url_check_interceptor_->Clear();
+    url_check_interceptor_->Add(url_, threat_type);
     shell()->tab()->GetNavigationController()->Navigate(url_);
 
     observer.WaitForNavigationFailureWithSafeBrowsingError();

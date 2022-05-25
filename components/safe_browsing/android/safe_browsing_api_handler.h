@@ -11,23 +11,30 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "components/safe_browsing/core/browser/db/util.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
-#include "url/gurl.h"
+
+class GURL;
 
 namespace safe_browsing {
 
+class UrlCheckInterceptor;
+struct ThreatMetadata;
+
+// TODO(pasko): Fold this class into SafeBrowsingApiHandlerBridge for
+// simplicity, as there are no other subclasses. This direction of folding
+// eliminates confusion of this native class with the
+// SafeBrowsingApiHandler.java.
 class SafeBrowsingApiHandler {
  public:
-  // Singleton interface.
-  static void SetInstance(SafeBrowsingApiHandler* instance);
+  // Returns a pointer to the singleton.
   static SafeBrowsingApiHandler* GetInstance();
 
-  typedef base::OnceCallback<void(SBThreatType sb_threat_type,
-                                  const ThreatMetadata& metadata)>
+  typedef base::OnceCallback<void(SBThreatType, const ThreatMetadata&)>
       URLCheckCallbackMeta;
 
-  // Makes Native->Java call and invokes callback when check is done.
+  virtual ~SafeBrowsingApiHandler(){};
+
+  // Makes Native-to-Java call and invokes callback when the check is done.
   virtual void StartURLCheck(std::unique_ptr<URLCheckCallbackMeta> callback,
                              const GURL& url,
                              const SBThreatTypeSet& threat_types) = 0;
@@ -36,11 +43,22 @@ class SafeBrowsingApiHandler {
 
   virtual bool StartHighConfidenceAllowlistCheck(const GURL& url) = 0;
 
-  virtual ~SafeBrowsingApiHandler() {}
+  void SetInterceptorForTesting(UrlCheckInterceptor* interceptor) {
+    interceptor_for_testing_ = interceptor;
+  }
 
- private:
-  // Pointer not owned.
-  static SafeBrowsingApiHandler* instance_;
+ protected:
+  UrlCheckInterceptor* interceptor_for_testing_ = nullptr;
+};
+
+// Interface allowing simplified interception of calls to
+// SafeBrowsingApiHandler. Intended for use only in tests.
+class UrlCheckInterceptor {
+ public:
+  virtual ~UrlCheckInterceptor(){};
+  virtual void Check(
+      std::unique_ptr<SafeBrowsingApiHandler::URLCheckCallbackMeta> callback,
+      const GURL& url) const = 0;
 };
 
 }  // namespace safe_browsing

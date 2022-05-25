@@ -13,10 +13,6 @@
 
 class MainThreadStackSamplingProfiler;
 
-namespace safe_browsing {
-class SafeBrowsingApiHandler;
-}
-
 // Android override of ChromeMainDelegate
 class ChromeMainDelegateAndroid : public ChromeMainDelegate {
  public:
@@ -35,16 +31,11 @@ class ChromeMainDelegateAndroid : public ChromeMainDelegate {
   absl::variant<int, content::MainFunctionParams> RunProcess(
       const std::string& process_type,
       content::MainFunctionParams main_function_params) override;
-  void ProcessExiting(const std::string& process_type) override;
+  void ProcessExiting(const std::string& process_type) override{};
 
  private:
   std::unique_ptr<MainThreadStackSamplingProfiler> sampling_profiler_;
   std::unique_ptr<content::BrowserMainRunner> browser_runner_;
-
-#if BUILDFLAG(SAFE_BROWSING_DB_REMOTE)
-  std::unique_ptr<safe_browsing::SafeBrowsingApiHandler>
-      safe_browsing_api_handler_;
-#endif
 };
 
 #endif  // CHROME_APP_ANDROID_CHROME_MAIN_DELEGATE_ANDROID_H_

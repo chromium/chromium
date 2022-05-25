@@ -219,6 +219,11 @@ void SafeBrowsingApiHandlerBridge::StartURLCheck(
     std::unique_ptr<SafeBrowsingApiHandler::URLCheckCallbackMeta> callback,
     const GURL& url,
     const SBThreatTypeSet& threat_types) {
+  if (interceptor_for_testing_) {
+    // For testing, only check the interceptor.
+    interceptor_for_testing_->Check(std::move(callback), url);
+    return;
+  }
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   if (!CheckApiIsSupported()) {
     // Mark all requests as safe. Only users who have an old, broken GMSCore or
@@ -245,11 +250,15 @@ void SafeBrowsingApiHandlerBridge::StartURLCheck(
 }
 
 bool SafeBrowsingApiHandlerBridge::StartCSDAllowlistCheck(const GURL& url) {
+  if (interceptor_for_testing_)
+    return false;
   return StartAllowlistCheck(url, safe_browsing::SB_THREAT_TYPE_CSD_ALLOWLIST);
 }
 
 bool SafeBrowsingApiHandlerBridge::StartHighConfidenceAllowlistCheck(
     const GURL& url) {
+  if (interceptor_for_testing_)
+    return false;
   return StartAllowlistCheck(
       url, safe_browsing::SB_THREAT_TYPE_HIGH_CONFIDENCE_ALLOWLIST);
 }

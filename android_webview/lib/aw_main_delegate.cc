@@ -305,11 +305,6 @@ bool AwMainDelegate::BasicStartupComplete(int* exit_code) {
 
   android_webview::RegisterPathProvider();
 
-  safe_browsing_api_handler_ =
-      std::make_unique<safe_browsing::SafeBrowsingApiHandlerBridge>();
-  safe_browsing::SafeBrowsingApiHandler::SetInstance(
-      safe_browsing_api_handler_.get());
-
   // Used only if the argument filter is enabled in tracing config,
   // as is the case by default in aw_tracing_controller.cc
   base::trace_event::TraceLog::GetInstance()->SetArgumentFilterPredicate(

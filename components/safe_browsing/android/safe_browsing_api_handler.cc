@@ -3,20 +3,21 @@
 // found in the LICENSE file.
 
 #include "components/safe_browsing/android/safe_browsing_api_handler.h"
-#include "base/bind.h"
+
+#include "base/no_destructor.h"
+#include "components/safe_browsing/android/safe_browsing_api_handler_bridge.h"
+#include "components/safe_browsing/buildflags.h"
 
 namespace safe_browsing {
 
-SafeBrowsingApiHandler* SafeBrowsingApiHandler::instance_ = nullptr;
-
-// static
-void SafeBrowsingApiHandler::SetInstance(SafeBrowsingApiHandler* instance) {
-  instance_ = instance;
-}
-
 // static
 SafeBrowsingApiHandler* SafeBrowsingApiHandler::GetInstance() {
-  return instance_;
+#if BUILDFLAG(SAFE_BROWSING_DB_REMOTE)
+  static base::NoDestructor<SafeBrowsingApiHandlerBridge> instance;
+  return instance.get();
+#else
+  return nullptr;
+#endif
 }
 
 }  // namespace safe_browsing

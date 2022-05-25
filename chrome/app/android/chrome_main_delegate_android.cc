@@ -8,6 +8,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/base_paths_android.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -17,18 +18,10 @@
 #include "chrome/browser/android/metrics/uma_utils.h"
 #include "chrome/common/profiler/main_thread_stack_sampling_profiler.h"
 #include "components/policy/core/common/android/android_combined_policy_provider.h"
-#include "components/safe_browsing/buildflags.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "content/public/browser/browser_main_runner.h"
 
-#if BUILDFLAG(SAFE_BROWSING_DB_REMOTE)
-#include "components/safe_browsing/android/safe_browsing_api_handler.h"
-#include "components/safe_browsing/android/safe_browsing_api_handler_bridge.h"
-#endif
-
 namespace {
-using safe_browsing::SafeBrowsingApiHandler;
-
 // Whether to use the process start time for startup metrics.
 const base::Feature kUseProcessStartTimeForMetrics{
     "UseProcessStartTimeForMetrics", base::FEATURE_DISABLED_BY_DEFAULT};
@@ -41,12 +34,7 @@ ChromeMainDelegateAndroid::ChromeMainDelegateAndroid() = default;
 ChromeMainDelegateAndroid::~ChromeMainDelegateAndroid() = default;
 
 bool ChromeMainDelegateAndroid::BasicStartupComplete(int* exit_code) {
-#if BUILDFLAG(SAFE_BROWSING_DB_REMOTE)
-  safe_browsing_api_handler_ =
-      std::make_unique<safe_browsing::SafeBrowsingApiHandlerBridge>();
-  SafeBrowsingApiHandler::SetInstance(safe_browsing_api_handler_.get());
-#endif
-
+  TRACE_EVENT0("startup", "ChromeMainDelegateAndroid::BasicStartupComplete");
   policy::android::AndroidCombinedPolicyProvider::SetShouldWaitForPolicy(true);
   SetChromeSpecificCommandLineFlags();
 
@@ -117,11 +105,4 @@ ChromeMainDelegateAndroid::RunProcess(
   if (exit_code > 0)
     return exit_code;
   return 0;
-}
-
-void ChromeMainDelegateAndroid::ProcessExiting(
-    const std::string& process_type) {
-#if BUILDFLAG(SAFE_BROWSING_DB_REMOTE)
-  SafeBrowsingApiHandler::SetInstance(nullptr);
-#endif
 }
