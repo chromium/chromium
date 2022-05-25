@@ -4019,7 +4019,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
             NewTabPageTabHelper::FromWebState(self.currentWebState);
         if (NTPHelper) {
           NTPHelper->SetNextNTPFeedType(feedType);
-          NTPHelper->SetNextNTPScrolledToFeed(YES);
+          // TODO(crbug.com/1329173): Scroll into feed.
         }
 
         // Navigate to NTP in same tab.
