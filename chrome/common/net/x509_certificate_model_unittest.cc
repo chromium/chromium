@@ -4,6 +4,7 @@
 
 #include "chrome/common/net/x509_certificate_model.h"
 
+#include "net/cert/internal/parse_certificate.h"
 #include "net/cert/x509_util.h"
 #include "net/test/cert_builder.h"
 #include "net/test/cert_test_util.h"
@@ -15,6 +16,22 @@ class X509CertificateModel : public testing::TestWithParam<std::string> {};
 using x509_certificate_model::Error;
 using x509_certificate_model::NotPresent;
 using x509_certificate_model::OptionalStringOrError;
+
+namespace {
+
+absl::optional<std::string> FindExtension(
+    const std::vector<x509_certificate_model::Extension>& extensions,
+    base::StringPiece name) {
+  for (const auto& extension : extensions) {
+    if (extension.name == name) {
+      return extension.value;
+    }
+  }
+
+  return absl::nullopt;
+}
+
+}  // namespace
 
 TEST_P(X509CertificateModel, InvalidCert) {
   x509_certificate_model::X509CertificateModel model(
@@ -96,6 +113,9 @@ TEST_P(X509CertificateModel, GetGoogleCertFields) {
   EXPECT_EQ("Certificate Basic Constraints", extensions[0].name);
   EXPECT_EQ("critical\nIs not a Certification Authority\n",
             extensions[0].value);
+  EXPECT_EQ("CRL Distribution Points", extensions[1].name);
+  EXPECT_EQ("notcrit\nURI: http://crl.thawte.com/ThawteSGCCA.crl\n",
+            extensions[1].value);
   EXPECT_EQ("Extended Key Usage", extensions[2].name);
   EXPECT_EQ(
       "notcrit\nTLS WWW Server Authentication (OID.1.3.6.1.5.5.7.3.1)\nTLS WWW "
@@ -258,15 +278,9 @@ TEST_P(X509CertificateModel, CertificatePoliciesInvalidUtf8UserNotice) {
                                       "policies_sanity_check.pem");
   ASSERT_TRUE(cert);
   auto extensions = model.GetExtensions("critical", "notcrit");
-  bool found = false;
-  for (const auto& extension : extensions) {
-    if (extension.name == "Certificate Policies") {
-      found = true;
-      EXPECT_EQ("notcrit\nError: Unable to decode extension", extension.value);
-    }
-  }
-
-  EXPECT_TRUE(found);
+  auto extension_value = FindExtension(extensions, "Certificate Policies");
+  ASSERT_TRUE(extension_value);
+  EXPECT_EQ("notcrit\nError: Unable to decode extension", *extension_value);
 }
 
 TEST_P(X509CertificateModel, GlobalsignComCert) {
@@ -291,6 +305,10 @@ TEST_P(X509CertificateModel, GlobalsignComCert) {
       "notcrit\nKey ID: 8A FC 14 1B 3D A3 59 67 A5 3B E1 73 92 A6 62 91\n7F "
       "E4 78 30\n",
       extensions[1].value);
+
+  EXPECT_EQ("CRL Distribution Points", extensions[3].name);
+  EXPECT_EQ("notcrit\nURI: http://crl.globalsign.net/SHA256ExtendVal1.crl\n",
+            extensions[3].value);
 
   EXPECT_EQ("Certificate Basic Constraints", extensions[4].name);
   EXPECT_EQ("notcrit\nIs not a Certification Authority\n", extensions[4].value);
@@ -364,6 +382,136 @@ TEST_P(X509CertificateModel, AuthorityKeyIdentifierAllFields) {
       "OU = GTE CyberTrust Solutions, Inc.\nO = GTE Corporation\nC = US\n\n\n"
       "Serial Number: 01 A5\n",
       extensions[3].value);
+}
+
+TEST_P(X509CertificateModel, CrlDpCrlIssuerAndRelativeName) {
+  base::FilePath certs_dir = net::GetTestCertsDirectory();
+  std::unique_ptr<net::CertBuilder> builder =
+      net::CertBuilder::FromFile(certs_dir.AppendASCII("ok_cert.pem"), nullptr);
+  ASSERT_TRUE(builder);
+
+  // SEQUENCE {
+  //   SEQUENCE {
+  //     [0] {
+  //       [1] {
+  //         SEQUENCE {
+  //           # commonName
+  //           OBJECT_IDENTIFIER { 2.5.4.3 }
+  //           PrintableString { "indirect CRL for indirectCRL CA3" }
+  //         }
+  //       }
+  //     }
+  //     [2] {
+  //       [4] {
+  //         SEQUENCE {
+  //           SET {
+  //             SEQUENCE {
+  //               # organizationUnitName
+  //               OBJECT_IDENTIFIER { 2.5.4.11 }
+  //               PrintableString { "indirectCRL CA3 cRLIssuer" }
+  //             }
+  //           }
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
+  const uint8_t kCrldp[] = {
+      0x30, 0x59, 0x30, 0x57, 0xa0, 0x2b, 0xa1, 0x29, 0x30, 0x27, 0x06, 0x03,
+      0x55, 0x04, 0x03, 0x13, 0x20, 0x69, 0x6e, 0x64, 0x69, 0x72, 0x65, 0x63,
+      0x74, 0x20, 0x43, 0x52, 0x4c, 0x20, 0x66, 0x6f, 0x72, 0x20, 0x69, 0x6e,
+      0x64, 0x69, 0x72, 0x65, 0x63, 0x74, 0x43, 0x52, 0x4c, 0x20, 0x43, 0x41,
+      0x33, 0xa2, 0x28, 0xa4, 0x26, 0x30, 0x24, 0x31, 0x22, 0x30, 0x20, 0x06,
+      0x03, 0x55, 0x04, 0x0b, 0x13, 0x19, 0x69, 0x6e, 0x64, 0x69, 0x72, 0x65,
+      0x63, 0x74, 0x43, 0x52, 0x4c, 0x20, 0x43, 0x41, 0x33, 0x20, 0x63, 0x52,
+      0x4c, 0x49, 0x73, 0x73, 0x75, 0x65, 0x72};
+
+  builder->SetExtension(net::der::Input(net::kCrlDistributionPointsOid),
+                        std::string(kCrldp, kCrldp + sizeof(kCrldp)));
+
+  x509_certificate_model::X509CertificateModel model(
+      bssl::UpRef(builder->GetCertBuffer()), GetParam());
+  ASSERT_TRUE(model.is_valid());
+
+  auto extensions = model.GetExtensions("critical", "notcrit");
+
+  auto extension_value = FindExtension(extensions, "CRL Distribution Points");
+  ASSERT_TRUE(extension_value);
+  EXPECT_EQ(
+      "notcrit\nCN = indirect CRL for indirectCRL CA3\nIssuer: X.500 Name: OU "
+      "= indirectCRL CA3 cRLIssuer\n\n",
+      *extension_value);
+}
+
+TEST_P(X509CertificateModel, CrlDpReasons) {
+  base::FilePath certs_dir = net::GetTestCertsDirectory();
+  std::unique_ptr<net::CertBuilder> builder =
+      net::CertBuilder::FromFile(certs_dir.AppendASCII("ok_cert.pem"), nullptr);
+  ASSERT_TRUE(builder);
+
+  // SEQUENCE {
+  //   SEQUENCE {
+  //     [0] {
+  //       [0] {
+  //         [4] {
+  //           SEQUENCE {
+  //             SET {
+  //               SEQUENCE {
+  //                 # commonName
+  //                 OBJECT_IDENTIFIER { 2.5.4.3 }
+  //                 PrintableString { "CRL1" }
+  //               }
+  //             }
+  //           }
+  //         }
+  //       }
+  //     }
+  //     [1 PRIMITIVE] { `0560` }
+  //   }
+  //   SEQUENCE {
+  //     [0] {
+  //       [0] {
+  //         [4] {
+  //           SEQUENCE {
+  //             SET {
+  //               SEQUENCE {
+  //                 # commonName
+  //                 OBJECT_IDENTIFIER { 2.5.4.3 }
+  //                 PrintableString { "CRL2" }
+  //               }
+  //             }
+  //           }
+  //         }
+  //       }
+  //     }
+  //     [1 PRIMITIVE] { `079f80` }
+  //   }
+  // }
+  const uint8_t kCrldp[] = {
+      0x30, 0x3b, 0x30, 0x1b, 0xa0, 0x15, 0xa0, 0x13, 0xa4, 0x11, 0x30,
+      0x0f, 0x31, 0x0d, 0x30, 0x0b, 0x06, 0x03, 0x55, 0x04, 0x03, 0x13,
+      0x04, 0x43, 0x52, 0x4c, 0x31, 0x81, 0x02, 0x05, 0x60, 0x30, 0x1c,
+      0xa0, 0x15, 0xa0, 0x13, 0xa4, 0x11, 0x30, 0x0f, 0x31, 0x0d, 0x30,
+      0x0b, 0x06, 0x03, 0x55, 0x04, 0x03, 0x13, 0x04, 0x43, 0x52, 0x4c,
+      0x32, 0x81, 0x03, 0x07, 0x9f, 0x80};
+
+  builder->SetExtension(net::der::Input(net::kCrlDistributionPointsOid),
+                        std::string(kCrldp, kCrldp + sizeof(kCrldp)));
+
+  x509_certificate_model::X509CertificateModel model(
+      bssl::UpRef(builder->GetCertBuffer()), GetParam());
+  ASSERT_TRUE(model.is_valid());
+
+  auto extensions = model.GetExtensions("critical", "notcrit");
+
+  auto extension_value = FindExtension(extensions, "CRL Distribution Points");
+  ASSERT_TRUE(extension_value);
+
+  EXPECT_EQ(
+      "notcrit\nX.500 Name: CN = CRL1\n\nKey Compromise,CA Compromise\nX.500 "
+      "Name: CN = CRL2\n\nUnused,Affiliation Changed,Superseded,Cessation of "
+      "Operation,Certificate on Hold\n",
+      *extension_value);
 }
 
 TEST_P(X509CertificateModel, SubjectIA5StringInvalidCharacters) {

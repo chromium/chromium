@@ -318,6 +318,17 @@ absl::optional<std::string> ProcessBitField(net::der::BitString bitfield,
 }
 
 // Returns nullopt on error, or empty string if no bits were set.
+absl::optional<std::string> ProcessBitStringValue(
+    net::der::Input value,
+    base::span<const int> string_map,
+    char separator) {
+  absl::optional<net::der::BitString> decoded = net::der::ParseBitString(value);
+  if (!decoded) {
+    return absl::nullopt;
+  }
+  return ProcessBitField(decoded.value(), string_map, separator);
+}
+
 absl::optional<std::string> ProcessBitStringExtension(
     net::der::Input extension_data,
     base::span<const int> string_map,
@@ -327,12 +338,8 @@ absl::optional<std::string> ProcessBitStringExtension(
   if (!parser.ReadTag(net::der::kBitString, &value) || parser.HasMore()) {
     return absl::nullopt;
   }
-  absl::optional<net::der::BitString> decoded = net::der::ParseBitString(value);
-  if (!decoded) {
-    return absl::nullopt;
-  }
 
-  return ProcessBitField(decoded.value(), string_map, separator);
+  return ProcessBitStringValue(value, string_map, separator);
 }
 
 absl::optional<std::string> ProcessNSCertTypeExtension(
@@ -746,6 +753,82 @@ absl::optional<std::string> ProcessCertificatePolicies(
   return rv;
 }
 
+absl::optional<std::string> ProcessCrlDistributionPoints(
+    net::der::Input extension_data) {
+  std::vector<net::ParsedDistributionPoint> distribution_points;
+  if (!ParseCrlDistributionPoints(extension_data, &distribution_points))
+    return absl::nullopt;
+
+  //    ReasonFlags ::= BIT STRING {
+  static const int kReasonStrings[] = {
+      //         unused                  (0),
+      IDS_CERT_REVOCATION_REASON_UNUSED,
+      //         keyCompromise           (1),
+      IDS_CERT_REVOCATION_REASON_KEY_COMPROMISE,
+      //         cACompromise            (2),
+      IDS_CERT_REVOCATION_REASON_CA_COMPROMISE,
+      //         affiliationChanged      (3),
+      IDS_CERT_REVOCATION_REASON_AFFILIATION_CHANGED,
+      //         superseded              (4),
+      IDS_CERT_REVOCATION_REASON_SUPERSEDED,
+      //         cessationOfOperation    (5),
+      IDS_CERT_REVOCATION_REASON_CESSATION_OF_OPERATION,
+      //         certificateHold         (6),
+      IDS_CERT_REVOCATION_REASON_CERTIFICATE_HOLD,
+      // These aren't included as they would be challenging to translate and
+      // are irrelevant for a web browser. (Actually all of these are
+      // kinda irrelevant as we don't support CRL reasons.)
+      //         privilegeWithdrawn      (7),
+      //         aACompromise            (8) }
+  };
+
+  std::string rv;
+  for (const auto& dp : distribution_points) {
+    if (dp.distribution_point_fullname) {
+      absl::optional<std::string> s =
+          ProcessGeneralNames(*dp.distribution_point_fullname);
+      if (!s)
+        return absl::nullopt;
+      rv += *s;
+    }
+
+    if (dp.distribution_point_name_relative_to_crl_issuer) {
+      net::RelativeDistinguishedName name_relative_to_crl_issuer;
+      net::der::Parser rdnParser(
+          *dp.distribution_point_name_relative_to_crl_issuer);
+      if (!net::ReadRdn(&rdnParser, &name_relative_to_crl_issuer))
+        return absl::nullopt;
+      std::string s = ProcessRDN(name_relative_to_crl_issuer);
+      if (s.empty())
+        return absl::nullopt;
+      rv += s;
+    }
+
+    if (dp.reasons) {
+      absl::optional<std::string> s =
+          ProcessBitStringValue(*dp.reasons, kReasonStrings, ',');
+      if (!s)
+        return absl::nullopt;
+      rv += *s + '\n';
+    }
+
+    if (dp.crl_issuer) {
+      net::CertErrors unused_errors;
+      auto crl_issuer =
+          net::GeneralNames::CreateFromValue(*dp.crl_issuer, &unused_errors);
+      if (!crl_issuer)
+        return absl::nullopt;
+      absl::optional<std::string> s = ProcessGeneralNames(*crl_issuer);
+      if (!s)
+        return absl::nullopt;
+      rv += l10n_util::GetStringFUTF8(IDS_CERT_ISSUER_FORMAT,
+                                      base::UTF8ToUTF16(*s));
+    }
+  }
+
+  return rv;
+}
+
 }  // namespace
 
 X509CertificateModel::X509CertificateModel(
@@ -1005,6 +1088,8 @@ absl::optional<std::string> X509CertificateModel::ProcessExtensionData(
     return ProcessAuthorityKeyId(extension.value);
   if (extension.oid == net::der::Input(net::kCertificatePoliciesOid))
     return ProcessCertificatePolicies(extension.value);
+  if (extension.oid == net::der::Input(net::kCrlDistributionPointsOid))
+    return ProcessCrlDistributionPoints(extension.value);
   return ProcessRawBytes(extension.value);
 }
 
