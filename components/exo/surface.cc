@@ -1640,4 +1640,10 @@ void Surface::SetKeyboardShortcutsInhibited(bool inhibited) {
 #endif
 }
 
+Capabilities* Surface::GetCapabilities() {
+  if (delegate_)
+    return delegate_->GetCapabilities();
+  return nullptr;
+}
+
 }  // namespace exo

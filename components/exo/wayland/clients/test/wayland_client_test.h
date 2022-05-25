@@ -27,6 +27,8 @@ class WaylandClientTest : public testing::Test {
   void SetUp() override;
   void TearDown() override;
 
+  wayland::Server* GetServer();
+
  private:
   WaylandClientTestHelper test_helper_;
 };

@@ -198,6 +198,11 @@ void SurfaceTreeHost::DidPresentCompositorFrame(
   active_presentation_callbacks_.erase(it);
 }
 
+void SurfaceTreeHost::SetCapabilities(Capabilities* capabilities) {
+  DCHECK(capabilities_ == nullptr);
+  capabilities_ = capabilities;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // SurfaceDelegate overrides:
 
@@ -219,6 +224,11 @@ bool SurfaceTreeHost::IsInputEnabled(Surface*) const {
 
 void SurfaceTreeHost::OnNewOutputAdded() {
   UpdateDisplayOnTree();
+}
+
+Capabilities* SurfaceTreeHost::GetCapabilities() {
+  DCHECK(capabilities_);
+  return capabilities_;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

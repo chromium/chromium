@@ -40,6 +40,8 @@ class WaylandClientTestHelper {
   void SetUp();
   void TearDown();
 
+  wayland::Server* wayland_server() { return wayland_server_.get(); }
+
  protected:
   virtual void SetUpOnUIThread(base::WaitableEvent* event);
 

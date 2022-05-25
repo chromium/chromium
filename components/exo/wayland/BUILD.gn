@@ -608,6 +608,7 @@ test("wayland_client_tests") {
   use_xvfb = use_xvfb_in_this_config
 
   sources = [
+    "clients/capability_binding_test.cc",
     "clients/interface_binding_test.cc",
     "clients/test/run_all_client_tests.cc",
   ]
@@ -616,6 +617,8 @@ test("wayland_client_tests") {
     ":client_support",
     ":client_version_test",
     ":wayland_client_test_helper",
+    "//components/exo",
+    "//components/exo/wayland",
     "//ui/base",
     "//ui/gl:test_support",
   ]

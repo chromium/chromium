@@ -182,6 +182,8 @@ void remote_shell_get_remote_surface(wl_client* client,
   if (wl_resource_get_version(remote_surface_resource) < 18)
     shell_surface->set_server_reparent_window(true);
 
+  shell_surface->SetCapabilities(GetCapabilities(client));
+
   shell_surface->set_delegate(
       shell->CreateShellSurfaceDelegate(remote_surface_resource));
   shell_surface->set_close_callback(
