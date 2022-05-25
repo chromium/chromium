@@ -68,7 +68,7 @@ NSString* const kLearnMoreUrl = @"internal://learn-more";
   self.primaryActionString =
       [self contentTextWithStringID:self.activateSyncButtonID];
 
-  self.bannerImage = [UIImage imageNamed:@"sync_screen_banner"];
+  self.bannerName = @"sync_screen_banner";
   self.isTallBanner = NO;
   self.scrollToEndMandatory = YES;
   self.readMoreString =

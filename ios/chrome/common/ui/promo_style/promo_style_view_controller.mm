@@ -40,6 +40,9 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
 
 @interface PromoStyleViewController () <UIScrollViewDelegate>
 
+// Whether banner is light or dark mode
+@property(nonatomic, assign) UIUserInterfaceStyle bannerStyle;
+
 @property(nonatomic, strong) UIScrollView* scrollView;
 @property(nonatomic, strong) UIImageView* imageView;
 // UIView that wraps the scrollable content.
@@ -89,6 +92,7 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
   UILayoutGuide* subtitleMarginLayoutGuide = [[UILayoutGuide alloc] init];
 
   self.separator = [[UIView alloc] init];
+  self.bannerStyle = UIUserInterfaceStyleUnspecified;
   self.separator.translatesAutoresizingMaskIntoConstraints = NO;
   self.separator.backgroundColor = [UIColor colorNamed:kSeparatorColor];
   self.separator.hidden = YES;
@@ -343,9 +347,9 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
   // Rescale image here as on iPad the view height isn't correctly set before
   // subviews are laid out.
   self.calculatingImageSize = YES;
-  self.imageView.image = [self scaleSourceImage:self.bannerImage
-                                   currentImage:self.imageView.image
-                                         toSize:[self computeBannerImageSize]];
+  self.imageView.image =
+      [self scaleBannerWithCurrentImage:self.imageView.image
+                                 toSize:[self computeBannerImageSize]];
   self.calculatingImageSize = NO;
 }
 
@@ -406,9 +410,9 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
 - (UIImageView*)imageView {
   if (!_imageView) {
     _imageView = [[UIImageView alloc]
-        initWithImage:[self scaleSourceImage:self.bannerImage
-                                currentImage:nil
-                                      toSize:[self computeBannerImageSize]]];
+        initWithImage:
+            [self scaleBannerWithCurrentImage:nil
+                                       toSize:[self computeBannerImageSize]]];
     _imageView.clipsToBounds = YES;
     _imageView.translatesAutoresizingMaskIntoConstraints = NO;
   }
@@ -587,6 +591,10 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
 
 #pragma mark - Private
 
+- (UIImage*)bannerImage {
+  return [UIImage imageNamed:self.bannerName];
+}
+
 // Computes banner's image size.
 - (CGSize)computeBannerImageSize {
   CGFloat bannerMultiplier =
@@ -595,7 +603,7 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
   CGFloat destinationHeight =
       roundf(self.view.bounds.size.height * bannerMultiplier);
   CGFloat destinationWidth =
-      roundf(self.bannerImage.size.width / self.bannerImage.size.height *
+      roundf([self bannerImage].size.width / [self bannerImage].size.height *
              destinationHeight);
   CGSize newSize = CGSizeMake(destinationWidth, destinationHeight);
   return newSize;
@@ -603,13 +611,17 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
 
 // Returns a new UIImage which is |sourceImage| resized to |newSize|. Returns
 // |currentImage| if it is already at the correct size.
-- (UIImage*)scaleSourceImage:(UIImage*)sourceImage
-                currentImage:(UIImage*)currentImage
-                      toSize:(CGSize)newSize {
-  if (CGSizeEqualToSize(newSize, currentImage.size)) {
+- (UIImage*)scaleBannerWithCurrentImage:(UIImage*)currentImage
+                                 toSize:(CGSize)newSize {
+  UIUserInterfaceStyle currentStyle =
+      UITraitCollection.currentTraitCollection.userInterfaceStyle;
+  if (CGSizeEqualToSize(newSize, currentImage.size) &&
+      self.bannerStyle == currentStyle) {
     return currentImage;
   }
-  return ResizeImage(sourceImage, newSize, ProjectionMode::kAspectFit);
+
+  self.bannerStyle = currentStyle;
+  return ResizeImage([self bannerImage], newSize, ProjectionMode::kAspectFit);
 }
 
 // Determines which font text style to use depending on the device size, the

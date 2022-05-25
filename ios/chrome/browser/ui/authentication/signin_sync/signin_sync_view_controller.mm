@@ -122,7 +122,7 @@ NSString* const kLearnMoreTextViewAccessibilityIdentifier =
     ]];
   }
 
-  self.bannerImage = [UIImage imageNamed:@"sync_screen_banner"];
+  self.bannerName = @"sync_screen_banner";
   self.secondaryActionString =
       l10n_util::GetNSString([self secondaryActionStringID]);
 

@@ -110,9 +110,8 @@ NSString* const kLearnMoreTextViewAccessibilityIdentifier =
   bool signinRestricted =
       self.enterpriseSignInRestrictions || forceSignInEnabled;
 
-  self.bannerImage = [UIImage
-      imageNamed:signinRestricted ? @"legacy_forced_signin_screen_banner"
-                                  : @"legacy_signin_screen_banner"];
+  self.bannerName = signinRestricted ? @"legacy_forced_signin_screen_banner"
+                                     : @"legacy_signin_screen_banner";
   // Only add "Don't Sign In" button when signin is not required.
   if (!forceSignInEnabled) {
     self.secondaryActionString =

@@ -42,7 +42,7 @@
   self.primaryActionString = @"Continue";
   self.readMoreString =
       l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SCREEN_READ_MORE);
-  self.bannerImage = [UIImage imageNamed:@"Sample-banner"];
+  self.bannerName = @"Sample-banner";
   self.isTallBanner = NO;
   self.scrollToEndMandatory = YES;
 

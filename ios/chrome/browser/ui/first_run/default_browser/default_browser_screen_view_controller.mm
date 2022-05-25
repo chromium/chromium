@@ -24,7 +24,7 @@
 - (void)viewDidLoad {
   self.view.accessibilityIdentifier =
       first_run::kFirstRunDefaultBrowserScreenAccessibilityIdentifier;
-  self.bannerImage = [UIImage imageNamed:@"default_browser_screen_banner"];
+  self.bannerName = @"default_browser_screen_banner";
   self.titleText =
       l10n_util::GetNSString(IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_TITLE);
   self.subtitleText =

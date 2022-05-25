@@ -26,7 +26,7 @@ NSString* const kConsentViewControllerIdentifier =
   self.view.accessibilityIdentifier = kConsentViewControllerIdentifier;
 
   if (IsPasswordManagerBrandingUpdateEnable()) {
-    self.bannerImage = [UIImage imageNamed:@"consent_view_controller"];
+    self.bannerName = @"consent_view_controller";
 
     NSString* userEmail = [app_group::GetGroupUserDefaults()
         stringForKey:AppGroupUserDefaultsCredentialProviderUserEmail()];
@@ -44,7 +44,7 @@ NSString* const kConsentViewControllerIdentifier =
           @"The subtitle in the consent screen.");
     }
   } else {
-    self.bannerImage = [UIImage imageNamed:@"legacy_consent_view_controller"];
+    self.bannerName = @"legacy_consent_view_controller";
     self.subtitleText =
         NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_CONSENT_SUBTITLE",
                           @"The subtitle in the consent screen.");

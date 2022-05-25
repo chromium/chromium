@@ -28,7 +28,7 @@
   self.primaryActionString = @"Accept and continue";
   self.secondaryActionString = @"Not now";
   self.tertiaryActionString = @"Customize sync";
-  self.bannerImage = [UIImage imageNamed:@"Sample-banner"];
+  self.bannerName = @"Sample-banner";
   self.isTallBanner = NO;
 
   // Add some screen-specific content and its constraints.

@@ -51,7 +51,9 @@ BOOL IsPasswordManagerBrandingUpdateEnabled() {
 // Properties set on initialization.
 @property(nonatomic, copy, readonly) NSString* titleText;
 @property(nonatomic, copy, readonly) NSString* subtitleText;
-@property(nonatomic, strong, readonly) UIImage* bannerImage;
+// Whether banner is light or dark mode
+@property(nonatomic, assign) UIUserInterfaceStyle bannerStyle;
+@property(nonatomic, copy, readonly) NSString* bannerName;
 @property(nonatomic, copy, readonly) NSString* actionString;
 
 // Visible UI components.
@@ -108,14 +110,13 @@ BOOL IsPasswordManagerBrandingUpdateEnabled() {
             IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SUBTITLE_IPHONE);
       }
 
-      _bannerImage =
-          [UIImage imageNamed:@"settings_passwords_in_other_apps_banner"];
+      _bannerName = @"settings_passwords_in_other_apps_banner";
     } else {
       _subtitleText = l10n_util::GetNSString(
           IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SUBTITLE);
-      _bannerImage = [UIImage
-          imageNamed:@"legacy_settings_passwords_in_other_apps_banner"];
+      _bannerName = @"legacy_settings_passwords_in_other_apps_banner";
     }
+    self.bannerStyle = UIUserInterfaceStyleUnspecified;
   }
   return self;
 }
@@ -725,11 +726,20 @@ BOOL IsPasswordManagerBrandingUpdateEnabled() {
   if (IsCompactHeight(self)) {
     return nil;
   }
+  UIUserInterfaceStyle currentStyle =
+      UITraitCollection.currentTraitCollection.userInterfaceStyle;
   CGSize newSize = [self computeBannerImageSize];
-  if (CGSizeEqualToSize(newSize, currentImage.size)) {
+  if (CGSizeEqualToSize(newSize, currentImage.size) &&
+      self.bannerStyle == currentStyle) {
     return currentImage;
   }
-  return ResizeImage(self.bannerImage, newSize, ProjectionMode::kAspectFit);
+  self.bannerStyle = currentStyle;
+  return ResizeImage([self bannerImage], newSize, ProjectionMode::kAspectFit);
+}
+
+// The banner image
+- (UIImage*)bannerImage {
+  return [UIImage imageNamed:self.bannerName];
 }
 
 // Computes banner's image size.
@@ -737,7 +747,7 @@ BOOL IsPasswordManagerBrandingUpdateEnabled() {
   CGFloat destinationHeight =
       roundf(self.view.bounds.size.height * kDefaultBannerMultiplier);
   CGFloat destinationWidth =
-      roundf(self.bannerImage.size.width / self.bannerImage.size.height *
+      roundf([self bannerImage].size.width / [self bannerImage].size.height *
              destinationHeight);
   CGSize newSize = CGSizeMake(destinationWidth, destinationHeight);
   return newSize;

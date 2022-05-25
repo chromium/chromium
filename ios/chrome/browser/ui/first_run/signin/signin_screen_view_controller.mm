@@ -65,7 +65,7 @@ NSString* const kEnterpriseIconName = @"enterprise_icon";
       l10n_util::GetNSString(IDS_IOS_FIRST_RUN_SCREEN_READ_MORE);
 
   // Set banner.
-  self.bannerImage = [UIImage imageNamed:kSigninBannerName];
+  self.bannerName = kSigninBannerName;
 
   // Set |self.titleText| and |self.subtitleText|.
   switch (self.signinStatus) {

@@ -13,8 +13,8 @@
 // Style screens.
 @interface PromoStyleViewController : UIViewController <UITextViewDelegate>
 
-// The banner image. Must be set before the view is loaded.
-@property(nonatomic, strong) UIImage* bannerImage;
+// The name of the banner image. Must be set before the view is loaded.
+@property(nonatomic, strong) NSString* bannerName;
 
 // When set to YES, the banner will be tall (35% of view height). When set to
 // NO, the banner will be of normal height (25% of view height). Defaults to NO.
