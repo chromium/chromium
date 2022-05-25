@@ -20,6 +20,7 @@ component("privacy_budget") {
     "identifiability_metrics.cc",
     "identifiability_sample_collector.cc",
     "identifiability_sample_collector_test_utils.h",
+    "identifiability_study_document_created.cc",
     "identifiability_study_settings.cc",
     "identifiable_token_builder.cc",
   ]

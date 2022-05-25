@@ -54,7 +54,7 @@ void TestUkmRecorder::AddEntry(mojom::UkmEntryPtr entry) {
       on_add_entry_ && entry && entry_hash_to_wait_for_ == entry->event_hash;
   UkmRecorderImpl::AddEntry(std::move(entry));
   if (should_run_callback)
-    std::move(on_add_entry_).Run();
+    on_add_entry_.Run();
 }
 
 const UkmSource* TestUkmRecorder::GetSourceForSourceId(
@@ -79,8 +79,9 @@ const ukm::mojom::UkmEntry* TestUkmRecorder::GetDocumentCreatedEntryForSourceId(
   return nullptr;
 }
 
-void TestUkmRecorder::SetOnAddEntryCallback(base::StringPiece entry_name,
-                                            base::OnceClosure on_add_entry) {
+void TestUkmRecorder::SetOnAddEntryCallback(
+    base::StringPiece entry_name,
+    base::RepeatingClosure on_add_entry) {
   on_add_entry_ = std::move(on_add_entry);
   entry_hash_to_wait_for_ = base::HashMetricName(entry_name);
 }
