@@ -5591,12 +5591,8 @@ CSSValue* ConsumeContainerName(CSSParserTokenRange& range,
 
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
 
-  while (true) {
-    CSSValue* value = ConsumeSingleContainerName(range, context);
-    if (!value)
-      break;
+  while (CSSValue* value = ConsumeSingleContainerName(range, context))
     list->Append(*value);
-  }
 
   return list->length() ? list : nullptr;
 }
