@@ -235,9 +235,6 @@ extern const base::Feature kKeepForceInstalledPreinstalledApps;
 #endif
 
 COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::Feature kDmTokenDeletion;
-
-COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kDnsOverHttps;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<bool> kDnsOverHttpsFallbackParam;

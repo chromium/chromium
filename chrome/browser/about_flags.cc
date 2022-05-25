@@ -8632,9 +8632,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(app_list_features::kLauncherPlayStoreSearch)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-    {"dm-token-deletion", flag_descriptions::kDmTokenDeletionName,
-     flag_descriptions::kDmTokenDeletionDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kDmTokenDeletion)},
 #if !BUILDFLAG(IS_ANDROID)
     {media_router::switches::kAccessCodeCastDeviceDurationSwitch,
      flag_descriptions::kAccessCodeCastDeviceDurationName,

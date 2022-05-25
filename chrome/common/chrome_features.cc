@@ -327,11 +327,6 @@ const base::Feature kKeepForceInstalledPreinstalledApps{
     "KeepForceInstalledPreinstalledApps", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
-// Causes the DMToken to be deleted (rather than invalidated) when a browser is
-// deleted from CBCM.
-const base::Feature kDmTokenDeletion{"DmTokenDeletion",
-                                     base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enable DNS over HTTPS (DoH).
 const base::Feature kDnsOverHttps {
   "DnsOverHttps",

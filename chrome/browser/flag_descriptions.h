@@ -1668,9 +1668,6 @@ extern const char kReduceUserAgentMinorVersionDescription[];
 extern const char kWebSQLAccessName[];
 extern const char kWebSQLAccessDescription[];
 
-extern const char kDmTokenDeletionName[];
-extern const char kDmTokenDeletionDescription[];
-
 // Android --------------------------------------------------------------------
 
 #if BUILDFLAG(IS_ANDROID)

@@ -1320,11 +1320,6 @@
     "expiry_milestone": 104
   },
   {
-    "name": "dm-token-deletion",
-    "owners": [ "igorruvinov", "zmin" ],
-    "expiry_milestone": 115
-  },
-  {
     "name": "dns-httpssvc",
     "owners": [ "dmcardle", "ericorth" ],
     "expiry_milestone": 93
