@@ -359,9 +359,9 @@ public class FeedSurfaceMediatorTest {
 
         mFeedSurfaceMediator.updateSectionHeader();
 
-        assertEquals(true, model.get(SectionHeaderListProperties.IS_TAB_MODE_KEY));
+        assertEquals(false, model.get(SectionHeaderListProperties.IS_TAB_MODE_KEY));
         assertEquals(false, model.get(SectionHeaderListProperties.IS_LOGO_KEY));
-        assertEquals(ViewVisibility.VISIBLE,
+        assertEquals(ViewVisibility.GONE,
                 model.get(SectionHeaderListProperties.INDICATOR_VIEW_VISIBILITY_KEY));
     }
 
@@ -435,9 +435,9 @@ public class FeedSurfaceMediatorTest {
 
         mFeedSurfaceMediator.updateSectionHeader();
 
-        assertEquals(true, model.get(SectionHeaderListProperties.IS_TAB_MODE_KEY));
+        assertEquals(false, model.get(SectionHeaderListProperties.IS_TAB_MODE_KEY));
         assertEquals(false, model.get(SectionHeaderListProperties.IS_LOGO_KEY));
-        assertEquals(ViewVisibility.VISIBLE,
+        assertEquals(ViewVisibility.GONE,
                 model.get(SectionHeaderListProperties.INDICATOR_VIEW_VISIBILITY_KEY));
     }
 

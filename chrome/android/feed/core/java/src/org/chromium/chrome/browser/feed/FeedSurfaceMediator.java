@@ -688,7 +688,7 @@ public class FeedSurfaceMediator
 
     private void setHeaderIndicatorState(boolean suggestionsVisible) {
         boolean isSignedIn = isSignedIn();
-        boolean isTabMode = isSignedIn && FeedFeatures.isWebFeedUIEnabled();
+        boolean isTabMode = isSignedIn && FeedFeatures.isWebFeedUIEnabled() && suggestionsVisible;
         // If we're in tab mode now, make sure webfeed tab is set up.
         if (isTabMode) {
             setUpWebFeedTab();
@@ -707,11 +707,11 @@ public class FeedSurfaceMediator
         mSectionHeaderModel.set(SectionHeaderListProperties.IS_LOGO_KEY,
                 !isGoogleSearchEngine && isSignedIn && suggestionsVisible);
         ViewVisibility indicatorState;
-        if (!isSignedIn) {
-            // Gone when not signed in to align text to far left.
+        if (!isSignedIn || !suggestionsVisible) {
+            // Gone when not signed in or feed off to align text to far left.
             indicatorState = ViewVisibility.GONE;
-        } else if (!suggestionsVisible || !isGoogleSearchEngine) {
-            // Visible when Google is not the search engine (show logo) or when turned off (eye).
+        } else if (!isGoogleSearchEngine) {
+            // Visible when Google is not the search engine (show logo).
             indicatorState = ViewVisibility.VISIBLE;
         } else {
             // Invisible when we have centered text (signed in and not shown). This
@@ -816,7 +816,7 @@ public class FeedSurfaceMediator
                 TemplateUrlServiceFactory.get().isDefaultSearchEngineGoogle();
         final int sectionHeaderStringId;
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_FEED) && isSignedIn()) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_FEED) && isSignedIn() && isExpanded) {
             sectionHeaderStringId = R.string.ntp_discover_on;
         } else if (isDefaultSearchEngineGoogle) {
             sectionHeaderStringId =
