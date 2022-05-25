@@ -1,0 +1,15 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//tools/polymer/html_to_js.gni")
+
+html_to_js("web_components") {
+  js_files = [
+    "policy_conflict.js",
+    "policy_row.js",
+    "policy_precedence_row.js",
+    "policy_table.js",
+    "status_box.js",
+  ]
+}

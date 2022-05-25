@@ -332,8 +332,10 @@ void URLRequestChromeJob::MimeTypeAvailable(URLDataSourceIOSImpl* source,
                                             const std::string& mime_type) {
   set_mime_type(mime_type);
 
-  if (mime_type == "text/html")
+  if (mime_type == "text/html" || (mime_type == "application/javascript" &&
+                                   source->ShouldReplaceI18nInJS())) {
     set_source(source);
+  }
 
   NotifyHeadersComplete();
 }

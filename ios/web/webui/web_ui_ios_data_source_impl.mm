@@ -51,6 +51,9 @@ class WebUIIOSDataSourceImpl::InternalDataSource : public URLDataSourceIOS {
   bool ShouldReplaceExistingSource() const override {
     return parent_->replace_existing_source_;
   }
+  bool ShouldReplaceI18nInJS() const override {
+    return parent_->ShouldReplaceI18nInJS();
+  }
   bool AllowCaching() const override { return false; }
   bool ShouldDenyXFrameOptions() const override {
     return parent_->deny_xframe_options_;
@@ -66,7 +69,8 @@ WebUIIOSDataSourceImpl::WebUIIOSDataSourceImpl(const std::string& source_name)
       default_resource_(-1),
       deny_xframe_options_(true),
       load_time_data_defaults_added_(false),
-      replace_existing_source_(true) {}
+      replace_existing_source_(true),
+      should_replace_i18n_in_js_(false) {}
 
 WebUIIOSDataSourceImpl::~WebUIIOSDataSourceImpl() {}
 
@@ -110,6 +114,14 @@ void WebUIIOSDataSourceImpl::AddBoolean(const std::string& name, bool value) {
 
 void WebUIIOSDataSourceImpl::UseStringsJs() {
   use_strings_js_ = true;
+}
+
+void WebUIIOSDataSourceImpl::EnableReplaceI18nInJS() {
+  should_replace_i18n_in_js_ = true;
+}
+
+bool WebUIIOSDataSourceImpl::ShouldReplaceI18nInJS() const {
+  return should_replace_i18n_in_js_;
 }
 
 void WebUIIOSDataSourceImpl::AddResourcePath(const std::string& path,

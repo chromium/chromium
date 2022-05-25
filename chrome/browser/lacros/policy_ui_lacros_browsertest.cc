@@ -77,7 +77,8 @@ void PolicyUiLacrosBrowserTest::ReadStatusFor(
           return;
         }
 
-        const policies = statusSection.querySelectorAll('fieldset');
+        const statusBox = statusSection.querySelector('status-box');
+        const policies = statusBox.shadowRoot.querySelectorAll('fieldset');
         const statuses = {};
         for (let i = 0; i < policies.length; ++i) {
           const legend = policies[i].querySelector('legend').textContent;

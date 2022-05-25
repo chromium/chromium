@@ -317,12 +317,13 @@ void PolicyUITest::VerifyPolicies(
   // Retrieve the text contents of the policy table cells for all policies.
   const std::string javascript =
       "var entries = document.getElementById('policy-ui')"
-      "  .querySelectorAll('.policy-table');"
+      "  .querySelectorAll('policy-table');"
       "var policies = [];"
       "for (var i = 0; i < entries.length; ++i) {"
-      "  var items = entries[i].querySelectorAll('.policy.row');"
+      "  var items = entries[i].shadowRoot.querySelectorAll('policy-row');"
       "  for (var j = 0; j < items.length; ++j) {"
-      "    var children = items[j].querySelectorAll('div');"
+      "    var row = items[j].shadowRoot.querySelector('.policy.row');"
+      "    var children = row.querySelectorAll('div');"
       "    var values = [];"
       "    for(var k = 0; k < children.length - 1; ++k) {"
       "      values.push(children[k].textContent.trim());"
@@ -558,12 +559,13 @@ bool PolicyUIStatusTest::ReadStatusFor(
           return;
         }
 
-        const policies = statusSection.querySelectorAll('fieldset');
+        const policies = statusSection.querySelectorAll('status-box');
         const statuses = {};
         for (let i = 0; i < policies.length; ++i) {
-          const legend = policies[i].querySelector('legend').textContent;
+          const legend = policies[i].shadowRoot.querySelector('legend')
+              .textContent;
           const entries = {};
-          const rows = policies[i]
+          const rows = policies[i].shadowRoot
             .querySelectorAll('.status-entry div:nth-child(2)');
           for (let j = 0; j < rows.length; ++j) {
             entries[rows[j].className] = rows[j].textContent.trim();
@@ -881,8 +883,14 @@ class PolicyPrecedenceUITest
 
   // Used to retrieve the contents of the policy precedence rows.
   const std::string kJavaScript =
-      "var precedence_row = document.getElementById('policy-ui')"
-      "  .querySelector('.policy-table .precedence.row > .value');"
+      "const tables = document.querySelectorAll('policy-table');"
+      "let precedence_row = null;"
+      "tables.forEach(table => {"
+      "  let row = table.shadowRoot.querySelector('policy-precedence-row');"
+      "  if (row) {"
+      "    precedence_row = row.shadowRoot.querySelector('.value');"
+      "  }"
+      "});"
       "domAutomationController.send(precedence_row.textContent);";
 };
 

@@ -54,6 +54,10 @@ class WebUIIOSDataSource : public base::SupportsUserData {
   // URL that provides translations and dynamic data when requested.
   virtual void UseStringsJs() = 0;
 
+  // Call this to enable i18n replacements in JS files (needed by Web UIs that
+  // use Web Components).
+  virtual void EnableReplaceI18nInJS() = 0;
+
   // Adds a mapping between a path name and a resource to return.
   virtual void AddResourcePath(const std::string& path, int resource_id) = 0;
 

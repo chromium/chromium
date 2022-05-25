@@ -67,6 +67,10 @@ class URLDataSourceIOS {
   // TODO: nuke this and convert all callers to not replace.
   virtual bool ShouldReplaceExistingSource() const;
 
+  // Returns true if i18n replacemenents should be performed in JS files. Needed
+  // by UIs that use Web Components.
+  virtual bool ShouldReplaceI18nInJS() const;
+
   // Returns true if responses from this URLDataSourceIOS can be cached.
   virtual bool AllowCaching() const;
 
