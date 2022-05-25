@@ -13,7 +13,9 @@
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
+#include "base/logging.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/file_manager/file_tasks_notifier.h"
@@ -35,6 +37,13 @@
 #include "ui/shell_dialogs/selected_file_info.h"
 
 namespace extensions {
+namespace {
+
+std::string Redact(const base::StringPiece path) {
+  return LOG_IS_ON(INFO) ? base::StrCat({"'", path, "'"}) : "(redacted)";
+}
+
+}  // namespace
 
 using ::ash::disks::DiskMountManager;
 using content::BrowserThread;
@@ -70,7 +79,8 @@ ExtensionFunction::ResponseAction FileManagerPrivateAddMountFunction::Run() {
 
     std::vector<storage::FileSystemURL> urls;
     const storage::FileSystemURL url =
-        file_system_context->CrackURLInFirstPartyContext(GURL(params->file_url));
+        file_system_context->CrackURLInFirstPartyContext(
+            GURL(params->file_url));
     urls.push_back(url);
 
     notifier->NotifyFileTasks(urls);
@@ -183,10 +193,14 @@ ExtensionFunction::ResponseAction FileManagerPrivateRemoveMountFunction::Run() {
   VolumeManager* const volume_manager = VolumeManager::Get(profile);
   DCHECK(volume_manager);
 
-  base::WeakPtr<Volume> volume =
+  const base::WeakPtr<Volume> volume =
       volume_manager->FindVolumeById(params->volume_id);
-  if (!volume.get())
-    return RespondNow(Error("Volume not available"));
+  if (!volume) {
+    LOG(ERROR) << "Cannot find volume " << Redact(params->volume_id);
+    return RespondNow(Error(file_manager_private::ToString(
+        api::file_manager_private::
+            MOUNT_COMPLETED_STATUS_ERROR_PATH_NOT_MOUNTED)));
+  }
 
   // TODO(tbarzic): Send response when callback is received, it would make more
   // sense than remembering issued unmount requests in file manager and showing
