@@ -21,6 +21,9 @@ class PrerenderServiceFactory : public BrowserStateKeyedServiceFactory {
       ChromeBrowserState* browser_state);
   static PrerenderServiceFactory* GetInstance();
 
+  // Returns the default factory, useful in tests where it's null by default.
+  static TestingFactory GetDefaultFactory();
+
   PrerenderServiceFactory(const PrerenderServiceFactory&) = delete;
   PrerenderServiceFactory& operator=(const PrerenderServiceFactory&) = delete;
 

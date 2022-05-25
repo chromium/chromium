@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/browser_view/browser_coordinator.h"
 
-#include <memory>
+#import <memory>
 
 #import "base/metrics/histogram_functions.h"
 #import "base/scoped_observation.h"
@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/follow/follow_tab_helper.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ntp/features.h"
+#import "ios/chrome/browser/prerender/preload_controller_delegate.h"
 #import "ios/chrome/browser/prerender/prerender_service.h"
 #import "ios/chrome/browser/prerender/prerender_service_factory.h"
 #import "ios/chrome/browser/signin/account_consistency_browser_agent.h"
@@ -37,6 +38,7 @@
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_coordinator.h"
 #import "ios/chrome/browser/ui/badges/badge_popup_menu_coordinator.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_coordinator.h"
+#import "ios/chrome/browser/ui/browser_container/browser_container_view_controller.h"
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller+delegates.h"
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller+private.h"
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller.h"
@@ -113,7 +115,7 @@
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web/web_state_delegate_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/view_source_browser_agent.h"
-#include "ios/chrome/browser/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/webui/net_export_tab_helper_delegate.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -137,6 +139,7 @@
                                   PasswordSuggestionCommands,
                                   PasswordSuggestionCoordinatorDelegate,
                                   PolicyChangeCommands,
+                                  PreloadControllerDelegate,
                                   RepostFormTabHelperDelegate,
                                   ToolbarAccessoryCoordinatorDelegate,
                                   URLLoadingDelegate,
@@ -294,6 +297,7 @@
   std::unique_ptr<WebStateListObserverBridge> _webStateListObserverBridge;
   std::unique_ptr<base::ScopedObservation<WebStateList, WebStateListObserver>>
       _scopedWebStateListObservation;
+  PrerenderService* _prerenderService;
 }
 
 #pragma mark - ChromeCoordinator
@@ -459,17 +463,28 @@
 // Instantiates a BrowserViewController.
 - (void)createViewController {
   DCHECK(self.browserContainerCoordinator.viewController);
+
   BrowserViewControllerDependencyFactory* factory =
       [[BrowserViewControllerDependencyFactory alloc]
           initWithBrowser:self.browser];
+
+  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  _prerenderService = PrerenderServiceFactory::GetForBrowserState(browserState);
+  if (!browserState->IsOffTheRecord()) {
+    DCHECK(_prerenderService);
+    _prerenderService->SetDelegate(self);
+  }
+
   _viewController = [[BrowserViewController alloc]
                      initWithBrowser:self.browser
                    dependencyFactory:factory
       browserContainerViewController:self.browserContainerCoordinator
                                          .viewController
-                          dispatcher:self.dispatcher];
+                          dispatcher:self.dispatcher
+                    prerenderService:_prerenderService];
   WebNavigationBrowserAgent::FromBrowser(self.browser)
       ->SetDelegate(_viewController);
+
   self.contextMenuProvider = [[ContextMenuConfigurationProvider alloc]
          initWithBrowser:self.browser
       baseViewController:_viewController];
@@ -1464,6 +1479,17 @@
 - (void)closePasswordSuggestion {
   [self.passwordSuggestionCoordinator stop];
   self.passwordSuggestionCoordinator = nil;
+}
+
+#pragma mark - PreloadControllerDelegate methods
+
+- (web::WebState*)webStateToReplace {
+  return self.browser ? self.browser->GetWebStateList()->GetActiveWebState()
+                      : nullptr;
+}
+
+- (UIView*)webViewContainer {
+  return self.browserContainerCoordinator.viewController.view;
 }
 
 @end

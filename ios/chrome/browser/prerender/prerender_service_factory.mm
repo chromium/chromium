@@ -4,16 +4,23 @@
 
 #import "ios/chrome/browser/prerender/prerender_service_factory.h"
 
-#include "base/no_destructor.h"
-#include "components/keyed_service/ios/browser_state_dependency_manager.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/prerender/prerender_service_impl.h"
-#include "ios/chrome/browser/signin/account_consistency_service_factory.h"
-#include "ios/web/public/browser_state.h"
+#import "base/no_destructor.h"
+#import "components/keyed_service/ios/browser_state_dependency_manager.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/prerender/prerender_service_impl.h"
+#import "ios/chrome/browser/signin/account_consistency_service_factory.h"
+#import "ios/web/public/browser_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+std::unique_ptr<KeyedService> BuildPrerenderService(
+    web::BrowserState* context) {
+  ChromeBrowserState* browser_state =
+      ChromeBrowserState::FromBrowserState(context);
+  return std::make_unique<PrerenderServiceImpl>(browser_state);
+}
 
 // static
 PrerenderService* PrerenderServiceFactory::GetForBrowserState(
@@ -39,9 +46,13 @@ PrerenderServiceFactory::~PrerenderServiceFactory() {}
 
 std::unique_ptr<KeyedService> PrerenderServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
-  return std::make_unique<PrerenderServiceImpl>(browser_state);
+  return BuildPrerenderService(context);
+}
+
+// static
+PrerenderServiceFactory::TestingFactory
+PrerenderServiceFactory::GetDefaultFactory() {
+  return base::BindRepeating(&BuildPrerenderService);
 }
 
 bool PrerenderServiceFactory::ServiceIsNULLWhileTesting() const {

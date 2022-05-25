@@ -28,6 +28,8 @@ class Browser;
 @protocol CRWResponderInputView;
 @class DefaultBrowserPromoNonModalScheduler;
 @protocol DefaultPromoNonModalPresentationDelegate;
+// TODO(crbug.com/1328039): Remove all use of the prerender service from BVC
+class PrerenderService;
 @class ToolbarAccessoryPresenter;
 @protocol IncognitoReauthCommands;
 
@@ -54,12 +56,14 @@ class Browser;
 // |dispatcher| is the dispatcher instance this BVC will use.
 // TODO(crbug.com/992582): Remove references to model objects -- including
 //   |browser| and |dispatcher| -- from this class.
+// TODO(crbug.com/1328039): Remove all use of the prerender service from BVC
 - (instancetype)initWithBrowser:(Browser*)browser
                  dependencyFactory:
                      (BrowserViewControllerDependencyFactory*)factory
     browserContainerViewController:
         (BrowserContainerViewController*)browserContainerViewController
                         dispatcher:(CommandDispatcher*)dispatcher
+                  prerenderService:(PrerenderService*)prerenderService
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithNibName:(NSString*)nibNameOrNil

@@ -256,6 +256,8 @@ source_set("unit_tests") {
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/history",
     "//ios/chrome/browser/main:test_support",
+    "//ios/chrome/browser/prerender",
+    "//ios/chrome/browser/prerender:test_support",
     "//ios/chrome/browser/search_engines",
     "//ios/chrome/browser/sessions",
     "//ios/chrome/browser/sessions:restoration_agent",

@@ -8,31 +8,31 @@
 
 #import <MaterialComponents/MaterialSnackbar.h>
 
-#include "base/mac/bundle_locations.h"
-#include "base/mac/foundation_util.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/metrics/user_metrics.h"
-#include "base/metrics/user_metrics_action.h"
-#include "base/strings/sys_string_conversions.h"
-#include "components/feature_engagement/public/event_constants.h"
-#include "components/feature_engagement/public/tracker.h"
-#include "components/omnibox/browser/location_bar_model_impl.h"
-#include "components/reading_list/core/reading_list_model.h"
-#include "components/sessions/core/tab_restore_service_helper.h"
-#include "components/signin/ios/browser/active_state_manager.h"
-#include "components/strings/grit/components_strings.h"
-#include "components/translate/core/browser/translate_manager.h"
-#include "components/ukm/ios/ukm_url_recorder.h"
+#import "base/mac/bundle_locations.h"
+#import "base/mac/foundation_util.h"
+#import "base/metrics/histogram_macros.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/feature_engagement/public/event_constants.h"
+#import "components/feature_engagement/public/tracker.h"
+#import "components/omnibox/browser/location_bar_model_impl.h"
+#import "components/reading_list/core/reading_list_model.h"
+#import "components/sessions/core/tab_restore_service_helper.h"
+#import "components/signin/ios/browser/active_state_manager.h"
+#import "components/strings/grit/components_strings.h"
+#import "components/translate/core/browser/translate_manager.h"
+#import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
-#include "ios/chrome/browser/application_context.h"
-#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
-#include "ios/chrome/browser/chrome_url_constants.h"
-#include "ios/chrome/browser/crash_report/crash_keys_helper.h"
-#include "ios/chrome/browser/discover_feed/feed_constants.h"
-#include "ios/chrome/browser/feature_engagement/tracker_factory.h"
-#include "ios/chrome/browser/feature_engagement/tracker_util.h"
+#import "ios/chrome/browser/application_context.h"
+#import "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/chrome_url_constants.h"
+#import "ios/chrome/browser/crash_report/crash_keys_helper.h"
+#import "ios/chrome/browser/discover_feed/feed_constants.h"
+#import "ios/chrome/browser/feature_engagement/tracker_factory.h"
+#import "ios/chrome/browser/feature_engagement/tracker_util.h"
 #import "ios/chrome/browser/find_in_page/find_tab_helper.h"
-#include "ios/chrome/browser/infobars/infobar_manager_impl.h"
+#import "ios/chrome/browser/infobars/infobar_manager_impl.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/metrics/new_tab_page_uma.h"
 #import "ios/chrome/browser/metrics/tab_usage_recorder_browser_agent.h"
@@ -44,11 +44,11 @@
 #import "ios/chrome/browser/prerender/prerender_service.h"
 #import "ios/chrome/browser/prerender/prerender_service_factory.h"
 #import "ios/chrome/browser/reading_list/offline_page_tab_helper.h"
-#include "ios/chrome/browser/reading_list/reading_list_model_factory.h"
-#include "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
+#import "ios/chrome/browser/reading_list/reading_list_model_factory.h"
+#import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
-#include "ios/chrome/browser/signin/authentication_service.h"
-#include "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/authentication_service.h"
+#import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #import "ios/chrome/browser/ssl/captive_portal_tab_helper.h"
 #import "ios/chrome/browser/ssl/captive_portal_tab_helper_delegate.h"
@@ -80,13 +80,13 @@
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_features.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_ui_element.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_ui_updater.h"
-#include "ios/chrome/browser/ui/fullscreen/scoped_fullscreen_disabler.h"
+#import "ios/chrome/browser/ui/fullscreen/scoped_fullscreen_disabler.h"
 #import "ios/chrome/browser/ui/gestures/view_revealing_vertical_pan_handler.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_commands.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_view.h"
 #import "ios/chrome/browser/ui/infobars/infobar_positioner.h"
-#include "ios/chrome/browser/ui/location_bar/location_bar_model_delegate_ios.h"
+#import "ios/chrome/browser/ui/location_bar/location_bar_model_delegate_ios.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/main_content/main_content_ui.h"
@@ -133,7 +133,7 @@
 #import "ios/chrome/browser/ui/util/url_with_title.h"
 #import "ios/chrome/browser/ui/voice/text_to_speech_playback_controller.h"
 #import "ios/chrome/browser/ui/voice/text_to_speech_playback_controller_factory.h"
-#include "ios/chrome/browser/upgrade/upgrade_center.h"
+#import "ios/chrome/browser/upgrade/upgrade_center.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_observer_bridge.h"
@@ -153,17 +153,17 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ios/public/provider/chrome/browser/voice_search/voice_search_api.h"
-#include "ios/public/provider/chrome/browser/voice_search/voice_search_controller.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ios/public/provider/chrome/browser/voice_search/voice_search_api.h"
+#import "ios/public/provider/chrome/browser/voice_search/voice_search_controller.h"
 #import "ios/web/public/deprecated/crw_js_injection_receiver.h"
-#include "ios/web/public/navigation/navigation_item.h"
+#import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "net/base/mac/url_conversions.h"
-#include "services/metrics/public/cpp/ukm_builders.h"
-#include "ui/base/device_form_factor.h"
-#include "ui/base/l10n/l10n_util.h"
+#import "services/metrics/public/cpp/ukm_builders.h"
+#import "ui/base/device_form_factor.h"
+#import "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -268,7 +268,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
                                      KeyCommandsPlumbing,
                                      MainContentUI,
                                      OmniboxPopupPresenterDelegate,
-                                     PreloadControllerDelegate,
                                      SideSwipeControllerDelegate,
                                      TabStripPresentation,
                                      UIGestureRecognizerDelegate,
@@ -293,6 +292,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   // Keyboard commands provider.  It offloads most of the keyboard commands
   // management off of the BVC.
   KeyCommandsProvider* _keyCommandsProvider;
+
+  // TODO(crbug.com/1328039): Remove all use of the prerender service from BVC
+  PrerenderService* _prerenderService;
 
   // Used to display the Voice Search UI.  Nil if not visible.
   id<VoiceSearchController> _voiceSearchController;
@@ -529,7 +531,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
                      (BrowserViewControllerDependencyFactory*)factory
     browserContainerViewController:
         (BrowserContainerViewController*)browserContainerViewController
-                        dispatcher:(CommandDispatcher*)dispatcher {
+                        dispatcher:(CommandDispatcher*)dispatcher
+                  prerenderService:(PrerenderService*)prerenderService {
   self = [super initWithNibName:nil bundle:base::mac::FrameworkBundle()];
   if (self) {
     DCHECK(factory);
@@ -538,6 +541,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     _commandDispatcher = dispatcher;
     _browserContainerViewController = browserContainerViewController;
     _dependencyFactory = factory;
+    // TODO(crbug.com/1328039): Remove all use of the prerender service from BVC
+    _prerenderService = prerenderService;
     self.textZoomHandler =
         HandlerForProtocol(self.commandDispatcher, TextZoomCommands);
     [self.commandDispatcher
@@ -1798,15 +1803,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   DCHECK([self isViewLoaded]);
   DCHECK(!_locationBarModelDelegate);
 
-  // Initialize the prerender service before creating the toolbar controller.
-  // TODO(crbug.com/1272532): Move this to BrowserCoordinator, after creating
-  // the BVC.
-  PrerenderService* prerenderService =
-      PrerenderServiceFactory::GetForBrowserState(self.browserState);
-  if (prerenderService) {
-    prerenderService->SetDelegate(self);
-  }
-
   // Create the location bar model and controller.
   _locationBarModelDelegate.reset(
       new LocationBarModelDelegateIOS(self.browser->GetWebStateList()));
@@ -2347,10 +2343,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   if (!webState)
     return;
 
-  PrerenderService* prerenderService =
-      PrerenderServiceFactory::GetForBrowserState(self.browserState);
+  // TODO(crbug.com/1328039): Remove all use of the prerender service from BVC
   BOOL isPrerendered =
-      (prerenderService && prerenderService->IsLoadingPrerender());
+      (_prerenderService && _prerenderService->IsLoadingPrerender());
   if (isPrerendered && ![self.helper isToolbarLoading:self.currentWebState])
     [self.primaryToolbarCoordinator showPrerenderingAnimation];
 
@@ -2529,11 +2524,10 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   if (!webState->IsRealized())
     return;
 
+  // TODO(crbug.com/1328039): Remove all use of the prerender service from BVC
   // There should be no pre-rendered Tabs for this BrowserState.
-  PrerenderService* prerenderService =
-      PrerenderServiceFactory::GetForBrowserState(self.browserState);
-  DCHECK(!prerenderService ||
-         !prerenderService->IsWebStatePrerendered(webState));
+  DCHECK(!_prerenderService ||
+         !_prerenderService->IsWebStatePrerendered(webState));
 
   CaptivePortalTabHelper::CreateForWebState(webState, self);
 
@@ -3609,9 +3603,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
   // Prerender tab does not have a toolbar, return |headerHeight| as promised by
   // API documentation.
-  PrerenderService* prerenderService =
-      PrerenderServiceFactory::GetForBrowserState(self.browserState);
-  if (prerenderService && prerenderService->IsLoadingPrerender())
+  // TODO(crbug.com/1328039): Remove all use of the prerender service from BVC
+  if (_prerenderService && _prerenderService->IsLoadingPrerender())
     return self.headerHeight;
 
   UIView* topHeader = headers[0].view;
@@ -4359,16 +4352,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
 - (UIView*)topToolbarView {
   return self.primaryToolbarCoordinator.viewController.view;
-}
-
-#pragma mark - PreloadControllerDelegate methods
-
-- (web::WebState*)webStateToReplace {
-  return self.currentWebState;
-}
-
-- (UIView*)webViewContainer {
-  return self.contentArea;
 }
 
 #pragma mark - LogoAnimationControllerOwnerOwner (Public)
