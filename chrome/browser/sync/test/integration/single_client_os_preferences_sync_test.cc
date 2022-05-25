@@ -5,8 +5,8 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/shelf_prefs.h"
+#include "base/json/json_writer.h"
 #include "base/notreached.h"
-#include "base/strings/string_util.h"
 #include "base/values.h"
 #include "chrome/browser/sync/test/integration/preferences_helper.h"
 #include "chrome/browser/sync/test/integration/sync_settings_categorization_sync_test.h"
@@ -54,10 +54,10 @@ class SyncCategorizationBaseTest : public SyncTest {
 
  protected:
   static std::string ConvertToSyncedPrefValue(const base::Value& value) {
-    const std::string res = value.DebugString();
-    const base::StringPiece trimmed =
-        base::TrimWhitespaceASCII(res, base::TrimPositions::TRIM_ALL);
-    return std::string(trimmed);
+    std::string result;
+    bool success = base::JSONWriter::Write(value, &result);
+    DCHECK(success);
+    return result;
   }
 
   sync_pb::PreferenceSpecifics* GetPreferenceSpecifics(
