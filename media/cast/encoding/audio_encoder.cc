@@ -400,7 +400,8 @@ class AudioEncoder::AppleAacImpl final : public AudioEncoder::ImplBase {
     in_asbd.mSampleRate = sampling_rate;
     in_asbd.mFormatID = kAudioFormatLinearPCM;
     in_asbd.mFormatFlags =
-        kAudioFormatFlagsNativeFloatPacked | kAudioFormatFlagIsNonInterleaved;
+        AudioFormatFlags{kAudioFormatFlagsNativeFloatPacked} |
+        kAudioFormatFlagIsNonInterleaved;
     in_asbd.mChannelsPerFrame = num_channels_;
     in_asbd.mBitsPerChannel = sizeof(float) * 8;
     in_asbd.mFramesPerPacket = 1;

@@ -58,7 +58,7 @@ TEST_F(TextDetectionImplMacTest, ScanOnce) {
   base::ScopedCFTypeRef<CGContextRef> context(CGBitmapContextCreate(
       nullptr, width, height, 8 /* bitsPerComponent */,
       width * 4 /* rowBytes */, rgb_colorspace,
-      kCGImageAlphaPremultipliedFirst | kCGBitmapByteOrder32Host));
+      uint32_t{kCGImageAlphaPremultipliedFirst} | kCGBitmapByteOrder32Host));
 
   // Draw a white background.
   CGContextSetRGBFillColor(context, 1.0, 1.0, 1.0, 1.0);

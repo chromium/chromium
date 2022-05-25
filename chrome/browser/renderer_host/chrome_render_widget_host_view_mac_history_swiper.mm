@@ -117,7 +117,7 @@ BOOL forceMagicMouse = NO;
 
 - (void)rendererHandledWheelEvent:(const blink::WebMouseWheelEvent&)event
                          consumed:(BOOL)consumed {
-  if (event.phase != NSEventPhaseBegan)
+  if (event.phase != blink::WebMouseWheelEvent::kPhaseBegan)
     return;
   _firstScrollUnconsumed = !consumed;
 }

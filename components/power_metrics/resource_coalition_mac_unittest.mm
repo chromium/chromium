@@ -76,7 +76,7 @@ void BurnCPU() {
   [[maybe_unused]] volatile double number = 1;
   while (base::TimeTicks::Now() < (begin + busy_time)) {
     for (int i = 0; i < 10000; ++i)
-      number *= base::RandDouble();
+      number = number * base::RandDouble();
   }
 }
 

@@ -83,7 +83,7 @@ void RenderedPdfSha1(const base::FilePath::StringType& pdf_filename,
   base::ScopedCFTypeRef<CGContextRef> context(CGBitmapContextCreate(
       rendered_bitmap.data(), dest_size.width(), dest_size.height(),
       kBitsPerComponent, kStride, color_space,
-      kCGImageAlphaPremultipliedFirst | kCGBitmapByteOrder32Little));
+      uint32_t{kCGImageAlphaPremultipliedFirst} | kCGBitmapByteOrder32Little));
 
   // Render using metafile and calculate the output hash.
   ASSERT_TRUE(pdf_cg->RenderPage(page_number, context,

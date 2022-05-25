@@ -75,8 +75,8 @@ static bool SetStreamFormat(int channels,
                             AudioStreamBasicDescription* format) {
   format->mSampleRate = sample_rate;
   format->mFormatID = kAudioFormatLinearPCM;
-  format->mFormatFlags =
-      kAudioFormatFlagsNativeFloatPacked | kLinearPCMFormatFlagIsNonInterleaved;
+  format->mFormatFlags = AudioFormatFlags{kAudioFormatFlagsNativeFloatPacked} |
+                         kLinearPCMFormatFlagIsNonInterleaved;
   format->mBytesPerPacket = sizeof(Float32);
   format->mFramesPerPacket = 1;
   format->mBytesPerFrame = sizeof(Float32);

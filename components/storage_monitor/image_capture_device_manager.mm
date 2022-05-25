@@ -55,9 +55,10 @@ storage_monitor::ImageCaptureDeviceManager* g_image_capture_device_manager =
 
     _deviceBrowser.reset([[ICDeviceBrowser alloc] init]);
     [_deviceBrowser setDelegate:self];
-    [_deviceBrowser setBrowsedDeviceTypeMask:
-        static_cast<ICDeviceTypeMask>(
-            ICDeviceTypeMaskCamera | ICDeviceLocationTypeMaskLocal)];
+    [_deviceBrowser
+        setBrowsedDeviceTypeMask:ICDeviceTypeMask{
+                                     ICDeviceTypeMaskCamera |
+                                     UInt{ICDeviceLocationTypeMaskLocal}}];
     [_deviceBrowser start];
   }
   return self;

@@ -81,7 +81,7 @@
   [attrs setObject:paragraphStyle forKey:NSParagraphStyleAttributeName];
 
   if (item->has_text_direction_override) {
-    [attrs setObject:@[ @(writingDirection | NSWritingDirectionOverride) ]
+    [attrs setObject:@[ @(long{writingDirection} | NSWritingDirectionOverride) ]
               forKey:NSWritingDirectionAttributeName];
   }
 

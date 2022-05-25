@@ -76,7 +76,7 @@ SHA256HashValue CalculateFingerprint256(SecCertificateRef cert) {
 
 OSStatus CreateSSLClientPolicy(SecPolicyRef* policy) {
   *policy = SecPolicyCreateSSL(false /* server */, nullptr);
-  return *policy ? noErr : errSecNoPolicyModule;
+  return *policy ? OSStatus{noErr} : errSecNoPolicyModule;
 }
 
 OSStatus CreateSSLServerPolicy(const std::string& hostname,
@@ -89,12 +89,12 @@ OSStatus CreateSSLServerPolicy(const std::string& hostname,
   }
 
   *policy = SecPolicyCreateSSL(true /* server */, hostname_cfstring.get());
-  return *policy ? noErr : errSecNoPolicyModule;
+  return *policy ? OSStatus{noErr} : errSecNoPolicyModule;
 }
 
 OSStatus CreateBasicX509Policy(SecPolicyRef* policy) {
   *policy = SecPolicyCreateBasicX509();
-  return *policy ? noErr : errSecNoPolicyModule;
+  return *policy ? OSStatus{noErr} : errSecNoPolicyModule;
 }
 
 OSStatus CreateRevocationPolicies(bool enable_revocation_checking,

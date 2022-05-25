@@ -246,8 +246,8 @@ static void SetAntiFlickerInVideoControlInterface(
   // Create the control request and launch it to the device's control interface.
   // Note how the wIndex needs the interface number OR'ed in the lowest bits.
   IOUSBDevRequest command;
-  command.bmRequestType =
-      USBmakebmRequestType(kUSBOut, kUSBClass, kUSBInterface);
+  command.bmRequestType = USBmakebmRequestType(UInt8{kUSBOut}, UInt8{kUSBClass},
+                                               UInt8{kUSBInterface});
   command.bRequest = kVcRequestCodeSetCur;
   UInt8 interface_number;
   (*control_interface)
@@ -328,8 +328,8 @@ static IOUSBDevRequest CreateEmptyPanTiltZoomRequest(
   (*control_interface)
       ->GetInterfaceNumber(control_interface, &interface_number);
   IOUSBDevRequest command;
-  command.bmRequestType =
-      USBmakebmRequestType(endpoint_direction, kUSBClass, kUSBInterface);
+  command.bmRequestType = USBmakebmRequestType(
+      endpoint_direction, UInt8{kUSBClass}, UInt8{kUSBInterface});
   command.bRequest = request_code;
   command.wIndex = (unit_id << 8) | interface_number;
   command.wValue = (control_selector << 8);

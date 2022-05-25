@@ -110,9 +110,13 @@ class ScopedTypeRef {
     object_ = object;
   }
 
-  bool operator==(const element_type& that) const { return object_ == that; }
+  bool operator==(const ScopedTypeRef& that) const {
+    return object_ == that.object_;
+  }
 
-  bool operator!=(const element_type& that) const { return object_ != that; }
+  bool operator!=(const ScopedTypeRef& that) const {
+    return object_ != that.object_;
+  }
 
   operator element_type() const { return object_; }
 
