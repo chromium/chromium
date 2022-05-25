@@ -1573,7 +1573,7 @@ const base::Feature kDeviceActiveClientMonthlyCheckMembership{
 
 // Enables or disables forced reboots when DeviceScheduledReboot policy is set.
 const base::Feature kDeviceForceScheduledReboot{
-    "DeviceForceScheduledReboot", base::FEATURE_DISABLED_BY_DEFAULT};
+    "DeviceForceScheduledReboot", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Maximum delay added to reboot time when DeviceScheduledReboot policy is set.
 const base::FeatureParam<int> kDeviceForceScheduledRebootMaxDelay{
