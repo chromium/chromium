@@ -353,7 +353,7 @@ void PaintTiming::SetFirstContentfulPaintPresentation(base::TimeTicks stamp) {
         first_contentful_paint_presentation_);
   }
   auto* coordinator = GetSupplementable()->GetResourceCoordinator();
-  if (coordinator && GetFrame() && GetFrame()->IsMainFrame()) {
+  if (coordinator && GetFrame() && GetFrame()->IsOutermostMainFrame()) {
     PerformanceTiming* timing = performance->timing();
     base::TimeDelta fcp = stamp - timing->NavigationStartAsMonotonicTime();
     coordinator->OnFirstContentfulPaint(fcp);
@@ -412,7 +412,7 @@ void PaintTiming::OnRestoredFromBackForwardCache() {
       RequestAnimationFrameTimesAfterBackForwardCacheRestore{});
 
   LocalFrame* frame = GetFrame();
-  if (!frame->IsMainFrame()) {
+  if (!frame->IsOutermostMainFrame()) {
     return;
   }
 
