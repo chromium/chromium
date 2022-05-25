@@ -401,6 +401,7 @@ BOOL IsPasswordManagerBrandingUpdateEnabled() {
     _titleLabel.adjustsFontForContentSizeCategory = YES;
     _titleLabel.accessibilityIdentifier =
         kPasswordsInOtherAppsTitleAccessibilityIdentifier;
+    _titleLabel.accessibilityTraits |= UIAccessibilityTraitHeader;
   }
   return _titleLabel;
 }

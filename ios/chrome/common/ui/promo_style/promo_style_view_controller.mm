@@ -431,6 +431,7 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
     _titleLabel.adjustsFontForContentSizeCategory = YES;
     _titleLabel.accessibilityIdentifier =
         kPromoStyleTitleAccessibilityIdentifier;
+    _titleLabel.accessibilityTraits |= UIAccessibilityTraitHeader;
   }
   return _titleLabel;
 }
