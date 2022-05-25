@@ -531,6 +531,24 @@
       "use_goma": true
     }
   },
+  "android-fieldtrial-fyi-rel": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "disable_android_lint": true,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "strip_debug_info": true,
+      "symbol_level": 1,
+      "system_webview_package_name": "com.google.android.apps.chrome",
+      "target_cpu": "x86",
+      "target_os": "android",
+      "use_errorprone_java_compiler": false,
+      "use_rbe": true,
+      "use_remoteexec": true
+    }
+  },
   "android-inverse-fieldtrials-pie-x86-fyi-rel": {
     "gn_args": {
       "dcheck_always_on": true,

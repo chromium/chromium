@@ -3017,6 +3017,25 @@
         'use_swarming': True,
         'os_type': 'android',
       },
+      'android-fieldtrial-rel': {
+        'mixins': [
+          'has_native_resultdb_integration',
+          'pie-x86-emulator',
+          'linux-bionic',
+          'x86-64',
+        ],
+        'os_type': 'android',
+        'swarming': {
+          'dimension_sets': [
+            {
+              'pool': 'chromium.tests.finch',
+            },
+          ],
+        },
+        'test_suites': {
+          'gtest_tests': 'fieldtrial_android_tests',
+        },
+      },
       'chromeos-amd64-generic-rel (goma cache silo)': {
         'additional_compile_targets': [
           'chromiumos_preflight',

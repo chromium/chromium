@@ -1687,6 +1687,14 @@
       },
     },
 
+    'fieldtrial_android_tests': {
+      'android_browsertests_no_fieldtrial': {
+        'args': [
+          '--disable-field-trial-config',
+        ],
+        'test': 'android_browsertests',
+      }
+    },
     'fieldtrial_browser_tests': {
       'browser_tests_no_field_trial': {
         'args': [

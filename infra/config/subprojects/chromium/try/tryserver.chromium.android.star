@@ -225,6 +225,11 @@ try_.builder(
 )
 
 try_.builder(
+    name = "android-fieldtrial-fyi-rel",
+    mirrors = ["ci/android-fieldtrial-rel"],
+)
+
+try_.builder(
     name = "android-inverse-fieldtrials-pie-x86-fyi-rel",
     mirrors = builder_config.copy_from("try/android-pie-x86-rel"),
 )

@@ -477,6 +477,39 @@ ci.builder(
     os = os.MAC_DEFAULT,
 )
 
+ci.builder(
+    name = "android-fieldtrial-rel",
+    builderless = False,
+    console_view_entry = consoles.console_view_entry(
+        category = "android",
+    ),
+    os = os.LINUX_BIONIC,
+    builder_spec = builder_config.builder_spec(
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+            apply_configs = [
+                "android",
+                "enable_reclient",
+            ],
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "android",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 32,
+            target_platform = builder_config.target_platform.ANDROID,
+        ),
+        android_config = builder_config.android_config(
+            config = "x86_builder",
+        ),
+        build_gs_bucket = "chromium-android-archive",
+    ),
+    reclient_jobs = rbe_jobs.DEFAULT,
+    reclient_instance = rbe_instance.DEFAULT,
+)
+
 fyi_ios_builder(
     name = "ios-fieldtrial-rel",
     builderless = False,
