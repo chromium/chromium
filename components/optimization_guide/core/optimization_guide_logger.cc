@@ -28,6 +28,12 @@ OptimizationGuideLogger::LogMessageBuilder::LogMessageBuilder(
       optimization_guide_logger_(optimization_guide_logger) {}
 
 OptimizationGuideLogger::LogMessageBuilder::~LogMessageBuilder() {
+  if (!optimization_guide_logger_) {
+    // It is possible for this to not be available in tests, so just return
+    // here.
+    return;
+  }
+
   std::string message = base::StrCat(messages_);
   optimization_guide_logger_->OnLogMessageAdded(base::Time::Now(), source_file_,
                                                 source_line_, message);

@@ -206,6 +206,10 @@ class HintsFetcherDisabledBrowserTest : public InProcessBrowserTest {
   // Creates hint data for the |hint_setup_url|'s so that the fetching of the
   // hints is triggered.
   void SetUpComponentUpdateHints(const GURL& hint_setup_url) {
+    optimization_guide::RetryForHistogramUntilCountReached(
+        GetHistogramTester(),
+        "OptimizationGuide.HintsManager.HintCacheInitialized", 1);
+
     const optimization_guide::HintsComponentInfo& component_info =
         test_hints_component_creator_.CreateHintsComponentInfoWithPageHints(
             optimization_guide::proto::NOSCRIPT, {hint_setup_url.host()}, "*");

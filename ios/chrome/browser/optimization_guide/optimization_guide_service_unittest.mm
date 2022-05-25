@@ -112,7 +112,9 @@ class OptimizationGuideServiceTest : public PlatformTest {
         OptimizationGuideServiceFactory::GetForBrowserState(
             browser_state_.get());
     optimization_guide_service_->DoFinalInit();
+  }
 
+  void CreateOTRBrowserState() {
     ChromeBrowserState* otr_browser_state =
         browser_state_->CreateOffTheRecordBrowserStateWithTestingFactories(
             {std::make_pair(
@@ -123,6 +125,10 @@ class OptimizationGuideServiceTest : public PlatformTest {
   }
 
   void PushHintsComponentAndWaitForCompletion() {
+    RetryForHistogramUntilCountReached(
+        histogram_tester(),
+        "OptimizationGuide.HintsManager.HintCacheInitialized", 1);
+
     base::RunLoop run_loop;
     optimization_guide_service()
         ->GetHintsManager()
@@ -510,6 +516,7 @@ TEST_F(OptimizationGuideServiceTest, IncognitoCanStillReadFromComponentHints) {
 
   // Set up incognito browser state and incognito OptimizationGuideService
   // consumer.
+  CreateOTRBrowserState();
   ChromeBrowserState* otr_browser_state =
       browser_state_->GetOffTheRecordChromeBrowserState();
 
@@ -517,6 +524,8 @@ TEST_F(OptimizationGuideServiceTest, IncognitoCanStillReadFromComponentHints) {
   OptimizationGuideService* otr_ogs =
       OptimizationGuideServiceFactory::GetForBrowserState(otr_browser_state);
   otr_ogs->RegisterOptimizationTypes({optimization_guide::proto::NOSCRIPT});
+  // Wait until initialization has stabilized.
+  RunUntilIdle();
 
   // Navigate to a URL that has a hint from a component and wait for that hint
   // to have loaded.
@@ -536,6 +545,7 @@ TEST_F(OptimizationGuideServiceTest, IncognitoStillProcessesBloomFilter) {
 
   // Set up incognito browser and incognito OptimizationGuideService
   // consumer.
+  CreateOTRBrowserState();
   ChromeBrowserState* otr_browser_state =
       browser_state_->GetOffTheRecordChromeBrowserState();
 
