@@ -24,7 +24,7 @@ void LinuxUI::SetInstance(std::unique_ptr<LinuxUI> instance) {
   g_linux_ui = instance.release();
 
   SkiaFontDelegate::SetInstance(g_linux_ui);
-#if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMECAST)
+#if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS)
   ShellDialogLinux::SetInstance(g_linux_ui);
 #endif
   ui::SetTextEditKeyBindingsDelegate(g_linux_ui);

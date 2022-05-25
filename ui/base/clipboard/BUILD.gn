@@ -35,7 +35,7 @@ component("clipboard_types") {
   }
 
   if (use_aura) {
-    if ((!is_chromecast && is_linux) || is_chromeos_lacros || !is_win) {
+    if ((!is_castos && is_linux) || is_chromeos_lacros || !is_win) {
       sources += [ "clipboard_format_type_aura.cc" ]
     }
   }

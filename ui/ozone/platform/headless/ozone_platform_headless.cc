@@ -101,9 +101,9 @@ class OzonePlatformHeadless : public OzonePlatform {
     return std::make_unique<InputMethodMinimal>(delegate);
   }
 
-// Desktop Linux, not ChromeOS.
+// Desktop Linux, not ChromeOS or CastOS.
 #if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
-    !BUILDFLAG(IS_CHROMEOS_LACROS) && !BUILDFLAG(IS_CHROMECAST)
+    !BUILDFLAG(IS_CHROMEOS_LACROS) && !BUILDFLAG(IS_CASTOS)
   const PlatformProperties& GetPlatformProperties() override {
     static base::NoDestructor<OzonePlatform::PlatformProperties> properties;
     static bool initialized = false;

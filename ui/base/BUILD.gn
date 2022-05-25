@@ -1124,7 +1124,7 @@ test("ui_base_unittests") {
         "//ui/base/ime/linux",
       ]
     }
-    if (is_linux && !is_chromecast && !is_chromeos_lacros) {
+    if (is_linux && !is_castos && !is_chromeos_lacros) {
       sources += [ "ime/linux/composition_text_util_pango_unittest.cc" ]
     }
     if (is_chromeos_ash || use_ozone) {

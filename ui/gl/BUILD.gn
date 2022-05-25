@@ -440,10 +440,6 @@ component("gl") {
 
     deps += [ ":gl_jni_headers" ]
   }
-
-  if (is_chromecast) {
-    defines += [ "CHROMECAST_BUILD" ]
-  }
 }
 
 if (is_mac && use_egl) {

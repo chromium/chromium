@@ -7,7 +7,7 @@ import("//build/config/ui.gni")
 declare_args() {
   # Optional system library.
   use_xkbcommon =
-      use_ozone && (is_linux || is_chromeos) && !is_chromecast &&
+      use_ozone && (is_linux || is_chromeos) && !is_castos &&
       # Avoid needing the 32-bit version of this library when Android is
       # building things via secondary toolchains.
       target_os != "android"

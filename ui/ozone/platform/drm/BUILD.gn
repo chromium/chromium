@@ -156,7 +156,7 @@ source_set("gbm") {
     "//ui/platform_window",
   ]
 
-  if (!is_chromecast) {
+  if (!is_castos) {
     data_deps = [
       "//third_party/angle:libEGL",
       "//third_party/angle:libGLESv2",
