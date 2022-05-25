@@ -191,7 +191,9 @@ class FakeMojoMediaClient : public MojoMediaClient {
       MediaLog* media_log,
       mojom::CommandBufferIdPtr command_buffer_id,
       RequestOverlayInfoCB request_overlay_info_cb,
-      const gfx::ColorSpace& target_color_space) override {
+      const gfx::ColorSpace& target_color_space,
+      mojo::PendingRemote<stable::mojom::StableVideoDecoder> oop_video_decoder)
+      override {
     return create_video_decoder_cb_.Run(media_log);
   }
 
@@ -228,8 +230,9 @@ class MojoVideoDecoderIntegrationTest : public ::testing::Test {
   mojo::PendingRemote<mojom::VideoDecoder> CreateRemoteVideoDecoder() {
     mojo::PendingRemote<mojom::VideoDecoder> remote_video_decoder;
     mojo::MakeSelfOwnedReceiver(
-        std::make_unique<MojoVideoDecoderService>(&mojo_media_client_,
-                                                  &mojo_cdm_service_context_),
+        std::make_unique<MojoVideoDecoderService>(
+            &mojo_media_client_, &mojo_cdm_service_context_,
+            mojo::PendingRemote<stable::mojom::StableVideoDecoder>()),
         remote_video_decoder.InitWithNewPipeAndPassReceiver());
     return remote_video_decoder;
   }

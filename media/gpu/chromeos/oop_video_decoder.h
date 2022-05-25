@@ -27,11 +27,11 @@ class OOPVideoDecoder : public VideoDecoderMixin,
   OOPVideoDecoder& operator=(const OOPVideoDecoder&) = delete;
 
   static std::unique_ptr<VideoDecoderMixin> Create(
+      mojo::PendingRemote<stable::mojom::StableVideoDecoder>
+          pending_remote_decoder,
       std::unique_ptr<MediaLog> media_log,
       scoped_refptr<base::SequencedTaskRunner> decoder_task_runner,
-      base::WeakPtr<VideoDecoderMixin::Client> client,
-      mojo::PendingRemote<stable::mojom::StableVideoDecoder>
-          pending_remote_decoder);
+      base::WeakPtr<VideoDecoderMixin::Client> client);
 
   // VideoDecoderMixin implementation, VideoDecoder part.
   void Initialize(const VideoDecoderConfig& config,

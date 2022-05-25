@@ -10,7 +10,7 @@
 namespace media {
 
 std::unique_ptr<VideoDecoder> CreatePlatformVideoDecoder(
-    const VideoDecoderTraits& traits) {
+    VideoDecoderTraits& traits) {
   return nullptr;
 }
 

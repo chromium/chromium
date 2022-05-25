@@ -21,6 +21,7 @@
 #include "media/gpu/chromeos/dmabuf_video_frame_pool.h"
 #include "media/gpu/chromeos/image_processor.h"
 #include "media/gpu/chromeos/image_processor_factory.h"
+#include "media/gpu/chromeos/oop_video_decoder.h"
 #include "media/gpu/chromeos/platform_video_frame_pool.h"
 #include "media/gpu/macros.h"
 #include "media/media_buildflags.h"
@@ -92,17 +93,24 @@ std::unique_ptr<VideoDecoder> VideoDecoderPipeline::Create(
     scoped_refptr<base::SequencedTaskRunner> client_task_runner,
     std::unique_ptr<DmabufVideoFramePool> frame_pool,
     std::unique_ptr<VideoFrameConverter> frame_converter,
-    std::unique_ptr<MediaLog> media_log) {
+    std::unique_ptr<MediaLog> media_log,
+    mojo::PendingRemote<stable::mojom::StableVideoDecoder> oop_video_decoder) {
   DCHECK(client_task_runner);
   DCHECK(frame_pool);
   DCHECK(frame_converter);
 
-  CreateDecoderFunctionCB create_decoder_function_cb =
+  CreateDecoderFunctionCB create_decoder_function_cb;
+  if (oop_video_decoder) {
+    create_decoder_function_cb =
+        base::BindOnce(&OOPVideoDecoder::Create, std::move(oop_video_decoder));
+  } else {
+    create_decoder_function_cb =
 #if BUILDFLAG(USE_VAAPI)
-      base::BindOnce(&VaapiVideoDecoder::Create);
+        base::BindOnce(&VaapiVideoDecoder::Create);
 #elif BUILDFLAG(USE_V4L2_CODEC)
-      base::BindOnce(&V4L2VideoDecoder::Create);
+        base::BindOnce(&V4L2VideoDecoder::Create);
 #endif
+  }
 
   auto* pipeline = new VideoDecoderPipeline(
       std::move(client_task_runner), std::move(frame_pool),

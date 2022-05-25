@@ -86,7 +86,8 @@ VideoDecoderTraits::VideoDecoderTraits(
     gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory,
     GetConfigCacheCB get_cached_configs_cb,
     GetCommandBufferStubCB get_command_buffer_stub_cb,
-    AndroidOverlayMojoFactoryCB android_overlay_factory_cb)
+    AndroidOverlayMojoFactoryCB android_overlay_factory_cb,
+    mojo::PendingRemote<stable::mojom::StableVideoDecoder> oop_video_decoder)
     : task_runner(std::move(task_runner)),
       gpu_task_runner(std::move(gpu_task_runner)),
       media_log(std::move(media_log)),
@@ -99,7 +100,8 @@ VideoDecoderTraits::VideoDecoderTraits(
       gpu_memory_buffer_factory(gpu_memory_buffer_factory),
       get_cached_configs_cb(std::move(get_cached_configs_cb)),
       get_command_buffer_stub_cb(std::move(get_command_buffer_stub_cb)),
-      android_overlay_factory_cb(std::move(android_overlay_factory_cb)) {}
+      android_overlay_factory_cb(std::move(android_overlay_factory_cb)),
+      oop_video_decoder(std::move(oop_video_decoder)) {}
 
 GpuMojoMediaClient::GpuMojoMediaClient(
     const gpu::GpuPreferences& gpu_preferences,
@@ -163,7 +165,8 @@ std::unique_ptr<VideoDecoder> GpuMojoMediaClient::CreateVideoDecoder(
     MediaLog* media_log,
     mojom::CommandBufferIdPtr command_buffer_id,
     RequestOverlayInfoCB request_overlay_info_cb,
-    const gfx::ColorSpace& target_color_space) {
+    const gfx::ColorSpace& target_color_space,
+    mojo::PendingRemote<stable::mojom::StableVideoDecoder> oop_video_decoder) {
   // All implementations require a command buffer.
   if (!command_buffer_id)
     return nullptr;
@@ -181,7 +184,7 @@ std::unique_ptr<VideoDecoder> GpuMojoMediaClient::CreateVideoDecoder(
       base::BindRepeating(
           &GetCommandBufferStub, gpu_task_runner_, media_gpu_channel_manager_,
           command_buffer_id->channel_token, command_buffer_id->route_id),
-      android_overlay_factory_cb_);
+      android_overlay_factory_cb_, std::move(oop_video_decoder));
 
   return CreatePlatformVideoDecoder(traits);
 }

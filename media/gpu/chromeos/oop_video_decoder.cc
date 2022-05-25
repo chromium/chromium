@@ -69,11 +69,11 @@ namespace media {
 
 // static
 std::unique_ptr<VideoDecoderMixin> OOPVideoDecoder::Create(
+    mojo::PendingRemote<stable::mojom::StableVideoDecoder>
+        pending_remote_decoder,
     std::unique_ptr<MediaLog> media_log,
     scoped_refptr<base::SequencedTaskRunner> decoder_task_runner,
-    base::WeakPtr<VideoDecoderMixin::Client> client,
-    mojo::PendingRemote<stable::mojom::StableVideoDecoder>
-        pending_remote_decoder) {
+    base::WeakPtr<VideoDecoderMixin::Client> client) {
   // TODO(b/171813538): make the destructor of this class (as well as the
   // destructor of sister class VaapiVideoDecoder) public so the explicit
   // argument can be removed from this call to base::WrapUnique().

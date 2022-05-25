@@ -22,6 +22,7 @@
 #include "media/gpu/chromeos/vda_video_frame_pool.h"
 #include "media/gpu/chromeos/video_frame_converter.h"
 #include "media/gpu/media_gpu_export.h"
+#include "media/mojo/mojom/stable/stable_video_decoder.mojom.h"
 #include "media/video/video_decode_accelerator.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/gpu_memory_buffer.h"
@@ -51,7 +52,8 @@ class MEDIA_GPU_EXPORT VdVideoDecodeAccelerator
           scoped_refptr<base::SequencedTaskRunner>,
           std::unique_ptr<DmabufVideoFramePool>,
           std::unique_ptr<VideoFrameConverter>,
-          std::unique_ptr<MediaLog>)>;
+          std::unique_ptr<MediaLog>,
+          mojo::PendingRemote<stable::mojom::StableVideoDecoder>)>;
 
   // Create VdVideoDecodeAccelerator instance, and call Initialize().
   // Return nullptr if Initialize() failed.

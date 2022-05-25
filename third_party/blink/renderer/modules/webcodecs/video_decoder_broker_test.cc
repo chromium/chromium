@@ -88,7 +88,9 @@ class FakeMojoMediaClient : public media::MojoMediaClient {
       media::MediaLog* media_log,
       media::mojom::CommandBufferIdPtr command_buffer_id,
       media::RequestOverlayInfoCB request_overlay_info_cb,
-      const gfx::ColorSpace& target_color_space) override {
+      const gfx::ColorSpace& target_color_space,
+      mojo::PendingRemote<media::stable::mojom::StableVideoDecoder>
+          oop_video_decoder) override {
     return std::make_unique<FakeGpuVideoDecoder>();
   }
 };
@@ -117,8 +119,9 @@ class FakeInterfaceFactory : public media::mojom::InterfaceFactory {
       mojo::PendingRemote<media::stable::mojom::StableVideoDecoder>
           dst_video_decoder) override {
     video_decoder_receivers_.Add(
-        std::make_unique<media::MojoVideoDecoderService>(&mojo_media_client_,
-                                                         &cdm_service_context_),
+        std::make_unique<media::MojoVideoDecoderService>(
+            &mojo_media_client_, &cdm_service_context_,
+            mojo::PendingRemote<media::stable::mojom::StableVideoDecoder>()),
         std::move(receiver));
   }
 

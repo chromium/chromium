@@ -58,6 +58,8 @@ struct VideoDecoderTraits {
 
   AndroidOverlayMojoFactoryCB android_overlay_factory_cb;
 
+  mojo::PendingRemote<stable::mojom::StableVideoDecoder> oop_video_decoder;
+
   VideoDecoderTraits(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
@@ -71,15 +73,15 @@ struct VideoDecoderTraits {
       gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory,
       GetConfigCacheCB get_cached_configs_cb,
       GetCommandBufferStubCB get_command_buffer_stub_cb,
-      AndroidOverlayMojoFactoryCB android_overlay_factory_cb);
+      AndroidOverlayMojoFactoryCB android_overlay_factory_cb,
+      mojo::PendingRemote<stable::mojom::StableVideoDecoder> oop_video_decoder);
   ~VideoDecoderTraits();
 };
 
 // Find platform specific implementations of these in
 // gpu_mojo_media_client_{platform}.cc
 // Creates a platform-specific media::VideoDecoder.
-std::unique_ptr<VideoDecoder> CreatePlatformVideoDecoder(
-    const VideoDecoderTraits&);
+std::unique_ptr<VideoDecoder> CreatePlatformVideoDecoder(VideoDecoderTraits&);
 
 // Queries the platform-specific VideoDecoder implementation for its
 // supported profiles. Many platforms fall back to use the VDAVideoDecoder
@@ -146,7 +148,9 @@ class MEDIA_MOJO_EXPORT GpuMojoMediaClient final : public MojoMediaClient {
       MediaLog* media_log,
       mojom::CommandBufferIdPtr command_buffer_id,
       RequestOverlayInfoCB request_overlay_info_cb,
-      const gfx::ColorSpace& target_color_space) final;
+      const gfx::ColorSpace& target_color_space,
+      mojo::PendingRemote<stable::mojom::StableVideoDecoder> oop_video_decoder)
+      final;
   std::unique_ptr<CdmFactory> CreateCdmFactory(
       mojom::FrameInterfaceFactory* interface_provider) final;
 

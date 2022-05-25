@@ -13,7 +13,7 @@
 namespace media {
 
 std::unique_ptr<VideoDecoder> CreatePlatformVideoDecoder(
-    const VideoDecoderTraits& traits) {
+    VideoDecoderTraits& traits) {
   return VdaVideoDecoder::Create(
       traits.task_runner, traits.gpu_task_runner, traits.media_log->Clone(),
       *traits.target_color_space, traits.gpu_preferences,

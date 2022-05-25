@@ -45,7 +45,8 @@ std::unique_ptr<VideoDecoder> MojoMediaClient::CreateVideoDecoder(
     MediaLog* media_log,
     mojom::CommandBufferIdPtr command_buffer_id,
     RequestOverlayInfoCB request_overlay_info_cb,
-    const gfx::ColorSpace& target_color_space) {
+    const gfx::ColorSpace& target_color_space,
+    mojo::PendingRemote<stable::mojom::StableVideoDecoder> oop_video_decoder) {
   return nullptr;
 }
 

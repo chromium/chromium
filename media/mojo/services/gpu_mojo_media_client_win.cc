@@ -37,7 +37,7 @@ bool ShouldUseD3D11VideoDecoder(
 }  // namespace
 
 std::unique_ptr<VideoDecoder> CreatePlatformVideoDecoder(
-    const VideoDecoderTraits& traits) {
+    VideoDecoderTraits& traits) {
   if (!ShouldUseD3D11VideoDecoder(*traits.gpu_workarounds)) {
     if (traits.gpu_workarounds->disable_dxva_video_decoder)
       return nullptr;

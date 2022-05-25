@@ -242,7 +242,8 @@ bool VdVideoDecodeAccelerator::Initialize(const Config& config,
         std::make_unique<VdaVideoFramePool>(weak_this_, client_task_runner_);
     vd_ = create_vd_cb_.Run(client_task_runner_, std::move(frame_pool),
                             std::make_unique<VideoFrameConverter>(),
-                            std::make_unique<NullMediaLog>());
+                            std::make_unique<NullMediaLog>(),
+                            /*oop_video_decoder=*/{});
     if (!vd_)
       return false;
 

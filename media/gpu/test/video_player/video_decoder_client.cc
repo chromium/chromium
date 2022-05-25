@@ -186,7 +186,8 @@ void VideoDecoderClient::CreateDecoderTask(bool* success,
           base::ThreadTaskRunnerHandle::Get(),
           std::make_unique<PlatformVideoFramePool>(),
           std::make_unique<VideoFrameConverter>(),
-          std::make_unique<NullMediaLog>());
+          std::make_unique<NullMediaLog>(),
+          /*oop_video_decoder=*/{});
 #endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
       break;
     case DecoderImplementation::kVDA:

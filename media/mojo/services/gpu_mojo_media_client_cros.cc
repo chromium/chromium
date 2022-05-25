@@ -104,7 +104,24 @@ VideoDecoderType GetActualPlatformDecoderImplementation(
 }  // namespace
 
 std::unique_ptr<VideoDecoder> CreatePlatformVideoDecoder(
-    const VideoDecoderTraits& traits) {
+    VideoDecoderTraits& traits) {
+  // TODO(b/195769334): we'll need to structure this function a bit differently
+  // to account for the following:
+  //
+  // 1) Eventually, we may turn off USE_VAAPI and USE_V4L2_CODEC on LaCrOS if we
+  //    delegate all video acceleration to ash-chrome. In those cases,
+  //    GetPreferredCrosDecoderImplementation() won't be able to determine the
+  //    video API in LaCrOS.
+  //
+  // 2) For out-of-process video decoding, we don't need a |frame_pool| because
+  //    the buffers will be allocated and managed out-of-process.
+  //
+  // 3) It's very possible that not all platforms will be able to migrate to the
+  //    direct VD soon enough. In those cases, the GPU process will still need
+  //    to use a VideoDecoderPipeline backed by an OOPVideoDecoder, and the
+  //    video decoder process will need to run the legacy VDA code and return
+  //    GpuMemoryBuffers.
+
   switch (GetActualPlatformDecoderImplementation(traits.gpu_preferences,
                                                  traits.gpu_info)) {
     case VideoDecoderType::kVaapi:
@@ -117,7 +134,7 @@ std::unique_ptr<VideoDecoder> CreatePlatformVideoDecoder(
           traits.gpu_preferences.enable_unsafe_webgpu);
       return VideoDecoderPipeline::Create(
           traits.task_runner, std::move(frame_pool), std::move(frame_converter),
-          traits.media_log->Clone());
+          traits.media_log->Clone(), std::move(traits.oop_video_decoder));
     }
     case VideoDecoderType::kVda: {
       return VdaVideoDecoder::Create(
