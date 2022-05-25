@@ -223,7 +223,7 @@ TEST_F(UserNoteUICoordinatorTest, AddNoteEndUserSidePanel) {
 }
 
 // TODO(crbug.com/1328966): Re-enable this test
-#if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(ADDRESS_SANITIZER)
 #define MAYBE_RemoveMiddleUserSidePanel DISABLED_RemoveMiddleUserSidePanel
 #else
 #define MAYBE_RemoveMiddleUserSidePanel RemoveMiddleUserSidePanel
@@ -267,7 +267,7 @@ TEST_F(UserNoteUICoordinatorTest, MAYBE_RemoveMiddleUserSidePanel) {
 }
 
 // TODO(crbug.com/1328966): Re-enable this test
-#if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(ADDRESS_SANITIZER)
 #define MAYBE_RemoveEndUserSidePanel DISABLED_RemoveEndUserSidePanel
 #else
 #define MAYBE_RemoveEndUserSidePanel RemoveEndUserSidePanel
@@ -311,7 +311,7 @@ TEST_F(UserNoteUICoordinatorTest, MAYBE_RemoveEndUserSidePanel) {
 }
 
 // TODO(crbug.com/1328966): Re-enable this test
-#if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(ADDRESS_SANITIZER)
 #define MAYBE_RemoveAllNoteUserSidePanel DISABLED_RemoveAllNoteUserSidePanel
 #else
 #define MAYBE_RemoveAllNoteUserSidePanel RemoveAllNoteUserSidePanel
