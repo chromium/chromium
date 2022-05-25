@@ -5,6 +5,7 @@
 #include "media/formats/hls/media_playlist.h"
 
 #include <initializer_list>
+#include <limits>
 #include <string>
 #include <utility>
 
@@ -949,6 +950,110 @@ TEST(HlsMediaPlaylistTest, XByteRangeTag) {
     fork.AppendLine("segment1.ts");
     fork.ExpectError(ParseStatusCode::kByteRangeInvalid);
   }
+}
+
+TEST(HlsMediaPlaylistTest, XBitrateTag) {
+  MediaPlaylistTestBuilder builder;
+  builder.AppendLine("#EXTM3U");
+  builder.AppendLine("#EXT-X-TARGETDURATION:10");
+
+  // The EXT-X-BITRATE tag must be a valid DecimalInteger
+  {
+    for (base::StringPiece x : {"", ":", ": 1", ":1 ", ":-1", ":{$bitrate}"}) {
+      auto fork = builder;
+      fork.AppendLine("#EXT-X-BITRATE", x);
+      fork.ExpectError(ParseStatusCode::kMalformedTag);
+    }
+  }
+
+  // The EXT-X-BITRATE tag applies only to the segments that it appears after
+  builder.AppendLine("#EXTINF:9.2,");
+  builder.AppendLine("segment0.ts");
+  builder.ExpectAdditionalSegment();
+  builder.ExpectSegment(HasMediaSequenceNumber, 0);
+  builder.ExpectSegment(HasUri, GURL("http://localhost/segment0.ts"));
+  builder.ExpectSegment(HasBitRate, absl::nullopt);
+
+  builder.AppendLine("#EXT-X-BITRATE:15");
+  builder.AppendLine("#EXTINF:9.2,");
+  builder.AppendLine("segment1.ts");
+  builder.ExpectAdditionalSegment();
+  builder.ExpectSegment(HasMediaSequenceNumber, 1);
+  builder.ExpectSegment(HasUri, GURL("http://localhost/segment1.ts"));
+  builder.ExpectSegment(HasBitRate, 15000);
+
+  builder.AppendLine("#EXTINF:9.2,");
+  builder.AppendLine("segment2.ts");
+  builder.ExpectAdditionalSegment();
+  builder.ExpectSegment(HasMediaSequenceNumber, 2);
+  builder.ExpectSegment(HasUri, GURL("http://localhost/segment2.ts"));
+  builder.ExpectSegment(HasBitRate, 15000);
+
+  // The EXT-X-BITRATE tag does not apply to segments that are byteranges
+  builder.AppendLine("#EXT-X-BYTERANGE:1024@0");
+  builder.AppendLine("#EXTINF:9.2,");
+  builder.AppendLine("segment3.ts");
+  builder.ExpectAdditionalSegment();
+  builder.ExpectSegment(HasMediaSequenceNumber, 3);
+  builder.ExpectSegment(HasUri, GURL("http://localhost/segment3.ts"));
+  builder.ExpectSegment(HasByteRange, CreateByteRange(1024, 0));
+  builder.ExpectSegment(HasBitRate, absl::nullopt);
+
+  builder.AppendLine("#EXTINF:9.2,");
+  builder.AppendLine("segment4.ts");
+  builder.ExpectAdditionalSegment();
+  builder.ExpectSegment(HasMediaSequenceNumber, 4);
+  builder.ExpectSegment(HasUri, GURL("http://localhost/segment4.ts"));
+  builder.ExpectSegment(HasByteRange, absl::nullopt);
+  builder.ExpectSegment(HasBitRate, 15000);
+
+  // The EXT-X-BITRATE tag is allowed to appear twice
+  builder.AppendLine("#EXT-X-BITRATE:20");
+  builder.AppendLine("#EXT-X-BITRATE:21");
+  builder.AppendLine("#EXTINF:9.2,");
+  builder.AppendLine("segment5.ts");
+  builder.ExpectAdditionalSegment();
+  builder.ExpectSegment(HasMediaSequenceNumber, 5);
+  builder.ExpectSegment(HasUri, GURL("http://localhost/segment5.ts"));
+  builder.ExpectSegment(HasBitRate, 21000);
+
+  // A value of 0 is tolerated
+  builder.AppendLine("#EXT-X-BITRATE:0");
+  builder.AppendLine("#EXTINF:9.2,");
+  builder.AppendLine("segment6.ts");
+  builder.ExpectAdditionalSegment();
+  builder.ExpectSegment(HasMediaSequenceNumber, 6);
+  builder.ExpectSegment(HasUri, GURL("http://localhost/segment6.ts"));
+  builder.ExpectSegment(HasBitRate, 0);
+
+  // Large values should saturate to `DecimalInteger::max`
+  builder.AppendLine("#EXT-X-BITRATE:18446744073709551");
+  builder.AppendLine("#EXTINF:9.2,");
+  builder.AppendLine("segment7.ts");
+  builder.ExpectAdditionalSegment();
+  builder.ExpectSegment(HasMediaSequenceNumber, 7);
+  builder.ExpectSegment(HasUri, GURL("http://localhost/segment7.ts"));
+  builder.ExpectSegment(HasBitRate, 18446744073709551000u);
+
+  builder.AppendLine("#EXT-X-BITRATE:18446744073709552");
+  builder.AppendLine("#EXTINF:9.2,");
+  builder.AppendLine("segment8.ts");
+  builder.ExpectAdditionalSegment();
+  builder.ExpectSegment(HasMediaSequenceNumber, 8);
+  builder.ExpectSegment(HasUri, GURL("http://localhost/segment8.ts"));
+  builder.ExpectSegment(HasBitRate,
+                        std::numeric_limits<types::DecimalInteger>::max());
+
+  builder.AppendLine("#EXT-X-BITRATE:18446744073709551615");
+  builder.AppendLine("#EXTINF:9.2,");
+  builder.AppendLine("segment9.ts");
+  builder.ExpectAdditionalSegment();
+  builder.ExpectSegment(HasMediaSequenceNumber, 9);
+  builder.ExpectSegment(HasUri, GURL("http://localhost/segment9.ts"));
+  builder.ExpectSegment(HasBitRate,
+                        std::numeric_limits<types::DecimalInteger>::max());
+
+  builder.ExpectOk();
 }
 
 }  // namespace media::hls

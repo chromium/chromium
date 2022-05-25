@@ -495,4 +495,9 @@ TEST(HlsTagsTest, ParseXByteRangeTag) {
   ErrorTest<XByteRangeTag>(absl::nullopt, ParseStatusCode::kMalformedTag);
 }
 
+TEST(HlsTagsTest, ParseXBitrateTag) {
+  RunTagIdenficationTest<XBitrateTag>("#EXT-X-BITRATE:3\n", "3");
+  RunDecimalIntegerTagTest(&XBitrateTag::bitrate);
+}
+
 }  // namespace media::hls

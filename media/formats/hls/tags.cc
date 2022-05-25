@@ -469,4 +469,8 @@ ParseStatus::Or<XByteRangeTag> XByteRangeTag::Parse(TagItem tag) {
   return XByteRangeTag{.range = std::move(range).value()};
 }
 
+ParseStatus::Or<XBitrateTag> XBitrateTag::Parse(TagItem tag) {
+  return ParseDecimalIntegerTag(tag, &XBitrateTag::bitrate);
+}
+
 }  // namespace media::hls

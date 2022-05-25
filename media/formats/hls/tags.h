@@ -197,6 +197,17 @@ struct MEDIA_EXPORT XByteRangeTag {
   types::ByteRangeExpression range;
 };
 
+// Represents the contents of the #EXT-X-BITRATE tag.
+struct MEDIA_EXPORT XBitrateTag {
+  static constexpr auto kName = MediaPlaylistTagName::kXBitrate;
+  static ParseStatus::Or<XBitrateTag> Parse(TagItem);
+
+  // The approximate bitrate of the following media segments, (except those that
+  // have the EXT-X-BYTERANGE tag) expressed in kilobits per second. The value
+  // must be within +-10% of the actual segment bitrate.
+  types::DecimalInteger bitrate;
+};
+
 }  // namespace media::hls
 
 #endif  // MEDIA_FORMATS_HLS_TAGS_H_

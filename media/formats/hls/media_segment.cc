@@ -14,6 +14,7 @@ MediaSegment::MediaSegment(types::DecimalFloatingPoint duration,
                            types::DecimalInteger discontinuity_sequence_number,
                            GURL uri,
                            absl::optional<types::ByteRange> byte_range,
+                           absl::optional<types::DecimalInteger> bitrate,
                            bool has_discontinuity,
                            bool is_gap)
     : duration_(duration),
@@ -21,6 +22,7 @@ MediaSegment::MediaSegment(types::DecimalFloatingPoint duration,
       discontinuity_sequence_number_(discontinuity_sequence_number),
       uri_(std::move(uri)),
       byte_range_(byte_range),
+      bitrate_(bitrate),
       has_discontinuity_(has_discontinuity),
       is_gap_(is_gap) {}
 MediaSegment::~MediaSegment() = default;

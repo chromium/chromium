@@ -153,6 +153,14 @@ inline void HasByteRange(absl::optional<types::ByteRange> range,
   }
 }
 
+// Checks the latest media segment's `GetBitRate` property against the given
+// value.
+inline void HasBitRate(absl::optional<types::DecimalInteger> bitrate,
+                       const base::Location& from,
+                       const MediaSegment& segment) {
+  EXPECT_EQ(segment.GetBitRate(), bitrate);
+}
+
 // Checks the latest media segment's `HasDiscontinuity` property against the
 // given value.
 inline void HasDiscontinuity(bool value,

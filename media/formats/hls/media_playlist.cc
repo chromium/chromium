@@ -10,6 +10,7 @@
 
 #include "base/check.h"
 #include "base/notreached.h"
+#include "base/numerics/clamped_math.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "media/formats/hls/media_segment.h"
@@ -57,6 +58,7 @@ ParseStatus::Or<MediaPlaylist> MediaPlaylist::Parse(
   absl::optional<XGapTag> gap_tag;
   absl::optional<XDiscontinuityTag> discontinuity_tag;
   absl::optional<XByteRangeTag> byterange_tag;
+  absl::optional<XBitrateTag> bitrate_tag;
   absl::optional<XPlaylistTypeTag> playlist_type_tag;
   absl::optional<XEndListTag> end_list_tag;
   absl::optional<XIFramesOnlyTag> i_frames_only_tag;
@@ -209,6 +211,14 @@ ParseStatus::Or<MediaPlaylist> MediaPlaylist::Parse(
           }
           break;
         }
+        case MediaPlaylistTagName::kXBitrate: {
+          auto result = XBitrateTag::Parse(*tag);
+          if (result.has_error()) {
+            return std::move(result).error();
+          }
+          bitrate_tag = std::move(result).value();
+          break;
+        }
       }
 
       continue;
@@ -265,9 +275,22 @@ ParseStatus::Or<MediaPlaylist> MediaPlaylist::Parse(
       }
     }
 
+    // The previous occurrence of the EXT-X-BITRATE tag applies to this segment
+    // only if this segment is not a byterange of its resource.
+    absl::optional<types::DecimalInteger> bitrate;
+    if (bitrate_tag.has_value() && !byterange.has_value()) {
+      // The value in the tag is expressed in kilobits per-second, but we wish
+      // to normalize all bitrates to bits-per-second. The spec specifically
+      // uses 'kilobit' as opposed to 'kibibit', so we multiply by 1000 instead
+      // of 1024.
+      // Ensure we don't overflow `DecimalInteger` when doing this
+      // multiplication.
+      bitrate = base::ClampMul(bitrate_tag->bitrate, 1000u);
+    }
+
     segments.emplace_back(inf_tag->duration, media_sequence_number,
                           discontinuity_sequence_number, std::move(segment_uri),
-                          byterange, discontinuity_tag.has_value(),
+                          byterange, bitrate, discontinuity_tag.has_value(),
                           gap_tag.has_value());
 
     // Reset per-segment tags
