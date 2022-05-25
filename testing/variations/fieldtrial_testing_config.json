@@ -4777,6 +4777,21 @@
             ]
         }
     ],
+    "IsVoiceSearchEnabledCache": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IsVoiceSearchEnabledCache"
+                    ]
+                }
+            ]
+        }
+    ],
     "JourneysArPlRuZh": [
         {
             "platforms": [
