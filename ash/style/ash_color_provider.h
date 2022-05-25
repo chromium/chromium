@@ -7,6 +7,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/login/ui/login_data_dispatcher.h"
+#include "ash/public/cpp/login_types.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "base/callback_helpers.h"
@@ -146,10 +147,7 @@ class ASH_EXPORT AshColorProvider : public SessionObserver,
   // Temporary field for testing purposes while OOBE WebUI is being migrated.
   absl::optional<bool> is_dark_mode_enabled_in_oobe_for_testing_;
 
-  // True if we're in the OOBE state, or OOBE WebUI dialog is open (e.g. for the
-  // "Add person" flow), except for the last two screens. In those two screens
-  // the theme is based on user's preferences.
-  bool force_oobe_light_mode_ = false;
+  OobeDialogState oobe_state_ = OobeDialogState::HIDDEN;
 
   // absl::nullopt in case no user pod is focused.
   absl::optional<bool> is_dark_mode_enabled_for_focused_pod_;

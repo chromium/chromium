@@ -65,8 +65,7 @@ constexpr int kLightBackgroundBlendAlpha = 127;  // 50%
 // In the future additional screens will be added. Eventually all screens
 // will support it and this array will not be needed anymore.
 constexpr OobeDialogState kStatesSupportingDarkTheme[] = {
-    OobeDialogState::HIDDEN, OobeDialogState::MARKETING_OPT_IN,
-    OobeDialogState::THEME_SELECTION};
+    OobeDialogState::MARKETING_OPT_IN, OobeDialogState::THEME_SELECTION};
 
 AshColorProvider* g_instance = nullptr;
 
@@ -209,7 +208,7 @@ void AshColorProvider::OnSessionStateChanged(
     return;
   if (state != session_manager::SessionState::OOBE &&
       state != session_manager::SessionState::LOGIN_PRIMARY) {
-    force_oobe_light_mode_ = false;
+    oobe_state_ = OobeDialogState::HIDDEN;
   }
   NotifyDarkModeEnabledPrefChange();
 }
@@ -313,9 +312,21 @@ bool AshColorProvider::IsDarkModeEnabled() const {
     if (is_dark_mode_enabled_in_oobe_for_testing_.has_value())
       return is_dark_mode_enabled_in_oobe_for_testing_.value();
 
-    // Always use the LIGHT theme in all OOBE screens except the last two
-    if (force_oobe_light_mode_)
-      return false;
+    if (oobe_state_ != OobeDialogState::HIDDEN) {
+      if (active_user_pref_service_) {
+        const PrefService::Preference* pref =
+            active_user_pref_service_->FindPreference(
+                prefs::kDarkModeScheduleType);
+        // Managed users do not see the theme selection screen, so to avoid
+        // confusion they should always see light colors during OOBE
+        if (pref->IsManaged() || pref->IsRecommended())
+          return false;
+
+        if (!active_user_pref_service_->GetBoolean(prefs::kDarkModeEnabled))
+          return false;
+      }
+      return base::Contains(kStatesSupportingDarkTheme, oobe_state_);
+    }
 
     // On the login screen use the preference of the focused pod's user if they
     // had the preference stored in the known_user and the pod is focused.
@@ -335,8 +346,7 @@ bool AshColorProvider::IsDarkModeEnabled() const {
 
 void AshColorProvider::SetDarkModeEnabledForTest(bool enabled) {
   DCHECK(features::IsDarkLightModeEnabled());
-  if (Shell::Get()->session_controller()->GetSessionState() ==
-      session_manager::SessionState::OOBE) {
+  if (oobe_state_ != OobeDialogState::HIDDEN) {
     auto closure = GetNotifyOnDarkModeChangeClosure();
     is_dark_mode_enabled_in_oobe_for_testing_ = enabled;
     return;
@@ -348,18 +358,7 @@ void AshColorProvider::SetDarkModeEnabledForTest(bool enabled) {
 
 void AshColorProvider::OnOobeDialogStateChanged(OobeDialogState state) {
   auto closure = GetNotifyOnDarkModeChangeClosure();
-  // Managed users do not see the theme selection screen, so to avoid confusion
-  // they should always see light colors during OOBE
-  if (state != OobeDialogState::HIDDEN && active_user_pref_service_) {
-    const PrefService::Preference* pref =
-        active_user_pref_service_->FindPreference(prefs::kDarkModeScheduleType);
-    if (pref->IsManaged() || pref->IsRecommended()) {
-      force_oobe_light_mode_ = true;
-      return;
-    }
-  }
-
-  force_oobe_light_mode_ = !base::Contains(kStatesSupportingDarkTheme, state);
+  oobe_state_ = state;
 }
 
 void AshColorProvider::OnFocusPod(const AccountId& account_id) {
