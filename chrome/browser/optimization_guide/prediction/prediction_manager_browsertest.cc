@@ -662,6 +662,12 @@ IN_PROC_BROWSER_TEST_F(PredictionManagerModelDownloadingBrowserTest,
          const ModelInfo& model_info) {
         EXPECT_EQ(optimization_target,
                   proto::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD);
+
+        // Regression test for crbug/1327975.
+        // Make sure model file path downloaded into profile dir.
+        base::FilePath profile_dir =
+            g_browser_process->profile_manager()->GetLastUsedProfileDir();
+        EXPECT_TRUE(profile_dir.IsParent(model_info.GetModelFilePath()));
         run_loop->Quit();
       },
       run_loop.get()));
