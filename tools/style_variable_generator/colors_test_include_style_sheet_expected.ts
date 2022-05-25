@@ -11,13 +11,6 @@ import {css} from 'lit';
 /* SAFETY_BOILERPLATE */
 
 export interface GetColorsCSSOptions {
-  /** The html selector the colors should be attached too. */
-  target?: 'host' | 'html';
-  /**
-   * Generate a css dump which sets variables to their dark mode values in light
-   * mode and vice versa. If true lockTheme is ignored.
-   */
-  invert?: boolean;
   /**
    * Generate a css dump which sets variables to either their dark mode or light
    * mode values and ignores the documents prefers-color-scheme.
@@ -74,50 +67,48 @@ const TYPOGRAPHY_CSS = window ? `` : '';
  */
 export function getColorsCSS(options?: GetColorsCSSOptions) {
   let cssString;
-  if (options?.invert) {
-    cssString = /* SAFE */ (`
-      ${options?.target === 'host' ? ':host' : 'html:not(body)'} {
-        ${DEFAULT_CSS}
-        ${UNTYPED_CSS}
-        ${TYPOGRAPHY_CSS}
-        ${DARK_MODE_OVERRIDES_CSS}
-      }
-
-      @media (prefers-color-scheme: dark) {
-        ${options?.target === 'host' ? ':host' : 'html:not(body)'} {
-          ${DEFAULT_CSS}
-        }
-      }
-    `);
-  } else if (options?.lockTheme === 'light') {
+  if (options?.lockTheme === 'light') {
     // Tag strings which are safe with a special comment so copybara can add
     // the right safety wrappers whem moving this code into Google3.
     cssString = /* SAFE */ (`
-      ${options?.target === 'host' ? ':host' : 'html:not(body)'} {
+      html:not(body), :host {
         ${DEFAULT_CSS}
         ${UNTYPED_CSS}
         ${TYPOGRAPHY_CSS}
+      }
+      :host([inverted-colors]) {
+        ${DARK_MODE_OVERRIDES_CSS}
       }
     `);
   } else if (options?.lockTheme === 'dark') {
     cssString = /* SAFE */ (`
-      ${options?.target === 'host' ? ':host' : 'html:not(body)'} {
+      html:not(body), :host {
         ${DEFAULT_CSS}
         ${UNTYPED_CSS}
         ${TYPOGRAPHY_CSS}
         ${DARK_MODE_OVERRIDES_CSS}
       }
+      :host([inverted-colors]) {
+        ${DEFAULT_CSS}
+      }
     `);
   } else {
     cssString = /* SAFE */ (`
-      ${options?.target === 'host' ? ':host' : 'html:not(body)'} {
+      html:not(body), :host {
         ${DEFAULT_CSS}
         ${UNTYPED_CSS}
         ${TYPOGRAPHY_CSS}
       }
+      :host([inverted-colors]) {
+        ${DARK_MODE_OVERRIDES_CSS}
+      }
+
       @media (prefers-color-scheme: dark) {
-        ${options?.target === 'host' ? ':host' : 'html:not(body)'} {
+        html:not(body), :host {
           ${DARK_MODE_OVERRIDES_CSS}
+        }
+        :host([inverted-colors]) {
+          ${DEFAULT_CSS}
         }
       }
     `);
