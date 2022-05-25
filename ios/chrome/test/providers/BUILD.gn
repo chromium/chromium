@@ -20,6 +20,7 @@ group("providers") {
     "//ios/chrome/test/providers/omaha",
     "//ios/chrome/test/providers/overrides",
     "//ios/chrome/test/providers/password_auto_fill",
+    "//ios/chrome/test/providers/push_notification",
     "//ios/chrome/test/providers/risk_data",
     "//ios/chrome/test/providers/signin",
     "//ios/chrome/test/providers/text_zoom",

@@ -1,0 +1,9 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("push_notification") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [ "test_push_notification.mm" ]
+  deps = [ "//ios/public/provider/chrome/browser/push_notification:push_notification_api" ]
+}
