@@ -64,7 +64,7 @@ class SingleFieldFormFiller {
   // saves the given |fields| that are eligible to be saved as new or updated
   // Autocomplete entries, which can then be served in the future as
   // suggestions. This update is dependent on whether we are running in
-  // incognito and if Autocomplete is enabled or not.
+  // incognito and if Autocomplete is enabled or not. |fields| can be empty.
   virtual void OnWillSubmitFormWithFields(
       const std::vector<FormFieldData>& fields,
       bool is_autocomplete_enabled) = 0;

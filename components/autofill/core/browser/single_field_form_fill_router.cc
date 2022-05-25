@@ -4,22 +4,49 @@
 
 #include "components/autofill/core/browser/single_field_form_fill_router.h"
 
+#include "components/autofill/core/browser/merchant_promo_code_manager.h"
 #include "components/autofill/core/browser/suggestions_context.h"
-#include "components/autofill/core/common/autofill_payments_features.h"
 
 namespace autofill {
 
 SingleFieldFormFillRouter::SingleFieldFormFillRouter(
-    AutocompleteHistoryManager* autocomplete_history_manager) {
-  autocomplete_history_manager_ = autocomplete_history_manager->GetWeakPtr();
-}
+    AutocompleteHistoryManager* autocomplete_history_manager,
+    base::WeakPtr<MerchantPromoCodeManager> merchant_promo_code_manager)
+    : autocomplete_history_manager_(autocomplete_history_manager->GetWeakPtr()),
+      merchant_promo_code_manager_(merchant_promo_code_manager) {}
 
 SingleFieldFormFillRouter::~SingleFieldFormFillRouter() = default;
 
-void SingleFieldFormFillRouter::OnWillSubmitForm(const FormData& form,
-                                                 bool is_autocomplete_enabled) {
+void SingleFieldFormFillRouter::OnWillSubmitForm(
+    const FormData& form,
+    raw_ptr<const FormStructure> form_structure,
+    bool is_autocomplete_enabled) {
+  if (form_structure)
+    DCHECK(form.fields.size() == form_structure->field_count());
+  std::vector<FormFieldData> autocomplete_fields;
+  std::vector<FormFieldData> merchant_promo_code_fields;
+  autocomplete_fields.reserve(form.fields.size());
+  merchant_promo_code_fields.reserve(form.fields.size());
+  for (size_t i = 0; i < form.fields.size(); i++) {
+    // If |form_structure| is present, then the fields in |form_structure| and
+    // the fields in |form| should be 1:1. |form_structure| not being present
+    // indicates we may have fields that were not able to be parsed, so we route
+    // them to autocomplete functionality by default.
+    if (merchant_promo_code_manager_ && form_structure &&
+        form_structure->field(i)->Type().GetStorableType() ==
+            MERCHANT_PROMO_CODE) {
+      merchant_promo_code_fields.push_back(form.fields[i]);
+    } else {
+      autocomplete_fields.push_back(form.fields[i]);
+    }
+  }
+
+  if (merchant_promo_code_manager_) {
+    merchant_promo_code_manager_->OnWillSubmitFormWithFields(
+        merchant_promo_code_fields, is_autocomplete_enabled);
+  }
   autocomplete_history_manager_->OnWillSubmitFormWithFields(
-      form.fields, is_autocomplete_enabled);
+      autocomplete_fields, is_autocomplete_enabled);
 }
 
 void SingleFieldFormFillRouter::OnGetSingleFieldSuggestions(
@@ -31,9 +58,17 @@ void SingleFieldFormFillRouter::OnGetSingleFieldSuggestions(
     const std::string& form_control_type,
     base::WeakPtr<SingleFieldFormFiller::SuggestionsHandler> handler,
     const SuggestionsContext& context) {
-  autocomplete_history_manager_->OnGetSingleFieldSuggestions(
-      query_id, is_autocomplete_enabled, autoselect_first_suggestion, name,
-      prefix, form_control_type, handler, context);
+  // Retrieving suggestions for a new field; select the appropriate filler.
+  if (merchant_promo_code_manager_ && context.focused_field &&
+      context.focused_field->Type().GetStorableType() == MERCHANT_PROMO_CODE) {
+    merchant_promo_code_manager_->OnGetSingleFieldSuggestions(
+        query_id, is_autocomplete_enabled, autoselect_first_suggestion, name,
+        prefix, form_control_type, handler, context);
+  } else {
+    autocomplete_history_manager_->OnGetSingleFieldSuggestions(
+        query_id, is_autocomplete_enabled, autoselect_first_suggestion, name,
+        prefix, form_control_type, handler, context);
+  }
 }
 
 void SingleFieldFormFillRouter::OnWillSubmitFormWithFields(
@@ -44,21 +79,35 @@ void SingleFieldFormFillRouter::CancelPendingQueries(
     const SingleFieldFormFiller::SuggestionsHandler* handler) {
   if (autocomplete_history_manager_)
     autocomplete_history_manager_->CancelPendingQueries(handler);
+  if (merchant_promo_code_manager_)
+    merchant_promo_code_manager_->CancelPendingQueries(handler);
 }
 
 void SingleFieldFormFillRouter::OnRemoveCurrentSingleFieldSuggestion(
     const std::u16string& field_name,
     const std::u16string& value,
     int frontend_id) {
-  autocomplete_history_manager_->OnRemoveCurrentSingleFieldSuggestion(
-      field_name, value, frontend_id);
+  if (merchant_promo_code_manager_ &&
+      frontend_id == POPUP_ITEM_ID_MERCHANT_PROMO_CODE_ENTRY) {
+    merchant_promo_code_manager_->OnRemoveCurrentSingleFieldSuggestion(
+        field_name, value, frontend_id);
+  } else {
+    autocomplete_history_manager_->OnRemoveCurrentSingleFieldSuggestion(
+        field_name, value, frontend_id);
+  }
 }
 
 void SingleFieldFormFillRouter::OnSingleFieldSuggestionSelected(
     const std::u16string& value,
     int frontend_id) {
-  autocomplete_history_manager_->OnSingleFieldSuggestionSelected(value,
-                                                                 frontend_id);
+  if (merchant_promo_code_manager_ &&
+      frontend_id == POPUP_ITEM_ID_MERCHANT_PROMO_CODE_ENTRY) {
+    merchant_promo_code_manager_->OnSingleFieldSuggestionSelected(value,
+                                                                  frontend_id);
+  } else {
+    autocomplete_history_manager_->OnSingleFieldSuggestionSelected(value,
+                                                                   frontend_id);
+  }
 }
 
 }  // namespace autofill

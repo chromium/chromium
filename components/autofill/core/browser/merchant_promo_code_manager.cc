@@ -9,7 +9,6 @@
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/suggestions_context.h"
-#include "components/autofill/core/browser/ui/popup_item_ids.h"
 
 namespace autofill {
 
@@ -55,7 +54,9 @@ void MerchantPromoCodeManager::OnRemoveCurrentSingleFieldSuggestion(
 
 void MerchantPromoCodeManager::OnSingleFieldSuggestionSelected(
     const std::u16string& value,
-    int frontend_id) {}
+    int frontend_id) {
+  // TODO(crbug.com/1190334): Add promo code suggestion accepted metrics here.
+}
 
 void MerchantPromoCodeManager::Init(
     raw_ptr<PersonalDataManager> personal_data_manager,

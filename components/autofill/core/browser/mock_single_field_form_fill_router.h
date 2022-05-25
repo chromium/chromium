@@ -14,9 +14,16 @@ namespace autofill {
 class MockSingleFieldFormFillRouter : public SingleFieldFormFillRouter {
  public:
   explicit MockSingleFieldFormFillRouter(
-      AutocompleteHistoryManager* autocomplete_history_manager);
+      AutocompleteHistoryManager* autocomplete_history_manager,
+      base::WeakPtr<MerchantPromoCodeManager> merchant_promo_code_manager);
   ~MockSingleFieldFormFillRouter() override;
 
+  MOCK_METHOD(void,
+              OnWillSubmitForm,
+              (const FormData& form,
+               raw_ptr<const FormStructure> form_structure,
+               bool is_autocomplete_enabled),
+              (override));
   MOCK_METHOD(void,
               OnGetSingleFieldSuggestions,
               (int query_id,
@@ -29,8 +36,9 @@ class MockSingleFieldFormFillRouter : public SingleFieldFormFillRouter {
                const SuggestionsContext& context),
               (override));
   MOCK_METHOD(void,
-              OnWillSubmitForm,
-              (const FormData& form, bool is_autocomplete_enabled),
+              OnWillSubmitFormWithFields,
+              (const std::vector<FormFieldData>& fields,
+               bool is_autocomplete_enabled),
               (override));
   MOCK_METHOD(void,
               CancelPendingQueries,

@@ -67,6 +67,8 @@ class ChromeAutofillClient
   version_info::Channel GetChannel() const override;
   PersonalDataManager* GetPersonalDataManager() override;
   AutocompleteHistoryManager* GetAutocompleteHistoryManager() override;
+  base::WeakPtr<MerchantPromoCodeManager> GetMerchantPromoCodeManager()
+      override;
   PrefService* GetPrefs() override;
   const PrefService* GetPrefs() const override;
   syncer::SyncService* GetSyncService() override;

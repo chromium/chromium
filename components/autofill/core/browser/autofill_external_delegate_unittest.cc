@@ -93,7 +93,6 @@ class MockAutofillClient : public TestAutofillClient {
               (override));
   MOCK_METHOD(void, HideAutofillPopup, (PopupHidingReason), (override));
   MOCK_METHOD(void, ExecuteCommand, (int), (override));
-
   // Mock the client query ID check.
   bool IsQueryIDRelevant(int query_id) { return query_id == kRecentQueryId; }
 };
@@ -613,6 +612,45 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateInvalidUniqueId) {
       .Times(0);
   external_delegate_->DidAcceptSuggestion(std::u16string(), -1, std::string(),
                                           0);
+}
+
+// Test that the Autofill delegate still allows previewing and filling
+// specifically of the negative ID for POPUP_ITEM_ID_MERCHANT_PROMO_CODE_ENTRY.
+TEST_F(AutofillExternalDelegateUnitTest,
+       ExternalDelegateFillsMerchantPromoCodeEntry) {
+  IssueOnQuery(kRecentQueryId);
+
+  AutofillClient::PopupOpenArgs open_args;
+  EXPECT_CALL(autofill_client_, ShowAutofillPopup)
+      .WillOnce(testing::SaveArg<0>(&open_args));
+
+  // This should call ShowAutofillPopup.
+  std::vector<Suggestion> suggestions;
+  suggestions.emplace_back();
+  std::u16string promo_code_value = u"PROMOCODE1234";
+  suggestions[0].main_text.value = promo_code_value;
+  suggestions[0].label = u"12.34% off your purchase!";
+  suggestions[0].frontend_id = POPUP_ITEM_ID_MERCHANT_PROMO_CODE_ENTRY;
+  external_delegate_->OnSuggestionsReturned(
+      kRecentQueryId, suggestions, /*autoselect_first_suggestion=*/false);
+
+  // The enums must be cast to ints to prevent compile errors on linux_rel.
+  EXPECT_THAT(open_args.suggestions,
+              SuggestionVectorIdsAre(testing::ElementsAre(
+                  static_cast<int>(POPUP_ITEM_ID_MERCHANT_PROMO_CODE_ENTRY))));
+
+  EXPECT_CALL(*autofill_driver_, RendererShouldClearPreviewedForm()).Times(1);
+  EXPECT_CALL(*autofill_driver_,
+              RendererShouldPreviewFieldWithValue(field_id_, promo_code_value));
+  external_delegate_->DidSelectSuggestion(
+      promo_code_value, POPUP_ITEM_ID_MERCHANT_PROMO_CODE_ENTRY, "");
+  EXPECT_CALL(autofill_client_,
+              HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
+  EXPECT_CALL(*autofill_driver_,
+              RendererShouldFillFieldWithValue(field_id_, promo_code_value));
+  external_delegate_->DidAcceptSuggestion(
+      promo_code_value, POPUP_ITEM_ID_MERCHANT_PROMO_CODE_ENTRY, std::string(),
+      0);
 }
 
 // Test that the ClearPreview call is only sent if the form was being previewed

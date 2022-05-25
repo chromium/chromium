@@ -678,7 +678,7 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
   std::unique_ptr<FormStructure> submitted_form = ValidateSubmittedForm(form);
   if (!submitted_form) {
     single_field_form_fill_router_->OnWillSubmitForm(
-        form, client()->IsAutocompleteEnabled());
+        form, submitted_form.get(), client()->IsAutocompleteEnabled());
     return;
   }
 
@@ -721,7 +721,8 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
     }
   }
   single_field_form_fill_router_->OnWillSubmitForm(
-      form_for_autocomplete, client()->IsAutocompleteEnabled());
+      form_for_autocomplete, submitted_form.get(),
+      client()->IsAutocompleteEnabled());
 
   if (IsAutofillProfileEnabled()) {
     address_form_event_logger_->OnWillSubmitForm(sync_state_, *submitted_form);
