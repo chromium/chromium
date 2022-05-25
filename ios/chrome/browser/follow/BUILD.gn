@@ -11,7 +11,6 @@ source_set("follow") {
   ]
   deps = [
     ":rss_link_js",
-    "//base",
     "//ios/chrome/browser/ui/follow",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
