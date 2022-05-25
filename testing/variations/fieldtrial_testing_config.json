@@ -8757,6 +8757,33 @@
             ]
         }
     ],
+    "WebApkServiceWorkerRemovalStudy": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_SkipAllServiceWorkerChecks_20220513",
+                    "enable_features": [
+                        "SkipServiceWorkerCheckAll"
+                    ],
+                    "disable_features": [
+                        "SkipServiceWorkerCheckInstallOnly"
+                    ]
+                },
+                {
+                    "name": "Enabled_SkipServiceWorkerChecksInstallOnly",
+                    "enable_features": [
+                        "SkipServiceWorkerCheckInstallOnly"
+                    ],
+                    "disable_features": [
+                        "SkipServiceWorkerCheckAll"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebFeedsMVP": [
         {
             "platforms": [
