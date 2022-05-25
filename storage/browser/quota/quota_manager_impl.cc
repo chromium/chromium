@@ -33,6 +33,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner_util.h"
@@ -2676,15 +2677,6 @@ void QuotaManagerImpl::DidGetLRUBucket(QuotaErrorOr<BucketLocator> result) {
   }
 }
 
-namespace {
-void DidGetSettingsThreadAdapter(base::TaskRunner* task_runner,
-                                 OptionalQuotaSettingsCallback callback,
-                                 absl::optional<QuotaSettings> settings) {
-  task_runner->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), std::move(settings)));
-}
-}  // namespace
-
 void QuotaManagerImpl::GetQuotaSettings(QuotaSettingsCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(callback);
@@ -2704,10 +2696,9 @@ void QuotaManagerImpl::GetQuotaSettings(QuotaSettingsCallback callback) {
       FROM_HERE,
       base::BindOnce(
           get_settings_function_,
-          base::BindOnce(&DidGetSettingsThreadAdapter,
-                         base::RetainedRef(base::ThreadTaskRunnerHandle::Get()),
-                         base::BindOnce(&QuotaManagerImpl::DidGetSettings,
-                                        weak_factory_.GetWeakPtr()))));
+          base::BindPostTask(base::ThreadTaskRunnerHandle::Get(),
+                             base::BindOnce(&QuotaManagerImpl::DidGetSettings,
+                                            weak_factory_.GetWeakPtr()))));
 }
 
 void QuotaManagerImpl::DidGetSettings(absl::optional<QuotaSettings> settings) {
