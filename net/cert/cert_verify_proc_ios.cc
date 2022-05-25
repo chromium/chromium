@@ -19,8 +19,8 @@
 #include "net/cert/known_roots.h"
 #include "net/cert/test_root_certs.h"
 #include "net/cert/x509_certificate.h"
+#include "net/cert/x509_util_apple.h"
 #include "net/cert/x509_util_ios.h"
-#include "net/cert/x509_util_ios_and_mac.h"
 
 using base::ScopedCFTypeRef;
 

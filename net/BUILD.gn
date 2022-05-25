@@ -1238,8 +1238,8 @@ component("net") {
       "base/platform_mime_util_mac.mm",
       "base/proxy_string_util_mac.cc",
       "cert/test_root_certs_mac.cc",
-      "cert/x509_util_ios_and_mac.cc",
-      "cert/x509_util_ios_and_mac.h",
+      "cert/x509_util_apple.cc",
+      "cert/x509_util_apple.h",
       "proxy_resolution/proxy_resolver_mac.cc",
       "proxy_resolution/proxy_resolver_mac.h",
     ]
@@ -4388,10 +4388,13 @@ test("net_unittests") {
     sources += [
       "cert/cert_verify_proc_mac_unittest.cc",
       "cert/internal/trust_store_mac_unittest.cc",
-      "cert/x509_util_ios_and_mac_unittest.cc",
       "ssl/client_cert_store_mac_unittest.cc",
       "ssl/ssl_platform_key_mac_unittest.cc",
     ]
+  }
+
+  if (is_apple) {
+    sources += [ "cert/x509_util_apple_unittest.cc" ]
   }
 
   if (is_win) {
@@ -4652,7 +4655,6 @@ test("net_unittests") {
       "url_request/url_fetcher_impl_unittest.cc",
       "url_request/url_request_context_builder_unittest.cc",
     ]
-    sources += [ "cert/x509_util_ios_and_mac_unittest.cc" ]
 
     bundle_deps = [ ":net_unittests_bundle_data" ]
   }

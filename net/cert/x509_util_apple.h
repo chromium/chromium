@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef NET_CERT_X509_UTIL_IOS_AND_MAC_H_
-#define NET_CERT_X509_UTIL_IOS_AND_MAC_H_
+#ifndef NET_CERT_X509_UTIL_APPLE_H_
+#define NET_CERT_X509_UTIL_APPLE_H_
 
 #include <CoreFoundation/CFArray.h>
 #include <Security/Security.h>
@@ -54,4 +54,4 @@ CreateSecCertificateArrayForX509Certificate(
 
 }  // namespace net
 
-#endif  // NET_CERT_X509_UTIL_IOS_AND_MAC_H_
+#endif  // NET_CERT_X509_UTIL_APPLE_H_

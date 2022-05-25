@@ -11,7 +11,7 @@
 #import "ios/web/security/wk_web_view_security_util.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
-#include "net/cert/x509_util_ios_and_mac.h"
+#include "net/cert/x509_util_apple.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
 

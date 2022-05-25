@@ -15,7 +15,7 @@
 #import "ios/web/security/wk_web_view_security_util.h"
 #import "ios/web/test/fakes/crw_fake_back_forward_list.h"
 #import "ios/web/test/fakes/fake_navigation_manager_delegate.h"
-#include "net/cert/x509_util_ios_and_mac.h"
+#include "net/cert/x509_util_apple.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
 #include "third_party/ocmock/OCMock/OCMock.h"
