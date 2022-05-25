@@ -772,10 +772,9 @@
 
   [NSLayoutConstraint deactivateConstraints:self.feedHeaderConstraints];
 
-  // On iPhones, the fake omnibox is pinned to the top so we anchor the feed
-  // header to the bottom of it. The fake omnibox is not pinned for iPads, so we
-  // instead anchor the feed header to the top of the NTP.
-  if (IsCompactWidth(self)) {
+  // If the fake omnibox is pinned to the top, we pin the feed header below it.
+  // Otherwise, the feed header gets pinned to the top.
+  if ([self shouldPinFakeOmnibox]) {
     self.feedHeaderConstraints = @[
       [self.feedHeaderViewController.view.topAnchor
           constraintEqualToAnchor:self.headerController.view.bottomAnchor
@@ -873,7 +872,7 @@
 - (void)handleStickyElementsForScrollPosition:(CGFloat)scrollPosition
                                         force:(BOOL)force {
   // Handles the sticky omnibox. Does not stick for iPads.
-  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
+  if ([self shouldPinFakeOmnibox]) {
     if (scrollPosition > [self offsetToStickOmnibox] &&
         !self.fakeOmniboxPinnedToTop) {
       [self pinFakeOmniboxToTop];
@@ -1032,7 +1031,7 @@
 // The y-position content offset for when the user has completely scrolled into
 // the Feed. Only takes sticky omnibox into consideration for non-iPad devices.
 - (CGFloat)offsetWhenScrolledIntoFeed {
-  if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
+  if (![self shouldPinFakeOmnibox]) {
     return -[self feedHeaderHeight];
   }
 
@@ -1160,6 +1159,13 @@
   [viewController.view removeFromSuperview];
   [viewController removeFromParentViewController];
   [viewController didMoveToParentViewController:nil];
+}
+
+// Whether the fake omnibox gets pinned to the top, or becomes the real primary
+// toolbar. The former is for narrower devices like portait iPhones, and the
+// latter is for wider devices like iPads and landscape iPhones.
+- (BOOL)shouldPinFakeOmnibox {
+  return !IsRegularXRegularSizeClass(self) && IsSplitToolbarMode(self);
 }
 
 #pragma mark - Getters
