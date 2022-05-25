@@ -92,18 +92,18 @@ class CORE_EXPORT CSSMathExpressionNode
   // Hits DCHECK if type conversion is required.
   virtual double DoubleValue() const = 0;
 
-  virtual double ComputeLengthPx(const CSSToLengthConversionData&) const = 0;
+  virtual double ComputeLengthPx(const CSSLengthResolver&) const = 0;
   virtual bool AccumulateLengthArray(CSSLengthArray&,
                                      double multiplier) const = 0;
   virtual void AccumulateLengthUnitTypes(
       CSSPrimitiveValue::LengthTypeFlags& types) const = 0;
   virtual scoped_refptr<const CalculationExpressionNode>
-  ToCalculationExpression(const CSSToLengthConversionData&) const = 0;
+  ToCalculationExpression(const CSSLengthResolver&) const = 0;
   virtual absl::optional<PixelsAndPercent> ToPixelsAndPercent(
-      const CSSToLengthConversionData&) const = 0;
+      const CSSLengthResolver&) const = 0;
 
   scoped_refptr<const CalculationValue> ToCalcValue(
-      const CSSToLengthConversionData& conversion_data,
+      const CSSLengthResolver& length_resolver,
       Length::ValueRange range,
       bool allows_negative_percentage_reference) const;
 
@@ -180,13 +180,12 @@ class CORE_EXPORT CSSMathExpressionNumericLiteral final
   bool IsZero() const final;
   String CustomCSSText() const final;
   scoped_refptr<const CalculationExpressionNode> ToCalculationExpression(
-      const CSSToLengthConversionData&) const final;
+      const CSSLengthResolver&) const final;
   absl::optional<PixelsAndPercent> ToPixelsAndPercent(
-      const CSSToLengthConversionData&) const final;
+      const CSSLengthResolver&) const final;
   double DoubleValue() const final;
   absl::optional<double> ComputeValueInCanonicalUnit() const final;
-  double ComputeLengthPx(
-      const CSSToLengthConversionData& conversion_data) const final;
+  double ComputeLengthPx(const CSSLengthResolver& length_resolver) const final;
   bool AccumulateLengthArray(CSSLengthArray& length_array,
                              double multiplier) const final;
   void AccumulateLengthUnitTypes(
@@ -255,13 +254,12 @@ class CORE_EXPORT CSSMathExpressionOperation final
 
   bool IsZero() const final;
   scoped_refptr<const CalculationExpressionNode> ToCalculationExpression(
-      const CSSToLengthConversionData&) const final;
+      const CSSLengthResolver&) const final;
   absl::optional<PixelsAndPercent> ToPixelsAndPercent(
-      const CSSToLengthConversionData&) const final;
+      const CSSLengthResolver&) const final;
   double DoubleValue() const final;
   absl::optional<double> ComputeValueInCanonicalUnit() const final;
-  double ComputeLengthPx(
-      const CSSToLengthConversionData& conversion_data) const final;
+  double ComputeLengthPx(const CSSLengthResolver& length_resolver) const final;
   bool AccumulateLengthArray(CSSLengthArray& length_array,
                              double multiplier) const final;
   void AccumulateLengthUnitTypes(
@@ -332,7 +330,7 @@ class CORE_EXPORT CSSMathExpressionAnchorQuery final
     return absl::nullopt;
   }
   absl::optional<PixelsAndPercent> ToPixelsAndPercent(
-      const CSSToLengthConversionData&) const final {
+      const CSSLengthResolver&) const final {
     return absl::nullopt;
   }
   bool AccumulateLengthArray(CSSLengthArray& length_array,
@@ -345,8 +343,7 @@ class CORE_EXPORT CSSMathExpressionAnchorQuery final
     NOTREACHED();
     return 0;
   }
-  double ComputeLengthPx(
-      const CSSToLengthConversionData& conversion_data) const final {
+  double ComputeLengthPx(const CSSLengthResolver& length_resolver) const final {
     // We can't resolve an anchor query until layout time.
     NOTREACHED();
     return 0;
@@ -361,7 +358,7 @@ class CORE_EXPORT CSSMathExpressionAnchorQuery final
 
   String CustomCSSText() const final;
   scoped_refptr<const CalculationExpressionNode> ToCalculationExpression(
-      const CSSToLengthConversionData&) const final;
+      const CSSLengthResolver&) const final;
   bool operator==(const CSSMathExpressionNode& other) const final;
   void Trace(Visitor* visitor) const final;
 

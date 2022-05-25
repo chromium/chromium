@@ -31,9 +31,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_TO_LENGTH_CONVERSION_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_TO_LENGTH_CONVERSION_DATA_H_
 
-#include <limits>
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/css_length_resolver.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/layout/geometry/axis.h"
 #include "third_party/blink/renderer/platform/text/writing_mode.h"
@@ -47,7 +47,7 @@ class LayoutView;
 class Font;
 class Element;
 
-class CORE_EXPORT CSSToLengthConversionData {
+class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
   STACK_ALLOCATED();
 
  public:
@@ -159,7 +159,8 @@ class CORE_EXPORT CSSToLengthConversionData {
     mutable absl::optional<double> cached_height_;
   };
 
-  CSSToLengthConversionData() : style_(nullptr), zoom_(1) {}
+  CSSToLengthConversionData()
+      : CSSLengthResolver(1 /* zoom */), style_(nullptr) {}
   CSSToLengthConversionData(const ComputedStyle*,
                             WritingMode,
                             const FontSizes&,
@@ -172,53 +173,23 @@ class CORE_EXPORT CSSToLengthConversionData {
                             const ContainerSizes&,
                             float zoom);
 
-  float Zoom() const { return zoom_; }
-
-  float EmFontSize() const;
-  float RemFontSize() const;
-  float ExFontSize() const;
-  float ChFontSize() const;
-
-  // Accessing these marks the style as having viewport units
-  double ViewportWidthPercent() const;
-  double ViewportHeightPercent() const;
-  double ViewportInlineSizePercent() const;
-  double ViewportBlockSizePercent() const;
-  double ViewportMinPercent() const;
-  double ViewportMaxPercent() const;
-  double SmallViewportWidthPercent() const;
-  double SmallViewportHeightPercent() const;
-  double SmallViewportInlineSizePercent() const;
-  double SmallViewportBlockSizePercent() const;
-  double SmallViewportMinPercent() const;
-  double SmallViewportMaxPercent() const;
-  double LargeViewportWidthPercent() const;
-  double LargeViewportHeightPercent() const;
-  double LargeViewportInlineSizePercent() const;
-  double LargeViewportBlockSizePercent() const;
-  double LargeViewportMinPercent() const;
-  double LargeViewportMaxPercent() const;
-  double DynamicViewportWidthPercent() const;
-  double DynamicViewportHeightPercent() const;
-  double DynamicViewportInlineSizePercent() const;
-  double DynamicViewportBlockSizePercent() const;
-  double DynamicViewportMinPercent() const;
-  double DynamicViewportMaxPercent() const;
-
-  // Accessing these marks the style as having container relative units.
-  double ContainerWidthPercent() const;
-  double ContainerHeightPercent() const;
-  double ContainerInlineSizePercent() const;
-  double ContainerBlockSizePercent() const;
-  double ContainerMinPercent() const;
-  double ContainerMaxPercent() const;
+  float EmFontSize() const override;
+  float RemFontSize() const override;
+  float ExFontSize() const override;
+  float ChFontSize() const override;
+  double ViewportWidth() const override;
+  double ViewportHeight() const override;
+  double SmallViewportWidth() const override;
+  double SmallViewportHeight() const override;
+  double LargeViewportWidth() const override;
+  double LargeViewportHeight() const override;
+  double DynamicViewportWidth() const override;
+  double DynamicViewportHeight() const override;
+  double ContainerWidth() const override;
+  double ContainerHeight() const override;
+  WritingMode GetWritingMode() const override;
 
   void SetFontSizes(const FontSizes& font_sizes) { font_sizes_ = font_sizes; }
-  void SetZoom(float zoom) {
-    DCHECK(std::isfinite(zoom));
-    DCHECK_GT(zoom, 0);
-    zoom_ = zoom;
-  }
 
   // See ContainerSizes::PreCachedCopy.
   //
@@ -235,19 +206,12 @@ class CORE_EXPORT CSSToLengthConversionData {
     return CopyWithAdjustedZoom(1.0f);
   }
 
-  double ZoomedComputedPixels(double value, CSSPrimitiveValue::UnitType) const;
-
  private:
-  bool IsHorizontalWritingMode() const {
-    return blink::IsHorizontalWritingMode(writing_mode_);
-  }
-
   const ComputedStyle* style_;
   WritingMode writing_mode_;
   FontSizes font_sizes_;
   ViewportSize viewport_size_;
   ContainerSizes container_sizes_;
-  float zoom_;
 };
 
 }  // namespace blink

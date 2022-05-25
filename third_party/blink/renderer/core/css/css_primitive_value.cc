@@ -24,12 +24,12 @@
 #include <cmath>
 
 #include "build/build_config.h"
+#include "third_party/blink/renderer/core/css/css_length_resolver.h"
 #include "third_party/blink/renderer/core/css/css_markup.h"
 #include "third_party/blink/renderer/core/css/css_math_expression_node.h"
 #include "third_party/blink/renderer/core/css/css_math_function_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_resolution_units.h"
-#include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/css/css_value_clamping_utils.h"
 #include "third_party/blink/renderer/core/css/css_value_pool.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
@@ -279,49 +279,49 @@ double CSSPrimitiveValue::ComputeDotsPerPixel() const {
 
 template <>
 int CSSPrimitiveValue::ComputeLength(
-    const CSSToLengthConversionData& conversion_data) const {
-  return RoundForImpreciseConversion<int>(ComputeLengthDouble(conversion_data));
+    const CSSLengthResolver& length_resolver) const {
+  return RoundForImpreciseConversion<int>(ComputeLengthDouble(length_resolver));
 }
 
 template <>
 unsigned CSSPrimitiveValue::ComputeLength(
-    const CSSToLengthConversionData& conversion_data) const {
+    const CSSLengthResolver& length_resolver) const {
   return RoundForImpreciseConversion<unsigned>(
-      ComputeLengthDouble(conversion_data));
+      ComputeLengthDouble(length_resolver));
 }
 
 template <>
 Length CSSPrimitiveValue::ComputeLength(
-    const CSSToLengthConversionData& conversion_data) const {
+    const CSSLengthResolver& length_resolver) const {
   return Length::Fixed(
-      ClampToCSSLengthRange(ComputeLengthDouble(conversion_data)));
+      ClampToCSSLengthRange(ComputeLengthDouble(length_resolver)));
 }
 
 template <>
 int16_t CSSPrimitiveValue::ComputeLength(
-    const CSSToLengthConversionData& conversion_data) const {
+    const CSSLengthResolver& length_resolver) const {
   return RoundForImpreciseConversion<int16_t>(
-      ComputeLengthDouble(conversion_data));
+      ComputeLengthDouble(length_resolver));
 }
 
 template <>
 uint16_t CSSPrimitiveValue::ComputeLength(
-    const CSSToLengthConversionData& conversion_data) const {
+    const CSSLengthResolver& length_resolver) const {
   return RoundForImpreciseConversion<uint16_t>(
-      ComputeLengthDouble(conversion_data));
+      ComputeLengthDouble(length_resolver));
 }
 
 template <>
 uint8_t CSSPrimitiveValue::ComputeLength(
-    const CSSToLengthConversionData& conversion_data) const {
+    const CSSLengthResolver& length_resolver) const {
   return RoundForImpreciseConversion<uint8_t>(
-      ComputeLengthDouble(conversion_data));
+      ComputeLengthDouble(length_resolver));
 }
 
 template <>
 float CSSPrimitiveValue::ComputeLength(
-    const CSSToLengthConversionData& conversion_data) const {
-  double value = ComputeLengthDouble(conversion_data);
+    const CSSLengthResolver& length_resolver) const {
+  double value = ComputeLengthDouble(length_resolver);
   if (RuntimeEnabledFeatures::CSSCalcInfinityAndNaNEnabled()) {
     value = CSSValueClampingUtils::ClampLength(value);
   }
@@ -330,8 +330,8 @@ float CSSPrimitiveValue::ComputeLength(
 
 template <>
 double CSSPrimitiveValue::ComputeLength(
-    const CSSToLengthConversionData& conversion_data) const {
-  double value = ComputeLengthDouble(conversion_data);
+    const CSSLengthResolver& length_resolver) const {
+  double value = ComputeLengthDouble(length_resolver);
   if (RuntimeEnabledFeatures::CSSCalcInfinityAndNaNEnabled()) {
     return CSSValueClampingUtils::ClampLength(value);
   }
@@ -339,10 +339,10 @@ double CSSPrimitiveValue::ComputeLength(
 }
 
 double CSSPrimitiveValue::ComputeLengthDouble(
-    const CSSToLengthConversionData& conversion_data) const {
+    const CSSLengthResolver& length_resolver) const {
   if (IsCalculated())
-    return To<CSSMathFunctionValue>(this)->ComputeLengthPx(conversion_data);
-  return To<CSSNumericLiteralValue>(this)->ComputeLengthPx(conversion_data);
+    return To<CSSMathFunctionValue>(this)->ComputeLengthPx(length_resolver);
+  return To<CSSNumericLiteralValue>(this)->ComputeLengthPx(length_resolver);
 }
 
 bool CSSPrimitiveValue::AccumulateLengthArray(CSSLengthArray& length_array,
@@ -422,9 +422,9 @@ double CSSPrimitiveValue::ConversionToCanonicalUnitsScaleFactor(
 }
 
 Length CSSPrimitiveValue::ConvertToLength(
-    const CSSToLengthConversionData& conversion_data) const {
+    const CSSLengthResolver& length_resolver) const {
   if (IsLength())
-    return ComputeLength<Length>(conversion_data);
+    return ComputeLength<Length>(length_resolver);
   if (IsPercentage()) {
     if (IsNumericLiteralValue() ||
         !To<CSSMathFunctionValue>(this)->AllowsNegativePercentageReference()) {
@@ -436,7 +436,7 @@ Length CSSPrimitiveValue::ConvertToLength(
     }
   }
   DCHECK(IsCalculated());
-  return To<CSSMathFunctionValue>(this)->ConvertToLength(conversion_data);
+  return To<CSSMathFunctionValue>(this)->ConvertToLength(length_resolver);
 }
 
 double CSSPrimitiveValue::GetDoubleValue() const {

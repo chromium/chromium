@@ -10,6 +10,8 @@
 
 namespace blink {
 
+class CSSLengthResolver;
+
 // Numeric values that can be expressed as a single unit (or a naked number or
 // percentage). The equivalence of CSS Typed OM's |CSSUnitValue| in the
 // |CSSValue| class hierarchy.
@@ -55,8 +57,7 @@ class CORE_EXPORT CSSNumericLiteralValue : public CSSPrimitiveValue {
   double ComputeDegrees() const;
   double ComputeDotsPerPixel() const;
 
-  double ComputeLengthPx(
-      const CSSToLengthConversionData& conversion_data) const;
+  double ComputeLengthPx(const CSSLengthResolver&) const;
   bool AccumulateLengthArray(CSSLengthArray& length_array,
                              double multiplier) const;
   void AccumulateLengthUnitTypes(LengthTypeFlags& types) const;

@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 
 #include "build/build_config.h"
-#include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
+#include "third_party/blink/renderer/core/css/css_length_resolver.h"
 #include "third_party/blink/renderer/core/css/css_value_pool.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
@@ -118,9 +118,9 @@ double CSSNumericLiteralValue::ComputeDotsPerPixel() const {
 }
 
 double CSSNumericLiteralValue::ComputeLengthPx(
-    const CSSToLengthConversionData& conversion_data) const {
+    const CSSLengthResolver& length_resolver) const {
   DCHECK(IsLength());
-  return conversion_data.ZoomedComputedPixels(num_, GetType());
+  return length_resolver.ZoomedComputedPixels(num_, GetType());
 }
 
 bool CSSNumericLiteralValue::AccumulateLengthArray(CSSLengthArray& length_array,

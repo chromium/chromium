@@ -256,6 +256,8 @@ blink_core_sources_css = [
   "css_timing_function_value.h",
   "css_to_length_conversion_data.cc",
   "css_to_length_conversion_data.h",
+  "css_length_resolver.cc",
+  "css_length_resolver.h",
   "css_unicode_range_value.cc",
   "css_unicode_range_value.h",
   "css_unset_value.cc",

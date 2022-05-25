@@ -26,7 +26,7 @@ class CORE_EXPORT CSSMathFunctionValue : public CSSPrimitiveValue {
   const CSSMathExpressionNode* ExpressionNode() const { return expression_; }
 
   scoped_refptr<const CalculationValue> ToCalcValue(
-      const CSSToLengthConversionData& conversion_data) const;
+      const CSSLengthResolver&) const;
 
   bool MayHaveRelativeUnit() const;
 
@@ -72,13 +72,11 @@ class CORE_EXPORT CSSMathFunctionValue : public CSSPrimitiveValue {
 
   double ComputeSeconds() const;
   double ComputeDegrees() const;
-  double ComputeLengthPx(
-      const CSSToLengthConversionData& conversion_data) const;
+  double ComputeLengthPx(const CSSLengthResolver&) const;
 
   bool AccumulateLengthArray(CSSLengthArray& length_array,
                              double multiplier) const;
-  Length ConvertToLength(
-      const CSSToLengthConversionData& conversion_data) const;
+  Length ConvertToLength(const CSSLengthResolver&) const;
 
   void AccumulateLengthUnitTypes(LengthTypeFlags& types) const {
     expression_->AccumulateLengthUnitTypes(types);

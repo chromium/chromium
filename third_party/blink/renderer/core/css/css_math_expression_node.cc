@@ -227,7 +227,7 @@ String CSSMathExpressionNumericLiteral::CustomCSSText() const {
 
 absl::optional<PixelsAndPercent>
 CSSMathExpressionNumericLiteral::ToPixelsAndPercent(
-    const CSSToLengthConversionData& conversion_data) const {
+    const CSSLengthResolver& length_resolver) const {
   PixelsAndPercent value(0, 0);
   switch (category_) {
     case kCalcLength:
@@ -235,9 +235,9 @@ CSSMathExpressionNumericLiteral::ToPixelsAndPercent(
       // PixelsAndPercent. Therefore, we need to use a function that doesn't
       // internally clamp the result to the float range.
       if (RuntimeEnabledFeatures::CSSCalcInfinityAndNaNEnabled())
-        value.pixels = value_->ComputeLengthPx(conversion_data);
+        value.pixels = value_->ComputeLengthPx(length_resolver);
       else
-        value.pixels = value_->ComputeLength<float>(conversion_data);
+        value.pixels = value_->ComputeLength<float>(length_resolver);
       break;
     case kCalcPercent:
       DCHECK(value_->IsPercentage());
@@ -253,7 +253,7 @@ CSSMathExpressionNumericLiteral::ToPixelsAndPercent(
       // TODO(alancutter): Stop treating numbers like pixels unconditionally
       // in calcs to be able to accomodate border-image-width
       // https://drafts.csswg.org/css-backgrounds-3/#the-border-image-width
-      value.pixels = value_->GetFloatValue() * conversion_data.Zoom();
+      value.pixels = value_->GetFloatValue() * length_resolver.Zoom();
       break;
     default:
       NOTREACHED();
@@ -263,9 +263,9 @@ CSSMathExpressionNumericLiteral::ToPixelsAndPercent(
 
 scoped_refptr<const CalculationExpressionNode>
 CSSMathExpressionNumericLiteral::ToCalculationExpression(
-    const CSSToLengthConversionData& conversion_data) const {
+    const CSSLengthResolver& length_resolver) const {
   return base::MakeRefCounted<CalculationExpressionPixelsAndPercentNode>(
-      *ToPixelsAndPercent(conversion_data));
+      *ToPixelsAndPercent(length_resolver));
 }
 
 double CSSMathExpressionNumericLiteral::DoubleValue() const {
@@ -297,15 +297,15 @@ CSSMathExpressionNumericLiteral::ComputeValueInCanonicalUnit() const {
 }
 
 double CSSMathExpressionNumericLiteral::ComputeLengthPx(
-    const CSSToLengthConversionData& conversion_data) const {
+    const CSSLengthResolver& length_resolver) const {
   switch (category_) {
     case kCalcLength:
       // When CSSCalcInfinityAndNaN is enabled, we allow infinity and NaN in
       // PixelsAndPercent. Therefore, we need to use a function that doesn't
       // internally clamp the result to the float range.
       if (RuntimeEnabledFeatures::CSSCalcInfinityAndNaNEnabled())
-        return value_->ComputeLengthPx(conversion_data);
-      return value_->ComputeLength<double>(conversion_data);
+        return value_->ComputeLengthPx(length_resolver);
+      return value_->ComputeLength<double>(length_resolver);
     case kCalcNumber:
     case kCalcPercent:
     case kCalcAngle:
@@ -585,18 +585,18 @@ bool CSSMathExpressionOperation::IsZero() const {
 }
 
 absl::optional<PixelsAndPercent> CSSMathExpressionOperation::ToPixelsAndPercent(
-    const CSSToLengthConversionData& conversion_data) const {
+    const CSSLengthResolver& length_resolver) const {
   absl::optional<PixelsAndPercent> result;
   switch (operator_) {
     case CSSMathOperator::kAdd:
     case CSSMathOperator::kSubtract: {
       DCHECK_EQ(operands_.size(), 2u);
-      result = operands_[0]->ToPixelsAndPercent(conversion_data);
+      result = operands_[0]->ToPixelsAndPercent(length_resolver);
       if (!result)
         return absl::nullopt;
 
       absl::optional<PixelsAndPercent> other_side =
-          operands_[1]->ToPixelsAndPercent(conversion_data);
+          operands_[1]->ToPixelsAndPercent(length_resolver);
       if (!other_side)
         return absl::nullopt;
       if (operator_ == CSSMathOperator::kAdd) {
@@ -615,7 +615,7 @@ absl::optional<PixelsAndPercent> CSSMathExpressionOperation::ToPixelsAndPercent(
           GetNumberSide(operands_[0], operands_[1]);
       const CSSMathExpressionNode* other_side =
           operands_[0] == number_side ? operands_[1] : operands_[0];
-      result = other_side->ToPixelsAndPercent(conversion_data);
+      result = other_side->ToPixelsAndPercent(length_resolver);
       if (!result)
         return absl::nullopt;
       float number = number_side->DoubleValue();
@@ -637,21 +637,21 @@ absl::optional<PixelsAndPercent> CSSMathExpressionOperation::ToPixelsAndPercent(
 
 scoped_refptr<const CalculationExpressionNode>
 CSSMathExpressionOperation::ToCalculationExpression(
-    const CSSToLengthConversionData& conversion_data) const {
+    const CSSLengthResolver& length_resolver) const {
   switch (operator_) {
     case CSSMathOperator::kAdd:
       DCHECK_EQ(operands_.size(), 2u);
       return CalculationExpressionOperationNode::CreateSimplified(
           CalculationExpressionOperationNode::Children(
-              {operands_[0]->ToCalculationExpression(conversion_data),
-               operands_[1]->ToCalculationExpression(conversion_data)}),
+              {operands_[0]->ToCalculationExpression(length_resolver),
+               operands_[1]->ToCalculationExpression(length_resolver)}),
           CalculationOperator::kAdd);
     case CSSMathOperator::kSubtract:
       DCHECK_EQ(operands_.size(), 2u);
       return CalculationExpressionOperationNode::CreateSimplified(
           CalculationExpressionOperationNode::Children(
-              {operands_[0]->ToCalculationExpression(conversion_data),
-               operands_[1]->ToCalculationExpression(conversion_data)}),
+              {operands_[0]->ToCalculationExpression(length_resolver),
+               operands_[1]->ToCalculationExpression(length_resolver)}),
           CalculationOperator::kSubtract);
     case CSSMathOperator::kMultiply:
       DCHECK_EQ(operands_.size(), 2u);
@@ -660,14 +660,14 @@ CSSMathExpressionOperation::ToCalculationExpression(
       if (operands_[0]->Category() == kCalcNumber) {
         return CalculationExpressionOperationNode::CreateSimplified(
             CalculationExpressionOperationNode::Children(
-                {operands_[1]->ToCalculationExpression(conversion_data),
+                {operands_[1]->ToCalculationExpression(length_resolver),
                  base::MakeRefCounted<CalculationExpressionNumberNode>(
                      operands_[0]->DoubleValue())}),
             CalculationOperator::kMultiply);
       }
       return CalculationExpressionOperationNode::CreateSimplified(
           CalculationExpressionOperationNode::Children(
-              {operands_[0]->ToCalculationExpression(conversion_data),
+              {operands_[0]->ToCalculationExpression(length_resolver),
                base::MakeRefCounted<CalculationExpressionNumberNode>(
                    operands_[1]->DoubleValue())}),
           CalculationOperator::kMultiply);
@@ -676,7 +676,7 @@ CSSMathExpressionOperation::ToCalculationExpression(
       DCHECK_EQ(operands_[1]->Category(), kCalcNumber);
       return CalculationExpressionOperationNode::CreateSimplified(
           CalculationExpressionOperationNode::Children(
-              {operands_[0]->ToCalculationExpression(conversion_data),
+              {operands_[0]->ToCalculationExpression(length_resolver),
                base::MakeRefCounted<CalculationExpressionNumberNode>(
                    1.0 / operands_[1]->DoubleValue())}),
           CalculationOperator::kMultiply);
@@ -685,7 +685,7 @@ CSSMathExpressionOperation::ToCalculationExpression(
       Vector<scoped_refptr<const CalculationExpressionNode>> operands;
       operands.ReserveCapacity(operands_.size());
       for (const CSSMathExpressionNode* operand : operands_)
-        operands.push_back(operand->ToCalculationExpression(conversion_data));
+        operands.push_back(operand->ToCalculationExpression(length_resolver));
       auto expression_operator = operator_ == CSSMathOperator::kMin
                                      ? CalculationOperator::kMin
                                      : CalculationOperator::kMax;
@@ -696,7 +696,7 @@ CSSMathExpressionOperation::ToCalculationExpression(
       Vector<scoped_refptr<const CalculationExpressionNode>> operands;
       operands.ReserveCapacity(operands_.size());
       for (const CSSMathExpressionNode* operand : operands_)
-        operands.push_back(operand->ToCalculationExpression(conversion_data));
+        operands.push_back(operand->ToCalculationExpression(length_resolver));
       return CalculationExpressionOperationNode::CreateSimplified(
           std::move(operands), CalculationOperator::kClamp);
     }
@@ -738,13 +738,13 @@ absl::optional<double> CSSMathExpressionOperation::ComputeValueInCanonicalUnit()
 }
 
 double CSSMathExpressionOperation::ComputeLengthPx(
-    const CSSToLengthConversionData& data) const {
+    const CSSLengthResolver& length_resolver) const {
   DCHECK_EQ(kCalcLength, Category());
   Vector<double> double_values;
   double_values.ReserveCapacity(operands_.size());
   for (const CSSMathExpressionNode* operand : operands_) {
     if (operand->Category() == kCalcLength) {
-      double_values.push_back(operand->ComputeLengthPx(data));
+      double_values.push_back(operand->ComputeLengthPx(length_resolver));
     } else {
       DCHECK_EQ(operand->Category(), kCalcNumber);
       double_values.push_back(operand->DoubleValue());
@@ -1076,7 +1076,7 @@ bool CSSMathExpressionAnchorQuery::operator==(
 
 scoped_refptr<const CalculationExpressionNode>
 CSSMathExpressionAnchorQuery::ToCalculationExpression(
-    const CSSToLengthConversionData&) const {
+    const CSSLengthResolver&) const {
   // TODO(crbug.com/1309178): Implement.
   return base::MakeRefCounted<CalculationExpressionPixelsAndPercentNode>(
       PixelsAndPercent(0, 0));
@@ -1388,10 +1388,10 @@ class CSSMathExpressionNodeParser {
 };
 
 scoped_refptr<const CalculationValue> CSSMathExpressionNode::ToCalcValue(
-    const CSSToLengthConversionData& conversion_data,
+    const CSSLengthResolver& length_resolver,
     Length::ValueRange range,
     bool allows_negative_percentage_reference) const {
-  if (auto maybe_pixels_and_percent = ToPixelsAndPercent(conversion_data)) {
+  if (auto maybe_pixels_and_percent = ToPixelsAndPercent(length_resolver)) {
     // Clamping if pixels + percent could result in NaN. In special case,
     // inf px + inf % could evaluate to nan when
     // allows_negative_percentage_reference is true.
@@ -1408,7 +1408,7 @@ scoped_refptr<const CalculationValue> CSSMathExpressionNode::ToCalcValue(
     return CalculationValue::Create(*maybe_pixels_and_percent, range);
   }
 
-  auto value = ToCalculationExpression(conversion_data);
+  auto value = ToCalculationExpression(length_resolver);
   if (RuntimeEnabledFeatures::CSSCalcInfinityAndNaNEnabled()) {
     absl::optional<PixelsAndPercent> evaluated_value =
         EvaluateValueIfNaNorInfinity(value,
