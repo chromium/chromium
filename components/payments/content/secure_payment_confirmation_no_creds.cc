@@ -29,7 +29,8 @@ SecurePaymentConfirmationNoCreds::~SecurePaymentConfirmationNoCreds() {
 void SecurePaymentConfirmationNoCreds::ShowDialog(
     content::WebContents* web_contents,
     const std::u16string& merchant_name,
-    ResponseCallback response_callback) {
+    ResponseCallback response_callback,
+    OptOutCallback opt_out_callback) {
 #if BUILDFLAG(IS_ANDROID)
   NOTREACHED();
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -39,13 +40,21 @@ void SecurePaymentConfirmationNoCreds::ShowDialog(
   view_->ShowDialog(web_contents,
                     l10n_util::GetStringFUTF16(
                         IDS_NO_MATCHING_CREDENTIAL_DESCRIPTION, merchant_name),
-                    std::move(response_callback));
+                    l10n_util::GetStringUTF16(
+                        IDS_SECURE_PAYMENT_CONFIRMATION_OPT_OUT_LINK_LABEL),
+                    std::move(response_callback), std::move(opt_out_callback));
 }
 
 void SecurePaymentConfirmationNoCreds::CloseDialog() {
   if (!view_)
     return;
   view_->HideDialog();
+}
+
+bool SecurePaymentConfirmationNoCreds::ClickOptOutForTesting() {
+  if (!view_)
+    return false;
+  return view_->ClickOptOutForTesting();
 }
 
 }  // namespace payments

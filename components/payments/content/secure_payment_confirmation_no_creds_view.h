@@ -21,6 +21,7 @@ namespace payments {
 class SecurePaymentConfirmationNoCredsView {
  public:
   using ResponseCallback = base::OnceClosure;
+  using OptOutCallback = base::OnceClosure;
 
   static base::WeakPtr<SecurePaymentConfirmationNoCredsView> Create();
 
@@ -28,8 +29,11 @@ class SecurePaymentConfirmationNoCredsView {
 
   virtual void ShowDialog(content::WebContents* web_contents,
                           const std::u16string& no_creds_text,
-                          ResponseCallback response_callback) = 0;
+                          const std::u16string& opt_out_link_label,
+                          ResponseCallback response_callback,
+                          OptOutCallback opt_out_callback) = 0;
   virtual void HideDialog() = 0;
+  virtual bool ClickOptOutForTesting() = 0;
 
  protected:
   SecurePaymentConfirmationNoCredsView();

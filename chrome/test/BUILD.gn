@@ -3270,6 +3270,7 @@ if (!is_android) {
         "../browser/ui/views/payments/payment_sheet_view_controller_browsertest.cc",
         "../browser/ui/views/payments/profile_list_view_controller_browsertest.cc",
         "../browser/ui/views/payments/secure_payment_confirmation_dialog_view_browsertest.cc",
+        "../browser/ui/views/payments/secure_payment_confirmation_no_creds_dialog_view_browsertest.cc",
         "../browser/ui/views/payments/shipping_address_editor_view_controller_browsertest.cc",
         "../browser/ui/views/payments/shipping_option_view_controller_browsertest.cc",
         "../browser/ui/views/permission_bubble/permission_prompt_bubble_view_browsertest.cc",

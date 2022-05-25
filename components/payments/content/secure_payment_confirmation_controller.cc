@@ -223,6 +223,8 @@ void SecurePaymentConfirmationController::ConfirmPaymentForTesting() {
 }
 
 bool SecurePaymentConfirmationController::ClickOptOutForTesting() {
+  // This should only be called when the view is showing.
+  DCHECK(view_);
   return view_->ClickOptOutForTesting();
 }
 

@@ -649,12 +649,19 @@ void PaymentRequest::AreRequestedMethodsSupportedCallback(
       // card art icon - because we download it in all cases, revealing a
       // failure doesn't leak any information about the user to the site.
       error_reason != AppCreationFailureReason::ICON_DOWNLOAD_FAILED) {
+    auto opt_out_callback =
+        spec_->method_data().front()->secure_payment_confirmation->show_opt_out
+            ? base::BindOnce(&PaymentRequest::OnUserOptedOut,
+                             weak_ptr_factory_.GetWeakPtr())
+            : base::NullCallback();
+
     delegate_->ShowNoMatchingPaymentCredentialDialog(
         url_formatter::FormatUrlForSecurityDisplay(
             state_->GetTopOrigin(),
             url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC),
         base::BindOnce(&PaymentRequest::OnUserCancelled,
-                       weak_ptr_factory_.GetWeakPtr()));
+                       weak_ptr_factory_.GetWeakPtr()),
+        std::move(opt_out_callback));
     if (observer_for_testing_)
       observer_for_testing_->OnErrorDisplayed();
     return;

@@ -83,7 +83,8 @@ class ContentPaymentRequestDelegate : public PaymentRequestDelegate {
 
   virtual void ShowNoMatchingPaymentCredentialDialog(
       const std::u16string& merchant_name,
-      base::OnceClosure response_callback) = 0;
+      base::OnceClosure response_callback,
+      base::OnceClosure opt_out_callback) = 0;
 
   // Returns a weak pointer to this delegate.
   base::WeakPtr<ContentPaymentRequestDelegate> GetContentWeakPtr();

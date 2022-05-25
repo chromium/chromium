@@ -155,6 +155,7 @@ TestContentPaymentRequestDelegate::GetPaymentUIObserver() const {
 
 void TestContentPaymentRequestDelegate::ShowNoMatchingPaymentCredentialDialog(
     const std::u16string& merchant_name,
-    base::OnceClosure response_callback) {}
+    base::OnceClosure response_callback,
+    base::OnceClosure opt_out_callback) {}
 
 }  // namespace payments

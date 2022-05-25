@@ -10,6 +10,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/link.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_provider.h"
 
@@ -37,18 +38,21 @@ SecurePaymentConfirmationNoCredsDialogView::
 void SecurePaymentConfirmationNoCredsDialogView::ShowDialog(
     content::WebContents* web_contents,
     const std::u16string& no_creds_text,
-    ResponseCallback response_callback) {
+    const std::u16string& opt_out_link_label,
+    ResponseCallback response_callback,
+    OptOutCallback opt_out_callback) {
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
+
+  response_callback_ = std::move(response_callback);
+  opt_out_callback_ = std::move(opt_out_callback);
 
   SetButtons(ui::DIALOG_BUTTON_OK);
   SetDefaultButton(ui::DIALOG_BUTTON_OK);
 
-  InitChildViews(no_creds_text);
+  InitChildViews(no_creds_text, opt_out_link_label);
 
   SetAccessibleTitle(no_creds_text);
-
-  response_callback_ = std::move(response_callback);
 
   SetAcceptCallback(base::BindOnce(
       &SecurePaymentConfirmationNoCredsDialogView::OnDialogClosed,
@@ -74,6 +78,13 @@ void SecurePaymentConfirmationNoCredsDialogView::HideDialog() {
     GetWidget()->Close();
 }
 
+bool SecurePaymentConfirmationNoCredsDialogView::ClickOptOutForTesting() {
+  if (opt_out_callback_.is_null())
+    return false;
+  OnOptOutClicked();
+  return true;
+}
+
 bool SecurePaymentConfirmationNoCredsDialogView::ShouldShowCloseButton() const {
   return false;
 }
@@ -95,8 +106,21 @@ void SecurePaymentConfirmationNoCredsDialogView::OnDialogClosed() {
     observer_for_test_->OnDialogClosed();
 }
 
+void SecurePaymentConfirmationNoCredsDialogView::OnOptOutClicked() {
+  // We should only have shown the opt out link if the callback was originally
+  // passed in.
+  DCHECK(!opt_out_callback_.is_null());
+
+  std::move(opt_out_callback_).Run();
+
+  if (observer_for_test_) {
+    observer_for_test_->OnOptOutClicked();
+  }
+}
+
 void SecurePaymentConfirmationNoCredsDialogView::InitChildViews(
-    const std::u16string& no_creds_text) {
+    const std::u16string& no_creds_text,
+    const std::u16string& opt_out_link_label) {
   RemoveAllChildViews();
 
   SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -107,6 +131,13 @@ void SecurePaymentConfirmationNoCredsDialogView::InitChildViews(
       static_cast<int>(DialogViewID::HEADER_IMAGE), /*use_cart_image=*/true));
 
   AddChildView(CreateBodyView(no_creds_text));
+
+  auto opt_out_link = std::make_unique<views::Link>(opt_out_link_label);
+  opt_out_link->SetVisible(!opt_out_callback_.is_null());
+  opt_out_link->SetCallback(base::BindRepeating(
+      &SecurePaymentConfirmationNoCredsDialogView::OnOptOutClicked,
+      weak_ptr_factory_.GetWeakPtr()));
+  SetExtraView(std::move(opt_out_link));
 
   InvalidateLayout();
 }

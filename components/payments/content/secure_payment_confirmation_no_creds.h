@@ -21,6 +21,7 @@ class SecurePaymentConfirmationNoCredsView;
 class SecurePaymentConfirmationNoCreds {
  public:
   using ResponseCallback = base::OnceClosure;
+  using OptOutCallback = base::OnceClosure;
 
   SecurePaymentConfirmationNoCreds();
   ~SecurePaymentConfirmationNoCreds();
@@ -34,8 +35,10 @@ class SecurePaymentConfirmationNoCreds {
 
   void ShowDialog(content::WebContents* web_contents,
                   const std::u16string& merchant_name,
-                  ResponseCallback response_callback);
+                  ResponseCallback response_callback,
+                  OptOutCallback opt_out_callback);
   void CloseDialog();
+  bool ClickOptOutForTesting();
 
  private:
   // On desktop, the SecurePaymentConfirmationNoCredsView object is memory
