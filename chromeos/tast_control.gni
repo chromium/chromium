@@ -228,6 +228,10 @@ tast_disabled_tests_from_chrome_all = [
 
   # https://crbug.com/1327361
   "policy.FullscreenAllowed",
+
+  # https://crbug.com/1328925
+  "inputs.InputMethodManagement",
+  "inputs.InputMethodManagement.guest",
 ]
 
 # To create filters to be used on specific builders add them like this:
