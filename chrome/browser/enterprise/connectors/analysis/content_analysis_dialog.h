@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate_base.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
+#include "components/download/public/common/download_item.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/views/animation/bounds_animator.h"
 #include "ui/views/controls/label.h"
@@ -46,7 +47,8 @@ class DeepScanningSideIconSpinnerView;
 // upload to the user.
 class ContentAnalysisDialog : public views::DialogDelegate,
                               public content::WebContentsObserver,
-                              public views::TextfieldController {
+                              public views::TextfieldController,
+                              public download::DownloadItem::Observer {
  public:
   // TestObserver should be implemented by tests that need to track when certain
   // ContentAnalysisDialog functions are called. The test can add itself as an
@@ -95,7 +97,8 @@ class ContentAnalysisDialog : public views::DialogDelegate,
                         safe_browsing::DeepScanAccessPoint access_point,
                         int files_count,
                         ContentAnalysisDelegateBase::FinalResult final_result =
-                            ContentAnalysisDelegateBase::FinalResult::SUCCESS);
+                            ContentAnalysisDelegateBase::FinalResult::SUCCESS,
+                        download::DownloadItem* download_item = nullptr);
 
   // views::DialogDelegate:
   std::u16string GetWindowTitle() const override;
@@ -255,6 +258,15 @@ class ContentAnalysisDialog : public views::DialogDelegate,
   void ContentsChanged(views::Textfield* sender,
                        const std::u16string& new_contents) override;
 
+  // download::DownloadItem::Observer:
+  void OnDownloadUpdated(download::DownloadItem* download) override;
+  void OnDownloadOpened(download::DownloadItem* download) override;
+  void OnDownloadDestroyed(download::DownloadItem* download) override;
+
+  // Several conditions can lead to the dialog being no longer useful, so this
+  // method is shared for those different conditions to close the dialog.
+  void CancelDialogWithoutCallback();
+
   std::unique_ptr<ContentAnalysisDelegateBase> delegate_;
 
   raw_ptr<content::WebContents> web_contents_;
@@ -295,6 +307,15 @@ class ContentAnalysisDialog : public views::DialogDelegate,
   // text (files_count_==0). This changes what text and top image are shown to
   // the user.
   int files_count_;
+
+  // `DownloadItem` for dialogs corresponding to a download with a reviewable
+  // verdict. nullptr otherwise.
+  download::DownloadItem* download_item_ = nullptr;
+
+  // Set to true once the dialog is either accepted or cancelled by the user.
+  // This is used to decide whether the dialog should go away without user input
+  // or not.
+  bool accepted_or_cancelled_ = false;
 
   base::WeakPtrFactory<ContentAnalysisDialog> weak_ptr_factory_{this};
 };

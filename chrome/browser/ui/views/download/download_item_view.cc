@@ -1342,7 +1342,8 @@ void DownloadItemView::ReviewButtonPressed() {
                          base::Unretained(this), DownloadCommands::DISCARD),
           model_->download()),
       shelf_->browser()->tab_strip_model()->GetActiveWebContents(),
-      safe_browsing::DeepScanAccessPoint::DOWNLOAD, /* file_count */ 1, state);
+      safe_browsing::DeepScanAccessPoint::DOWNLOAD, /* file_count */ 1, state,
+      model_->download());
 }
 
 void DownloadItemView::ShowOpenDialog(content::WebContents* web_contents) {

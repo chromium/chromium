@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -1093,5 +1094,121 @@ INSTANTIATE_TEST_SUITE_P(,
                              /*custom_message_exists*/ testing::Bool(),
                              /*custom_url_exists*/ testing::Bool(),
                              /*bypass_justification_enabled*/ testing::Bool()));
+
+class ContentAnalysysDialogDownloadObserverTest
+    : public safe_browsing::DeepScanningBrowserTestBase,
+      public ContentAnalysisDialog::TestObserver {
+ public:
+  ContentAnalysysDialogDownloadObserverTest() {
+    ContentAnalysisDialog::SetObserverForTesting(this);
+  }
+
+  void ConstructorCalled(ContentAnalysisDialog* dialog,
+                         base::TimeTicks timestamp) override {
+    ctor_called_ = true;
+  }
+
+  void ViewsFirstShown(ContentAnalysisDialog* dialog,
+                       base::TimeTicks timestamp) override {
+    std::move(views_first_shown_closure_).Run();
+  }
+
+  void DestructorCalled(ContentAnalysisDialog* dialog) override {
+    std::move(dtor_called_closure_).Run();
+  }
+
+ protected:
+  bool ctor_called_ = false;
+  base::OnceClosure views_first_shown_closure_;
+  base::OnceClosure dtor_called_closure_;
+};
+
+IN_PROC_BROWSER_TEST_F(ContentAnalysysDialogDownloadObserverTest,
+                       DownloadOpened) {
+  download::MockDownloadItem mock_download_item;
+  base::RunLoop show_run_loop;
+  views_first_shown_closure_ = show_run_loop.QuitClosure();
+
+  new ContentAnalysisDialog(
+      std::make_unique<ContentAnalysisDownloadsDelegate>(
+          u"", u"", GURL(), true,
+          /* open_file_callback */ base::DoNothing(),
+          /* discard_callback */ base::DoNothing(), &mock_download_item),
+      browser()->tab_strip_model()->GetActiveWebContents(),
+      safe_browsing::DeepScanAccessPoint::DOWNLOAD, /* file_count */ 1,
+      ContentAnalysisDelegateBase::FinalResult::WARNING, &mock_download_item);
+
+  show_run_loop.Run();
+
+  EXPECT_TRUE(ctor_called_);
+
+  base::RunLoop dtor_run_loop;
+  dtor_called_closure_ = dtor_run_loop.QuitClosure();
+
+  mock_download_item.NotifyObserversDownloadOpened();
+  dtor_run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(ContentAnalysysDialogDownloadObserverTest,
+                       DownloadUpdated) {
+  download::MockDownloadItem mock_download_item;
+  base::RunLoop show_run_loop;
+  views_first_shown_closure_ = show_run_loop.QuitClosure();
+
+  new ContentAnalysisDialog(
+      std::make_unique<ContentAnalysisDownloadsDelegate>(
+          u"", u"", GURL(), true,
+          /* open_file_callback */ base::DoNothing(),
+          /* discard_callback */ base::DoNothing(), &mock_download_item),
+      browser()->tab_strip_model()->GetActiveWebContents(),
+      safe_browsing::DeepScanAccessPoint::DOWNLOAD, /* file_count */ 1,
+      ContentAnalysisDelegateBase::FinalResult::WARNING, &mock_download_item);
+
+  show_run_loop.Run();
+
+  EXPECT_TRUE(ctor_called_);
+
+  base::RunLoop dtor_run_loop;
+  dtor_called_closure_ = dtor_run_loop.QuitClosure();
+
+  // Randomly updating the download should not close the dialog.
+  EXPECT_CALL(mock_download_item, GetDangerType())
+      .WillOnce(testing::Return(download::DOWNLOAD_DANGER_TYPE_ASYNC_SCANNING));
+  mock_download_item.NotifyObserversDownloadUpdated();
+  EXPECT_FALSE(dtor_run_loop.AnyQuitCalled());
+
+  // Updating the download with a user validation results in the dialog closing.
+  EXPECT_CALL(mock_download_item, GetDangerType())
+      .WillOnce(testing::Return(download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED));
+  mock_download_item.NotifyObserversDownloadUpdated();
+  dtor_run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(ContentAnalysysDialogDownloadObserverTest,
+                       DownloadDestroyed) {
+  auto mock_download_item = std::make_unique<download::MockDownloadItem>();
+  base::RunLoop show_run_loop;
+  views_first_shown_closure_ = show_run_loop.QuitClosure();
+
+  new ContentAnalysisDialog(
+      std::make_unique<ContentAnalysisDownloadsDelegate>(
+          u"", u"", GURL(), true,
+          /* open_file_callback */ base::DoNothing(),
+          /* discard_callback */ base::DoNothing(), mock_download_item.get()),
+      browser()->tab_strip_model()->GetActiveWebContents(),
+      safe_browsing::DeepScanAccessPoint::DOWNLOAD, /* file_count */ 1,
+      ContentAnalysisDelegateBase::FinalResult::WARNING,
+      mock_download_item.get());
+
+  show_run_loop.Run();
+
+  EXPECT_TRUE(ctor_called_);
+
+  base::RunLoop dtor_run_loop;
+  dtor_called_closure_ = dtor_run_loop.QuitClosure();
+
+  mock_download_item.reset();
+  dtor_run_loop.Run();
+}
 
 }  // namespace enterprise_connectors

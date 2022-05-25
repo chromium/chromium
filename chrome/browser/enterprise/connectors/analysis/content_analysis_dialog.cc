@@ -214,13 +214,15 @@ ContentAnalysisDialog::ContentAnalysisDialog(
     content::WebContents* web_contents,
     safe_browsing::DeepScanAccessPoint access_point,
     int files_count,
-    ContentAnalysisDelegateBase::FinalResult final_result)
+    ContentAnalysisDelegateBase::FinalResult final_result,
+    download::DownloadItem* download_item)
     : content::WebContentsObserver(web_contents),
       delegate_(std::move(delegate)),
       web_contents_(web_contents),
       final_result_(final_result),
       access_point_(std::move(access_point)),
-      files_count_(files_count) {
+      files_count_(files_count),
+      download_item_(download_item) {
   DCHECK(delegate_);
   SetOwnedByWidget(true);
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
@@ -236,6 +238,9 @@ ContentAnalysisDialog::ContentAnalysisDialog(
 
   first_shown_timestamp_ = base::TimeTicks::Now();
 
+  if (download_item_)
+    download_item_->AddObserver(this);
+
   constrained_window::ShowWebModalDialogViews(this, web_contents_);
 
   if (observer_for_testing)
@@ -249,6 +254,7 @@ std::u16string ContentAnalysisDialog::GetWindowTitle() const {
 void ContentAnalysisDialog::AcceptButtonCallback() {
   DCHECK(delegate_);
   DCHECK(is_warning());
+  accepted_or_cancelled_ = true;
   absl::optional<std::u16string> justification = absl::nullopt;
   if (delegate_->BypassRequiresJustification() && bypass_justification_)
     justification = bypass_justification_->GetText();
@@ -256,6 +262,7 @@ void ContentAnalysisDialog::AcceptButtonCallback() {
 }
 
 void ContentAnalysisDialog::CancelButtonCallback() {
+  accepted_or_cancelled_ = true;
   if (delegate_)
     delegate_->Cancel(is_warning());
 }
@@ -386,15 +393,13 @@ ui::ModalType ContentAnalysisDialog::GetModalType() const {
 void ContentAnalysisDialog::WebContentsDestroyed() {
   // If |web_contents_| is destroyed, then the scan results don't matter so the
   // delegate can be destroyed as well.
-  delegate_.reset(nullptr);
-  CancelDialog();
+  CancelDialogWithoutCallback();
 }
 
 void ContentAnalysisDialog::PrimaryPageChanged(content::Page& page) {
   // If the primary page is changed, the scan results would be stale. So the
   // delegate should be reset and dialog should be cancelled.
-  delegate_.reset(nullptr);
-  CancelDialog();
+  CancelDialogWithoutCallback();
 }
 
 void ContentAnalysisDialog::ShowResult(
@@ -418,6 +423,8 @@ void ContentAnalysisDialog::ShowResult(
 }
 
 ContentAnalysisDialog::~ContentAnalysisDialog() {
+  if (download_item_)
+    download_item_->RemoveObserver(this);
   if (observer_for_testing)
     observer_for_testing->DestructorCalled(this);
 }
@@ -944,6 +951,35 @@ ContentAnalysisDialog::GetBypassJustificationTextareaForTesting() const {
 views::Label* ContentAnalysisDialog::GetJustificationTextLengthForTesting()
     const {
   return bypass_justification_text_length_;
+}
+
+void ContentAnalysisDialog::OnDownloadUpdated(
+    download::DownloadItem* download) {
+  if (download->GetDangerType() ==
+          download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED &&
+      !accepted_or_cancelled_) {
+    // The user validated the verdict in another instance of
+    // `ContentAnalysisDialog`, so this one is now pointless and can go away.
+    CancelDialogWithoutCallback();
+  }
+}
+
+void ContentAnalysisDialog::OnDownloadOpened(download::DownloadItem* download) {
+  if (!accepted_or_cancelled_)
+    CancelDialogWithoutCallback();
+}
+
+void ContentAnalysisDialog::OnDownloadDestroyed(
+    download::DownloadItem* download) {
+  if (!accepted_or_cancelled_)
+    CancelDialogWithoutCallback();
+  download_item_ = nullptr;
+}
+
+void ContentAnalysisDialog::CancelDialogWithoutCallback() {
+  // Reset `delegate` so no logic runs when the dialog is cancelled.
+  delegate_.reset(nullptr);
+  CancelDialog();
 }
 
 }  // namespace enterprise_connectors
