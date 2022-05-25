@@ -737,6 +737,14 @@ bool CalendarView::IsDateCellViewFocused() {
   return focused_view->GetClassName() == CalendarDateCellView::kViewClassName;
 }
 
+bool CalendarView::IsAnimating() {
+  return header_->layer()->GetAnimator()->is_animating() ||
+         current_month_->layer()->GetAnimator()->is_animating() ||
+         content_view_->layer()->GetAnimator()->is_animating() ||
+         (event_list_view_ &&
+          event_list_view_->layer()->GetAnimator()->is_animating());
+}
+
 void CalendarView::MaybeResetContentViewFocusBehavior() {
   if (IsDateCellViewFocused() ||
       content_view_->GetFocusBehavior() == FocusBehavior::ALWAYS) {
@@ -794,38 +802,7 @@ void CalendarView::OnViewFocused(View* observed_view) {
     return;
   }
 
-  // When focusing on the `content_view_`, we decide which is the to-be-focused
-  // cell based on the current position.
-  const int position = scroll_view_->GetVisibleRect().y();
-  const int row_height = calendar_view_controller_->row_height();
-
-  // At least one row of the current month is visible on the screen. The
-  // to-be-focused cell should be the first non-grayed date cell that is
-  // visible, or today's cell if today is in the current month and visible.
-  if (position < (next_label_->y() - row_height - kMonthVerticalPadding -
-                  kLabelVerticalPadding)) {
-    int row_index = 0;
-    const int today_index = calendar_view_controller_->today_row() - 1;
-    while (position > (PositionOfCurrentMonth() + row_index * row_height))
-      ++row_index;
-
-    CalendarDateCellView* focused_cell;
-    if (current_month_->has_today() && row_index <= today_index) {
-      focused_cell = current_month_->focused_cells()[today_index];
-    } else {
-      focused_cell = current_month_->focused_cells()[row_index];
-    }
-    focused_cell->SetFirstOnFocusedAccessibilityLabel();
-    focus_manager->SetFocusedView(focused_cell);
-  } else {
-    // If there's no visible row of the current month on the screen, focus on
-    // the first visible non-grayed-out date of the next month.
-    focus_manager->SetFocusedView(next_month_->focused_cells().front());
-  }
-
-  AdjustDateCellVoxBounds();
-
-  content_view_->SetFocusBehavior(FocusBehavior::NEVER);
+  FocusTodayOrFirstDateCell();
 }
 
 views::View* CalendarView::AddLabelWithId(LabelType type, bool add_at_front) {
@@ -905,9 +882,10 @@ void CalendarView::OpenEventList() {
   if (!calendar_utils::IsActiveUser())
     return;
 
-  // If the event list is already open or the months are moving/animation,
-  // do nothing.
-  if (event_list_view_ || is_calendar_view_scrolling_)
+  // If the event list is already open or if any animation is occurring do not
+  // let the user open the EventListView. It is ok to show the EventListView if
+  // the animation cooldown is active.
+  if (event_list_view_ || is_calendar_view_scrolling_ || IsAnimating())
     return;
 
   scroll_view_->SetVerticalScrollBarMode(
@@ -940,11 +918,6 @@ void CalendarView::OpenEventList() {
       scroll_view_->GetVisibleRect().height() -
           calendar_view_controller_->GetRowHeightWithEventListView() +
           kContentVerticalPadding);
-
-  if (!should_months_animate_) {
-    OnOpenEventListAnimationComplete();
-    return;
-  }
 
   set_should_months_animate(false);
   gfx::Vector2dF moving_up_location = gfx::Vector2dF(
@@ -989,6 +962,12 @@ void CalendarView::OpenEventList() {
 }
 
 void CalendarView::CloseEventList() {
+  // Don't allow the EventListView to close if an animation is
+  // occurring. It is ok to animate the EventListView if the animation cooldown
+  // is active.
+  if (IsAnimating())
+    return;
+
   // Updates `scroll_view_`'s accessible name without the selected date.
   scroll_view_->GetViewAccessibility().OverrideName(l10n_util::GetStringFUTF16(
       IDS_ASH_CALENDAR_BUBBLE_ACCESSIBLE_DESCRIPTION,
@@ -1520,6 +1499,9 @@ void CalendarView::OnOpenEventListAnimationComplete() {
 }
 
 void CalendarView::OnCloseEventListAnimationComplete() {
+  auto* focused_view = GetFocusManager()->GetFocusedView();
+  const bool was_focused = focused_view && Contains(focused_view);
+
   RemoveChildViewT(event_list_view_);
   event_list_view_ = nullptr;
   calendar_view_controller_->OnEventListClosed();
@@ -1528,6 +1510,51 @@ void CalendarView::OnCloseEventListAnimationComplete() {
       IDS_ASH_CALENDAR_UP_BUTTON_ACCESSIBLE_DESCRIPTION));
   down_button_->SetTooltipText(l10n_util::GetStringUTF16(
       IDS_ASH_CALENDAR_DOWN_BUTTON_ACCESSIBLE_DESCRIPTION));
+
+  if (!was_focused)
+    return;
+
+  FocusTodayOrFirstDateCell();
+}
+
+void CalendarView::FocusTodayOrFirstDateCell() {
+  previous_month_->EnableFocus();
+  current_month_->EnableFocus();
+  next_month_->EnableFocus();
+  next_next_month_->EnableFocus();
+
+  // When focusing on the `content_view_`, we decide which is the to-be-focused
+  // cell based on the current position.
+  const int position = scroll_view_->GetVisibleRect().y();
+  const int row_height = calendar_view_controller_->row_height();
+
+  // At least one row of the current month is visible on the screen. The
+  // to-be-focused cell should be the first non-grayed date cell that is
+  // visible, or today's cell if today is in the current month and visible.
+  if (position < (next_label_->y() - row_height - kMonthVerticalPadding -
+                  kLabelVerticalPadding)) {
+    int row_index = 0;
+    const int today_index = calendar_view_controller_->today_row() - 1;
+    while (position > (PositionOfCurrentMonth() + row_index * row_height))
+      ++row_index;
+
+    CalendarDateCellView* focused_cell;
+    if (current_month_->has_today() && row_index <= today_index) {
+      focused_cell = current_month_->focused_cells()[today_index];
+    } else {
+      focused_cell = current_month_->focused_cells()[row_index];
+    }
+    focused_cell->SetFirstOnFocusedAccessibilityLabel();
+    GetFocusManager()->SetFocusedView(focused_cell);
+  } else {
+    // If there's no visible row of the current month on the screen, focus on
+    // the first visible non-grayed-out date of the next month.
+    GetFocusManager()->SetFocusedView(next_month_->focused_cells().front());
+  }
+
+  AdjustDateCellVoxBounds();
+
+  content_view_->SetFocusBehavior(FocusBehavior::NEVER);
 }
 
 BEGIN_METADATA(CalendarView, views::View)

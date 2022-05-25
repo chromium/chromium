@@ -637,6 +637,41 @@ TEST_F(CalendarViewTest, MixedInput) {
   }
 }
 
+// Tests that focus returns to a DateCellView after closing the EventListView if
+// the EventListView view tree had a focused view.
+TEST_F(CalendarViewTest, FocusAfterClosingEventListView) {
+  base::Time date;
+  // Create a monthview based on Jun,7th 2021.
+  ASSERT_TRUE(base::Time::FromString("7 Jun 2021 10:00 GMT", &date));
+
+  // Set time override.
+  SetFakeNow(date);
+  base::subtle::ScopedTimeClockOverrides time_override(
+      &CalendarViewTest::FakeTimeNow, /*time_ticks_override=*/nullptr,
+      /*thread_ticks_override=*/nullptr);
+
+  CreateCalendarView();
+
+  auto* focus_manager = calendar_view()->GetFocusManager();
+
+  // Should start with focus on today's cell.
+  ASSERT_EQ(u"7",
+            static_cast<views::LabelButton*>(focus_manager->GetFocusedView())
+                ->GetText());
+  ASSERT_FALSE(event_list_view());
+
+  PressEnter();
+  EXPECT_TRUE(event_list_view());
+
+  EXPECT_EQ(calendar_view()->GetFocusManager()->GetFocusedView(),
+            close_button());
+
+  PressEnter();
+  EXPECT_STREQ(
+      calendar_view()->GetFocusManager()->GetFocusedView()->GetClassName(),
+      "CalendarDateCellView");
+}
+
 TEST_F(CalendarViewTest, MonthViewFocusing) {
   base::Time date;
   // Create a monthview based on Jun,7th 2021.
@@ -1025,6 +1060,35 @@ class CalendarViewAnimationTest : public AshTestBase {
     calendar_view_->SetMonthViews();
   }
 
+  // The position of the `next_month_`.
+  int NextMonthPosition() {
+    return previous_label()->GetPreferredSize().height() +
+           calendar_view_->previous_month_->GetPreferredSize().height() +
+           current_label()->GetPreferredSize().height() +
+           calendar_view_->current_month_->GetPreferredSize().height() +
+           next_label()->GetPreferredSize().height();
+  }
+
+  void ScrollUpOneMonth() {
+    calendar_view_->ScrollOneMonthWithAnimation(/*scroll_up=*/true);
+  }
+
+  void ScrollDownOneMonth() {
+    calendar_view_->ScrollOneMonthWithAnimation(/*scroll_up=*/false);
+  }
+
+  void ResetToTodayWithAnimation() {
+    calendar_view_->ResetToTodayWithAnimation();
+  }
+
+  bool IsAnimating() { return calendar_view_->IsAnimating(); }
+
+  bool is_scrolling_up() { return calendar_view_->is_scrolling_up_; }
+
+  views::ScrollView::ScrollBarMode GetScrollBarMode() {
+    return scroll_view()->GetVerticalScrollBarMode();
+  }
+
   CalendarView* calendar_view() { return calendar_view_; }
 
   views::Label* month_header() { return calendar_view_->header_->header_; }
@@ -1039,31 +1103,7 @@ class CalendarViewAnimationTest : public AshTestBase {
   views::View* current_label() { return calendar_view_->current_label_; }
   views::View* next_label() { return calendar_view_->next_label_; }
   views::ScrollView* scroll_view() { return calendar_view_->scroll_view_; }
-  views::ScrollView::ScrollBarMode GetScrollBarMode() {
-    return scroll_view()->GetVerticalScrollBarMode();
-  }
-
-  // The position of the `next_month_`.
-  int NextMonthPosition() {
-    return previous_label()->GetPreferredSize().height() +
-           calendar_view_->previous_month_->GetPreferredSize().height() +
-           current_label()->GetPreferredSize().height() +
-           calendar_view_->current_month_->GetPreferredSize().height() +
-           next_label()->GetPreferredSize().height();
-  }
-
-  bool is_scrolling_up() { return calendar_view_->is_scrolling_up_; }
-
-  void ScrollUpOneMonth() {
-    calendar_view_->ScrollOneMonthWithAnimation(/*scroll_up=*/true);
-  }
-  void ScrollDownOneMonth() {
-    calendar_view_->ScrollOneMonthWithAnimation(/*scroll_up=*/false);
-  }
-
-  void ResetToTodayWithAnimation() {
-    calendar_view_->ResetToTodayWithAnimation();
-  }
+  views::View* event_list_view() { return calendar_view_->event_list_view_; }
 
  private:
   std::unique_ptr<views::Widget> widget_;
@@ -1394,6 +1434,52 @@ TEST_F(CalendarViewAnimationTest, ResetToTodayWithAnimation) {
   task_environment()->FastForwardBy(
       calendar_test_utils::kAnimationSettleDownDuration);
   EXPECT_EQ(1.0f, header()->layer()->opacity());
+}
+
+// Tests that the EventListView does not crash if shown during the initial open.
+TEST_F(CalendarViewAnimationTest, QuickShowEventListInitialOpen) {
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+
+  // Creates calendar view, which will trigger an animation.
+  CreateCalendarView();
+
+  // Try to show the EventListView during the initial animation by selecting a
+  // non-today date within today's month.
+  const auto* tomorrow_date_cell =
+      GetDateCell(/*month=*/current_month(), /*day=*/u"25");
+  ClickDateCell(tomorrow_date_cell);
+
+  EXPECT_TRUE(IsAnimating());
+  EXPECT_TRUE(event_list_view());
+
+  task_environment()->FastForwardBy(
+      calendar_test_utils::kAnimationSettleDownDuration);
+
+  EXPECT_TRUE(event_list_view());
+}
+
+// Tests that the EventListView does not show during the month change animation.
+TEST_F(CalendarViewAnimationTest, DontShowEventListDuringMonthAnimation) {
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
+
+  CreateCalendarView();
+  task_environment()->FastForwardBy(
+      calendar_test_utils::kAnimationSettleDownDuration);
+
+  // Start the scroll down animation.
+  ScrollUpOneMonth();
+  task_environment()->FastForwardBy(
+      calendar_utils::kAnimationDurationForVisibility);
+  ASSERT_TRUE(current_month()->layer()->GetAnimator()->is_animating());
+
+  // Try to open the EventListView.
+  const auto* tomorrow_date_cell =
+      GetDateCell(/*month=*/current_month(), /*day=*/u"25");
+  ClickDateCell(tomorrow_date_cell);
+
+  EXPECT_FALSE(event_list_view());
 }
 
 // Test class for testing the `CalendarView` together with the message center

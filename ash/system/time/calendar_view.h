@@ -226,6 +226,10 @@ class ASH_EXPORT CalendarView : public CalendarViewController::Observer,
   // If currently focusing on any date cell.
   bool IsDateCellViewFocused();
 
+  // Returns whether `header_`, `current_month_`, `content_view_`, or
+  // `event_list_view_` are animating.
+  bool IsAnimating();
+
   // If focusing on `CalendarDateCellView` is interrupted (by scrolling or by
   // today's button), resets the content view's `FocusBehavior` to `ALWAYS`.
   void MaybeResetContentViewFocusBehavior();
@@ -249,10 +253,9 @@ class ASH_EXPORT CalendarView : public CalendarViewController::Observer,
   void OnOpenEventListAnimationComplete();
   void OnCloseEventListAnimationComplete();
 
-  // Unowned.
-  UnifiedSystemTrayController* controller_;
-
-  std::unique_ptr<CalendarViewController> calendar_view_controller_;
+  // Focuses todays DateCellView, or the first available one in
+  // `current_month_`.
+  void FocusTodayOrFirstDateCell();
 
   // Setters for animation flags.
   void set_should_header_animate(bool should_animate) {
@@ -261,6 +264,11 @@ class ASH_EXPORT CalendarView : public CalendarViewController::Observer,
   void set_should_months_animate(bool should_animate) {
     should_months_animate_ = should_animate;
   }
+
+  // Unowned.
+  UnifiedSystemTrayController* controller_;
+
+  std::unique_ptr<CalendarViewController> calendar_view_controller_;
 
   // The content of the `scroll_view_`, which carries months and month labels.
   // Owned by `CalendarView`.
