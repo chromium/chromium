@@ -22,6 +22,10 @@ namespace chromeos {
 
 namespace {
 
+// This enum should match the UpdatePriority enum here:
+// ash/webui/firmware_update_ui/mojom/firmware_update.mojom
+enum UpdatePriority { kLow, kMedium, kHigh, kCritical };
+
 FwupdClient* g_instance = nullptr;
 
 const char kCabFileExtension[] = ".cab";
@@ -277,22 +281,28 @@ class FwupdClientImpl : public FwupdClient {
                 << " is missing its description text.";
       }
 
+      // If priority isn't specified we use default of low priority
+      int priority_value = UpdatePriority::kLow;
+      if (priority) {
+        priority_value = priority->GetInt();
+      } else {
+        LOG(WARNING)
+            << "Device: " << device_id
+            << " is missing its priority field, using default of low priority.";
+      }
+
       const bool success =
-          version && priority && !filepath.empty() && !sha_checksum.empty();
+          version && !filepath.empty() && !sha_checksum.empty();
       // TODO(michaelcheco): Confirm that this is the expected behavior.
       if (success) {
         VLOG(1) << "fwupd: Found update version for device: " << device_id
                 << " with version: " << version->GetString();
         updates.emplace_back(version->GetString(), description_value,
-                             priority->GetInt(), filepath, sha_checksum);
+                             priority_value, filepath, sha_checksum);
       } else {
         if (!version) {
           LOG(ERROR) << "Device: " << device_id
                      << " is missing its version field.";
-        }
-        if (!priority) {
-          LOG(ERROR) << "Device: " << device_id
-                     << " is missing its priority field.";
         }
         if (!uri) {
           LOG(ERROR) << "Device: " << device_id << " is missing its URI field.";
