@@ -12,6 +12,7 @@
 #include "base/profiler/module_cache.h"
 #include "base/profiler/stack_sampling_profiler_test_util.h"
 #include "base/run_loop.h"
+#include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread.h"
 #include "base/trace_event/trace_buffer.h"
 #include "base/trace_event/trace_event.h"
@@ -19,6 +20,7 @@
 #include "services/tracing/perfetto/test_utils.h"
 #include "services/tracing/public/cpp/buildflags.h"
 #include "services/tracing/public/cpp/perfetto/producer_test_utils.h"
+#include "services/tracing/public/cpp/perfetto/trace_event_data_source.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/perfetto/protos/perfetto/trace/trace_packet.pb.h"
@@ -39,6 +41,11 @@ namespace {
 using base::trace_event::TraceLog;
 using ::testing::Invoke;
 using ::testing::Return;
+using PacketVector = TestProducerClient::PacketVector;
+
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+std::unique_ptr<perfetto::TracingSession> g_tracing_session;
+#endif
 
 #if BUILDFLAG(ENABLE_LOADER_LOCK_SAMPLING)
 
@@ -70,7 +77,13 @@ class LoaderLockEventAnalyzer {
 
 #endif  // BUILDFLAG(ENABLE_LOADER_LOCK_SAMPLING)
 
-class TracingSampleProfilerTest : public TracingUnitTest {
+class TracingSampleProfilerTest
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+    : public testing::Test
+#else
+    : public TracingUnitTest
+#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+{
  public:
   TracingSampleProfilerTest() = default;
 
@@ -81,7 +94,9 @@ class TracingSampleProfilerTest : public TracingUnitTest {
   ~TracingSampleProfilerTest() override = default;
 
   void SetUp() override {
+#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
     TracingUnitTest::SetUp();
+#endif
 
 #if BUILDFLAG(ENABLE_LOADER_LOCK_SAMPLING)
     // Override the default LoaderLockSampler because in production it is
@@ -95,34 +110,98 @@ class TracingSampleProfilerTest : public TracingUnitTest {
 
     events_stack_received_count_ = 0u;
 
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+    PerfettoTracedProcess::GetTaskRunner()->ResetTaskRunnerForTesting(
+        base::ThreadTaskRunnerHandle::Get());
+    TraceEventDataSource::GetInstance()->ResetForTesting();
+#else
     auto perfetto_wrapper = std::make_unique<base::tracing::PerfettoTaskRunner>(
         base::ThreadTaskRunnerHandle::Get());
     producer_ =
         std::make_unique<TestProducerClient>(std::move(perfetto_wrapper),
                                              /*log_only_main_thread=*/false);
+#endif
   }
 
   void TearDown() override {
+#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
     producer_.reset();
+#endif
 
 #if BUILDFLAG(ENABLE_LOADER_LOCK_SAMPLING)
     LoaderLockSamplingThread::SetLoaderLockSamplerForTesting(nullptr);
 #endif
 
+#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
     TracingUnitTest::TearDown();
+#endif
   }
 
   void BeginTrace() {
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+    perfetto::TraceConfig trace_config;
+    trace_config.add_buffers()->set_size_kb(1024);
+    auto* ds_cfg = trace_config.add_data_sources()->mutable_config();
+    ds_cfg->set_name(mojom::kSamplerProfilerSourceName);
+    ds_cfg = trace_config.add_data_sources()->mutable_config();
+    ds_cfg->set_name("track_event");
+
+    g_tracing_session = perfetto::Tracing::NewTrace();
+    g_tracing_session->Setup(trace_config);
+    g_tracing_session->StartBlocking();
+    // Make sure TraceEventMetadataSource::StartTracingImpl gets run.
+    base::RunLoop().RunUntilIdle();
+#else
     TracingSamplerProfiler::StartTracingForTesting(producer_.get());
+#endif
   }
 
   void WaitForEvents() { base::PlatformThread::Sleep(base::Milliseconds(200)); }
 
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  void EnsureTraceStopped() {
+    if (!g_tracing_session)
+      return;
+
+    perfetto::TrackEvent::Flush();
+
+    base::RunLoop wait_for_stop;
+    g_tracing_session->SetOnStopCallback(
+        [&wait_for_stop] { wait_for_stop.Quit(); });
+    g_tracing_session->Stop();
+    wait_for_stop.Run();
+
+    std::vector<char> serialized_data = g_tracing_session->ReadTraceBlocking();
+    g_tracing_session.reset();
+
+    perfetto::protos::Trace trace;
+    EXPECT_TRUE(
+        trace.ParseFromArray(serialized_data.data(), serialized_data.size()));
+    for (const auto& packet : trace.packet()) {
+      auto proto = std::make_unique<perfetto::protos::TracePacket>();
+      *proto = packet;
+      finalized_packets_.push_back(std::move(proto));
+    }
+  }
+#endif
+
+  const PacketVector& GetFinalizedPackets() {
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+    EnsureTraceStopped();
+    return finalized_packets_;
+#else   // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+    return producer_->finalized_packets();
+#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  }
+
   void EndTracing() {
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+    EnsureTraceStopped();
+#else
     TracingSamplerProfiler::StopTracingForTesting();
     base::RunLoop().RunUntilIdle();
-
-    auto& packets = producer_->finalized_packets();
+#endif
+    auto& packets = GetFinalizedPackets();
     for (auto& packet : packets) {
       if (packet->has_streaming_profile_packet()) {
         events_stack_received_count_++;
@@ -140,7 +219,7 @@ class TracingSampleProfilerTest : public TracingUnitTest {
 
   uint32_t FindProfilerSequenceId() {
     uint32_t profile_sequence_id = std::numeric_limits<uint32_t>::max();
-    auto& packets = producer_->finalized_packets();
+    auto& packets = GetFinalizedPackets();
     for (auto& packet : packets) {
       if (packet->has_streaming_profile_packet()) {
         profile_sequence_id = packet->trusted_packet_sequence_id();
@@ -151,14 +230,23 @@ class TracingSampleProfilerTest : public TracingUnitTest {
     return profile_sequence_id;
   }
 
+#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   TestProducerClient* producer() const { return producer_.get(); }
+#endif
 
  protected:
   // We want our singleton torn down after each test.
   base::ShadowingAtExitManager at_exit_manager_;
   base::trace_event::TraceResultBuffer trace_buffer_;
 
-  std::unique_ptr<TestProducerClient> producer_;
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  base::test::TaskEnvironment task_environment_;
+  base::test::TracingEnvironment tracing_environment_;
+  std::vector<std::unique_ptr<perfetto::protos::TracePacket>>
+      finalized_packets_;
+#else   // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  std::unique_ptr<tracing::TestProducerClient> producer_;
+#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
   // Number of stack sampling events received.
   size_t events_stack_received_count_ = 0;
@@ -190,7 +278,11 @@ TEST_F(TracingSampleProfilerTest, JoinRunningTracing) {
   ValidateReceivedEvents();
 }
 
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+TEST_F(TracingSampleProfilerTest, DISABLED_TestStartupTracing) {
+#else
 TEST_F(TracingSampleProfilerTest, TestStartupTracing) {
+#endif
   auto profiler = TracingSamplerProfiler::CreateOnMainThread();
   TracingSamplerProfiler::SetupStartupTracingForTesting();
   base::RunLoop().RunUntilIdle();
@@ -203,7 +295,7 @@ TEST_F(TracingSampleProfilerTest, TestStartupTracing) {
   base::RunLoop().RunUntilIdle();
   if (TracingSamplerProfiler::IsStackUnwindingSupported()) {
     uint32_t seq_id = FindProfilerSequenceId();
-    auto& packets = producer()->finalized_packets();
+    auto& packets = GetFinalizedPackets();
     int64_t reference_ts = 0;
     int64_t first_profile_ts = 0;
     for (auto& packet : packets) {
@@ -224,7 +316,11 @@ TEST_F(TracingSampleProfilerTest, TestStartupTracing) {
   }
 }
 
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+TEST_F(TracingSampleProfilerTest, DISABLED_JoinStartupTracing) {
+#else
 TEST_F(TracingSampleProfilerTest, JoinStartupTracing) {
+#endif
   TracingSamplerProfiler::SetupStartupTracingForTesting();
   base::RunLoop().RunUntilIdle();
   auto profiler = TracingSamplerProfiler::CreateOnMainThread();
@@ -237,7 +333,7 @@ TEST_F(TracingSampleProfilerTest, JoinStartupTracing) {
   base::RunLoop().RunUntilIdle();
   if (TracingSamplerProfiler::IsStackUnwindingSupported()) {
     uint32_t seq_id = FindProfilerSequenceId();
-    auto& packets = producer()->finalized_packets();
+    auto& packets = GetFinalizedPackets();
     int64_t reference_ts = 0;
     int64_t first_profile_ts = 0;
     for (auto& packet : packets) {
@@ -403,7 +499,10 @@ class TracingProfileBuilderTest : public TracingUnitTest {
 TEST_F(TracingProfileBuilderTest, ValidModule) {
   base::TestModule module;
   TracingSamplerProfiler::TracingProfileBuilder profile_builder(
-      base::PlatformThreadId(), std::make_unique<TestTraceWriter>(producer()),
+      base::PlatformThreadId(),
+#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+      std::make_unique<TestTraceWriter>(producer()),
+#endif
       false);
   profile_builder.OnSampleCompleted({base::Frame(0x1010, &module)},
                                     base::TimeTicks());
@@ -411,12 +510,16 @@ TEST_F(TracingProfileBuilderTest, ValidModule) {
 
 TEST_F(TracingProfileBuilderTest, InvalidModule) {
   TracingSamplerProfiler::TracingProfileBuilder profile_builder(
-      base::PlatformThreadId(), std::make_unique<TestTraceWriter>(producer()),
+      base::PlatformThreadId(),
+#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+      std::make_unique<TestTraceWriter>(producer()),
+#endif
       false);
   profile_builder.OnSampleCompleted({base::Frame(0x1010, nullptr)},
                                     base::TimeTicks());
 }
 
+#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 TEST_F(TracingProfileBuilderTest, MangleELFModuleID) {
   base::TestModule module;
@@ -432,6 +535,7 @@ TEST_F(TracingProfileBuilderTest, MangleELFModuleID) {
   producer()->FlushPacketIfPossible();
 
   bool found_build_id = false;
+  EXPECT_GT(producer()->GetFinalizedPacketCount(), 0u);
   for (unsigned i = 0; i < producer()->GetFinalizedPacketCount(); ++i) {
     const perfetto::protos::TracePacket* packet =
         producer()->GetFinalizedPacket(i);
@@ -446,6 +550,7 @@ TEST_F(TracingProfileBuilderTest, MangleELFModuleID) {
   }
   EXPECT_TRUE(found_build_id);
 }
+#endif
 #endif
 
 }  // namespace tracing

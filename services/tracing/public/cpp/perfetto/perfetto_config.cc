@@ -155,6 +155,13 @@ void AddDataSourceConfigs(
                         json_agent_label_filter);
   }
 
+  if (source_names.count(tracing::mojom::kSamplerProfilerSourceName) == 1) {
+    AddDataSourceConfig(
+        perfetto_config, tracing::mojom::kSamplerProfilerSourceName,
+        chrome_config_string, privacy_filtering_enabled, convert_to_legacy_json,
+        client_priority, json_agent_label_filter);
+  }
+
   if (stripped_config.IsCategoryGroupEnabled(
           TRACE_DISABLED_BY_DEFAULT("cpu_profiler"))) {
     DCHECK_EQ(

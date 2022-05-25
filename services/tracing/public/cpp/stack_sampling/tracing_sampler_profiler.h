@@ -96,7 +96,9 @@ class COMPONENT_EXPORT(TRACING_CPP) TracingSamplerProfiler {
    public:
     TracingProfileBuilder(
         base::PlatformThreadId sampled_thread_id,
+#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
         std::unique_ptr<perfetto::TraceWriter> trace_writer,
+#endif
         bool should_enable_filtering,
         const base::RepeatingClosure& sample_callback_for_testing =
             base::RepeatingClosure());
@@ -109,7 +111,9 @@ class COMPONENT_EXPORT(TRACING_CPP) TracingSamplerProfiler {
     void OnProfileCompleted(base::TimeDelta profile_duration,
                             base::TimeDelta sampling_period) override {}
 
+#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
     void SetTraceWriter(std::unique_ptr<perfetto::TraceWriter> trace_writer);
+#endif
 
    private:
     struct BufferedSample {
@@ -144,8 +148,10 @@ class COMPONENT_EXPORT(TRACING_CPP) TracingSamplerProfiler {
 
     base::ModuleCache module_cache_;
     const base::PlatformThreadId sampled_thread_id_;
+#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
     base::Lock trace_writer_lock_;
     std::unique_ptr<perfetto::TraceWriter> trace_writer_;
+#endif
     StackProfileWriter stack_profile_writer_;
     bool reset_incremental_state_ = true;
     uint32_t last_incremental_state_reset_id_ = 0;
@@ -208,8 +214,11 @@ class COMPONENT_EXPORT(TRACING_CPP) TracingSamplerProfiler {
   void SetSampleCallbackForTesting(
       const base::RepeatingClosure& sample_callback_for_testing);
 
-  void StartTracing(std::unique_ptr<perfetto::TraceWriter> trace_writer,
-                    bool should_enable_filtering);
+  void StartTracing(
+#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+      std::unique_ptr<perfetto::TraceWriter> trace_writer,
+#endif
+      bool should_enable_filtering);
   void StopTracing();
 
  private:
