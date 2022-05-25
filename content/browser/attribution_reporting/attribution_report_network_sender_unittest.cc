@@ -226,10 +226,10 @@ TEST_F(AttributionReportNetworkSenderTest, DebugReportSent_NoMetricsRecorded) {
   network_sender_->SendReport(report, /*is_debug_report=*/true,
                               base::DoNothing());
 
-  histograms.ExpectTotalCount("Conversions.ReportStatus", 0);
+  histograms.ExpectTotalCount("Conversions.ReportStatus2", 0);
   histograms.ExpectTotalCount("Conversions.Report.HttpResponseOrNetErrorCode",
                               0);
-  histograms.ExpectTotalCount("Conversions.ReportRetrySucceed", 0);
+  histograms.ExpectTotalCount("Conversions.ReportRetrySucceed2", 0);
 }
 
 TEST_F(AttributionReportNetworkSenderTest,
@@ -324,16 +324,30 @@ TEST_F(AttributionReportNetworkSenderTest, ReportSent_RequestAttributesSet) {
 }
 
 TEST_F(AttributionReportNetworkSenderTest, ReportSent_CallbackFired) {
-  auto report = DefaultReport();
-  EXPECT_CALL(callback_,
-              Run(report, SendResult(SendResult::Status::kSent, net::OK,
-                                     net::HttpStatusCode::HTTP_OK)));
+  const auto report = DefaultReport();
 
-  network_sender_->SendReport(report, /*is_debug_report=*/false,
-                              callback_.Get());
-  EXPECT_EQ(1, test_url_loader_factory_.NumPending());
-  EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
-      kReportUrl, ""));
+  static const net::HttpStatusCode kTestCases[] = {
+      net::HTTP_OK,
+      net::HTTP_CREATED,
+      net::HTTP_ACCEPTED,
+      net::HTTP_NON_AUTHORITATIVE_INFORMATION,
+      net::HTTP_NO_CONTENT,
+      net::HTTP_RESET_CONTENT,
+      net::HTTP_PARTIAL_CONTENT,
+  };
+
+  for (net::HttpStatusCode code : kTestCases) {
+    EXPECT_CALL(callback_, Run(report, SendResult(SendResult::Status::kSent,
+                                                  net::OK, code)));
+
+    network_sender_->SendReport(report, /*is_debug_report=*/false,
+                                callback_.Get());
+    EXPECT_EQ(1, test_url_loader_factory_.NumPending());
+    EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
+        kReportUrl, "", code));
+
+    Mock::VerifyAndClear(&callback_);
+  }
 }
 
 TEST_F(AttributionReportNetworkSenderTest, SenderDeletedDuringRequest_NoCrash) {
@@ -474,7 +488,7 @@ TEST_F(AttributionReportNetworkSenderTest,
     EXPECT_EQ(0, test_url_loader_factory_.NumPending());
     Mock::VerifyAndClear(&callback_);
 
-    histograms.ExpectUniqueSample("Conversions.ReportRetrySucceed", false, 1);
+    histograms.ExpectUniqueSample("Conversions.ReportRetrySucceed2", false, 1);
   }
 
   // Retry succeeds
@@ -498,7 +512,7 @@ TEST_F(AttributionReportNetworkSenderTest,
     // Simulate a second request failure due to network change.
     test_url_loader_factory_.SimulateResponseForPendingRequest(kReportUrl, "");
 
-    histograms.ExpectUniqueSample("Conversions.ReportRetrySucceed", true, 1);
+    histograms.ExpectUniqueSample("Conversions.ReportRetrySucceed2", true, 1);
   }
 }
 
@@ -556,7 +570,7 @@ TEST_F(AttributionReportNetworkSenderTest, ErrorHistogram) {
     EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
         kReportUrl, ""));
     // kOk = 0.
-    histograms.ExpectUniqueSample("Conversions.ReportStatus", 0, 1);
+    histograms.ExpectUniqueSample("Conversions.ReportStatus2", 0, 1);
     histograms.ExpectUniqueSample(
         "Conversions.Report.HttpResponseOrNetErrorCode", net::HTTP_OK, 1);
   }
@@ -571,7 +585,7 @@ TEST_F(AttributionReportNetworkSenderTest, ErrorHistogram) {
         GURL(kReportUrl), completion_status,
         network::mojom::URLResponseHead::New(), ""));
     // kInternalError = 1.
-    histograms.ExpectUniqueSample("Conversions.ReportStatus", 1, 1);
+    histograms.ExpectUniqueSample("Conversions.ReportStatus2", 1, 1);
     histograms.ExpectUniqueSample(
         "Conversions.Report.HttpResponseOrNetErrorCode", net::ERR_FAILED, 1);
   }
@@ -583,7 +597,7 @@ TEST_F(AttributionReportNetworkSenderTest, ErrorHistogram) {
     EXPECT_TRUE(test_url_loader_factory_.SimulateResponseForPendingRequest(
         kReportUrl, "", net::HTTP_UNAUTHORIZED));
     // kExternalError = 2.
-    histograms.ExpectUniqueSample("Conversions.ReportStatus", 2, 1);
+    histograms.ExpectUniqueSample("Conversions.ReportStatus2", 2, 1);
     histograms.ExpectUniqueSample(
         "Conversions.Report.HttpResponseOrNetErrorCode", net::HTTP_UNAUTHORIZED,
         1);

@@ -164,12 +164,12 @@ void LogMetricsOnReportCompleted(const AttributionReport& report,
   switch (report.GetReportType()) {
     case AttributionReport::ReportType::kEventLevel:
       base::UmaHistogramEnumeration(
-          "Conversions.ReportSendOutcome2",
+          "Conversions.ReportSendOutcome3",
           ConvertToConversionReportSendOutcome(status));
       break;
     case AttributionReport::ReportType::kAggregatableAttribution:
       base::UmaHistogramEnumeration(
-          "Conversions.AggregatableReport.ReportSendOutcome",
+          "Conversions.AggregatableReport.ReportSendOutcome2",
           ConvertToConversionReportSendOutcome(status));
       break;
   }

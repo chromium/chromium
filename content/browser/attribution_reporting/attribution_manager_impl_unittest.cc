@@ -550,7 +550,7 @@ TEST_F(AttributionManagerImplTest,
   report_sender_->RunCallbacksAndReset({SendResult::Status::kTransientFailure});
 
   // kFailed = 1.
-  histograms.ExpectUniqueSample("Conversions.ReportSendOutcome2", 1, 1);
+  histograms.ExpectUniqueSample("Conversions.ReportSendOutcome3", 1, 1);
 }
 
 TEST_F(AttributionManagerImplTest, RetryLogicOverridesGetReportTimer) {
@@ -617,7 +617,7 @@ TEST_F(AttributionManagerImplTest,
   EXPECT_THAT(StoredReports(), IsEmpty());
 
   // kFailed = 1.
-  histograms.ExpectUniqueSample("Conversions.ReportSendOutcome2", 1, 1);
+  histograms.ExpectUniqueSample("Conversions.ReportSendOutcome3", 1, 1);
 }
 
 TEST_F(AttributionManagerImplTest, QueuedReportAlwaysFails_StopsSending) {
@@ -661,7 +661,7 @@ TEST_F(AttributionManagerImplTest, QueuedReportAlwaysFails_StopsSending) {
   EXPECT_THAT(StoredReports(), IsEmpty());
 
   // kFailed = 1.
-  histograms.ExpectUniqueSample("Conversions.ReportSendOutcome2", 1, 1);
+  histograms.ExpectUniqueSample("Conversions.ReportSendOutcome3", 1, 1);
 }
 
 TEST_F(AttributionManagerImplTest, ReportExpiredAtStartup_Sent) {
@@ -697,7 +697,7 @@ TEST_F(AttributionManagerImplTest, ReportSent_Deleted) {
   EXPECT_THAT(report_sender_->calls(), IsEmpty());
 
   // kSent = 0.
-  histograms.ExpectUniqueSample("Conversions.ReportSendOutcome2", 0, 1);
+  histograms.ExpectUniqueSample("Conversions.ReportSendOutcome3", 0, 1);
 }
 
 TEST_F(AttributionManagerImplTest, QueuedReportSent_ObserversNotified) {
@@ -743,11 +743,11 @@ TEST_F(AttributionManagerImplTest, QueuedReportSent_ObserversNotified) {
        SendResult::Status::kSent, SendResult::Status::kTransientFailure});
 
   // kSent = 0.
-  histograms.ExpectBucketCount("Conversions.ReportSendOutcome2", 0, 2);
+  histograms.ExpectBucketCount("Conversions.ReportSendOutcome3", 0, 2);
   // kFailed = 1.
-  histograms.ExpectBucketCount("Conversions.ReportSendOutcome2", 1, 0);
+  histograms.ExpectBucketCount("Conversions.ReportSendOutcome3", 1, 0);
   // kDropped = 2.
-  histograms.ExpectBucketCount("Conversions.ReportSendOutcome2", 2, 1);
+  histograms.ExpectBucketCount("Conversions.ReportSendOutcome3", 2, 1);
 }
 
 TEST_F(AttributionManagerImplTest, TriggerHandled_ObserversNotified) {
@@ -1349,7 +1349,7 @@ TEST_F(AttributionManagerImplTest, EmbedderDisallowsReporting_ReportNotSent) {
   EXPECT_THAT(report_sender_->calls(), IsEmpty());
 
   // kDropped = 2.
-  histograms.ExpectBucketCount("Conversions.ReportSendOutcome2", 2, 1);
+  histograms.ExpectBucketCount("Conversions.ReportSendOutcome3", 2, 1);
 }
 
 TEST_F(AttributionManagerImplTest,
@@ -1818,7 +1818,7 @@ TEST_F(AttributionManagerImplTest,
       kFirstReportingWindow.InMinutes(), 1);
   // kSent = 0.
   histograms.ExpectUniqueSample(
-      "Conversions.AggregatableReport.ReportSendOutcome", 0, 1);
+      "Conversions.AggregatableReport.ReportSendOutcome2", 0, 1);
 }
 
 TEST_F(AttributionManagerImplTest,
@@ -1863,7 +1863,7 @@ TEST_F(AttributionManagerImplTest,
       kFirstReportingWindow.InMinutes(), 1);
   // kFailedToAssemble = 3.
   histograms.ExpectUniqueSample(
-      "Conversions.AggregatableReport.ReportSendOutcome", 3, 1);
+      "Conversions.AggregatableReport.ReportSendOutcome2", 3, 1);
 }
 
 TEST_F(AttributionManagerImplTest, AggregationServiceDisabled_ReportNotSent) {
@@ -1888,7 +1888,7 @@ TEST_F(AttributionManagerImplTest, AggregationServiceDisabled_ReportNotSent) {
       kFirstReportingWindow.InMinutes(), 1);
   // kFailedToAssemble = 3.
   histograms.ExpectUniqueSample(
-      "Conversions.AggregatableReport.ReportSendOutcome", 3, 1);
+      "Conversions.AggregatableReport.ReportSendOutcome2", 3, 1);
 }
 
 TEST_F(AttributionManagerImplTest, GetFailedReportDelay) {

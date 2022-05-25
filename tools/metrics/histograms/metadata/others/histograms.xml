@@ -3275,6 +3275,22 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Conversions.AggregatableReport.ReportSendOutcome"
     enum="ConversionReportSendOutcome" expires_after="2022-11-13">
+  <obsolete>
+    Replaced with Conversions.AggregatableReport.ReportSendOutcome2 due to HTTP
+    status check change, May 2022.
+  </obsolete>
+  <owner>linnan@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the high level request status of an aggregatable report. Recorded
+    once per aggregatable report. For aggregatable report that has been retried,
+    only the last retry will be counted.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.AggregatableReport.ReportSendOutcome2"
+    enum="ConversionReportSendOutcome" expires_after="2022-11-13">
   <owner>linnan@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
@@ -3619,6 +3635,21 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Conversions.ReportRetrySucceed" enum="BooleanSuccess"
     expires_after="2022-10-23">
+  <obsolete>
+    Replaced with Conversions.ReportRetrySucceed2 due to HTTP status check
+    change, May 2022.
+  </obsolete>
+  <owner>johnidel@chromium.org</owner>
+  <owner>csharrison@chromium.org</owner>
+  <owner>linnan@chromium.org</owner>
+  <summary>
+    Records whether a particular conversion report was successful. Emitted for
+    all conversion reports which retry.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.ReportRetrySucceed2" enum="BooleanSuccess"
+    expires_after="2022-10-23">
   <owner>johnidel@chromium.org</owner>
   <owner>csharrison@chromium.org</owner>
   <owner>linnan@chromium.org</owner>
@@ -3656,6 +3687,22 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Conversions.ReportSendOutcome2"
     enum="ConversionReportSendOutcome" expires_after="2022-11-13">
+  <obsolete>
+    Replaced with Conversions.ReportSendOutcome3 due to HTTP status check
+    change, May 2022.
+  </obsolete>
+  <owner>linnan@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the high level request status of a conversion report. Recorded once
+    per conversion report. For conversion report that has been retried, only the
+    last retry will be counted.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.ReportSendOutcome3"
+    enum="ConversionReportSendOutcome" expires_after="2022-11-13">
   <owner>linnan@chromium.org</owner>
   <owner>johnidel@chromium.org</owner>
   <owner>measurement-api-dev+metrics@google.com</owner>
@@ -3667,6 +3714,21 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Conversions.ReportStatus" enum="ConversionReportStatus"
+    expires_after="2022-10-09">
+  <obsolete>
+    Replaced with Conversions.ReportStatus2 due to HTTP status check change, May
+    2022.
+  </obsolete>
+  <owner>johnidel@chromium.org</owner>
+  <owner>csharrison@chromium.org</owner>
+  <summary>
+    Records the high level request status of a conversion report. Recorded for
+    every conversion report sent. For conversion report that has been retried,
+    every retry will be counted.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.ReportStatus2" enum="ConversionReportStatus"
     expires_after="2022-10-09">
   <owner>johnidel@chromium.org</owner>
   <owner>csharrison@chromium.org</owner>
