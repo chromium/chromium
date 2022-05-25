@@ -440,7 +440,7 @@ class BookmarkBarView : public views::AccessiblePaneView,
   std::vector<views::LabelButton*> bookmark_buttons_;
 
   raw_ptr<ButtonSeparatorView> bookmarks_separator_view_ = nullptr;
-  raw_ptr<ButtonSeparatorView> tab_groups_separator_view_ = nullptr;
+  raw_ptr<ButtonSeparatorView> saved_tab_groups_separator_view_ = nullptr;
 
   const raw_ptr<Browser> browser_;
   raw_ptr<BrowserView> browser_view_;

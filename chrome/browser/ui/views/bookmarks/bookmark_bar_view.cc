@@ -705,8 +705,9 @@ gfx::Size BookmarkBarView::GetMinimumSize() const {
     gfx::Size size = bookmarks_separator_view_->GetPreferredSize();
     width += size.width();
   }
-  if (tab_groups_separator_view_ && tab_groups_separator_view_->GetVisible()) {
-    gfx::Size size = tab_groups_separator_view_->GetPreferredSize();
+  if (saved_tab_groups_separator_view_ &&
+      saved_tab_groups_separator_view_->GetVisible()) {
+    gfx::Size size = saved_tab_groups_separator_view_->GetPreferredSize();
     width += size.width();
   }
   if (apps_page_shortcut_->GetVisible()) {
@@ -802,15 +803,15 @@ void BookmarkBarView::Layout() {
       x += bookmark_bar_button_padding;
 
       // Update the bounds for the separator.
-      gfx::Size tab_groups_separator_view_pref =
-          tab_groups_separator_view_->GetPreferredSize();
-      tab_groups_separator_view_->SetBounds(
-          x, center_y(tab_groups_separator_view_pref.height()),
-          tab_groups_separator_view_pref.width(),
-          tab_groups_separator_view_pref.height());
+      gfx::Size saved_tab_groups_separator_view_pref =
+          saved_tab_groups_separator_view_->GetPreferredSize();
+      saved_tab_groups_separator_view_->SetBounds(
+          x, center_y(saved_tab_groups_separator_view_pref.height()),
+          saved_tab_groups_separator_view_pref.width(),
+          saved_tab_groups_separator_view_pref.height());
 
       // The right padding of the separator is included in the width.
-      x += tab_groups_separator_view_pref.width();
+      x += saved_tab_groups_separator_view_pref.width();
     }
   }
 
@@ -849,10 +850,11 @@ void BookmarkBarView::Layout() {
 
   // Set the visibility of the tab group separator if there are groups and
   // bookmarks.
-  if (base::FeatureList::IsEnabled(features::kTabGroupsSave))
-    tab_groups_separator_view_->SetVisible(saved_tab_group_bar_width > 0 &&
-                                           !bookmark_buttons_.empty() &&
-                                           bookmark_buttons_[0]->GetVisible());
+  if (saved_tab_groups_separator_view_ &&
+      base::FeatureList::IsEnabled(features::kTabGroupsSave))
+    saved_tab_groups_separator_view_->SetVisible(
+        saved_tab_group_bar_width > 0 && !bookmark_buttons_.empty() &&
+        bookmark_buttons_[0]->GetVisible());
 
   // Layout the right side buttons.
   x = max_x + bookmark_bar_button_padding;
@@ -1448,9 +1450,9 @@ void BookmarkBarView::Init() {
           &BookmarkBarView::OnAppsPageShortcutVisibilityPrefChanged,
           base::Unretained(this)));
 
-  tab_groups_separator_view_ =
+  saved_tab_groups_separator_view_ =
       AddChildView(std::make_unique<ButtonSeparatorView>());
-  tab_groups_separator_view_->SetVisible(
+  saved_tab_groups_separator_view_->SetVisible(
       base::FeatureList::IsEnabled(features::kTabGroupsSave) &&
       browser_->profile()->IsRegularProfile());
 
