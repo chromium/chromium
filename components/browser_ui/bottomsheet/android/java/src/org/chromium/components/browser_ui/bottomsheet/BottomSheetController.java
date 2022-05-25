@@ -6,6 +6,7 @@ package org.chromium.components.browser_ui.bottomsheet;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -156,4 +157,10 @@ public interface BottomSheetController {
      * @return A property model used to show the scrim behind the bottom sheet.
      */
     PropertyModel createScrimParams();
+
+    /**
+     * @return The {@link BackPressHandler} that will handle a back press event when the bottom
+     *         sheet is open or holds sheet content.
+     */
+    BackPressHandler getBottomSheetBackPressHandler();
 }

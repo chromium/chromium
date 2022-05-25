@@ -39,6 +39,7 @@ android_library("manager_java") {
 
   deps = [
     ":java",
+    "//components/browser_ui/widget/android:java",
     "//ui/android:ui_full_java",
   ]
 }
