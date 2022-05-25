@@ -182,7 +182,7 @@ TEST_F('ChromeVoxSmartStickyModeTest', 'ContinuousRead', async function() {
   `;
   const root = await this.runWithLoadedTree(site);
   // Fake the read from here/continuous read state.
-  ChromeVoxState.isReadingContinuously = true;
+  ChromeVoxState.instance.isReadingContinuously = true;
   mockFeedback.call(doCmd('toggleStickyMode'))
       .expectSpeech('Sticky mode enabled')
       .call(doCmd('nextObject'))

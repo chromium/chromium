@@ -45,8 +45,11 @@ export class Background extends ChromeVoxState {
     /** @private {cursors.Range} */
     this.currentRange_ = null;
 
-    /** @type {!AbstractEarcons} @private */
+    /** @private {!AbstractEarcons} */
     this.earcons_ = new Earcons();
+
+    /** @private {boolean} */
+    this.isReadingContinuously_ = false;
 
     /** @private {string|undefined} */
     this.lastClipboardEvent_;
@@ -123,6 +126,11 @@ export class Background extends ChromeVoxState {
   }
 
   /** @override */
+  get isReadingContinuously() {
+    return this.isReadingContinuously_;
+  }
+
+  /** @override */
   get pageSel() {
     return this.pageSel_;
   }
@@ -181,6 +189,11 @@ export class Background extends ChromeVoxState {
   /** @override */
   set backgroundTts(newBackgroundTts) {
     this.backgroundTts_ = newBackgroundTts;
+  }
+
+  /** @override */
+  set isReadingContinuously(newValue) {
+    this.isReadingContinuously_ = newValue;
   }
 
   /** @override */

@@ -183,7 +183,7 @@ export class CommandHandler extends CommandHandlerInterface {
         return false;
       case 'stopSpeech':
         ChromeVox.tts.stop();
-        ChromeVoxState.isReadingContinuously = false;
+        ChromeVoxState.instance.isReadingContinuously = false;
         return false;
       case 'toggleEarcons': {
         ChromeVox.earcons.enabled = !ChromeVox.earcons.enabled;
@@ -786,9 +786,9 @@ export class CommandHandler extends CommandHandlerInterface {
         }
       } break;
       case 'readFromHere':
-        ChromeVoxState.isReadingContinuously = true;
+        ChromeVoxState.instance.isReadingContinuously = true;
         const continueReading = function() {
-          if (!ChromeVoxState.isReadingContinuously ||
+          if (!ChromeVoxState.instance.isReadingContinuously ||
               !ChromeVoxState.instance.currentRange) {
             return;
           }
@@ -800,7 +800,7 @@ export class CommandHandler extends CommandHandlerInterface {
           // Stop if we've wrapped back to the document.
           const maybeDoc = newRange.start.node;
           if (AutomationPredicate.root(maybeDoc)) {
-            ChromeVoxState.isReadingContinuously = false;
+            ChromeVoxState.instance.isReadingContinuously = false;
             return;
           }
 

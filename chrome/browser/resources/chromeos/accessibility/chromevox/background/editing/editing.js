@@ -475,7 +475,7 @@ const AutomationRichEditableText = class extends AutomationEditableText {
     // CommandHandler). We use the speech end callback to trigger additional
     // speech.
     // Also, skip speech based on the predicate.
-    if (ChromeVoxState.isReadingContinuously ||
+    if (ChromeVoxState.instance.isReadingContinuously ||
         AutomationPredicate.shouldOnlyOutputSelectionChangeInBraille(
             this.node_)) {
       this.updateIntraLineState_(cur);

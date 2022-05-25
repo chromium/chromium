@@ -34,7 +34,7 @@ export class SmartStickyMode {
    */
   onCurrentRangeChanged(newRange, opt_fromEditing) {
     if (!newRange || this.ignoreRangeChanges_ ||
-        ChromeVoxState.isReadingContinuously || opt_fromEditing ||
+        ChromeVoxState.instance.isReadingContinuously || opt_fromEditing ||
         localStorage['smartStickyMode'] !== 'true') {
       return;
     }

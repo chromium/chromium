@@ -62,6 +62,11 @@ ChromeVoxState = class {
     return null;
   }
 
+  /** @return {boolean} */
+  get isReadingContinuously() {
+    return false;
+  }
+
   /** @return {cursors.Range} */
   get pageSel() {
     return null;
@@ -86,6 +91,12 @@ ChromeVoxState = class {
    * @abstract
    */
   set backgroundTts(newBackgroundTts) {}
+
+  /**
+   * @param {boolean} newValue
+   * @abstract
+   */
+  set isReadingContinuously(newValue) {}
 
   /**
    * @param {cursors.Range}
@@ -135,9 +146,6 @@ ChromeVoxState = class {
 
 /** @type {ChromeVoxState} */
 ChromeVoxState.instance;
-
-/** @type {boolean} */
-ChromeVoxState.isReadingContinuously;
 
 /** @type {!Array<ChromeVoxStateObserver>} */
 ChromeVoxState.observers = [];
