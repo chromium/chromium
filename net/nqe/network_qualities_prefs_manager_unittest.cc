@@ -27,31 +27,28 @@ namespace {
 
 class TestPrefDelegate : public NetworkQualitiesPrefsManager::PrefDelegate {
  public:
-  TestPrefDelegate()
-      : write_count_(0), read_count_(0), value_(new base::DictionaryValue) {}
+  TestPrefDelegate() : write_count_(0), read_count_(0) {}
 
   TestPrefDelegate(const TestPrefDelegate&) = delete;
   TestPrefDelegate& operator=(const TestPrefDelegate&) = delete;
 
   ~TestPrefDelegate() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    value_->DictClear();
-    EXPECT_EQ(0U, value_->DictSize());
   }
 
-  void SetDictionaryValue(const base::DictionaryValue& value) override {
+  void SetDictionaryValue(const base::Value::Dict& dict) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     write_count_++;
-    value_.reset(value.DeepCopy());
-    ASSERT_EQ(value.DictSize(), value_->DictSize());
+    value_ = dict.Clone();
+    ASSERT_EQ(dict.size(), value_.size());
   }
 
-  std::unique_ptr<base::DictionaryValue> GetDictionaryValue() override {
+  base::Value::Dict GetDictionaryValue() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     read_count_++;
-    return value_->CreateDeepCopy();
+    return value_.Clone();
   }
 
   size_t write_count() const {
@@ -70,7 +67,7 @@ class TestPrefDelegate : public NetworkQualitiesPrefsManager::PrefDelegate {
   size_t read_count_;
 
   // Current value of the prefs.
-  std::unique_ptr<base::DictionaryValue> value_;
+  base::Value::Dict value_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

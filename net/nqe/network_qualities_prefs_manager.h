@@ -35,10 +35,10 @@ class NET_EXPORT NetworkQualitiesPrefsManager
     virtual ~PrefDelegate() {}
 
     // Sets the persistent pref to the given value.
-    virtual void SetDictionaryValue(const base::DictionaryValue& value) = 0;
+    virtual void SetDictionaryValue(const base::Value::Dict& dict) = 0;
 
     // Returns a copy of the persistent prefs.
-    virtual std::unique_ptr<base::DictionaryValue> GetDictionaryValue() = 0;
+    virtual base::Value::Dict GetDictionaryValue() = 0;
   };
 
   // Creates an instance of the NetworkQualitiesPrefsManager. Ownership of
@@ -72,7 +72,7 @@ class NET_EXPORT NetworkQualitiesPrefsManager
   std::unique_ptr<PrefDelegate> pref_delegate_;
 
   // Current prefs on the disk.
-  std::unique_ptr<base::DictionaryValue> prefs_;
+  base::Value::Dict prefs_;
 
   // nqe::internal::NetworkQualityStore::NetworkQualitiesCacheObserver
   // implementation:

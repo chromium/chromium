@@ -37,17 +37,16 @@ class PrefDelegateImpl
 
   ~PrefDelegateImpl() override {}
 
-  void SetDictionaryValue(const base::DictionaryValue& value) override {
+  void SetDictionaryValue(const base::Value::Dict& dict) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    pref_service_->Set(path_, value);
+    pref_service_->SetDict(path_, dict.Clone());
     UMA_HISTOGRAM_EXACT_LINEAR("NQE.Prefs.WriteCount", 1, 2);
   }
 
-  std::unique_ptr<base::DictionaryValue> GetDictionaryValue() override {
+  base::Value::Dict GetDictionaryValue() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     UMA_HISTOGRAM_EXACT_LINEAR("NQE.Prefs.ReadCount", 1, 2);
-    return base::DictionaryValue::From(base::Value::ToUniquePtrValue(
-        pref_service_->GetDictionary(path_)->Clone()));
+    return pref_service_->GetDictionary(path_)->GetDict().Clone();
   }
 
  private:
