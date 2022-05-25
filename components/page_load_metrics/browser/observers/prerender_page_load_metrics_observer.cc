@@ -30,6 +30,11 @@ const char kHistogramPrerenderCumulativeShiftScore[] =
 const char kHistogramPrerenderCumulativeShiftScoreMainFrame[] =
     "PageLoad.Clients.Prerender.LayoutInstability.CumulativeShiftScore."
     "MainFrame";
+const char
+    kHistogramPrerenderMaxCumulativeShiftScoreSessionWindowGap1000msMax5000ms2
+        [] = "PageLoad.Clients.Prerender.LayoutInstability."
+             "MaxCumulativeShiftScore.SessionWindow."
+             "Gap1000ms.Max5000ms2";
 
 }  // namespace internal
 
@@ -177,6 +182,18 @@ void PrerenderPageLoadMetricsObserver::RecordSessionEndHistograms(
       AppendSuffix(internal::kHistogramPrerenderCumulativeShiftScoreMainFrame),
       page_load_metrics::LayoutShiftUmaValue(
           GetDelegate().GetMainFrameRenderData().layout_shift_score));
+
+  const page_load_metrics::NormalizedCLSData& normalized_cls_data =
+      GetDelegate().GetNormalizedCLSData(
+          page_load_metrics::PageLoadMetricsObserverDelegate::BfcacheStrategy::
+              ACCUMULATE);
+  if (!normalized_cls_data.data_tainted) {
+    page_load_metrics::UmaMaxCumulativeShiftScoreHistogram10000x(
+        AppendSuffix(
+            internal::
+                kHistogramPrerenderMaxCumulativeShiftScoreSessionWindowGap1000msMax5000ms2),
+        normalized_cls_data);
+  }
 }
 
 std::string PrerenderPageLoadMetricsObserver::AppendSuffix(
