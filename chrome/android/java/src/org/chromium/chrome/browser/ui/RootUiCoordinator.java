@@ -67,6 +67,7 @@ import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsControlle
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthCoordinatorFactory;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager;
+import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthTopToolbarDelegate;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -116,6 +117,7 @@ import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures.Adap
 import org.chromium.chrome.browser.toolbar.adaptive.OptionalNewTabButtonController;
 import org.chromium.chrome.browser.toolbar.top.ToolbarActionModeCallback;
 import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer;
+import org.chromium.chrome.browser.toolbar.top.TopToolbarInteractabilityManager;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuBlocker;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinatorFactory;
@@ -729,22 +731,47 @@ public class RootUiCoordinator
         }
 
         if (IncognitoReauthManager.isIncognitoReauthFeatureAvailable()) {
-            TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
-            OneshotSupplier<TabSwitcherCustomViewManager> tabSwitcherCustomViewSupplier =
-                    new OneshotSupplierImpl<>();
-            tabSwitcherCustomViewSupplier = (mActivityType == ActivityType.TABBED)
-                    ? mStartSurfaceSupplier.get().getTabSwitcherCustomViewManagerSupplier()
-                    : tabSwitcherCustomViewSupplier;
-            IncognitoReauthCoordinatorFactory incognitoReauthCoordinatorFactory =
-                    new IncognitoReauthCoordinatorFactory(mActivity, tabModelSelector,
-                            mModalDialogManagerSupplier.get(), new SettingsLauncherImpl(),
-                            tabSwitcherCustomViewSupplier);
-            mIncognitoReauthController = new IncognitoReauthController(tabModelSelector,
-                    mActivityLifecycleDispatcher, mLayoutStateProviderOneShotSupplier,
-                    mProfileSupplier, incognitoReauthCoordinatorFactory);
+            initIncognitoReauthController();
         }
 
         new OneShotCallback<>(mProfileSupplier, this::initHistoryClustersCoordinator);
+    }
+
+    private void initIncognitoReauthController() {
+        TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
+        OneshotSupplier<TabSwitcherCustomViewManager> tabSwitcherCustomViewSupplier =
+                new OneshotSupplierImpl<>();
+        tabSwitcherCustomViewSupplier = (mActivityType == ActivityType.TABBED)
+                ? mStartSurfaceSupplier.get().getTabSwitcherCustomViewManagerSupplier()
+                : tabSwitcherCustomViewSupplier;
+
+        // TODO(crbug.com/1324211, crbug.com/1227656) : Refactor below to remove
+        // IncognitoReauthTopToolbarDelegate and pass TopToolbarInteractabilityManager.
+        IncognitoReauthTopToolbarDelegate incognitoReauthTopToolbarDelegate = null;
+
+        if (mActivityType == ActivityType.TABBED) {
+            TopToolbarInteractabilityManager topToolbarInteractabilityManager =
+                    mToolbarManager.getTopToolbarInteractabilityManager();
+            incognitoReauthTopToolbarDelegate = new IncognitoReauthTopToolbarDelegate() {
+                @Override
+                public int disableNewTabButton() {
+                    return topToolbarInteractabilityManager.disableNewTabButton();
+                }
+
+                @Override
+                public void enableNewTabButton(int clientToken) {
+                    topToolbarInteractabilityManager.enableNewTabButton(clientToken);
+                }
+            };
+        }
+
+        IncognitoReauthCoordinatorFactory incognitoReauthCoordinatorFactory =
+                new IncognitoReauthCoordinatorFactory(mActivity, tabModelSelector,
+                        mModalDialogManagerSupplier.get(), new SettingsLauncherImpl(),
+                        tabSwitcherCustomViewSupplier, incognitoReauthTopToolbarDelegate);
+        mIncognitoReauthController = new IncognitoReauthController(tabModelSelector,
+                mActivityLifecycleDispatcher, mLayoutStateProviderOneShotSupplier, mProfileSupplier,
+                incognitoReauthCoordinatorFactory);
     }
 
     private void initHistoryClustersCoordinator(Profile profile) {

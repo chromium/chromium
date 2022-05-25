@@ -208,6 +208,14 @@ public class TabSwitcherModeTopToolbar extends OptimizedFrameLayout
     }
 
     /**
+     * A method to toggle the enabled state of the new tab view button.
+     */
+    void setNewTabButtonEnabled(boolean enabled) {
+        mNewTabViewButton.setEnabled(enabled);
+        mNewTabImageButton.setEnabled(enabled);
+    }
+
+    /**
      * @param tabCountProvider The {@link TabCountProvider} used to observe the number of tabs in
      *                         the current model.
      */

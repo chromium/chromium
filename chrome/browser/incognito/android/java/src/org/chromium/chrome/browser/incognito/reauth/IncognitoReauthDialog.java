@@ -16,6 +16,8 @@ import org.chromium.ui.modelutil.PropertyModel;
 /**
  * This class is responsible for managing the Incognito re-auth dialog. It handles creation,
  * showing and hiding of the re-auth dialog.
+ *
+ * TODO(crbug.com/1227656): Clean this up to remove references to non-fullscreen logic.
  */
 class IncognitoReauthDialog {
     @NonNull

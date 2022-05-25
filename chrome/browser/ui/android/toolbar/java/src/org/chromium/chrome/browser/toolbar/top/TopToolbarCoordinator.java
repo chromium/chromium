@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewStub;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -704,6 +705,16 @@ public class TopToolbarCoordinator implements Toolbar {
         } else if (mStartSurfaceToolbarCoordinator != null) {
             mStartSurfaceToolbarCoordinator.setNewTabButtonHighlight(highlight);
         }
+    }
+
+    /**
+     * @return A {@link TopToolbarInteractabilityManager} which allows non toolbar clients to toggle
+     *         the interactability of elements present in the top toolbar.
+     */
+    public @NonNull TopToolbarInteractabilityManager getTopToolbarInteractabilityManager() {
+        return mStartSurfaceToolbarCoordinator != null
+                ? mStartSurfaceToolbarCoordinator.getTopToolbarInteractabilityManager()
+                : mTabSwitcherModeCoordinator.getTopToolbarInteractabilityManager();
     }
 
     /** Returns the {@link OptionalBrowsingModeButtonController}. */

@@ -39,6 +39,8 @@ class IncognitoReauthCoordinator {
     // This happens when user hasn't yet interacted with tab switcher but we create
     // this coordinator to display a full-screen dialog.
     private final @Nullable TabSwitcherCustomViewManager mTabSwitcherCustomViewManager;
+    // This can be null if the context is not a tabbed Activity.
+    private final @Nullable IncognitoReauthTopToolbarDelegate mIncognitoReauthTopToolbarDelegate;
     private final boolean mShowFullScreen;
 
     // Non-null for full screen re-auth dialog.
@@ -49,6 +51,9 @@ class IncognitoReauthCoordinator {
     private IncognitoReauthDialog mIncognitoReauthDialog;
     private PropertyModel mPropertyModel;
     private PropertyModelChangeProcessor mModelChangeProcessor;
+    // A token returned by {@link IncognitoReauthTopToolbarDelegate} that needs to be used to
+    // re-enable the new tab button control state.
+    private @Nullable Integer mNewTabInteractabilityToken;
 
     /**
      * @param context The {@link Context} to use for inflating the Incognito re-auth view.
@@ -64,6 +69,8 @@ class IncognitoReauthCoordinator {
      *         SettingsActivity}.
      * @param tabSwitcherCustomViewManager A {@link TabSwitcherCustomViewManager} that
      *         allows to communicate with tab switcher to show the re-auth screen.
+     * @param incognitoReauthTopToolbarDelegate A {@link IncognitoReauthTopToolbarDelegate}
+     *         responsible for controlling the interactability of the top toolbar elements.
      * @param showFullScreen Whether to show a fullscreen / tab based re-auth dialog.
      */
     public IncognitoReauthCoordinator(@NonNull Context context,
@@ -73,10 +80,12 @@ class IncognitoReauthCoordinator {
             @NonNull IncognitoReauthManager incognitoReauthManager,
             @NonNull SettingsLauncher settingsLauncher,
             @Nullable TabSwitcherCustomViewManager tabSwitcherCustomViewManager,
+            @Nullable IncognitoReauthTopToolbarDelegate incognitoReauthTopToolbarDelegate,
             boolean showFullScreen) {
         mContext = context;
         mModalDialogManager = modalDialogManager;
         mTabSwitcherCustomViewManager = tabSwitcherCustomViewManager;
+        mIncognitoReauthTopToolbarDelegate = incognitoReauthTopToolbarDelegate;
         mShowFullScreen = showFullScreen;
         mIncognitoReauthMediator = new IncognitoReauthMediator(
                 tabModelSelector, incognitoReauthCallback, incognitoReauthManager);
@@ -89,6 +98,7 @@ class IncognitoReauthCoordinator {
         mModelChangeProcessor.destroy();
     }
 
+    // TODO(crbug.com/1227656): Rename the method to remove reference to Dialog.
     void showDialog() {
         mIncognitoReauthView =
                 LayoutInflater.from(mContext).inflate(R.layout.incognito_reauth_view, null);
@@ -110,9 +120,15 @@ class IncognitoReauthCoordinator {
                     != null : "TabSwitcherCustomViewManager can't be null.";
             boolean success = mTabSwitcherCustomViewManager.requestView(mIncognitoReauthView);
             assert success : "Unable to signal showing the re-auth screen to tab switcher.";
+
+            assert mIncognitoReauthTopToolbarDelegate
+                    != null : "delegate to top toolbar can't be null";
+            mNewTabInteractabilityToken = mIncognitoReauthTopToolbarDelegate.disableNewTabButton();
         }
     }
 
+    // TODO(crbug.com/1227656): Rename and possibly refactor the method to remove reference to
+    // Dialog.
     void hideDialogAndDestroy(@DialogDismissalCause int dismissalCause) {
         if (mShowFullScreen) {
             assert mIncognitoReauthDialog != null : "Incognito re-auth dialog doesn't exists.";
@@ -122,6 +138,12 @@ class IncognitoReauthCoordinator {
                     != null : "TabSwitcherCustomViewManager can't be null.";
             boolean success = mTabSwitcherCustomViewManager.releaseView();
             assert success : "Unable to signal removing the re-auth screen from tab switcher.";
+
+            assert mIncognitoReauthTopToolbarDelegate
+                    != null : "delegate to top toolbar can't be null";
+            assert mNewTabInteractabilityToken != null : "Top toolbar manager was not acquired.";
+            mIncognitoReauthTopToolbarDelegate.enableNewTabButton(mNewTabInteractabilityToken);
+            mNewTabInteractabilityToken = null;
         }
         destroy();
     }

@@ -25,6 +25,8 @@ public class IncognitoReauthCoordinatorFactory {
     private final @NonNull ModalDialogManager mModalDialogManager;
     private final @NonNull IncognitoReauthManager mIncognitoReauthManager;
     private final @NonNull SettingsLauncher mSettingsLauncher;
+    // This is non-null for Tabbed activity.
+    private final @Nullable IncognitoReauthTopToolbarDelegate mIncognitoReauthTopToolbarDelegate;
 
     // A callback controller to monitor the availability of {@link TabSwitcherCustomViewManager}.
     private final CallbackController mTabSwitcherCustomViewManagerController =
@@ -44,16 +46,20 @@ public class IncognitoReauthCoordinatorFactory {
      * @param tabSwitcherCustomViewManagerOneshotSupplier A {@link OneshotSupplier
      *         <TabSwitcherCustomViewManager>} that allows to communicate with tab switcher to
      *         show the re-auth screen.
+     * @param topToolbarDelegate A {@link IncognitoReauthTopToolbarDelegate} responsible for
+     *         controlling the interactability of the top toolbar elements.
      */
     public IncognitoReauthCoordinatorFactory(@NonNull Context context,
             @NonNull TabModelSelector tabModelSelector,
             @NonNull ModalDialogManager modalDialogManager,
             @NonNull SettingsLauncher settingsLauncher,
             @NonNull OneshotSupplier<TabSwitcherCustomViewManager>
-                    tabSwitcherCustomViewManagerOneshotSupplier) {
+                    tabSwitcherCustomViewManagerOneshotSupplier,
+            @Nullable IncognitoReauthTopToolbarDelegate topToolbarDelegate) {
         mContext = context;
         mTabModelSelector = tabModelSelector;
         mModalDialogManager = modalDialogManager;
+        mIncognitoReauthTopToolbarDelegate = topToolbarDelegate;
         mIncognitoReauthManager = new IncognitoReauthManager();
         mSettingsLauncher = settingsLauncher;
         tabSwitcherCustomViewManagerOneshotSupplier.onAvailable(
@@ -72,6 +78,6 @@ public class IncognitoReauthCoordinatorFactory {
             boolean showFullScreen) {
         return new IncognitoReauthCoordinator(mContext, mTabModelSelector, mModalDialogManager,
                 incognitoReauthCallback, mIncognitoReauthManager, mSettingsLauncher,
-                mTabSwitcherCustomViewManager, showFullScreen);
+                mTabSwitcherCustomViewManager, mIncognitoReauthTopToolbarDelegate, showFullScreen);
     }
 }

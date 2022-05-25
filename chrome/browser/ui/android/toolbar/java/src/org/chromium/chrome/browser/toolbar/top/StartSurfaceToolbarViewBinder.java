@@ -21,6 +21,7 @@ import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarPropert
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.INCOGNITO_TAB_COUNT_PROVIDER;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.INCOGNITO_TAB_MODEL_SELECTOR;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IS_INCOGNITO;
+import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IS_NEW_TAB_ENABLED;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IS_VISIBLE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.LOGO_IS_VISIBLE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.MENU_IS_VISIBLE;
@@ -72,6 +73,8 @@ class StartSurfaceToolbarViewBinder {
             view.setMenuButtonVisibility(model.get(MENU_IS_VISIBLE));
         } else if (propertyKey == NEW_TAB_CLICK_HANDLER) {
             view.setOnNewTabClickHandler(model.get(NEW_TAB_CLICK_HANDLER));
+        } else if (propertyKey == IS_NEW_TAB_ENABLED) {
+            view.setNewTabEnabled(model.get(IS_NEW_TAB_ENABLED));
         } else if (propertyKey == NEW_TAB_BUTTON_HIGHLIGHT) {
             view.setNewTabButtonHighlight(model.get(NEW_TAB_BUTTON_HIGHLIGHT));
         } else if (propertyKey == NEW_TAB_VIEW_IS_VISIBLE) {

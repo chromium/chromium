@@ -123,6 +123,18 @@ class StartSurfaceToolbarView extends RelativeLayout {
     }
 
     /**
+     * Sets whether the "+" new tab button view and "New tab" text is enabled or not.
+     *
+     * @param enabled The desired interactability state for the new tab button and text view.
+     */
+    void setNewTabEnabled(boolean enabled) {
+        mNewTabButton.setEnabled(enabled);
+        if (mNewTabViewWithText.getVisibility() == VISIBLE) {
+            mNewTabViewWithText.setEnabled(enabled);
+        }
+    }
+
+    /**
      * Sets the {@link OnClickListener} that will be notified when the New Tab view or New Tab
      * button is pressed.
      * @param listener The callback that will be notified when the New Tab view is pressed.

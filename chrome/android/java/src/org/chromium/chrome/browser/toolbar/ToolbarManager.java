@@ -131,6 +131,7 @@ import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
 import org.chromium.chrome.browser.toolbar.top.ToolbarPhone;
 import org.chromium.chrome.browser.toolbar.top.ToolbarTablet;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator;
+import org.chromium.chrome.browser.toolbar.top.TopToolbarInteractabilityManager;
 import org.chromium.chrome.browser.toolbar.top.ViewShiftingActionBarDelegate;
 import org.chromium.chrome.browser.ui.TabObscuringHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
@@ -1822,6 +1823,14 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
      */
     public LoadProgressCoordinator getProgressBarCoordinator() {
         return mProgressBarCoordinator;
+    }
+
+    /**
+     * @return A {@link TopToolbarInteractabilityManager} which allows non toolbar clients to toggle
+     *         the interactability of elements present in the top toolbar.
+     */
+    public @NonNull TopToolbarInteractabilityManager getTopToolbarInteractabilityManager() {
+        return mToolbar.getTopToolbarInteractabilityManager();
     }
 
     /**

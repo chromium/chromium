@@ -20,6 +20,7 @@ import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarPropert
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.INCOGNITO_TAB_COUNT_PROVIDER;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.INCOGNITO_TAB_MODEL_SELECTOR;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IS_INCOGNITO;
+import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IS_NEW_TAB_ENABLED;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IS_VISIBLE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.LOGO_IS_VISIBLE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.NEW_TAB_BUTTON_HIGHLIGHT;
@@ -275,6 +276,11 @@ class StartSurfaceToolbarMediator {
     private boolean isFakeSearchBoxScrolledToScreenTop(int fakeSearchBoxMarginToScreenTop) {
         return mPropertyModel.get(IS_VISIBLE)
                 && -mPropertyModel.get(TRANSLATION_Y) >= fakeSearchBoxMarginToScreenTop;
+    }
+
+    // Updates interactability to both New tab button "+" and New tab view text "New tab".
+    void setNewTabEnabled(boolean enabled) {
+        mPropertyModel.set(IS_NEW_TAB_ENABLED, enabled);
     }
 
     void setOnNewTabClickHandler(View.OnClickListener listener) {
