@@ -154,8 +154,21 @@ void RemoveAllWindowsFromOverview() {
   auto* overview_session =
       Shell::Get()->overview_controller()->overview_session();
   for (const auto& grid : overview_session->grid_list()) {
-    while (!grid->empty())
-      overview_session->RemoveItem(grid->window_list()[0].get());
+    while (!grid->empty()) {
+      OverviewItem* overview_item = grid->window_list()[0].get();
+
+      // We want to restore the window here primarily because when we are
+      // undoing the removal of an active desk outside of overview, we do not
+      // want those windows to still be in its overview transformation, so we
+      // need to restore the transformation of the desk's windows before we
+      // remove the respective overview items from the grid. We can also do this
+      // in the case of combining desks, as in that case we will be applying the
+      // overview transformation to the windows again when appending those
+      // windows back to the overview grid regardless of whether those windows
+      // were already in that transformation.
+      overview_item->RestoreWindow(/*reset_transform=*/true);
+      overview_session->RemoveItem(overview_item);
+    }
   }
 }
 
@@ -642,9 +655,11 @@ void DesksController::ActivateDesk(const Desk* desk, DesksSwitchSource source) {
   }
 
   if (source == DesksSwitchSource::kDeskRemoved ||
-      source == DesksSwitchSource::kRemovalUndone || is_user_switch) {
-    // Desk switches due to desks removal or user switches in a multi-profile
-    // session result in immediate desk activation without animation.
+      (source == DesksSwitchSource::kRemovalUndone && in_overview) ||
+      is_user_switch) {
+    // Desk switches due to desks removal, undoing the removal of an active desk
+    // in overview mode, or user switches in a multi-profile session result in
+    // immediate desk activation without animation.
     ActivateDeskInternal(desk, /*update_window_activation=*/!in_overview);
     return;
   }
@@ -1470,7 +1485,7 @@ void DesksController::RemoveDeskInternal(const Desk* desk,
     // windows from the overview grid which will result in removing the
     // "OverviewModeLabel" widgets created by overview mode for these windows.
     // This way the removed desk tracks only real windows, which are now ready
-    // to be moved to the target desk.
+    // to be moved to the target desk if we are combining desks.
     if (in_overview)
       RemoveAllWindowsFromOverview();
 

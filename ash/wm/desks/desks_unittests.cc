@@ -7845,6 +7845,44 @@ TEST_F(DesksCloseAllTest, CanCloseMultipleDesksInSuccessionAndUndo) {
   EXPECT_EQ(2u, controller->desks().size());
 }
 
+// Tests that an active desk's windows are restored with an identity transform
+// when it's removal is undone outside of overview mode.
+TEST_F(DesksCloseAllTest,
+       ActiveDeskWindowsAreRestoredProperlyOutsideOfOverview) {
+  WindowHolder window(CreateAppWindow());
+  NewDesk();
+  auto* controller = DesksController::Get();
+  ASSERT_EQ(2u, controller->desks().size());
+  controller->SendToDeskAtIndex(window.window(), 0);
+  Desk* desk_1 = controller->desks()[0].get();
+  Desk* desk_2 = controller->desks()[1].get();
+  ASSERT_EQ(1u, desk_1->windows().size());
+  ASSERT_EQ(0u, desk_2->windows().size());
+  ASSERT_TRUE(desk_1->is_active());
+
+  EnterOverview();
+  ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
+  EXPECT_FALSE(window.window()->transform().IsIdentity());
+
+  ClickOnCloseAllButtonForDesk(0);
+  ExitOverview();
+  ASSERT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
+
+  // Overview is destroyed asynchronously so we have to wait for it to finish.
+  base::RunLoop().RunUntilIdle();
+
+  // Clicking the undo button outside of overview triggers a desk switch
+  // animation, so we have to wait for that.
+  DeskSwitchAnimationWaiter waiter;
+  ClickOnUndoDeskRemovalButton();
+  waiter.Wait();
+  EXPECT_TRUE(window.is_valid());
+
+  // At this point, the transformation applied to the window by overview mode
+  // should have been removed by the desk removal operation.
+  EXPECT_TRUE(window.window()->transform().IsIdentity());
+}
+
 // TODO(afakhry): Add more tests:
 // - Always on top windows are not tracked by any desk.
 // - Reusing containers when desks are removed and created.
