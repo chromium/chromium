@@ -1358,7 +1358,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="229182044471402145">Não foi encontrado qualquer tipo de letra correspondente.</translation>
 <translation id="2292848386125228270">Inicie o <ph name="PRODUCT_NAME" /> como um utilizador normal. Se precisar de executar com acesso máximo para programação, volte a executar com a sinalização --no-sandbox.</translation>
 <translation id="2294081976975808113">Privacidade do ecrã</translation>
-<translation id="2294358108254308676">Pretende instalar o <ph name="PRODUCT_NAME" />?</translation>
+<translation id="2294358108254308676">Instalar o <ph name="PRODUCT_NAME" />?</translation>
 <translation id="229477815107578534">Reveja as definições</translation>
 <translation id="2295864384543949385"><ph name="NUM_RESULTS" /> resultados</translation>
 <translation id="2296022312651137376">O domínio <ph name="DOMAIN_NAME" /> requer que o dispositivo esteja online ao iniciar sessão em <ph name="EMAIL" />.</translation>
@@ -2201,7 +2201,7 @@ Pretende pará-lo?</translation>
 <translation id="3064871050034234884">Os sites podem reproduzir som</translation>
 <translation id="3065041951436100775">Comentários acerca de separador desativado.</translation>
 <translation id="3065522099314259755">Latência de repetição do teclado</translation>
-<translation id="3067198179881736288">Pretende instalar a aplicação?</translation>
+<translation id="3067198179881736288">Instalar a aplicação?</translation>
 <translation id="3067198360141518313">Executar este plug-in</translation>
 <translation id="3071624960923923138">Pode clicar aqui para abrir um novo separador</translation>
 <translation id="3072775339180057696">Permitir que o site veja o ficheiro <ph name="FILE_NAME" />?</translation>
@@ -7233,7 +7233,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="80974698889265265">Os PINs não coincidem</translation>
 <translation id="809792523045608178"><ph name="IDS_SHORT_PRODUCT_NAME" /> está a utilizar definições do proxy de uma extensão</translation>
 <translation id="8097959162767603171">Primeiro, o seu administrador tem de aceitar os Termos de Utilização na lista de dispositivos do Chrome na Consola do administrador.</translation>
-<translation id="8098156986344908134">Pretende instalar o <ph name="DEVICE_OS" /> e apagar o disco rígido?</translation>
+<translation id="8098156986344908134">Instalar o <ph name="DEVICE_OS" /> e apagar o disco rígido?</translation>
 <translation id="8098616321286360457">É necessária uma ligação de rede</translation>
 <translation id="810068641062493918"><ph name="LANGUAGE" /> selecionado. Prima Pesquisar e a tecla de espaço para desmarcar.</translation>
 <translation id="8100972288595615768">Pretende limpar os dados e as autorizações do site <ph name="SITE_NAME" />?</translation>
