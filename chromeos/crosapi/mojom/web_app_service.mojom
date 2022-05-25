@@ -6,6 +6,16 @@ module crosapi.mojom;
 
 import "chromeos/crosapi/mojom/web_app_types.mojom";
 
+// Describes an Android package associated with a web app.
+[Stable]
+struct WebAppAndroidPackage {
+  // Android package name.
+  string package_name@0;
+
+  // SHA256 fingerprint of the certificate of this Android app.
+  string sha256_fingerprint@1;
+};
+
 // Implemented in lacros-chrome. Allows ash-chrome to modify web app state in
 // lacros-chrome.
 // Next version: 1
@@ -32,7 +42,7 @@ interface WebAppProviderBridge {
 // 2) to register its own |crosapi::mojom::WebAppProviderBridge| to let
 //    ash-chrome to modify or query WebAppProvider in lacros-chrome.
 //
-// Next version: 1
+// Next version: 2
 // Next method id: 2
 [Stable, Uuid="dfa7b3f8-236f-4706-861b-98068aa5fc8f"]
 interface WebAppService {
@@ -40,4 +50,11 @@ interface WebAppService {
   // WebAppProvider in lacros-chrome.
   RegisterWebAppProviderBridge@0(
     pending_remote<WebAppProviderBridge> web_app_provider_bridge);
+
+  // Gets the information about an Android package matching this web app, if
+  // this app was installed from the Play Store. Returns null if the app was not
+  // installed from the Play Store.
+  [MinVersion=1]
+  GetAssociatedAndroidPackage@1(string web_app_id)
+    => (WebAppAndroidPackage? package);
 };
