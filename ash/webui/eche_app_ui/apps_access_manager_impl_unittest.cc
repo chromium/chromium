@@ -632,6 +632,13 @@ TEST_F(AppsAccessManagerImplTest,
   FakeSendAppsPolicyStateChange(
       eche_app::proto::AppStreamingPolicy::APP_POLICY_DISABLED);
 
+  // No action is taken until get apps access state response is received.
+  EXPECT_EQ(0u, GetNumObserverCalls());
+
+  FakeGetAppsAccessStateResponse(
+      eche_app::proto::Result::RESULT_NO_ERROR,
+      eche_app::proto::AppsAccessState::ACCESS_GRANTED);
+
   fake_multidevice_setup_client()->InvokePendingSetFeatureEnabledStateCallback(
       /*expected_feature=*/Feature::kEche,
       /*expected_enabled=*/false, /*expected_auth_token=*/absl::nullopt,

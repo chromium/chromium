@@ -150,9 +150,14 @@ void AppsAccessManagerImpl::OnAppPolicyStateChange(
   if (current_app_policy_state_ == app_policy_state)
     return;
   current_app_policy_state_ = app_policy_state;
-  AccessStatus access_status = ComputeAppsAccessState();
-  UpdateFeatureEnabledState(access_status);
-  SetAccessStatusInternal(access_status);
+
+  // We only notify policy state after we also query access status from the
+  // remote phone.
+  if (initialized_) {
+    AccessStatus access_status = ComputeAppsAccessState();
+    UpdateFeatureEnabledState(access_status);
+    SetAccessStatusInternal(access_status);
+  }
 }
 
 void AppsAccessManagerImpl::OnFeatureStatusChanged() {
