@@ -4306,7 +4306,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-openscreen-cast-streaming-session",
      flag_descriptions::kOpenscreenCastStreamingSessionName,
      flag_descriptions::kOpenscreenCastStreamingSessionDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(media::kOpenscreenCastStreamingSession)},
+     FEATURE_VALUE_TYPE(mirroring::features::kOpenscreenCastStreamingSession)},
 
     {"enable-cast-streaming-av1", flag_descriptions::kCastStreamingAv1Name,
      flag_descriptions::kCastStreamingAv1Description, kOsDesktop,
