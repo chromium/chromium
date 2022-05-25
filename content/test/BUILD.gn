@@ -1680,28 +1680,28 @@ test("content_browsertests") {
     }
   }
 
-  if (is_android || is_linux || is_chromeos || is_mac || is_win) {
-    sources += [
-      "../browser/media/capture/content_capture_device_browsertest_base.cc",
-      "../browser/media/capture/content_capture_device_browsertest_base.h",
-      "../browser/media/capture/fake_video_capture_stack.cc",
-      "../browser/media/capture/fake_video_capture_stack.h",
-      "../browser/media/capture/frame_test_util.cc",
-      "../browser/media/capture/frame_test_util.h",
-      "../browser/media/capture/web_contents_video_capture_device_browsertest.cc",
-    ]
+  if (enable_screen_capture) {
+    if (is_android || is_linux || is_chromeos || is_mac || is_win) {
+      sources += [
+        "../browser/media/capture/content_capture_device_browsertest_base.cc",
+        "../browser/media/capture/content_capture_device_browsertest_base.h",
+        "../browser/media/capture/fake_video_capture_stack.cc",
+        "../browser/media/capture/fake_video_capture_stack.h",
+        "../browser/media/capture/frame_test_util.cc",
+        "../browser/media/capture/frame_test_util.h",
+        "../browser/media/capture/web_contents_video_capture_device_browsertest.cc",
+      ]
 
-    data += [ "$root_out_dir/content_shell.pak" ]
-  }
+      data += [ "$root_out_dir/content_shell.pak" ]
+    }
 
-  if (is_linux || is_chromeos || is_mac || is_win) {
-    sources += [
-      "../browser/media/capture/mouse_cursor_overlay_controller_browsertest.cc",
-    ]
+    if (is_linux || is_chromeos || is_mac || is_win) {
+      sources += [ "../browser/media/capture/mouse_cursor_overlay_controller_browsertest.cc" ]
 
-    # For chromecast, content_browsertests does not provide a shell window.
-    if (use_aura && !is_chromecast) {
-      sources += [ "../browser/media/capture/aura_window_video_capture_device_browsertest.cc" ]
+      # For chromecast, content_browsertests does not provide a shell window.
+      if (use_aura && !is_chromecast) {
+        sources += [ "../browser/media/capture/aura_window_video_capture_device_browsertest.cc" ]
+      }
     }
   }
 

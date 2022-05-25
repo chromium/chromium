@@ -84,6 +84,8 @@ std::unique_ptr<media::VideoCaptureJpegDecoder> CreateGpuJpegDecoder(
 // not on hardware performance.
 const int kMaxNumberOfBuffers = media::kVideoCaptureDefaultMaxBufferPoolSize;
 
+#if BUILDFLAG(ENABLE_SCREEN_CAPTURE)
+
 #if BUILDFLAG(IS_MAC)
 const base::Feature kDesktopCaptureMacV2{"DesktopCaptureMacV2",
                                          base::FEATURE_ENABLED_BY_DEFAULT};
@@ -91,8 +93,6 @@ const base::Feature kDesktopCaptureMacV2{"DesktopCaptureMacV2",
 const base::Feature kScreenCaptureKitMac{"ScreenCaptureKitMac",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
-
-#if BUILDFLAG(ENABLE_SCREEN_CAPTURE)
 
 void IncrementDesktopCaptureCounters(const DesktopMediaID& device_id) {
   switch (device_id.type) {
@@ -289,15 +289,14 @@ void InProcessVideoCaptureDeviceLauncher::LaunchDeviceAsync(
     }
 #endif  // BUILDFLAG(ENABLE_SCREEN_CAPTURE)
 
-    default: {
-      NOTIMPLEMENTED();
-      std::move(after_start_capture_callback).Run(nullptr);
-      return;
-    }
+    default:
+      NOTREACHED() << "unsupported stream type=" << stream_type;
+      start_capture_closure =
+          base::BindOnce(std::move(after_start_capture_callback), nullptr);
   }
 
-  device_task_runner_->PostTask(FROM_HERE, std::move(start_capture_closure));
   state_ = State::DEVICE_START_IN_PROGRESS;
+  device_task_runner_->PostTask(FROM_HERE, std::move(start_capture_closure));
 }
 
 void InProcessVideoCaptureDeviceLauncher::AbortLaunch() {
