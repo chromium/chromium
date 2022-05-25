@@ -42,6 +42,7 @@ EXTRA_PATHS = [
 EXTRA_PATHS.append(GPU_DIR)
 
 FILES_AND_DIRECTORIES_TO_CHECK = [
+    'flake_suppressor',
     'gpu_tests',
 ]
 

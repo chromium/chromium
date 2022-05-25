@@ -3,19 +3,21 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import typing
 import unittest
 
 from flake_suppressor import data_types
 
 
 class ExpectationUnittest(unittest.TestCase):
-  def testAppliesToResultNonResult(self):
+  def testAppliesToResultNonResult(self) -> None:
     """Tests that AppliesToResult properly fails when given a non-Result."""
     e = data_types.Expectation('test', ['win', 'nvidia'], ['Failure'])
+    fake_result = typing.cast(data_types.Result, None)
     with self.assertRaises(AssertionError):
-      e.AppliesToResult(None)
+      e.AppliesToResult(fake_result)
 
-  def testAppliesToResultApplies(self):
+  def testAppliesToResultApplies(self) -> None:
     """Tests that AppliesToResult properly returns True on expected Results."""
     # Exact match.
     e = data_types.Expectation('test', ['win', 'nvidia'], ['Failure'])
@@ -28,7 +30,7 @@ class ExpectationUnittest(unittest.TestCase):
     e = data_types.Expectation('t*', ['win', 'nvidia'], ['Failure'])
     self.assertTrue(e.AppliesToResult(r))
 
-  def testAppliesToResultDoesNotApply(self):
+  def testAppliesToResultDoesNotApply(self) -> None:
     """Tests that AppliesToResult properly returns False on expected Results."""
     # Name mismatch
     e = data_types.Expectation('test', ['win', 'nvidia'], ['Failure'])
@@ -40,21 +42,22 @@ class ExpectationUnittest(unittest.TestCase):
 
 
 class ResultUnittest(unittest.TestCase):
-  def testTupleEnforced(self):
+  def testTupleEnforced(self) -> None:
     """Tests that tags must be in a tuple."""
+    fake_tuple = typing.cast(tuple, ['win', 'nvidia'])
     with self.assertRaises(AssertionError):
-      _ = data_types.Result('suite', 'test', ['win', 'nvidia'], 'id')
+      _ = data_types.Result('suite', 'test', fake_tuple, 'id')
 
-  def testWildcardsDisallowed(self):
+  def testWildcardsDisallowed(self) -> None:
     with self.assertRaises(AssertionError):
       _ = data_types.Result('suite', 't*', ('win', 'nvidia'), 'id')
 
-  def testHashability(self):  # pylint: disable=no-self-use
+  def testHashability(self) -> None:  # pylint: disable=no-self-use
     """Tests that Result objects are hashable."""
     r = data_types.Result('suite', 'test', ('win', 'nvidia'), 'id')
     _ = set([r])
 
-  def testEquality(self):
+  def testEquality(self) -> None:
     """Tests that equality is properly calculated."""
     r = data_types.Result('suite', 'test', ('win', 'nvidia'), 'id')
     other = data_types.Result('suite', 'test', ('win', 'nvidia'), 'id')
