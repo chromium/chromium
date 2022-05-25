@@ -166,22 +166,37 @@ def _CheckStyle(input_api, output_api):
     style_checker_path = input_api.os_path.join(input_api.PresubmitLocalPath(),
                                                 'tools',
                                                 'check_blink_style.py')
-    args = [input_api.python_executable, style_checker_path, '--diff-files']
-    args += files
-
+    # When running git cl presubmit --all this presubmit may be asked to check
+    # ~260 files, leading to a command line that is about 17,000 characters.
+    # This goes past the Windows 8191 character cmd.exe limit and causes cryptic
+    # failures. To avoid these we break the command up into smaller pieces.
+    # Depending on how long the command is on Windows the error may be:
+    #     The command line is too long.
+    # Or it may be:
+    #     OSError: Execution failed with error: [WinError 206] The filename or
+    #     extension is too long.
+    # The latter error comes from CreateProcess hitting its 32768 character
+    # limit.
+    files_per_command = 70 if input_api.is_windows else 1000
     results = []
-    try:
-        child = input_api.subprocess.Popen(args,
-                                           stderr=input_api.subprocess.PIPE)
-        _, stderrdata = child.communicate()
-        if child.returncode != 0:
+    for i in range(0, len(files), files_per_command):
+        args = [
+            input_api.python_executable, style_checker_path, '--diff-files'
+        ]
+        args += files[i:i + files_per_command]
+
+        try:
+            child = input_api.subprocess.Popen(
+                args, stderr=input_api.subprocess.PIPE)
+            _, stderrdata = child.communicate()
+            if child.returncode != 0:
+                results.append(
+                    output_api.PresubmitError('check_blink_style.py failed',
+                                              [stderrdata]))
+        except Exception as e:
             results.append(
-                output_api.PresubmitError('check_blink_style.py failed',
-                                          [stderrdata]))
-    except Exception as e:
-        results.append(
-            output_api.PresubmitNotifyResult(
-                'Could not run check_blink_style.py', [str(e)]))
+                output_api.PresubmitNotifyResult(
+                    'Could not run check_blink_style.py', [str(e)]))
 
     return results
 
