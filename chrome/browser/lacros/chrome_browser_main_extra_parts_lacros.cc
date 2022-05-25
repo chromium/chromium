@@ -111,14 +111,14 @@ void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {
   desk_template_client_ = std::make_unique<DeskTemplateClientLacros>();
   download_controller_client_ =
       std::make_unique<DownloadControllerClientLacros>();
-  task_manager_provider_ = std::make_unique<crosapi::TaskManagerLacros>();
+  file_system_provider_ = std::make_unique<LacrosFileSystemProvider>();
   kiosk_session_service_ = std::make_unique<KioskSessionServiceLacros>();
-  web_page_info_provider_ =
-      std::make_unique<crosapi::WebPageInfoProviderLacros>();
   screen_orientation_delegate_ =
       std::make_unique<ScreenOrientationDelegateLacros>();
   search_controller_ = std::make_unique<crosapi::SearchControllerLacros>();
-  file_system_provider_ = std::make_unique<LacrosFileSystemProvider>();
+  task_manager_provider_ = std::make_unique<crosapi::TaskManagerLacros>();
+  web_page_info_provider_ =
+      std::make_unique<crosapi::WebPageInfoProviderLacros>();
 
   memory_pressure::MultiSourceMemoryPressureMonitor* monitor =
       static_cast<memory_pressure::MultiSourceMemoryPressureMonitor*>(
