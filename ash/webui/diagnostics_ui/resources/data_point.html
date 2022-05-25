@@ -19,7 +19,10 @@
   }
 
   .header {
-    @apply --diagnostics-data-point-title-font;
+    color: var(--diagnostics-data-point-title-color);
+    font-family: var(--diagnostics-roboto-font-family);
+    font-size: var(--diagnostics-data-point-title-font-size);
+    font-weight: var(--diagnostics-regular-font-weight);
   }
 
   :host([orientation=horizontal]) .header {
@@ -41,7 +44,10 @@
   }
 
   .value {
-    @apply --diagnostics-data-point-subtitle-font;
+    color: var(--diagnostics-data-point-subtitle-color);
+    font-family: var(--diagnostics-roboto-font-family);
+    font-size: var(--diagnostics-data-point-subtitle-font-size);
+    font-weight: var(--diagnostics-regular-font-weight);
     word-wrap: break-word;
   }
 

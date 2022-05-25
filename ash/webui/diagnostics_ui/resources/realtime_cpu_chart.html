@@ -11,8 +11,10 @@
 
   g.tick text {
     color: var(--cros-color-secondary);
+    font-family: var(--diagnostics-roboto-font-family);
+    font-size: var(--diagnostics-chart-tick-font-size);
+    font-weight: var(--diagnostics-regular-font-weight);
     line-height: 18px;
-    @apply --diagnostics-chart-tick-font;
   }
 
   path.domain {
@@ -51,9 +53,12 @@
   }
 
   #chart-legend {
-    text-align: right;
-    @apply --diagnostics-chart-legend-font;
+    color: var(--diagnostics-chart-legend-color);
+    font-family: var(--diagnostics-roboto-font-family);
+    font-size: var(--diagnostics-chart-legend-font-size);
+    font-weight: var(--diagnostics-regular-font-weight);
     padding-right: 5px;
+    text-align: right;
   }
 
   #chart-legend > .divider {

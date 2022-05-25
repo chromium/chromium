@@ -1,6 +1,9 @@
 <style include="diagnostics-shared">
   #additionalMessage {
-    @apply --diagnostics-routine-additional-message-font;
+    color: var(--diagnostics-routine-additional-message-color);
+    font-family: var(--diagnostics-roboto-font-family);
+    font-size: var(--diagnostics-routine-additional-message-font-size);
+    font-weight: var(--diagnostics-regular-font-weight);
   }
 
   .button-container {
@@ -47,7 +50,10 @@
   }
 
   #testStatusText {
-    @apply --diagnostics-test-status-text-font;
+    color: var(--diagnostics-test-status-text-color);
+    font-family: var(--diagnostics-roboto-font-family);
+    font-size: var(--diagnostics-test-status-text-font-size);
+    font-weight: var(--diagnostics-regular-font-weight);
     padding-inline-start: 6px;
   }
 
