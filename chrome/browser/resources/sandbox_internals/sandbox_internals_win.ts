@@ -2,98 +2,86 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 import {$} from 'chrome://resources/js/util.m.js';
 
-/**
- * @typedef {{
- *   name: string,
- *   enabled: boolean,
- * }}
- */
-let SandboxFeature;
+type SandboxFeature = {
+  name: string,
+  enabled: boolean,
+};
 
-/**
- * @typedef {{
- *   processId: number,
- *   processType: string,
- *   name: string,
- *   metricsName: string,
- *   sandboxType: string
- * }}
- */
-let BrowserHostProcess;
+type BrowserHostProcess = {
+  processId: number,
+  processType: string,
+  name: string,
+  metricsName: string,
+  sandboxType: string,
+};
 
-/**
- * @typedef {{
- *   processId: number
- * }}
- */
-let RendererHostProcess;
+type RendererHostProcess = {
+  processId: number,
+};
 
 /**
  * This may have additional fields displayed in the JSON output.
  * See //sandbox/win/src/sandbox_constants.cc for keys in policy.
- * @typedef {{
- *   processId: number,
- *   lockdownLevel: string,
- *   desiredIntegrityLevel: string,
- *   platformMitigations: string,
- *   componentFilters: string
- * }}
  */
-let PolicyDiagnostic;
+type PolicyDiagnostic = {
+  appContainerCapabilities: string[],
+  appContainerSid: string,
+  componentFilters: string,
+  desiredIntegrityLevel: string,
+  lockdownLevel: string,
+  lowboxSid: string,
+  platformMitigations: string,
+  processId: number,
+};
 
-/**
- * @typedef {{
- *   browser: !Array<!BrowserHostProcess>,
- *   renderer: !Array<!RendererHostProcess>,
- *   policies: !Array<!PolicyDiagnostic>,
- *   features: !Array<!SandboxFeature>
- * }}
- */
-let SandboxDiagnostics;
+type SandboxDiagnostics = {
+  browser: BrowserHostProcess[],
+  renderer: RendererHostProcess[],
+  policies: PolicyDiagnostic[],
+  features: SandboxFeature[],
+};
 
 /**
  * Represents a mitigation field from the PROCESS_CREATION_MITITAGION_POLICY*
  * series in Winbase.h.
  */
-class MitigationField {
+abstract class MitigationField {
+  mitigation: string;
+  value: number;
+  mask: number;
+  offset: number;
+
   /**
    * mask & value must be 0<=x<=255.
-   * @param {string} mitigation human name of mitigation.
-   * @param {number} value value to match within mask.
-   * @param {number} mask applied before matching.
-   * @param {number} offset within PC section.
+   * @param mitigation human name of mitigation.
+   * @param value value to match within mask.
+   * @param mask applied before matching.
+   * @param offset within PC section.
    */
-  constructor(mitigation, value, mask, offset) {
-    /** @type {string} */
+  constructor(mitigation: string, value: number, mask: number, offset: number) {
     this.mitigation = mitigation;
-    /** @type {number} */
     this.value = value;
-    /** @type {number} */
     this.mask = mask;
-    /** @type {number} */
     this.offset = offset;
   }
 
   /**
    * Each PC field overrides this as they know where their data is.
-   * @param {Uint8Array} bytes platform mitigations data.
-   * @return {Uint8Array} chunk containing this field or null.
+   * @param bytes platform mitigations data.
+   * @return chunk containing this field or null.
    */
-  getFieldData(bytes) {
-    assertNotReached();
-  }
+  abstract getFieldData(bytes: Uint8Array): Uint8Array|null;
 
   /**
    * Are all the bits of this field set in the mitigations represented by
    * |bytes|.
-   * @param {Uint8Array} bytes platform mitigations.
-   * @return {boolean}
+   * @param bytes platform mitigations.
    */
-  isFieldSet(bytes) {
+  isFieldSet(bytes: Uint8Array): boolean {
     if (bytes.length !== 4 && bytes.length !== 8 && bytes.length !== 16) {
       throw new Error('Platform mitigations has unexpected size');
     }
@@ -103,7 +91,7 @@ class MitigationField {
     }
     const idx = subfield.length - 1 - Math.floor(this.offset / 8);
     const ibit = this.offset % 8;
-    return (subfield[idx] & (this.mask << ibit)) === (this.value << ibit);
+    return (subfield[idx]! & (this.mask << ibit)) === (this.value << ibit);
   }
 }
 
@@ -112,10 +100,10 @@ class MitigationField {
  */
 class PC0Field extends MitigationField {
   /**
-   * @param {Uint8Array} bytes platform mitigations data.
-   * @return {Uint8Array} chunk containing this field or null.
+   * @param bytes platform mitigations data.
+   * @return chunk containing this field or null.
    */
-  getFieldData(bytes) {
+  getFieldData(bytes: Uint8Array): Uint8Array {
     if (bytes.length === 4) {
       // Win32 only 4 bytes of fields.
       return bytes;
@@ -131,8 +119,7 @@ class PC0Field extends MitigationField {
  * PROCESS_CREATION_MITIGATION_POLICY_*
  */
 class PC1Field extends MitigationField {
-  /** @override */
-  getFieldData(bytes) {
+  getFieldData(bytes: Uint8Array) {
     if (bytes.length === 8) {
       return bytes;
     } else if (bytes.length === 16) {
@@ -146,8 +133,7 @@ class PC1Field extends MitigationField {
  * PROCESS_CREATION_MITIGATION_POLICY2_*
  */
 class PC2Field extends MitigationField {
-  /** @override */
-  getFieldData(bytes) {
+  getFieldData(bytes: Uint8Array) {
     if (bytes.length === 8) {
       return null;
     } else if (bytes.length === 16) {
@@ -162,8 +148,9 @@ class PC2Field extends MitigationField {
   representation of PROCESS_CREATION_MITIGATION_POLICY_* entries.
  */
 class DecodeMitigations {
+  fields: MitigationField[];
+
   constructor() {
-    /* @typedef {{Array<MitigationField>}} */
     this.fields = [
       // Defined in Windows.h from Winbase.h
       // basic (pc0) mitigations in {win7},{lsb of pc1}.
@@ -262,10 +249,10 @@ class DecodeMitigations {
   }
 
   /**
-   * @param {string} str Hex encoded data.
-   * @return {Uint8Array} bytes Decoded bytes.
+   * @param str Hex encoded data.
+   * @return bytes Decoded bytes.
    */
-  parseHexString(str) {
+  parseHexString(str: string): Uint8Array {
     assert((str.length % 2 === 0), 'str must have even length');
     const bytes = new Uint8Array(str.length / 2);
     for (let idx = 0; idx < str.length / 2; idx++) {
@@ -277,10 +264,10 @@ class DecodeMitigations {
   /**
    * Return a list of platform mitigation which are set in |mitigations|.
    * Mitigations will be in the same order as Winbase.h.
-   * @param {string} mitigations Hex encoded process mitigation flags.
-   * @return {!Array<string>} Matched mitigation values.
+   * @param mitigations Hex encoded process mitigation flags.
+   * @return Matched mitigation values.
    */
-  enabledMitigations(mitigations) {
+  enabledMitigations(mitigations: string): string[] {
     const bytes = this.parseHexString(mitigations);
     const output = [];
     for (const item of this.fields) {
@@ -294,7 +281,7 @@ class DecodeMitigations {
 
 const DECODE_MITIGATIONS = new DecodeMitigations();
 
-const WELL_KNOWN_SIDS = {
+const WELL_KNOWN_SIDS: {[sid: string]: string} = {
   'S-1-15-3-1': 'InternetClient',
   'S-1-15-3-2': 'InternetClientServer',
   'S-1-15-3-3': 'PrivateNetworkClientServer',
@@ -337,21 +324,18 @@ const WELL_KNOWN_SIDS = {
 
 /**
  * Maps capabilities to well known values.
- * @param {string}
- * @return {string}
  */
-function mapCapabilitySid(sid) {
+function mapCapabilitySid(sid: string): string {
   if (WELL_KNOWN_SIDS[sid]) {
-    return WELL_KNOWN_SIDS[sid];
+    return WELL_KNOWN_SIDS[sid]!;
   }
   return sid;
 }
 
 /**
  * Adds a row to the sandbox-status table.
- * @param {!Array<Node>} args
  */
-function addRow(args) {
+function addRow(args: Node[]) {
   const row = document.createElement('tr');
   for (const td of args) {
     row.appendChild(td);
@@ -361,10 +345,8 @@ function addRow(args) {
 
 /**
  * Makes a <td> containing arg as textContent.
- * @param {string} textContent
- * @return {Node}
  */
-function makeTextEntry(textContent) {
+function makeTextEntry(textContent: string): Node {
   const col = document.createElement('td');
   col.textContent = textContent;
   return col;
@@ -372,10 +354,8 @@ function makeTextEntry(textContent) {
 
 /**
  * Makes a <td> containing formatted component filter flags.
- * @param {PolicyDiagnostic} policy
- * @return {Node}
  */
-function makeComponentFilterEntry(policy) {
+function makeComponentFilterEntry(policy: PolicyDiagnostic): Node {
   const fixed = document.createElement('div');
   fixed.classList.add('mitigations');
   fixed.innerText = policy.componentFilters;
@@ -386,11 +366,8 @@ function makeComponentFilterEntry(policy) {
 
 /**
  * Makes an expandable <td> containing arg as textContent.
- * @param {string} mainEntry is always shown
- * @param {Object} expandable
- * @return {Node}
  */
-function makeExpandableEntry(mainEntry, expandable) {
+function makeExpandableEntry(mainEntry: string, expandable: Expandable): Node {
   const button = document.createElement('div');
   const expand = document.createElement('div');
   button.innerText = '\u2795';  // (+)
@@ -413,41 +390,66 @@ function makeExpandableEntry(mainEntry, expandable) {
   return col;
 }
 
+abstract class Expandable {
+  expanded: boolean = false;
+
+  onClick(col: HTMLElement): boolean {
+    this.expanded = !this.expanded;
+    col.innerText = this.getText();
+    return this.expanded;
+  }
+
+  abstract getText(): string;
+}
+
+class MitigationEntryExpandable extends Expandable {
+  mitigations: string;
+
+  constructor(mitigations: string) {
+    super();
+    this.mitigations = mitigations;
+  }
+
+  override getText(): string {
+    if (this.expanded) {
+      return DECODE_MITIGATIONS.enabledMitigations(this.mitigations).join('\n');
+    } else {
+      return '';
+    }
+  }
+}
+
+class AppContainerEntryExpandable extends Expandable {
+  caps: string[];
+
+  constructor(caps: string[]) {
+    super();
+    this.caps = caps;
+  }
+
+  override getText(): string {
+    if (this.expanded) {
+      return this.caps.map(mapCapabilitySid).sort().join('\n');
+    } else {
+      return '';
+    }
+  }
+}
+
 /**
  * Adds a mitigations entry that can expand to show friendly names of the
  * mitigations.
- * @param {string} platformMitigations
- * @return {Node}
- * @suppress {globalThis}
  */
-function makeMitigationEntry(platformMitigations) {
-  const expander = {
-    expanded: false,
-    mitigations: platformMitigations,
-    onClick: function(col) {
-      this.expanded = !this.expanded;
-      col.innerText = this.getText();
-      return this.expanded;
-    },
-    getText: function() {
-      if (this.expanded) {
-        return DECODE_MITIGATIONS.enabledMitigations(this.mitigations)
-            .join('\n');
-      } else {
-        return '';
-      }
-    }
-  };
+function makeMitigationEntry(platformMitigations: string): Node {
+  const expander = new MitigationEntryExpandable(platformMitigations);
   return makeExpandableEntry(platformMitigations, expander);
 }
 
 /**
  * Formats a lowbox sid or appcontainer configuration (policies can only
  * have one or the other).
- * @param {PolicyDiagnostic} policy
- * @return {Node}
  */
-function makeLowboxAcEntry(policy) {
+function makeLowboxAcEntry(policy: PolicyDiagnostic): Node {
   if (policy.lowboxSid) {
     // Lowbox token does not have capabilities but should match AC entries.
     const fixed = document.createElement('div');
@@ -459,22 +461,8 @@ function makeLowboxAcEntry(policy) {
   }
   if (policy.appContainerSid) {
     // AC has identifying SID plus lockdown capabilities.
-    const expander = {
-      expanded: false,
-      caps: policy.appContainerCapabilities,
-      onClick: function(col) {
-        this.expanded = !this.expanded;
-        col.innerText = this.getText();
-        return this.expanded;
-      },
-      getText: function() {
-        if (this.expanded) {
-          return this.caps.map(mapCapabilitySid).sort().join('\n');
-        } else {
-          return '';
-        }
-      }
-    };
+    const expander =
+        new AppContainerEntryExpandable(policy.appContainerCapabilities);
     return makeExpandableEntry(policy.appContainerSid, expander);
   }
   return makeTextEntry('');
@@ -482,17 +470,14 @@ function makeLowboxAcEntry(policy) {
 
 /**
  * Adds policy information for a process to the sandbox-status table.
- * @param {number} pid
- * @param {string} type
- * @param {string} name
- * @param {string} sandbox
- * @param {PolicyDiagnostic} policy
  */
-function addRowForProcess(pid, type, name, sandbox, policy) {
+function addRowForProcess(
+    pid: number, type: string, name: string, sandbox: string,
+    policy: PolicyDiagnostic) {
   if (policy) {
     // Text-only items.
     const entries = [
-      pid, type, name, sandbox, policy.lockdownLevel,
+      String(pid), type, name, sandbox, policy.lockdownLevel,
       policy.desiredIntegrityLevel
     ].map(makeTextEntry);
     entries.push(makeMitigationEntry(policy.platformMitigations));
@@ -500,16 +485,14 @@ function addRowForProcess(pid, type, name, sandbox, policy) {
     entries.push(makeLowboxAcEntry(policy));
     addRow(entries);
   } else {
-    addRow([pid, type, name, 'Not Sandboxed', '', '', '', '', ''].map(
+    addRow([String(pid), type, name, 'Not Sandboxed', '', '', '', '', ''].map(
         makeTextEntry));
   }
 }
 
-/** @param {!SandboxDiagnostics} results */
-function onGetSandboxDiagnostics(results) {
+function onGetSandboxDiagnostics(results: SandboxDiagnostics) {
   // Make it easy to look up policies.
-  /** @type {!Map<number,!PolicyDiagnostic>} */
-  const policies = new Map();
+  const policies: Map<number, PolicyDiagnostic> = new Map();
   for (const policy of results.policies) {
     policies.set(policy.processId, policy);
   }
@@ -525,13 +508,14 @@ function onGetSandboxDiagnostics(results) {
     const pid = process.processId;
     const name = process.name || process.metricsName;
     addRowForProcess(
-        pid, process.processType, name, process.sandboxType, policies.get(pid));
+        pid, process.processType, name, process.sandboxType, policies.get(pid)!
+    );
   }
 
   // Renderer Processes.
   for (const process of results.renderer) {
     const pid = process.processId;
-    addRowForProcess(pid, 'Renderer', '', 'Renderer', policies.get(pid));
+    addRowForProcess(pid, 'Renderer', '', 'Renderer', policies.get(pid)!);
   }
 
   // Raw Diagnostics.

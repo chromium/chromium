@@ -7716,6 +7716,10 @@ grit("dev_ui_browser_resources") {
   if (is_android) {
     deps += [ "//chrome/browser/ui/webui/feed_internals:mojo_bindings_js" ]
   }
+
+  if (is_android || is_linux || is_chromeos || is_win) {
+    deps += [ "//chrome/browser/resources/sandbox_internals:build_ts" ]
+  }
 }
 
 action("expired_flags_list_gen") {

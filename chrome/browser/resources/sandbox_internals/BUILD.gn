@@ -2,33 +2,34 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/typescript/ts_library.gni")
 
-js_type_check("closure_compile") {
-  if (is_win) {
-    deps = [ ":sandbox_internals_win" ]
+assert(is_android || is_linux || is_chromeos || is_win)
+
+preprocess_folder = "preprocessed"
+
+if (is_win) {
+  ts_files = [ "sandbox_internals_win.ts" ]
+} else {
+  ts_files = [ "sandbox_internals.ts" ]
+}
+
+preprocess_if_expr("preprocess") {
+  in_folder = "."
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  in_files = ts_files
+}
+
+ts_library("build_ts") {
+  root_dir = "$target_gen_dir/$preprocess_folder"
+  out_dir = "$target_gen_dir/tsc"
+  in_files = ts_files
+
+  if (is_android) {
+    definitions = [ "./sandbox_android.d.ts" ]
   }
-  if (is_android || is_linux || is_chromeos) {
-    deps = [ ":sandbox_internals" ]
-  }
-}
 
-js_library("sandbox_internals") {
-  # Android & Linux both need _externs for type checks as they share a js file.
-  deps = [
-    ":sandbox_android_externs",
-    "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js:util.m",
-  ]
-}
-
-js_library("sandbox_android_externs") {
-}
-
-js_library("sandbox_internals_win") {
-  deps = [
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:util.m",
-  ]
+  deps = [ "//ui/webui/resources:library" ]
+  extra_deps = [ ":preprocess" ]
 }

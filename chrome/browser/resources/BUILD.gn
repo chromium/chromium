@@ -135,9 +135,6 @@ if (enable_js_type_check) {
         "usb_internals:closure_compile",
       ]
     }
-    if (is_win || is_android || is_linux || is_chromeos) {
-      deps += [ "sandbox_internals:closure_compile" ]
-    }
     if (is_chromeos_ash) {
       deps += [
         "chromeos:closure_compile",

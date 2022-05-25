@@ -2,32 +2,33 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {$} from 'chrome://resources/js/util.m.js';
-
 // <if expr="is_linux or chromeos_ash or chromeos_lacros">
 import './strings.m.js';
+
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 // </if>
 
+import {$} from 'chrome://resources/js/util.m.js';
+
 /**
  * CSS classes for different statuses.
- * @enum {string}
  */
-const StatusClass = {
-  GOOD: 'good',
-  BAD: 'bad',
-  MEDIUM: 'medium',
-  INFO: 'info'
-};
+enum StatusClass {
+  GOOD = 'good',
+  BAD = 'bad',
+  MEDIUM = 'medium',
+  INFO = 'info',
+}
 
 /**
  * Adds a row to the sandbox status table.
- * @param {string} name The name of the status item.
- * @param {string} value The status of the item.
- * @param {string?} cssClass A CSS class to apply to the row.
- * @return {Element} The newly added TR.
+ * @param name The name of the status item.
+ * @param value The status of the item.
+ * @param cssClass A CSS class to apply to the row.
+ * @return The newly added TR.
  */
-function addStatusRow(name, value, cssClass) {
+function addStatusRow(
+    name: string, value: string, cssClass: StatusClass|null): HTMLElement {
   const row = document.createElement('tr');
 
   const nameCol = row.appendChild(document.createElement('td'));
@@ -46,21 +47,9 @@ function addStatusRow(name, value, cssClass) {
 }
 
 /**
- * Adds a status row that reports either Yes or No.
- * @param {string} name The name of the status item.
- * @param {boolean} result The status (good/bad) result.
- * @return {Element} The newly added TR.
- */
-function addGoodBadRow(name, result) {
-  return addStatusRow(
-      name, result ? 'Yes' : 'No', result ? StatusClass.GOOD : StatusClass.BAD);
-}
-
-/**
  * Reports the overall sandbox status evaluation message.
- * @param {boolean} result
  */
-function setEvaluation(result) {
+function setEvaluation(result: boolean) {
   const message = result ? 'You are adequately sandboxed.' :
                            'You are NOT adequately sandboxed.';
   $('evaluation').innerText = message;
@@ -71,7 +60,7 @@ function setEvaluation(result) {
  * Main page handler for Android.
  */
 function androidHandler() {
-  chrome.getAndroidSandboxStatus((status) => {
+  chrome.getAndroidSandboxStatus(status => {
     let isIsolated = false;
     let isTsync = false;
     let isChromeSeccomp = false;
@@ -86,7 +75,7 @@ function androidHandler() {
     const procStatus = status.procStatus.split('\n');
     for (const line of procStatus) {
       if (line.startsWith('Seccomp')) {
-        let value = line.split(':')[1].trim();
+        let value = line.split(':')[1]!.trim();
         let cssClass = StatusClass.BAD;
         if (value === '2') {
           value = 'Yes - TSYNC (' + line + ')';
@@ -133,6 +122,18 @@ function androidHandler() {
 // </if>
 
 // <if expr="is_linux or chromeos_ash or chromeos_lacros">
+
+/**
+ * Adds a status row that reports either Yes or No.
+ * @param name The name of the status item.
+ * @param result The status (good/bad) result.
+ * @return The newly added TR.
+ */
+function addGoodBadRow(name: string, result: boolean): HTMLElement {
+  return addStatusRow(
+      name, result ? 'Yes' : 'No', result ? StatusClass.GOOD : StatusClass.BAD);
+}
+
 /**
  * Main page handler for desktop Linux.
  */
