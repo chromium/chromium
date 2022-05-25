@@ -95,17 +95,22 @@ void PolicyStatusProvider::GetStatusFromCore(const CloudPolicyCore* core,
       refresh_scheduler ? refresh_scheduler->GetActualRefreshDelay()
                         : CloudPolicyRefreshScheduler::kDefaultRefreshDelayMs);
 
+  const bool is_push_available =
+      refresh_scheduler && refresh_scheduler->invalidations_available();
+
   bool no_error = store->status() == CloudPolicyStore::STATUS_OK && client &&
                   client->status() == DM_STATUS_SUCCESS;
   dict->SetBoolKey("error", !no_error);
-  dict->SetBoolKey(
-      "policiesPushAvailable",
-      refresh_scheduler ? refresh_scheduler->invalidations_available() : false);
+  dict->SetBoolKey("policiesPushAvailable", is_push_available);
   dict->SetStringKey("status", status);
-  dict->SetStringKey(
-      "refreshInterval",
-      ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_DURATION,
-                             ui::TimeFormat::LENGTH_SHORT, refresh_interval));
+  // If push is on, policy update will be done via push. Hide policy fetch
+  // interval label to prevent users from misunderstanding.
+  if (!is_push_available) {
+    dict->SetStringKey(
+        "refreshInterval",
+        ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_DURATION,
+                               ui::TimeFormat::LENGTH_SHORT, refresh_interval));
+  }
   base::Time last_refresh_time =
       policy && policy->has_timestamp()
           ? base::Time::FromJavaTime(policy->timestamp())

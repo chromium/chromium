@@ -189,7 +189,9 @@ StatusBox.prototype = {
     }
 
     if (scope !== 'updater') {
-      this.setLabelAndShow_('.refresh-interval', status.refreshInterval);
+      if (status.refreshInterval) {
+        this.setLabelAndShow_('.refresh-interval', status.refreshInterval);
+      }
       this.setLabelAndShow_('.status', status.status);
       this.setLabelAndShow_(
           '.policy-push',
