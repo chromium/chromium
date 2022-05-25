@@ -35,6 +35,8 @@ if (is_win) {
       "../app/chrome_dll_resource.h",
       "../common/chrome_icon_resources_win.h",
       "//base/compiler_specific.h",
+      "//base/win/win_handle_types.h",
+      "//base/win/win_handle_types_list.inc",
       "//base/win/windows_types.h",
       "install_constants.h",
       "install_details.cc",
