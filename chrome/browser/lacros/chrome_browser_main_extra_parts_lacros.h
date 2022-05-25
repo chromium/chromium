@@ -20,6 +20,7 @@ class ForceInstalledTrackerLacros;
 class LacrosButterBar;
 class LacrosExtensionAppsController;
 class LacrosExtensionAppsPublisher;
+class LacrosFileSystemProvider;
 class KioskSessionServiceLacros;
 class FieldTrialObserver;
 class QuickAnswersController;
@@ -149,6 +150,9 @@ class ChromeBrowserMainExtraPartsLacros : public ChromeBrowserMainExtraParts {
 
   // Updates Blink preferences on tablet mode state change.
   std::unique_ptr<TabletModePageBehavior> tablet_mode_page_behavior_;
+
+  // Forwards file system provider events to extensions.
+  std::unique_ptr<LacrosFileSystemProvider> file_system_provider_;
 };
 
 #endif  // CHROME_BROWSER_LACROS_CHROME_BROWSER_MAIN_EXTRA_PARTS_LACROS_H_

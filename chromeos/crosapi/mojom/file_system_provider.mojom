@@ -115,7 +115,22 @@ enum FSPOperationResponse {
 // Implemented by Lacros.
 [Stable, Uuid="8cbcf151-c189-4fe9-90ff-892c7f5637a9"]
 interface FileSystemProvider {
-// TODO(https://crbug.com/1314397): Add methods.
+  // Allows Ash file system to forward an operation to Lacros extension
+  // providers.
+  // We use mojo_base.mojom.Value as the type because:
+  //   * The extension API is stable.
+  //   * Both the supplier and consumer of this information uses a type
+  //   interchangeable with mojo_base.mojom.Value. While we could add a
+  //   translation layer to a strongly typed mojom struct, this adds a
+  //   overhead and the potential for errors with no benefit.
+  // Similarly, histogram_value is an int32 instead of the native enum
+  // HistogramValue because the enum is stable, has hundreds of entries, and
+  // cannot be type-mapped due to build-time dependency inversions.
+  // Provider will typically be an extension_id but is intentionally left
+  // abstract to support multi-profile in the future.
+  [MinVersion=1]
+  ForwardOperation@0(string provider, int32 histogram_value, string event_name,
+                     array<mojo_base.mojom.Value> args);
 };
 
 // Implemented by Ash. Extensions in Lacros can register themselves as file

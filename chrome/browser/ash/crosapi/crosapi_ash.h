@@ -169,6 +169,9 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::FieldTrialService> receiver) override;
   void BindFileManager(
       mojo::PendingReceiver<mojom::FileManager> receiver) override;
+  void BindFileSystemProviderService(
+      mojo::PendingReceiver<mojom::FileSystemProviderService> receiver)
+      override;
   void BindForceInstalledTracker(
       mojo::PendingReceiver<mojom::ForceInstalledTracker> receiver) override;
   void BindGeolocationService(

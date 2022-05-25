@@ -6,7 +6,9 @@
 #define CHROME_BROWSER_ASH_CROSAPI_FILE_SYSTEM_PROVIDER_SERVICE_ASH_H_
 
 #include "chromeos/crosapi/mojom/file_system_provider.mojom.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 
 class Profile;
 
@@ -23,6 +25,9 @@ class FileSystemProviderServiceAsh : public mojom::FileSystemProviderService {
   FileSystemProviderServiceAsh& operator=(const FileSystemProviderServiceAsh&) =
       delete;
   ~FileSystemProviderServiceAsh() override;
+
+  void BindReceiver(
+      mojo::PendingReceiver<mojom::FileSystemProviderService> receiver);
 
   // crosapi::mojom::FileSystemProviderService:
   void RegisterFileSystemProvider(
@@ -74,6 +79,15 @@ class FileSystemProviderServiceAsh : public mojom::FileSystemProviderService {
                                     std::vector<base::Value> args,
                                     OperationFinishedCallback callback,
                                     Profile* profile);
+
+  // Exposed so that ash clients can work with Lacros file system providers.
+  mojo::RemoteSet<mojom::FileSystemProvider>& remotes() { return remotes_; }
+
+ private:
+  // Each separate Lacros process owns its own remote.
+  mojo::RemoteSet<mojom::FileSystemProvider> remotes_;
+  // Receives events from Lacros file system provider extensions.
+  mojo::ReceiverSet<mojom::FileSystemProviderService> receivers_;
 };
 
 }  // namespace crosapi

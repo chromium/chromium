@@ -41,6 +41,7 @@
 #include "chromeos/crosapi/mojom/feedback.mojom.h"
 #include "chromeos/crosapi/mojom/field_trial.mojom.h"
 #include "chromeos/crosapi/mojom/file_manager.mojom.h"
+#include "chromeos/crosapi/mojom/file_system_provider.mojom.h"
 #include "chromeos/crosapi/mojom/force_installed_tracker.mojom.h"
 #include "chromeos/crosapi/mojom/geolocation.mojom.h"
 #include "chromeos/crosapi/mojom/holding_space_service.mojom.h"
@@ -286,6 +287,10 @@ LacrosService::LacrosService()
   ConstructRemote<crosapi::mojom::FileManager,
                   &crosapi::mojom::Crosapi::BindFileManager,
                   Crosapi::MethodMinVersions::kBindFileManagerMinVersion>();
+  ConstructRemote<
+      crosapi::mojom::FileSystemProviderService,
+      &crosapi::mojom::Crosapi::BindFileSystemProviderService,
+      Crosapi::MethodMinVersions::kBindFileSystemProviderServiceMinVersion>();
   ConstructRemote<
       crosapi::mojom::FieldTrialService,
       &crosapi::mojom::Crosapi::BindFieldTrialService,

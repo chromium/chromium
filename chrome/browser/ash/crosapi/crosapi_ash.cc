@@ -340,6 +340,11 @@ void CrosapiAsh::BindFileManager(
   file_manager_ash_->BindReceiver(std::move(receiver));
 }
 
+void CrosapiAsh::BindFileSystemProviderService(
+    mojo::PendingReceiver<crosapi::mojom::FileSystemProviderService> receiver) {
+  file_system_provider_service_ash_->BindReceiver(std::move(receiver));
+}
+
 void CrosapiAsh::BindForceInstalledTracker(
     mojo::PendingReceiver<crosapi::mojom::ForceInstalledTracker> receiver) {
   force_installed_tracker_ash_->BindReceiver(std::move(receiver));

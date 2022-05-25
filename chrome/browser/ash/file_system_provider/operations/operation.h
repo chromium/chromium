@@ -63,7 +63,11 @@ class Operation : public RequestManager::HandlerInterface {
   ProvidedFileSystemInfo file_system_info_;
 
  private:
-  DispatchEventImplCallback dispatch_event_impl_;
+  using DispatchEventInternalCallback =
+      base::RepeatingCallback<bool(extensions::events::HistogramValue,
+                                   const std::string&,
+                                   std::vector<base::Value>)>;
+  DispatchEventInternalCallback dispatch_event_impl_;
 };
 
 }  // namespace operations

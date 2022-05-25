@@ -32,6 +32,7 @@ import "chromeos/crosapi/mojom/extension_info_private.mojom";
 import "chromeos/crosapi/mojom/feedback.mojom";
 import "chromeos/crosapi/mojom/field_trial.mojom";
 import "chromeos/crosapi/mojom/file_manager.mojom";
+import "chromeos/crosapi/mojom/file_system_provider.mojom";
 import "chromeos/crosapi/mojom/force_installed_tracker.mojom";
 import "chromeos/crosapi/mojom/geolocation.mojom";
 import "chromeos/crosapi/mojom/holding_space_service.mojom";
@@ -108,8 +109,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 78
-// Next method id: 81
+// Next version: 79
+// Next method id: 82
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -268,6 +269,12 @@ interface Crosapi {
   // Added in M88.
   [MinVersion=5]
   BindFileManager@8(pending_receiver<FileManager> receiver);
+
+  // This interface allows Lacros extensions to implement file systems.
+  // Added in M104.
+  [MinVersion=78]
+  BindFileSystemProviderService@81(
+      pending_receiver<FileSystemProviderService> receiver);
 
   // Binds the ForceInstalledTracker interface for track the status of
   // force-installed extensions.

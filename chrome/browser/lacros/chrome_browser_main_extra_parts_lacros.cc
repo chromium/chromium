@@ -21,6 +21,7 @@
 #include "chrome/browser/lacros/lacros_butter_bar.h"
 #include "chrome/browser/lacros/lacros_extension_apps_controller.h"
 #include "chrome/browser/lacros/lacros_extension_apps_publisher.h"
+#include "chrome/browser/lacros/lacros_file_system_provider.h"
 #include "chrome/browser/lacros/lacros_memory_pressure_evaluator.h"
 #include "chrome/browser/lacros/launcher_search/search_controller_lacros.h"
 #include "chrome/browser/lacros/screen_orientation_delegate_lacros.h"
@@ -117,6 +118,7 @@ void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {
   screen_orientation_delegate_ =
       std::make_unique<ScreenOrientationDelegateLacros>();
   search_controller_ = std::make_unique<crosapi::SearchControllerLacros>();
+  file_system_provider_ = std::make_unique<LacrosFileSystemProvider>();
 
   memory_pressure::MultiSourceMemoryPressureMonitor* monitor =
       static_cast<memory_pressure::MultiSourceMemoryPressureMonitor*>(

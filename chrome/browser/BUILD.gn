@@ -5375,6 +5375,8 @@ static_library("browser") {
       "lacros/lacros_extension_apps_publisher.h",
       "lacros/lacros_extensions_util.cc",
       "lacros/lacros_extensions_util.h",
+      "lacros/lacros_file_system_provider.cc",
+      "lacros/lacros_file_system_provider.h",
       "lacros/lacros_memory_pressure_evaluator.cc",
       "lacros/lacros_memory_pressure_evaluator.h",
       "lacros/lacros_prefs.cc",
