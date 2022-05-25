@@ -246,9 +246,10 @@ void SearchPrefetchBaseBrowserTest::RegisterStaticFile(
 void SearchPrefetchBaseBrowserTest::AddNewSuggestionRule(
     std::string origin_query,
     std::vector<std::string> suggestions,
-    int prefetch_index) {
-  search_suggestion_rules_.emplace_back(
-      SearchSuggestionTuple(origin_query, suggestions, prefetch_index));
+    int prefetch_index,
+    int prerender_index) {
+  search_suggestion_rules_.emplace_back(SearchSuggestionTuple(
+      origin_query, suggestions, prefetch_index, prerender_index));
 }
 
 std::unique_ptr<net::test_server::HttpResponse>
@@ -366,8 +367,7 @@ SearchPrefetchBaseBrowserTest::HandleSearchSuggestRequest(
   // $1    : origin query
   // $2    : suggested results. It should be like: "suggestion_1",
   // "suggestion_2", ..., "suggestion_n".
-  // $3    : a json that contains prefetch hints. It can be an empty string if
-  // there is no prefetch hint.
+  // $3    : a json that contains preload hints.
   std::string content_template = R"([
       "$1",
       [$2],
@@ -378,9 +378,11 @@ SearchPrefetchBaseBrowserTest::HandleSearchSuggestRequest(
       }])";
 
   // $1: the index of prefetch hint in suggested results.
-  std::string prefetch_hint_template = R"(
+  // $2: the index of prerender hint in suggested results.
+  std::string preload_hint_template = R"(
         "google:clientdata": {
-          "phi": $1
+          "phi": $1,
+          "pre": $2
         }
     )";
 
@@ -396,12 +398,11 @@ SearchPrefetchBaseBrowserTest::HandleSearchSuggestRequest(
     for (size_t i = 0; i < suggestion_rule.suggestions.size(); ++i) {
       formatted_suggestions[i] = "\"" + suggestion_rule.suggestions[i] + "\"";
     }
-    std::string prefetch_hint_json = "";
-    if (suggestion_rule.prefetch_hint_index != -1) {
-      prefetch_hint_json = base::ReplaceStringPlaceholders(
-          prefetch_hint_template,
-          {base::NumberToString(suggestion_rule.prefetch_hint_index)}, nullptr);
-    }
+    std::string prefetch_hint_json = base::ReplaceStringPlaceholders(
+        preload_hint_template,
+        {base::NumberToString(suggestion_rule.prefetch_hint_index),
+         base::NumberToString(suggestion_rule.prerender_hint_index)},
+        nullptr);
     std::string suggestions_string =
         base::JoinString(formatted_suggestions, ",");
     content = base::ReplaceStringPlaceholders(
@@ -421,10 +422,12 @@ SearchPrefetchBaseBrowserTest::HandleSearchSuggestRequest(
 SearchPrefetchBaseBrowserTest::SearchSuggestionTuple::SearchSuggestionTuple(
     std::string origin_query,
     std::vector<std::string> suggestions,
-    int prefetch_index)
+    int prefetch_index,
+    int prerender_index)
     : origin_query(origin_query),
       suggestions(suggestions),
-      prefetch_hint_index(prefetch_index) {}
+      prefetch_hint_index(prefetch_index),
+      prerender_hint_index(prerender_index) {}
 
 SearchPrefetchBaseBrowserTest::SearchSuggestionTuple::~SearchSuggestionTuple() =
     default;

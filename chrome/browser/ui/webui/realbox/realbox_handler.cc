@@ -748,7 +748,7 @@ void RealboxHandler::OnResultChanged(AutocompleteController* controller,
     if (SearchPrefetchService* search_prefetch_service =
             SearchPrefetchServiceFactory::GetForProfile(profile_)) {
       search_prefetch_service->OnResultChanged(
-          autocomplete_controller_->result());
+          web_contents_, autocomplete_controller_->result());
     }
   }
 

@@ -28,6 +28,10 @@ class Profile;
 class SearchPrefetchURLLoader;
 class AutocompleteResult;
 
+namespace content {
+class WebContents;
+}
+
 namespace network {
 struct ResourceRequest;
 }
@@ -98,7 +102,8 @@ class SearchPrefetchService : public KeyedService,
   void OnTemplateURLServiceChanged() override;
 
   // Called when `AutocompleteController` receives updates on `result`.
-  void OnResultChanged(const AutocompleteResult& result);
+  void OnResultChanged(content::WebContents* web_contents,
+                       const AutocompleteResult& result);
 
   // Returns whether the prefetch started or not.
   bool MaybePrefetchURL(const GURL& url);

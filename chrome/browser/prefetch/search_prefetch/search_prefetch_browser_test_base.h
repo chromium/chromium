@@ -65,9 +65,12 @@ class SearchPrefetchBaseBrowserTest : public InProcessBrowserTest {
                           const std::string& content,
                           const std::string& content_type);
 
+  // Allows tests to add a new suggestion rule for the given `origin_query`.
+  // See `SearchSuggestionTuple` for details.
   void AddNewSuggestionRule(std::string origin_query,
                             std::vector<std::string> suggestions,
-                            int prefetch_index);
+                            int prefetch_index,
+                            int prerender_index);
 
   size_t search_server_request_count() const {
     return search_server_request_count_;
@@ -108,24 +111,44 @@ class SearchPrefetchBaseBrowserTest : public InProcessBrowserTest {
   struct SearchSuggestionTuple {
     SearchSuggestionTuple(std::string origin_query,
                           std::vector<std::string> suggestions,
-                          int prefetch_index);
+                          int prefetch_index,
+                          int prerender_index);
     ~SearchSuggestionTuple();
 
     SearchSuggestionTuple(const SearchSuggestionTuple& other);
 
+    // The string that users typed.
     std::string origin_query;
+
+    // A list of search suggestions associated with `origin_query`.
     std::vector<std::string> suggestions;
+
+    //  The index of prefetch hint in `suggestions`. Set to -1 if none of them
+    //  should be prefetched.
     int prefetch_hint_index = -1;
+
+    //  The index of prefetch hint in `suggestions`. Set to -1 if none of them
+    //  should be prerendered.
+    int prerender_hint_index = -1;
   };
 
   // Stores some hard-coded rules for testing.
-  // Tests can also call AddNewSuggestionRule to append a new rule.
-  // Note: they are order-sensitive! The last rule(the newest added rule) has
+  // Tests can also call `AddNewSuggestionRule` to append a new rule.
+  // Note: they are order-sensitive! The last rule (the newest added rule) has
   // the highest priority.
   std::vector<SearchSuggestionTuple> search_suggestion_rules_{
-      SearchSuggestionTuple("porgs", {"porgs", "porgsandwich"}, 0),
-      SearchSuggestionTuple("puffins", {"puffins", "puffinsalad"}, -1),
-      SearchSuggestionTuple("502_on_prefetch", {"502_on_prefetch"}, 0)};
+      SearchSuggestionTuple("porgs",
+                            {"porgs", "porgsandwich"},
+                            /*prefetch_index=*/0,
+                            /*prerender_index=*/-1),
+      SearchSuggestionTuple("puffins",
+                            {"puffins", "puffinsalad"},
+                            /*prefetch_index=*/-1,
+                            /*prerender_index=*/-1),
+      SearchSuggestionTuple("502_on_prefetch",
+                            {"502_on_prefetch"},
+                            /*prefetch_index=*/0,
+                            /*prerender_index=*/-1)};
 
   content::ContentMockCertVerifier mock_cert_verifier_;
 

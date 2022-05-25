@@ -1292,7 +1292,7 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
   AddNewSuggestionRule(
       kOmniboxSuggestPrefetchQuery,
       {kOmniboxSuggestPrefetchQuery, kOmniboxSuggestPrefetchSecondItemQuery},
-      1);
+      /*prefetch_index=*/1, /*prerender_index=*/-1);
   auto* search_prefetch_service =
       SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
   std::string search_terms = kOmniboxSuggestPrefetchQuery;

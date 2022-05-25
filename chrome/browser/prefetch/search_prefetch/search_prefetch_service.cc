@@ -17,6 +17,7 @@
 #include "chrome/browser/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/prefetch/search_prefetch/search_prefetch_url_loader.h"
 #include "chrome/browser/prefetch/search_prefetch/streaming_search_prefetch_request.h"
+#include "chrome/browser/prerender/prerender_manager.h"
 #include "chrome/browser/prerender/prerender_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -31,6 +32,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
+#include "content/public/browser/web_contents.h"
 #include "net/base/load_flags.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "url/origin.h"
@@ -442,7 +444,8 @@ void SearchPrefetchService::ReportFetchResult(bool error) {
   last_error_time_ticks_ = base::TimeTicks::Now();
 }
 
-void SearchPrefetchService::OnResultChanged(const AutocompleteResult& result) {
+void SearchPrefetchService::OnResultChanged(content::WebContents* web_contents,
+                                            const AutocompleteResult& result) {
   auto* template_url_service =
       TemplateURLServiceFactory::GetForProfile(profile_);
   DCHECK(template_url_service);
@@ -485,6 +488,12 @@ void SearchPrefetchService::OnResultChanged(const AutocompleteResult& result) {
   for (const auto& match : result) {
     if (BaseSearchProvider::ShouldPrefetch(match)) {
       MaybePrefetchURL(GetPrefetchURLFromMatch(match, template_url_service));
+    }
+    if (prerender_utils::IsSearchSuggestionPrerenderEnabled() &&
+        BaseSearchProvider::ShouldPrerender(match) && web_contents) {
+      PrerenderManager::CreateForWebContents(web_contents);
+      auto* prerender_manager = PrerenderManager::FromWebContents(web_contents);
+      prerender_manager->StartPrerenderSearchSuggestion(match);
     }
   }
 }
