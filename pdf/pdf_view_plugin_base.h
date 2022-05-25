@@ -163,8 +163,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
     return document_load_state_;
   }
 
-  bool edit_mode_for_testing() const { return edit_mode_; }
-
  protected:
   // Callback that runs after `LoadUrl()`. The `loader` is the loader used to
   // load the URL, and `result` is the result code for the load.

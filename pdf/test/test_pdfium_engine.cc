@@ -4,6 +4,7 @@
 
 #include "pdf/test/test_pdfium_engine.h"
 
+#include <stdint.h>
 #include <string.h>
 
 #include <iterator>
@@ -23,6 +24,9 @@ namespace chrome_pdf {
 
 // static
 const uint32_t TestPDFiumEngine::kPageNumber;
+
+// static
+const uint8_t TestPDFiumEngine::kLoadedData[];
 
 // static
 const uint8_t TestPDFiumEngine::kSaveData[];
@@ -54,12 +58,12 @@ base::Value::List TestPDFiumEngine::GetBookmarks() {
 }
 
 uint32_t TestPDFiumEngine::GetLoadedByteSize() {
-  return sizeof(kSaveData);
+  return sizeof(kLoadedData);
 }
 
 bool TestPDFiumEngine::ReadLoadedBytes(uint32_t length, void* buffer) {
   DCHECK_LE(length, GetLoadedByteSize());
-  memcpy(buffer, kSaveData, length);
+  memcpy(buffer, kLoadedData, length);
   return true;
 }
 

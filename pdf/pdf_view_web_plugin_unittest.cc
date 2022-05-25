@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -25,12 +26,14 @@
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "net/cookies/site_for_cookies.h"
+#include "pdf/buildflags.h"
 #include "pdf/content_restriction.h"
 #include "pdf/mojom/pdf.mojom.h"
 #include "pdf/paint_ready_rect.h"
 #include "pdf/pdf_view_plugin_base.h"
 #include "pdf/test/test_helpers.h"
 #include "pdf/test/test_pdfium_engine.h"
+#include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
@@ -75,6 +78,7 @@ namespace chrome_pdf {
 
 namespace {
 
+using ::testing::AnyNumber;
 using ::testing::ElementsAreArray;
 using ::testing::Eq;
 using ::testing::InSequence;
@@ -379,6 +383,15 @@ class PdfViewWebPluginWithoutInitializeTest : public testing::Test {
 
   void TearDown() override { plugin_.reset(); }
 
+  void ExpectUpdateTextInputState(
+      blink::WebTextInputType expected_text_input_type) {
+    EXPECT_CALL(*client_ptr_, UpdateTextInputState)
+        .WillOnce([this, expected_text_input_type]() {
+          EXPECT_EQ(expected_text_input_type,
+                    plugin_->GetPluginTextInputType());
+        });
+  }
+
   NiceMock<FakePdfService> pdf_service_;
   mojo::AssociatedReceiver<pdf::mojom::PdfService> pdf_receiver_{&pdf_service_};
 
@@ -389,8 +402,10 @@ class PdfViewWebPluginWithoutInitializeTest : public testing::Test {
 
 class PdfViewWebPluginTest : public PdfViewWebPluginWithoutInitializeTest {
  protected:
+  static constexpr char kPdfUrl[] = "http://localhost/example.pdf";
+
   void SetUp() override {
-    SetUpPluginWithUrl("http://localhost/example.pdf");
+    SetUpPluginWithUrl(kPdfUrl);
 
     EXPECT_TRUE(plugin_->InitializeForTesting());
   }
@@ -963,28 +978,16 @@ TEST_F(PdfViewWebPluginTest, FormTextFieldFocusChangeUpdatesTextInputType) {
   ASSERT_EQ(blink::WebTextInputType::kWebTextInputTypeNone,
             plugin_->GetPluginTextInputType());
 
-  EXPECT_CALL(*client_ptr_, UpdateTextInputState).WillOnce([this]() {
-    EXPECT_EQ(blink::WebTextInputType::kWebTextInputTypeText,
-              plugin_->GetPluginTextInputType());
-  });
+  ExpectUpdateTextInputState(blink::WebTextInputType::kWebTextInputTypeText);
   plugin_->FormFieldFocusChange(PDFEngine::FocusFieldType::kText);
 
-  EXPECT_CALL(*client_ptr_, UpdateTextInputState).WillOnce([this]() {
-    EXPECT_EQ(blink::WebTextInputType::kWebTextInputTypeNone,
-              plugin_->GetPluginTextInputType());
-  });
+  ExpectUpdateTextInputState(blink::WebTextInputType::kWebTextInputTypeNone);
   plugin_->FormFieldFocusChange(PDFEngine::FocusFieldType::kNoFocus);
 
-  EXPECT_CALL(*client_ptr_, UpdateTextInputState).WillOnce([this]() {
-    EXPECT_EQ(blink::WebTextInputType::kWebTextInputTypeText,
-              plugin_->GetPluginTextInputType());
-  });
+  ExpectUpdateTextInputState(blink::WebTextInputType::kWebTextInputTypeText);
   plugin_->FormFieldFocusChange(PDFEngine::FocusFieldType::kText);
 
-  EXPECT_CALL(*client_ptr_, UpdateTextInputState).WillOnce([this]() {
-    EXPECT_EQ(blink::WebTextInputType::kWebTextInputTypeNone,
-              plugin_->GetPluginTextInputType());
-  });
+  ExpectUpdateTextInputState(blink::WebTextInputType::kWebTextInputTypeNone);
   plugin_->FormFieldFocusChange(PDFEngine::FocusFieldType::kNonText);
 }
 
@@ -1060,6 +1063,17 @@ TEST_F(PdfViewWebPluginTest, CaretChange) {
       /*device_scale=*/2.0f, /*window_rect=*/gfx::Rect(12, 24, 36, 48));
   plugin_->CaretChanged(gfx::Rect(10, 20, 30, 40));
   EXPECT_EQ(gfx::Rect(28, 20, 30, 40), plugin_->GetPluginCaretBounds());
+}
+
+TEST_F(PdfViewWebPluginTest, EnteredEditMode) {
+  EXPECT_CALL(pdf_service_, SetPluginCanSave(true));
+  EXPECT_CALL(*client_ptr_, PostMessage).Times(AnyNumber());
+  EXPECT_CALL(*client_ptr_, PostMessage(base::test::IsJson(R"({
+    "type": "setIsEditing",
+  })")));
+  plugin_->EnteredEditMode();
+
+  pdf_receiver_.FlushForTesting();
 }
 
 TEST_F(PdfViewWebPluginTest, NotifyNumberOfFindResultsChanged) {
@@ -1254,6 +1268,178 @@ TEST_F(PdfViewWebPluginWithDocInfoTest, DocumentLoadCompletePostMessages) {
   EXPECT_CALL(*client_ptr_, PostMessage(Eq(std::ref(expect_bookmarks))));
   EXPECT_CALL(*client_ptr_, PostMessage(Eq(std::ref(expect_metadata))));
   plugin_->DocumentLoadComplete();
+}
+
+class PdfViewWebPluginSaveTest : public PdfViewWebPluginTest {
+ protected:
+  static void AddDataToValue(base::span<const uint8_t> data,
+                             base::Value& value) {
+    value.SetKey("dataToSave", base::Value(data));
+  }
+
+  void SetUpClient() override {
+    // Ignore non-"saveData" `PdfViewWebPlugin::Client::PostMessage()` calls.
+    EXPECT_CALL(*client_ptr_, PostMessage)
+        .WillRepeatedly([](const base::Value::Dict& message) {
+          EXPECT_NE("saveData", *message.FindString("type"));
+        });
+  }
+};
+
+#if BUILDFLAG(ENABLE_INK)
+TEST_F(PdfViewWebPluginSaveTest, AnnotationInNonEditMode) {
+  base::Value expected_response = base::test::ParseJson(R"({
+    "type": "saveData",
+    "token": "annotation-in-non-edit-mode",
+    "fileName": "example.pdf",
+    "editModeForTesting": false,
+  })");
+  AddDataToValue(base::make_span(TestPDFiumEngine::kLoadedData),
+                 expected_response);
+
+  EXPECT_CALL(pdf_service_, SetPluginCanSave(true));
+  ExpectUpdateTextInputState(blink::WebTextInputType::kWebTextInputTypeNone);
+  EXPECT_CALL(*client_ptr_, PostMessage(base::test::IsJson(expected_response)));
+
+  base::Value message = base::test::ParseJson(R"({
+    "type": "save",
+    "saveRequestType": 0,
+    "token": "annotation-in-non-edit-mode",
+  })");
+  plugin_->OnMessage(message.GetDict());
+
+  pdf_receiver_.FlushForTesting();
+}
+
+TEST_F(PdfViewWebPluginSaveTest, AnnotationInEditMode) {
+  plugin_->EnteredEditMode();
+  pdf_receiver_.FlushForTesting();
+
+  base::Value expected_response = base::test::ParseJson(R"({
+    "type": "saveData",
+    "token": "annotation-in-edit-mode",
+    "fileName": "example.pdf",
+    "editModeForTesting": true,
+  })");
+  AddDataToValue(base::make_span(TestPDFiumEngine::kSaveData),
+                 expected_response);
+
+  EXPECT_CALL(pdf_service_, SetPluginCanSave(true));
+  ExpectUpdateTextInputState(blink::WebTextInputType::kWebTextInputTypeNone);
+  EXPECT_CALL(*client_ptr_, PostMessage(base::test::IsJson(expected_response)));
+
+  base::Value message = base::test::ParseJson(R"({
+    "type": "save",
+    "saveRequestType": 0,
+    "token": "annotation-in-edit-mode",
+  })");
+  plugin_->OnMessage(message.GetDict());
+
+  pdf_receiver_.FlushForTesting();
+}
+#endif  // BUILDFLAG(ENABLE_INK)
+
+TEST_F(PdfViewWebPluginSaveTest, OriginalInNonEditMode) {
+  {
+    InSequence pdf_service_sequence;
+
+    EXPECT_CALL(pdf_service_, SetPluginCanSave(false));
+    EXPECT_CALL(
+        pdf_service_,
+        SaveUrlAs(GURL(kPdfUrl), network::mojom::ReferrerPolicy::kDefault));
+    EXPECT_CALL(pdf_service_, SetPluginCanSave(false));
+  }
+
+  ExpectUpdateTextInputState(blink::WebTextInputType::kWebTextInputTypeNone);
+  EXPECT_CALL(*client_ptr_, PostMessage(base::test::IsJson(R"({
+    "type": "consumeSaveToken",
+    "token": "original-in-non-edit-mode",
+  })")));
+
+  base::Value message = base::test::ParseJson(R"({
+    "type": "save",
+    "saveRequestType": 1,
+    "token": "original-in-non-edit-mode",
+  })");
+  plugin_->OnMessage(message.GetDict());
+
+  pdf_receiver_.FlushForTesting();
+}
+
+TEST_F(PdfViewWebPluginSaveTest, OriginalInEditMode) {
+  plugin_->EnteredEditMode();
+  pdf_receiver_.FlushForTesting();
+
+  {
+    InSequence pdf_service_sequence;
+
+    EXPECT_CALL(pdf_service_, SetPluginCanSave(false));
+    EXPECT_CALL(
+        pdf_service_,
+        SaveUrlAs(GURL(kPdfUrl), network::mojom::ReferrerPolicy::kDefault));
+    EXPECT_CALL(pdf_service_, SetPluginCanSave(true));
+  }
+
+  ExpectUpdateTextInputState(blink::WebTextInputType::kWebTextInputTypeNone);
+  EXPECT_CALL(*client_ptr_, PostMessage(base::test::IsJson(R"({
+    "type": "consumeSaveToken",
+    "token": "original-in-edit-mode",
+  })")));
+
+  base::Value message = base::test::ParseJson(R"({
+    "type": "save",
+    "saveRequestType": 1,
+    "token": "original-in-edit-mode",
+  })");
+  plugin_->OnMessage(message.GetDict());
+
+  pdf_receiver_.FlushForTesting();
+}
+
+#if BUILDFLAG(ENABLE_INK)
+TEST_F(PdfViewWebPluginSaveTest, EditedInNonEditMode) {
+  base::Value expected_response = base::test::ParseJson(R"({
+    "type": "saveData",
+    "token": "edited-in-non-edit-mode",
+    "fileName": "example.pdf",
+    "editModeForTesting": false,
+  })");
+  AddDataToValue(base::make_span(TestPDFiumEngine::kLoadedData),
+                 expected_response);
+
+  ExpectUpdateTextInputState(blink::WebTextInputType::kWebTextInputTypeNone);
+  EXPECT_CALL(*client_ptr_, PostMessage(base::test::IsJson(expected_response)));
+
+  base::Value message = base::test::ParseJson(R"({
+    "type": "save",
+    "saveRequestType": 2,
+    "token": "edited-in-non-edit-mode",
+  })");
+  plugin_->OnMessage(message.GetDict());
+}
+#endif  // BUILDFLAG(ENABLE_INK)
+
+TEST_F(PdfViewWebPluginSaveTest, EditedInEditMode) {
+  plugin_->EnteredEditMode();
+
+  base::Value expected_response = base::test::ParseJson(R"({
+    "type": "saveData",
+    "token": "edited-in-edit-mode",
+    "fileName": "example.pdf",
+    "editModeForTesting": true,
+  })");
+  AddDataToValue(base::make_span(TestPDFiumEngine::kSaveData),
+                 expected_response);
+
+  ExpectUpdateTextInputState(blink::WebTextInputType::kWebTextInputTypeNone);
+  EXPECT_CALL(*client_ptr_, PostMessage(base::test::IsJson(expected_response)));
+
+  base::Value message = base::test::ParseJson(R"({
+    "type": "save",
+    "saveRequestType": 2,
+    "token": "edited-in-edit-mode",
+  })");
+  plugin_->OnMessage(message.GetDict());
 }
 
 class PdfViewWebPluginSubmitFormTest
