@@ -3886,24 +3886,6 @@ bool AXObject::IsNameFromAuthorAttribute() const {
          HasAttribute(html_names::kTitleAttr);
 }
 
-String AXObject::TextFromAriaLabelledby(AXObjectSet& visited,
-                                        AXRelatedObjectVector* related_objects,
-                                        Vector<String>& ids) const {
-  HeapVector<Member<Element>> elements;
-  AriaLabelledbyElementVector(GetElement(), elements, ids);
-  return TextFromElements(true, visited, elements, related_objects);
-}
-
-String AXObject::TextFromAriaDescribedby(AXRelatedObjectVector* related_objects,
-                                         Vector<String>& ids) const {
-  AXObjectSet visited;
-
-  HeapVector<Member<Element>> elements;
-  ElementsFromAttribute(GetElement(), elements,
-                        html_names::kAriaDescribedbyAttr, ids);
-  return TextFromElements(true, visited, elements, related_objects);
-}
-
 AccessibilityOrientation AXObject::Orientation() const {
   // In ARIA 1.1, the default value for aria-orientation changed from
   // horizontal to undefined.

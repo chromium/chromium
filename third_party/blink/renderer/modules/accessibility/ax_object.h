@@ -1376,11 +1376,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   static bool IsNameFromAriaAttribute(Element* element);
   // Return true if the name is from @aria-label / @aria-labelledby / @title.
   bool IsNameFromAuthorAttribute() const;
-  String TextFromAriaLabelledby(AXObjectSet& visited,
-                                AXRelatedObjectVector* related_objects,
-                                Vector<String>& ids) const;
-  String TextFromAriaDescribedby(AXRelatedObjectVector* related_objects,
-                                 Vector<String>& ids) const;
 
   ax::mojom::blink::Role ButtonRoleType() const;
 
