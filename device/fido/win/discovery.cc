@@ -14,7 +14,7 @@ namespace device {
 WinWebAuthnApiAuthenticatorDiscovery::WinWebAuthnApiAuthenticatorDiscovery(
     HWND parent_window,
     WinWebAuthnApi* api)
-    : FidoDiscoveryBase(FidoTransportProtocol::kUsbHumanInterfaceDevice),
+    : FidoDiscoveryBase(FidoTransportProtocol::kInternal),
       parent_window_(parent_window),
       api_(api) {}
 

@@ -603,7 +603,11 @@ void AuthenticatorRequestDialogModel::OnAccountPreselected(
     if (cred.user.id == id) {
       preselected_account_ = std::move(cred.user);
       ephemeral_state_.creds_.clear();
-      HideDialogAndDispatchToPlatformAuthenticator();
+      if (transport_availability()->has_win_native_api_authenticator) {
+        HideDialogAndDispatchToNativeWindowsApi();
+      } else {
+        HideDialogAndDispatchToPlatformAuthenticator();
+      }
       return;
     }
   }

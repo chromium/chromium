@@ -10,6 +10,7 @@
 #include "base/containers/span.h"
 #include "base/notreached.h"
 #include "base/strings/string_piece_forward.h"
+#include "base/strings/string_util_win.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/cbor/values.h"
 #include "crypto/sha2.h"
@@ -20,6 +21,28 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
+
+struct FakeWinWebAuthnApi::CredentialInfoList {
+  WEBAUTHN_CREDENTIAL_DETAILS_LIST credential_details_list;
+  std::vector<WEBAUTHN_CREDENTIAL_DETAILS*> win_credentials;
+  std::vector<CredentialInfo> credentials;
+};
+
+struct FakeWinWebAuthnApi::CredentialInfo {
+  WEBAUTHN_CREDENTIAL_DETAILS details;
+  std::vector<uint8_t> credential_id;
+
+  WEBAUTHN_RP_ENTITY_INFORMATION rp;
+  std::u16string rp_id;
+  std::u16string rp_name;
+  absl::optional<std::u16string> rp_icon;
+
+  WEBAUTHN_USER_ENTITY_INFORMATION user;
+  std::vector<uint8_t> user_id;
+  std::u16string user_name;
+  absl::optional<std::u16string> user_icon;
+  std::u16string user_display_name;
+};
 
 struct FakeWinWebAuthnApi::WebAuthnAssertionEx {
   std::vector<uint8_t> credential_id;
@@ -33,6 +56,7 @@ FakeWinWebAuthnApi::~FakeWinWebAuthnApi() {
   // Ensure callers free unmanaged pointers returned by the real Windows API.
   DCHECK(returned_attestations_.empty());
   DCHECK(returned_assertions_.empty());
+  DCHECK(returned_credential_lists_.empty());
 }
 
 bool FakeWinWebAuthnApi::InjectNonDiscoverableCredential(
@@ -68,6 +92,11 @@ bool FakeWinWebAuthnApi::InjectDiscoverableCredential(
 bool FakeWinWebAuthnApi::IsAvailable() const {
   return is_available_;
 }
+
+bool FakeWinWebAuthnApi::SupportsSilentDiscovery() const {
+  return supports_silent_discovery_;
+}
+
 HRESULT FakeWinWebAuthnApi::IsUserVerifyingPlatformAuthenticatorAvailable(
     BOOL* result) {
   DCHECK(is_available_);
@@ -206,6 +235,85 @@ HRESULT FakeWinWebAuthnApi::CancelCurrentOperation(GUID* cancellation_id) {
   return E_NOTIMPL;
 }
 
+HRESULT FakeWinWebAuthnApi::GetPlatformCredentialList(
+    PCWEBAUTHN_GET_CREDENTIALS_OPTIONS options,
+    PWEBAUTHN_CREDENTIAL_DETAILS_LIST* credentials) {
+  DCHECK(is_available_ && supports_silent_discovery_);
+  if (result_override_ != S_OK) {
+    return result_override_;
+  }
+  returned_credential_lists_.emplace_back();
+  for (const auto& registration : registrations_) {
+    if (!registration.second.is_resident) {
+      continue;
+    }
+    if (options->pwszRpId) {
+      std::string rp_id = base::WideToUTF8(options->pwszRpId);
+      if (registration.second.rp->id != rp_id) {
+        continue;
+      }
+    }
+
+    returned_credential_lists_.back().credentials.emplace_back(CredentialInfo({
+        .credential_id = registration.first,
+        .rp_id = base::UTF8ToUTF16(registration.second.rp->id),
+        .rp_name = base::UTF8ToUTF16(registration.second.rp->name.value_or("")),
+        .user_id = registration.second.user->id,
+        .user_name =
+            base::UTF8ToUTF16(registration.second.user->name.value_or("")),
+        .user_display_name = base::UTF8ToUTF16(
+            registration.second.user->display_name.value_or("")),
+    }));
+    auto& credential = returned_credential_lists_.back().credentials.back();
+    if (registration.second.rp->icon_url) {
+      credential.rp_icon =
+          base::UTF8ToUTF16(registration.second.rp->icon_url->spec());
+    }
+    if (registration.second.user->icon_url) {
+      credential.user_icon =
+          base::UTF8ToUTF16(registration.second.user->icon_url->spec());
+    }
+    credential.rp = {
+        .dwVersion = WEBAUTHN_RP_ENTITY_INFORMATION_CURRENT_VERSION,
+        .pwszId = base::as_wcstr(credential.rp_id),
+        .pwszName = base::as_wcstr(credential.rp_name),
+        .pwszIcon =
+            credential.rp_icon ? base::as_wcstr(*credential.rp_icon) : nullptr,
+    };
+    credential.user = {
+        .dwVersion = WEBAUTHN_USER_ENTITY_INFORMATION_CURRENT_VERSION,
+        .cbId = static_cast<DWORD>(credential.user_id.size()),
+        .pbId = credential.user_id.data(),
+        .pwszName = base::as_wcstr(credential.user_name),
+        .pwszIcon = credential.user_icon ? base::as_wcstr(*credential.user_icon)
+                                         : nullptr,
+        .pwszDisplayName = base::as_wcstr(credential.user_display_name),
+    };
+    credential.details = {
+        .dwVersion = WEBAUTHN_CREDENTIAL_DETAILS_VERSION_1,
+        .cbCredentialID = static_cast<DWORD>(credential.credential_id.size()),
+        .pbCredentialID = credential.credential_id.data(),
+        .pRpInformation = &credential.rp,
+        .pUserInformation = &credential.user,
+        .bRemovable = false,
+    };
+  }
+
+  for (auto& credential : returned_credential_lists_.back().credentials) {
+    returned_credential_lists_.back().win_credentials.push_back(
+        &credential.details);
+  }
+  returned_credential_lists_.back().credential_details_list = {
+      .cCredentialDetails = static_cast<DWORD>(
+          returned_credential_lists_.back().win_credentials.size()),
+      .ppCredentialDetails =
+          returned_credential_lists_.back().win_credentials.data(),
+  };
+  *credentials = &returned_credential_lists_.back().credential_details_list;
+  return returned_credential_lists_.back().credentials.empty() ? NTE_NOT_FOUND
+                                                               : S_OK;
+}
+
 PCWSTR FakeWinWebAuthnApi::GetErrorName(HRESULT hr) {
   DCHECK(is_available_);
   // See the comment for WebAuthNGetErrorName() in <webauthn.h>.
@@ -251,6 +359,19 @@ void FakeWinWebAuthnApi::FreeAssertion(PWEBAUTHN_ASSERTION assertion) {
       continue;
     }
     returned_assertions_.erase(it);
+    return;
+  }
+  NOTREACHED();
+}
+
+void FakeWinWebAuthnApi::FreePlatformCredentialList(
+    PWEBAUTHN_CREDENTIAL_DETAILS_LIST credentials) {
+  for (auto it = returned_credential_lists_.begin();
+       it != returned_credential_lists_.end(); ++it) {
+    if (credentials != &it->credential_details_list) {
+      continue;
+    }
+    returned_credential_lists_.erase(it);
     return;
   }
   NOTREACHED();

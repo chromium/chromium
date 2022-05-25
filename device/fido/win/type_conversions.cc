@@ -18,6 +18,7 @@
 #include "components/device_event_log/device_event_log.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/authenticator_make_credential_response.h"
+#include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/get_assertion_request_handler.h"
 #include "device/fido/make_credential_request_handler.h"
@@ -296,6 +297,34 @@ uint32_t ToWinAttestationConveyancePreference(
   }
   NOTREACHED();
   return WEBAUTHN_ATTESTATION_CONVEYANCE_PREFERENCE_NONE;
+}
+
+std::vector<DiscoverableCredentialMetadata>
+WinCredentialDetailsListToCredentialMetadata(
+    const WEBAUTHN_CREDENTIAL_DETAILS_LIST& credentials) {
+  std::vector<DiscoverableCredentialMetadata> result;
+  for (size_t i = 0; i < credentials.cCredentialDetails; ++i) {
+    WEBAUTHN_CREDENTIAL_DETAILS* credential =
+        credentials.ppCredentialDetails[i];
+    WEBAUTHN_USER_ENTITY_INFORMATION* user = credential->pUserInformation;
+    DiscoverableCredentialMetadata metadata(
+        std::vector<uint8_t>(
+            credential->pbCredentialID,
+            credential->pbCredentialID + credential->cbCredentialID),
+        PublicKeyCredentialUserEntity(
+            std::vector<uint8_t>(user->pbId, user->pbId + user->cbId),
+            user->pwszName
+                ? absl::make_optional(base::WideToUTF8(user->pwszName))
+                : absl::nullopt,
+            user->pwszDisplayName
+                ? absl::make_optional(base::WideToUTF8(user->pwszDisplayName))
+                : absl::nullopt,
+            user->pwszIcon
+                ? absl::make_optional(GURL(base::WideToUTF8(user->pwszIcon)))
+                : absl::nullopt));
+    result.push_back(std::move(metadata));
+  }
+  return result;
 }
 
 }  // namespace device

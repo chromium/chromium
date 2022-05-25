@@ -202,7 +202,10 @@ test("device_unittests") {
   }
 
   if (is_win) {
-    sources += [ "fido/win/type_conversions_unittest.cc" ]
+    sources += [
+      "fido/win/authenticator_unittest.cc",
+      "fido/win/type_conversions_unittest.cc",
+    ]
   }
 
   # FIDO HID:

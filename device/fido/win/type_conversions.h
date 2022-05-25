@@ -18,6 +18,7 @@
 
 namespace device {
 
+class DiscoverableCredentialMetadata;
 enum class GetAssertionStatus;
 enum class MakeCredentialStatus;
 
@@ -81,6 +82,11 @@ COMPONENT_EXPORT(DEVICE_FIDO)
 uint32_t ToWinAttestationConveyancePreference(
     const AttestationConveyancePreference&,
     int api_version);
+
+COMPONENT_EXPORT(DEVICE_FIDO)
+std::vector<DiscoverableCredentialMetadata>
+WinCredentialDetailsListToCredentialMetadata(
+    const WEBAUTHN_CREDENTIAL_DETAILS_LIST& credentials);
 
 }  // namespace device
 
