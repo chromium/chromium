@@ -477,8 +477,17 @@ class AudioSinkAudioTrackImpl {
         long beforeMsecs = SystemClock.elapsedRealtime();
         int bytesWritten;
         if (mUseHwAvSync) {
-            bytesWritten = mAudioTrack.write(
-                    mPcmBuffer, sizeInBytes, AudioTrack.WRITE_BLOCKING, timestampNs);
+            // Hw av sync stream uses the timestamp in the audio buffer to do
+            // synchronization. Therefore we need to skip pushing audio data to
+            // Android AudioTrack if the timestamp is invalid. The audio buffer
+            // with no timestamp is usually the silence buffer pushed by cma
+            // backend, not the audio data pushed by the native application.
+            if (timestampNs == NO_TIMESTAMP) {
+                bytesWritten = sizeInBytes;
+            } else {
+                bytesWritten = mAudioTrack.write(
+                        mPcmBuffer, sizeInBytes, AudioTrack.WRITE_BLOCKING, timestampNs);
+            }
         } else {
             bytesWritten = mAudioTrack.write(mPcmBuffer, sizeInBytes, AudioTrack.WRITE_BLOCKING);
         }
@@ -581,7 +590,12 @@ class AudioSinkAudioTrackImpl {
         if (!haveValidRefPoint()) {
             // No timestamp available yet, just put dummy values and return.
             mRenderingDelayBuffer.putLong(0, 0);
-            mRenderingDelayBuffer.putLong(8, NO_TIMESTAMP);
+            // Hw av sync stream uses the timestamp in the audio buffer instead
+            // of the reported rendering delay to do synchronization. Therefore
+            // it is safe to report zero rendering delay when it is not
+            // available.
+            mRenderingDelayBuffer.putLong(
+                    8, mUseHwAvSync ? convertNsecsToUsecs(System.nanoTime()) : NO_TIMESTAMP);
             mLastRenderingDelayUsecs = NO_TIMESTAMP;
             return;
         }

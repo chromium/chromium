@@ -315,9 +315,12 @@ void AudioSinkAndroidAudioTrackImpl::FeedDataContinue() {
   int bytes_per_frame =
       num_channels_ * (use_hw_av_sync_ ? sizeof(int16_t) : sizeof(float));
   int64_t fed_frames = pending_data_bytes_already_fed_ / bytes_per_frame;
-  int64_t timestamp_ns_new = pending_data_->timestamp() +
-                             fed_frames * base::Time::kNanosecondsPerSecond /
-                                 input_samples_per_second_;
+  int64_t timestamp_ns_new =
+      (pending_data_->timestamp() == INT64_MIN)
+          ? pending_data_->timestamp()
+          : pending_data_->timestamp() + fed_frames *
+                                             base::Time::kNanosecondsPerSecond /
+                                             input_samples_per_second_;
   int written = Java_AudioSinkAudioTrackImpl_writePcm(
       base::android::AttachCurrentThread(), j_audio_sink_audiotrack_impl_,
       left_to_send, timestamp_ns_new);
