@@ -878,7 +878,9 @@ void RePostTask(scoped_refptr<base::SingleThreadTaskRunner> task_runner,
 //    - High nesting level: 1 wake up per minute
 // Disable the kStopInBackground feature because it hides the effect of
 // intensive wake up throttling.
-TEST_P(FrameSchedulerImplStopInBackgroundDisabledTest, ThrottledTaskExecution) {
+// Flake test: crbug.com/1328967
+TEST_P(FrameSchedulerImplStopInBackgroundDisabledTest,
+       DISABLED_ThrottledTaskExecution) {
   // This TaskRunner is throttled.
   const scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       frame_scheduler_->GetTaskRunner(GetParam());
