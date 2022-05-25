@@ -132,7 +132,7 @@ class NET_EXPORT_PRIVATE HttpServerPropertiesManager {
   FRIEND_TEST_ALL_PREFIXES(HttpServerPropertiesManagerTest,
                            AdvertisedVersionsRoundTrip);
 
-  void AddServerData(const base::Value& server_dict,
+  void AddServerData(const base::Value::Dict& server_dict,
                      HttpServerProperties::ServerInfoMap* server_info_map,
                      bool use_network_isolation_key);
 
@@ -146,13 +146,13 @@ class NET_EXPORT_PRIVATE HttpServerPropertiesManager {
   // |alternative_service| is the output of parsing |dict|.
   // Return value is true if parsing is successful.
   static bool ParseAlternativeServiceDict(
-      const base::Value& dict,
+      const base::Value::Dict& dict,
       bool host_optional,
       const std::string& parsing_under,
       AlternativeService* alternative_service);
 
   static bool ParseAlternativeServiceInfoDictOfServer(
-      const base::Value& dict,
+      const base::Value::Dict& dict,
       const std::string& server_str,
       AlternativeServiceInfo* alternative_service_info);
 
@@ -161,43 +161,43 @@ class NET_EXPORT_PRIVATE HttpServerPropertiesManager {
   // not considered corruption).
   static bool ParseAlternativeServiceInfo(
       const url::SchemeHostPort& server,
-      const base::Value& server_dict,
+      const base::Value::Dict& server_dict,
       HttpServerProperties::ServerInfo* server_info);
 
   void ReadLastLocalAddressWhenQuicWorked(
-      const base::Value& server_dict,
+      const base::Value::Dict& server_dict,
       IPAddress* last_local_address_when_quic_worked);
   void ParseNetworkStats(const url::SchemeHostPort& server,
-                         const base::Value& server_dict,
+                         const base::Value::Dict& server_dict,
                          HttpServerProperties::ServerInfo* server_info);
   void AddToQuicServerInfoMap(
-      const base::Value& server_dict,
+      const base::Value::Dict& server_dict,
       bool use_network_isolation_key,
       HttpServerProperties::QuicServerInfoMap* quic_server_info_map);
   void AddToBrokenAlternativeServices(
-      const base::Value& broken_alt_svc_entry_dict,
+      const base::Value::Dict& broken_alt_svc_entry_dict,
       bool use_network_isolation_key,
       BrokenAlternativeServiceList* broken_alternative_service_list,
       RecentlyBrokenAlternativeServices* recently_broken_alternative_services);
 
   void SaveAlternativeServiceToServerPrefs(
       const AlternativeServiceInfoVector& alternative_service_info_vector,
-      base::Value* server_pref_dict);
+      base::Value::Dict& server_pref_dict);
   void SaveLastLocalAddressWhenQuicWorkedToPrefs(
       const IPAddress& last_local_address_when_quic_worked,
-      base::Value* http_server_properties_dict);
+      base::Value::Dict& http_server_properties_dict);
   void SaveNetworkStatsToServerPrefs(
       const ServerNetworkStats& server_network_stats,
-      base::Value* server_pref_dict);
+      base::Value::Dict& server_pref_dict);
   void SaveQuicServerInfoMapToServerPrefs(
       const HttpServerProperties::QuicServerInfoMap& quic_server_info_map,
-      base::Value* http_server_properties_dict);
+      base::Value::Dict& http_server_properties_dict);
   void SaveBrokenAlternativeServicesToPrefs(
       const BrokenAlternativeServiceList& broken_alternative_service_list,
       size_t max_broken_alternative_services,
       const RecentlyBrokenAlternativeServices&
           recently_broken_alternative_services,
-      base::Value* http_server_properties_dict);
+      base::Value::Dict& http_server_properties_dict);
 
   void OnHttpServerPropertiesLoaded();
 
