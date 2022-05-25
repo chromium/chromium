@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_NOTIFICATIONS_PASSPHRASE_TEXTFIELD_H_
-#define CHROME_BROWSER_ASH_NOTIFICATIONS_PASSPHRASE_TEXTFIELD_H_
+#ifndef CHROME_BROWSER_NOTIFICATIONS_PASSPHRASE_TEXTFIELD_H_
+#define CHROME_BROWSER_NOTIFICATIONS_PASSPHRASE_TEXTFIELD_H_
 
 #include <string>
 
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/textfield/textfield.h"
 
-namespace ash {
+namespace chromeos {
 
 class PassphraseTextfield : public views::Textfield {
  public:
@@ -40,6 +40,6 @@ class PassphraseTextfield : public views::Textfield {
   bool changed_;
 };
 
-}  // namespace ash
+}  // namespace chromeos
 
-#endif  // CHROME_BROWSER_ASH_NOTIFICATIONS_PASSPHRASE_TEXTFIELD_H_
+#endif  // CHROME_BROWSER_NOTIFICATIONS_PASSPHRASE_TEXTFIELD_H_

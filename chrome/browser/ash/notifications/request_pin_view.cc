@@ -12,7 +12,7 @@
 #include "base/i18n/number_formatting.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ash/notifications/passphrase_textfield.h"
+#include "chrome/browser/notifications/passphrase_textfield.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/grit/generated_resources.h"
@@ -173,7 +173,7 @@ void RequestPinView::Init() {
                              views::LayoutAlignment::kStart);
 
   // Textfield to enter the PIN/PUK.
-  textfield_ = AddChildView(std::make_unique<ash::PassphraseTextfield>());
+  textfield_ = AddChildView(std::make_unique<PassphraseTextfield>());
   textfield_->set_controller(this);
   textfield_->SetEnabled(true);
   textfield_->SetAssociatedLabel(header_label_);

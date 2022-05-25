@@ -5525,6 +5525,8 @@ static_library("browser") {
       "media/platform_verification_chromeos.h",
       "memory/oom_kills_monitor.cc",
       "memory/oom_kills_monitor.h",
+      "notifications/passphrase_textfield.cc",
+      "notifications/passphrase_textfield.h",
       "obsolete_system/obsolete_system_stub.cc",
       "platform_keys/extension_key_permissions_service.cc",
       "platform_keys/extension_key_permissions_service.h",

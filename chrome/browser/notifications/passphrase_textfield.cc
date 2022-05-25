@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/notifications/passphrase_textfield.h"
+#include "chrome/browser/notifications/passphrase_textfield.h"
 
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 
-namespace ash {
+namespace chromeos {
 
 PassphraseTextfield::PassphraseTextfield()
     : Textfield(), show_fake_(false), changed_(true) {
@@ -65,4 +65,4 @@ ADD_PROPERTY_METADATA(bool, ShowFake)
 ADD_READONLY_PROPERTY_METADATA(bool, Changed)
 END_METADATA
 
-}  // namespace ash
+}  // namespace chromeos

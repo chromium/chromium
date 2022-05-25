@@ -1618,8 +1618,6 @@ source_set("chromeos") {
     "../ash/notifications/kiosk_external_update_notification.h",
     "../ash/notifications/low_disk_notification.cc",
     "../ash/notifications/low_disk_notification.h",
-    "../ash/notifications/passphrase_textfield.cc",
-    "../ash/notifications/passphrase_textfield.h",
     "../ash/notifications/request_pin_view.cc",
     "../ash/notifications/request_pin_view.h",
     "../ash/notifications/request_system_proxy_credentials_view.cc",
