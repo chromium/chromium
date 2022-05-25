@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
+#include "chrome/browser/safe_browsing/cloud_content_scanning/cloud_binary_upload_service.h"
 #include "chrome/browser/safe_browsing/services_delegate.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 

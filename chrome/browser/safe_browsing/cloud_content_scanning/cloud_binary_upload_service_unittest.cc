@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
+#include "chrome/browser/safe_browsing/cloud_content_scanning/cloud_binary_upload_service.h"
 
 #include <memory>
 #include <utility>
@@ -137,9 +137,9 @@ class MockBinaryFCMService : public BinaryFCMService {
   MOCK_METHOD0(Connected, bool());
 };
 
-class BinaryUploadServiceTest : public testing::Test {
+class CloudBinaryUploadServiceTest : public testing::Test {
  public:
-  BinaryUploadServiceTest()
+  CloudBinaryUploadServiceTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         fake_factory_(true, enterprise_connectors::ContentAnalysisResponse()) {
     MultipartUploadRequest::RegisterFactoryForTests(&fake_factory_);
@@ -148,12 +148,12 @@ class BinaryUploadServiceTest : public testing::Test {
 
     // Since we have mocked the MultipartUploadRequest, we don't need a
     // URLLoaderFactory, so pass nullptr here.
-    service_ = std::make_unique<BinaryUploadService>(nullptr, &profile_,
-                                                     std::move(fcm_service));
+    service_ = std::make_unique<CloudBinaryUploadService>(
+        nullptr, &profile_, std::move(fcm_service));
 
     EXPECT_CALL(*fcm_service_, Connected()).WillRepeatedly(Return(true));
   }
-  ~BinaryUploadServiceTest() override {
+  ~CloudBinaryUploadServiceTest() override {
     MultipartUploadRequest::RegisterFactoryForTests(nullptr);
   }
 
@@ -204,7 +204,7 @@ class BinaryUploadServiceTest : public testing::Test {
   }
 
   void ServiceWithNoFCMConnection() {
-    service_ = std::make_unique<BinaryUploadService>(
+    service_ = std::make_unique<CloudBinaryUploadService>(
         nullptr, &profile_, std::unique_ptr<BinaryFCMService>(nullptr));
   }
 
@@ -254,12 +254,12 @@ class BinaryUploadServiceTest : public testing::Test {
  protected:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
-  std::unique_ptr<BinaryUploadService> service_;
+  std::unique_ptr<CloudBinaryUploadService> service_;
   raw_ptr<MockBinaryFCMService> fcm_service_;
   FakeMultipartUploadRequestFactory fake_factory_;
 };
 
-TEST_F(BinaryUploadServiceTest, FailsForLargeFile) {
+TEST_F(CloudBinaryUploadServiceTest, FailsForLargeFile) {
   BinaryUploadService::Result scanning_result;
   enterprise_connectors::ContentAnalysisResponse scanning_response;
 
@@ -280,7 +280,7 @@ TEST_F(BinaryUploadServiceTest, FailsForLargeFile) {
   EXPECT_EQ(scanning_result, BinaryUploadService::Result::FILE_TOO_LARGE);
 }
 
-TEST_F(BinaryUploadServiceTest, FailsWhenMissingInstanceID) {
+TEST_F(CloudBinaryUploadServiceTest, FailsWhenMissingInstanceID) {
   BinaryUploadService::Result scanning_result;
   enterprise_connectors::ContentAnalysisResponse scanning_response;
 
@@ -295,7 +295,8 @@ TEST_F(BinaryUploadServiceTest, FailsWhenMissingInstanceID) {
   EXPECT_EQ(scanning_result, BinaryUploadService::Result::FAILED_TO_GET_TOKEN);
 }
 
-TEST_F(BinaryUploadServiceTest, FailsWhenMissingInstanceID_Authentication) {
+TEST_F(CloudBinaryUploadServiceTest,
+       FailsWhenMissingInstanceID_Authentication) {
   BinaryUploadService::Result scanning_result;
   enterprise_connectors::ContentAnalysisResponse scanning_response;
 
@@ -323,7 +324,7 @@ TEST_F(BinaryUploadServiceTest, FailsWhenMissingInstanceID_Authentication) {
   EXPECT_EQ(scanning_result, BinaryUploadService::Result::FAILED_TO_GET_TOKEN);
 }
 
-TEST_F(BinaryUploadServiceTest, FailsWhenUploadFails) {
+TEST_F(CloudBinaryUploadServiceTest, FailsWhenUploadFails) {
   BinaryUploadService::Result scanning_result;
   enterprise_connectors::ContentAnalysisResponse scanning_response;
   std::unique_ptr<MockRequest> request =
@@ -339,7 +340,7 @@ TEST_F(BinaryUploadServiceTest, FailsWhenUploadFails) {
   EXPECT_EQ(scanning_result, BinaryUploadService::Result::UPLOAD_FAILURE);
 }
 
-TEST_F(BinaryUploadServiceTest, FailsWhenUploadFails_Authentication) {
+TEST_F(CloudBinaryUploadServiceTest, FailsWhenUploadFails_Authentication) {
   BinaryUploadService::Result scanning_result;
   enterprise_connectors::ContentAnalysisResponse scanning_response;
   std::unique_ptr<MockRequest> request =
@@ -356,7 +357,7 @@ TEST_F(BinaryUploadServiceTest, FailsWhenUploadFails_Authentication) {
   EXPECT_EQ(scanning_result, BinaryUploadService::Result::UNAUTHORIZED);
 }
 
-TEST_F(BinaryUploadServiceTest, HoldsScanResponsesUntilAllReady) {
+TEST_F(CloudBinaryUploadServiceTest, HoldsScanResponsesUntilAllReady) {
   BinaryUploadService::Result scanning_result =
       BinaryUploadService::Result::UNKNOWN;
   enterprise_connectors::ContentAnalysisResponse scanning_response;
@@ -396,7 +397,7 @@ TEST_F(BinaryUploadServiceTest, HoldsScanResponsesUntilAllReady) {
   EXPECT_EQ(scanning_result, BinaryUploadService::Result::SUCCESS);
 }
 
-TEST_F(BinaryUploadServiceTest, TimesOut) {
+TEST_F(CloudBinaryUploadServiceTest, TimesOut) {
   BinaryUploadService::Result scanning_result =
       BinaryUploadService::Result::UNKNOWN;
   enterprise_connectors::ContentAnalysisResponse scanning_response;
@@ -414,7 +415,7 @@ TEST_F(BinaryUploadServiceTest, TimesOut) {
   EXPECT_EQ(scanning_result, BinaryUploadService::Result::TIMEOUT);
 }
 
-TEST_F(BinaryUploadServiceTest, OnInstanceIDAfterTimeout) {
+TEST_F(CloudBinaryUploadServiceTest, OnInstanceIDAfterTimeout) {
   BinaryUploadService::Result scanning_result =
       BinaryUploadService::Result::UNKNOWN;
   enterprise_connectors::ContentAnalysisResponse scanning_response;
@@ -443,7 +444,7 @@ TEST_F(BinaryUploadServiceTest, OnInstanceIDAfterTimeout) {
   EXPECT_EQ(scanning_result, BinaryUploadService::Result::TIMEOUT);
 }
 
-TEST_F(BinaryUploadServiceTest, OnUploadCompleteAfterTimeout) {
+TEST_F(CloudBinaryUploadServiceTest, OnUploadCompleteAfterTimeout) {
   BinaryUploadService::Result scanning_result =
       BinaryUploadService::Result::UNKNOWN;
   enterprise_connectors::ContentAnalysisResponse scanning_response;
@@ -466,7 +467,7 @@ TEST_F(BinaryUploadServiceTest, OnUploadCompleteAfterTimeout) {
   EXPECT_EQ(scanning_result, BinaryUploadService::Result::TIMEOUT);
 }
 
-TEST_F(BinaryUploadServiceTest, OnGetResponseAfterTimeout) {
+TEST_F(CloudBinaryUploadServiceTest, OnGetResponseAfterTimeout) {
   BinaryUploadService::Result scanning_result =
       BinaryUploadService::Result::UNKNOWN;
   enterprise_connectors::ContentAnalysisResponse scanning_response;
@@ -490,7 +491,7 @@ TEST_F(BinaryUploadServiceTest, OnGetResponseAfterTimeout) {
   EXPECT_EQ(scanning_result, BinaryUploadService::Result::TIMEOUT);
 }
 
-TEST_F(BinaryUploadServiceTest, OnUnauthorized) {
+TEST_F(CloudBinaryUploadServiceTest, OnUnauthorized) {
   BinaryUploadService::Result scanning_result =
       BinaryUploadService::Result::UNKNOWN;
   enterprise_connectors::ContentAnalysisResponse scanning_response;
@@ -524,7 +525,7 @@ TEST_F(BinaryUploadServiceTest, OnUnauthorized) {
   EXPECT_EQ(scanning_result, BinaryUploadService::Result::UNAUTHORIZED);
 }
 
-TEST_F(BinaryUploadServiceTest, OnGetSynchronousResponse) {
+TEST_F(CloudBinaryUploadServiceTest, OnGetSynchronousResponse) {
   BinaryUploadService::Result scanning_result =
       BinaryUploadService::Result::UNKNOWN;
   enterprise_connectors::ContentAnalysisResponse scanning_response;
@@ -552,7 +553,7 @@ TEST_F(BinaryUploadServiceTest, OnGetSynchronousResponse) {
   EXPECT_EQ(scanning_result, BinaryUploadService::Result::SUCCESS);
 }
 
-TEST_F(BinaryUploadServiceTest, ReturnsAsynchronouslyWithNoFCM) {
+TEST_F(CloudBinaryUploadServiceTest, ReturnsAsynchronouslyWithNoFCM) {
   ServiceWithNoFCMConnection();
 
   BinaryUploadService::Result scanning_result =
@@ -572,7 +573,7 @@ TEST_F(BinaryUploadServiceTest, ReturnsAsynchronouslyWithNoFCM) {
   EXPECT_EQ(scanning_result, BinaryUploadService::Result::FAILED_TO_GET_TOKEN);
 }
 
-TEST_F(BinaryUploadServiceTest, ReturnsAsynchronouslyWithDisconnectedFCM) {
+TEST_F(CloudBinaryUploadServiceTest, ReturnsAsynchronouslyWithDisconnectedFCM) {
   ServiceWithDisconnectedFCM();
 
   BinaryUploadService::Result scanning_result =
@@ -592,7 +593,7 @@ TEST_F(BinaryUploadServiceTest, ReturnsAsynchronouslyWithDisconnectedFCM) {
   EXPECT_EQ(scanning_result, BinaryUploadService::Result::FAILED_TO_GET_TOKEN);
 }
 
-TEST_F(BinaryUploadServiceTest, IsAuthorizedValidTimer) {
+TEST_F(CloudBinaryUploadServiceTest, IsAuthorizedValidTimer) {
   // The 24 hours timer should be started on the first IsAuthorized call.
   ValidateAuthorizationTimerIdle();
   service_->IsAuthorized(
@@ -602,7 +603,7 @@ TEST_F(BinaryUploadServiceTest, IsAuthorizedValidTimer) {
   ValidateAuthorizationTimerStarted();
 }
 
-TEST_F(BinaryUploadServiceTest, IsAuthorizedMultipleDMTokens) {
+TEST_F(CloudBinaryUploadServiceTest, IsAuthorizedMultipleDMTokens) {
   service_->SetAuthForTesting("valid_dm_token", true);
   service_->SetAuthForTesting("invalid_dm_token", false);
 
@@ -624,7 +625,8 @@ TEST_F(BinaryUploadServiceTest, IsAuthorizedMultipleDMTokens) {
   }
 }
 
-TEST_F(BinaryUploadServiceTest, AdvancedProtectionMalwareRequestAuthorized) {
+TEST_F(CloudBinaryUploadServiceTest,
+       AdvancedProtectionMalwareRequestAuthorized) {
   AdvancedProtectionStatusManagerFactory::GetForProfile(&profile_)
       ->SetAdvancedProtectionStatusForTesting(/*enrolled=*/true);
 
@@ -658,7 +660,7 @@ TEST_F(BinaryUploadServiceTest, AdvancedProtectionMalwareRequestAuthorized) {
   EXPECT_EQ(scanning_result, BinaryUploadService::Result::SUCCESS);
 }
 
-TEST_F(BinaryUploadServiceTest, AdvancedProtectionDlpRequestUnauthorized) {
+TEST_F(CloudBinaryUploadServiceTest, AdvancedProtectionDlpRequestUnauthorized) {
   AdvancedProtectionStatusManagerFactory::GetForProfile(&profile_)
       ->SetAdvancedProtectionStatusForTesting(/*enrolled=*/true);
 
@@ -696,7 +698,7 @@ TEST_F(BinaryUploadServiceTest, AdvancedProtectionDlpRequestUnauthorized) {
   EXPECT_EQ(scanning_result, BinaryUploadService::Result::UNAUTHORIZED);
 }
 
-TEST_F(BinaryUploadServiceTest,
+TEST_F(CloudBinaryUploadServiceTest,
        DeepScanESBEnabledEnhancedProtectionMalwareRequestAuthorized) {
   safe_browsing::SetEnhancedProtectionPrefForTests(profile_.GetPrefs(),
                                                    /*value*/ true);
@@ -728,7 +730,7 @@ TEST_F(BinaryUploadServiceTest,
   EXPECT_EQ(scanning_result, BinaryUploadService::Result::SUCCESS);
 }
 
-TEST_F(BinaryUploadServiceTest, ConnectorUrlParams) {
+TEST_F(CloudBinaryUploadServiceTest, ConnectorUrlParams) {
   {
     MockRequest request(
         base::DoNothing(),
@@ -793,7 +795,7 @@ TEST_F(BinaryUploadServiceTest, ConnectorUrlParams) {
   }
 }
 
-TEST_F(BinaryUploadServiceTest, UrlOverride) {
+TEST_F(CloudBinaryUploadServiceTest, UrlOverride) {
   MockRequest request(
       base::DoNothing(),
       GURL("https://safebrowsing.google.com/safebrowsing/uploads/scan"));
@@ -820,33 +822,33 @@ TEST_F(BinaryUploadServiceTest, UrlOverride) {
             request.GetUrlWithParams());
 }
 
-TEST_F(BinaryUploadServiceTest, GetUploadUrl) {
+TEST_F(CloudBinaryUploadServiceTest, GetUploadUrl) {
   // testing enterprise scenario
-  ASSERT_EQ(safe_browsing::BinaryUploadService::GetUploadUrl(
+  ASSERT_EQ(CloudBinaryUploadService::GetUploadUrl(
                 /*is_consumer_scan_eligible */ false),
             GURL("https://safebrowsing.google.com/safebrowsing/uploads/scan"));
 
   // testing APP scenario with Deep Scanning for ESB Feature enabled
   ASSERT_EQ(
-      safe_browsing::BinaryUploadService::GetUploadUrl(
+      CloudBinaryUploadService::GetUploadUrl(
           /*is_consumer_scan_eligible */ true),
       GURL("https://safebrowsing.google.com/safebrowsing/uploads/consumer"));
 }
 
-TEST_F(BinaryUploadServiceTest, RequestQueue) {
+TEST_F(CloudBinaryUploadServiceTest, RequestQueue) {
   BinaryUploadService::Result scanning_result =
       BinaryUploadService::Result::UNKNOWN;
   enterprise_connectors::ContentAnalysisResponse scanning_response;
   std::vector<MockRequest*> requests;
 
-  ExpectInstanceID("valid id",
-                   2 * BinaryUploadService::GetParallelActiveRequestsMax());
+  ExpectInstanceID(
+      "valid id", 2 * CloudBinaryUploadService::GetParallelActiveRequestsMax());
   ExpectNetworkResponse(true, enterprise_connectors::ContentAnalysisResponse());
 
   // Uploading 2*max requests before any response is received ensures that the
   // queue is populated and processed correctly.
   for (size_t i = 0;
-       i < 2 * BinaryUploadService::GetParallelActiveRequestsMax(); ++i) {
+       i < 2 * CloudBinaryUploadService::GetParallelActiveRequestsMax(); ++i) {
     std::unique_ptr<MockRequest> request =
         MakeRequest(&scanning_result, &scanning_response, /*is_app*/ false);
     request->add_tag("dlp");
@@ -874,46 +876,46 @@ TEST_F(BinaryUploadServiceTest, RequestQueue) {
   EXPECT_EQ(scanning_result, BinaryUploadService::Result::SUCCESS);
 }
 
-TEST_F(BinaryUploadServiceTest, TestMaxParallelRequestsFlag) {
-  EXPECT_EQ(5UL, BinaryUploadService::GetParallelActiveRequestsMax());
+TEST_F(CloudBinaryUploadServiceTest, TestMaxParallelRequestsFlag) {
+  EXPECT_EQ(5UL, CloudBinaryUploadService::GetParallelActiveRequestsMax());
 
   {
     base::test::ScopedCommandLine scoped_command_line;
     scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
         "wp-max-parallel-active-requests", "10");
-    EXPECT_EQ(10UL, BinaryUploadService::GetParallelActiveRequestsMax());
+    EXPECT_EQ(10UL, CloudBinaryUploadService::GetParallelActiveRequestsMax());
   }
 
   {
     base::test::ScopedCommandLine scoped_command_line;
     scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
         "wp-max-parallel-active-requests", "100");
-    EXPECT_EQ(100UL, BinaryUploadService::GetParallelActiveRequestsMax());
+    EXPECT_EQ(100UL, CloudBinaryUploadService::GetParallelActiveRequestsMax());
   }
 
   {
     base::test::ScopedCommandLine scoped_command_line;
     scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
         "wp-max-parallel-active-requests", "0");
-    EXPECT_EQ(5UL, BinaryUploadService::GetParallelActiveRequestsMax());
+    EXPECT_EQ(5UL, CloudBinaryUploadService::GetParallelActiveRequestsMax());
   }
 
   {
     base::test::ScopedCommandLine scoped_command_line;
     scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
         "wp-max-parallel-active-requests", "foo");
-    EXPECT_EQ(5UL, BinaryUploadService::GetParallelActiveRequestsMax());
+    EXPECT_EQ(5UL, CloudBinaryUploadService::GetParallelActiveRequestsMax());
   }
 
   {
     base::test::ScopedCommandLine scoped_command_line;
     scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
         "wp-max-parallel-active-requests", "-1");
-    EXPECT_EQ(5UL, BinaryUploadService::GetParallelActiveRequestsMax());
+    EXPECT_EQ(5UL, CloudBinaryUploadService::GetParallelActiveRequestsMax());
   }
 }
 
-TEST_F(BinaryUploadServiceTest, EmptyFileRequest) {
+TEST_F(CloudBinaryUploadServiceTest, EmptyFileRequest) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   base::FilePath file_path = temp_dir.GetPath().AppendASCII("normal.doc");

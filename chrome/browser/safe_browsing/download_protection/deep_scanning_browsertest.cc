@@ -30,6 +30,7 @@
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_fcm_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service_factory.h"
+#include "chrome/browser/safe_browsing/cloud_content_scanning/cloud_binary_upload_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_browsertest_base.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_test_utils.h"
 #include "chrome/browser/safe_browsing/download_protection/deep_scanning_request.h"
@@ -358,7 +359,8 @@ class DownloadDeepScanningBrowserTestBase
   }
 
   void AuthorizeForDeepScanning() {
-    BinaryUploadServiceFactory::GetForProfile(browser()->profile())
+    static_cast<safe_browsing::CloudBinaryUploadService*>(
+        BinaryUploadServiceFactory::GetForProfile(browser()->profile()))
         ->SetAuthForTesting("dm_token", /*authorized=*/true);
   }
 
@@ -371,7 +373,7 @@ class DownloadDeepScanningBrowserTestBase
         std::make_unique<FakeBinaryFCMService>();
     binary_fcm_service_ = binary_fcm_service.get();
     Profile* profile = Profile::FromBrowserContext(browser_context);
-    return std::make_unique<BinaryUploadService>(
+    return std::make_unique<safe_browsing::CloudBinaryUploadService>(
         g_browser_process->safe_browsing_service()->GetURLLoaderFactory(
             profile),
         profile, std::move(binary_fcm_service));
@@ -424,7 +426,7 @@ class DownloadDeepScanningBrowserTestBase
 
   void InterceptRequest(const network::ResourceRequest& request) {
     if (is_consumer_) {
-      if (request.url == BinaryUploadService::GetUploadUrl(
+      if (request.url == safe_browsing::CloudBinaryUploadService::GetUploadUrl(
                              /*is_consumer_scan_eligible=*/true)) {
         ASSERT_TRUE(
             GetUploadMetadata(GetDataPipeUploadData(request), &last_request_));
@@ -432,7 +434,7 @@ class DownloadDeepScanningBrowserTestBase
           std::move(waiting_for_upload_closure_).Run();
       }
     } else {
-      if (request.url == BinaryUploadService::GetUploadUrl(
+      if (request.url == safe_browsing::CloudBinaryUploadService::GetUploadUrl(
                              /*is_consumer_scan_eligible=*/false)) {
         ASSERT_TRUE(
             GetUploadMetadata(GetDataPipeUploadData(request), &last_request_));

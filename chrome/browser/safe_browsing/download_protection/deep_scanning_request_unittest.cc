@@ -28,7 +28,7 @@
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_fcm_service.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
+#include "chrome/browser/safe_browsing/cloud_content_scanning/cloud_binary_upload_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_test_utils.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
@@ -122,12 +122,12 @@ constexpr char kScanId[] = "scan_id";
 
 }  // namespace
 
-class FakeBinaryUploadService : public BinaryUploadService {
+class FakeBinaryUploadService : public CloudBinaryUploadService {
  public:
   FakeBinaryUploadService()
-      : BinaryUploadService(/*url_loader_factory=*/nullptr,
-                            /*profile=*/nullptr,
-                            /*binary_fcm_service=*/nullptr) {}
+      : CloudBinaryUploadService(/*url_loader_factory=*/nullptr,
+                                 /*profile=*/nullptr,
+                                 /*binary_fcm_service=*/nullptr) {}
 
   void MaybeUploadForDeepScanning(std::unique_ptr<Request> request) override {
     last_request_ = request->content_analysis_request();
