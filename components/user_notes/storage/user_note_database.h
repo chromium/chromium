@@ -19,6 +19,9 @@
 
 namespace user_notes {
 
+constexpr base::FilePath::CharType kDatabaseName[] =
+    FILE_PATH_LITERAL("UserNotes.db");
+
 // Provides the backend SQLite support for user notes.
 // This class must be used on a same blocking sequence.
 class UserNoteDatabase {
@@ -27,7 +30,7 @@ class UserNoteDatabase {
   ~UserNoteDatabase();
 
   // Initialises internal database. Must be called prior to any other usage.
-  void Init();
+  bool Init();
 
   UserNoteMetadataSnapshot GetNoteMetadataForUrls(std::vector<GURL> urls);
 
@@ -52,7 +55,16 @@ class UserNoteDatabase {
   void DeleteAllNotes();
 
  private:
+  // Called by the database to report errors.
+  void DatabaseErrorCallback(int error, sql::Statement* stmt);
+
+  // Creates or migrates to the new schema if needed.
+  bool InitSchema();
+
+  bool CreateSchema();
+
   sql::Database db_ GUARDED_BY_CONTEXT(sequence_checker_);
+
   const base::FilePath db_file_path_;
 
   SEQUENCE_CHECKER(sequence_checker_);

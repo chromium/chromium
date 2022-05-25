@@ -31,3 +31,16 @@ static_library("internal") {
     "//url",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "user_note_database_unittest.cc" ]
+
+  deps = [
+    ":internal",
+    "//base",
+    "//sql",
+    "//sql:test_support",
+    "//testing/gtest",
+  ]
+}
