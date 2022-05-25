@@ -109,6 +109,10 @@ if (enable_vulkan) {
 
     defines = [ "IS_VULKAN_IMPL" ]
 
+    if (ozone_platform == "x11") {
+      defines += [ "OZONE_PLATFORM_IS_X11" ]
+    }
+
     deps = [
       ":buildflags",
       "//base",
