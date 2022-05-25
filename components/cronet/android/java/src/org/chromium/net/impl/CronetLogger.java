@@ -4,7 +4,7 @@
 
 package org.chromium.net.impl;
 
-import org.chromium.net.ExperimentalCronetEngine;
+import java.time.Duration;
 
 /**
  * Base class for implementing a CronetLogger.
@@ -21,38 +21,54 @@ public abstract class CronetLogger {
         CRONET_SOURCE_FALLBACK,
     }
 
+    /**
+     * Logs a cronetEngine creation action with the details of the creation.
+     *
+     * @param cronetEngineId the id of the engine being created.
+     * @param builder the builder used in creating the engine. This allows us to log the details of
+     * the cronet. While this builder exposes some setter methods, do not set any of the variables
+     * here. It's here just for logging purposes.
+     * @param version the version of cronet used for the engine. See {@link CronetVersion}
+     * @param source the source of the cronet provider for the engine. See {@link CronetSource}
+     */
     public abstract void logCronetEngineCreation(int cronetEngineId,
-            ExperimentalCronetEngine.Builder builder, CronetVersion version, CronetSource source);
+            CronetEngineBuilderImpl builder, CronetVersion version, CronetSource source);
 
+    /**
+     * Logs a request/response action.
+     * @param cronetEngineId the id of the engine used for the request
+     * @param trafficInfo the associated traffic information. See {@link CronetTrafficInfo}
+     */
     public abstract void logCronetTrafficInfo(int cronetEngineId, CronetTrafficInfo trafficInfo);
 
     /**
-     * This aggregates the information about request and response traffic for a
-     * particular CronetEngine
+     * Aggregates the information about request and response traffic for a
+     * particular CronetEngine.
      */
     public static class CronetTrafficInfo {
-        private final int mRequestHeaderSizeInBytes;
-        private final int mRequestBodySizeInBytes;
-        private final int mResponseHeaderSizeInBytes;
-        private final int mResponseBodySizeInBytes;
+        private final long mRequestHeaderSizeInBytes;
+        private final long mRequestBodySizeInBytes;
+        private final long mResponseHeaderSizeInBytes;
+        private final long mResponseBodySizeInBytes;
         private final int mResponseStatusCode;
-        private final int mHeadersLatencyInMillis;
-        private final int mTotalLatencyInMillis;
+        private final Duration mHeadersLatency;
+        private final Duration mTotalLatency;
         private final String mNegotiatedProtocol;
         private final boolean mWasConnectionMigrationAttempted;
         private final boolean mDidConnectionMigrationSucceed;
 
-        public CronetTrafficInfo(int requestHeaderSizeInBytes, int requestBodySizeInBytes,
-                int responseHeaderSizeInBytes, int responseBodySizeInBytes, int responseStatusCode,
-                int headersLatencyInMillis, int totalLatencyInMillis, String negotiatedProtocol,
-                boolean wasConnectionMigrationAttempted, boolean didConnectionMigrationSucceed) {
+        public CronetTrafficInfo(long requestHeaderSizeInBytes, long requestBodySizeInBytes,
+                long responseHeaderSizeInBytes, long responseBodySizeInBytes,
+                int responseStatusCode, Duration headersLatency, Duration totalLatency,
+                String negotiatedProtocol, boolean wasConnectionMigrationAttempted,
+                boolean didConnectionMigrationSucceed) {
             mRequestHeaderSizeInBytes = requestHeaderSizeInBytes;
             mRequestBodySizeInBytes = requestBodySizeInBytes;
             mResponseHeaderSizeInBytes = responseHeaderSizeInBytes;
             mResponseBodySizeInBytes = responseBodySizeInBytes;
             mResponseStatusCode = responseStatusCode;
-            mHeadersLatencyInMillis = headersLatencyInMillis;
-            mTotalLatencyInMillis = totalLatencyInMillis;
+            mHeadersLatency = headersLatency;
+            mTotalLatency = totalLatency;
             mNegotiatedProtocol = negotiatedProtocol;
             mWasConnectionMigrationAttempted = wasConnectionMigrationAttempted;
             mDidConnectionMigrationSucceed = didConnectionMigrationSucceed;
@@ -61,28 +77,28 @@ public abstract class CronetLogger {
         /**
          * @return The total size of headers sent in bytes
          */
-        public int getRequestHeaderSizeInBytes() {
+        public long getRequestHeaderSizeInBytes() {
             return mRequestHeaderSizeInBytes;
         }
 
         /**
          * @return The total size of request body sent, if any, in bytes
          */
-        public int getRequestBodySizeInBytes() {
+        public long getRequestBodySizeInBytes() {
             return mRequestBodySizeInBytes;
         }
 
         /**
          * @return The total size of headers received in bytes
          */
-        public int getResponseHeaderSizeInBytes() {
+        public long getResponseHeaderSizeInBytes() {
             return mResponseHeaderSizeInBytes;
         }
 
         /**
          * @return The total size of response body, if any, received in bytes
          */
-        public int getResponseBodySizeInBytes() {
+        public long getResponseBodySizeInBytes() {
             return mResponseBodySizeInBytes;
         }
 
@@ -97,20 +113,20 @@ public abstract class CronetLogger {
          * The time it took from starting the request to receiving the full set of
          * response headers.
          *
-         * @return The time to get response headers in milliseconds
+         * @return The time to get response headers
          */
-        public int getHeadersLatencyInMillis() {
-            return mHeadersLatencyInMillis;
+        public Duration getHeadersLatency() {
+            return mHeadersLatency;
         }
 
         /**
          * The time it took from starting the request to receiving the entire
          * response.
          *
-         * @return The time to get total response in milliseconds
+         * @return The time to get total response
          */
-        public int getTotalLatencyInMillis() {
-            return mTotalLatencyInMillis;
+        public Duration getTotalLatency() {
+            return mTotalLatency;
         }
 
         /**
