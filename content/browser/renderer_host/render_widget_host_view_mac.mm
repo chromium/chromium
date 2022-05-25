@@ -469,16 +469,10 @@ void RenderWidgetHostViewMac::NotifyHostAndDelegateOnWasShown(
 
   // If the frame for the renderer is already available, then the
   // tab-switching time is the presentation time for the browser-compositor.
-  DelegatedFrameHost* delegated_frame_host =
-      browser_compositor_->GetDelegatedFrameHost();
-  DCHECK(delegated_frame_host);
-  const bool record_presentation_time = has_saved_frame;
-  delegated_frame_host->WasShown(
-      browser_compositor_->GetRendererLocalSurfaceId(),
-      browser_compositor_->GetRendererSize(),
-      record_presentation_time
-          ? std::move(tab_switch_start_state)
-          : blink::mojom::RecordContentToVisibleTimeRequestPtr());
+  if (has_saved_frame && tab_switch_start_state) {
+    browser_compositor_->RequestPresentationTimeForNextFrame(
+        std::move(tab_switch_start_state));
+  }
 }
 
 void RenderWidgetHostViewMac::RequestPresentationTimeFromHostOrDelegate(
@@ -491,8 +485,8 @@ void RenderWidgetHostViewMac::RequestPresentationTimeFromHostOrDelegate(
   if (browser_compositor_->GetDelegatedFrameHost()->HasSavedFrame()) {
     // If the frame for the renderer is already available, then the
     // tab-switching time is the presentation time for the browser-compositor.
-    browser_compositor_->GetDelegatedFrameHost()
-        ->RequestPresentationTimeForNextFrame(std::move(visible_time_request));
+    browser_compositor_->RequestPresentationTimeForNextFrame(
+        std::move(visible_time_request));
   } else {
     host()->RequestPresentationTimeForNextFrame(
         std::move(visible_time_request));

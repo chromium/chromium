@@ -63,6 +63,17 @@
 #include "ui/android/delegated_frame_host_android.h"
 #endif
 
+#if BUILDFLAG(IS_MAC)
+#include "content/browser/renderer_host/browser_compositor_view_mac.h"
+#include "content/browser/renderer_host/delegated_frame_host.h"
+#include "content/browser/renderer_host/test_render_widget_host_view_mac_factory.h"
+#include "content/public/browser/context_factory.h"
+#include "third_party/blink/public/common/page/content_to_visible_time_reporter.h"
+#include "ui/compositor/compositor.h"
+#include "ui/compositor/layer.h"
+#include "ui/compositor/recyclable_compositor_mac.h"
+#endif
+
 namespace content {
 
 namespace {
@@ -1074,6 +1085,13 @@ class RenderWidgetHostViewPresentationFeedbackBrowserTest
 
     // Start with the widget hidden.
     rwhvb->Hide();
+
+#if BUILDFLAG(IS_MAC)
+    // On Mac, DelegatedFrameHost only behaves the same as on other platforms
+    // when it has no parent UI layer.
+    ASSERT_FALSE(
+        GetBrowserCompositor()->DelegatedFrameHostGetLayer()->parent());
+#endif
   }
 
   // Set a VisibleTimeRequest that will be sent the first time the widget
@@ -1173,6 +1191,59 @@ class RenderWidgetHostViewPresentationFeedbackBrowserTest
     return AssertionSuccess();
   }
 
+#if BUILDFLAG(IS_MAC)
+  // Helpers for parent layer tests.
+
+  // Holds a ui::Layer with its own compositor to be set as parent layer during
+  // tests. This must be destroyed before tearing down the test harness so that
+  // the ContentBrowserTest environment doesn't have any references to the
+  // ui::Layer during destruction.
+  class ScopedParentLayer {
+   public:
+    ScopedParentLayer(BrowserCompositorMac* browser_compositor)
+        : browser_compositor_(browser_compositor) {
+      recyclable_compositor_ =
+          ui::RecyclableCompositorMacFactory::Get()->CreateCompositor(
+              content::GetContextFactory());
+      layer_.SetCompositorForTesting(recyclable_compositor_->compositor());
+    }
+
+    ~ScopedParentLayer() {
+      browser_compositor_->SetParentUiLayer(nullptr);
+      layer_.ResetCompositor();
+      ui::RecyclableCompositorMacFactory::Get()->RecycleCompositor(
+          std::move(recyclable_compositor_));
+    }
+
+    ui::Layer* layer() { return &layer_; }
+
+   private:
+    raw_ptr<BrowserCompositorMac> browser_compositor_;
+    ui::Layer layer_{ui::LAYER_SOLID_COLOR};
+    std::unique_ptr<ui::RecyclableCompositorMac> recyclable_compositor_;
+  };
+
+  BrowserCompositorMac* GetBrowserCompositor() const {
+    return GetBrowserCompositorMacForTesting(GetRenderWidgetHostView());
+  }
+
+  // Waits for presentation feedback, then expects that it includes a specific
+  // WithSavedFrame result value.
+  void WaitForUnhandledSavedFrameFeedback() {
+    ASSERT_TRUE(WaitForPresentationFeedback(
+        HistogramToExpect::kTotalIncompleteSwitchDuration));
+    // If ExpectUniqueSample fails, include all related histograms for easier
+    // debugging.
+    SCOPED_TRACE(::testing::Message()
+                 << "All histograms: "
+                 << PrintToString(histogram_tester_.GetTotalCountsForPrefix(
+                        "Browser.Tabs.")));
+    histogram_tester_.ExpectUniqueSample(
+        "Browser.Tabs.TabSwitchResult2.WithSavedFrames",
+        blink::ContentToVisibleTimeReporter::TabSwitchResult::kUnhandled, 1);
+  }
+#endif
+
   base::test::ScopedFeatureList features_;
   base::HistogramTester histogram_tester_;
 };
@@ -1266,6 +1337,47 @@ IN_PROC_BROWSER_TEST_P(
   GetRenderWidgetHostView()->Hide();
   EXPECT_TRUE(WaitForPresentationFeedback(HistogramToExpect::kNothing));
 }
+
+#if BUILDFLAG(IS_MAC)
+
+// The default tests do not set a parent UI layer, so the BrowserCompositorMac
+// state is always HasNoCompositor when the RWHV is hidden, or HasOwnCompositor
+// when the RWHV is visible. These tests add a parent layer to make sure that
+// presentation feedback is logged as Unhandled when the state is
+// UseParentLayerCompositor, instead of being silently dropped.
+
+IN_PROC_BROWSER_TEST_P(
+    RenderWidgetHostViewPresentationFeedbackMetrics2BrowserTest,
+    ShowWithParentLayer) {
+  ASSERT_TRUE(CreateVisibleTimeRequest());
+  ScopedParentLayer parent_layer(GetBrowserCompositor());
+  GetBrowserCompositor()->SetParentUiLayer(parent_layer.layer());
+  GetRenderWidgetHostView()->ShowWithVisibility(PageVisibilityState::kVisible);
+  WaitForUnhandledSavedFrameFeedback();
+}
+
+IN_PROC_BROWSER_TEST_P(
+    RenderWidgetHostViewPresentationFeedbackMetrics2BrowserTest,
+    ShowThenAddParentLayer) {
+  ASSERT_TRUE(CreateVisibleTimeRequest());
+  GetRenderWidgetHostView()->ShowWithVisibility(PageVisibilityState::kVisible);
+  ScopedParentLayer parent_layer(GetBrowserCompositor());
+  GetBrowserCompositor()->SetParentUiLayer(parent_layer.layer());
+  WaitForUnhandledSavedFrameFeedback();
+}
+
+IN_PROC_BROWSER_TEST_P(
+    RenderWidgetHostViewPresentationFeedbackMetrics2BrowserTest,
+    ShowThenRemoveParentLayer) {
+  ASSERT_TRUE(CreateVisibleTimeRequest());
+  ScopedParentLayer parent_layer(GetBrowserCompositor());
+  GetBrowserCompositor()->SetParentUiLayer(parent_layer.layer());
+  GetRenderWidgetHostView()->ShowWithVisibility(PageVisibilityState::kVisible);
+  GetBrowserCompositor()->SetParentUiLayer(nullptr);
+  WaitForUnhandledSavedFrameFeedback();
+}
+
+#endif  // BUILDFLAG(IS_MAC)
 
 #endif  // !BUILDFLAG(IS_ANDROID)
 

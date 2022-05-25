@@ -108,12 +108,18 @@ ContentToVisibleTimeReporter::TabWasShown(bool has_saved_frames,
           show_reason_bfcache_restore));
 }
 
-void ContentToVisibleTimeReporter::TabWasHidden() {
+void ContentToVisibleTimeReporter::TabMeasurementWasInterrupted(
+    TabSwitchResult result) {
+  DCHECK_NE(result, TabSwitchResult::kSuccess);
+  if (result == TabSwitchResult::kUnhandled &&
+      !IsTabSwitchMetric2FeatureEnabled()) {
+    // Unhandled was not reported for the legacy metric.
+    return;
+  }
   if (tab_switch_start_state_ &&
       (!IsTabSwitchMetric2FeatureEnabled() ||
        tab_switch_start_state_->show_reason_tab_switching)) {
-    RecordHistogramsAndTraceEvents(TabSwitchResult::kIncomplete,
-                                   true /* show_reason_tab_switching */,
+    RecordHistogramsAndTraceEvents(result, true /* show_reason_tab_switching */,
                                    false /* show_reason_bfcache_restore */,
                                    gfx::PresentationFeedback::Failure());
   }
@@ -191,6 +197,7 @@ void ContentToVisibleTimeReporter::RecordHistogramsAndTraceEvents(
         break;
       case TabSwitchResult::kMissedTabHide:
       case TabSwitchResult::kIncomplete:
+      case TabSwitchResult::kUnhandled:
         base::UmaHistogramMediumTimes(
             base::StrCat(
                 {"Browser.Tabs.TotalIncompleteSwitchDuration2.", suffix}),
@@ -223,6 +230,7 @@ void ContentToVisibleTimeReporter::RecordHistogramsAndTraceEvents(
           tab_switch_duration);
       break;
     case TabSwitchResult::kMissedTabHide:
+    case TabSwitchResult::kUnhandled:
       // This was not included in the v1 histograms.
       DCHECK(IsTabSwitchMetric2FeatureEnabled());
       [[fallthrough]];

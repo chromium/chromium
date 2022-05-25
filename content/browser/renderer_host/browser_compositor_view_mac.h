@@ -14,6 +14,7 @@
 #include "components/viz/common/surfaces/scoped_surface_id_allocator.h"
 #include "content/browser/renderer_host/delegated_frame_host.h"
 #include "content/common/content_export.h"
+#include "third_party/blink/public/mojom/widget/record_content_to_visible_time_request.mojom-forward.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/compositor_observer.h"
 #include "ui/compositor/layer_observer.h"
@@ -108,6 +109,13 @@ class CONTENT_EXPORT BrowserCompositorMac : public DelegatedFrameHostClient,
       base::OnceCallback<void()> allocation_task);
   const viz::LocalSurfaceId& GetRendererLocalSurfaceId();
   void TransformPointToRootSurface(gfx::PointF* point);
+
+  // Sends `visible_time_request` to the DelegatedFrameHost. Use this instead of
+  // passing the request directly to DelegatedFrameHost::WasShown or
+  // DelegatedFrameHost::RequestPresentationTimeForNextFrame because it will
+  // record the right metrics for the UseParentLayerCompositor state.
+  void RequestPresentationTimeForNextFrame(
+      blink::mojom::RecordContentToVisibleTimeRequestPtr visible_time_request);
 
   // Indicate that the recyclable compositor should be destroyed, and no future
   // compositors should be recycled.

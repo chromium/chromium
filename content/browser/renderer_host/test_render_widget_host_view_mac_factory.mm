@@ -14,4 +14,9 @@ RenderWidgetHostViewBase* CreateRenderWidgetHostViewMacForTesting(
   return new RenderWidgetHostViewMac(widget);
 }
 
+BrowserCompositorMac* GetBrowserCompositorMacForTesting(
+    const RenderWidgetHostView* rwhv) {
+  return static_cast<const RenderWidgetHostViewMac*>(rwhv)->BrowserCompositor();
+}
+
 }  // namespace content
