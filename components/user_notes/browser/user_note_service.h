@@ -88,6 +88,8 @@ class UserNoteService : public KeyedService, public UserNotesUIDelegate {
   void OnNoteCreationDone(const base::UnguessableToken& id,
                           const std::string& note_content) override;
   void OnNoteCreationCancelled(const base::UnguessableToken& id) override;
+  void OnNoteUpdated(const base::UnguessableToken& id,
+                     const std::string& note_content) override;
 
  private:
   struct ModelMapEntry {

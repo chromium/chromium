@@ -33,11 +33,13 @@
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/layout/layout_types.h"
+#include "ui/views/view_utils.h"
 
 namespace {
 
 constexpr int kUserNoteDateViewId = 180;
 constexpr int kUserNoteMenuButtonViewId = 181;
+constexpr int kUserNoteQuoteViewId = 182;
 
 // Layout structure:
 //
@@ -125,6 +127,7 @@ std::unique_ptr<views::View> CreateTargetTextView(
   user_note_quote->SetMultiLine(true);
   user_note_quote->SetMaxLines(user_note_quote_max_lines);
   user_note_quote->SetElideBehavior(gfx::ELIDE_TAIL);
+  user_note_quote->SetID(kUserNoteQuoteViewId);
   // User note quote layout
   const views::FlexSpecification text_flex(
       views::LayoutOrientation::kVertical,
@@ -148,10 +151,11 @@ std::unique_ptr<views::View> CreateTargetTextView(
 
 // Layout structure:
 //
-// [    cancel add]  <--- button container
+// [    cancel (add or save)]  <--- button container
 std::unique_ptr<views::View> CreateButtonsView(
     base::RepeatingClosure cancel_callback,
-    base::RepeatingClosure add_callback) {
+    base::RepeatingClosure action_callback,
+    UserNoteView::State state) {
   auto button_container = std::make_unique<views::View>();
 
   // Cancel button
@@ -162,12 +166,14 @@ std::unique_ptr<views::View> CreateButtonsView(
   cancel_button->SetEnabledTextColors(SK_ColorBLUE);
   button_container->AddChildView(std::move(cancel_button));
 
-  // Add button
-  auto add_button = std::make_unique<views::MdTextButton>(
-      add_callback, l10n_util::GetStringUTF16(IDS_ADD));
-  add_button->SetCustomPadding(button_padding);
-  add_button->SetProminent(true);
-  button_container->AddChildView(std::move(add_button));
+  // Action button
+  auto action_button = std::make_unique<views::MdTextButton>(
+      action_callback,
+      l10n_util::GetStringUTF16(
+          state == UserNoteView::State::kCreating ? IDS_ADD : IDS_SAVE));
+  action_button->SetCustomPadding(button_padding);
+  action_button->SetProminent(true);
+  button_container->AddChildView(std::move(action_button));
 
   // Button container layout
   ChromeLayoutProvider* const chrome_layout_provider =
@@ -240,10 +246,8 @@ UserNoteView::UserNoteView(UserNoteUICoordinator* coordinator,
   const int corner_radius = views::LayoutProvider::Get()->GetCornerRadiusMetric(
       views::Emphasis::kHigh);
   const int rounded_border_thickness = 1;
-  const SkColor border_color = UserNoteView::State::kCreating == state ||
-                                       UserNoteView::State::kEditing == state
-                                   ? SK_ColorBLUE
-                                   : SK_ColorLTGRAY;
+  const SkColor border_color =
+      UserNoteView::State::kCreating == state ? SK_ColorBLUE : SK_ColorLTGRAY;
 
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical)
@@ -265,7 +269,7 @@ void UserNoteView::SetDefaultOrDetachedState(base::Time date,
                                              const std::string quote) {
   if (user_note_header_) {
     user_note_header_->SetVisible(true);
-    views::Label* date_view = static_cast<views::Label*>(
+    views::Label* date_view = views::AsViewClass<views::Label>(
         user_note_header_->GetViewByID(kUserNoteDateViewId));
     date_view->SetText(ConvertDate(date));
   } else {
@@ -290,7 +294,8 @@ void UserNoteView::SetDefaultOrDetachedState(base::Time date,
   }
 }
 
-void UserNoteView::SetCreatingOrEditState(const std::string content) {
+void UserNoteView::SetCreatingOrEditState(const std::string content,
+                                          UserNoteView::State state) {
   if (text_area_) {
     text_area_->SetVisible(true);
   } else {
@@ -304,10 +309,13 @@ void UserNoteView::SetCreatingOrEditState(const std::string content) {
     button_container_->SetVisible(true);
   } else {
     button_container_ = AddChildView(CreateButtonsView(
-        base::BindRepeating(&UserNoteView::OnCancelNewUserNote,
+        base::BindRepeating(&UserNoteView::OnCancelUserNote,
+                            base::Unretained(this), state),
+        base::BindRepeating(state == UserNoteView::State::kCreating
+                                ? &UserNoteView::OnAddUserNote
+                                : &UserNoteView::OnSaveUserNote,
                             base::Unretained(this)),
-        base::BindRepeating(&UserNoteView::OnAddUserNote,
-                            base::Unretained(this))));
+        state));
   }
 }
 
@@ -320,13 +328,13 @@ void UserNoteView::CreateOrUpdateNoteView(UserNoteView::State state,
       SetDefaultOrDetachedState(date, content, /*quote =*/std::string());
       break;
     case UserNoteView::State::kCreating:
-      SetCreatingOrEditState(/*content =*/std::string());
+      SetCreatingOrEditState(/*content =*/std::string(), state);
       break;
-    case UserNoteView::State::kOrphaned:
+    case UserNoteView::State::kDetached:
       SetDefaultOrDetachedState(date, content, quote);
       break;
     case UserNoteView::State::kEditing:
-      SetCreatingOrEditState(content);
+      SetCreatingOrEditState(content, state);
       break;
     default:
       SetBorder(nullptr);
@@ -368,8 +376,22 @@ void UserNoteView::OnMenuClosed() {
   dialog_model_ = nullptr;
 }
 
-void UserNoteView::OnCancelNewUserNote() {
-  coordinator_->OnNoteCreationCancelled(UserNoteId());
+void UserNoteView::OnCancelUserNote(UserNoteView::State state) {
+  if (state == UserNoteView::State::kCreating) {
+    coordinator_->OnNoteCreationCancelled(UserNoteId(), this);
+    return;
+  }
+
+  // Hide editing state
+  GetBorder()->set_color(SK_ColorLTGRAY);
+  text_area_->SetVisible(false);
+  button_container_->SetVisible(false);
+
+  // Show default/detached state
+  user_note_body_->SetVisible(false);
+  if (user_note_quote_)
+    user_note_quote_->SetVisible(false);
+  user_note_header_->SetVisible(false);
 }
 
 void UserNoteView::OnAddUserNote() {
@@ -391,7 +413,20 @@ void UserNoteView::OnAddUserNote() {
 }
 
 void UserNoteView::OnEditUserNote(int event_flags) {
-  // TODO(cheickcisse): Edit existing note.
+  const std::u16string note_content = user_note_body_->GetText();
+
+  // Hide default/detached state
+  GetBorder()->set_color(SK_ColorBLUE);
+  user_note_body_->SetVisible(false);
+  user_note_header_->SetVisible(false);
+  if (user_note_quote_) {
+    user_note_quote_->SetVisible(false);
+
+    // Show editing state
+    CreateOrUpdateNoteView(UserNoteView::State::kEditing, base::Time(),
+                           base::UTF16ToUTF8(note_content),
+                           /*quote =*/std::string());
+  }
 }
 
 void UserNoteView::OnDeleteUserNote(int event_flags) {
@@ -400,4 +435,29 @@ void UserNoteView::OnDeleteUserNote(int event_flags) {
 
 void UserNoteView::OnLearnUserNote(int event_flags) {
   // TODO(cheickcisse): Learn more about user note.
+}
+
+void UserNoteView::OnSaveUserNote() {
+  const std::u16string note_content = text_area_->GetText();
+  const std::u16string note_quote =
+      user_note_quote_
+          ? views::AsViewClass<views::Label>(
+                user_note_quote_->GetViewByID(kUserNoteQuoteViewId))
+                ->GetText()
+          : std::u16string();
+  base::Time date = base::Time::Now();
+
+  // Hide editing state
+  GetBorder()->set_color(SK_ColorLTGRAY);
+  text_area_->SetVisible(false);
+  button_container_->SetVisible(false);
+
+  // Show default state
+  CreateOrUpdateNoteView(
+      user_note_quote_ ? UserNoteView::State::kDetached
+                       : UserNoteView::State::kDefault,
+      date, base::UTF16ToUTF8(note_content),
+      !note_quote.empty() ? base::UTF16ToUTF8(note_quote) : std::string());
+
+  coordinator_->OnNoteUpdated(UserNoteId(), base::UTF16ToUTF8(note_content));
 }
