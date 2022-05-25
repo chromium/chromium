@@ -31,8 +31,7 @@ chromium-metrics-reviews@google.com.
       summary="Same as NoSavedFrames with the destination tab being loaded
                (frozen or not frozen)"/>
   <variant name=".NoSavedFrames_NotLoaded"
-      summary="Same as WithSavedFrames with the destination tab being
-               unloaded."/>
+      summary="Same as NoSavedFrames with the destination tab being unloaded."/>
   <variant name=".WithSavedFrames"
       summary="There is a saved frame in the cache when the tab switch
                starts."/>
