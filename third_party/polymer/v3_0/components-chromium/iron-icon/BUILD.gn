@@ -8,7 +8,6 @@ import("//third_party/closure_compiler/compile_js.gni")
 
 js_library("iron-icon") {
   deps = [
-    "../iron-flex-layout:iron-flex-layout",
     "../iron-meta:iron-meta",
     "../polymer:polymer_bundled",
   ]

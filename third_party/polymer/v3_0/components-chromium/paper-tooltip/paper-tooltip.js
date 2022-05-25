@@ -46,7 +46,6 @@ Custom property | Description | Default
 `--paper-tooltip-delay-out` | Delay before tooltip starts to fade out | `0`
 `--paper-tooltip-duration-in` | Timing for animation when showing tooltip | `500`
 `--paper-tooltip-duration-out` | Timing for animation when hiding tooltip | `0`
-`--paper-tooltip-animation` | Mixin applied to the tooltip animation | `{}`
 
 Also prefer using the exposed CSS part as follows where possible
 paper-tooltip::part(tooltip) {...}
@@ -70,7 +69,6 @@ Polymer({
       #tooltip {
         display: block;
         outline: none;
-        @apply --paper-font-common-base;
         font-size: 10px;
         line-height: 1;
         background-color: var(--paper-tooltip-background, #616161);

@@ -1,8 +1,8 @@
 diff --git a/components-chromium/paper-tooltip/paper-tooltip.js b/components-chromium/paper-tooltip/paper-tooltip.js
-index 853eee1990258..96a81a5a903b9 100644
+index 853eee1990258..1b36aa4c38b3f 100644
 --- a/components-chromium/paper-tooltip/paper-tooltip.js
 +++ b/components-chromium/paper-tooltip/paper-tooltip.js
-@@ -42,12 +42,15 @@ Custom property | Description | Default
+@@ -42,12 +42,14 @@ Custom property | Description | Default
  `--paper-tooltip-background` | The background color of the tooltip | `#616161`
  `--paper-tooltip-opacity` | The opacity of the tooltip | `0.9`
  `--paper-tooltip-text-color` | The text color of the tooltip | `white`
@@ -11,7 +11,7 @@ index 853eee1990258..96a81a5a903b9 100644
  `--paper-tooltip-delay-out` | Delay before tooltip starts to fade out | `0`
  `--paper-tooltip-duration-in` | Timing for animation when showing tooltip | `500`
  `--paper-tooltip-duration-out` | Timing for animation when hiding tooltip | `0`
- `--paper-tooltip-animation` | Mixin applied to the tooltip animation | `{}`
+-`--paper-tooltip-animation` | Mixin applied to the tooltip animation | `{}`
 +
 +Also prefer using the exposed CSS part as follows where possible
 +paper-tooltip::part(tooltip) {...}
@@ -19,7 +19,14 @@ index 853eee1990258..96a81a5a903b9 100644
  @group Paper Elements
  @element paper-tooltip
  @demo demo/index.html
-@@ -74,7 +77,6 @@ Polymer({
+@@ -67,14 +69,12 @@ Polymer({
+       #tooltip {
+         display: block;
+         outline: none;
+-        @apply --paper-font-common-base;
+         font-size: 10px;
+         line-height: 1;
+         background-color: var(--paper-tooltip-background, #616161);
          color: var(--paper-tooltip-text-color, white);
          padding: 8px;
          border-radius: 2px;
@@ -27,7 +34,7 @@ index 853eee1990258..96a81a5a903b9 100644
        }
  
        @keyframes keyFrameScaleUp {
-@@ -149,7 +151,6 @@ Polymer({
+@@ -149,7 +149,6 @@ Polymer({
          animation-timing-function: ease-in;
          animation-duration: var(--paper-tooltip-duration-in, 500ms);
          animation-fill-mode: forwards;
@@ -35,7 +42,7 @@ index 853eee1990258..96a81a5a903b9 100644
        }
  
        .fade-out-animation {
-@@ -160,7 +161,6 @@ Polymer({
+@@ -160,7 +159,6 @@ Polymer({
          animation-timing-function: ease-in;
          animation-duration: var(--paper-tooltip-duration-out, 500ms);
          animation-fill-mode: forwards;
@@ -43,7 +50,7 @@ index 853eee1990258..96a81a5a903b9 100644
        }
  
        .scale-up-animation {
-@@ -172,7 +172,6 @@ Polymer({
+@@ -172,7 +170,6 @@ Polymer({
          animation-timing-function: ease-in;
          animation-duration: var(--paper-tooltip-duration-in, 500ms);
          animation-fill-mode: forwards;
@@ -51,7 +58,7 @@ index 853eee1990258..96a81a5a903b9 100644
        }
  
        .scale-down-animation {
-@@ -184,7 +183,6 @@ Polymer({
+@@ -184,7 +181,6 @@ Polymer({
          animation-timing-function: ease-in;
          animation-duration: var(--paper-tooltip-duration-out, 500ms);
          animation-fill-mode: forwards;
@@ -59,7 +66,7 @@ index 853eee1990258..96a81a5a903b9 100644
        }
  
        .slide-down-animation {
-@@ -196,7 +194,6 @@ Polymer({
+@@ -196,7 +192,6 @@ Polymer({
          animation-timing-function: cubic-bezier(0.0, 0.0, 0.2, 1);
          animation-duration: var(--paper-tooltip-duration-out, 500ms);
          animation-fill-mode: forwards;
@@ -67,7 +74,7 @@ index 853eee1990258..96a81a5a903b9 100644
        }
  
        .slide-down-animation-out {
-@@ -208,7 +205,6 @@ Polymer({
+@@ -208,7 +203,6 @@ Polymer({
          animation-timing-function: cubic-bezier(0.4, 0.0, 1, 1);
          animation-duration: var(--paper-tooltip-duration-out, 500ms);
          animation-fill-mode: forwards;
@@ -75,7 +82,7 @@ index 853eee1990258..96a81a5a903b9 100644
        }
  
        .cancel-animation {
-@@ -222,7 +218,7 @@ Polymer({
+@@ -222,7 +216,7 @@ Polymer({
        }
      </style>
  
@@ -84,7 +91,7 @@ index 853eee1990258..96a81a5a903b9 100644
        <slot></slot>
      </div>
  `,
-@@ -282,8 +278,8 @@ Polymer({
+@@ -282,8 +276,8 @@ Polymer({
       */
      animationExit: {type: String, value: ''},
      /**
@@ -95,7 +102,7 @@ index 853eee1990258..96a81a5a903b9 100644
       * and hiding the tooltip. If you want to override this, you must ensure
       * that your animationConfig has the exact format below.
       * @deprecated since version
-@@ -311,12 +307,16 @@ Polymer({
+@@ -311,12 +305,16 @@ Polymer({
  
    /**
     * Returns the target element that this tooltip is anchored to. It is
@@ -114,7 +121,7 @@ index 853eee1990258..96a81a5a903b9 100644
      var parentNode = dom(this).parentNode;
      // If the parentNode is a document fragment, then we need to use the host.
      var ownerRoot = dom(this).getOwnerRoot();
-@@ -331,6 +331,15 @@ Polymer({
+@@ -331,6 +329,15 @@ Polymer({
      return target;
    },
  
@@ -130,7 +137,7 @@ index 853eee1990258..96a81a5a903b9 100644
    /**
     * @return {void}
     */
-@@ -429,13 +438,16 @@ Polymer({
+@@ -429,13 +436,16 @@ Polymer({
     * @return {void}
     */
    updatePosition: function() {
@@ -149,7 +156,7 @@ index 853eee1990258..96a81a5a903b9 100644
      var targetRect = this._target.getBoundingClientRect();
      var thisRect = this.getBoundingClientRect();
      var horizontalCenterOffset = (targetRect.width - thisRect.width) / 2;
-@@ -581,5 +593,45 @@ Polymer({
+@@ -581,5 +591,45 @@ Polymer({
      }
      this.unlisten(this.$.tooltip, 'animationend', '_onAnimationEnd');
      this.unlisten(this, 'mouseenter', 'hide');
