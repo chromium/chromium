@@ -14,6 +14,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/style/color_provider.h"
+#include "ash/public/cpp/view_shadow.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/tray_constants.h"
@@ -29,6 +30,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_type.h"
+#include "ui/compositor_extra/shadow.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
@@ -297,6 +299,12 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
     set_color(SK_ColorTRANSPARENT);
   }
 
+  if (params_.has_shadow) {
+    shadow_ = std::make_unique<ViewShadow>(this, params_.shadow_elevation);
+    shadow_->shadow()->SetShadowStyle(gfx::ShadowStyle::kChromeOSSystemUI);
+    shadow_->SetRoundedCornerRadius(params_.corner_radius);
+  }
+
   auto layout = std::make_unique<BottomAlignedBoxLayout>(this);
   layout->SetDefaultFlex(1);
   layout_ = SetLayoutManager(std::move(layout));
@@ -413,7 +421,7 @@ void TrayBubbleView::OnWidgetActivationChanged(Widget* widget, bool active) {
 }
 
 ui::LayerType TrayBubbleView::GetLayerType() const {
-  if (params_.translucent && !params_.has_shadow)
+  if (params_.translucent)
     return ui::LAYER_NOT_DRAWN;
   return ui::LAYER_TEXTURED;
 }
@@ -421,11 +429,8 @@ ui::LayerType TrayBubbleView::GetLayerType() const {
 std::unique_ptr<NonClientFrameView> TrayBubbleView::CreateNonClientFrameView(
     Widget* widget) {
   // Create the customized bubble border.
-  std::unique_ptr<BubbleBorder> bubble_border = std::make_unique<BubbleBorder>(
-      arrow(), params_.has_shadow ? BubbleBorder::CHROMEOS_SYSTEM_UI_SHADOW
-                                  : BubbleBorder::NO_SHADOW);
-  if (params_.has_shadow)
-    bubble_border->set_md_shadow_elevation(params_.shadow_elevation);
+  std::unique_ptr<BubbleBorder> bubble_border =
+      std::make_unique<BubbleBorder>(arrow(), BubbleBorder::NO_SHADOW);
   if (params_.corner_radius)
     bubble_border->SetCornerRadius(params_.corner_radius);
   bubble_border->set_avoid_shadow_overlap(true);

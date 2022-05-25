@@ -14,7 +14,6 @@
 namespace ash {
 
 class HoverHighlightView;
-class SystemShadow;
 class TrayBubbleWrapper;
 
 // Pen colors.
@@ -81,8 +80,6 @@ class ProjectorAnnotationTray : public TrayBackgroundView,
 
   // The bubble that appears after clicking the annotation tools tray button.
   std::unique_ptr<TrayBubbleWrapper> bubble_;
-
-  std::unique_ptr<SystemShadow> shadow_;
 
   // The last selected pen color.
   SkColor current_pen_color_ = kProjectorDefaultPenColor;

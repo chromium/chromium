@@ -15,7 +15,6 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/style/system_shadow.h"
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ash/system/tray/tray_bubble_wrapper.h"
 #include "ash/system/tray/tray_container.h"
@@ -180,7 +179,6 @@ void ProjectorAnnotationTray::ShowBubble() {
   init_params.preferred_width = kBubbleWidth;
   init_params.close_on_deactivate = true;
   init_params.translucent = true;
-  init_params.has_shadow = false;
   init_params.corner_radius = kTrayItemCornerRadius;
   init_params.reroute_event_handler = true;
 
@@ -223,12 +221,6 @@ void ProjectorAnnotationTray::ShowBubble() {
   // Show the bubble.
   bubble_ = std::make_unique<TrayBubbleWrapper>(this, bubble_view);
   SetIsActive(true);
-
-  // Create a shadow for bubble widget.
-  shadow_ = SystemShadow::CreateShadowForWidget(
-      GetBubbleWidget(), SystemShadow::Type::kElevation12);
-  shadow_->SetRoundedCornerRadius(init_params.corner_radius);
-  shadow_->SetContentBounds(bubble_view->GetContentsBounds());
 }
 
 TrayBubbleView* ProjectorAnnotationTray::GetBubbleView() {

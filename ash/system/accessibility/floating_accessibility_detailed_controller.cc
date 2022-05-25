@@ -77,7 +77,6 @@ void FloatingAccessibilityDetailedController::Show(
   init_params.insets = gfx::Insets::TLBR(
       0, kBubbleMenuPadding, kBubbleMenuPadding, kBubbleMenuPadding);
   init_params.close_on_deactivate = false;
-  init_params.has_shadow = false;
   init_params.translucent = true;
 
   bubble_view_ = new DetailedBubbleView(init_params);

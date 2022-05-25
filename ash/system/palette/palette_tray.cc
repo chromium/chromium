@@ -20,7 +20,6 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/icon_button.h"
-#include "ash/style/system_shadow.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/palette/palette_tool_manager.h"
 #include "ash/system/palette/palette_utils.h"
@@ -525,7 +524,6 @@ void PaletteTray::HidePalette() {
   is_bubble_auto_opened_ = false;
   num_actions_in_bubble_ = 0;
   bubble_.reset();
-  shadow_.reset();
 
   shelf()->UpdateAutoHideState();
 }
@@ -648,7 +646,6 @@ void PaletteTray::ShowBubble() {
   init_params.preferred_width = kPaletteWidth;
   init_params.close_on_deactivate = true;
   init_params.translucent = true;
-  init_params.has_shadow = false;
   init_params.corner_radius = kTrayItemCornerRadius;
   init_params.reroute_event_handler = true;
 
@@ -693,12 +690,6 @@ void PaletteTray::ShowBubble() {
   // Show the bubble.
   bubble_ = std::make_unique<TrayBubbleWrapper>(this, bubble_view);
   SetIsActive(true);
-
-  // Create a system shadow for the tray bubble.
-  shadow_ = SystemShadow::CreateShadowForWidget(
-      bubble_->GetBubbleWidget(), SystemShadow::Type::kElevation12);
-  shadow_->SetRoundedCornerRadius(kTrayItemCornerRadius);
-  shadow_->SetContentBounds(gfx::Rect(bubble_view->GetBoundsInScreen().size()));
 }
 
 TrayBubbleView* PaletteTray::GetBubbleView() {

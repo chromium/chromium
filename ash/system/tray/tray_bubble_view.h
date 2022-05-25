@@ -31,6 +31,8 @@ class Widget;
 
 namespace ash {
 
+class ViewShadow;
+
 // Specialized bubble view for bubbles associated with a tray icon (e.g. the
 // Ash status area). Mostly this handles custom anchor location and arrow and
 // border rendering. This also has its own delegate for handling mouse events
@@ -242,6 +244,8 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
   // Used to activate tray bubble view if user tries to interact the tray with
   // keyboard.
   std::unique_ptr<EventHandler> reroute_event_handler_;
+
+  std::unique_ptr<ViewShadow> shadow_;
 
   absl::optional<StatusAreaWidget::ScopedTrayBubbleCounter>
       tray_bubble_counter_;

@@ -42,14 +42,18 @@ void SwitchAccessBackButtonBubbleController::ShowBackButton(
                             kShellWindowId_AccessibilityBubbleContainer);
     init_params.anchor_mode = TrayBubbleView::AnchorMode::kRect;
     init_params.is_anchored_to_status_area = false;
-    init_params.has_shadow = false;
     init_params.preferred_width = back_button_view_->size().width();
     init_params.translucent = true;
 
     bubble_view_ = new TrayBubbleView(init_params);
     bubble_view_->SetArrow(views::BubbleBorder::BOTTOM_RIGHT);
     bubble_view_->AddChildView(back_button_view_);
-    bubble_view_->SetPaintToLayer();
+
+    // Only call `SetPaintToLayer()` when necessary since a layer could have
+    // been created for `ViewShadow` and re-creating here breaks the z-order set
+    // by `ViewShadow`.
+    if (!bubble_view_->layer())
+      bubble_view_->SetPaintToLayer();
     bubble_view_->layer()->SetFillsBoundsOpaquely(false);
 
     widget_ = views::BubbleDialogDelegateView::CreateBubble(bubble_view_);
