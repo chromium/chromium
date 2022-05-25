@@ -121,6 +121,7 @@
 <translation id="1942765061641586207">ຄວາມລະອຽດຂອງຮູບ</translation>
 <translation id="1972984168337863910">ຂະຫຍາຍແຜງຄຳຕິຊົມໄຟລ໌</translation>
 <translation id="1995337122023280937">ໄປຫາສະຖານທີ່ຂອງໄຟລ໌</translation>
+<translation id="1996806196681857869">ແຟ້ມຈັດເກັບທີ່ບີບອັດໂດຍ Z</translation>
 <translation id="2001796770603320721">ຈັດການໃນ Drive</translation>
 <translation id="2009067268969781306">ການຟໍແມັດໄດຣຈະລຶບຂໍ້ມູນທັງໝົດທີ່ເກັບໄວ້ໃນມັນ ຄຳສັ່ງນີ້ບໍ່ສາມາດຍົກເລີກໄດ້.</translation>
 <translation id="2025955442973426285">ພາສາທິກຣິນຢາ</translation>
@@ -588,6 +589,7 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> ລາຍການ</translation>
 <translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">ລຽງ​ລຳ​ດັບ​ທາງ​ເລືອກ</translation>
+<translation id="5985041959109124139">ແຟ້ມຈັດເກັບ tar ທີ່ບີບອັດໂດຍ Z</translation>
 <translation id="6007237601604674381">ຍ້າຍບໍ່ສໍາເລັດ. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">ເຄືອຂ່າຍອີເທີເນັດ</translation>
 <translation id="60357267506638014">QWERTY ພາ​ສາ​ເຊັກ</translation>
@@ -618,6 +620,7 @@
 <translation id="6220423280121890987">ພາສາປັນຈາບີ</translation>
 <translation id="6224240818060029162">ພາສາແດນນິດ</translation>
 <translation id="6224253798271602650">ຟໍແມັດ <ph name="DRIVE_NAME" /></translation>
+<translation id="6224665423283788195">ແຟ້ມຈັດເກັບທີ່ບີບອັດໂດຍ Zstandard</translation>
 <translation id="6227235786875481728">ບໍ່​ສາ​ມາດຫຼິ້ນໄຟລ​໌​ນີ້​ໄດ້.</translation>
 <translation id="6241349547798190358">ພາສາດັຈ (ເບວຢຽມ)</translation>
 <translation id="6267547857941397424">ເຄືອຂ່າຍທີ <ph name="NETWORK_INDEX" /> ຈາກທັງໝົດ <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, ສັນຍານຄວາມແຮງ <ph name="SIGNAL_STRENGTH" />%, ແບັດເຕີຣີໂທລະສັບ <ph name="BATTERY_STATUS" />%, ເຊື່ອມຕໍ່</translation>
@@ -645,6 +648,7 @@
 <translation id="6509122719576673235">ພາສານັອກແວ</translation>
 <translation id="6528513914570774834">ອະນຸຍາດໃຫ້ຜູ້ໃຊ້ອື່ນຂອງອຸປະກອນນີ້ໃຊ້ເຄືອຂ່າຍນີ້</translation>
 <translation id="653019979737152879">ກໍາລັງຊິງຄ໌ <ph name="FILE_NAME" />...</translation>
+<translation id="6530595303336443929">ແຟ້ມຈັດເກັບ tar ທີ່ບີບອັດໂດຍ Zstandard</translation>
 <translation id="6549689063733911810">ບໍ່ດົນມານີ້</translation>
 <translation id="6558280019477628686">ເກີດຄວາມຜິດພາດຂຶ້ນ. ບາງລາຍການອາດຈະບໍ່ຖືກລຶບ.</translation>
 <translation id="656398493051028875">ກໍາລັງລຶບ "<ph name="FILENAME" />"...</translation>

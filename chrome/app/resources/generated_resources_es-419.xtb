@@ -827,7 +827,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1784707308176068866">Ejecutar en segundo plano cuando lo solicita una app nativa cooperativa</translation>
 <translation id="1784849162047402014">El dispositivo tiene poco espacio en el disco</translation>
 <translation id="1787350673646245458">Imagen de usuario</translation>
-<translation id="1788329699711791226">Accede a todo lo que tienes en el navegador Chrome desde <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="1790976235243700817">Quitar acceso</translation>
 <translation id="1791662854739702043">Instalado</translation>
 <translation id="1792619191750875668">Pantalla extendida</translation>
@@ -3161,7 +3160,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="4028467762035011525">Agregar métodos de entrada</translation>
 <translation id="4029556917477724407">Regresar de la página <ph name="PAGE_TITLE" /></translation>
 <translation id="4031179711345676612">Micrófono permitido</translation>
-<translation id="4031308539321678562">Esta acción borrará permanentemente los datos de navegación de este dispositivo. Es posible que otras apps de tu Chromebook utilicen las Cuentas de Google de este perfil. Puedes quitar esas cuentas en <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" />.</translation>
 <translation id="4031527940632463547">Se bloqueó el acceso a los sensores</translation>
 <translation id="4033415645631238123">El acceso con Smart Lock ya no está disponible. Todavía puedes desbloquear el dispositivo con Smart Lock.</translation>
 <translation id="4033471457476425443">Agregar carpeta nueva</translation>
@@ -4647,7 +4645,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5539221284352502426">El servidor rechazó la contraseña que ingresaste porque es demasiado corta, debe incluir números o símbolos, o debe ser diferente a las contraseñas anteriores.</translation>
 <translation id="5541694225089836610">Tu administrador inhabilitó esta acción</translation>
 <translation id="5542132724887566711">Perfil</translation>
-<translation id="554229901779827904"><ph name="MANAGER_NAME" /> administra tu cuenta. El administrador puede ver y editar este perfil del navegador de Chrome y sus datos. Tus datos incluyen los favoritos, el historial y las contraseñas.</translation>
 <translation id="5542750926112347543">Las cookies de <ph name="DOMAIN" /> están bloqueadas</translation>
 <translation id="5542949973455282971">Conectando a <ph name="CARRIER_NAME" /></translation>
 <translation id="5543983818738093899">Comprobando estado…</translation>
@@ -4914,7 +4911,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5816434091619127343">Los cambios solicitados harán que la impresora no se pueda utilizar.</translation>
 <translation id="5817069030404929329">¿Deseas mover las contraseñas de este dispositivo a tu Cuenta de Google?</translation>
 <translation id="5817918615728894473">Sincronizar</translation>
-<translation id="581840385858998009">Personaliza el fondo de pantalla, el avatar, el protector de pantalla y más</translation>
 <translation id="5821565227679781414">Crear acceso directo</translation>
 <translation id="5825412242012995131">Activado (recomendado)</translation>
 <translation id="5826395379250998812">Conecta tu <ph name="DEVICE_TYPE" /> con el teléfono. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
@@ -5678,6 +5674,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="6568283005472142698">Búsqueda de pestañas</translation>
 <translation id="65711204837946324">Se necesita permiso para continuar con la descarga.</translation>
 <translation id="6571772921213691236">Editar los datos de acceso</translation>
+<translation id="6573096386450695060">Permitir siempre</translation>
 <translation id="6573497332121198392">No se puede quitar el acceso directo.</translation>
 <translation id="657402800789773160">&amp;Volver a cargar esta página</translation>
 <translation id="6577284282025554716">Se canceló la descarga: <ph name="FILE_NAME" /></translation>
@@ -6654,7 +6651,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7559719679815339381">Espera. La aplicación de kiosco se está actualizando. No desconectes el dispositivo USB.</translation>
 <translation id="7560756177962144929">Sincroniza tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="7561196759112975576">Siempre</translation>
-<translation id="7562099761826673163">Personaliza el dispositivo</translation>
 <translation id="756445078718366910">Abrir la ventana del navegador</translation>
 <translation id="7564847347806291057">Finalizar proceso</translation>
 <translation id="756503097602602175">Desde <ph name="LINK_BEGIN" />Configuración<ph name="LINK_END" />, puedes administrar las Cuentas de Google a las que se accedió. Es posible que se apliquen a todas las cuentas los permisos que otorgaste a sitios web y apps. Si no quieres que los sitios o las apps accedan a la información de tu cuenta, podrás acceder a tu <ph name="DEVICE_TYPE" /> como invitado o navegar en la Web desde una <ph name="LINK_2_BEGIN" />ventana de incógnito<ph name="LINK_2_END" />.</translation>
@@ -6716,7 +6712,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7624337243375417909">bloqueo de mayúscula desactivado</translation>
 <translation id="7625568159987162309">Ver permisos y datos almacenados de los sitios</translation>
 <translation id="7625823789272218216">Nueva pestaña a la izquierda</translation>
-<translation id="7626032353295482388">Te damos la bienvenida a Chrome</translation>
 <translation id="7628201176665550262">Frecuencia de actualización</translation>
 <translation id="7629827748548208700">Pestaña: <ph name="TAB_NAME" /></translation>
 <translation id="7630426712700473382"><ph name="MANAGER" /> administra este dispositivo y requiere que accedas a tu cuenta en todas las instancias.</translation>
@@ -6994,7 +6989,6 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="7876027585589532670">No se puede editar el acceso directo.</translation>
 <translation id="7877451762676714207">Error de servidor desconocido. Inténtalo nuevamente o comunícate con el administrador del servidor.</translation>
 <translation id="7879631849810108578">Conjunto de combinaciones de teclas: <ph name="IDS_SHORT_SET_COMMAND" /></translation>
-<translation id="7880591377632733558"><ph name="ACCOUNT_FIRST_NAME" />, te damos la bienvenida a Chrome</translation>
 <translation id="7880685873361171388">Si habilitas esta tecnología y el estado es "activada", Chrome usará tu historial de navegación durante 7 días para determinar el grupo, o "cohorte", al que perteneces. Los anunciantes pueden seleccionar anuncios para el grupo. El historial de navegación se mantendrá privado en tu dispositivo. Esta prueba está activada solo en
     <ph name="BEGIN_LINK" />algunas regiones<ph name="END_LINK" />.</translation>
 <translation id="7880823633812189969">Se borrarán los datos locales en el reinicio</translation>
@@ -7427,6 +7421,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8275080796245127762">Llamar desde tu dispositivo</translation>
 <translation id="8275339871947079271">Si quieres que la contraseña esté disponible de forma segura en cualquier dispositivo en el que accedas, muévela a tu Cuenta de Google</translation>
 <translation id="8276560076771292512">Vaciar caché y volver a cargar de manera forzada</translation>
+<translation id="8281721647184388851">¿Deseas activar la sincronización del navegador Chrome?</translation>
 <translation id="8281886186245836920">Omitir</translation>
 <translation id="8283475148136688298">El código de autenticación se rechazó mientras se establecía la conexión con "<ph name="DEVICE_NAME" />".</translation>
 <translation id="8284279544186306258">todos los sitios de <ph name="WEBSITE_1" /></translation>

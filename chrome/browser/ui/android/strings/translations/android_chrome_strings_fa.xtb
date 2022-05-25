@@ -56,6 +56,7 @@
 <translation id="124678866338384709">بستن برگه کنونی</translation>
 <translation id="1246905108078336582">پیشنهاد از بریده‌دان حذف شود؟</translation>
 <translation id="1258753120186372309">‏Google doodle: ‏<ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">فهرست خواندن</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> هم‌رسانی نشد</translation>
 <translation id="1283039547216852943">برای بزرگ کردن ضربه بزنید</translation>
 <translation id="1285310382777185058">تغییر زبان</translation>
@@ -493,10 +494,10 @@
 <translation id="363596933471559332">با استفاده از اعتبارنامه‌های ذخیره شده، به‌طور خودکار به سیستم وب‌سایت‌ها وارد شوید. وقتی این قابلیت خاموش است، هر بار قبل از وارد شدن به سیستم وب‌سایت از شما خواسته می‌شود اطلاعات را تأیید کنید.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3677911431265050325">درخواست سایت ویژه دستگاه همراه</translation>
-<translation id="3685860403008476208">همه افرادی که از این دستگاه استفاده می‌کنند می‌توانند فایل‌هایی را که در «حالت ناشناس» بارگیری می‌کنید ببینند</translation>
 <translation id="3687645719033307815">درحال مشاهده پیش‌نمای این صفحه هستید</translation>
 <translation id="3690369331356918524">اگر گذرواژه‌ها به‌دلیل نقض داده درمعرض خطر باشد، به شما هشدار می‌دهد</translation>
 <translation id="3692944402865947621">به‌دلیل دردسترس نبودن مکان فضای ذخیره‌سازی، <ph name="FILE_NAME" /> بارگیری نشد.</translation>
+<translation id="3697705478071004188">مرتب‌سازی براساس سایت</translation>
 <translation id="3699022356773522638">فایل بارگیری شود؟</translation>
 <translation id="371230970611282515">رویدادهای خطرناک را پیش از اینکه اتفاق بیفتند پیش‌بینی می‌کند و درباره آن‌ها به شما هشدار می‌دهد.</translation>
 <translation id="3714981814255182093">باز کردن «نوار پیدا کردن»</translation>
@@ -523,6 +524,7 @@
 <translation id="3845098929839618392">بازکردن در برگه ناشناس</translation>
 <translation id="3856096718352044181">لطفاً تأیید کنید این ارائه‌دهندهْ معتبر است یا بعداً دوباره امتحان کنید</translation>
 <translation id="3858860766373142691">نام</translation>
+<translation id="3859206958100234503">برای دریافت گذرواژه‌ها، نشانک‌ها، و داده‌های دیگر در همه دستگاه‌هایتان، همگام‌سازی کنید</translation>
 <translation id="3861633093716975811">ویدیوهای پرطرفدار</translation>
 <translation id="3892148308691398805">کپی کردن نوشتار</translation>
 <translation id="3894427358181296146">افزودن پوشه</translation>
@@ -580,6 +582,7 @@
 <translation id="4209895695669353772">‏برای اینکه Google محتوای شخصی‌شده به شما پیشنهاد دهد، همگام‌سازی را روشن کنید</translation>
 <translation id="4214315110991671325">‏اگر کوکی‌ها را مجاز کنید، ممکن است Chrome از آن‌ها برای پیش‌بارگیری استفاده کند.</translation>
 <translation id="4225895483398857530">میان‌بر نوار ابزار</translation>
+<translation id="4227318652298512614">هر سایتی را که می‌خواهید دنبال کنید</translation>
 <translation id="4242533952199664413">باز کردن تنظیمات</translation>
 <translation id="4248098802131000011">گذرواژه خود را از نقض داده و سایر مسائل امنیتی ایمن نگه دارید</translation>
 <translation id="4249955472157341256">مرتب‌سازی براساس جدیدترین</translation>
@@ -696,6 +699,7 @@
 <translation id="4842515939542199281">برای جستجو با صدایتان، روی میکروفون ضربه بزنید</translation>
 <translation id="4844633725025837809">‏برای افزایش ایمنی، گذرواژه‌ها را قبل‌از ذخیره شدن در «مدیر گذرواژه Google» در دستگاهتان رمزگذاری می‌کند</translation>
 <translation id="4850886885716139402">نما</translation>
+<translation id="4852014461738377247">‏درحال ورود به سیستم\u2026</translation>
 <translation id="4860895144060829044">تماس</translation>
 <translation id="4864369630010738180">در حال ورود به سیستم...</translation>
 <translation id="4866368707455379617">‏<ph name="MODULE" /> برای Chrome نصب نشد</translation>
@@ -1149,6 +1153,7 @@
 <translation id="7304873321153398381">‏آفلاین. Chrome نمی‌تواند گذرواژه‌هایتان را بررسی کند.</translation>
 <translation id="7313188324932846546">برای تنظیم همگام‌سازی ضربه بزنید</translation>
 <translation id="7332075081379534664">ورود به سیستم باموفقیت انجام شد</translation>
+<translation id="7333232495927792353">‏برای دریافت مرتبط‌ترین محتوا از Google، همگام‌سازی کنید</translation>
 <translation id="7339898014177206373">پنجرهٔ جدید</translation>
 <translation id="7340958967809483333">گزینه‌های «یافته‌ها»</translation>
 <translation id="7352339641508007922">برای ثبت نماگرفت طولانی، بکشید</translation>
@@ -1304,6 +1309,7 @@
 <translation id="8103578431304235997">برگه ناشناس</translation>
 <translation id="8105613260829665809">‏درصورت ادامه دادن، با <ph name="BEGIN_TOS_LINK" />شرایط خدمات<ph name="END_TOS_LINK" /> موافقت می‌کنید.\nبرای کمک به بهبود برنامه، Chrome داده‌های استفاده و ازکارافتادگی را به Google ارسال می‌کند. <ph name="BEGIN_UMA_LINK" />مدیریت<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
+<translation id="8107530384992929318">بستن گزینه‌های مرتب‌سازی</translation>
 <translation id="8109613176066109935">برای اینکه به نشانک‌ها در همه دستگاه‌هایتان دسترسی داشته باشید، همگام‌سازی را روشن کنید</translation>
 <translation id="8110024788458304985">‏کمک به بهبود عملکرد و ویژگی‌های Chrome</translation>
 <translation id="8110087112193408731">‏فعالیت Chrome شما در «آسایش دیجیتالی» نشان داده شود؟</translation>
@@ -1377,6 +1383,7 @@
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">باز کردن صفحه سابقه</translation>
 <translation id="8493948351860045254">آزاد کردن فضا</translation>
+<translation id="8497242791509864205">باز کردن گزینه‌های مرتب‌سازی</translation>
 <translation id="8497480609928300907">شرح «راهنمای حریم‌خصوصی»</translation>
 <translation id="8497726226069778601">هنوز… چیزی برای دیدن وجود ندارد</translation>
 <translation id="8503559462189395349">‏گذرواژه‌های Chrome</translation>
@@ -1529,6 +1536,7 @@
 <translation id="96681097142096641">صفحه ساده‌شده نشان داده شود؟</translation>
 <translation id="968900484120156207">صفحاتی را که بازدید کرده‌اید، اینجا نمایش داده می‌شوند</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> دقیقه باقی‌مانده است</translation>
+<translation id="978443947993957527">محتوای ویژه خودتان را ببینید</translation>
 <translation id="981121421437150478">آفلاین</translation>
 <translation id="983192555821071799">بستن همه برگه‌ها</translation>
 <translation id="987264212798334818">موارد کلی</translation>

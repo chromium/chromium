@@ -81,6 +81,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> erabiltzaileak Chrome-ko profil honetan hasi du saioa dagoeneko. Arakatze-datuak bereizita edukitzeko, Chrome-k profil bat sor dezake zuretzat.</translation>
 <translation id="2580411288591421699">Ezin da instalatu une honetan abian den Google Chrome-ren bertsio bera. Itxi Google Chrome eta saiatu berriro.</translation>
 <translation id="2586406160782125153">Gailuko arakatze-datuak ezabatuko dira. Geroago datuak eskuratu nahi izanez gero, hasi saioa Chrome-n <ph name="USER_EMAIL" /> gisa.</translation>
+<translation id="2597976513418770460">Lortu Chrome arakatzailean dituzun gauzak <ph name="ACCOUNT_EMAIL" /> bidez</translation>
 <translation id="2622559029861875898">Chrome-k ezin ditu bilatu eguneratzeak. Egiaztatu Internetera konektatuta zaudela.</translation>
 <translation id="2645435784669275700">Chrome OS</translation>
 <translation id="2652691236519827073">Ireki esteka Chrome-ko beste &amp;fitxa batean</translation>
@@ -310,6 +311,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="7801699035218095297">Pasahitzak kopiatzen saiatzen ari da Google Chrome. Hori baimentzeko, idatzi Windows-eko pasahitza.</translation>
 <translation id="7808348361785373670">Kendu Chrome-tik…</translation>
 <translation id="7825851276765848807">Instalazioak huts egin du zehaztu gabeko errore batengatik. Deskargatu Google Chrome berriro.</translation>
+<translation id="7880591377632733558">Ongi etorri Chrome-ra, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="7890208801193284374">Ordenagailua partekatzen baduzu, lagunek eta familiako kideek euren kontuak erabilita ibil daitezke Interneten, nahi duten moduan.</translation>
 <translation id="7896673875602241923">Norbaitek <ph name="ACCOUNT_EMAIL_LAST" /> gisa hasi du saioa Chrome-n ordenagailu hau erabilita. Zure informazioa bereizita izateko, sortu beste Chrome erabiltzaile bat.</translation>
 <translation id="7917876797003313048">Saioa hasita daukaten Google-ko kontuak kudea ditzakezu. Google-ko kontuak Chrome arakatzaile, Play Store, Gmail eta abarrerako erabiltzen dira. Kontu bat beste norbaitentzat gehitu nahi baduzu (adibidez, familiako kide batentzat), gehitu beste pertsona bat <ph name="DEVICE_TYPE" /> gailuan. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
@@ -335,6 +337,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="8418845734693287262">Chrome OS-k ezin izan ditu sinkronizatu zure datuak, kontuan saioa hasteko xehetasunak zaharkituta daudelako.</translation>
 <translation id="8421734018304082652">Chrome-k fitxategia blokeatu du enkriptatuta dagoelako. Eskatu jabeari hura desenkriptatzeko</translation>
 <translation id="8433638294851456451">Zenbaki bat hemendik Android-eko telefonora bidaltzeko, hasi Chrome-ko saioa bi gailuetan.</translation>
+<translation id="8451192282033883849"><ph name="MANAGER_NAME" /> administratzaileak kudeatzen du kontua. Chrome arakatzaileko profil hau eta profil honetako datuak (esaterako, laster-markak, historia eta pasahitzak) ikusi eta edita ditzake administratzaileak.</translation>
 <translation id="8498858610309223613">Google Chrome-ren segurtasun-eguneratze berezi bat aplikatu berri da. Berrabiarazi gailua, eta fitxak leheneratuko dizkizugu.</translation>
 <translation id="8504220326736535258">Chrome-k fitxategia blokeatu du malwarea daukalako</translation>
 <translation id="8516431725144212809">Chrome-k gutxi gorabehera igarri dizkizun interesak</translation>

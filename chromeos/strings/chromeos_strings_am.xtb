@@ -78,6 +78,7 @@
 <translation id="1578784163189013834">የማያ ገጽ ማቆያ ዳራን ይምረጡ</translation>
 <translation id="1615335640928990664">የውሂብ አጠቃቀም ከ<ph name="FRIENDLY_DATE" /> ጀምሮ</translation>
 <translation id="1621067168122174824">የባትሪ መሙላት ሙከራን አሂድ</translation>
+<translation id="1631385268983122904">መሣሪያውን አሁንም መልሰው አይሰካኩት</translation>
 <translation id="1639239467298939599">በመጫን ላይ</translation>
 <translation id="1641857168437328880">ሰነድ መጋቢ (ባለአንድ ጎን)</translation>
 <translation id="1643449475550628585">የልጣፍ ምስልን በየቀኑ ቀይር</translation>
@@ -85,6 +86,7 @@
 <translation id="1645954272419197032">እባክዎ የመሣሪያ መረጃን ያረጋግጡ</translation>
 <translation id="1662989795263954667">ቆሟል - ቀለም አልቋል</translation>
 <translation id="1668469839109562275">አብሮገነብ VPN</translation>
+<translation id="1676557873873341166">ቪዲዮን በመቅረጽ ላይ</translation>
 <translation id="1703835215927279855">ደብዳቤ</translation>
 <translation id="1706391837335750954">የዲኤንኤስ መፍትሔ ሰጪ አለ</translation>
 <translation id="1715359911173058521">ከቃኚው ጋር የሚገናኝ አንድ ችግር አለ። የአውታረ መረብ ወይም የዩኤስቢ ግንኙነትን ይፈትሹ እና እንደገና ይሞክሩ።</translation>
@@ -159,6 +161,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">በአቅራቢያ ያሉ መሣሪያዎችን ለማግኘት ብሉቱዝን ያብሩ</translation>
+<translation id="2340422556570134524">ከማየት ውጪ የማይፈቅድ ሳይጠበቅ በርቷል። በድጋሚ ከመሞከርዎ በፊት እባክዎ ራስዎ ከማየት ውጪ የማይፈቅድን ያጥፉት።</translation>
 <translation id="2346474577291266260">እጅግ በጣም ጥሩ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">ቀጥል</translation>
 <translation id="2360257214555822463"><ph name="LINK_BEGIN" />ብቁ ያልሆኑ ክፍለ-አካላት<ph name="LINK_END" /> ተገኝተዋል። ይህ መጫኑን ለማረጋገጥ ከመረጡ እባክዎ አሁን ያድርጉት።</translation>
@@ -474,6 +477,7 @@
 <translation id="5372659122375744710">የWiFi አውታረ መረብ ደህንነት የተጠበቀ አይደለም</translation>
 <translation id="5376354385557966694">ራስሰር የብርሃን ሁነታ</translation>
 <translation id="537872351913703572">መሣሪያው ወደ ሌላ ተጠቃሚ ወይም ድርጅት ይሄዳል</translation>
+<translation id="5389159777326897627">ልጣፍ እና ቅጥ</translation>
 <translation id="5389224261615877010">ቀስተ ደመና</translation>
 <translation id="5395600419410242651">ሁሉንም ውሂብ ደምስስ</translation>
 <translation id="5400907029458559844">መሣሪያው እየተገናኘ ነው።</translation>
@@ -643,6 +647,7 @@
 <translation id="6961170852793647506">ለመጀመር ሰነድዎን በቃኚው ላይ ያስቀምጡት</translation>
 <translation id="6965382102122355670">እሺ</translation>
 <translation id="6977381486153291903">የጽኑ ትዕዛዝ ክለሳ</translation>
+<translation id="6995564396478647735">ከማየት ውጪ የማይፈቅድ ሁነታ መብራቱን ያረጋግጡ</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> ይህን መሣሪያ የሚያስተዳድር ሲሆን የተጎበኙ ድረ-ገጾች፣ የይለፍ ቃላት እና ኢሜይል ጨምሮ የሁሉም የተጠቃሚ እንቅስቃሴ መዳረሻ አለው።</translation>
 <translation id="7040230719604914234">ከዋኝ</translation>
 <translation id="7041549558901442110">መሣሪያ አልተገናኘም።</translation>
@@ -653,6 +658,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">አልተሳካም - ማረጋግጥ አልተሳካም</translation>
 <translation id="7103252855940681301">መሣሪያ <ph name="INDEX" /> ከ<ph name="COUNT" /> <ph name="NAME" /> ተብሎ ተሰይሟል</translation>
+<translation id="7126228745139711113">ከማየት ውጪ የማይፈቅድ ጠፍቷል</translation>
 <translation id="7134436342991564651">{0,plural, =1{የስም አገልጋይ}one{የስም አገልጋዩች}other{የስም አገልጋዩች}}</translation>
 <translation id="7143207342074048698">በመያያዝ ላይ</translation>
 <translation id="7144878232160441200">እንደገና ሞክር</translation>
@@ -744,6 +750,7 @@
 <translation id="80398733265834479">ራስ-ሰር ቀለም ሁነታን አንቃ</translation>
 <translation id="8041089156583427627">ግብረ መልስ ላክ</translation>
 <translation id="8045012663542226664">የማይክሮፎን ድምጸ-ከል ማድረጊያ</translation>
+<translation id="8063022551652308521">ከማየት ውጪ የማይፈቅድ አሁንም እንደጠፋ ነው። ለመቀጠል ከማየት ውጪ የማይፈቅድን ያብሩት።</translation>
 <translation id="8075838845814659848">የሚቀረው ኃይል መሙላት</translation>
 <translation id="8082366717211101304">ከAndroid መተግበሪያዎች ዲኤንኤስን መፍታት አልተቻለም</translation>
 <translation id="8083281199617904460">ይህ የጥገና ሂደት ለሰለጠነ የጥገና ቴክኒሺያን የታሰበ ነው። የተበላሹ ክፍለ-አካላትን ከተኩ በኋላ ብቻ ይጀምሩ።</translation>
@@ -814,6 +821,7 @@
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> ይህንን ባህሪ ለማስተዳደር የግራ ወይም የቀኝ ቀስት ቁልፎችን ይጠቀሙ።</translation>
 <translation id="8712637175834984815">ገባኝ</translation>
 <translation id="871560550817059752">አልተሳካም - ቀለም አልቋል</translation>
+<translation id="8717030727630712160">የጥገና ሂደት ከቆመበት በማስቀጠል ላይ…</translation>
 <translation id="8723108084122415655">ነባሪ ያልሆነ አውታረ መረብ ከስርዓተ ምላሽ ጊዜ በላይ ነው</translation>
 <translation id="8725066075913043281">እንደገና ይሞክሩ</translation>
 <translation id="8726019395068607495">ቆሟል - በር ክፍት ነው</translation>
@@ -835,6 +843,7 @@
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">መሣሪያ ጡባዊ ነው።</translation>
 <translation id="8881098542468797602">ሙከራ ተሳክቷል</translation>
+<translation id="8897267175591692539">አሁን መሣሪያውን መሰካካት ይችላሉ</translation>
 <translation id="8898840733695078011">የሲግናል ጥንካሬ</translation>
 <translation id="8910721771319628100">ነባሪ አውታረ መረብ ከስርዓተ ምላሽ ጊዜ ገደብ በላይ ነው</translation>
 <translation id="8918637186205009138">የ<ph name="GIVEN_NAME" /> <ph name="DEVICE_TYPE" /></translation>

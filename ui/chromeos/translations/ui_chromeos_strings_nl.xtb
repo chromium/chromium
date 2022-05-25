@@ -121,6 +121,7 @@
 <translation id="1942765061641586207">Afbeeldingsresolutie</translation>
 <translation id="1972984168337863910">Feedbackvensters voor bestanden uitvouwen</translation>
 <translation id="1995337122023280937">Naar bestandslocatie</translation>
+<translation id="1996806196681857869">Archief gecomprimeerd met Z</translation>
 <translation id="2001796770603320721">Beheren in Drive</translation>
 <translation id="2009067268969781306">Tijdens het formatteren van een schijf worden alle opgeslagen gegevens verwijderd. Deze actie kan niet ongedaan worden gemaakt.</translation>
 <translation id="2025955442973426285">Tigrinya</translation>
@@ -590,6 +591,7 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> items</translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">Sorteeropties</translation>
+<translation id="5985041959109124139">Tar-archief gecomprimeerd met Z</translation>
 <translation id="6007237601604674381">Verplaatsen mislukt. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Ethernet-netwerk</translation>
 <translation id="60357267506638014">Tsjechisch QWERTY</translation>
@@ -620,6 +622,7 @@
 <translation id="6220423280121890987">Punjabi</translation>
 <translation id="6224240818060029162">Deens</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" /> formatteren</translation>
+<translation id="6224665423283788195">Archief gecomprimeerd met Zstandard</translation>
 <translation id="6227235786875481728">Dit bestand kan niet worden afgespeeld.</translation>
 <translation id="6241349547798190358">Nederlands (België)</translation>
 <translation id="6267547857941397424">Netwerk <ph name="NETWORK_INDEX" /> van <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />%, telefoonbatterij <ph name="BATTERY_STATUS" />%, verbinden</translation>
@@ -647,6 +650,7 @@
 <translation id="6509122719576673235">Noors</translation>
 <translation id="6528513914570774834">Andere gebruikers van dit apparaat toestaan om dit netwerk te gebruiken</translation>
 <translation id="653019979737152879"><ph name="FILE_NAME" /> synchroniseren...</translation>
+<translation id="6530595303336443929">Tar-archief gecomprimeerd met Zstandard</translation>
 <translation id="6549689063733911810">Recent</translation>
 <translation id="6558280019477628686">Er is een fout opgetreden. Sommige items zijn mogelijk niet verwijderd.</translation>
 <translation id="656398493051028875"><ph name="FILENAME" /> verwijderen...</translation>

@@ -62,6 +62,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1275285675049378717">Stromversorgung für <ph name="POWER_SOURCE" /></translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">Smartphone suchen</translation>
+<translation id="1287002645302686982">Es gibt bereits einen gespeicherten Desktop mit dem Namen „<ph name="DESK_TEMPLATE_NAME" />“</translation>
 <translation id="1289185460362160437">Du darfst das Gerät am <ph name="COME_BACK_DAY_OF_WEEK" /> um <ph name="COME_BACK_TIME" /> wieder verwenden.</translation>
 <translation id="1290331692326790741">Schwaches Signal</translation>
 <translation id="1290982764014248209"><ph name="DRAGGED_APP" /> in den Ordner <ph name="FOLDER_NAME" /> verschieben.</translation>
@@ -91,7 +92,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1420408895951708260">Nachtlicht an/aus. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">Letzte Fotos und Medien von deinem Smartphone auf deinem Gerät „<ph name="DEVICE_TYPE" />“ ansehen</translation>
 <translation id="1426410128494586442">Ja</translation>
-<translation id="1438357537418863713">App-Streaming ist jetzt eingerichtet. Sobald du anfängst, erscheinen hier die kürzlich gestarteten Apps.</translation>
+<translation id="1447641497144572814">Bildschirmschoner startet</translation>
 <translation id="1455242230282523554">Spracheinstellungen anzeigen</translation>
 <translation id="1460620680449458626">Ton ist aus.</translation>
 <translation id="1467432559032391204">Links</translation>
@@ -266,6 +267,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2586561057878260610">Drücke Strg + W für eine Kombination mit <ph name="DESK_NAME" />. Drücke Strg + Umschalttaste + W, um den Desktop und das Fenster zu schließen.</translation>
 <translation id="2595239820337756193">5 km in Meilen</translation>
 <translation id="2596078834055697711">Screenshot von Fenster erstellen</translation>
+<translation id="2598725286293895280">Desktop enthält nicht unterstützte Apps</translation>
 <translation id="2607678425161541573">Online-Anmeldung erforderlich</translation>
 <translation id="2620016719323068571">In deinen <ph name="CATEGORY" />, Dateien, Apps und mehr suchen…</translation>
 <translation id="2620436844016719705">System</translation>
@@ -641,6 +643,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="4734965478015604180">Horizontal</translation>
 <translation id="4735498845456076464">Die Tastenkombination <ph name="LAUNCHER_KEY_NAME" /> + Ziffer hat sich geändert. Wenn du eine Funktionstaste benötigst, drücke die <ph name="LAUNCHER_KEY_NAME" />-Taste + eine Taste in der oberen Reihe.</translation>
 <translation id="473775607612524610">Aktualisieren</translation>
+<translation id="4740516757091333363">Gespeicherten Desktop löschen?</translation>
 <translation id="4752784485658729358">Es sind maximal 6 gespeicherte Desktops zulässig. Entferne einen Desktop, um einen neuen zu speichern.</translation>
 <translation id="4759238208242260848">Downloads</translation>
 <translation id="4774338217796918551">Du darfst das Gerät um <ph name="COME_BACK_TIME" /> wieder verwenden.</translation>
@@ -693,7 +696,6 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="5071064518267176975">Eine App möchte das Mikrofon verwenden</translation>
 <translation id="5078796286268621944">Falsche PIN</translation>
 <translation id="5083553833479578423">Möchtest du weitere Assistant-Funktionen freischalten?</translation>
-<translation id="5106223312672646208">Personalisieren</translation>
 <translation id="5107522548814527560">Web</translation>
 <translation id="5117590920725113268">Nächsten Monat anzeigen</translation>
 <translation id="5136175204352732067">Andere Tastatur angeschlossen</translation>
@@ -738,6 +740,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="5352250171825660495">Dunkles Design ist aktiviert</translation>
 <translation id="5356963482258194581">Du kannst zwischen dem dunklen und hellen Design wechseln. Klicke mit der rechten Maustaste auf den Desktop und wähle „Hintergrund &amp; Stil“ aus.</translation>
 <translation id="5379115545237091094">Zu viele Versuche</translation>
+<translation id="5391307769715781764">Gespeicherten Desktop ersetzen?</translation>
 <translation id="5393156353051693207">Beliebige Stelle berühren und halten, um Apps neu zu sortieren</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> über <ph name="IN_PLACE_APP" />; loslassen, um Ordner zu erstellen.</translation>
 <translation id="5397578532367286026">Die Nutzung und der Verlauf des Nutzers sind für den Manager (<ph name="MANAGER_EMAIL" />) unter chrome.com einsehbar.</translation>
@@ -971,6 +974,7 @@ Neuinstallation</translation>
 <translation id="6790428901817661496">Wiedergabe</translation>
 <translation id="6801878137098616817">Vor Kurzem bearbeitet</translation>
 <translation id="6803622936009808957">Der Bildschirm konnte nicht gespiegelt werden, da die Auflösung nicht unterstützt wird. Stattdessen wurde der Modus für den erweiterten Desktop gestartet.</translation>
+<translation id="6812232930908427253">Desktop konnte nicht gespeichert werden. Zu viele Fenster oder Tabs.</translation>
 <translation id="6818242057446442178">Zurück um ein Wort</translation>
 <translation id="6819327813400217281">Kamera ist an der unteren linken Ecke angepinnt</translation>
 <translation id="6820676911989879663">Zeit für eine Pause.</translation>

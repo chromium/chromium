@@ -81,6 +81,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> is already signed in to this Chrome profile. To keep your browsing separate, Chrome can create your own profile for you.</translation>
 <translation id="2580411288591421699">Cannot install the same Google Chrome version that is currently running. Please close Google Chrome and try again.</translation>
 <translation id="2586406160782125153">This will delete your browsing data from this device. To retrieve your data later, sign in to Chrome as <ph name="USER_EMAIL" />.</translation>
+<translation id="2597976513418770460">Get your Chrome browser stuff from <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="2622559029861875898">Chrome can't check for updates. Try checking your Internet connection.</translation>
 <translation id="2645435784669275700">Chrome OS</translation>
 <translation id="2652691236519827073">Open Link in New Chrome &amp;tab</translation>
@@ -311,6 +312,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="7801699035218095297">Google Chrome is trying to copy passwords. Type your Windows password to allow this.</translation>
 <translation id="7808348361785373670">Remove from Chrome...</translation>
 <translation id="7825851276765848807">Installation failed due to unspecified error. Please download Google Chrome again.</translation>
+<translation id="7880591377632733558">Welcome to Chrome, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="7890208801193284374">If you share a computer, friends and family can browse separately and set up Chrome just the way they want.</translation>
 <translation id="7896673875602241923">Someone previously signed in to Chrome on this computer as <ph name="ACCOUNT_EMAIL_LAST" />. Please create a new Chrome user to keep your information separate.</translation>
 <translation id="7917876797003313048">You can manage your signed-in Google Accounts. Your Google Accounts are used for Chrome Browser, Play Store, Gmail and more. If you want to add an account for someone else, like a family member, add a new person to your <ph name="DEVICE_TYPE" /> instead. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
@@ -336,6 +338,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="8418845734693287262">Chrome OS could not sync your data because your account sign-in details are out of date.</translation>
 <translation id="8421734018304082652">Chrome blocked this file because it's encrypted. Ask its owner to decrypt it</translation>
 <translation id="8433638294851456451">To send a number from here to your Android phone, sign in to Chrome on both devices.</translation>
+<translation id="8451192282033883849">Your account is managed by <ph name="MANAGER_NAME" />. Your administrator can see and edit this Chrome browser profile and its data like bookmarks, history and passwords.</translation>
 <translation id="8498858610309223613">A special security update for Google Chrome was just applied. Restart now and we'll restore your tabs.</translation>
 <translation id="8504220326736535258">Chrome blocked this file because it has malware</translation>
 <translation id="8516431725144212809">Your interests as estimated by Chrome</translation>

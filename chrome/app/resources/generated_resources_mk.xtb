@@ -372,6 +372,7 @@
 <translation id="1362865166188278099">Механички проблем. Проверете го печатачот</translation>
 <translation id="1363585519747660921">Потребно е конфигурирање на USB-печатачот</translation>
 <translation id="1367951781824006909">Избери датотека</translation>
+<translation id="1368603372088757436">Linux не е поддржан на вашиот <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="1369149969991017342">Пристап со прекинувачи (контролирајте го компјутерот со само еден или два прекинувачи)</translation>
 <translation id="1372841398847029212">Синхронизирајте со вашата сметка</translation>
 <translation id="1373176046406139583">Видливоста на вашиот уред контролира кој може да споделува со вас додека ви е отклучен екранот. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
@@ -716,6 +717,7 @@
 <translation id="1670399744444387456">Основно</translation>
 <translation id="1673137583248014546"><ph name="URL" /> сака да ја види марката и моделот на вашиот безбедносен клуч</translation>
 <translation id="1674073353928166410">Отвори ги сите (<ph name="URL_COUNT" />) во прозорец „Инкогнито“</translation>
+<translation id="1676902103953506022">Детали за акредитивите за <ph name="USERNAME" /> на <ph name="DOMAIN" /></translation>
 <translation id="1677306805708094828">Не може да се додаде <ph name="EXTENSION_TYPE_PARAMETER" /></translation>
 <translation id="1677472565718498478">Уште <ph name="TIME" /></translation>
 <translation id="1679068421605151609">Програмерски алатки</translation>
@@ -843,7 +845,6 @@
 <translation id="1784707308176068866">Извршувај во заднина кога тоа ќе го побара матична апликација што соработува</translation>
 <translation id="1784849162047402014">Уредот нема доволно простор на дискот</translation>
 <translation id="1787350673646245458">Слика на корисникот</translation>
-<translation id="1788329699711791226">Пристапете до работите на прелистувачот Chrome од <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="1790976235243700817">Отстрани го пристапот</translation>
 <translation id="1791662854739702043">Инсталирано</translation>
 <translation id="1792619191750875668">Продолжен екран</translation>
@@ -3185,7 +3186,6 @@
 <translation id="4028467762035011525">Додајте методи за внесување</translation>
 <translation id="4029556917477724407">Вратете се наназад од страницата <ph name="PAGE_TITLE" /></translation>
 <translation id="4031179711345676612">Микрофон е дозволен</translation>
-<translation id="4031308539321678562">Ова трајно ќе ги избрише податоците од прелистувањето на уредов. Сметките на Google во профилов може да се користат од други апликации на вашиот Chromebook. Може да ги отстраните сметкиве во <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" />.</translation>
 <translation id="4031527940632463547">Сензорите се блокирани</translation>
 <translation id="4033415645631238123">Најавувањето со Smart Lock веќе не е достапно. Сепак може да отклучите со Smart Lock.</translation>
 <translation id="4033471457476425443">Додај нова папка</translation>
@@ -4672,7 +4672,6 @@
 <translation id="5539221284352502426">Серверот ја одби лозинката што ја внесовте. Можни причини за тоа се: лозинката е премногу кратка; лозинката мора да содржи броеви или симболи; лозинката мора да се разликува од претходните лозинки.</translation>
 <translation id="5541694225089836610">Дејството е оневозможено од администраторот</translation>
 <translation id="5542132724887566711">Профил</translation>
-<translation id="554229901779827904">Со сметката управува <ph name="MANAGER_NAME" />. Администраторот може да го види и изменува овој профил на прелистувач Chrome и податоците за него. Податоците вклучуваат обележувачи, историја и лозинки.</translation>
 <translation id="5542750926112347543">Колачињата од <ph name="DOMAIN" /> се блокирани</translation>
 <translation id="5542949973455282971">Се поврзува со <ph name="CARRIER_NAME" /></translation>
 <translation id="5543983818738093899">Се проверува статусот...</translation>
@@ -4686,6 +4685,7 @@
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="5551573675707792127">Тастатура и внесување текст</translation>
 <translation id="5553089923092577885">Сертификат на политика за мапирање</translation>
+<translation id="5554240068773209752">Кликнете тука за да ги приспособите контролите</translation>
 <translation id="5554403733534868102">Потоа, нема чекање ажурирања</translation>
 <translation id="5554489410841842733">Оваа икона ќе биде видлива кога наставката може да дејствува на тековната страница.</translation>
 <translation id="5554720593229208774">Орган за сертификација на е-пошта</translation>
@@ -4939,7 +4939,6 @@
 <translation id="5816434091619127343">Бараните промени на печатачот ќе го направат неупотреблив.</translation>
 <translation id="5817069030404929329">Да се преместат лозинките од уредов во вашата сметка на Google?</translation>
 <translation id="5817918615728894473">Спари</translation>
-<translation id="581840385858998009">Приспособување на тапетот, аватарот, заштитникот на екран и друго</translation>
 <translation id="5821565227679781414">Креирај кратенка</translation>
 <translation id="5825412242012995131">Вклучено (се препорачува)</translation>
 <translation id="5826395379250998812">Поврзете го вашиот <ph name="DEVICE_TYPE" /> со телефонот. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
@@ -5703,6 +5702,7 @@
 <translation id="6568283005472142698">Пребарување картички</translation>
 <translation id="65711204837946324">Потребна е дозвола за преземање</translation>
 <translation id="6571772921213691236">Изменете ги податоците за најавување</translation>
+<translation id="6573096386450695060">Секогаш дозволувај</translation>
 <translation id="6573497332121198392">Не може да се отстрани кратенката</translation>
 <translation id="657402800789773160">&amp;Пак вчитај страница</translation>
 <translation id="6577284282025554716">Преземањето е откажано: <ph name="FILE_NAME" /></translation>
@@ -6682,7 +6682,6 @@
 <translation id="7559719679815339381">Ве молиме почекајте... Апликацијата Киоск е во процес на ажурирање. Не отстранувајте ја USB-меморијата.</translation>
 <translation id="7560756177962144929">Синхронизирајте го вашиот <ph name="DEVICE_TYPE" /></translation>
 <translation id="7561196759112975576">Секогаш</translation>
-<translation id="7562099761826673163">Персонализирајте го вашиот уред</translation>
 <translation id="756445078718366910">Отвори прозорец на прелистувач</translation>
 <translation id="7564847347806291057">Заврши процес</translation>
 <translation id="756503097602602175">Може да управувате со најавените сметки на Google од <ph name="LINK_BEGIN" />Поставки<ph name="LINK_END" />. Дозволите што сте им ги одобриле на веб-сајтовите и апликациите можеби ќе важат за сите сметки. Ако не сакате сајтовите или апликациите да пристапуваат до податоците за сметката, може да се најавите на вашиот <ph name="DEVICE_TYPE" /> како гостин или да прелистувате на интернет во <ph name="LINK_2_BEGIN" />прозорец „Инкогнито“<ph name="LINK_2_END" />.</translation>
@@ -6744,7 +6743,6 @@
 <translation id="7624337243375417909">Caps Lock е исклучено</translation>
 <translation id="7625568159987162309">Прегледајте ги дозволите и податоците складирани на сајтовите</translation>
 <translation id="7625823789272218216">Нова картичка налево</translation>
-<translation id="7626032353295482388">Добре дојдовте на Chrome</translation>
 <translation id="7628201176665550262">Брзина на освежување</translation>
 <translation id="7629827748548208700">Картичка: <ph name="TAB_NAME" /></translation>
 <translation id="7630426712700473382"><ph name="MANAGER" /> управува со уредов и бара да се најавувате секој пат.</translation>
@@ -7022,7 +7020,6 @@
 <translation id="7876027585589532670">Не може да се измени кратенката</translation>
 <translation id="7877451762676714207">Непозната грешка на серверот. Обидете се повторно или контактирајте со администраторот на серверот.</translation>
 <translation id="7879631849810108578">Поставена е кратенка: <ph name="IDS_SHORT_SET_COMMAND" /></translation>
-<translation id="7880591377632733558">Добре дојдовте на Chrome, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="7880685873361171388">Кога е вклучена и статусот е активен, Chrome ја користи вашата историја на прелистување во минатите 7 дена за да ја одреди групата или „кохортата“ во која припаѓате. Огласувачите може да избираат реклами за групата. Историјата на прелистување останува приватна на вашиот уред. Оваа пробна верзија е активна само во
     <ph name="BEGIN_LINK" />некои региони<ph name="END_LINK" />.</translation>
 <translation id="7880823633812189969">Локалните податоци ќе се избришат кога ќе рестартирате</translation>
@@ -7250,6 +7247,7 @@
 <translation id="80866457114322936">{NUM_FILES,plural, =1{Датотекава е шифрирана. Побарајте од сопственикот да ја дешифрира.}one{Некои од датотекиве се шифрирани. Побарајте од сопственикот да ги дешифрира.}other{Некои од датотекиве се шифрирани. Побарајте од сопственикот да ги дешифрира.}}</translation>
 <translation id="808894953321890993">Промени лозинка</translation>
 <translation id="8090234456044969073">Прочитај листа со најчесто посетувани веб-локации</translation>
+<translation id="8090513782447872344">Може да се вратите во секое време за да погледнете повторно</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> не реагира</translation>
 <translation id="8095105960962832018"><ph name="BEGIN_PARAGRAPH1" />Направете бекап на Google Drive. Лесно враќајте ги податоците или менувајте ги уредите во секое време. Бекапот опфаќа податоци за апликациите.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Вашиот бекап се прикачува во Google и се шифрира со помош на лозинката за вашата сметка на Google.<ph name="END_PARAGRAPH2" />
@@ -7457,6 +7455,7 @@
 <translation id="8275080796245127762">Јавете се од вашиот уред</translation>
 <translation id="8275339871947079271">Преместете ја лозинката во сметката на Google за да пристапувате до неа безбедно секаде каде што сте најавени</translation>
 <translation id="8276560076771292512">Испразни кеш и освежи</translation>
+<translation id="8281721647184388851">Да се вклучи синхронизација на прелистувачот Chrome?</translation>
 <translation id="8281886186245836920">Прескокни</translation>
 <translation id="8283475148136688298">Отфрлен код за автентикацијата при поврзување со „<ph name="DEVICE_NAME" />“.</translation>
 <translation id="8284279544186306258">сите локации на <ph name="WEBSITE_1" /></translation>

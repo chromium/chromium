@@ -65,6 +65,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1275285675049378717">S'està alimentant el <ph name="POWER_SOURCE" /></translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">Localitza el telèfon</translation>
+<translation id="1287002645302686982">Ja existeix un escriptori desat que es diu <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="1289185460362160437">Pots tornar <ph name="COME_BACK_DAY_OF_WEEK" /> a les <ph name="COME_BACK_TIME" />.</translation>
 <translation id="1290331692326790741">Senyal feble</translation>
 <translation id="1290982764014248209">Mou <ph name="DRAGGED_APP" /> a la carpeta <ph name="FOLDER_NAME" />.</translation>
@@ -94,7 +95,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1420408895951708260">Activa o desactiva la funció Llum nocturna. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">Consulta els fitxers multimèdia i les fotos recents del telèfon al teu <ph name="DEVICE_TYPE" /></translation>
 <translation id="1426410128494586442">Sí</translation>
-<translation id="1438357537418863713">La reproducció en continu d'aplicacions ja està configurada. Quan comencis, les aplicacions llançades recentment apareixeran aquí.</translation>
+<translation id="1447641497144572814">S'inicia l'estalvi de pantalla</translation>
 <translation id="1455242230282523554">Mostra la configuració d'idioma</translation>
 <translation id="1460620680449458626">El volum està silenciat.</translation>
 <translation id="1467432559032391204">Esquerra</translation>
@@ -269,6 +270,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2586561057878260610">Prem Ctrl+W per combinar amb <ph name="DESK_NAME" />. Prem Ctrl+Shift+W per tancar l'escriptori i les finestres</translation>
 <translation id="2595239820337756193">5 km en milles</translation>
 <translation id="2596078834055697711">Fes una captura de pantalla de la finestra</translation>
+<translation id="2598725286293895280">Hi ha aplicacions no admeses a l'escriptori</translation>
 <translation id="2607678425161541573">Cal iniciar la sessió en línia</translation>
 <translation id="2620016719323068571">Cerca <ph name="CATEGORY" />, fitxers, aplicacions i més...</translation>
 <translation id="2620436844016719705">Sistema</translation>
@@ -644,6 +646,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="4734965478015604180">Horitzontal</translation>
 <translation id="4735498845456076464">La tecla de drecera <ph name="LAUNCHER_KEY_NAME" />+número ha canviat. Per fer servir les tecles de funció, prem la tecla <ph name="LAUNCHER_KEY_NAME" />+una tecla de la fila superior.</translation>
 <translation id="473775607612524610">Actualitza</translation>
+<translation id="4740516757091333363">Vols suprimir l'escriptori desat?</translation>
 <translation id="4752784485658729358">Només s'admeten 6 escriptoris desats. Suprimeix-ne un per desar-ne un de nou.</translation>
 <translation id="4759238208242260848">Baixades</translation>
 <translation id="4774338217796918551">Pots tornar demà a les <ph name="COME_BACK_TIME" />.</translation>
@@ -696,7 +699,6 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="5071064518267176975">Una aplicació vol utilitzar el micròfon</translation>
 <translation id="5078796286268621944">PIN incorrecte</translation>
 <translation id="5083553833479578423">Desbloqueja més funcions de l'Assistent.</translation>
-<translation id="5106223312672646208">Personalitza</translation>
 <translation id="5107522548814527560">Web</translation>
 <translation id="5117590920725113268">Mostra el mes següent</translation>
 <translation id="5136175204352732067">S'ha connectat un altre teclat</translation>
@@ -741,6 +743,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="5352250171825660495">El tema fosc està activat</translation>
 <translation id="5356963482258194581">Canvia entre els temes clar i fosc. Fes clic amb el botó dret a l'escriptori i selecciona Estil i fons de pantalla.</translation>
 <translation id="5379115545237091094">Massa intents</translation>
+<translation id="5391307769715781764">Vols substituir l'escriptori desat?</translation>
 <translation id="5393156353051693207">Mantén premut qualsevol lloc per tornar a ordenar les aplicacions</translation>
 <translation id="5395308026110844773">L'aplicació <ph name="DRAGGED_APP_NAME" /> és a sobre de l'aplicació <ph name="IN_PLACE_APP" />. Deixa-la anar per crear una carpeta.</translation>
 <translation id="5397578532367286026">El gestor (<ph name="MANAGER_EMAIL" />) pot revisar l'ús i l'historial d'aquest usuari a chrome.com.</translation>
@@ -974,6 +977,7 @@ Instal·lació nova</translation>
 <translation id="6790428901817661496">Reprodueix</translation>
 <translation id="6801878137098616817">Editat fa poc</translation>
 <translation id="6803622936009808957">No s'han pogut projectar les pantalles, perquè no s'ha trobat cap resolució compatible. S'ha entrat al mode d'escriptori ampliat.</translation>
+<translation id="6812232930908427253">No s'ha pogut desar l'escriptori. Hi ha massa finestres o pestanyes.</translation>
 <translation id="6818242057446442178">Enrere per paraula</translation>
 <translation id="6819327813400217281">La càmera s'ha ajustat a l'extrem inferior esquerre</translation>
 <translation id="6820676911989879663">Fes una pausa</translation>

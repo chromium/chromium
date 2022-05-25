@@ -56,6 +56,7 @@
 <translation id="124678866338384709">Isara ang kasalukuyang tab</translation>
 <translation id="1246905108078336582">Alisin ang suhestyon mula sa clipboard?</translation>
 <translation id="1258753120186372309">Google doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">Listahan ng babasahin</translation>
 <translation id="1266864766717917324">Hindi maibahagi ang <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">I-tap upang palawakin</translation>
 <translation id="1285310382777185058">Palitan ang wika</translation>
@@ -493,10 +494,10 @@ Pindutin nang matagal ang anumang salita para maghanap. Para pinuhin ang iyong p
 <translation id="363596933471559332">Awtomatikong mag-sign in sa mga website gamit ang mga naka-store na kredensyal. Kapag naka-off ang feature, hihilingin sa iyong mag-verify sa tuwing magsa-sign in ka sa isang website.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3677911431265050325">Hilingin ang pang-mobile na site</translation>
-<translation id="3685860403008476208">Makikita ng sinumang gumagamit ng device na ito ang mga file na na-download mo sa Incognito</translation>
 <translation id="3687645719033307815">Tinitingnan mo ang preview ng page na ito</translation>
 <translation id="3690369331356918524">Babalaan ka kung mae-expose ang mga password sa isang paglabag sa data</translation>
 <translation id="3692944402865947621">Hindi na-download ang <ph name="FILE_NAME" /> dahil hindi maabot ang lokasyon ng storage.</translation>
+<translation id="3697705478071004188">Pagbukud-bukurin Ayon sa Site</translation>
 <translation id="3699022356773522638">I-download ang file?</translation>
 <translation id="371230970611282515">Hinuhulaan ang mga mapanganib na event at binibigyan ka ng babala tungkol sa mga ito bago mangyari ang mga ito.</translation>
 <translation id="3714981814255182093">Buksan ang Bar sa Paghahanap</translation>
@@ -523,6 +524,7 @@ Pindutin nang matagal ang anumang salita para maghanap. Para pinuhin ang iyong p
 <translation id="3845098929839618392">Buksan sa Incognito tab</translation>
 <translation id="3856096718352044181">Paki-verify na valid na provider ito o subukan ulit sa ibang pagkakataon</translation>
 <translation id="3858860766373142691">Pangalan</translation>
+<translation id="3859206958100234503">Mag-sync para makuha ang iyong mga password, bookmark, at higit pa sa lahat ng device mo</translation>
 <translation id="3861633093716975811">Mga sikat na video</translation>
 <translation id="3892148308691398805">Kopyahin ang text</translation>
 <translation id="3894427358181296146">Magdagdag ng folder</translation>
@@ -580,6 +582,7 @@ Pindutin nang matagal ang anumang salita para maghanap. Para pinuhin ang iyong p
 <translation id="4209895695669353772">Para makakuha ng naka-personalize na content na iminumungkahi ng Google, i-on ang pag-sync</translation>
 <translation id="4214315110991671325">Kung papayagan mo ang cookies, posibleng gamitin ng Chrome ang mga ito para sa pag-preload.</translation>
 <translation id="4225895483398857530">Shortcut ng toolbar</translation>
+<translation id="4227318652298512614">Subaybayan ang anumang site na gusto mo</translation>
 <translation id="4242533952199664413">Buksan ang mga setting</translation>
 <translation id="4248098802131000011">Panatilihing ligtas ang iyong mga password mula sa mga paglabag sa data breaches at iba pang isyu sa seguridad</translation>
 <translation id="4249955472157341256">Pagbukud-bukurin ayon sa Pinakabago</translation>
@@ -696,6 +699,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="4842515939542199281">Para maghanap gamit ang iyong boses, i-tap ang mikropono</translation>
 <translation id="4844633725025837809">Para sa dagdag na kaligtasan, i-encrypt ang mga password sa iyong device bago i-save ang mga ito sa Google Password Manager</translation>
 <translation id="4850886885716139402">View</translation>
+<translation id="4852014461738377247">Nagsa-sign in\u2026</translation>
 <translation id="4860895144060829044">Tawagan</translation>
 <translation id="4864369630010738180">Nagsa-sign in...</translation>
 <translation id="4866368707455379617">Hindi ma-install ang <ph name="MODULE" /> para sa Chrome</translation>
@@ -1149,6 +1153,7 @@ Pinapahusay ng mga trust token ang privacy sa web at hindi magagamit ang mga ito
 <translation id="7304873321153398381">Offline. Hindi masuri ng Chrome ang iyong mga password.</translation>
 <translation id="7313188324932846546">Mag-tap para i-set up ang pag-sync</translation>
 <translation id="7332075081379534664">Matagumpay ang pag-sign in</translation>
+<translation id="7333232495927792353">Mag-sync para makuha ang pinakanauugnay na content mula sa Google</translation>
 <translation id="7339898014177206373">Bagong window</translation>
 <translation id="7340958967809483333">Mga opsyon para sa Discover</translation>
 <translation id="7352339641508007922">I-drag para kumuha ng mahabang screenshot</translation>
@@ -1304,6 +1309,7 @@ Pinapahusay ng mga trust token ang privacy sa web at hindi magagamit ang mga ito
 <translation id="8103578431304235997">Tab na Incognito</translation>
 <translation id="8105613260829665809">Sa pamamagitan ng pagpapatuloy, sumasang-ayon ka sa <ph name="BEGIN_TOS_LINK" />Mga Tuntunin ng Serbisyo<ph name="END_TOS_LINK" />.\nPara makatulong na mapaganda ang app, nagpapadala ang Chrome ng data ng paggamit at pag-crash sa Google. <ph name="BEGIN_UMA_LINK" />Pamahalaan<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
+<translation id="8107530384992929318">Isara ang mga opsyon sa pagbubukod-bukod</translation>
 <translation id="8109613176066109935">Para makuha ang iyong mga bookmark sa lahat ng device mo, i-on ang pag-sync</translation>
 <translation id="8110024788458304985">Tumulong na pahusayin ang mga feature at performance ng Chrome</translation>
 <translation id="8110087112193408731">Ipakita sa Digital Wellness ang aktibidad mo sa Chrome?</translation>
@@ -1377,6 +1383,7 @@ Pinapahusay ng mga trust token ang privacy sa web at hindi magagamit ang mga ito
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Buksan ang page ng history</translation>
 <translation id="8493948351860045254">Magbakante ng espasyo</translation>
+<translation id="8497242791509864205">Buksan ang mga opsyon sa pagbubukod-bukod</translation>
 <translation id="8497480609928300907">Paliwanag sa gabay sa privacy</translation>
 <translation id="8497726226069778601">Walang makikita dito... sa ngayon</translation>
 <translation id="8503559462189395349">Mga Password sa Chrome</translation>
@@ -1529,6 +1536,7 @@ Pinapahusay ng mga trust token ang privacy sa web at hindi magagamit ang mga ito
 <translation id="96681097142096641">Tingnan ang pinasimpleng page?</translation>
 <translation id="968900484120156207">Lalabas dito ang mga page na binibisita mo</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> (na) minuto na lang ang natitira</translation>
+<translation id="978443947993957527">Makakita ng content na para sa iyo</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Isara ang lahat ng tab</translation>
 <translation id="987264212798334818">Pangkalahatan</translation>

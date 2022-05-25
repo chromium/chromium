@@ -78,6 +78,7 @@
 <translation id="1578784163189013834">Achtergrond voor screensaver selecteren</translation>
 <translation id="1615335640928990664">Datagebruik sinds <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Batterijlading testen</translation>
+<translation id="1631385268983122904">Zet het apparaat nog niet weer in elkaar</translation>
 <translation id="1639239467298939599">Laden</translation>
 <translation id="1641857168437328880">Documentfeeder (enkelzijdig)</translation>
 <translation id="1643449475550628585">Achtergrondafbeelding dagelijks wijzigen</translation>
@@ -85,6 +86,7 @@
 <translation id="1645954272419197032">Bevestig de apparaatgegevens</translation>
 <translation id="1662989795263954667">Gestopt: geen inkt meer</translation>
 <translation id="1668469839109562275">Ingebouwde VPN</translation>
+<translation id="1676557873873341166">Video opnemen</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS-resolver aanwezig</translation>
 <translation id="1715359911173058521">Er is een communicatieprobleem met de scanner. Check het netwerk of de USB-aansluiting en probeer het opnieuw.</translation>
@@ -159,6 +161,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Zet Bluetooth aan om apparaten in de buurt te vinden</translation>
+<translation id="2340422556570134524">Schrijfbeveiliging is onverwacht aangezet. Zet schrijfbeveiliging handmatig uit voordat je het opnieuw probeert.</translation>
 <translation id="2346474577291266260">Uitstekend (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">Doorgaan</translation>
 <translation id="2360257214555822463"><ph name="LINK_BEGIN" />Niet-gekwalificeerde componenten<ph name="LINK_END" /> gevonden. Als je wilt bevestigen dat dit is geïnstalleerd, doe je dat nu.</translation>
@@ -474,6 +477,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="5372659122375744710">Wifi-netwerk is niet beveiligd</translation>
 <translation id="5376354385557966694">Automatisch lichte modus</translation>
 <translation id="537872351913703572">Het apparaat gaat naar een andere gebruiker of organisatie</translation>
+<translation id="5389159777326897627">Achtergrond en stijl</translation>
 <translation id="5389224261615877010">Regenboog</translation>
 <translation id="5395600419410242651">Alle gegevens wissen</translation>
 <translation id="5400907029458559844">Apparaat maakt verbinding.</translation>
@@ -643,6 +647,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="6961170852793647506">Leg je document op de scanner om aan de slag te gaan</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">Firmwarerevisie</translation>
+<translation id="6995564396478647735">Zorg dat schrijfbeveiliging aanstaat</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> beheert dit apparaat en heeft toegang tot alle gebruikersactiviteit, waaronder bezochte webpagina's, wachtwoorden en e-mails.</translation>
 <translation id="7040230719604914234">Operator</translation>
 <translation id="7041549558901442110">Apparaat is niet verbonden.</translation>
@@ -653,6 +658,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Mislukt: autorisatie mislukt</translation>
 <translation id="7103252855940681301">Apparaat <ph name="INDEX" /> van <ph name="COUNT" /> met de naam <ph name="NAME" />.</translation>
+<translation id="7126228745139711113">Schrijfbeveiliging staat uit</translation>
 <translation id="7134436342991564651">{0,plural, =1{Naamserver}other{Naamservers}}</translation>
 <translation id="7143207342074048698">Verbinden</translation>
 <translation id="7144878232160441200">Opnieuw proberen</translation>
@@ -744,6 +750,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="80398733265834479">Modus voor automatische kleuren aanzetten</translation>
 <translation id="8041089156583427627">Feedback sturen</translation>
 <translation id="8045012663542226664">Microfoon dempen</translation>
+<translation id="8063022551652308521">Schrijfbeveiliging staat nog steeds uit. Als je wilt doorgaan, zet je schrijfbeveiliging aan.</translation>
 <translation id="8075838845814659848">Resterende batterijlading</translation>
 <translation id="8082366717211101304">Kan DNS niet omzetten vanuit Android-apps</translation>
 <translation id="8083281199617904460">Dit reparatieproces is bedoeld voor een getrainde reparateur. Start pas nadat de componenten die niet goed werken zijn vervangen.</translation>
@@ -814,6 +821,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Gebruik de pijl naar rechts of pijl naar links om deze functie te beheren.</translation>
 <translation id="8712637175834984815">Begrepen</translation>
 <translation id="871560550817059752">Mislukt - Geen inkt meer</translation>
+<translation id="8717030727630712160">Reparatieproces hervatten…</translation>
 <translation id="8723108084122415655">Niet-standaard netwerk overschrijdt drempel voor latentie</translation>
 <translation id="8725066075913043281">Opnieuw proberen</translation>
 <translation id="8726019395068607495">Gestopt: klep geopend</translation>
@@ -835,6 +843,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Apparaat is een tablet.</translation>
 <translation id="8881098542468797602">Test geslaagd</translation>
+<translation id="8897267175591692539">Je kunt het apparaat nu weer in elkaar zetten</translation>
 <translation id="8898840733695078011">Signaalsterkte</translation>
 <translation id="8910721771319628100">Standaardnetwerk overschrijdt drempel voor latentie</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> van <ph name="GIVEN_NAME" /></translation>

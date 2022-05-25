@@ -56,6 +56,7 @@
 <translation id="124678866338384709">Maak huidige oortjie toe</translation>
 <translation id="1246905108078336582">Verwyder voorstel van knipbord af?</translation>
 <translation id="1258753120186372309">Google-logoskets: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">Leeslys</translation>
 <translation id="1266864766717917324">Kon nie <ph name="CONTENT_TYPE" /> deel nie.</translation>
 <translation id="1283039547216852943">Tik om uit te vou</translation>
 <translation id="1285310382777185058">Verander taal</translation>
@@ -493,10 +494,10 @@ Raak en hou enige woord om te soek. Kies meer of minder woorde as jy jou soektog
 <translation id="363596933471559332">Meld outomaties met gebergde eiebewyse by webwerwe aan. As die kenmerk af is, sal jy elke keer om verifikasie gevra word voordat jy by 'n webwerf aanmeld.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3677911431265050325">Versoek mobiele werf</translation>
-<translation id="3685860403008476208">Enigiemand wat hierdie toestel gebruik, kan lêers sien wat jy in Incognito aflaai</translation>
 <translation id="3687645719033307815">Jy bekyk tans 'n voorskou van hierdie bladsy</translation>
 <translation id="3690369331356918524">Waarsku jou as wagwoorde in 'n dataskending blootgestel is</translation>
 <translation id="3692944402865947621"><ph name="FILE_NAME" /> aflaai het misluk omdat die bergingligging nie bereik kan word nie.</translation>
+<translation id="3697705478071004188">Rangskik volgens werf</translation>
 <translation id="3699022356773522638">Laai lêer af?</translation>
 <translation id="371230970611282515">Voorspel en waarsku jou teen gevaarlike gevalle voordat hulle plaasvind.</translation>
 <translation id="3714981814255182093">Maak die Vindbalk oop</translation>
@@ -523,6 +524,7 @@ Raak en hou enige woord om te soek. Kies meer of minder woorde as jy jou soektog
 <translation id="3845098929839618392">Maak in Incognito-oortjie oop</translation>
 <translation id="3856096718352044181">Bevestig dat dit 'n geldige verskaffer is of probeer later weer</translation>
 <translation id="3858860766373142691">Naam</translation>
+<translation id="3859206958100234503">Sinkroniseer om jou wagwoorde, boekmerke en meer op al jou toestelle te kry</translation>
 <translation id="3861633093716975811">Gewilde video's</translation>
 <translation id="3892148308691398805">Kopieer teks</translation>
 <translation id="3894427358181296146">Voeg vouer by</translation>
@@ -697,6 +699,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="4842515939542199281">Tik op die mikrofoon om met jou stem te soek</translation>
 <translation id="4844633725025837809">Jy kan vir bykomende veiligheid wagwoorde op jou toestel enkripteer voordat hulle in Google Wagwoordbestuurder gestoor word</translation>
 <translation id="4850886885716139402">Bekyk</translation>
+<translation id="4852014461738377247">Meld tans aan …</translation>
 <translation id="4860895144060829044">Bel</translation>
 <translation id="4864369630010738180">Meld tans aan …</translation>
 <translation id="4866368707455379617">Kan nie <ph name="MODULE" /> vir Chrome installeer nie</translation>
@@ -1150,6 +1153,7 @@ Vertrouenstokens verbeter privaatheid op die web en kan nie gebruik word om uit 
 <translation id="7304873321153398381">Vanlyn. Chrome kan nie jou wagwoorde nagaan nie.</translation>
 <translation id="7313188324932846546">Tik om sinkronisering op te stel</translation>
 <translation id="7332075081379534664">Aanmelding was suksesvol</translation>
+<translation id="7333232495927792353">Sinkroniseer om die relevantste inhoud van Google af te kry</translation>
 <translation id="7339898014177206373">Nuwe venster</translation>
 <translation id="7340958967809483333">Opsies vir Ontdek</translation>
 <translation id="7352339641508007922">Sleep om 'n lang skermkiekie te neem</translation>
@@ -1305,6 +1309,7 @@ Vertrouenstokens verbeter privaatheid op die web en kan nie gebruik word om uit 
 <translation id="8103578431304235997">Incognito-oortjie</translation>
 <translation id="8105613260829665809">Deur voort te gaan, stem jy in tot die <ph name="BEGIN_TOS_LINK" />diensbepalings<ph name="END_TOS_LINK" />.\nChrome stuur gebruik- en omvaldata na Google toe om te help om die program beter te maak. <ph name="BEGIN_UMA_LINK" />Bestuur<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
+<translation id="8107530384992929318">Maak rangskikopsies toe</translation>
 <translation id="8109613176066109935">Skakel sinkronisering aan om jou boekmerke op al jou toestelle te kry</translation>
 <translation id="8110024788458304985">Help om Chrome se kenmerke en -werkverrigting beter te maak</translation>
 <translation id="8110087112193408731">Wys jou Chrome-aktiwiteit in Digitale Welstand?</translation>
@@ -1378,6 +1383,7 @@ Vertrouenstokens verbeter privaatheid op die web en kan nie gebruik word om uit 
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Maak die geskiedenisbladsy oop</translation>
 <translation id="8493948351860045254">Maak spasie beskikbaar</translation>
+<translation id="8497242791509864205">Maak rangskikopsies oop</translation>
 <translation id="8497480609928300907">Privaatheidgidsverduideliking</translation>
 <translation id="8497726226069778601">Niks hier te sien nie … vir eers</translation>
 <translation id="8503559462189395349">Chrome-wagwoorde</translation>
@@ -1530,6 +1536,7 @@ Vertrouenstokens verbeter privaatheid op die web en kan nie gebruik word om uit 
 <translation id="96681097142096641">Bekyk vereenvoudigde bladsy?</translation>
 <translation id="968900484120156207">Bladsye wat jy besoek, verskyn hier</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> minute oor</translation>
+<translation id="978443947993957527">Sien inhoud vir jou</translation>
 <translation id="981121421437150478">Vanlyn</translation>
 <translation id="983192555821071799">Maak alle oortjies toe</translation>
 <translation id="987264212798334818">Algemeen</translation>

@@ -24,6 +24,7 @@
 <translation id="109942774857561566">ਮੈਂ ਬੋਰ ਹੋ ਚੁੱਕਾ/ਚੁੱਕੀ ਹਾਂ</translation>
 <translation id="1104084341931202936">ਪਹੁੰਚਯੋਗਤਾ ਸੈਟਿੰਗਾਂ ਦਿਖਾਓ</translation>
 <translation id="1104621072296271835">ਰਲ ਕੇ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਹੋਰ ਵੀ ਬਿਹਤਰ ਕੰਮ ਕਰਦੇ ਹਨ</translation>
+<translation id="1111021433905331574">ਤੁਸੀਂ ਸੈਟਿੰਗਾਂ &gt; <ph name="APP_TITLE" /> 'ਤੇ ਜਾ ਕੇ ਆਪਣੇ ਕੀ-ਬੋਰਡ ਬੈਕਲਾਈਟ ਦਾ ਰੰਗ ਬਦਲ ਸਕਦੇ ਹੋ</translation>
 <translation id="112308213915226829">ਸ਼ੈਲਫ ਆਟੋਲੁਕਾਓ</translation>
 <translation id="1142002900084379065">ਹਾਲੀਆ ਫ਼ੋਟੋਆਂ</translation>
 <translation id="1148499908455722006"><ph name="USER_NAME" /> ਲਈ ਜਾਣਕਾਰੀ ਵਿੰਡੋ ਖੋਲ੍ਹੋ</translation>
@@ -65,6 +66,7 @@
 <translation id="1275285675049378717"><ph name="POWER_SOURCE" /> ਨੂੰ ਪਾਵਰ ਦਿੱਤੀ ਜਾ ਰਹੀ ਹੈ</translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">ਫ਼ੋਨ ਦਾ ਪਤਾ ਲਗਾਓ</translation>
+<translation id="1287002645302686982">ਰੱਖਿਅਤ ਕੀਤੇ ਡੈਸਕ ਦਾ ਨਾਮ <ph name="DESK_TEMPLATE_NAME" /> ਪਹਿਲਾਂ ਤੋਂ ਹੀ ਮੌਜੂਦ ਹੈ</translation>
 <translation id="1289185460362160437"><ph name="COME_BACK_DAY_OF_WEEK" /> ਨੂੰ <ph name="COME_BACK_TIME" /> ਵਜੇ ਡੀਵਾਈਸ ਦੁਬਾਰਾ ਵਰਤੋ।</translation>
 <translation id="1290331692326790741">ਕਮਜ਼ੋਰ ਸਿਗਨਲ</translation>
 <translation id="1290982764014248209"><ph name="DRAGGED_APP" /> ਨੂੰ <ph name="FOLDER_NAME" /> ਫੋਲਡਰ ਵਿੱਚ ਲਿਜਾਓ।</translation>
@@ -94,7 +96,6 @@
 <translation id="1420408895951708260">ਰਾਤ ਦੀ ਰੋਸ਼ਨੀ ਨੂੰ ਟੌਗਲ ਕਰੋ। <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">ਆਪਣੇ <ph name="DEVICE_TYPE" /> 'ਤੇ ਆਪਣੇ ਫ਼ੋਨ ਦੀਆਂ ਹਾਲੀਆ ਫ਼ੋਟੋਆਂ ਅਤੇ ਮੀਡੀਆ ਦੇਖੋ</translation>
 <translation id="1426410128494586442">ਹਾਂ</translation>
-<translation id="1438357537418863713">ਹੁਣ ਐਪ ਸਟ੍ਰੀਮਿੰਗ ਦਾ ਸੈੱਟਅੱਪ ਹੋ ਗਿਆ ਹੈ। ਸ਼ੁਰੂਆਤ ਕਰਨ ਤੋਂ ਬਾਅਦ, ਹਾਲ ਹੀ ਵਿੱਚ ਲਾਂਚ ਕੀਤੀਆਂ ਐਪਾਂ ਇੱਥੇ ਦਿਸਣਗੀਆਂ।</translation>
 <translation id="1447641497144572814">ਸਕ੍ਰੀਨ ਸੇਵਰ ਸ਼ੁਰੂ ਹੁੰਦਾ ਹੈ</translation>
 <translation id="1455242230282523554">ਭਾਸ਼ਾ ਸੈਟਿੰਗਾਂ ਦਿਖਾਓ</translation>
 <translation id="1460620680449458626">ਅਵਾਜ਼ ਨੂੰ ਮਿਊਟ ਕੀਤਾ ਹੋਇਆ ਹੈ।</translation>
@@ -270,6 +271,7 @@
 <translation id="2586561057878260610"><ph name="DESK_NAME" /> ਨਾਲ ਸੁਮੇਲ ਕਰਨ ਲਈ Ctrl + W ਦਬਾਓ। ਡੈਸਕ ਅਤੇ ਵਿੰਡੋਆਂ ਨੂੰ ਬੰਦ ਕਰਨ ਲਈ Ctrl + Shift + W ਦਬਾਓ।</translation>
 <translation id="2595239820337756193">ਮੀਲ ਵਿੱਚ 5K</translation>
 <translation id="2596078834055697711">ਵਿੰਡੋ ਦਾ ਸਕ੍ਰੀਨਸ਼ਾਟ ਲਓ</translation>
+<translation id="2598725286293895280">ਡੈਸਕ ਵਿੱਚ ਅਸਮਰਥਿਤ ਐਪਾਂ</translation>
 <translation id="2607678425161541573">ਆਨਲਾਈਨ ਸਾਈਨ-ਇਨ ਕਰਨਾ ਲੋੜੀਂਦਾ ਹੈ</translation>
 <translation id="2620016719323068571">ਆਪਣੀ <ph name="CATEGORY" />, ਫ਼ਾਈਲਾਂ, ਐਪਾਂ, ਅਤੇ ਹੋਰ ਬਹੁਤ ਕੁਝ ਖੋਜੋ...</translation>
 <translation id="2620436844016719705">ਸਿਸਟਮ</translation>
@@ -645,6 +647,7 @@
 <translation id="4734965478015604180">ਲੇਟਵਾਂ</translation>
 <translation id="4735498845456076464"><ph name="LAUNCHER_KEY_NAME" /> + ਨੰਬਰ ਕੀ-ਬੋਰਡ ਸ਼ਾਰਟਕੱਟ ਬਦਲ ਗਿਆ ਹੈ। ਫੰਕਸ਼ਨ ਕੁੰਜੀਆਂ ਵਰਤਣ ਲਈ, <ph name="LAUNCHER_KEY_NAME" /> ਕੁੰਜੀ + ਉੱਪਰਲੀ ਕਤਾਰ 'ਤੇ ਦਿੱਤੀ ਕੋਈ ਵੀ ਕੁੰਜੀ ਦਬਾਓ।</translation>
 <translation id="473775607612524610">ਅੱਪਡੇਟ ਕਰੋ</translation>
+<translation id="4740516757091333363">ਕੀ ਰੱਖਿਅਤ ਕੀਤੇ ਡੈਸਕ ਨੂੰ ਮਿਟਾਉਣਾ ਹੈ?</translation>
 <translation id="4752784485658729358">ਰੱਖਿਅਤ ਕੀਤੇ ਗਏ ਸਿਰਫ਼ 6 ਡੈਸਕਾਂ ਦੀ ਆਗਿਆ ਹੈ। ਨਵਾਂ ਡੈਸਕ ਰੱਖਿਅਤ ਕਰਨ ਲਈ ਪਹਿਲਾਂ ਤੋਂ ਮੌਜੂਦ ਡੈਸਕ ਹਟਾਓ।</translation>
 <translation id="4759238208242260848">ਡਾਊਨਲੋਡਸ</translation>
 <translation id="4774338217796918551">ਕੱਲ੍ਹ <ph name="COME_BACK_TIME" /> ਡੀਵਾਈਸ ਦੁਬਾਰਾ ਵਰਤੋ।</translation>
@@ -698,7 +701,6 @@
 <translation id="5071064518267176975">ਇੱਕ ਐਪ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਦੀ ਵਰਤੋਂ ਕਰਨਾ ਚਾਹੁੰਦੀ ਹੈ</translation>
 <translation id="5078796286268621944">ਗ਼ਲਤ PIN</translation>
 <translation id="5083553833479578423">Assistant ਦੀਆਂ ਹੋਰ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਨੂੰ ਅਣਲਾਕ ਕਰੋ।</translation>
-<translation id="5106223312672646208">ਵਿਅਕਤੀਗਤ ਬਣਾਓ</translation>
 <translation id="5107522548814527560">ਵੈੱਬ</translation>
 <translation id="5117590920725113268">ਅਗਲਾ ਮਹੀਨਾ ਦਿਖਾਓ</translation>
 <translation id="5136175204352732067">ਵੱਖਰਾ ਕੀ-ਬੋਰਡ ਕਨੈਕਟ ਕੀਤਾ ਗਿਆ</translation>
@@ -743,6 +745,7 @@
 <translation id="5352250171825660495">ਗੂੜ੍ਹਾ ਥੀਮ ਚਾਲੂ ਹੈ</translation>
 <translation id="5356963482258194581">ਗੂੜ੍ਹੇ ਅਤੇ ਹਲਕੇ ਥੀਮ ਵਿਚਕਾਰ ਸਵਿੱਚ ਕਰੋ। ਡੈਸਕਟਾਪ 'ਤੇ ਸੱਜਾ-ਕਲਿੱਕ ਕਰ ਕੇ 'ਵਾਲਪੇਪਰ ਅਤੇ ਸਟਾਈਲ' ਚੁਣੋ।</translation>
 <translation id="5379115545237091094">ਬਹੁਤ ਸਾਰੀਆਂ ਕੋਸ਼ਿਸ਼ਾਂ</translation>
+<translation id="5391307769715781764">ਕੀ ਰੱਖਿਅਤ ਕੀਤੇ ਡੈਸਕ ਨੂੰ ਬਦਲਣਾ ਹੈ?</translation>
 <translation id="5393156353051693207">ਆਪਣੀਆਂ ਐਪਾਂ ਨੂੰ ਮੁੜ-ਕ੍ਰਮਬੱਧ ਕਰਨ ਲਈ ਕਿਤੇ ਵੀ ਸਪਰਸ਼ ਕਰ ਕੇ ਰੱਖੋ</translation>
 <translation id="5395308026110844773"><ph name="IN_PLACE_APP" /> ਦੇ ਉੱਪਰ <ph name="DRAGGED_APP_NAME" />, ਫੋਲਡਰ ਬਣਾਉਣ ਲਈ ਛੱਡੋ।</translation>
 <translation id="5397578532367286026">ਇਸ ਵਰਤੋਂਕਾਰ ਦੀ ਵਰਤੋਂ ਅਤੇ ਇਤਿਹਾਸ ਦੀ ਸਮੀਖਿਆ ਪ੍ਰਬੰਧਕ (<ph name="MANAGER_EMAIL" />) ਵੱਲੋਂ chrome.com 'ਤੇ ਕੀਤੀ ਜਾ ਸਕਦੀ ਹੈ।</translation>
@@ -976,6 +979,7 @@
 <translation id="6790428901817661496">ਪਲੇ ਕਰੋ</translation>
 <translation id="6801878137098616817">ਹਾਲ ਹੀ ਵਿੱਚ ਸੰਪਾਦਨ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="6803622936009808957">ਡਿਸਪਲੇਆਂ ਨੂੰ ਮਿਰਰ ਨਹੀਂ ਕਰ ਸਕਿਆ ਕਿਉਂਕਿ ਕੋਈ ਸਮਰਥਿਤ ਰੈਜ਼ੋਲਿਊਸ਼ਨ ਨਹੀਂ ਮਿਲੇ। ਇਸਦੀ ਬਜਾਏ ਵਿਸਤ੍ਰਿਤ ਡੈਸਕਟਾਪ ਵਿੱਚ ਚਲਾ ਗਿਆ।</translation>
+<translation id="6812232930908427253">ਡੈਸਕ ਨੂੰ ਰੱਖਿਅਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ। ਬਹੁਤ ਸਾਰੀਆਂ ਵਿੰਡੋਆਂ ਜਾਂ ਟੈਬਾਂ ਹਨ।</translation>
 <translation id="6818242057446442178">ਇੱਕ ਸ਼ਬਦ ਪਿੱਛੇ ਜਾਓ</translation>
 <translation id="6819327813400217281">ਕੈਮਰੇ ਨੂੰ ਹੇਠਲੇ ਖੱਬੇ ਕੋਨੇ 'ਤੇ ਵਿਵਸਥਿਤ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="6820676911989879663">ਥੋੜ੍ਹੀ ਦੇਰ ਆਰਾਮ ਕਰੋ!</translation>

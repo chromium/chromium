@@ -78,6 +78,7 @@
 <translation id="1578784163189013834">Pilih latar penyelamat skrin</translation>
 <translation id="1615335640928990664">Penggunaan data sejak <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Jalankan Ujian cas</translation>
+<translation id="1631385268983122904">Jangan masukkan semula bateri lagi</translation>
 <translation id="1639239467298939599">Memuatkan</translation>
 <translation id="1641857168437328880">Penyuap Dokumen (Satu sisi)</translation>
 <translation id="1643449475550628585">Tukar imej kertas dinding setiap hari</translation>
@@ -85,6 +86,7 @@
 <translation id="1645954272419197032">Sila sahkan maklumat peranti</translation>
 <translation id="1662989795263954667">Dihentikan - Kehabisan dakwat</translation>
 <translation id="1668469839109562275">VPN terbina dalam</translation>
+<translation id="1676557873873341166">Mengambil video</translation>
 <translation id="1703835215927279855">Surat</translation>
 <translation id="1706391837335750954">Pelerai DNS Ada</translation>
 <translation id="1715359911173058521">Terdapat isu semasa berkomunikasi dengan pengimbas. Semak rangkaian atau sambungan USB dan cuba lagi.</translation>
@@ -159,6 +161,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Hidupkan Bluetooth untuk menemui peranti berdekatan</translation>
+<translation id="2340422556570134524">Write Protect telah dihidupkan tanpa diduga. Sila matikan Write Protect secara manual sebelum mencuba lagi.</translation>
 <translation id="2346474577291266260">Cemerlang (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">Teruskan</translation>
 <translation id="2360257214555822463"><ph name="LINK_BEGIN" />Komponen tidak layak<ph name="LINK_END" /> dikesan. Jika anda memilih untuk mengesahkan komponen ini telah dipasang, sila lakukannya sekarang.</translation>
@@ -474,6 +477,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="5372659122375744710">Rangkaian Wi-Fi tidak selamat</translation>
 <translation id="5376354385557966694">Mod cerah automatik</translation>
 <translation id="537872351913703572">Peranti akan menjadi milik pengguna atau organisasi lain</translation>
+<translation id="5389159777326897627">Hiasan latar &amp; gaya</translation>
 <translation id="5389224261615877010">Pelangi</translation>
 <translation id="5395600419410242651">Padamkan semua data</translation>
 <translation id="5400907029458559844">Peranti sedang menyambung.</translation>
@@ -643,6 +647,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="6961170852793647506">Untuk bermula, letakkan dokumen anda di atas pengimbas</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">Semakan perisian tegar</translation>
+<translation id="6995564396478647735">Pastikan Write Protect dihidupkan</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> mengurus peranti ini dan mempunyai akses kepada semua aktiviti pengguna, termasuk halaman web yang dilawati, kata laluan dan e-mel.</translation>
 <translation id="7040230719604914234">Pengendali</translation>
 <translation id="7041549558901442110">Peranti tidak disambungkan.</translation>
@@ -653,6 +658,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Gagal - Pemberian Keizinan Gagal</translation>
 <translation id="7103252855940681301">Peranti <ph name="INDEX" /> daripada <ph name="COUNT" /> bernama <ph name="NAME" />.</translation>
+<translation id="7126228745139711113">Write Protect dimatikan</translation>
 <translation id="7134436342991564651">{0,plural, =1{Pelayan nama}other{Pelayan nama}}</translation>
 <translation id="7143207342074048698">Menyambung</translation>
 <translation id="7144878232160441200">Cuba semula</translation>
@@ -744,6 +750,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="80398733265834479">Dayakan mod warna automatik</translation>
 <translation id="8041089156583427627">Hantar Maklum Balas</translation>
 <translation id="8045012663542226664">Redam Mikrofon</translation>
+<translation id="8063022551652308521">Write Protect masih dimatikan. Untuk meneruskan, hidupkan Write Protect.</translation>
 <translation id="8075838845814659848">Baki cas</translation>
 <translation id="8082366717211101304">Tidak dapat menyelesaikan DNS daripada apl Android</translation>
 <translation id="8083281199617904460">Proses pembaikan ini adalah untuk juruteknik pembaikan terlatih. Mulakan hanya selepas menggantikan komponen yang tidak berfungsi.</translation>
@@ -814,6 +821,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Gunakan kekunci Anak panah ke kiri atau Anak panah ke kanan untuk mengurus ciri ini.</translation>
 <translation id="8712637175834984815">Faham</translation>
 <translation id="871560550817059752">Gagal - Kehabisan dakwat</translation>
+<translation id="8717030727630712160">Menyambung semula proses pembaikan…</translation>
 <translation id="8723108084122415655">Rangkaian bukan lalai melebihi ambang kependaman</translation>
 <translation id="8725066075913043281">Cuba lagi</translation>
 <translation id="8726019395068607495">Dihentikan - Pintu terbuka</translation>
@@ -835,6 +843,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Peranti ialah tablet.</translation>
 <translation id="8881098542468797602">Ujian berjaya</translation>
+<translation id="8897267175591692539">Sekarang anda boleh masukkan semula bateri</translation>
 <translation id="8898840733695078011">Kekuatan isyarat</translation>
 <translation id="8910721771319628100">Rangkaian lalai melebihi ambang kependaman</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> <ph name="GIVEN_NAME" /></translation>

@@ -78,6 +78,7 @@
 <translation id="1578784163189013834">Вибрати фон для заставки</translation>
 <translation id="1615335640928990664">Використання трафіку з <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Почати перевірку заряджання</translation>
+<translation id="1631385268983122904">Поки не збирайте пристрій</translation>
 <translation id="1639239467298939599">Завантаження</translation>
 <translation id="1641857168437328880">Пристрій автоподачі документів (односторонній)</translation>
 <translation id="1643449475550628585">Змінювати фоновий малюнок щодня</translation>
@@ -85,6 +86,7 @@
 <translation id="1645954272419197032">Підтвердьте інформацію про пристрій</translation>
 <translation id="1662989795263954667">Зупинено – закінчилося чорнило</translation>
 <translation id="1668469839109562275">Вбудована мережа VPN</translation>
+<translation id="1676557873873341166">Записується відео</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Є резолвер DNS</translation>
 <translation id="1715359911173058521">Не вдалося підключитися до сканера. Перевірте з’єднання з мережею або USB та повторіть спробу.</translation>
@@ -159,6 +161,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2336381494582898602">Очищення</translation>
 <translation id="2338501278241028356">Щоб знайти пристрої поблизу, увімкніть Bluetooth</translation>
+<translation id="2340422556570134524">Захист від запису було несподівано ввімкнено. Перш ніж повторити спробу, вимкніть цю функцію вручну.</translation>
 <translation id="2346474577291266260">Чудовий сигнал (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">Продовжити</translation>
 <translation id="2360257214555822463">Виявлено <ph name="LINK_BEGIN" />неналежні компоненти<ph name="LINK_END" />. Якщо ви знаєте, що їх встановлено, підтвердьте це зараз.</translation>
@@ -474,6 +477,7 @@
 <translation id="5372659122375744710">Мережа Wi-Fi ненадійна</translation>
 <translation id="5376354385557966694">Автоматичний світлий режим</translation>
 <translation id="537872351913703572">Пристрій буде передано іншому користувачу або організації</translation>
+<translation id="5389159777326897627">Оформлення та стиль</translation>
 <translation id="5389224261615877010">Веселка</translation>
 <translation id="5395600419410242651">Стерти всі дані</translation>
 <translation id="5400907029458559844">Підключення пристрою.</translation>
@@ -643,6 +647,7 @@
 <translation id="6961170852793647506">Щоб почати, покладіть документ на сканер</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">Мікропрограма</translation>
+<translation id="6995564396478647735">Переконайтеся, що захист від запису ввімкнено</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> керує цим пристроєм і має доступ до всіх дій користувача, зокрема відвіданих веб-сторінок, паролів і електронних листів.</translation>
 <translation id="7040230719604914234">Оператор</translation>
 <translation id="7041549558901442110">Пристрій не підключено.</translation>
@@ -653,6 +658,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Не вдалося – помилка авторизації</translation>
 <translation id="7103252855940681301">Пристрій <ph name="INDEX" /> з <ph name="COUNT" />: "<ph name="NAME" />".</translation>
+<translation id="7126228745139711113">Захист від запису вимкнено</translation>
 <translation id="7134436342991564651">{0,plural, =1{Сервер імен}one{Сервери імен}few{Сервери імен}many{Сервери імен}other{Сервери імен}}</translation>
 <translation id="7143207342074048698">Під’єднання</translation>
 <translation id="7144878232160441200">Повторити спробу</translation>
@@ -744,6 +750,7 @@
 <translation id="80398733265834479">Увімкнути режим автоматичного вибору кольору</translation>
 <translation id="8041089156583427627">Надіслати відгук</translation>
 <translation id="8045012663542226664">Вимкнення звуку мікрофона</translation>
+<translation id="8063022551652308521">Захист від запису все ще вимкнено. Щоб продовжити, увімкніть цю функцію.</translation>
 <translation id="8075838845814659848">Рівень заряду</translation>
 <translation id="8082366717211101304">Не вдається перетворити DNS із додатків для Android</translation>
 <translation id="8083281199617904460">Ремонт має провести кваліфікований спеціаліст. Перш ніж почати ремонт, замініть несправні компоненти.</translation>
@@ -814,6 +821,7 @@
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Щоб керувати цією функцією, натискайте стрілки ліворуч або праворуч.</translation>
 <translation id="8712637175834984815">Виконано</translation>
 <translation id="871560550817059752">Не надруковано – закінчилося чорнило</translation>
+<translation id="8717030727630712160">Відновлюємо ремонт…</translation>
 <translation id="8723108084122415655">Затримка мережі не за умовчанням задовга</translation>
 <translation id="8725066075913043281">Повторити спробу</translation>
 <translation id="8726019395068607495">Зупинено – відкрито кришку принтера</translation>
@@ -835,6 +843,7 @@
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Це планшет.</translation>
 <translation id="8881098542468797602">Перевірку пройдено</translation>
+<translation id="8897267175591692539">Можете збирати пристрій</translation>
 <translation id="8898840733695078011">Рівень сигналу</translation>
 <translation id="8910721771319628100">Затримка мережі за умовчанням задовга</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> (<ph name="GIVEN_NAME" />)</translation>

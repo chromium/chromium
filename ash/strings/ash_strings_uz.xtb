@@ -96,7 +96,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1420408895951708260">Tungi rejim: <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">Telefoningizdagi oxirgi rasmlar va media fayllarni <ph name="DEVICE_TYPE" /> qurilmasida oching</translation>
 <translation id="1426410128494586442">Ha</translation>
-<translation id="1438357537418863713">Ilovadan translatsiya qilish endi sozlandi. Boshlanganda oxirgi ochilgan ilovalar shu yerda chiqadi.</translation>
+<translation id="1447641497144572814">Ekran lavhasi boshlandi</translation>
 <translation id="1455242230282523554">Til sozlamalarini ochish</translation>
 <translation id="1460620680449458626">Ovozsiz</translation>
 <translation id="1467432559032391204">Chapga</translation>
@@ -700,7 +700,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="5071064518267176975">Ilova mikrofondan foydalanmoqchi</translation>
 <translation id="5078796286268621944">Noto‘g‘ri PIN-kod</translation>
 <translation id="5083553833479578423">Assistentning boshqa imkoniyatlarini oching.</translation>
-<translation id="5106223312672646208">Moslashtirish</translation>
+<translation id="509790653408515442">Telefon ilovalari namoyish qilinganda ular shu yerda chiqadi</translation>
 <translation id="5107522548814527560">Veb</translation>
 <translation id="5117590920725113268">Keyingi oyni ko‘rsatish</translation>
 <translation id="5136175204352732067">Boshqa klaviatura ulandi</translation>
@@ -723,6 +723,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="523505283826916779">Maxsus imkoniyatlar sozlamalari</translation>
 <translation id="5245201184978705914">Transkripsiya yaratilmadi</translation>
 <translation id="5253783950165989294"><ph name="DEVICE_NAME" /> nomli qurilmaga ulandi, batareya quvvati: <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="5258528442992323769">Saqlangan ish stollari topilmadi</translation>
 <translation id="5260676007519551770">Desk 4</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> ilovasiga diqqat qaratishingiz zarur.</translation>
 <translation id="5283198616748585639">1 daqiqa qoʻshish</translation>
@@ -1262,6 +1263,7 @@ yangi oʻrnatilgan</translation>
 <translation id="851458219935658693">Joriy ish stoli oynalarini chiqarish, radio tugma tanlandi</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> qurilmasi yoniqligida uni quvvatlab bo‘lmaydi.</translation>
 <translation id="8535393432370007982">Rangi asosida saralanishini bekor qilish</translation>
+<translation id="8542053257095774575">Saqlangan ish stoli yoki andozalar topilmadi</translation>
 <translation id="8546059259582788728">Saralash bekor qilindi</translation>
 <translation id="8551588720239073785">Sana va vaqt sozlamalari</translation>
 <translation id="8553395910833293175">Allaqachon barcha ish stollarida mavjud</translation>

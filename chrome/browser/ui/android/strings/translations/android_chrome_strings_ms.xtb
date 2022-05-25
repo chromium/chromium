@@ -56,6 +56,7 @@
 <translation id="124678866338384709">Tutup tab semasa</translation>
 <translation id="1246905108078336582">Alih keluar cadangan daripada papan keratan?</translation>
 <translation id="1258753120186372309">Coretan Google: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">Senarai bacaan</translation>
 <translation id="1266864766717917324">Tidak dapat berkongsi <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Ketik untuk kembangkan</translation>
 <translation id="1285310382777185058">Tukar bahasa</translation>
@@ -312,6 +313,7 @@ Sentuh &amp; tahan mana-mana perkataan untuk mencari. Untuk memperhalus carian a
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# Fail audio}other{# Fail audio}}</translation>
 <translation id="265156376773362237">Pramuat standard</translation>
 <translation id="2656405586795711023">Apl web</translation>
+<translation id="2669454659051515572">Sesiapa sahaja yang menggunakan peranti ini dapat melihat fail yang dimuat turun</translation>
 <translation id="2702516483241149200">Baharu: kongsi pautan yang menatal ke teks ini</translation>
 <translation id="2704606927547763573">Disalin</translation>
 <translation id="2707726405694321444">Muat semula halaman</translation>
@@ -493,10 +495,10 @@ Sentuh &amp; tahan mana-mana perkataan untuk mencari. Untuk memperhalus carian a
 <translation id="363596933471559332">Log masuk secara automatik ke laman web menggunakan bukti kelayakan yang disimpan. Apabila ciri ini dimatikan, anda akan diminta memberikan pengesahan setiap kali sebelum log masuk ke laman web.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3677911431265050325">Minta tapak mudah alih</translation>
-<translation id="3685860403008476208">Sesiapa sahaja yang menggunakan peranti ini boleh melihat fail yang anda muat turun dalam Inkognito</translation>
 <translation id="3687645719033307815">Anda sedang melihat pratonton halaman ini</translation>
 <translation id="3690369331356918524">Memberikan amaran kepada anda jika kata laluan terdedah dalam pelanggaran data</translation>
 <translation id="3692944402865947621">Muat turun <ph name="FILE_NAME" /> gagal kerana lokasi storan tidak dapat dicapai.</translation>
+<translation id="3697705478071004188">Isih mengikut Laman</translation>
 <translation id="3699022356773522638">Muat turun fail?</translation>
 <translation id="371230970611282515">Meramalkan dan memberi anda amaran tentang acara berbahaya sebelum acara itu berlaku.</translation>
 <translation id="3714981814255182093">Buka Bar Cari</translation>
@@ -777,6 +779,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />tetapkan semula penyegerakan<
 <translation id="5246093389635966745">Edit pintasan bar alat</translation>
 <translation id="526421993248218238">Tidak dapat memuatkan halaman ini</translation>
 <translation id="5271967389191913893">Peranti tidak dapat membuka kandungan yang hendak dimuat turun.</translation>
+<translation id="5274286919938458946">Dipautkan dengan <ph name="CARD_DETAIL" /></translation>
 <translation id="5292796745632149097">Hantar ke</translation>
 <translation id="5300426565656326054">Pemeribadian iklan berasaskan penyemak imbas</translation>
 <translation id="5304593522240415983">Medan ini tidak boleh kosong</translation>
@@ -1308,6 +1311,7 @@ Token amanah meningkatkan privasi pada web dan tidak boleh digunakan untuk menge
 <translation id="8103578431304235997">Tab Inkognito</translation>
 <translation id="8105613260829665809">Dengan meneruskan penggunaan, anda bersetuju menerima <ph name="BEGIN_TOS_LINK" />Syarat Perkhidmatan<ph name="END_TOS_LINK" />.\nUntuk membantu dalam usaha meningkatkan apl, Chrome menghantar data penggunaan dan ranap sistem kepada Google. <ph name="BEGIN_UMA_LINK" />Urus<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
+<translation id="8107530384992929318">Tutup pilihan isih</translation>
 <translation id="8109613176066109935">Hidupkan penyegerakan untuk mendapatkan penanda halaman pada semua peranti anda</translation>
 <translation id="8110024788458304985">Bantu kami memperbaik ciri dan prestasi Chrome</translation>
 <translation id="8110087112193408731">Tunjukkan aktiviti Chrome anda dalam Kesejahteraan Digital?</translation>
@@ -1381,6 +1385,7 @@ Token amanah meningkatkan privasi pada web dan tidak boleh digunakan untuk menge
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Buka halaman sejarah</translation>
 <translation id="8493948351860045254">Kosongkan ruang</translation>
+<translation id="8497242791509864205">Buka pilihan isih</translation>
 <translation id="8497480609928300907">Penjelasan panduan privasi</translation>
 <translation id="8497726226069778601">Belum ada apa-apa untuk dilihat di sini... lagi</translation>
 <translation id="8503559462189395349">Kata Laluan Chrome</translation>

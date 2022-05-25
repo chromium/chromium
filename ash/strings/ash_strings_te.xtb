@@ -24,6 +24,7 @@
 <translation id="109942774857561566">నాకు ఏమీ తోచడం లేదు</translation>
 <translation id="1104084341931202936">యాక్సెసిబిలిటీ సెట్టింగ్‌లను చూపుతుంది</translation>
 <translation id="1104621072296271835">మీ పరికరాలు కలిసికట్టుగా మరింత బాగా పనిచేస్తాయి</translation>
+<translation id="1111021433905331574">మీరు మీ కీబోర్డ్ బ్యాక్‌లైట్ రంగును సెట్టింగ్‌లు &gt; <ph name="APP_TITLE" />‌లో మార్చవచ్చు</translation>
 <translation id="112308213915226829">అరను ఆటోమేటిక్‌గా దాచు</translation>
 <translation id="1142002900084379065">ఇటీవలి ఫోటోలు</translation>
 <translation id="1148499908455722006"><ph name="USER_NAME" /> కోసం సమాచార డైలాగ్‌ను తెరవండి</translation>
@@ -95,7 +96,6 @@
 <translation id="1420408895951708260">రాత్రి కాంతిని టోగుల్ చేయి. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">మీ ఫోన్‌లోని తాజా ఫోటోలు, మీడియాను మీ <ph name="DEVICE_TYPE" />లో చూడండి</translation>
 <translation id="1426410128494586442">అవును</translation>
-<translation id="1438357537418863713">యాప్ స్ట్రీమింగ్ ఇప్పుడు సెటప్ చేయబడింది. మీరు ప్రారంభించిన తర్వాత, ఇటీవల లాంచ్ చేయబడిన యాప్‌లు ఇక్కడ కనిపిస్తాయి.</translation>
 <translation id="1447641497144572814">స్క్రీన్ సేవర్ ప్రారంభమవుతోంది</translation>
 <translation id="1455242230282523554">భాష సెట్టింగ్‌లను చూపుతుంది</translation>
 <translation id="1460620680449458626">వాల్యూమ్ మ్యూట్ చేయబడింది.</translation>
@@ -701,7 +701,6 @@
 <translation id="5071064518267176975">యాప్ మైక్రోఫోన్‌ను ఉపయోగించాలనుకుంటోంది</translation>
 <translation id="5078796286268621944"> సరి కానటువంటి PIN</translation>
 <translation id="5083553833479578423">మరిన్ని Assistant ఫీచర్‌లను అన్‌లాక్ చేయండి.</translation>
-<translation id="5106223312672646208">వ్యక్తిగతీకరించండి</translation>
 <translation id="5107522548814527560">వెబ్</translation>
 <translation id="5117590920725113268">తరువాత నెలను చూపుతుంది</translation>
 <translation id="5136175204352732067">వేరే కీబోర్డ్ కనెక్ట్ చేయబడింది</translation>

@@ -78,6 +78,7 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> já tem sessão iniciada neste perfil do Chrome. Para manter a sua navegação separada, o Chrome pode criar-lhe o seu próprio perfil.</translation>
 <translation id="2580411288591421699">Não é possível instalar a mesma versão do Google Chrome atualmente em execução. Feche o Google Chrome e tente novamente.</translation>
 <translation id="2586406160782125153">Esta ação elimina os seus dados de navegação deste dispositivo. Para recuperar os seus dados mais tarde, inicie sessão no Chrome como <ph name="USER_EMAIL" />.</translation>
+<translation id="2597976513418770460">Obtenha os seus itens do navegador Chrome a partir de <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="2622559029861875898">O Chrome não consegue verificar se existem atualizações. Experimente verificar a sua ligação à Internet.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2652691236519827073">Abrir link num novo &amp;separador do Chrome</translation>
@@ -304,6 +305,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="7801699035218095297">O Google Chrome está a tentar copiar palavras-passe. Escreva a sua palavra-passe do Windows para permitir esta ação.</translation>
 <translation id="7808348361785373670">Remover do Chrome...</translation>
 <translation id="7825851276765848807">Ocorreu uma falha na instalação devido a um erro não especificado. Descarregue novamente o Google Chrome.</translation>
+<translation id="7880591377632733558">Damos-lhe as boas-vindas ao Chrome, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="7890208801193284374">Se partilhar um computador, os amigos e os familiares podem navegar separadamente e configurar o Chrome da forma que quiserem.</translation>
 <translation id="7896673875602241923">Anteriormente, alguém iniciou sessão no Chrome neste computador com a conta <ph name="ACCOUNT_EMAIL_LAST" />. Crie um novo utilizador do Chrome para manter as informações em separado.</translation>
 <translation id="7917876797003313048">Pode gerir as suas Contas Google com sessão iniciada. As suas Contas Google são utilizadas para o navegador Chrome, a Play Store, o Gmail e muito mais. Se pretender adicionar uma conta para outra pessoa, como um membro da família, adicione uma nova pessoa ao seu <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
@@ -329,6 +331,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="8418845734693287262">O ChromeOS não conseguiu sincronizar os dados porque os detalhes de início de sessão da sua conta estão desatualizados.</translation>
 <translation id="8421734018304082652">O Chrome bloqueou este ficheiro porque está encriptado. Peça ao respetivo proprietário para o desencriptar</translation>
 <translation id="8433638294851456451">Para enviar um número daqui para o seu telemóvel Android, inicie sessão no Chrome em ambos os dispositivos.</translation>
+<translation id="8451192282033883849">A sua conta é gerida por <ph name="MANAGER_NAME" />. O seu administrador pode ver e editar este perfil do navegador Chrome e os respetivos dados, como os marcadores, o histórico e as palavras-passe.</translation>
 <translation id="8498858610309223613">Acabou de ser instalada uma atualização de segurança especial para o Google Chrome. Reinicie agora e iremos restaurar os seus separadores.</translation>
 <translation id="8504220326736535258">O Chrome bloqueou este ficheiro porque tem software malicioso</translation>
 <translation id="8516431725144212809">Os seus interesses conforme estimados pelo Chrome</translation>

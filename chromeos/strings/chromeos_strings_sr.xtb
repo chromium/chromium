@@ -78,6 +78,7 @@
 <translation id="1578784163189013834">Одаберите позадину чувара екрана</translation>
 <translation id="1615335640928990664">Потрошња података од <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Покрени тест пуњења</translation>
+<translation id="1631385268983122904">Још не састављајте уређај</translation>
 <translation id="1639239467298939599">Учитавање</translation>
 <translation id="1641857168437328880">Увлачење документа (једнострано)</translation>
 <translation id="1643449475550628585">Мењајте слику позадине сваког дана</translation>
@@ -85,6 +86,7 @@
 <translation id="1645954272419197032">Потврдите информације о уређају</translation>
 <translation id="1662989795263954667">Заустављено – нема више мастила</translation>
 <translation id="1668469839109562275">Уграђени VPN</translation>
+<translation id="1676557873873341166">Снима се видео</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Присутан је DNS разрешивач</translation>
 <translation id="1715359911173058521">Дошло је до проблема у комуникацији са скенером. Проверите мрежну или USB везу и пробајте поново.</translation>
@@ -159,6 +161,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Укључите Bluetooth да бисте открили уређаје у близини</translation>
+<translation id="2340422556570134524">Заштита од уписивања се неочекивано укључила. Ручно искључите заштиту од уписивања пре него што пробате поново.</translation>
 <translation id="2346474577291266260">Одличан (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">Наставите</translation>
 <translation id="2360257214555822463">Откривене су <ph name="LINK_BEGIN" />неквалификоване компоненте<ph name="LINK_END" />. Ако желите да потврдите да су монтиране, урадите то одмах.</translation>
@@ -474,6 +477,7 @@
 <translation id="5372659122375744710">WiFi мрежа није безбедна</translation>
 <translation id="5376354385557966694">Аутоматски светли режим</translation>
 <translation id="537872351913703572">Уређај ће прећи на другог корисника или организацију</translation>
+<translation id="5389159777326897627">Позадина и стил</translation>
 <translation id="5389224261615877010">Дуга</translation>
 <translation id="5395600419410242651">Обриши све податке</translation>
 <translation id="5400907029458559844">Уређај се повезује.</translation>
@@ -643,6 +647,7 @@
 <translation id="6961170852793647506">Да бисте започели, поставите документ на скенер</translation>
 <translation id="6965382102122355670">Потврди</translation>
 <translation id="6977381486153291903">Ревизија фирмвера</translation>
+<translation id="6995564396478647735">Уверите се да је заштита од уписивања укључена</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> управља овим уређајем и има приступ свим активностима корисника, укључујући посећене веб-странице, лозинке и имејлове.</translation>
 <translation id="7040230719604914234">Мобилни оператер</translation>
 <translation id="7041549558901442110">Уређај није повезан.</translation>
@@ -653,6 +658,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Неуспешно – овлашћење није успело</translation>
 <translation id="7103252855940681301"><ph name="INDEX" />. уређај од <ph name="COUNT" /> са називом <ph name="NAME" />.</translation>
+<translation id="7126228745139711113">Заштита од уписивања је искључена</translation>
 <translation id="7134436342991564651">{0,plural, =1{Сервер имена}one{Сервери имена}few{Сервери имена}other{Сервери имена}}</translation>
 <translation id="7143207342074048698">Повезивање</translation>
 <translation id="7144878232160441200">Пробај поново</translation>
@@ -744,6 +750,7 @@
 <translation id="80398733265834479">Омогућите режим аутоподешавања боја</translation>
 <translation id="8041089156583427627">Пошаљи повратне информације</translation>
 <translation id="8045012663542226664">Искључивање звука микрофона</translation>
+<translation id="8063022551652308521">Заштита од уписивања је и даље искључена. Да бисте наставили, укључите заштиту од уписивања.</translation>
 <translation id="8075838845814659848">Преостали ниво напуњености батерије</translation>
 <translation id="8082366717211101304">DNS не може да се разреши из Android апликација</translation>
 <translation id="8083281199617904460">Овај процес поправке смеју да обављају само обучени сервисери. Покрените га само после замене неисправних компоненти.</translation>
@@ -814,6 +821,7 @@
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Користите тастер са стрелицом налево или надесно да бисте управљали овом функцијом.</translation>
 <translation id="8712637175834984815">Важи</translation>
 <translation id="871560550817059752">Није успело – нема више мастила</translation>
+<translation id="8717030727630712160">Наставља се процес поправке…</translation>
 <translation id="8723108084122415655">Мрежа која није подразумевана премашује граничну вредност за кашњење</translation>
 <translation id="8725066075913043281">Пробајте поново</translation>
 <translation id="8726019395068607495">Заустављено – врата су отворена</translation>
@@ -835,6 +843,7 @@
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Уређај је таблет.</translation>
 <translation id="8881098542468797602">Тест је успео</translation>
+<translation id="8897267175591692539">Сада можете да саставите уређај</translation>
 <translation id="8898840733695078011">Јачина сигнала</translation>
 <translation id="8910721771319628100">Подразумевана мрежа премашује граничну вредност за кашњење</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> корисника <ph name="GIVEN_NAME" /></translation>

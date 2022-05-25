@@ -121,6 +121,7 @@
 <translation id="1942765061641586207">Rozlíšenie obrázka</translation>
 <translation id="1972984168337863910">Rozbaliť panely so spätnou väzbou týkajúcou sa súborov</translation>
 <translation id="1995337122023280937">Prejsť na umiestnenie súboru</translation>
+<translation id="1996806196681857869">Archív komprimovaný metódou Z</translation>
 <translation id="2001796770603320721">Spravovať na Disku</translation>
 <translation id="2009067268969781306">Formátovaním kľúča odstránite všetky dáta, ktoré sú v ňom uložené. Túto akciu nie je možné vrátiť späť.</translation>
 <translation id="2025955442973426285">Tigrinská klávesnica</translation>
@@ -589,6 +590,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="5955954492236143329">Počet položiek: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="5957366693331451795">Chromeboxy</translation>
 <translation id="5982621672636444458">Usporiadať možnosti</translation>
+<translation id="5985041959109124139">Archív vo formáte Tar komprimovaný metódou Z</translation>
 <translation id="6007237601604674381">Presun zlyhal. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Sieť Ethernet</translation>
 <translation id="60357267506638014">Česká klávesnica QWERTY</translation>
@@ -619,6 +621,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="6220423280121890987">Pandžábska klávesnica</translation>
 <translation id="6224240818060029162">Dánska klávesnica</translation>
 <translation id="6224253798271602650">Formátovať: <ph name="DRIVE_NAME" /></translation>
+<translation id="6224665423283788195">Archív komprimovaný metódou Zstandard</translation>
 <translation id="6227235786875481728">Tento súbor nie je možné prehrať.</translation>
 <translation id="6241349547798190358">Holandská (Belgicko) klávesnica</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_INDEX" />. sieť z <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, sila signálu <ph name="SIGNAL_STRENGTH" /> %, batéria telefónu <ph name="BATTERY_STATUS" /> %, pripojenie</translation>
@@ -646,6 +649,7 @@ s ostatnými, a to všetko na jednom mieste.<ph name="MARKUP_9" /></translatio
 <translation id="6509122719576673235">Nórčina</translation>
 <translation id="6528513914570774834">Povoliť ostatným používateľom zariadenia pripojiť sa k tejto sieti</translation>
 <translation id="653019979737152879">Prebieha synchronizácia súboru <ph name="FILE_NAME" />...</translation>
+<translation id="6530595303336443929">Archív vo formáte Tar komprimovaný metódou Zstandard</translation>
 <translation id="6549689063733911810">Nedávne</translation>
 <translation id="6558280019477628686">Vyskytla sa chyba. Niektoré položky sa nemuseli odstrániť.</translation>
 <translation id="656398493051028875">Prebieha odstraňovanie súboru <ph name="FILENAME" />...</translation>

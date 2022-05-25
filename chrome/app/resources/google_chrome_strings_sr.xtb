@@ -82,6 +82,7 @@
 <translation id="2574930892358684005">Корисник <ph name="EXISTING_USER" /> је већ пријављен на овај Chrome профил. Да би вам прегледање било раздвојено, Chrome може да направи засебан профил за вас.</translation>
 <translation id="2580411288591421699">Није могуће инсталирати верзију Google Chrome прегледача која је иста као тренутно покренута верзија. Затворите Google Chrome и покушајте поново.</translation>
 <translation id="2586406160782125153">Овим ћете избрисати податке прегледања са уређаја. Да бисте касније вратили податке, пријавите се у Chrome као <ph name="USER_EMAIL" />.</translation>
+<translation id="2597976513418770460">Преузмите садржај из Chrome прегледача са: <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="2622559029861875898">Chrome не може да тражи ажурирања. Проверите интернет везу.</translation>
 <translation id="2645435784669275700">Chrome ОС</translation>
 <translation id="2652691236519827073">Отвори линк у новој Chrome &amp;картици</translation>
@@ -312,6 +313,7 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="7801699035218095297">Google Chrome покушава да копира лозинке. Унесите лозинку за Windows да бисте то омогућили.</translation>
 <translation id="7808348361785373670">Уклони из Chrome-а...</translation>
 <translation id="7825851276765848807">Инсталација није успела услед неутврђене грешке. Преузмите Google Chrome поново.</translation>
+<translation id="7880591377632733558">Добро дошли у Chrome, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="7890208801193284374">Ако делите рачунар, пријатељи и породица могу засебно да прегледају и да подесе Chrome баш онако како желе.</translation>
 <translation id="7896673875602241923">Неко се претходно пријавио на Chrome на овом рачунару као <ph name="ACCOUNT_EMAIL_LAST" />. Направите новог корисника Chrome-а да би информације биле раздвојене.</translation>
 <translation id="7917876797003313048">Можете да управљате Google налозима на које сте пријављени. Google налози се користе за Chrome прегледач, Play продавницу, Gmail и друго. Ако желите да додате налог за неког другог, нпр. члана породице, уместо тога додајте нову особу на свој уређај <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
@@ -337,6 +339,7 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="8418845734693287262">Chrome ОС не може да синхронизује податке зато што су подаци за пријављивање на налог застарели.</translation>
 <translation id="8421734018304082652">Chrome је блокирао овај фајл јер је шифрован. Затражите од власника да га дешифрује</translation>
 <translation id="8433638294851456451">Да бисте послали број са овог уређаја на Android телефон, пријавите се у Chrome на оба уређаја.</translation>
+<translation id="8451192282033883849">Вашим налогом управља <ph name="MANAGER_NAME" />. Администратор може да види и мења овај профил у Chrome прегледачу и његове податке, попут обележивача, историје и лозинки.</translation>
 <translation id="8498858610309223613">Посебно безбедносно ажурирање за Google Chrome је управо примењено. Рестартујте га и вратићемо вам картице.</translation>
 <translation id="8504220326736535258">Chrome је блокирао овај фајл јер садржи малвер</translation>
 <translation id="8516431725144212809">Ваша интересовања према процени Chrome-а</translation>

@@ -56,6 +56,7 @@
 <translation id="124678866338384709">Lukk den aktive fanen</translation>
 <translation id="1246905108078336582">Vil du fjerne forslaget fra utklippstavlen?</translation>
 <translation id="1258753120186372309">Google-doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">Leseliste</translation>
 <translation id="1266864766717917324">Kunne ikke dele <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Trykk for å vise</translation>
 <translation id="1285310382777185058">Bytt språk</translation>
@@ -493,10 +494,10 @@ Trykk og hold inne på et ord for å søke. For å finstemme søket, merk flere 
 <translation id="363596933471559332">Du logges på nettsteder automatisk ved hjelp av lagret legitimasjon. Når funksjonen er slått av, blir du bedt om å oppgi legitimasjonen din hver gang du logger på et nettsted.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3677911431265050325">Be om mobilversjonen av nettstedet</translation>
-<translation id="3685860403008476208">Alle som bruker denne enheten, kan se filer du laster ned i Inkognito</translation>
 <translation id="3687645719033307815">Du ser på en forhåndsvisning av denne siden</translation>
 <translation id="3690369331356918524">Advarer deg hvis passord blir avdekket i databrudd</translation>
 <translation id="3692944402865947621">Nedlastingen av <ph name="FILE_NAME" /> ble avbrutt fordi lagringsstedet ikke kan nås.</translation>
+<translation id="3697705478071004188">Sorter etter nettsted</translation>
 <translation id="3699022356773522638">Vil du laste ned filen?</translation>
 <translation id="371230970611282515">Forutser og advarer deg om farlige hendelser før de inntreffer.</translation>
 <translation id="3714981814255182093">Åpne søkeraden</translation>
@@ -523,6 +524,7 @@ Trykk og hold inne på et ord for å søke. For å finstemme søket, merk flere 
 <translation id="3845098929839618392">Åpne i inkognitofane</translation>
 <translation id="3856096718352044181">Verifiser at dette er en gyldig leverandør, eller prøv på nytt senere</translation>
 <translation id="3858860766373142691">Navn</translation>
+<translation id="3859206958100234503">Synkroniser for å få passordene dine, bokmerkene dine med mer på alle enhetene dine.</translation>
 <translation id="3861633093716975811">Populære videoer</translation>
 <translation id="3892148308691398805">Kopiér teksten</translation>
 <translation id="3894427358181296146">Legg til en mappe</translation>
@@ -697,6 +699,7 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="4842515939542199281">For å søke med stemmen, trykk på mikrofonen</translation>
 <translation id="4844633725025837809">For ekstra trygghet kan du kryptere passord på enheten før de lagres i Google Passordlagring</translation>
 <translation id="4850886885716139402">Visning</translation>
+<translation id="4852014461738377247">Logger på \u2026</translation>
 <translation id="4860895144060829044">Ring</translation>
 <translation id="4864369630010738180">Logger på ...</translation>
 <translation id="4866368707455379617">Kan ikke installere <ph name="MODULE" /> for Chrome</translation>
@@ -1150,6 +1153,7 @@ Tillitstokener gir bedre personvern på nettet og kan ikke brukes til å finne u
 <translation id="7304873321153398381">Uten nett. Chrome kan ikke sjekke passordene dine.</translation>
 <translation id="7313188324932846546">Trykk for å konfigurere synkronisering</translation>
 <translation id="7332075081379534664">Påloggingen var vellykket</translation>
+<translation id="7333232495927792353">Synkroniser for å få det mest relevante innholdet fra Google</translation>
 <translation id="7339898014177206373">Nytt vindu</translation>
 <translation id="7340958967809483333">Alternativer for Discover</translation>
 <translation id="7352339641508007922">Dra for å ta en lang skjermdump</translation>
@@ -1305,6 +1309,7 @@ Tillitstokener gir bedre personvern på nettet og kan ikke brukes til å finne u
 <translation id="8103578431304235997">Inkognitofane</translation>
 <translation id="8105613260829665809">Ved å fortsette godtar du <ph name="BEGIN_TOS_LINK" />vilkårene for bruk<ph name="END_TOS_LINK" />.\nFor å bidra til å gjøre appen bedre sender Chrome bruks- og krasjrelaterte data til Google. <ph name="BEGIN_UMA_LINK" />Administrer<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
+<translation id="8107530384992929318">Lukk sorteringsalternativer</translation>
 <translation id="8109613176066109935">For å få bokmerkene dine på alle enhetene dine, slå på synkronisering</translation>
 <translation id="8110024788458304985">Bidra til å gjøre funksjonene og ytelsen til Chrome bedre</translation>
 <translation id="8110087112193408731">Vil du vise Chrome-aktiviteten din i Digital balanse?</translation>
@@ -1378,6 +1383,7 @@ Tillitstokener gir bedre personvern på nettet og kan ikke brukes til å finne u
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Åpne loggsiden</translation>
 <translation id="8493948351860045254">Frigjør plass</translation>
+<translation id="8497242791509864205">Åpne sorteringsalternativer</translation>
 <translation id="8497480609928300907">Forklaring til personvernveiledningen</translation>
 <translation id="8497726226069778601">Det er ikke noe her foreløpig</translation>
 <translation id="8503559462189395349">Chrome-passord</translation>
@@ -1530,6 +1536,7 @@ Tillitstokener gir bedre personvern på nettet og kan ikke brukes til å finne u
 <translation id="96681097142096641">Vil du se den forenklede siden?</translation>
 <translation id="968900484120156207">Sider du besøker, vises her</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> minutter igjen</translation>
+<translation id="978443947993957527">Se innhold for deg</translation>
 <translation id="981121421437150478">Uten nett</translation>
 <translation id="983192555821071799">Lukk alle faner</translation>
 <translation id="987264212798334818">Generelt</translation>

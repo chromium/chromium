@@ -5317,6 +5317,15 @@ principal del string usuario-agente en 99.
 <translation id="6786666051053129545">Habilitar el flujo de Voice Match de Asistente de Google</translation>
 <translation id="6786747875388722282">Extensiones</translation>
 <translation id="6786967369487349613">Establecer el directorio del perfil de itinerancia</translation>
+<translation id="6789319144568227749">Determina si se admiten encabezados de solicitudes sin comodín CORS.
+
+      A partir de la versión 97 de <ph name="PRODUCT_NAME" />, se puede determinar si se admiten encabezados de solicitudes sin comodín CORS. Cuando las secuencias de comandos envían una solicitud de red de orígenes cruzados a través de fetch() y XMLHttpRequest con un encabezado Authorization para agregar a la secuencia de comandos, el encabezado debe tener la autorización expresa del encabezado Access-Control-Allow-Headers en la respuesta de la solicitud preliminar de CORS. En este caso, "Expresa" significa que el símbolo comodín "*" no incluye el encabezado de autorización. Para obtener más información, visita <ph name="CORS_NON_WILDCARD_REQUEST_HEADERS_FEATURE_URL" />.
+
+      Si no estableces esta política o la estableces como verdadera, <ph name="PRODUCT_NAME" /> admitirá los encabezados de solicitudes sin comodín CORS y se comportará como se describe anteriormente.
+
+      Si la estableces como falsa, Chrome admitirá el símbolo comodín ("*") del encabezado Access-Control-Allow-Headers en la respuesta de la solicitud preliminar de CORS, a fin de incluir el encabezado Authorization.
+
+      Esta política empresarial es temporal; se planea quitarla en el futuro.</translation>
 <translation id="6789422336869764846">Si habilitas la política o no la estableces, los dispositivos inscritos informarán el estado del interruptor del modo de desarrollador del dispositivo cuando se inicia la máquina.
 
       Si la inhabilitas, los dispositivos inscritos no informarán el estado del interruptor del modo de desarrollador.</translation>

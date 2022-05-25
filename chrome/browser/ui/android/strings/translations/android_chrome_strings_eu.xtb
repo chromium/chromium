@@ -56,6 +56,7 @@
 <translation id="124678866338384709">Itxi oraingo fitxa</translation>
 <translation id="1246905108078336582">Iradokizuna arbeletik kendu nahi duzu?</translation>
 <translation id="1258753120186372309">Google doodle-a: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">Irakurketa-zerrenda</translation>
 <translation id="1266864766717917324">Ezin izan da partekatu <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Sakatu zabaltzeko</translation>
 <translation id="1285310382777185058">Aldatu hizkuntza</translation>
@@ -493,10 +494,10 @@ Eduki sakatuta bilatu nahi duzun hitza. Bilaketa mugatzeko, hautatu hitz gehiago
 <translation id="363596933471559332">Hasi saioa automatikoki webguneetan gordetako kredentzialekin. Eginbidea desaktibatuta badago, zeu zarela egiaztatzeko eskatuko dizu webguneak saioa hasten duzun bakoitzean.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3677911431265050325">Eskatu mugikorretarako webgunea</translation>
-<translation id="3685860403008476208">Gailua erabiltzen duen edonork ikusi ahalko ditu ezkutuko moduan deskargatzen dituzun fitxategiak</translation>
 <translation id="3687645719033307815">Orri honen aurrebista ikusten ari zara</translation>
 <translation id="3690369331356918524">Abisatu pasahitzak arriskuan badaude datuen isilpekotasuna urratu delako.</translation>
 <translation id="3692944402865947621">Ezin izan da deskargatu <ph name="FILE_NAME" />, memoria ez dagoelako eskuragarri.</translation>
+<translation id="3697705478071004188">Ordenatu webgunearen arabera</translation>
 <translation id="3699022356773522638">Fitxategia deskargatu nahi duzu?</translation>
 <translation id="371230970611282515">Gertaera arriskutsuak iragartzen ditu eta haien berri ematen dizu gertatu aurretik.</translation>
 <translation id="3714981814255182093">Ireki bilaketa-barra</translation>
@@ -523,6 +524,7 @@ Eduki sakatuta bilatu nahi duzun hitza. Bilaketa mugatzeko, hautatu hitz gehiago
 <translation id="3845098929839618392">Ireki ezkutuko fitxa batean</translation>
 <translation id="3856096718352044181">Egiaztatu hornitzaile horrek balio duela edo saiatu berriro geroago</translation>
 <translation id="3858860766373142691">Izena</translation>
+<translation id="3859206958100234503">Sinkronizatu datuak gailu guztietako pasahitzak, laster-markak eta abar eskuratzeko</translation>
 <translation id="3861633093716975811">Bideo arrakastatsuak</translation>
 <translation id="3892148308691398805">Kopiatu testua</translation>
 <translation id="3894427358181296146">Gehitu karpeta</translation>
@@ -580,6 +582,7 @@ Eduki sakatuta bilatu nahi duzun hitza. Bilaketa mugatzeko, hautatu hitz gehiago
 <translation id="4209895695669353772">Google-k iradokitzen duen eduki pertsonalizatua jasotzeko, aktibatu sinkronizazioa</translation>
 <translation id="4214315110991671325">Cookieak onartzen badituzu, baliteke Chrome-k haiek erabiltzea orriak aurrez kargatzeko.</translation>
 <translation id="4225895483398857530">Tresna-barrako lasterbidea</translation>
+<translation id="4227318652298512614">Jarrai iezaiezu gustuko webguneei</translation>
 <translation id="4242533952199664413">Ireki ezarpenak</translation>
 <translation id="4248098802131000011">Babestu pasahitzak datuen isilpekotasunaren urratzeen eta beste segurtasun-arazo batzuen aurka</translation>
 <translation id="4249955472157341256">Ordenatu berrienetatik zaharrenetara</translation>
@@ -696,6 +699,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="4842515939542199281">Ahotsa erabilita bilatzeko, sakatu mikrofonoa</translation>
 <translation id="4844633725025837809">Seguruagoa izan dadin, enkriptatu pasahitzak gailuan bertan Google-ren Pasahitz-kudeatzailea zerbitzuan gorde aurretik</translation>
 <translation id="4850886885716139402">Ikusi</translation>
+<translation id="4852014461738377247">Saioa hasten\u2026</translation>
 <translation id="4860895144060829044">Deitu</translation>
 <translation id="4864369630010738180">Saioa hasten…</translation>
 <translation id="4866368707455379617">Ezin da instalatu <ph name="MODULE" /> Chrome-rako</translation>
@@ -1149,6 +1153,7 @@ Fidagarritasun-tokenek sareko pribatutasuna hobetzen dute eta ezin dira erabili 
 <translation id="7304873321153398381">Konexiorik gabe. Chrome-k ezin ditu egiaztatu pasahitzak.</translation>
 <translation id="7313188324932846546">Sakatu hau sinkronizazioa konfiguratzeko</translation>
 <translation id="7332075081379534664">Hasi da saioa</translation>
+<translation id="7333232495927792353">Sinkronizatu datuak Google-k edukirik egokiena eskain diezazun</translation>
 <translation id="7339898014177206373">Leiho berria</translation>
 <translation id="7340958967809483333">Discover-en aukerak</translation>
 <translation id="7352339641508007922">Orri osoaren pantaila-argazki bat ateratzeko, arrastatu pantaila</translation>
@@ -1304,6 +1309,7 @@ Fidagarritasun-tokenek sareko pribatutasuna hobetzen dute eta ezin dira erabili 
 <translation id="8103578431304235997">Ezkutuko moduko fitxa</translation>
 <translation id="8105613260829665809">Aurrera egiten baduzu, onartu egingo dituzu <ph name="BEGIN_TOS_LINK" />Zerbitzu-baldintzak<ph name="END_TOS_LINK" />.\nAplikazioa hobetzeko, erabilerarekin eta hutsegiteekin erlazionatutako datuak bidaltzen dizkio Chrome-k Google-ri. <ph name="BEGIN_UMA_LINK" />Kudeatu<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
+<translation id="8107530384992929318">Itxi ordenatzeko aukerak</translation>
 <translation id="8109613176066109935">Laster-markak gailu guztietan eskura izateko, aktibatu sinkronizazioa</translation>
 <translation id="8110024788458304985">Lagundu Chrome-ren eginbideak eta errendimendua hobetzen</translation>
 <translation id="8110087112193408731">Chrome-ko jarduerak Ongizate digitala programan agertzea nahi duzu?</translation>
@@ -1377,6 +1383,7 @@ Fidagarritasun-tokenek sareko pribatutasuna hobetzen dute eta ezin dira erabili 
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Ireki historiaren orria</translation>
 <translation id="8493948351860045254">Egin tokia</translation>
+<translation id="8497242791509864205">Ireki ordenatzeko aukerak</translation>
 <translation id="8497480609928300907">Pribatutasun-gidaren azalpena</translation>
 <translation id="8497726226069778601">Hutsik dago… momentuz.</translation>
 <translation id="8503559462189395349">Chrome-ko pasahitzak</translation>
@@ -1529,6 +1536,7 @@ Fidagarritasun-tokenek sareko pribatutasuna hobetzen dute eta ezin dira erabili 
 <translation id="96681097142096641">Orri sinplifikatua ikusi nahi duzu?</translation>
 <translation id="968900484120156207">Hemen agertuko dira bisitatzen dituzun orriak</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> minutu gelditzen dira</translation>
+<translation id="978443947993957527">Ikusi zuretzako edukia</translation>
 <translation id="981121421437150478">Konexiorik gabekoak</translation>
 <translation id="983192555821071799">Itxi fitxa guztiak</translation>
 <translation id="987264212798334818">Orokorra</translation>

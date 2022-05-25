@@ -241,6 +241,7 @@ A webhelyek nem használhatnak cookie-kat arra, hogy megfigyeljék más webhelye
 <translation id="2982481275546140226">Adatok törlése</translation>
 <translation id="298306318844797842">Fizetési mód hozzáadása…</translation>
 <translation id="2989805286512600854">Megnyitás új lapon</translation>
+<translation id="3020183492814296499">Parancsikonok</translation>
 <translation id="3037605927509011580">A manóba!</translation>
 <translation id="3039722182465315531">Bejelentkezés nélkül</translation>
 <translation id="3076846064362030967">A rendszer nem jelentkezteti ki Google-fiókjából. Amikor be van jelentkezve, a <ph name="BEGIN_LINK" />további tevékenységtípusokat<ph name="END_LINK" /> a rendszer elmentheti a Google-fiókjába. Bármikor törölheti őket.
@@ -512,6 +513,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />állítsa vissza a szin
 <translation id="5416022985862681400">Legutóbbi 7 nap</translation>
 <translation id="543338862236136125">Jelszó módosítása</translation>
 <translation id="5433691172869980887">Felhasználónév vágólapra másolva</translation>
+<translation id="5439599923922718668">Gyakran látogatott webhelyek</translation>
 <translation id="54401264925851789">Oldal biztonsági információi</translation>
 <translation id="5443952882982198570">Hitelkártyák</translation>
 <translation id="5457226814769348910">Offline verzió megnyitása</translation>

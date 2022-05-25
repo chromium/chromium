@@ -77,6 +77,7 @@
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> ist bereits in diesem Chrome-Profil angemeldet. Wenn du deine Browsingaktivitäten getrennt halten möchtest, kann Chrome für dich ein eigenes Profil einrichten.</translation>
 <translation id="2580411288591421699">Die Google Chrome-Version kann nicht installiert werden, da sie aktuell ausgeführt wird. Schließe Google Chrome und versuche es noch einmal.</translation>
 <translation id="2586406160782125153">Dadurch werden deine Browserdaten von diesem Gerät gelöscht. Wenn du deine Daten später abrufen möchtest, melde dich als <ph name="USER_EMAIL" /> in Chrome an.</translation>
+<translation id="2597976513418770460">Über <ph name="ACCOUNT_EMAIL" /> auf deine Chrome-Browserinhalte zugreifen</translation>
 <translation id="2622559029861875898">Chrome kann nicht nach Aktualisierungen suchen. Überprüfe deine Internetverbindung.</translation>
 <translation id="2645435784669275700">Chrome OS</translation>
 <translation id="2652691236519827073">Link in neuem Chrome-Tab öffnen</translation>
@@ -302,6 +303,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="7801699035218095297">Google Chrome versucht, Passwörter zu kopieren. Gib dein Windows-Passwort ein, um dies zuzulassen.</translation>
 <translation id="7808348361785373670">Aus Chrome entfernen...</translation>
 <translation id="7825851276765848807">Die Installation ist aufgrund eines unbekannten Fehlers fehlgeschlagen. Lade Google Chrome erneut herunter.</translation>
+<translation id="7880591377632733558">Willkommen bei Chrome, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="7890208801193284374">Bei gemeinsam genutzten Computern können die verschiedenen Personen separat surfen und Chrome jeweils nach ihren Wünschen einrichten.</translation>
 <translation id="7896673875602241923">Auf diesem Computer war zuvor ein Nutzer mit dem Konto <ph name="ACCOUNT_EMAIL_LAST" /> in Chrome angemeldet. Erstelle einen neuen Chrome-Nutzer, um deine Daten getrennt zu verwenden.</translation>
 <translation id="7917876797003313048">Du kannst deine angemeldeten Google-Konten verwalten. Deine Google-Konten werden für den Chrome-Browser, den Play Store, Gmail und mehr verwendet. Wenn du ein Konto für jemand anderen hinzufügen möchtest, z. B. ein Familienmitglied, ordne bitte stattdessen deinem Gerät (<ph name="DEVICE_TYPE" />) eine neue Person zu. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
@@ -327,6 +329,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="8418845734693287262">Chrome OS konnte deine Daten nicht synchronisieren, da die Anmeldedaten deines Kontos veraltet sind.</translation>
 <translation id="8421734018304082652">Chrome hat diese Datei blockiert, weil sie verschlüsselt ist. Bitte den Inhaber der Datei, sie zu entschlüsseln.</translation>
 <translation id="8433638294851456451">Wenn du eine Nummer von diesem Gerät an dein Android-Smartphone senden möchtest, musst du dich auf beiden Geräten in Chrome anmelden.</translation>
+<translation id="8451192282033883849">Dein Konto wird von <ph name="MANAGER_NAME" /> verwaltet. Dein Administrator kann das Profil dieses Chrome-Browsers und seine Daten wie Lesezeichen, den Verlauf und Passwörter ansehen und bearbeiten.</translation>
 <translation id="8498858610309223613">Da soeben ein kritisches Sicherheitsupdate für Google Chrome installiert wurde, solltest du jetzt einen Neustart durchführen. Deine Tabs werden dann automatisch wiederhergestellt.</translation>
 <translation id="8504220326736535258">Chrome hat diese Datei blockiert, weil sie Malware enthält</translation>
 <translation id="8516431725144212809">Deine von Chrome geschätzten Interessen</translation>

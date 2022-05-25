@@ -56,6 +56,7 @@
 <translation id="124678866338384709">Uždaryti dabartinį skirtuką</translation>
 <translation id="1246905108078336582">Pašalinti pasiūlymą iš iškarpinės?</translation>
 <translation id="1258753120186372309">„Google“ papuoštas logotipas: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">Skaitymo sąrašas</translation>
 <translation id="1266864766717917324">Nepavyko bendrinti turinio: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Palieskite ir išskleiskite</translation>
 <translation id="1285310382777185058">Kalbos keitimas</translation>
@@ -493,7 +494,6 @@ Norėdami ieškoti, palieskite ir palaikykite bet kurį žodį. Jei norite patik
 <translation id="363596933471559332">Automatiškai prisijungti prie svetainių naudojant išsaugotus prisijungimo duomenis. Kai funkcija išjungta, kaskart prisijungiant prie svetainės prašoma patvirtinti.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3677911431265050325">Pateikti užklausą dėl svetainės mobiliesiems</translation>
-<translation id="3685860403008476208">Visi šį įrenginį naudojantys asmenys gali peržiūrėti failus, kuriuos atsisiunčiate inkognito režimu</translation>
 <translation id="3687645719033307815">Žiūrite šio puslapio peržiūrą</translation>
 <translation id="3690369331356918524">Įspėjama, jei slaptažodžiai buvo atskleisti įvykus duomenų saugos pažeidimui</translation>
 <translation id="3692944402865947621">Nepavyko atsisiųsti „<ph name="FILE_NAME" />“, nes saugyklos vieta nepasiekiama.</translation>
@@ -523,6 +523,7 @@ Norėdami ieškoti, palieskite ir palaikykite bet kurį žodį. Jei norite patik
 <translation id="3845098929839618392">Atidaryti inkognito skirtuke</translation>
 <translation id="3856096718352044181">Patvirtinkite, kad tai yra tinkamas paslaugų teikėjas, arba vėliau bandykite dar kartą</translation>
 <translation id="3858860766373142691">Pavadinimas</translation>
+<translation id="3859206958100234503">Sinchronizuokite, kad gautumėte slaptažodžius, žymes ir kitą turinį visuose savo įrenginiuose</translation>
 <translation id="3861633093716975811">Populiarūs vaizdo įrašai</translation>
 <translation id="3892148308691398805">Kopijuoti tekstą</translation>
 <translation id="3894427358181296146">Aplanko pridėjimas</translation>
@@ -697,6 +698,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />iš naujo nustatyki
 <translation id="4842515939542199281">Jei norite ieškoti balsu, palieskite mikrofoną</translation>
 <translation id="4844633725025837809">Kad užtikrintumėte geresnę saugą, šifruokite slaptažodžius įrenginyje prieš išsaugodami juos „Google“ slaptažodžių tvarkytuvėje</translation>
 <translation id="4850886885716139402">Žiūrėti</translation>
+<translation id="4852014461738377247">Prisijungiama\u2026</translation>
 <translation id="4860895144060829044">Skambinti</translation>
 <translation id="4864369630010738180">Prisijungiama...</translation>
 <translation id="4866368707455379617">Nepavyko įdiegti „Chrome“ skirto modulio „<ph name="MODULE" />“</translation>
@@ -1150,6 +1152,7 @@ Patikimi prieigos raktai pagerina privatumą žiniatinklyje ir negali būti naud
 <translation id="7304873321153398381">Neprisijungta. „Chrome“ negali patikrinti jūsų slaptažodžių.</translation>
 <translation id="7313188324932846546">Palieskite, kad nustatytumėte sinchronizavimą</translation>
 <translation id="7332075081379534664">Sėkmingai prisijungta</translation>
+<translation id="7333232495927792353">Sinchronizuokite, kad gautumėte aktualiausią turinį iš „Google“</translation>
 <translation id="7339898014177206373">Naujas langas</translation>
 <translation id="7340958967809483333">„Discover“ parinktys</translation>
 <translation id="7352339641508007922">Vilkite, kad užfiksuotumėte ilgą ekrano kopiją</translation>
@@ -1530,6 +1533,7 @@ Patikimi prieigos raktai pagerina privatumą žiniatinklyje ir negali būti naud
 <translation id="96681097142096641">Peržiūrėti supaprastintą puslapį?</translation>
 <translation id="968900484120156207">Jūsų aplankomi puslapiai rodomi čia</translation>
 <translation id="970715775301869095">Liko <ph name="MINUTES" /> min.</translation>
+<translation id="978443947993957527">Jums skirto turinio peržiūra</translation>
 <translation id="981121421437150478">Neprisijungus</translation>
 <translation id="983192555821071799">Uždar. visų skirtukų lapus</translation>
 <translation id="987264212798334818">Bendra</translation>

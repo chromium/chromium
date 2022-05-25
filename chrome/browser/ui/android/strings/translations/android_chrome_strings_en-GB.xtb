@@ -56,6 +56,7 @@
 <translation id="124678866338384709">Close current tab</translation>
 <translation id="1246905108078336582">Remove suggestion from clipboard?</translation>
 <translation id="1258753120186372309">Google doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">Reading list</translation>
 <translation id="1266864766717917324">Couldn't share <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Tap to expand</translation>
 <translation id="1285310382777185058">Change language</translation>
@@ -312,6 +313,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# Audio file}other{# Audio files}}</translation>
 <translation id="265156376773362237">Standard preloading</translation>
 <translation id="2656405586795711023">Web apps</translation>
+<translation id="2669454659051515572">Anyone using this device can see downloaded files</translation>
 <translation id="2702516483241149200">New: Share a link that scrolls to this text</translation>
 <translation id="2704606927547763573">Copied</translation>
 <translation id="2707726405694321444">Refresh page</translation>
@@ -493,7 +495,6 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="363596933471559332">Automatically sign in to websites using stored credentials. When the feature is off, you’ll be asked for verification every time before signing in to a website.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3677911431265050325">Request mobile site</translation>
-<translation id="3685860403008476208">Anyone using this device can see files that you download in Incognito</translation>
 <translation id="3687645719033307815">You are viewing a preview of this page</translation>
 <translation id="3690369331356918524">Warns you if passwords are exposed in a data breach</translation>
 <translation id="3692944402865947621"><ph name="FILE_NAME" /> download failed because storage location is not reachable.</translation>
@@ -778,6 +779,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5246093389635966745">Edit toolbar shortcut</translation>
 <translation id="526421993248218238">Can't load this page</translation>
 <translation id="5271967389191913893">Device cannot open the content to be downloaded.</translation>
+<translation id="5274286919938458946">Linked with <ph name="CARD_DETAIL" /></translation>
 <translation id="5292796745632149097">Send to</translation>
 <translation id="5300426565656326054">Browser-based ad personalisation</translation>
 <translation id="5304593522240415983">This field cannot be blank</translation>

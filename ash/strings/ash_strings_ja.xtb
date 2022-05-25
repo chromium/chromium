@@ -24,6 +24,7 @@
 <translation id="109942774857561566">退屈だな</translation>
 <translation id="1104084341931202936">ユーザー補助機能の設定を表示</translation>
 <translation id="1104621072296271835">デバイスを連携させると活用の幅が広がります</translation>
+<translation id="1111021433905331574">[設定] &gt; [<ph name="APP_TITLE" />] でキーボードのバックライトの色を変更できます</translation>
 <translation id="112308213915226829">シェルフを自動的に非表示にする</translation>
 <translation id="1142002900084379065">最近の写真</translation>
 <translation id="1148499908455722006"><ph name="USER_NAME" /> の情報ダイアログを開きます</translation>
@@ -95,7 +96,6 @@
 <translation id="1420408895951708260">夜間モードのオンとオフを切り替えます。<ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666"><ph name="DEVICE_TYPE" /> でスマートフォンの最近の写真やメディアを表示します</translation>
 <translation id="1426410128494586442">はい</translation>
-<translation id="1438357537418863713">アプリのストリーミングを設定しました。ご利用を開始すると、最近開いたアプリがここに表示されます。</translation>
 <translation id="1447641497144572814">スクリーン セーバーを開始します</translation>
 <translation id="1455242230282523554">言語設定を表示</translation>
 <translation id="1460620680449458626">音量はミュートされています。</translation>
@@ -700,7 +700,6 @@
 <translation id="5071064518267176975">アプリがマイクの使用を求めています</translation>
 <translation id="5078796286268621944">PIN が正しくありません</translation>
 <translation id="5083553833479578423">さらに多くのアシスタント機能をぜひご活用ください。</translation>
-<translation id="5106223312672646208">カスタマイズ</translation>
 <translation id="5107522548814527560">ウェブ</translation>
 <translation id="5117590920725113268">次の月を表示</translation>
 <translation id="5136175204352732067">別のキーボードが接続されています</translation>

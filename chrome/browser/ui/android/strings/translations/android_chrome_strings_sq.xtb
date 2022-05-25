@@ -56,6 +56,7 @@
 <translation id="124678866338384709">Mbyll skedën aktuale</translation>
 <translation id="1246905108078336582">Të hiqet sugjerimi nga kujtesa e fragmenteve?</translation>
 <translation id="1258753120186372309">Logoja alternative e Google: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">Lista e leximit</translation>
 <translation id="1266864766717917324">Nuk mund të ndahet <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Trokit për të zgjeruar</translation>
 <translation id="1285310382777185058">Ndrysho gjuhën</translation>
@@ -493,7 +494,6 @@ Prek dhe mbaj shtypur një fjalë për ta kërkuar. Për të përsosur kërkimin
 <translation id="363596933471559332">Identifikohu automatikisht në sajtet e uebit duke përdorur kredencialet e ruajtura. Kur funksioni është i çaktivizuar, do të të kërkohet gjithmonë verifikimi  përpara se të identifikohesh në një sajt uebi.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3677911431265050325">Kërko sajtin për celular</translation>
-<translation id="3685860403008476208">Kushdo që e përdor këtë pajisje mund të shohë skedarët që ti shkarkon në modalitetin "I fshehtë"</translation>
 <translation id="3687645719033307815">Po shikon një pamje paraprake të kësaj faqeje</translation>
 <translation id="3690369331356918524">Të paralajmëron nëse fjalëkalimet janë ekspozuar në një nxjerrje të paautorizuar të të dhënave</translation>
 <translation id="3692944402865947621">Shkarkimi i skedarit <ph name="FILE_NAME" /> dështoi sepse vendndodhja e hapësirës ruajtëse nuk është e arritshme.</translation>
@@ -523,6 +523,7 @@ Prek dhe mbaj shtypur një fjalë për ta kërkuar. Për të përsosur kërkimin
 <translation id="3845098929839618392">Hape në skedë "të fshehtë"</translation>
 <translation id="3856096718352044181">Verifiko që ky është një ofrues i vlefshëm ose provo përsëri më vonë</translation>
 <translation id="3858860766373142691">Emri</translation>
+<translation id="3859206958100234503">Sinkronizoje për të marrë fjalëkalimet, faqeshënuesit etj. në të gjitha pajisjet e tua</translation>
 <translation id="3861633093716975811">Video të njohura</translation>
 <translation id="3892148308691398805">Kopjo tekstin</translation>
 <translation id="3894427358181296146">Shto dosje</translation>
@@ -580,6 +581,7 @@ Prek dhe mbaj shtypur një fjalë për ta kërkuar. Për të përsosur kërkimin
 <translation id="4209895695669353772">Për të marrë përmbajtje të personalizuar të sugjeruar nga Google, aktivizo sinkronizimin</translation>
 <translation id="4214315110991671325">Nëse lejon kukit, Chrome mund t'i përdorë ato për ngarkimin paraprak.</translation>
 <translation id="4225895483398857530">Shkurtorja e shiritit të veglave</translation>
+<translation id="4227318652298512614">Ndiq çdo sajt që dëshiron</translation>
 <translation id="4242533952199664413">Hap cilësimet</translation>
 <translation id="4248098802131000011">Mbaji fjalëkalimet e tua të sigurta nga nxjerrjet e paautorizuara të të dhënave dhe problemeve të tjera të sigurisë</translation>
 <translation id="4249955472157341256">Rendit sipas "Më të fundit"</translation>
@@ -696,6 +698,7 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="4842515939542199281">Trokit te mikrofoni për të kërkuar me zë</translation>
 <translation id="4844633725025837809">Për siguri shtesë, enkripto fjalëkalimet në pajisjen tënde para se të ruhen në "Menaxherin e fjalëkalimeve" të Google</translation>
 <translation id="4850886885716139402">Pamja</translation>
+<translation id="4852014461738377247">Po identifikohesh\u2026</translation>
 <translation id="4860895144060829044">Telefono</translation>
 <translation id="4864369630010738180">Po identifikohet...</translation>
 <translation id="4866368707455379617"><ph name="MODULE" /> nuk mund të instalohet për Chrome</translation>
@@ -1149,6 +1152,7 @@ Kodet e besimit përmirësojnë privatësinë në ueb dhe nuk mund të përdoren
 <translation id="7304873321153398381">Jashtë linje. Chrome nuk mund t'i kontrollojë fjalëkalimet e tua.</translation>
 <translation id="7313188324932846546">Trokit për të konfiguruar sinkronizimin</translation>
 <translation id="7332075081379534664">Identifikimi i suksesshëm</translation>
+<translation id="7333232495927792353">Sinkronizoje për të marrë përmbajtjet më të përshtatshme nga Google</translation>
 <translation id="7339898014177206373">Dritare e re</translation>
 <translation id="7340958967809483333">Opsionet për "Zbulo"</translation>
 <translation id="7352339641508007922">Zvarrite për të regjistruar një pamje të gjatë të ekranit</translation>
@@ -1529,6 +1533,7 @@ Kodet e besimit përmirësojnë privatësinë në ueb dhe nuk mund të përdoren
 <translation id="96681097142096641">Të shikohet faqja e thjeshtuar?</translation>
 <translation id="968900484120156207">Faqet që viziton shfaqen këtu</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> minuta të mbetura</translation>
+<translation id="978443947993957527">Shiko përmbajtjet për ty</translation>
 <translation id="981121421437150478">Jashtë linje</translation>
 <translation id="983192555821071799">Mbyll të gjitha skedat</translation>
 <translation id="987264212798334818">Të përgjithshme</translation>

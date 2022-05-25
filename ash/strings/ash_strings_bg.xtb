@@ -24,6 +24,7 @@
 <translation id="109942774857561566">„I’m bored“ („Скучно ми е“)</translation>
 <translation id="1104084341931202936">Показване на настройките за достъпност</translation>
 <translation id="1104621072296271835">Устройствата ви работят още по-добре заедно</translation>
+<translation id="1111021433905331574">Можете да промените цвета на фоновото осветление на клавиатурата от „Настройки“ &gt; „<ph name="APP_TITLE" />“</translation>
 <translation id="112308213915226829">Автоматично скриване на лавицата</translation>
 <translation id="1142002900084379065">Скорошни снимки</translation>
 <translation id="1148499908455722006">Отваряне на диалогов прозорец с информация за <ph name="USER_NAME" /></translation>
@@ -65,6 +66,7 @@
 <translation id="1275285675049378717">Захранва се <ph name="POWER_SOURCE" /></translation>
 <translation id="1279938420744323401">„<ph name="DISPLAY_NAME" />“ (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">Намиране на телефона</translation>
+<translation id="1287002645302686982">Вече има запазен работен кът на име „<ph name="DESK_TEMPLATE_NAME" />“</translation>
 <translation id="1289185460362160437">Заповядайте отново в <ph name="COME_BACK_TIME" /> в(ъв) <ph name="COME_BACK_DAY_OF_WEEK" />.</translation>
 <translation id="1290331692326790741">слаб сигнал</translation>
 <translation id="1290982764014248209">Преместване на <ph name="DRAGGED_APP" /> в папката <ph name="FOLDER_NAME" />.</translation>
@@ -94,7 +96,7 @@
 <translation id="1420408895951708260">Превключване на функцията за нощно осветление. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">Преглед на скорошните снимки и мултимедийни файлове от телефона ви на вашия <ph name="DEVICE_TYPE" /></translation>
 <translation id="1426410128494586442">Да</translation>
-<translation id="1438357537418863713">Функцията за поточно предаване на приложения вече е настроена. След като започнете да я използвате, наскоро стартираните приложения ще се показват тук.</translation>
+<translation id="1447641497144572814">Скрийнсейвърът се стартира</translation>
 <translation id="1455242230282523554">Показване на езиковите настройки</translation>
 <translation id="1460620680449458626">Звукът е спрян.</translation>
 <translation id="1467432559032391204">Наляво</translation>
@@ -269,6 +271,7 @@
 <translation id="2586561057878260610">Натиснете Ctrl + W за комбиниране с(ъс) <ph name="DESK_NAME" />. Натиснете Ctrl + Shift + W за затваряне на работния кът и прозорците.</translation>
 <translation id="2595239820337756193">5 km in miles</translation>
 <translation id="2596078834055697711">Правене на екранна снимка на прозореца</translation>
+<translation id="2598725286293895280">Работният кът съдържа неподдържани приложения</translation>
 <translation id="2607678425161541573">Изисква се онлайн вход</translation>
 <translation id="2620016719323068571">Търсете в своите <ph name="CATEGORY" />, файлове, приложения и други…</translation>
 <translation id="2620436844016719705">Система</translation>
@@ -330,6 +333,7 @@
 <translation id="2970920913501714344">да инсталира приложения, разширения и теми;</translation>
 <translation id="2977598380246111477">Следваща цифра</translation>
 <translation id="2981684127883932071">Показани са предложения</translation>
+<translation id="2985148236010982088">Вижте всички приложения</translation>
 <translation id="2992327365391326550">Бутонът за микрофона на устройството е изключен.</translation>
 <translation id="2995447421581609334">Показване на устройствата за предаване.</translation>
 <translation id="2996462380875591307">Лупата в прикрепен режим е активирана. За да я изключите, натиснете отново Ctrl + клавиш „Търсене“ + D.</translation>
@@ -468,6 +472,7 @@
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> и още <ph name="UNAVAILABLE_APPS_COUNT" /> приложения не са инсталирани на това устройство.</translation>
 <translation id="3735740477244556633">Сортиране по</translation>
 <translation id="3742055079367172538">Направена бе екранна снимка</translation>
+<translation id="3761848338953536304">Администраторът ви изисква да изключите настройката за заключване на SIM картата</translation>
 <translation id="3765841986579723851">Редактирано днес</translation>
 <translation id="3771549900096082774">Режим на висок контраст</translation>
 <translation id="3773700760453577392">Администратор е деактивирал централизирания вход за <ph name="USER_EMAIL" />. За да се продължи, всички потребители трябва да излязат от профилите си.</translation>
@@ -642,6 +647,7 @@
 <translation id="4734965478015604180">Хоризонтално</translation>
 <translation id="4735498845456076464">Клавишната комбинация клавиш „<ph name="LAUNCHER_KEY_NAME" />“ + цифра се промени. За да използвате функционалните клавиши, натиснете „<ph name="LAUNCHER_KEY_NAME" />“ + клавиш от най-горния ред.</translation>
 <translation id="473775607612524610">Актуализиране</translation>
+<translation id="4740516757091333363">Да се изтрие ли запазеният работен кът?</translation>
 <translation id="4752784485658729358">Може да имате само 6 запазени работни къта. Премахнете един от текущите, за да запазите нов.</translation>
 <translation id="4759238208242260848">Изтегляния</translation>
 <translation id="4774338217796918551">Заповядайте отново утре в <ph name="COME_BACK_TIME" />.</translation>
@@ -694,7 +700,6 @@
 <translation id="5071064518267176975">Приложение иска да използва микрофона</translation>
 <translation id="5078796286268621944">Неправилен ПИН</translation>
 <translation id="5083553833479578423">Отключете още функции на Асистент.</translation>
-<translation id="5106223312672646208">Персонализиране</translation>
 <translation id="5107522548814527560">Мрежата</translation>
 <translation id="5117590920725113268">Показване на следващия месец</translation>
 <translation id="5136175204352732067">Свързана е различна клавиатура</translation>
@@ -739,6 +744,7 @@
 <translation id="5352250171825660495">Тъмната тема е включена</translation>
 <translation id="5356963482258194581">Превключвайте между тъмната и светлата тема. Кликнете с десния бутон върху работния плот и изберете „Тапет и стил“.</translation>
 <translation id="5379115545237091094">Твърде много опити</translation>
+<translation id="5391307769715781764">Да се замени ли запазеният работен кът?</translation>
 <translation id="5393156353051693207">Докоснете и задръжте произволно място, за да пренаредите приложенията си</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> е върху <ph name="IN_PLACE_APP" />. Освободете, за да създадете папка.</translation>
 <translation id="5397578532367286026">Данните за употребата и историята на този потребител могат да се преглеждат от мениджъра (<ph name="MANAGER_EMAIL" />) на адрес chrome.com.</translation>
@@ -839,6 +845,7 @@
 <translation id="598407983968395253">Използване на шаблон</translation>
 <translation id="598882571027504733">За да инсталирате актуализацията, рестартирайте своя Chromebook, докато клавиатурата е прикачена.</translation>
 <translation id="5992218262414051481">Режимът на висок контраст е активиран. За да го изключите, натиснете отново Ctrl + клавиш „Търсене“ + H.</translation>
+<translation id="6009656393242168182">Деактивиране на настройката за заключване на SIM картата ви</translation>
 <translation id="6012623610530968780">Страница <ph name="SELECTED_PAGE" /> от <ph name="TOTAL_PAGE_NUM" /></translation>
 <translation id="6018164090099858612">Излиза се от огледалния режим</translation>
 <translation id="602001110135236999">Превъртане наляво</translation>
@@ -873,6 +880,7 @@
 <translation id="6165508094623778733">Научете повече</translation>
 <translation id="6166852626429024716">Търсете в устройството, приложенията, настройките и мрежата...</translation>
 <translation id="6179832488876878285">Тук можете да фиксирате важните за вас файлове. Отворете приложението „Файлове“, за да започнете.</translation>
+<translation id="6182592640011875895">Отваряне на работния кът</translation>
 <translation id="619279033188484792">Преглед на скорошните снимки, мултимедийни файлове и известия от телефона ви на вашия <ph name="DEVICE_TYPE" /></translation>
 <translation id="619335566042889110">Пълно зареждане сега</translation>
 <translation id="6220928844947387476">Вече можете да записвате себе си и екрана си едновременно</translation>
@@ -970,6 +978,7 @@
 <translation id="6790428901817661496">Пускане</translation>
 <translation id="6801878137098616817">Редактирано наскоро</translation>
 <translation id="6803622936009808957">Дисплеите не можаха да се дублират, тъй като не бяха намерени поддържани разделителни способности. Вместо това влязохте в режима за разширен работен плот.</translation>
+<translation id="6812232930908427253">Работният кът не бе запазен. Твърде много прозорци или раздели.</translation>
 <translation id="6818242057446442178">Придвижване назад с една дума</translation>
 <translation id="6819327813400217281">Картината от камерата е прилепена към долния ляв ъгъл</translation>
 <translation id="6820676911989879663">Време е за почивка!</translation>
@@ -1179,6 +1188,7 @@
 <translation id="8052898407431791827">Копирано в буферната памет</translation>
 <translation id="8054466585765276473">Издръжливостта на батерията се изчислява.</translation>
 <translation id="8061464966246066292">Висок контраст</translation>
+<translation id="8083540854303889870">Запазено за по-късно</translation>
 <translation id="8098591350844501178">Спиране на предаването на екрана към „<ph name="RECEIVER_NAME" />“</translation>
 <translation id="8113423164597455979">Вкл. за всички</translation>
 <translation id="8120151603115102514">Телефонът ви няма активирано заключване на екрана. За да отключите своя Chromebook, въведете паролата си.</translation>

@@ -78,6 +78,7 @@
 <translation id="1578784163189013834">选择屏保背景</translation>
 <translation id="1615335640928990664">自 <ph name="FRIENDLY_DATE" />开始的流量使用情况</translation>
 <translation id="1621067168122174824">运行充电测试</translation>
+<translation id="1631385268983122904">暂勿将设备组装回原样</translation>
 <translation id="1639239467298939599">正在加载</translation>
 <translation id="1641857168437328880">文件馈送器（单面）</translation>
 <translation id="1643449475550628585">每天更改一次壁纸图片</translation>
@@ -85,6 +86,7 @@
 <translation id="1645954272419197032">请确认设备信息</translation>
 <translation id="1662989795263954667">已停止 - 墨水已用完</translation>
 <translation id="1668469839109562275">内置 VPN</translation>
+<translation id="1676557873873341166">正在录制视频</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">存在 DNS 解析器</translation>
 <translation id="1715359911173058521">与扫描仪通信时出问题了。请检查网络或 USB 连接，然后重试。</translation>
@@ -159,6 +161,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">开启蓝牙以发现附近的设备</translation>
+<translation id="2340422556570134524">写保护被意外地开启了。请手动关闭写保护，然后重新尝试配置。</translation>
 <translation id="2346474577291266260">极佳 (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">继续</translation>
 <translation id="2360257214555822463">检测到<ph name="LINK_BEGIN" />不支持的组件<ph name="LINK_END" />。如果您要选择确认已安装这些组件，请立即确认。</translation>
@@ -474,6 +477,7 @@
 <translation id="5372659122375744710">Wi-Fi 网络不安全</translation>
 <translation id="5376354385557966694">自动浅色模式</translation>
 <translation id="537872351913703572">设备将由另一用户或组织使用</translation>
+<translation id="5389159777326897627">壁纸与样式</translation>
 <translation id="5389224261615877010">彩虹色</translation>
 <translation id="5395600419410242651">清除所有数据</translation>
 <translation id="5400907029458559844">设备正在连接。</translation>
@@ -643,6 +647,7 @@
 <translation id="6961170852793647506">首先，将您的文件放置在扫描仪上</translation>
 <translation id="6965382102122355670">确定</translation>
 <translation id="6977381486153291903">固件版本</translation>
+<translation id="6995564396478647735">请确保已开启写保护</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> 负责管理此设备，而且有权查看所有用户活动（包括访问过的网页、密码和电子邮件）。</translation>
 <translation id="7040230719604914234">运营商</translation>
 <translation id="7041549558901442110">设备未连接。</translation>
@@ -653,6 +658,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">失败 - 授权失败</translation>
 <translation id="7103252855940681301">第 <ph name="INDEX" /> 部设备（共 <ph name="COUNT" /> 部），名称为“<ph name="NAME" />”。</translation>
+<translation id="7126228745139711113">写保护处于关闭状态</translation>
 <translation id="7134436342991564651">{0,plural, =1{域名服务器}other{域名服务器}}</translation>
 <translation id="7143207342074048698">正在连接</translation>
 <translation id="7144878232160441200">重试</translation>
@@ -744,6 +750,7 @@
 <translation id="80398733265834479">启用自动颜色模式</translation>
 <translation id="8041089156583427627">发送反馈</translation>
 <translation id="8045012663542226664">麦克风静音</translation>
+<translation id="8063022551652308521">写保护依然处于关闭状态。若要继续，请开启写保护。</translation>
 <translation id="8075838845814659848">剩余电量</translation>
 <translation id="8082366717211101304">无法从 Android 应用解析 DNS</translation>
 <translation id="8083281199617904460">此维修流程专供训练有素的维修技师执行。请仅在替换了出故障的组件后启动此流程。</translation>
@@ -814,6 +821,7 @@
 <translation id="8709616837707653427"><ph name="DESC_TEXT" />使用向左键或向右键即可管理此功能。</translation>
 <translation id="8712637175834984815">知道了</translation>
 <translation id="871560550817059752">失败 - 墨水已用完</translation>
+<translation id="8717030727630712160">继续修复…</translation>
 <translation id="8723108084122415655">非默认网络的延迟时间超出了阈值</translation>
 <translation id="8725066075913043281">重试</translation>
 <translation id="8726019395068607495">已停止 - 机盖未关</translation>
@@ -835,6 +843,7 @@
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">设备类型是平板电脑。</translation>
 <translation id="8881098542468797602">测试成功</translation>
+<translation id="8897267175591692539">现在可以将设备组装回原样了</translation>
 <translation id="8898840733695078011">信号强度</translation>
 <translation id="8910721771319628100">默认网络的延迟时间超出了阈值</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />的 <ph name="DEVICE_TYPE" /></translation>

@@ -78,6 +78,7 @@
 <translation id="1578784163189013834">اختيار خلفية شاشة التوقف</translation>
 <translation id="1615335640928990664">عرض معدل استخدام البيانات منذ تاريخ <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">تشغيل اختبار فحص البطارية</translation>
+<translation id="1631385268983122904">لا يمكنك تجميع الجهاز بعد.</translation>
 <translation id="1639239467298939599">جارٍ التحميل.</translation>
 <translation id="1641857168437328880">وحدة تغذية المستندات (وجه واحد)</translation>
 <translation id="1643449475550628585">تغيير صورة الخلفية يوميًا</translation>
@@ -85,6 +86,7 @@
 <translation id="1645954272419197032">مطلوب تأكيد معلومات الجهاز</translation>
 <translation id="1662989795263954667">توقّفت الطابعة - نفد الحبر</translation>
 <translation id="1668469839109562275">الشبكة الافتراضية الخاصة المُدمجة</translation>
+<translation id="1676557873873341166">تسجيل فيديو</translation>
 <translation id="1703835215927279855">خطاب</translation>
 <translation id="1706391837335750954">توفُّر برنامج تعيين نظام أسماء النطاقات</translation>
 <translation id="1715359911173058521">‏حدث مشكلة في الاتصال بالماسح الضوئي. يُرجى التحقّق من الاتصال بالشبكة أو اتصال USB وإعادة المحاولة.</translation>
@@ -159,6 +161,7 @@
 <translation id="2326139988748364651">‏<ph name="RESOLUTION_VALUE" /> نقطة لكل بوصة (DPI)</translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">تفعيل البلوتوث لاكتشاف الأجهزة القريبة</translation>
+<translation id="2340422556570134524">تم تفعيل ميزة "وضع القراءة فقط" بشكلٍ غير متوقَّع. يُرجى إيقاف ميزة "وضع القراءة فقط" يدويًا قبل إعادة المحاولة.</translation>
 <translation id="2346474577291266260">إشارة ممتازة (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">متابعة</translation>
 <translation id="2360257214555822463">تم رصد <ph name="LINK_BEGIN" />مكونات غير معتمَدة<ph name="LINK_END" />. إذا أردت التأكد من تثبيت المكوّنات، يُرجى إجراء ذلك الآن.</translation>
@@ -474,6 +477,7 @@
 <translation id="5372659122375744710">‏شبكة Wi-Fi غير آمنة.</translation>
 <translation id="5376354385557966694">الوضع الفاتح التلقائي</translation>
 <translation id="537872351913703572">سيتم نقل الجهاز إلى مستخدم آخر أو إلى مؤسسة أخرى.</translation>
+<translation id="5389159777326897627">صورة الشاشة والأسلوب</translation>
 <translation id="5389224261615877010">قوس قزح</translation>
 <translation id="5395600419410242651">محو جميع البيانات</translation>
 <translation id="5400907029458559844">جارٍ توصيل الجهاز</translation>
@@ -643,6 +647,7 @@
 <translation id="6961170852793647506">للبدء، يُرجى وضع المستند على الماسح الضوئي.</translation>
 <translation id="6965382102122355670">حسنًا</translation>
 <translation id="6977381486153291903">مراجعة البرامج الثابتة</translation>
+<translation id="6995564396478647735">التأكد من تفعيل ميزة "وضع القراءة فقط"</translation>
 <translation id="7028979494427204405">يُدير <ph name="MANAGER" /> هذا الجهاز ويمكنه الوصول إلى جميع أنشطة المستخدم، بما في ذلك صفحات الويب التي تمت زيارتها وكلمات المرور والبريد الإلكتروني.</translation>
 <translation id="7040230719604914234">مشغل شبكة الجوّال</translation>
 <translation id="7041549558901442110">الجهاز غير متصل.</translation>
@@ -653,6 +658,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">تعذَّر التفويض: تعذَّر إتمام عملية التفويض.</translation>
 <translation id="7103252855940681301">الجهاز <ph name="INDEX" /> من إجمالي <ph name="COUNT" /> اسمه <ph name="NAME" />.</translation>
+<translation id="7126228745139711113">ميزة "وضع القراءة فقط" متوقّفة</translation>
 <translation id="7134436342991564651">{0,plural, =1{خادم أسماء واحد}zero{خوادم الأسماء}two{خادما أسماء}few{خوادم الأسماء}many{خوادم الأسماء}other{خوادم الأسماء}}</translation>
 <translation id="7143207342074048698">اتصال</translation>
 <translation id="7144878232160441200">إعادة المحاولة</translation>
@@ -744,6 +750,7 @@
 <translation id="80398733265834479">تفعيل وضع الألوان التلقائية</translation>
 <translation id="8041089156583427627">إرسال تعليقات</translation>
 <translation id="8045012663542226664">كتم صوت الميكروفون</translation>
+<translation id="8063022551652308521">لا تزال ميزة "وضع القراءة فقط" متوقّفة، وعليك تفعيلها للمتابعة.</translation>
 <translation id="8075838845814659848">شحن البطارية المتبقي</translation>
 <translation id="8082366717211101304">‏تعذَّر التحويل باستخدام نظام أسماء النطاقات (DNS) من تطبيقات Android.</translation>
 <translation id="8083281199617904460">إنّ إجراء عملية الإصلاح هذه مقصور على فنيّي الإصلاح المدرّبين. يُرجى بدء عملية الإصلاح بعد استبدال المكوّنات المُعطّلة.</translation>
@@ -814,6 +821,7 @@
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> يمكنك استخدام أزرار السهم المتجه لليمين أو السهم المتجه لليسار لإدارة هذه الميزة.</translation>
 <translation id="8712637175834984815">تم</translation>
 <translation id="871560550817059752">تعذَّرت الطباعة - نفد الحبر</translation>
+<translation id="8717030727630712160">جارٍ استئناف عملية الإصلاح…</translation>
 <translation id="8723108084122415655">وقت استجابة الشبكة غير التلقائية أعلى من الحد الأقصى.</translation>
 <translation id="8725066075913043281">أعد المحاولة</translation>
 <translation id="8726019395068607495">توقّفت الطابعة - باب الطابعة مفتوح</translation>
@@ -835,6 +843,7 @@
 <translation id="8868741746785112895">‏المعرّف الفريد العمومي (GUID)</translation>
 <translation id="8876270629542503161">الجهاز هو جهاز لوحي.</translation>
 <translation id="8881098542468797602">نجح الاختبار.</translation>
+<translation id="8897267175591692539">يمكنك الآن تجميع الجهاز.</translation>
 <translation id="8898840733695078011">قوة الإشارة</translation>
 <translation id="8910721771319628100">وقت استجابة الشبكة التلقائية أعلى من الحدّ الأقصى.</translation>
 <translation id="8918637186205009138">جهاز <ph name="DEVICE_TYPE" /> الخاص بـ <ph name="GIVEN_NAME" /></translation>

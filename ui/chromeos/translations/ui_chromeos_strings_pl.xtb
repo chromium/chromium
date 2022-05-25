@@ -121,6 +121,7 @@
 <translation id="1942765061641586207">Rozdzielczość grafiki</translation>
 <translation id="1972984168337863910">Rozwiń panele informacji zwrotnej o plikach</translation>
 <translation id="1995337122023280937">Otwórz lokalizację pliku</translation>
+<translation id="1996806196681857869">Skompresowane archiwum Z</translation>
 <translation id="2001796770603320721">Zarządzaj na Dysku</translation>
 <translation id="2009067268969781306">Sformatowanie dysku spowoduje usunięcie wszystkich zapisanych na nim danych. Nie można tego cofnąć.</translation>
 <translation id="2025955442973426285">Tigrinia</translation>
@@ -589,6 +590,7 @@
 <translation id="5955954492236143329">Elementy: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="5957366693331451795">Chromeboksy</translation>
 <translation id="5982621672636444458">Opcje sortowania</translation>
+<translation id="5985041959109124139">Archiwum Tar po kompresji Z</translation>
 <translation id="6007237601604674381">Przenoszenie nie powiodło się. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Sieć Ethernet</translation>
 <translation id="60357267506638014">czeski (QWERTY)</translation>
@@ -619,6 +621,7 @@
 <translation id="6220423280121890987">Pendżabski</translation>
 <translation id="6224240818060029162">Duński</translation>
 <translation id="6224253798271602650">Formatowanie dysku <ph name="DRIVE_NAME" /></translation>
+<translation id="6224665423283788195">Skompresowane archiwum Zstandard</translation>
 <translation id="6227235786875481728">Nie można odtworzyć tego pliku.</translation>
 <translation id="6241349547798190358">Niderlandzki (Belgia)</translation>
 <translation id="6267547857941397424">Sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, siła sygnału: <ph name="SIGNAL_STRENGTH" />%, bateria telefonu: <ph name="BATTERY_STATUS" />%, połącz</translation>
@@ -646,6 +649,7 @@
 <translation id="6509122719576673235">Norweski</translation>
 <translation id="6528513914570774834">Zezwól innym użytkownikom tego urządzenia na używanie tej sieci</translation>
 <translation id="653019979737152879">Synchronizuję <ph name="FILE_NAME" />...</translation>
+<translation id="6530595303336443929">Archiwum Tar po kompresji Zstandard</translation>
 <translation id="6549689063733911810">Ostatnie</translation>
 <translation id="6558280019477628686">Wystąpił błąd. Niektóre elementy mogły nie zostać usunięte.</translation>
 <translation id="656398493051028875">Usuwam „<ph name="FILENAME" />”...</translation>

@@ -24,6 +24,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="109942774857561566">Aspertuta nago</translation>
 <translation id="1104084341931202936">Erakutsi erabilerraztasun-ezarpenak</translation>
 <translation id="1104621072296271835">Gailuek are hobeto funtzionatzen dute batera</translation>
+<translation id="1111021433905331574">Teklatuaren atzeko argiztapenaren kolorea aldatzeko, joan Ezarpenak &gt; <ph name="APP_TITLE" /> atalera</translation>
 <translation id="112308213915226829">Ezkutatu apala automatikoki</translation>
 <translation id="1142002900084379065">Azken argazkiak</translation>
 <translation id="1148499908455722006">Ireki <ph name="USER_NAME" /> erabiltzailearen informazio-leihoa</translation>
@@ -65,6 +66,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1275285675049378717"><ph name="POWER_SOURCE" /> gailuari energia ematen</translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">Aurkitu telefonoa</translation>
+<translation id="1287002645302686982">Badago <ph name="DESK_TEMPLATE_NAME" /> izeneko lan-eremu bat</translation>
 <translation id="1289185460362160437">Itzuli egun honetan: <ph name="COME_BACK_DAY_OF_WEEK" /> (<ph name="COME_BACK_TIME" />).</translation>
 <translation id="1290331692326790741">Seinale ahula</translation>
 <translation id="1290982764014248209">Eraman <ph name="DRAGGED_APP" /> <ph name="FOLDER_NAME" /> karpetara.</translation>
@@ -94,7 +96,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1420408895951708260">Aktibatu/Desaktibatu Gaueko argia. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">Ikusi telefonoko azken argazkiak eta multimedia-elementuak <ph name="DEVICE_TYPE" /> bidez</translation>
 <translation id="1426410128494586442">Bai</translation>
-<translation id="1438357537418863713">Konfiguratu da aplikazioak zuzenean exekutatzeko aukera. Aukera hori erabiltzen hasten zarenean, hemen agertuko dira abiarazi dituzun azken aplikazioak.</translation>
+<translation id="1447641497144572814">Pantaila-babeslea ezartzear dago</translation>
 <translation id="1455242230282523554">Erakutsi hizkuntza-ezarpenak</translation>
 <translation id="1460620680449458626">Bolumena desaktibatuta dago.</translation>
 <translation id="1467432559032391204">Ezkerrera</translation>
@@ -269,6 +271,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="2586561057878260610">Sakatu Ktrl + W <ph name="DESK_NAME" /> lan-eremuarekin konbinatzeko. Sakatu Ktrl + Maius + W lan-eremua eta leihoak ixteko.</translation>
 <translation id="2595239820337756193">Zenbat da 5 km miliatan</translation>
 <translation id="2596078834055697711">Atera leihoaren pantaila-argazkia</translation>
+<translation id="2598725286293895280">Lan-eremuko aplikazio bat ez da bateragarria</translation>
 <translation id="2607678425161541573">Saioa hasi behar da sarean</translation>
 <translation id="2620016719323068571">Bilatu <ph name="CATEGORY" />, fitxategiak, aplikazioak eta beste…</translation>
 <translation id="2620436844016719705">Sistema</translation>
@@ -645,6 +648,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="4734965478015604180">Horizontala</translation>
 <translation id="4735498845456076464"><ph name="LAUNCHER_KEY_NAME" /> + zenbakia lasterbidea aldatu egin da. Funtzio-teklak erabiltzeko, sakatu <ph name="LAUNCHER_KEY_NAME" /> tekla + goiko errenkadako tekla bat.</translation>
 <translation id="473775607612524610">Eguneratu</translation>
+<translation id="4740516757091333363">Gordetako lan-eremua ezabatu?</translation>
 <translation id="4752784485658729358">Gordetako sei lan-eremu soilik eduki daitezke. Beste bat gordetzeko, kendu lehendik dagoen bat.</translation>
 <translation id="4759238208242260848">Deskargak</translation>
 <translation id="4774338217796918551">Itzuli bihar ordu honetan: <ph name="COME_BACK_TIME" />.</translation>
@@ -697,7 +701,6 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="5071064518267176975">Aplikazio batek mikrofonoa erabili nahi du</translation>
 <translation id="5078796286268621944">Okerra da PINa</translation>
 <translation id="5083553833479578423">Desblokeatu Laguntzailea zerbitzuaren eginbide gehiago.</translation>
-<translation id="5106223312672646208">Pertsonalizatu</translation>
 <translation id="5107522548814527560">Sarea</translation>
 <translation id="5117590920725113268">Erakutsi hurrengo hilabetea</translation>
 <translation id="5136175204352732067">Beste teklatu bat konektatu duzu</translation>
@@ -742,6 +745,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="5352250171825660495">Aktibatuta dago gai iluna.</translation>
 <translation id="5356963482258194581">Aldatu gai ilunetik gai argira, eta alderantziz. Egin klik eskuineko botoiarekin mahaigainean eta hautatu Horma-papera eta estiloa.</translation>
 <translation id="5379115545237091094">Saiakera gehiegi egin dira</translation>
+<translation id="5391307769715781764">Gordetako lan-eremua ordeztu?</translation>
 <translation id="5393156353051693207">Aplikazioen ordena aldatzeko, eduki sakatuta edozein toki</translation>
 <translation id="5395308026110844773"><ph name="IN_PLACE_APP" /> aplikazioaren gainean dago <ph name="DRAGGED_APP_NAME" />; aska ezazu karpeta bat sortzeko.</translation>
 <translation id="5397578532367286026">Kudeatzaileak (<ph name="MANAGER_EMAIL" />) erabiltzaile honen erabilera-datuak eta historia ikus ditzake manager chrome.com webgunean.</translation>
@@ -975,6 +979,7 @@ Berriki instalatu da</translation>
 <translation id="6790428901817661496">Erreproduzitu</translation>
 <translation id="6801878137098616817">Duela gutxi editatu da</translation>
 <translation id="6803622936009808957">Ezin izan dira islatu pantailan ez delako onartutako bereizmenik aurkitu. Horren ordez, mahaigain hedatuan sartu zara.</translation>
+<translation id="6812232930908427253">Ezin izan da gorde lan-eremua. Leiho edo fitxa gehiegi daude.</translation>
 <translation id="6818242057446442178">Joan aurreko hitzera</translation>
 <translation id="6819327813400217281">Atxiki egin da kamera beheko ezkerraldeko izkinan</translation>
 <translation id="6820676911989879663">Hartu atseden</translation>

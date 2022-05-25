@@ -121,6 +121,7 @@
 <translation id="1942765061641586207">చిత్ర రిజల్యూషన్</translation>
 <translation id="1972984168337863910">అభిప్రాయ ప్యానెల్‌ల ఫైళ్లు విస్తరించు</translation>
 <translation id="1995337122023280937">ఫైల్ లొకేషన్‌కు వెళ్ళు</translation>
+<translation id="1996806196681857869">Z కుదించిన ఆర్కైవ్</translation>
 <translation id="2001796770603320721">డిస్క్‌లో నిర్వహించు</translation>
 <translation id="2009067268969781306">డ్రైవ్‌ను ఫార్మాట్ చేయడం వలన దానిలో నిల్వ చేయబడిన మొత్తం డేటా తొలగించబడుతుంది. ఈ చర్యను రద్దు చేయలేరు.</translation>
 <translation id="2025955442973426285">టైగ్రిన్యా</translation>
@@ -589,6 +590,7 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> అంశాలు</translation>
 <translation id="5957366693331451795">Chromeboxలు</translation>
 <translation id="5982621672636444458">క్రమబద్ధీకరణ ఎంపికలు</translation>
+<translation id="5985041959109124139">Z కుదించిన tar ఆర్కైవ్</translation>
 <translation id="6007237601604674381">తరలింపు విఫలమైంది. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">ఈథర్‌నెట్ నెట్‌వర్క్</translation>
 <translation id="60357267506638014">చెక్ QWERTY</translation>
@@ -619,6 +621,7 @@
 <translation id="6220423280121890987">పంజాబీ</translation>
 <translation id="6224240818060029162">డేనిష్</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" />ను ఫార్మాట్ చేయండి</translation>
+<translation id="6224665423283788195">Zstandard కుదించిన ఆర్కైవ్</translation>
 <translation id="6227235786875481728">ఈ ఫైల్‌ని ప్లే చేయడం సాధ్యం కాలేదు.</translation>
 <translation id="6241349547798190358">డచ్ (బెల్జియం)</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_COUNT" />లో <ph name="NETWORK_INDEX" /> నెట్‌వర్క్, <ph name="PHONE_NAME" />, సిగ్నల్ సామర్థ్యం <ph name="SIGNAL_STRENGTH" />%, ఫోన్ బ్యాటరీ <ph name="BATTERY_STATUS" />%, కనెక్ట్ చేయండి</translation>
@@ -646,6 +649,7 @@
 <translation id="6509122719576673235">నార్వేజియన్</translation>
 <translation id="6528513914570774834">ఈ నెట్‌వర్క్‌ను ఉపయోగించడానికి ఈ పరికరం యొక్క ఇతర వినియోగదారులను అనుమతించండి</translation>
 <translation id="653019979737152879"><ph name="FILE_NAME" />ని సింక్ చేస్తోంది...</translation>
+<translation id="6530595303336443929">Zstandard కుదించిన tar ఆర్కైవ్</translation>
 <translation id="6549689063733911810">ఇటీవల</translation>
 <translation id="6558280019477628686">ఎర్రర్ ఏర్పడింది. కొన్ని అంశాలు తొలగించబడి ఉండకపోవచ్చు.</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />"ని తొలగిస్తోంది...</translation>

@@ -78,6 +78,7 @@
 <translation id="1578784163189013834">Izbira ozadja ohranjevalnika zaslona</translation>
 <translation id="1615335640928990664">Prenesena količina podatkov od tega dne: <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Zaženi preizkus napolnjenosti</translation>
+<translation id="1631385268983122904">Naprave še ne sestavite.</translation>
 <translation id="1639239467298939599">Nalaganje</translation>
 <translation id="1641857168437328880">Podajalnik dokumentov (enostransko)</translation>
 <translation id="1643449475550628585">Dnevna sprememba slike zaslonskega ozadja</translation>
@@ -85,6 +86,7 @@
 <translation id="1645954272419197032">Potrdite podatke o napravi</translation>
 <translation id="1662989795263954667">Ustavljeno – zmanjkalo je črnila</translation>
 <translation id="1668469839109562275">Vgrajeno omrežje VPN</translation>
+<translation id="1676557873873341166">Snemanje videoposnetka</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Prisotnost razreševalnika DNS</translation>
 <translation id="1715359911173058521">Pri komuniciranju z optičnim bralnikom je prišlo do težave. Preverite omrežje ali povezavo USB in poskusite znova.</translation>
@@ -159,6 +161,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> pik na palec</translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Vklopite Bluetooth, če želite odkriti naprave v bližini</translation>
+<translation id="2340422556570134524">Zaščita pred pisanjem je bila nepričakovano vklopljena. Izklopite zaščito pred pisanjem, preden znova poskusite ročno.</translation>
 <translation id="2346474577291266260">Odlična (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">Naprej</translation>
 <translation id="2360257214555822463">Zaznane so bile <ph name="LINK_BEGIN" />neustrezne komponente<ph name="LINK_END" />. Če želite potrditi, da je to nameščeno, storite to zdaj.</translation>
@@ -474,6 +477,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="5372659122375744710">Omrežje Wi-Fi ni varno</translation>
 <translation id="5376354385557966694">Samodejni svetli način</translation>
 <translation id="537872351913703572">Naprava se prenaša k drugemu uporabniku ali organizaciji.</translation>
+<translation id="5389159777326897627">Zaslonsko ozadje in slog</translation>
 <translation id="5389224261615877010">Mavrica</translation>
 <translation id="5395600419410242651">Izbriši vse podatke</translation>
 <translation id="5400907029458559844">Naprava se povezuje.</translation>
@@ -643,6 +647,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="6961170852793647506">Če želite začeti, postavite dokument na optični bralnik.</translation>
 <translation id="6965382102122355670">V redu</translation>
 <translation id="6977381486153291903">Različica vdelane programske opreme</translation>
+<translation id="6995564396478647735">Prepričajte se, da je zaščita pred pisanjem vklopljena</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> upravlja to napravo in ima dostop do vse dejavnosti uporabnika, vključno z obiskanimi spletnimi mesti, gesli in e-pošto.</translation>
 <translation id="7040230719604914234">Operater</translation>
 <translation id="7041549558901442110">Naprava ni povezana.</translation>
@@ -653,6 +658,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Ni uspelo – Pooblastitev ni uspela.</translation>
 <translation id="7103252855940681301">Naprava <ph name="INDEX" /> od <ph name="COUNT" /> z imenom <ph name="NAME" />.</translation>
+<translation id="7126228745139711113">Zaščita pred pisanjem je izklopljena</translation>
 <translation id="7134436342991564651">{0,plural, =1{Imenski strežnik}one{Imenski strežniki}two{Imenski strežniki}few{Imenski strežniki}other{Imenski strežniki}}</translation>
 <translation id="7143207342074048698">Povezovanje</translation>
 <translation id="7144878232160441200">Poskusi ponovno</translation>
@@ -744,6 +750,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="80398733265834479">Omogoči način samodejne barve</translation>
 <translation id="8041089156583427627">Pošlji povratne informacije</translation>
 <translation id="8045012663542226664">Izklop zvok mikrofona</translation>
+<translation id="8063022551652308521">Zaščita pred pisanjem je še vedno izklopljena. Če želite nadaljevati, jo vklopite.</translation>
 <translation id="8075838845814659848">Preostanek polnjenja</translation>
 <translation id="8082366717211101304">Iz aplikacij za Android ni mogoče razrešiti DNS-ja.</translation>
 <translation id="8083281199617904460">Ta postopek popravila je namenjen za usposobljenega serviserja. Začnite šele po zamenjavi okvarjenih komponent.</translation>
@@ -814,6 +821,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Upravljajte to funkcijo s tipkama puščica levo ali desno.</translation>
 <translation id="8712637175834984815">Razumem</translation>
 <translation id="871560550817059752">Napaka – zmanjkalo je črnila</translation>
+<translation id="8717030727630712160">Nadaljevanje postopka popravila …</translation>
 <translation id="8723108084122415655">Omrežje, ki ni privzeto, je nad pragom zakasnitve</translation>
 <translation id="8725066075913043281">Poskusite znova</translation>
 <translation id="8726019395068607495">Ustavljeno – vrata so odprta</translation>
@@ -835,6 +843,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Naprava je tablični računalnik.</translation>
 <translation id="8881098542468797602">Preizkus je uspel</translation>
+<translation id="8897267175591692539">Zdaj lahko napravo znova sestavite.</translation>
 <translation id="8898840733695078011">Moč signala</translation>
 <translation id="8910721771319628100">Privzeto omrežje je nad pragom zakasnitve</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" /> – <ph name="DEVICE_TYPE" /></translation>

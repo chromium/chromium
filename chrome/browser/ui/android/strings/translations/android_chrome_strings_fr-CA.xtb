@@ -56,6 +56,7 @@
 <translation id="124678866338384709">Fermer l'onglet actuel</translation>
 <translation id="1246905108078336582">Supprimer la suggestion du presse-papiers?</translation>
 <translation id="1258753120186372309">Logo commémoratif de Google : <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">Liste de lecture</translation>
 <translation id="1266864766717917324">Partage impossible du contenu suivant : <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Toucher pour développer</translation>
 <translation id="1285310382777185058">Changer de langue</translation>
@@ -83,6 +84,7 @@ Lorsque vous supprimez votre historique de navigation (pour un site en particuli
 <translation id="1383876407941801731">Rechercher</translation>
 <translation id="1384704387250346179">Traduire l'image avec Lentille Google <ph name="BEGIN_NEW" />Nouv.<ph name="END_NEW" /></translation>
 <translation id="1386674309198842382">Actif il y a <ph name="LAST_UPDATED" /> jours</translation>
+<translation id="13931502444227376">Pour continuer, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> partagera votre nom, votre adresse de courriel et votre photo de profil avec ce site. Consultez les <ph name="BEGIN_LINK1" />conditions d'utilisation<ph name="END_LINK1" /> de ce site.</translation>
 <translation id="1397811292916898096">Rechercher avec <ph name="PRODUCT_NAME" /></translation>
 <translation id="139993653570221430">Vous pouvez changer d'avis à tout moment dans les paramètres de Chrome. Comme les essais se déroulent parallèlement à la méthode de diffusion actuelle des annonces, vous ne verrez pas de changements dans l'immédiat.</translation>
 <translation id="1406000523432664303">« Ne pas faire le suivi »</translation>
@@ -145,6 +147,7 @@ Les jetons de confiance améliorent la confidentialité sur le Web et ne peuvent
 <translation id="173522743738009831">À propos du bac à sable de confidentialité</translation>
 <translation id="1736419249208073774">Explorer</translation>
 <translation id="1749561566933687563">Synchronisez vos favoris</translation>
+<translation id="1750259112639922169">Groupe d'onglets – <ph name="TAB_COUNT" /> onglet(s)</translation>
 <translation id="17513872634828108">Onglets ouverts</translation>
 <translation id="1754404134430936718">Texte copié</translation>
 <translation id="1779766957982586368">Fermer la fenêtre</translation>
@@ -491,7 +494,6 @@ Maintenez le doigt sur un mot pour effectuer une recherche sur celui-ci. Pour af
 <translation id="363596933471559332">Connexion automatique à des sites Web à l'aide d'authentifiants enregistrés. Lorsque la fonctionnalité est désactivée, une vérification est effectuée avant chaque connexion à un site Web.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" /> : <ph name="WEBSITE_URL" /></translation>
 <translation id="3677911431265050325">Voir la version pour appareil mobile</translation>
-<translation id="3685860403008476208">Toute personne utilisant cet appareil peut voir les fichiers que vous téléchargez en navigation privée</translation>
 <translation id="3687645719033307815">Vous regardez un aperçu de cette page</translation>
 <translation id="3690369331356918524">Vous avertit si des mots de passe sont exposés dans une violation de données</translation>
 <translation id="3692944402865947621">Impossible de télécharger <ph name="FILE_NAME" />, car aucun emplacement de stockage n'a été trouvé.</translation>
@@ -521,6 +523,7 @@ Maintenez le doigt sur un mot pour effectuer une recherche sur celui-ci. Pour af
 <translation id="3845098929839618392">Ouvrir dans onglet nav. privée</translation>
 <translation id="3856096718352044181">Veuillez vérifier qu'il s'agit d'un fournisseur valide ou réessayer plus tard</translation>
 <translation id="3858860766373142691">Nom</translation>
+<translation id="3859206958100234503">Synchronisez vos données pour ajouter vos mots de passe, vos favoris et plus sur tous vos appareils</translation>
 <translation id="3861633093716975811">Vidéos populaires</translation>
 <translation id="3892148308691398805">Copier le texte</translation>
 <translation id="3894427358181296146">Ajouter un dossier</translation>
@@ -578,6 +581,7 @@ Maintenez le doigt sur un mot pour effectuer une recherche sur celui-ci. Pour af
 <translation id="4209895695669353772">Pour obtenir du contenu personnalisé suggéré par Google, activez la synchronisation</translation>
 <translation id="4214315110991671325">Si vous autorisez les témoins, Chrome peut les utiliser pour procéder au préchargement.</translation>
 <translation id="4225895483398857530">Raccourci de la barre d'outils</translation>
+<translation id="4227318652298512614">Suivez les sites que vous voulez</translation>
 <translation id="4242533952199664413">Ouvrir les paramètres</translation>
 <translation id="4248098802131000011">Protégez vos mots de passe contre les violations de données et d'autres problèmes de sécurité</translation>
 <translation id="4249955472157341256">Trier par Plus récents</translation>
@@ -694,6 +698,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="4842515939542199281">Pour rechercher avec des commandes vocales, touchez le microphone</translation>
 <translation id="4844633725025837809">Pour renforcer la sécurité, chiffrez les mots de passe sur votre appareil avant qu'ils soient enregistrés dans le gestionnaire de mots de passe Google</translation>
 <translation id="4850886885716139402">Affichage</translation>
+<translation id="4852014461738377247">Connexion en cours…</translation>
 <translation id="4860895144060829044">Appeler</translation>
 <translation id="4864369630010738180">Connexion en cours…</translation>
 <translation id="4866368707455379617">Impossible d'installer <ph name="MODULE" /> dans Chrome</translation>
@@ -786,6 +791,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5368227114232678694">Pour naviguer en privé sur cet appareil, essayez la navigation privée</translation>
 <translation id="5375577065097716013">Rechercher l'image avec Lentille Google <ph name="BEGIN_NEW" />Nouv.<ph name="END_NEW" /></translation>
 <translation id="5376898820269806588">Réaction changée</translation>
+<translation id="5401851137404501592">Pour continuer, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> partagera votre nom, votre adresse de courriel et votre photo de profil avec ce site.</translation>
 <translation id="5403644198645076998">Autoriser uniquement certains sites</translation>
 <translation id="5409881200985013443">Envoyez <ph name="ONE_TIME_CODE" /> à <ph name="CLIENT_NAME" />?</translation>
 <translation id="5414836363063783498">Vérification...</translation>
@@ -1125,6 +1131,7 @@ Les jetons de confiance améliorent la confidentialité sur le Web et ne peuvent
 <translation id="7177873915659574692">Impossible de créer un code QR. L'URL contient plus de <ph name="CHARACTER_LIMIT" /> caractères.</translation>
 <translation id="7177959540995930968">Vous pouvez en apprendre plus sur ces fonctionnalités dans les paramètres de Chrome.</translation>
 <translation id="718226107353899806">Vous pouvez ajouter jusqu'à <ph name="MAX_NUM_REACTIONS" /> réactions</translation>
+<translation id="7183693674623539380">Groupe d'onglets – <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="7187993566681480880">Il vous protège dans Chrome et peut être utilisé pour améliorer votre sécurité dans d'autres applications Google lorsque vous êtes connecté à votre compte.</translation>
 <translation id="7191430249889272776">Onglet ouvert en arrière-plan.</translation>
 <translation id="7196215469483532480">Explication du guide sur la confidentialité ouverte à pleine hauteur</translation>
@@ -1145,6 +1152,7 @@ Les jetons de confiance améliorent la confidentialité sur le Web et ne peuvent
 <translation id="7304873321153398381">Hors ligne. Chrome ne peut pas vérifier vos mots de passe.</translation>
 <translation id="7313188324932846546">Touchez pour configurer la synchronisation</translation>
 <translation id="7332075081379534664">Connexion réussie</translation>
+<translation id="7333232495927792353">Synchronisez vos données pour accéder à du contenu plus pertinent de Google</translation>
 <translation id="7339898014177206373">Nouvelle fenêtre</translation>
 <translation id="7340958967809483333">Options pour Découvertes</translation>
 <translation id="7352339641508007922">Faites glisser le doigt pour prendre une longue capture d'écran</translation>
@@ -1525,6 +1533,7 @@ Les jetons de confiance améliorent la confidentialité sur le Web et ne peuvent
 <translation id="96681097142096641">Affichez la page simplifiée?</translation>
 <translation id="968900484120156207">Les pages que vous visitez s'affichent ici</translation>
 <translation id="970715775301869095">Il reste <ph name="MINUTES" /> minutes</translation>
+<translation id="978443947993957527">Affichez du contenu personnalisé</translation>
 <translation id="981121421437150478">Hors ligne</translation>
 <translation id="983192555821071799">Fermer tous les onglets</translation>
 <translation id="987264212798334818">Généralités</translation>

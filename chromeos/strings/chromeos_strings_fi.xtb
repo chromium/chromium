@@ -78,6 +78,7 @@
 <translation id="1578784163189013834">Valitse näytönsäästäjän tausta</translation>
 <translation id="1615335640928990664">Datan käyttö <ph name="FRIENDLY_DATE" /> jälkeen</translation>
 <translation id="1621067168122174824">Suorita lataustesti</translation>
+<translation id="1631385268983122904">Älä kokoa laitetta vielä</translation>
 <translation id="1639239467298939599">Ladataan</translation>
 <translation id="1641857168437328880">Syöttölaite (yksipuolinen)</translation>
 <translation id="1643449475550628585">Vaihda taustakuva päivittäin</translation>
@@ -85,6 +86,7 @@
 <translation id="1645954272419197032">Vahvista laitteen tiedot</translation>
 <translation id="1662989795263954667">Pysähtynyt – Muste loppu</translation>
 <translation id="1668469839109562275">Sisäänrakennettu VPN</translation>
+<translation id="1676557873873341166">Tallennetaan videota</translation>
 <translation id="1703835215927279855">Kirje</translation>
 <translation id="1706391837335750954">DNS-ratkaisija paikalla</translation>
 <translation id="1715359911173058521">Skanneriin yhdistämisessä on ongelma. Tarkista verkko- tai USB-yhteys ja yritä uudelleen.</translation>
@@ -159,6 +161,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Löydä lähellä olevat laitteet ottamalla ensin Bluetooth käyttöön.</translation>
+<translation id="2340422556570134524">Write Protect on laitettu päälle yllättäen. Laita Write Protect manuaalisesti pois päältä ennen kuin yrität uudelleen.</translation>
 <translation id="2346474577291266260">Erinomainen (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">Jatka</translation>
 <translation id="2360257214555822463"><ph name="LINK_BEGIN" />Sopimattomia komponentteja<ph name="LINK_END" /> havaittu. Jos päätät vahvistaa, että tällaisia on asennettu, tee se nyt.</translation>
@@ -474,6 +477,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="5372659122375744710">Wi-Fi-verkko ei ole suojattu</translation>
 <translation id="5376354385557966694">Automaattinen vaalea tila</translation>
 <translation id="537872351913703572">Laitteen omistaja vaihtuu</translation>
+<translation id="5389159777326897627">Taustakuva ja tyyli</translation>
 <translation id="5389224261615877010">Sateenkaari</translation>
 <translation id="5395600419410242651">Poista kaikki data</translation>
 <translation id="5400907029458559844">Laite muodostaa yhteyttä.</translation>
@@ -643,6 +647,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="6961170852793647506">Aloita asettamalla dokumentti skanneriin</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">Laiteohjelmiston versio</translation>
+<translation id="6995564396478647735">Varmista, että Write Protect on päällä.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> ylläpitää tätä laitetta ja pääsee näkemään kaiken käyttäjätoiminnan, esim. avatut verkkosivustot, salasanat ja sähköpostit.</translation>
 <translation id="7040230719604914234">Operaattori</translation>
 <translation id="7041549558901442110">Laitetta ei ole yhdistetty.</translation>
@@ -653,6 +658,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Epäonnistui – Valtuutus epäonnistui</translation>
 <translation id="7103252855940681301">Laite <ph name="INDEX" />/<ph name="COUNT" /> nimeltä <ph name="NAME" />.</translation>
+<translation id="7126228745139711113">Write Protect on pois päältä</translation>
 <translation id="7134436342991564651">{0,plural, =1{Nimipalvelin}other{Nimipalvelimet}}</translation>
 <translation id="7143207342074048698">Yhdistetään</translation>
 <translation id="7144878232160441200">Yritä uudelleen</translation>
@@ -744,6 +750,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="80398733265834479">Ota automaattinen väritila käyttöön</translation>
 <translation id="8041089156583427627">Lähetä palautetta</translation>
 <translation id="8045012663542226664">Mikrofonin mykistys</translation>
+<translation id="8063022551652308521">Write Protect on yhä pois päältä. Jatka laittamalla Write Protect päälle.</translation>
 <translation id="8075838845814659848">Virtaa jäljellä</translation>
 <translation id="8082366717211101304">DNS:n selvitys ei onnistu Android-sovelluksilla</translation>
 <translation id="8083281199617904460">Korjausprosessi on tarkoitettu koulutetun korjausteknikon suoritettavaksi. Aloita vasta, kun väärin toimivat komponentit on vaihdettu.</translation>
@@ -814,6 +821,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Säädä ominaisuutta vasemmalla ja oikealla nuolella.</translation>
 <translation id="8712637175834984815">Ymmärretty</translation>
 <translation id="871560550817059752">Epäonnistui – Muste loppu</translation>
+<translation id="8717030727630712160">Jatketaan korjausprosessia…</translation>
 <translation id="8723108084122415655">Muu kuin oletusverkko yli viiverajan</translation>
 <translation id="8725066075913043281">Yritä uudelleen</translation>
 <translation id="8726019395068607495">Pysähtynyt – Luukku auki</translation>
@@ -835,6 +843,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Laite on tabletti.</translation>
 <translation id="8881098542468797602">Testi onnistui</translation>
+<translation id="8897267175591692539">Voit koota laitteen nyt</translation>
 <translation id="8898840733695078011">Signaalin vahvuus</translation>
 <translation id="8910721771319628100">Oletusverkko yli viiverajan</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> (<ph name="GIVEN_NAME" />)</translation>

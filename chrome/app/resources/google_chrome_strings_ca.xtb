@@ -77,6 +77,7 @@
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> ja té la sessió iniciada en aquest perfil de Chrome. Per continuar amb la teva navegació per separat, Chrome et pot crear un perfil propi.</translation>
 <translation id="2580411288591421699">No es pot instal·lar la mateixa versió de Google Chrome que s'executa actualment. Tanqueu Google Chrome i torneu-ho a provar.</translation>
 <translation id="2586406160782125153">Amb aquesta acció, se suprimiran les teves dades de navegació d'aquest dispositiu. Per recuperar les teves dades més endavant, inicia la sessió a Chrome com a <ph name="USER_EMAIL" />.</translation>
+<translation id="2597976513418770460">Obtén el contingut del teu navegador Chrome del compte <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="2622559029861875898">Chrome no pot cercar actualitzacions. Comprova la connexió a Internet.</translation>
 <translation id="2645435784669275700">Chrome OS</translation>
 <translation id="2652691236519827073">Obre l'enllaç en una pes&amp;tanya nova a Chrome</translation>
@@ -303,6 +304,7 @@
 <translation id="7801699035218095297">Google Chrome està provant de copiar les contrasenyes. Escriu la teva contrasenya de Windows per permetre-ho.</translation>
 <translation id="7808348361785373670">Suprimeix de Chrome...</translation>
 <translation id="7825851276765848807">La instal·lació ha fallat a causa d'un error no especificat. Torneu a baixar Google Chrome.</translation>
+<translation id="7880591377632733558">Et donem la benvinguda a Chrome, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="7890208801193284374">Si compartiu un ordinador, els amics i els familiars poden navegar de manera independent i configurar Chrome com vulguin.</translation>
 <translation id="7896673875602241923">Algú ha iniciat anteriorment la sessió a Chrome en aquest ordinador com a <ph name="ACCOUNT_EMAIL_LAST" />. Crea un usuari de Chrome per mantenir la informació separada.</translation>
 <translation id="7917876797003313048">Pots gestionar els Comptes de Google en què tens la sessió iniciada. Els Comptes de Google s'utilitzen per al navegador Chrome, Play Store, Gmail i més. Si vols afegir un compte per a algú altre, com ara un membre de la família, afegeix una persona nova al teu dispositiu <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
@@ -328,6 +330,7 @@
 <translation id="8418845734693287262">Chrome OS no ha pogut sincronitzar les teves dades perquè les dades d'inici de sessió del compte no estan actualitzades.</translation>
 <translation id="8421734018304082652">Chrome ha bloquejat aquest fitxer perquè està encriptat. Demana al propietari que el desencripti.</translation>
 <translation id="8433638294851456451">Per enviar un número d'aquí al teu telèfon Android, inicia la sessió a Chrome en tots dos dispositius.</translation>
+<translation id="8451192282033883849"><ph name="MANAGER_NAME" /> gestiona el teu compte. L'administrador pot veure i editar aquest perfil del navegador Chrome i les dades associades, com ara les adreces d'interès, l'historial i les contrasenyes.</translation>
 <translation id="8498858610309223613">S'acaba d'aplicar una actualització de seguretat especial per a Google Chrome. Reinicia el navegador i restaurarem les pestanyes.</translation>
 <translation id="8504220326736535258">Chrome ha bloquejat aquest fitxer perquè inclou programari maliciós</translation>
 <translation id="8516431725144212809">Els teus interessos segons les estimacions de Chrome</translation>

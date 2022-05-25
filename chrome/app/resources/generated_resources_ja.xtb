@@ -369,6 +369,7 @@
 <translation id="1362865166188278099">機械的な問題が発生しました。プリンタを確認してください</translation>
 <translation id="1363585519747660921">USB プリンタの設定が必要です</translation>
 <translation id="1367951781824006909">ファイルを選択</translation>
+<translation id="1368603372088757436">Linux はお使いの <ph name="DEVICE_TYPE" /> ではサポートされていません。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="1369149969991017342">スイッチ アクセス（スイッチ 1 つまたは 2 つでパソコンを制御）</translation>
 <translation id="1372841398847029212">アカウントに同期</translation>
 <translation id="1373176046406139583">デバイスの公開設定では、画面のロックが解除されているときに、あなたとファイルを共有できる相手を管理します。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
@@ -711,6 +712,7 @@
 <translation id="1670399744444387456">基本設定</translation>
 <translation id="1673137583248014546"><ph name="URL" /> よりセキュリティ キーのメーカーとモデルの読み取り許可を求められています</translation>
 <translation id="1674073353928166410">シークレット ウィンドウですべて開く（<ph name="URL_COUNT" /> 件の URL）</translation>
+<translation id="1676902103953506022"><ph name="DOMAIN" /> での <ph name="USERNAME" /> の認証情報</translation>
 <translation id="1677306805708094828"><ph name="EXTENSION_TYPE_PARAMETER" /> を追加できません</translation>
 <translation id="1677472565718498478">残り <ph name="TIME" /></translation>
 <translation id="1679068421605151609">デベロッパー ツール</translation>
@@ -830,7 +832,6 @@
 <translation id="1784707308176068866">連携するネイティブ アプリケーションからのリクエストに応じてバックグラウンドで実行する</translation>
 <translation id="1784849162047402014">デバイスのディスク空き領域が少なくなっています</translation>
 <translation id="1787350673646245458">ユーザー画像</translation>
-<translation id="1788329699711791226"><ph name="ACCOUNT_EMAIL" /> から Chrome ブラウザのアイテムにアクセス</translation>
 <translation id="1790976235243700817">アクセスを削除</translation>
 <translation id="1791662854739702043">インストール先</translation>
 <translation id="1792619191750875668">拡張ディスプレイ</translation>
@@ -2975,7 +2976,7 @@
 <translation id="3855676282923585394">ブックマークと設定をインポート...</translation>
 <translation id="3856096718352044181">有効なプロバイダであることを確認するか、しばらくしてからもう一度お試しください</translation>
 <translation id="3856800405688283469">タイムゾーンを選択</translation>
-<translation id="3857807444929313943">指を放して、もう一度タッチ</translation>
+<translation id="3857807444929313943">指を離して、もう一度タッチ</translation>
 <translation id="3858860766373142691">名前</translation>
 <translation id="385939467708172187">安全なパスワードを使用</translation>
 <translation id="3861638017150647085">ユーザー名「<ph name="USERNAME" />」は使用できません</translation>
@@ -3160,7 +3161,6 @@
 <translation id="4028467762035011525">入力方法を追加</translation>
 <translation id="4029556917477724407"><ph name="PAGE_TITLE" /> ページから戻る</translation>
 <translation id="4031179711345676612">マイクを使用できます</translation>
-<translation id="4031308539321678562">このデバイスから閲覧データを完全に削除します。このプロフィールの Google アカウントは、Chromebook の他のアプリで使用されている可能性があります。これらのアカウントは、<ph name="BEGIN_LINK" />[<ph name="SETTING_SECTION" />] &gt; [<ph name="ACCOUNTS_SECTION" />]<ph name="END_LINK" /> で削除できます。</translation>
 <translation id="4031527940632463547">センサーがブロックされました</translation>
 <translation id="4033415645631238123">Smart Lock を使用したログインはできなくなりました。Smart Lock を使用してロックを解除することは引き続き可能です。</translation>
 <translation id="4033471457476425443">新しいフォルダを追加</translation>
@@ -4308,6 +4308,7 @@
 <translation id="520568280985468584">ネットワークを追加しました。モバイル ネットワークが有効になるまでに数分かかる場合があります。</translation>
 <translation id="5206215183583316675">「<ph name="CERTIFICATE_NAME" />」を削除しますか？</translation>
 <translation id="520621735928254154">証明書のインポート エラー</translation>
+<translation id="5206562235913517859">販売店 ID は「ABC-1234」の形式です</translation>
 <translation id="5206787458656075734">{COUNT,plural, =1{不正使用されたパスワードを変更しました。不正使用されたパスワードは他にも # 件あります。このパスワードを今すぐ確認することをおすすめします。}other{不正使用されたパスワードを変更しました。不正使用されたパスワードは他にも # 件あります。これらのパスワードを今すぐ確認することをおすすめします。}}</translation>
 <translation id="5207949376430453814">テキスト カーソルをハイライト表示する</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> により、ご使用の Chrome OS デバイスが対象かどうかの確認が行われます。</translation>
@@ -4641,7 +4642,6 @@
 <translation id="5539221284352502426">入力したパスワードはサーバーによって拒否されました。考えられる原因は次のとおりです。パスワードが短すぎる。パスワードに数字または記号が含まれていない。以前と同じパスワードを指定した。</translation>
 <translation id="5541694225089836610">操作が管理者によって無効にされています</translation>
 <translation id="5542132724887566711">プロフィール</translation>
-<translation id="554229901779827904">あなたのアカウントは <ph name="MANAGER_NAME" /> によって管理されています。管理者は、この Chrome ブラウザのプロフィールとそのデータを表示、編集できます。こうしたデータには、ブックマーク、履歴、パスワードが含まれます。</translation>
 <translation id="5542750926112347543"><ph name="DOMAIN" /> からの Cookie がブロックされました</translation>
 <translation id="5542949973455282971"><ph name="CARRIER_NAME" /> に接続しています</translation>
 <translation id="5543983818738093899">ステータスを確認しています...</translation>
@@ -4655,6 +4655,7 @@
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="5551573675707792127">キーボードとテキスト入力</translation>
 <translation id="5553089923092577885">証明書ポリシーのマッピング</translation>
+<translation id="5554240068773209752">コントロールをカスタマイズするにはここをクリックしてください</translation>
 <translation id="5554403733534868102">今後アップデートを待つ必要はありません</translation>
 <translation id="5554489410841842733">このアイコンは、ページで拡張機能が使用できる場合に表示されます。</translation>
 <translation id="5554720593229208774">メール認証局</translation>
@@ -4828,6 +4829,7 @@
 <translation id="5729712731028706266">表示(&amp;V)</translation>
 <translation id="5731247495086897348">貼り付けて実行(&amp;S)</translation>
 <translation id="5732392974455271431">ブロックの解除は保護者が行うことができます</translation>
+<translation id="5733866499231170760">無効な ID です。入力した形式が正しくありません。提供された手順を確認し、正しい形式で ID を入力してください。問題を解決できない場合は、この欄を空白のままにしてインストールを続行してください。</translation>
 <translation id="5734362860645681824">通信</translation>
 <translation id="5734697361979786483">ファイル共有を追加</translation>
 <translation id="5736796278325406685">有効なユーザー名を入力してください</translation>
@@ -4908,7 +4910,6 @@
 <translation id="5816434091619127343">リクエストされた変更を行うと、プリンタを使用できなくります。</translation>
 <translation id="5817069030404929329">このデバイスから Google アカウントにパスワードを移動しますか？</translation>
 <translation id="5817918615728894473">ペア設定</translation>
-<translation id="581840385858998009">壁紙、アバター、スクリーンセーバーなどをカスタマイズできます</translation>
 <translation id="5821565227679781414">ショートカットを作成</translation>
 <translation id="5825412242012995131">オン（推奨）</translation>
 <translation id="5826395379250998812"><ph name="DEVICE_TYPE" /> をスマートフォンと接続します。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
@@ -5668,6 +5669,7 @@
 <translation id="6568283005472142698">タブ検索</translation>
 <translation id="65711204837946324">ダウンロードの権限が必要です</translation>
 <translation id="6571772921213691236">ログインデータの編集</translation>
+<translation id="6573096386450695060">常に許可</translation>
 <translation id="6573497332121198392">ショートカットの削除はできません</translation>
 <translation id="657402800789773160">ページを再読み込み(&amp;R)</translation>
 <translation id="6577284282025554716"><ph name="FILE_NAME" /> のダウンロードがキャンセルされました</translation>
@@ -6643,7 +6645,6 @@
 <translation id="7559719679815339381">しばらくお待ちください....キオスクアプリを更新しています。USB スティックを取り外さないでください。</translation>
 <translation id="7560756177962144929"><ph name="DEVICE_TYPE" /> の同期</translation>
 <translation id="7561196759112975576">常に使用</translation>
-<translation id="7562099761826673163">デバイスをカスタマイズする</translation>
 <translation id="756445078718366910">ブラウザ ウィンドウを開く</translation>
 <translation id="7564847347806291057">プロセスを終了</translation>
 <translation id="756503097602602175">ログインする Google アカウントは、<ph name="LINK_BEGIN" />設定<ph name="LINK_END" />で管理できます。ウェブサイトとアプリに許可した権限はすべてのアカウントに適用されます。サイトやアプリがアカウント情報にアクセスしないようにするには、<ph name="DEVICE_TYPE" /> にゲストとしてログインするか、<ph name="LINK_2_BEGIN" />シークレット ウィンドウ<ph name="LINK_2_END" />でウェブ ブラウジングします。</translation>
@@ -6705,7 +6706,6 @@
 <translation id="7624337243375417909">CapsLock オフ</translation>
 <translation id="7625568159987162309">すべてのサイトに保存されている権限とデータを表示</translation>
 <translation id="7625823789272218216">左側の新しいタブ</translation>
-<translation id="7626032353295482388">Chrome へようこそ</translation>
 <translation id="7628201176665550262">リフレッシュ レート</translation>
 <translation id="7629827748548208700">タブ:<ph name="TAB_NAME" /></translation>
 <translation id="7630426712700473382">このデバイスは <ph name="MANAGER" /> によって管理されています。使用するには毎回ログインする必要があります。</translation>
@@ -6930,6 +6930,7 @@
 <translation id="7824864914877854148">エラーが発生したため、バックアップを完了できませんでした</translation>
 <translation id="782590969421016895">現在のページを使用</translation>
 <translation id="7826174860695147464">従来のブラウザのサポート（LBS） - 内部</translation>
+<translation id="7826190688224781865">販売店 ID コード</translation>
 <translation id="7826249772873145665">ADB デバッグが無効になりました</translation>
 <translation id="7826254698725248775">競合するデバイス識別子です。</translation>
 <translation id="7828731929332799387">サードパーティのコンテキストで使用される Cookie とサイトデータがすべて削除されます。続行しますか？</translation>
@@ -6982,7 +6983,6 @@
 <translation id="7876027585589532670">ショートカットの編集はできません</translation>
 <translation id="7877451762676714207">不明なサーバー エラーが発生しました。もう一度お試しになるか、サーバー管理者にご連絡ください。</translation>
 <translation id="7879631849810108578">ショートカットが設定されました: <ph name="IDS_SHORT_SET_COMMAND" /></translation>
-<translation id="7880591377632733558">Chrome へようこそ、<ph name="ACCOUNT_FIRST_NAME" /> さん</translation>
 <translation id="7880685873361171388">この設定をオンにして、ステータスが有効な場合、Chrome は 7 日間の閲覧履歴に基づいて、自身が属する特定の「コホート」つまりグループを特定します。広告主はこのグループに対して広告を表示するよう設定できます。閲覧履歴はデバイスに保存され、プライバシーが保たれます。この試用版は、<ph name="BEGIN_LINK" />一部の地域<ph name="END_LINK" />でのみ使用できます。</translation>
 <translation id="7880823633812189969">再起動すると、ローカルデータが削除されます</translation>
 <translation id="7881066108824108340">DNS</translation>
@@ -7210,6 +7210,7 @@
 <translation id="80866457114322936">{NUM_FILES,plural, =1{このファイルは暗号化されています。所有者に復号するよう依頼してください。}other{一部のファイルは暗号化されています。所有者に復号するよう依頼してください。}}</translation>
 <translation id="808894953321890993">パスワードの変更</translation>
 <translation id="8090234456044969073">よくアクセスするウェブサイトのリストの読み取り</translation>
+<translation id="8090513782447872344">またいつでもご確認いただけます</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> が応答していません</translation>
 <translation id="8095105960962832018"><ph name="BEGIN_PARAGRAPH1" />Google ドライブにバックアップします。これにより、いつでも簡単にデータを復元したりデバイスを切り替えたりできます。バックアップ対象にはアプリのデータが含まれます。<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />バックアップ データは Google にアップロードされ、Google アカウントのパスワードを使って暗号化されます。<ph name="END_PARAGRAPH2" />
@@ -7414,6 +7415,7 @@
 <translation id="8275080796245127762">デバイスから発信</translation>
 <translation id="8275339871947079271">パスワードを Google アカウントに移動すると、ログイン中いつでも安全にアクセスできるようになります</translation>
 <translation id="8276560076771292512">キャッシュの消去とハード再読み込み</translation>
+<translation id="8281721647184388851">Chrome ブラウザの同期をオンにしますか？</translation>
 <translation id="8281886186245836920">スキップ</translation>
 <translation id="8283475148136688298">「<ph name="DEVICE_NAME" />」への接続中に、認証コードが拒否されました。</translation>
 <translation id="8284279544186306258"><ph name="WEBSITE_1" /> の全サイト</translation>
@@ -8398,6 +8400,7 @@
 <translation id="987897973846887088">使用できる画像がありません</translation>
 <translation id="988320949174893488">たまに引っかかる</translation>
 <translation id="988978206646512040">パスフレーズは必ず指定してください</translation>
+<translation id="991097196715779457">販売店 ID コード（省略可）</translation>
 <translation id="992032470292211616">拡張機能、アプリ、テーマはお使いのデバイスに悪影響を与える可能性があります。続行してもよろしいですか？</translation>
 <translation id="992256792861109788">ピンク</translation>
 <translation id="992592832486024913">ChromeVox（音声フィードバック）を無効にする</translation>

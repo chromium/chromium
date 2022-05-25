@@ -78,6 +78,7 @@
 <translation id="1578784163189013834">Pilih latar belakang screen saver</translation>
 <translation id="1615335640928990664">Penggunaan data sejak <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Jalankan pengujian Pengisian Daya</translation>
+<translation id="1631385268983122904">Jangan memasang kembali perangkat</translation>
 <translation id="1639239467298939599">Memuat</translation>
 <translation id="1641857168437328880">Pengumpan Dokumen (Satu Sisi)</translation>
 <translation id="1643449475550628585">Ubah gambar wallpaper setiap hari</translation>
@@ -85,6 +86,7 @@
 <translation id="1645954272419197032">Konfirmasi informasi perangkat</translation>
 <translation id="1662989795263954667">Dihentikan - Tinta habis</translation>
 <translation id="1668469839109562275">VPN bawaan</translation>
+<translation id="1676557873873341166">Merekam video</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Keberadaan DNS Resolver</translation>
 <translation id="1715359911173058521">Terjadi masalah saat menghubungkan ke pemindai. Periksa koneksi jaringan atau USB, lalu coba lagi.</translation>
@@ -159,6 +161,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Aktifkan Bluetooth untuk menemukan perangkat di sekitar</translation>
+<translation id="2340422556570134524">Proteksi Tulis telah diaktifkan secara tidak terduga. Nonaktifkan Proteksi Tulis secara manual sebelum mencoba lagi.</translation>
 <translation id="2346474577291266260">Sangat baik (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">Lanjutkan</translation>
 <translation id="2360257214555822463"><ph name="LINK_BEGIN" />Komponen yang tidak memenuhi syarat<ph name="LINK_END" /> terdeteksi. Jika Anda memilih untuk mengonfirmasi bahwa komponen tersebut telah diinstal, lakukan sekarang.</translation>
@@ -474,6 +477,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="5372659122375744710">Jaringan Wi-Fi tidak aman</translation>
 <translation id="5376354385557966694">Mode terang otomatis</translation>
 <translation id="537872351913703572">Perangkat akan digunakan oleh organisasi atau pengguna yang berbeda</translation>
+<translation id="5389159777326897627">Wallpaper &amp; Gaya</translation>
 <translation id="5389224261615877010">Pelangi</translation>
 <translation id="5395600419410242651">Hapus semua data</translation>
 <translation id="5400907029458559844">Perangkat sedang menghubungkan.</translation>
@@ -643,6 +647,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="6961170852793647506">Untuk memulai, letakkan dokumen Anda pada pemindai</translation>
 <translation id="6965382102122355670">Oke</translation>
 <translation id="6977381486153291903">Revisi firmware</translation>
+<translation id="6995564396478647735">Pastikan Proteksi Tulis aktif</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> akan mengelola perangkat ini dan memiliki akses ke semua aktivitas pengguna, termasuk halaman yang dikunjungi, sandi, dan email.</translation>
 <translation id="7040230719604914234">Operator</translation>
 <translation id="7041549558901442110">Perangkat tidak terhubung.</translation>
@@ -653,6 +658,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Gagal - Otorisasi Gagal</translation>
 <translation id="7103252855940681301">Perangkat <ph name="INDEX" /> dari <ph name="COUNT" /> bernama <ph name="NAME" />.</translation>
+<translation id="7126228745139711113">Proteksi Tulis dinonaktifkan</translation>
 <translation id="7134436342991564651">{0,plural, =1{Server nama}other{Server nama}}</translation>
 <translation id="7143207342074048698">Menghubungkan</translation>
 <translation id="7144878232160441200">Coba lagi</translation>
@@ -744,6 +750,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="80398733265834479">Aktifkan mode warna otomatis</translation>
 <translation id="8041089156583427627">Kirim Masukan</translation>
 <translation id="8045012663542226664">Bisukan mikrofon</translation>
+<translation id="8063022551652308521">Proteksi Tulis masih dinonaktifkan. Untuk melanjutkan, aktifkan Proteksi Tulis.</translation>
 <translation id="8075838845814659848">Sisa daya baterai</translation>
 <translation id="8082366717211101304">Tidak dapat me-resolve DNS dari aplikasi Android</translation>
 <translation id="8083281199617904460">Proses perbaikan ini ditujukan untuk teknisi perbaikan terlatih. Hanya mulai perbaikan setelah mengganti komponen yang rusak.</translation>
@@ -814,6 +821,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Gunakan tombol Panah kiri atau kanan untuk mengelola fitur ini.</translation>
 <translation id="8712637175834984815">Mengerti</translation>
 <translation id="871560550817059752">Gagal - Tinta habis</translation>
+<translation id="8717030727630712160">Melanjutkan proses perbaikan …</translation>
 <translation id="8723108084122415655">Jaringan non-default melebihi ambang batas latensi</translation>
 <translation id="8725066075913043281">Coba lagi</translation>
 <translation id="8726019395068607495">Dihentikan - Tutup terbuka</translation>
@@ -835,6 +843,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Perangkat adalah tablet.</translation>
 <translation id="8881098542468797602">Pengujian berhasil</translation>
+<translation id="8897267175591692539">Anda sekarang dapat memasang kembali perangkat</translation>
 <translation id="8898840733695078011">Kekuatan sinyal</translation>
 <translation id="8910721771319628100">Jaringan default melebihi ambang batas latensi</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> <ph name="GIVEN_NAME" /></translation>

@@ -65,6 +65,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1275285675049378717">Alimentando <ph name="POWER_SOURCE" /></translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">Localizar teléfono</translation>
+<translation id="1287002645302686982">Xa hai un escritorio co nome "<ph name="DESK_TEMPLATE_NAME" />"</translation>
 <translation id="1289185460362160437">Volve o <ph name="COME_BACK_DAY_OF_WEEK" /> á seguinte hora: <ph name="COME_BACK_TIME" />.</translation>
 <translation id="1290331692326790741">Sinal feble</translation>
 <translation id="1290982764014248209">Mover <ph name="DRAGGED_APP" /> ao cartafol: <ph name="FOLDER_NAME" />.</translation>
@@ -94,7 +95,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1420408895951708260">Activar/desactivar Luz nocturna: <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">Accede ao contido multimedia e ás fotos recentes do teu teléfono desde o dispositivo <ph name="DEVICE_TYPE" /></translation>
 <translation id="1426410128494586442">Si</translation>
-<translation id="1438357537418863713">Configurouse a emisión de aplicacións. Unha vez que comeces a utilizala, aparecerán aquí as aplicacións que abrises recentemente con esta función.</translation>
+<translation id="1447641497144572814">Inicio do protector de pantalla</translation>
 <translation id="1455242230282523554">Mostrar a configuración do idioma</translation>
 <translation id="1460620680449458626">O volume está silenciado.</translation>
 <translation id="1467432559032391204">Esquerda</translation>
@@ -269,6 +270,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2586561057878260610">Preme Control + W para combinar con <ph name="DESK_NAME" />. Preme Control + Maiúsculas + W para pechar o escritorio e as ventás.</translation>
 <translation id="2595239820337756193">5 km en millas</translation>
 <translation id="2596078834055697711">Fai unha captura de pantalla da ventá</translation>
+<translation id="2598725286293895280">O escritorio contén aplicacións non compatibles</translation>
 <translation id="2607678425161541573">É necesario iniciar sesión en liña</translation>
 <translation id="2620016719323068571">Busca <ph name="CATEGORY" />, ficheiros, aplicacións e moito máis…</translation>
 <translation id="2620436844016719705">Sistema</translation>
@@ -645,6 +647,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="4734965478015604180">Horizontal</translation>
 <translation id="4735498845456076464">O atallo de teclado <ph name="LAUNCHER_KEY_NAME" /> + número cambiou. Para usar as teclas de función, preme <ph name="LAUNCHER_KEY_NAME" /> + unha das teclas da fila superior.</translation>
 <translation id="473775607612524610">Actualizar</translation>
+<translation id="4740516757091333363">Queres eliminar o escritorio gardado?</translation>
 <translation id="4752784485658729358">Só se poden gardar 6 escritorios. Para gardar un novo, antes tes que quitar un.</translation>
 <translation id="4759238208242260848">Descargas</translation>
 <translation id="4774338217796918551">Volve mañá á seguinte hora: <ph name="COME_BACK_TIME" />.</translation>
@@ -697,7 +700,6 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="5071064518267176975">Unha aplicación quere usar o micrófono</translation>
 <translation id="5078796286268621944">PIN incorrecto</translation>
 <translation id="5083553833479578423">Desbloquea máis funcións do Asistente.</translation>
-<translation id="5106223312672646208">Personalizar</translation>
 <translation id="5107522548814527560">Web</translation>
 <translation id="5117590920725113268">Mostrar mes seguinte</translation>
 <translation id="5136175204352732067">Conectouse un teclado diferente</translation>
@@ -742,6 +744,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="5352250171825660495">O tema escuro está activado</translation>
 <translation id="5356963482258194581">Cambia do tema claro ao escuro, e viceversa. Fai clic co botón dereito no escritorio e selecciona Estilo e fondo de pantalla.</translation>
 <translation id="5379115545237091094">Demasiados intentos</translation>
+<translation id="5391307769715781764">Queres substituír o escritorio gardado?</translation>
 <translation id="5393156353051693207">Mantén premida calquera parte da pantalla para reordenar as aplicacións</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> está sobre <ph name="IN_PLACE_APP" />, solta a aplicación para crear un cartafol.</translation>
 <translation id="5397578532367286026">O administrador pode revisar o uso e o historial deste usuario (<ph name="MANAGER_EMAIL" />) en chrome.com.</translation>
@@ -975,6 +978,7 @@ Nova instalación</translation>
 <translation id="6790428901817661496">Reproducir</translation>
 <translation id="6801878137098616817">Editouse recentemente</translation>
 <translation id="6803622936009808957">Non se puideron replicar as pantallas porque non se atopou ningunha resolución compatible. No seu lugar accedeuse ao escritorio ampliado.</translation>
+<translation id="6812232930908427253">Non se puido gardar o escritorio. Hai demasiadas ventás ou pestanas.</translation>
 <translation id="6818242057446442178">Retroceder unha palabra</translation>
 <translation id="6819327813400217281">Cámara axustada á esquina inferior esquerda</translation>
 <translation id="6820676911989879663">Fai unha pausa!</translation>

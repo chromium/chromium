@@ -78,6 +78,7 @@
 <translation id="1578784163189013834">Kies sluimerskermagtergrond</translation>
 <translation id="1615335640928990664">Datagebruik sedert <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Laat loop laaitoets</translation>
+<translation id="1631385268983122904">Moet die toestel nog nie weer inmekaarsit nie</translation>
 <translation id="1639239467298939599">Laai tans</translation>
 <translation id="1641857168437328880">Dokumentvoerder (een kant)</translation>
 <translation id="1643449475550628585">Verander muurpapierprent daagliks</translation>
@@ -85,6 +86,7 @@
 <translation id="1645954272419197032">Bevestig asseblief die toestelinligting</translation>
 <translation id="1662989795263954667">Gestop – ink is op</translation>
 <translation id="1668469839109562275">Ingeboude VPN</translation>
+<translation id="1676557873873341166">Neem tans video op</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS-ontbinder is teenwoordig</translation>
 <translation id="1715359911173058521">Kan nie met die skandeerder kommunikeer nie. Gaan die netwerk of USB-verbinding na en probeer weer.</translation>
@@ -159,6 +161,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2336381494582898602">Kragwas</translation>
 <translation id="2338501278241028356">Skakel Bluetooth aan om toestelle in die omtrek te ontdek</translation>
+<translation id="2340422556570134524">Skryfbeskerming is onverwags aangeskakel. Skakel Skryfbeskerming asseblief self af voordat jy weer probeer.</translation>
 <translation id="2346474577291266260">Uitstekend (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">Gaan voort</translation>
 <translation id="2360257214555822463"><ph name="LINK_BEGIN" />Ongekwalifiseerde komponente<ph name="LINK_END" /> is bespeur. As jy kies om te bevestig dat dit geïnstalleer is, moet jy dit asseblief nou doen.</translation>
@@ -474,6 +477,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="5372659122375744710">Wi-fi-netwerk is nie veilig nie</translation>
 <translation id="5376354385557966694">Outomatiese ligmodus</translation>
 <translation id="537872351913703572">Toestel sal na ’n ander gebruiker of organisasie gaan</translation>
+<translation id="5389159777326897627">Muurpapier en Styl</translation>
 <translation id="5389224261615877010">Reënboog</translation>
 <translation id="5395600419410242651">Vee alle data uit</translation>
 <translation id="5400907029458559844">Toestel koppel tans.</translation>
@@ -643,6 +647,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="6961170852793647506">Plaas jou dokument op die skandeerder om te begin</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">Fermwarehersiening</translation>
+<translation id="6995564396478647735">Maak seker dat Skryfbeskerming aan is</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> bestuur hierdie toestel en het toegang tot alle gebruikeraktiwiteit, insluitend webblaaie wat besoek is, wagwoorde en e-pos.</translation>
 <translation id="7040230719604914234">Diensverskaffer</translation>
 <translation id="7041549558901442110">Toestel is nie gekoppel nie.</translation>
@@ -653,6 +658,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Misluk – kon nie magtig nie</translation>
 <translation id="7103252855940681301">Toestel <ph name="INDEX" /> van <ph name="COUNT" /> genaamd <ph name="NAME" />.</translation>
+<translation id="7126228745139711113">Skryfbeskerming is afgeskakel</translation>
 <translation id="7134436342991564651">{0,plural, =1{Naambediener}other{Naambedieners}}</translation>
 <translation id="7143207342074048698">Koppel tans</translation>
 <translation id="7144878232160441200">Probeer weer</translation>
@@ -744,6 +750,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="80398733265834479">Aktiveer outokleurmodus</translation>
 <translation id="8041089156583427627">Stuur terugvoer</translation>
 <translation id="8045012663542226664">Demp mikrofoon</translation>
+<translation id="8063022551652308521">Skryfbeskerming is steeds afgeskakel. Skakel Skryfbeskerming aan om voort te gaan.</translation>
 <translation id="8075838845814659848">Oorblywende batterykrag</translation>
 <translation id="8082366717211101304">Kan nie DNS van Android-programme af oplos nie</translation>
 <translation id="8083281199617904460">Hierdie herstelproses is vir opgeleide hersteltegnici bedoel. Moenie begin voordat die wanfunksionerende komponente vervang is nie.</translation>
@@ -814,6 +821,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Gebruik links- of regspylsleutel om hierdie kenmerk te bestuur.</translation>
 <translation id="8712637175834984815">Het dit</translation>
 <translation id="871560550817059752">Misluk – Ink is op</translation>
+<translation id="8717030727630712160">Hervat tans herstelproses …</translation>
 <translation id="8723108084122415655">Nieversteknetwerk is bo traagheiddrempel</translation>
 <translation id="8725066075913043281">Probeer weer</translation>
 <translation id="8726019395068607495">Gestop – deur is oop</translation>
@@ -835,6 +843,7 @@ Probeer die mikrofoon tik om my enigiets te vra.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Toestel is 'n tablet.</translation>
 <translation id="8881098542468797602">Toets was suksesvol</translation>
+<translation id="8897267175591692539">Jy kan die toestel nou weer inmekaarsit</translation>
 <translation id="8898840733695078011">Seinsterkte</translation>
 <translation id="8910721771319628100">Versteknetwerk is bo traagheiddrempel</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" /> se <ph name="DEVICE_TYPE" /></translation>

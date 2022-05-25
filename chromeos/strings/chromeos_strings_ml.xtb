@@ -78,6 +78,7 @@
 <translation id="1578784163189013834">സ്ക്രീൻ സേവർ പശ്ചാത്തലം തിരഞ്ഞെടുക്കുക</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> മുതലുള്ള ഡാറ്റാ ഉപയോഗം</translation>
 <translation id="1621067168122174824">ചാർജ് ടെസ്റ്റ് റൺ ചെയ്യുക</translation>
+<translation id="1631385268983122904">ഇപ്പോൾ, ഉപകരണം വേർപെടുത്തിയ നിലയിൽ തുടരുക</translation>
 <translation id="1639239467298939599">ലോഡുചെയ്യുന്നു</translation>
 <translation id="1641857168437328880">ഡോക്യുമെന്റ് ഫീഡർ (ഒരു വശമുള്ളത്)</translation>
 <translation id="1643449475550628585">വാൾപേപ്പർ ചിത്രം ദിവസേന മാറ്റുക</translation>
@@ -85,6 +86,7 @@
 <translation id="1645954272419197032">ഉപകരണ വിവരം സ്ഥിരീകരിക്കുക</translation>
 <translation id="1662989795263954667">പ്രിന്റ് ജോലി നിർത്തി - മഷിയില്ല</translation>
 <translation id="1668469839109562275">ബിൽറ്റ് ഇൻ VPN</translation>
+<translation id="1676557873873341166">വീഡിയോ എടുക്കുന്നു</translation>
 <translation id="1703835215927279855">ലെറ്റർ</translation>
 <translation id="1706391837335750954">DNS റിസോൾവർ അവതരണം</translation>
 <translation id="1715359911173058521">സ്‌കാനറുമായി ബന്ധപ്പെടുന്നതിൽ പ്രശ്‌നമുണ്ട്. നെറ്റ്‌വർക്കോ USB കണക്ഷനോ പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക.</translation>
@@ -159,6 +161,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2336381494582898602">പവർവാഷ്</translation>
 <translation id="2338501278241028356">സമീപത്തുള്ള ഉപകരണങ്ങൾ കണ്ടെത്താൻ Bluetooth ഓണാക്കുക</translation>
+<translation id="2340422556570134524">റൈറ്റ് പരിരക്ഷ അപ്രതീക്ഷിതമായി ഓണായിരിക്കുന്നു. വീണ്ടും ശ്രമിക്കുന്നതിന് മുമ്പ് റൈറ്റ് പരിരക്ഷ നേരിട്ട് ഓഫാക്കുക.</translation>
 <translation id="2346474577291266260">വളരെ മികച്ചത് (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">തുടരുക</translation>
 <translation id="2360257214555822463"><ph name="LINK_BEGIN" />യോഗ്യതയില്ലാത്ത ഘടകങ്ങൾ<ph name="LINK_END" /> കണ്ടെത്തി. ഇത് നിങ്ങൾ ഇൻസ്റ്റാൾ ചെയ്തതാണെങ്കിൽ ഇപ്പോൾ സ്ഥിരീകരിക്കുക.</translation>
@@ -473,6 +476,7 @@
 <translation id="5372659122375744710">വെെഫെെ നെറ്റ്‌വർക്ക് സുരക്ഷിതമല്ല</translation>
 <translation id="5376354385557966694">സ്വയമേവയുള്ള ലൈറ്റ് മോഡ്</translation>
 <translation id="537872351913703572">മറ്റൊരു ഉപയോക്താവോ സ്ഥാപനമോ ആയിരിക്കും ഉപകരണം ഉപയോഗിക്കുന്നത്</translation>
+<translation id="5389159777326897627">വാൾപേപ്പറും സ്റ്റൈലും</translation>
 <translation id="5389224261615877010">റെയിൻബോ</translation>
 <translation id="5395600419410242651">എല്ലാ ഡാറ്റയും മായ്ക്കുക</translation>
 <translation id="5400907029458559844">ഉപകരണം കണക്റ്റ് ചെയ്യുന്നു.</translation>
@@ -642,6 +646,7 @@
 <translation id="6961170852793647506">ആരംഭിക്കാൻ, നിങ്ങളുടെ ഡോക്യുമെന്റ് സ്‌കാനറിൽ വയ്ക്കുക</translation>
 <translation id="6965382102122355670">ശരി</translation>
 <translation id="6977381486153291903">ഫേംവെയർ പുനഃപരിശോധന</translation>
+<translation id="6995564396478647735">റൈറ്റ് പരിരക്ഷ ഓണാണെന്ന് ഉറപ്പാക്കുക</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> ഈ ഉപകരണം മാനേജ് ചെയ്യുന്നു, സന്ദർശിച്ച വെബ്‌പേജുകൾ, പാസ്‌വേഡുകൾ, ഇമെയിൽ എന്നിവയുൾപ്പെടെ ഉപയോക്താവിന്റെ എല്ലാ ആക്‌റ്റിവിറ്റികളിലേക്കും ആക്‌സസും ഉണ്ടായിരിക്കും.</translation>
 <translation id="7040230719604914234">ഓപ്പറേറ്റർ</translation>
 <translation id="7041549558901442110">ഉപകരണം കണക്റ്റ് ചെയ്തിട്ടില്ല.</translation>
@@ -652,6 +657,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">പരാജയപ്പെട്ടു - അംഗീകരിക്കൽ പ്രക്രിയ നടന്നില്ല</translation>
 <translation id="7103252855940681301"><ph name="INDEX" />-ൽ <ph name="COUNT" />-ാമത്തെ ഉപകരണം, പേര് <ph name="NAME" />.</translation>
+<translation id="7126228745139711113">റൈറ്റ് പരിരക്ഷ ഓഫാക്കിയിരിക്കുന്നു</translation>
 <translation id="7134436342991564651">{0,plural, =1{നെയിം സെർവർ}other{നെയിം സെർവറുകൾ}}</translation>
 <translation id="7143207342074048698">കണക്റ്റിംഗ്</translation>
 <translation id="7144878232160441200">വീണ്ടും ശ്രമിക്കുക</translation>
@@ -743,6 +749,7 @@
 <translation id="80398733265834479">സ്വയം നിറം ക്രമീകരിക്കൽ മോഡ് പ്രവർത്തനക്ഷമമാക്കുക</translation>
 <translation id="8041089156583427627">ഫീഡ്ബാക്ക് അയയ്ക്കുക</translation>
 <translation id="8045012663542226664">മൈക്രോഫോൺ മ്യൂട്ട് ചെയ്യൽ</translation>
+<translation id="8063022551652308521">റൈറ്റ് പരിരക്ഷ ഇപ്പോഴും ഓഫാണ്. തുടരാൻ റൈറ്റ് പരിരക്ഷ ഓണാക്കുക.</translation>
 <translation id="8075838845814659848">ശേഷിക്കുന്ന ചാർജ്</translation>
 <translation id="8082366717211101304">Android ആപ്പുകളിൽ നിന്ന് DNS പരിഹരിക്കാനാകില്ല</translation>
 <translation id="8083281199617904460">ഈ റിപ്പയർ പ്രക്രിയ, പരിശീലനം ലഭിച്ച റിപ്പയർ ടെക്‌നീഷ്യന് വേണ്ടി രൂപകൽപ്പന ചെയ്തതാണ്. തകരാറുള്ള ഘടകങ്ങൾ മാറ്റിയ ശേഷം മാത്രം ആരംഭിക്കുക.</translation>
@@ -813,6 +820,7 @@
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> ഈ ഫീച്ചർ മാനേജ് ചെയ്യാൻ ഇടത്തേയ്‌ക്കോ വലത്തേയ്‌ക്കോ ഉള്ള അമ്പടയാളം ഉപയോഗിക്കുക.</translation>
 <translation id="8712637175834984815">മനസ്സിലായി</translation>
 <translation id="871560550817059752">പ്രിന്റ് ചെയ്യാനായില്ല - മഷിയില്ല</translation>
+<translation id="8717030727630712160">റിപ്പയർ പ്രോസസ് പുനരാരംഭിക്കുന്നു…</translation>
 <translation id="8723108084122415655">നോൺ-ഡിഫോൾട്ട് നെറ്റ്‌വർക്ക് പ്രതികരണ സമയം പരിധിക്ക് മുകളിലാണ്</translation>
 <translation id="8725066075913043281">വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="8726019395068607495">പ്രിന്റ് ജോലി നിർത്തി - ഡോർ തുറന്നിരിക്കുന്നു</translation>
@@ -834,6 +842,7 @@
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">ഉപകരണം ഒരു ടാബ്‌ലെറ്റാണ്.</translation>
 <translation id="8881098542468797602">ടെസ്റ്റ് പൂർത്തിയായി</translation>
+<translation id="8897267175591692539">ഉപകരണം ഇപ്പോൾ വീണ്ടും കൂട്ടി യോജിപ്പിക്കാം</translation>
 <translation id="8898840733695078011">സിഗ്‌നൽ ശക്തി</translation>
 <translation id="8910721771319628100">ഡിഫോൾട്ട് നെറ്റ്‌വർക്ക് പ്രതികരണ സമയം പരിധിക്ക് മുകളിലാണ്</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" /> എന്നയാളുടെ <ph name="DEVICE_TYPE" /></translation>

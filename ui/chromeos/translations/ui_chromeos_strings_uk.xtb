@@ -121,6 +121,7 @@
 <translation id="1942765061641586207">Роздільна здатність зображення</translation>
 <translation id="1972984168337863910">Розгортаються панелі відгуків про файли</translation>
 <translation id="1995337122023280937">Відкрити місце розташування файлу</translation>
+<translation id="1996806196681857869">Стиснутий архів Z</translation>
 <translation id="2001796770603320721">Керувати на Диску</translation>
 <translation id="2009067268969781306">Якщо відформатувати диск, усі збережені на ньому дані буде видалено. Цю дію не можна відмінити.</translation>
 <translation id="2025955442973426285">Тигринья</translation>
@@ -589,6 +590,7 @@
 <translation id="5955954492236143329">Елементів: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">Параметри сортування</translation>
+<translation id="5985041959109124139">Стиснутий архів Z у форматі TAR</translation>
 <translation id="6007237601604674381">Помилка переміщення. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Мережа Ethernet</translation>
 <translation id="60357267506638014">Чеська (QWERTY)</translation>
@@ -619,6 +621,7 @@
 <translation id="6220423280121890987">Панджабі</translation>
 <translation id="6224240818060029162">Данська</translation>
 <translation id="6224253798271602650">Форматувати (<ph name="DRIVE_NAME" />)</translation>
+<translation id="6224665423283788195">Стиснутий архів ZSTD</translation>
 <translation id="6227235786875481728">Неможливо відтворити цей файл.</translation>
 <translation id="6241349547798190358">Нідерландська (Бельгія)</translation>
 <translation id="6267547857941397424">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />%, рівень заряду акумулятора телефона – <ph name="BATTERY_STATUS" />%. Підключитися</translation>
@@ -646,6 +649,7 @@
 <translation id="6509122719576673235">Норвезька</translation>
 <translation id="6528513914570774834">Надіти іншим користувачам цього пристрою доступ до цієї мережі</translation>
 <translation id="653019979737152879">Синхронізація файлу <ph name="FILE_NAME" />…</translation>
+<translation id="6530595303336443929">Стиснутий архів ZSTD у форматі TAR</translation>
 <translation id="6549689063733911810">Останні</translation>
 <translation id="6558280019477628686">Сталася помилка. Можливо, не всі елементи було видалено.</translation>
 <translation id="656398493051028875">Видалення файлу "<ph name="FILENAME" />"…</translation>

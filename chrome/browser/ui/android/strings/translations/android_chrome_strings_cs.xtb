@@ -56,6 +56,7 @@
 <translation id="124678866338384709">Zavřít aktuální kartu</translation>
 <translation id="1246905108078336582">Odstranit návrh ze schránky?</translation>
 <translation id="1258753120186372309">Sváteční logo Google: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">Seznam četby</translation>
 <translation id="1266864766717917324">Sdílení obsahu typu <ph name="CONTENT_TYPE" /> se nezdařilo</translation>
 <translation id="1283039547216852943">Klepnutím rozbalíte</translation>
 <translation id="1285310382777185058">Změna jazyka</translation>
@@ -493,7 +494,6 @@ Vyhledávání spustíte podržením libovolného slova. Vyhledávání můžete
 <translation id="363596933471559332">Přihlašovat se na weby automaticky pomocí uložených identifikačních údajů. Když je tato funkce vypnutá, budete před každým přihlášením na web požádáni o ověření.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3677911431265050325">Požadovat mobilní web</translation>
-<translation id="3685860403008476208">Soubory stažené v anonymním režimu mohou zobrazit všichni uživatelé tohoto zařízení</translation>
 <translation id="3687645719033307815">Prohlížíte si náhled této stránky</translation>
 <translation id="3690369331356918524">Upozorní vás v případě vyzrazení hesel při porušení zabezpečení</translation>
 <translation id="3692944402865947621">Stažení souboru <ph name="FILE_NAME" /> se nezdařilo, protože umístění úložiště není dostupné.</translation>
@@ -523,6 +523,7 @@ Vyhledávání spustíte podržením libovolného slova. Vyhledávání můžete
 <translation id="3845098929839618392">Otevřít na anonymní kartě</translation>
 <translation id="3856096718352044181">Zkontrolujte, zda se jedná o platného poskytovatele, nebo to zkuste znovu později</translation>
 <translation id="3858860766373142691">Název</translation>
+<translation id="3859206958100234503">Pokud svá hesla, záložky a další položky chcete mít na všech svých zařízeních, zapněte synchronizaci</translation>
 <translation id="3861633093716975811">Populární videa</translation>
 <translation id="3892148308691398805">Kopírovat text</translation>
 <translation id="3894427358181296146">Přidat složku</translation>
@@ -580,6 +581,7 @@ Vyhledávání spustíte podržením libovolného slova. Vyhledávání můžete
 <translation id="4209895695669353772">Chcete-li od Googlu získat personalizované návrhy obsahu, zapněte synchronizaci</translation>
 <translation id="4214315110991671325">Pokud máte povolené soubory cookie, může je Chrome používat k předběžnému načítání.</translation>
 <translation id="4225895483398857530">Zkratka lišty</translation>
+<translation id="4227318652298512614">Sledujte jakékoli weby</translation>
 <translation id="4242533952199664413">Otevřít Nastavení</translation>
 <translation id="4248098802131000011">Ochraňte svá hesla před porušeními zabezpečení údajů a jinými bezpečnostními problémy</translation>
 <translation id="4249955472157341256">Seřadit podle nejnovější</translation>
@@ -696,6 +698,7 @@ Chcete-toto nastavení změnit, <ph name="BEGIN_LINK" />resetujte synchronizaci<
 <translation id="4842515939542199281">Pokud chcete vyhledávat hlasově, klepněte na mikrofon</translation>
 <translation id="4844633725025837809">Za účelem zvýšení zabezpečení zašifrovat hesla v zařízení před uložením do Správce hesel Google</translation>
 <translation id="4850886885716139402">Zobrazit</translation>
+<translation id="4852014461738377247">Přihlašování…</translation>
 <translation id="4860895144060829044">Volat</translation>
 <translation id="4864369630010738180">Přihlašování...</translation>
 <translation id="4866368707455379617">Modul <ph name="MODULE" /> pro Chrome se nepodařilo nainstalovat</translation>
@@ -1149,6 +1152,7 @@ Tokeny důvěry zvyšují ochranu soukromí na webu a nelze pomocí nich zjisti
 <translation id="7304873321153398381">Offline. Chrome nemůže zkontrolovat vaše hesla.</translation>
 <translation id="7313188324932846546">Klepnutím nastavíte synchronizaci</translation>
 <translation id="7332075081379534664">Přihlášení proběhlo úspěšně</translation>
+<translation id="7333232495927792353">Pokud chcete získat nejrelevantnější obsah z Googlu, zapněte synchronizaci</translation>
 <translation id="7339898014177206373">Nové okno</translation>
 <translation id="7340958967809483333">Možnosti funkce Objevit</translation>
 <translation id="7352339641508007922">Přetažením můžete pořídit dlouhý snímek obrazovky</translation>
@@ -1529,6 +1533,7 @@ Tokeny důvěry zvyšují ochranu soukromí na webu a nelze pomocí nich zjisti
 <translation id="96681097142096641">Zobrazit zjednodušenou stránku?</translation>
 <translation id="968900484120156207">Zde se zobrazují navštívené stránky</translation>
 <translation id="970715775301869095">Zbývá: <ph name="MINUTES" /> min</translation>
+<translation id="978443947993957527">Sledujte obsah pro vás</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Zavřít všechny karty</translation>
 <translation id="987264212798334818">Všeobecné</translation>

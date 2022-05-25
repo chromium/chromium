@@ -121,6 +121,7 @@
 <translation id="1942765061641586207">ความละเอียดของรูปภาพ</translation>
 <translation id="1972984168337863910">ขยายแผงความคิดเห็นเกี่ยวกับไฟล์</translation>
 <translation id="1995337122023280937">ไปยังตำแหน่งที่ตั้งไฟล์</translation>
+<translation id="1996806196681857869">ที่เก็บถาวรซึ่งบีบอัดโดย Z</translation>
 <translation id="2001796770603320721">จัดการใน Google ไดรฟ์</translation>
 <translation id="2009067268969781306">การฟอร์แมตไดรฟ์จะลบข้อมูลทั้งหมดที่เก็บไว้ในไดรฟ์ การดำเนินการนี้ยกเลิกไม่ได้</translation>
 <translation id="2025955442973426285">ตีกรินยา</translation>
@@ -589,6 +590,7 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> รายการ</translation>
 <translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">ตัวเลือกการจัดเรียง</translation>
+<translation id="5985041959109124139">ที่เก็บถาวร Tar ซึ่งบีบอัดโดย Z</translation>
 <translation id="6007237601604674381">การย้ายล้มเหลว <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">เครือข่ายอีเธอร์เน็ต</translation>
 <translation id="60357267506638014">QWERTY แบบเช็ก</translation>
@@ -619,6 +621,7 @@
 <translation id="6220423280121890987">ปัญจาบ</translation>
 <translation id="6224240818060029162">เดนมาร์ก</translation>
 <translation id="6224253798271602650">ฟอร์แมต <ph name="DRIVE_NAME" /></translation>
+<translation id="6224665423283788195">ที่เก็บถาวรซึ่งบีบอัดโดย Zstandard</translation>
 <translation id="6227235786875481728">ไม่สามารถเล่นไฟล์นี้</translation>
 <translation id="6241349547798190358">ดัตช์ (เบลเยียม)</translation>
 <translation id="6267547857941397424">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />%, แบตเตอรี่โทรศัพท์ <ph name="BATTERY_STATUS" />%, เชื่อมต่อ</translation>
@@ -646,6 +649,7 @@
 <translation id="6509122719576673235">นอร์เวย์</translation>
 <translation id="6528513914570774834">อนุญาตให้ผู้ใช้อุปกรณ์นี้คนอื่นๆ ใช้เครือข่ายนี้ได้</translation>
 <translation id="653019979737152879">กำลังซิงค์ <ph name="FILE_NAME" />...</translation>
+<translation id="6530595303336443929">ที่เก็บถาวร Tar ซึ่งบีบอัดโดย Zstandard</translation>
 <translation id="6549689063733911810">ล่าสุด</translation>
 <translation id="6558280019477628686">เกิดข้อผิดพลาด อาจไม่ได้ลบบางรายการ</translation>
 <translation id="656398493051028875">กำลังลบ "<ph name="FILENAME" />"...</translation>

@@ -24,6 +24,7 @@
 <translation id="109942774857561566">我好无聊</translation>
 <translation id="1104084341931202936">显示无障碍设置</translation>
 <translation id="1104621072296271835">协同运作可使您的各部设备更好地发挥作用</translation>
+<translation id="1111021433905331574">您可在“设置”&gt;“<ph name="APP_TITLE" />”部分中更改键盘背光的颜色</translation>
 <translation id="112308213915226829">自动隐藏任务栏</translation>
 <translation id="1142002900084379065">近期照片</translation>
 <translation id="1148499908455722006">打开“<ph name="USER_NAME" />”的信息对话框</translation>
@@ -62,6 +63,7 @@
 <translation id="1275285675049378717">正在为 <ph name="POWER_SOURCE" />充电</translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" />（<ph name="ANNOTATION" />）</translation>
 <translation id="1285992161347843613">定位手机</translation>
+<translation id="1287002645302686982">已经存在名为“<ph name="DESK_TEMPLATE_NAME" />”的已保存桌面</translation>
 <translation id="1289185460362160437">您需要等到<ph name="COME_BACK_DAY_OF_WEEK" /><ph name="COME_BACK_TIME" /> 才能再次使用此设备。</translation>
 <translation id="1290331692326790741">信号较弱</translation>
 <translation id="1290982764014248209">将“<ph name="DRAGGED_APP" />”移至文件夹“<ph name="FOLDER_NAME" />”内。</translation>
@@ -91,7 +93,7 @@
 <translation id="1420408895951708260">开启/关闭护眼模式。<ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">在 <ph name="DEVICE_TYPE" /> 上查看手机中近期拍摄的照片和播放的媒体</translation>
 <translation id="1426410128494586442">是</translation>
-<translation id="1438357537418863713">应用串流现已设置完毕。一旦您开始使用，最近启动过的应用即会显示在此处。</translation>
+<translation id="1447641497144572814">屏保启动了</translation>
 <translation id="1455242230282523554">显示语言设置</translation>
 <translation id="1460620680449458626">当前处于静音状态。</translation>
 <translation id="1467432559032391204">向左</translation>
@@ -266,6 +268,7 @@
 <translation id="2586561057878260610">按 Ctrl + W 即可与“<ph name="DESK_NAME" />”合并。按 Ctrl + Shift + W 则可关闭桌面和窗口。</translation>
 <translation id="2595239820337756193">5 公里是多少英里</translation>
 <translation id="2596078834055697711">截取窗口屏幕截图</translation>
+<translation id="2598725286293895280">该桌面中含有不受支持的应用</translation>
 <translation id="2607678425161541573">需要在线登录</translation>
 <translation id="2620016719323068571">搜索您的<ph name="CATEGORY" />、文件、应用等内容…</translation>
 <translation id="2620436844016719705">系统</translation>
@@ -641,6 +644,7 @@
 <translation id="4734965478015604180">横向</translation>
 <translation id="4735498845456076464">键盘快捷键“<ph name="LAUNCHER_KEY_NAME" /> + 数字键”已更改。若要使用功能键，请按<ph name="LAUNCHER_KEY_NAME" />键 + 顶排的某个键。</translation>
 <translation id="473775607612524610">更新</translation>
+<translation id="4740516757091333363">要删除已保存的桌面吗？</translation>
 <translation id="4752784485658729358">最多只能保存 6 个桌面。若要保存一个新桌面，请先移除一个已存桌面。</translation>
 <translation id="4759238208242260848">下载内容</translation>
 <translation id="4774338217796918551">您需要等到明天<ph name="COME_BACK_TIME" /> 才能再次使用此设备。</translation>
@@ -693,7 +697,6 @@
 <translation id="5071064518267176975">有一款应用想使用麦克风</translation>
 <translation id="5078796286268621944">PIN 不正确</translation>
 <translation id="5083553833479578423">启用更多 Google 助理功能。</translation>
-<translation id="5106223312672646208">个性化</translation>
 <translation id="5107522548814527560">网页</translation>
 <translation id="5117590920725113268">显示下一个月</translation>
 <translation id="5136175204352732067">所连接的键盘已不是原来的那个</translation>
@@ -738,6 +741,7 @@
 <translation id="5352250171825660495">深色主题已开启</translation>
 <translation id="5356963482258194581">在深色主题和浅色主题之间切换。右键点击相应桌面，然后选择“壁纸和样式”。</translation>
 <translation id="5379115545237091094">尝试次数过多</translation>
+<translation id="5391307769715781764">要替换已保存的桌面吗？</translation>
 <translation id="5393156353051693207">若要将您的应用重新排序，请轻触并按住任意位置</translation>
 <translation id="5395308026110844773">“<ph name="DRAGGED_APP_NAME" />”已拖至“<ph name="IN_PLACE_APP" />”上，松开即可创建文件夹。</translation>
 <translation id="5397578532367286026">管理员 (<ph name="MANAGER_EMAIL" />) 可在 chrome.com 上查看该用户的使用情况和历史记录。</translation>
@@ -971,6 +975,7 @@
 <translation id="6790428901817661496">播放</translation>
 <translation id="6801878137098616817">最近修改过</translation>
 <translation id="6803622936009808957">找不到系统支持的分辨率，因此无法镜像显示屏。已改为进入扩展桌面。</translation>
+<translation id="6812232930908427253">无法保存桌面。窗口或标签页过多。</translation>
 <translation id="6818242057446442178">后退一个字词</translation>
 <translation id="6819327813400217281">相机已对准左下角</translation>
 <translation id="6820676911989879663">休息一下！</translation>

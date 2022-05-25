@@ -65,6 +65,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="1275285675049378717">Inawasha <ph name="POWER_SOURCE" /></translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">Kupata simu</translation>
+<translation id="1287002645302686982">Eneokazi lililohifadhiwa kwa jina la <ph name="DESK_TEMPLATE_NAME" /> tayari lipo</translation>
 <translation id="1289185460362160437">Rejea <ph name="COME_BACK_DAY_OF_WEEK" /> saa <ph name="COME_BACK_TIME" />.</translation>
 <translation id="1290331692326790741">Mtandao si thabiti</translation>
 <translation id="1290982764014248209">Hamishia <ph name="DRAGGED_APP" /> kwenye folda ya <ph name="FOLDER_NAME" />.</translation>
@@ -94,7 +95,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="1420408895951708260">Swichi ya Mwanga wa Usiku. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">Tazama picha na maudhui ya hivi karibuni ya simu yako kwenye <ph name="DEVICE_TYPE" /> yako</translation>
 <translation id="1426410128494586442">Ndiyo</translation>
-<translation id="1438357537418863713">Mipangilio ya kipengele cha kutiririsha programu sasa imewekwa. Ukianza kukitumia, programu ulizofungua hivi karibuni zitaonekana hapa.</translation>
+<translation id="1447641497144572814">Taswira ya skrini inaanza</translation>
 <translation id="1455242230282523554">Onyesha mipangilio ya lugha</translation>
 <translation id="1460620680449458626">Umezima sauti.</translation>
 <translation id="1467432559032391204">Kushoto</translation>
@@ -269,6 +270,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="2586561057878260610">Bonyeza Ctrl + W ili uunganishe na <ph name="DESK_NAME" />. Bonyeza Ctrl + Shift + W ili ufunge eneokazi na madirisha.</translation>
 <translation id="2595239820337756193">Kilomita tano kwa maili</translation>
 <translation id="2596078834055697711">Piga picha ya skrini ya dirisha</translation>
+<translation id="2598725286293895280">Programu zisizotumika katika eneokazi</translation>
 <translation id="2607678425161541573">Unahitaji kuingia katika akaunti mtandaoni</translation>
 <translation id="2620016719323068571">Tafuta <ph name="CATEGORY" /> yako, faili, programu na zaidi...</translation>
 <translation id="2620436844016719705">Mfumo</translation>
@@ -644,6 +646,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="4734965478015604180">Kimlalo</translation>
 <translation id="4735498845456076464">Mikato ya kibodi ya <ph name="LAUNCHER_KEY_NAME" /> + Nambari imebadilika. Ili utumie vitufe vya kukokotoa, bonyeza kitufe cha <ph name="LAUNCHER_KEY_NAME" /> pamoja na kitufe kwenye safu mlalo ya juu.</translation>
 <translation id="473775607612524610">Sasisha</translation>
+<translation id="4740516757091333363">Ungependa kufuta eneokazi lililohifadhiwa?</translation>
 <translation id="4752784485658729358">Maeneokazi 6 tu yanaweza kuhifadhiwa Ondoa eneokazi la zamani ili uhifadhi jipya.</translation>
 <translation id="4759238208242260848">Vipakuliwa</translation>
 <translation id="4774338217796918551">Rejea kesho saa <ph name="COME_BACK_TIME" />.</translation>
@@ -696,7 +699,6 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="5071064518267176975">Kuna programu inayotaka kutumia maikrofoni</translation>
 <translation id="5078796286268621944">PIN isiyo sahihi</translation>
 <translation id="5083553833479578423">Fungua vipengele zaidi vya programu yako ya Mratibu.</translation>
-<translation id="5106223312672646208">Weka mapendeleo</translation>
 <translation id="5107522548814527560">Wavuti</translation>
 <translation id="5117590920725113268">Onyesha mwezi unaofuata</translation>
 <translation id="5136175204352732067">Kibodi tofauti imeunganishwa</translation>
@@ -741,6 +743,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="5352250171825660495">Mandhari meusi yamewashwa</translation>
 <translation id="5356963482258194581">Kubadili kati ya mandhari meusi na meupe. Bofya kulia kwenye eneo-kazi kisha uchague Mandhari na mtindo.</translation>
 <translation id="5379115545237091094">Umejaribu mara nyingi mno</translation>
+<translation id="5391307769715781764">Ungependa kubadilisha eneokazi lililohifadhiwa?</translation>
 <translation id="5393156353051693207">Gusa na ushikilie sehemu yoyote ili upange tena programu zako</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> iko juu ya <ph name="IN_PLACE_APP" />, achilia ili ufungue folda mpya.</translation>
 <translation id="5397578532367286026">Matumizi na historia ya mtumiaji huyu yanaweza kukaguliwa na msimamizi ( <ph name="MANAGER_EMAIL" /> ) kwenye chrome.com.</translation>
@@ -974,6 +977,7 @@ Imesakinishwa hivi karibuni</translation>
 <translation id="6790428901817661496">Cheza</translation>
 <translation id="6801878137098616817">Ilibadilishwa hivi karibuni</translation>
 <translation id="6803622936009808957">Haikuweza kuakisi maonyesho kwa kuwa hakuna misongo inayoweza kutumiwa iliyopatikana. Badala yake imeingia eneo-kazi lililopanuliwa.</translation>
+<translation id="6812232930908427253">Imeshindwa kuhifadhi eneokazi. Madirisha au vichupo ni vingi sana.</translation>
 <translation id="6818242057446442178">Rudi nyuma kwa neno moja</translation>
 <translation id="6819327813400217281">Onyesho la kukagua kamera limelinganishwa kwenye kona ya chini kushoto</translation>
 <translation id="6820676911989879663">Pumzika kidogo!</translation>

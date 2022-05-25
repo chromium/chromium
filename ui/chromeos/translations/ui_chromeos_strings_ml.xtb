@@ -121,6 +121,7 @@
 <translation id="1942765061641586207">ചിത്രത്തിന്റെ റെസല്യൂഷൻ</translation>
 <translation id="1972984168337863910">ഫയലുകളുടെ ഫീഡ്ബാക്ക് പാനലുകൾ വികസിപ്പിക്കുക</translation>
 <translation id="1995337122023280937">ഫയൽ ലൊക്കേഷനിലേക്ക് പോവുക</translation>
+<translation id="1996806196681857869">Z കംപ്രസ് ചെയ്ത ആർക്കൈവ്</translation>
 <translation id="2001796770603320721">ഡ്രൈവിൽ മാനേജ് ചെയ്യുക</translation>
 <translation id="2009067268969781306">ഒരു ഡ്രൈവ് ഫോർമാറ്റ് ചെയ്‌താൽ അതിൽ സൂക്ഷിച്ചിരിക്കുന്ന മുഴുവൻ ഡാറ്റയും ഇല്ലാതാക്കപ്പെടും. ഈ പ്രവൃത്തി പഴയപടിയാക്കാനാകില്ല.</translation>
 <translation id="2025955442973426285">ടിഗ്രിന്യ</translation>
@@ -589,6 +590,7 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> ഇനങ്ങൾ</translation>
 <translation id="5957366693331451795">Chromebox-കൾ</translation>
 <translation id="5982621672636444458">അടുക്കൽ ഓപ്‌ഷനുകൾ</translation>
+<translation id="5985041959109124139">Z കംപ്രസ് ചെയ്ത tar ആർക്കൈവ്</translation>
 <translation id="6007237601604674381">നീക്കുന്നത് പരാജയപ്പെട്ടു. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">എതെർനെറ്റ് നെറ്റ്‌വർക്ക്</translation>
 <translation id="60357267506638014">ചെക്ക് QWERTY</translation>
@@ -619,6 +621,7 @@
 <translation id="6220423280121890987">പഞ്ചാബി</translation>
 <translation id="6224240818060029162">ഡാനിഷ്</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" /> ഫോർമാറ്റ് ചെയ്യുക</translation>
+<translation id="6224665423283788195">Zstandard കംപ്രസ് ചെയ്ത ആർക്കൈവ്</translation>
 <translation id="6227235786875481728">ഈ ഫയൽ പ്ലേ ചെയ്യാൻ കഴിഞ്ഞില്ല.</translation>
 <translation id="6241349547798190358">ഡച്ച് (ബെൽജിയം)</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_COUNT" />-ൽ <ph name="NETWORK_INDEX" /> നെറ്റ്‌വർക്ക്, <ph name="PHONE_NAME" />, സിഗ്‌നൽ ശക്തി <ph name="SIGNAL_STRENGTH" />%, ഫോൺ ബാറ്ററി <ph name="BATTERY_STATUS" />%, കണക്‌റ്റ് ചെയ്യുക</translation>
@@ -646,6 +649,7 @@
 <translation id="6509122719576673235">നോര്‍വീജിയന്‍</translation>
 <translation id="6528513914570774834">ഈ നെറ്റ്‌വർക്ക് ഉപയോഗിക്കാൻ ഉപകരണത്തിലെ മറ്റ് ഉപയോക്താക്കളെ അനുവദിക്കുക</translation>
 <translation id="653019979737152879"><ph name="FILE_NAME" /> എന്നത് സമന്വയിപ്പിക്കുന്നു...</translation>
+<translation id="6530595303336443929">Zstandard കംപ്രസ് ചെയ്ത tar ആർക്കൈവ്</translation>
 <translation id="6549689063733911810">പുതിയവ</translation>
 <translation id="6558280019477628686">ഒരു പിശക് സംഭവിച്ചു. ചില ഇനങ്ങൾ ഇല്ലാതാക്കാൻ ഇടയില്ല.</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />" ഇല്ലാതാക്കുന്നു...</translation>

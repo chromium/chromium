@@ -80,6 +80,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> is al ingelogd bij dit Chrome-profiel. Als je je browsegegevens gescheiden wilt houden, kan Chrome een eigen profiel voor je maken.</translation>
 <translation id="2580411288591421699">Kan dezelfde Google Chrome-versie die momenteel actief is, niet installeren. Sluit Google Chrome en probeer het opnieuw.</translation>
 <translation id="2586406160782125153">Hiermee worden je browsegegevens verwijderd van dit apparaat. Als je je gegevens later wilt terughalen, log je in bij Chrome als <ph name="USER_EMAIL" />.</translation>
+<translation id="2597976513418770460">Haal je Chrome-browsergegevens op via <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="2622559029861875898">Chrome kan niet checken op updates. Check de internetverbinding.</translation>
 <translation id="2645435784669275700">Chrome OS</translation>
 <translation id="2652691236519827073">Link openen op een nieuw Chrome-&amp;tabblad</translation>
@@ -307,6 +308,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="7801699035218095297">Google Chrome probeert wachtwoorden te kopiëren. Geef je Windows-wachtwoord op om dit toe te staan.</translation>
 <translation id="7808348361785373670">Verwijderen uit Chrome…</translation>
 <translation id="7825851276765848807">De installatie is mislukt vanwege een onbekende fout. Download Google Chrome opnieuw.</translation>
+<translation id="7880591377632733558">Welkom bij Chrome, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="7890208801193284374">Als je een computer deelt, kunnen vrienden en familie afzonderlijk surfen en Chrome configureren zoals zij dat willen.</translation>
 <translation id="7896673875602241923">Iemand heeft eerder bij Chrome op deze computer ingelogd als <ph name="ACCOUNT_EMAIL_LAST" />. Maak een nieuwe Chrome-gebruiker om je informatie gescheiden te houden.</translation>
 <translation id="7917876797003313048">Je kunt je ingelogde Google-accounts beheren. Je Google-accounts worden gebruikt voor onder andere de Chrome-browser, Play Store, en Gmail. Als je een account wilt toevoegen voor iemand anders, bijvoorbeeld een gezinslid, voeg je een nieuw persoon toe aan je <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
@@ -332,6 +334,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="8418845734693287262">Chrome OS kan je gegevens niet synchroniseren, omdat de inloggegevens voor je account zijn verouderd.</translation>
 <translation id="8421734018304082652">Chrome heeft dit bestand geblokkeerd omdat het versleuteld is. Vraag de eigenaar om het te ontgrendelen.</translation>
 <translation id="8433638294851456451">Als je een nummer hier vandaan naar je Android-telefoon wilt sturen, log je in bij Chrome op beide apparaten.</translation>
+<translation id="8451192282033883849">Je account wordt beheerd door <ph name="MANAGER_NAME" />. Je beheerder kan dit Chrome-browserprofiel en de bijbehorende gegevens (zoals bookmarks, geschiedenis en wachtwoorden) bekijken en bewerken.</translation>
 <translation id="8498858610309223613">Er is zojuist een speciale beveiligingsupdate voor Google Chrome toegepast. Start nu opnieuw op. Je tabbladen worden hersteld.</translation>
 <translation id="8504220326736535258">Chrome heeft dit bestand geblokkeerd omdat het malware bevat</translation>
 <translation id="8516431725144212809">Jouw interesses volgens schattingen van Chrome</translation>

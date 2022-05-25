@@ -78,6 +78,7 @@
 <translation id="1578784163189013834">Khetha indawo engemuva yesilondolozi sesikrini</translation>
 <translation id="1615335640928990664">Ukusetshenziswa kwedatha kusuka ngo-<ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Qalisa ukuhlola kokushaja</translation>
+<translation id="1631385268983122904">Ungasheshi ukubuyisela idivayisi ndawonye</translation>
 <translation id="1639239467298939599">Iyalayisha</translation>
 <translation id="1641857168437328880">Isiphakeli Sedokhumenti (Uhlangothi olulodwa)</translation>
 <translation id="1643449475550628585">Shintsha umfanekiso wesithombe sangemuva nsuku zonke</translation>
@@ -85,6 +86,7 @@
 <translation id="1645954272419197032">Sicela uqinisekise ulwazi lwedivayisi</translation>
 <translation id="1662989795263954667">Imile - Uyinki uphelile</translation>
 <translation id="1668469839109562275">I-VPN eyakhelwe ngaphakathi</translation>
+<translation id="1676557873873341166">Ithatha ividiyo</translation>
 <translation id="1703835215927279855">Incwadi</translation>
 <translation id="1706391837335750954">Isixazululi se-DNS Sikhona</translation>
 <translation id="1715359911173058521">Kunenkinga yokuxhumana neskena. Hlola inethiwekhi noma uxhumano lwe-USB bese uyazama futhi.</translation>
@@ -159,6 +161,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2336381494582898602">I-Powerwash</translation>
 <translation id="2338501278241028356">Vula i-Bluetooth ukuze uthole amadivayisi aseduze</translation>
+<translation id="2340422556570134524">I-Write Protect ivulwe kungazelelwe. Sicela uvule i-Write Protect mathupha ngaphambi kokuzama futhi.</translation>
 <translation id="2346474577291266260">Kuhle kakhulu (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">Qhubeka</translation>
 <translation id="2360257214555822463">Kutholakele <ph name="LINK_BEGIN" />izingxenye ezingafaneleki<ph name="LINK_END" />. Uma ukhetha ukuqinisekisa ukuthi lokhu kufakiwe, sicela wenze kanjalo manje.</translation>
@@ -474,6 +477,7 @@ Zama ukuthepha imakrofoni ukuze ungibuze noma yini.</translation>
 <translation id="5372659122375744710">Inethiwekhi ye-WiFi ayivikelekile</translation>
 <translation id="5376354385557966694">Imodi elula ngokuzenzekelayo</translation>
 <translation id="537872351913703572">Idivayisi izoya kumsebenzisi noma inhlangano ehlukile</translation>
+<translation id="5389159777326897627">I-wallpaper nestayela</translation>
 <translation id="5389224261615877010">Uthingo lwenkosazane</translation>
 <translation id="5395600419410242651">Sula yonke idatha</translation>
 <translation id="5400907029458559844">Idivayisi iyaxhuma.</translation>
@@ -643,6 +647,7 @@ Zama ukuthepha imakrofoni ukuze ungibuze noma yini.</translation>
 <translation id="6961170852793647506">Ukuze uqalise, beka idokhumenti yakho kuskena</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">Isibuyekezo se-firmware</translation>
+<translation id="6995564396478647735">Qiniseka ukuthi i-Write Protect ivuliwe</translation>
 <translation id="7028979494427204405">I-<ph name="MANAGER" /> iphatha le divayisi futhi inokufinyelela kuwo wonke umsebenzi womsebenzisi, kufaka phakathi amakhasi ewebhu avakashelwe, amaphasiwedi, ne-imeyili.</translation>
 <translation id="7040230719604914234">Opharetha</translation>
 <translation id="7041549558901442110">Idivayisi ayixhunyiwe.</translation>
@@ -653,6 +658,7 @@ Zama ukuthepha imakrofoni ukuze ungibuze noma yini.</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Kwehlulekile - Ukugunyaza Kwehlulekile</translation>
 <translation id="7103252855940681301">Idivayisi engu-<ph name="INDEX" /> kwangu-<ph name="COUNT" /> ebizwa ngokuthi i-<ph name="NAME" />.</translation>
+<translation id="7126228745139711113">I-Write Protect ivaliwe</translation>
 <translation id="7134436342991564651">{0,plural, =1{Igama leseva}one{Igama lamaseva}other{Igama lamaseva}}</translation>
 <translation id="7143207342074048698">Iyaxhuma</translation>
 <translation id="7144878232160441200">Zama futhi</translation>
@@ -744,6 +750,7 @@ Zama ukuthepha imakrofoni ukuze ungibuze noma yini.</translation>
 <translation id="80398733265834479">Nika amandla imodi yombala ozenzakalelayo</translation>
 <translation id="8041089156583427627">Thumela impendulo</translation>
 <translation id="8045012663542226664">Ukuthulisa kwemakrofoni</translation>
+<translation id="8063022551652308521">I-Write Protect isavaliwe. Ukuze uqhubeke, vula i-Write Protect.</translation>
 <translation id="8075838845814659848">Inkokhelo esele</translation>
 <translation id="8082366717211101304">Ayikwazi ukuxazulula i-DNS kusukela kuma-app we-Android</translation>
 <translation id="8083281199617904460">Le nqubo yokulungisa ihloselwe uchwepheshe wokulungisa oqeqeshiwe. Qala kuphela ngemva kokushintsha izingxenye ezingasebenzi kahle.</translation>
@@ -814,6 +821,7 @@ Zama ukuthepha imakrofoni ukuze ungibuze noma yini.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Sebenzisa umcibisholo Wangakwesokunxele noma Wangakwesokudla ukuphatha lesi sici.</translation>
 <translation id="8712637175834984815">Ngiyitholile</translation>
 <translation id="871560550817059752">Yehlulekile - Uyinki uphelile</translation>
+<translation id="8717030727630712160">Iqhubeka nenqubo yokulungisa…</translation>
 <translation id="8723108084122415655">Inethiwekhi engeyona ezenzakalelayo ingaphezu komkhawulo wokubambezeleka</translation>
 <translation id="8725066075913043281">Zama futhi</translation>
 <translation id="8726019395068607495">Imile - Umnyango uvuliwe</translation>
@@ -835,6 +843,7 @@ Zama ukuthepha imakrofoni ukuze ungibuze noma yini.</translation>
 <translation id="8868741746785112895">I-GUID</translation>
 <translation id="8876270629542503161">Idivayisi iyithebulethi.</translation>
 <translation id="8881098542468797602">Ukuhlola kuphumelele</translation>
+<translation id="8897267175591692539">Ungayibuyisela idivayisi ndawonye manje</translation>
 <translation id="8898840733695078011">Amandla esiginali</translation>
 <translation id="8910721771319628100">Inethiwekhi ezenzakalelayo ingaphezu komkhawulo wokubambezeleka</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" /> <ph name="DEVICE_TYPE" /></translation>

@@ -241,6 +241,7 @@ Sivustot eivät näe selaustoimintaasi eri sivustoilla evästeiden kautta esim. 
 <translation id="2982481275546140226">Tyhjennä tiedot</translation>
 <translation id="298306318844797842">Lisää maksutapa…</translation>
 <translation id="2989805286512600854">Avaa uudessa välilehdessä</translation>
+<translation id="3020183492814296499">Pikanäppäimet</translation>
 <translation id="3037605927509011580">Harmin paikka!</translation>
 <translation id="3039722182465315531">Älä kirjaudu sisään</translation>
 <translation id="3076846064362030967">Sinua ei kirjata ulos Google-tililtäsi. <ph name="BEGIN_LINK" />Muita toimintoja<ph name="END_LINK" /> voidaan tallentaa Google-tilillesi, kun olet kirjautuneena sisään. Voit poistaa niitä koska vain.
@@ -512,6 +513,7 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="5416022985862681400">Viimeiset 7 päivää</translation>
 <translation id="543338862236136125">Muokkaa salasanaa</translation>
 <translation id="5433691172869980887">Käyttäjänimi kopioitu</translation>
+<translation id="5439599923922718668">Usein avatut</translation>
 <translation id="54401264925851789">Sivun suojaustiedot</translation>
 <translation id="5443952882982198570">Luottokortit</translation>
 <translation id="5457226814769348910">Avaa offline-versio</translation>

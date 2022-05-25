@@ -77,6 +77,7 @@
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> さんはこの Chrome プロファイルにすでにログインしています。ブラウジング環境を分ける場合は、Chrome で自分用のプロファイルを作成できます。</translation>
 <translation id="2580411288591421699">実行中の Google Chrome と同じバージョンをインストールすることはできません。Google Chrome を閉じてからもう一度お試しください。</translation>
 <translation id="2586406160782125153">このデバイスから閲覧データを削除します。後でデータを取得するには、<ph name="USER_EMAIL" /> として Chrome にログインしてください。</translation>
+<translation id="2597976513418770460">Chrome ブラウザのアイテムを <ph name="ACCOUNT_EMAIL" /> から取得</translation>
 <translation id="2622559029861875898">Chrome がアップデートを確認できません。インターネット接続を確認してみてください。</translation>
 <translation id="2645435784669275700">Chrome OS</translation>
 <translation id="2652691236519827073">新しい Chrome タブでリンクを開く(&amp;T)</translation>
@@ -302,6 +303,7 @@
 <translation id="7801699035218095297">Google Chrome がパスワードをコピーしようとしています。続行するには、Windows のパスワードを入力してください。</translation>
 <translation id="7808348361785373670">Chrome から削除...</translation>
 <translation id="7825851276765848807">原因不明のエラーによりインストールに失敗しました。Google Chrome をもう一度ダウンロードしてください。</translation>
+<translation id="7880591377632733558">Chrome へようこそ、<ph name="ACCOUNT_FIRST_NAME" /> さん</translation>
 <translation id="7890208801193284374">パソコンを共有している場合、友だちや家族はそれぞれ Chrome を自分専用のブラウザとして自分用の設定をして使うことができます。</translation>
 <translation id="7896673875602241923">前回このパソコンで別のユーザー（<ph name="ACCOUNT_EMAIL_LAST" />）が Chrome にログインしました。情報を個別に保持するには、新しい Chrome ユーザーを作成してください。</translation>
 <translation id="7917876797003313048">ログインする Google アカウントを管理できます。Google アカウントは、Chrome ブラウザ、Play ストア、Gmail などで使用されます。家族など、あなた以外の人のアカウントを追加する場合は、<ph name="DEVICE_TYPE" /> に新しいユーザーを追加してください。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
@@ -327,6 +329,7 @@
 <translation id="8418845734693287262">アカウントのログイン情報が最新でないため、Chrome OS はデータを同期できませんでした。</translation>
 <translation id="8421734018304082652">このファイルは暗号化されているため、Chrome でブロックされました。所有者に暗号化の解除を依頼してください</translation>
 <translation id="8433638294851456451">Android スマートフォンに番号を送信するには、両方のデバイスで Chrome にログインしてください。</translation>
+<translation id="8451192282033883849">あなたのアカウントは <ph name="MANAGER_NAME" /> によって管理されています。管理者は、この Chrome ブラウザのプロフィールとそのデータ（ブックマーク、履歴、パスワードなど）を表示、編集できます。</translation>
 <translation id="8498858610309223613">Google Chrome の特別なセキュリティ アップデートが適用されました。今すぐ再起動してください。タブは復元されます。</translation>
 <translation id="8504220326736535258">このファイルにはマルウェアが含まれているため、Chrome でブロックされました</translation>
 <translation id="8516431725144212809">Chrome が推定したお客様の興味 / 関心</translation>

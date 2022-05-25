@@ -56,6 +56,7 @@
 <translation id="124678866338384709">Fechar o separador atual</translation>
 <translation id="1246905108078336582">Remover a sugestão da área de transferência?</translation>
 <translation id="1258753120186372309">Doodle da Google: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">Lista de leitura</translation>
 <translation id="1266864766717917324">Não foi possível partilhar <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Toque para expandir</translation>
 <translation id="1285310382777185058">Altere o idioma</translation>
@@ -312,6 +313,7 @@ Toque sem soltar em qualquer palavra para pesquisar. Para refinar a sua pesquisa
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# ficheiro de áudio}other{# ficheiros de áudio}}</translation>
 <translation id="265156376773362237">Pré-carregamento padrão</translation>
 <translation id="2656405586795711023">Apps para a Web</translation>
+<translation id="2669454659051515572">Qualquer pessoa que use este dispositivo pode ver os ficheiros transferidos</translation>
 <translation id="2702516483241149200">Novo: partilhe um link que se desloca para este texto</translation>
 <translation id="2704606927547763573">Copiado</translation>
 <translation id="2707726405694321444">Atualizar página</translation>
@@ -493,10 +495,10 @@ Toque sem soltar em qualquer palavra para pesquisar. Para refinar a sua pesquisa
 <translation id="363596933471559332">Inicie automaticamente sessão em Sites com as credenciais armazenadas. Quando a funcionalidade está desativada, é-lhe sempre pedida validação antes de iniciar sessão num Website.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3677911431265050325">Pedir site para dispositivos móveis</translation>
-<translation id="3685860403008476208">Qualquer pessoa que utilize este dispositivo pode ver os ficheiros que transferir na Navegação anónima</translation>
 <translation id="3687645719033307815">Está a ver uma pré-visualização desta página.</translation>
 <translation id="3690369331356918524">Envia-lhe um aviso se as palavras-passe forem expostas numa violação de dados.</translation>
 <translation id="3692944402865947621">A transferência de <ph name="FILE_NAME" /> falhou porque o local de armazenamento está fora do alcance.</translation>
+<translation id="3697705478071004188">Ordenar por site</translation>
 <translation id="3699022356773522638">Transferir ficheiro?</translation>
 <translation id="371230970611282515">Prevê e envia-lhe avisos sobre eventos perigosos antes da sua ocorrência.</translation>
 <translation id="3714981814255182093">Abrir a barra Localizar</translation>
@@ -777,6 +779,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />reponha a sincronização
 <translation id="5246093389635966745">Editar atalho da barra de ferramentas</translation>
 <translation id="526421993248218238">Não é possível carregar esta página.</translation>
 <translation id="5271967389191913893">O dispositivo não consegue abrir o conteúdo a transferir.</translation>
+<translation id="5274286919938458946">Associado a <ph name="CARD_DETAIL" /></translation>
 <translation id="5292796745632149097">Enviar para</translation>
 <translation id="5300426565656326054">Personalização de anúncios com base no navegador</translation>
 <translation id="5304593522240415983">Este campo não pode estar em branco</translation>
@@ -1308,6 +1311,7 @@ Os símbolos fidedignos melhoram a privacidade na Web e não podem ser usados pa
 <translation id="8103578431304235997">Separador de navegação anónima</translation>
 <translation id="8105613260829665809">Ao continuar, aceita os <ph name="BEGIN_TOS_LINK" />Termos de Utilização<ph name="END_TOS_LINK" />.\nPara ajudar a melhorar a app, o Chrome envia dados de utilização e falhas de sistema para a Google. <ph name="BEGIN_UMA_LINK" />Faça a gestão<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
+<translation id="8107530384992929318">Fechar opções de ordenação</translation>
 <translation id="8109613176066109935">Para obter os seus marcadores em todos os dispositivos, ative a sincronização.</translation>
 <translation id="8110024788458304985">Ajudar a melhorar as funcionalidades e o desempenho do Chrome</translation>
 <translation id="8110087112193408731">Pretende apresentar a sua atividade do Chrome no Bem-estar digital?</translation>
@@ -1381,6 +1385,7 @@ Os símbolos fidedignos melhoram a privacidade na Web e não podem ser usados pa
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Abrir a página do histórico</translation>
 <translation id="8493948351860045254">Libertar espaço</translation>
+<translation id="8497242791509864205">Abrir opções de ordenação</translation>
 <translation id="8497480609928300907">Explicação do guia de privacidade</translation>
 <translation id="8497726226069778601">Ainda não há nada para ver aqui</translation>
 <translation id="8503559462189395349">Palavras-passe do Chrome</translation>

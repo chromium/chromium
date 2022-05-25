@@ -55,6 +55,7 @@
 <translation id="1054153489933238809">&amp;Original in neuem Tab öffnen</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{<ph name="DEVICE_TYPE" /> innerhalb von 1 Woche aktualisieren}other{<ph name="DEVICE_TYPE" /> innerhalb von {NUM_WEEKS} Wochen aktualisieren}}</translation>
 <translation id="1056898198331236512">Warnung</translation>
+<translation id="105822690353767994">Erlaube, dass die Erweiterung auf dieser Website immer ausgeführt werden darf, wenn diese Meldung nicht mehr angezeigt werden soll.</translation>
 <translation id="1058262162121953039">PUK</translation>
 <translation id="1059065096897445832">{MIN_PIN_LENGTH,plural, =1{Gib deine neue PIN ein. Eine PIN muss aus mindestens einem Zeichen bestehen und kann Buchstaben, Zahlen und andere Zeichen enthalten.}other{Gib deine neue PIN ein. Eine PIN muss aus mindestens # Zeichen bestehen und kann Buchstaben, Zahlen und andere Zeichen enthalten.}}</translation>
 <translation id="1059484610606223931">Hypertext Transfer Protocol Secure (HTTPS)</translation>
@@ -827,7 +828,6 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1784707308176068866">Im Hintergrund ausführen, wenn dies von einer mit Chrome zusammenarbeitenden nativen Anwendung angefordert wird</translation>
 <translation id="1784849162047402014">Gerät verfügt über wenig Speicherplatz</translation>
 <translation id="1787350673646245458">Nutzerbild</translation>
-<translation id="1788329699711791226">Über <ph name="ACCOUNT_EMAIL" /> auf deine Chrome-Browserinhalte zugreifen</translation>
 <translation id="1790976235243700817">Zugriff entfernen</translation>
 <translation id="1791662854739702043">Installiert</translation>
 <translation id="1792619191750875668">Erweiterter Bildschirm</translation>
@@ -853,6 +853,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
     Apps oder Inhalte auf anderen Geräten sind davon nicht betroffen.</translation>
 <translation id="1809734401532861917">Meine Lesezeichen, den Verlauf, Passwörter und andere Einstellungen zu <ph name="USER_EMAIL_ADDRESS" /> hinzufügen</translation>
 <translation id="1810366086647840386">Image-Server</translation>
+<translation id="1811908311154949291">Umgrenzter Inkognito-Frame: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="1813278315230285598">Dienste</translation>
 <translation id="18139523105317219">Name der EDI-Partei</translation>
 <translation id="1815083418640426271">Als unformatierten Text einfügen</translation>
@@ -1668,6 +1669,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" /> konnte keine Verbindung zu <ph name="NETWORK_ID" /> herstellen. Wähle ein anderes Netzwerk oder versuche es noch einmal.</translation>
 <translation id="2553440850688409052">Dieses Plug-in ausblenden</translation>
 <translation id="2554553592469060349">Die ausgewählte Datei ist zu groß. Maximale Größe: 3 MB</translation>
+<translation id="25568951186001797">Umgrenzter Frame: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="2558569818338050235">Dein Browserverlauf hat Einfluss darauf, welche Werbung dir gezeigt wird</translation>
 <translation id="2558896001721082624">Optionen für Bedienungshilfen immer im Systemmenü einblenden</translation>
 <translation id="2559889124253841528">Auf Gerät speichern</translation>
@@ -2230,6 +2232,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3101126716313987672">Schwaches Licht</translation>
 <translation id="3101709781009526431">Datum und Uhrzeit</translation>
 <translation id="3103451787721578293">Bitte gib einen Grund für das Hochladen dieser Daten an:</translation>
+<translation id="3105339775057145050">Letztes fehlgeschlagenes Update</translation>
 <translation id="3105796011181310544">Wieder zu Google wechseln?</translation>
 <translation id="310671807099593501">Die Website verwendet Bluetooth</translation>
 <translation id="3108931485517391283">Empfang nicht möglich</translation>
@@ -2532,6 +2535,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3433621910545056227">Hoppla! Das System konnte die Attributsperre für die Installationszeit des Geräts nicht einrichten.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="3434272557872943250">Wenn die Einstellung "Zusätzliche Web- &amp; App-Aktivitäten" für dein Kind aktiviert ist, werden diese Daten möglicherweise in seinem Google-Konto gespeichert. Unter families.google.com findest du weitere Informationen zu dieser Einstellung. Dort erfährst du auch, wie du sie ändern kannst.</translation>
+<translation id="3434475275396485144">Diese Einstellung wird vom Administrator deines Smartphones verwaltet</translation>
 <translation id="3434512374684753970">Audio &amp; Video</translation>
 <translation id="3435688026795609344">"<ph name="EXTENSION_NAME" />" fordert deinen <ph name="CODE_TYPE" /> an.</translation>
 <translation id="3435738964857648380">Sicherheit</translation>
@@ -3161,7 +3165,6 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4028467762035011525">Eingabemethoden hinzufügen</translation>
 <translation id="4029556917477724407">Von der Seite „<ph name="PAGE_TITLE" />“ zurückgehen</translation>
 <translation id="4031179711345676612">Mikrofonnutzung zulässig</translation>
-<translation id="4031308539321678562">Dadurch werden Browserdaten dauerhaft von diesem Gerät gelöscht. Die Google-Konten in diesem Profil können von anderen Apps auf deinem Chromebook verwendet werden. Du kannst diese Konten unter <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" /> entfernen.</translation>
 <translation id="4031527940632463547">Sensoren blockiert</translation>
 <translation id="4033415645631238123">Anmeldung per Smart Lock ist nicht mehr verfügbar. Das Entsperren per Smart Lock ist weiterhin möglich.</translation>
 <translation id="4033471457476425443">Neuen Ordner hinzufügen</translation>
@@ -4647,7 +4650,6 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5539221284352502426">Das eingegebene Passwort wurde vom Server zurückgewiesen. Mögliche Ursachen: Das Passwort ist zu kurz. Das Passwort muss Zahlen oder Symbole enthalten. Das Passwort muss sich von vorherigen Passwörtern unterscheiden.</translation>
 <translation id="5541694225089836610">Die Aktion wurde von deinem Administrator deaktiviert</translation>
 <translation id="5542132724887566711">Profil</translation>
-<translation id="554229901779827904">Dein Konto wird von <ph name="MANAGER_NAME" /> verwaltet. Dein Administrator kann das Profil dieses Chrome-Browsers und seine Daten ansehen und bearbeiten. Deine Daten enthalten Lesezeichen, Verlauf und Passwörter.</translation>
 <translation id="5542750926112347543">Cookies von <ph name="DOMAIN" /> blockiert</translation>
 <translation id="5542949973455282971">Verbindung mit <ph name="CARRIER_NAME" /> wird hergestellt</translation>
 <translation id="5543983818738093899">Status wird überprüft...</translation>
@@ -4912,7 +4914,6 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5816434091619127343">Die angeforderten Änderungen würden den Drucker unbrauchbar machen.</translation>
 <translation id="5817069030404929329">Passwörter von diesem Gerät in dein Google-Konto verschieben?</translation>
 <translation id="5817918615728894473">Koppeln</translation>
-<translation id="581840385858998009">Hintergrund, Avatar, Bildschirmschoner und mehr personalisieren</translation>
 <translation id="5821565227679781414">Verknüpfung erstellen</translation>
 <translation id="5825412242012995131">An (empfohlen)</translation>
 <translation id="5826395379250998812"><ph name="DEVICE_TYPE" /> mit Smartphone verbinden. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
@@ -5675,6 +5676,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6568283005472142698">Tab-Suche</translation>
 <translation id="65711204837946324">Du musst die Berechtigung haben, die Datei herunterzuladen</translation>
 <translation id="6571772921213691236">Anmeldedaten bearbeiten</translation>
+<translation id="6573096386450695060">Immer zulassen</translation>
 <translation id="6573497332121198392">Verknüpfung kann nicht entfernt werden</translation>
 <translation id="657402800789773160">&amp;Diese Seite neu laden</translation>
 <translation id="6577284282025554716">Download abgebrochen: <ph name="FILE_NAME" /></translation>
@@ -6363,6 +6365,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="7264695323040866038">Immer die <ph name="APP" /> App verwenden, um unterstützte Weblinks zu öffnen?</translation>
 <translation id="7267044199012331848">Die virtuelle Maschine konnte nicht installiert werden. Versuche es noch einmal oder wende dich an deinen Administrator. Fehlercode: <ph name="ERROR_CODE" />.</translation>
 <translation id="7267875682732693301">Lege den Finger immer wieder in leicht geänderter Position auf, bis der Abdruck vollständig erfasst ist</translation>
+<translation id="7267898843336437186">Ordner auswählen, der von dieser Website aufgerufen werden kann</translation>
 <translation id="7268127947535186412">Diese Einstellung wird vom Eigentümer des Geräts verwaltet.</translation>
 <translation id="7269736181983384521">Nearby Share-Datennutzung</translation>
 <translation id="7272674038937250585">Keine Beschreibung vorhanden</translation>
@@ -6651,7 +6654,6 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="7559719679815339381">Die Kiosk-App wird gerade aktualisiert, bitte warten. Entferne den USB-Stick nicht.</translation>
 <translation id="7560756177962144929"><ph name="DEVICE_TYPE" /> synchronisieren</translation>
 <translation id="7561196759112975576">Immer</translation>
-<translation id="7562099761826673163">Gerät personalisieren</translation>
 <translation id="756445078718366910">Browserfenster öffnen</translation>
 <translation id="7564847347806291057">Prozess beenden</translation>
 <translation id="756503097602602175">Angemeldete Google-Konten können in den <ph name="LINK_BEGIN" />Einstellungen<ph name="LINK_END" /> verwaltet werden. Berechtigungen, die du Websites und Anwendungen gewährt hast, gelten möglicherweise für alle Konten. Wenn du nicht möchtest, dass Websites oder Anwendungen Zugriff auf deine Kontoinformationen haben, kannst du dich auf <ph name="DEVICE_TYPE" /> als Gast anmelden oder in einem <ph name="LINK_2_BEGIN" />Inkognitofenster<ph name="LINK_2_END" /> im Web surfen.</translation>
@@ -6713,7 +6715,6 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="7624337243375417909">Feststelltaste aus</translation>
 <translation id="7625568159987162309">Nach Websites sortierte Berechtigungen und gespeicherte Daten aufrufen</translation>
 <translation id="7625823789272218216">Neuer Tab links</translation>
-<translation id="7626032353295482388">Willkommen bei Chrome</translation>
 <translation id="7628201176665550262">Aktualisierungsrate</translation>
 <translation id="7629827748548208700">Tab: <ph name="TAB_NAME" /></translation>
 <translation id="7630426712700473382">Dieses Gerät wird von <ph name="MANAGER" /> verwaltet und erfordert immer eine Anmeldung.</translation>
@@ -6991,7 +6992,6 @@ Drücke zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter oder ein
 <translation id="7876027585589532670">Verknüpfung kann nicht bearbeitet werden</translation>
 <translation id="7877451762676714207">Unbekannter Serverfehler. Bitte versuche es erneut oder wende dich an den Serveradministrator.</translation>
 <translation id="7879631849810108578">Tastenkombination festgelegt: <ph name="IDS_SHORT_SET_COMMAND" /></translation>
-<translation id="7880591377632733558">Willkommen bei Chrome, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="7880685873361171388">Wenn FLoC aktiviert und aktiv ist, verwendet Chrome den Browserverlauf der letzten sieben Tage, um eine Gruppe oder „Kohorte“ für dich zu bestimmen. Werbetreibende können Werbung für die einzelnen Gruppen auswählen. Dein Browserverlauf wird sicher auf deinem Gerät gespeichert. Diese Testversion ist probeweise nur in <ph name="BEGIN_LINK" />ausgewählten Regionen verfügbar<ph name="END_LINK" />.</translation>
 <translation id="7880823633812189969">Lokale Daten werden beim nächsten Neustart gelöscht</translation>
 <translation id="7881066108824108340">DNS</translation>
@@ -7423,6 +7423,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8275080796245127762">Über mein Gerät anrufen</translation>
 <translation id="8275339871947079271">Wenn du mit allen Geräten, auf denen du angemeldet bist, sicher auf dein Passwort zugreifen möchtest, verschiebe es in dein Google-Konto.</translation>
 <translation id="8276560076771292512">Cache leeren und vollständig aktualisieren</translation>
+<translation id="8281721647184388851">Chrome-Browsersynchronisierung aktivieren?</translation>
 <translation id="8281886186245836920">Überspringen</translation>
 <translation id="8283475148136688298">Beim Herstellen der Verbindung zu "<ph name="DEVICE_NAME" />" wurde der Authentifizierungscode zurückgewiesen.</translation>
 <translation id="8284279544186306258">alle <ph name="WEBSITE_1" />-Websites</translation>
@@ -7962,6 +7963,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8838770651474809439">Hamburger</translation>
 <translation id="8838778928843281408">Smartphones verwalten</translation>
 <translation id="8841843049738266382">Nutzer auf der Zulassungsliste ansehen und ändern</translation>
+<translation id="8842059467121215385">Seite aktualisieren, um „<ph name="EXTENSION_NAME" />“ zu verwenden</translation>
 <translation id="8842594465773264717">Diesen Fingerabdruck löschen</translation>
 <translation id="8845001906332463065">Hilfe aufrufen</translation>
 <translation id="8846132060409673887">Hersteller und Modell dieses Computers auslesen</translation>
@@ -8117,6 +8119,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="899657321862108550">Dein persönlicher Chrome-Browser – auf allen Geräten</translation>
 <translation id="899676909165543803">Der Fingerabdrucksensor ist die Taste rechts unten auf der Tastatur. Berühre ihn leicht mit dem Finger.</translation>
 <translation id="8999560016882908256">Syntaxfehler in Abschnitt: <ph name="ERROR_LINE" /></translation>
+<translation id="9003185744423389627">Fehler bei Verbindung zum Geräteverwaltungsserver mit dem Status „<ph name="STATUS_TEXT" />“ am <ph name="FAILURE_TIME" /></translation>
 <translation id="9003647077635673607">Auf allen Websites zulassen</translation>
 <translation id="9003677638446136377">Erneut prüfen</translation>
 <translation id="9004754973617721124">Websitedaten und Berechtigungen für <ph name="SITE_NAME" />, alle ihr untergeordneten Websites und auf ihr installierten Apps löschen?</translation>

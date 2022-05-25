@@ -121,6 +121,7 @@
 <translation id="1942765061641586207">Risoluzione dell'immagine</translation>
 <translation id="1972984168337863910">Espandi i riquadri di feedback dei file</translation>
 <translation id="1995337122023280937">Vai a posizione file</translation>
+<translation id="1996806196681857869">Archivio compresso con Z</translation>
 <translation id="2001796770603320721">Gestisci in Drive</translation>
 <translation id="2009067268969781306">Se formatti un'unità vengono eliminati tutti i dati in essa memorizzati. L'azione non può essere annullata.</translation>
 <translation id="2025955442973426285">Tigrino</translation>
@@ -588,6 +589,7 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> elementi</translation>
 <translation id="5957366693331451795">I Chromebox</translation>
 <translation id="5982621672636444458">Opzioni ordinamento</translation>
+<translation id="5985041959109124139">Archivio tar compresso con Z</translation>
 <translation id="6007237601604674381">Spostamento non riuscito. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Rete Ethernet</translation>
 <translation id="60357267506638014">Tastiera QWERTY Ceco</translation>
@@ -618,6 +620,7 @@
 <translation id="6220423280121890987">Punjabi</translation>
 <translation id="6224240818060029162">Danese</translation>
 <translation id="6224253798271602650">Formatta <ph name="DRIVE_NAME" /></translation>
+<translation id="6224665423283788195">Archivio compresso con Zstandard</translation>
 <translation id="6227235786875481728">Impossibile riprodurre il file.</translation>
 <translation id="6241349547798190358">Olandese (Belgio)</translation>
 <translation id="6267547857941397424">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, intensità del segnale <ph name="SIGNAL_STRENGTH" />%, batteria del telefono <ph name="BATTERY_STATUS" />%, connetti</translation>
@@ -645,6 +648,7 @@
 <translation id="6509122719576673235">Norvegese</translation>
 <translation id="6528513914570774834">Consenti ad altri utenti del dispositivo di usare questa rete</translation>
 <translation id="653019979737152879">Sincronizzazione del file <ph name="FILE_NAME" /> in corso...</translation>
+<translation id="6530595303336443929">Archivio tar compresso con Zstandard</translation>
 <translation id="6549689063733911810">Recenti</translation>
 <translation id="6558280019477628686">Si è verificato un errore. Alcuni elementi potrebbero non essere stati eliminati.</translation>
 <translation id="656398493051028875">Eliminazione di "<ph name="FILENAME" />"...</translation>

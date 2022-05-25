@@ -24,6 +24,7 @@
 <translation id="109942774857561566">我好無聊</translation>
 <translation id="1104084341931202936">顯示無障礙設定</translation>
 <translation id="1104621072296271835">完成連結可進一步提升裝置效能</translation>
+<translation id="1111021433905331574">你可以在「設定」&gt;「<ph name="APP_TITLE" />」中變更鍵盤背光的顏色</translation>
 <translation id="112308213915226829">自動隱藏檔案櫃</translation>
 <translation id="1142002900084379065">最近的相片</translation>
 <translation id="1148499908455722006">開啟「<ph name="USER_NAME" />」的資訊對話方塊</translation>
@@ -62,6 +63,7 @@
 <translation id="1275285675049378717">為「<ph name="POWER_SOURCE" />」供電</translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">尋找手機</translation>
+<translation id="1287002645302686982">系統中已經有名稱為「<ph name="DESK_TEMPLATE_NAME" />」的桌面</translation>
 <translation id="1289185460362160437"><ph name="COME_BACK_DAY_OF_WEEK" /><ph name="COME_BACK_TIME" /> 裝置就會解除鎖定。</translation>
 <translation id="1290331692326790741">訊號微弱</translation>
 <translation id="1290982764014248209">將「<ph name="DRAGGED_APP" />」移到「<ph name="FOLDER_NAME" />」資料夾。</translation>
@@ -91,7 +93,7 @@
 <translation id="1420408895951708260">切換夜燈模式。<ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">透過 <ph name="DEVICE_TYPE" /> 查看手機上最近的相片和媒體</translation>
 <translation id="1426410128494586442">是</translation>
-<translation id="1438357537418863713">應用程式串流已設定完成。當你開始使用這項功能時，這裡會顯示最近啟動過的應用程式。</translation>
+<translation id="1447641497144572814">螢幕保護程式已開始運作</translation>
 <translation id="1455242230282523554">顯示語言設定</translation>
 <translation id="1460620680449458626">音量已設為靜音。</translation>
 <translation id="1467432559032391204">向左</translation>
@@ -266,6 +268,7 @@
 <translation id="2586561057878260610">按下 Ctrl + W 鍵，即可與「<ph name="DESK_NAME" />」合併。按下 Ctrl + Shift + W 鍵，即可關閉桌面和視窗。</translation>
 <translation id="2595239820337756193">5 公里等於多少英里</translation>
 <translation id="2596078834055697711">擷取視窗螢幕畫面</translation>
+<translation id="2598725286293895280">桌面不支援的應用程式</translation>
 <translation id="2607678425161541573">需要線上登入</translation>
 <translation id="2620016719323068571">搜尋<ph name="CATEGORY" />、檔案、應用程式和其他內容...</translation>
 <translation id="2620436844016719705">系統</translation>
@@ -641,6 +644,7 @@
 <translation id="4734965478015604180">橫向</translation>
 <translation id="4735498845456076464">「<ph name="LAUNCHER_KEY_NAME" /> 鍵 + 數字鍵」的鍵盤快速鍵已變更。如要使用功能鍵，請按下<ph name="LAUNCHER_KEY_NAME" /> 鍵 + 最上排的任一按鍵。</translation>
 <translation id="473775607612524610">更新</translation>
+<translation id="4740516757091333363">要刪除已儲存的桌面嗎？</translation>
 <translation id="4752784485658729358">最多只能保存 6 個桌面。如要儲存新桌面，請先移除一個桌面。</translation>
 <translation id="4759238208242260848">下載</translation>
 <translation id="4774338217796918551"><ph name="COME_BACK_TIME" /> 裝置就會解除鎖定。</translation>
@@ -693,7 +697,6 @@
 <translation id="5071064518267176975">某個應用程式要求使用麥克風</translation>
 <translation id="5078796286268621944">PIN 不正確</translation>
 <translation id="5083553833479578423">啟用更多 Google 助理功能。</translation>
-<translation id="5106223312672646208">個人化</translation>
 <translation id="5107522548814527560">網頁</translation>
 <translation id="5117590920725113268">顯示下一個月</translation>
 <translation id="5136175204352732067">已連接其他鍵盤</translation>
@@ -738,6 +741,7 @@
 <translation id="5352250171825660495">深色主題已開啟</translation>
 <translation id="5356963482258194581">在深色和淺色主題之間切換。在桌面上按一下滑鼠右鍵，並選取桌布和樣式。</translation>
 <translation id="5379115545237091094">嘗試次數過多</translation>
+<translation id="5391307769715781764">要取代已儲存的桌面嗎？</translation>
 <translation id="5393156353051693207">按住任一處即可將應用程式重新排序</translation>
 <translation id="5395308026110844773">「<ph name="DRAGGED_APP_NAME" />」已拖曳到「<ph name="IN_PLACE_APP" />」上方，放開滑鼠即可建立資料夾。</translation>
 <translation id="5397578532367286026">管理員 (<ph name="MANAGER_EMAIL" />) 可以在 chrome.com 瞭解這名使用者的使用情形和記錄。</translation>
@@ -970,6 +974,7 @@
 <translation id="6790428901817661496">播放</translation>
 <translation id="6801878137098616817">最近編輯過</translation>
 <translation id="6803622936009808957">找不到系統支援的解析度，因此無法顯示鏡像。已改為進入延伸桌面。</translation>
+<translation id="6812232930908427253">視窗或分頁過多，無法儲存桌面。</translation>
 <translation id="6818242057446442178">移至上一個字詞</translation>
 <translation id="6819327813400217281">攝影機已對齊左下角</translation>
 <translation id="6820676911989879663">目前禁止使用裝置！</translation>

@@ -56,6 +56,7 @@
 <translation id="124678866338384709">Luk aktuel fane</translation>
 <translation id="1246905108078336582">Vil du fjerne forslaget fra udklipsholderen?</translation>
 <translation id="1258753120186372309">Google-doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">Læseliste</translation>
 <translation id="1266864766717917324">Det var ikke muligt at dele <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Tryk for at udvide</translation>
 <translation id="1285310382777185058">Skift sprog</translation>
@@ -493,7 +494,6 @@ Tryk og hold på et ord for at søge. Du kan tilpasse din søgning ved at vælge
 <translation id="363596933471559332">Log automatisk ind på websites med gemte loginoplysninger. Når funktionen er slået fra, bliver du bedt om at bekræfte, hver gang du vil logge ind på et website.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3677911431265050325">Anmod om mobilversion</translation>
-<translation id="3685860403008476208">Alle, der bruger denne enhed, kan se de filer, du downloader i inkognito</translation>
 <translation id="3687645719033307815">Du ser en forhåndsvisning af denne side</translation>
 <translation id="3690369331356918524">Advarer dig, hvis adgangskoder offentliggøres i et brud på datasikkerheden</translation>
 <translation id="3692944402865947621"><ph name="FILE_NAME" /> blev ikke downloadet, da lagerplaceringen ikke er tilgængelig.</translation>
@@ -523,6 +523,7 @@ Tryk og hold på et ord for at søge. Du kan tilpasse din søgning ved at vælge
 <translation id="3845098929839618392">Åbn i inkognitofane</translation>
 <translation id="3856096718352044181">Bekræft, at dette er en gyldig udbyder, eller prøv igen senere</translation>
 <translation id="3858860766373142691">Navn</translation>
+<translation id="3859206958100234503">Synkroniser data for at få dine adgangskoder, bogmærker og meget mere på alle dine enheder</translation>
 <translation id="3861633093716975811">Populære videoer</translation>
 <translation id="3892148308691398805">Kopiér tekst</translation>
 <translation id="3894427358181296146">Tilføj mappe</translation>
@@ -580,6 +581,7 @@ Tryk og hold på et ord for at søge. Du kan tilpasse din søgning ved at vælge
 <translation id="4209895695669353772">Aktivér synkronisering for at hente brugertilpasset indhold, som er foreslået af Google</translation>
 <translation id="4214315110991671325">Hvis du tillader cookies, kan Chrome bruge dem til forudindlæsning.</translation>
 <translation id="4225895483398857530">Genvej til værktøjslinje</translation>
+<translation id="4227318652298512614">Følg de websites, der interesserer dig</translation>
 <translation id="4242533952199664413">Åbn Indstillinger</translation>
 <translation id="4248098802131000011">Beskyt dine adgangskoder mod brud på datasikkerheden og andre sikkerhedsproblemer</translation>
 <translation id="4249955472157341256">Sortér efter seneste</translation>
@@ -696,6 +698,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="4842515939542199281">Tryk på mikrofonen for at søge ved hjælp af stemmen</translation>
 <translation id="4844633725025837809">For at beskytte adgangskoderne yderligere krypteres de på din enhed, inden de gemmes i Googles Adgangskodeadministrator</translation>
 <translation id="4850886885716139402">Vis</translation>
+<translation id="4852014461738377247">Logger ind\u2026</translation>
 <translation id="4860895144060829044">Ring op</translation>
 <translation id="4864369630010738180">Logger ind...</translation>
 <translation id="4866368707455379617"><ph name="MODULE" /> kunne ikke installeres til Chrome</translation>
@@ -1149,6 +1152,7 @@ Trust tokens forbedrer beskyttelsen af personlige oplysninger på nettet og kan 
 <translation id="7304873321153398381">Offline. Chrome kan ikke tjekke dine adgangskoder.</translation>
 <translation id="7313188324932846546">Tryk for at konfigurere synkronisering</translation>
 <translation id="7332075081379534664">Login blev fuldført</translation>
+<translation id="7333232495927792353">Synkroniser data for at få det mest relevante indhold fra Google</translation>
 <translation id="7339898014177206373">Nyt vindue</translation>
 <translation id="7340958967809483333">Indstillinger for Discover</translation>
 <translation id="7352339641508007922">Træk for at tage et langt screenshot</translation>
@@ -1529,6 +1533,7 @@ Trust tokens forbedrer beskyttelsen af personlige oplysninger på nettet og kan 
 <translation id="96681097142096641">Vil du se en forenklet side?</translation>
 <translation id="968900484120156207">De sider, du besøger, vises her</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> minutter tilbage</translation>
+<translation id="978443947993957527">Få personligt tilpasset indhold</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Luk alle faner</translation>
 <translation id="987264212798334818">Generelt</translation>

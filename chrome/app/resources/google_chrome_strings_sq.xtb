@@ -81,6 +81,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> është i identifikuar tashmë në këtë profil të Chrome. Për ta mbajtur shfletimin tënd të ndarë, Chrome mund të krijojë profilin tënd personal për ty.</translation>
 <translation id="2580411288591421699">Nuk mund të instalohet i njëjti version i Google Chrome që po ekzekutohet aktualisht. Mbylle Google Chrome dhe provo përsëri.</translation>
 <translation id="2586406160782125153">Kjo do të fshijë të dhënat e shfletimit nga kjo pajisje. Për t'i marrë më vonë të dhënat, identifikohu te Chrome si <ph name="USER_EMAIL" />.</translation>
+<translation id="2597976513418770460">Merr gjërat e tua në shfletuesin Chrome nga <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="2622559029861875898">Chrome nuk mund të kontrollojë për përditësime. Provo të kontrollosh lidhjen e internetit.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2652691236519827073">Hape lidhjen në një &amp;skedë të re të Chrome</translation>
@@ -311,6 +312,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="7801699035218095297">Google Chrome po përpiqet të kopjojë fjalëkalimet. Shkruaj fjalëkalimin tënd të Windows për ta lejuar këtë.</translation>
 <translation id="7808348361785373670">Hiqe nga Chrome...</translation>
 <translation id="7825851276765848807">Instalimi dështoi për shkak të një gabimi të papërcaktuar. Shkarkoje Google Chrome përsëri.</translation>
+<translation id="7880591377632733558">Mirë se vjen në Chrome, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="7890208801193284374">Nëse e ndan një kompjuter, miqtë dhe familja mund të shfletojnë veçmas dhe ta konfigurojnë Chrome pikërisht ashtu si dëshirojnë.</translation>
 <translation id="7896673875602241923">Dikush është identifikuar më parë në Chrome në këtë kompjuter si <ph name="ACCOUNT_EMAIL_LAST" />. Krijo një përdorues të ri të Chrome për t'i mbajtur të ndara informacionet e tua.</translation>
 <translation id="7917876797003313048">Mund t'i menaxhosh "Llogaritë e Google" ku je identifikuar. "Llogaritë e tua të Google" përdoren për shfletuesin Chrome, Play Store, Gmail etj. Nëse do të shtosh një llogari për dikë tjetër, si p.sh. anëtar të familjes, shto më mirë një person të ri te <ph name="DEVICE_TYPE" /> yt. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
@@ -336,6 +338,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="8418845734693287262">ChromeOS nuk mund t'i sinkronizonte të dhënat e tua sepse detajet e identifikimit të llogarisë nuk janë të përditësuara.</translation>
 <translation id="8421734018304082652">Chrome e bllokoi këtë skedar sepse ai është i enkriptuar. Kërkoji zotëruesit ta dekriptojë atë</translation>
 <translation id="8433638294851456451">Për të dërguar një numër nga këtu te telefoni yt Android, identifikohu në Chrome në të dyja pajisjet.</translation>
+<translation id="8451192282033883849">Llogaria jote menaxhohet nga <ph name="MANAGER_NAME" />. Administratori yt mund ta shikojë dhe ta modifikojë këtë profil të shfletuesit Chrome dhe të dhënat e tij, si p.sh. faqeshënuesit, historikun dhe fjalëkalimet.</translation>
 <translation id="8498858610309223613">Sapo është zbatuar një përditësim special i sigurisë për Google Chrome. Rinise tani dhe do të restaurojmë skedat e tua.</translation>
 <translation id="8504220326736535258">Chrome e bllokoi këtë skedar sepse ai ka softuer keqdashës</translation>
 <translation id="8516431725144212809">Interesat e tua sipas përllogaritjes nga Chrome</translation>

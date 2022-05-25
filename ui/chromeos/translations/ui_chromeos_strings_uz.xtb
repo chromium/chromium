@@ -121,6 +121,7 @@
 <translation id="1942765061641586207">Tasvirning piksellar sig‘imi</translation>
 <translation id="1972984168337863910">Fayllar holat panelini yoyish</translation>
 <translation id="1995337122023280937">Fayl joylashuviga kirish</translation>
+<translation id="1996806196681857869">Z turdagi arxiv</translation>
 <translation id="2001796770603320721">Google Drive orqali ochish</translation>
 <translation id="2009067268969781306">Xotira formatlansa, undagi barcha maʼlumotlar oʻchib ketadi. Bu amal bekor qilinmaydi.</translation>
 <translation id="2025955442973426285">Tigrinya</translation>
@@ -588,6 +589,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> ta obyekt</translation>
 <translation id="5957366693331451795">Chromeboxe qurilmalari</translation>
 <translation id="5982621672636444458">Saralash</translation>
+<translation id="5985041959109124139">Z turdagi tar arxiv</translation>
 <translation id="6007237601604674381">Ko‘chirib bo‘lmadi. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Ethernet tarmoq</translation>
 <translation id="60357267506638014">Chex (QWERTY)</translation>
@@ -618,6 +620,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="6220423280121890987">Panjob</translation>
 <translation id="6224240818060029162">Dan</translation>
 <translation id="6224253798271602650">Formatlash: <ph name="DRIVE_NAME" /></translation>
+<translation id="6224665423283788195">Zstandard turdagi arxiv</translation>
 <translation id="6227235786875481728">Bu faylni ijro etib bo‘lmaydi.</translation>
 <translation id="6241349547798190358">Golland (Belgiya)</translation>
 <translation id="6267547857941397424">Tarmoq: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, Telefon nomi: <ph name="PHONE_NAME" />, Signal darajasi: <ph name="SIGNAL_STRENGTH" />%, Telefon quvvati: <ph name="BATTERY_STATUS" />%, Ulanish</translation>
@@ -645,6 +648,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="6509122719576673235">Norvey tili</translation>
 <translation id="6528513914570774834">Bu tarmoqdan foydalanish uchun ushbu qurilmadagi boshqa foydalanuvchilarga ruxsat berish</translation>
 <translation id="653019979737152879">“<ph name="FILE_NAME" />” fayli sinxronlanmoqda...</translation>
+<translation id="6530595303336443929">Zstandard turdagi tar arxiv</translation>
 <translation id="6549689063733911810">Yaqinda</translation>
 <translation id="6558280019477628686">Xatolik yuz berdi. Ba’zi elementlar o‘chirilmadi.</translation>
 <translation id="656398493051028875">“<ph name="FILENAME" />” fayli o‘chirilmoqda...</translation>

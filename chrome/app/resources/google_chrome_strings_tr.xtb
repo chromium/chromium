@@ -77,6 +77,7 @@
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> kullanıcısının oturumu halihazırda bu Chrome profilinde açık. Göz atma işlemlerinizi ayrı tutmak isterseniz Chrome, sizin için kendi profilinizi oluşturabilir.</translation>
 <translation id="2580411288591421699">Şu anda çalışmakta olan Google Chrome ile aynı sürüm yüklenemez. Lütfen Google Chrome'u kapatın ve tekrar deneyin.</translation>
 <translation id="2586406160782125153">Bu işlem, tarama verilerinizi bu cihazdan silecektir. Verilerinizi daha sonra geri almak için Chrome'da <ph name="USER_EMAIL" /> hesabıyla oturum açın.</translation>
+<translation id="2597976513418770460"><ph name="ACCOUNT_EMAIL" /> hesabından Chrome tarayıcı öğelerinizi alın</translation>
 <translation id="2622559029861875898">Chrome güncellemeleri denetleyemiyor. İnternet bağlantınızı kontrol etmeyi deneyin.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2652691236519827073">Bağlantıyı Yeni Chrome &amp;sekmesinde aç</translation>
@@ -305,6 +306,7 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="7801699035218095297">Google Chrome şifreleri kopyalamaya çalışıyor. Buna izin vermek için Windows şifrenizi yazın.</translation>
 <translation id="7808348361785373670">Chrome'dan kaldır...</translation>
 <translation id="7825851276765848807">Yükleme belirtilmeyen bir hata nedeniyle başarısız oldu. Lütfen Google Chrome'u tekrar yükleyin.</translation>
+<translation id="7880591377632733558">Chrome'a hoş geldiniz <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="7890208801193284374">Bir bilgisayarı paylaşıyorsanız arkadaşlarınız ve aileniz web'e ayrı olarak göz atabilir ve Chrome'u tam olarak istedikleri şekilde ayarlayabilirler.</translation>
 <translation id="7896673875602241923">Birisi daha önce bu bilgisayarda <ph name="ACCOUNT_EMAIL_LAST" /> olarak Chrome oturumu açmış. Bilgilerinizi ayrı tutmak için yeni bir Chrome kullanıcısı oluşturun.</translation>
 <translation id="7917876797003313048">Oturum açılmış Google Hesaplarınızı yönetebilirsiniz. Google Hesaplarınız; Chrome tarayıcı, Play Store, Gmail ve daha başka yerlerde kullanılır. Aile üyesi gibi başka bir kullanıcı için hesap eklemek isterseniz bunun yerine <ph name="DEVICE_TYPE" /> cihazınıza yeni bir kişi ekleyin. <ph name="LINK_BEGIN" />Daha fazla bilgi<ph name="LINK_END" /></translation>
@@ -330,6 +332,7 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="8418845734693287262">Hesap oturum açma ayrıntılarınız güncel olmadığından ChromeOS, verilerinizi senkronize edemedi.</translation>
 <translation id="8421734018304082652">Şifrelenmiş olması nedeniyle bu dosya Chrome tarafından engellendi. Dosyanın sahibinden şifresini çözmesini isteyin.</translation>
 <translation id="8433638294851456451">Buradan Android telefonunuza numara göndermek için iki cihazdan da Chrome'da oturum açın.</translation>
+<translation id="8451192282033883849">Hesabınız <ph name="MANAGER_NAME" /> tarafından yönetiliyor. Yöneticiniz bu Chrome tarayıcı profilinin yanı sıra yer işaretleri, geçmiş ve şifreler gibi verilerini görüntüleyip düzenleyebilir.</translation>
 <translation id="8498858610309223613">Google Chrome için özel bir güvenlik güncellemesi uygulandı. Uygulamayı hemen yeniden başlatın; açık sekmeleriniz geri yüklenir.</translation>
 <translation id="8504220326736535258">Kötü amaçlı yazılım içermesi nedeniyle bu dosya Chrome tarafından engellendi</translation>
 <translation id="8516431725144212809">Chrome'un tahmin ettiği ilgi alanlarınız</translation>

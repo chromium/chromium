@@ -56,6 +56,7 @@
 <translation id="124678866338384709">Затвори ја тековната картичка</translation>
 <translation id="1246905108078336582">Дали да се отстрани предлогот од привремената меморија?</translation>
 <translation id="1258753120186372309">Google Doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">Список за читање</translation>
 <translation id="1266864766717917324">Не може да се сподели <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Допрете за да се прошири</translation>
 <translation id="1285310382777185058">Изменете го јазикот</translation>
@@ -493,10 +494,10 @@
 <translation id="363596933471559332">Автоматски најавувајте се на веб-сајтови со складирани акредитиви. Кога функцијата е исклучена, ќе се бара проверка од вас секогаш пред најавување на веб-сајт.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3677911431265050325">Побарај мобилна верзија на сајтот</translation>
-<translation id="3685860403008476208">Сите што го користат уредов може да ги видат датотеките што сте ги презеле во „Инкогнито“</translation>
 <translation id="3687645719033307815">Гледате преглед на страницава</translation>
 <translation id="3690369331356918524">Ве предупредува ако лозинките се откриени при упад во податоците</translation>
 <translation id="3692944402865947621">Преземањето на <ph name="FILE_NAME" /> не успеа бидејќи локацијата за складирање не е достапна.</translation>
+<translation id="3697705478071004188">Подреди според сајт</translation>
 <translation id="3699022356773522638">Да се преземе датотеката?</translation>
 <translation id="371230970611282515">Предвидува опасни настани и ве предупредува пред да се случат.</translation>
 <translation id="3714981814255182093">Отворете ја Лентата за пребарување</translation>
@@ -1308,6 +1309,7 @@
 <translation id="8103578431304235997">Инкогнито-картичка</translation>
 <translation id="8105613260829665809">Ако продолжите, се согласувате со <ph name="BEGIN_TOS_LINK" />Условите за користење<ph name="END_TOS_LINK" />.\nЗа да се подобри апликацијата, Chrome испраќа податоци за користењето и падовите во Google. <ph name="BEGIN_UMA_LINK" />Управувајте<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
+<translation id="8107530384992929318">Затворете ги опциите за подредување</translation>
 <translation id="8109613176066109935">За да ги добиете обележувачите на сите ваши уреди, вклучете ја синхронизацијата</translation>
 <translation id="8110024788458304985">Помогнете да се подобрат функциите и изведбата на Chrome</translation>
 <translation id="8110087112193408731">Да се прикажува вашата активност на Chrome во „Дигитална благосостојба“?</translation>
@@ -1381,6 +1383,7 @@
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Отворете ја страницата „Историја“</translation>
 <translation id="8493948351860045254">Ослободи простор</translation>
+<translation id="8497242791509864205">Отворете ги опциите за подредување</translation>
 <translation id="8497480609928300907">Објаснување за водичот за приватност</translation>
 <translation id="8497726226069778601">Нема што да се види тука... сѐ уште</translation>
 <translation id="8503559462189395349">Лозинки на Chrome</translation>

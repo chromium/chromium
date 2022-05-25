@@ -81,6 +81,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> er þegar innskráð(ur) á þennan Chrome prófíl. Chrome getur búið til sérstakan prófíl fyrir þig svo að þú getir haldið þinni vefskoðun aðskilinni.</translation>
 <translation id="2580411288591421699">Ekki er hægt að setja upp sömu útgáfu Google Chrome og er nú þegar í gangi. Lokaðu Google Chrome og reyndu aftur.</translation>
 <translation id="2586406160782125153">Þetta mun eyða vefskoðunargögnum úr þessu tæki. Skráðu þig inn í Chrome sem <ph name="USER_EMAIL" /> til að endurheimta gögnin síðar.</translation>
+<translation id="2597976513418770460">Sæktu Chrome gögnin þín frá <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="2622559029861875898">Chrome getur ekki athugað með uppfærslur. Athugaðu nettenginguna þína.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2652691236519827073">Opna tengil í nýjum &amp;flipa í Chrome</translation>
@@ -311,6 +312,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7801699035218095297">Google Chrome er að reyna að afrita aðgangsorð. Sláðu inn Windows-aðgangsorðið þitt til að leyfa það.</translation>
 <translation id="7808348361785373670">Fjarlægja úr Chrome...</translation>
 <translation id="7825851276765848807">Uppsetning mistókst vegna ótilgreindrar villu. Sæktu Google Chrome aftur.</translation>
+<translation id="7880591377632733558">Velkomin(n) í Chrome, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="7890208801193284374">Ef nokkrir eru um sömu tölvu geta vinir og fjölskyldumeðlimir vafrað hver á sínum prófíl og sett Chrome upp eins og hverjum og einum líkar best.</translation>
 <translation id="7896673875602241923">Einhver hefur skráð sig inn á Chrome í þessari tölvu sem <ph name="ACCOUNT_EMAIL_LAST" />. Búðu til nýjan notanda í Chrome til að halda upplýsingum ykkar aðskildum.</translation>
 <translation id="7917876797003313048">Þú getur stjórnað innskráðum Google reikningum þínum. Google reikningarnir þínir eru notaðir fyrir Chrome vafrann, Play Store, Gmail og fleira. Ef þú vilt bæta við reikningi fyrir einhvern annan, t.d. fjölskyldumeðlim, skaltu frekar bæta nýjum einstaklingi við <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Frekari upplýsingar<ph name="LINK_END" /></translation>
@@ -336,6 +338,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="8418845734693287262">ChromeOS gat ekki samstillt gögnin þín vegna þess að innskráningarupplýsingar reikningsins eru úreltar.</translation>
 <translation id="8421734018304082652">Chrome setti þessa skrá á bannlista vegna þess að hún er dulkóðuð. Biddu eiganda hennar að afkóða hana</translation>
 <translation id="8433638294851456451">Til að senda númer héðan í Android símann þinn skaltu skrá þig inn á Chrome í báðum tækjunum.</translation>
+<translation id="8451192282033883849">Reikningnum þínum er stjórnað af <ph name="MANAGER_NAME" />. Stjórnandinn þinn getur séð og breytt þessum Chrome vafraprófíl og gögnum hans á borð við bókamerki, feril og aðgangsorð.</translation>
 <translation id="8498858610309223613">Sérstök öryggisuppfærsla fyrir Google Chrome var tekin í notkun. Endurræstu núna og við opnum flipana þína aftur.</translation>
 <translation id="8504220326736535258">Chrome setti þessa skrá á bannlista því að hún inniheldur spilliforrit</translation>
 <translation id="8516431725144212809">Mat Chrome á áhugasviðum þínum</translation>

@@ -78,6 +78,7 @@
 <translation id="1578784163189013834">Vybrať pozadie šetriča obrazovky</translation>
 <translation id="1615335640928990664">Spotreba dát od <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Spustiť test nabitia</translation>
+<translation id="1631385268983122904">Zariadenie zatiaľ znova neskladajte</translation>
 <translation id="1639239467298939599">Prebieha načítavanie</translation>
 <translation id="1641857168437328880">Podávač dokumentov (jednostranný)</translation>
 <translation id="1643449475550628585">Denne meniť obrázok tapety</translation>
@@ -85,6 +86,7 @@
 <translation id="1645954272419197032">Potvrďte informácie zo zariadení</translation>
 <translation id="1662989795263954667">Zastavené – minul sa atrament</translation>
 <translation id="1668469839109562275">Vstavaná sieť VPN</translation>
+<translation id="1676557873873341166">Nahráva sa video</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Prekladač DNS je prítomný</translation>
 <translation id="1715359911173058521">Pri komunikácii so skenerom sa vyskytol problém. Skontrolujte pripojenie k sieti alebo rozhraniu USB a skúste to znova.</translation>
@@ -159,6 +161,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Ak chcete nájsť zariadenia v okolí, zapnite Bluetooth</translation>
+<translation id="2340422556570134524">Ochrana proti zápisu bola neočakávane zapnutá. Vypnite ju ručne a skúste to znova.</translation>
 <translation id="2346474577291266260">Vynikajúce (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">Pokračovať</translation>
 <translation id="2360257214555822463">Boli zistené <ph name="LINK_BEGIN" />nevhodné komponenty<ph name="LINK_END" />. Ak chcete potvrdiť, že boli nainštalované, urobte tak teraz.</translation>
@@ -474,6 +477,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="5372659122375744710">Sieť Wi‑Fi nie je zabezpečená</translation>
 <translation id="5376354385557966694">Automatický svetlý režim</translation>
 <translation id="537872351913703572">Zariadenie bude doručené inému používateľovi alebo organizácii</translation>
+<translation id="5389159777326897627">Tapeta a štýl</translation>
 <translation id="5389224261615877010">Dúha</translation>
 <translation id="5395600419410242651">Vymazať všetky údaje</translation>
 <translation id="5400907029458559844">Zariadenie sa pripája.</translation>
@@ -643,6 +647,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="6961170852793647506">Začnite položením dokumentu na skener</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">Revízia firmvéru</translation>
+<translation id="6995564396478647735">Skontrolujte, či je zapnutá ochrana proti zápisu</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> spravuje toto zariadenie a má prístup k všetkým aktivitám používateľa vrátane navštívených webových stránok, hesiel a pošty.</translation>
 <translation id="7040230719604914234">Operátor</translation>
 <translation id="7041549558901442110">Zariadenie nie je pripojené.</translation>
@@ -653,6 +658,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Nepodarilo sa – nepodarilo sa autorizovať</translation>
 <translation id="7103252855940681301"><ph name="INDEX" />. zariadenie z <ph name="COUNT" /> s názvom <ph name="NAME" />.</translation>
+<translation id="7126228745139711113">Ochrana proti zápisu je vypnutá</translation>
 <translation id="7134436342991564651">{0,plural, =1{Menný server}few{Menné servery}many{Name servers}other{Menné servery}}</translation>
 <translation id="7143207342074048698">Pripája sa</translation>
 <translation id="7144878232160441200">Skúsiť znova</translation>
@@ -744,6 +750,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="80398733265834479">Povoliť automatický farebný režim</translation>
 <translation id="8041089156583427627">Odoslať spätnú väzbu</translation>
 <translation id="8045012663542226664">Vypnutie zvuku mikrofónu</translation>
+<translation id="8063022551652308521">Ochrana proti zápisu je stále vypnutá. Ak chcete pokračovať, zapnite ju.</translation>
 <translation id="8075838845814659848">Zostávajúca úroveň batérie</translation>
 <translation id="8082366717211101304">DNS sa nedá preložiť v aplikáciách pre Android</translation>
 <translation id="8083281199617904460">Túto opravu môže vykonať iba školený technik. Začnite iba po výmene chybných komponentov.</translation>
@@ -814,6 +821,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Spravujte túto funkciu pomocou ľavej alebo pravej šípky.</translation>
 <translation id="8712637175834984815">Dobre</translation>
 <translation id="871560550817059752">Nepodarilo sa – minul sa atrament</translation>
+<translation id="8717030727630712160">Obnovuje sa proces opravy…</translation>
 <translation id="8723108084122415655">Nepredvolená sieť prekračuje úroveň latencie</translation>
 <translation id="8725066075913043281">Skúsiť znova</translation>
 <translation id="8726019395068607495">Zastavené – dvierka sú otvorené</translation>
@@ -835,6 +843,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Zariadenie je tablet.</translation>
 <translation id="8881098542468797602">Test bol úspešný</translation>
+<translation id="8897267175591692539">Teraz môžete zariadenie znova zložiť</translation>
 <translation id="8898840733695078011">Sila signálu</translation>
 <translation id="8910721771319628100">Predvolená sieť prekračuje prah latencie</translation>
 <translation id="8918637186205009138">Zariadenie <ph name="DEVICE_TYPE" /> používateľa <ph name="GIVEN_NAME" /></translation>

@@ -121,6 +121,7 @@
 <translation id="1942765061641586207">છબી રિઝોલ્યુશન</translation>
 <translation id="1972984168337863910">ફાઇલોના પ્રતિસાદની પૅનલ મોટી કરો</translation>
 <translation id="1995337122023280937">ફાઇલના સ્થાન પર જાઓ</translation>
+<translation id="1996806196681857869">Z દ્વારા નાનું કરવામાં આવેલું આર્કાઇવ</translation>
 <translation id="2001796770603320721">ડ્રાઇવમાં મેનેજ કરો</translation>
 <translation id="2009067268969781306">ડ્રાઇવને ફોર્મેટ કરવાથી તેના પર સ્ટોર કરેલો બધો ડેટા ડિલીટ થઈ જશે. આ છેલ્લા ફેરફારને રદ કરી શકાતો નથી.</translation>
 <translation id="2025955442973426285">ટિગ્રિન્યા</translation>
@@ -589,6 +590,7 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> આઇટમ</translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">સૉર્ટ કરવા માટેના વિકલ્પો</translation>
+<translation id="5985041959109124139">Z દ્વારા નાનું કરવામાં આવેલું tar આર્કાઇવ</translation>
 <translation id="6007237601604674381">ખસેડવું નિષ્ફળ થયું. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">ઇથરનેટ નેટવર્ક</translation>
 <translation id="60357267506638014">ચેક QWERTY</translation>
@@ -619,6 +621,7 @@
 <translation id="6220423280121890987">પંજાબી</translation>
 <translation id="6224240818060029162">ડેનિશ</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" />ને ફોર્મેટ કરો</translation>
+<translation id="6224665423283788195">Z માનક દ્વારા નાનું કરવામાં આવેલું આર્કાઇવ</translation>
 <translation id="6227235786875481728">આ ફાઇલ ચલાવી શકાઈ નથી.</translation>
 <translation id="6241349547798190358">ડચ (બેલ્જિયમ)</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_COUNT" />માંથી <ph name="NETWORK_INDEX" /> નેટવર્ક, <ph name="PHONE_NAME" />, સિગ્નલની સશક્તતા <ph name="SIGNAL_STRENGTH" />%, ફોનની બૅટરી <ph name="BATTERY_STATUS" />%, કનેક્ટ કરો</translation>
@@ -646,6 +649,7 @@
 <translation id="6509122719576673235">નોર્વેજીયન</translation>
 <translation id="6528513914570774834">આ ઉપકરણના અન્ય વપરાશકર્તાઓને આ નેટવર્ક વાપરવાની મંજૂરી આપો</translation>
 <translation id="653019979737152879"><ph name="FILE_NAME" /> સમન્વયિત કરી રહ્યું છે...</translation>
+<translation id="6530595303336443929">Z માનક દ્વારા નાનું કરવામાં આવેલું tar આર્કાઇવ</translation>
 <translation id="6549689063733911810">તાજેતરનું</translation>
 <translation id="6558280019477628686">એક ભૂલ આવી. અમુક આઇટમ કદાચ ડિલીટ કરી શકાઈ નથી.</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />" કાઢી નાખી રહ્યું છે...</translation>

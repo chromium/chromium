@@ -78,6 +78,7 @@
 <translation id="1578784163189013834">Дэлгэц амраагчийн арын дэвсгэрийг сонгох</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" />-с хойших дата ашиглалт</translation>
 <translation id="1621067168122174824">Цэнэглэх туршилтыг ажиллуулах</translation>
+<translation id="1631385268983122904">Одоохондоо төхөөрөмжийг бүү угсраарай</translation>
 <translation id="1639239467298939599">Ачаалж байна</translation>
 <translation id="1641857168437328880">Документыг дамжуулах тавиур (Нэг талаар нь)</translation>
 <translation id="1643449475550628585">Дэлгэцийн зургийг өдөр бүр өөрчлөх</translation>
@@ -85,6 +86,7 @@
 <translation id="1645954272419197032">Төхөөрөмжийн мэдээллийг баталгаажуулна уу</translation>
 <translation id="1662989795263954667">Зогссон - Хэвлэгчийн хор дууссан</translation>
 <translation id="1668469839109562275">Бүрэлдэхүүн VPN</translation>
+<translation id="1676557873873341166">Видео бичиж байна</translation>
 <translation id="1703835215927279855">Захидал</translation>
 <translation id="1706391837335750954">DNS тайлагчийг үзүүлэх</translation>
 <translation id="1715359911173058521">Сканнертай холбогдоход асуудал гарлаа. Сүлжээ эсвэл USB холболтыг шалгаад, дахин оролдоно уу.</translation>
@@ -159,6 +161,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2336381494582898602">Үйлдвэрийн тохиргоонд нь буцааж оруулах</translation>
 <translation id="2338501278241028356">Ойролцоох төхөөрөмж хайхын тулд Bluetooth-г асаана уу</translation>
+<translation id="2340422556570134524">Write Protect гэнэт ассан. Дахин оролдохоос өмнө Write Protect-г гар аргаар унтраана уу.</translation>
 <translation id="2346474577291266260">Маш сайн (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">Цааш</translation>
 <translation id="2360257214555822463"><ph name="LINK_BEGIN" />Шаардлага хангаагүй бүрэлдэхүүн хэсгүүд<ph name="LINK_END" /> илэрлээ. Хэрэв та үүнийг суулгасан болохыг баталгаажуулахаар сонгосон бол одоо хийнэ үү.</translation>
@@ -474,6 +477,7 @@
 <translation id="5372659122375744710">Wi-Fi сүлжээ аюулгүй биш байна</translation>
 <translation id="5376354385557966694">Автомат гэрэлтэй горим</translation>
 <translation id="537872351913703572">Төхөөрөмж өөр хэрэглэгч эсвэл байгууллага руу очих болно</translation>
+<translation id="5389159777326897627">Дэлгэцийн зураг &amp; стиль</translation>
 <translation id="5389224261615877010">Солонго</translation>
 <translation id="5395600419410242651">Бүх өгөгдлийг устгах</translation>
 <translation id="5400907029458559844">Төхөөрөмж холбогдож байна.</translation>
@@ -643,6 +647,7 @@
 <translation id="6961170852793647506">Эхлүүлэхийн тулд документоо сканнер дээр байрлуулна уу</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">Жижиг программын шалгалт</translation>
+<translation id="6995564396478647735">Write Protect асаалттай эсэхийг шалгана уу</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> энэ төхөөрөмжийг удирддаг бөгөөд хэрэглэгчийн зочилсон веб хуудас, нууц үг болон имэйл зэрэг бүх үйл ажиллагаанд хандах эрхтэй.</translation>
 <translation id="7040230719604914234">Оператор</translation>
 <translation id="7041549558901442110">Төхөөрөмж холбогдоогүй байна.</translation>
@@ -653,6 +658,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Амжилтгүй боллоо - Баталгаажуулалт амжилтгүй боллоо</translation>
 <translation id="7103252855940681301"><ph name="NAME" /> гэсэн нэртэй <ph name="COUNT" />-н <ph name="INDEX" />-р төхөөрөмж.</translation>
+<translation id="7126228745139711113">Write Protect унтраалттай байна</translation>
 <translation id="7134436342991564651">{0,plural, =1{Нэрийн сервер}other{Нэрийн серверүүд}}</translation>
 <translation id="7143207342074048698">Холбож байна</translation>
 <translation id="7144878232160441200">Дахин оролдох</translation>
@@ -744,6 +750,7 @@
 <translation id="80398733265834479">Автомат өнгөний горимыг идэвхжүүлэх</translation>
 <translation id="8041089156583427627">Санал хүсэлт илгээх</translation>
 <translation id="8045012663542226664">Микрофоны дууг хаах</translation>
+<translation id="8063022551652308521">Write Protect унтраалттай хэвээр байна. Үргэлжлүүлэхийн тулд Write Protect-г асаана уу.</translation>
 <translation id="8075838845814659848">Үлдсэн цэнэг</translation>
 <translation id="8082366717211101304">Android аппуудаас DNS-г шийдвэрлэх боломжгүй</translation>
 <translation id="8083281199617904460">Энэ засварын явц нь бэлтгэгдсэн засварын техникчид зориулагдсан. Зөвхөн гэмтэлтэй бүрэлдэхүүн хэсгүүдийг сольсныхоо дараа эхэлнэ үү.</translation>
@@ -814,6 +821,7 @@
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Энэ онцлогийг удирдахын тулд Зүүн эсвэл Баруун суман товчийг ашиглана уу.</translation>
 <translation id="8712637175834984815">Ойлголоо</translation>
 <translation id="871560550817059752">Амжилтгүй болсон - Бэх дууссан</translation>
+<translation id="8717030727630712160">Засах явцыг үргэлжлүүлж байна…</translation>
 <translation id="8723108084122415655">Өгөгдмөл бус сүлжээ хоцролтын хязгаараас дээш байна</translation>
 <translation id="8725066075913043281">Дахин оролдож үзнэ үү.</translation>
 <translation id="8726019395068607495">Зогссон - Таг нээлттэй</translation>
@@ -835,6 +843,7 @@
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Төхөөрөмж нь таблет байна.</translation>
 <translation id="8881098542468797602">Туршилт амжилттай боллоо</translation>
+<translation id="8897267175591692539">Та одоо төхөөрөмжийг угсарч болно</translation>
 <translation id="8898840733695078011">Дохионы хүч</translation>
 <translation id="8910721771319628100">Өгөгдмөл сүлжээ хоцролтын хязгаараас дээш байна</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />-н <ph name="DEVICE_TYPE" /></translation>

@@ -78,6 +78,7 @@
 <translation id="1578784163189013834">ಸ್ಕ್ರೀನ್ ಸೇವರ್ ಹಿನ್ನೆಲೆಯನ್ನು ಆಯ್ಕೆ ಮಾಡಿ</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> ರಿಂದ ಡೇಟಾ ಬಳಕೆ</translation>
 <translation id="1621067168122174824">ಚಾರ್ಜ್‌ ಪರೀಕ್ಷೆಯನ್ನು ರನ್‌ ಮಾಡಿ</translation>
+<translation id="1631385268983122904">ಸದ್ಯಕ್ಕೆ, ಸಾಧನವನ್ನು ಸಂಪರ್ಕ ಕಡಿತಗೊಳಿಸಿ</translation>
 <translation id="1639239467298939599">ಲೋಡ್ ಆಗುತ್ತಿದೆ</translation>
 <translation id="1641857168437328880">ಡಾಕ್ಯುಮೆಂಟ್ ಫೀಡರ್ (ಒಂದು-ಬದಿಯದ್ದು)</translation>
 <translation id="1643449475550628585">ವಾಲ್‌ಪೇಪರ್ ಚಿತ್ರವನ್ನು ಪ್ರತಿದಿನ ಬದಲಾಯಿಸಿ</translation>
@@ -85,6 +86,7 @@
 <translation id="1645954272419197032">ಸಾಧನದ ಮಾಹಿತಿಯನ್ನು ದೃಢೀಕರಿಸಿ</translation>
 <translation id="1662989795263954667">ನಿಲ್ಲಿಸಲಾಗಿದೆ - ಇಂಕ್ ಖಾಲಿಯಾಗಿದೆ</translation>
 <translation id="1668469839109562275">ಬಿಲ್ಟ್-ಇನ್ VPN</translation>
+<translation id="1676557873873341166">ವೀಡಿಯೊ ಕ್ಯಾಪ್ಚರ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS ರೀಸಾಲ್ವರ್ ಅಸ್ತಿತ್ವ</translation>
 <translation id="1715359911173058521">ಸ್ಕ್ಯಾನರ್ ಜೊತೆ ಸಂವಹನ ನಡೆಸುವಾಗ ಸಮಸ್ಯೆ ಎದುರಾಗಿದೆ. ನೆಟ್‌ವರ್ಕ್ ಅಥವಾ USB ಕನೆಕ್ಷನ್ ಅನ್ನು ಪರಿಶೀಲಿಸಿ ಹಾಗೂ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
@@ -159,6 +161,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2336381494582898602">ಪವರ್‌ವಾಶ್</translation>
 <translation id="2338501278241028356">ಸಮೀಪದ ಸಾಧನಗಳನ್ನು ಅನ್ವೇಷಿಸಲು ಬ್ಲೂಟೂತ್ ಆನ್ ಮಾಡಿ</translation>
+<translation id="2340422556570134524">ರೈಟ್ ಪ್ರೊಟೆಕ್ಟ್ ಅನ್ನು ಅನಿರೀಕ್ಷಿತವಾಗಿ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ. ಮತ್ತೊಮ್ಮೆ ಪ್ರಯತ್ನಿಸುವ ಮೊದಲು ರೈಟ್ ಪ್ರೊಟೆಕ್ಟ್ ಅನ್ನು ಹಸ್ತಚಾಲಿತವಾಗಿ ಆಫ್ ಮಾಡಿ.</translation>
 <translation id="2346474577291266260">ಅತ್ಯುತ್ತಮ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">ಮುಂದುವರೆಸಿ</translation>
 <translation id="2360257214555822463"><ph name="LINK_BEGIN" />ಅನರ್ಹ ಕಾಂಪೋನೆಂಟ್‌ಗಳು<ph name="LINK_END" /> ಪತ್ತೆಯಾಗಿವೆ. ಇದನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾಗಿದೆ ಎಂದು ಖಚಿತಪಡಿಸಲು ನೀವು ಆರಿಸಿದರೆ, ಈಗಲೇ ಮಾಡಿ.</translation>
@@ -473,6 +476,7 @@
 <translation id="5372659122375744710">ವೈಫೈ ನೆಟ್‌ವರ್ಕ್ ಸುರಕ್ಷಿತವಾಗಿಲ್ಲ</translation>
 <translation id="5376354385557966694">ಸ್ವಯಂಚಾಲಿತ ಬೆಳಕಿನ ಮೋಡ್</translation>
 <translation id="537872351913703572">ಸಾಧನವು ಬೇರೆ ಬಳಕೆದಾರರು ಅಥವಾ ಸಂಸ್ಥೆಗೆ ಹೋಗುತ್ತದೆ</translation>
+<translation id="5389159777326897627">ವಾಲ್‌ಪೇಪರ್ &amp; ಸ್ಟೈಲ್</translation>
 <translation id="5389224261615877010">ಕಾಮನಬಿಲ್ಲಿನ ಬಣ್ಣ</translation>
 <translation id="5395600419410242651">ಎಲ್ಲಾ ಡೇಟಾವನ್ನು ಅಳಿಸಿ</translation>
 <translation id="5400907029458559844">ಸಾಧನವು ಕನೆಕ್ಟ್ ಆಗುತ್ತಿದೆ.</translation>
@@ -642,6 +646,7 @@
 <translation id="6961170852793647506">ಪ್ರಾರಂಭಿಸಲು, ನಿಮ್ಮ ಡಾಕ್ಯುಮೆಂಟ್ ಅನ್ನು ಸ್ಕ್ಯಾನರ್‌ನ ಮೇಲಿರಿಸಿ</translation>
 <translation id="6965382102122355670">ಸರಿ</translation>
 <translation id="6977381486153291903">ಫರ್ಮ್‌ವೇರ್ ಮರುಪರಿಶೀಲನೆ</translation>
+<translation id="6995564396478647735">ರೈಟ್ ಪ್ರೊಟೆಕ್ಟ್ ಆನ್ ಆಗಿದೆಯೇ ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ</translation>
 <translation id="7028979494427204405">ಈ ಸಾಧನವನ್ನು <ph name="MANAGER" /> ನಿರ್ವಹಿಸುತ್ತದೆ ಮತ್ತು ಬಳಕೆದಾರರು ಭೇಟಿ ನೀಡಿದ ವೆಬ್‌ಪುಟಗಳು, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಹಾಗೂ ಇಮೇಲ್ ಸೇರಿದಂತೆ ಅವರ ಎಲ್ಲಾ ಚಟುವಟಿಕೆಗಳಿಗೆ ಪ್ರವೇಶ ಹೊಂದಿರುತ್ತದೆ.</translation>
 <translation id="7040230719604914234">ಆಪರೇಟರ್</translation>
 <translation id="7041549558901442110">ಸಾಧನವು ಕನೆಕ್ಟ್ ಆಗಿಲ್ಲ.</translation>
@@ -652,6 +657,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">ವಿಫಲವಾಗಿದೆ - ದೃಢೀಕರಣ ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="7103252855940681301"><ph name="COUNT" /> ರಲ್ಲಿ <ph name="INDEX" />ನೇ ಸಾಧನವನ್ನು <ph name="NAME" /> ಎಂದು ಹೆಸರಿಸಲಾಗಿದೆ.</translation>
+<translation id="7126228745139711113">ರೈಟ್ ಪ್ರೊಟೆಕ್ಟ್ ಅನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="7134436342991564651">{0,plural, =1{ಸರ್ವರ್ ಹೆಸರು}one{ಸರ್ವರ್‌ಗಳ ಹೆಸರು}other{ಸರ್ವರ್‌ಗಳ ಹೆಸರು}}</translation>
 <translation id="7143207342074048698">ಕನೆಕ್ಟ್...</translation>
 <translation id="7144878232160441200">ಮರುಪ್ರಯತ್ನಿಸಿ</translation>
@@ -743,6 +749,7 @@
 <translation id="80398733265834479">ಸ್ವಯಂಚಾಲಿತ ಬಣ್ಣದ ಮೋಡ್ ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="8041089156583427627">ಪ್ರತಿಕ್ರಿಯೆ ಕಳುಹಿಸಿ</translation>
 <translation id="8045012663542226664">ಮೈಕ್ರೊಫೋನ್‌ ಮ್ಯೂಟ್ ಕೀ</translation>
+<translation id="8063022551652308521">ರೈಟ್ ಪ್ರೊಟೆಕ್ಟ್ ಅನ್ನು ಈಗಲೂ ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ. ಮುಂದುವರೆಯಲು, ರೈಟ್ ಪ್ರೊಟೆಕ್ಟ್ ಆನ್ ಮಾಡಿ.</translation>
 <translation id="8075838845814659848">ಉಳಿದಿರುವ ಚಾರ್ಜ್</translation>
 <translation id="8082366717211101304">Android ಆ್ಯಪ್‌ಗಳ ಮೂಲಕ DNS ಅನ್ನು ಬಗೆಹರಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ</translation>
 <translation id="8083281199617904460">ಈ ರಿಪೇರಿ ಪ್ರಕ್ರಿಯೆಯನ್ನು ತರಬೇತಿ ಪಡೆದ ರಿಪೇರಿ ಮಾಡುವ ತಂತ್ರಜ್ಞರಿಗೆ ಮಾಡುವಂತೆ ತಿಳಿಸಲಾಗಿದೆ. ಸಮರ್ಪಕವಾಗಿ ಕಾರ್ಯನಿರ್ವಹಿಸದ ಕಾಂಪೋನೆಂಟ್‌ಗಳನ್ನು ಬದಲಿಸಿದ ನಂತರವೇ ಪ್ರಾರಂಭಿಸಿ.</translation>
@@ -813,6 +820,7 @@
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> ಈ ಫೀಚರ್ ಅನ್ನು ನಿರ್ವಹಿಸಲು ಎಡ ಅಥವಾ ಬಲ ಆ್ಯರೋ ಕೀಗಳನ್ನು ಬಳಸಿ.</translation>
 <translation id="8712637175834984815">ಅರ್ಥವಾಯಿತು</translation>
 <translation id="871560550817059752">ವಿಫಲವಾಗಿದೆ - ಇಂಕ್ ಖಾಲಿಯಾಗಿದೆ</translation>
+<translation id="8717030727630712160">ದುರಸ್ತಿ ಪ್ರಕ್ರಿಯೆಯನ್ನು ಪುನರಾರಂಭಿಸಲಾಗುತ್ತಿದೆ…</translation>
 <translation id="8723108084122415655">ವಿಳಂಬ ಥ್ರೆಶ್‌ಹೋಲ್ಡ್‌ ಮೇಲಿನ ಡೀಫಾಲ್ಟ್ ಅಲ್ಲದ ನೆಟ್‌ವರ್ಕ್</translation>
 <translation id="8725066075913043281">ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="8726019395068607495">ನಿಲ್ಲಿಸಲಾಗಿದೆ - ಡೋರ್ ಓಪನ್ ಆಗಿದೆ</translation>
@@ -834,6 +842,7 @@
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">ಸಾಧನವು ಟ್ಯಾಬ್ಲೆಟ್ ಆಗಿದೆ.</translation>
 <translation id="8881098542468797602">ಪರೀಕ್ಷೆ ಯಶಸ್ವಿಯಾಗಿದೆ</translation>
+<translation id="8897267175591692539">ಸಾಧನವನ್ನು ಈಗ ಮತ್ತೆ ಜೋಡಿಸಬಹುದು</translation>
 <translation id="8898840733695078011">ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ</translation>
 <translation id="8910721771319628100">ವಿಳಂಬ ಥ್ರೆಶ್‌ಹೋಲ್ಡ್‌ ಮೇಲಿನ ಡೀಫಾಲ್ಟ್ ನೆಟ್‌ವರ್ಕ್</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />ನ <ph name="DEVICE_TYPE" /></translation>

@@ -80,6 +80,7 @@
 <translation id="2574930892358684005">‏سبَق تسجيل دخول <ph name="EXISTING_USER" /> إلى هذا الملف الشخصي على Chrome. للحصول على تجربة تصفّح منفصلة، يمكن لمتصفِّح Chrome إنشاء ملف شخصي خاص بك.</translation>
 <translation id="2580411288591421699">‏لا يمكن تثبيت نفس الإصدار المثبت من Google Chrome والذي يتم تشغيله حاليًا. يُرجى إغلاق Google Chrome وإعادة المحاولة.</translation>
 <translation id="2586406160782125153">‏سيؤدي هذا إلى حذف بيانات التصفح من هذا الجهاز. لاسترداد بياناتك لاحقًا، سجّل الدخول إلى Chrome كـ <ph name="USER_EMAIL" />.</translation>
+<translation id="2597976513418770460">‏يمكنك الاطّلاع على بياناتك في متصفِّح Chrome من خلال <ph name="ACCOUNT_EMAIL" />.</translation>
 <translation id="2622559029861875898">‏يتعذّر على Chrome البحث عن تحديثات. يُرجى التحقّق من اتصال الإنترنت.</translation>
 <translation id="2645435784669275700">‏نظام التشغيل Chrome</translation>
 <translation id="2652691236519827073">‏فتح الرابط في علامة تبويب جديدة في Chrome</translation>
@@ -304,6 +305,7 @@
 <translation id="7801699035218095297">‏يحاول Google Chrome نسخ كلمات المرور. اكتب كلمة مرور Windows للسماح بذلك.</translation>
 <translation id="7808348361785373670">‏جارٍ الإزالة من Chrome...</translation>
 <translation id="7825851276765848807">‏فشل التثبيت نظرًا لحدوث خطأ غير محدد. يُرجى تنزيل Google Chrome مرة أخرى.</translation>
+<translation id="7880591377632733558">‏<ph name="ACCOUNT_FIRST_NAME" />، مرحبًا بك في Chrome.</translation>
 <translation id="7890208801193284374">‏إذا كنت تشارك الكمبيوتر مع أصدقائك وعائلتك، فبإمكانهم التصفح على حدة وإعداد Chrome على النحو الذي يريدونه.</translation>
 <translation id="7896673875602241923">‏سجّل شخص ما الدخول من قبل إلى Chrome على جهاز الكمبيوتر هذا باسم <ph name="ACCOUNT_EMAIL_LAST" />. يُرجى إنشاء حساب مستخدم جديد في Chrome للإبقاء على معلوماتك بشكلٍ منفصل.</translation>
 <translation id="7917876797003313048">‏يمكنك إدارة حسابات Google التي تم تسجيل الدخول إليها. يتم استخدام حساباتك على Google في متصفّح Chrome و"متجر Play" وGmail والمزيد. إذا أردت إضافة حساب لمستخدم آخر، مثل أحد أفراد العائلة، أضِف شخصًا جديدًا إلى <ph name="DEVICE_TYPE" /> بدلاً من ذلك. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
@@ -329,6 +331,7 @@
 <translation id="8418845734693287262">‏تعذّر على نظام التشغيل Chrome مزامنة البيانات لأن تفاصيل تسجيل الدخول إلى حسابك قديمة.</translation>
 <translation id="8421734018304082652">‏حَظَر Chrome هذا الملف لأنّه ملف مُشفَّر. يمكنك أن تطلب من مالك الملف فك تشفيره.</translation>
 <translation id="8433638294851456451">‏لإرسال رقم من هذا الجهاز إلى جهازك الذي يعمل بنظام التشغيل Android، يُرجى تسجيل الدخول إلى متصفِّح Chrome على الجهازَين.</translation>
+<translation id="8451192282033883849">‏تتم إدارة حسابك من خلال <ph name="MANAGER_NAME" />. وبإمكان المشرف الاطّلاع على الملف الشخصي لمتصفّح Chrome وتعديل بياناته، مثل الإشارات المرجعية والسجلّ وكلمات المرور.</translation>
 <translation id="8498858610309223613">‏تم للتو تطبيق تحديث أمان خاص لمتصفِّح Google Chrome. ويمكنك الآن إعادة التشغيل وستتم استعادة علامات التبويب.</translation>
 <translation id="8504220326736535258">‏حَظَر Chrome هذا الملف لأنّه يحتوي على برامج ضارة.</translation>
 <translation id="8516431725144212809">‏اهتماماتك حسب تقدير Chrome</translation>

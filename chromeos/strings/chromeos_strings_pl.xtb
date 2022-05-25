@@ -78,6 +78,7 @@
 <translation id="1578784163189013834">Wybierz tło wygaszacza ekranu</translation>
 <translation id="1615335640928990664">Użycie danych od <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Przeprowadź test ładowania</translation>
+<translation id="1631385268983122904">Jeszcze nie składaj urządzenia z powrotem</translation>
 <translation id="1639239467298939599">Wczytuję</translation>
 <translation id="1641857168437328880">Podajnik dokumentów (jednostronny)</translation>
 <translation id="1643449475550628585">Zmieniaj obraz tapety codziennie</translation>
@@ -85,6 +86,7 @@
 <translation id="1645954272419197032">Potwierdź informacje o urządzeniu</translation>
 <translation id="1662989795263954667">Zatrzymano – brak tuszu</translation>
 <translation id="1668469839109562275">Wbudowana sieć VPN</translation>
+<translation id="1676557873873341166">Nagrywam obraz</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Resolver DNS – obecność</translation>
 <translation id="1715359911173058521">Wystąpił problem z komunikacją ze skanerem. Sprawdź połączenie sieciowe lub połączenie USB i spróbuj ponownie.</translation>
@@ -159,6 +161,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Włącz Bluetooth, by wykryć urządzenia w pobliżu</translation>
+<translation id="2340422556570134524">Niespodziewanie zostało włączone zabezpieczenie przed zapisem. Zanim spróbujesz ponownie, wyłącz je ręcznie.</translation>
 <translation id="2346474577291266260">Świetna (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">Dalej</translation>
 <translation id="2360257214555822463">Wykryto <ph name="LINK_BEGIN" />niezgodne komponenty<ph name="LINK_END" />. Jeśli chcesz potwierdzić, że zostały one zainstalowane, zrób to teraz.</translation>
@@ -474,6 +477,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="5372659122375744710">Sieć Wi-Fi nie jest bezpieczna</translation>
 <translation id="5376354385557966694">Automatyczny tryb jasny</translation>
 <translation id="537872351913703572">Właścicielem urządzenia zostanie inny użytkownik lub inna organizacja</translation>
+<translation id="5389159777326897627">Tapeta i styl</translation>
 <translation id="5389224261615877010">Tęcza</translation>
 <translation id="5395600419410242651">Usuń wszystkie dane</translation>
 <translation id="5400907029458559844">Urządzenie się łączy.</translation>
@@ -643,6 +647,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="6961170852793647506">Aby rozpocząć, umieść dokument na skanerze</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">Wersja oprogramowania</translation>
+<translation id="6995564396478647735">Włącz zabezpieczenie przed zapisem</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> zarządza tym urządzeniem i ma dostęp do wszelkiej aktywności użytkownika, w tym odwiedzanych stron internetowych, haseł i e-maili.</translation>
 <translation id="7040230719604914234">Operator</translation>
 <translation id="7041549558901442110">Urządzenie nie ma połączenia.</translation>
@@ -653,6 +658,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Niepowodzenie – nieudana autoryzacja</translation>
 <translation id="7103252855940681301">Urządzenie <ph name="INDEX" /> z <ph name="COUNT" /> o nazwie <ph name="NAME" />.</translation>
+<translation id="7126228745139711113">Zabezpieczenie przed zapisem jest wyłączone</translation>
 <translation id="7134436342991564651">{0,plural, =1{Serwer nazw}few{Serwery nazw}many{Serwery nazw}other{Serwery nazw}}</translation>
 <translation id="7143207342074048698">Łączenie</translation>
 <translation id="7144878232160441200">Spróbuj jeszcze raz</translation>
@@ -744,6 +750,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="80398733265834479">Włącz automatyczny tryb kolorów</translation>
 <translation id="8041089156583427627">Prześlij opinię</translation>
 <translation id="8045012663542226664">Wyciszenie mikrofonu</translation>
+<translation id="8063022551652308521">Zabezpieczenie przed zapisem jest wciąż wyłączone. Włącz je, aby chronić dane.</translation>
 <translation id="8075838845814659848">Stan naładowania</translation>
 <translation id="8082366717211101304">Nie udało się znaleźć DNS w aplikacjach na Androida</translation>
 <translation id="8083281199617904460">Proces naprawy powinien zostać przeprowadzony przez wykwalifikowanego specjalistę. Przed rozpoczęciem wymień wadliwe komponenty.</translation>
@@ -814,6 +821,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Aby zarządzać tą funkcją, naciskaj klawisze strzałek w lewo lub w prawo.</translation>
 <translation id="8712637175834984815">Rozumiem</translation>
 <translation id="871560550817059752">Niepowodzenie – brak tuszu</translation>
+<translation id="8717030727630712160">Wznawiam proces naprawy…</translation>
 <translation id="8723108084122415655">Sieć inna niż domyślna przekroczyła próg opóźnienia</translation>
 <translation id="8725066075913043281">Spróbuj ponownie</translation>
 <translation id="8726019395068607495">Zatrzymano – otwarte drzwiczki drukarki</translation>
@@ -835,6 +843,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Urządzenie to tablet.</translation>
 <translation id="8881098542468797602">Test zakończył się powodzeniem</translation>
+<translation id="8897267175591692539">Teraz możesz z powrotem złożyć urządzenie</translation>
 <translation id="8898840733695078011">Siła sygnału</translation>
 <translation id="8910721771319628100">Sieć domyślna przekroczyła próg opóźnienia</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />: <ph name="DEVICE_TYPE" /></translation>

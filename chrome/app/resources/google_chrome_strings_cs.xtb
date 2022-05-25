@@ -81,6 +81,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="2574930892358684005">Uživatel <ph name="EXISTING_USER" /> už je k tomuto profilu Chrome přihlášen. Chcete-li své procházení oddělit, Chrome vám může vytvořit vlastní profil.</translation>
 <translation id="2580411288591421699">Nelze nainstalovat verzi aplikace Google Chrome, která je právě spuštěná. Ukončete aplikaci Google Chrome a opakujte akci.</translation>
 <translation id="2586406160782125153">Ze zařízení budou smazány vaše údaje o prohlížení. Budete-li chtít své údaje později načíst, přihlaste se do Chromu jako <ph name="USER_EMAIL" />.</translation>
+<translation id="2597976513418770460">Získejte údaje prohlížeče Chrome z účtu <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="2622559029861875898">Chrome nemůže vyhledat dostupné aktualizace. Zkuste zkontrolovat připojení k internetu.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2652691236519827073">Otevřít odkaz na nové kar&amp;tě Chrome</translation>
@@ -310,6 +311,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="7801699035218095297">Google Chrome se pokouší zkopírovat hesla. Tato akce vyžaduje zadání hesla systému Windows.</translation>
 <translation id="7808348361785373670">Odstranit z Chromu...</translation>
 <translation id="7825851276765848807">Instalace se z neznámého důvodu nezdařila. Stáhněte prosím aplikaci Google Chrome znovu.</translation>
+<translation id="7880591377632733558">Vítejte v Chromu, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="7890208801193284374">Pokud počítač sdílíte s kamarády a členy rodiny, každý může web procházet samostatně a nastavit si Chrome podle svých požadavků.</translation>
 <translation id="7896673875602241923">Prohlížeč Chrome v tomto počítači je již přihlášen k účtu <ph name="ACCOUNT_EMAIL_LAST" />. Chcete-li své informace uchovat odděleně, vytvořte nového uživatele Chromu.</translation>
 <translation id="7917876797003313048">Můžete spravovat účty Google, ke kterým jste přihlášeni. Účty Google jsou používány v prohlížeči Chrome, Obchodu Play, Gmailu a dalších službách. Pokud chcete přidat účet někoho jiného, například člena rodiny, přidejte nového uživatele do zařízení <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
@@ -335,6 +337,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="8418845734693287262">ChromeOS vaše data nemohl synchronizovat, protože vaše přihlašovací údaje nejsou aktuální.</translation>
 <translation id="8421734018304082652">Chrome tento soubor zablokoval, protože je zašifrovaný. Požádejte jeho vlastníka, aby ho dešifroval</translation>
 <translation id="8433638294851456451">Pokud odtud chcete odeslat číslo do telefonu Android, v obou zařízeních se přihlaste do Chromu.</translation>
+<translation id="8451192282033883849">Váš účet je spravován doménou <ph name="MANAGER_NAME" />. Tento profil prohlížeče Chrome a jeho data, jako jsou záložky, historie a hesla, může zobrazit a upravovat váš administrátor.</translation>
 <translation id="8498858610309223613">Právě byla nainstalována mimořádná bezpečnostní aktualizace prohlížeče Google Chrome. Restartujte jej, vaše karty budou obnoveny.</translation>
 <translation id="8504220326736535258">Chrome tento soubor zablokoval, protože obsahuje malware</translation>
 <translation id="8516431725144212809">Vaše zájmy podle odhadu Chromu</translation>

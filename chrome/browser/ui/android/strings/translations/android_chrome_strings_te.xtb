@@ -56,6 +56,7 @@
 <translation id="124678866338384709">ప్రస్తుత ట్యాబ్‌ను మూసివేయండి</translation>
 <translation id="1246905108078336582">క్లిప్‌బోర్డ్ నుండి సూచనను తొలగించాలా?</translation>
 <translation id="1258753120186372309">Google doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">పఠన లిస్ట్‌</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" />ను షేర్ చేయడం సాధ్యపడలేదు</translation>
 <translation id="1283039547216852943">విస్త‌రించ‌డానికి నొక్కండి</translation>
 <translation id="1285310382777185058">భాషను మార్చండి</translation>
@@ -312,6 +313,7 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# ఆడియో ఫైల్}other{# ఆడియో ఫైళ్లు}}</translation>
 <translation id="265156376773362237">స్టాండర్డ్ ప్రీ - లోడింగ్</translation>
 <translation id="2656405586795711023">వెబ్ యాప్‌లు</translation>
+<translation id="2669454659051515572">డౌన్‌లోడ్ చేసిన ఫైల్స్‌ను ఈ పరికరాన్ని ఉపయోగించే ఎవరైనా చూడగలరు</translation>
 <translation id="2702516483241149200">కొత్తది: ఈ టెక్స్ట్‌కు స్క్రోల్ చేసే లింక్‌ను షేర్ చేయండి</translation>
 <translation id="2704606927547763573">కాపీ చేయబడింది</translation>
 <translation id="2707726405694321444">పేజీని రిఫ్రెష్ చేయండి</translation>
@@ -493,10 +495,10 @@
 <translation id="363596933471559332">నిల్వ చేసిన ఆధారాలను ఉపయోగించి ఆటోమేటిక్‌గా వెబ్‌సైట్‌లకు సైన్ ఇన్ చేయండి. ఫీచ‌ర్‌ ఆఫ్ చేయబడినప్పుడు, మీరు వెబ్‌సైట్‌కు సైన్ ఇన్ చేసే ప్రతిసారి ధృవీకరణ కోసం మిమ్మల్ని అడుగుతుంది.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3677911431265050325">మొబైల్ సైట్‌ను రిక్వెస్ట్ చేయండి</translation>
-<translation id="3685860403008476208">మీరు అజ్ఞాత మోడ్‌లో డౌన్‌లోడ్ చేసే ఫైల్స్‌ను, ఈ పరికరాన్ని ఉపయోగించే ఎవరైనా చూడగలరు</translation>
 <translation id="3687645719033307815">మీరు ఈ పేజీ ప్రివ్యూను చూస్తున్నారు</translation>
 <translation id="3690369331356918524">మీరు ఉపయోగించే పాస్‌వర్డ్‌లు, ఏదైనా డేటా ఉల్లంఘనలో బహిర్గతమైతే మిమ్మల్ని హెచ్చరిస్తుంది</translation>
 <translation id="3692944402865947621">నిల్వ స్థానాన్ని చేరుకోలేకపోయిన కారణంగా <ph name="FILE_NAME" /> డౌన్‌లోడ్ విఫలమైంది.</translation>
+<translation id="3697705478071004188">సైట్ ఆధారంగా క్రమపద్ధతిలో అమర్చుతుంది</translation>
 <translation id="3699022356773522638">ఫైల్‌ను డౌన్‌లోడ్ చేయాలా?</translation>
 <translation id="371230970611282515">ప్రమాదకరమైన సంఘటనలు జరగడానికి ముందే, వాటిని గుర్తించి, మిమ్మల్ని హెచ్చరిస్తుంది.</translation>
 <translation id="3714981814255182093">శోధన పట్టీని తెరవండి</translation>
@@ -777,6 +779,7 @@
 <translation id="5246093389635966745">టూల్‌బార్ షార్ట్‌కట్‌ను ఎడిట్ చేయండి</translation>
 <translation id="526421993248218238">ఈ పేజీని లోడ్ చేయడం సాధ్యం కాదు</translation>
 <translation id="5271967389191913893">పరికరం డౌన్‌లోడ్ చేయాల్సిన కంటెంట్‌ను తెరవలేదు.</translation>
+<translation id="5274286919938458946"><ph name="CARD_DETAIL" />తో లింక్ చేయబడింది</translation>
 <translation id="5292796745632149097">ఈ పరికరానికి పంపండి</translation>
 <translation id="5300426565656326054">బ్రౌజర్ ఆధారిత యాడ్ వ్యక్తిగతీకరణ</translation>
 <translation id="5304593522240415983">ఈ ఫీల్డ్ ఖాళీగా ఉండరాదు</translation>
@@ -1308,6 +1311,7 @@
 <translation id="8103578431304235997">అజ్ఞాత ట్యాబ్</translation>
 <translation id="8105613260829665809">కొనసాగడం ద్వారా, మీరు <ph name="BEGIN_TOS_LINK" />సర్వీస్ నియమాల<ph name="END_TOS_LINK" />ను అంగీకరిస్తున్నారు.\nయాప్‌ను మెరుగుపరచడంలో సహాయపడటానికి Chrome, వినియోగ, అలాగే క్రాష్ డేటాను Googleకు పంపుతుంది. <ph name="BEGIN_UMA_LINK" />మేనేజ్ చేయండి<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
+<translation id="8107530384992929318">క్రమబద్ధీకరణ ఆప్షన్‌లను మూసివేస్తుంది</translation>
 <translation id="8109613176066109935">ఇక ఎప్పుడు ఎక్కడ బుక్‌మార్క్‌లను సెట్‌ చేసినా ఆటోమాటిక్‌గా మీ అన్ని పరికరాలలో పొందాలనుకుంటే, సింక్‌ ఎంపికని ఆన్ చేయండి</translation>
 <translation id="8110024788458304985">Chrome OS ఫీచర్‌లు, పనితీరును మెరుగుపరచడంలో సహాయపడండి</translation>
 <translation id="8110087112193408731">డిజిటల్ సంక్షేమంలో మీ Chrome యాక్టివిటీని చూపించాలా?</translation>
@@ -1381,6 +1385,7 @@
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">చరిత్ర పేజీని తెరవండి</translation>
 <translation id="8493948351860045254">స్థలాన్ని ఖాళీ చేయి</translation>
+<translation id="8497242791509864205">క్రమబద్ధీకరణ ఆప్షన్‌లను తెరుస్తుంది</translation>
 <translation id="8497480609928300907">గోప్యతా గైడ్ వివరణ</translation>
 <translation id="8497726226069778601">ఇక్కడ చూడటానికి ఏమీ లేదు… ఇప్పటికీ</translation>
 <translation id="8503559462189395349">Chrome పాస్‌వర్డ్‌లు</translation>

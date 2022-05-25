@@ -121,6 +121,7 @@
 <translation id="1942765061641586207">প্ৰতিচ্ছবিৰ ৰিজ’লিউছন</translation>
 <translation id="1972984168337863910">ফাইলসমূহৰ প্ৰতিক্ৰিয়াৰ পেনেলটো বিস্তাৰ কৰক</translation>
 <translation id="1995337122023280937">ফাইলৰ অৱস্থানলৈ যাওক</translation>
+<translation id="1996806196681857869">Z কম্প্ৰেছ কৰা আৰ্কাইভ</translation>
 <translation id="2001796770603320721">ড্ৰাইভত পৰিচালনা কৰক</translation>
 <translation id="2009067268969781306">এটা ড্ৰাইভ ফর্মেট কৰা কার্যই ড্ৰাইভটোত ষ্ট'ৰ কৰি ৰখা সকলো ডেটা মচিব। এই কাৰ্যটো আনডু কৰিব নোৱাৰি।</translation>
 <translation id="2025955442973426285">টিগ্ৰিনিয়া</translation>
@@ -588,6 +589,7 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" />টা বস্তু</translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">মিলোৱাৰ বিকল্পসমূহ</translation>
+<translation id="5985041959109124139">Z কম্প্ৰেছ কৰা টাৰ আৰ্কাইভ</translation>
 <translation id="6007237601604674381">স্থানান্তৰ কৰিবপৰা নগ’ল। <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">ইথাৰনেট নেটৱৰ্ক</translation>
 <translation id="60357267506638014">ছেক QWERTY</translation>
@@ -618,6 +620,7 @@
 <translation id="6220423280121890987">পাঞ্জাবী</translation>
 <translation id="6224240818060029162">ডেনিশ্ব</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" /> ফর্মেট কৰক</translation>
+<translation id="6224665423283788195">Zstandard কম্প্ৰেছ কৰা আৰ্কাইভ</translation>
 <translation id="6227235786875481728">এই ফাইলটো প্লে’ কৰিব পৰা নগ’ল।</translation>
 <translation id="6241349547798190358">ডাট্‌চ (বেলজিয়াম)</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_COUNT" />টা নেটৱৰ্কৰ <ph name="NETWORK_INDEX" />, <ph name="PHONE_NAME" />, ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" />%, ফ’নৰ বেটাৰী <ph name="BATTERY_STATUS" />%, সংযোগ কৰক</translation>
@@ -645,6 +648,7 @@
 <translation id="6509122719576673235">ন’ৰৱেজিয়ান</translation>
 <translation id="6528513914570774834">এই ডিভাইচটোৰ অন্য ব্যৱহাৰকাৰীসকলক এই নেটৱৰ্কটো ব্যৱহাৰ কৰিবলৈ দিয়ক</translation>
 <translation id="653019979737152879"><ph name="FILE_NAME" /> ছিংক কৰি থকা হৈছে…</translation>
+<translation id="6530595303336443929">Zstandard কম্প্ৰেছ কৰা টাৰ আৰ্কাইভ</translation>
 <translation id="6549689063733911810">শেহতীয়া</translation>
 <translation id="6558280019477628686">কোনো আসোঁৱাহ হৈছে। কিছুমান বস্তু মচা নহ’ব পাৰে।</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />" মচি থকা হৈছে...</translation>

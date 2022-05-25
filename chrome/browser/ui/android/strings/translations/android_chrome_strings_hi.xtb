@@ -56,6 +56,7 @@
 <translation id="124678866338384709">वर्तमान टैब को बंद करें</translation>
 <translation id="1246905108078336582">क्लिपबोर्ड से सुझाव हटाना चाहते हैं?</translation>
 <translation id="1258753120186372309">Google doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">रीडिंग लिस्ट</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> शेयर नहीं किया जा सका</translation>
 <translation id="1283039547216852943">पूरा खोलने के लिए टैप करें</translation>
 <translation id="1285310382777185058">भाषा बदलें</translation>
@@ -493,10 +494,10 @@
 <translation id="363596933471559332">स्टोर किए गए क्रेडेंशियल का इस्तेमाल करके वेबसाइटों में अपने आप साइन इन करें. सुविधा के बंद होने पर, किसी वेबसाइट में साइन इन करने से पहले आपसे हर बार पुष्टि करने को कहा जाएगा.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3677911431265050325">मोबाइल साइट के लिए अनुरोध करें</translation>
-<translation id="3685860403008476208">इस डिवाइस का इस्तेमाल करने वाला कोई भी व्यक्ति उन फ़ाइलों को देख सकता है जिन्हें आपने गुप्त मोड में रहते हुए डाउनलोड किया है</translation>
 <translation id="3687645719033307815">आप इस पेज की झलक देख रहे हैं</translation>
 <translation id="3690369331356918524">अगर डेटा का गलत इस्तेमाल होने पर आपके पासवर्ड बिना अनुमति के सार्वजनिक हो जाते हैं, तो आपको चेतावनी मिलती है</translation>
 <translation id="3692944402865947621"><ph name="FILE_NAME" /> डाउनलोड नहीं हो सकी क्योंकि स्टोर करने की जगह नहीं मिली.</translation>
+<translation id="3697705478071004188">साइट के मुताबिक क्रम से लगाएं</translation>
 <translation id="3699022356773522638">फ़ाइल डाउनलोड करें?</translation>
 <translation id="371230970611282515">नुकसान पहुंचाने वाली घटनाओं का पहले से अंदाज़ा लगाता है. साथ ही, उनके बारे में आपको चेतावनी देता है.</translation>
 <translation id="3714981814255182093">ढूंढें बार खोलें</translation>
@@ -1308,6 +1309,7 @@
 <translation id="8103578431304235997">गुप्त टैब</translation>
 <translation id="8105613260829665809">जारी रखने का मतलब है कि आप <ph name="BEGIN_TOS_LINK" />सेवा की शर्तों<ph name="END_TOS_LINK" /> से सहमत हैं.\nऐप्लिकेशन को बेहतर बनाने के लिए Chrome, ऐप्लिकेशन के इस्तेमाल और क्रैश होने से जुड़ा डेटा Google को भेजता है. <ph name="BEGIN_UMA_LINK" />मैनेज करें<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
+<translation id="8107530384992929318">क्रम से लगाने वाले विकल्प बंद करें</translation>
 <translation id="8109613176066109935">अपने सभी डिवाइस पर अपने बुकमार्क पाने के लिए, 'सिंक करें' को चालू करें</translation>
 <translation id="8110024788458304985">Chrome की सुविधाओं और परफ़ॉर्मेंस को बेहतर बनाने में मदद करें</translation>
 <translation id="8110087112193408731">'डिजिटल वेलबीइंग' में अपनी Chrome गतिविधि दिखाना चाहते हैं?</translation>
@@ -1381,6 +1383,7 @@
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">इतिहास पेज खोलें</translation>
 <translation id="8493948351860045254">स्‍थान खाली करें</translation>
+<translation id="8497242791509864205">क्रम से लगाने वाले विकल्प खोलें</translation>
 <translation id="8497480609928300907">निजता गाइड के बारे में जानकारी</translation>
 <translation id="8497726226069778601">यहां देखने के लिए…अभी तक कुछ भी नहीं है</translation>
 <translation id="8503559462189395349">Chrome पासवर्ड</translation>

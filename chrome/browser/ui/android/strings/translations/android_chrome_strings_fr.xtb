@@ -56,6 +56,7 @@
 <translation id="124678866338384709">Fermer l'onglet actuel</translation>
 <translation id="1246905108078336582">Supprimer la suggestion du presse-papiers ?</translation>
 <translation id="1258753120186372309">Doodle : <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">Liste de lecture</translation>
 <translation id="1266864766717917324">Impossible de partager le contenu suivant : <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Appuyer pour développer</translation>
 <translation id="1285310382777185058">Changer de langue</translation>
@@ -493,7 +494,6 @@ Appuyez sur n'importe quel mot pour effectuer une recherche. Pour affiner la rec
 <translation id="363596933471559332">Connexion automatique aux sites Web à l'aide des identifiants enregistrés. Lorsque la fonctionnalité est désactivée, vous êtes invité à effectuer la validation avant chaque connexion à un site Web.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" /> : <ph name="WEBSITE_URL" /></translation>
 <translation id="3677911431265050325">Demander le site mobile</translation>
-<translation id="3685860403008476208">Toute personne utilisant cet appareil peut voir les fichiers que vous téléchargez en mode navigation privée</translation>
 <translation id="3687645719033307815">Ceci est un aperçu de cette page</translation>
 <translation id="3690369331356918524">Vous alerte si des mots de passe sont compromis lors d'une violation des données</translation>
 <translation id="3692944402865947621">Échec du téléchargement du fichier "<ph name="FILE_NAME" />" en raison de l'espace de stockage indisponible.</translation>
@@ -523,6 +523,7 @@ Appuyez sur n'importe quel mot pour effectuer une recherche. Pour affiner la rec
 <translation id="3845098929839618392">Ouvrir en navigation privée</translation>
 <translation id="3856096718352044181">Veuillez vérifier qu'il s'agit d'un fournisseur valide ou réessayer plus tard</translation>
 <translation id="3858860766373142691">Nom</translation>
+<translation id="3859206958100234503">Synchronisez pour récupérer vos mots de passe, favoris, et plus encore sur tous vos appareils</translation>
 <translation id="3861633093716975811">Vidéos populaires</translation>
 <translation id="3892148308691398805">Copier le texte</translation>
 <translation id="3894427358181296146">Ajouter un dossier</translation>
@@ -580,6 +581,7 @@ Appuyez sur n'importe quel mot pour effectuer une recherche. Pour affiner la rec
 <translation id="4209895695669353772">Activez la synchronisation pour obtenir des suggestions de contenu personnalisées de la part de Google</translation>
 <translation id="4214315110991671325">Si vous autorisez les cookies, Chrome peut les utiliser pour le préchargement.</translation>
 <translation id="4225895483398857530">Raccourci de la barre d'outils</translation>
+<translation id="4227318652298512614">Suivez les sites de votre choix</translation>
 <translation id="4242533952199664413">Ouvrir les paramètres</translation>
 <translation id="4248098802131000011">Protégez vos mots de passe contre les violations de données et d'autres problèmes liés à la sécurité</translation>
 <translation id="4249955472157341256">Trier par "Les plus récents"</translation>
@@ -696,6 +698,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="4842515939542199281">Pour lancer une recherche vocale, appuyer sur le micro</translation>
 <translation id="4844633725025837809">Pour renforcer la sécurité, chiffrez les mots de passe sur votre appareil avant qu'ils soient enregistrés dans le Gestionnaire de mots de passe Google</translation>
 <translation id="4850886885716139402">Afficher</translation>
+<translation id="4852014461738377247">Connexion\u2026</translation>
 <translation id="4860895144060829044">Appeler</translation>
 <translation id="4864369630010738180">Connexion...</translation>
 <translation id="4866368707455379617">Impossible d'installer le module <ph name="MODULE" /> pour Chrome</translation>
@@ -1149,6 +1152,7 @@ Les jetons de confiance améliorent la confidentialité sur le Web et ne peuvent
 <translation id="7304873321153398381">Hors connexion. Chrome ne parvient pas à vérifier vos mots de passe.</translation>
 <translation id="7313188324932846546">Appuyez ici pour configurer la synchronisation</translation>
 <translation id="7332075081379534664">Connexion établie</translation>
+<translation id="7333232495927792353">Synchronisez pour que Google vous présente les contenus les plus pertinents</translation>
 <translation id="7339898014177206373">Nouvelle fenêtre</translation>
 <translation id="7340958967809483333">Options pour Discover</translation>
 <translation id="7352339641508007922">Faites glisser pour prendre une capture d'écran étendue</translation>
@@ -1529,6 +1533,7 @@ Les jetons de confiance améliorent la confidentialité sur le Web et ne peuvent
 <translation id="96681097142096641">Afficher la page simplifiée ?</translation>
 <translation id="968900484120156207">Les pages que vous consultez sont répertoriées ici</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> minutes restantes</translation>
+<translation id="978443947993957527">Voir des contenus sur mesure</translation>
 <translation id="981121421437150478">Hors connexion</translation>
 <translation id="983192555821071799">Fermer tous les onglets</translation>
 <translation id="987264212798334818">Général</translation>

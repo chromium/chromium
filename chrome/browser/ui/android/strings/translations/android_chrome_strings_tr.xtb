@@ -56,6 +56,7 @@
 <translation id="124678866338384709">Geçerli sekmeyi kapatır</translation>
 <translation id="1246905108078336582">Öneri panodan kaldırılsın mı?</translation>
 <translation id="1258753120186372309">Google doodle'ı: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">Okuma listesi</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> paylaşılamadı</translation>
 <translation id="1283039547216852943">Genişletmek için dokunun</translation>
 <translation id="1285310382777185058">Dili değiştirin</translation>
@@ -493,7 +494,6 @@ Arama yapmak için herhangi bir kelimeye dokunup basılı tutun. Aramanızı has
 <translation id="363596933471559332">Depolanmış kimlik bilgileriyle web sitelerinde otomatik olarak oturum açın. Bu özellik kapatıldığında, bir web sitesinde oturum açmadan önce her defasında doğrulama yapmanız istenir.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3677911431265050325">Mobil site iste</translation>
-<translation id="3685860403008476208">Bu cihazı kullanan herkes Gizli modda indirdiğiniz dosyaları görebilir</translation>
 <translation id="3687645719033307815">Bu sayfanın önizlemesini görüntülüyorsunuz</translation>
 <translation id="3690369331356918524">Şifreleriniz bir veri ihlalinde ifşa olursa uyarır</translation>
 <translation id="3692944402865947621">Depolama konumuna erişilemediği için <ph name="FILE_NAME" /> dosyası indirilemedi.</translation>
@@ -523,6 +523,7 @@ Arama yapmak için herhangi bir kelimeye dokunup basılı tutun. Aramanızı has
 <translation id="3845098929839618392">Gizli sekmede aç</translation>
 <translation id="3856096718352044181">Lütfen bunun geçerli bir sağlayıcı olduğunu doğrulayın veya daha sonra tekrar deneyin</translation>
 <translation id="3858860766373142691">Ad</translation>
+<translation id="3859206958100234503">Şifrelerinize, yer işaretlerinize ve daha fazlasına tüm cihazlarınızdan ulaşmak için senkronize edin</translation>
 <translation id="3861633093716975811">Popüler videolar</translation>
 <translation id="3892148308691398805">Metni kopyala</translation>
 <translation id="3894427358181296146">Klasör ekleyin</translation>
@@ -580,6 +581,7 @@ Arama yapmak için herhangi bir kelimeye dokunup basılı tutun. Aramanızı has
 <translation id="4209895695669353772">Google tarafından önerilen kişiselleştirilmiş içeriği almak için senkronizasyonu açın</translation>
 <translation id="4214315110991671325">Çerezlere izin verirseniz Chrome bunları önceden yükleme işlemi için kullanabilir.</translation>
 <translation id="4225895483398857530">Araç çubuğu kısayolu</translation>
+<translation id="4227318652298512614">İstediğiniz siteleri takip edin</translation>
 <translation id="4242533952199664413">Ayarları aç</translation>
 <translation id="4248098802131000011">Şifrelerinizi veri ihlali ve diğer güvenlik sorunlarına karşı güvende tutun</translation>
 <translation id="4249955472157341256">En güncel tarihe göre sırala</translation>
@@ -696,6 +698,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="4842515939542199281">Sesinizle arama yapmak için mikrofona dokunun</translation>
 <translation id="4844633725025837809">Ek güvenlik için, Google Şifre Yöneticisi'ne kaydedilmeden önce şifrelerinizi cihazınızda şifreleyin</translation>
 <translation id="4850886885716139402">Görüntüle</translation>
+<translation id="4852014461738377247">Oturum açılıyor\u2026</translation>
 <translation id="4860895144060829044">Telefon et</translation>
 <translation id="4864369630010738180">Oturum açılıyor...</translation>
 <translation id="4866368707455379617">Chrome için <ph name="MODULE" /> yüklenemiyor</translation>
@@ -1149,6 +1152,7 @@ Güven jetonları, web'deki gizliliği artırır ve kim olduğunuzu bulmak için
 <translation id="7304873321153398381">Çevrimdışı. Chrome, şifrelerinizi kontrol edemiyor.</translation>
 <translation id="7313188324932846546">Senkronizasyonu ayarlamak için dokunun</translation>
 <translation id="7332075081379534664">Oturum açma başarılı oldu</translation>
+<translation id="7333232495927792353">Google'daki en alakalı içeriğe ulaşmak için senkronize edin</translation>
 <translation id="7339898014177206373">Yeni pencere</translation>
 <translation id="7340958967809483333">Keşfet seçenekleri</translation>
 <translation id="7352339641508007922">Uzun ekran görüntüsü almak için sürükleyin</translation>
@@ -1529,6 +1533,7 @@ Güven jetonları, web'deki gizliliği artırır ve kim olduğunuzu bulmak için
 <translation id="96681097142096641">Basitleştirilmiş sayfa görüntülensin mi?</translation>
 <translation id="968900484120156207">Ziyaret ettiğiniz sayfalar burada görünür</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> dk. kaldı</translation>
+<translation id="978443947993957527">Size özel içerikleri görün</translation>
 <translation id="981121421437150478">Çevrimdışı</translation>
 <translation id="983192555821071799">Tüm sekmeleri kapat</translation>
 <translation id="987264212798334818">Genel</translation>

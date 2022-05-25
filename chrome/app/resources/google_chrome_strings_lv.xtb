@@ -78,6 +78,7 @@
 <translation id="2574930892358684005">Lietotājs <ph name="EXISTING_USER" /> jau ir pierakstījies šajā Chrome profilā. Lai atdalītu pārlūkošanu, pārlūkā Chrome varat izveidot atsevišķu profilu.</translation>
 <translation id="2580411288591421699">Nevar instalēt to pašu Google Chrome versiju, kas jau darbojas. Lūdzu, aizveriet Google Chrome un mēģiniet vēlreiz.</translation>
 <translation id="2586406160782125153">Veicot šo darbību, no šīs ierīces tiks dzēsti pārlūkošanas dati. Lai vēlāk izgūtu datus, pierakstieties pārlūkā Chrome kā <ph name="USER_EMAIL" />.</translation>
+<translation id="2597976513418770460">Piekļūstiet savam Chrome saturam no konta <ph name="ACCOUNT_EMAIL" />.</translation>
 <translation id="2622559029861875898">Pārlūkprogrammā Chrome nevar pārbaudīt atjauninājumu pieejamību. Pārbaudiet interneta savienojumu.</translation>
 <translation id="2645435784669275700">Chrome OS</translation>
 <translation id="2652691236519827073">Atvērt saiti jaunā Chrome &amp;cilnē</translation>
@@ -305,6 +306,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="7801699035218095297">Google Chrome mēģina nokopēt paroles. Lai to atļautu, ierakstiet savu Windows paroli.</translation>
 <translation id="7808348361785373670">Noņemšana no pārlūka Chrome...</translation>
 <translation id="7825851276765848807">Instalēšana neizdevās nenoteiktas kļūdas dēļ. Lūdzu, lejupielādējiet pārlūkprogrammu Google Chrome vēlreiz.</translation>
+<translation id="7880591377632733558">Laipni lūdzam pārlūkā Chrome, <ph name="ACCOUNT_FIRST_NAME" />!</translation>
 <translation id="7890208801193284374">Ja jūsu datoru izmanto arī jūsu draugi un ģimenes locekļi, viņi var iestatīt pārlūku Chrome atbilstoši savām vēlmēm un pārlūkot saturu atsevišķos kontos.</translation>
 <translation id="7896673875602241923">Kāds iepriekš pierakstījās pārlūkā Chrome šajā datorā, izmantojot e-pasta adresi <ph name="ACCOUNT_EMAIL_LAST" />. Lūdzu, izveidojiet jaunu Chrome lietotāju, lai nošķirtu savu informāciju.</translation>
 <translation id="7917876797003313048">Varat pārvaldīt Google kontus, kuros esat pierakstījies. Jūsu Google konti tiek izmantoti pārlūkā Chrome, Play veikalā, pakalpojumā Gmail un citur. Ja vēlaties pievienot kontu kādam citam, piemēram, ģimenes loceklim, pievienojiet jaunu personu savai <ph name="DEVICE_TYPE" /> ierīcei. <ph name="LINK_BEGIN" />Uzziniet vairāk<ph name="LINK_END" />.</translation>
@@ -330,6 +332,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="8418845734693287262">Chrome OS nevarēja sinhronizēt jūsu datus, jo jūsu konta pierakstīšanās informācija ir novecojusi.</translation>
 <translation id="8421734018304082652">Pārlūkā Chrome šis fails tika bloķēts, jo tas ir šifrēts. Lūdziet faila īpašniekam to atšifrēt.</translation>
 <translation id="8433638294851456451">Lai nosūtītu numuru no šejienes uz savu Android tālruni, abās ierīcēs pierakstieties pārlūkā Chrome.</translation>
+<translation id="8451192282033883849">Jūsu kontu pārvalda <ph name="MANAGER_NAME" />. Administrators var skatīt un rediģēt šo Chrome profilu un tā datus, piemēram, grāmatzīmes, vēsturi un paroles.</translation>
 <translation id="8498858610309223613">Tikko tika piemērots īpašs Google Chrome drošības atjauninājums. Restartējiet tūlīt, un mēs atjaunosim jūsu cilnes.</translation>
 <translation id="8504220326736535258">Pārlūkā Chrome šis fails tika bloķēts, jo tajā ir ļaunprātīga programmatūra.</translation>
 <translation id="8516431725144212809">Jūsu intereses, kas aptuveni noteiktas pārlūkā Chrome</translation>

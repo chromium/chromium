@@ -78,6 +78,7 @@
 <translation id="1578784163189013834">選取螢幕保護程式背景</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" />至今的數據用量</translation>
 <translation id="1621067168122174824">執行充電測試</translation>
+<translation id="1631385268983122904">請暫時不要將電池放回裝置</translation>
 <translation id="1639239467298939599">載入中</translation>
 <translation id="1641857168437328880">文件送紙器 (單面)</translation>
 <translation id="1643449475550628585">每日變更桌布圖片</translation>
@@ -85,6 +86,7 @@
 <translation id="1645954272419197032">請確認裝置資訊</translation>
 <translation id="1662989795263954667">已停止 - 墨水已用完</translation>
 <translation id="1668469839109562275">內置 VPN</translation>
+<translation id="1676557873873341166">正在錄影</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS 解析器存在</translation>
 <translation id="1715359911173058521">與掃瞄器通訊時發生問題。請檢查網絡或 USB 連線，然後再試一次。</translation>
@@ -159,6 +161,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2336381494582898602">執行 Powerwash</translation>
 <translation id="2338501278241028356">開啟藍牙即可探索附近的裝置</translation>
+<translation id="2340422556570134524">「寫入保護」功能已在無預警的情況下開啟。再次嘗試前，請先手動關閉「寫入保護」功能。</translation>
 <translation id="2346474577291266260">非常好 (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">繼續</translation>
 <translation id="2360257214555822463">偵測到<ph name="LINK_BEGIN" />不兼容的組件<ph name="LINK_END" />。如果您選擇確認已安裝這些組件，請立即執行。</translation>
@@ -474,6 +477,7 @@
 <translation id="5372659122375744710">Wi-Fi 網絡不安全</translation>
 <translation id="5376354385557966694">自動明亮模式</translation>
 <translation id="537872351913703572">裝置的使用者或機構將會變更</translation>
+<translation id="5389159777326897627">桌布和樣式</translation>
 <translation id="5389224261615877010">彩虹</translation>
 <translation id="5395600419410242651">清除所有資料</translation>
 <translation id="5400907029458559844">連接緊裝置。</translation>
@@ -643,6 +647,7 @@
 <translation id="6961170852793647506">如要開始，請將文件放到掃瞄器上</translation>
 <translation id="6965382102122355670">確定</translation>
 <translation id="6977381486153291903">韌體版本</translation>
+<translation id="6995564396478647735">確認已開啟「寫入保護」功能</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> 會管理此裝置並可存取所有使用者活動，包括網頁瀏覽記錄、密碼和電郵。</translation>
 <translation id="7040230719604914234">流動網絡供應商</translation>
 <translation id="7041549558901442110">未連接裝置。</translation>
@@ -653,6 +658,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">失敗 - 授權失敗</translation>
 <translation id="7103252855940681301">裝置 <ph name="INDEX" /> (總共 <ph name="COUNT" /> 個)，名稱為 <ph name="NAME" />。</translation>
+<translation id="7126228745139711113">「寫入保護」功能已關閉</translation>
 <translation id="7134436342991564651">{0,plural, =1{域名伺服器}other{域名伺服器}}</translation>
 <translation id="7143207342074048698">正在連接</translation>
 <translation id="7144878232160441200">重試</translation>
@@ -744,6 +750,7 @@
 <translation id="80398733265834479">啟用自動調色模式</translation>
 <translation id="8041089156583427627">提供意見</translation>
 <translation id="8045012663542226664">將麥克風設定為靜音</translation>
+<translation id="8063022551652308521">「寫入保護」功能仍然關閉。如要繼續，請開啟該功能。</translation>
 <translation id="8075838845814659848">剩餘電量</translation>
 <translation id="8082366717211101304">無法從 Android 應用程式解析 DNS</translation>
 <translation id="8083281199617904460">此維修程序應由經受訓練的維修技術員執行。需要先更換故障組件後才能開始維修。</translation>
@@ -814,6 +821,7 @@
 <translation id="8709616837707653427"><ph name="DESC_TEXT" />用向左或者向右箭咀掣就可以管理呢個功能。</translation>
 <translation id="8712637175834984815">我知道了</translation>
 <translation id="871560550817059752">失敗 - 墨水已用完</translation>
+<translation id="8717030727630712160">繼續進行維修程序…</translation>
 <translation id="8723108084122415655">非預設網絡超過延遲門檻</translation>
 <translation id="8725066075913043281">再試一次</translation>
 <translation id="8726019395068607495">已停止 - 機門未關</translation>
@@ -835,6 +843,7 @@
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">裝置類型係平板電腦。</translation>
 <translation id="8881098542468797602">已通過測試</translation>
+<translation id="8897267175591692539">您現在可將電池放回裝置</translation>
 <translation id="8898840733695078011">訊號強度</translation>
 <translation id="8910721771319628100">預設網絡超過延遲門檻</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />的 <ph name="DEVICE_TYPE" /></translation>

@@ -24,6 +24,7 @@
 <translation id="109942774857561566">ပျင်းနေတယ်</translation>
 <translation id="1104084341931202936">အများသုံးစွဲနိုင်မှု ဆက်တင်များကို ပြရန်</translation>
 <translation id="1104621072296271835">သင်၏စက်ပစ္စည်းများကို အတူတကွအသုံးပြုလျှင် ပိုမိုကောင်းမွန်ပါသည်</translation>
+<translation id="1111021433905331574">သင့်ကီးဘုတ်နောက်ခံမီးရောင်ကို ဆက်တင်များ &gt; <ph name="APP_TITLE" /> တွင် ပြောင်းနိုင်သည်</translation>
 <translation id="112308213915226829">အလိုအလျောက် ဝှက်သည့် စင်</translation>
 <translation id="1142002900084379065">လတ်တလော ဓာတ်ပုံများ</translation>
 <translation id="1148499908455722006"><ph name="USER_NAME" /> အတွက် အချက်အလက်ဒိုင်ယာလော့ ဖွင့်ပါ</translation>
@@ -95,7 +96,7 @@
 <translation id="1420408895951708260">'ညအလင်းရောင်' အဖွင့်အပိတ် ခလုတ်။ <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">သင့်ဖုန်း၏ မကြာသေးမီက ဓာတ်ပုံနှင့် မီဒီယာများကို သင့် <ph name="DEVICE_TYPE" /> တွင် ကြည့်နိုင်သည်</translation>
 <translation id="1426410128494586442">Yes</translation>
-<translation id="1438357537418863713">အက်ပ် တိုက်ရိုက်လွှင့်ခြင်းကို ယခု သတ်မှတ်လိုက်ပါပြီ။ သင်စတင်သည့်အခါ လတ်တလောဖွင့်ထားသော အက်ပ်များကို ဤနေရာတွင် ပြမည်။</translation>
+<translation id="1447641497144572814">ဖန်သားပြင်နားချိန် စတင်ပြီ</translation>
 <translation id="1455242230282523554">ဘာသာစကားဆက်တင်များကို ပြရန်</translation>
 <translation id="1460620680449458626">အသံ တိတ်ထားသည်။</translation>
 <translation id="1467432559032391204">ဘယ်</translation>
@@ -699,7 +700,7 @@
 <translation id="5071064518267176975">အက်ပ်က သင့်မိုက်ခရိုဖုန်းကို သုံးလိုသည်</translation>
 <translation id="5078796286268621944">မမှန်ကန်သည့် ပင်ကုဒ်</translation>
 <translation id="5083553833479578423">နောက်ထပ် Assistant ဝန်ဆောင်မှုများကို ဖွင့်ပါ</translation>
-<translation id="5106223312672646208">ပုဂ္ဂိုလ်ရေးသီးသန့်ပြင်ဆင်ရန်</translation>
+<translation id="509790653408515442">သင့်ဖုန်း၏ အက်ပ်များကို တိုက်ရိုက်လွှင့်သောအခါ ၎င်းတို့က ဤနေရာတွင် ပေါ်လာမည်</translation>
 <translation id="5107522548814527560">ဝဘ်</translation>
 <translation id="5117590920725113268">လာမည့် လကို ပြရန်</translation>
 <translation id="5136175204352732067">မတူညီသည့် ကီးဘုတ်ကို ချိတ်ဆက်ထားသည်</translation>
@@ -722,6 +723,7 @@
 <translation id="523505283826916779">ရယူသုံးနိုင်မှု ဆက်တင်များ</translation>
 <translation id="5245201184978705914">စာသားမှတ်တမ်း ထုတ်ယူ၍မရပါ</translation>
 <translation id="5253783950165989294"><ph name="DEVICE_NAME" /> စက်သို့ ချိတ်ဆက်ထားသည်၊ ဘက်ထရီအား <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="5258528442992323769">သိမ်းထားသည့် မျက်နှာပြင်များ မရှိပါ</translation>
 <translation id="5260676007519551770">စာရေးခုံ ၄</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> တွင် ကြည့်စရာရှိသည်။</translation>
 <translation id="5283198616748585639">၁ မိနစ် တိုးရန်</translation>
@@ -1261,6 +1263,7 @@
 <translation id="851458219935658693">ဝင်းဒိုးများကို လက်ရှိ မျက်နှာပြင်နေရာမှ ပြရန်၊ ရေဒီယိုခလုတ်ကို ရွေးထားသည်</translation>
 <translation id="8517041960877371778">သင်၏ <ph name="DEVICE_TYPE" /> ကိရိယာမှာ ဖွင့်ထားလျှင် အားသွင်း၍ ရချင်မှရမည်.</translation>
 <translation id="8535393432370007982">အရောင်ဖြင့် အစီအစဉ်တကျစီစဉ်မှုကို နောက်ပြန်ရန်</translation>
+<translation id="8542053257095774575">သိမ်းထားသည့် မျက်နှာပြင်များ (သို့) ပုံစံများ မရှိပါ</translation>
 <translation id="8546059259582788728">အစီအစဉ်တကျစီခြင်းကို နောက်ပြန်ပြီးပြီ</translation>
 <translation id="8551588720239073785">ရက်စွဲနှင့် အချိန်ဆက်တင်များ</translation>
 <translation id="8553395910833293175">မျက်နှာပြင်နေရာအားလုံးတွင် သတ်မှတ်ပြီးပါပြီ။</translation>

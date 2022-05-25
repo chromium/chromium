@@ -56,6 +56,7 @@
 <translation id="124678866338384709">Pechar a pestana actual</translation>
 <translation id="1246905108078336582">Queres quitar a suxestión do portapapeis?</translation>
 <translation id="1258753120186372309">Doodle de Google: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">Lista de lectura</translation>
 <translation id="1266864766717917324">Non se puido compartir este contido: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Toca para despregar</translation>
 <translation id="1285310382777185058">Cambiar idioma</translation>
@@ -493,7 +494,6 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="363596933471559332">Iniciar sesión automaticamente nos sitios web coas credenciais almacenadas. Cando a función estea desactivada, solicitaráseche sempre a verificación antes de iniciar sesión nun sitio web.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3677911431265050325">Solicitar sitio para móbiles</translation>
-<translation id="3685860403008476208">Calquera que use este dispositivo pode ver os ficheiros que descargues no modo de incógnito</translation>
 <translation id="3687645719033307815">Estás vendo unha vista previa desta páxina</translation>
 <translation id="3690369331356918524">Avísate se os teus contrasinais están en risco debido a unha violación da seguranza dos datos</translation>
 <translation id="3692944402865947621">Produciuse un erro ao descargar <ph name="FILE_NAME" /> porque non se pode acceder á localización do almacenamento.</translation>
@@ -523,6 +523,7 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="3845098929839618392">Abrir en pestana de incógnito</translation>
 <translation id="3856096718352044181">Verifica que se trate dun fornecedor válido ou téntao de novo máis tarde.</translation>
 <translation id="3858860766373142691">Nome</translation>
+<translation id="3859206958100234503">Sincroniza os datos para ter os teus contrasinais, marcadores e máis en todos os teus dispositivos</translation>
 <translation id="3861633093716975811">Vídeos populares</translation>
 <translation id="3892148308691398805">Copiar texto</translation>
 <translation id="3894427358181296146">Engadir cartafol</translation>
@@ -580,6 +581,7 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="4209895695669353772">Para recibir contido personalizado suxerido por Google, activa a sincronización</translation>
 <translation id="4214315110991671325">Se permites o uso de cookies, Chrome poderá utilizalas para as precargas.</translation>
 <translation id="4225895483398857530">Atallo da barra de ferramentas</translation>
+<translation id="4227318652298512614">Sigue os sitios que queiras</translation>
 <translation id="4242533952199664413">Abrir configuración</translation>
 <translation id="4248098802131000011">Protexe os teus contrasinais fronte a violacións da seguranza dos datos e outros problemas de seguranza</translation>
 <translation id="4249955472157341256">Ordenar por máis recente</translation>
@@ -696,6 +698,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="4842515939542199281">Para facer buscas coa voz, toca o micrófono</translation>
 <translation id="4844633725025837809">Para dispoñer dunha maior seguranza, os teus contrasinais encríptanse no dispositivo antes de gardarse no xestor de contrasinais de Google</translation>
 <translation id="4850886885716139402">Vista</translation>
+<translation id="4852014461738377247">Iniciando sesión…</translation>
 <translation id="4860895144060829044">Chamar</translation>
 <translation id="4864369630010738180">Iniciando sesión...</translation>
 <translation id="4866368707455379617">Non se puido instalar o módulo <ph name="MODULE" /> para Chrome</translation>
@@ -1149,6 +1152,7 @@ Os tokens de confianza melloran a privacidade na Web e non se poden usar para de
 <translation id="7304873321153398381">Estás sen conexión. Chrome non puido comprobar os teus contrasinais.</translation>
 <translation id="7313188324932846546">Toca para configurar a sincronización</translation>
 <translation id="7332075081379534664">Iniciouse sesión</translation>
+<translation id="7333232495927792353">Sincroniza os datos para desfrutar do contido máis relevante de Google</translation>
 <translation id="7339898014177206373">Nova ventá</translation>
 <translation id="7340958967809483333">Opcións de Discover</translation>
 <translation id="7352339641508007922">Para facer unha captura de pantalla longa, arrastra o dedo para arriba ou para abaixo</translation>
@@ -1529,6 +1533,7 @@ Os tokens de confianza melloran a privacidade na Web e non se poden usar para de
 <translation id="96681097142096641">Queres ver a páxina simplificada?</translation>
 <translation id="968900484120156207">As páxinas que visites aparecerán aquí</translation>
 <translation id="970715775301869095">Quedan <ph name="MINUTES" /> minutos</translation>
+<translation id="978443947993957527">Contido para ti</translation>
 <translation id="981121421437150478">Sen conexión</translation>
 <translation id="983192555821071799">Pechar todas as pestanas</translation>
 <translation id="987264212798334818">Xeral</translation>

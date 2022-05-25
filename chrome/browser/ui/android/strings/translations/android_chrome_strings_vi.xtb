@@ -56,6 +56,7 @@
 <translation id="124678866338384709">Đóng thẻ hiện tại</translation>
 <translation id="1246905108078336582">Xóa nội dung đề xuất khỏi bảng nhớ tạm?</translation>
 <translation id="1258753120186372309">Hình tượng trưng của Google: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">Danh sách đọc</translation>
 <translation id="1266864766717917324">Không thể chia sẻ <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Nhấn để mở rộng</translation>
 <translation id="1285310382777185058">Thay đổi ngôn ngữ</translation>
@@ -493,7 +494,6 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="363596933471559332">Tự động đăng nhập vào các trang web bằng thông tin đăng nhập được lưu trữ. Khi tính năng này tắt, bạn sẽ luôn được yêu cầu xác minh trước khi đăng nhập vào trang web.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3677911431265050325">Yêu cầu trang web dành cho thiết bị di động</translation>
-<translation id="3685860403008476208">Bất cứ ai sử dụng thiết bị này đều có thể xem các tệp bạn tải xuống trong chế độ Ẩn danh</translation>
 <translation id="3687645719033307815">Bạn đang xem bản xem trước của trang này</translation>
 <translation id="3690369331356918524">Cảnh báo bạn nếu mật khẩu bị lộ trong một sự cố rò rỉ dữ liệu</translation>
 <translation id="3692944402865947621">Không tải <ph name="FILE_NAME" /> xuống được do không tìm thấy vị trí bộ nhớ.</translation>
@@ -523,6 +523,7 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="3845098929839618392">Mở trong thẻ Ẩn danh</translation>
 <translation id="3856096718352044181">Vui lòng xác minh rằng đây là nhà cung cấp hợp lệ hoặc thử lại sau</translation>
 <translation id="3858860766373142691">Tên</translation>
+<translation id="3859206958100234503">Đồng bộ hoá để xem mật khẩu, dấu trang và các nội dung khác trên tất cả thiết bị của bạn</translation>
 <translation id="3861633093716975811">Video phổ biến</translation>
 <translation id="3892148308691398805">Sao chép văn bản</translation>
 <translation id="3894427358181296146">Thêm thư mục</translation>
@@ -580,6 +581,7 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="4209895695669353772">Để nhận nội dung do Google đề xuất riêng cho bạn, hãy bật tính năng đồng bộ hóa</translation>
 <translation id="4214315110991671325">Nếu bạn cho phép cookie thì Chrome có thể dùng các cookie này để tải trước.</translation>
 <translation id="4225895483398857530">Lối tắt trên thanh công cụ</translation>
+<translation id="4227318652298512614">Theo dõi mọi trang web bạn muốn</translation>
 <translation id="4242533952199664413">Mở phần cài đặt</translation>
 <translation id="4248098802131000011">Bảo vệ mật khẩu của bạn trước việc bị rò rỉ dữ liệu và các vấn đề bảo mật khác</translation>
 <translation id="4249955472157341256">Sắp xếp theo Mới nhất</translation>
@@ -696,6 +698,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="4842515939542199281">Để tìm kiếm bằng giọng nói, hãy nhấn vào micrô</translation>
 <translation id="4844633725025837809">Để tăng mức độ an toàn, hãy mã hoá mật khẩu trên thiết bị trước khi lưu vào Trình quản lý mật khẩu của Google</translation>
 <translation id="4850886885716139402">Xem</translation>
+<translation id="4852014461738377247">Đang đăng nhập\u2026</translation>
 <translation id="4860895144060829044">Gọi</translation>
 <translation id="4864369630010738180">Đang đăng nhập...</translation>
 <translation id="4866368707455379617">Không thể cài đặt <ph name="MODULE" /> cho Chrome</translation>
@@ -1149,6 +1152,7 @@ Mã thông báo tin cậy giúp cải thiện quyền riêng tư trên web và 
 <translation id="7304873321153398381">Không có kết nối mạng. Chrome không thể kiểm tra mật khẩu của bạn.</translation>
 <translation id="7313188324932846546">Nhấn để thiết lập quá trình đồng bộ hóa</translation>
 <translation id="7332075081379534664">Đăng nhập thành công</translation>
+<translation id="7333232495927792353">Đồng bộ hoá để xem nội dung phù hợp nhất trên Google</translation>
 <translation id="7339898014177206373">Cửa sổ mới</translation>
 <translation id="7340958967809483333">Các tùy chọn của tính năng Khám phá</translation>
 <translation id="7352339641508007922">Kéo để chụp ảnh màn hình dài</translation>
@@ -1529,6 +1533,7 @@ Mã thông báo tin cậy giúp cải thiện quyền riêng tư trên web và 
 <translation id="96681097142096641">Xem trang ở chế độ đơn giản?</translation>
 <translation id="968900484120156207">Các trang mà bạn truy cập sẽ xuất hiện tại đây</translation>
 <translation id="970715775301869095">Còn <ph name="MINUTES" /> phút</translation>
+<translation id="978443947993957527">Xem nội dung dành cho bạn</translation>
 <translation id="981121421437150478">Ngoại tuyến</translation>
 <translation id="983192555821071799">Đóng tất cả các thẻ</translation>
 <translation id="987264212798334818">Chung</translation>

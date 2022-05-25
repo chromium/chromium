@@ -24,6 +24,7 @@
 <translation id="109942774857561566">ደብሮኛል</translation>
 <translation id="1104084341931202936">የተደራሽነት ቅንብሮችን አሳይ</translation>
 <translation id="1104621072296271835">የእርስዎ መሣሪያዎች እንዲያውም የተሻለ ይሠራሉ</translation>
+<translation id="1111021433905331574">በቅንብሮች &gt; <ph name="APP_TITLE" /> ውስጥ የእርስዎን የቁልፍ ሰሌዳ የጀርባ ብርሀን ቀለም መቀየር ይችላሉ።</translation>
 <translation id="112308213915226829">መደርደሪያን በራስ ሰር ደብቅ</translation>
 <translation id="1142002900084379065">የቅርብ ጊዜ ፎቶዎች</translation>
 <translation id="1148499908455722006">የ<ph name="USER_NAME" /> የመረጃ መገናኛን ክፈት</translation>
@@ -92,7 +93,7 @@
 <translation id="1420408895951708260">የምሽት ብርሃንን ቀያይር። <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">የስልክዎን የቅርብ ጊዜ ፎቶዎች እና ሚዲያ በእርስዎ <ph name="DEVICE_TYPE" /> ላይ ይመልከቱ</translation>
 <translation id="1426410128494586442">አዎ</translation>
-<translation id="1438357537418863713">የመተግበሪያ ዥረት መልቀቅ አሁን ተዋቅሯል። አንዴ ከጀመሩ በኋላ በቅርብ ጊዜ የተጀመሩ መተግበሪያዎች እዚህ ይታያሉ።</translation>
+<translation id="1447641497144572814">የማያ ገጽ አሳራፊ የሚጀምረው</translation>
 <translation id="1455242230282523554">የቋንቋ ቅንብሮችን አሳይ</translation>
 <translation id="1460620680449458626">የድምፅ መጠን ድምፀ ከል ተደርጓል።</translation>
 <translation id="1467432559032391204">ግራ</translation>
@@ -696,7 +697,6 @@
 <translation id="5071064518267176975">አንድ መተግበሪያ ማይክሮፎኑን መጠቀም ይፈልጋል</translation>
 <translation id="5078796286268621944">የተሳሳተ ፒን</translation>
 <translation id="5083553833479578423">ተጨማሪ የረዳት ባህሪያትን ያስከፍቱ።</translation>
-<translation id="5106223312672646208">ግላዊነት ያላብሱ</translation>
 <translation id="5107522548814527560">ድር</translation>
 <translation id="5117590920725113268">ቀጣዩን ወር አሳይ</translation>
 <translation id="5136175204352732067">የተለየ የቁልፍ ሰሌዳ ተገናኝቷል</translation>

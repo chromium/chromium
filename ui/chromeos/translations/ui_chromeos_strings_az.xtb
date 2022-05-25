@@ -121,6 +121,7 @@
 <translation id="1942765061641586207">Şəkil dəqiqliyi</translation>
 <translation id="1972984168337863910">Faylların rəy panelini genişləndirin</translation>
 <translation id="1995337122023280937">Faylın yerinə keçin</translation>
+<translation id="1996806196681857869">Z sıxılmış arxivi</translation>
 <translation id="2001796770603320721">Diskdə idarə edin</translation>
 <translation id="2009067268969781306">Formatdan sonra diskdə saxlanılan bütün data silinəcək. Bu əməliyyat geri qaytarıla bilməz.</translation>
 <translation id="2025955442973426285">Tiqrin</translation>
@@ -588,6 +589,7 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> element</translation>
 <translation id="5957366693331451795">Chromebox cihazları</translation>
 <translation id="5982621672636444458">Çeşidləmə variantları</translation>
+<translation id="5985041959109124139">Z sıxılmış tar arxivi</translation>
 <translation id="6007237601604674381">Daşınma alınmadı. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Ethernet şəbəkəsi</translation>
 <translation id="60357267506638014">Çex QWERTY</translation>
@@ -618,6 +620,7 @@
 <translation id="6220423280121890987">Pəncab</translation>
 <translation id="6224240818060029162">Danimarka</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" /> cihazını format edin</translation>
+<translation id="6224665423283788195">Z standart sıxılmış arxivi</translation>
 <translation id="6227235786875481728">Bu fayl oynadıla bilmədi.</translation>
 <translation id="6241349547798190358">Holland dili (Belçika)</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> şəbəkə, <ph name="PHONE_NAME" />, Siqnal Gücü <ph name="SIGNAL_STRENGTH" />%, Telefonun Batareyası <ph name="BATTERY_STATUS" />%, Qoşulun</translation>
@@ -645,6 +648,7 @@
 <translation id="6509122719576673235">Norveç</translation>
 <translation id="6528513914570774834">Bu cihazdakı digər istifadəçilərin şəbəkədən istifadə etmələrinə icazə verin</translation>
 <translation id="653019979737152879"><ph name="FILE_NAME" /> sinxronizasiya olunur...</translation>
+<translation id="6530595303336443929">Z standart sıxılmış tar arxivi</translation>
 <translation id="6549689063733911810">Son</translation>
 <translation id="6558280019477628686">Xəta baş verdi. Bəzi elementlər silinməmiş ola bilər.</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />" silinir...</translation>

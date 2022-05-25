@@ -78,6 +78,7 @@
 <translation id="1578784163189013834">Velja bakgrunn skjávara</translation>
 <translation id="1615335640928990664">Gagnanotkun síðan <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Keyra hleðslupróf</translation>
+<translation id="1631385268983122904">Ekki setja tækið saman strax</translation>
 <translation id="1639239467298939599">Hleður</translation>
 <translation id="1641857168437328880">Skjalamatari (einhliða)</translation>
 <translation id="1643449475550628585">Skipta daglega um veggfóðursmynd</translation>
@@ -85,6 +86,7 @@
 <translation id="1645954272419197032">Staðfestu upplýsingar um tæki</translation>
 <translation id="1662989795263954667">Stöðvað – blekið er búið</translation>
 <translation id="1668469839109562275">Innbyggt VPN</translation>
+<translation id="1676557873873341166">Myndbandsupptaka í gangi</translation>
 <translation id="1703835215927279855">Bréf</translation>
 <translation id="1706391837335750954">DNS-úrlausn til staðar</translation>
 <translation id="1715359911173058521">Villa kom upp við að ná sambandi við skannann. Athugaðu net- eða USB-tenginguna og reyndu aftur.</translation>
@@ -159,6 +161,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2336381494582898602">Djúphreinsun</translation>
 <translation id="2338501278241028356">Kveiktu á Bluetooth til að uppgötva nálæg tæki</translation>
+<translation id="2340422556570134524">Óvænt var kveikt á skrifvörn. Slökktu handvirkt á skrifvörn áður en þú reynir aftur.</translation>
 <translation id="2346474577291266260">Frábær (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">Halda áfram</translation>
 <translation id="2360257214555822463"><ph name="LINK_BEGIN" />Ósamhæfir íhlutir<ph name="LINK_END" /> greindust. Ef þú velur að staðfesta uppsetningu á þeim skaltu gera það núna.</translation>
@@ -474,6 +477,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="5372659122375744710">Wi-Fi net er ekki öruggt</translation>
 <translation id="5376354385557966694">Sjálfvirk ljós stilling</translation>
 <translation id="537872351913703572">Tækið verður afhent öðrum notanda eða öðru fyrirtæki</translation>
+<translation id="5389159777326897627">Veggfóður og stíll</translation>
 <translation id="5389224261615877010">Regnbogi</translation>
 <translation id="5395600419410242651">Eyða öllum gögnum</translation>
 <translation id="5400907029458559844">Tækið er að tengjast.</translation>
@@ -643,6 +647,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="6961170852793647506">Settu skjalið á skannann til að hefjast handa</translation>
 <translation id="6965382102122355670">Í lagi</translation>
 <translation id="6977381486153291903">Útgáfa fastbúnaðar</translation>
+<translation id="6995564396478647735">Gakktu úr skugga um að kveikt sé á skrifvörn</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> hefur umsjón með þessu tæki og hefur aðgang að allri notendavirkni, þ.m.t. heimsóttum vefsíðum, aðgangsorðum og tölvupósti.</translation>
 <translation id="7040230719604914234">Símafyrirtæki</translation>
 <translation id="7041549558901442110">Tækið er ekki tengt.</translation>
@@ -653,6 +658,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Mistókst – Heimild fékkst ekki</translation>
 <translation id="7103252855940681301">Tæki <ph name="INDEX" /> af <ph name="COUNT" /> sem nefnist <ph name="NAME" />.</translation>
+<translation id="7126228745139711113">Slökkt er á skrifvörn</translation>
 <translation id="7134436342991564651">{0,plural, =1{Nafnaþjónn}one{Nafnaþjónn}other{Nafnaþjónar}}</translation>
 <translation id="7143207342074048698">Tengist</translation>
 <translation id="7144878232160441200">Reyna aftur</translation>
@@ -744,6 +750,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="80398733265834479">Kveikja á sjálfvirkri litastillingu</translation>
 <translation id="8041089156583427627">Senda ábendingu</translation>
 <translation id="8045012663542226664">Slökkva á hljóðnema</translation>
+<translation id="8063022551652308521">Enn er slökkt á skrifvörn. Kveiktu á skrifvörn til að halda áfram.</translation>
 <translation id="8075838845814659848">Hleðsla eftir</translation>
 <translation id="8082366717211101304">Ekki er hægt að leysa úr DNS frá Android forritum</translation>
 <translation id="8083281199617904460">Viðgerðaferlið ætti að vera í höndum þjálfaðs sérfræðings. Ekki hefjast handa fyrr en biluðu íhlutirnir hafa verið fjarlægðir.</translation>
@@ -814,6 +821,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Notaðu ör til vinstri eða ör til hægri til að stjórna þessum eiginleika.</translation>
 <translation id="8712637175834984815">Ég skil</translation>
 <translation id="871560550817059752">Mistókst – blekið er búið</translation>
+<translation id="8717030727630712160">Viðgerðarferli heldur áfram…</translation>
 <translation id="8723108084122415655">Ósjálfgefið net yfir biðþröskuldi</translation>
 <translation id="8725066075913043281">Reyna aftur</translation>
 <translation id="8726019395068607495">Stöðvað – hlíf er opin</translation>
@@ -835,6 +843,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="8868741746785112895">GUID-kenni</translation>
 <translation id="8876270629542503161">Tækið er spjaldtölva.</translation>
 <translation id="8881098542468797602">Próf tókst</translation>
+<translation id="8897267175591692539">Þú getur sett tækið saman núna</translation>
 <translation id="8898840733695078011">Sendistyrkur</translation>
 <translation id="8910721771319628100">Sjálfgefið net er yfir biðþröskuldi</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" /> – <ph name="DEVICE_TYPE" /></translation>

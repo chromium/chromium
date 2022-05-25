@@ -121,6 +121,7 @@
 <translation id="1942765061641586207">ပုံကြည်လင်ပြတ်သားမှု</translation>
 <translation id="1972984168337863910">ဖိုင်တုံ့ပြန်မှု အကန့်များ ချဲ့ပြရန်</translation>
 <translation id="1995337122023280937">ဖိုင်တည်နေရာသို့ သွားရန်</translation>
+<translation id="1996806196681857869">Z ဖြင့် ချုံ့ထားသည့် မှတ်တမ်း</translation>
 <translation id="2001796770603320721">Drive တွင် စီမံပါ</translation>
 <translation id="2009067268969781306">ဒရိုက်ဗ်တစ်ခုကို ဖော်မက်ချခြင်းသည် ၎င်းပေါ်ရှိ ဒေတာများအားလုံးကို ဖျက်လိုက်ပါမည်။ ဤလုပ်ဆောင်ချက်ကို ပြန်ပြင်၍ မရပါ။</translation>
 <translation id="2025955442973426285">တီဂရင်းညာ</translation>
@@ -588,6 +589,7 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> ခု</translation>
 <translation id="5957366693331451795">Chromebox များ</translation>
 <translation id="5982621672636444458">ရွေးချယ်စရာများ စီရန်</translation>
+<translation id="5985041959109124139">Z ဖြင့် ချုံ့ထားသည့် tar မှတ်တမ်း</translation>
 <translation id="6007237601604674381">ရွှေ့ခြင်း မအောင်မြင်ပါ။ <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">အီသာနက်ကွန်ရက်</translation>
 <translation id="60357267506638014">ချက် QWERTY</translation>
@@ -618,6 +620,7 @@
 <translation id="6220423280121890987">ပန်ချာပီ</translation>
 <translation id="6224240818060029162">ဒိန်းမတ်</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" /> ဖော်မက်ချရန်</translation>
+<translation id="6224665423283788195">Z စံနှုန်းဖြင့် ချုံ့ထားသည့် မှတ်တမ်း</translation>
 <translation id="6227235786875481728">ဒီဖိုင်ကို ဖွင့် မရနိုင်ခဲ့ပါ။</translation>
 <translation id="6241349547798190358">ဒတ်ချ် (ဘယ်လ်ဂျီယံ)</translation>
 <translation id="6267547857941397424">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက်မှ <ph name="NETWORK_INDEX" />၊ <ph name="PHONE_NAME" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />%၊ ဖုန်းဘက်ထရီ <ph name="BATTERY_STATUS" />%၊ ချိတ်ဆက်ရန်</translation>
@@ -645,6 +648,7 @@
 <translation id="6509122719576673235">နော်ဝေ ဂျီယန်</translation>
 <translation id="6528513914570774834">ဤစက်ပစ္စည်း၏ အခြားအသုံးပြုသူများအား ဤကွန်ရက်ကို အသုံးပြုခွင့်ပေးရန်</translation>
 <translation id="653019979737152879">စင့်ခ် လုပ်နေ <ph name="FILE_NAME" />...</translation>
+<translation id="6530595303336443929">Z စံနှုန်းဖြင့် ချုံ့ထားသည့် tar မှတ်တမ်း</translation>
 <translation id="6549689063733911810">မကြာခင်</translation>
 <translation id="6558280019477628686">အမှားအယွင်း ရှိနေပါသည်။ အချို့အရာများကို ဖျက်လိုက်ခြင်း မဖြစ်နိုင်ပါ။</translation>
 <translation id="656398493051028875">ဖျက်နေ "<ph name="FILENAME" />"...</translation>

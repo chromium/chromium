@@ -56,6 +56,7 @@
 <translation id="124678866338384709">סגירת הכרטיסייה הנוכחית</translation>
 <translation id="1246905108078336582">להסיר את ההצעה מהלוח?</translation>
 <translation id="1258753120186372309">‏דודל של Google‏: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">רשימת קריאה</translation>
 <translation id="1266864766717917324">לא ניתן היה לשתף את ה<ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">יש להקיש כדי להרחיב</translation>
 <translation id="1285310382777185058">החלפת שפה</translation>
@@ -493,7 +494,6 @@
 <translation id="363596933471559332">כניסה אוטומטית לאתרים באמצעות פרטי כניסה מאוחסנים. כשתכונה זו כבויה, יהיה עליך לבצע אימות לפני כל כניסה לאתר.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3677911431265050325">בקשת אתר לנייד</translation>
-<translation id="3685860403008476208">כל מי שמשתמש במכשיר הזה יכול לראות קבצים שמבוצעת להם הורדה במצב פרטי</translation>
 <translation id="3687645719033307815">מוצגת לך תצוגה מקדימה של הדף הזה</translation>
 <translation id="3690369331356918524">במצב הזה המערכת מזהירה אותך אם סיסמאות נחשפות כתוצאה מפרצה באבטחת המידע</translation>
 <translation id="3692944402865947621">ההורדה של <ph name="FILE_NAME" /> נכשלה כי מיקום האחסון לא נגיש.</translation>
@@ -523,6 +523,7 @@
 <translation id="3845098929839618392">לפתיחה בכרטיסיית מצב אנונימי</translation>
 <translation id="3856096718352044181">יש לאמת שהספק הזה חוקי או לנסות שוב מאוחר יותר</translation>
 <translation id="3858860766373142691">שם</translation>
+<translation id="3859206958100234503">אפשר לבצע סנכרון כדי לעדכן את הסיסמאות, הסימניות ונתונים נוספים בכל המכשירים שלך</translation>
 <translation id="3861633093716975811">סרטונים פופולריים</translation>
 <translation id="3892148308691398805">העתקת הטקסט</translation>
 <translation id="3894427358181296146">הוספת תיקייה</translation>
@@ -580,6 +581,7 @@
 <translation id="4209895695669353772">‏כדי לקבל מ-Google הצעות לתוכן מותאם אישית, יש להפעיל את הסנכרון</translation>
 <translation id="4214315110991671325">‏אם מאפשרים שימוש בקובצי Cookie, יכול להיות שמערכת Chrome תשתמש בהם בטעינה מראש.</translation>
 <translation id="4225895483398857530">קיצור דרך בסרגל הכלים</translation>
+<translation id="4227318652298512614">עוקבים אחר כל אתר שרוצים</translation>
 <translation id="4242533952199664413">פתיחת ההגדרות</translation>
 <translation id="4248098802131000011">הגנה על הסיסמאות שלך מפני פרצות באבטחת המידע ובעיות אבטחה אחרות</translation>
 <translation id="4249955472157341256">מיון לפי 'האחרון'</translation>
@@ -696,6 +698,7 @@
 <translation id="4842515939542199281">כדי לחפש באמצעות הקול, מקישים על המיקרופון</translation>
 <translation id="4844633725025837809">‏כדי לשפר את הבטיחות, כדאי להצפין את הסיסמאות במכשיר שלך לפני שהן נשמרות במנהל הסיסמאות של Google</translation>
 <translation id="4850886885716139402">הצגה</translation>
+<translation id="4852014461738377247">‏בתהליך כניסה\u2026</translation>
 <translation id="4860895144060829044">תרימו טלפון</translation>
 <translation id="4864369630010738180">מתבצעת כניסה...</translation>
 <translation id="4866368707455379617">‏לא ניתן להתקין את <ph name="MODULE" /> ל-Chrome</translation>
@@ -1149,6 +1152,7 @@
 <translation id="7304873321153398381">‏אין חיבור לאינטרנט. ל-Chrome אין אפשרות לבדוק את הסיסמאות שלך.</translation>
 <translation id="7313188324932846546">יש להקיש כדי להגדיר סנכרון</translation>
 <translation id="7332075081379534664">הכניסה בוצעה בהצלחה</translation>
+<translation id="7333232495927792353">‏אפשר לבצע סנכרון כדי לקבל את התוכן הכי רלוונטי מ-Google</translation>
 <translation id="7339898014177206373">חלון חדש</translation>
 <translation id="7340958967809483333">‏אפשרויות של Discover</translation>
 <translation id="7352339641508007922">יש לגרור כדי ליצור צילום מסך ארוך</translation>
@@ -1529,6 +1533,7 @@
 <translation id="96681097142096641">להציג דף פשוט?</translation>
 <translation id="968900484120156207">הדפים שבהם ביקרת מופיעים כאן</translation>
 <translation id="970715775301869095">נותרו <ph name="MINUTES" /> דקות</translation>
+<translation id="978443947993957527">הצגת תוכן שרלוונטי לך</translation>
 <translation id="981121421437150478">לא מקוון</translation>
 <translation id="983192555821071799">סגירת כל הכרטיסיות</translation>
 <translation id="987264212798334818">כללי</translation>

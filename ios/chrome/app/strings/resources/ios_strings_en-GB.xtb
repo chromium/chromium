@@ -241,6 +241,7 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 <translation id="2982481275546140226">Clear Data</translation>
 <translation id="298306318844797842">Add Payment Method...</translation>
 <translation id="2989805286512600854">Open in New Tab</translation>
+<translation id="3020183492814296499">Shortcuts</translation>
 <translation id="3037605927509011580">Aw, Snap!</translation>
 <translation id="3039722182465315531">Don't sign in</translation>
 <translation id="3076846064362030967">You won't be signed out of your Google Account. <ph name="BEGIN_LINK" />Other forms of activity<ph name="END_LINK" /> may be saved in your Google Account when you’re signed in. You can delete them at any time.
@@ -461,7 +462,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="4901778704868714008">Save...</translation>
 <translation id="4904877109095351937">Mark Read</translation>
 <translation id="4908869848243824489">Discover by Google</translation>
-<translation id="4930714375720679147">Turn On</translation>
+<translation id="4930714375720679147">Turn on</translation>
 <translation id="4941089862236492464">Sorry, there was a problem sharing your item.</translation>
 <translation id="4944543191714094452">Find in page…</translation>
 <translation id="4945756290001680296">Access password settings</translation>
@@ -512,6 +513,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5416022985862681400">Last 7 days</translation>
 <translation id="543338862236136125">Edit password</translation>
 <translation id="5433691172869980887">Username copied</translation>
+<translation id="5439599923922718668">Frequently visited</translation>
 <translation id="54401264925851789">Page Security Info</translation>
 <translation id="5443952882982198570">Credit cards</translation>
 <translation id="5457226814769348910">Open offline version</translation>

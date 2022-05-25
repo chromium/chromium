@@ -78,6 +78,7 @@
 <translation id="1578784163189013834">เลือกพื้นหลังของโปรแกรมรักษาหน้าจอ</translation>
 <translation id="1615335640928990664">ปริมาณการใช้อินเทอร์เน็ตตั้งแต่ <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">ทดสอบการชาร์จแบตเตอรี่</translation>
+<translation id="1631385268983122904">อย่าเพิ่งประกอบอุปกรณ์กลับเข้าด้วยกัน</translation>
 <translation id="1639239467298939599">กำลังโหลด</translation>
 <translation id="1641857168437328880">ตัวป้อนเอกสาร (ด้านเดียว)</translation>
 <translation id="1643449475550628585">เปลี่ยนรูปภาพวอลเปเปอร์ทุกวัน</translation>
@@ -85,6 +86,7 @@
 <translation id="1645954272419197032">โปรดยืนยันข้อมูลอุปกรณ์</translation>
 <translation id="1662989795263954667">หยุดพิมพ์ - หมึกหมด</translation>
 <translation id="1668469839109562275">VPN ในตัว</translation>
+<translation id="1676557873873341166">กำลังถ่ายวิดีโอ</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">มีรีโซลเวอร์ DNS</translation>
 <translation id="1715359911173058521">เกิดปัญหาในการสื่อสารกับเครื่องสแกน ตรวจสอบการเชื่อมต่อเครือข่ายหรือ USB แล้วลองอีกครั้ง</translation>
@@ -159,6 +161,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">เปิดบลูทูธเพื่อค้นหาอุปกรณ์ใกล้เคียง</translation>
+<translation id="2340422556570134524">Write Protect เปิดโดยไม่คาดคิด โปรดปิด Write Protect ด้วยตนเองก่อนลองอีกครั้ง</translation>
 <translation id="2346474577291266260">ดีมาก (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">ต่อไป</translation>
 <translation id="2360257214555822463">ตรวจพบ<ph name="LINK_BEGIN" />คอมโพเนนต์ที่ไม่ตรงตามข้อกำหนด<ph name="LINK_END" /> หากคุณเลือกที่จะยืนยันว่าได้ติดตั้งคอมโพเนนต์เหล่านี้ โปรดดำเนินการดังกล่าวตอนนี้เลย</translation>
@@ -474,6 +477,7 @@
 <translation id="5372659122375744710">เครือข่าย WiFi ไม่ปลอดภัย</translation>
 <translation id="5376354385557966694">โหมดสว่างอัตโนมัติ</translation>
 <translation id="537872351913703572">อุปกรณ์จะไปอยู่กับผู้ใช้หรือองค์กรใหม่</translation>
+<translation id="5389159777326897627">วอลเปเปอร์และสไตล์</translation>
 <translation id="5389224261615877010">สีรุ้ง</translation>
 <translation id="5395600419410242651">ลบข้อมูลทั้งหมด</translation>
 <translation id="5400907029458559844">อุปกรณ์กำลังเชื่อมต่อ</translation>
@@ -643,6 +647,7 @@
 <translation id="6961170852793647506">วางเอกสารบนเครื่องสแกนเพื่อเริ่มต้นใช้งาน</translation>
 <translation id="6965382102122355670">ตกลง</translation>
 <translation id="6977381486153291903">การแก้ไขเฟิร์มแวร์</translation>
+<translation id="6995564396478647735">ตรวจสอบว่า Write Protect เปิดอยู่</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> จัดการอุปกรณ์นี้และมีสิทธิ์เข้าถึงกิจกรรมทั้งหมดของผู้ใช้ ซึ่งรวมถึงหน้าเว็บที่เข้าชม รหัสผ่าน และอีเมล</translation>
 <translation id="7040230719604914234">โอเปอเรเตอร์</translation>
 <translation id="7041549558901442110">อุปกรณ์ไม่ได้เชื่อมต่ออยู่</translation>
@@ -653,6 +658,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">ไม่สำเร็จ - การให้สิทธิ์ไม่สำเร็จ</translation>
 <translation id="7103252855940681301">อุปกรณ์ <ph name="INDEX" /> จาก <ph name="COUNT" /> มีชื่อว่า <ph name="NAME" /></translation>
+<translation id="7126228745139711113">ปิด Write Protect แล้ว</translation>
 <translation id="7134436342991564651">{0,plural, =1{เนมเซิร์ฟเวอร์}other{เนมเซิร์ฟเวอร์}}</translation>
 <translation id="7143207342074048698">กำลังเชื่อมต่อ</translation>
 <translation id="7144878232160441200">ลองอีกครั้ง</translation>
@@ -744,6 +750,7 @@
 <translation id="80398733265834479">เปิดใช้โหมดปรับสีอัตโนมัติ</translation>
 <translation id="8041089156583427627">ส่งความคิดเห็น</translation>
 <translation id="8045012663542226664">ปุ่มปิดเสียงไมโครโฟน</translation>
+<translation id="8063022551652308521">Write Protect ยังปิดอยู่ โปรดเปิด Write Protect เพื่อดำเนินการต่อ</translation>
 <translation id="8075838845814659848">การชาร์จที่เหลือ</translation>
 <translation id="8082366717211101304">ไม่สามารถแปลง DNS จากแอป Android</translation>
 <translation id="8083281199617904460">ขั้นตอนการซ่อมนี้มีไว้สำหรับช่างซ่อมที่ผ่านการฝึกฝน โดยจะเริ่มหลังจากแทนที่คอมโพเนนต์ที่ทำงานผิดพลาดแล้วเท่านั้น</translation>
@@ -814,6 +821,7 @@
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> ใช้แป้นลูกศรซ้ายหรือขวาเพื่อจัดการฟีเจอร์นี้</translation>
 <translation id="8712637175834984815">สำเร็จ</translation>
 <translation id="871560550817059752">ไม่สำเร็จ - หมึกหมด</translation>
+<translation id="8717030727630712160">กำลังดำเนินการซ่อมต่อ…</translation>
 <translation id="8723108084122415655">เครือข่ายที่ไม่ใช่ค่าเริ่มต้นสูงกว่าเกณฑ์เวลาในการตอบสนอง</translation>
 <translation id="8725066075913043281">ลองอีกครั้ง</translation>
 <translation id="8726019395068607495">หยุดพิมพ์ - ฝาเครื่องเปิดอยู่</translation>
@@ -835,6 +843,7 @@
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">อุปกรณ์เป็นแท็บเล็ต</translation>
 <translation id="8881098542468797602">การทดสอบสำเร็จ</translation>
+<translation id="8897267175591692539">ประกอบอุปกรณ์กลับเข้าด้วยกันได้เลย</translation>
 <translation id="8898840733695078011">ความแรงสัญญาณ</translation>
 <translation id="8910721771319628100">เครือข่ายเริ่มต้นสูงกว่าเกณฑ์เวลาในการตอบสนอง</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> ของ <ph name="GIVEN_NAME" /></translation>

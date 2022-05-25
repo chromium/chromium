@@ -121,6 +121,7 @@
 <translation id="1942765061641586207">छविको रिजोल्युसन</translation>
 <translation id="1972984168337863910">फाइलका प्रतिक्रियाका प्यानलहरू विस्तृत गर्नुहोस्</translation>
 <translation id="1995337122023280937">फाइल रहेको स्थानमा जानुहोस्</translation>
+<translation id="1996806196681857869">Z compressed archive</translation>
 <translation id="2001796770603320721">ड्राइभमा व्यवस्थित गर्नुहोस्</translation>
 <translation id="2009067268969781306">ड्राइभ फर्म्याट गर्नुले यसमा भण्डार गरिएका सम्पूर्ण डेटा मेट्ने छ। यो कार्य उल्टाउन सकिँदैन।</translation>
 <translation id="2025955442973426285">टिग्रिन्या</translation>
@@ -588,6 +589,7 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> वस्तुहरू</translation>
 <translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">विकल्पहरू क्रमबद्ध गर्नुहोस्</translation>
+<translation id="5985041959109124139">Z compressed tar archive</translation>
 <translation id="6007237601604674381">सार्ने कार्य असफल भयो। <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">इथरनेट नेटवर्क</translation>
 <translation id="60357267506638014">चेक QWERTY</translation>
@@ -618,6 +620,7 @@
 <translation id="6220423280121890987">पञ्जाबी</translation>
 <translation id="6224240818060029162">डेनिस</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" /> फर्म्याट गर्नुहोस्</translation>
+<translation id="6224665423283788195">Zstandard compressed archive</translation>
 <translation id="6227235786875481728">फाइल प्ले हुन सकेन।</translation>
 <translation id="6241349547798190358">डच (बेल्जियम)</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" /> मध्ये नेटवर्क <ph name="NETWORK_INDEX" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%, फोनको ब्याट्री <ph name="BATTERY_STATUS" />%, जोड्नुहोस्</translation>
@@ -645,6 +648,7 @@
 <translation id="6509122719576673235">नर्वेयन</translation>
 <translation id="6528513914570774834">यस डिभाइसका अन्य प्रयोगकर्ताहरूलाई यो नेटवर्क प्रयोग गर्न दिनुहोस्</translation>
 <translation id="653019979737152879"><ph name="FILE_NAME" /> लाई समक्रमण गर्दै...</translation>
+<translation id="6530595303336443929">Zstandard compressed tar archive</translation>
 <translation id="6549689063733911810">हालै</translation>
 <translation id="6558280019477628686">एउटा त्रुटि भयो। केही वस्तुहरू नमेटिएका हुनसक्छन्।</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />" लाई मेटाउँदै...</translation>

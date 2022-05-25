@@ -82,6 +82,7 @@
 <translation id="2574930892358684005"><ph name="EXISTING_USER" />님이 이미 Chrome 프로필에 로그인되어 있습니다. 인터넷 사용 기록을 별도로 보관하기 위해 Chrome에서 나만의 프로필을 만들 수 있습니다.</translation>
 <translation id="2580411288591421699">현재 실행 중인 Chrome과 동일한 버전은 설치할 수 없습니다. Chrome을 닫고 다시 시도하세요.</translation>
 <translation id="2586406160782125153">인터넷 사용 기록이 기기에서 삭제됩니다. 나중에 데이터를 가져오려면 Chrome에 <ph name="USER_EMAIL" />(으)로 로그인하세요.</translation>
+<translation id="2597976513418770460"><ph name="ACCOUNT_EMAIL" />에서 Chrome 브라우저 기능을 이용해 보세요</translation>
 <translation id="2622559029861875898">Chrome에서 업데이트를 확인할 수 없습니다. 인터넷 연결 상태를 확인하세요.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2652691236519827073">새 Chrome 탭에서 링크 열기(&amp;T)</translation>
@@ -312,6 +313,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7801699035218095297">Chrome에서 비밀번호를 복사하려고 합니다. 허용하려면 Windows 비밀번호를 입력하세요.</translation>
 <translation id="7808348361785373670">Chrome에서 삭제...</translation>
 <translation id="7825851276765848807">알 수 없는 오류로 인해 설치에 실패했습니다. Chrome을 다시 다운로드하세요.</translation>
+<translation id="7880591377632733558"><ph name="ACCOUNT_FIRST_NAME" />님, Chrome에 오신 것을 환영합니다</translation>
 <translation id="7890208801193284374">컴퓨터를 공유하는 경우 친구와 가족이 개별적으로 탐색하고 원하는 대로 Chrome을 설정할 수 있습니다.</translation>
 <translation id="7896673875602241923">다른 사용자가 이전에 이 컴퓨터에서 <ph name="ACCOUNT_EMAIL_LAST" />(으)로 Chrome에 로그인했습니다. 새 Chrome 사용자를 만들어 정보를 별도로 관리하세요.</translation>
 <translation id="7917876797003313048">로그인된 Google 계정을 관리할 수 있습니다. Google 계정은 Chrome 브라우저, Play 스토어, Gmail 등에서 사용됩니다. 가족 구성원 등 다른 사람을 위해 계정을 추가하고 싶다면 대신 <ph name="DEVICE_TYPE" />에 새 사용자를 추가하세요. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
@@ -337,6 +339,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8418845734693287262">계정의 로그인 세부정보가 오래되어 ChromeOS에서 데이터를 동기화할 수 없습니다.</translation>
 <translation id="8421734018304082652">파일이 암호화되어 있기 때문에 Chrome에서 파일을 차단했습니다. 파일 소유자에게 복호화를 요청하세요</translation>
 <translation id="8433638294851456451">여기에서 Android 휴대전화로 번호를 전송하려면 두 기기 모두에서 Chrome에 로그인하세요.</translation>
+<translation id="8451192282033883849">내 계정은 <ph name="MANAGER_NAME" />에서 관리합니다. 관리자가 이 Chrome 브라우저 프로필과 북마크, 방문 기록, 비밀번호 등의 데이터를 보고 수정할 수 있습니다.</translation>
 <translation id="8498858610309223613">Chrome 특별 보안 업데이트를 방금 적용했습니다. 다시 시작하면 탭이 복원됩니다.</translation>
 <translation id="8504220326736535258">파일에 멀웨어가 포함되어 있기 때문에 Chrome에서 파일을 차단했습니다</translation>
 <translation id="8516431725144212809">Chrome에서 예측한 관심분야</translation>

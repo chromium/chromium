@@ -78,6 +78,7 @@
 <translation id="1578784163189013834">સ્ક્રીન સેવરનું બૅકગ્રાઉન્ડ પસંદ કરો</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" />થી ડેટા વપરાશ</translation>
 <translation id="1621067168122174824">ચાર્જિંગનું પરીક્ષણ ચાલુ કરો</translation>
+<translation id="1631385268983122904">ડિવાઇસને હમણાં પાછું જોડશો નહીં</translation>
 <translation id="1639239467298939599">લોડ કરી રહ્યું છે</translation>
 <translation id="1641857168437328880">દસ્તાવેજનું ફીડર (એક બાજુથી)</translation>
 <translation id="1643449475550628585">વૉલપેપરની છબી દરરોજ બદલો</translation>
@@ -85,6 +86,7 @@
 <translation id="1645954272419197032">કૃપા કરીને ડિવાઇસની માહિતી કન્ફર્મ કરો</translation>
 <translation id="1662989795263954667">બંધ - શાહી ખલાસ થઈ ગઈ</translation>
 <translation id="1668469839109562275">બિલ્ટ-ઇન VPN</translation>
+<translation id="1676557873873341166">વીડિયો લઈ રહ્યાં છીએ</translation>
 <translation id="1703835215927279855">અક્ષર</translation>
 <translation id="1706391837335750954">DNS રિઝોલ્વરનું વર્તમાન પરીક્ષણ</translation>
 <translation id="1715359911173058521">સ્કૅનર સાથે સંચાર કરતી વખતે સમસ્યા આવી. નેટવર્ક અથવા USB કનેક્શન ચેક કરો અને ફરી પ્રયાસ કરો.</translation>
@@ -159,6 +161,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">નજીકનાં ડિવાઇસ શોધવા માટે Bluetooth ચાલુ કરો</translation>
+<translation id="2340422556570134524">રાઇટ પ્રોટેક્ટની સુવિધા અનપેક્ષિત રીતે શરૂ કરવામાં આવી. ફરી પ્રયાસ કરતા પહેલાં કૃપા કરીને મેન્યુઅલી રાઇટ પ્રોટેક્ટ બંધ કરો.</translation>
 <translation id="2346474577291266260">ઉત્તમ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">આગળ વધો</translation>
 <translation id="2360257214555822463"><ph name="LINK_BEGIN" />અયોગ્ય ઘટકો<ph name="LINK_END" />ની જાણકારી મળી. આ ઇન્સ્ટૉલ કરવામાં આવ્યા છે તે જો તમે કન્ફર્મ કરવાનું પસંદ કરતા હો, તો કૃપા કરીને હમણાં જ કન્ફર્મ કરો.</translation>
@@ -473,6 +476,7 @@
 <translation id="5372659122375744710">આ વાઇ-ફાઇ નેટવર્ક સુરક્ષિત નથી</translation>
 <translation id="5376354385557966694">ઑટોમૅટિક લાઇટ મોડ</translation>
 <translation id="537872351913703572">ડિવાઇસ કોઈ અન્ય વપરાશકર્તા અથવા સંસ્થાને આપવામાં આવશે</translation>
+<translation id="5389159777326897627">વૉલપેપર અને સ્ટાઇલ</translation>
 <translation id="5389224261615877010">મેઘધનુષ</translation>
 <translation id="5395600419410242651">તમામ ડેટા કાઢી નાખો</translation>
 <translation id="5400907029458559844">ડિવાઇસ કનેક્ટ થઈ રહ્યું છે.</translation>
@@ -642,6 +646,7 @@
 <translation id="6961170852793647506">શરૂ કરવા માટે, તમારા દસ્તાવેજને સ્કૅનર પર મૂકો</translation>
 <translation id="6965382102122355670">બરાબર, સમજાઇ ગયું</translation>
 <translation id="6977381486153291903">ફર્મવેયર પુનરાવર્તન</translation>
+<translation id="6995564396478647735">ખાતરી કરો કે રાઇટ પ્રોટેક્ટ ચાલુ છે</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> આ ડિવાઇસને મેનેજ કરે છે અને મુલાકાત લીધેલા વેબપેજ, પાસવર્ડ અને ઇમેઇલ સહિત, બધી વપરાશકર્તા પ્રવૃત્તિઓનો ઍક્સેસ ધરાવે છે.</translation>
 <translation id="7040230719604914234">ઑપરેટર</translation>
 <translation id="7041549558901442110">ડિવાઇસ કનેક્ટ થયું નથી.</translation>
@@ -652,6 +657,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">નિષ્ફળ રહ્યું - અધિકરણ નિષ્ફળ</translation>
 <translation id="7103252855940681301"><ph name="NAME" /> નામનું ડિવાઇસ (<ph name="INDEX" />/<ph name="COUNT" />).</translation>
+<translation id="7126228745139711113">રાઇટ પ્રોટેક્ટ બંધ છે</translation>
 <translation id="7134436342991564651">{0,plural, =1{સર્વરનું નામ}one{સર્વરનું નામ}other{સર્વરનું નામ}}</translation>
 <translation id="7143207342074048698">કનેક્ટિંગ</translation>
 <translation id="7144878232160441200">ફરી પ્રયત્ન કરો</translation>
@@ -743,6 +749,7 @@
 <translation id="80398733265834479">ઑટો કલર મોડ ચાલુ કરો</translation>
 <translation id="8041089156583427627">પ્રતિસાદ મોકલો</translation>
 <translation id="8045012663542226664">માઇક્રોફોનને મ્યૂટ કરવાની કી</translation>
+<translation id="8063022551652308521">રાઇટ પ્રોટેક્ટ હજી પણ બંધ છે. આગળ વધવા માટે, રાઇટ પ્રોટેક્ટ ચાલુ કરો.</translation>
 <translation id="8075838845814659848">બાકી રહેલું બૅટરી ચાર્જિંગ</translation>
 <translation id="8082366717211101304">Android ઍપથી DNSનું નિરાકરણ કરી શકતા નથી</translation>
 <translation id="8083281199617904460">રિપૅરની આ પ્રક્રિયા રિપૅરિંગ કરતા પ્રશિક્ષિત ટેક્નિશિયન દ્વારા કરવામાં આવે તે વધુ યોગ્ય છે. ખામીયુક્ત ઘટકોને બદલ્યા પછી જ શરૂઆત કરો.</translation>
@@ -813,6 +820,7 @@
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> આ સુવિધા મેનેજ કરવા માટે ડાબી કે જમણી એરો કીનો ઉપયોગ કરો.</translation>
 <translation id="8712637175834984815">સમજાઈ ગયું</translation>
 <translation id="871560550817059752">નિષ્ફળ થયું - પ્રિન્ટરમાં શાહી પૂરી થઈ ગઈ છે</translation>
+<translation id="8717030727630712160">રિપૅરની પ્રક્રિયા ફરી શરૂ કરી રહ્યાં છીએ…</translation>
 <translation id="8723108084122415655">નૉન-ડિફૉલ્ટ નેટવર્ક ગેટવેની વિલંબતા જરૂરી થ્રેશોલ્ડ કરતાં વધુ છે</translation>
 <translation id="8725066075913043281">ફરી પ્રયાસ કરો</translation>
 <translation id="8726019395068607495">બંધ - ઢાંકણ ખુલ્લું છે</translation>
@@ -834,6 +842,7 @@
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">ડિવાઇસ એક ટૅબ્લેટ છે.</translation>
 <translation id="8881098542468797602">પરીક્ષણ સફળ થયું</translation>
+<translation id="8897267175591692539">તમે હવે ડિવાઇસને પાછું જોડી શકો છો</translation>
 <translation id="8898840733695078011">સિગ્નલ પ્રબળતા</translation>
 <translation id="8910721771319628100">ડિફૉલ્ટ નેટવર્ક ગેટવેની વિલંબતા જરૂરી થ્રેશોલ્ડ કરતાં વધુ છે</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />ની <ph name="DEVICE_TYPE" /></translation>

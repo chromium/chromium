@@ -78,6 +78,7 @@
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> on jo kirjautunut tähän Chrome-profiiliin. Chrome voi luoda sinulle oman profiilin, jotta selaamisesi pysyy erillään.</translation>
 <translation id="2580411288591421699">Ei voi asentaa samaa Google Chromen versiota, joka tällä hetkellä on käytössä. Sulje Google Chrome ja yritä uudelleen.</translation>
 <translation id="2586406160782125153">Selaustiedot poistetaan tältä laitteelta. Jos haluat palauttaa tiedot myöhemmin, kirjaudu Chromeen käyttäjänä <ph name="USER_EMAIL" />.</translation>
+<translation id="2597976513418770460">Käytä tililtä <ph name="ACCOUNT_EMAIL" /> löytyvää Chrome-selaimen sisältöä</translation>
 <translation id="2622559029861875898">Chrome ei voi tarkistaa päivityksiä. Tarkista internetyhteytesi.</translation>
 <translation id="2645435784669275700">Chrome-käyttöjärjestelmä</translation>
 <translation id="2652691236519827073">Avaa linkki uudella Chromen välilehdellä</translation>
@@ -304,6 +305,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="7801699035218095297">Google Chrome yrittää kopioida salasanoja. Salli tämä kirjoittamalla Windows-salasanasi.</translation>
 <translation id="7808348361785373670">Poista Chromesta…</translation>
 <translation id="7825851276765848807">Asennus epäonnistui tuntemattoman virheen vuoksi. Lataa Google Chrome uudelleen.</translation>
+<translation id="7880591377632733558">Tervetuloa Chromeen, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="7890208801193284374">Jos käytät jaettua tietokonetta, kaverisi ja perheenjäsenesi voivat selata verkkoa omista profiileistaan käsin ja muokata Chromesta juuri itselleen sopivan.</translation>
 <translation id="7896673875602241923">Joku on jo kirjautunut tällä tietokoneella Chromeen käyttäjätilillä <ph name="ACCOUNT_EMAIL_LAST" />. Luo uusi Chrome-käyttäjä, jos haluat pitää tiedot erillään.</translation>
 <translation id="7917876797003313048">Voit ylläpitää sisäänkirjautuneita Google-tilejäsi. Google-tilejäsi käytetään Chrome-selaimella, Play Kaupassa ja muualla. Jos haluat lisätä tilin jollekulle toiselle, esim. perheenjäsenelle, lisää tämän sijasta uusi henkilö laitteelle (<ph name="DEVICE_TYPE" />). <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
@@ -329,6 +331,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="8418845734693287262">Chrome-käyttöjärjestelmä ei voinut synkronoida dataa, koska tilin kirjautumistiedot ovat vanhentuneet.</translation>
 <translation id="8421734018304082652">Chrome on estänyt tämän tiedoston, koska se on salattu. Pyydä sen omistajaa purkamaan salaus</translation>
 <translation id="8433638294851456451">Jos haluat lähettää numeron täältä Android-puhelimeesi, kirjaudu Chromeen molemmilla laitteilla.</translation>
+<translation id="8451192282033883849"><ph name="MANAGER_NAME" /> ylläpitää tiliäsi. Järjestelmänvalvoja voi nähdä tämän Chrome-selainprofiilin ja sen datan (esim. kirjanmerkit, historian ja salasanat) sekä muokata niitä.</translation>
 <translation id="8498858610309223613">Google Chromen tärkeä tietoturvapäivitys on asennettu. Käynnistä selain uudelleen – palautamme avoimet välilehdet.</translation>
 <translation id="8504220326736535258">Chrome on estänyt tämän tiedoston, koska se sisältää haittaohjelmia</translation>
 <translation id="8516431725144212809">Chromen arvio siitä, mitkä ovat kiinnostuksen kohteitasi</translation>

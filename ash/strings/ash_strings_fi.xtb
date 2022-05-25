@@ -24,6 +24,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="109942774857561566">Minulla on tylsää</translation>
 <translation id="1104084341931202936">Näytä esteettömyysasetukset</translation>
 <translation id="1104621072296271835">Laitteesi toimivat entistä paremmin yhdessä</translation>
+<translation id="1111021433905331574">Voit muuttaa näppäimistön taustaväriä Asetuksista &gt; <ph name="APP_TITLE" /></translation>
 <translation id="112308213915226829">Piilota hylly automaattisesti</translation>
 <translation id="1142002900084379065">Viimeisimmät kuvat</translation>
 <translation id="1148499908455722006">Avaa tietoikkuna: <ph name="USER_NAME" /></translation>
@@ -64,6 +65,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1275285675049378717">Toimii virtalähteenä: <ph name="POWER_SOURCE" /></translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">Paikanna puhelin</translation>
+<translation id="1287002645302686982">Tällä nimellä (<ph name="DESK_TEMPLATE_NAME" />) löytyy ennestään tallennettu työpöytä.</translation>
 <translation id="1289185460362160437">Palaa seuraavana ajankohtana: <ph name="COME_BACK_DAY_OF_WEEK" />, kello <ph name="COME_BACK_TIME" />.</translation>
 <translation id="1290331692326790741">Heikko signaali</translation>
 <translation id="1290982764014248209">Siirrä <ph name="DRAGGED_APP" /> kansioon <ph name="FOLDER_NAME" />.</translation>
@@ -93,7 +95,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1420408895951708260">Yövalo päälle/pois. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">Katsele puhelimesi viimeisimpiä kuvia ja mediaa tällä laitteella: <ph name="DEVICE_TYPE" /></translation>
 <translation id="1426410128494586442">Kyllä</translation>
-<translation id="1438357537418863713">Sovellusstriimaus on nyt otettu käyttöön. Kun aloitat sen käytön, äskettäin käynnistetyt sovellukset näkyvät täällä.</translation>
+<translation id="1447641497144572814">Näytönsäästäjä alkaa</translation>
 <translation id="1455242230282523554">Näytä kieliasetukset</translation>
 <translation id="1460620680449458626">Äänet on mykistetty.</translation>
 <translation id="1467432559032391204">Vasemmalla</translation>
@@ -268,6 +270,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="2586561057878260610"><ph name="DESK_NAME" /> yhdistetään, kun painat Ctrl + W. Sulje työpöytä ja ikkunat painamalla Ctrl + Shift + W.</translation>
 <translation id="2595239820337756193">5 km maileina</translation>
 <translation id="2596078834055697711">Ota kuvakaappaus</translation>
+<translation id="2598725286293895280">Työpöydällä on ei-tuettuja sovelluksia</translation>
 <translation id="2607678425161541573">Edellyttää kirjautumista verkossa</translation>
 <translation id="2620016719323068571">Hae <ph name="CATEGORY" />, tiedostoista, sovelluksista ja muista.</translation>
 <translation id="2620436844016719705">Järjestelmä</translation>
@@ -643,6 +646,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="4734965478015604180">Vaakasuora</translation>
 <translation id="4735498845456076464">Pikanäppäinyhdistelmä <ph name="LAUNCHER_KEY_NAME" /> + numeronäppäin on muuttunut. Jos haluat käyttää toimintonäppäimiä, paina <ph name="LAUNCHER_KEY_NAME" /> + ylärivin näppäin.</translation>
 <translation id="473775607612524610">Päivitä</translation>
+<translation id="4740516757091333363">Poistetaanko tallennettu työpöytä?</translation>
 <translation id="4752784485658729358">Vain kuusi tallennettua työpöytää sallitaan. Poista jokin työpöytä tallentaaksesi uuden.</translation>
 <translation id="4759238208242260848">Lataukset</translation>
 <translation id="4774338217796918551">Palaa huomenna kello <ph name="COME_BACK_TIME" />.</translation>
@@ -695,7 +699,6 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="5071064518267176975">Sovellus haluaa käyttää mikrofonia</translation>
 <translation id="5078796286268621944">Väärä PIN-koodi</translation>
 <translation id="5083553833479578423">Käytä lisää Assistantin ominaisuuksia.</translation>
-<translation id="5106223312672646208">Personoi</translation>
 <translation id="5107522548814527560">Verkko</translation>
 <translation id="5117590920725113268">Näytä seuraava kuukausi</translation>
 <translation id="5136175204352732067">Eri näppäimistö kytketty</translation>
@@ -740,6 +743,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="5352250171825660495">Tumma teema on päällä</translation>
 <translation id="5356963482258194581">Vaihda tumman ja vaalean teeman välillä. Klikkaa työpöytää kakkospainikkeella ja valitse Taustakuva ja tyyli.</translation>
 <translation id="5379115545237091094">Liian monta yritystä</translation>
+<translation id="5391307769715781764">Korvataanko tallennettu työpöytä?</translation>
 <translation id="5393156353051693207">Järjestele sovellukset uudelleen koskettamalla mitä tahansa kohtaa pitkään</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> on sovelluksen <ph name="IN_PLACE_APP" /> päällä, päästä irti luodaksesi kansion.</translation>
 <translation id="5397578532367286026">Hallinnoija (<ph name="MANAGER_EMAIL" />) voi tarkkailla tämän käyttäjän käyttö- ja historiatietoja osoitteessa chrome.com.</translation>
@@ -973,6 +977,7 @@ Uusi asennus</translation>
 <translation id="6790428901817661496">Toista</translation>
 <translation id="6801878137098616817">Muokattu hiljattain</translation>
 <translation id="6803622936009808957">Näyttöjen peilaaminen ei onnistunut, sillä tuettua resoluutiota ei löytynyt. Sen sijaan valittiin työpöydän laajennus.</translation>
+<translation id="6812232930908427253">Työpöydän tallentaminen epäonnistui. Liian monta ikkunaa tai välilehteä.</translation>
 <translation id="6818242057446442178">Yksi sana taaksepäin</translation>
 <translation id="6819327813400217281">Kamera kohdistettu vasempaan alakulmaan</translation>
 <translation id="6820676911989879663">Pidä tauko</translation>

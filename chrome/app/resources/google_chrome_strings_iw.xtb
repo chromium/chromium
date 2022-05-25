@@ -78,6 +78,7 @@
 <translation id="2574930892358684005">‏המשתמש <ph name="EXISTING_USER" /> כבר מחובר לפרופיל Chrome הזה. כדי להפריד בין פעילויות גלישה, Chrome יכול ליצור עבורך פרופיל משלך.</translation>
 <translation id="2580411288591421699">‏אין אפשרות להתקין את אותה גרסת Google Chrome הפועלת כעת. יש לסגור את Google Chrome ולנסות שוב.</translation>
 <translation id="2586406160782125153">‏הפעולה תמחק את נתוני הגלישה מהמכשיר. כדי לאחזר את הנתונים מאוחר יותר, יש להיכנס אל Chrome עם <ph name="USER_EMAIL" />.</translation>
+<translation id="2597976513418770460">‏אפשר לקבל את הנתונים של <ph name="ACCOUNT_EMAIL" /> ולשמור אותם בדפדפן Chrome</translation>
 <translation id="2622559029861875898">‏Chrome לא יכול לחפש עדכונים. יש לבדוק את החיבור לאינטרנט.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2652691236519827073">‏פתיחת הקישור ב&amp;כרטיסיית Chrome חדשה</translation>
@@ -304,6 +305,7 @@
 <translation id="7801699035218095297">‏Google Chrome מנסה להעתיק את הסיסמאות. כדי לאפשר את הפעולה הזו, יש להקליד את הסיסמה שלך ל-Windows.</translation>
 <translation id="7808348361785373670">‏הסרה מ-Chrome...</translation>
 <translation id="7825851276765848807">‏ההתקנה נכשלה בשל שגיאה לא מזוהה. צריך להוריד שוב את Google Chrome.</translation>
+<translation id="7880591377632733558">‏ברוך בואך אל Chrome, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="7890208801193284374">‏כשמשתפים מחשב, חברים ובני משפחה יכולים לגלוש בנפרד ולהגדיר את Chrome בדיוק כפי שהם רוצים.</translation>
 <translation id="7896673875602241923">‏מישהו נכנס בעבר ל-Chrome מהמחשב הזה כ-<ph name="ACCOUNT_EMAIL_LAST" />. יש ליצור משתמש חדש ל-Chrome כדי לשמור על הפרדת המידע שלך.</translation>
 <translation id="7917876797003313048">‏יש לך אפשרות לנהל את חשבונות Google שאליהם נכנסת. כדי ליהנות מחיבור לחשבון בדפדפן Chrome, בחנות Play, ב-‏Gmail ובשירותים נוספים, עליך להיכנס עם חשבונות Google שלך. כדי להוסיף חשבון של מישהו אחר, כמו חבר/ה בקבוצה המשפחתית, יש להוסיף משתמש חדש ל-<ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
@@ -329,6 +331,7 @@
 <translation id="8418845734693287262">‏לא בוצע סנכרון של הנתונים ב-ChromeOS כי פרטי הכניסה לחשבון לא מעודכנים.</translation>
 <translation id="8421734018304082652">‏הקובץ הזה מוצפן ולכן הוא נחסם על ידי Chrome. אפשר לבקש מהבעלים לפענח אותו</translation>
 <translation id="8433638294851456451">‏כדי לשלוח מספר מכאן לטלפון Android, יש להיכנס ל-Chrome בשני המכשירים.</translation>
+<translation id="8451192282033883849">‏החשבון שלך מנוהל על ידי <ph name="MANAGER_NAME" />. האדמין שלך יכול לראות ולערוך את הפרופיל הזה של דפדפן Chrome ואת הנתונים שלו, כמו סימניות, היסטוריה וסיסמאות.</translation>
 <translation id="8498858610309223613">‏בוצע עדכון אבטחה מיוחד של Google Chrome. עכשיו עליך להפעיל מחדש את Chrome ואנחנו נשחזר את הכרטיסיות.</translation>
 <translation id="8504220326736535258">‏בקובץ הזה יש תוכנה זדונית ולכן הוא נחסם על ידי Chrome</translation>
 <translation id="8516431725144212809">‏תחומי העניין שלך בהתאם להערכה של Chrome</translation>

@@ -56,6 +56,7 @@
 <translation id="124678866338384709">ಪ್ರಸ್ತುತ ಟ್ಯಾಬ್ ಮುಚ್ಚಿ</translation>
 <translation id="1246905108078336582">ಕ್ಲಿಪ್‌ಬೋರ್ಡ್‌ನಿಂದ ಸಲಹೆಗಳನ್ನು ತೆಗೆದುಹಾಕುವುದೇ?</translation>
 <translation id="1258753120186372309">Google ಡೂಡಲ್‌: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">ಓದುವ ಪಟ್ಟಿ</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> ಅನ್ನು ಹಂಚಿಕೊಳ್ಳಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
 <translation id="1283039547216852943">ವಿಸ್ತರಿಸಲು ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="1285310382777185058">ಭಾಷೆಯನ್ನು ಬದಲಾಯಿಸಿ</translation>
@@ -493,10 +494,10 @@
 <translation id="363596933471559332">ಸಂಗ್ರಹಿಸಲಾದ ರುಜುವಾತುಗಳನ್ನು ಬಳಸಿಕೊಳ್ಳುವ ಮೂಲಕ ವೆಬ್‌ಸೈಟ್‌ಗಳಿಗೆ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಸೈನ್ ಇನ್ ಮಾಡಿ. ವೈಶಿಷ್ಟ್ಯವು ಆಫ್ ಆಗಿರುವಾಗ, ವೆಬ್‌ಸೈಟ್‌ಗೆ ಸೈನ್ ಇನ್ ಮಾಡುವ ಮೊದಲು ಪ್ರತಿ ಬಾರಿಯೂ ನಿಮಗೆ ಪರಿಶೀಲನೆ ಮಾಡಲು ಕೇಳಲಾಗುವುದು.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3677911431265050325">ಮೊಬೈಲ್ ಸೈಟ್‌ಗಾಗಿ ವಿನಂತಿಸಿ</translation>
-<translation id="3685860403008476208">ಈ ಸಾಧನವನ್ನು ಬಳಸುವ ಯಾರಾದರೂ ನೀವು ಡೌನ್‌ಲೋಡ್ ಮಾಡುವ ಫೈಲ್‌ಗಳನ್ನು ಅಜ್ಞಾತ ವಿಂಡೋದಲ್ಲಿ ನೋಡಬಹುದು</translation>
 <translation id="3687645719033307815">ಈ ಪುಟದ ಪೂರ್ವವೀಕ್ಷಣೆಯನ್ನು ನೀವು ನೋಡುತ್ತಿರುವಿರಿ</translation>
 <translation id="3690369331356918524">ಡೇಟಾ ಉಲ್ಲಂಘನೆಯ ಮೂಲಕ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಬಹಿರಂಗವಾದರೆ, ನಿಮಗೆ ಎಚ್ಚರಿಕೆ ನೀಡುತ್ತದೆ</translation>
 <translation id="3692944402865947621">ಸಂಗ್ರಹಣೆ ಸ್ಥಳವನ್ನು ತಲುಪಲು ಸಾಧ್ಯವಾಗದ ಕಾರಣ <ph name="FILE_NAME" /> ಅನ್ನು ಡೌನ್‌ಲೋಡ್‌ ಮಾಡಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ.</translation>
+<translation id="3697705478071004188">ಸೈಟ್ ಪ್ರಕಾರ ವಿಂಗಡಿಸಿ</translation>
 <translation id="3699022356773522638">ಫೈಲ್ ಅನ್ನು ಡೌನ್‌ಲೋಡ್ ಮಾಡಬೇಕೆ?</translation>
 <translation id="371230970611282515">ಅಪಾಯಕಾರಿ ಘಟನೆಗಳು ಸಂಭವಿಸುವ ಮೊದಲೇ, ಅವುಗಳನ್ನು ಪತ್ತೆಹಚ್ಚುತ್ತದೆ ಮತ್ತು ನಿಮಗೆ ಎಚ್ಚರಿಕೆ ನೀಡುತ್ತದೆ.</translation>
 <translation id="3714981814255182093">ಹುಡುಕು ಪಟ್ಟಿಯನ್ನು ತೆರೆಯಿರಿ</translation>
@@ -523,6 +524,7 @@
 <translation id="3845098929839618392">ಅಜ್ಞಾತ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
 <translation id="3856096718352044181">ಇವರು ಮಾನ್ಯವಾದ ಪೂರೈಕೆದಾರರೇ ಎಂಬುದನ್ನು ದೃಢೀಕರಿಸಿ ಅಥವಾ ಆನಂತರ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ</translation>
 <translation id="3858860766373142691">ಹೆಸರು</translation>
+<translation id="3859206958100234503">ನಿಮ್ಮ ಎಲ್ಲಾ ಸಾಧನಗಳಲ್ಲಿ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳು, ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು ಮತ್ತು ಹೆಚ್ಚಿನದನ್ನು ಪಡೆಯಲು ಸಿಂಕ್ ಮಾಡಿ</translation>
 <translation id="3861633093716975811">ಜನಪ್ರಿಯ ವೀಡಿಯೊಗಳು</translation>
 <translation id="3892148308691398805">ಪಠ್ಯ ನಕಲಿಸಿ</translation>
 <translation id="3894427358181296146">ಫೋಲ್ಡರ್ ಸೇರಿಸು</translation>
@@ -696,6 +698,7 @@
 <translation id="4842515939542199281">ನಿಮ್ಮ ಧ್ವನಿಯ ಮೂಲಕ ಹುಡುಕಲು, ಮೈಕ್ರೊಫೋನ್ ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="4844633725025837809">ಹೆಚ್ಚಿನ ಸುರಕ್ಷತೆಗಾಗಿ, ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು Google ಪಾಸ್‌ವರ್ಡ್ ನಿರ್ವಾಹಕದಲ್ಲಿ ಉಳಿಸುವ ಮೊದಲು ಅವುಗಳನ್ನು ನಿಮ್ಮ ಸಾಧನದಲ್ಲಿ ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಿ</translation>
 <translation id="4850886885716139402">ವೀಕ್ಷಣೆ</translation>
+<translation id="4852014461738377247">ಸೈನ್ ಇನ್ ಮಾಡಲಾಗುತ್ತಿದೆ\u2026</translation>
 <translation id="4860895144060829044">ಕರೆ</translation>
 <translation id="4864369630010738180">ಸೈನ್ ಇನ್ ಮಾಡಲಾಗುತ್ತಿದೆ...</translation>
 <translation id="4866368707455379617">Chrome ಗಾಗಿ <ph name="MODULE" /> ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ</translation>
@@ -1149,6 +1152,7 @@
 <translation id="7304873321153398381">ಆಫ್‌ಲೈನ್. Chrome ಗೆ ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಪರಿಶೀಲಿಸಲು ಸಾಧ್ಯವಾಗುತ್ತಿಲ್ಲ.</translation>
 <translation id="7313188324932846546">ಸಿಂಕ್ ಸೆಟಪ್ ಮಾಡಲು ಟ್ಯಾಪ್ ಮಾಡಿ</translation>
 <translation id="7332075081379534664">ಸೈನ್ ಇನ್ ಯಶಸ್ವಿಯಾಗಿದೆ</translation>
+<translation id="7333232495927792353">Google ನಿಂದ ಹೆಚ್ಚು ಸಂಬಂಧಿತ ವಿಷಯವನ್ನು ಪಡೆಯಲು ಸಿಂಕ್ ಮಾಡಿ</translation>
 <translation id="7339898014177206373">ಹೊಸ ವಿಂಡೊ</translation>
 <translation id="7340958967809483333">Discover ಗಾಗಿ ಆಯ್ಕೆಗಳು</translation>
 <translation id="7352339641508007922">ದೀರ್ಘ ಸ್ಕ್ರೀನ್‌ಶಾಟ್ ಅನ್ನು ತೆಗೆದುಕೊಳ್ಳಲು ಡ್ರ್ಯಾಗ್ ಮಾಡಿ</translation>
@@ -1304,6 +1308,7 @@
 <translation id="8103578431304235997">ಅದೃಶ್ಯ ಟ್ಯಾಬ್‌</translation>
 <translation id="8105613260829665809">ಮುಂದುವರಿಯುವ ಮೂಲಕ, ನೀವು <ph name="BEGIN_TOS_LINK" />ಸೇವಾ ನಿಯಮಗಳಿಗೆ<ph name="END_TOS_LINK" /> ಸಮ್ಮತಿಸುತ್ತೀರಿ.\nಆ್ಯಪ್ ಅನ್ನು ಸುಧಾರಿಸುವುದಕ್ಕೆ ಸಹಾಯ ಮಾಡಲು, Chrome ಬಳಕೆ ಮತ್ತು ಕ್ರ್ಯಾಶ್ ಡೇಟಾವನ್ನು Google ಗೆ ಕಳುಹಿಸುತ್ತದೆ. <ph name="BEGIN_UMA_LINK" />ನಿರ್ವಹಿಸಿ<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
+<translation id="8107530384992929318">ವಿಂಗಡಣೆ ಆಯ್ಕೆಗಳನ್ನು ಮುಚ್ಚಿರಿ</translation>
 <translation id="8109613176066109935">ನಿಮ್ಮ ಎಲ್ಲ ಸಾಧನಗಳಲ್ಲಿ ನಿಮ್ಮ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ಪಡೆದುಕೊಳ್ಳಲು, ಸಿಂಕ್‌ ಆನ್‌ ಮಾಡಿ</translation>
 <translation id="8110024788458304985">Chrome ನ ಫೀಚರ್‌ಗಳು ಹಾಗೂ ಕಾರ್ಯಕ್ಷಮತೆಯನ್ನು ಸುಧಾರಿಸಲು ಸಹಾಯ ಮಾಡಿ</translation>
 <translation id="8110087112193408731">ಡಿಜಿಟಲ್ ಯೋಗಕ್ಷೇಮದಲ್ಲಿ ನಿಮ್ಮ Chrome ಚಟುವಟಿಕೆಯನ್ನು ತೋರಿಸಲು ಬಯಸುವಿರಾ?</translation>
@@ -1377,6 +1382,7 @@
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">ಇತಿಹಾಸ ಪುಟ ತೆರೆಯಿರಿ</translation>
 <translation id="8493948351860045254">ಸ್ಥಳಾವಕಾಶವನ್ನು ಮುಕ್ತಗೊಳಿಸಿ</translation>
+<translation id="8497242791509864205">ವಿಂಗಡಣೆ ಆಯ್ಕೆಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="8497480609928300907">ಗೌಪ್ಯತಾ ಮಾರ್ಗದರ್ಶಿ ವಿವರಣೆ</translation>
 <translation id="8497726226069778601">ಇಲ್ಲಿ ನೋಡಲು ಇನ್ನೂ ಏನೂ ಇಲ್ಲ...</translation>
 <translation id="8503559462189395349">Chrome ಪಾಸ್‌ವರ್ಡ್‌ಗಳು</translation>
@@ -1529,6 +1535,7 @@
 <translation id="96681097142096641">ಸರಳೀಕೃತ ಪುಟವನ್ನು ವೀಕ್ಷಿಸಬೇಕೆ?</translation>
 <translation id="968900484120156207">ನೀವು ಭೇಟಿ ನೀಡುವ ಪುಟಗಳು ಇಲ್ಲಿ ಕಾಣಿಸಿಕೊಳ್ಳುತ್ತವೆ</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> ನಿಮಿಷಗಳು ಉಳಿದಿವೆ</translation>
+<translation id="978443947993957527">ನಿಮಗಾಗಿ ವಿಷಯವನ್ನು ನೋಡಿ</translation>
 <translation id="981121421437150478">ಆಫ್‌ಲೈನ್</translation>
 <translation id="983192555821071799">ಎಲ್ಲ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಮುಚ್ಚಿ</translation>
 <translation id="987264212798334818">ಸಾಮಾನ್ಯ</translation>

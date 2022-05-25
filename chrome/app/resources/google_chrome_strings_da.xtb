@@ -78,6 +78,7 @@
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> er allerede logget ind på denne Chrome-profil. Hvis du vil holde din browsing adskilt, kan Chrome oprette en ny profil til dig selv.</translation>
 <translation id="2580411288591421699">Det er ikke muligt at installere den samme version af Google Chrome, som allerede kører. Luk Google Chrome, og prøv igen.</translation>
 <translation id="2586406160782125153">Denne handling sletter dine browserdata på denne enhed. Hvis du senere vil hente dine data igen, skal du logge ind på Chrome som <ph name="USER_EMAIL" />.</translation>
+<translation id="2597976513418770460">Få adgang til ting fra din Chrome-browser via <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="2622559029861875898">Chrome kan ikke søge efter opdateringer. Prøv at tjekke din internetforbindelse.</translation>
 <translation id="2645435784669275700">Chrome OS</translation>
 <translation id="2652691236519827073">Åbn linket i en ny Chrome-&amp;fane</translation>
@@ -304,6 +305,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="7801699035218095297">Google Chrome forsøger at kopiere adgangskoder. Angiv din Windows-adgangskode for at tillade dette.</translation>
 <translation id="7808348361785373670">Fjern fra Chrome...</translation>
 <translation id="7825851276765848807">Installationen mislykkedes på grund af en uspecificeret fejl. Download Google Chrome igen.</translation>
+<translation id="7880591377632733558">Velkommen til Chrome, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="7890208801193284374">Hvis du deler en computer, kan venner og familie browse individuelt og konfigurere Chrome, som de ønsker hver især.</translation>
 <translation id="7896673875602241923">Nogen har tidligere logget ind på Chrome på denne computer som <ph name="ACCOUNT_EMAIL_LAST" />. Opret en ny Chrome-bruger for at holde dine oplysninger adskilt.</translation>
 <translation id="7917876797003313048">Du kan administrere de Google-konti, du er logget ind på. Dine Google-konti bruges i Chrome-browseren, Play Butik, Gmail m.m. Hvis du vil tilføje en konto, der tilhører en anden, f.eks. et familiemedlem, skal du føje en ny person til din <ph name="DEVICE_TYPE" /> i stedet. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
@@ -329,6 +331,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="8418845734693287262">Chrome OS kunne ikke synkronisere dine data, fordi loginoplysningerne til din konto er forældede.</translation>
 <translation id="8421734018304082652">Chrome har blokeret denne fil, fordi den er krypteret. Bed ejeren af filen om at dekryptere den</translation>
 <translation id="8433638294851456451">Hvis du vil sende et nummer fra denne enhed til din Android-telefon, skal du logge ind på Chrome på begge enheder.</translation>
+<translation id="8451192282033883849">Din konto administreres af <ph name="MANAGER_NAME" />. Din administrator kan se og redigere denne Chrome-browserprofil og dens data som f.eks. bogmærker, historik og adgangskoder.</translation>
 <translation id="8498858610309223613">En særlig sikkerhedsopdatering til Google Chrome blev netop anvendt. Genstart nu, hvorefter vi gendanner dine faner.</translation>
 <translation id="8504220326736535258">Chrome har blokeret denne fil, fordi den har malware</translation>
 <translation id="8516431725144212809">Dine interesser, som de er estimeret af Chrome</translation>

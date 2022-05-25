@@ -77,6 +77,7 @@
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> er allerede logget på denne Chrome-profilen. For å holde surfingen din atskilt kan Chrome opprette en egen profil til deg.</translation>
 <translation id="2580411288591421699">Google Chrome-versjonen du prøver å installere, kjører allerede. Lukk Google Chrome og forsøk å installere på nytt.</translation>
 <translation id="2586406160782125153">Dette sletter nettlesingsdataene dine fra denne enheten. For å hente dataene igjen senere må du logge på Chrome som <ph name="USER_EMAIL" />.</translation>
+<translation id="2597976513418770460">Få Chrome-nettlesertingene dine fra <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="2622559029861875898">Chrome kan ikke se etter oppdateringer. Prøv å kontrollere internettilkoblingen.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2652691236519827073">Åpne linken i en ny &amp;fane i Chrome</translation>
@@ -303,6 +304,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="7801699035218095297">Google Chrome prøver å kopiere passord. Skriv inn Windows-passordet ditt for å tillate dette.</translation>
 <translation id="7808348361785373670">Fjern fra Chrome</translation>
 <translation id="7825851276765848807">Installeringen mislyktes på grunn av en uspesifisert feil. Last ned Google Chrome på nytt.</translation>
+<translation id="7880591377632733558">Velkommen til Chrome, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="7890208801193284374">Hvis du deler en datamaskin med andre, kan venner og familie surfe hver for seg og konfigurere Chrome akkurat slik de vil.</translation>
 <translation id="7896673875602241923">Noen har tidligere logget på Chrome på denne datamaskinen som <ph name="ACCOUNT_EMAIL_LAST" />. Opprett en ny Chrome-bruker for å holde informasjonen din atskilt.</translation>
 <translation id="7917876797003313048">Du kan administrere de påloggede Google-kontoene dine. Google-kontoene dine brukes i Chrome-nettleseren, Play-butikken, Gmail med mer. Hvis du vil legge til en konto for noen andre, for eksempel et familiemedlem, legger du til en ny person på <ph name="DEVICE_TYPE" /> i stedet. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
@@ -328,6 +330,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="8418845734693287262">ChromeOS kunne ikke synkronisere dataene dine, ettersom påloggingsopplysningene for kontoen din er utdaterte.</translation>
 <translation id="8421734018304082652">Chrome har blokkert denne filen fordi den er kryptert. Be eieren om å dekryptere den</translation>
 <translation id="8433638294851456451">For å sende numre herfra til Android-telefonen din, logg på Chrome på begge enhetene.</translation>
+<translation id="8451192282033883849">Kontoen din administreres av <ph name="MANAGER_NAME" />. Administratoren kan se og redigere denne Chrome-nettleserprofilen og tilhørende data, som bokmerker, logg og passord.</translation>
 <translation id="8498858610309223613">En spesiell sikkerhetsoppdatering for Google Chrome ble nettopp installert. Start på nytt nå, så gjenoppretter vi fanene dine.</translation>
 <translation id="8504220326736535258">Chrome har blokkert denne filen fordi den inneholder skadelig programvare</translation>
 <translation id="8516431725144212809">Interessene dine som Chrome har anslått</translation>

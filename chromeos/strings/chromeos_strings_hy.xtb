@@ -78,6 +78,7 @@
 <translation id="1578784163189013834">Ընտրել էկրանապահի ֆոն</translation>
 <translation id="1615335640928990664">Տվյալների օգտագործում <ph name="FRIENDLY_DATE" />-ից ի վեր</translation>
 <translation id="1621067168122174824">Փորձարկել լիցքավորումը</translation>
+<translation id="1631385268983122904">Առայժմ մի դրեք մարտկոցը սարքի մեջ</translation>
 <translation id="1639239467298939599">Բեռնում</translation>
 <translation id="1641857168437328880">Փաստաթղթերի մատակարար (միակողմանի)</translation>
 <translation id="1643449475550628585">Փոխել պաստառն ամեն օր</translation>
@@ -85,6 +86,7 @@
 <translation id="1645954272419197032">Հաստատեք սարքի մասին տեղեկությունները</translation>
 <translation id="1662989795263954667">Դադարեցվել է – Թանաք չկա</translation>
 <translation id="1668469839109562275">Ներկառուցված VPN</translation>
+<translation id="1676557873873341166">Տեսագրում</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS լուծիչը առկա է</translation>
 <translation id="1715359911173058521">Չհաջողվեց կապ հաստատել սկաների հետ։ Ստուգեք ցանցային կամ USB կապը և նորից փորձեք։</translation>
@@ -159,6 +161,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Մոտակա սարքերը գտնելու համար միացրեք Bluetooth-ը</translation>
+<translation id="2340422556570134524">Write Protect-ն անսպասելիորեն միացավ։ Նախքան նորից փորձելը անջատեք Write Protect-ը ձեռքով։</translation>
 <translation id="2346474577291266260">Գերազանց (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">Շարունակել</translation>
 <translation id="2360257214555822463">Հայտնաբերվել են <ph name="LINK_BEGIN" />անհամատեղելի բաղադրիչներ<ph name="LINK_END" />։ Եթե ձեզ հայտնի է, որ դրանք տեղադրվել են, հաստատեք հիմա։</translation>
@@ -474,6 +477,7 @@
 <translation id="5372659122375744710">Wi-Fi ցանցն անվտանգ չէ</translation>
 <translation id="5376354385557966694">Ավտոմատ բաց ռեժիմ</translation>
 <translation id="537872351913703572">Սարքը կփոխանցվի այլ օգտատիրոջ կամ կազմակերպության</translation>
+<translation id="5389159777326897627">Պաստառ և ոճ</translation>
 <translation id="5389224261615877010">Ծիածան</translation>
 <translation id="5395600419410242651">Ջնջել բոլոր տվյալները</translation>
 <translation id="5400907029458559844">Սարքը միանում է։</translation>
@@ -643,6 +647,7 @@
 <translation id="6961170852793647506">Սկսելու համար փաստաթուղթը դրեք սկաների վրա</translation>
 <translation id="6965382102122355670">Եղավ</translation>
 <translation id="6977381486153291903">Ներկառուցված ծրագրակազմի տարբերակը</translation>
+<translation id="6995564396478647735">Համոզվեք, որ Write Protect-ը միացված է</translation>
 <translation id="7028979494427204405">Այս սարքը կառավարվում է <ph name="MANAGER" />-ի կողմից, և վերջինիս տեսանելի են օգտատիրոջ բոլոր գործողությունները, այդ թվում՝ այցելած կայքերը, գաղտնաբառերը և նամակները:</translation>
 <translation id="7040230719604914234">Օպերատոր</translation>
 <translation id="7041549558901442110">Սարքը միացված չէ։</translation>
@@ -653,6 +658,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Սխալ – չհաջողվեց թույլատրել</translation>
 <translation id="7103252855940681301">Սարք <ph name="INDEX" />/<ph name="COUNT" />, <ph name="NAME" />։</translation>
+<translation id="7126228745139711113">Write Protect-ն անջատված է</translation>
 <translation id="7134436342991564651">{0,plural, =1{Անվանումների սերվեր}one{Անվանումների սերվեր}other{Անվանումների սերվերներ}}</translation>
 <translation id="7143207342074048698">Միացում</translation>
 <translation id="7144878232160441200">Նորից փորձել</translation>
@@ -744,6 +750,7 @@
 <translation id="80398733265834479">Միացնել գույների ինքնակարգավորման ռեժիմը</translation>
 <translation id="8041089156583427627">Կարծիք հայտնել</translation>
 <translation id="8045012663542226664">Խոսափողն անջատված է</translation>
+<translation id="8063022551652308521">Write Protect-ը դեռ անջատված է։ Շարունակելու համար միացրեք այն։</translation>
 <translation id="8075838845814659848">Մարտկոցի լիցքը</translation>
 <translation id="8082366717211101304">Չհաջողվեց փոխակերպել DNS-ը Android հավելվածներից</translation>
 <translation id="8083281199617904460">Վերանորոգումը պետք է իրականացվի որակավորված մասնագետի կողմից։ Նախքան սկսելը փոխեք թերի աշխատող բաղադրիչները։</translation>
@@ -814,6 +821,7 @@
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Այս գործառույթը կառավարելու համար օգտագործեք ձախ կամ աջ սլաքները։</translation>
 <translation id="8712637175834984815">Պատրաստ է</translation>
 <translation id="871560550817059752">Չհաջողվեց տպել – Թանաքը սպառվել է</translation>
+<translation id="8717030727630712160">Վերանորոգման գործընթացը վերսկսվում է…</translation>
 <translation id="8723108084122415655">Չկանխադրված ցանցը հապաղման սահմանափակման նկատմամբ առավելություն ունի</translation>
 <translation id="8725066075913043281">Փորձել կրկին</translation>
 <translation id="8726019395068607495">Դադարեցվել է – Դռնակը բաց է</translation>
@@ -835,6 +843,7 @@
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Սարքը պլանշետ է։</translation>
 <translation id="8881098542468797602">Փորձարկումը հաջողվեց</translation>
+<translation id="8897267175591692539">Այժմ կարող եք մարտկոցը դնել սարքի մեջ</translation>
 <translation id="8898840733695078011">Ազդանշանի հզորությունը</translation>
 <translation id="8910721771319628100">Կանխադրված ցանցը հապաղման սահմանափակման նկատմամբ առավելություն ունի</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> (<ph name="GIVEN_NAME" />)</translation>

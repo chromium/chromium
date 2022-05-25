@@ -56,6 +56,7 @@
 <translation id="124678866338384709">Huidig tabblad sluiten</translation>
 <translation id="1246905108078336582">Suggestie verwijderen van klembord?</translation>
 <translation id="1258753120186372309">Google-doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">Leeslijst</translation>
 <translation id="1266864766717917324">Kan <ph name="CONTENT_TYPE" /> niet delen</translation>
 <translation id="1283039547216852943">Tik om uit te vouwen</translation>
 <translation id="1285310382777185058">Taal wijzigen</translation>
@@ -312,6 +313,7 @@ Tik op een woord en houd dit vast om te zoeken. Selecteer meer of minder woorden
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# audiobestand}other{# audiobestanden}}</translation>
 <translation id="265156376773362237">Standaard vooraf laden</translation>
 <translation id="2656405586795711023">Web-apps</translation>
+<translation id="2669454659051515572">Iedereen die dit apparaat gebruikt, kan gedownloade bestanden zien</translation>
 <translation id="2702516483241149200">Nieuw: deel een link die rechtstreeks naar deze tekst scrollt</translation>
 <translation id="2704606927547763573">Gekopieerd</translation>
 <translation id="2707726405694321444">Pagina vernieuwen</translation>
@@ -493,10 +495,10 @@ Tik op een woord en houd dit vast om te zoeken. Selecteer meer of minder woorden
 <translation id="363596933471559332">Log automatisch in bij websites met de opgeslagen inloggegevens. Als de functie uitstaat, moet je je identiteit verifiëren voordat je kunt inloggen bij een website.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3677911431265050325">Mobiele site opvragen</translation>
-<translation id="3685860403008476208">Iedereen die dit apparaat gebruikt, kan de bestanden zien die je in de incognitomodus downloadt</translation>
 <translation id="3687645719033307815">Je bekijkt een voorbeeld van deze pagina</translation>
 <translation id="3690369331356918524">Waarschuwt als je wachtwoorden zijn gelekt bij een gegevenslek</translation>
 <translation id="3692944402865947621">Downloaden van <ph name="FILE_NAME" /> mislukt omdat de opslaglocatie niet bereikbaar is.</translation>
+<translation id="3697705478071004188">Sorteren op site</translation>
 <translation id="3699022356773522638">Bestand downloaden?</translation>
 <translation id="371230970611282515">Voorspelt en waarschuwt je voor gevaarlijke gebeurtenissen voordat deze plaatsvinden.</translation>
 <translation id="3714981814255182093">De zoekbalk openen</translation>
@@ -523,6 +525,7 @@ Tik op een woord en houd dit vast om te zoeken. Selecteer meer of minder woorden
 <translation id="3845098929839618392">Openen op incognitotabblad</translation>
 <translation id="3856096718352044181">Controleer of dit een geldige provider is of probeer het later opnieuw</translation>
 <translation id="3858860766373142691">Naam</translation>
+<translation id="3859206958100234503">Voer een synchronisatie uit om onder meer je wachtwoorden en bookmarks op al je apparaten beschikbaar te maken</translation>
 <translation id="3861633093716975811">Populaire video's</translation>
 <translation id="3892148308691398805">Tekst kopiëren</translation>
 <translation id="3894427358181296146">Map toevoegen</translation>
@@ -697,6 +700,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="4842515939542199281">Tik op de microfoon om met je stem te zoeken</translation>
 <translation id="4844633725025837809">Voor extra beveiliging versleutel je je wachtwoorden op je apparaat voordat ze worden opgeslagen in Google Wachtwoordmanager</translation>
 <translation id="4850886885716139402">Weergave</translation>
+<translation id="4852014461738377247">Inloggen\u2026</translation>
 <translation id="4860895144060829044">Bellen</translation>
 <translation id="4864369630010738180">Inloggen...</translation>
 <translation id="4866368707455379617">Kan <ph name="MODULE" /> niet installeren voor Chrome</translation>
@@ -775,6 +779,7 @@ Voor je Google-account kunnen andere vormen van browsegeschiedenis (zoals zoekop
 <translation id="5246093389635966745">Snelkoppeling voor werkbalk bewerken</translation>
 <translation id="526421993248218238">Kan deze pagina niet laden</translation>
 <translation id="5271967389191913893">Het apparaat kan de content niet openen die moet worden gedownload.</translation>
+<translation id="5274286919938458946">Gekoppeld aan <ph name="CARD_DETAIL" /></translation>
 <translation id="5292796745632149097">Verzenden naar</translation>
 <translation id="5300426565656326054">Browsergebaseerde advertentiepersonalisatie</translation>
 <translation id="5304593522240415983">Dit veld mag niet leeg zijn</translation>
@@ -1150,6 +1155,7 @@ Trust Tokens verbeteren de privacy op internet en kunnen niet worden gebruikt om
 <translation id="7304873321153398381">Offline. Chrome kan je wachtwoorden niet checken.</translation>
 <translation id="7313188324932846546">Tik om synchronisatie in te stellen</translation>
 <translation id="7332075081379534664">Inloggen gelukt</translation>
+<translation id="7333232495927792353">Voer een synchronisatie uit om de meest relevante content van Google op te halen</translation>
 <translation id="7339898014177206373">Nieuw venster</translation>
 <translation id="7340958967809483333">Opties voor Discover</translation>
 <translation id="7352339641508007922">Sleep om een lang screenshot te maken</translation>
@@ -1305,6 +1311,7 @@ Trust Tokens verbeteren de privacy op internet en kunnen niet worden gebruikt om
 <translation id="8103578431304235997">Incognitotabblad</translation>
 <translation id="8105613260829665809">Door verder te gaan, ga je akkoord met de <ph name="BEGIN_TOS_LINK" />Servicevoorwaarden<ph name="END_TOS_LINK" />.\nChrome stuurt gebruiks- en crashgegevens naar Google om de app te helpen verbeteren. <ph name="BEGIN_UMA_LINK" />Beheren<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
+<translation id="8107530384992929318">Sorteeropties sluiten</translation>
 <translation id="8109613176066109935">Zet de synchronisatie aan om op al je apparaten toegang tot je bookmarks te hebben</translation>
 <translation id="8110024788458304985">Help de functies en prestaties van Chrome te verbeteren</translation>
 <translation id="8110087112193408731">Chrome-activiteit in Digitaal welzijn bekijken?</translation>
@@ -1378,6 +1385,7 @@ Trust Tokens verbeteren de privacy op internet en kunnen niet worden gebruikt om
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">De pagina Geschiedenis openen</translation>
 <translation id="8493948351860045254">Ruimte vrijmaken</translation>
+<translation id="8497242791509864205">Sorteeropties openen</translation>
 <translation id="8497480609928300907">Uitleg over privacygids</translation>
 <translation id="8497726226069778601">Hier is nog niets te zien</translation>
 <translation id="8503559462189395349">Chrome-wachtwoorden</translation>
@@ -1530,6 +1538,7 @@ Trust Tokens verbeteren de privacy op internet en kunnen niet worden gebruikt om
 <translation id="96681097142096641">Vereenvoudigde pagina bekijken?</translation>
 <translation id="968900484120156207">Bezochte pagina's zie je hier</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> minuten resterend</translation>
+<translation id="978443947993957527">Content voor jou bekijken</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Alle tabbladen sluiten</translation>
 <translation id="987264212798334818">Algemeen</translation>

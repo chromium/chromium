@@ -56,6 +56,7 @@
 <translation id="124678866338384709">Fechar a guia atual</translation>
 <translation id="1246905108078336582">Remover sugestão da área de transferência?</translation>
 <translation id="1258753120186372309">Doodle do Google: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">Lista de leitura</translation>
 <translation id="1266864766717917324">Falha no compartilhamento de <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Toque para expandir</translation>
 <translation id="1285310382777185058">Mudar o idioma</translation>
@@ -493,10 +494,10 @@ Toque em qualquer palavra e a mantenha pressionada para pesquisar. Para refinar 
 <translation id="363596933471559332">Faça login automaticamente nos websites usando as credenciais armazenadas. Se o recurso estiver desativado, será preciso fazer a verificação sempre antes de fazer login em um website.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3677911431265050325">Solicitar site móvel</translation>
-<translation id="3685860403008476208">Qualquer pessoa que use este dispositivo pode ver os arquivos transferidos por download no modo de navegação anônima</translation>
 <translation id="3687645719033307815">Esta é uma visualização dessa página</translation>
 <translation id="3690369331356918524">Avisa caso suas senhas sejam expostas em uma violação de dados</translation>
 <translation id="3692944402865947621">Falha no download do arquivo <ph name="FILE_NAME" /> porque não foi possível acessar o local do armazenamento.</translation>
+<translation id="3697705478071004188">Ordenar por site</translation>
 <translation id="3699022356773522638">Fazer o download do arquivo?</translation>
 <translation id="371230970611282515">Prevê e avisa sobre eventos perigosos antes que eles aconteçam.</translation>
 <translation id="3714981814255182093">Abrir a barra Localizar</translation>
@@ -523,6 +524,7 @@ Toque em qualquer palavra e a mantenha pressionada para pesquisar. Para refinar 
 <translation id="3845098929839618392">Abrir em guia anônima</translation>
 <translation id="3856096718352044181">Verifique se o provedor é válido ou tente novamente mais tarde</translation>
 <translation id="3858860766373142691">Nome</translation>
+<translation id="3859206958100234503">Sincronize para acessar seus favoritos, senhas e muito mais em todos os dispositivos</translation>
 <translation id="3861633093716975811">Vídeos mais acessados</translation>
 <translation id="3892148308691398805">Copiar texto</translation>
 <translation id="3894427358181296146">Adicionar pasta</translation>
@@ -698,6 +700,7 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="4842515939542199281">Para pesquisar com a voz, toque no microfone</translation>
 <translation id="4844633725025837809">Para ter mais segurança, criptografe as senhas no dispositivo antes que elas sejam salvas no Gerenciador de senhas do Google</translation>
 <translation id="4850886885716139402">Ver</translation>
+<translation id="4852014461738377247">Fazendo login\u2026</translation>
 <translation id="4860895144060829044">Ligar</translation>
 <translation id="4864369630010738180">Fazendo login...</translation>
 <translation id="4866368707455379617">Não é possível instalar <ph name="MODULE" /> para o Chrome</translation>
@@ -1151,6 +1154,7 @@ Os tokens de confiança melhoram a privacidade na Web e não podem ser usados pa
 <translation id="7304873321153398381">Off-line. Não é possível verificar suas senhas com o Chrome.</translation>
 <translation id="7313188324932846546">Toque para configurar sincronização</translation>
 <translation id="7332075081379534664">Login concluído</translation>
+<translation id="7333232495927792353">Sincronize para acessar no Google o que importa para você</translation>
 <translation id="7339898014177206373">Nova janela</translation>
 <translation id="7340958967809483333">Opções do Discover</translation>
 <translation id="7352339641508007922">Arraste para fazer uma captura de tela longa</translation>
@@ -1306,6 +1310,7 @@ Os tokens de confiança melhoram a privacidade na Web e não podem ser usados pa
 <translation id="8103578431304235997">Guia anônima</translation>
 <translation id="8105613260829665809">Ao continuar, você concorda com os <ph name="BEGIN_TOS_LINK" />Termos de Serviço<ph name="END_TOS_LINK" />.\nPara ajudar a melhorar o app, o Chrome envia dados de uso e de falha ao Google. <ph name="BEGIN_UMA_LINK" />Gerenciar<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
+<translation id="8107530384992929318">Fechar as opções de classificação</translation>
 <translation id="8109613176066109935">Para ter seus favoritos em todos os seus dispositivos, ative a sincronização</translation>
 <translation id="8110024788458304985">Ajudar a melhorar os recursos e o desempenho do Chrome</translation>
 <translation id="8110087112193408731">Mostrar sua atividade do Chrome no Bem-estar digital?</translation>
@@ -1379,6 +1384,7 @@ Os tokens de confiança melhoram a privacidade na Web e não podem ser usados pa
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Abrir Histórico</translation>
 <translation id="8493948351860045254">Liberar espaço</translation>
+<translation id="8497242791509864205">Abrir as opções de classificação</translation>
 <translation id="8497480609928300907">Explicação sobre o Guia de privacidade</translation>
 <translation id="8497726226069778601">Não há nada para ver aqui... ainda</translation>
 <translation id="8503559462189395349">Senhas do Chrome</translation>
@@ -1531,6 +1537,7 @@ Os tokens de confiança melhoram a privacidade na Web e não podem ser usados pa
 <translation id="96681097142096641">Ver página simplificada?</translation>
 <translation id="968900484120156207">As páginas visitadas são exibidas aqui</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> minutos restantes</translation>
+<translation id="978443947993957527">Veja conteúdo personalizado</translation>
 <translation id="981121421437150478">Off-line</translation>
 <translation id="983192555821071799">Fechar todas as guias</translation>
 <translation id="987264212798334818">Geral</translation>

@@ -78,6 +78,7 @@
 <translation id="1578784163189013834">ဖန်သားပြင်နားချိန် နောက်ခံရွေးရန်</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> မှစ၍ ဒေတာသုံးစွဲမှု</translation>
 <translation id="1621067168122174824">အားဝင်ရောက်မှု စစ်ဆေးရန်</translation>
+<translation id="1631385268983122904">ဘက်ထရီ ပြန်မတပ်ပါနှင့်ဦး</translation>
 <translation id="1639239467298939599">တင်ပေးနေ</translation>
 <translation id="1641857168437328880">စာရွက်စာတမ်း ထည့်ရန်ဗန်း (တစ်ဘက်သုံး)</translation>
 <translation id="1643449475550628585">နောက်ခံပုံကို နေ့စဉ်ပြောင်းရန်</translation>
@@ -85,6 +86,7 @@
 <translation id="1645954272419197032">ကိရိယာ၏ အချက်အလက်များ အတည်ပြုပါ</translation>
 <translation id="1662989795263954667">ရပ်သွားသည် - မင်ကုန်နေသည်</translation>
 <translation id="1668469839109562275">အသင့်ပါသော VPN</translation>
+<translation id="1676557873873341166">ဗီဒီယိုရိုက်နေသည်</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS Resolver ရှိသည်</translation>
 <translation id="1715359911173058521">စကင်ဖတ်စက်နှင့် ချိတ်ဆက်ရာတွင် ပြဿနာရှိနေသည်။ ကွန်ရက် (သို့) USB ချိတ်ဆက်မှုကို စစ်ဆေးပြီး ထပ်စမ်းကြည့်ပါ။</translation>
@@ -159,6 +161,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2336381494582898602">ပါဝါဆေးကြောခြင်း</translation>
 <translation id="2338501278241028356">အနီးတဝိုက်ရှိ စက်ပစ္စည်းများကို ရှာဖွေရန် ဘလူးတုသ်ကို ဖွင့်ပါ</translation>
+<translation id="2340422556570134524">‘ပြင်ခွင့်မရှိမုဒ်’ မမျှော်လင့်ဘဲ ပွင့်သွားသည်။ ထပ်မစမ်းမီ ‘ပြင်ခွင့်မရှိမုဒ်’ ကို ကိုယ်တိုင်ပိတ်ပါ။</translation>
 <translation id="2346474577291266260">အလွန်ကောင်း (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">ဆက်လုပ်ရန်</translation>
 <translation id="2360257214555822463"><ph name="LINK_BEGIN" />သတ်မှတ်ချက်မပြည့်မီသော ဆက်စပ်ပစ္စည်းများ<ph name="LINK_END" /> တွေ့ရှိထားသည်။ ၎င်းကိုထည့်သွင်းပြီးဖြစ်ကြောင်း အတည်ပြုရန် ရွေးလိုပါက ယခုရွေးပါ။</translation>
@@ -473,6 +476,7 @@
 <translation id="5372659122375744710">WiFi ကွန်ရက်က မလုံခြုံပါ</translation>
 <translation id="5376354385557966694">အလိုအလျောက် အလင်းမုဒ်</translation>
 <translation id="537872351913703572">အခြားအသုံးပြုသူ (သို့) အဖွဲ့အစည်းထံသို့ စက် ရောက်ရှိသွားမည်</translation>
+<translation id="5389159777326897627">နောက်ခံနှင့် စတိုင်</translation>
 <translation id="5389224261615877010">သက်သန့်</translation>
 <translation id="5395600419410242651">ဒေတာအားလုံး ဖျက်ရန်</translation>
 <translation id="5400907029458559844">ကိရိယာ ချိတ်ဆက်နေသည်။</translation>
@@ -642,6 +646,7 @@
 <translation id="6961170852793647506">စတင်ရန် စာရွက်စာတမ်းကို စကင်နာပေါ်တင်ပါ</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">ဖာမ်းဝဲ ပြန်လည်စိစစ်ခြင်း</translation>
+<translation id="6995564396478647735">‘ပြင်ခွင့်မရှိမုဒ်’ ဖွင့်ထားကြောင်း သေချာပါစေ</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> က ဤကိရိယာကို စီမံခန့်ခွဲပြီး ဝင်ကြည့်ထားသည့် ဝဘ်စာမျက်နှာများ၊ စကားဝှက်များနှင့် အီးမေးလ်အပါအဝင် အသုံးပြုသူ၏ လုပ်ဆောင်ချက်အားလုံးကို အသုံးပြုခွင့်ရှိပါသည်။</translation>
 <translation id="7040230719604914234">မိုဘိုင်းဝန်ဆောင်မှုပေးသူ</translation>
 <translation id="7041549558901442110">ကိရိယာကို ကွန်ရက်ချိတ်မထားပါ။</translation>
@@ -652,6 +657,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">မအောင်မြင်ပါ - ခွင့်ပြုချက်ပေး၍ မရပါ</translation>
 <translation id="7103252855940681301">ကိရိယာသည် <ph name="COUNT" /> ခုအနက် <ph name="INDEX" /> ခုမြောက်ဖြစ်ပြီး <ph name="NAME" /> ဟု အမည်ပေးထားသည်။</translation>
+<translation id="7126228745139711113">‘ပြင်ခွင့်မရှိမုဒ်’ ပိတ်ထားသည်</translation>
 <translation id="7134436342991564651">{0,plural, =1{ဆာဗာအမည်}other{ဆာဗာများအမည်}}</translation>
 <translation id="7143207342074048698">ချိတ်ဆက်နေသည်</translation>
 <translation id="7144878232160441200">ထပ်စမ်းရန်</translation>
@@ -743,6 +749,7 @@
 <translation id="80398733265834479">အလိုအလျောက်အရောင်ချိန်မုဒ် ဖွင့်ရန်</translation>
 <translation id="8041089156583427627">အကြံပြုချက် ပို့ရန်</translation>
 <translation id="8045012663542226664">မိုက်ခရိုဖုန်း အသံပိတ်ရန်ခလုတ်</translation>
+<translation id="8063022551652308521">‘ပြင်ခွင့်မရှိမုဒ်’ ပိတ်ထားသေးသည်။ ရှေ့ဆက်ရန် ‘ပြင်ခွင့်မရှိမုဒ်’ ဖွင့်ရမည်။</translation>
 <translation id="8075838845814659848">ကျန်ရှိသော အားပမာဏ</translation>
 <translation id="8082366717211101304">Android အက်ပ်များမှ DNS ဖြေရှင်း၍မရပါ</translation>
 <translation id="8083281199617904460">ဤပြင်ဆင်ရေးလုပ်ငန်းသည် တက်ကျွမ်းသော နည်းပညာရှင်အတွက်ဖြစ်သည်။ ပျက်နေသည့် ဆက်စပ်ပစ္စည်းများကို လဲလှယ်ပြီးမှသာ စတင်ပါ။</translation>
@@ -813,6 +820,7 @@
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> ဤဝန်ဆောင်မှုကို စီမံရန် ဘယ် သို့မဟုတ် ညာညွှန်မြားခလုတ်များ အသုံးပြုပါ။</translation>
 <translation id="8712637175834984815">ရပါပြီ!</translation>
 <translation id="871560550817059752">မအောင်မြင်ပါ - မင်ကုန်နေသည်</translation>
+<translation id="8717030727630712160">ပြင်ဆင်မှုလုပ်ငန်းစဉ် ဆက်လုပ်နေသည်…</translation>
 <translation id="8723108084122415655">တုံ့ပြန်ချိန် သတ်မှတ်ကာလအထက်ရှိနေသော မူရင်းမဟုတ်သည့်ကွန်ရက်</translation>
 <translation id="8725066075913043281">ထပ် စမ်းကြည့်ရန်</translation>
 <translation id="8726019395068607495">ရပ်သွားသည် - တံခါးပွင့်နေသည်</translation>
@@ -834,6 +842,7 @@
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">ကိရိယာသည် တက်ဘလက်ဖြစ်သည်</translation>
 <translation id="8881098542468797602">စစ်ဆေးမှု အောင်မြင်သည်</translation>
+<translation id="8897267175591692539">ဘက်ထရီ ယခုပြန်တပ်နိုင်ပါပြီ</translation>
 <translation id="8898840733695078011">လိုင်းဆွဲအား</translation>
 <translation id="8910721771319628100">တုံ့ပြန်ချိန် သတ်မှတ်ကာလအထက်ရှိနေသော မူလကွန်ရက်</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" /> ၏ <ph name="DEVICE_TYPE" /></translation>

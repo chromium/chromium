@@ -56,6 +56,7 @@
 <translation id="124678866338384709">Funga kichupo kilichofunguka</translation>
 <translation id="1246905108078336582">Je, ungependa kuondoa pendekezo kwenye ubao wa kunakili?</translation>
 <translation id="1258753120186372309">Google doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">Orodha ya kusoma</translation>
 <translation id="1266864766717917324">Imeshindwa kushiriki <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Gusa ili upanue</translation>
 <translation id="1285310382777185058">Badilisha lugha</translation>
@@ -493,7 +494,6 @@ Gusa na ushikilie neno lolote ili utafute. Ili uchuje utafutaji wako, chagua man
 <translation id="363596933471559332">Ingia katika tovuti kiotomatiki kwa kutumia kitambulisho kilichohifadhiwa. Kipengele kikiwa kimezimwa, utaombwa kuthibitisha kila wakati kabla ya kuingia katika tovuti.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3677911431265050325">Omba tovuti ya kifaa cha mkononi</translation>
-<translation id="3685860403008476208">Mtu yeyote anayetumia kifaa hiki anaweza kuona faili unazopakua katika hali fiche</translation>
 <translation id="3687645719033307815">Unaangalia onyesho la kukagua ukurasa huu</translation>
 <translation id="3690369331356918524">Hukuonya iwapo manenosiri yamefichuliwa katika tukio la ufichuzi haramu wa data</translation>
 <translation id="3692944402865947621">Imeshindwa kupakua <ph name="FILE_NAME" /> kwa sababu haikupata eneo la kuhifadhi.</translation>
@@ -523,6 +523,7 @@ Gusa na ushikilie neno lolote ili utafute. Ili uchuje utafutaji wako, chagua man
 <translation id="3845098929839618392">Fungua katika kichupo fiche</translation>
 <translation id="3856096718352044181">Tafadhali thibitisha kuwa huyu ni mtoa huduma sahihi au ujaribu tena baadaye</translation>
 <translation id="3858860766373142691">Jina</translation>
+<translation id="3859206958100234503">Sawazisha ili upate manenosiri yako, alamisho na mengine zaidi kwenye vifaa vyako vyote</translation>
 <translation id="3861633093716975811">Video maarufu</translation>
 <translation id="3892148308691398805">Nakili maandishi</translation>
 <translation id="3894427358181296146">Ongeza folda</translation>
@@ -580,6 +581,7 @@ Gusa na ushikilie neno lolote ili utafute. Ili uchuje utafutaji wako, chagua man
 <translation id="4209895695669353772">Washa kipengele cha usawazishaji ili Google ikupendekezee maudhui yanayokufaa</translation>
 <translation id="4214315110991671325">Ukiruhusu vidakuzi, huenda Chrome ikavitumia wakati wa kupakia mapema.</translation>
 <translation id="4225895483398857530">Njia ya mkato ya upau wa vidhibiti</translation>
+<translation id="4227318652298512614">Fuatilia tovuti zozote unazotaka</translation>
 <translation id="4242533952199664413">Fungua mipangilio</translation>
 <translation id="4248098802131000011">Zuia manenosiri yako dhidi ya ufichuzi haramu wa data na matatizo mengine ya usalama</translation>
 <translation id="4249955472157341256">Panga kulingana na zilizoingia hivi karibuni</translation>
@@ -696,6 +698,7 @@ Ili ubadilishe mipangilio hii, <ph name="BEGIN_LINK" />fanya usawazishaji upya<p
 <translation id="4842515939542199281">Ili utafute kwa kutumia sauti yako, gusa maikrofoni</translation>
 <translation id="4844633725025837809">Ili kuimarisha usalama, simba manenosiri kwa njia fiche kwenye kifaa chako kabla hayajahifadhiwa kwenye Kidhibiti cha Manenosiri cha Google</translation>
 <translation id="4850886885716139402">Mwonekano</translation>
+<translation id="4852014461738377247">Unaingia katika akaunti\u2026</translation>
 <translation id="4860895144060829044">Piga simu</translation>
 <translation id="4864369630010738180">Unaingia katika akaunti...</translation>
 <translation id="4866368707455379617">Imeshindwa kusakinisha <ph name="MODULE" /> kwenye Chrome</translation>
@@ -1149,6 +1152,7 @@ Tokeni za uaminifu zinaboresha faragha kwenye wavuti na haziwezi kutumiwa kukuta
 <translation id="7304873321153398381">Nje ya mtandao. Chrome imeshindwa kukagua manenosiri yako.</translation>
 <translation id="7313188324932846546">Gusa ili uweke mipangilio ya usawazishaji</translation>
 <translation id="7332075081379534664">Umeingia katika akaunti</translation>
+<translation id="7333232495927792353">Sawazisha ili upate maudhui yanayokufaa zaidi kutoka Google</translation>
 <translation id="7339898014177206373">Dirisha jipya</translation>
 <translation id="7340958967809483333">Chaguo za Dokezo</translation>
 <translation id="7352339641508007922">Buruta ipi upige picha ndefu ya skrini</translation>
@@ -1529,6 +1533,7 @@ Tokeni za uaminifu zinaboresha faragha kwenye wavuti na haziwezi kutumiwa kukuta
 <translation id="96681097142096641">Ungependa kuangalia ukurasa uliorahisishwa?</translation>
 <translation id="968900484120156207">Kurasa unazotembelea zitaonekana hapa</translation>
 <translation id="970715775301869095">Zimesalia dakika <ph name="MINUTES" /></translation>
+<translation id="978443947993957527">Ona maudhui yanayokufaa</translation>
 <translation id="981121421437150478">Nje ya mtandao</translation>
 <translation id="983192555821071799">Funga vichupo vyote</translation>
 <translation id="987264212798334818">Jumla</translation>

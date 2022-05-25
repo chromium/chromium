@@ -56,6 +56,7 @@
 <translation id="124678866338384709">現在のタブを閉じる</translation>
 <translation id="1246905108078336582">クリップボードから候補を削除してもよろしいですか？</translation>
 <translation id="1258753120186372309">Google Doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">リーディング リスト</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> を共有できませんでした</translation>
 <translation id="1283039547216852943">タップして展開</translation>
 <translation id="1285310382777185058">言語を変更する</translation>
@@ -312,6 +313,7 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# 件の音声ファイル}other{# 件の音声ファイル}}</translation>
 <translation id="265156376773362237">標準プリロード</translation>
 <translation id="2656405586795711023">ウェブアプリ</translation>
+<translation id="2669454659051515572">ダウンロードしたファイルは、このデバイスを使用するすべてのユーザーが確認できます</translation>
 <translation id="2702516483241149200">新規: このテキストにスクロールするリンクを共有できます</translation>
 <translation id="2704606927547763573">コピーしました</translation>
 <translation id="2707726405694321444">ページを更新</translation>
@@ -493,10 +495,10 @@
 <translation id="363596933471559332">保存されている認証情報を使用してウェブサイトに自動的にログインします。この機能がオフの場合は、ウェブサイトにログインするときに毎回確認を求められます。</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3677911431265050325">モバイルサイトをリクエスト</translation>
-<translation id="3685860403008476208">このデバイスを使用するすべてのユーザーが、あなたがシークレット モードでダウンロードしたファイルを確認できます</translation>
 <translation id="3687645719033307815">このページのプレビューを表示しています</translation>
 <translation id="3690369331356918524">データ侵害によりパスワードが漏洩した場合に警告します</translation>
 <translation id="3692944402865947621">保存場所にアクセスできないため、<ph name="FILE_NAME" /> をダウンロードできませんでした。</translation>
+<translation id="3697705478071004188">サイトで並べ替え</translation>
 <translation id="3699022356773522638">ファイルをダウンロードしますか？</translation>
 <translation id="371230970611282515">危険なイベントの発生を予測して警告します。</translation>
 <translation id="3714981814255182093">検索バーを開く</translation>
@@ -777,6 +779,7 @@
 <translation id="5246093389635966745">ツールバー ショートカットの編集</translation>
 <translation id="526421993248218238">ページを読み込めません</translation>
 <translation id="5271967389191913893">デバイスでダウンロード コンテンツを開くことができません。</translation>
+<translation id="5274286919938458946"><ph name="CARD_DETAIL" /> とリンクしました</translation>
 <translation id="5292796745632149097">送信先</translation>
 <translation id="5300426565656326054">ブラウザベースの広告のカスタマイズ</translation>
 <translation id="5304593522240415983">この項目は必須です</translation>
@@ -1308,6 +1311,7 @@
 <translation id="8103578431304235997">シークレット タブ</translation>
 <translation id="8105613260829665809">続行すると、<ph name="BEGIN_TOS_LINK" />利用規約<ph name="END_TOS_LINK" />に同意されたものとみなされます。\nアプリを改善するため、Chrome では使用状況とクラッシュに関するデータが Google に送信されます。<ph name="BEGIN_UMA_LINK" />管理<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
+<translation id="8107530384992929318">並べ替えオプションを閉じる</translation>
 <translation id="8109613176066109935">お使いのどのデバイスでも同じブックマークを使用するには、同期を有効にします</translation>
 <translation id="8110024788458304985">Chrome の機能と動作の改善に協力する</translation>
 <translation id="8110087112193408731">Chrome のアクティビティを Digital Wellbeing で表示しますか？</translation>
@@ -1381,6 +1385,7 @@
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">履歴ページを開く</translation>
 <translation id="8493948351860045254">容量を空ける</translation>
+<translation id="8497242791509864205">並べ替えオプションを開く</translation>
 <translation id="8497480609928300907">プライバシー ガイドの説明</translation>
 <translation id="8497726226069778601">表示するものがまだありません</translation>
 <translation id="8503559462189395349">Chrome パスワード</translation>

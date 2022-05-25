@@ -81,6 +81,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> est déjà connecté à ce profil Chrome. Pour maintenir votre navigation séparée, Chrome peut créer un profil pour vous.</translation>
 <translation id="2580411288591421699">Vous ne pouvez pas installer la version de Google Chrome qui est en cours d'exécution. Veuillez fermer Google Chrome et essayez de nouveau.</translation>
 <translation id="2586406160782125153">Cette action entraînera la suppression de vos données de navigation sur cet appareil. Pour récupérer vos données plus tard, connectez-vous à Chrome en tant que <ph name="USER_EMAIL" />.</translation>
+<translation id="2597976513418770460">Profitez de vos données du navigateur Chrome associées au compte <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="2622559029861875898">Chrome ne peut pas vérifier la présence de mises à jour. Essayez de vérifier votre connexion Internet.</translation>
 <translation id="2645435784669275700">Chrome OS</translation>
 <translation id="2652691236519827073">Ouvrir le lien dans un nouvel ongle&amp;t Chrome</translation>
@@ -311,6 +312,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="7801699035218095297">Google Chrome essaie de copier des mots de passe. Pour autoriser cette action, entrez votre mot de passe Windows.</translation>
 <translation id="7808348361785373670">Supprimer de Google Chrome...</translation>
 <translation id="7825851276765848807">Échec de l'installation en raison d'une erreur non spécifiée. Veuillez télécharger Google Chrome de nouveau.</translation>
+<translation id="7880591377632733558">Bienvenue dans Chrome, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="7890208801193284374">Si vous partagez un ordinateur avec vos proches, ceux-ci peuvent configurer Google Chrome comme bon leur semble et naviguer sur le Web à leur manière.</translation>
 <translation id="7896673875602241923">Un utilisateur s'est récemment connecté à Google Chrome sur cet ordinateur en tant que <ph name="ACCOUNT_EMAIL_LAST" />. Veuillez créer un autre utilisateur Google Chrome pour séparer vos données.</translation>
 <translation id="7917876797003313048">Vous pouvez gérer les comptes Google auxquels vous êtes connecté. Vos comptes Google sont utilisés par le navigateur Chrome, par Play Store, par Gmail et autres. Si vous voulez ajouter un compte pour quelqu'un d'autre, comme un membre de votre famille, ajoutez plutôt une nouvelle personne à votre <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
@@ -336,6 +338,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="8418845734693287262">Chrome OS n'a pas pu synchroniser vos données parce que les détails de connexion de votre compte ne sont plus à jour.</translation>
 <translation id="8421734018304082652">Chrome a bloqué ce fichier parce qu'il est chiffré. Demandez à son propriétaire de le déchiffrer</translation>
 <translation id="8433638294851456451">Pour envoyer un numéro d'ici vers votre téléphone Android, connectez-vous à Chrome sur vos deux appareils.</translation>
+<translation id="8451192282033883849">Votre compte est géré par <ph name="MANAGER_NAME" />. Votre administrateur peut voir et modifier ce profil de navigateur Chrome ainsi que ses données telles que les favoris, l'historique et les mots de passe.</translation>
 <translation id="8498858610309223613">Une mise à jour de sécurité spéciale pour Google Chrome vient d'être effectuée. Redémarrez maintenant, et nous restaurerons vos onglets.</translation>
 <translation id="8504220326736535258">Chrome a bloqué ce fichier parce qu'il contient un logiciel malveillant</translation>
 <translation id="8516431725144212809">Vos centres d'intérêt estimés par Chrome</translation>

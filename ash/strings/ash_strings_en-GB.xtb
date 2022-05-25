@@ -96,7 +96,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="1420408895951708260">Toggle Night Light. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">View your phone's recent photos and media on your <ph name="DEVICE_TYPE" /></translation>
 <translation id="1426410128494586442">Yes</translation>
-<translation id="1438357537418863713">App streaming is now set up. Once you get started, recently launched apps will appear here.</translation>
 <translation id="1447641497144572814">Screen saver starts</translation>
 <translation id="1455242230282523554">Show language settings</translation>
 <translation id="1460620680449458626">Volume is muted.</translation>
@@ -701,7 +700,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="5071064518267176975">An app wants to use the microphone</translation>
 <translation id="5078796286268621944">Incorrect PIN</translation>
 <translation id="5083553833479578423">Unlock more Assistant features.</translation>
-<translation id="5106223312672646208">Personalise</translation>
+<translation id="509790653408515442">When you stream your phone’s apps, they will appear here</translation>
 <translation id="5107522548814527560">Web</translation>
 <translation id="5117590920725113268">Show next month</translation>
 <translation id="5136175204352732067">Different keyboard connected</translation>
@@ -724,6 +723,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="523505283826916779">Accessibility settings</translation>
 <translation id="5245201184978705914">Can't generate transcript</translation>
 <translation id="5253783950165989294">Connected to a device named <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" />% battery</translation>
+<translation id="5258528442992323769">No saved desks</translation>
 <translation id="5260676007519551770">Desk 4</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> requests your attention.</translation>
 <translation id="5283198616748585639">Add 1 min</translation>
@@ -1263,6 +1263,7 @@ New install</translation>
 <translation id="851458219935658693">Show windows from the current desk, radio button selected</translation>
 <translation id="8517041960877371778">Your <ph name="DEVICE_TYPE" /> may not charge while it is turned on.</translation>
 <translation id="8535393432370007982">Undo sort order by colour</translation>
+<translation id="8542053257095774575">No saved desks or templates</translation>
 <translation id="8546059259582788728">Sort undo successful</translation>
 <translation id="8551588720239073785">Date and time settings</translation>
 <translation id="8553395910833293175">Already assigned to all desks.</translation>

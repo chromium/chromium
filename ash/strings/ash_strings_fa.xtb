@@ -24,6 +24,7 @@
 <translation id="109942774857561566">‏I’m bored (حوصله‌ام سر رفته)</translation>
 <translation id="1104084341931202936">نشان دادن تنظیمات دسترس‌پذیری</translation>
 <translation id="1104621072296271835">دستگاه‌هایتان باهم به‌مراتب بهتر کار می‌کنند</translation>
+<translation id="1111021433905331574">می‌توانید رنگ نور پس‌زمینه صفحه‌کلید را در اینجا تغییر دهید: «تنظیمات &gt; <ph name="APP_TITLE" />»</translation>
 <translation id="112308213915226829">پنهان کردن خودکار قفسه</translation>
 <translation id="1142002900084379065">عکس‌های اخیر</translation>
 <translation id="1148499908455722006">باز کردن کادر گفتگوی اطلاعات برای <ph name="USER_NAME" /></translation>
@@ -65,6 +66,7 @@
 <translation id="1275285675049378717">درحال تأمین برق <ph name="POWER_SOURCE" /></translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">پیدا کردن تلفن</translation>
+<translation id="1287002645302686982">میزکار ذخیره‌شده‌ای با نام <ph name="DESK_TEMPLATE_NAME" /> ازقبل موجود است</translation>
 <translation id="1289185460362160437"><ph name="COME_BACK_DAY_OF_WEEK" /> ساعت <ph name="COME_BACK_TIME" /> برگردید.</translation>
 <translation id="1290331692326790741">سیگنال ضعیف</translation>
 <translation id="1290982764014248209">انتقال <ph name="DRAGGED_APP" /> به پوشه <ph name="FOLDER_NAME" />.</translation>
@@ -94,7 +96,7 @@
 <translation id="1420408895951708260">روشن/خاموش کردن «نور شب». <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">رسانه و عکس‌های جدید تلفنتان را در <ph name="DEVICE_TYPE" /> مشاهده کنید</translation>
 <translation id="1426410128494586442">بله</translation>
-<translation id="1438357537418863713">جاری‌سازی برنامه اکنون راه‌اندازی شده است. به‌محض اینکه شروع‌به‌کار کنید، برنامه‌هایی که اخیراً راه‌اندازی شده‌اند اینجا نشان داده خواهند شد.</translation>
+<translation id="1447641497144572814">محافظ صفحه‌نمایش شروع شد</translation>
 <translation id="1455242230282523554">نمایش تنظیمات زبان</translation>
 <translation id="1460620680449458626">دکمه میزان صدا صامت است.</translation>
 <translation id="1467432559032391204">چپ</translation>
@@ -269,6 +271,7 @@
 <translation id="2586561057878260610">‏برای ترکیب با <ph name="DESK_NAME" />، کلیدهای Ctrl + W را فشار دهید. برای بستن میزکار و پنجره‌ها، کلیدهای Ctrl + Shift + W را فشار دهید.</translation>
 <translation id="2595239820337756193">‏5K in miles (‏۵ کیلومتر به مایل)</translation>
 <translation id="2596078834055697711">گرفتن عکس از پنجره صفحه‌نمایش</translation>
+<translation id="2598725286293895280">برنامه‌های پشتیبانی‌نشده در میزکار</translation>
 <translation id="2607678425161541573">ورود به سیستم آنلاین لازم است</translation>
 <translation id="2620016719323068571">جستجوی <ph name="CATEGORY" />، فایل‌ها، برنامه‌ها، و موارد بیشتر…</translation>
 <translation id="2620436844016719705">سیستم</translation>
@@ -644,6 +647,7 @@
 <translation id="4734965478015604180">افقی</translation>
 <translation id="4735498845456076464">میان‌بر صفحه‌کلید «<ph name="LAUNCHER_KEY_NAME" /> + عدد» تغییر کرده است. برای استفاده از کلیدهای عملکرد، کلید <ph name="LAUNCHER_KEY_NAME" /> + یکی از کلیدهای ردیف بالا را فشار دهید.</translation>
 <translation id="473775607612524610">به‌روزرسانی</translation>
+<translation id="4740516757091333363">میزکار ذخیره‌شده حذف شود؟</translation>
 <translation id="4752784485658729358">تنها ۶ میزکار ذخیره‌شده مجاز است. برای ذخیره میزکار جدید، یکی‌از میزکارها را بردارید.</translation>
 <translation id="4759238208242260848">بارگیری‌ها</translation>
 <translation id="4774338217796918551">فردا ساعت <ph name="COME_BACK_TIME" /> برگردید.</translation>
@@ -696,7 +700,6 @@
 <translation id="5071064518267176975">برنامه‌ای می‌خواهد از میکروفون شما استفاده کند</translation>
 <translation id="5078796286268621944">پین اشتباه</translation>
 <translation id="5083553833479578423">باز کردن قفل ویژگی‌های بیشتری از «دستیار».</translation>
-<translation id="5106223312672646208">شخصی‌سازی</translation>
 <translation id="5107522548814527560">وب</translation>
 <translation id="5117590920725113268">نمایش ماه بعدی</translation>
 <translation id="5136175204352732067">صفحه‌کلید دیگری متصل شد</translation>
@@ -741,6 +744,7 @@
 <translation id="5352250171825660495">زمینه تیره روشن است</translation>
 <translation id="5356963482258194581">بین زمینه تیره و روشن جابه‌جا شوید. روی میز کار کلیک راست کنید و «کاغذدیواری و سبک» را انتخاب کنید.</translation>
 <translation id="5379115545237091094">تلاش‌های ناموفق زیادی انجام شده است</translation>
+<translation id="5391307769715781764">میزکار ذخیره‌شده جایگزین شود؟</translation>
 <translation id="5393156353051693207">برای تغییر ترتیب برنامه‌ها، جایی را لمس کنید و نگه دارید</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> موجود در بالای <ph name="IN_PLACE_APP" />، برای ایجاد پوشه رها کنید.</translation>
 <translation id="5397578532367286026">‏میزان مصرف و سابقه این کاربر می‌تواند توسط مدیر (<ph name="MANAGER_EMAIL" />) در chrome.com بازبینی شود.</translation>
@@ -974,6 +978,7 @@
 <translation id="6790428901817661496">پخش</translation>
 <translation id="6801878137098616817">اخیراً ویرایش شده است</translation>
 <translation id="6803622936009808957">نمایش یک تصویر واحد در چند صفحه نمایش ممکن نیست زیرا وضوح تصویر پشتیبانی شده‌ای وجود ندارد. بجای آن حالت نمایش دسک‌تاپ چند بخشی استفاده می‌شود.</translation>
+<translation id="6812232930908427253">میزکار ذخیره نشد. تعداد پنجره‌ها یا برگه‌ها خیلی زیاد است.</translation>
 <translation id="6818242057446442178">عقب رفتن کلمه‌به‌کلمه</translation>
 <translation id="6819327813400217281">دوربین به گوشه پایین سمت چپ چسبید</translation>
 <translation id="6820676911989879663">استراحت کنید!</translation>

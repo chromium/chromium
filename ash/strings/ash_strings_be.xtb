@@ -65,6 +65,7 @@
 <translation id="1275285675049378717">Сілкаванне прылады: <ph name="POWER_SOURCE" /></translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">Знайсці тэлефон</translation>
+<translation id="1287002645302686982">Ужо ёсць захаваны працоўны стол з іменем "<ph name="DESK_TEMPLATE_NAME" />"</translation>
 <translation id="1289185460362160437">Дзень і час разблакіроўкі прылады: <ph name="COME_BACK_DAY_OF_WEEK" />, <ph name="COME_BACK_TIME" /></translation>
 <translation id="1290331692326790741">Слабы сігнал</translation>
 <translation id="1290982764014248209">Перамясціць у папку "<ph name="FOLDER_NAME" />" праграму "<ph name="DRAGGED_APP" />"</translation>
@@ -94,7 +95,7 @@
 <translation id="1420408895951708260">Уключыць або выключыць Начную падсветку. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">Праглядайце на прыладзе <ph name="DEVICE_TYPE" /> нядаўнія медыяфайлы і фота з тэлефона</translation>
 <translation id="1426410128494586442">Так</translation>
-<translation id="1438357537418863713">Перадача праграм плынню наладжана. Пасля таго як вы пачняце ёй карыстацца, нядаўна запушчаныя праграмы будуць паказвацца тут.</translation>
+<translation id="1447641497144572814">Запускаецца застаўка</translation>
 <translation id="1455242230282523554">Паказаць моўныя налады</translation>
 <translation id="1460620680449458626">Гук выключаны.</translation>
 <translation id="1467432559032391204">Злева</translation>
@@ -269,6 +270,7 @@
 <translation id="2586561057878260610">Каб аб'яднаць з працоўным сталом "<ph name="DESK_NAME" />", націсніце Ctrl + W. Каб закрыць працоўны стол і вокны, націсніце Ctrl + Shift + W.</translation>
 <translation id="2595239820337756193">5 кіламетраў у мілях</translation>
 <translation id="2596078834055697711">Зрабіць здымак акна</translation>
+<translation id="2598725286293895280">На працоўным стале ёсць праграмы, якія не падтрымліваюцца</translation>
 <translation id="2607678425161541573">Неабходна выканаць уваход праз інтэрнэт</translation>
 <translation id="2620016719323068571">Пошук: <ph name="CATEGORY" />, файлы, праграмы і не толькі...</translation>
 <translation id="2620436844016719705">Сістэма</translation>
@@ -644,6 +646,7 @@
 <translation id="4734965478015604180">Гарызантальна</translation>
 <translation id="4735498845456076464">Змянілася прызначэнне спалучэння клавіш <ph name="LAUNCHER_KEY_NAME" /> + лічба. Каб выканаць дзеянне функцыянальнай клавішы, націсніце <ph name="LAUNCHER_KEY_NAME" /> + адну з клавіш верхняга рада.</translation>
 <translation id="473775607612524610">Абнавіць</translation>
+<translation id="4740516757091333363">Выдаліць захаваны працоўны стол?</translation>
 <translation id="4752784485658729358">Можна захоўваць не больш за 6 працоўных сталоў. Каб можна было захаваць новы працоўны стол, выдаліце адзін са старых.</translation>
 <translation id="4759238208242260848">Спампоўкі</translation>
 <translation id="4774338217796918551">Можна будзе прадоўжыць заўтра ў <ph name="COME_BACK_TIME" />.</translation>
@@ -696,7 +699,6 @@
 <translation id="5071064518267176975">Праграма запытвае дазвол на выкарыстанне мікрафона</translation>
 <translation id="5078796286268621944">Няправільны PIN-код</translation>
 <translation id="5083553833479578423">Адкрыйце больш функцый Памочніка.</translation>
-<translation id="5106223312672646208">Персаналізаваць</translation>
 <translation id="5107522548814527560">Інтэрнэт</translation>
 <translation id="5117590920725113268">Паказаць наступны месяц</translation>
 <translation id="5136175204352732067">Падключана іншая клавіятура</translation>
@@ -741,6 +743,7 @@
 <translation id="5352250171825660495">Цёмная тэма ўключана</translation>
 <translation id="5356963482258194581">Вы можаце пераключацца паміж цёмнай і светлай тэмамі. Націсніце правай кнопкай мышы на працоўны стол і выберыце "Шпалеры і стыль".</translation>
 <translation id="5379115545237091094">Занадта шмат спроб</translation>
+<translation id="5391307769715781764">Замяніць захаваны працоўны стол?</translation>
 <translation id="5393156353051693207">Каб змяніць парадак размяшчэння праграм, націсніце экран у любым месцы і ўтрымлівайце</translation>
 <translation id="5395308026110844773">Праграма "<ph name="DRAGGED_APP_NAME" />" зараз над праграмай "<ph name="IN_PLACE_APP" />". Каб стварыць папку, адпусціце праграму.</translation>
 <translation id="5397578532367286026">Выкарыстанне і гісторыя гэтага карыстальніка могуць праглядацца менеджарам (<ph name="MANAGER_EMAIL" />) на chrome.com.</translation>
@@ -974,6 +977,7 @@
 <translation id="6790428901817661496">Прайграць</translation>
 <translation id="6801878137098616817">Зменена нядаўна</translation>
 <translation id="6803622936009808957">Не ўдалося ўключыць рэжым адлюстравання дысплэяў, бо не была знойдзена раздзяляльнасць, якая б падтрымлівалася. Выкарыстоўваецца рэжым "Пашыраны працоўны стол".</translation>
+<translation id="6812232930908427253">Не ўдалося захаваць працоўны стол: акон або ўкладак занадта шмат.</translation>
 <translation id="6818242057446442178">Назад на адно слова</translation>
 <translation id="6819327813400217281">Акно перадпрагляду камеры прывязана да левага ніжняга вугла</translation>
 <translation id="6820676911989879663">Зрабіце перапынак!</translation>

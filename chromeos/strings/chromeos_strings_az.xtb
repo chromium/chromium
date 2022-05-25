@@ -78,6 +78,7 @@
 <translation id="1578784163189013834">Ekran qoruyucusu üçün arxa fon seçin</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> tarixindən bəri data istifadəsi</translation>
 <translation id="1621067168122174824">Şarj testini icra edin</translation>
+<translation id="1631385268983122904">Hələ batareyanı daxil etməyin</translation>
 <translation id="1639239467298939599">Yüklənir</translation>
 <translation id="1641857168437328880">Sənəd Bəsləyici (Bir tərəfli)</translation>
 <translation id="1643449475550628585">Hər gün divar kağızı şəklini dəyişdirin</translation>
@@ -85,6 +86,7 @@
 <translation id="1645954272419197032">Cihaz məlumatını təsdiqləyin</translation>
 <translation id="1662989795263954667">Dayanıb - Mürəkkəb yoxdur</translation>
 <translation id="1668469839109562275">Daxili VPN</translation>
+<translation id="1676557873873341166">Video çəkilir</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS Həlledicisi Mövcuddur</translation>
 <translation id="1715359911173058521">Skanerlə bağlantı yaratmaq olmur. Şəbəkəvə ya USB bağlantısını yoxlayıb yenidən sınayın.</translation>
@@ -159,6 +161,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2336381494582898602">Sıfırlama</translation>
 <translation id="2338501278241028356">Yaxınlıqdakı cihazları tapmaq üçün Bluetooth'u aktiv edin</translation>
+<translation id="2340422556570134524">Yazma Qoruyucusu gözlənilmədən aktiv edilib. Yenidən cəhd etməzdən əvvəl Yazma Qoruyucusunu manual olaraq deaktiv edin.</translation>
 <translation id="2346474577291266260">Əla (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">Davam edin</translation>
 <translation id="2360257214555822463"><ph name="LINK_BEGIN" />Uyğunsuz komponentlər<ph name="LINK_END" /> aşkarlanıb. Bunun quraşdırıldığını təsdiqləməyi seçsəniz, indi bunu edin.</translation>
@@ -473,6 +476,7 @@
 <translation id="5372659122375744710">WiFi şəbəkəsi güvənli deyil</translation>
 <translation id="5376354385557966694">Avtomatik işıqlı rejim</translation>
 <translation id="537872351913703572">Cihaz başqa istifadəçinin və ya təşkilatın mülkiyyətinə keçəcək</translation>
+<translation id="5389159777326897627">Divar kağızı və üslub</translation>
 <translation id="5389224261615877010">Göy qurşağı</translation>
 <translation id="5395600419410242651">Bütün məlumatlar silinsin</translation>
 <translation id="5400907029458559844">Cihaz qoşulur.</translation>
@@ -642,6 +646,7 @@
 <translation id="6961170852793647506">Başlamaq üçün sənədinizi skanerə yerləşdirin</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">Mikro proqram versiyası</translation>
+<translation id="6995564396478647735">Yazma Qoruyucusunun aktiv olduğuna əmin olun</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> bu cihazı idarə edir və giriş edilən veb səhifə, parol və e-poçt daxil olmaqla bütün istifadəçi fəaliyyətinə girişi var.</translation>
 <translation id="7040230719604914234">Operator</translation>
 <translation id="7041549558901442110">Cihaz qoşulmayıb.</translation>
@@ -652,6 +657,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Alınmadı - Doğrulama Alınmadı</translation>
 <translation id="7103252855940681301"><ph name="NAME" /> adlı cihaz <ph name="INDEX" />/<ph name="COUNT" />.</translation>
+<translation id="7126228745139711113">Yazma Qoruyucusu deaktivdir</translation>
 <translation id="7134436342991564651">{0,plural, =1{Ad serveri}other{Ad serverləri}}</translation>
 <translation id="7143207342074048698">Qoşulur</translation>
 <translation id="7144878232160441200">Yenidən cəhd edin</translation>
@@ -743,6 +749,7 @@
 <translation id="80398733265834479">Avtomatik rəng rejimini aktiv edin</translation>
 <translation id="8041089156583427627">Geri Əlaqə Göndərin</translation>
 <translation id="8045012663542226664">Mikrofonun səssiz düyməsi</translation>
+<translation id="8063022551652308521">Yazma Qoruyucusu hələ də deaktivdir. Davam etmək üçün Yazma Qoruyucusunu aktiv edin.</translation>
 <translation id="8075838845814659848">Qalan şarj</translation>
 <translation id="8082366717211101304">Android tətbiqlərindən DNS'i həll etmək olmur</translation>
 <translation id="8083281199617904460">Bu təmir prosesi təlim keçmiş təmir ustası üçün nəzərdə tutulub. Yalnız nasaz komponentləri dəyişdirdikdən sonra başlayın.</translation>
@@ -813,6 +820,7 @@
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Bu funksiyanı idarə etmək üçün Sol və ya Sağ ox düyməsini istifadə edin.</translation>
 <translation id="8712637175834984815">Anladım</translation>
 <translation id="871560550817059752">Alınmadı - Mürəkkəb yoxdur</translation>
+<translation id="8717030727630712160">Təmir prosesi davam etdirilir…</translation>
 <translation id="8723108084122415655">Qeyri-defolt şəbəkə gecikmə həddindən yuxarıdır</translation>
 <translation id="8725066075913043281">Yenidən cəhd edin</translation>
 <translation id="8726019395068607495">Dayanıb - Qapı açıqdır</translation>
@@ -834,6 +842,7 @@
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Cihaz planşetdir.</translation>
 <translation id="8881098542468797602">Test uğurlu oldu</translation>
+<translation id="8897267175591692539">İndi batareyanı daxil edə bilərsiniz</translation>
 <translation id="8898840733695078011">Siqnal gücü</translation>
 <translation id="8910721771319628100">Defolt şəbəkə gecikmə həddindən yuxarıdır</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" /> adlı istifadəçinin <ph name="DEVICE_TYPE" /></translation>

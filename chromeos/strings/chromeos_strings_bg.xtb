@@ -78,6 +78,7 @@
 <translation id="1578784163189013834">Избиране на фон за скрийнсейвъра</translation>
 <translation id="1615335640928990664">Пренос на данни от <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Стартиране на тест на зареждането</translation>
+<translation id="1631385268983122904">Още не сглобявайте устройството</translation>
 <translation id="1639239467298939599">Зарежда се</translation>
 <translation id="1641857168437328880">Подавач на документи (едностранно)</translation>
 <translation id="1643449475550628585">Ежедневна промяна на изображението на тапета</translation>
@@ -85,6 +86,7 @@
 <translation id="1645954272419197032">Моля, потвърдете информацията за устройството</translation>
 <translation id="1662989795263954667">Спряло – няма мастило</translation>
 <translation id="1668469839109562275">Вградена VPN</translation>
+<translation id="1676557873873341166">Заснема се видеоклип</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Налице е DNS резолвер</translation>
 <translation id="1715359911173058521">Има проблем с установяването на връзка със скенера. Проверете връзката с USB или мрежата и опитайте отново.</translation>
@@ -159,6 +161,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Включете Bluetooth, за да бъдат открити устройствата в близост</translation>
+<translation id="2340422556570134524">Защитата срещу записване се включи неочаквано. Изключете я ръчно, преди да опитате отново.</translation>
 <translation id="2346474577291266260">Отлична (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">Напред</translation>
 <translation id="2360257214555822463">Открити са <ph name="LINK_BEGIN" />неотговарящи на изискванията компоненти<ph name="LINK_END" />. Ако искате да потвърдите, че са инсталирани, направете го сега.</translation>
@@ -474,6 +477,7 @@
 <translation id="5372659122375744710">Wi-Fi мрежата не е сигурна</translation>
 <translation id="5376354385557966694">Автоматичен светъл режим</translation>
 <translation id="537872351913703572">Устройството преминава в друг потребител или организация</translation>
+<translation id="5389159777326897627">Тапет и стил</translation>
 <translation id="5389224261615877010">Дъга</translation>
 <translation id="5395600419410242651">Изтриване на всички данни</translation>
 <translation id="5400907029458559844">Устройството установява връзка.</translation>
@@ -643,6 +647,7 @@
 <translation id="6961170852793647506">За да започнете, поставете документа върху скенера</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">Версия на фърмуера</translation>
+<translation id="6995564396478647735">Защитата срещу записване трябва да е включена</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> управлява това устройство и има достъп до цялата потребителска активност, включително посетените уеб страници, паролите и имейлите.</translation>
 <translation id="7040230719604914234">Оператор</translation>
 <translation id="7041549558901442110">Устройството не е свързано.</translation>
@@ -653,6 +658,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Неуспешно – Удостоверяването не бе успешно</translation>
 <translation id="7103252855940681301">Устройство <ph name="INDEX" /> от <ph name="COUNT" /> на име <ph name="NAME" />.</translation>
+<translation id="7126228745139711113">Защитата срещу записване е изключена</translation>
 <translation id="7134436342991564651">{0,plural, =1{Сървър за имена}other{Сървъри за имена}}</translation>
 <translation id="7143207342074048698">Свързва се</translation>
 <translation id="7144878232160441200">Повторен опит</translation>
@@ -744,6 +750,7 @@
 <translation id="80398733265834479">Активиране на режима за автоматични цветове</translation>
 <translation id="8041089156583427627">Изпращане на отзивите</translation>
 <translation id="8045012663542226664">Заглушаване на микрофона</translation>
+<translation id="8063022551652308521">Защитата срещу записване все още е изключена. Включете я, за да продължите.</translation>
 <translation id="8075838845814659848">Оставащ заряд</translation>
 <translation id="8082366717211101304">Преобразуването от DNS не е възможно от приложения за Android</translation>
 <translation id="8083281199617904460">Тази процедура за ремонт е предназначена за обучени техници. Стартирайте я само след замяна на неизправните компоненти.</translation>
@@ -814,6 +821,7 @@
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Използвайте клавишите със стрелки наляво и надясно, за да управлявате тази функция.</translation>
 <translation id="8712637175834984815">Разбрах</translation>
 <translation id="871560550817059752">Неуспешно – няма мастило</translation>
+<translation id="8717030727630712160">Процедурата за ремонт се възобновява…</translation>
 <translation id="8723108084122415655">Забавянето на допълнителната мрежа е над прага</translation>
 <translation id="8725066075913043281">Опитайте отново</translation>
 <translation id="8726019395068607495">Спряло – вратичката е отворена</translation>
@@ -835,6 +843,7 @@
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Устройството е таблет.</translation>
 <translation id="8881098542468797602">Тестът бе успешен</translation>
+<translation id="8897267175591692539">Вече можете да сглобите устройството</translation>
 <translation id="8898840733695078011">Сила на сигнала</translation>
 <translation id="8910721771319628100">Забавянето на основната мрежа е над прага</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> на <ph name="GIVEN_NAME" /></translation>

@@ -76,6 +76,7 @@
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> s-a conectat deja la acest profil Chrome. Ca să separi navigarea, poți crea propriul profil în Chrome.</translation>
 <translation id="2580411288591421699">Nu se poate instala aceeași versiune Google Chrome care rulează în prezent. Închide Google Chrome și încearcă din nou.</translation>
 <translation id="2586406160782125153">Astfel, se vor șterge datele de navigare de pe acest dispozitiv. Pentru a recupera datele mai târziu, conectează-te la Chrome ca <ph name="USER_EMAIL" />.</translation>
+<translation id="2597976513418770460">Obține datele din browserul Chrome din <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="2622559029861875898">Chrome nu poate căuta actualizări. Verifică-ți conexiunea la internet.</translation>
 <translation id="2645435784669275700">Sistemul de operare Chrome</translation>
 <translation id="2652691236519827073">Deschide linkul într-o &amp;filă Chrome nouă</translation>
@@ -301,6 +302,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="7801699035218095297">Google Chrome încearcă să copieze parolele. Pentru a permite acest lucru, introdu parola pentru Windows.</translation>
 <translation id="7808348361785373670">Elimină din Chrome...</translation>
 <translation id="7825851276765848807">Instalarea nu a reușit din cauza unei erori neprecizate. Descarci Google Chrome din nou.</translation>
+<translation id="7880591377632733558">Bun venit la Chrome, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="7890208801193284374">Dacă permiteți accesul la un computer, familia și prietenii pot să navigheze separat și să configureze Chrome cum doresc.</translation>
 <translation id="7896673875602241923">Un alt utilizator s-a conectat anterior la Chrome pe acest computer ca <ph name="ACCOUNT_EMAIL_LAST" />. Creează un nou utilizator Chrome pentru a-ți păstra separat informațiile.</translation>
 <translation id="7917876797003313048">Îți poți gestiona Conturile Google la care te-ai conectat. Conturile tale Google sunt folosite pentru browserul Chrome, pentru Magazinul Play, pentru Gmail și pentru multe altele. Dacă vrei să adaugi un cont pentru altcineva, de exemplu, pentru un membru al familiei, adaugă noua persoană pe <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
@@ -326,6 +328,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="8418845734693287262">Sistemul de operare Chrome nu a putut sincroniza datele, deoarece detaliile de conectare pentru cont nu sunt actualizate.</translation>
 <translation id="8421734018304082652">Chrome a blocat fișierul deoarece este criptat. Solicită-i proprietarului să-l decripteze</translation>
 <translation id="8433638294851456451">Pentru a trimite un număr de aici pe telefonul Android, conectează-te la Chrome pe ambele dispozitive.</translation>
+<translation id="8451192282033883849">Contul tău este gestionat de <ph name="MANAGER_NAME" />. Administratorul poate să vadă și să editeze acest profil și datele asociate din browserul Chrome, cum ar fi marcajele, istoricul și parolele.</translation>
 <translation id="8498858610309223613">Tocmai a fost aplicată o actualizare de securitate specială pentru Google Chrome. Repornește acum și filele vor fi restabilite.</translation>
 <translation id="8504220326736535258">Chrome a blocat fișierul deoarece conține programe malware</translation>
 <translation id="8516431725144212809">Interesele tale estimate de Chrome</translation>

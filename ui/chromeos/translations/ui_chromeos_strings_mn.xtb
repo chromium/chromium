@@ -121,6 +121,7 @@
 <translation id="1942765061641586207">Зургийн нягтрал</translation>
 <translation id="1972984168337863910">Файлын cанал хүсэлтийн түр зуурын самбарыг дэлгэх</translation>
 <translation id="1995337122023280937">Файлын байршил руу очих</translation>
+<translation id="1996806196681857869">Z-н шахсан архив</translation>
 <translation id="2001796770603320721">Драйвын файлуудыг удирдах</translation>
 <translation id="2009067268969781306">Драйвыг форматлах нь түүн дээр хадгалсан бүх өгөгдлийг устгана. Энэ үйлдлийг буцаах боломжгүй.</translation>
 <translation id="2025955442973426285">Тигринья</translation>
@@ -586,6 +587,7 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> зүйл</translation>
 <translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">Эрэмбийн сонголт</translation>
+<translation id="5985041959109124139">Z-н шахсан tar архив</translation>
 <translation id="6007237601604674381">Зөөж чадсангүй. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Ethernet сүлжээ</translation>
 <translation id="60357267506638014">Чех QWERTY</translation>
@@ -616,6 +618,7 @@
 <translation id="6220423280121890987">Пaнжаб</translation>
 <translation id="6224240818060029162">Дани</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" />-г форматлах</translation>
+<translation id="6224665423283788195">Zstandard-н шахсан архив</translation>
 <translation id="6227235786875481728">Энэ файлыг тоглуулж чадсангүй.</translation>
 <translation id="6241349547798190358">Голланд (Бельги)</translation>
 <translation id="6267547857941397424">Сүлжээ: <ph name="NETWORK_COUNT" />-н <ph name="NETWORK_INDEX" />, <ph name="PHONE_NAME" />, дохионы хүч <ph name="SIGNAL_STRENGTH" />%, утасны батарей <ph name="BATTERY_STATUS" />%, холбогдох</translation>
@@ -643,6 +646,7 @@
 <translation id="6509122719576673235">Норвег хэл</translation>
 <translation id="6528513914570774834">Энэ төхөөрөмжийн бусад хэрэглэгчдэд энэ сүлжээг ашиглах зөвшөөрөл олгох</translation>
 <translation id="653019979737152879"><ph name="FILE_NAME" /> синхрончилж байна...</translation>
+<translation id="6530595303336443929">Zstandard-н шахсан tar архив</translation>
 <translation id="6549689063733911810">Сүүлд</translation>
 <translation id="6558280019477628686">Алдаа гарлаа. Зарим зүйлийг устгаагүй байж болзошгүй.</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />" устгаж байна...</translation>

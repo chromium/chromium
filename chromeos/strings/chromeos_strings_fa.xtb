@@ -78,6 +78,7 @@
 <translation id="1578784163189013834">انتخاب پس‌زمینه محافظ صفحه</translation>
 <translation id="1615335640928990664">مصرف داده از <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">اجرای آزمایش شارژ</translation>
+<translation id="1631385268983122904">هنوز دستگاه را سرهم نکنید</translation>
 <translation id="1639239467298939599">بارگیری</translation>
 <translation id="1641857168437328880">تغذیه‌کننده سند (یک‌رو)</translation>
 <translation id="1643449475550628585">تغییر روزانه کاغذدیواری</translation>
@@ -85,6 +86,7 @@
 <translation id="1645954272419197032">لطفاً اطلاعات دستگاه را تأیید کنید</translation>
 <translation id="1662989795263954667">متوقف شد - جوهر تمام شده است</translation>
 <translation id="1668469839109562275">‏VPN داخلی</translation>
+<translation id="1676557873873341166">فیلم‌برداری</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">موجود بودن رافع ساناد</translation>
 <translation id="1715359911173058521">‏مشکلی در برقراری ارتباط با اسکنر وجود دارد. اتصال USB یا شبکه را بررسی کنید و دوباره امتحان کنید.</translation>
@@ -159,6 +161,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> نقطه در اینچ</translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">برای کاوش دستگاه‌های همین اطراف، بلوتوث را روشن کنید</translation>
+<translation id="2340422556570134524">«محافظت دربرابر نوشتن» ناخواسته روشن شده است. پیش‌از ادامه دادن، لطفاً «محافظت دربرابر نوشتن» را دستی خاموش کنید.</translation>
 <translation id="2346474577291266260">عالی (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">ادامه</translation>
 <translation id="2360257214555822463"><ph name="LINK_BEGIN" />قطعات غیرمجاز<ph name="LINK_END" /> شناسایی شد. اگر می‌خواهید تأیید کنید این قطعات نصب شده‌اند، لطفاً اکنون این کار را انجام دهید.</translation>
@@ -474,6 +477,7 @@
 <translation id="5372659122375744710">‏شبکه Wi-Fi ایمن نیست</translation>
 <translation id="5376354385557966694">حالت روشن خودکار</translation>
 <translation id="537872351913703572">دستگاه به کاربر یا سازمان دیگری منتقل خواهد شد</translation>
+<translation id="5389159777326897627">کاغذدیواری و سبک</translation>
 <translation id="5389224261615877010">رنگین‌کمان</translation>
 <translation id="5395600419410242651">پاک کردن همه داده‌ها</translation>
 <translation id="5400907029458559844">دستگاه درحال برقراری اتصال است.</translation>
@@ -643,6 +647,7 @@
 <translation id="6961170852793647506">برای شروع‌، سند را روی اسکنر قرار دهید</translation>
 <translation id="6965382102122355670">قبول</translation>
 <translation id="6977381486153291903">بازبینی سفت‌افزار</translation>
+<translation id="6995564396478647735">مطمئن شوید «محافظت دربرابر نوشتن» روشن باشد</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> این دستگاه را مدیریت می‌کند و به همه فعالیت‌های کاربر، ازجمله صفحه‌های وب بازدیدشده، گذرواژه‌ها، و ایمیل دسترسی دارد.</translation>
 <translation id="7040230719604914234">اپراتور</translation>
 <translation id="7041549558901442110">دستگاه متصل نشده است.</translation>
@@ -653,6 +658,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /><ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">ناموفق - مجوز صادر نشد</translation>
 <translation id="7103252855940681301">نام دستگاه <ph name="INDEX" /> از <ph name="COUNT" /> <ph name="NAME" /> است.</translation>
+<translation id="7126228745139711113">«محافظت دربرابر نوشتن» خاموش است</translation>
 <translation id="7134436342991564651">{0,plural, =1{سرور نام}one{سرور نام}other{سرورهای نام}}</translation>
 <translation id="7143207342074048698">در حال اتصال</translation>
 <translation id="7144878232160441200">سعی مجدد</translation>
@@ -744,6 +750,7 @@
 <translation id="80398733265834479">فعال کردن حالت رنگ خودکار</translation>
 <translation id="8041089156583427627">ارسال بازخورد</translation>
 <translation id="8045012663542226664">بی‌صدا کردن میکروفون</translation>
+<translation id="8063022551652308521">«محافظت دربرابر نوشتن» همچنان خاموش است. برای ادامه دادن، «محافظت دربرابر نوشتن» را روشن کنید.</translation>
 <translation id="8075838845814659848">شارژ باقی‌مانده</translation>
 <translation id="8082366717211101304">‏نمی‌توان ساناد را از برنامه‌های Android حل‌وفصل کرد</translation>
 <translation id="8083281199617904460">این فرایند تعمیر برای تکنسین تعمیرات آموزش‌دیده درنظر گرفته شده است. فقط پس‌از تعویض قطعات معیوب شروع کنید.</translation>
@@ -814,6 +821,7 @@
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> برای مدیریت این ویژگی، از کلیدهای پیکان روبه راست یا روبه چپ استفاده کنید.</translation>
 <translation id="8712637175834984815">متوجه شدم</translation>
 <translation id="871560550817059752">انجام نشد - جوهر تمام شده است</translation>
+<translation id="8717030727630712160">درحال ازسرگیری فرایند تعمیر…</translation>
 <translation id="8723108084122415655">آستانه تأخیر در شبکه غیر پیش‌فرض خیلی زیاد است</translation>
 <translation id="8725066075913043281">سعی مجدد</translation>
 <translation id="8726019395068607495">متوقف شد - در باز است</translation>
@@ -835,6 +843,7 @@
 <translation id="8868741746785112895">شناسه منحصربه‌فرد جهانی</translation>
 <translation id="8876270629542503161">دستگاه رایانه لوحی است.</translation>
 <translation id="8881098542468797602">آزمایش موفق بود</translation>
+<translation id="8897267175591692539">اکنون می‌توانید دستگاه را سرهم کنید</translation>
 <translation id="8898840733695078011">قدرت سیگنال</translation>
 <translation id="8910721771319628100">آستانه تأخیر در شبکه پیش‌فرض خیلی زیاد است</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> <ph name="GIVEN_NAME" /></translation>

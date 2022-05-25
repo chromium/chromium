@@ -24,6 +24,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="109942774857561566">Me aburro</translation>
 <translation id="1104084341931202936">Muestra configuración de accesibilidad</translation>
 <translation id="1104621072296271835">Tus dispositivos funcionan aún mejor juntos</translation>
+<translation id="1111021433905331574">Puedes cambiar el color de la retroiluminación de tu teclado en Configuración &gt; <ph name="APP_TITLE" /></translation>
 <translation id="112308213915226829">Autoocultar estantería</translation>
 <translation id="1142002900084379065">Fotos recientes</translation>
 <translation id="1148499908455722006">Abre el cuadro de diálogo con información de <ph name="USER_NAME" /></translation>
@@ -65,6 +66,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1275285675049378717">Alimentando a <ph name="POWER_SOURCE" /></translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">Localizar teléfono</translation>
+<translation id="1287002645302686982">Ya hay un escritorio guardado con el nombre "<ph name="DESK_TEMPLATE_NAME" />"</translation>
 <translation id="1289185460362160437">Vuelve el <ph name="COME_BACK_DAY_OF_WEEK" /> a las <ph name="COME_BACK_TIME" />.</translation>
 <translation id="1290331692326790741">Señal débil</translation>
 <translation id="1290982764014248209">Se está moviendo <ph name="DRAGGED_APP" /> a la carpeta <ph name="FOLDER_NAME" />.</translation>
@@ -94,7 +96,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1420408895951708260">Activa o desactiva la luz nocturna. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">Consulta fotos y contenido multimedia recientes de tu teléfono en tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="1426410128494586442">Sí</translation>
-<translation id="1438357537418863713">El streaming de aplicaciones se ha configurado. Cuando empieces a usarlo, las últimas aplicaciones que abras aparecerán aquí.</translation>
+<translation id="1447641497144572814">Se inicia el salvapantallas</translation>
 <translation id="1455242230282523554">Mostrar los ajustes de idioma</translation>
 <translation id="1460620680449458626">El volumen está silenciado.</translation>
 <translation id="1467432559032391204">Izquierda</translation>
@@ -269,6 +271,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="2586561057878260610">Pulsa Ctrl + W para combinarlo con <ph name="DESK_NAME" />. Pulsa Ctrl + Shift + W para cerrar el escritorio y las ventanas.</translation>
 <translation id="2595239820337756193">5 km en millas</translation>
 <translation id="2596078834055697711">Hacer una captura de pantalla de la ventana</translation>
+<translation id="2598725286293895280">Aplicaciones no compatibles en el escritorio</translation>
 <translation id="2607678425161541573">Se requiere inicio de sesión online</translation>
 <translation id="2620016719323068571">Busca tus <ph name="CATEGORY" />, archivos, aplicaciones y más...</translation>
 <translation id="2620436844016719705">Sistema</translation>
@@ -645,6 +648,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="4734965478015604180">Horizontal</translation>
 <translation id="4735498845456076464">La combinación de teclas <ph name="LAUNCHER_KEY_NAME" /> + número ha cambiado. Para usar las teclas de funciones, pulsa la tecla <ph name="LAUNCHER_KEY_NAME" /> + una tecla de la fila superior.</translation>
 <translation id="473775607612524610">Actualizar</translation>
+<translation id="4740516757091333363">¿Eliminar escritorio guardado?</translation>
 <translation id="4752784485658729358">Solo se pueden guardar 6 escritorios. Quita un escritorio para guardar uno nuevo.</translation>
 <translation id="4759238208242260848">Descargas</translation>
 <translation id="4774338217796918551">Vuelve mañana a las <ph name="COME_BACK_TIME" />.</translation>
@@ -697,7 +701,6 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="5071064518267176975">Una aplicación quiere usar el micrófono</translation>
 <translation id="5078796286268621944">PIN incorrecto</translation>
 <translation id="5083553833479578423">Descubre más funciones del Asistente.</translation>
-<translation id="5106223312672646208">Personalizar</translation>
 <translation id="5107522548814527560">Web</translation>
 <translation id="5117590920725113268">Mostrar mes siguiente</translation>
 <translation id="5136175204352732067">Se ha conectado otro teclado</translation>
@@ -742,6 +745,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="5352250171825660495">Tema oscuro está activado</translation>
 <translation id="5356963482258194581">Cambia entre el tema oscuro y el claro. Haz clic con el botón derecho en el escritorio y selecciona Fondo de pantalla y estilo.</translation>
 <translation id="5379115545237091094">Demasiados intentos</translation>
+<translation id="5391307769715781764">¿Sustituir escritorio guardado?</translation>
 <translation id="5393156353051693207">Toca y mantén pulsado en cualquier lugar de la pantalla para reorganizar tus aplicaciones</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> está encima de <ph name="IN_PLACE_APP" />. Suelta para crear una carpeta.</translation>
 <translation id="5397578532367286026">El administrador puede consultar el uso y el historial de este usuario (<ph name="MANAGER_EMAIL" />) en la página chrome.com.</translation>
@@ -975,6 +979,7 @@ Nueva instalación</translation>
 <translation id="6790428901817661496">Reproducir</translation>
 <translation id="6801878137098616817">Editado recientemente</translation>
 <translation id="6803622936009808957">No se han podido proyectar las pantallas porque no se han encontrado resoluciones compatibles. Se ha utilizado el modo de escritorio ampliado en su lugar.</translation>
+<translation id="6812232930908427253">No se ha podido guardar el escritorio. Hay demasiadas ventanas o pestañas.</translation>
 <translation id="6818242057446442178">Retroceder por palabra</translation>
 <translation id="6819327813400217281">Cámara ajustada a la esquina inferior izquierda</translation>
 <translation id="6820676911989879663">Haz una pausa</translation>
@@ -1303,7 +1308,7 @@ Nueva instalación</translation>
 <translation id="8818320199597151042">Quitando perfil. Espera unos minutos.</translation>
 <translation id="8819728065740986820">La función Carga inteligente está activada</translation>
 <translation id="8825863694328519386">Desliza el dedo desde la izquierda para volver</translation>
-<translation id="8834539327799336565">Conectados ahora</translation>
+<translation id="8834539327799336565">Conectado ahora</translation>
 <translation id="8841375032071747811">Botón Atrás</translation>
 <translation id="8843682306134542540">Activa o desactiva el bloqueo. <ph name="STATE_TEXT" />.</translation>
 <translation id="8850991929411075241">Buscar+Esc</translation>

@@ -24,6 +24,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="109942774857561566">Nudzi mi się</translation>
 <translation id="1104084341931202936">Pokaż ustawienia ułatwień dostępu</translation>
 <translation id="1104621072296271835">Razem Twoje urządzenia mogą jeszcze więcej</translation>
+<translation id="1111021433905331574">Kolor podświetlenia klawiatury możesz zmienić, klikając Ustawienia &gt; <ph name="APP_TITLE" /></translation>
 <translation id="112308213915226829">Autoukrywanie półki</translation>
 <translation id="1142002900084379065">Najnowsze zdjęcia</translation>
 <translation id="1148499908455722006">Otwórz okno informacyjne dla konta <ph name="USER_NAME" /></translation>
@@ -65,6 +66,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1275285675049378717">Zasilanie przez <ph name="POWER_SOURCE" /></translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">Znajdź telefon</translation>
+<translation id="1287002645302686982">Istnieje już zapisane biurko o nazwie <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="1289185460362160437">Możesz wrócić w: <ph name="COME_BACK_DAY_OF_WEEK" /> o <ph name="COME_BACK_TIME" />.</translation>
 <translation id="1290331692326790741">słaby sygnał</translation>
 <translation id="1290982764014248209">Przenieś aplikację <ph name="DRAGGED_APP" /> do folderu <ph name="FOLDER_NAME" />.</translation>
@@ -94,7 +96,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1420408895951708260">Włącz lub wyłącz Podświetlenie nocne. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">Wyświetlaj najnowsze zdjęcia i pliki multimedialne z telefonu na urządzeniu <ph name="DEVICE_TYPE" /></translation>
 <translation id="1426410128494586442">Tak</translation>
-<translation id="1438357537418863713">Strumieniowe przesyłanie aplikacji zostało skonfigurowane. Gdy zaczniesz korzystać z tej funkcji, w tym miejscu pojawią się ostatnio uruchomione aplikacje.</translation>
+<translation id="1447641497144572814">Wygaszacz ekranu uruchamia się</translation>
 <translation id="1455242230282523554">Pokaż ustawienia języka</translation>
 <translation id="1460620680449458626">Dźwięk jest wyciszony.</translation>
 <translation id="1467432559032391204">W lewo</translation>
@@ -269,6 +271,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2586561057878260610">Naciśnij Ctrl + W, aby połączyć z biurkiem <ph name="DESK_NAME" />. Naciśnij Ctrl + Shift + W, aby zamknąć biurko i okna.</translation>
 <translation id="2595239820337756193">Przelicz 5 km na mile</translation>
 <translation id="2596078834055697711">Zrób zrzut ekranu okna</translation>
+<translation id="2598725286293895280">Nieobsługiwane aplikacje w biurku</translation>
 <translation id="2607678425161541573">Wymagane jest zalogowanie w trybie online</translation>
 <translation id="2620016719323068571">Szukaj elementów takich jak np. <ph name="CATEGORY" />, pliki lub aplikacje…</translation>
 <translation id="2620436844016719705">System</translation>
@@ -644,6 +647,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="4734965478015604180">Poziomo</translation>
 <translation id="4735498845456076464">Skrót klawiszowy <ph name="LAUNCHER_KEY_NAME" /> + cyfra został zmieniony. Aby użyć klawiszy funkcyjnych, naciśnij klawisz <ph name="LAUNCHER_KEY_NAME" /> + klawisz w górnym rzędzie.</translation>
 <translation id="473775607612524610">Aktualizuj</translation>
+<translation id="4740516757091333363">Usunąć zapisane biurko?</translation>
 <translation id="4752784485658729358">Zapisać można tylko 6 biurek. Usuń biurko, aby zapisać nowe.</translation>
 <translation id="4759238208242260848">Pobrane pliki</translation>
 <translation id="4774338217796918551">Możesz wrócić jutro o <ph name="COME_BACK_TIME" />.</translation>
@@ -696,7 +700,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="5071064518267176975">Aplikacja chce używać mikrofonu</translation>
 <translation id="5078796286268621944">Błędny kod PIN</translation>
 <translation id="5083553833479578423">Poznaj więcej funkcji Asystenta.</translation>
-<translation id="5106223312672646208">Personalizacja</translation>
+<translation id="509790653408515442">Tutaj będą się pojawiać aplikacje przesyłane strumieniowo z telefonu</translation>
 <translation id="5107522548814527560">Internet</translation>
 <translation id="5117590920725113268">Pokaż przyszły miesiąc</translation>
 <translation id="5136175204352732067">Podłączono inną klawiaturę</translation>
@@ -719,6 +723,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="523505283826916779">Ustawienia ułatwień dostępu</translation>
 <translation id="5245201184978705914">Nie udało się wygenerować transkrypcji</translation>
 <translation id="5253783950165989294">Połączono z urządzeniem o nazwie <ph name="DEVICE_NAME" />, bateria <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="5258528442992323769">Nie ma zapisanych biurek</translation>
 <translation id="5260676007519551770">Biurko 4</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> wymaga Twojej reakcji.</translation>
 <translation id="5283198616748585639">Dodaj 1 min</translation>
@@ -741,6 +746,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="5352250171825660495">Ciemny motyw jest włączony</translation>
 <translation id="5356963482258194581">Przełącz między ciemnym i jasnym motywem. Kliknij prawym przyciskiem na pulpicie i wybierz Tapeta i styl.</translation>
 <translation id="5379115545237091094">Zbyt wiele prób</translation>
+<translation id="5391307769715781764">Zastąpić zapisane biurko?</translation>
 <translation id="5393156353051693207">Naciśnij i przytrzymaj dowolne miejsce, aby zmienić kolejność aplikacji</translation>
 <translation id="5395308026110844773">Aplikacja <ph name="DRAGGED_APP_NAME" /> jest nad aplikacją <ph name="IN_PLACE_APP" /> – puść, by utworzyć folder.</translation>
 <translation id="5397578532367286026">Działania i historia tego użytkownika mogą być sprawdzane przez menedżera (<ph name="MANAGER_EMAIL" />) na chrome.com.</translation>
@@ -973,6 +979,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="6790428901817661496">Odtwórz</translation>
 <translation id="6801878137098616817">Niedawno edytowane</translation>
 <translation id="6803622936009808957">Nie można wyświetlić odbicia lustrzanego, ponieważ nie znaleziono obsługiwanych rozdzielczości. Zamiast tego został włączony pulpit rozszerzony.</translation>
+<translation id="6812232930908427253">Nie udało się zapisać biurka. Zbyt wiele okien lub kart.</translation>
 <translation id="6818242057446442178">Cofnij o jedno słowo</translation>
 <translation id="6819327813400217281">Podgląd z kamery został przyciągnięty do lewego dolnego rogu</translation>
 <translation id="6820676911989879663">Zrób sobie przerwę</translation>
@@ -1255,6 +1262,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="851458219935658693">Wybrano opcję Pokaż okna z bieżącego biurka</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> nie może się ładować, gdy jest włączony.</translation>
 <translation id="8535393432370007982">Cofnij sortowanie według koloru</translation>
+<translation id="8542053257095774575">Nie ma zapisanych biurek ani szablonów</translation>
 <translation id="8546059259582788728">Sortowanie zostało cofnięte</translation>
 <translation id="8551588720239073785">Ustawienia daty i godziny</translation>
 <translation id="8553395910833293175">Już przypisano do wszystkich biurek.</translation>

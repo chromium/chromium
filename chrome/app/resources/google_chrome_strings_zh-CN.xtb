@@ -76,6 +76,7 @@
 <translation id="2574930892358684005"><ph name="EXISTING_USER" />已登录此 Chrome 个人资料。Chrome 可为您创建一份专属的个人资料，以将您的浏览数据与该用户的浏览数据分隔开来。</translation>
 <translation id="2580411288591421699">无法安装与当前运行版本相同的 Google Chrome 浏览器。请关闭 Google Chrome 浏览器，然后重试。</translation>
 <translation id="2586406160782125153">这会从这台设备上删除您的浏览数据。如果日后想要检索您的数据，届时请以 <ph name="USER_EMAIL" /> 的身份登录 Chrome。</translation>
+<translation id="2597976513418770460">从 <ph name="ACCOUNT_EMAIL" /> 获取您的 Chrome 浏览器信息</translation>
 <translation id="2622559029861875898">Chrome 无法检查是否有更新。请检查您的互联网连接。</translation>
 <translation id="2645435784669275700">Chrome 操作系统</translation>
 <translation id="2652691236519827073">在 Chrome 新标签页中打开链接(&amp;T)</translation>
@@ -301,6 +302,7 @@
 <translation id="7801699035218095297">Google Chrome 正在尝试复制密码。请输入您的 Windows 密码以允许此操作。</translation>
 <translation id="7808348361785373670">从Chrome中移除…</translation>
 <translation id="7825851276765848807">由于未指定的错误导致安装失败。请重新下载 Google Chrome 浏览器。</translation>
+<translation id="7880591377632733558"><ph name="ACCOUNT_FIRST_NAME" />，您好！欢迎使用 Chrome</translation>
 <translation id="7890208801193284374">如果您与亲朋好友共用计算机，他们将能够使用单独的帐号进行浏览，并可随心所欲地设置Chrome。</translation>
 <translation id="7896673875602241923">之前已有人在此计算机上以 <ph name="ACCOUNT_EMAIL_LAST" /> 的身份登录了 Chrome。请新建一个 Chrome 用户来单独保存您的信息。</translation>
 <translation id="7917876797003313048">您可以管理您已登录的 Google 帐号。您可通过登录自己的 Google 帐号使用 Chrome 浏览器、Play 商店、Gmail 等产品。如果您想添加他人（比如某个家庭成员）的帐号，请改为将这个新人添加到您的 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
@@ -326,6 +328,7 @@
 <translation id="8418845734693287262">由于您的帐号登录详细信息已过期，Chrome 操作系统无法同步您的数据。</translation>
 <translation id="8421734018304082652">Chrome 屏蔽了此文件，因为它已加密。请让文件所有者解密</translation>
 <translation id="8433638294851456451">若要从此处向您的 Android 手机发送电话号码，请在这两部设备上分别登录 Chrome。</translation>
+<translation id="8451192282033883849">您的帐号由 <ph name="MANAGER_NAME" /> 管理。您的管理员能看到并修改这份 Chrome 浏览器个人资料及其数据（例如书签、历史记录和密码）。</translation>
 <translation id="8498858610309223613">Google Chrome 刚刚应用了一项特殊的安全更新。请立即重启，以便系统恢复您的标签页。</translation>
 <translation id="8504220326736535258">Chrome 屏蔽了此文件，因为它包含恶意软件</translation>
 <translation id="8516431725144212809">Chrome 推测出的您的兴趣</translation>

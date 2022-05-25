@@ -5325,6 +5325,15 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 <translation id="6786666051053129545">Mengaktifkan alur Voice Match Asisten Google</translation>
 <translation id="6786747875388722282">Ekstensi</translation>
 <translation id="6786967369487349613">Menyetel direktori profil roaming</translation>
+<translation id="6789319144568227749">Mengonfigurasi dukungan header permintaan non-karakter pengganti CORS.
+
+      <ph name="PRODUCT_NAME" /> versi 97 memperkenalkan dukungan untuk header permintaan non-karakter pengganti CORS. Jika skrip membuat permintaan jaringan lintas asal melalui fetch() dan XMLHttpRequest dengan header Authorization yang ditambah skrip, header tersebut harus diizinkan secara eksplisit oleh header Access-Control-Allow-Headers dalam respons preflight CORS. "Secara eksplisit" di sini berarti simbol karakter pengganti "*" tidak mencakup header Authorization. Lihat <ph name="CORS_NON_WILDCARD_REQUEST_HEADERS_FEATURE_URL" /> untuk mengetahui detail selengkapnya.
+
+      Jika kebijakan ini tidak disetel atau disetel ke Benar (True), <ph name="PRODUCT_NAME" /> akan mendukung header permintaan non-karakter pengganti CORS dan berperilaku seperti yang dijelaskan di atas.
+
+      Jika kebijakan ini disetel ke Salah (False), Chrome akan mengizinkan simbol karakter pengganti ("*") di header Access-Control-Allow-Headers dalam respons preflight CORS untuk mencakup header Authorization.
+
+      Kebijakan Perusahaan ini bersifat sementara dan akan dihapus pada masa mendatang.</translation>
 <translation id="6789422336869764846">Jika kebijakan disetel ke Aktif atau tidak disetel, perangkat yang terdaftar akan melaporkan status tombol dev perangkat saat perangkat di-booting.
 
       Jika kebijakan disetel ke Nonaktif, perangkat yang terdaftar tidak akan melaporkan status tombol dev.</translation>

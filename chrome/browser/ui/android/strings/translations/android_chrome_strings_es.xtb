@@ -56,6 +56,7 @@
 <translation id="124678866338384709">Cierra la pestaña actual</translation>
 <translation id="1246905108078336582">¿Quitar la sugerencia del portapapeles?</translation>
 <translation id="1258753120186372309">Doodles de Google: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">Lista de lectura</translation>
 <translation id="1266864766717917324">No se ha podido compartir: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Toca para ampliar</translation>
 <translation id="1285310382777185058">Cambiar idioma</translation>
@@ -493,10 +494,10 @@ Mantén pulsada cualquier palabra para buscarla. Para acotar la búsqueda, selec
 <translation id="363596933471559332">Permite iniciar sesión automáticamente en sitios web con credenciales almacenadas. Si esta función está desactivada, se solicitará la verificación cada vez que se intente iniciar sesión en un sitio web.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3677911431265050325">Solicitar sitio web móvil</translation>
-<translation id="3685860403008476208">Cualquier persona que use este dispositivo puede ver los archivos que descargues en modo incógnito</translation>
 <translation id="3687645719033307815">Estás viendo una vista previa de esta página</translation>
 <translation id="3690369331356918524">Te avisa si tus contraseñas se ven expuestas en una quiebra de seguridad de datos</translation>
 <translation id="3692944402865947621">No se ha podido descargar <ph name="FILE_NAME" /> porque no se puede acceder a la ubicación del almacenamiento.</translation>
+<translation id="3697705478071004188">Ordenar por sitio</translation>
 <translation id="3699022356773522638">¿Descargar archivo?</translation>
 <translation id="371230970611282515">Predice y te advierte de eventos peligrosos antes de que se produzcan.</translation>
 <translation id="3714981814255182093">Abre la barra de búsqueda</translation>
@@ -523,6 +524,7 @@ Mantén pulsada cualquier palabra para buscarla. Para acotar la búsqueda, selec
 <translation id="3845098929839618392">Abrir en pestaña de Incógnito</translation>
 <translation id="3856096718352044181">Verifica que este sea un proveedor válido o inténtalo de nuevo más tarde.</translation>
 <translation id="3858860766373142691">Nombre</translation>
+<translation id="3859206958100234503">Activa la sincronización para tener tus contraseñas, marcadores y más en todos tus dispositivos</translation>
 <translation id="3861633093716975811">Vídeos populares</translation>
 <translation id="3892148308691398805">Copiar texto</translation>
 <translation id="3894427358181296146">Añadir carpeta</translation>
@@ -580,6 +582,7 @@ Mantén pulsada cualquier palabra para buscarla. Para acotar la búsqueda, selec
 <translation id="4209895695669353772">Para obtener contenido personalizado sugerido por Google, activa la sincronización</translation>
 <translation id="4214315110991671325">Si permites las cookies, es posible que Chrome las use para la precarga.</translation>
 <translation id="4225895483398857530">Acceso directo en la barra de herramientas</translation>
+<translation id="4227318652298512614">Sigue todos los sitios que quieras</translation>
 <translation id="4242533952199664413">Abrir Configuración</translation>
 <translation id="4248098802131000011">Mantén tus contraseñas protegidas frente a quiebras de seguridad de datos y otros problemas de seguridad.</translation>
 <translation id="4249955472157341256">Ordenar por más recientes</translation>
@@ -696,6 +699,7 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 <translation id="4842515939542199281">Para buscar con la voz, toca el micrófono</translation>
 <translation id="4844633725025837809">Para mayor seguridad, cifra las contraseñas en tu dispositivo antes de que se guarden en el gestor de contraseñas de Google</translation>
 <translation id="4850886885716139402">Ver</translation>
+<translation id="4852014461738377247">Iniciando sesión\u2026</translation>
 <translation id="4860895144060829044">Llamar</translation>
 <translation id="4864369630010738180">Iniciando sesión...</translation>
 <translation id="4866368707455379617">No se puede instalar <ph name="MODULE" /> para Chrome</translation>
@@ -1149,6 +1153,7 @@ Los tokens de confianza mejoran la privacidad en la Web y no se pueden usar para
 <translation id="7304873321153398381">Sin conexión. Chrome no puede comprobar tus contraseñas.</translation>
 <translation id="7313188324932846546">Toca para configurar la sincronización</translation>
 <translation id="7332075081379534664">Se ha iniciado sesión correctamente</translation>
+<translation id="7333232495927792353">Activa la sincronización para recibir el contenido más relevante de Google</translation>
 <translation id="7339898014177206373">Nueva ventana</translation>
 <translation id="7340958967809483333">Opciones de Discover</translation>
 <translation id="7352339641508007922">Arrastra para hacer una captura de página completa</translation>
@@ -1304,6 +1309,7 @@ Los tokens de confianza mejoran la privacidad en la Web y no se pueden usar para
 <translation id="8103578431304235997">Pestaña de Incógnito</translation>
 <translation id="8105613260829665809">Si continúas, aceptas los <ph name="BEGIN_TOS_LINK" />Términos del Servicio<ph name="END_TOS_LINK" />.\nPara ayudar a mejorar la aplicación, Chrome envía datos de uso y de fallos a Google. <ph name="BEGIN_UMA_LINK" />Gestionar<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
+<translation id="8107530384992929318">Cerrar opciones para ordenar</translation>
 <translation id="8109613176066109935">Activa la sincronización para ver tus marcadores en todos tus dispositivos</translation>
 <translation id="8110024788458304985">Ayudar a mejorar las funciones y el rendimiento de Chrome</translation>
 <translation id="8110087112193408731">¿Mostrar tu actividad de Chrome en Bienestar digital?</translation>
@@ -1377,6 +1383,7 @@ Los tokens de confianza mejoran la privacidad en la Web y no se pueden usar para
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Abre la página Historial</translation>
 <translation id="8493948351860045254">Liberar espacio</translation>
+<translation id="8497242791509864205">Abrir opciones para ordenar</translation>
 <translation id="8497480609928300907">Explicación de la guía de privacidad</translation>
 <translation id="8497726226069778601">Aún no tienes contenido</translation>
 <translation id="8503559462189395349">Contraseñas de Chrome</translation>
@@ -1529,6 +1536,7 @@ Los tokens de confianza mejoran la privacidad en la Web y no se pueden usar para
 <translation id="96681097142096641">¿Ver página simplificada?</translation>
 <translation id="968900484120156207">Las páginas que visites aparecerán aquí.</translation>
 <translation id="970715775301869095">Quedan <ph name="MINUTES" /> minutos</translation>
+<translation id="978443947993957527">Recibe contenido personalizado</translation>
 <translation id="981121421437150478">Sin conexión</translation>
 <translation id="983192555821071799">Cerrar todas las pestañas</translation>
 <translation id="987264212798334818">General</translation>

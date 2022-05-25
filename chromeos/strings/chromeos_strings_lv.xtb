@@ -78,6 +78,7 @@
 <translation id="1578784163189013834">Izvēlēties ekrānsaudzētāja fonu</translation>
 <translation id="1615335640928990664">Datu lietojums kopš šī datuma: <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Veikt uzlādes pārbaudi</translation>
+<translation id="1631385268983122904">Vēl neievietojiet akumulatoru ierīcē</translation>
 <translation id="1639239467298939599">Notiek ielāde</translation>
 <translation id="1641857168437328880">Dokumentu padevējs (vienpusēji)</translation>
 <translation id="1643449475550628585">Katru dienu mainīt fona tapetes attēlu</translation>
@@ -85,6 +86,7 @@
 <translation id="1645954272419197032">Pārbaudiet informāciju par ierīci</translation>
 <translation id="1662989795263954667">Apturēts — beigusies tinte</translation>
 <translation id="1668469839109562275">Iebūvēts VPN</translation>
+<translation id="1676557873873341166">Notiek videoklipa uzņemšana</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS atrisinātāja pieejamība</translation>
 <translation id="1715359911173058521">Savienojumā ar skeneri radās problēma. Pārbaudiet tīkla vai USB savienojumu un mēģiniet vēlreiz.</translation>
@@ -159,6 +161,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Ieslēdziet Bluetooth, lai atklātu tuvumā esošas ierīces</translation>
+<translation id="2340422556570134524">Aizsardzība pret rakstīšanu ir negaidīti ieslēgta. Lūdzu, manuāli izslēdziet aizsardzību pret rakstīšanu un pēc tam mēģiniet vēlreiz.</translation>
 <translation id="2346474577291266260">Izcils (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">Turpināt</translation>
 <translation id="2360257214555822463">Konstatēti <ph name="LINK_BEGIN" />prasībām neatbilstoši komponenti<ph name="LINK_END" />. Ja zināt, ka tādi ir instalēti, aplieciniet to tagad.</translation>
@@ -474,6 +477,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="5372659122375744710">Wi-Fi tīkls nav drošs</translation>
 <translation id="5376354385557966694">Automātisks gaišais režīms</translation>
 <translation id="537872351913703572">Ierīci izmantos cits lietotājs vai organizācija</translation>
+<translation id="5389159777326897627">Fona tapete un stils</translation>
 <translation id="5389224261615877010">Varavīksne</translation>
 <translation id="5395600419410242651">Dzēst visus datus</translation>
 <translation id="5400907029458559844">Notiek ierīces pievienošana.</translation>
@@ -643,6 +647,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="6961170852793647506">Lai sāktu darbu, novietojiet dokumentu uz skenera.</translation>
 <translation id="6965382102122355670">Labi</translation>
 <translation id="6977381486153291903">Aparātprogrammatūras pārskatīšana</translation>
+<translation id="6995564396478647735">Ieslēdziet aizsardzību pret rakstīšanu</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> pārvalda šo ierīci un var piekļūt visām lietotāja darbībām, tostarp apmeklētajām tīmekļa lapām, parolēm un e-pastam.</translation>
 <translation id="7040230719604914234">Mobilo sakaru operators</translation>
 <translation id="7041549558901442110">Ierīce nav pievienota.</translation>
@@ -653,6 +658,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Neizdevās — autorizācija neizdevās</translation>
 <translation id="7103252855940681301"><ph name="INDEX" />. ierīce no <ph name="COUNT" />, nosaukums: <ph name="NAME" />.</translation>
+<translation id="7126228745139711113">Aizsardzība pret rakstīšanu ir izslēgta</translation>
 <translation id="7134436342991564651">{0,plural, =1{Nosaukumu serveris}zero{Nosaukumu serveri}one{Nosaukumu serveri}other{Nosaukumu serveri}}</translation>
 <translation id="7143207342074048698">Notiek savienojuma izveide</translation>
 <translation id="7144878232160441200">Mēģināt vēlreiz</translation>
@@ -744,6 +750,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="80398733265834479">Iespējot automātisko krāsu režīmu</translation>
 <translation id="8041089156583427627">Sūtīt atsauksmes</translation>
 <translation id="8045012663542226664">Mikrofona izslēgšana</translation>
+<translation id="8063022551652308521">Aizsardzība pret rakstīšanu joprojām ir izslēgta. Lai turpinātu, ieslēdziet aizsardzību pret rakstīšanu.</translation>
 <translation id="8075838845814659848">Atlikusī akumulatora enerģija</translation>
 <translation id="8082366717211101304">Nevar atrast DNS no Android lietotnēm</translation>
 <translation id="8083281199617904460">Šāda veida labošana ir jāveic apmācītam labošanas speciālistam. Pirms sākšanas nomainiet komponentus, kuri nedarbojas pareizi.</translation>
@@ -814,6 +821,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Lai pārvaldītu šo funkciju, izmantojiet kreiso vai labo bulttaustiņu.</translation>
 <translation id="8712637175834984815">Sapratu!</translation>
 <translation id="871560550817059752">Neizdevās — beigusies tinte</translation>
+<translation id="8717030727630712160">Tiek atsākta labošana…</translation>
 <translation id="8723108084122415655">Tīklā, kas nav noklusējuma tīkls, latentums pārsniedza slieksni</translation>
 <translation id="8725066075913043281">Mēģināt vēlreiz</translation>
 <translation id="8726019395068607495">Apturēts — durtiņas ir atvērtas</translation>
@@ -835,6 +843,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Ierīce ir planšetdators.</translation>
 <translation id="8881098542468797602">Pārbaude sekmīga</translation>
+<translation id="8897267175591692539">Tagad varat ievietot akumulatoru</translation>
 <translation id="8898840733695078011">Signāla stiprums</translation>
 <translation id="8910721771319628100">Noklusējuma tīkla latentums pārsniedza slieksni</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" />, ko izmanto <ph name="GIVEN_NAME" /></translation>

@@ -56,6 +56,7 @@
 <translation id="124678866338384709">Chiudi scheda corrente</translation>
 <translation id="1246905108078336582">Rimuovere il suggerimento dagli appunti?</translation>
 <translation id="1258753120186372309">Doodle di Google: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">Elenco di lettura</translation>
 <translation id="1266864766717917324">Impossibile condividere <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Tocca per espandere</translation>
 <translation id="1285310382777185058">Cambia lingua</translation>
@@ -312,6 +313,7 @@ Tocca e tieni premuta una parola per eseguire una ricerca. Per perfezionare la r
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# file audio}other{# file audio}}</translation>
 <translation id="265156376773362237">Precaricamento standard</translation>
 <translation id="2656405586795711023">App web</translation>
+<translation id="2669454659051515572">Tutte le persone che usano questo dispositivo possono vedere i file scaricati</translation>
 <translation id="2702516483241149200">Novità: condividi un link che scorre direttamente a questo testo</translation>
 <translation id="2704606927547763573">Copiata</translation>
 <translation id="2707726405694321444">Aggiorna la pagina</translation>
@@ -493,10 +495,10 @@ Tocca e tieni premuta una parola per eseguire una ricerca. Per perfezionare la r
 <translation id="363596933471559332">Accedi automaticamente ai siti web utilizzando credenziali memorizzate. Quando la funzione non è attiva, ti viene chiesta la verifica prima di ogni accesso ai siti web.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3677911431265050325">Richiedi sito per dispositivi mobili</translation>
-<translation id="3685860403008476208">Tutte le persone che usano questo dispositivo possono vedere i file che scarichi in modalità di navigazione in incognito</translation>
 <translation id="3687645719033307815">È visualizzata un'anteprima di questa pagina</translation>
 <translation id="3690369331356918524">Ricevi un avviso se le password sono esposte a violazione dei dati</translation>
 <translation id="3692944402865947621">Download di <ph name="FILE_NAME" /> non riuscito perché non è possibile trovare il percorso di archiviazione.</translation>
+<translation id="3697705478071004188">Ordina per sito</translation>
 <translation id="3699022356773522638">Vuoi scaricare il file?</translation>
 <translation id="371230970611282515">Prevede e ti avvisa quando stanno per verificarsi eventi pericolosi.</translation>
 <translation id="3714981814255182093">Apri la barra Trova</translation>
@@ -523,6 +525,7 @@ Tocca e tieni premuta una parola per eseguire una ricerca. Per perfezionare la r
 <translation id="3845098929839618392">Apri in scheda incognito</translation>
 <translation id="3856096718352044181">Verifica che questo fornitore sia valido e riprova più tardi</translation>
 <translation id="3858860766373142691">Nome</translation>
+<translation id="3859206958100234503">Attiva la sincronizzazione per recuperare password, preferiti e altri contenuti salvati su tutti i tuoi dispositivi</translation>
 <translation id="3861633093716975811">Video più visti</translation>
 <translation id="3892148308691398805">Copia testo</translation>
 <translation id="3894427358181296146">Aggiungi cartella</translation>
@@ -697,6 +700,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="4842515939542199281">Tocca il microfono per eseguire ricerche con i comandi vocali</translation>
 <translation id="4844633725025837809">Per maggiore sicurezza, cripta le password sul dispositivo prima che vengano salvate in Gestore delle password di Google</translation>
 <translation id="4850886885716139402">Visualizza</translation>
+<translation id="4852014461738377247">Accesso in corso…</translation>
 <translation id="4860895144060829044">Chiama</translation>
 <translation id="4864369630010738180">Accesso in corso...</translation>
 <translation id="4866368707455379617">Impossibile installare <ph name="MODULE" /> per Chrome</translation>
@@ -775,6 +779,7 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="5246093389635966745">Modifica scorciatoia per la barra degli strumenti</translation>
 <translation id="526421993248218238">Impossibile caricare la pagina</translation>
 <translation id="5271967389191913893">Non è possibile aprire i contenuti da scaricare sul dispositivo.</translation>
+<translation id="5274286919938458946">Collegata alla carta <ph name="CARD_DETAIL" /></translation>
 <translation id="5292796745632149097">Invia a</translation>
 <translation id="5300426565656326054">Personalizzazione degli annunci basata sul browser</translation>
 <translation id="5304593522240415983">Questo campo non può essere vuoto</translation>
@@ -1150,6 +1155,7 @@ I token attendibili migliorano la privacy sul Web e non possono essere usati per
 <translation id="7304873321153398381">Offline. Chrome non può controllare le tue password.</translation>
 <translation id="7313188324932846546">Tocca per configurare la sincronizzazione</translation>
 <translation id="7332075081379534664">Accesso eseguito</translation>
+<translation id="7333232495927792353">Attiva la sincronizzazione per ricevere i contenuti più pertinenti di Google</translation>
 <translation id="7339898014177206373">Nuova finestra</translation>
 <translation id="7340958967809483333">Opzioni per Discover</translation>
 <translation id="7352339641508007922">Trascina per acquisire uno screenshot lungo</translation>
@@ -1305,6 +1311,7 @@ I token attendibili migliorano la privacy sul Web e non possono essere usati per
 <translation id="8103578431304235997">Scheda di navigazione in incognito</translation>
 <translation id="8105613260829665809">Se continui, accetti i <ph name="BEGIN_TOS_LINK" />Termini di servizio<ph name="END_TOS_LINK" />.\nPer contribuire a migliorare l'app, Chrome invia a Google dati sull'utilizzo e sugli arresti anomali. <ph name="BEGIN_UMA_LINK" />Gestisci<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
+<translation id="8107530384992929318">Chiudi opzioni di ordinamento</translation>
 <translation id="8109613176066109935">Attiva la sincronizzazione per trovare i tuoi preferiti su tutti i dispositivi</translation>
 <translation id="8110024788458304985">Contribuisci a migliorare le funzionalità e le prestazioni di Chrome</translation>
 <translation id="8110087112193408731">Vuoi mostrare la tua attività di Chrome in Benessere digitale?</translation>
@@ -1378,6 +1385,7 @@ I token attendibili migliorano la privacy sul Web e non possono essere usati per
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Apri la pagina Cronologia</translation>
 <translation id="8493948351860045254">Libera spazio</translation>
+<translation id="8497242791509864205">Apri opzioni di ordinamento</translation>
 <translation id="8497480609928300907">Spiegazione della Guida alla privacy</translation>
 <translation id="8497726226069778601">Qui non c'è ancora niente</translation>
 <translation id="8503559462189395349">Password Chrome</translation>
@@ -1530,6 +1538,7 @@ I token attendibili migliorano la privacy sul Web e non possono essere usati per
 <translation id="96681097142096641">Vuoi visualizzare la pagina semplificata?</translation>
 <translation id="968900484120156207">Le pagine visitate saranno mostrate qui</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> min rimanenti</translation>
+<translation id="978443947993957527">Vedi i contenuti per te</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Chiudi tutte le schede</translation>
 <translation id="987264212798334818">Generali</translation>

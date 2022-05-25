@@ -56,6 +56,7 @@
 <translation id="124678866338384709">Loka núverandi flipa</translation>
 <translation id="1246905108078336582">Fjarlægja tillögu af klippiborði?</translation>
 <translation id="1258753120186372309">Google dúlla: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">Leslisti</translation>
 <translation id="1266864766717917324">Ekki tókst að deila <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Ýttu til að stækka</translation>
 <translation id="1285310382777185058">Skipta um tungumál</translation>
@@ -493,10 +494,10 @@ Haltu fingri á hvaða orði sem er til að leita að því. Veldu fleiri eða f
 <translation id="363596933471559332">Skrá þig sjálfkrafa inn á vefsvæði með vistuðum skilríkjum. Þegar slökkt er á þessum eiginleika verðurðu beðin(n) um staðfestingu í hvert sinn sem þú skráir þig inn á vefsvæði.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3677911431265050325">Biðja um vefsvæði fyrir farsíma</translation>
-<translation id="3685860403008476208">Allir sem nota þetta tæki geta séð skrár sem þú hleður niður í huliðsstillingu</translation>
 <translation id="3687645719033307815">Þú ert að sjá forskoðun þessarar síðu</translation>
 <translation id="3690369331356918524">Lætur þig vita ef aðgangsorð eru afhjúpuð vegna öryggisbrots</translation>
 <translation id="3692944402865947621">Ekki tókst að sækja <ph name="FILE_NAME" /> því að ekki næst í geymslustaðinn.</translation>
+<translation id="3697705478071004188">Raða eftir vefsvæði</translation>
 <translation id="3699022356773522638">Sækja skrá?</translation>
 <translation id="371230970611282515">Spáir fyrir um og varar þig við hættulegum viðburðum áður en þeir gerast.</translation>
 <translation id="3714981814255182093">Opna leitarstikuna</translation>
@@ -523,6 +524,7 @@ Haltu fingri á hvaða orði sem er til að leita að því. Veldu fleiri eða f
 <translation id="3845098929839618392">Opna á huliðsflipa</translation>
 <translation id="3856096718352044181">Gakktu úr skugga um að þetta sé staðfest veita eða reyndu aftur síðar</translation>
 <translation id="3858860766373142691">Heiti</translation>
+<translation id="3859206958100234503">Samstilltu til að fá aðgangsorðin þín, bókamerkin og fleira í öllum tækjunum þínum</translation>
 <translation id="3861633093716975811">Vinsæl myndskeið</translation>
 <translation id="3892148308691398805">Afrita texta</translation>
 <translation id="3894427358181296146">Bæta möppu við</translation>
@@ -580,6 +582,7 @@ Haltu fingri á hvaða orði sem er til að leita að því. Veldu fleiri eða f
 <translation id="4209895695669353772">Kveiktu á samstillingu til að fá sérsniðið efni sem Google stingur upp á</translation>
 <translation id="4214315110991671325">Chrome kann að nota fótspor við forhleðslu ef þú leyfir fótspor.</translation>
 <translation id="4225895483398857530">Flýtileið á tækjastiku</translation>
+<translation id="4227318652298512614">Fylgdu öllum vefsvæðum sem þú vilt</translation>
 <translation id="4242533952199664413">Opna stillingar</translation>
 <translation id="4248098802131000011">Tryggðu öryggi aðgangsorðanna gagnvart öryggisbrotum og öðrum öryggisvandamálum</translation>
 <translation id="4249955472157341256">Raða eftir nýjasta</translation>
@@ -696,6 +699,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="4842515939542199281">Ýttu á hljóðnemann til að leita með röddinni</translation>
 <translation id="4844633725025837809">Dulkóðaðu aðgangsorðin þín í tækinu áður en þau eru vistuð í aðgangsorðastjórnun Google til að auka öryggið</translation>
 <translation id="4850886885716139402">Yfirlit</translation>
+<translation id="4852014461738377247">Skráir inn\u2026</translation>
 <translation id="4860895144060829044">Hringja</translation>
 <translation id="4864369630010738180">Skráir inn...</translation>
 <translation id="4866368707455379617">Ekki tókst að setja upp <ph name="MODULE" /> fyrir Chrome</translation>
@@ -1149,6 +1153,7 @@ Traustir lyklar bæta persónuvernd á netinu og ekki er hægt að nota þá til
 <translation id="7304873321153398381">Án nettengingar. Chrome getur ekki athugað aðgangsorðin þín.</translation>
 <translation id="7313188324932846546">Ýttu til að setja upp samstillingu</translation>
 <translation id="7332075081379534664">Innskráning tókst</translation>
+<translation id="7333232495927792353">Samstilltu til að fá meira viðeigandi efni frá Google</translation>
 <translation id="7339898014177206373">Nýr gluggi</translation>
 <translation id="7340958967809483333">Valkostir fyrir Tillögur</translation>
 <translation id="7352339641508007922">Dragðu til að taka langa skjámynd</translation>
@@ -1304,6 +1309,7 @@ Traustir lyklar bæta persónuvernd á netinu og ekki er hægt að nota þá til
 <translation id="8103578431304235997">Huliðsflipi</translation>
 <translation id="8105613260829665809">Með því að halda áfram samþykkirðu <ph name="BEGIN_TOS_LINK" />þjónustuskilmálana<ph name="END_TOS_LINK" />.\nChrome sendir gögn um notkun og hrun til Google til að bæta forritið. <ph name="BEGIN_UMA_LINK" />Stjórna<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
+<translation id="8107530384992929318">Loka röðunarvalkostum</translation>
 <translation id="8109613176066109935">Kveiktu á samstillingu til að fá aðgang að bókamerkjunum þínum í öllum tækjum</translation>
 <translation id="8110024788458304985">Hjálpa til við að bæta eiginleika og afköst Chrome</translation>
 <translation id="8110087112193408731">Viltu sjá það sem þú gerir í Chrome í stafrænni vellíðan?</translation>
@@ -1377,6 +1383,7 @@ Traustir lyklar bæta persónuvernd á netinu og ekki er hægt að nota þá til
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Opna ferilsíðuna</translation>
 <translation id="8493948351860045254">Losa um pláss</translation>
+<translation id="8497242791509864205">Opna röðunarvalkosti</translation>
 <translation id="8497480609928300907">Útskýring á leiðbeiningum um persónuvernd</translation>
 <translation id="8497726226069778601">Ekkert hér… enn sem komið er</translation>
 <translation id="8503559462189395349">Aðgangsorð í Chrome</translation>
@@ -1529,6 +1536,7 @@ Traustir lyklar bæta persónuvernd á netinu og ekki er hægt að nota þá til
 <translation id="96681097142096641">Skoða einfaldaða síðu?</translation>
 <translation id="968900484120156207">Síður sem þú heimsækir birtast hér</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> mín. eftir</translation>
+<translation id="978443947993957527">Sjáðu efni fyrir þig</translation>
 <translation id="981121421437150478">Ónettengt</translation>
 <translation id="983192555821071799">Loka öllum flipum</translation>
 <translation id="987264212798334818">Almennt</translation>

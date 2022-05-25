@@ -121,6 +121,7 @@
 <translation id="1942765061641586207">Rezoluția imaginii</translation>
 <translation id="1972984168337863910">Extinde panourile cu feedback privind fișierele</translation>
 <translation id="1995337122023280937">Accesează locația fișierului</translation>
+<translation id="1996806196681857869">Arhivă comprimată Z</translation>
 <translation id="2001796770603320721">Gestionează în Drive</translation>
 <translation id="2009067268969781306">Formatarea unității va șterge toate datele stocate pe unitate. Această acțiune nu poate fi anulată.</translation>
 <translation id="2025955442973426285">Tigrinya</translation>
@@ -589,6 +590,7 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> elemente</translation>
 <translation id="5957366693331451795">Chromeboxurile</translation>
 <translation id="5982621672636444458">Opțiuni de sortare</translation>
+<translation id="5985041959109124139">Arhivă .tar comprimată Z</translation>
 <translation id="6007237601604674381">Mutarea nu a reușit. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Rețeaua ethernet</translation>
 <translation id="60357267506638014">Cehă QWERTY</translation>
@@ -619,6 +621,7 @@
 <translation id="6220423280121890987">Punjabi</translation>
 <translation id="6224240818060029162">Daneză</translation>
 <translation id="6224253798271602650">Formatează <ph name="DRIVE_NAME" /></translation>
+<translation id="6224665423283788195">Arhivă comprimată Zstandard</translation>
 <translation id="6227235786875481728">Acest fișier nu a putut fi redat.</translation>
 <translation id="6241349547798190358">Neerlandeză (Belgia)</translation>
 <translation id="6267547857941397424">Rețeaua <ph name="NETWORK_INDEX" /> din <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" /> %, bateria telefonului: <ph name="BATTERY_STATUS" /> %, conectează-te</translation>
@@ -646,6 +649,7 @@
 <translation id="6509122719576673235">Norvegiană</translation>
 <translation id="6528513914570774834">Permite altor utilizatori ai dispozitivului să folosească această rețea</translation>
 <translation id="653019979737152879">Se sincronizează <ph name="FILE_NAME" />...</translation>
+<translation id="6530595303336443929">Arhivă .tar comprimată Zstandard</translation>
 <translation id="6549689063733911810">Recente</translation>
 <translation id="6558280019477628686">A apărut o eroare. Este posibil ca unele elemente să nu fi fost șterse.</translation>
 <translation id="656398493051028875">Se șterge „<ph name="FILENAME" />”...</translation>

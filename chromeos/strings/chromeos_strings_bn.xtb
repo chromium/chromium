@@ -78,6 +78,7 @@
 <translation id="1578784163189013834">স্ক্রিন সেভারের ব্যাকগ্রাউন্ড বেছে নিন</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> পর্যন্ত ডেটার ব্যবহার</translation>
 <translation id="1621067168122174824">চার্জ টেস্ট করুন</translation>
+<translation id="1631385268983122904">এখনই ডিভাইসের সাথে ব্যাটারি ব্যবহার করবেন না</translation>
 <translation id="1639239467298939599">লোড হচ্ছে</translation>
 <translation id="1641857168437328880">ডকুমেন্ট ফিডার (এক পিঠের)</translation>
 <translation id="1643449475550628585">ওয়ালপেপারের ছবি প্রতিদিন পরিবর্তন করুন</translation>
@@ -85,6 +86,7 @@
 <translation id="1645954272419197032">ডিভাইসের তথ্য নিশ্চিত করুন</translation>
 <translation id="1662989795263954667">বন্ধ হয়ে গেছে - প্রিন্টারে কালি ফুরিয়ে গেছে</translation>
 <translation id="1668469839109562275">বিল্ট-ইন ভিপিএন</translation>
+<translation id="1676557873873341166">ভিডিও ক্যাপচার করা হচ্ছে</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS সমাধানকারী স্ক্রিন পিন করা</translation>
 <translation id="1715359911173058521">স্ক্যানারের সাথে কানেক্ট করতে সমস্যা হচ্ছে। নেটওয়ার্ক বা ইউএসবি কানেকশন চেক করে আবার চেষ্টা করুন।</translation>
@@ -159,6 +161,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2336381494582898602">পাওয়ারওয়াশ</translation>
 <translation id="2338501278241028356">আশেপাশের ডিভাইস খুঁজে পেতে ব্লুটুথ চালু করুন</translation>
+<translation id="2340422556570134524">অপ্রত্যাশিতভাবে, 'রাইট প্রোটেক্ট' চালু হয়ে গেছে। আবার চেষ্টা করার আগে, 'রাইট প্রোটেক্ট' ম্যানুয়ালি বন্ধ করুন।</translation>
 <translation id="2346474577291266260">গড় (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">চালিয়ে যান</translation>
 <translation id="2360257214555822463"><ph name="LINK_BEGIN" />উপযুক্ত নয় এমন কম্পোনেন্ট<ph name="LINK_END" /> পাওয়া গেছে। এটি ইনস্টল করা হয়েছে তা কনফার্ম করতে চাইলে, এখনই করুন।</translation>
@@ -473,6 +476,7 @@
 <translation id="5372659122375744710">ওয়াই-ফাই নেটওয়ার্ক সুরক্ষিত নয়</translation>
 <translation id="5376354385557966694">অটোমেটিক 'লাইট মোড'</translation>
 <translation id="537872351913703572">ডিভাইসটি অন্য ব্যবহারকারী বা প্রতিষ্ঠানের কাছে থাকবে</translation>
+<translation id="5389159777326897627">ওয়ালপেপার ও স্টাইল</translation>
 <translation id="5389224261615877010">রামধনু</translation>
 <translation id="5395600419410242651">সব ডেটা মুছুন</translation>
 <translation id="5400907029458559844">ডিভাইস কানেক্ট করা হচ্ছে।</translation>
@@ -642,6 +646,7 @@
 <translation id="6961170852793647506">শুরু করার জন্য, স্ক্যানারে ডকুমেন্ট রাখুন</translation>
 <translation id="6965382102122355670">ঠিক আছে</translation>
 <translation id="6977381486153291903">ফার্মওয়ের পুনর্বিবেচনাগুলি</translation>
+<translation id="6995564396478647735">'রাইট প্রোটেক্ট' চালু আছে কিনা তা ভালভাবে দেখে নিন</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> এই ডিভাইস ম্যানেজ করে এবং ব্যবহারকারী দেখেছেন এমন ওয়েবপেজ, পাসওয়ার্ড ও ইমেল আইডি সহ তার সব অ্যাক্টিভিটি সংক্রান্ত ডেটা অ্যাক্সেস করে।</translation>
 <translation id="7040230719604914234">অপারেটর</translation>
 <translation id="7041549558901442110">ডিভাইস কানেক্ট করা নেই।</translation>
@@ -652,6 +657,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">পাওয়া যায়নি - অনুমোদন পাওয়া যায়নি</translation>
 <translation id="7103252855940681301"><ph name="COUNT" />টি নামযুক্ত<ph name="NAME" />-এর মধ্যে <ph name="INDEX" /> নম্বর ডিভাইস।</translation>
+<translation id="7126228745139711113">'রাইট প্রোটেক্ট' বন্ধ করা আছে</translation>
 <translation id="7134436342991564651">{0,plural, =1{নেম-সার্ভার}one{নেম সার্ভার}other{নেম সার্ভার}}</translation>
 <translation id="7143207342074048698">সংযুক্ত হচ্ছে</translation>
 <translation id="7144878232160441200">আবার চেষ্টা করুন</translation>
@@ -743,6 +749,7 @@
 <translation id="80398733265834479">'অটো কালার' মোড চালু করুন</translation>
 <translation id="8041089156583427627">প্রতিক্রিয়া পাঠান</translation>
 <translation id="8045012663542226664">'মাইক্রোফোন মিউট কী'</translation>
+<translation id="8063022551652308521">'রাইট প্রোটেক্ট' এখনও বন্ধ করা আছে। এগিয়ে যেতে 'রাইট প্রোটেক্ট' চালু করুন।</translation>
 <translation id="8075838845814659848">বাকি থাকা চার্জ</translation>
 <translation id="8082366717211101304">অ্যানড্রয়েড অ্যাপ থেকে ডিএনএস সংক্রান্ত সমস্যার সমাধান করা যাচ্ছে না</translation>
 <translation id="8083281199617904460">এই রিপেয়ার প্রসেস একজন প্রশিক্ষিত প্রযুক্তিবিদ দ্বারা সম্পন্ন করা প্রয়োজন। ত্রুটিপূর্ণ কম্পোনেন্টগুলি সরিয়ে দেওয়ার পর শুরু করুন।</translation>
@@ -813,6 +820,7 @@
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> এই ফিচার ম্যানেজ করতে, 'বাঁদিক' বা 'ডানদিকের তীরচিহ্ন' বোতাম ব্যবহার করুন।</translation>
 <translation id="8712637175834984815">বুঝেছি</translation>
 <translation id="871560550817059752">প্রিন্ট করা যায়নি - প্রিন্টারে কালি নেই</translation>
+<translation id="8717030727630712160">রিপেয়ার প্রসেস আবার চালু করা হচ্ছে…</translation>
 <translation id="8723108084122415655">নেটওয়ার্ক লেটেন্সির যে ঊর্ধসীমা রয়েছে, তার চেয়ে ডিফল্ট অবস্থায় নেই এমন নেটওয়ার্ক গেটওয়ের লেটেন্সি বেশি</translation>
 <translation id="8725066075913043281">আবার চেষ্টা করুন</translation>
 <translation id="8726019395068607495">বন্ধ হয়ে গেছে - প্রিন্টার ডোর খোলা আছে</translation>
@@ -834,6 +842,7 @@
 <translation id="8868741746785112895">গ্লোবালি ইউনিক আইডেন্টিফায়ার (GUID)</translation>
 <translation id="8876270629542503161">ডিভাইস একটি ট্যাবলেট।</translation>
 <translation id="8881098542468797602">টেস্ট সফল হয়েছে</translation>
+<translation id="8897267175591692539">এখন আপনি ডিভাইসের সাথে ব্যাটারি ব্যবহার করতে পারেন</translation>
 <translation id="8898840733695078011">সংকেতের ক্ষমতা</translation>
 <translation id="8910721771319628100">নেটওয়ার্ক লেটেন্সির যে ঊর্ধসীমা রয়েছে, তার চেয়ে ডিফল্ট নেটওয়ার্ক গেটওয়ের লেটেন্সি বেশি</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />-এর <ph name="DEVICE_TYPE" /></translation>

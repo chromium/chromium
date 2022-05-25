@@ -24,6 +24,7 @@
 <translation id="109942774857561566">મને કંટાળો આવે છે</translation>
 <translation id="1104084341931202936">ઍક્સેસિબિલિટી સેટિંગ બતાવો</translation>
 <translation id="1104621072296271835">તમારા ઉપકરણો એક સાથે હોય ત્યારે વધુ કાર્યક્ષમ હોય છે</translation>
+<translation id="1111021433905331574">તમે સેટિંગ &gt; <ph name="APP_TITLE" />માં જઈને તમારા કીબોર્ડની બૅકલાઇટનો રંગ બદલી શકો છો</translation>
 <translation id="112308213915226829">સ્વતઃછુપાવો શેલ્ફ</translation>
 <translation id="1142002900084379065">તાજેતરના ફોટા</translation>
 <translation id="1148499908455722006"><ph name="USER_NAME" /> માટે માહિતી સંવાદ ખોલો</translation>
@@ -95,7 +96,7 @@
 <translation id="1420408895951708260">રાત્રિ પ્રકાશને ટૉગલ કરો. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">તમારા <ph name="DEVICE_TYPE" /> પર તમારા ફોનના તાજેતરના ફોટા અને મીડિયા જુઓ</translation>
 <translation id="1426410128494586442">હા</translation>
-<translation id="1438357537418863713">હવે ઍપ સ્ટ્રીમિંગનું સેટઅપ કરવામાં આવ્યું છે. એકવાર તમે ઍપ સ્ટ્રીમિંગનો ઉપયોગ કરવાનું શરૂ કરશો, એટલે તાજેતરમાં લૉન્ચ કરેલી ઍપ અહીં દેખાશે.</translation>
+<translation id="1447641497144572814">સ્ક્રીન સેવર શરૂ થાય છે</translation>
 <translation id="1455242230282523554">ભાષા સેટિંગ બતાવો</translation>
 <translation id="1460620680449458626">વૉલ્યૂમ મ્યૂટ કરેલું છે.</translation>
 <translation id="1467432559032391204">ડાબું</translation>
@@ -699,7 +700,7 @@
 <translation id="5071064518267176975">ઍપ માઇક્રોફોનનો ઉપયોગ કરવા માગે છે</translation>
 <translation id="5078796286268621944">ખોટો PIN</translation>
 <translation id="5083553833479578423">Assistantની વધુ સુવિધાઓને અનલૉક કરો.</translation>
-<translation id="5106223312672646208">મનગમતું બનાવો</translation>
+<translation id="509790653408515442">જ્યારે તમે તમારા ફોનની ઍપ સ્ટ્રીમ કરશો, ત્યારે તે અહીં દેખાશે</translation>
 <translation id="5107522548814527560">વેબ</translation>
 <translation id="5117590920725113268">આગલો મહિનો દર્શાવો</translation>
 <translation id="5136175204352732067">અલગ કીબોર્ડ કનેક્ટ કર્યું</translation>
@@ -722,6 +723,7 @@
 <translation id="523505283826916779">ઍક્સેસિબિલિટી સેટિંગ</translation>
 <translation id="5245201184978705914">ટ્રાન્સક્રિપ્ટ જનરેટ કરી શકાતી નથી</translation>
 <translation id="5253783950165989294"><ph name="DEVICE_NAME" /> નામના <ph name="BATTERY_PERCENTAGE" />% બૅટરી ધરાવતા ડિવાઇસ સાથે કનેક્ટેડ</translation>
+<translation id="5258528442992323769">કોઈ ડેસ્ક સાચવેલું નથી</translation>
 <translation id="5260676007519551770">ડેસ્ક 4</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> તમને ધ્યાન આપવાની વિનંતી કરે છે.</translation>
 <translation id="5283198616748585639">1 મિનિટ ઉમેરો</translation>
@@ -1261,6 +1263,7 @@
 <translation id="851458219935658693">વર્તમાન ડેસ્કમાંની બધી વિન્ડો બતાવો, રેડિયો બટન પસંદ કર્યું</translation>
 <translation id="8517041960877371778">તમારું <ph name="DEVICE_TYPE" /> ચાલુ હોય ત્યારે તે ચાર્જ ન થાય તેવું બની શકે.</translation>
 <translation id="8535393432370007982">રંગ મુજબ સૉર્ટ કરવાના ક્રમનો છેલ્લો ફેરફાર રદ કરો</translation>
+<translation id="8542053257095774575">કોઈ ડેસ્ક કે નમૂનો સાચવેલો નથી</translation>
 <translation id="8546059259582788728">સૉર્ટ કરવાનો છેલ્લો ફેરફાર રદ કરવાનું સફળ થયું</translation>
 <translation id="8551588720239073785">તારીખ અને સમયનાં સેટિંગ</translation>
 <translation id="8553395910833293175">બધા ડેસ્ક માટે પહેલેથી જ સોંપણી કરવામાં આવી છે.</translation>

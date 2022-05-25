@@ -3573,6 +3573,7 @@ Als je dit beleid niet toepast of niet instelt, kunnen sites niet tegelijkertijd
 <translation id="4960597185231686653">Een Booleaanse markering die aangeeft of het schermtoetsenbord de optie voor spraakinvoer heeft.</translation>
 <translation id="4970046075219007744">Web-apps toestaan om de gebruiker toegang te geven tot bestandstypen via de File Handling API</translation>
 <translation id="4970855112942626932">Inloggen bij browser uitzetten</translation>
+<translation id="4974091268178043378">Chrome OS-kleurmodus</translation>
 <translation id="4976928720873547342">Als je het beleid instelt, worden alle opgegeven gegevenstypen uitgesloten van synchronisatie voor zowel <ph name="CHROME_SYNC_NAME" /> als synchronisatie van roamingprofielen. Dit kan handig zijn om het roamingprofiel te verkleinen of het type gegevens te beperken dat wordt geüpload naar de <ph name="CHROME_SYNC_NAME" />-servers.
 
       De huidige gegevenstypen voor dit beleid zijn: 'bookmarks', 'readingList', 'preferences', 'passwords', 'autofill', 'themes', 'typedUrls', 'extensions', 'apps', 'tabs', 'wifiConfigurations'. Die namen zijn hoofdlettergevoelig.</translation>
@@ -4323,6 +4324,7 @@ Dit gedrag wordt niet geactiveerd als Safe Browsing is uitgezet (door het beleid
 
 Gebruikers kunnen deze instelling niet wijzigen.</translation>
 <translation id="5848438019586925019">Het algoritme voor het genereren van sleutelparen.</translation>
+<translation id="5851248808417680865">Donker thema gebruiken</translation>
 <translation id="585270638818921943">Voorkomen dat de gebruiker Android-apps van niet-vertrouwde bronnen gebruikt</translation>
 <translation id="5853547031212075792">Gebruikers toestaan de modus 'Alleen HTTPS' aan te zetten</translation>
 <translation id="5859344336338527083">Als je dit beleid instelt, kun je opgeven welke URL's extensies, apps en thema's mogen installeren. Vóór <ph name="PRODUCT_NAME" /> 21 konden gebruikers op een link naar een *.crx-bestand klikken en bood <ph name="PRODUCT_NAME" /> aan het bestand te installeren na een aantal waarschuwingen. Sindsdien moeten bestanden worden gedownload en naar de instellingenpagina van <ph name="PRODUCT_NAME" /> worden gesleept. Met deze instelling kunnen specifieke URL's het oude, eenvoudigere installatieproces gebruiken.
@@ -4489,6 +4491,7 @@ Gebruikers kunnen deze instelling niet wijzigen.</translation>
 
       Dit beleid geldt alleen als de machine is ingeschreven met <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> voor <ph name="PRODUCT_NAME" />.
       Dit beleid geldt altijd voor <ph name="PRODUCT_OS_NAME" />.</translation>
+<translation id="6019162469732742754">Automatische modus gebruiken</translation>
 <translation id="6019606564278029236">Externe gebruikers toestaan om vensters met verhoogde bevoegdheid te gebruiken tijdens een sessie voor support op afstand</translation>
 <translation id="6022948604095165524">Actie bij starten</translation>
 <translation id="602318745029752898">Stemmen voor verbeterde tekst-naar-spraak via netwerk toestaan in Selecteer om uitgesproken te worden.</translation>
@@ -5468,6 +5471,7 @@ Als je dit beleid instelt op een lege lijst of niet instelt, zijn er geen URL's 
 <translation id="7019805045859631636">Snel</translation>
 <translation id="7025332601572838001">Het gedrag voor de servicevoorwaarden configureren voor de eerste uitvoering van CCT</translation>
 <translation id="7026351325994257733">Toestaan dat wifi-netwerkconfiguraties worden gesynchroniseerd tussen <ph name="PRODUCT_OS_NAME" />-apparaten en een verbonden Android-telefoon.</translation>
+<translation id="7027057540229843762">Licht thema gebruiken</translation>
 <translation id="7027785306666625591">Energiebeheer in <ph name="PRODUCT_OS_NAME" /> configureren.
 
       Met dit beleid kun je configureren hoe <ph name="PRODUCT_OS_NAME" /> zich gedraagt wanneer de gebruiker enige tijd inactief is.</translation>
@@ -7018,6 +7022,9 @@ Dit beleid geldt per frame en is niet alleen gebaseerd op de oorspronkelijke URL
 
       'http://acme.com/ABC' komt alleen overeen in IESiteListMode.</translation>
 <translation id="8736538322216687231">Minimale 'Beperkte modus' op YouTube afdwingen</translation>
+<translation id="8744844164152340112">Bepaalt het thema dat wordt gebruikt om de UI weer te geven tijdens OOBE en in sessies (donker/licht/automatisch).
+      De automatische modus schakelt automatisch tussen het donkere en lichte thema bij zonsopgang en -ondergang.
+      Dit beleid moet worden aanbevolen, om gebruikers de mogelijkheid te geven het thema te wijzigen in de systeeminstellingen.</translation>
 <translation id="8745669971728319820">Met dit beleid wordt bepaald of informatie over extensies en plug-ins moet worden gerapporteerd.
 
       Als het beleid <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> niet is ingesteld of niet is toegepast, wordt dit beleid genegeerd.

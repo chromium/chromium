@@ -56,6 +56,7 @@
 <translation id="124678866338384709">Aktuellen Tab schließen</translation>
 <translation id="1246905108078336582">Vorschlag aus Zwischenablage entfernen?</translation>
 <translation id="1258753120186372309">Google-Doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">Leseliste</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> konnte nicht geteilt werden</translation>
 <translation id="1283039547216852943">Zum Maximieren tippen</translation>
 <translation id="1285310382777185058">Sprache ändern</translation>
@@ -493,7 +494,6 @@ Berühre und halte ein Wort, um eine Suche damit zu starten. Du kannst deine Suc
 <translation id="363596933471559332">Du wirst mit gespeicherten Anmeldedaten automatisch auf Websites angemeldet. Wenn diese Funktion nicht aktiviert ist, wirst du jedes Mal aufgefordert, dich manuell auf einer Website anzumelden.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3677911431265050325">Mobile Version anfordern</translation>
-<translation id="3685860403008476208">Alle Personen, die dieses Gerät nutzen, können Dateien sehen, die du im Inkognitomodus herunterlädst</translation>
 <translation id="3687645719033307815">Du siehst eine Vorschau dieser Seite</translation>
 <translation id="3690369331356918524">Warnt dich, wenn Passwörter durch eine Datenpanne preisgegeben worden sind</translation>
 <translation id="3692944402865947621">Download von <ph name="FILE_NAME" /> fehlgeschlagen, weil der Speicherort nicht erreichbar ist.</translation>
@@ -523,6 +523,7 @@ Berühre und halte ein Wort, um eine Suche damit zu starten. Du kannst deine Suc
 <translation id="3845098929839618392">In Inkognitotab öffnen</translation>
 <translation id="3856096718352044181">Vergewissere dich, dass dies ein gültiger Provider ist, oder versuche es später noch einmal</translation>
 <translation id="3858860766373142691">Name</translation>
+<translation id="3859206958100234503">Mit der Synchronisierung kannst du Passwörter, Lesezeichen und weitere Elemente auf allen deinen Geräten abrufen</translation>
 <translation id="3861633093716975811">Beliebte Videos</translation>
 <translation id="3892148308691398805">Text kopieren</translation>
 <translation id="3894427358181296146">Ordner hinzufügen</translation>
@@ -580,6 +581,7 @@ Berühre und halte ein Wort, um eine Suche damit zu starten. Du kannst deine Suc
 <translation id="4209895695669353772">Aktiviere die Synchronisierung, um personalisierte, von Google vorgeschlagene Inhalte zu erhalten</translation>
 <translation id="4214315110991671325">Wenn du Cookies erlaubst, kann Chrome diese beim Vorabladen verwenden.</translation>
 <translation id="4225895483398857530">Tastenkürzel in Symbolleiste</translation>
+<translation id="4227318652298512614">Folge Websites deiner Wahl</translation>
 <translation id="4242533952199664413">Einstellungen öffnen</translation>
 <translation id="4248098802131000011">Schütze deine Passwörter vor Datenpannen und anderen Sicherheitsproblemen</translation>
 <translation id="4249955472157341256">Neueste zuerst</translation>
@@ -696,6 +698,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />setze die S
 <translation id="4842515939542199281">Tippe auf das Mikrofon, um die Sprachsuche zu verwenden</translation>
 <translation id="4844633725025837809">Für zusätzliche Sicherheit kannst du Passwörter auf deinem Gerät verschlüsseln lassen, bevor sie im Passwortmanager von Google gespeichert werden</translation>
 <translation id="4850886885716139402">Anzeigen</translation>
+<translation id="4852014461738377247">Anmeldung läuft…</translation>
 <translation id="4860895144060829044">Anrufen</translation>
 <translation id="4864369630010738180">Anmeldung erfolgt...</translation>
 <translation id="4866368707455379617"><ph name="MODULE" /> kann nicht für Chrome installiert werden</translation>
@@ -1149,6 +1152,7 @@ Trust Tokens verbessern den Datenschutz im Web und können nicht dazu verwendet 
 <translation id="7304873321153398381">Offline. Chrome kann deine Passwörter nicht prüfen.</translation>
 <translation id="7313188324932846546">Zum Einrichten der Synchronisierung tippen</translation>
 <translation id="7332075081379534664">Angemeldet</translation>
+<translation id="7333232495927792353">Mit der Synchronisierung erhältst du die relevantesten Inhalte von Google</translation>
 <translation id="7339898014177206373">Neues Fenster</translation>
 <translation id="7340958967809483333">Optionen für Discover</translation>
 <translation id="7352339641508007922">Ziehen, um einen langen Screenshot zu erstellen</translation>
@@ -1529,6 +1533,7 @@ Trust Tokens verbessern den Datenschutz im Web und können nicht dazu verwendet 
 <translation id="96681097142096641">Vereinfachte Seite ansehen?</translation>
 <translation id="968900484120156207">Von dir besuchte Seiten werden hier angezeigt</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> Minuten übrig</translation>
+<translation id="978443947993957527">Für dich ausgewählte Inhalte sehen</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="983192555821071799">Alle Tabs schließen</translation>
 <translation id="987264212798334818">Allgemein</translation>

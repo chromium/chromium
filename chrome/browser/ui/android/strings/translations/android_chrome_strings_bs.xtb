@@ -56,6 +56,7 @@
 <translation id="124678866338384709">Zatvori trenutnu karticu</translation>
 <translation id="1246905108078336582">Ukloniti prijedlog iz međumemorije?</translation>
 <translation id="1258753120186372309">Google crtež: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">Lista za čitanje</translation>
 <translation id="1266864766717917324">Nije moguće podijeliti <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Dodirnite da proširite</translation>
 <translation id="1285310382777185058">Promijenite jezik</translation>
@@ -493,10 +494,10 @@ Dodirnite i zadržite bilo koju riječ da je pretražite. Za fino podešavanje p
 <translation id="363596933471559332">Automatski se prijavite na web lokacije korištenjem pohranjenih akreditiva. Kada je ova funkcija isključena, od vas će se tražiti potvrda prilikom svake prijave na web lokaciju.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3677911431265050325">Zatraži web lokaciju za mobilni uređaj</translation>
-<translation id="3685860403008476208">Svi koji koriste ovaj uređaj mogu vidjeti fajlove koje preuzmete u anonimnom načinu rada</translation>
 <translation id="3687645719033307815">Prikazan vam je pregled ove stranice</translation>
 <translation id="3690369331356918524">Upozorava vas ako su lozinke izložene prilikom narušavanja podataka</translation>
 <translation id="3692944402865947621">Preuzimanje fajla <ph name="FILE_NAME" /> nije uspjelo jer je lokacija arhiviranja nedostupna.</translation>
+<translation id="3697705478071004188">Poredaj po web-lokaciji</translation>
 <translation id="3699022356773522638">Preuzeti fajl?</translation>
 <translation id="371230970611282515">Predviđa opasne događaje i upozorava vas na njih prije nego što nastupe.</translation>
 <translation id="3714981814255182093">Otvori u traci za traženje</translation>
@@ -523,6 +524,7 @@ Dodirnite i zadržite bilo koju riječ da je pretražite. Za fino podešavanje p
 <translation id="3845098929839618392">Otvori u anonimnoj kartici</translation>
 <translation id="3856096718352044181">Potvrdite da je ovo važeći pružalac usluga ili pokušajte ponovo kasnije</translation>
 <translation id="3858860766373142691">Naziv</translation>
+<translation id="3859206958100234503">Sinhronizirajte da preuzmete lozinke, oznake i ostali sadržaj na svim svojim uređajima</translation>
 <translation id="3861633093716975811">Popularni videozapisi</translation>
 <translation id="3892148308691398805">Kopiraj tekst</translation>
 <translation id="3894427358181296146">Dodaj folder</translation>
@@ -580,7 +582,7 @@ Dodirnite i zadržite bilo koju riječ da je pretražite. Za fino podešavanje p
 <translation id="4209895695669353772">Uključite sinhronizaciju da dobijete prilagođeni sadržaj koji predlaže Google</translation>
 <translation id="4214315110991671325">Ako dozvolite kolačiće, Chrome ih može koristiti za predučitavanje.</translation>
 <translation id="4225895483398857530">Prečica za alatnu traku</translation>
-<translation id="4227318652298512614">Pratite sve web-lokacije koje želite</translation>
+<translation id="4227318652298512614">Pratite web lokacije koje želite</translation>
 <translation id="4242533952199664413">Otvori postavke</translation>
 <translation id="4248098802131000011">Zaštite svoje lozinke od narušavanja podataka i ostalih sigurnosnih problema</translation>
 <translation id="4249955472157341256">Poredaj po najnovijem</translation>
@@ -697,6 +699,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="4842515939542199281">Da pretražujete glasom, dodirnite mikrofon</translation>
 <translation id="4844633725025837809">Radi dodatne sigurnosti, šifrirajte lozinke na uređaju prije nego što se sačuvaju u Googleovom Upravitelju lozinki</translation>
 <translation id="4850886885716139402">Prikaz</translation>
+<translation id="4852014461738377247">Prijavljivanje…</translation>
 <translation id="4860895144060829044">Pozovi</translation>
 <translation id="4864369630010738180">Prijavljivanje…</translation>
 <translation id="4866368707455379617">Nije moguće instalirati modul <ph name="MODULE" /> za Chrome</translation>
@@ -1150,6 +1153,7 @@ Tokeni povjerenja poboljšavaju privatnosti na webu i ne mogu se koristi za utvr
 <translation id="7304873321153398381">Van mreže. Chrome ne može provjeriti vaše lozinke.</translation>
 <translation id="7313188324932846546">Dodirnite da postavite sinhronizaciju</translation>
 <translation id="7332075081379534664">Prijava je uspjela</translation>
+<translation id="7333232495927792353">Sinhronizirajte da preuzmete najrelevantniji sadržaj s Googlea</translation>
 <translation id="7339898014177206373">Novi prozor</translation>
 <translation id="7340958967809483333">Opcije za Discover</translation>
 <translation id="7352339641508007922">Prevucite da kreirate dugi snimak ekrana</translation>
@@ -1305,6 +1309,7 @@ Tokeni povjerenja poboljšavaju privatnosti na webu i ne mogu se koristi za utvr
 <translation id="8103578431304235997">Anonimna kartica</translation>
 <translation id="8105613260829665809">Ako nastavite, pristajete na <ph name="BEGIN_TOS_LINK" />Uslove korištenja usluge<ph name="END_TOS_LINK" />.\nRadi poboljšanja aplikacije Chrome šalje Googleu podatke o korištenju i padovima aplikacije. <ph name="BEGIN_UMA_LINK" />Upravljajte<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
+<translation id="8107530384992929318">Zatvori opcije razvrstavanja</translation>
 <translation id="8109613176066109935">Da biste imali svoje oznake na svim svojim uređajima, uključite sinhronizaciju</translation>
 <translation id="8110024788458304985">Pomozite nam da poboljšamo funkcije i performanse Chromea</translation>
 <translation id="8110087112193408731">Prikazati aktivnosti Chromea u Digitalnom blagostanju?</translation>
@@ -1378,6 +1383,7 @@ Tokeni povjerenja poboljšavaju privatnosti na webu i ne mogu se koristi za utvr
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">Otvori stranicu sa historijom</translation>
 <translation id="8493948351860045254">Oslobodi prostor</translation>
+<translation id="8497242791509864205">Otvori opcije razvrstavanja</translation>
 <translation id="8497480609928300907">Objašnjenje vodiča za privatnost</translation>
 <translation id="8497726226069778601">Ovdje nema ničega… još uvijek</translation>
 <translation id="8503559462189395349">Chrome lozinke</translation>
@@ -1530,6 +1536,7 @@ Tokeni povjerenja poboljšavaju privatnosti na webu i ne mogu se koristi za utvr
 <translation id="96681097142096641">Prikazati pojednostavljenu stranicu?</translation>
 <translation id="968900484120156207">Stranice koje posjetite će se pojaviti ovdje</translation>
 <translation id="970715775301869095">Ostalo je još <ph name="MINUTES" /> min</translation>
+<translation id="978443947993957527">Pogledajte sadržaj prilagođen vama</translation>
 <translation id="981121421437150478">Van mreže</translation>
 <translation id="983192555821071799">Zatvori sve kartice</translation>
 <translation id="987264212798334818">Opće</translation>

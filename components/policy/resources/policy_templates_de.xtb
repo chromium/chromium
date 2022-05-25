@@ -5238,6 +5238,15 @@ Ist diese Richtlinie auf „true“ gesetzt, wird WebSQL im Zusammenhang mit Dri
 <translation id="6786666051053129545">Ablauf „Voice Match mit Google Assistant“ aktivieren</translation>
 <translation id="6786747875388722282">Erweiterungen</translation>
 <translation id="6786967369487349613">Roaming-Profilverzeichnis festlegen</translation>
+<translation id="6789319144568227749">Damit wird die Unterstützung für CORS-Anfrageheader ohne Platzhalter konfiguriert.
+
+      Mit der Version 97 von <ph name="PRODUCT_NAME" /> wird die Unterstützung für CORS-Anfrageheader ohne Platzhalter eingeführt. Wenn in Skripts eine ursprungsübergreifende Netzwerkanfrage per fetch() und XMLHttpRequest mit einem per Skript hinzugefügten Autorisierungsheader gestellt wird, muss der Header durch den Header „Access-Control-Allow-Headers“ in der CORS-Preflight-Antwort explizit zugelassen werden. „Explizit“ bedeutet hier, dass sich das Platzhaltersymbol „*“ nicht auf den Autorisierungsheader beziehen darf. Nähere Informationen findest du unter <ph name="CORS_NON_WILDCARD_REQUEST_HEADERS_FEATURE_URL" />.
+
+      Wenn diese Richtlinie nicht festgelegt bzw. auf „Wahr“ gesetzt wird, unterstützt <ph name="PRODUCT_NAME" /> die CORS-Anfrageheader ohne Platzhalter und verhält sich wie oben beschrieben.
+
+      Wird diese Richtlinie auf „Falsch“ gesetzt, darf sich das Platzhaltersymbol „*“ im Header „Access-Control-Allow-Headers“ in der CORS-Preflight-Antwort auf den Autorisierungsheader beziehen.
+
+      Diese Unternehmensrichtlinie ist vorübergehend. In Zukunft wird sie voraussichtlich entfernt.</translation>
 <translation id="6789422336869764846">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, wird über registrierte Geräte der Status des Entwicklermodus gemeldet, wenn das Gerät startet.
 
       Ist sie deaktiviert, melden registrierte Geräte den Status des Entwicklermodus nicht.</translation>

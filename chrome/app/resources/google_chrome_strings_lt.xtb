@@ -82,6 +82,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="2574930892358684005">Naudotojas (<ph name="EXISTING_USER" />) jau yra prisijungęs prie šio „Chrome“ profilio. Kad naršytumėte atskirai, „Chrome“ gali sukurti jums atskirą profilį.</translation>
 <translation id="2580411288591421699">Negalima įdiegti tos pačios „Google Chrome“ versijos, kuri dabar paleista. Uždarykite „Google Chrome“ ir bandykite dar kartą.</translation>
 <translation id="2586406160782125153">Atlikus šį veiksmą bus ištrinti naršymo duomenys iš šio įrenginio. Jei vėliau norėsite atgauti duomenis, prisijunkite prie „Chrome“ kaip <ph name="USER_EMAIL" />.</translation>
+<translation id="2597976513418770460">Gaukite „Chrome“ naršyklės informaciją iš <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="2622559029861875898">„Chrome“ negali tikrinti naujinių. Pabandykite patikrinti interneto ryšį.</translation>
 <translation id="2645435784669275700">„Chrome“ OS</translation>
 <translation id="2652691236519827073">Atidaryti nuorodą naujame „Chrome“ &amp;skirtuke</translation>
@@ -312,6 +313,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="7801699035218095297">„Google Chrome“ bando kopijuoti slaptažodžius. Įveskite „Windows“ slaptažodį, kad tai leistumėte.</translation>
 <translation id="7808348361785373670">Pašalinti iš „Chrome“...</translation>
 <translation id="7825851276765848807">Nepavyko įdiegti dėl nenustatytos klaidos. Atsisiųskite „Google Chrome“ dar kartą.</translation>
+<translation id="7880591377632733558">Sveiki, <ph name="ACCOUNT_FIRST_NAME" />, tai – „Chrome“</translation>
 <translation id="7890208801193284374">Jei bendrinate kompiuterį, šeimos nariai ir draugai gali naršyti atskirai ir nustatyti „Chrome“ pagal savo poreikius.</translation>
 <translation id="7896673875602241923">Kažkas anksčiau prisijungė prie „Chrome“ šiame kompiuteryje kaip <ph name="ACCOUNT_EMAIL_LAST" />. Sukurkite naują „Chrome“ naudotoją, kad apsaugotumėte savo informaciją.</translation>
 <translation id="7917876797003313048">Galite tvarkyti „Google“ paskyras, prie kurių prisijungiate. Jūsų „Google“ paskyros naudojamos naršyklei „Chrome“, „Play“ parduotuvei, „Gmail“ ir kt. Jei norite kam nors pridėti paskyrą, pvz., šeimos grupės nariui, pridėkite naują asmenį prie „<ph name="DEVICE_TYPE" />“ įrenginio. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
@@ -337,6 +339,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="8418845734693287262">„Chrome“ OS nepavyko sinchronizuoti duomenų, nes išsami paskyros prisijungimo informacija pasenusi.</translation>
 <translation id="8421734018304082652">„Chrome“ užblokavo šį failą, nes jis šifruotas. Paprašykite savininko iššifruoti.</translation>
 <translation id="8433638294851456451">Jei norite iš čia į „Android“ telefoną išsiųsti numerį, prisijunkite prie „Chrome“ abiejuose įrenginiuose.</translation>
+<translation id="8451192282033883849">Jūsų paskyrą tvarko <ph name="MANAGER_NAME" />. Jūsų administratorius gali matyti ir redaguoti šį „Chrome“ naršyklės profilį bei jo duomenis, pvz., žymes, istoriją ir slaptažodžius.</translation>
 <translation id="8498858610309223613">Ką tik pritaikytas specialus „Google Chrome“ skirtas saugos naujinys. Dabar paleiskite naršyklę iš naujo ir atkursime visus skirtukus.</translation>
 <translation id="8504220326736535258">„Chrome“ užblokavo šį failą, nes jame yra kenkėjiška programa</translation>
 <translation id="8516431725144212809">„Chrome“ įvertinti jūsų pomėgiai</translation>

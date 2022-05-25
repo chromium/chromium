@@ -121,6 +121,7 @@
 <translation id="1942765061641586207">Պատկերի լուծաչափը</translation>
 <translation id="1972984168337863910">Ծավալել ֆայլերի մասին կարծիք հայտնելու վահանակները</translation>
 <translation id="1995337122023280937">Անցնել ֆայլի տեղադրություն</translation>
+<translation id="1996806196681857869">Z սեղմված արխիվ</translation>
 <translation id="2001796770603320721">Կառավարել Drive-ում</translation>
 <translation id="2009067268969781306">Ֆորմատավորման արդյունքում կրիչի վրա պահված բոլոր տվյալները կջնջվեն: Այս գործողությունը հնարավոր չէ հետարկել:</translation>
 <translation id="2025955442973426285">տիգրինյա</translation>
@@ -588,6 +589,7 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> տարր</translation>
 <translation id="5957366693331451795">Chromebox սարքեր</translation>
 <translation id="5982621672636444458">Տեսակավորման ընտրանքներ</translation>
+<translation id="5985041959109124139">Z սեղմված tar-արխիվ</translation>
 <translation id="6007237601604674381">Չհաջողվեց տեղափոխել: <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Ethernet ցանց</translation>
 <translation id="60357267506638014">Չեխական QWERTY</translation>
@@ -618,6 +620,7 @@
 <translation id="6220423280121890987">փենջաբերեն</translation>
 <translation id="6224240818060029162">դանիերեն</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" />. ֆորմատավորել</translation>
+<translation id="6224665423283788195">ZST սեղմված արխիվ</translation>
 <translation id="6227235786875481728">Չհաջողվեց նվագարկել այս ֆայլը:</translation>
 <translation id="6241349547798190358">հոլանդերեն (Բելգիա)</translation>
 <translation id="6267547857941397424">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="PHONE_NAME" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />%, մարտկոցի լիցքը՝ <ph name="BATTERY_STATUS" />%, կապակցում</translation>
@@ -645,6 +648,7 @@
 <translation id="6509122719576673235">Նորվեգական</translation>
 <translation id="6528513914570774834">Թույլատրել սարքի մյուս օգտատերերին օգտագործել այս ցանցը</translation>
 <translation id="653019979737152879"><ph name="FILE_NAME" />-ի համաժամացում…</translation>
+<translation id="6530595303336443929">ZST սեղմված tar-արխիվ</translation>
 <translation id="6549689063733911810">Վերջին</translation>
 <translation id="6558280019477628686">Սխալ առաջացավ: Հնարավոր է՝ որոշ տարրեր չեն ջնջվել:</translation>
 <translation id="656398493051028875">«<ph name="FILENAME" />»-ը ջնջվում է…</translation>

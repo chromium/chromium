@@ -65,6 +65,7 @@
 <translation id="1275285675049378717">מספק חשמל ל-<ph name="POWER_SOURCE" /></translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" />‏ (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">איתור טלפון</translation>
+<translation id="1287002645302686982">כבר קיים שולחן עבודה וירטואלי בשם <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="1289185460362160437">אפשר לחזור ביום <ph name="COME_BACK_DAY_OF_WEEK" /> בשעה <ph name="COME_BACK_TIME" />.</translation>
 <translation id="1290331692326790741">אות חלש</translation>
 <translation id="1290982764014248209">העברת <ph name="DRAGGED_APP" /> אל התיקייה <ph name="FOLDER_NAME" />.</translation>
@@ -94,7 +95,7 @@
 <translation id="1420408895951708260">הפעלה או כיבוי של תאורת הלילה. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">הצגת המדיה והתמונות שבטלפון מהזמן האחרון במכשיר <ph name="DEVICE_TYPE" /></translation>
 <translation id="1426410128494586442">כן</translation>
-<translation id="1438357537418863713">הסטרימינג של האפליקציות מוגדר עכשיו. אחרי שמתחילים להשתמש בסטרימינג של אפליקציות, אפליקציות שהופעלו לאחרונה מופיעות כאן.</translation>
+<translation id="1447641497144572814">שומר המסך מופעל</translation>
 <translation id="1455242230282523554">הצגת הגדרות השפה</translation>
 <translation id="1460620680449458626">צלילים מושתקים.</translation>
 <translation id="1467432559032391204">שמאלה</translation>
@@ -269,6 +270,7 @@
 <translation id="2586561057878260610">‏יש להקיש על Ctrl +‏ W כדי לשלב עם <ph name="DESK_NAME" />. יש להקיש על Ctrl +‏ Shift +‏ W כדי לסגור את שולחן העבודה הווירטואלי והחלונות.</translation>
 <translation id="2595239820337756193">כמה מיילים יש ב-5 קילומטרים</translation>
 <translation id="2596078834055697711">צילום מסך של חלון</translation>
+<translation id="2598725286293895280">בשולחן העבודה יש אפליקציות שלא נתמכות</translation>
 <translation id="2607678425161541573">נדרשת כניסה אונליין</translation>
 <translation id="2620016719323068571">חיפוש ב<ph name="CATEGORY" />, בקבצים, באפליקציות ועוד…</translation>
 <translation id="2620436844016719705">מערכת</translation>
@@ -644,6 +646,7 @@
 <translation id="4734965478015604180">אופקי</translation>
 <translation id="4735498845456076464">מקשי הקיצור <ph name="LAUNCHER_KEY_NAME" /> + ספרה הוחלפו. כדי לדמות את הפעולה של מקשי הפונקציה, יש להקיש על המקש <ph name="LAUNCHER_KEY_NAME" /> + מקש כלשהו בשורה העליונה של המקלדת.</translation>
 <translation id="473775607612524610">עדכון</translation>
+<translation id="4740516757091333363">למחוק את שולחן העבודה השמור?</translation>
 <translation id="4752784485658729358">ניתן לשמור רק 6 שולחנות עבודה וירטואליים. צריך להסיר שולחן עבודה וירטואלי כדי לשמור אחד חדש.</translation>
 <translation id="4759238208242260848">הורדות</translation>
 <translation id="4774338217796918551">אפשר לחזור מחר בשעה <ph name="COME_BACK_TIME" />.</translation>
@@ -696,7 +699,6 @@
 <translation id="5071064518267176975">אפליקציה כלשהי מבקשת להשתמש במיקרופון</translation>
 <translation id="5078796286268621944">‏PIN שגוי</translation>
 <translation id="5083553833479578423">‏אפשר להפעיל תכונות Assistant נוספות.</translation>
-<translation id="5106223312672646208">התאמה אישית</translation>
 <translation id="5107522548814527560">אינטרנט</translation>
 <translation id="5117590920725113268">הצגת החודש הבא</translation>
 <translation id="5136175204352732067">חוברה מקלדת אחרת</translation>
@@ -741,6 +743,7 @@
 <translation id="5352250171825660495">עיצוב כהה פועל</translation>
 <translation id="5356963482258194581">אפשר להחליף בין עיצוב כהה לעיצוב בהיר. לוחצים לחיצה ימנית על שולחן העבודה ובוחרים באפשרות 'טפט וסגנון'.</translation>
 <translation id="5379115545237091094">יותר מדי ניסיונות</translation>
+<translation id="5391307769715781764">להחליף את שולחן העבודה השמור?</translation>
 <translation id="5393156353051693207">לוחצים לחיצה ארוכה במקום כלשהו כדי למיין מחדש את האפליקציות</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> מעל <ph name="IN_PLACE_APP" />. יש לשחרר כדי ליצור תיקייה.</translation>
 <translation id="5397578532367286026">‏המנהל (<ph name="MANAGER_EMAIL" />) יכול לבדוק את השימוש וההיסטוריה של משתמש זה ב-chrome.com.</translation>
@@ -974,6 +977,7 @@
 <translation id="6790428901817661496">הפעלה</translation>
 <translation id="6801878137098616817">נערך לאחרונה</translation>
 <translation id="6803622936009808957">לא ניתן היה לשקף מסכים מכיוון שלא נמצאה רזולוציה נתמכת. במקום זאת התצוגה עברה למצב שולחן עבודה מורחב.</translation>
+<translation id="6812232930908427253">לא ניתן היה לשמור את שולחן העבודה הווירטואלי. יש יותר מדי חלונות או כרטיסיות.</translation>
 <translation id="6818242057446442178">מילה אחת אחורה</translation>
 <translation id="6819327813400217281">המצלמה מוצמדת לפינה הימנית התחתונה</translation>
 <translation id="6820676911989879663">הגיע הזמן להפסקה</translation>

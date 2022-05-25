@@ -65,6 +65,7 @@
 <translation id="1275285675049378717"><ph name="POWER_SOURCE" /> चार्ज गर्दै</translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">फोन रहेको स्थान पत्ता लगाउनुहोस्</translation>
+<translation id="1287002645302686982"><ph name="DESK_TEMPLATE_NAME" /> नामक डेस्क सेभ गरिसकिएको छ</translation>
 <translation id="1289185460362160437"><ph name="COME_BACK_DAY_OF_WEEK" /> <ph name="COME_BACK_TIME" /> बजे फेरि आउनुहोला।</translation>
 <translation id="1290331692326790741">कमजोर सिग्नल</translation>
 <translation id="1290982764014248209"><ph name="DRAGGED_APP" /> लाई फोल्डर <ph name="FOLDER_NAME" /> मा सार्नुहोस्।</translation>
@@ -94,7 +95,7 @@
 <translation id="1420408895951708260">रात्रि प्रकाश टगल गर्नुहोस्। <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666"><ph name="DEVICE_TYPE" /> मा आफ्नो फोनका हालसालैका फोटो तथा मिडिया हेर्नुहोस्</translation>
 <translation id="1426410128494586442">हो</translation>
-<translation id="1438357537418863713">एप स्ट्रिमिङ सेटअप गरिएको छ। तपाईंले एप स्ट्रिमिङ प्रयोग गरेपछि हालसालै लन्च गरिएका एपहरू यहाँ देखिने छन्।</translation>
+<translation id="1447641497144572814">स्क्रिन सेभर सुरु भयो</translation>
 <translation id="1455242230282523554">भाषासम्बन्धी सेटिङहरू देखाउनुहोस्</translation>
 <translation id="1460620680449458626">भोल्युम म्युट गरिएको छ।</translation>
 <translation id="1467432559032391204">बाँया</translation>
@@ -269,6 +270,7 @@
 <translation id="2586561057878260610"><ph name="DESK_NAME" /> मा संयोजन गर्न Ctrl + W थिच्नुहोस्। डेस्क तथा विन्डोहरू बन्द गर्न Ctrl + Shift + W थिच्नुहोस्।</translation>
 <translation id="2595239820337756193">५ किलोमिटर बराबर कति माइल हुन्छ</translation>
 <translation id="2596078834055697711">विन्डोको स्क्रिनसट लिनुहोस्‌</translation>
+<translation id="2598725286293895280">यो डेस्कमा प्रयोग गर्न नमिल्ने एपहरू छन्</translation>
 <translation id="2607678425161541573">अनलाइन मार्फत साइन इन गर्नु पर्ने हुन्छ</translation>
 <translation id="2620016719323068571">आफ्ना <ph name="CATEGORY" />, फाइल, एप र अन्य कुराहरू खोज्नुहोस्...</translation>
 <translation id="2620436844016719705">सिस्टम</translation>
@@ -644,6 +646,7 @@
 <translation id="4734965478015604180">तेर्सो</translation>
 <translation id="4735498845456076464"><ph name="LAUNCHER_KEY_NAME" /> + Number किबोर्डका सर्टकट परिवर्तन गरिएको छ। फङ्सन की प्रयोग गर्न <ph name="LAUNCHER_KEY_NAME" /> की + माथिल्लो रोमा भएको कुनै की थिच्नुहोस्।</translation>
 <translation id="473775607612524610">अपडेट गर्नुहोस्</translation>
+<translation id="4740516757091333363">सेभ गरिएको डेस्क मेटाउने हो?</translation>
 <translation id="4752784485658729358">६ वटाभन्दा बढी डेस्क सेभ गर्न मिल्दैन। तपाईं नयाँ डेस्क सेभ गर्न चाहनुहुन्छ भने सेभ गरिएको कुनै डेस्क हटाउनुहोस्।</translation>
 <translation id="4759238208242260848">डाउनलोडहरू</translation>
 <translation id="4774338217796918551">भोलि <ph name="COME_BACK_TIME" /> बजे फेरि आउनुहोला।</translation>
@@ -696,7 +699,6 @@
 <translation id="5071064518267176975">कुनै एपले माइक्रोफोन प्रयोग गर्ने अनुमति माग्दै छ</translation>
 <translation id="5078796286268621944">गलत PIN</translation>
 <translation id="5083553833479578423">सहायकका थप सुविधाहरू अनलक गर्नुहोस्।</translation>
-<translation id="5106223312672646208">पर्सनलाइज गर्नुहोस्</translation>
 <translation id="5107522548814527560">वेब</translation>
 <translation id="5117590920725113268">अर्को महिना देखाउनुहोस्</translation>
 <translation id="5136175204352732067">भिन्न किबोर्ड जडान गरियो</translation>
@@ -741,6 +743,7 @@
 <translation id="5352250171825660495">अँध्यारो थिम अन छ</translation>
 <translation id="5356963482258194581">अँध्यारो तथा उज्यालो थिम अदलबदल गर्नुहोस्। डेस्कटपमा दायाँ क्लिक गर्नुहोस् र "वालपेपर तथा शैली" चयन गर्नुहोस्।</translation>
 <translation id="5379115545237091094">अत्यधिक प्रयासहरू भए</translation>
+<translation id="5391307769715781764">सेभ गरिएको डेस्क बदल्ने हो?</translation>
 <translation id="5393156353051693207">तपाईं आफ्ना एपहरूको क्रम पुनः मिलाउन चाहनुहुन्छ भने कुनै पनि ठाउँमा टच एण्ड होल्ड गर्नुहोस्</translation>
 <translation id="5395308026110844773"><ph name="IN_PLACE_APP" /> का माथि <ph name="DRAGGED_APP_NAME" />, फोल्डर सिर्जना गर्न विमोचन गर्नुहोस्।</translation>
 <translation id="5397578532367286026">यो प्रयोगकर्ताको उपयोग र इतिहासलाई व्यवस्थापक (<ph name="MANAGER_EMAIL" />) ले chrome.com मा पुनरीक्षण गर्न सक्छ।</translation>
@@ -974,6 +977,7 @@
 <translation id="6790428901817661496">प्ले गर्नुहोस्</translation>
 <translation id="6801878137098616817">हालसालै सम्पादन गरिएको</translation>
 <translation id="6803622936009808957">समर्थित रिजोलुशन फेला नपारेदेखि मिरर डिस्प्ले गर्न सकेन। सट्टामा विस्तारित डेस्कटप प्रविष्ट गरियो।</translation>
+<translation id="6812232930908427253">डेस्क सेभ गर्न सकिएन। अत्यन्त धेरै विन्डो वा ट्याबहरू सेभ गरिएका छन्।</translation>
 <translation id="6818242057446442178">कर्सरलाई एक शब्द पछाडि लैजानुहोस्</translation>
 <translation id="6819327813400217281">क्यामेरा पुछारको बायाँ कुनामा स्न्याप गरियो</translation>
 <translation id="6820676911989879663">विश्राम लिनुहोस्!</translation>

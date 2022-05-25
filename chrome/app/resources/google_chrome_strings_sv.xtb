@@ -82,6 +82,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> är redan inloggad på den här Chrome-profilen. Du kan hålla isär webbinformationen genom att skapa en egen profil i Chrome.</translation>
 <translation id="2580411288591421699">Det går inte att installera samma version av Google Chrome som redan körs. Stäng Google Chrome och försök igen.</translation>
 <translation id="2586406160782125153">Webbinformationen raderas från enheten. Logga in i Chrome som <ph name="USER_EMAIL" /> om du vill kunna återställa datan senare.</translation>
+<translation id="2597976513418770460">Få saker i webbläsaren Chrome från <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="2622559029861875898">Chrome kan inte söka efter uppdateringar. Testa att kontrollera internetanslutningen.</translation>
 <translation id="2645435784669275700">Chrome OS</translation>
 <translation id="2652691236519827073">Öppna länkar i en ny flik i Chrome</translation>
@@ -312,6 +313,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="7801699035218095297">Skriv ditt Windows-lösenord om du tillåter att lösenorden i Google Chrome kopieras.</translation>
 <translation id="7808348361785373670">Ta bort från Chrome …</translation>
 <translation id="7825851276765848807">Installationen misslyckades på grund av ett okänt fel. Ladda ned Google Chrome igen.</translation>
+<translation id="7880591377632733558">Välkommen till Chrome, <ph name="ACCOUNT_FIRST_NAME" />!</translation>
 <translation id="7890208801193284374">Om du delar en dator med vänner och familj kan de konfigurera Chrome precis som de vill och surfa separat.</translation>
 <translation id="7896673875602241923">Någon har tidigare loggat in i Chrome som <ph name="ACCOUNT_EMAIL_LAST" /> på den här datorn. Skapa en ny Chrome-användare så att dina uppgifter hålls separat.</translation>
 <translation id="7917876797003313048">Du kan hantera dina inloggade Google-konton. Dina Google-konton används för webbläsaren Chrome, Play Butik, Gmail med mera. Om du vill lägga till ett konto åt någon annan, till exempel en familjemedlem, lägger du till en ny person på <ph name="DEVICE_TYPE" /> i stället. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
@@ -337,6 +339,7 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="8418845734693287262">Det gick inte att synkronisera data med Chrome OS eftersom inloggningsuppgifterna för kontot är inaktuella.</translation>
 <translation id="8421734018304082652">Den här filen blockerades av Chrome eftersom den är krypterad. Be ägaren att dekryptera den</translation>
 <translation id="8433638294851456451">Logga in på Chrome på båda enheterna om du vill skicka ett nummer från Android-telefonen.</translation>
+<translation id="8451192282033883849">Kontot hanteras av <ph name="MANAGER_NAME" />. Administratören kan se och redigera den här Chrome-profilen och tillhörande data som bokmärken, historik och lösenord.</translation>
 <translation id="8498858610309223613">En särskild säkerhetsuppdatering för Google Chrome installerades precis. Starta om webbläsaren nu. Flikarna återställs efteråt.</translation>
 <translation id="8504220326736535258">Den här filen blockerades av Chrome eftersom den har skadlig programvara</translation>
 <translation id="8516431725144212809">Chromes uppskattning av dina intressen</translation>

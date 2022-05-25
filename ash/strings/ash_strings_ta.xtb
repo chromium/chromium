@@ -65,6 +65,7 @@
 <translation id="1275285675049378717"><ph name="POWER_SOURCE" /> மூலம் சார்ஜ் ஆகிறது</translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">மொபைல் இருக்குமிடத்தைக் கண்டறிதல்</translation>
+<translation id="1287002645302686982"><ph name="DESK_TEMPLATE_NAME" /> எனும் பெயரில் ஏற்கெனவே ஒரு டெஸ்க் சேமிக்கப்பட்டுள்ளது</translation>
 <translation id="1289185460362160437"><ph name="COME_BACK_DAY_OF_WEEK" />, <ph name="COME_BACK_TIME" />க்கு சாதனத்தை மீண்டும் பயன்படுத்தலாம்.</translation>
 <translation id="1290331692326790741">வலுவற்ற சிக்னல்</translation>
 <translation id="1290982764014248209"><ph name="DRAGGED_APP" />ஐ <ph name="FOLDER_NAME" /> ஃபோல்டருக்கு நகர்த்தும்.</translation>
@@ -94,7 +95,7 @@
 <translation id="1420408895951708260">நைட் லைட்டை ஆன்/ஆஃப் செய்யும். <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">மொபைலில் உள்ள சமீபத்திய படங்களையும் மீடியாவையும் <ph name="DEVICE_TYPE" /> இல் பார்க்கலாம்</translation>
 <translation id="1426410128494586442">ஆம்</translation>
-<translation id="1438357537418863713">ஆப்ஸ் ஸ்ட்ரீமிங் இப்போது அமைக்கப்பட்டது. இதைத் தொடங்கும்போது, நீங்கள் சமீபத்தில் பயன்படுத்திய ஆப்ஸ் இங்கே காட்டப்படும்.</translation>
+<translation id="1447641497144572814">ஸ்கிரீன் சேவர் ஏற்றப்படுகிறது</translation>
 <translation id="1455242230282523554">மொழி அமைப்புகளைக் காட்டும்</translation>
 <translation id="1460620680449458626">ஒலி முடக்கப்பட்டுள்ளது.</translation>
 <translation id="1467432559032391204">இடது</translation>
@@ -269,6 +270,7 @@
 <translation id="2586561057878260610"><ph name="DESK_NAME" /> உடன் இணைக்க Ctrl + W அழுத்தவும். டெஸ்க்கையும் சாளரங்களையும் மூட Ctrl + Shift + W அழுத்தவும்.</translation>
 <translation id="2595239820337756193">5 கிமீ எத்தனை மைல்?</translation>
 <translation id="2596078834055697711">சாளரத்தை ஸ்கிரீன்ஷாட் எடுக்கும்</translation>
+<translation id="2598725286293895280">டெஸ்க்கில் ஆதரிக்கப்படாத ஆப்ஸ் உள்ளன</translation>
 <translation id="2607678425161541573">ஆன்லைன் உள்நுழைவு அவசியம்</translation>
 <translation id="2620016719323068571">உங்கள் <ph name="CATEGORY" />, ஃபைல்கள், ஆப்ஸ் மற்றும் பலவற்றைத் தேடுக...</translation>
 <translation id="2620436844016719705">அமைப்பு</translation>
@@ -644,6 +646,7 @@
 <translation id="4734965478015604180">கிடைமட்டம்</translation>
 <translation id="4735498845456076464">இந்தக் கீபோர்டு ஷார்ட்கட் மாற்றப்பட்டுள்ளது: <ph name="LAUNCHER_KEY_NAME" /> + எண். செயல்பாட்டு பட்டன்களைப் பயன்படுத்த, <ph name="LAUNCHER_KEY_NAME" /> பட்டன் + மேல் வரிசையில் உள்ள ஒரு பட்டனை அழுத்தவும்.</translation>
 <translation id="473775607612524610">புதுப்பி</translation>
+<translation id="4740516757091333363">சேமிக்கப்பட்ட டெஸ்க்கை நீக்கவா?</translation>
 <translation id="4752784485658729358">6 டெஸ்க்குகளை மட்டுமே சேமிக்க முடியும். புதிதாக ஒன்றைச் சேமிக்க ஒரு டெஸ்கை அகற்றவும்.</translation>
 <translation id="4759238208242260848">பதிவிறக்கங்கள்</translation>
 <translation id="4774338217796918551">நாளை <ph name="COME_BACK_TIME" />க்கு சாதனத்தை மீண்டும் பயன்படுத்தலாம்.</translation>
@@ -696,7 +699,6 @@
 <translation id="5071064518267176975">மைக்ரோஃபோனை ஓர் ஆப்ஸ் பயன்படுத்த விரும்புகிறது</translation>
 <translation id="5078796286268621944">தவறான PIN</translation>
 <translation id="5083553833479578423">மேலும் பல அசிஸ்டண்ட் அம்சங்களைப் பெறுக.</translation>
-<translation id="5106223312672646208">பிரத்தியேகமாக்குதல்</translation>
 <translation id="5107522548814527560">இணையம்</translation>
 <translation id="5117590920725113268">அடுத்த மாதத்தைக் காட்டு</translation>
 <translation id="5136175204352732067">வேறொரு கீபோர்டு இணைக்கப்பட்டது</translation>
@@ -741,6 +743,7 @@
 <translation id="5352250171825660495">டார்க் தீம் இயக்கப்பட்டுள்ளது</translation>
 <translation id="5356963482258194581">டார்க், லைட் ஆகிய தீம்களுக்கு இடையே மாறுதல். டெஸ்க்டாப்பில் வலது கிளிக் செய்து 'வால்பேப்பர் &amp; ஸ்டைல்' என்பதைத் தேர்ந்தெடுக்கவும்.</translation>
 <translation id="5379115545237091094">அதிகபட்சம் முயன்றுவிட்டீர்கள்</translation>
+<translation id="5391307769715781764">சேமிக்கப்பட்ட டெஸ்க்கை மாற்றவா?</translation>
 <translation id="5393156353051693207">உங்கள் ஆப்ஸை மறுவரிசைப்படுத்த, எங்கேயாவது தொட்டுப் பிடிக்கவும்</translation>
 <translation id="5395308026110844773"><ph name="IN_PLACE_APP" />ன் மேல் <ph name="DRAGGED_APP_NAME" />ஐ இழுத்துவிடுகிறீர்கள். ஃபோல்டரை உருவாக்க, விடுவிக்கவும்.</translation>
 <translation id="5397578532367286026">இந்தப் பயனரின் பயன்பாடு மற்றும் வரலாறு chrome.com இன் நிர்வாகியால் (<ph name="MANAGER_EMAIL" />) மதிப்பாய்வு செய்யப்படும்.</translation>
@@ -974,6 +977,7 @@
 <translation id="6790428901817661496">இயக்கு</translation>
 <translation id="6801878137098616817">சமீபத்தில் திருத்தப்பட்டது</translation>
 <translation id="6803622936009808957">ஆதரிக்கும் தெளிவுகள் கிடைக்காததால் காட்சிகளைப் பிரதிபலிக்க முடியவில்லை. பதிலாக நீட்டிக்கப்பட்ட டெஸ்க்டாப்பிற்குச் சென்றது.</translation>
+<translation id="6812232930908427253">டெஸ்க்கைச் சேமிக்க முடியவில்லை. மிகவும் அதிகமான சாளரங்கள்/உலாவிப் பக்கங்கள் உள்ளன.</translation>
 <translation id="6818242057446442178">சொல் வாரியாகப் பின்செல்</translation>
 <translation id="6819327813400217281">கேமரா மாதிரிக்காட்சி கீழ் இடது மூலையில் பொருத்தப்பட்டது</translation>
 <translation id="6820676911989879663">சிறிது நேரம் இடைவேளை எடுத்துக்கொள்ளவும்!</translation>

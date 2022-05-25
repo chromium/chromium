@@ -121,6 +121,7 @@
 <translation id="1942765061641586207">इमेज रिझोल्युशन</translation>
 <translation id="1972984168337863910">फाइल फीडबॅक पॅनलचा विस्तार करा</translation>
 <translation id="1995337122023280937">फाइल स्थानावर जा</translation>
+<translation id="1996806196681857869">Z काँप्रेस केलेले संग्रहण</translation>
 <translation id="2001796770603320721">ड्राइव्ह मध्ये व्यवस्थापित करा</translation>
 <translation id="2009067268969781306">ड्राइव्ह फॉरमॅट त्यावर स्टोअर केलेला डेटा हटवेल. ही क्रिया पहिल्यासारखी केली जाऊ शकत नाही.</translation>
 <translation id="2025955442973426285">टिग्रीन्या</translation>
@@ -589,6 +590,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> आयटम</translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">क्रमवारी पर्याय</translation>
+<translation id="5985041959109124139">Z काँप्रेस केलेले tar संग्रहण</translation>
 <translation id="6007237601604674381">हलविणे अयशस्वी. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">इथरनेट नेटवर्क</translation>
 <translation id="60357267506638014">झेक QWERTY</translation>
@@ -619,6 +621,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="6220423280121890987">पंजाबी</translation>
 <translation id="6224240818060029162">डॅनिश</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" /> फॉरमॅट करा</translation>
+<translation id="6224665423283788195">Zstandard काँप्रेस केलेले संग्रहण</translation>
 <translation id="6227235786875481728">ही फाइल प्ले केली जाणे शक्य झाले नाही.</translation>
 <translation id="6241349547798190358">डच (बेल्जियम)</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="PHONE_NAME" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />%, फोन बॅटरी <ph name="BATTERY_STATUS" />%, कनेक्ट करा</translation>
@@ -646,6 +649,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="6509122719576673235">नॉर्वेजियन</translation>
 <translation id="6528513914570774834">या डिव्हाइसच्या इतर वापरकर्त्यांना हे नेटवर्क वापरण्याची परवानगी द्या</translation>
 <translation id="653019979737152879"><ph name="FILE_NAME" /> संकालित करत आहे...</translation>
+<translation id="6530595303336443929">Zstandard काँप्रेस केलेले tar संग्रहण</translation>
 <translation id="6549689063733911810">अलीकडील</translation>
 <translation id="6558280019477628686">एक एरर आली. काही आयटम हटवता आले नाहीत.</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />" हटवत आहे...</translation>

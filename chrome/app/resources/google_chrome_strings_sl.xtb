@@ -82,6 +82,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="2574930892358684005">Uporabnik <ph name="EXISTING_USER" /> je že prijavljen v ta profil v Chromu. Če želite ločiti brskanje, lahko Chrome za vas ustvari nov profil.</translation>
 <translation id="2580411288591421699">Ni mogoče namestiti različice Google Chroma, enake tisti, ki se trenutno izvaja. Zaprite Google Chrome in poskusite znova.</translation>
 <translation id="2586406160782125153">S tem bodo iz te naprave izbrisani podatki brskanja. Če želite pozneje prenesti podatke, se v Chrome prijavite kot <ph name="USER_EMAIL" />.</translation>
+<translation id="2597976513418770460">Prenesite stvari za brskalnik Chrome iz računa <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="2622559029861875898">Chrome ne more preveriti, ali so na voljo posodobitve. Poskusite preveriti internetno povezavo.</translation>
 <translation id="2645435784669275700">Chrome OS</translation>
 <translation id="2652691236519827073">Odpiranje povezave na novem &amp;zavihku v Chromu</translation>
@@ -312,6 +313,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="7801699035218095297">Google Chrome poskuša kopirati gesla. Če želite to omogočiti, vnesite geslo za Windows.</translation>
 <translation id="7808348361785373670">Odstranitev iz Chroma ...</translation>
 <translation id="7825851276765848807">Namestitev ni uspela zaradi nenavedene napake. Znova prenesite Google Chrome.</translation>
+<translation id="7880591377632733558">Pozdravljeni v Chromu, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="7890208801193284374">Če računalnik souporabljate z drugimi, lahko prijatelji in sorodniki ločeno brskajo ter nastavijo Chrome tako, kot želijo.</translation>
 <translation id="7896673875602241923">Nekdo se je prijavil v Chrome v tem računalniku kot <ph name="ACCOUNT_EMAIL_LAST" />. Ustvarite nov uporabniški profil za Chrome, če želite, da bodo vaši podatki ločeni.</translation>
 <translation id="7917876797003313048">Upravljate lahko račune Google, v katere ste prijavljeni. Računi Google se uporabljajo za brskalnik Chrome, Trgovino Play, Gmail in drugo. Če želite dodati račun za nekoga drugega, na primer družinskega člana, v napravo <ph name="DEVICE_TYPE" /> dodajte novo osebo. <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>
@@ -337,6 +339,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="8418845734693287262">Chrome OS ni mogel sinhronizirati podatkov, ker so podatki za prijavo v račun zastareli.</translation>
 <translation id="8421734018304082652">Chrome je blokiral to datoteko, ker je šifrirana. Lastnika prosite, da jo dešifrira.</translation>
 <translation id="8433638294851456451">Če želite poslati telefonsko številko od tukaj v telefon Android, se prijavite v Chrome v obeh napravah.</translation>
+<translation id="8451192282033883849">Vaš račun upravlja <ph name="MANAGER_NAME" />. Vaš skrbnik lahko vidi in upravlja ta profil za brskalnik Chrome s podatki vred, in sicer zaznamki, zgodovino ter gesli.</translation>
 <translation id="8498858610309223613">Pravkar je bila nameščena posebna varnostna posodobitev za Google Chrome. Znova ga zaženite (vaše zavihke bomo obnovili).</translation>
 <translation id="8504220326736535258">Chrome je blokiral to datoteko, ker vsebuje zlonamerno programsko opremo.</translation>
 <translation id="8516431725144212809">Vaša zanimanja po Chromovi oceni</translation>

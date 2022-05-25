@@ -76,6 +76,7 @@
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> ha già eseguito l'accesso a questo profilo Chrome. Per tenere separata la tua navigazione, Chrome può creare per te il tuo profilo personale.</translation>
 <translation id="2580411288591421699">Impossibile installare la stessa versione di Google Chrome attualmente in esecuzione. Chiudi Google Chrome e riprova.</translation>
 <translation id="2586406160782125153">Verranno eliminati i tuoi dati di navigazione da questo dispositivo. Per recuperare i dati in un secondo momento, accedi a Chrome come <ph name="USER_EMAIL" />.</translation>
+<translation id="2597976513418770460">Accedi ai tuoi contenuti del browser Chrome dall'account <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="2622559029861875898">Chrome non può controllare la disponibilità di aggiornamenti. Prova a controllare la connessione a Internet.</translation>
 <translation id="2645435784669275700">Chrome OS</translation>
 <translation id="2652691236519827073">Apri link in una nuova &amp;scheda di Chrome</translation>
@@ -302,6 +303,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="7801699035218095297">Google Chrome sta cercando di copiare le password. Per consentire l'operazione, digita la tua password Windows.</translation>
 <translation id="7808348361785373670">Rimuovi da Chrome...</translation>
 <translation id="7825851276765848807">Installazione non riuscita a causa di un errore non specificato. Scarica nuovamente Google Chrome.</translation>
+<translation id="7880591377632733558">Ti diamo il benvenuto in Chrome, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="7890208801193284374">Se condividi un computer, i tuoi amici e la tua famiglia possono navigare separatamente e configurare Chrome in base alle proprie esigenze.</translation>
 <translation id="7896673875602241923">Qualcuno ha già eseguito l'accesso a Chrome su questo computer come <ph name="ACCOUNT_EMAIL_LAST" />. Crea un nuovo utente Chrome per tenere separate le tue informazioni.</translation>
 <translation id="7917876797003313048">Puoi gestire gli Account Google a cui hai eseguito l'accesso. I tuoi Account Google vengono usati per il browser Chrome, il Play Store, Gmail e altro ancora. Se vuoi aggiungere un account per qualcun altro, come un membro del gruppo Famiglia, aggiungi invece una nuova persona a <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
@@ -327,6 +329,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="8418845734693287262">Impossibile sincronizzare i dati in Chrome OS perché i dati di accesso dell'account sono obsoleti.</translation>
 <translation id="8421734018304082652">Chrome ha bloccato questo file perché è criptato. Chiedi al suo proprietario di decriptarlo</translation>
 <translation id="8433638294851456451">Per inviare un numero da questo dispositivo al tuo telefono Android, accedi a Chrome su entrambi i dispositivi.</translation>
+<translation id="8451192282033883849">Il tuo account è gestito da <ph name="MANAGER_NAME" />. L'amministratore può vedere e modificare questo profilo del browser Chrome e i relativi dati, come preferiti, cronologia e password.</translation>
 <translation id="8498858610309223613">È stato appena applicato un aggiornamento di sicurezza speciale per Google Chrome. Riavvia ora e le schede verranno ripristinate.</translation>
 <translation id="8504220326736535258">Chrome ha bloccato questo file perché ha un malware</translation>
 <translation id="8516431725144212809">I tuoi interessi stimati da Chrome</translation>

@@ -65,6 +65,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1275285675049378717">Đang cấp nguồn cho <ph name="POWER_SOURCE" /></translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">Tìm điện thoại</translation>
+<translation id="1287002645302686982">Đã tồn tại một không gian làm việc đã lưu có tên là <ph name="DESK_TEMPLATE_NAME" /></translation>
 <translation id="1289185460362160437">Hãy quay lại vào <ph name="COME_BACK_DAY_OF_WEEK" /> lúc <ph name="COME_BACK_TIME" />.</translation>
 <translation id="1290331692326790741">Tín hiệu yếu</translation>
 <translation id="1290982764014248209">Di chuyển <ph name="DRAGGED_APP" /> sang thư mục <ph name="FOLDER_NAME" />.</translation>
@@ -94,7 +95,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1420408895951708260">Bật/tắt chế độ Ánh sáng đêm. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">Xem ảnh và nội dung phương tiện mới đây của điện thoại trên <ph name="DEVICE_TYPE" /></translation>
 <translation id="1426410128494586442">Có</translation>
-<translation id="1438357537418863713">Quá trình phát trực tuyến qua ứng dụng hiện đã được thiết lập. Sau khi bạn bắt đầu, các ứng dụng được chạy gần đây sẽ xuất hiện ở đây.</translation>
+<translation id="1447641497144572814">Trình bảo vệ màn hình bắt đầu</translation>
 <translation id="1455242230282523554">Hiển thị các tùy chọn cài đặt ngôn ngữ</translation>
 <translation id="1460620680449458626">Đang tắt tiếng.</translation>
 <translation id="1467432559032391204">Trái</translation>
@@ -269,6 +270,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="2586561057878260610">Nhấn Ctrl + W để kết hợp với <ph name="DESK_NAME" />. Nhấn Ctrl + Shift + W để đóng không gian làm việc và cửa sổ.</translation>
 <translation id="2595239820337756193">5.000 dặm</translation>
 <translation id="2596078834055697711">Chụp ảnh màn hình cửa sổ</translation>
+<translation id="2598725286293895280">Ứng dụng không được hỗ trợ trong không gian làm việc</translation>
 <translation id="2607678425161541573">Yêu cầu đăng nhập trực tuyến</translation>
 <translation id="2620016719323068571">Tìm kiếm <ph name="CATEGORY" />, tệp, ứng dụng, v.v...</translation>
 <translation id="2620436844016719705">Hệ thống</translation>
@@ -644,6 +646,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="4734965478015604180">Ngang</translation>
 <translation id="4735498845456076464">Phím tắt <ph name="LAUNCHER_KEY_NAME" /> + Số đã thay đổi. Để sử dụng các phím chức năng, hãy nhấn tổ hợp phím <ph name="LAUNCHER_KEY_NAME" /> + một phím ở hàng trên cùng.</translation>
 <translation id="473775607612524610">Cập nhật</translation>
+<translation id="4740516757091333363">Xoá không gian làm việc đã lưu?</translation>
 <translation id="4752784485658729358">Chỉ được lưu tối đa 6 không gian làm việc. Hãy xoá một không gian làm việc nếu muốn lưu một không gian làm việc mới.</translation>
 <translation id="4759238208242260848">Tệp đã tải xuống</translation>
 <translation id="4774338217796918551">Hãy quay lại lúc <ph name="COME_BACK_TIME" /> ngày mai.</translation>
@@ -696,7 +699,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="5071064518267176975">Một ứng dụng muốn dùng micrô</translation>
 <translation id="5078796286268621944">Mã PIN không chính xác</translation>
 <translation id="5083553833479578423">Mở khóa các tính năng khác của Trợ lý.</translation>
-<translation id="5106223312672646208">Cá nhân hoá</translation>
 <translation id="5107522548814527560">Web</translation>
 <translation id="5117590920725113268">Hiển thị tháng tiếp theo</translation>
 <translation id="5136175204352732067">Đã kết nối bàn phím khác</translation>
@@ -741,6 +743,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="5352250171825660495">Giao diện tối đang bật</translation>
 <translation id="5356963482258194581">Thay đổi giữa giao diện sáng và giao diện tối. Nhấp chuột phải vào màn hình rồi chọn Hình nền và phong cách.</translation>
 <translation id="5379115545237091094">Quá nhiều lần thử</translation>
+<translation id="5391307769715781764">Thay thế không gian làm việc đã lưu?</translation>
 <translation id="5393156353051693207">Chạm và giữ vị trí bất kỳ để sắp xếp lại ứng dụng</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> nằm trên <ph name="IN_PLACE_APP" />, thả để tạo thư mục.</translation>
 <translation id="5397578532367286026">Người quản lý (<ph name="MANAGER_EMAIL" />) trên chrome.com có thể xem lại mức sử dụng và lịch sử của người dùng này.</translation>
@@ -974,6 +977,7 @@ Mới cài đặt</translation>
 <translation id="6790428901817661496">Phát</translation>
 <translation id="6801878137098616817">Mới chỉnh sửa gần đây</translation>
 <translation id="6803622936009808957">Không thể phản chiếu màn hình do không tìm thấy độ phân giải được hỗ trợ. Thay vào đó, đã chuyển sang chế độ màn hình mở rộng.</translation>
+<translation id="6812232930908427253">Không thể lưu không gian làm việc. Có quá nhiều cửa sổ hoặc thẻ.</translation>
 <translation id="6818242057446442178">Lùi một từ</translation>
 <translation id="6819327813400217281">Máy ảnh đang bám theo góc dưới bên trái</translation>
 <translation id="6820676911989879663">Hãy nghỉ giải lao!</translation>

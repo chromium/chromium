@@ -56,6 +56,7 @@
 <translation id="124678866338384709">موجودہ ٹیب بند کریں</translation>
 <translation id="1246905108078336582">کلپ بورڈ سے تجویز ہٹائیں؟</translation>
 <translation id="1258753120186372309">Google doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">پڑھنے کی فہرست</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> کا اشتراک نہیں کیا جا سکا</translation>
 <translation id="1283039547216852943">پھیلانے کیلئے تھپتھپائیں</translation>
 <translation id="1285310382777185058">زبان تبدیل کریں</translation>
@@ -493,7 +494,6 @@
 <translation id="363596933471559332">اسٹور کردہ اسناد کا استعمال کر کے ویب سائٹس میں خود کار طور پر سائن ان کریں۔ خصوصیت آف ہونے پر، کسی ویب سائٹ میں سائن ان کرنے سے پہلے ہر بار آپ سے توثیق کرنے کو کہا جائے گا۔</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3677911431265050325">موبائل سائٹ کی درخواست کریں</translation>
-<translation id="3685860403008476208">اس آلے کا استعمال کرنے والا کوئی بھی شخص ان فائلز کو دیکھ سکتا ہے جنہیں آپ پوشیدگی میں ڈاؤن لوڈ کرتے ہیں</translation>
 <translation id="3687645719033307815">آپ اس صفحہ کا پیش منظر دیکھ رہے ہیں</translation>
 <translation id="3690369331356918524">اگر پاس ورڈز ڈیٹا کی خلاف ورزی میں افشاء ہوتے ہیں تو آپ کو متنبہ کرتی ہے</translation>
 <translation id="3692944402865947621">اسٹوریج کا مقام ناقابل رسائی ہونے کے سبب <ph name="FILE_NAME" /> ڈاؤن لوڈ کرنا ناکام ہو گیا۔</translation>
@@ -523,6 +523,7 @@
 <translation id="3845098929839618392">پوشیدگی ٹیب میں کھولیں</translation>
 <translation id="3856096718352044181">براہ کرم توثیق کریں کہ یہ درست فراہم کنندہ ہے یا بعد میں دوبارہ کوشش کریں</translation>
 <translation id="3858860766373142691">نام</translation>
+<translation id="3859206958100234503">اپنے تمام آلات پر اپنے پاس ورڈز، بُک مارکس اور بہت کچھ حاصل کرنے کے لیے مطابقت پذیری کریں</translation>
 <translation id="3861633093716975811">مقبول ویڈیوز</translation>
 <translation id="3892148308691398805">ٹیکسٹ کاپی کریں</translation>
 <translation id="3894427358181296146">فولڈر کا اضافہ کریں</translation>
@@ -580,6 +581,7 @@
 <translation id="4209895695669353772">‏Google کی جانب سے تجویز کردہ ذاتی نوعیت کا مواد حاصل کرنے کیلئے، سِنک کو آن کریں</translation>
 <translation id="4214315110991671325">‏اگر آپ کوکیز کی اجازت دیتے ہیں تو Chrome پیشگی لوڈنگ کے لیے ان کا استعمال کر سکتا ہے۔</translation>
 <translation id="4225895483398857530">ٹول بار کا شارٹ کٹ</translation>
+<translation id="4227318652298512614">اپنی مرضی کی کسی بھی سائٹ کی پیروی کریں</translation>
 <translation id="4242533952199664413">ترتیبات کھولیں</translation>
 <translation id="4248098802131000011">ڈیٹا کی خلاف ورزیوں اور سیکیورٹی کے دیگر معاملات سے اپنا پاس ورڈ محفوظ رکھیں</translation>
 <translation id="4249955472157341256">تازہ ترین کے لحاظ سے ترتیب دیں</translation>
@@ -696,6 +698,7 @@
 <translation id="4842515939542199281">اپنی آواز سے تلاش کرنے کے لیے مائیکروفون پر تھپتھپائیں</translation>
 <translation id="4844633725025837809">‏اضافی حفاظت کے لیے، پاس ورڈز کو Google پاس ورڈ مینیجر میں محفوظ کرنے سے پہلے اپنے آلے پر مرموز کریں</translation>
 <translation id="4850886885716139402">دیکھیں</translation>
+<translation id="4852014461738377247">‏سائن ان کیا جا رہا ہے\u2026</translation>
 <translation id="4860895144060829044">کال کریں</translation>
 <translation id="4864369630010738180">سائن ان کر رہا ہے…</translation>
 <translation id="4866368707455379617">‏Chrome کیلئے <ph name="MODULE" /> انسٹال کرنے سے قاصر</translation>
@@ -1149,6 +1152,7 @@
 <translation id="7304873321153398381">‏آف لائن۔ Chrome آپ کے پاس ورڈز چیک نہیں کر سکتا ہے۔</translation>
 <translation id="7313188324932846546">مطابقت پذیری سیٹ اپ کرنے کے لیے تھپتھپائیں</translation>
 <translation id="7332075081379534664">سائن ان ہو گیا</translation>
+<translation id="7333232495927792353">‏Google سے انتہائی متعلقہ مواد حاصل کرنے کے لیے مطابقت پذیری کریں</translation>
 <translation id="7339898014177206373">نئی ونڈو</translation>
 <translation id="7340958967809483333">‏Discover کے لیے اختیارات</translation>
 <translation id="7352339641508007922">لمبا اسکرین شاٹ لینے کے لیے گھسیٹیں</translation>
@@ -1529,6 +1533,7 @@
 <translation id="96681097142096641">آسان کردہ صفحہ ملاحظہ کریں؟</translation>
 <translation id="968900484120156207">آپ کے ملاحظہ کردہ صفحات یہاں دکھائی دیتے ہیں</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> منٹ باقی</translation>
+<translation id="978443947993957527">اپنے لیے مواد دیکھیں</translation>
 <translation id="981121421437150478">آف لائن</translation>
 <translation id="983192555821071799">سبھی ٹیبز بند کریں</translation>
 <translation id="987264212798334818">عمومی</translation>

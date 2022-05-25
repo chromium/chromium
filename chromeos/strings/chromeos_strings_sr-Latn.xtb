@@ -78,6 +78,7 @@
 <translation id="1578784163189013834">Odaberite pozadinu čuvara ekrana</translation>
 <translation id="1615335640928990664">Potrošnja podataka od <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Pokreni test punjenja</translation>
+<translation id="1631385268983122904">Još ne sastavljajte uređaj</translation>
 <translation id="1639239467298939599">Učitavanje</translation>
 <translation id="1641857168437328880">Uvlačenje dokumenta (jednostrano)</translation>
 <translation id="1643449475550628585">Menjajte sliku pozadine svakog dana</translation>
@@ -85,6 +86,7 @@
 <translation id="1645954272419197032">Potvrdite informacije o uređaju</translation>
 <translation id="1662989795263954667">Zaustavljeno – nema više mastila</translation>
 <translation id="1668469839109562275">Ugrađeni VPN</translation>
+<translation id="1676557873873341166">Snima se video</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Prisutan je DNS razrešivač</translation>
 <translation id="1715359911173058521">Došlo je do problema u komunikaciji sa skenerom. Proverite mrežnu ili USB vezu i probajte ponovo.</translation>
@@ -159,6 +161,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Uključite Bluetooth da biste otkrili uređaje u blizini</translation>
+<translation id="2340422556570134524">Zaštita od upisivanja se neočekivano uključila. Ručno isključite zaštitu od upisivanja pre nego što probate ponovo.</translation>
 <translation id="2346474577291266260">Odličan (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">Nastavite</translation>
 <translation id="2360257214555822463">Otkrivene su <ph name="LINK_BEGIN" />nekvalifikovane komponente<ph name="LINK_END" />. Ako želite da potvrdite da su montirane, uradite to odmah.</translation>
@@ -474,6 +477,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="5372659122375744710">WiFi mreža nije bezbedna</translation>
 <translation id="5376354385557966694">Automatski svetli režim</translation>
 <translation id="537872351913703572">Uređaj će preći na drugog korisnika ili organizaciju</translation>
+<translation id="5389159777326897627">Pozadina i stil</translation>
 <translation id="5389224261615877010">Duga</translation>
 <translation id="5395600419410242651">Obriši sve podatke</translation>
 <translation id="5400907029458559844">Uređaj se povezuje.</translation>
@@ -643,6 +647,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="6961170852793647506">Da biste započeli, postavite dokument na skener</translation>
 <translation id="6965382102122355670">Potvrdi</translation>
 <translation id="6977381486153291903">Revizija firmvera</translation>
+<translation id="6995564396478647735">Uverite se da je zaštita od upisivanja uključena</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> upravlja ovim uređajem i ima pristup svim aktivnostima korisnika, uključujući posećene veb-stranice, lozinke i imejlove.</translation>
 <translation id="7040230719604914234">Mobilni operater</translation>
 <translation id="7041549558901442110">Uređaj nije povezan.</translation>
@@ -653,6 +658,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Neuspešno – ovlašćenje nije uspelo</translation>
 <translation id="7103252855940681301"><ph name="INDEX" />. uređaj od <ph name="COUNT" /> sa nazivom <ph name="NAME" />.</translation>
+<translation id="7126228745139711113">Zaštita od upisivanja je isključena</translation>
 <translation id="7134436342991564651">{0,plural, =1{Server imena}one{Serveri imena}few{Serveri imena}other{Serveri imena}}</translation>
 <translation id="7143207342074048698">Povezivanje</translation>
 <translation id="7144878232160441200">Probaj ponovo</translation>
@@ -744,6 +750,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="80398733265834479">Omogućite režim autopodešavanja boja</translation>
 <translation id="8041089156583427627">Pošalji povratne informacije</translation>
 <translation id="8045012663542226664">Isključivanje zvuka mikrofona</translation>
+<translation id="8063022551652308521">Zaštita od upisivanja je i dalje isključena. Da biste nastavili, uključite zaštitu od upisivanja.</translation>
 <translation id="8075838845814659848">Preostali nivo napunjenosti baterije</translation>
 <translation id="8082366717211101304">DNS ne može da se razreši iz Android aplikacija</translation>
 <translation id="8083281199617904460">Ovaj proces popravke smeju da obavljaju samo obučeni serviseri. Pokrenite ga samo posle zamene neispravnih komponenti.</translation>
@@ -814,6 +821,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Koristite taster sa strelicom nalevo ili nadesno da biste upravljali ovom funkcijom.</translation>
 <translation id="8712637175834984815">Važi</translation>
 <translation id="871560550817059752">Nije uspelo – nema više mastila</translation>
+<translation id="8717030727630712160">Nastavlja se proces popravke…</translation>
 <translation id="8723108084122415655">Mreža koja nije podrazumevana premašuje graničnu vrednost za kašnjenje</translation>
 <translation id="8725066075913043281">Probajte ponovo</translation>
 <translation id="8726019395068607495">Zaustavljeno – vrata su otvorena</translation>
@@ -835,6 +843,7 @@ Probajte da dodirnete mikrofon da biste me pitali nešto.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Uređaj je tablet.</translation>
 <translation id="8881098542468797602">Test je uspeo</translation>
+<translation id="8897267175591692539">Sada možete da sastavite uređaj</translation>
 <translation id="8898840733695078011">Jačina signala</translation>
 <translation id="8910721771319628100">Podrazumevana mreža premašuje graničnu vrednost za kašnjenje</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> korisnika <ph name="GIVEN_NAME" /></translation>

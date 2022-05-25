@@ -5193,6 +5193,15 @@
 <translation id="6786666051053129545">啟用 Google 助理 Voice Match 流程</translation>
 <translation id="6786747875388722282">擴充功能</translation>
 <translation id="6786967369487349613">設定漫遊設定檔目錄</translation>
+<translation id="6789319144568227749">設定 CORS 非萬用字元要求標頭的支援功能。
+
+      <ph name="PRODUCT_NAME" /> 97 版新增 CORS 非萬用字元要求標頭的支援功能。當指令碼透過 fetch() 和含有已新增指令碼 Authorization 標頭的 XMLHttpRequest 發出跨來源網路要求時，該標頭在 CORS 預檢回應中必須獲得 Access-Control-Allow-Headers 標頭的明確允許。此處的「明確」是指萬用字元符號「*」不會涵蓋 Authorization 標頭。詳情請參閱 <ph name="CORS_NON_WILDCARD_REQUEST_HEADERS_FEATURE_URL" />。
+
+      如果不設定這項政策或設為 True，<ph name="PRODUCT_NAME" /> 會支援 CORS 非萬用字元要求標頭，且裝置行為將如上所述。
+
+      如果不設定這項政策或設為 False，Chrome 會允許萬用字元符號「*」在 CORS 預檢回應的 Access-Control-Allow-Headers 標頭中涵蓋 Authorization 標頭。
+
+      這項 Enterprise 政策僅是暫時性措施，預計將於日後移除。</translation>
 <translation id="6789422336869764846">如果將這項政策設為啟用或不設定，已註冊的裝置會回報裝置的開發人員模式切換設定在開機時的狀態。
 
       如果將這項政策設為停用，已註冊的裝置不會回報開發人員模式切換設定的狀態。</translation>

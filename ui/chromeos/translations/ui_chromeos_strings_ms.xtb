@@ -121,6 +121,7 @@
 <translation id="1942765061641586207">Peleraian imej</translation>
 <translation id="1972984168337863910">Kembangkan panel maklum balas fail</translation>
 <translation id="1995337122023280937">Pergi ke lokasi fail</translation>
+<translation id="1996806196681857869">Arkib termampat Z</translation>
 <translation id="2001796770603320721">Urus dalam Drive</translation>
 <translation id="2009067268969781306">Memformatkan pemacu akan memadamkan semua data yang disimpan di dalamnya. Tindakan ini tidak boleh dibuat asal.</translation>
 <translation id="2025955442973426285">Tigrinya</translation>
@@ -589,6 +590,7 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> item</translation>
 <translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">Pilihan isihan</translation>
+<translation id="5985041959109124139">Arkib tar termampat Z</translation>
 <translation id="6007237601604674381">Pemindahan gagal. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Rangkaian ethernet</translation>
 <translation id="60357267506638014">QWERTY bahasa Czech</translation>
@@ -619,6 +621,7 @@
 <translation id="6220423280121890987">Punjabi</translation>
 <translation id="6224240818060029162">Denmark</translation>
 <translation id="6224253798271602650">Formatkan <ph name="DRIVE_NAME" /></translation>
+<translation id="6224665423283788195">Arkib termampat Zstandard</translation>
 <translation id="6227235786875481728">Fail ini tidak dapat dimainkan.</translation>
 <translation id="6241349547798190358">Belanda (Belgium)</translation>
 <translation id="6267547857941397424">Rangkaian <ph name="NETWORK_INDEX" /> daripada <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, Kekuatan Isyarat <ph name="SIGNAL_STRENGTH" />%, Bateri Telefon <ph name="BATTERY_STATUS" />%, Sambung</translation>
@@ -646,6 +649,7 @@
 <translation id="6509122719576673235">Bahasa Norway</translation>
 <translation id="6528513914570774834">Benarkan pengguna lain peranti ini untuk menggunakan rangkaian ini</translation>
 <translation id="653019979737152879">Menyegerakkan <ph name="FILE_NAME" />...</translation>
+<translation id="6530595303336443929">Arkib tar termampat Zstandard</translation>
 <translation id="6549689063733911810">Terbaharu</translation>
 <translation id="6558280019477628686">Ralat berlaku. Sesetengah item mungkin tidak dipadamkan.</translation>
 <translation id="656398493051028875">Memadamkan "<ph name="FILENAME" />"...</translation>

@@ -65,6 +65,7 @@
 <translation id="1275285675049378717"><ph name="POWER_SOURCE" /> түзмөгүн кубаттоодо</translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">Телефондун жайгашкан жерин аныктоо</translation>
+<translation id="1287002645302686982">"<ph name="DESK_TEMPLATE_NAME" />" деп аталган иш такта бар</translation>
 <translation id="1289185460362160437"><ph name="COME_BACK_DAY_OF_WEEK" /> күнү саат <ph name="COME_BACK_TIME" /> болгондо кайтып келиңиз.</translation>
 <translation id="1290331692326790741">Начар сигнал</translation>
 <translation id="1290982764014248209"><ph name="DRAGGED_APP" /> колдонмосун <ph name="FOLDER_NAME" /> папкасына жылдыруу.</translation>
@@ -94,7 +95,7 @@
 <translation id="1420408895951708260">Түнкү жарыкты күйгүзүү же өчүрүү. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">Телефонуңуздагы соңку сүрөттөрдү жана медианы <ph name="DEVICE_TYPE" /> түзмөгүңүздө көрөсүз</translation>
 <translation id="1426410128494586442">Ооба</translation>
-<translation id="1438357537418863713">Колдонмодон алып ойнотуу туураланды. Баштагандан кийин акыркы иштетилген колдонмолор ушул жерде көрүнөт.</translation>
+<translation id="1447641497144572814">Көшөгө күйгүзүлөт</translation>
 <translation id="1455242230282523554">Тил жөндөөлөрүн көрсөтүү</translation>
 <translation id="1460620680449458626">Үнү өчүрүлгөн.</translation>
 <translation id="1467432559032391204">Сол</translation>
@@ -269,6 +270,7 @@
 <translation id="2586561057878260610"><ph name="DESK_NAME" /> менен бириктирүү үчүн Ctrl + W баскычтарын басыңыз. Иш такта жана терезелерди жабуу үчүн Ctrl + Shift + W баскычтарын басыңыз.</translation>
 <translation id="2595239820337756193">5 миң миля</translation>
 <translation id="2596078834055697711">Терезенин скриншотун тартып алуу</translation>
+<translation id="2598725286293895280">Иш тактада колдоого алынбаган колдонмолор бар</translation>
 <translation id="2607678425161541573">Онлайн аккаунтка кирүү талап кылынат</translation>
 <translation id="2620016719323068571">Төмөнкү категорияларда издөө: <ph name="CATEGORY" />, файлдар, колдонмолор жана башкалар...</translation>
 <translation id="2620436844016719705">Тутум</translation>
@@ -644,6 +646,7 @@
 <translation id="4734965478015604180">Туурасынан</translation>
 <translation id="4735498845456076464"><ph name="LAUNCHER_KEY_NAME" /> + Номер ыкчам баскычы өзгөртүлдү. Функциялык баскычтарды колдонуу үчүн <ph name="LAUNCHER_KEY_NAME" /> баскычын + жогорку саптагы баскычты басыңыз.</translation>
 <translation id="473775607612524610">Жаңыртуу</translation>
+<translation id="4740516757091333363">Сакталган иш тактаны өчүрөсүзбү?</translation>
 <translation id="4752784485658729358">6 сакталган иш тактага гана уруксат берилген. Жаңы иш тактаны сактоо үчүн эскисин өчүрүңүз.</translation>
 <translation id="4759238208242260848">Жүктөлүп алынгандар</translation>
 <translation id="4774338217796918551">Эртең саат <ph name="COME_BACK_TIME" /> болгондо кайтып келиңиз.</translation>
@@ -696,7 +699,6 @@
 <translation id="5071064518267176975">Колдонмо микрофонду ачканы жатат</translation>
 <translation id="5078796286268621944">Туура эмес PIN</translation>
 <translation id="5083553833479578423">Жардамчынын башка функцияларын иштетиңиз.</translation>
-<translation id="5106223312672646208">Жекелештирүү</translation>
 <translation id="5107522548814527560">Интернет</translation>
 <translation id="5117590920725113268">Кийинки айды көрсөтүү</translation>
 <translation id="5136175204352732067">Башка баскычтоп туташтырылды</translation>
@@ -741,6 +743,7 @@
 <translation id="5352250171825660495">Караңгы тема күйүк</translation>
 <translation id="5356963482258194581">Караңгы жана жарык темалардын арасында которулуңуз. Иш тактада оң баскычын чыкылдатып, "Тушкагаз жана стилди" тандаңыз.</translation>
 <translation id="5379115545237091094">Өтө көп аракеттер аткарылды</translation>
+<translation id="5391307769715781764">Сакталган иш тактаны алмаштырасызбы?</translation>
 <translation id="5393156353051693207">Колдонмолоруңуздун иретин өзгөртүү үчүн каалаган жерди басып кармап туруңуз</translation>
 <translation id="5395308026110844773">Папка түзүү үчүн, <ph name="DRAGGED_APP_NAME" /> колдонмосун <ph name="IN_PLACE_APP" /> колдонмосунун үстүнө сүйрөп барып, коё бериңиз.</translation>
 <translation id="5397578532367286026">Башкаруучу бул колдонуучунун пайдалангандарын жана таржымалын (<ph name="MANAGER_EMAIL" />) chrome.com дарегинен карап чыга алат.</translation>
@@ -974,6 +977,7 @@
 <translation id="6790428901817661496">Ойнотуу</translation>
 <translation id="6801878137098616817">Жакында түзөтүлдү</translation>
 <translation id="6803622936009808957">Колдоого алынган бир дагы чечилиш табылбагандыктан, дисплейлер чагылыштырылбай калды. Анын ордуна кеңейтилген иштакта киргизилди.</translation>
+<translation id="6812232930908427253">Иш такта сакталбай койду. Терезелер же өтмөктөр өтө көп.</translation>
 <translation id="6818242057446442178">Бир сөз артка кайтуу</translation>
 <translation id="6819327813400217281">Камера төмөнкү сол бурчка кадалды</translation>
 <translation id="6820676911989879663">Тыныгуу алыңыз!</translation>

@@ -123,6 +123,7 @@
 <translation id="1942765061641586207">Ανάλυση εικόνας</translation>
 <translation id="1972984168337863910">Ανάπτυξη πλαισίων σχολίων αρχείων</translation>
 <translation id="1995337122023280937">Μετάβαση στην τοποθεσία αρχείου</translation>
+<translation id="1996806196681857869">Συμπιεσμένο αρχείο Z</translation>
 <translation id="2001796770603320721">Διαχείριση στο Drive</translation>
 <translation id="2009067268969781306">Η διαμόρφωση ενός δίσκου θα διαγράψει όλα τα δεδομένα που έχουν αποθηκευτεί σε αυτόν. Δεν είναι δυνατή η αναίρεση αυτής της ενέργειας.</translation>
 <translation id="2025955442973426285">Τιγκρίνια</translation>
@@ -602,6 +603,7 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> στοιχεία</translation>
 <translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">Επιλογές ταξινόμησης</translation>
+<translation id="5985041959109124139">Συμπιεσμένο αρχείο tar Z</translation>
 <translation id="6007237601604674381">Αποτυχία μετακίνησης. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Δίκτυο ethernet</translation>
 <translation id="60357267506638014">Τσεχικό QWERTY</translation>
@@ -632,6 +634,7 @@
 <translation id="6220423280121890987">Παντζάμπι</translation>
 <translation id="6224240818060029162">Δανικά</translation>
 <translation id="6224253798271602650">Διαμόρφωση <ph name="DRIVE_NAME" /></translation>
+<translation id="6224665423283788195">Συμπιεσμένο αρχείο Zstandard</translation>
 <translation id="6227235786875481728">Δεν ήταν δυνατή η αναπαραγωγή αυτού του αρχείου.</translation>
 <translation id="6241349547798190358">Ολλανδικά (Βέλγιο)</translation>
 <translation id="6267547857941397424">Δίκτυο <ph name="NETWORK_INDEX" /> από <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />%, Μπαταρία τηλεφώνου <ph name="BATTERY_STATUS" />%, Σύνδεση</translation>
@@ -659,6 +662,7 @@
 <translation id="6509122719576673235">Νορβηγικά</translation>
 <translation id="6528513914570774834">Επιτρέψτε σε άλλους χρήστες της συσκευής να χρησιμοποιούν αυτό το δίκτυο</translation>
 <translation id="653019979737152879">Συγχρονισμός <ph name="FILE_NAME" />…</translation>
+<translation id="6530595303336443929">Συμπιεσμένο αρχείο tar Zstandard</translation>
 <translation id="6549689063733911810">Πρόσφατα</translation>
 <translation id="6558280019477628686">Παρουσιάστηκε σφάλμα. Ορισμένα στοιχεία ενδέχεται να μην έχουν διαγραφεί.</translation>
 <translation id="656398493051028875">Διαγραφή αρχείου "<ph name="FILENAME" />"…</translation>

@@ -121,6 +121,7 @@
 <translation id="1942765061641586207">Image resolution</translation>
 <translation id="1972984168337863910">Expand files feedback panels</translation>
 <translation id="1995337122023280937">Go to file location</translation>
+<translation id="1996806196681857869">Z compressed archive</translation>
 <translation id="2001796770603320721">Manage in Drive</translation>
 <translation id="2009067268969781306">Formatting a drive will delete all data stored on it. This action cannot be undone.</translation>
 <translation id="2025955442973426285">Tigrinya</translation>
@@ -589,6 +590,7 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> items</translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">Sort options</translation>
+<translation id="5985041959109124139">Z compressed tar archive</translation>
 <translation id="6007237601604674381">Move failed. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Ethernet network</translation>
 <translation id="60357267506638014">Czech QWERTY</translation>
@@ -619,6 +621,7 @@
 <translation id="6220423280121890987">Punjabi</translation>
 <translation id="6224240818060029162">Danish</translation>
 <translation id="6224253798271602650">Format <ph name="DRIVE_NAME" /></translation>
+<translation id="6224665423283788195">Zstandard compressed archive</translation>
 <translation id="6227235786875481728">This file could not be played.</translation>
 <translation id="6241349547798190358">Dutch (Belgium)</translation>
 <translation id="6267547857941397424">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, signal strength <ph name="SIGNAL_STRENGTH" />%, phone battery <ph name="BATTERY_STATUS" />%, connect</translation>
@@ -646,6 +649,7 @@
 <translation id="6509122719576673235">Norwegian</translation>
 <translation id="6528513914570774834">Allow other users of this device to use this network</translation>
 <translation id="653019979737152879">Syncing <ph name="FILE_NAME" />...</translation>
+<translation id="6530595303336443929">Zstandard compressed tar archive</translation>
 <translation id="6549689063733911810">Recent</translation>
 <translation id="6558280019477628686">An error occurred. Some items may not have been deleted.</translation>
 <translation id="656398493051028875">Deleting "<ph name="FILENAME" />"...</translation>

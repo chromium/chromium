@@ -24,6 +24,7 @@
 <translation id="109942774857561566">나 심심해</translation>
 <translation id="1104084341931202936">접근성 설정 표시</translation>
 <translation id="1104621072296271835">기기가 연결되면 더욱 원활하게 작동합니다</translation>
+<translation id="1111021433905331574">설정 &gt; <ph name="APP_TITLE" />에서 키보드 백라이트 색상을 변경할 수 있습니다.</translation>
 <translation id="112308213915226829">실행기 자동 숨김</translation>
 <translation id="1142002900084379065">최근 사진</translation>
 <translation id="1148499908455722006"><ph name="USER_NAME" /> 정보 대화상자 열기</translation>
@@ -65,6 +66,7 @@
 <translation id="1275285675049378717"><ph name="POWER_SOURCE" /> 전원 공급 중</translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" />(<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">휴대전화 찾기</translation>
+<translation id="1287002645302686982">이름이 <ph name="DESK_TEMPLATE_NAME" />인 저장된 데스크가 이미 있습니다.</translation>
 <translation id="1289185460362160437"><ph name="COME_BACK_DAY_OF_WEEK" /> <ph name="COME_BACK_TIME" />에 다시 사용해 주세요.</translation>
 <translation id="1290331692326790741">신호 약함</translation>
 <translation id="1290982764014248209"><ph name="DRAGGED_APP" /> 앱을 <ph name="FOLDER_NAME" /> 폴더로 이동합니다.</translation>
@@ -94,7 +96,7 @@
 <translation id="1420408895951708260">야간 조명을 전환합니다. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666"><ph name="DEVICE_TYPE" />에서 휴대전화의 최근 사진 및 미디어를 봅니다.</translation>
 <translation id="1426410128494586442">예</translation>
-<translation id="1438357537418863713">앱 스트리밍이 설정되었습니다. 앱 스트리밍을 시작하면 최근에 실행한 앱이 여기 표시됩니다.</translation>
+<translation id="1447641497144572814">화면 보호기 시작</translation>
 <translation id="1455242230282523554">언어 설정 표시</translation>
 <translation id="1460620680449458626">음소거되어 있습니다.</translation>
 <translation id="1467432559032391204">왼쪽</translation>
@@ -269,6 +271,7 @@
 <translation id="2586561057878260610">Ctrl + W 키를 눌러 <ph name="DESK_NAME" />과(와) 결합하세요. Ctrl + Shift + W 키를 눌러 데스크와 창을 닫으세요.</translation>
 <translation id="2595239820337756193">5km를 마일로 변환</translation>
 <translation id="2596078834055697711">창 스크린샷 찍기</translation>
+<translation id="2598725286293895280">데스크에 지원되지 않는 앱 있음</translation>
 <translation id="2607678425161541573">온라인 로그인 필요</translation>
 <translation id="2620016719323068571"><ph name="CATEGORY" />, 파일, 앱 등 검색</translation>
 <translation id="2620436844016719705">시스템</translation>
@@ -644,6 +647,7 @@
 <translation id="4734965478015604180">가로</translation>
 <translation id="4735498845456076464"><ph name="LAUNCHER_KEY_NAME" /> + 숫자 단축키가 변경되었습니다. 기능 키를 사용하려면 <ph name="LAUNCHER_KEY_NAME" /> 키 + 맨 윗줄의 키를 누르세요.</translation>
 <translation id="473775607612524610">업데이트</translation>
+<translation id="4740516757091333363">저장된 데스크를 삭제하시겠습니까?</translation>
 <translation id="4752784485658729358">데스크는 6개까지만 저장할 수 있습니다. 새 데스크를 저장하려면 이전 데스크를 삭제하세요.</translation>
 <translation id="4759238208242260848">다운로드</translation>
 <translation id="4774338217796918551">내일 <ph name="COME_BACK_TIME" />에 다시 사용해 주세요.</translation>
@@ -696,7 +700,6 @@
 <translation id="5071064518267176975">앱에서 마이크를 사용하려고 함</translation>
 <translation id="5078796286268621944">잘못된 PIN</translation>
 <translation id="5083553833479578423">더 많은 어시스턴트 기능을 사용해 보세요.</translation>
-<translation id="5106223312672646208">맞춤설정</translation>
 <translation id="5107522548814527560">웹</translation>
 <translation id="5117590920725113268">다음 달 표시</translation>
 <translation id="5136175204352732067">다른 키보드 연결됨</translation>
@@ -741,6 +744,7 @@
 <translation id="5352250171825660495">어두운 테마가 켜져 있습니다.</translation>
 <translation id="5356963482258194581">밝은 테마와 어두운 테마 간에 전환합니다. 바탕화면을 마우스 오른쪽 버튼으로 클릭하고 배경화면/스타일을 선택하세요.</translation>
 <translation id="5379115545237091094">시도 횟수가 너무 많음</translation>
+<translation id="5391307769715781764">저장된 데스크를 대체하시겠습니까?</translation>
 <translation id="5393156353051693207">앱을 재정렬하려면 아무 곳이나 길게 터치합니다</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" />을(를) <ph name="IN_PLACE_APP" /> 위로 드래그해서 놓으면 폴더가 만들어집니다.</translation>
 <translation id="5397578532367286026">관리자(<ph name="MANAGER_EMAIL" />)는 chrome.com에서 해당 사용자의 사용 및 방문 기록을 검토할 수 있습니다.</translation>
@@ -974,6 +978,7 @@
 <translation id="6790428901817661496">재생</translation>
 <translation id="6801878137098616817">최근에 수정됨</translation>
 <translation id="6803622936009808957">지원되는 해상도가 없으므로 디스플레이를 그대로 반영할 수 없습니다. 대신 확장 데스크톱을 시작했습니다.</translation>
+<translation id="6812232930908427253">데스크를 저장할 수 없습니다. 창 또는 탭이 너무 많습니다.</translation>
 <translation id="6818242057446442178">한 단어 뒤로 이동</translation>
 <translation id="6819327813400217281">카메라 미리보기가 왼쪽 하단으로 맞춰졌습니다</translation>
 <translation id="6820676911989879663">잠시 쉬어 가세요.</translation>

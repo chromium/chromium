@@ -56,6 +56,7 @@
 <translation id="124678866338384709">Закрыть вкладку</translation>
 <translation id="1246905108078336582">Удалить подсказку из буфера обмена?</translation>
 <translation id="1258753120186372309">Дудл Google: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">Список для чтения</translation>
 <translation id="1266864766717917324">Не удалось отправить: <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Нажмите, чтобы развернуть</translation>
 <translation id="1285310382777185058">Изменить язык</translation>
@@ -493,10 +494,10 @@
 <translation id="363596933471559332">Входить на веб-сайты с помощью сохраненного имени пользователя и пароля. Когда функция отключена, эти данные нужно указывать при каждом входе.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" /> (<ph name="WEBSITE_URL" />)</translation>
 <translation id="3677911431265050325">Мобильная версия</translation>
-<translation id="3685860403008476208">Файлы, которые вы скачиваете в режиме инкогнито, будут доступны всем пользователям этого устройства.</translation>
 <translation id="3687645719033307815">Эта страница показывается в режиме предварительного просмотра.</translation>
 <translation id="3690369331356918524">Сообщает, если пароли были раскрыты в результате утечки данных.</translation>
 <translation id="3692944402865947621">Не удалось скачать файл <ph name="FILE_NAME" />, так как хранилище недоступно.</translation>
+<translation id="3697705478071004188">Сортировать по названию сайта</translation>
 <translation id="3699022356773522638">Скачать файл?</translation>
 <translation id="371230970611282515">Предсказывает опасные события и предупреждает вас до того, как они происходят.</translation>
 <translation id="3714981814255182093">Открыть панель поиска</translation>
@@ -523,6 +524,7 @@
 <translation id="3845098929839618392">Открыть в режиме инкогнито</translation>
 <translation id="3856096718352044181">Убедитесь, что это действительный поставщик услуг, или повторите попытку позже.</translation>
 <translation id="3858860766373142691">Название</translation>
+<translation id="3859206958100234503">Чтобы на всех своих устройствах получить доступ к паролям, закладкам и другим данным, выполните синхронизацию.</translation>
 <translation id="3861633093716975811">Популярные видео</translation>
 <translation id="3892148308691398805">Копировать текст</translation>
 <translation id="3894427358181296146">Добавление папки</translation>
@@ -580,6 +582,7 @@
 <translation id="4209895695669353772">Чтобы мы могли рекомендовать вам интересный контент, включите синхронизацию.</translation>
 <translation id="4214315110991671325">Если вы разрешили использование файлов cookie, Chrome может применять их для предзагрузки.</translation>
 <translation id="4225895483398857530">Кнопка на панели инструментов</translation>
+<translation id="4227318652298512614">Посещайте любые сайты</translation>
 <translation id="4242533952199664413">Открыть настройки</translation>
 <translation id="4248098802131000011">Защитите пароли от утечки данных и других проблем с безопасностью</translation>
 <translation id="4249955472157341256">Сортировать по дате</translation>
@@ -696,6 +699,7 @@
 <translation id="4842515939542199281">Чтобы использовать голосовой ввод при поиске, нажмите на микрофон</translation>
 <translation id="4844633725025837809">В целях повышения безопасности шифруйте пароли на устройстве, прежде чем они будут сохраняться в Диспетчере паролей Google.</translation>
 <translation id="4850886885716139402">Посмотреть</translation>
+<translation id="4852014461738377247">Вход…</translation>
 <translation id="4860895144060829044">Позвонить</translation>
 <translation id="4864369630010738180">Вход в систему...</translation>
 <translation id="4866368707455379617">Не удается установить модуль "<ph name="MODULE" />" для Chrome</translation>
@@ -1149,6 +1153,7 @@
 <translation id="7304873321153398381">Вы не в Сети. Браузеру Chrome не удается проверить пароли.</translation>
 <translation id="7313188324932846546">Нажмите, чтобы настроить синхронизацию.</translation>
 <translation id="7332075081379534664">Аутентификация выполнена</translation>
+<translation id="7333232495927792353">Чтобы получать все самое актуальное от Google, выполните синхронизацию.</translation>
 <translation id="7339898014177206373">Новое окно</translation>
 <translation id="7340958967809483333">Параметры рекомендаций</translation>
 <translation id="7352339641508007922">Перетащите, чтобы сделать длинный скриншот.</translation>
@@ -1304,6 +1309,7 @@
 <translation id="8103578431304235997">Вкладка инкогнито</translation>
 <translation id="8105613260829665809">Продолжая, вы принимаете <ph name="BEGIN_TOS_LINK" />Условия использования<ph name="END_TOS_LINK" />.\nChrome отправляет в Google статистику использования и отчеты о сбоях, которые помогут улучшить приложение. <ph name="BEGIN_UMA_LINK" />Настроить<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
+<translation id="8107530384992929318">Закрыть параметры сортировки</translation>
 <translation id="8109613176066109935">Чтобы получить доступ к закладкам на всех устройствах, включите синхронизацию.</translation>
 <translation id="8110024788458304985">Помогать повышать производительность и улучшать функции Chrome</translation>
 <translation id="8110087112193408731">Показать данные о ваших действиях в Chrome в сервисе "Цифровое благополучие"?</translation>
@@ -1377,6 +1383,7 @@
 <translation id="8485434340281759656"><ph name="DESCRIPTION" /> <ph name="FILE_SIZE" /> <ph name="SEPARATOR" /></translation>
 <translation id="8489271220582375723">Открыть страницу "История"</translation>
 <translation id="8493948351860045254">Освободить место</translation>
+<translation id="8497242791509864205">Открыть параметры сортировки</translation>
 <translation id="8497480609928300907">Пояснение для руководства по конфиденциальности</translation>
 <translation id="8497726226069778601">Здесь появятся часто посещаемые страницы</translation>
 <translation id="8503559462189395349">Пароли Chrome</translation>
@@ -1529,6 +1536,7 @@
 <translation id="96681097142096641">Посмотреть страницу в упрощенном виде?</translation>
 <translation id="968900484120156207">Здесь будут страницы, которые вы посещали.</translation>
 <translation id="970715775301869095">Осталось <ph name="MINUTES" /> мин.</translation>
+<translation id="978443947993957527">Материалы для вас</translation>
 <translation id="981121421437150478">Офлайн</translation>
 <translation id="983192555821071799">Закрыть все вкладки</translation>
 <translation id="987264212798334818">Общие</translation>

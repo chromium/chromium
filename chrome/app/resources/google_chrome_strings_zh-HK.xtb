@@ -80,6 +80,7 @@
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> 已登入此 Chrome 設定檔。Chrome 可為您建立您的設定檔，以分開您的瀏覽區。</translation>
 <translation id="2580411288591421699">您無法安裝這個版本的 Google Chrome，因為相同的版本目前正在執行中。請關閉 Google Chrome，然後再試一次。</translation>
 <translation id="2586406160782125153">這會刪除此裝置上的瀏覽資料。如果日後想擷取資料，請以 <ph name="USER_EMAIL" /> 的身分登入 Chrome。</translation>
+<translation id="2597976513418770460">從 <ph name="ACCOUNT_EMAIL" /> 取得 Chrome 瀏覽器內容</translation>
 <translation id="2622559029861875898">Chrome 無法檢查更新，請檢查互聯網連線。</translation>
 <translation id="2645435784669275700">Chrome OS</translation>
 <translation id="2652691236519827073">在 Chrome 的新分頁中開啟連結(&amp;T)</translation>
@@ -309,6 +310,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="7801699035218095297">Google Chrome 正在嘗試複製密碼。如果您同意，請輸入 Windows 密碼。</translation>
 <translation id="7808348361785373670">從 Chrome 中移除…</translation>
 <translation id="7825851276765848807">不明錯誤導致安裝失敗，請再次下載 Google Chrome。</translation>
+<translation id="7880591377632733558"><ph name="ACCOUNT_FIRST_NAME" />，歡迎使用 Chrome</translation>
 <translation id="7890208801193284374">如果您與親朋好友共用電腦，每個人均可享有獨立的瀏覽空間，按照自己的偏好設定 Chrome。</translation>
 <translation id="7896673875602241923">先前已有其他人在這部電腦上以 <ph name="ACCOUNT_EMAIL_LAST" /> 的身分登入 Chrome。請建立新的 Chrome 使用者以個別保存您的資料。</translation>
 <translation id="7917876797003313048">您可管理已登入的 Google 帳戶。Google 帳戶可用於 Chrome 瀏覽器、Play 商店和 Gmail 等服務。如要新增其他人 (例如家庭成員) 的帳戶，請改為將使用者新增至您的 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
@@ -334,6 +336,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="8418845734693287262">您的帳戶登入詳情尚未更新，因此 Chrome OS 無法同步處理您的資料。</translation>
 <translation id="8421734018304082652">由於此檔案已加密，因此已被 Chrome 封鎖。請要求擁有者解密檔案</translation>
 <translation id="8433638294851456451">如要將號碼從此處傳送至 Android 手機，請在這兩部裝置上登入 Chrome。</translation>
+<translation id="8451192282033883849">您的帳戶由 <ph name="MANAGER_NAME" /> 管理。管理員可查看並編輯此 Chrome 瀏覽器設定檔和其資料，例如書籤、記錄和密碼。</translation>
 <translation id="8498858610309223613">Google Chrome 剛套用了特別的安全性更新。請立即重新啟動，我們將會還原您的分頁。</translation>
 <translation id="8504220326736535258">由於此檔案含有惡意軟件，因此已被 Chrome 封鎖</translation>
 <translation id="8516431725144212809">Chrome 推測您有以下興趣</translation>

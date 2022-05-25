@@ -55,6 +55,7 @@
 <translation id="1054153489933238809">פתיחת ה&amp;תמונה המקורית בכרטיסייה חדשה</translation>
 <translation id="1055274863771110134">{NUM_WEEKS,plural, =1{יש לעדכן את <ph name="DEVICE_TYPE" /> בתוך שבוע}two{יש לעדכן את <ph name="DEVICE_TYPE" /> בתוך שבועיים ({NUM_WEEKS})}many{יש לעדכן את <ph name="DEVICE_TYPE" /> בתוך {NUM_WEEKS} שבועות}other{יש לעדכן את <ph name="DEVICE_TYPE" /> בתוך {NUM_WEEKS} שבועות}}</translation>
 <translation id="1056898198331236512">אזהרה</translation>
+<translation id="105822690353767994">כדאי לתת לתוסף הרשאה קבועה לפעול באתר הזה כדי שההודעה הזו לא תוצג שוב.</translation>
 <translation id="1058262162121953039">PUK</translation>
 <translation id="1059065096897445832">{MIN_PIN_LENGTH,plural, =1{יש להזין את קוד האימות החדש. קוד אימות חייב להיות באורך תו אחד לפחות, ויכול לכלול אותיות, מספרים ותווים אחרים.}two{יש להזין את קוד האימות החדש. קוד אימות חייב להיות באורך # תווים לפחות, ויכול לכלול אותיות, מספרים ותווים אחרים.}many{יש להזין את קוד האימות החדש. קוד אימות חייב להיות באורך # תווים לפחות, ויכול לכלול אותיות, מספרים ותווים אחרים.}other{יש להזין את קוד האימות החדש. קוד אימות חייב להיות באורך # תווים לפחות, ויכול לכלול אותיות, מספרים ותווים אחרים.}}</translation>
 <translation id="1059484610606223931">Hypertext Transport Protocol (HTTPS)</translation>
@@ -840,7 +841,6 @@
 <translation id="1784707308176068866">הפעלה ברקע כשהדבר מתבקש על-ידי אפליקציה מקורית הפועלת בשיתוף פעולה</translation>
 <translation id="1784849162047402014">חסר מקום אחסון בדיסק של המכשיר</translation>
 <translation id="1787350673646245458">תמונת המשתמש</translation>
-<translation id="1788329699711791226">‏גישה לנתונים של <ph name="ACCOUNT_EMAIL" /> בדפדפן Chrome</translation>
 <translation id="1790976235243700817">הסרת הגישה</translation>
 <translation id="1791662854739702043">מותקן</translation>
 <translation id="1792619191750875668">תצוגה מורחבת</translation>
@@ -866,6 +866,7 @@
     פעולה זו לא משפיעה על אפליקציות או תוכן במכשירים אחרים.</translation>
 <translation id="1809734401532861917">הוספת הסימניות, ההיסטוריה, הסיסמאות והגדרות נוספות שלי אל <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1810366086647840386">השרת של קובץ האימג'</translation>
+<translation id="1811908311154949291">‏Fenced Frame במצב פרטי: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="1813278315230285598">שירותים</translation>
 <translation id="18139523105317219">‏שם צד EDI</translation>
 <translation id="1815083418640426271">הדבקה כטקסט רגיל</translation>
@@ -1685,6 +1686,7 @@
 <translation id="2553340429761841190"><ph name="PRODUCT_NAME" /> לא הצליח להתחבר אל <ph name="NETWORK_ID" />. יש לבחור רשת אחרת או לנסות שוב.</translation>
 <translation id="2553440850688409052">הסתרת הפלאגין</translation>
 <translation id="2554553592469060349">‏הקובץ שנבחר גדול מדי (גודל מרבי: ‎3mb).</translation>
+<translation id="25568951186001797">‏Fenced Frame‏: <ph name="FENCEDFRAME_SITE" /></translation>
 <translation id="2558569818338050235">היסטוריית הגלישה שלך משפיעה על המודעות שמוצגות לך</translation>
 <translation id="2558896001721082624">אפשרויות נגישות מוצגות תמיד בתפריט המערכת</translation>
 <translation id="2559889124253841528">שמירה במכשיר</translation>
@@ -2248,6 +2250,7 @@
 <translation id="3101126716313987672">עמעום תאורת המסך</translation>
 <translation id="3101709781009526431">תאריך ושעה</translation>
 <translation id="3103451787721578293">יש להזין סיבה להעלאת הנתונים האלה:</translation>
+<translation id="3105339775057145050">העדכון האחרון נכשל</translation>
 <translation id="3105796011181310544">‏להחזיר אל Google?</translation>
 <translation id="310671807099593501">‏האתר משתמש ב-Bluetooth</translation>
 <translation id="3108931485517391283">לא ניתן לקבל את הקובץ</translation>
@@ -2550,6 +2553,7 @@
 <translation id="3433621910545056227">אופס!  המערכת לא הצליחה ליצור את נעילת התכונות של המכשיר המתרחשת בזמן ההתקנה.</translation>
 <translation id="3434107140712555581">‎<ph name="BATTERY_PERCENTAGE" />%‎</translation>
 <translation id="3434272557872943250">‏אם ההגדרה 'פעילות באתרי אינטרנט ובאפליקציות נוספים' הופעלה עבור הילד/ה שלך, ייתכן שהנתונים יישמרו בחשבון Google שלהם. למידע נוסף על ההגדרות האלה ואיך ניתן לשנות אותן, יש לעבור לכתובת families.google.com.</translation>
+<translation id="3434475275396485144">ההגדרה הזו מנוהלת על ידי האדמין של הטלפון</translation>
 <translation id="3434512374684753970">אודיו ווידאו</translation>
 <translation id="3435688026795609344">התוסף "<ph name="EXTENSION_NAME" />" מבקש את ה-<ph name="CODE_TYPE" /> שלך</translation>
 <translation id="3435738964857648380">אבטחה</translation>
@@ -3179,7 +3183,6 @@
 <translation id="4028467762035011525">הוספה של שיטות קלט</translation>
 <translation id="4029556917477724407">חזרה מהדף <ph name="PAGE_TITLE" /></translation>
 <translation id="4031179711345676612">ניתן להשתמש במיקרופון בדף זה</translation>
-<translation id="4031308539321678562">‏הפעולה הזו תמחק באופן סופי את נתוני הגלישה במכשיר הזה. יכול להיות שיש אפליקציות אחרות ב-Chromebook שלך שמחוברות לחשבונות Google שבפרופיל הזה. כדי להסיר את החשבונות האלה, עליך לעבור אל <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" />.</translation>
 <translation id="4031527940632463547">החיישנים חסומים</translation>
 <translation id="4033415645631238123">‏אי אפשר יותר להיכנס באמצעות Smart Lock. אפשר להמשיך לבטל את נעילת המכשיר באמצעות Smart Lock.</translation>
 <translation id="4033471457476425443">הוספת תיקייה חדשה</translation>
@@ -4666,7 +4669,6 @@
 <translation id="5539221284352502426">השרת דחה את הסיסמה שהזנת. סיבות אפשריות לכך: הסיסמה קצרה מדי; הסיסמה חייבת לכלול ספרות או סמלים; הסיסמה לא יכולה להיות זהה לסיסמה שכבר השתמשת בה בעבר.</translation>
 <translation id="5541694225089836610">האפשרות לבצע את הפעולה הזו הושבתה על-ידי מנהל המערכת</translation>
 <translation id="5542132724887566711">פרופיל</translation>
-<translation id="554229901779827904">‏החשבון שלך מנוהל על ידי <ph name="MANAGER_NAME" />. האדמין שלך יכול לראות ולערוך את הפרופיל והנתונים שלך בדפדפן Chrome. הנתונים שלך כוללים את הסימניות, ההיסטוריה והסיסמאות.</translation>
 <translation id="5542750926112347543">‏קובצי Cookie מ-<ph name="DOMAIN" /> חסומים</translation>
 <translation id="5542949973455282971">מתבצע חיבור אל <ph name="CARRIER_NAME" /></translation>
 <translation id="5543983818738093899">הסטטוס בבדיקה...</translation>
@@ -4933,7 +4935,6 @@
 <translation id="5816434091619127343">אם יבוצעו שינויי המדפסת שהתבקשו, לא ניתן יהיה להשתמש בה.</translation>
 <translation id="5817069030404929329">‏להעביר סיסמאות מהמכשיר הזה לחשבון Google?</translation>
 <translation id="5817918615728894473">התאמה</translation>
-<translation id="581840385858998009">התאמה אישית של הטפט, הדמות, שומר המסך ועוד</translation>
 <translation id="5821565227679781414">יצירת קיצור דרך</translation>
 <translation id="5825412242012995131">מופעל (מומלץ)</translation>
 <translation id="5826395379250998812">יש לחבר את ה-<ph name="DEVICE_TYPE" /> לטלפון. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
@@ -5697,6 +5698,7 @@
 <translation id="6568283005472142698">חיפוש בכרטיסיות</translation>
 <translation id="65711204837946324">נדרשת הרשאה כדי להוריד</translation>
 <translation id="6571772921213691236">עריכה נתוני הכניסה</translation>
+<translation id="6573096386450695060">אני רוצה לאפשר תמיד</translation>
 <translation id="6573497332121198392">לא ניתן להסיר את קיצור הדרך</translation>
 <translation id="657402800789773160">&amp;טעינת דף זה מחדש</translation>
 <translation id="6577284282025554716">ההורדה בוטלה: <ph name="FILE_NAME" /></translation>
@@ -6389,6 +6391,7 @@
 <translation id="7264695323040866038">להשתמש תמיד באפליקציה <ph name="APP" /> לפתיחה של קישורים נתמכים באינטרנט?</translation>
 <translation id="7267044199012331848">לא ניתן להתקין את המכונה הווירטואלית. אפשר לנסות שוב או ליצור קשר עם מנהל המערכת. קוד שגיאה: <ph name="ERROR_CODE" />.</translation>
 <translation id="7267875682732693301">יש להרים את האצבע ולגעת בחיישן עם חלקים שונים של האצבע כדי להוסיף טביעת אצבע מלאה</translation>
+<translation id="7267898843336437186">בחירת תיקייה שהאתר יכול לראות</translation>
 <translation id="7268127947535186412">ההגדרה הזו מנוהלת על ידי הבעלים של המכשיר.</translation>
 <translation id="7269736181983384521">שימוש בחבילת הגלישה לשיתוף בקרבת מקום</translation>
 <translation id="7272674038937250585">לא סופק תיאור</translation>
@@ -6677,7 +6680,6 @@
 <translation id="7559719679815339381">יש להמתין....מתבצע עדכון של אפליקצית הקיוסק. אין להסיר את הדיסק און קי.</translation>
 <translation id="7560756177962144929">סנכרון של <ph name="DEVICE_TYPE" /></translation>
 <translation id="7561196759112975576">תמיד</translation>
-<translation id="7562099761826673163">התאמה אישית של המכשיר</translation>
 <translation id="756445078718366910">פתיחת חלון דפדפן</translation>
 <translation id="7564847347806291057">סיום התהליך</translation>
 <translation id="756503097602602175">‏ב<ph name="LINK_BEGIN" />הגדרות<ph name="LINK_END" /> אפשר לנהל את חשבונות Google המחוברים. ייתכן שהרשאות שנתת לאתרים ולאפליקציות יחולו על כל החשבונות. אם אינך רוצה שלאתרים או לאפליקציות תהיה גישה לפרטי החשבון שלך, ניתן להיכנס אל <ph name="DEVICE_TYPE" /> כאורח או לגלוש באינטרנט ב<ph name="LINK_2_BEGIN" />חלון אנונימי<ph name="LINK_2_END" />.</translation>
@@ -6739,7 +6741,6 @@
 <translation id="7624337243375417909">‏caps lock מושבת</translation>
 <translation id="7625568159987162309">הצגת הרשאות ונתונים המאוחסנים באתרים שונים</translation>
 <translation id="7625823789272218216">כרטיסייה חדשה מצד ימין</translation>
-<translation id="7626032353295482388">‏ברוך בואך אל Chrome</translation>
 <translation id="7628201176665550262">קצב רענון</translation>
 <translation id="7629827748548208700">כרטיסייה: <ph name="TAB_NAME" /></translation>
 <translation id="7630426712700473382">המכשיר הזה מנוהל על ידי <ph name="MANAGER" />, וכדי להשתמש בו צריך להיכנס לחשבון בכל פעם.</translation>
@@ -7016,7 +7017,6 @@
 <translation id="7876027585589532670">לא ניתן לערוך את קיצור הדרך</translation>
 <translation id="7877451762676714207">שגיאת שרת לא ידועה. יש לנסות שוב או לפנות למנהל השרת.</translation>
 <translation id="7879631849810108578">קיצור הדרך הוגדר: <ph name="IDS_SHORT_SET_COMMAND" /></translation>
-<translation id="7880591377632733558">‏ברוך בואך אל Chrome, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="7880685873361171388">‏כשההגדרה מופעלת והסטטוס פעיל, Chrome משתמש בהיסטוריית הגלישה שלך במהלך 7 ימים כדי לשייך אותך לקבוצה, או "קבוצה בעלת מאפיינים משותפים". מפרסמים יכולים לבחור מודעות לקבוצה. היסטוריית החיפושים נשמרת באופן פרטי במכשיר. תקופת הניסיון הזו פעילה רק
     ב<ph name="BEGIN_LINK" />אזורים מסוימים<ph name="END_LINK" />.</translation>
 <translation id="7880823633812189969">הנתונים המקומיים יימחקו אחרי הפעלה מחדש</translation>
@@ -7451,6 +7451,7 @@
 <translation id="8275080796245127762">שיחה מהמכשיר שלך</translation>
 <translation id="8275339871947079271">‏מומלץ להעביר את הסיסמה לחשבון Google כדי לגשת אליה באופן מאובטח לאחר התחברות לחשבון</translation>
 <translation id="8276560076771292512">ריקון המטמון וטעינה מחדש קשיחה</translation>
+<translation id="8281721647184388851">‏להפעיל את הסנכרון של דפדפן Chrome?</translation>
 <translation id="8281886186245836920">דילוג</translation>
 <translation id="8283475148136688298">קוד האימות נדחה בעת ההתחברות ל-"<ph name="DEVICE_NAME" />".</translation>
 <translation id="8284279544186306258">כל אתרי <ph name="WEBSITE_1" /></translation>
@@ -7992,6 +7993,7 @@
 <translation id="8838770651474809439">המבורגר</translation>
 <translation id="8838778928843281408">ניהול הטלפונים</translation>
 <translation id="8841843049738266382">קריאה ושינוי של משתמשים ברשימת היתרים</translation>
+<translation id="8842059467121215385">יש לרענן את הדף כדי להשתמש בתוסף '<ph name="EXTENSION_NAME" />'</translation>
 <translation id="8842594465773264717">מחיקת טביעת האצבע הזו</translation>
 <translation id="8845001906332463065">קבלת עזרה</translation>
 <translation id="8846132060409673887">קריאת היצרן והדגם של המחשב הזה</translation>
@@ -8147,6 +8149,7 @@
 <translation id="899657321862108550">‏ה-Chrome שלך, בכל מקום</translation>
 <translation id="899676909165543803">חיישן טביעות האצבע הוא המקש הימני בשורה התחתונה במקלדת. יש לגעת בו בעדינות באחת האצבעות.</translation>
 <translation id="8999560016882908256">שגיאה בתחביר של קטע: <ph name="ERROR_LINE" /></translation>
+<translation id="9003185744423389627">החיבור לשרת ניהול המכשירים נכשל עם הסטטוס '<ph name="STATUS_TEXT" />', בשעה <ph name="FAILURE_TIME" /></translation>
 <translation id="9003647077635673607">התרה בכל האתרים</translation>
 <translation id="9003677638446136377">בדיקה נוספת</translation>
 <translation id="9004754973617721124">לנקות את הנתונים ואת ההרשאות לאתר <ph name="SITE_NAME" />, לכל האתרים שתחתיו ולאפליקציות המותקנות בהם?</translation>

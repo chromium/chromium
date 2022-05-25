@@ -121,6 +121,7 @@
 <translation id="1942765061641586207">Képfelbontás</translation>
 <translation id="1972984168337863910">A fájlokhoz tartozó visszajelzési párbeszédpanel kibontása</translation>
 <translation id="1995337122023280937">Ugrás a fájl helyéhez</translation>
+<translation id="1996806196681857869">Z tömörített archívum</translation>
 <translation id="2001796770603320721">Kezelés a Drive-ban</translation>
 <translation id="2009067268969781306">A meghajtó formázásával törli a rajta lévő összes adatot. A művelet nem vonható vissza.</translation>
 <translation id="2025955442973426285">tigrinya</translation>
@@ -589,6 +590,7 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> elem</translation>
 <translation id="5957366693331451795">Chromeboxok</translation>
 <translation id="5982621672636444458">Rendezési beállítások</translation>
+<translation id="5985041959109124139">Z tömörített TAR-archívum</translation>
 <translation id="6007237601604674381">Az áthelyezés sikertelen. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Ethernet-hálózat</translation>
 <translation id="60357267506638014">cseh QWERTY</translation>
@@ -619,6 +621,7 @@
 <translation id="6220423280121890987">pandzsábi</translation>
 <translation id="6224240818060029162">dán</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" /> formázása</translation>
+<translation id="6224665423283788195">Zstandard tömörített archívum</translation>
 <translation id="6227235786875481728">Ezt a fájlt nem lehet lejátszani.</translation>
 <translation id="6241349547798190358">holland (Belgium)</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_INDEX" />. hálózat (összesen <ph name="NETWORK_COUNT" />), <ph name="PHONE_NAME" />, jelerősség: <ph name="SIGNAL_STRENGTH" />%, telefon akkumulátora: <ph name="BATTERY_STATUS" />%, csatlakozás</translation>
@@ -646,6 +649,7 @@
 <translation id="6509122719576673235">norvég</translation>
 <translation id="6528513914570774834">Engedélyezi a hálózat használatát az eszköz többi felhasználója számára</translation>
 <translation id="653019979737152879">A(z) <ph name="FILE_NAME" /> szinkronizálása…</translation>
+<translation id="6530595303336443929">Zstandard tömörített TAR-archívum</translation>
 <translation id="6549689063733911810">Legutóbbiak</translation>
 <translation id="6558280019477628686">Hiba történt. Előfordulhat, hogy egyes elemek nem törlődtek.</translation>
 <translation id="656398493051028875">„<ph name="FILENAME" />” törlése...</translation>

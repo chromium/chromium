@@ -56,6 +56,7 @@
 <translation id="124678866338384709">वर्तमान टॅब बंद करा</translation>
 <translation id="1246905108078336582">क्लिपबोर्डवरून सूचना काढून टाकायची आहे का?</translation>
 <translation id="1258753120186372309">Google डूडल: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">वाचन सूची</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> शेअर करू शकलो नाही</translation>
 <translation id="1283039547216852943">विस्तृत करण्यासाठी टॅप करा</translation>
 <translation id="1285310382777185058">भाषा बदला</translation>
@@ -312,6 +313,7 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# ऑडिओ फाइल}other{# ऑडिओ फाइल}}</translation>
 <translation id="265156376773362237">साधारण प्रीलोडिंग</translation>
 <translation id="2656405586795711023">वेब अ‍ॅप्स</translation>
+<translation id="2669454659051515572">हे डिव्हाइस वापरणारे कोणीही डाउनलोड केलेल्या फाइल पाहू शकते</translation>
 <translation id="2702516483241149200">नवीन: या मजकुरापर्यंत स्क्रोल करणारी लिंक शेअर करा</translation>
 <translation id="2704606927547763573">कॉपी केले</translation>
 <translation id="2707726405694321444">पृष्ठ रिफ्रेश करा</translation>
@@ -493,10 +495,10 @@
 <translation id="363596933471559332">स्टोअर क्रेडेंशियल वापरून वेबसाइटवर आपोआप साइन इन करा. वैशिष्ट्य बंद असते तेव्हा, वेबसाइटवर साइन इन करण्यापूर्वी दरवेळी तुम्हाला पडताळणीसाठी विचारले जाईल.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3677911431265050325">मोबाइल साइटची विनंती करा</translation>
-<translation id="3685860403008476208">हे डिव्हाइस वापरणारे कोणीही तुम्ही गुप्त मोडमध्ये डाउनलोड केलेल्या फाइल पाहू शकतात</translation>
 <translation id="3687645719033307815">तुम्ही या पेजचे पूर्वावलोकन पाहत आहात</translation>
 <translation id="3690369331356918524">डेटा भंगामध्ये पासवर्ड उघड झाल्यास, तुम्हाला चेतावणी देते</translation>
 <translation id="3692944402865947621"><ph name="FILE_NAME" /> download failed because storage location is not reachable.</translation>
+<translation id="3697705478071004188">साइटनुसार क्रमाने लावा</translation>
 <translation id="3699022356773522638">फाइल डाउनलोड करायची आहे का?</translation>
 <translation id="371230970611282515">धोकादायक घटना घडण्याआधी त्यांचे पूर्वानुमान करतो आणि त्यांबद्दल तुम्हाला चेतावणी देतो.</translation>
 <translation id="3714981814255182093">शोध बार उघडा</translation>
@@ -523,6 +525,7 @@
 <translation id="3845098929839618392">गुप्त टॅबमध्ये उघडा</translation>
 <translation id="3856096718352044181">कृपया हा वैध पुरवठादार आहे याची पडताळणी करा किंवा नंतर पुन्हा प्रयत्न करा</translation>
 <translation id="3858860766373142691">नाव</translation>
+<translation id="3859206958100234503">तुमच्या सर्व डिव्हाइसवर तुमचे पासवर्ड, बुकमार्क आणि आणखी बरेच काही मिळवण्यासाठी सिंक करा</translation>
 <translation id="3861633093716975811">लोकप्रिय व्हिडिओ</translation>
 <translation id="3892148308691398805">मजकूर कॉपी करा</translation>
 <translation id="3894427358181296146">फोल्डर जोडा</translation>
@@ -697,6 +700,7 @@
 <translation id="4842515939542199281">तुमचा आवाज वापरून शोधण्यासाठी, मायक्रोफोनवर टॅप करा</translation>
 <translation id="4844633725025837809">अतिरिक्त सुरक्षिततेसाठी, पासवर्ड हे Google पासवर्ड व्यवस्थापक यामध्ये सेव्ह केले जाण्यापूर्वी तुमच्या डिव्हाइसवर एंक्रिप्ट करा</translation>
 <translation id="4850886885716139402">पहा</translation>
+<translation id="4852014461738377247">साइन इन करत आहे\u2026</translation>
 <translation id="4860895144060829044">कॉल करा</translation>
 <translation id="4864369630010738180">साइन इन करत आहे...</translation>
 <translation id="4866368707455379617">Chrome साठी <ph name="MODULE" /> इंस्टॉल करू शकत नाही</translation>
@@ -775,6 +779,7 @@
 <translation id="5246093389635966745">टूलबार शॉर्टकट संपादित करा</translation>
 <translation id="526421993248218238">हे पेज लोड करू शकत नाही</translation>
 <translation id="5271967389191913893">डाउनलोड केली जाण्यासाठी डिव्हाइस आशय उघडू शकत नाही.</translation>
+<translation id="5274286919938458946"><ph name="CARD_DETAIL" /> सह लिंक केलेले</translation>
 <translation id="5292796745632149097">यांना पाठवा</translation>
 <translation id="5300426565656326054">ब्राउझरवर आधारित जाहिरात पर्सनलायझेशन</translation>
 <translation id="5304593522240415983">हे फील्ड रिक्त ठेवता येणार नाही</translation>
@@ -1150,6 +1155,7 @@
 <translation id="7304873321153398381">ऑफलाइन. Chrome तुमचे पासवर्ड तपासू शकत नाही.</translation>
 <translation id="7313188324932846546">सिंक सेट करण्यासाठी टॅप करा</translation>
 <translation id="7332075081379534664">यशस्वीरीत्या साइन इन केले</translation>
+<translation id="7333232495927792353">Google वरून सर्वात उपयुक्त आशय मिळवण्यासाठी सिंक करा</translation>
 <translation id="7339898014177206373">नवीन विंडो</translation>
 <translation id="7340958967809483333">Discover चे पर्याय</translation>
 <translation id="7352339641508007922">मोठा स्क्रीनशॉट काढण्यासाठी ड्रॅग करा</translation>
@@ -1305,6 +1311,7 @@
 <translation id="8103578431304235997">गुप्त टॅब</translation>
 <translation id="8105613260829665809">पुढे सुरू ठेवून, तुम्ही <ph name="BEGIN_TOS_LINK" />सेवा अटी<ph name="END_TOS_LINK" /> यांना सहमती दर्शवता.\nअ‍ॅपमध्ये सुधारणा करण्यात मदत करण्यासाठी, Chrome हे Google ला वापर आणि क्रॅश डेटा पाठवते. <ph name="BEGIN_UMA_LINK" />व्यवस्थापित करा<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
+<translation id="8107530384992929318">क्रमाने लावण्याचे पर्याय बंद करा</translation>
 <translation id="8109613176066109935">तुमच्या सर्व डिव्हाइसवरील तुमचे बुकमार्क मिळवण्यासाठी, सिंक सुरू करा</translation>
 <translation id="8110024788458304985">Chrome ची वैशिष्ट्ये आणि परफॉर्मन्समध्ये सुधारणा करण्यात मदत करा</translation>
 <translation id="8110087112193408731">Digital wellbeing मध्ये तुमची Chrome ॲक्टिव्हिटी दाखवायची का?</translation>
@@ -1378,6 +1385,7 @@
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">इतिहास पृष्ठ उघडा</translation>
 <translation id="8493948351860045254">जागा मोकळी करा</translation>
+<translation id="8497242791509864205">क्रमाने लावण्याचे पर्याय उघडा</translation>
 <translation id="8497480609928300907">गोपनीयता मार्गदर्शक स्पष्टीकरण</translation>
 <translation id="8497726226069778601">अद्याप… येथे पाहण्यासाठी काहीही नाही</translation>
 <translation id="8503559462189395349">Chrome पासवर्ड</translation>
@@ -1530,6 +1538,7 @@
 <translation id="96681097142096641">सरलीकृत पेज पाहायचे आहे का?</translation>
 <translation id="968900484120156207">तुम्ही भेट देता ती पेज येथे दिसतील</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> मिनिटे शिल्लक</translation>
+<translation id="978443947993957527">तुमच्यासाठीचा आशय पहा</translation>
 <translation id="981121421437150478">ऑफलाइन</translation>
 <translation id="983192555821071799">सर्व टॅब बंद करा</translation>
 <translation id="987264212798334818">सामान्य</translation>

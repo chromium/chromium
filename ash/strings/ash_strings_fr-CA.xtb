@@ -65,6 +65,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1275285675049378717">Alimente cet appareil : <ph name="POWER_SOURCE" /></translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">Localiser le téléphone</translation>
+<translation id="1287002645302686982">Un bureau enregistré nommé <ph name="DESK_TEMPLATE_NAME" /> existe déjà</translation>
 <translation id="1289185460362160437">Reviens <ph name="COME_BACK_DAY_OF_WEEK" /> à <ph name="COME_BACK_TIME" />.</translation>
 <translation id="1290331692326790741">Signal faible</translation>
 <translation id="1290982764014248209">Déplacer l'application <ph name="DRAGGED_APP" /> vers le dossier <ph name="FOLDER_NAME" />.</translation>
@@ -94,7 +95,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1420408895951708260">Activer ou désactiver le mode Éclairage nocturne. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">Affichez les photos et les fichiers multimédias récents de votre téléphone sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="1426410128494586442">Oui</translation>
-<translation id="1438357537418863713">La diffusion d'application est maintenant configurée. Lorsque vous commencerez à l'utiliser, les applications récemment lancées s'afficheront ici.</translation>
+<translation id="1447641497144572814">L'écran de veille démarre</translation>
 <translation id="1455242230282523554">Afficher les paramètres de langue</translation>
 <translation id="1460620680449458626">Le volume est désactivé.</translation>
 <translation id="1467432559032391204">À gauche</translation>
@@ -177,6 +178,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Bonjour, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">Entrée de texte</translation>
+<translation id="1982717156487272186">Afficher les données de la semaine précédente</translation>
 <translation id="1989113344093894667">Impossible de capturer le contenu</translation>
 <translation id="1990046457226896323">Les fichiers de synthèse textuelle ont été téléchargés</translation>
 <translation id="1993072747612765854">En savoir plus sur la dernière mise à jour de <ph name="SYSTEM_APP_NAME" /></translation>
@@ -268,6 +270,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="2586561057878260610">Appuyer sur Ctrl+W pour combiner avec <ph name="DESK_NAME" />. Appuyer sur Ctrl+W pour fermer le bureau et les fenêtres.</translation>
 <translation id="2595239820337756193">Combien y a-t-il de milles dans 5 km?</translation>
 <translation id="2596078834055697711">Faire une capture d'écran de la fenêtre</translation>
+<translation id="2598725286293895280">Applications non compatibles dans le bureau</translation>
 <translation id="2607678425161541573">Connexion en ligne requise</translation>
 <translation id="2620016719323068571">Recherchez vos <ph name="CATEGORY" />, vos fichiers, vos applications et plus.</translation>
 <translation id="2620436844016719705">Système</translation>
@@ -625,6 +628,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="4631891353005174729"><ph name="APP_NAME_TYPE" />, note <ph name="RATING_SCORE" /></translation>
 <translation id="4633185660152240791">{0,plural, =1{Restaurez la version antérieure de l'appareil dans un délai d'un jour}one{Restaurez la version antérieure de l'appareil dans un délai de # jour}other{Restaurez la version antérieure de l'appareil dans un délai de # jours}}</translation>
 <translation id="4642092649622328492">Effectuer une capture d'écran partielle</translation>
+<translation id="4644727592819780893">La surface de capture est trop petite pour remplir l'aperçu de la caméra</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, recommandation d'application</translation>
 <translation id="4657775630156561295">La suggestion suivante sera supprimée de l'historique des suggestions de votre compte :
 
@@ -642,6 +646,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="4734965478015604180">Horizontal</translation>
 <translation id="4735498845456076464">Le raccourci-clavier <ph name="LAUNCHER_KEY_NAME" />+Chiffre a été modifié. Pour utiliser les touches de fonction, appuyez sur la touche <ph name="LAUNCHER_KEY_NAME" /> ainsi que sur une touche de la rangée du haut.</translation>
 <translation id="473775607612524610">Mise à jour</translation>
+<translation id="4740516757091333363">Supprimer le bureau enregistré?</translation>
 <translation id="4752784485658729358">Vous pouvez utiliser jusqu'à six bureaux. Retirez un bureau pour en enregistrer un nouveau.</translation>
 <translation id="4759238208242260848">Téléchargements</translation>
 <translation id="4774338217796918551">Reviens demain à <ph name="COME_BACK_TIME" />.</translation>
@@ -694,7 +699,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="5071064518267176975">Une application demande l'autorisation d'utiliser le microphone</translation>
 <translation id="5078796286268621944">NIP incorrect</translation>
 <translation id="5083553833479578423">Déverrouillez davantage de fonctionnalités de l'Assistant Google.</translation>
-<translation id="5106223312672646208">Personnaliser</translation>
 <translation id="5107522548814527560">Web</translation>
 <translation id="5117590920725113268">Afficher le mois suivant</translation>
 <translation id="5136175204352732067">Autre clavier branché</translation>
@@ -739,6 +743,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="5352250171825660495">Le thème sombre est activé</translation>
 <translation id="5356963482258194581">Basculez entre les thèmes sombre et clair. Faites un clic droit sur le bureau et sélectionnez Fond d'écran et style.</translation>
 <translation id="5379115545237091094">Trop de tentatives</translation>
+<translation id="5391307769715781764">Remplacer le bureau enregistré?</translation>
 <translation id="5393156353051693207">Maintenez le doigt n'importe où pour réorganiser vos applications</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> par-dessus <ph name="IN_PLACE_APP" />, puis relâchez-la pour créer un dossier.</translation>
 <translation id="5397578532367286026">Le gestionnaire (<ph name="MANAGER_EMAIL" />) peut examiner les actions effectuées par cet utilisateur, ainsi que son historique, sur chrome.com.</translation>
@@ -783,6 +788,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="5673434351075758678">De « <ph name="FROM_LOCALE" />  à « <ph name="TO_LOCALE" /> » après la synchronisation de vos paramètres.</translation>
 <translation id="5675363643668471212">Élément d'étagère</translation>
 <translation id="5677928146339483299">Bloqué</translation>
+<translation id="5678564054339031017">Afficher les données de la semaine suivante</translation>
 <translation id="5679050765726761783">Un adaptateur d'alimentation à faible consommation est branché</translation>
 <translation id="5682642926269496722">L'Assistant Google n'est pas accessible pour le compte d'utilisateur actuel.</translation>
 <translation id="5689633613396158040">Le mode Éclairage nocturne permet de regarder l'écran plus facilement lorsque l'éclairage est faible. Touchez l'écran pour modifier l'heure à laquelle le mode Éclairage nocturne s'active ou se désactive complètement.</translation>
@@ -971,6 +977,7 @@ Nouvelle installation</translation>
 <translation id="6790428901817661496">Jouer</translation>
 <translation id="6801878137098616817">Modifié récemment</translation>
 <translation id="6803622936009808957">La mise en miroir n'a pas été possible faute de résolutions prises en charge. Le mode de bureau étendu a plutôt été sélectionné.</translation>
+<translation id="6812232930908427253">Impossible d'enregistrer le bureau. Trop de fenêtres ou d'onglets sont ouverts.</translation>
 <translation id="6818242057446442178">Déplacer un mot vers l'arrière</translation>
 <translation id="6819327813400217281">Caméra alignée sur le coin inférieur gauche</translation>
 <translation id="6820676911989879663">Prenez une pause!</translation>

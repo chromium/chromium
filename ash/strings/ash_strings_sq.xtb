@@ -65,6 +65,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1275285675049378717">Po furnizon me energji <ph name="POWER_SOURCE" /></translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">Gjej telefonin</translation>
+<translation id="1287002645302686982">Një tavolinë e ruajtur pune me emrin "<ph name="DESK_TEMPLATE_NAME" />" ekziston tashmë</translation>
 <translation id="1289185460362160437">Kthehu ditën <ph name="COME_BACK_DAY_OF_WEEK" /> në <ph name="COME_BACK_TIME" />.</translation>
 <translation id="1290331692326790741">Sinjal i dobët</translation>
 <translation id="1290982764014248209">Zhvendos <ph name="DRAGGED_APP" /> në dosjen <ph name="FOLDER_NAME" />.</translation>
@@ -94,7 +95,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1420408895951708260">Ndrysho "Dritën e natës". <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">Shiko fotografitë dhe mediat më të fundit të telefonin tënd në <ph name="DEVICE_TYPE" /></translation>
 <translation id="1426410128494586442">Po</translation>
-<translation id="1438357537418863713">Transmetimi i aplikacioneve është konfiguruar tani. Pasi të fillosh, aplikacionet e hapura së fundi do të shfaqen këtu.</translation>
+<translation id="1447641497144572814">Mbrojtësi i ekranit po niset</translation>
 <translation id="1455242230282523554">Shfaq cilësimet e gjuhës</translation>
 <translation id="1460620680449458626">Volumi është i çaktivizuar.</translation>
 <translation id="1467432559032391204">Majtas</translation>
@@ -269,6 +270,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2586561057878260610">Shtyp Ctrl + W për ta kombinuar me <ph name="DESK_NAME" />. Shtyp Ctrl + Shift + W për të mbyllur tavolinën e punës dhe dritaret.</translation>
 <translation id="2595239820337756193">Sa milje janë 5 km</translation>
 <translation id="2596078834055697711">Nxirr një pamje ekrani për dritaren</translation>
+<translation id="2598725286293895280">Aplikacione të pambështetura në tavolinën e punës</translation>
 <translation id="2607678425161541573">Kërkohet identifikim në linjë</translation>
 <translation id="2620016719323068571">Kërko te <ph name="CATEGORY" />, skedarët, aplikacionet dhe të tjera...</translation>
 <translation id="2620436844016719705">Sistemi</translation>
@@ -644,6 +646,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="4734965478015604180">Horizontal</translation>
 <translation id="4735498845456076464">Shkurtorja e tastierës për <ph name="LAUNCHER_KEY_NAME" /> + Numri është ndryshuar. Për të përdorur tastet e funksioneve, shtyp tastin <ph name="LAUNCHER_KEY_NAME" /> + një tast në rreshtin e sipërm.</translation>
 <translation id="473775607612524610">Përditësoje</translation>
+<translation id="4740516757091333363">Të fshihet tavolina e ruajtur e punës?</translation>
 <translation id="4752784485658729358">Lejohen vetëm 6 tavolina të ruajtura pune. Hiq një tavolinë pune për të ruajtur një të re.</translation>
 <translation id="4759238208242260848">Shkarkimet</translation>
 <translation id="4774338217796918551">Kthehu përsëri nesër në <ph name="COME_BACK_TIME" />.</translation>
@@ -696,7 +699,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="5071064518267176975">Një aplikacion kërkon të përdorë mikrofonin</translation>
 <translation id="5078796286268621944">Kod i pasaktë PIN</translation>
 <translation id="5083553833479578423">Shkyç më shumë funksione të "Asistentit".</translation>
-<translation id="5106223312672646208">Personalizo</translation>
 <translation id="5107522548814527560">Ueb</translation>
 <translation id="5117590920725113268">Trego muajin e ardhshëm</translation>
 <translation id="5136175204352732067">Është lidhur një tastierë tjetër</translation>
@@ -741,6 +743,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="5352250171825660495">"Tema e errët" është aktive</translation>
 <translation id="5356963482258194581">Ndërro mes temës së errët dhe temës së ndriçuar. Kliko me butonin djathtas në desktop dhe zgjidh "Imazhi i sfondit dhe stili".</translation>
 <translation id="5379115545237091094">Shumë përpjekje</translation>
+<translation id="5391307769715781764">Të zëvendësohet tavolina e ruajtur e punës?</translation>
 <translation id="5393156353051693207">Prek dhe mbaj të shtypur kudo për të rirenditur aplikacionet</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> mbi <ph name="IN_PLACE_APP" />, lëshoje për të krijuar dosje.</translation>
 <translation id="5397578532367286026">Përdorimi dhe historiku i këtij përdoruesi mund të rishikohen nga menaxheri (<ph name="MANAGER_EMAIL" />) në chrome.com.</translation>
@@ -974,6 +977,7 @@ Instalim i ri</translation>
 <translation id="6790428901817661496">Luaj</translation>
 <translation id="6801878137098616817">Modifikuar së fundi</translation>
 <translation id="6803622936009808957">Nuk mundi të pasqyrojë ekranet sepse nuk u gjetën rezolucione të mbështetura. Në vend të kësaj kaloi në desktopin e zgjeruar.</translation>
+<translation id="6812232930908427253">Tavolina e punës nuk mund të ruhej. Shumë dritare ose skeda.</translation>
 <translation id="6818242057446442178">Një fjalë pas</translation>
 <translation id="6819327813400217281">Pamja paraprake e kamerës ka kaluar në këndin e poshtëm majtas</translation>
 <translation id="6820676911989879663">Bëj një pushim!</translation>

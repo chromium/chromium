@@ -56,6 +56,7 @@
 <translation id="124678866338384709">ปิดแท็บปัจจุบัน</translation>
 <translation id="1246905108078336582">นำคำแนะนำออกจากคลิปบอร์ดไหม</translation>
 <translation id="1258753120186372309">Google doodle: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">เรื่องรออ่าน</translation>
 <translation id="1266864766717917324">แชร์<ph name="CONTENT_TYPE" />ไม่ได้</translation>
 <translation id="1283039547216852943">แตะเพื่อขยาย</translation>
 <translation id="1285310382777185058">เปลี่ยนภาษา</translation>
@@ -312,6 +313,7 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{ไฟล์เสียง # ไฟล์}other{ไฟล์เสียง # ไฟล์}}</translation>
 <translation id="265156376773362237">การโหลดล่วงหน้าแบบมาตรฐาน</translation>
 <translation id="2656405586795711023">เว็บแอป</translation>
+<translation id="2669454659051515572">ใครก็ตามที่ใช้อุปกรณ์นี้จะเห็นไฟล์ที่ดาวน์โหลด</translation>
 <translation id="2702516483241149200">ใหม่: แชร์ลิงก์ที่เลื่อนมายังข้อความนี้</translation>
 <translation id="2704606927547763573">คัดลอกแล้ว</translation>
 <translation id="2707726405694321444">รีเฟรชหน้า</translation>
@@ -493,10 +495,10 @@
 <translation id="363596933471559332">ลงชื่อเข้าใช้เว็บไซต์โดยอัตโนมัติโดยใช้ข้อมูลเข้าสู่ระบบที่เก็บไว้ เมื่อฟีเจอร์นี้ปิดอยู่ ระบบจะขอให้คุณยืนยันทุกครั้งก่อนลงชื่อเข้าใช้เว็บไซต์</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3677911431265050325">ขอเว็บไซต์ในอุปกรณ์เคลื่อนที่</translation>
-<translation id="3685860403008476208">ใครก็ตามที่ใช้อุปกรณ์นี้อาจเห็นไฟล์ที่คุณดาวน์โหลดในโหมดไม่ระบุตัวตน</translation>
 <translation id="3687645719033307815">คุณกำลังดูตัวอย่างของหน้านี้</translation>
 <translation id="3690369331356918524">เตือนคุณในกรณีที่รหัสผ่านรั่วไหลจากการละเมิดข้อมูล</translation>
 <translation id="3692944402865947621">ดาวน์โหลด <ph name="FILE_NAME" /> ไม่สำเร็จเนื่องจากเข้าถึงตำแหน่งที่เก็บข้อมูลไม่ได้</translation>
+<translation id="3697705478071004188">จัดเรียงตามเว็บไซต์</translation>
 <translation id="3699022356773522638">ดาวน์โหลดไฟล์ใช่ไหม</translation>
 <translation id="371230970611282515">คาดการณ์และเตือนคุณก่อนเกิดเหตุการณ์อันตราย</translation>
 <translation id="3714981814255182093">เปิดแถบค้นหา</translation>
@@ -523,6 +525,7 @@
 <translation id="3845098929839618392">เปิดในแท็บที่ไม่ระบุตัวตน</translation>
 <translation id="3856096718352044181">โปรดยืนยันว่านี่เป็นผู้ให้บริการที่ถูกต้องหรือลองอีกครั้งภายหลัง</translation>
 <translation id="3858860766373142691">ชื่อ</translation>
+<translation id="3859206958100234503">ซิงค์เพื่อรับรหัสผ่าน บุ๊กมาร์ก และอีกมากมายในอุปกรณ์ทั้งหมดของคุณ</translation>
 <translation id="3861633093716975811">วิดีโอยอดนิยม</translation>
 <translation id="3892148308691398805">คัดลอกข้อความ</translation>
 <translation id="3894427358181296146">เพิ่มโฟลเดอร์</translation>
@@ -697,6 +700,7 @@
 <translation id="4842515939542199281">แตะไมโครโฟนเพื่อค้นหาด้วยเสียง</translation>
 <translation id="4844633725025837809">เข้ารหัสให้กับรหัสผ่านในอุปกรณ์ก่อนบันทึกลงในเครื่องมือจัดการรหัสผ่านของ Google เพื่อเพิ่มความปลอดภัย</translation>
 <translation id="4850886885716139402">มุมมอง</translation>
+<translation id="4852014461738377247">กำลังลงชื่อเข้าใช้\u2026</translation>
 <translation id="4860895144060829044">โทร</translation>
 <translation id="4864369630010738180">กำลังลงชื่อเข้าใช้...</translation>
 <translation id="4866368707455379617">ติดตั้ง <ph name="MODULE" /> สำหรับ Chrome ไม่ได้</translation>
@@ -775,6 +779,7 @@
 <translation id="5246093389635966745">แก้ไขทางลัดแถบเครื่องมือ</translation>
 <translation id="526421993248218238">โหลดหน้านี้ไม่ได้</translation>
 <translation id="5271967389191913893">อุปกรณ์ไม่สามารถเปิดเนื้อหาที่จะดาวน์โหลดได้</translation>
+<translation id="5274286919938458946">ลิงก์อยู่กับ <ph name="CARD_DETAIL" /></translation>
 <translation id="5292796745632149097">ส่งไปที่</translation>
 <translation id="5300426565656326054">การปรับโฆษณาตามโปรไฟล์ของผู้ใช้ด้วยข้อมูลจากเบราว์เซอร์</translation>
 <translation id="5304593522240415983">ต้องกรอกข้อมูลในช่องนี้</translation>
@@ -1150,6 +1155,7 @@
 <translation id="7304873321153398381">ออฟไลน์ Chrome ตรวจสอบรหัสผ่านของคุณไม่ได้</translation>
 <translation id="7313188324932846546">แตะเพื่อตั้งค่าการซิงค์</translation>
 <translation id="7332075081379534664">ลงชื่อเข้าใช้สำเร็จ</translation>
+<translation id="7333232495927792353">ซิงค์เพื่อรับเนื้อหาที่เกี่ยวข้องที่สุดจาก Google</translation>
 <translation id="7339898014177206373">หน้าต่างใหม่</translation>
 <translation id="7340958967809483333">ตัวเลือกสำหรับ Discover</translation>
 <translation id="7352339641508007922">ลากเพื่อถ่ายภาพหน้าจอแบบยาว</translation>
@@ -1305,6 +1311,7 @@
 <translation id="8103578431304235997">แท็บที่ไม่ระบุตัวตน</translation>
 <translation id="8105613260829665809">การดำเนินการต่อหมายความว่าคุณยอมรับ<ph name="BEGIN_TOS_LINK" />ข้อกำหนดในการให้บริการ<ph name="END_TOS_LINK" />\nChrome จะส่งข้อมูลการใช้งานและข้อขัดข้องไปยัง Google เพื่อช่วยปรับปรุงแอป <ph name="BEGIN_UMA_LINK" />จัดการ<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
+<translation id="8107530384992929318">ปิดตัวเลือกการจัดเรียง</translation>
 <translation id="8109613176066109935">เปิดการซิงค์เพื่อรับบุ๊กมาร์กในอุปกรณ์ทุกเครื่องของคุณ</translation>
 <translation id="8110024788458304985">ช่วยปรับปรุงฟีเจอร์และประสิทธิภาพของ Chrome</translation>
 <translation id="8110087112193408731">ต้องการแสดงกิจกรรม Chrome ในไลฟ์สไตล์ดิจิทัลไหม</translation>
@@ -1378,6 +1385,7 @@
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">เปิดหน้าประวัติการเข้าชม</translation>
 <translation id="8493948351860045254">เพิ่มพื้นที่ว่าง</translation>
+<translation id="8497242791509864205">เปิดตัวเลือกการจัดเรียง</translation>
 <translation id="8497480609928300907">คำอธิบายคู่มือความเป็นส่วนตัว</translation>
 <translation id="8497726226069778601">ที่นี่ยังไม่มีอะไรให้ดู… เลย</translation>
 <translation id="8503559462189395349">รหัสผ่าน Chrome</translation>
@@ -1530,6 +1538,7 @@
 <translation id="96681097142096641">ดูหน้าเว็บในโหมดผู้อ่านไหม</translation>
 <translation id="968900484120156207">หน้าที่คุณเข้าชมจะปรากฏที่นี่</translation>
 <translation id="970715775301869095">เหลือ <ph name="MINUTES" /> นาที</translation>
+<translation id="978443947993957527">ดูเนื้อหาสำหรับคุณ</translation>
 <translation id="981121421437150478">ออฟไลน์</translation>
 <translation id="983192555821071799">ปิดแท็บทั้งหมด</translation>
 <translation id="987264212798334818">ทั่วไป</translation>

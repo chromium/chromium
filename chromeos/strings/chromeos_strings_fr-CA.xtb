@@ -38,6 +38,7 @@
 <translation id="131421566576084655">La date de la dernière réinitialisation des données n'est pas disponible</translation>
 <translation id="1314565355471455267">RPV Android</translation>
 <translation id="131461803491198646">Réseau domestique, sans itinérance</translation>
+<translation id="132712914231403017">Installer l'image du micrologiciel</translation>
 <translation id="1327977588028644528">Passerelle</translation>
 <translation id="1328223165223065150">Couleur du fond d'écran</translation>
 <translation id="1330426557709298164">JPG</translation>
@@ -81,6 +82,7 @@
 <translation id="1641857168437328880">Chargeur de document (recto)</translation>
 <translation id="1643449475550628585">Modifier le fond d'écran tous les jours</translation>
 <translation id="1644574205037202324">Historique</translation>
+<translation id="1645954272419197032">Veuillez confirmer les renseignements sur l'appareil</translation>
 <translation id="1662989795263954667">Tâchez arrêtée : à court d'encre</translation>
 <translation id="1668469839109562275">RPV intégré</translation>
 <translation id="1703835215927279855">Lettre</translation>
@@ -119,6 +121,7 @@
 <translation id="2006864819935886708">Connectivité</translation>
 <translation id="2008685064673031089">Recherche de numéros premiers</translation>
 <translation id="2016697457005847575">Essayer les étapes de dépannage</translation>
+<translation id="2016848882344942759">--pas de marque blanque--</translation>
 <translation id="202500043506723828">EID</translation>
 <translation id="2080070583977670716">Plus de paramètres</translation>
 <translation id="2085089206770112532">Diminuer la luminosité de l'écran</translation>
@@ -149,6 +152,7 @@
 <translation id="2271469253353559191">Programmation du mode sombre</translation>
 <translation id="2275586345903859204">La réparation est terminée</translation>
 <translation id="2287186687001756809">Aucune image proposée. Pour ajouter des photos, accédez au site <ph name="LINK" /></translation>
+<translation id="2294753434210277304">Insérez un appareil de stockage externe, tel qu'une clé USB ou une carte SD, avec l'image téléchargée par l'utilitaire de récupération Chromebook</translation>
 <translation id="2307344026739914387">Utiliser la biclé actuelle</translation>
 <translation id="2320295602967756579">Activer le thème clair</translation>
 <translation id="2323506179655536734">IGNORÉ</translation>
@@ -189,6 +193,7 @@
 <translation id="2712812801627182647">Clé d'authentification TLS</translation>
 <translation id="2713444072780614174">Blanc</translation>
 <translation id="2717139507051041123">Activer le mode Couleur sombre</translation>
+<translation id="2727250716596204208">Impossible de trouver l'image du micrologiciel. Insérez un appareil de stockage externe, tel qu'une clé USB ou une carte SD, avec l'image téléchargée par l'utilitaire de récupération Chromebook.</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2751739896257479635">Authentification EAP phase 2</translation>
 <translation id="2756652381241102009">Exécuter les diagnostics</translation>
@@ -220,6 +225,7 @@
 <translation id="3122464029669770682">Processeur</translation>
 <translation id="3124039320086536031">L'appareil est connecté.</translation>
 <translation id="3127341325625468058">{PAGE_NUMBER,plural, =0{Retirer la page?}=1{Retirer la page {PAGE_NUMBER}?}one{Retirer la page {PAGE_NUMBER}?}other{Retirer la page {PAGE_NUMBER}?}}</translation>
+<translation id="3137983112374760826">Approvisionnement de l'appareil en cours…</translation>
 <translation id="315116470104423982">Données mobiles</translation>
 <translation id="3156846309055100599">Numérisation de la page <ph name="PAGE_NUMBER" /> en cours…</translation>
 <translation id="315738237743207937">Un portail captif a été détecté</translation>
@@ -241,6 +247,7 @@
 <translation id="3340011300870565703">Le niveau de la pile de l'écouteur droit est à <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3368922792935385530">Connecté</translation>
 <translation id="3369013195428705271">Voulez-vous vraiment effacer tout l'historique d'impression? Vos tâches d'impression courantes ne seront pas effacées.</translation>
+<translation id="3383751554789092165">Modifiez les renseignements sur l'appareil au besoin.</translation>
 <translation id="3404249063913988450">Activer l'écran de veille</translation>
 <translation id="3404770484521709967">Les composants sont installés correctement.</translation>
 <translation id="3413935475507503304">Pour lancer la mise à jour, cliquez sur Suivant.</translation>
@@ -279,6 +286,7 @@
 <translation id="3748026146096797577">Non connecté</translation>
 <translation id="3749289110408117711">Nom du fichier</translation>
 <translation id="3771294271822695279">Fichiers vidéo</translation>
+<translation id="3774059845329307709">Numéro de série</translation>
 <translation id="3784455785234192852">Verrouiller</translation>
 <translation id="38114475217616659">Effacer tout l'historique</translation>
 <translation id="3820172043799983114">NIP erroné.</translation>
@@ -362,6 +370,7 @@
 <translation id="455835558791489930">Pile de <ph name="CHARGE_VALUE" /> mAh</translation>
 <translation id="4561801978359312462">Carte SIM déverrouillée</translation>
 <translation id="4562494484721939086">Aucun service</translation>
+<translation id="4568938274596692027">L'installation est terminée. Préparation au redémarrage en cours…</translation>
 <translation id="458794348635939462">Impossible de résoudre tous les hôtes</translation>
 <translation id="4593212453765072419">Authentification requise du mandataire</translation>
 <translation id="4609350030397390689">Diminuer la luminosité du clavier</translation>
@@ -405,6 +414,7 @@
 <translation id="4890353053343094602">Choisissez-en un immédiatement</translation>
 <translation id="4891842000192098784">Stress</translation>
 <translation id="4897058166682006107">Le niveau de la pile de l'écouteur gauche est à <ph name="BATTERY_PERCENTAGE" /> %.</translation>
+<translation id="4908030561598728899">Installation du micrologiciel en cours…</translation>
 <translation id="4915052247106771211">L'appareil sera réinitialisé aux paramètres par défaut (Powerwash).</translation>
 <translation id="4917385247580444890">Fort</translation>
 <translation id="4917889632206600977">Tâche arrêtée : à court de papier</translation>
@@ -619,8 +629,10 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="6768237774506518020">Taux d'échec élevé des résolutions DNS</translation>
 <translation id="680983167891198932">Clé</translation>
 <translation id="6816797338148849397">Des renseignements concernant votre sélection sont accessibles. Servez-vous de la touche de flèche vers le haut pour y accéder.</translation>
+<translation id="6822504384524564824">L'UGS ne doit être changée que si le ou les nouveaux composants diffèrent de ceux qu'ils remplacent. Par exemple, le remplacement d'un écran tactile par un écran non tactile, ou la mise à niveau de la mémoire de 8 Go à 16 Go.</translation>
 <translation id="6840315122969944400">Réparation d'un <ph name="DEVICE_TYPE" /></translation>
 <translation id="6853312040151791195">Vitesse de décharge</translation>
+<translation id="6876833053687020046">Code d'article DRAM</translation>
 <translation id="6889786074662672253">Pendant le redémarrage, ne débranchez pas cet appareil externe et n'éteignez pas votre ordinateur. Vous pouvez réduire cette fenêtre. Cela peut prendre quelques minutes, et votre appareil externe peut ne pas fonctionner pendant ce temps.</translation>
 <translation id="6905724422583748843">Retourner à <ph name="PAGE_NAME" /></translation>
 <translation id="6910312834584889076">Le couvercle du numériseur est ouvert. Fermez le couvercle, puis réessayez.</translation>
@@ -668,6 +680,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="7343649194310845056">Appareils réseau</translation>
 <translation id="7359657277149375382">Type de fichier</translation>
 <translation id="7375053625150546623">EAP</translation>
+<translation id="7378553660733179982">UGS</translation>
 <translation id="7378886533986123738">Changer l'écran de veille</translation>
 <translation id="7397270852490618635">Désactiver le thème clair</translation>
 <translation id="741244894080940828">conversion</translation>
@@ -767,6 +780,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="8364946094152050673">Le champ des serveurs de nom est vide</translation>
 <translation id="8372477600026034341">Hôtes supplémentaires</translation>
 <translation id="8378855320830505539">Région</translation>
+<translation id="8382302752385457774">Marque blanche</translation>
 <translation id="8395584934117017006">Cet appareil <ph name="DEVICE_TYPE" /> est géré par l'entreprise</translation>
 <translation id="8398927464629426868">La vitesse à laquelle l'appareil se charge ou se décharge actuellement</translation>
 <translation id="8422748173858722634">IIEM</translation>

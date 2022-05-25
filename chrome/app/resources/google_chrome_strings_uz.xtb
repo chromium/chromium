@@ -79,6 +79,7 @@
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> allaqachon ushbu Chrome profiliga kirgan. Internetni alohida kezish uchun Chrome siz uchun alohida profil yaratadi.</translation>
 <translation id="2580411288591421699">Hozir ishlab turgan versiyadagi Google Chrome brauzerini o‘rnatib bo‘lmaydi. Google Chrome brauzeringizni yoping va qaytadan urinib ko‘ring.</translation>
 <translation id="2586406160782125153">Bu qurilmadagi brauzer tarixini tozalaydi. Ma’lumotlaringizni keyinroq olish uchun Chrome brauzeriga <ph name="USER_EMAIL" /> sifatida kiring.</translation>
+<translation id="2597976513418770460">Chrome brauzeri maʼlumotlarini <ph name="ACCOUNT_EMAIL" /> profilidan oling</translation>
 <translation id="2622559029861875898">Chrome yangilanishlar chiqqanini tekshira olmadi. Internet aloqasini tekshiring.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2652691236519827073">Havolani yangi &amp;varaqda ochish</translation>
@@ -310,6 +311,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="7801699035218095297">Chrome parollarni nusxalashga urinmoqda. Ruxsat berish uchun Windows parolingizni kiriting.</translation>
 <translation id="7808348361785373670">Chrome‘dan olib tashlash...</translation>
 <translation id="7825851276765848807">O‘rnatish vaqtida kutilmagan xatolik yuz berdi. Google Chrome‘ni qayta yuklab oling.</translation>
+<translation id="7880591377632733558"><ph name="ACCOUNT_FIRST_NAME" />, Chrome brauzeriga xush kelibsiz!</translation>
 <translation id="7890208801193284374">Agar kompyuterdan yaqinlaringiz va do‘stlaringiz ham foydalansa, ular Chrome brauzerini o‘zlari xohlagancha sozlab olishlari mumkin.</translation>
 <translation id="7896673875602241923">Oldinroq Chrome profiliga kimdir bu kompyuterdan <ph name="ACCOUNT_EMAIL_LAST" /> sifatida kirgan. Ma’lumotlaringizni alohida saqlash uchun yangi Chrome profilini yarating.</translation>
 <translation id="7917876797003313048">Kirilgan Google hisoblaringizni boshqarishingiz mumkin. Google hisoblaringizdan Chrome brauzeri, Play Market va Gmail kabilardan foydalaniladi. Oila aʼzosi kabi biror kishi uchun hisob qoʻshmoqchi boʻlsangiz, yangi shaxsni <ph name="DEVICE_TYPE" /> qurilmasiga qoʻshing. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
@@ -335,6 +337,7 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="8418845734693287262">Hisobga kirish maʼlumotlaringiz eskirgani sababli ChromeOS maʼlumotlaringizni sinxronlay olmadi.</translation>
 <translation id="8421734018304082652">Bu fayl shifrlangani uchun Chrome uni blokladi Egasidan uni kodsizlashni soʻrang</translation>
 <translation id="8433638294851456451">Bu yerdan Android telefoningizga raqam yuborish uchun ikkala qurilmada Chrome hisobingizga kiring.</translation>
+<translation id="8451192282033883849">Hisobingiz <ph name="MANAGER_NAME" /> domenida boshqariladi. Administrator Chrome brauzeri profili va undagi bukmarklar, tarix va parollar kabi maʼlumotlarni koʻrib, tahrirlay oladi.</translation>
 <translation id="8498858610309223613">Google Chrome xavfsizlik tizimiga maxsus yangilanish oʻrnatildi. Qayta ishga tushiring va ochiq sahifalarni tiklang.</translation>
 <translation id="8504220326736535258">Bu fayl zararli dastur boʻlgani uchun Chrome uni blokladi</translation>
 <translation id="8516431725144212809">Chrome taxmin qilgan qiziqishlaringiz</translation>

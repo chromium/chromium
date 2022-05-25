@@ -78,6 +78,7 @@
 <translation id="1578784163189013834">Velg skjermsparerbakgrunn</translation>
 <translation id="1615335640928990664">Databruk siden <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Kjør ladetest</translation>
+<translation id="1631385268983122904">Ikke sett enheten sammen igjen ennå</translation>
 <translation id="1639239467298939599">Laster inn</translation>
 <translation id="1641857168437328880">Dokumentmater (ensidig)</translation>
 <translation id="1643449475550628585">Endre bakgrunnsbilde daglig</translation>
@@ -85,6 +86,7 @@
 <translation id="1645954272419197032">Bekreft enhetsinformasjonen</translation>
 <translation id="1662989795263954667">Stoppet – tom for blekk</translation>
 <translation id="1668469839109562275">Innebygd VPN</translation>
+<translation id="1676557873873341166">Tar opp video</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS-resolveren er til stede</translation>
 <translation id="1715359911173058521">Det er problemer med å kommunisere med skanneren. Sjekk nettverks- eller USB-forbindelsen, og prøv på nytt.</translation>
@@ -159,6 +161,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Slå på Bluetooth for å finne enheter i nærheten</translation>
+<translation id="2340422556570134524">Skrivebeskyttelse er slått på uventet. Slå av skrivebeskyttelse manuelt før du prøver på nytt.</translation>
 <translation id="2346474577291266260">Utmerket (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">Fortsett</translation>
 <translation id="2360257214555822463">Fant <ph name="LINK_BEGIN" />ikke-kvalifiserte komponenter<ph name="LINK_END" />. Hvis du velger å bekrefte at disse er installert, må du gjøre det nå.</translation>
@@ -474,6 +477,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="5372659122375744710">Wi-Fi-nettverket er ikke sikkert</translation>
 <translation id="5376354385557966694">Automatisk lys modus</translation>
 <translation id="537872351913703572">Enheten skal få ny bruker eller organisasjon</translation>
+<translation id="5389159777326897627">Bakgrunn og stil</translation>
 <translation id="5389224261615877010">Regnbue</translation>
 <translation id="5395600419410242651">Slett alle data</translation>
 <translation id="5400907029458559844">Enheten kobler seg til.</translation>
@@ -643,6 +647,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="6961170852793647506">For å begynne, legg dokumentet på skanneren</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">Fastvareversjon</translation>
+<translation id="6995564396478647735">Sørg for at skrivebeskyttelse er på</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> administrerer denne enheten og har tilgang til all brukeraktivitet, blant annet nettsteder som besøkes, passord og e-post.</translation>
 <translation id="7040230719604914234">Operatør</translation>
 <translation id="7041549558901442110">Enheten er ikke tilkoblet.</translation>
@@ -653,6 +658,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Mislykket – autorisasjonen mislyktes</translation>
 <translation id="7103252855940681301">Enhet <ph name="INDEX" /> av <ph name="COUNT" />. Navn: <ph name="NAME" />.</translation>
+<translation id="7126228745139711113">Skrivebeskyttelse er avslått</translation>
 <translation id="7134436342991564651">{0,plural, =1{Navnetjener}other{Navnetjenere}}</translation>
 <translation id="7143207342074048698">Kobler til</translation>
 <translation id="7144878232160441200">Prøv på nytt</translation>
@@ -744,6 +750,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="80398733265834479">Slå på automatisk fargemodus</translation>
 <translation id="8041089156583427627">Send tilbakemelding</translation>
 <translation id="8045012663542226664">Kutt mikrofonlyden</translation>
+<translation id="8063022551652308521">Skrivebeskyttelse er fremdeles avslått. For å fortsette, slå på skrivebeskyttelse.</translation>
 <translation id="8075838845814659848">Gjenværende batteri</translation>
 <translation id="8082366717211101304">Kan ikke foreta DNS-oppslag fra Android-apper</translation>
 <translation id="8083281199617904460">Denne reparasjonsprosessen er beregnet på en kvalifisert reparatør. Den skal kun startes etter at de ikke-fungerende komponentene er byttet ut.</translation>
@@ -814,6 +821,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Bruk venstre- eller høyrepilen for å administrere denne funksjonen.</translation>
 <translation id="8712637175834984815">Skjønner</translation>
 <translation id="871560550817059752">Mislykket – tom for blekk</translation>
+<translation id="8717030727630712160">Gjenopptar reparasjonsprosessen …</translation>
 <translation id="8723108084122415655">Tidsforsinkelsen for ikke-standardnettverket er over grenseverdien</translation>
 <translation id="8725066075913043281">Prøv på nytt</translation>
 <translation id="8726019395068607495">Stoppet – luken er åpen</translation>
@@ -835,6 +843,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Enheten er et nettbrett.</translation>
 <translation id="8881098542468797602">Testen er fullført</translation>
+<translation id="8897267175591692539">Nå kan du sette enheten sammen igjen</translation>
 <translation id="8898840733695078011">Signalstyrke</translation>
 <translation id="8910721771319628100">Tidsforsinkelsen for standardnettverket er over grenseverdien</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" /> – <ph name="DEVICE_TYPE" /></translation>

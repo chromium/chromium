@@ -78,6 +78,7 @@ tetapan OS Chrome<ph name="LINK_END" /> anda</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> telah pun dilog masuk ke profil Chrome ini. Untuk menjadikan penyemakan imbas anda terpisah, Chrome boleh membuat profil anda sendiri untuk anda.</translation>
 <translation id="2580411288591421699">Tidak dapat memasang versi Google Chrome yang sama yang kini dijalankan. Sila tutup Google Chrome dan cuba semula.</translation>
 <translation id="2586406160782125153">Tindakan ini akan memadamkan data semakan imbas anda daripada peranti ini. Untuk mendapatkan kembali data anda kemudian, log masuk ke Chrome sebagai <ph name="USER_EMAIL" />.</translation>
+<translation id="2597976513418770460">Dapatkan bahan penyemak imbas Chrome anda daripada <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="2622559029861875898">Chrome tidak dapat menyemak kemas kini. Cuba periksa sambungan Internet anda.</translation>
 <translation id="2645435784669275700">Chrome OS</translation>
 <translation id="2652691236519827073">Buka Pautan dalam &amp;tab Chrome Baharu</translation>
@@ -304,6 +305,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="7801699035218095297">Google Chrome cuba menyalin kata laluan. Taip kata laluan Windows anda untuk membenarkan penyalinan.</translation>
 <translation id="7808348361785373670">Alih keluar daripada Chrome...</translation>
 <translation id="7825851276765848807">Gagal pemasangan disebabkan ralat yang tidak dinyatakan. Sila muat turun semula Google Chrome.</translation>
+<translation id="7880591377632733558">Selamat Datang ke Chrome, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="7890208801193284374">Jika anda berkongsi komputer, rakan dan keluarga boleh menyemak imbas secara berasingan dan menyediakan Chrome sebagaimana yang mereka mahukan.</translation>
 <translation id="7896673875602241923">Sebelum ini, seseorang telah log masuk ke Chrome pada komputer ini sebagai <ph name="ACCOUNT_EMAIL_LAST" />. Sila buat pengguna Chrome baharu untuk mengasingkan maklumat anda.</translation>
 <translation id="7917876797003313048">Anda boleh mengurus Google Account anda yang dilog masuk. Google Account anda digunakan untuk penyemak imbas Chrome, Play Store, Gmail dan pelbagai lagi. Jika anda ingin menambah akaun untuk orang lain, seperti ahli keluarga, tambahkan sahaja orang baharu pada <ph name="DEVICE_TYPE" /> anda. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
@@ -329,6 +331,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="8418845734693287262">Chrome OS tidak dapat menyegerakkan data anda kerana butiran log masuk akaun anda sudah lapuk.</translation>
 <translation id="8421734018304082652">Chrome menyekat fail ini kerana fail ini disulitkan. Minta pemilik fail ini untuk menyahsulitnya</translation>
 <translation id="8433638294851456451">Untuk menghantar nombor dari sini ke telefon Android anda, log masuk ke Chrome pada kedua-dua peranti.</translation>
+<translation id="8451192282033883849">Akaun anda diurus oleh <ph name="MANAGER_NAME" />. Pentadbir anda boleh melihat dan mengedit profil penyemak imbas Chrome ini dan datanya seperti penanda halaman, sejarah dan kata laluan.</translation>
 <translation id="8498858610309223613">Kemas kini keselamatan khas untuk Google Chrome baru sahaja diterapkan. Mulakan semula sekarang dan kami akan memulihkan tab anda.</translation>
 <translation id="8504220326736535258">Chrome menyekat fail ini kerana mengandungi perisian hasad</translation>
 <translation id="8516431725144212809">Minat anda seperti yang dianggarkan oleh Chrome</translation>

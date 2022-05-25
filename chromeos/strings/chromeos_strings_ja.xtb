@@ -78,6 +78,7 @@
 <translation id="1578784163189013834">スクリーン セーバーの背景を選択する</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> 以降のデータ使用量</translation>
 <translation id="1621067168122174824">充電テストを実行</translation>
+<translation id="1631385268983122904">まだデバイスを組み立てないでください</translation>
 <translation id="1639239467298939599">読み込み中</translation>
 <translation id="1641857168437328880">ドキュメント フィーダー（片面）</translation>
 <translation id="1643449475550628585">壁紙画像を毎日変更する</translation>
@@ -85,6 +86,7 @@
 <translation id="1645954272419197032">デバイス情報を確認してください</translation>
 <translation id="1662989795263954667">停止 - インク切れ</translation>
 <translation id="1668469839109562275">組み込みの VPN</translation>
+<translation id="1676557873873341166">動画を撮影しています</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS Resolver の存在</translation>
 <translation id="1715359911173058521">スキャナとの通信に問題が発生しました。ネットワークまたは USB の接続を確認してから、もう一度お試しください。</translation>
@@ -159,6 +161,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">近くのデバイスを検出するには Bluetooth をオンにしてください</translation>
+<translation id="2340422556570134524">書き込み保護が予期せずオンになっています。書き込み保護を手動でオフにしてから、もう一度お試しください。</translation>
 <translation id="2346474577291266260">非常に強い（<ph name="SIGNAL_STRENGTH" />）</translation>
 <translation id="2359808026110333948">続行</translation>
 <translation id="2360257214555822463"><ph name="LINK_BEGIN" />不適格なコンポーネント<ph name="LINK_END" />が検出されました。これらをインストールしたことを確認する場合は、ここで行ってください。</translation>
@@ -474,6 +477,7 @@
 <translation id="5372659122375744710">Wi-Fi ネットワークが保護されていません</translation>
 <translation id="5376354385557966694">ライトモードを自動的に設定する</translation>
 <translation id="537872351913703572">別のユーザーまたは組織がデバイスを使用する</translation>
+<translation id="5389159777326897627">壁紙とスタイル</translation>
 <translation id="5389224261615877010">虹</translation>
 <translation id="5395600419410242651">すべてのデータを消去する</translation>
 <translation id="5400907029458559844">デバイスは接続中です。</translation>
@@ -643,6 +647,7 @@
 <translation id="6961170852793647506">まずスキャナにドキュメントを置きます</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">ファームウェア リビジョン</translation>
+<translation id="6995564396478647735">書き込み保護がオンになっていることを確認してください</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> はこのデバイスを管理しており、閲覧したウェブページ、パスワード、メールなど、すべてのユーザー アクティビティにアクセスできます。</translation>
 <translation id="7040230719604914234">携帯通信会社</translation>
 <translation id="7041549558901442110">デバイスは接続されていません。</translation>
@@ -653,6 +658,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">失敗 - 認証に失敗しました</translation>
 <translation id="7103252855940681301">デバイス <ph name="INDEX" />/<ph name="COUNT" />、名前: <ph name="NAME" />。</translation>
+<translation id="7126228745139711113">書き込み保護がオフになっています</translation>
 <translation id="7134436342991564651">{0,plural, =1{ネームサーバー}other{ネームサーバー}}</translation>
 <translation id="7143207342074048698">接続中</translation>
 <translation id="7144878232160441200">再読み込み</translation>
@@ -744,6 +750,7 @@
 <translation id="80398733265834479">自動カラー モードを有効にする</translation>
 <translation id="8041089156583427627">フィードバックを送信</translation>
 <translation id="8045012663542226664">マイクのミュート</translation>
+<translation id="8063022551652308521">書き込み保護はまだオフになっています。続行するには、書き込み保護をオンにしてください。</translation>
 <translation id="8075838845814659848">バッテリー残量</translation>
 <translation id="8082366717211101304">Android アプリから DNS を解決できません</translation>
 <translation id="8083281199617904460">この修復プロセスは、訓練を受けた修復技術者が行うことを想定しています。不具合のあるコンポーネントを交換した後で開始してください。</translation>
@@ -814,6 +821,7 @@
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> 左右矢印キーでこの機能を管理できます。</translation>
 <translation id="8712637175834984815">閉じる</translation>
 <translation id="871560550817059752">失敗 - インクがありません</translation>
+<translation id="8717030727630712160">修復プロセスを再開しています…</translation>
 <translation id="8723108084122415655">デフォルト以外のネットワークの応答時間がしきい値を超えています</translation>
 <translation id="8725066075913043281">やり直し</translation>
 <translation id="8726019395068607495">停止 - 扉が開いています</translation>
@@ -835,6 +843,7 @@
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">デバイスの種類はタブレットです。</translation>
 <translation id="8881098542468797602">テストが成功しました</translation>
+<translation id="8897267175591692539">デバイスを組み立てることができます</translation>
 <translation id="8898840733695078011">電波強度</translation>
 <translation id="8910721771319628100">デフォルトのネットワークの応答時間がしきい値を超えています</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" /> さんの <ph name="DEVICE_TYPE" /></translation>

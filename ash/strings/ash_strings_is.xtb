@@ -24,6 +24,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="109942774857561566">Mér leiðist</translation>
 <translation id="1104084341931202936">Sýna aðgengisstillingar</translation>
 <translation id="1104621072296271835">Tækin þín virka enn betur saman</translation>
+<translation id="1111021433905331574">Þú getur breytt um lit á baklýsingu lyklaborðsins í Stillingar &gt; <ph name="APP_TITLE" /></translation>
 <translation id="112308213915226829">Fela hillu sjálfkrafa</translation>
 <translation id="1142002900084379065">Nýlegar myndir</translation>
 <translation id="1148499908455722006">Opna upplýsingaglugga fyrir <ph name="USER_NAME" /></translation>
@@ -65,6 +66,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1275285675049378717">Knýr <ph name="POWER_SOURCE" /></translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">Staðsetja síma</translation>
+<translation id="1287002645302686982">Vistað skrifborð með heitið <ph name="DESK_TEMPLATE_NAME" /> er þegar til</translation>
 <translation id="1289185460362160437">Komdu aftur á <ph name="COME_BACK_DAY_OF_WEEK" /> klukkan <ph name="COME_BACK_TIME" />.</translation>
 <translation id="1290331692326790741">Lítill sendistyrkur</translation>
 <translation id="1290982764014248209">Færa <ph name="DRAGGED_APP" /> í möppuna <ph name="FOLDER_NAME" />.</translation>
@@ -94,7 +96,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1420408895951708260">Kveikja/slökkva á næturljósi. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">Skoðaðu nýlegar myndir, margmiðlunarefni og tilkynningar símans í <ph name="DEVICE_TYPE" /></translation>
 <translation id="1426410128494586442">Já</translation>
-<translation id="1438357537418863713">Forritastreymi er núna uppsett. Nýlega notuð forrit birtast hér þegar þú hefst handa.</translation>
+<translation id="1447641497144572814">Skjávari hefst</translation>
 <translation id="1455242230282523554">Sýna tungumálastillingar</translation>
 <translation id="1460620680449458626">Slökkt er á hljóði.</translation>
 <translation id="1467432559032391204">Rangsælis</translation>
@@ -269,6 +271,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2586561057878260610">Ýttu á Ctrl + W til að sameina við <ph name="DESK_NAME" />. Ýttu á Ctrl + Shift + W til að loka skrifborði og gluggum.</translation>
 <translation id="2595239820337756193">5 km í mílum</translation>
 <translation id="2596078834055697711">Taka skjámynd af glugga</translation>
+<translation id="2598725286293895280">Óstudd forrit í skrifborði</translation>
 <translation id="2607678425161541573">Innskráningar á netinu er krafist</translation>
 <translation id="2620016719323068571">Leitaðu að <ph name="CATEGORY" />, skrám, forritum og fleira...</translation>
 <translation id="2620436844016719705">Kerfi</translation>
@@ -644,6 +647,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="4734965478015604180">Lárétt</translation>
 <translation id="4735498845456076464">Flýtilyklinum „<ph name="LAUNCHER_KEY_NAME" /> + tölustafur“ hefur verið breytt. Ýttu á <ph name="LAUNCHER_KEY_NAME" />-lykilinn + lykil í efstu röð til að nota aðgerðalyklana.</translation>
 <translation id="473775607612524610">Uppfæra</translation>
+<translation id="4740516757091333363">Viltu eyða vistuðu skrifborði?</translation>
 <translation id="4752784485658729358">Aðeins 6 vistuð skrifborð leyfð. Fjarlægðu skrifborð til að vista nýtt.</translation>
 <translation id="4759238208242260848">Niðurhal</translation>
 <translation id="4774338217796918551">Komdu aftur á morgun klukkan <ph name="COME_BACK_TIME" />.</translation>
@@ -696,7 +700,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="5071064518267176975">Forrit vill nota hljóðnemann</translation>
 <translation id="5078796286268621944">Rangt PIN-númer</translation>
 <translation id="5083553833479578423">Opnaðu fyrir fleiri eiginleika hjálparans.</translation>
-<translation id="5106223312672646208">Sérsníða</translation>
 <translation id="5107522548814527560">Vefur</translation>
 <translation id="5117590920725113268">Sýna næsta mánuð</translation>
 <translation id="5136175204352732067">Annað lyklaborð tengt</translation>
@@ -741,6 +744,7 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="5352250171825660495">Kveikt er á dökku þema</translation>
 <translation id="5356963482258194581">Skiptu á milli dökka og ljósa þemans. Hægrismelltu á skjáborðið og veldu „Veggfóður og stíll“.</translation>
 <translation id="5379115545237091094">Of margar tilraunir</translation>
+<translation id="5391307769715781764">Skipta út vistuðu skrifborði?</translation>
 <translation id="5393156353051693207">Haltu inni hvar sem er til að endurraða forritunum þínum</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> ofan á <ph name="IN_PLACE_APP" />, slepptu til að búa til möppu.</translation>
 <translation id="5397578532367286026">Stjórnandinn (<ph name="MANAGER_EMAIL" />) getur farið yfir notkun og feril þessa notanda á chrome.com.</translation>
@@ -974,6 +978,7 @@ Ný uppsetning</translation>
 <translation id="6790428901817661496">Spila</translation>
 <translation id="6801878137098616817">Breytt nýlega</translation>
 <translation id="6803622936009808957">Ekki var hægt að spegla skjái vegna þess að engin studd upplausn fannst. Skjáborð hefur verið framlengt í staðinn.</translation>
+<translation id="6812232930908427253">Ekki tókst að vista skrifborð. Of margir gluggar eða flipar.</translation>
 <translation id="6818242057446442178">Til baka um orð</translation>
 <translation id="6819327813400217281">Myndavél fest við neðra horn vinstra megin</translation>
 <translation id="6820676911989879663">Taktu pásu!</translation>

@@ -76,6 +76,7 @@
 <translation id="2574930892358684005">W tym profilu Chrome jest już zalogowany użytkownik <ph name="EXISTING_USER" />. Aby umożliwić Ci przeglądanie osobno, Chrome może utworzyć dla Ciebie nowy profil.</translation>
 <translation id="2580411288591421699">Nie można zainstalować tej samej wersji przeglądarki Google Chrome co obecnie uruchomiona. Zamknij przeglądarkę Google Chrome i spróbuj ponownie.</translation>
 <translation id="2586406160782125153">Spowoduje to usunięcie danych przeglądania z tego urządzenia. Aby później odzyskać dane, zaloguj się w Chrome jako <ph name="USER_EMAIL" />.</translation>
+<translation id="2597976513418770460">Uzyskaj dostęp do danych z przeglądarki Chrome z konta <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="2622559029861875898">Chrome nie może sprawdzić dostępności aktualizacji. Sprawdź połączenie z internetem.</translation>
 <translation id="2645435784669275700">Chrome OS</translation>
 <translation id="2652691236519827073">O&amp;twórz link w nowej karcie Chrome</translation>
@@ -301,6 +302,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="7801699035218095297">Google Chrome próbuje skopiować hasła. Aby na to zezwolić, podaj swoje hasło do Windows.</translation>
 <translation id="7808348361785373670">Usuń z Chrome...</translation>
 <translation id="7825851276765848807">Instalacja nie powiodła się z powodu nieokreślonego błędu. Pobierz Google Chrome ponownie.</translation>
+<translation id="7880591377632733558">Witamy w Chrome, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="7890208801193284374">Jeśli dzielisz komputer ze znajomymi lub rodziną, wszyscy możecie niezależnie przeglądać internet i po swojemu skonfigurować Chrome.</translation>
 <translation id="7896673875602241923">Ktoś zalogował się wcześniej w Chrome na tym komputerze jako <ph name="ACCOUNT_EMAIL_LAST" />. Utwórz nowego użytkownika Chrome, by Twoje informacje były przechowywane oddzielnie.</translation>
 <translation id="7917876797003313048">Możesz zarządzać kontami Google, na które się logujesz. Kont Google możesz używać w przeglądarce Chrome, Sklepie Play, Gmailu i innych usługach. Jeśli chcesz dodać konto innej osoby, np. kogoś z rodziny, zamiast tego dodaj nową osobę do urządzenia <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
@@ -326,6 +328,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="8418845734693287262">Chrome OS nie może zsynchronizować danych, ponieważ dane logowania na Twoje konto są nieaktualne.</translation>
 <translation id="8421734018304082652">Ten plik został zablokowany przez Chrome, bo jest zaszyfrowany. Poproś jego właściciela, aby go odszyfrował</translation>
 <translation id="8433638294851456451">Aby wysłać stąd numer na swój telefon z Androidem, zaloguj się w Chrome na obu urządzeniach.</translation>
+<translation id="8451192282033883849">Tym kontem zarządza <ph name="MANAGER_NAME" />. Administrator może przeglądać i edytować ten profil przeglądarki Chrome i dane, które się na nim znajdują, w tym zakładki, historię i hasła.</translation>
 <translation id="8498858610309223613">Właśnie została zastosowana specjalna aktualizacja zabezpieczeń Google Chrome. Uruchom ponownie Chrome teraz. Karty zostaną przywrócone.</translation>
 <translation id="8504220326736535258">Ten plik został zablokowany przez Chrome, bo zawiera złośliwe oprogramowanie</translation>
 <translation id="8516431725144212809">Twoje zainteresowania oszacowane według Chrome</translation>

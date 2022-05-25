@@ -80,6 +80,7 @@
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> xa ten a sesión iniciada neste perfil de Chrome. Se queres xestionar a túa navegación cun perfil independente e de teu, Chrome pode crearche un.</translation>
 <translation id="2580411288591421699">Non se pode instalar a mesma versión de Google Chrome que se está executando actualmente. Pecha Google Chrome e téntao de novo.</translation>
 <translation id="2586406160782125153">Esta acción eliminará os teus datos de navegación deste dispositivo. Para recuperar os teus datos máis tarde, inicia sesión en Chrome como <ph name="USER_EMAIL" />.</translation>
+<translation id="2597976513418770460">Obtén os datos do navegador Chrome de <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="2622559029861875898">Chrome non puido buscar actualizacións. Verifica a conexión a Internet.</translation>
 <translation id="2645435784669275700">Chrome OS</translation>
 <translation id="2652691236519827073">Abrir ligazón nunha nova &amp;pestana de Chrome</translation>
@@ -309,6 +310,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="7801699035218095297">Google Chrome está tentando copiar os contrasinais. Escribe o teu contrasinal de Windows para permitir esta acción.</translation>
 <translation id="7808348361785373670">Eliminar de Chrome...</translation>
 <translation id="7825851276765848807">Non se puido efectuar a instalación debido a un erro non especificado. Volve descargar Google Chrome.</translation>
+<translation id="7880591377632733558">Dámosche a benvida a Chrome, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="7890208801193284374">Se compartes un ordenador, os teus amigos e familiares poderán navegar por separado e configurar Chrome como prefiran.</translation>
 <translation id="7896673875602241923">Anteriormente, alguén iniciou sesión como <ph name="ACCOUNT_EMAIL_LAST" /> en Chrome neste ordenador. Crea un novo usuario de Chrome para manter a túa información por separado.</translation>
 <translation id="7917876797003313048">Podes xestionar as Contas de Google nas que teñas a sesión iniciada. As túas Contas de Google úsanse para o navegador Chrome, Play Store, Gmail e moito máis. Se queres engadir unha conta para outra persoa, como un familiar, engade unha persoa nova ao teu dispositivo (<ph name="DEVICE_TYPE" />). <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
@@ -334,6 +336,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="8418845734693287262">Chrome OS non puido sincronizar os teus datos porque a información de inicio de sesión da túa conta está desactualizada.</translation>
 <translation id="8421734018304082652">Chrome bloqueou este ficheiro porque está encriptado. Pídelle ao seu propietario que o desencripte</translation>
 <translation id="8433638294851456451">Para enviar un número desde aquí ao teu teléfono Android, inicia sesión en Chrome nos dous dispositivos.</translation>
+<translation id="8451192282033883849"><ph name="MANAGER_NAME" /> xestiona a túa conta. O teu administrador pode consultar e editar este perfil do navegador Chrome e os seus datos (por exemplo, os marcadores, o historial ou os contrasinais).</translation>
 <translation id="8498858610309223613">Acábase de aplicar unha actualización especial de seguranza para Google Chrome. Reinicia agora o navegador para restaurar as pestanas.</translation>
 <translation id="8504220326736535258">Chrome bloqueou este ficheiro porque inclúe software malicioso</translation>
 <translation id="8516431725144212809">Os teus intereses estimados por Chrome</translation>

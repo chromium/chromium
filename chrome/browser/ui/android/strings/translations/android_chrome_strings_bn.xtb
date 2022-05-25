@@ -56,6 +56,7 @@
 <translation id="124678866338384709">বর্তমান ট্যাব বন্ধ করুন</translation>
 <translation id="1246905108078336582">ক্লিপবোর্ড থেকে সাজেশন সরাতে চান?</translation>
 <translation id="1258753120186372309">Google ডুডল: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">পড়ার তালিকা</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> শেয়ার করা যায়নি</translation>
 <translation id="1283039547216852943">প্রসারিত করতে আলতো চাপুন</translation>
 <translation id="1285310382777185058">ভাষা পরিবর্তন করুন</translation>
@@ -493,10 +494,10 @@
 <translation id="363596933471559332">সঞ্চিত ক্রেডেনশিয়াল ব্যবহার করে ওয়েবসাইটগুলিতে অটোমেটিক সাইন-ইন। যখন বৈশিষ্ট্যটি বন্ধ করা থাকে, তখন প্রতিবারই একটি ওয়েবসাইটে সাইন-ইন করার সময় আপনাকে যাচাইকরণের জন্য বলা হবে।</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3677911431265050325">মোবাইল সাইটের জন্য অনুরোধ করুন</translation>
-<translation id="3685860403008476208">এই ডিভাইস ব্যবহার করছেন এমন যেকেউ 'ছদ্মবেশী' মোডে ডাউনলোড করা ফাইলগুলি দেখতে পারবেন</translation>
 <translation id="3687645719033307815">আপনি এই পৃষ্ঠার একটি প্রিভিউ দেখছেন</translation>
 <translation id="3690369331356918524">আপনার পাসওয়ার্ড কোনও ডেটা নিরাপত্তা লঙ্ঘনের কারণে সর্বজনীনভাবে প্রকাশ হলে তা আপনাকে জানানো হবে</translation>
 <translation id="3692944402865947621">স্টোর করার জায়গা খুঁজে না পাওয়ায় <ph name="FILE_NAME" /> ডাউনলোড করা যায়নি।</translation>
+<translation id="3697705478071004188">সাইট অনুযায়ী সাজান</translation>
 <translation id="3699022356773522638">ফাইল ডাউনলোড করবেন?</translation>
 <translation id="371230970611282515">কোনও ঝুঁকিপূর্ণ ঘটনা ঘটলে সেটি অনুমান করে আপনাকে সতর্ক করা হয়।</translation>
 <translation id="3714981814255182093">খুঁজুন দণ্ডটি খুলুন</translation>
@@ -523,6 +524,7 @@
 <translation id="3845098929839618392">ছদ্মবেশী ট্যাবে খুলুন</translation>
 <translation id="3856096718352044181">এটি সঠিক প্রদানকারী কিনা যাচাই করুন অথবা পরে আবার চেষ্টা করুন</translation>
 <translation id="3858860766373142691">নাম</translation>
+<translation id="3859206958100234503">আপনার সবকটি ডিভাইসের পাসওয়ার্ড, বুকমার্ক এবং আরও অনেক কিছু পেতে সিঙ্ক করুন</translation>
 <translation id="3861633093716975811">জনপ্রিয় ভিডিও</translation>
 <translation id="3892148308691398805">টেক্সট কপি করুন</translation>
 <translation id="3894427358181296146">ফোল্ডার যোগ করুন</translation>
@@ -582,6 +584,7 @@
 <translation id="4209895695669353772">Google-এর প্রস্তাবিত ব্যক্তিগতকৃত কন্টেন্ট পেতে সিঙ্ক বিকল্প চালু করুন</translation>
 <translation id="4214315110991671325">আপনি কুকি ব্যবহার করার অনুমতি দিলে, প্রিলোড করার জন্য Chrome সেটি ব্যবহার করতে পারে।</translation>
 <translation id="4225895483398857530">টুলবারের শর্টকার্ট</translation>
+<translation id="4227318652298512614">আপনার যে সাইট পছন্দ সেটি ফলো করুন</translation>
 <translation id="4242533952199664413">সেটিংস খুলুন</translation>
 <translation id="4248098802131000011">ডেটার নিরাপত্তা লঙ্ঘনকরীদের ও অন্যান্য নিরাপত্তা সংক্রান্ত ইস্যুগুলি থেকে আপনার পাসওয়ার্ড নিরাপদে রাখুন</translation>
 <translation id="4249955472157341256">লেটেস্ট অনুযায়ী সাজান</translation>
@@ -698,6 +701,7 @@
 <translation id="4842515939542199281">আপনার ভয়েস ব্যবহার করে সার্চ করার জন্য, মাইক্রোফোনে ট্যাপ করুন</translation>
 <translation id="4844633725025837809">অতিরিক্ত নিরাপত্তার জন্য, Google পাসওয়ার্ড ম্যানেজারে সেভ করার আগে আপনার ডিভাইসে পাসওয়ার্ড এনক্রিপ্ট করুন</translation>
 <translation id="4850886885716139402">দেখুন</translation>
+<translation id="4852014461738377247">সাইন-ইন করা হচ্ছে</translation>
 <translation id="4860895144060829044">কল করুন</translation>
 <translation id="4864369630010738180">প্রবেশ করা হচ্ছে...</translation>
 <translation id="4866368707455379617">Chrome-এর জন্য <ph name="MODULE" /> ইনস্টল করা যাচ্ছে না</translation>
@@ -1151,6 +1155,7 @@
 <translation id="7304873321153398381">অফলাইন। Chrome আপনার পাসওয়ার্ড চেক করতে পারছে না।</translation>
 <translation id="7313188324932846546">সিঙ্ক সেট আপ করতে ট্যাপ করুন</translation>
 <translation id="7332075081379534664">সাইন-ইন হয়ে গেছে</translation>
+<translation id="7333232495927792353">Google থেকে সবচেয়ে প্রাসঙ্গিক কন্টেন্ট পেতে সিঙ্ক করুন</translation>
 <translation id="7339898014177206373">নতুন উইন্ডো</translation>
 <translation id="7340958967809483333">Discover-এর বিকল্প</translation>
 <translation id="7352339641508007922">দীর্ঘ স্ক্রিনশট নিতে টেনে আনুন</translation>
@@ -1306,6 +1311,7 @@
 <translation id="8103578431304235997">ছদ্মবেশী ট্যাব</translation>
 <translation id="8105613260829665809">চালিয়ে যাওয়ার অর্থ আপনি <ph name="BEGIN_TOS_LINK" />পরিষেবার শর্তাবলী<ph name="END_TOS_LINK" />তে সম্মতি জানাচ্ছেন।\nঅ্যাপের উন্নতি করার জন্য Chrome ক্র্যাশ ও ব্যবহারের ডেটা Google-কে পাঠায়। <ph name="BEGIN_UMA_LINK" />ম্যানেজ করুন<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
+<translation id="8107530384992929318">সাজানোর বিকল্প বন্ধ করুন</translation>
 <translation id="8109613176066109935">আপনার সমস্ত ডিভাইসে বুকমার্কগুলি পেতে সিঙ্ক বিকল্প চালু করুন</translation>
 <translation id="8110024788458304985">Chrome-এর ফিচার ও পারফর্ম্যান্স আরও উন্নত করে তুলতে সাহায্য করুন</translation>
 <translation id="8110087112193408731">ডিজিটাল ওয়েলবিং-এ আপনার Chrome অ্যাক্টিভিটি দেখতে চান?</translation>
@@ -1379,6 +1385,7 @@
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">ইতিহাস পৃষ্ঠাটি খুলুন</translation>
 <translation id="8493948351860045254">জায়গা ফাঁকা করুন</translation>
+<translation id="8497242791509864205">সাজানোর বিকল্প খুলুন</translation>
 <translation id="8497480609928300907">গোপনীয়তা সম্পর্কিত গাইডের ব্যাখ্যা</translation>
 <translation id="8497726226069778601">এখানে... দেখার মতো এখনো কিছু নেই</translation>
 <translation id="8503559462189395349">Chrome পাসওয়ার্ডগুলি</translation>
@@ -1531,6 +1538,7 @@
 <translation id="96681097142096641">'রিডার' মোডে পৃষ্ঠাটি দেখতে চান?</translation>
 <translation id="968900484120156207">আপনি যে পৃষ্ঠাগুলিতে যান সেগুলি এখানে দেখানো হয়</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> মিনিট বাকি আছে</translation>
+<translation id="978443947993957527">আপনার জন্য কন্টেন্ট দেখুন</translation>
 <translation id="981121421437150478">অফলাইন</translation>
 <translation id="983192555821071799">সমস্ত ট্যাবগুলি বন্ধ করুন</translation>
 <translation id="987264212798334818">সাধারণ</translation>

@@ -24,6 +24,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="109942774857561566">Dosadno mi je</translation>
 <translation id="1104084341931202936">Prikaži postavke pristupačnosti</translation>
 <translation id="1104621072296271835">Uređaji još bolje rade zajedno</translation>
+<translation id="1111021433905331574">Boju pozadinskog osvjetljenja tipkovnice možete promijeniti u odjeljku Postavke &gt; <ph name="APP_TITLE" /></translation>
 <translation id="112308213915226829">Automatski sakrij policu</translation>
 <translation id="1142002900084379065">Nedavne fotografije</translation>
 <translation id="1148499908455722006">Otvaranje informativnog dijaloškog okvira za korisnika <ph name="USER_NAME" /></translation>
@@ -65,7 +66,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1275285675049378717">Napajanje uređaja <ph name="POWER_SOURCE" /></translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">Lociranje telefona</translation>
-<translation id="1287002645302686982">Već postoji spremljena radna površina pod nazivom <ph name="DESK_TEMPLATE_NAME" /></translation>
+<translation id="1287002645302686982">Sačuvana radna površina pod nazivom <ph name="DESK_TEMPLATE_NAME" /> već postoji</translation>
 <translation id="1289185460362160437">Vratite se na dan: <ph name="COME_BACK_DAY_OF_WEEK" /> u <ph name="COME_BACK_TIME" />.</translation>
 <translation id="1290331692326790741">Slab signal</translation>
 <translation id="1290982764014248209">Premjesti aplikaciju <ph name="DRAGGED_APP" /> u folder <ph name="FOLDER_NAME" />.</translation>
@@ -95,7 +96,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1420408895951708260">Uključite ili isključite Noćno svjetlo. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">Pregledajte nedavne fotografije i medije s telefona na uređaju <ph name="DEVICE_TYPE" /></translation>
 <translation id="1426410128494586442">Da</translation>
-<translation id="1438357537418863713">Prijenos aplikacije je sada postavljen. Kada započnete, nedavno pokrenute aplikacije će se pojaviti ovdje.</translation>
+<translation id="1447641497144572814">Čuvar ekrana se pokreće</translation>
 <translation id="1455242230282523554">Prikaži postavke jezika</translation>
 <translation id="1460620680449458626">Zvuk je isključen.</translation>
 <translation id="1467432559032391204">Lijevo</translation>
@@ -270,7 +271,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="2586561057878260610">Pritisnite Ctrl + W da kombinirate s radnom površinom <ph name="DESK_NAME" />. Pritisnite Ctrl + Shift + W da zatvorite radnu površinu i prozore.</translation>
 <translation id="2595239820337756193">5 km u miljama</translation>
 <translation id="2596078834055697711">Napravite snimak ekrana prozora</translation>
-<translation id="2598725286293895280">Nepodržane aplikacije na radnoj površini</translation>
+<translation id="2598725286293895280">Na radnoj površini ima aplikacija koje nisu podržane</translation>
 <translation id="2607678425161541573">Potrebna je online prijava</translation>
 <translation id="2620016719323068571">Pretražite kategoriju <ph name="CATEGORY" />, fajlove, aplikacije i drugo...</translation>
 <translation id="2620436844016719705">Sistem</translation>
@@ -646,7 +647,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="4734965478015604180">Horizontalno</translation>
 <translation id="4735498845456076464">Prečica na tastaturi <ph name="LAUNCHER_KEY_NAME" /> + broj je promijenjena. Da koristite funkcijske tipke, pritisnite tipku <ph name="LAUNCHER_KEY_NAME" /> + tipku u gornjem redu.</translation>
 <translation id="473775607612524610">Ažuriraj</translation>
-<translation id="4740516757091333363">Želite li izbrisati spremljenu radnu površinu?</translation>
+<translation id="4740516757091333363">Izbrisati sačuvanu radnu površinu?</translation>
 <translation id="4752784485658729358">Dozvoljeno je samo 6 radnih površina. Uklonite jednu radnu površinu da sačuvate novu.</translation>
 <translation id="4759238208242260848">Preuzimanja</translation>
 <translation id="4774338217796918551">Vratite se sutra u <ph name="COME_BACK_TIME" />.</translation>
@@ -699,7 +700,6 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="5071064518267176975">Aplikacija želi koristiti mikrofon</translation>
 <translation id="5078796286268621944">Pogrešan PIN</translation>
 <translation id="5083553833479578423">Otključajte više funkcija Asistenta.</translation>
-<translation id="5106223312672646208">Personalizirajte</translation>
 <translation id="5107522548814527560">Web</translation>
 <translation id="5117590920725113268">Prikaz sljedećeg mjeseca</translation>
 <translation id="5136175204352732067">Povezana je drugačija tastatura</translation>
@@ -744,7 +744,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="5352250171825660495">Tamna tema je uključena</translation>
 <translation id="5356963482258194581">Prebacite se između tamne i svijetle teme. Kliknite desnim klikom na radnoj površini i odaberite pozadinsku sliku i stil.</translation>
 <translation id="5379115545237091094">Previše pokušaja</translation>
-<translation id="5391307769715781764">Želite li zamijeniti spremljenu radnu površinu?</translation>
+<translation id="5391307769715781764">Zamijeniti sačuvanu radnu površinu?</translation>
 <translation id="5393156353051693207">Dodirnite i zadržite bilo gdje da promijenite redoslijed aplikacija</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> prekriva aplikaciju <ph name="IN_PLACE_APP" />. Pustite da kreirate folder.</translation>
 <translation id="5397578532367286026">Upravitelj (<ph name="MANAGER_EMAIL" />) može pregledavati upotrebu i povijest tog korisnika na web-lokaciji chrome.com.</translation>
@@ -978,7 +978,7 @@ Nova instalacija</translation>
 <translation id="6790428901817661496">Pokreni</translation>
 <translation id="6801878137098616817">Nedavno uređeno</translation>
 <translation id="6803622936009808957">Preslikavanje ekrana nije moguće jer nisu pronađene podržane rezolucije. Umjesto toga, prikazuje se proširena radna površina.</translation>
-<translation id="6812232930908427253">Spremanje radne površine nije uspjelo. Previše prozora ili kartica.</translation>
+<translation id="6812232930908427253">Pohranjivanje radne površine nije uspjelo. Previše prozora ili kartica.</translation>
 <translation id="6818242057446442178">Riječ unazad</translation>
 <translation id="6819327813400217281">Kamera se uklopila u donji lijevi ugao</translation>
 <translation id="6820676911989879663">Odmori se!</translation>

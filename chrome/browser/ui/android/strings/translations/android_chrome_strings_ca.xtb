@@ -56,6 +56,7 @@
 <translation id="124678866338384709">Tanca la pestanya actual</translation>
 <translation id="1246905108078336582">Vols suprimir el suggeriment del porta-retalls?</translation>
 <translation id="1258753120186372309">Doodle de Google: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">Llista de lectura</translation>
 <translation id="1266864766717917324">No s'ha pogut compartir <ph name="CONTENT_TYPE" />.</translation>
 <translation id="1283039547216852943">Toca per desplegar</translation>
 <translation id="1285310382777185058">Canvia d'idioma</translation>
@@ -493,7 +494,6 @@ Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, se
 <translation id="363596933471559332">Inicia la sessió automàticament als llocs web amb les credencials emmagatzemades. Si la funció està desactivada, se us demana sempre que les verifiqueu per iniciar la sessió en un lloc web.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3677911431265050325">Sol·licita el lloc web per a mòbils</translation>
-<translation id="3685860403008476208">Qualsevol persona que utilitzi aquest dispositiu podrà veure els fitxers que baixis en mode d'incògnit</translation>
 <translation id="3687645719033307815">Estàs veient una previsualització d'aquesta pàgina</translation>
 <translation id="3690369331356918524">T'avisa si les contrasenyes queden exposades a causa d'una violació de les dades.</translation>
 <translation id="3692944402865947621">No s'ha pogut baixar <ph name="FILE_NAME" /> perquè no es pot trobar la ubicació d'emmagatzematge.</translation>
@@ -523,6 +523,7 @@ Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, se
 <translation id="3845098929839618392">Obre en una pestanya d'incògnit</translation>
 <translation id="3856096718352044181">Verifica que aquest és un proveïdor vàlid o torna-ho a provar més tard</translation>
 <translation id="3858860766373142691">Nom</translation>
+<translation id="3859206958100234503">Sincronitza per obtenir les contrasenyes, les adreces d'interès i altres elements en tots els teus dispositius</translation>
 <translation id="3861633093716975811">Vídeos populars</translation>
 <translation id="3892148308691398805">Copia el text</translation>
 <translation id="3894427358181296146">Afegeix una carpeta</translation>
@@ -580,6 +581,7 @@ Mantén premuda qualsevol paraula per cercar-la. Per definir millor la cerca, se
 <translation id="4209895695669353772">Perquè Google et suggereixi contingut personalitzat, activa la sincronització</translation>
 <translation id="4214315110991671325">Si permets les galetes, Chrome pot utilitzar-les per a càrrega prèvia.</translation>
 <translation id="4225895483398857530">Drecera de la barra d'eines</translation>
+<translation id="4227318652298512614">Segueix tots els llocs web que vulguis</translation>
 <translation id="4242533952199664413">Obre la configuració</translation>
 <translation id="4248098802131000011">Protegeix les contrasenyes contra les violacions de les dades i contra altres problemes de seguretat</translation>
 <translation id="4249955472157341256">Ordena per Més recents</translation>
@@ -696,6 +698,7 @@ Per canviar aquesta opció, <ph name="BEGIN_LINK" />restableix la sincronitzaci�
 <translation id="4842515939542199281">Per fer cerques amb la veu, toca el micròfon</translation>
 <translation id="4844633725025837809">Per augmentar la seguretat, encripta les contrasenyes al dispositiu abans de desar-les al gestor de contrasenyes de Google</translation>
 <translation id="4850886885716139402">Mostra</translation>
+<translation id="4852014461738377247">S'està iniciant la sessió…</translation>
 <translation id="4860895144060829044">Truca</translation>
 <translation id="4864369630010738180">S'està iniciant la sessió...</translation>
 <translation id="4866368707455379617">No es pot instal·lar <ph name="MODULE" /> per a Chrome</translation>
@@ -1149,6 +1152,7 @@ Els testimonis de confiança milloren la privadesa al web i no poden utilitzar-s
 <translation id="7304873321153398381">No tens connexió. Chrome no pot comprovar les teves contrasenyes.</translation>
 <translation id="7313188324932846546">Toca per configurar la sincronització</translation>
 <translation id="7332075081379534664">Has iniciat la sessió correctament</translation>
+<translation id="7333232495927792353">Sincronitza per obtenir el contingut més rellevant de Google</translation>
 <translation id="7339898014177206373">Finestra nova</translation>
 <translation id="7340958967809483333">Opcions per a Discover</translation>
 <translation id="7352339641508007922">Arrossega per fer una captura llarga</translation>
@@ -1529,6 +1533,7 @@ Els testimonis de confiança milloren la privadesa al web i no poden utilitzar-s
 <translation id="96681097142096641">Vols mostrar la pàgina simplificada?</translation>
 <translation id="968900484120156207">Les pàgines que visitis es mostraran aquí</translation>
 <translation id="970715775301869095">Queden <ph name="MINUTES" /> minuts</translation>
+<translation id="978443947993957527">Contingut per a tu</translation>
 <translation id="981121421437150478">Sense connexió</translation>
 <translation id="983192555821071799">Tanca totes les pestanyes</translation>
 <translation id="987264212798334818">General</translation>

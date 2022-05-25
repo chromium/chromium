@@ -56,6 +56,7 @@
 <translation id="124678866338384709">Cerrar la pestaña actual</translation>
 <translation id="1246905108078336582">¿Quieres quitar la sugerencia del portapapeles?</translation>
 <translation id="1258753120186372309">Doodle de Google: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">Lista de lectura</translation>
 <translation id="1266864766717917324">No se pudo compartir <ph name="CONTENT_TYPE" /></translation>
 <translation id="1283039547216852943">Presiona para expandir</translation>
 <translation id="1285310382777185058">Cambiar el idioma</translation>
@@ -493,7 +494,6 @@ Para buscar una palabra, mantenla presionada. Si quieres definir mejor la búsqu
 <translation id="363596933471559332">Permite acceder automáticamente a los sitios web con las credenciales almacenadas. Si la función está desactivada, siempre se solicitará verificación antes de acceder a un sitio web.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3677911431265050325">Solicitar sitio móvil</translation>
-<translation id="3685860403008476208">Cualquiera que use este dispositivo podrá ver los archivos que descargues en modo Incógnito</translation>
 <translation id="3687645719033307815">Estás viendo una vista previa de esta página</translation>
 <translation id="3690369331356918524">Te advierte si quedan expuestas las contraseñas ante una violación de la seguridad de los datos.</translation>
 <translation id="3692944402865947621">Falló la descarga de <ph name="FILE_NAME" /> porque no se puede acceder a la ubicación del almacenamiento.</translation>
@@ -580,6 +580,7 @@ Para buscar una palabra, mantenla presionada. Si quieres definir mejor la búsqu
 <translation id="4209895695669353772">Para obtener contenido personalizado y sugerido por Google, activa la sincronización</translation>
 <translation id="4214315110991671325">Si permites las cookies, Chrome puede usarlas para la precarga.</translation>
 <translation id="4225895483398857530">Acceso directo a la barra de herramientas</translation>
+<translation id="4227318652298512614">Sigue los sitios que quieras</translation>
 <translation id="4242533952199664413">Abrir la configuración</translation>
 <translation id="4248098802131000011">Mantén protegidas tus contraseñas ante violaciones de la seguridad de los datos y otros problemas de seguridad.</translation>
 <translation id="4249955472157341256">Ordenar por más recientes</translation>

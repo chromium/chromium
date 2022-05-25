@@ -78,6 +78,7 @@
 <translation id="1578784163189013834">ເລືອກພື້ນຫຼັງສະກຣີນເຊັບເວີ</translation>
 <translation id="1615335640928990664">ການນຳໃຊ້ອິນເຕີເນັດນັບຕັ້ງແຕ່ <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">ເອີ້ນໃຊ້ການທົດສອບການສາກ</translation>
+<translation id="1631385268983122904">ຢ່າປະກອບອຸປະກອນເຂົ້າກັນເທື່ອ</translation>
 <translation id="1639239467298939599">ກໍາລັງໂຫຼດ</translation>
 <translation id="1641857168437328880">ຕົວປ້ອນເອກະສານ (ດ້ານດຽວ)</translation>
 <translation id="1643449475550628585">ປ່ຽນຮູບພື້ນຫຼັງທຸກມື້</translation>
@@ -85,6 +86,7 @@
 <translation id="1645954272419197032">ກະລຸນາຢືນຢັນຂໍ້​ມູນ​ອຸ​ປະ​ກອນ</translation>
 <translation id="1662989795263954667">ຢຸດພິມ, ນໍ້າໝຶກໝົດ</translation>
 <translation id="1668469839109562275">VPN ໃນຕົວ</translation>
+<translation id="1676557873873341166">ກຳລັງຖ່າຍວິດີໂອ</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">ມີ DNS Resolver</translation>
 <translation id="1715359911173058521">ເກີດບັນຫາຂຶ້ນໃນການຕິດຕໍ່ສື່ສານກັບເຄື່ອງສະແກນ. ກະລຸນາກວດສອບເຄືອຂ່າຍ ຫຼື ການເຊື່ອມຕໍ່ USB ແລ້ວລອງໃໝ່.</translation>
@@ -159,6 +161,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">ເປີດ Bluetooth ເພື່ອຊອກຫາອຸປະກອນທີ່ຢູ່ໃກ້ຄຽງ</translation>
+<translation id="2340422556570134524">Write Protect ຖືກເປີດໃຊ້ໂດຍບໍ່ຄາດຄິດ. ກະລຸນາປິດ Write Protect ດ້ວຍຕົວເອງກ່ອນລອງໃໝ່.</translation>
 <translation id="2346474577291266260">ດີເລີດ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">ສືບຕໍ່</translation>
 <translation id="2360257214555822463">ກວດພົບ <ph name="LINK_BEGIN" />ອົງປະກອບທີ່ບໍ່ຜ່ານເງື່ອນໄຂ<ph name="LINK_END" />. ຫາກທ່ານເລືອກທີ່ຈະຢືນຢັນວ່ານີ້ໄດ້ຮັບການຕິດຕັ້ງແລ້ວ, ກະລຸນາເຮັດຕອນນີ້.</translation>
@@ -475,6 +478,7 @@
 <translation id="5372659122375744710">ເຄືອຂ່າຍ WiFi ບໍ່ປອດໄພ</translation>
 <translation id="5376354385557966694">ໂໝດແຈ້ງອັດຕະໂນມັດ</translation>
 <translation id="537872351913703572">ອຸປະກອນຈະສົ່ງໄປຫາຜູ້ໃຊ້ ຫຼື ອົງການອື່ນ</translation>
+<translation id="5389159777326897627">ຮູບພື້ນຫຼັງ ແລະ ຮູບແບບ</translation>
 <translation id="5389224261615877010">ຮຸ້ງ</translation>
 <translation id="5395600419410242651">ລຶບຂໍ້ມູນທັງໝົດ</translation>
 <translation id="5400907029458559844">ອຸປະກອນກຳລັງເຊື່ອມຕໍ່ຢູ່.</translation>
@@ -644,6 +648,7 @@
 <translation id="6961170852793647506">ເພື່ອເລີ່ມຕົ້ນ, ໃຫ້ວາງເອກະສານຂອງທ່ານໃສ່ເຄື່ອງສະແກນ</translation>
 <translation id="6965382102122355670">ຕົກລົງ</translation>
 <translation id="6977381486153291903">ການດັດແກ້ເຟີມແວ</translation>
+<translation id="6995564396478647735">ກວດສອບວ່າເປີດໃຊ້ Write Protect ແລ້ວ</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> ຈັດການອຸປະກອນນີ້ ແລະ ເຂົ້າເຖິງການເຄື່ອນໄຫວຜູ້ໃຊ້ທັງໝົດ, ຮວມທັງໜ້າເວັບທີ່ເຂົ້າເບິ່ງ, ລະຫັດຜ່ານ ແລະ ອີເມວ.</translation>
 <translation id="7040230719604914234">ຜູ້ໃຫ້ບໍລິການ</translation>
 <translation id="7041549558901442110">ອຸປະກອນບໍ່ໄດ້ເຊື່ອມຕໍ່.</translation>
@@ -655,6 +660,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">ບໍ່ສຳເລັດ, ການມອບສິດບໍ່ສຳເລັດ</translation>
 <translation id="7103252855940681301">ອຸປະກອນທີ <ph name="INDEX" /> ຈາກທັງໝົດ <ph name="COUNT" /> ຊື່ <ph name="NAME" />.</translation>
+<translation id="7126228745139711113">ປິດ Write Protect ໄວ້ຢູ່</translation>
 <translation id="7134436342991564651">{0,plural, =1{Name server}other{Name servers}}</translation>
 <translation id="7143207342074048698">ກຳ​ລັງ​ເຊື່ອມ​ຕໍ່</translation>
 <translation id="7144878232160441200">ລອງໃໝ່ອີກ</translation>
@@ -746,6 +752,7 @@
 <translation id="80398733265834479">ເປີດການນຳໃຊ້ໂໝດປັບສີອັດຕະໂນມັດ</translation>
 <translation id="8041089156583427627">ສົ່ງຄຳຕິຊົມ</translation>
 <translation id="8045012663542226664">ປິດສຽງໄມໂຄຣໂຟນ</translation>
+<translation id="8063022551652308521">Write Protect ຍັງຄົງປິດຢູ່. ເພື່ອສືບຕໍ່, ໃຫ້ເປີດໃຊ້ Write Protect ກ່ອນ.</translation>
 <translation id="8075838845814659848">ການສາກທີ່ເຫຼືອ</translation>
 <translation id="8082366717211101304">ບໍ່ສາມາດລະບຸ DNS ຈາກແອັບ Android ໄດ້</translation>
 <translation id="8083281199617904460">ຂັ້ນຕອນການສ້ອມແປງນີ້ແມ່ນສຳລັບຊ່າງສ້ອມແປງທີ່ໄດ້ຮັບການເຝິກມາແລ້ວ. ໃຫ້ເລີ່ມສະເພາະຫຼັງຈາກການປ່ຽນອົງປະກອບທີ່ເສຍຫາຍເທົ່ານັ້ນ.</translation>
@@ -816,6 +823,7 @@
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> ໃຊ້ປຸ່ມລູກສອນຊ້າຍ ຫຼື ຂວາເພື່ອຈັດການຄຸນສົມບັດນີ້.</translation>
 <translation id="8712637175834984815">ເຂົ້າໃຈແລ້ວ</translation>
 <translation id="871560550817059752">ບໍ່ສຳເລັດ, ນໍ້າໝຶກໝົດ</translation>
+<translation id="8717030727630712160">ກຳລັງສືບຕໍ່ຂັ້ນຕອນສ້ອມແປງ…</translation>
 <translation id="8723108084122415655">ເຄືອຂ່າຍທີ່ບໍ່ແມ່ນຄ່າເລີ່ມຕົ້ນສູງກວ່າເກນເວລາໃນການຕອບສະໜອງ</translation>
 <translation id="8725066075913043281">ລອງໃໝ່ອີກ</translation>
 <translation id="8726019395068607495">ຢຸດພິມ, ຝາເປີດຢູ່</translation>
@@ -837,6 +845,7 @@
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">ອຸປະກອນແມ່ນແທັບເລັດ.</translation>
 <translation id="8881098542468797602">ສຳເລັດການທົດສອບແລ້ວ</translation>
+<translation id="8897267175591692539">ຕອນນີ້ທ່ານສາມາດປະກອບອຸປະກອນເຂົ້າກັນໄດ້ແລ້ວ</translation>
 <translation id="8898840733695078011">ຄວາມແຮງສັນຍານ</translation>
 <translation id="8910721771319628100">ເຄືອຂ່າຍເລີ່ມຕົ້ນສູງກວ່າເກນເວລາໃນການຕອບສະໜອງ</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> ຂອງ <ph name="GIVEN_NAME" /></translation>

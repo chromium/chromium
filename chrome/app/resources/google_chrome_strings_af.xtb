@@ -82,6 +82,7 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> is reeds by hierdie Chrome-profiel aangemeld. Chrome kan jou eie profiel vir jou skep om jou blaaidata apart te hou.</translation>
 <translation id="2580411288591421699">Kan nie dieselfde Google Chrome-weergawe installeer as wat tans gebruik word nie. Maak Google Chrome asseblief toe en probeer weer.</translation>
 <translation id="2586406160782125153">Dit sal jou blaaierdata op hierdie toestel uitvee. Meld as <ph name="USER_EMAIL" /> by Chrome aan om jou data later op te haal.</translation>
+<translation id="2597976513418770460">Kry jou Chrome-blaaiergoed van <ph name="ACCOUNT_EMAIL" /> af</translation>
 <translation id="2622559029861875898">Chrome kan nie nagaan of daar opdaterings is nie. Probeer om jou internetverbinding na te gaan.</translation>
 <translation id="2645435784669275700">Chrome-bedryfstelsel</translation>
 <translation id="2652691236519827073">Maak skakel in 'n nuwe Chrome-oortjie oop</translation>
@@ -312,6 +313,7 @@ Toestemmings wat jy reeds aan webwerwe en programme gegee het, kan op hierdie re
 <translation id="7801699035218095297">Google Chrome probeer tans om wagwoorde te kopieer. Tik jou Windows-wagwoord in om dit toe te laat.</translation>
 <translation id="7808348361785373670">Verwyder uit Chrome …</translation>
 <translation id="7825851276765848807">Installering het weens 'n ongespesifiseerde fout misluk. Laai Google Chrome asseblief weer af.</translation>
+<translation id="7880591377632733558">Welkom by Chrome, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="7890208801193284374">As jy 'n rekenaar deel, kan vriende en familie apart blaai en Chrome opstel nes hulle dit wil hê.</translation>
 <translation id="7896673875602241923">Iemand het voorheen op hierdie rekenaar as <ph name="ACCOUNT_EMAIL_LAST" /> by Chrome aangemeld. Skep asseblief 'n nuwe Chrome-gebruiker om jou inligting apart te hou.</translation>
 <translation id="7917876797003313048">Jy kan jou aangemelde Google-rekeninge bestuur. Jou Google-rekeninge word gebruik vir Chrome-blaaier, Play Winkel, Gmail en meer. As jy 'n rekening vir iemand anders, soos 'n gesinslid, wil byvoeg, kan jy 'n nuwe persoon eerder by jou <ph name="DEVICE_TYPE" /> voeg. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
@@ -337,6 +339,7 @@ Toestemmings wat jy reeds aan webwerwe en programme gegee het, kan op hierdie re
 <translation id="8418845734693287262">Chrome-bedrystelsel kon nie jou data sinkroniseer nie omdat jou rekening se aanmeldbesonderhede verouderd is.</translation>
 <translation id="8421734018304082652">Chrome het hierdie lêer geblokkeer omdat dit geënkripteer word. Vra die eienaar daarvan om dit te dekripteer</translation>
 <translation id="8433638294851456451">Meld op albei toestelle by Chrome aan om 'n nommer van hier af na jou Android-foon te stuur.</translation>
+<translation id="8451192282033883849">Jou rekening word bestuur deur <ph name="MANAGER_NAME" />. Jou administrateur kan hierdie Chrome-blaaierprofiel en sy data soos boekmerke, geskiedenis en wagwoorde sien en wysig.</translation>
 <translation id="8498858610309223613">'n Spesiale sekuriteitsopdatering vir Google Chrome is sopas toegepas. Herbegin nou en ons sal jou oortjies teruglaai.</translation>
 <translation id="8504220326736535258">Chrome het hierdie lêer geblokkeer omdat dit wanware het</translation>
 <translation id="8516431725144212809">Jou belangstellings soos geskat deur Chrome</translation>

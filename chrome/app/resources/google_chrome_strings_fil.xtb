@@ -82,6 +82,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="2574930892358684005">Naka-sign in na si <ph name="EXISTING_USER" /> sa profile sa Chrome na ito. Para panatilihing hiwalay ang iyong pag-browse, puwedeng gumawa ang Chrome ng sarili mong profile para sa iyo.</translation>
 <translation id="2580411288591421699">Hindi ma-install ang parehong bersyon ng Google Chrome na kasalukuyang tumatakbo. Mangyaring isara ang Google Chrome at muling subukan.</translation>
 <translation id="2586406160782125153">Ide-delete nito ang iyong data sa pag-browse sa device na ito. Upang makuha ang iyong data sa ibang pagkakataon, mag-sign in sa Chrome bilang <ph name="USER_EMAIL" />.</translation>
+<translation id="2597976513418770460">Kunin ang iyong mga bagay sa Chrome browser mula sa <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="2622559029861875898">Hindi matingnan ng Chrome kung may mga update. Subukang tingnan ang iyong koneksyon sa internet.</translation>
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2652691236519827073">Buksan ang Link sa Bagong &amp;tab ng Chrome</translation>
@@ -312,6 +313,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="7801699035218095297">Sinusubukan ng Google Chrome na kopyahin ang mga password. I-type ang iyong password sa Windows para payagan ito.</translation>
 <translation id="7808348361785373670">Alisin sa Chrome...</translation>
 <translation id="7825851276765848807">Nabigo ang pag-install dahil sa hindi natukoy na error. Paki-download muli ang Google Chrome.</translation>
+<translation id="7880591377632733558">Welcome sa Chrome, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="7890208801193284374">Kung nagpapahiram ka ng computer, ang mga kaibigan at kapamilya ay maaaring mag-browse nang hiwalay at i-set up ang Chrome sa paraang gusto nila.</translation>
 <translation id="7896673875602241923">May nag-sign in dati sa Chrome sa computer na ito bilang <ph name="ACCOUNT_EMAIL_LAST" />. Mangyaring gumawa ng bagong user ng Chrome upang ihiwalay ang iyong impormasyon.</translation>
 <translation id="7917876797003313048">Puwede mong pamahalaan ang iyong mga naka-sign in na Google Account. Ginagamit ang iyong mga Google Account para sa Chrome browser, Play Store, Gmail, at higit pa. Kung gusto mong magdagdag ng account para sa ibang tao, tulad ng miyembro ng pamilya, magdagdag na lang ng bagong tao sa iyong <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
@@ -337,6 +339,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="8418845734693287262">Hindi ma-sync ng ChromeOS ang iyong data dahil hindi napapanahon ang mga detalye sa pag-sign in sa iyong account.</translation>
 <translation id="8421734018304082652">Na-block ng Chrome ang file na ito dahil naka-encrypt ito. Hilingin sa may-ari nito na i-decrypt ito</translation>
 <translation id="8433638294851456451">Para magpadala ng numero sa iyong Android phone mula rito, mag-sign in sa Chrome sa parehong device.</translation>
+<translation id="8451192282033883849">Pinapamahalaan ng <ph name="MANAGER_NAME" /> ang iyong account. Makikita at mae-edit ng iyong administrator ang profile na ito sa Chrome browser at ang data nito gaya ng mga bookmark, history, at mga password.</translation>
 <translation id="8498858610309223613">Naglapat ng espesyal na update sa seguridad para sa Google Chrome. Mag-restart na at ire-restore namin ang iyong mga tab.</translation>
 <translation id="8504220326736535258">Na-block ng Chrome ang file na ito dahil mayroon itong malware</translation>
 <translation id="8516431725144212809">Iyong mga interes tulad ng tinatantya ng Chrome</translation>

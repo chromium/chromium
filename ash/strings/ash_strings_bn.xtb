@@ -24,6 +24,7 @@
 <translation id="109942774857561566">আমি বোর হয়ে গেছি</translation>
 <translation id="1104084341931202936">অ্যাক্সেসেবিলিটি সেটিংস দেখান</translation>
 <translation id="1104621072296271835">আপনার ডিভাইসগুলি একসাথে আরও ভাল কাজ করে</translation>
+<translation id="1111021433905331574">'সেটিংস' &gt; <ph name="APP_TITLE" /> থেকে কীবোর্ড ব্যাকলাইটের রঙ পরিবর্তন করতে পারবেন</translation>
 <translation id="112308213915226829">তাককে স্বয়ংক্রিয়ভাবে লুকান</translation>
 <translation id="1142002900084379065">সাম্প্রতিক ফটো</translation>
 <translation id="1148499908455722006"><ph name="USER_NAME" />-এর জন্য অ্যাকাউন্টের তথ্য সহ ডায়ালগ খুলুন</translation>
@@ -65,6 +66,7 @@
 <translation id="1275285675049378717"><ph name="POWER_SOURCE" /> চার্জ করা হচ্ছে</translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">ফোনের লোকেশন খুঁজে পাওয়ার সুবিধা</translation>
+<translation id="1287002645302686982"><ph name="DESK_TEMPLATE_NAME" /> নামের সেভ করা একটি ডেস্ক আগে থেকেই রয়েছে</translation>
 <translation id="1289185460362160437"><ph name="COME_BACK_DAY_OF_WEEK" /> <ph name="COME_BACK_TIME" />-এ আবার ব্যবহার করতে পারবেন।</translation>
 <translation id="1290331692326790741">সিগন্যালটি ভাল নয়</translation>
 <translation id="1290982764014248209"><ph name="DRAGGED_APP" />কে <ph name="FOLDER_NAME" /> ফোল্ডারে সরান।</translation>
@@ -94,7 +96,7 @@
 <translation id="1420408895951708260">নাইট লাইট ফিচারটি টগল করুন। <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">আপনার <ph name="DEVICE_TYPE" />-এ আপনার ফোনের সাম্প্রতিক ফটো এবং মিডিয়া দেখুন</translation>
 <translation id="1426410128494586442">হ্যাঁ</translation>
-<translation id="1438357537418863713">অ্যাপ স্ট্রিমিং এখন সেট আপ করা আছে। আপনি চালু করলে, সাম্প্রতিক ব্যবহার করা অ্যাপ এখানে দেখা যাবে।</translation>
+<translation id="1447641497144572814">স্ক্রিন সেভার চালু হচ্ছে</translation>
 <translation id="1455242230282523554">ভাষার সেটিংস দেখুন</translation>
 <translation id="1460620680449458626">ভলিউম মিউট করা আছে।</translation>
 <translation id="1467432559032391204">বামে</translation>
@@ -269,6 +271,7 @@
 <translation id="2586561057878260610"><ph name="DESK_NAME" />-এর সাথে জুড়তে, Ctrl + W কী প্রেস করুন। ডেস্ক ও উইন্ডো বন্ধ করতে, Ctrl + Shift + W কী প্রেস করুন।</translation>
 <translation id="2595239820337756193">মাইলের হিসেবে ৫ হাজার</translation>
 <translation id="2596078834055697711">উইন্ডো স্ক্রিনশট নিন</translation>
+<translation id="2598725286293895280">কাজ করে না এমন অ্যাপ ডেস্কে রয়েছে</translation>
 <translation id="2607678425161541573">অনলাইন সাইন-ইন প্রয়োজন</translation>
 <translation id="2620016719323068571">আপনার <ph name="CATEGORY" />, ফাইল, অ্যাপ এবং আরও অনেক কিছু সার্চ করুন...</translation>
 <translation id="2620436844016719705">সিস্টেম</translation>
@@ -644,6 +647,7 @@
 <translation id="4734965478015604180">অনুভূমিক</translation>
 <translation id="4735498845456076464"><ph name="LAUNCHER_KEY_NAME" /> + Number কীবোর্ড শর্ককার্ট পরিবর্তন করা হয়েছে। ফাংশান কী ব্যবহার করতে, <ph name="LAUNCHER_KEY_NAME" /> কী + কীবোর্ডের উপরের সারির যেকোনও একটি কী প্রেস করুন।</translation>
 <translation id="473775607612524610">আপডেট করুন</translation>
+<translation id="4740516757091333363">সেভ করা ডেস্ক মুছবেন?</translation>
 <translation id="4752784485658729358">সেভ করা শুধুমাত্র ৬টি ডেস্কের অনুমতি আছে। নতুন একটি সেভের জন্য ডেস্ক সরান।</translation>
 <translation id="4759238208242260848">ডাউনলোড</translation>
 <translation id="4774338217796918551">আগামীকাল <ph name="COME_BACK_TIME" />-এ আবার ব্যবহার করতে পারবেন।</translation>
@@ -696,7 +700,6 @@
 <translation id="5071064518267176975">অ্যাপ মাইক্রোফোন ব্যবহার করতে চায়</translation>
 <translation id="5078796286268621944">ভুল পিন</translation>
 <translation id="5083553833479578423">অ্যাসিস্ট্যান্ট-এর আরও বৈশিষ্ট্য আনলক করুন।</translation>
-<translation id="5106223312672646208">পছন্দমতো</translation>
 <translation id="5107522548814527560">ওয়েব</translation>
 <translation id="5117590920725113268">পরবর্তী মাস দেখান</translation>
 <translation id="5136175204352732067">বিভিন্ন কীবোর্ড কানেক্ট করা হয়েছে</translation>
@@ -741,6 +744,7 @@
 <translation id="5352250171825660495">ডার্ক থিম চালু আছে</translation>
 <translation id="5356963482258194581">ডার্ক ও লাইট থিমের মধ্যে বদল করুন। ডেস্কটপে মাউসের ডানদিকের বোতামে ক্লিক করে ওয়ালপেপার ও স্টাইল বেছে নিন।</translation>
 <translation id="5379115545237091094">অনেক বেশি চেষ্টা করেছেন</translation>
+<translation id="5391307769715781764">সেভ করা ডেস্ক পরিবর্তন করবেন?</translation>
 <translation id="5393156353051693207">অ্যাপ নতুন করে সাজাতে যেকোনও জায়গায় টাচ করে ধরে থাকুন</translation>
 <translation id="5395308026110844773">ফোল্ডার তৈরি করতে <ph name="IN_PLACE_APP" />-এর উপরে <ph name="DRAGGED_APP_NAME" /> টেনে এনে ছেড়ে দিন।</translation>
 <translation id="5397578532367286026">chrome.com-এ পরিচালক (<ph name="MANAGER_EMAIL" />) এই ব্যবহারকারীর ব্যবহার এবং ইতিহাস পর্যালোচনা করতে পারেন৷</translation>
@@ -974,6 +978,7 @@
 <translation id="6790428901817661496">চালু করুন</translation>
 <translation id="6801878137098616817">সম্প্রতি এডিট করা হয়েছে</translation>
 <translation id="6803622936009808957">সমর্থিত রেসুলিউশানগুলি খুঁজে না পাওয়ায় প্রদর্শনগুলি মিরর মানে প্রতিবিম্বিত করতে পারেনি। এর পরিবর্তে প্রসারিত ডেস্কটপে প্রবেশ করেছে।</translation>
+<translation id="6812232930908427253">ডেস্ক সেভ করা যায়নি। অনেক বেশি উইন্ডো বা ট্যাব রয়েছে।</translation>
 <translation id="6818242057446442178">শব্দ অনুযায়ী পেছনে যান</translation>
 <translation id="6819327813400217281">ক্যামেরাটি নিচে বাঁদিকের কোণে স্ন্যাপ করা হয়েছে</translation>
 <translation id="6820676911989879663">বিরতি নিন!</translation>

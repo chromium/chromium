@@ -78,6 +78,7 @@
 <translation id="1578784163189013834">Pumili ng background ng screen saver</translation>
 <translation id="1615335640928990664">Paggamit ng data simula noong <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Patakbuhin ang pagsusuri sa Pag-charge</translation>
+<translation id="1631385268983122904">Huwag munang i-assemble ulit ang device</translation>
 <translation id="1639239467298939599">Naglo-load</translation>
 <translation id="1641857168437328880">Document Feeder (Isang bahagi)</translation>
 <translation id="1643449475550628585">Araw-araw na palitan ang larawan sa wallpaper</translation>
@@ -85,6 +86,7 @@
 <translation id="1645954272419197032">Pakikumpirma ang impormasyon ng device</translation>
 <translation id="1662989795263954667">Huminto - Wala nang ink</translation>
 <translation id="1668469839109562275">Built-in na VPN</translation>
+<translation id="1676557873873341166">Pagkuha ng video</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">May DNS Resolver</translation>
 <translation id="1715359911173058521">May isyu sa pagkonekta sa scanner. Suriin ang koneksyon ng network o USB at subukan ulit.</translation>
@@ -159,6 +161,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">I-on ang Bluetooth upang tuklasin ang mga kalapit na device</translation>
+<translation id="2340422556570134524">Hindi inaasahang na-on ang Write Protect. Manual na i-off ang Write Protect bago subukan ulit.</translation>
 <translation id="2346474577291266260">Napakabilis (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">Magpatuloy</translation>
 <translation id="2360257214555822463">May na-detect na <ph name="LINK_BEGIN" />mga hindi kwalipikadong bahagi<ph name="LINK_END" />. Kung pipiliin mong kumpirmahin na na-install na ito, pakigawa ito ngayon.</translation>
@@ -474,6 +477,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="5372659122375744710">Hindi secure ang WiFi network</translation>
 <translation id="5376354385557966694">Awtomatikong light mode</translation>
 <translation id="537872351913703572">Mapupunta ang device sa ibang user o organisayon</translation>
+<translation id="5389159777326897627">Wallpaper at style</translation>
 <translation id="5389224261615877010">Bahaghari</translation>
 <translation id="5395600419410242651">Burahin ang lahat ng data</translation>
 <translation id="5400907029458559844">Kumokonekta ang device.</translation>
@@ -643,6 +647,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="6961170852793647506">Para magsimula, ilagay ang iyong dokumento sa scanner</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">Rebisyon ng firmware</translation>
+<translation id="6995564396478647735">Tiyaking naka-on ang Write Protect</translation>
 <translation id="7028979494427204405">Pinapamahalaan ng <ph name="MANAGER" /> ang device na ito at mayroon itong access sa lahat ng aktibidad ng user, kabilang ang mga webpage na binisita, mga password, at email.</translation>
 <translation id="7040230719604914234">Operator</translation>
 <translation id="7041549558901442110">Hindi nakakonekta ang device.</translation>
@@ -653,6 +658,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Nabigo - Hindi Nabigyan ng Pahintulot</translation>
 <translation id="7103252855940681301">Device <ph name="INDEX" /> sa <ph name="COUNT" /> na nagngangalang <ph name="NAME" />.</translation>
+<translation id="7126228745139711113">Naka-off ang Write Protect</translation>
 <translation id="7134436342991564651">{0,plural, =1{Name server}one{Mga name server}other{Mga name server}}</translation>
 <translation id="7143207342074048698">Kumokonekta</translation>
 <translation id="7144878232160441200">Subukang muli</translation>
@@ -744,6 +750,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="80398733265834479">I-enable ang auto color mode</translation>
 <translation id="8041089156583427627">Magpadala ng Feedback</translation>
 <translation id="8045012663542226664">Pang-mute ng mikropono</translation>
+<translation id="8063022551652308521">Naka-off pa rin ang Write Protect. Para magpatuloy, i-on ang Write Protect.</translation>
 <translation id="8075838845814659848">Natitirang pag-charge</translation>
 <translation id="8082366717211101304">Hindi ma-resolve ang DNS mula sa mga Android app</translation>
 <translation id="8083281199617904460">Nakalaan ang prosesong ito ng pag-aayos para sa sinanay na technician sa pag-aayos. Magsimula lang kapag napalitan na ang mga hindi gumaganang bahagi.</translation>
@@ -814,6 +821,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Gamitin ang mga Kaliwa o Pakanang arrow key para pamahalaan ang feature na ito.</translation>
 <translation id="8712637175834984815">Nakuha ko</translation>
 <translation id="871560550817059752">Hindi na-print - Wala nang ink</translation>
+<translation id="8717030727630712160">Ipinagpapatuloy ang proseso ng pag-aayos…</translation>
 <translation id="8723108084122415655">Mas mataas sa limitasyon ng latency ang hindi default na network</translation>
 <translation id="8725066075913043281">Muling subukan</translation>
 <translation id="8726019395068607495">Huminto - Nakabukas ang door</translation>
@@ -835,6 +843,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Tablet ang device.</translation>
 <translation id="8881098542468797602">Nagtagumpay ang pagsusuri</translation>
+<translation id="8897267175591692539">Puwede mo nang i-assemble ulit ang device</translation>
 <translation id="8898840733695078011">Lakas ng signal</translation>
 <translation id="8910721771319628100">Mas mataas sa limitasyon ng latency ang default na network</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> ni <ph name="GIVEN_NAME" /></translation>

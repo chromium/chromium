@@ -56,6 +56,7 @@
 <translation id="124678866338384709">현재 탭 닫기</translation>
 <translation id="1246905108078336582">클립보드에서 추천 항목을 삭제하시겠습니까?</translation>
 <translation id="1258753120186372309">Google 기념일 로고: <ph name="DOODLE_DESCRIPTION" /></translation>
+<translation id="1263231323834454256">읽기 목록</translation>
 <translation id="1266864766717917324"><ph name="CONTENT_TYPE" /> 공유할 수 없음</translation>
 <translation id="1283039547216852943">탭하여 펼치기</translation>
 <translation id="1285310382777185058">언어 변경</translation>
@@ -493,10 +494,10 @@
 <translation id="363596933471559332">저장된 사용자 인증 정보를 사용하여 자동으로 웹사이트에 로그인합니다. 이 기능이 꺼져 있는 경우에는 웹사이트에 로그인할 때마다 인증 요청 메시지가 표시됩니다.</translation>
 <translation id="3653111872753786013"><ph name="WEBSITE_TITLE" />: <ph name="WEBSITE_URL" /></translation>
 <translation id="3677911431265050325">모바일 버전으로 보기</translation>
-<translation id="3685860403008476208">이 기기를 사용하는 누구나 시크릿 모드에서 다운로드된 파일을 볼 수 있습니다.</translation>
 <translation id="3687645719033307815">페이지의 미리보기를 보는 중입니다.</translation>
 <translation id="3690369331356918524">데이터 유출로 인해 비밀번호가 노출된 경우 알립니다.</translation>
 <translation id="3692944402865947621">저장 위치에 연결할 수 없어 <ph name="FILE_NAME" />을(를) 다운로드할 수 없습니다.</translation>
+<translation id="3697705478071004188">사이트별 정렬</translation>
 <translation id="3699022356773522638">파일을 다운로드하시겠습니까?</translation>
 <translation id="371230970611282515">위험한 이벤트가 발생하기 전에 이를 예측하여 알립니다.</translation>
 <translation id="3714981814255182093">찾기 창 열기</translation>
@@ -523,6 +524,7 @@
 <translation id="3845098929839618392">시크릿 탭에서 열기</translation>
 <translation id="3856096718352044181">유효한 제공업체인지 확인하거나 나중에 다시 시도하세요.</translation>
 <translation id="3858860766373142691">이름</translation>
+<translation id="3859206958100234503">동기화하여 모든 기기에서 비밀번호, 북마크 등을 가져오세요.</translation>
 <translation id="3861633093716975811">인기 동영상</translation>
 <translation id="3892148308691398805">텍스트 복사</translation>
 <translation id="3894427358181296146">폴더 추가</translation>
@@ -580,6 +582,7 @@
 <translation id="4209895695669353772">Google에서 추천하는 맞춤 콘텐츠를 보려면 동기화를 사용 설정하세요.</translation>
 <translation id="4214315110991671325">사용자가 쿠키를 허용하면 Chrome에서 미리 로드할 때 쿠키를 사용할 수 있습니다.</translation>
 <translation id="4225895483398857530">툴바 바로가기</translation>
+<translation id="4227318652298512614">원하는 사이트 팔로우</translation>
 <translation id="4242533952199664413">설정 열기</translation>
 <translation id="4248098802131000011">정보 유출 및 다른 보안 문제로부터 비밀번호를 안전하게 보호하세요.</translation>
 <translation id="4249955472157341256">최신순 정렬</translation>
@@ -696,6 +699,7 @@
 <translation id="4842515939542199281">음성으로 검색하려면 마이크 탭하기</translation>
 <translation id="4844633725025837809">보안 강화를 위해 비밀번호를 기기 내에서 암호화한 후 Google 비밀번호 관리자에 저장합니다</translation>
 <translation id="4850886885716139402">보기</translation>
+<translation id="4852014461738377247">로그인 중\u2026</translation>
 <translation id="4860895144060829044">전화걸기</translation>
 <translation id="4864369630010738180">로그인 중...</translation>
 <translation id="4866368707455379617">Chrome에 <ph name="MODULE" />을(를) 설치할 수 없습니다.</translation>
@@ -1149,6 +1153,7 @@
 <translation id="7304873321153398381">오프라인 상태입니다. Chrome에서 비밀번호를 확인할 수 없습니다.</translation>
 <translation id="7313188324932846546">동기화를 설정하려면 탭하세요.</translation>
 <translation id="7332075081379534664">로그인 성공</translation>
+<translation id="7333232495927792353">동기화하여 Google에서 가장 관련 있는 콘텐츠를 확인하세요.</translation>
 <translation id="7339898014177206373">새 창</translation>
 <translation id="7340958967809483333">디스커버용 옵션</translation>
 <translation id="7352339641508007922">긴 스크린샷을 찍으려면 드래그하세요.</translation>
@@ -1304,6 +1309,7 @@
 <translation id="8103578431304235997">시크릿 탭</translation>
 <translation id="8105613260829665809">계속하면 <ph name="BEGIN_TOS_LINK" />서비스 약관<ph name="END_TOS_LINK" />에 동의하는 것으로 간주됩니다.\n앱 개선을 위해 Chrome에서 사용 및 비정상 종료 데이터를 Google에 전송합니다. <ph name="BEGIN_UMA_LINK" />관리<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
+<translation id="8107530384992929318">정렬 옵션 닫기</translation>
 <translation id="8109613176066109935">어느 기기에서나 내 북마크를 사용하려면 동기화를 사용 설정하세요.</translation>
 <translation id="8110024788458304985">Chrome의 기능 및 성능 개선에 참여</translation>
 <translation id="8110087112193408731">디지털 웰빙에서 Chrome 활동을 표시할까요?</translation>
@@ -1377,6 +1383,7 @@
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">방문 기록 페이지 열기</translation>
 <translation id="8493948351860045254">저장 공간 확보하기</translation>
+<translation id="8497242791509864205">정렬 옵션 열기</translation>
 <translation id="8497480609928300907">개인 정보 보호 가이드 설명</translation>
 <translation id="8497726226069778601">아직 표시할 내용 없음</translation>
 <translation id="8503559462189395349">Chrome 비밀번호</translation>
@@ -1529,6 +1536,7 @@
 <translation id="96681097142096641">간소화된 페이지를 보시겠습니까?</translation>
 <translation id="968900484120156207">방문한 페이지가 여기에 표시됩니다.</translation>
 <translation id="970715775301869095"><ph name="MINUTES" />분 남음</translation>
+<translation id="978443947993957527">맞춤 콘텐츠 보기</translation>
 <translation id="981121421437150478">오프라인</translation>
 <translation id="983192555821071799">탭 모두 닫기</translation>
 <translation id="987264212798334818">일반</translation>

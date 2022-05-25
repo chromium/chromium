@@ -121,6 +121,7 @@
 <translation id="1942765061641586207">Kuvan resoluutio</translation>
 <translation id="1972984168337863910">Laajenna tiedostojen palautepaneelit</translation>
 <translation id="1995337122023280937">Siirry tiedoston sijaintiin</translation>
+<translation id="1996806196681857869">Z-pakattu arkisto</translation>
 <translation id="2001796770603320721">Ylläpidä Drivessa</translation>
 <translation id="2009067268969781306">Driven alustaminen poistaa kaiken sille tallennetun datan. Tätä toimintoa ei voi kumota.</translation>
 <translation id="2025955442973426285">tigrinja</translation>
@@ -589,6 +590,7 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> kohdetta</translation>
 <translation id="5957366693331451795">Chromeboxit</translation>
 <translation id="5982621672636444458">Lajitteluasetukset</translation>
+<translation id="5985041959109124139">Z-pakattu tar-arkisto</translation>
 <translation id="6007237601604674381">Siirto epäonnistui. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Ethernet-verkko</translation>
 <translation id="60357267506638014">tšekki, QWERTY</translation>
@@ -619,6 +621,7 @@
 <translation id="6220423280121890987">punjabi</translation>
 <translation id="6224240818060029162">tanska</translation>
 <translation id="6224253798271602650">Alusta <ph name="DRIVE_NAME" /></translation>
+<translation id="6224665423283788195">Zstandard-pakattu arkisto</translation>
 <translation id="6227235786875481728">Tätä tiedostoa ei voi toistaa.</translation>
 <translation id="6241349547798190358">hollanti (Belgia)</translation>
 <translation id="6267547857941397424">Verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, signaalin vahvuus <ph name="SIGNAL_STRENGTH" /> %, puhelimen akun varaus <ph name="BATTERY_STATUS" /> %, yhdistä</translation>
@@ -646,6 +649,7 @@
 <translation id="6509122719576673235">norja</translation>
 <translation id="6528513914570774834">Anna muiden laitteen käyttäjien käyttää tätä verkkoa</translation>
 <translation id="653019979737152879">Synkronoidaan kohdetta <ph name="FILE_NAME" />…</translation>
+<translation id="6530595303336443929">Zstandard-pakattu tar-arkisto</translation>
 <translation id="6549689063733911810">Viimeisimmät</translation>
 <translation id="6558280019477628686">Tapahtui virhe. Kaikkia kohteita ei välttämättä poistettu.</translation>
 <translation id="656398493051028875">Poistetaan tiedostoa <ph name="FILENAME" />…</translation>

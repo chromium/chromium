@@ -65,6 +65,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1275285675049378717">En cours d'alimentation : <ph name="POWER_SOURCE" /></translation>
 <translation id="1279938420744323401"><ph name="DISPLAY_NAME" /> (<ph name="ANNOTATION" />)</translation>
 <translation id="1285992161347843613">Localiser le téléphone</translation>
+<translation id="1287002645302686982">Il y a déjà un bureau enregistré nommé "<ph name="DESK_TEMPLATE_NAME" />"</translation>
 <translation id="1289185460362160437">Revenez <ph name="COME_BACK_DAY_OF_WEEK" /> à <ph name="COME_BACK_TIME" />.</translation>
 <translation id="1290331692326790741">Signal de faible intensité</translation>
 <translation id="1290982764014248209">Déplacer <ph name="DRAGGED_APP" /> vers le dossier <ph name="FOLDER_NAME" />.</translation>
@@ -94,7 +95,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1420408895951708260">Activer/Désactiver la fonctionnalité Éclairage nocturne. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">Afficher les photos et contenus multimédias récents de votre téléphone sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="1426410128494586442">Oui</translation>
-<translation id="1438357537418863713">Streaming d'appli configuré. Les applis récemment lancées s'afficheront ici.</translation>
+<translation id="1447641497144572814">L'économiseur d'écran démarre</translation>
 <translation id="1455242230282523554">Afficher les paramètres de langue</translation>
 <translation id="1460620680449458626">Le volume est désactivé.</translation>
 <translation id="1467432559032391204">À gauche</translation>
@@ -269,6 +270,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2586561057878260610">Appuyez sur Ctrl+W pour combiner avec <ph name="DESK_NAME" />. Appuyez sur Ctrl+Maj+W pour fermer le bureau et les fenêtres.</translation>
 <translation id="2595239820337756193">5 km en miles</translation>
 <translation id="2596078834055697711">Faire une capture de la fenêtre</translation>
+<translation id="2598725286293895280">Applis non compatibles dans le bureau</translation>
 <translation id="2607678425161541573">Connexion en ligne requise</translation>
 <translation id="2620016719323068571">Recherchez vos <ph name="CATEGORY" />, fichiers, applis, etc.…</translation>
 <translation id="2620436844016719705">Système</translation>
@@ -644,6 +646,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="4734965478015604180">Horizontal</translation>
 <translation id="4735498845456076464">Le raccourci clavier <ph name="LAUNCHER_KEY_NAME" />+Chiffre a été modifié. Pour utiliser les touches de fonction, appuyez sur la touche <ph name="LAUNCHER_KEY_NAME" /> et sur une touche de la rangée supérieure.</translation>
 <translation id="473775607612524610">Mettre à jour</translation>
+<translation id="4740516757091333363">Supprimer le bureau enregistré ?</translation>
 <translation id="4752784485658729358">Seuls six bureaux enregistrés sont autorisés. Supprimez un bureau pour en enregistrer un nouveau.</translation>
 <translation id="4759238208242260848">Téléchargements</translation>
 <translation id="4774338217796918551">Revenez demain à <ph name="COME_BACK_TIME" />.</translation>
@@ -696,7 +699,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="5071064518267176975">Une appli souhaite utiliser le micro</translation>
 <translation id="5078796286268621944">Code PIN incorrect</translation>
 <translation id="5083553833479578423">Déverrouiller plus de fonctionnalités de l'Assistant.</translation>
-<translation id="5106223312672646208">Personnaliser</translation>
 <translation id="5107522548814527560">Web</translation>
 <translation id="5117590920725113268">Afficher le mois suivant</translation>
 <translation id="5136175204352732067">Clavier différent branché</translation>
@@ -741,6 +743,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="5352250171825660495">Le thème sombre est activé</translation>
 <translation id="5356963482258194581">Basculez entre les thèmes sombre et clair. Effectuez un clic droit sur le bureau et sélectionnez "Fond d'écran et style".</translation>
 <translation id="5379115545237091094">Trop de tentatives</translation>
+<translation id="5391307769715781764">Remplacer le bureau enregistré ?</translation>
 <translation id="5393156353051693207">Appuyez de manière prolongée n'importe où pour réorganiser les applis</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> sur <ph name="IN_PLACE_APP" />. Relâcher pour créer un dossier.</translation>
 <translation id="5397578532367286026">Le gestionnaire (<ph name="MANAGER_EMAIL" />) peut consulter les actions effectuées cet utilisateur, ainsi que son historique, sur chrome.com.</translation>
@@ -974,6 +977,7 @@ Nouvelle installation</translation>
 <translation id="6790428901817661496">Lire</translation>
 <translation id="6801878137098616817">Modifié récemment</translation>
 <translation id="6803622936009808957">Impossible de dupliquer les écrans, car aucune résolution compatible n'a été détectée. Le bureau étendu a été activé à la place.</translation>
+<translation id="6812232930908427253">Impossible d'enregistrer le bureau. Il y a trop de fenêtres ou d'onglets.</translation>
 <translation id="6818242057446442178">Reculer par mot</translation>
 <translation id="6819327813400217281">Appareil photo aligné sur l'angle inférieur gauche</translation>
 <translation id="6820676911989879663">Faites une pause !</translation>

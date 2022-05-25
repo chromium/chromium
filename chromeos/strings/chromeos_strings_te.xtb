@@ -78,6 +78,7 @@
 <translation id="1578784163189013834">స్క్రీన్ సేవర్ బ్యాక్‌గ్రౌండ్ ఎంచుకోండి</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> నుండి డేటా వినియోగం</translation>
 <translation id="1621067168122174824">ఛార్జ్ పరీక్షను రన్ చేయండి</translation>
+<translation id="1631385268983122904">ఇప్పుడే పరికరాన్ని అసెంబుల్ చేయవద్దు</translation>
 <translation id="1639239467298939599">లోడ్ అవుతోంది</translation>
 <translation id="1641857168437328880">డాక్యుమెంట్ ఫీడర్ (ఒక వైపున)</translation>
 <translation id="1643449475550628585">ప్రతిరోజూ వాల్‌పేపర్ ఇమేజ్‌ను మార్చండి</translation>
@@ -85,6 +86,7 @@
 <translation id="1645954272419197032">దయచేసి పరికర సమాచారాన్ని నిర్ధారించండి</translation>
 <translation id="1662989795263954667">ఆగిపోయింది - ఇంక్ లేదు</translation>
 <translation id="1668469839109562275">బిల్ట్-ఇన్ VPN</translation>
+<translation id="1676557873873341166">వీడియో తీస్తోంది</translation>
 <translation id="1703835215927279855">లెటర్</translation>
 <translation id="1706391837335750954">DNS రిసాల్వర్ అందుబాటులో ఉంది</translation>
 <translation id="1715359911173058521">స్కానర్‌తో కమ్యూనికేట్ చేయడంలో ఎదో సమస్య ఉంది. నెట్‌వర్క్ లేదా USB కనెక్షన్‌ను చెక్ చేసి, మళ్లీ ట్రై చేయండి.</translation>
@@ -159,6 +161,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2336381494582898602">పవర్‌వాష్ చేయి</translation>
 <translation id="2338501278241028356">సమీప పరికరాలను కనుగొనడానికి బ్లూటూత్‌ను ఆన్ చేయండి</translation>
+<translation id="2340422556570134524">ఎడిటింగ్ అనుమతించని రక్షణ అనుకోకుండా ఆన్ అయింది. మళ్లీ ట్రై చేసే ముందు దయచేసి మాన్యువల్‌గా ఎడిటింగ్ అనుమతించని రక్షణను ఆఫ్ చేయండి.</translation>
 <translation id="2346474577291266260">అద్భుతంగా ఉంది (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">కొనసాగించు</translation>
 <translation id="2360257214555822463"><ph name="LINK_BEGIN" />అర్హత లేని భాగాలు<ph name="LINK_END" /> గుర్తించబడ్డాయి. ఇది ఇన్‌స్టాల్ చేయబడిందని నిర్ధారించాలని మీరు ఎంచుకుంటే, దయచేసి ఇప్పుడే దాన్ని చెక్ చేయండి.</translation>
@@ -473,6 +476,7 @@
 <translation id="5372659122375744710">WiFi నెట్‌వర్క్ సురక్షితంగా లేదు</translation>
 <translation id="5376354385557966694">ఆటోమేటిక్ లైట్ మోడ్</translation>
 <translation id="537872351913703572">పరికరం వేరే యూజర్‌కు లేదా సంస్థకు బదిలీ చేయబడుతుంది</translation>
+<translation id="5389159777326897627">వాల్‌పేపర్ &amp; స్టయిల్</translation>
 <translation id="5389224261615877010">ఇంద్రధనస్సు</translation>
 <translation id="5395600419410242651">డేటా మొత్తాన్ని ఫ్యాక్టరీ రీసెట్ చేయండి</translation>
 <translation id="5400907029458559844">పరికరం కనెక్ట్ అవుతోంది.</translation>
@@ -642,6 +646,7 @@
 <translation id="6961170852793647506">ప్రారంభించడానికి, మీ డాక్యుమెంట్‌ను స్కానర్ మీద పెట్టండి</translation>
 <translation id="6965382102122355670">సరే</translation>
 <translation id="6977381486153291903">ఫర్మ్‌వేర్ పునర్విమర్శ</translation>
+<translation id="6995564396478647735">ఎడిటింగ్ అనుమతించని రక్షణ ఆన్‌లో ఉందని నిర్ధారించుకోండి</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> ఈ పరికరాన్ని మేనేజ్ చేస్తుంది, అలాగే సందర్శించిన వెబ్ పేజీలు, పాస్‌వర్డ్‌లు, ఈమెయిళ్లతో సహా యూజర్ యాక్టివిటీకి యాక్సెస్‌ను కలిగి ఉంటుంది.</translation>
 <translation id="7040230719604914234">ఆపరేటర్</translation>
 <translation id="7041549558901442110">పరికరం కనెక్ట్ కాలేదు.</translation>
@@ -652,6 +657,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">విఫలమైంది - ప్రామాణీకరణ విఫలమైంది</translation>
 <translation id="7103252855940681301"><ph name="COUNT" />లో <ph name="INDEX" /> పరికరాలు <ph name="NAME" /> అనే పేరుతో ఉన్నాయి.</translation>
+<translation id="7126228745139711113">ఎడిటింగ్ అనుమతించని రక్షణ ఆఫ్ చేయబడింది</translation>
 <translation id="7134436342991564651">{0,plural, =1{సర్వర్ పేరు}other{సర్వర్‌ల పేరు}}</translation>
 <translation id="7143207342074048698">కనెక్ట్ అవుతో.</translation>
 <translation id="7144878232160441200">మళ్ళీ ప్రయత్నించు</translation>
@@ -743,6 +749,7 @@
 <translation id="80398733265834479">ఆటోమేటిక్ రంగు మోడ్‌ను ఎనేబుల్ చేయండి</translation>
 <translation id="8041089156583427627">ప్రతిస్పందనను పంపండి</translation>
 <translation id="8045012663542226664">మైక్రోఫోన్ మ్యూట్</translation>
+<translation id="8063022551652308521">ఎడిటింగ్ అనుమతించని రక్షణ ఇంకా ఆఫ్‌లో ఉంది. కొనసాగించడానికి, ఎడిటింగ్ అనుమతించని రక్షణను ఆన్ చేయండి.</translation>
 <translation id="8075838845814659848">మిగిలిన ఛార్జ్</translation>
 <translation id="8082366717211101304">Android యాప్‌ల నుండి DNSను పరిష్కరించడం సాధ్యపడదు</translation>
 <translation id="8083281199617904460">ఈ రిపేర్ ప్రాసెస్ శిక్షణ పొందిన రిపేర్ టెక్నీషియన్ కోసం ఉద్దేశించబడింది. సరిగ్గా పని చేయని భాగాలను రీప్లేస్ చేసిన తర్వాత మాత్రమే ప్రారంభించండి.</translation>
@@ -813,6 +820,7 @@
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> ఈ ఫీచర్‌ను మేనేజ్ చేయడానికి ఎడమ వైపు బాణం లేదా కుడి వైపు బాణం కీలను ఉపయోగించండి.</translation>
 <translation id="8712637175834984815">అర్థమైంది</translation>
 <translation id="871560550817059752">విఫలమైంది - ఇంక్ అయిపోయింది</translation>
+<translation id="8717030727630712160">రిపేర్ ప్రాసెస్ కొనసాగించబడుతోంది…</translation>
 <translation id="8723108084122415655">పరిమితిని మించి ప్రతిస్పందన సమయం ఉన్న డిఫాల్ట్-యేతర నెట్‌వర్క్</translation>
 <translation id="8725066075913043281">మళ్ళీ ప్రయత్నించండి</translation>
 <translation id="8726019395068607495">ఆగిపోయింది - డోర్ తెరిచి ఉంది</translation>
@@ -834,6 +842,7 @@
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">పరికర రకం టాబ్లెట్.</translation>
 <translation id="8881098542468797602">పరీక్ష విజయవంతమైంది</translation>
+<translation id="8897267175591692539">మీరు ఇప్పుడు పరికరాన్ని అసెంబుల్ చేయవచ్చు</translation>
 <translation id="8898840733695078011">సిగ్నల్ సామర్థ్యం</translation>
 <translation id="8910721771319628100">పరిమితిని మించి ప్రతిస్పందన సమయం ఉన్న డిఫాల్ట్ నెట్‌వర్క్</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />కు చెందిన <ph name="DEVICE_TYPE" /></translation>

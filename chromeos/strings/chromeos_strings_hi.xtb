@@ -78,6 +78,7 @@
 <translation id="1578784163189013834">स्क्रीन सेवर का बैकग्राउंड चुनें</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> से लेकर अब तक इस्तेमाल किया गया डेटा</translation>
 <translation id="1621067168122174824">चार्ज टेस्ट चलाएं</translation>
+<translation id="1631385268983122904">डिवाइस में अभी बैटरी न लगाएं</translation>
 <translation id="1639239467298939599">लोड हो रहा है</translation>
 <translation id="1641857168437328880">डॉक्यूमेंट फ़ीडर (एक तरफ़ वाला)</translation>
 <translation id="1643449475550628585">वॉलपेपर रोज़ बदलें</translation>
@@ -85,6 +86,7 @@
 <translation id="1645954272419197032">कृपया डिवाइस की जानकारी की पुष्टि करें</translation>
 <translation id="1662989795263954667">बंद हो गया - स्याही खत्म हो गई</translation>
 <translation id="1668469839109562275">पहले से मौजूद वीपीएन</translation>
+<translation id="1676557873873341166">वीडियो रिकॉर्ड हो रहा है</translation>
 <translation id="1703835215927279855">लेटर</translation>
 <translation id="1706391837335750954">डीएनएस रिज़ॉल्वर मौजूद है</translation>
 <translation id="1715359911173058521">स्कैनर से कनेक्ट करते समय कोई गड़बड़ी हुई. अपने नेटवर्क या यूएसबी कनेक्शन की जांच करें और फिर से कोशिश करें.</translation>
@@ -159,6 +161,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> डीपीआई</translation>
 <translation id="2336381494582898602">पॉवरवॉश</translation>
 <translation id="2338501278241028356">आस-पास के डिवाइस खोजने के लिए ब्लूटूथ चालू करें</translation>
+<translation id="2340422556570134524">'राइट प्रोटेक्ट' अचानक चालू हो गया है. दोबारा कोशिश करने से पहले, 'राइट प्रोटेक्ट' को मैन्युअल तरीके से बंद करें.</translation>
 <translation id="2346474577291266260">सिग्नल बहुत अच्छा है (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">जारी रखें</translation>
 <translation id="2360257214555822463"><ph name="LINK_BEGIN" />अमान्य कॉम्पोनेंट<ph name="LINK_END" /> मिले. अगर इनकी पुष्टि 'इंस्टॉल कर दिए गए हैं' के तौर पर करनी है, तो कृपया अभी पुष्टि करें.</translation>
@@ -474,6 +477,7 @@
 <translation id="5372659122375744710">यह वाई-फ़ाई नेटवर्क सुरक्षित नहीं है</translation>
 <translation id="5376354385557966694">अपने-आप हल्के रंग वाला मोड</translation>
 <translation id="537872351913703572">डिवाइस किसी दूसरे उपयोगकर्ता या संगठन को दिया जाएगा</translation>
+<translation id="5389159777326897627">वॉलपेपर और स्टाइल</translation>
 <translation id="5389224261615877010">इंद्रधनुष</translation>
 <translation id="5395600419410242651">पूरा डेटा हमेशा के लिए मिटाएं</translation>
 <translation id="5400907029458559844">डिवाइस कनेक्ट हो रहा है.</translation>
@@ -643,6 +647,7 @@
 <translation id="6961170852793647506">शुरू करने के लिए, अपने दस्तावेज़ को स्कैनर पर रखें</translation>
 <translation id="6965382102122355670">ठीक है</translation>
 <translation id="6977381486153291903">फ़र्मवेयर पुनरीक्षण</translation>
+<translation id="6995564396478647735">पक्का करें कि 'राइट प्रोटेक्ट' चालू हो</translation>
 <translation id="7028979494427204405">इस डिवाइस को <ph name="MANAGER" /> प्रबंधित करता है और इसके पास उपयोगकर्ता की सभी गतिविधियों का ऐक्सेस है. इन गतिविधियों में उपयोगकर्ता के पासवर्ड, ईमेल, और उन पेजों की जानकारी होती है जिन पर वह जाता है.</translation>
 <translation id="7040230719604914234">ऑपरेटर</translation>
 <translation id="7041549558901442110">डिवाइस कनेक्ट नहीं है.</translation>
@@ -653,6 +658,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">नहीं मिल सकी - अनुमति नहीं मिल सकी</translation>
 <translation id="7103252855940681301"><ph name="COUNT" /> में से <ph name="INDEX" /> डिवाइस, जिसका नाम <ph name="NAME" /> है.</translation>
+<translation id="7126228745139711113">'राइट प्रोटेक्ट' बंद है</translation>
 <translation id="7134436342991564651">{0,plural, =1{नाम सर्वर}one{नाम सर्वर}other{नाम सर्वर}}</translation>
 <translation id="7143207342074048698">कनेक्‍टिंग</translation>
 <translation id="7144878232160441200">फिर से प्रयास करें</translation>
@@ -744,6 +750,7 @@
 <translation id="80398733265834479">अपने-आप रंग तय करने वाला मोड चालू करें</translation>
 <translation id="8041089156583427627">सुझाव भेजें</translation>
 <translation id="8045012663542226664">माइक्रोफ़ोन को म्यूट करने का बटन</translation>
+<translation id="8063022551652308521">'राइट प्रोटेक्ट' अब भी बंद है. आगे बढ़ने के लिए, 'राइट प्रोटेक्ट' को चालू करें.</translation>
 <translation id="8075838845814659848">इतने प्रतिशत चार्ज होना बाकी है</translation>
 <translation id="8082366717211101304">Android ऐप्लिकेशन से डीएनएस की समस्या ठीक नहीं की जा सकती</translation>
 <translation id="8083281199617904460">यह रिपेयर प्रोसेस, किसी प्रशिक्षित रिपेयर टेक्नीशियन के लिए है. खराब कॉम्पोनेंट बदलने के बाद ही प्रोसेस शुरू करें.</translation>
@@ -814,6 +821,7 @@
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> इस सुविधा को प्रबंधित करने के लिए लेफ़्ट और राइट ऐरो बटन इस्तेमाल करें.</translation>
 <translation id="8712637175834984815">समझ लिया</translation>
 <translation id="871560550817059752">प्रिंट नहीं हो पाया - स्याही खत्म हो गई</translation>
+<translation id="8717030727630712160">रिपेयर प्रोसेस फिर शुरू की जा रही है…</translation>
 <translation id="8723108084122415655">ऐसा नेटवर्क जो डिफ़ॉल्ट के तौर पर सेट नहीं है, वह इंतज़ार की समयसीमा से ऊपर है</translation>
 <translation id="8725066075913043281">फिर से कोशिश करें</translation>
 <translation id="8726019395068607495">बंद हो गया - दरवाज़ा खुला है</translation>
@@ -835,6 +843,7 @@
 <translation id="8868741746785112895">GUID (ग्लोबली यूनीक आइडेंटिफ़ायर)</translation>
 <translation id="8876270629542503161">डिवाइस एक टैबलेट है.</translation>
 <translation id="8881098542468797602">टेस्ट सफल रहा</translation>
+<translation id="8897267175591692539">आप चाहें तो, डिवाइस में अब बैटरी लगा लें</translation>
 <translation id="8898840733695078011">सिग्‍नल शक्ति</translation>
 <translation id="8910721771319628100">डिफ़ॉल्ट नेटवर्क, इंतज़ार की समयसीमा से ऊपर है</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" /> का <ph name="DEVICE_TYPE" /></translation>

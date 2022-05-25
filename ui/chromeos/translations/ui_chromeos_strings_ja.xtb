@@ -121,6 +121,7 @@
 <translation id="1942765061641586207">画像解像度</translation>
 <translation id="1972984168337863910">ファイルのフィードバック パネルを展開します</translation>
 <translation id="1995337122023280937">ファイルの場所へ移動</translation>
+<translation id="1996806196681857869">Z で圧縮されたアーカイブ</translation>
 <translation id="2001796770603320721">ドライブで管理</translation>
 <translation id="2009067268969781306">ドライブをフォーマットすると、そのドライブに保存されているすべてのデータが削除されます。この操作は元に戻せません。</translation>
 <translation id="2025955442973426285">チグリヤナ語</translation>
@@ -589,6 +590,7 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> 個のアイテム</translation>
 <translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">並べ替え方法</translation>
+<translation id="5985041959109124139">Z で圧縮された tar アーカイブ</translation>
 <translation id="6007237601604674381">移動できませんでした。<ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">イーサネット ネットワーク</translation>
 <translation id="60357267506638014">チェコ語 QWERTY 配列</translation>
@@ -619,6 +621,7 @@
 <translation id="6220423280121890987">パンジャブ語</translation>
 <translation id="6224240818060029162">デンマーク語</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" /> をフォーマット</translation>
+<translation id="6224665423283788195">Zstandard で圧縮されたアーカイブ</translation>
 <translation id="6227235786875481728">このファイルは再生できませんでした。</translation>
 <translation id="6241349547798190358">オランダ語（ベルギー）</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="PHONE_NAME" />、信号強度 <ph name="SIGNAL_STRENGTH" />%、電池残量 <ph name="BATTERY_STATUS" />%、接続</translation>
@@ -646,6 +649,7 @@
 <translation id="6509122719576673235">ノルウェー語</translation>
 <translation id="6528513914570774834">このデバイスの他のユーザーにこのネットワークの使用を許可する</translation>
 <translation id="653019979737152879"><ph name="FILE_NAME" /> を同期しています...</translation>
+<translation id="6530595303336443929">Zstandard で圧縮された tar アーカイブ</translation>
 <translation id="6549689063733911810">最近使用したアイテム</translation>
 <translation id="6558280019477628686">エラーが発生しました。一部の項目が削除されていない可能性があります。</translation>
 <translation id="656398493051028875">「<ph name="FILENAME" />」を削除しています...</translation>
