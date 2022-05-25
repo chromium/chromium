@@ -79,9 +79,7 @@
       [_textView.leadingAnchor
           constraintEqualToAnchor:self.contentView.leadingAnchor
                          constant:kTableViewHorizontalSpacing],
-      [_textView.topAnchor
-          constraintEqualToAnchor:self.contentView.topAnchor
-                         constant:kTableViewLabelVerticalTopSpacing],
+      [_textView.topAnchor constraintEqualToAnchor:self.contentView.topAnchor],
       [_textView.bottomAnchor
           constraintEqualToAnchor:self.contentView.bottomAnchor
                          constant:0],
