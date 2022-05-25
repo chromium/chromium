@@ -189,7 +189,7 @@ void MostVisitedSitesProviderTest::CheckMatchesEquivalentTo(
     for (const auto& match : result) {
       if (match.type != AutocompleteMatchType::TILE_NAVSUGGEST)
         continue;
-      const auto& tiles = match.navsuggest_tiles;
+      const auto& tiles = match.suggest_tiles;
       ASSERT_EQ(urls.size(), tiles.size()) << "Wrong number of tiles reported";
       for (size_t index = 0u; index < urls.size(); index++) {
         EXPECT_EQ(urls[index].url, tiles[index].url)

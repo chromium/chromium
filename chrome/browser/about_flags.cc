@@ -5255,7 +5255,8 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"organic-repeatable-queries",
      flag_descriptions::kOrganicRepeatableQueriesName,
-     flag_descriptions::kOrganicRepeatableQueriesDescription, kOsDesktop,
+     flag_descriptions::kOrganicRepeatableQueriesDescription,
+     kOsDesktop | kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(history::kOrganicRepeatableQueries,
                                     kOrganicRepeatableQueriesVariations,
                                     "OrganicRepeatableQueries")},

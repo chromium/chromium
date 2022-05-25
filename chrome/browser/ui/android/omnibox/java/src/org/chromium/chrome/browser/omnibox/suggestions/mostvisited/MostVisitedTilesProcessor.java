@@ -22,12 +22,15 @@ import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionUiType;
+import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionProcessor;
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionView;
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionViewProperties;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
+import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.components.browser_ui.widget.tile.TileView;
 import org.chromium.components.browser_ui.widget.tile.TileViewBinder;
 import org.chromium.components.browser_ui.widget.tile.TileViewProperties;
@@ -115,7 +118,7 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
 
     @Override
     public void populateModel(AutocompleteMatch suggestion, PropertyModel model, int matchIndex) {
-        final List<AutocompleteMatch.NavsuggestTile> tiles = suggestion.getNavsuggestTiles();
+        final List<AutocompleteMatch.SuggestTile> tiles = suggestion.getSuggestTiles();
         final int tilesCount = tiles.size();
         final List<ListItem> tileList = new ArrayList<>(tilesCount);
         final LargeIconBridge iconBridge = mIconBridgeSupplier.get();
@@ -149,7 +152,17 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
             Bitmap fallbackIcon = mIconGenerator.generateIconForUrl(url);
             tileModel.set(TileViewProperties.ICON, new BitmapDrawable(fallbackIcon));
 
-            if (TextUtils.equals(url.getSpec(), UrlConstants.EXPLORE_URL)) {
+            if (tiles.get(elementIndex).isSearch) {
+                Drawable drawable = TintedDrawable.constructTintedDrawable(
+                        mContext, R.drawable.ic_suggestion_magnifier);
+                // Note: we should never show most visited tiles in incognito mode. Catch this early
+                // if we ever do.
+                assert model.get(SuggestionCommonProperties.COLOR_SCHEME)
+                        != BrandedColorScheme.INCOGNITO;
+                drawable.setTintList(
+                        ChromeColors.getSecondaryIconTint(mContext, /* isIncognito= */ false));
+                tileModel.set(TileViewProperties.ICON, drawable);
+            } else if (TextUtils.equals(url.getSpec(), UrlConstants.EXPLORE_URL)) {
                 setExploreSitesIcon(tileModel);
             } else if (iconBridge != null) {
                 iconBridge.getLargeIconForUrl(tiles.get(elementIndex).url, mDesiredFaviconWidthPx,

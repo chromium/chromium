@@ -43,7 +43,7 @@ public class AutocompleteMatchBuilder {
     private List<QueryTile> mQueryTiles;
     private byte[] mClipboardImageData;
     private boolean mHasTabMatch;
-    private List<AutocompleteMatch.NavsuggestTile> mNavsuggestTiles;
+    private List<AutocompleteMatch.SuggestTile> mSuggestTiles;
     private OmniboxPedal mOmniboxPedal;
 
     /**
@@ -93,7 +93,7 @@ public class AutocompleteMatchBuilder {
         mQueryTiles = null;
         mClipboardImageData = null;
         mHasTabMatch = false;
-        mNavsuggestTiles = null;
+        mSuggestTiles = null;
         mOmniboxPedal = null;
 
         mDisplayTextClassifications.add(
@@ -113,7 +113,7 @@ public class AutocompleteMatchBuilder {
                 mDisplayText, mDisplayTextClassifications, mDescription,
                 mDescriptionClassifications, mAnswer, mFillIntoEdit, mUrl, mImageUrl,
                 mImageDominantColor, mIsDeletable, mPostContentType, mPostData, mGroupId,
-                mQueryTiles, mClipboardImageData, mHasTabMatch, mNavsuggestTiles, mOmniboxPedal);
+                mQueryTiles, mClipboardImageData, mHasTabMatch, mSuggestTiles, mOmniboxPedal);
     }
 
     /**
@@ -252,12 +252,11 @@ public class AutocompleteMatchBuilder {
     }
 
     /**
-     * @param tiles Navsuggest tiles to associate with the suggestion.
+     * @param tiles Suggest tiles to associate with the suggestion.
      * @return Omnibox suggestion builder.
      */
-    public AutocompleteMatchBuilder setNavsuggestTiles(
-            List<AutocompleteMatch.NavsuggestTile> tiles) {
-        mNavsuggestTiles = tiles;
+    public AutocompleteMatchBuilder setSuggestTiles(List<AutocompleteMatch.SuggestTile> tiles) {
+        mSuggestTiles = tiles;
         return this;
     }
 

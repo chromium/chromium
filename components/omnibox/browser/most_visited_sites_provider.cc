@@ -16,14 +16,15 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_match_classification.h"
 #include "components/omnibox/common/omnibox_features.h"
+#include "components/search_engines/template_url_service.h"
 #include "components/url_formatter/url_formatter.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
 #include "url/gurl.h"
 
 namespace {
-// The relevance score for navsuggest tiles.
-// Navsuggest tiles should be positioned below the Query Tiles object.
+// The relevance score for suggest tiles.
+// Suggest tiles should be positioned below the Query Tiles object.
 constexpr const int kMostVisitedTilesRelevance = 1500;
 
 // Use the same max number of tiles as MostVisitedListCoordinator to offer the
@@ -60,10 +61,10 @@ AutocompleteMatch BuildMatch(AutocompleteProvider* provider,
 }
 
 template <typename TileContainer>
-bool BuildTileNavsuggest(AutocompleteProvider* provider,
-                         AutocompleteProviderClient* const client,
-                         const TileContainer& container,
-                         ACMatches& matches) {
+bool BuildTileSuggest(AutocompleteProvider* provider,
+                      AutocompleteProviderClient* const client,
+                      const TileContainer& container,
+                      ACMatches& matches) {
   if (container.empty())
     return false;
 
@@ -81,10 +82,17 @@ bool BuildTileNavsuggest(AutocompleteProvider* provider,
         provider, client, std::u16string(), GURL::EmptyGURL(),
         kMostVisitedTilesRelevance, AutocompleteMatchType::TILE_NAVSUGGEST);
 
-    match.navsuggest_tiles.reserve(container.size());
+    match.suggest_tiles.reserve(container.size());
+    auto* const url_service = client->GetTemplateURLService();
 
     for (const auto& tile : container) {
-      match.navsuggest_tiles.push_back({tile.url, tile.title});
+      match.suggest_tiles.push_back({
+          .url = tile.url,
+          .title = tile.title,
+          .is_search =
+              url_service->IsSearchResultsPageFromDefaultSearchProvider(
+                  tile.url),
+      });
     }
     matches.push_back(std::move(match));
   } else {
@@ -157,7 +165,7 @@ MostVisitedSitesProvider::~MostVisitedSitesProvider() = default;
 
 void MostVisitedSitesProvider::OnMostVisitedUrlsAvailable(
     const history::MostVisitedURLList& urls) {
-  if (BuildTileNavsuggest(this, client_, urls, matches_))
+  if (BuildTileSuggest(this, client_, urls, matches_))
     listener_->OnProviderUpdate(true);
 }
 
@@ -212,9 +220,9 @@ void MostVisitedSitesProvider::OnURLsAvailable(
   if (!matches_.empty())
     return;
 
-  if (BuildTileNavsuggest(this, client_,
-                          sections.at(ntp_tiles::SectionType::PERSONALIZED),
-                          matches_)) {
+  if (BuildTileSuggest(this, client_,
+                       sections.at(ntp_tiles::SectionType::PERSONALIZED),
+                       matches_)) {
     listener_->OnProviderUpdate(true);
   }
 }
@@ -249,7 +257,7 @@ void MostVisitedSitesProvider::DeleteMatchElement(
     size_t element_index) {
   DCHECK_EQ(source_match.type, AutocompleteMatchType::TILE_NAVSUGGEST);
   DCHECK_GE(element_index, 0u);
-  DCHECK_LT((size_t)element_index, source_match.navsuggest_tiles.size());
+  DCHECK_LT((size_t)element_index, source_match.suggest_tiles.size());
 
   // Attempt to modify the match in place.
   DCHECK_EQ(matches_.size(), 1ul);
@@ -257,15 +265,15 @@ void MostVisitedSitesProvider::DeleteMatchElement(
 
   if (source_match.type != AutocompleteMatchType::TILE_NAVSUGGEST ||
       element_index < 0u ||
-      element_index >= source_match.navsuggest_tiles.size() ||
+      element_index >= source_match.suggest_tiles.size() ||
       matches_.size() != 1u ||
       matches_[0].type != AutocompleteMatchType::TILE_NAVSUGGEST) {
     return;
   }
 
-  const auto& url_to_delete = source_match.navsuggest_tiles[element_index].url;
+  const auto& url_to_delete = source_match.suggest_tiles[element_index].url;
   BlockURL(url_to_delete);
-  auto& tiles_to_update = matches_[0].navsuggest_tiles;
+  auto& tiles_to_update = matches_[0].suggest_tiles;
   base::EraseIf(tiles_to_update, [&url_to_delete](const auto& tile) {
     return tile.url == url_to_delete;
   });

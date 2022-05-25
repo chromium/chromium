@@ -29,7 +29,7 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.omnibox.AutocompleteMatch;
-import org.chromium.components.omnibox.AutocompleteMatch.NavsuggestTile;
+import org.chromium.components.omnibox.AutocompleteMatch.SuggestTile;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -77,9 +77,9 @@ public final class MostVisitedTilesProcessorUnitTest {
     @Test
     @MediumTest
     public void doNotFetchExploreSiteIconWithCachedReady() {
-        List<NavsuggestTile> tiles = new ArrayList<>();
-        tiles.add(new NavsuggestTile("explore_sites", EXPLORE_SITES_URL));
-        Mockito.doReturn(tiles).when(mSuggestion).getNavsuggestTiles();
+        List<SuggestTile> tiles =
+                Arrays.asList(new SuggestTile("explore_sites", EXPLORE_SITES_URL, false));
+        Mockito.doReturn(tiles).when(mSuggestion).getSuggestTiles();
 
         Bitmap exploreSitesIcon = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
         mCallbackCount = 0;
