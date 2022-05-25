@@ -198,7 +198,15 @@ int CreateNewMICeAndDefaultBrowserFRETrial(
       new_fre_with_default_screen_only_percent = 10;
       break;
     case version_info::Channel::STABLE:
-      return kPlaceholderTrialVersion;
+      new_fre_control_percent = 8;
+      new_fre_holdback_percent = 8;
+      new_fre_with_uma_dialog_set_percent = 8;
+      new_fre_with_three_steps_set_percent = 8;
+      new_fre_with_two_steps_set_percent = 8;
+      new_fre_with_default_screen_and_default_cooldown_percent = 8;
+      new_fre_with_default_screen_and_short_cooldown_percent = 8;
+      new_fre_with_default_screen_only_percent = 8;
+      break;
   }
 
   // Set up the trial and groups.
