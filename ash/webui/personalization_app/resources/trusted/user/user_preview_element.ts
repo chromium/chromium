@@ -100,11 +100,6 @@ export class UserPreview extends WithPersonalizationStore {
     if (value && old) {
       this.dispatchEvent(new AvatarChangedEvent());
     }
-    if (old && old.url.startsWith('blob:')) {
-      // Revoke old object urls to clear memory. This is safe to call multiple
-      // times.
-      URL.revokeObjectURL(old.url);
-    }
   }
 
   private shouldShowMainPageView_(path: string, isEnterpriseManaged: boolean):
