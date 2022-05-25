@@ -834,6 +834,13 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kSupportsRtcWakeOver24Hours;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+// This flag is used to toggle the reading of data from the web_app DB instead
+// of the ExternallyInstalledWebAppPrefs. Data will be written to both storages,
+// and this will be removed in the future once we move to using the web_app DB
+// completely.
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::Feature kUseWebAppDBInsteadOfExternalPrefs;
+
 bool PrefServiceEnabled();
 
 // DON'T ADD RANDOM STUFF HERE. Put it in the main section above in

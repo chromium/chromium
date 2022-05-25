@@ -911,7 +911,26 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
   histogram_tester_.ExpectTotalCount(kUpdateHistogramName, 0);
 }
 
-IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
+class ManifestUpdateManagerBrowserTest_ExternalPrefMigration
+    : public ManifestUpdateManagerBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  ManifestUpdateManagerBrowserTest_ExternalPrefMigration() {
+    bool enable_migration = GetParam();
+    if (enable_migration) {
+      scoped_feature_list_.InitWithFeatures(
+          {features::kUseWebAppDBInsteadOfExternalPrefs}, {});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          {}, {features::kUseWebAppDBInsteadOfExternalPrefs});
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(ManifestUpdateManagerBrowserTest_ExternalPrefMigration,
                        CheckIgnoresPlaceholderApps) {
   // Set up app URL to redirect to force placeholder app to install.
   const GURL app_url = GetAppURL();
@@ -932,7 +951,8 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
   // Install via ExternallyManagedAppManager, the redirect to a different origin
   // should cause it to install a placeholder app.
   AppId app_id = InstallPolicyApp();
-  EXPECT_TRUE(GetProvider().registrar().IsPlaceholderApp(app_id));
+  EXPECT_TRUE(GetProvider().registrar().IsPlaceholderApp(
+      app_id, WebAppManagement::kPolicy));
 
   // Manifest updating should ignore non-redirect loads for placeholder apps
   // because the ExternallyManagedAppManager will handle these.
@@ -951,6 +971,10 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
   histogram_tester_.ExpectBucketCount(
       kUpdateHistogramName, ManifestUpdateResult::kAppIsPlaceholder, 1);
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ManifestUpdateManagerBrowserTest_ExternalPrefMigration,
+                         ::testing::Bool());
 
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
                        CheckFindsThemeColorChange) {

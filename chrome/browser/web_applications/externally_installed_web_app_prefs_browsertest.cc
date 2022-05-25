@@ -6,36 +6,34 @@
 
 #include <algorithm>
 
+#include "base/containers/contains.h"
 #include "base/json/json_reader.h"
-#include "chrome/browser/web_applications/test/fake_web_app_provider.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/test/web_app_test.h"
-#include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/user_uninstalled_preinstalled_web_app_prefs.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_prefs_utils.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_test.h"
 
 namespace web_app {
 
-class ExternallyInstalledWebAppPrefsTest : public WebAppTest {
+class ExternallyInstalledWebAppPrefsBrowserTest
+    : public WebAppControllerBrowserTest {
  public:
-  ExternallyInstalledWebAppPrefsTest() = default;
-  ExternallyInstalledWebAppPrefsTest(
-      const ExternallyInstalledWebAppPrefsTest&) = delete;
-  ExternallyInstalledWebAppPrefsTest& operator=(
-      const ExternallyInstalledWebAppPrefsTest&) = delete;
-  ~ExternallyInstalledWebAppPrefsTest() override = default;
-
-  void SetUp() override {
-    ChromeRenderViewHostTestHarness::SetUp();
-    web_app_provider_ = web_app::FakeWebAppProvider::Get(profile());
-    web_app_provider_->StartWithSubsystems();
-  }
+  ExternallyInstalledWebAppPrefsBrowserTest() = default;
+  ExternallyInstalledWebAppPrefsBrowserTest(
+      const ExternallyInstalledWebAppPrefsBrowserTest&) = delete;
+  ExternallyInstalledWebAppPrefsBrowserTest& operator=(
+      const ExternallyInstalledWebAppPrefsBrowserTest&) = delete;
+  ~ExternallyInstalledWebAppPrefsBrowserTest() override = default;
 
   AppId SimulatePreviouslyInstalledApp(const GURL& url,
                                        ExternalInstallSource install_source) {
@@ -55,20 +53,28 @@ class ExternallyInstalledWebAppPrefsTest : public WebAppTest {
     std::sort(urls.begin(), urls.end());
     return urls;
   }
+};
 
-  FakeWebAppProvider* provider() {
-    base::RunLoop run_loop;
-    web_app_provider_->on_registry_ready().Post(FROM_HERE,
-                                                run_loop.QuitClosure());
-    run_loop.Run();
-    return web_app_provider_;
+class ExternallyInstalledWebAppPrefsBrowserTest_ExternalPrefMigration
+    : public ExternallyInstalledWebAppPrefsBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  ExternallyInstalledWebAppPrefsBrowserTest_ExternalPrefMigration() {
+    bool enable_migration = GetParam();
+    if (enable_migration) {
+      scoped_feature_list_.InitWithFeatures(
+          {features::kUseWebAppDBInsteadOfExternalPrefs}, {});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          {}, {features::kUseWebAppDBInsteadOfExternalPrefs});
+    }
   }
 
  private:
-  FakeWebAppProvider* web_app_provider_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(ExternallyInstalledWebAppPrefsTest, BasicOps) {
+IN_PROC_BROWSER_TEST_F(ExternallyInstalledWebAppPrefsBrowserTest, BasicOps) {
   GURL url_a("https://a.example.com/");
   GURL url_b("https://b.example.com/");
   GURL url_c("https://c.example.com/");
@@ -150,7 +156,7 @@ TEST_F(ExternallyInstalledWebAppPrefsTest, BasicOps) {
 
   // Uninstall an underlying extension. The ExternallyInstalledWebAppPrefs will
   // still return positive.
-  ScopedRegistryUpdate update(&provider()->sync_bridge());
+  ScopedRegistryUpdate update(&provider().sync_bridge());
   update->DeleteApp(id_b);
 
   EXPECT_EQ(id_a, map.LookupAppId(url_a).value_or("missing"));
@@ -171,32 +177,53 @@ TEST_F(ExternallyInstalledWebAppPrefsTest, BasicOps) {
             GetAppUrls(ExternalInstallSource::kExternalPolicy));
 }
 
-TEST_F(ExternallyInstalledWebAppPrefsTest, IsPlaceholderApp) {
+IN_PROC_BROWSER_TEST_P(
+    ExternallyInstalledWebAppPrefsBrowserTest_ExternalPrefMigration,
+    IsPlaceholderApp) {
   const GURL url("https://example.com");
-  const AppId app_id = "app_id_string";
+  auto web_app_install_info = std::make_unique<WebAppInstallInfo>();
+  web_app_install_info->start_url = url;
+  web_app_install_info->title = u"App Title";
+  web_app_install_info->display_mode = web_app::DisplayMode::kBrowser;
+  web_app_install_info->user_display_mode =
+      web_app::UserDisplayMode::kStandalone;
+
+  AppId app_id =
+      test::InstallWebApp(profile(), std::move(web_app_install_info),
+                          /*overwrite_existing_manifest_fields=*/true,
+                          webapps::WebappInstallSource::EXTERNAL_POLICY);
   ExternallyInstalledWebAppPrefs prefs(profile()->GetPrefs());
   prefs.Insert(url, app_id, ExternalInstallSource::kExternalPolicy);
-  EXPECT_FALSE(ExternallyInstalledWebAppPrefs(profile()->GetPrefs())
-                   .IsPlaceholderApp(app_id));
+  EXPECT_FALSE(provider().registrar().IsPlaceholderApp(
+      app_id, WebAppManagement::kPolicy));
   prefs.SetIsPlaceholder(url, true);
-  EXPECT_TRUE(ExternallyInstalledWebAppPrefs(profile()->GetPrefs())
-                  .IsPlaceholderApp(app_id));
+  {
+    ScopedRegistryUpdate update(&provider().sync_bridge());
+    WebApp* installed_app = update->UpdateApp(app_id);
+    if (installed_app)
+      installed_app->AddPlaceholderInfoToManagementExternalConfigMap(
+          WebAppManagement::kPolicy, /*is_placeholder=*/true);
+  }
+  EXPECT_TRUE(provider().registrar().IsPlaceholderApp(
+      app_id, WebAppManagement::kPolicy));
 }
 
-TEST_F(ExternallyInstalledWebAppPrefsTest, OldPrefFormat) {
+IN_PROC_BROWSER_TEST_P(
+    ExternallyInstalledWebAppPrefsBrowserTest_ExternalPrefMigration,
+    OldPrefFormat) {
   // Set up the old format for this pref {url -> app_id}.
   DictionaryPrefUpdate update(profile()->GetPrefs(),
                               prefs::kWebAppsExtensionIDs);
   update->SetStringKey("https://example.com", "add_id_string");
   // This should not crash on invalid pref data.
-  EXPECT_FALSE(ExternallyInstalledWebAppPrefs(profile()->GetPrefs())
-                   .IsPlaceholderApp("app_id_string"));
+  EXPECT_FALSE(provider().registrar().IsPlaceholderApp(
+      "app_id_string", WebAppManagement::kPolicy));
 }
 
 // Case 1: Single Install URL per source, no placeholder info (defaults to
 // false).
-TEST_F(ExternallyInstalledWebAppPrefsTest,
-       WebAppParsedDataOneInstallURLPerSource) {
+IN_PROC_BROWSER_TEST_F(ExternallyInstalledWebAppPrefsBrowserTest,
+                       WebAppParsedDataOneInstallURLPerSource) {
   base::Value external_prefs = *base::JSONReader::Read(R"({
     "https://app1.com/": {
       "extension_id": "test_app1",
@@ -218,20 +245,18 @@ TEST_F(ExternallyInstalledWebAppPrefsTest,
   WebApp::ExternalManagementConfig config1;
   config1.is_placeholder = false;
   config1.install_urls = {GURL("https://app1.com/")};
-  expected_map["test_app1"][WebAppManagement::Type::kPolicy] =
-      std::move(config1);
+  expected_map["test_app1"][WebAppManagement::kPolicy] = std::move(config1);
   WebApp::ExternalManagementConfig config2;
   config2.is_placeholder = false;
   config2.install_urls = {GURL("https://app2.com/")};
-  expected_map["test_app1"][WebAppManagement::Type::kSystem] =
-      std::move(config2);
+  expected_map["test_app1"][WebAppManagement::kSystem] = std::move(config2);
 
   EXPECT_EQ(web_app_data_map, expected_map);
 }
 
 // Case 2: Multiple Install URL per source, with is_placeholder set to true.
-TEST_F(ExternallyInstalledWebAppPrefsTest,
-       WebAppDataMapMultipleInstallURLPerSource) {
+IN_PROC_BROWSER_TEST_F(ExternallyInstalledWebAppPrefsBrowserTest,
+                       WebAppDataMapMultipleInstallURLPerSource) {
   base::Value external_prefs = *base::JSONReader::Read(R"({
     "https://app1.com/": {
       "extension_id": "test_app1",
@@ -254,8 +279,7 @@ TEST_F(ExternallyInstalledWebAppPrefsTest,
   WebApp::ExternalManagementConfig config;
   config.is_placeholder = true;
   config.install_urls = {GURL("https://app1.com/"), GURL("https://app2.com/")};
-  expected_map["test_app1"][WebAppManagement::Type::kDefault] =
-      std::move(config);
+  expected_map["test_app1"][WebAppManagement::kDefault] = std::move(config);
 
   EXPECT_EQ(web_app_data_map, expected_map);
 }
@@ -267,8 +291,8 @@ TEST_F(ExternallyInstalledWebAppPrefsTest,
 // without knowing which source to correspond with).
 // 4. pref entry with source but no app_id (won't generate map because app
 // ID does not exist).
-TEST_F(ExternallyInstalledWebAppPrefsTest,
-       WebAppDataMapMultipleAppIDsMultipleURLs) {
+IN_PROC_BROWSER_TEST_F(ExternallyInstalledWebAppPrefsBrowserTest,
+                       WebAppDataMapMultipleAppIDsMultipleURLs) {
   base::Value external_prefs = *base::JSONReader::Read(R"({
     "https://app1.com/": {
       "extension_id": "test_app1",
@@ -306,51 +330,55 @@ TEST_F(ExternallyInstalledWebAppPrefsTest,
   WebApp::ExternalManagementConfig config2;
   config2.is_placeholder = true;
   config2.install_urls = {GURL("https://app4.com/")};
-  expected_map["test_app1"][WebAppManagement::Type::kDefault] =
-      std::move(config1);
-  expected_map["test_app4"][WebAppManagement::Type::kWebAppStore] =
+  expected_map["test_app1"][WebAppManagement::kDefault] = std::move(config1);
+  expected_map["test_app4"][WebAppManagement::kWebAppStore] =
       std::move(config2);
 
   EXPECT_EQ(web_app_data_map, expected_map);
 }
 
-TEST_F(ExternallyInstalledWebAppPrefsTest, MigrationTestForSingleSource) {
-  std::unique_ptr<WebApp> web_app = test::CreateWebApp(
-      GURL("https://app.com/"), WebAppManagement::Type::kDefault);
-  AppId app_id = web_app->app_id();
-  {
-    ScopedRegistryUpdate update(&provider()->sync_bridge());
-    update->CreateApp(std::move(web_app));
-  }
-  const WebApp* installed_app = provider()->registrar().GetAppById(app_id);
-  EXPECT_FALSE(provider()->registrar().IsPlaceholderApp(app_id));
-  EXPECT_EQ(0u, installed_app->management_to_external_config_map().size());
+IN_PROC_BROWSER_TEST_P(
+    ExternallyInstalledWebAppPrefsBrowserTest_ExternalPrefMigration,
+    MigrationTestForSingleSource) {
+  const GURL url("https://example.com/");
+  auto web_app_install_info = std::make_unique<WebAppInstallInfo>();
+  web_app_install_info->start_url = url;
+  web_app_install_info->title = u"App Title";
+  web_app_install_info->display_mode = web_app::DisplayMode::kBrowser;
+  web_app_install_info->user_display_mode =
+      web_app::UserDisplayMode::kStandalone;
 
+  AppId app_id =
+      test::InstallWebApp(profile(), std::move(web_app_install_info),
+                          /*overwrite_existing_manifest_fields=*/true,
+                          webapps::WebappInstallSource::EXTERNAL_POLICY);
+
+  const WebApp* installed_app = provider().registrar().GetAppById(app_id);
+  EXPECT_FALSE(provider().registrar().IsPlaceholderApp(
+      app_id, WebAppManagement::kPolicy));
+
+  GURL install_url("https://app.com/install");
   ExternallyInstalledWebAppPrefs external_prefs(profile()->GetPrefs());
-  external_prefs.Insert(GURL("https://app.com/install"), app_id,
-                        ExternalInstallSource::kExternalDefault);
-  external_prefs.SetIsPlaceholder(GURL("https://app.com/install"), true);
+  external_prefs.Insert(install_url, app_id,
+                        ExternalInstallSource::kExternalPolicy);
+  external_prefs.SetIsPlaceholder(install_url, true);
 
   ExternallyInstalledWebAppPrefs::MigrateExternalPrefData(
-      profile()->GetPrefs(), &provider()->sync_bridge());
+      profile()->GetPrefs(), &provider().sync_bridge());
 
-  EXPECT_TRUE(provider()->registrar().IsPlaceholderApp(app_id));
+  // Verify install source, placeholder info and urls have been migrated.
+  EXPECT_TRUE(provider().registrar().IsPlaceholderApp(
+      app_id, WebAppManagement::kPolicy));
   EXPECT_EQ(1u, installed_app->management_to_external_config_map().size());
-  EXPECT_TRUE(installed_app->management_to_external_config_map()
-                  .at(WebAppManagement::Type::kDefault)
-                  .is_placeholder);
-  // Verify install source and urls have been migrated.
-  EXPECT_EQ(1u, installed_app->management_to_external_config_map()
-                    .at(WebAppManagement::Type::kDefault)
-                    .install_urls.size());
-  EXPECT_EQ(GURL("https://app.com/install"),
-            *installed_app->management_to_external_config_map()
-                 .at(WebAppManagement::Type::kDefault)
-                 .install_urls.begin());
+  EXPECT_TRUE(base::Contains(
+      installed_app
+          ->management_to_external_config_map()[WebAppManagement::kPolicy]
+          .install_urls,
+      install_url));
 }
 
-TEST_F(ExternallyInstalledWebAppPrefsTest,
-       UserUninstalledPreInstalledWebAppMigrationSingleApp) {
+IN_PROC_BROWSER_TEST_F(ExternallyInstalledWebAppPrefsBrowserTest,
+                       UserUninstalledPreInstalledWebAppMigrationSingleApp) {
   ExternallyInstalledWebAppPrefs external_prefs(profile()->GetPrefs());
   UserUninstalledPreinstalledWebAppPrefs preinstalled_prefs(
       profile()->GetPrefs());
@@ -365,15 +393,16 @@ TEST_F(ExternallyInstalledWebAppPrefsTest,
   external_prefs.SetIsPlaceholder(GURL("https://app2.com/install"), true);
 
   ExternallyInstalledWebAppPrefs::MigrateExternalPrefData(
-      profile()->GetPrefs(), &provider()->sync_bridge());
+      profile()->GetPrefs(), &provider().sync_bridge());
 
   // On migration, only a app_id1 should be migrated.
   EXPECT_TRUE(preinstalled_prefs.DoesAppIdExist(app_id1));
   EXPECT_FALSE(preinstalled_prefs.DoesAppIdExist(app_id2));
 }
 
-TEST_F(ExternallyInstalledWebAppPrefsTest,
-       UserUninstalledPreInstalledWebAppMigrationSingleAppNonDefault) {
+IN_PROC_BROWSER_TEST_F(
+    ExternallyInstalledWebAppPrefsBrowserTest,
+    UserUninstalledPreInstalledWebAppMigrationSingleAppNonDefault) {
   ExternallyInstalledWebAppPrefs external_prefs(profile()->GetPrefs());
   UserUninstalledPreinstalledWebAppPrefs preinstalled_prefs(
       profile()->GetPrefs());
@@ -387,15 +416,16 @@ TEST_F(ExternallyInstalledWebAppPrefsTest,
   external_prefs.SetIsPlaceholder(GURL("https://app2.com/install"), true);
 
   ExternallyInstalledWebAppPrefs::MigrateExternalPrefData(
-      profile()->GetPrefs(), &provider()->sync_bridge());
+      profile()->GetPrefs(), &provider().sync_bridge());
 
   // On migration, nothing is migrated because default installs do not exist in
   // the external prefs.
   EXPECT_FALSE(preinstalled_prefs.DoesAppIdExist(app_id1));
 }
 
-TEST_F(ExternallyInstalledWebAppPrefsTest,
-       UserUninstalledPreInstalledWebAppMigrationSingleAppMultiURL) {
+IN_PROC_BROWSER_TEST_F(
+    ExternallyInstalledWebAppPrefsBrowserTest,
+    UserUninstalledPreInstalledWebAppMigrationSingleAppMultiURL) {
   ExternallyInstalledWebAppPrefs external_prefs(profile()->GetPrefs());
   UserUninstalledPreinstalledWebAppPrefs preinstalled_prefs(
       profile()->GetPrefs());
@@ -409,7 +439,7 @@ TEST_F(ExternallyInstalledWebAppPrefsTest,
   external_prefs.SetIsPlaceholder(GURL("https://app2.com/install"), true);
 
   ExternallyInstalledWebAppPrefs::MigrateExternalPrefData(
-      profile()->GetPrefs(), &provider()->sync_bridge());
+      profile()->GetPrefs(), &provider().sync_bridge());
 
   // On migration, everything (app_ids and both URLs should be migrated).
   EXPECT_TRUE(preinstalled_prefs.DoesAppIdExist(app_id1));
@@ -419,8 +449,8 @@ TEST_F(ExternallyInstalledWebAppPrefsTest,
                          GURL("https://app2.com/install")));
 }
 
-TEST_F(ExternallyInstalledWebAppPrefsTest,
-       UserUninstalledPreInstalledWebAppMigrationOldPref) {
+IN_PROC_BROWSER_TEST_F(ExternallyInstalledWebAppPrefsBrowserTest,
+                       UserUninstalledPreInstalledWebAppMigrationOldPref) {
   ExternallyInstalledWebAppPrefs external_prefs(profile()->GetPrefs());
   UserUninstalledPreinstalledWebAppPrefs preinstalled_prefs(
       profile()->GetPrefs());
@@ -437,7 +467,7 @@ TEST_F(ExternallyInstalledWebAppPrefsTest,
                        kWasExternalAppUninstalledByUser, true);
 
   ExternallyInstalledWebAppPrefs::MigrateExternalPrefData(
-      profile()->GetPrefs(), &provider()->sync_bridge());
+      profile()->GetPrefs(), &provider().sync_bridge());
 
   // On migration, everything (app_ids and both URLs should be migrated).
   EXPECT_TRUE(preinstalled_prefs.DoesAppIdExist(app_id1));
@@ -447,8 +477,8 @@ TEST_F(ExternallyInstalledWebAppPrefsTest,
                          GURL("https://app2.com/install")));
 }
 
-TEST_F(ExternallyInstalledWebAppPrefsTest,
-       DuplicateMigrationDoesNotGrowPreinstalledPrefs) {
+IN_PROC_BROWSER_TEST_F(ExternallyInstalledWebAppPrefsBrowserTest,
+                       DuplicateMigrationDoesNotGrowPreinstalledPrefs) {
   ExternallyInstalledWebAppPrefs external_prefs(profile()->GetPrefs());
   UserUninstalledPreinstalledWebAppPrefs preinstalled_prefs(
       profile()->GetPrefs());
@@ -461,7 +491,7 @@ TEST_F(ExternallyInstalledWebAppPrefsTest,
                        kWasExternalAppUninstalledByUser, true);
 
   ExternallyInstalledWebAppPrefs::MigrateExternalPrefData(
-      profile()->GetPrefs(), &provider()->sync_bridge());
+      profile()->GetPrefs(), &provider().sync_bridge());
 
   // On migration, everything (app_ids and both URLs should be migrated).
   EXPECT_TRUE(preinstalled_prefs.DoesAppIdExist(app_id1));
@@ -472,10 +502,15 @@ TEST_F(ExternallyInstalledWebAppPrefsTest,
   // Call migration 2 more times, pref size should not grow if same
   // data is being migrated.
   ExternallyInstalledWebAppPrefs::MigrateExternalPrefData(
-      profile()->GetPrefs(), &provider()->sync_bridge());
+      profile()->GetPrefs(), &provider().sync_bridge());
   ExternallyInstalledWebAppPrefs::MigrateExternalPrefData(
-      profile()->GetPrefs(), &provider()->sync_bridge());
+      profile()->GetPrefs(), &provider().sync_bridge());
   EXPECT_EQ(1, preinstalled_prefs.Size());
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ExternallyInstalledWebAppPrefsBrowserTest_ExternalPrefMigration,
+    ::testing::Bool());
 
 }  // namespace web_app

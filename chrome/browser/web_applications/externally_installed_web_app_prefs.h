@@ -75,13 +75,7 @@ class ExternallyInstalledWebAppPrefs {
   absl::optional<AppId> LookupAppId(const GURL& url) const;
   bool HasNoApps() const;
 
-  // Returns an id if there is a placeholder app for |url|. Note that nullopt
-  // does not mean that there is no app for |url| just that there is no
-  // *placeholder app*.
-  absl::optional<AppId> LookupPlaceholderAppId(const GURL& url) const;
-
   void SetIsPlaceholder(const GURL& url, bool is_placeholder);
-  bool IsPlaceholderApp(const AppId& app_id) const;
 
   // Converts the existing external_pref information to a map<AppId,
   // ParsedPrefs> for simplified parsing and migrating to the web app DB.
@@ -92,6 +86,15 @@ class ExternallyInstalledWebAppPrefs {
                                       WebAppSyncBridge* sync_bridge);
 
  private:
+  friend class WebAppRegistrar;
+
+  // Returns an id if there is a placeholder app for |url|. Note that nullopt
+  // does not mean that there is no app for |url| just that there is no
+  // *placeholder app*.
+  absl::optional<AppId> LookupPlaceholderAppId(const GURL& url) const;
+
+  bool IsPlaceholderApp(const AppId& app_id) const;
+
   // Used to migrate information regarding user uninstalled preinstalled apps
   // to UserUninstalledPreinstalledWebAppPrefs.
   static void MigrateExternalPrefDataToPreinstalledPrefs(

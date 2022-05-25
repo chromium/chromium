@@ -26,6 +26,7 @@
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "content/public/browser/service_worker_context.h"
@@ -83,6 +84,25 @@ class ExternallyManagedAppManagerImplBrowserTest : public InProcessBrowserTest {
 
  private:
   OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
+};
+
+class ExternallyManagedPlaceholderMigrationBrowserTest
+    : public ExternallyManagedAppManagerImplBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  ExternallyManagedPlaceholderMigrationBrowserTest() {
+    bool enable_migration = GetParam();
+    if (enable_migration) {
+      scoped_feature_list_.InitWithFeatures(
+          {features::kUseWebAppDBInsteadOfExternalPrefs}, {});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          {}, {features::kUseWebAppDBInsteadOfExternalPrefs});
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Basic integration test to make sure the whole flow works. Each step in the
@@ -151,7 +171,7 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
 }
 
 // Installing a placeholder app with shortcuts should succeed.
-IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
+IN_PROC_BROWSER_TEST_P(ExternallyManagedPlaceholderMigrationBrowserTest,
                        PlaceholderInstallSucceedsWithShortcuts) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -161,7 +181,8 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
   GURL url(
       embedded_test_server()->GetURL("/server-redirect?" + final_url.spec()));
 
-  ExternalInstallOptions options = CreateInstallOptions(url);
+  ExternalInstallOptions options =
+      CreateInstallOptions(url, ExternalInstallSource::kExternalPolicy);
   options.install_placeholder = true;
   options.add_to_applications_menu = true;
   options.add_to_desktop = true;
@@ -172,13 +193,14 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
   absl::optional<AppId> app_id =
       ExternallyInstalledWebAppPrefs(profile()->GetPrefs()).LookupAppId(url);
   ASSERT_TRUE(app_id.has_value());
-  EXPECT_TRUE(registrar().IsPlaceholderApp(app_id.value()));
+  EXPECT_TRUE(
+      registrar().IsPlaceholderApp(app_id.value(), WebAppManagement::kPolicy));
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
 // Installing a placeholder app with a custom name should succeed.
 // This feature is ChromeOS-only.
-IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
+IN_PROC_BROWSER_TEST_P(ExternallyManagedPlaceholderMigrationBrowserTest,
                        PlaceholderInstallSucceedsWithCustomName) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -189,7 +211,8 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
       embedded_test_server()->GetURL("/server-redirect?" + final_url.spec()));
   const std::string CUSTOM_NAME = "CUSTOM_NAME";
 
-  ExternalInstallOptions options = CreateInstallOptions(url);
+  ExternalInstallOptions options =
+      CreateInstallOptions(url, ExternalInstallSource::kExternalPolicy);
   options.install_placeholder = true;
   options.add_to_applications_menu = true;
   options.add_to_desktop = true;
@@ -201,14 +224,15 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
   absl::optional<AppId> app_id =
       ExternallyInstalledWebAppPrefs(profile()->GetPrefs()).LookupAppId(url);
   ASSERT_TRUE(app_id.has_value());
-  EXPECT_TRUE(registrar().IsPlaceholderApp(app_id.value()));
+  EXPECT_TRUE(
+      registrar().IsPlaceholderApp(app_id.value(), WebAppManagement::kPolicy));
   EXPECT_EQ(CUSTOM_NAME,
             registrar().GetAppById(app_id.value())->untranslated_name());
 }
 
 // Installing a placeholder app with a custom icon should succeed.
 // This feature is ChromeOS-only.
-IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
+IN_PROC_BROWSER_TEST_P(ExternallyManagedPlaceholderMigrationBrowserTest,
                        PlaceholderInstallSucceedsWithCustomIcon) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -224,7 +248,8 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
   const auto kGeneratedSizes = SizesToGenerate();
   EXPECT_TRUE(kGeneratedSizes.find(kIconSize) == kGeneratedSizes.end());
 
-  ExternalInstallOptions options = CreateInstallOptions(app_url);
+  ExternalInstallOptions options =
+      CreateInstallOptions(app_url, ExternalInstallSource::kExternalPolicy);
   options.install_placeholder = true;
   options.add_to_applications_menu = true;
   options.add_to_desktop = true;
@@ -237,7 +262,8 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
       ExternallyInstalledWebAppPrefs(profile()->GetPrefs())
           .LookupAppId(app_url);
   ASSERT_TRUE(app_id.has_value());
-  EXPECT_TRUE(registrar().IsPlaceholderApp(app_id.value()));
+  EXPECT_TRUE(
+      registrar().IsPlaceholderApp(app_id.value(), WebAppManagement::kPolicy));
   SortedSizesPx downloaded_sizes =
       registrar().GetAppDownloadedIconSizesAny(app_id.value());
   EXPECT_EQ(1u + kGeneratedSizes.size(), downloaded_sizes.size());
@@ -586,5 +612,9 @@ IN_PROC_BROWSER_TEST_F(ExternallyManagedAppManagerImplBrowserTest,
             result_code_.value());
   ASSERT_TRUE(registrar().GetAppById(app_id)->IsPolicyInstalledApp());
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ExternallyManagedPlaceholderMigrationBrowserTest,
+                         ::testing::Bool());
 
 }  // namespace web_app

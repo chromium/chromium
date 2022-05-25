@@ -1214,4 +1214,7 @@ const base::Feature kSupportsRtcWakeOver24Hours{
     "SupportsRtcWakeOver24Hours", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+const base::Feature kUseWebAppDBInsteadOfExternalPrefs{
+    "UseWebAppDBInsteadOfExternalPrefs", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features

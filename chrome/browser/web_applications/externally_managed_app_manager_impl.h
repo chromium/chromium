@@ -13,7 +13,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/external_install_options.h"
-#include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/externally_managed_app_install_task.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/web_app_url_loader.h"
@@ -88,7 +87,6 @@ class ExternallyManagedAppManagerImpl : public ExternallyManagedAppManager {
       const ExternalInstallOptions& install_options);
 
   const raw_ptr<Profile> profile_;
-  ExternallyInstalledWebAppPrefs externally_installed_app_prefs_;
 
   // unique_ptr so that it can be replaced in tests.
   std::unique_ptr<WebAppUrlLoader> url_loader_;

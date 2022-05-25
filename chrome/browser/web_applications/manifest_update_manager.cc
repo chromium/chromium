@@ -75,7 +75,7 @@ void ManifestUpdateManager::MaybeUpdate(const GURL& url,
     return;
   }
 
-  if (registrar_->IsPlaceholderApp(app_id)) {
+  if (registrar_->IsPlaceholderApp(app_id, WebAppManagement::kPolicy)) {
     NotifyResult(url, app_id, ManifestUpdateResult::kAppIsPlaceholder);
     return;
   }

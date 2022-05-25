@@ -170,16 +170,8 @@ void WebAppInstallFinalizer::FinalizeInstall(
   web_app->SetParentAppId(options.parent_app_id);
   web_app->SetInstallSourceForMetrics(options.install_surface);
 
-  DCHECK(!(source == WebAppManagement::Type::kSync &&
-           web_app_info.is_placeholder));
-  if (source != WebAppManagement::Type::kSync) {
-    web_app->AddPlaceholderInfoToManagementExternalConfigMap(
-        source, web_app_info.is_placeholder);
-    if (web_app_info.install_url.is_valid()) {
-      web_app->AddInstallURLToManagementExternalConfigMap(
-          source, web_app_info.install_url);
-    }
-  }
+  WriteExternalConfigMapInfo(*web_app, source, web_app_info.is_placeholder,
+                             web_app_info.install_url);
 
   if (!options.locally_installed) {
     DCHECK(!(options.add_to_applications_menu || options.add_to_desktop ||
@@ -728,6 +720,21 @@ void WebAppInstallFinalizer::OnUpdateHooksFinished(
 
 const WebAppRegistrar& WebAppInstallFinalizer::GetWebAppRegistrar() const {
   return *registrar_;
+}
+
+void WebAppInstallFinalizer::WriteExternalConfigMapInfo(
+    WebApp& web_app,
+    WebAppManagement::Type source,
+    bool is_placeholder,
+    GURL install_url) {
+  DCHECK(!(source == WebAppManagement::Type::kSync && is_placeholder));
+  if (source != WebAppManagement::Type::kSync) {
+    web_app.AddPlaceholderInfoToManagementExternalConfigMap(source,
+                                                            is_placeholder);
+    if (install_url.is_valid()) {
+      web_app.AddInstallURLToManagementExternalConfigMap(source, install_url);
+    }
+  }
 }
 
 FileHandlerUpdateAction WebAppInstallFinalizer::GetFileHandlerUpdateAction(

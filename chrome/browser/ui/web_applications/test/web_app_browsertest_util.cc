@@ -233,10 +233,11 @@ Browser* LaunchBrowserForWebAppInTab(Profile* profile, const AppId& app_id) {
   return browser;
 }
 
-ExternalInstallOptions CreateInstallOptions(const GURL& url) {
-  ExternalInstallOptions install_options(
-      url, UserDisplayMode::kStandalone,
-      ExternalInstallSource::kInternalDefault);
+ExternalInstallOptions CreateInstallOptions(
+    const GURL& url,
+    const ExternalInstallSource& source) {
+  ExternalInstallOptions install_options(url, UserDisplayMode::kStandalone,
+                                         source);
   // Avoid creating real shortcuts in tests.
   install_options.add_to_applications_menu = false;
   install_options.add_to_desktop = false;

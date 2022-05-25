@@ -12,6 +12,7 @@
 #include "base/strings/string_piece_forward.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_manager_observer.h"
@@ -57,7 +58,10 @@ Browser* LaunchWebAppBrowserAndWait(Profile*, const AppId&);
 Browser* LaunchBrowserForWebAppInTab(Profile*, const AppId&);
 
 // Return |ExternalInstallOptions| with OS shortcut creation disabled.
-ExternalInstallOptions CreateInstallOptions(const GURL& url);
+ExternalInstallOptions CreateInstallOptions(
+    const GURL& url,
+    const ExternalInstallSource& source =
+        ExternalInstallSource::kInternalDefault);
 
 // Synchronous version of ExternallyManagedAppManager::Install.
 ExternallyManagedAppManager::InstallResult ExternallyManagedAppManagerInstall(

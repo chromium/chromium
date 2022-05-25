@@ -84,6 +84,7 @@ void WebApp::AddSource(WebAppManagement::Type source) {
 
 void WebApp::RemoveSource(WebAppManagement::Type source) {
   sources_[source] = false;
+  management_to_external_config_map_.erase(source);
 }
 
 bool WebApp::HasAnySources() const {
@@ -410,6 +411,13 @@ void WebApp::AddInstallURLToManagementExternalConfigMap(
   DCHECK_NE(type, WebAppManagement::Type::kSync);
   DCHECK(install_url.is_valid());
   management_to_external_config_map_[type].install_urls.emplace(install_url);
+}
+
+void WebApp::AddExternalSourceInformation(WebAppManagement::Type type,
+                                          GURL install_url,
+                                          bool is_placeholder) {
+  AddInstallURLToManagementExternalConfigMap(type, install_url);
+  AddPlaceholderInfoToManagementExternalConfigMap(type, is_placeholder);
 }
 
 WebApp::ClientData::ClientData() = default;

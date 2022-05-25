@@ -70,9 +70,43 @@ blink::ParsedPermissionsPolicy WebAppRegistrar::GetPermissionsPolicy(
                  : blink::ParsedPermissionsPolicy();
 }
 
-bool WebAppRegistrar::IsPlaceholderApp(const AppId& app_id) const {
-  return ExternallyInstalledWebAppPrefs(profile_->GetPrefs())
-      .IsPlaceholderApp(app_id);
+bool WebAppRegistrar::IsPlaceholderApp(
+    const AppId& app_id,
+    const WebAppManagement::Type source_type) const {
+  if (!base::FeatureList::IsEnabled(
+          features::kUseWebAppDBInsteadOfExternalPrefs)) {
+    return ExternallyInstalledWebAppPrefs(profile_->GetPrefs())
+        .IsPlaceholderApp(app_id);
+  }
+
+  DCHECK(source_type == WebAppManagement::kPolicy);
+  const WebApp* web_app = GetAppById(app_id);
+  if (!web_app)
+    return false;
+
+  if (!base::Contains(web_app->management_to_external_config_map(),
+                      source_type)) {
+    return false;
+  }
+
+  return web_app->management_to_external_config_map()[source_type]
+      .is_placeholder;
+}
+
+absl::optional<AppId> WebAppRegistrar::LookupPlaceholderAppId(
+    const GURL& install_url,
+    const WebAppManagement::Type source_type) const {
+  if (!base::FeatureList::IsEnabled(
+          features::kUseWebAppDBInsteadOfExternalPrefs)) {
+    return ExternallyInstalledWebAppPrefs(profile_->GetPrefs())
+        .LookupPlaceholderAppId(install_url);
+  }
+
+  DCHECK(source_type == WebAppManagement::kPolicy);
+  absl::optional<AppId> app_id = LookUpAppIdByInstallUrl(install_url);
+  if (app_id.has_value() && IsPlaceholderApp(app_id.value(), source_type))
+    return app_id;
+  return absl::nullopt;
 }
 
 void WebAppRegistrar::AddObserver(AppRegistrarObserver* observer) {
@@ -444,6 +478,18 @@ void WebAppRegistrar::SetSubsystems(
     WebAppTranslationManager* translation_manager) {
   policy_manager_ = policy_manager;
   translation_manager_ = translation_manager;
+}
+
+absl::optional<AppId> WebAppRegistrar::LookUpAppIdByInstallUrl(
+    const GURL& install_url) const {
+  for (const WebApp& web_app : GetApps()) {
+    for (auto it : web_app.management_to_external_config_map()) {
+      if (base::Contains(it.second.install_urls, install_url)) {
+        return web_app.app_id();
+      }
+    }
+  }
+  return absl::nullopt;
 }
 
 bool WebAppRegistrar::IsInstalled(const AppId& app_id) const {

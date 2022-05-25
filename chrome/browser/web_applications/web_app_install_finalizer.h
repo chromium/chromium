@@ -166,6 +166,12 @@ class WebAppInstallFinalizer {
 
   const WebAppRegistrar& GetWebAppRegistrar() const;
 
+  // Writes external config data to the web_app DB, mapped per source.
+  void WriteExternalConfigMapInfo(WebApp& web_app,
+                                  WebAppManagement::Type source,
+                                  bool is_placeholder,
+                                  GURL install_url);
+
  private:
   using CommitCallback = base::OnceCallback<void(bool success)>;
 

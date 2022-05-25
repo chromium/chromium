@@ -14,6 +14,7 @@
 #include "base/feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
 #include "chrome/browser/web_applications/externally_managed_app_registration_task.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
@@ -43,9 +44,7 @@ struct ExternallyManagedAppManagerImpl::TaskAndCallback {
 
 ExternallyManagedAppManagerImpl::ExternallyManagedAppManagerImpl(
     Profile* profile)
-    : profile_(profile),
-      externally_installed_app_prefs_(profile->GetPrefs()),
-      url_loader_(std::make_unique<WebAppUrlLoader>()) {}
+    : profile_(profile), url_loader_(std::make_unique<WebAppUrlLoader>()) {}
 
 ExternallyManagedAppManagerImpl::~ExternallyManagedAppManagerImpl() = default;
 
@@ -173,8 +172,11 @@ void ExternallyManagedAppManagerImpl::MaybeStartNext() {
       return;
     }
 
-    absl::optional<AppId> app_id = externally_installed_app_prefs_.LookupAppId(
-        install_options.install_url);
+    // This app id isn't guaranteed to be installed,
+    // it's only guaranteed to have been installed in the past.
+    absl::optional<AppId> app_id =
+        ExternallyInstalledWebAppPrefs(profile()->GetPrefs())
+            .LookupAppId(install_options.install_url);
 
     // If the URL is not in ExternallyInstalledWebAppPrefs,
     // then no external source has installed it.
@@ -197,9 +199,9 @@ void ExternallyManagedAppManagerImpl::MaybeStartNext() {
       // If the app is already installed, only reinstall it if the app is a
       // placeholder app and the client asked for it to be reinstalled.
       if (install_options.reinstall_placeholder &&
-          externally_installed_app_prefs_
-              .LookupPlaceholderAppId(install_options.install_url)
-              .has_value()) {
+          registrar()->IsPlaceholderApp(app_id.value(),
+                                        ConvertExternalInstallSourceToSource(
+                                            install_options.install_source))) {
         StartInstallationTask(std::move(front));
         return;
       }
