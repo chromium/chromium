@@ -1581,8 +1581,10 @@ ManifestParser::ParseIsolatedAppPermissions(const JSONObject* object) {
     new_policy.feature_name = feature;
     for (const auto& origin : allowlist) {
       // PermissionsPolicyParser expects origin strings to be wrapped in single
-      // quotes, as they would be in the header's permissions policy string.
-      String wrapped_origin = "'" + origin + "'";
+      // quotes, as they would be in the header's permissions policy string. The
+      // asterisk is a token, which does not need to be wrapped in single
+      // quotes.
+      String wrapped_origin = (origin == "*" ? origin : "'" + origin + "'");
       new_policy.allowlist.push_back(wrapped_origin);
     }
     policy.push_back(new_policy);
