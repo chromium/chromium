@@ -17,12 +17,12 @@ MockMojoMediaStreamDispatcherHost::CreatePendingRemoteAndBind() {
   return receiver_.BindNewPipeAndPassRemote();
 }
 
-void MockMojoMediaStreamDispatcherHost::GenerateStream(
+void MockMojoMediaStreamDispatcherHost::GenerateStreams(
     int32_t request_id,
     const StreamControls& controls,
     bool user_gesture,
     mojom::blink::StreamSelectionInfoPtr audio_stream_selection_info_ptr,
-    GenerateStreamCallback callback) {
+    GenerateStreamsCallback callback) {
   request_id_ = request_id;
   ++request_stream_counter_;
   stream_devices_ = blink::mojom::blink::StreamDevices();
@@ -52,9 +52,13 @@ void MockMojoMediaStreamDispatcherHost::GenerateStream(
   if (do_not_run_cb_) {
     generate_stream_cb_ = std::move(callback);
   } else {
+    // TODO(crbug.com/1300883): Generalize to multiple streams.
+    blink::mojom::blink::StreamDevicesSetPtr stream_devices_set =
+        blink::mojom::blink::StreamDevicesSet::New();
+    stream_devices_set->stream_devices.emplace_back(stream_devices_.Clone());
     std::move(callback).Run(mojom::blink::MediaStreamRequestResult::OK,
                             String("dummy") + String::Number(request_id_),
-                            stream_devices_.Clone(),
+                            std::move(stream_devices_set),
                             /*pan_tilt_zoom_allowed=*/false);
   }
 }

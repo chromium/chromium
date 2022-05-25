@@ -168,7 +168,21 @@ class PLATFORM_EXPORT MediaStreamComponent final
   WebLocalFrame* creation_frame_ = nullptr;
 };
 
-typedef HeapVector<Member<MediaStreamComponent>> MediaStreamComponentVector;
+class PLATFORM_EXPORT MediaStreamComponents final
+    : public GarbageCollected<MediaStreamComponents> {
+ public:
+  // At least one of audio_track / video_track must be non-null.
+  MediaStreamComponents(MediaStreamComponent* audio_track,
+                        MediaStreamComponent* video_track);
+
+  void Trace(Visitor*) const;
+
+  Member<MediaStreamComponent> audio_track_;
+  Member<MediaStreamComponent> video_track_;
+};
+
+using MediaStreamComponentVector = HeapVector<Member<MediaStreamComponent>>;
+using MediaStreamsComponentsVector = HeapVector<Member<MediaStreamComponents>>;
 
 }  // namespace blink
 

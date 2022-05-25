@@ -144,8 +144,8 @@ bool MediaStreamDevice::IsSameDevice(
          session_id_ == other_device.session_id_;
 }
 
-// TODO(crbug/1313021): Remove this function and use blink::mojom::StreaDevices
-// directly everywhere.
+// TODO(crbug.com/1313021): Remove this function and use
+// blink::mojom::StreaDevices directly everywhere.
 blink::MediaStreamDevices StreamDevicesToMediaStreamDevicesList(
     const blink::mojom::StreamDevices& devices) {
   blink::MediaStreamDevices all_devices;

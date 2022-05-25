@@ -55,6 +55,8 @@ blink_modules_sources("mediastream") {
     "media_stream_local_frame_wrapper.h",
     "media_stream_renderer_factory.cc",
     "media_stream_renderer_factory.h",
+    "media_stream_set.cc",
+    "media_stream_set.h",
     "media_stream_track.cc",
     "media_stream_track.h",
     "media_stream_track_content_hint.h",

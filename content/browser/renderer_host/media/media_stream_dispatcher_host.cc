@@ -185,7 +185,7 @@ struct MediaStreamDispatcherHost::PendingAccessRequest {
       const blink::StreamControls& controls,
       bool user_gesture,
       blink::mojom::StreamSelectionInfoPtr audio_stream_selection_info_ptr,
-      GenerateStreamCallback callback,
+      GenerateStreamsCallback callback,
       MediaDeviceSaltAndOrigin salt_and_origin)
       : page_request_id(page_request_id),
         controls(controls),
@@ -200,7 +200,7 @@ struct MediaStreamDispatcherHost::PendingAccessRequest {
   const blink::StreamControls controls;
   bool user_gesture;
   blink::mojom::StreamSelectionInfoPtr audio_stream_selection_info_ptr;
-  GenerateStreamCallback callback;
+  GenerateStreamsCallback callback;
   MediaDeviceSaltAndOrigin salt_and_origin;
 };
 
@@ -299,7 +299,7 @@ void MediaStreamDispatcherHost::OnWebContentsFocused() {
   while (!pending_requests_.empty()) {
     std::unique_ptr<PendingAccessRequest> request =
         std::move(pending_requests_.front());
-    media_stream_manager_->GenerateStream(
+    media_stream_manager_->GenerateStreams(
         render_process_id_, render_frame_id_, requester_id_,
         request->page_request_id, request->controls,
         std::move(request->salt_and_origin), request->user_gesture,
@@ -350,7 +350,8 @@ void MediaStreamDispatcherHost::CancelAllRequests() {
   for (auto& pending_request : pending_requests_) {
     std::move(pending_request->callback)
         .Run(blink::mojom::MediaStreamRequestResult::FAILED_DUE_TO_SHUTDOWN,
-             /*label=*/std::string(), /*stream_devices=*/nullptr,
+             /*label=*/std::string(),
+             /*stream_devices_set=*/nullptr,
              /*pan_tilt_zoom_allowed=*/false);
   }
   pending_requests_.clear();
@@ -358,12 +359,12 @@ void MediaStreamDispatcherHost::CancelAllRequests() {
                                            requester_id_);
 }
 
-void MediaStreamDispatcherHost::GenerateStream(
+void MediaStreamDispatcherHost::GenerateStreams(
     int32_t page_request_id,
     const blink::StreamControls& controls,
     bool user_gesture,
     blink::mojom::StreamSelectionInfoPtr audio_stream_selection_info_ptr,
-    GenerateStreamCallback callback) {
+    GenerateStreamsCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   if (!AllowedStreamTypeCombination(controls.audio.stream_type,
@@ -386,18 +387,18 @@ void MediaStreamDispatcherHost::GenerateStream(
       GetUIThreadTaskRunner({}).get(), FROM_HERE,
       base::BindOnce(salt_and_origin_callback_, render_process_id_,
                      render_frame_id_),
-      base::BindOnce(&MediaStreamDispatcherHost::DoGenerateStream,
+      base::BindOnce(&MediaStreamDispatcherHost::DoGenerateStreams,
                      weak_factory_.GetWeakPtr(), page_request_id, controls,
                      user_gesture, std::move(audio_stream_selection_info_ptr),
                      std::move(callback)));
 }
 
-void MediaStreamDispatcherHost::DoGenerateStream(
+void MediaStreamDispatcherHost::DoGenerateStreams(
     int32_t page_request_id,
     const blink::StreamControls& controls,
     bool user_gesture,
     blink::mojom::StreamSelectionInfoPtr audio_stream_selection_info_ptr,
-    GenerateStreamCallback callback,
+    GenerateStreamsCallback callback,
     MediaDeviceSaltAndOrigin salt_and_origin) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
@@ -405,7 +406,8 @@ void MediaStreamDispatcherHost::DoGenerateStream(
                                            salt_and_origin.origin)) {
     std::move(callback).Run(
         blink::mojom::MediaStreamRequestResult::INVALID_SECURITY_ORIGIN,
-        /*label=*/std::string(), /*stream_devices=*/nullptr,
+        /*label=*/std::string(),
+        /*stream_devices_set=*/nullptr,
         /*pan_tilt_zoom_allowed=*/false);
     return;
   }
@@ -428,7 +430,7 @@ void MediaStreamDispatcherHost::DoGenerateStream(
     return;
   }
 
-  media_stream_manager_->GenerateStream(
+  media_stream_manager_->GenerateStreams(
       render_process_id_, render_frame_id_, requester_id_, page_request_id,
       controls, std::move(salt_and_origin), user_gesture,
       std::move(audio_stream_selection_info_ptr), std::move(callback),

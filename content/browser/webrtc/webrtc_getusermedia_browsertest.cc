@@ -80,6 +80,9 @@ std::string GenerateGetUserMediaWithOptionalSourceID(
   return function_name + "({" + audio_constraint + video_constraint + "});";
 }
 
+// TODO(crbug.com/1327666): Bring back when
+// WebRtcGetUserMediaBrowserTest.DisableLocalEchoParameter is fixed.
+#if 0
 std::string GenerateGetUserMediaWithDisableLocalEcho(
     const std::string& function_name,
     const std::string& disable_local_echo) {
@@ -96,6 +99,7 @@ bool VerifyDisableLocalEcho(bool expect_value,
                             const blink::StreamControls& controls) {
   return expect_value == controls.disable_local_echo;
 }
+#endif
 
 }  // namespace
 
@@ -640,6 +644,10 @@ IN_PROC_BROWSER_TEST_F(WebRtcGetUserMediaBrowserTest,
   ExecuteJavascriptAndWaitForOk(call);
 }
 
+// TODO(crbug.com/1327666): Fix this test. It seems to be broken (no audio /
+// video tracks are requested; "uncaught (in promise) undefined)") and was false
+// positive before disabling.
+#if 0
 IN_PROC_BROWSER_TEST_F(WebRtcGetUserMediaBrowserTest,
                        DisableLocalEchoParameter) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
@@ -652,21 +660,22 @@ IN_PROC_BROWSER_TEST_F(WebRtcGetUserMediaBrowserTest,
   MediaStreamManager* manager =
       BrowserMainLoop::GetInstance()->media_stream_manager();
 
-  manager->SetGenerateStreamCallbackForTesting(
+  manager->SetGenerateStreamsCallbackForTesting(
       base::BindOnce(&VerifyDisableLocalEcho, false));
   std::string call = GenerateGetUserMediaWithDisableLocalEcho(
       "getUserMediaAndExpectSuccess", "false");
   ExecuteJavascriptAndWaitForOk(call);
 
-  manager->SetGenerateStreamCallbackForTesting(
+  manager->SetGenerateStreamsCallbackForTesting(
       base::BindOnce(&VerifyDisableLocalEcho, true));
   call = GenerateGetUserMediaWithDisableLocalEcho(
       "getUserMediaAndExpectSuccess", "true");
   ExecuteJavascriptAndWaitForOk(call);
 
-  manager->SetGenerateStreamCallbackForTesting(
+  manager->SetGenerateStreamsCallbackForTesting(
       MediaStreamManager::GenerateStreamTestCallback());
 }
+#endif
 
 IN_PROC_BROWSER_TEST_F(WebRtcGetUserMediaBrowserTest, GetAudioSettingsDefault) {
   ASSERT_TRUE(embedded_test_server()->Start());

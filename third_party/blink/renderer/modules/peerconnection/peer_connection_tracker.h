@@ -242,7 +242,7 @@ class MODULES_EXPORT PeerConnectionTracker
   virtual void TrackGetUserMedia(UserMediaRequest* user_media_request);
   // Sends an update when getUserMedia resolveѕ with a stream.
   virtual void TrackGetUserMediaSuccess(UserMediaRequest* user_media_request,
-                                        MediaStream* stream);
+                                        const MediaStream* stream);
   // Sends an update when getUserMedia fails with an error.
   virtual void TrackGetUserMediaFailure(UserMediaRequest* user_media_request,
                                         const String& error,

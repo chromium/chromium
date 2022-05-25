@@ -50,6 +50,7 @@
 #include "third_party/blink/renderer/modules/mediastream/media_constraints_impl.h"
 #include "third_party/blink/renderer/modules/mediastream/media_error_state.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_set.h"
 #include "third_party/blink/renderer/modules/mediastream/overconstrained_error.h"
 #include "third_party/blink/renderer/modules/mediastream/transferred_media_stream_track.h"
 #include "third_party/blink/renderer/modules/mediastream/user_media_controller.h"
@@ -501,35 +502,52 @@ void UserMediaRequest::Start() {
     controller_->RequestUserMedia(this);
 }
 
-void UserMediaRequest::Succeed(MediaStreamDescriptor* stream_descriptor) {
+void UserMediaRequest::Succeed(
+    const MediaStreamDescriptorVector& streams_descriptors) {
   DCHECK(!is_resolved_);
+  DCHECK(transferred_track_ == nullptr || streams_descriptors.size() == 1u);
   if (!GetExecutionContext())
     return;
 
-  MediaStream::Create(GetExecutionContext(), stream_descriptor,
-                      transferred_track_,
-                      WTF::Bind(&UserMediaRequest::OnMediaStreamInitialized,
-                                WrapPersistent(this)));
+  if (transferred_track_) {
+    MediaStream::Create(GetExecutionContext(), streams_descriptors[0],
+                        transferred_track_,
+                        WTF::Bind(&UserMediaRequest::OnMediaStreamInitialized,
+                                  WrapPersistent(this)));
+  } else {
+    MediaStreamSet::Create(
+        GetExecutionContext(), streams_descriptors,
+        WTF::Bind(&UserMediaRequest::OnMediaStreamsInitialized,
+                  WrapPersistent(this)));
+  }
 }
 
 void UserMediaRequest::OnMediaStreamInitialized(MediaStream* stream) {
+  OnMediaStreamsInitialized({stream});
+}
+
+void UserMediaRequest::OnMediaStreamsInitialized(MediaStreamVector streams) {
   DCHECK(!is_resolved_);
 
-  MediaStreamTrackVector audio_tracks = stream->getAudioTracks();
-  for (const auto& audio_track : audio_tracks)
-    audio_track->SetConstraints(audio_);
+  for (const Member<MediaStream>& stream : streams) {
+    MediaStreamTrackVector audio_tracks = stream->getAudioTracks();
+    for (const auto& audio_track : audio_tracks)
+      audio_track->SetConstraints(audio_);
 
-  MediaStreamTrackVector video_tracks = stream->getVideoTracks();
-  for (const auto& video_track : video_tracks)
-    video_track->SetConstraints(video_);
+    MediaStreamTrackVector video_tracks = stream->getVideoTracks();
+    for (const auto& video_track : video_tracks)
+      video_track->SetConstraints(video_);
 
-  RecordIdentifiabilityMetric(surface_, GetExecutionContext(),
-                              IdentifiabilityBenignStringToken(g_empty_string));
-  if (auto* window = GetWindow()) {
-    PeerConnectionTracker::From(*window).TrackGetUserMediaSuccess(this, stream);
+    RecordIdentifiabilityMetric(
+        surface_, GetExecutionContext(),
+        IdentifiabilityBenignStringToken(g_empty_string));
+    if (auto* window = GetWindow()) {
+      PeerConnectionTracker::From(*window).TrackGetUserMediaSuccess(this,
+                                                                    stream);
+    }
   }
   // After this call, the execution context may be invalid.
-  callbacks_->OnSuccess(stream);
+  callbacks_->OnSuccess(streams);
   is_resolved_ = true;
 }
 

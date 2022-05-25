@@ -69,8 +69,10 @@ class PromiseResolverCallbacks final : public UserMediaRequest::Callbacks {
         on_success_follow_up_(std::move(on_success_follow_up)) {}
   ~PromiseResolverCallbacks() override = default;
 
-  void OnSuccess(MediaStream* stream) override {
-    DCHECK(stream);
+  void OnSuccess(const MediaStreamVector& streams) override {
+    // TODO(crbug.com/1300883): Generalize to multiple streams.
+    DCHECK_EQ(streams.size(), 1u);
+    MediaStream* stream = streams[0];
 
     MediaStreamTrack* video_track = nullptr;
 

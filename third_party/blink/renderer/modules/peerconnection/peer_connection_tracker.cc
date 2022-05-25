@@ -1137,7 +1137,7 @@ void PeerConnectionTracker::TrackGetUserMedia(
 
 void PeerConnectionTracker::TrackGetUserMediaSuccess(
     UserMediaRequest* user_media_request,
-    MediaStream* stream) {
+    const MediaStream* stream) {
   DCHECK_CALLED_ON_VALID_THREAD(main_thread_);
 
   // Serialize audio and video track information (id and label) or an

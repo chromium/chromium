@@ -220,9 +220,10 @@ class MediaStreamManagerTest : public ::testing::Test {
   ~MediaStreamManagerTest() override { audio_manager_->Shutdown(); }
 
   MOCK_METHOD1(Response, void(int index));
-  void ResponseCallback(int index,
-                        const blink::mojom::StreamDevices& devices,
-                        std::unique_ptr<MediaStreamUIProxy> ui_proxy) {
+  void ResponseCallback(
+      int index,
+      const blink::mojom::StreamDevicesSet& stream_devices_set,
+      std::unique_ptr<MediaStreamUIProxy> ui_proxy) {
     Response(index);
     base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
                                                   run_loop_.QuitClosure());
@@ -265,8 +266,8 @@ class MediaStreamManagerTest : public ::testing::Test {
 
     blink::MediaStreamDevice video_device;
     blink::MediaStreamDevice audio_device;
-    MediaStreamManager::GenerateStreamCallback generate_stream_callback =
-        base::BindOnce(GenerateStreamCallback, &run_loop_, request_audio,
+    MediaStreamManager::GenerateStreamsCallback generate_stream_callback =
+        base::BindOnce(GenerateStreamsCallback, &run_loop_, request_audio,
                        true /* request_video */, &audio_device, &video_device);
     base::MockCallback<MediaStreamManager::DeviceStoppedCallback>
         stopped_callback;
@@ -293,7 +294,7 @@ class MediaStreamManagerTest : public ::testing::Test {
                   OnMediaRequestStateChanged(_, _, _, _, expected_type,
                                              MEDIA_REQUEST_STATE_DONE));
     }
-    media_stream_manager_->GenerateStream(
+    media_stream_manager_->GenerateStreams(
         render_process_id, render_frame_id, requester_id, page_request_id,
         controls, MediaDeviceSaltAndOrigin(), false /* user_gesture */,
         StreamSelectionInfo::New(
@@ -335,7 +336,7 @@ class MediaStreamManagerTest : public ::testing::Test {
     }
   }
 
-  static void GenerateStreamCallback(
+  static void GenerateStreamsCallback(
       base::RunLoop* wait_loop,
       bool request_audio,
       bool request_video,
@@ -343,20 +344,28 @@ class MediaStreamManagerTest : public ::testing::Test {
       blink::MediaStreamDevice* video_device,
       blink::mojom::MediaStreamRequestResult result,
       const std::string& label,
-      const blink::mojom::StreamDevicesPtr devices,
+      blink::mojom::StreamDevicesSetPtr stream_devices_set,
       bool pan_tilt_zoom_allowed) {
+    // TODO(crbug.com/1300883): Generalize to multiple streams.
+    DCHECK_EQ(stream_devices_set->stream_devices.size(), 1u);
     if (request_audio) {
-      ASSERT_TRUE(devices->audio_device.has_value());
-      *audio_device = devices->audio_device.value();
+      ASSERT_TRUE(
+          stream_devices_set->stream_devices[0]->audio_device.has_value());
+      *audio_device =
+          stream_devices_set->stream_devices[0]->audio_device.value();
     } else {
-      ASSERT_FALSE(devices->audio_device.has_value());
+      ASSERT_FALSE(
+          stream_devices_set->stream_devices[0]->audio_device.has_value());
     }
 
     if (request_video) {
-      ASSERT_TRUE(devices->video_device.has_value());
-      *video_device = devices->video_device.value();
+      ASSERT_TRUE(
+          stream_devices_set->stream_devices[0]->video_device.has_value());
+      *video_device =
+          stream_devices_set->stream_devices[0]->video_device.value();
     } else {
-      ASSERT_FALSE(devices->video_device.has_value());
+      ASSERT_FALSE(
+          stream_devices_set->stream_devices[0]->video_device.has_value());
     }
 
     wait_loop->Quit();
@@ -386,8 +395,8 @@ class MediaStreamManagerTest : public ::testing::Test {
     base::RunLoop run_loop;
     blink::MediaStreamDevice audio_device;
 
-    MediaStreamManager::GenerateStreamCallback generate_stream_callback =
-        base::BindOnce(GenerateStreamCallback, &run_loop, true, false,
+    MediaStreamManager::GenerateStreamsCallback generate_stream_callback =
+        base::BindOnce(GenerateStreamsCallback, &run_loop, true, false,
                        &audio_device, nullptr);
     MediaStreamManager::DeviceStoppedCallback stopped_callback;
     MediaStreamManager::DeviceChangedCallback changed_callback;
@@ -398,7 +407,7 @@ class MediaStreamManagerTest : public ::testing::Test {
 
     StreamSelectionInfoPtr info =
         StreamSelectionInfo::New(strategy, session_id);
-    media_stream_manager_->GenerateStream(
+    media_stream_manager_->GenerateStreams(
         render_process_id, render_frame_id, requester_id, page_request_id,
         controls, MediaDeviceSaltAndOrigin(), false /* user_gesture */,
         std::move(info), std::move(generate_stream_callback),
@@ -737,10 +746,10 @@ TEST_F(MediaStreamManagerTest, GetDisplayMediaRequestCallsUIProxy) {
   controls.video.stream_type =
       blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE;
 
-  MediaStreamManager::GenerateStreamCallback generate_stream_callback =
+  MediaStreamManager::GenerateStreamsCallback generate_stream_callback =
       base::BindOnce([](blink::mojom::MediaStreamRequestResult result,
                         const std::string& label,
-                        blink::mojom::StreamDevicesPtr devices,
+                        blink::mojom::StreamDevicesSetPtr stream_devices_set,
                         bool pan_tilt_zoom_allowed) {});
   EXPECT_CALL(
       *media_observer_,
@@ -751,7 +760,7 @@ TEST_F(MediaStreamManagerTest, GetDisplayMediaRequestCallsUIProxy) {
   const int render_frame_id = 0;
   const int requester_id = 0;
   const int page_request_id = 0;
-  media_stream_manager_->GenerateStream(
+  media_stream_manager_->GenerateStreams(
       render_process_id, render_frame_id, requester_id, page_request_id,
       controls, MediaDeviceSaltAndOrigin(), false /* user_gesture */,
       StreamSelectionInfo::New(
@@ -785,8 +794,8 @@ TEST_F(MediaStreamManagerTest, DesktopCaptureDeviceStopped) {
   const int page_request_id = 1;
 
   blink::MediaStreamDevice video_device;
-  MediaStreamManager::GenerateStreamCallback generate_stream_callback =
-      base::BindOnce(GenerateStreamCallback, &run_loop_,
+  MediaStreamManager::GenerateStreamsCallback generate_stream_callback =
+      base::BindOnce(GenerateStreamsCallback, &run_loop_,
                      false /* request_audio */, true /* request_video */,
                      nullptr, &video_device);
   MediaStreamManager::DeviceStoppedCallback stopped_callback =
@@ -805,7 +814,7 @@ TEST_F(MediaStreamManagerTest, DesktopCaptureDeviceStopped) {
   MediaStreamManager::DeviceCaptureHandleChangeCallback
       capture_handle_change_callback;
 
-  media_stream_manager_->GenerateStream(
+  media_stream_manager_->GenerateStreams(
       render_process_id, render_frame_id, requester_id, page_request_id,
       controls, MediaDeviceSaltAndOrigin(), false /* user_gesture */,
       StreamSelectionInfo::New(
@@ -844,8 +853,8 @@ TEST_F(MediaStreamManagerTest, DesktopCaptureDeviceChanged) {
   const int page_request_id = 1;
 
   blink::MediaStreamDevice video_device;
-  MediaStreamManager::GenerateStreamCallback generate_stream_callback =
-      base::BindOnce(GenerateStreamCallback, &run_loop_,
+  MediaStreamManager::GenerateStreamsCallback generate_stream_callback =
+      base::BindOnce(GenerateStreamsCallback, &run_loop_,
                      false /* request_audio */, true /* request_video */,
                      nullptr, &video_device);
   MediaStreamManager::DeviceStoppedCallback stopped_callback;
@@ -872,7 +881,7 @@ TEST_F(MediaStreamManagerTest, DesktopCaptureDeviceChanged) {
   MediaStreamManager::DeviceCaptureHandleChangeCallback
       capture_handle_change_callback;
 
-  media_stream_manager_->GenerateStream(
+  media_stream_manager_->GenerateStreams(
       render_process_id, render_frame_id, requester_id, page_request_id,
       controls, MediaDeviceSaltAndOrigin(), false /* user_gesture */,
       StreamSelectionInfo::New(
@@ -988,5 +997,7 @@ TEST_F(MediaStreamManagerTest, GetMediaDeviceIDForHMAC) {
       }));
   base::RunLoop().RunUntilIdle();
 }
+
+// TODO(crbug.com/1300883): Add test cases for multi stream generation.
 
 }  // namespace content

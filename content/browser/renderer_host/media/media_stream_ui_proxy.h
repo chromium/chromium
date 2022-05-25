@@ -170,7 +170,7 @@ class CONTENT_EXPORT FakeMediaStreamUIProxy : public MediaStreamUIProxy {
 
  private:
   // This is used for RequestAccess().
-  // TODO(crbug/1313021): Use blink::mojom::StreamDevices instead of
+  // TODO(crbug.com/1313021): Use blink::mojom::StreamDevices instead of
   // blink::MediaStreamDevices.
   blink::MediaStreamDevices devices_;
 

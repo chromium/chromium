@@ -90,15 +90,15 @@ class CONTENT_EXPORT MediaStreamManager
       public base::PowerThermalObserver {
  public:
   // Callback to deliver the result of a media access request.
-  using MediaAccessRequestCallback =
-      base::OnceCallback<void(const blink::mojom::StreamDevices& devices,
-                              std::unique_ptr<MediaStreamUIProxy> ui)>;
+  using MediaAccessRequestCallback = base::OnceCallback<void(
+      const blink::mojom::StreamDevicesSet& stream_devices_set,
+      std::unique_ptr<MediaStreamUIProxy> ui)>;
 
-  using GenerateStreamCallback =
-      base::OnceCallback<void(blink::mojom::MediaStreamRequestResult result,
-                              const std::string& label,
-                              blink::mojom::StreamDevicesPtr stream_devices,
-                              bool pan_tilt_zoom_allowed)>;
+  using GenerateStreamsCallback = base::OnceCallback<void(
+      blink::mojom::MediaStreamRequestResult result,
+      const std::string& label,
+      blink::mojom::StreamDevicesSetPtr stream_devices_set,
+      bool pan_tilt_zoom_allowed)>;
 
   using OpenDeviceCallback =
       base::OnceCallback<void(bool success,
@@ -203,7 +203,7 @@ class CONTENT_EXPORT MediaStreamManager
   // notify clients about request state changes.
   // TODO(crbug.com/1288839): Package device-related callbacks into a single
   // struct.
-  void GenerateStream(
+  void GenerateStreams(
       int render_process_id,
       int render_frame_id,
       int requester_id,
@@ -212,7 +212,7 @@ class CONTENT_EXPORT MediaStreamManager
       MediaDeviceSaltAndOrigin salt_and_origin,
       bool user_gesture,
       blink::mojom::StreamSelectionInfoPtr audio_stream_selection_info_ptr,
-      GenerateStreamCallback generate_stream_cb,
+      GenerateStreamsCallback generate_stream_cb,
       DeviceStoppedCallback device_stopped_cb,
       DeviceChangedCallback device_changed_cb,
       DeviceRequestStateChangeCallback device_request_state_change_cb,
@@ -408,7 +408,7 @@ class CONTENT_EXPORT MediaStreamManager
   void StopRemovedDevice(blink::mojom::MediaDeviceType type,
                          const blink::WebMediaDeviceInfo& media_device_info);
 
-  void SetGenerateStreamCallbackForTesting(
+  void SetGenerateStreamsCallbackForTesting(
       GenerateStreamTestCallback test_callback);
 
   // This method is called when all tracks are started.
@@ -574,7 +574,8 @@ class CONTENT_EXPORT MediaStreamManager
       blink::MediaStreamDevice* existing_device,
       MediaRequestState* existing_request_state) const;
 
-  void FinalizeGenerateStream(const std::string& label, DeviceRequest* request);
+  void FinalizeGenerateStreams(const std::string& label,
+                               DeviceRequest* request);
   void FinalizeGetOpenDevice(const std::string& label, DeviceRequest* request);
   void PanTiltZoomPermissionChecked(
       const std::string& label,

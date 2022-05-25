@@ -197,4 +197,15 @@ void MediaStreamComponent::Trace(Visitor* visitor) const {
   visitor->Trace(source_);
 }
 
+MediaStreamComponents::MediaStreamComponents(MediaStreamComponent* audio_track,
+                                             MediaStreamComponent* video_track)
+    : audio_track_(audio_track), video_track_(video_track) {
+  DCHECK(audio_track_ || video_track_);
+}
+
+void MediaStreamComponents::Trace(Visitor* visitor) const {
+  visitor->Trace(audio_track_);
+  visitor->Trace(video_track_);
+}
+
 }  // namespace blink

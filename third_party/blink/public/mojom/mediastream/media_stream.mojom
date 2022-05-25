@@ -142,10 +142,15 @@ interface MediaStreamDeviceObserver {
                               MediaStreamDevice device);
 };
 
-// Contains devices that are assigned to a specific stream.
+// Contains devices that are assigned to a specific stream. At least one of
+// audio_device / video_device must be set.
 struct StreamDevices {
   MediaStreamDevice? audio_device;
   MediaStreamDevice? video_device;
+};
+
+struct StreamDevicesSet {
+  array<StreamDevices> stream_devices;
 };
 
 // Per-frame browser-side interface that is used by the renderer process to
@@ -165,10 +170,18 @@ interface MediaStreamDispatcherHost {
   // finally, when it is SEARCH_BY_DEVICE_ID, an existing stream is used if the
   // device associated to the request already has an opened stream available, or
   // a new one otherwise.
-  GenerateStream(int32 request_id, StreamControls controls, bool user_gesture,
+  // The result callback provides:
+  // |result|: The overall result of the stream generation.
+  // |label|: The request label.
+  // |stream_devices|: A list of devices per stream. If |result| is not ok, this
+  // list may be null.
+  // |pan_tilt_zoom_allowed|: A flag indicating whether pan / tilt / zoom is
+  // allowed.
+  // TODO(crbug.com/1327958): Use expected<T,E> for the return values.
+  GenerateStreams(int32 request_id, StreamControls controls, bool user_gesture,
                  StreamSelectionInfo audio_stream_selection_info)
       => (MediaStreamRequestResult result, string label,
-         StreamDevices? stream_devices,
+         StreamDevicesSet? stream_devices,
          bool pan_tilt_zoom_allowed);
 
   // The |focus| bit is |true| if focus should be switched to
