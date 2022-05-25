@@ -133,7 +133,7 @@ const IDNTestCase kIdnCases[] = {
      kSafe},
 
     // Block mixed numeric + numeric lookalike (12.com, using U+0577).
-    {"xn--1-9dd.com", u"1\u07f3.com", kUnsafe},
+    {"xn--1-xcc.com", u"1\u0577.com", kUnsafe},
 
     // Block mixed numeric lookalike + numeric (੨0.com, uses U+0A68).
     {"xn--0-6ee.com", u"\u0a680.com", kUnsafe},
