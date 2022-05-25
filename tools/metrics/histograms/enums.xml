@@ -40078,7 +40078,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4157" label="V8UDPSocket_RemotePort_AttributeGetter"/>
   <int value="4158" label="V8UDPSocket_Writable_AttributeGetter"/>
   <int value="4159" label="AbortSignalTimeout"/>
-  <int value="4160" label="ClientHintsPartitionedCookies"/>
+  <int value="4160" label="OBSOLETE_ClientHintsPartitionedCookies"/>
   <int value="4161" label="V8Document_Prerendering_AttributeGetter"/>
   <int value="4162" label="V8Document_Onprerenderingchange_AttributeGetter"/>
   <int value="4163" label="V8Document_Onprerenderingchange_AttributeSetter"/>
@@ -40274,7 +40274,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="93" label="ClientHintUAFullVersionList"/>
   <int value="94" label="ClientHintUAFull"/>
   <int value="95" label="ClientHintUAWoW64"/>
-  <int value="96" label="ClientHintPartitionedCookies"/>
+  <int value="96" label="Deprecated: ClientHintPartitionedCookies"/>
   <int value="97" label="BrowsingTopics"/>
   <int value="98" label="BrowsingTopicsBackwardCompatible"/>
   <int value="99" label="ClientHintSaveData"/>

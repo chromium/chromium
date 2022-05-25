@@ -480,17 +480,6 @@ void BaseFetchContext::AddClientHintsIfNecessary(
         prefers_color_scheme.value());
   }
 
-  if (ShouldSendClientHint(
-          ClientHintsMode::kStandard, policy, resource_origin, is_1p_origin,
-          network::mojom::blink::WebClientHintsType::kPartitionedCookies,
-          hints_preferences)) {
-    request.SetHttpHeaderField(
-        network::GetClientHintToNameMap()
-            .at(network::mojom::blink::WebClientHintsType::kPartitionedCookies)
-            .c_str(),
-        SerializeBoolHeader(true));
-  }
-
   if (ShouldSendClientHint(ClientHintsMode::kStandard, policy, resource_origin,
                            is_1p_origin,
                            network::mojom::blink::WebClientHintsType::kSaveData,
@@ -708,14 +697,12 @@ bool BaseFetchContext::ShouldSendClientHint(
       base::FeatureList::IsEnabled(features::kAllowClientHintsToThirdParty)) {
     origin_ok = true;
   } else {
-    // For subresource requests, if the parent frame has Sec-CH-UA-Reduced,
-    // Sec-CH-UA-Full, or Sec-CH-Partitioned-Cookies, then send the hint in the
-    // fetch request, regardless of the permissions policy.
+    // For subresource requests, if the parent frame has Sec-CH-UA-Reduced or
+    // Sec-CH-UA-Full then send the hint in the fetch request, regardless of the
+    // permissions policy.
     origin_ok =
         type == network::mojom::blink::WebClientHintsType::kUAReduced ||
         type == network::mojom::blink::WebClientHintsType::kFullUserAgent ||
-        type ==
-            network::mojom::blink::WebClientHintsType::kPartitionedCookies ||
         (policy &&
          policy->IsFeatureEnabledForOrigin(
              GetClientHintToPolicyFeatureMap().at(type), resource_origin));

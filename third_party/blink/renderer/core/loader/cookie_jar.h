@@ -8,6 +8,7 @@
 #include "services/network/public/mojom/restricted_cookie_manager.mojom-blink.h"
 
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -26,6 +27,16 @@ class CookieJar : public GarbageCollected<CookieJar> {
   void SetCookieManager(
       mojo::PendingRemote<network::mojom::blink::RestrictedCookieManager>
           cookie_manager);
+
+  // This function checks subresource requests for the partitioned cookies
+  // origin trial. We only consider requests that:
+  // - have a Set-Cookie header
+  // - have Partitioned in the cookie line
+  // If both of these conditions are met, we check if the response contains an
+  // Origin-Trial header with a valid token. If it does not, we revert that
+  // URL's partitioned cookies to unpartitioned.
+  // TODO(https://crbug.com/1296161): Delete this function.
+  void CheckPartitionedCookiesOriginTrial(const ResourceResponse& response);
 
  private:
   bool RequestRestrictedCookieManagerIfNeeded();
