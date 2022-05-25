@@ -1561,6 +1561,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="History.SqliteDatabaseError" enum="SqliteLoggedResultCode"
+    expires_after="2022-10-23">
+  <owner>sophiechang@chromium.org</owner>
+  <owner>asully@chromium.org</owner>
+  <component>UI&gt;Browser&gt;History</component>
+  <summary>
+    The exact database error encountered when initializing the database, if
+    failed.
+  </summary>
+</histogram>
+
 <histogram name="History.TopSitesRecoveredPercentage" units="%"
     expires_after="M85">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>

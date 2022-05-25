@@ -3180,10 +3180,16 @@ TEST_F(HistoryBackendTest, DeleteFTSIndexDatabases) {
 // Tests that calling DatabaseErrorCallback doesn't cause crash. (Regression
 // test for https://crbug.com/796138)
 TEST_F(HistoryBackendTest, DatabaseError) {
+  base::HistogramTester histogram_tester;
+
   backend_->SetTypedURLSyncBridgeForTest(nullptr);
-  backend_->DatabaseErrorCallback(SQLITE_CORRUPT, nullptr);
+  backend_->DatabaseErrorCallback(SQLITE_CANTOPEN, nullptr);
   // Run loop to let any posted callbacks run before TearDown().
   base::RunLoop().RunUntilIdle();
+
+  histogram_tester.ExpectUniqueSample(
+      "History.DatabaseSqliteError",
+      static_cast<int>(sql::SqliteLoggedResultCode::kCantOpen), 1);
 }
 
 // Tests that calling DatabaseErrorCallback results in killing the database and
