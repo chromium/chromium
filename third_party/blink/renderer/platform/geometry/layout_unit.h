@@ -35,7 +35,6 @@
 #include <iosfwd>
 #include <limits>
 
-#include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
 #include "base/logging.h"

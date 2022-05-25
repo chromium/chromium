@@ -30,7 +30,6 @@
 #include <cstddef>
 #include <limits>
 
-#include "base/check_op.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
