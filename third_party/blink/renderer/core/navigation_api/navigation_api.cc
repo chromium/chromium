@@ -799,6 +799,12 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
   if (!promise_list.IsEmpty()) {
     transition_ = MakeGarbageCollected<NavigationTransition>(
         script_state, navigation_type, currentEntry());
+
+    DCHECK(!params.destination_item || !params.state_object);
+    auto* state_object = params.destination_item
+                             ? params.destination_item->StateObject()
+                             : params.state_object;
+
     // In the spec, the URL and history update steps are not called for reloads.
     // In our implementation, we call the corresponding function anyway, but
     // |type| being a reload type makes it do none of the spec-relevant
@@ -806,8 +812,7 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
     GetSupplementable()->document()->Loader()->RunURLAndHistoryUpdateSteps(
         params.url, params.destination_item,
         mojom::blink::SameDocumentNavigationType::kNavigationApiTransitionWhile,
-        params.state_object, params.frame_load_type,
-        params.is_browser_initiated,
+        state_object, params.frame_load_type, params.is_browser_initiated,
         params.is_synchronously_committed_same_document);
   }
 
