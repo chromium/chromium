@@ -70,6 +70,7 @@ class BrowserSwitcherServiceWin : public BrowserSwitcherService {
   // extension, or from a previous Chrome version. Called during initialization.
   void DeleteSitelistCacheFile();
 
+  void PrefsFileDeleted(bool success);
   void CacheFileUpdated();
   void SitelistCacheFileUpdated();
 
