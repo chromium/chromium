@@ -4,8 +4,8 @@
 
 import './menu_container.js';
 import './search_query.js';
-import './shared_style.js';
-import './shared_vars.js';
+import './history_clusters_shared_style.css.js';
+import './shared_vars.css.js';
 import './url_visit.js';
 import '../../cr_elements/cr_icons_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';

@@ -4,7 +4,7 @@
 
 import './menu_container.js';
 import './page_favicon.js';
-import './shared_style.js';
+import './history_clusters_shared_style.css.js';
 import '../../cr_elements/cr_action_menu/cr_action_menu.js';
 import '../../cr_elements/cr_lazy_render/cr_lazy_render.m.js';
 

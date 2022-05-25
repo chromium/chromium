@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './shared_vars.js';
+import './shared_vars.css.js';
 
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import './cluster.js';
-import './shared_style.js';
+import './history_clusters_shared_style.css.js';
 import '../../cr_elements/cr_button/cr_button.m.js';
 import '../../cr_elements/cr_dialog/cr_dialog.m.js';
 import '../../cr_elements/cr_lazy_render/cr_lazy_render.m.js';

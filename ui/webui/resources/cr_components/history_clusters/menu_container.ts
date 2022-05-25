@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './shared_style.js';
+import './history_clusters_shared_style.css.js';
 import '../../cr_elements/cr_action_menu/cr_action_menu.js';
 import '../../cr_elements/cr_lazy_render/cr_lazy_render.m.js';
 
