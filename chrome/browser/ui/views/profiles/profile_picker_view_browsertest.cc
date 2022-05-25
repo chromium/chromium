@@ -1844,6 +1844,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerLacrosFirstRunBrowserTest,
   // Dummy case to set up the primary profile.
 }
 IN_PROC_BROWSER_TEST_F(ProfilePickerLacrosFirstRunBrowserTest, PRE_QuitEarly) {
+  base::HistogramTester histogram_tester;
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   Profile* profile =
       profile_manager->GetProfile(profile_manager->GetPrimaryUserProfilePath());
@@ -1865,6 +1866,10 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerLacrosFirstRunBrowserTest, PRE_QuitEarly) {
   WaitForPickerClosed();
   EXPECT_EQ(0u, BrowserList::GetInstance()->size());
   EXPECT_TRUE(ShouldOpenPrimaryProfileFirstRun(profile));
+  histogram_tester.ExpectBucketCount(
+      "Profile.LacrosPrimaryProfileFirstRunOutcome",
+      ProfileMetrics::ProfileSignedInFlowOutcome::kAbortedOnEnterpriseWelcome,
+      1);
 }
 IN_PROC_BROWSER_TEST_F(ProfilePickerLacrosFirstRunBrowserTest, QuitEarly) {
   // On the second run, the FRE is still not marked finished and we should
@@ -1882,6 +1887,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerLacrosFirstRunBrowserTest,
   // Dummy case to set up the primary profile.
 }
 IN_PROC_BROWSER_TEST_F(ProfilePickerLacrosFirstRunBrowserTest, PRE_QuitAtEnd) {
+  base::HistogramTester histogram_tester;
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   Profile* profile =
       profile_manager->GetProfile(profile_manager->GetPrimaryUserProfilePath());
@@ -1909,6 +1915,9 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerLacrosFirstRunBrowserTest, PRE_QuitAtEnd) {
   // Because we quit, we should also quit chrome, but mark the FRE finished.
   EXPECT_FALSE(ShouldOpenPrimaryProfileFirstRun(profile));
   EXPECT_EQ(0u, BrowserList::GetInstance()->size());
+  histogram_tester.ExpectBucketCount(
+      "Profile.LacrosPrimaryProfileFirstRunOutcome",
+      ProfileMetrics::ProfileSignedInFlowOutcome::kAbortedAfterSignIn, 1);
 }
 IN_PROC_BROWSER_TEST_F(ProfilePickerLacrosFirstRunBrowserTest, QuitAtEnd) {
   // On the second run, the FRE is marked finished and we should skip it.
@@ -1925,6 +1934,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerLacrosFirstRunBrowserTest, PRE_PRE_OptIn) {
   // Dummy case to set up the primary profile.
 }
 IN_PROC_BROWSER_TEST_F(ProfilePickerLacrosFirstRunBrowserTest, PRE_OptIn) {
+  base::HistogramTester histogram_tester;
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   Profile* profile = profiles::testing::CreateProfileSync(
       profile_manager, profile_manager->GetPrimaryUserProfilePath());
@@ -1953,6 +1963,9 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerLacrosFirstRunBrowserTest, PRE_OptIn) {
   WaitForPickerClosed();
   EXPECT_FALSE(ShouldOpenPrimaryProfileFirstRun(profile));
   EXPECT_EQ(1u, BrowserList::GetInstance()->size());
+  histogram_tester.ExpectBucketCount(
+      "Profile.LacrosPrimaryProfileFirstRunOutcome",
+      ProfileMetrics::ProfileSignedInFlowOutcome::kConsumerSync, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(ProfilePickerLacrosFirstRunBrowserTest, OptIn) {
