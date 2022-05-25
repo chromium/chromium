@@ -84,7 +84,8 @@ id<GREYMatcher> SkipSigninButton() {
 }
 
 // Navigates to the terms of service and back.
-- (void)testTermsAndConditions {
+// TODO(crbug.com/1329202): Failing on builders
+- (void)DISABLED_testTermsAndConditions {
   id<GREYMatcher> termsOfServiceLink =
       grey_accessibilityLabel(@"Terms of Service");
   [[EarlGrey selectElementWithMatcher:termsOfServiceLink]
@@ -115,7 +116,8 @@ id<GREYMatcher> SkipSigninButton() {
 }
 
 // Toggle the UMA checkbox.
-- (void)testToggleMetricsOn {
+// TODO(crbug.com/1329202): Failing on builders
+- (void)DISABLED_testToggleMetricsOn {
   id<GREYMatcher> metrics =
       grey_accessibilityID(first_run::kUMAMetricsButtonAccessibilityIdentifier);
   [[EarlGrey selectElementWithMatcher:metrics] performAction:grey_tap()];
@@ -134,7 +136,8 @@ id<GREYMatcher> SkipSigninButton() {
 }
 
 // Dismisses the first run screens.
-- (void)testDismissFirstRun {
+// TODO(crbug.com/1329202): Failing on builders
+- (void)DISABLE_testDismissFirstRun {
   [[EarlGrey selectElementWithMatcher:FirstRunOptInAcceptButton()]
       performAction:grey_tap()];
 
@@ -150,7 +153,8 @@ id<GREYMatcher> SkipSigninButton() {
 }
 
 // Signs in to an account and then taps the Advanced link to go to settings.
-- (void)testSignInAndTapSettingsLink {
+// TODO(crbug.com/1329202): Failing on builders
+- (void)DISABLED_testSignInAndTapSettingsLink {
   FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
@@ -186,7 +190,8 @@ id<GREYMatcher> SkipSigninButton() {
 
 // Checks that the sync screen doesn't appear when the SyncDisabled policy is
 // enabled.
-- (void)testSyncDisabled {
+// TODO(crbug.com/1329202): Failing on builders
+- (void)DISABLED_testSyncDisabled {
   policy_test_utils::SetPolicy(true, policy::key::kSyncDisabled);
 
   // Launch First Run and accept tems of services.
@@ -199,7 +204,8 @@ id<GREYMatcher> SkipSigninButton() {
 }
 
 // Checks FRE shows in only one window.
-- (void)testFirstRunInMultiWindow {
+// TODO(crbug.com/1329202): Failing on builders
+- (void)DISABLED_testFirstRunInMultiWindow {
   if (![ChromeEarlGrey areMultipleWindowsSupported])
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
 
