@@ -371,10 +371,12 @@ void ShelfConfig::UpdateConfig(bool new_is_app_list_visible,
   // If the virtual keyboard is shown, the back button and in-app shelf should
   // be shown so users can exit the keyboard. SystemTrayModel may be null in
   // tests.
-  const bool new_is_virtual_keyboard_shown =
-      Shell::Get()->system_tray_model()
-          ? Shell::Get()->system_tray_model()->virtual_keyboard()->visible()
-          : false;
+  const bool new_is_virtual_keyboard_shown = Shell::Get()->system_tray_model()
+                                                 ? Shell::Get()
+                                                       ->system_tray_model()
+                                                       ->virtual_keyboard()
+                                                       ->arc_keyboard_visible()
+                                                 : false;
 
   const bool new_is_in_app =
       CalculateIsInApp(new_is_app_list_visible, new_is_virtual_keyboard_shown);

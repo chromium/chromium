@@ -7,13 +7,15 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/keyboard/arc/arc_input_method_bounds_tracker.h"
+#include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
 #include "base/observer_list.h"
 
 namespace ash {
 
 // Model to store virtual keyboard visibility state.
 class ASH_EXPORT VirtualKeyboardModel
-    : public ArcInputMethodBoundsTracker::Observer {
+    : public ArcInputMethodBoundsTracker::Observer,
+      public KeyboardControllerObserver {
  public:
   class Observer {
    public:
@@ -41,14 +43,20 @@ class ASH_EXPORT VirtualKeyboardModel
   // ArcInputMethodBoundsTracker::Observer:
   void OnArcInputMethodBoundsChanged(const gfx::Rect& bounds) override;
 
-  bool visible() const { return visible_; }
+  // KeyboardControllerObserver:
+  void OnKeyboardEnabledChanged(bool is_enabled) override;
+
+  bool arc_keyboard_visible() const { return arc_keyboard_visible_; }
   const gfx::Rect& arc_keyboard_bounds() const { return arc_keyboard_bounds_; }
 
  private:
-  void NotifyChanged();
+  // Sets `arc_keyboard_visible_` depending on last reported ARC input method
+  // bounds and the keyboard controller state. Notifies observes of the
+  // visibility change if the `arc_keyboard_visible_` value changed..
+  void UpdateArcKeyboardVisibility();
 
-  // The visibility of virtual keyboard.
-  bool visible_ = false;
+  // Whether ARC IME keyboard is currently visible..
+  bool arc_keyboard_visible_ = false;
 
   gfx::Rect arc_keyboard_bounds_;
 

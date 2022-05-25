@@ -59,9 +59,9 @@ bool CanStartGoingBackFromSplitViewDivider(const gfx::Point& screen_location) {
   // Same thing for ARC virtual keyboard as well.
   SystemTrayModel* system_tray_model = Shell::Get()->system_tray_model();
   if (system_tray_model) {
-    auto* arc_keyboard = system_tray_model->virtual_keyboard();
-    if (arc_keyboard->visible() &&
-        arc_keyboard->arc_keyboard_bounds().Contains(screen_location)) {
+    auto* virtual_keyboard = system_tray_model->virtual_keyboard();
+    if (virtual_keyboard->arc_keyboard_visible() &&
+        virtual_keyboard->arc_keyboard_bounds().Contains(screen_location)) {
       return false;
     }
   }

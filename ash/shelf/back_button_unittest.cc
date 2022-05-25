@@ -265,7 +265,7 @@ TEST_F(BackButtonTest, BackButtonWithAndroidKeyboard) {
       Shell::Get()->system_tray_model()->virtual_keyboard();
   ASSERT_TRUE(keyboard);
   keyboard->OnArcInputMethodBoundsChanged(gfx::Rect(400, 400));
-  EXPECT_TRUE(keyboard->visible());
+  EXPECT_TRUE(keyboard->arc_keyboard_visible());
 
   EXPECT_TRUE(IsBackButtonVisible());
   ASSERT_TRUE(back_button());

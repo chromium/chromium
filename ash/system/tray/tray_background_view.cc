@@ -804,8 +804,12 @@ gfx::Insets TrayBackgroundView::GetBackgroundInsets() const {
 bool TrayBackgroundView::GetEffectiveVisibility() {
   // When the virtual keyboard is visible, the effective visibility of the view
   // is solely determined by |show_with_virtual_keyboard_|.
-  if (Shell::Get()->system_tray_model()->virtual_keyboard()->visible())
+  if (Shell::Get()
+          ->system_tray_model()
+          ->virtual_keyboard()
+          ->arc_keyboard_visible()) {
     return show_with_virtual_keyboard_;
+  }
 
   if (!visible_preferred_)
     return false;
