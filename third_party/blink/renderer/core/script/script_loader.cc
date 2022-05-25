@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/script/script_loader.h"
 
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
@@ -67,7 +68,6 @@
 #include "third_party/blink/renderer/core/trustedtypes/trusted_types_util.h"
 #include "third_party/blink/renderer/platform/bindings/parkable_string.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object_snapshot.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
@@ -1113,6 +1113,12 @@ void ScriptLoader::FetchModuleScriptTree(
 PendingScript* ScriptLoader::TakePendingScript(
     ScriptSchedulingType scheduling_type) {
   CHECK(prepared_pending_script_);
+
+  // Record usage histograms per script tag.
+  if (element_->GetDocument().Url().ProtocolIsInHTTPFamily()) {
+    base::UmaHistogramEnumeration("Blink.Script.SchedulingType",
+                                  scheduling_type);
+  }
 
   PendingScript* pending_script = prepared_pending_script_;
   prepared_pending_script_ = nullptr;

@@ -2158,6 +2158,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.Script.SchedulingType" enum="ScriptSchedulingType"
+    expires_after="2022-11-25">
+  <owner>kouhei@chromium.org</owner>
+  <owner>hiroshige@chromium.org</owner>
+  <owner>chikamune@chromium.org</owner>
+  <summary>
+    Number of script elements for each scheduling type, recorded when each
+    script loading reaches the #prepare-a-script state defined in the spec, with
+    http or https request.
+
+    Warning: this histogram was expired from 2018-12-31 to 2022-05-25; data may
+    be missing.
+  </summary>
+</histogram>
+
 <histogram name="Blink.Script.SourceTextTime" units="microseconds"
     expires_after="2022-10-18">
   <owner>cduvall@chromium.org</owner>
