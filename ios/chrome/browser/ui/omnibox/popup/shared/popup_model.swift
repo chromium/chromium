@@ -20,6 +20,7 @@ import UIKit
   @Published var sections: [PopupMatchSection]
 
   @Published var highlightedMatchIndexPath: IndexPath?
+  @Published var rtlContentAttribute: UISemanticContentAttribute = .forceLeftToRight
 
   /// Index of the preselected section when no row is highlighted.
   var preselectedSectionIndex: Int
@@ -56,7 +57,9 @@ import UIKit
   }
 
   public func setTextAlignment(_ alignment: NSTextAlignment) {}
-  public func setSemanticContentAttribute(_ semanticContentAttribute: UISemanticContentAttribute) {}
+  public func setSemanticContentAttribute(_ semanticContentAttribute: UISemanticContentAttribute) {
+    rtlContentAttribute = semanticContentAttribute
+  }
 }
 
 // MARK: OmniboxSuggestionCommands

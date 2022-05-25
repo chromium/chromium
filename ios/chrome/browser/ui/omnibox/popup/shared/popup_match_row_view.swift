@@ -82,7 +82,7 @@ struct PopupMatchRowView: View {
       Spacer().frame(
         width: leadingMarginForRowContent + spaceBetweenRowContentLeadingEdgeAndSuggestionText)
       customSeparatorColor.frame(height: 0.5)
-    }.environment(\.layoutDirection, .leftToRight)
+    }
   }
 
   @Environment(\.layoutDirection) var layoutDirection: LayoutDirection
@@ -90,9 +90,9 @@ struct PopupMatchRowView: View {
   var leadingMarginForRowContent: CGFloat {
     switch uiVariation {
     case .one:
-      return uiConfiguration.omniboxLeadingSpace
+      return uiConfiguration.omniboxLeadingSpace + 7
     case .two:
-      return 0
+      return 8
     }
   }
 
@@ -111,6 +111,15 @@ struct PopupMatchRowView: View {
       return uiConfiguration.omniboxLeadingImageLeadingSpace
     case .two:
       return 30
+    }
+  }
+
+  var spaceBetweenTextAndImage: CGFloat {
+    switch uiVariation {
+    case .one:
+      return 14
+    case .two:
+      return 15
     }
   }
 
@@ -148,20 +157,18 @@ struct PopupMatchRowView: View {
       // The content is in front of the button, for proper hit testing.
       HStack(alignment: .center, spacing: 0) {
         Color.clear.frame(width: leadingMarginForRowContent)
-        HStack(alignment: .center, spacing: 0) {
-          Color.clear.frame(
-            width: spaceBetweenRowContentLeadingEdgeAndCenterOfSuggestionImage
-              - PopupMatchImageView.Dimension.image / 2)
-          match.image
-            .map { image in
-              PopupMatchImageView(
-                image: image, highlightColor: highlightColor
-              )
-              .accessibilityHidden(true)
-              .clipShape(RoundedRectangle(cornerRadius: 7, style: .continuous))
-            }
-          Spacer()
-        }.frame(width: spaceBetweenRowContentLeadingEdgeAndSuggestionText)
+
+        match.image
+          .map { image in
+            PopupMatchImageView(
+              image: image, highlightColor: highlightColor
+            )
+            .accessibilityHidden(true)
+            .clipShape(RoundedRectangle(cornerRadius: 7, style: .continuous))
+          }
+
+        Color.clear.frame(width: spaceBetweenTextAndImage)
+
         VStack(alignment: .leading, spacing: 0) {
           VStack(alignment: .leading, spacing: 0) {
             GradientTextView(match.text, highlightColor: highlightColor)
@@ -190,14 +197,13 @@ struct PopupMatchRowView: View {
         if match.isAppendable || match.isTabMatch {
           PopupMatchTrailingButton(match: match, action: trailingButtonHandler)
             .foregroundColor(isHighlighted ? highlightColor : .chromeBlue)
-            .environment(\.layoutDirection, layoutDirection)
         }
         Color.clear.frame(width: trailingMarginForRowContent)
       }
       .padding(
         uiVariation == .one ? Dimensions.VariationOne.padding : Dimensions.VariationTwo.padding
       )
-      .environment(\.layoutDirection, .leftToRight)
+      .environment(\.layoutDirection, layoutDirection)
     }
     .frame(maxWidth: .infinity, minHeight: Dimensions.minHeight)
   }

@@ -116,4 +116,15 @@ protocol PublishedWrapper {
     UIConfiguration.omniboxTextFieldLeadingSpace = 140
     return UIConfiguration
   }
+
+  public override var description: String {
+    var description = "\(type(of: self)): "
+    description += "omniboxLeadingSpace=\(omniboxLeadingSpace), "
+    description += "omniboxTrailingSpace=\(omniboxTrailingSpace), "
+    description += "safeAreaTrailingSpace=\(safeAreaTrailingSpace), "
+    description += "omniboxLeadingImageLeadingSpace=\(omniboxLeadingImageLeadingSpace), "
+    description += "omniboxTextFieldLeadingSpace=\(omniboxTextFieldLeadingSpace), "
+    description += ";"
+    return description
+  }
 }

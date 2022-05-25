@@ -160,6 +160,15 @@ struct PopupView: View {
   @ViewBuilder func sectionContents(
     _ sectionIndex: Int, _ section: PopupMatchSection, _ geometry: GeometryProxy
   ) -> some View {
+
+    let layoutDirection =
+      (model.rtlContentAttribute == .unspecified)
+      ? (UIApplication.shared.userInterfaceLayoutDirection
+        == UIUserInterfaceLayoutDirection.leftToRight
+        ? LayoutDirection.leftToRight : LayoutDirection.rightToLeft)
+      : ((model.rtlContentAttribute == .forceLeftToRight)
+        ? LayoutDirection.leftToRight : LayoutDirection.rightToLeft)
+
     ForEach(Array(zip(section.matches.indices, section.matches)), id: \.0) {
       matchIndex, match in
       let indexPath = IndexPath(row: matchIndex, section: sectionIndex)
@@ -286,7 +295,6 @@ struct PopupView: View {
   var body: some View {
     listView
       .onAppear(perform: onAppear)
-      .environment(\.layoutDirection, .leftToRight)
   }
 
   @ViewBuilder
@@ -439,6 +447,12 @@ struct PopupView_Previews: PreviewProvider {
     let sample = PopupView(
       model: model(), uiConfiguration: PopupUIConfiguration.previewsConfiguration()
     ).previewDevice(PreviewDevice(rawValue: "iPhone 13 mini"))
+
+    sample.environment(\.popupUIVariation, .one)
+      .environment(\.locale, .init(identifier: "ar"))
+
+    sample.environment(\.popupUIVariation, .two)
+      .environment(\.locale, .init(identifier: "ar"))
 
     sample.environment(\.popupUIVariation, .one)
     sample.environment(\.popupUIVariation, .two)
