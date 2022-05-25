@@ -178,7 +178,6 @@ void ChromeFeaturesServiceProvider::IsFeatureEnabled(
       &arc::kNativeBridgeToggleFeature,
       &features::kSessionManagerLongKillTimeout,
       &features::kSessionManagerLivenessCheck,
-      &features::kCrostiniUseDlc,
   };
 
   dbus::MessageReader reader(method_call);

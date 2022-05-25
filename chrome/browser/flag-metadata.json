@@ -1054,11 +1054,6 @@
     "expiry_milestone": 110
   },
   {
-    "name": "crostini-use-dlc",
-    "owners": [ "sidereal", "davidmunro@google.com", "nverne" ],
-    "expiry_milestone": 100
-  },
-  {
     "name": "crostini-use-lxd-4",
     "owners": [ "sidereal", "davidmunro@google.com", "nverne" ],
     "expiry_milestone": 110

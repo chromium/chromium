@@ -4437,11 +4437,6 @@ const char kCrostiniContainerInstallDescription[] =
 const char kCrostiniGpuSupportName[] = "Crostini GPU Support";
 const char kCrostiniGpuSupportDescription[] = "Enable Crostini GPU support.";
 
-const char kCrostiniUseDlcName[] = "Crostini Use DLC";
-const char kCrostiniUseDlcDescription[] =
-    "Download the termina VM using the new DLC service instead of the old "
-    "component updater.";
-
 const char kCrostiniResetLxdDbName[] = "Crostini Reset LXD DB on launch";
 const char kCrostiniResetLxdDbDescription[] =
     "Recreates the LXD database every time we launch it";

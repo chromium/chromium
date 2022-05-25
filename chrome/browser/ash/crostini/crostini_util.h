@@ -103,10 +103,6 @@ bool ShouldAllowContainerUpgrade(Profile* profile);
 // the configuration specified by CrostiniAnsiblePlaybook user policy.
 bool ShouldConfigureDefaultContainer(Profile* profile);
 
-// Returns whether a dialog from Crostini is blocking the immediate launch.
-bool MaybeShowCrostiniDialogBeforeLaunch(Profile* profile,
-                                         CrostiniResult result);
-
 using LaunchArg = absl::variant<storage::FileSystemURL, std::string>;
 
 // Launch a Crostini App with a given set of files, given as absolute paths in
@@ -162,10 +158,6 @@ views::Widget* ShowCrostiniForceCloseDialog(
     const std::string& app_name,
     views::Widget* closable_widget,
     base::OnceClosure force_close_callback);
-// Shows the Crostini Termina Upgrade dialog (for blocking crostini start until
-// Termina version matches).
-void ShowCrostiniUpdateComponentView(Profile* profile,
-                                     CrostiniUISurface ui_surface);
 // Shows the ui with the error message when installing a package fails.
 void ShowCrostiniPackageInstallFailureView(const std::string& error_message);
 

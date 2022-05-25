@@ -3862,7 +3862,6 @@ if (!is_android) {
         "../browser/ui/views/crostini/crostini_package_install_failure_view_browsertest.cc",
         "../browser/ui/views/crostini/crostini_recovery_view_browsertest.cc",
         "../browser/ui/views/crostini/crostini_uninstaller_view_browsertest.cc",
-        "../browser/ui/views/crostini/crostini_update_component_view_browsertest.cc",
         "../browser/ui/views/crostini/crostini_update_filesystem_view_browsertest.cc",
         "../browser/ui/views/extensions/extension_dialog_bounds_browsertest.cc",
         "../browser/ui/views/frame/browser_frame_ash_browsertest.cc",

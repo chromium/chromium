@@ -2462,8 +2462,6 @@ static_library("ui") {
       "views/crostini/crostini_recovery_view.h",
       "views/crostini/crostini_uninstaller_view.cc",
       "views/crostini/crostini_uninstaller_view.h",
-      "views/crostini/crostini_update_component_view.cc",
-      "views/crostini/crostini_update_component_view.h",
       "views/crostini/crostini_update_filesystem_view.cc",
       "views/crostini/crostini_update_filesystem_view.h",
       "views/extensions/request_file_system_dialog_view.cc",

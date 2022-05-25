@@ -366,10 +366,6 @@ const base::Feature kCrostiniResetLxdDb{"CrostiniResetLxdDb",
 const base::Feature kCrostiniUseLxd4{"CrostiniUseLxd4",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Use DLC instead of component updater for managing the Termina image if set
-// (and component updater instead of DLC if not).
-const base::Feature kCrostiniUseDlc{"CrostiniUseDlc",
-                                    base::FEATURE_ENABLED_BY_DEFAULT};
 // Enables experimental UI creating and managing multiple Crostini containers.
 const base::Feature kCrostiniMultiContainer{"CrostiniMultiContainer",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
