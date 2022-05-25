@@ -33,6 +33,8 @@ VisitRow::VisitRow(URLID arg_url_id,
 
 VisitRow::~VisitRow() = default;
 
+VisitRow::VisitRow(const VisitRow&) = default;
+
 // QueryResults ----------------------------------------------------------------
 
 QueryResults::QueryResults() = default;

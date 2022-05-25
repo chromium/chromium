@@ -312,7 +312,7 @@ class URLDatabase {
   // be used in between CreateTemporaryURLTable() and CommitTemporaryURLTable().
   URLID AddURLInternal(const URLRow& info, bool is_temporary);
 
-  // Return ture if the urls table's schema contains "AUTOINCREMENT".
+  // Return true if the urls table's schema contains "AUTOINCREMENT".
   // false if table do not contain AUTOINCREMENT, or the table is not created.
   bool URLTableContainsAutoincrement();
 

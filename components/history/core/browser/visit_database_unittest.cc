@@ -32,7 +32,9 @@ bool IsVisitInfoEqual(const VisitRow& a, const VisitRow& b) {
          a.visit_time == b.visit_time &&
          a.referring_visit == b.referring_visit &&
          ui::PageTransitionTypeIncludingQualifiersIs(a.transition,
-                                                     b.transition);
+                                                     b.transition) &&
+         a.originator_cache_guid == b.originator_cache_guid &&
+         a.originator_visit_id == b.originator_visit_id;
 }
 
 }  // namespace
@@ -76,6 +78,9 @@ TEST_F(VisitDatabaseTest, Add) {
   VisitRow visit_info2(visit_info1.url_id,
                        visit_info1.visit_time + base::Seconds(1), 1,
                        ui::PAGE_TRANSITION_TYPED, 0, true, 0);
+  // Verify we can fetch originator data too.
+  visit_info2.originator_cache_guid = "foobar_client";
+  visit_info2.originator_visit_id = 42;
   EXPECT_TRUE(AddVisit(&visit_info2, SOURCE_BROWSED));
 
   // Add third visit for a different page.
@@ -145,6 +150,8 @@ TEST_F(VisitDatabaseTest, Update) {
   modification.transition = ui::PAGE_TRANSITION_TYPED;
   modification.visit_time = Time::Now() + base::Days(1);
   modification.referring_visit = 9292;
+  modification.originator_cache_guid = "foobar_client";
+  modification.originator_visit_id = 42;
   UpdateVisitRow(modification);
 
   // Check that the mutated version was written.

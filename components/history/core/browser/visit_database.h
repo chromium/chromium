@@ -277,6 +277,16 @@ class VisitDatabase {
   // column which is no longer used.
   bool MigrateVisitsWithoutOpenerVisitColumnAndDropPubliclyRoutableColumn();
 
+  // Called by the derived classes to migrate the older visits table which
+  // which aren't ready to accommodate Sync. It sets `id` to AUTOINCREMENT, and
+  // ensures the existence of the `originator_cache_guid` and
+  // `originator_visit_id` columns.
+  bool MigrateVisitsAutoincrementIdAndAddOriginatorColumns();
+
+  // Return true if the visits table's schema contains "AUTOINCREMENT".
+  // false if table do not contain AUTOINCREMENT, or the table is not created.
+  bool VisitTableContainsAutoincrement();
+
   // A subprocedure in the process of migration to version 40.
   bool GetAllVisitedURLRowidsForMigrationToVersion40(
       std::vector<URLID>* visited_url_rowids_sorted);
@@ -285,7 +295,8 @@ class VisitDatabase {
 // Columns, in order, of the visit table.
 #define HISTORY_VISIT_ROW_FIELDS                                        \
   " id,url,visit_time,from_visit,transition,segment_id,visit_duration," \
-  "incremented_omnibox_typed_score,opener_visit "
+  "incremented_omnibox_typed_score,opener_visit,originator_cache_guid," \
+  "originator_visit_id "
 
 }  // namespace history
 

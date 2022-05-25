@@ -111,7 +111,13 @@ bool VisitDatabase::InitVisitTable() {
     // for each row.
     if (!GetDB().Execute(
             "CREATE TABLE visits("
-            "id INTEGER PRIMARY KEY,"
+            // The `id` uses AUTOINCREMENT to support Sync. Chrome Sync uses the
+            // `id` in conjunction with the Client ID as a unique identifier.
+            // If this was not AUTOINCREMENT, deleting a row and creating a new
+            // one could reuse the same `id` for an entirely new visit, which
+            // would confuse Sync, as Sync would be unable to distinguish
+            // an update from a deletion plus a creation.
+            "id INTEGER PRIMARY KEY AUTOINCREMENT,"
             "url INTEGER NOT NULL,"  // key of the URL this corresponds to
             "visit_time INTEGER NOT NULL,"
             "from_visit INTEGER,"
@@ -121,7 +127,16 @@ bool VisitDatabase::InitVisitTable() {
             // longer used and should NOT be read or written from any longer.
             "visit_duration INTEGER DEFAULT 0 NOT NULL,"
             "incremented_omnibox_typed_score BOOLEAN DEFAULT FALSE NOT NULL,"
-            "opener_visit INTEGER)"))
+            "opener_visit INTEGER,"
+            // These two fields are non-null only for remote visits synced to
+            // the local machine. The `originator_cache_guid` is the unique
+            // identifier for the originator machine the visit was originally
+            // made on, and `originator_visit_id` is the `id` of the visit row
+            // as originally assigned by AUTOINCREMENT on the originator.
+            // The tuple of (`originator_cache_guid`, `origin_visit_id`) is
+            // globally unique.
+            "originator_cache_guid TEXT,"
+            "originator_visit_id INTEGER)"))
       return false;
   }
 
@@ -175,6 +190,8 @@ void VisitDatabase::FillVisitRow(sql::Statement& statement, VisitRow* visit) {
       base::TimeDelta::FromInternalValue(statement.ColumnInt64(6));
   visit->incremented_omnibox_typed_score = statement.ColumnBool(7);
   visit->opener_visit = statement.ColumnInt64(8);
+  visit->originator_cache_guid = statement.ColumnString(9);
+  visit->originator_visit_id = statement.ColumnInt64(10);
 }
 
 // static
@@ -234,8 +251,9 @@ VisitID VisitDatabase::AddVisit(VisitRow* visit, VisitSource source) {
       SQL_FROM_HERE,
       "INSERT INTO visits "
       "(url, visit_time, from_visit, transition, segment_id, "
-      "visit_duration, incremented_omnibox_typed_score, opener_visit) "
-      "VALUES (?,?,?,?,?,?,?,?)"));
+      "visit_duration, incremented_omnibox_typed_score, opener_visit,"
+      "originator_cache_guid,originator_visit_id) "
+      "VALUES (?,?,?,?,?,?,?,?,?,?)"));
   statement.BindInt64(0, visit->url_id);
   statement.BindInt64(1, visit->visit_time.ToInternalValue());
   statement.BindInt64(2, visit->referring_visit);
@@ -244,6 +262,8 @@ VisitID VisitDatabase::AddVisit(VisitRow* visit, VisitSource source) {
   statement.BindInt64(5, visit->visit_duration.ToInternalValue());
   statement.BindBool(6, visit->incremented_omnibox_typed_score);
   statement.BindInt64(7, visit->opener_visit);
+  statement.BindString(8, visit->originator_cache_guid);
+  statement.BindInt64(9, visit->originator_visit_id);
 
   if (!statement.Run()) {
     DVLOG(0) << "Failed to execute visit insert statement:  "
@@ -325,7 +345,8 @@ bool VisitDatabase::UpdateVisitRow(const VisitRow& visit) {
       SQL_FROM_HERE,
       "UPDATE visits SET "
       "url=?,visit_time=?,from_visit=?,transition=?,segment_id=?,"
-      "visit_duration=?,incremented_omnibox_typed_score=?,opener_visit=? "
+      "visit_duration=?,incremented_omnibox_typed_score=?,opener_visit=?,"
+      "originator_cache_guid=?,originator_visit_id=? "
       "WHERE id=?"));
   statement.BindInt64(0, visit.url_id);
   statement.BindInt64(1, visit.visit_time.ToInternalValue());
@@ -335,7 +356,9 @@ bool VisitDatabase::UpdateVisitRow(const VisitRow& visit) {
   statement.BindInt64(5, visit.visit_duration.ToInternalValue());
   statement.BindBool(6, visit.incremented_omnibox_typed_score);
   statement.BindInt64(7, visit.opener_visit);
-  statement.BindInt64(8, visit.visit_id);
+  statement.BindString(8, visit.originator_cache_guid);
+  statement.BindInt64(9, visit.originator_visit_id);
+  statement.BindInt64(10, visit.visit_id);
 
   return statement.Run();
 }
@@ -1059,6 +1082,67 @@ bool VisitDatabase::
          GetDB().Execute("DROP TABLE visits") &&
          GetDB().Execute("ALTER TABLE visits_tmp RENAME TO visits") &&
          transaction.Commit();
+}
+
+bool VisitDatabase::MigrateVisitsAutoincrementIdAndAddOriginatorColumns() {
+  if (!GetDB().DoesTableExist("visits")) {
+    NOTREACHED() << " Visits table should exist before migration";
+    return false;
+  }
+
+  if (GetDB().DoesColumnExist("visits", "originator_cache_guid") &&
+      GetDB().DoesColumnExist("visits", "originator_visit_id") &&
+      VisitTableContainsAutoincrement()) {
+    return true;
+  }
+
+  sql::Transaction transaction(&GetDB());
+  return transaction.Begin() &&
+         GetDB().Execute(
+             "CREATE TABLE visits_tmp("
+             "id INTEGER PRIMARY KEY AUTOINCREMENT,"
+             "url INTEGER NOT NULL,"  // key of the URL this corresponds to
+             "visit_time INTEGER NOT NULL,"
+             "from_visit INTEGER,"
+             "transition INTEGER DEFAULT 0 NOT NULL,"
+             "segment_id INTEGER,"
+             "visit_duration INTEGER DEFAULT 0 NOT NULL,"
+             "incremented_omnibox_typed_score BOOLEAN DEFAULT FALSE NOT NULL,"
+             "opener_visit INTEGER)") &&
+         GetDB().Execute(
+             "INSERT INTO visits_tmp SELECT "
+             "id, url, visit_time, from_visit, transition, segment_id, "
+             "visit_duration, incremented_omnibox_typed_score, opener_visit "
+             "FROM visits") &&
+         GetDB().Execute(
+             "ALTER TABLE visits_tmp ADD COLUMN originator_cache_guid TEXT") &&
+         GetDB().Execute(
+             "ALTER TABLE visits_tmp ADD COLUMN originator_visit_id INTEGER") &&
+         GetDB().Execute("DROP TABLE visits") &&
+         GetDB().Execute("ALTER TABLE visits_tmp RENAME TO visits") &&
+         transaction.Commit();
+}
+
+bool VisitDatabase::VisitTableContainsAutoincrement() {
+  // sqlite_schema has columns:
+  //   type - "index" or "table".
+  //   name - name of created element.
+  //   tbl_name - name of element, or target table in case of index.
+  //   rootpage - root page of the element in database file.
+  //   sql - SQL to create the element.
+  sql::Statement statement(
+      GetDB().GetUniqueStatement("SELECT sql FROM sqlite_schema WHERE type = "
+                                 "'table' AND name = 'visits'"));
+
+  // visits table does not exist.
+  if (!statement.Step())
+    return false;
+
+  std::string urls_schema = statement.ColumnString(0);
+  // We check if the whole schema contains "AUTOINCREMENT", since
+  // "AUTOINCREMENT" only can be used for "INTEGER PRIMARY KEY", so we assume no
+  // other columns could contain "AUTOINCREMENT".
+  return urls_schema.find("AUTOINCREMENT") != std::string::npos;
 }
 
 bool VisitDatabase::GetAllVisitedURLRowidsForMigrationToVersion40(

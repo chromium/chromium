@@ -192,6 +192,7 @@ bundle_data("unit_tests_bundle_data") {
     "//components/test/data/history/history.52.sql",
     "//components/test/data/history/history.53.sql",
     "//components/test/data/history/history.54.sql",
+    "//components/test/data/history/history.55.sql",
     "//components/test/data/history/thumbnail_wild/Favicons.corrupt_meta.disable",
     "//components/test/data/history/thumbnail_wild/Favicons.v2.init.sql",
     "//components/test/data/history/thumbnail_wild/Favicons.v3.init.sql",

@@ -70,6 +70,7 @@ class VisitRow {
            bool arg_incremented_omnibox_typed_score,
            VisitID arg_opener_visit);
   ~VisitRow();
+  VisitRow(const VisitRow&);
 
   // Compares two visits based on dates, for sorting.
   bool operator<(const VisitRow& other) const {
@@ -115,6 +116,12 @@ class VisitRow {
   // whereas `referring_visit` is only populated if the Referrer is from the
   // same tab.
   VisitID opener_visit = 0;
+
+  // These are set only for synced visits originating from a different machine.
+  // `originator_cache_guid` is the originator machine's unique client ID. It's
+  // called a "cache" just to match Chrome Sync's terminology.
+  std::string originator_cache_guid;
+  VisitID originator_visit_id = 0;
 
   // We allow the implicit copy constructor and operator=.
 };
