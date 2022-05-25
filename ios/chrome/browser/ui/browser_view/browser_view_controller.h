@@ -79,7 +79,9 @@ class PrerenderService;
 // Handler for reauth commands.
 @property(nonatomic, weak) id<IncognitoReauthCommands> reauthHandler;
 
-// Returns whether or not text to speech is playing.
+// TODO(crbug.com/1329104): Move voice search controller/coordinator to
+// BrowserCoordinator, remove this as a public property. Returns whether or not
+// text to speech is playing.
 @property(nonatomic, assign, readonly, getter=isPlayingTTS) BOOL playingTTS;
 
 // The container used for infobar banner overlays.
@@ -133,6 +135,7 @@ class PrerenderService;
 // intended to be called before setWebUsageSuspended:NO in cases where a new tab
 // is about to appear in order to allow the BVC to avoid doing unnecessary work
 // related to showing the previously selected tab.
+// TODO(crbug.com/1329109): Move this to a browser agent or web event mediator.
 - (void)expectNewForegroundTab;
 
 // Shows the voice search UI.

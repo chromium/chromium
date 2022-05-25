@@ -11,12 +11,14 @@ namespace web {
 class WebState;
 }  // namespace web
 
-// Helper for the BrowserViewController.
+// TODO(crbug.com/1329102): Remove this class and make these method free helper
+// functions in the correct domains. Helper for the BrowserViewController.
 @interface BrowserViewControllerHelper : NSObject
 
 // Returns true if the current tab of |webState| is currently loading.
 - (BOOL)isToolbarLoading:(web::WebState*)webState;
 
+// TODO(crbug.com/1329102): Remove this method; it's unused.
 // Returns true if |webState|'s current tab's URL is bookmarked, either by the
 // user or by a managed bookmarks.
 - (BOOL)isWebStateBookmarked:(web::WebState*)webState;

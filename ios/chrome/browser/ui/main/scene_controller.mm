@@ -2217,6 +2217,8 @@ bool IsSigninForcedByPolicy() {
   BrowserViewController* backgroundBVC =
       self.mainInterface == self.currentInterface ? self.incognitoInterface.bvc
                                                   : self.mainInterface.bvc;
+  // TODO(crbug.com/1329104): playingTTS will be removed as an API from the BVC
+  // and something else will be used instead.
   if (backgroundBVC.playingTTS)
     [backgroundBVC startVoiceSearch];
   else
