@@ -97,7 +97,6 @@ TEST_F(UserNoteUICoordinatorTest, ShowEmptyUserNoteSidePanel) {
   EXPECT_TRUE(browser_view()->right_aligned_side_panel()->GetVisible());
 
   coordinator_->Show(SidePanelEntry::Id::kUserNote);
-  user_note_ui_coordinator_->Invalidate();
 
   SidePanelEntry::Id entry_id = coordinator_->GetLastActiveEntryId().value();
   EXPECT_EQ(entry_id, SidePanelEntry::Id::kUserNote);
@@ -126,7 +125,6 @@ TEST_F(UserNoteUICoordinatorTest, PopulateUserNoteSidePanel) {
   }
 
   coordinator_->Show(SidePanelEntry::Id::kUserNote);
-  user_note_ui_coordinator_->Invalidate();
 
   auto* scroll_view = GetUserNoteScrollView();
   EXPECT_EQ(scroll_view->contents()->children().size(), 3u);
@@ -160,7 +158,6 @@ TEST_F(UserNoteUICoordinatorTest, AddNoteMiddleUserSidePanel) {
   }
 
   coordinator_->Show(SidePanelEntry::Id::kUserNote);
-  user_note_ui_coordinator_->Invalidate();
 
   auto* scroll_view = GetUserNoteScrollView();
   EXPECT_EQ(scroll_view->contents()->children().size(), 2u);
@@ -201,7 +198,6 @@ TEST_F(UserNoteUICoordinatorTest, AddNoteEndUserSidePanel) {
   }
 
   coordinator_->Show(SidePanelEntry::Id::kUserNote);
-  user_note_ui_coordinator_->Invalidate();
 
   auto* scroll_view = GetUserNoteScrollView();
   EXPECT_EQ(scroll_view->contents()->children().size(), 3u);
@@ -248,7 +244,6 @@ TEST_F(UserNoteUICoordinatorTest, MAYBE_RemoveMiddleUserSidePanel) {
   }
 
   coordinator_->Show(SidePanelEntry::Id::kUserNote);
-  user_note_ui_coordinator_->Invalidate();
 
   auto* scroll_view = GetUserNoteScrollView();
   EXPECT_EQ(scroll_view->contents()->children().size(), 3u);
@@ -292,7 +287,6 @@ TEST_F(UserNoteUICoordinatorTest, MAYBE_RemoveEndUserSidePanel) {
   }
 
   coordinator_->Show(SidePanelEntry::Id::kUserNote);
-  user_note_ui_coordinator_->Invalidate();
 
   auto* scroll_view = GetUserNoteScrollView();
   EXPECT_EQ(scroll_view->contents()->children().size(), 3u);
@@ -336,7 +330,6 @@ TEST_F(UserNoteUICoordinatorTest, MAYBE_RemoveAllNoteUserSidePanel) {
   }
 
   coordinator_->Show(SidePanelEntry::Id::kUserNote);
-  user_note_ui_coordinator_->Invalidate();
 
   auto* scroll_view = GetUserNoteScrollView();
   EXPECT_EQ(scroll_view->contents()->children().size(), 3u);

@@ -8,6 +8,8 @@
 
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/user_note/user_note_view.h"
@@ -145,6 +147,9 @@ void UserNoteUICoordinator::ScrollToNote() {
 }
 
 void UserNoteUICoordinator::Invalidate() {
+  if (!scroll_view_)
+    return;
+
   if (!browser_->tab_strip_model()->GetActiveWebContents()) {
     scroll_view_->contents()->RemoveAllChildViews();
     return;
@@ -224,16 +229,17 @@ void UserNoteUICoordinator::Invalidate() {
 }
 
 void UserNoteUICoordinator::Show() {
-  // TODO(cheickcisse): Implement Show, which will be called by UserNoteService
-  // to open notes in the side panel.
+  auto* side_panel_coordinator =
+      BrowserView::GetBrowserViewForBrowser(browser_)->side_panel_coordinator();
+  side_panel_coordinator->Show(SidePanelEntry::Id::kUserNote);
 }
 
 void UserNoteUICoordinator::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
-  // TODO(cheickcisse): Implement OnTabStripModelChanged, which should call
-  // Invalidate() to poll the latest list of notes to display.
+  if (selection.active_tab_changed())
+    Invalidate();
 }
 
 std::unique_ptr<views::View> UserNoteUICoordinator::CreateUserNotesView() {
@@ -268,6 +274,7 @@ std::unique_ptr<views::View> UserNoteUICoordinator::CreateUserNotesView() {
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kStretch);
 
+  Invalidate();
   return root_view;
 }
 
