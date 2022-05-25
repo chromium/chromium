@@ -200,6 +200,12 @@ public class RootUiCoordinator
      */
     private @Nullable IncognitoReauthController mIncognitoReauthController;
     /**
+     * An {@link OneshotSupplierImpl} of the {@link IncognitoReauthController} that can be used by
+     * clients to check to see if a re-auth is being shown or not.
+     */
+    private OneshotSupplierImpl<IncognitoReauthController>
+            mIncognitoReauthControllerOneshotSupplier = new OneshotSupplierImpl<>();
+    /**
      * A Callback controller that is fired when the {@link TabSwitcherCustomViewManager} is made
      * available.
      */
@@ -772,6 +778,7 @@ public class RootUiCoordinator
         mIncognitoReauthController = new IncognitoReauthController(tabModelSelector,
                 mActivityLifecycleDispatcher, mLayoutStateProviderOneShotSupplier, mProfileSupplier,
                 incognitoReauthCoordinatorFactory);
+        mIncognitoReauthControllerOneshotSupplier.set(mIncognitoReauthController);
     }
 
     private void initHistoryClustersCoordinator(Profile profile) {
@@ -1360,6 +1367,10 @@ public class RootUiCoordinator
         mBottomSheetController.addObserver(mContextualSearchSuppressor);
     }
 
+    public OneshotSupplier<IncognitoReauthController> getIncognitoReauthControllerSupplier() {
+        return mIncognitoReauthControllerOneshotSupplier;
+    }
+
     // Testing methods
 
     @VisibleForTesting
@@ -1372,12 +1383,9 @@ public class RootUiCoordinator
         return mScrimCoordinator;
     }
 
+    @VisibleForTesting
     public OneshotSupplier<LayoutStateProvider> getLayoutStateProviderForTesting() {
         return mLayoutStateProviderOneShotSupplier;
-    }
-
-    public IncognitoReauthController getIncognitoReauthControllerForTesting() {
-        return mIncognitoReauthController;
     }
 
     @VisibleForTesting

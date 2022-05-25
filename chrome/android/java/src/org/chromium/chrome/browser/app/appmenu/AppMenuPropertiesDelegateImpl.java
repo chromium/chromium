@@ -48,6 +48,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsController;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
+import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
@@ -114,6 +115,8 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     protected final TabModelSelector mTabModelSelector;
     protected final ToolbarManager mToolbarManager;
     protected final View mDecorView;
+
+    private CallbackController mIncognitoReauthCallbackController = new CallbackController();
     private CallbackController mCallbackController = new CallbackController();
     private ObservableSupplier<BookmarkBridge> mBookmarkBridgeSupplier;
     private boolean mUpdateMenuItemVisible;
@@ -122,6 +125,11 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     private int mAddAppTitleShown;
     private Map<CustomViewBinder, Integer> mCustomViewTypeOffsetMap;
     private boolean mIsTypeSpecificBookmarkItemRowPresent;
+    /**
+     * This is non null for the case of ChromeTabbedActivity when the corresponding {@link
+     * CallbackController} has been fired.
+     */
+    private @Nullable IncognitoReauthController mIncognitoReauthController;
 
     @VisibleForTesting
     @IntDef({MenuGroup.INVALID, MenuGroup.PAGE_MENU, MenuGroup.OVERVIEW_MODE_MENU,
@@ -172,14 +180,17 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
      *         {@link LayoutStateProvider} associated with the containing activity.
      * @param startSurfaceSupplier An {@link OneshotSupplier} for the Start surface.
      * @param bookmarkBridgeSupplier An {@link ObservableSupplier} for the {@link BookmarkBridge}
-     *         associated with the containing activity.
+     * @param incognitoReauthControllerOneshotSupplier An {@link OneshotSupplier} for the {@link
+     *         IncognitoReauthController} which is not null for tabbed Activity.
      */
     public AppMenuPropertiesDelegateImpl(Context context, ActivityTabProvider activityTabProvider,
             MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
             TabModelSelector tabModelSelector, ToolbarManager toolbarManager, View decorView,
             @Nullable OneshotSupplier<LayoutStateProvider> layoutStateProvidersSupplier,
             @Nullable OneshotSupplier<StartSurface> startSurfaceSupplier,
-            ObservableSupplier<BookmarkBridge> bookmarkBridgeSupplier) {
+            ObservableSupplier<BookmarkBridge> bookmarkBridgeSupplier,
+            @Nullable OneshotSupplier<IncognitoReauthController>
+                    incognitoReauthControllerOneshotSupplier) {
         mContext = context;
         mIsTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext);
         mActivityTabProvider = activityTabProvider;
@@ -187,6 +198,13 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
         mTabModelSelector = tabModelSelector;
         mToolbarManager = toolbarManager;
         mDecorView = decorView;
+
+        if (incognitoReauthControllerOneshotSupplier != null) {
+            incognitoReauthControllerOneshotSupplier.onAvailable(
+                    mIncognitoReauthCallbackController.makeCancelable(incognitoReauthController -> {
+                        mIncognitoReauthController = incognitoReauthController;
+                    }));
+        }
 
         if (layoutStateProvidersSupplier != null) {
             layoutStateProvidersSupplier.onAvailable(mCallbackController.makeCancelable(
@@ -567,11 +585,15 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
             }
 
             if (item.getItemId() == R.id.new_incognito_tab_menu_id && item.isVisible()) {
+                // Disable new incognito tab when a re-authentication might be pending.
+                boolean isIncognitoReauthPending = (mIncognitoReauthController != null)
+                        && mIncognitoReauthController.isIncognitoReauthPending();
+
                 // Disable new incognito tab when it is blocked (e.g. by a policy).
                 // findItem(...).setEnabled(...)" is not enough here, because of the inflated
                 // main_menu.xml contains multiple items with the same id in different groups
                 // e.g.: menu_new_incognito_tab.
-                item.setEnabled(isIncognitoEnabled());
+                item.setEnabled(isIncognitoEnabled() && !isIncognitoReauthPending);
             }
 
             if (item.getItemId() == R.id.divider_line_id) {

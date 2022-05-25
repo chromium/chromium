@@ -1891,7 +1891,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                                    .launchUrl(NewTabPageUtils.encodeNtpUrl(
                                                       NewTabPageLaunchOrigin.WEB_FEED),
                                            TabLaunchType.FROM_CHROME_UI),
-                getModalDialogManager(), getSnackbarManager());
+                getModalDialogManager(), getSnackbarManager(),
+                mRootUiCoordinator.getIncognitoReauthControllerSupplier());
     }
 
     private TabDelegateFactory getTabDelegateFactory() {

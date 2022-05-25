@@ -44,6 +44,7 @@ import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtils;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtilsJni;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSnackbarController;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
@@ -159,8 +160,12 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     private TabModelFilter mTabModelFilter;
     @Mock
     public WebsitePreferenceBridge.Natives mWebsitePreferenceBridgeJniMock;
+    @Mock
+    private IncognitoReauthController mIncognitoReauthControllerMock;
 
     private OneshotSupplierImpl<LayoutStateProvider> mLayoutStateProviderSupplier =
+            new OneshotSupplierImpl<>();
+    private OneshotSupplierImpl<IncognitoReauthController> mIncognitoReauthControllerSupplier =
             new OneshotSupplierImpl<>();
     private ObservableSupplierImpl<BookmarkBridge> mBookmarkBridgeSupplier =
             new ObservableSupplierImpl<>();
@@ -184,6 +189,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         MockitoAnnotations.initMocks(this);
 
         mLayoutStateProviderSupplier.set(mLayoutStateProvider);
+        mIncognitoReauthControllerSupplier.set(mIncognitoReauthControllerMock);
         when(mTab.getWebContents()).thenReturn(mWebContents);
         when(mWebContents.getNavigationController()).thenReturn(mNavigationController);
         when(mNavigationController.getUseDesktopUserAgent()).thenReturn(false);
@@ -207,11 +213,12 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
         PowerBookmarkUtils.setPriceTrackingEligibleForTesting(false);
         PowerBookmarkUtils.setPowerBookmarkMetaForTesting(PowerBookmarkMeta.newBuilder().build());
-        mTabbedAppMenuPropertiesDelegate = Mockito.spy(new TabbedAppMenuPropertiesDelegate(
-                ContextUtils.getApplicationContext(), mActivityTabProvider,
-                mMultiWindowModeStateDispatcher, mTabModelSelector, mToolbarManager, mDecorView,
-                mAppMenuDelegate, mLayoutStateProviderSupplier, null, mBookmarkBridgeSupplier,
-                mFeedLauncher, mDialogManager, mSnackbarManager));
+        mTabbedAppMenuPropertiesDelegate = Mockito.spy(
+                new TabbedAppMenuPropertiesDelegate(ContextUtils.getApplicationContext(),
+                        mActivityTabProvider, mMultiWindowModeStateDispatcher, mTabModelSelector,
+                        mToolbarManager, mDecorView, mAppMenuDelegate, mLayoutStateProviderSupplier,
+                        null, mBookmarkBridgeSupplier, mFeedLauncher, mDialogManager,
+                        mSnackbarManager, mIncognitoReauthControllerSupplier));
         SharedPreferencesManager.getInstance().removeKeysWithPrefix(
                 ChromePreferenceKeys.MULTI_INSTANCE_URL);
         SharedPreferencesManager.getInstance().removeKeysWithPrefix(
@@ -457,6 +464,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
 
     private void setUpIncognitoMocks() {
         doReturn(true).when(mTabbedAppMenuPropertiesDelegate).isIncognitoEnabled();
+        doReturn(false).when(mIncognitoReauthControllerMock).isIncognitoReauthPending();
     }
 
     private Menu createTestMenu() {

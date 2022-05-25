@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.tabbed_mode;
 import android.content.Context;
 import android.view.View;
 
+import androidx.annotation.NonNull;
+
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.R;
@@ -18,6 +20,7 @@ import org.chromium.chrome.browser.feed.FeedFeatures;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedFaviconFetcher;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedMainMenuItem;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSnackbarController;
+import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
@@ -50,10 +53,12 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
             OneshotSupplier<StartSurface> startSurfaceSupplier,
             ObservableSupplier<BookmarkBridge> bookmarkBridgeSupplier,
             WebFeedSnackbarController.FeedLauncher feedLauncher,
-            ModalDialogManager modalDialogManager, SnackbarManager snackbarManager) {
+            ModalDialogManager modalDialogManager, SnackbarManager snackbarManager,
+            @NonNull OneshotSupplier<IncognitoReauthController>
+                    incognitoReauthControllerOneshotSupplier) {
         super(context, activityTabProvider, multiWindowModeStateDispatcher, tabModelSelector,
                 toolbarManager, decorView, layoutStateProvider, startSurfaceSupplier,
-                bookmarkBridgeSupplier);
+                bookmarkBridgeSupplier, incognitoReauthControllerOneshotSupplier);
         mAppMenuDelegate = appMenuDelegate;
         mFeedLauncher = feedLauncher;
         mModalDialogManager = modalDialogManager;

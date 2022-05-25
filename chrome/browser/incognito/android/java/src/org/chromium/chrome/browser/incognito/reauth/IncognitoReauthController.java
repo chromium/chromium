@@ -159,10 +159,20 @@ public class IncognitoReauthController
     }
 
     /**
-     * Returns true if the re-auth page is showing, false otherwise.
+     * @return True, if the re-auth page is currently being shown, false otherwise.
      */
     public boolean isReauthPageShowing() {
         return mIncognitoReauthCoordinator != null;
+    }
+
+    /**
+     * A method to check whether an Incognito re-authentication is currently pending.
+     *
+     * @return True, if an Incognito re-authentication is pending, false otherwise.
+     */
+    public boolean isIncognitoReauthPending() {
+        // A re-authentication is pending only in the context when the re-auth setting is always on.
+        return mIncognitoReauthPending && IncognitoReauthManager.isIncognitoReauthEnabled(mProfile);
     }
 
     /**

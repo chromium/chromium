@@ -890,7 +890,8 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
     public AppMenuPropertiesDelegate createAppMenuPropertiesDelegate() {
         return new AppMenuPropertiesDelegateImpl(this, getActivityTabProvider(),
                 getMultiWindowModeStateDispatcher(), getTabModelSelector(), getToolbarManager(),
-                getWindow().getDecorView(), null, null, mBookmarkBridgeSupplier);
+                getWindow().getDecorView(), null, null, mBookmarkBridgeSupplier,
+                /*incognitoReauthControllerOneshotSupplier=*/null);
     }
 
     /**

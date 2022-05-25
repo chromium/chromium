@@ -50,7 +50,9 @@ import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.CallbackController;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -528,13 +530,14 @@ public class CustomTabActivityIncognitoTest {
         IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(true);
         Intent intent = createMinimalIncognitoCustomTabIntent();
         CustomTabActivity customTabActivity = launchIncognitoCustomTab(intent);
-
         // Ensure that we did indeed create the re-auth controller.
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            IncognitoReauthController controller =
+            OneshotSupplier<IncognitoReauthController> incognitoReauthControllerOneshotSupplier =
                     customTabActivity.getRootUiCoordinatorForTesting()
-                            .getIncognitoReauthControllerForTesting();
-            assertNotNull(controller);
+                            .getIncognitoReauthControllerSupplier();
+            CallbackController callbackController = new CallbackController();
+            incognitoReauthControllerOneshotSupplier.onAvailable(callbackController.makeCancelable(
+                    incognitoReauthController -> { assertNotNull(incognitoReauthController); }));
         });
     }
 }
