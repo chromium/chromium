@@ -512,8 +512,10 @@ ChromeBrowserMainExtraPartsMetrics::~ChromeBrowserMainExtraPartsMetrics() =
     default;
 
 void ChromeBrowserMainExtraPartsMetrics::PostCreateMainMessageLoop() {
+#if !BUILDFLAG(IS_ANDROID)
   // Must be initialized before any child processes are spawned.
   process_monitor_ = std::make_unique<ProcessMonitor>();
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 void ChromeBrowserMainExtraPartsMetrics::PreProfileInit() {
@@ -655,7 +657,6 @@ void ChromeBrowserMainExtraPartsMetrics::PostBrowserStart() {
         std::make_unique<metrics::TabStatsTracker>(
             g_browser_process->local_state()));
   }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Only instantiate the ProcessMetricsRecorder and the PowerMetricsReporter if
   // process_monitor_ exists. This is always the case for Chrome but not for the
@@ -664,15 +665,12 @@ void ChromeBrowserMainExtraPartsMetrics::PostBrowserStart() {
     process_metrics_recorder_ =
         std::make_unique<ProcessMetricsRecorder>(process_monitor_.get());
 
-    // BatteryLevelProvider is supported on mac and windows only, thus we report
-    // power metrics only on those platforms.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
     power_metrics_reporter_ =
         std::make_unique<PowerMetricsReporter>(process_monitor_.get());
-#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 
     process_monitor_->StartGatherCycle();
   }
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 void ChromeBrowserMainExtraPartsMetrics::PreMainMessageLoopRun() {
