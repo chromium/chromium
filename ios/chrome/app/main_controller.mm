@@ -141,6 +141,10 @@
 
 namespace {
 
+// Skip chromeMain.reset() on shutdown, see crbug.com/1328891 for details.
+const base::Feature kFastApplicationWillTerminate{
+    "FastApplicationWillTerminate", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Constants for deferring resetting the startup attempt count (to give the app
 // a little while to make sure it says alive).
 NSString* const kStartupAttemptReset = @"StartupAttemptReset";
@@ -768,6 +772,12 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   for (SceneState* sceneState in self.appState.connectedScenes) {
     sceneState.activationLevel = SceneActivationLevelUnattached;
   }
+
+  // _chromeMain.reset() is a blocking call that regularly causes
+  // applicationWillTerminate to fail after a 5s delay. Experiment with skipping
+  // this shutdown call. See: crbug.com/1328891
+  if (base::FeatureList::IsEnabled(kFastApplicationWillTerminate))
+    return;
 
   _chromeMain.reset();
 }

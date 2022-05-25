@@ -4389,6 +4389,21 @@
             ]
         }
     ],
+    "IOSFastApplicationWillTerminate": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "FastApplicationWillTerminate"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSKeepsRenderProcessAlive": [
         {
             "platforms": [
