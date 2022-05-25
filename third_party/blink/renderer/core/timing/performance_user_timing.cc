@@ -76,14 +76,20 @@ bool IsTracingEnabled() {
 UserTiming::UserTiming(Performance& performance) : performance_(&performance) {}
 
 void UserTiming::AddMarkToPerformanceTimeline(PerformanceMark& mark) {
-  if (performance_->timing()) {
-    TRACE_EVENT_COPY_MARK1("blink.user_timing", mark.name().Utf8().c_str(),
-                           "data",
-                           performance_->timing()->GetNavigationTracingData());
-  } else {
-    TRACE_EVENT_COPY_MARK("blink.user_timing", mark.name().Utf8().c_str());
-  }
   InsertPerformanceEntry(marks_map_, mark);
+  if (!IsTracingEnabled()) {
+    return;
+  }
+
+  std::unique_ptr<TracedValue> traced_value;
+  if (performance_->timing()) {
+    traced_value = performance_->timing()->GetNavigationTracingData();
+  } else {
+    traced_value = std::make_unique<TracedValue>();
+  }
+  traced_value->SetDouble("startTime", mark.startTime());
+  TRACE_EVENT_COPY_MARK1("blink.user_timing", mark.name().Utf8().c_str(),
+                         "data", std::move(traced_value));
 }
 
 void UserTiming::ClearMarks(const AtomicString& mark_name) {
