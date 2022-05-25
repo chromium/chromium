@@ -93,12 +93,12 @@ async def test_browsingContext_create_eventContextCreatedEmitted(
 
 
 @pytest.mark.asyncio
-async def test_DEBUG_browsingContext_close_browsingContext_contextDestroyedEmitted(
+async def test_browsingContext_close_browsingContext_closed(
       websocket, context_id):
     await subscribe(websocket, ["browsingContext.contextDestroyed"])
 
     # Send command.
-    command = {"id": 12, "method": "PROTO.browsingContext.close",
+    command = {"id": 12, "method": "browsingContext.close",
                "params": {"context": context_id}}
     await send_JSON_command(websocket, command)
 
@@ -114,6 +114,13 @@ async def test_DEBUG_browsingContext_close_browsingContext_contextDestroyedEmitt
     # Assert command done.
     resp = await read_JSON_message(websocket)
     assert resp == {"id": 12, "result": {}}
+
+    result = await execute_command(websocket,
+                                   {"method": "browsingContext.getTree",
+                                    "params": {}})
+
+    # Assert context is closed.
+    assert result == {'contexts': []}
 
 
 @pytest.mark.asyncio

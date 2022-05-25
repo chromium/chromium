@@ -72,6 +72,39 @@ describe('test BrowsingContextParser', function () {
       });
     });
   });
+  describe('CloseCommand', function () {
+    describe('parseParams', function () {
+      it('context should be parsed', async function () {
+        expect(
+          BrowsingContextParser.CloseCommand.parseParams({
+            context: 'some_context',
+          })
+        ).to.deep.equal({
+          context: 'some_context',
+        });
+      });
+      it('unknown params should be ignored', async function () {
+        expect(
+          BrowsingContextParser.CloseCommand.parseParams({
+            context: 'some_context',
+            unknown_param: 'unknown_value',
+          })
+        ).to.deep.equal({
+          context: 'some_context',
+        });
+      });
+      it('missing context should not be parsed', async function () {
+        expect(() => BrowsingContextParser.CloseCommand.parseParams({}))
+          .to.throw()
+          .with.property('error', 'invalid argument');
+      });
+      it('undefined params should not be parsed', async function () {
+        expect(() => BrowsingContextParser.CreateCommand.parseParams(undefined))
+          .to.throw()
+          .with.property('error', 'invalid argument');
+      });
+    });
+  });
   describe('BrowsingContext', function () {
     describe('parseOptionalList', function () {
       it('array of strings should be parsed', async function () {

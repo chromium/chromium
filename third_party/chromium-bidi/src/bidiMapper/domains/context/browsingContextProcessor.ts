@@ -22,6 +22,7 @@ import { BrowsingContext, CDP, Script } from '../protocol/bidiProtocolTypes';
 import Protocol from 'devtools-protocol';
 import { IBidiServer } from '../../utils/bidiServer';
 import { IEventManager } from '../events/EventManager';
+import { NoSuchFrameException } from '../protocol/error';
 
 const logContext = log('context');
 
@@ -280,16 +281,22 @@ export class BrowsingContextProcessor {
     return await context.findElement(selector);
   }
 
-  async process_PROTO_browsingContext_close(
-    commandData: BrowsingContext.PROTO.CloseCommand
-  ): Promise<BrowsingContext.PROTO.CloseResult> {
+  async process_browsingContext_close(
+    commandParams: BrowsingContext.CloseParameters
+  ): Promise<BrowsingContext.CloseResult> {
     const browserCdpClient = this._cdpConnection.browserClient();
+
+    if (!this._hasKnownContext(commandParams.context)) {
+      throw new NoSuchFrameException(
+        `Context ${commandParams.context} not found`
+      );
+    }
 
     const detachedFromTargetPromise = new Promise<void>(async (resolve) => {
       const onContextDestroyed = (
-        params: Protocol.Target.DetachedFromTargetEvent
+        eventParams: Protocol.Target.DetachedFromTargetEvent
       ) => {
-        if (params.targetId === commandData.params.context) {
+        if (eventParams.targetId === commandParams.context) {
           browserCdpClient.Target.removeListener(
             'detachedFromTarget',
             onContextDestroyed
@@ -301,7 +308,7 @@ export class BrowsingContextProcessor {
     });
 
     await this._cdpConnection.browserClient().Target.closeTarget({
-      targetId: commandData.params.context,
+      targetId: commandParams.context,
     });
 
     // Sometimes CDP command finishes before `detachedFromTarget` event,

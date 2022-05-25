@@ -123,6 +123,10 @@ export class CommandProcessor {
         return await this.#contextProcessor.process_browsingContext_create(
           BrowsingContextParser.CreateCommand.parseParams(commandData.params)
         );
+      case 'browsingContext.close':
+        return await this.#contextProcessor.process_browsingContext_close(
+          BrowsingContextParser.CloseCommand.parseParams(commandData.params)
+        );
       case 'browsingContext.getTree':
         return await this.#contextProcessor.process_browsingContext_getTree(
           // TODO(sadym): add params parsing.
@@ -149,11 +153,6 @@ export class CommandProcessor {
         return await this.#contextProcessor.process_PROTO_browsingContext_findElement(
           // TODO(sadym): add params parsing.
           commandData as BrowsingContext.PROTO.FindElementCommand
-        );
-      case 'PROTO.browsingContext.close':
-        return await this.#contextProcessor.process_PROTO_browsingContext_close(
-          // TODO(sadym): add params parsing.
-          commandData as BrowsingContext.PROTO.CloseCommand
         );
 
       case 'PROTO.cdp.sendCommand':

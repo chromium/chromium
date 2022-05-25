@@ -32,7 +32,8 @@ export namespace Message {
   export type ErrorCode =
     | 'unknown error'
     | 'unknown command'
-    | 'invalid argument';
+    | 'invalid argument'
+    | 'no such frame';
 
   export type ErrorResult = {
     readonly error: ErrorCode;
@@ -338,14 +339,14 @@ export namespace BrowsingContext {
     | GetTreeCommand
     | NavigateCommand
     | CreateCommand
-    | PROTO.FindElementCommand
-    | PROTO.CloseCommand;
+    | CloseCommand
+    | PROTO.FindElementCommand;
   export type CommandResult =
     | GetTreeResult
     | NavigateResult
     | CreateResult
-    | PROTO.FindElementResult
-    | PROTO.CloseResult;
+    | CloseResult
+    | PROTO.FindElementResult;
   export type Event =
     | LoadEvent
     | DomContentLoadedEvent
@@ -419,6 +420,17 @@ export namespace BrowsingContext {
     };
   };
 
+  export type CloseCommand = {
+    method: 'browsingContext.close';
+    params: CloseParameters;
+  };
+
+  export type CloseParameters = {
+    context: BrowsingContext;
+  };
+
+  export type CloseResult = { result: {} };
+
   // events
   export class LoadEvent extends EventResponseClass<NavigationInfo> {
     static readonly method = 'browsingContext.load';
@@ -478,17 +490,6 @@ export namespace BrowsingContext {
     export type FindElementSuccessResult = {
       result: CommonDataTypes.NodeRemoteValue;
     };
-
-    export type CloseCommand = {
-      method: 'PROTO.browsingContext.close';
-      params: CloseParameters;
-    };
-
-    export type CloseParameters = {
-      context: BrowsingContext;
-    };
-
-    export type CloseResult = { result: {} };
   }
 
   export const EventNames = new Set([

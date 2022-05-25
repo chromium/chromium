@@ -44,6 +44,21 @@ export namespace BrowsingContextParser {
       };
     }
   }
+  export namespace CloseCommand {
+    export function parseParams(
+      params: any
+    ): BrowsingContextType.CloseParameters {
+      if (!params)
+        throw new InvalidArgumentErrorResponse(`'params' should be defined.`);
+      if (!params.context)
+        throw new InvalidArgumentErrorResponse(
+          `'params.context' should be defined.`
+        );
+      return {
+        context: BrowsingContext.parse(params.context),
+      };
+    }
+  }
   export namespace BrowsingContext {
     export function parseOptionalList(
       contexts: any
