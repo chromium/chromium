@@ -1025,9 +1025,6 @@ deps = {
   'src/third_party/highway/src':
     Var('chromium_git') + '/external/github.com/google/highway.git' + '@' + Var('highway_revision'),
 
-  'src/third_party/glfw/src':
-    Var('chromium_git') + '/external/github.com/glfw/glfw.git@' +  '94773111300fee0453844a4c9407af7e880b4df8',
-
   'src/third_party/apache-portable-runtime/src': {
       'url': Var('chromium_git') + '/external/apache-portable-runtime.git' + '@' + 'c3f11fcd86b42922834cae91103cf068246c6bb6',
       'condition': 'checkout_android',
@@ -4689,7 +4686,8 @@ hooks = [
 recursedeps = [
   # ANGLE manages DEPS that it also owns the build files for, such as dEQP.
   'src/third_party/angle',
-  # Dawn needs CTS from its DEPS
+  # Dawn manages DEPS for its copy of the WebGPU CTS as well as GLFW for which
+  # it has build files.
   'src/third_party/dawn',
   'src/third_party/openscreen/src',
   'src/third_party/vulkan-deps',
