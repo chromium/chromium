@@ -22,7 +22,16 @@ installed, along with the application's brand code, usage-stats opt-in status,
 and any additional parameters to be associated with the application.
 
 On Windows, the tag is embedded in one of the certificates in the metainstaller
-PE.
+PE. The tag is supported for both EXE and MSI formats.
+
+### Tag Format
+
+#### Brand code
+The brand code is a string of up to 4 characters long. The brand code is
+persisted during the install, over-installs, and updates.
+
+TODO(crbug.com/1328903) - document the rest of the tag format.
+
 
 ### Elevation (Windows)
 The metainstaller parses its tag and re-launches itself at high integrity if
@@ -54,7 +63,13 @@ TODO(crbug.com/1327497) - document.
 
 
 ## Updater
-The updater is installed at:
+The updater is installed in one of the following modes (or scopes):
+1. per-system (or per-machine). This mode requires administrator privileges.
+2. per-user
+
+Per-machine and per-user instances of the updater can run side by side.
+
+Depending on the scope, the updater is installed at:
 
 * (Windows, User): `%LOCAL_APP_DATA%\{COMPANY}\{UPDATERNAME}\{VERSION}\updater.exe`
 * (Windows, System): `%PROGRAM_FILES%\{COMPANY}\{UPDATERNAME}\{VERSION}\updater.exe`
@@ -180,7 +195,7 @@ application:
 #### Online Installs
 
 An online install is done with a [metainstaller](#Metainstaller). Every time an
-online installer is run, it sends an install event ping. The update check and
+online installer runs, it sends an install event ping. The update check and
 the install event ping have the same session id. The install ping is lost if the
 network is unreachable for any reason, or the program has crashed.
 
@@ -498,6 +513,13 @@ The updater will not delete this file.
 part of pings to the update server.
 
 ## Updates
+There is no limit for the number of retries to update an application if the
+update fails repeatedly.
+
+### Cohort Tracking
+The client records the `cohort`, `cohortname`, and `cohorthint` values from the
+server in each update response (even if there is no-update) and reports them on
+subsequent update checks.
 
 ### Differential Updates
 TODO(crbug.com/1035895): Document differential updates.
@@ -506,6 +528,18 @@ TODO(crbug.com/1035895): Document differential updates.
 The updater runs periodic tasks every hour, checking its own status, detecting
 application uninstalls, and potential checking for updates (if it has been at
 least 5 hours since the last update check).
+
+For internal users, the period of the scheduled tasks is 30 minutes.
+
+TODO(crbug.com/1328943) - document the jitter for starting updates.
+
+#### Windows Scheduling of Updates
+The update tasks are scheduled using the OS task scheduler.
+
+The time resolution for tasks is 1 minute. Tasks are set to run 5 minutes after
+they've been created.
+
+TODO(crbug.com/1328935) - built in task scheduler as a failover mechanism
 
 TODO(crbug.com/1035895): Does the updater run at user login on Windows?
 
@@ -546,6 +580,10 @@ macOS:
 *   The updater deletes the file when reporting active use.
 
 ### EULA/ToS Acceptance
+Software can be installed or updated only if the user has agreed to the `Terms
+of Service`. The updater only runs if the user has accepted the ToS for at
+least one application.
+
 TODO(crbug.com/1035895): Document EULA signals.
 
 ### Usage Stats Acceptance
@@ -587,16 +625,25 @@ When the updater attempts to download a file, it will send an event with
 Multiple events associated with an update session are bundled together into a
 single request.
 
+## Downloading
+There could be multiple URLs for a given application payload. The URLs are tried
+in the order they are returned in the update response.
+
+The integrity and authenticity of the payload is verified.
+
+There is no download cache. Payloads are re-downloaded for applications which
+fail to install.
+
 ## Services
 
 ### Crash Reporting
 TODO(crbug.com/1035895): Document updater crash reporting.
 
 ### Application Commands (applicable to the Windows version of the Updater)
-The Application Command feature allows installed Updater-managed products to
-pre-register and later run command lines in the format
-`c:\path-to-exe\exe.exe {params}` (elevated for system applications). `{params}`
-is optional and can also include replaceable parameters substituted at runtime.
+The feature allows installed products to pre-register and later run command
+lines in the format `c:\path-to-exe\exe.exe {params}` (elevated for system
+applications). `{params}` is optional and can also include replaceable
+parameters substituted at runtime.
 
 The program path must always be an absolute path. Additionally, for system
 applications,  the program path must also be a child of %ProgramFiles% or
