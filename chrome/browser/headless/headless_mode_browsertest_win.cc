@@ -58,3 +58,53 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest,
   EXPECT_TRUE(browser()->window()->IsVisible());
   EXPECT_FALSE(::IsWindowVisible(desktop_window_hwnd));
 }
+
+IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest,
+                       MinimizedRestoredWindowVisibility) {
+  DesktopWindowTreeHostWinWrapper* desktop_window_tree_host =
+      static_cast<DesktopWindowTreeHostWinWrapper*>(
+          browser()->window()->GetNativeWindow()->GetHost());
+  HWND desktop_window_hwnd = desktop_window_tree_host->GetHWND();
+
+  // Verify initial state.
+  ASSERT_FALSE(browser()->window()->IsMinimized());
+  EXPECT_TRUE(browser()->window()->IsVisible());
+  EXPECT_FALSE(::IsWindowVisible(desktop_window_hwnd));
+
+  // Verify minimized state.
+  browser()->window()->Minimize();
+  ASSERT_TRUE(browser()->window()->IsMinimized());
+  EXPECT_TRUE(browser()->window()->IsVisible());
+  EXPECT_FALSE(::IsWindowVisible(desktop_window_hwnd));
+
+  // Verify restored state.
+  browser()->window()->Restore();
+  ASSERT_FALSE(browser()->window()->IsMinimized());
+  EXPECT_TRUE(browser()->window()->IsVisible());
+  EXPECT_FALSE(::IsWindowVisible(desktop_window_hwnd));
+}
+
+IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTest,
+                       MaximizedRestoredWindowVisibility) {
+  DesktopWindowTreeHostWinWrapper* desktop_window_tree_host =
+      static_cast<DesktopWindowTreeHostWinWrapper*>(
+          browser()->window()->GetNativeWindow()->GetHost());
+  HWND desktop_window_hwnd = desktop_window_tree_host->GetHWND();
+
+  // Verify initial state.
+  ASSERT_FALSE(browser()->window()->IsMaximized());
+  EXPECT_TRUE(browser()->window()->IsVisible());
+  EXPECT_FALSE(::IsWindowVisible(desktop_window_hwnd));
+
+  // Verify maximized state.
+  browser()->window()->Maximize();
+  ASSERT_TRUE(browser()->window()->IsMaximized());
+  EXPECT_TRUE(browser()->window()->IsVisible());
+  EXPECT_FALSE(::IsWindowVisible(desktop_window_hwnd));
+
+  // Verify restored state.
+  browser()->window()->Restore();
+  ASSERT_FALSE(browser()->window()->IsMaximized());
+  EXPECT_TRUE(browser()->window()->IsVisible());
+  EXPECT_FALSE(::IsWindowVisible(desktop_window_hwnd));
+}

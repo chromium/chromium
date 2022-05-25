@@ -537,7 +537,6 @@ void DesktopNativeWidgetAura::UpdateWindowTransparency() {
 void DesktopNativeWidgetAura::InitNativeWidget(Widget::InitParams params) {
   ownership_ = params.ownership;
   widget_type_ = params.type;
-  headless_mode_ = params.headless_mode;
   name_ = params.name;
 
   content_window_->AcquireAllPropertiesFrom(
