@@ -22,6 +22,8 @@ class ApcExternalActionDelegate
       base::OnceCallback<void()> start_dom_checks_callback,
       base::OnceCallback<void(const autofill_assistant::external::Result&
                                   result)> end_action_callback) override;
+  void OnInterruptStarted() override;
+  void OnInterruptFinished() override;
 };
 
 #endif  // CHROME_BROWSER_AUTOFILL_ASSISTANT_PASSWORD_CHANGE_APC_EXTERNAL_ACTION_DELEGATE_H_

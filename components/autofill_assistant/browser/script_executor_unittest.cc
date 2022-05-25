@@ -1335,6 +1335,8 @@ TEST_F(ScriptExecutorTest, InterruptFailsMainScript) {
   EXPECT_CALL(executor_callback_,
               Run(Field(&ScriptExecutor::Result::success, false)));
   executor_->Run(&user_data_, executor_callback_.Get());
+  EXPECT_THAT(ui_delegate_.GetInterruptNotificationHistory(),
+              ElementsAre(FakeScriptExecutorUiDelegate::INTERRUPT_STARTED));
 }
 
 TEST_F(ScriptExecutorTest, InterruptReturnsShutdown) {
@@ -1364,6 +1366,8 @@ TEST_F(ScriptExecutorTest, InterruptReturnsShutdown) {
                         Field(&ScriptExecutor::Result::at_end,
                               ScriptExecutor::SHUTDOWN))));
   executor_->Run(&user_data_, executor_callback_.Get());
+  EXPECT_THAT(ui_delegate_.GetInterruptNotificationHistory(),
+              ElementsAre(FakeScriptExecutorUiDelegate::INTERRUPT_STARTED));
 }
 
 TEST_F(ScriptExecutorTest, RunInterruptDuringPrompt) {
@@ -1456,6 +1460,9 @@ TEST_F(ScriptExecutorTest, RunInterruptDuringPrompt) {
                   ElementAreaProto::default_instance(), interruptible_area,
                   ElementAreaProto::default_instance()));
   EXPECT_EQ("done", ui_delegate_.GetStatusMessage());
+  EXPECT_THAT(ui_delegate_.GetInterruptNotificationHistory(),
+              ElementsAre(FakeScriptExecutorUiDelegate::INTERRUPT_STARTED,
+                          FakeScriptExecutorUiDelegate::INTERRUPT_FINISHED));
 }
 
 TEST_F(ScriptExecutorTest, RunPromptInBrowseMode) {
@@ -1550,6 +1557,11 @@ TEST_F(ScriptExecutorTest, RunInterruptMultipleTimesDuringPrompt) {
           AutofillAssistantState::PROMPT, AutofillAssistantState::RUNNING,
           AutofillAssistantState::PROMPT, AutofillAssistantState::RUNNING,
           AutofillAssistantState::PROMPT, AutofillAssistantState::RUNNING));
+  EXPECT_THAT(ui_delegate_.GetInterruptNotificationHistory(),
+              ElementsAre(FakeScriptExecutorUiDelegate::INTERRUPT_STARTED,
+                          FakeScriptExecutorUiDelegate::INTERRUPT_FINISHED,
+                          FakeScriptExecutorUiDelegate::INTERRUPT_STARTED,
+                          FakeScriptExecutorUiDelegate::INTERRUPT_FINISHED));
 }
 
 TEST_F(ScriptExecutorTest, UpdateScriptListGetNext) {

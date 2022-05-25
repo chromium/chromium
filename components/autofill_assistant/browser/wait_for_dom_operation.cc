@@ -30,11 +30,15 @@ WaitForDomOperation::WaitForDomOperation(
                                             ->GetScriptParameters()
                                             .GetEnableObserverWaitForDom()
                                             .value_or(false)),
-      observer_(observer),
       check_elements_(std::move(check_elements)),
       callback_(std::move(callback)),
       timeout_warning_delay_(delegate_->GetSettings().warning_delay),
-      retry_timer_(delegate_->GetSettings().periodic_element_check_interval) {}
+      retry_timer_(delegate_->GetSettings().periodic_element_check_interval) {
+  if (observer) {
+    observers_.emplace_back(observer);
+  }
+  observers_.emplace_back(ui_delegate_);
+}
 
 WaitForDomOperation::~WaitForDomOperation() {
   delegate_->RemoveNavigationListener(this);
@@ -220,8 +224,9 @@ void WaitForDomOperation::OnAllChecksDone(
 
 void WaitForDomOperation::RunInterrupt(const std::string& path) {
   batch_element_checker_.reset();
-  if (observer_)
-    observer_->OnInterruptStarted();
+  for (auto* observer : observers_) {
+    observer->OnInterruptStarted();
+  }
 
   SavePreInterruptState();
   ran_interrupts_.insert(path);
@@ -248,8 +253,9 @@ void WaitForDomOperation::OnInterruptDone(
     RunCallbackWithResult(ClientStatus(INTERRUPT_FAILED), &result);
     return;
   }
-  if (observer_)
-    observer_->OnInterruptFinished();
+  for (auto* observer : observers_) {
+    observer->OnInterruptFinished();
+  }
 
   RestorePreInterruptState();
   RestorePreInterruptScroll();

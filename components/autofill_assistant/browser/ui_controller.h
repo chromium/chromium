@@ -113,6 +113,8 @@ class UiController : public ScriptExecutorUiDelegate,
                                             collect_user_data_options) override;
   const CollectUserDataOptions* GetLastSuccessfulUserDataOptions()
       const override;
+  void OnInterruptStarted() override;
+  void OnInterruptFinished() override;
 
   // Overrides autofill_assistant::UiDelegate:
   std::vector<Details> GetDetails() const override;

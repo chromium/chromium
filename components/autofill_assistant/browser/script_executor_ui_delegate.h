@@ -19,13 +19,14 @@
 #include "components/autofill_assistant/browser/tts_button_state.h"
 #include "components/autofill_assistant/browser/user_action.h"
 #include "components/autofill_assistant/browser/user_data.h"
+#include "components/autofill_assistant/browser/wait_for_dom_observer.h"
 #include "url/gurl.h"
 
 namespace autofill_assistant {
 
 // A delegate which provides the ScriptExecutor with methods to control the
 // Autofill Assistant UI.
-class ScriptExecutorUiDelegate {
+class ScriptExecutorUiDelegate : public WaitForDomObserver {
  public:
   virtual void SetStatusMessage(const std::string& message) = 0;
   virtual std::string GetStatusMessage() const = 0;

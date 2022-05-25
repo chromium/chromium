@@ -24,6 +24,13 @@ class ExternalActionDelegate {
       base::OnceCallback<void()> start_dom_checks_callback,
       base::OnceCallback<void(const external::Result& result)>
           end_action_callback) = 0;
+
+  // Called before starting the execution of an interrupt.
+  virtual void OnInterruptStarted() = 0;
+
+  // Called after finishing to execute an interrupt, before resuming the
+  // execution of the main script
+  virtual void OnInterruptFinished() = 0;
 };
 
 }  // namespace autofill_assistant

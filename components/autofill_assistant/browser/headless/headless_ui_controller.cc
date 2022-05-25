@@ -13,6 +13,7 @@ HeadlessUiController::HeadlessUiController(
 bool HeadlessUiController::SupportsExternalActions() {
   return action_extension_delegate_ != nullptr;
 }
+
 void HeadlessUiController::ExecuteExternalAction(
     const external::Action& external_action,
     base::OnceCallback<void()> start_dom_checks_callback,
@@ -23,6 +24,17 @@ void HeadlessUiController::ExecuteExternalAction(
   action_extension_delegate_->OnActionRequested(
       external_action, std::move(start_dom_checks_callback),
       std::move(end_action_callback));
+}
+
+void HeadlessUiController::OnInterruptStarted() {
+  if (action_extension_delegate_) {
+    action_extension_delegate_->OnInterruptStarted();
+  }
+}
+void HeadlessUiController::OnInterruptFinished() {
+  if (action_extension_delegate_) {
+    action_extension_delegate_->OnInterruptFinished();
+  }
 }
 
 // TODO(b/201964911): fail execution instead of just logging a warning if a

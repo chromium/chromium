@@ -17,3 +17,7 @@ void ApcExternalActionDelegate::OnActionRequested(
   result.set_success(true);
   std::move(end_action_callback).Run(result);
 }
+
+void ApcExternalActionDelegate::OnInterruptStarted() {}
+
+void ApcExternalActionDelegate::OnInterruptFinished() {}

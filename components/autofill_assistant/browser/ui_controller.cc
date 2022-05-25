@@ -1186,4 +1186,7 @@ void UiController::ExecuteExternalAction(
   NOTREACHED() << "Flows using default UI don't support external actions.";
 }
 
+void UiController::OnInterruptStarted() {}
+void UiController::OnInterruptFinished() {}
+
 }  // namespace autofill_assistant
