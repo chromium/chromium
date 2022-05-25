@@ -253,7 +253,7 @@ class DownloadInterstitialMediator {
             @Override
             public void onItemUpdated(OfflineItem item, UpdateDelta updateDelta) {
                 if (mModel.get(DOWNLOAD_ITEM) == null) {
-                    if (!TextUtils.equals(mDownloadUrl, item.originalUrl)) return;
+                    if (!TextUtils.equals(mDownloadUrl, item.originalUrl.getSpec())) return;
                     // Run before download is first attached.
                     mModel.set(SHOULD_REMOVE_PENDING_MESSAGE, true);
 

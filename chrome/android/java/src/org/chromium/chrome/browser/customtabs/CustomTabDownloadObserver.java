@@ -59,7 +59,7 @@ public class CustomTabDownloadObserver extends EmptyTabObserver {
             // Register the download's original URL to prevent messages UI showing in interstitial.
             DownloadManagerService.getDownloadManagerService()
                     .getMessageUiController(/* otrProfileId */ null)
-                    .addDownloadInterstitialSource(tab.getOriginalUrl().getSpec());
+                    .addDownloadInterstitialSource(tab.getOriginalUrl());
             NewDownloadTab.from(tab, coordinator, mActivity).show();
         }
     }

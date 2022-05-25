@@ -149,9 +149,9 @@ ScopedJavaLocalRef<jobject> DownloadManagerService::CreateJavaDownloadInfo(
     download::DownloadItem* item) {
   base::TimeDelta time_delta;
   bool time_remaining_known = item->TimeRemaining(&time_delta);
-  std::string original_url = item->GetOriginalUrl().SchemeIs(url::kDataScheme)
-                                 ? std::string()
-                                 : item->GetOriginalUrl().spec();
+  GURL original_url = item->GetOriginalUrl().SchemeIs(url::kDataScheme)
+                          ? GURL::EmptyGURL()
+                          : item->GetOriginalUrl();
   content::BrowserContext* browser_context =
       content::DownloadItemUtils::GetBrowserContext(item);
 
@@ -178,8 +178,9 @@ ScopedJavaLocalRef<jobject> DownloadManagerService::CreateJavaDownloadInfo(
       item->GetReceivedBytes(), item->GetTotalBytes(), otr_profile_id,
       item->GetState(), item->PercentComplete(), item->IsPaused(),
       DownloadUtils::IsDownloadUserInitiated(item), item->CanResume(),
-      item->IsParallelDownload(), ConvertUTF8ToJavaString(env, original_url),
-      ConvertUTF8ToJavaString(env, item->GetReferrerUrl().spec()),
+      item->IsParallelDownload(),
+      url::GURLAndroid::FromNativeGURL(env, original_url),
+      url::GURLAndroid::FromNativeGURL(env, item->GetReferrerUrl()),
       time_remaining_known ? time_delta.InMilliseconds()
                            : kUnknownRemainingTime,
       item->GetLastAccessTime().ToJavaTime(), item->IsDangerous(),

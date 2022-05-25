@@ -93,7 +93,7 @@ public class OfflineItem implements Cloneable {
 
     // Request Metadata.
     public GURL url;
-    public String originalUrl;
+    public GURL originalUrl;
     public boolean isOffTheRecord;
     public String otrProfileId;
 

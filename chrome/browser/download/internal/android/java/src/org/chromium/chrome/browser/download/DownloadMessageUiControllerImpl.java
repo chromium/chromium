@@ -47,6 +47,7 @@ import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -280,7 +281,7 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
     private final Set<ContentId> mIgnoredItems = new HashSet<>();
 
     // Used to calculate which items are being handled by a download interstitial.
-    private final Set<String> mDownloadInterstitialSources = new HashSet<>();
+    private final Set<GURL> mDownloadInterstitialSources = new HashSet<>();
 
     // The notification IDs associated with the currently tracked completed items. The notification
     // should be removed when the message action button is clicked to open the item.
@@ -337,7 +338,7 @@ public class DownloadMessageUiControllerImpl implements DownloadMessageUiControl
      * @param originalUrl The URL of the download.
      */
     @Override
-    public void addDownloadInterstitialSource(String originalUrl) {
+    public void addDownloadInterstitialSource(GURL originalUrl) {
         mDownloadInterstitialSources.add(originalUrl);
     }
 

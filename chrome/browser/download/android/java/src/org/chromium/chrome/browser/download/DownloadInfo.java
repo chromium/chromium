@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.download;
 
 import android.graphics.Bitmap;
 
+import androidx.annotation.NonNull;
+
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.components.download.DownloadState;
@@ -25,18 +27,15 @@ import org.chromium.url.GURL;
  * Class representing the state of a single download.
  */
 public final class DownloadInfo {
-    private final GURL mUrl;
+    private final @NonNull GURL mUrl;
     private final String mUserAgent;
     private final String mMimeType;
     private final String mCookie;
     private final String mFileName;
     private final String mDescription;
     private final String mFilePath;
-
-    // TODO(https://crbug.com/1278805): Migrate mReferrer and mOriginalUrl to GURL
-    private final String mReferrer;
-    private final String mOriginalUrl;
-
+    private final @NonNull GURL mReferrer;
+    private final @NonNull GURL mOriginalUrl;
     private final long mBytesReceived;
     private final long mBytesTotalSize;
     private final String mDownloadGuid;
@@ -68,15 +67,15 @@ public final class DownloadInfo {
     private final OfflineItemSchedule mSchedule;
 
     private DownloadInfo(Builder builder) {
-        mUrl = builder.mUrl;
+        mUrl = builder.mUrl == null ? GURL.emptyGURL() : builder.mUrl;
         mUserAgent = builder.mUserAgent;
         mMimeType = builder.mMimeType;
         mCookie = builder.mCookie;
         mFileName = builder.mFileName;
         mDescription = builder.mDescription;
         mFilePath = builder.mFilePath;
-        mReferrer = builder.mReferrer;
-        mOriginalUrl = builder.mOriginalUrl;
+        mReferrer = builder.mReferrer == null ? GURL.emptyGURL() : builder.mReferrer;
+        mOriginalUrl = builder.mOriginalUrl == null ? GURL.emptyGURL() : builder.mOriginalUrl;
         mBytesReceived = builder.mBytesReceived;
         mBytesTotalSize = builder.mBytesTotalSize;
         mDownloadGuid = builder.mDownloadGuid;
@@ -109,6 +108,7 @@ public final class DownloadInfo {
         mSchedule = builder.mSchedule;
     }
 
+    @NonNull
     public GURL getUrl() {
         return mUrl;
     }
@@ -137,11 +137,13 @@ public final class DownloadInfo {
         return mFilePath;
     }
 
-    public String getReferrer() {
+    @NonNull
+    public GURL getReferrer() {
         return mReferrer;
     }
 
-    public String getOriginalUrl() {
+    @NonNull
+    public GURL getOriginalUrl() {
         return mOriginalUrl;
     }
 
@@ -329,8 +331,8 @@ public final class DownloadInfo {
         private String mFileName;
         private String mDescription;
         private String mFilePath;
-        private String mReferrer;
-        private String mOriginalUrl;
+        private GURL mReferrer;
+        private GURL mOriginalUrl;
         private long mBytesReceived;
         private long mBytesTotalSize;
         private boolean mIsGETRequest;
@@ -394,12 +396,12 @@ public final class DownloadInfo {
             return this;
         }
 
-        public Builder setReferrer(String referer) {
+        public Builder setReferrer(GURL referer) {
             mReferrer = referer;
             return this;
         }
 
-        public Builder setOriginalUrl(String originalUrl) {
+        public Builder setOriginalUrl(GURL originalUrl) {
             mOriginalUrl = originalUrl;
             return this;
         }
@@ -576,7 +578,7 @@ public final class DownloadInfo {
             String filePath, GURL url, String mimeType, long bytesReceived, long bytesTotalSize,
             OTRProfileID otrProfileId, int state, int percentCompleted, boolean isPaused,
             boolean hasUserGesture, boolean isResumable, boolean isParallelDownload,
-            String originalUrl, String referrerUrl, long timeRemainingInMs, long lastAccessTime,
+            GURL originalUrl, GURL referrerUrl, long timeRemainingInMs, long lastAccessTime,
             boolean isDangerous, @FailState int failState, OfflineItemSchedule schedule) {
         String remappedMimeType = MimeUtils.remapGenericMimeType(mimeType, url.getSpec(), fileName);
 

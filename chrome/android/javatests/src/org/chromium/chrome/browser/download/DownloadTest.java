@@ -58,6 +58,7 @@ import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.util.TestWebServer;
 import org.chromium.ui.base.PageTransition;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -121,7 +122,7 @@ public class DownloadTest implements CustomMainActivityStart {
         public void onNotificationShown(ContentId id, int notificationId) {}
 
         @Override
-        public void addDownloadInterstitialSource(String originalUrl) {}
+        public void addDownloadInterstitialSource(GURL originalUrl) {}
 
         @Override
         public void onItemsAdded(List<OfflineItem> items) {}
@@ -149,7 +150,7 @@ public class DownloadTest implements CustomMainActivityStart {
         public int notifyDownloadSuccessful(final ContentId id, final String filePath,
                 final String fileName, final long systemDownloadId, final OTRProfileID otrProfileID,
                 final boolean isSupportedMimeType, final boolean isOpenable, final Bitmap icon,
-                final String originalUrl, final boolean shouldPromoteOrigin, final String referrer,
+                final GURL originalUrl, final boolean shouldPromoteOrigin, final GURL referrer,
                 final long totalBytes) {
             return 0;
         }
@@ -159,17 +160,17 @@ public class DownloadTest implements CustomMainActivityStart {
                 final Progress progress, final long bytesReceived, final long timeRemainingInMillis,
                 final long startTime, final OTRProfileID otrProfileID,
                 final boolean canDownloadWhileMetered, final boolean isTransient, final Bitmap icon,
-                final String originalUrl, final boolean shouldPromoteOrigin) {}
+                final GURL originalUrl, final boolean shouldPromoteOrigin) {}
 
         @Override
         void notifyDownloadPaused(ContentId id, String fileName, boolean isResumable,
                 boolean isAutoResumable, OTRProfileID otrProfileID, boolean isTransient,
-                Bitmap icon, final String originalUrl, final boolean shouldPromoteOrigin,
+                Bitmap icon, final GURL originalUrl, final boolean shouldPromoteOrigin,
                 boolean hasUserGesture, boolean forceRebuild, @PendingState int pendingState) {}
 
         @Override
         public void notifyDownloadFailed(final ContentId id, final String fileName,
-                final Bitmap icon, final String originalUrl, final boolean shouldPromoteOrigin,
+                final Bitmap icon, final GURL originalUrl, final boolean shouldPromoteOrigin,
                 OTRProfileID otrProfileID, @FailState int failState) {}
 
         @Override

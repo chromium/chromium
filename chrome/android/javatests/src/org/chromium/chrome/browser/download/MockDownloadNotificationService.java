@@ -19,6 +19,7 @@ import org.chromium.components.offline_items_collection.FailState;
 import org.chromium.components.offline_items_collection.OfflineItem.Progress;
 import org.chromium.components.offline_items_collection.PendingState;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,7 +68,7 @@ public class MockDownloadNotificationService extends DownloadNotificationService
     public int notifyDownloadSuccessful(final ContentId id, final String filePath,
             final String fileName, final long systemDownloadId, final OTRProfileID otrProfileID,
             final boolean isSupportedMimeType, final boolean isOpenable, final Bitmap icon,
-            final String originalUrl, final boolean shouldPromoteOrigin, final String referrer,
+            final GURL originalUrl, final boolean shouldPromoteOrigin, final GURL referrer,
             final long totalBytes) {
         return TestThreadUtils.runOnUiThreadBlockingNoException(
                 ()
@@ -82,7 +83,7 @@ public class MockDownloadNotificationService extends DownloadNotificationService
             final Progress progress, final long bytesReceived, final long timeRemainingInMillis,
             final long startTime, final OTRProfileID otrProfileID,
             final boolean canDownloadWhileMetered, final boolean isTransient, final Bitmap icon,
-            final String originalUrl, final boolean shouldPromoteOrigin) {
+            final GURL originalUrl, final boolean shouldPromoteOrigin) {
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> MockDownloadNotificationService.super.notifyDownloadProgress(id,
@@ -94,7 +95,7 @@ public class MockDownloadNotificationService extends DownloadNotificationService
     @Override
     void notifyDownloadPaused(ContentId id, String fileName, boolean isResumable,
             boolean isAutoResumable, OTRProfileID otrProfileID, boolean isTransient, Bitmap icon,
-            final String originalUrl, final boolean shouldPromoteOrigin, boolean hasUserGesture,
+            final GURL originalUrl, final boolean shouldPromoteOrigin, boolean hasUserGesture,
             boolean forceRebuild, @PendingState int pendingState) {
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
@@ -106,7 +107,7 @@ public class MockDownloadNotificationService extends DownloadNotificationService
 
     @Override
     public void notifyDownloadFailed(final ContentId id, final String fileName, final Bitmap icon,
-            final String originalUrl, final boolean shouldPromoteOrigin, OTRProfileID otrProfileID,
+            final GURL originalUrl, final boolean shouldPromoteOrigin, OTRProfileID otrProfileID,
             @FailState int failState) {
         TestThreadUtils.runOnUiThreadBlocking(
                 ()

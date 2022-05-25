@@ -51,6 +51,12 @@ public class JUnitTestGURLs {
     public static final String MULTI_TEXT_FRAGMENT_URL =
             "https://www.example.com/#:~:text=selector1&text=selector2&text=selector3";
     public static final String INVALID_URL = "http://0x100.0/";
+    public static final String GOOGLE_URL = "http://www.google.com/";
+    public static final String GOOGLE_URL_DOGS = "http://www.google.com/dogs";
+    public static final String GOOGLE_URL_DOGS_FUN = "http://www.google.com/dogs-are-fun";
+    public static final String GOOGLE_URL_DOG = "http://www.google.com/dog";
+    public static final String GOOGLE_URL_CAT = "http://www.google.com/cat";
+    public static final String GOOGLE_URL_PIG = "http://www.google.com/pig";
 
     // Map of URL string to GURL serialization.
     /* package */ static final Map<String, String> sGURLMap;
@@ -124,6 +130,18 @@ public class JUnitTestGURLs {
                 "131,1,true,0,5,0,-1,0,-1,8,15,0,-1,23,1,0,-1,25,47,false,false,https://www.example.com/#:~:text=selector1&text=selector2&text=selector3");
         map.put(INVALID_URL,
                 "73,1,false,0,4,0,-1,0,-1,7,7,0,-1,14,1,0,-1,0,-1,false,false,http://0x100.0/");
+        map.put(GOOGLE_URL,
+                "80,1,true,0,4,0,-1,0,-1,7,14,0,-1,21,1,0,-1,0,-1,false,false,http://www.google.com/");
+        map.put(GOOGLE_URL_DOGS,
+                "84,1,true,0,4,0,-1,0,-1,7,14,0,-1,21,5,0,-1,0,-1,false,false,http://www.google.com/dogs");
+        map.put(GOOGLE_URL_DOGS_FUN,
+                "93,1,true,0,4,0,-1,0,-1,7,14,0,-1,21,13,0,-1,0,-1,false,false,http://www.google.com/dogs-are-fun");
+        map.put(GOOGLE_URL_DOG,
+                "83,1,true,0,4,0,-1,0,-1,7,14,0,-1,21,4,0,-1,0,-1,false,false,http://www.google.com/dog");
+        map.put(GOOGLE_URL_CAT,
+                "83,1,true,0,4,0,-1,0,-1,7,14,0,-1,21,4,0,-1,0,-1,false,false,http://www.google.com/cat");
+        map.put(GOOGLE_URL_PIG,
+                "83,1,true,0,4,0,-1,0,-1,7,14,0,-1,21,4,0,-1,0,-1,false,false,http://www.google.com/pig");
         sGURLMap = Collections.unmodifiableMap(map);
     }
 

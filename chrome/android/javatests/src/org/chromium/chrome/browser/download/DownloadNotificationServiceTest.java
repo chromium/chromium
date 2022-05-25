@@ -36,6 +36,7 @@ import org.chromium.components.offline_items_collection.OfflineItem.Progress;
 import org.chromium.components.offline_items_collection.OfflineItemProgressUnit;
 import org.chromium.components.offline_items_collection.PendingState;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.url.GURL;
 
 import java.util.Arrays;
 import java.util.List;
@@ -159,8 +160,9 @@ public class DownloadNotificationServiceTest {
         assertTrue(mDownloadNotificationService.mDownloadsInProgress.contains(ID1));
 
         // Download is successful.
-        mDownloadNotificationService.notifyDownloadSuccessful(
-                ID1, "", "test", 1L, mPrimaryOTRProfileID, true, true, null, "", false, "", 0);
+        mDownloadNotificationService.notifyDownloadSuccessful(ID1, "", "test", 1L,
+                mPrimaryOTRProfileID, true, true, null, GURL.emptyGURL(), false, GURL.emptyGURL(),
+                0);
         assertEquals(1, mDownloadNotificationService.getNotificationIds().size());
         assertFalse(mDownloadForegroundServiceManager.mDownloadUpdateQueue.containsKey(
                 notificationId1));

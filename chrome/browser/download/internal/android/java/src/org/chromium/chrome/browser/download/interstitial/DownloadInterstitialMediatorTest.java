@@ -37,6 +37,7 @@ import org.chromium.components.offline_items_collection.OfflineItemProgressUnit;
 import org.chromium.components.offline_items_collection.OfflineItemState;
 import org.chromium.components.offline_items_collection.OpenParams;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.url.JUnitTestGURLs;
 
 /**
  * Unit tests for the {@link DownloadInterstitialMediator}. Modifies the page state through the
@@ -76,7 +77,7 @@ public class DownloadInterstitialMediatorTest {
         mModel.set(DownloadInterstitialProperties.SECONDARY_BUTTON_TEXT, CANCEL_BUTTON_TEXT);
         mProvider.addItem(mItem0);
         mMediator = new DownloadInterstitialMediator(InstrumentationRegistry::getContext, mModel,
-                mItem0.originalUrl, mProvider, mSnackbarManager, sharedPrefsManager,
+                mItem0.originalUrl.getSpec(), mProvider, mSnackbarManager, sharedPrefsManager,
                 () -> { mMediator = null; });
         // Increment progress to trigger onItemUpdated method for OfflineContentProvider observers.
         // This attaches the OfflineItem to the mediator.
@@ -95,7 +96,7 @@ public class DownloadInterstitialMediatorTest {
     @Feature({"NewDownloadTab"})
     public void testSecondDownloadNotAttached() {
         OfflineItem item1 = createOfflineItem("item1");
-        item1.originalUrl = "www.bar.com";
+        item1.originalUrl = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1);
         mProvider.addItem(item1);
         mProvider.incrementProgress(item1.id);
         assertEquals(mItem0, mModel.get(DOWNLOAD_ITEM));
@@ -106,12 +107,12 @@ public class DownloadInterstitialMediatorTest {
     @Feature({"NewDownloadTab"})
     public void testInProgressDownloadNotAttached() {
         OfflineItem item1 = createOfflineItem("item1");
-        item1.originalUrl = "www.bar.com";
+        item1.originalUrl = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1);
         // Remove observer so that the mediator can attach its own observer.
         mProvider.setObserver(null);
         mModel.set(DOWNLOAD_ITEM, null);
         mMediator = new DownloadInterstitialMediator(InstrumentationRegistry::getContext, mModel,
-                item1.originalUrl, mProvider, mSnackbarManager,
+                item1.originalUrl.getSpec(), mProvider, mSnackbarManager,
                 SharedPreferencesManager.getInstance(), () -> { mMediator = null; });
         mProvider.incrementProgress(mItem0.id);
         mProvider.addItem(item1);
@@ -241,7 +242,7 @@ public class DownloadInterstitialMediatorTest {
         item.state = OfflineItemState.IN_PROGRESS;
         item.title = "Test Item";
         item.description = "Test Description";
-        item.originalUrl = "www.foo.com";
+        item.originalUrl = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_2);
         return item;
     }
 

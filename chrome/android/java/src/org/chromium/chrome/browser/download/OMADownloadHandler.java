@@ -763,7 +763,7 @@ public class OMADownloadHandler extends BroadcastReceiver {
         enqueueRequest.mimeType = mimeType;
         enqueueRequest.description = omaInfo.getValue(OMA_DESCRIPTION);
         enqueueRequest.cookie = newInfo.getCookie();
-        enqueueRequest.referrer = newInfo.getReferrer();
+        enqueueRequest.referrer = newInfo.getReferrer().getSpec();
         enqueueRequest.userAgent = newInfo.getUserAgent();
         enqueueRequest.notifyCompleted = omaInfo.isValueEmpty(OMA_INSTALL_NOTIFY_URI);
         DownloadManagerBridge.enqueueNewDownload(
@@ -1018,8 +1018,8 @@ public class OMADownloadHandler extends BroadcastReceiver {
                         String pendingUri =
                                 DownloadCollectionBridge.createIntermediateUriForPublish(
                                         mDownloadInfo.getFileName(), mDownloadInfo.getMimeType(),
-                                        mDownloadInfo.getOriginalUrl(),
-                                        mDownloadInfo.getReferrer());
+                                        mDownloadInfo.getOriginalUrl().getSpec(),
+                                        mDownloadInfo.getReferrer().getSpec());
                         success = DownloadCollectionBridge.copyFileToIntermediateUri(
                                 path, pendingUri);
                         if (success) {
