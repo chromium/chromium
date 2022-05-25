@@ -53,6 +53,7 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -126,6 +127,7 @@ public class ReaderModeTest implements CustomMainActivityStart {
     @MediumTest
     // TODO(crbug.com/1225333): Implement corresponding test for messages.
     @DisableFeatures(ChromeFeatureList.MESSAGES_FOR_ANDROID_READER_MODE)
+    @DisabledTest(message = "https://crbug.com/1328942")
     public void testReaderModeInfobarShown() {
         waitForReaderModeInfobar();
     }
