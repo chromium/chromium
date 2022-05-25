@@ -5,6 +5,7 @@
 #include <utility>
 
 #include "ipcz/ipcz.h"
+#include "ipcz/node.h"
 #include "test/multinode_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -103,9 +104,49 @@ TEST_P(RemotePortalTest, TransferBackAndForth) {
     EXPECT_EQ("hi", message);
   }
 
+  CloseAll({a, b});
   VerifyEndToEnd(c, d);
 
-  CloseAll({a, b, c, d, node1, node0});
+  CloseAll({c, d, node1, node0});
+}
+
+TEST_P(RemotePortalTest, DisconnectThroughProxy) {
+  // Exercises node disconnection. Namely if portals on nodes 1 and 3 are
+  // connected via proxy on node 2, and node 3 disappears, node 1's portal
+  // should observe peer closure.
+  IpczHandle node0 = CreateBrokerNode();
+  IpczHandle node1 = CreateNonBrokerNode();
+  IpczHandle node2 = CreateNonBrokerNode();
+  IpczHandle node3 = CreateNonBrokerNode();
+
+  auto [a, b] = ConnectBrokerToNonBroker(node0, node1);
+  auto [c, d] = ConnectBrokerToNonBroker(node0, node2);
+  auto [e, f] = ConnectBrokerToNonBroker(node0, node3);
+
+  auto [q, p] = OpenPortals(node0);
+
+  // Send `q` to `node1` and `p` to `node2`.
+  Put(a, "", {&q, 1});
+  Put(c, "", {&p, 1});
+  EXPECT_EQ(IPCZ_RESULT_OK, WaitToGet(b, nullptr, {&q, 1}));
+  EXPECT_EQ(IPCZ_RESULT_OK, WaitToGet(d, nullptr, {&p, 1}));
+
+  // Now forward 'p' back to `node0` and then again to `node3`. This ensures
+  // that node2 will proxy between node1 and node3 for at least a small window
+  // of time.
+  Put(d, "", {&p, 1});
+  EXPECT_EQ(IPCZ_RESULT_OK, WaitToGet(c, nullptr, {&p, 1}));
+  Put(e, "", {&p, 1});
+  EXPECT_EQ(IPCZ_RESULT_OK, WaitToGet(f, nullptr, {&p, 1}));
+
+  // TODO: Once proxy reduction is implemented, the test setup should wait for
+  // a direct link between node2 and node3 before then severing only that
+  // connection. Without proxy reduction, no such direct link exists yet.
+  ipcz::Node::SimulateDisconnectForTesting(node0, node3);
+
+  EXPECT_EQ(IPCZ_RESULT_OK, WaitForConditionFlags(q, IPCZ_TRAP_PEER_CLOSED));
+
+  CloseAll({a, b, c, d, e, f, q, p, node3, node2, node1, node0});
 }
 
 INSTANTIATE_MULTINODE_TEST_SUITE_P(RemotePortalTest);

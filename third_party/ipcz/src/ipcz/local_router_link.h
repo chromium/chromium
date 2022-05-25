@@ -26,6 +26,7 @@ class LocalRouterLink : public RouterLink {
   // RouterLink:
   LinkType GetType() const override;
   bool HasLocalPeer(const Router& router) override;
+  bool IsRemoteLinkTo(const NodeLink& node_link, SublinkId sublink) override;
   void AcceptParcel(Parcel& parcel) override;
   void AcceptRouteClosure(SequenceNumber sequence_length) override;
   void Deactivate() override;

@@ -87,8 +87,15 @@ class Node : public APIObjectImpl<Node, APIObject::kNode> {
   // randomness.
   NodeName GenerateRandomName() const;
 
+  // Forces disconnection of two specific nodes which have an established
+  // NodeLink to each other.
+  static void SimulateDisconnectForTesting(IpczHandle first, IpczHandle second);
+
  private:
   ~Node() override;
+
+  // Forces disconnection of a specific node from this one.
+  void SimulateDisconnectForTesting(const NodeName& name);
 
   const Type type_;
   const IpczDriver driver_;

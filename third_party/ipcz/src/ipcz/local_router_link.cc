@@ -82,6 +82,11 @@ bool LocalRouterLink::HasLocalPeer(const Router& router) {
   return state_->GetRouter(side_.opposite()).get() == &router;
 }
 
+bool LocalRouterLink::IsRemoteLinkTo(const NodeLink& node_link,
+                                     SublinkId sublink) {
+  return false;
+}
+
 void LocalRouterLink::AcceptParcel(Parcel& parcel) {
   if (Ref<Router> receiver = state_->GetRouter(side_.opposite())) {
     receiver->AcceptInboundParcel(parcel);

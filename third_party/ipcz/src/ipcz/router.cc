@@ -49,6 +49,9 @@ void Router::QueryStatus(IpczPortalStatus& status) {
 
 bool Router::HasLocalPeer(Router& router) {
   absl::MutexLock lock(&mutex_);
+  if (!outward_link_) {
+    return false;
+  }
   return outward_link_->HasLocalPeer(router);
 }
 
@@ -159,7 +162,9 @@ bool Router::AcceptRouteClosureFrom(LinkType link_type,
         return false;
       }
 
-      if (!inward_link_) {
+      if (inward_link_) {
+        inward_link_->AcceptRouteClosure(sequence_length);
+      } else {
         status_.flags |= IPCZ_PORTAL_STATUS_PEER_CLOSED;
         if (inbound_parcels_.IsSequenceFullyConsumed()) {
           status_.flags |= IPCZ_PORTAL_STATUS_DEAD;
@@ -356,6 +361,35 @@ void Router::BeginProxyingToNewRouter(NodeLink& to_node_link,
   // We may have inbound parcels queued which need to be forwarded to the new
   // Router, so give them a chance to be flushed out.
   Flush();
+}
+
+void Router::NotifyLinkDisconnected(const NodeLink& node_link,
+                                    SublinkId sublink) {
+  Ref<RouterLink> dead_outward_link;
+  SequenceNumber inbound_sequence_length;
+  Ref<RouterLink> dead_inward_link;
+  SequenceNumber outbound_sequence_length;
+  {
+    absl::MutexLock lock(&mutex_);
+    if (outward_link_ && outward_link_->IsRemoteLinkTo(node_link, sublink)) {
+      dead_outward_link = std::move(outward_link_);
+      inbound_sequence_length = inbound_parcels_.GetCurrentSequenceLength();
+    } else if (inward_link_ &&
+               inward_link_->IsRemoteLinkTo(node_link, sublink)) {
+      dead_inward_link = std::move(inward_link_);
+      outbound_sequence_length = outbound_parcels_.GetCurrentSequenceLength();
+    }
+  }
+
+  if (dead_outward_link) {
+    AcceptRouteClosureFrom(dead_outward_link->GetType(),
+                           inbound_sequence_length);
+  }
+
+  if (dead_inward_link) {
+    AcceptRouteClosureFrom(dead_inward_link->GetType(),
+                           outbound_sequence_length);
+  }
 }
 
 void Router::Flush() {

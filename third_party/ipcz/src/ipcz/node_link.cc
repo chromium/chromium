@@ -138,6 +138,11 @@ void NodeLink::Transmit(Message& message) {
   transport_->Transmit(message);
 }
 
+void NodeLink::SimulateDisconnectForTesting() {
+  OnTransportError();
+  Deactivate();
+}
+
 SequenceNumber NodeLink::GenerateOutgoingSequenceNumber() {
   return SequenceNumber(next_outgoing_sequence_number_generator_.fetch_add(
       1, std::memory_order_relaxed));
@@ -243,7 +248,15 @@ bool NodeLink::OnRouteClosed(msg::RouteClosed& route_closed) {
 }
 
 void NodeLink::OnTransportError() {
-  // TODO: Notify all routers attached to sublinks here that this link is dead.
+  SublinkMap sublinks;
+  {
+    absl::MutexLock lock(&mutex_);
+    sublinks.swap(sublinks_);
+  }
+
+  for (auto& [id, sublink] : sublinks) {
+    sublink.receiver->NotifyLinkDisconnected(*this, id);
+  }
 }
 
 NodeLink::Sublink::Sublink(Ref<RemoteRouterLink> router_link,

@@ -127,6 +127,11 @@ class Router : public RefCounted {
   void BeginProxyingToNewRouter(NodeLink& to_node_link,
                                 const RouterDescriptor& descriptor);
 
+  // Notifies this Router that one of its links has been disconnected from a
+  // remote node. The link is identified by a combination of a specific NodeLink
+  // and SublinkId.
+  void NotifyLinkDisconnected(const NodeLink& node_link, SublinkId sublink);
+
  private:
   ~Router() override;
 

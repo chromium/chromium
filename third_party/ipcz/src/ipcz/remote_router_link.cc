@@ -44,6 +44,11 @@ bool RemoteRouterLink::HasLocalPeer(const Router& router) {
   return false;
 }
 
+bool RemoteRouterLink::IsRemoteLinkTo(const NodeLink& node_link,
+                                      SublinkId sublink) {
+  return node_link_.get() == &node_link && sublink_ == sublink;
+}
+
 void RemoteRouterLink::AcceptParcel(Parcel& parcel) {
   const absl::Span<Ref<APIObject>> objects = parcel.objects_view();
 

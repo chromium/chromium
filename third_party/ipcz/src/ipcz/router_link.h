@@ -7,10 +7,12 @@
 
 #include "ipcz/link_type.h"
 #include "ipcz/sequence_number.h"
+#include "ipcz/sublink_id.h"
 #include "util/ref_counted.h"
 
 namespace ipcz {
 
+class NodeLink;
 class Parcel;
 class Router;
 
@@ -31,6 +33,10 @@ class RouterLink : public RefCounted {
 
   // Returns true iff this is a LocalRouterLink whose peer router is `router`.
   virtual bool HasLocalPeer(const Router& router) = 0;
+
+  // Returns true iff this is a RemoteRouterLink routing over `node_link` via
+  // `sublink`.
+  virtual bool IsRemoteLinkTo(const NodeLink& node_link, SublinkId sublink) = 0;
 
   // Passes a parcel to the Router on the other side of this link to be queued
   // and/or router further.

@@ -124,4 +124,29 @@ NodeName Node::GenerateRandomName() const {
   return name;
 }
 
+// static
+void Node::SimulateDisconnectForTesting(IpczHandle first, IpczHandle second) {
+  Node* node0 = Node::FromHandle(first);
+  Node* node1 = Node::FromHandle(second);
+
+  node0->SimulateDisconnectForTesting(node1->GetAssignedName());
+  node1->SimulateDisconnectForTesting(node0->GetAssignedName());
+}
+
+void Node::SimulateDisconnectForTesting(const NodeName& name) {
+  absl::MutexLock lock(&mutex_);
+  auto it = node_links_.find(name);
+  if (it == node_links_.end()) {
+    return;
+  }
+
+  Ref<NodeLink> link = std::move(it->second);
+  node_links_.erase(it);
+
+  if (broker_link_ == link) {
+    broker_link_.reset();
+  }
+  link->SimulateDisconnectForTesting();
+}
+
 }  // namespace ipcz
