@@ -16,7 +16,6 @@
 #include "chrome/browser/push_messaging/push_messaging_service_impl.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
-#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/isolated_app_test_utils.h"
@@ -200,13 +199,6 @@ class IsolatedAppBrowserTest : public IsolatedAppBrowserTestHarness {
   content::RenderFrameHost* GetMainFrame(Browser* browser) {
     return browser->tab_strip_model()->GetActiveWebContents()->GetMainFrame();
   }
-
-  Browser* GetBrowserFromFrame(content::RenderFrameHost* frame) {
-    Browser* browser = chrome::FindBrowserWithWebContents(
-        content::WebContents::FromRenderFrameHost(frame));
-    EXPECT_TRUE(browser);
-    return browser;
-  }
 };
 
 IN_PROC_BROWSER_TEST_F(IsolatedAppBrowserTest, AppsPartitioned) {
@@ -312,22 +304,6 @@ class IsolatedAppBrowserCookieTest : public IsolatedAppBrowserTest {
     return cookie_map_[url.spec()];
   }
 
-  void CreateIframe(content::RenderFrameHost* parent_frame,
-                    const std::string& iframe_id,
-                    const GURL& url) {
-    EXPECT_EQ(true, content::EvalJs(parent_frame,
-                                    content::JsReplace(R"(
-            new Promise(resolve => {
-              let f = document.createElement('iframe');
-              f.id = $1;
-              f.src = $2;
-              f.addEventListener('load', () => resolve(true));
-              document.body.appendChild(f);
-            });
-        )",
-                                                       iframe_id, url)));
-  }
-
  private:
   void MonitorRequest(const net::test_server::HttpRequest& request) {
     // Replace the host in |request.GetURL()| with the value from the Host
@@ -364,7 +340,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedAppBrowserCookieTest, Cookies) {
   auto* app_frame = OpenApp(app_id);
   auto* app_browser = GetBrowserFromFrame(app_frame);
   app_frame = ui_test_utils::NavigateToURL(app_browser, app_url);
-  CreateIframe(app_frame, "child", non_app_url);
+  CreateIframe(app_frame, "child", non_app_url, "");
 
   const auto& app_cookies = GetCookieHeadersForUrl(app_url);
   EXPECT_EQ(1u, app_cookies.size());
@@ -377,7 +353,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedAppBrowserCookieTest, Cookies) {
   auto* app_frame2 = OpenApp(app_id);
   auto* app_browser2 = GetBrowserFromFrame(app_frame2);
   app_frame2 = ui_test_utils::NavigateToURL(app_browser2, app_url);
-  CreateIframe(app_frame2, "child", non_app_url);
+  CreateIframe(app_frame2, "child", non_app_url, "");
 
   EXPECT_EQ(2u, app_cookies.size());
   EXPECT_EQ("foo=bar", app_cookies[1]);
@@ -408,7 +384,7 @@ class IsolatedAppBrowserServiceWorkerTest : public IsolatedAppBrowserTest {
     auto* original_frame = OpenApp(app_id);
     app_web_contents_ =
         content::WebContents::FromRenderFrameHost(original_frame);
-    app_window_ = chrome::FindBrowserWithWebContents(app_web_contents_);
+    app_window_ = GetBrowserFromFrame(original_frame);
     app_frame_ = ui_test_utils::NavigateToURL(app_window_, app_url_);
     storage_partition_ = app_frame_->GetStoragePartition();
     EXPECT_NE(default_storage_partition(), storage_partition_);

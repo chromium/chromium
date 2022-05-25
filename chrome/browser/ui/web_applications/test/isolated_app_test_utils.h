@@ -36,6 +36,12 @@ class IsolatedAppBrowserTestHarness : public WebAppControllerBrowserTest {
       Browser* window,
       const GURL& url,
       WindowOpenDisposition disposition = WindowOpenDisposition::CURRENT_TAB);
+
+  Browser* GetBrowserFromFrame(content::RenderFrameHost* frame);
+  void CreateIframe(content::RenderFrameHost* parent_frame,
+                    const std::string& iframe_id,
+                    const GURL& url,
+                    const std::string& permissions_policy);
 };
 
 }  // namespace web_app
