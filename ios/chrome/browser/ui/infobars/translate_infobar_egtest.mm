@@ -399,7 +399,8 @@ void TestResponseProvider::GetLanguageResponse(
 }
 
 // Tests that language in http content is detected.
-- (void)testLanguageDetectionHttpContentLanguage {
+// TODO(crbug.com/1328970): Re-enable when translate works in HTTP
+- (void)DISABLED_testLanguageDetectionHttpContentLanguage {
   // Start the HTTP server.
   std::unique_ptr<web::DataResponseProvider> provider(new TestResponseProvider);
   web::test::SetUpHttpServer(std::move(provider));
@@ -436,7 +437,8 @@ void TestResponseProvider::GetLanguageResponse(
 }
 
 // Tests that language in http content is detected when navigating to a link.
-- (void)testLanguageDetectionHttpContentLanguageBehindLink {
+// TODO(crbug.com/1328970): Re-enable when translate works in HTTP
+- (void)DISABLED_testLanguageDetectionHttpContentLanguageBehindLink {
   // Start the HTTP server.
   std::unique_ptr<web::DataResponseProvider> provider(new TestResponseProvider);
   web::test::SetUpHttpServer(std::move(provider));
