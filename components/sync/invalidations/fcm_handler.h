@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/containers/circular_deque.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
@@ -59,7 +60,8 @@ class FCMHandler : public gcm::GCMAppHandler {
   bool IsListening() const;
 
   // Add or remove a new listener which will be notified on each new incoming
-  // invalidation. |listener| must not be nullptr.
+  // invalidation. |listener| must not be nullptr. When added, some previously
+  // received messages will be immediately replayed.
   void AddListener(InvalidationsListener* listener);
   void RemoveListener(InvalidationsListener* listener);
 
@@ -110,6 +112,10 @@ class FCMHandler : public gcm::GCMAppHandler {
   base::OneShotTimer token_validation_timer_;
 
   bool waiting_for_token_ = false;
+
+  // A list of the latest incoming messages, used to replay incoming messages
+  // whenever a new listener is added.
+  base::circular_deque<std::string> last_received_messages_;
 
   // Contains all listeners to notify about each incoming message in OnMessage
   // method.
