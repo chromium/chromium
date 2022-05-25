@@ -14,16 +14,6 @@
 namespace file_manager {
 namespace io_task {
 
-// Performs a move via the FileSystemOperationRunner.
-storage::FileSystemOperationRunner::OperationID StartMoveOnIOThread(
-    scoped_refptr<storage::FileSystemContext> file_system_context,
-    const storage::FileSystemURL& source_url,
-    const storage::FileSystemURL& destination_url,
-    storage::FileSystemOperation::CopyOrMoveOptionSet options,
-    const FileManagerCopyOrMoveHookDelegate::ProgressCallback&
-        progress_callback,
-    storage::FileSystemOperation::StatusCallback complete_callback);
-
 // Obtains metadata of a URL. Used to get the filesize of the transferred files.
 void GetFileMetadataOnIOThread(
     scoped_refptr<storage::FileSystemContext> file_system_context,

@@ -62,6 +62,23 @@ storage::FileSystemOperationRunner::OperationID StartCopyOnIOThread(
       std::move(complete_callback));
 }
 
+// Starts the move operation via FileSystemOperationRunner.
+storage::FileSystemOperationRunner::OperationID StartMoveOnIOThread(
+    scoped_refptr<storage::FileSystemContext> file_system_context,
+    const storage::FileSystemURL& source_url,
+    const storage::FileSystemURL& destination_url,
+    storage::FileSystemOperation::CopyOrMoveOptionSet options,
+    const FileManagerCopyOrMoveHookDelegate::ProgressCallback&
+        progress_callback,
+    storage::FileSystemOperation::StatusCallback complete_callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  return file_system_context->operation_runner()->Move(
+      source_url, destination_url, options,
+      storage::FileSystemOperation::ERROR_BEHAVIOR_ABORT,
+      std::make_unique<FileManagerCopyOrMoveHookDelegate>(progress_callback),
+      std::move(complete_callback));
+}
+
 }  // namespace
 
 CopyOrMoveIOTask::CopyOrMoveIOTask(

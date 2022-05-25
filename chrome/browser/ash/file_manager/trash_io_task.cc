@@ -54,6 +54,17 @@ storage::FileSystemOperationRunner::OperationID StartCreateDirectoryOnIOThread(
       url, /*exclusive=*/false, /*recursive=*/true, std::move(callback));
 }
 
+storage::FileSystemOperationRunner::OperationID StartMoveFileLocalOnIOThread(
+    scoped_refptr<storage::FileSystemContext> file_system_context,
+    const storage::FileSystemURL source_url,
+    const storage::FileSystemURL destination_url,
+    storage::FileSystemOperation::CopyOrMoveOptionSet options,
+    storage::FileSystemOperation::StatusCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+  return file_system_context->operation_runner()->MoveFileLocal(
+      source_url, destination_url, options, std::move(callback));
+}
+
 bool WriteMetadataFileOnBlockingThread(const base::FilePath& destination_path,
                                        const std::string& contents) {
   // If the metadata file already exists either a previous copy failed or
@@ -411,9 +422,7 @@ void TrashIOTask::TrashFile(size_t source_idx,
   // File browsers generally default to preserving mtimes on copy/move so we
   // should do the same.
   storage::FileSystemOperation::CopyOrMoveOptionSet options(
-      storage::FileSystemOperation::CopyOrMoveOption::kPreserveLastModified,
-      storage::FileSystemOperation::CopyOrMoveOption::
-          kRemovePartiallyCopiedFilesOnError);
+      storage::FileSystemOperation::CopyOrMoveOption::kPreserveLastModified);
 
   auto complete_callback =
       base::BindPostTask(base::SequencedTaskRunnerHandle::Get(),
@@ -425,8 +434,8 @@ void TrashIOTask::TrashFile(size_t source_idx,
   // callback is never invoked.
   content::GetIOThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&StartMoveOnIOThread, file_system_context_, source_url,
-                     destination_url, options, base::DoNothing(),
+      base::BindOnce(&StartMoveFileLocalOnIOThread, file_system_context_,
+                     source_url, destination_url, options,
                      std::move(complete_callback)),
       base::BindOnce(&TrashIOTask::SetCurrentOperationID,
                      weak_ptr_factory_.GetWeakPtr()));
