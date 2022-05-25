@@ -1125,6 +1125,125 @@ class TestExpectationMapSplitByStalenessUnittest(unittest.TestCase):
     self.assertEqual(semi_stale_dict, expected_semi_stale_dict)
     self.assertEqual(active_dict, {})
 
+  def testSemiStaleTreatedAsActive(self):
+    """Tests output when semi-stale expectations are considered active."""
+    expectation_map = data_types.TestExpectationMap({
+        'foo':
+        data_types.ExpectationBuilderMap({
+            data_types.Expectation('foo', ['win'], ['Failure']):
+            data_types.BuilderStepMap({
+                'foo_builder':
+                data_types.StepBuildStatsMap({
+                    'step1':
+                    uu.CreateStatsWithPassFails(1, 0),
+                    'step2':
+                    uu.CreateStatsWithPassFails(2, 2),
+                }),
+                'bar_builder':
+                data_types.StepBuildStatsMap({
+                    'step1':
+                    uu.CreateStatsWithPassFails(3, 0),
+                    'step2':
+                    uu.CreateStatsWithPassFails(0, 4)
+                }),
+            }),
+            data_types.Expectation('foo', ['linux'], ['RetryOnFailure']):
+            data_types.BuilderStepMap({
+                'foo_builder':
+                data_types.StepBuildStatsMap({
+                    'step1':
+                    uu.CreateStatsWithPassFails(5, 0),
+                    'step2':
+                    uu.CreateStatsWithPassFails(6, 6),
+                }),
+            }),
+        }),
+        'bar':
+        data_types.ExpectationBuilderMap({
+            data_types.Expectation('bar', ['win'], ['Failure']):
+            data_types.BuilderStepMap({
+                'foo_builder':
+                data_types.StepBuildStatsMap({
+                    'step1':
+                    uu.CreateStatsWithPassFails(7, 0),
+                }),
+                'bar_builder':
+                data_types.StepBuildStatsMap({
+                    'step1':
+                    uu.CreateStatsWithPassFails(0, 8),
+                }),
+            }),
+        }),
+    })
+
+    expected_semi_stale_dict = data_types.TestExpectationMap({
+        'foo':
+        data_types.ExpectationBuilderMap({
+            data_types.Expectation('foo', ['linux'], ['RetryOnFailure']):
+            data_types.BuilderStepMap({
+                'foo_builder':
+                data_types.StepBuildStatsMap({
+                    'step1':
+                    uu.CreateStatsWithPassFails(5, 0),
+                    'step2':
+                    uu.CreateStatsWithPassFails(6, 6),
+                }),
+            }),
+        }),
+        'bar':
+        data_types.ExpectationBuilderMap({
+            data_types.Expectation('bar', ['win'], ['Failure']):
+            data_types.BuilderStepMap({
+                'foo_builder':
+                data_types.StepBuildStatsMap({
+                    'step1':
+                    uu.CreateStatsWithPassFails(7, 0),
+                }),
+                'bar_builder':
+                data_types.StepBuildStatsMap({
+                    'step1':
+                    uu.CreateStatsWithPassFails(0, 8),
+                }),
+            }),
+        }),
+    })
+
+    expected_active_dict = data_types.TestExpectationMap({
+        'foo':
+        data_types.ExpectationBuilderMap({
+            data_types.Expectation('foo', ['win'], ['Failure']):
+            data_types.BuilderStepMap({
+                'foo_builder':
+                data_types.StepBuildStatsMap({
+                    'step1':
+                    uu.CreateStatsWithPassFails(1, 0),
+                    'step2':
+                    uu.CreateStatsWithPassFails(2, 2),
+                }),
+                'bar_builder':
+                data_types.StepBuildStatsMap({
+                    'step1':
+                    uu.CreateStatsWithPassFails(3, 0),
+                    'step2':
+                    uu.CreateStatsWithPassFails(0, 4)
+                }),
+            }),
+        }),
+    })
+
+    def SideEffect(pass_map):
+      return pass_map[data_types.FULL_PASS]['foo_builder'][
+          'step1'] == uu.CreateStatsWithPassFails(1, 0)
+
+    with mock.patch.object(expectation_map,
+                           '_ShouldTreatSemiStaleAsActive',
+                           side_effect=SideEffect):
+      stale_dict, semi_stale_dict, active_dict =\
+          expectation_map.SplitByStaleness()
+    self.assertEqual(stale_dict, {})
+    self.assertEqual(semi_stale_dict, expected_semi_stale_dict)
+    self.assertEqual(active_dict, expected_active_dict)
+
   def testAllExpectations(self):
     """Tests output when all three types of expectations are provided."""
     expectation_map = data_types.TestExpectationMap({

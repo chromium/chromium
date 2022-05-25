@@ -516,6 +516,14 @@ class BaseTestExpectationMap(BaseTypedMap):
               expectation_file,
               ExpectationBuilderMap()).setdefault(expectation, BuilderStepMap())
           _CopyPassesIntoBuilderMap(builder_map, [NEVER_PASS, PARTIAL_PASS])
+        # Handle the case of a semi-stale expectation that should be considered
+        # active.
+        elif self._ShouldTreatSemiStaleAsActive(tmp_map):
+          builder_map = active_dict.setdefault(
+              expectation_file,
+              ExpectationBuilderMap()).setdefault(expectation, BuilderStepMap())
+          _CopyPassesIntoBuilderMap(builder_map,
+                                    [FULL_PASS, PARTIAL_PASS, NEVER_PASS])
         # Handle the case of a semi-stale expectation.
         else:
           # TODO(crbug.com/998329): Sort by pass percentage so it's easier to
@@ -526,6 +534,22 @@ class BaseTestExpectationMap(BaseTypedMap):
           _CopyPassesIntoBuilderMap(builder_map,
                                     [FULL_PASS, PARTIAL_PASS, NEVER_PASS])
     return stale_dict, semi_stale_dict, active_dict
+
+  def _ShouldTreatSemiStaleAsActive(self, pass_map):
+    """Check if a semi-stale expectation should be treated as active.
+
+    Allows for implementation-specific workarounds.
+
+    Args:
+      pass_map: A dict mapping the FULL/NEVER/PARTIAL_PASS constants to
+          BuilderStepMaps, as used in self.SplitByStaleness().
+
+    Returns:
+      A boolean denoting whether the given results data should be treated as an
+      active expectation instead of a semi-stale one.
+    """
+    del pass_map
+    return False
 
   def FilterOutUnusedExpectations(self):
     """Filters out any unused Expectations from stored data.
