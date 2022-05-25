@@ -585,3 +585,13 @@ ci.builder(
     os = os.WINDOWS_DEFAULT,
     reclient_jobs = rbe_jobs.DEFAULT,
 )
+
+ci.builder(
+    name = "ios-asan",
+    console_view_entry = consoles.console_view_entry(
+        category = "iOS",
+        short_name = "asn",
+    ),
+    goma_backend = goma.backend.RBE_PROD,
+    sheriff_rotations = args.ignore_default(sheriff_rotations.IOS),
+)

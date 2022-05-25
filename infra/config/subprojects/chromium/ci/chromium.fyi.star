@@ -1267,14 +1267,6 @@ fyi_coverage_builder(
 )
 
 fyi_ios_builder(
-    name = "ios-asan",
-    console_view_entry = consoles.console_view_entry(
-        category = "iOS",
-        short_name = "asan",
-    ),
-)
-
-fyi_ios_builder(
     name = "ios-m1-simulator",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(

@@ -1,3 +1,4 @@
+ci/ios-asan
 ci/ios-catalyst
 ci/ios-device
 ci/ios-simulator
