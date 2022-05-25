@@ -1111,7 +1111,7 @@ TEST_F(MetricsWebContentsObserverTest,
   CheckNoErrorEvents();
 }
 
-TEST_F(MetricsWebContentsObserverTest, DISABLED_LongestInputInMainFrame) {
+TEST_F(MetricsWebContentsObserverTest, LongestInputInMainFrame) {
   // We need to navigate before we can navigate the subframe.
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL(kDefaultTestUrl));
