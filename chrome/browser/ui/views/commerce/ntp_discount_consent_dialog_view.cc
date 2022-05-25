@@ -12,6 +12,7 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
 
+#include "chrome/browser/ui/commerce/commerce_prompt.h"
 #include "chrome/browser/ui/views/accessibility/theme_tracking_non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
@@ -27,14 +28,16 @@ namespace {
 constexpr int kChildSpacing = 24;
 }  // namespace
 
-// static
-void NtpDiscountConsentDialogView::Show(Browser* browser,
-                                        ActionCallback callback) {
+namespace commerce {
+void ShowDiscountConsentPrompt(
+    Browser* browser,
+    base::OnceCallback<void(chrome_cart::mojom::ConsentStatus)> callback) {
   constrained_window::CreateBrowserModalDialogViews(
       std::make_unique<NtpDiscountConsentDialogView>(std::move(callback)),
       browser->window()->GetNativeWindow())
       ->Show();
 }
+}  // namespace commerce
 
 NtpDiscountConsentDialogView::NtpDiscountConsentDialogView(
     ActionCallback callback)

@@ -18,6 +18,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_web_contents_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -106,10 +107,11 @@ class CartHandlerTest : public testing::Test {
         HistoryServiceFactory::GetInstance(),
         HistoryServiceFactory::GetDefaultFactory());
     profile_ = profile_builder.Build();
+    web_contents_ = web_contents_factory_.CreateWebContents(profile_.get());
 
     handler_ = std::make_unique<CartHandler>(
         mojo::PendingReceiver<chrome_cart::mojom::CartHandler>(),
-        profile_.get());
+        profile_.get(), web_contents_);
     service_ = CartServiceFactory::GetForProfile(profile_.get());
   }
 
@@ -159,6 +161,8 @@ class CartHandlerTest : public testing::Test {
   // Required to run tests from UI thread.
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
+  content::TestWebContentsFactory web_contents_factory_;
+  raw_ptr<content::WebContents> web_contents_;  // Weak. Owned by factory_.
   std::unique_ptr<CartHandler> handler_;
   raw_ptr<CartService> service_;
   base::HistogramTester histogram_tester_;
@@ -656,7 +660,7 @@ TEST_F(CartHandlerCartURLUTMTest, TestAppendUTMToPartnerMerchant) {
   run_loop[0].Run();
 
   // Verifies UTM tags for when discount is enabled.
-  handler_->SetDiscountEnabled(true);
+  profile_->GetPrefs()->SetBoolean(prefs::kCartDiscountEnabled, true);
   ASSERT_TRUE(service_->IsCartDiscountEnabled());
   handler_->GetMerchantCarts(base::BindOnce(
       &GetEvaluationMerchantCartWithUtmSource, run_loop[1].QuitClosure(), true,

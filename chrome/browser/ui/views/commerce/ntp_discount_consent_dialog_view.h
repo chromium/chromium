@@ -9,13 +9,10 @@
 #include "chrome/browser/cart/chrome_cart.mojom.h"
 #include "ui/views/window/dialog_delegate.h"
 
-class Browser;
-
 class NtpDiscountConsentDialogView : public views::DialogDelegateView {
  public:
   using ActionCallback =
       base::OnceCallback<void(chrome_cart::mojom::ConsentStatus)>;
-  static void Show(Browser* browser, ActionCallback callback);
   explicit NtpDiscountConsentDialogView(ActionCallback callback);
   ~NtpDiscountConsentDialogView() override;
 

@@ -28,6 +28,8 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+#include "chrome/browser/ui/browser.h"
+
 class DiscountURLLoader;
 class FetchDiscountWorker;
 
@@ -137,6 +139,7 @@ class CartService : public history::HistoryServiceObserver,
   // This is used when the NativeDialog variation is active. It gets called
   // when user has clicked the 'Continue' button in the discount consent.
   void ShowNativeConsentDialog(
+      Browser* browser,
       base::OnceCallback<void(chrome_cart::mojom::ConsentStatus)>
           consent_status_callback);
   // Appends UTM tags to the end of |base_url|. It will always append

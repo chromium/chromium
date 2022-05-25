@@ -17,7 +17,9 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/commerce/commerce_prompt.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
@@ -1149,10 +1151,9 @@ void CartService::SetCouponServiceForTesting(CouponService* coupon_service) {
 }
 
 void CartService::ShowNativeConsentDialog(
+    Browser* browser,
     base::OnceCallback<void(chrome_cart::mojom::ConsentStatus)>
         consent_status_callback) {
-  // TODO(crbug.com/1317519): Show the native dialog and move the
-  // consent_status_callback to the dialog.
-  std::move(consent_status_callback)
-      .Run(chrome_cart::mojom::ConsentStatus::ACCEPTED);
+  commerce::ShowDiscountConsentPrompt(browser,
+                                      std::move(consent_status_callback));
 }

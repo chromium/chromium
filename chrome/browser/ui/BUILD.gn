@@ -1062,6 +1062,7 @@ static_library("ui") {
       "commander/tab_command_source.h",
       "commander/window_command_source.cc",
       "commander/window_command_source.h",
+      "commerce/commerce_prompt.h",
       "confirm_bubble_model.cc",
       "confirm_bubble_model.h",
       "content_settings/content_setting_bubble_model.cc",
