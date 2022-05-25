@@ -669,9 +669,8 @@ bool HTMLFrameOwnerElement::LazyLoadIfPossible(
           /*record_uma=*/true)) {
     lazy_load_frame_observer_->DeferLoadUntilNearViewport(request,
                                                           frame_load_type);
-    if (IsAdRelated()) {
-      SetTimeoutToStartAdFrameLoading();
-    }
+    MaybeSetTimeoutToStartAdFrameLoading(
+        /*is_loading_attr_lazy=*/loading_lazy_set);
 
     return true;
   }
@@ -873,9 +872,18 @@ void HTMLFrameOwnerElement::LoadIfLazyOnIdle(base::TimeTicks deadline) {
   LoadImmediatelyIfLazy();
 }
 
-void HTMLFrameOwnerElement::SetTimeoutToStartAdFrameLoading() {
-  if (!IsAdRelated() || !base::FeatureList::IsEnabled(
-                            features::kAutomaticLazyFrameLoadingToAds)) {
+void HTMLFrameOwnerElement::MaybeSetTimeoutToStartAdFrameLoading(
+    bool is_loading_attr_lazy) {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutomaticLazyFrameLoadingToAds)) {
+    return;
+  }
+  if (!IsAdRelated()) {
+    return;
+  }
+  // Even if the frame is ad related, respect the explicit loading="lazy"
+  // attribute and won't set a timeout if the attribute exists.
+  if (is_loading_attr_lazy) {
     return;
   }
 

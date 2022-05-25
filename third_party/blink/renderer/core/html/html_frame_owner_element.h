@@ -199,7 +199,7 @@ class CORE_EXPORT HTMLFrameOwnerElement : public HTMLElement,
     is_swapping_frames_ = is_swapping;
   }
 
-  void SetTimeoutToStartAdFrameLoading();
+  void MaybeSetTimeoutToStartAdFrameLoading(bool is_loading_attr_lazy);
   // This function is used for the call back of idle task.
   // Trigger loading if the frame is lazy-loaded but not started yet.
   void LoadIfLazyOnIdle(base::TimeTicks deadline);

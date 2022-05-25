@@ -4,11 +4,14 @@ const waitUntilIdle = () => {
   });
 };
 const loaded_ids = [];
-const appendAdFrame = (id, elm) => {
+const appendAdFrame = (id, elm, loadingAttr) => {
   const frame = document.createElement('iframe');
   frame.width = 300;
   frame.height = 300;
   frame.id = id;
+  if (loadingAttr) {
+    frame.loading = loadingAttr;
+  }
 
   elm.appendChild(frame);
   internals.setIsAdSubframe(frame);
