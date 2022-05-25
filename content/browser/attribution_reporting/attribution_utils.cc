@@ -114,7 +114,8 @@ base::Time ReportTimeAtWindow(const CommonSourceInfo& source,
   return ReportTimeFromDeadline(source.impression_time(), deadline);
 }
 
-std::string SerializeAttributionJson(base::ValueView body, bool pretty_print) {
+std::string SerializeAttributionJson(const base::Value::Dict& body,
+                                     bool pretty_print) {
   int options = pretty_print ? base::JSONWriter::OPTIONS_PRETTY_PRINT : 0;
 
   std::string output_json;

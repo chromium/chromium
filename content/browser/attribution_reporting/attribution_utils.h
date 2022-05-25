@@ -7,12 +7,12 @@
 
 #include <string>
 
+#include "base/values.h"
 #include "content/browser/attribution_reporting/attribution_source_type.h"
 #include "content/common/content_export.h"
 
 namespace base {
 class Time;
-class ValueView;
 }  // namespace base
 
 namespace content {
@@ -31,8 +31,9 @@ int NumReportWindows(AttributionSourceType source_type);
 // Calculates the report time for a given source and window index.
 base::Time ReportTimeAtWindow(const CommonSourceInfo& source, int window_index);
 
-CONTENT_EXPORT std::string SerializeAttributionJson(base::ValueView body,
-                                                    bool pretty_print = false);
+CONTENT_EXPORT std::string SerializeAttributionJson(
+    const base::Value::Dict& body,
+    bool pretty_print = false);
 
 // Checks whether filters keys within `source` and `trigger` match.
 // `negated` indicates that no filter data keys should have a match
