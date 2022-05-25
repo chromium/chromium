@@ -3555,6 +3555,7 @@ enum WebFeature {
   kV8PaymentInstruments_Keys_Method = 4234,
   kV8PaymentInstruments_Set_Method = 4235,
   kPerformanceMeasureFindExistingName = 4236,
+  kFlexboxNewAbsPos = 4237,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

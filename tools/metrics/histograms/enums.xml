@@ -40156,6 +40156,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4234" label="V8PaymentInstruments_Keys_Method"/>
   <int value="4235" label="V8PaymentInstruments_Set_Method"/>
   <int value="4236" label="PerformanceMeasureFindExistingName"/>
+  <int value="4237" label="FlexboxNewAbsPos"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
