@@ -15,7 +15,6 @@
 #include "third_party/blink/public/common/attribution_reporting/constants.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom-blink.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
-#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
@@ -92,8 +91,14 @@ TEST(AttributionResponseParsingTest, ParseAttributionAggregatableSource) {
       {"Empty header", "", false, {}},
       {"Invalid JSON", "{", false, {}},
       {"Not an array", "{}", false, {}},
+      {"Element not a dictionary", R"([123])", false, {}},
       {"Missing id field", R"([{"key_piece":"0x159"}])", false, {}},
+      {"id not a string", R"([{"id":123}])", false, {}},
       {"Missing key_piece field", R"([{"id":"key"}])", false, {}},
+      {"key_piece not a string",
+       R"([{"id":"key","key_piece":123}])",
+       false,
+       {}},
       {"Invalid key", R"([{"id":"key","key_piece":"0xG59"}])", false, {}},
       {"One valid key",
        R"([{"id":"key","key_piece":"0x159"}])",
@@ -132,20 +137,14 @@ TEST(AttributionResponseParsingTest,
     wtf_size_t key_size;
 
     String GetHeader() const {
-      StringBuilder builder;
-      builder.Append("[");
-
-      const char* separator = "";
+      JSONArray array;
       for (wtf_size_t i = 0u; i < key_count; ++i) {
-        builder.Append(separator);
-        builder.Append("{\"key_piece\":\"0x1\",\"id\":\"");
-        builder.Append(GetKey(i));
-        builder.Append("\"}");
-        separator = ",";
+        auto object = std::make_unique<JSONObject>();
+        object->SetString("key_piece", "0x1");
+        object->SetString("id", GetKey(i));
+        array.PushObject(std::move(object));
       }
-
-      builder.Append("]");
-      return builder.ToString();
+      return array.ToJSONString();
     }
 
     WTF::HashMap<String, absl::uint128> GetAggregationKeys() const {
@@ -199,23 +198,21 @@ TEST(AttributionResponseParsingTest, ParseAttributionAggregatableTrigger) {
   const struct {
     String description;
     String header;
-    bool valid;
-    mojom::blink::AttributionAggregatableTriggerPtr trigger;
+    mojom::blink::AttributionAggregatableTriggerPtr expected;
   } kTestCases[] = {
-      {"Empty header", "", false,
-       mojom::blink::AttributionAggregatableTrigger::New()},
-      {"Invalid JSON", "{", false,
-       mojom::blink::AttributionAggregatableTrigger::New()},
-      {"Not an array", "{}", false,
-       mojom::blink::AttributionAggregatableTrigger::New()},
-      {"Missing source_keys field", R"([{"key_piece":"0x400"}])", false,
-       mojom::blink::AttributionAggregatableTrigger::New()},
-      {"Missing key_piece field", R"([{"source_keys":["key"]}])", false,
-       mojom::blink::AttributionAggregatableTrigger::New()},
-      {"Invalid key", R"([{"key_piece":"0xG00","source_keys":["key"]}])", false,
-       mojom::blink::AttributionAggregatableTrigger::New()},
+      {"Empty header", "", nullptr},
+      {"Invalid JSON", "{", nullptr},
+      {"Not an array", "{}", nullptr},
+      {"Element not a dictionary", "[123]", nullptr},
+      {"Missing source_keys field", R"([{"key_piece":"0x400"}])", nullptr},
+      {"source_keys not an array",
+       R"([{"key_piece":"0x400","source_keys":"key"}])", nullptr},
+      {"source_keys element not a string",
+       R"([{"key_piece":"0x400","source_keys":[123]}])"},
+      {"Missing key_piece field", R"([{"source_keys":["key"]}])", nullptr},
+      {"Invalid key", R"([{"key_piece":"0xG00","source_keys":["key"]}])",
+       nullptr},
       {"Valid trigger", R"([{"key_piece":"0x400","source_keys":["key"]}])",
-       true,
        AggregatableTriggerBuilder()
            .AddTriggerData(
                mojom::blink::AttributionAggregatableTriggerData::New(
@@ -231,7 +228,6 @@ TEST(AttributionResponseParsingTest, ParseAttributionAggregatableTrigger) {
          "filters": {"filter": ["value1"]},
          "not_filters": {"filter": ["value2"]}
        }])",
-       true,
        AggregatableTriggerBuilder()
            .AddTriggerData(
                mojom::blink::AttributionAggregatableTriggerData::New(
@@ -249,7 +245,6 @@ TEST(AttributionResponseParsingTest, ParseAttributionAggregatableTrigger) {
       {"Two valid trigger data",
        R"([{"key_piece":"0x400","source_keys":["key1"]},
            {"key_piece":"0xA80","source_keys":["key2"]}])",
-       true,
        AggregatableTriggerBuilder()
            .AddTriggerData(
                mojom::blink::AttributionAggregatableTriggerData::New(
@@ -271,9 +266,9 @@ TEST(AttributionResponseParsingTest, ParseAttributionAggregatableTrigger) {
         trigger_data;
     bool valid =
         ParseAttributionAggregatableTriggerData(test_case.header, trigger_data);
-    EXPECT_EQ(test_case.valid, valid) << test_case.description;
-    if (test_case.valid) {
-      EXPECT_EQ(test_case.trigger->trigger_data, trigger_data)
+    EXPECT_EQ(!test_case.expected.is_null(), valid) << test_case.description;
+    if (test_case.expected) {
+      EXPECT_EQ(test_case.expected->trigger_data, trigger_data)
           << test_case.description;
     }
   }
@@ -289,31 +284,23 @@ TEST(AttributionResponseParsingTest,
     wtf_size_t key_size;
 
     String GetHeader() const {
-      StringBuilder builder;
-      builder.Append("[");
-
       String key = GetKey();
 
-      const char* separator = "";
+      JSONArray array;
       for (wtf_size_t i = 0u; i < trigger_data_count; ++i) {
-        builder.Append(separator);
-        builder.Append("{\"key_piece\":\"0x1\",\"source_keys\":[");
+        auto object = std::make_unique<JSONObject>();
+        object->SetString("key_piece", "0x1");
 
-        const char* sub_separator = "";
+        auto keys = std::make_unique<JSONArray>();
         for (wtf_size_t j = 0u; j < key_count; ++j) {
-          builder.Append(sub_separator);
-          builder.Append("\"");
-          builder.Append(key);
-          builder.Append("\"");
-          sub_separator = ",";
+          keys->PushString(key);
         }
+        object->SetArray("source_keys", std::move(keys));
 
-        builder.Append("]}");
-        separator = ",";
+        array.PushObject(std::move(object));
       }
 
-      builder.Append("]");
-      return builder.ToString();
+      return array.ToJSONString();
     }
 
     WTF::Vector<mojom::blink::AttributionAggregatableTriggerDataPtr>
@@ -375,6 +362,7 @@ TEST(AttributionResponseParsingTest, ParseAttributionAggregatableValues) {
   } kTestCases[] = {
       {"Empty header", "", false, {}},
       {"Invalid JSON", "{", false, {}},
+      {"Value not an integer", R"({"key":"1"})", false, {}},
       {"Invalid value", R"({"key":-1})", false, {}},
       {"Valid value", R"({"key":123})", true, {{"key", 123}}},
       {"Two valid values",
@@ -403,21 +391,11 @@ TEST(AttributionResponseParsingTest,
     wtf_size_t key_size;
 
     String GetHeader() const {
-      StringBuilder builder;
-      builder.Append("{");
-
-      const char* separator = "";
+      JSONObject object;
       for (wtf_size_t i = 0u; i < key_count; ++i) {
-        builder.Append(separator);
-        builder.Append("\"");
-        builder.Append(GetKey(i));
-        builder.Append("\":");
-        builder.AppendNumber(i + 1);
-        separator = ",";
+        object.SetInteger(GetKey(i), i + 1);
       }
-
-      builder.Append("}");
-      return builder.ToString();
+      return object.ToJSONString();
     }
 
     WTF::HashMap<String, uint32_t> GetValues() const {
