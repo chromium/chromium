@@ -4694,7 +4694,7 @@
           'mac_pro_amd_gpu',
         ],
         'test_suites': {
-          'gtest_tests': 'gpu_fyi_mac_release_gtests',
+          'gtest_tests': 'gpu_fyi_mac_amd_release_gtests',
           'gpu_telemetry_tests': 'gpu_fyi_mac_pro_release_telemetry_tests',
         },
       },

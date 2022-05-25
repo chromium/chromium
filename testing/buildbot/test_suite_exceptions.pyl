@@ -3284,7 +3284,6 @@
   'webgl2_conformance_gl_passthrough_tests': {
     'remove_from': [
       # Not enough capacity. https://crbug.com/982294
-      'Mac Pro FYI Release (AMD)',
       'Mac FYI Retina Release (NVIDIA)',
     ],
   },
