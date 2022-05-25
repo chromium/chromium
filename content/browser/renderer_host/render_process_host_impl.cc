@@ -1905,12 +1905,20 @@ void RenderProcessHostImpl::BindIndexedDB(
       storage_key, std::move(receiver));
 }
 
-void RenderProcessHostImpl::BindBucketManagerHost(
+void RenderProcessHostImpl::BindBucketManagerHostForRenderFrame(
+    const GlobalRenderFrameHostId& render_frame_host_id,
+    mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  storage_partition_impl_->GetBucketManager()->BindReceiverForRenderFrame(
+      render_frame_host_id, std::move(receiver), mojo::GetBadMessageCallback());
+}
+
+void RenderProcessHostImpl::BindBucketManagerHostForWorker(
     const url::Origin& origin,
     mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  storage_partition_impl_->GetBucketManager()->BindReceiver(
-      origin, std::move(receiver), mojo::GetBadMessageCallback());
+  storage_partition_impl_->GetBucketManager()->BindReceiverForWorker(
+      GetID(), origin, std::move(receiver), mojo::GetBadMessageCallback());
 }
 
 void RenderProcessHostImpl::ForceCrash() {

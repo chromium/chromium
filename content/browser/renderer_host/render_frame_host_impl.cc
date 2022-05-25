@@ -10427,8 +10427,8 @@ void RenderFrameHostImpl::CreateIDBFactory(
 
 void RenderFrameHostImpl::CreateBucketManagerHost(
     mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver) {
-  GetProcess()->BindBucketManagerHost(GetLastCommittedOrigin(),
-                                      std::move(receiver));
+  GetProcess()->BindBucketManagerHostForRenderFrame(GetGlobalId(),
+                                                    std::move(receiver));
 }
 
 void RenderFrameHostImpl::CreatePermissionService(

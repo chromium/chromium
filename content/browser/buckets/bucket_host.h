@@ -9,7 +9,9 @@
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/buckets/bucket_manager_host.mojom.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 
 namespace content {
@@ -31,9 +33,18 @@ class BucketHost : public blink::mojom::BucketHost {
   BucketHost(const BucketHost&) = delete;
   BucketHost& operator=(const BucketHost&) = delete;
 
+  // This callback returns a permission state for a given type. Effectively, it
+  // wraps calls into `PermissionController`, storing relevant parameters. There
+  // should be a `PermissionDecisionCallback` for each bound mojo remote, hence
+  // `permission_decider_map_`.
+  using PermissionDecisionCallback =
+      base::RepeatingCallback<blink::mojom::PermissionStatus(
+          blink::PermissionType)>;
+
   // Create mojo data pipe and return remote to pass to the renderer
   // for the StorageBucket object.
-  mojo::PendingRemote<blink::mojom::BucketHost> CreateStorageBucketBinding();
+  mojo::PendingRemote<blink::mojom::BucketHost> CreateStorageBucketBinding(
+      const PermissionDecisionCallback& permission_decision);
 
   void OnUpdate(const storage::BucketInfo& bucket_info);
 
@@ -56,6 +67,12 @@ class BucketHost : public blink::mojom::BucketHost {
   storage::BucketInfo bucket_info_;
 
   mojo::ReceiverSet<blink::mojom::BucketHost> receivers_;
+
+  // A mapping from an integer which identifies the mojo receiver (found in
+  // `receivers_`) to a callback which decides whether that receiver has
+  // permission to use certain web features (namely, DURABLE_STORAGE).
+  std::map<mojo::ReceiverId, PermissionDecisionCallback>
+      permission_decider_map_;
 };
 
 }  // namespace content

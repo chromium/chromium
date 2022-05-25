@@ -370,7 +370,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
       base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback);
 
   // Updates the persistence bit for the given bucket.
-  void UpdateBucketPersistence(
+  virtual void UpdateBucketPersistence(
       BucketId bucket,
       bool persistent,
       base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback);

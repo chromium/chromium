@@ -8,18 +8,19 @@
 #include <map>
 #include <memory>
 
+#include "base/gtest_prod_util.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/types/pass_key.h"
+#include "content/browser/buckets/bucket_manager_host.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/global_routing_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "third_party/blink/public/mojom/buckets/bucket_manager_host.mojom-forward.h"
 #include "url/origin.h"
 
 namespace content {
-
-class BucketManagerHost;
 
 // One instance of BucketManager exists per StoragePartition, and is created and
 // owned by the `RenderProcessHostImpl`. This class creates and destroys
@@ -35,8 +36,17 @@ class CONTENT_EXPORT BucketManager {
   BucketManager(const BucketManager&) = delete;
   BucketManager& operator=(const BucketManager&) = delete;
 
-  // Binds `receiver` to the BucketManagerHost for `origin`.
-  void BindReceiver(
+  // Binds `receiver` to the BucketManagerHost for the last committed origin in
+  // the RenderFrameHost referenced by  `render_frame_host_id`.
+  void BindReceiverForRenderFrame(
+      const content::GlobalRenderFrameHostId& render_frame_host_id,
+      mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver,
+      mojo::ReportBadMessageCallback bad_message_callback);
+
+  // Binds `receiver` to the BucketManagerHost for `origin`. `render_process_id`
+  // represents the service worker that is connecting to the bucket service.
+  void BindReceiverForWorker(
+      int render_process_id,
       const url::Origin& origin,
       mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver,
       mojo::ReportBadMessageCallback bad_message_callback);
@@ -50,7 +60,17 @@ class CONTENT_EXPORT BucketManager {
   }
 
  private:
+  friend class BucketManagerHostTest;
+  FRIEND_TEST_ALL_PREFIXES(BucketManagerHostTest, OpenBucketValidateName);
+  FRIEND_TEST_ALL_PREFIXES(BucketManagerHostTest, PermissionCheck);
+
   SEQUENCE_CHECKER(sequence_checker_);
+
+  void DoBindReceiver(
+      const url::Origin& origin,
+      mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver,
+      const BucketHost::PermissionDecisionCallback& permission_decision,
+      mojo::ReportBadMessageCallback bad_message_callback);
 
   // Owns all instances of BucketManagerHost associated with a StoragePartition.
   std::map<url::Origin, std::unique_ptr<BucketManagerHost>> hosts_

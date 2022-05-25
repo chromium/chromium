@@ -63,14 +63,14 @@ void MockQuotaManager::UpdateOrCreateBucket(
     return;
   }
 
-  QuotaErrorOr<BucketInfo> bucketOr = FindBucket(
-      params.storage_key, params.name, blink::mojom::StorageType::kTemporary);
-  if (bucketOr.ok()) {
-    std::move(callback).Run(std::move(bucketOr));
+  QuotaErrorOr<BucketInfo> bucket_or =
+      FindAndUpdateBucket(params, blink::mojom::StorageType::kTemporary);
+  if (bucket_or.ok()) {
+    std::move(callback).Run(std::move(bucket_or));
     return;
   }
-  BucketInfo bucket = CreateBucket(params.storage_key, params.name,
-                                   blink::mojom::StorageType::kTemporary);
+  BucketInfo bucket =
+      CreateBucket(params, blink::mojom::StorageType::kTemporary);
   buckets_.emplace_back(
       BucketData(bucket, storage::AllQuotaClientTypes(), base::Time::Now()));
   std::move(callback).Run(std::move(bucket));
@@ -85,13 +85,12 @@ void MockQuotaManager::GetOrCreateBucketDeprecated(
     return;
   }
 
-  QuotaErrorOr<BucketInfo> bucketOr =
-      FindBucket(params.storage_key, params.name, type);
-  if (bucketOr.ok()) {
-    std::move(callback).Run(std::move(bucketOr));
+  QuotaErrorOr<BucketInfo> bucket_or = FindAndUpdateBucket(params, type);
+  if (bucket_or.ok()) {
+    std::move(callback).Run(std::move(bucket_or));
     return;
   }
-  BucketInfo bucket = CreateBucket(params.storage_key, params.name, type);
+  BucketInfo bucket = CreateBucket(params, type);
   buckets_.emplace_back(
       BucketData(bucket, storage::AllQuotaClientTypes(), base::Time::Now()));
   std::move(callback).Run(std::move(bucket));
@@ -144,13 +143,13 @@ bool MockQuotaManager::AddBucket(const BucketInfo& bucket,
   return true;
 }
 
-BucketInfo MockQuotaManager::CreateBucket(const StorageKey& storage_key,
-                                          const std::string& name,
+BucketInfo MockQuotaManager::CreateBucket(const BucketInitParams& params,
                                           StorageType type) {
-  return BucketInfo(bucket_id_generator_.GenerateNextId(), storage_key, type,
-                    name, /*expiration=*/base::Time::Max(), /*quota=*/0,
-                    /*persistent=*/false,
-                    /*durability=*/{});
+  return BucketInfo(
+      bucket_id_generator_.GenerateNextId(), params.storage_key, type,
+      params.name, params.expiration, params.quota,
+      params.persistent.value_or(false),
+      params.durability.value_or(blink::mojom::BucketDurability::kRelaxed));
 }
 
 bool MockQuotaManager::BucketHasData(const BucketInfo& bucket,
@@ -227,6 +226,22 @@ void MockQuotaManager::FindAndDeleteBucketData(const StorageKey& storage_key,
                    std::move(callback));
 }
 
+void MockQuotaManager::UpdateBucketPersistence(
+    BucketId bucket,
+    bool persistent,
+    base::OnceCallback<void(QuotaErrorOr<BucketInfo>)> callback) {
+  auto it = std::find_if(buckets_.begin(), buckets_.end(),
+                         [bucket](const BucketData& bucket_data) {
+                           return bucket_data.bucket.id == bucket;
+                         });
+  if (it != buckets_.end()) {
+    it->bucket.persistent = persistent;
+    std::move(callback).Run(it->bucket);
+  } else {
+    std::move(callback).Run(QuotaError::kNotFound);
+  }
+}
+
 void MockQuotaManager::NotifyWriteFailed(const StorageKey& storage_key) {
   auto storage_key_error_log =
       write_error_tracker_.insert(std::pair<StorageKey, int>(storage_key, 0))
@@ -260,6 +275,26 @@ QuotaErrorOr<BucketInfo> MockQuotaManager::FindBucket(
                bucket_data.bucket.type == type;
       });
   if (it != buckets_.end()) {
+    return it->bucket;
+  }
+  return QuotaError::kNotFound;
+}
+
+QuotaErrorOr<BucketInfo> MockQuotaManager::FindAndUpdateBucket(
+    const BucketInitParams& params,
+    blink::mojom::StorageType type) {
+  auto it = std::find_if(buckets_.begin(), buckets_.end(),
+                         [params, type](const BucketData& bucket_data) {
+                           return bucket_data.bucket.storage_key ==
+                                      params.storage_key &&
+                                  bucket_data.bucket.name == params.name &&
+                                  bucket_data.bucket.type == type;
+                         });
+  if (it != buckets_.end()) {
+    if (params.persistent)
+      it->bucket.persistent = *params.persistent;
+    if (!params.expiration.is_null())
+      it->bucket.expiration = params.expiration;
     return it->bucket;
   }
   return QuotaError::kNotFound;

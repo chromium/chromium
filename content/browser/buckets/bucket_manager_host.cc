@@ -55,9 +55,11 @@ BucketManagerHost::BucketManagerHost(BucketManager* manager, url::Origin origin)
 BucketManagerHost::~BucketManagerHost() = default;
 
 void BucketManagerHost::BindReceiver(
-    mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver) {
+    mojo::PendingReceiver<blink::mojom::BucketManagerHost> receiver,
+    const BucketHost::PermissionDecisionCallback& permission_decision) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  receivers_.Add(this, std::move(receiver));
+  permission_decider_map_.emplace(receivers_.Add(this, std::move(receiver)),
+                                  permission_decision);
 }
 
 void BucketManagerHost::OpenBucket(const std::string& name,
@@ -65,12 +67,6 @@ void BucketManagerHost::OpenBucket(const std::string& name,
                                    OpenBucketCallback callback) {
   if (!IsValidBucketName(name)) {
     receivers_.ReportBadMessage("Invalid bucket name");
-    return;
-  }
-
-  auto it = bucket_map_.find(name);
-  if (it != bucket_map_.end()) {
-    std::move(callback).Run(it->second->CreateStorageBucketBinding());
     return;
   }
 
@@ -82,16 +78,29 @@ void BucketManagerHost::OpenBucket(const std::string& name,
     if (policies->has_quota)
       params.quota = policies->quota;
 
-    if (policies->has_persisted)
-      params.persistent = policies->persisted;
-
     if (policies->has_durability)
       params.durability = policies->durability;
+
+    if (policies->has_persisted) {
+      // Only grant persistence if permitted.
+      auto it = permission_decider_map_.find(receivers_.current_receiver());
+      if (it == permission_decider_map_.end()) {
+        NOTREACHED();
+        receivers_.ReportBadMessage("Internal error");
+        return;
+      }
+      if (it->second.Run(blink::PermissionType::DURABLE_STORAGE) ==
+          blink::mojom::PermissionStatus::GRANTED) {
+        params.persistent = policies->persisted;
+      }
+    }
   }
+
   manager_->quota_manager_proxy()->UpdateOrCreateBucket(
       params, base::SequencedTaskRunnerHandle::Get(),
       base::BindOnce(&BucketManagerHost::DidGetBucket,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
+                     weak_factory_.GetWeakPtr(), receivers_.current_receiver(),
+                     std::move(callback)));
 }
 
 void BucketManagerHost::Keys(KeysCallback callback) {
@@ -142,10 +151,12 @@ void BucketManagerHost::UpdateBucketPersistence(
 
 void BucketManagerHost::OnReceiverDisconnect() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  permission_decider_map_.erase(receivers_.current_receiver());
   manager_->OnHostReceiverDisconnect(this, base::PassKey<BucketManagerHost>());
 }
 
 void BucketManagerHost::DidGetBucket(
+    mojo::ReceiverId receiver_id,
     OpenBucketCallback callback,
     storage::QuotaErrorOr<storage::BucketInfo> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -157,9 +168,16 @@ void BucketManagerHost::DidGetBucket(
   }
 
   const auto& bucket = result.value();
-  auto bucket_host = std::make_unique<BucketHost>(this, bucket);
-  auto pending_remote = bucket_host->CreateStorageBucketBinding();
-  bucket_map_.emplace(bucket.name, std::move(bucket_host));
+  auto it = bucket_map_.find(bucket.name);
+  if (it == bucket_map_.end()) {
+    it = bucket_map_
+             .emplace(bucket.name, std::make_unique<BucketHost>(this, bucket))
+             .first;
+  }
+
+  auto permission_it = permission_decider_map_.find(receiver_id);
+  auto pending_remote =
+      it->second->CreateStorageBucketBinding(permission_it->second);
   std::move(callback).Run(std::move(pending_remote));
 }
 

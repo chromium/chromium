@@ -52,9 +52,12 @@ class BucketManagerHostTest : public testing::Test {
         quota_manager_.get(), base::ThreadTaskRunnerHandle::Get());
     bucket_manager_ =
         std::make_unique<BucketManager>(quota_manager_proxy_.get());
-    bucket_manager_->BindReceiver(
+    bucket_manager_->DoBindReceiver(
         url::Origin::Create(GURL(kTestUrl)),
         bucket_manager_host_remote_.BindNewPipeAndPassReceiver(),
+        base::BindRepeating([](blink::PermissionType permission) {
+          return blink::mojom::PermissionStatus::GRANTED;
+        }),
         base::DoNothing());
     EXPECT_TRUE(bucket_manager_host_remote_.is_bound());
   }
@@ -115,9 +118,13 @@ TEST_F(BucketManagerHostTest, OpenBucketValidateName) {
 
   for (auto it = names.begin(); it < names.end(); ++it) {
     mojo::Remote<blink::mojom::BucketManagerHost> remote;
-    bucket_manager_->BindReceiver(url::Origin::Create(GURL(kTestUrl)),
-                                  remote.BindNewPipeAndPassReceiver(),
-                                  base::DoNothing());
+    bucket_manager_->DoBindReceiver(
+        url::Origin::Create(GURL(kTestUrl)),
+        remote.BindNewPipeAndPassReceiver(),
+        base::BindRepeating([](blink::PermissionType permission) {
+          return blink::mojom::PermissionStatus::GRANTED;
+        }),
+        base::DoNothing());
     EXPECT_TRUE(remote.is_bound());
 
     if (it->first) {
@@ -174,6 +181,107 @@ TEST_F(BucketManagerHostTest, DeleteInvalidBucketName) {
   bucket_manager_host_remote_->DeleteBucket("InvalidBucket", base::DoNothing());
   bucket_manager_host_remote_.FlushForTesting();
   EXPECT_EQ("Invalid bucket name", bad_message_observer.WaitForBadMessage());
+}
+
+TEST_F(BucketManagerHostTest, PermissionCheck) {
+  const std::vector<
+      std::pair<blink::mojom::PermissionStatus, /*persisted_respected=*/bool>>
+      test_cases = {{blink::mojom::PermissionStatus::GRANTED, true},
+                    {blink::mojom::PermissionStatus::DENIED, false}};
+
+  for (auto test_case : test_cases) {
+    blink::mojom::PermissionStatus permission = test_case.first;
+    bool persisted_respected = test_case.second;
+    mojo::Remote<blink::mojom::BucketManagerHost> manager_remote;
+    bucket_manager_->DoBindReceiver(
+        url::Origin::Create(GURL(kTestUrl)),
+        manager_remote.BindNewPipeAndPassReceiver(),
+        base::BindLambdaForTesting(
+            [&](blink::PermissionType type) { return permission; }),
+        base::DoNothing());
+    EXPECT_TRUE(manager_remote.is_bound());
+
+    {
+      // Not initially persisted.
+      mojo::Remote<blink::mojom::BucketHost> bucket_remote;
+      {
+        base::RunLoop run_loop;
+        manager_remote->OpenBucket(
+            "foo", blink::mojom::BucketPolicies::New(),
+            base::BindLambdaForTesting(
+                [&](mojo::PendingRemote<blink::mojom::BucketHost> remote) {
+                  EXPECT_TRUE(remote.is_valid());
+                  bucket_remote.Bind(std::move(remote));
+                  run_loop.Quit();
+                }));
+        run_loop.Run();
+      }
+
+      {
+        base::RunLoop run_loop;
+        bucket_remote->Persisted(
+            base::BindLambdaForTesting([&](bool persisted, bool success) {
+              EXPECT_FALSE(persisted);
+              EXPECT_TRUE(success);
+              run_loop.Quit();
+            }));
+        run_loop.Run();
+      }
+
+      // Changed to persisted.
+      {
+        base::RunLoop run_loop;
+        bucket_remote->Persist(
+            base::BindLambdaForTesting([&](bool persisted, bool success) {
+              EXPECT_EQ(persisted, persisted_respected);
+              EXPECT_EQ(success, persisted_respected);
+              run_loop.Quit();
+            }));
+        run_loop.Run();
+      }
+      {
+        base::test::TestFuture<bool> delete_future;
+        bucket_manager_host_remote_->DeleteBucket("foo",
+                                                  delete_future.GetCallback());
+        EXPECT_TRUE(delete_future.Get());
+      }
+
+      // Initially persisted.
+      mojo::Remote<blink::mojom::BucketHost> bucket_remote2;
+      {
+        base::RunLoop run_loop;
+        auto policies = blink::mojom::BucketPolicies::New();
+        policies->has_persisted = true;
+        policies->persisted = true;
+        manager_remote->OpenBucket(
+            "foo", std::move(policies),
+            base::BindLambdaForTesting(
+                [&](mojo::PendingRemote<blink::mojom::BucketHost> remote) {
+                  EXPECT_TRUE(remote.is_valid());
+                  bucket_remote2.Bind(std::move(remote));
+                  run_loop.Quit();
+                }));
+        run_loop.Run();
+      }
+
+      {
+        base::RunLoop run_loop;
+        bucket_remote2->Persisted(
+            base::BindLambdaForTesting([&](bool persisted, bool success) {
+              EXPECT_EQ(persisted, persisted_respected);
+              EXPECT_TRUE(success);
+              run_loop.Quit();
+            }));
+        run_loop.Run();
+      }
+      {
+        base::test::TestFuture<bool> delete_future;
+        bucket_manager_host_remote_->DeleteBucket("foo",
+                                                  delete_future.GetCallback());
+        EXPECT_TRUE(delete_future.Get());
+      }
+    }
+  }
 }
 
 }  // namespace content

@@ -1052,7 +1052,7 @@ storage::BucketInfo AddQuotaManagedBucket(
     blink::mojom::StorageType type,
     base::Time modified = base::Time::Now()) {
   storage::BucketInfo bucket =
-      manager->CreateBucket(storage_key, bucket_name, type);
+      manager->CreateBucket({storage_key, bucket_name}, type);
   manager->AddBucket(bucket, {kClientFile}, modified);
   EXPECT_TRUE(manager->BucketHasData(bucket, kClientFile));
   return bucket;

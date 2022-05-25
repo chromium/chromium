@@ -21,9 +21,12 @@ BucketHost::BucketHost(BucketManagerHost* bucket_manager_host,
 BucketHost::~BucketHost() = default;
 
 mojo::PendingRemote<blink::mojom::BucketHost>
-BucketHost::CreateStorageBucketBinding() {
+BucketHost::CreateStorageBucketBinding(
+    const PermissionDecisionCallback& permission_decision) {
   mojo::PendingRemote<blink::mojom::BucketHost> remote;
-  receivers_.Add(this, remote.InitWithNewPipeAndPassReceiver());
+  permission_decider_map_.emplace(
+      receivers_.Add(this, remote.InitWithNewPipeAndPassReceiver()),
+      permission_decision);
   return remote;
 }
 
@@ -32,8 +35,24 @@ void BucketHost::OnUpdate(const storage::BucketInfo& bucket_info) {
 }
 
 void BucketHost::Persist(PersistCallback callback) {
-  bucket_manager_host_->UpdateBucketPersistence(
-      bucket_info_.id, true, base::BindOnce(std::move(callback), true));
+  if (bucket_info_.persistent) {
+    std::move(callback).Run(true, true);
+    return;
+  }
+
+  auto it = permission_decider_map_.find(receivers_.current_receiver());
+  if (it == permission_decider_map_.end()) {
+    NOTREACHED();
+    std::move(callback).Run(false, false);
+    return;
+  }
+  if (it->second.Run(blink::PermissionType::DURABLE_STORAGE) ==
+      blink::mojom::PermissionStatus::GRANTED) {
+    bucket_manager_host_->UpdateBucketPersistence(
+        bucket_info_.id, true, base::BindOnce(std::move(callback), true));
+  } else {
+    std::move(callback).Run(false, false);
+  }
 }
 
 void BucketHost::Persisted(PersistedCallback callback) {
@@ -62,6 +81,7 @@ void BucketHost::Expires(ExpiresCallback callback) {
 }
 
 void BucketHost::OnReceiverDisconnected() {
+  permission_decider_map_.erase(receivers_.current_receiver());
   if (!receivers_.empty())
     return;
   // Destroys `this`.

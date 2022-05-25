@@ -247,13 +247,13 @@ TEST_F(MockQuotaManagerTest, BasicBucketManipulation) {
       StorageKey::CreateFromStringForTesting("http://host2:1/");
 
   const BucketInfo temp_bucket1 =
-      manager()->CreateBucket(kStorageKey1, "temp_host1", kTemporary);
+      manager()->CreateBucket({kStorageKey1, "temp_host1"}, kTemporary);
   const BucketInfo perm_bucket1 =
-      manager()->CreateBucket(kStorageKey1, "perm_host1", kPersistent);
+      manager()->CreateBucket({kStorageKey1, "perm_host1"}, kPersistent);
   const BucketInfo temp_bucket2 =
-      manager()->CreateBucket(kStorageKey2, "temp_host2", kTemporary);
+      manager()->CreateBucket({kStorageKey2, "temp_host2"}, kTemporary);
   const BucketInfo perm_bucket2 =
-      manager()->CreateBucket(kStorageKey2, "perm_host2", kPersistent);
+      manager()->CreateBucket({kStorageKey2, "perm_host2"}, kPersistent);
 
   EXPECT_EQ(manager()->BucketDataCount(kClientFile), 0);
   EXPECT_EQ(manager()->BucketDataCount(kClientDB), 0);
@@ -290,14 +290,17 @@ TEST_F(MockQuotaManagerTest, BasicBucketManipulation) {
 
 TEST_F(MockQuotaManagerTest, BucketDeletion) {
   const BucketInfo bucket1 = manager()->CreateBucket(
-      StorageKey::CreateFromStringForTesting("http://host1:1/"),
-      kDefaultBucketName, kTemporary);
+      {StorageKey::CreateFromStringForTesting("http://host1:1/"),
+       kDefaultBucketName},
+      kTemporary);
   const BucketInfo bucket2 = manager()->CreateBucket(
-      StorageKey::CreateFromStringForTesting("http://host2:1/"),
-      kDefaultBucketName, kPersistent);
+      {StorageKey::CreateFromStringForTesting("http://host2:1/"),
+       kDefaultBucketName},
+      kPersistent);
   const BucketInfo bucket3 = manager()->CreateBucket(
-      StorageKey::CreateFromStringForTesting("http://host3:1/"),
-      kDefaultBucketName, kTemporary);
+      {StorageKey::CreateFromStringForTesting("http://host3:1/"),
+       kDefaultBucketName},
+      kTemporary);
 
   manager()->AddBucket(bucket1, {kClientFile}, base::Time::Now());
   manager()->AddBucket(bucket2, {kClientFile, kClientDB}, base::Time::Now());
@@ -324,11 +327,13 @@ TEST_F(MockQuotaManagerTest, BucketDeletion) {
 
 TEST_F(MockQuotaManagerTest, ModifiedBuckets) {
   const BucketInfo bucket1 = manager()->CreateBucket(
-      StorageKey::CreateFromStringForTesting("http://host1:1/"),
-      kDefaultBucketName, kTemporary);
+      {StorageKey::CreateFromStringForTesting("http://host1:1/"),
+       kDefaultBucketName},
+      kTemporary);
   const BucketInfo bucket2 = manager()->CreateBucket(
-      StorageKey::CreateFromStringForTesting("http://host2:1/"),
-      kDefaultBucketName, kTemporary);
+      {StorageKey::CreateFromStringForTesting("http://host2:1/"),
+       kDefaultBucketName},
+      kTemporary);
 
   base::Time now = base::Time::Now();
   base::Time then = base::Time();
