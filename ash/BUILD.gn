@@ -2407,6 +2407,17 @@ action("dbus_service_files") {
   args += rebase_path(sources, root_build_dir)
 }
 
+static_library("run_ash_unittests") {
+  testonly = true
+  sources = [ "test/ash_unittests.cc" ]
+  deps = [
+    ":test_support",
+    "//base/test:test_support",
+    "//components/viz/test:test_support",
+    "//mojo/core/embedder:embedder",
+  ]
+}
+
 test("ash_unittests") {
   use_xvfb = use_xvfb_in_this_config
 
@@ -2844,7 +2855,6 @@ test("ash_unittests") {
     "system/usb_peripheral/usb_peripheral_notification_controller_unittest.cc",
     "system/virtual_keyboard/virtual_keyboard_tray_unittest.cc",
     "test/ash_test_helper_unittest.cc",
-    "test/ash_unittests.cc",
     "tooltips/tooltip_controller_unittest.cc",
     "touch/touch_devices_controller_unittest.cc",
     "touch/touch_observer_hud_unittest.cc",
@@ -2951,6 +2961,7 @@ test("ash_unittests") {
 
   deps = [
     ":ash",
+    ":run_ash_unittests",
     ":test_support",
     "//ash/app_list",
     "//ash/app_list:test_support",
@@ -3140,6 +3151,23 @@ test("ash_unittests") {
       "ambient/resources/ambient_animation_static_resources_impl_unittest.cc",
     ]
   }
+}
+
+test("ash_pixeltests") {
+  sources = [
+    "test/ash_pixel_diff_test_base.cc",
+    "test/ash_pixel_diff_test_base.h",
+  ]
+
+  deps = [
+    ":ash",
+    ":run_ash_unittests",
+    ":test_support",
+    "//ash/public/cpp",
+    "//base/test:test_support",
+    "//components/viz/test:test_support",
+    "//mojo/core/embedder:embedder",
+  ]
 }
 
 # TODO(oshima): Remove or migrate to new ash_ui_perftests
