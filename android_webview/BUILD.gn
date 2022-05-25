@@ -69,18 +69,15 @@ if (android_64bit_target_cpu && skip_secondary_abi_for_cq) {
   }
 }
 
-# This version of the WebView APK doesn't include WebLayer.
+# This version of the WebView APK doesn't include WebLayer java and resources.
 # It's used to define the allowlist of resources to be pulled out of language
 # splits. See |shared_resources_allowlist_target|.
 standalone_system_webview_apk_tmpl("system_webview_no_weblayer_apk") {
   exclude_weblayer_java = true
   apk_name = "SystemWebViewNoWebLayer"
 
-  # Don't include any code to speed up compilation. This is used only for the
-  # resources allowlist.
   include_32_bit_webview = false
   include_64_bit_webview = false
-  omit_dex = true
 
   # Adding deps on recycler view in the base WebView APK will end up keeping the
   # Java in the base APK instead of the WebLayer DFM, even though it is not
