@@ -34,7 +34,6 @@
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/metrics/power/battery_level_provider.h"
 #include "chrome/browser/metrics/power/power_metrics_reporter.h"
-#include "chrome/browser/metrics/power/process_metrics_recorder.h"
 #include "chrome/browser/metrics/power/process_monitor.h"
 #include "chrome/browser/metrics/process_memory_metrics_emitter.h"
 #include "chrome/browser/shell_integration.h"
@@ -658,13 +657,9 @@ void ChromeBrowserMainExtraPartsMetrics::PostBrowserStart() {
             g_browser_process->local_state()));
   }
 
-  // Only instantiate the ProcessMetricsRecorder and the PowerMetricsReporter if
-  // process_monitor_ exists. This is always the case for Chrome but not for the
-  // unittests.
+  // Only instantiate the PowerMetricsReporter if |process_monitor_| exists.
+  // This is always the case for Chrome but not for the unit tests.
   if (process_monitor_) {
-    process_metrics_recorder_ =
-        std::make_unique<ProcessMetricsRecorder>(process_monitor_.get());
-
     power_metrics_reporter_ =
         std::make_unique<PowerMetricsReporter>(process_monitor_.get());
 

@@ -3894,8 +3894,6 @@ static_library("browser") {
       "metrics/power/power_metrics.h",
       "metrics/power/power_metrics_reporter.cc",
       "metrics/power/power_metrics_reporter.h",
-      "metrics/power/process_metrics_recorder.cc",
-      "metrics/power/process_metrics_recorder.h",
       "metrics/power/process_metrics_recorder_util.cc",
       "metrics/power/process_metrics_recorder_util.h",
       "metrics/power/process_monitor.cc",

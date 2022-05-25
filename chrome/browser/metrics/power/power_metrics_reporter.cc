@@ -141,6 +141,47 @@ int64_t PowerMetricsReporter::GetBucketForSampleForTesting(
   return GetBucketForSample(value);
 }
 
+void PowerMetricsReporter::OnMetricsSampled(
+    int process_type,
+    ProcessSubtypes process_subtype,
+    const ProcessMonitor::Metrics& metrics) {
+  // The histogram macros don't support variables as histogram names,
+  // hence the macro duplication for each process type.
+  switch (process_type) {
+    case content::PROCESS_TYPE_BROWSER:
+      RecordProcessHistograms("BrowserProcess", metrics);
+      break;
+    case content::PROCESS_TYPE_RENDERER:
+      RecordProcessHistograms("RendererProcess", metrics);
+      break;
+    case content::PROCESS_TYPE_GPU:
+      RecordProcessHistograms("GPUProcess", metrics);
+      break;
+    case content::PROCESS_TYPE_PPAPI_PLUGIN:
+      RecordProcessHistograms("PPAPIProcess", metrics);
+      break;
+    case content::PROCESS_TYPE_UTILITY:
+      RecordProcessHistograms("UtilityProcess", metrics);
+      break;
+    default:
+      break;
+  }
+
+  switch (process_subtype) {
+    case kProcessSubtypeUnknown:
+      break;
+    case kProcessSubtypeExtensionPersistent:
+      RecordProcessHistograms("RendererExtensionPersistentProcess", metrics);
+      break;
+    case kProcessSubtypeExtensionEvent:
+      RecordProcessHistograms("RendererExtensionEventProcess", metrics);
+      break;
+    case kProcessSubtypeNetworkProcess:
+      RecordProcessHistograms("NetworkProcess", metrics);
+      break;
+  }
+}
+
 void PowerMetricsReporter::OnAggregatedMetricsSampled(
     const ProcessMonitor::Metrics& metrics) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
