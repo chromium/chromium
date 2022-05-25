@@ -1791,24 +1791,15 @@ TEST_F(WindowTreeHostManagerTest, GetActiveDisplayWhenReplacingPrimaryDisplay) {
       Shell::Get()->window_tree_host_manager()->GetRootWindowForDisplayId(
           GetPrimaryDisplay().id());
 
-  // Creating a window at the lower right end of the primary display with a
-  // view.
-  views::Widget* widget = TestWidgetBuilder().BuildOwnedByNativeWidget();
-  views::View* view =
-      widget->GetContentsView()->AddChildView(std::make_unique<views::View>());
-
-  view->SetBounds(0, 0, 200, 200);
-  widget->Show();
-
   RootWindowTestEventHandler handler;
   root_window->AddPreTargetHandler(&handler);
 
-  ui::test::EventGenerator generator(root_window, widget->GetNativeWindow());
+  ui::test::EventGenerator generator(root_window);
 
-  // Move the cursor to a coordinates that is in the logical bounds of the older
-  // display[0,0 800x600] and in the physical bounds[0,0 700x500] of new display
-  // but not in the logical bound[0,0 350x250] as the crash happens before full
-  // propagation of device_scale_factor effect.
+  // Move the cursor to a coordinate that is in the logical bounds of the older
+  // display[0,0 800x600] but not in the logical bounds[0,0 350x250] of the new
+  // display. The cursor coordinates also needs to be in the root window's
+  // bounds[0,0 700x500] attached to the new primary display.
   generator.MoveMouseTo(400, 300);
 
   // Replace the primary display with a newer display with a different device
@@ -1823,7 +1814,6 @@ TEST_F(WindowTreeHostManagerTest, GetActiveDisplayWhenReplacingPrimaryDisplay) {
   display_manager()->OnNativeDisplaysChanged(display_info_list);
 
   root_window->RemovePreTargetHandler(&handler);
-  widget->CloseNow();
 }
 
 TEST_F(WindowTreeHostManagerTest, KeyEventFromSecondaryDisplay) {
