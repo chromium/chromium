@@ -88,8 +88,7 @@ using web::test::HttpServer;
 
 // Tests that only one NTP tile is displayed for a TopSite that involves a
 // redirect.
-// TODO(crbug.com/1326515): Re-enable after fixing flaking on builders
-- (void)DISABLED_testTopSitesTileAfterRedirect {
+- (void)testTopSitesTileAfterRedirect {
   std::map<GURL, HtmlResponseProviderImpl::Response> responses;
   const GURL firstRedirectURL = HttpServer::MakeUrl("http://firstRedirect/");
   const GURL destinationURL = HttpServer::MakeUrl("http://destination/");
@@ -139,14 +138,7 @@ using web::test::HttpServer;
       assertWithMatcher:grey_nil()];
 
   // Clear history and verify that the tile does not exist.
-  [ChromeEarlGreyUI openSettingsMenu];
-  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsMenuPrivacyButton()];
-  [ChromeEarlGreyUI tapPrivacyMenuButton:ClearBrowsingDataCell()];
-  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:ClearBrowsingDataButton()];
-  [[EarlGrey selectElementWithMatcher:ConfirmClearBrowsingDataButton()]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
-      performAction:grey_tap()];
+  [ChromeEarlGrey clearBrowsingHistory];
 
   // Wait for clear browsing data to completed before checking for title2 to
   // disappear.
