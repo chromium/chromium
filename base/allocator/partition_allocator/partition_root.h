@@ -68,6 +68,7 @@
 #include "base/allocator/partition_allocator/thread_cache.h"
 #include "base/base_export.h"
 #include "base/dcheck_is_on.h"
+#include "base/debug/debugging_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 
@@ -992,7 +993,7 @@ PA_ALWAYS_INLINE void PartitionAllocFreeForRefCounting(uintptr_t slot_start) {
   PA_DCHECK(root->brp_enabled());
 
   // memset() can be really expensive.
-#if EXPENSIVE_DCHECKS_ARE_ON()
+#if BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON)
   DebugMemset(reinterpret_cast<void*>(slot_start), kFreedByte,
               slot_span->GetUtilizedSlotSize()
 #if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
@@ -1283,7 +1284,7 @@ PA_ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
 
   // memset() can be really expensive.
-#if EXPENSIVE_DCHECKS_ARE_ON()
+#if BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON)
   internal::DebugMemset(SlotStartAddr2Ptr(slot_start), internal::kFreedByte,
                         slot_span->GetUtilizedSlotSize()
 #if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
@@ -1824,7 +1825,7 @@ PA_ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocWithFlagsNoHooks(
   // PA_LIKELY: operator new() calls malloc(), not calloc().
   if (PA_LIKELY(!zero_fill)) {
     // memset() can be really expensive.
-#if EXPENSIVE_DCHECKS_ARE_ON()
+#if BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON)
     internal::DebugMemset(object, internal::kUninitializedByte, usable_size);
 #endif
   } else if (!is_already_zeroed) {

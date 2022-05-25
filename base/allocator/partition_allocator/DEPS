@@ -11,6 +11,7 @@ include_rules = [
     "+base/mac/foundation_util.h",
     "+base/mac/mac_util.h",
     "+base/mac/scoped_cftyperef.h",
+    "+base/debug/debugging_buildflags.h",
     "+base/win/windows_types.h",
     "+build/build_config.h",
     "+build/buildflag.h",

@@ -42,6 +42,7 @@
 #include "base/allocator/partition_allocator/partition_tag_bitmap.h"
 #include "base/allocator/partition_allocator/reservation_offset_table.h"
 #include "base/allocator/partition_allocator/tagging.h"
+#include "base/debug/debugging_buildflags.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
@@ -938,7 +939,7 @@ TEST_P(PartitionAllocTest, Alloc) {
   // Check that the realloc copied correctly.
   char* new_char_ptr = static_cast<char*>(new_ptr);
   EXPECT_EQ(*new_char_ptr, 'A');
-#if EXPENSIVE_DCHECKS_ARE_ON()
+#if BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON)
   // Subtle: this checks for an old bug where we copied too much from the
   // source of the realloc. The condition can be detected by a trashing of
   // the uninitialized value in the space of the upsized allocation.
@@ -1055,7 +1056,7 @@ TEST_P(PartitionAllocTest, AllocSizes) {
     allocator.root()->Free(new_ptr_2);
     allocator.root()->Free(ptr4);
 
-#if EXPENSIVE_DCHECKS_ARE_ON()
+#if BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON)
     // |SlotSpanMetadata::Free| must poison the slot's contents with
     // |kFreedByte|.
     EXPECT_EQ(kFreedByte,
@@ -1365,7 +1366,7 @@ TEST_P(PartitionAllocTest, Realloc) {
   char* char_ptr2 = static_cast<char*>(ptr2);
   EXPECT_EQ('A', char_ptr2[0]);
   EXPECT_EQ('A', char_ptr2[size - 1]);
-#if EXPENSIVE_DCHECKS_ARE_ON()
+#if BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON)
   EXPECT_EQ(kUninitializedByte, static_cast<unsigned char>(char_ptr2[size]));
 #endif
 
@@ -1377,7 +1378,7 @@ TEST_P(PartitionAllocTest, Realloc) {
   char* char_ptr = static_cast<char*>(ptr);
   EXPECT_EQ('A', char_ptr[0]);
   EXPECT_EQ('A', char_ptr[size - 2]);
-#if EXPENSIVE_DCHECKS_ARE_ON()
+#if BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON)
   EXPECT_EQ(kUninitializedByte, static_cast<unsigned char>(char_ptr[size - 1]));
 #endif
 
@@ -1397,7 +1398,7 @@ TEST_P(PartitionAllocTest, Realloc) {
   char_ptr2 = static_cast<char*>(ptr2);
   EXPECT_EQ('A', char_ptr2[0]);
   EXPECT_EQ('A', char_ptr2[size - 1]);
-#if EXPENSIVE_DCHECKS_ARE_ON()
+#if BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON)
   EXPECT_EQ(kUninitializedByte, static_cast<unsigned char>(char_ptr2[size]));
 #endif
   allocator.root()->Free(ptr2);
