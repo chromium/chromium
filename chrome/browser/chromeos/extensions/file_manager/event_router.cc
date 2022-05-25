@@ -56,6 +56,7 @@
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/components/disks/disks_prefs.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
@@ -337,7 +338,8 @@ class DeviceEventRouterImpl : public DeviceEventRouter {
   // DeviceEventRouter overrides.
   bool IsExternalStorageDisabled() override {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    return profile_->GetPrefs()->GetBoolean(prefs::kExternalStorageDisabled);
+    return profile_->GetPrefs()->GetBoolean(
+        disks::prefs::kExternalStorageDisabled);
   }
 
  private:

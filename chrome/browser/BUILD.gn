@@ -5558,6 +5558,7 @@ static_library("browser") {
       "//chrome/browser/ui/webui/settings/chromeos/constants:mojom",
       "//chrome/browser/webshare:storage",
       "//chromeos/components/cdm_factory_daemon:cdm_factory_daemon_browser",
+      "//chromeos/components/disks:prefs",
       "//chromeos/components/onc:onc",
       "//chromeos/components/quick_answers:quick_answers",
       "//chromeos/components/quick_answers/public/cpp:cpp",

@@ -50,6 +50,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/pciguard/pciguard_client.h"
+#include "chromeos/components/disks/disks_prefs.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/update_engine/update_engine.pb.h"
 #include "chromeos/dbus/update_engine/update_engine_client.h"
@@ -351,9 +352,7 @@ void Preferences::RegisterProfilePrefs(
       ::prefs::kChromeOSReleaseNotesVersion, "0.0.0.0",
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 
-  registry->RegisterBooleanPref(::prefs::kExternalStorageDisabled, false);
-
-  registry->RegisterBooleanPref(::prefs::kExternalStorageReadOnly, false);
+  disks::prefs::RegisterProfilePrefs(registry);
 
   registry->RegisterStringPref(::prefs::kTermsOfServiceURL, "");
 

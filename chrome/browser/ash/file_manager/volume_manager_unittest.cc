@@ -34,8 +34,8 @@
 #include "chrome/browser/ash/file_system_provider/service.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/components/disks/disks_prefs.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/suspend.pb.h"
 #include "components/prefs/pref_service.h"
@@ -452,7 +452,8 @@ TEST_F(VolumeManagerTest, OnAutoMountableDiskEvent_Hidden) {
 
 TEST_F(VolumeManagerTest, OnAutoMountableDiskEvent_Added) {
   // Enable external storage.
-  profile()->GetPrefs()->SetBoolean(prefs::kExternalStorageDisabled, false);
+  profile()->GetPrefs()->SetBoolean(disks::prefs::kExternalStorageDisabled,
+                                    false);
 
   LoggingObserver observer;
   volume_manager()->AddObserver(&observer);
@@ -485,7 +486,8 @@ TEST_F(VolumeManagerTest, OnAutoMountableDiskEvent_Added) {
 
 TEST_F(VolumeManagerTest, OnAutoMountableDiskEvent_AddedNonMounting) {
   // Enable external storage.
-  profile()->GetPrefs()->SetBoolean(prefs::kExternalStorageDisabled, false);
+  profile()->GetPrefs()->SetBoolean(disks::prefs::kExternalStorageDisabled,
+                                    false);
 
   // Device which is already mounted.
   {
@@ -533,7 +535,8 @@ TEST_F(VolumeManagerTest, OnAutoMountableDiskEvent_AddedNonMounting) {
 
   // External storage is disabled.
   {
-    profile()->GetPrefs()->SetBoolean(prefs::kExternalStorageDisabled, true);
+    profile()->GetPrefs()->SetBoolean(disks::prefs::kExternalStorageDisabled,
+                                      true);
 
     LoggingObserver observer;
     volume_manager()->AddObserver(&observer);
@@ -616,7 +619,8 @@ TEST_F(VolumeManagerTest, OnAutoMountableDiskEvent_Changed) {
 }
 
 TEST_F(VolumeManagerTest, OnAutoMountableDiskEvent_ChangedInReadonly) {
-  profile()->GetPrefs()->SetBoolean(prefs::kExternalStorageReadOnly, true);
+  profile()->GetPrefs()->SetBoolean(disks::prefs::kExternalStorageReadOnly,
+                                    true);
 
   // Changed event should cause mounting (if possible).
   LoggingObserver observer;
@@ -961,7 +965,8 @@ TEST_F(VolumeManagerTest, OnExternalStorageDisabledChanged) {
   ASSERT_EQ(0U, disk_mount_manager_->unmount_requests().size());
 
   // Emulate to set kExternalStorageDisabled to false.
-  profile()->GetPrefs()->SetBoolean(prefs::kExternalStorageDisabled, false);
+  profile()->GetPrefs()->SetBoolean(disks::prefs::kExternalStorageDisabled,
+                                    false);
   volume_manager()->OnExternalStorageDisabledChanged();
 
   // Expect no effects.
@@ -969,7 +974,8 @@ TEST_F(VolumeManagerTest, OnExternalStorageDisabledChanged) {
   EXPECT_EQ(0U, disk_mount_manager_->unmount_requests().size());
 
   // Emulate to set kExternalStorageDisabled to true.
-  profile()->GetPrefs()->SetBoolean(prefs::kExternalStorageDisabled, true);
+  profile()->GetPrefs()->SetBoolean(disks::prefs::kExternalStorageDisabled,
+                                    true);
   volume_manager()->OnExternalStorageDisabledChanged();
 
   // Wait until all unmount request finishes, so that callback chain to unmount
@@ -1000,9 +1006,10 @@ TEST_F(VolumeManagerTest, ExternalStorageDisabledPolicyMultiProfile) {
 
   // Simulates the case that the main profile has kExternalStorageDisabled set
   // as false, and the secondary profile has the config set to true.
-  profile()->GetPrefs()->SetBoolean(prefs::kExternalStorageDisabled, false);
-  secondary.profile()->GetPrefs()->SetBoolean(prefs::kExternalStorageDisabled,
-                                              true);
+  profile()->GetPrefs()->SetBoolean(disks::prefs::kExternalStorageDisabled,
+                                    false);
+  secondary.profile()->GetPrefs()->SetBoolean(
+      disks::prefs::kExternalStorageDisabled, true);
 
   LoggingObserver main_observer, secondary_observer;
   volume_manager()->AddObserver(&main_observer);
@@ -1040,9 +1047,11 @@ TEST_F(VolumeManagerTest, ExternalStorageDisabledPolicyMultiProfile) {
 
 TEST_F(VolumeManagerTest, OnExternalStorageReadOnlyChanged) {
   // Emulate updates of kExternalStorageReadOnly (change to true, then false).
-  profile()->GetPrefs()->SetBoolean(prefs::kExternalStorageReadOnly, true);
+  profile()->GetPrefs()->SetBoolean(disks::prefs::kExternalStorageReadOnly,
+                                    true);
   volume_manager()->OnExternalStorageReadOnlyChanged();
-  profile()->GetPrefs()->SetBoolean(prefs::kExternalStorageReadOnly, false);
+  profile()->GetPrefs()->SetBoolean(disks::prefs::kExternalStorageReadOnly,
+                                    false);
   volume_manager()->OnExternalStorageReadOnlyChanged();
 
   // Verify that remount of removable disks is triggered for each update.

@@ -363,8 +363,6 @@ extern const char kEduCoexistenceArcMigrationCompleted[];
 extern const char kRestrictedManagedGuestSessionExtensionCleanupExemptList[];
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(IS_CHROMEOS)
-extern const char kExternalStorageDisabled[];
-extern const char kExternalStorageReadOnly[];
 extern const char kForceMaximizeOnFirstRun[];
 extern const char kInsightsExtensionEnabled[];
 extern const char kOOMKillsDailyCount[];

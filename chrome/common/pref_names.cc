@@ -1157,14 +1157,6 @@ const char kRestrictedManagedGuestSessionExtensionCleanupExemptList[] =
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS)
-// A pref holding the value of the policy used to disable mounting of external
-// storage for the user.
-const char kExternalStorageDisabled[] = "hardware.external_storage_disabled";
-
-// A pref holding the value of the policy used to limit mounting of external
-// storage to read-only mode for the user.
-const char kExternalStorageReadOnly[] = "hardware.external_storage_read_only";
-
 // This boolean controls whether the first window shown on first run should be
 // unconditionally maximized, overriding the heuristic that normally chooses the
 // window size.

@@ -1003,6 +1003,7 @@ static_library("extensions") {
     deps += [
       "//chrome/browser/chromeos/extensions:constants",
       "//chrome/browser/chromeos/extensions/login_screen",
+      "//chromeos/components/disks:prefs",
       "//chromeos/components/quick_answers/public/cpp:prefs",
       "//chromeos/crosapi/cpp",
       "//chromeos/crosapi/mojom",

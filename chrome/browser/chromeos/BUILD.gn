@@ -272,6 +272,7 @@ source_set("chromeos") {
     "//chromeos/ash/components/scanning",
     "//chromeos/components/cdm_factory_daemon:cdm_factory_daemon_browser",
     "//chromeos/components/chromebox_for_meetings/buildflags",
+    "//chromeos/components/disks:prefs",
     "//chromeos/components/feature_usage",
     "//chromeos/components/local_search_service/public/cpp:cpp",
     "//chromeos/components/mojo_bootstrap",

@@ -158,6 +158,7 @@
 #include "chrome/browser/nearby_sharing/common/nearby_share_prefs.h"
 #include "chrome/browser/policy/default_geolocation_policy_handler.h"
 #include "chrome/browser/policy/os_color_mode_policy_handler.h"
+#include "chromeos/components/disks/disks_prefs.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
 #include "components/account_manager_core/pref_names.h"
 #include "components/drive/drive_pref_names.h"  // nogncheck crbug.com/1125897
@@ -923,10 +924,10 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     chromeos::prefs::kEmojiSuggestionEnterpriseAllowed,
     base::Value::Type::BOOLEAN },
   { key::kExternalStorageDisabled,
-    prefs::kExternalStorageDisabled,
+    disks::prefs::kExternalStorageDisabled,
     base::Value::Type::BOOLEAN },
   { key::kExternalStorageReadOnly,
-    prefs::kExternalStorageReadOnly,
+    disks::prefs::kExternalStorageReadOnly,
     base::Value::Type::BOOLEAN },
   { key::kAudioOutputAllowed,
     chromeos::prefs::kAudioOutputAllowed,

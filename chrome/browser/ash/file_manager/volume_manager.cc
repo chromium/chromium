@@ -48,7 +48,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/media_galleries/fileapi/mtp_device_map_service.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/pref_names.h"
+#include "chromeos/components/disks/disks_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "components/storage_monitor/storage_monitor.h"
 #include "content/public/browser/browser_context.h"
@@ -193,7 +193,7 @@ std::string GetMountPointNameForMediaStorage(
 }
 
 chromeos::MountAccessMode GetExternalStorageAccessMode(const Profile* profile) {
-  return profile->GetPrefs()->GetBoolean(prefs::kExternalStorageReadOnly)
+  return profile->GetPrefs()->GetBoolean(disks::prefs::kExternalStorageReadOnly)
              ? chromeos::MOUNT_ACCESS_MODE_READ_ONLY
              : chromeos::MOUNT_ACCESS_MODE_READ_WRITE;
 }
@@ -677,11 +677,11 @@ void VolumeManager::Initialize() {
   // Subscribe to Profile Preference change.
   pref_change_registrar_.Init(profile_->GetPrefs());
   pref_change_registrar_.Add(
-      prefs::kExternalStorageDisabled,
+      disks::prefs::kExternalStorageDisabled,
       base::BindRepeating(&VolumeManager::OnExternalStorageDisabledChanged,
                           weak_ptr_factory_.GetWeakPtr()));
   pref_change_registrar_.Add(
-      prefs::kExternalStorageReadOnly,
+      disks::prefs::kExternalStorageReadOnly,
       base::BindRepeating(&VolumeManager::OnExternalStorageReadOnlyChanged,
                           weak_ptr_factory_.GetWeakPtr()));
 
@@ -985,7 +985,8 @@ void VolumeManager::OnAutoMountableDiskEvent(
 
       bool mounting = false;
       if (disk.mount_path().empty() && disk.has_media() &&
-          !profile_->GetPrefs()->GetBoolean(prefs::kExternalStorageDisabled)) {
+          !profile_->GetPrefs()->GetBoolean(
+              disks::prefs::kExternalStorageDisabled)) {
         // TODO(crbug.com/774890): Remove |mount_label| when the issue gets
         // resolved. Currently we suggest a mount point name, because in case
         // when disk's name contains '#', content will not load in Files App.
@@ -1313,7 +1314,8 @@ void VolumeManager::OnExternalStorageDisabledChanged() {
   // If the policy just got disabled we have to unmount every device currently
   // mounted. The opposite is fine - we can let the user re-plug their device to
   // make it available.
-  if (profile_->GetPrefs()->GetBoolean(prefs::kExternalStorageDisabled)) {
+  if (profile_->GetPrefs()->GetBoolean(
+          disks::prefs::kExternalStorageDisabled)) {
     // We do not iterate on mount_points directly, because mount_points can
     // be changed by UnmountPath(). Also, a failing unmount shouldn't be retried
     // indefinitely. So make a set of all the mount points that should be
@@ -1347,7 +1349,7 @@ void VolumeManager::OnRemovableStorageAttached(
     const storage_monitor::StorageInfo& info) {
   if (!storage_monitor::StorageInfo::IsMTPDevice(info.device_id()))
     return;
-  if (profile_->GetPrefs()->GetBoolean(prefs::kExternalStorageDisabled))
+  if (profile_->GetPrefs()->GetBoolean(disks::prefs::kExternalStorageDisabled))
     return;
 
   // Resolve mtp storage name and get MtpStorageInfo.
@@ -1637,7 +1639,8 @@ void VolumeManager::DoMountEvent(chromeos::MountError error_code,
 
   // Filter out removable disks if forbidden by policy for this profile.
   if (volume->type() == VOLUME_TYPE_REMOVABLE_DISK_PARTITION &&
-      profile_->GetPrefs()->GetBoolean(prefs::kExternalStorageDisabled)) {
+      profile_->GetPrefs()->GetBoolean(
+          disks::prefs::kExternalStorageDisabled)) {
     return;
   }
 
