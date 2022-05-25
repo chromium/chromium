@@ -545,10 +545,7 @@ public class NewTabPageLayout extends LinearLayout implements VrModeObserver {
         int marginTop = getResources().getDimensionPixelSize(shouldShowLogo()
                         ? R.dimen.tile_grid_layout_padding_top
                         : R.dimen.tile_grid_layout_no_logo_padding_top);
-        int marginBottom =
-                getResources().getDimensionPixelOffset(R.dimen.tile_grid_layout_bottom_margin);
         marginLayoutParams.topMargin = marginTop;
-        marginLayoutParams.bottomMargin = marginBottom;
 
         if (isScrollableMVTEnabled()) {
             // Let mMvTilesContainerLayout attached to the edge of the screen.
@@ -557,9 +554,13 @@ public class NewTabPageLayout extends LinearLayout implements VrModeObserver {
                     R.dimen.ntp_header_lateral_paddings_v2);
             marginLayoutParams.leftMargin = -lateralPaddingsForNTP;
             marginLayoutParams.rightMargin = -lateralPaddingsForNTP;
+            marginLayoutParams.bottomMargin = getResources().getDimensionPixelOffset(
+                    R.dimen.tile_carousel_layout_bottom_margin);
         } else {
             ViewGroup.LayoutParams layoutParams = mMvTilesContainerLayout.getLayoutParams();
             layoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT;
+            marginLayoutParams.bottomMargin =
+                    getResources().getDimensionPixelOffset(R.dimen.tile_grid_layout_bottom_margin);
         }
     }
 
