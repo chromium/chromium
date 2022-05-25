@@ -681,6 +681,7 @@ absl_cc_library(
     absl::memory
     absl::meta
     absl::optional
+    absl::prefetch
     absl::utility
     absl::hashtablez_sampler
   PUBLIC
@@ -702,6 +703,7 @@ absl_cc_test(
     absl::base
     absl::config
     absl::core_headers
+    absl::prefetch
     absl::raw_logging_internal
     absl::strings
     GTest::gmock_main

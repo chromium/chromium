@@ -837,6 +837,21 @@ static_assert(ABSL_INTERNAL_INLINE_NAMESPACE_STR[0] != 'h' ||
 #define ABSL_INTERNAL_HAS_RTTI 1
 #endif  // !defined(__GNUC__) || defined(__GXX_RTTI)
 
+// ABSL_INTERNAL_HAVE_SSE is used for compile-time detection of SSE support.
+// See https://gcc.gnu.org/onlinedocs/gcc/x86-Options.html for an overview of
+// which architectures support the various x86 instruction sets.
+#ifdef ABSL_INTERNAL_HAVE_SSE
+#error ABSL_INTERNAL_HAVE_SSE cannot be directly set
+#elif defined(__SSE__)
+#define ABSL_INTERNAL_HAVE_SSE 1
+#elif defined(_M_X64) || (defined(_M_IX86_FP) && _M_IX86_FP >= 1)
+// MSVC only defines _M_IX86_FP for x86 32-bit code, and _M_IX86_FP >= 1
+// indicates that at least SSE was targeted with the /arch:SSE option.
+// All x86-64 processors support SSE, so support can be assumed.
+// https://docs.microsoft.com/en-us/cpp/preprocessor/predefined-macros
+#define ABSL_INTERNAL_HAVE_SSE 1
+#endif
+
 // ABSL_INTERNAL_HAVE_SSE2 is used for compile-time detection of SSE2 support.
 // See https://gcc.gnu.org/onlinedocs/gcc/x86-Options.html for an overview of
 // which architectures support the various x86 instruction sets.

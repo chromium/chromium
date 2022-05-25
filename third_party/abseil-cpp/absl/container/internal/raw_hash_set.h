@@ -197,6 +197,7 @@
 
 #include "absl/base/config.h"
 #include "absl/base/internal/endian.h"
+#include "absl/base/internal/prefetch.h"
 #include "absl/base/optimization.h"
 #include "absl/base/port.h"
 #include "absl/container/internal/common.h"
@@ -1636,12 +1637,13 @@ class raw_hash_set {
   template <class K = key_type>
   void prefetch(const key_arg<K>& key) const {
     (void)key;
-#if defined(__GNUC__)
+    // Avoid probing if we won't be able to prefetch the addresses received.
+#ifdef ABSL_INTERNAL_HAVE_PREFETCH
     prefetch_heap_block();
     auto seq = probe(ctrl_, hash_ref()(key), capacity_);
-    __builtin_prefetch(static_cast<const void*>(ctrl_ + seq.offset()));
-    __builtin_prefetch(static_cast<const void*>(slots_ + seq.offset()));
-#endif  // __GNUC__
+    base_internal::PrefetchT0(ctrl_ + seq.offset());
+    base_internal::PrefetchT0(slots_ + seq.offset());
+#endif  // ABSL_INTERNAL_HAVE_PREFETCH
   }
 
   // The API of find() has two extensions.
@@ -2159,9 +2161,7 @@ class raw_hash_set {
   // This is intended to overlap with execution of calculating the hash for a
   // key.
   void prefetch_heap_block() const {
-#if defined(__GNUC__)
-    __builtin_prefetch(static_cast<const void*>(ctrl_), 0, 1);
-#endif  // __GNUC__
+    base_internal::PrefetchT2(ctrl_);
   }
 
   HashtablezInfoHandle& infoz() { return settings_.template get<1>(); }

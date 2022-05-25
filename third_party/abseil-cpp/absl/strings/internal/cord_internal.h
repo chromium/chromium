@@ -632,7 +632,9 @@ inline const CordRepExternal* CordRep::external() const {
 }
 
 inline CordRep* CordRep::Ref(CordRep* rep) {
-  assert(rep != nullptr);
+  // ABSL_ASSUME is a workaround for
+  // https://gcc.gnu.org/bugzilla/show_bug.cgi?id=105585
+  ABSL_ASSUME(rep != nullptr);
   rep->refcount.Increment();
   return rep;
 }

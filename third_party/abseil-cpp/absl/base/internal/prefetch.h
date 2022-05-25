@@ -17,6 +17,15 @@
 
 #include "absl/base/config.h"
 
+#ifdef __SSE__
+#include <xmmintrin.h>
+#endif
+
+#if defined(_MSC_VER) && defined(ABSL_INTERNAL_HAVE_SSE)
+#include <intrin.h>
+#pragma intrinsic(_mm_prefetch)
+#endif
+
 // Compatibility wrappers around __builtin_prefetch, to prefetch data
 // for read if supported by the toolchain.
 
@@ -72,6 +81,8 @@ void PrefetchNta(const void* addr);
 
 #if ABSL_HAVE_BUILTIN(__builtin_prefetch) || defined(__GNUC__)
 
+#define ABSL_INTERNAL_HAVE_PREFETCH 1
+
 // See __builtin_prefetch:
 // https://gcc.gnu.org/onlinedocs/gcc/Other-Builtins.html.
 //
@@ -95,6 +106,24 @@ inline void PrefetchNta(const void* addr) {
   // Note: this uses prefetchtnta on Intel.
   __builtin_prefetch(addr, 0, 0);
 }
+
+#elif defined(ABSL_INTERNAL_HAVE_SSE)
+
+#define ABSL_INTERNAL_HAVE_PREFETCH 1
+
+inline void PrefetchT0(const void* addr) {
+  _mm_prefetch(reinterpret_cast<const char*>(addr), _MM_HINT_T0);
+}
+inline void PrefetchT1(const void* addr) {
+  _mm_prefetch(reinterpret_cast<const char*>(addr), _MM_HINT_T1);
+}
+inline void PrefetchT2(const void* addr) {
+  _mm_prefetch(reinterpret_cast<const char*>(addr), _MM_HINT_T2);
+}
+inline void PrefetchNta(const void* addr) {
+  _mm_prefetch(reinterpret_cast<const char*>(addr), _MM_HINT_NTA);
+}
+
 #else
 inline void PrefetchT0(const void*) {}
 inline void PrefetchT1(const void*) {}
