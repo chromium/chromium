@@ -19,18 +19,24 @@
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ui/app_list/search/games/game_result.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/components/string_matching/fuzzy_tokenized_string_match.h"
 #include "chromeos/components/string_matching/tokenized_string.h"
-#include "chromeos/components/string_matching/tokenized_string_match.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace app_list {
 namespace {
 
+using chromeos::string_matching::FuzzyTokenizedStringMatch;
 using chromeos::string_matching::TokenizedString;
-using chromeos::string_matching::TokenizedStringMatch;
 
-constexpr double kRelevanceThreshold = 0.7;
+// Parameters for FuzzyTokenizedStringMatch.
+constexpr bool kUsePrefixOnly = false;
+constexpr bool kUseWeightedRatio = false;
+constexpr bool kUseEditDistance = false;
+constexpr double kRelevanceThreshold = 0.32;
+constexpr double kPartialMatchPenaltyRate = 0.9;
+
 constexpr size_t kMaxResults = 3u;
 
 bool IsSuggestedContentEnabled(Profile* profile) {
@@ -47,8 +53,12 @@ double CalculateTitleRelevance(const TokenizedString& tokenized_query,
     return kDefaultRelevance;
   }
 
-  TokenizedStringMatch match;
-  match.Calculate(tokenized_query, tokenized_title);
+  FuzzyTokenizedStringMatch match;
+  // The return parameter is ignored here, but this method also implicitly
+  // calculates the match relevance.
+  match.IsRelevant(tokenized_query, tokenized_title, kRelevanceThreshold,
+                   kUsePrefixOnly, kUseWeightedRatio, kUseEditDistance,
+                   kPartialMatchPenaltyRate);
   return match.relevance();
 }
 
