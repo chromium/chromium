@@ -35,6 +35,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
+import org.chromium.ui.util.ColorUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -290,8 +291,12 @@ class SigninFirstRunMediator implements AccountsChangeObserver, ProfileDataCache
 
         ArrayList<SpanApplier.SpanInfo> spans = new ArrayList<>();
         // Terms of Service SpanInfo.
-        final NoUnderlineClickableSpan clickableTermsOfServiceSpan = new NoUnderlineClickableSpan(
-                mContext, view -> mDelegate.showInfoPage(R.string.google_terms_of_service_url));
+        final NoUnderlineClickableSpan clickableTermsOfServiceSpan =
+                new NoUnderlineClickableSpan(mContext,
+                        view
+                        -> mDelegate.showInfoPage(ColorUtils.inNightMode(mContext)
+                                        ? R.string.google_terms_of_service_dark_mode_url
+                                        : R.string.google_terms_of_service_url));
         spans.add(
                 new SpanApplier.SpanInfo("<TOS_LINK>", "</TOS_LINK>", clickableTermsOfServiceSpan));
 
