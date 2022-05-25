@@ -166,7 +166,7 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
     @Override
     public void fullscreenStateChangedForTab(
             boolean prefersNavigationBar, boolean prefersStatusBar) {
-        mDelegate.enterFullscreenModeForTab(prefersNavigationBar, prefersStatusBar);
+        mDelegate.fullscreenStateChangedForTab(prefersNavigationBar, prefersStatusBar);
     }
 
     @Override
