@@ -11,7 +11,6 @@
 #include "base/observer_list.h"
 #include "base/process/process_handle.h"
 #include "base/scoped_multi_source_observation.h"
-#include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_child_process_observer.h"
 #include "content/public/browser/render_process_host.h"
@@ -41,16 +40,13 @@ struct ProcessInfo {
   std::unique_ptr<base::ProcessMetrics> process_metrics;
 };
 
-// ProcessMonitor is a tool which periodically monitors performance metrics
-// of all the Chrome processes for histogram logging and possibly taking action
-// upon noticing serious performance degradation.
+// ProcessMonitor is a tool which allows the sampling of power-related metrics
+// for all Chrome processes. The metrics sampling is driven externally by
+// calling SampleAllProcesses() periodically.
 class ProcessMonitor : public content::BrowserChildProcessObserver,
                        public content::RenderProcessHostCreationObserver,
                        public content::RenderProcessHostObserver {
  public:
-  // The interval at which ProcessMonitor performs its timed collections.
-  static constexpr base::TimeDelta kGatherInterval = base::Minutes(2);
-
   struct Metrics {
     Metrics();
     Metrics(const Metrics& other);
@@ -115,17 +111,8 @@ class ProcessMonitor : public content::BrowserChildProcessObserver,
 
   ~ProcessMonitor() override;
 
-  // Start the cycle of metrics gathering.
-  void StartGatherCycle();
-
-  // Adds/removes an observer.
-  void AddObserver(Observer* observer);
-  void RemoveObserver(Observer* observer);
-
- protected:
-  base::ObserverList<Observer>& GetObserversForTesting() {
-    return observer_list_;
-  }
+  // Gather the metrics for all the processes.
+  virtual void SampleAllProcesses(Observer* observer);
 
  private:
   // content::RenderProcessHostCreationObserver:
@@ -147,11 +134,6 @@ class ProcessMonitor : public content::BrowserChildProcessObserver,
   void BrowserChildProcessHostDisconnected(
       const content::ChildProcessData& data) override;
 
-  // Gather the metrics for all the child processes.
-  void SampleAllProcesses();
-
-  void SampleProcess();
-
   base::ScopedMultiSourceObservation<content::RenderProcessHost,
                                      content::RenderProcessHostObserver>
       render_process_host_observations_{this};
@@ -161,11 +143,6 @@ class ProcessMonitor : public content::BrowserChildProcessObserver,
   std::map<content::RenderProcessHost*, ProcessInfo> render_process_infos_;
 
   std::map<int, ProcessInfo> browser_child_process_infos_;
-
-  // The timer to signal ProcessMonitor to perform its timed collections.
-  base::RepeatingTimer repeating_timer_;
-
-  base::ObserverList<Observer> observer_list_;
 };
 
 #endif  // CHROME_BROWSER_METRICS_POWER_PROCESS_MONITOR_H_

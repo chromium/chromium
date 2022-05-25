@@ -662,8 +662,6 @@ void ChromeBrowserMainExtraPartsMetrics::PostBrowserStart() {
   if (process_monitor_) {
     power_metrics_reporter_ =
         std::make_unique<PowerMetricsReporter>(process_monitor_.get());
-
-    process_monitor_->StartGatherCycle();
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 }

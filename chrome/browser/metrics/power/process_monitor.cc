@@ -128,8 +128,6 @@ ProcessMonitor::Metrics& operator+=(ProcessMonitor::Metrics& lhs,
 
 }  // namespace
 
-constexpr base::TimeDelta ProcessMonitor::kGatherInterval;
-
 ProcessInfo::ProcessInfo(int process_type,
                          ProcessSubtypes process_subtype,
                          std::unique_ptr<base::ProcessMetrics> process_metrics)
@@ -165,18 +163,26 @@ ProcessMonitor::~ProcessMonitor() {
   content::BrowserChildProcessObserver::Remove(this);
 }
 
-void ProcessMonitor::StartGatherCycle() {
+void ProcessMonitor::SampleAllProcesses(Observer* observer) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  repeating_timer_.Start(FROM_HERE, kGatherInterval, this,
-                         &ProcessMonitor::SampleAllProcesses);
-}
 
-void ProcessMonitor::AddObserver(Observer* observer) {
-  observer_list_.AddObserver(observer);
-}
+  std::vector<ProcessInfo*> process_infos;
+  process_infos.reserve(1 + render_process_infos_.size() +
+                        browser_child_process_infos_.size());
+  process_infos.push_back(&browser_process_info_);
+  for (auto& [_, process_info] : render_process_infos_)
+    process_infos.push_back(&process_info);
+  for (auto& [_, process_info] : browser_child_process_infos_)
+    process_infos.push_back(&process_info);
 
-void ProcessMonitor::RemoveObserver(Observer* observer) {
-  observer_list_.RemoveObserver(observer);
+  Metrics aggregated_metrics;
+  for (auto* process_info : process_infos) {
+    Metrics metrics = SampleMetrics(*process_info->process_metrics);
+    aggregated_metrics += metrics;
+    observer->OnMetricsSampled(process_info->process_type,
+                               process_info->process_subtype, metrics);
+  }
+  observer->OnAggregatedMetricsSampled(aggregated_metrics);
 }
 
 void ProcessMonitor::OnRenderProcessHostCreated(
@@ -268,28 +274,4 @@ void ProcessMonitor::BrowserChildProcessHostDisconnected(
   }
 
   browser_child_process_infos_.erase(it);
-}
-
-void ProcessMonitor::SampleAllProcesses() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  std::vector<ProcessInfo*> process_infos;
-  process_infos.reserve(1 + render_process_infos_.size() +
-                        browser_child_process_infos_.size());
-  process_infos.push_back(&browser_process_info_);
-  for (auto& [_, process_info] : render_process_infos_)
-    process_infos.push_back(&process_info);
-  for (auto& [_, process_info] : browser_child_process_infos_)
-    process_infos.push_back(&process_info);
-
-  Metrics aggregated_metrics;
-  for (auto* process_info : process_infos) {
-    Metrics metrics = SampleMetrics(*process_info->process_metrics);
-    aggregated_metrics += metrics;
-    for (auto& observer : observer_list_)
-      observer.OnMetricsSampled(process_info->process_type,
-                                process_info->process_subtype, metrics);
-  }
-  for (auto& observer : observer_list_)
-    observer.OnAggregatedMetricsSampled(aggregated_metrics);
 }
