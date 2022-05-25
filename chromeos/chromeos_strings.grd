@@ -2208,6 +2208,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_PERSONALIZATION_APP_AVATAR_REJECT_PHOTO" desc="Label for the button to reject webcam photo or video">
         Retake
       </message>
+      <message name="IDS_PERSONALIZATION_APP_ARIA_ANNOUNCE_AVATAR_CHANGED" desc="Text read out by the screen reader after the user avatar image changes">
+        Avatar image changed
+      </message>
       <message name="IDS_PERSONALIZATION_APP_SCREENSAVER_LABEL" desc="Label for the Screensaver page in Personalization app.">
         Screensaver
       </message>

@@ -196,8 +196,11 @@
         <img class="preview-image disabled" src="//personalization/common/slideshow.png">
       </div>
       <div id="messageContainer">
-        <span class="text">$i18n{ambientModeMainPageZeroStateMessage}</span>
-        <cr-button class="primary" on-click="onClickAmbientModeButton_">
+        <span class="text" id="turnOnDescription">
+          $i18n{ambientModeMainPageZeroStateMessage}
+        </span>
+        <cr-button class="primary" on-click="onClickAmbientModeButton_"
+            aria-describedby="turnOnDescription">
           <div>$i18n{ambientModeTurnOnLabel}</div>
         </cr-button>
       </div>
