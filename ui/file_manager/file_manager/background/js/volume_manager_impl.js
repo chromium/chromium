@@ -286,7 +286,7 @@ export class VolumeManagerImpl extends EventTarget {
           case 'success': {
             const requested = requestKey in this.requests_;
             if (!requested && volumeInfo) {
-              console.warn(`Unmounted '${volumeId}' without request`);
+              console.debug(`Unmounted '${volumeId}' without request`);
               this.dispatchEvent(new CustomEvent(
                   'externally-unmounted', {detail: volumeInfo}));
             } else {
@@ -299,7 +299,8 @@ export class VolumeManagerImpl extends EventTarget {
           }
 
           default:
-            console.warn(`Cannot unmount '${volumeId}': ${status}`);
+            console.error('Cannot unmount (redacted):', status);
+            console.debug(`Cannot unmount '${volumeId}':`, status);
             this.finishRequest_(requestKey, status);
             return;
         }

@@ -89,8 +89,7 @@ CommandUtil.getSharesheetLaunchSource = event => {
     case CommandUtil.SharingActionElementId.SHARE_SHEET:
       return chrome.fileManagerPrivate.SharesheetLaunchSource.SHARESHEET_BUTTON;
     default: {
-      console.error(
-          'Unrecognized event.target.id for sharesheet launch"%s"', id);
+      console.error('Unrecognized event.target.id for sharesheet launch', id);
       return chrome.fileManagerPrivate.SharesheetLaunchSource.UNKNOWN;
     }
   }
@@ -260,16 +259,16 @@ CommandUtil.forceDefaultHandler = (node, commandId) => {
  */
 CommandUtil.createVolumeSwitchCommand = index =>
     new (class extends FilesCommand {
-  execute(event, fileManager) {
-    fileManager.directoryTree.activateByIndex(index - 1);
-  }
+      execute(event, fileManager) {
+        fileManager.directoryTree.activateByIndex(index - 1);
+      }
 
-  /** @override */
-  canExecute(event, fileManager) {
-    event.canExecute =
-        index > 0 && index <= fileManager.directoryTree.items.length;
-  }
-})();
+      /** @override */
+      canExecute(event, fileManager) {
+        event.canExecute =
+            index > 0 && index <= fileManager.directoryTree.items.length;
+      }
+    })();
 
 /**
  * Returns a directory entry when only one entry is selected and it is
@@ -690,8 +689,8 @@ CommandHandler.COMMANDS_['unmount'] = new (class extends FilesCommand {
       try {
         await fileManager.volumeManager.unmount(volume);
       } catch (error) {
-        console.error(
-            `Cannot unmount '${volume.volumeId}': ${error.stack || error}`);
+        console.error(`Cannot unmount (redacted)':`, error);
+        console.debug(`Cannot unmount '${volume.volumeId}':`, error);
         errorCallback(volume.volumeType);
       }
     });
@@ -1033,15 +1032,15 @@ CommandHandler.COMMANDS_['select-all'] = new (class extends FilesCommand {
 
 CommandHandler.COMMANDS_['toggle-hidden-files'] =
     new (class extends FilesCommand {
-  execute(event, fileManager) {
-    const visible = !fileManager.fileFilter.isHiddenFilesVisible();
-    fileManager.fileFilter.setHiddenFilesVisible(visible);
-    event.command.checked = visible;  // Checkmark for "Show hidden files".
-    CommandHandler.recordMenuItemSelected(
-        visible ? CommandHandler.MenuCommandsForUMA.HIDDEN_FILES_SHOW :
-                  CommandHandler.MenuCommandsForUMA.HIDDEN_FILES_HIDE);
-  }
-})();
+      execute(event, fileManager) {
+        const visible = !fileManager.fileFilter.isHiddenFilesVisible();
+        fileManager.fileFilter.setHiddenFilesVisible(visible);
+        event.command.checked = visible;  // Checkmark for "Show hidden files".
+        CommandHandler.recordMenuItemSelected(
+            visible ? CommandHandler.MenuCommandsForUMA.HIDDEN_FILES_SHOW :
+                      CommandHandler.MenuCommandsForUMA.HIDDEN_FILES_HIDE);
+      }
+    })();
 
 /**
  * Toggles visibility of top-level Android folders which are not visible by
@@ -1049,58 +1048,59 @@ CommandHandler.COMMANDS_['toggle-hidden-files'] =
  */
 CommandHandler.COMMANDS_['toggle-hidden-android-folders'] =
     new (class extends FilesCommand {
-  execute(event, fileManager) {
-    const visible = !fileManager.fileFilter.isAllAndroidFoldersVisible();
-    fileManager.fileFilter.setAllAndroidFoldersVisible(visible);
-    event.command.checked = visible;
-    CommandHandler.recordMenuItemSelected(
-        visible ?
-            CommandHandler.MenuCommandsForUMA.HIDDEN_ANDROID_FOLDERS_SHOW :
-            CommandHandler.MenuCommandsForUMA.HIDDEN_ANDROID_FOLDERS_HIDE);
-  }
+      execute(event, fileManager) {
+        const visible = !fileManager.fileFilter.isAllAndroidFoldersVisible();
+        fileManager.fileFilter.setAllAndroidFoldersVisible(visible);
+        event.command.checked = visible;
+        CommandHandler.recordMenuItemSelected(
+            visible ?
+                CommandHandler.MenuCommandsForUMA.HIDDEN_ANDROID_FOLDERS_SHOW :
+                CommandHandler.MenuCommandsForUMA.HIDDEN_ANDROID_FOLDERS_HIDE);
+      }
 
-  /** @override */
-  canExecute(event, fileManager) {
-    const hasAndroidFilesVolumeInfo =
-        !!fileManager.volumeManager.getCurrentProfileVolumeInfo(
-            VolumeManagerCommon.VolumeType.ANDROID_FILES);
-    const currentRootType = fileManager.directoryModel.getCurrentRootType();
-    const isInMyFiles =
-        currentRootType == VolumeManagerCommon.RootType.MY_FILES ||
-        currentRootType == VolumeManagerCommon.RootType.DOWNLOADS ||
-        currentRootType == VolumeManagerCommon.RootType.CROSTINI ||
-        currentRootType == VolumeManagerCommon.RootType.ANDROID_FILES;
-    event.canExecute = hasAndroidFilesVolumeInfo && isInMyFiles;
-    event.command.setHidden(!event.canExecute);
-    event.command.checked = fileManager.fileFilter.isAllAndroidFoldersVisible();
-  }
-})();
+      /** @override */
+      canExecute(event, fileManager) {
+        const hasAndroidFilesVolumeInfo =
+            !!fileManager.volumeManager.getCurrentProfileVolumeInfo(
+                VolumeManagerCommon.VolumeType.ANDROID_FILES);
+        const currentRootType = fileManager.directoryModel.getCurrentRootType();
+        const isInMyFiles =
+            currentRootType == VolumeManagerCommon.RootType.MY_FILES ||
+            currentRootType == VolumeManagerCommon.RootType.DOWNLOADS ||
+            currentRootType == VolumeManagerCommon.RootType.CROSTINI ||
+            currentRootType == VolumeManagerCommon.RootType.ANDROID_FILES;
+        event.canExecute = hasAndroidFilesVolumeInfo && isInMyFiles;
+        event.command.setHidden(!event.canExecute);
+        event.command.checked =
+            fileManager.fileFilter.isAllAndroidFoldersVisible();
+      }
+    })();
 
 /**
  * Toggles drive sync settings.
  */
 CommandHandler.COMMANDS_['drive-sync-settings'] =
     new (class extends FilesCommand {
-  execute(event, fileManager) {
-    // If checked, the sync is disabled.
-    const nowCellularDisabled =
-        fileManager.ui.gearMenu.syncButton.hasAttribute('checked');
-    const changeInfo = {cellularDisabled: !nowCellularDisabled};
-    chrome.fileManagerPrivate.setPreferences(changeInfo);
-    CommandHandler.recordMenuItemSelected(
-        nowCellularDisabled ?
-            CommandHandler.MenuCommandsForUMA.MOBILE_DATA_OFF :
-            CommandHandler.MenuCommandsForUMA.MOBILE_DATA_ON);
-  }
+      execute(event, fileManager) {
+        // If checked, the sync is disabled.
+        const nowCellularDisabled =
+            fileManager.ui.gearMenu.syncButton.hasAttribute('checked');
+        const changeInfo = {cellularDisabled: !nowCellularDisabled};
+        chrome.fileManagerPrivate.setPreferences(changeInfo);
+        CommandHandler.recordMenuItemSelected(
+            nowCellularDisabled ?
+                CommandHandler.MenuCommandsForUMA.MOBILE_DATA_OFF :
+                CommandHandler.MenuCommandsForUMA.MOBILE_DATA_ON);
+      }
 
-  /** @override */
-  canExecute(event, fileManager) {
-    event.canExecute = fileManager.directoryModel.isOnDrive() &&
-        fileManager.volumeManager.getDriveConnectionState()
-            .hasCellularNetworkAccess;
-    event.command.setHidden(!event.canExecute);
-  }
-})();
+      /** @override */
+      canExecute(event, fileManager) {
+        event.canExecute = fileManager.directoryModel.isOnDrive() &&
+            fileManager.volumeManager.getDriveConnectionState()
+                .hasCellularNetworkAccess;
+        event.command.setHidden(!event.canExecute);
+      }
+    })();
 
 /**
  * Delete / Move to Trash command.
@@ -1292,23 +1292,25 @@ CommandHandler.registerUndoDeleteToast = function(fileManager) {
  */
 CommandHandler.COMMANDS_['restore-from-trash'] =
     new (class extends FilesCommand {
-  execute(event, fileManager) {
-    const entries = CommandUtil.getCommandEntries(fileManager, event.target);
-    fileManager.fileOperationManager.restoreDeleted(entries.map(e => {
-      return /** @type {!TrashEntry} */ (e);
-    }));
-  }
+      execute(event, fileManager) {
+        const entries =
+            CommandUtil.getCommandEntries(fileManager, event.target);
+        fileManager.fileOperationManager.restoreDeleted(entries.map(e => {
+          return /** @type {!TrashEntry} */ (e);
+        }));
+      }
 
-  /** @override */
-  canExecute(event, fileManager) {
-    const entries = CommandUtil.getCommandEntries(fileManager, event.target);
+      /** @override */
+      canExecute(event, fileManager) {
+        const entries =
+            CommandUtil.getCommandEntries(fileManager, event.target);
 
-    const enabled =
-        entries.length > 0 && entries.every(e => util.isTrashEntry(e));
-    event.canExecute = enabled;
-    event.command.setHidden(!enabled);
-  }
-})();
+        const enabled =
+            entries.length > 0 && entries.every(e => util.isTrashEntry(e));
+        event.canExecute = enabled;
+        event.command.setHidden(!enabled);
+      }
+    })();
 
 /**
  * Empties (permanently deletes all) files from trash.
@@ -1360,63 +1362,67 @@ CommandHandler.COMMANDS_['paste'] = new (class extends FilesCommand {
  */
 CommandHandler.COMMANDS_['paste-into-current-folder'] =
     new (class extends FilesCommand {
-  execute(event, fileManager) {
-    fileManager.document.execCommand('paste');
-  }
+      execute(event, fileManager) {
+        fileManager.document.execCommand('paste');
+      }
 
-  /** @override */
-  canExecute(event, fileManager) {
-    const fileTransferController = fileManager.fileTransferController;
+      /** @override */
+      canExecute(event, fileManager) {
+        const fileTransferController = fileManager.fileTransferController;
 
-    event.canExecute = !!fileTransferController &&
-        fileTransferController.queryPasteCommandEnabled(
-            fileManager.directoryModel.getCurrentDirEntry());
-  }
-})();
+        event.canExecute = !!fileTransferController &&
+            fileTransferController.queryPasteCommandEnabled(
+                fileManager.directoryModel.getCurrentDirEntry());
+      }
+    })();
 
 /**
  * Pastes files from clipboard into the selected folder.
  */
-CommandHandler.COMMANDS_['paste-into-folder'] = new (class extends FilesCommand {
-  execute(event, fileManager) {
-    const entries = CommandUtil.getCommandEntries(fileManager, event.target);
-    if (entries.length !== 1 || !entries[0].isDirectory ||
-        !CommandUtil.shouldShowMenuItemsForEntry(
-            fileManager.volumeManager, entries[0])) {
-      return;
-    }
+CommandHandler.COMMANDS_['paste-into-folder'] =
+    new (class extends FilesCommand {
+      execute(event, fileManager) {
+        const entries =
+            CommandUtil.getCommandEntries(fileManager, event.target);
+        if (entries.length !== 1 || !entries[0].isDirectory ||
+            !CommandUtil.shouldShowMenuItemsForEntry(
+                fileManager.volumeManager, entries[0])) {
+          return;
+        }
 
-    // This handler tweaks the Event object for 'paste' event so that
-    // the FileTransferController can distinguish this 'paste-into-folder'
-    // command and know the destination directory.
-    const handler = inEvent => {
-      inEvent.destDirectory = entries[0];
-    };
-    fileManager.document.addEventListener('paste', handler, true);
-    fileManager.document.execCommand('paste');
-    fileManager.document.removeEventListener('paste', handler, true);
-  }
+        // This handler tweaks the Event object for 'paste' event so that
+        // the FileTransferController can distinguish this 'paste-into-folder'
+        // command and know the destination directory.
+        const handler = inEvent => {
+          inEvent.destDirectory = entries[0];
+        };
+        fileManager.document.addEventListener('paste', handler, true);
+        fileManager.document.execCommand('paste');
+        fileManager.document.removeEventListener('paste', handler, true);
+      }
 
-  /** @override */
-  canExecute(event, fileManager) {
-    const entries = CommandUtil.getCommandEntries(fileManager, event.target);
+      /** @override */
+      canExecute(event, fileManager) {
+        const entries =
+            CommandUtil.getCommandEntries(fileManager, event.target);
 
-    // Show this item only when one directory is selected.
-    if (entries.length !== 1 || !entries[0].isDirectory ||
-        !CommandUtil.shouldShowMenuItemsForEntry(
-            fileManager.volumeManager, entries[0])) {
-      event.canExecute = false;
-      event.command.setHidden(true);
-      return;
-    }
+        // Show this item only when one directory is selected.
+        if (entries.length !== 1 || !entries[0].isDirectory ||
+            !CommandUtil.shouldShowMenuItemsForEntry(
+                fileManager.volumeManager, entries[0])) {
+          event.canExecute = false;
+          event.command.setHidden(true);
+          return;
+        }
 
-    const fileTransferController = fileManager.fileTransferController;
-    const directoryEntry = /** @type {DirectoryEntry|FakeEntry} */ (entries[0]);
-    event.canExecute = !!fileTransferController &&
-        fileTransferController.queryPasteCommandEnabled(directoryEntry);
-    event.command.setHidden(false);
-  }
-})();
+        const fileTransferController = fileManager.fileTransferController;
+        const directoryEntry =
+            /** @type {DirectoryEntry|FakeEntry} */ (entries[0]);
+        event.canExecute = !!fileTransferController &&
+            fileTransferController.queryPasteCommandEnabled(directoryEntry);
+        event.command.setHidden(false);
+      }
+    })();
 
 /**
  * Cut/Copy command.
@@ -1665,33 +1671,36 @@ CommandHandler.COMMANDS_['send-feedback'] = new (class extends FilesCommand {
  */
 CommandHandler.COMMANDS_['drive-buy-more-space'] =
     new (class extends FilesCommand {
-  execute(event, fileManager) {
-    util.visitURL(str('GOOGLE_DRIVE_BUY_STORAGE_URL'));
-    CommandHandler.recordMenuItemSelected(
-        CommandHandler.MenuCommandsForUMA.DRIVE_BUY_MORE_SPACE);
-  }
+      execute(event, fileManager) {
+        util.visitURL(str('GOOGLE_DRIVE_BUY_STORAGE_URL'));
+        CommandHandler.recordMenuItemSelected(
+            CommandHandler.MenuCommandsForUMA.DRIVE_BUY_MORE_SPACE);
+      }
 
-  /** @override */
-  canExecute(event, fileManager) {
-    CommandUtil.canExecuteVisibleOnDriveInNormalAppModeOnly(event, fileManager);
-  }
-})();
+      /** @override */
+      canExecute(event, fileManager) {
+        CommandUtil.canExecuteVisibleOnDriveInNormalAppModeOnly(
+            event, fileManager);
+      }
+    })();
 
 /**
  * Opens drive.google.com.
  */
-CommandHandler.COMMANDS_['drive-go-to-drive'] = new (class extends FilesCommand {
-  execute(event, fileManager) {
-    util.visitURL(str('GOOGLE_DRIVE_ROOT_URL'));
-    CommandHandler.recordMenuItemSelected(
-        CommandHandler.MenuCommandsForUMA.DRIVE_GO_TO_DRIVE);
-  }
+CommandHandler.COMMANDS_['drive-go-to-drive'] =
+    new (class extends FilesCommand {
+      execute(event, fileManager) {
+        util.visitURL(str('GOOGLE_DRIVE_ROOT_URL'));
+        CommandHandler.recordMenuItemSelected(
+            CommandHandler.MenuCommandsForUMA.DRIVE_GO_TO_DRIVE);
+      }
 
-  /** @override */
-  canExecute(event, fileManager) {
-    CommandUtil.canExecuteVisibleOnDriveInNormalAppModeOnly(event, fileManager);
-  }
-})();
+      /** @override */
+      canExecute(event, fileManager) {
+        CommandUtil.canExecuteVisibleOnDriveInNormalAppModeOnly(
+            event, fileManager);
+      }
+    })();
 
 /**
  * Opens a file with default task.
@@ -1740,194 +1749,199 @@ CommandHandler.COMMANDS_['open-with'] = new (class extends FilesCommand {
 /**
  * Invoke Sharesheet.
  */
-CommandHandler.COMMANDS_['invoke-sharesheet'] = new (class extends FilesCommand {
-  execute(event, fileManager) {
-    const entries = fileManager.selectionHandler.selection.entries;
-    const launchSource = CommandUtil.getSharesheetLaunchSource(event);
-    chrome.fileManagerPrivate.invokeSharesheet(entries, launchSource, () => {
-      if (chrome.runtime.lastError) {
-        console.warn(chrome.runtime.lastError.message);
-        return;
+CommandHandler.COMMANDS_['invoke-sharesheet'] =
+    new (class extends FilesCommand {
+      execute(event, fileManager) {
+        const entries = fileManager.selectionHandler.selection.entries;
+        const launchSource = CommandUtil.getSharesheetLaunchSource(event);
+        chrome.fileManagerPrivate.invokeSharesheet(
+            entries, launchSource, () => {
+              if (chrome.runtime.lastError) {
+                console.warn(chrome.runtime.lastError.message);
+                return;
+              }
+            });
       }
-    });
-  }
 
-  /** @override */
-  canExecute(event, fileManager) {
-    const entries = fileManager.selectionHandler.selection.entries;
+      /** @override */
+      canExecute(event, fileManager) {
+        const entries = fileManager.selectionHandler.selection.entries;
 
-    if (!entries || entries.length === 0 ||
-        (entries.some(entry => entry.isDirectory) &&
-         (!CommandUtil.isDriveEntries(entries, fileManager.volumeManager) ||
-          entries.length > 1))) {
-      event.canExecute = false;
-      event.command.setHidden(true);
-      event.command.disabled = true;
-      return;
-    }
+        if (!entries || entries.length === 0 ||
+            (entries.some(entry => entry.isDirectory) &&
+             (!CommandUtil.isDriveEntries(entries, fileManager.volumeManager) ||
+              entries.length > 1))) {
+          event.canExecute = false;
+          event.command.setHidden(true);
+          event.command.disabled = true;
+          return;
+        }
 
-    event.canExecute = true;
-    // In the case where changing focus to action bar elements, it is safe to
-    // keep the command enabled if it was visible before, because there should
-    // be no change to the selected entries.
-    event.command.disabled =
-        !fileManager.ui.actionbar.contains(/** @type {Node} */ (event.target));
+        event.canExecute = true;
+        // In the case where changing focus to action bar elements, it is safe
+        // to keep the command enabled if it was visible before, because there
+        // should be no change to the selected entries.
+        event.command.disabled = !fileManager.ui.actionbar.contains(
+            /** @type {Node} */ (event.target));
 
-    chrome.fileManagerPrivate.sharesheetHasTargets(entries, hasTargets => {
-      if (chrome.runtime.lastError) {
-        console.warn(chrome.runtime.lastError.message);
-        return;
+        chrome.fileManagerPrivate.sharesheetHasTargets(entries, hasTargets => {
+          if (chrome.runtime.lastError) {
+            console.warn(chrome.runtime.lastError.message);
+            return;
+          }
+          event.command.setHidden(!hasTargets);
+          event.canExecute = hasTargets;
+          event.command.disabled = !hasTargets;
+        });
       }
-      event.command.setHidden(!hasTargets);
-      event.canExecute = hasTargets;
-      event.command.disabled = !hasTargets;
-    });
-  }
-})();
+    })();
 
 CommandHandler.COMMANDS_['toggle-holding-space'] =
     new (class extends FilesCommand {
-  constructor() {
-    super();
-    /**
-     * Whether the command adds or removed items from holding space. The value
-     * is set in <code>canExecute()</code>. It will be true unless all selected
-     * items are already in the holding space.
-     * @private {boolean|undefined}
-     */
-    this.addsItems_;
-  }
-
-  /** @override */
-  execute(event, fileManager) {
-    if (this.addsItems_ === undefined) {
-      return;
-    }
-
-    // Filter out entries from unsupported volumes.
-    const allowedVolumeTypes = HoldingSpaceUtil.getAllowedVolumeTypes();
-    const entries =
-        fileManager.selectionHandler.selection.entries.filter(entry => {
-          const volumeInfo = fileManager.volumeManager.getVolumeInfo(entry);
-          return volumeInfo &&
-              allowedVolumeTypes.includes(volumeInfo.volumeType);
-        });
-
-    chrome.fileManagerPrivate.toggleAddedToHoldingSpace(
-        entries, this.addsItems_);
-
-    if (this.addsItems_) {
-      HoldingSpaceUtil.maybeStoreTimeOfFirstPin();
-    }
-  }
-
-  /** @override */
-  canExecute(event, fileManager) {
-    const command = event.command;
-
-    const allowedVolumeTypes = HoldingSpaceUtil.getAllowedVolumeTypes();
-    const currentRootType = fileManager.directoryModel.getCurrentRootType();
-    if (!util.isRecentRootType(currentRootType)) {
-      const volumeInfo = fileManager.directoryModel.getCurrentVolumeInfo();
-      if (!volumeInfo || !allowedVolumeTypes.includes(volumeInfo.volumeType)) {
-        event.canExecute = false;
-        command.setHidden(true);
-        return;
+      constructor() {
+        super();
+        /**
+         * Whether the command adds or removed items from holding space. The
+         * value is set in <code>canExecute()</code>. It will be true unless all
+         * selected items are already in the holding space.
+         * @private {boolean|undefined}
+         */
+        this.addsItems_;
       }
-    }
 
-    // Filter out entries from unsupported volumes.
-    const entries =
-        fileManager.selectionHandler.selection.entries.filter(entry => {
-          const volumeInfo = fileManager.volumeManager.getVolumeInfo(entry);
-          return volumeInfo &&
-              allowedVolumeTypes.includes(volumeInfo.volumeType);
-        });
+      /** @override */
+      execute(event, fileManager) {
+        if (this.addsItems_ === undefined) {
+          return;
+        }
 
-    if (entries.length === 0) {
-      event.canExecute = false;
-      command.setHidden(true);
-      return;
-    }
+        // Filter out entries from unsupported volumes.
+        const allowedVolumeTypes = HoldingSpaceUtil.getAllowedVolumeTypes();
+        const entries =
+            fileManager.selectionHandler.selection.entries.filter(entry => {
+              const volumeInfo = fileManager.volumeManager.getVolumeInfo(entry);
+              return volumeInfo &&
+                  allowedVolumeTypes.includes(volumeInfo.volumeType);
+            });
 
-    event.canExecute = true;
-    command.setHidden(false);
+        chrome.fileManagerPrivate.toggleAddedToHoldingSpace(
+            entries, this.addsItems_);
 
-    this.checkHoldingSpaceState(entries, command);
-  }
+        if (this.addsItems_) {
+          HoldingSpaceUtil.maybeStoreTimeOfFirstPin();
+        }
+      }
 
-  /**
-   * @param {!Array<Entry|FilesAppEntry>} entries
-   * @param {!Command} command
-   */
-  async checkHoldingSpaceState(entries, command) {
-    // Update the command to add or remove holding space items depending on the
-    // current holding space state - the command will remove items only if all
-    // currently selected items are already in the holding space.
-    let state;
-    try {
-      state = await getHoldingSpaceState();
-    } catch (e) {
-      console.warn('Error getting holding space state', e);
-    }
-    if (!state) {
-      command.setHidden(true);
-      return;
-    }
+      /** @override */
+      canExecute(event, fileManager) {
+        const command = event.command;
 
-    const itemsSet = {};
-    state.itemUrls.forEach((item) => itemsSet[item] = true);
+        const allowedVolumeTypes = HoldingSpaceUtil.getAllowedVolumeTypes();
+        const currentRootType = fileManager.directoryModel.getCurrentRootType();
+        if (!util.isRecentRootType(currentRootType)) {
+          const volumeInfo = fileManager.directoryModel.getCurrentVolumeInfo();
+          if (!volumeInfo ||
+              !allowedVolumeTypes.includes(volumeInfo.volumeType)) {
+            event.canExecute = false;
+            command.setHidden(true);
+            return;
+          }
+        }
 
-    const selectedUrls = util.entriesToURLs(entries);
-    this.addsItems_ = selectedUrls.some(url => !itemsSet[url]);
+        // Filter out entries from unsupported volumes.
+        const entries =
+            fileManager.selectionHandler.selection.entries.filter(entry => {
+              const volumeInfo = fileManager.volumeManager.getVolumeInfo(entry);
+              return volumeInfo &&
+                  allowedVolumeTypes.includes(volumeInfo.volumeType);
+            });
 
-    command.label = this.addsItems_ ?
-        str('HOLDING_SPACE_PIN_TO_SHELF_COMMAND_LABEL') :
-        str('HOLDING_SPACE_UNPIN_FROM_SHELF_COMMAND_LABEL');
-  }
-})();
+        if (entries.length === 0) {
+          event.canExecute = false;
+          command.setHidden(true);
+          return;
+        }
+
+        event.canExecute = true;
+        command.setHidden(false);
+
+        this.checkHoldingSpaceState(entries, command);
+      }
+
+      /**
+       * @param {!Array<Entry|FilesAppEntry>} entries
+       * @param {!Command} command
+       */
+      async checkHoldingSpaceState(entries, command) {
+        // Update the command to add or remove holding space items depending on
+        // the current holding space state - the command will remove items only
+        // if all currently selected items are already in the holding space.
+        let state;
+        try {
+          state = await getHoldingSpaceState();
+        } catch (e) {
+          console.warn('Error getting holding space state', e);
+        }
+        if (!state) {
+          command.setHidden(true);
+          return;
+        }
+
+        const itemsSet = {};
+        state.itemUrls.forEach((item) => itemsSet[item] = true);
+
+        const selectedUrls = util.entriesToURLs(entries);
+        this.addsItems_ = selectedUrls.some(url => !itemsSet[url]);
+
+        command.label = this.addsItems_ ?
+            str('HOLDING_SPACE_PIN_TO_SHELF_COMMAND_LABEL') :
+            str('HOLDING_SPACE_UNPIN_FROM_SHELF_COMMAND_LABEL');
+      }
+    })();
 
 /**
  * Opens containing folder of the focused file.
  */
 CommandHandler.COMMANDS_['go-to-file-location'] =
     new (class extends FilesCommand {
-  execute(event, fileManager) {
-    const entries = CommandUtil.getCommandEntries(fileManager, event.target);
-    if (entries.length !== 1) {
-      return;
-    }
+      execute(event, fileManager) {
+        const entries =
+            CommandUtil.getCommandEntries(fileManager, event.target);
+        if (entries.length !== 1) {
+          return;
+        }
 
-    const components = PathComponent.computeComponentsFromEntry(
-        entries[0], fileManager.volumeManager);
-    // Entries in file list table should always have its containing folder.
-    // (i.e. Its path have at least two components: its parent and itself.)
-    assert(components.length >= 2);
-    const parentComponent = components[components.length - 2];
-    parentComponent.resolveEntry().then(entry => {
-      if (entry && entry.isDirectory) {
-        fileManager.directoryModel.changeDirectoryEntry(
-            /** @type {!(DirectoryEntry|FilesAppDirEntry)} */ (entry));
+        const components = PathComponent.computeComponentsFromEntry(
+            entries[0], fileManager.volumeManager);
+        // Entries in file list table should always have its containing folder.
+        // (i.e. Its path have at least two components: its parent and itself.)
+        assert(components.length >= 2);
+        const parentComponent = components[components.length - 2];
+        parentComponent.resolveEntry().then(entry => {
+          if (entry && entry.isDirectory) {
+            fileManager.directoryModel.changeDirectoryEntry(
+                /** @type {!(DirectoryEntry|FilesAppDirEntry)} */ (entry));
+          }
+        });
       }
-    });
-  }
 
-  /** @override */
-  canExecute(event, fileManager) {
-    // Available in Recents, Audio, Images, and Videos.
-    if (!util.isRecentRootType(
-            fileManager.directoryModel.getCurrentRootType())) {
-      event.canExecute = false;
-      event.command.setHidden(true);
-      return;
-    }
+      /** @override */
+      canExecute(event, fileManager) {
+        // Available in Recents, Audio, Images, and Videos.
+        if (!util.isRecentRootType(
+                fileManager.directoryModel.getCurrentRootType())) {
+          event.canExecute = false;
+          event.command.setHidden(true);
+          return;
+        }
 
-    // Available for a single entry.
-    const entries = CommandUtil.getCommandEntries(fileManager, event.target);
-    event.canExecute = entries.length === 1;
-    event.command.setHidden(!event.canExecute);
-  }
-})();
+        // Available for a single entry.
+        const entries =
+            CommandUtil.getCommandEntries(fileManager, event.target);
+        event.canExecute = entries.length === 1;
+        event.command.setHidden(!event.canExecute);
+      }
+    })();
 
 /**
  * Displays QuickView for current selection.
@@ -2380,8 +2394,8 @@ CommandHandler.COMMANDS_['share-with-linux'] = new (class extends FilesCommand {
 /**
  * Shares the selected (single only) directory with the Plugin VM.
  */
-CommandHandler.COMMANDS_['share-with-plugin-vm'] =
-    new (class extends FilesCommand {
+CommandHandler
+    .COMMANDS_['share-with-plugin-vm'] = new (class extends FilesCommand {
   execute(event, fileManager) {
     const entry = CommandUtil.getCommandEntry(fileManager, event.target);
     if (!entry || !entry.isDirectory) {
@@ -2459,19 +2473,19 @@ CommandHandler.COMMANDS_['share-with-plugin-vm'] =
  */
 CommandHandler.COMMANDS_['manage-linux-sharing-gear'] =
     new (class extends FilesCommand {
-  execute(event, fileManager) {
-    chrome.fileManagerPrivate.openSettingsSubpage('crostini/sharedPaths');
-    CommandHandler.recordMenuItemSelected(
-        CommandHandler.MenuCommandsForUMA.MANAGE_LINUX_SHARING);
-  }
+      execute(event, fileManager) {
+        chrome.fileManagerPrivate.openSettingsSubpage('crostini/sharedPaths');
+        CommandHandler.recordMenuItemSelected(
+            CommandHandler.MenuCommandsForUMA.MANAGE_LINUX_SHARING);
+      }
 
-  /** @override */
-  canExecute(event, fileManager) {
-    event.canExecute =
-        fileManager.crostini.isEnabled(constants.DEFAULT_CROSTINI_VM);
-    event.command.setHidden(!event.canExecute);
-  }
-})();
+      /** @override */
+      canExecute(event, fileManager) {
+        event.canExecute =
+            fileManager.crostini.isEnabled(constants.DEFAULT_CROSTINI_VM);
+        event.command.setHidden(!event.canExecute);
+      }
+    })();
 
 /**
  * Link to settings page from file context menus (not gear menu).  Allows
@@ -2479,21 +2493,22 @@ CommandHandler.COMMANDS_['manage-linux-sharing-gear'] =
  */
 CommandHandler.COMMANDS_['manage-linux-sharing'] =
     new (class extends FilesCommand {
-  execute(event, fileManager) {
-    chrome.fileManagerPrivate.openSettingsSubpage('crostini/sharedPaths');
-    CommandHandler.recordMenuItemSelected(
-        CommandHandler.MenuCommandsForUMA.MANAGE_LINUX_SHARING);
-  }
+      execute(event, fileManager) {
+        chrome.fileManagerPrivate.openSettingsSubpage('crostini/sharedPaths');
+        CommandHandler.recordMenuItemSelected(
+            CommandHandler.MenuCommandsForUMA.MANAGE_LINUX_SHARING);
+      }
 
-  /** @override */
-  canExecute(event, fileManager) {
-    const entries = CommandUtil.getCommandEntries(fileManager, event.target);
-    event.canExecute = entries.length === 1 && entries[0].isDirectory &&
-        fileManager.crostini.isPathShared(
-            constants.DEFAULT_CROSTINI_VM, entries[0]);
-    event.command.setHidden(!event.canExecute);
-  }
-})();
+      /** @override */
+      canExecute(event, fileManager) {
+        const entries =
+            CommandUtil.getCommandEntries(fileManager, event.target);
+        event.canExecute = entries.length === 1 && entries[0].isDirectory &&
+            fileManager.crostini.isPathShared(
+                constants.DEFAULT_CROSTINI_VM, entries[0]);
+        event.command.setHidden(!event.canExecute);
+      }
+    })();
 
 /**
  * Link to settings page from gear menu.  Allows the user to manage files and
@@ -2501,19 +2516,19 @@ CommandHandler.COMMANDS_['manage-linux-sharing'] =
  */
 CommandHandler.COMMANDS_['manage-plugin-vm-sharing-gear'] =
     new (class extends FilesCommand {
-  execute(event, fileManager) {
-    chrome.fileManagerPrivate.openSettingsSubpage(
-        'app-management/pluginVm/sharedPaths');
-    CommandHandler.recordMenuItemSelected(
-        CommandHandler.MenuCommandsForUMA.MANAGE_PLUGIN_VM_SHARING);
-  }
+      execute(event, fileManager) {
+        chrome.fileManagerPrivate.openSettingsSubpage(
+            'app-management/pluginVm/sharedPaths');
+        CommandHandler.recordMenuItemSelected(
+            CommandHandler.MenuCommandsForUMA.MANAGE_PLUGIN_VM_SHARING);
+      }
 
-  /** @override */
-  canExecute(event, fileManager) {
-    event.canExecute = fileManager.crostini.isEnabled(constants.PLUGIN_VM);
-    event.command.setHidden(!event.canExecute);
-  }
-})();
+      /** @override */
+      canExecute(event, fileManager) {
+        event.canExecute = fileManager.crostini.isEnabled(constants.PLUGIN_VM);
+        event.command.setHidden(!event.canExecute);
+      }
+    })();
 
 /**
  * Link to settings page from file context menus (not gear menu).  Allows
@@ -2521,21 +2536,22 @@ CommandHandler.COMMANDS_['manage-plugin-vm-sharing-gear'] =
  */
 CommandHandler.COMMANDS_['manage-plugin-vm-sharing'] =
     new (class extends FilesCommand {
-  execute(event, fileManager) {
-    chrome.fileManagerPrivate.openSettingsSubpage(
-        'app-management/pluginVm/sharedPaths');
-    CommandHandler.recordMenuItemSelected(
-        CommandHandler.MenuCommandsForUMA.MANAGE_PLUGIN_VM_SHARING);
-  }
+      execute(event, fileManager) {
+        chrome.fileManagerPrivate.openSettingsSubpage(
+            'app-management/pluginVm/sharedPaths');
+        CommandHandler.recordMenuItemSelected(
+            CommandHandler.MenuCommandsForUMA.MANAGE_PLUGIN_VM_SHARING);
+      }
 
-  /** @override */
-  canExecute(event, fileManager) {
-    const entries = CommandUtil.getCommandEntries(fileManager, event.target);
-    event.canExecute = entries.length === 1 && entries[0].isDirectory &&
-        fileManager.crostini.isPathShared(constants.PLUGIN_VM, entries[0]);
-    event.command.setHidden(!event.canExecute);
-  }
-})();
+      /** @override */
+      canExecute(event, fileManager) {
+        const entries =
+            CommandUtil.getCommandEntries(fileManager, event.target);
+        event.canExecute = entries.length === 1 && entries[0].isDirectory &&
+            fileManager.crostini.isPathShared(constants.PLUGIN_VM, entries[0]);
+        event.command.setHidden(!event.canExecute);
+      }
+    })();
 
 /**
  * Creates a shortcut of the selected folder (single only).
@@ -2778,13 +2794,13 @@ CommandHandler.COMMANDS_['inspect-element'] = new (class extends FilesCommand {
  */
 CommandHandler.COMMANDS_['inspect-background'] =
     new (class extends FilesCommand {
-  execute(event, fileManager) {
-    if (!window.isSWA) {
-      chrome.fileManagerPrivate.openInspector(
-          chrome.fileManagerPrivate.InspectionType.BACKGROUND);
-    }
-  }
-})();
+      execute(event, fileManager) {
+        if (!window.isSWA) {
+          chrome.fileManagerPrivate.openInspector(
+              chrome.fileManagerPrivate.InspectionType.BACKGROUND);
+        }
+      }
+    })();
 
 /**
  * Opens the gear menu.
@@ -2964,22 +2980,22 @@ CommandHandler.COMMANDS_['volume-storage'] = new (class extends FilesCommand {
  */
 CommandHandler.COMMANDS_['show-providers-submenu'] =
     new (class extends FilesCommand {
-  execute(event, fileManager) {
-    fileManager.ui.gearButton.showSubMenu();
-  }
-
-  /** @override */
-  canExecute(event, fileManager) {
-    if (fileManager.dialogType !== DialogType.FULL_PAGE) {
-      event.canExecute = false;
-    } else {
-      if (window.isSWA) {
-        event.canExecute = !fileManager.guestMode;
-      } else {
-        event.canExecute = !chrome.extension.inIncognitoContext;
+      execute(event, fileManager) {
+        fileManager.ui.gearButton.showSubMenu();
       }
-    }
-  }
-})();
+
+      /** @override */
+      canExecute(event, fileManager) {
+        if (fileManager.dialogType !== DialogType.FULL_PAGE) {
+          event.canExecute = false;
+        } else {
+          if (window.isSWA) {
+            event.canExecute = !fileManager.guestMode;
+          } else {
+            event.canExecute = !chrome.extension.inIncognitoContext;
+          }
+        }
+      }
+    })();
 
 export {CommandUtil};
