@@ -205,10 +205,6 @@ void AutocompleteActionPredictor::StartPrerendering(
       return;
     }
 
-    // TODO(https://crbug.com/1166085): Reset the handle upon prerendering
-    // activation/cancellation. There is a case that a user input the same url
-    // after activation/cancellation, and this mechanism prevents the user from
-    // starting a new prerendering.
     PrerenderManager::CreateForWebContents(&web_contents);
     auto* prerender_manager = PrerenderManager::FromWebContents(&web_contents);
     direct_url_input_prerender_handle_ =
