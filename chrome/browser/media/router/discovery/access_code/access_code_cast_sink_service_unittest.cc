@@ -302,7 +302,7 @@ TEST_F(AccessCodeCastSinkServiceTest,
 TEST_F(AccessCodeCastSinkServiceTest,
        AccessCodeCastDeviceRemovedAfterRouteEndsExpirationDisabled) {
   feature_list_.Reset();
-  feature_list_.Init();
+  feature_list_.InitAndDisableFeature(features::kAccessCodeCastRememberDevices);
   // Test to see that an AccessCode cast sink will be removed after the session
   // is ended.
   mock_time_task_runner()->FastForwardUntilNoTasksRemain();
