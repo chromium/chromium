@@ -136,7 +136,9 @@ optimize_webui("build") {
   deps = [
     ":main",
     "//ui/file_manager:preprocess_generated",
+    "//ui/file_manager:preprocess_generated_image_loader",
     "//ui/file_manager:preprocess_static",
+    "//ui/file_manager:preprocess_static_image_loader",
     "//ui/webui/resources:library",
     "//ui/webui/resources:preprocess",
   ]
@@ -157,7 +159,9 @@ optimize_webui("build_worker") {
 
   deps = [
     "//ui/file_manager:preprocess_generated",
+    "//ui/file_manager:preprocess_generated_image_loader",
     "//ui/file_manager:preprocess_static",
+    "//ui/file_manager:preprocess_static_image_loader",
     "//ui/webui/resources:preprocess",
   ]
 }
@@ -185,7 +189,9 @@ optimize_webui("build_background") {
   deps = [
     ":main_background",
     "//ui/file_manager:preprocess_generated",
+    "//ui/file_manager:preprocess_generated_image_loader",
     "//ui/file_manager:preprocess_static",
+    "//ui/file_manager:preprocess_static_image_loader",
     "//ui/webui/resources:preprocess",
   ]
 }

@@ -806,14 +806,10 @@ js_test_gen_html("js_test_gen_html_modules") {
       ]
 }
 
-preprocess_folder =
-    rebase_path(
-        "$target_gen_dir/../../../preprocessed/file_manager/background/js",
-        root_build_dir)
-
-files_app_path =
-    rebase_path("$root_gen_dir/ui/file_manager/preprocessed/file_manager",
+tsc_folder =
+    rebase_path("$target_gen_dir/../../../tsc/file_manager/background/js",
                 root_build_dir)
+
 image_loader_path =
     rebase_path("$root_gen_dir/ui/file_manager/preprocessed/image_loader",
                 root_build_dir)
@@ -821,7 +817,7 @@ image_loader_path =
 optimize_webui("build") {
   host = "file_manager"
 
-  input = preprocess_folder
+  input = tsc_folder
   js_module_in_files = [
     "main_background.m.js",
     "runtime_loaded_test_util.js",
@@ -834,14 +830,11 @@ optimize_webui("build") {
   ]
 
   external_paths = [
-    "chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj|$files_app_path",
     "chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp|$image_loader_path",
   ]
 
   deps = [
-    ":main_background.m",
-    "//ui/file_manager:preprocess_generated",
-    "//ui/file_manager:preprocess_static",
+    "//ui/file_manager:build_ts",
     "//ui/webui/resources:preprocess",
   ]
 }

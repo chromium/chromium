@@ -215,7 +215,9 @@ optimize_webui("build") {
   deps = [
     ":background.m",
     "//ui/file_manager:preprocess_generated",
+    "//ui/file_manager:preprocess_generated_image_loader",
     "//ui/file_manager:preprocess_static",
+    "//ui/file_manager:preprocess_static_image_loader",
     "//ui/webui/resources:preprocess",
   ]
 }

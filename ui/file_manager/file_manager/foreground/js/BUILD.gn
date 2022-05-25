@@ -1374,14 +1374,10 @@ js_test_gen_html("js_test_gen_html_modules") {
                   ]
 }
 
-preprocess_folder =
-    rebase_path(
-        "$target_gen_dir/../../../preprocessed/file_manager/foreground/js",
-        root_build_dir)
-
-files_app_path =
-    rebase_path("$root_gen_dir/ui/file_manager/preprocessed/file_manager",
+tsc_folder =
+    rebase_path("$target_gen_dir/../../../tsc/file_manager/foreground/js",
                 root_build_dir)
+
 image_loader_path =
     rebase_path("$root_gen_dir/ui/file_manager/preprocessed/image_loader",
                 root_build_dir)
@@ -1389,7 +1385,7 @@ image_loader_path =
 optimize_webui("build") {
   host = "file_manager"
 
-  input = preprocess_folder
+  input = tsc_folder
   js_module_in_files = [
     "main.js",
     "deferred_elements.m.js",
@@ -1402,14 +1398,12 @@ optimize_webui("build") {
   ]
 
   external_paths = [
-    "chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj|$files_app_path",
     "chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp|$image_loader_path",
   ]
 
   deps = [
     ":main",
-    "//ui/file_manager:preprocess_generated",
-    "//ui/file_manager:preprocess_static",
+    "//ui/file_manager:build_ts",
     "//ui/webui/resources:library",
     "//ui/webui/resources:preprocess",
   ]
@@ -1418,20 +1412,18 @@ optimize_webui("build") {
 optimize_webui("build_worker") {
   host = "file_manager"
 
-  input = preprocess_folder
+  input = tsc_folder
   js_module_in_files = [ "metadata/metadata_dispatcher.js" ]
 
   js_out_files = [ "metadata_dispatcher.rollup.js" ]
 
   external_paths = [
-    "chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj|$files_app_path",
     "chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp|$image_loader_path",
   ]
 
   deps = [
     "metadata:metadata_dispatcher",
-    "//ui/file_manager:preprocess_generated",
-    "//ui/file_manager:preprocess_static",
+    "//ui/file_manager:build_ts",
     "//ui/webui/resources:preprocess",
   ]
 }

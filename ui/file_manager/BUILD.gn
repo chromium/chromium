@@ -6,6 +6,8 @@ import("//chrome/common/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/typescript/ts_library.gni")
+import("//ui/file_manager/file_names.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
 grit("resources") {
@@ -76,264 +78,27 @@ preprocess_if_expr("preprocess_static") {
   out_folder = preprocess_folder
   out_manifest = "$target_gen_dir/manifest_preprocess_static.json"
 
-  in_files = [
-    # Audio Player:
-    "audio_player/js/audio_player.js",
-    "audio_player/js/background.js",
-    "audio_player/js/error_util.js",
-    "audio_player/js/main.js",
-    "audio_player/js/main_background.js",
-    "audio_player/js/metadata_worker.js",
-    "audio_player/js/test_util.js",
-
-    # Files app Background:
-    "file_manager/background/js/app_window_wrapper.js",
-    "file_manager/background/js/app_windows.js",
-    "file_manager/background/js/background.js",
-    "file_manager/background/js/background_base.js",
-    "file_manager/background/js/crostini.js",
-    "file_manager/background/js/device_handler.js",
-    "file_manager/background/js/drive_sync_handler.js",
-    "file_manager/background/js/duplicate_finder.js",
-    "file_manager/background/js/entry_location_impl.js",
-    "file_manager/background/js/file_operation_handler.js",
-    "file_manager/background/js/file_operation_manager.js",
-    "file_manager/background/js/file_operation_util.js",
-    "file_manager/background/js/import_history.js",
-    "file_manager/background/js/launcher.js",
-    "file_manager/background/js/main_background.m.js",
-    "file_manager/background/js/media_import_handler.js",
-    "file_manager/background/js/media_scanner.js",
-    "file_manager/background/js/metadata_proxy.js",
-    "file_manager/background/js/metrics_start.js",
-    "file_manager/background/js/mock_crostini.js",
-    "file_manager/background/js/mock_file_operation_manager.js",
-    "file_manager/background/js/mock_media_scanner.js",
-    "file_manager/background/js/mock_progress_center.js",
-    "file_manager/background/js/mock_volume_manager.js",
-    "file_manager/background/js/mount_metrics.js",
-    "file_manager/background/js/progress_center.js",
-    "file_manager/background/js/runtime_loaded_test_util.js",
-    "file_manager/background/js/task_queue.js",
-    "file_manager/background/js/test_import_history.js",
-    "file_manager/background/js/test_util.js",
-    "file_manager/background/js/test_util_base.js",
-    "file_manager/background/js/trash.js",
-    "file_manager/background/js/volume_info_impl.js",
-    "file_manager/background/js/volume_info_list_impl.js",
-    "file_manager/background/js/volume_manager_factory.js",
-    "file_manager/background/js/volume_manager_impl.js",
-    "file_manager/background/js/volume_manager_util.js",
-
-    # Files Common:
-    "file_manager/common/js/api.js",
-    "file_manager/common/js/app_util.js",
-    "file_manager/common/js/async_util.js",
-    "file_manager/common/js/dialog_type.js",
-    "file_manager/common/js/error_counter.js",
-    "file_manager/common/js/glitch.js",
-    "file_manager/common/js/file_operation_common.js",
-    "file_manager/common/js/file_type.js",
-    "file_manager/common/js/files_app_entry_types.js",
-    "file_manager/common/js/files_app_state.js",
-    "file_manager/common/js/filtered_volume_manager.js",
-    "file_manager/common/js/importer_common.js",
-    "file_manager/common/js/lru_cache.js",
-    "file_manager/common/js/mediasession_types.js",
-    "file_manager/common/js/metrics.js",
-    "file_manager/common/js/metrics_base.js",
-    "file_manager/common/js/mock_chrome.js",
-    "file_manager/common/js/mock_entry.js",
-    "file_manager/common/js/notifications_browser_proxy.js",
-    "file_manager/common/js/power.js",
-    "file_manager/common/js/progress_center_common.js",
-    "file_manager/common/js/storage_adapter.js",
-    "file_manager/common/js/test_error_reporting.js",
-    "file_manager/common/js/test_importer_common.js",
-    "file_manager/common/js/trash.js",
-    "file_manager/common/js/unittest_util.js",
-    "file_manager/common/js/url_constants.js",
-    "file_manager/common/js/util.js",
-    "file_manager/common/js/volume_manager_types.js",
-    "file_manager/common/js/xfm.js",
-
-    # Externs:
-    "file_manager/externs/background/background_base.js",
-    "file_manager/externs/background/crostini.js",
-    "file_manager/externs/background/drive_sync_handler.js",
-    "file_manager/externs/background/duplicate_finder.js",
-    "file_manager/externs/background/file_browser_background_full.js",
-    "file_manager/externs/background/file_operation_manager.js",
-    "file_manager/externs/background/import_history.js",
-    "file_manager/externs/background/media_import_handler.js",
-    "file_manager/externs/background/media_scanner.js",
-    "file_manager/externs/background/progress_center.js",
-    "file_manager/externs/background/task_queue.js",
-    "file_manager/externs/background_window.js",
-    "file_manager/externs/banner.js",
-    "file_manager/externs/command_handler_deps.js",
-    "file_manager/externs/directory_change_event.js",
-    "file_manager/externs/drive_dialog_controller.js",
-    "file_manager/externs/entries_changed_event.js",
-    "file_manager/externs/entry_location.js",
-    "file_manager/externs/exif_entry.js",
-    "file_manager/externs/files_app_entry_interfaces.js",
-    "file_manager/externs/metadata_worker_window.js",
-    "file_manager/externs/progress_center_panel.js",
-    "file_manager/externs/volume_info.js",
-    "file_manager/externs/volume_info_list.js",
-    "file_manager/externs/volume_manager.js",
-
-    # Files app Foreground:
-    "file_manager/foreground/js/actions_controller.js",
-    "file_manager/foreground/js/actions_model.js",
-    "file_manager/foreground/js/android_app_list_model.js",
-    "file_manager/foreground/js/app_state_controller.js",
-    "file_manager/foreground/js/banner_controller.js",
-    "file_manager/foreground/js/column_visibility_controller.js",
-    "file_manager/foreground/js/constants.js",
-    "file_manager/foreground/js/crossover_search_utils.js",
-    "file_manager/foreground/js/crostini_controller.js",
-    "file_manager/foreground/js/deferred_elements.m.js",
-    "file_manager/foreground/js/dialog_action_controller.js",
-    "file_manager/foreground/js/directory_contents.js",
-    "file_manager/foreground/js/directory_model.js",
-    "file_manager/foreground/js/directory_tree_naming_controller.js",
-    "file_manager/foreground/js/drive_dialog_controller.js",
-    "file_manager/foreground/js/drop_effect_and_label.js",
-    "file_manager/foreground/js/elements_importer.js",
-    "file_manager/foreground/js/fake_android_app_list_model.js",
-    "file_manager/foreground/js/fake_file_selection_handler.js",
-    "file_manager/foreground/js/file_list_model.js",
-    "file_manager/foreground/js/file_manager.js",
-    "file_manager/foreground/js/file_manager_commands.js",
-    "file_manager/foreground/js/file_selection.js",
-    "file_manager/foreground/js/file_tasks.js",
-    "file_manager/foreground/js/file_transfer_controller.js",
-    "file_manager/foreground/js/file_type_filters_controller.js",
-    "file_manager/foreground/js/file_watcher.js",
-    "file_manager/foreground/js/folder_shortcuts_data_model.js",
-    "file_manager/foreground/js/gear_menu_controller.js",
-    "file_manager/foreground/js/guest_os_controller.js",
-    "file_manager/foreground/js/holding_space_util.js",
-    "file_manager/foreground/js/import_controller.js",
-    "file_manager/foreground/js/last_modified_controller.js",
-    "file_manager/foreground/js/launch_param.js",
-    "file_manager/foreground/js/list_thumbnail_loader.js",
-    "file_manager/foreground/js/main.js",
-    "file_manager/foreground/js/main_window_component.js",
-    "file_manager/foreground/js/metadata_box_controller.js",
-    "file_manager/foreground/js/metadata_update_controller.js",
-    "file_manager/foreground/js/metrics_start.js",
-    "file_manager/foreground/js/mock_actions_model.js",
-    "file_manager/foreground/js/mock_directory_model.js",
-    "file_manager/foreground/js/mock_folder_shortcut_data_model.js",
-    "file_manager/foreground/js/mock_navigation_list_model.js",
-    "file_manager/foreground/js/mock_thumbnail_loader.js",
-    "file_manager/foreground/js/naming_controller.js",
-    "file_manager/foreground/js/file_rename.js",
-    "file_manager/foreground/js/navigation_list_model.js",
-    "file_manager/foreground/js/navigation_uma.js",
-    "file_manager/foreground/js/path_component.js",
-    "file_manager/foreground/js/providers_model.js",
-    "file_manager/foreground/js/quick_view_controller.js",
-    "file_manager/foreground/js/quick_view_model.js",
-    "file_manager/foreground/js/quick_view_uma.js",
-    "file_manager/foreground/js/scan_controller.js",
-    "file_manager/foreground/js/search_controller.js",
-    "file_manager/foreground/js/selection_menu_controller.js",
-    "file_manager/foreground/js/sort_menu_controller.js",
-    "file_manager/foreground/js/spinner_controller.js",
-    "file_manager/foreground/js/task_controller.js",
-    "file_manager/foreground/js/task_history.js",
-    "file_manager/foreground/js/thumbnail_loader.js",
-    "file_manager/foreground/js/toolbar_controller.js",
-    "file_manager/foreground/js/webui_command_extender.js",
-
-    # Metadata:
-    "file_manager/foreground/js/metadata/byte_reader.js",
-    "file_manager/foreground/js/metadata/content_metadata_provider.js",
-    "file_manager/foreground/js/metadata/exif_constants.js",
-    "file_manager/foreground/js/metadata/exif_parser.js",
-    "file_manager/foreground/js/metadata/external_metadata_provider.js",
-    "file_manager/foreground/js/metadata/file_system_metadata_provider.js",
-    "file_manager/foreground/js/metadata/function_parallel.js",
-    "file_manager/foreground/js/metadata/function_sequence.js",
-    "file_manager/foreground/js/metadata/id3_parser.js",
-    "file_manager/foreground/js/metadata/image_orientation.js",
-    "file_manager/foreground/js/metadata/image_parsers.js",
-    "file_manager/foreground/js/metadata/metadata_cache_item.js",
-    "file_manager/foreground/js/metadata/metadata_cache_set.js",
-    "file_manager/foreground/js/metadata/metadata_dispatcher.js",
-    "file_manager/foreground/js/metadata/metadata_item.js",
-    "file_manager/foreground/js/metadata/metadata_model.js",
-    "file_manager/foreground/js/metadata/metadata_parser.js",
-    "file_manager/foreground/js/metadata/metadata_provider.js",
-    "file_manager/foreground/js/metadata/metadata_request.js",
-    "file_manager/foreground/js/metadata/mock_metadata.js",
-    "file_manager/foreground/js/metadata/mpeg_parser.js",
-    "file_manager/foreground/js/metadata/multi_metadata_provider.js",
-    "file_manager/foreground/js/metadata/thumbnail_model.js",
-
-    # Files app UI:
-    "file_manager/foreground/js/ui/a11y_announce.js",
-    "file_manager/foreground/js/ui/action_model_ui.js",
-    "file_manager/foreground/js/ui/actions_submenu.js",
-    "file_manager/foreground/js/ui/autocomplete_list.js",
-    "file_manager/foreground/js/ui/combobutton.js",
-    "file_manager/foreground/js/ui/commandbutton.js",
-    "file_manager/foreground/js/ui/default_task_dialog.js",
-    "file_manager/foreground/js/ui/dialog_footer.js",
-    "file_manager/foreground/js/ui/directory_tree.js",
-    "file_manager/foreground/js/ui/drag_selector.js",
-    "file_manager/foreground/js/ui/file_grid.js",
-    "file_manager/foreground/js/ui/file_list_selection_model.js",
-    "file_manager/foreground/js/ui/file_manager_dialog_base.js",
-    "file_manager/foreground/js/ui/file_manager_ui.js",
-    "file_manager/foreground/js/ui/file_metadata_formatter.js",
-    "file_manager/foreground/js/ui/file_table.js",
-    "file_manager/foreground/js/ui/file_table_list.js",
-    "file_manager/foreground/js/ui/file_tap_handler.js",
-    "file_manager/foreground/js/ui/files_alert_dialog.js",
-    "file_manager/foreground/js/ui/files_confirm_dialog.js",
-    "file_manager/foreground/js/ui/files_menu.js",
-    "file_manager/foreground/js/ui/gear_menu.js",
-    "file_manager/foreground/js/ui/import_crostini_image_dialog.js",
-    "file_manager/foreground/js/ui/install_linux_package_dialog.js",
-    "file_manager/foreground/js/ui/list_container.js",
-    "file_manager/foreground/js/ui/breadcrumb_controller.js",
-    "file_manager/foreground/js/ui/multi_menu.js",
-    "file_manager/foreground/js/ui/multi_menu_button.js",
-    "file_manager/foreground/js/ui/progress_center_panel.js",
-    "file_manager/foreground/js/ui/providers_menu.js",
-    "file_manager/foreground/js/ui/search_box.js",
-    "file_manager/foreground/js/ui/table/table.js",
-    "file_manager/foreground/js/ui/table/table_column.js",
-    "file_manager/foreground/js/ui/table/table_column_model.js",
-    "file_manager/foreground/js/ui/table/table_header.js",
-    "file_manager/foreground/js/ui/table/table_list.js",
-    "file_manager/foreground/js/ui/table/table_splitter.js",
-
-    # Image Loader:
-    "image_loader/background.m.js",
-    "image_loader/cache.js",
-    "image_loader/image_loader.js",
-    "image_loader/image_loader_client.js",
-    "image_loader/image_loader_util.js",
-    "image_loader/image_request_task.js",
-    "image_loader/load_image_request.js",
-    "image_loader/piex_loader.js",
-    "image_loader/scheduler.js",
-  ]
+  in_files = static_js_files
 
   deps = [
-    "//ui/file_manager/audio_player/js:js_modules",
     "//ui/file_manager/file_manager/background/js:js_modules",
     "//ui/file_manager/file_manager/background/js:main_background.m",
     "//ui/file_manager/file_manager/common/js:js_modules",
     "//ui/file_manager/file_manager/foreground/elements:web_components",
     "//ui/file_manager/file_manager/foreground/js:deferred_elements.m",
     "//ui/file_manager/file_manager/foreground/js:main",
+  ]
+}
+
+preprocess_if_expr("preprocess_static_image_loader") {
+  in_folder = "."
+  out_folder = preprocess_folder
+  out_manifest = "$target_gen_dir/manifest_preprocess_static_image_loader.json"
+
+  in_files = audio_static_js_files + image_loader_static_js_files
+
+  deps = [
+    "//ui/file_manager/audio_player/js:js_modules",
     "//ui/file_manager/image_loader:background.m",
     "//ui/file_manager/image_loader:js_modules",
   ]
@@ -345,59 +110,27 @@ preprocess_if_expr("preprocess_generated") {
   out_folder = preprocess_folder
   out_manifest = "$target_gen_dir/manifest_preprocess_generated.json"
 
-  in_files = [
-    # Audio Player:
-    "audio_player/elements/audio_player.js",
-    "audio_player/elements/control_panel.js",
-    "audio_player/elements/repeat_button.js",
-    "audio_player/elements/track_info_panel.js",
-    "audio_player/elements/track_list.js",
-
-    # Files app Elements:
-    "file_manager/foreground/elements/files_format_dialog.js",
-    "file_manager/foreground/elements/files_icon_button.js",
-    "file_manager/foreground/elements/files_metadata_box.js",
-    "file_manager/foreground/elements/files_metadata_entry.js",
-    "file_manager/foreground/elements/files_password_dialog.js",
-    "file_manager/foreground/elements/files_quick_view.js",
-    "file_manager/foreground/elements/files_ripple.js",
-    "file_manager/foreground/elements/files_safe_media.js",
-    "file_manager/foreground/elements/files_spinner.js",
-    "file_manager/foreground/elements/files_toast.js",
-    "file_manager/foreground/elements/files_toggle_ripple.js",
-    "file_manager/foreground/elements/files_tooltip.js",
-    "file_manager/foreground/elements/icons.js",
-    "file_manager/foreground/elements/xf_button.js",
-    "file_manager/foreground/elements/xf_circular_progress.js",
-    "file_manager/foreground/elements/xf_display_panel.js",
-    "file_manager/foreground/elements/xf_panel_item.js",
-    "file_manager/foreground/js/ui/banners/drive_low_space_banner.js",
-    "file_manager/foreground/js/ui/banners/drive_offline_pinning_banner.js",
-    "file_manager/foreground/js/ui/banners/drive_welcome_banner.js",
-    "file_manager/foreground/js/ui/banners/educational_banner.js",
-    "file_manager/foreground/js/ui/banners/holding_space_welcome_banner.js",
-    "file_manager/foreground/js/ui/banners/invalid_usb_filesystem_banner.js",
-    "file_manager/foreground/js/ui/banners/local_disk_low_space_banner.js",
-    "file_manager/foreground/js/ui/banners/photos_welcome_banner.js",
-    "file_manager/foreground/js/ui/banners/shared_with_crostini_pluginvm_banner.js",
-    "file_manager/foreground/js/ui/banners/state_banner.js",
-    "file_manager/foreground/js/ui/banners/trash_banner.js",
-    "file_manager/foreground/js/ui/banners/warning_banner.js",
-    "file_manager/foreground/js/ui/breadcrumb.js",
-
-    "image_loader/image_orientation.js",
-    "image_loader/lru_cache.js",
-
-    "file_manager/common/js/file_types_data.js",
-  ]
+  in_files = generated_js_files
 
   deps = [
-    "//ui/file_manager/audio_player/elements:web_components",
     "//ui/file_manager/base/gn:file_types_data_gen_js",
     "//ui/file_manager/file_manager/foreground/elements:elements",
     "//ui/file_manager/file_manager/foreground/elements:web_components",
     "//ui/file_manager/file_manager/foreground/js/ui:web_components",
     "//ui/file_manager/file_manager/foreground/js/ui/banners:web_components",
+  ]
+}
+
+preprocess_if_expr("preprocess_generated_image_loader") {
+  in_folder = target_gen_dir
+  out_folder = preprocess_folder
+  out_manifest =
+      "$target_gen_dir/manifest_preprocess_generated_image_loader.json"
+
+  in_files = audio_generated_js_files + image_loader_generated_js_files
+
+  deps = [
+    "//ui/file_manager/audio_player/elements:web_components",
     "//ui/file_manager/image_loader:copy_from_filesapp",
   ]
 }
@@ -414,7 +147,7 @@ generate_grd("build_grd") {
   ]
 
   deps = [
-    ":preprocess_generated",
+    ":build_ts",
     "audio_player:build_static_grdp",
     "file_manager:build_static_grdp",
     "//ui/file_manager/audio_player/js:build",
@@ -481,11 +214,15 @@ generate_grd("build_grd") {
     ]
   } else {
     manifest_files = [
-      "$target_gen_dir/manifest_preprocess_generated.json",
-      "$target_gen_dir/manifest_preprocess_static.json",
+      "$target_gen_dir/manifest_preprocess_generated_image_loader.json",
+      "$target_gen_dir/manifest_preprocess_static_image_loader.json",
+      "$target_gen_dir/tsconfig.manifest",
     ]
 
-    deps += [ ":preprocess_static" ]
+    deps += [
+      ":preprocess_generated_image_loader",
+      ":preprocess_static_image_loader",
+    ]
   }
 }
 
@@ -506,4 +243,25 @@ grit("file_manager_gen_resources") {
     "file_manager_gen_resources.pak",
   ]
   output_dir = target_gen_dir
+}
+
+copy("copy_ts") {
+  sources = ts_files
+  outputs = [ "$preprocess_folder/{{source_target_relative}}" ]
+}
+
+ts_library("build_ts") {
+  root_dir = preprocess_folder
+  out_dir = "$target_gen_dir/tsc"
+  tsconfig_base = "tsconfig_base.json"
+
+  extra_deps = [
+    ":copy_ts",
+    ":preprocess_generated",
+    ":preprocess_static",
+  ]
+
+  deps = [ "//ui/webui/resources:library" ]
+
+  in_files = static_js_files + generated_js_files + ts_files
 }
