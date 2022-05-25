@@ -512,7 +512,7 @@ export class ShimlessRma extends ShimlessRmaBase {
     if (error === RmadErrorCode.kRmaNotRequired) {
       const errorState = {
         state: State.kUnknown,
-        canCancel: false,
+        canExit: false,
         canGoBack: false,
         error: RmadErrorCode.kRmaNotRequired
       };
@@ -548,7 +548,7 @@ export class ShimlessRma extends ShimlessRmaBase {
 
       // Set the next page as the current page.
       this.currentPage_ = nextStatePageInfo;
-      if (!stateResult.canCancel) {
+      if (!stateResult.canExit) {
         this.currentPage_.buttonExit = ButtonState.HIDDEN;
       }
       if (!stateResult.canGoBack) {

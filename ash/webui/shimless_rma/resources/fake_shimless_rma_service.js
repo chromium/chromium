@@ -134,7 +134,7 @@ export class FakeShimlessRmaService {
       assert(this.stateIndex_ < this.states_.length);
       const state = this.states_[this.stateIndex_];
       this.setFakeCurrentState_(
-          state.state, state.canCancel, state.canGoBack, state.error);
+          state.state, state.canExit, state.canGoBack, state.error);
     }
     return this.methods_.resolveMethodWithDelay(
         'getCurrentState', this.resolveMethodDelayMs_);
@@ -155,13 +155,13 @@ export class FakeShimlessRmaService {
       assert(this.stateIndex_ < this.states_.length);
       const state = this.states_[this.stateIndex_];
       this.setFakePrevState_(
-          state.state, state.canCancel, state.canGoBack,
+          state.state, state.canExit, state.canGoBack,
           RmadErrorCode.kTransitionFailed);
     } else {
       this.stateIndex_--;
       const state = this.states_[this.stateIndex_];
       this.setFakePrevState_(
-          state.state, state.canCancel, state.canGoBack, state.error);
+          state.state, state.canExit, state.canGoBack, state.error);
     }
     return this.methods_.resolveMethodWithDelay(
         'transitionPreviousState', this.resolveMethodDelayMs_);
@@ -1242,7 +1242,7 @@ export class FakeShimlessRmaService {
 
     this.methods_.register('abortRma');
 
-    this.methods_.register('canCancel');
+    this.methods_.register('canExit');
     this.methods_.register('canGoBack');
 
     this.methods_.register('beginFinalization');
@@ -1359,13 +1359,13 @@ export class FakeShimlessRmaService {
       assert(this.stateIndex_ < this.states_.length);
       const state = this.states_[this.stateIndex_];
       this.setFakeStateForMethod_(
-          method, state.state, state.canCancel, state.canGoBack,
+          method, state.state, state.canExit, state.canGoBack,
           RmadErrorCode.kTransitionFailed);
     } else if (this.states_[this.stateIndex_].state !== expectedState) {
       // Error: Called in wrong state.
       const state = this.states_[this.stateIndex_];
       this.setFakeStateForMethod_(
-          method, state.state, state.canCancel, state.canGoBack,
+          method, state.state, state.canExit, state.canGoBack,
           RmadErrorCode.kRequestInvalid);
     } else {
       // Success.
@@ -1377,7 +1377,7 @@ export class FakeShimlessRmaService {
       }
       const state = this.states_[this.stateIndex_];
       this.setFakeStateForMethod_(
-          method, state.state, state.canCancel, state.canGoBack, state.error);
+          method, state.state, state.canExit, state.canGoBack, state.error);
     }
     return this.methods_.resolveMethodWithDelay(
         method, this.resolveMethodDelayMs_);
@@ -1386,28 +1386,28 @@ export class FakeShimlessRmaService {
   /**
    * Sets the value that will be returned when calling getCurrent().
    * @param {!State} state
-   * @param {boolean} canCancel,
+   * @param {boolean} canExit,
    * @param {boolean} canGoBack,
    * @param {!RmadErrorCode} error
    * @private
    */
-  setFakeCurrentState_(state, canCancel, canGoBack, error) {
+  setFakeCurrentState_(state, canExit, canGoBack, error) {
     this.setFakeStateForMethod_(
-        'getCurrentState', state, canCancel, canGoBack, error);
+        'getCurrentState', state, canExit, canGoBack, error);
   }
 
   /**
    * Sets the value that will be returned when calling
    * transitionPreviousState().
    * @param {!State} state
-   * @param {boolean} canCancel,
+   * @param {boolean} canExit,
    * @param {boolean} canGoBack,
    * @param {!RmadErrorCode} error
    * @private
    */
-  setFakePrevState_(state, canCancel, canGoBack, error) {
+  setFakePrevState_(state, canExit, canGoBack, error) {
     this.setFakeStateForMethod_(
-        'transitionPreviousState', state, canCancel, canGoBack, error);
+        'transitionPreviousState', state, canExit, canGoBack, error);
   }
 
   /**
@@ -1415,15 +1415,15 @@ export class FakeShimlessRmaService {
    * that update state. e.g. setSameOwner()
    * @param {string} method
    * @param {!State} state
-   * @param {boolean} canCancel,
+   * @param {boolean} canExit,
    * @param {boolean} canGoBack,
    * @param {!RmadErrorCode} error
    * @private
    */
-  setFakeStateForMethod_(method, state, canCancel, canGoBack, error) {
+  setFakeStateForMethod_(method, state, canExit, canGoBack, error) {
     this.methods_.setResult(method, /** @type {!StateResult} */ ({
                               state: state,
-                              canCancel: canCancel,
+                              canExit: canExit,
                               canGoBack: canGoBack,
                               error: error
                             }));

@@ -21,7 +21,7 @@ import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_moj
  * this is used frequently.
  * @typedef {{
  *   state: !State,
- *   canCancel: boolean,
+ *   canExit: boolean,
  *   canGoBack: boolean,
  *   error: !RmadErrorCode
  * }}

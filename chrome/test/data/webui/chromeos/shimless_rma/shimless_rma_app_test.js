@@ -232,7 +232,7 @@ export function shimlessRMAAppTest() {
     await initializeShimlessRMAApp(
         [{
           state: State.kSelectComponents,
-          canCancel: true,
+          canExit: true,
           canGoBack: true,
           error: RmadErrorCode.kOk
         }],
@@ -256,7 +256,7 @@ export function shimlessRMAAppTest() {
     await initializeShimlessRMAApp(
         [{
           state: State.kSelectComponents,
-          canCancel: true,
+          canExit: true,
           canGoBack: true,
           error: RmadErrorCode.kOk
         }],
@@ -297,7 +297,7 @@ export function shimlessRMAAppTest() {
     await initializeShimlessRMAApp(
         [{
           state: State.kSelectComponents,
-          canCancel: true,
+          canExit: true,
           canGoBack: true,
           error: RmadErrorCode.kOk
         }],
@@ -335,7 +335,7 @@ export function shimlessRMAAppTest() {
     await initializeShimlessRMAApp(
         [{
           state: State.kSelectComponents,
-          canCancel: true,
+          canExit: true,
           canGoBack: true,
           error: RmadErrorCode.kOk
         }],
@@ -404,7 +404,7 @@ export function shimlessRMAAppTest() {
     await initializeShimlessRMAApp(
         [{
           state: State.kWelcomeScreen,
-          canCancel: true,
+          canExit: true,
           canGoBack: true,
           error: RmadErrorCode.kOk
         }],

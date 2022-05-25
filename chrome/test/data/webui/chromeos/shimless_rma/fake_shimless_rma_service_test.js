@@ -32,7 +32,7 @@ export function fakeShimlessRmaServiceTestSuite() {
     const states = [
       {
         state: State.kWelcomeScreen,
-        canCancel: true,
+        canExit: true,
         canGoBack: false,
         error: RmadErrorCode.kOk
       },
@@ -41,7 +41,7 @@ export function fakeShimlessRmaServiceTestSuite() {
 
     return service.getCurrentState().then((state) => {
       assertEquals(state.state, State.kWelcomeScreen);
-      assertTrue(state.canCancel);
+      assertTrue(state.canExit);
       assertFalse(state.canGoBack);
       assertEquals(state.error, RmadErrorCode.kOk);
     });
