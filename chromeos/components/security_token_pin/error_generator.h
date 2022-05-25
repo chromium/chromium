@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_SECURITY_TOKEN_PIN_ERROR_GENERATOR_H_
-#define ASH_COMPONENTS_SECURITY_TOKEN_PIN_ERROR_GENERATOR_H_
+#ifndef CHROMEOS_COMPONENTS_SECURITY_TOKEN_PIN_ERROR_GENERATOR_H_
+#define CHROMEOS_COMPONENTS_SECURITY_TOKEN_PIN_ERROR_GENERATOR_H_
 
 #include <string>
 
-#include "ash/components/security_token_pin/constants.h"
 #include "base/component_export.h"
+#include "chromeos/components/security_token_pin/constants.h"
 
 namespace chromeos {
 namespace security_token_pin {
@@ -23,4 +23,4 @@ std::u16string GenerateErrorMessage(ErrorLabel error_label,
 }  // namespace security_token_pin
 }  // namespace chromeos
 
-#endif  // ASH_COMPONENTS_SECURITY_TOKEN_PIN_ERROR_GENERATOR_H_
+#endif  // CHROMEOS_COMPONENTS_SECURITY_TOKEN_PIN_ERROR_GENERATOR_H_

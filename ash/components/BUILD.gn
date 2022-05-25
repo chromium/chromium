@@ -40,7 +40,6 @@ test("ash_components_unittests") {
     "//ash/components/policy:unit_tests",
     "//ash/components/power:unit_tests",
     "//ash/components/proximity_auth:unit_tests",
-    "//ash/components/security_token_pin:unit_tests",
     "//ash/components/settings:unit_tests",
     "//ash/components/smbfs:unit_tests",
     "//ash/components/tether:unit_tests",

@@ -400,11 +400,11 @@ component("cpp") {
 
   public_deps = [
     "//ash/components/arc/mojom:notifications",
-    "//ash/components/security_token_pin",
     "//ash/public/mojom",
     "//ash/services/cellular_setup/public/mojom",
     "//ash/webui/personalization_app/proto",
     "//base",
+    "//chromeos/components/security_token_pin",
     "//chromeos/crosapi/mojom",
     "//chromeos/services/assistant/public/mojom",
     "//chromeos/services/bluetooth_config/public/mojom",

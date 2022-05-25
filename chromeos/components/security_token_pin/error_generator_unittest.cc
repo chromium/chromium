@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/security_token_pin/error_generator.h"
+#include "chromeos/components/security_token_pin/error_generator.h"
 
 #include <string>
 
-#include "ash/components/security_token_pin/constants.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/components/security_token_pin/constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {

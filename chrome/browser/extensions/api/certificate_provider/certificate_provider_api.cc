@@ -11,7 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/components/security_token_pin/constants.h"
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/values.h"
@@ -21,6 +20,7 @@
 #include "chrome/browser/ash/certificate_provider/security_token_pin_dialog_host.h"
 #include "chrome/common/extensions/api/certificate_provider.h"
 #include "chrome/common/extensions/api/certificate_provider_internal.h"
+#include "chromeos/components/security_token_pin/constants.h"
 #include "extensions/browser/quota_service.h"
 #include "net/cert/x509_certificate.h"
 #include "net/ssl/ssl_private_key.h"

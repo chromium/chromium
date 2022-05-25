@@ -25,7 +25,6 @@ source_set("chromeos") {
   public_configs = [ "//build/config/linux/nss" ]
 
   public_deps = [
-    "//ash/components/security_token_pin",
     "//ash/resources/vector_icons",
     "//ash/strings",
     "//chrome:extra_resources",
@@ -281,6 +280,7 @@ source_set("chromeos") {
     "//chromeos/components/quick_answers/public/cpp:cpp",
     "//chromeos/components/quick_answers/public/cpp:prefs",
     "//chromeos/components/remote_apps/mojom",
+    "//chromeos/components/security_token_pin",
     "//chromeos/components/sensors",
     "//chromeos/components/sensors:buildflags",
     "//chromeos/components/sensors/mojom",

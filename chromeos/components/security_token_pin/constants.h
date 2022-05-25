@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_SECURITY_TOKEN_PIN_CONSTANTS_H_
-#define ASH_COMPONENTS_SECURITY_TOKEN_PIN_CONSTANTS_H_
+#ifndef CHROMEOS_COMPONENTS_SECURITY_TOKEN_PIN_CONSTANTS_H_
+#define CHROMEOS_COMPONENTS_SECURITY_TOKEN_PIN_CONSTANTS_H_
 
 // This header contains types related to the security token PIN requests.
 
@@ -29,4 +29,4 @@ enum class ErrorLabel {
 }  // namespace security_token_pin
 }  // namespace chromeos
 
-#endif  // ASH_COMPONENTS_SECURITY_TOKEN_PIN_CONSTANTS_H_
+#endif  // CHROMEOS_COMPONENTS_SECURITY_TOKEN_PIN_CONSTANTS_H_
