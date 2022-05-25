@@ -277,7 +277,7 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
 
     private void setTextFragmentReceiver() {
         if (mChromeShareExtras.getRenderFrameHost() != null
-                && mChromeShareExtras.getRenderFrameHost().isRenderFrameCreated()) {
+                && mChromeShareExtras.getRenderFrameHost().isRenderFrameLive()) {
             mProducer = mChromeShareExtras.getRenderFrameHost().getInterfaceToRendererFrame(
                     TextFragmentReceiver.MANAGER);
             return;

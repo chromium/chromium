@@ -146,9 +146,9 @@ public class RenderFrameHostImpl implements RenderFrameHost {
     }
 
     @Override
-    public boolean isRenderFrameCreated() {
+    public boolean isRenderFrameLive() {
         if (mNativeRenderFrameHostAndroid == 0) return false;
-        return RenderFrameHostImplJni.get().isRenderFrameCreated(
+        return RenderFrameHostImplJni.get().isRenderFrameLive(
                 mNativeRenderFrameHostAndroid, RenderFrameHostImpl.this);
     }
 
@@ -244,7 +244,7 @@ public class RenderFrameHostImpl implements RenderFrameHost {
         void notifyUserActivation(long nativeRenderFrameHostAndroid, RenderFrameHostImpl caller);
         boolean signalCloseWatcherIfActive(
                 long nativeRenderFrameHostAndroid, RenderFrameHostImpl caller);
-        boolean isRenderFrameCreated(long nativeRenderFrameHostAndroid, RenderFrameHostImpl caller);
+        boolean isRenderFrameLive(long nativeRenderFrameHostAndroid, RenderFrameHostImpl caller);
         void getInterfaceToRendererFrame(long nativeRenderFrameHostAndroid,
                 RenderFrameHostImpl caller, String interfacename, long messagePipeRawHandle);
         void terminateRendererDueToBadMessage(

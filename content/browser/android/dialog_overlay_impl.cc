@@ -99,7 +99,7 @@ DialogOverlayImpl::DialogOverlayImpl(const JavaParamRef<jobject>& obj,
 
   // Make sure RenderFrameDeleted will be called on RFH and thus we will clean
   // up.
-  CHECK(rfhi_->IsRenderFrameCreated());
+  CHECK(rfhi_->IsRenderFrameLive());
   web_contents->GetNativeView()->AddObserver(this);
 
   // Note that we're not allowed to call back into |obj| before it calls

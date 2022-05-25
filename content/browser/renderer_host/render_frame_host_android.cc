@@ -175,10 +175,10 @@ jboolean RenderFrameHostAndroid::SignalCloseWatcherIfActive(
   return close_listener_host->SignalIfActive();
 }
 
-jboolean RenderFrameHostAndroid::IsRenderFrameCreated(
+jboolean RenderFrameHostAndroid::IsRenderFrameLive(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>&) const {
-  return render_frame_host_->IsRenderFrameCreated();
+  return render_frame_host_->IsRenderFrameLive();
 }
 
 void RenderFrameHostAndroid::GetInterfaceToRendererFrame(
@@ -186,7 +186,7 @@ void RenderFrameHostAndroid::GetInterfaceToRendererFrame(
     const base::android::JavaParamRef<jobject>&,
     const base::android::JavaParamRef<jstring>& interface_name,
     jlong message_pipe_raw_handle) const {
-  DCHECK(render_frame_host_->IsRenderFrameCreated());
+  DCHECK(render_frame_host_->IsRenderFrameLive());
   render_frame_host_->GetRemoteInterfaces()->GetInterfaceByName(
       ConvertJavaStringToUTF8(env, interface_name),
       mojo::ScopedMessagePipeHandle(

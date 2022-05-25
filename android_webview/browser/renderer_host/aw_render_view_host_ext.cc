@@ -230,7 +230,7 @@ mojom::LocalMainFrame* AwRenderViewHostExt::GetLocalMainFrameRemote() {
 
   // Avoid accessing GetRemoteAssociatedInterfaces until the renderer is
   // created.
-  if (!main_frame->IsRenderFrameCreated()) {
+  if (!main_frame->IsRenderFrameLive()) {
     main_frame_global_id_ = content::GlobalRenderFrameHostId();
     return nullptr;
   }

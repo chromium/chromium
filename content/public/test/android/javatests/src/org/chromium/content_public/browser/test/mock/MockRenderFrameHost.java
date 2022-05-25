@@ -67,7 +67,7 @@ public class MockRenderFrameHost implements RenderFrameHost {
     }
 
     @Override
-    public boolean isRenderFrameCreated() {
+    public boolean isRenderFrameLive() {
         return false;
     }
 

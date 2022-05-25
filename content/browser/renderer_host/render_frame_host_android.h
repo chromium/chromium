@@ -65,9 +65,8 @@ class RenderFrameHostAndroid : public base::SupportsUserData::Data {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>&) const;
 
-  jboolean IsRenderFrameCreated(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>&) const;
+  jboolean IsRenderFrameLive(JNIEnv* env,
+                             const base::android::JavaParamRef<jobject>&) const;
 
   void GetInterfaceToRendererFrame(
       JNIEnv* env,

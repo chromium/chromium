@@ -3042,7 +3042,7 @@ public class AwContents implements SmartClipProvider {
 
         RenderFrameHost mainFrame = mWebContents.getMainFrame();
         // If the RenderFrameHost or the RenderFrame doesn't exist we couldn't post the message.
-        if (mainFrame == null || !mainFrame.isRenderFrameCreated()) return;
+        if (mainFrame == null || !mainFrame.isRenderFrameLive()) return;
 
         mWebContents.postMessageToMainFrame(messagePayload, null, targetOrigin, sentPorts);
     }

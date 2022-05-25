@@ -177,7 +177,7 @@ public class AppIndexingUtil {
         RenderFrameHost mainFrame = webContents.getMainFrame();
         if (mainFrame == null) return null;
 
-        if (!mainFrame.isRenderFrameCreated()) return null;
+        if (!mainFrame.isRenderFrameLive()) return null;
 
         return mainFrame.getInterfaceToRendererFrame(DocumentMetadata.MANAGER);
     }

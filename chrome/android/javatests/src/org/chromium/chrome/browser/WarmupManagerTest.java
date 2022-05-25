@@ -129,7 +129,7 @@ public class WarmupManagerTest {
     @Test
     @SmallTest
     public void testCreateAndTakeSpareRenderer() {
-        final AtomicBoolean isRenderFrameCreated = new AtomicBoolean();
+        final AtomicBoolean isRenderFrameLive = new AtomicBoolean();
         final AtomicReference<WebContents> webContentsReference = new AtomicReference<>();
 
         PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
@@ -140,13 +140,13 @@ public class WarmupManagerTest {
             Assert.assertNotNull(webContents);
             Assert.assertFalse(mWarmupManager.hasSpareWebContents());
 
-            if (webContents.getMainFrame().isRenderFrameCreated()) {
-                isRenderFrameCreated.set(true);
+            if (webContents.getMainFrame().isRenderFrameLive()) {
+                isRenderFrameLive.set(true);
             }
             WebContentsObserver observer = new WebContentsObserver(webContents) {
                 @Override
                 public void renderFrameCreated(GlobalRenderFrameHostId id) {
-                    isRenderFrameCreated.set(true);
+                    isRenderFrameLive.set(true);
                 }
             };
             webContents.addObserver(observer);
@@ -154,7 +154,7 @@ public class WarmupManagerTest {
             webContentsReference.set(webContents);
         });
         CriteriaHelper.pollUiThread(
-                () -> isRenderFrameCreated.get(), "Spare renderer is not initialized");
+                () -> isRenderFrameLive.get(), "Spare renderer is not initialized");
         PostTask.runOrPostTask(
                 UiThreadTaskTraits.DEFAULT, () -> webContentsReference.get().destroy());
     }
