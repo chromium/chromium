@@ -386,44 +386,69 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, Mount) {
       ->AddVolumeForTesting(file_manager::Volume::CreateForProvidedFileSystem(
           info, file_manager::MOUNT_CONTEXT_AUTO));
 
-  // We will call fileManagerPrivate.unmountVolume once. To test that method, we
-  // check that UnmountPath is really called with the same value.
-  EXPECT_CALL(*disk_mount_manager_mock_, UnmountPath(_, _)).Times(0);
+  // The test.js calls fileManagerPrivate.removeMount(name) twice for each name
+  // "mount_path1" and "archive_mount_path". The first call should unmount with
+  // no error, and the second should fail with an error. Record the events, and
+  // verify them by name and occurrence count.
+  int events[4] = {0, 0, 0, 0};
+
   EXPECT_CALL(
       *disk_mount_manager_mock_,
       UnmountPath(chromeos::CrosDisksClient::GetRemovableDiskMountPoint()
                       .AppendASCII("mount_path1")
                       .AsUTF8Unsafe(),
                   _))
-      .WillOnce(
-          testing::Invoke([](const std::string&,
-                             DiskMountManager::UnmountPathCallback callback) {
+      .WillOnce(testing::Invoke(
+          [&events](const std::string& path,
+                    DiskMountManager::UnmountPathCallback callback) {
+            const auto name = base::FilePath(path).BaseName();
+            EXPECT_EQ("mount_path1", name.value());
+            ++events[0];
+            EXPECT_EQ(1, events[0]);
             std::move(callback).Run(chromeos::MOUNT_ERROR_NONE);
           }))
-      .WillOnce(
-          testing::Invoke([](const std::string&,
-                             DiskMountManager::UnmountPathCallback callback) {
+      .WillOnce(testing::Invoke(
+          [&events](const std::string& path,
+                    DiskMountManager::UnmountPathCallback callback) {
+            const auto name = base::FilePath(path).BaseName();
+            EXPECT_EQ("mount_path1", name.value());
+            ++events[1];
+            EXPECT_EQ(1, events[1]);
             std::move(callback).Run(chromeos::MOUNT_ERROR_CANCELLED);
           }));
+
   EXPECT_CALL(*disk_mount_manager_mock_,
               UnmountPath(chromeos::CrosDisksClient::GetArchiveMountPoint()
                               .AppendASCII("archive_mount_path")
                               .AsUTF8Unsafe(),
                           _))
-      .WillOnce(
-          testing::Invoke([](const std::string&,
-                             DiskMountManager::UnmountPathCallback callback) {
+      .WillOnce(testing::Invoke(
+          [&events](const std::string& path,
+                    DiskMountManager::UnmountPathCallback callback) {
+            const auto name = base::FilePath(path).BaseName();
+            EXPECT_EQ("archive_mount_path", name.value());
+            ++events[2];
+            EXPECT_EQ(1, events[2]);
             std::move(callback).Run(chromeos::MOUNT_ERROR_NONE);
           }))
-      .WillOnce(
-          testing::Invoke([](const std::string&,
-                             DiskMountManager::UnmountPathCallback callback) {
+      .WillOnce(testing::Invoke(
+          [&events](const std::string& path,
+                    DiskMountManager::UnmountPathCallback callback) {
+            const auto name = base::FilePath(path).BaseName();
+            EXPECT_EQ("archive_mount_path", name.value());
+            ++events[3];
+            EXPECT_EQ(1, events[3]);
             std::move(callback).Run(chromeos::MOUNT_ERROR_NEED_PASSWORD);
           }));
 
   ASSERT_TRUE(RunExtensionTest("file_browser/mount_test", {},
                                {.load_as_component = true}))
       << message_;
+
+  ASSERT_EQ(1, events[0]);
+  ASSERT_EQ(1, events[1]);
+  ASSERT_EQ(1, events[2]);
+  ASSERT_EQ(1, events[3]);
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, FormatVolume) {

@@ -759,7 +759,7 @@ const base::Feature kFullscreenAlertBubble{"EnableFullscreenBubble",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enable ChromeOS FuseBox service.
-const base::Feature kFuseBox{"FuseBox", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kFuseBox{"FuseBox", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Debugging UI for ChromeOS FuseBox service.
 const base::Feature kFuseBoxDebug{"FuseBoxDebug",
