@@ -858,7 +858,7 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
     @SmallTest
     @Feature({"ContextualSearch"})
     @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
-    @DisabledTest(message = "http://crbug.com/1296677")
+    // Previously disabled: http://crbug.com/1296677
     public void testDictionaryDefinitions(@EnabledFeature int enabledFeature) throws Exception {
         runDictionaryCardTest(CardTag.CT_DEFINITION);
     }
