@@ -362,6 +362,8 @@ class CC_EXPORT SchedulerStateMachine {
     return pending_tree_is_ready_for_activation_;
   }
 
+  bool resourceless_draw() const { return resourceless_draw_; }
+
  protected:
   bool BeginFrameRequiredForAction() const;
   bool BeginFrameNeededForVideo() const;
