@@ -137,5 +137,6 @@ GestureCommandHandler.granularity = GestureGranularity.LINE;
 GestureCommandHandler.init_();
 
 BridgeHelper.registerHandler(
-    BridgeTargets.GESTURE_COMMAND_HANDLER, BridgeActions.SET_ENABLED,
+    BridgeConstants.GestureCommandHandler.TARGET,
+    BridgeConstants.GestureCommandHandler.Action.SET_ENABLED,
     enabled => GestureCommandHandler.setEnabled(enabled));

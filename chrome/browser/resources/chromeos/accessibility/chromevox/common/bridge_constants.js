@@ -15,7 +15,6 @@ goog.provide('BridgeTargets');
 BridgeTargets = {
   CHROMEVOX_STATE: 'ChromeVoxState',
   EVENT_STREAM_LOGGER: 'EventStreamLogger',
-  GESTURE_COMMAND_HANDLER: 'GestureCommandHandler',
   LOG_STORE: 'LogStore',
   PANEL: 'Panel',
   PANEL_BACKGROUND: 'PanelBackground',
@@ -84,6 +83,15 @@ BridgeConstants = {
       GET: 'get',
     },
   },
+
+  GestureCommandHandler: {
+    /** @public {BridgeTarget} */
+    TARGET: 'GestureCommandHandler',
+    /** @enum {string} */
+    Action: {
+      SET_ENABLED: 'setEnabled',
+    },
+  },
 };
 
 /**
@@ -108,7 +116,6 @@ BridgeActions = {
   ON_CURRENT_RANGE_CHANGED: 'onCurrentRangeChanged',
   PERFORM_CUSTOM_ACTION_ON_CURRENT_NODE: 'performCustomActionOnCurrentNode',
   PERFORM_STANDARD_ACTION_ON_CURRENT_NODE: 'performStandardActionOnCurrentNode',
-  SET_ENABLED: 'setEnabled',
   SET_RANGE_TO_I_SEARCH_NODE: 'setRangeToISearchNode',
   UPDATE_PUNCTUATION_ECHO: 'updatePunctuationEcho',
   WAIT_FOR_PANEL_COLLAPSE: 'waitForPanelCollapse',
@@ -122,6 +129,7 @@ BridgeActions = {
  *           BridgeConstants.ChromeVoxBackground.Action |
  *           BridgeConstants.ChromeVoxPrefs.Action |
  *           BridgeConstants.CommandHandler.Action |
- *           BridgeConstants.EventSourceState.Action}
+ *           BridgeConstants.EventSourceState.Action |
+ *           BridgeConstants.GestureCommandHandler.Action}
  */
 BridgeAction;
