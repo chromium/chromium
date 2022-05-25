@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "components/prefs/pref_change_registrar.h"
 #include "components/sync/base/model_type.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -17,6 +18,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 #include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
+#include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
 #include "components/prefs/json_pref_store.h"
 #include "components/sync/protocol/preference_specifics.pb.h"
@@ -90,6 +92,24 @@ absl::optional<sync_pb::PreferenceSpecifics> GetPreferenceInFakeServer(
     fake_server::FakeServer* fake_server);
 
 }  // namespace preferences_helper
+
+// Checker that blocks until pref has the specified value.
+class BooleanPrefValueChecker : public StatusChangeChecker {
+ public:
+  BooleanPrefValueChecker(PrefService* pref_service,
+                          const char* path,
+                          bool expected_value);
+  ~BooleanPrefValueChecker() override;
+
+  bool IsExitConditionSatisfied(std::ostream* os) override;
+
+ private:
+  const char* path_;
+  const bool expected_value_;
+
+  const base::raw_ptr<PrefService> pref_service_;
+  PrefChangeRegistrar pref_change_registrar_;
+};
 
 // Abstract checker that takes care of registering for preference changes.
 class PrefMatchChecker : public StatusChangeChecker {

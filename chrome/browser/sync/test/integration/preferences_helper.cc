@@ -180,6 +180,25 @@ absl::optional<sync_pb::PreferenceSpecifics> GetPreferenceInFakeServer(
 
 }  // namespace preferences_helper
 
+BooleanPrefValueChecker::BooleanPrefValueChecker(PrefService* pref_service,
+                                                 const char* path,
+                                                 bool expected_value)
+    : path_(path),
+      expected_value_(expected_value),
+      pref_service_(pref_service) {
+  pref_change_registrar_.Init(pref_service_);
+  pref_change_registrar_.Add(
+      path_, base::BindRepeating(&BooleanPrefValueChecker::CheckExitCondition,
+                                 base::Unretained(this)));
+}
+
+BooleanPrefValueChecker::~BooleanPrefValueChecker() = default;
+
+bool BooleanPrefValueChecker::IsExitConditionSatisfied(std::ostream* os) {
+  *os << "Waiting for pref '" << path_ << "' to be " << expected_value_;
+  return pref_service_->GetBoolean(path_) == expected_value_;
+}
+
 PrefMatchChecker::PrefMatchChecker(const char* path) : path_(path) {
   for (int i = 0; i < test()->num_clients(); ++i) {
     RegisterPrefListener(preferences_helper::GetPrefs(i));
