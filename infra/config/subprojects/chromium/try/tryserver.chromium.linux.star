@@ -264,6 +264,36 @@ try_.compilator_builder(
     main_list_view = "try",
 )
 
+try_.orchestrator_builder(
+    name = "linux-rel-orchestrator-pool",
+    builderless = None,
+    compilator = "linux-rel-orchestrator-pool-compilator",
+    mirrors = [
+        "ci/Linux Builder",
+        "ci/Linux Tests",
+        "ci/GPU Linux Builder",
+        "ci/Linux Release (NVIDIA)",
+    ],
+    try_settings = builder_config.try_settings(
+        rts_config = builder_config.rts_config(
+            condition = builder_config.rts_condition.QUICK_RUN_ONLY,
+        ),
+    ),
+    use_clang_coverage = True,
+    coverage_test_types = ["unit", "overall"],
+    tryjob = try_.job(
+        experiment_percentage = 10,
+    ),
+    experiments = {
+        "remove_src_checkout_experiment": 100,
+    },
+    pool = "luci.chromium.try.orchestrator",
+)
+
+try_.compilator_builder(
+    name = "linux-rel-orchestrator-pool-compilator",
+)
+
 # crbug.com/1270571: Experimental bot to test pre-warming
 try_.orchestrator_builder(
     name = "linux-rel-warmed",
