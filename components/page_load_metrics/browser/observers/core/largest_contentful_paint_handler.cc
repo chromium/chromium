@@ -271,16 +271,16 @@ void LargestContentfulPaintHandler::RecordSubframeTiming(
     const base::TimeDelta& navigation_start_offset) {
   UpdateFirstInputOrScrollNotified(first_input_or_scroll_notified_timestamp,
                                    navigation_start_offset);
-  // TODO(iclelland): Use the remainder of the fields from
-  // largest_contentful_paint to construct the ContentfulPaintTimingInfo here
+  DCHECK(!subframe_contentful_paint_.Text().InMainFrame());
+  DCHECK(!subframe_contentful_paint_.Image().InMainFrame());
   ContentfulPaintTimingInfo new_text_candidate(
       AdjustedTime(largest_contentful_paint.largest_text_paint,
                    navigation_start_offset),
       largest_contentful_paint.largest_text_paint_size,
-      subframe_contentful_paint_.Text().TextOrImage(),
-      subframe_contentful_paint_.Text().ImageBPP(),
-      subframe_contentful_paint_.Text().InMainFrame(),
-      subframe_contentful_paint_.Text().Type());
+      ContentfulPaintTimingInfo::LargestContentTextOrImage::kText,
+      /*image_bpp=*/0.0, /*in_main_frame=*/false,
+      static_cast<blink::LargestContentfulPaintType>(
+          largest_contentful_paint.type));
   if (IsValid(new_text_candidate.Time())) {
     MergeForSubframesWithAdjustedTime(&subframe_contentful_paint_.Text(),
                                       new_text_candidate);
@@ -291,10 +291,10 @@ void LargestContentfulPaintHandler::RecordSubframeTiming(
       AdjustedTime(largest_contentful_paint.largest_image_paint,
                    navigation_start_offset),
       largest_contentful_paint.largest_image_paint_size,
-      subframe_contentful_paint_.Image().TextOrImage(),
-      subframe_contentful_paint_.Image().ImageBPP(),
-      subframe_contentful_paint_.Image().InMainFrame(),
-      subframe_contentful_paint_.Image().Type());
+      ContentfulPaintTimingInfo::LargestContentTextOrImage::kImage,
+      largest_contentful_paint.image_bpp, /*in_main_frame=*/false,
+      static_cast<blink::LargestContentfulPaintType>(
+          largest_contentful_paint.type));
   if (IsValid(new_image_candidate.Time())) {
     MergeForSubframesWithAdjustedTime(&subframe_contentful_paint_.Image(),
                                       new_image_candidate);
@@ -305,16 +305,16 @@ void LargestContentfulPaintHandler::RecordCrossSiteSubframeTiming(
     const page_load_metrics::mojom::LargestContentfulPaintTiming&
         largest_contentful_paint,
     const base::TimeDelta& navigation_start_offset) {
-  // TODO(iclelland): Use the remainder of the fields from
-  // largest_contentful_paint to construct the ContentfulPaintTimingInfo here
+  DCHECK(!cross_site_subframe_contentful_paint_.Text().InMainFrame());
+  DCHECK(!cross_site_subframe_contentful_paint_.Image().InMainFrame());
   ContentfulPaintTimingInfo new_text_candidate(
       AdjustedTime(largest_contentful_paint.largest_text_paint,
                    navigation_start_offset),
       largest_contentful_paint.largest_text_paint_size,
-      cross_site_subframe_contentful_paint_.Text().TextOrImage(),
-      cross_site_subframe_contentful_paint_.Text().ImageBPP(),
-      cross_site_subframe_contentful_paint_.Text().InMainFrame(),
-      cross_site_subframe_contentful_paint_.Text().Type());
+      ContentfulPaintTimingInfo::LargestContentTextOrImage::kText,
+      /*image_bpp=*/0.0, /*in_main_frame=*/false,
+      static_cast<blink::LargestContentfulPaintType>(
+          largest_contentful_paint.type));
   if (IsValid(new_text_candidate.Time())) {
     MergeForSubframesWithAdjustedTime(
         &cross_site_subframe_contentful_paint_.Text(), new_text_candidate);
@@ -325,10 +325,10 @@ void LargestContentfulPaintHandler::RecordCrossSiteSubframeTiming(
       AdjustedTime(largest_contentful_paint.largest_image_paint,
                    navigation_start_offset),
       largest_contentful_paint.largest_image_paint_size,
-      cross_site_subframe_contentful_paint_.Image().TextOrImage(),
-      cross_site_subframe_contentful_paint_.Image().ImageBPP(),
-      cross_site_subframe_contentful_paint_.Image().InMainFrame(),
-      cross_site_subframe_contentful_paint_.Image().Type());
+      ContentfulPaintTimingInfo::LargestContentTextOrImage::kImage,
+      largest_contentful_paint.image_bpp, /*in_main_frame=*/false,
+      static_cast<blink::LargestContentfulPaintType>(
+          largest_contentful_paint.type));
   if (IsValid(new_image_candidate.Time())) {
     MergeForSubframesWithAdjustedTime(
         &cross_site_subframe_contentful_paint_.Image(), new_image_candidate);
