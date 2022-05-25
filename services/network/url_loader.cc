@@ -494,7 +494,8 @@ class CacheTransparencySettings {
       const auto version_string = split[0];
       int version_number = 0;
       if (StringToInt(version_string, &version_number)) {
-        // TODO(ricea): Do something useful with the version number.
+        base::UmaHistogramExactLinear("Network.CacheTransparency.ListVersion",
+                                      version_number, 101);
       } else {
         LOG(WARNING) << "Could not parse pervasive payload version number";
       }

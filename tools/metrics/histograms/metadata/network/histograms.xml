@@ -144,6 +144,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Network.CacheTransparency.ListVersion" units="version"
+    expires_after="2022-11-01">
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>ricea@chromium.org</owner>
+  <summary>
+    Records the version number of the pervasive payloads list, when the list is
+    parsed the first time a URL request is made.
+  </summary>
+</histogram>
+
 <histogram name="Network.CacheTransparency.MarkedUnusable" units="list index"
     expires_after="2022-11-01">
   <owner>nidhijaju@chromium.org</owner>
