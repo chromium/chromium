@@ -97,9 +97,12 @@ class WebrtcVideoEncoderVpx : public WebrtcVideoEncoder {
   // Used to generate zero-based frame timestamps.
   base::TimeTicks timestamp_base_;
 
-  // VPX image and buffer to hold the actual YUV planes.
-  std::unique_ptr<vpx_image_t> image_;
-  std::unique_ptr<uint8_t[]> image_buffer_;
+  // vpx_image_t has a custom deallocator which needs to be called before
+  // deletion.
+  using scoped_vpx_image = std::unique_ptr<vpx_image_t, void (*)(vpx_image_t*)>;
+
+  // VPX image descriptor and pixel buffer.
+  scoped_vpx_image image_;
 
   // Active map used to optimize out processing of un-changed macroblocks.
   std::unique_ptr<uint8_t[]> active_map_;
