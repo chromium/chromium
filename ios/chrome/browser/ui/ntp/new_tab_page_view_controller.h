@@ -69,6 +69,10 @@
 // The view controller representing the NTP feed header.
 @property(nonatomic, assign) FeedHeaderViewController* feedHeaderViewController;
 
+// The view controller representing the Feed top section (between the feed
+// header and the feed collection).
+@property(nonatomic, assign) UIViewController* feedTopSectionViewController;
+
 // Bubble presenter for displaying IPH bubbles relating to the NTP.
 @property(nonatomic, strong) BubblePresenter* bubblePresenter;
 

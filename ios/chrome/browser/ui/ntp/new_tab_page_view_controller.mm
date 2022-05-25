@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/ui/ntp/discover_feed_wrapper_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/feed_header_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/feed_metrics_recorder.h"
+#import "ios/chrome/browser/ui/ntp/feed_top_section_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_constants.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_content_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
@@ -357,6 +358,13 @@
         toParentViewController:parentViewController];
   }
 
+  // Adds the feed top section to the view hierarchy if it exists.
+  if (IsDiscoverFeedTopSyncPromoEnabled() &&
+      self.feedTopSectionViewController) {
+    [self addViewController:self.feedTopSectionViewController
+        toParentViewController:parentViewController];
+  }
+
   if (IsContentSuggestionsHeaderMigrationEnabled()) {
     [self addViewController:self.headerController
         toParentViewController:parentViewController];
@@ -457,8 +465,8 @@
 }
 
 - (CGFloat)heightAboveFeed {
-  CGFloat height =
-      [self adjustedContentSuggestionsHeight] + [self feedHeaderHeight];
+  CGFloat height = [self adjustedContentSuggestionsHeight] +
+                   [self feedHeaderHeight] + [self feedTopSectionHeight];
   if (IsContentSuggestionsHeaderMigrationEnabled()) {
     // Add the header height since it is no longer a part of the Content
     // Suggestions.
@@ -475,6 +483,9 @@
   }
   if (self.headerController) {
     [self removeFromViewHierarchy:self.headerController];
+  }
+  if (self.feedTopSectionViewController) {
+    [self removeFromViewHierarchy:self.feedTopSectionViewController];
   }
   self.contentSuggestionsHeightConstraint.active = NO;
 }
@@ -805,13 +816,20 @@
 - (void)setInitialFeedHeaderConstraints {
   DCHECK(self.feedHeaderViewController);
   [NSLayoutConstraint deactivateConstraints:self.feedHeaderConstraints];
+
+  // If Feed top section is enabled, the header bottom anchor should be set to
+  // its top anchor instead of the feed collection's top anchor.
+  UIView* bottomView = self.collectionView;
+  if (IsDiscoverFeedTopSyncPromoEnabled() &&
+      self.feedTopSectionViewController) {
+    bottomView = self.feedTopSectionViewController.view;
+  }
   self.feedHeaderConstraints = @[
     [self.feedHeaderViewController.view.topAnchor
         constraintEqualToAnchor:[self contentSuggestionsViewController]
                                     .view.bottomAnchor],
-    [self.collectionView.topAnchor
-        constraintEqualToAnchor:self.feedHeaderViewController.view
-                                    .bottomAnchor],
+    [bottomView.topAnchor constraintEqualToAnchor:self.feedHeaderViewController
+                                                      .view.bottomAnchor],
   ];
   [self.feedHeaderViewController toggleBackgroundBlur:NO animated:YES];
   [NSLayoutConstraint activateConstraints:self.feedHeaderConstraints];
@@ -824,17 +842,26 @@
   self.collectionView.contentInset =
       UIEdgeInsetsMake([self heightAboveFeed], 0, 0, 0);
 
-  // Sets frame for feed header and content suggestions within the space from
-  // the inset.
+  // Sets the frame for feed header, top section and content suggestions within
+  // the space from the inset.
+  if (IsDiscoverFeedTopSyncPromoEnabled() &&
+      self.feedTopSectionViewController) {
+    self.feedTopSectionViewController.view.frame =
+        CGRectMake(self.feedTopSectionViewController.view.frame.origin.x,
+                   -[self feedTopSectionHeight], self.view.frame.size.width,
+                   [self feedTopSectionHeight]);
+  }
+
   if (self.feedHeaderViewController) {
     self.feedHeaderViewController.view.frame =
         CGRectMake(self.feedHeaderViewController.view.frame.origin.x,
-                   -[self feedHeaderHeight], self.view.frame.size.width,
-                   [self feedHeaderHeight]);
+                   -[self feedHeaderHeight] - [self feedTopSectionHeight],
+                   self.view.frame.size.width, [self feedHeaderHeight]);
   }
   [self contentSuggestionsViewController].view.frame = CGRectMake(
       [self contentSuggestionsViewController].view.frame.origin.x,
-      -[self contentSuggestionsContentHeight] - [self feedHeaderHeight],
+      -[self contentSuggestionsContentHeight] - [self feedHeaderHeight] -
+          [self feedTopSectionHeight],
       self.view.frame.size.width, [self contentSuggestionsContentHeight]);
 
   self.contentSuggestionsHeightConstraint.constant =
@@ -938,6 +965,21 @@
           constraintEqualToAnchor:[self containerView].trailingAnchor],
     ]];
     [self setInitialFeedHeaderConstraints];
+    if (IsDiscoverFeedTopSyncPromoEnabled() &&
+        self.feedTopSectionViewController) {
+      [NSLayoutConstraint activateConstraints:@[
+        [self.feedTopSectionViewController.view.leadingAnchor
+            constraintEqualToAnchor:[self containerView].leadingAnchor],
+        [self.feedTopSectionViewController.view.trailingAnchor
+            constraintEqualToAnchor:[self containerView].trailingAnchor],
+        [self.feedTopSectionViewController.view.topAnchor
+            constraintEqualToAnchor:self.feedHeaderViewController.view
+                                        .bottomAnchor],
+        [self.collectionView.topAnchor
+            constraintEqualToAnchor:self.feedTopSectionViewController.view
+                                        .bottomAnchor],
+      ]];
+    }
   } else {
     [NSLayoutConstraint activateConstraints:@[
       [self.collectionView.topAnchor
@@ -1025,6 +1067,14 @@
   return self.feedHeaderViewController
              ? [self.feedHeaderViewController feedHeaderHeight] +
                    [self.feedHeaderViewController customSearchEngineViewHeight]
+             : 0;
+}
+
+// Height of the feed top section, returns 0 if not visible.
+- (CGFloat)feedTopSectionHeight {
+  return IsDiscoverFeedTopSyncPromoEnabled() &&
+                 self.feedTopSectionViewController
+             ? self.feedTopSectionViewController.view.frame.size.height
              : 0;
 }
 

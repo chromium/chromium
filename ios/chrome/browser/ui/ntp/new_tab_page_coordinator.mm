@@ -61,6 +61,7 @@
 #import "ios/chrome/browser/ui/ntp/feed_management/feed_management_navigation_delegate.h"
 #import "ios/chrome/browser/ui/ntp/feed_menu_commands.h"
 #import "ios/chrome/browser/ui/ntp/feed_metrics_recorder.h"
+#import "ios/chrome/browser/ui/ntp/feed_top_section_coordinator.h"
 #import "ios/chrome/browser/ui/ntp/incognito_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_content_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_delegate.h"
@@ -204,6 +205,10 @@ namespace {
 @property(nonatomic, strong)
     FeedManagementCoordinator* feedManagementCoordinator;
 
+// Coordinator for Feed top section.
+@property(nonatomic, strong)
+    FeedTopSectionCoordinator* feedTopSectionCoordinator;
+
 @end
 
 @implementation NewTabPageCoordinator
@@ -313,6 +318,10 @@ namespace {
         self.headerController.focusOmniboxWhenViewAppears = NO;
       }
     }
+  }
+
+  if (IsDiscoverFeedTopSyncPromoEnabled()) {
+    self.feedTopSectionCoordinator = [self createFeedTopSectionCoordinator];
   }
 
   self.contentSuggestionsCoordinator =
@@ -464,6 +473,9 @@ namespace {
       [[DiscoverFeedWrapperViewController alloc]
                     initWithDelegate:self
           discoverFeedViewController:self.discoverFeedViewController];
+
+  self.ntpViewController.feedTopSectionViewController =
+      self.feedTopSectionCoordinator.viewController;
 
   self.headerSynchronizer = [[ContentSuggestionsHeaderSynchronizer alloc]
       initWithCollectionController:self.ntpViewController
@@ -1177,6 +1189,17 @@ namespace {
         self.baseViewController;
   }
   return contentSuggestionsCoordinator;
+}
+
+// Configures and returns the feed top section coordinator.
+- (FeedTopSectionCoordinator*)createFeedTopSectionCoordinator {
+  DCHECK(self.ntpViewController);
+  FeedTopSectionCoordinator* feedTopSectionCoordinator =
+      [[FeedTopSectionCoordinator alloc]
+          initWithBaseViewController:self.ntpViewController
+                             browser:self.browser];
+  [feedTopSectionCoordinator start];
+  return feedTopSectionCoordinator;
 }
 
 - (void)handleFeedManageTapped {
