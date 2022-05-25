@@ -408,6 +408,7 @@ void WaylandToplevelWindow::HandleAuraToplevelConfigure(int32_t x,
     gfx::Size size_in_dip = restored_size_dip().IsEmpty()
                                 ? GetBoundsInDIP().size()
                                 : restored_size_dip();
+    bounds_dip.set_origin(gfx::Point(x, y));
     bounds_dip.set_size(size_in_dip);
   }
 
@@ -439,7 +440,13 @@ void WaylandToplevelWindow::SetBoundsInPixels(const gfx::Rect& bounds) {
 }
 
 void WaylandToplevelWindow::SetOrigin(const gfx::Point& origin) {
-  WaylandWindow::SetBoundsInDIP(gfx::Rect(origin, GetBoundsInDIP().size()));
+  // TODO(crbug.com/1306688): Using UpdateBoundsInDIP changes the size of the
+  // window due to the rounding.  Change this to use SetBoundsInDIP when
+  // `bounds_px_` becomes `bounds_dip_`.
+  gfx::Point origin_px =
+      gfx::ScaleToFlooredPoint(origin, window_scale(), window_scale());
+  WaylandWindow::SetBoundsInPixels(
+      gfx::Rect(origin_px, GetBoundsInPixels().size()));
 }
 
 void WaylandToplevelWindow::HandleSurfaceConfigure(uint32_t serial) {

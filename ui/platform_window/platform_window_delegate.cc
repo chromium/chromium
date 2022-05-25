@@ -55,6 +55,8 @@ gfx::Rect PlatformWindowDelegate::ConvertRectToPixels(
   return rect_in_dip;
 }
 
+void PlatformWindowDelegate::OnMovedToAnotherDisplay() {}
+
 gfx::Rect PlatformWindowDelegate::ConvertRectToDIP(
     const gfx::Rect& rect_in_pixels) const {
   return rect_in_pixels;

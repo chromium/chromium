@@ -602,9 +602,12 @@ void ShellSurface::Configure(bool ends_drag) {
           GetClientBoundsInScreen(widget_), window_state->GetStateType(),
           IsResizing(), widget_->IsActive(), origin_offset);
     } else {
-      serial = configure_callback_.Run(gfx::Rect(),
-                                       chromeos::WindowStateType::kNormal,
-                                       false, false, origin_offset);
+      gfx::Rect bounds;
+      if (initial_bounds_)
+        bounds.set_origin(initial_bounds_->origin());
+      serial =
+          configure_callback_.Run(bounds, chromeos::WindowStateType::kNormal,
+                                  false, false, origin_offset);
     }
   }
 

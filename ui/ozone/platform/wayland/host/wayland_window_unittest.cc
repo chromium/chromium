@@ -3132,6 +3132,16 @@ TEST_P(WaylandWindowTest, DoesNotGrabPopupUnlessParentHasGrab) {
   Sync();
 }
 
+TEST_P(WaylandWindowTest, InitialBounds) {
+  testing::NiceMock<MockWaylandPlatformWindowDelegate> delegate_2;
+  auto toplevel = CreateWaylandWindowWithParams(
+      PlatformWindowType::kWindow, 0, gfx::Rect(10, 10, 200, 200), &delegate_2);
+  toplevel->HandleAuraToplevelConfigure(20, 20, 0, 0, false, false, true);
+  toplevel->HandleSurfaceConfigure(2);
+  static_cast<WaylandToplevelWindow*>(toplevel.get())->ApplyPendingBounds();
+  EXPECT_EQ(gfx::Rect(20, 20, 200, 200), toplevel->GetBoundsInDIP());
+}
+
 namespace {
 
 class WaylandSubsurfaceTest : public WaylandWindowTest {

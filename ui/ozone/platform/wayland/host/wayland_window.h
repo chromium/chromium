@@ -325,8 +325,9 @@ class WaylandWindow : public PlatformWindow,
   const WaylandConnection* connection() const { return connection_; }
   PlatformWindowDelegate* delegate() { return delegate_; }
 
-  // [Deprecatd] Sets bounds in dip. This will be replaced with SetBoundsInDIP.
-  void SetBoundsDip(const gfx::Rect& bounds_dip);
+  // Update the bounds of the window in DIP. Unlike SetBoundInDIP, it will not
+  // send a request to the compositor even if the screen coordinate is enabled.
+  void UpdateBoundsInDIP(const gfx::Rect& bounds_dip);
 
   void set_ui_scale(float ui_scale) { ui_scale_ = ui_scale; }
 

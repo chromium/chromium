@@ -891,6 +891,10 @@ DesktopWindowTreeHostPlatform::GetOwnedWindowAnchorAndRectInPx() {
   return window_anchor;
 }
 
+void DesktopWindowTreeHostPlatform::OnMovedToAnotherDisplay() {
+  WindowTreeHost::OnHostResizedInPixels(GetBoundsInPixels().size());
+}
+
 gfx::Rect DesktopWindowTreeHostPlatform::ConvertRectToPixels(
     const gfx::Rect& rect_in_dip) const {
   return ToPixelRect(rect_in_dip);

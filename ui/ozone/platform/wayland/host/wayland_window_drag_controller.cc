@@ -21,6 +21,8 @@
 #include "base/run_loop.h"
 #include "base/task/current_thread.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/platform/platform_event_dispatcher.h"
@@ -38,6 +40,8 @@
 #include "ui/ozone/platform/wayland/host/wayland_data_device_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_offer.h"
 #include "ui/ozone/platform/wayland/host/wayland_data_source.h"
+#include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
+#include "ui/ozone/platform/wayland/host/wayland_screen.h"
 #include "ui/ozone/platform/wayland/host/wayland_serial_tracker.h"
 #include "ui/ozone/platform/wayland/host/wayland_surface.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
@@ -420,8 +424,7 @@ void WaylandWindowDragController::OnToplevelWindowCreated(
     return;
 
   DCHECK(window);
-  // TODO(crbug.com/1306688): This should use DIP.
-  auto origin = window->GetBoundsInPixels().origin();
+  auto origin = window->GetBoundsInDIP().origin();
   gfx::Vector2d offset = gfx::ToFlooredPoint(pointer_location_) - origin;
   DVLOG(1) << "Toplevel window created (detached)."
            << " widget=" << window->GetWidget()
@@ -452,10 +455,13 @@ void WaylandWindowDragController::HandleMotionEvent(LocatedEvent* event) {
     return;
 
   // Update current cursor position relative to the event source
-  // (pointer_grab_owner_) so it can be retrieved later on through
+  // (focused window) so it can be retrieved later on through
   // |Screen::GetCursorScreenPoint| API.
-  if (pointer_grab_owner_)
-    pointer_grab_owner_->UpdateCursorPositionFromEvent(event);
+  auto* pointer_focused_window = connection_->wayland_window_manager()
+                                     ->GetCurrentPointerOrTouchFocusedWindow();
+
+  if (pointer_focused_window)
+    pointer_focused_window->UpdateCursorPositionFromEvent(event);
 
   // Notify listeners about window bounds change (i.e: re-positioning) event.
   // To do so, set the new bounds as per the motion event location and the drag
@@ -463,10 +469,9 @@ void WaylandWindowDragController::HandleMotionEvent(LocatedEvent* event) {
   // surface has no visual effect in ozone/wayland backend. Actual window
   // re-positioning during dragging session is done through the drag icon.
   if (dragged_window_) {
-    // TODO(crbug.com/1306688): This should use DIP.
     gfx::Point new_location = event->location() - drag_offset_;
-    gfx::Size size = dragged_window_->GetBoundsInPixels().size();
-    dragged_window_->SetBoundsInPixels({new_location, size});
+    gfx::Size size = dragged_window_->GetBoundsInDIP().size();
+    dragged_window_->SetBoundsInDIP({new_location, size});
   }
 
   should_process_drag_event_ = false;

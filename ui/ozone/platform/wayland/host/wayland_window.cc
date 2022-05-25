@@ -37,7 +37,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_event_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_frame_manager.h"
 #include "ui/ozone/platform/wayland/host/wayland_output_manager.h"
-#include "ui/ozone/platform/wayland/host/wayland_pointer.h"
+#include "ui/ozone/platform/wayland/host/wayland_screen.h"
 #include "ui/ozone/platform/wayland/host/wayland_subsurface.h"
 #include "ui/ozone/platform/wayland/host/wayland_surface.h"
 #include "ui/ozone/platform/wayland/host/wayland_zcr_cursor_shapes.h"
@@ -134,7 +134,7 @@ void WaylandWindow::UpdateWindowScale(bool update_bounds) {
 
   // We need to keep DIP size of the window the same whenever the scale changes.
   if (update_bounds)
-    SetBoundsDip(gfx::ScaleToEnclosedRect(bounds_px_, 1.0 / old_scale));
+    UpdateBoundsInDIP(gfx::ScaleToEnclosedRect(bounds_px_, 1.0 / old_scale));
 
   // Propagate update to the child windows
   if (child_window_)
@@ -588,7 +588,7 @@ void WaylandWindow::OnDragSessionClose(DragOperation operation) {
   std::move(drag_loop_quit_closure_).Run();
 }
 
-void WaylandWindow::SetBoundsDip(const gfx::Rect& bounds_dip) {
+void WaylandWindow::UpdateBoundsInDIP(const gfx::Rect& bounds_dip) {
   // This method is used to update the content size by calling WindowWindow's
   // SetBounds, instead of WaylandToplevelWindow's override, which sends a
   // request to the compositor.
@@ -651,6 +651,8 @@ WaylandWindow* WaylandWindow::GetRootParentWindow() {
 }
 
 void WaylandWindow::OnEnteredOutput() {
+  delegate()->OnMovedToAnotherDisplay();
+
   // Wayland does weird things for menus so instead of tracking outputs that
   // we entered or left, we take that from the parent window and ignore this
   // event.
@@ -666,8 +668,8 @@ void WaylandWindow::OnLeftOutput() {
   // event.
   if (AsWaylandPopup())
     return;
-
-  UpdateWindowScale(true);
+  // Do not update the window scale where. It'll be updated when entring a new
+  // output.
 }
 
 void WaylandWindow::UpdateCursorPositionFromEvent(const Event* orig_event) {
@@ -695,10 +697,10 @@ void WaylandWindow::UpdateCursorPositionFromEvent(const Event* orig_event) {
   auto* toplevel_window = GetRootParentWindow();
   if (toplevel_window != this) {
     event = Event::Clone(*orig_event);
-    // TODO(crbug.com/1306688): This should use DIP.
     ConvertEventLocationToTargetWindowLocation(
-        toplevel_window->GetBoundsInPixels().origin(),
-        GetBoundsInPixels().origin(), event->AsLocatedEvent());
+        toplevel_window->GetBoundsInDIP().origin(), GetBoundsInDIP().origin(),
+        event->AsLocatedEvent());
+
     located_event = event->AsLocatedEvent();
   }
 
@@ -1064,7 +1066,7 @@ void WaylandWindow::ApplyPendingBounds() {
   DCHECK(!pending_configures_.empty());
   for (auto& configure : pending_configures_)
     configure.set = true;
-  SetBoundsDip(pending_configures_.back().bounds_dip);
+  UpdateBoundsInDIP(pending_configures_.back().bounds_dip);
 }
 
 bool WaylandWindow::HasPendingConfigures() const {

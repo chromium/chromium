@@ -1109,6 +1109,7 @@ TEST_P(WaylandWindowDragControllerTest, CursorPositionIsUpdatedOnMotion) {
                  WmMoveLoopHandler* move_loop_handler,
                  bool in_pixel_coordinates) {
     for (auto* output : *outputs) {
+      SCOPED_TRACE(base::StringPrintf("Output Scale=%d", output->GetScale()));
       gfx::Point p0{10, 10};
       // Compute the expected point first as drag operation will move the
       // window.
