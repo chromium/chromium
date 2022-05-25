@@ -2,6 +2,9 @@ chrisha@chromium.org
 fdoray@chromium.org
 joenotcharles@chromium.org
 
+# Preferred reviewer for service/dedicated/shared worker changes.
+pmonette@chromium.org
+
 # For IPC security review
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS
