@@ -23,6 +23,7 @@
 #include "base/nix/xdg_util.h"
 #include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
@@ -532,11 +533,11 @@ class SettingGetterImplKDE : public ProxyConfigServiceLinux::SettingGetter {
     // This has to be called on the UI thread (http://crbug.com/69057).
     base::ThreadRestrictions::ScopedAllowIO allow_io;
 
-    // Derive the location of the kde config dir from the environment.
+    // Derive the location(s) of the kde config dir from the environment.
     std::string home;
     if (env_var_getter->GetVar("KDEHOME", &home) && !home.empty()) {
       // $KDEHOME is set. Use it unconditionally.
-      kde_config_dir_ = KDEHomeToConfigPath(base::FilePath(home));
+      kde_config_dirs_.emplace_back(KDEHomeToConfigPath(base::FilePath(home)));
     } else {
       // $KDEHOME is unset. Try to figure out what to use. This seems to be
       // the common case on most distributions.
@@ -547,7 +548,7 @@ class SettingGetterImplKDE : public ProxyConfigServiceLinux::SettingGetter {
           base::nix::DESKTOP_ENVIRONMENT_KDE3) {
         // KDE3 always uses .kde for its configuration.
         base::FilePath kde_path = base::FilePath(home).Append(".kde");
-        kde_config_dir_ = KDEHomeToConfigPath(kde_path);
+        kde_config_dirs_.emplace_back(KDEHomeToConfigPath(kde_path));
       } else if (base::nix::GetDesktopEnvironment(env_var_getter) ==
                  base::nix::DESKTOP_ENVIRONMENT_KDE4) {
         // Some distributions patch KDE4 to use .kde4 instead of .kde, so that
@@ -577,13 +578,27 @@ class SettingGetterImplKDE : public ProxyConfigServiceLinux::SettingGetter {
           }
         }
         if (use_kde4) {
-          kde_config_dir_ = KDEHomeToConfigPath(kde4_path);
+          kde_config_dirs_.emplace_back(KDEHomeToConfigPath(kde4_path));
         } else {
-          kde_config_dir_ = KDEHomeToConfigPath(kde3_path);
+          kde_config_dirs_.emplace_back(KDEHomeToConfigPath(kde3_path));
         }
       } else {
         // KDE 5 migrated to ~/.config for storing kioslaverc.
-        kde_config_dir_ = base::FilePath(home).Append(".config");
+        kde_config_dirs_.emplace_back(base::FilePath(home).Append(".config"));
+
+        // kioslaverc also can be stored in any of XDG_CONFIG_DIRS
+        std::string config_dirs;
+        if (env_var_getter_->GetVar("XDG_CONFIG_DIRS", &config_dirs)) {
+          auto dirs = base::SplitString(config_dirs, ":", base::KEEP_WHITESPACE,
+                                        base::SPLIT_WANT_NONEMPTY);
+          for (const auto& dir : dirs) {
+            kde_config_dirs_.emplace_back(dir);
+          }
+        }
+
+        // Reverses the order of paths to store them in ascending order of
+        // priority
+        std::reverse(kde_config_dirs_.begin(), kde_config_dirs_.end());
       }
     }
   }
@@ -652,8 +667,15 @@ class SettingGetterImplKDE : public ProxyConfigServiceLinux::SettingGetter {
     // the first change, and it will never change again). So, we watch the
     // directory instead. We then act only on changes to the kioslaverc entry.
     // TODO(eroman): What if the file is deleted? (handle with IN_DELETE).
-    if (inotify_add_watch(inotify_fd_, kde_config_dir_.value().c_str(),
-                          IN_MODIFY | IN_MOVED_TO) < 0) {
+    size_t failed_dirs = 0;
+    for (const auto& kde_config_dir : kde_config_dirs_) {
+      if (inotify_add_watch(inotify_fd_, kde_config_dir.value().c_str(),
+                            IN_MODIFY | IN_MOVED_TO) < 0) {
+        ++failed_dirs;
+      }
+    }
+    // Fail if inotify_add_watch failed with every directory
+    if (failed_dirs == kde_config_dirs_.size()) {
       return false;
     }
     notify_delegate_ = delegate;
@@ -840,81 +862,93 @@ class SettingGetterImplKDE : public ProxyConfigServiceLinux::SettingGetter {
     }
   }
 
-  // Reads kioslaverc one line at a time and calls AddKDESetting() to add
-  // each relevant name-value pair to the appropriate value table.
+  // Reads kioslaverc from all paths one line at a time and calls
+  // AddKDESetting() to add each relevant name-value pair to the appropriate
+  // value table. Each value can be overwritten by values from configs from
+  // the following paths.
   void UpdateCachedSettings() {
-    base::FilePath kioslaverc = kde_config_dir_.Append("kioslaverc");
-    base::ScopedFILE input(base::OpenFile(kioslaverc, "r"));
-    if (!input.get())
-      return;
-    ResetCachedSettings();
-    bool in_proxy_settings = false;
-    bool line_too_long = false;
-    char line[BUFFER_SIZE];
-    // fgets() will return NULL on EOF or error.
-    while (fgets(line, sizeof(line), input.get())) {
-      // fgets() guarantees the line will be properly terminated.
-      size_t length = strlen(line);
-      if (!length)
+    bool at_least_one_kioslaverc_opened = false;
+    for (const auto& kde_config_dir : kde_config_dirs_) {
+      base::FilePath kioslaverc = kde_config_dir.Append("kioslaverc");
+      base::ScopedFILE input(base::OpenFile(kioslaverc, "r"));
+      if (!input.get())
         continue;
-      // This should be true even with CRLF endings.
-      if (line[length - 1] != '\n') {
-        line_too_long = true;
-        continue;
+
+      // Reset cached settings once only if some config was successfully opened
+      if (!at_least_one_kioslaverc_opened) {
+        ResetCachedSettings();
       }
-      if (line_too_long) {
-        // The previous line had no line ending, but this done does. This is
-        // the end of the line that was too long, so warn here and skip it.
-        LOG(WARNING) << "skipped very long line in " << kioslaverc.value();
-        line_too_long = false;
-        continue;
-      }
-      // Remove the LF at the end, and the CR if there is one.
-      line[--length] = '\0';
-      if (length && line[length - 1] == '\r')
+      at_least_one_kioslaverc_opened = true;
+      bool in_proxy_settings = false;
+      bool line_too_long = false;
+      char line[BUFFER_SIZE];
+      // fgets() will return NULL on EOF or error.
+      while (fgets(line, sizeof(line), input.get())) {
+        // fgets() guarantees the line will be properly terminated.
+        size_t length = strlen(line);
+        if (!length)
+          continue;
+        // This should be true even with CRLF endings.
+        if (line[length - 1] != '\n') {
+          line_too_long = true;
+          continue;
+        }
+        if (line_too_long) {
+          // The previous line had no line ending, but this one does. This is
+          // the end of the line that was too long, so warn here and skip it.
+          LOG(WARNING) << "skipped very long line in " << kioslaverc.value();
+          line_too_long = false;
+          continue;
+        }
+        // Remove the LF at the end, and the CR if there is one.
         line[--length] = '\0';
-      // Now parse the line.
-      if (line[0] == '[') {
-        // Switching sections. All we care about is whether this is
-        // the (a?) proxy settings section, for both KDE3 and KDE4.
-        in_proxy_settings = !strncmp(line, "[Proxy Settings]", 16);
-      } else if (in_proxy_settings) {
-        // A regular line, in the (a?) proxy settings section.
-        char* split = strchr(line, '=');
-        // Skip this line if it does not contain an = sign.
-        if (!split)
-          continue;
-        // Split the line on the = and advance |split|.
-        *(split++) = 0;
-        std::string key = line;
-        std::string value = split;
-        base::TrimWhitespaceASCII(key, base::TRIM_ALL, &key);
-        base::TrimWhitespaceASCII(value, base::TRIM_ALL, &value);
-        // Skip this line if the key name is empty.
-        if (key.empty())
-          continue;
-        // Is the value name localized?
-        if (key[key.length() - 1] == ']') {
-          // Find the matching bracket.
-          length = key.rfind('[');
-          // Skip this line if the localization indicator is malformed.
-          if (length == std::string::npos)
+        if (length && line[length - 1] == '\r')
+          line[--length] = '\0';
+        // Now parse the line.
+        if (line[0] == '[') {
+          // Switching sections. All we care about is whether this is
+          // the (a?) proxy settings section, for both KDE3 and KDE4.
+          in_proxy_settings = !strncmp(line, "[Proxy Settings]", 16);
+        } else if (in_proxy_settings) {
+          // A regular line, in the (a?) proxy settings section.
+          char* split = strchr(line, '=');
+          // Skip this line if it does not contain an = sign.
+          if (!split)
             continue;
-          // Trim the localization indicator off.
-          key.resize(length);
-          // Remove any resulting trailing whitespace.
-          base::TrimWhitespaceASCII(key, base::TRIM_TRAILING, &key);
-          // Skip this line if the key name is now empty.
+          // Split the line on the = and advance |split|.
+          *(split++) = 0;
+          std::string key = line;
+          std::string value = split;
+          base::TrimWhitespaceASCII(key, base::TRIM_ALL, &key);
+          base::TrimWhitespaceASCII(value, base::TRIM_ALL, &value);
+          // Skip this line if the key name is empty.
           if (key.empty())
             continue;
+          // Is the value name localized?
+          if (key[key.length() - 1] == ']') {
+            // Find the matching bracket.
+            length = key.rfind('[');
+            // Skip this line if the localization indicator is malformed.
+            if (length == std::string::npos)
+              continue;
+            // Trim the localization indicator off.
+            key.resize(length);
+            // Remove any resulting trailing whitespace.
+            base::TrimWhitespaceASCII(key, base::TRIM_TRAILING, &key);
+            // Skip this line if the key name is now empty.
+            if (key.empty())
+              continue;
+          }
+          // Now fill in the tables.
+          AddKDESetting(key, value);
         }
-        // Now fill in the tables.
-        AddKDESetting(key, value);
       }
+      if (ferror(input.get()))
+        LOG(ERROR) << "error reading " << kioslaverc.value();
     }
-    if (ferror(input.get()))
-      LOG(ERROR) << "error reading " << kioslaverc.value();
-    ResolveModeEffects();
+    if (at_least_one_kioslaverc_opened) {
+      ResolveModeEffects();
+    }
   }
 
   // This is the callback from the debounce timer.
@@ -990,7 +1024,7 @@ class SettingGetterImplKDE : public ProxyConfigServiceLinux::SettingGetter {
   std::unique_ptr<base::FileDescriptorWatcher::Controller> inotify_watcher_;
   ProxyConfigServiceLinux::Delegate* notify_delegate_;
   std::unique_ptr<base::OneShotTimer> debounce_timer_;
-  base::FilePath kde_config_dir_;
+  std::vector<base::FilePath> kde_config_dirs_;
   bool indirect_manual_;
   bool auto_no_pac_;
   bool reversed_bypass_list_;

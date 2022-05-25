@@ -56,6 +56,7 @@ struct EnvVarValues {
   const char* SOCKS_SERVER;
   const char* SOCKS_VERSION;
   const char* no_proxy;
+  const char* XDG_CONFIG_DIRS;
 };
 
 // Undo macro pollution from GDK includes (from message_loop.h).
@@ -123,6 +124,7 @@ class MockEnvironment : public base::Environment {
     ENTRY(no_proxy);
     ENTRY(SOCKS_SERVER);
     ENTRY(SOCKS_VERSION);
+    ENTRY(XDG_CONFIG_DIRS);
 #undef ENTRY
     Reset();
   }
@@ -429,6 +431,12 @@ class ProxyConfigServiceLinuxTest : public PlatformTest,
     kioslaverc4_ = kde4_config_.Append(FILE_PATH_LITERAL("kioslaverc"));
     // Set up paths for KDE 5
     kioslaverc5_ = config_home_.Append(FILE_PATH_LITERAL("kioslaverc"));
+    config_xdg_home_ = user_home_.Append(FILE_PATH_LITERAL("xdg"));
+    config_kdedefaults_home_ =
+        config_home_.Append(FILE_PATH_LITERAL("kdedefaults"));
+    kioslaverc5_xdg_ = config_xdg_home_.Append(FILE_PATH_LITERAL("kioslaverc"));
+    kioslaverc5_kdedefaults_ =
+        config_kdedefaults_home_.Append(FILE_PATH_LITERAL("kioslaverc"));
   }
 
   void TearDown() override {
@@ -439,6 +447,8 @@ class ProxyConfigServiceLinuxTest : public PlatformTest,
 
   base::FilePath user_home_;
   base::FilePath config_home_;
+  base::FilePath config_xdg_home_;
+  base::FilePath config_kdedefaults_home_;
   // KDE3 paths.
   base::FilePath kde_home_;
   base::FilePath kioslaverc_;
@@ -448,6 +458,8 @@ class ProxyConfigServiceLinuxTest : public PlatformTest,
   base::FilePath kioslaverc4_;
   // KDE5 paths.
   base::FilePath kioslaverc5_;
+  base::FilePath kioslaverc5_xdg_;
+  base::FilePath kioslaverc5_kdedefaults_;
 };
 
 // Builds an identifier for each test in an array.
@@ -1930,6 +1942,94 @@ TEST_F(ProxyConfigServiceLinuxTest, KDEFileChanged) {
 
   // TODO(eroman): Add a test where kioslaverc is deleted next. Currently this
   //               doesn't trigger any notifications, but it probably should.
+}
+
+TEST_F(ProxyConfigServiceLinuxTest, KDEMultipleKioslaverc) {
+  std::string xdg_config_dirs = config_kdedefaults_home_.value();
+  xdg_config_dirs += ':';
+  xdg_config_dirs += config_xdg_home_.value();
+
+  const struct {
+    // Short description to identify the test
+    std::string description;
+
+    // Input.
+    std::string kioslaverc;
+    base::FilePath kioslaverc_path;
+    bool auto_detect;
+    GURL pac_url;
+    ProxyRulesExpectation proxy_rules;
+  } tests[] = {
+      {
+          TEST_DESC("Use xdg/kioslaverc"),
+
+          // Input.
+          "[Proxy Settings]\nProxyType=3\n"
+          "Proxy Config Script=http://wpad/wpad.dat\n"
+          "httpsProxy=www.foo.com\n",
+          kioslaverc5_xdg_,  // kioslaverc path
+          true,              // auto_detect
+          GURL(),            // pac_url
+          ProxyRulesExpectation::Empty(),
+      },
+      {
+          TEST_DESC(".config/kdedefaults/kioslaverc overrides xdg/kioslaverc"),
+
+          // Input.
+          "[Proxy Settings]\nProxyType=2\n"
+          "NoProxyFor=.google.com,.kde.org\n",
+          kioslaverc5_kdedefaults_,      // kioslaverc path
+          false,                         // auto_detect
+          GURL("http://wpad/wpad.dat"),  // pac_url
+          ProxyRulesExpectation::Empty(),
+      },
+      {
+          TEST_DESC(".config/kioslaverc overrides others"),
+
+          // Input.
+          "[Proxy Settings]\nProxyType=1\nhttpProxy=www.google.com 80\n"
+          "ReversedException=true\n",
+          kioslaverc5_,  // kioslaverc path
+          false,         // auto_detect
+          GURL(),        // pac_url
+          ProxyRulesExpectation::PerSchemeWithBypassReversed(
+              "www.google.com:80",        // http
+              "www.foo.com:80",           // https
+              "",                         // ftp
+              "*.google.com,*.kde.org"),  // bypass rules,
+      },
+  };
+
+  // Create directories for all configs
+  base::CreateDirectory(config_home_);
+  base::CreateDirectory(config_xdg_home_);
+  base::CreateDirectory(config_kdedefaults_home_);
+
+  for (size_t i = 0; i < std::size(tests); ++i) {
+    SCOPED_TRACE(base::StringPrintf("Test[%" PRIuS "] %s", i,
+                                    tests[i].description.c_str()));
+    std::unique_ptr<MockEnvironment> env(new MockEnvironment);
+    env->values.XDG_CURRENT_DESKTOP = "KDE";
+    env->values.KDE_SESSION_VERSION = "5";
+    env->values.HOME = user_home_.value().c_str();
+    env->values.XDG_CONFIG_DIRS = xdg_config_dirs.c_str();
+    SyncConfigGetter sync_config_getter(new ProxyConfigServiceLinux(
+        std::move(env), TRAFFIC_ANNOTATION_FOR_TESTS));
+    ProxyConfigWithAnnotation config;
+    // Write the kioslaverc file to specified location.
+    base::WriteFile(tests[i].kioslaverc_path, tests[i].kioslaverc);
+    CHECK(base::PathExists(tests[i].kioslaverc_path));
+    sync_config_getter.SetupAndInitialFetch();
+    ProxyConfigService::ConfigAvailability availability =
+        sync_config_getter.SyncGetLatestProxyConfig(&config);
+    EXPECT_EQ(availability, ProxyConfigService::CONFIG_VALID);
+
+    if (availability == ProxyConfigService::CONFIG_VALID) {
+      EXPECT_EQ(tests[i].auto_detect, config.value().auto_detect());
+      EXPECT_EQ(tests[i].pac_url, config.value().pac_url());
+      EXPECT_TRUE(tests[i].proxy_rules.Matches(config.value().proxy_rules()));
+    }
+  }
 }
 
 }  // namespace
