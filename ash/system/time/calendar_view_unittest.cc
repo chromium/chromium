@@ -917,6 +917,40 @@ TEST_F(CalendarViewTest, RecordDwellTimeMetricWhenScrolling) {
                                     /*expected_count=*/7);
 }
 
+// Tests that EventListView has proper bounds when shown.
+TEST_F(CalendarViewTest, EventListBoundsTest) {
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+  base::Time date;
+  // Create a monthview based on Jun,7th 2021.
+  ASSERT_TRUE(base::Time::FromString("7 Jun 2021 10:00 GMT", &date));
+
+  // Set time override.
+  SetFakeNow(date);
+  base::subtle::ScopedTimeClockOverrides time_override(
+      &CalendarViewTest::FakeTimeNow, /*time_ticks_override=*/nullptr,
+      /*thread_ticks_override=*/nullptr);
+
+  CreateCalendarView();
+  ASSERT_EQ(u"1",
+            static_cast<views::LabelButton*>(current_month()->children()[2])
+                ->GetText());
+  GestureTapOn(
+      static_cast<views::LabelButton*>(current_month()->children()[2]));
+  ASSERT_TRUE(event_list_view());
+  ASSERT_FALSE(current_month()->layer()->GetAnimator()->is_animating());
+
+  // EventListView should be flush with the bottom of the scroll views visible
+  // area. EventListView is ignored by the CalendarViews LayoutManager, but it
+  // should be flush with the bottom of `scroll_view_`'s clipped height.
+  // `scroll_view_`'s bounds extend further to the end of the view, but the
+  // contents of `scroll_view_` are clipped.
+  const int bottom_of_scroll_view_visible_area =
+      scroll_view()->bounds().y() + scroll_view()->GetMaxHeight();
+  const int top_of_event_list_view = event_list_view()->y();
+  EXPECT_EQ(bottom_of_scroll_view_visible_area, top_of_event_list_view);
+}
+
 // A test class for testing animation. This class cannot set fake now since it's
 // using `MOCK_TIME` to test the animations, and it can't inherit from
 // CalendarAnimationTest due to the same reason.

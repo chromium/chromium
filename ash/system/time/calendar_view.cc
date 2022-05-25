@@ -59,11 +59,6 @@ constexpr int kChevronPadding = calendar_utils::kColumnSetPadding - 1;
 // The offset for `month_label_` to make it align with `month_header`.
 constexpr int kMonthLabelPaddingOffset = -1;
 
-// The percentage of a normal row height, which (percentage * row_height) will
-// be used as the `CalendarView` height when the `CalendarEventListView` is
-// expanded.
-constexpr float kExpandedCalendarViewHeightScale = 1.1;
-
 // Duration of the delay for modifying opacity.
 constexpr base::TimeDelta kDelayVisibilityAnimationDuration =
     base::Milliseconds(200);
@@ -937,14 +932,14 @@ void CalendarView::OpenEventList() {
   // Set the bounds of the EventListView to be flush with the bottom of the
   // scroll view. Only the position will be animated, so give the view its final
   // bounds.
-  event_list_view_->SetBounds(scroll_view_->x(),
-                              scroll_view_->y() +
-                                  calendar_view_controller_->row_height() +
-                                  kContentVerticalPadding,
-                              scroll_view_->GetVisibleRect().width(),
-                              scroll_view_->GetVisibleRect().height() -
-                                  kExpandedCalendarViewHeightScale *
-                                      calendar_view_controller_->row_height());
+  event_list_view_->SetBounds(
+      scroll_view_->x(),
+      scroll_view_->y() +
+          calendar_view_controller_->GetRowHeightWithEventListView(),
+      scroll_view_->GetVisibleRect().width(),
+      scroll_view_->GetVisibleRect().height() -
+          calendar_view_controller_->GetRowHeightWithEventListView() +
+          kContentVerticalPadding);
 
   if (!should_months_animate_) {
     OnOpenEventListAnimationComplete();
@@ -1495,8 +1490,9 @@ void CalendarView::OnOpenEventListAnimationComplete() {
   RestoreMonthStatus();
   scroll_view_->ScrollToPosition(scroll_view_->vertical_scroll_bar(),
                                  PositionOfSelectedDate());
-  scroll_view_->ClipHeightTo(0, kExpandedCalendarViewHeightScale *
-                                    calendar_view_controller_->row_height());
+  // Clip the height to a bit more than the height of a row.
+  scroll_view_->ClipHeightTo(
+      0, calendar_view_controller_->GetRowHeightWithEventListView());
 
   if (!should_months_animate_)
     months_animation_restart_timer_.Reset();

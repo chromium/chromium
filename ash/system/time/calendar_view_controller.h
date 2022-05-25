@@ -88,11 +88,17 @@ class ASH_EXPORT CalendarViewController {
   // Getters and setters: the row index when the event list view is showing,
   // today's row number, today's row height and expanded area height.
   int GetExpandedRowIndex() const;
+
   void set_expanded_row_index(int row_index) {
     expanded_row_index_ = row_index;
   }
+
   int today_row() const { return today_row_; }
   void set_today_row(int row) { today_row_ = row; }
+
+  // `row_height_` is expanded when the EventListView is shown.
+  int GetRowHeightWithEventListView() const;
+
   int row_height() const { return row_height_; }
   void set_row_height(int height) { row_height_ = height; }
 
