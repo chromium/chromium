@@ -253,15 +253,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
   // Default to the integrated gpu on a multi-gpu Mac.
   if (!force_high_performance_gpu)
     force_low_power_gpu = true;
-
-  GPUInfo::GPUDevice preferred_gpu;
-  if (force_high_performance_gpu && gpu_info_.GetDiscreteGpu(&preferred_gpu)) {
-    system_device_id = preferred_gpu.register_id;
-  } else if (force_low_power_gpu &&
-             gpu_info_.GetIntegratedGpu(&preferred_gpu)) {
-    system_device_id = preferred_gpu.register_id;
-  }
-#elif BUILDFLAG(IS_WIN)
+#endif  // IS_MAC
   GPUInfo::GPUDevice* preferred_gpu = nullptr;
   if (force_high_performance_gpu) {
     preferred_gpu =
@@ -269,9 +261,13 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
   } else if (force_low_power_gpu) {
     preferred_gpu = gpu_info_.GetGpuByPreference(gl::GpuPreference::kLowPower);
   }
-  if (preferred_gpu)
+  if (preferred_gpu) {
+#if BUILDFLAG(IS_WIN)
     system_device_id = CHROME_LUID_to_uint64_t(preferred_gpu->luid);
+#else  // IS_MAC
+    system_device_id = preferred_gpu->register_id;
 #endif
+  }
 
 #if defined(USE_EGL)
   if (system_device_id != 0) {
