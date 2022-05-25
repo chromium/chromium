@@ -727,37 +727,45 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   static constexpr char wait_script[] = R"(
     let table = document.querySelector('#reportTable')
         .shadowRoot.querySelector('tbody');
-    let obs = new MutationObserver((_, obs) => {
+    const setTitleIfDone = (_, obs) => {
       if (table.children.length === 1 &&
+          table.children[0].children.length >= 7 &&
           table.children[0].children[6].innerText === "7") {
-        obs.disconnect();
-        document.title = $1;
+          if (obs) {
+            obs.disconnect();
+          }
+          document.title = $1;
+          return true;
       }
-    });
-    obs.observe(table, {'childList': true});)";
-  EXPECT_TRUE(ExecJsInWebUI(JsReplace(wait_script, kCompleteTitle)));
+      return false;
+    };
+    if (!setTitleIfDone()) {
+      let obs = new MutationObserver(setTitleIfDone);
+      obs.observe(table, {'childList': true});
+    })";
+  ASSERT_TRUE(ExecJsInWebUI(JsReplace(wait_script, kCompleteTitle)));
 
   // Wait for the table to rendered.
   TitleWatcher title_watcher(shell()->web_contents(), kCompleteTitle);
   ClickRefreshButton();
-  EXPECT_EQ(kCompleteTitle, title_watcher.WaitAndGetTitle());
+  ASSERT_EQ(kCompleteTitle, title_watcher.WaitAndGetTitle());
 
   // Click the send reports button and expect that the report table is emptied.
   const std::u16string kSentTitle = u"Sent";
   TitleWatcher sent_title_watcher(shell()->web_contents(), kSentTitle);
   SetTitleOnReportsTableEmpty(kSentTitle);
 
-  EXPECT_TRUE(ExecJsInWebUI(
+  ASSERT_TRUE(ExecJsInWebUI(
       R"(document.querySelector('#reportTable')
          .shadowRoot.querySelector('input[type="checkbox"]').click();)"));
-  EXPECT_TRUE(
+  ASSERT_TRUE(
       ExecJsInWebUI("document.getElementById('send-reports').click();"));
 
   // The real manager would do this itself, but the test manager requires manual
   // triggering.
   manager_.NotifyReportsChanged(AttributionReport::ReportType::kEventLevel);
 
-  EXPECT_EQ(kSentTitle, sent_title_watcher.WaitAndGetTitle());
+  ASSERT_EQ(kSentTitle, sent_title_watcher.WaitAndGetTitle());
 }
 
 IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
