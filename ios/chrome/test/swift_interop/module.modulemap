@@ -14,6 +14,11 @@ module Enums {
   requires cplusplus
 }
 
+module Language {
+  header "language/nodiscard.h"
+  requires cplusplus
+}
+
 module Namespace {
   header "namespace/namespace.h"
   requires cplusplus
