@@ -378,7 +378,7 @@ HacksAndPatchesCommon() {
   sed -i 's|\(#define\s\+__GLIBC_MINOR__\)|\1 17 //|' "${features_h}"
   # Do not use pthread_cond_clockwait as it was introduced in glibc 2.30.
   local cppconfig_h="${usr_include}/${arch}-${os}/c++/10/bits/c++config.h"
-  sed -i 's|\(#define\s\+_GLIBCXX_USE_PTHREAD_COND_CLOCKWAIT\)|\1 0 //|' \
+  sed -i 's|\(#define\s\+_GLIBCXX_USE_PTHREAD_COND_CLOCKWAIT\)|// \1|' \
     "${cppconfig_h}"
 
   # This is for chrome's ./build/linux/pkg-config-wrapper

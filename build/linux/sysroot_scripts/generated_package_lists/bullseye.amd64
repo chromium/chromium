@@ -224,6 +224,8 @@ https://snapshot.debian.org/archive/debian/20220331T153654Z/pool/main/libx/libxc
 https://snapshot.debian.org/archive/debian/20220331T153654Z/pool/main/libx/libxcb/libxcb-xkb1_1.14-3_amd64.deb
 https://snapshot.debian.org/archive/debian/20220331T153654Z/pool/main/libx/libxcomposite/libxcomposite1_0.4.5-1_amd64.deb
 https://snapshot.debian.org/archive/debian/20220331T153654Z/pool/main/libx/libxcomposite/libxcomposite-dev_0.4.5-1_amd64.deb
+https://snapshot.debian.org/archive/debian/20220331T153654Z/pool/main/libx/libxcrypt/libcrypt1_4.4.18-4_amd64.deb
+https://snapshot.debian.org/archive/debian/20220331T153654Z/pool/main/libx/libxcrypt/libcrypt-dev_4.4.18-4_amd64.deb
 https://snapshot.debian.org/archive/debian/20220331T153654Z/pool/main/libx/libxcursor/libxcursor1_1.2.0-2_amd64.deb
 https://snapshot.debian.org/archive/debian/20220331T153654Z/pool/main/libx/libxcursor/libxcursor-dev_1.2.0-2_amd64.deb
 https://snapshot.debian.org/archive/debian/20220331T153654Z/pool/main/libx/libxdamage/libxdamage1_1.1.5-2_amd64.deb

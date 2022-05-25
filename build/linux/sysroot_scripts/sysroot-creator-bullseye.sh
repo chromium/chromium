@@ -75,6 +75,8 @@ DEBIAN_PACKAGES="\
   libcloudproviders0
   libcolord2
   libcom-err2
+  libcrypt-dev
+  libcrypt1
   libcups2
   libcups2-dev
   libcupsimage2
