@@ -34,6 +34,7 @@
 #include "content/public/browser/overlay_window.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
@@ -112,9 +113,14 @@ class DocumentPictureInPictureWindowControllerBrowserTest
     return pip_window_controller_;
   }
 
-  DocumentOverlayWindowViews* GetOverlayWindow() {
-    return static_cast<DocumentOverlayWindowViews*>(
-        window_controller()->GetWindowForTesting());
+  content::RenderWidgetHostView* GetRenderWidgetHostView() {
+    if (!window_controller())
+      return nullptr;
+
+    if (auto* web_contents = window_controller()->GetChildWebContents())
+      return web_contents->GetRenderWidgetHostView();
+
+    return nullptr;
   }
 
   void LoadTabAndEnterPictureInPicture(Browser* browser) {
@@ -131,8 +137,7 @@ class DocumentPictureInPictureWindowControllerBrowserTest
 
     ASSERT_EQ(true, EvalJs(active_web_contents, "createDocumentPipWindow()"));
     ASSERT_TRUE(window_controller() != nullptr);
-    ASSERT_TRUE(window_controller()->GetWindowForTesting() != nullptr);
-    EXPECT_TRUE(window_controller()->GetWindowForTesting()->IsVisible());
+    ASSERT_TRUE(GetRenderWidgetHostView()->IsShowing());
   }
 
   void ClickButton(views::Button* button) {
@@ -140,6 +145,19 @@ class DocumentPictureInPictureWindowControllerBrowserTest
                                ui::EventTimeForNow(), 0, 0);
     views::test::ButtonTestApi(button).NotifyClick(event);
   }
+
+  // Watch for destruction of a WebContents. `is_destroyed()` will report if the
+  // WebContents has been destroyed yet.
+  class DestructionObserver : public content::WebContentsObserver {
+   public:
+    explicit DestructionObserver(content::WebContents* web_contents)
+        : content::WebContentsObserver(web_contents) {}
+
+    void WebContentsDestroyed() override { Observe(/*web_contents=*/nullptr); }
+
+    // If we've stopped observing, it's because the WebContents was destroyed.
+    bool is_destroyed() const { return !web_contents(); }
+  };
 
  private:
   raw_ptr<content::DocumentPictureInPictureWindowController>
@@ -151,23 +169,38 @@ class DocumentPictureInPictureWindowControllerBrowserTest
 
 // Checks the creation of the window controller, as well as basic window
 // creation, visibility and activation.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// Document PiP is not supported in Lacros yet.
+#define MAYBE_CreationAndVisibilityAndActivation \
+  DISABLED_CreationAndVisibilityAndActivation
+#else
+#define MAYBE_CreationAndVisibilityAndActivation \
+  CreationAndVisibilityAndActivation
+#endif
 IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
-                       DISABLED_CreationAndVisibilityAndActivation) {
+                       MAYBE_CreationAndVisibilityAndActivation) {
   LoadTabAndEnterPictureInPicture(browser());
 
-  gfx::NativeWindow native_window = GetOverlayWindow()->GetNativeWindow();
-  EXPECT_FALSE(platform_util::IsWindowActive(native_window));
+  ASSERT_TRUE(GetRenderWidgetHostView());
+  EXPECT_TRUE(GetRenderWidgetHostView()->IsShowing());
+  EXPECT_FALSE(GetRenderWidgetHostView()->HasFocus());
 }
 
 // Regression test for https://crbug.com/1296780 - opening a picture-in-picture
 // window twice in a row should work, closing the old window before opening the
 // new one.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// Document PiP is not supported in Lacros yet.
+#define MAYBE_CreateTwice DISABLED_CreateTwice
+#else
+#define MAYBE_CreateTwice CreateTwice
+#endif
 IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
-                       DISABLED_CreateTwice) {
+                       MAYBE_CreateTwice) {
   LoadTabAndEnterPictureInPicture(browser());
 
-  gfx::NativeWindow native_window_1 = GetOverlayWindow()->GetNativeWindow();
-  EXPECT_FALSE(platform_util::IsWindowActive(native_window_1));
+  ASSERT_TRUE(window_controller()->GetChildWebContents());
+  DestructionObserver w(window_controller()->GetChildWebContents());
 
   // Now open the window a second time, without previously closing the original
   // window.
@@ -177,43 +210,63 @@ IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
                          "window.requestPictureInPictureWindow("
                          "  {width: 200, height: 200}"
                          ").then(w => true)"));
+  base::RunLoop().RunUntilIdle();
 
-  ASSERT_TRUE(window_controller());
-  ASSERT_TRUE(window_controller()->GetWindowForTesting());
-  EXPECT_TRUE(window_controller()->GetWindowForTesting()->IsVisible());
+  // The first WebContents should be destroyed.
+  EXPECT_TRUE(w.is_destroyed());
 
-  gfx::NativeWindow native_window_2 = GetOverlayWindow()->GetNativeWindow();
-  EXPECT_FALSE(platform_util::IsWindowActive(native_window_2));
-
-  // The two windows should be different.
-  EXPECT_NE(native_window_1, native_window_2);
+  // The new WebContents should be visible and unfocused.
+  ASSERT_TRUE(GetRenderWidgetHostView());
+  EXPECT_TRUE(GetRenderWidgetHostView()->IsShowing());
+  EXPECT_TRUE(!GetRenderWidgetHostView()->HasFocus());
 }
 
 // Tests closing the document picture-in-picture window.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// Document PiP is not supported in Lacros yet.
+#define MAYBE_CloseWindow DISABLED_CloseWindow
+#else
+#define MAYBE_CloseWindow CloseWindow
+#endif
 IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
-                       DISABLED_CloseWindow) {
+                       MAYBE_CloseWindow) {
   LoadTabAndEnterPictureInPicture(browser());
 
   window_controller()->Close(/*should_pause_video=*/true);
 
-  ASSERT_FALSE(window_controller()->GetWindowForTesting());
+  ASSERT_FALSE(window_controller()->GetChildWebContents());
 }
 
 // Tests navigating the opener closes the picture in picture window.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// Document PiP is not supported in Lacros yet.
+#define MAYBE_ClosePictureInPictureWhenOpenerNavigates \
+  DISABLED_ClosePictureInPictureWhenOpenerNavigates
+#else
+#define MAYBE_ClosePictureInPictureWhenOpenerNavigates \
+  ClosePictureInPictureWhenOpenerNavigates
+#endif
 IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
-                       DISABLED_ClosePictureInPictureWhenOpenerNavigates) {
+                       MAYBE_ClosePictureInPictureWhenOpenerNavigates) {
   LoadTabAndEnterPictureInPicture(browser());
   GURL test_page_url = ui_test_utils::GetTestUrl(
       base::FilePath(base::FilePath::kCurrentDirectory),
       base::FilePath(kPictureInPictureDocumentPipPage));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_page_url));
-  ASSERT_FALSE(window_controller()->GetWindowForTesting());
+  ASSERT_FALSE(window_controller()->GetChildWebContents());
 }
 
 // Navigation by the pip window to a new document should close the pip window.
-IN_PROC_BROWSER_TEST_F(
-    DocumentPictureInPictureWindowControllerBrowserTest,
-    DISABLED_CloseOnPictureInPictureNavigationToNewDocument) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// Document PiP is not supported in Lacros yet.
+#define MAYBE_CloseOnPictureInPictureNavigationToNewDocument \
+  DISABLED_CloseOnPictureInPictureNavigationToNewDocument
+#else
+#define MAYBE_CloseOnPictureInPictureNavigationToNewDocument \
+  CloseOnPictureInPictureNavigationToNewDocument
+#endif
+IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
+                       MAYBE_CloseOnPictureInPictureNavigationToNewDocument) {
   LoadTabAndEnterPictureInPicture(browser());
 
   content::WebContents* active_web_contents =
@@ -222,13 +275,21 @@ IN_PROC_BROWSER_TEST_F(
                          "navigateInDocumentPipWindow('http://media/"
                          "picture_in_picture/blank.html');"));
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(window_controller()->GetWindowForTesting());
+  EXPECT_FALSE(window_controller()->GetChildWebContents());
 }
 
 // Navigation within the pip window's document should not close the pip window.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// Document PiP is not supported in Lacros yet.
+#define MAYBE_DoNotCloseOnPictureInPictureNavigationInsideDocument \
+  DISABLED_DoNotCloseOnPictureInPictureNavigationInsideDocument
+#else
+#define MAYBE_DoNotCloseOnPictureInPictureNavigationInsideDocument \
+  DoNotCloseOnPictureInPictureNavigationInsideDocument
+#endif
 IN_PROC_BROWSER_TEST_F(
     DocumentPictureInPictureWindowControllerBrowserTest,
-    DISABLED_DoNotCloseOnPictureInPictureNavigationInsideDocument) {
+    MAYBE_DoNotCloseOnPictureInPictureNavigationInsideDocument) {
   LoadTabAndEnterPictureInPicture(browser());
 
   content::WebContents* active_web_contents =
@@ -236,11 +297,14 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_EQ(true, EvalJs(active_web_contents,
                          "navigateInDocumentPipWindow('#top');"));
   base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(window_controller()->GetWindowForTesting());
+  EXPECT_TRUE(window_controller()->GetChildWebContents());
 }
 
+// Make sure that document PiP fails without a secure context.
+// Unlike other tests, this one does work on Lacros.
+// TODO(crbug.com/1328840): Consider replacing this with a web platform test.
 IN_PROC_BROWSER_TEST_F(DocumentPictureInPictureWindowControllerBrowserTest,
-                       DISABLED_RequiresSecureContext) {
+                       RequiresSecureContext) {
   GURL test_page_url("http://media/picture-in-picture/blank.html");
   ASSERT_FALSE(network::IsUrlPotentiallyTrustworthy(test_page_url));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_page_url));

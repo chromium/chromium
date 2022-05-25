@@ -64,15 +64,11 @@ class TestDocumentPictureInPictureWindowController
   content::WebContents* GetWebContents() override { return web_contents_; }
 
   // DocumentPictureInPictureWindowController
-  void SetChildWebContents(
-      std::unique_ptr<content::WebContents> child) override {
-    child_web_contents_ = std::move(child);
+  void SetChildWebContents(content::WebContents* child) override {
+    child_web_contents_ = child;
   }
   content::WebContents* GetChildWebContents() override {
-    return child_web_contents_.get();
-  }
-  content::DocumentOverlayWindow* GetWindowForTesting() override {
-    return nullptr;
+    return child_web_contents_;
   }
 
   void set_web_contents(content::WebContents* web_contents) {
@@ -83,7 +79,7 @@ class TestDocumentPictureInPictureWindowController
 
  private:
   raw_ptr<content::WebContents> web_contents_;
-  std::unique_ptr<content::WebContents> child_web_contents_;
+  raw_ptr<content::WebContents> child_web_contents_;
 };
 
 class DocumentOverlayWindowViewsTest : public ChromeViewsTestBase {
@@ -106,7 +102,7 @@ class DocumentOverlayWindowViewsTest : public ChromeViewsTestBase {
     auto child =
         content::WebContentsTester::CreateTestWebContents(&profile_, nullptr);
 
-    pip_window_controller_.SetChildWebContents(std::move(child));
+    pip_window_controller_.SetChildWebContents(child.get());
 
 #if BUILDFLAG(IS_CHROMEOS)
     test_views_delegate()->set_context(GetContext());

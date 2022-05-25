@@ -362,7 +362,7 @@ void NormalizeDisposition(NavigateParams* params) {
 
     case WindowOpenDisposition::NEW_PICTURE_IN_PICTURE:
       // Always show a new picture in picture window.
-      params->window_action = NavigateParams::SHOW_WINDOW;
+      params->window_action = NavigateParams::SHOW_WINDOW_INACTIVE;
       break;
 
     case WindowOpenDisposition::NEW_WINDOW:
@@ -835,6 +835,14 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
       if (should_close_this_tab)
         params->source_contents->Close();
     }
+  }
+
+  // If this is a Picture in Picture window, then notify the pip manager about
+  // it. This enables the opener and pip window to stay connected, so that (for
+  // example), the pip window does not outlive the opener.
+  if (params->disposition == WindowOpenDisposition::NEW_PICTURE_IN_PICTURE) {
+    PictureInPictureWindowManager::GetInstance()->EnterDocumentPictureInPicture(
+        params->source_contents, contents_to_navigate_or_insert);
   }
 
   params->navigated_or_inserted_contents = contents_to_navigate_or_insert;

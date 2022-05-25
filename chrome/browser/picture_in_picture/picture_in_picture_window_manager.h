@@ -44,9 +44,8 @@ class PictureInPictureWindowManager {
   // (i.e. Chrome's BrowserNavigator) then calls this method to create the
   // window. There's no corresponding path through the WebContentsDelegate, so
   // it doesn't have a failure state.
-  void EnterDocumentPictureInPicture(
-      content::WebContents* parent_web_contents,
-      std::unique_ptr<content::WebContents> child_web_contents);
+  void EnterDocumentPictureInPicture(content::WebContents* parent_web_contents,
+                                     content::WebContents* child_web_contents);
 
   // Shows a PIP window with an explicitly provided window controller. This is
   // used by ChromeOS ARC windows which do not have a WebContents as the source.
