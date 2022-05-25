@@ -129,7 +129,6 @@ if (enable_js_type_check) {
         "gaia_auth_host:closure_compile",
         "image_editor:closure_compile",
         "inline_login:closure_compile",
-        "nearby_internals:closure_compile",
         "ntp4:closure_compile",
         "omnibox:closure_compile",
         "settings:closure_compile",
@@ -142,6 +141,7 @@ if (enable_js_type_check) {
     if (is_chromeos_ash) {
       deps += [
         "chromeos:closure_compile",
+        "nearby_internals:closure_compile",
         "nearby_share:closure_compile",
         "nearby_share/shared:closure_compile_module",
       ]
