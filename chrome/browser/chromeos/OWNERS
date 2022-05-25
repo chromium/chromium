@@ -11,5 +11,3 @@ khorimoto@chromium.org
 oshima@chromium.org
 xiyuan@chromium.org
 per-file *active_directory*=file://chrome/browser/ash/authpolicy/OWNERS
-per-file note_taking*=glenrob@chromium.org
-per-file note_taking*=ericwilligers@chromium.org
