@@ -1050,6 +1050,51 @@ class BASE_EXPORT GSL_OWNER Value {
   BASE_EXPORT friend bool operator<=(const Value& lhs, const Value& rhs);
   BASE_EXPORT friend bool operator>=(const Value& lhs, const Value& rhs);
 
+  BASE_EXPORT friend bool operator==(const Value& lhs, bool rhs);
+  friend bool operator==(bool lhs, const Value& rhs) { return rhs == lhs; }
+  friend bool operator!=(const Value& lhs, bool rhs) { return !(lhs == rhs); }
+  friend bool operator!=(bool lhs, const Value& rhs) { return !(lhs == rhs); }
+  BASE_EXPORT friend bool operator==(const Value& lhs, int rhs);
+  friend bool operator==(int lhs, const Value& rhs) { return rhs == lhs; }
+  friend bool operator!=(const Value& lhs, int rhs) { return !(lhs == rhs); }
+  friend bool operator!=(int lhs, const Value& rhs) { return !(lhs == rhs); }
+  BASE_EXPORT friend bool operator==(const Value& lhs, double rhs);
+  friend bool operator==(double lhs, const Value& rhs) { return rhs == lhs; }
+  friend bool operator!=(const Value& lhs, double rhs) { return !(lhs == rhs); }
+  friend bool operator!=(double lhs, const Value& rhs) { return !(lhs == rhs); }
+  BASE_EXPORT friend bool operator==(const Value& lhs, StringPiece rhs);
+  friend bool operator==(StringPiece lhs, const Value& rhs) {
+    return rhs == lhs;
+  }
+  friend bool operator!=(const Value& lhs, StringPiece rhs) {
+    return !(lhs == rhs);
+  }
+  friend bool operator!=(StringPiece lhs, const Value& rhs) {
+    return !(lhs == rhs);
+  }
+  // Note: Blob support intentionally omitted as an experiment for potentially
+  // wholly removing Blob support from Value itself in the future.
+  BASE_EXPORT friend bool operator==(const Value& lhs, const Value::Dict& rhs);
+  friend bool operator==(const Value::Dict& lhs, const Value& rhs) {
+    return rhs == lhs;
+  }
+  friend bool operator!=(const Value& lhs, const Value::Dict& rhs) {
+    return !(lhs == rhs);
+  }
+  friend bool operator!=(const Value::Dict& lhs, const Value& rhs) {
+    return !(lhs == rhs);
+  }
+  BASE_EXPORT friend bool operator==(const Value& lhs, const Value::List& rhs);
+  friend bool operator==(const Value::List& lhs, const Value& rhs) {
+    return rhs == lhs;
+  }
+  friend bool operator!=(const Value& lhs, const Value::List& rhs) {
+    return !(lhs == rhs);
+  }
+  friend bool operator!=(const Value::List& lhs, const Value& rhs) {
+    return !(lhs == rhs);
+  }
+
   // Compares if two Value objects have equal contents.
   // DEPRECATED, use `operator==(const Value& lhs, const Value& rhs)` instead.
   // TODO(crbug.com/646113): Delete this and migrate callsites.
