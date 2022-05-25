@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "build/build_config.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 
 #include "base/test/scoped_feature_list.h"
@@ -221,7 +222,13 @@ TEST_F(UserNoteUICoordinatorTest, AddNoteEndUserSidePanel) {
   EXPECT_EQ(last_user_note_view->UserNoteId(), note_ids_[index]);
 }
 
-TEST_F(UserNoteUICoordinatorTest, RemoveMiddleUserSidePanel) {
+// TODO(crbug.com/1328966): Re-enable this test
+#if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)
+#define MAYBE_RemoveMiddleUserSidePanel DISABLED_RemoveMiddleUserSidePanel
+#else
+#define MAYBE_RemoveMiddleUserSidePanel RemoveMiddleUserSidePanel
+#endif
+TEST_F(UserNoteUICoordinatorTest, MAYBE_RemoveMiddleUserSidePanel) {
   coordinator_->Toggle();
   EXPECT_TRUE(browser_view()->right_aligned_side_panel()->GetVisible());
 
@@ -259,7 +266,13 @@ TEST_F(UserNoteUICoordinatorTest, RemoveMiddleUserSidePanel) {
   }
 }
 
-TEST_F(UserNoteUICoordinatorTest, RemoveEndUserSidePanel) {
+// TODO(crbug.com/1328966): Re-enable this test
+#if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)
+#define MAYBE_RemoveEndUserSidePanel DISABLED_RemoveEndUserSidePanel
+#else
+#define MAYBE_RemoveEndUserSidePanel RemoveEndUserSidePanel
+#endif
+TEST_F(UserNoteUICoordinatorTest, MAYBE_RemoveEndUserSidePanel) {
   coordinator_->Toggle();
   EXPECT_TRUE(browser_view()->right_aligned_side_panel()->GetVisible());
 
@@ -297,7 +310,13 @@ TEST_F(UserNoteUICoordinatorTest, RemoveEndUserSidePanel) {
   }
 }
 
-TEST_F(UserNoteUICoordinatorTest, RemoveAllNoteUserSidePanel) {
+// TODO(crbug.com/1328966): Re-enable this test
+#if BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER)
+#define MAYBE_RemoveAllNoteUserSidePanel DISABLED_RemoveAllNoteUserSidePanel
+#else
+#define MAYBE_RemoveAllNoteUserSidePanel RemoveAllNoteUserSidePanel
+#endif
+TEST_F(UserNoteUICoordinatorTest, MAYBE_RemoveAllNoteUserSidePanel) {
   coordinator_->Toggle();
   EXPECT_TRUE(browser_view()->right_aligned_side_panel()->GetVisible());
 
