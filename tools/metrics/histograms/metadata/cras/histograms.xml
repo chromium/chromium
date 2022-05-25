@@ -253,7 +253,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Cras.HfpWidebandSpeechSupported" units="BooleanSupported"
+<histogram name="Cras.HfpWidebandSpeechSupported" enum="BooleanSupported"
     expires_after="2022-11-20">
   <owner>hychao@chromium.org</owner>
   <owner>chromeos-audio@google.com</owner>

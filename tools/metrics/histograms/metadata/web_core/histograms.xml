@@ -610,7 +610,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebCore.IndexedDB.TombstoneSweeper.DeletionWriteError"
-    units="LevelDBStatus" expires_after="2022-08-01">
+    enum="LevelDBStatus" expires_after="2022-08-01">
   <owner>dmurph@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
   <owner>storage-dev@chromium.org</owner>

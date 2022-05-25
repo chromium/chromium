@@ -79,7 +79,7 @@ chromium-metrics-reviews@google.com.
   <token key="MediaType" variants="CameraRollMediaType"/>
 </histogram>
 
-<histogram name="PhoneHub.CameraRoll.Content.Present" units="BooleanPresent"
+<histogram name="PhoneHub.CameraRoll.Content.Present" enum="BooleanPresent"
     expires_after="2023-02-01">
   <owner>jasonsun@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>

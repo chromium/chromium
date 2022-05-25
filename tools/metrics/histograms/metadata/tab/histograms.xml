@@ -147,8 +147,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Discarding.HighPMFPolicy.DiscardSuccess"
-    units="BooleanSuccess" expires_after="2021-12-06">
+<histogram name="Discarding.HighPMFPolicy.DiscardSuccess" enum="BooleanSuccess"
+    expires_after="2021-12-06">
   <owner>chrisha@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -363,7 +363,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Tab.CloseAllTabsDialog.ClosedAllTabs" units="Boolean"
+<histogram name="Tab.CloseAllTabsDialog.ClosedAllTabs" enum="Boolean"
     expires_after="2022-09-11">
   <obsolete>
     Removed 4/2022. Replaced with a metric split by incognito and non-incognito
@@ -381,7 +381,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tab.CloseAllTabsDialog.ClosedAllTabs.{CloseType}"
-    units="Boolean" expires_after="2022-09-11">
+    enum="Boolean" expires_after="2022-09-11">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <summary>
@@ -1456,7 +1456,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TabManager.SessionOverlap.BackgroundTabOpening"
-    units="BooleanOverlap" expires_after="M79">
+    enum="BooleanOverlap" expires_after="M79">
   <owner>chrisha@chromium.org</owner>
   <summary>
     Whether background tab opening session is overlapped with other types of
@@ -1469,7 +1469,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TabManager.SessionOverlap.SessionRestore"
-    units="BooleanOverlap" expires_after="M77">
+    enum="BooleanOverlap" expires_after="M77">
   <owner>chrisha@chromium.org</owner>
   <summary>
     Whether session restore is overlapped with other types of session, e.g.,

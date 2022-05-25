@@ -92,7 +92,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sharing.ClickToCallPhoneNumberValid" units="BooleanValid"
+<histogram name="Sharing.ClickToCallPhoneNumberValid" enum="BooleanValid"
     expires_after="M98">
   <owner>knollr@chromium.org</owner>
   <owner>peter@chromium.org</owner>

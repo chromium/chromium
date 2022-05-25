@@ -768,7 +768,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="UpdateEngine.UpdateInvalidated" units="BooleanSuccess"
+<histogram name="UpdateEngine.UpdateInvalidated" enum="BooleanSuccess"
     expires_after="2023-01-01">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>

@@ -1542,7 +1542,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContentSuggestions.{FeedType}.InfoCard.{Action}"
-    units="FeedInfoCardType" expires_after="2023-05-01">
+    enum="FeedInfoCardType" expires_after="2023-05-01">
   <owner>jianli@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>feed@chromium.org</owner>

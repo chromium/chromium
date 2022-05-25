@@ -2904,7 +2904,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.TouchToFill.ObservedSuccessfulSubmission"
-    units="Boolean" expires_after="2022-10-30">
+    enum="Boolean" expires_after="2022-10-30">
   <owner>ioanap@chromium.org</owner>
   <owner>fhorschig@chromium.org</owner>
   <owner>kolos@chromium.org</owner>
@@ -3445,7 +3445,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordProtection.RequestWithToken.{TriggerType}"
-    units="BooleanSent" expires_after="2022-10-06">
+    enum="BooleanSent" expires_after="2022-10-06">
   <owner>bhatiarohit@google.com</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -3456,7 +3456,7 @@ chromium-metrics-reviews@google.com.
   <token key="TriggerType" variants="PasswordProtectionTriggerType"/>
 </histogram>
 
-<histogram name="PasswordProtection.SampleReportSent" units="Boolean"
+<histogram name="PasswordProtection.SampleReportSent" enum="Boolean"
     expires_after="2022-10-31">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>

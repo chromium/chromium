@@ -110,7 +110,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="LightweightReactions.GifGenerationCancelled" units="Boolean"
+<histogram name="LightweightReactions.GifGenerationCancelled" enum="Boolean"
     expires_after="2022-07-31">
   <owner>gujen@google.com</owner>
   <owner>chrome-creation@google.com</owner>
@@ -476,7 +476,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SharedHighlights.LinkGenerated{Requested}"
-    units="BooleanSuccess" expires_after="2022-08-10">
+    enum="BooleanSuccess" expires_after="2022-08-10">
   <owner>gayane@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
@@ -505,7 +505,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SharedHighlights.ObtainReshareLink.Status"
-    units="LinkToTextReshareStatus" expires_after="2022-10-09">
+    enum="LinkToTextReshareStatus" expires_after="2022-10-09">
   <owner>gayane@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
@@ -631,7 +631,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TextFragmentAnchor{TextFragmentSource}.ListItemMatch"
-    units="Boolean" expires_after="2022-06-30">
+    enum="Boolean" expires_after="2022-06-30">
   <obsolete>
     Removed 2022-05.
   </obsolete>
@@ -728,7 +728,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TextFragmentAnchor{TextFragmentSource}.SpansMultipleBlocks"
-    units="Boolean" expires_after="2022-06-30">
+    enum="Boolean" expires_after="2022-06-30">
   <obsolete>
     Removed 2022-05.
   </obsolete>
@@ -764,7 +764,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TextFragmentAnchor{TextFragmentSource}.TableCellMatch"
-    units="Boolean" expires_after="2022-06-30">
+    enum="Boolean" expires_after="2022-06-30">
   <obsolete>
     Removed 2022-05.
   </obsolete>

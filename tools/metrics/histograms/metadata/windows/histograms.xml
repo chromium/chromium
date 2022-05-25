@@ -321,7 +321,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Windows.TouchDrag.Success" units="BooleanSuccess"
+<histogram name="Windows.TouchDrag.Success" enum="BooleanSuccess"
     expires_after="2021-12-01">
   <owner>davidbienvenu@chromium.org</owner>
   <owner>dfried@chromium.org</owner>

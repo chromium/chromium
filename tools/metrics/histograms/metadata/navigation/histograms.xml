@@ -1652,7 +1652,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
   </summary>
 </histogram>
 
-<histogram name="Prerender.PrerenderLoadComplete" units="BooleanSuccess"
+<histogram name="Prerender.PrerenderLoadComplete" enum="BooleanSuccess"
     expires_after="2022-10-16">
   <owner>gambard@chromium.org</owner>
   <owner>justincohen@chromium.org</owner>

@@ -728,7 +728,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IOS.IPH.DefaultSite.Presented" units="BooleanHit"
+<histogram name="IOS.IPH.DefaultSite.Presented" enum="BooleanHit"
     expires_after="2023-02-28">
   <owner>gambard@chromium.org</owner>
   <owner>lpromero@chromium.org</owner>

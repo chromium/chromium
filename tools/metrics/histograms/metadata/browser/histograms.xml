@@ -162,7 +162,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.PaintPreview.Player.CompositorProcessStartedCorrectly"
-    units="BooleanSuccess" expires_after="2022-11-13">
+    enum="BooleanSuccess" expires_after="2022-11-13">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <owner>chrome-fdt@google.com</owner>
@@ -181,8 +181,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Browser.PaintPreview.Player.LinkClicked"
-    units="BooleanSuccess" expires_after="2022-10-16">
+<histogram name="Browser.PaintPreview.Player.LinkClicked" enum="BooleanSuccess"
+    expires_after="2022-10-16">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <owner>chrome-fdt@google.com</owner>
@@ -224,7 +224,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Browser.PaintPreview.TabbedPlayer.FirstPaintBeforeTabLoad"
-    units="Boolean" expires_after="2022-08-07">
+    enum="Boolean" expires_after="2022-08-07">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <owner>chrome-fdt@google.com</owner>
@@ -234,7 +234,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Browser.PaintPreview.TabbedPlayer.HadCapture" units="Boolean"
+<histogram name="Browser.PaintPreview.TabbedPlayer.HadCapture" enum="Boolean"
     expires_after="2022-10-23">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
@@ -716,7 +716,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BrowserRenderProcessHost.LabeledInTaskManager"
-    units="BooleanLabeledRendererTask" expires_after="2022-11-06">
+    enum="BooleanLabeledRendererTask" expires_after="2022-11-06">
   <owner>creis@chromium.org</owner>
   <owner>avi@chromium.org</owner>
   <summary>

@@ -68,7 +68,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Startup.Android.Cold.FirstNavigationCommitOccurredPreForeground"
-    units="Boolean" expires_after="2022-11-06">
+    enum="Boolean" expires_after="2022-11-06">
   <owner>blundell@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
   <summary>
@@ -79,7 +79,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Startup.Android.Cold.FirstPaintOccurredPreForeground"
-    units="Boolean" expires_after="2022-11-06">
+    enum="Boolean" expires_after="2022-11-06">
   <owner>blundell@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
   <summary>
@@ -318,7 +318,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Startup.Android.StartSurfaceShownAtStartup" units="Boolean"
+<histogram name="Startup.Android.StartSurfaceShownAtStartup" enum="Boolean"
     expires_after="2022-10-07">
   <owner>hanxi@chromium.org</owner>
   <owner>spdonghao@chromium.org</owner>

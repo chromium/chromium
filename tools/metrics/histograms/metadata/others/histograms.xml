@@ -5403,7 +5403,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ExploreSites.ImageDecoded" units="Boolean"
+<histogram name="ExploreSites.ImageDecoded" enum="Boolean"
     expires_after="2020-06-30">
   <owner>freedjm@chromium.org</owner>
   <owner>chrome-explore-team@google.com</owner>
@@ -5433,7 +5433,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ExploreSites.NTPLoadingCatalogFromNetwork" units="Boolean"
+<histogram name="ExploreSites.NTPLoadingCatalogFromNetwork" enum="Boolean"
     expires_after="2020-02-16">
   <owner>dimich@chromium.org</owner>
   <summary>
@@ -5501,7 +5501,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Favicons.LargeIconService.BlacklistedURLMismatch"
-    units="BooleanError" expires_after="M77">
+    enum="BooleanError" expires_after="M77">
   <obsolete>
     Removed in M88.
   </obsolete>
@@ -7608,7 +7608,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Mac.FileMenuNativeShare" units="BooleanSuccess"
+<histogram name="Mac.FileMenuNativeShare" enum="BooleanSuccess"
     expires_after="2022-12-31">
   <owner>nasims@google.com</owner>
   <owner>ellyjones@chromium.org</owner>
@@ -8017,7 +8017,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Mojo.InvalidUTF8String" units="BooleanValid"
+<histogram name="Mojo.InvalidUTF8String" enum="BooleanValid"
     expires_after="2023-04-01">
   <owner>rsesek@chromium.org</owner>
   <owner>chrome-mojo@google.com</owner>
@@ -8748,7 +8748,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="OSX.NativeShare" units="BooleanSuccess"
+<histogram name="OSX.NativeShare" enum="BooleanSuccess"
     expires_after="2021-09-05">
   <obsolete>
     Removed July 2021, superceded by Mac.FileMenuNativeShare.
@@ -9085,7 +9085,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Pepper.Graphics3DHasShareGroup" units="BooleanShareGroup"
+<histogram name="Pepper.Graphics3DHasShareGroup" enum="BooleanShareGroup"
     expires_after="M77">
   <owner>jbauman@chromium.org</owner>
   <summary>
@@ -9814,7 +9814,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Process.Sandbox.Launch.WarningResultCode"
-    units="LaunchErrorCodes" expires_after="never">
+    enum="LaunchErrorCodes" expires_after="never">
 <!-- expires-never: metric needed for diagnosing sandbox issues. -->
 
   <owner>forshaw@chromium.org</owner>
@@ -9863,7 +9863,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ProxyOverriddenBubble.UserSelection"
-    units="ExtensionBubbleAction" expires_after="2020-12-31">
+    enum="ExtensionBubbleAction" expires_after="2020-12-31">
   <obsolete>
     Code removed 2021/06.
   </obsolete>
@@ -12045,7 +12045,7 @@ should be kept until we remove incident reporting. -->
   </summary>
 </histogram>
 
-<histogram name="SiteIsolatedCodeCache.JS.Hit" units="Boolean"
+<histogram name="SiteIsolatedCodeCache.JS.Hit" enum="Boolean"
     expires_after="2022-11-10">
   <owner>yhirano@chromium.org</owner>
   <owner>loading-dev@chromium.org</owner>
@@ -12066,7 +12066,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SiteIsolatedCodeCache.JS.PotentialMemoryBackedCodeCacheHit"
-    units="Boolean" expires_after="2022-11-10">
+    enum="Boolean" expires_after="2022-11-10">
   <owner>yhirano@chromium.org</owner>
   <owner>loading-dev@chromium.org</owner>
   <summary>

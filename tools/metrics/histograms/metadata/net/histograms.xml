@@ -1521,7 +1521,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.ExpectCT.HeaderPresentOnResponse" units="BooleanPresent"
+<histogram name="Net.ExpectCT.HeaderPresentOnResponse" enum="BooleanPresent"
     expires_after="2022-11-13">
   <owner>estark@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
@@ -4483,7 +4483,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.SpdySession.ServerSupportsWebSocket" units="Boolean"
+<histogram name="Net.SpdySession.ServerSupportsWebSocket" enum="Boolean"
     expires_after="2023-05-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>

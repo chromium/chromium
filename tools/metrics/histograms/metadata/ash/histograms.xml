@@ -1853,7 +1853,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.DeskTemplate.ReplaceTemplate" units="BooleanHit"
+<histogram name="Ash.DeskTemplate.ReplaceTemplate" enum="BooleanHit"
     expires_after="2022-07-14">
   <owner>aprilzhou@chromium.org</owner>
   <owner>janetmac@chromium.org</owner>
@@ -4549,7 +4549,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Ash.Window.DragMaximized.Valid" units="Boolean"
+<histogram name="Ash.Window.DragMaximized.Valid" enum="Boolean"
     expires_after="2023-03-31">
   <owner>conniekxu@chromium.org</owner>
   <owner>xdai@chromium.org</owner>

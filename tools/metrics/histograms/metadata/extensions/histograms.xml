@@ -233,7 +233,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Extensions.BackgroundPageType"
-    units="ExtensionBackgroundPageType" expires_after="never">
+    enum="ExtensionBackgroundPageType" expires_after="never">
 <!-- expires-never: Used for monitoring user extension usage. -->
 
   <owner>rdevlin.cronin@chromium.org</owner>
@@ -3174,8 +3174,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Extensions.SyncBlockedByDefaultWebAppMigration"
-    units="Boolean" expires_after="2022-11-13">
+<histogram name="Extensions.SyncBlockedByDefaultWebAppMigration" enum="Boolean"
+    expires_after="2022-11-13">
   <owner>alancutter@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>

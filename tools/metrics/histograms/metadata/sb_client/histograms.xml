@@ -114,7 +114,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SBClientDownload.DocumentAnalysisSuccess" units="Boolean"
+<histogram name="SBClientDownload.DocumentAnalysisSuccess" enum="Boolean"
     expires_after="2022-10-16">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>

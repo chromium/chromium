@@ -772,7 +772,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.ContactsPicker.PropertiesRequested"
-    units="ContactsPickerProperties" expires_after="2020-11-29">
+    enum="ContactsPickerProperties" expires_after="2020-11-29">
   <owner>finnur@chromium.org</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -3013,7 +3013,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.SelectFileDialogContentSelected"
-    units="SelectFileDialogContent" expires_after="2022-10-16">
+    enum="SelectFileDialogContent" expires_after="2022-10-16">
   <owner>finnur@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -3320,7 +3320,7 @@ chromium-metrics-reviews@google.com.
       variants="ThumbnailProvider_ClientType"/>
 </histogram>
 
-<histogram name="Android.Toolbar.BitmapCapture" units="ToolbarCaptureType"
+<histogram name="Android.Toolbar.BitmapCapture" enum="ToolbarCaptureType"
     expires_after="2023-05-11">
   <owner>skym@chromium.org</owner>
   <owner>seacow@google.com</owner>
@@ -3333,7 +3333,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.TopToolbar.AllowCaptureReason"
-    units="TopToolbarAllowCaptureReason" expires_after="2023-05-16">
+    enum="TopToolbarAllowCaptureReason" expires_after="2023-05-16">
   <owner>skym@chromium.org</owner>
   <owner>seacow@google.com</owner>
   <summary>
@@ -3347,7 +3347,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.TopToolbar.BlockCaptureReason"
-    units="TopToolbarBlockCaptureReason" expires_after="2023-05-16">
+    enum="TopToolbarBlockCaptureReason" expires_after="2023-05-16">
   <owner>skym@chromium.org</owner>
   <owner>seacow@google.com</owner>
   <summary>
@@ -3358,7 +3358,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.TopToolbar.SnapshotDifference"
-    units="ToolbarSnapshotDifference" expires_after="2023-05-16">
+    enum="ToolbarSnapshotDifference" expires_after="2023-05-16">
   <owner>skym@chromium.org</owner>
   <owner>seacow@google.com</owner>
   <summary>

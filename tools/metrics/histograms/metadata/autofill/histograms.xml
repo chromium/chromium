@@ -3903,7 +3903,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Autofill.WebOTP.OneTimeCode.FromAutocomplete" units="Boolean"
+<histogram name="Autofill.WebOTP.OneTimeCode.FromAutocomplete" enum="Boolean"
     expires_after="2022-12-12">
   <owner>yigu@chromium.org</owner>
   <owner>battre@chromium.org</owner>
@@ -3916,7 +3916,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.WebOTP.PhoneNumberCollection.ParseResult"
-    units="Boolean" expires_after="2022-12-12">
+    enum="Boolean" expires_after="2022-12-12">
   <owner>yigu@chromium.org</owner>
   <owner>battre@chromium.org</owner>
   <owner>web-identity@google.com</owner>

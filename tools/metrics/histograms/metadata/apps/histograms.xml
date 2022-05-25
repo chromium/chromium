@@ -2180,7 +2180,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.LockScreen.AppsProfile.Creation.Success"
-    units="BooleanSuccess" expires_after="2022-12-01">
+    enum="BooleanSuccess" expires_after="2022-12-01">
   <owner>glenrob@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>

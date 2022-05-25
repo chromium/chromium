@@ -1906,7 +1906,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="V8.WasmMemoryProtectionKeysSupport" units="BooleanSupported"
+<histogram name="V8.WasmMemoryProtectionKeysSupport" enum="BooleanSupported"
     expires_after="2022-11-06">
   <owner>clemensb@chromium.org</owner>
   <owner>jkummerow@chromium.org</owner>

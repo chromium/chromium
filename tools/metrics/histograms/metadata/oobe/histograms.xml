@@ -335,7 +335,7 @@ chromium-metrics-reviews@google.com.
   <summary>Time spent on specific OOBE screen grouped by exit reason.</summary>
 </histogram>
 
-<histogram name="OOBE.StepShownStatus" units="BooleanShown"
+<histogram name="OOBE.StepShownStatus" enum="BooleanShown"
     expires_after="never">
 <!-- expires-never: Core metric for monitoring OOBE flow regressions. -->
 

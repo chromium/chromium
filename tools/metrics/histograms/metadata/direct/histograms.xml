@@ -199,7 +199,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DirectWrite.Fonts.Proxy.LookupTableDiskCacheHit"
-    units="BooleanSuccess" expires_after="2022-10-15">
+    enum="BooleanSuccess" expires_after="2022-10-15">
   <owner>drott@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>
@@ -211,7 +211,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DirectWrite.Fonts.Proxy.LookupTablePersistSuccess"
-    units="BooleanSuccess" expires_after="2022-10-15">
+    enum="BooleanSuccess" expires_after="2022-10-15">
   <owner>drott@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>
