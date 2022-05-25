@@ -55,8 +55,9 @@ DisplayOverlayController::DisplayOverlayController(
 }
 
 DisplayOverlayController::~DisplayOverlayController() {
-  RemoveOverlayIfAny();
   ash::Shell::Get()->RemovePreTargetHandler(this);
+  touch_injector_->set_display_overlay_controller(nullptr);
+  RemoveOverlayIfAny();
 }
 
 void DisplayOverlayController::OnWindowBoundsChanged() {
