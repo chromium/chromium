@@ -18,7 +18,6 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/gfx/color_analysis.h"
 
 namespace ash {
 
@@ -52,16 +51,7 @@ void KeyboardBacklightColorController::SetBacklightColor(
   DCHECK(rgb_keyboard_manager);
   DVLOG(3) << __func__ << " backlight_color=" << backlight_color;
   switch (backlight_color) {
-    case personalization_app::mojom::BacklightColor::kWallpaper: {
-      auto* wallpaper_controller = Shell::Get()->wallpaper_controller();
-      DCHECK(wallpaper_controller);
-      SkColor color = wallpaper_controller->GetProminentColor(
-          color_utils::ColorProfile(color_utils::LumaRange::NORMAL,
-                                    color_utils::SaturationRange::VIBRANT));
-      rgb_keyboard_manager->SetStaticBackgroundColor(
-          SkColorGetR(color), SkColorGetG(color), SkColorGetB(color));
-      break;
-    }
+    case personalization_app::mojom::BacklightColor::kWallpaper:
     case personalization_app::mojom::BacklightColor::kWhite:
     case personalization_app::mojom::BacklightColor::kRed:
     case personalization_app::mojom::BacklightColor::kYellow:

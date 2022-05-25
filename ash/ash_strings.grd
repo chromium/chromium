@@ -5002,7 +5002,9 @@ New install
       <message name="IDS_ASH_KEYBOARD_BACKLIGHT_COLOR_EDUCATION_NUDGE_TEXT" desc="The body text suggesting that the user can change the keyboard backlight color">
         You can change the color of your keyboard backlight in Settings > <ph name="APP_TITLE">$1<ex>Wallpaper &amp; style</ex></ph>
       </message>
-
+      <message name="IDS_ASH_STATUS_TRAY_KEYBOARD_BACKLIGHT_ACCESSIBLE_NAME" desc="The accessible text for the brightness slider keyboard backlight icon.">
+        Keyboard backlight color
+      </message>
     </messages>
   </release>
 </grit>

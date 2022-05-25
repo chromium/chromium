@@ -442,6 +442,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "unified_menu_expand.icon",
     "unified_menu_info.icon",
     "unified_menu_keyboard.icon",
+    "unified_menu_keyboard_backlight.icon",
     "unified_menu_keyboard_brightness.icon",
     "unified_menu_locale.icon",
     "unified_menu_lock.icon",

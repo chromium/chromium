@@ -18,6 +18,15 @@ inline constexpr SkColor kInvalidColor = SK_ColorTRANSPARENT;
 ASH_EXPORT SkColor ConvertBacklightColorToSkColor(
     personalization_app::mojom::BacklightColor backlight_color);
 
+// Util method to convert the |BacklightColor| enum to a |SkColor| that is used
+// as the background color for the rgb icon displayed in the system's keyboard
+// brightness slider. The color is different from the color returned by
+// |ConvertBacklightColorToSkColor| and matches the color displayed in the
+// personalization hub as the actual rgb keyboard colors appear to be visually
+// darker than what the UX wants to show to users.
+SkColor ConvertBacklightColorToIconBackgroundColor(
+    personalization_app::mojom::BacklightColor backlight_color);
+
 }  // namespace ash
 
 #endif  // ASH_RGB_KEYBOARD_RGB_KEYBOARD_UTIL_H_

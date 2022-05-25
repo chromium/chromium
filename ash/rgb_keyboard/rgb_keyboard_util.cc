@@ -4,13 +4,38 @@
 
 #include "ash/rgb_keyboard/rgb_keyboard_util.h"
 
+#include "ash/public/cpp/wallpaper/wallpaper_types.h"
+#include "ash/shell.h"
+#include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
+#include "ui/gfx/color_analysis.h"
 
 namespace ash {
 
 SkColor ConvertBacklightColorToSkColor(
     personalization_app::mojom::BacklightColor backlight_color) {
   switch (backlight_color) {
+    case personalization_app::mojom::BacklightColor::kWallpaper: {
+      auto* wallpaper_controller = Shell::Get()->wallpaper_controller();
+      DCHECK(wallpaper_controller);
+      // Attempt to get the prominent colors by using different |LumaRange| and
+      // |SaturationRange|. Depending on the combination of these values and the
+      // current wallpaper, the |color| may be invalid.
+      SkColor color = wallpaper_controller->GetProminentColor(
+          color_utils::ColorProfile(color_utils::LumaRange::NORMAL,
+                                    color_utils::SaturationRange::VIBRANT));
+      if (color == kInvalidWallpaperColor) {
+        color = wallpaper_controller->GetProminentColor(
+            color_utils::ColorProfile(color_utils::LumaRange::LIGHT,
+                                      color_utils::SaturationRange::VIBRANT));
+      }
+      if (color == kInvalidWallpaperColor) {
+        color = wallpaper_controller->GetProminentColor(
+            color_utils::ColorProfile(color_utils::LumaRange::DARK,
+                                      color_utils::SaturationRange::VIBRANT));
+      }
+      return color;
+    }
     case personalization_app::mojom::BacklightColor::kWhite:
       return SkColorSetRGB(/*r=*/255, /*g=*/255, /*b=*/210);
     case personalization_app::mojom::BacklightColor::kRed:
@@ -25,6 +50,38 @@ SkColor ConvertBacklightColorToSkColor(
       return SkColorSetRGB(/*r=*/25, /*g=*/55, /*b=*/210);
     case personalization_app::mojom::BacklightColor::kPurple:
       return SkColorSetRGB(/*r=*/132, /*g=*/32, /*b=*/180);
+    default:
+      return kInvalidColor;
+  }
+}
+
+SkColor ConvertBacklightColorToIconBackgroundColor(
+    personalization_app::mojom::BacklightColor backlight_color) {
+  switch (backlight_color) {
+    case personalization_app::mojom::BacklightColor::kWhite:
+      return SkColorSetA(
+          static_cast<SkColor>(personalization_app::mojom::kWhiteColor), 0xFF);
+    case personalization_app::mojom::BacklightColor::kRed:
+      return SkColorSetA(
+          static_cast<SkColor>(personalization_app::mojom::kRedColor), 0xFF);
+    case personalization_app::mojom::BacklightColor::kYellow:
+      return SkColorSetA(
+          static_cast<SkColor>(personalization_app::mojom::kYellowColor), 0xFF);
+    case personalization_app::mojom::BacklightColor::kGreen:
+      return SkColorSetA(
+          static_cast<SkColor>(personalization_app::mojom::kGreenColor), 0xFF);
+    case personalization_app::mojom::BacklightColor::kBlue:
+      return SkColorSetA(
+          static_cast<SkColor>(personalization_app::mojom::kBlueColor), 0xFF);
+    case personalization_app::mojom::BacklightColor::kIndigo:
+      return SkColorSetA(
+          static_cast<SkColor>(personalization_app::mojom::kIndigoColor), 0xFF);
+    case personalization_app::mojom::BacklightColor::kPurple:
+      return SkColorSetA(
+          static_cast<SkColor>(personalization_app::mojom::kPurpleColor), 0xFF);
+    case personalization_app::mojom::BacklightColor::kWallpaper:
+      return ConvertBacklightColorToSkColor(
+          personalization_app::mojom::BacklightColor::kWallpaper);
     default:
       return kInvalidColor;
   }
