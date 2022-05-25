@@ -346,15 +346,19 @@ void StyleCascade::AnalyzeMatchResult() {
   int index = 0;
   for (const MatchedProperties& properties :
        match_result_.GetMatchedProperties()) {
-    ExpandCascade(properties, GetDocument(), index++,
-                  [this](CascadePriority cascade_priority,
-                         const CSSProperty& css_property,
-                         const CSSValue& css_value [[maybe_unused]],
-                         uint16_t tree_order [[maybe_unused]]) {
-                    const CSSProperty& property =
-                        ResolveSurrogate(css_property);
-                    map_.Add(property.GetCSSPropertyName(), cascade_priority);
-                  });
+    ExpandCascade(
+        properties, GetDocument(), index++,
+        [this](CascadePriority cascade_priority,
+               const CSSProperty& css_property, const CSSPropertyName& name,
+               const CSSValue& css_value [[maybe_unused]],
+               uint16_t tree_order [[maybe_unused]]) {
+          if (css_property.IsSurrogate()) {
+            const CSSProperty& property = ResolveSurrogate(css_property);
+            map_.Add(property.GetCSSPropertyName(), cascade_priority);
+          } else {
+            map_.Add(name, cascade_priority);
+          }
+        });
   }
 }
 

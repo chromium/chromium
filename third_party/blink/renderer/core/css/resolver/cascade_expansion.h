@@ -72,13 +72,17 @@ constexpr wtf_size_t kMaxMatchedPropertiesIndex =
 // Usage:
 //
 //   ExpandCascade(..., [](CascadePriority cascade_priority,
-//                         const CSSProperty& css_property, const CSSValue&
+//                         const CSSProperty& css_property,
+//                         const CSSPropertyName& name,
+//                         const CSSValue&
 //                         css_value, uint16_t tree_order) {
 //                           DoStuff(...)
 //                         }
 //
-// The css_property reference is not guaranteed to live past the end of the
-// callback.
+// The css_property and name references are not guaranteed to live past the end
+// of the callback. The name is guaranteed to be identical to
+// css_property.GetCSSPropertyName() (using it generally saves you the virtual
+// function call).
 //
 // The implementation is in cascade_expansion-inl.h, which you will need to
 // include if you use this function.
