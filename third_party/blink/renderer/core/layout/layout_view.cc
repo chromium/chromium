@@ -285,7 +285,7 @@ bool LayoutView::ShouldPlaceBlockDirectionScrollbarOnLogicalLeft() const {
   NOT_DESTROYED();
   LocalFrame& frame = GetFrameView()->GetFrame();
   // See crbug.com/249860
-  if (frame.IsMainFrame())
+  if (frame.IsOutermostMainFrame())
     return false;
   // <body> inherits 'direction' from <html>, so checking style on the body is
   // sufficient.
