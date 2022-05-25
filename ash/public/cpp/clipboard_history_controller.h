@@ -51,8 +51,8 @@ class ASH_PUBLIC_EXPORT ClipboardHistoryController {
   // Returns the singleton instance.
   static ClipboardHistoryController* Get();
 
-  virtual void AddObserver(Observer* observer) const = 0;
-  virtual void RemoveObserver(Observer* observer) const = 0;
+  virtual void AddObserver(Observer* observer) = 0;
+  virtual void RemoveObserver(Observer* observer) = 0;
 
   // Returns whether the clipboard history menu is able to show.
   virtual bool CanShowMenu() const = 0;

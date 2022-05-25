@@ -12,6 +12,7 @@
 #include "ash/clipboard/clipboard_history_menu_model_adapter.h"
 #include "ash/clipboard/views/clipboard_history_delete_button.h"
 #include "ash/clipboard/views/clipboard_history_item_view.h"
+#include "ash/public/cpp/clipboard_history_controller.h"
 #include "ash/public/cpp/clipboard_image_model_factory.h"
 #include "ash/shell.h"
 #include "base/bind.h"
@@ -104,28 +105,27 @@ class ClipboardDataWaiter : public ui::ClipboardObserver {
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 
-// The helper class to wait for the update in the clipboard history item list.
-class ClipboardHistoryItemUpdateWaiter
+// The helper class to wait for an update to the clipboard history item list.
+class ScopedClipboardHistoryListUpdateWaiter
     : public ash::ClipboardHistoryController::Observer {
  public:
-  ClipboardHistoryItemUpdateWaiter() = default;
-  ClipboardHistoryItemUpdateWaiter(const ClipboardHistoryItemUpdateWaiter&) =
-      delete;
-  ClipboardHistoryItemUpdateWaiter& operator=(
-      const ClipboardHistoryItemUpdateWaiter&) = delete;
-  ~ClipboardHistoryItemUpdateWaiter() override {
-    ash::ClipboardHistoryController::Get()->RemoveObserver(this);
+  ScopedClipboardHistoryListUpdateWaiter() {
+    controller_observation_.Observe(ash::ClipboardHistoryController::Get());
   }
+  ScopedClipboardHistoryListUpdateWaiter(
+      const ScopedClipboardHistoryListUpdateWaiter&) = delete;
+  ScopedClipboardHistoryListUpdateWaiter& operator=(
+      const ScopedClipboardHistoryListUpdateWaiter&) = delete;
+  ~ScopedClipboardHistoryListUpdateWaiter() override { run_loop_.Run(); }
 
+  // ash::ClipboardHistoryController::Observer:
   void OnClipboardHistoryItemListAddedOrRemoved() override { run_loop_.Quit(); }
-
-  void Wait() {
-    ash::ClipboardHistoryController::Get()->AddObserver(this);
-    run_loop_.Run();
-  }
 
  private:
   base::RunLoop run_loop_;
+  base::ScopedObservation<ash::ClipboardHistoryController,
+                          ash::ClipboardHistoryController::Observer>
+      controller_observation_{this};
 };
 
 // The helper class to wait for the completion of the image model request.
@@ -1032,15 +1032,13 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryWebContentsBrowserTest,
   content::BoundingBoxUpdateWaiter select_part_one(web_contents);
   ASSERT_TRUE(ExecuteScript(web_contents, "selectPart1();"));
   select_part_one.Wait();
-  ASSERT_TRUE(ExecuteScript(web_contents, "copyToClipboard();"));
 
-  // Wait until the clipboard history updates.
   const auto& item_lists = GetClipboardItems();
-  if (item_lists.empty()) {
-    ClipboardHistoryItemUpdateWaiter item_update_waiter;
-    item_update_waiter.Wait();
-    ASSERT_EQ(1u, item_lists.size());
+  {
+    ScopedClipboardHistoryListUpdateWaiter scoped_waiter;
+    ASSERT_TRUE(ExecuteScript(web_contents, "copyToClipboard();"));
   }
+  ASSERT_EQ(1u, item_lists.size());
 
   base::HistogramTester histogram_tester;
 
@@ -1077,14 +1075,12 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryWebContentsBrowserTest,
   content::BoundingBoxUpdateWaiter select_part_two(web_contents);
   ASSERT_TRUE(ExecuteScript(web_contents, "selectPart2();"));
   select_part_two.Wait();
-  ASSERT_TRUE(ExecuteScript(web_contents, "copyToClipboard();"));
 
-  // Wait until the clipboard history updates.
-  if (item_lists.size() == 1u) {
-    ClipboardHistoryItemUpdateWaiter item_update_waiter;
-    item_update_waiter.Wait();
-    ASSERT_EQ(2u, item_lists.size());
+  {
+    ScopedClipboardHistoryListUpdateWaiter scoped_waiter;
+    ASSERT_TRUE(ExecuteScript(web_contents, "copyToClipboard();"));
   }
+  ASSERT_EQ(2u, item_lists.size());
 
   // Show the clipboard history menu.
   event_generator->PressAndReleaseKey(ui::VKEY_V, ui::EF_COMMAND_DOWN);

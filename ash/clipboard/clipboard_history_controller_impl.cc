@@ -255,16 +255,6 @@ void ClipboardHistoryControllerImpl::Shutdown() {
   nudge_controller_.reset();
 }
 
-void ClipboardHistoryControllerImpl::AddObserver(
-    ClipboardHistoryController::Observer* observer) const {
-  observers_.AddObserver(observer);
-}
-
-void ClipboardHistoryControllerImpl::RemoveObserver(
-    ClipboardHistoryController::Observer* observer) const {
-  observers_.RemoveObserver(observer);
-}
-
 bool ClipboardHistoryControllerImpl::IsMenuShowing() const {
   return context_menu_ && context_menu_->IsRunning();
 }
@@ -286,6 +276,16 @@ void ClipboardHistoryControllerImpl::ToggleMenuShownByAccelerator() {
 
   ShowMenu(CalculateAnchorRect(), ui::MENU_SOURCE_KEYBOARD,
            crosapi::mojom::ClipboardHistoryControllerShowSource::kAccelerator);
+}
+
+void ClipboardHistoryControllerImpl::AddObserver(
+    ClipboardHistoryController::Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void ClipboardHistoryControllerImpl::RemoveObserver(
+    ClipboardHistoryController::Observer* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 void ClipboardHistoryControllerImpl::ShowMenu(
