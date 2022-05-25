@@ -5,6 +5,7 @@
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "content/browser/renderer_host/input/synthetic_touchpad_pinch_gesture.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/common/input/synthetic_pinch_gesture_params.h"
@@ -246,8 +247,15 @@ IN_PROC_BROWSER_TEST_P(TouchpadPinchBrowserTest, WheelListenerPreventingPinch) {
 
 // If the synthetic wheel event for a touchpad double tap is canceled, we
 // should not change the page scale.
+// TODO(crbug.com/1328984): Re-enable this test
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_WheelListenerPreventingDoubleTap \
+  DISABLED_WheelListenerPreventingDoubleTap
+#else
+#define MAYBE_WheelListenerPreventingDoubleTap WheelListenerPreventingDoubleTap
+#endif
 IN_PROC_BROWSER_TEST_P(TouchpadPinchBrowserTest,
-                       WheelListenerPreventingDoubleTap) {
+                       MAYBE_WheelListenerPreventingDoubleTap) {
   LoadURL();
 
   blink::web_pref::WebPreferences prefs =
