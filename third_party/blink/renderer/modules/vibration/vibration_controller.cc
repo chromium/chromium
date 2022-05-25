@@ -83,6 +83,7 @@ void CollectHistogramMetrics(LocalDOMWindow* window) {
   if (window->GetFrame()->IsInFencedFrameTree()) {
     type = NavigatorVibrationType::kInFencedFrameTree;
   } else if (!window->GetFrame()->IsMainFrame()) {
+    // TODO(crbug.com/1254770): Update for embedded portals.
     UseCounter::Count(window, WebFeature::kNavigatorVibrateSubFrame);
     if (window->GetFrame()->IsCrossOriginToMainFrame()) {
       if (user_gesture)
@@ -189,6 +190,7 @@ bool VibrationController::Vibrate(const VibrationPattern& pattern) {
 
   if (!frame->HasStickyUserActivation()) {
     String message;
+    // TODO(crbug.com/1254770): Update for embedded portals.
     if (frame->IsCrossOriginToMainFrame()) {
       message =
           "Blocked call to navigator.vibrate inside a cross-origin "
