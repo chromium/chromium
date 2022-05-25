@@ -41,6 +41,15 @@ class RealtimeAnalyser final {
   DISALLOW_NEW();
 
  public:
+  static const double kDefaultSmoothingTimeConstant;
+  static const double kDefaultMinDecibels;
+  static const double kDefaultMaxDecibels;
+
+  static const unsigned kDefaultFFTSize;
+  static const unsigned kMinFFTSize;
+  static const unsigned kMaxFFTSize;
+  static const unsigned kInputBufferSize;
+
   explicit RealtimeAnalyser(unsigned render_quantum_frames);
 
   RealtimeAnalyser(const RealtimeAnalyser&) = delete;
@@ -67,15 +76,6 @@ class RealtimeAnalyser final {
 
   // The audio thread writes input data here.
   void WriteInput(AudioBus*, uint32_t frames_to_process);
-
-  static const double kDefaultSmoothingTimeConstant;
-  static const double kDefaultMinDecibels;
-  static const double kDefaultMaxDecibels;
-
-  static const unsigned kDefaultFFTSize;
-  static const unsigned kMinFFTSize;
-  static const unsigned kMaxFFTSize;
-  static const unsigned kInputBufferSize;
 
  private:
   // The audio thread writes the input audio here.

@@ -388,12 +388,17 @@ class MODULES_EXPORT BaseAudioContext
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
  private:
-  bool is_cleared_ = false;
+  // This is considering 32 is large enough for multiple channels audio.
+  // It is somewhat arbitrary and could be increased if necessary.
+  enum { kMaxNumberOfChannels = 32 };
+
   void Clear();
 
   // When the context goes away, there might still be some sources which
   // haven't finished playing.  Make sure to release them here.
   void ReleaseActiveSourceNodes();
+
+  bool is_cleared_ = false;
 
   // Listener for the PannerNodes
   Member<AudioListener> listener_;
@@ -423,10 +428,6 @@ class MODULES_EXPORT BaseAudioContext
   Member<PeriodicWave> periodic_wave_square_;
   Member<PeriodicWave> periodic_wave_sawtooth_;
   Member<PeriodicWave> periodic_wave_triangle_;
-
-  // This is considering 32 is large enough for multiple channels audio.
-  // It is somewhat arbitrary and could be increased if necessary.
-  enum { kMaxNumberOfChannels = 32 };
 
   // The handler associated with the above `destination_node_`.
   scoped_refptr<AudioDestinationHandler> destination_handler_;

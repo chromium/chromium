@@ -27,6 +27,13 @@ static float32x4_t WrapVirtualIndexVector(float32x4_t x,
   return vsubq_f32(x, vmulq_f32(vcvtq_f32_s32(f), wave_size));
 }
 
+static ALWAYS_INLINE double WrapVirtualIndex(double virtual_index,
+                                             unsigned periodic_wave_size,
+                                             double inv_periodic_wave_size) {
+  return virtual_index -
+         floor(virtual_index * inv_periodic_wave_size) * periodic_wave_size;
+}
+
 std::tuple<int, double> OscillatorHandler::ProcessKRateVector(
     int n,
     float* dest_p,
@@ -133,13 +140,6 @@ std::tuple<int, double> OscillatorHandler::ProcessKRateVector(
       periodic_wave_size;
 
   return std::make_tuple(k, virtual_read_index);
-}
-
-static ALWAYS_INLINE double WrapVirtualIndex(double virtual_index,
-                                             unsigned periodic_wave_size,
-                                             double inv_periodic_wave_size) {
-  return virtual_index -
-         floor(virtual_index * inv_periodic_wave_size) * periodic_wave_size;
 }
 
 double OscillatorHandler::ProcessARateVectorKernel(

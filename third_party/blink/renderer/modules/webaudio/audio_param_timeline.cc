@@ -79,6 +79,36 @@ static bool IsPositiveAudioParamTime(double time,
   return false;
 }
 
+// Test that for a SetTarget event, the current value is close enough
+// to the target value that we can consider the event to have
+// converged to the target.
+static bool HasSetTargetConverged(float value,
+                                  float target,
+                                  double current_time,
+                                  double start_time,
+                                  double time_constant) {
+  // Converged if enough time constants (`kTimeConstantsToConverge`) have passed
+  // since the start of the event.
+  if (current_time > start_time + kTimeConstantsToConverge * time_constant) {
+    return true;
+  }
+
+  // If `target` is 0, converged if |`value`| is less than
+  // `kSetTargetThreshold`.
+  if (target == 0 && fabs(value) < kSetTargetThreshold) {
+    return true;
+  }
+
+  // If `target` is not zero, converged if relative difference betwenn `value`
+  // and `target` is small.  That is |`target`-`value`|/|`value`| <
+  // `kSetTargetThreshold`.
+  if (target != 0 && fabs(target - value) < kSetTargetThreshold * fabs(value)) {
+    return true;
+  }
+
+  return false;
+}
+
 String AudioParamTimeline::EventToString(const ParamEvent& event) const {
   // The default arguments for most automation methods is the value and the
   // time.
@@ -1269,36 +1299,6 @@ void AudioParamTimeline::ClampNewEventsToCurrentTime(double current_time) {
   }
 
   new_events_.clear();
-}
-
-// Test that for a SetTarget event, the current value is close enough
-// to the target value that we can consider the event to have
-// converged to the target.
-static bool HasSetTargetConverged(float value,
-                                  float target,
-                                  double current_time,
-                                  double start_time,
-                                  double time_constant) {
-  // Converged if enough time constants (`kTimeConstantsToConverge`) have passed
-  // since the start of the event.
-  if (current_time > start_time + kTimeConstantsToConverge * time_constant) {
-    return true;
-  }
-
-  // If `target` is 0, converged if |`value`| is less than
-  // `kSetTargetThreshold`.
-  if (target == 0 && fabs(value) < kSetTargetThreshold) {
-    return true;
-  }
-
-  // If `target` is not zero, converged if relative difference betwenn `value`
-  // and `target` is small.  That is |`target`-`value`|/|`value`| <
-  // `kSetTargetThreshold`.
-  if (target != 0 && fabs(target - value) < kSetTargetThreshold * fabs(value)) {
-    return true;
-  }
-
-  return false;
 }
 
 bool AudioParamTimeline::HandleAllEventsInThePast(
