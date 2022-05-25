@@ -282,20 +282,7 @@ void PaintLayer::UpdateLayerPositionsAfterLayout() {
 
 void PaintLayer::UpdateLayerPositionRecursive(
     const PaintLayer* enclosing_scroller) {
-  auto old_location = location_without_position_offset_;
-  auto old_offset_for_in_flow_rel_position = OffsetForInFlowRelPosition();
   UpdateLayerPosition();
-
-  if (location_without_position_offset_ != old_location) {
-    MarkAncestorChainForFlagsUpdate();
-  } else {
-    // TODO(chrishtr): compute this invalidation in layout instead of here.
-    auto offset_for_in_flow_rel_position =
-        rare_data_ ? rare_data_->offset_for_in_flow_rel_position
-                   : PhysicalOffset();
-    if (offset_for_in_flow_rel_position != old_offset_for_in_flow_rel_position)
-      MarkAncestorChainForFlagsUpdate();
-  }
 
   const PaintLayer* previous_enclosing_scroller =
       AncestorScrollContainerLayer();
