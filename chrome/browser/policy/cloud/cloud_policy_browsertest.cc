@@ -204,6 +204,7 @@ class CloudPolicyTest : public PlatformBrowserTest,
 
   void CreatedBrowserMainParts(
       content::BrowserMainParts* browser_main_parts) override {
+    PlatformBrowserTest::CreatedBrowserMainParts(browser_main_parts);
     invalidation::ProfileInvalidationProviderFactory::GetInstance()
         ->RegisterTestingFactory(
             base::BindRepeating(&BuildFakeProfileInvalidationProvider));

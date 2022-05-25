@@ -528,6 +528,7 @@ class ChromeBrowserCloudManagementEnrollmentTest
   }
 
   void CreatedBrowserMainParts(content::BrowserMainParts* parts) override {
+    PlatformBrowserTest::CreatedBrowserMainParts(parts);
     static_cast<ChromeBrowserMainParts*>(parts)->AddParts(
         std::make_unique<ChromeBrowserExtraSetUp>(&observer_));
   }

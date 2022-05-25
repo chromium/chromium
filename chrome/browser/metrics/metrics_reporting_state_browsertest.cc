@@ -94,6 +94,7 @@ class MetricsReportingStateTest : public InProcessBrowserTest {
   }
 
   void CreatedBrowserMainParts(content::BrowserMainParts* parts) override {
+    InProcessBrowserTest::CreatedBrowserMainParts(parts);
     // IsMetricsReportingEnabled() in non-official builds always returns false.
     // Enable the official build checks so that this test can work in both
     // official and non-official builds.

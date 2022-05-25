@@ -521,6 +521,7 @@ class ChromeTracingDelegateBrowserTestOnStartup
 
   void CreatedBrowserMainParts(
       content::BrowserMainParts* browser_main_parts) override {
+    InProcessBrowserTest::CreatedBrowserMainParts(browser_main_parts);
     content::BackgroundTracingManager::GetInstance()
         ->SetConfigTextFilterForTesting(
             base::BindRepeating(&FieldTrialConfigTextFilter));

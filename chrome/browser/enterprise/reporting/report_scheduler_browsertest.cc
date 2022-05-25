@@ -59,6 +59,7 @@ class ReportSchedulerTest
   }
 
   void CreatedBrowserMainParts(content::BrowserMainParts* parts) override {
+    InProcessBrowserTest::CreatedBrowserMainParts(parts);
     static_cast<ChromeBrowserMainParts*>(parts)->AddParts(
         std::make_unique<ChromeBrowserExtraSetUp>(this));
   }

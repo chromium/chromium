@@ -455,6 +455,7 @@ PrerenderInProcessBrowserTest::GetFakeSafeBrowsingDatabaseManager() {
 
 void PrerenderInProcessBrowserTest::CreatedBrowserMainParts(
     content::BrowserMainParts* browser_main_parts) {
+  InProcessBrowserTest::CreatedBrowserMainParts(browser_main_parts);
   safe_browsing_factory_->SetTestDatabaseManager(
       new safe_browsing::FakeSafeBrowsingDatabaseManager(
           content::GetUIThreadTaskRunner({}),

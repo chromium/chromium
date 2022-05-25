@@ -491,6 +491,7 @@ class SafeBrowsingBlockingPageBrowserTest
 
   void CreatedBrowserMainParts(
       content::BrowserMainParts* browser_main_parts) override {
+    CertVerifierBrowserTest::CreatedBrowserMainParts(browser_main_parts);
     // Test UI manager and test database manager should be set before
     // the browser is started but after threads are created.
     auto blocking_page_factory =
@@ -1914,6 +1915,7 @@ class SafeBrowsingBlockingPageDelayedWarningBrowserTest
 
   void CreatedBrowserMainParts(
       content::BrowserMainParts* browser_main_parts) override {
+    InProcessBrowserTest::CreatedBrowserMainParts(browser_main_parts);
     // Test UI manager and test database manager should be set before
     // the browser is started but after threads are created.
     factory_.SetTestUIManager(new FakeSafeBrowsingUIManager(
@@ -2686,6 +2688,7 @@ class SafeBrowsingBlockingPageEnhancedProtectionMessageTest
 
   void CreatedBrowserMainParts(
       content::BrowserMainParts* browser_main_parts) override {
+    policy::PolicyTest::CreatedBrowserMainParts(browser_main_parts);
     // Test UI manager and test database manager should be set before
     // the browser is started but after threads are created.
     factory_.SetTestUIManager(new FakeSafeBrowsingUIManager(
@@ -2830,6 +2833,7 @@ class SafeBrowsingBlockingPageRealTimeUrlCheckTest
 
   void CreatedBrowserMainParts(
       content::BrowserMainParts* browser_main_parts) override {
+    InProcessBrowserTest::CreatedBrowserMainParts(browser_main_parts);
     // Test UI manager and test database manager should be set before
     // the browser is started but after threads are created.
     factory_.SetTestUIManager(new FakeSafeBrowsingUIManager(
