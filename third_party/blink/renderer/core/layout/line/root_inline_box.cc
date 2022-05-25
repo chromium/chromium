@@ -41,8 +41,8 @@ namespace blink {
 struct SameSizeAsRootInlineBox : public InlineFlowBox {
   unsigned unsigned_variable;
   Member<void*> member1;
-  void* pointers[1];
   Member<void*> member2;
+  void* pointers[1];
   LayoutUnit layout_variables[6];
 };
 
