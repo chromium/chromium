@@ -478,7 +478,7 @@ void Pointer::OnSurfaceDestroying(Surface* surface) {
 // ui::EventHandler overrides:
 
 void Pointer::OnMouseEvent(ui::MouseEvent* event) {
-  if (seat_->was_shutdown())
+  if (seat_->was_shutdown() || event->handled())
     return;
 
   // Nothing to report to a client nor have to update the pointer when capture

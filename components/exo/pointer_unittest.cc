@@ -1176,6 +1176,45 @@ TEST_F(PointerTest, DragDropAndPointerEnterLeaveEvents_NoOpOnTouchDrag) {
   pointer.reset();
 }
 
+TEST_F(PointerTest, IgnoresHandledEvents) {
+  // A very dumb handler that simply marks all events as handled. This is needed
+  // allows us to mark a mouse event as handled as it gets processed by the
+  // event processor.
+  class SetHandledHandler : public ui::EventHandler {
+    void OnMouseEvent(ui::MouseEvent* event) override { event->SetHandled(); }
+  };
+  SetHandledHandler handler;
+  ash::Shell::Get()->AddPreTargetHandler(&handler);
+
+  Seat seat(std::make_unique<TestDataExchangeDelegate>());
+  testing::NiceMock<MockPointerDelegate> pointer_delegate;
+  std::unique_ptr<Pointer> pointer(new Pointer(&pointer_delegate, &seat));
+
+  // Make origin into a real window so the touch can click it
+  std::unique_ptr<ShellSurface> shell_surface =
+      test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
+
+  EXPECT_CALL(pointer_delegate, CanAcceptPointerEventsForSurface(testing::_))
+      .WillRepeatedly(testing::Return(true));
+  ui::test::EventGenerator generator(ash::Shell::GetPrimaryRootWindow());
+
+  // The SetHandlerHandler should have marked the event as processed. Therefore
+  // the event should simply be ignored.
+  EXPECT_CALL(pointer_delegate,
+              OnPointerButton(testing::_, testing::_, testing::_))
+      .Times(0);
+
+  // This event should be ignored because it has already been handled.
+  auto window_point = shell_surface->surface_for_testing()
+                          ->window()
+                          ->GetBoundsInScreen()
+                          .CenterPoint();
+  generator.MoveMouseTo(window_point);
+  generator.ClickLeftButton();
+
+  ash::Shell::Get()->RemovePreTargetHandler(&handler);
+}
+
 namespace {
 
 class PointerDragDropObserver : public WMHelper::DragDropObserver {
