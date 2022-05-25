@@ -2447,8 +2447,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.NoteTakingApp.DefaultLaunchResult"
-    enum="NoteTakingAppLaunchResult" expires_after="2022-06-01">
-  <owner>dstockwell@chromium.org</owner>
+    enum="NoteTakingAppLaunchResult" expires_after="2022-12-01">
+  <owner>glenrob@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
     The result of attempting to launch a default note-taking app on Chrome OS.
@@ -2457,8 +2457,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.NoteTakingApp.PreferredLaunchResult"
-    enum="NoteTakingAppLaunchResult" expires_after="2022-10-04">
-  <owner>dstockwell@chromium.org</owner>
+    enum="NoteTakingAppLaunchResult" expires_after="2022-12-01">
+  <owner>glenrob@chromium.org</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
     The result of attempting to launch the user-specified preferred note-taking
