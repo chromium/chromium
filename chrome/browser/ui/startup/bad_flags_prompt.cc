@@ -55,9 +55,7 @@ namespace {
 #if !BUILDFLAG(IS_ANDROID)
 // Dangerous command line flags for which to display a warning that "stability
 // and security will suffer".
-constexpr const char* kBadFlags[] = {
-    // This flag allows redirecting user traffic.
-    network::switches::kHostResolverRules,
+static const char* kBadFlags[] = {
     network::switches::kIgnoreCertificateErrorsSPKIList,
     // These flags disable sandbox-related security.
     sandbox::policy::switches::kDisableGpuSandbox,
