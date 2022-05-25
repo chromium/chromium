@@ -4,8 +4,11 @@
 
 #include "content/browser/webui/content_web_ui_configs.h"
 
+#include "content/browser/attribution_reporting/attribution_internals_ui.h"
 #include "content/browser/gpu/gpu_internals_ui.h"
 #include "content/browser/indexed_db/indexed_db_internals_ui.h"
+#include "content/browser/media/media_internals_ui.h"
+#include "content/browser/net/network_errors_listing_ui.h"
 #include "content/browser/service_worker/service_worker_internals_ui.h"
 #include "content/browser/webrtc/webrtc_internals_ui.h"
 #include "content/public/browser/webui_config_map.h"
@@ -14,8 +17,11 @@ namespace content {
 
 void RegisterContentWebUIConfigs() {
   auto& map = WebUIConfigMap::GetInstance();
+  map.AddWebUIConfig(std::make_unique<AttributionInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<GpuInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<IndexedDBInternalsUIConfig>());
+  map.AddWebUIConfig(std::make_unique<MediaInternalsUIConfig>());
+  map.AddWebUIConfig(std::make_unique<NetworkErrorsListingUIConfig>());
   map.AddWebUIConfig(std::make_unique<ServiceWorkerInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<WebRTCInternalsUIConfig>());
 }
