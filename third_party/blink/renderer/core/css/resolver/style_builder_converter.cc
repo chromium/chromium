@@ -441,7 +441,7 @@ static float ComputeFontSize(const CSSToLengthConversionData& conversion_data,
     return primitive_value.ComputeLength<float>(conversion_data);
   if (primitive_value.IsCalculated()) {
     return To<CSSMathFunctionValue>(primitive_value)
-        .ToCalcValue(conversion_data.Unzoomed())
+        .ToCalcValue(conversion_data)
         ->Evaluate(parent_size.value);
   }
   NOTREACHED();

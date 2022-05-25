@@ -252,8 +252,9 @@ float MediaValues::CalculateEmSize(LocalFrame* frame) {
   DCHECK(frame->GetDocument());
   const ComputedStyle* style = frame->GetDocument()->GetComputedStyle();
   DCHECK(style);
-  CSSToLengthConversionData::FontSizes font_sizes(style, style);
-  return font_sizes.Em();
+  // CSSToLengthConversionData::FontSizes returns pre-zoomed font sizes. Need to
+  // scale back to CSS pixels.
+  return CSSToLengthConversionData::FontSizes(style, style).Unzoomed().Em();
 }
 
 float MediaValues::CalculateExSize(LocalFrame* frame) {
@@ -261,8 +262,8 @@ float MediaValues::CalculateExSize(LocalFrame* frame) {
   DCHECK(frame->GetDocument());
   const ComputedStyle* style = frame->GetDocument()->GetComputedStyle();
   DCHECK(style);
-  // Font metrics are based on the used font which is scaled to match the size
-  // of CSS pixels. Need to scale back to CSS pixels.
+  // CSSToLengthConversionData::FontSizes returns pre-zoomed font sizes. Need to
+  // scale back to CSS pixels.
   return CSSToLengthConversionData::FontSizes(style, style).Unzoomed().Ex();
 }
 
@@ -271,8 +272,8 @@ float MediaValues::CalculateChSize(LocalFrame* frame) {
   DCHECK(frame->GetDocument());
   const ComputedStyle* style = frame->GetDocument()->GetComputedStyle();
   DCHECK(style);
-  // Font metrics are based on the used font which is scaled to match the size
-  // of CSS pixels. Need to scale back to CSS pixels.
+  // CSSToLengthConversionData::FontSizes returns pre-zoomed font sizes. Need to
+  // scale back to CSS pixels.
   return CSSToLengthConversionData::FontSizes(style, style).Unzoomed().Ch();
 }
 
