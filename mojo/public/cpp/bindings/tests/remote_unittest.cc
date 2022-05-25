@@ -1435,7 +1435,8 @@ class LargeMessageTestImpl : public mojom::LargeMessageTest {
   Receiver<mojom::LargeMessageTest> receiver_;
 };
 
-TEST_P(RemoteTest, SendVeryLargeMessages) {
+// TODO(crbug.com/1329178): Flaky on Linux/ASAN, Mac, and Fuchsia bots.
+TEST_P(RemoteTest, DISABLED_SendVeryLargeMessages) {
   Remote<mojom::LargeMessageTest> remote;
   LargeMessageTestImpl impl(remote.BindNewPipeAndPassReceiver());
 
