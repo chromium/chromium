@@ -78,7 +78,7 @@
 <translation id="1578784163189013834">Odaberite pozadinu čuvara ekrana</translation>
 <translation id="1615335640928990664">Prijenos podataka od datuma <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Pokreni test punjenja</translation>
-<translation id="1631385268983122904">Još nemojte sastavljati uređaj</translation>
+<translation id="1631385268983122904">Nemojte još sklapati uređaj</translation>
 <translation id="1639239467298939599">Učitavanje</translation>
 <translation id="1641857168437328880">Ulagač za dokumente (jednostrano skeniranje)</translation>
 <translation id="1643449475550628585">Dnevna promjena pozadinske slike</translation>
@@ -161,7 +161,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Uključite Bluetooth da otkrijete uređaje u blizini</translation>
-<translation id="2340422556570134524">Zaštita od pisanja se neočekivano uključila. Isključite zaštitu od pisanja ručno i pokušajte ponovo.</translation>
+<translation id="2340422556570134524">Zaštita od pisanja je neočekivano isključena. Ručno isključite Zaštitu od pisanja prije nego pokušate ponovo.</translation>
 <translation id="2346474577291266260">Odlično (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">Nastavi</translation>
 <translation id="2360257214555822463">Otkrivene su <ph name="LINK_BEGIN" />nekvalificirane komponente<ph name="LINK_END" />. Ako želite potvrditi da je ovo instalirano, uradite to sada.</translation>
@@ -234,6 +234,7 @@
 <translation id="315738237743207937">Otkriven je zaštitni portal</translation>
 <translation id="3170673040743561620">Stavite dokument na skener</translation>
 <translation id="3188257591659621405">Moji fajlovi</translation>
+<translation id="319101249942218879">Slika avatara je promijenjena</translation>
 <translation id="3192947282887913208">Audio fajlovi</translation>
 <translation id="3199982728237701504">Ulagač za dokumente (dvostrano skeniranje)</translation>
 <translation id="320091191259649613">Ako se problem javlja i nakon ažuriranja, moguće da je komponenta kvalificirana nedavno i još nije ušla u bazu podataka.</translation>
@@ -477,7 +478,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="5372659122375744710">WiFi mreža nije sigurna</translation>
 <translation id="5376354385557966694">Automatski svijetli način rada</translation>
 <translation id="537872351913703572">Uređaj će preći na različitog korisnika ili organizaciju</translation>
-<translation id="5389159777326897627">Pozadine i stilovi</translation>
+<translation id="5389159777326897627">Pozadinska slika i stil</translation>
 <translation id="5389224261615877010">Duga</translation>
 <translation id="5395600419410242651">Potpuno izbriši sve podatke</translation>
 <translation id="5400907029458559844">Uređaj se povezuje.</translation>
@@ -647,7 +648,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="6961170852793647506">Da započnete, stavite dokument na skener</translation>
 <translation id="6965382102122355670">Uredu</translation>
 <translation id="6977381486153291903">Revizija firmvera</translation>
-<translation id="6995564396478647735">Provjerite je li zaštita od pisanja isključena</translation>
+<translation id="6995564396478647735">Provjerite je li uključena Zaštita od pisanja</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> upravlja ovim uređajem i ima pristup svim aktivnostima korisnika, uključujući posjećene web stranice, lozinke i e-poštu.</translation>
 <translation id="7040230719604914234">Operater</translation>
 <translation id="7041549558901442110">Uređaj nije povezan.</translation>
@@ -750,7 +751,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="80398733265834479">Omogućavanje načina rada automatske boje</translation>
 <translation id="8041089156583427627">Slanje povratnih informacija</translation>
 <translation id="8045012663542226664">Isključivanje zvuka mikrofona</translation>
-<translation id="8063022551652308521">Zaštita od pisanja još uvijek je isključena. Da biste nastavili, uključite zaštitu od pisanja.</translation>
+<translation id="8063022551652308521">Zaštita od pisanja je i dalje isključena. Da nastavite, uključite Zaštitu od pisanja.</translation>
 <translation id="8075838845814659848">Preostali nivo napunjenosti</translation>
 <translation id="8082366717211101304">Nije moguće razriješiti DNS iz Android aplikacija</translation>
 <translation id="8083281199617904460">Ovaj postupak popravka je namijenjen obučenom tehničaru za popravak. Počnite samo nakon zamjene komponenti koje ne rade ispravno.</translation>
@@ -821,7 +822,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Upravljajte ovom funkcijom putem strelice ulijevo ili udesno.</translation>
 <translation id="8712637175834984815">Razumijem</translation>
 <translation id="871560550817059752">Nije uspjelo – nema tinte</translation>
-<translation id="8717030727630712160">Nastavljamo postupak popravka…</translation>
+<translation id="8717030727630712160">Nastavljanje postupka popravka…</translation>
 <translation id="8723108084122415655">Mreža koja nije zadana je iznad praga latentnosti</translation>
 <translation id="8725066075913043281">Pokušaj ponovo</translation>
 <translation id="8726019395068607495">Zaustavljeno – poklopac je otvoren</translation>
@@ -843,7 +844,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Uređaj je tablet.</translation>
 <translation id="8881098542468797602">Test je uspješan</translation>
-<translation id="8897267175591692539">Sad možete sastaviti uređaj</translation>
+<translation id="8897267175591692539">Sada možete sklopiti uređaj</translation>
 <translation id="8898840733695078011">Jačina signala</translation>
 <translation id="8910721771319628100">Zadana mreža je iznad praga latentnosti</translation>
 <translation id="8918637186205009138">Uređaj <ph name="DEVICE_TYPE" /> koji koristi <ph name="GIVEN_NAME" /></translation>

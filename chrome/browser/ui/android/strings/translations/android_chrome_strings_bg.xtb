@@ -313,6 +313,7 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# аудиофайл}other{# аудиофайла}}</translation>
 <translation id="265156376773362237">Стандартно предварит. зареждане</translation>
 <translation id="2656405586795711023">Уеб приложения</translation>
+<translation id="2669454659051515572">Всеки, който използва това устройство, може да преглежда изтеглените файлове</translation>
 <translation id="2702516483241149200">Ново: споделяне на връзка, която превърта до този текст</translation>
 <translation id="2704606927547763573">Копирано</translation>
 <translation id="2707726405694321444">Опресняване на страницата</translation>
@@ -778,6 +779,7 @@
 <translation id="5246093389635966745">Редактиране на пряк път в лентата с инструменти</translation>
 <translation id="526421993248218238">Тази страница не може да се зареди</translation>
 <translation id="5271967389191913893">Устройството не може да отвори съдържанието за изтегляне.</translation>
+<translation id="5274286919938458946">Свързана с(ъс) <ph name="CARD_DETAIL" /></translation>
 <translation id="5292796745632149097">Изпращане до</translation>
 <translation id="5300426565656326054">Персонализиране на рекламите въз основа на браузъра</translation>
 <translation id="5304593522240415983">Това поле трябва да се попълни</translation>

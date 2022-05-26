@@ -205,7 +205,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="211328683600082144">TURN ON MICROPHONE</translation>
 <translation id="2123115117533398272">Chrome OS shows suggestions for new content to explore. Sends statistics to improve quality only if you’ve chosen to share usage data. <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="2126242104232412123">New desk</translation>
-<translation id="2127372758936585790">Low-power charger</translation>
 <translation id="2132302418721800944">Record full screen</translation>
 <translation id="2135456203358955318">Docked magnifier</translation>
 <translation id="2148716181193084225">Today</translation>
@@ -1062,6 +1061,7 @@ New install</translation>
 <translation id="7348093485538360975">On-Screen Keyboard</translation>
 <translation id="735745346212279324">VPN disconnected</translation>
 <translation id="7360036564632145207">Changing your data access protection for peripherals setting can optimise performance</translation>
+<translation id="736045644501761622">Set wallpaper and style</translation>
 <translation id="7371404428569700291">Record window</translation>
 <translation id="7377169924702866686">Caps Lock is on.</translation>
 <translation id="7377481913241237033">Connect with a code</translation>
@@ -1296,6 +1296,7 @@ New install</translation>
 <translation id="8721053961083920564">Toggle volume. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Full screen capture</translation>
 <translation id="8734991477317290293">It may be attempting to steal your keystrokes</translation>
+<translation id="8735678380411481005">Keyboard backlight colour</translation>
 <translation id="8735953464173050365">Show keyboard settings. <ph name="KEYBOARD_NAME" /> is selected</translation>
 <translation id="8755498163081687682">Verify your identity: <ph name="ORIGIN_NAME" /> would like to confirm that it's you</translation>
 <translation id="875593634123171288">Show VPN settings</translation>

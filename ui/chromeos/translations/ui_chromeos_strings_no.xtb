@@ -121,6 +121,7 @@
 <translation id="1942765061641586207">Bildeoppløsning</translation>
 <translation id="1972984168337863910">Vis tilbakemeldingspaneler på filer</translation>
 <translation id="1995337122023280937">Gå til filplassering</translation>
+<translation id="1996806196681857869">Z-komprimert arkiv</translation>
 <translation id="2001796770603320721">Administrer i Disk</translation>
 <translation id="2009067268969781306">Diskformatering sletter alle data som er lagret på disken. Denne handlingen kan ikke angres.</translation>
 <translation id="2025955442973426285">Tigrinja</translation>
@@ -589,6 +590,7 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> elementer</translation>
 <translation id="5957366693331451795">Chromebox-enheter</translation>
 <translation id="5982621672636444458">Sorteringsalternativer</translation>
+<translation id="5985041959109124139">Z-komprimert TAR-arkiv</translation>
 <translation id="6007237601604674381">Flytting mislyktes. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Ethernet-nettverk</translation>
 <translation id="60357267506638014">Tsjekkisk QWERTY</translation>
@@ -619,6 +621,7 @@
 <translation id="6220423280121890987">Panjabi</translation>
 <translation id="6224240818060029162">Dansk</translation>
 <translation id="6224253798271602650">Formatér <ph name="DRIVE_NAME" /></translation>
+<translation id="6224665423283788195">Zstandard-komprimert arkiv</translation>
 <translation id="6227235786875481728">Denne filen kan ikke spilles av.</translation>
 <translation id="6241349547798190358">Nederlandsk (Belgia)</translation>
 <translation id="6267547857941397424">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="PHONE_NAME" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> % – telefonbatterinivå <ph name="BATTERY_STATUS" /> % – koble til</translation>
@@ -646,6 +649,7 @@
 <translation id="6509122719576673235">Norsk</translation>
 <translation id="6528513914570774834">La andre brukere av denne enheten bruke dette nettverket</translation>
 <translation id="653019979737152879">Synkroniserer <ph name="FILE_NAME" /> …</translation>
+<translation id="6530595303336443929">Zstandard-komprimert TAR-arkiv</translation>
 <translation id="6549689063733911810">Siste</translation>
 <translation id="6558280019477628686">Det oppsto en feil. Enkelte elementer ble muligens ikke slettet.</translation>
 <translation id="656398493051028875">Sletter «<ph name="FILENAME" />» ...</translation>

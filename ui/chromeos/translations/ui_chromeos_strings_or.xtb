@@ -121,6 +121,7 @@
 <translation id="1942765061641586207">ଛବି ରିଜୋଲ୍ୟୁସନ୍</translation>
 <translation id="1972984168337863910">ମତାମତ ପ୍ୟାନେଲ୍‍ଗୁଡ଼ିକୁ ପ୍ରସାରଣ କରନ୍ତୁ</translation>
 <translation id="1995337122023280937">ଫାଇଲ୍ ଲୋକେସନକୁ ଯାଆନ୍ତୁ</translation>
+<translation id="1996806196681857869">Zରେ କମ୍ପ୍ରେସ କରାଯାଇଥିବା ଆର୍କାଇଭ ଫାଇଲ</translation>
 <translation id="2001796770603320721">Driveରେ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="2009067268969781306">କୌଣସି ଡ୍ରାଇଭ୍‍କୁ ଡିଲିଟ୍ କରିବା ଦ୍ୱାରା ଏଥିରେ ଷ୍ଟୋର୍ କରାଯାଇଥିବା ସମସ୍ତ ଡାଟା ଡିଲିଟ୍ ହୋଇଯିବ। ଏହି କାର୍ଯ୍ୟକୁ ପୂର୍ବବତ୍ କରାଯାଇପାରିବ ନାହିଁ।</translation>
 <translation id="2025955442973426285">ଟାଇଗ୍ରିନ୍ୟା</translation>
@@ -583,6 +584,7 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" />ଟି ଆଇଟମ୍</translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">ସଜାଇବା ବିକଳ୍ପଗୁଡ଼ିକ</translation>
+<translation id="5985041959109124139">Zରେ କମ୍ପ୍ରେସ କରାଯାଇଥିବା tar ଆର୍କାଇଭ ଫାଇଲ</translation>
 <translation id="6007237601604674381">ଘୁଞ୍ଚାଇବା ବିଫଳ ହେଲା। <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">ଇଥର୍‌ନେଟ୍ ନେଟ୍‍ୱାର୍କ</translation>
 <translation id="60357267506638014">ଚେକ୍ QWERTY</translation>
@@ -613,6 +615,7 @@
 <translation id="6220423280121890987">ପଞ୍ଜାବୀ</translation>
 <translation id="6224240818060029162">ଡେନିସ୍</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" /> ଫର୍ମାଟ୍ କରନ୍ତୁ</translation>
+<translation id="6224665423283788195">Zstandardରେ କମ୍ପ୍ରେସ କରାଯାଇଥିବା ଆର୍କାଇଭ ଫାଇଲ</translation>
 <translation id="6227235786875481728">ଏହି ଫାଇଲ୍ ଚଲାଯାଇପାରିଲା ନାହିଁ।</translation>
 <translation id="6241349547798190358">ଡଚ୍ (ବେଲଜିୟମ୍)</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_COUNT" />ଟିର <ph name="NETWORK_INDEX" /> ନେଟ୍‌ୱାର୍କ, <ph name="PHONE_NAME" />, ସିଗ୍‍ନାଲ୍‍ର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />%, ଫୋନ୍‌ ବ୍ୟାଟେରୀ <ph name="BATTERY_STATUS" />%, ସଂଯୋଗ କରନ୍ତୁ</translation>
@@ -640,6 +643,7 @@
 <translation id="6509122719576673235">ନରୱେଜିଆନ୍</translation>
 <translation id="6528513914570774834">ଏହି ଡିଭାଇସ୍‌ର ଅନ୍ୟ ଉପଯୋଗକର୍ତ୍ତାଙ୍କୁ ଏହି ନେଟ୍‌ୱର୍କ ବ୍ୟବହାର କରିବାକୁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="653019979737152879"><ph name="FILE_NAME" /> ସିଙ୍କ୍ ହେଉଛି...</translation>
+<translation id="6530595303336443929">Zstandardରେ କମ୍ପ୍ରେସ କରାଯାଇଥିବା tar ଆର୍କାଇଭ ଫାଇଲ</translation>
 <translation id="6549689063733911810">ବର୍ତ୍ତମାନ</translation>
 <translation id="6558280019477628686">ଏକ ତ୍ରୁଟି ଦେଖାଦେଲା। କିଛି ଆଇଟମ୍‍କୁ ଡିଲିଟ୍ ହୋଇନପାରେ।</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />" ଡିଲିଟ୍‌ ହେଉଛି...</translation>

@@ -313,6 +313,7 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# 个音频文件}other{# 个音频文件}}</translation>
 <translation id="265156376773362237">标准预加载</translation>
 <translation id="2656405586795711023">Web 应用</translation>
+<translation id="2669454659051515572">任何使用此设备的用户都能看到已下载的文件</translation>
 <translation id="2702516483241149200">新功能：可分享能够定位到此文本的链接</translation>
 <translation id="2704606927547763573">已复制</translation>
 <translation id="2707726405694321444">刷新网页</translation>
@@ -778,6 +779,7 @@
 <translation id="5246093389635966745">修改工具栏快捷方式</translation>
 <translation id="526421993248218238">无法加载此页面</translation>
 <translation id="5271967389191913893">设备无法打开要下载的内容。</translation>
+<translation id="5274286919938458946">已关联到<ph name="CARD_DETAIL" /></translation>
 <translation id="5292796745632149097">发送到</translation>
 <translation id="5300426565656326054">基于浏览器的广告个性化</translation>
 <translation id="5304593522240415983">此字段不能为空</translation>

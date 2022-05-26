@@ -121,6 +121,7 @@
 <translation id="1942765061641586207">Irudiaren bereizmena</translation>
 <translation id="1972984168337863910">Zabaldu fitxategien oharren panelak</translation>
 <translation id="1995337122023280937">Joan fitxategiaren kokapenera</translation>
+<translation id="1996806196681857869">Z bidez konprimatutako artxiboa</translation>
 <translation id="2001796770603320721">Kudeatu Drive-n</translation>
 <translation id="2009067268969781306">Unitatea formateatuz gero, bertan gordetako datu guztiak ezabatuko dira. Ezin da desegin ekintza hori.</translation>
 <translation id="2025955442973426285">Tigrinyarra</translation>
@@ -588,6 +589,7 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> elementu</translation>
 <translation id="5957366693331451795">Chromebox-ak</translation>
 <translation id="5982621672636444458">Ordenatzeko aukerak</translation>
+<translation id="5985041959109124139">Z bidez konprimatutako .tar artxiboa</translation>
 <translation id="6007237601604674381">Ezin izan da eraman. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Ethernet sarea</translation>
 <translation id="60357267506638014">QWERTY txekiarra</translation>
@@ -618,6 +620,7 @@
 <translation id="6220423280121890987">Punjabtarra</translation>
 <translation id="6224240818060029162">Daniarra</translation>
 <translation id="6224253798271602650">Formateatu <ph name="DRIVE_NAME" /></translation>
+<translation id="6224665423283788195">Zstandard bidez konprimatutako artxiboa</translation>
 <translation id="6227235786875481728">Ezin izan da fitxategia erreproduzitu.</translation>
 <translation id="6241349547798190358">Nederlandarra (Belgika)</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />. Seinalearen indarra: % <ph name="SIGNAL_STRENGTH" />. Telefonoaren bateria: % <ph name="BATTERY_STATUS" />. Konektatu.</translation>
@@ -645,6 +648,7 @@
 <translation id="6509122719576673235">Norvegiarra</translation>
 <translation id="6528513914570774834">Baimendu sare hau erabiltzea gailu hau darabiltenei</translation>
 <translation id="653019979737152879"><ph name="FILE_NAME" /> sinkronizatzen…</translation>
+<translation id="6530595303336443929">Zstandard bidez konprimatutako .tar artxiboa</translation>
 <translation id="6549689063733911810">Azkenak</translation>
 <translation id="6558280019477628686">Errore bat gertatu da. Agian ez dira ezabatu elementu batzuk.</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />" ezabatzen…</translation>

@@ -78,6 +78,7 @@
 <translation id="1578784163189013834">ஸ்கிரீன் சேவர் பின்புலத்தைத் தேர்வுசெய்தல்</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> வரையிலான டேட்டா உபயோகம்</translation>
 <translation id="1621067168122174824">சார்ஜ் சோதனையை இயக்கு</translation>
+<translation id="1631385268983122904">இப்போது சாதனத்தில் பேட்டரியைப் பொருத்த வேண்டாம்</translation>
 <translation id="1639239467298939599">ஏற்றுகிறது</translation>
 <translation id="1641857168437328880">டாக்குமெண்ட் ஃபீடர் (ஒரு பக்கம்)</translation>
 <translation id="1643449475550628585">வால்பேப்பர் படத்தைத் தினமும் மாற்றும்</translation>
@@ -85,6 +86,7 @@
 <translation id="1645954272419197032">சாதனத் தகவலை உறுதிப்படுத்துதல்</translation>
 <translation id="1662989795263954667">பிரிண்டரில் மை தீர்ந்துவிட்டதால் அச்சிட முடியவில்லை</translation>
 <translation id="1668469839109562275">உள்ளமைந்த VPN</translation>
+<translation id="1676557873873341166">வீடியோவை எடுக்கிறது</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS ரிசால்வர் இருப்பது</translation>
 <translation id="1715359911173058521">ஸ்கேனருடன் இணைப்பதில் சிக்கல். நெட்வொர்க்/USB இணைப்பைச் சரிபார்த்து மீண்டும் முயலவும்.</translation>
@@ -159,6 +161,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2336381494582898602">பவர்வாஷ்</translation>
 <translation id="2338501278241028356">அருகிலுள்ள சாதனங்களைக் கண்டறிய, புளூடூத்தை இயக்கவும்</translation>
+<translation id="2340422556570134524">திருத்துவதைத் தடுக்கும் அம்சம் எதிர்பாராதவிதமாக இயக்கப்பட்டுள்ளது. மீண்டும் முயல்வதற்கு முன்னர் திருத்துவதைத் தடுக்கும் அம்சத்தை முடக்கவும்.</translation>
 <translation id="2346474577291266260">மிக நன்றாக உள்ளது (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">தொடர்க</translation>
 <translation id="2360257214555822463"><ph name="LINK_BEGIN" />தகுதிபெறாத காம்பனென்ட்கள்<ph name="LINK_END" /> கண்டறியப்பட்டுள்ளன. இது நிறுவப்பட்டது என உறுதிசெய்ய நினைத்தால், அதை இப்போதே செய்யுங்கள்.</translation>
@@ -474,6 +477,7 @@
 <translation id="5372659122375744710">வைஃபை நெட்வொர்க் பாதுகாப்பாக இல்லை</translation>
 <translation id="5376354385557966694">தானியங்கு லைட் பயன்முறை</translation>
 <translation id="537872351913703572">வேறொரு பயனருக்கோ நிறுவனத்திற்கோ சாதனம் வழங்கப்படும்</translation>
+<translation id="5389159777326897627">வால்பேப்பர் &amp; ஸ்டைல்</translation>
 <translation id="5389224261615877010">வானவில்</translation>
 <translation id="5395600419410242651">எல்லாத் தரவையும் அழி</translation>
 <translation id="5400907029458559844">சாதனம் இணைக்கப்படுகிறது.</translation>
@@ -643,6 +647,7 @@
 <translation id="6961170852793647506">ஸ்கேன் செய்ய, ஆவணத்தை ஸ்கேனர் மீது வைக்கவும்</translation>
 <translation id="6965382102122355670">சரி</translation>
 <translation id="6977381486153291903">நிலைபொருள் பதிப்பு</translation>
+<translation id="6995564396478647735">திருத்துவதைத் தடுக்கும் அம்சம் இயக்கப்பட்டிருப்பதை உறுதிசெய்துகொள்ளுங்கள்</translation>
 <translation id="7028979494427204405">இந்தச் சாதனத்தை <ph name="MANAGER" /> நிர்வகிக்கிறது. பார்வையிட்ட இணையப்பக்கங்கள், கடவுச்சொற்கள், மின்னஞ்சல் உட்பட பயனரின் செயல்பாடு அனைத்திற்குமான அணுகலும் இதற்கு உள்ளது.</translation>
 <translation id="7040230719604914234">ஆபரேட்டர்</translation>
 <translation id="7041549558901442110">சாதனம் இணைக்கப்படவில்லை.</translation>
@@ -653,6 +658,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">தோல்வியடைந்தது - அங்கீகரிக்க முடியவில்லை</translation>
 <translation id="7103252855940681301"><ph name="COUNT" /> சாதனங்களில் <ph name="INDEX" />வது சாதனத்தின் பெயர் <ph name="NAME" />.</translation>
+<translation id="7126228745139711113">திருத்துவதைத் தடுக்கும் அம்சம் முடக்கப்பட்டுள்ளது</translation>
 <translation id="7134436342991564651">{0,plural, =1{நேம் சர்வர்}other{நேம் சர்வர்கள்}}</translation>
 <translation id="7143207342074048698">இணைத்தல்</translation>
 <translation id="7144878232160441200">மீண்டும் முயற்சி செய்க</translation>
@@ -744,6 +750,7 @@
 <translation id="80398733265834479">தன்னியக்க வண்ணப் பயன்முறையை இயக்கும்</translation>
 <translation id="8041089156583427627">கருத்துத் தெரிவிக்கவும்</translation>
 <translation id="8045012663542226664">மைக்ரோஃபோனை ஒலியடக்கும்</translation>
+<translation id="8063022551652308521">திருத்துவதைத் தடுக்கும் அம்சம் முடக்கப்பட்டுள்ளது. தொடர, திருத்துவதைத் தடுக்கும் அம்சத்தை இயக்கவும்.</translation>
 <translation id="8075838845814659848">மீதமுள்ள சார்ஜ்</translation>
 <translation id="8082366717211101304">Android ஆப்ஸில் இருந்து DNS கோரிக்கையைத் தீர்க்க முடியவில்லை</translation>
 <translation id="8083281199617904460">இந்த ரிப்பேர் வழிமுறைகள், பயிற்சி பெற்ற ரிப்பேர் டெக்னீஷியனுக்கானது. சரியாகச் செயல்படாத காம்பனென்ட்களை மாற்றிய பிறகே தொடங்கவும்.</translation>
@@ -814,6 +821,7 @@
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> இந்த அம்சத்தை நிர்வகிக்க, இடது/வலது அம்புக்குறி விசையைப் பயன்படுத்துங்கள்.</translation>
 <translation id="8712637175834984815">புரிந்தது</translation>
 <translation id="871560550817059752">பிரிண்டரில் மை தீர்ந்துவிட்டதால் அச்சிட முடியவில்லை</translation>
+<translation id="8717030727630712160">ரிப்பேர் செய்யத் தொடங்குகிறோம்…</translation>
 <translation id="8723108084122415655">இயல்பு நிலையல்லாத நெட்வொர்க்கில் ஏற்படும் தாமதம் வரம்பை மீறி உள்ளது</translation>
 <translation id="8725066075913043281">மீண்டும் முயற்சிக்கவும்</translation>
 <translation id="8726019395068607495">மூடி திறந்துள்ளதால் அச்சிட முடியவில்லை</translation>
@@ -835,6 +843,7 @@
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">சாதனம் ஒரு டேப்லெட்.</translation>
 <translation id="8881098542468797602">சோதனை நிறைவடைந்தது</translation>
+<translation id="8897267175591692539">இப்போது பேட்டரியைப் பொருத்தலாம்</translation>
 <translation id="8898840733695078011">சிக்னலின் வலிமை</translation>
 <translation id="8910721771319628100">இயல்புநிலை நெட்வொர்க்கில் ஏற்படும் தாமதம் வரம்பை மீறி உள்ளது</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" /> இன் <ph name="DEVICE_TYPE" /></translation>

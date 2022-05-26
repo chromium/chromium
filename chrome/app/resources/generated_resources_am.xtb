@@ -4328,6 +4328,7 @@
 <translation id="520568280985468584">አውታረ መረብ በተሳካ ሁኔታ ታክሏል። የተንቀሳቃሽ ስልክ አውታረ መረብዎ ንቁ እስኪሆን ድረስ ብዙ ደቂቃዎችን ሊወስድ ይችላል።</translation>
 <translation id="5206215183583316675">«<ph name="CERTIFICATE_NAME" />» ይሰረዝ?</translation>
 <translation id="520621735928254154">የእውቅና ማረጋገጫ ማስመጣት ስህተት</translation>
+<translation id="5206562235913517859">የቸርቻሪ-መደብር መታወቂያ የ ABC-1234 ቅርጸት ነው</translation>
 <translation id="5206787458656075734">{COUNT,plural, =1{የተጠለፈው የይለፍ ቃል በተሳካ ሁኔታ ተቀይሯል። # ተጨማሪ የተጠለፈ ይለፍ ቃል አለዎት። Chrome ይህን የይለፍ ቃል አሁን መፈተሽ ይመክራል።}one{የተጠለፈው የይለፍ ቃል በተሳካ ሁኔታ ተቀይሯል። # ተጨማሪ የተጠለፉ የይለፍ ቃላት አለዎት። Chrome እነዚህን የይለፍ ቃላት አሁን መፈተሽ ይመክራል።}other{የተጠለፈው የይለፍ ቃል በተሳካ ሁኔታ ተቀይሯል። # ተጨማሪ የተጠለፉ የይለፍ ቃላት አለዎት። Chrome እነዚህን የይለፍ ቃላት አሁን መፈተሽ ይመክራል።}}</translation>
 <translation id="5207949376430453814">የጽሑፍ ድፋቱን አድምቅ</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> እርስዎ ብቁ የሆነ የChromeOS መሣሪያ እየተጠቀሙ መሆንዎን ማረጋገጥ ይፈልጋል።</translation>
@@ -4849,6 +4850,7 @@
 <translation id="5729712731028706266">&amp;እይታ</translation>
 <translation id="5731247495086897348">ለ&amp;ጥፍና እና ሂድ</translation>
 <translation id="5732392974455271431">የእርስዎ ወላጆች እገዳውን ሊያነሱልዎ ይችላሉ</translation>
+<translation id="5733866499231170760">ልክ ያልኾነ መታወቂያ። እርስዎ ያስገቡት ቅርጸት ትክክል አይደለም። መታወቂያውን በትክክለኛው ቅርጸት እያስገቡ እንደሆነ ለማረጋገጥ እባክዎ የተቀበሏቸውን መመሪያዎች ይመልከቱ። ይህን ችግር መፍታት ካልቻሉ እባክዎ መስኩን ባዶ ይተዉት እና መጫኑን ይቀጥሉ።</translation>
 <translation id="5734362860645681824">ተግባቦት</translation>
 <translation id="5734697361979786483">ፋይል አጋራን ያክሉ</translation>
 <translation id="5736796278325406685">እባክዎ የሚሠራ የተጠቃሚ ስም ያስገቡ</translation>
@@ -6958,6 +6960,7 @@
 <translation id="7824864914877854148">በስህተት ምክንያት በምትኬ ማስቀመጥ ሊጠናቀቅ አልተቻለም</translation>
 <translation id="782590969421016895">የአሁኑ ገጾችን ይጠቀሙ</translation>
 <translation id="7826174860695147464">የቆየ የአሳሽ ድጋፍ (ኤልቢኤስ) - የውስጥ</translation>
+<translation id="7826190688224781865">የቸርቻሪ-መደብር መታወቂያ ኮድ</translation>
 <translation id="7826249772873145665">የADB ስሕተት ማረሚያ ተሰናክሏል</translation>
 <translation id="7826254698725248775">የሚጋጭ የመሣሪያ ለዪ።</translation>
 <translation id="7828731929332799387">ይህ በሦስተኛ ወገን ዓውደ አገባቦች ውስጥ የሚገኙ ሁሉንም ኩኪዎች እና የጣቢያ ውሂብ ይሰርዛል። መቀጠል ይፈልጋሉ?</translation>
@@ -8434,6 +8437,7 @@ nil</translation>
 <translation id="987897973846887088">ምንም ምስሎች አይገኙም</translation>
 <translation id="988320949174893488">አንዳንድ ጊዜ መንቀጥቀጥ</translation>
 <translation id="988978206646512040">ባዶ የይለፍ ሐረግ አይፈቀድም</translation>
+<translation id="991097196715779457">የቸርቻሪ-መደብር መታወቂያ ኮድ (አማራጭ)</translation>
 <translation id="992032470292211616">ቅጥያዎች፣ መተግበሪያዎች እና ገጽታዎች መሣሪያዎን ሊጎዱት ይችላሉ። እርግጠኛ ነዎት መቀጠል ይፈልጋሉ?</translation>
 <translation id="992256792861109788">ሮዝ</translation>
 <translation id="992592832486024913">ChromeVoxን (የሚነገር ግብረመልስ) አሰናክል</translation>

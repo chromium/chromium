@@ -121,6 +121,7 @@
 <translation id="1942765061641586207">Rezolucija slike</translation>
 <translation id="1972984168337863910">Proširivanje ploča za povratne informacije o fajlovima</translation>
 <translation id="1995337122023280937">Posjeti lokaciju fajla</translation>
+<translation id="1996806196681857869">Kompresirana arhiva ekstenzije Z</translation>
 <translation id="2001796770603320721">Upravljajte na Disku</translation>
 <translation id="2009067268969781306">Formatiranjem diska ćete izbrisati sve podatke koji su na njemu pohranjeni. Ova radnja se ne može poništiti.</translation>
 <translation id="2025955442973426285">tigrinja</translation>
@@ -589,6 +590,7 @@
 <translation id="5955954492236143329">Broj stavki: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="5957366693331451795">Uređaji Chromebox</translation>
 <translation id="5982621672636444458">Opcije razvrstavanja</translation>
+<translation id="5985041959109124139">Kompresirana tar arhiva ekstenzije Z</translation>
 <translation id="6007237601604674381">Premještanje nije uspjelo. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Ethernet mreža</translation>
 <translation id="60357267506638014">Češka QWERTY</translation>
@@ -619,6 +621,7 @@
 <translation id="6220423280121890987">pandžapski</translation>
 <translation id="6224240818060029162">danski</translation>
 <translation id="6224253798271602650">Formatirajte <ph name="DRIVE_NAME" /></translation>
+<translation id="6224665423283788195">Kompresirana arhiva ekstenzije Zstandard</translation>
 <translation id="6227235786875481728">Reproduciranje ovog fajla nije uspjelo.</translation>
 <translation id="6241349547798190358">nizozemski (Belgija)</translation>
 <translation id="6267547857941397424">Mreža <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, jačina signala <ph name="SIGNAL_STRENGTH" />%, baterija telefona <ph name="BATTERY_STATUS" />%, poveži</translation>
@@ -646,6 +649,7 @@
 <translation id="6509122719576673235">Norveška</translation>
 <translation id="6528513914570774834">Dozvoli drugim korisnicima ovog uređaja da koriste ovu mrežu</translation>
 <translation id="653019979737152879">Sinhronizira se <ph name="FILE_NAME" />…</translation>
+<translation id="6530595303336443929">Kompresirana tar arhiva ekstenzije Zstandard</translation>
 <translation id="6549689063733911810">Nedavno</translation>
 <translation id="6558280019477628686">Došlo je do greške. Neke stavke možda nisu izbrisane.</translation>
 <translation id="656398493051028875">Brisanje fajla "<ph name="FILENAME" />"...</translation>

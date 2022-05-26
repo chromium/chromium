@@ -132,7 +132,7 @@
 <translation id="4194328954146351878">साइटना NFC डिव्हाइसवरील माहिती पाहू देण्याची किंवा बदलण्याची अनुमती देण्यापूर्वी विचारा (शिफारस केलेले)</translation>
 <translation id="4200726100658658164">स्थान सेटिंग्ज उघडा</translation>
 <translation id="4226663524361240545">सूचनांमुळे डिव्हाइसचे कंपन होऊ शकते</translation>
-<translation id="4259722352634471385">नेव्हिगेशन अवरोधित केले आहे: <ph name="URL" /></translation>
+<translation id="4259722352634471385">नेव्हिगेशन ब्लॉक केले आहे: <ph name="URL" /></translation>
 <translation id="4278390842282768270">अनुमत</translation>
 <translation id="429312253194641664">साइट मीडिया प्ले करत आहे</translation>
 <translation id="42981349822642051">विस्तृत करा</translation>
@@ -216,7 +216,7 @@
 <translation id="6177128806592000436">या साइटवरील तुमचे कनेक्शन सुरक्षित नाही</translation>
 <translation id="6181444274883918285">साइट एक्सेप्शन जोडा</translation>
 <translation id="6192792657125177640">अपवाद</translation>
-<translation id="6196640612572343990">तृतीय-पक्ष कुकीज अवरोधित करा</translation>
+<translation id="6196640612572343990">तृतीय-पक्ष कुकीज ब्लॉक करा</translation>
 <translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" /> पर्याय</translation>
 <translation id="6231752747840485235">'<ph name="APP_NAME" />' अनइंस्टॉल करायचे आहे का?</translation>
 <translation id="6262279340360821358"><ph name="PERMISSION_1" /> आणि <ph name="PERMISSION_2" /> ला ब्लॉक केले</translation>
@@ -254,7 +254,7 @@
 <translation id="7000754031042624318">Android सेटिंग्जमध्‍ये बंद केले</translation>
 <translation id="7016516562562142042">वर्तमान शोध इंजिनसाठी अनुमती दिली</translation>
 <translation id="702463548815491781">TalkBack किंवा स्विच ॲक्सेस सुरू असताना शिफारस केलेले</translation>
-<translation id="7053983685419859001">अवरोधित करा</translation>
+<translation id="7053983685419859001">ब्लॉक करा</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 निवडला}other{# निवडले}}</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> निवडले.  स्क्रीनच्या वरच्या बाजूला पर्याय उपलब्ध आहेत</translation>
 <translation id="7141896414559753902">साइट पॉप-अप आणि रीडिरेक्ट दाखवण्यापासून ब्लॉक करा (शिफारस केलेले)</translation>

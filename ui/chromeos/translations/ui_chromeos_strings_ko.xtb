@@ -121,6 +121,7 @@
 <translation id="1942765061641586207">이미지 해상도</translation>
 <translation id="1972984168337863910">파일 의견 패널 펼치기</translation>
 <translation id="1995337122023280937">파일 위치로 이동</translation>
+<translation id="1996806196681857869">Z 압축 보관 파일</translation>
 <translation id="2001796770603320721">드라이브에서 관리</translation>
 <translation id="2009067268969781306">드라이브를 포맷하면 드라이브에 저장된 데이터가 모두 삭제됩니다. 이 작업은 취소할 수 없습니다.</translation>
 <translation id="2025955442973426285">티그리냐어</translation>
@@ -589,6 +590,7 @@
 <translation id="5955954492236143329">항목 <ph name="NUMBER_OF_ITEMS" />개</translation>
 <translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">정렬 옵션</translation>
+<translation id="5985041959109124139">Z 압축 tar 보관 파일</translation>
 <translation id="6007237601604674381">이동에 실패했습니다. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">이더넷 네트워크</translation>
 <translation id="60357267506638014">체코어 QWERTY</translation>
@@ -619,6 +621,7 @@
 <translation id="6220423280121890987">펀자브어</translation>
 <translation id="6224240818060029162">덴마크어</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" /> 포맷</translation>
+<translation id="6224665423283788195">Zstandard 압축 보관 파일</translation>
 <translation id="6227235786875481728">이 파일은 재생할 수 없습니다.</translation>
 <translation id="6241349547798190358">네덜란드어(벨기에)</translation>
 <translation id="6267547857941397424">네트워크 <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />%, 휴대전화 배터리 <ph name="BATTERY_STATUS" />%, 연결</translation>
@@ -646,6 +649,7 @@
 <translation id="6509122719576673235">노르웨이어</translation>
 <translation id="6528513914570774834">이 기기의 다른 사용자가 이 네트워크를 사용하도록 허용</translation>
 <translation id="653019979737152879"><ph name="FILE_NAME" />을(를) 동기화하는 중...</translation>
+<translation id="6530595303336443929">Zstandard 압축 tar 보관 파일</translation>
 <translation id="6549689063733911810">최근 문서함</translation>
 <translation id="6558280019477628686">오류가 발생했습니다. 일부 항목이 삭제되지 않았을 수 있습니다.</translation>
 <translation id="656398493051028875">'<ph name="FILENAME" />' 삭제 중...</translation>

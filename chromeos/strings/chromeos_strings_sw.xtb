@@ -78,6 +78,7 @@
 <translation id="1578784163189013834">Chagua mandharinyuma ya taswira ya skrini</translation>
 <translation id="1615335640928990664">Matumizi ya data tangu <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Tekeleza jaribio la Kuchaji</translation>
+<translation id="1631385268983122904">Usirudishie betri ya kifaa kwanza</translation>
 <translation id="1639239467298939599">Inapakia</translation>
 <translation id="1641857168437328880">Mashine ya kuingiza hati (Upande mmoja)</translation>
 <translation id="1643449475550628585">Badilisha picha ya mandhari kila siku</translation>
@@ -85,6 +86,7 @@
 <translation id="1645954272419197032">Tafadhali thibitisha maelezo ya kifaa</translation>
 <translation id="1662989795263954667">Imesimama - Wino umeisha</translation>
 <translation id="1668469839109562275">VPN iliyojumuishwa ndani</translation>
+<translation id="1676557873873341166">Inaendelea kunasa video</translation>
 <translation id="1703835215927279855">Barua</translation>
 <translation id="1706391837335750954">Kisuluhishaji cha DNS Kinapatikana</translation>
 <translation id="1715359911173058521">Hitilafu ya kuwasiliana na kichanganuzi imetokea. Kagua muunganisho wa mtandao au USB kisha ujaribu tena.</translation>
@@ -159,6 +161,7 @@
 <translation id="2326139988748364651">Dpi <ph name="RESOLUTION_VALUE" /></translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Washa Bluetooth ili ugundue vifaa vilivyo karibu</translation>
+<translation id="2340422556570134524">Kipengele cha Write Protect kimewashwa bila kutarajiwa. Tafadhali zima kipengele cha Write Protect wewe mwenyewe kabla ya kujaribu tena.</translation>
 <translation id="2346474577291266260">Thabiti zaidi (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">Endelea</translation>
 <translation id="2360257214555822463"><ph name="LINK_BEGIN" />Vipengele ambavyo havijaidhinishwa<ph name="LINK_END" /> vimetambuliwa. Iwapo utachagua kuthibitisha kama kipengele hiki kimesakinishwa, tafadhali thibitisha sasa.</translation>
@@ -473,6 +476,7 @@
 <translation id="5372659122375744710">Mtandao wa WiFi si salama</translation>
 <translation id="5376354385557966694">Hali ya mwangaza inayowekwa kiotomatiki</translation>
 <translation id="537872351913703572">Kifaa kitaenda kwa mtumiaji au shirika tofauti</translation>
+<translation id="5389159777326897627">Mandhari na mtindo</translation>
 <translation id="5389224261615877010">Upinde wa mvua</translation>
 <translation id="5395600419410242651">Futa data yote</translation>
 <translation id="5400907029458559844">Kifaa kinaunganishwa.</translation>
@@ -642,6 +646,7 @@
 <translation id="6961170852793647506">Ili uanze, weka hati yako kwenye kichanganuzi</translation>
 <translation id="6965382102122355670">Sawa</translation>
 <translation id="6977381486153291903">Sahihisho la programu dhibiti</translation>
+<translation id="6995564396478647735">Hakikisha kipengele cha Write Protect kimewashwa</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> hudhibiti kifaa hiki na ina idhini ya kufikia shughuli zote za mtumiaji, zikiwemo kurasa za wavuti alizotembelea, manenosiri na anwani za barua pepe.</translation>
 <translation id="7040230719604914234">Mtoa huduma</translation>
 <translation id="7041549558901442110">Kifaa hakijaunganishwa.</translation>
@@ -652,6 +657,7 @@
 <translation id="7086440545492620869"><ph name="DISPLAY_NAME" /> <ph name="VALUE" /></translation>
 <translation id="710028965487274708">Haijafaulu - Imeshindwa Kuidhinisha</translation>
 <translation id="7103252855940681301">Kifaa cha <ph name="INDEX" /> kati ya <ph name="COUNT" /> kinaitwa <ph name="NAME" />.</translation>
+<translation id="7126228745139711113">Kipengele cha Write Protect kimezimwa</translation>
 <translation id="7134436342991564651">{0,plural, =1{Seva ya jina}other{Seva za majina}}</translation>
 <translation id="7143207342074048698">Inaunganisha</translation>
 <translation id="7144878232160441200">Jaribu tena</translation>
@@ -743,6 +749,7 @@
 <translation id="80398733265834479">Washa hali ya kubadilisha rangi kiotomatiki</translation>
 <translation id="8041089156583427627">Tuma Maoni</translation>
 <translation id="8045012663542226664">Maikrofoni imezimwa</translation>
+<translation id="8063022551652308521">Kipengele cha Write Protect bado hakijawashwa. Ili uendelee, washa Write Protect.</translation>
 <translation id="8075838845814659848">Chaji iliyosalia</translation>
 <translation id="8082366717211101304">Imeshindwa kusuluhisha DNS kutoka kwenye programu za Android</translation>
 <translation id="8083281199617904460">Mchakato wa marekebisho unalenga mafundi waliopewa mafunzo tu Anza baada tu ya kubadilisha vipengele vyenye hitilafu.</translation>
@@ -813,6 +820,7 @@
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Tumia vitufe vya vishale vya Kushoto au Kulia kudhibiti kipengele hiki.</translation>
 <translation id="8712637175834984815">Nimeelewa</translation>
 <translation id="871560550817059752">Haijakamilika - Wino umeisha</translation>
+<translation id="8717030727630712160">Tunaendelea na mchakato wa urekebishaji…</translation>
 <translation id="8723108084122415655">Muda wa kusubiri wa mtandao usio chaguomsingi umezidi kiwango cha juu</translation>
 <translation id="8725066075913043281">Jaribu tena</translation>
 <translation id="8726019395068607495">Imesimama - Mlango umefunguka</translation>
@@ -834,6 +842,7 @@
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Kifaa hiki ni kompyuta kibao.</translation>
 <translation id="8881098542468797602">Jaribio limefaulu</translation>
+<translation id="8897267175591692539">Unaweza kurudishia betri sasa</translation>
 <translation id="8898840733695078011">Uthabiti wa mawimbi</translation>
 <translation id="8910721771319628100">Muda wa kusubiri wa mtandao chaguomsingi umezidi kiwango cha juu</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> ya <ph name="GIVEN_NAME" /></translation>

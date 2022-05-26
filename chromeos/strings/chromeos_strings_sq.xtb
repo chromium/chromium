@@ -78,6 +78,7 @@
 <translation id="1578784163189013834">Zgjidh imazhin e sfondit të mbrojtësit të ekranit</translation>
 <translation id="1615335640928990664">Përdorimi i të dhënave që prej ditës: <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Ekzekuto testin e karikimit</translation>
+<translation id="1631385268983122904">Mos e vendos ende baterinë në pajisje.</translation>
 <translation id="1639239467298939599">Po ngarkohet...</translation>
 <translation id="1641857168437328880">Furnizuesi i dokumentit (një anë)</translation>
 <translation id="1643449475550628585">Ndryshoje çdo ditë imazhin e sfondit</translation>
@@ -85,6 +86,7 @@
 <translation id="1645954272419197032">Konfirmo informacionet e pajisjes</translation>
 <translation id="1662989795263954667">Ndaloi - Nuk ka bojë</translation>
 <translation id="1668469839109562275">VPN e integruar</translation>
+<translation id="1676557873873341166">Po nxjerr një video</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Zgjidhësi i DNS-së i pranishëm</translation>
 <translation id="1715359911173058521">Ka një problem komunikimi me skanerin. Kontrollo lidhjen e rrjetit ose lidhjen USB dhe provo përsëri.</translation>
@@ -159,6 +161,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2336381494582898602">Rivendosje në gjendjen e fabrikës</translation>
 <translation id="2338501278241028356">Aktivizo "Bluetooth-in" për të zbuluar pajisjet në afërsi</translation>
+<translation id="2340422556570134524">"Mbrojtja nga shkrimi" është aktivizuar papritur. Çaktivizo në mënyrë manuale "Mbrojtjen nga shkrimi" para se të provosh përsëri.</translation>
 <translation id="2346474577291266260">I shkëlqyer (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">Vazhdo</translation>
 <translation id="2360257214555822463">U zbuluan <ph name="LINK_BEGIN" />komponentë të pakualifikuar<ph name="LINK_END" />. Nëse zgjedh ta konfirmosh që kjo është instaluar, bëje këtë tani.</translation>
@@ -473,6 +476,7 @@
 <translation id="5372659122375744710">Rrjeti Wi-Fi nuk është i sigurt</translation>
 <translation id="5376354385557966694">Modaliteti i ndriçuar automatik</translation>
 <translation id="537872351913703572">Pajisja do të kalojë te një përdorues ose organizatë tjerër</translation>
+<translation id="5389159777326897627">Imazhi i sfondit dhe stili</translation>
 <translation id="5389224261615877010">Ylber</translation>
 <translation id="5395600419410242651">Spastro të gjitha të dhënat</translation>
 <translation id="5400907029458559844">Pajisja po lidhet.</translation>
@@ -642,6 +646,7 @@
 <translation id="6961170852793647506">Për të filluar, vendose dokumentin tënd në skaner</translation>
 <translation id="6965382102122355670">Në rregull</translation>
 <translation id="6977381486153291903">Rishikimi i firmuerit</translation>
+<translation id="6995564396478647735">Sigurohu që "Mbrojtja nga shkrimi" është aktive</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> menaxhon këtë pajisje dhe ka qasje te i gjithë aktiviteti i përdoruesit, duke përfshirë faqet e uebit të vizituara, fjalëkalimet dhe email-i.</translation>
 <translation id="7040230719604914234">Operatori</translation>
 <translation id="7041549558901442110">Pajisja nuk është lidhur.</translation>
@@ -652,6 +657,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Dështoi - Autorizimi dështoi</translation>
 <translation id="7103252855940681301">Pajisja <ph name="INDEX" /> nga <ph name="COUNT" /> me emrin <ph name="NAME" />.</translation>
+<translation id="7126228745139711113">"Mbrojtja nga shkrimi" është e çaktivizuar</translation>
 <translation id="7134436342991564651">{0,plural, =1{Serveri i emrave}other{Serverët e emrave}}</translation>
 <translation id="7143207342074048698">Po lidhet</translation>
 <translation id="7144878232160441200">Provo sërish</translation>
@@ -743,6 +749,7 @@
 <translation id="80398733265834479">Aktivizo modalitetin automatik të ngjyrave</translation>
 <translation id="8041089156583427627">Dërgo komentet</translation>
 <translation id="8045012663542226664">Heqja e zërit të mikrofonit</translation>
+<translation id="8063022551652308521">"Mbrojtja nga shkrimi" është akoma e çaktivizuar. Për të vazhduar, aktivizo "Mbrojtjen nga shkrimi".</translation>
 <translation id="8075838845814659848">Karikimi i mbetur</translation>
 <translation id="8082366717211101304">DNS-ja nuk mund të zgjidhet nga aplikacionet për Android</translation>
 <translation id="8083281199617904460">Ky proces riparimi duhet të kryhet nga një teknik i trajnuar për riparimin. Fillo vetëm pas zëvendësimit të komponentëve që nuk funksionojnë mirë.</translation>
@@ -813,6 +820,7 @@
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Përdor tastet "Shigjeta majtas" ose "Shigjeta djathtas" për ta menaxhuar këtë veçori.</translation>
 <translation id="8712637175834984815">E kuptova</translation>
 <translation id="871560550817059752">Dështoi - Nuk ka bojë</translation>
+<translation id="8717030727630712160">Procesi i riparimit po vazhdon…</translation>
 <translation id="8723108084122415655">Rrjeti jo i parazgjedhur është mbi pragun e vonesës</translation>
 <translation id="8725066075913043281">Provo sërish</translation>
 <translation id="8726019395068607495">Ndaloi - Dera e hapur</translation>
@@ -834,6 +842,7 @@
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Pajisja është një tablet.</translation>
 <translation id="8881098542468797602">Testi u krye me sukses</translation>
+<translation id="8897267175591692539">Tani mund ta vendosësh baterinë në pajisje.</translation>
 <translation id="8898840733695078011">Fuqia e sinjalit</translation>
 <translation id="8910721771319628100">Rrjeti i parazgjedhur është mbi pragun e vonesës</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> që ka <ph name="GIVEN_NAME" /></translation>

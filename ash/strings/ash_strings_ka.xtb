@@ -205,7 +205,6 @@
 <translation id="211328683600082144">მიკროფონის ჩართვა</translation>
 <translation id="2123115117533398272">ChromeOS გთავაზობთ ახალ კონტენტს. ხარისხის გაუმჯობესების მიზნით, გაგზავნის სტატისტიკას (მხოლოდ იმ შემთხვევაში, თუ არჩეული გაქვთ გამოყენების მონაცემების გაზიარება). <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="2126242104232412123">ახალი სამუშაო მაგიდა</translation>
-<translation id="2127372758936585790">დამტენის დაბალი მუხტი</translation>
 <translation id="2132302418721800944">ეკრანის სრულად ჩაწერა</translation>
 <translation id="2135456203358955318">ჩამაგრებული ლუპა</translation>
 <translation id="2148716181193084225">დღეს</translation>
@@ -700,6 +699,7 @@
 <translation id="5071064518267176975">აპი მოითხოვს მიკროფონის გამოყენებას</translation>
 <translation id="5078796286268621944">არასწორი პინი</translation>
 <translation id="5083553833479578423">განბლოკეთ ასისტენტის დამატებითი ფუნქციები.</translation>
+<translation id="509790653408515442">თქვენი ტელეფონის აპების გაშვებისას, ისინი აქ გამოჩნდება</translation>
 <translation id="5107522548814527560">ვები</translation>
 <translation id="5117590920725113268">შემდეგი თვის ჩვენება</translation>
 <translation id="5136175204352732067">დაკავშირებულია განსხვავებული კლავიატურა</translation>
@@ -722,6 +722,7 @@
 <translation id="523505283826916779">მარტივი წვდომის პარამეტრები</translation>
 <translation id="5245201184978705914">ტრანსკრიპტის შექმნა ვერ მოხერხდა</translation>
 <translation id="5253783950165989294">დაკავშირებულია მოწყობილობასთან, სახელად <ph name="DEVICE_NAME" />, ბატარეის დონეა <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="5258528442992323769">სამუშაო მაგიდები არ არის შენახული</translation>
 <translation id="5260676007519551770">დესკტოპი 4</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> საჭიროებს ყურადღების მიქცევას.</translation>
 <translation id="5283198616748585639">1 წუთის დამატება</translation>
@@ -1261,6 +1262,7 @@
 <translation id="851458219935658693">ამჟამინდელი სამუშაო მაგიდის ფანჯრების ჩვენება, არჩეულია არჩევანის ღილაკი</translation>
 <translation id="8517041960877371778">თქვენი <ph name="DEVICE_TYPE" /> შეიძლება არ დაიტენოს, როცა ის ჩართულია.</translation>
 <translation id="8535393432370007982">ფერის მიხედვით დალაგების გაუქმება</translation>
+<translation id="8542053257095774575">სამუშაო მაგიდები ან შაბლონები არ არის შენახული</translation>
 <translation id="8546059259582788728">დალაგება წარმატებით გაუქმდა</translation>
 <translation id="8551588720239073785">თარიღისა და დროის პარამეტრები</translation>
 <translation id="8553395910833293175">უკვე მიმაგრებულია ყველა სამუშაო მაგიდაზე.</translation>

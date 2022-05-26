@@ -205,7 +205,6 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="211328683600082144">UKLJUČI MIKROFON</translation>
 <translation id="2123115117533398272">Chrome OS prikazuje prijedloge za istraživanje novog sadržaja. Statistiku za poboljšanje kvalitete šalje samo ako ste odabrali dijeljenje podataka o upotrebi. <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="2126242104232412123">Nova radna površina</translation>
-<translation id="2127372758936585790">Punjač male snage</translation>
 <translation id="2132302418721800944">Snimanje cijelog zaslona</translation>
 <translation id="2135456203358955318">Usidreno povećalo</translation>
 <translation id="2148716181193084225">Danas</translation>
@@ -1060,6 +1059,7 @@ Novo instaliranje</translation>
 <translation id="7348093485538360975">Tipkovnica na zaslonu</translation>
 <translation id="735745346212279324">Veza s VPN-om prekinuta</translation>
 <translation id="7360036564632145207">Promjenom postavke zaštite pristupa podacima za periferne uređaje možete optimizirati rad</translation>
+<translation id="736045644501761622">Postavite pozadinu i stil</translation>
 <translation id="7371404428569700291">Snimanje prozora</translation>
 <translation id="7377169924702866686">Uključena je opcija Caps Lock.</translation>
 <translation id="7377481913241237033">Povezivanje pomoću koda</translation>
@@ -1293,6 +1293,7 @@ Novo instaliranje</translation>
 <translation id="8721053961083920564">Uključivanje ili isključivanje zvuka. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Snimka cijelog zaslona</translation>
 <translation id="8734991477317290293">Možda pokušava ukrasti podatke o pritisnutim tipkama</translation>
+<translation id="8735678380411481005">Boja pozadinskog svjetla tipkovnice</translation>
 <translation id="8735953464173050365">Prikaz postavki tipkovnice. Odabrana je tipkovnica <ph name="KEYBOARD_NAME" /></translation>
 <translation id="8755498163081687682">Potvrdite svoj identitet: <ph name="ORIGIN_NAME" /> želi potvrditi da ste to vi</translation>
 <translation id="875593634123171288">Prikaz postavki VPN-a</translation>

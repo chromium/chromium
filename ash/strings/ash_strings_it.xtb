@@ -202,7 +202,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="211328683600082144">ATTIVA MICROFONO</translation>
 <translation id="2123115117533398272">Chrome OS mostra suggerimenti relativi a nuovi contenuti da esplorare. Invia statistiche per migliorare la qualità solo se hai scelto di condividere i dati sull'utilizzo. <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="2126242104232412123">Nuova scrivania</translation>
-<translation id="2127372758936585790">Caricabatterie a basso consumo</translation>
 <translation id="2132302418721800944">Registra schermo intero</translation>
 <translation id="2135456203358955318">Lente d'ingrandimento ancorata</translation>
 <translation id="2148716181193084225">Oggi</translation>
@@ -698,6 +697,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="5071064518267176975">Un'app vuole usare il microfono</translation>
 <translation id="5078796286268621944">PIN errato</translation>
 <translation id="5083553833479578423">Sblocca altre funzioni dell'assistente.</translation>
+<translation id="509790653408515442">Le app del tuo telefono che trasmetti in streaming verranno visualizzate qui</translation>
 <translation id="5107522548814527560">Web</translation>
 <translation id="5117590920725113268">Mostra mese successivo</translation>
 <translation id="5136175204352732067">Tastiera diversa collegata</translation>
@@ -720,6 +720,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="523505283826916779">Impostazioni di accessibilità</translation>
 <translation id="5245201184978705914">Impossibile generare la trascrizione</translation>
 <translation id="5253783950165989294">Connessione stabilita con un dispositivo di nome <ph name="DEVICE_NAME" />; batteria <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="5258528442992323769">Nessuna scrivania salvata</translation>
 <translation id="5260676007519551770">Scrivania 4</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> richiede la tua attenzione.</translation>
 <translation id="5283198616748585639">Aggiungi 1 min</translation>
@@ -1258,6 +1259,7 @@ Nuova installazione</translation>
 <translation id="851458219935658693">Mostra finestre della scrivania corrente, pulsante di opzione selezionato</translation>
 <translation id="8517041960877371778">Il tuo dispositivo <ph name="DEVICE_TYPE" /> potrebbe non caricarsi mentre è acceso.</translation>
 <translation id="8535393432370007982">Annulla l'ordinamento per colore</translation>
+<translation id="8542053257095774575">Nessuna scrivania o nessun modello salvati</translation>
 <translation id="8546059259582788728">Annullamento dell'ordinamento completato</translation>
 <translation id="8551588720239073785">Impostazioni di data e ora</translation>
 <translation id="8553395910833293175">Finestra già assegnata a tutte le scrivanie.</translation>

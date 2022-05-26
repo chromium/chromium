@@ -121,6 +121,7 @@
 <translation id="1942765061641586207">影像解析度</translation>
 <translation id="1972984168337863910">展開檔案意見回饋面板</translation>
 <translation id="1995337122023280937">前往檔案位置</translation>
+<translation id="1996806196681857869">Z 壓縮的封存檔</translation>
 <translation id="2001796770603320721">在雲端硬碟中管理</translation>
 <translation id="2009067268969781306">若將硬碟格式化，其中儲存的所有資料都將遭到刪除。這項操作無法復原。</translation>
 <translation id="2025955442973426285">蒂格里亞文</translation>
@@ -589,6 +590,7 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> 個項目</translation>
 <translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">排序選項</translation>
+<translation id="5985041959109124139">Z 壓縮的 tar 封存檔</translation>
 <translation id="6007237601604674381">移動失敗，<ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">乙太網路</translation>
 <translation id="60357267506638014">捷克 QWERTY</translation>
@@ -619,6 +621,7 @@
 <translation id="6220423280121890987">旁遮普文</translation>
 <translation id="6224240818060029162">丹麥文</translation>
 <translation id="6224253798271602650">將「<ph name="DRIVE_NAME" />」格式化</translation>
+<translation id="6224665423283788195">Zstandard 壓縮的封存檔</translation>
 <translation id="6227235786875481728">無法播放這個檔案。</translation>
 <translation id="6241349547798190358">荷蘭文 (比利時)</translation>
 <translation id="6267547857941397424">第 <ph name="NETWORK_INDEX" /> 個網路 (共 <ph name="NETWORK_COUNT" /> 個)，<ph name="PHONE_NAME" />，訊號強度 <ph name="SIGNAL_STRENGTH" />%，手機電量：<ph name="BATTERY_STATUS" />%，連線</translation>
@@ -646,6 +649,7 @@
 <translation id="6509122719576673235">挪威文</translation>
 <translation id="6528513914570774834">允許這個裝置的其他使用者使用這個網路</translation>
 <translation id="653019979737152879">正在同步處理 <ph name="FILE_NAME" />...</translation>
+<translation id="6530595303336443929">Zstandard 壓縮的 tar 封存檔</translation>
 <translation id="6549689063733911810">近期</translation>
 <translation id="6558280019477628686">發生錯誤，系統可能尚未刪除部分項目。</translation>
 <translation id="656398493051028875">正在刪除「<ph name="FILENAME" />」...</translation>

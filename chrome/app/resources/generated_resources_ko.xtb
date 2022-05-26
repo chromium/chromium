@@ -4336,6 +4336,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="520568280985468584">네트워크가 추가되었습니다. 셀룰러 네트워크가 활성화되려면 몇 분 정도 걸릴 수 있습니다.</translation>
 <translation id="5206215183583316675">'<ph name="CERTIFICATE_NAME" />'을(를) 삭제하시겠습니까?</translation>
 <translation id="520621735928254154">인증서 가져오기 오류</translation>
+<translation id="5206562235913517859">소매업체 매장 ID 형식: ABC-1234</translation>
 <translation id="5206787458656075734">{COUNT,plural, =1{유출된 비밀번호를 변경했습니다. 유출된 비밀번호가 #개 더 있습니다. 지금 바로 이 비밀번호를 확인해 보시기 바랍니다.}other{유출된 비밀번호를 변경했습니다. 유출된 비밀번호가 #개 더 있습니다. 지금 바로 이 비밀번호를 확인해 보시기 바랍니다.}}</translation>
 <translation id="5207949376430453814">텍스트 캐럿 강조표시</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" />에서 내가 사용 중인 ChromeOS 기기가 적합한지 확인하려고 합니다.</translation>
@@ -4857,6 +4858,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5729712731028706266">보기(&amp;V)</translation>
 <translation id="5731247495086897348">붙여넣어 바로가기(&amp;S)</translation>
 <translation id="5732392974455271431">부모님이 차단 해제할 수 있습니다.</translation>
+<translation id="5733866499231170760">잘못된 ID입니다. 입력한 형식이 잘못되었습니다. 제공된 안내를 확인하여 올바른 형식으로 ID를 입력하세요. 문제를 해결할 수 없으면 입력란을 비워 두고 설치를 계속하세요.</translation>
 <translation id="5734362860645681824">커뮤니케이션</translation>
 <translation id="5734697361979786483">파일 공유 추가</translation>
 <translation id="5736796278325406685">올바른 사용자 이름을 입력하세요.</translation>
@@ -6964,6 +6966,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7824864914877854148">오류로 인해 백업을 완료할 수 없습니다.</translation>
 <translation id="782590969421016895">현재 페이지 사용</translation>
 <translation id="7826174860695147464">이전 브라우저 지원(LBS): 내부</translation>
+<translation id="7826190688224781865">소매업체 매장 ID 코드</translation>
 <translation id="7826249772873145665">ADB 디버깅 사용 중지됨</translation>
 <translation id="7826254698725248775">기기 식별자가 충돌합니다.</translation>
 <translation id="7828731929332799387">타사와 관련하여 제공되는 모든 쿠키 및 사이트 데이터가 삭제됩니다. 계속하시겠습니까?</translation>
@@ -8435,6 +8438,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="987897973846887088">사용 가능한 이미지 없음</translation>
 <translation id="988320949174893488">가끔 멈춤</translation>
 <translation id="988978206646512040">암호를 빈칸으로 두어서는 안 됩니다.</translation>
+<translation id="991097196715779457">소매업체 매장 ID 코드(선택사항)</translation>
 <translation id="992032470292211616">확장 프로그램, 앱 및 테마는 기기를 손상시킬 수 있습니다. 계속하시겠습니까?</translation>
 <translation id="992256792861109788">분홍색</translation>
 <translation id="992592832486024913">ChromeVox(음성 피드백) 사용 중지</translation>

@@ -121,6 +121,7 @@
 <translation id="1942765061641586207">دقة الصورة</translation>
 <translation id="1972984168337863910">توسيع لوحات تعليقات الملفات</translation>
 <translation id="1995337122023280937">الانتقال إلى موقع الملف</translation>
+<translation id="1996806196681857869">‏ملف أرشيف مضغوط ببرنامج Z</translation>
 <translation id="2001796770603320721">‏الإدارة في Drive</translation>
 <translation id="2009067268969781306">سيؤدي تنسيق محرك أقراص إلى حذف جميع البيانات المخزّنة عليه. لا يمكن التراجع عن هذا الإجراء.</translation>
 <translation id="2025955442973426285">التغرينية</translation>
@@ -590,6 +591,7 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> من العناصر</translation>
 <translation id="5957366693331451795">‏أجهزة Chromebox</translation>
 <translation id="5982621672636444458">خيارات التصنيف</translation>
+<translation id="5985041959109124139">‏ملف أرشيف tar مضغوط ببرنامج Z</translation>
 <translation id="6007237601604674381">تعذّر النقل. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">شبكة إيثرنت</translation>
 <translation id="60357267506638014">‏تخطيط QWERTY للتشيكية</translation>
@@ -620,6 +622,7 @@
 <translation id="6220423280121890987">البنجابية</translation>
 <translation id="6224240818060029162">الدانمركية</translation>
 <translation id="6224253798271602650">تنسيق <ph name="DRIVE_NAME" /></translation>
+<translation id="6224665423283788195">‏ملف أرشيف مضغوط ببرنامج Zstandard</translation>
 <translation id="6227235786875481728">يتعذر تشغيل هذا الملف.</translation>
 <translation id="6241349547798190358">الهولندية (بلجيكا)</translation>
 <translation id="6267547857941397424">الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، الهاتف <ph name="PHONE_NAME" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />%، بطارية الهاتف <ph name="BATTERY_STATUS" />%، الاتصال</translation>
@@ -647,6 +650,7 @@
 <translation id="6509122719576673235">النرويجية</translation>
 <translation id="6528513914570774834">السماح للمستخدمين الآخرين لهذا الجهاز باستخدام هذه الشبكة</translation>
 <translation id="653019979737152879">جارٍ مزامنة <ph name="FILE_NAME" />...</translation>
+<translation id="6530595303336443929">‏ملف أرشيف tar مضغوط ببرنامج Zstandard</translation>
 <translation id="6549689063733911810">الأحدث</translation>
 <translation id="6558280019477628686">حدث خطأ ما. ربما لم يتمّ حذف بعض العناصر.</translation>
 <translation id="656398493051028875">جارٍ حذف "<ph name="FILENAME" />"...</translation>

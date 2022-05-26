@@ -367,6 +367,7 @@
 <translation id="1362865166188278099">मेकानिकल समस्या भयो। प्रिन्टर जाँच्नुहोस्</translation>
 <translation id="1363585519747660921">USB प्रिन्टरलाई कन्फिगर गर्नु पर्छ</translation>
 <translation id="1367951781824006909">एउटा फाइल रोज्नुहोस्</translation>
+<translation id="1368603372088757436">तपाईं <ph name="DEVICE_TYPE" /> मा Linux चल्दैन। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="1369149969991017342">स्विचमार्फत पहुँच राख्नुहोस् (केवल एक वा दुई स्विचहरू प्रयोग गरी कम्प्युटर नियन्त्रण गर्नुहोस्)</translation>
 <translation id="1372841398847029212">आफ्नो खातासँग सिंक गर्नुहोस्</translation>
 <translation id="1373176046406139583">तपाईंको डिभाइसको पहुँचसम्बन्धी सेटिङमा गई तपाईंको स्क्रिन अनलक हुँदा तपाईंसँग कसले सेयर गर्न सक्छन् भन्ने कुरा तोक्न सकिन्छ। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
@@ -709,6 +710,7 @@
 <translation id="1670399744444387456">आधारभूत</translation>
 <translation id="1673137583248014546"><ph name="URL" /> तपाईंको सुरक्षा साँचोको ब्रान्डको नाम र मोडेल हेर्न चाहन्छ</translation>
 <translation id="1674073353928166410">सबै URL (<ph name="URL_COUNT" />) इन्कोग्निटो विन्डोमा खोलियोस्</translation>
+<translation id="1676902103953506022"><ph name="DOMAIN" /> मा रहेको <ph name="USERNAME" /> का युजरनेम तथा पासवर्डहरू</translation>
 <translation id="1677306805708094828"><ph name="EXTENSION_TYPE_PARAMETER" /> थप्न सकिएन</translation>
 <translation id="1677472565718498478"><ph name="TIME" /> बाँकी छ</translation>
 <translation id="1679068421605151609">विकासकर्ता उपकरणहरू</translation>
@@ -4664,6 +4666,7 @@
 <translation id="554903022911579950">Kerberos</translation>
 <translation id="5551573675707792127">किबोर्ड र पाठ इनपुट</translation>
 <translation id="5553089923092577885">प्रमाणपत्र नीति मानचित्रहरू</translation>
+<translation id="5554240068773209752">कन्ट्रोलहरू कस्टमाइज गर्न यहाँ क्लिक गर्नुहोस्</translation>
 <translation id="5554403733534868102">यसपछि सफ्टवेयर अपडेट गर्नका निम्ति पर्खनु पर्दैन</translation>
 <translation id="5554489410841842733">यो प्रतिमा जब देखा पर्छ जब विस्तारले हालको पृष्ठमा काम गर्न सक्दैन।</translation>
 <translation id="5554720593229208774">इमेल प्रमाणीकरण प्राधिकरण</translation>
@@ -7224,6 +7227,7 @@
 <translation id="80866457114322936">{NUM_FILES,plural, =1{यो फाइल इन्क्रिप्ट गरिएको छ। यसका मालिकलाई डिक्रिप्ट गर्न लगाउनुहोस्।}other{यीमध्ये केही फाइलहरू इन्क्रिप्ट गरिएका छन्। यिनका मालिकलाई डिक्रिप्ट गर्न लगाउनुहोस्।}}</translation>
 <translation id="808894953321890993">पासवर्ड परिवर्तन गर्नुहोस्‌</translation>
 <translation id="8090234456044969073">तपाइँको सबैभन्दा धेरै भ्रमण गरिएका वेबसाइटहरूको सूची पढ्नुहोस्</translation>
+<translation id="8090513782447872344">तपाईं पछि जुनसुकै बेला यहाँ आएर यो "गोपनीयतासम्बन्धी गाइड" फेरि हेर्न सक्नुहुन्छ</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> ले प्रतिक्रिया जनाइरहेको छैन</translation>
 <translation id="8095105960962832018"><ph name="BEGIN_PARAGRAPH1" />Google ड्राइभमा ब्याकअप गर्नुहोस्। जुनसुकै बेला सजिलैसँग आफ्नो डेटा पुनर्स्थापना गर्नुहोस् वा यन्त्र बदल्नुहोस्। तपाईंको ब्याकअपमा एपको डेटा समावेश हुन्छ।<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />तपाईंका ब्याकअपहरू Google मा अपलोड गरी तपाईंको Google खाताको पासवर्ड प्रयोग गरेर इन्क्रिप्ट गरिन्छन्।<ph name="END_PARAGRAPH2" />

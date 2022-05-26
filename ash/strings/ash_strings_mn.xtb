@@ -205,7 +205,6 @@
 <translation id="211328683600082144">МИКРОФОНЫГ АСААХ</translation>
 <translation id="2123115117533398272">ChromeOS нь судлах шинэ контентын зөвлөмжүүдийг харуулна. Та ашиглалтын өгөгдлийг хуваалцахaар сонгосон тохиолдолд л чанарыг сайжруулахын тулд статистик илгээнэ. <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="2126242104232412123">Шинэ ширээ</translation>
-<translation id="2127372758936585790">Бага эрчим хүчээр цэнэглэгч</translation>
 <translation id="2132302418721800944">Бүтэн дэлгэцийг бичих</translation>
 <translation id="2135456203358955318">Суурилуулсан томруулагч</translation>
 <translation id="2148716181193084225">Өнөөдөр</translation>
@@ -701,6 +700,7 @@
 <translation id="5071064518267176975">Апп микрофон ашиглахыг хүсэж байна</translation>
 <translation id="5078796286268621944">ПИН код буруу байна</translation>
 <translation id="5083553833479578423">Tуслахын бусад онцлогийн түгжээг тайлна уу.</translation>
+<translation id="509790653408515442">Та утасныхаа аппыг дамжуулах үед тэдгээр нь энд гарч ирэх болно</translation>
 <translation id="5107522548814527560">Веб</translation>
 <translation id="5117590920725113268">Дараагийн сарыг харуулах</translation>
 <translation id="5136175204352732067">Өөр гар холбосон</translation>
@@ -723,6 +723,7 @@
 <translation id="523505283826916779">Нэвтрэх боломжит байдлын тохиргоо</translation>
 <translation id="5245201184978705914">Сийрүүлгийг үүсгэх боломжгүй</translation>
 <translation id="5253783950165989294"><ph name="DEVICE_NAME" /> нэртэй төхөөрөмжид холбогдсон, <ph name="BATTERY_PERCENTAGE" />% батарей</translation>
+<translation id="5258528442992323769">Хадгалсан дэлгэц байхгүй</translation>
 <translation id="5260676007519551770">Дэлгэц 4</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> танаас анхаарал тавихыг хүсэж байна.</translation>
 <translation id="5283198616748585639">1 минут нэмэх</translation>
@@ -1263,6 +1264,7 @@
 <translation id="851458219935658693">Одоогийн дэлгэцээс цонхыг харуулах, радио товчлуурыг сонгосон</translation>
 <translation id="8517041960877371778">Таны <ph name="DEVICE_TYPE" /> асаалттай үед цэнэглэхгүй.</translation>
 <translation id="8535393432370007982">Өнгөөр эрэмбэлэх дарааллыг болих</translation>
+<translation id="8542053257095774575">Хадгалсан дэлгэц эсвэл загвар байхгүй</translation>
 <translation id="8546059259582788728">Эрэмбэлэхийг амжилттай болилоо</translation>
 <translation id="8551588720239073785">Огноо болон цагийн тохиргоо</translation>
 <translation id="8553395910833293175">Бүх дэлгэц дээр аль хэдийн оноосон.</translation>

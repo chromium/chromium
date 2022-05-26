@@ -121,6 +121,7 @@
 <translation id="1942765061641586207">የምስል ጥራት</translation>
 <translation id="1972984168337863910">የፋይሎች ግብረመልስ ፓነሎችን ዘርጋ</translation>
 <translation id="1995337122023280937">ወደ የፋይል ቦታ ሂድ</translation>
+<translation id="1996806196681857869">Z የታመቀ መዝገብ</translation>
 <translation id="2001796770603320721">በDrive ውስጥ ያስተዳድሩ</translation>
 <translation id="2009067268969781306">አንጻፊን መቅረጽ በላዩ ላይ ያለን ሁሉንም ውሂብ ይሰርዛል። ይህ እርምጃ ሊቀለበስ አይችልም።</translation>
 <translation id="2025955442973426285">ትግርኛ</translation>
@@ -589,6 +590,7 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> ንጥሎች</translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">የድርደራ አማራጮች</translation>
+<translation id="5985041959109124139">Z የታመቀ tar መዝገብ</translation>
 <translation id="6007237601604674381">መውሰድ አልተሳካም። <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">የኤተርኔት አውታረ መረብ</translation>
 <translation id="60357267506638014">የቼክኛ QWERTY</translation>
@@ -619,6 +621,7 @@
 <translation id="6220423280121890987">ፑንጃቢ</translation>
 <translation id="6224240818060029162">ዴንማርክኛ</translation>
 <translation id="6224253798271602650">ቅርጸት <ph name="DRIVE_NAME" /></translation>
+<translation id="6224665423283788195">Zstandard የታመቀ መዝገብ</translation>
 <translation id="6227235786875481728">ይህ ፋይል ሊጫወት አይችልም።</translation>
 <translation id="6241349547798190358">ደች (ቤልጂየም)</translation>
 <translation id="6267547857941397424">አውታረ መረብ <ph name="NETWORK_INDEX" /> ከ<ph name="NETWORK_COUNT" />፣ <ph name="PHONE_NAME" />፣ የሲግናል ጥንካሬ <ph name="SIGNAL_STRENGTH" />%፣ የስልክ ባትሪ <ph name="BATTERY_STATUS" />%፣ አገናኝ</translation>
@@ -646,6 +649,7 @@
 <translation id="6509122719576673235">ኖርዌጂያን</translation>
 <translation id="6528513914570774834">ሌሎች የዚህ መሣሪያ ተጠቃሚዎች ይህን አውታረ መረብ እንዲጠቀሙ ይፍቀዱላቸው</translation>
 <translation id="653019979737152879"><ph name="FILE_NAME" />ን በማመሳሰል ላይ...</translation>
+<translation id="6530595303336443929">Zstandard የታመቀ tar መዝገብ</translation>
 <translation id="6549689063733911810">የቅርብ ጊዜ</translation>
 <translation id="6558280019477628686">አንድ ስህተት ተከስቷል። አንዳንድ ንጥሎች አልተሰረዙ ሊሆኑ ይችላሉ።</translation>
 <translation id="656398493051028875">«<ph name="FILENAME" />»ን በመሰረዝ ላይ...</translation>

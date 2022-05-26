@@ -78,6 +78,7 @@
 <translation id="1578784163189013834">Elegir el fondo del protector de pantalla</translation>
 <translation id="1615335640928990664">Uso de datos desde el <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Ejecutar prueba de carga</translation>
+<translation id="1631385268983122904">No vuelvas a armar el dispositivo</translation>
 <translation id="1639239467298939599">Cargando</translation>
 <translation id="1641857168437328880">Alimentador de documentos (una cara)</translation>
 <translation id="1643449475550628585">Cambiar la imagen del fondo de pantalla diariamente</translation>
@@ -85,6 +86,7 @@
 <translation id="1645954272419197032">Confirma la información del dispositivo</translation>
 <translation id="1662989795263954667">Se detuvo: sin tinta</translation>
 <translation id="1668469839109562275">VPN integrada</translation>
+<translation id="1676557873873341166">Grabando un video</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Agente de resolución de DNS disponible</translation>
 <translation id="1715359911173058521">Hay un problema de comunicación con el escáner. Revisa la conexión de red o USB y vuelve a intentarlo.</translation>
@@ -159,6 +161,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Activar Bluetooth para buscar los dispositivos cercanos</translation>
+<translation id="2340422556570134524">Se activó la protección de escritura de forma inesperada. Desactiva la protección de escritura de forma manual y vuelve a intentarlo.</translation>
 <translation id="2346474577291266260">Excelente (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2360257214555822463">Se detectaron <ph name="LINK_BEGIN" />componentes no calificados<ph name="LINK_END" />. Si quieres confirmar que se instalaron, hazlo ahora.</translation>
@@ -474,6 +477,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="5372659122375744710">la red Wi-Fi no es segura</translation>
 <translation id="5376354385557966694">Modo claro automático</translation>
 <translation id="537872351913703572">El dispositivo cambiará de organización o usuario</translation>
+<translation id="5389159777326897627">Estilo y fondo de pantalla</translation>
 <translation id="5389224261615877010">Arcoíris</translation>
 <translation id="5395600419410242651">Borrar todos los datos</translation>
 <translation id="5400907029458559844">El dispositivo se está conectando.</translation>
@@ -643,6 +647,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="6961170852793647506">Para comenzar, coloca tu documento en el escáner.</translation>
 <translation id="6965382102122355670">Aceptar</translation>
 <translation id="6977381486153291903">Revisión de firmware</translation>
+<translation id="6995564396478647735">Asegúrate de que la protección de escritura esté activada</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> administra este dispositivo y tiene acceso a toda la actividad del usuario, incluso las páginas web que visitó, su correo electrónico y sus contraseñas.</translation>
 <translation id="7040230719604914234">Operador</translation>
 <translation id="7041549558901442110">El dispositivo no está conectado.</translation>
@@ -653,6 +658,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Se produjo un error de autorización</translation>
 <translation id="7103252855940681301">El nombre del dispositivo <ph name="INDEX" /> de <ph name="COUNT" /> es <ph name="NAME" />.</translation>
+<translation id="7126228745139711113">La protección de escritura está desactivada</translation>
 <translation id="7134436342991564651">{0,plural, =1{Servidor de nombres}other{Servidores de nombres}}</translation>
 <translation id="7143207342074048698">Conectando</translation>
 <translation id="7144878232160441200">Volver a intentar</translation>
@@ -744,6 +750,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="80398733265834479">Habilitar el modo de color automático</translation>
 <translation id="8041089156583427627">Enviar comentario</translation>
 <translation id="8045012663542226664">Micrófono silenciado</translation>
+<translation id="8063022551652308521">La protección de pantalla sigue desactivada. Actívala para continuar.</translation>
 <translation id="8075838845814659848">Carga restante</translation>
 <translation id="8082366717211101304">No se puede resolver el DNS desde apps para Android</translation>
 <translation id="8083281199617904460">Este proceso de reparación está diseñado para un técnico capacitado. No comiences con la reparación hasta no haber reemplazado los componentes dañados.</translation>
@@ -814,6 +821,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Para administrar esta función, utiliza las flechas hacia la izquierda o la derecha.</translation>
 <translation id="8712637175834984815">Entendido</translation>
 <translation id="871560550817059752">Error: Sin tinta</translation>
+<translation id="8717030727630712160">Reanudando el proceso de reparación…</translation>
 <translation id="8723108084122415655">la red no predeterminada supera el umbral de latencia</translation>
 <translation id="8725066075913043281">Intentar nuevamente</translation>
 <translation id="8726019395068607495">Se detuvo: la tapa está abierta</translation>
@@ -835,6 +843,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">El dispositivo es una tablet.</translation>
 <translation id="8881098542468797602">Se completó correctamente la prueba</translation>
+<translation id="8897267175591692539">Ya puedes volver a armar el dispositivo</translation>
 <translation id="8898840733695078011">Intensidad de la señal</translation>
 <translation id="8910721771319628100">la red predeterminada supera el umbral de latencia</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> de <ph name="GIVEN_NAME" /></translation>

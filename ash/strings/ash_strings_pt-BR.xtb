@@ -205,7 +205,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="211328683600082144">ATIVAR MICROFONE</translation>
 <translation id="2123115117533398272">O ChromeOS mostra sugestões de novos conteúdos para conhecer. Ele só vai enviar estatísticas para melhorar a qualidade se você compartilhar os dados de uso. <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="2126242104232412123">Novo espaço</translation>
-<translation id="2127372758936585790">Carregador de baixa potência</translation>
 <translation id="2132302418721800944">Gravar tela cheia</translation>
 <translation id="2135456203358955318">Lupa em área fixa</translation>
 <translation id="2148716181193084225">Hoje</translation>
@@ -700,6 +699,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="5071064518267176975">Um app quer usar o microfone</translation>
 <translation id="5078796286268621944">PIN incorreto</translation>
 <translation id="5083553833479578423">Desbloqueie mais recursos do Assistente.</translation>
+<translation id="509790653408515442">Os apps do smartphone vão aparecer aqui quando você fizer streaming deles</translation>
 <translation id="5107522548814527560">Web</translation>
 <translation id="5117590920725113268">Mostrar próximo mês</translation>
 <translation id="5136175204352732067">Teclado diferente conectado</translation>
@@ -722,6 +722,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="523505283826916779">Configurações de acessibilidade</translation>
 <translation id="5245201184978705914">Falha ao gerar transcrição</translation>
 <translation id="5253783950165989294">Conectado a um dispositivo chamado <ph name="DEVICE_NAME" />. <ph name="BATTERY_PERCENTAGE" />% de bateria</translation>
+<translation id="5258528442992323769">Nenhum espaço de trabalho salvo</translation>
 <translation id="5260676007519551770">Espaço de trabalho 4</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> precisa de atenção.</translation>
 <translation id="5283198616748585639">Adicionar 1 min</translation>
@@ -1261,6 +1262,7 @@ Nova instalação</translation>
 <translation id="851458219935658693">Mostrar janelas do espaço de trabalho atual, botão de opção selecionado</translation>
 <translation id="8517041960877371778">Seu <ph name="DEVICE_TYPE" /> pode não ser carregado enquanto estiver ligado.</translation>
 <translation id="8535393432370007982">Desfazer ordem de classificação por cor</translation>
+<translation id="8542053257095774575">Nenhum espaço de trabalho ou modelo salvo</translation>
 <translation id="8546059259582788728">A ordem de classificação foi desfeita</translation>
 <translation id="8551588720239073785">Configurações de data e hora</translation>
 <translation id="8553395910833293175">Já atribuído a todos os espaços de trabalho.</translation>

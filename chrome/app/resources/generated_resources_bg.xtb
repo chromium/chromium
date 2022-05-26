@@ -4334,6 +4334,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="520568280985468584">Мобилната мрежа е добавена успешно. Активирането ѝ може да отнеме няколко минути.</translation>
 <translation id="5206215183583316675">Да се изтрие ли „<ph name="CERTIFICATE_NAME" />“?</translation>
 <translation id="520621735928254154">Грешка при импортирането на сертификата</translation>
+<translation id="5206562235913517859">Идентификаторът на магазина на търговеца е във формат ABC-1234</translation>
 <translation id="5206787458656075734">{COUNT,plural, =1{Успешно променихте компрометираната парола. Имате още # компрометирана парола. Chrome препоръчва да я проверите сега.}other{Успешно променихте компрометираната парола. Имате още # компрометирани пароли. Chrome препоръчва да ги проверите сега.}}</translation>
 <translation id="5207949376430453814">Открояване на точката на вмъкване в текста</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> иска да провери дали използвате отговарящо на условията устройство с Chrome OS.</translation>
@@ -4856,6 +4857,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5729712731028706266">&amp;Изглед</translation>
 <translation id="5731247495086897348">&amp;Поставяне и старт</translation>
 <translation id="5732392974455271431">Родителите ви могат да го отблокират за вас</translation>
+<translation id="5733866499231170760">Невалиден идентификатор. Форматът е неправилен. Прегледайте инструкциите, които сте получили, за да въведете идентификатора в правилния формат. Ако не можете да решите този проблем, оставете полето празно и продължете с инсталирането.</translation>
 <translation id="5734362860645681824">Комуникации</translation>
 <translation id="5734697361979786483">Добавяне на споделено хранилище</translation>
 <translation id="5736796278325406685">Моля, въведете валидно потребителско име</translation>
@@ -6963,6 +6965,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7824864914877854148">Създаването на резервно копие не можа да завърши поради грешка</translation>
 <translation id="782590969421016895">Използване на текущите страници</translation>
 <translation id="7826174860695147464">Поддръжка на наследени браузъри (LBS) – Вътрешни настройки</translation>
+<translation id="7826190688224781865">Идентификационен код на магазина на търговеца</translation>
 <translation id="7826249772873145665">Отстраняването на грешки през ADB бе деактивирано</translation>
 <translation id="7826254698725248775">Идентификаторът на устройството е несъвместим.</translation>
 <translation id="7828731929332799387">Така ще бъдат изтрити всички „бисквитки“ и данни за сайтове, налични в контексти на трети страни. Искате ли да продължите?</translation>
@@ -8433,6 +8436,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="987897973846887088">Няма налични изображения</translation>
 <translation id="988320949174893488">Накъсване от време на време</translation>
 <translation id="988978206646512040">Трябва да се въведе пропуск</translation>
+<translation id="991097196715779457">Идентификационен код на магазина на търговеца (незадължителен)</translation>
 <translation id="992032470292211616">Разширенията, приложенията и темите могат да навредят на устройството ви. Наистина ли искате да продължите?</translation>
 <translation id="992256792861109788">розово</translation>
 <translation id="992592832486024913">Деактивиране на ChromeVox (обратна връзка с говор)</translation>

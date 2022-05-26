@@ -78,6 +78,7 @@
 <translation id="1578784163189013834">Vælg baggrund til Pauseskærm</translation>
 <translation id="1615335640928990664">Dataforbrug siden <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Kør opladningstest</translation>
+<translation id="1631385268983122904">Du skal ikke samle enheden endnu.</translation>
 <translation id="1639239467298939599">Indlæser...</translation>
 <translation id="1641857168437328880">Dokumentindføring (én side)</translation>
 <translation id="1643449475550628585">Skift baggrundsbillede dagligt</translation>
@@ -85,6 +86,7 @@
 <translation id="1645954272419197032">Bekræft enhedsoplysninger</translation>
 <translation id="1662989795263954667">Stoppet – Mangler blæk</translation>
 <translation id="1668469839109562275">Indbygget VPN</translation>
+<translation id="1676557873873341166">Optager video</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS-resolver er til stede</translation>
 <translation id="1715359911173058521">Der kan ikke kommunikeres med scanneren. Tjek netværks- eller USB-forbindelsen, og prøv igen.</translation>
@@ -159,6 +161,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Slå Bluetooth til for at opdage enheder i nærheden</translation>
+<translation id="2340422556570134524">Skrivebeskyttet er uventet slået til. Slå Skrivebeskyttet til manuelt, inden du prøver igen.</translation>
 <translation id="2346474577291266260">Meget godt (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">Fortsæt</translation>
 <translation id="2360257214555822463">Der blev registreret <ph name="LINK_BEGIN" />ikke-kvalificerede komponenter<ph name="LINK_END" />. Hvis du vil bekræfte, at disse komponenter er blevet installeret korrekt, kan du gøre det nu.</translation>
@@ -473,6 +476,7 @@
 <translation id="5372659122375744710">Wi-Fi-netværket er ikke sikkert</translation>
 <translation id="5376354385557966694">Automatisk lys tilstand</translation>
 <translation id="537872351913703572">Enheden overdrages til en anden bruger eller organisation</translation>
+<translation id="5389159777326897627">Baggrund og stil</translation>
 <translation id="5389224261615877010">Regnbue</translation>
 <translation id="5395600419410242651">Ryd alle data</translation>
 <translation id="5400907029458559844">Enheden opretter forbindelse.</translation>
@@ -642,6 +646,7 @@
 <translation id="6961170852793647506">Kom godt i gang ved at placere dit dokument i scanneren</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">Firmwarerevision</translation>
+<translation id="6995564396478647735">Sørg for, at Skrivebeskyttet er slået til</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> administrerer denne enhed og har adgang til al brugeraktivitet, bl.a. besøgte websider, adgangskoder og mails.</translation>
 <translation id="7040230719604914234">Udbyder</translation>
 <translation id="7041549558901442110">Enheden er ikke tilsluttet.</translation>
@@ -652,6 +657,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Handlingen mislykkedes – Godkendelse mislykkedes</translation>
 <translation id="7103252855940681301">Enhed <ph name="INDEX" /> af <ph name="COUNT" /> med navnet <ph name="NAME" />.</translation>
+<translation id="7126228745139711113">Skrivebeskyttet er slået fra</translation>
 <translation id="7134436342991564651">{0,plural, =1{Navneserver}one{Navneserver}other{Navneservere}}</translation>
 <translation id="7143207342074048698">Tilslutter</translation>
 <translation id="7144878232160441200">Prøv igen</translation>
@@ -743,6 +749,7 @@
 <translation id="80398733265834479">Aktivér tilstanden med automatisk farve</translation>
 <translation id="8041089156583427627">Send feedback</translation>
 <translation id="8045012663542226664">Slå mikrofonens lyd fra</translation>
+<translation id="8063022551652308521">Skrivebeskyttet er stadig slået fra. Du skal slå Skrivebeskyttet til for at fortsætte.</translation>
 <translation id="8075838845814659848">Resterende batteriniveau</translation>
 <translation id="8082366717211101304">Der kan ikke udføres DNS-oversættelse fra Android-apps</translation>
 <translation id="8083281199617904460">Denne reparationsproces er beregnet til en tekniker med speciale i reparation. Start først processen, når de komponenter, der ikke fungerer, er blevet udskiftet.</translation>
@@ -813,6 +820,7 @@
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Tryk på venstre- eller højrepil for at bruge denne funktion.</translation>
 <translation id="8712637175834984815">Forstået</translation>
 <translation id="871560550817059752">Handlingen mislykkedes – Mangler blæk</translation>
+<translation id="8717030727630712160">Genoptager reparationsprocessen…</translation>
 <translation id="8723108084122415655">Det netværk, der ikke er angivet som standardnetværket, overstiger grænsen for forsinkelse</translation>
 <translation id="8725066075913043281">Forsøg igen</translation>
 <translation id="8726019395068607495">Stoppet – Åben låge</translation>
@@ -834,6 +842,7 @@
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Enheden er en tablet.</translation>
 <translation id="8881098542468797602">Testen blev gennemført</translation>
+<translation id="8897267175591692539">Du kan nu samle enheden</translation>
 <translation id="8898840733695078011">Signalstyrke</translation>
 <translation id="8910721771319628100">Standardnetværket overstiger grænsen for forsinkelse</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> tilhørende <ph name="GIVEN_NAME" /></translation>

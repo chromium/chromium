@@ -61,6 +61,7 @@
 <translation id="2583187216237139145">આ પ્રોફાઇલના ઉપયોગ (જેમકે બુકમાર્ક, ઇતિહાસ, પાસવર્ડ બનાવવા અને અન્ય સેટિંગ ગોઠવવા) દરમિયાન જનરેટ થયેલા કોઈપણ Chromium ડેટાને ઑફિસની પ્રોફાઇલના વ્યવસ્થાપક કાઢી નાખી શકે છે. <ph name="LEARN_MORE" /></translation>
 <translation id="2648074677641340862">ઇન્સ્ટૉલેશન દરમિયાન ઓપરેટિંગ સિસ્ટમ ભૂલ આવી. કૃપા કરીને ફરીથી Chromium ડાઉનલોડ કરો.</translation>
 <translation id="2661879430930417727">જો તમે ડિવાઇસ શેર કરતા હો, તો મિત્રો અને કુટુંબીજનો અલગ-અલગ બ્રાઉઝ કરી શકે છે અને તેઓ તેમને જોઈએ તે પ્રમાણે Chromiumનું સેટઅપ કરી શકે છે</translation>
+<translation id="268602741124540128">Chromiumમાં સ્વાગત છે, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="2711502716910134313">Chromium ટૅબ</translation>
 <translation id="2718390899429598676">ઉમેરેલી સુરક્ષા માટે, Chromium તમારા ડેટાને એન્ક્રિપ્ટ કરશે.</translation>
 <translation id="2770231113462710648">ડિફૉલ્ટ બ્રાઉઝરને આના પર બદલો:</translation>
@@ -119,9 +120,11 @@
 <translation id="3830894615770080216">ChromiumOS સિસ્ટમ</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
 <translation id="386822487697155367">ChromiumOS વડે સહાય મેળવો</translation>
+<translation id="3871664619793219264"><ph name="ACCOUNT_EMAIL" />માંથી તમારા Chromium બ્રાઉઝરની વસ્તુઓ મેળવો</translation>
 <translation id="388648406173476553">Chromiumને કસ્ટમાઇઝ અને તેનું નિયંત્રણ કરો. તમારે ક્યાંક ધ્યાન આપવાની જરૂર છે - વિગતો માટે ક્લિક કરો.</translation>
 <translation id="3889543394854987837">Chromium ને ખોલવા માટે તમારા નામને ક્લિક કરો અને બ્રાઉઝ કરવાનું પ્રારંભ કરો.</translation>
 <translation id="390528597099634151"><ph name="EXISTING_USER" /> આ Chromium પ્રોફાઇલમાં પહેલેથી સાઇન ઇન છે. તમારું બ્રાઉઝિંગ અલગ રાખવા, Chromium તમારા માટે તમારી અલગ પ્રોફાઇલ બનાવી શકે છે.</translation>
+<translation id="391789666908693569"><ph name="MANAGER_NAME" /> દ્વારા તમારું એકાઉન્ટ મેનેજ કરવામાં આવે છે. તમારા ઍડમિનિસ્ટ્રેટર આ Chromium બ્રાઉઝરની પ્રોફાઇલ અને બુકમાર્ક, ઇતિહાસ તથા પાસવર્ડ જેવો તેનો ડેટા જોઈ શકે છે અને તેમાં ફેરફાર કરી શકે છે.</translation>
 <translation id="3945058413678539331">Chromium પાસવર્ડની કૉપિ કરવાનો પ્રયાસ કરી રહ્યું છે. આની મંજૂરી આપવા માટે તમારો Windows પાસવર્ડ લખો.</translation>
 <translation id="3962623956404948996">Chromium આ ફાઇલને સ્કૅન કરવાનો સુઝાવ આપે છે, કારણ કે તે જોખમકારક હોઈ શકે છે</translation>
 <translation id="3997429360543082038">ChromiumOS વિશે</translation>

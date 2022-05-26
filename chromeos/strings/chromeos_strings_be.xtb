@@ -78,6 +78,7 @@
 <translation id="1578784163189013834">Выбраць фон застаўкі</translation>
 <translation id="1615335640928990664">Выкарыстанне трафіка з <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Выканаць праверку зарадкі</translation>
+<translation id="1631385268983122904">Пакуль што не збірайце прыладу</translation>
 <translation id="1639239467298939599">Ідзе загрузка</translation>
 <translation id="1641857168437328880">Прылада для падачы дакументаў (адным бокам)</translation>
 <translation id="1643449475550628585">Змяняць відарыс шпалер штодня</translation>
@@ -85,6 +86,7 @@
 <translation id="1645954272419197032">Пацвердзіце звесткі пра прыладу</translation>
 <translation id="1662989795263954667">Спынена: скончылася чарніла</translation>
 <translation id="1668469839109562275">Убудаваная сетка VPN</translation>
+<translation id="1676557873873341166">Ідзе здымка відэа</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Наяўнасць DNS-рэзолвера</translation>
 <translation id="1715359911173058521">Узнікла праблема пры абмене даных са сканерам. Праверце падключэнне да сеткі або USB-падключэнне і паўтарыце спробу.</translation>
@@ -159,6 +161,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> DPI</translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Каб знайсці прылады паблізу, уключыце Bluetooth</translation>
+<translation id="2340422556570134524">Была нечакана ўключана абарона ад запісу. Адключыце яе ўручную і паўтарыце спробу.</translation>
 <translation id="2346474577291266260">Выдатны (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">Працягнуць</translation>
 <translation id="2360257214555822463">Выяўлены <ph name="LINK_BEGIN" />кампаненты, якія не адпавядаюць патрабаванням<ph name="LINK_END" />. Калі вы хочаце пацвердзіць, што яны ўсталяваны, зрабіце гэта зараз.</translation>
@@ -474,6 +477,7 @@
 <translation id="5372659122375744710">Сетка Wi-Fi не абаронена</translation>
 <translation id="5376354385557966694">Аўтаматычнае ўключэнне светлага рэжыму</translation>
 <translation id="537872351913703572">Прылада будзе перададзена іншаму карыстальніку або арганізацыі</translation>
+<translation id="5389159777326897627">Шпалеры і стыль</translation>
 <translation id="5389224261615877010">Вясёлка</translation>
 <translation id="5395600419410242651">Сцерці ўсе даныя</translation>
 <translation id="5400907029458559844">Прылада падключаецца.</translation>
@@ -643,6 +647,7 @@
 <translation id="6961170852793647506">Для пачатку палажыце дакумент у сканер</translation>
 <translation id="6965382102122355670">ОК</translation>
 <translation id="6977381486153291903">Версія ўбудаванага ПЗ</translation>
+<translation id="6995564396478647735">Упэўніцеся, што абарона ад запісу ўключана</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> кіруе гэтай прыладай і мае доступ да ўсіх дзеянняў карыстальніка, у тым ліку да гісторыі наведаных вэб-старонак, да пароляў і электроннай пошты.</translation>
 <translation id="7040230719604914234">Аператар</translation>
 <translation id="7041549558901442110">Прылада не падключана.</translation>
@@ -653,6 +658,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Збой: памылка аўтарызацыі</translation>
 <translation id="7103252855940681301">Прылада <ph name="INDEX" /> з <ph name="COUNT" />. Назва: <ph name="NAME" />.</translation>
+<translation id="7126228745139711113">Абарона ад запісу выключана</translation>
 <translation id="7134436342991564651">{0,plural, =1{Сервер даменных імён}one{Серверы даменных імён}few{Серверы даменных імён}many{Серверы даменных імён}other{Серверы даменных імён}}</translation>
 <translation id="7143207342074048698">Падключэнне</translation>
 <translation id="7144878232160441200">Паўтарыць</translation>
@@ -744,6 +750,7 @@
 <translation id="80398733265834479">Уключыць рэжым аўтакарэкцыі колераў</translation>
 <translation id="8041089156583427627">Адправіць водгук</translation>
 <translation id="8045012663542226664">Выключэнне гуку мікрафона</translation>
+<translation id="8063022551652308521">Абарона ад запісу ўсё яшчэ выключана. Каб працягнуць, уключыце яе.</translation>
 <translation id="8075838845814659848">Узровень зараду акумулятара</translation>
 <translation id="8082366717211101304">Не ўдалося ажыццявіць DNS-пераўтварэнне з праграм для Android</translation>
 <translation id="8083281199617904460">Рамонт павінен выконвацца кваліфікаваным спецыялістам па рамонце. Пачынаць рамонт можна толькі пасля замены кампанентаў, якія працуюць няправільна.</translation>
@@ -814,6 +821,7 @@
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Каб кіраваць гэтай функцыяй, выкарыстоўвайце клавішы са стрэлкамі ўлева і ўправа</translation>
 <translation id="8712637175834984815">Зразумела</translation>
 <translation id="871560550817059752">Збой: скончылася чарніла</translation>
+<translation id="8717030727630712160">Ідзе ўзнаўленне рамонту…</translation>
 <translation id="8723108084122415655">Затрымка ў нестандартнай сетцы перавышае парогавае значэнне</translation>
 <translation id="8725066075913043281">Паўтарыць спробу</translation>
 <translation id="8726019395068607495">Спынена: дзверцы прынтара адкрыты</translation>
@@ -835,6 +843,7 @@
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Гэта планшэт.</translation>
 <translation id="8881098542468797602">Праверка пройдзена</translation>
+<translation id="8897267175591692539">Цяпер вы можаце сабраць прыладу</translation>
 <translation id="8898840733695078011">Сіла сігналу</translation>
 <translation id="8910721771319628100">Затрымка ў стандартнай сетцы перавышае парогавае значэнне</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />: <ph name="DEVICE_TYPE" /></translation>

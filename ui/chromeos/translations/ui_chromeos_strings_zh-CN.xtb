@@ -121,6 +121,7 @@
 <translation id="1942765061641586207">图片分辨率</translation>
 <translation id="1972984168337863910">展开文件反馈面板</translation>
 <translation id="1995337122023280937">转到文件位置</translation>
+<translation id="1996806196681857869">Z 压缩的归档文件</translation>
 <translation id="2001796770603320721">在云端硬盘中管理</translation>
 <translation id="2009067268969781306">将驱动器格式化会删除其中存储的所有数据。此操作无法撤消。</translation>
 <translation id="2025955442973426285">蒂格尼亚语</translation>
@@ -584,6 +585,7 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> 项内容</translation>
 <translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">排序选项</translation>
+<translation id="5985041959109124139">Z 压缩的 tar 归档文件</translation>
 <translation id="6007237601604674381">移动失败。<ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">以太网</translation>
 <translation id="60357267506638014">捷克语(QWERTY)</translation>
@@ -614,6 +616,7 @@
 <translation id="6220423280121890987">旁遮普语</translation>
 <translation id="6224240818060029162">丹麦语</translation>
 <translation id="6224253798271602650">将“<ph name="DRIVE_NAME" />”格式化</translation>
+<translation id="6224665423283788195">Zstandard 压缩的归档文件</translation>
 <translation id="6227235786875481728">此文件无法播放。</translation>
 <translation id="6241349547798190358">荷兰语（比利时）</translation>
 <translation id="6267547857941397424">第 <ph name="NETWORK_INDEX" /> 个网络（共 <ph name="NETWORK_COUNT" /> 个），<ph name="PHONE_NAME" />，信号强度为 <ph name="SIGNAL_STRENGTH" />%，剩余电量为 <ph name="BATTERY_STATUS" />%，连接</translation>
@@ -641,6 +644,7 @@
 <translation id="6509122719576673235">挪威语</translation>
 <translation id="6528513914570774834">允许此设备的其他用户使用此网络</translation>
 <translation id="653019979737152879">正在同步<ph name="FILE_NAME" />…</translation>
+<translation id="6530595303336443929">Zstandard 压缩的 tar 归档文件</translation>
 <translation id="6549689063733911810">我最近用过</translation>
 <translation id="6558280019477628686">出错了。系统可能尚未删除某些项。</translation>
 <translation id="656398493051028875">正在删除“<ph name="FILENAME" />”…</translation>

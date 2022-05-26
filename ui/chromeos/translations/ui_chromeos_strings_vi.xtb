@@ -121,6 +121,7 @@
 <translation id="1942765061641586207">Độ phân giải hình ảnh</translation>
 <translation id="1972984168337863910">Mở rộng bảng dữ liệu phản hồi về tệp</translation>
 <translation id="1995337122023280937">Chuyển đến vị trí tệp</translation>
+<translation id="1996806196681857869">Tệp lưu trữ nén bằng Z</translation>
 <translation id="2001796770603320721">Quản lý trong Drive</translation>
 <translation id="2009067268969781306">Thao tác định dạng ổ sẽ xóa toàn bộ dữ liệu lưu trữ trên ổ đó. Bạn không thể hủy thao tác này sau khi đã thực hiện.</translation>
 <translation id="2025955442973426285">Tiếng Tigrinya</translation>
@@ -589,6 +590,7 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> mục</translation>
 <translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">Tùy chọn sắp xếp</translation>
+<translation id="5985041959109124139">Tệp lưu trữ tar nén bằng Z</translation>
 <translation id="6007237601604674381">Di chuyển không thành công. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Mạng Ethernet</translation>
 <translation id="60357267506638014">QWERTY tiếng Séc</translation>
@@ -619,6 +621,7 @@
 <translation id="6220423280121890987">Tiếng Punjab</translation>
 <translation id="6224240818060029162">Tiếng Đan Mạch</translation>
 <translation id="6224253798271602650">Định dạng <ph name="DRIVE_NAME" /></translation>
+<translation id="6224665423283788195">Tệp lưu trữ nén bằng Zstandard</translation>
 <translation id="6227235786875481728">Không thể phát tệp này.</translation>
 <translation id="6241349547798190358">Tiếng Hà Lan (Bỉ)</translation>
 <translation id="6267547857941397424">Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />%, Pin điện thoại <ph name="BATTERY_STATUS" />%, Kết nối</translation>
@@ -646,6 +649,7 @@
 <translation id="6509122719576673235">Tiếng Na Uy</translation>
 <translation id="6528513914570774834">Cho phép người dùng khác của thiết bị sử dụng mạng này</translation>
 <translation id="653019979737152879">Đang đồng bộ hóa <ph name="FILE_NAME" />...</translation>
+<translation id="6530595303336443929">Tệp lưu trữ tar nén bằng Zstandard</translation>
 <translation id="6549689063733911810">Gần đây</translation>
 <translation id="6558280019477628686">Đã xảy ra lỗi. Một số mục có thể chưa được xóa.</translation>
 <translation id="656398493051028875">Đang xóa "<ph name="FILENAME" />"...</translation>

@@ -78,6 +78,7 @@
 <translation id="1578784163189013834">स्क्रिन सेभरको ब्याकग्राउन्ड चयन गर्नुहोस्</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> देखि प्रयोग गरिएको डेटा</translation>
 <translation id="1621067168122174824">ब्याट्रीको चार्जसम्बन्धी परीक्षण गर्नुहोस्</translation>
+<translation id="1631385268983122904">डिभाइसमा अहिले नै ब्याट्री नहाल्नुहोस्</translation>
 <translation id="1639239467298939599">लोड गर्दै</translation>
 <translation id="1641857168437328880">डकुमेन्ट फिडर (एकतर्फी)</translation>
 <translation id="1643449475550628585">वालपेपर दैनिक रूपमा बदल्नुहोस्</translation>
@@ -85,6 +86,7 @@
 <translation id="1645954272419197032">कृपया डिभाइससम्बन्धी जानकारी पुष्टि गर्नुहोस्</translation>
 <translation id="1662989795263954667">रोकियो - प्रिन्टरको मसी सकियो</translation>
 <translation id="1668469839109562275">अन्तर्निर्मित VPN</translation>
+<translation id="1676557873873341166">भिडियो खिचिँदै छ</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS रिजल्भर प्रिजेन्ट</translation>
 <translation id="1715359911173058521">स्क्यानरसँग कनेक्ट गर्ने क्रममा कुनै समस्या आयो। नेटवर्क वा USB कनेक्सन जाँच्नुहोस् र फेरि प्रयास गर्नुहोस्।</translation>
@@ -159,6 +161,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2336381494582898602">पावरवास</translation>
 <translation id="2338501278241028356">नजिकैका डिभाइसहरू पत्ता लगाउन ब्लुटुथ अन गर्नुहोस्</translation>
+<translation id="2340422556570134524">राइट प्रोटेक्ट अनपेक्षित रूपमा अन भएको छ। फेरि प्रयास गर्नुअघि कृपया म्यानुअल रूपमा राइट प्रोटेक्ट अफ गर्नुहोस्।</translation>
 <translation id="2346474577291266260">उत्कृष्ट (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">जारी राख्नुहोस्</translation>
 <translation id="2360257214555822463"><ph name="LINK_BEGIN" />अयोग्य कम्पोनेन्टहरू<ph name="LINK_END" /> भेटिए। तपाईं यो कम्पोनेन्ट इन्स्टल गरिएको छ भन्ने कुरा पुष्टि गर्ने विकल्प रोज्न चाहनुहुन्छ भने कृपया अहिले नै उक्त विकल्प रोज्नुहोस्।</translation>
@@ -473,6 +476,7 @@
 <translation id="5372659122375744710">WiFi नेटवर्क सुरक्षित छैन</translation>
 <translation id="5376354385557966694">स्वचालित उज्यालो मोड</translation>
 <translation id="537872351913703572">अर्कै प्रयोगकर्ता वा संस्थालाई डिभाइसको स्वामित्व दिइने छ</translation>
+<translation id="5389159777326897627">वालपेपर र शैली</translation>
 <translation id="5389224261615877010">इन्द्रेणी</translation>
 <translation id="5395600419410242651">सबै डेटा मेटाइयोस्</translation>
 <translation id="5400907029458559844">डिभाइस कनेक्ट गरिँदै छ।</translation>
@@ -642,6 +646,7 @@
 <translation id="6961170852793647506">कागजात स्क्यान गर्ने कार्य सुरु गर्न उक्त कागजात स्क्यानरमा राख्नुहोस्</translation>
 <translation id="6965382102122355670">ठिक छ</translation>
 <translation id="6977381486153291903">फर्मवेयरको पुनरावृत्ति</translation>
+<translation id="6995564396478647735">राइट प्रोटेक्ट अन छ भन्ने कुरा सुनिश्चित गर्नुहोस्</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> ले यो डिभाइस व्यवस्थापन गर्छ र यसले हेरिएका वेबपेज, पासवर्ड र इमेललगायत प्रयोगकर्ताले गर्ने सबै क्रियाकलाप हेर्न सक्छ।</translation>
 <translation id="7040230719604914234">सेवा प्रदायक</translation>
 <translation id="7041549558901442110">डिभाइस कनेक्ट गरिएको छैन।</translation>
@@ -652,6 +657,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">विफल भयो - अनुमति दिइएको छैन</translation>
 <translation id="7103252855940681301"><ph name="COUNT" /> वटामध्ये <ph name="INDEX" /> औँ डिभाइस, डिभाइसको नाम: <ph name="NAME" />।</translation>
+<translation id="7126228745139711113">राइट प्रोटेक्ट अफ छ</translation>
 <translation id="7134436342991564651">{0,plural, =1{नेम सर्भर}other{नेम सेभरहरू}}</translation>
 <translation id="7143207342074048698">जडान गर्दै...</translation>
 <translation id="7144878232160441200">पुन: प्रयास गर्नुहोस्</translation>
@@ -743,6 +749,7 @@
 <translation id="80398733265834479">स्वतः रङ समायोजन गर्ने मोड अन गर्नुहोस्</translation>
 <translation id="8041089156583427627">प्रतिक्रिया पठाउनुहोस्।</translation>
 <translation id="8045012663542226664">माइक्रोफोन म्युट गर्ने की</translation>
+<translation id="8063022551652308521">राइट प्रोटेक्ट अझै अफ छ। अघि बढ्न राइट प्रोटेक्ट अन गर्नुहोस्।</translation>
 <translation id="8075838845814659848">बाँकी ब्याट्री</translation>
 <translation id="8082366717211101304">Android एपहरूबाट DNS समाधान गर्न सकिएन</translation>
 <translation id="8083281199617904460">यो मर्मत प्रक्रिया तालिम प्राप्त मर्मत प्राविधिकका लागि तयार पारिएको हो। खराब कम्पोनेन्टहरू बदलेपछि मात्र उक्त प्रक्रिया सुरु गर्नुहोस्।</translation>
@@ -813,6 +820,7 @@
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> यो सुविधा व्यवस्थापन गर्न लेफ्ट वा राइट एरो की प्रयोग गर्नुहोस्।</translation>
 <translation id="8712637175834984815">भयो</translation>
 <translation id="871560550817059752">प्रिन्ट गर्न सकिएन - मसी सकियो</translation>
+<translation id="8717030727630712160">मर्मत गर्ने प्रक्रिया सुचारु गरिँदै छ…</translation>
 <translation id="8723108084122415655">डिफल्ट नेटवर्कका रूपमा सेट नगरिएको यस नेटवर्कको विलम्बता समयसीमाभन्दा बढी छ</translation>
 <translation id="8725066075913043281">पुन: प्रयास गर्नुहोस्</translation>
 <translation id="8726019395068607495">रोकियो - प्रिन्टरको कभर खुला छ</translation>
@@ -834,6 +842,7 @@
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">यो डिभाइस ट्याब्लेट हो।</translation>
 <translation id="8881098542468797602">परीक्षण सफल भयो</translation>
+<translation id="8897267175591692539">तपाईं अब डिभाइसमा ब्याट्री हाल्न सक्नुहुन्छ</translation>
 <translation id="8898840733695078011">सिग्नलको क्षमता</translation>
 <translation id="8910721771319628100">डिफल्ट नेटवर्कको विलम्बता समयसीमाभन्दा बढी छ</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" /> को <ph name="DEVICE_TYPE" /></translation>

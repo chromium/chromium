@@ -121,6 +121,7 @@
 <translation id="1942765061641586207">وضوح تصویر</translation>
 <translation id="1972984168337863910">بزرگ کردن پانل‌های بازخورد فایل‌ها</translation>
 <translation id="1995337122023280937">رفتن به محل فایل</translation>
+<translation id="1996806196681857869">‏بایگانی فشرده Z</translation>
 <translation id="2001796770603320721">مدیریت در درایو</translation>
 <translation id="2009067268969781306">با قالب‌بندی درایو همه داده‌های ذخیره‌شده در آن حذف خواهد شد. این کنش واگردشدنی نیست.</translation>
 <translation id="2025955442973426285">تیگرینیا</translation>
@@ -589,6 +590,7 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> مورد</translation>
 <translation id="5957366693331451795">‏دستگاه‌های Chromebox</translation>
 <translation id="5982621672636444458">گزینه‌های مرتب‌سازی</translation>
+<translation id="5985041959109124139">‏بایگانی نواری فشرده Z</translation>
 <translation id="6007237601604674381">انتقال انجام نشد. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">شبکه اترنت</translation>
 <translation id="60357267506638014">‏QWERTY چکی</translation>
@@ -619,6 +621,7 @@
 <translation id="6220423280121890987">پنجابی</translation>
 <translation id="6224240818060029162">دانمارکی</translation>
 <translation id="6224253798271602650">قالب‌بندی <ph name="DRIVE_NAME" /></translation>
+<translation id="6224665423283788195">‏بایگانی فشرده Zstandard</translation>
 <translation id="6227235786875481728">این فایل اجرا نمی‌شود.</translation>
 <translation id="6241349547798190358">هلندی (بلژیک)</translation>
 <translation id="6267547857941397424">شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />، <ph name="PHONE_NAME" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" />٪، باتری تلفن <ph name="BATTERY_STATUS" />٪، اتصال</translation>
@@ -646,6 +649,7 @@
 <translation id="6509122719576673235">نروژی</translation>
 <translation id="6528513914570774834">به سایر کاربران این دستگاه اجازه داده شود از این شبکه استفاده کنند</translation>
 <translation id="653019979737152879">در حال همگام‌سازی <ph name="FILE_NAME" />...</translation>
+<translation id="6530595303336443929">‏بایگانی نواری فشرده Zstandard</translation>
 <translation id="6549689063733911810">اخیر</translation>
 <translation id="6558280019477628686">خطایی روی داد. ممکن است بعضی از موارد حذف نشده باشند.</translation>
 <translation id="656398493051028875">در حال حذف «<ph name="FILENAME" />»...</translation>

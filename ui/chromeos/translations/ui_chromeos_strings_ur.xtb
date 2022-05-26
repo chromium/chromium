@@ -121,6 +121,7 @@
 <translation id="1942765061641586207">تصویر کا ریزولیوشن</translation>
 <translation id="1972984168337863910">فائلز کے تاثرات کے پینلز کو پھیلائیں</translation>
 <translation id="1995337122023280937">فائل کے مقام پر جائیں</translation>
+<translation id="1996806196681857869">‏Z کمپریسڈ آرکائیو</translation>
 <translation id="2001796770603320721">‏Drive میں نظم کریں</translation>
 <translation id="2009067268969781306">ڈرائیو کو فارمیٹ کرنے سے اس پر اسٹور کردہ تمام ڈیٹا حذف ہو جائے گا۔ اس کارروائی کو کالعدم نہیں کیا جا سکتا۔</translation>
 <translation id="2025955442973426285">تگرینی</translation>
@@ -588,6 +589,7 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> آئٹمز</translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">ترتیب دینے کے اختیارات</translation>
+<translation id="5985041959109124139">‏Z کمپریسڈ tar آرکائیو</translation>
 <translation id="6007237601604674381">منتقل کرنا ناکام ہوگیا۔ <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">ایتھرنیٹ نیٹ ورک</translation>
 <translation id="60357267506638014">Czech QWERTY</translation>
@@ -618,6 +620,7 @@
 <translation id="6220423280121890987">پنجابی</translation>
 <translation id="6224240818060029162">ڈينش</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" /> کو فارمیٹ کریں</translation>
+<translation id="6224665423283788195">‏Zstandard کمپریسڈ آرکائیو</translation>
 <translation id="6227235786875481728">یہ فائل نہیں چلائی جا سکی۔</translation>
 <translation id="6241349547798190358">ڈچ (بیلجیم)</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_COUNT" /> میں سے نیٹ ورک <ph name="NETWORK_INDEX" />، <ph name="PHONE_NAME" />، سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" />%، فون کی بیٹری <ph name="BATTERY_STATUS" />%، منسلک کریں</translation>
@@ -645,6 +648,7 @@
 <translation id="6509122719576673235">نارويجين</translation>
 <translation id="6528513914570774834">اس آلہ کے دیگر صارفین کو یہ نیٹ ورک استعمال کرنے کی اجازت دیں</translation>
 <translation id="653019979737152879"><ph name="FILE_NAME" /> کی مطابقت پذیری ہو رہی ہے…</translation>
+<translation id="6530595303336443929">‏Zstandard کمپریسڈ tar آرکائیو</translation>
 <translation id="6549689063733911810">حالیہ</translation>
 <translation id="6558280019477628686">ایک خرابی پیش آ گئی۔ ہو سکتا ہے کچھ آئٹمز حذف نہ ہوئے ہوں۔</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />" کو حذف کیا جا رہا ہے…</translation>

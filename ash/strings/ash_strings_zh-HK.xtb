@@ -205,7 +205,6 @@
 <translation id="211328683600082144">開啟麥克風</translation>
 <translation id="2123115117533398272">Chrome OS 會顯示新內容建議以供探索。只有在您選擇分享使用情況資料時，系統才會傳送統計資料以改善服務質素。<ph name="MANAGE_SETTINGS" /></translation>
 <translation id="2126242104232412123">新增虛擬桌面</translation>
-<translation id="2127372758936585790">低功率充電器</translation>
 <translation id="2132302418721800944">錄影全螢幕</translation>
 <translation id="2135456203358955318">固定的放大鏡</translation>
 <translation id="2148716181193084225">今天</translation>
@@ -699,6 +698,7 @@
 <translation id="5071064518267176975">有應用程式要求使用麥克風</translation>
 <translation id="5078796286268621944">PIN 不正確</translation>
 <translation id="5083553833479578423">啟用更多「Google 助理」功能。</translation>
+<translation id="509790653408515442">串流手機的應用程式時，這些應用程式將會在這裡顯示</translation>
 <translation id="5107522548814527560">網絡</translation>
 <translation id="5117590920725113268">顯示下個月</translation>
 <translation id="5136175204352732067">已連接不同的鍵盤</translation>
@@ -721,6 +721,7 @@
 <translation id="523505283826916779">協助工具設定</translation>
 <translation id="5245201184978705914">無法產生轉錄文字</translation>
 <translation id="5253783950165989294">已連接名為「<ph name="DEVICE_NAME" />」的裝置，電量為 <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="5258528442992323769">沒有已儲存的桌面</translation>
 <translation id="5260676007519551770">桌面 4</translation>
 <translation id="5283099933536931082">「<ph name="APP_ITEM_TITLE" />」有新嘅要求需要你處理。</translation>
 <translation id="5283198616748585639">增加 1 分鐘</translation>
@@ -1259,6 +1260,7 @@
 <translation id="851458219935658693">顯示目前桌面嘅視窗，揀咗圓形按鈕</translation>
 <translation id="8517041960877371778">您的 <ph name="DEVICE_TYPE" /> 在開啟時可能無法充電。</translation>
 <translation id="8535393432370007982">根據顏色復原排列次序</translation>
+<translation id="8542053257095774575">沒有已儲存的桌面或範本</translation>
 <translation id="8546059259582788728">成功復原排序</translation>
 <translation id="8551588720239073785">日期和時間設定</translation>
 <translation id="8553395910833293175">已指派給所有桌面。</translation>

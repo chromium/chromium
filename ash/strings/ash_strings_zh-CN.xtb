@@ -202,7 +202,6 @@
 <translation id="211328683600082144">开启麦克风</translation>
 <translation id="2123115117533398272">Chrome 操作系统会显示有关新内容的建议以供探索。仅当您已选择分享使用情况数据时，系统才会向 Google 发送统计信息用于提升内容建议的质量。<ph name="MANAGE_SETTINGS" /></translation>
 <translation id="2126242104232412123">新桌面</translation>
-<translation id="2127372758936585790">低功率充电器</translation>
 <translation id="2132302418721800944">录制整个屏幕</translation>
 <translation id="2135456203358955318">停靠的放大镜</translation>
 <translation id="2148716181193084225">今天</translation>
@@ -697,6 +696,7 @@
 <translation id="5071064518267176975">有一款应用想使用麦克风</translation>
 <translation id="5078796286268621944">PIN 不正确</translation>
 <translation id="5083553833479578423">启用更多 Google 助理功能。</translation>
+<translation id="509790653408515442">当您流式传输您手机上的应用时，它们会显示在此处</translation>
 <translation id="5107522548814527560">网页</translation>
 <translation id="5117590920725113268">显示下一个月</translation>
 <translation id="5136175204352732067">所连接的键盘已不是原来的那个</translation>
@@ -719,6 +719,7 @@
 <translation id="523505283826916779">无障碍设置</translation>
 <translation id="5245201184978705914">无法生成转录内容</translation>
 <translation id="5253783950165989294">已连接到一部名为“<ph name="DEVICE_NAME" />”的设备，它的电池电量为 <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="5258528442992323769">尚未保存任何桌面</translation>
 <translation id="5260676007519551770">桌面 4</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" />中有需要您关注的新动态。</translation>
 <translation id="5283198616748585639">加 1 分钟</translation>
@@ -1257,6 +1258,7 @@
 <translation id="851458219935658693">显示当前桌面中的窗口，已选中单选按钮</translation>
 <translation id="8517041960877371778">您的 <ph name="DEVICE_TYPE" /> 在开启时可能无法充电。</translation>
 <translation id="8535393432370007982">撤消按颜色排序</translation>
+<translation id="8542053257095774575">尚未保存任何桌面或模板</translation>
 <translation id="8546059259582788728">已成功撤消排序</translation>
 <translation id="8551588720239073785">日期和时间设置</translation>
 <translation id="8553395910833293175">此前就已分配至所有桌面。</translation>

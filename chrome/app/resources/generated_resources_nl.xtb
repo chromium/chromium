@@ -1007,6 +1007,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1944921356641260203">Update gevonden</translation>
 <translation id="1947136734041527201">Hiermee kun je inloggen bij websites met het account dat je hebt bij een identiteitsservice</translation>
 <translation id="1949584741547056205">Snelle antwoorden</translation>
+<translation id="1949849604471335579">Achtergrond, schermbeveiliging, accentkleuren en meer personaliseren</translation>
 <translation id="1951012854035635156">Assistent</translation>
 <translation id="1954597385941141174">Sites kunnen vragen of ze verbinding mogen maken met USB-apparaten</translation>
 <translation id="1954813140452229842">Fout bij het activeren van de fileshare. Controleer je inloggegevens en probeer het opnieuw.</translation>
@@ -1038,6 +1039,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1981434377190976112">Al je gegevens op alle websites lezen</translation>
 <translation id="1984417487208496350">Geen beveiliging (niet aanbevolen)</translation>
 <translation id="1987317783729300807">Accounts</translation>
+<translation id="1987574314042117472">Populaire apps selecteren en installeren</translation>
 <translation id="1988259784461813694">Vereiste</translation>
 <translation id="1989112275319619282">Browsen</translation>
 <translation id="1989903373608997757">Altijd gebruiken</translation>
@@ -1103,6 +1105,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2048554637254265991">Fout bij starten van containerbeheer. Probeer het opnieuw.</translation>
 <translation id="2048653237708779538">Actie niet beschikbaar</translation>
 <translation id="2050339315714019657">Staand</translation>
+<translation id="2052572566310583903">Geïnstalleerd op je andere apparaten</translation>
 <translation id="2053312383184521053">Gegevens van inactieve status</translation>
 <translation id="2054240652864153171">Sitegegevens wissen voor <ph name="SITE_NAME" /> gepartitioneerd op <ph name="PARTITION_SITE_NAME" />?</translation>
 <translation id="2055585478631012616">Je wordt uitgelogd bij deze sites, ook in geopende tabbladen</translation>
@@ -1265,6 +1268,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2191754378957563929">Aan</translation>
 <translation id="2192505247865591433">Van:</translation>
 <translation id="2193365732679659387">Vertrouwensinstellingen</translation>
+<translation id="2194554416429452547">Tijdens proefperioden verkent Chrome manieren om spam, fraude en het delen tussen sites te beperken. Chrome <ph name="ESTIMATE_INTERESTS_LINK" /> die sites kunnen gebruiken om advertenties te laten zien. Je kunt je interesses beheren in de instellingen.</translation>
 <translation id="2194856509914051091">Overwegingen</translation>
 <translation id="2195331105963583686">Je kunt deze <ph name="DEVICE_TYPE" /> daarna nog steeds gebruiken, maar je apparaat ontvangt geen automatische software- en beveiligingsupdates meer.</translation>
 <translation id="2195729137168608510">E-mail beveiligen</translation>
@@ -1402,7 +1406,7 @@ Via Voice Match kan de Google Assistent de stem van <ph name="SUPERVISED_USER_NA
     <ph name="BR" />
 De Assistent neemt clips van de stem van je kind op om een uniek spraakmodel te maken, dat alleen op de apparaten van je kind wordt opgeslagen. Het spraakmodel van je kind kan tijdelijk naar Google worden gestuurd zodat de stem van je kind beter kan worden herkend.
     <ph name="BR" />
-Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijder je de functie via de instellingen voor de Assistent op het apparaat van je kind. Als je de audioclips die je kind opneemt tijdens het instellen van Voice Match wilt bekijken of verwijderen, ga je vanuit het account van je kind naar <ph name="VOICE_MATCH_SETTINGS_URL" />.
+Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijder je de functie via de instellingen voor de Assistent op het apparaat van je kind. Als je de audiofragmenten die je kind opneemt tijdens het instellen van Voice Match wilt bekijken of verwijderen, ga je vanuit het account van je kind naar <ph name="VOICE_MATCH_SETTINGS_URL" />.
     <ph name="BR" />
 <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2307630946657910723">Deel van de pagina zoeken met <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
@@ -1868,6 +1872,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="2749836841884031656">Simkaart</translation>
 <translation id="2749881179542288782">Controleer grammatica met spelling</translation>
 <translation id="2753677631968972007">Siterechten handmatig beheren</translation>
+<translation id="2754825024506485820">Vind de apps die je nodig hebt, van productiviteit tot entertainment, in de Google Play Store. Je kunt apps op elk moment installeren.</translation>
 <translation id="2755349111255270002">Deze <ph name="DEVICE_TYPE" /> resetten</translation>
 <translation id="2755367719610958252">Toegankelijkheidsfuncties beheren</translation>
 <translation id="275662540872599901">scherm uit</translation>
@@ -1944,6 +1949,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="2815693974042551705">Bookmark voor map toevoegen</translation>
 <translation id="2816319641769218778">Zet de synchronisatie aan om wachtwoorden op te slaan op je Google-account.</translation>
 <translation id="2816628817680324566">Deze site toestaan je beveiligingssleutel te identificeren?</translation>
+<translation id="2817435998497102771">Je achtergrond en stijl instellen</translation>
 <translation id="2818476747334107629">Printergegevens</translation>
 <translation id="2819167288942847344">Voorinstellingen gebruiken voor telefoon, tablet of vensters waarvan het formaat kan worden aangepast om te voorkomen dat de app ongewenst gedrag vertoont</translation>
 <translation id="2820957248982571256">Scannen…</translation>
@@ -2837,6 +2843,7 @@ Foutcode: <ph name="ERROR_CODE" />.</translation>
 <translation id="3727144509609414201">Beschikbare wifi-netwerken</translation>
 <translation id="3727187387656390258">Pop-up controleren</translation>
 <translation id="372722114124766626">Eenmalig</translation>
+<translation id="3727332897090187514">Geen opmerking toegevoegd</translation>
 <translation id="3727473233247516571">Subframe in Back-Forward Cache: <ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
 <translation id="3728188878314831180">Meldingen mirroren vanaf je telefoon</translation>
 <translation id="3728681439294129328">Netwerkadres configureren</translation>
@@ -3172,6 +3179,7 @@ Foutcode: <ph name="ERROR_CODE" />.</translation>
 <translation id="4031527940632463547">Sensoren geblokkeerd</translation>
 <translation id="4033415645631238123">Inloggen met Smart Lock is niet meer beschikbaar. Je kunt nog wel ontgrendelen met Smart Lock.</translation>
 <translation id="4033471457476425443">Nieuwe map toevoegen</translation>
+<translation id="4033711848170683365">Hiermee worden browsegegevens op dit apparaat definitief verwijderd. De Google-accounts in dit profiel kunnen worden gebruikt door andere apps op je <ph name="DEVICE_TYPE" />. Je kunt deze accounts verwijderen via <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" />.</translation>
 <translation id="4033963223187371752">Beveiligde sites kunnen niet-beveiligde content insluiten, zoals afbeeldingen of webframes</translation>
 <translation id="4034824040120875894">Printer</translation>
 <translation id="4035758313003622889">&amp;Taakbeheer</translation>
@@ -3449,6 +3457,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4314815835985389558">Synchronisatie beheren</translation>
 <translation id="4315933848520197627">Account ontkoppelen</translation>
 <translation id="4316850752623536204">Website van ontwikkelaar</translation>
+<translation id="4317733381297736564">In-app-aankopen</translation>
 <translation id="4317820549299924617">Verificatie is mislukt</translation>
 <translation id="4320177379694898372">Geen internetverbinding</translation>
 <translation id="4322394346347055525">Andere tabbladen sluiten</translation>
@@ -4030,6 +4039,7 @@ Foutcode: <ph name="ERROR_CODE" />.</translation>
 <translation id="4893522937062257019">Op het vergrendelscherm</translation>
 <translation id="4897496410259333978">Neem contact op met je beheerder voor meer informatie.</translation>
 <translation id="4898011734382862273">Het certificaat '<ph name="CERTIFICATE_NAME" />' vertegenwoordigt een certificeringsinstantie.</translation>
+<translation id="4899696330053002588">Bevat advertenties</translation>
 <translation id="489985760463306091">Start je computer opnieuw op om de verwijdering van schadelijke software te voltooien</translation>
 <translation id="4900392736118574277">Je startpagina is gewijzigd in <ph name="URL" />.</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz - geïnterlinieerd</translation>
@@ -4403,6 +4413,7 @@ Foutcode: <ph name="ERROR_CODE" />.</translation>
 <translation id="52912272896845572">Privésleutelbestand is ongeldig.</translation>
 <translation id="5291739252352359682">Maakt automatisch een ondertiteling voor media in de Chrome-browser (momenteel alleen beschikbaar in het Engels). Audio en ondertiteling worden lokaal verwerkt en worden nooit doorgestuurd vanaf het apparaat.</translation>
 <translation id="529175790091471945">Dit apparaat formatteren</translation>
+<translation id="5292862864186939732">Altijd toestaan dat <ph name="EXTENSION_NAME" /> wordt uitgevoerd op <ph name="ORIGIN" />?</translation>
 <translation id="529296195492126134">Kortstondige modus wordt niet ondersteund. Neem contact op met je beheerder.</translation>
 <translation id="5293170712604732402">Instellingen terugzetten naar de oorspronkelijke standaardwaarden</translation>
 <translation id="5294097441441645251">Moet beginnen met een kleine letter of underscore</translation>
@@ -5157,6 +5168,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="6054961935262556546">Zichtbaarheid wijzigen</translation>
 <translation id="6055171183283175969">Het opgegeven wachtwoord is onjuist.</translation>
 <translation id="6055392876709372977">PKCS nr. 1 SHA-256 met RSA-encryptie</translation>
+<translation id="6055544610007596637">Installeer apps voor je <ph name="DEVICE_TYPE" /> via de Google Play Store</translation>
 <translation id="6056710589053485679">Normaal opnieuw laden</translation>
 <translation id="6057312498756061228">Dit bestand is te groot voor een beveiligingscontrole. Je kunt bestanden tot 50 MB openen.</translation>
 <translation id="6057381398996433816">Deze site mag je bewegings- en lichtsensoren niet gebruiken.</translation>
@@ -5919,7 +5931,7 @@ Als <ph name="SUPERVISED_USER_NAME" /> hulp nodig heeft bij het lezen, laat je k
     <ph name="BR" />
 Via Voice Match kan de Assistent je herkennen en onderscheiden van anderen. De Assistent neemt clips van je stem op om een uniek spraakmodel te maken, dat alleen op jouw apparaten wordt opgeslagen. Je spraakmodel kan tijdelijk naar Google worden gestuurd zodat je stem beter kan worden herkend.
     <ph name="BR" />
-Als je later besluit dat je Voice Match niet wilt gebruiken, verwijder je dit gewoon in de instellingen voor de Assistent. Je kunt de audioclips die je opneemt tijdens het instellen van Voice Match bekijken of verwijderen via <ph name="VOICE_MATCH_SETTINGS_URL" />.
+Als je later besluit dat je Voice Match niet wilt gebruiken, verwijder je dit gewoon in de instellingen voor de Assistent. Je kunt de audiofragmenten die je opneemt tijdens het instellen van Voice Match bekijken of verwijderen via <ph name="VOICE_MATCH_SETTINGS_URL" />.
     <ph name="BR" />
 <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="6810613314571580006">Log automatisch in bij websites met de opgeslagen inloggegevens. Als de functie uitstaat, moet je je identiteit bevestigen voordat je inlogt op een website.</translation>
@@ -6128,6 +6140,7 @@ Als je later besluit dat je Voice Match niet wilt gebruiken, verwijder je dit ge
 <translation id="7002055706763150362">Als je Smart Lock voor Chromebook wilt instellen, moet Google eerst controleren of je de juiste gebruiker bent. Typ je wachtwoord om aan de slag te gaan.</translation>
 <translation id="7003339318920871147">Webdatabases</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} bestand}other{{COUNT} bestanden}}</translation>
+<translation id="7003705861991657723">Alfa</translation>
 <translation id="7003723821785740825">Stel een snellere manier in om je apparaat te ontgrendelen</translation>
 <translation id="7003844668372540529">Onbekend product <ph name="PRODUCT_ID" /> van <ph name="VENDOR_NAME" /></translation>
 <translation id="7004402701596653846">De site kan MIDI gebruiken.</translation>
@@ -6144,6 +6157,7 @@ Als je later besluit dat je Voice Match niet wilt gebruiken, verwijder je dit ge
 <translation id="7008815993384338777">Roaming staat momenteel uit</translation>
 <translation id="7009709314043432820"><ph name="APP_NAME" /> gebruikt je camera</translation>
 <translation id="701080569351381435">Bekijk paginabron</translation>
+<translation id="7011797924920577670">schat je interesses</translation>
 <translation id="7014174261166285193">Installatie mislukt.</translation>
 <translation id="7014480873681694324">Markering verwijderen</translation>
 <translation id="7017004637493394352">Zeg nog een keer "Oké Google"</translation>
@@ -6211,6 +6225,7 @@ Als je later besluit dat je Voice Match niet wilt gebruiken, verwijder je dit ge
 <translation id="7082568314107259011"><ph name="NETWORK_NAME" /> wordt beheerd door je beheerder</translation>
 <translation id="7085389578340536476">Toestaan dat Chrome audio opneemt?</translation>
 <translation id="708550780726587276">(niet ingesteld)</translation>
+<translation id="7086531709814430567">Altijd toestaan dat deze extensies worden uitgevoerd op <ph name="ORIGIN" />?</translation>
 <translation id="7086672505018440886">Chrome-logbestanden opnemen in het archief.</translation>
 <translation id="7088434364990739311">Het starten van de updatecontrole is mislukt (foutcode <ph name="ERROR" />).</translation>
 <translation id="7088674813905715446">Dit apparaat is uit bedrijf genomen door de beheerder. Vraag je beheerder om het apparaat op 'in behandeling' in te stellen, zodat het kan worden aangemeld.</translation>
@@ -8343,6 +8358,7 @@ Op <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" /> vind je m
 <translation id="9215742531438648683">Google Play Store verwijderen</translation>
 <translation id="9218430445555521422">Instellen als standaard</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" /> (niet-ondersteunde app)</translation>
+<translation id="9219582468404818260">Help ons het web beter te maken</translation>
 <translation id="9220525904950070496">Account verwijderen</translation>
 <translation id="9220820413868316583">Til je vinger op en probeer het opnieuw.</translation>
 <translation id="923467487918828349">Alle bekijken</translation>

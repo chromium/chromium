@@ -4320,6 +4320,7 @@
 <translation id="520568280985468584">已成功新增網路。行動網路可能要過幾分鐘才會啟用。</translation>
 <translation id="5206215183583316675">要刪除「<ph name="CERTIFICATE_NAME" />」嗎？</translation>
 <translation id="520621735928254154">憑證匯入錯誤</translation>
+<translation id="5206562235913517859">零售商店 ID 的格式為 ABC-1234</translation>
 <translation id="5206787458656075734">{COUNT,plural, =1{已成功變更遭外洩的密碼。你還有 # 組遭外洩的密碼。Chrome 建議你立即檢查這組密碼。}other{已成功變更遭外洩的密碼。你還有 # 組遭外洩的密碼。Chrome 建議你立即檢查這些密碼。}}</translation>
 <translation id="5207949376430453814">醒目顯示文字插入點</translation>
 <translation id="520840839826327499">「<ph name="SERVICE_NAME" />」想要確認你是否使用合格的 Chrome OS 裝置。</translation>
@@ -4839,6 +4840,7 @@
 <translation id="5729712731028706266">檢視(&amp;V)</translation>
 <translation id="5731247495086897348">貼上並前往(&amp;S)</translation>
 <translation id="5732392974455271431">你的家長可以為你解除封鎖這個網站</translation>
+<translation id="5733866499231170760">無效的 ID。輸入的格式不正確。請查看已收到的操作說明，以確保輸入的是正確格式的 ID。如果無法解決這個問題，請將此欄位留空並繼續進行安裝作業。</translation>
 <translation id="5734362860645681824">通訊</translation>
 <translation id="5734697361979786483">新增檔案共用區</translation>
 <translation id="5736796278325406685">請輸入有效的使用者名稱</translation>
@@ -6945,6 +6947,7 @@
 <translation id="7824864914877854148">發生錯誤，因此無法完成備份程序</translation>
 <translation id="782590969421016895">使用目前的網頁</translation>
 <translation id="7826174860695147464">舊版瀏覽器支援 (LBS) 功能 - 內部設定</translation>
+<translation id="7826190688224781865">零售商店 ID 代碼</translation>
 <translation id="7826249772873145665">已停用 ADB 偵錯</translation>
 <translation id="7826254698725248775">裝置 ID 發生衝突。</translation>
 <translation id="7828731929332799387">這將會刪除第三方內容中使用的所有 Cookie 和網站資料。確定要繼續嗎？</translation>
@@ -8415,6 +8418,7 @@
 <translation id="987897973846887088">沒有可用的圖片</translation>
 <translation id="988320949174893488">不時間斷</translation>
 <translation id="988978206646512040">通關密語欄位不得留空</translation>
+<translation id="991097196715779457">零售商店 ID 代碼 (選填)</translation>
 <translation id="992032470292211616">擴充功能、應用程式和主題可能會損害你的裝置，你確定要繼續嗎？</translation>
 <translation id="992256792861109788">粉紅色</translation>
 <translation id="992592832486024913">停用 ChromeVox (互動朗讀)</translation>

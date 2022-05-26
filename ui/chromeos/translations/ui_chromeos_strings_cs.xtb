@@ -121,6 +121,7 @@
 <translation id="1942765061641586207">Rozlišení obrázku</translation>
 <translation id="1972984168337863910">Rozbalit panely zpětné vazby k souborům</translation>
 <translation id="1995337122023280937">Přejít do umístění souboru</translation>
+<translation id="1996806196681857869">Komprimovaný archiv Z</translation>
 <translation id="2001796770603320721">Spravovat na Disku</translation>
 <translation id="2009067268969781306">Naformátováním jednotky smažete všechna na ní uložená data. Tuto akci nelze vrátit zpět.</translation>
 <translation id="2025955442973426285">tigrinijština</translation>
@@ -588,6 +589,7 @@
 <translation id="5955954492236143329">Počet položek: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">Možnosti řazení</translation>
+<translation id="5985041959109124139">Archiv ve formátu Tar komprimovaný metodou Z</translation>
 <translation id="6007237601604674381">Přesun se nezdařil. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Síť Ethernet</translation>
 <translation id="60357267506638014">Česká klávesnice QWERTY</translation>
@@ -618,6 +620,7 @@
 <translation id="6220423280121890987">pandžábština</translation>
 <translation id="6224240818060029162">dánština</translation>
 <translation id="6224253798271602650">Formátovat jednotku <ph name="DRIVE_NAME" /></translation>
+<translation id="6224665423283788195">Komprimovaný archiv Zstandard</translation>
 <translation id="6227235786875481728">Soubor nelze přehrát.</translation>
 <translation id="6241349547798190358">nizozemština (Belgie)</translation>
 <translation id="6267547857941397424">Síť <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, síla signálu: <ph name="SIGNAL_STRENGTH" /> %, baterie telefonu: <ph name="BATTERY_STATUS" /> %, připojit</translation>
@@ -645,6 +648,7 @@
 <translation id="6509122719576673235">norština</translation>
 <translation id="6528513914570774834">Povolit ostatním uživatelům tohoto zařízení používat tuto síť</translation>
 <translation id="653019979737152879">Synchronizace souboru <ph name="FILE_NAME" />...</translation>
+<translation id="6530595303336443929">Archiv ve formátu Tar komprimovaný metodou Zstandard</translation>
 <translation id="6549689063733911810">Poslední</translation>
 <translation id="6558280019477628686">Došlo k chybě. Některé položky možná nebyly smazány.</translation>
 <translation id="656398493051028875">Mazání souboru <ph name="FILENAME" />...</translation>

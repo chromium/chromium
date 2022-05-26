@@ -205,7 +205,6 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="211328683600082144">MİKROFONU YANDIRIN</translation>
 <translation id="2123115117533398272">ChromeOS yeni məzmun üçün təklifləri göstərir. Yalnız istifadə datasını paylaşmağı seçdiyiniz zaman keyfiyyəti yaxşılaşdırmaq üçün statistika göndərir. <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="2126242104232412123">Yeni iş masası</translation>
-<translation id="2127372758936585790">Gücü az şarjer</translation>
 <translation id="2132302418721800944">Tam ekranı çəkin</translation>
 <translation id="2135456203358955318">Daxili miqyas</translation>
 <translation id="2148716181193084225">Bu gün</translation>
@@ -700,6 +699,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="5071064518267176975">Tətbiq mikrofondan istifadə etmək istəyir</translation>
 <translation id="5078796286268621944">Yanlış PIN</translation>
 <translation id="5083553833479578423">Daha çox Assistent funksiyalarını kiliddən çıxarın.</translation>
+<translation id="509790653408515442">Telefonunuzdakı tətbiqləri yayımladığınız zaman onlar burada görünəcək</translation>
 <translation id="5107522548814527560">Veb</translation>
 <translation id="5117590920725113268">Gələn ayı göstərin</translation>
 <translation id="5136175204352732067">Fərqli klaviatura qoşuldu</translation>
@@ -722,6 +722,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="523505283826916779">Əlçatımlılıq ayarları</translation>
 <translation id="5245201184978705914">Transkript yaratmaq olmur</translation>
 <translation id="5253783950165989294"><ph name="DEVICE_NAME" /> adlı cihaza qoşulub, enerji: <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="5258528442992323769">Yadda saxlanmış masa yoxdur</translation>
 <translation id="5260676007519551770">Masa 4</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> diqqətinizi tələb edir.</translation>
 <translation id="5283198616748585639">1 dəqiqə əlavə edin</translation>
@@ -1261,6 +1262,7 @@ Yeni quraşdırma</translation>
 <translation id="851458219935658693">Mövcud masadan pəncərələri göstərin, radio düyməsi seçilib</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> cihazınız aktiv olan zaman elektrik yığmaya bilər.</translation>
 <translation id="8535393432370007982">Rəng üzrə çeşidləmə sırasını ləğv edin</translation>
+<translation id="8542053257095774575">Yadda saxlanmış masa və ya şablon yoxdur</translation>
 <translation id="8546059259582788728">Çeşidləmənin ləğvi uğurlu oldu</translation>
 <translation id="8551588720239073785">Tarix və vaxt ayarları</translation>
 <translation id="8553395910833293175">Artıq bütün masalara təyin olunub.</translation>

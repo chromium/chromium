@@ -312,6 +312,7 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# 個音訊檔案}other{# 個音訊檔案}}</translation>
 <translation id="265156376773362237">標準預先載入模式</translation>
 <translation id="2656405586795711023">網頁應用程式</translation>
+<translation id="2669454659051515572">這部裝置的任何使用者都可以看到已下載的檔案</translation>
 <translation id="2702516483241149200">新功能：分享可跳至這段文字的連結</translation>
 <translation id="2704606927547763573">已複製</translation>
 <translation id="2707726405694321444">重新整理頁面</translation>
@@ -777,6 +778,7 @@
 <translation id="5246093389635966745">編輯工具列捷徑</translation>
 <translation id="526421993248218238">無法載入這個網頁</translation>
 <translation id="5271967389191913893">裝置無法開啟您要下載的這項內容。</translation>
+<translation id="5274286919938458946">已連結到 <ph name="CARD_DETAIL" /></translation>
 <translation id="5292796745632149097">傳送到</translation>
 <translation id="5300426565656326054">以瀏覽器為主的廣告個人化</translation>
 <translation id="5304593522240415983">這個欄位不能留空</translation>

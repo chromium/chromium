@@ -121,6 +121,7 @@
 <translation id="1942765061641586207">Billedopløsning</translation>
 <translation id="1972984168337863910">Udvid paneler med feedback til filer</translation>
 <translation id="1995337122023280937">Gå til filplacering</translation>
+<translation id="1996806196681857869">Z-komprimeret arkiv</translation>
 <translation id="2001796770603320721">Administrer i Drev</translation>
 <translation id="2009067268969781306">Formatering af et drev sletter alle de data, der er gemt på det. Denne handling kan ikke fortrydes.</translation>
 <translation id="2025955442973426285">Tigrinsk</translation>
@@ -589,6 +590,7 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> elementer</translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">Sorteringsmuligheder</translation>
+<translation id="5985041959109124139">Z-komprimeret tar-arkiv</translation>
 <translation id="6007237601604674381">Flytningen mislykkedes. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Ethernet-netværk</translation>
 <translation id="60357267506638014">Tjekkisk (QWERTY)</translation>
@@ -619,6 +621,7 @@
 <translation id="6220423280121890987">Punjabi</translation>
 <translation id="6224240818060029162">Dansk</translation>
 <translation id="6224253798271602650">Formatér <ph name="DRIVE_NAME" /></translation>
+<translation id="6224665423283788195">Zstandard-komprimeret arkiv</translation>
 <translation id="6227235786875481728">Denne fil kunne ikke afspilles.</translation>
 <translation id="6241349547798190358">Hollandsk (Belgien)</translation>
 <translation id="6267547857941397424">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, signalstyrke <ph name="SIGNAL_STRENGTH" /> %, telefonbatteri <ph name="BATTERY_STATUS" /> %, opret forbindelse</translation>
@@ -646,6 +649,7 @@
 <translation id="6509122719576673235">Norsk</translation>
 <translation id="6528513914570774834">Giv andre brugere af denne enhed tilladelse til at bruge dette netværk</translation>
 <translation id="653019979737152879">Synkroniserer <ph name="FILE_NAME" />...</translation>
+<translation id="6530595303336443929">Zstandard-komprimeret tar-arkiv</translation>
 <translation id="6549689063733911810">Seneste</translation>
 <translation id="6558280019477628686">Der opstod en fejl. Nogle elementer blev muligvis ikke slettet.</translation>
 <translation id="656398493051028875">Slettter "<ph name="FILENAME" />"...</translation>

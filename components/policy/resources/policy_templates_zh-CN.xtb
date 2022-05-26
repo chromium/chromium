@@ -3569,6 +3569,7 @@
 <translation id="4960597185231686653">一个布尔值标记，用于表明屏幕键盘能否提供语音输入功能。</translation>
 <translation id="4970046075219007744">允许 Web 应用通过 File Handling API 请求用户授权其访问各类文件</translation>
 <translation id="4970855112942626932">禁止登录浏览器</translation>
+<translation id="4974091268178043378">ChromeOS 颜色模式</translation>
 <translation id="4976928720873547342">如果您设置了此政策，系统将会从同步操作（无论是 <ph name="CHROME_SYNC_NAME" />还是漫游个人资料同步）中排除所有指定的数据类型。这有助于缩减漫游个人资料的大小，或者限制向 <ph name="CHROME_SYNC_NAME" />服务器上传的数据类型。
 
       此政策当前可用的数据类型为：“bookmarks”、“readingList”、“preferences”、“passwords”、“autofill”、“themes”、“typedUrls”、“extensions”、“apps”、“tabs”、“wifiConfiguration”。这些名称区分大小写！</translation>
@@ -4318,6 +4319,7 @@
 
       用户无法更改此设置。</translation>
 <translation id="5848438019586925019">用于生成密钥对的算法。</translation>
+<translation id="5851248808417680865">使用深色主题</translation>
 <translation id="585270638818921943">禁止用户使用来源不受信任的 Android 应用</translation>
 <translation id="5853547031212075792">允许用户启用纯 HTTPS 模式</translation>
 <translation id="5859344336338527083">通过设置此政策，您可以指定哪些网址可安装扩展程序、应用和主题背景。在 <ph name="PRODUCT_NAME" /> 21 以前，用户可以点击指向 *.crx 文件的链接，<ph name="PRODUCT_NAME" /> 虽然会显示一些警告，但仍会让用户安装该文件。但从 21 版开始，用户必须下载此类文件并将其拖动到 <ph name="PRODUCT_NAME" /> 的设置页面中。此设置可允许特定网址采用较简便的旧安装流程。
@@ -4484,6 +4486,7 @@
 
       对于 <ph name="PRODUCT_NAME" />，仅当已使用 <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> 注册相应设备后，此政策才有效。
       对于 <ph name="PRODUCT_OS_NAME" />，此政策一直有效。</translation>
+<translation id="6019162469732742754">使用自动模式</translation>
 <translation id="6019606564278029236">允许远程用户在远程协助会话中操控提权后的窗口</translation>
 <translation id="6022948604095165524">启动时的操作</translation>
 <translation id="602318745029752898">允许在“随选朗读”功能中使用增强型网络文字转语音的语音</translation>
@@ -5468,6 +5471,7 @@
 <translation id="7019805045859631636">快</translation>
 <translation id="7025332601572838001">配置 CCT 首次运行期间的《服务条款》行为</translation>
 <translation id="7026351325994257733">允许在 <ph name="PRODUCT_OS_NAME" />设备和一部已连接的 Android 手机之间同步 Wi-Fi 网络配置。</translation>
+<translation id="7027057540229843762">使用浅色主题</translation>
 <translation id="7027785306666625591">配置<ph name="PRODUCT_OS_NAME" />中的电源管理设置。
 
       这些政策可让您配置在用户停止操作一定时间后<ph name="PRODUCT_OS_NAME" />的行为。</translation>
@@ -7008,6 +7012,9 @@
 
       “http://acme.com/ABC”仅在“IESiteListMode”下匹配。</translation>
 <translation id="8736538322216687231">强制启用最低级别的 YouTube 受限模式</translation>
+<translation id="8744844164152340112">控制用于在 OOBE 期间和会话期间呈现界面的主题（深色/浅色/自动）。
+      自动模式会于日出和日落时自动在深色主题和浅色主题之间切换。
+      最好使用此政策，以便用户能在系统设置中更改主题。</translation>
 <translation id="8745669971728319820">此政策旨在控制是否报告扩展程序和插件信息。
 
       如果 <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> 政策未设置或已停用，系统将忽略此政策。

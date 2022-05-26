@@ -4340,6 +4340,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="520568280985468584">Ychwanegwyd rhwydwaith yn llwyddiannus. Gall gymryd sawl munud i'ch rhwydwaith symudol weithredu.</translation>
 <translation id="5206215183583316675">Dileu "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="520621735928254154">Gwall Mewnforio Tystysgrif</translation>
+<translation id="5206562235913517859">Mae rhif adnabod y siop adwerthwr yn y fformat ABC-1234</translation>
 <translation id="5206787458656075734">{COUNT,plural, =1{Wedi newid y cyfrinair a ddarganfuwyd yn llwyddiannus. Mae gennych # cyfrinair arall sydd wedi'i ddarganfod. Mae Chrome yn argymell gwirio'r cyfrinair hwn ar unwaith.}zero{Wedi newid y cyfrinair a ddarganfuwyd yn llwyddiannus. Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Chrome yn argymell gwirio'r cyfrineiriau hyn ar unwaith.}two{Wedi newid y cyfrinair a ddarganfuwyd yn llwyddiannus. Mae gennych # gyfrinair arall sydd wedi'u darganfod. Mae Chrome yn argymell gwirio'r cyfrineiriau hyn ar unwaith.}few{Wedi newid y cyfrinair a ddarganfuwyd yn llwyddiannus. Mae gennych # chyfrinair arall sydd wedi'u darganfod. Mae Chrome yn argymell gwirio'r cyfrineiriau hyn ar unwaith.}many{Wedi newid y cyfrinair a ddarganfuwyd yn llwyddiannus. Mae gennych # chyfrinair arall sydd wedi'u darganfod. Mae Chrome yn argymell gwirio'r cyfrineiriau hyn ar unwaith.}other{Wedi newid y cyfrinair a ddarganfuwyd yn llwyddiannus. Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Chrome yn argymell gwirio'r cyfrineiriau hyn ar unwaith.}}</translation>
 <translation id="5207949376430453814">Amlygu caret testun</translation>
 <translation id="520840839826327499">Mae <ph name="SERVICE_NAME" /> eisiau gwirio a ydych yn defnyddio dyfais ChromeOS cymwys.</translation>
@@ -4861,6 +4862,7 @@ Gallwch aseinio sawl switsh i'r weithred hon.</translation>
 <translation id="5729712731028706266">&amp;Gwedd</translation>
 <translation id="5731247495086897348">Gl&amp;udo a Mynd</translation>
 <translation id="5732392974455271431">Gall eich rhieni ei ddadrwystro ar eich rhan</translation>
+<translation id="5733866499231170760">Rhif adnabod annilys. Mae'r fformat a roddwyd gennych yn anghywir. Gwiriwch y cyfarwyddiadau a gawsoch i sicrhau eich bod yn rhoi'r rhif adnabod yn y fformat cywir. Os na allwch ddatrys y broblem hon, gadewch y maes yn wag a pharhau i osod.</translation>
 <translation id="5734362860645681824">Cyfathrebiadau</translation>
 <translation id="5734697361979786483">Ychwanegu cyfran ffeil</translation>
 <translation id="5736796278325406685">Rhowch enw defnyddiwr dilys</translation>
@@ -6976,6 +6978,7 @@ Pwyswch switsh neu fysell a aseiniwyd i dynnu aseiniad.</translation>
 <translation id="7824864914877854148">Ni ellid cwblhau gwneud copïau wrth gefn oherwydd gwall</translation>
 <translation id="782590969421016895">Defnyddio'r tudalennau presennol</translation>
 <translation id="7826174860695147464">Cefnogaeth Porwr Etifeddiaeth (LBS) - Mewnol</translation>
+<translation id="7826190688224781865">Cod adnabod siop adwerthwr</translation>
 <translation id="7826249772873145665">Mae dadfygio ADB wedi'i analluogi</translation>
 <translation id="7826254698725248775">Dynodwr dyfeisiau croes.</translation>
 <translation id="7828731929332799387">Bydd hyn yn dileu'r holl gwcis a data gwefan sydd ar gael mewn cyd-destunau trydydd parti. Ydych chi am barhau?</translation>
@@ -8449,6 +8452,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.}}<
 <translation id="987897973846887088">Nid oes unrhyw luniau ar gael</translation>
 <translation id="988320949174893488">Rhewi achlysurol</translation>
 <translation id="988978206646512040">Ni chaniateir cyfrinymadrodd gwag</translation>
+<translation id="991097196715779457">Cod adnabod siop adwerthwr (dewisol)</translation>
 <translation id="992032470292211616">Gall estyniadau, apiau a themâu niweidio'ch dyfais. Ydych chi'n siŵr eich bod am barhau?</translation>
 <translation id="992256792861109788">Pinc</translation>
 <translation id="992592832486024913">Analluogi ChromeVox (adborth ar lafar)</translation>

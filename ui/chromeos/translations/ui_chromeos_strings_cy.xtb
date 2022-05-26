@@ -121,6 +121,7 @@
 <translation id="1942765061641586207">Cydraniad llun</translation>
 <translation id="1972984168337863910">Ehangu paneli adborth ffeiliau</translation>
 <translation id="1995337122023280937">Mynd i leoliad y ffeil</translation>
+<translation id="1996806196681857869">Archif cywasgedig Z</translation>
 <translation id="2001796770603320721">Rheoli yn Drive</translation>
 <translation id="2009067268969781306">Bydd fformatio gyriant yn dileu'r holl ddata sydd wedi'u cadw arno. Ni ellir dadwneud y weithred hon.</translation>
 <translation id="2025955442973426285">Tigrinya</translation>
@@ -588,6 +589,7 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> eitem</translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">Dewisiadau trefnu</translation>
+<translation id="5985041959109124139">Archif tar cywasgedig Z</translation>
 <translation id="6007237601604674381">Methwyd â symud. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Rhwydwaith ether-rwyd</translation>
 <translation id="60357267506638014">QWERTY Tsieceg</translation>
@@ -618,6 +620,7 @@
 <translation id="6220423280121890987">Pwnjabi</translation>
 <translation id="6224240818060029162">Daneg</translation>
 <translation id="6224253798271602650">Fformat <ph name="DRIVE_NAME" /></translation>
+<translation id="6224665423283788195">Archif gywasgedig Zstandard</translation>
 <translation id="6227235786875481728">Ni ellid chwarae'r ffeil hon.</translation>
 <translation id="6241349547798190358">Iseldireg (Gwlad Belg)</translation>
 <translation id="6267547857941397424">Rhwydwaith <ph name="NETWORK_INDEX" /> o <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, Cryfder y Signal <ph name="SIGNAL_STRENGTH" />%, Batri'r Ffôn <ph name="BATTERY_STATUS" />%, Cysylltu</translation>
@@ -645,6 +648,7 @@
 <translation id="6509122719576673235">Norwyeg</translation>
 <translation id="6528513914570774834">Caniatáu i ddefnyddwyr eraill y ddyfais hon ddefnyddio'r rhwydwaith hwn</translation>
 <translation id="653019979737152879">Wrthi'n cysoni <ph name="FILE_NAME" />...</translation>
+<translation id="6530595303336443929">Archif tar cywasgedig Zstandard</translation>
 <translation id="6549689063733911810">Diweddar</translation>
 <translation id="6558280019477628686">Bu gwall. Mae'n bosib na fydd rhai eitemau wedi'u dileu.</translation>
 <translation id="656398493051028875">Wrthi'n dileu "<ph name="FILENAME" />"...</translation>

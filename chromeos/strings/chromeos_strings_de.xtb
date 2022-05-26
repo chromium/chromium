@@ -78,6 +78,7 @@
 <translation id="1578784163189013834">Hintergrund für den Bildschirmschoner auswählen</translation>
 <translation id="1615335640928990664">Datennutzung seit <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Ladetest ausführen</translation>
+<translation id="1631385268983122904">Bitte setze den Akku bzw. die Batterie(n) noch nicht wieder ein</translation>
 <translation id="1639239467298939599">Wird geladen...</translation>
 <translation id="1641857168437328880">Dokumenteneinzug (einseitig)</translation>
 <translation id="1643449475550628585">Hintergrundbild täglich ändern</translation>
@@ -85,6 +86,7 @@
 <translation id="1645954272419197032">Geräteinformationen bestätigen</translation>
 <translation id="1662989795263954667">Angehalten – Keine Tinte</translation>
 <translation id="1668469839109562275">Integriertes VPN</translation>
+<translation id="1676557873873341166">Video wird aufgezeichnet</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS-Resolver vorhanden</translation>
 <translation id="1715359911173058521">Bei der Kommunikation mit dem Scanner ist ein Problem aufgetreten. Prüfe die Netzwerk- oder USB-Verbindung und versuche es noch einmal.</translation>
@@ -159,6 +161,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Aktiviere Bluetooth, damit Geräte in der Nähe gefunden werden</translation>
+<translation id="2340422556570134524">Der Schreibschutz wurde unerwartet aktiviert. Bitte deaktiviere ihn manuell, bevor du es noch einmal versuchst.</translation>
 <translation id="2346474577291266260">Sehr gut (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">Weiter</translation>
 <translation id="2360257214555822463">Es wurden <ph name="LINK_BEGIN" />nicht qualifizierte Komponenten<ph name="LINK_END" /> erkannt. Wenn du deren Installation bestätigen möchtest, tu das bitte jetzt.</translation>
@@ -474,6 +477,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="5372659122375744710">WLAN ist nicht sicher</translation>
 <translation id="5376354385557966694">Automatischer heller Modus</translation>
 <translation id="537872351913703572">Gerät wird an einen anderen Nutzer oder eine andere Organisation übergeben</translation>
+<translation id="5389159777326897627">Hintergrund &amp; Stil</translation>
 <translation id="5389224261615877010">Regenbogen</translation>
 <translation id="5395600419410242651">Alle Daten löschen</translation>
 <translation id="5400907029458559844">Das Gerät wird verbunden.</translation>
@@ -643,6 +647,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="6961170852793647506">Lege zuerst das Dokument in den Scanner</translation>
 <translation id="6965382102122355670">Ok</translation>
 <translation id="6977381486153291903">Firmware-Version</translation>
+<translation id="6995564396478647735">Der Schreibschutz muss aktiviert sein</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> verwaltet dieses Gerät und hat Zugriff auf alle Nutzeraktivitäten, einschließlich besuchter Webseiten, Passwörter und E-Mails.</translation>
 <translation id="7040230719604914234">Operator</translation>
 <translation id="7041549558901442110">Das Gerät ist nicht verbunden.</translation>
@@ -653,6 +658,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Fehler – Autorisierung fehlgeschlagen</translation>
 <translation id="7103252855940681301">Der Name des Geräts <ph name="INDEX" /> von <ph name="COUNT" /> lautet „<ph name="NAME" />“.</translation>
+<translation id="7126228745139711113">Der Schreibschutz ist deaktiviert</translation>
 <translation id="7134436342991564651">{0,plural, =1{Nameserver}other{Nameserver}}</translation>
 <translation id="7143207342074048698">Verbindung...</translation>
 <translation id="7144878232160441200">Wiederholen</translation>
@@ -744,6 +750,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="80398733265834479">Automatischen Farbmodus aktivieren</translation>
 <translation id="8041089156583427627">Feedback geben</translation>
 <translation id="8045012663542226664">Mikrofon stummschalten</translation>
+<translation id="8063022551652308521">Der Schreibschutz ist noch deaktiviert. Bitte aktiviere ihn, um fortzufahren.</translation>
 <translation id="8075838845814659848">Akkustand</translation>
 <translation id="8082366717211101304">Auflösen des DNS von Android-Apps aus nicht möglich</translation>
 <translation id="8083281199617904460">Dieser Reparaturvorgang muss von qualifiziertem Reparaturpersonal durchgeführt werden. Starte das Gerät erst, nachdem die fehlerhaften Komponenten ausgetauscht wurden.</translation>
@@ -814,6 +821,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Verwende zum Verwalten dieser Funktion den Rechts- und Linkspfeil.</translation>
 <translation id="8712637175834984815">Alles klar</translation>
 <translation id="871560550817059752">Fehlgeschlagen – Keine Tinte</translation>
+<translation id="8717030727630712160">Reparaturvorgang wird fortgesetzt…</translation>
 <translation id="8723108084122415655">Das nicht standardmäßige Netzwerk hat den Latenzgrenzwert überschritten</translation>
 <translation id="8725066075913043281">Erneut versuchen</translation>
 <translation id="8726019395068607495">Angehalten – Druckerklappe offen</translation>
@@ -835,6 +843,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Das Gerät ist ein Tablet.</translation>
 <translation id="8881098542468797602">Test abgeschlossen</translation>
+<translation id="8897267175591692539">Setze den Akku bzw. die Batterie(n) wieder ein</translation>
 <translation id="8898840733695078011">Signalstärke</translation>
 <translation id="8910721771319628100">Das Standardnetzwerk hat den Latenzgrenzwert überschritten</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> von <ph name="GIVEN_NAME" /></translation>

@@ -78,6 +78,7 @@
 <translation id="1578784163189013834">Escoller o fondo do salvapantallas</translation>
 <translation id="1615335640928990664">Uso de datos desde o <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Realizar proba de carga</translation>
+<translation id="1631385268983122904">Non montes aínda o dispositivo</translation>
 <translation id="1639239467298939599">Cargando</translation>
 <translation id="1641857168437328880">Alimentador de documentos (a unha cara)</translation>
 <translation id="1643449475550628585">Cambiar imaxe de fondo de pantalla todos os días</translation>
@@ -85,6 +86,7 @@
 <translation id="1645954272419197032">Confirma a información do dispositivo</translation>
 <translation id="1662989795263954667">Detívose (esgotouse a tinta)</translation>
 <translation id="1668469839109562275">VPN integrada</translation>
+<translation id="1676557873873341166">Gravando vídeo</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Presenza do solucionador de DNS</translation>
 <translation id="1715359911173058521">Produciuse un erro ao establecer comunicación co escáner. Comproba a conexión USB ou de rede e téntao de novo.</translation>
@@ -159,6 +161,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> ppp</translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Activa o Bluetooth para detectar dispositivos situados nas proximidades</translation>
+<translation id="2340422556570134524">A protección contra a escritura activouse inesperadamente. Desactívaa manualmente antes de tentalo de novo.</translation>
 <translation id="2346474577291266260">Excelente (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2360257214555822463">Detectáronse <ph name="LINK_BEGIN" />compoñentes non compatibles<ph name="LINK_END" />. Se decides confirmar que se instalaron, faino agora.</translation>
@@ -278,7 +281,7 @@
 <translation id="3621202678540785336">Entrada</translation>
 <translation id="3632579075709132555">Activar/Desactivar pantalla de privacidade</translation>
 <translation id="3643810137582748570">Omitir calibración</translation>
-<translation id="3678765385266369662">Selecciona como queres desactivar a protección da escritura</translation>
+<translation id="3678765385266369662">Selecciona como queres desactivar a protección contra a escritura</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> (proba)</translation>
 <translation id="370665806235115550">Cargando...</translation>
 <translation id="3708186454126126312">Dispositivos conectados previamente</translation>
@@ -474,6 +477,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="5372659122375744710">A rede wifi non é segura</translation>
 <translation id="5376354385557966694">Modo claro automático</translation>
 <translation id="537872351913703572">O dispositivo utilizarao un usuario ou unha organización diferente</translation>
+<translation id="5389159777326897627">Estilo e fondo de pantalla</translation>
 <translation id="5389224261615877010">Arco da vella</translation>
 <translation id="5395600419410242651">Borrar todos os datos</translation>
 <translation id="5400907029458559844">O dispositivo estase conectando.</translation>
@@ -643,6 +647,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="6961170852793647506">Para comezar, coloca o documento no escáner</translation>
 <translation id="6965382102122355670">Aceptar</translation>
 <translation id="6977381486153291903">Revisión do firmware</translation>
+<translation id="6995564396478647735">Asegúrate de que a protección contra a escritura estea activada</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> xestiona este dispositivo e ten acceso a toda a actividade dos usuarios, como as páxinas web visitadas, os contrasinais e o correo electrónico.</translation>
 <translation id="7040230719604914234">Operador</translation>
 <translation id="7041549558901442110">O dispositivo non está conectado.</translation>
@@ -653,6 +658,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Produciuse un erro de autorización</translation>
 <translation id="7103252855940681301">Dispositivo <ph name="INDEX" /> de <ph name="COUNT" />. Nome: <ph name="NAME" />.</translation>
+<translation id="7126228745139711113">A protección contra a escritura está desactivada</translation>
 <translation id="7134436342991564651">{0,plural, =1{Servidor de nomes}other{Servidores de nomes}}</translation>
 <translation id="7143207342074048698">Conectando</translation>
 <translation id="7144878232160441200">Volver tentar</translation>
@@ -744,6 +750,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="80398733265834479">Activar modo de cores automáticas</translation>
 <translation id="8041089156583427627">Enviar comentarios</translation>
 <translation id="8045012663542226664">Desactivar micrófono</translation>
+<translation id="8063022551652308521">A protección contra a escritura aínda está desactivada. Actívaa para continuar.</translation>
 <translation id="8075838845814659848">Carga restante</translation>
 <translation id="8082366717211101304">Non se puido resolver o DNS desde aplicacións Android</translation>
 <translation id="8083281199617904460">Este proceso de reparación debe efectualo un técnico cualificado, e só se debe iniciar despois de substituír os compoñentes que non funcionen correctamente.</translation>
@@ -814,6 +821,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Utilizar teclas frecha cara á esquerda ou frecha arriba para xestionar esta función.</translation>
 <translation id="8712637175834984815">De acordo</translation>
 <translation id="871560550817059752">Produciuse un erro: a impresora quedou sen tinta</translation>
+<translation id="8717030727630712160">Retomando proceso de reparación…</translation>
 <translation id="8723108084122415655">A rede non predeterminada supera o límite de latencia</translation>
 <translation id="8725066075913043281">Tentar de novo</translation>
 <translation id="8726019395068607495">Detívose (a tapa está aberta)</translation>
@@ -835,6 +843,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">O dispositivo é unha tableta.</translation>
 <translation id="8881098542468797602">Superouse a proba</translation>
+<translation id="8897267175591692539">Xa podes montar o dispositivo</translation>
 <translation id="8898840733695078011">Intensidade do sinal</translation>
 <translation id="8910721771319628100">A rede predeterminada supera o límite de latencia</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> de <ph name="GIVEN_NAME" /></translation>

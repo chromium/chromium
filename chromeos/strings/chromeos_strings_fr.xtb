@@ -78,6 +78,7 @@
 <translation id="1578784163189013834">Sélectionner l'arrière-plan pour l'économiseur d'écran</translation>
 <translation id="1615335640928990664">Consommation des données depuis le <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Lancer le test de recharge</translation>
+<translation id="1631385268983122904">Ne réassemblez pas encore l'appareil</translation>
 <translation id="1639239467298939599">Chargement en cours</translation>
 <translation id="1641857168437328880">Chargeur de document (recto)</translation>
 <translation id="1643449475550628585">Modifier le fond d'écran tous les jours</translation>
@@ -85,6 +86,7 @@
 <translation id="1645954272419197032">Confirmer les informations concernant l'appareil</translation>
 <translation id="1662989795263954667">Tâche suspendue - À court d'encre</translation>
 <translation id="1668469839109562275">VPN intégré</translation>
+<translation id="1676557873873341166">Enregistrement vidéo…</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Présence du résolveur DNS</translation>
 <translation id="1715359911173058521">Un problème empêche la communication avec le scanner. Vérifiez la connexion réseau ou USB, puis réessayez.</translation>
@@ -159,6 +161,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> ppp</translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Activer le Bluetooth pour découvrir les appareils à proximité</translation>
+<translation id="2340422556570134524">La protection en écriture a été activée de manière inattendue. Veuillez la désactiver manuellement avant de réessayer.</translation>
 <translation id="2346474577291266260">Excellente (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">Continuer</translation>
 <translation id="2360257214555822463"><ph name="LINK_BEGIN" />Composants non conformes<ph name="LINK_END" /> détectés. Si vous décidez de confirmer l'installation, veuillez le faire immédiatement.</translation>
@@ -474,6 +477,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="5372659122375744710">Réseau Wi-Fi non sécurisé</translation>
 <translation id="5376354385557966694">Mode clair automatique</translation>
 <translation id="537872351913703572">L'appareil sera transféré à un autre utilisateur ou à une autre organisation</translation>
+<translation id="5389159777326897627">Fond d'écran et style</translation>
 <translation id="5389224261615877010">Arc-en-ciel</translation>
 <translation id="5395600419410242651">Effacer toutes les données</translation>
 <translation id="5400907029458559844">L'appareil se connecte.</translation>
@@ -643,6 +647,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="6961170852793647506">Pour commencer, placez votre document sur le scanner</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6977381486153291903">Version du micrologiciel</translation>
+<translation id="6995564396478647735">Vérifier que la protection en écriture est activée</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> gère cet appareil et a accès à toutes les activités des utilisateurs, y compris les pages Web consultées, les mots de passe et la messagerie.</translation>
 <translation id="7040230719604914234">Opérateur</translation>
 <translation id="7041549558901442110">L'appareil n'est pas connecté.</translation>
@@ -653,6 +658,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Échec - Échec de l'autorisation</translation>
 <translation id="7103252855940681301">Appareil <ph name="INDEX" /> sur <ph name="COUNT" /> nommé <ph name="NAME" />.</translation>
+<translation id="7126228745139711113">La protection en écriture est désactivée</translation>
 <translation id="7134436342991564651">{0,plural, =1{Serveur de noms}one{Serveur de noms}other{Serveurs de noms}}</translation>
 <translation id="7143207342074048698">Connexion</translation>
 <translation id="7144878232160441200">Réessayer</translation>
@@ -744,6 +750,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="80398733265834479">Activer le mode couleur auto</translation>
 <translation id="8041089156583427627">Envoyer</translation>
 <translation id="8045012663542226664">Désactivation du micro</translation>
+<translation id="8063022551652308521">La protection en écriture est toujours désactivée. Pour continuer, activez-la.</translation>
 <translation id="8075838845814659848">Niveau de charge</translation>
 <translation id="8082366717211101304">Impossible de résoudre le DNS depuis les applis Android</translation>
 <translation id="8083281199617904460">Ce processus de réparation est destiné à guider les réparateurs qualifiés. Ne commencez qu'après avoir remplacé les composants défectueux.</translation>
@@ -814,6 +821,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Pour gérer cette fonctionnalité, utilisez les flèches vers la gauche ou vers la droite.</translation>
 <translation id="8712637175834984815">OK</translation>
 <translation id="871560550817059752">Échec – À court d'encre</translation>
+<translation id="8717030727630712160">Reprise du processus de réparation…</translation>
 <translation id="8723108084122415655">Seuil de latence dépassé pour le réseau non défini par défaut</translation>
 <translation id="8725066075913043281">Réessayer</translation>
 <translation id="8726019395068607495">Tâche suspendue - Capot ouvert</translation>
@@ -835,6 +843,7 @@ Veuillez appuyer sur le micro pour me poser une question.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">L'appareil est une tablette.</translation>
 <translation id="8881098542468797602">Test réussi</translation>
+<translation id="8897267175591692539">Vous pouvez maintenant réassembler l'appareil</translation>
 <translation id="8898840733695078011">Intensité du signal</translation>
 <translation id="8910721771319628100">Seuil de latence dépassé pour le réseau par défaut</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> de <ph name="GIVEN_NAME" /></translation>

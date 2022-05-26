@@ -498,6 +498,7 @@
 <translation id="3687645719033307815">तपाईं यो पेजको प्रिभ्यू हेर्दै हुनुहुन्छ</translation>
 <translation id="3690369331356918524">डेटा चोरीका घटनामा पासवर्डहरू खुलासा हुँदा तपाईंलाई चेतावनी दिन्छ</translation>
 <translation id="3692944402865947621">भण्डारण स्थान पहुँचयोग्य नहुनाले <ph name="FILE_NAME" /> डाउनलोड गर्न सकिएन।</translation>
+<translation id="3697705478071004188">साइटअनुसार क्रमबद्ध गर्नुहोस्</translation>
 <translation id="3699022356773522638">फाइल डाउनलोड गर्ने हो?</translation>
 <translation id="371230970611282515">खतरनाक घटनाहरू घट्नुअघि नै तिनको पूर्वानुमान गर्छ र तपाईंलाई सोबारे चेतावनी दिन्छ।</translation>
 <translation id="3714981814255182093">खोजको पट्टी खोल्नुहोस्</translation>
@@ -1309,6 +1310,7 @@
 <translation id="8103578431304235997">इन्कोग्निटो ट्याब</translation>
 <translation id="8105613260829665809">तपाईंले जारी राख्नुभयो भने तपाईं <ph name="BEGIN_TOS_LINK" />सेवाका सर्तहरू<ph name="END_TOS_LINK" />मा सहमत हुनुहुन्छ भन्ने अर्थ लाग्छ।\nChrome ले Google लाई यो एपको गुणस्तर सुधार्न सघाउने प्रयोजनका लागि यो एपको प्रयोगसम्बन्धी डेटा र क्र्यास रिपोर्ट पठाउँछ। <ph name="BEGIN_UMA_LINK" />व्यवस्थापन गर्नुहोस्<ph name="END_UMA_LINK" /></translation>
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
+<translation id="8107530384992929318">क्रमबद्ध गर्ने विकल्पहरू बन्द गर्नुहोस्</translation>
 <translation id="8109613176066109935">आफ्ना सबै डिभाइसमा पुस्तक चिन्हहरू प्राप्त गर्न सिंक गर्ने सुविधा अन गर्नुहोस्</translation>
 <translation id="8110024788458304985">Chrome का सुविधाको गुणस्तर र यसको पर्फर्मेन्स सुधार्न मद्दत गर्नुहोस्</translation>
 <translation id="8110087112193408731">तपाईंले Chrome मा गर्नुभएका क्रियाकलाप डिजिटल वेलबिइङमा देखाउने हो?</translation>
@@ -1382,6 +1384,7 @@
 <translation id="8485434340281759656"><ph name="FILE_SIZE" /> <ph name="SEPARATOR" /> <ph name="DESCRIPTION" /></translation>
 <translation id="8489271220582375723">इतिहासको पृष्ठ खोल्नुहोस्</translation>
 <translation id="8493948351860045254">ठाउँ खाली गर्नुहोस्</translation>
+<translation id="8497242791509864205">क्रमबद्ध गर्ने विकल्पहरू खोल्नुहोस्</translation>
 <translation id="8497480609928300907">गोपनीयतासम्बन्धी मार्गदर्शनको वर्णन</translation>
 <translation id="8497726226069778601">अहिलेसम्म... यहाँ हेर्न केही पनि छैन</translation>
 <translation id="8503559462189395349">Chrome का पासवर्डहरू</translation>

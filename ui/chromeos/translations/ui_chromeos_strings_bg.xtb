@@ -121,6 +121,7 @@
 <translation id="1942765061641586207">Разделителна способност на изображението</translation>
 <translation id="1972984168337863910">Разгъване на панелите с информация за файловете</translation>
 <translation id="1995337122023280937">Към местоположението на файла</translation>
+<translation id="1996806196681857869">Архив, компресиран във формат Z</translation>
 <translation id="2001796770603320721">Управление в Диск</translation>
 <translation id="2009067268969781306">При форматирането на устройство ще бъдат изтрити всички съхранявани на него данни. Това действие не може да бъде отменено.</translation>
 <translation id="2025955442973426285">Тигриня</translation>
@@ -589,6 +590,7 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> елемента</translation>
 <translation id="5957366693331451795">Устройствата Chromebox</translation>
 <translation id="5982621672636444458">Опции за сортиране</translation>
+<translation id="5985041959109124139">Tar архив, компресиран във формат Z</translation>
 <translation id="6007237601604674381">Преместването не бе успешно. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Ethernet мрежа</translation>
 <translation id="60357267506638014">Чешка (QWERTY) клавиатура</translation>
@@ -619,6 +621,7 @@
 <translation id="6220423280121890987">Пенджаби</translation>
 <translation id="6224240818060029162">Датски</translation>
 <translation id="6224253798271602650">Форматиране на <ph name="DRIVE_NAME" /></translation>
+<translation id="6224665423283788195">Архив, компресиран във формат Zstandard</translation>
 <translation id="6227235786875481728">Този файл не можа да бъде възпроизведен.</translation>
 <translation id="6241349547798190358">Нидерландски (Белгия)</translation>
 <translation id="6267547857941397424">Мрежа <ph name="NETWORK_INDEX" /> от <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, сила на сигнала <ph name="SIGNAL_STRENGTH" />%, батерия на телефона <ph name="BATTERY_STATUS" />%, свързване</translation>
@@ -646,6 +649,7 @@
 <translation id="6509122719576673235">норвежки</translation>
 <translation id="6528513914570774834">Разрешаване на другите потребители на устройството да използват тази мрежа</translation>
 <translation id="653019979737152879">„<ph name="FILE_NAME" />“ се синхронизира...</translation>
+<translation id="6530595303336443929">Tar архив, компресиран във формат Zstandard</translation>
 <translation id="6549689063733911810">Скорошни</translation>
 <translation id="6558280019477628686">Възникна грешка. Някои елементи може да не са изтрити.</translation>
 <translation id="656398493051028875">„<ph name="FILENAME" />“ се изтрива...</translation>

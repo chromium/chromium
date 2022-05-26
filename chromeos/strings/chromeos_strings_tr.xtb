@@ -78,6 +78,7 @@
 <translation id="1578784163189013834">Ekran koruyucu arka planı seç</translation>
 <translation id="1615335640928990664"><ph name="FRIENDLY_DATE" /> sonrası veri kullanımı</translation>
 <translation id="1621067168122174824">Şarj testini çalıştır</translation>
+<translation id="1631385268983122904">Cihaz parçalarını henüz geri takmayın</translation>
 <translation id="1639239467298939599">Yükleniyor</translation>
 <translation id="1641857168437328880">Doküman Besleyici (Tek taraflı)</translation>
 <translation id="1643449475550628585">Duvar kağıdı resmini günlük olarak değiştir</translation>
@@ -85,6 +86,7 @@
 <translation id="1645954272419197032">Lütfen cihaz bilgilerini onaylayın</translation>
 <translation id="1662989795263954667">Durduruldu - Mürekkep bitti</translation>
 <translation id="1668469839109562275">Yerleşik VPN</translation>
+<translation id="1676557873873341166">Video çekiliyor</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS Çözümleyici Varlığı</translation>
 <translation id="1715359911173058521">Tarayıcı ile iletişimde bir sorun var. Ağ veya USB bağlantısını kontrol edip tekrar deneyin.</translation>
@@ -159,6 +161,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> dpi</translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Yakındaki cihazları keşfetmek için Bluetooth'u aç</translation>
+<translation id="2340422556570134524">Yazma koruması beklenmedik bir şekilde etkinleştirildi. Tekrar denemeden önce lütfen yazma korumasını devre dışı bırakın.</translation>
 <translation id="2346474577291266260">Mükemmel (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">Devam et</translation>
 <translation id="2360257214555822463"><ph name="LINK_BEGIN" />Uygun olmayan bileşenler<ph name="LINK_END" /> algılandı. Bileşenlerin yüklendiğini onaylamayı seçerseniz lütfen hemen onaylayın.</translation>
@@ -474,6 +477,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="5372659122375744710">Kablosuz ağ güvenli değil</translation>
 <translation id="5376354385557966694">Otomatik açık mod</translation>
 <translation id="537872351913703572">Cihaz başka bir kullanıcı veya kuruluşa teslim edilir</translation>
+<translation id="5389159777326897627">Duvar kağıdı ve stil</translation>
 <translation id="5389224261615877010">Gökkuşağı</translation>
 <translation id="5395600419410242651">Tüm verileri sil</translation>
 <translation id="5400907029458559844">Cihaz bağlanıyor.</translation>
@@ -643,6 +647,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="6961170852793647506">Başlamak için dokümanınızı tarayıcıya yerleştirin</translation>
 <translation id="6965382102122355670">Tamam</translation>
 <translation id="6977381486153291903">Donanım yazılımı düzeltmesi</translation>
+<translation id="6995564396478647735">Yazma korumasının etkin olduğundan emin olun</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> bu cihazı yönetir ve ziyaret edilen web sayfaları, şifreler ve e-posta dahil tüm kullanıcı etkinliğine erişebilir.</translation>
 <translation id="7040230719604914234">Operatör</translation>
 <translation id="7041549558901442110">Cihaz bağlı değil.</translation>
@@ -653,6 +658,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Başarısız - Yetkilendirme Başarısız Oldu</translation>
 <translation id="7103252855940681301"><ph name="COUNT" /> cihazdan <ph name="INDEX" />. sıradakinin adı <ph name="NAME" />.</translation>
+<translation id="7126228745139711113">Yazma koruması devre dışı</translation>
 <translation id="7134436342991564651">{0,plural, =1{Ad sunucusu}other{Ad sunucuları}}</translation>
 <translation id="7143207342074048698">Bağlanıyor</translation>
 <translation id="7144878232160441200">Yeniden dene</translation>
@@ -744,6 +750,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="80398733265834479">Otomatik renk modunu etkinleştir</translation>
 <translation id="8041089156583427627">Görüş bildirin</translation>
 <translation id="8045012663542226664">Mikrofonun sesini kapatma</translation>
+<translation id="8063022551652308521">Yazma koruması hâlâ devre dışı. Devam etmek için yazma korumasını etkinleştirin.</translation>
 <translation id="8075838845814659848">Kalan şarj seviyesi</translation>
 <translation id="8082366717211101304">Android uygulamalarından DNS çözümlenemiyor</translation>
 <translation id="8083281199617904460">Bu onarım işlemini eğitimli bir onarım teknisyeninin yapması gerekir. Sadece arızalı bileşenleri değiştirdikten sonra başlayın.</translation>
@@ -814,6 +821,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Bu özelliği yönetmek için sol veya sağ ok tuşlarını kullanın.</translation>
 <translation id="8712637175834984815">Anlaşıldı</translation>
 <translation id="871560550817059752">İşlem başarısız - Mürekkep yok</translation>
+<translation id="8717030727630712160">Onarım süreci devam ediyor…</translation>
 <translation id="8723108084122415655">Varsayılan olmayan ağ, gecikme eşiğini aştı</translation>
 <translation id="8725066075913043281">Yeniden dene</translation>
 <translation id="8726019395068607495">Durduruldu - Kapak açık</translation>
@@ -835,6 +843,7 @@ Bana bir şey sormak için mikrofona dokunmayı deneyin.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Cihazın türü tablet.</translation>
 <translation id="8881098542468797602">Test başarılı oldu</translation>
+<translation id="8897267175591692539">Cihaz parçalarını şimdi geri takabilirsiniz</translation>
 <translation id="8898840733695078011">Sinyal gücü</translation>
 <translation id="8910721771319628100">Varsayılan ağ, gecikme eşiğini aştı</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" /> adlı kişinin <ph name="DEVICE_TYPE" /> cihazı</translation>

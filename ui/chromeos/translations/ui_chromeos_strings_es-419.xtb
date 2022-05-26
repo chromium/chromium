@@ -121,6 +121,7 @@
 <translation id="1942765061641586207">Resolución de imagen</translation>
 <translation id="1972984168337863910">Expandir paneles de comentarios de archivos</translation>
 <translation id="1995337122023280937">Ir a la ubicación del archivo</translation>
+<translation id="1996806196681857869">Archivo comprimido en Z</translation>
 <translation id="2001796770603320721">Administrar en Drive</translation>
 <translation id="2009067268969781306">Si formateas una unidad, se borrarán todos los datos almacenados en ella. No se puede deshacer esta acción.</translation>
 <translation id="2025955442973426285">Tigriña</translation>
@@ -589,6 +590,7 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> elementos</translation>
 <translation id="5957366693331451795">Las Chromeboxes</translation>
 <translation id="5982621672636444458">Ordenar opciones</translation>
+<translation id="5985041959109124139">Archivo tar comprimido en Z</translation>
 <translation id="6007237601604674381">Se produjo un error en al mover el archivo (<ph name="ERROR_MESSAGE" />).</translation>
 <translation id="6011074160056912900">Red de Ethernet</translation>
 <translation id="60357267506638014">Checo (QWERTY)</translation>
@@ -619,6 +621,7 @@
 <translation id="6220423280121890987">Punyabí</translation>
 <translation id="6224240818060029162">Danés</translation>
 <translation id="6224253798271602650">Formatear <ph name="DRIVE_NAME" /></translation>
+<translation id="6224665423283788195">Archivo comprimido en Zstandard</translation>
 <translation id="6227235786875481728">Este archivo no se puede reproducir.</translation>
 <translation id="6241349547798190358">Neerlandés (Bélgica)</translation>
 <translation id="6267547857941397424">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" />%, nivel de la batería del teléfono: <ph name="BATTERY_STATUS" />%, conectar</translation>
@@ -646,6 +649,7 @@
 <translation id="6509122719576673235">Noruego</translation>
 <translation id="6528513914570774834">Permitir que otros usuarios de este dispositivo usen esta red</translation>
 <translation id="653019979737152879">Sincronizando <ph name="FILE_NAME" />…</translation>
+<translation id="6530595303336443929">Archivo tar comprimido en Zstandard</translation>
 <translation id="6549689063733911810">Recientes</translation>
 <translation id="6558280019477628686">Se produjo un error. Es posible que no se hayan borrado algunos elementos.</translation>
 <translation id="656398493051028875">Eliminando "<ph name="FILENAME" />"…</translation>

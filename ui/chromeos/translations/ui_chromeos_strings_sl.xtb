@@ -121,6 +121,7 @@
 <translation id="1942765061641586207">Ločljivost slike</translation>
 <translation id="1972984168337863910">Razširitev datotek podoken povratnih informacij</translation>
 <translation id="1995337122023280937">Na lokacijo datoteke</translation>
+<translation id="1996806196681857869">Stisnjeni arhiv Z</translation>
 <translation id="2001796770603320721">Upravljanje v Googlu Drive</translation>
 <translation id="2009067268969781306">Če formatirate pogon, se izbrišejo vsi podatki, shranjeni na njem. Tega dejanja ni mogoče razveljaviti.</translation>
 <translation id="2025955442973426285">tigrinja</translation>
@@ -589,6 +590,7 @@
 <translation id="5955954492236143329">Št. datotek: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="5957366693331451795">Chromeboxi</translation>
 <translation id="5982621672636444458">Možnosti razvrščanja</translation>
+<translation id="5985041959109124139">Stisnjeni arhiv tar Z</translation>
 <translation id="6007237601604674381">Premikanje ni uspelo. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Ethernetno omrežje</translation>
 <translation id="60357267506638014">češčina – QWERTY</translation>
@@ -619,6 +621,7 @@
 <translation id="6220423280121890987">pandžabščina</translation>
 <translation id="6224240818060029162">danščina</translation>
 <translation id="6224253798271602650">Formatiraj <ph name="DRIVE_NAME" /></translation>
+<translation id="6224665423283788195">Stisnjeni arhiv Zstandard</translation>
 <translation id="6227235786875481728">Te datoteke ni bilo mogoče predvajati.</translation>
 <translation id="6241349547798190358">nizozemščina (Belgija)</translation>
 <translation id="6267547857941397424">Omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, moč signala je <ph name="SIGNAL_STRENGTH" /> %, stanje baterije telefona je <ph name="BATTERY_STATUS" /> %, vzpostavitev povezave</translation>
@@ -646,6 +649,7 @@
 <translation id="6509122719576673235">norveščina</translation>
 <translation id="6528513914570774834">Omogoči drugim uporabnikom te naprave uporabo tega omrežja</translation>
 <translation id="653019979737152879"><ph name="FILE_NAME" /> – sinhroniziranje ...</translation>
+<translation id="6530595303336443929">Stisnjeni arhiv tar Zstandard</translation>
 <translation id="6549689063733911810">Nedavno</translation>
 <translation id="6558280019477628686">Prišlo je do napake. Nekateri elementi morda niso izbrisani.</translation>
 <translation id="656398493051028875">Brisanje datoteke »<ph name="FILENAME" />« ...</translation>

@@ -78,6 +78,7 @@
 <translation id="1578784163189013834">בחירת רקע לשומר המסך</translation>
 <translation id="1615335640928990664">שימוש בחבילת הגלישה מאז <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">הפעלה של בדיקת טעינה</translation>
+<translation id="1631385268983122904">אין להרכיב חזרה את חלקי המכשיר</translation>
 <translation id="1639239467298939599">בטעינה</translation>
 <translation id="1641857168437328880">הכנסת מסמכים (צד אחד)</translation>
 <translation id="1643449475550628585">החלפה של תמונת הטפט מדי יום</translation>
@@ -85,6 +86,7 @@
 <translation id="1645954272419197032">יש לאשר את פרטי המכשיר</translation>
 <translation id="1662989795263954667">הפסיקה – הדיו נגמר</translation>
 <translation id="1668469839109562275">‏רשתות VPN מובנות</translation>
+<translation id="1676557873873341166">מתבצעת הקלטת וידאו</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">‏מקודד DNS נוכח</translation>
 <translation id="1715359911173058521">‏יש בעיה בתקשורת עם הסורק. יש לבדוק את הרשת או את חיבור ה-USB ולנסות שוב.</translation>
@@ -159,6 +161,7 @@
 <translation id="2326139988748364651">‏<ph name="RESOLUTION_VALUE" /> ‏DPI</translation>
 <translation id="2336381494582898602">שחזור הגדרות יצרן</translation>
 <translation id="2338501278241028356">‏יש להפעיל את Bluetooth כדי לאתר מכשירים קרובים</translation>
+<translation id="2340422556570134524">התכונה 'הגנה מכתיבה' הופעלה באופן בלתי צפוי. יש להשבית את התכונה 'הגנה מכתיבה' באופן ידני לפני שמנסים שוב.</translation>
 <translation id="2346474577291266260">מצוין (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">המשך</translation>
 <translation id="2360257214555822463">זוהו <ph name="LINK_BEGIN" />רכיבים לא מתאימים<ph name="LINK_END" />. אם ברצונך לאשר את ההתקנה שלהם, עליך לעשות זאת עכשיו.</translation>
@@ -474,6 +477,7 @@
 <translation id="5372659122375744710">‏רשת ה-Wi-Fi לא מאובטחת</translation>
 <translation id="5376354385557966694">מצב בהיר אוטומטי</translation>
 <translation id="537872351913703572">המכשיר יועבר למשתמש או לארגון אחר</translation>
+<translation id="5389159777326897627">טפט וסגנון</translation>
 <translation id="5389224261615877010">קשת</translation>
 <translation id="5395600419410242651">מחיקת כל הנתונים</translation>
 <translation id="5400907029458559844">המכשיר בתהליך התחברות.</translation>
@@ -643,6 +647,7 @@
 <translation id="6961170852793647506">כדי להתחיל, מניחים את המסמך על הסורק</translation>
 <translation id="6965382102122355670">אישור</translation>
 <translation id="6977381486153291903">שכתוב קושחה</translation>
+<translation id="6995564396478647735">צריך לוודא שהתכונה 'הגנה מכתיבה' פועלת</translation>
 <translation id="7028979494427204405">הניהול של המכשיר הזה מתבצע מהדומיין <ph name="MANAGER" /> ואפשר לגשת ממנו אל כל המידע על הפעילות של המשתמשים, כולל דפי אינטרנט שנכנסת אליהם, סיסמאות ואימייל.</translation>
 <translation id="7040230719604914234">ספק</translation>
 <translation id="7041549558901442110">המכשיר לא מחובר.</translation>
@@ -653,6 +658,7 @@
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">נכשל – ההרשאה נכשלה</translation>
 <translation id="7103252855940681301">מכשיר <ph name="INDEX" /> מתוך <ph name="COUNT" /> בשם <ph name="NAME" />.</translation>
+<translation id="7126228745139711113">התכונה 'הגנה מכתיבה' מושבתת</translation>
 <translation id="7134436342991564651">{0,plural, =1{שרת שמות}two{שרתי שמות}many{שרתי שמות}other{שרתי שמות}}</translation>
 <translation id="7143207342074048698">מתבצע חיבור</translation>
 <translation id="7144878232160441200">יש לנסות שוב</translation>
@@ -744,6 +750,7 @@
 <translation id="80398733265834479">הפעלה של מצב צבע אוטומטי</translation>
 <translation id="8041089156583427627"> שליחת משוב</translation>
 <translation id="8045012663542226664">השתקת המיקרופון</translation>
+<translation id="8063022551652308521">התכונה 'הגנה מכתיבה' עדיין מושבתת. צריך להפעיל אותה כדי להמשיך.</translation>
 <translation id="8075838845814659848">אחוז הסוללה שנותר לטעון</translation>
 <translation id="8082366717211101304">‏לא ניתן ליצור רזולוציית DNS לאפליקציות ל-Android</translation>
 <translation id="8083281199617904460">תהליך התיקון צריך להתבצע על ידי טכנאי מוסמך. יש להתחיל אותו רק אחרי שמחליפים את הרכיבים שאינם תקינים.</translation>
@@ -814,6 +821,7 @@
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> כדי לנהל את התכונה הזו, יש להקיש על מקש החץ הימני או השמאלי.</translation>
 <translation id="8712637175834984815">הבנתי</translation>
 <translation id="871560550817059752">נכשלה – הדיו נגמר</translation>
+<translation id="8717030727630712160">תהליך התיקון מתחדש…</translation>
 <translation id="8723108084122415655">הרשת שאינה מוגדרת כברירת מחדל חורגת מסף זמן האחזור</translation>
 <translation id="8725066075913043281">ניסיון חוזר</translation>
 <translation id="8726019395068607495">הפסיקה – דלת המדפסת פתוחה</translation>
@@ -835,6 +843,7 @@
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">המכשיר הוא טאבלט.</translation>
 <translation id="8881098542468797602">הבדיקה הושלמה בהצלחה</translation>
+<translation id="8897267175591692539">עכשיו אפשר להרכיב חזרה את חלקי המכשיר</translation>
 <translation id="8898840733695078011">עוצמת אות</translation>
 <translation id="8910721771319628100">רשת ברירת המחדל חורגת מסף זמן האחזור</translation>
 <translation id="8918637186205009138">ה-<ph name="DEVICE_TYPE" /> של <ph name="GIVEN_NAME" /></translation>

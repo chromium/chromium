@@ -121,6 +121,7 @@
 <translation id="1942765061641586207">Разрешение изображения</translation>
 <translation id="1972984168337863910">Развернуть панель с информацией о файлах</translation>
 <translation id="1995337122023280937">Перейти к местоположению файла</translation>
+<translation id="1996806196681857869">Сжатый архив Z</translation>
 <translation id="2001796770603320721">Открыть на Google Диске</translation>
 <translation id="2009067268969781306">При форматировании диска все хранящиеся на нем данные будут удалены. Это действие нельзя отменить.</translation>
 <translation id="2025955442973426285">Тигринья</translation>
@@ -589,6 +590,7 @@
 <translation id="5955954492236143329">Объектов: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="5957366693331451795">Устройства Chromebox</translation>
 <translation id="5982621672636444458">Сортировать</translation>
+<translation id="5985041959109124139">Сжатый TAR-архив Z</translation>
 <translation id="6007237601604674381">Не удалось выполнить перемещение. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Сеть Ethernet</translation>
 <translation id="60357267506638014">Чешская (QWERTY)</translation>
@@ -619,6 +621,7 @@
 <translation id="6220423280121890987">Панджаби</translation>
 <translation id="6224240818060029162">Датский</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" />: форматирование</translation>
+<translation id="6224665423283788195">Сжатый архив ZST</translation>
 <translation id="6227235786875481728">Воспроизведение невозможно.</translation>
 <translation id="6241349547798190358">Нидерландский (Бельгия)</translation>
 <translation id="6267547857941397424">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, телефон – <ph name="PHONE_NAME" />, уровень сигнала – <ph name="SIGNAL_STRENGTH" /> %, заряд батареи – <ph name="BATTERY_STATUS" /> %, подключение</translation>
@@ -646,6 +649,7 @@
 <translation id="6509122719576673235">Норвежский</translation>
 <translation id="6528513914570774834">Предоставить другим пользователям устройства доступ к этой сети</translation>
 <translation id="653019979737152879">Синхронизация файла "<ph name="FILE_NAME" />"…</translation>
+<translation id="6530595303336443929">Сжатый TAR-архив ZST</translation>
 <translation id="6549689063733911810">Недавние</translation>
 <translation id="6558280019477628686">Произошла ошибка. Возможно, не все элементы были удалены.</translation>
 <translation id="656398493051028875">Удаление файла "<ph name="FILENAME" />"…</translation>

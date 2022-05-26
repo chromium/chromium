@@ -4309,6 +4309,7 @@
 <translation id="520568280985468584">已成功添加网络。不过，您的移动网络可能要过几分钟才可用。</translation>
 <translation id="5206215183583316675">要删除“<ph name="CERTIFICATE_NAME" />”吗？</translation>
 <translation id="520621735928254154">导入证书时出现错误</translation>
+<translation id="5206562235913517859">零售商店 ID 的格式为 ABC-1234</translation>
 <translation id="5206787458656075734">{COUNT,plural, =1{已成功更改这个已泄露的密码。您还有 # 个已泄露的密码。Chrome 建议您立即检查这个密码。}other{已成功更改这个已泄露的密码。您还有 # 个已泄露的密码。Chrome 建议您立即检查这些密码。}}</translation>
 <translation id="5207949376430453814">突出显示文本插入符号</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" />需要检查您使用的是否为符合条件的 Chrome 操作系统设备。</translation>
@@ -4828,6 +4829,7 @@
 <translation id="5729712731028706266">视图(&amp;V)</translation>
 <translation id="5731247495086897348">粘贴并转到(&amp;S)</translation>
 <translation id="5732392974455271431">您的父母可为您取消屏蔽此网站</translation>
+<translation id="5733866499231170760">ID 无效。您输入的格式不正确。请查看您已收到的说明，以确保使用正确的格式输入 ID。如果您无法解决此问题，请将该字段留空并继续安装。</translation>
 <translation id="5734362860645681824">通讯</translation>
 <translation id="5734697361979786483">添加文件共享</translation>
 <translation id="5736796278325406685">请输入有效的用户名</translation>
@@ -6934,6 +6936,7 @@
 <translation id="7824864914877854148">发生错误，因此无法完成备份</translation>
 <translation id="782590969421016895">使用当前网页</translation>
 <translation id="7826174860695147464">旧版浏览器支持 (LBS) - 内部设置</translation>
+<translation id="7826190688224781865">零售商店 ID 代码</translation>
 <translation id="7826249772873145665">ADB 调试已停用</translation>
 <translation id="7826254698725248775">设备标识符冲突。</translation>
 <translation id="7828731929332799387">这将会删除第三方环境下的所有可用 Cookie 和网站数据。要继续吗？</translation>
@@ -8403,6 +8406,7 @@
 <translation id="987897973846887088">没有可用的图片</translation>
 <translation id="988320949174893488">偶尔不流畅</translation>
 <translation id="988978206646512040">密码字段不能留空</translation>
+<translation id="991097196715779457">零售商店 ID 代码（选填）</translation>
 <translation id="992032470292211616">这些扩展程序、应用和主题背景可能会危害您的设备。确定要继续下载吗？</translation>
 <translation id="992256792861109788">粉色</translation>
 <translation id="992592832486024913">停用 ChromeVox（语音反馈）</translation>

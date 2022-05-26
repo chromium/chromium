@@ -313,6 +313,7 @@ Cyffyrddwch a daliwch unrhyw air i chwilio. I fireinio'ch chwiliad, dewiswch fwy
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# Ffeil sain}zero{# Ffeil sain}two{# Ffeil sain}few{# Ffeil sain}many{# Ffeil sain}other{# Ffeil sain}}</translation>
 <translation id="265156376773362237">Rhaglwytho safonol</translation>
 <translation id="2656405586795711023">Apiau gwe</translation>
+<translation id="2669454659051515572">Gall unrhyw un sy'n defnyddio'r ddyfais hon weld ffeiliau sydd wedi'u lawrlwytho</translation>
 <translation id="2702516483241149200">Newydd: gallwch rannu dolen sy'n sgrolio i'r testun hwn</translation>
 <translation id="2704606927547763573">Copïwyd</translation>
 <translation id="2707726405694321444">Ail-lwytho'r dudalen</translation>
@@ -778,6 +779,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />ailosodwch gysoni<ph name="END_L
 <translation id="5246093389635966745">Golygu llwybr byr y bar offer</translation>
 <translation id="526421993248218238">Methu â llwytho'r dudalen hon</translation>
 <translation id="5271967389191913893">Ni all y ddyfais agor y cynnwys i'w lawrlwytho.</translation>
+<translation id="5274286919938458946">Wedi cysylltu â <ph name="CARD_DETAIL" /></translation>
 <translation id="5292796745632149097">Anfon at</translation>
 <translation id="5300426565656326054">Personoleiddio hysbysebion ar sail Porwr</translation>
 <translation id="5304593522240415983">Ni all y maes hwn fod yn wag</translation>

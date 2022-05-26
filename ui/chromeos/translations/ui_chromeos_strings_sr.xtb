@@ -121,6 +121,7 @@
 <translation id="1942765061641586207">Резолуција слике</translation>
 <translation id="1972984168337863910">Прошири окна за повратне информације о датотекама</translation>
 <translation id="1995337122023280937">Иди на локацију датотеке</translation>
+<translation id="1996806196681857869">Z компримована архива</translation>
 <translation id="2001796770603320721">Управљајте на Диску</translation>
 <translation id="2009067268969781306">Форматирањем диска избрисаће се сви подаци сачувани на њему. Ова радња не може да се опозове.</translation>
 <translation id="2025955442973426285">тигриња</translation>
@@ -589,6 +590,7 @@
 <translation id="5955954492236143329">Ставки: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="5957366693331451795">Chromebox-ови</translation>
 <translation id="5982621672636444458">Опције сортирања</translation>
+<translation id="5985041959109124139">Z компримована tar архива</translation>
 <translation id="6007237601604674381">Премештање није успело. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Етернет мрежа</translation>
 <translation id="60357267506638014">чешка QWERTY</translation>
@@ -619,6 +621,7 @@
 <translation id="6220423280121890987">пенџапски</translation>
 <translation id="6224240818060029162">дански</translation>
 <translation id="6224253798271602650">Форматирај: <ph name="DRIVE_NAME" /></translation>
+<translation id="6224665423283788195">Zstandard компримована архива</translation>
 <translation id="6227235786875481728">Ову датотеку није могуће пустити.</translation>
 <translation id="6241349547798190358">холандски (Белгија)</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_INDEX" />. мрежа од <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, јачина сигнала <ph name="SIGNAL_STRENGTH" />%, батерија телефона <ph name="BATTERY_STATUS" />%, повежи</translation>
@@ -646,6 +649,7 @@
 <translation id="6509122719576673235">норвешки</translation>
 <translation id="6528513914570774834">Дозволите другим корисницима овог уређаја да користе ову мрежу</translation>
 <translation id="653019979737152879">Синхронизује се <ph name="FILE_NAME" />...</translation>
+<translation id="6530595303336443929">Zstandard компримована tar архива</translation>
 <translation id="6549689063733911810">Недавно</translation>
 <translation id="6558280019477628686">Дошло је до грешке. Неке ставке можда нису избрисане.</translation>
 <translation id="656398493051028875">Брисање „<ph name="FILENAME" />“...</translation>

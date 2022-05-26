@@ -78,6 +78,7 @@
 <translation id="1578784163189013834">Tria el fons de l'estalvi de pantalla</translation>
 <translation id="1615335640928990664">Ús de dades des de <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1621067168122174824">Executa la prova de càrrega</translation>
+<translation id="1631385268983122904">No tornis a muntar el dispositiu, encara</translation>
 <translation id="1639239467298939599">S'està carregant</translation>
 <translation id="1641857168437328880">Alimentador de documents (a una cara)</translation>
 <translation id="1643449475550628585">Canvia la imatge del fons de pantalla diàriament</translation>
@@ -85,6 +86,7 @@
 <translation id="1645954272419197032">Confirma la informació del dispositiu</translation>
 <translation id="1662989795263954667">S'ha aturat: no hi ha tinta</translation>
 <translation id="1668469839109562275">VPN integrada</translation>
+<translation id="1676557873873341166">S'està gravant un vídeo</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Solucionador de DNS present</translation>
 <translation id="1715359911173058521">S'ha produït un problema en establir la comunicació amb l'escàner. Comprova la xarxa o la connexió USB i torna-ho a provar.</translation>
@@ -159,6 +161,7 @@
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> ppp</translation>
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2338501278241028356">Activa el Bluetooth per detectar dispositius propers</translation>
+<translation id="2340422556570134524">La protecció contra l'escriptura s'ha activat de manera imprevista. Desactiva la protecció contra l'escriptura manualment abans de tornar-ho a provar.</translation>
 <translation id="2346474577291266260">Excel·lent (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="2359808026110333948">Continua</translation>
 <translation id="2360257214555822463">S'han detectat <ph name="LINK_BEGIN" />components no qualificats<ph name="LINK_END" />. Si vols confirmar que s'han instal·lat, fes-ho ara.</translation>
@@ -474,6 +477,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="5372659122375744710">La xarxa Wi-Fi no és segura</translation>
 <translation id="5376354385557966694">Mode clar automàtic</translation>
 <translation id="537872351913703572">El dispositiu es retornarà a un altre usuari o a una altra organització</translation>
+<translation id="5389159777326897627">Estil i fons de pantalla</translation>
 <translation id="5389224261615877010">Arc de Sant Martí</translation>
 <translation id="5395600419410242651">Esborra totes les dades</translation>
 <translation id="5400907029458559844">El dispositiu s'està connectant.</translation>
@@ -643,6 +647,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="6961170852793647506">Per començar, col·loca el document a l'escàner</translation>
 <translation id="6965382102122355670">D'acord</translation>
 <translation id="6977381486153291903">Revisió de microprogramari</translation>
+<translation id="6995564396478647735">Assegura't que la protecció contra l'escriptura estigui activada</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> gestiona aquest dispositiu i té accés a tota l'activitat dels usuaris, com ara les pàgines web visitades, les contrasenyes i el correu electrònic.</translation>
 <translation id="7040230719604914234">Operador</translation>
 <translation id="7041549558901442110">El dispositiu no està connectat.</translation>
@@ -653,6 +658,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
 <translation id="710028965487274708">Error: s'ha produït un error en l'autorització</translation>
 <translation id="7103252855940681301">Dispositiu <ph name="INDEX" /> de <ph name="COUNT" />, anomenat <ph name="NAME" />.</translation>
+<translation id="7126228745139711113">La protecció contra l'escriptura està desactivada</translation>
 <translation id="7134436342991564651">{0,plural, =1{Servidor de noms}other{Servidors de noms}}</translation>
 <translation id="7143207342074048698">Connectant</translation>
 <translation id="7144878232160441200">Torna-ho a provar</translation>
@@ -744,6 +750,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="80398733265834479">Activa el mode de color automàtic</translation>
 <translation id="8041089156583427627">Envia suggeriments</translation>
 <translation id="8045012663542226664">Silenci del micròfon</translation>
+<translation id="8063022551652308521">La protecció contra l'escriptura encara està desactivada. Per continuar, activa-la.</translation>
 <translation id="8075838845814659848">Càrrega restant</translation>
 <translation id="8082366717211101304">No es pot resoldre el DNS des d'aplicacions d'Android</translation>
 <translation id="8083281199617904460">Aquest procés de reparació l'ha de dur a terme un tècnic qualificat. No comencis fins que no s'hagin substituït els components que no funcionen correctament.</translation>
@@ -814,6 +821,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Utilitza les tecles de fletxa dreta o esquerra per gestionar aquesta funció.</translation>
 <translation id="8712637175834984815">Entesos</translation>
 <translation id="871560550817059752">Error: no hi ha tinta</translation>
+<translation id="8717030727630712160">S'està reprenent el procés de reparació…</translation>
 <translation id="8723108084122415655">La xarxa no predeterminada supera el llindar de latència</translation>
 <translation id="8725066075913043281">Torna-ho a provar</translation>
 <translation id="8726019395068607495">S'ha aturat: porta oberta</translation>
@@ -835,6 +843,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">El dispositiu és una tauleta.</translation>
 <translation id="8881098542468797602">La prova s'ha superat</translation>
+<translation id="8897267175591692539">Ara ja pots tornar a muntar el dispositiu</translation>
 <translation id="8898840733695078011">Intensitat del senyal</translation>
 <translation id="8910721771319628100">La xarxa predeterminada supera el llindar de latència</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> de <ph name="GIVEN_NAME" /></translation>

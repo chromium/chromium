@@ -121,6 +121,7 @@
 <translation id="1942765061641586207">ছবির রেজোলিউশন</translation>
 <translation id="1972984168337863910">ফাইল ফিডব্যাক প্যানেল বড় করুন</translation>
 <translation id="1995337122023280937">ফাইল লোকেশনে যান</translation>
+<translation id="1996806196681857869">Z কম্প্রেস করা আর্কাইভ</translation>
 <translation id="2001796770603320721">ড্রাইভে পরিচালনা করুন</translation>
 <translation id="2009067268969781306">ড্রাইভ ফরম্যাট করা হলে, সেটিতে সেভ করা সব ডেটা মুছে যাবে। সেটিকে আর আগের অবস্থায় ফেরানো যাবে না।</translation>
 <translation id="2025955442973426285">টাইগ্রিনা</translation>
@@ -588,6 +589,7 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" />টি আইটেম</translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">বাছাই বিকল্পগুলি</translation>
+<translation id="5985041959109124139">Z কম্প্রেস করা টার আর্কাইভ</translation>
 <translation id="6007237601604674381">স্থানান্তরণ ব্যর্থ হয়েছে৷ <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">ইথারনেট নেটওয়ার্ক</translation>
 <translation id="60357267506638014">চেক QWERTY</translation>
@@ -618,6 +620,7 @@
 <translation id="6220423280121890987">পাঞ্জাবি</translation>
 <translation id="6224240818060029162">ড্যানিশ</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" /> ফরম্যাট করা</translation>
+<translation id="6224665423283788195">Zstandard কম্প্রেস করা আর্কাইভ</translation>
 <translation id="6227235786875481728">এই ফাইলটি চালানো যাবেনা৷</translation>
 <translation id="6241349547798190358">ডাচ (বেলজিয়াম)</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="PHONE_NAME" /> সিগন্যাল: <ph name="SIGNAL_STRENGTH" />, ফোনের ব্যাটারি <ph name="BATTERY_STATUS" />%, কানেক্ট করুন</translation>
@@ -645,6 +648,7 @@
 <translation id="6509122719576673235">নরওয়েয়ীয়</translation>
 <translation id="6528513914570774834">এই ডিভাইসের অন্যান্য ব্যবহারকারীদের এই নেটওয়ার্ক ব্যবহার করতে দিন</translation>
 <translation id="653019979737152879"><ph name="FILE_NAME" /> সিঙ্ক হচ্ছে...</translation>
+<translation id="6530595303336443929">Zstandard কম্প্রেস করা টার আর্কাইভ</translation>
 <translation id="6549689063733911810">সাম্প্রতিক</translation>
 <translation id="6558280019477628686">একটি ত্রুটি হয়েছে৷ কিছু আইটেম হয়ত মোছা যায়নি।</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />" মোছা হচ্ছে...</translation>
