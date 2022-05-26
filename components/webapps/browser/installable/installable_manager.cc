@@ -951,9 +951,9 @@ void InstallableManager::OnScreenshotFetched(GURL screenshot_url,
         continue;
       }
 
-      int dimensions_max = std::max(screenshot.width(), screenshot.height());
-      int dimensions_min = std::min(screenshot.width(), screenshot.height());
-      if (dimensions_max > dimensions_min * kMaximumScreenshotRatio)
+      std::pair<int, int> dimensions =
+          std::minmax(screenshot.width(), screenshot.height());
+      if (dimensions.second > dimensions.first * kMaximumScreenshotRatio)
         continue;
 
       screenshots_.push_back(screenshot);
