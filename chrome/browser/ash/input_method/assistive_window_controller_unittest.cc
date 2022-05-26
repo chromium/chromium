@@ -128,18 +128,15 @@ TEST_F(AssistiveWindowControllerTest, ConfirmedLength0SetsBoundsToCaretBounds) {
 
   gfx::Rect current_bounds = suggestion_view->GetAnchorRect();
   gfx::Rect caret_bounds(0, 0, 100, 100);
-  gfx::Rect composition_bounds(0, 0, 90, 100);
   Bounds bounds;
   bounds.caret = caret_bounds;
-  bounds.composition_text = composition_bounds;
   ui::IMEBridge::Get()->GetAssistiveWindowHandler()->SetBounds(bounds);
 
   EXPECT_NE(current_bounds, suggestion_view->GetAnchorRect());
   EXPECT_EQ(caret_bounds, suggestion_view->GetAnchorRect());
 }
 
-TEST_F(AssistiveWindowControllerTest,
-       ConfirmedLengthNSetsBoundsToCompositionTextBounds) {
+TEST_F(AssistiveWindowControllerTest, ConfirmedLengthNSetsBoundsToCaretBounds) {
   ui::ime::SuggestionDetails details;
   details.text = suggestion_;
   details.confirmed_length = 1;
@@ -152,43 +149,15 @@ TEST_F(AssistiveWindowControllerTest,
 
   gfx::Rect current_bounds = suggestion_view->GetAnchorRect();
   gfx::Rect caret_bounds(0, 0, 100, 100);
-  gfx::Rect composition_bounds(0, 0, 90, 100);
   Bounds bounds;
   bounds.caret = caret_bounds;
-  bounds.composition_text = composition_bounds;
-  ui::IMEBridge::Get()->GetAssistiveWindowHandler()->SetBounds(bounds);
-
-  EXPECT_NE(current_bounds, suggestion_view->GetAnchorRect());
-  EXPECT_EQ(composition_bounds, suggestion_view->GetAnchorRect());
-}
-
-TEST_F(AssistiveWindowControllerTest,
-       ConfirmedLengthNSetsBoundsToCaretBoundsWithLacrosEnabled) {
-  EnableLacros();
-  ui::ime::SuggestionDetails details;
-  details.text = suggestion_;
-  details.confirmed_length = 1;
-  ui::IMEBridge::Get()->GetAssistiveWindowHandler()->ShowSuggestion(details);
-  ui::ime::SuggestionWindowView* suggestion_view =
-      controller_->GetSuggestionWindowViewForTesting();
-  EXPECT_EQ(
-      1u,
-      ui::IMEBridge::Get()->GetAssistiveWindowHandler()->GetConfirmedLength());
-
-  gfx::Rect current_bounds = suggestion_view->GetAnchorRect();
-  gfx::Rect caret_bounds(0, 0, 100, 100);
-  gfx::Rect composition_bounds(0, 0, 90, 100);
-  Bounds bounds;
-  bounds.caret = caret_bounds;
-  bounds.composition_text = composition_bounds;
   ui::IMEBridge::Get()->GetAssistiveWindowHandler()->SetBounds(bounds);
 
   EXPECT_NE(current_bounds, suggestion_view->GetAnchorRect());
   EXPECT_EQ(caret_bounds, suggestion_view->GetAnchorRect());
 }
 
-TEST_F(AssistiveWindowControllerTest,
-       ShowingSuggestionForFirstTimeShouldRepositionWindow) {
+TEST_F(AssistiveWindowControllerTest, WindowTracksCaretBounds) {
   ui::ime::SuggestionDetails details;
   details.text = suggestion_;
   details.confirmed_length = 0;
@@ -214,8 +183,8 @@ TEST_F(AssistiveWindowControllerTest,
   // Second char entered to text input
   assistive_window->SetBounds(Bounds{.caret = caret_bounds_after_two_key});
 
-  // Second `SetBounds` should be ignored
-  EXPECT_EQ(caret_bounds_after_one_key, suggestion_view->GetAnchorRect());
+  // Anchor should track the new caret position.
+  EXPECT_EQ(caret_bounds_after_two_key, suggestion_view->GetAnchorRect());
 }
 
 TEST_F(AssistiveWindowControllerTest,
