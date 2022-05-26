@@ -15,6 +15,7 @@
 #include "weblayer/browser/profile_impl.h"
 #include "weblayer/browser/safe_browsing/safe_browsing_service.h"
 #include "weblayer/browser/safe_browsing/safe_browsing_token_fetcher_impl.h"
+#include "weblayer/browser/safe_browsing/weblayer_user_population_helper.h"
 
 namespace weblayer {
 
@@ -55,7 +56,8 @@ KeyedService* WebLayerPingManagerFactory::BuildServiceInstanceFor(
           &WebLayerPingManagerFactory::ShouldFetchAccessTokenForReport,
           base::Unretained(this), context),
       safe_browsing::WebUIInfoSingleton::GetInstance(),
-      content::GetUIThreadTaskRunner({}));
+      content::GetUIThreadTaskRunner({}),
+      base::BindRepeating(&GetUserPopulationForBrowserContext, context));
 }
 
 bool WebLayerPingManagerFactory::ShouldFetchAccessTokenForReport(

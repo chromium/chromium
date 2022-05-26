@@ -61,8 +61,6 @@ SuspiciousSiteTrigger::SuspiciousSiteTrigger(
     PrefService* prefs,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     history::HistoryService* history_service,
-    base::RepeatingCallback<ChromeUserPopulation()>
-        get_user_population_callback,
     ReferrerChainProvider* referrer_chain_provider,
     bool monitor_mode)
     : content::WebContentsObserver(web_contents),
@@ -74,7 +72,6 @@ SuspiciousSiteTrigger::SuspiciousSiteTrigger(
       prefs_(prefs),
       url_loader_factory_(url_loader_factory),
       history_service_(history_service),
-      get_user_population_callback_(get_user_population_callback),
       referrer_chain_provider_(referrer_chain_provider),
       task_runner_(content::GetUIThreadTaskRunner({})) {}
 
@@ -102,8 +99,8 @@ bool SuspiciousSiteTrigger::MaybeStartReport() {
   TriggerManagerReason reason;
   if (!trigger_manager_->StartCollectingThreatDetailsWithReason(
           TriggerType::SUSPICIOUS_SITE, web_contents(), resource,
-          url_loader_factory_, history_service_, get_user_population_callback_,
-          referrer_chain_provider_, error_options, &reason)) {
+          url_loader_factory_, history_service_, referrer_chain_provider_,
+          error_options, &reason)) {
     UMA_HISTOGRAM_ENUMERATION(kSuspiciousSiteTriggerEventMetricName,
                               SuspiciousSiteTriggerEvent::REPORT_START_FAILED);
     LOCAL_HISTOGRAM_ENUMERATION(

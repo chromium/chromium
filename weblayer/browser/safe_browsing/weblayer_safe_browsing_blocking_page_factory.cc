@@ -13,7 +13,6 @@
 #include "weblayer/browser/safe_browsing/safe_browsing_metrics_collector_factory.h"
 #include "weblayer/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
 #include "weblayer/browser/safe_browsing/safe_browsing_service.h"
-#include "weblayer/browser/safe_browsing/weblayer_user_population_helper.h"
 
 namespace weblayer {
 
@@ -49,7 +48,6 @@ WebLayerSafeBrowsingBlockingPageFactory::CreateSafeBrowsingPage(
       display_options, should_trigger_reporting,
       // WebLayer doesn't integrate //components/history.
       /*history_service=*/nullptr,
-      base::BindRepeating(&GetUserPopulationForBrowserContext, browser_context),
       SafeBrowsingNavigationObserverManagerFactory::GetForBrowserContext(
           browser_context),
       SafeBrowsingMetricsCollectorFactory::GetForBrowserContext(

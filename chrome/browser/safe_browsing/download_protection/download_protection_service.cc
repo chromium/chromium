@@ -19,7 +19,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
-#include "chrome/browser/safe_browsing/chrome_user_population_helper.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service_factory.h"
 #include "chrome/browser/safe_browsing/download_protection/check_client_download_request.h"
@@ -495,8 +494,6 @@ void DownloadProtectionService::MaybeSendDangerousDownloadOpenedReport(
     report->set_did_proceed(true);
     report->set_download_verdict(
         DownloadDangerTypeToDownloadResponseVerdict(item->GetDangerType()));
-    *report->mutable_population() =
-        safe_browsing::GetUserPopulationForProfile(profile);
 
     ReportThreatDetailsResult result =
         sb_service_->SendDownloadReport(profile, std::move(report));

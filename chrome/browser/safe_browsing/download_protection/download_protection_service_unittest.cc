@@ -51,7 +51,6 @@
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
-#include "chrome/browser/safe_browsing/chrome_user_population_helper.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service_factory.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_test_utils.h"
@@ -2759,8 +2758,6 @@ TEST_F(DownloadProtectionServiceTest,
     expected_report.set_url(GURL::EmptyGURL().spec());
     expected_report.set_type(
         ClientSafeBrowsingReportRequest::DANGEROUS_DOWNLOAD_OPENED);
-    *expected_report.mutable_population() =
-        safe_browsing::GetUserPopulationForProfile(profile());
     expected_report.set_download_verdict(ClientDownloadResponse::SAFE);
     expected_report.set_did_proceed(true);
     expected_report.set_token(token);

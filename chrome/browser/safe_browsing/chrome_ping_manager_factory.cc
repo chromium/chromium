@@ -9,6 +9,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/safe_browsing/chrome_user_population_helper.h"
 #include "chrome/browser/safe_browsing/chrome_v4_protocol_config_provider.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -55,7 +56,9 @@ KeyedService* ChromePingManagerFactory::BuildServiceInstanceFor(
       base::BindRepeating(
           &ChromePingManagerFactory::ShouldFetchAccessTokenForReport, profile),
       safe_browsing::WebUIInfoSingleton::GetInstance(),
-      content::GetUIThreadTaskRunner({}));
+      content::GetUIThreadTaskRunner({}),
+      base::BindRepeating(&safe_browsing::GetUserPopulationForProfile,
+                          profile));
 }
 
 // static

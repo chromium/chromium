@@ -21,26 +21,22 @@ class MockTriggerManager : public TriggerManager {
 
   ~MockTriggerManager() override;
 
-  MOCK_METHOD8(
+  MOCK_METHOD7(
       StartCollectingThreatDetails,
       bool(TriggerType trigger_type,
            content::WebContents* web_contents,
            const security_interstitials::UnsafeResource& resource,
            scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
            history::HistoryService* history_service,
-           base::RepeatingCallback<ChromeUserPopulation()>
-               get_user_population_callback,
            ReferrerChainProvider* referrer_chain_provider,
            const SBErrorOptions& error_display_options));
-  MOCK_METHOD9(
+  MOCK_METHOD8(
       StartCollectingThreatDetailsWithReason,
       bool(TriggerType trigger_type,
            content::WebContents* web_contents,
            const security_interstitials::UnsafeResource& resource,
            scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
            history::HistoryService* history_service,
-           base::RepeatingCallback<ChromeUserPopulation()>
-               get_user_population_callback,
            ReferrerChainProvider* referrer_chain_provider,
            const SBErrorOptions& error_display_options,
            TriggerManagerReason* out_reason));

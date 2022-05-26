@@ -61,7 +61,9 @@ class PingManager : public KeyedService {
       std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher,
       base::RepeatingCallback<bool()> get_should_fetch_access_token,
       WebUIDelegate* webui_delegate,
-      scoped_refptr<base::SequencedTaskRunner> ui_task_runner);
+      scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
+      base::RepeatingCallback<ChromeUserPopulation()>
+          get_user_population_callback);
 
   void OnURLLoaderComplete(network::SimpleURLLoader* source,
                            std::unique_ptr<std::string> response_body);
@@ -75,9 +77,9 @@ class PingManager : public KeyedService {
   // SafeBrowsingtHitUrl.
   void ReportSafeBrowsingHit(const safe_browsing::HitReport& hit_report);
 
-  // Users can opt-in on the SafeBrowsing interstitial to send detailed
-  // threat reports. The returned object provides details on whether the report
-  // was successful.
+  // Sends a detailed threat report after performing validation and adding extra
+  // details to the report. The returned object provides details on whether the
+  // report was successful.
   ReportThreatDetailsResult ReportThreatDetails(
       std::unique_ptr<ClientSafeBrowsingReportRequest> report);
 
@@ -95,7 +97,9 @@ class PingManager : public KeyedService {
       std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher,
       base::RepeatingCallback<bool()> get_should_fetch_access_token,
       WebUIDelegate* webui_delegate,
-      scoped_refptr<base::SequencedTaskRunner> ui_task_runner);
+      scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
+      base::RepeatingCallback<ChromeUserPopulation()>
+          get_user_population_callback);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(PingManagerTest, TestSafeBrowsingHitUrl);
@@ -140,6 +144,9 @@ class PingManager : public KeyedService {
 
   // The task runner for the UI thread.
   scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
+
+  // Pulls the user population.
+  base::RepeatingCallback<ChromeUserPopulation()> get_user_population_callback_;
 
   base::WeakPtrFactory<PingManager> weak_factory_{this};
 };

@@ -19,7 +19,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/safe_browsing/chrome_ping_manager_factory.h"
-#include "chrome/browser/safe_browsing/chrome_user_population_helper.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/prefs/pref_service.h"
@@ -225,8 +224,6 @@ AndroidTelemetryService::GetReport(download::DownloadItem* item) {
   report->set_type(ClientSafeBrowsingReportRequest::APK_DOWNLOAD);
   report->set_url(item->GetOriginalUrl().spec());
   report->set_page_url(item->GetTabUrl().spec());
-  *report->mutable_population() =
-      safe_browsing::GetUserPopulationForProfile(profile_);
 
   // Fill referrer chain.
   content::WebContents* web_contents =

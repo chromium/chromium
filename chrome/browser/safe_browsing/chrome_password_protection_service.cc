@@ -611,8 +611,6 @@ void ChromePasswordProtectionService::MaybeStartThreatDetailsCollection(
   trigger_manager_->StartCollectingThreatDetails(
       safe_browsing::TriggerType::GAIA_PASSWORD_REUSE, web_contents, resource,
       url_loader_factory, /*history_service=*/nullptr,
-      base::BindRepeating(&safe_browsing::GetUserPopulationForProfile,
-                          profile_),
       SafeBrowsingNavigationObserverManagerFactory::GetForBrowserContext(
           profile_),
       TriggerManager::GetSBErrorDisplayOptions(*profile_->GetPrefs(),

@@ -63,7 +63,6 @@ source_set("ad_sampler_trigger") {
     "//base:base",
     "//components/safe_browsing/core/browser:referrer_chain_provider",
     "//components/safe_browsing/core/common",
-    "//components/safe_browsing/core/common/proto:csd_proto",
     "//content/public/browser",
   ]
 }
@@ -81,7 +80,6 @@ source_set("suspicious_site_trigger") {
     "//components/prefs:prefs",
     "//components/safe_browsing/core/browser:referrer_chain_provider",
     "//components/safe_browsing/core/common",
-    "//components/safe_browsing/core/common/proto:csd_proto",
     "//content/public/browser",
     "//net:net",
   ]

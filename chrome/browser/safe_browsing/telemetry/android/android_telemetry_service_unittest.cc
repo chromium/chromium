@@ -11,7 +11,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/safe_browsing/chrome_user_population_helper.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -286,14 +285,6 @@ TEST_F(AndroidTelemetryServiceTest, GetReport_ValidateAllFields) {
 
   ASSERT_TRUE(report->has_page_url());
   EXPECT_EQ(kTabURL, report->page_url());
-
-  ASSERT_TRUE(report->has_population());
-  std::string actual_population_serialized;
-  std::string expected_population_serialized;
-  report->population().SerializeToString(&actual_population_serialized);
-  safe_browsing::GetUserPopulationForProfile(profile()).SerializeToString(
-      &expected_population_serialized);
-  EXPECT_EQ(expected_population_serialized, actual_population_serialized);
 
   ASSERT_TRUE(report->has_download_item_info());
   ASSERT_TRUE(report->download_item_info().has_url());

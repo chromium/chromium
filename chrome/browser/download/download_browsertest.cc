@@ -63,7 +63,6 @@
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_browsertest_util.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
-#include "chrome/browser/safe_browsing/chrome_user_population_helper.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -5430,12 +5429,6 @@ IN_PROC_BROWSER_TEST_F(DownloadTestWithFakeSafeBrowsing,
             actual_report.type());
   EXPECT_EQ(safe_browsing::ClientDownloadResponse::UNCOMMON,
             actual_report.download_verdict());
-  std::string actual_population_serialized;
-  actual_report.population().SerializeToString(&actual_population_serialized);
-  std::string expected_population_serialized;
-  safe_browsing::GetUserPopulationForProfile(browser()->profile())
-      .SerializeToString(&expected_population_serialized);
-  EXPECT_EQ(expected_population_serialized, actual_population_serialized);
   EXPECT_EQ(download_url.spec(), actual_report.url());
   EXPECT_TRUE(actual_report.did_proceed());
 

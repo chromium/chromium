@@ -76,10 +76,12 @@ PingManager* PingManager::Create(
     std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher,
     base::RepeatingCallback<bool()> get_should_fetch_access_token,
     WebUIDelegate* webui_delegate,
-    scoped_refptr<base::SequencedTaskRunner> ui_task_runner) {
+    scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
+    base::RepeatingCallback<ChromeUserPopulation()>
+        get_user_population_callback) {
   return new PingManager(config, url_loader_factory, std::move(token_fetcher),
                          get_should_fetch_access_token, webui_delegate,
-                         ui_task_runner);
+                         ui_task_runner, get_user_population_callback);
 }
 
 PingManager::PingManager(
@@ -88,13 +90,16 @@ PingManager::PingManager(
     std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher,
     base::RepeatingCallback<bool()> get_should_fetch_access_token,
     WebUIDelegate* webui_delegate,
-    scoped_refptr<base::SequencedTaskRunner> ui_task_runner)
+    scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
+    base::RepeatingCallback<ChromeUserPopulation()>
+        get_user_population_callback)
     : config_(config),
       url_loader_factory_(url_loader_factory),
       token_fetcher_(std::move(token_fetcher)),
       get_should_fetch_access_token_(get_should_fetch_access_token),
       webui_delegate_(webui_delegate),
-      ui_task_runner_(ui_task_runner) {}
+      ui_task_runner_(ui_task_runner),
+      get_user_population_callback_(get_user_population_callback) {}
 
 PingManager::~PingManager() {}
 
@@ -148,6 +153,10 @@ void PingManager::ReportSafeBrowsingHit(
 // Sends threat details for users who opt-in.
 PingManager::ReportThreatDetailsResult PingManager::ReportThreatDetails(
     std::unique_ptr<ClientSafeBrowsingReportRequest> report) {
+  if (!get_user_population_callback_.is_null()) {
+    *report->mutable_population() = get_user_population_callback_.Run();
+  }
+
   std::string serialized_report;
   if (!report->SerializeToString(&serialized_report)) {
     DLOG(ERROR) << "Unable to serialize the threat report.";

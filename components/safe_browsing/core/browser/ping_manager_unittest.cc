@@ -5,6 +5,7 @@
 
 #include "components/safe_browsing/core/browser/ping_manager.h"
 #include "base/base64.h"
+#include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/strings/escape.h"
 #include "base/strings/stringprintf.h"
@@ -32,9 +33,10 @@ class PingManagerTest : public testing::Test {
           "&key=%s", base::EscapeQueryParamValue(key, true).c_str());
     }
 
-    ping_manager_.reset(new PingManager(
-        safe_browsing::GetTestV4ProtocolConfig(), nullptr, nullptr,
-        base::BindRepeating([]() { return false; }), nullptr, nullptr));
+    ping_manager_.reset(
+        new PingManager(safe_browsing::GetTestV4ProtocolConfig(), nullptr,
+                        nullptr, base::BindRepeating([]() { return false; }),
+                        nullptr, nullptr, base::NullCallback()));
   }
 
   PingManager* ping_manager() { return ping_manager_.get(); }

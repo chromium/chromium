@@ -19,6 +19,7 @@
 #include "weblayer/browser/browser_context_impl.h"
 #include "weblayer/browser/profile_impl.h"
 #include "weblayer/browser/safe_browsing/weblayer_ping_manager_factory.h"
+#include "weblayer/browser/safe_browsing/weblayer_user_population_helper.h"
 #include "weblayer/test/weblayer_browser_test.h"
 
 using safe_browsing::ClientSafeBrowsingReportRequest;
@@ -132,17 +133,24 @@ void WeblayerPingManagerTest::RunReportThreatDetailsTest(
       ->SetOnCSBRRLoggedCallbackForTesting(csbrr_logged_run_loop.QuitClosure());
 
   std::string access_token = "testing_access_token";
-  std::string report_content;
+  std::string input_report_content;
   std::unique_ptr<ClientSafeBrowsingReportRequest> report =
       std::make_unique<ClientSafeBrowsingReportRequest>();
   // The report must be non-empty. The selected property to set is arbitrary.
   report->set_type(ClientSafeBrowsingReportRequest::URL_PHISHING);
-  EXPECT_TRUE(report->SerializeToString(&report_content));
+  EXPECT_TRUE(report->SerializeToString(&input_report_content));
+  ClientSafeBrowsingReportRequest expected_report;
+  expected_report.ParseFromString(input_report_content);
+  *expected_report.mutable_population() =
+      GetUserPopulationForBrowserContext(GetProfile()->GetBrowserContext());
+  std::string expected_report_content;
+  EXPECT_TRUE(expected_report.SerializeToString(&expected_report_content));
+  EXPECT_NE(input_report_content, expected_report_content);
 
   network::TestURLLoaderFactory test_url_loader_factory;
   test_url_loader_factory.SetInterceptor(
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
-        EXPECT_EQ(GetUploadData(request), report_content);
+        EXPECT_EQ(GetUploadData(request), expected_report_content);
         std::string header_value;
         bool found_header = request.headers.GetHeader(
             net::HttpRequestHeaders::kAuthorization, &header_value);

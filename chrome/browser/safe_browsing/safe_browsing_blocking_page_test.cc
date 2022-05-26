@@ -35,7 +35,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/safe_browsing/chrome_safe_browsing_blocking_page_factory.h"
-#include "chrome/browser/safe_browsing/chrome_user_population_helper.h"
 #include "chrome/browser/safe_browsing/safe_browsing_metrics_collector_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
@@ -338,15 +337,13 @@ class TestThreatDetailsFactory : public ThreatDetailsFactory {
       const security_interstitials::UnsafeResource& unsafe_resource,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       history::HistoryService* history_service,
-      base::RepeatingCallback<ChromeUserPopulation()>
-          get_user_population_callback,
       ReferrerChainProvider* referrer_chain_provider,
       bool trim_to_ad_tags,
       ThreatDetailsDoneCallback done_callback) override {
     auto details = base::WrapUnique(new ThreatDetails(
         delegate, web_contents, unsafe_resource, url_loader_factory,
-        history_service, get_user_population_callback, referrer_chain_provider,
-        trim_to_ad_tags, std::move(done_callback)));
+        history_service, referrer_chain_provider, trim_to_ad_tags,
+        std::move(done_callback)));
     details_ = details.get();
     details->StartCollection();
     return details;
@@ -382,9 +379,6 @@ class TestSafeBrowsingBlockingPage : public SafeBrowsingBlockingPage {
             HistoryServiceFactory::GetForProfile(
                 Profile::FromBrowserContext(web_contents->GetBrowserContext()),
                 ServiceAccessType::EXPLICIT_ACCESS),
-            base::BindRepeating(
-                &safe_browsing::GetUserPopulationForProfile,
-                Profile::FromBrowserContext(web_contents->GetBrowserContext())),
             SafeBrowsingNavigationObserverManagerFactory::GetForBrowserContext(
                 web_contents->GetBrowserContext()),
             SafeBrowsingMetricsCollectorFactory::GetForProfile(

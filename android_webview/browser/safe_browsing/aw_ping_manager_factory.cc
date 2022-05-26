@@ -44,7 +44,11 @@ KeyedService* AwPingManagerFactory::BuildServiceInstanceFor(
       GetURLLoaderFactory(), /*token_fetcher=*/nullptr,
       get_should_fetch_access_token,
       safe_browsing::WebUIInfoSingleton::GetInstance(),
-      content::GetUIThreadTaskRunner({}));
+      content::GetUIThreadTaskRunner({}),
+      // TODO(crbug.com/1284979) If features get added that can alter
+      // user population values in android_webview, we should consider
+      // threading the user population through for client reports
+      /*get_user_population_callback=*/base::NullCallback());
 }
 
 std::string AwPingManagerFactory::GetProtocolConfigClientName() const {

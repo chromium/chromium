@@ -53,7 +53,6 @@ if (safe_browsing_mode > 0) {
       "//components/safe_browsing/core/browser:safe_browsing_metrics_collector",
       "//components/safe_browsing/core/common",
       "//components/safe_browsing/core/common:safe_browsing_prefs",
-      "//components/safe_browsing/core/common/proto:csd_proto",
       "//components/security_interstitials/content:security_interstitial_page",
       "//components/security_interstitials/core",
       "//components/security_interstitials/core:unsafe_resource",
