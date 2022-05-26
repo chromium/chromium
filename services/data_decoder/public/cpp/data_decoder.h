@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/callback_forward.h"
+#include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -88,6 +89,8 @@ class DataDecoder {
   using ValueParseCallback = base::OnceCallback<void(ValueOrError)>;
   using GzipperCallback =
       base::OnceCallback<void(ResultOrError<mojo_base::BigBuffer>)>;
+
+  using CancellationFlag = base::RefCountedData<bool>;
 
   // Returns a raw interface to the service instance. This launches an instance
   // of the service process if possible on the current platform, or returns a
@@ -171,6 +174,13 @@ class DataDecoder {
   // This instance's connection to the service. This connection is lazily
   // established and may be reset after long periods of idle time.
   mojo::Remote<mojom::DataDecoderService> service_;
+
+  // Cancellation flag for any outstanding requests. When a request is
+  // started, it takes a reference to this flag. Upon the destruction of this
+  // instance, the flag is set to `true`. Any outstanding requests should check
+  // this flag, and if it is `true`, they should not run the callback, per
+  // the API guarantees above.
+  scoped_refptr<CancellationFlag> cancel_requests_;
 };
 
 }  // namespace data_decoder
