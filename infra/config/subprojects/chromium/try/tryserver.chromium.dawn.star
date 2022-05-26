@@ -56,6 +56,11 @@ try_.builder(
 try_.builder(
     name = "dawn-mac-x64-deps-rel",
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
+    mirrors = [
+        "ci/Dawn Mac x64 DEPS Builder",
+        "ci/Dawn Mac x64 DEPS Release (AMD)",
+        "ci/Dawn Mac x64 DEPS Release (Intel)",
+    ],
     main_list_view = "try",
     os = os.MAC_ANY,
     tryjob = try_.job(
