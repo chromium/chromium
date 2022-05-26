@@ -72678,6 +72678,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="50" label="SharedImageProvider no access"/>
   <int value="51" label="SharedImageProvider SkImage creation failed"/>
   <int value="52" label="Zero SkColorFilter bytes"/>
+  <int value="53" label="Insufficient Pixel Data"/>
 </enum>
 
 <enum name="PaletteModeCancelType">
