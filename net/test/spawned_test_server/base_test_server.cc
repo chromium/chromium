@@ -347,28 +347,23 @@ void BaseTestServer::CleanUpWhenStoppingServer() {
   started_ = false;
 }
 
-// Generates a dictionary of arguments to pass to the Python test server via
-// the test server spawner, in the form of
-// { argument-name: argument-value, ... }
-// Returns false if an invalid configuration is specified.
-bool BaseTestServer::GenerateArguments(base::DictionaryValue* arguments) const {
-  DCHECK(arguments);
-
-  arguments->SetStringKey("host", host_port_pair_.host());
-  arguments->SetIntKey("port", host_port_pair_.port());
-  arguments->SetStringKey("data-dir", document_root_.AsUTF8Unsafe());
+absl::optional<base::Value::Dict> BaseTestServer::GenerateArguments() const {
+  base::Value::Dict arguments;
+  arguments.Set("host", host_port_pair_.host());
+  arguments.Set("port", host_port_pair_.port());
+  arguments.Set("data-dir", document_root_.AsUTF8Unsafe());
 
   if (VLOG_IS_ON(1) || log_to_console_)
-    arguments->SetKey("log-to-console", base::Value());
+    arguments.Set("log-to-console", base::Value());
 
   if (ws_basic_auth_) {
     DCHECK(type_ == TYPE_WS || type_ == TYPE_WSS);
-    arguments->SetKey("ws-basic-auth", base::Value());
+    arguments.Set("ws-basic-auth", base::Value());
   }
 
   if (redirect_connect_to_localhost_) {
     DCHECK(type_ == TYPE_BASIC_AUTH_PROXY || type_ == TYPE_PROXY);
-    arguments->SetKey("redirect-connect-to-localhost", base::Value());
+    arguments.Set("redirect-connect-to-localhost", base::Value());
   }
 
   if (UsingSSL(type_)) {
@@ -381,17 +376,16 @@ bool BaseTestServer::GenerateArguments(base::DictionaryValue* arguments) const {
           !base::PathExists(certificate_path)) {
         LOG(ERROR) << "Certificate path " << certificate_path.value()
                    << " doesn't exist. Can't launch https server.";
-        return false;
+        return absl::nullopt;
       }
-      arguments->SetStringKey("cert-and-key-file",
-                              certificate_path.AsUTF8Unsafe());
+      arguments.Set("cert-and-key-file", certificate_path.AsUTF8Unsafe());
     }
 
     // Check the client certificate related arguments.
     if (ssl_options_.request_client_certificate)
-      arguments->SetKey("ssl-client-auth", base::Value());
+      arguments.Set("ssl-client-auth", base::Value());
 
-    std::vector<base::Value> ssl_client_certs;
+    base::Value::List ssl_client_certs;
 
     std::vector<base::FilePath>::const_iterator it;
     for (it = ssl_options_.client_authorities.begin();
@@ -399,23 +393,17 @@ bool BaseTestServer::GenerateArguments(base::DictionaryValue* arguments) const {
       if (it->IsAbsolute() && !base::PathExists(*it)) {
         LOG(ERROR) << "Client authority path " << it->value()
                    << " doesn't exist. Can't launch https server.";
-        return false;
+        return absl::nullopt;
       }
-      ssl_client_certs.emplace_back(it->AsUTF8Unsafe());
+      ssl_client_certs.Append(it->AsUTF8Unsafe());
     }
 
     if (ssl_client_certs.size()) {
-      arguments->SetKey("ssl-client-ca",
-                        base::Value(std::move(ssl_client_certs)));
+      arguments.Set("ssl-client-ca", std::move(ssl_client_certs));
     }
   }
 
-  return GenerateAdditionalArguments(arguments);
-}
-
-bool BaseTestServer::GenerateAdditionalArguments(
-    base::DictionaryValue* arguments) const {
-  return true;
+  return absl::make_optional(std::move(arguments));
 }
 
 }  // namespace net

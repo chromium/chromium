@@ -183,15 +183,14 @@ absl::optional<std::vector<base::FilePath>> LocalTestServer::GetPythonPath()
 
 bool LocalTestServer::AddCommandLineArguments(
     base::CommandLine* command_line) const {
-  base::DictionaryValue arguments_dict;
-  if (!GenerateArguments(&arguments_dict))
+  absl::optional<base::Value::Dict> arguments_dict = GenerateArguments();
+  if (!arguments_dict)
     return false;
 
   // Serialize the argument dictionary into CommandLine.
-  for (base::DictionaryValue::Iterator it(arguments_dict); !it.IsAtEnd();
-       it.Advance()) {
-    const base::Value& value = it.value();
-    const std::string& key = it.key();
+  for (auto it = arguments_dict->begin(); it != arguments_dict->end(); ++it) {
+    const base::Value& value = it->second;
+    const std::string& key = it->first;
 
     // Add arguments from a list.
     if (value.is_list()) {
