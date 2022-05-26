@@ -605,6 +605,54 @@ TEST_F(
   mock_bluetooth_suspension_recovery_timer_->Fire();
 }
 
+TEST_F(
+    ProximityAuthUnlockManagerImplTest,
+    InitialScanAfterSuspendResume_DontPerformInitialScanIfConnectionEstablished) {
+  CreateUnlockManager(ProximityAuthSystem::SESSION_LOCK);
+
+  ASSERT_FALSE(mock_bluetooth_suspension_recovery_timer_->IsRunning());
+
+  // Simulates the lid of chromebook closing resulting in suspension.
+  chromeos::FakePowerManagerClient::Get()->SendSuspendImminent(
+      power_manager::SuspendImminent_Reason_LID_CLOSED);
+
+  EXPECT_CALL(
+      proximity_auth_client_,
+      UpdateSmartLockState(SmartLockState::kPhoneFoundLockedAndProximate))
+      .Times(1);
+  EXPECT_CALL(proximity_auth_client_,
+              UpdateSmartLockState(SmartLockState::kConnectingToPhone))
+      .Times(1);
+
+  // We want to emulate a bluetooth adapter that is present and powered
+  // upon lid reopen and resume, because we are testing the code path
+  // within OnBluetoothAdapterPresentAndPowerChanged() after the
+  // suspension timer concludes.
+  ON_CALL(*bluetooth_adapter_, IsPresent()).WillByDefault(Return(true));
+  ON_CALL(*bluetooth_adapter_, IsPowered()).WillByDefault(Return(true));
+
+  // This event simulates reopen of lid resulting in resume.
+  chromeos::FakePowerManagerClient::Get()->SendSuspendDone();
+  EXPECT_TRUE(mock_bluetooth_suspension_recovery_timer_->IsRunning());
+
+  // Start the life cycle for unlock manager.
+  unlock_manager_->SetRemoteDeviceLifeCycle(&life_cycle_);
+  EXPECT_TRUE(life_cycle_.started());
+
+  // Simulate a secure channel connection established with phone.
+  life_cycle_.ChangeState(
+      RemoteDeviceLifeCycle::State::SECURE_CHANNEL_ESTABLISHED);
+
+  // Simulate the phone responding with locked and proximate.
+  unlock_manager_->OnRemoteStatusUpdate(kRemoteScreenLocked);
+
+  EXPECT_TRUE(mock_bluetooth_suspension_recovery_timer_->IsRunning());
+
+  // Time out the suspension recovery timer so we run
+  // OnBluetoothAdapterPresentAndPowerChanged().
+  mock_bluetooth_suspension_recovery_timer_->Fire();
+}
+
 TEST_F(ProximityAuthUnlockManagerImplTest,
        BluetoothOffMessageShownImmediatelyIfBluetoothWasOffBeforeSuspend) {
   CreateUnlockManager(ProximityAuthSystem::SESSION_LOCK);

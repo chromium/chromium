@@ -482,9 +482,10 @@ void UnlockManagerImpl::OnBluetoothAdapterPresentAndPoweredChanged() {
   DCHECK(!IsBluetoothAdapterRecoveringFromSuspend());
 
   if (IsBluetoothPresentAndPowered()) {
-    if (!is_performing_initial_scan_)
+    if (!is_performing_initial_scan_ &&
+        !is_bluetooth_connection_to_phone_active_) {
       SetIsPerformingInitialScan(true /* is_performing_initial_scan */);
-
+    }
     return;
   }
 
