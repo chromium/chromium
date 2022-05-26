@@ -7,9 +7,14 @@
 
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
+#include "media/mojo/mojom/media_log.mojom.h"
 #include "media/mojo/mojom/stable/stable_video_decoder.mojom.h"
 #include "media/mojo/mojom/video_decoder.mojom.h"
 #include "media/mojo/services/media_mojo_export.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace media {
 
@@ -34,7 +39,10 @@ namespace media {
 // StableVideoDecoderService should also check incoming data due to similar
 // concerns.
 class MEDIA_MOJO_EXPORT StableVideoDecoderService
-    : public stable::mojom::StableVideoDecoder {
+    : public stable::mojom::StableVideoDecoder,
+      public stable::mojom::VideoFrameHandleReleaser,
+      public mojom::VideoDecoderClient,
+      public mojom::MediaLog {
  public:
   explicit StableVideoDecoderService(
       std::unique_ptr<mojom::VideoDecoder> dst_video_decoder);
@@ -62,7 +70,45 @@ class MEDIA_MOJO_EXPORT StableVideoDecoderService
               DecodeCallback callback) final;
   void Reset(ResetCallback callback) final;
 
+  // mojom::stable::VideoFrameHandleReleaser implementation.
+  void ReleaseVideoFrame(const base::UnguessableToken& release_token) final;
+
+  // mojom::VideoDecoderClient implementation.
+  void OnVideoFrameDecoded(
+      const scoped_refptr<VideoFrame>& frame,
+      bool can_read_without_stalling,
+      const absl::optional<base::UnguessableToken>& release_token) final;
+  void OnWaiting(WaitingReason reason) final;
+  void RequestOverlayInfo(bool restart_for_transitions) final;
+
+  // mojom::MediaLog implementation.
+  void AddLogRecord(const MediaLogRecord& event) final;
+
  private:
+  // Incoming calls from the |dst_video_decoder_| to
+  // |video_decoder_client_receiver_| are forwarded to
+  // |stable_video_decoder_client_remote_|.
+  mojo::AssociatedReceiver<mojom::VideoDecoderClient>
+      video_decoder_client_receiver_ GUARDED_BY_CONTEXT(sequence_checker_);
+  mojo::AssociatedRemote<stable::mojom::VideoDecoderClient>
+      stable_video_decoder_client_remote_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Incoming calls from the |dst_video_decoder_| to |media_log_receiver_| are
+  // forwarded to |stable_media_log_remote_|.
+  mojo::Receiver<mojom::MediaLog> media_log_receiver_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+  mojo::Remote<stable::mojom::MediaLog> stable_media_log_remote_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // Incoming requests from the client to
+  // |stable_video_frame_handle_releaser_receiver_| are forwarded to
+  // |video_frame_handle_releaser_remote_|.
+  mojo::Receiver<stable::mojom::VideoFrameHandleReleaser>
+      stable_video_frame_handle_releaser_receiver_
+          GUARDED_BY_CONTEXT(sequence_checker_);
+  mojo::Remote<mojom::VideoFrameHandleReleaser>
+      video_frame_handle_releaser_remote_ GUARDED_BY_CONTEXT(sequence_checker_);
+
   // The incoming stable::mojom::StableVideoDecoder requests are forwarded to
   // |dst_video_decoder_|.
   std::unique_ptr<mojom::VideoDecoder> dst_video_decoder_

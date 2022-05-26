@@ -5,9 +5,13 @@
 #include "media/mojo/services/stable_video_decoder_service.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "media/mojo/common/mojo_decoder_buffer_converter.h"
+#include "media/mojo/mojom/media_log.mojom.h"
 #include "media/mojo/mojom/video_decoder.mojom.h"
 #include "media/mojo/services/stable_video_decoder_factory_service.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/system/data_pipe.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -21,6 +25,29 @@ namespace media {
 
 namespace {
 
+class MockVideoFrameHandleReleaser : public mojom::VideoFrameHandleReleaser {
+ public:
+  explicit MockVideoFrameHandleReleaser(
+      mojo::PendingReceiver<mojom::VideoFrameHandleReleaser>
+          video_frame_handle_releaser)
+      : video_frame_handle_releaser_receiver_(
+            this,
+            std::move(video_frame_handle_releaser)) {}
+  MockVideoFrameHandleReleaser(const MockVideoFrameHandleReleaser&) = delete;
+  MockVideoFrameHandleReleaser& operator=(const MockVideoFrameHandleReleaser&) =
+      delete;
+  ~MockVideoFrameHandleReleaser() override = default;
+
+  // mojom::VideoFrameHandleReleaser implementation.
+  MOCK_METHOD2(ReleaseVideoFrame,
+               void(const base::UnguessableToken& release_token,
+                    const gpu::SyncToken& release_sync_token));
+
+ private:
+  mojo::Receiver<mojom::VideoFrameHandleReleaser>
+      video_frame_handle_releaser_receiver_;
+};
+
 class MockVideoDecoder : public mojom::VideoDecoder {
  public:
   MockVideoDecoder() = default;
@@ -28,17 +55,40 @@ class MockVideoDecoder : public mojom::VideoDecoder {
   MockVideoDecoder& operator=(const MockVideoDecoder&) = delete;
   ~MockVideoDecoder() override = default;
 
+  mojo::AssociatedRemote<mojom::VideoDecoderClient> TakeClientRemote() {
+    return std::move(client_remote_);
+  }
+  mojo::Remote<mojom::MediaLog> TakeMediaLogRemote() {
+    return std::move(media_log_remote_);
+  }
+  std::unique_ptr<StrictMock<MockVideoFrameHandleReleaser>>
+  TakeVideoFrameHandleReleaser() {
+    return std::move(video_frame_handle_releaser_);
+  }
+  std::unique_ptr<MojoDecoderBufferReader> TakeMojoDecoderBufferReader() {
+    return std::move(mojo_decoder_buffer_reader_);
+  };
+
   // mojom::VideoDecoder implementation.
   MOCK_METHOD1(GetSupportedConfigs, void(GetSupportedConfigsCallback callback));
-  MOCK_METHOD6(
-      Construct,
-      void(mojo::PendingAssociatedRemote<mojom::VideoDecoderClient> client,
-           mojo::PendingRemote<mojom::MediaLog> media_log,
-           mojo::PendingReceiver<mojom::VideoFrameHandleReleaser>
-               video_frame_handle_receiver,
-           mojo::ScopedDataPipeConsumerHandle decoder_buffer_pipe,
-           mojom::CommandBufferIdPtr command_buffer_id,
-           const gfx::ColorSpace& target_color_space));
+  void Construct(
+      mojo::PendingAssociatedRemote<mojom::VideoDecoderClient> client,
+      mojo::PendingRemote<mojom::MediaLog> media_log,
+      mojo::PendingReceiver<mojom::VideoFrameHandleReleaser>
+          video_frame_handle_releaser,
+      mojo::ScopedDataPipeConsumerHandle decoder_buffer_pipe,
+      mojom::CommandBufferIdPtr command_buffer_id,
+      const gfx::ColorSpace& target_color_space) final {
+    client_remote_.Bind(std::move(client));
+    media_log_remote_.Bind(std::move(media_log));
+    video_frame_handle_releaser_ =
+        std::make_unique<StrictMock<MockVideoFrameHandleReleaser>>(
+            std::move(video_frame_handle_releaser));
+    DoConstruct(std::move(command_buffer_id), target_color_space);
+  }
+  MOCK_METHOD2(DoConstruct,
+               void(mojom::CommandBufferIdPtr command_buffer_id,
+                    const gfx::ColorSpace& target_color_space));
   MOCK_METHOD4(Initialize,
                void(const VideoDecoderConfig& config,
                     bool low_delay,
@@ -48,7 +98,167 @@ class MockVideoDecoder : public mojom::VideoDecoder {
                void(mojom::DecoderBufferPtr buffer, DecodeCallback callback));
   MOCK_METHOD1(Reset, void(ResetCallback callback));
   MOCK_METHOD1(OnOverlayInfoChanged, void(const OverlayInfo& overlay_info));
+
+ private:
+  mojo::AssociatedRemote<mojom::VideoDecoderClient> client_remote_;
+  mojo::Remote<mojom::MediaLog> media_log_remote_;
+  std::unique_ptr<StrictMock<MockVideoFrameHandleReleaser>>
+      video_frame_handle_releaser_;
+  std::unique_ptr<MojoDecoderBufferReader> mojo_decoder_buffer_reader_;
 };
+
+class MockStableVideoDecoderClient : public stable::mojom::VideoDecoderClient {
+ public:
+  explicit MockStableVideoDecoderClient(
+      mojo::PendingAssociatedReceiver<stable::mojom::VideoDecoderClient>
+          pending_receiver)
+      : receiver_(this, std::move(pending_receiver)) {}
+  MockStableVideoDecoderClient(const MockStableVideoDecoderClient&) = delete;
+  MockStableVideoDecoderClient& operator=(const MockStableVideoDecoderClient&) =
+      delete;
+  ~MockStableVideoDecoderClient() override = default;
+
+  // stable::mojom::VideoDecoderClient implementation.
+  MOCK_METHOD3(OnVideoFrameDecoded,
+               void(const scoped_refptr<VideoFrame>& frame,
+                    bool can_read_without_stalling,
+                    const base::UnguessableToken& release_token));
+  MOCK_METHOD1(OnWaiting, void(WaitingReason reason));
+
+ private:
+  mojo::AssociatedReceiver<stable::mojom::VideoDecoderClient> receiver_;
+};
+
+class MockStableMediaLog : public stable::mojom::MediaLog {
+ public:
+  explicit MockStableMediaLog(
+      mojo::PendingReceiver<stable::mojom::MediaLog> pending_receiver)
+      : receiver_(this, std::move(pending_receiver)) {}
+  MockStableMediaLog(const MockStableMediaLog&) = delete;
+  MockStableMediaLog& operator=(const MockStableMediaLog&) = delete;
+  ~MockStableMediaLog() override = default;
+
+  // stable::mojom::MediaLog implementation.
+  MOCK_METHOD1(AddLogRecord, void(const MediaLogRecord& event));
+
+ private:
+  mojo::Receiver<stable::mojom::MediaLog> receiver_;
+};
+
+// AuxiliaryEndpoints groups the endpoints that support the operation of a
+// StableVideoDecoderService and that come from the Construct() call. That way,
+// tests can easily poke at one endpoint and set expectations on the other. For
+// example, a test might want to simulate the scenario in which a frame has been
+// decoded by the underlying mojom::VideoDecoder. In this case, the test can
+// call |video_decoder_client_remote|->OnVideoFrameDecoded() and then set an
+// expectation on |mock_stable_video_decoder_client|->OnVideoFrameDecoded().
+struct AuxiliaryEndpoints {
+  // |video_decoder_client_remote| is the client that the underlying
+  // mojom::VideoDecoder receives through the Construct() call. Tests can make
+  // calls on it and those calls should ultimately be received by the
+  // |mock_stable_video_decoder_client|.
+  mojo::AssociatedRemote<mojom::VideoDecoderClient> video_decoder_client_remote;
+  std::unique_ptr<StrictMock<MockStableVideoDecoderClient>>
+      mock_stable_video_decoder_client;
+
+  // |media_log_remote| is the MediaLog that the underlying mojom::VideoDecoder
+  // receives through the Construct() call. Tests can make calls on it and those
+  // calls should ultimately be received by the |mock_stable_media_log|.
+  mojo::Remote<mojom::MediaLog> media_log_remote;
+  std::unique_ptr<StrictMock<MockStableMediaLog>> mock_stable_media_log;
+
+  // Tests can use |stable_video_frame_handle_releaser_remote| to simulate
+  // releasing a VideoFrame.
+  // |mock_video_frame_handle_releaser| is the VideoFrameHandleReleaser that's
+  // setup when the underlying mojom::VideoDecoder receives a Construct() call.
+  // Tests can make calls on |stable_video_frame_handle_releaser_remote| and
+  // they should be ultimately received by the
+  // |mock_video_frame_handle_releaser|.
+  mojo::Remote<stable::mojom::VideoFrameHandleReleaser>
+      stable_video_frame_handle_releaser_remote;
+  std::unique_ptr<StrictMock<MockVideoFrameHandleReleaser>>
+      mock_video_frame_handle_releaser;
+
+  // |mojo_decoder_buffer_reader| wraps the reading end of the data pipe that
+  // the underlying mojom::VideoDecoder receives through the Construct() call.
+  // Tests can write data using the |mojo_decoder_buffer_writer| and that data
+  // should be ultimately received by the |mojo_decoder_buffer_reader|.
+  std::unique_ptr<MojoDecoderBufferWriter> mojo_decoder_buffer_writer;
+  std::unique_ptr<MojoDecoderBufferReader> mojo_decoder_buffer_reader;
+};
+
+// Calls Construct() on |stable_video_decoder_remote| and, if
+// |expect_construct_call| is true, expects a corresponding Construct() call on
+// |mock_video_decoder| which is assumed to be the backing decoder of
+// |stable_video_decoder_remote|. Returns nullptr if the expectations on
+// |mock_video_decoder| are violated. Otherwise, returns an AuxiliaryEndpoints
+// instance that contains the supporting endpoints that tests can use to
+// interact with the auxiliary interfaces used by the
+// |stable_video_decoder_remote|.
+std::unique_ptr<AuxiliaryEndpoints> ConstructStableVideoDecoder(
+    mojo::Remote<stable::mojom::StableVideoDecoder>&
+        stable_video_decoder_remote,
+    StrictMock<MockVideoDecoder>& mock_video_decoder,
+    bool expect_construct_call) {
+  constexpr gfx::ColorSpace kTargetColorSpace = gfx::ColorSpace::CreateSRGB();
+  if (expect_construct_call) {
+    EXPECT_CALL(mock_video_decoder,
+                DoConstruct(/*command_buffer_id=*/_,
+                            /*target_color_space=*/kTargetColorSpace));
+  }
+  mojo::PendingAssociatedRemote<stable::mojom::VideoDecoderClient>
+      stable_video_decoder_client_remote;
+  auto mock_stable_video_decoder_client =
+      std::make_unique<StrictMock<MockStableVideoDecoderClient>>(
+          stable_video_decoder_client_remote
+              .InitWithNewEndpointAndPassReceiver());
+
+  mojo::PendingRemote<stable::mojom::MediaLog> stable_media_log_remote;
+  auto mock_stable_media_log = std::make_unique<StrictMock<MockStableMediaLog>>(
+      stable_media_log_remote.InitWithNewPipeAndPassReceiver());
+
+  mojo::Remote<stable::mojom::VideoFrameHandleReleaser>
+      video_frame_handle_releaser_remote;
+
+  mojo::ScopedDataPipeConsumerHandle remote_consumer_handle;
+  std::unique_ptr<MojoDecoderBufferWriter> mojo_decoder_buffer_writer =
+      MojoDecoderBufferWriter::Create(
+          GetDefaultDecoderBufferConverterCapacity(DemuxerStream::VIDEO),
+          &remote_consumer_handle);
+
+  stable_video_decoder_remote->Construct(
+      std::move(stable_video_decoder_client_remote),
+      std::move(stable_media_log_remote),
+      video_frame_handle_releaser_remote.BindNewPipeAndPassReceiver(),
+      std::move(remote_consumer_handle), kTargetColorSpace);
+  stable_video_decoder_remote.FlushForTesting();
+
+  if (!Mock::VerifyAndClearExpectations(&mock_video_decoder))
+    return nullptr;
+
+  auto auxiliary_endpoints = std::make_unique<AuxiliaryEndpoints>();
+
+  auxiliary_endpoints->video_decoder_client_remote =
+      mock_video_decoder.TakeClientRemote();
+  auxiliary_endpoints->mock_stable_video_decoder_client =
+      std::move(mock_stable_video_decoder_client);
+
+  auxiliary_endpoints->media_log_remote =
+      mock_video_decoder.TakeMediaLogRemote();
+  auxiliary_endpoints->mock_stable_media_log = std::move(mock_stable_media_log);
+
+  auxiliary_endpoints->stable_video_frame_handle_releaser_remote =
+      std::move(video_frame_handle_releaser_remote);
+  auxiliary_endpoints->mock_video_frame_handle_releaser =
+      mock_video_decoder.TakeVideoFrameHandleReleaser();
+
+  auxiliary_endpoints->mojo_decoder_buffer_writer =
+      std::move(mojo_decoder_buffer_writer);
+  auxiliary_endpoints->mojo_decoder_buffer_reader =
+      mock_video_decoder.TakeMojoDecoderBufferReader();
+
+  return auxiliary_endpoints;
+}
 
 class StableVideoDecoderServiceTest : public testing::Test {
  public:
@@ -123,6 +333,38 @@ TEST_F(StableVideoDecoderServiceTest, FactoryCanCreateStableVideoDecoders) {
     ASSERT_TRUE(remote.is_bound());
     ASSERT_TRUE(remote.is_connected());
   }
+}
+
+// Tests that a call to stable::mojom::VideoDecoder::Construct() call gets
+// routed correctly to the underlying mojom::VideoDecoder.
+TEST_F(StableVideoDecoderServiceTest, StableVideoDecoderCanBeConstructed) {
+  auto mock_video_decoder = std::make_unique<StrictMock<MockVideoDecoder>>();
+  auto* mock_video_decoder_raw = mock_video_decoder.get();
+  auto stable_video_decoder_remote =
+      CreateStableVideoDecoder(std::move(mock_video_decoder));
+  ASSERT_TRUE(stable_video_decoder_remote.is_bound());
+  ASSERT_TRUE(stable_video_decoder_remote.is_connected());
+  ASSERT_TRUE(ConstructStableVideoDecoder(stable_video_decoder_remote,
+                                          *mock_video_decoder_raw,
+                                          /*expect_construct_call=*/true));
+}
+
+// Tests that if two calls to stable::mojom::VideoDecoder::Construct() are made,
+// only one is routed to the underlying mojom::VideoDecoder.
+TEST_F(StableVideoDecoderServiceTest,
+       StableVideoDecoderCannotBeConstructedTwice) {
+  auto mock_video_decoder = std::make_unique<StrictMock<MockVideoDecoder>>();
+  auto* mock_video_decoder_raw = mock_video_decoder.get();
+  auto stable_video_decoder_remote =
+      CreateStableVideoDecoder(std::move(mock_video_decoder));
+  ASSERT_TRUE(stable_video_decoder_remote.is_bound());
+  ASSERT_TRUE(stable_video_decoder_remote.is_connected());
+  EXPECT_TRUE(ConstructStableVideoDecoder(stable_video_decoder_remote,
+                                          *mock_video_decoder_raw,
+                                          /*expect_construct_call=*/true));
+  EXPECT_TRUE(ConstructStableVideoDecoder(stable_video_decoder_remote,
+                                          *mock_video_decoder_raw,
+                                          /*expect_construct_call=*/false));
 }
 
 }  // namespace
