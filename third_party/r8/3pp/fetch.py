@@ -5,8 +5,10 @@
 
 import argparse
 import datetime
+import hashlib
 import json
 import os
+import pathlib
 import urllib.request
 
 # I have arbitrarily chosen 100 as a number much more than the number of commits
@@ -55,13 +57,29 @@ def get_commit_before_today():
     return None
 
 
+def compute_patch_hash():
+  this_dir = pathlib.Path(__file__).parent
+  md5 = hashlib.md5()
+  for p in sorted(this_dir.glob('patches/*.patch')):
+    md5.update(p.read_bytes())
+  # Include install.py so that it triggers changes as well.
+  md5.update((this_dir / 'install.sh').read_bytes())
+  # Shorten to avoid really long version strings. Given the low number of patch
+  # files, 10 digits is more than sufficient.
+  return md5.hexdigest()[:10]
+
+
 def do_latest():
     commit_hash = get_commit_before_today()
     assert commit_hash is not None
-    print(commit_hash)
+    patch_hash = compute_patch_hash()
+    # Include hash of patch files so that 3pp bot will create a new version when
+    # they change.
+    print(f'{commit_hash}-{patch_hash}')
 
 
-def get_download_url(sha):
+def get_download_url(version):
+    sha = version.split('-')[0]
     partial_manifest = {
         'url': [_ARCHIVE_URL.format(sha)],
         'ext': '.tar.gz',
@@ -71,7 +89,7 @@ def get_download_url(sha):
 
 def main():
     ap = argparse.ArgumentParser()
-    sub = ap.add_subparsers()
+    sub = ap.add_subparsers(required=True)
 
     latest = sub.add_parser("latest")
     latest.set_defaults(func=do_latest)
