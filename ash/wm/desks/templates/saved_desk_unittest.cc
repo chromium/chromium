@@ -3700,6 +3700,70 @@ TEST_F(SavedDeskTest, AdminTemplate) {
   EXPECT_NE(name_view, GetHighlightedView());
 }
 
+// Tests that the scroll bar is hidden when there is enough space to show all
+// scroll contents, and is shown otherwise.
+TEST_F(SavedDeskTest, ScrollBarVisibility) {
+  // Make display size large enough so that we could test both hidden and shown
+  // scroll bar.
+  UpdateDisplay("1000x800");
+
+  // 3 templates and 3 save-and-recall desks would not show the scroll bar.
+  {
+    // Add 3 `kTemplate` entries.
+    AddEntry(base::GUID::GenerateRandomV4(), "desk_template 1",
+             base::Time::Now(), DeskTemplateType::kTemplate);
+    AddEntry(base::GUID::GenerateRandomV4(), "desk_template 2",
+             base::Time::Now(), DeskTemplateType::kTemplate);
+    AddEntry(base::GUID::GenerateRandomV4(), "desk_template 3",
+             base::Time::Now(), DeskTemplateType::kTemplate);
+
+    // Add 3 `kSaveAndRecall` entries.
+    AddEntry(base::GUID::GenerateRandomV4(), "desk_template 1",
+             base::Time::Now(), DeskTemplateType::kSaveAndRecall);
+    AddEntry(base::GUID::GenerateRandomV4(), "desk_template 2",
+             base::Time::Now(), DeskTemplateType::kSaveAndRecall);
+    AddEntry(base::GUID::GenerateRandomV4(), "desk_template 3",
+             base::Time::Now(), DeskTemplateType::kSaveAndRecall);
+
+    OpenOverviewAndShowTemplatesGrid();
+
+    SavedDeskLibraryView* library_view =
+        GetOverviewGridList()[0]->GetSavedDeskLibraryView();
+    SavedDeskLibraryViewTestApi test_api(library_view);
+    EXPECT_FALSE(test_api.scroll_view()->vertical_scroll_bar()->GetVisible());
+
+    ExitOverview();
+  }
+
+  // 6 templates and 6 save-and-recall desks would show the scroll bar.
+  {
+    // Add 3 more `kTemplate` entries.
+    AddEntry(base::GUID::GenerateRandomV4(), "desk_template 4",
+             base::Time::Now(), DeskTemplateType::kTemplate);
+    AddEntry(base::GUID::GenerateRandomV4(), "desk_template 5",
+             base::Time::Now(), DeskTemplateType::kTemplate);
+    AddEntry(base::GUID::GenerateRandomV4(), "desk_template 6",
+             base::Time::Now(), DeskTemplateType::kTemplate);
+
+    // Add 3 more `kSaveAndRecall` entries.
+    AddEntry(base::GUID::GenerateRandomV4(), "desk_template 4",
+             base::Time::Now(), DeskTemplateType::kSaveAndRecall);
+    AddEntry(base::GUID::GenerateRandomV4(), "desk_template 5",
+             base::Time::Now(), DeskTemplateType::kSaveAndRecall);
+    AddEntry(base::GUID::GenerateRandomV4(), "desk_template 6",
+             base::Time::Now(), DeskTemplateType::kSaveAndRecall);
+
+    OpenOverviewAndShowTemplatesGrid();
+
+    SavedDeskLibraryView* library_view =
+        GetOverviewGridList()[0]->GetSavedDeskLibraryView();
+    SavedDeskLibraryViewTestApi test_api(library_view);
+    EXPECT_TRUE(test_api.scroll_view()->vertical_scroll_bar()->GetVisible());
+
+    ExitOverview();
+  }
+}
+
 using DeskSaveAndRecallTest = SavedDeskTest;
 
 TEST_F(DeskSaveAndRecallTest, SaveDeskForLater) {
