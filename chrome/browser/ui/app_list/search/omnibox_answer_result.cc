@@ -47,9 +47,12 @@ constexpr char kOmniboxAnswerSchema[] = "omnibox_answer://";
 ChromeSearchResult::IconInfo CreateAnswerIconInfo(
     const gfx::VectorIcon& vector_icon) {
   const int dimension = GetAnswerCardIconDimension();
-  const bool dark_mode = ash::features::IsProductivityLauncherEnabled() ||
-                         (ash::features::IsDarkLightModeEnabled() &&
-                          ash::ColorProvider::Get()->IsDarkModeEnabled());
+  // ColorProvider might be nullptr in tests.
+  const bool dark_mode =
+      ash::features::IsProductivityLauncherEnabled() ||
+      (ash::features::IsDarkLightModeEnabled() && ash::ColorProvider::Get() &&
+       ash::ColorProvider::Get()->IsDarkModeEnabled());
+
   const auto icon =
       dark_mode ? gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
                       dimension / 2, gfx::kGoogleBlue300,

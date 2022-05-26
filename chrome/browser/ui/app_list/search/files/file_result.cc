@@ -153,9 +153,12 @@ FileResult::FileResult(const std::string& schema,
   // background if dark/light mode feature is not enabled. Productivity launcher
   // has dark background by default, so use icons for dark background in that
   // case.
+  const bool is_dark_light_enabled = ash::features::IsDarkLightModeEnabled();
+  // ColorProvider might be nullptr in tests.
+  auto* color_provider = ash::ColorProvider::Get();
   const bool dark_background =
-      ash::features::IsDarkLightModeEnabled()
-          ? ash::ColorProvider::Get()->IsDarkModeEnabled()
+      is_dark_light_enabled
+          ? color_provider && color_provider->IsDarkModeEnabled()
           : ash::features::IsProductivityLauncherEnabled();
   if (display_type == DisplayType::kChip) {
     SetChipIcon(chromeos::GetChipIconForPath(filepath, dark_background));
@@ -163,7 +166,7 @@ FileResult::FileResult(const std::string& schema,
     // For Continue Section, if dark/light mode is disabled, we should use the
     // icon and not the chip icon with a dark background as default.
     const gfx::ImageSkia chip_icon =
-        ash::features::IsDarkLightModeEnabled()
+        is_dark_light_enabled
             ? chromeos::GetChipIconForPath(filepath, dark_background)
             : chromeos::GetIconForPath(filepath, /*dark_background=*/true);
     SetChipIcon(chip_icon);
