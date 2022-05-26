@@ -68,6 +68,13 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
                                public PostMessageReceiver::Client,
                                public PdfAccessibilityActionHandler {
  public:
+  // Must match `SaveRequestType` in chrome/browser/resources/pdf/constants.ts.
+  enum class SaveRequestType {
+    kAnnotation = 0,
+    kOriginal = 1,
+    kEdited = 2,
+  };
+
   // Provides services from the plugin's container.
   class Client : public V8ValueConverter {
    public:
@@ -271,6 +278,7 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   bool IsPrintPreview() const override;
   SkColor GetBackgroundColor() const override;
   void CaretChanged(const gfx::Rect& caret_rect) override;
+  void EnteredEditMode() override;
   void SetSelectedText(const std::string& selected_text) override;
   bool IsValidLink(const std::string& url) override;
 
@@ -320,7 +328,6 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   base::WeakPtr<PdfViewPluginBase> GetWeakPtr() override;
   void OnDocumentLoadComplete() override;
   void SendMessage(base::Value::Dict message) override;
-  void SaveAs() override;
   void SetFormTextFieldInFocus(bool in_focus) override;
   void SetAccessibilityDocInfo(AccessibilityDocInfo doc_info) override;
   void SetAccessibilityPageInfo(AccessibilityPageInfo page_info,
@@ -330,7 +337,6 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   void SetAccessibilityViewportInfo(
       AccessibilityViewportInfo viewport_info) override;
   void SetContentRestrictions(int content_restrictions) override;
-  void SetPluginCanSave(bool can_save) override;
   void DidStartLoading() override;
   void DidStopLoading() override;
   void InvokePrintDialog() override;
@@ -357,7 +363,12 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   // Creates a URL loader with universal access.
   std::unique_ptr<UrlLoader> CreateUrlLoaderInternal();
 
-  // Message handlers.
+  // Handles message for saving the PDF.
+  void HandleSaveMessage(const base::Value::Dict& message);
+  void SaveToBuffer(const std::string& token);
+  void SaveToFile(const std::string& token);
+
+  // Handles message for setting the background color.
   void HandleSetBackgroundColorMessage(const base::Value::Dict& message);
 
   // Recalculates values that depend on scale factors.
@@ -483,6 +494,9 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
 
   // Stores the tickmarks to be shown for the current find results.
   std::vector<gfx::Rect> tickmarks_;
+
+  // Whether the document is in edit mode.
+  bool edit_mode_ = false;
 
   // Only instantiated when not print previewing.
   std::unique_ptr<MetricsHandler> metrics_handler_;

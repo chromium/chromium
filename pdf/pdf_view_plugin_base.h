@@ -82,13 +82,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
     kFailed,
   };
 
-  // Must match `SaveRequestType` in chrome/browser/resources/pdf/constants.ts.
-  enum class SaveRequestType {
-    kAnnotation = 0,
-    kOriginal = 1,
-    kEdited = 2,
-  };
-
   PdfViewPluginBase(const PdfViewPluginBase& other) = delete;
   PdfViewPluginBase& operator=(const PdfViewPluginBase& other) = delete;
 
@@ -124,7 +117,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
   void FormFieldFocusChange(PDFEngine::FocusFieldType type) override;
   void SetIsSelecting(bool is_selecting) override;
   void SelectionChanged(const gfx::Rect& left, const gfx::Rect& right) override;
-  void EnteredEditMode() override;
   void DocumentFocusChanged(bool document_has_focus) override;
   void SetLinkUnderCursor(const std::string& link_under_cursor) override;
 
@@ -184,8 +176,7 @@ class PdfViewPluginBase : public PDFEngine::Client,
   void InitializeBase(std::unique_ptr<PDFiumEngine> engine,
                       base::StringPiece src_url,
                       base::StringPiece original_url,
-                      bool full_frame,
-                      bool has_edits);
+                      bool full_frame);
 
   // Creates a new `PDFiumEngine`.
   virtual std::unique_ptr<PDFiumEngine> CreateEngine(
@@ -221,14 +212,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // guaranteed to be received in the order that they are sent. This method is
   // non-blocking.
   virtual void SendMessage(base::Value::Dict message) = 0;
-
-  // Invokes the "SaveAs" dialog.
-  virtual void SaveAs() = 0;
-
-  void SaveToBuffer(const std::string& token);
-
-  // Consumes a token for saving the document.
-  void ConsumeSaveToken(const std::string& token);
 
   // Sends the loading progress, where `percentage` represents the progress, or
   // -1 for loading error.
@@ -322,10 +305,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // set by `chrome_pdf::ContentRestriction` enum values.
   virtual void SetContentRestrictions(int content_restrictions) = 0;
 
-  // Informs the embedder whether the plugin can handle save commands
-  // internally.
-  virtual void SetPluginCanSave(bool can_save) = 0;
-
   // Sends start/stop loading notifications to the plugin's render frame.
   virtual void DidStartLoading() = 0;
   virtual void DidStopLoading() = 0;
@@ -404,16 +383,12 @@ class PdfViewPluginBase : public PDFEngine::Client,
   void HandleRotateClockwiseMessage(const base::Value::Dict& /*message*/);
   void HandleRotateCounterclockwiseMessage(
       const base::Value::Dict& /*message*/);
-  void HandleSaveMessage(const base::Value::Dict& message);
   void HandleSaveAttachmentMessage(const base::Value::Dict& message);
   void HandleSelectAllMessage(const base::Value::Dict& /*message*/);
   void HandleSetPresentationModeMessage(const base::Value::Dict& message);
   void HandleSetTwoUpViewMessage(const base::Value::Dict& message);
   void HandleStopScrollingMessage(const base::Value::Dict& /*message*/);
   void HandleViewportMessage(const base::Value::Dict& message);
-
-  // Saves the document to a file.
-  void SaveToFile(const std::string& token);
 
   // Paints the given invalid area of the plugin to the given graphics device.
   // PaintManager::Client::OnPaint() should be its only caller.
@@ -559,9 +534,6 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // Indicates whether the browser has been notified about an unsupported
   // feature once, which helps prevent the infobar from going up more than once.
   bool notified_browser_about_unsupported_feature_ = false;
-
-  // Whether the document is in edit mode.
-  bool edit_mode_ = false;
 
   // Assigned a value only between `PrintBegin()` and `PrintEnd()` calls.
   absl::optional<blink::WebPrintParams> print_params_;

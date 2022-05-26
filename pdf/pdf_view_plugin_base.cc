@@ -152,8 +152,7 @@ PdfViewPluginBase::~PdfViewPluginBase() = default;
 void PdfViewPluginBase::InitializeBase(std::unique_ptr<PDFiumEngine> engine,
                                        base::StringPiece src_url,
                                        base::StringPiece original_url,
-                                       bool full_frame,
-                                       bool has_edits) {
+                                       bool full_frame) {
   full_frame_ = full_frame;
 
   DCHECK(engine);
@@ -169,14 +168,6 @@ void PdfViewPluginBase::InitializeBase(std::unique_ptr<PDFiumEngine> engine,
   last_progress_sent_ = 0;
   LoadUrl(src_url, base::BindOnce(&PdfViewPluginBase::DidOpen, GetWeakPtr()));
   url_ = std::string(original_url);
-
-  // Not all edits go through the PDF plugin's form filler. The plugin instance
-  // can be restarted by exiting annotation mode on ChromeOS, which can set the
-  // document to an edited state.
-  edit_mode_ = has_edits;
-#if !BUILDFLAG(ENABLE_INK)
-  DCHECK(!edit_mode_);
-#endif  // !BUILDFLAG(ENABLE_INK)
 }
 
 void PdfViewPluginBase::ProposeDocumentLayout(const DocumentLayout& layout) {
@@ -446,15 +437,6 @@ void PdfViewPluginBase::SelectionChanged(const gfx::Rect& left,
     PrepareAndSetAccessibilityViewportInfo();
 }
 
-void PdfViewPluginBase::EnteredEditMode() {
-  edit_mode_ = true;
-  SetPluginCanSave(true);
-
-  base::Value::Dict message;
-  message.Set("type", "setIsEditing");
-  SendMessage(std::move(message));
-}
-
 void PdfViewPluginBase::DocumentFocusChanged(bool document_has_focus) {
   base::Value::Dict message;
   message.Set("type", "documentFocusChanged");
@@ -514,7 +496,6 @@ void PdfViewPluginBase::HandleMessage(const base::Value::Dict& message) {
           {"rotateClockwise", &PdfViewPluginBase::HandleRotateClockwiseMessage},
           {"rotateCounterclockwise",
            &PdfViewPluginBase::HandleRotateCounterclockwiseMessage},
-          {"save", &PdfViewPluginBase::HandleSaveMessage},
           {"saveAttachment", &PdfViewPluginBase::HandleSaveAttachmentMessage},
           {"selectAll", &PdfViewPluginBase::HandleSelectAllMessage},
           {"setPresentationMode",
@@ -526,46 +507,6 @@ void PdfViewPluginBase::HandleMessage(const base::Value::Dict& message) {
 
   MessageHandler handler = kMessageHandlers.at(*message.FindString("type"));
   (this->*handler)(message);
-}
-
-void PdfViewPluginBase::SaveToBuffer(const std::string& token) {
-  engine()->KillFormFocus();
-
-  base::Value::Dict message;
-  message.Set("type", "saveData");
-  message.Set("token", token);
-  message.Set("fileName", GetFileNameForSaveFromUrl(url_));
-
-  // Expose `edit_mode_` state for integration testing.
-  message.Set("editModeForTesting", edit_mode_);
-
-  base::Value data_to_save;
-  if (edit_mode_) {
-    base::Value::BlobStorage data = engine()->GetSaveData();
-    if (IsSaveDataSizeValid(data.size()))
-      data_to_save = base::Value(std::move(data));
-  } else {
-#if BUILDFLAG(ENABLE_INK)
-    uint32_t length = engine()->GetLoadedByteSize();
-    if (IsSaveDataSizeValid(length)) {
-      base::Value::BlobStorage data(length);
-      if (engine()->ReadLoadedBytes(length, data.data()))
-        data_to_save = base::Value(std::move(data));
-    }
-#else
-    NOTREACHED();
-#endif  // BUILDFLAG(ENABLE_INK)
-  }
-
-  message.Set("dataToSave", std::move(data_to_save));
-  SendMessage(std::move(message));
-}
-
-void PdfViewPluginBase::ConsumeSaveToken(const std::string& token) {
-  base::Value::Dict message;
-  message.Set("type", "consumeSaveToken");
-  message.Set("token", token);
-  SendMessage(std::move(message));
 }
 
 void PdfViewPluginBase::SendLoadingProgress(double percentage) {
@@ -1088,34 +1029,6 @@ void PdfViewPluginBase::HandleRotateCounterclockwiseMessage(
   engine()->RotateCounterclockwise();
 }
 
-void PdfViewPluginBase::HandleSaveMessage(const base::Value::Dict& message) {
-  const std::string& token = *message.FindString("token");
-  int request_type = message.FindInt("saveRequestType").value();
-  DCHECK_GE(request_type, static_cast<int>(SaveRequestType::kAnnotation));
-  DCHECK_LE(request_type, static_cast<int>(SaveRequestType::kEdited));
-
-  switch (static_cast<SaveRequestType>(request_type)) {
-    case SaveRequestType::kAnnotation:
-#if BUILDFLAG(ENABLE_INK)
-      // In annotation mode, assume the user will make edits and prefer saving
-      // using the plugin data.
-      SetPluginCanSave(true);
-      SaveToBuffer(token);
-#else
-      NOTREACHED();
-#endif  // BUILDFLAG(ENABLE_INK)
-      break;
-    case SaveRequestType::kOriginal:
-      SetPluginCanSave(false);
-      SaveToFile(token);
-      SetPluginCanSave(edit_mode_);
-      break;
-    case SaveRequestType::kEdited:
-      SaveToBuffer(token);
-      break;
-  }
-}
-
 void PdfViewPluginBase::HandleSaveAttachmentMessage(
     const base::Value::Dict& message) {
   const int index = message.FindInt("attachmentIndex").value();
@@ -1278,12 +1191,6 @@ void PdfViewPluginBase::HandleViewportMessage(
 
   SetZoom(new_zoom);
   UpdateScroll(GetScrollPositionFromOffset(scroll_offset));
-}
-
-void PdfViewPluginBase::SaveToFile(const std::string& token) {
-  engine()->KillFormFocus();
-  ConsumeSaveToken(token);
-  SaveAs();
 }
 
 void PdfViewPluginBase::DoPaint(const std::vector<gfx::Rect>& paint_rects,

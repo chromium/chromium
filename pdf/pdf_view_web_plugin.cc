@@ -37,6 +37,7 @@
 #include "cc/paint/paint_image_builder.h"
 #include "net/cookies/site_for_cookies.h"
 #include "pdf/accessibility_structs.h"
+#include "pdf/buildflags.h"
 #include "pdf/content_restriction.h"
 #include "pdf/metrics_handler.h"
 #include "pdf/mojom/pdf.mojom.h"
@@ -49,6 +50,7 @@
 #include "pdf/ppapi_migration/result_codes.h"
 #include "pdf/ppapi_migration/url_loader.h"
 #include "pdf/ui/document_properties.h"
+#include "pdf/ui/file_name.h"
 #include "printing/metafile_skia.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -240,14 +242,23 @@ bool PdfViewWebPlugin::InitializeCommon() {
   InitializeBase(CreateEngine(this, params->script_option),
                  /*src_url=*/params->src_url,
                  /*original_url=*/params->original_url,
-                 /*full_frame=*/params->full_frame,
-                 /*has_edits=*/params->has_edits);
+                 /*full_frame=*/params->full_frame);
 
   SendSetSmoothScrolling();
 
-  if (!IsPrintPreview())
-    metrics_handler_ = std::make_unique<MetricsHandler>();
+  // Skip the remaining initialization when in Print Preview mode.
+  if (IsPrintPreview())
+    return true;
 
+  // Not all edits go through the PDF plugin's form filler. The plugin instance
+  // can be restarted by exiting annotation mode on ChromeOS, which can set the
+  // document to an edited state.
+  edit_mode_ = params->has_edits;
+#if !BUILDFLAG(ENABLE_INK)
+  DCHECK(!edit_mode_);
+#endif  // !BUILDFLAG(ENABLE_INK)
+
+  metrics_handler_ = std::make_unique<MetricsHandler>();
   return true;
 }
 
@@ -741,6 +752,15 @@ SkColor PdfViewWebPlugin::GetBackgroundColor() const {
   return background_color_;
 }
 
+void PdfViewWebPlugin::EnteredEditMode() {
+  edit_mode_ = true;
+  pdf_service_->SetPluginCanSave(true);
+
+  base::Value::Dict message;
+  message.Set("type", "setIsEditing");
+  SendMessage(std::move(message));
+}
+
 void PdfViewWebPlugin::SetSelectedText(const std::string& selected_text) {
   selected_text_ = blink::WebString::FromUTF8(selected_text);
   client_->TextSelectionChanged(selected_text_, /*offset=*/0,
@@ -795,6 +815,7 @@ void PdfViewWebPlugin::OnMessage(const base::Value::Dict& message) {
   using MessageHandler = void (PdfViewWebPlugin::*)(const base::Value::Dict&);
   static constexpr auto kMessageHandlers =
       base::MakeFixedFlatMap<base::StringPiece, MessageHandler>({
+          {"save", &PdfViewWebPlugin::HandleSaveMessage},
           {"setBackgroundColor",
            &PdfViewWebPlugin::HandleSetBackgroundColorMessage},
       });
@@ -807,6 +828,80 @@ void PdfViewWebPlugin::OnMessage(const base::Value::Dict& message) {
   }
 
   PdfViewPluginBase::HandleMessage(message);
+}
+
+void PdfViewWebPlugin::HandleSaveMessage(const base::Value::Dict& message) {
+  const std::string& token = *message.FindString("token");
+  int request_type = message.FindInt("saveRequestType").value();
+  DCHECK_GE(request_type, static_cast<int>(SaveRequestType::kAnnotation));
+  DCHECK_LE(request_type, static_cast<int>(SaveRequestType::kEdited));
+
+  switch (static_cast<SaveRequestType>(request_type)) {
+    case SaveRequestType::kAnnotation:
+#if BUILDFLAG(ENABLE_INK)
+      // In annotation mode, assume the user will make edits and prefer saving
+      // using the plugin data.
+      pdf_service_->SetPluginCanSave(true);
+      SaveToBuffer(token);
+#else
+      NOTREACHED();
+#endif  // BUILDFLAG(ENABLE_INK)
+      break;
+    case SaveRequestType::kOriginal:
+      pdf_service_->SetPluginCanSave(false);
+      SaveToFile(token);
+      pdf_service_->SetPluginCanSave(edit_mode_);
+      break;
+    case SaveRequestType::kEdited:
+      SaveToBuffer(token);
+      break;
+  }
+}
+
+void PdfViewWebPlugin::SaveToBuffer(const std::string& token) {
+  engine()->KillFormFocus();
+
+  base::Value::Dict message;
+  message.Set("type", "saveData");
+  message.Set("token", token);
+  message.Set("fileName", GetFileNameForSaveFromUrl(GetURL()));
+
+  // Expose `edit_mode_` state for integration testing.
+  message.Set("editModeForTesting", edit_mode_);
+
+  base::Value data_to_save;
+  if (edit_mode_) {
+    base::Value::BlobStorage data = engine()->GetSaveData();
+    if (IsSaveDataSizeValid(data.size()))
+      data_to_save = base::Value(std::move(data));
+  } else {
+#if BUILDFLAG(ENABLE_INK)
+    uint32_t length = engine()->GetLoadedByteSize();
+    if (IsSaveDataSizeValid(length)) {
+      base::Value::BlobStorage data(length);
+      if (engine()->ReadLoadedBytes(length, data.data()))
+        data_to_save = base::Value(std::move(data));
+    }
+#else
+    NOTREACHED();
+#endif  // BUILDFLAG(ENABLE_INK)
+  }
+
+  message.Set("dataToSave", std::move(data_to_save));
+  SendMessage(std::move(message));
+}
+
+void PdfViewWebPlugin::SaveToFile(const std::string& token) {
+  engine()->KillFormFocus();
+
+  base::Value::Dict message;
+  message.Set("type", "consumeSaveToken");
+  message.Set("token", token);
+  SendMessage(std::move(message));
+
+  // TODO(crbug.com/1302059): Is there a good reason to null-terminate here?
+  pdf_service_->SaveUrlAs(GURL(GetURL().c_str()),
+                          network::mojom::ReferrerPolicy::kDefault);
 }
 
 void PdfViewWebPlugin::HandleSetBackgroundColorMessage(
@@ -879,12 +974,6 @@ void PdfViewWebPlugin::SendMessage(base::Value::Dict message) {
   client_->PostMessage(std::move(message));
 }
 
-void PdfViewWebPlugin::SaveAs() {
-  // TODO(crbug.com/1302059): Is there a good reason to null-terminate here?
-  pdf_service_->SaveUrlAs(GURL(GetURL().c_str()),
-                          network::mojom::ReferrerPolicy::kDefault);
-}
-
 void PdfViewWebPlugin::SetFormTextFieldInFocus(bool in_focus) {
   text_input_type_ = in_focus ? blink::WebTextInputType::kWebTextInputTypeText
                               : blink::WebTextInputType::kWebTextInputTypeNone;
@@ -920,10 +1009,6 @@ void PdfViewWebPlugin::SetAccessibilityViewportInfo(
 
 void PdfViewWebPlugin::SetContentRestrictions(int content_restrictions) {
   pdf_service_->UpdateContentRestrictions(content_restrictions);
-}
-
-void PdfViewWebPlugin::SetPluginCanSave(bool can_save) {
-  pdf_service_->SetPluginCanSave(can_save);
 }
 
 void PdfViewWebPlugin::DidStartLoading() {

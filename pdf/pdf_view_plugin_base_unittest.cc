@@ -120,8 +120,6 @@ class FakePdfViewPluginBase : public PdfViewPluginBase {
     sent_messages_.push_back(base::Value(std::move(message)));
   }
 
-  MOCK_METHOD(void, SaveAs, (), (override));
-
   MOCK_METHOD(void, SetFormTextFieldInFocus, (bool), (override));
 
   MOCK_METHOD(void,
@@ -143,8 +141,6 @@ class FakePdfViewPluginBase : public PdfViewPluginBase {
               (override));
 
   MOCK_METHOD(void, SetContentRestrictions, (int), (override));
-
-  MOCK_METHOD(void, SetPluginCanSave, (bool), (override));
 
   MOCK_METHOD(void, DidStartLoading, (), (override));
   MOCK_METHOD(void, DidStopLoading, (), (override));
