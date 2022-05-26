@@ -750,6 +750,12 @@ extern const char kAccountIdMigrationState[] = "account_id_migration_state";
 const char kColorModeThemed[] = "ash.dark_mode.color_mode_themed";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Deprecated 05/2022.
+const char kNativeBridge64BitSupportExperimentEnabled[] =
+    "arc.native_bridge_64bit_support_experiment";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -798,6 +804,11 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 #if !BUILDFLAG(IS_ANDROID)
   registry->RegisterIntegerPref(kStabilityRendererLaunchCount, 0);
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  registry->RegisterBooleanPref(kNativeBridge64BitSupportExperimentEnabled,
+                                false);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 // Register prefs used only for migration (clearing or moving to a new key).
@@ -1651,6 +1662,11 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
 #if !BUILDFLAG(IS_ANDROID)
   local_state->ClearPref(prefs::kTabFreezingEnabled);
 #endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Added 05/2022.
+  local_state->ClearPref(kNativeBridge64BitSupportExperimentEnabled);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS

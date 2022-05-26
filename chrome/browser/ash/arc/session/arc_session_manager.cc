@@ -1808,30 +1808,14 @@ void ArcSessionManager::ExpandPropertyFilesAndReadSalt() {
   // For ARCVM, generate <dest_path>/{combined.prop,fstab}. For ARC, generate
   // <dest_path>/{default,build,vendor_build}.prop.
   const bool is_arcvm = arc::IsArcVmEnabled();
-  bool add_native_bridge_64bit_support = false;
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          ash::switches::kArcEnableNativeBridge64BitSupportExperiment)) {
-    PrefService* local_pref_service = g_browser_process->local_state();
-    if (base::FeatureList::IsEnabled(
-            arc::kNativeBridge64BitSupportExperimentFeature)) {
-      // Note that we treat this experiment as a one-way off->on switch, across
-      // all users of the device, as the lifetime of ARC mini-container and user
-      // sessions are different in different scenarios, and removing the
-      // experiment after it has been in effect for a user's ARC instance can
-      // lead to unexpected, and unsupported, results.
-      local_pref_service->SetBoolean(
-          prefs::kNativeBridge64BitSupportExperimentEnabled, true);
-    }
-    add_native_bridge_64bit_support = local_pref_service->GetBoolean(
-        prefs::kNativeBridge64BitSupportExperimentEnabled);
-  }
 
   std::deque<JobDesc> jobs = {
       JobDesc{kArcPrepareHostGeneratedDirJobName,
               UpstartOperation::JOB_START,
               {std::string("IS_ARCVM=") + (is_arcvm ? "1" : "0"),
-               std::string("ADD_NATIVE_BRIDGE_64BIT_SUPPORT=") +
-                   (add_native_bridge_64bit_support ? "1" : "0")}},
+               // TODO(b/233107740) Remove this once crrev.com/c/3656121 has
+               // landed.
+               std::string("ADD_NATIVE_BRIDGE_64BIT_SUPPORT=0")}},
   };
   ConfigureUpstartJobs(std::move(jobs),
                        base::BindOnce(&ArcSessionManager::OnExpandPropertyFiles,

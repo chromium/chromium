@@ -2410,9 +2410,6 @@ extern const char kArcKeyboardShortcutHelperIntegrationDescription[];
 extern const char kArcNativeBridgeToggleName[];
 extern const char kArcNativeBridgeToggleDescription[];
 
-extern const char kArcNativeBridge64BitSupportExperimentName[];
-extern const char kArcNativeBridge64BitSupportExperimentDescription[];
-
 extern const char kArcRightClickLongPressName[];
 extern const char kArcRightClickLongPressDescription[];
 

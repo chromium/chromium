@@ -226,13 +226,6 @@
     "expiry_milestone": 108
   },
   {
-    "name": "arc-native-bridge-64bit-support-experiment",
-    "owners": [ "jhorwich" ],
-    // Used on ChromeOS to experimentally enable 64-bit ARC native-bridge
-    // support before promoting it to enabled on a specific device class.
-    "expiry_milestone": 93
-  },
-  {
     "name": "arc-native-bridge-toggle",
     "owners": [ "levarum@google.com" ],
     // Used on ChromeOS to compare and debug different ARC native-bridge

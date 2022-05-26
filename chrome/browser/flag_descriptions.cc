@@ -4213,11 +4213,6 @@ const char kArcNativeBridgeToggleName[] =
 const char kArcNativeBridgeToggleDescription[] =
     "Toggle between native bridge implementations for ARC.";
 
-const char kArcNativeBridge64BitSupportExperimentName[] =
-    "Enable experimental 64-bit native bridge support for ARC";
-const char kArcNativeBridge64BitSupportExperimentDescription[] =
-    "Enable experimental 64-bit native bridge support for ARC where available.";
-
 const char kArcRightClickLongPressName[] =
     "Enable ARC right click long press compatibility feature.";
 const char kArcRightClickLongPressDescription[] =

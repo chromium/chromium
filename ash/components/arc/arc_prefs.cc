@@ -126,13 +126,6 @@ const char kAnrPendingCount[] = "arc.anr_pending_count";
 // Keeps the duration of the current ANR rate period.
 const char kAnrPendingDuration[] = "arc.anr_pending_duration";
 
-// A boolean preference that indicates whether this device has run with the
-// native bridge 64 bit support experiment enabled. Persisting value in local
-// state, rather than in a user profile, is required as it needs to be read
-// whenever ARC mini-container is started.
-const char kNativeBridge64BitSupportExperimentEnabled[] =
-    "arc.native_bridge_64bit_support_experiment";
-
 // A dictionary preference that keeps track of stability metric values, which is
 // maintained by StabilityMetricsManager. Persisting values in local state is
 // required to include these metrics in the initial stability log in case of a
@@ -154,8 +147,6 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(kArcSerialNumberSalt, std::string());
   registry->RegisterDictionaryPref(kArcSnapshotHours);
   registry->RegisterDictionaryPref(kArcSnapshotInfo);
-  registry->RegisterBooleanPref(kNativeBridge64BitSupportExperimentEnabled,
-                                false);
   registry->RegisterDictionaryPref(kStabilityMetrics);
 
   registry->RegisterIntegerPref(kAnrPendingCount, 0);

@@ -55260,8 +55260,6 @@ from previous Chrome versions.
   <int value="-1668306615" label="CrostiniUseDlc:enabled"/>
   <int value="-1667822423" label="ContextMenuGoogleLensChip:disabled"/>
   <int value="-1666652919" label="MagnifierPanningImprovements:disabled"/>
-  <int value="-1665720309"
-      label="ArcNativeBridge64BitSupportExperiment:disabled"/>
   <int value="-1664795930" label="StorageAccessAPI:disabled"/>
   <int value="-1664290318" label="ComputePressure:enabled"/>
   <int value="-1663410466" label="top-document-isolation"/>
@@ -56109,8 +56107,6 @@ from previous Chrome versions.
   <int value="-1151615978" label="BorealisBigGl:disabled"/>
   <int value="-1151476162" label="LacrosMergeIcuDataFile:disabled"/>
   <int value="-1151014496" label="NearbySharingDeviceContacts:disabled"/>
-  <int value="-1150881704"
-      label="ArcNativeBridge64BitSupportExperiment:enabled"/>
   <int value="-1146814438" label="TabbedAppOverflowMenuIcons:enabled"/>
   <int value="-1146310028" label="HardwareSecureDecryptionFallback:enabled"/>
   <int value="-1145905507" label="SendTabToSelfWhenSignedIn:disabled"/>

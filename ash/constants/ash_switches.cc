@@ -105,12 +105,6 @@ const char kArcDisablePlayAutoInstall[] = "arc-disable-play-auto-install";
 // See also |kArcVmUreadaheadMode|.
 const char kArcDisableUreadahead[] = "arc-disable-ureadahead";
 
-// Flag to enables an experiment to allow users to turn on 64-bit support in
-// native bridge on systems that have such support available but not yet enabled
-// by default.
-const char kArcEnableNativeBridge64BitSupportExperiment[] =
-    "arc-enable-native-bridge-64bit-support-experiment";
-
 // Flag that forces the OptIn ui to be shown. Used in tests.
 const char kArcForceShowOptInUi[] = "arc-force-show-optin-ui";
 
