@@ -23,8 +23,9 @@
     </structures>
     <includes>
       <if expr="is_win">
-        <include name="IDR_ABOUT_CONFLICTS_HTML" file="resources\conflicts\about_conflicts.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" />
+        <include name="IDR_ABOUT_CONFLICTS_HTML" file="resources\conflicts\about_conflicts.html" type="BINDATA" />
         <include name="IDR_ABOUT_CONFLICTS_JS" file="resources\conflicts\about_conflicts.js" type="BINDATA" />
+        <include name="IDR_ABOUT_CONFLICTS_WARNING_SVG" file="resources\conflicts\warning.svg" type="BINDATA" />
       </if>
       <if expr="enable_nacl or is_macosx">
         <!-- On Mac, the NaCl page resources need to be included in the build, regardless of whether chrome://nacl is available at runtime, because x86_64 and arm64 builds need to have identical pak files, https://crbug.com/1318358. -->

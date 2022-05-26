@@ -32,6 +32,7 @@ content::WebUIDataSource* CreateConflictsUIHTMLSource() {
       "trusted-types jstemplate;");
 
   source->AddResourcePath("conflicts.js", IDR_ABOUT_CONFLICTS_JS);
+  source->AddResourcePath("warning.svg", IDR_ABOUT_CONFLICTS_WARNING_SVG);
   source->SetDefaultResource(IDR_ABOUT_CONFLICTS_HTML);
   return source;
 }
