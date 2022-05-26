@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/strings.m.js';
-// #import 'chrome://resources/cr_components/chromeos/cellular_setup/psim_flow_ui.m.js';
+import 'chrome://os-settings/strings.m.js';
+import 'chrome://resources/cr_components/chromeos/cellular_setup/psim_flow_ui.m.js';
 
-// #import {PSimUIState, PSimPageName, PSimSetupFlowResult, PSIM_SETUP_RESULT_METRIC_NAME, SUCCESSFUL_PSIM_SETUP_DURATION_METRIC_NAME, FAILED_PSIM_SETUP_DURATION_METRIC_NAME} from 'chrome://resources/cr_components/chromeos/cellular_setup/psim_flow_ui.m.js';
-// #import {setCellularSetupRemoteForTesting} from 'chrome://resources/cr_components/chromeos/cellular_setup/mojo_interface_provider.m.js';
-// #import {flush, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {assertTrue} from '../../../chai_assert.js';
-// #import {ButtonState} from 'chrome://resources/cr_components/chromeos/cellular_setup/cellular_types.m.js';
-// #import {FakeCellularSetupDelegate} from './fake_cellular_setup_delegate.m.js';
-// #import {FakeCarrierPortalHandlerRemote, FakeCellularSetupRemote} from './fake_cellular_setup_remote.m.js';
-// #import {MockMetricsPrivate} from './mock_metrics_private.m.js';
-// #import {eventToPromise, flushTasks} from 'chrome://test/test_util.js';
-// clang-format on
+import {ButtonState} from 'chrome://resources/cr_components/chromeos/cellular_setup/cellular_types.m.js';
+import {setCellularSetupRemoteForTesting} from 'chrome://resources/cr_components/chromeos/cellular_setup/mojo_interface_provider.m.js';
+import {FAILED_PSIM_SETUP_DURATION_METRIC_NAME, PSimPageName, PSimSetupFlowResult, PSimUIState, SUCCESSFUL_PSIM_SETUP_DURATION_METRIC_NAME} from 'chrome://resources/cr_components/chromeos/cellular_setup/psim_flow_ui.m.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {eventToPromise} from 'chrome://test/test_util.js';
+
+import {assertTrue} from '../../../chai_assert.js';
+
+import {FakeCellularSetupDelegate} from './fake_cellular_setup_delegate.js';
+import {FakeCarrierPortalHandlerRemote, FakeCellularSetupRemote} from './fake_cellular_setup_remote.js';
+import {MockMetricsPrivate} from './mock_metrics_private.js';
 
 suite('CrComponentsPsimFlowUiTest', function() {
   let pSimPage;
@@ -33,7 +33,7 @@ suite('CrComponentsPsimFlowUiTest', function() {
   let timeoutFunction = null;
 
   async function flushAsync() {
-    Polymer.dom.flush();
+    flush();
     // Use setTimeout to wait for the next macrotask.
     return new Promise(resolve => setTimeout(resolve));
   }
@@ -41,7 +41,7 @@ suite('CrComponentsPsimFlowUiTest', function() {
   /** @param {PSimSetupFlowResult} pSimSetupFlowResult */
   function endFlowAndVerifyResult(pSimSetupFlowResult) {
     pSimPage.remove();
-    Polymer.dom.flush();
+    flush();
     assertEquals(
         chrome.metricsPrivate.getHistogramEnumValueCount(pSimSetupFlowResult),
         1);
@@ -69,26 +69,24 @@ suite('CrComponentsPsimFlowUiTest', function() {
   }
 
   setup(async function() {
-    cellularCarrierHandler =
-        new cellular_setup.FakeCarrierPortalHandlerRemote();
-    cellularSetupRemote =
-        new cellular_setup.FakeCellularSetupRemote(cellularCarrierHandler);
-    cellular_setup.setCellularSetupRemoteForTesting(cellularSetupRemote);
+    cellularCarrierHandler = new FakeCarrierPortalHandlerRemote();
+    cellularSetupRemote = new FakeCellularSetupRemote(cellularCarrierHandler);
+    setCellularSetupRemoteForTesting(cellularSetupRemote);
     chrome.metricsPrivate = new MockMetricsPrivate();
 
     pSimPage = document.createElement('psim-flow-ui');
-    pSimPage.delegate = new cellular_setup.FakeCellularSetupDelegate();
+    pSimPage.delegate = new FakeCellularSetupDelegate();
     pSimPage.setTimerFunctionForTest(function(fn, milliseconds) {
       timeoutFunction = fn;
       return 1;
     });
 
     const focusNextButtonPromise =
-        test_util.eventToPromise('focus-default-button', pSimPage);
+        eventToPromise('focus-default-button', pSimPage);
     pSimPage.initSubflow();
     await focusNextButtonPromise;
     document.body.appendChild(pSimPage);
-    Polymer.dom.flush();
+    flush();
   });
 
   teardown(function() {
@@ -102,8 +100,7 @@ suite('CrComponentsPsimFlowUiTest', function() {
     const provisioningPage = pSimPage.$$('#provisioningPage');
     assertTrue(!!provisioningPage);
     assertFalse(
-        pSimPage.selectedPSimPageName_ ===
-        cellularSetup.PSimPageName.provisioningPage);
+        pSimPage.selectedPSimPageName_ === PSimPageName.provisioningPage);
 
     cellularActivationDelegate.onActivationFinished(
         ash.cellularSetup.mojom.ActivationResult
@@ -111,16 +108,13 @@ suite('CrComponentsPsimFlowUiTest', function() {
 
     await flushAsync();
 
-    assertTrue(
-        pSimPage.selectedPSimPageName_ ===
-        cellularSetup.PSimPageName.PROVISIONING);
+    assertTrue(pSimPage.selectedPSimPageName_ === PSimPageName.PROVISIONING);
 
     endFlowAndVerifyResult(PSimSetupFlowResult.SUCCESS);
   });
 
   test('Sim detection failure with retries', async function() {
-    assertTrue(
-        pSimPage.state_ === cellularSetup.PSimUIState.STARTING_ACTIVATION);
+    assertTrue(pSimPage.state_ === PSimUIState.STARTING_ACTIVATION);
     assertTrue(!!pSimPage.currentTimeoutId_);
 
     await flushAsync();
@@ -128,15 +122,13 @@ suite('CrComponentsPsimFlowUiTest', function() {
     // Simulate timeout.
     timeoutFunction();
 
-    assertTrue(
-        pSimPage.state_ === cellularSetup.PSimUIState.TIMEOUT_START_ACTIVATION);
+    assertTrue(pSimPage.state_ === PSimUIState.TIMEOUT_START_ACTIVATION);
     assertTrue(pSimPage.forwardButtonLabel === 'Try again');
 
     // Simulate clicking 'Try Again'.
     pSimPage.navigateForward();
 
-    assertTrue(
-        pSimPage.state_ === cellularSetup.PSimUIState.STARTING_ACTIVATION);
+    assertTrue(pSimPage.state_ === PSimUIState.STARTING_ACTIVATION);
     assertTrue(!!pSimPage.currentTimeoutId_);
 
     await flushAsync();
@@ -144,15 +136,13 @@ suite('CrComponentsPsimFlowUiTest', function() {
     // Timeout again.
     timeoutFunction();
 
-    assertTrue(
-        pSimPage.state_ === cellularSetup.PSimUIState.TIMEOUT_START_ACTIVATION);
+    assertTrue(pSimPage.state_ === PSimUIState.TIMEOUT_START_ACTIVATION);
     assertTrue(pSimPage.forwardButtonLabel === 'Try again');
 
     // Click 'Try Again' again.
     pSimPage.navigateForward();
 
-    assertTrue(
-        pSimPage.state_ === cellularSetup.PSimUIState.STARTING_ACTIVATION);
+    assertTrue(pSimPage.state_ === PSimUIState.STARTING_ACTIVATION);
     assertTrue(!!pSimPage.currentTimeoutId_);
 
     await flushAsync();
@@ -161,9 +151,7 @@ suite('CrComponentsPsimFlowUiTest', function() {
     timeoutFunction();
 
     // Should now be at the failure state.
-    assertTrue(
-        pSimPage.state_ ===
-        cellularSetup.PSimUIState.FINAL_TIMEOUT_START_ACTIVATION);
+    assertTrue(pSimPage.state_ === PSimUIState.FINAL_TIMEOUT_START_ACTIVATION);
   });
 
   test('Carrier title on provisioning page', async () => {
@@ -190,15 +178,13 @@ suite('CrComponentsPsimFlowUiTest', function() {
   });
 
   test('forward navigation and finish cellular setup test', async function() {
-    pSimPage.state_ = cellularSetup.PSimUIState.WAITING_FOR_PORTAL_TO_LOAD;
-    Polymer.dom.flush();
+    pSimPage.state_ = PSimUIState.WAITING_FOR_PORTAL_TO_LOAD;
+    flush();
     pSimPage.navigateForward();
     assertTrue(
-        pSimPage.state_ ===
-        cellularSetup.PSimUIState.WAITING_FOR_ACTIVATION_TO_FINISH);
+        pSimPage.state_ === PSimUIState.WAITING_FOR_ACTIVATION_TO_FINISH);
 
-    assertEquals(
-        cellularSetup.ButtonState.ENABLED, pSimPage.buttonState.forward);
+    assertEquals(ButtonState.ENABLED, pSimPage.buttonState.forward);
     assertEquals(pSimPage.forwardButtonLabel, 'Done');
     let exitCellularSetupEventFired = false;
     pSimPage.addEventListener('exit-cellular-setup', () => {
@@ -240,8 +226,7 @@ suite('CrComponentsPsimFlowUiTest', function() {
     const provisioningPage = pSimPage.$$('#provisioningPage');
     assertTrue(!!provisioningPage);
     assertFalse(
-        pSimPage.selectedPSimPageName_ ===
-        cellularSetup.PSimPageName.provisioningPage);
+        pSimPage.selectedPSimPageName_ === PSimPageName.provisioningPage);
 
     cellularActivationDelegate.onActivationFinished(
         ash.cellularSetup.mojom.ActivationResult.kFailedToActivate);

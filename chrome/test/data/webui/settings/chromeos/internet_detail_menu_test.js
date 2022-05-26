@@ -9,7 +9,7 @@ import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_moj
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {FakeNetworkConfig} from 'chrome://test/chromeos/fake_network_config_mojom.js';
-import {FakeESimManagerRemote} from 'chrome://test/cr_components/chromeos/cellular_setup/fake_esim_manager_remote.m.js';
+import {FakeESimManagerRemote} from 'chrome://test/cr_components/chromeos/cellular_setup/fake_esim_manager_remote.js';
 import {eventToPromise, flushTasks, waitAfterNextRender} from 'chrome://test/test_util.js';
 
 import {assertEquals, assertTrue} from '../../chai_assert.js';

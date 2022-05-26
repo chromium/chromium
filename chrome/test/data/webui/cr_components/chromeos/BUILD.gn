@@ -7,7 +7,6 @@ assert(is_chromeos, "CrComponents Chromeos tests are Chrome OS only.")
 
 group("modulize") {
   deps = [
-    "cellular_setup:modulize",
     "multidevice_setup:modulize",
     "network:modulize",
   ]

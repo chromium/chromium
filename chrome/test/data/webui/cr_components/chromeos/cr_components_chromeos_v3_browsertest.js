@@ -78,17 +78,17 @@ GEN('#include "content/public/test/browser_test.h"');
 ].forEach(test => registerTest('MultiDeviceSetup', 'multidevice-setup', ...test));
 
 [
- ['ActivationCodePage', 'cellular_setup/activation_code_page_test.m.js'],
- ['BasePage', 'cellular_setup/base_page_test.m.js'],
- ['ButtonBar', 'cellular_setup/button_bar_test.m.js'],
- ['ConfirmationCodePage', 'cellular_setup/confirmation_code_page_test.m.js'],
- ['CellularEidDialog', 'cellular_setup/cellular_eid_dialog_test.m.js'],
- ['CellularSetup', 'cellular_setup/cellular_setup_test.m.js'],
- ['EsimFlowUi', 'cellular_setup/esim_flow_ui_test.m.js'],
- ['FinalPage', 'cellular_setup/final_page_test.m.js'],
- ['ProvisioningPage', 'cellular_setup/provisioning_page_test.m.js'],
- ['PsimFlowUi', 'cellular_setup/psim_flow_ui_test.m.js'],
- ['SetupLoadingPage', 'cellular_setup/setup_loading_page_test.m.js'],
+ ['ActivationCodePage', 'cellular_setup/activation_code_page_test.js'],
+ ['BasePage', 'cellular_setup/base_page_test.js'],
+ ['ButtonBar', 'cellular_setup/button_bar_test.js'],
+ ['CellularEidDialog', 'cellular_setup/cellular_eid_dialog_test.js'],
+ ['CellularSetup', 'cellular_setup/cellular_setup_test.js'],
+ ['ConfirmationCodePage', 'cellular_setup/confirmation_code_page_test.js'],
+ ['EsimFlowUi', 'cellular_setup/esim_flow_ui_test.js'],
+ ['FinalPage', 'cellular_setup/final_page_test.js'],
+ ['ProvisioningPage', 'cellular_setup/provisioning_page_test.js'],
+ ['PsimFlowUi', 'cellular_setup/psim_flow_ui_test.js'],
+ ['SetupLoadingPage', 'cellular_setup/setup_loading_page_test.js'],
 ].forEach(test => registerTest('CellularSetup', 'os-settings', ...test));
 // clang-format on
 

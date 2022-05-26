@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/strings.m.js';
-// #import 'chrome://resources/cr_components/chromeos/cellular_setup/button_bar.m.js';
+import 'chrome://os-settings/strings.m.js';
+import 'chrome://resources/cr_components/chromeos/cellular_setup/button_bar.m.js';
 
-// #import {flush, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {ButtonState, Button, ButtonBarState, CellularSetupPageName} from 'chrome://resources/cr_components/chromeos/cellular_setup/cellular_types.m.js';
-// #import {assertEquals, assertFalse, assertTrue} from '../../../chai_assert.js';
-// clang-format on
+import {ButtonBarState, ButtonState} from 'chrome://resources/cr_components/chromeos/cellular_setup/cellular_types.m.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {assertEquals, assertTrue} from '../../../chai_assert.js';
 
 suite('CellularSetupButtonBarTest', function() {
   /** @type {!ButtonBarElement} */
@@ -17,7 +16,7 @@ suite('CellularSetupButtonBarTest', function() {
   setup(function() {
     buttonBar = document.createElement('button-bar');
     document.body.appendChild(buttonBar);
-    Polymer.dom.flush();
+    flush();
   });
 
   teardown(function() {
@@ -25,7 +24,7 @@ suite('CellularSetupButtonBarTest', function() {
   });
 
   /**
-   * @param {!cellularSetup.ButtonBarState} state
+   * @param {!ButtonBarState} state
    */
   function setStateForAllButtons(state) {
     buttonBar.buttonState = {
@@ -33,7 +32,7 @@ suite('CellularSetupButtonBarTest', function() {
       cancel: state,
       forward: state,
     };
-    Polymer.dom.flush();
+    flush();
   }
 
   /**
@@ -61,44 +60,44 @@ suite('CellularSetupButtonBarTest', function() {
   }
 
   test('individual buttons appear if enabled', function() {
-    setStateForAllButtons(cellularSetup.ButtonState.ENABLED);
+    setStateForAllButtons(ButtonState.ENABLED);
     assertTrue(isButtonShownAndEnabled(buttonBar.$$('#backward')));
     assertTrue(isButtonShownAndEnabled(buttonBar.$$('#cancel')));
     assertTrue(isButtonShownAndEnabled(buttonBar.$$('#forward')));
   });
 
   test('individual buttons appear but are diabled', function() {
-    setStateForAllButtons(cellularSetup.ButtonState.DISABLED);
+    setStateForAllButtons(ButtonState.DISABLED);
     assertTrue(isButtonShownAndDisabled(buttonBar.$$('#backward')));
     assertTrue(isButtonShownAndDisabled(buttonBar.$$('#cancel')));
     assertTrue(isButtonShownAndDisabled(buttonBar.$$('#forward')));
   });
 
   test('individual buttons are hidden', function() {
-    setStateForAllButtons(cellularSetup.ButtonState.HIDDEN);
+    setStateForAllButtons(ButtonState.HIDDEN);
     assertTrue(isButtonHidden(buttonBar.$$('#backward')));
     assertTrue(isButtonHidden(buttonBar.$$('#cancel')));
     assertTrue(isButtonHidden(buttonBar.$$('#forward')));
   });
 
   test('default focus is on last button if all are enabled', function() {
-    setStateForAllButtons(cellularSetup.ButtonState.ENABLED);
+    setStateForAllButtons(ButtonState.ENABLED);
     buttonBar.focusDefaultButton();
 
-    Polymer.dom.flush();
+    flush();
 
     assertEquals(buttonBar.shadowRoot.activeElement, buttonBar.$$('#forward'));
   });
 
   test('default focus is on first button if rest are hidden', function() {
     buttonBar.buttonState = {
-      backward: cellularSetup.ButtonState.ENABLED,
-      cancel: cellularSetup.ButtonState.HIDDEN,
-      forward: cellularSetup.ButtonState.HIDDEN,
+      backward: ButtonState.ENABLED,
+      cancel: ButtonState.HIDDEN,
+      forward: ButtonState.HIDDEN,
     };
     buttonBar.focusDefaultButton();
 
-    Polymer.dom.flush();
+    flush();
 
     assertEquals(buttonBar.shadowRoot.activeElement, buttonBar.$$('#backward'));
   });
@@ -107,13 +106,13 @@ suite('CellularSetupButtonBarTest', function() {
       'default focus is on first button if rest are visible but disabled',
       function() {
         buttonBar.buttonState = {
-          backward: cellularSetup.ButtonState.ENABLED,
-          cancel: cellularSetup.ButtonState.DISABLED,
-          forward: cellularSetup.ButtonState.DISABLED,
+          backward: ButtonState.ENABLED,
+          cancel: ButtonState.DISABLED,
+          forward: ButtonState.DISABLED,
         };
         buttonBar.focusDefaultButton();
 
-        Polymer.dom.flush();
+        flush();
 
         assertEquals(
             buttonBar.shadowRoot.activeElement, buttonBar.$$('#backward'));

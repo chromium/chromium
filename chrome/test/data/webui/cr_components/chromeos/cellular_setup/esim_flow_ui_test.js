@@ -2,23 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/strings.m.js';
-// #import 'chrome://resources/cr_components/chromeos/cellular_setup/esim_flow_ui.m.js';
+import 'chrome://os-settings/strings.m.js';
+import 'chrome://resources/cr_components/chromeos/cellular_setup/esim_flow_ui.m.js';
 
-// #import {flush, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {setESimManagerRemoteForTesting} from 'chrome://resources/cr_components/chromeos/cellular_setup/mojo_interface_provider.m.js';
-// #import {ButtonState} from 'chrome://resources/cr_components/chromeos/cellular_setup/cellular_types.m.js';
-// #import {ESimPageName, ESimSetupFlowResult, ESIM_SETUP_RESULT_METRIC_NAME, SUCCESSFUL_ESIM_SETUP_DURATION_METRIC_NAME, FAILED_ESIM_SETUP_DURATION_METRIC_NAME} from 'chrome://resources/cr_components/chromeos/cellular_setup/esim_flow_ui.m.js';
-// #import {assertEquals, assertTrue} from '../../../chai_assert.js';
-// #import {FakeESimManagerRemote} from './fake_esim_manager_remote.m.js';
-// #import {FakeCellularSetupDelegate} from './fake_cellular_setup_delegate.m.js';
-// #import {FakeBarcodeDetector, FakeImageCapture} from './fake_barcode_detector.m.js';
-// #import {FakeNetworkConfig} from 'chrome://test/chromeos/fake_network_config_mojom.js';
-// #import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
-// #import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
-// #import {MockMetricsPrivate} from './mock_metrics_private.m.js';
-// clang-format on
+import {ButtonState} from 'chrome://resources/cr_components/chromeos/cellular_setup/cellular_types.m.js';
+import {ESimPageName, ESimSetupFlowResult, FAILED_ESIM_SETUP_DURATION_METRIC_NAME, SUCCESSFUL_ESIM_SETUP_DURATION_METRIC_NAME} from 'chrome://resources/cr_components/chromeos/cellular_setup/esim_flow_ui.m.js';
+import {setESimManagerRemoteForTesting} from 'chrome://resources/cr_components/chromeos/cellular_setup/mojo_interface_provider.m.js';
+import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
+import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {FakeNetworkConfig} from 'chrome://test/chromeos/fake_network_config_mojom.js';
+
+import {assertEquals, assertTrue} from '../../../chai_assert.js';
+
+import {FakeBarcodeDetector, FakeImageCapture} from './fake_barcode_detector.js';
+import {FakeCellularSetupDelegate} from './fake_cellular_setup_delegate.js';
+import {FakeESimManagerRemote} from './fake_esim_manager_remote.js';
+import {MockMetricsPrivate} from './mock_metrics_private.js';
 
 suite('CrComponentsEsimFlowUiTest', function() {
   /** @type {string} */
@@ -38,7 +38,7 @@ suite('CrComponentsEsimFlowUiTest', function() {
   const wifiGuidPrefix = 'wifi';
 
   async function flushAsync() {
-    Polymer.dom.flush();
+    flush();
     // Use setTimeout to wait for the next macrotask.
     return new Promise(resolve => setTimeout(resolve));
   }
@@ -46,7 +46,7 @@ suite('CrComponentsEsimFlowUiTest', function() {
   /** @param {ESimSetupFlowResult} eSimSetupFlowResult */
   function endFlowAndVerifyResult(eSimSetupFlowResult) {
     eSimPage.remove();
-    Polymer.dom.flush();
+    flush();
     assertEquals(
         chrome.metricsPrivate.getHistogramEnumValueCount(eSimSetupFlowResult),
         1);
@@ -80,8 +80,7 @@ suite('CrComponentsEsimFlowUiTest', function() {
     onlineNetwork.connectionState =
         chromeos.networkConfig.mojom.ConnectionStateType.kOnline;
     networkConfigRemote.addNetworksForTest([onlineNetwork]);
-    network_config.MojoInterfaceProviderImpl.getInstance().remote_ =
-        networkConfigRemote;
+    MojoInterfaceProviderImpl.getInstance().remote_ = networkConfigRemote;
   }
 
   /** Takes actively online network offline. */
@@ -110,17 +109,17 @@ suite('CrComponentsEsimFlowUiTest', function() {
     addOnlineWifiNetwork();
 
     chrome.metricsPrivate = new MockMetricsPrivate();
-    eSimManagerRemote = new cellular_setup.FakeESimManagerRemote();
-    cellular_setup.setESimManagerRemoteForTesting(eSimManagerRemote);
+    eSimManagerRemote = new FakeESimManagerRemote();
+    setESimManagerRemoteForTesting(eSimManagerRemote);
 
     document.addEventListener('focus-default-button', () => {
       focusDefaultButtonEventFired = true;
     });
 
     eSimPage = document.createElement('esim-flow-ui');
-    eSimPage.delegate = new cellular_setup.FakeCellularSetupDelegate();
+    eSimPage.delegate = new FakeCellularSetupDelegate();
     document.body.appendChild(eSimPage);
-    Polymer.dom.flush();
+    flush();
 
     ironPages = eSimPage.$$('iron-pages');
     profileLoadingPage = eSimPage.$$('#profileLoadingPage');
@@ -163,13 +162,12 @@ suite('CrComponentsEsimFlowUiTest', function() {
    * navigating forward. Asserts that the button_bar and page state is disabled
    * and busy during the install.
    * @param {HTMLElement} page
-   * @param {cellularSetup.ButtonState} previousBackButtonState
+   * @param {ButtonState} previousBackButtonState
    */
   async function navigateForwardForInstall(page, previousBackButtonState) {
     const checkShowBusyState =
         (page !== profileDiscoveryPage && page !== finalPage);
-    assertEquals(
-        eSimPage.buttonState.forward, cellularSetup.ButtonState.ENABLED);
+    assertEquals(eSimPage.buttonState.forward, ButtonState.ENABLED);
     assertEquals(eSimPage.buttonState.backward, previousBackButtonState);
     if (checkShowBusyState) {
       assertFalse(page.showBusy);
@@ -178,16 +176,14 @@ suite('CrComponentsEsimFlowUiTest', function() {
     // If back button is hidden before installation began, the new back button
     // state should also be hidden, if it was enabled new back button state
     // should be disabled while installation is taking place.
-    let newBackButtonState = cellularSetup.ButtonState.HIDDEN;
-    if (previousBackButtonState === cellularSetup.ButtonState.ENABLED) {
-      newBackButtonState = cellularSetup.ButtonState.DISABLED;
+    let newBackButtonState = ButtonState.HIDDEN;
+    if (previousBackButtonState === ButtonState.ENABLED) {
+      newBackButtonState = ButtonState.DISABLED;
     }
     eSimPage.navigateForward();
 
-    assertEquals(
-        eSimPage.buttonState.forward, cellularSetup.ButtonState.DISABLED);
-    assertEquals(
-        eSimPage.buttonState.cancel, cellularSetup.ButtonState.DISABLED);
+    assertEquals(eSimPage.buttonState.forward, ButtonState.DISABLED);
+    assertEquals(eSimPage.buttonState.cancel, ButtonState.DISABLED);
     assertEquals(eSimPage.buttonState.backward, newBackButtonState);
     if (checkShowBusyState) {
       assertTrue(page.showBusy);
@@ -212,13 +208,11 @@ suite('CrComponentsEsimFlowUiTest', function() {
   }
 
   async function assertFinalPageAndPressDoneButton(shouldBeShowingError) {
-    assertSelectedPage(cellular_setup.ESimPageName.FINAL, finalPage);
+    assertSelectedPage(ESimPageName.FINAL, finalPage);
     assertEquals(!!finalPage.$$('.error'), shouldBeShowingError);
-    assertEquals(
-        cellularSetup.ButtonState.ENABLED, eSimPage.buttonState.forward);
-    assertEquals(
-        cellularSetup.ButtonState.HIDDEN, eSimPage.buttonState.backward);
-    assertEquals(cellularSetup.ButtonState.HIDDEN, eSimPage.buttonState.cancel);
+    assertEquals(ButtonState.ENABLED, eSimPage.buttonState.forward);
+    assertEquals(ButtonState.HIDDEN, eSimPage.buttonState.backward);
+    assertEquals(ButtonState.HIDDEN, eSimPage.buttonState.cancel);
     assertEquals(eSimPage.forwardButtonLabel, 'Done');
     let exitCellularSetupEventFired = false;
     eSimPage.addEventListener('exit-cellular-setup', () => {
@@ -232,16 +226,16 @@ suite('CrComponentsEsimFlowUiTest', function() {
 
   /**
    * @param {boolean} forwardButtonShouldBeEnabled
-   * @param {cellularSetup.ButtonState} backButtonState
+   * @param {ButtonState} backButtonState
    */
   function assertButtonState(forwardButtonShouldBeEnabled, backButtonState) {
     const buttonState = eSimPage.buttonState;
     assertEquals(buttonState.backward, backButtonState);
-    assertEquals(buttonState.cancel, cellularSetup.ButtonState.ENABLED);
+    assertEquals(buttonState.cancel, ButtonState.ENABLED);
     assertEquals(
         buttonState.forward,
-        forwardButtonShouldBeEnabled ? cellularSetup.ButtonState.ENABLED :
-                                       cellularSetup.ButtonState.DISABLED);
+        forwardButtonShouldBeEnabled ? ButtonState.ENABLED :
+                                       ButtonState.DISABLED);
   }
 
   function assertFocusDefaultButtonEventFired() {
@@ -250,20 +244,18 @@ suite('CrComponentsEsimFlowUiTest', function() {
   }
 
   async function assertProfileLoadingPageAndContinue() {
-    assertSelectedPage(
-        cellular_setup.ESimPageName.PROFILE_LOADING, profileLoadingPage);
+    assertSelectedPage(ESimPageName.PROFILE_LOADING, profileLoadingPage);
     assertButtonState(
         /*forwardButtonShouldBeEnabled=*/ false,
-        /*backButtonState=*/ cellularSetup.ButtonState.HIDDEN);
+        /*backButtonState=*/ ButtonState.HIDDEN);
     await flushAsync();
   }
 
   function assertProfileDiscoveryPage() {
-    assertSelectedPage(
-        cellular_setup.ESimPageName.PROFILE_DISCOVERY, profileDiscoveryPage);
+    assertSelectedPage(ESimPageName.PROFILE_DISCOVERY, profileDiscoveryPage);
     assertButtonState(
         /*forwardButtonShouldBeEnabled*/ true,
-        /*backButtonState*/ cellularSetup.ButtonState.HIDDEN);
+        /*backButtonState*/ ButtonState.HIDDEN);
   }
 
   function assertActivationCodePage(
@@ -272,8 +264,7 @@ suite('CrComponentsEsimFlowUiTest', function() {
       // In the initial state, input should be cleared.
       assertEquals(activationCodePage.$$('#activationCode').value, '');
     }
-    assertSelectedPage(
-        cellular_setup.ESimPageName.ACTIVATION_CODE, activationCodePage);
+    assertSelectedPage(ESimPageName.ACTIVATION_CODE, activationCodePage);
     assertButtonState(forwardButtonShouldBeEnabled, backButtonState);
   }
 
@@ -283,8 +274,7 @@ suite('CrComponentsEsimFlowUiTest', function() {
       // In the initial state, input should be cleared.
       assertEquals(confirmationCodePage.$$('#confirmationCode').value, '');
     }
-    assertSelectedPage(
-        cellular_setup.ESimPageName.CONFIRMATION_CODE, confirmationCodePage);
+    assertSelectedPage(ESimPageName.CONFIRMATION_CODE, confirmationCodePage);
     assertButtonState(forwardButtonShouldBeEnabled, backButtonState);
   }
 
@@ -304,14 +294,14 @@ suite('CrComponentsEsimFlowUiTest', function() {
       // Should now be at the activation code page.
       assertActivationCodePage(
           /*forwardButtonShouldBeEnabled*/ false,
-          /*backButtonState*/ cellularSetup.ButtonState.HIDDEN);
+          /*backButtonState*/ ButtonState.HIDDEN);
       // Insert an activation code.
       activationCodePage.$$('#activationCode').value = ACTIVATION_CODE_VALID;
 
       // Forward button should now be enabled.
       assertActivationCodePage(
           /*forwardButtonShouldBeEnabled*/ true,
-          /*backButtonState*/ cellularSetup.ButtonState.HIDDEN);
+          /*backButtonState*/ ButtonState.HIDDEN);
     });
 
     test('Invalid activation code', async function() {
@@ -321,12 +311,12 @@ suite('CrComponentsEsimFlowUiTest', function() {
 
       await navigateForwardForInstall(
           activationCodePage,
-          /*backButtonState*/ cellularSetup.ButtonState.HIDDEN);
+          /*backButtonState*/ ButtonState.HIDDEN);
 
       // Install should fail and still be at activation code page.
       assertActivationCodePage(
           /*forwardButtonShouldBeEnabled*/ true,
-          /*backButtonState*/ cellularSetup.ButtonState.HIDDEN);
+          /*backButtonState*/ ButtonState.HIDDEN);
       assertTrue(activationCodePage.showError);
 
       endFlowAndVerifyResult(
@@ -336,7 +326,7 @@ suite('CrComponentsEsimFlowUiTest', function() {
     test('Valid activation code', async function() {
       await navigateForwardForInstall(
           activationCodePage,
-          /*backButtonState*/ cellularSetup.ButtonState.HIDDEN);
+          /*backButtonState*/ ButtonState.HIDDEN);
 
       // Should go to final page.
       await assertFinalPageAndPressDoneButton(false);
@@ -351,17 +341,17 @@ suite('CrComponentsEsimFlowUiTest', function() {
 
       await navigateForwardForInstall(
           activationCodePage,
-          /*backButtonState*/ cellularSetup.ButtonState.HIDDEN);
+          /*backButtonState*/ ButtonState.HIDDEN);
 
       // Confirmation code page should be showing.
       assertConfirmationCodePage(
           /*forwardButtonShouldBeEnabled*/ false,
-          /*backButtonState*/ cellularSetup.ButtonState.ENABLED);
+          /*backButtonState*/ ButtonState.ENABLED);
 
       euicc.setProfileInstallResultForTest(
           ash.cellularSetup.mojom.ProfileInstallResult.kSuccess);
       await enterConfirmationCode(
-          /*backButtonState*/ cellularSetup.ButtonState.ENABLED);
+          /*backButtonState*/ ButtonState.ENABLED);
 
       // Should go to final page.
       await assertFinalPageAndPressDoneButton(false);
@@ -376,22 +366,22 @@ suite('CrComponentsEsimFlowUiTest', function() {
 
       await navigateForwardForInstall(
           activationCodePage,
-          /*backButtonState*/ cellularSetup.ButtonState.HIDDEN);
+          /*backButtonState*/ ButtonState.HIDDEN);
 
       // Confirmation code page should be showing.
       assertConfirmationCodePage(
           /*forwardButtonShouldBeEnabled*/ false,
-          /*backButtonState*/ cellularSetup.ButtonState.ENABLED);
+          /*backButtonState*/ ButtonState.ENABLED);
 
       euicc.setProfileInstallResultForTest(
           ash.cellularSetup.mojom.ProfileInstallResult.kFailure);
       const confirmationCodeInput = await enterConfirmationCode(
-          /*backButtonState*/ cellularSetup.ButtonState.ENABLED);
+          /*backButtonState*/ ButtonState.ENABLED);
 
       // Should still be at confirmation code page with input showing error.
       assertConfirmationCodePage(
           /*forwardButtonShouldBeEnabled*/ true,
-          /*backButtonState*/ cellularSetup.ButtonState.ENABLED);
+          /*backButtonState*/ ButtonState.ENABLED);
       assertTrue(confirmationCodeInput.invalid);
 
       endFlowAndVerifyResult(ESimSetupFlowResult.INSTALL_FAIL);
@@ -404,12 +394,12 @@ suite('CrComponentsEsimFlowUiTest', function() {
 
       await navigateForwardForInstall(
           activationCodePage,
-          /*backButtonState*/ cellularSetup.ButtonState.HIDDEN);
+          /*backButtonState*/ ButtonState.HIDDEN);
 
       // Confirmation code page should be showing.
       assertConfirmationCodePage(
           /*forwardButtonShouldBeEnabled*/ false,
-          /*backButtonState*/ cellularSetup.ButtonState.ENABLED);
+          /*backButtonState*/ ButtonState.ENABLED);
       confirmationCodePage.$$('#confirmationCode').value = 'CONFIRMATION_CODE';
 
       eSimPage.navigateBackward();
@@ -418,7 +408,7 @@ suite('CrComponentsEsimFlowUiTest', function() {
       // Should now be at the activation code page.
       assertActivationCodePage(
           /*forwardButtonShouldBeEnabled*/ true,
-          /*backButtonState*/ cellularSetup.ButtonState.HIDDEN);
+          /*backButtonState*/ ButtonState.HIDDEN);
       assertEquals(
           activationCodePage.$$('#activationCode').value,
           ACTIVATION_CODE_VALID);
@@ -482,12 +472,12 @@ suite('CrComponentsEsimFlowUiTest', function() {
       // Confirmation code page should be showing.
       assertConfirmationCodePage(
           /*forwardButtonShouldBeEnabled*/ false,
-          /*backButtonState*/ cellularSetup.ButtonState.HIDDEN);
+          /*backButtonState*/ ButtonState.HIDDEN);
 
       profile.setProfileInstallResultForTest(
           ash.cellularSetup.mojom.ProfileInstallResult.kSuccess);
       await enterConfirmationCode(
-          /*backButtonState*/ cellularSetup.ButtonState.HIDDEN);
+          /*backButtonState*/ ButtonState.HIDDEN);
 
       // Should go to final page.
       await assertFinalPageAndPressDoneButton(false);
@@ -505,17 +495,17 @@ suite('CrComponentsEsimFlowUiTest', function() {
       // Confirmation code page should be showing.
       assertConfirmationCodePage(
           /*forwardButtonShouldBeEnabled*/ false,
-          /*backButtonState*/ cellularSetup.ButtonState.HIDDEN);
+          /*backButtonState*/ ButtonState.HIDDEN);
 
       profile.setProfileInstallResultForTest(
           ash.cellularSetup.mojom.ProfileInstallResult.kFailure);
       const confirmationCodeInput =
-          await enterConfirmationCode(cellularSetup.ButtonState.HIDDEN);
+          await enterConfirmationCode(ButtonState.HIDDEN);
 
       // Should still be at confirmation code page with input showing error.
       assertConfirmationCodePage(
           /*forwardButtonShouldBeEnabled*/ true,
-          /*backButtonState*/ cellularSetup.ButtonState.HIDDEN);
+          /*backButtonState*/ ButtonState.HIDDEN);
       assertTrue(confirmationCodeInput.invalid);
 
       endFlowAndVerifyResult(ESimSetupFlowResult.INSTALL_FAIL);
@@ -531,7 +521,7 @@ suite('CrComponentsEsimFlowUiTest', function() {
       // Confirmation code page should be showing.
       assertConfirmationCodePage(
           /*forwardButtonShouldBeEnabled*/ false,
-          /*backButtonState*/ cellularSetup.ButtonState.HIDDEN);
+          /*backButtonState*/ ButtonState.HIDDEN);
       confirmationCodePage.$$('#confirmationCode').value = 'CONFIRMATION_CODE';
 
       endFlowAndVerifyResult(
@@ -577,15 +567,14 @@ suite('CrComponentsEsimFlowUiTest', function() {
 
     function skipDiscovery() {
       // Simulate pressing 'Skip'.
-      assertTrue(
-          eSimPage.buttonState.forward === cellularSetup.ButtonState.ENABLED);
+      assertTrue(eSimPage.buttonState.forward === ButtonState.ENABLED);
       eSimPage.navigateForward();
-      Polymer.dom.flush();
+      flush();
 
       // Should now be at the activation code page.
       assertActivationCodePage(
           /*forwardButtonShouldBeEnabled*/ false,
-          /*backButtonState*/ cellularSetup.ButtonState.ENABLED);
+          /*backButtonState*/ ButtonState.ENABLED);
       assertFocusDefaultButtonEventFired();
 
       // Insert an activation code.
@@ -594,7 +583,7 @@ suite('CrComponentsEsimFlowUiTest', function() {
 
       assertActivationCodePage(
           /*forwardButtonShouldBeEnabled*/ true,
-          /*backButtonState*/ cellularSetup.ButtonState.ENABLED);
+          /*backButtonState*/ ButtonState.ENABLED);
     }
 
     test('Skip discovery flow', async function() {
@@ -602,7 +591,7 @@ suite('CrComponentsEsimFlowUiTest', function() {
 
       await navigateForwardForInstall(
           activationCodePage,
-          /*backButtonState*/ cellularSetup.ButtonState.ENABLED);
+          /*backButtonState*/ ButtonState.ENABLED);
 
       // Should now be at the final page.
       await assertFinalPageAndPressDoneButton(false);
@@ -621,12 +610,12 @@ suite('CrComponentsEsimFlowUiTest', function() {
 
           await navigateForwardForInstall(
               activationCodePage,
-              /*backButtonState*/ cellularSetup.ButtonState.ENABLED);
+              /*backButtonState*/ ButtonState.ENABLED);
 
           // Confirmation code page should be showing.
           assertConfirmationCodePage(
               /*forwardButtonShouldBeEnabled*/ false,
-              /*backButtonState*/ cellularSetup.ButtonState.ENABLED);
+              /*backButtonState*/ ButtonState.ENABLED);
           assertFocusDefaultButtonEventFired();
           confirmationCodePage.$$('#confirmationCode').value =
               'CONFIRMATION_CODE';
@@ -638,7 +627,7 @@ suite('CrComponentsEsimFlowUiTest', function() {
 
           assertActivationCodePage(
               /*forwardButtonShouldBeEnabled*/ true,
-              /*backButtonState*/ cellularSetup.ButtonState.ENABLED);
+              /*backButtonState*/ ButtonState.ENABLED);
           assertFocusDefaultButtonEventFired();
           assertEquals(
               activationCodePage.$$('#activationCode').value,
@@ -660,16 +649,15 @@ suite('CrComponentsEsimFlowUiTest', function() {
       // Select the first profile on the list.
       const profileList = profileDiscoveryPage.$$('#profileList');
       profileList.selectItem(profileList.items[0]);
-      Polymer.dom.flush();
+      flush();
 
       // The 'Forward' button should now be enabled.
-      assertTrue(
-          eSimPage.buttonState.forward === cellularSetup.ButtonState.ENABLED);
+      assertTrue(eSimPage.buttonState.forward === ButtonState.ENABLED);
 
       // Simulate pressing 'Forward'.
       await navigateForwardForInstall(
           profileDiscoveryPage,
-          /*backButtonState*/ cellularSetup.ButtonState.HIDDEN);
+          /*backButtonState*/ ButtonState.HIDDEN);
     }
 
     test('Select profile flow', async function() {
@@ -694,13 +682,13 @@ suite('CrComponentsEsimFlowUiTest', function() {
       // Confirmation code page should be showing.
       assertConfirmationCodePage(
           /*forwardButtonShouldBeEnabled*/ false,
-          /*backButtonState*/ cellularSetup.ButtonState.ENABLED);
+          /*backButtonState*/ ButtonState.ENABLED);
       assertFocusDefaultButtonEventFired();
 
       profileList.profiles[0].setProfileInstallResultForTest(
           ash.cellularSetup.mojom.ProfileInstallResult.kSuccess);
       await enterConfirmationCode(
-          /*backButtonState*/ cellularSetup.ButtonState.ENABLED);
+          /*backButtonState*/ ButtonState.ENABLED);
 
       // Should go to final page.
       await assertFinalPageAndPressDoneButton(false);
@@ -724,7 +712,7 @@ suite('CrComponentsEsimFlowUiTest', function() {
           // Confirmation code page should be showing.
           assertConfirmationCodePage(
               /*forwardButtonShouldBeEnabled*/ false,
-              /*backButtonState*/ cellularSetup.ButtonState.ENABLED);
+              /*backButtonState*/ ButtonState.ENABLED);
           confirmationCodePage.$$('#confirmationCode').value =
               'CONFIRMATION_CODE';
 
@@ -764,8 +752,7 @@ suite('CrComponentsEsimFlowUiTest', function() {
         pSimNetwork.connectionState =
             chromeos.networkConfig.mojom.ConnectionStateType.kConnected;
         networkConfigRemote.addNetworksForTest([pSimNetwork]);
-        network_config.MojoInterfaceProviderImpl.getInstance().remote_ =
-            networkConfigRemote;
+        MojoInterfaceProviderImpl.getInstance().remote_ = networkConfigRemote;
         await flushAsync();
 
         assertEquals(

@@ -18,7 +18,7 @@ let detectedBarcode = 'LPA:1$ACTIVATION_CODE';
 /**
  * @implements {BarcodeDetector}
  */
-/* #export */ class FakeBarcodeDetector {
+export class FakeBarcodeDetector {
   constructor() {}
 
   /** @override */
@@ -53,7 +53,7 @@ let detectedBarcode = 'LPA:1$ACTIVATION_CODE';
 /**
  * @implements {ImageCapture}
  */
-/* #export */ class FakeImageCapture {
+export class FakeImageCapture {
   constructor(mediaStream) {
     this.track = {
       readyState: 'live',

@@ -2,19 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/strings.m.js';
-// #import 'chrome://resources/cr_components/chromeos/cellular_setup/confirmation_code_page.m.js';
+import 'chrome://os-settings/strings.m.js';
+import 'chrome://resources/cr_components/chromeos/cellular_setup/confirmation_code_page.m.js';
 
-// #import {flush, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {assertTrue} from '../../../chai_assert.js';
-// clang-format on
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {assertTrue} from '../../../chai_assert.js';
 
 suite('CrComponentsConfirmationCodePageTest', function() {
   let confirmationCodePage;
 
   function flushAsync() {
-    Polymer.dom.flush();
+    flush();
     // Use setTimeout to wait for the next macrotask.
     return new Promise(resolve => setTimeout(resolve));
   }
@@ -22,7 +21,7 @@ suite('CrComponentsConfirmationCodePageTest', function() {
   setup(function() {
     confirmationCodePage = document.createElement('confirmation-code-page');
     document.body.appendChild(confirmationCodePage);
-    Polymer.dom.flush();
+    flush();
   });
 
   test('Event is fired when enter is pressed on input', async function() {

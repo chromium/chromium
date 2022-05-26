@@ -221,23 +221,6 @@ if (include_js_tests) {
 
     if (is_chromeos_ash) {
       data += [
-        "$root_gen_dir/chrome/test/data/webui/cr_components/chromeos/cellular_setup/activation_code_page_test.m.js",
-        "$root_gen_dir/chrome/test/data/webui/cr_components/chromeos/cellular_setup/base_page_test.m.js",
-        "$root_gen_dir/chrome/test/data/webui/cr_components/chromeos/cellular_setup/button_bar_test.m.js",
-        "$root_gen_dir/chrome/test/data/webui/cr_components/chromeos/cellular_setup/confirmation_code_page_test.m.js",
-        "$root_gen_dir/chrome/test/data/webui/cr_components/chromeos/cellular_setup/cellular_eid_dialog_test.m.js",
-        "$root_gen_dir/chrome/test/data/webui/cr_components/chromeos/cellular_setup/cellular_setup_test.m.js",
-        "$root_gen_dir/chrome/test/data/webui/cr_components/chromeos/cellular_setup/esim_flow_ui_test.m.js",
-        "$root_gen_dir/chrome/test/data/webui/cr_components/chromeos/cellular_setup/final_page_test.m.js",
-        "$root_gen_dir/chrome/test/data/webui/cr_components/chromeos/cellular_setup/provisioning_page_test.m.js",
-        "$root_gen_dir/chrome/test/data/webui/cr_components/chromeos/cellular_setup/psim_flow_ui_test.m.js",
-        "$root_gen_dir/chrome/test/data/webui/cr_components/chromeos/cellular_setup/fake_barcode_detector.m.js",
-        "$root_gen_dir/chrome/test/data/webui/cr_components/chromeos/cellular_setup/fake_canvas_context.m.js",
-        "$root_gen_dir/chrome/test/data/webui/cr_components/chromeos/cellular_setup/setup_loading_page_test.m.js",
-        "$root_gen_dir/chrome/test/data/webui/cr_components/chromeos/cellular_setup/fake_cellular_setup_remote.m.js",
-        "$root_gen_dir/chrome/test/data/webui/cr_components/chromeos/cellular_setup/fake_cellular_setup_delegate.m.js",
-        "$root_gen_dir/chrome/test/data/webui/cr_components/chromeos/cellular_setup/fake_esim_manager_remote.m.js",
-        "$root_gen_dir/chrome/test/data/webui/cr_components/chromeos/cellular_setup/fake_media_devices.m.js",
         "$root_gen_dir/chrome/test/data/webui/cr_components/chromeos/multidevice_setup/integration_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/cr_components/chromeos/multidevice_setup/setup_succeeded_page_test.m.js",
         "$root_gen_dir/chrome/test/data/webui/cr_components/chromeos/multidevice_setup/start_setup_page_test.m.js",
