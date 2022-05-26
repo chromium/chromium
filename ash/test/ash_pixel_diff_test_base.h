@@ -6,6 +6,8 @@
 #define ASH_TEST_ASH_PIXEL_DIFF_TEST_BASE_H_
 
 #include "ash/test/ash_test_base.h"
+#include "ash/wallpaper/test_wallpaper_controller_client.h"
+#include "base/files/scoped_temp_dir.h"
 
 namespace ash {
 
@@ -34,6 +36,19 @@ class AshPixelDiffTestBase : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override;
+
+ private:
+  // Sets a pure color wallpaper.
+  void SetWallPaper();
+
+  const AccountId kAccountId_;
+
+  // The temporary data directories for wallpaper setting.
+  base::ScopedTempDir user_data_dir_;
+  base::ScopedTempDir online_wallpaper_dir_;
+  base::ScopedTempDir custom_wallpaper_dir_;
+
+  TestWallpaperControllerClient client_;
 };
 
 }  // namespace ash
