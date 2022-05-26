@@ -198,13 +198,23 @@ OmniboxAnswerResult::OmniboxAnswerResult(
   } else {
     UpdateClassicTitleAndDetails();
   }
+  if (ash::ColorProvider::Get())
+    ash::ColorProvider::Get()->AddObserver(this);
 }
 
-OmniboxAnswerResult::~OmniboxAnswerResult() = default;
+OmniboxAnswerResult::~OmniboxAnswerResult() {
+  if (ash::ColorProvider::Get())
+    ash::ColorProvider::Get()->RemoveObserver(this);
+}
 
 void OmniboxAnswerResult::Open(int event_flags) {
   list_controller_->OpenURL(profile_, match_.destination_url, match_.transition,
                             ui::DispositionFromEventFlags(event_flags));
+}
+
+void OmniboxAnswerResult::OnColorModeChanged(bool dark_mode_enabled) {
+  if (!IsWeatherResult())
+    UpdateIcon();
 }
 
 void OmniboxAnswerResult::UpdateIcon() {

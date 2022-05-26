@@ -7,6 +7,7 @@
 
 #include <iosfwd>
 
+#include "ash/public/cpp/style/color_mode_observer.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
@@ -24,7 +25,7 @@ namespace app_list {
 
 // TODO(crbug.com/1258415): We should split this into four subclasses:
 // {drive,local} {zero-state,search}.
-class FileResult : public ChromeSearchResult {
+class FileResult : public ChromeSearchResult, public ash::ColorModeObserver {
  public:
   enum class Type { kFile, kDirectory, kSharedDirectory };
 
@@ -67,6 +68,9 @@ class FileResult : public ChromeSearchResult {
   }
 
  private:
+  // ash::ColorModeObserver:
+  void OnColorModeChanged(bool dark_mode_enabled) override;
+
   // Callback for the result of RequestThumbnail's call to the ThumbnailLoader.
   void OnThumbnailLoaded(const SkBitmap* bitmap, base::File::Error error);
 
@@ -74,6 +78,8 @@ class FileResult : public ChromeSearchResult {
   // GetJustificationStringAsync.
   void OnJustificationStringReturned(
       absl::optional<std::u16string> justification);
+
+  void UpdateIcon();
 
   const base::FilePath filepath_;
   const Type type_;
