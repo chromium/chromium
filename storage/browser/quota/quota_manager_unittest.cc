@@ -3062,7 +3062,8 @@ TEST_F(QuotaManagerImplTest, DumpBucketTable) {
                            MatchesBucketTableEntry(kStorageKey, kPerm, 2)));
 }
 
-TEST_F(QuotaManagerImplTest, RetrieveBucketsTable) {
+// TODO(crbug.com/1329201): Test is flaky.
+TEST_F(QuotaManagerImplTest, DISABLED_RetrieveBucketsTable) {
   const StorageKey kStorageKey = ToStorageKey("http://example.com/");
   const std::string kSerializedStorageKey = kStorageKey.Serialize();
   const base::Time kAccessTime = base::Time::Now();
