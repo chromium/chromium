@@ -18,6 +18,7 @@
       "fuchsia.device.NameProvider",
       "fuchsia.element.GraphicalPresenter",
       "fuchsia.fonts.Provider",
+      "fuchsia.hwinfo.Product",
       "fuchsia.input.virtualkeyboard.ControllerCreator",
       "fuchsia.intl.PropertyProvider",
       "fuchsia.logger.LogSink",

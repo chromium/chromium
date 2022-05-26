@@ -5,54 +5,69 @@
 #include "base/fuchsia/system_info.h"
 
 #include <fuchsia/buildinfo/cpp/fidl.h>
+#include <fuchsia/hwinfo/cpp/fidl.h>
 #include <lib/sys/cpp/component_context.h>
 
 #include "base/check.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
+#include "base/location.h"
 #include "base/no_destructor.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "base/threading/thread_restrictions.h"
 
 namespace base {
 
 namespace {
 
-fuchsia::buildinfo::BuildInfo FetchSystemBuildInfo() {
-  ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::WILL_BLOCK);
-
-  fuchsia::buildinfo::ProviderSyncPtr build_info_provider_sync;
-  ComponentContextForProcess()->svc()->Connect(
-      build_info_provider_sync.NewRequest());
-
-  fuchsia::buildinfo::BuildInfo build_info;
-  zx_status_t status = build_info_provider_sync->GetBuildInfo(&build_info);
-  ZX_DCHECK(status == ZX_OK, status);
-  DCHECK(!build_info.IsEmpty()) << "FIDL service returned empty BuildInfo";
-  return build_info;
+// Returns this process's ProductInfo object.
+template <typename Data>
+Data& CachedData() {
+  static NoDestructor<Data> data;
+  return *data;
 }
 
-// Returns this process's BuildInfo object.
-fuchsia::buildinfo::BuildInfo& CachedBuildInfo() {
-  static NoDestructor<fuchsia::buildinfo::BuildInfo> build_info;
-  return *build_info;
+template <typename Data>
+const Data& GetCachedData() {
+  DCHECK(!CachedData<Data>().IsEmpty())
+      << "FetchAndCacheSystemInfo() has not been called in this process";
+  return CachedData<Data>();
+}
+
+template <typename Interface,
+          typename Data,
+          zx_status_t (Interface::Sync_::*Getter)(Data*)>
+void FetchAndCacheData() {
+  DCHECK(CachedData<Data>().IsEmpty()) << "Only call once per process";
+
+  fidl::SynchronousInterfacePtr<Interface> provider_sync;
+  ComponentContextForProcess()->svc()->Connect(provider_sync.NewRequest());
+
+  zx_status_t status = (provider_sync.get()->*Getter)(&CachedData<Data>());
+  ZX_CHECK(status == ZX_OK, status) << Interface::Name_;
+  DCHECK(!CachedData<Data>().IsEmpty()) << "FIDL service returned empty data";
 }
 
 }  // namespace
 
 void FetchAndCacheSystemInfo() {
-  DCHECK(CachedBuildInfo().IsEmpty()) << "Only call once per process";
-  CachedBuildInfo() = FetchSystemBuildInfo();
+  ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::WILL_BLOCK);
+  FetchAndCacheData<fuchsia::buildinfo::Provider, fuchsia::buildinfo::BuildInfo,
+                    &fuchsia::buildinfo::Provider_Sync::GetBuildInfo>();
+  FetchAndCacheData<fuchsia::hwinfo::Product, fuchsia::hwinfo::ProductInfo,
+                    &fuchsia::hwinfo::Product_Sync::GetInfo>();
 }
 
 const fuchsia::buildinfo::BuildInfo& GetCachedBuildInfo() {
-  DCHECK(!CachedBuildInfo().IsEmpty())
-      << "FetchAndCacheSystemInfo() has not been called in this process";
-  return CachedBuildInfo();
+  return GetCachedData<fuchsia::buildinfo::BuildInfo>();
+}
+
+const fuchsia::hwinfo::ProductInfo& GetCachedProductInfo() {
+  return GetCachedData<fuchsia::hwinfo::ProductInfo>();
 }
 
 void ClearCachedSystemInfoForTesting() {
-  CachedBuildInfo() = {};
+  CachedData<fuchsia::buildinfo::BuildInfo>() = {};
+  CachedData<fuchsia::hwinfo::ProductInfo>() = {};
 }
 
 }  // namespace base

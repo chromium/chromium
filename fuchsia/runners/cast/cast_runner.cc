@@ -50,6 +50,7 @@ static constexpr const char* kServices[] = {
     // "fuchsia.camera3.DeviceWatcher" is redirected to the agent.
     "fuchsia.device.NameProvider",
     "fuchsia.fonts.Provider",
+    "fuchsia.hwinfo.Product",
     "fuchsia.input.virtualkeyboard.ControllerCreator",
     "fuchsia.intl.PropertyProvider",
     // "fuchsia.legacymetrics.MetricsRecorder" is redirected to the agent.

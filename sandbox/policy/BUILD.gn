@@ -155,6 +155,7 @@ component("policy") {
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.buildinfo",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.camera3",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.fonts",
+      "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.hwinfo",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.intl",
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.logger",
 
