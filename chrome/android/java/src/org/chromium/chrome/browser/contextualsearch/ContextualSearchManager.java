@@ -20,7 +20,6 @@ import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
-import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.SysUtils;
 import org.chromium.base.TimeUtils;
@@ -73,7 +72,6 @@ import org.chromium.content_public.browser.SelectAroundCaretResult;
 import org.chromium.content_public.browser.SelectionClient;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ContentUrlConstants;
-import org.chromium.contextual_search.mojom.OverlayPosition;
 import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.LocalizationUtils;
@@ -943,10 +941,7 @@ public class ContextualSearchManager
         assert mSearchPanel != null;
         mLoadedSearchUrlTimeMs = System.currentTimeMillis();
         mLastSearchRequestLoaded = mSearchRequest;
-        String searchUrl = mSearchRequest.getSearchUrl();
-        ContextualSearchManagerJni.get().allowlistContextualSearchJsApiUrl(
-                mNativeContextualSearchManagerPtr, this, searchUrl);
-        mSearchPanel.loadUrlInPanel(searchUrl);
+        mSearchPanel.loadUrlInPanel(mSearchRequest.getSearchUrl());
         // Prevent losing focus when clicking a suggestion. See https://crbug.com/1250825.
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.RELATED_SEARCHES)) {
             mSearchPanel.getContainerView().setFocusableInTouchMode(false);
@@ -964,64 +959,12 @@ public class ContextualSearchManager
     }
 
     /**
-     * Called to set a caption by the Search Result page in the overlay through the CS JavaScript
-     * API. This notifies CS that there is a caption to show for the current overlay.
-     * @param caption The caption to display.
-     */
-    @CalledByNative
-    @VisibleForTesting
-    void onSetCaption(String caption) {
-        // If the Partial Translations Feature is enabled we don't want to show these SERP
-        // Translations until we can associate the right icon to match what's shown for that
-        // Feature (for consistency). See https://crbug.com/1249656 for details.
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_SEARCH_TRANSLATIONS)
-                || TextUtils.isEmpty(caption) || mSearchPanel == null) {
-            return;
-        }
-        setCaption(caption);
-    }
-
-    /**
      * Called to set a caption to show in a second line in the Bar.
      * @param caption The caption to display.
      */
     private void setCaption(String caption) {
         // Notify the UI of the caption.
         mSearchPanel.setCaption(caption);
-    }
-
-    /**
-     * Called by JavaScript in the Overlay to change the position of the overlay.
-     * The panel cannot be changed to any opened position if it's not already opened.
-     * @param desiredPosition The desired position of the Overlay Panel expressed as an
-     *        OverlayPosition int (defined in contextual_search_js_api_service.mojom).
-     */
-    @CalledByNative
-    private void onChangeOverlayPosition(int desiredPosition) {
-        assert desiredPosition >= OverlayPosition.CLOSE
-                && desiredPosition <= OverlayPosition.MAXIMIZE;
-        // Ignore requests when the panel is not already open to prevent spam or abuse of the API.
-        if (!mSearchPanel.isShowing() || desiredPosition < OverlayPosition.CLOSE
-                || desiredPosition > OverlayPosition.MAXIMIZE) {
-            Log.w(TAG, "Unexpected request to set Overlay position to " + desiredPosition);
-            return;
-        }
-
-        // Set the position.
-        switch (desiredPosition) {
-            case OverlayPosition.CLOSE:
-                mSearchPanel.closePanel(StateChangeReason.UNKNOWN, true);
-                break;
-            case OverlayPosition.PEEK:
-                mSearchPanel.peekPanel(StateChangeReason.UNKNOWN);
-                break;
-            case OverlayPosition.EXPAND:
-                mSearchPanel.expandPanel(StateChangeReason.UNKNOWN);
-                break;
-            case OverlayPosition.MAXIMIZE:
-                mSearchPanel.maximizePanel(StateChangeReason.UNKNOWN);
-                break;
-        }
     }
 
     @Override
@@ -1199,13 +1142,6 @@ public class ContextualSearchManager
                 mShouldLoadDelayedSearch = true;
                 mPolicy.updateCountersForOpen();
             }
-        }
-
-        @Override
-        public void onContentViewCreated() {
-            ContextualSearchManagerJni.get().enableContextualSearchJsApiForWebContents(
-                    mNativeContextualSearchManagerPtr, ContextualSearchManager.this,
-                    getSearchPanelWebContents());
         }
 
         @Override
@@ -2151,9 +2087,5 @@ public class ContextualSearchManager
         void gatherSurroundingText(long nativeContextualSearchManager,
                 ContextualSearchManager caller, ContextualSearchContext contextualSearchContext,
                 WebContents baseWebContents);
-        void allowlistContextualSearchJsApiUrl(
-                long nativeContextualSearchManager, ContextualSearchManager caller, String url);
-        void enableContextualSearchJsApiForWebContents(long nativeContextualSearchManager,
-                ContextualSearchManager caller, WebContents overlayWebContents);
     }
 }

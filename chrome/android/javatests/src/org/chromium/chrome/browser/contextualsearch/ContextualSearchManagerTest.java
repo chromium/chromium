@@ -534,30 +534,6 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
         Assert.assertFalse(mManager.getRequest().isTranslationForced());
     }
 
-    @Test
-    @SmallTest
-    @Feature({"ContextualSearch"})
-    @ParameterAnnotations.UseMethodParameter(FeatureParamProvider.class)
-    public void testSerpTranslationDisabledWhenPartialTranslationEnabled(
-            @EnabledFeature int enabledFeature) throws Exception {
-        // Resolving a German word should trigger translation.
-        simulateResolveSearch("german");
-        // Simulate a JavaScript translate message from the SERP to the manager
-        TestThreadUtils.runOnUiThreadBlocking(() -> mManager.onSetCaption("caption"));
-
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.CONTEXTUAL_SEARCH_TRANSLATIONS)) {
-            Assert.assertFalse(
-                    "The SERP Translation caption should not show when Partial Translations "
-                            + "is enabled!",
-                    mPanel.getSearchBarControl().getCaptionVisible());
-        } else {
-            Assert.assertTrue(
-                    "The SERP Translation caption should show without Partial Translations "
-                            + "enabled!",
-                    mPanel.getSearchBarControl().getCaptionVisible());
-        }
-    }
-
     /**
      * Tests the Translate Caption on a resolve gesture.
      * This test is disabled because it relies on the network and a live search result,

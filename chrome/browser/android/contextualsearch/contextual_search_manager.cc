@@ -16,11 +16,9 @@
 #include "base/time/time.h"
 #include "chrome/android/chrome_jni_headers/ContextualSearchManager_jni.h"
 #include "chrome/browser/android/contextualsearch/contextual_search_delegate.h"
-#include "chrome/browser/android/contextualsearch/contextual_search_observer.h"
 #include "chrome/browser/android/contextualsearch/resolved_search_term.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
-#include "components/contextual_search/content/browser/contextual_search_js_api_service_impl.h"
 #include "components/navigation_interception/intercept_navigation_delegate.h"
 #include "components/variations/variations_associated_data.h"
 #include "content/public/browser/render_view_host.h"
@@ -156,51 +154,6 @@ void ContextualSearchManager::OnTextSurroundingSelectionAvailable(
   Java_ContextualSearchManager_onTextSurroundingSelectionAvailable(
       env, java_manager_, j_encoding, j_surrounding_text, start_offset,
       end_offset);
-}
-
-void ContextualSearchManager::EnableContextualSearchJsApiForWebContents(
-    JNIEnv* env,
-    jobject obj,
-    const JavaParamRef<jobject>& j_overlay_web_contents) {
-  DCHECK(j_overlay_web_contents);
-  WebContents* overlay_web_contents =
-      WebContents::FromJavaWebContents(j_overlay_web_contents);
-  DCHECK(overlay_web_contents);
-
-  // It's safe to use a raw pointer since the lifetime of |this| matches the
-  // application lifetime, and therefore spans multiple WebContents.
-  contextual_search::ContextualSearchObserver::SetHandlerForWebContents(
-      overlay_web_contents, this);
-}
-
-void ContextualSearchManager::AllowlistContextualSearchJsApiUrl(
-    JNIEnv* env,
-    jobject obj,
-    const base::android::JavaParamRef<jstring>& j_url) {
-  DCHECK(j_url);
-  overlay_gurl_ = GURL(base::android::ConvertJavaStringToUTF8(env, j_url));
-}
-
-void ContextualSearchManager::ShouldEnableJsApi(
-    const GURL& gurl,
-    contextual_search::mojom::ContextualSearchJsApiService::
-        ShouldEnableJsApiCallback callback) {
-  bool should_enable = (gurl == overlay_gurl_);
-  std::move(callback).Run(should_enable);
-}
-
-void ContextualSearchManager::SetCaption(const std::string& caption) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  base::android::ScopedJavaLocalRef<jstring> j_caption =
-      base::android::ConvertUTF8ToJavaString(env, caption.c_str());
-  Java_ContextualSearchManager_onSetCaption(env, java_manager_, j_caption);
-}
-
-void ContextualSearchManager::ChangeOverlayPosition(
-    contextual_search::mojom::OverlayPosition desired_position) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  Java_ContextualSearchManager_onChangeOverlayPosition(
-      env, java_manager_, static_cast<int>(desired_position));
 }
 
 jlong JNI_ContextualSearchManager_Init(JNIEnv* env,
