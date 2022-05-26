@@ -60,8 +60,7 @@ class StubInputController : public InputController {
   void SetPointingStickPrimaryButtonRight(bool right) override {}
   void SetPointingStickAcceleration(bool enabled) override {}
   void SetGamepadKeyBitsMapping(
-      const base::flat_map<int, std::vector<uint64_t>>&& key_bits_mapping)
-      override {}
+      base::flat_map<int, std::vector<uint64_t>> key_bits_mapping) override {}
   std::vector<uint64_t> GetGamepadKeyBits(int id) override {
     return std::vector<uint64_t>();
   }

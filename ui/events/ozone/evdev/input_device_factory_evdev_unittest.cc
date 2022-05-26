@@ -97,8 +97,7 @@ class StubDeviceEventDispatcherEvdev : public DeviceEventDispatcherEvdev {
 
   void DispatchGamepadDevicesUpdated(
       const std::vector<GamepadDevice>& devices,
-      const base::flat_map<int, std::vector<uint64_t>>& key_bits_mapping)
-      override {}
+      base::flat_map<int, std::vector<uint64_t>> key_bits_mapping) override {}
 
  private:
   base::RepeatingCallback<void(const std::vector<InputDevice>& devices)>

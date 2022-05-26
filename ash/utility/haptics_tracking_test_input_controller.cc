@@ -112,7 +112,7 @@ void HapticsTrackingTestInputController::SetPointingStickAcceleration(
     bool enabled) {}
 
 void HapticsTrackingTestInputController::SetGamepadKeyBitsMapping(
-    const base::flat_map<int, std::vector<uint64_t>>&& key_bits_mapping) {}
+    base::flat_map<int, std::vector<uint64_t>> key_bits_mapping) {}
 
 std::vector<uint64_t> HapticsTrackingTestInputController::GetGamepadKeyBits(
     int id) {

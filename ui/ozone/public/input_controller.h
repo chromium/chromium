@@ -104,7 +104,7 @@ class COMPONENT_EXPORT(OZONE_BASE) InputController {
 
   // Gamepad settings.
   virtual void SetGamepadKeyBitsMapping(
-      const base::flat_map<int, std::vector<uint64_t>>&& key_bits_mapping) = 0;
+      base::flat_map<int, std::vector<uint64_t>> key_bits_mapping) = 0;
   virtual std::vector<uint64_t> GetGamepadKeyBits(int id) = 0;
 
   // Touch log collection.

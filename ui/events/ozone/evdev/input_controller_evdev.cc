@@ -206,7 +206,7 @@ void InputControllerEvdev::SetPointingStickAcceleration(bool enabled) {
 }
 
 void InputControllerEvdev::SetGamepadKeyBitsMapping(
-    const base::flat_map<int, std::vector<uint64_t>>&& key_bits_mapping) {
+    base::flat_map<int, std::vector<uint64_t>> key_bits_mapping) {
   gamepad_key_bits_mapping_ = std::move(key_bits_mapping);
 }
 

@@ -97,7 +97,7 @@ class COMPONENT_EXPORT(EVDEV) EventFactoryEvdev : public DeviceEventObserver,
   void DispatchGamepadEvent(const GamepadEvent& event);
   void DispatchGamepadDevicesUpdated(
       const std::vector<GamepadDevice>& devices,
-      const base::flat_map<int, std::vector<uint64_t>>& key_bits_mapping);
+      base::flat_map<int, std::vector<uint64_t>> key_bits_mapping);
 
  protected:
   // DeviceEventObserver overrides:

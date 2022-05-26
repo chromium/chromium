@@ -579,8 +579,7 @@ void InputDeviceFactoryEvdev::NotifyGamepadDevicesUpdated() {
     }
   }
 
-  dispatcher_->DispatchGamepadDevicesUpdated(gamepads,
-                                             std::move(key_bits_mapping));
+  dispatcher_->DispatchGamepadDevicesUpdated(gamepads, std::move(key_bits_mapping));
 }
 
 void InputDeviceFactoryEvdev::NotifyUncategorizedDevicesUpdated() {
