@@ -39,7 +39,6 @@ class ASH_EXPORT AdaptiveChargingController
   void PowerChanged(const power_manager::PowerSupplyProperties& proto) override;
 
   bool is_adaptive_delaying_charge_ = false;
-  bool is_on_charger_ = false;
 
   base::ScopedObservation<chromeos::PowerManagerClient,
                           chromeos::PowerManagerClient::Observer>

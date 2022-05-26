@@ -20,8 +20,6 @@ namespace features {
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kAdaptiveCharging;
 COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const base::Feature kAdaptiveChargingForTesting;
-COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kAdjustSplitViewForVK;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kAllowAmbientEQ;
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -619,7 +617,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool AreDesksTrackpadSwipeImprovementsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool AreImprovedScreenCaptureSettingsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool DoWindowsFollowCursor();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAdaptiveChargingEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAdaptiveChargingForTestingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAdjustSplitViewForVKEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAllowAmbientEQEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAmbientModeAnimationEnabled();
