@@ -28,6 +28,9 @@ struct SenderEncodedFrame final : public EncodedFrame {
   // field was not computed.
   double encoder_utilization;
 
+  // The bitrate the encoder used for encoding this frame.
+  int encoder_bitrate = 0;
+
   // The amount of "lossiness" needed to encode the frame within the targeted
   // bandwidth.  More-complex frame content and/or lower target encode bitrates
   // will cause this value to rise.

@@ -88,6 +88,10 @@ class H264VideoToolboxEncoder final : public VideoEncoder,
   // invalidate compression sessions.
   const FrameSenderConfig video_config_;
 
+  // The VideoToolbox does not support bitrate configuration, so we use a
+  // constant bitrate determined on construction.
+  const int average_bitrate_;
+
   // Frame size of the current compression session. Can be changed by submitting
   // a frame of a different size, which will cause a compression session reset.
   gfx::Size frame_size_;

@@ -5,7 +5,21 @@
 import("//testing/test.gni")
 import("//third_party/libaom/options.gni")
 
-component("mirroring_service") {
+component("features") {
+  output_name = "mirroring_features"
+  defines = [ "IS_MIRRORING_FEATURES_IMPL" ]
+  sources = [
+    "mirroring_features.cc",
+    "mirroring_features.h",
+  ]
+
+  deps = [
+    "//base",
+    "//third_party/libaom:libaom_buildflags",
+  ]
+}
+
+static_library("mirroring_service") {
   sources = [
     "captured_audio_input.cc",
     "captured_audio_input.h",
@@ -15,8 +29,6 @@ component("mirroring_service") {
     "message_dispatcher.h",
     "mirror_settings.cc",
     "mirror_settings.h",
-    "mirroring_features.cc",
-    "mirroring_features.h",
     "mirroring_service.cc",
     "mirroring_service.h",
     "receiver_response.cc",
@@ -40,6 +52,7 @@ component("mirroring_service") {
   public_deps = [ "//base" ]
 
   deps = [
+    ":features",
     "//build:chromeos_buildflags",
     "//components/mirroring/mojom:service",
     "//components/openscreen_platform",
@@ -66,7 +79,6 @@ component("mirroring_service") {
     "//services/network/public/mojom",
     "//services/viz/public/cpp/gpu",
     "//third_party/jsoncpp",  # Required by Open Screen API.
-    "//third_party/libaom:libaom_buildflags",
     "//third_party/openscreen/src/cast/streaming:common",
     "//ui/base",
     "//ui/gfx",
@@ -96,6 +108,7 @@ source_set("unittests") {
   ]
 
   deps = [
+    ":features",
     ":mirroring_service",
     "//base",
     "//base/test:test_support",

@@ -185,6 +185,8 @@ source_set("encoding") {
   }
 }
 
+# TODO(https://crbug.com/1327074): should be split into multiple source sets
+# once the new Open Screen frame sender implementation is added.
 source_set("sender") {
   sources = [
     "cast_sender.h",
@@ -196,6 +198,8 @@ source_set("sender") {
     "sender/congestion_control.h",
     "sender/frame_sender.cc",
     "sender/frame_sender.h",
+    "sender/frame_sender_impl.cc",
+    "sender/frame_sender_impl.h",
     "sender/performance_metrics_overlay.cc",
     "sender/performance_metrics_overlay.h",
     "sender/video_sender.cc",

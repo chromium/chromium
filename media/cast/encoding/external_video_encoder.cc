@@ -462,11 +462,12 @@ class ExternalVideoEncoder::VEAClientImpl final
             static_cast<double>(in_progress_frame_encodes_.size()) /
             kBacklogRedlineThreshold;
 
-        const double actual_bit_rate =
+        const double actual_bitrate =
             encoded_frame->data.size() * 8.0 / frame_duration.InSecondsF();
+        encoded_frame->encoder_bitrate = actual_bitrate;
         DCHECK_GT(request.target_bit_rate, 0);
         const double bitrate_utilization =
-            actual_bit_rate / request.target_bit_rate;
+            actual_bitrate / request.target_bit_rate;
         double quantizer = QuantizerEstimator::NO_RESULT;
         // If the quantizer can be parsed from the key frame, try to parse
         // the following delta frames as well.
