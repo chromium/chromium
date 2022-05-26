@@ -34,8 +34,8 @@ the version of clang-format that comes with your checkout. That way, you'll
 automatically get updates and be running a tool that formats consistently with
 other developers. The binary lives under `src/buildtools`, but it's also in your
 path indirectly via a `depot_tools` launcher script:
-[clang-format](https://code.google.com/p/chromium/codesearch#chromium/tools/depot_tools/clang-format)
-([clang-format.bat](https://code.google.com/p/chromium/codesearch#chromium/tools/depot_tools/clang-format.bat) on Windows). Assuming that `depot_tools` is in your editor's `PATH`
+[clang-format](https://source.chromium.org/chromium/chromium/tools/depot_tools/+/HEAD:clang-format)
+([clang-format.bat](https://source.chromium.org/chromium/chromium/tools/depot_tools/+/HEAD:clang-format.bat) on Windows). Assuming that `depot_tools` is in your editor's `PATH`
 and the editor command runs from a working directory inside the Chromium
 checkout, the editor scripts (which anticipate clang-format on the path) should
 work.
