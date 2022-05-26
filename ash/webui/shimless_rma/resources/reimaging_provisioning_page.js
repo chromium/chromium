@@ -56,7 +56,7 @@ export class ReimagingProvisioningPage extends ReimagingProvisioningPageBase {
       /** @protected {boolean} */
       shouldShowSpinner_: {
         type: Boolean,
-        value: false,
+        value: true,
       },
     };
   }
