@@ -3574,6 +3574,10 @@ const char kStartSurfaceAndroidDescription[] =
     "Enable showing the start surface when launching Chrome via the "
     "launcher.";
 
+const char kFeedPositionAndroidName[] = "Feed Position";
+const char kFeedPositionAndroidDescription[] =
+    "Enable pushing down or pulling up of Feeds on NTP";
+
 const char kStrictSiteIsolationName[] = "Strict site isolation";
 const char kStrictSiteIsolationDescription[] =
     "Security mode that enables site isolation for all sites (SitePerProcess). "

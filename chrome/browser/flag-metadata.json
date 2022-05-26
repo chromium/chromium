@@ -2086,6 +2086,11 @@
     "expiry_milestone": 106
   },
   {
+    "name": "enable-feed-position-on-ntp",
+    "owners": ["clank-start","hanxi","spdonghao", "andrewheard"],
+    "expiry_milestone": 110
+  },
+  {
     "name": "enable-fenced-frames",
     "owners": [ "dom", "shivanisha", "chrome-fenced-frames@google.com" ],
     "expiry_milestone": 110

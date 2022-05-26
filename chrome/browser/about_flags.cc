@@ -2150,6 +2150,24 @@ const FeatureEntry::FeatureVariation kStartSurfaceAndroidVariations[] = {
      std::size(kStartSurfaceAndroid_SingleSurfaceSingleTab), nullptr},
 };
 
+const FeatureEntry::FeatureParam kFeedPositionAndroid_push_down_feed_small[] = {
+    {"push_down_feed_small", "true"}};
+
+const FeatureEntry::FeatureParam kFeedPositionAndroid_push_down_feed_large[] = {
+    {"push_down_feed_large", "true"}};
+
+const FeatureEntry::FeatureParam kFeedPositionAndroid_pull_up_feed[] = {
+    {"pull_up_feed", "true"}};
+
+const FeatureEntry::FeatureVariation kFeedPositionAndroidVariations[] = {
+    {"Push down Feed (small)", kFeedPositionAndroid_push_down_feed_small,
+     std::size(kFeedPositionAndroid_push_down_feed_small), nullptr},
+    {"Push down Feed (large)", kFeedPositionAndroid_push_down_feed_large,
+     std::size(kFeedPositionAndroid_push_down_feed_large), nullptr},
+    {"Pull up Feed", kFeedPositionAndroid_pull_up_feed,
+     std::size(kFeedPositionAndroid_pull_up_feed), nullptr},
+};
+
 const FeatureEntry::FeatureParam kFeatureNotificationGuide_low_engaged[] = {
     {"enable_feature_incognito_tab", "true"},
     {"enable_feature_ntp_suggestion_card", "true"},
@@ -5748,6 +5766,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kStartSurfaceAndroid,
                                     kStartSurfaceAndroidVariations,
                                     "ChromeStart")},
+
+    {"enable-feed-position-on-ntp", flag_descriptions::kFeedPositionAndroidName,
+     flag_descriptions::kFeedPositionAndroidDescription, kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kFeedPositionAndroid,
+                                    kFeedPositionAndroidVariations,
+                                    "FeedPositionAndroid")},
 
     {"enable-instant-start", flag_descriptions::kInstantStartName,
      flag_descriptions::kInstantStartDescription, kOsAndroid,

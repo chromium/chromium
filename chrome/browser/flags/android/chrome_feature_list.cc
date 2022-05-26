@@ -267,6 +267,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kShareButtonInTopToolbar,
     &kSharedClipboardUI,
     &kShowScrollableMVTOnNTPAndroid,
+    &kFeedPositionAndroid,
     &kSpannableInlineAutocomplete,
     &kSpecialLocaleWrapper,
     &kSpecialUserDecision,
@@ -827,6 +828,9 @@ const base::Feature kShowExtendedPreloadingSetting{
     "ShowExtendedPreloadingSetting", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kStartSurfaceAndroid{"StartSurfaceAndroid",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kFeedPositionAndroid{"FeedPositionAndroid",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
 // If enabled, keep logging and reporting UMA while chrome is backgrounded.
