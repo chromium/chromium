@@ -1,6 +1,7 @@
 import("//build/config/c++/c++.gni")
 import("//build/config/chrome_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/compiler/compiler.gni")
 import("//build/config/dcheck_always_on.gni")
 import("//buildtools/deps_revisions.gni")
 
@@ -26,23 +27,23 @@ config("runtime_library") {
   ldflags = []
   libs = []
 
+  # We set a custom _LIBCPP_ABI_NAMESPACE for the following reasons:
+  #
+  # 1. When libcxx_is_shared is true, symbols from libc++.so are exported for
+  #    all DSOs to use.  If the system libc++ gets loaded (indirectly through
+  #    a system library), then it will conflict with our libc++.so.
+  # 2. The default value of _LIBCPP_ABI_NAMESPACE is the string
+  #    "_LIBCPP_ABI_NAMESPACE". This contributes to an increase in binary size;
+  #    on Windows, the increase is great enough that we go above the 4GB size
+  #    limit for PDBs (https://crbug.com/1327710#c5). To fix this, we set
+  #    _LIBCPP_ABI_NAMESPACE to a shorter value.
+  defines += [ "_LIBCPP_ABI_NAMESPACE=Cr" ]
+
   if (libcxx_abi_unstable) {
-    defines += [ "_LIBCPP_ABI_UNSTABLE" ]
+    defines += [ "_LIBCPP_ABI_VERSION=2" ]
   }
 
-  if (libcxx_is_shared) {
-    # When libcxx_is_shared is true, symbols from libc++.so are exported for
-    # all DSOs to use.  If the system libc++ gets loaded (indirectly through
-    # a system library), then it will conflict with our libc++.so.  Add a
-    # custom ABI version if we're building with _LIBCPP_ABI_UNSTABLE to avoid
-    # conflicts.
-    #
-    # Windows doesn't need to set _LIBCPP_ABI_VERSION since there's no system
-    # C++ library we could conflict with.
-    if (libcxx_abi_unstable && !is_win) {
-      defines += [ "_LIBCPP_ABI_VERSION=Cr" ]
-    }
-  } else {
+  if (!libcxx_is_shared) {
     # Don't leak any symbols on a static build.
     defines += [ "_LIBCPP_DISABLE_VISIBILITY_ANNOTATIONS" ]
     if (!export_libcxxabi_from_executables && !is_win) {
@@ -63,7 +64,11 @@ config("runtime_library") {
   # The Windows component build fails to link with libc++'s debug mode. See
   # https://crbug.com/923166#c33, https://crbug.com/923166#c44, and
   # https://llvm.org/PR41018.
-  if (!(is_win && is_component_build)) {
+  #
+  # TODO(https://crbug.com/1327706): Figure out why thinlto builds fail to link
+  # with libc++'s debug mode after https://reviews.llvm.org/D103964, and then
+  # remove the !use_thin_lto`)
+  if (!(is_win && is_component_build) && !use_thin_lto) {
     # libc++ has two levels of debug mode. Setting _LIBCPP_DEBUG to zero
     # enables most assertions. Setting it to one additionally enables iterator
     # debugging. See https://libcxx.llvm.org/docs/DesignDocs/DebugMode.html
