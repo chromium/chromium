@@ -450,7 +450,9 @@ bool IsAXSetter(SEL selector) {
     case ax::mojom::Role::kSubscript:
     case ax::mojom::Role::kSuggestion:
     case ax::mojom::Role::kSuperscript:
+      return NSAccessibilityGroupRole;
     case ax::mojom::Role::kSvgRoot:
+      return NSAccessibilityImageRole;
     case ax::mojom::Role::kStrong:
     case ax::mojom::Role::kTableHeaderContainer:
     case ax::mojom::Role::kTabPanel:
