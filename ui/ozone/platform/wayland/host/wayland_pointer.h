@@ -80,6 +80,7 @@ class WaylandPointer {
 
   void SetupStylus();
 
+  // zcr_pointer_stylus_v2_listener
   static void Tool(void* data, struct zcr_pointer_stylus_v2* x, uint32_t y);
   static void Force(void* data,
                     struct zcr_pointer_stylus_v2* x,

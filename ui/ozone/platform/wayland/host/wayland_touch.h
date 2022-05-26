@@ -57,7 +57,27 @@ class WaylandTouch {
   static void Cancel(void* data, wl_touch* obj);
   static void Frame(void* data, wl_touch* obj);
 
+  void SetupStylus();
+
+  // zcr_touch_stylus_v2_listener
+  static void Tool(void* data,
+                   struct zcr_touch_stylus_v2* obj,
+                   uint32_t id,
+                   uint32_t type);
+  static void Force(void* data,
+                    struct zcr_touch_stylus_v2* obj,
+                    uint32_t time,
+                    uint32_t id,
+                    wl_fixed_t force);
+  static void Tilt(void* data,
+                   struct zcr_touch_stylus_v2* obj,
+                   uint32_t time,
+                   uint32_t id,
+                   wl_fixed_t tilt_x,
+                   wl_fixed_t tilt_y);
+
   wl::Object<wl_touch> obj_;
+  wl::Object<zcr_touch_stylus_v2> zcr_touch_stylus_v2_;
   WaylandConnection* const connection_;
   Delegate* const delegate_;
 };

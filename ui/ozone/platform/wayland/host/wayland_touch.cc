@@ -4,6 +4,8 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_touch.h"
 
+#include <stylus-unstable-v2-client-protocol.h>
+
 #include "base/logging.h"
 #include "base/time/time.h"
 #include "ui/events/types/event_type.h"
@@ -24,6 +26,8 @@ WaylandTouch::WaylandTouch(wl_touch* touch,
   };
 
   wl_touch_add_listener(obj_.get(), &listener, this);
+
+  SetupStylus();
 }
 
 WaylandTouch::~WaylandTouch() {
@@ -92,5 +96,46 @@ void WaylandTouch::Cancel(void* data, wl_touch* obj) {
 }
 
 void WaylandTouch::Frame(void* data, wl_touch* obj) {}
+
+void WaylandTouch::SetupStylus() {
+  auto* stylus_v2 = connection_->stylus_v2();
+  if (!stylus_v2)
+    return;
+
+  zcr_touch_stylus_v2_.reset(
+      zcr_stylus_v2_get_touch_stylus(stylus_v2, obj_.get()));
+
+  static zcr_touch_stylus_v2_listener kTouchStylusV2Listener = {&Tool, &Force,
+                                                                &Tilt};
+  zcr_touch_stylus_v2_add_listener(zcr_touch_stylus_v2_.get(),
+                                   &kTouchStylusV2Listener, this);
+}
+
+// static
+void WaylandTouch::Tool(void* data,
+                        struct zcr_touch_stylus_v2* obj,
+                        uint32_t id,
+                        uint32_t type) {
+  NOTIMPLEMENTED_LOG_ONCE();
+}
+
+// static
+void WaylandTouch::Force(void* data,
+                         struct zcr_touch_stylus_v2* obj,
+                         uint32_t time,
+                         uint32_t id,
+                         wl_fixed_t force) {
+  NOTIMPLEMENTED_LOG_ONCE();
+}
+
+// static
+void WaylandTouch::Tilt(void* data,
+                        struct zcr_touch_stylus_v2* obj,
+                        uint32_t time,
+                        uint32_t id,
+                        wl_fixed_t tilt_x,
+                        wl_fixed_t tilt_y) {
+  NOTIMPLEMENTED_LOG_ONCE();
+}
 
 }  // namespace ui
