@@ -1144,10 +1144,13 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Power.ForegroundBatteryDrain.30SecondsAvg2{Exclusive}{DarkeningType}"
-    units="uAh" expires_after="2022-11-07">
+    units="uAh" expires_after="never">
+<!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
+
   <owner>eseckler@chromium.org</owner>
   <owner>khokhlov@chromium.org</owner>
   <owner>woa-performance@google.com</owner>
+  <owner>chrome-analysis-team@google.com</owner>
   <summary>
     Periodically samples the battery capacity drained while Chrome is a
     foreground app and the device is on battery power {DarkeningType}. Sampled
@@ -1176,6 +1179,9 @@ chromium-metrics-reviews@google.com.
 
     We've found looking at the 99%ile-trimmed mean more useful than looking at
     specific percentiles, especially when filtering for specific device models.
+
+    This histogram is of special interest to the chrome-analysis-team@. Do not
+    change its semantics or retire it without talking to them first.
   </summary>
   <token key="Exclusive">
     <variant name="" summary=""/>
