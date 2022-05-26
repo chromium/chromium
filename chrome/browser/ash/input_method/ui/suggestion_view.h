@@ -66,7 +66,6 @@ class UI_CHROMEOS_EXPORT SuggestionView : public views::Button {
   gfx::Point GetAnchorOrigin() const;
 
   std::u16string GetSuggestionForTesting();
-  CompletionSuggestionLabelView* suggestion_label_for_testing() const;
 
  private:
   friend class SuggestionWindowViewTest;

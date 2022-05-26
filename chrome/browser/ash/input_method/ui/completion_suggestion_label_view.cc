@@ -9,8 +9,10 @@
 
 namespace ui {
 namespace ime {
-
-const char CompletionSuggestionLabelView::kFontName[] = "Roboto";
+namespace {
+constexpr char kSuggestionFontStyle[] = "Roboto";
+constexpr int kSuggestionFontSize = 13;
+}  // namespace
 
 CompletionSuggestionLabelView::CompletionSuggestionLabelView() {
   SetHorizontalAlignment(gfx::ALIGN_LEFT);
@@ -24,7 +26,8 @@ CompletionSuggestionLabelView::CompletionSuggestionLabelView() {
 void CompletionSuggestionLabelView::SetPrefixAndPrediction(
     const std::u16string& prefix,
     const std::u16string& prediction) {
-  const gfx::FontList kSuggestionFont({kFontName}, gfx::Font::NORMAL, kFontSize,
+  const gfx::FontList kSuggestionFont({kSuggestionFontStyle}, gfx::Font::NORMAL,
+                                      kSuggestionFontSize,
                                       gfx::Font::Weight::NORMAL);
   // SetText clears the existing style only if the text to set is different from
   // the previous one.
@@ -53,13 +56,6 @@ void CompletionSuggestionLabelView::SetPrefixAndPrediction(
   // a non-empty prefix.
   // Maximum width for suggestion.
   SizeToFit(448);
-}
-
-int CompletionSuggestionLabelView::GetPrefixWidthPx() const {
-  if (children().size() == 2) {
-    return static_cast<views::Label*>(children()[0])->width();
-  }
-  return 0;
 }
 
 BEGIN_METADATA(CompletionSuggestionLabelView, views::StyledLabel)

@@ -244,6 +244,7 @@ void InputMethodAsh::OnCaretBoundsChanged(const TextInputClient* client) {
     ash::Bounds bounds;
     bounds.caret = caret_rect;
     bounds.autocorrect = client->GetAutocorrectCharacterBounds();
+    client->GetCompositionCharacterBounds(0, &bounds.composition_text);
     assistive_window->SetBounds(bounds);
   }
 
