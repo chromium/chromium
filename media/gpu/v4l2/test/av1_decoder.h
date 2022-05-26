@@ -8,6 +8,10 @@
 #include "media/gpu/v4l2/test/v4l2_ioctl_shim.h"
 #include "media/gpu/v4l2/test/video_decoder.h"
 
+// TODO(b/234019411): Move this include to v4l2_stateless_decoder.cc
+// once the bug is fixed.
+#include <linux/media/av1-ctrls.h>
+
 #include <set>
 
 #include "media/filters/ivf_parser.h"
@@ -23,15 +27,10 @@
 #define ANALYZER_ALLOW_UNUSED(var) static_cast<void>(var);
 
 // TODO(stevecho): This is temporary until the change to define
-// V4L2_PIX_FMT_AV1_FRAME lands in videodev2.h.
+// V4L2_PIX_FMT_AV1 lands in videodev2.h.
 // https://patchwork.linuxtv.org/project/linux-media/patch/20210810220552.298140-2-daniel.almeida@collabora.com/
 #ifndef V4L2_PIX_FMT_AV1
 #define V4L2_PIX_FMT_AV1 v4l2_fourcc('A', 'V', '0', '1') /* AV1 */
-#endif
-#ifndef V4L2_PIX_FMT_AV1_FRAME
-#define V4L2_PIX_FMT_AV1_FRAME                        \
-  v4l2_fourcc('A', 'V', '1', 'F') /* AV1 parsed frame \
-                                   */
 #endif
 
 namespace media {
