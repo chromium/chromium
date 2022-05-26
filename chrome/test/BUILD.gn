@@ -1141,7 +1141,10 @@ if (!is_android) {
     use_xvfb = use_xvfb_in_this_config
 
     configs += [ "//build/config:precompiled_headers" ]
-    configs += [ ":disable_thinlto_cache_flags" ]
+    configs += [
+      ":disable_thinlto_cache_flags",
+      ":pdb_larger_than_4gb",
+    ]
     defines = [
       "HAS_OUT_OF_PROC_TEST_RUNNER",
       "CHROME_VERSION_MAJOR=" + chrome_version_major,
@@ -4957,6 +4960,15 @@ config("disable_thinlto_cache_flags") {
   }
 }
 
+config("pdb_larger_than_4gb") {
+  if (is_win && symbol_level == 2 && use_thin_lto) {
+    # These binaries create PDBs larger than 4 GiB. Increasing the PDB page
+    # size allows larger PDBs, but not all tools can handle such large PDBs
+    # yet.
+    ldflags = [ "/pdbpagesize:8192" ]
+  }
+}
+
 test("unit_tests") {
   use_xvfb = use_xvfb_in_this_config
 
@@ -5435,7 +5447,10 @@ test("unit_tests") {
   }
 
   configs += [ "//build/config:precompiled_headers" ]
-  configs += [ ":disable_thinlto_cache_flags" ]
+  configs += [
+    ":disable_thinlto_cache_flags",
+    ":pdb_larger_than_4gb",
+  ]
 
   data_deps = [
     "//chrome/test/data/media/engagement/preload:generate_preload_list",
