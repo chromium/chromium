@@ -5312,7 +5312,7 @@
   {
     "name": "secondary-google-account-usage",
     "owners": [ "rodmartin", "sinhak", "chromeos-commercial-identity@google.com" ],
-    "expiry_milestone": 103
+    "expiry_milestone": 102
   },
   {
     "name": "semantic-colors-debug-override",
