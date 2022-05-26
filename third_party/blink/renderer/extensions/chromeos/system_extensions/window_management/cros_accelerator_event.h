@@ -9,18 +9,30 @@
 
 namespace blink {
 
+class CrosAcceleratorEventInit;
+
 class CrosAcceleratorEvent final : public Event {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static CrosAcceleratorEvent* Create();
+  static CrosAcceleratorEvent* Create(
+      const AtomicString& type,
+      const CrosAcceleratorEventInit* event_init);
 
-  CrosAcceleratorEvent();
+  CrosAcceleratorEvent(const AtomicString& type,
+                       const CrosAcceleratorEventInit* event_init);
   ~CrosAcceleratorEvent() override;
+
+  const String& acceleratorName() { return accelerator_name_; }
+  bool repeat() { return repeat_; }
 
   void Trace(Visitor*) const override;
 
   const AtomicString& InterfaceName() const override;
+
+ private:
+  const String accelerator_name_;
+  const bool repeat_;
 };
 
 }  // namespace blink

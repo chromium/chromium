@@ -4,20 +4,24 @@
 
 #include "third_party/blink/renderer/extensions/chromeos/system_extensions/window_management/cros_accelerator_event.h"
 
+#include "third_party/blink/renderer/bindings/extensions_chromeos/v8/v8_cros_accelerator_event_init.h"
 #include "third_party/blink/renderer/extensions/chromeos/event_chromeos.h"
 #include "third_party/blink/renderer/extensions/chromeos/event_type_chromeos_names.h"
 
 namespace blink {
 
-CrosAcceleratorEvent* CrosAcceleratorEvent::Create() {
-  return MakeGarbageCollected<CrosAcceleratorEvent>();
+CrosAcceleratorEvent* CrosAcceleratorEvent::Create(
+    const AtomicString& type,
+    const CrosAcceleratorEventInit* event_init) {
+  return MakeGarbageCollected<CrosAcceleratorEvent>(type, event_init);
 }
 
-// TODO(b/221123297): Support both `acceleratordown` and `acceleratorup`.
-CrosAcceleratorEvent::CrosAcceleratorEvent()
-    : Event(event_type_names::kAcceleratordown,
-            Bubbles::kYes,
-            Cancelable::kNo) {}
+CrosAcceleratorEvent::CrosAcceleratorEvent(
+    const AtomicString& type,
+    const CrosAcceleratorEventInit* event_init)
+    : Event(type, Bubbles::kYes, Cancelable::kNo),
+      accelerator_name_(event_init->acceleratorName()),
+      repeat_(event_init->repeat()) {}
 
 CrosAcceleratorEvent::~CrosAcceleratorEvent() = default;
 

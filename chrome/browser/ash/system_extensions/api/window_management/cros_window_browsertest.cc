@@ -646,8 +646,11 @@ IN_PROC_BROWSER_TEST_F(CrosWindowBrowserTest, CrosAcceleratorEventIdl) {
   const char test_code[] = R"(
 async function cros_test() {
   assert_true(chromeos.CrosAcceleratorEvent !== undefined, 'event');
-  let accelerator_event = new chromeos.CrosAcceleratorEvent();
+  let accelerator_event = new chromeos.CrosAcceleratorEvent(
+     'acceleratordown', {acceleratorName: 'close-window', repeat: false});
   assert_equals(accelerator_event.type, 'acceleratordown', 'event type');
+  assert_equals(accelerator_event.acceleratorName, 'close-window');
+  assert_false(accelerator_event.repeat);
   assert_true(accelerator_event.bubbles, 'bubbles');
   assert_false(accelerator_event.cancelable, 'cancelable');
 }

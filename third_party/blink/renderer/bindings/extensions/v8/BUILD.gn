@@ -12,7 +12,8 @@ blink_extensions_chromeos_sources("v8_chromeos") {
   visibility = []
   visibility = [ "//third_party/blink/renderer/extensions/chromeos" ]
 
-  sources = generated_namespace_sources_in_extensions_chromeos
+  sources = generated_dictionary_sources_in_extensions_chromeos +
+            generated_interface_sources_in_extensions_chromeos
 
   deps = [
     "//third_party/blink/renderer/bindings:generate_bindings_all",
