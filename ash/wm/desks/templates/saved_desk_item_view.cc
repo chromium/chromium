@@ -36,6 +36,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
+#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/time_format.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -337,6 +338,25 @@ void SavedDeskItemView::UpdateTemplate(const DeskTemplate& updated_template) {
   // This will trigger `name_view_` to compute its new preferred bounds and
   // invalidate the layout for `this`
   name_view_->OnContentsChanged();
+}
+
+void SavedDeskItemView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
+  int accessible_text_id =
+      desk_template_->type() == DeskTemplateType::kTemplate
+          ? IDS_ASH_DESKS_TEMPLATES_LIBRARY_TEMPLATES_GRID_ITEM_ACCESSIBLE_NAME
+          : IDS_ASH_DESKS_TEMPLATES_LIBRARY_SAVE_AND_RECALL_GRID_ITEM_ACCESSIBLE_NAME;
+
+  node_data->role = ax::mojom::Role::kButton;
+
+  node_data->AddStringAttribute(
+      ax::mojom::StringAttribute::kName,
+      l10n_util::GetStringFUTF8(accessible_text_id,
+                                desk_template_->template_name()));
+
+  node_data->AddStringAttribute(
+      ax::mojom::StringAttribute::kDescription,
+      l10n_util::GetStringUTF8(
+          IDS_ASH_DESKS_TEMPLATES_LIBRARY_SAVED_DESK_GRID_ITEM_EXTRA_ACCESSIBLE_DESCRIPTION));
 }
 
 void SavedDeskItemView::Layout() {

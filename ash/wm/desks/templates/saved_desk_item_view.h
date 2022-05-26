@@ -10,6 +10,7 @@
 #include "ash/wm/overview/overview_highlightable_view.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
@@ -108,6 +109,7 @@ class ASH_EXPORT SavedDeskItemView : public views::Button,
   void UpdateTemplate(const DeskTemplate& updated_template);
 
   // views::Button:
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void Layout() override;
   void OnThemeChanged() override;
   void OnViewFocused(views::View* observed_view) override;
