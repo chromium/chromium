@@ -59194,6 +59194,7 @@ from previous Chrome versions.
   <int value="963457392" label="ChromeHomeModernLayout:disabled"/>
   <int value="963671232" label="DrawOcclusion:disabled"/>
   <int value="964613807" label="ContextualSearchTranslationModel:disabled"/>
+  <int value="964995928" label="LauncherHideContinueSection:enabled"/>
   <int value="965037619"
       label="HappinessTrackingSurveysForDesktopSettingsPrivacy:disabled"/>
   <int value="966134219" label="CrostiniEnableDlc:disabled"/>
@@ -59585,6 +59586,7 @@ from previous Chrome versions.
   <int value="1215531732" label="OmniboxUIExperiments:disabled"/>
   <int value="1215768255" label="AutofillCreditCardLocalCardMigration:enabled"/>
   <int value="1216286283" label="tint-composited-content"/>
+  <int value="1216363133" label="LauncherHideContinueSection:disabled"/>
   <int value="1216452475" label="SyncUSSAutofillProfile:disabled"/>
   <int value="1216488634" label="NavigationNetworkResponseQueue:enabled"/>
   <int value="1217907443" label="spurious-power-button-keyboard-accel"/>

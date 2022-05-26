@@ -3864,6 +3864,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "launcher-hide-continue-section",
+    "owners": ["jamescook", "//ash/app_list/OWNERS"],
+    "expiry_milestone": 109
+  },
+  {
     "name": "launcher-lacros-integration",
     "owners": ["wrong", "thanhdng", "tby"],
     "expiry_milestone": 115

@@ -3170,6 +3170,9 @@ extern const char kLauncherGameSearchDescription[];
 extern const char kLauncherFeedbackOnContinueSectionRemoveName[];
 extern const char kLauncherFeedbackOnContinueSectionRemoveDescription[];
 
+extern const char kLauncherHideContinueSectionName[];
+extern const char kLauncherHideContinueSectionDescription[];
+
 extern const char kLauncherNudgeName[];
 extern const char kLauncherNudgeDescription[];
 
