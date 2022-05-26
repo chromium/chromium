@@ -73,6 +73,15 @@ void VersionUpdater::SetOsUpdateStatusCallback(
 // chrome/app/os_settings_strings.grdp:66
 // for mapping of OS update status to strings
 void VersionUpdater::CheckOsUpdateAvailable() {
+  if (disable_update_for_testing_) {
+    disable_update_for_testing_ = false;
+    status_callback_.Run(update_engine::Operation::IDLE,
+                         /*progress=*/0, /*rollback=*/false,
+                         /*powerwash=*/false, /*newVersion*/ "",
+                         /*update_size=*/0, update_engine::ErrorCode::kSuccess);
+    return;
+  }
+
   // TODO(gavinwill): Does this need thread guarding.
   if (check_update_available_ == UPDATE_AVAILABLE) {
     status_callback_.Run(update_engine::Operation::UPDATE_AVAILABLE,
@@ -205,6 +214,10 @@ void VersionUpdater::OnRequestUpdateCheck(
 void VersionUpdater::UpdateStatusChangedForTesting(
     const update_engine::StatusResult& status) {
   UpdateStatusChanged(status);
+}
+
+void VersionUpdater::DisableUpdateOnceForTesting() {
+  disable_update_for_testing_ = true;
 }
 
 }  // namespace shimless_rma

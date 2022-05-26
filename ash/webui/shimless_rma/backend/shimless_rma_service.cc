@@ -119,7 +119,7 @@ ShimlessRmaService::~ShimlessRmaService() {
 void ShimlessRmaService::GetCurrentState(GetCurrentStateCallback callback) {
   RmadClient::Get()->GetCurrentState(base::BindOnce(
       &ShimlessRmaService::OnGetStateResponse<GetCurrentStateCallback>,
-      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+      weak_ptr_factory_.GetWeakPtr(), std::move(callback), kGetCurrentState));
 }
 
 // TODO(gavindodd): Handle transition back from wifi connect and os update pages
@@ -127,7 +127,8 @@ void ShimlessRmaService::TransitionPreviousState(
     TransitionPreviousStateCallback callback) {
   RmadClient::Get()->TransitionPreviousState(base::BindOnce(
       &ShimlessRmaService::OnGetStateResponse<TransitionPreviousStateCallback>,
-      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+      kTransitPreviousState));
 }
 
 void ShimlessRmaService::AbortRma(AbortRmaCallback callback) {
@@ -174,9 +175,11 @@ void ShimlessRmaService::BeginFinalization(BeginFinalizationCallback callback) {
       rmad::WelcomeState::RMAD_CHOICE_FINALIZE_REPAIR);
 
   if (!HaveAllowedNetworkConnection()) {
+    user_has_seen_network_page_ = true;
     mojo_state_ = mojom::State::kConfigureNetwork;
-    std::move(callback).Run(mojom::State::kConfigureNetwork, can_abort_,
-                            can_go_back_, rmad::RmadErrorCode::RMAD_ERROR_OK);
+    std::move(callback).Run(mojom::State::kConfigureNetwork,
+                            /*can_cancel=*/true, /*can_go_back=*/true,
+                            rmad::RmadErrorCode::RMAD_ERROR_OK);
   } else {
     check_os_callback_ =
         base::BindOnce(&ShimlessRmaService::OsUpdateOrNextRmadStateCallback,
@@ -347,11 +350,16 @@ void ShimlessRmaService::UpdateOsSkipped(UpdateOsSkippedCallback callback) {
     LOG(ERROR) << "UpdateOsSkipped called while UpdateEngine active";
     // Override the rmad state (kWelcome) with the mojo sub-state for OS
     // updates.
-    std::move(callback).Run(mojom::State::kUpdateOs, can_abort_, can_go_back_,
+    std::move(callback).Run(mojom::State::kUpdateOs, /*can_cancel=*/true,
+                            /*can_go_back=*/true,
                             rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
     return;
   }
   TransitionNextStateGeneric(std::move(callback));
+}
+
+VersionUpdater* ShimlessRmaService::GetVersionUpdaterForTesting() {
+  return &version_updater_;
 }
 
 void ShimlessRmaService::SetSameOwner(SetSameOwnerCallback callback) {
@@ -1228,12 +1236,14 @@ void ShimlessRmaService::TransitionNextStateGeneric(Callback callback) {
   RmadClient::Get()->TransitionNextState(
       state_proto_,
       base::BindOnce(&ShimlessRmaService::OnGetStateResponse<Callback>,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     kTransitNextState));
 }
 
 template <class Callback>
 void ShimlessRmaService::OnGetStateResponse(
     Callback callback,
+    StateResponseCalledFrom called_from,
     absl::optional<rmad::GetStateReply> response) {
   if (!response) {
     LOG(ERROR) << "Failed to call rmadClient";
@@ -1258,6 +1268,23 @@ void ShimlessRmaService::OnGetStateResponse(
                             can_abort_, can_go_back_, response->error());
     return;
   }
+
+  // This is a special case we need to check to make sure if user has seen
+  // the NetworkPage and clicks back button from the next page. The user should
+  // be back to the NetworkPage. The reason why it needs special check is
+  // because of state mismatch between shimless mojom and rmad. In this case,
+  // the mojom kConfigureNetwork state doesn't match to any rmad state.
+  if (called_from == kTransitPreviousState && user_has_seen_network_page_ &&
+      state_proto_.state_case() == rmad::RmadState::kWelcome &&
+      mojo_state_ == mojom::State::kWelcomeScreen) {
+    user_has_seen_network_page_ = false;
+    mojo_state_ = mojom::State::kConfigureNetwork;
+    std::move(callback).Run(mojom::State::kConfigureNetwork,
+                            /*can_cancel=*/true, /*can_go_back=*/true,
+                            rmad::RmadErrorCode::RMAD_ERROR_OK);
+    return;
+  }
+
   std::move(callback).Run(RmadStateToMojo(state_proto_.state_case()),
                           can_abort_, can_go_back_,
                           rmad::RmadErrorCode::RMAD_ERROR_OK);
@@ -1352,7 +1379,8 @@ void ShimlessRmaService::OsUpdateOrNextRmadStateCallback(
     TransitionNextStateGeneric(std::move(callback));
   } else {
     mojo_state_ = mojom::State::kUpdateOs;
-    std::move(callback).Run(mojom::State::kUpdateOs, can_abort_, can_go_back_,
+    std::move(callback).Run(mojom::State::kUpdateOs, /*can_cancel=*/true,
+                            /*can_go_back=*/true,
                             rmad::RmadErrorCode::RMAD_ERROR_OK);
   }
 }

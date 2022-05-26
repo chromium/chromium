@@ -126,6 +126,8 @@ class ShimlessRmaServiceTest : public testing::Test {
     shimless_rma_provider_ = std::make_unique<ShimlessRmaService>(
         std::make_unique<FakeShimlessRmaDelegate>());
 
+    version_updater_ = shimless_rma_provider_->GetVersionUpdaterForTesting();
+
     // Wait until |cros_network_config_test_helper_| has initialized.
     base::RunLoop().RunUntilIdle();
   }
@@ -288,6 +290,7 @@ class ShimlessRmaServiceTest : public testing::Test {
 
   std::unique_ptr<ShimlessRmaService> shimless_rma_provider_;
   RmadClient* rmad_client_ = nullptr;  // Unowned convenience pointer.
+  VersionUpdater* version_updater_ = nullptr;
 
  private:
   std::unique_ptr<network_config::CrosNetworkConfigTestHelper>
@@ -608,6 +611,160 @@ TEST_F(ShimlessRmaServiceTest, DropNewNetworks) {
 
 // TODO(gavindodd): Add tests of transitions back from rmad states through
 // the mojom chrome update and network selection states when implemented.
+
+// User has seen the NetworkPage and has selected a network. Clicking back
+// button from the next page will direct user back to NetworkPage.
+TEST_F(ShimlessRmaServiceTest, SelectNetworkAndGoBack) {
+  const std::vector<rmad::GetStateReply> fake_states = {
+      CreateStateReply(rmad::RmadState::kWelcome, rmad::RMAD_ERROR_OK),
+      CreateStateReply(rmad::RmadState::kComponentsRepair,
+                       rmad::RMAD_ERROR_OK)};
+  fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
+
+  base::RunLoop run_loop;
+
+  // Initialize current state
+  shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
+      [&](mojom::State state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::State::kWelcomeScreen);
+        EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
+      }));
+  run_loop.RunUntilIdle();
+
+  // No network should direct user to the NetworkPage
+  shimless_rma_provider_->BeginFinalization(base::BindLambdaForTesting(
+      [&](mojom::State state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::State::kConfigureNetwork);
+        EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
+      }));
+  run_loop.RunUntilIdle();
+
+  // Simulate connecting to a new network on the NetworkPage.
+  SetupWiFiNetwork("WiFi 1");
+  NetworkStateHandler::NetworkStateList configured_networks;
+  GetCurrentlyConfiguredWifiNetworks(&configured_networks);
+  EXPECT_EQ(1u, configured_networks.size());
+
+  // Simulate that there is no OS update available.
+  version_updater_->DisableUpdateOnceForTesting();
+
+  // Complete network selection. User should go to the SelectComponentPage
+  shimless_rma_provider_->NetworkSelectionComplete(base::BindLambdaForTesting(
+      [&](mojom::State state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::State::kSelectComponents);
+        EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
+      }));
+  run_loop.RunUntilIdle();
+
+  // Transition to previous page. User should be back to the NetworkPage.
+  shimless_rma_provider_->TransitionPreviousState(base::BindLambdaForTesting(
+      [&](mojom::State state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::State::kConfigureNetwork);
+        EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+// User has seen the NetworkPage but does not select a network. Clicking back
+// button from the next page will direct user back to NetworkPage.
+TEST_F(ShimlessRmaServiceTest, DoNotSelectNetworkAndGoBack) {
+  const std::vector<rmad::GetStateReply> fake_states = {
+      CreateStateReply(rmad::RmadState::kWelcome, rmad::RMAD_ERROR_OK),
+      CreateStateReply(rmad::RmadState::kComponentsRepair,
+                       rmad::RMAD_ERROR_OK)};
+  fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
+
+  base::RunLoop run_loop;
+
+  // Initialize current state.
+  shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
+      [&](mojom::State state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::State::kWelcomeScreen);
+        EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
+      }));
+  run_loop.RunUntilIdle();
+
+  // No network should direct user to the NetworkPage.
+  shimless_rma_provider_->BeginFinalization(base::BindLambdaForTesting(
+      [&](mojom::State state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::State::kConfigureNetwork);
+        EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
+      }));
+  run_loop.RunUntilIdle();
+
+  // Complete network selection without selecting any network.
+  shimless_rma_provider_->NetworkSelectionComplete(base::BindLambdaForTesting(
+      [&](mojom::State state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::State::kSelectComponents);
+        EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
+      }));
+  run_loop.RunUntilIdle();
+
+  // Transition to previous page. User should be back to the NetworkPage.
+  shimless_rma_provider_->TransitionPreviousState(base::BindLambdaForTesting(
+      [&](mojom::State state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::State::kConfigureNetwork);
+        EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+// When Network is already connected and user did not see the NetworkPage.
+// Clicking back button from the next page will skip NetworkPage and direct
+// user back to the WelcomePage.
+TEST_F(ShimlessRmaServiceTest, WithNetworkConnectedAndGoBack) {
+  SetupWiFiNetwork(kDefaultWifiGuid);
+  const std::vector<rmad::GetStateReply> fake_states = {
+      CreateStateReply(rmad::RmadState::kWelcome, rmad::RMAD_ERROR_OK),
+      CreateStateReply(rmad::RmadState::kComponentsRepair,
+                       rmad::RMAD_ERROR_OK)};
+  fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
+
+  base::RunLoop run_loop;
+
+  // Initialize current state.
+  shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
+      [&](mojom::State state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::State::kWelcomeScreen);
+        EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
+      }));
+  run_loop.RunUntilIdle();
+
+  // Simulate that there is no OS update available.
+  version_updater_->DisableUpdateOnceForTesting();
+
+  // Since network is already connected. User will skip the NetworkPage
+  // and go to SelectComponentPage directly.
+  shimless_rma_provider_->BeginFinalization(base::BindLambdaForTesting(
+      [&](mojom::State state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::State::kSelectComponents);
+        EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
+      }));
+  run_loop.RunUntilIdle();
+
+  // Transition to previous page. User should be back to the WelcomePage
+  // directly.
+  shimless_rma_provider_->TransitionPreviousState(base::BindLambdaForTesting(
+      [&](mojom::State state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::State::kWelcomeScreen);
+        EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
 
 TEST_F(ShimlessRmaServiceTest, GetCurrentState) {
   std::vector<rmad::GetStateReply> fake_states;
