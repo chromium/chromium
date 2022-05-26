@@ -303,7 +303,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Arc.App.PrimaryAbi" enum="AppPrimaryAbi" expires_after="M102">
+<histogram name="Arc.App.PrimaryAbi" enum="AppPrimaryAbi"
+    expires_after="2023-05-25">
   <owner>batoon@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
