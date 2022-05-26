@@ -4780,13 +4780,28 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, SkipCrossOriginPrerender) {
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
   test::PrerenderHostRegistryObserver registry_observer(*web_contents_impl());
 
-  // Add a cross-origin prerender.
+  url::Origin initiator_origin = url::Origin::Create(kInitialUrl);
+  url::Origin prerender_origin = url::Origin::Create(kPrerenderingUrl);
+  std::string kConsolePattern = base::StringPrintf(
+      "The SpeculationRules API does not support cross-origin "
+      "prerender yet. (initiator origin: %s, prerender origin: %s). "
+      "https://crbug.com/1176054 tracks cross-origin support.",
+      initiator_origin.Serialize().c_str(),
+      prerender_origin.Serialize().c_str());
+  WebContentsConsoleObserver console_observer(web_contents_impl());
+  console_observer.SetPattern(kConsolePattern);
+
+  // Add a cross-origin prerender rule.
   AddPrerenderAsync(kPrerenderingUrl);
 
   // Wait for PrerenderHostRegistry to receive the cross-origin prerender
   // request, and it should be ignored.
   registry_observer.WaitForTrigger(kPrerenderingUrl);
   EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
+
+  // A warning message should be sent to console for debugging purpose.
+  console_observer.Wait();
+  EXPECT_EQ(1u, console_observer.messages().size());
 
   ExpectFinalStatusForSpeculationRule(
       PrerenderHost::FinalStatus::kCrossOriginNavigation);

@@ -159,6 +159,19 @@ void SpeculationHostImpl::ProcessCandidatesForPrerender(
     GetContentClient()->browser()->LogWebFeatureForCurrentPage(
         rfhi, blink::mojom::WebFeature::kSpeculationRulesPrerender);
 
+    // TODO(crbug.com/1176054): Remove it after supporting cross-origin
+    // prerender.
+    if (!rfhi->GetLastCommittedOrigin().IsSameOriginWith(it->url)) {
+      rfhi->AddMessageToConsole(
+          blink::mojom::ConsoleMessageLevel::kWarning,
+          base::StringPrintf(
+              "The SpeculationRules API does not support cross-origin "
+              "prerender yet. (initiator origin: %s, prerender origin: %s). "
+              "https://crbug.com/1176054 tracks cross-origin support.",
+              rfhi->GetLastCommittedOrigin().Serialize().c_str(),
+              url::Origin::Create(it->url).Serialize().c_str()));
+    }
+
     Referrer referrer(*(it->referrer));
     int prerender_host_id = registry_->CreateAndStartHost(
         PrerenderAttributes(
