@@ -149,7 +149,7 @@ void ScanScriptWebBundle(
     const HTMLToken::DataVector& data,
     const KURL& base_url,
     scoped_refptr<const PreloadRequest::ExclusionInfo>& exclusion_info) {
-  ScanScriptWebBundle(data.AsAtomicString(), base_url, exclusion_info);
+  ScanScriptWebBundle(data.AsString(), base_url, exclusion_info);
 }
 
 }  // namespace
