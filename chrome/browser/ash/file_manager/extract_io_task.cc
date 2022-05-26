@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
@@ -53,7 +54,7 @@ ExtractIOTask::ExtractIOTask(
 
 ExtractIOTask::~ExtractIOTask() {}
 
-void ExtractIOTask::ZipExtractCallback(bool success) {
+void ExtractIOTask::FinishedExtraction(bool success) {
   progress_.state = success ? State::kSuccess : State::kError;
   DCHECK_GT(extractCount_, 0);
   if (--extractCount_ == 0) {
@@ -64,6 +65,33 @@ void ExtractIOTask::ZipExtractCallback(bool success) {
   }
 }
 
+// Recursively walk directory and set 'u+rwx,g+x,o+x'.
+bool SetDirectoryPermissions(base::FilePath directory, bool success) {
+  if (success) {
+    base::FileEnumerator traversal(directory, true,
+                                   base::FileEnumerator::DIRECTORIES);
+    for (base::FilePath current = traversal.Next(); !current.empty();
+         current = traversal.Next()) {
+      base::SetPosixFilePermissions(
+          current, base::FILE_PERMISSION_READ_BY_USER |
+                       base::FILE_PERMISSION_WRITE_BY_USER |
+                       base::FILE_PERMISSION_EXECUTE_BY_USER |
+                       base::FILE_PERMISSION_EXECUTE_BY_GROUP |
+                       base::FILE_PERMISSION_EXECUTE_BY_OTHERS);
+    }
+  }
+  return success;
+}
+
+void ExtractIOTask::ZipExtractCallback(base::FilePath destination_directory,
+                                       bool success) {
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+      base::BindOnce(&SetDirectoryPermissions, destination_directory, success),
+      base::BindOnce(&ExtractIOTask::FinishedExtraction,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
 void ExtractIOTask::ExtractIntoNewDirectory(
     base::FilePath destination_directory,
     base::FilePath source_file,
@@ -71,14 +99,29 @@ void ExtractIOTask::ExtractIntoNewDirectory(
   if (created_ok) {
     unzip::mojom::UnzipOptionsPtr options =
         unzip::mojom::UnzipOptions::New("auto");
-    unzip::Unzip(unzip::LaunchUnzipper(), source_file, destination_directory,
-                 std::move(options),
-                 base::BindOnce(&ExtractIOTask::ZipExtractCallback,
-                                weak_ptr_factory_.GetWeakPtr()));
+    unzip::Unzip(
+        unzip::LaunchUnzipper(), source_file, destination_directory,
+        std::move(options),
+        base::BindOnce(&ExtractIOTask::ZipExtractCallback,
+                       weak_ptr_factory_.GetWeakPtr(), destination_directory));
   } else {
     LOG(ERROR) << "Cannot create directory "
                << zip::Redact(destination_directory);
   }
+}
+
+bool CreateExtractionDirectory(const base::FilePath& destination_directory) {
+  bool created_ok = base::CreateDirectory(destination_directory);
+  // Make sure the directory is world readable.
+  if (created_ok) {
+    created_ok = base::SetPosixFilePermissions(
+        destination_directory, base::FILE_PERMISSION_READ_BY_USER |
+                                   base::FILE_PERMISSION_WRITE_BY_USER |
+                                   base::FILE_PERMISSION_EXECUTE_BY_USER |
+                                   base::FILE_PERMISSION_EXECUTE_BY_GROUP |
+                                   base::FILE_PERMISSION_EXECUTE_BY_OTHERS);
+  }
+  return created_ok;
 }
 
 void ExtractIOTask::ExtractArchive(
@@ -87,13 +130,13 @@ void ExtractIOTask::ExtractArchive(
   DCHECK(index < progress_.sources.size());
   const base::FilePath source_file = progress_.sources[index].url.path();
   if (destination_result.is_error()) {
-    ZipExtractCallback(false);
+    ZipExtractCallback(base::FilePath(), false);
   } else {
     const base::FilePath destination_directory =
         destination_result.value().path();
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
-        base::BindOnce(&base::CreateDirectory, destination_directory),
+        base::BindOnce(&CreateExtractionDirectory, destination_directory),
         base::BindOnce(&ExtractIOTask::ExtractIntoNewDirectory,
                        weak_ptr_factory_.GetWeakPtr(), destination_directory,
                        source_file));
