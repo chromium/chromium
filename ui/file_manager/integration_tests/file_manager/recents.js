@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {addEntries, ENTRIES, EntryType, getDateWithinLastMonth, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
+import {addEntries, ENTRIES, getCaller, getDateWithinLastMonth, pending, repeatUntil, RootPath, sendTestMessage, TestEntryInfo, wait} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
-import {mountCrostini, openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
+import {mountCrostini, navigateWithDirectoryTree, openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
 import {BASIC_CROSTINI_ENTRY_SET, BASIC_DRIVE_ENTRY_SET, BASIC_LOCAL_ENTRY_SET, NESTED_ENTRY_SET, RECENT_ENTRY_SET} from './test_data.js';
 
 // Test entry for a recently-modified video file.
@@ -217,24 +217,112 @@ async function verifyBreadcrumbsPath(appId, expectedPath) {
 }
 
 /**
- * Opens given file's containing folder by choosing "Go to file location"
- * context menu item.
+ * Select a file and right click to show the context menu, then click the
+ * specified context menu item.
  *
  * @param {string} appId Files app windowId.
- * @param {string} itemName Name of the file to open containing folder.
+ * @param {string} fileName Name of the file to right click.
+ * @param {string} commandId The command id for the context menu item.
  */
-async function goToFileLocation(appId, itemName) {
+async function rightClickContextMenu(appId, fileName, commandId) {
   // Select the item.
   chrome.test.assertTrue(
-      !!await remoteCall.callRemoteTestUtil('selectFile', appId, [itemName]));
+      !!await remoteCall.callRemoteTestUtil('selectFile', appId, [fileName]));
 
   // Right-click the selected file.
   await remoteCall.waitAndRightClick(appId, '.table-row[selected]');
 
-  // Click 'Go to file location' menu command.
-  const goToLocationMenu = '#file-context-menu:not([hidden]) ' +
-      '[command="#go-to-file-location"]:not([hidden]):not([disabled])';
-  remoteCall.waitAndClickElement(appId, goToLocationMenu);
+  // Click the context menu item with the command id.
+  const contextMenuItem = '#file-context-menu:not([hidden]) ' +
+      `[command="#${commandId}"]:not([hidden]):not([disabled])`;
+  await remoteCall.waitAndClickElement(appId, contextMenuItem);
+}
+
+/**
+ * Opens given file's containing folder by choosing "Go to file location"
+ * context menu item.
+ *
+ * @param {string} appId Files app windowId.
+ * @param {string} fileName Name of the file to open containing folder.
+ */
+async function goToFileLocation(appId, fileName) {
+  await rightClickContextMenu(appId, fileName, 'go-to-file-location');
+}
+
+/**
+ * Delete a given file by choosing "Delete" context menu item.
+ *
+ * @param {string} appId Files app windowId.
+ * @param {string} fileName Name of the file to delete.
+ */
+async function deleteFile(appId, fileName) {
+  await rightClickContextMenu(appId, fileName, 'delete');
+  // Click "Delete" on the Delete confirm dialog.
+  await remoteCall.waitAndClickElement(
+      appId, '.files-confirm-dialog button.cr-dialog-ok');
+}
+
+/**
+ * Rename a given file by choosing "Rename" context menu item.
+ *
+ * @param {string} appId Files app windowId.
+ * @param {string} fileName Name of the file to rename.
+ * @param {string} newName The new file name.
+ */
+async function renameFile(appId, fileName, newName) {
+  const textInput = '#file-list .table-row[renaming] input.rename';
+  await rightClickContextMenu(appId, fileName, 'rename');
+  // Wait for the rename input field.
+  await remoteCall.waitForElement(appId, textInput);
+  // Input the new name.
+  await remoteCall.inputText(appId, textInput, newName);
+  const inputElement = await remoteCall.waitForElement(appId, textInput);
+  chrome.test.assertEq(newName, inputElement.value);
+  // Press Enter to commit renaming.
+  const keyDown = [textInput, 'Enter', false, false, false];
+  chrome.test.assertTrue(
+      await remoteCall.callRemoteTestUtil('fakeKeyDown', appId, keyDown));
+  // Wait until renaming is complete.
+  const renamingItem = '#file-list .table-row[renaming]';
+  await remoteCall.waitForElementLost(appId, renamingItem);
+}
+
+/**
+ * Cut a given file by choosing "Cut" context menu item and paste the file
+ * to the new folder.
+ *
+ * @param {string} appId Files app windowId.
+ * @param {string} fileName Name of the file to cut.
+ * @param {string} newFolder Full breadcrumb path for the new folder to paste.
+ */
+async function cutFileAndPasteTo(appId, fileName, newFolder) {
+  await rightClickContextMenu(appId, fileName, 'cut');
+  // Go to the new folder to paste.
+  await navigateWithDirectoryTree(appId, newFolder);
+  chrome.test.assertTrue(
+      await remoteCall.callRemoteTestUtil('execCommand', appId, ['paste']));
+  // Wait for the operation to be completed.
+  const caller = getCaller();
+  await repeatUntil(async () => {
+    const element = await remoteCall.waitForElement(
+        appId, ['#progress-panel', 'xf-panel-item']);
+    const expectedPrimaryText =
+        `Moving ${fileName} to ${newFolder.split('/').pop()}`;
+    const expectedSecondaryText = 'Complete';
+    const actualPrimaryText = element.attributes['primary-text'];
+    const actualSecondaryText = element.attributes['secondary-text'];
+
+    if (expectedPrimaryText === actualPrimaryText &&
+        actualSecondaryText === actualSecondaryText) {
+      return;
+    }
+
+    return pending(
+        caller,
+        `Expected feedback panel msg: "${expectedPrimaryText} - ${
+            expectedSecondaryText}", got "${actualPrimaryText} - ${
+            actualSecondaryText}"`);
+  });
 }
 
 /**
@@ -618,4 +706,234 @@ testcase.recentsA11yMessages = async () => {
   chrome.test.assertEq(
       'Videos filter is off. Filter is reset.',
       a11yMessages[a11yMessages.length - 1]);
+};
+
+/**
+ * Tests the read only flag on Recents view should be hidden.
+ */
+testcase.recentsReadOnlyHidden = async () => {
+  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+  await navigateToRecent(appId);
+  const readOnlyIndicator =
+      await remoteCall.waitForElement(appId, ['#read-only-indicator']);
+  chrome.test.assertTrue(
+      readOnlyIndicator.hidden, 'Read only indicator should be hidden');
+};
+
+/**
+ * Tests delete operation can be performed in Recents view on files from
+ * Downloads, Drive and Play Files.
+ */
+testcase.recentsAllowDeletion = async () => {
+  await addPlayFileEntries();
+  const appId = await setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.beautiful], [ENTRIES.desktop]);
+  await navigateToRecent(appId);
+  const files = TestEntryInfo.getExpectedRows([
+    ENTRIES.beautiful, ENTRIES.desktop, RECENT_MODIFIED_ANDROID_DOCUMENT,
+    RECENT_MODIFIED_ANDROID_IMAGE, RECENT_MODIFIED_ANDROID_VIDEO
+  ]);
+  await remoteCall.waitForFiles(appId, files);
+
+  // Delete a file originated from Downloads.
+  await deleteFile(appId, ENTRIES.beautiful.nameText);
+  const files1 = TestEntryInfo.getExpectedRows([
+    ENTRIES.desktop, RECENT_MODIFIED_ANDROID_DOCUMENT,
+    RECENT_MODIFIED_ANDROID_IMAGE, RECENT_MODIFIED_ANDROID_VIDEO
+  ]);
+  await remoteCall.waitForFiles(appId, files1);
+
+  // Delete a file originated from Drive.
+  await deleteFile(appId, ENTRIES.desktop.nameText);
+  const files2 = TestEntryInfo.getExpectedRows([
+    RECENT_MODIFIED_ANDROID_DOCUMENT, RECENT_MODIFIED_ANDROID_IMAGE,
+    RECENT_MODIFIED_ANDROID_VIDEO
+  ]);
+  await remoteCall.waitForFiles(appId, files2);
+
+  // Delete a file originated from Play Files.
+  await deleteFile(appId, RECENT_MODIFIED_ANDROID_IMAGE.nameText);
+  const files3 = TestEntryInfo.getExpectedRows(
+      [RECENT_MODIFIED_ANDROID_DOCUMENT, RECENT_MODIFIED_ANDROID_VIDEO]);
+  await remoteCall.waitForFiles(appId, files3);
+};
+
+/**
+ * Tests delete operation can be performed in Recents view with multiple files
+ * from different sources including Downloads, Drive and Play Files.
+ */
+testcase.recentsAllowMultipleFilesDeletion = async () => {
+  await addPlayFileEntries();
+  const appId = await setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.beautiful], [ENTRIES.desktop]);
+  await navigateToRecent(appId);
+  const files = TestEntryInfo.getExpectedRows([
+    ENTRIES.beautiful, ENTRIES.desktop, RECENT_MODIFIED_ANDROID_DOCUMENT,
+    RECENT_MODIFIED_ANDROID_IMAGE, RECENT_MODIFIED_ANDROID_VIDEO
+  ]);
+  await remoteCall.waitForFiles(appId, files);
+
+  // Select all files from the gear menu.
+  await remoteCall.waitAndClickElement(appId, '#gear-button');
+  const selectAllMenu = '#gear-menu:not([hidden]) ' +
+      `[command="#select-all"]:not([hidden]):not([disabled])`;
+  await remoteCall.waitAndClickElement(appId, selectAllMenu);
+  await remoteCall.waitForElement(appId, '.table-row[selected]');
+  // Wait for the files selection label.
+  const caller = getCaller();
+  await repeatUntil(async () => {
+    const element =
+        await remoteCall.waitForElement(appId, '#files-selected-label');
+    const expectedLabel = '5 files selected';
+
+    if (element.text === expectedLabel) {
+      return;
+    }
+
+    return pending(
+        caller,
+        `Expected files selection label: "${expectedLabel}", got "${
+            element.text}"`);
+  });
+  // Delete all selected files via action bar.
+  await remoteCall.waitAndClickElement(appId, '#delete-button');
+  // Click okay on the confirm dialog.
+  await remoteCall.waitAndClickElement(
+      appId, '.files-confirm-dialog button.cr-dialog-ok');
+
+  // Check all files should be deleted.
+  await remoteCall.waitForFiles(appId, []);
+};
+
+/**
+ * Tests rename operation can be performed in Recents view on files from
+ * Downloads, Drive.
+ */
+testcase.recentsAllowRename = async () => {
+  const appId = await setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.beautiful], [ENTRIES.desktop]);
+  await navigateToRecent(appId);
+  const files =
+      TestEntryInfo.getExpectedRows([ENTRIES.beautiful, ENTRIES.desktop]);
+  await remoteCall.waitForFiles(appId, files);
+
+  // Rename a file originated from Downloads.
+  const newBeautiful = ENTRIES.beautiful.cloneWithNewName('new-beautiful.ogg');
+  await renameFile(appId, ENTRIES.beautiful.nameText, newBeautiful.nameText);
+  const files1 = TestEntryInfo.getExpectedRows([
+    newBeautiful,
+    ENTRIES.desktop,
+  ]);
+  await remoteCall.waitForFiles(appId, files1);
+
+  // Rename a file originated from Drive.
+  const newDesktop = ENTRIES.desktop.cloneWithNewName('new-desktop.png');
+  await renameFile(appId, ENTRIES.desktop.nameText, newDesktop.nameText);
+  const files2 = TestEntryInfo.getExpectedRows([
+    newDesktop,
+    newBeautiful,
+  ]);
+  await remoteCall.waitForFiles(appId, files2);
+};
+
+/**
+ * Tests rename operation is not allowed in Recents view for files from
+ * Play files.
+ */
+testcase.recentsNoRenameForPlayFiles = async () => {
+  await addPlayFileEntries();
+  const appId =
+      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
+  await navigateToRecent(appId);
+  const files = TestEntryInfo.getExpectedRows([
+    ENTRIES.beautiful, RECENT_MODIFIED_ANDROID_DOCUMENT,
+    RECENT_MODIFIED_ANDROID_IMAGE, RECENT_MODIFIED_ANDROID_VIDEO
+  ]);
+  await remoteCall.waitForFiles(appId, files);
+
+  // Select the item.
+  chrome.test.assertTrue(!!await remoteCall.callRemoteTestUtil(
+      'selectFile', appId, [RECENT_MODIFIED_ANDROID_DOCUMENT.nameText]));
+
+  // Right-click the selected file.
+  await remoteCall.waitAndRightClick(appId, '.table-row[selected]');
+
+  // Checks the rename menu should be disabled.
+  const renameMenu = '#file-context-menu:not([hidden]) ' +
+      '[command="#rename"][disabled]:not([hidden])';
+  await remoteCall.waitForElement(appId, renameMenu);
+};
+
+/**
+ * Tests cut operation can be performed in Recents view on files from
+ * Downloads, Drive and Play Files.
+ */
+testcase.recentsAllowCut = async () => {
+  await addPlayFileEntries();
+  const appId = await setupAndWaitUntilReady(
+      RootPath.DOWNLOADS, [ENTRIES.beautiful, ENTRIES.directoryA],
+      [ENTRIES.desktop]);
+  const files = TestEntryInfo.getExpectedRows([
+    ENTRIES.beautiful, ENTRIES.desktop, RECENT_MODIFIED_ANDROID_DOCUMENT,
+    RECENT_MODIFIED_ANDROID_IMAGE, RECENT_MODIFIED_ANDROID_VIDEO
+  ]);
+  const newFolderBreadcrumb =
+      `/My files/Downloads/${ENTRIES.directoryA.nameText}`;
+
+  // Cut/Paste a file originated from Downloads.
+  await navigateToRecent(appId);
+  await remoteCall.waitForFiles(appId, files);
+  await cutFileAndPasteTo(
+      appId, ENTRIES.beautiful.nameText, newFolderBreadcrumb);
+  // The file being cut should appear in the new directory.
+  const filesInNewDir1 = TestEntryInfo.getExpectedRows([ENTRIES.beautiful]);
+  await remoteCall.waitForFiles(appId, filesInNewDir1);
+  // Recents view still have the full file list because the file being cut just
+  // moves to a new directory, but it still belongs to Recent.
+  await navigateToRecent(appId);
+  await remoteCall.waitForFiles(appId, files);
+  // Use "go to location" to validate the file in Recents after cut is
+  // collected from the new folder.
+  await goToFileLocation(appId, ENTRIES.beautiful.nameText);
+  await remoteCall.waitForFiles(appId, filesInNewDir1);
+  await verifyBreadcrumbsPath(appId, newFolderBreadcrumb);
+
+  // Cut/Paste a file originated from Drive.
+  await navigateToRecent(appId);
+  await remoteCall.waitForFiles(appId, files);
+  await cutFileAndPasteTo(appId, ENTRIES.desktop.nameText, newFolderBreadcrumb);
+  // The file being cut should appear in the new directory.
+  const filesInNewDir2 = TestEntryInfo.getExpectedRows([
+    ENTRIES.beautiful,
+    ENTRIES.desktop,
+  ]);
+  await remoteCall.waitForFiles(appId, filesInNewDir2);
+  // Recents view still have the full file list because the file being cut just
+  // moves to a new directory, but it still belongs to Recent.
+  await navigateToRecent(appId);
+  await remoteCall.waitForFiles(appId, files);
+  // Use "go to location" to validate the file in Recents after cut is
+  // collected from the new folder.
+  await goToFileLocation(appId, ENTRIES.desktop.nameText);
+  await remoteCall.waitForFiles(appId, filesInNewDir2);
+  await verifyBreadcrumbsPath(appId, newFolderBreadcrumb);
+
+  // Cut/Paste a file originated from Play Files.
+  await navigateToRecent(appId);
+  await remoteCall.waitForFiles(appId, files);
+  await cutFileAndPasteTo(
+      appId, RECENT_MODIFIED_ANDROID_IMAGE.nameText, newFolderBreadcrumb);
+  // The file being cut should appear in the new directory.
+  const filesInNewDir3 = TestEntryInfo.getExpectedRows(
+      [ENTRIES.beautiful, ENTRIES.desktop, RECENT_MODIFIED_ANDROID_IMAGE]);
+  await remoteCall.waitForFiles(appId, filesInNewDir3);
+  // Recents view still have the full file list because the file being cut just
+  // moves to a new directory, but it still belongs to Recent.
+  await navigateToRecent(appId);
+  await remoteCall.waitForFiles(appId, files);
+  // Use "go to location" to validate the file in Recents after cut is
+  // collected from the new folder.
+  await goToFileLocation(appId, RECENT_MODIFIED_ANDROID_IMAGE.nameText);
+  await remoteCall.waitForFiles(appId, filesInNewDir3);
+  await verifyBreadcrumbsPath(appId, newFolderBreadcrumb);
 };

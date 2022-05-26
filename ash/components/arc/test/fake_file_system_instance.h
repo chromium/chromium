@@ -231,6 +231,9 @@ class FakeFileSystemInstance : public mojom::FileSystemInstance {
   // Adds a recent document accessible by document provider based methods.
   void AddRecentDocument(const std::string& root_id, const Document& document);
 
+  // Removes a recent document accessible by document provider based methods.
+  void RemoveRecentDocument(const Document& document);
+
   // Adds a root accessible by document provider based methods.
   void AddRoot(const Root& root);
 
