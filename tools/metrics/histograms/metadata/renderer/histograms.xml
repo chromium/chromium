@@ -27,14 +27,6 @@ chromium-metrics-reviews@google.com.
   <variant name="LowResolution" summary="Tops out at 24 hours"/>
 </variants>
 
-<variants name="RendererLifetime">
-  <variant name="" summary="Applies to all lifetimes."/>
-  <variant name=".LongLived"
-      summary="Renderer process was alive for more than a minute."/>
-  <variant name=".ShortLived"
-      summary="Renderer process was alive for up to one minute."/>
-</variants>
-
 <histogram name="Renderer.BrowserLaunchToRunLoopStart" units="ms"
     expires_after="2022-11-13">
   <owner>sky@chromium.org</owner>
@@ -405,20 +397,6 @@ chromium-metrics-reviews@google.com.
     The time it takes RenderThreadImpl::Init() to run, recorded for each
     renderer process.
   </summary>
-</histogram>
-
-<histogram name="Renderer.TotalCPUUse2{Lifetime}" units="ms"
-    expires_after="2022-05-06">
-  <owner>olivierli@chromium.org</owner>
-  <owner>catan-team@chromium.org</owner>
-  <summary>
-    Total CPU utilization of a renderer, read just before the process is about
-    to go away. Total CPU time can exceed the total process lifetime. This is
-    because CPU use of N seconds can be spread out over M threads. Example: A
-    Renderer having 4 threads active for a period of 1 minute in parallel will
-    use 4 minutes of CPU time. Not recorded on Android.
-  </summary>
-  <token key="Lifetime" variants="RendererLifetime"/>
 </histogram>
 
 <histogram name="RendererScheduler.IPC.FrameVisibility" enum="Boolean"
