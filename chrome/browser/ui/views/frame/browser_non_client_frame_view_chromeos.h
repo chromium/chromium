@@ -228,6 +228,9 @@ class BrowserNonClientFrameViewChromeOS
   // Called any time the frame color may have changed.
   void OnUpdateFrameColor();
 
+  // Update background color when the frame color changes.
+  void UpdateBackgroundColor();
+
   // Called any time the theme has changed and may need to be animated.
   void MaybeAnimateThemeChanged();
 

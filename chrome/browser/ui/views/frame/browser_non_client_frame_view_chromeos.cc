@@ -60,7 +60,9 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/views/animation/animation_builder.h"
+#include "ui/views/background.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/rect_based_targeting_utils.h"
 #include "ui/views/widget/widget.h"
@@ -129,6 +131,19 @@ BrowserNonClientFrameViewChromeOS::BrowserNonClientFrameViewChromeOS(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::window_util::InstallResizeHandleWindowTargeterForWindow(
       frame->GetNativeWindow());
+
+  if (chromeos::features::IsDarkLightModeEnabled()) {
+    // To differentiate browser windows in dark/light mode, set a highlight
+    // border to the non client frame view. To avoid the border being covered by
+    // the client view, we should use a full insets border.
+    SetBorder(std::make_unique<views::HighlightBorder>(
+        0, views::HighlightBorder::Type::kHighlightBorder1,
+        /*use_light_colors=*/false,
+        views::HighlightBorder::InsetsType::kFullInsets));
+    // Since highlight border has an inner border with opacity, we need to set a
+    // background underneath with frame color.
+    SetBackground(views::CreateSolidBackground(chromeos::kDefaultFrameColor));
+  }
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -325,7 +340,16 @@ gfx::Rect BrowserNonClientFrameViewChromeOS::GetBoundsForClientView() const {
   // and the top-of-window views are revealed, the TopContainerView paints the
   // window header by redirecting paints from its background to
   // BrowserNonClientFrameViewChromeOS.
-  return bounds();
+  gfx::Rect client_bounds(bounds());
+  if (browser_view()->IsFullscreen())
+    return client_bounds;
+
+  // If there is a border, inset the client bounds to show the border when the
+  // browser window is not in fullscreen.
+  if (auto* border = GetBorder()) {
+    client_bounds.Inset(border->GetInsets());
+  }
+  return client_bounds;
 }
 
 gfx::Rect BrowserNonClientFrameViewChromeOS::GetWindowBoundsForClientBounds(
@@ -407,6 +431,9 @@ void BrowserNonClientFrameViewChromeOS::OnPaint(gfx::Canvas* canvas) {
 
   if (frame_header_)
     frame_header_->PaintHeader(canvas);
+
+  OnPaintBackground(canvas);
+  OnPaintBorder(canvas);
 }
 
 void BrowserNonClientFrameViewChromeOS::LayoutWindowControlsOverlay() {
@@ -749,6 +776,8 @@ void BrowserNonClientFrameViewChromeOS::PaintAsActiveChanged() {
 
   if (frame_header_)
     frame_header_->SetPaintAsActive(ShouldPaintAsActive());
+
+  UpdateBackgroundColor();
 }
 
 void BrowserNonClientFrameViewChromeOS::OnProfileAvatarChanged(
@@ -944,6 +973,16 @@ void BrowserNonClientFrameViewChromeOS::OnUpdateFrameColor() {
 
   if (frame_header_)
     frame_header_->UpdateFrameColors();
+
+  UpdateBackgroundColor();
+}
+
+void BrowserNonClientFrameViewChromeOS::UpdateBackgroundColor() {
+  // Update background color to current frame color.
+  if (auto* background = GetBackground()) {
+    background->SetNativeControlColor(
+        GetFrameColor(BrowserFrameActiveState::kUseCurrent));
+  }
 }
 
 void BrowserNonClientFrameViewChromeOS::MaybeAnimateThemeChanged() {
