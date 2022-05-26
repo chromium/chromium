@@ -1641,7 +1641,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.ImageFetcher.RequestLatency" units="ms"
-    expires_after="2022-07-01">
+    expires_after="2023-07-01">
   <owner>vishwasuppoor@chromium.org</owner>
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
@@ -1652,7 +1652,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.ImageFetcher.Result" enum="BooleanSuccess"
-    expires_after="2022-11-13">
+    expires_after="2023-07-01">
   <owner>siyua@chromium.org</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
@@ -3575,9 +3575,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.UsedCachedServerCard" units="uses"
-    expires_after="2022-10-30">
-  <owner>jsaul@google.com</owner>
+    expires_after="2023-06-01">
   <owner>siyua@chromium.org</owner>
+  <owner>jsaul@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Records the number of times that the cache for unmasked server cards has
@@ -3588,9 +3588,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.UsedCachedVirtualCard" units="uses"
-    expires_after="2022-06-26">
-  <owner>jsaul@google.com</owner>
+    expires_after="2023-06-01">
   <owner>siyua@chromium.org</owner>
+  <owner>jsaul@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>
     Records the number of times that the cache for virtual cards has been
