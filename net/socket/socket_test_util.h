@@ -33,7 +33,6 @@
 #include "net/socket/client_socket_factory.h"
 #include "net/socket/client_socket_handle.h"
 #include "net/socket/client_socket_pool.h"
-#include "net/socket/connection_attempts.h"
 #include "net/socket/datagram_client_socket.h"
 #include "net/socket/socket_performance_watcher.h"
 #include "net/socket/socket_tag.h"
@@ -742,7 +741,6 @@ class MockClientSocket : public TransportClientSocket {
   int Bind(const net::IPEndPoint& local_addr) override;
   bool SetNoDelay(bool no_delay) override;
   bool SetKeepAlive(bool enable, int delay) override;
-  ConnectionAttempts GetConnectionAttempts() const override;
 
   // StreamSocket implementation.
   int Connect(CompletionOnceCallback callback) override = 0;
@@ -816,7 +814,6 @@ class MockTCPClientSocket : public MockClientSocket, public AsyncSocket {
   int GetPeerAddress(IPEndPoint* address) const override;
   bool WasEverUsed() const override;
   bool GetSSLInfo(SSLInfo* ssl_info) override;
-  ConnectionAttempts GetConnectionAttempts() const override;
 
   // AsyncSocket:
   void OnReadComplete(const MockRead& data) override;
@@ -866,8 +863,6 @@ class MockTCPClientSocket : public MockClientSocket, public AsyncSocket {
   bool enable_read_if_ready_;
 
   BeforeConnectCallback before_connect_callback_;
-
-  ConnectionAttempts connection_attempts_;
 };
 
 class MockSSLClientSocket : public AsyncSocket, public SSLClientSocket {
@@ -1269,9 +1264,6 @@ class WrappedStreamSocket : public TransportClientSocket {
  public:
   explicit WrappedStreamSocket(std::unique_ptr<StreamSocket> transport);
   ~WrappedStreamSocket() override;
-
-  // TransportClientSocket implementation:
-  ConnectionAttempts GetConnectionAttempts() const override;
 
   // StreamSocket implementation:
   int Bind(const net::IPEndPoint& local_addr) override;

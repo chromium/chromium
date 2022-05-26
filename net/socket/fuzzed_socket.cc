@@ -245,10 +245,6 @@ bool FuzzedSocket::GetSSLInfo(SSLInfo* ssl_info) {
   return false;
 }
 
-ConnectionAttempts FuzzedSocket::GetConnectionAttempts() const {
-  return {};
-}
-
 int64_t FuzzedSocket::GetTotalReceivedBytes() const {
   return total_bytes_read_;
 }

@@ -9,7 +9,6 @@
 #include "build/build_config.h"
 #include "net/base/address_list.h"
 #include "net/base/completion_once_callback.h"
-#include "net/socket/connection_attempts.h"
 #include "net/socket/tcp_client_socket.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
@@ -55,13 +54,6 @@ void TCPClientSocketBrokered::SetSocketCreatorForTesting(
     base::RepeatingCallback<std::unique_ptr<net::TransportClientSocket>(void)>
         socket_creator) {
   socket_creator_for_testing_ = std::move(socket_creator);
-}
-
-net::ConnectionAttempts TCPClientSocketBrokered::GetConnectionAttempts() const {
-  if (!brokered_socket_) {
-    return {};
-  }
-  return brokered_socket_->GetConnectionAttempts();
 }
 
 void TCPClientSocketBrokered::SetBeforeConnectCallback(

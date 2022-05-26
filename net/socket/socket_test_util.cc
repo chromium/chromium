@@ -921,10 +921,6 @@ NextProto MockClientSocket::GetNegotiatedProtocol() const {
   return kProtoUnknown;
 }
 
-ConnectionAttempts MockClientSocket::GetConnectionAttempts() const {
-  return {};
-}
-
 MockClientSocket::~MockClientSocket() = default;
 
 void MockClientSocket::RunCallbackAsync(CompletionOnceCallback callback,
@@ -1069,10 +1065,6 @@ bool MockTCPClientSocket::SetKeepAlive(bool enable, int delay) {
   return data_->set_keep_alive_result();
 }
 
-ConnectionAttempts MockTCPClientSocket::GetConnectionAttempts() const {
-  return connection_attempts_;
-}
-
 void MockTCPClientSocket::SetBeforeConnectCallback(
     const BeforeConnectCallback& before_connect_callback) {
   DCHECK(!before_connect_callback_);
@@ -1111,13 +1103,6 @@ int MockTCPClientSocket::Connect(CompletionOnceCallback callback) {
 
   int result = data_->connect_data().result;
   IoMode mode = data_->connect_data().mode;
-
-  if (result != OK && result != ERR_IO_PENDING) {
-    IPEndPoint address;
-    if (GetPeerAddress(&address) == OK)
-      connection_attempts_.push_back(ConnectionAttempt(address, result));
-  }
-
   if (mode == SYNCHRONOUS)
     return result;
 
@@ -2109,10 +2094,6 @@ NextProto WrappedStreamSocket::GetNegotiatedProtocol() const {
 
 bool WrappedStreamSocket::GetSSLInfo(SSLInfo* ssl_info) {
   return transport_->GetSSLInfo(ssl_info);
-}
-
-ConnectionAttempts WrappedStreamSocket::GetConnectionAttempts() const {
-  return {};
 }
 
 int64_t WrappedStreamSocket::GetTotalReceivedBytes() const {

@@ -69,9 +69,6 @@ class MockTransportClientSocketFactory : public ClientSocketFactory {
     kDelayedFailing,
     // A stalled socket that never connects at all.
     kStalled,
-    // A stalled socket that never connects at all, but returns a failing
-    // ConnectionAttempt in |GetConnectionAttempts|.
-    kStalledFailing,
     // A socket that can be triggered to connect explicitly, asynchronously.
     kTriggerable,
   };

@@ -72,7 +72,6 @@ class FuzzedSocket : public TransportClientSocket {
 
   // TransportClientSocket implementation:
   int Bind(const net::IPEndPoint& local_addr) override;
-  ConnectionAttempts GetConnectionAttempts() const override;
   // StreamSocket implementation:
   int Connect(CompletionOnceCallback callback) override;
   void Disconnect() override;

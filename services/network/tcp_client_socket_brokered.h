@@ -11,7 +11,6 @@
 #include "net/base/address_list.h"
 #include "net/base/completion_once_callback.h"
 #include "net/nqe/network_quality_estimator.h"
-#include "net/socket/connection_attempts.h"
 #include "net/socket/socket_tag.h"
 #include "net/socket/tcp_socket.h"
 #include "net/socket/transport_client_socket.h"
@@ -57,7 +56,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) TCPClientSocketBrokered
   void SetSocketCreatorForTesting(
       base::RepeatingCallback<std::unique_ptr<net::TransportClientSocket>(void)>
           socket_creator) override;
-  net::ConnectionAttempts GetConnectionAttempts() const override;
 
   // StreamSocket implementation.
   void SetBeforeConnectCallback(

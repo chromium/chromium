@@ -19,7 +19,6 @@
 #include "net/base/address_list.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"
-#include "net/socket/connection_attempts.h"
 #include "net/socket/socket_descriptor.h"
 #include "net/socket/stream_socket.h"
 #include "net/socket/tcp_socket.h"
@@ -87,7 +86,6 @@ class NET_EXPORT TCPClientSocket : public TransportClientSocket,
   int Bind(const IPEndPoint& address) override;
   bool SetKeepAlive(bool enable, int delay) override;
   bool SetNoDelay(bool no_delay) override;
-  ConnectionAttempts GetConnectionAttempts() const override;
 
   // StreamSocket implementation.
   void SetBeforeConnectCallback(
@@ -216,9 +214,6 @@ class NET_EXPORT TCPClientSocket : public TransportClientSocket,
 
   // This socket was previously disconnected and has not been re-connected.
   bool previously_disconnected_;
-
-  // Failed connection attempts made while trying to connect this socket.
-  ConnectionAttempts connection_attempts_;
 
   // Total number of bytes received by the socket.
   int64_t total_received_bytes_;

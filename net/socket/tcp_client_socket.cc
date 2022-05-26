@@ -232,7 +232,6 @@ int TCPClientSocket::DoConnect() {
 
   if (previously_disconnected_) {
     was_ever_used_ = false;
-    connection_attempts_.clear();
     previously_disconnected_ = false;
   }
 
@@ -290,9 +289,6 @@ int TCPClientSocket::DoConnectComplete(int result) {
 
   if (result == OK)
     return OK;  // Done!
-
-  connection_attempts_.push_back(
-      ConnectionAttempt(addresses_[current_address_index_], result));
 
   // Don't try the next address if entering suspend mode.
   if (result == ERR_NETWORK_IO_SUSPENDED)
@@ -458,10 +454,6 @@ int TCPClientSocket::SetSendBufferSize(int32_t size) {
 
 SocketDescriptor TCPClientSocket::SocketDescriptorForTesting() const {
   return socket_->SocketDescriptorForTesting();
-}
-
-ConnectionAttempts TCPClientSocket::GetConnectionAttempts() const {
-  return connection_attempts_;
 }
 
 int64_t TCPClientSocket::GetTotalReceivedBytes() const {

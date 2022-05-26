@@ -122,9 +122,6 @@ TEST_F(TCPClientSocketBrokeredTest, FailedConnect) {
   ASSERT_EQ(result, net::ERR_IO_PENDING);
   result = callback.WaitForResult();
   EXPECT_EQ(result, net::ERR_CONNECTION_FAILED);
-
-  net::ConnectionAttempts attempts = socket_->GetConnectionAttempts();
-  EXPECT_EQ(1u, attempts.size());
 }
 
 TEST_F(TCPClientSocketBrokeredTest, WasEverUsed) {
