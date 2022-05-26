@@ -7116,6 +7116,24 @@
             ]
         }
     ],
+    "SegmentationStructuredMetrics": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "segment_ids_allowed_for_reporting": "4,5,6,11,12,16"
+                    },
+                    "enable_features": [
+                        "SegmentationStructuredMetrics"
+                    ]
+                }
+            ]
+        }
+    ],
     "SendTabToSelfV2": [
         {
             "platforms": [
