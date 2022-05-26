@@ -3406,7 +3406,7 @@ void RenderFrameHostManager::CommitPending(
   // 2) a current RenderFrameHost which has just received a commit IPC from the
   //    renderer, so it must have a live connection to its renderer frame in
   //    order to receive the IPC.
-  DCHECK(pending_rfh->IsRenderFrameCreated());
+  DCHECK(pending_rfh->IsRenderFrameLive());
 
   // We should not have a pending bfcache entry unless bfcache or prerendering
   // is enabled. Note that in prerendering, the prerendering page information is

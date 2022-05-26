@@ -333,7 +333,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
                        MessagesBeforeAndAfterRenderFrameCreated) {
   // Start with a WebContents that hasn't created its main RenderFrame.
   WebContents* web_contents = shell()->web_contents();
-  ASSERT_FALSE(web_contents->GetMainFrame()->IsRenderFrameCreated());
+  ASSERT_FALSE(web_contents->GetMainFrame()->IsRenderFrameLive());
 
   // An attempt to run script via GetAssociatedLocalFrame will do nothing before
   // the RenderFrame is created, since the message sent to the renderer will get
@@ -345,7 +345,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   // Navigating will create the RenderFrame.
   GURL url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));
-  ASSERT_TRUE(web_contents->GetMainFrame()->IsRenderFrameCreated());
+  ASSERT_TRUE(web_contents->GetMainFrame()->IsRenderFrameLive());
 
   // Future attempts to run script via GetAssociatedLocalFrame should succeed.
   // This timed out before the fix, since the message was dropped and no value

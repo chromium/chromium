@@ -2230,7 +2230,7 @@ RenderFrameHostImpl::GetPendingIsolationInfoForSubresources() {
 
 void RenderFrameHostImpl::GetCanonicalUrl(
     base::OnceCallback<void(const absl::optional<GURL>&)> callback) {
-  if (IsRenderFrameCreated()) {
+  if (IsRenderFrameLive()) {
     // Validate that the URL returned by the renderer is HTTP(S) only. It is
     // allowed to be cross-origin.
     auto validate_and_forward =
@@ -2251,7 +2251,7 @@ void RenderFrameHostImpl::GetCanonicalUrl(
 
 void RenderFrameHostImpl::GetOpenGraphMetadata(
     base::OnceCallback<void(blink::mojom::OpenGraphMetadataPtr)> callback) {
-  if (IsRenderFrameCreated()) {
+  if (IsRenderFrameLive()) {
     GetAssociatedLocalFrame()->GetOpenGraphMetadata(
         base::BindOnce(&ForwardOpenGraphMetadataIfValid, std::move(callback)));
   } else {
@@ -2282,7 +2282,7 @@ void RenderFrameHostImpl::GetSerializedHtmlWithLocalLinks(
     const base::flat_map<blink::FrameToken, base::FilePath>& frame_token_map,
     bool save_with_empty_url,
     mojo::PendingRemote<mojom::FrameHTMLSerializerHandler> serializer_handler) {
-  if (!IsRenderFrameCreated())
+  if (!IsRenderFrameLive())
     return;
   GetMojomFrameInRenderer()->GetSerializedHtmlWithLocalLinks(
       url_map, frame_token_map, save_with_empty_url,
@@ -2565,7 +2565,7 @@ RenderViewHost* RenderFrameHostImpl::GetRenderViewHost() const {
 }
 
 service_manager::InterfaceProvider* RenderFrameHostImpl::GetRemoteInterfaces() {
-  DCHECK(IsRenderFrameCreated());
+  DCHECK(IsRenderFrameLive());
   return remote_interfaces_.get();
 }
 
@@ -3172,7 +3172,7 @@ void RenderFrameHostImpl::DeleteRenderFrame(
   if (IsPendingDeletion())
     return;
 
-  if (IsRenderFrameCreated()) {
+  if (IsRenderFrameLive()) {
     GetMojomFrameInRenderer()->Delete(intent);
 
     // We change the lifecycle state to kRunningUnloadHandlers at the end of
@@ -3339,7 +3339,7 @@ void RenderFrameHostImpl::Init() {
         // Inner frame trees shouldn't be possible here.
         DCHECK_EQ(render_frame_host->frame_tree(), main_rfh->frame_tree());
 
-        if (render_frame_host->IsRenderFrameCreated())
+        if (render_frame_host->IsRenderFrameLive())
           render_frame_host->frame_->ResumeBlockedRequests();
       },
       base::Unretained(this)));
@@ -4524,7 +4524,7 @@ void RenderFrameHostImpl::Unload(RenderFrameProxyHost* proxy, bool is_loading) {
 
   if (proxy) {
     SetLifecycleState(LifecycleStateImpl::kRunningUnloadHandlers);
-    if (IsRenderFrameCreated()) {
+    if (IsRenderFrameLive()) {
       GetMojomFrameInRenderer()->Unload(
           proxy->GetRoutingID(), is_loading,
           proxy->frame_tree_node()->current_replication_state().Clone(),
@@ -5478,7 +5478,7 @@ void RenderFrameHostImpl::FlushNetworkAndNavigationInterfacesForTesting(
   DCHECK(network_service_disconnect_handler_holder_);
   network_service_disconnect_handler_holder_.FlushForTesting();  // IN-TEST
 
-  DCHECK(IsRenderFrameCreated());
+  DCHECK(IsRenderFrameLive());
   DCHECK(frame_);
   frame_.FlushForTesting();  // IN-TEST
 }
@@ -7891,7 +7891,7 @@ void RenderFrameHostImpl::Stop() {
   TRACE_EVENT1("navigation", "RenderFrameHostImpl::Stop", "render_frame_host",
                this);
   // Don't call GetAssociatedLocalFrame before the RenderFrame is created.
-  if (!IsRenderFrameCreated())
+  if (!IsRenderFrameLive())
     return;
   GetAssociatedLocalFrame()->StopLoading();
 }
@@ -9207,7 +9207,7 @@ bool RenderFrameHostImpl::IsSameSiteInstance(
 
 void RenderFrameHostImpl::UpdateAccessibilityMode() {
   // Don't update accessibility mode for a frame that hasn't been created yet.
-  if (!IsRenderFrameCreated())
+  if (!IsRenderFrameLive())
     return;
 
   ui::AXMode ax_mode = delegate_->GetAccessibilityMode();
@@ -9256,7 +9256,7 @@ void RenderFrameHostImpl::RequestAXTreeSnapshot(
     AXTreeSnapshotCallback callback,
     mojom::SnapshotAccessibilityTreeParamsPtr params) {
   // TODO(https://crbug.com/859110): Remove once frame_ can no longer be null.
-  if (!IsRenderFrameCreated())
+  if (!IsRenderFrameLive())
     return;
 
   GetMojomFrameInRenderer()->SnapshotAccessibilityTree(
@@ -9268,7 +9268,7 @@ void RenderFrameHostImpl::RequestAXTreeSnapshot(
 void RenderFrameHostImpl::RequestDistilledAXTree(
     AXTreeDistillerCallback callback) {
   // TODO(https://crbug.com/859110): Remove once frame_ can no longer be null.
-  if (!IsRenderFrameCreated())
+  if (!IsRenderFrameLive())
     return;
 
   GetMojomFrameInRenderer()->SnapshotAndDistillAXTree(
@@ -9347,10 +9347,6 @@ bool RenderFrameHostImpl::IsLastCommitIPAddressPubliclyRoutable() const {
                                  : net::IPEndPoint();
 
   return ip_end_point.address().IsPubliclyRoutable();
-}
-
-bool RenderFrameHostImpl::IsRenderFrameCreated() {
-  return is_render_frame_created();
 }
 
 bool RenderFrameHostImpl::IsRenderFrameLive() {

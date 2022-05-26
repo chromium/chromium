@@ -1866,7 +1866,6 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, CrashSubframe) {
   EXPECT_FALSE(
       child->current_frame_host()->render_view_host()->IsRenderViewLive());
   EXPECT_FALSE(child->current_frame_host()->IsRenderFrameLive());
-  EXPECT_FALSE(child->current_frame_host()->IsRenderFrameCreated());
 
   // Now crash the top-level page to clear the child frame.
   {

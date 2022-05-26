@@ -253,7 +253,7 @@ void PageImpl::UpdateBrowserControlsState(cc::BrowserControlsState constraints,
                                           bool animate) {
   // TODO(https://crbug.com/1154852): Asking for the LocalMainFrame interface
   // before the RenderFrame is created is racy.
-  if (!GetMainDocument().IsRenderFrameCreated())
+  if (!GetMainDocument().IsRenderFrameLive())
     return;
 
   GetMainDocument().GetAssociatedLocalMainFrame()->UpdateBrowserControlsState(

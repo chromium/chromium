@@ -242,7 +242,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // can be checked with IsRenderFrameLive().
   // NOTE: Due to historical relationships between RenderViewHost and
   // RenderWidgetHost, the main frame RenderWidgetHostView may initially exist
-  // before IsRenderFrameCreated() is true, but they would afterward change
+  // before IsRenderFrameLive() is true, but they would afterward change
   // values together. It is better to not rely on this behaviour as it is
   // intended to change. See https://crbug.com/419087.
   virtual RenderWidgetHostView* GetView() = 0;
@@ -638,13 +638,9 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // Returns whether the IP address of the last commit was publicly routable.
   virtual bool IsLastCommitIPAddressPubliclyRoutable() const = 0;
 
-  // Returns true if WebContentsObserver::RenderFrameCreated notification has
-  // been dispatched for this frame, and so a RenderFrameDeleted notification
-  // will later be dispatched for this frame.
-  virtual bool IsRenderFrameCreated() = 0;
-
   // Returns whether the RenderFrame in the renderer process has been created
   // and still has a connection.  This is valid for all frames.
+  // RenderFrameDeleted notification will later be dispatched for this frame.
   virtual bool IsRenderFrameLive() = 0;
 
   // Defines different states the RenderFrameHost can be in during its lifetime,

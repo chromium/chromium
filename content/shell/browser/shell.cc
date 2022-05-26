@@ -125,7 +125,7 @@ Shell* Shell::CreateShell(std::unique_ptr<WebContents> web_contents,
   // for windows opened from the renderer) then the Shell won't hear about the
   // main frame being created as a WebContentsObservers. This gives the delegate
   // a chance to act on the main frame accordingly.
-  if (raw_web_contents->GetMainFrame()->IsRenderFrameCreated())
+  if (raw_web_contents->GetMainFrame()->IsRenderFrameLive())
     g_platform->MainFrameCreated(shell);
 
   return shell;

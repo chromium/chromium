@@ -45,7 +45,7 @@ void BindMediaStreamDeviceObserverReceiver(
 
   RenderFrameHost* render_frame_host =
       RenderFrameHost::FromID(render_process_id, render_frame_id);
-  if (render_frame_host && render_frame_host->IsRenderFrameCreated())
+  if (render_frame_host && render_frame_host->IsRenderFrameLive())
     render_frame_host->GetRemoteInterfaces()->GetInterface(std::move(receiver));
 }
 

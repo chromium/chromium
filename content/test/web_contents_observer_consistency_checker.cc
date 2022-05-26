@@ -66,9 +66,6 @@ void WebContentsObserverConsistencyChecker::RenderFrameCreated(
                  << Format(render_frame_host);
   }
 
-  CHECK(render_frame_host->IsRenderFrameCreated())
-      << "RenderFrameCreated was called for a RenderFrameHost that has not been"
-         "marked created.";
   CHECK(render_frame_host->GetProcess()->IsInitializedAndNotDead())
       << "RenderFrameCreated was called for a RenderFrameHost whose render "
          "process is not currently live, so there's no way for the RenderFrame "
@@ -95,9 +92,6 @@ void WebContentsObserverConsistencyChecker::RenderFrameCreated(
 void WebContentsObserverConsistencyChecker::RenderFrameDeleted(
     RenderFrameHost* render_frame_host) {
   CHECK(!web_contents_destroyed_);
-  CHECK(!render_frame_host->IsRenderFrameCreated())
-      << "RenderFrameDeleted was called for a RenderFrameHost that is"
-         "(still) marked as created.";
   CHECK(!render_frame_host->IsRenderFrameLive())
       << "RenderFrameDeleted was called for a RenderFrameHost that is"
          "still live.";

@@ -233,7 +233,7 @@ class FindRequestManager::FrameObserver : public WebContentsObserver {
 
     manager_->RemoveFrame(rfh);
     // Make sure RenderFrameDeleted will be called to clean up
-    DCHECK(rfh->IsRenderFrameCreated());
+    DCHECK(rfh->IsRenderFrameLive());
 
     if (IsFindInPageDisabled(rfh))
       return;
