@@ -61,6 +61,13 @@ std::unique_ptr<views::ImageButton> CreateControlButton(
   button->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
   button->SetProperty(views::kMarginsKey, margin_insets);
   views::InstallCircleHighlightPathGenerator(button.get());
+  button->SetProperty(
+      views::kMarginsKey,
+      gfx::Insets().set_left(ChromeLayoutProvider::Get()->GetDistanceMetric(
+          views::DistanceMetric::DISTANCE_RELATED_CONTROL_HORIZONTAL)));
+  button->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification().WithAlignment(views::LayoutAlignment::kEnd));
 
   return button;
 }
@@ -383,19 +390,6 @@ std::unique_ptr<views::View> SidePanelCoordinator::CreateHeader() {
 
   header_combobox_ = header->AddChildView(CreateCombobox());
 
-  // Create an empty view between branding and buttons to align branding on left
-  // without hardcoding margins. This view fills up the empty space between the
-  // branding and the control buttons.
-  // TODO(pbos): This View seems like it should be avoidable by not having LHS
-  // and RHS content stretch? This is copied from the Lens side panel, but could
-  // probably by cleaned up?
-  auto container = std::make_unique<views::View>();
-  container->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                               views::MaximumFlexSizeRule::kUnbounded));
-  header->AddChildView(std::move(container));
-
   header->AddChildView(CreateControlButton(
       header.get(),
       base::BindRepeating(&SidePanelCoordinator::Close, base::Unretained(this)),
@@ -417,6 +411,13 @@ std::unique_ptr<views::Combobox> SidePanelCoordinator::CreateCombobox() {
 
   combobox->SetCallback(base::BindRepeating(
       &SidePanelCoordinator::OnComboboxChanged, base::Unretained(this)));
+  combobox->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::LayoutOrientation::kHorizontal,
+                               views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kUnbounded,
+                               /*adjust_height_for_width=*/false)
+          .WithAlignment(views::LayoutAlignment::kStart));
   return combobox;
 }
 
