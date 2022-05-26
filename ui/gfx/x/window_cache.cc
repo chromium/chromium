@@ -152,13 +152,13 @@ Window WindowCache::GetWindowAtPoint(gfx::Point point_px,
     }
   }
 
-  if (info->has_wm_name)
-    return window;
   for (Window child : base::Reversed(info->children)) {
     Window ret = GetWindowAtPoint(point_px, child, ignore);
     if (ret != Window::None)
       return ret;
   }
+  if (info->has_wm_name)
+    return window;
   return Window::None;
 }
 
