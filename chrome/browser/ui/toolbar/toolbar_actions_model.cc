@@ -45,6 +45,7 @@
 #include "extensions/browser/unloaded_extension_reason.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/manifest_constants.h"
+#include "extensions/common/permissions/permissions_data.h"
 
 ToolbarActionsModel::ToolbarActionsModel(
     Profile* profile,
@@ -232,6 +233,22 @@ const std::u16string ToolbarActionsModel::GetExtensionName(
     const ActionId& action_id) const {
   return base::UTF8ToUTF16(
       extension_registry_->enabled_extensions().GetByID(action_id)->name());
+}
+
+bool ToolbarActionsModel::IsRestrictedUrl(const GURL& url) const {
+  // We consider a site to be restricted if it's restricted for every
+  // extension in the toolbar. This can vary based on the extensions
+  // installed - if the user has an extension that can execute script
+  // everywhere and has an icon in the toolbar (like the non-ChromeOS version
+  // of ChromeVox), then otherwise-restricted sites may not be.
+  // If nay extension has access, we want to properly message that (since
+  // saying "No extensions can run..." is inaccurate). Other extensions
+  // will still be properly attributed in UI.
+  return std::all_of(
+      action_ids().begin(), action_ids().end(), [this, url](ActionId id) {
+        return GetExtensionById(id)->permissions_data()->IsRestrictedUrl(
+            url, /*error=*/nullptr);
+      });
 }
 
 bool ToolbarActionsModel::IsActionPinned(const ActionId& action_id) const {

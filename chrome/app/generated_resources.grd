@@ -5401,6 +5401,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_EXTENSIONS_MENU_SITE_ACCESS_TAB_NO_EXTENSIONS_HAVE_ACCESS_TEXT" desc="Text on the site access tab when no extensions have requested access to the current site's data. $1 is replaced with the current site.">
         No extensions have requested to read and change <ph name="SITE_NAME">$1<ex>google.com</ex></ph>
       </message>
+      <message name="IDS_EXTENSIONS_MENU_SITE_ACCESS_TAB_RESTRICTED_SITE_TEXT" desc="Text on the site access tab when the current site has restricted site access. $1 is replaced with the current site.">
+        No extensions are allowed to read and change <ph name="SITE_NAME">$1<ex>google.com</ex></ph>
+      </message>
       <message name="IDS_EXTENSIONS_MENU_SITE_ACCESS_TAB_USER_SETTINGS_TITLE" desc="Title of the button in the site access tab used to show/hide the user settings options.">
         Choose your default setting
       </message>

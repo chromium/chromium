@@ -152,6 +152,9 @@ class ExtensionsTabbedMenuViewUnitTest : public ExtensionsToolbarUnitTest {
   // Returns whether the requests access section is displayed on the site access
   // tab.
   bool IsRequestsAccessSectionDisplayed();
+  // Returns whether the site settings button is displayed on the site access
+  // tab.
+  bool IsSiteSettingsButtonDisplayed();
 
   // Opens the tabbed menu in the installed tab.
   void ShowInstalledTabInMenu();
@@ -229,6 +232,12 @@ bool ExtensionsTabbedMenuViewUnitTest::IsHasAccessSectionDisplayed() {
 
 bool ExtensionsTabbedMenuViewUnitTest::IsRequestsAccessSectionDisplayed() {
   return requests_access_items().size() != 0;
+}
+
+bool ExtensionsTabbedMenuViewUnitTest::IsSiteSettingsButtonDisplayed() {
+  return extensions_tabbed_menu()
+      ->GetSiteSettingsButtonForTesting()
+      ->GetVisible();
 }
 
 void ExtensionsTabbedMenuViewUnitTest::ShowInstalledTabInMenu() {
@@ -697,7 +706,8 @@ TEST_F(ExtensionsTabbedMenuViewUnitTest,
       browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL());
 }
 
-TEST_F(ExtensionsTabbedMenuViewUnitTest, SiteAccessTab_NoExtensionsHaveAccess) {
+TEST_F(ExtensionsTabbedMenuViewUnitTest,
+       SiteAccessTab_NoExtensionsRequestOrHaveAccess) {
   InstallExtension("Test Extension A");
   InstallExtension("Test Extension B");
 
@@ -709,12 +719,34 @@ TEST_F(ExtensionsTabbedMenuViewUnitTest, SiteAccessTab_NoExtensionsHaveAccess) {
       IDS_EXTENSIONS_MENU_SITE_ACCESS_TAB_NO_EXTENSIONS_HAVE_ACCESS_TEXT,
       url_formatter::IDNToUnicode(url_formatter::StripWWW(url.host())));
 
-  // Verify only the correct message is displayed when no extensions have access
-  // to the current site.
+  // Verify the correct message and site settings button are displayed when no
+  // extensions request or have access to the current site.
   EXPECT_TRUE(site_access_message()->GetVisible());
   EXPECT_EQ(site_access_message()->GetText(), no_extensions_have_access_text);
   EXPECT_FALSE(IsHasAccessSectionDisplayed());
   EXPECT_FALSE(IsRequestsAccessSectionDisplayed());
+  EXPECT_TRUE(IsSiteSettingsButtonDisplayed());
+}
+
+TEST_F(ExtensionsTabbedMenuViewUnitTest, SiteAccessTab_RestrictedSite) {
+  InstallExtension("Test Extension A");
+  InstallExtension("Test Extension B");
+
+  const GURL restricted_url("chrome://extensions");
+  web_contents_tester()->NavigateAndCommit(restricted_url);
+  ShowSiteAccessTabInMenu();
+
+  auto restricted_site_text = l10n_util::GetStringFUTF16(
+      IDS_EXTENSIONS_MENU_SITE_ACCESS_TAB_RESTRICTED_SITE_TEXT,
+      base::UTF8ToUTF16(restricted_url.host()));
+
+  // Verify only the correct message is displayed on a restricted site,
+  // regardless of extensions and site settings access,
+  EXPECT_TRUE(site_access_message()->GetVisible());
+  EXPECT_EQ(site_access_message()->GetText(), restricted_site_text);
+  EXPECT_FALSE(IsHasAccessSectionDisplayed());
+  EXPECT_FALSE(IsRequestsAccessSectionDisplayed());
+  EXPECT_FALSE(IsSiteSettingsButtonDisplayed());
 }
 
 TEST_F(ExtensionsTabbedMenuViewUnitTest,
@@ -743,6 +775,10 @@ TEST_F(ExtensionsTabbedMenuViewUnitTest,
   // Extension with no host permissions does not have site access, and it should
   // not be in any site access section.
   EXPECT_EQ(requests_access_items().size(), 0u);
+
+  // Site settings button should always be displayed, except for restricted
+  // sites.
+  EXPECT_TRUE(IsSiteSettingsButtonDisplayed());
 }
 
 // TODO(crbug.com/1304951): Test is flaky.

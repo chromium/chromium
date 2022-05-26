@@ -711,33 +711,47 @@ void ExtensionsTabbedMenuView::UpdateSiteAccessTab() {
     return;
   }
 
-  // TODO(crbug.com/1263310): If user is on a chrome:-scheme page, show
-  // respective message, and hide site settings.
-  url::Origin origin = url::Origin::Create(web_contents->GetLastCommittedURL());
-  extensions::PermissionsManager::UserSiteSetting site_setting =
-      extensions::PermissionsManager::Get(browser_->profile())
-          ->GetUserSiteSetting(origin);
-  switch (site_setting) {
-    case extensions::PermissionsManager::UserSiteSetting::kGrantAllExtensions:
-      SetButtonChecked(site_settings_, kGrantAllExtensionsIndex);
-      UpdateSiteAccessSectionsVisibility(kDontShowCombobox);
-      // TODO(crbug.com/1263310): After finishing implementation of user
-      // permission (grant user permissions with precedence over extension
-      // permissions), check that "requests access" section is hidden, and
-      // either "has access" section or message is visible.
-      break;
-    case extensions::PermissionsManager::UserSiteSetting::kBlockAllExtensions:
-      SetButtonChecked(site_settings_, kBlockAllExtensionsIndex);
-      site_access_message_->SetText(l10n_util::GetStringUTF16(
-          IDS_EXTENSIONS_MENU_SITE_ACCESS_TAB_BLOCK_ALL_EXTENSIONS_TEXT));
-      site_access_message_->SetVisible(true);
-      has_access_.container->SetVisible(false);
-      requests_access_.container->SetVisible(false);
-      break;
-    case extensions::PermissionsManager::UserSiteSetting::kCustomizeByExtension:
-      SetButtonChecked(site_settings_, kCustomizeByExtensionIndex);
-      UpdateSiteAccessSectionsVisibility(kShowCombobox);
-      break;
+  const GURL& url = web_contents->GetLastCommittedURL();
+  // Only display a special message in the tab if the url is restricted, since
+  // the user is not able to select any site permissions. Otherwise, populate
+  // the tab according to the site setting selected.
+  if (toolbar_model_->IsRestrictedUrl(url)) {
+    SetLabelTextAndStyle(
+        *site_access_message_,
+        IDS_EXTENSIONS_MENU_SITE_ACCESS_TAB_RESTRICTED_SITE_TEXT,
+        GetCurrentHost(web_contents));
+    site_access_message_->SetVisible(true);
+    has_access_.container->SetVisible(false);
+    requests_access_.container->SetVisible(false);
+    site_settings_button_->SetVisible(false);
+  } else {
+    url::Origin origin = url::Origin::Create(url);
+    extensions::PermissionsManager::UserSiteSetting site_setting =
+        extensions::PermissionsManager::Get(browser_->profile())
+            ->GetUserSiteSetting(origin);
+    switch (site_setting) {
+      case extensions::PermissionsManager::UserSiteSetting::kGrantAllExtensions:
+        SetButtonChecked(site_settings_, kGrantAllExtensionsIndex);
+        UpdateSiteAccessSectionsVisibility(kDontShowCombobox);
+        // TODO(crbug.com/1263310): After finishing implementation of user
+        // permission (grant user permissions with precedence over extension
+        // permissions), check that "requests access" section is hidden, and
+        // either "has access" section or message is visible.
+        break;
+      case extensions::PermissionsManager::UserSiteSetting::kBlockAllExtensions:
+        SetButtonChecked(site_settings_, kBlockAllExtensionsIndex);
+        site_access_message_->SetText(l10n_util::GetStringUTF16(
+            IDS_EXTENSIONS_MENU_SITE_ACCESS_TAB_BLOCK_ALL_EXTENSIONS_TEXT));
+        site_access_message_->SetVisible(true);
+        has_access_.container->SetVisible(false);
+        requests_access_.container->SetVisible(false);
+        break;
+      case extensions::PermissionsManager::UserSiteSetting::
+          kCustomizeByExtension:
+        SetButtonChecked(site_settings_, kCustomizeByExtensionIndex);
+        UpdateSiteAccessSectionsVisibility(kShowCombobox);
+        break;
+    }
   }
 
   // Site access tab updates can happen during the menu construction, and
