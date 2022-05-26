@@ -1,0 +1,36 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_SEGMENTATION_PLATFORM_CONTENT_PAGE_LOAD_TRIGGER_CONTEXT_H_
+#define COMPONENTS_SEGMENTATION_PLATFORM_CONTENT_PAGE_LOAD_TRIGGER_CONTEXT_H_
+
+#include "base/memory/raw_ptr.h"
+#include "components/segmentation_platform/public/trigger_context.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/jni_android.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
+namespace content {
+class WebContents;
+}  // namespace content
+
+namespace segmentation_platform {
+
+// Contains contextual information for a page load trigger event.
+struct PageLoadTriggerContext : public TriggerContext {
+ public:
+  explicit PageLoadTriggerContext(content::WebContents* web_contents);
+  ~PageLoadTriggerContext() override;
+
+#if BUILDFLAG(IS_ANDROID)
+  base::android::ScopedJavaLocalRef<jobject> CreateJavaObject() const override;
+#endif  // BUILDFLAG(IS_ANDROID)
+
+  raw_ptr<content::WebContents> web_contents;
+};
+
+}  // namespace segmentation_platform
+
+#endif  // COMPONENTS_SEGMENTATION_PLATFORM_CONTENT_PAGE_LOAD_TRIGGER_CONTEXT_H_
