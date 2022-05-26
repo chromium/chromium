@@ -74,55 +74,6 @@ SHA256HashValue CalculateFingerprint256(SecCertificateRef cert) {
   return sha256;
 }
 
-OSStatus CreateSSLClientPolicy(SecPolicyRef* policy) {
-  *policy = SecPolicyCreateSSL(false /* server */, nullptr);
-  return *policy ? OSStatus{noErr} : errSecNoPolicyModule;
-}
-
-OSStatus CreateSSLServerPolicy(const std::string& hostname,
-                               SecPolicyRef* policy) {
-  base::ScopedCFTypeRef<CFStringRef> hostname_cfstring;
-  if (!hostname.empty()) {
-    hostname_cfstring.reset(base::SysUTF8ToCFStringRef(hostname));
-    if (!hostname_cfstring)
-      return errSecNoPolicyModule;
-  }
-
-  *policy = SecPolicyCreateSSL(true /* server */, hostname_cfstring.get());
-  return *policy ? OSStatus{noErr} : errSecNoPolicyModule;
-}
-
-OSStatus CreateBasicX509Policy(SecPolicyRef* policy) {
-  *policy = SecPolicyCreateBasicX509();
-  return *policy ? OSStatus{noErr} : errSecNoPolicyModule;
-}
-
-OSStatus CreateRevocationPolicies(bool enable_revocation_checking,
-                                  CFMutableArrayRef policies) {
-  // On Sierra, it's not possible to disable network revocation checking
-  // without also breaking AIA. If revocation checking isn't explicitly
-  // enabled, just don't add a revocation policy.
-  if (!enable_revocation_checking)
-    return noErr;
-
-  // If revocation checking is requested, enable checking and require positive
-  // results. Note that this will fail if there are certs with no
-  // CRLDistributionPoints or OCSP AIA urls, which differs from the behavior
-  // of |enable_revocation_checking| on pre-10.12. There does not appear to be
-  // a way around this, but it shouldn't matter much in practice since
-  // revocation checking is generally used with EV certs, where it is expected
-  // that all certs include revocation mechanisms.
-  SecPolicyRef revocation_policy =
-      SecPolicyCreateRevocation(kSecRevocationUseAnyAvailableMethod |
-                                kSecRevocationRequirePositiveResponse);
-
-  if (!revocation_policy)
-    return errSecNoPolicyModule;
-  CFArrayAppendValue(policies, revocation_policy);
-  CFRelease(revocation_policy);
-  return noErr;
-}
-
 CSSMFieldValue::CSSMFieldValue()
     : cl_handle_(CSSM_INVALID_HANDLE),
       oid_(NULL),

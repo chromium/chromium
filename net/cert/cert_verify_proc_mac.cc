@@ -212,21 +212,30 @@ OSStatus CreateTrustPolicies(int flags, ScopedCFTypeRef<CFArrayRef>* policies) {
   if (!local_policies)
     return memFullErr;
 
-  SecPolicyRef ssl_policy;
-  OSStatus status =
-      x509_util::CreateSSLServerPolicy(std::string(), &ssl_policy);
-  if (status)
-    return status;
+  ScopedCFTypeRef<SecPolicyRef> ssl_policy(
+      SecPolicyCreateSSL(/*server=*/true, /*hostname=*/nullptr));
+  if (!ssl_policy)
+    return errSecNoPolicyModule;
   CFArrayAppendValue(local_policies, ssl_policy);
-  CFRelease(ssl_policy);
 
   // Explicitly add revocation policies, in order to override system
   // revocation checking policies and instead respect the application-level
   // revocation preference.
-  status = x509_util::CreateRevocationPolicies(
-      (flags & CertVerifyProc::VERIFY_REV_CHECKING_ENABLED), local_policies);
-  if (status)
-    return status;
+  if (flags & CertVerifyProc::VERIFY_REV_CHECKING_ENABLED) {
+    // If revocation checking is requested, enable checking and require positive
+    // results. Note that this will fail if there are certs with no
+    // CRLDistributionPoints or OCSP AIA urls, which differs from the behavior
+    // of |enable_revocation_checking| on pre-10.12. There does not appear to be
+    // a way around this, but it shouldn't matter much in practice since
+    // revocation checking is generally used with EV certs, where it is expected
+    // that all certs include revocation mechanisms.
+    ScopedCFTypeRef<SecPolicyRef> revocation_policy(
+        SecPolicyCreateRevocation(kSecRevocationUseAnyAvailableMethod |
+                                  kSecRevocationRequirePositiveResponse));
+    if (!revocation_policy)
+      return errSecNoPolicyModule;
+    CFArrayAppendValue(local_policies, revocation_policy);
+  }
 
   policies->reset(local_policies.release());
   return noErr;

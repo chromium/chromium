@@ -45,20 +45,12 @@ void ShowCertificateViewerForWindow(NSWindow* owning_window,
   }
   // Add a basic X.509 policy, in order to match the behaviour of
   // SFCertificatePanel when no policies are specified.
-  base::ScopedCFTypeRef<SecPolicyRef> basic_policy;
-  OSStatus status =
-      net::x509_util::CreateBasicX509Policy(basic_policy.InitializeInto());
-  if (status != noErr) {
+  base::ScopedCFTypeRef<SecPolicyRef> basic_policy(SecPolicyCreateBasicX509());
+  if (!basic_policy) {
     NOTREACHED();
     return;
   }
   CFArrayAppendValue(policies, basic_policy.get());
-
-  status = net::x509_util::CreateRevocationPolicies(false, policies);
-  if (status != noErr) {
-    NOTREACHED();
-    return;
-  }
 
   SFCertificatePanel* panel = [[SFCertificatePanel alloc] init];
   [panel setPolicies:base::mac::CFToNSCast(policies.get())];
