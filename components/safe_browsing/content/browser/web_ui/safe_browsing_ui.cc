@@ -14,6 +14,7 @@
 #include "base/base64url.h"
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/i18n/number_formatting.h"
 #include "base/i18n/time_formatting.h"
@@ -171,11 +172,19 @@ void WebUIInfoSingleton::AddToCSBRRsSent(
   for (auto* webui_listener : webui_instances_)
     webui_listener->NotifyCSBRRJsListener(csbrr.get());
   csbrrs_sent_.push_back(std::move(csbrr));
+  if (on_csbrr_logged_for_testing_) {
+    std::move(on_csbrr_logged_for_testing_).Run();
+  }
 }
 
 void WebUIInfoSingleton::ClearCSBRRsSent() {
   std::vector<std::unique_ptr<ClientSafeBrowsingReportRequest>>().swap(
       csbrrs_sent_);
+}
+
+void WebUIInfoSingleton::SetOnCSBRRLoggedCallbackForTesting(
+    base::OnceClosure on_done) {
+  on_csbrr_logged_for_testing_ = std::move(on_done);
 }
 
 void WebUIInfoSingleton::AddToHitReportsSent(
@@ -410,6 +419,7 @@ WebUIInfoSingleton::GetReferringAppInfo(content::WebContents* web_contents) {
 
 void WebUIInfoSingleton::ClearListenerForTesting() {
   has_test_listener_ = false;
+  on_csbrr_logged_for_testing_ = base::NullCallback();
   MaybeClearData();
 }
 

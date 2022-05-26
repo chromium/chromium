@@ -201,10 +201,12 @@ class FakeSafeBrowsingService : public TestSafeBrowsingService {
     return it->second;
   }
 
-  void SendSerializedDownloadReport(Profile* profile,
-                                    const std::string& report) override {
+  PingManager::ReportThreatDetailsResult SendDownloadReport(
+      Profile* profile,
+      std::unique_ptr<ClientSafeBrowsingReportRequest> report) override {
+    report->SerializeToString(&latest_report_);
     download_report_count_++;
-    latest_report_ = report;
+    return PingManager::ReportThreatDetailsResult::SUCCESS;
   }
 
   network::TestURLLoaderFactory* GetTestURLLoaderFactory(Profile* profile) {

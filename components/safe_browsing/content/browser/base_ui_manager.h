@@ -11,6 +11,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/memory/ref_counted.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
 
 class GURL;
@@ -49,11 +50,10 @@ class BaseUIManager : public base::RefCountedThreadSafe<BaseUIManager> {
   virtual void DisplayBlockingPage(const UnsafeResource& resource);
 
   // This is a no-op in the base class, but should be overridden to send threat
-  // details. Called on the UI thread by the ThreatDetails with the serialized
-  // protocol buffer.
-  virtual void SendSerializedThreatDetails(
+  // details. Called on the UI thread by the ThreatDetails with the report.
+  virtual void SendThreatDetails(
       content::BrowserContext* browser_context,
-      const std::string& serialized);
+      std::unique_ptr<ClientSafeBrowsingReportRequest> report);
 
   // Updates the allowlist URL set for |web_contents|. Called on the UI thread.
   void AddToAllowlistUrlSet(const GURL& allowlist_url,

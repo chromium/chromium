@@ -17,8 +17,10 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/browser/ping_manager.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
@@ -91,6 +93,7 @@ void ChromePingManagerTest::SetUp() {
   sb_service_ = base::MakeRefCounted<safe_browsing::TestSafeBrowsingService>();
   TestingBrowserProcess::GetGlobal()->SetSafeBrowsingService(sb_service_.get());
   g_browser_process->safe_browsing_service()->Initialize();
+  WebUIInfoSingleton::GetInstance()->AddListenerForTesting();
 }
 
 void ChromePingManagerTest::TearDown() {
@@ -102,6 +105,7 @@ void ChromePingManagerTest::TearDown() {
   }
 
   feature_list_.Reset();
+  WebUIInfoSingleton::GetInstance()->ClearListenerForTesting();
 }
 
 void ChromePingManagerTest::SetUpFeatureList(
@@ -155,6 +159,7 @@ void ChromePingManagerTest::RunReportThreatDetailsTest(
     bool is_remove_cookies_feature_enabled,
     bool expect_access_token,
     bool expect_cookies_removed) {
+  base::RunLoop csbrr_logged_run_loop;
   base::HistogramTester histogram_tester;
   SetUpFeatureList(is_csbrr_token_feature_enabled,
                    is_remove_cookies_feature_enabled);
@@ -162,9 +167,17 @@ void ChromePingManagerTest::RunReportThreatDetailsTest(
       SetUpProfile(is_enhanced_protection, is_signed_in);
   auto* ping_manager = ChromePingManagerFactory::GetForBrowserContext(profile);
   auto* raw_token_fetcher = SetUpTokenFetcher(ping_manager);
+  safe_browsing::WebUIInfoSingleton::GetInstance()
+      ->SetOnCSBRRLoggedCallbackForTesting(csbrr_logged_run_loop.QuitClosure());
 
   std::string access_token = "testing_access_token";
-  std::string report_content = "testing_report_content";
+  std::string report_content;
+  std::unique_ptr<ClientSafeBrowsingReportRequest> report =
+      std::make_unique<ClientSafeBrowsingReportRequest>();
+  // The report must be non-empty. The selected property to set is arbitrary.
+  report->set_type(ClientSafeBrowsingReportRequest::URL_PHISHING);
+  EXPECT_TRUE(report->SerializeToString(&report_content));
+
   network::TestURLLoaderFactory test_url_loader_factory;
   test_url_loader_factory.SetInterceptor(
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
@@ -189,11 +202,15 @@ void ChromePingManagerTest::RunReportThreatDetailsTest(
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &test_url_loader_factory));
 
-  ping_manager->ReportThreatDetails(report_content);
+  PingManager::ReportThreatDetailsResult result =
+      ping_manager->ReportThreatDetails(std::move(report));
+  EXPECT_EQ(result, PingManager::ReportThreatDetailsResult::SUCCESS);
   EXPECT_EQ(raw_token_fetcher->WasStartCalled(), expect_access_token);
   if (expect_access_token) {
     raw_token_fetcher->RunAccessTokenCallback(access_token);
   }
+  csbrr_logged_run_loop.Run();
+  EXPECT_EQ(WebUIInfoSingleton::GetInstance()->csbrrs_sent().size(), 1u);
 }
 
 TEST_F(ChromePingManagerTest, ReportThreatDetailsWithAccessToken) {

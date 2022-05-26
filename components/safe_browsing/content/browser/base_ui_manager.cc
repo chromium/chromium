@@ -357,9 +357,9 @@ void BaseUIManager::MaybeReportSafeBrowsingHit(
 
 // If the user had opted-in to send ThreatDetails, this gets called
 // when the report is ready.
-void BaseUIManager::SendSerializedThreatDetails(
+void BaseUIManager::SendThreatDetails(
     content::BrowserContext* browser_context,
-    const std::string& serialized) {
+    std::unique_ptr<ClientSafeBrowsingReportRequest> report) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return;
 }
