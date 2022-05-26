@@ -1132,7 +1132,7 @@ const base::Feature kPerformantSplitViewResizing{
 // Provides a UI for users to customize their wallpapers, screensaver and
 // avatars.
 const base::Feature kPersonalizationHub{"PersonalizationHub",
-                                        base::FEATURE_ENABLED_BY_DEFAULT};
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Provides a UI for users to view information about their Android phone
 // and perform phone-side actions within ChromeOS.
