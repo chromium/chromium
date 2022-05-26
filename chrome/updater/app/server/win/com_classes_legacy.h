@@ -215,8 +215,6 @@ class LegacyProcessLauncherImpl
 // Placeholders may be embedded within words, and appropriate quoting of
 // back-slash, double-quotes, space, and tab is applied if necessary.
 //
-// TODO(crbug/1318293): Verify AppCommand executables are authenticode signed by
-// Google before executing them.
 // TODO(crbug/1316682): Implement AutoRunOnOSUpgrade app commands.
 class LegacyAppCommandWebImpl
     : public Microsoft::WRL::RuntimeClass<

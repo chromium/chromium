@@ -427,8 +427,10 @@ bool WaitFor(base::RepeatingCallback<bool()> predicate) {
   while (base::TimeTicks::Now() < deadline) {
     if (predicate.Run())
       return true;
-    base::PlatformThread::Sleep(base::Milliseconds(200));
+
+    base::WaitableEvent().TimedWait(TestTimeouts::tiny_timeout());
   }
+
   return false;
 }
 

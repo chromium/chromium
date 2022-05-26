@@ -165,6 +165,15 @@ class IntegrationTest : public ::testing::Test {
     test_commands_->ExpectLegacyProcessLauncherSucceeds();
   }
 
+  void ExpectLegacyAppCommandWebSucceeds(
+      const std::string& app_id,
+      const std::string& command_id,
+      const base::Value::ListStorage& parameters,
+      int expected_exit_code) {
+    test_commands_->ExpectLegacyAppCommandWebSucceeds(
+        app_id, command_id, parameters, expected_exit_code);
+  }
+
   void RunUninstallCmdLine() { test_commands_->RunUninstallCmdLine(); }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -514,6 +523,19 @@ TEST_F(IntegrationTest, LegacyUpdate3Web) {
 TEST_F(IntegrationTest, LegacyProcessLauncher) {
   Install();
   ExpectLegacyProcessLauncherSucceeds();
+  Uninstall();
+}
+
+TEST_F(IntegrationTest, LegacyAppCommandWeb) {
+  Install();
+
+  const char kAppId[] = "test1";
+  InstallApp(kAppId);
+
+  base::Value::ListStorage parameters;
+  parameters.push_back(base::Value("5432"));
+  ExpectLegacyAppCommandWebSucceeds(kAppId, "command1", parameters, 5432);
+
   Uninstall();
 }
 

@@ -176,6 +176,15 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
     updater::test::ExpectLegacyProcessLauncherSucceeds(updater_scope_);
   }
 
+  void ExpectLegacyAppCommandWebSucceeds(
+      const std::string& app_id,
+      const std::string& command_id,
+      const base::Value::ListStorage& parameters,
+      int expected_exit_code) const override {
+    updater::test::ExpectLegacyAppCommandWebSucceeds(
+        updater_scope_, app_id, command_id, parameters, expected_exit_code);
+  }
+
   void RunUninstallCmdLine() const override {
     updater::test::RunUninstallCmdLine(updater_scope_);
   }

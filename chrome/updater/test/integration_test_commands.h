@@ -76,6 +76,11 @@ class IntegrationTestCommands
       int expected_final_state,
       int expected_error_code) const = 0;
   virtual void ExpectLegacyProcessLauncherSucceeds() const = 0;
+  virtual void ExpectLegacyAppCommandWebSucceeds(
+      const std::string& app_id,
+      const std::string& command_id,
+      const base::Value::ListStorage& parameters,
+      int expected_exit_code) const = 0;
   virtual void RunUninstallCmdLine() const = 0;
   virtual void SetUpTestService() const = 0;
   virtual void TearDownTestService() const = 0;

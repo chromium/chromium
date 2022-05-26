@@ -371,10 +371,8 @@ STDMETHODIMP LegacyOnDemandImpl::get_nextVersionWeb(IDispatch** next) {
 
 STDMETHODIMP LegacyOnDemandImpl::get_command(BSTR command_id,
                                              IDispatch** command) {
-  // TODO(crbug/1318293): Verify AppCommand executables are authenticode signed
-  // by Google before executing them.
-  // TODO(crbug/1318304): Add integration tests for AppCommands.
-  return E_NOTIMPL;
+  return LegacyAppCommandWebImpl::CreateAppCommandWeb(
+      GetUpdaterScope(), base::UTF8ToWide(app_id()), command_id, command);
 }
 
 STDMETHODIMP LegacyOnDemandImpl::get_currentState(IDispatch** current_state) {

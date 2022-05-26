@@ -38,6 +38,7 @@
 #include "base/version.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_bstr.h"
+#include "base/win/scoped_variant.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/updater/app/server/win/updater_idl.h"
@@ -338,6 +339,45 @@ void SleepFor(int seconds) {
   VLOG(2) << "Sleeping " << seconds << " seconds...";
   base::WaitableEvent().TimedWait(base::Seconds(seconds));
   VLOG(2) << "Sleep complete.";
+}
+
+void SetupAppCommand(UpdaterScope scope,
+                     const std::wstring& app_id,
+                     const std::wstring& command_id,
+                     base::ScopedTempDir& temp_dir) {
+  base::FilePath system_path;
+  ASSERT_TRUE(base::PathService::Get(base::DIR_SYSTEM, &system_path));
+
+  const wchar_t kCmdExe[] = L"cmd.exe";
+  const base::FilePath from_test_process = system_path.Append(kCmdExe);
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+
+  if (scope == UpdaterScope::kUser) {
+    command_line = base::CommandLine(from_test_process);
+  } else {
+    base::FilePath programfiles_path;
+    ASSERT_TRUE(
+        base::PathService::Get(base::DIR_PROGRAM_FILES, &programfiles_path));
+    ASSERT_TRUE(temp_dir.CreateUniqueTempDirUnderPath(programfiles_path));
+    base::FilePath test_process_path = temp_dir.GetPath().Append(kCmdExe);
+
+    ASSERT_TRUE(base::CopyFile(from_test_process, test_process_path));
+    command_line = base::CommandLine(test_process_path);
+  }
+
+  base::win::RegKey command_key;
+  ASSERT_EQ(command_key.Create(UpdaterScopeToHKeyRoot(scope),
+                               base::StrCat({CLIENTS_KEY, app_id, L"\\",
+                                             kRegKeyCommands, command_id})
+                                   .c_str(),
+                               Wow6432(KEY_WRITE)),
+            ERROR_SUCCESS);
+  ASSERT_EQ(
+      command_key.WriteValue(kRegValueCommandLine,
+                             base::StrCat({command_line.GetCommandLineString(),
+                                           L" /c \"exit %1\""})
+                                 .c_str()),
+      ERROR_SUCCESS);
 }
 
 class WindowEnumerator {
@@ -861,6 +901,63 @@ void ExpectLegacyProcessLauncherSucceeds(UpdaterScope scope) {
             process_launcher->LaunchCmdElevated(kAppId1, _T("fc"),
                                                 caller_proc_id, &proc_handle));
   EXPECT_EQ(static_cast<ULONG_PTR>(0), proc_handle);
+}
+
+void ExpectLegacyAppCommandWebSucceeds(
+    UpdaterScope scope,
+    const std::string& app_id,
+    const std::string& command_id,
+    const base::Value::ListStorage& parameters,
+    int expected_exit_code) {
+  const size_t kMaxParameters = 9;
+  ASSERT_LE(parameters.size(), kMaxParameters);
+
+  base::ScopedTempDir temp_dir;
+  const std::wstring appid = base::UTF8ToWide(app_id);
+  const std::wstring commandid = base::UTF8ToWide(command_id);
+
+  SetupAppCommand(scope, appid, commandid, temp_dir);
+
+  Microsoft::WRL::ComPtr<IAppBundleWeb> bundle;
+  ASSERT_HRESULT_SUCCEEDED(InitializeBundle(scope, bundle));
+  ASSERT_HRESULT_SUCCEEDED(
+      bundle->createInstalledApp(base::win::ScopedBstr(appid).Get()));
+
+  Microsoft::WRL::ComPtr<IDispatch> app_dispatch;
+  ASSERT_HRESULT_SUCCEEDED(bundle->get_appWeb(0, &app_dispatch));
+  Microsoft::WRL::ComPtr<IAppWeb> app;
+  ASSERT_HRESULT_SUCCEEDED(app_dispatch.As(&app));
+
+  Microsoft::WRL::ComPtr<IDispatch> command_dispatch;
+  ASSERT_HRESULT_SUCCEEDED(app->get_command(
+      base::win::ScopedBstr(commandid).Get(), &command_dispatch));
+  Microsoft::WRL::ComPtr<IAppCommandWeb> app_command_web;
+  ASSERT_HRESULT_SUCCEEDED(command_dispatch.As(&app_command_web));
+
+  std::vector<base::win::ScopedVariant> variant_params;
+  variant_params.reserve(kMaxParameters);
+  std::transform(parameters.begin(), parameters.end(),
+                 std::back_inserter(variant_params), [](const auto& param) {
+                   return base::win::ScopedVariant(
+                       base::UTF8ToWide(param.GetString()).c_str());
+                 });
+  for (size_t i = parameters.size(); i < kMaxParameters; ++i)
+    variant_params.emplace_back(base::win::ScopedVariant::kEmptyVariant);
+
+  ASSERT_HRESULT_SUCCEEDED(app_command_web->execute(
+      variant_params[0], variant_params[1], variant_params[2],
+      variant_params[3], variant_params[4], variant_params[5],
+      variant_params[6], variant_params[7], variant_params[8]));
+
+  EXPECT_TRUE(WaitFor(base::BindLambdaForTesting([&]() {
+    UINT status = 0;
+    EXPECT_HRESULT_SUCCEEDED(app_command_web->get_status(&status));
+    return status == COMMAND_STATUS_COMPLETE;
+  })));
+
+  DWORD exit_code = 0;
+  EXPECT_HRESULT_SUCCEEDED(app_command_web->get_exitCode(&exit_code));
+  EXPECT_EQ(exit_code, static_cast<DWORD>(expected_exit_code));
 }
 
 int RunVPythonCommand(const base::CommandLine& command_line) {

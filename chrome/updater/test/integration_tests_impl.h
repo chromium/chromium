@@ -165,6 +165,12 @@ void ExpectLegacyUpdate3WebSucceeds(UpdaterScope scope,
                                     int expected_final_state,
                                     int expected_error_code);
 void ExpectLegacyProcessLauncherSucceeds(UpdaterScope scope);
+void ExpectLegacyAppCommandWebSucceeds(
+    UpdaterScope scope,
+    const std::string& app_id,
+    const std::string& command_id,
+    const base::Value::ListStorage& parameters,
+    int expected_exit_code);
 void RunTestServiceCommand(const std::string& sub_command);
 
 // Calls a function defined in test/service/win/rpc_client.py.

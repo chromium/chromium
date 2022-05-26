@@ -57,10 +57,10 @@ constexpr int kSuccess = 0;
 constexpr int kUnknownSwitch = 101;
 constexpr int kBadCommand = 102;
 
-base::Value::DictStorage DictStorageFromString(const std::string& values) {
+base::Value ValueFromString(const std::string& values) {
   absl::optional<base::Value> results_value = base::JSONReader::Read(values);
   EXPECT_TRUE(results_value);
-  return results_value->Clone().TakeDictDeprecated();
+  return results_value->Clone();
 }
 
 template <typename... Args>
@@ -156,7 +156,22 @@ base::RepeatingCallback<bool(Args...)> WithSwitch(
   return WithSwitch(
       flag,
       base::BindLambdaForTesting([=](const std::string& flag, Args... args) {
-        return callback.Run(DictStorageFromString(flag), std::move(args)...);
+        return callback.Run(ValueFromString(flag).TakeDictDeprecated(),
+                            std::move(args)...);
+      }));
+}
+
+// Overload for base::Value::ListStorage switches.
+template <typename... Args>
+base::RepeatingCallback<bool(Args...)> WithSwitch(
+    const std::string& flag,
+    base::RepeatingCallback<bool(const base::Value::ListStorage&, Args...)>
+        callback) {
+  return WithSwitch(
+      flag,
+      base::BindLambdaForTesting([=](const std::string& flag, Args... args) {
+        return callback.Run(ValueFromString(flag).TakeListDeprecated(),
+                            std::move(args)...);
       }));
 }
 
@@ -244,6 +259,16 @@ void AppTestHelper::FirstTaskRun() {
                                           &ExpectLegacyUpdate3WebSucceeds)))))},
     {"expect_legacy_process_launcher_succeeds",
      WithSystemScope(Wrap(&ExpectLegacyProcessLauncherSucceeds))},
+    {"expect_legacy_app_command_web_succeeds",
+     WithSwitch(
+         "expected_exit_code",
+         WithSwitch(
+             "parameters",
+             WithSwitch(
+                 "command_id",
+                 WithSwitch("app_id",
+                            WithSystemScope(
+                                Wrap(&ExpectLegacyAppCommandWebSucceeds))))))},
     {"run_uninstall_cmd_line", WithSystemScope(Wrap(&RunUninstallCmdLine))},
 #endif  // BUILDFLAG(IS_WIN)
     {"expect_version_active",
