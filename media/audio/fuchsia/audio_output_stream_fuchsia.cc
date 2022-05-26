@@ -24,6 +24,8 @@ const uint32_t kBufferId = 0;
 
 fuchsia::media::AudioRenderUsage GetStreamUsage(
     const AudioParameters& parameters) {
+  // TODO(crbug.com/1253010) In WebEngine: use `audio_renderer_usage` from the
+  // `FrameMediaSettings` for the current web frame.
   if (parameters.latency_tag() == AudioLatency::LATENCY_RTC)
     return fuchsia::media::AudioRenderUsage::COMMUNICATION;
   return fuchsia::media::AudioRenderUsage::MEDIA;

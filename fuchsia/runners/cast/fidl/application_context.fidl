@@ -7,7 +7,9 @@ library chromium.cast;
 
 @discoverable
 protocol ApplicationContext {
-    /// Returns session_id to use in the AudioConsumer API.
+    /// Returns `session_id` to use in the AudioConsumer API. May return 0
+    /// if there is no media session associated with the app. In this case
+    /// audio will be rendered through AudioRenderer.
     GetMediaSessionId() -> (struct {
         media_session_id uint64;
     });

@@ -996,8 +996,9 @@ void FrameImpl::InitWindowTreeHost() {
   // to the view-tree to be displayed. See https://crbug.com/1109270
 }
 
-void FrameImpl::SetMediaSessionId(uint64_t session_id) {
-  media_session_id_ = session_id;
+void FrameImpl::SetMediaSettings(
+    fuchsia::web::FrameMediaSettings media_settings) {
+  media_settings_ = std::move(media_settings);
 }
 
 void FrameImpl::MediaStartedPlaying(const MediaPlayerInfo& video_type,
