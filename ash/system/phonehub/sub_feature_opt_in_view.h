@@ -31,6 +31,7 @@ class ASH_EXPORT SubFeatureOptInView : public views::View {
   SubFeatureOptInView(PhoneHubViewID view_id,
                       int description_string_id,
                       int set_up_button_string_id);
+  void RefreshDescription(int description_string_id);
 
  private:
   void InitLayout();

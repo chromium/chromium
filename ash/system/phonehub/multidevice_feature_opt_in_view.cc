@@ -172,11 +172,18 @@ void MultideviceFeatureOptInView::OnCameraRollAccessChanged() {
 
 void MultideviceFeatureOptInView::UpdateVisibility() {
   DCHECK(multidevice_feature_access_manager_);
-  // Refresh the permission status.
-  setup_mode_ = GetPermissionSetupMode(multidevice_feature_access_manager_);
+  // Refresh the permission status if changed
+  phonehub::util::PermissionsOnboardingSetUpMode current_mode =
+      GetPermissionSetupMode(multidevice_feature_access_manager_);
+  if (current_mode != setup_mode_) {
+    setup_mode_ = current_mode;
+    RefreshDescription(
+        GetDescriptionStringId(multidevice_feature_access_manager_));
+  }
   SetVisible(setup_mode_ != PermissionsOnboardingSetUpMode::kNone &&
              !multidevice_feature_access_manager_
                   ->HasMultideviceFeatureSetupUiBeenDismissed());
+  PreferredSizeChanged();
 }
 
 BEGIN_METADATA(MultideviceFeatureOptInView, views::View)
