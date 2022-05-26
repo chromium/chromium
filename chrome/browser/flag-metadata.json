@@ -5757,7 +5757,7 @@
   {
     "name": "tab-search-fuzzy-search",
     "owners": [ "yuhengh", "chrome-cros@google.com" ],
-    "expiry_milestone": 101
+    "expiry_milestone": 110
   },
   {
     "name": "tab-search-media-tabs",
