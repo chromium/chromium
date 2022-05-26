@@ -505,6 +505,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // Stores any CORS error encountered while processing |url_request_|.
   absl::optional<CorsErrorStatus> cors_error_status_;
 
+  // True if a pervasive payload is found, for logging purposes.
+  bool pervasive_payload_requested_ = false;
+
   // Used when deferring sending the data to the client until mime sniffing is
   // finished.
   mojom::URLResponseHeadPtr response_;

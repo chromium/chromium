@@ -791,9 +791,13 @@ URLLoader::URLLoader(
   if (CacheTransparencySettings::Get().PervasivePayloadsEnabled()) {
     auto index = CacheTransparencySettings::Get().GetIndexForURL(request.url);
     if (index.has_value()) {
+      // Remember that a pervasive payload was found so we can annotate the
+      // URLLoaderCompletionStatus with it later.
+      pervasive_payload_requested_ = true;
       url_request_->set_pervasive_payloads_index_for_logging(index.value());
       base::UmaHistogramExactLinear("Network.CacheTransparency.URLMatched",
                                     index.value(), 101);
+      DVLOG(2) << "Found pervasive payload: " << request.url.spec();
     }
   }
 
@@ -2137,6 +2141,8 @@ void URLLoader::NotifyCompleted(int error_code) {
         net::IsCertStatusError(url_request_->ssl_info().cert_status)) {
       status.ssl_info = url_request_->ssl_info();
     }
+
+    status.pervasive_payload_requested = pervasive_payload_requested_;
 
     url_loader_client_.Get()->OnComplete(status);
   }
