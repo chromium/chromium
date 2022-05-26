@@ -214,6 +214,147 @@ chromium-metrics-reviews@google.com.
   <summary>Records the result of triggering disk cleanup.</summary>
 </histogram>
 
+<histogram name="Cryptohome.Error.AllLocations" enum="CryptohomeErrorLocation"
+    expires_after="2023-05-01">
+  <owner>zuan@chromium.org</owner>
+  <owner>cros-hwsec+uma@chromium.org</owner>
+  <summary>
+    Background context on this histogram: A CryptohomeError in this context
+    refers to an error that occurred in response to a dbus request to selected
+    cryptohomed APIs. The set of APIs with this CryptohomeError is generally
+    those related to authentication, and contains CryptohomeErrorInfo field in
+    the dbus Reply protobuf. Currently that includes methods that are called
+    during login. A CryptohomeError consists of a linear stack of
+    ErrorLocations, each one of them is an actual line in the cryptohomed
+    codebase which the error passed through, and could have certain attributes,
+    known as ErrorAction attached to them. The ErrorLocation in the bottom of
+    the stack could optionally have a TPM Error Code associated, if the source
+    of error is TPM related.
+
+    For this histogram, for every CryptohomeError that occurs, we individually
+    report each individual ErrorLocation's corresponding enum value when an
+    error ocurred.
+
+    This is useful to cryptohome developers in the sense that they'll be able to
+    know which lines that handle error in cryptohomed has been triggered due to
+    an error.
+  </summary>
+</histogram>
+
+<histogram name="Cryptohome.Error.DevUnexpectedState"
+    enum="CryptohomeErrorLocation" expires_after="2023-05-01">
+  <owner>zuan@chromium.org</owner>
+  <owner>cros-hwsec+uma@chromium.org</owner>
+  <summary>
+    Background context on this histogram: A CryptohomeError in this context
+    refers to an error that occurred in response to a dbus request to selected
+    cryptohomed APIs. The set of APIs with this CryptohomeError is generally
+    those related to authentication, and contains CryptohomeErrorInfo field in
+    the dbus Reply protobuf. Currently that includes methods that are called
+    during login. A CryptohomeError consists of a linear stack of
+    ErrorLocations, each one of them is an actual line in the cryptohomed
+    codebase which the error passed through, and could have certain attributes,
+    known as ErrorAction attached to them. The ErrorLocation in the bottom of
+    the stack could optionally have a TPM Error Code associated, if the source
+    of error is TPM related.
+
+    For this histogram, for every CryptohomeError, we individually report all
+    ErrorLocation that has the kDevCheckUnexpectedState ErrorAction associated
+    with it. The kDevCheckUnexpectedState ErrorAction is used by developers when
+    the developer believes that this error should never occur, so from a
+    notification standpoint, it functions similar to a DCHECK(), except it never
+    crashes cryptohome and handles the error in a graceful manner.
+
+    This is useful to cryptohome developers because they'll be alerted when any
+    of the situations that the developers doesn't expect to occur occurs.
+  </summary>
+</histogram>
+
+<histogram name="Cryptohome.Error.HashedStack" enum="CryptohomeErrorHashed"
+    expires_after="2023-05-01">
+  <owner>zuan@chromium.org</owner>
+  <owner>cros-hwsec+uma@chromium.org</owner>
+  <summary>
+    Background context on this histogram: A CryptohomeError in this context
+    refers to an error that occurred in response to a dbus request to selected
+    cryptohomed APIs. The set of APIs with this CryptohomeError is generally
+    those related to authentication, and contains CryptohomeErrorInfo field in
+    the dbus Reply protobuf. Currently that includes methods that are called
+    during login. A CryptohomeError consists of a linear stack of
+    ErrorLocations, each one of them is an actual line in the cryptohomed
+    codebase which the error passed through, and could have certain attributes,
+    known as ErrorAction attached to them. The ErrorLocation in the bottom of
+    the stack could optionally have a TPM Error Code associated, if the source
+    of error is TPM related.
+
+    For this histogram, we take the entire CryptohomeError's linear stack of
+    ErrorLocation, and hash the entire stack, then we report the hash. The
+    original stack of ErrorLocation is logged.
+
+    This is useful to cryptohome developers because we're able to classify the
+    CryptohomeError by the content of the stack, and identify new ways the error
+    can occur if they do occur.
+  </summary>
+</histogram>
+
+<histogram name="Cryptohome.Error.LeafErrorWithoutTPM"
+    enum="CryptohomeErrorLocation" expires_after="2023-05-01">
+  <owner>zuan@chromium.org</owner>
+  <owner>cros-hwsec+uma@chromium.org</owner>
+  <summary>
+    Background context on this histogram: A CryptohomeError in this context
+    refers to an error that occurred in response to a dbus request to selected
+    cryptohomed APIs. The set of APIs with this CryptohomeError is generally
+    those related to authentication, and contains CryptohomeErrorInfo field in
+    the dbus Reply protobuf. Currently that includes methods that are called
+    during login. A CryptohomeError consists of a linear stack of
+    ErrorLocations, each one of them is an actual line in the cryptohomed
+    codebase which the error passed through, and could have certain attributes,
+    known as ErrorAction attached to them. The ErrorLocation in the bottom of
+    the stack could optionally have a TPM Error Code associated, if the source
+    of error is TPM related.
+
+    For this histogram, for every CryptohomeError that occurred, we report the
+    last ErrorLocation in the stack of ErrorLocation in the CryptohomeError, if
+    the last ErrorLocation does not have a TPM Error Code associated with it.
+
+    This is useful to cryptohome developers because frequently, the last
+    ErrorLocation in the stack would be able to uniquely identify the error, and
+    this histogram doesn't involve hashing, so it would be more convenient for
+    the developers.
+  </summary>
+</histogram>
+
+<histogram name="Cryptohome.Error.LeafErrorWithTPM"
+    enum="CryptohomeErrorLocationWithTPMError" expires_after="2023-05-01">
+  <owner>zuan@chromium.org</owner>
+  <owner>cros-hwsec+uma@chromium.org</owner>
+  <summary>
+    Background context on this histogram: A CryptohomeError in this context
+    refers to an error that occurred in response to a dbus request to selected
+    cryptohomed APIs. The set of APIs with this CryptohomeError is generally
+    those related to authentication, and contains CryptohomeErrorInfo field in
+    the dbus Reply protobuf. Currently that includes methods that are called
+    during login. A CryptohomeError consists of a linear stack of
+    ErrorLocations, each one of them is an actual line in the cryptohomed
+    codebase which the error passed through, and could have certain attributes,
+    known as ErrorAction attached to them. The ErrorLocation in the bottom of
+    the stack could optionally have a TPM Error Code associated, if the source
+    of error is TPM related.
+
+    For this histogram, for every CryptohomeError that occurred, we report the
+    last ErrorLocation and the second last ErrorLocation in the CryptohomeError,
+    if the last ErrorLocation have a TPM Error Code associated with it. The
+    upper and lower 16-bit value of the reported value contains the second last
+    ErrorLocation and the TPM Error Code, correspondingly.
+
+    This is useful to cryptohome developers because frequently, the last and
+    second last ErrorLocation in the stack would be able to uniquely identify
+    the error, and this histogram doesn't involve hashing, so it woul dbe more
+    convenient for the developers.
+  </summary>
+</histogram>
+
 <histogram name="Cryptohome.Errors" enum="CryptohomeError"
     expires_after="2022-09-25">
   <owner>apronin@chromium.org</owner>

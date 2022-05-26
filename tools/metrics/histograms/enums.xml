@@ -22474,6 +22474,45 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="19" label="Failed to clean up ephemeral cryptohome"/>
 </enum>
 
+<enum name="CryptohomeErrorHashed">
+<!--
+  This enum is intended to be populated automatically by platform2/src/cryptohome/error/tool/location_db.py. It only populate values that indeed occurs in the wild, and the set of such values is gathered from the logs.
+
+  The labels are of the format: <Error Location>/<Error Location Enum Value> ...
+  Whereby Error Location and enum values are defined in platform2/cryptohome/error/locations.h
+  -->
+
+  <int value="706395249"
+      label="kLocUserDataAuthSessionNotFoundInExtendAuthSession/288"/>
+  <int value="4104955507"
+      label="kLocUserDataAuthSessionNotFoundInAuthAuthSession/286"/>
+</enum>
+
+<enum name="CryptohomeErrorLocation">
+<!--
+  This enum is intended to be populated automatically by platform2/src/cryptohome/error/tool/location_db.py. It populates all values found in the cryptohome code base.
+
+  The labels are the Cryptohome Error Location enum defined in platform2/cryptohome/error/locations.h
+  -->
+
+  <int value="286" label="kLocUserDataAuthSessionNotFoundInAuthAuthSession"/>
+  <int value="288" label="kLocUserDataAuthSessionNotFoundInExtendAuthSession"/>
+</enum>
+
+<enum name="CryptohomeErrorLocationWithTPMError">
+<!--
+  This enum is intended to be populated automatically by platform2/src/cryptohome/error/tool/location_db.py. It populates values that indeed occurs in the wild, and the set of such values is gathered through actual UMA data.
+
+  The labels are of the format: <Error Location>-<TPM Error Code>
+  Whereby Error Location are defined in platform2/cryptohome/error/locations.h
+  -->
+
+  <int value="12845195"
+      label="kLocTpmAuthBlockUtilsGetPubkeyFailedInPubkeyHash-TPM_RC_HANDLE"/>
+  <int value="12845218"
+      label="kLocTpmAuthBlockUtilsGetPubkeyFailedInPubkeyHash-TPM_RC_BAD_AUTH"/>
+</enum>
+
 <enum name="CryptohomeFetchUssExperimentConfigStatus">
   <int value="0" label="Enabled"/>
   <int value="1" label="Disabled"/>
