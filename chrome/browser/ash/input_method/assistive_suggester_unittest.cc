@@ -9,6 +9,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/input_method/assistive_suggester_client_filter.h"
 #include "chrome/browser/ash/input_method/assistive_suggester_switch.h"
 #include "chrome/browser/ash/input_method/fake_suggestion_handler.h"
@@ -49,6 +50,10 @@ ui::KeyEvent GenerateKeyEvent(const ui::DomCode& code,
                       ui::DomKey::NONE, ui::EventTimeForNow());
 }
 
+ui::KeyEvent ReleaseKey(const ui::DomCode& code) {
+  return GenerateKeyEvent(code, ui::EventType::ET_KEY_RELEASED, ui::EF_NONE);
+}
+
 ui::KeyEvent PressKey(const ui::DomCode& code) {
   return GenerateKeyEvent(code, ui::EventType::ET_KEY_PRESSED, ui::EF_NONE);
 }
@@ -65,6 +70,11 @@ ui::KeyEvent PressKeyWithCtrl(const ui::DomCode& code) {
 ui::KeyEvent PressKeyWithShift(const ui::DomCode& code) {
   return GenerateKeyEvent(code, ui::EventType::ET_KEY_PRESSED,
                           ui::EF_SHIFT_DOWN);
+}
+
+ui::KeyEvent CreateRepeatKeyEvent(const ui::DomCode& code) {
+  return GenerateKeyEvent(code, ui::EventType::ET_KEY_PRESSED,
+                          ui::EF_IS_REPEAT);
 }
 
 void SetInputMethodOptions(Profile& profile, bool predictive_writing_enabled) {
@@ -114,7 +124,8 @@ class AssistiveSuggesterTest : public testing::Test {
     profile_->GetPrefs()->SetBoolean(prefs::kEmojiSuggestionEnabled, false);
   }
 
-  content::BrowserTaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<AssistiveSuggester> assistive_suggester_;
   std::unique_ptr<FakeSuggestionHandler> suggestion_handler_;
@@ -265,6 +276,15 @@ TEST_F(AssistiveSuggesterTest,
   EXPECT_FALSE(assistive_suggester_->IsAssistiveFeatureEnabled());
 }
 
+TEST_F(AssistiveSuggesterTest,
+       AssistiveDiacriticsLongpressFlagEnabled_AssistiveFeatureEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kDiacriticsOnPhysicalKeyboardLongpress);
+
+  EXPECT_TRUE(assistive_suggester_->IsAssistiveFeatureEnabled());
+}
+
 TEST_F(AssistiveSuggesterTest, RecordPredictiveWritingPrefOnActivate) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
@@ -385,6 +405,101 @@ TEST_F(AssistiveSuggesterTest, RecordsMultiWordTextInputAsEnabled) {
   histogram_tester_.ExpectUniqueSample(
       "InputMethod.Assistive.MultiWord.InputState",
       AssistiveTextInputState::kFeatureEnabled, 1);
+}
+
+TEST_F(AssistiveSuggesterTest, DiacriticsSugestionOnKeyDownLongpress) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kDiacriticsOnPhysicalKeyboardLongpress},
+      /*disabled_features=*/{});
+  assistive_suggester_->OnActivate(kUsEnglishEngineId);
+  assistive_suggester_->OnFocus(5);
+
+  EXPECT_FALSE(assistive_suggester_->OnKeyEvent(PressKey(ui::DomCode::US_A)));
+  task_environment_.FastForwardBy(base::Seconds(1));
+
+  EXPECT_TRUE(suggestion_handler_->GetShowingSuggestion());
+  EXPECT_EQ(suggestion_handler_->GetSuggestionText(), u"à;á;â;ã;ã;ä;å;ā");
+}
+
+TEST_F(AssistiveSuggesterTest,
+       DiacriticsSugestionOnKeyDownLongpressNotInterruptedByOtherKeys) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kDiacriticsOnPhysicalKeyboardLongpress},
+      /*disabled_features=*/{});
+  assistive_suggester_->OnActivate(kUsEnglishEngineId);
+  assistive_suggester_->OnFocus(5);
+
+  EXPECT_FALSE(assistive_suggester_->OnKeyEvent(PressKey(ui::DomCode::US_A)));
+  EXPECT_FALSE(assistive_suggester_->OnKeyEvent(PressKey(ui::DomCode::US_O)));
+  EXPECT_FALSE(assistive_suggester_->OnKeyEvent(ReleaseKey(ui::DomCode::US_O)));
+  task_environment_.FastForwardBy(base::Seconds(1));
+  EXPECT_TRUE(suggestion_handler_->GetShowingSuggestion());
+  EXPECT_EQ(suggestion_handler_->GetSuggestionText(), u"à;á;â;ã;ã;ä;å;ā");
+}
+
+TEST_F(AssistiveSuggesterTest,
+       DiacriticsSugestionWithoutContextIgnoresOnKeyDownLongpress) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kDiacriticsOnPhysicalKeyboardLongpress},
+      /*disabled_features=*/{});
+  assistive_suggester_->OnActivate(kUsEnglishEngineId);
+
+  EXPECT_FALSE(assistive_suggester_->OnKeyEvent(PressKey(ui::DomCode::US_A)));
+  task_environment_.FastForwardBy(base::Seconds(1));
+  EXPECT_FALSE(suggestion_handler_->GetShowingSuggestion());
+  EXPECT_EQ(suggestion_handler_->GetSuggestionText(), u"");
+}
+
+TEST_F(AssistiveSuggesterTest, DiacriticsSugestionInterruptedDoesNotSuggest) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kDiacriticsOnPhysicalKeyboardLongpress},
+      /*disabled_features=*/{});
+  assistive_suggester_->OnActivate(kUsEnglishEngineId);
+  assistive_suggester_->OnFocus(5);
+
+  EXPECT_FALSE(assistive_suggester_->OnKeyEvent(PressKey(ui::DomCode::US_A)));
+  task_environment_.FastForwardBy(
+      base::Milliseconds(100));  // Not long enough to trigger longpress.
+  EXPECT_FALSE(assistive_suggester_->OnKeyEvent(ReleaseKey(ui::DomCode::US_A)));
+  EXPECT_FALSE(suggestion_handler_->GetShowingSuggestion());
+  EXPECT_EQ(suggestion_handler_->GetSuggestionText(), u"");
+}
+
+TEST_F(AssistiveSuggesterTest,
+       ProcesssAndDoNotPropagateAlphaRepeatKeyIfDiacriticsOnLongpressEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kDiacriticsOnPhysicalKeyboardLongpress},
+      /*disabled_features=*/{});
+  assistive_suggester_->OnActivate(kUsEnglishEngineId);
+  assistive_suggester_->OnFocus(5);
+
+  // Returning true tells IME to not propagate this event.
+  EXPECT_TRUE(assistive_suggester_->OnKeyEvent(
+      CreateRepeatKeyEvent(ui::DomCode::US_A)));
+  task_environment_.FastForwardBy(
+      base::Seconds(1));  // Long enough to trigger longpress.
+  EXPECT_FALSE(assistive_suggester_->OnKeyEvent(ReleaseKey(ui::DomCode::US_A)));
+  EXPECT_FALSE(suggestion_handler_->GetShowingSuggestion());
+  EXPECT_EQ(suggestion_handler_->GetSuggestionText(), u"");
+}
+
+TEST_F(AssistiveSuggesterTest,
+       IgnoreAndPropagateNonAlphaRepeatKeyIfDiacriticsOnLongpressEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kDiacriticsOnPhysicalKeyboardLongpress},
+      /*disabled_features=*/{});
+  assistive_suggester_->OnActivate(kUsEnglishEngineId);
+  assistive_suggester_->OnFocus(5);
+
+  // Returning false tells IME to propagate this event.
+  EXPECT_FALSE(assistive_suggester_->OnKeyEvent(
+      CreateRepeatKeyEvent(ui::DomCode::ARROW_DOWN)));
 }
 
 struct PersonalInfoTestCase {
