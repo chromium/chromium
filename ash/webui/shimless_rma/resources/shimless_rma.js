@@ -81,7 +81,7 @@ export const StateComponentMapping = {
     buttonNext: ButtonState.HIDDEN,
     buttonNextLabelKey: 'getStartedButtonLabel',
     buttonExit: ButtonState.HIDDEN,
-    buttonBack: ButtonState.VISIBLE,
+    buttonBack: ButtonState.HIDDEN,
   },
   [State.kConfigureNetwork]: {
     componentIs: 'onboarding-network-page',
@@ -146,21 +146,21 @@ export const StateComponentMapping = {
     requiresReloadWhenShown: false,
     buttonNext: ButtonState.DISABLED,
     buttonExit: ButtonState.VISIBLE,
-    buttonBack: ButtonState.VISIBLE,
+    buttonBack: ButtonState.HIDDEN,
   },
   [State.kUpdateRoFirmware]: {
     componentIs: 'reimaging-firmware-update-page',
     requiresReloadWhenShown: false,
     buttonNext: ButtonState.HIDDEN,
     buttonExit: ButtonState.HIDDEN,
-    buttonBack: ButtonState.VISIBLE,
+    buttonBack: ButtonState.HIDDEN,
   },
   [State.kUpdateDeviceInformation]: {
     componentIs: 'reimaging-device-information-page',
     requiresReloadWhenShown: false,
     buttonNext: ButtonState.DISABLED,
     buttonExit: ButtonState.HIDDEN,
-    buttonBack: ButtonState.VISIBLE,
+    buttonBack: ButtonState.HIDDEN,
   },
   [State.kCheckCalibration]: {
     componentIs: 'reimaging-calibration-failed-page',
@@ -175,7 +175,7 @@ export const StateComponentMapping = {
     requiresReloadWhenShown: true,
     buttonNext: ButtonState.DISABLED,
     buttonExit: ButtonState.HIDDEN,
-    buttonBack: ButtonState.VISIBLE,
+    buttonBack: ButtonState.HIDDEN,
   },
   [State.kSetupCalibration]: {
     componentIs: 'reimaging-calibration-setup-page',
@@ -189,14 +189,14 @@ export const StateComponentMapping = {
     requiresReloadWhenShown: true,
     buttonNext: ButtonState.HIDDEN,
     buttonExit: ButtonState.HIDDEN,
-    buttonBack: ButtonState.VISIBLE,
+    buttonBack: ButtonState.HIDDEN,
   },
   [State.kWaitForManualWPEnable]: {
     componentIs: 'wrapup-wait-for-manual-wp-enable-page',
     requiresReloadWhenShown: true,
     buttonNext: ButtonState.HIDDEN,
     buttonExit: ButtonState.HIDDEN,
-    buttonBack: ButtonState.VISIBLE,
+    buttonBack: ButtonState.HIDDEN,
   },
   [State.kRestock]: {
     componentIs: 'wrapup-restock-page',
@@ -209,14 +209,14 @@ export const StateComponentMapping = {
     componentIs: 'wrapup-finalize-page',
     buttonNext: ButtonState.HIDDEN,
     buttonExit: ButtonState.HIDDEN,
-    buttonBack: ButtonState.VISIBLE,
+    buttonBack: ButtonState.HIDDEN,
   },
   [State.kRepairComplete]: {
     componentIs: 'wrapup-repair-complete-page',
     requiresReloadWhenShown: false,
     buttonNext: ButtonState.HIDDEN,
     buttonExit: ButtonState.HIDDEN,
-    buttonBack: ButtonState.VISIBLE,
+    buttonBack: ButtonState.HIDDEN,
   },
 };
 
