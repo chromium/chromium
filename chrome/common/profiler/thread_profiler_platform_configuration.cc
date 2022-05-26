@@ -211,7 +211,11 @@ double AndroidPlatformConfiguration::GetChildProcessEnableFraction(
   // TODO(https://crbug.com/1326430): Enable for all the default processes.
   switch (process) {
     case metrics::CallStackProfileParams::Process::kRenderer:
-      return 0.4;
+      // There are empirically, on average, 1.3 renderer processes per browser
+      // process. This samples the renderer process at roughly the same
+      // frequency overall as the browser process.
+      // http://uma/p/chrome/timeline_v2?sid=39bc30a43a01d045204d0add05ad120a
+      return 0.75;
 
     default:
       return 0.0;
