@@ -25,7 +25,7 @@ namespace {
 HumanPresenceDBusClient* g_instance = nullptr;
 
 // Extracts result data out of a DBus response.
-absl::optional<hps::HpsResult> UnwrapHpsResult(dbus::Response* response) {
+absl::optional<hps::HpsResultProto> UnwrapHpsResult(dbus::Response* response) {
   if (response == nullptr) {
     return absl::nullopt;
   }
@@ -37,7 +37,7 @@ absl::optional<hps::HpsResult> UnwrapHpsResult(dbus::Response* response) {
     return absl::nullopt;
   }
 
-  return result.value();
+  return result;
 }
 
 class HumanPresenceDBusClientImpl : public HumanPresenceDBusClient {
@@ -88,7 +88,7 @@ class HumanPresenceDBusClientImpl : public HumanPresenceDBusClient {
 
     // Notify observers of state change.
     for (auto& observer : observers_) {
-      observer.OnHpsSenseChanged(result.value());
+      observer.OnHpsSenseChanged(result);
     }
   }
 
@@ -103,7 +103,7 @@ class HumanPresenceDBusClientImpl : public HumanPresenceDBusClient {
 
     // Notify observers of state change.
     for (auto& observer : observers_) {
-      observer.OnHpsNotifyChanged(result.value());
+      observer.OnHpsNotifyChanged(result);
     }
   }
 

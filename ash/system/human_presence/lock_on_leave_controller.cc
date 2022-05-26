@@ -65,9 +65,9 @@ void LockOnLeaveController::OnOrientationChanged(
   ReconfigViaDbus();
 }
 
-void LockOnLeaveController::OnHpsSenseChanged(hps::HpsResult state) {}
+void LockOnLeaveController::OnHpsSenseChanged(const hps::HpsResultProto&) {}
 
-void LockOnLeaveController::OnHpsNotifyChanged(hps::HpsResult state) {}
+void LockOnLeaveController::OnHpsNotifyChanged(const hps::HpsResultProto&) {}
 
 void LockOnLeaveController::OnRestart() {
   service_available_ = true;

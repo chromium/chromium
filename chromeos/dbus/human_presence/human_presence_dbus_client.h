@@ -30,11 +30,11 @@ class COMPONENT_EXPORT(HPS) HumanPresenceDBusClient {
     ~Observer() override;
 
     // Called when the presence of a user starts or stops being detected.
-    virtual void OnHpsSenseChanged(hps::HpsResult state) = 0;
+    virtual void OnHpsSenseChanged(const hps::HpsResultProto&) = 0;
 
     // Called when the presence of a "snooper" looking over the user's shoulder
     // starts or stops being detected.
-    virtual void OnHpsNotifyChanged(hps::HpsResult state) = 0;
+    virtual void OnHpsNotifyChanged(const hps::HpsResultProto&) = 0;
 
     // Called when the service starts or restarts.
     virtual void OnRestart() = 0;
@@ -44,7 +44,7 @@ class COMPONENT_EXPORT(HPS) HumanPresenceDBusClient {
   };
 
   using GetResultCallback =
-      base::OnceCallback<void(absl::optional<hps::HpsResult>)>;
+      base::OnceCallback<void(absl::optional<hps::HpsResultProto>)>;
 
   HumanPresenceDBusClient(const HumanPresenceDBusClient&) = delete;
   HumanPresenceDBusClient& operator=(const HumanPresenceDBusClient&) = delete;

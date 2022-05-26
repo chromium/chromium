@@ -47,6 +47,8 @@ h2 {
   height: 64px;
   outline: solid 2px var(--cros-color-primary-inverted);
   border-radius: 4px;
+  margin-right: 32px;
+  margin-bottom: 32px;
 }
 
 .feature-panel {
@@ -54,6 +56,7 @@ h2 {
   border-top: solid 4px var(--cros-color-prominent-inverted);
   margin-right: 16px;
   padding: 16px;
+  min-width: 544px;
 }
 
 .spacer {
@@ -61,14 +64,13 @@ h2 {
 }
 
 .history {
-  min-width: 512px;
+  width: 512px;
   min-height: 32px;
   display: flex;
   flex-direction: row;
   justify-content: end;
   outline: solid 2px var(--cros-color-primary-inverted);
   border-radius: 4px;
-  margin-top: 32px;
 }
 
 .history span {
@@ -107,4 +109,25 @@ h2 {
   );
   background-attachment: fixed;
   color: var(--cros-color-disabled) !important;
+}
+
+.inference-history {
+  height: 128px;
+  background: none;
+  align-items: end;
+}
+
+.inference-history span {
+  background: var(--cros-color-prominent-inverted);
+}
+
+.inference-history span.invalid {
+  background: var(--cros-color-primary-inverted);
+}
+
+#sense-inference-result, #notify-inference-result {
+  align-self: end;
+  margin-left: .5em;
+  margin-bottom: .5em;
+  font-variant-numeric: tabular-nums;
 }

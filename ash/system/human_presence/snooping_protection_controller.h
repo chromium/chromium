@@ -63,8 +63,8 @@ class ASH_EXPORT SnoopingProtectionController
   void OnOrientationChanged(bool suitable_for_human_presence) override;
 
   // chromeos::HumanPresenceDBusClient::Observer:
-  void OnHpsSenseChanged(hps::HpsResult state) override;
-  void OnHpsNotifyChanged(hps::HpsResult state) override;
+  void OnHpsSenseChanged(const hps::HpsResultProto& result) override;
+  void OnHpsNotifyChanged(const hps::HpsResultProto& result) override;
   void OnRestart() override;
   void OnShutdown() override;
 
@@ -115,7 +115,7 @@ class ASH_EXPORT SnoopingProtectionController
   void StartServiceObservation(bool service_is_available);
 
   // Performs the state update from the daemon response.
-  void UpdateServiceState(absl::optional<hps::HpsResult> result);
+  void UpdateServiceState(absl::optional<hps::HpsResultProto> result);
 
   // A callback to update visibility when the user enables or disables the
   // feature.
