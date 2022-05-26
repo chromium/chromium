@@ -9,9 +9,12 @@ import android.app.job.JobScheduler;
 import android.app.job.JobService;
 import android.content.Context;
 import android.os.PersistableBundle;
+import android.os.SystemClock;
+import android.text.format.DateUtils;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.BuildConfig;
 
 /**
@@ -85,6 +88,8 @@ public abstract class MinidumpUploadJobService extends JobService {
     private MinidumpUploadJob.UploadsFinishedCallback createJobFinishedCallback(
             final JobParameters params) {
         return new MinidumpUploadJob.UploadsFinishedCallback() {
+            private final long mTaskStartTimeMs = SystemClock.uptimeMillis();
+
             @Override
             public void uploadsFinished(boolean reschedule) {
                 if (reschedule) {
@@ -96,6 +101,10 @@ public abstract class MinidumpUploadJobService extends JobService {
                     }
                 }
                 MinidumpUploadJobService.this.jobFinished(params, reschedule);
+                long taskDurationMs = SystemClock.uptimeMillis() - mTaskStartTimeMs;
+                RecordHistogram.recordCustomTimesHistogram(
+                        "Stability.Android.MinidumpUploadingTime", taskDurationMs, 1,
+                        DateUtils.DAY_IN_MILLIS, 50);
             }
         };
     }

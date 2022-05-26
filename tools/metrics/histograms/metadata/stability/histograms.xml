@@ -22,6 +22,16 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram name="Stability.Android.MinidumpUploadingTime" units="ms"
+    expires_after="2022-11-30">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>src/components/minidump_uploader/OWNERS</owner>
+  <summary>
+    Records the time (uptimeMillis) taken by a minidump uploading task to
+    complete. Recorded when the task finished callback is invoked.
+  </summary>
+</histogram>
+
 <histogram name="Stability.Android.OomKillReverseRank" units="rank"
     expires_after="2022-11-13">
   <owner>boliu@chromium.org</owner>
