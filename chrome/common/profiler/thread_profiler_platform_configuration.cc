@@ -201,28 +201,34 @@ void AndroidPlatformConfiguration::RequestRuntimeModuleInstall() const {
 
 double AndroidPlatformConfiguration::GetChildProcessEnableFraction(
     metrics::CallStackProfileParams::Process process) const {
-  // Profile all processes in browser test mode since they're disabled
-  // otherwise.
-  if (browser_test_mode_enabled())
-    return DefaultPlatformConfiguration::GetChildProcessEnableFraction(process);
+  DCHECK_NE(metrics::CallStackProfileParams::Process::kBrowser, process);
 
-  if (process == metrics::CallStackProfileParams::Process::kRenderer)
-    return 0.4;
+  // Profile all supported processes in browser test mode.
+  if (browser_test_mode_enabled()) {
+    return 1.0;
+  }
 
-  // TODO(https://crbug.com/1004855): Enable for all the default processes.
-  return 0.0;
+  // TODO(https://crbug.com/1326430): Enable for all the default processes.
+  switch (process) {
+    case metrics::CallStackProfileParams::Process::kRenderer:
+      return 0.4;
+
+    default:
+      return 0.0;
+  }
 }
 
 bool AndroidPlatformConfiguration::IsEnabledForThread(
     metrics::CallStackProfileParams::Process process,
     metrics::CallStackProfileParams::Thread thread) const {
-  // Enable on renderer process main thread in production, for now.
-  if (process == metrics::CallStackProfileParams::Process::kRenderer &&
-      thread == metrics::CallStackProfileParams::Thread::kMain) {
-    return true;
-  }
+  // TODO(https://crbug.com/1326430): Enable for all the default processes.
+  switch (process) {
+    case metrics::CallStackProfileParams::Process::kRenderer:
+      return thread == metrics::CallStackProfileParams::Thread::kMain;
 
-  return false;
+    default:
+      return false;
+  }
 }
 
 bool AndroidPlatformConfiguration::IsSupportedForChannel(
