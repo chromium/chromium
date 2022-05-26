@@ -1530,7 +1530,7 @@ def CheckForgettingMAYBEInTests(input_api, output_api):
 def CheckDCHECK_IS_ONHasBraces(input_api, output_api):
     """Checks to make sure DCHECK_IS_ON() does not skip the parentheses."""
     errors = []
-    pattern = input_api.re.compile(r'DCHECK_IS_ON\b(?!\(\))',
+    pattern = input_api.re.compile(r'\bDCHECK_IS_ON\b(?!\(\))',
                                    input_api.re.MULTILINE)
     for f in input_api.AffectedSourceFiles(input_api.FilterSourceFile):
         if (not f.LocalPath().endswith(('.cc', '.mm', '.h'))):

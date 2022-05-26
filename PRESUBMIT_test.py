@@ -4509,6 +4509,33 @@ class AssertPythonShebangTest(unittest.TestCase):
         errors = PRESUBMIT.CheckPythonShebang(input_api, MockOutputApi())
         self.assertEqual(0, len(errors))
 
+class VerifyDcheckParentheses(unittest.TestCase):
+  def testPermissibleUsage(self):
+    input_api = MockInputApi()
+    input_api.files = [
+      MockFile('okay1.cc', ['DCHECK_IS_ON()']),
+      MockFile('okay2.cc', ['#if DCHECK_IS_ON()']),
+
+      # Other constructs that aren't exactly `DCHECK_IS_ON()` do their
+      # own thing at their own risk.
+      MockFile('okay3.cc', ['PA_DCHECK_IS_ON']),
+      MockFile('okay4.cc', ['#if PA_DCHECK_IS_ON']),
+      MockFile('okay6.cc', ['BUILDFLAG(PA_DCHECK_IS_ON)']),
+    ]
+    errors = PRESUBMIT.CheckDCHECK_IS_ONHasBraces(input_api, MockOutputApi())
+    self.assertEqual(0, len(errors))
+
+  def testMissingParentheses(self):
+    input_api = MockInputApi()
+    input_api.files = [
+      MockFile('bad1.cc', ['DCHECK_IS_ON']),
+      MockFile('bad2.cc', ['#if DCHECK_IS_ON']),
+      MockFile('bad3.cc', ['DCHECK_IS_ON && foo']),
+    ]
+    errors = PRESUBMIT.CheckDCHECK_IS_ONHasBraces(input_api, MockOutputApi())
+    self.assertEqual(3, len(errors))
+    for error in errors:
+      self.assertRegex(error.message, r'DCHECK_IS_ON().+parentheses')
 
 if __name__ == '__main__':
   unittest.main()
