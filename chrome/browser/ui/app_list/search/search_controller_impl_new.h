@@ -16,12 +16,13 @@
 #include "base/containers/flat_map.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/ui/app_list/search/burnin_controller.h"
 #include "chrome/browser/ui/app_list/search/mixer.h"
 #include "chrome/browser/ui/app_list/search/ranking/launch_data.h"
 #include "chrome/browser/ui/app_list/search/ranking/ranker_delegate.h"
 #include "chrome/browser/ui/app_list/search/search_controller.h"
-#include "chrome/browser/ui/app_list/search/zero_state_sync_controller.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AppListControllerDelegate;
 class AppListModelUpdater;
@@ -96,17 +97,38 @@ class SearchControllerImplNew : public SearchController {
 
   // Rank the results of |provider_type|.
   void Rank(ash::AppListSearchResultType provider_type);
+
   void SetSearchResults(const SearchProvider* provider);
+
   void SetZeroStateResults(const SearchProvider* provider);
+
+  void OnZeroStateTimedOut();
+
   void OnBurnInPeriodElapsed();
+
   void OnResultsChangedWithType(ash::AppListSearchResultType result_type);
 
   Profile* profile_;
   std::unique_ptr<BurnInController> burnin_controller_;
-  std::unique_ptr<ZeroStateSyncController> zero_state_sync_controller_;
 
   // The query associated with the most recent search.
   std::u16string last_query_;
+
+  // How many search providers should block zero-state until they return
+  // results.
+  int total_zero_state_blockers_ = 0;
+
+  // How many zero-state blocking providers have returned for this search.
+  int returned_zero_state_blockers_ = 0;
+
+  // A timer to trigger a Publish at the end of the timeout period passed to
+  // StartZeroState.
+  base::OneShotTimer zero_state_timeout_;
+
+  // The callback to indicate zero-state should be published. It is reset after
+  // calling, and has_value is used as a flag for whether zero-state has
+  // published.
+  absl::optional<base::OnceClosure> on_zero_state_done_;
 
   // The time when StartSearch was most recently called.
   base::Time session_start_;
