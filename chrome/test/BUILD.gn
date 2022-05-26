@@ -995,9 +995,6 @@ if (is_android) {
       "$root_gen_dir/components/components_resources.pak",
       "$root_gen_dir/components/dev_ui_components_resources.pak",
     ]
-
-    # TODO(crbug.com/1292951): Remove this line.
-    configs -= [ "//build/config/compiler:prevent_unsafe_narrowing" ]
   }
 
   static_library("test_support_ui_android") {
@@ -9857,9 +9854,6 @@ if (!is_android) {
     if (enable_basic_printing) {
       deps += [ "//printing" ]
     }
-
-    # TODO(crbug.com/1292951): Remove this line.
-    configs -= [ "//build/config/compiler:prevent_unsafe_narrowing" ]
   }
 
   test("sync_performance_tests") {

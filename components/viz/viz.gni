@@ -68,8 +68,5 @@ template("viz_test") {
     }
     configs -= viz_remove_configs
     configs += viz_add_configs
-
-    # TODO(crbug.com/1292951): Remove this line.
-    configs -= [ "//build/config/compiler:prevent_unsafe_narrowing" ]
   }
 }

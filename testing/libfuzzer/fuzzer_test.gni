@@ -288,9 +288,6 @@ template("fuzzer_test") {
       if (is_mac) {
         sources += [ "//testing/libfuzzer/libfuzzer_exports.h" ]
       }
-
-      # TODO(crbug.com/1292951): Remove this line.
-      configs -= [ "//build/config/compiler:prevent_unsafe_narrowing" ]
     }
   } else {
     # noop on unsupported platforms.

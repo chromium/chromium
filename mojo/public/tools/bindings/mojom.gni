@@ -960,9 +960,6 @@ template("mojom") {
     if (defined(shared_component_impl_macro)) {
       defines = [ shared_component_impl_macro ]
     }
-
-    # TODO(crbug.com/1292951): Remove this line.
-    configs -= [ "//build/config/compiler:prevent_unsafe_narrowing" ]
   }
 
   shared_cpp_library_target_name = "${target_name}_shared"
@@ -973,9 +970,6 @@ template("mojom") {
       }
       output_name = "$shared_component_output_name"
       public_deps = [ ":$shared_cpp_sources_target_name" ]
-
-      # TODO(crbug.com/1292951): Remove this line.
-      configs -= [ "//build/config/compiler:prevent_unsafe_narrowing" ]
     }
   } else {
     group(shared_cpp_library_target_name) {
@@ -1370,9 +1364,6 @@ template("mojom") {
             public_deps += config.traits_public_deps
           }
         }
-
-        # TODO(crbug.com/1292951): Remove this line.
-        configs -= [ "//build/config/compiler:prevent_unsafe_narrowing" ]
       }
     }
 

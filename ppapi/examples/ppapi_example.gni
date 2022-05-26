@@ -15,9 +15,6 @@ assert(enable_plugins)
 template("ppapi_example") {
   if (!is_mac) {
     shared_library(target_name) {
-      # TODO(crbug.com/1292951): Remove this line.
-      configs -= [ "//build/config/compiler:prevent_unsafe_narrowing" ]
-
       testonly = true
 
       if (defined(invoker.output_name)) {

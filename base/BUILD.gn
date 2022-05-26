@@ -117,11 +117,6 @@ config("todo_buildflag_build_rust_json_parser") {
   ]
 }
 
-config("base_implementation") {
-  defines = [ "BASE_IMPLEMENTATION" ]
-  configs = [ "//build/config/compiler:wexit_time_destructors" ]
-}
-
 if (is_win) {
   # This is in a separate config so the flags can be applied to dependents.
   # ldflags in GN aren't automatically inherited.
@@ -1412,15 +1407,19 @@ mixed_component("base") {
   }
 
   all_dependent_configs = []
-  defines = []
+  defines = [ "BASE_IMPLEMENTATION" ]
   data = []
   data_deps = []
   libs = []
   frameworks = []
 
   configs += [
-    ":base_implementation",
     "//build/config:precompiled_headers",
+
+    # TODO(crbug.com/1292951): Enable.
+    # "//build/config/compiler:prevent_unsafe_narrowing",
+
+    "//build/config/compiler:wexit_time_destructors",
     "//build/config/compiler:wglobal_constructors",
   ]
 
@@ -2458,7 +2457,6 @@ mixed_component("base") {
         [ "//build/config/clang:llvm-symbolizer_data($host_toolchain)" ]
   }
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
   if (!is_debug) {
     configs -= [ "//build/config/compiler:default_optimization" ]
     configs += [ "//build/config/compiler:optimize_max" ]
