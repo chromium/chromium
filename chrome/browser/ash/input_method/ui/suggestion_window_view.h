@@ -77,7 +77,6 @@ class UI_CHROMEOS_EXPORT SuggestionWindowView
 
  protected:
   // views::BubbleDialogDelegateView:
-  gfx::Rect GetBubbleBounds() override;
   void OnThemeChanged() override;
 
  private:

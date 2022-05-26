@@ -58,13 +58,6 @@ class UI_CHROMEOS_EXPORT SuggestionView : public views::Button {
   void SetHighlighted(bool highlighted);
   void SetMinWidth(int width);
 
-  // When this view is being anchored to some other view, returns the point in
-  // this view that this should be anchored to, in local coordinates.
-  // For example, if this method returns the bottom left corner of this view,
-  // then this view should be placed above the anchor so that the bottom left
-  // corner of this view corresponds to the anchor.
-  gfx::Point GetAnchorOrigin() const;
-
   std::u16string GetSuggestionForTesting();
 
  private:
