@@ -484,11 +484,6 @@ bool IncreaseBufferCountForHighFrameRate() {
   return increase;
 }
 
-bool IncreaseBufferCountForWebViewOverlays() {
-  return IsAndroidSurfaceControlEnabled() &&
-         base::FeatureList::IsEnabled(kWebViewSurfaceControl);
-}
-
 #endif
 
 }  // namespace features

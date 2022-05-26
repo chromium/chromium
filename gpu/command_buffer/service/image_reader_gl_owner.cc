@@ -69,16 +69,6 @@ uint32_t NumRequiredMaxImages(TextureOwner::Mode mode) {
     if (features::IncreaseBufferCountForHighFrameRate())
       return 5;
 
-    // WebView overlays relies on WebView zero copy at the moment, which
-    // requires at least 3 buffers (one renderer prepares, one is locked by
-    // display compositor in latest compositor frame and one is pending
-    // deletion). These are additional to normal 3 that we need to surface
-    // control.
-    // TODO(vasilyt): This needs to be resolved before feature launch, but
-    // should work for dogfoog.
-    if (features::IncreaseBufferCountForWebViewOverlays())
-      return 6;
-
     return 3;
   }
   return features::LimitAImageReaderMaxSizeToOne() ? 1 : 2;
