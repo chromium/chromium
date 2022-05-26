@@ -440,6 +440,9 @@ An updatecheck object represents the actual intent to update. It has the
 following members:
  *   `rollback_allowed`: true if the client will accept a version downgrade.
      Typically used in conjunction with a targetversionprefix. Default: false.
+ *   `sameversionupdate`: true if the client is requesting that it be updated
+     to the version it currently has (usually as part of a repair or
+     overinstallation) instead of receiving no update. Default: false.
  *   `targetversionprefix`: A component-wise prefix of a version number, or a
      complete version number. The server SHOULD NOT return an update
      instruction to a version number that does not match the prefix or complete
