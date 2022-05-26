@@ -732,13 +732,13 @@ TEST_F(ExtensionsTabbedMenuViewUnitTest, SiteAccessTab_RestrictedSite) {
   InstallExtension("Test Extension A");
   InstallExtension("Test Extension B");
 
-  const GURL restricted_url("chrome://extensions");
-  web_contents_tester()->NavigateAndCommit(restricted_url);
+  std::u16string restricted_url_text(u"chrome://extensions");
+  web_contents_tester()->NavigateAndCommit(GURL(restricted_url_text));
   ShowSiteAccessTabInMenu();
 
   auto restricted_site_text = l10n_util::GetStringFUTF16(
       IDS_EXTENSIONS_MENU_SITE_ACCESS_TAB_RESTRICTED_SITE_TEXT,
-      base::UTF8ToUTF16(restricted_url.host()));
+      restricted_url_text);
 
   // Verify only the correct message is displayed on a restricted site,
   // regardless of extensions and site settings access,

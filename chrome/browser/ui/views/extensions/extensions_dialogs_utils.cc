@@ -43,6 +43,14 @@ ui::ImageModel GetIcon(ToolbarActionViewController* action,
 
 std::u16string GetCurrentHost(content::WebContents* web_contents) {
   DCHECK(web_contents);
-  return url_formatter::IDNToUnicode(
-      url_formatter::StripWWW(web_contents->GetLastCommittedURL().host()));
+  auto url = web_contents->GetLastCommittedURL();
+  // Hide the scheme when necessary (e.g hide "https://" but don't
+  // "chrome://").
+  return url_formatter::FormatUrl(
+      url,
+      url_formatter::kFormatUrlOmitDefaults |
+          url_formatter::kFormatUrlOmitHTTPS |
+          url_formatter::kFormatUrlOmitTrivialSubdomains |
+          url_formatter::kFormatUrlTrimAfterHost,
+      base::UnescapeRule::NORMAL, nullptr, nullptr, nullptr);
 }

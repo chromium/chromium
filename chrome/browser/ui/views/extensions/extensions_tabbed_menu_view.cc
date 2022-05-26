@@ -169,22 +169,30 @@ int FindIndex(views::View* parent_view, const std::u16string extension_name) {
          children.begin();
 }
 
-// Returns the web content's host. This method should only be called when
-// web contents are present.
-std::u16string GetCurrentHost(content::WebContents* web_contents) {
+// Returns the current site pointed by `web_contents`. This method should only
+// be called when web contents are present.
+std::u16string GetCurrentSite(content::WebContents* web_contents) {
   DCHECK(web_contents);
-  return url_formatter::IDNToUnicode(
-      url_formatter::StripWWW(web_contents->GetLastCommittedURL().host()));
+  auto url = web_contents->GetLastCommittedURL();
+  // Hide the scheme when necessary (e.g hide "https://" but don't
+  // "chrome://").
+  return url_formatter::FormatUrl(
+      url,
+      url_formatter::kFormatUrlOmitDefaults |
+          url_formatter::kFormatUrlOmitHTTPS |
+          url_formatter::kFormatUrlOmitTrivialSubdomains |
+          url_formatter::kFormatUrlTrimAfterHost,
+      base::UnescapeRule::NORMAL, nullptr, nullptr, nullptr);
 }
 
 // Sets the `label` text to `message_id` with `current_host` emphasized.
 void SetLabelTextAndStyle(views::Label& label,
                           int message_id,
-                          std::u16string current_host) {
+                          std::u16string current_site) {
   size_t offset = 0u;
-  label.SetText(l10n_util::GetStringFUTF16(message_id, current_host, &offset));
+  label.SetText(l10n_util::GetStringFUTF16(message_id, current_site, &offset));
   label.SetTextStyleRange(ChromeTextStyle::STYLE_EMPHASIZED,
-                          gfx::Range(offset, offset + current_host.length()));
+                          gfx::Range(offset, offset + current_site.length()));
 }
 
 void SetButtonChecked(views::View* container, size_t index) {
@@ -458,7 +466,7 @@ void ExtensionsTabbedMenuView::CreateSiteAccessTab() {
   if (!web_contents)
     return;
 
-  auto current_host = GetCurrentHost(web_contents);
+  auto current_site = GetCurrentSite(web_contents);
   const int horizontal_spacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_BUTTON_HORIZONTAL_PADDING);
   const int vertical_spacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
@@ -516,10 +524,10 @@ void ExtensionsTabbedMenuView::CreateSiteAccessTab() {
           .Build();
 
   const auto create_radio_button_builder =
-      [this, current_host](UserSiteSetting site_settings, int label_id) {
+      [this, current_site](UserSiteSetting site_settings, int label_id) {
         auto label = ((site_settings == UserSiteSetting::kGrantAllExtensions) ||
                       (site_settings == UserSiteSetting::kBlockAllExtensions))
-                         ? l10n_util::GetStringFUTF16(label_id, current_host)
+                         ? l10n_util::GetStringFUTF16(label_id, current_site)
                          : l10n_util::GetStringUTF16(label_id);
         return views::Builder<views::RadioButton>(
                    std::make_unique<views::RadioButton>(label, kGroupId))
@@ -719,7 +727,7 @@ void ExtensionsTabbedMenuView::UpdateSiteAccessTab() {
     SetLabelTextAndStyle(
         *site_access_message_,
         IDS_EXTENSIONS_MENU_SITE_ACCESS_TAB_RESTRICTED_SITE_TEXT,
-        GetCurrentHost(web_contents));
+        GetCurrentSite(web_contents));
     site_access_message_->SetVisible(true);
     has_access_.container->SetVisible(false);
     requests_access_.container->SetVisible(false);
@@ -766,10 +774,10 @@ void ExtensionsTabbedMenuView::UpdateSiteAccessSectionsVisibility(
   auto* web_contents = browser_->tab_strip_model()->GetActiveWebContents();
   DCHECK(web_contents);
 
-  auto current_host = GetCurrentHost(web_contents);
-  auto update_section = [current_host](SiteAccessSection* section) {
+  auto current_site = GetCurrentSite(web_contents);
+  auto update_section = [current_site](SiteAccessSection* section) {
     SetLabelTextAndStyle(*section->header, section->header_string_id,
-                         current_host);
+                         current_site);
     bool should_be_visible = !section->items->children().empty();
     if (section->container->GetVisible() != should_be_visible)
       section->container->SetVisible(should_be_visible);
@@ -795,7 +803,7 @@ void ExtensionsTabbedMenuView::UpdateSiteAccessSectionsVisibility(
     SetLabelTextAndStyle(
         *site_access_message_,
         IDS_EXTENSIONS_MENU_SITE_ACCESS_TAB_NO_EXTENSIONS_HAVE_ACCESS_TEXT,
-        current_host);
+        current_site);
   } else {
     site_access_message_->SetVisible(false);
   }
