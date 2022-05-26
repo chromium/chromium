@@ -1236,7 +1236,7 @@ DownloadUIModel::BubbleStatusTextBuilder::GetInProgressStatusText() const {
   }
 
   // A download scheduled to be opened when complete: "↓ 100/120 MB • Opening in
-  // 10 secs"
+  // 10 seconds"
   if (web_drive.empty() && model_->GetOpenWhenComplete()) {
     if (!time_remaining_known)
       return base::StrCat(
@@ -1249,17 +1249,17 @@ DownloadUIModel::BubbleStatusTextBuilder::GetInProgressStatusText() const {
          l10n_util::GetStringFUTF16(
              IDS_DOWNLOAD_STATUS_OPEN_IN,
              ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_DURATION,
-                                    ui::TimeFormat::LENGTH_SHORT,
+                                    ui::TimeFormat::LENGTH_LONG,
                                     time_remaining))});
   }
 
-  // In progress download with known time left: "↓ 100/120 MB • 10 secs left"
+  // In progress download with known time left: "↓ 100/120 MB • 10 seconds left"
   if (time_remaining_known) {
     return base::StrCat(
         {l10n_util::GetStringUTF16(IDS_DOWNLOAD_BUBBLE_DOWNLOAD_SYMBOL),
          size_ratio_prefix,
          ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_REMAINING,
-                                ui::TimeFormat::LENGTH_SHORT, time_remaining)});
+                                ui::TimeFormat::LENGTH_LONG, time_remaining)});
   }
 
   if (completed_bytes == 0) {
@@ -1320,7 +1320,7 @@ DownloadUIModel::BubbleStatusTextBuilder::GetCompletedStatusText() const {
   } else {
     std::u16string total_text = ui::FormatBytes(model_->GetTotalBytes());
     std::u16string delta_str = ui::TimeFormat::Simple(
-        ui::TimeFormat::FORMAT_ELAPSED, ui::TimeFormat::LENGTH_SHORT,
+        ui::TimeFormat::FORMAT_ELAPSED, ui::TimeFormat::LENGTH_LONG,
         base::Time::Now() - model_->GetEndTime());
     return base::StrCat(
         {total_text,
