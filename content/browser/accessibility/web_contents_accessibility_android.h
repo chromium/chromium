@@ -385,6 +385,7 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   void HandleScrolledToAnchor(int32_t unique_id);
   void HandleDialogModalOpened(int32_t unique_id);
   void AnnounceLiveRegionText(const std::u16string& text);
+  void HandleTextContentChanged(int32_t unique_id);
   void HandleTextSelectionChanged(int32_t unique_id);
   void HandleEditableTextChanged(int32_t unique_id);
   void HandleSliderChanged(int32_t unique_id);

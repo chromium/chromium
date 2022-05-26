@@ -481,13 +481,17 @@ const char* BrowserAccessibilityAndroid::GetClassName() const {
     // On Android, contenteditable needs to be handled the same as any
     // other text field.
     role = ax::mojom::Role::kTextField;
-  } else if (ui::IsAndroidTextViewCandidate(role) && HasOnlyTextChildren()) {
+  } else if (IsAndroidTextView()) {
     // On Android, we want to report some extra nodes as TextViews. For example,
     // a <div> that only contains text, or a <p> that only contains text.
     role = ax::mojom::Role::kStaticText;
   }
 
   return ui::AXRoleToAndroidClassName(role, PlatformGetParent() != nullptr);
+}
+
+bool BrowserAccessibilityAndroid::IsAndroidTextView() const {
+  return ui::IsAndroidTextViewCandidate(GetRole()) && HasOnlyTextChildren();
 }
 
 bool BrowserAccessibilityAndroid::IsChildOfLeaf() const {
@@ -1924,19 +1928,6 @@ void BrowserAccessibilityAndroid::OnDataChanged() {
   auto* manager =
       static_cast<BrowserAccessibilityManagerAndroid*>(this->manager());
   manager->ClearNodeInfoCacheForGivenId(unique_id());
-
-  // For any nodes that are the children of a leaf, we also want to invalidate
-  // the cache for the ancestry chain up until the first non-leaf node.
-  if (IsChildOfLeaf()) {
-    BrowserAccessibilityAndroid* parent =
-        static_cast<BrowserAccessibilityAndroid*>(PlatformGetParent());
-
-    while (parent != nullptr && (parent->IsChildOfLeaf() || parent->IsLeaf())) {
-      manager->ClearNodeInfoCacheForGivenId(parent->unique_id());
-      parent = static_cast<BrowserAccessibilityAndroid*>(
-          parent->PlatformGetParent());
-    }
-  }
 }
 
 int BrowserAccessibilityAndroid::CountChildrenWithRole(
