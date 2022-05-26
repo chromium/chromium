@@ -329,9 +329,15 @@ TEST_F(ViewElementTest, GetSources) {
 
   // ViewElement should have two sources: from MockNamedTestView and from View.
   EXPECT_EQ(sources.size(), 2U);
+#if defined(__clang__) && defined(_MSC_VER)
+  EXPECT_EQ(sources[0].path_,
+            "components\\ui_devtools\\views\\view_element_unittest.cc");
+  EXPECT_EQ(sources[1].path_, "ui\\views\\view.h");
+#else
   EXPECT_EQ(sources[0].path_,
             "components/ui_devtools/views/view_element_unittest.cc");
   EXPECT_EQ(sources[1].path_, "ui/views/view.h");
+#endif
 }
 
 TEST_F(ViewElementTest, DispatchMouseEvent) {

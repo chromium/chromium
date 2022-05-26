@@ -71,7 +71,14 @@ config("compiler") {
   ]
 
   if (is_clang) {
-    cflags += [ "/Zc:twoPhase" ]
+    cflags += [
+      "/Zc:twoPhase",
+
+      # Consistently use backslash as the path separator when expanding the
+      # __FILE__ macro when targeting Windows regardless of the build
+      # environment.
+      "-ffile-reproducible",
+    ]
   }
 
   # Force C/C++ mode for the given GN detected file type. This is necessary
