@@ -8,7 +8,9 @@
 #include <algorithm>
 #include <cstring>
 #include <initializer_list>
+
 #include "base/bits.h"
+#include "base/check_op.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 

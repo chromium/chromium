@@ -25,6 +25,7 @@
 
 #include <iterator>
 
+#include "base/check_op.h"
 #include "base/dcheck_is_on.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"

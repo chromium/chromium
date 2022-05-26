@@ -27,6 +27,7 @@
 #include <iterator>
 #include <utility>
 
+#include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
 #include "base/template_util.h"

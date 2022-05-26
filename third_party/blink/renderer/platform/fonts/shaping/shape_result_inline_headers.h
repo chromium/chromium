@@ -37,6 +37,7 @@
 #include <memory>
 #include <type_traits>
 
+#include "base/check_op.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"

@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/check_op.h"
 #include "third_party/blink/renderer/core/animation/typed_interpolation_value.h"
 #include "third_party/blink/renderer/core/animation/underlying_value.h"
 #include "third_party/blink/renderer/core/core_export.h"

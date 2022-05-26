@@ -24,6 +24,7 @@
 
 #include <stdint.h>
 
+#include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
 #include "build/build_config.h"

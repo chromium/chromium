@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_FRAME_FRAME_AD_EVIDENCE_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_FRAME_FRAME_AD_EVIDENCE_H_
 
+#include "base/check_op.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/mojom/ad_tagging/ad_evidence.mojom-shared.h"
 

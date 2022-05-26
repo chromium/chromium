@@ -29,6 +29,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/check_op.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/values_equivalent.h"
 #include "base/types/pass_key.h"

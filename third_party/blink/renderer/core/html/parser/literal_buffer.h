@@ -8,7 +8,9 @@
 #include <algorithm>
 #include <memory>
 #include <type_traits>
+
 #include "base/bits.h"
+#include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"

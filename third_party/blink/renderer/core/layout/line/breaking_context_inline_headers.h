@@ -25,6 +25,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LINE_BREAKING_CONTEXT_INLINE_HEADERS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LINE_BREAKING_CONTEXT_INLINE_HEADERS_H_
 
+#include "base/check_op.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_box.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_list_marker.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_ruby_run.h"

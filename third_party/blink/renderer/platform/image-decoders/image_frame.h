@@ -27,6 +27,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_IMAGE_DECODERS_IMAGE_FRAME_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_IMAGE_DECODERS_IMAGE_FRAME_H_
 
+#include "base/check_op.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/platform/web_vector.h"

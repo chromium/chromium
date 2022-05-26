@@ -5,6 +5,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_CHARACTER_RANGE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_CHARACTER_RANGE_H_
 
+#include "base/dcheck_is_on.h"
+
+#if DCHECK_IS_ON()
+#include "base/check_op.h"
+#endif
+
 namespace blink {
 
 struct CharacterRange {

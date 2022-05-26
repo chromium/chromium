@@ -8,6 +8,7 @@
 #include <cstring>  // memcpy, memset
 #include <type_traits>
 
+#include "base/check_op.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scrollbar_display_item.h"
 #include "third_party/blink/renderer/platform/platform_export.h"

@@ -36,6 +36,7 @@
 
 #include <utility>
 
+#include "base/check_op.h"
 #include "base/notreached.h"
 #include "cc/paint/paint_canvas.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"

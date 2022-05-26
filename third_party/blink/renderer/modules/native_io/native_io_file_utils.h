@@ -8,6 +8,7 @@
 #include <cstddef>
 #include <memory>
 
+#include "base/check_op.h"
 #include "base/sequence_checker.h"
 #include "base/types/pass_key.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer/array_buffer_contents.h"

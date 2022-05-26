@@ -35,6 +35,7 @@
 
 #if DCHECK_IS_ON()
 
+#include "base/check_op.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
 

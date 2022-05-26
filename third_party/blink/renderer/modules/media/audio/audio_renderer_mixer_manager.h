@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 
+#include "base/check_op.h"
 #include "base/containers/flat_map.h"
 #include "base/synchronization/lock.h"
 #include "base/unguessable_token.h"

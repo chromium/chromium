@@ -29,6 +29,7 @@
 #include <atomic>
 
 #include "base/callback_forward.h"
+#include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
 #include "base/memory/ref_counted.h"

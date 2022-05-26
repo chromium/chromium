@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_INK_OVERFLOW_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_INK_OVERFLOW_H_
 
+#include "base/check_op.h"
 #include "base/dcheck_is_on.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

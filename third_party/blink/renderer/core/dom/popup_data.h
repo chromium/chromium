@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_POPUP_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_POPUP_DATA_H_
 
+#include "base/check_op.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_menu_element.h"
 #include "third_party/blink/renderer/core/html_element_type_helpers.h"

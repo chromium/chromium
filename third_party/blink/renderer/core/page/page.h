@@ -25,6 +25,7 @@
 
 #include <memory>
 
+#include "base/check_op.h"
 #include "base/dcheck_is_on.h"
 #include "base/types/pass_key.h"
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
