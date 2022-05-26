@@ -419,6 +419,9 @@ void EnterpriseEnrollmentHelperImpl::ReportEnrollmentStatus(
         case policy::DM_STATUS_CANNOT_SIGN_REQUEST:
           UMA(policy::kMetricEnrollmentRegisterCannotSignRequest);
           break;
+        case policy::DM_STATUS_SERVICE_DEVICE_NEEDS_RESET:
+          NOTREACHED();
+          break;
         case policy::DM_STATUS_SERVICE_ARC_DISABLED:
           NOTREACHED();
           break;

@@ -167,6 +167,7 @@ DemoSetupController::DemoSetupError CreateFromClientStatus(
                                                  RecoveryMethod::kUnknown,
                                                  debug_message);
     case policy::DM_STATUS_SERVICE_DEVICE_NOT_FOUND:
+    case policy::DM_STATUS_SERVICE_DEVICE_NEEDS_RESET:
       return DemoSetupController::DemoSetupError(
           ErrorCode::kDeviceNotFound, RecoveryMethod::kUnknown, debug_message);
     case policy::DM_STATUS_SERVICE_MANAGEMENT_TOKEN_INVALID:
