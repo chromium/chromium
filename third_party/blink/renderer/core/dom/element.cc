@@ -3107,7 +3107,8 @@ Node::InsertionNotificationRequest Element::InsertedInto(
   if (!name_value.IsNull())
     UpdateName(g_null_atom, name_value);
 
-  if (RuntimeEnabledFeatures::FocusgroupEnabled()) {
+  ExecutionContext* context = GetExecutionContext();
+  if (RuntimeEnabledFeatures::FocusgroupEnabled(context)) {
     const AtomicString& focusgroup_value =
         FastGetAttribute(html_names::kFocusgroupAttr);
     if (!focusgroup_value.IsNull())
@@ -7112,7 +7113,8 @@ inline void Element::UpdateId(TreeScope& scope,
 }
 
 inline void Element::UpdateFocusgroup(const AtomicString& input) {
-  if (!RuntimeEnabledFeatures::FocusgroupEnabled())
+  ExecutionContext* context = GetExecutionContext();
+  if (!RuntimeEnabledFeatures::FocusgroupEnabled(context))
     return;
 
   if (ShadowRoot* shadow_root = ContainingShadowRoot())
@@ -8029,7 +8031,8 @@ bool Element::IsInertRoot() {
 }
 
 FocusgroupFlags Element::GetFocusgroupFlags() const {
-  if (!RuntimeEnabledFeatures::FocusgroupEnabled() || !HasRareData())
+  ExecutionContext* context = GetExecutionContext();
+  if (!RuntimeEnabledFeatures::FocusgroupEnabled(context) || !HasRareData())
     return FocusgroupFlags::kNone;
   return GetElementRareData()->GetFocusgroupFlags();
 }

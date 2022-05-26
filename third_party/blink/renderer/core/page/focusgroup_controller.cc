@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/focusgroup_flags.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
@@ -25,8 +26,11 @@ using utils = FocusgroupControllerUtils;
 // static
 bool FocusgroupController::HandleArrowKeyboardEvent(KeyboardEvent* event,
                                                     const LocalFrame* frame) {
-  DCHECK(RuntimeEnabledFeatures::FocusgroupEnabled());
   DCHECK(frame);
+  DCHECK(frame->DomWindow());
+  ExecutionContext* context = frame->DomWindow()->GetExecutionContext();
+  DCHECK(RuntimeEnabledFeatures::FocusgroupEnabled(context));
+
   FocusgroupDirection direction = utils::FocusgroupDirectionForEvent(event);
   if (direction == FocusgroupDirection::kNone)
     return false;

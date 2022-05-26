@@ -13,7 +13,7 @@ interface mixin HTMLOrForeignElement {
   [CEReactions] attribute long tabIndex;
 
   // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/Focusgroup/explainer.md
-  [CEReactions, Reflect, RuntimeEnabled=Focusgroup] attribute DOMString focusgroup;
+  [CEReactions, Reflect, RuntimeEnabled=Focusgroup, Measure] attribute DOMString focusgroup;
 
   [ImplementedAs=focusForBindings] void focus(optional FocusOptions options = {});
   void blur();

@@ -3561,6 +3561,13 @@ enum WebFeature {
   kScriptSchedulingType_ParserBlockingInline = 4240,
   kScriptSchedulingType_InOrder = 4241,
   kScriptSchedulingType_Async = 4242,
+  kFocusgroup = 4243,
+  kV8HTMLElement_Focusgroup_AttributeGetter = 4244,
+  kV8HTMLElement_Focusgroup_AttributeSetter = 4245,
+  kV8MathMLElement_Focusgroup_AttributeGetter = 4246,
+  kV8MathMLElement_Focusgroup_AttributeSetter = 4247,
+  kV8SVGElement_Focusgroup_AttributeGetter = 4248,
+  kV8SVGElement_Focusgroup_AttributeSetter = 4249,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

@@ -40164,6 +40164,13 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4240" label="ScriptSchedulingType_ParserBlockingInline"/>
   <int value="4241" label="ScriptSchedulingType_InOrder"/>
   <int value="4242" label="ScriptSchedulingType_Async"/>
+  <int value="4243" label="Focusgroup"/>
+  <int value="4244" label="V8HTMLElement_Focusgroup_AttributeGetter"/>
+  <int value="4245" label="V8HTMLElement_Focusgroup_AttributeSetter"/>
+  <int value="4246" label="V8MathMLElement_Focusgroup_AttributeGetter"/>
+  <int value="4247" label="V8MathMLElement_Focusgroup_AttributeSetter"/>
+  <int value="4248" label="V8SVGElement_Focusgroup_AttributeGetter"/>
+  <int value="4249" label="V8SVGElement_Focusgroup_AttributeSetter"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
