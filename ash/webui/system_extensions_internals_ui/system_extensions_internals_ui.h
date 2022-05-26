@@ -5,6 +5,8 @@
 #ifndef ASH_WEBUI_SYSTEM_EXTENSIONS_INTERNALS_UI_SYSTEM_EXTENSIONS_INTERNALS_UI_H_
 #define ASH_WEBUI_SYSTEM_EXTENSIONS_INTERNALS_UI_SYSTEM_EXTENSIONS_INTERNALS_UI_H_
 
+#include <memory>
+
 #include "ash/webui/system_extensions_internals_ui/mojom/system_extensions_internals_ui.mojom.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
@@ -27,6 +29,9 @@ class SystemExtensionsInternalsUI : public ui::MojoWebUIController {
 
  private:
   WEB_UI_CONTROLLER_TYPE_DECL();
+
+  std::unique_ptr<mojom::system_extensions_internals::PageHandler>
+      page_handler_;
 };
 
 }  // namespace ash

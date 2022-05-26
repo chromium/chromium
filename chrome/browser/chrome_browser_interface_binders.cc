@@ -329,9 +329,8 @@
 void ash::SystemExtensionsInternalsUI::BindInterface(
     mojo::PendingReceiver<ash::mojom::system_extensions_internals::PageHandler>
         receiver) {
-  auto page_handler = std::make_unique<SystemExtensionsInternalsPageHandler>(
-      Profile::FromWebUI(web_ui()));
-  mojo::MakeSelfOwnedReceiver(std::move(page_handler), std::move(receiver));
+  page_handler_ = std::make_unique<SystemExtensionsInternalsPageHandler>(
+      Profile::FromWebUI(web_ui()), std::move(receiver));
 }
 #endif
 

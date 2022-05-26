@@ -9,8 +9,10 @@
 namespace ash {
 
 SystemExtensionsInternalsPageHandler::SystemExtensionsInternalsPageHandler(
-    Profile* profile)
-    : profile_(profile) {}
+    Profile* profile,
+    mojo::PendingReceiver<mojom::system_extensions_internals::PageHandler>
+        receiver)
+    : profile_(profile), receiver_(this, std::move(receiver)) {}
 
 SystemExtensionsInternalsPageHandler::~SystemExtensionsInternalsPageHandler() =
     default;

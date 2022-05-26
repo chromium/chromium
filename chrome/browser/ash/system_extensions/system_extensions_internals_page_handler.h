@@ -14,13 +14,17 @@
 #include "chrome/browser/ash/system_extensions/system_extensions_provider.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 
 namespace ash {
 
 class SystemExtensionsInternalsPageHandler
     : public ash::mojom::system_extensions_internals::PageHandler {
  public:
-  explicit SystemExtensionsInternalsPageHandler(Profile* profile);
+  SystemExtensionsInternalsPageHandler(
+      Profile* profile,
+      mojo::PendingReceiver<mojom::system_extensions_internals::PageHandler>
+          receiver);
   ~SystemExtensionsInternalsPageHandler() override;
 
   // mojom::system_extensions_internals::PageHandler
@@ -34,6 +38,7 @@ class SystemExtensionsInternalsPageHandler
       InstallStatusOrSystemExtensionId result);
 
   raw_ptr<Profile> profile_;
+  mojo::Receiver<mojom::system_extensions_internals::PageHandler> receiver_;
 
   base::WeakPtrFactory<SystemExtensionsInternalsPageHandler> weak_ptr_factory_{
       this};
