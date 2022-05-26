@@ -20,7 +20,6 @@
 #include "chrome/browser/ash/crosapi/idle_service_ash.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -219,8 +218,7 @@ TEST_F(BrowserUtilTest, ManagedAccountLacros) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(chromeos::features::kLacrosSupport);
   AddRegularUser("user@managedchrome.com");
-  testing_profile_.GetProfilePolicyConnector()->OverrideIsManagedForTesting(
-      true);
+
   {
     ScopedLacrosAvailabilityCache cache(LacrosAvailability::kLacrosDisallowed);
     EXPECT_FALSE(browser_util::IsLacrosEnabled());
@@ -253,8 +251,6 @@ TEST_F(BrowserUtilTest, BlockedForChildUser) {
 TEST_F(LacrosSupportBrowserUtilTest, AshWebBrowserEnabled) {
   base::test::ScopedFeatureList feature_list;
   AddRegularUser("user@managedchrome.com");
-  testing_profile_.GetProfilePolicyConnector()->OverrideIsManagedForTesting(
-      true);
 
   // Lacros is not allowed.
   {
@@ -304,8 +300,6 @@ TEST_F(LacrosSupportBrowserUtilTest, AshWebBrowserEnabled) {
 TEST_F(BrowserUtilTest, IsAshWebBrowserDisabled) {
   base::test::ScopedFeatureList feature_list;
   AddRegularUser("user@managedchrome.com");
-  testing_profile_.GetProfilePolicyConnector()->OverrideIsManagedForTesting(
-      true);
   ScopedLacrosAvailabilityCache cache(LacrosAvailability::kLacrosOnly);
 
   // Lacros is allowed and enabled and is the only browser by policy.
@@ -388,8 +382,6 @@ TEST_F(BrowserUtilTest, ManagedAccountLacrosPrimary) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(chromeos::features::kLacrosSupport);
   AddRegularUser("user@managedchrome.com");
-  testing_profile_.GetProfilePolicyConnector()->OverrideIsManagedForTesting(
-      true);
 
   {
     ScopedLacrosAvailabilityCache cache(LacrosAvailability::kLacrosDisallowed);
