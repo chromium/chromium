@@ -88535,6 +88535,32 @@
        {}
       ]
      ],
+     "color-mix-currentcolor-001.html": [
+      "0f502d22ec85e45664280c356ee1c06c8e742fab",
+      [
+       null,
+       [
+        [
+         "/css/css-color/color-mix-currentcolor-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "color-mix-currentcolor-002.html": [
+      "fb050688379c8709af9b1d6dca324731e71fc246",
+      [
+       null,
+       [
+        [
+         "/css/css-color/color-mix-currentcolor-002-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "color-mix-non-srgb-001.html": [
       "7563581a4cf6f8438e1ad9a8a25671c3f052ce79",
       [
@@ -96626,6 +96652,19 @@
         [
          [
           "/css/reference/pass_if_pass_below.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "container-for-cue.html": [
+       "f53d161db0dda46b608c40e5ef1ccf714828a364",
+       [
+        null,
+        [
+         [
+          "/css/css-contain/container-queries/container-for-cue-ref.html",
           "=="
          ]
         ],
@@ -261415,6 +261454,14 @@
       "7296d17fba3bd7b45769cbed12e954509ee85eac",
       []
      ],
+     "color-mix-currentcolor-001-ref.html": [
+      "ba9b8b9622fd499d70debde938c8c26881714add",
+      []
+     ],
+     "color-mix-currentcolor-002-ref.html": [
+      "64e60fbf291285fe766cd68ec9204f295308ca5d",
+      []
+     ],
      "color-mix-non-srgb-001-ref.html": [
       "15556737c7f8b10e80bcaec6bf550403050dd990",
       []
@@ -262182,6 +262229,10 @@
        "8dd3b8b2c1dea6230357f8ff6ec1225154650094",
        []
       ],
+      "container-for-cue-ref.html": [
+       "48b262236394da747f188c9422cc9364b1cb4271",
+       []
+      ],
       "container-units-gradient-ref.html": [
        "dbdabd9bc4ecee3eec34406e7fd13a1e04141978",
        []
@@ -262217,6 +262268,10 @@
       "support": {
        "cq-testcommon.js": [
         "673c3176baebf8f8963098cd7113b68634f1a1ef",
+        []
+       ],
+       "test.vtt": [
+        "ffd1d4ca443d3c86e1c2076f0584ef9a7b4a049f",
         []
        ]
       },
@@ -471142,11 +471197,12 @@
        ]
       ],
       "popup-invoking-attribute.tentative.html": [
-       "7108acc9ae6a83bd4d73bd605ed8469110142eef",
+       "49056f8b77ff9ca7c76f9555a7afbedb1382bd7a",
        [
         null,
         {
-         "testdriver": true
+         "testdriver": true,
+         "timeout": "long"
         }
        ]
       ],
@@ -492594,6 +492650,13 @@
      ],
      "transitionWhile-on-synthetic-event.html": [
       "3acf41745811aca4d5e31de5b257e97a72b556fa",
+      [
+       null,
+       {}
+      ]
+     ],
+     "transitionWhile-popstate.html": [
+      "a889e40e22b5a480c6b390a69d49d7add952d7af",
       [
        null,
        {}
@@ -546660,10 +546723,12 @@
       ]
      ],
      "cross-partition.https.tentative.html": [
-      "3535b9cdf3a5c71ab5ec8b4792bd86847dd25205",
+      "4e91da554686ec9f86f63572750296db48c34a4b",
       [
        null,
-       {}
+       {
+        "timeout": "long"
+       }
       ]
      ],
      "detached-iframe.html": [
@@ -546685,10 +546750,12 @@
       ]
      ],
      "opaque-origin.html": [
-      "c1762299dbf668aab5844862734869d71363234c",
+      "1d05a909d8e8069e7f4d58673e0ebfad1a03b462",
       [
        null,
-       {}
+       {
+        "timeout": "long"
+       }
       ]
      ],
      "ordering.html": [
