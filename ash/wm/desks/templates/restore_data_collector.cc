@@ -54,8 +54,11 @@ void RestoreDataCollector::CaptureActiveDeskAsTemplate(
       shell->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
   auto* delegate = shell->desks_templates_delegate();
   for (auto* window : mru_windows) {
-    if (!delegate->IsWindowSupportedForDeskTemplate(window) &&
-        !wm::GetTransientParent(window)) {
+    // Skip transient windows without reporting.
+    if (wm::GetTransientParent(window))
+      continue;
+
+    if (!delegate->IsWindowSupportedForDeskTemplate(window)) {
       call.unsupported_apps.push_back(window);
       continue;
     }
