@@ -2516,10 +2516,23 @@ TabDragController::GetTabGroupForTargetIndex(const std::vector<int>& selected) {
   int left_most_selected_x_position =
       left_most_selected_tab->x() + tab_left_inset;
 
-  if ((left_most_selected_x_position <= left_edge - buffer) &&
-      left_group.has_value() &&
+  if (left_group.has_value() &&
       !attached_model->IsGroupCollapsed(left_group.value())) {
-    return left_group;
+    // Take the dragged tabs out of left_group if they are at the rightmost edge
+    // of the tabstrip. This happens when the tabstrip is full and the dragged
+    // tabs are as far right as they can go without being pulled out into a new
+    // window. In this case, since the dragged tabs can't move further right in
+    // the tabstrip, it will never go "beyond" the left_group and therefore
+    // never leave it unless we add this check. See crbug.com/1134376.
+    // TODO(crbug/1329344): Update this to work better with Tab Scrolling once
+    // dragging near the end of the tabstrip is cleaner.
+    if (attached_context_->GetTabAt(selected.back())->bounds().right() >=
+        attached_context_->TabDragAreaEndX()) {
+      return absl::nullopt;
+    }
+
+    if (left_most_selected_x_position <= left_edge - buffer)
+      return left_group;
   }
   if ((left_most_selected_x_position >= left_edge + buffer) &&
       right_group.has_value() &&
