@@ -875,42 +875,14 @@ void TranslatePrefs::GetUserSelectedLanguageList(
   language_prefs_->GetUserSelectedLanguagesList(languages);
 }
 
-bool TranslatePrefs::CanTranslateLanguage(
-    language::AcceptLanguagesService* accept_languages,
-    base::StringPiece language) {
-  // Languages not on the blocklist can always be translated.
-  if (!IsBlockedLanguage(language))
-    return true;
-
-  // Languages not on the Accept-Language list should not be blocked unless the
-  // detailed language settings are showing or the language can not be on the
-  // Accept-Language list (this is true for languages that do not have a ICU
-  // localization for the current UI locale.
-  bool can_be_accept_language =
-      language::AcceptLanguagesService::CanBeAcceptLanguage(language);
-  bool is_accept_language = accept_languages->IsAcceptLanguage(language);
-  if (!is_accept_language && can_be_accept_language &&
-      !IsDetailedLanguageSettingsEnabled())
-    return true;
-
+bool TranslatePrefs::CanTranslateLanguage(base::StringPiece language) {
   // Under this experiment, translate English page even though English may be
   // blocked.
   if (language == "en" && language::ShouldForceTriggerTranslateOnEnglishPages(
                               GetForceTriggerOnEnglishPagesCount()))
     return true;
-  return false;
-}
 
-// static
-bool TranslatePrefs::IsDetailedLanguageSettingsEnabled() {
-#if BUILDFLAG(IS_ANDROID)
-  return base::FeatureList::IsEnabled(language::kDetailedLanguageSettings);
-#elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  return base::FeatureList::IsEnabled(
-      language::kDesktopDetailedLanguageSettings);
-#else
-  return false;
-#endif
+  return !IsBlockedLanguage(language);
 }
 
 bool TranslatePrefs::ShouldAutoTranslate(base::StringPiece source_language,

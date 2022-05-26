@@ -1234,22 +1234,13 @@ TEST_F(TranslateManagerTest, PredefinedTargetLanguage_BlockedLanguage) {
   PrepareTranslateManager();
   manager_->set_application_locale("en");
 
-  // Add german language to the list of accepted languages.
-  // If a lang is not in the list than CanTranslateLanguage(|lang|) returns true
-  // even if a language is blocked.
-  prefs_.registry()->RegisterStringPref("accept_languages.test", "de");
-  language::AcceptLanguagesService accept_languages(&prefs_,
-                                                    "accept_languages.test");
-
   ON_CALL(mock_translate_client_, IsTranslatableURL(GURL::EmptyGURL()))
       .WillByDefault(Return(true));
-  ON_CALL(mock_translate_client_, GetAcceptLanguagesService())
-      .WillByDefault(Return(&accept_languages));
 
   translate_prefs_.BlockLanguage("de");
 
   ASSERT_TRUE(translate_prefs_.IsBlockedLanguage("de"));
-  ASSERT_FALSE(translate_prefs_.CanTranslateLanguage(&accept_languages, "de"));
+  ASSERT_FALSE(translate_prefs_.CanTranslateLanguage("de"));
   network_notifier_.SimulateOnline();
 
   translate_manager_->SetPredefinedTargetLanguage("ru");
@@ -1274,22 +1265,13 @@ TEST_F(TranslateManagerTest, PredefinedTargetLanguage_OverrideBlockedLanguage) {
   PrepareTranslateManager();
   manager_->set_application_locale("en");
 
-  // Add german language to the list of accepted languages.
-  // If a lang is not in the list than CanTranslateLanguage(|lang|) returns true
-  // even if a language is blocked.
-  prefs_.registry()->RegisterStringPref("accept_languages.test", "de");
-  language::AcceptLanguagesService accept_languages(&prefs_,
-                                                    "accept_languages.test");
-
   ON_CALL(mock_translate_client_, IsTranslatableURL(GURL::EmptyGURL()))
       .WillByDefault(Return(true));
-  ON_CALL(mock_translate_client_, GetAcceptLanguagesService())
-      .WillByDefault(Return(&accept_languages));
 
   translate_prefs_.BlockLanguage("de");
 
   ASSERT_TRUE(translate_prefs_.IsBlockedLanguage("de"));
-  ASSERT_FALSE(translate_prefs_.CanTranslateLanguage(&accept_languages, "de"));
+  ASSERT_FALSE(translate_prefs_.CanTranslateLanguage("de"));
   network_notifier_.SimulateOnline();
 
   translate_manager_->SetPredefinedTargetLanguage(

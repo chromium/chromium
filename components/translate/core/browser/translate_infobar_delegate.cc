@@ -199,10 +199,7 @@ void TranslateInfoBarDelegate::TranslationDeclined() {
 bool TranslateInfoBarDelegate::IsTranslatableLanguageByPrefs() const {
   TranslateClient* client = translate_manager_->translate_client();
   std::unique_ptr<TranslatePrefs> translate_prefs(client->GetTranslatePrefs());
-  language::AcceptLanguagesService* accept_languages =
-      client->GetAcceptLanguagesService();
-  return translate_prefs->CanTranslateLanguage(accept_languages,
-                                               source_language_code());
+  return translate_prefs->CanTranslateLanguage(source_language_code());
 }
 
 void TranslateInfoBarDelegate::ToggleTranslatableLanguageByPrefs() {

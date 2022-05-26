@@ -20,7 +20,6 @@
 #include "base/strings/string_split.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "components/language/core/browser/accept_languages_service.h"
 #include "components/language/core/browser/language_model.h"
 #include "components/language/core/common/language_experiments.h"
 #include "components/language/core/common/language_util.h"
@@ -995,11 +994,8 @@ void TranslateManager::FilterForUserPrefs(
     TranslateTriggerDecision* decision,
     TranslatePrefs* translate_prefs,
     const std::string& page_language_code) {
-  language::AcceptLanguagesService* accept_languages =
-      translate_client_->GetAcceptLanguagesService();
   // Don't translate any user blocklisted languages.
-  if (!translate_prefs->CanTranslateLanguage(accept_languages,
-                                             page_language_code)) {
+  if (!translate_prefs->CanTranslateLanguage(page_language_code)) {
     decision->SetIsInLanguageBlocklist();
 
     decision->PreventAutoTranslate();

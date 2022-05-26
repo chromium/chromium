@@ -19,7 +19,6 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "components/language/core/browser/accept_languages_service.h"
 #include "components/language/core/browser/language_prefs.h"
 #include "components/language/core/browser/language_prefs_test_util.h"
 #include "components/language/core/browser/pref_names.h"
@@ -1140,47 +1139,12 @@ TEST_F(TranslatePrefsTest, CanTranslateLanguage) {
 
   translate_prefs_->ResetToDefaults();
 
-  language::AcceptLanguagesService accept_languages_service(
-      &prefs_, language::prefs::kAcceptLanguages);
-
   // Unblocked language.
-  EXPECT_TRUE(
-      translate_prefs_->CanTranslateLanguage(&accept_languages_service, "fr"));
+  EXPECT_TRUE(translate_prefs_->CanTranslateLanguage("fr"));
 
   // Blocked language.
   translate_prefs_->BlockLanguage("en");
-  EXPECT_FALSE(
-      translate_prefs_->CanTranslateLanguage(&accept_languages_service, "en"));
-
-  // When the detailed language settings are enabled blocked languages not in
-  // the accept languages list are blocked. When the detailed language settings
-  // are disabled blocked languages not in the accept language list are allowed.
-  translate_prefs_->BlockLanguage("de");
-  if (TranslatePrefs::IsDetailedLanguageSettingsEnabled()) {
-    EXPECT_FALSE(translate_prefs_->CanTranslateLanguage(
-        &accept_languages_service, "de"));
-  } else {
-    EXPECT_TRUE(translate_prefs_->CanTranslateLanguage(
-        &accept_languages_service, "de"));
-  }
-
-// When the detailed language settings are enabled blocked languages not in
-// accept languages can be translated.
-#if BUILDFLAG(IS_ANDROID)
-  {  // Android scoped feature.
-    base::test::ScopedFeatureList scoped_feature_list(
-        language::kDetailedLanguageSettings);
-    EXPECT_FALSE(translate_prefs_->CanTranslateLanguage(
-        &accept_languages_service, "de"));
-  }
-#elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-  {  // Desktop scoped feature.
-    base::test::ScopedFeatureList scoped_feature_list(
-        language::kDesktopDetailedLanguageSettings);
-    EXPECT_FALSE(translate_prefs_->CanTranslateLanguage(
-        &accept_languages_service, "de"));
-  }
-#endif
+  EXPECT_FALSE(translate_prefs_->CanTranslateLanguage("en"));
 
   {  // English in force translate experiment scoped feature.
     base::test::ScopedFeatureList scoped_feature_list;
@@ -1189,8 +1153,7 @@ TEST_F(TranslatePrefsTest, CanTranslateLanguage) {
         {{"override_model", "heuristic"},
          {"enforce_ranker", "false"},
          {"backoff_threshold", "1"}});
-    EXPECT_TRUE(translate_prefs_->CanTranslateLanguage(
-        &accept_languages_service, "en"));
+    EXPECT_TRUE(translate_prefs_->CanTranslateLanguage("en"));
   }
 }
 

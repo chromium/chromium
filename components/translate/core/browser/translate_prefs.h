@@ -33,7 +33,6 @@ class PrefRegistrySyncable;
 
 namespace language {
 class LanguagePrefs;
-class AcceptLanguagesService;
 }
 
 namespace translate {
@@ -321,8 +320,7 @@ class TranslatePrefs {
   // Gets the user selected language list from language settings.
   void GetUserSelectedLanguageList(std::vector<std::string>* languages) const;
 
-  bool CanTranslateLanguage(language::AcceptLanguagesService* accept_languages,
-                            base::StringPiece language);
+  bool CanTranslateLanguage(base::StringPiece language);
   bool ShouldAutoTranslate(base::StringPiece source_language,
                            std::string* target_language);
   // True if the detailed language settings are enabled for this user.
