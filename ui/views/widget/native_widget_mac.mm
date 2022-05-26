@@ -711,8 +711,8 @@ void NativeWidgetMac::ScheduleLayout() {
 }
 
 void NativeWidgetMac::SetCursor(const ui::Cursor& cursor) {
-  if (GetInProcessNSWindowBridge())
-    GetInProcessNSWindowBridge()->SetCursor(cursor);
+  if (GetNSWindowMojo())
+    GetNSWindowMojo()->SetCursor(cursor);
 }
 
 void NativeWidgetMac::ShowEmojiPanel() {

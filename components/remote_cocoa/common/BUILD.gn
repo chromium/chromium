@@ -21,6 +21,7 @@ mojom("mojo") {
     "//mojo/public/mojom/base",
     "//services/network/public/mojom",
     "//ui/base/accelerators/mojom",
+    "//ui/base/cursor/mojom",
     "//ui/base/mojom",
     "//ui/display/mojom",
     "//ui/events/mojom",

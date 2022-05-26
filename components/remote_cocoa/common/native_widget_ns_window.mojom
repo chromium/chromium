@@ -7,6 +7,7 @@ module remote_cocoa.mojom;
 import "components/remote_cocoa/common/select_file_dialog.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "services/network/public/mojom/network_param.mojom";
+import "ui/base/cursor/mojom/cursor.mojom";
 import "ui/base/mojom/ui_base_types.mojom";
 import "ui/events/mojom/event_constants.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
@@ -250,4 +251,7 @@ interface NativeWidgetNSWindow {
   // overlay display override for a |overlay_type|.
   RemoveWindowControlsOverlayNSView(
       WindowControlsOverlayNSViewType overlay_type);
+
+  // Set the cursor type to display.
+  SetCursor(ui.mojom.Cursor cursor);
 };
