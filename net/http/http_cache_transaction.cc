@@ -640,6 +640,10 @@ void HttpCache::Transaction::SetValidatingCannotProceed() {
 }
 
 void HttpCache::Transaction::WriterAboutToBeRemovedFromEntry(int result) {
+  TRACE_EVENT_WITH_FLOW0(
+      "io", "HttpCacheTransaction::WriterAboutToBeRemovedFromEntry",
+      net_log().source().id,
+      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
   // Since the transaction can no longer access the network transaction, save
   // all network related info now.
   if (moved_network_transaction_to_writers_ &&
@@ -658,6 +662,10 @@ void HttpCache::Transaction::WriterAboutToBeRemovedFromEntry(int result) {
 }
 
 void HttpCache::Transaction::WriteModeTransactionAboutToBecomeReader() {
+  TRACE_EVENT_WITH_FLOW0(
+      "io", "HttpCacheTransaction::WriteModeTransactionAboutToBecomeReader",
+      net_log().source().id,
+      TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
   mode_ = READ;
   if (moved_network_transaction_to_writers_ &&
       entry_->writers->network_transaction()) {
@@ -2242,6 +2250,9 @@ int HttpCache::Transaction::DoHeadersPhaseCannotProceed(int result) {
 }
 
 int HttpCache::Transaction::DoFinishHeaders(int result) {
+  TRACE_EVENT_WITH_FLOW0("io", "HttpCacheTransaction::DoFinishHeaders",
+                         net_log().source().id,
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
   if (!cache_.get() || !entry_ || result != OK) {
     TransitionToState(STATE_NONE);
     return result;
@@ -2272,6 +2283,9 @@ int HttpCache::Transaction::DoFinishHeaders(int result) {
 }
 
 int HttpCache::Transaction::DoFinishHeadersComplete(int rv) {
+  TRACE_EVENT_WITH_FLOW0("io", "HttpCacheTransaction::DoFinishHeadersComplete",
+                         net_log().source().id,
+                         TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
   entry_lock_waiting_since_ = TimeTicks();
   if (rv == ERR_CACHE_RACE || rv == ERR_CACHE_LOCK_TIMEOUT) {
     TransitionToState(STATE_HEADERS_PHASE_CANNOT_PROCEED);
