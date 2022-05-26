@@ -176,11 +176,12 @@ void CameraRollDownloadManagerImpl::UpdateDownloadProgress(
   }
 
   const DownloadItem& download_item = it->second;
+  const bool is_complete =
+      update->status == secure_channel::mojom::FileTransferStatus::kSuccess;
   holding_space_keyed_service_->UpdateItem(download_item.holding_space_item_id)
       ->SetProgress(ash::HoldingSpaceProgress(update->bytes_transferred,
-                                              update->total_bytes))
-      .SetInvalidateImage(update->status ==
-                          secure_channel::mojom::FileTransferStatus::kSuccess);
+                                              update->total_bytes, is_complete))
+      .SetInvalidateImage(is_complete);
 
   switch (update->status) {
     case secure_channel::mojom::FileTransferStatus::kInProgress:

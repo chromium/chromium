@@ -264,6 +264,15 @@ TEST_F(CameraRollDownloadManagerImplTest, UpdateDownloadProgress) {
   camera_roll_download_manager()->UpdateDownloadProgress(
       secure_channel::mojom::FileTransferUpdate::New(
           /*payload_id=*/1234,
+          secure_channel::mojom::FileTransferStatus::kInProgress,
+          /*total_bytes=*/file_size_bytes,
+          /*bytes_transferred=*/file_size_bytes));
+  EXPECT_FALSE(holding_space_item->progress().IsComplete());
+  EXPECT_FLOAT_EQ(1, holding_space_item->progress().GetValue().value());
+
+  camera_roll_download_manager()->UpdateDownloadProgress(
+      secure_channel::mojom::FileTransferUpdate::New(
+          /*payload_id=*/1234,
           secure_channel::mojom::FileTransferStatus::kSuccess,
           /*total_bytes=*/file_size_bytes,
           /*bytes_transferred=*/file_size_bytes));
