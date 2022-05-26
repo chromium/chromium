@@ -11,6 +11,8 @@
 
 namespace content {
 
+class Beacon;
+
 PendingBeaconService* PendingBeaconService::GetInstance() {
   return base::Singleton<PendingBeaconService>::get();
 }
@@ -18,15 +20,10 @@ PendingBeaconService* PendingBeaconService::GetInstance() {
 PendingBeaconService::PendingBeaconService() = default;
 PendingBeaconService::~PendingBeaconService() = default;
 
-void PendingBeaconService::CreateBeacon(
-    mojo::PendingReceiver<blink::mojom::PendingBeacon> receiver,
-    const base::UnguessableToken& id,
-    const GURL& url,
-    blink::mojom::BeaconMethod method,
-    base::TimeDelta timeout) {
-  auto beacon =
-      std::make_unique<Beacon>(id, url, method, timeout, std::move(receiver));
-  beacons_.emplace_back(std::move(beacon));
+void PendingBeaconService::sendBeacons(
+    const std::vector<std::unique_ptr<Beacon>>& beacons) {
+  // TODO(crbug.com/1293679): Implement sending beacons.
+  NOTIMPLEMENTED();
 }
 
 }  // namespace content

@@ -16,11 +16,11 @@
 
 namespace content {
 
+class Beacon;
 class PendingBeaconService;
 
-// Holds a set of IDs (i.e. UnguessableTokens) for a document's
-// pending beacons. This class is responsible for triggering the sending
-// of beacons when a document is either discarded or hidden.
+// Holds a document's pending beacons. This class is responsible for triggering
+// the sending of beacons when a document is either discarded or hidden.
 // TODO(crbug.com/1293679): Send beacons when document is discarded or hidden.
 class CONTENT_EXPORT PendingBeaconHost
     : public blink::mojom::PendingBeaconHost,
@@ -35,6 +35,8 @@ class CONTENT_EXPORT PendingBeaconHost
                     blink::mojom::BeaconMethod method,
                     base::TimeDelta timeout) override;
 
+  void DeleteBeacon(Beacon* beacon);
+
   void SetReceiver(
       mojo::PendingReceiver<blink::mojom::PendingBeaconHost> receiver);
 
@@ -44,8 +46,8 @@ class CONTENT_EXPORT PendingBeaconHost
   explicit PendingBeaconHost(RenderFrameHost* rfh,
                              PendingBeaconService* service);
 
-  // The IDs for the beacons that the document owns.
-  std::vector<base::UnguessableToken> beacon_ids_;
+  std::vector<std::unique_ptr<Beacon>> beacons_;
+
   mojo::Receiver<blink::mojom::PendingBeaconHost> receiver_;
 
   // Service is a singleton object that has a lifetime longer than any
@@ -59,29 +61,26 @@ class CONTENT_EXPORT PendingBeaconHost
 class Beacon : public blink::mojom::PendingBeacon {
  public:
   // Browser-side pending beacon constructor. Parameters correspond to the
-  // renderer-side PendingBeacon class, except for 'id' which is a
-  // browser-side identifier to distinguish which beacons belong to which
-  // documents. This will be used to determine if a beacon should be sent when
-  // a particular document is discarded or hidden (each document has a
-  // `PendingBeaconHost` which keeps a vector of IDs for the beacons it owns).
+  // renderer-side PendingBeacon class.
   // API explainer can be found at:
   // https://github.com/darrenw/docs/blob/main/explainers/beacon_api.md
-  explicit Beacon(const base::UnguessableToken& id,
-                  const GURL& url,
-                  blink::mojom::BeaconMethod method,
-                  base::TimeDelta timeout,
-                  mojo::PendingReceiver<blink::mojom::PendingBeacon> receiver);
+  Beacon(const GURL& url,
+         blink::mojom::BeaconMethod method,
+         base::TimeDelta timeout,
+         PendingBeaconHost* beacon_host,
+         mojo::PendingReceiver<blink::mojom::PendingBeacon> receiver);
   ~Beacon() override;
   void Deactivate() override;
 
  private:
   mojo::Receiver<blink::mojom::PendingBeacon> receiver_;
 
-  const base::UnguessableToken id_;
+  // The beacon host that owns this beacon. raw_ptr is safe here as the host's
+  // lifetime will always be longer than the individual beacon's.
+  raw_ptr<PendingBeaconHost> beacon_host_;
   const GURL url_;
   [[maybe_unused]] const blink::mojom::BeaconMethod method_;
   [[maybe_unused]] const base::TimeDelta timeout_;
-  bool active_ = true;
 };
 
 }  // namespace content

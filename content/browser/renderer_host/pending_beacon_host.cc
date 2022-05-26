@@ -19,12 +19,23 @@ void PendingBeaconHost::CreateBeacon(
     const GURL& url,
     blink::mojom::BeaconMethod method,
     base::TimeDelta timeout) {
-  base::UnguessableToken id = base::UnguessableToken::Create();
-  beacon_ids_.emplace_back(id);
-  service_->CreateBeacon(std::move(receiver), id, url, method, timeout);
+  auto beacon =
+      std::make_unique<Beacon>(url, method, timeout, this, std::move(receiver));
+  beacons_.emplace_back(std::move(beacon));
 }
 
-PendingBeaconHost::~PendingBeaconHost() = default;
+PendingBeaconHost::~PendingBeaconHost() {
+  service_->sendBeacons(beacons_);
+}
+
+void PendingBeaconHost::DeleteBeacon(Beacon* beacon) {
+  auto iter = std::find_if(
+      beacons_.begin(), beacons_.end(),
+      [&](std::unique_ptr<Beacon>& b) { return b.get() == beacon; });
+  if (iter != beacons_.end()) {
+    beacons_.erase(iter);
+  }
+}
 
 void PendingBeaconHost::SetReceiver(
     mojo::PendingReceiver<blink::mojom::PendingBeaconHost> receiver) {
@@ -33,25 +44,21 @@ void PendingBeaconHost::SetReceiver(
 
 DOCUMENT_USER_DATA_KEY_IMPL(PendingBeaconHost);
 
-Beacon::Beacon(const base::UnguessableToken& id,
-               const GURL& url,
+void Beacon::Deactivate() {
+  beacon_host_->DeleteBeacon(this);
+}
+
+Beacon::Beacon(const GURL& url,
                blink::mojom::BeaconMethod method,
                base::TimeDelta timeout,
+               PendingBeaconHost* beacon_host,
                mojo::PendingReceiver<blink::mojom::PendingBeacon> receiver)
     : receiver_(this, std::move(receiver)),
-      id_(id),
+      beacon_host_(beacon_host),
       url_(url),
       method_(method),
       timeout_(timeout) {}
 
 Beacon::~Beacon() = default;
-
-void Beacon::Deactivate() {
-  // Beacons are not deleted on deactivation; they'll be cleaned up when the
-  // document that owns the beacon is either hidden or discarded.
-  // TODO(crbug.com/1293679): Clean up beacons when their owning document is
-  // discarded or hidden.
-  active_ = false;
-}
 
 }  // namespace content

@@ -16,28 +16,23 @@
 
 namespace content {
 
-// Singleton class that manages all the pending beacons for a browser
-// instance.
+class Beacon;
+
+// Singleton class that manages sending pending beacons as well as persisting
+// and restoring pending beacons to disk for crash recovery.
+// TODO(crbug.com/1293679): Implement beacon persistence.
 class CONTENT_EXPORT PendingBeaconService {
  public:
   static PendingBeaconService* GetInstance();
   PendingBeaconService(const PendingBeaconService&) = delete;
   PendingBeaconService& operator=(const PendingBeaconService&) = delete;
 
-  // Creates a new Beacon, adds it to this service's vector of owned `beacons_`,
-  // and connects the new beacon as a receiver for the incoming PendingReceiver.
-  void CreateBeacon(mojo::PendingReceiver<blink::mojom::PendingBeacon> receiver,
-                    const base::UnguessableToken& id,
-                    const GURL& url,
-                    blink::mojom::BeaconMethod method,
-                    base::TimeDelta timeout);
-
   ~PendingBeaconService();
+
+  void sendBeacons(const std::vector<std::unique_ptr<Beacon>>& beacons);
 
  private:
   PendingBeaconService();
-
-  std::vector<std::unique_ptr<Beacon>> beacons_;
 
   friend struct base::DefaultSingletonTraits<PendingBeaconService>;
 };
