@@ -125,8 +125,6 @@ class CORE_EXPORT V8ScriptRunner final {
                                                     ClassicScript*,
                                                     ExecuteScriptPolicy,
                                                     RethrowErrorsOption);
-  static v8::MaybeLocal<v8::Value>
-  CompileAndRunInternalScript(v8::Isolate*, ScriptState*, const ClassicScript&);
   static v8::MaybeLocal<v8::Value> CallAsConstructor(
       v8::Isolate*,
       v8::Local<v8::Object>,

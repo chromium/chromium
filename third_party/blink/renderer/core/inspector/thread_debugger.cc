@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/rand_util.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_evaluation_result.h"
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_blob.h"
@@ -516,18 +517,22 @@ void ThreadDebugger::installAdditionalCommandLineAPI(
       "function getAccessibleRole(node) { [Command Line API] }",
       v8::SideEffectType::kHasNoSideEffect);
 
-  v8::Local<v8::Value> function_value;
-  // `kDoNotSanitize` is used for internal scripts for keeping the existing
-  // behavior.
-  bool success = V8ScriptRunner::CompileAndRunInternalScript(
-                     isolate_, ScriptState::From(context),
-                     *ClassicScript::CreateUnspecifiedScript(
-                         "(function(e) { console.log(e.type, e); })",
-                         ScriptSourceLocationType::kInternal,
-                         SanitizeScriptErrors::kDoNotSanitize))
-                     .ToLocal(&function_value) &&
-                 function_value->IsFunction();
-  DCHECK(success);
+  ScriptEvaluationResult result =
+      ClassicScript::CreateUnspecifiedScript(
+          "(function(e) { console.log(e.type, e); })",
+          ScriptSourceLocationType::kInternal)
+          ->RunScriptOnScriptStateAndReturnValue(ScriptState::From(context));
+  if (result.GetResultType() != ScriptEvaluationResult::ResultType::kSuccess) {
+    // On pages where scripting is disabled or CSP sandbox directive is used,
+    // this can be blocked and thus early exited here.
+    // This is probably OK because `monitorEvents()` console API is anyway not
+    // working on such pages. For more discussion see
+    // https://crrev.com/c/3258735/9/third_party/blink/renderer/core/inspector/thread_debugger.cc#529
+    return;
+  }
+
+  v8::Local<v8::Value> function_value = result.GetSuccessValue();
+  DCHECK(function_value->IsFunction());
   CreateFunctionPropertyWithData(
       context, object, "monitorEvents", ThreadDebugger::MonitorEventsCallback,
       function_value,

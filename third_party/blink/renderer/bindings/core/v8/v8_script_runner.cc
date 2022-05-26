@@ -650,46 +650,6 @@ ScriptEvaluationResult V8ScriptRunner::CompileAndRunScript(
   return ScriptEvaluationResult::FromClassicExceptionRethrown();
 }
 
-v8::MaybeLocal<v8::Value> V8ScriptRunner::CompileAndRunInternalScript(
-    v8::Isolate* isolate,
-    ScriptState* script_state,
-    const ClassicScript& classic_script) {
-  DCHECK_EQ(isolate, script_state->GetIsolate());
-
-  const ReferrerScriptInfo referrer_info(classic_script.BaseUrl(),
-                                         classic_script.FetchOptions());
-  v8::Local<v8::Data> host_defined_options =
-      referrer_info.ToV8HostDefinedOptions(isolate, classic_script.SourceUrl());
-
-  v8::ScriptCompiler::CompileOptions compile_options;
-  V8CodeCache::ProduceCacheOptions produce_cache_options;
-  v8::ScriptCompiler::NoCacheReason no_cache_reason;
-  std::tie(compile_options, produce_cache_options, no_cache_reason) =
-      V8CodeCache::GetCompileOptions(mojom::blink::V8CacheOptions::kDefault,
-                                     classic_script);
-  // Currently internal scripts don't have cache handlers. So we should not
-  // produce cache for them.
-  DCHECK_EQ(produce_cache_options,
-            V8CodeCache::ProduceCacheOptions::kNoProduceCache);
-  v8::Local<v8::Script> script;
-  if (!V8ScriptRunner::CompileScript(script_state, classic_script,
-                                     compile_options, no_cache_reason,
-                                     host_defined_options)
-           .ToLocal(&script))
-    return v8::MaybeLocal<v8::Value>();
-
-  TRACE_EVENT0("v8", "v8.run");
-  RuntimeCallStatsScopedTracer rcs_scoped_tracer(isolate);
-  RUNTIME_CALL_TIMER_SCOPE(isolate, RuntimeCallStats::CounterId::kV8);
-  v8::Isolate::SafeForTerminationScope safe_for_termination(isolate);
-  v8::MicrotasksScope microtasks_scope(
-      isolate, ToMicrotaskQueue(script_state),
-      v8::MicrotasksScope::kDoNotRunMicrotasks);
-  v8::MaybeLocal<v8::Value> result = script->Run(isolate->GetCurrentContext());
-  CHECK(!isolate->IsDead());
-  return result;
-}
-
 v8::MaybeLocal<v8::Value> V8ScriptRunner::CallAsConstructor(
     v8::Isolate* isolate,
     v8::Local<v8::Object> constructor,
