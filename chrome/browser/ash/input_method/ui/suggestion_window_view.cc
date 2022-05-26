@@ -133,6 +133,20 @@ void SuggestionWindowView::SetButtonHighlighted(
   }
 }
 
+gfx::Rect SuggestionWindowView::GetBubbleBounds() {
+  // The bubble bounds must be shifted to align with the anchor.
+  // If there is more than one suggestion, use the anchor origin of the first
+  // (topmost) suggestion. This allows the alignment to work correctly for both
+  // vertical and horizontal orientations.
+  const views::View::Views& candidates = candidate_area_->children();
+  const gfx::Point anchor_origin =
+      !candidates.empty()
+          ? static_cast<SuggestionView*>(candidates[0])->GetAnchorOrigin()
+          : gfx::Point(0, 0);
+  return BubbleDialogDelegateView::GetBubbleBounds() -
+         anchor_origin.OffsetFromOrigin();
+}
+
 void SuggestionWindowView::OnThemeChanged() {
   BubbleDialogDelegateView::OnThemeChanged();
 

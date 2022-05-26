@@ -9,6 +9,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ash/input_method/assistive_window_properties.h"
 #include "chrome/browser/ash/input_method/ui/assistive_delegate.h"
+#include "chrome/browser/ash/input_method/ui/suggestion_details.h"
 #include "chrome/browser/ash/input_method/ui/suggestion_view.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -310,6 +311,16 @@ TEST_P(SuggestionWindowViewTest, DisplaysCorrectOrientationLayout) {
           suggestion_window_view_->GetLayoutManager())
           ->GetOrientation();
   EXPECT_EQ(layout_orientation, expected_orientation);
+}
+
+TEST_P(SuggestionWindowViewTest, LeftBoundIsCloseToAnchor) {
+  suggestion_window_view_->Show({
+      .text = u"good",
+  });
+
+  suggestion_window_view_->SetAnchorRect(gfx::Rect(100, 0, 10, 10));
+
+  EXPECT_EQ(suggestion_window_view_->GetBoundsInScreen().x(), 100 - kPadding);
 }
 
 }  // namespace ime
