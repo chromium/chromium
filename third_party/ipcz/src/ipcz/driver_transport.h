@@ -20,7 +20,6 @@
 namespace ipcz {
 
 class Message;
-class Node;
 
 // Encapsulates shared ownership of a transport endpoint created by an ipcz
 // driver. The driver calls into this object to notify ipcz of incoming messages

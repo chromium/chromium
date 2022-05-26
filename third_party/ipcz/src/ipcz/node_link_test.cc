@@ -31,9 +31,9 @@ std::pair<Ref<NodeLink>, Ref<NodeLink>> LinkNodes(Ref<Node> broker,
                                      nullptr, &handle0, &handle1));
 
   auto transport0 =
-      MakeRefCounted<DriverTransport>(DriverObject(broker, handle0));
+      MakeRefCounted<DriverTransport>(DriverObject(kDriver, handle0));
   auto transport1 =
-      MakeRefCounted<DriverTransport>(DriverObject(non_broker, handle1));
+      MakeRefCounted<DriverTransport>(DriverObject(kDriver, handle1));
 
   NodeLinkMemory::Allocation allocation = NodeLinkMemory::Allocate(broker);
   ABSL_ASSERT(allocation.node_link_memory);

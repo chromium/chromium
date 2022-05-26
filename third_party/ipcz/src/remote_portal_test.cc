@@ -5,7 +5,6 @@
 #include <utility>
 
 #include "ipcz/ipcz.h"
-#include "ipcz/node.h"
 #include "test/multinode_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -139,14 +138,17 @@ TEST_P(RemotePortalTest, DisconnectThroughProxy) {
   Put(e, "", {&p, 1});
   EXPECT_EQ(IPCZ_RESULT_OK, WaitToGet(f, nullptr, {&p, 1}));
 
-  // TODO: Once proxy reduction is implemented, the test setup should wait for
-  // a direct link between node2 and node3 before then severing only that
-  // connection. Without proxy reduction, no such direct link exists yet.
-  ipcz::Node::SimulateDisconnectForTesting(node0, node3);
+  // Forcibly close node3 such that all its connections are severed. Any portals
+  // reliant on those connections should observe peer closure as a result. Note
+  // that portal lifetime is independent of node lifetime, so affected portals
+  // created by node3 still must be explicitly closed below.
+  Close(node3);
 
+  // Even q must observe peer closure, despite being potentially several hops
+  // away from node3 where its peer p resided.
   EXPECT_EQ(IPCZ_RESULT_OK, WaitForConditionFlags(q, IPCZ_TRAP_PEER_CLOSED));
 
-  CloseAll({a, b, c, d, e, f, q, p, node3, node2, node1, node0});
+  CloseAll({a, b, c, d, e, f, q, p, node2, node1, node0});
 }
 
 INSTANTIATE_MULTINODE_TEST_SUITE_P(RemotePortalTest);

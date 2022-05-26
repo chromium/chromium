@@ -18,8 +18,7 @@ namespace ipcz::test {
 TestTransportListener::TestTransportListener(IpczHandle node,
                                              IpczDriverHandle handle)
     : TestTransportListener(MakeRefCounted<DriverTransport>(
-          DriverObject(WrapRefCounted(reinterpret_cast<Node*>(node)),
-                       handle))) {}
+          DriverObject(reinterpret_cast<Node*>(node)->driver(), handle))) {}
 
 TestTransportListener::TestTransportListener(Ref<DriverTransport> transport)
     : transport_(std::move(transport)) {

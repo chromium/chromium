@@ -21,7 +21,7 @@ namespace {
 class BufferPoolTest : public testing::Test {
  protected:
   DriverMemoryMapping AllocateDriverMemory(size_t size) {
-    return DriverMemory(node_, size).Map();
+    return DriverMemory(node_->driver(), size).Map();
   }
 
  private:

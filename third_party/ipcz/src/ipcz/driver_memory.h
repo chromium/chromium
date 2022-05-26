@@ -14,8 +14,6 @@
 
 namespace ipcz {
 
-class Node;
-
 // Scoped wrapper around a shared memory region allocated and manipulated
 // through an ipcz driver.
 class DriverMemory {
@@ -27,7 +25,7 @@ class DriverMemory {
 
   // Asks the node to allocate a new driver shared memory region of at least
   // `num_bytes` in size.
-  DriverMemory(Ref<Node> node, size_t num_bytes);
+  DriverMemory(const IpczDriver& driver, size_t num_bytes);
 
   DriverMemory(DriverMemory&& other);
   DriverMemory& operator=(DriverMemory&& other);

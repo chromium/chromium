@@ -60,7 +60,7 @@ NodeLinkMemory::~NodeLinkMemory() = default;
 
 // static
 NodeLinkMemory::Allocation NodeLinkMemory::Allocate(Ref<Node> node) {
-  DriverMemory primary_buffer_memory(node, sizeof(PrimaryBuffer));
+  DriverMemory primary_buffer_memory(node->driver(), sizeof(PrimaryBuffer));
   if (!primary_buffer_memory.is_valid()) {
     return {.node_link_memory = nullptr, .primary_buffer_memory = {}};
   }

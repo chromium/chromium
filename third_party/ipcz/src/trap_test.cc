@@ -7,14 +7,14 @@
 
 #include "ipcz/ipcz.h"
 #include "reference_drivers/single_process_reference_driver.h"
-#include "test/test_base.h"
+#include "test/test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/memory/memory.h"
 
 namespace ipcz {
 namespace {
 
-class TrapTest : public test::TestBase {
+class TrapTest : public test::Test {
  public:
   ~TrapTest() override { Close(node_); }
 

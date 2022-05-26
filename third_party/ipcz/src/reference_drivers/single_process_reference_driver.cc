@@ -9,9 +9,13 @@
 #include <limits>
 #include <string>
 #include <string_view>
+#include <tuple>
 #include <vector>
 
+#include "ipcz/driver_object.h"
+#include "ipcz/driver_transport.h"
 #include "ipcz/ipcz.h"
+#include "ipcz/message.h"
 #include "reference_drivers/object.h"
 #include "reference_drivers/random.h"
 #include "third_party/abseil-cpp/absl/synchronization/mutex.h"
@@ -82,17 +86,42 @@ class InProcessTransport
     Deactivate();
 
     Ref<InProcessTransport> peer;
+    std::vector<SavedMessage> saved_messages;
     {
       absl::MutexLock lock(&mutex_);
       peer = std::move(peer_);
+      saved_messages = std::move(saved_messages_);
     }
 
     if (peer) {
+      // Kind of a hack so we can deserialize messages as if they were read
+      // and deserialized by the peer. We want to do this because the serialized
+      // messages may encode driver objects with live resources that would
+      // otherwise leak. This is particularly problematic in test environments
+      // where we want to exercise various edge cases that can result in
+      // dropped connections and dropped messages, within a single test process
+      // that may run multiple such tests in succession.
+      //
+      // We construct a temporary DriverObject which wraps `this`, as needed
+      // for Message deserialization. This must be released when done, as it
+      // does not actually own a handle to the peer.
+      auto peer_transport = MakeRefCounted<DriverTransport>(
+          DriverObject(kSingleProcessReferenceDriver, peer->handle()));
+      for (SavedMessage& m : saved_messages) {
+        ipcz::Message message;
+        message.DeserializeUnknownType(
+            ipcz::DriverTransport::RawMessage{m.data, m.handles},
+            *peer_transport);
+      }
+
+      std::ignore = peer_transport->Release();
+
       // NOTE: Although nothing should ever call back into `this` after Close(),
       // for consistency with other methods we still take precaution not to call
       // into the peer while holding `mutex_`.
       peer->OnPeerClosed();
     }
+
     return IPCZ_RESULT_OK;
   }
 
@@ -104,13 +133,23 @@ class InProcessTransport
 
   IpczResult Activate(IpczHandle transport,
                       IpczTransportActivityHandler activity_handler) {
+    Ref<TransportWrapper> new_transport =
+        MakeRefCounted<TransportWrapper>(transport, activity_handler);
     Ref<InProcessTransport> peer;
     {
       absl::MutexLock lock(&mutex_);
       ABSL_ASSERT(!transport_);
-      transport_ =
-          MakeRefCounted<TransportWrapper>(transport, activity_handler);
-      peer = peer_;
+      if (!peer_closed_) {
+        transport_ = std::move(new_transport);
+        peer = peer_;
+      }
+    }
+
+    if (new_transport) {
+      // If the wrapper wasn't taken by this object, our peer has already been
+      // closed. Signal a transport error, as peer closure would have done.
+      new_transport->NotifyError();
+      return IPCZ_RESULT_OK;
     }
 
     // Let the peer know that it can now call into us directly. This may
@@ -212,6 +251,7 @@ class InProcessTransport
     {
       absl::MutexLock lock(&mutex_);
       transport = std::move(transport_);
+      peer_closed_ = true;
     }
 
     if (transport) {
@@ -226,6 +266,7 @@ class InProcessTransport
   Ref<InProcessTransport> peer_ ABSL_GUARDED_BY(mutex_);
   Ref<TransportWrapper> transport_ ABSL_GUARDED_BY(mutex_);
   bool peer_active_ ABSL_GUARDED_BY(mutex_) = false;
+  bool peer_closed_ ABSL_GUARDED_BY(mutex_) = false;
   std::vector<SavedMessage> saved_messages_ ABSL_GUARDED_BY(mutex_);
 };
 

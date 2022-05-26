@@ -65,13 +65,13 @@ IpczResult DriverTransport::Activate() {
   // Acquire a self-reference, balanced in NotifyTransport() when the driver
   // invokes its activity handler with IPCZ_TRANSPORT_ACTIVITY_DEACTIVATED.
   IpczHandle handle = ReleaseAsHandle(WrapRefCounted(this));
-  return transport_.node()->driver().ActivateTransport(
+  return transport_.driver()->ActivateTransport(
       transport_.handle(), handle, NotifyTransport, IPCZ_NO_FLAGS, nullptr);
 }
 
 IpczResult DriverTransport::Deactivate() {
-  return transport_.node()->driver().DeactivateTransport(
-      transport_.handle(), IPCZ_NO_FLAGS, nullptr);
+  return transport_.driver()->DeactivateTransport(transport_.handle(),
+                                                  IPCZ_NO_FLAGS, nullptr);
 }
 
 IpczResult DriverTransport::Transmit(Message& message) {
@@ -81,9 +81,9 @@ IpczResult DriverTransport::Transmit(Message& message) {
   const absl::Span<const uint8_t> data = message.data_view();
   const absl::Span<const IpczDriverHandle> handles =
       message.transmissible_driver_handles();
-  return transport_.node()->driver().Transmit(
-      transport_.handle(), data.data(), data.size(), handles.data(),
-      handles.size(), IPCZ_NO_FLAGS, nullptr);
+  return transport_.driver()->Transmit(transport_.handle(), data.data(),
+                                       data.size(), handles.data(),
+                                       handles.size(), IPCZ_NO_FLAGS, nullptr);
 }
 
 bool DriverTransport::Notify(const RawMessage& message) {

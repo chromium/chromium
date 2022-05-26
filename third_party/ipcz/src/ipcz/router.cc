@@ -154,6 +154,7 @@ bool Router::AcceptOutboundParcel(Parcel& parcel) {
 
 bool Router::AcceptRouteClosureFrom(LinkType link_type,
                                     SequenceNumber sequence_length) {
+  Ref<RouterLink> inward_forwarding_link;
   TrapEventDispatcher dispatcher;
   {
     absl::MutexLock lock(&mutex_);
@@ -163,7 +164,7 @@ bool Router::AcceptRouteClosureFrom(LinkType link_type,
       }
 
       if (inward_link_) {
-        inward_link_->AcceptRouteClosure(sequence_length);
+        inward_forwarding_link = inward_link_;
       } else {
         status_.flags |= IPCZ_PORTAL_STATUS_PEER_CLOSED;
         if (inbound_parcels_.IsSequenceFullyConsumed()) {
@@ -177,6 +178,10 @@ bool Router::AcceptRouteClosureFrom(LinkType link_type,
         return false;
       }
     }
+  }
+
+  if (inward_forwarding_link) {
+    inward_forwarding_link->AcceptRouteClosure(sequence_length);
   }
 
   Flush();
@@ -268,15 +273,20 @@ Ref<Router> Router::Deserialize(const RouterDescriptor& descriptor,
     Ref<RemoteRouterLink> new_link = from_node_link.AddRemoteRouterLink(
         descriptor.new_sublink, LinkType::kPeripheralOutward, LinkSide::kB,
         router);
-    if (!new_link) {
-      return nullptr;
-    }
-    router->outward_link_ = std::move(new_link);
+    if (new_link) {
+      router->outward_link_ = std::move(new_link);
 
-    DVLOG(4) << "Route extended from "
-             << from_node_link.remote_node_name().ToString() << " to "
-             << from_node_link.local_node_name().ToString() << " via sublink "
-             << descriptor.new_sublink;
+      DVLOG(4) << "Route extended from "
+               << from_node_link.remote_node_name().ToString() << " to "
+               << from_node_link.local_node_name().ToString() << " via sublink "
+               << descriptor.new_sublink;
+    } else if (!descriptor.peer_closed) {
+      // The new portal is DOA, either because the associated NodeLink is dead,
+      // or the sublink ID was already in use. The latter implies a bug or bad
+      // behavior, but it should be harmless to ignore beyond this point.
+      router->AcceptRouteClosureFrom(LinkType::kPeripheralOutward,
+                                     descriptor.next_incoming_sequence_number);
+    }
   }
 
   router->Flush();

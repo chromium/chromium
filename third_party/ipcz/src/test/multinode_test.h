@@ -18,7 +18,7 @@ namespace ipcz::test {
 //
 // This fixture mostly provides convenience methods for creating and connecting
 // nodes in various useful configurations.
-class MultinodeTest : public TestBase {
+class MultinodeTest : public internal::TestBase, public ::testing::Test {
  public:
   // Selects which driver a new node will use. Interconnecting nodes must always
   // use the same driver.

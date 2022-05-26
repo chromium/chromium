@@ -186,7 +186,10 @@ ipcz_source_set("reference_drivers") {
     }
   }
 
-  ipcz_deps = [ ":util" ]
+  ipcz_deps = [
+    ":impl",
+    ":util",
+  ]
   public_deps = [ ":ipcz_header" ]
   configs = [ ":ipcz_include_src_dir" ]
 
@@ -347,6 +350,7 @@ ipcz_source_set("ipcz_tests_sources") {
     "test/mock_driver.h",
     "test/multinode_test.cc",
     "test/multinode_test.h",
+    "test/test.h",
     "test/test_base.cc",
     "test/test_base.h",
     "test/test_transport_listener.cc",

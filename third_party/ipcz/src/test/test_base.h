@@ -14,14 +14,16 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/span.h"
 
-namespace ipcz::test {
+namespace ipcz::test::internal {
 
-class TestBase : public testing::Test {
+// Base class for ipcz unit tests (see ipcz::test::Test in test.h) and multinode
+// test fixtures (see ipcz::test::MultinodeTest in multinode_test.h).
+class TestBase {
  public:
   using TrapEventHandler = std::function<void(const IpczTrapEvent&)>;
 
   TestBase();
-  ~TestBase() override;
+  ~TestBase();
 
   const IpczAPI& ipcz() const { return ipcz_; }
 
@@ -60,6 +62,6 @@ class TestBase : public testing::Test {
   IpczAPI ipcz_ = {.size = sizeof(ipcz_)};
 };
 
-}  // namespace ipcz::test
+}  // namespace ipcz::test::internal
 
 #endif  // IPCZ_SRC_TEST_TEST_BASE_H_

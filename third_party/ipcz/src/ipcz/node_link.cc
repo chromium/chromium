@@ -74,12 +74,17 @@ Ref<RemoteRouterLink> NodeLink::AddRemoteRouterLink(SublinkId sublink,
       RemoteRouterLink::Create(WrapRefCounted(this), sublink, type, side);
 
   absl::MutexLock lock(&mutex_);
+  if (!active_) {
+    // We don't bind new RemoteRouterLinks once we've been deactivated, lest we
+    // incur leaky NodeLink references.
+    return nullptr;
+  }
+
   auto [it, added] = sublinks_.try_emplace(
       sublink, Sublink(std::move(link), std::move(router)));
   if (!added) {
-    // The sublink provided here may be received in a message from another node.
-    // Failure here serves as a validation signal, as a well-behaved node will
-    // not attempt to reuse sublink IDs.
+    // The SublinkId provided here may have been received from another node and
+    // may already be in use if the node is misbehaving.
     return nullptr;
   }
   return it->second.router_link;
@@ -109,18 +114,15 @@ Ref<Router> NodeLink::GetRouter(SublinkId sublink) {
 }
 
 void NodeLink::Deactivate() {
-  SublinkMap sublinks;
   {
     absl::MutexLock lock(&mutex_);
-    sublinks = std::move(sublinks_);
     if (!active_) {
       return;
     }
-
     active_ = false;
   }
 
-  sublinks.clear();
+  OnTransportError();
   transport_->Deactivate();
 }
 
@@ -136,11 +138,6 @@ void NodeLink::Transmit(Message& message) {
 
   message.header().sequence_number = GenerateOutgoingSequenceNumber();
   transport_->Transmit(message);
-}
-
-void NodeLink::SimulateDisconnectForTesting() {
-  OnTransportError();
-  Deactivate();
 }
 
 SequenceNumber NodeLink::GenerateOutgoingSequenceNumber() {

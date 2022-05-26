@@ -6,7 +6,7 @@
 
 #include "ipcz/ipcz.h"
 #include "reference_drivers/single_process_reference_driver.h"
-#include "test/test_base.h"
+#include "test/test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ipcz {
@@ -15,7 +15,7 @@ namespace {
 const IpczDriver& kDefaultDriver =
     reference_drivers::kSingleProcessReferenceDriver;
 
-using APITest = test::TestBase;
+using APITest = test::Test;
 
 TEST_F(APITest, Unimplemented) {
   EXPECT_EQ(IPCZ_RESULT_UNIMPLEMENTED,

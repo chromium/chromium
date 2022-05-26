@@ -14,19 +14,18 @@
 namespace ipcz {
 
 class DriverTransport;
-class Node;
 
 // Owns an IpczDriverHandle and exposes a generic interface for serialization
 // and deserialization through the driver.
 class DriverObject {
  public:
   DriverObject();
-  DriverObject(Ref<Node> node, IpczDriverHandle handle);
+  DriverObject(const IpczDriver& driver, IpczDriverHandle handle);
   DriverObject(DriverObject&&);
   DriverObject& operator=(DriverObject&&);
   ~DriverObject();
 
-  const Ref<Node>& node() const { return node_; }
+  const IpczDriver* driver() const { return driver_; }
   IpczDriverHandle handle() const { return handle_; }
 
   void reset();
@@ -72,7 +71,7 @@ class DriverObject {
                                   absl::Span<const IpczDriverHandle> handles);
 
  private:
-  Ref<Node> node_;
+  const IpczDriver* driver_ = nullptr;
   IpczDriverHandle handle_ = IPCZ_INVALID_DRIVER_HANDLE;
 };
 

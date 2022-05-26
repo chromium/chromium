@@ -13,7 +13,6 @@
 #include "ipcz/driver_memory.h"
 #include "ipcz/driver_memory_mapping.h"
 #include "ipcz/driver_object.h"
-#include "ipcz/node.h"
 #include "ipcz/test_messages.h"
 #include "test/mock_driver.h"
 #include "test/test_transport_listener.h"
@@ -37,15 +36,14 @@ class DriverTransportTest : public testing::Test {
   std::pair<Ref<DriverTransport>, Ref<DriverTransport>> CreateTransportPair(
       IpczDriverHandle transport0,
       IpczDriverHandle transport1) {
-    return {MakeRefCounted<DriverTransport>(DriverObject(node_, transport0)),
-            MakeRefCounted<DriverTransport>(DriverObject(node_, transport1))};
+    return {MakeRefCounted<DriverTransport>(
+                DriverObject(test::kMockDriver, transport0)),
+            MakeRefCounted<DriverTransport>(
+                DriverObject(test::kMockDriver, transport1))};
   }
 
  private:
   ::testing::StrictMock<test::MockDriver> driver_;
-  Ref<Node> node_{MakeRefCounted<Node>(Node::Type::kNormal,
-                                       test::kMockDriver,
-                                       IPCZ_INVALID_DRIVER_HANDLE)};
 };
 
 TEST_F(DriverTransportTest, Activation) {

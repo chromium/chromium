@@ -226,7 +226,7 @@ IpczResult Box(IpczHandle node_handle,
   }
 
   auto box = ipcz::MakeRefCounted<ipcz::Box>(
-      ipcz::DriverObject(ipcz::WrapRefCounted(node), driver_handle));
+      ipcz::DriverObject(node->driver(), driver_handle));
   *handle = ipcz::Box::ReleaseAsHandle(std::move(box));
   return IPCZ_RESULT_OK;
 }

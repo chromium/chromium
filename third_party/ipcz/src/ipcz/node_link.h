@@ -105,10 +105,6 @@ class NodeLink : public RefCounted, private msg::NodeMessageListener {
   // memory.
   void Transmit(Message& message);
 
-  // Simulates disconnection by invoking the code path which handles transport
-  // errors and deactiving this link.
-  void SimulateDisconnectForTesting();
-
  private:
   NodeLink(Ref<Node> node,
            LinkSide link_side,

@@ -9,7 +9,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/synchronization/notification.h"
 
-namespace ipcz::test {
+namespace ipcz::test::internal {
 
 namespace {
 
@@ -175,4 +175,4 @@ void TestBase::HandleEvent(const IpczTrapEvent* event) {
   (*handler)(*event);
 }
 
-}  // namespace ipcz::test
+}  // namespace ipcz::test::internal

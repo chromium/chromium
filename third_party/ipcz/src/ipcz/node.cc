@@ -32,30 +32,8 @@ Node::Node(Type type, const IpczDriver& driver, IpczDriverHandle driver_node)
 Node::~Node() = default;
 
 IpczResult Node::Close() {
-  absl::flat_hash_map<NodeName, Ref<NodeLink>> node_links;
-  {
-    absl::MutexLock lock(&mutex_);
-    node_links_.swap(node_links);
-    broker_link_.reset();
-  }
-
-  for (const auto& entry : node_links) {
-    entry.second->Deactivate();
-  }
+  ShutDown();
   return IPCZ_RESULT_OK;
-}
-
-void Node::ShutDown() {
-  absl::flat_hash_map<NodeName, Ref<NodeLink>> node_links;
-  {
-    absl::MutexLock lock(&mutex_);
-    std::swap(node_links_, node_links);
-    broker_link_.reset();
-  }
-
-  for (const auto& entry : node_links) {
-    entry.second->Deactivate();
-  }
 }
 
 IpczResult Node::ConnectNode(IpczDriverHandle driver_transport,
@@ -69,8 +47,8 @@ IpczResult Node::ConnectNode(IpczDriverHandle driver_transport,
     initial_portals[i] = Portal::ReleaseAsHandle(std::move(portal));
   }
 
-  auto transport = MakeRefCounted<DriverTransport>(
-      DriverObject(WrapRefCounted(this), driver_transport));
+  auto transport =
+      MakeRefCounted<DriverTransport>(DriverObject(driver_, driver_transport));
   IpczResult result = NodeConnector::ConnectNode(WrapRefCounted(this),
                                                  transport, flags, portals);
   if (result != IPCZ_RESULT_OK) {
@@ -124,29 +102,17 @@ NodeName Node::GenerateRandomName() const {
   return name;
 }
 
-// static
-void Node::SimulateDisconnectForTesting(IpczHandle first, IpczHandle second) {
-  Node* node0 = Node::FromHandle(first);
-  Node* node1 = Node::FromHandle(second);
-
-  node0->SimulateDisconnectForTesting(node1->GetAssignedName());
-  node1->SimulateDisconnectForTesting(node0->GetAssignedName());
-}
-
-void Node::SimulateDisconnectForTesting(const NodeName& name) {
-  absl::MutexLock lock(&mutex_);
-  auto it = node_links_.find(name);
-  if (it == node_links_.end()) {
-    return;
-  }
-
-  Ref<NodeLink> link = std::move(it->second);
-  node_links_.erase(it);
-
-  if (broker_link_ == link) {
+void Node::ShutDown() {
+  NodeLinkMap node_links;
+  {
+    absl::MutexLock lock(&mutex_);
+    std::swap(node_links_, node_links);
     broker_link_.reset();
   }
-  link->SimulateDisconnectForTesting();
+
+  for (const auto& entry : node_links) {
+    entry.second->Deactivate();
+  }
 }
 
 }  // namespace ipcz

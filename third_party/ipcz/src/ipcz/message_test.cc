@@ -123,8 +123,8 @@ class MessageTest : public testing::Test {
   const Ref<Node> node_{MakeRefCounted<Node>(Node::Type::kNormal,
                                              test::kMockDriver,
                                              IPCZ_INVALID_DRIVER_HANDLE)};
-  const Ref<DriverTransport> transport_{
-      MakeRefCounted<DriverTransport>(DriverObject(node_, kTransportHandle))};
+  const Ref<DriverTransport> transport_{MakeRefCounted<DriverTransport>(
+      DriverObject(test::kMockDriver, kTransportHandle))};
   std::queue<ReceivedMessage> received_messages_;
   bool reject_driver_objects_ = false;
 };
@@ -185,7 +185,7 @@ TEST_F(MessageTest, DriverObject) {
 
   test::msg::MessageWithDriverObject in;
   in.params().object =
-      in.AppendDriverObject(DriverObject(node(), kObjectHandle));
+      in.AppendDriverObject(DriverObject(test::kMockDriver, kObjectHandle));
 
   transport().Transmit(in);
 
@@ -202,7 +202,7 @@ TEST_F(MessageTest, DriverObjectArray) {
                                                  0x42425555};
   DriverObject in_objects[std::size(kObjectHandles)];
   for (size_t i = 0; i < std::size(kObjectHandles); ++i) {
-    in_objects[i] = DriverObject(node(), kObjectHandles[i]);
+    in_objects[i] = DriverObject(test::kMockDriver, kObjectHandles[i]);
   }
 
   test::msg::MessageWithDriverObjectArray in;
@@ -285,7 +285,7 @@ TEST_F(MessageTest, MalformedDriverObject) {
   constexpr IpczDriverHandle kObjectHandle = 0x12345678;
   test::msg::MessageWithDriverObject in;
   in.params().object =
-      in.AppendDriverObject(DriverObject(node(), kObjectHandle));
+      in.AppendDriverObject(DriverObject(test::kMockDriver, kObjectHandle));
 
   // Force driver object deserialization to fail. This must result in failure of
   // overall message deserialization.
@@ -306,7 +306,7 @@ TEST_F(MessageTest, DriverObjectClaimedTwice) {
                                                  0x42425555};
   DriverObject in_objects[std::size(kObjectHandles)];
   for (size_t i = 0; i < std::size(kObjectHandles); ++i) {
-    in_objects[i] = DriverObject(node(), kObjectHandles[i]);
+    in_objects[i] = DriverObject(test::kMockDriver, kObjectHandles[i]);
   }
 
   test::msg::MessageWithDriverArrayAndExtraObject in;
@@ -339,11 +339,11 @@ TEST_F(MessageTest, UnclaimedDriverObjects) {
   constexpr IpczDriverHandle kObjectHandle3 = 0x5a5a5a5a;
   test::msg::MessageWithDriverObject in;
   in.params().object =
-      in.AppendDriverObject(DriverObject(node(), kObjectHandle1));
+      in.AppendDriverObject(DriverObject(test::kMockDriver, kObjectHandle1));
 
   // Append two more objects with no references to them in the message.
-  in.AppendDriverObject(DriverObject(node(), kObjectHandle2));
-  in.AppendDriverObject(DriverObject(node(), kObjectHandle3));
+  in.AppendDriverObject(DriverObject(test::kMockDriver, kObjectHandle2));
+  in.AppendDriverObject(DriverObject(test::kMockDriver, kObjectHandle3));
 
   transport().Transmit(in);
 

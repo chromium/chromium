@@ -14,7 +14,7 @@
 #include "ipcz/portal.h"
 #include "ipcz/router.h"
 #include "reference_drivers/single_process_reference_driver.h"
-#include "test/test_base.h"
+#include "test/test.h"
 #include "test/test_transport_listener.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "util/ref_counted.h"
@@ -24,7 +24,7 @@ namespace {
 
 const IpczDriver& kDriver = reference_drivers::kSingleProcessReferenceDriver;
 
-class NodeConnectorTest : public test::TestBase {
+class NodeConnectorTest : public test::Test {
  protected:
   Ref<Node> CreateBrokerNode() {
     return MakeRefCounted<Node>(Node::Type::kBroker, kDriver,
@@ -40,16 +40,16 @@ class NodeConnectorTest : public test::TestBase {
     return MakeRefCounted<Portal>(node, MakeRefCounted<Router>());
   }
 
-  DriverTransport::Pair CreateTransports(Ref<Node> node0, Ref<Node> node1) {
+  DriverTransport::Pair CreateTransports() {
     IpczDriverHandle handle0, handle1;
     EXPECT_EQ(IPCZ_RESULT_OK,
               kDriver.CreateTransports(
                   IPCZ_INVALID_DRIVER_HANDLE, IPCZ_INVALID_DRIVER_HANDLE,
                   IPCZ_NO_FLAGS, nullptr, &handle0, &handle1));
     auto transport0 =
-        MakeRefCounted<DriverTransport>(DriverObject(node0, handle0));
+        MakeRefCounted<DriverTransport>(DriverObject(kDriver, handle0));
     auto transport1 =
-        MakeRefCounted<DriverTransport>(DriverObject(node1, handle1));
+        MakeRefCounted<DriverTransport>(DriverObject(kDriver, handle1));
     return {transport0, transport1};
   }
 };
@@ -58,8 +58,7 @@ TEST_F(NodeConnectorTest, ConnectBrokerToNonBroker) {
   Ref<Node> broker = CreateBrokerNode();
   Ref<Node> non_broker = CreateNonBrokerNode();
 
-  auto [broker_transport, non_broker_transport] =
-      CreateTransports(broker, non_broker);
+  auto [broker_transport, non_broker_transport] = CreateTransports();
 
   bool non_broker_received_connect = false;
   test::TestTransportListener listener(non_broker_transport);
@@ -83,8 +82,7 @@ TEST_F(NodeConnectorTest, ConnectNonBrokerToBroker) {
   Ref<Node> broker = CreateBrokerNode();
   Ref<Node> non_broker = CreateNonBrokerNode();
 
-  auto [broker_transport, non_broker_transport] =
-      CreateTransports(broker, non_broker);
+  auto [broker_transport, non_broker_transport] = CreateTransports();
 
   bool broker_received_connect = false;
   test::TestTransportListener listener(broker_transport);
@@ -111,8 +109,7 @@ TEST_F(NodeConnectorTest, BrokerRejectInvalidMessage) {
   Ref<Node> non_broker = CreateNonBrokerNode();
 
   {
-    auto [broker_transport, non_broker_transport] =
-        CreateTransports(broker, non_broker);
+    auto [broker_transport, non_broker_transport] = CreateTransports();
 
     bool rejected = false;
     std::vector<Ref<Portal>> initial_portals = {CreatePortal(broker)};
@@ -139,8 +136,7 @@ TEST_F(NodeConnectorTest, BrokerRejectInvalidMessage) {
   }
 
   {
-    auto [broker_transport, non_broker_transport] =
-        CreateTransports(broker, non_broker);
+    auto [broker_transport, non_broker_transport] = CreateTransports();
 
     bool rejected = false;
     std::vector<Ref<Portal>> initial_portals = {CreatePortal(broker)};
@@ -163,8 +159,8 @@ TEST_F(NodeConnectorTest, BrokerRejectInvalidMessage) {
     // NodeConnector should reject this message.
     EXPECT_FALSE(rejected);
     msg::ConnectFromBrokerToNonBroker message;
-    message.params().buffer =
-        message.AppendDriverObject(DriverMemory(broker, 64).TakeDriverObject());
+    message.params().buffer = message.AppendDriverObject(
+        DriverMemory(kDriver, 64).TakeDriverObject());
     non_broker_transport->Transmit(message);
     EXPECT_TRUE(rejected);
   }
@@ -178,8 +174,7 @@ TEST_F(NodeConnectorTest, NonBrokerRejectInvalidMessage) {
   Ref<Node> non_broker = CreateNonBrokerNode();
 
   {
-    auto [broker_transport, non_broker_transport] =
-        CreateTransports(broker, non_broker);
+    auto [broker_transport, non_broker_transport] = CreateTransports();
 
     bool rejected = false;
     std::vector<Ref<Portal>> initial_portals = {CreatePortal(non_broker)};
@@ -196,8 +191,7 @@ TEST_F(NodeConnectorTest, NonBrokerRejectInvalidMessage) {
   }
 
   {
-    auto [broker_transport, non_broker_transport] =
-        CreateTransports(broker, non_broker);
+    auto [broker_transport, non_broker_transport] = CreateTransports();
 
     bool rejected = false;
     std::vector<Ref<Portal>> initial_portals = {CreatePortal(non_broker)};
@@ -223,8 +217,7 @@ TEST_F(NodeConnectorTest, NonBrokerRejectInvalidMessage) {
 TEST_F(NodeConnectorTest, EndToEndSuccess_BrokerFirst) {
   Ref<Node> broker = CreateBrokerNode();
   Ref<Node> non_broker = CreateNonBrokerNode();
-  auto [broker_transport, non_broker_transport] =
-      CreateTransports(broker, non_broker);
+  auto [broker_transport, non_broker_transport] = CreateTransports();
 
   std::vector<Ref<Portal>> initial_broker_portals = {CreatePortal(broker)};
   Ref<NodeLink> broker_link;
@@ -260,8 +253,7 @@ TEST_F(NodeConnectorTest, EndToEndSuccess_BrokerFirst) {
 TEST_F(NodeConnectorTest, EndToEndSuccess_NonBrokerFirst) {
   Ref<Node> broker = CreateBrokerNode();
   Ref<Node> non_broker = CreateNonBrokerNode();
-  auto [broker_transport, non_broker_transport] =
-      CreateTransports(broker, non_broker);
+  auto [broker_transport, non_broker_transport] = CreateTransports();
 
   std::vector<Ref<Portal>> initial_non_broker_portals = {
       CreatePortal(non_broker)};
@@ -297,8 +289,7 @@ TEST_F(NodeConnectorTest, EndToEndSuccess_NonBrokerFirst) {
 TEST_F(NodeConnectorTest, MultipleInitialPortals) {
   Ref<Node> broker = CreateBrokerNode();
   Ref<Node> non_broker = CreateNonBrokerNode();
-  auto [broker_transport, non_broker_transport] =
-      CreateTransports(broker, non_broker);
+  auto [broker_transport, non_broker_transport] = CreateTransports();
 
   // We establish multiple initial portals on connection, with a surplus on the
   // broker side to test that behavior as well.

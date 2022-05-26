@@ -30,13 +30,16 @@ class Object : public RefCounted {
 
   Type type() const { return type_; }
 
+  IpczDriverHandle handle() const {
+    return reinterpret_cast<IpczDriverHandle>(this);
+  }
+
   static Object* FromHandle(IpczDriverHandle handle) {
-    return reinterpret_cast<Object*>(static_cast<uintptr_t>(handle));
+    return reinterpret_cast<Object*>(handle);
   }
 
   static IpczDriverHandle ReleaseAsHandle(Ref<Object> object) {
-    return static_cast<IpczDriverHandle>(
-        reinterpret_cast<uintptr_t>(object.release()));
+    return reinterpret_cast<IpczDriverHandle>(object.release());
   }
 
   static Ref<Object> TakeFromHandle(IpczDriverHandle handle) {

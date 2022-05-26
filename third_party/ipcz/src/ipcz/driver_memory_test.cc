@@ -5,9 +5,8 @@
 #include "ipcz/driver_memory.h"
 
 #include "ipcz/driver_memory_mapping.h"
-#include "ipcz/node.h"
 #include "test/mock_driver.h"
-#include "test/test_base.h"
+#include "test/test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "util/ref_counted.h"
 
@@ -17,19 +16,15 @@ namespace {
 using testing::_;
 using testing::Return;
 
-class DriverMemoryTest : public test::TestBase {
+class DriverMemoryTest : public test::Test {
  public:
   DriverMemoryTest() = default;
   ~DriverMemoryTest() override = default;
 
   test::MockDriver& driver() { return driver_; }
-  const Ref<Node>& node() const { return node_; }
 
  private:
   ::testing::StrictMock<test::MockDriver> driver_;
-  const Ref<Node> node_{MakeRefCounted<Node>(Node::Type::kNormal,
-                                             test::kMockDriver,
-                                             IPCZ_INVALID_DRIVER_HANDLE)};
 };
 
 TEST_F(DriverMemoryTest, Invalid) {
@@ -40,7 +35,7 @@ TEST_F(DriverMemoryTest, Invalid) {
 TEST_F(DriverMemoryTest, AcquireFromObject) {
   constexpr IpczDriverHandle kHandle = 1234;
   constexpr size_t kSize = 64;
-  DriverObject object(node(), kHandle);
+  DriverObject object(test::kMockDriver, kHandle);
 
   // Constructing a new DriverMemory over a generic DriverObject must query the
   // underlying object for its size.
@@ -73,7 +68,7 @@ TEST_F(DriverMemoryTest, Allocate) {
       })
       .RetiresOnSaturation();
 
-  DriverMemory memory(node(), kSize);
+  DriverMemory memory(test::kMockDriver, kSize);
   EXPECT_EQ(kHandle, memory.driver_object().handle());
   EXPECT_EQ(kSize, memory.size());
 
@@ -93,7 +88,7 @@ TEST_F(DriverMemoryTest, Clone) {
       })
       .RetiresOnSaturation();
 
-  DriverMemory memory(node(), kSize);
+  DriverMemory memory(test::kMockDriver, kSize);
 
   EXPECT_CALL(driver(), DuplicateSharedMemory(kHandle, _, _, _))
       .WillOnce([&](IpczDriverHandle memory, uint32_t, const void*,
@@ -135,7 +130,7 @@ TEST_F(DriverMemoryTest, Map) {
       })
       .RetiresOnSaturation();
 
-  DriverMemory memory(node(), kSize);
+  DriverMemory memory(test::kMockDriver, kSize);
 
   EXPECT_CALL(driver(), MapSharedMemory(kHandle, _, _, _, _))
       .WillOnce([&](IpczDriverHandle memory, uint32_t, const void*, void** addr,
