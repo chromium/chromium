@@ -72,21 +72,20 @@ namespace net {
 namespace {
 
 base::Value CertVerifierParams(const CertVerifier::RequestParams& params) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetKey("certificates",
-              NetLogX509CertificateList(params.certificate().get()));
+  base::Value::Dict dict;
+  dict.Set("certificates",
+           NetLogX509CertificateList(params.certificate().get()));
   if (!params.ocsp_response().empty()) {
-    dict.SetStringPath("ocsp_response", PEMEncode(params.ocsp_response(),
-                                                  "NETLOG OCSP RESPONSE"));
+    dict.Set("ocsp_response",
+             PEMEncode(params.ocsp_response(), "NETLOG OCSP RESPONSE"));
   }
   if (!params.sct_list().empty()) {
-    dict.SetStringPath("sct_list",
-                       PEMEncode(params.sct_list(), "NETLOG SCT LIST"));
+    dict.Set("sct_list", PEMEncode(params.sct_list(), "NETLOG SCT LIST"));
   }
-  dict.SetPath("host", NetLogStringValue(params.hostname()));
-  dict.SetIntPath("verifier_flags", params.flags());
+  dict.Set("host", NetLogStringValue(params.hostname()));
+  dict.Set("verifier_flags", params.flags());
 
-  return dict;
+  return base::Value(std::move(dict));
 }
 
 }  // namespace

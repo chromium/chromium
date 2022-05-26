@@ -6235,12 +6235,11 @@ TEST_F(URLRequestTestHTTP, ProcessPKPAndSendReport) {
   std::unique_ptr<base::Value> value(
       base::JSONReader::ReadDeprecated(mock_report_sender.latest_report()));
   ASSERT_TRUE(value);
-  ASSERT_TRUE(value->is_dict());
-  base::DictionaryValue* report_dict;
-  ASSERT_TRUE(value->GetAsDictionary(&report_dict));
-  std::string report_hostname;
-  EXPECT_TRUE(report_dict->GetString("hostname", &report_hostname));
-  EXPECT_EQ(test_server_hostname, report_hostname);
+  base::Value::Dict* report_dict = value->GetIfDict();
+  ASSERT_TRUE(report_dict);
+  std::string* report_hostname = report_dict->FindString("hostname");
+  ASSERT_TRUE(report_hostname);
+  EXPECT_EQ(test_server_hostname, *report_hostname);
   EXPECT_EQ(isolation_info.network_isolation_key(),
             mock_report_sender.latest_network_isolation_key());
 }

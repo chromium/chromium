@@ -31,7 +31,7 @@ namespace {
 
 base::Value JobResultParams(bool trial_success) {
   base::Value results(base::Value::Type::DICTIONARY);
-  results.SetBoolKey("trial_success", trial_success);
+  results.GetDict().Set("trial_success", trial_success);
   return results;
 }
 

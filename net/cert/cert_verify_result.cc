@@ -65,30 +65,30 @@ void CertVerifyResult::Reset() {
 }
 
 base::Value CertVerifyResult::NetLogParams(int net_error) const {
-  base::DictionaryValue results;
+  base::Value::Dict dict;
   DCHECK_NE(ERR_IO_PENDING, net_error);
   if (net_error < 0)
-    results.SetIntKey("net_error", net_error);
-  results.SetBoolKey("is_issued_by_known_root", is_issued_by_known_root);
+    dict.Set("net_error", net_error);
+  dict.Set("is_issued_by_known_root", is_issued_by_known_root);
   if (is_issued_by_additional_trust_anchor) {
-    results.SetBoolKey("is_issued_by_additional_trust_anchor", true);
+    dict.Set("is_issued_by_additional_trust_anchor", true);
   }
-  results.SetIntKey("cert_status", cert_status);
+  dict.Set("cert_status", static_cast<int>(cert_status));
   // TODO(mattm): This double-wrapping of the certificate list is weird. Remove
   // this (probably requires updates to netlog-viewer).
-  base::Value certificate_dict(base::Value::Type::DICTIONARY);
-  certificate_dict.SetKey("certificates",
-                          net::NetLogX509CertificateList(verified_cert.get()));
-  results.SetKey("verified_cert", std::move(certificate_dict));
+  base::Value::Dict certificate_dict;
+  certificate_dict.Set("certificates",
+                       net::NetLogX509CertificateList(verified_cert.get()));
+  dict.Set("verified_cert", std::move(certificate_dict));
 
-  base::Value hashes(base::Value::Type::LIST);
+  base::Value::List hashes;
   for (const auto& public_key_hash : public_key_hashes)
     hashes.Append(public_key_hash.ToString());
-  results.SetKey("public_key_hashes", std::move(hashes));
+  dict.Set("public_key_hashes", std::move(hashes));
 
-  results.SetKey("scts", net::NetLogSignedCertificateTimestampParams(&scts));
+  dict.Set("scts", net::NetLogSignedCertificateTimestampParams(&scts));
 
-  return std::move(results);
+  return base::Value(std::move(dict));
 }
 
 }  // namespace net

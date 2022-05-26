@@ -54,7 +54,7 @@ namespace {
 // ReadHeader reads the header (including length prefix) from |data| and
 // updates |data| to remove the header on return. Caller takes ownership of the
 // returned pointer.
-base::DictionaryValue* ReadHeader(base::StringPiece* data) {
+std::unique_ptr<base::Value> ReadHeader(base::StringPiece* data) {
   uint16_t header_len;
   if (data->size() < sizeof(header_len))
     return nullptr;
@@ -75,7 +75,7 @@ base::DictionaryValue* ReadHeader(base::StringPiece* data) {
 
   if (!header->is_dict())
     return nullptr;
-  return static_cast<base::DictionaryValue*>(header.release());
+  return header;
 }
 
 // kCurrentFileVersion is the version of the CRLSet file format that we
@@ -124,22 +124,21 @@ bool ReadCRL(base::StringPiece* data,
 // the given |key| (without path expansion) in |header_dict| and sets |*out|
 // to the decoded values. It's not an error if |key| is not found in
 // |header_dict|.
-bool CopyHashListFromHeader(base::DictionaryValue* header_dict,
+bool CopyHashListFromHeader(const base::Value::Dict& header_dict,
                             const char* key,
                             std::vector<std::string>* out) {
-  const base::Value* list = header_dict->FindListKey(key);
+  const base::Value::List* list = header_dict.FindList(key);
   if (!list) {
     // Hash lists are optional so it's not an error if not present.
     return true;
   }
-  base::Value::ConstListView list_view = list->GetListDeprecated();
 
   out->clear();
-  out->reserve(list_view.size());
+  out->reserve(list->size());
 
   std::string sha256_base64;
 
-  for (const base::Value& i : list_view) {
+  for (const base::Value& i : *list) {
     sha256_base64.clear();
 
     if (!i.is_string())
@@ -160,25 +159,24 @@ bool CopyHashListFromHeader(base::DictionaryValue* header_dict,
 // hashes to lists of the same, from the given |key| in |header_dict|. It
 // copies the map data into |out| (after base64-decoding).
 bool CopyHashToHashesMapFromHeader(
-    base::DictionaryValue* header_dict,
+    const base::Value::Dict& header_dict,
     const char* key,
     std::unordered_map<std::string, std::vector<std::string>>* out) {
   out->clear();
 
-  base::Value* const dict =
-      header_dict->FindKeyOfType(key, base::Value::Type::DICTIONARY);
+  const base::Value::Dict* dict = header_dict.FindDict(key);
   if (dict == nullptr) {
     // Maps are optional so it's not an error if not present.
     return true;
   }
 
-  for (auto i : dict->DictItems()) {
+  for (auto i : *dict) {
     if (!i.second.is_list()) {
       return false;
     }
 
     std::vector<std::string> allowed_spkis;
-    for (const auto& j : i.second.GetListDeprecated()) {
+    for (const auto& j : i.second.GetList()) {
       allowed_spkis.push_back(std::string());
       if (!j.is_string() ||
           !base::Base64Decode(j.GetString(), &allowed_spkis.back())) {
@@ -219,23 +217,25 @@ bool CRLSet::Parse(base::StringPiece data, scoped_refptr<CRLSet>* out_crl_set) {
 #error assumes little endian
 #endif
 
-  std::unique_ptr<base::DictionaryValue> header_dict(ReadHeader(&data));
-  if (!header_dict.get())
+  std::unique_ptr<base::Value> header_value(ReadHeader(&data));
+  if (!header_value.get())
     return false;
 
-  std::string* contents = header_dict->FindStringKey("ContentType");
+  const base::Value::Dict& header_dict = header_value->GetDict();
+
+  const std::string* contents = header_dict.FindString("ContentType");
   if (!contents || (*contents != "CRLSet"))
     return false;
 
-  if (header_dict->FindIntKey("Version") != kCurrentFileVersion)
+  if (header_dict.FindInt("Version") != kCurrentFileVersion)
     return false;
 
-  absl::optional<int> sequence = header_dict->FindIntKey("Sequence");
+  absl::optional<int> sequence = header_dict.FindInt("Sequence");
   if (!sequence)
     return false;
 
   // NotAfter is optional for now.
-  double not_after = header_dict->FindDoubleKey("NotAfter").value_or(0);
+  double not_after = header_dict.FindDouble("NotAfter").value_or(0);
   if (not_after < 0)
     return false;
 
@@ -255,13 +255,13 @@ bool CRLSet::Parse(base::StringPiece data, scoped_refptr<CRLSet>* out_crl_set) {
   }
 
   std::vector<std::string> blocked_interception_spkis;
-  if (!CopyHashListFromHeader(header_dict.get(), "BlockedSPKIs",
+  if (!CopyHashListFromHeader(header_dict, "BlockedSPKIs",
                               &crl_set->blocked_spkis_) ||
-      !CopyHashToHashesMapFromHeader(header_dict.get(), "LimitedSubjects",
+      !CopyHashToHashesMapFromHeader(header_dict, "LimitedSubjects",
                                      &crl_set->limited_subjects_) ||
-      !CopyHashListFromHeader(header_dict.get(), "KnownInterceptionSPKIs",
+      !CopyHashListFromHeader(header_dict, "KnownInterceptionSPKIs",
                               &crl_set->known_interception_spkis_) ||
-      !CopyHashListFromHeader(header_dict.get(), "BlockedInterceptionSPKIs",
+      !CopyHashListFromHeader(header_dict, "BlockedInterceptionSPKIs",
                               &blocked_interception_spkis)) {
     return false;
   }

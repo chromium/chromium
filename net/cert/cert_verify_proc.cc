@@ -495,23 +495,22 @@ base::Value CertVerifyParams(X509Certificate* cert,
                              int flags,
                              CRLSet* crl_set,
                              const CertificateList& additional_trust_anchors) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetKey("certificates", NetLogX509CertificateList(cert));
+  base::Value::Dict dict;
+  dict.Set("certificates", NetLogX509CertificateList(cert));
   if (!ocsp_response.empty()) {
-    dict.SetStringKey("ocsp_response",
-                      PEMEncode(ocsp_response, "NETLOG OCSP RESPONSE"));
+    dict.Set("ocsp_response", PEMEncode(ocsp_response, "NETLOG OCSP RESPONSE"));
   }
   if (!sct_list.empty()) {
-    dict.SetStringKey("sct_list", PEMEncode(sct_list, "NETLOG SCT LIST"));
+    dict.Set("sct_list", PEMEncode(sct_list, "NETLOG SCT LIST"));
   }
-  dict.SetKey("host", NetLogStringValue(hostname));
-  dict.SetIntKey("verify_flags", flags);
-  dict.SetKey("crlset_sequence", NetLogNumberValue(crl_set->sequence()));
+  dict.Set("host", NetLogStringValue(hostname));
+  dict.Set("verify_flags", flags);
+  dict.Set("crlset_sequence", NetLogNumberValue(crl_set->sequence()));
   if (crl_set->IsExpired())
-    dict.SetBoolKey("crlset_is_expired", true);
+    dict.Set("crlset_is_expired", true);
 
   if (!additional_trust_anchors.empty()) {
-    base::Value certs(base::Value::Type::LIST);
+    base::Value::List certs;
     for (auto& anchor : additional_trust_anchors) {
       std::string pem_encoded;
       if (X509Certificate::GetPEMEncodedFromDER(
@@ -520,10 +519,10 @@ base::Value CertVerifyParams(X509Certificate* cert,
         certs.Append(std::move(pem_encoded));
       }
     }
-    dict.SetKey("additional_trust_anchors", std::move(certs));
+    dict.Set("additional_trust_anchors", std::move(certs));
   }
 
-  return dict;
+  return base::Value(std::move(dict));
 }
 
 }  // namespace

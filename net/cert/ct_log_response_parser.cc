@@ -115,9 +115,8 @@ bool FillConsistencyProof(const base::Value& json_consistency_proof,
     return false;
   }
 
-  const base::DictionaryValue* dict_value = nullptr;
-  if (!json_consistency_proof.GetAsDictionary(&dict_value) ||
-      !dict_value->FindKey("consistency")) {
+  const base::Value::Dict* dict_value = json_consistency_proof.GetIfDict();
+  if (!dict_value || !dict_value->Find("consistency")) {
     return false;
   }
 
