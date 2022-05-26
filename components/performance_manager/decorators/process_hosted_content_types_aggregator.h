@@ -7,6 +7,8 @@
 
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/graph.h"
+#include "components/performance_manager/public/graph/page_node.h"
+#include "components/performance_manager/public/graph/worker_node.h"
 
 namespace performance_manager {
 
@@ -14,7 +16,9 @@ namespace performance_manager {
 // |hosted_content_types()| property.
 class ProcessHostedContentTypesAggregator
     : public GraphOwnedDefaultImpl,
-      public FrameNode::ObserverDefaultImpl {
+      public PageNode::ObserverDefaultImpl,
+      public FrameNode::ObserverDefaultImpl,
+      public WorkerNode::ObserverDefaultImpl {
  public:
   ProcessHostedContentTypesAggregator();
   ~ProcessHostedContentTypesAggregator() override;
@@ -28,9 +32,17 @@ class ProcessHostedContentTypesAggregator
   void OnPassedToGraph(Graph* graph) override;
   void OnTakenFromGraph(Graph* graph) override;
 
+  // PageNodeObserver:
+  void OnTypeChanged(const PageNode* page_node) override;
+
   // FrameNodeObserver:
   void OnFrameNodeAdded(const FrameNode* frame_node) override;
   void OnIsAdFrameChanged(const FrameNode* frame_node) override;
+  void OnURLChanged(const FrameNode* frame_node,
+                    const GURL& previous_value) override;
+
+  // WorkerNodeObserver:
+  void OnWorkerNodeAdded(const WorkerNode* worker_node) override;
 
  private:
 };

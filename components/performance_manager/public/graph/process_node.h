@@ -46,13 +46,23 @@ class ProcessNode : public Node {
 
   // The type of content a renderer can host.
   enum class ContentType : uint32_t {
+    // Hosted an extension.
     kExtension = 1 << 0,
+    // Hosted a frame with no parent.
     kMainFrame = 1 << 1,
-    kAd = 1 << 2,
+    // Hosted a frame with a parent.
+    kSubframe = 1 << 2,
+    // Hosted a frame (main frame or subframe) with a committed navigation. A
+    // "speculative" frame will not have a committed navigation.
+    kNavigatedFrame = 1 << 3,
+    // Hosted a frame that was tagged as an ad.
+    kAd = 1 << 4,
+    // Hosted a worker (service worker, dedicated worker, shared worker).
+    kWorker = 1 << 5,
   };
 
   using ContentTypes =
-      base::EnumSet<ContentType, ContentType::kExtension, ContentType::kAd>;
+      base::EnumSet<ContentType, ContentType::kExtension, ContentType::kWorker>;
 
   ProcessNode();
 

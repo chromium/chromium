@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/performance_manager/public/graph/node_data_describer_registry.h"
+#include "components/performance_manager/public/graph/process_node.h"
 #include "content/public/common/child_process_host.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -33,8 +34,14 @@ std::string ContentTypeToString(ProcessNode::ContentType content_type) {
       return "Extension";
     case ProcessNode::ContentType::kMainFrame:
       return "Main frame";
+    case ProcessNode::ContentType::kSubframe:
+      return "Subframe";
+    case ProcessNode::ContentType::kNavigatedFrame:
+      return "Navigated Frame";
     case ProcessNode::ContentType::kAd:
       return "Ad";
+    case ProcessNode::ContentType::kWorker:
+      return "Worker";
   }
 }
 
