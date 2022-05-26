@@ -4,7 +4,7 @@
 
 import("//chrome/common/features.gni")
 import("//tools/grit/grit_rule.gni")
-import("//tools/polymer/html_to_js.gni")
+import("//tools/polymer/html_to_wrapper.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
@@ -46,9 +46,11 @@ ts_library("build_ts") {
   tsconfig_base = "tsconfig_base.json"
   in_files = [
     "app.ts",
+    "app.html.ts",
     "browser_switch_proxy.ts",
     "internals/browser_switch_internals_proxy.ts",
     "internals/app.ts",
+    "internals/app.html.ts",
   ]
   definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
   deps = [
@@ -56,25 +58,31 @@ ts_library("build_ts") {
     "//ui/webui/resources:library",
   ]
   extra_deps = [
-    ":copy_browser_proxy",
     ":copy_internals",
-    ":web_components",
+    ":copy_main",
+    ":html_wrapper_files",
   ]
 }
 
-copy("copy_browser_proxy") {
-  sources = [ "browser_switch_proxy.ts" ]
+copy("copy_main") {
+  sources = [
+    "app.ts",
+    "browser_switch_proxy.ts",
+  ]
   outputs = [ "$target_gen_dir/{{source_file_part}}" ]
 }
 
 copy("copy_internals") {
-  sources = [ "internals/browser_switch_internals_proxy.ts" ]
+  sources = [
+    "internals/app.ts",
+    "internals/browser_switch_internals_proxy.ts",
+  ]
   outputs = [ "$target_gen_dir/internals/{{source_file_part}}" ]
 }
 
-html_to_js("web_components") {
-  js_files = [
-    "app.ts",
-    "internals/app.ts",
+html_to_wrapper("html_wrapper_files") {
+  in_files = [
+    "app.html",
+    "internals/app.html",
   ]
 }
