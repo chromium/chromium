@@ -52,6 +52,8 @@ class DownloadToolbarButtonView : public ToolbarButton,
   void Disable() override;
   void UpdateDownloadIcon() override;
   void ShowDetails() override;
+  void HideDetails() override;
+  bool IsShowingDetails() override;
 
   // ToolbarButton:
   void UpdateIcon() override;
@@ -65,6 +67,8 @@ class DownloadToolbarButtonView : public ToolbarButton,
   DownloadBubbleUIController* bubble_controller() {
     return bubble_controller_.get();
   }
+
+  DownloadDisplayController* display_controller() { return controller_.get(); }
 
  private:
   // views::Button overrides:

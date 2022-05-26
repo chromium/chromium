@@ -154,6 +154,13 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
 
+#if !BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/download/bubble/download_bubble_controller.h"
+#include "chrome/browser/download/bubble/download_display.h"
+#include "chrome/browser/download/bubble/download_display_controller.h"
+#include "components/safe_browsing/core/common/features.h"
+#endif
+
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 #include "chrome/browser/safe_browsing/download_protection/download_feedback_service.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
@@ -526,6 +533,17 @@ void CreateCompletedDownload(content::DownloadManager* download_manager,
       std::vector<download::DownloadItem::ReceivedSlice>(),
       download::DownloadItemRerouteInfo());
 }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+bool IsDownloadSurfaceVisible(BrowserWindow* window) {
+  return base::FeatureList::IsEnabled(safe_browsing::kDownloadBubble)
+             ? window->GetDownloadBubbleUIController()
+                   ->display_controller_for_testing()
+                   ->download_display_for_testing()
+                   ->IsShowingDetails()
+             : window->IsDownloadShelfVisible();
+}
+#endif
 
 }  // namespace
 
@@ -5486,10 +5504,10 @@ IN_PROC_BROWSER_TEST_F(DownloadTestWithFakeSafeBrowsing,
 
 #endif  // FULL_SAFE_BROWSING
 
-// The rest of these tests rely on the download shelf, which ChromeOS doesn't
-// use.
+// The rest of these tests rely on the download surface, which ChromeOS doesn't
+// use (crbug.com/1323505 is tracking Download Bubble on ChromeOS).
 #if !BUILDFLAG(IS_CHROMEOS)
-// Test that the download shelf is shown by starting a download.
+// Test that the download surface is shown by starting a download.
 IN_PROC_BROWSER_TEST_F(DownloadTest, DownloadAndWait) {
   embedded_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -5497,14 +5515,24 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, DownloadAndWait) {
 
   DownloadAndWait(browser(), url);
 
-  // The download shelf should be visible.
-  EXPECT_TRUE(browser()->window()->IsDownloadShelfVisible());
+  // The download surface should be visible.
+  EXPECT_TRUE(IsDownloadSurfaceVisible(browser()->window()));
 }
+
+class DownloadShelfTest : public DownloadTest {
+ public:
+  DownloadShelfTest() {
+    feature_list_.InitAndDisableFeature(safe_browsing::kDownloadBubble);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
 
 // Test that the download shelf is per-window by starting a download in one
 // tab, opening a second tab, closing the shelf, going back to the first tab,
 // and checking that the shelf is closed.
-IN_PROC_BROWSER_TEST_F(DownloadTest, PerWindowShelf) {
+IN_PROC_BROWSER_TEST_F(DownloadShelfTest, PerWindowShelf) {
   embedded_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url = embedded_test_server()->GetURL("/download-test3.gif");
@@ -5536,13 +5564,13 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, PerWindowShelf) {
       0, {TabStripModel::GestureType::kOther});
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
 
-  // The download shelf should not be visible.
+  // The shelf should now be closed.
   EXPECT_FALSE(browser()->window()->IsDownloadShelfVisible());
 }
 
 // Check whether the downloads shelf is closed when the downloads tab is
 // invoked.
-IN_PROC_BROWSER_TEST_F(DownloadTest, CloseShelfOnDownloadsTab) {
+IN_PROC_BROWSER_TEST_F(DownloadShelfTest, CloseShelfOnDownloadsTab) {
   embedded_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url =
@@ -5557,13 +5585,13 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, CloseShelfOnDownloadsTab) {
 
   // Open the downloads tab.
   chrome::ShowDownloads(browser());
-  // The shelf should now be closed.
+  // The download shelf should now be closed.
   EXPECT_FALSE(browser()->window()->IsDownloadShelfVisible());
 }
 
-// Test that when downloading an item in Incognito mode, the download shelf is
+// Test that when downloading an item in Incognito mode, the download surface is
 // not visible after closing the Incognito window.
-IN_PROC_BROWSER_TEST_F(DownloadTest, IncognitoDownloadShelfVisibility) {
+IN_PROC_BROWSER_TEST_F(DownloadTest, IncognitoDownloadSurfaceVisibility) {
   Browser* incognito = CreateIncognitoBrowser();
   ASSERT_TRUE(incognito);
 
@@ -5578,18 +5606,18 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, IncognitoDownloadShelfVisibility) {
                                                false);
   DownloadAndWait(incognito, url);
 
-  // Verify that the download shelf is showing for the Incognito window.
-  EXPECT_TRUE(incognito->window()->IsDownloadShelfVisible());
+  // Verify that the download surface is showing for the Incognito window.
+  EXPECT_TRUE(IsDownloadSurfaceVisible(incognito->window()));
 
-  // Verify that the regular window does not have a download shelf.
-  EXPECT_FALSE(browser()->window()->IsDownloadShelfVisible());
+  // Verify that the regular window does not have a download surface.
+  EXPECT_FALSE(IsDownloadSurfaceVisible(browser()->window()));
 }
 
 // Download a file in a new window.
-// Verify that we have 2 windows, and the download shelf is not visible in the
+// Verify that we have 2 windows, and the download surface is not visible in the
 // first window, but is visible in the second window.
 // Close the new window.
-// Verify that we have 1 window, and the download shelf is not visible.
+// Verify that we have 1 window, and the download surface is not visible.
 //
 // Regression test for http://crbug.com/44454
 IN_PROC_BROWSER_TEST_F(DownloadTest, NewWindow) {
@@ -5605,14 +5633,14 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, NewWindow) {
                                  WindowOpenDisposition::NEW_WINDOW,
                                  ui_test_utils::BROWSER_TEST_NONE);
 
-  // When the download finishes, the download shelf SHOULD NOT be visible in
+  // When the download finishes, the download surface SHOULD NOT be visible in
   // the first window.
   ExpectWindowCountAfterDownload(2);
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
-  // Download shelf should close.
-  EXPECT_FALSE(browser()->window()->IsDownloadShelfVisible());
+  // Download surface should close.
+  EXPECT_FALSE(IsDownloadSurfaceVisible(browser()->window()));
 
-  // The download shelf SHOULD be visible in the second window.
+  // The download surface SHOULD be visible in the second window.
   std::set<Browser*> original_browsers;
   original_browsers.insert(browser());
   Browser* download_browser =
@@ -5620,7 +5648,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, NewWindow) {
   ASSERT_TRUE(download_browser);
   EXPECT_NE(download_browser, browser());
   EXPECT_EQ(1, download_browser->tab_strip_model()->count());
-  EXPECT_TRUE(download_browser->window()->IsDownloadShelfVisible());
+  EXPECT_TRUE(IsDownloadSurfaceVisible(download_browser->window()));
 
   // Close the new window.
   chrome::CloseWindow(download_browser);
@@ -5630,8 +5658,8 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, NewWindow) {
   ExpectWindowCountAfterDownload(1);
 
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
-  // Download shelf should close.
-  EXPECT_FALSE(browser()->window()->IsDownloadShelfVisible());
+  // Download surface should close.
+  EXPECT_FALSE(IsDownloadSurfaceVisible(browser()->window()));
 
   base::FilePath file(FILE_PATH_LITERAL("download-test1.lib"));
   CheckDownload(browser(), file, file);
@@ -5688,8 +5716,8 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, DownloadTest_History) {
   EXPECT_EQ("Mon, 13 Nov 2006 20:31:09 GMT", last_modified);
 
   // Downloads that were restored from history shouldn't cause the download
-  // shelf to be displayed.
-  EXPECT_FALSE(browser()->window()->IsDownloadShelfVisible());
+  // surface to be displayed.
+  EXPECT_FALSE(IsDownloadSurfaceVisible(browser()->window()));
 }
 
 IN_PROC_BROWSER_TEST_F(DownloadTest, HiddenDownload) {
@@ -5714,12 +5742,12 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, HiddenDownload) {
   download_manager->DownloadUrl(std::move(params));
   observer->WaitForFinished();
 
-  // Verify that download shelf is not shown.
-  EXPECT_FALSE(browser()->window()->IsDownloadShelfVisible());
+  // Verify that download surface is not shown.
+  EXPECT_FALSE(IsDownloadSurfaceVisible(browser()->window()));
 }
 
 // High flake rate; https://crbug.com/1247392.
-IN_PROC_BROWSER_TEST_F(DownloadTest, DISABLED_AutoOpenClosesShelf) {
+IN_PROC_BROWSER_TEST_F(DownloadTest, DISABLED_AutoOpenClosesSurface) {
   base::FilePath file(FILE_PATH_LITERAL("download-autoopen.txt"));
   embedded_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -5730,11 +5758,11 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, DISABLED_AutoOpenClosesShelf) {
 
   DownloadAndWait(browser(), url);
 
-  // Download shelf should close.
-  EXPECT_FALSE(browser()->window()->IsDownloadShelfVisible());
+  // Download surface should close.
+  EXPECT_FALSE(IsDownloadSurfaceVisible(browser()->window()));
 }
 
-IN_PROC_BROWSER_TEST_F(DownloadTest, CrxDenyInstallClosesShelf) {
+IN_PROC_BROWSER_TEST_F(DownloadTest, CrxDenyInstallClosesSurface) {
   std::unique_ptr<base::AutoReset<bool>> allow_offstore_install =
       download_crx_util::OverrideOffstoreInstallAllowedForTesting(true);
 
@@ -5753,7 +5781,7 @@ IN_PROC_BROWSER_TEST_F(DownloadTest, CrxDenyInstallClosesShelf) {
 
   observer->WaitForFinished();
 
-  // Download shelf should close.
-  EXPECT_FALSE(browser()->window()->IsDownloadShelfVisible());
+  // Download surface should close.
+  EXPECT_FALSE(IsDownloadSurfaceVisible(browser()->window()));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)

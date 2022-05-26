@@ -3481,6 +3481,21 @@
             ]
         }
     ],
+    "DownloadUXRedesign": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DownloadBubble"
+                    ]
+                }
+            ]
+        }
+    ],
     "DragAndDropAndroid": [
         {
             "platforms": [

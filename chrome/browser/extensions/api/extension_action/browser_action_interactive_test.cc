@@ -54,12 +54,30 @@
 #include "ui/gfx/scrollbar_size.h"
 #include "ui/views/widget/widget.h"
 
+#if !BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/download/bubble/download_bubble_controller.h"
+#include "chrome/browser/download/bubble/download_display.h"
+#include "chrome/browser/download/bubble/download_display_controller.h"
+#include "components/safe_browsing/core/common/features.h"
+#endif
+
 #if BUILDFLAG(IS_WIN)
 #include "ui/views/win/hwnd_util.h"
 #endif
 
 namespace extensions {
 namespace {
+
+#if !BUILDFLAG(IS_CHROMEOS)
+bool IsDownloadSurfaceVisible(BrowserWindow* window) {
+  return base::FeatureList::IsEnabled(safe_browsing::kDownloadBubble)
+             ? window->GetDownloadBubbleUIController()
+                   ->display_controller_for_testing()
+                   ->download_display_for_testing()
+                   ->IsShowingDetails()
+             : window->IsDownloadShelfVisible();
+}
+#endif
 
 // Helper to ensure all extension hosts are destroyed during the test. If a host
 // is still alive, the Profile can not be destroyed in
@@ -1021,10 +1039,11 @@ IN_PROC_BROWSER_TEST_F(NavigatingExtensionPopupInteractiveTest,
       downloads_directory.AppendASCII("download-test3-attachment.gif")));
 
   // The test verification below is applicable only to scenarios where the
-  // download shelf is supported - on ChromeOS, instead of the download shelf,
-  // there is a download notification in the right-bottom corner of the screen.
+  // download surface is supported - on ChromeOS, instead of the download
+  // surface, there is a download notification in the right-bottom corner of the
+  // screen.
 #if !BUILDFLAG(IS_CHROMEOS)
-  EXPECT_TRUE(browser()->window()->IsDownloadShelfVisible());
+  EXPECT_TRUE(IsDownloadSurfaceVisible(browser()->window()));
 #endif
 }
 
@@ -1056,10 +1075,11 @@ IN_PROC_BROWSER_TEST_F(NavigatingExtensionPopupInteractiveTest,
       downloads_directory.AppendASCII("download-test3-attachment.gif")));
 
   // The test verification below is applicable only to scenarios where the
-  // download shelf is supported - on ChromeOS, instead of the download shelf,
-  // there is a download notification in the right-bottom corner of the screen.
+  // download surface is supported - on ChromeOS, instead of the download
+  // surface, there is a download notification in the right-bottom corner of the
+  // screen.
 #if !BUILDFLAG(IS_CHROMEOS)
-  EXPECT_TRUE(browser()->window()->IsDownloadShelfVisible());
+  EXPECT_TRUE(IsDownloadSurfaceVisible(browser()->window()));
 #endif
 }
 
