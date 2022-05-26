@@ -1556,11 +1556,7 @@ void RenderWidgetHostViewAura::EnsureCaretNotInRect(
   if (hidden_window_bounds_in_screen.IsEmpty())
     return;
 
-  gfx::Rect visible_area_in_local_space = gfx::SubtractRects(
-      window_->GetBoundsInScreen(), hidden_window_bounds_in_screen);
-  visible_area_in_local_space =
-      ConvertRectFromScreen(visible_area_in_local_space);
-  ScrollFocusedEditableNodeIntoRect(visible_area_in_local_space);
+  ScrollFocusedEditableNodeIntoView();
 }
 
 bool RenderWidgetHostViewAura::IsTextEditCommandEnabled(
@@ -2142,7 +2138,7 @@ void RenderWidgetHostViewAura::OnRenderFrameMetadataChangedAfterActivation(
       metadata.local_surface_id.value().is_valid() &&
       metadata.local_surface_id.value().IsSameOrNewerThan(inset_surface_id_)) {
     inset_surface_id_ = viz::LocalSurfaceId();
-    ScrollFocusedEditableNodeIntoRect(gfx::Rect());
+    ScrollFocusedEditableNodeIntoView();
   }
 
   if (metadata.selection.start != selection_start_ ||
@@ -2762,12 +2758,11 @@ void RenderWidgetHostViewAura::SetPopupChild(
       popup_child_host_view ? popup_child_host_view->event_handler() : nullptr);
 }
 
-void RenderWidgetHostViewAura::ScrollFocusedEditableNodeIntoRect(
-    const gfx::Rect& node_rect) {
+void RenderWidgetHostViewAura::ScrollFocusedEditableNodeIntoView() {
   auto* input_handler = GetFrameWidgetInputHandlerForFocusedWidget();
   if (!input_handler)
     return;
-  input_handler->ScrollFocusedEditableNodeIntoRect(node_rect);
+  input_handler->ScrollFocusedEditableNodeIntoView();
 }
 
 void RenderWidgetHostViewAura::OnSynchronizedDisplayPropertiesChanged(

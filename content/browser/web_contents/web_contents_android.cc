@@ -488,7 +488,7 @@ void WebContentsAndroid::ScrollFocusedEditableNodeIntoView(JNIEnv* env) {
   bool should_overlay_content =
       web_contents_->GetPrimaryPage().virtual_keyboard_overlays_content();
   if (!should_overlay_content)
-    input_handler->ScrollFocusedEditableNodeIntoRect(gfx::Rect());
+    input_handler->ScrollFocusedEditableNodeIntoView();
 }
 
 void WebContentsAndroid::SelectAroundCaretAck(

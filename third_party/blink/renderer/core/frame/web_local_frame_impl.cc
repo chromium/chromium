@@ -2885,13 +2885,8 @@ PageState WebLocalFrameImpl::CurrentHistoryItemToPageState() {
   return SingleHistoryItemToPageState(current_history_item_);
 }
 
-void WebLocalFrameImpl::ScrollFocusedEditableElementIntoRect(
-    const gfx::Rect& rect) {
-  // TODO(ekaramad): Perhaps we should remove |rect| since all it seems to be
-  // doing is helping verify if scrolling animation for a given focused editable
-  // element has finished.
-  if (has_scrolled_focused_editable_node_into_rect_ &&
-      rect == rect_for_scrolled_focused_editable_node_ && autofill_client_) {
+void WebLocalFrameImpl::ScrollFocusedEditableElementIntoView() {
+  if (has_scrolled_focused_editable_node_into_rect_ && autofill_client_) {
     autofill_client_->DidCompleteFocusChangeInFrame();
     return;
   }
@@ -2901,7 +2896,6 @@ void WebLocalFrameImpl::ScrollFocusedEditableElementIntoRect(
   if (!local_root_frame_widget->ScrollFocusedEditableElementIntoView())
     return;
 
-  rect_for_scrolled_focused_editable_node_ = rect;
   has_scrolled_focused_editable_node_into_rect_ = true;
   if (!local_root_frame_widget->HasPendingPageScaleAnimation() &&
       autofill_client_) {

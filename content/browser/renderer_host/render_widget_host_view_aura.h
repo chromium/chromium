@@ -391,7 +391,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
     return event_handler_.get();
   }
 
-  void ScrollFocusedEditableNodeIntoRect(const gfx::Rect& rect);
+  void ScrollFocusedEditableNodeIntoView();
 
   ui::EventPointerType GetLastPointerType() const { return last_pointer_type_; }
 

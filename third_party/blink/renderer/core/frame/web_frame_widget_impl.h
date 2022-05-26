@@ -788,8 +788,7 @@ class CORE_EXPORT WebFrameWidgetImpl
       int32_t end,
       mojom::blink::SelectionMenuBehavior behavior) override;
   void MoveRangeSelectionExtent(const gfx::Point& extent_in_dips) override;
-  void ScrollFocusedEditableNodeIntoRect(
-      const gfx::Rect& rect_in_dips) override;
+  void ScrollFocusedEditableNodeIntoView() override;
   void WaitForPageScaleAnimationForTesting(
       WaitForPageScaleAnimationForTestingCallback callback) override;
   void MoveCaret(const gfx::Point& point_in_dips) override;

@@ -52,7 +52,7 @@ enum TestWritingMode { kLTR, kRTL };
 
 // What kind of scroll into view to invoke, via JavaScript binding
 // (element.scrollIntoView), using the InputHandler
-// ScrollFocusedEditableNodeIntoRect method, or via setting an OSK inset.
+// ScrollFocusedEditableNodeIntoView method, or via setting an OSK inset.
 enum TestInvokeMethod { kJavaScript, kInputHandler, kAuraOnScreenKeyboard };
 
 [[maybe_unused]] std::string DescribeFrameType(
@@ -75,7 +75,7 @@ blink::mojom::FrameWidgetInputHandler* GetInputHandler(FrameTreeNode* node) {
       ->GetFrameWidgetInputHandler();
 }
 
-// Will block from the destructor until a ScrollFocusedEditableNodeIntoRect has
+// Will block from the destructor until a ScrollFocusedEditableNodeIntoView has
 // completed. This must be called with the root frame tree node since that's
 // where the ScrollIntoView and PageScaleAnimation will bubble to.
 class ScopedFocusScrollWaiter {
@@ -157,7 +157,7 @@ class ScrollRectToVisibleInParentFrameInterceptor
 // cross_site_scroll_into_view_factory.html builds a frame tree from its given
 // argument, allowing only a single child frame in each frame. The inner most
 // frame adds an <input> element which can be used to call
-// ScrollFocusedEditableNodeIntoRect.
+// ScrollFocusedEditableNodeIntoView.
 //
 // Each test starts by performing a non-scrolling focus on the <input> element.
 // It then performs a scroll into view (either via JavaScript bindings or
@@ -474,11 +474,11 @@ class ScrollIntoViewBrowserTestBase : public ContentBrowserTest {
     if (GetInvokeMethod() == kInputHandler ||
         GetInvokeMethod() == kAuraOnScreenKeyboard) {
       // Focus the input for tests that rely on scrolling to a focused element
-      // (i.e. via ScrollFocusedEditableNodeIntoRect).  Use `preventScroll` to
+      // (i.e. via ScrollFocusedEditableNodeIntoView).  Use `preventScroll` to
       // avoid affecting the test via the automatic scrolling caused by focus.
       //
       // Note: normally, an IME (i.e. On-Screen Keyboard) can also attempt to
-      // scroll into view (in fact, using ScrollFocusedEditableNodeIntoRect
+      // scroll into view (in fact, using ScrollFocusedEditableNodeIntoView
       // which we're trying to test). However, in order to reliably test this
       // across platforms this test harness suppresses IME events so that the
       // on-screen keyboard on a platform that uses one will not activate in
@@ -502,10 +502,8 @@ class ScrollIntoViewBrowserTestBase : public ContentBrowserTest {
       case kInputHandler: {
         ScopedFocusScrollWaiter wait_for_scroll_done(RootFrameTreeNode());
 
-        // The gfx::Rect() param is used only to debounce repeated calls, see
-        // the TODO at https://bit.ly/3vIdTsD
         GetInputHandler(InnerMostFrameTreeNode())
-            ->ScrollFocusedEditableNodeIntoRect(gfx::Rect());
+            ->ScrollFocusedEditableNodeIntoView();
       } break;
       case kAuraOnScreenKeyboard: {
         ScopedFocusScrollWaiter wait_for_scroll_done(RootFrameTreeNode());
@@ -539,7 +537,7 @@ class ScrollIntoViewBrowserTestBase : public ContentBrowserTest {
 
 // Runs tests in all combinations of Local/Remote frames,
 // left-to-right/right-to-left writing modes, and scrollIntoView via
-// element.scrollIntoView/InputHandler.ScrollFocusedEditableNodeIntoRect. The
+// element.scrollIntoView/InputHandler.ScrollFocusedEditableNodeIntoView. The
 // kAuraOnScreenKeyboard is intentionally omitted as it is expected to be
 // functionally equivalent to kInputHandler.
 class ScrollIntoViewBrowserTest
@@ -590,7 +588,7 @@ class ScrollIntoViewBrowserTest
         invoke_method = "JavaScript";
       } break;
       case kInputHandler: {
-        invoke_method = "ScrollFocusedEditableNodeIntoRect";
+        invoke_method = "ScrollFocusedEditableNodeIntoView";
       } break;
       case kAuraOnScreenKeyboard: {
         invoke_method = "AuraOnScreenKeyboard";
@@ -723,7 +721,7 @@ INSTANTIATE_TEST_SUITE_P(/* no prefix */,
 
 constexpr double kMobileMinimumScale = 0.25;
 
-// Tests zooming behaviors for ScrollFocusedEditableNodeIntoRect. These tests
+// Tests zooming behaviors for ScrollFocusedEditableNodeIntoView. These tests
 // runs only on Android since that's the only platorm that uses this behavior.
 class ZoomScrollIntoViewBrowserTest
     : public ScrollIntoViewBrowserTestBase,

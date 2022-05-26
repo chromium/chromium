@@ -348,15 +348,13 @@ void FrameWidgetInputHandlerImpl::MoveRangeSelectionExtent(
       widget_, main_thread_frame_widget_input_handler_, extent));
 }
 
-void FrameWidgetInputHandlerImpl::ScrollFocusedEditableNodeIntoRect(
-    const gfx::Rect& rect) {
+void FrameWidgetInputHandlerImpl::ScrollFocusedEditableNodeIntoView() {
   RunOnMainThread(base::BindOnce(
-      [](base::WeakPtr<mojom::blink::FrameWidgetInputHandler> handler,
-         const gfx::Rect& rect) {
+      [](base::WeakPtr<mojom::blink::FrameWidgetInputHandler> handler) {
         if (handler)
-          handler->ScrollFocusedEditableNodeIntoRect(rect);
+          handler->ScrollFocusedEditableNodeIntoView();
       },
-      main_thread_frame_widget_input_handler_, rect));
+      main_thread_frame_widget_input_handler_));
 }
 
 void FrameWidgetInputHandlerImpl::WaitForPageScaleAnimationForTesting(
