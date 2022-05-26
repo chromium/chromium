@@ -1404,7 +1404,7 @@ Via Voice Match kan de Google Assistent de stem van <ph name="SUPERVISED_USER_NA
     <ph name="BR" />
 De Assistent neemt clips van de stem van je kind op om een uniek spraakmodel te maken, dat alleen op de apparaten van je kind wordt opgeslagen. Het spraakmodel van je kind kan tijdelijk naar Google worden gestuurd zodat de stem van je kind beter kan worden herkend.
     <ph name="BR" />
-Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijder je de functie via de instellingen voor de Assistent op het apparaat van je kind. Als je de audioclips die je kind opneemt tijdens het instellen van Voice Match wilt bekijken of verwijderen, ga je vanuit het account van je kind naar <ph name="VOICE_MATCH_SETTINGS_URL" />.
+Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijder je de functie via de instellingen voor de Assistent op het apparaat van je kind. Als je de audiofragmenten die je kind opneemt tijdens het instellen van Voice Match wilt bekijken of verwijderen, ga je vanuit het account van je kind naar <ph name="VOICE_MATCH_SETTINGS_URL" />.
     <ph name="BR" />
 <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="2307630946657910723">Deel van de pagina zoeken met <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
@@ -5926,7 +5926,7 @@ Als <ph name="SUPERVISED_USER_NAME" /> hulp nodig heeft bij het lezen, laat je k
     <ph name="BR" />
 Via Voice Match kan de Assistent je herkennen en onderscheiden van anderen. De Assistent neemt clips van je stem op om een uniek spraakmodel te maken, dat alleen op jouw apparaten wordt opgeslagen. Je spraakmodel kan tijdelijk naar Google worden gestuurd zodat je stem beter kan worden herkend.
     <ph name="BR" />
-Als je later besluit dat je Voice Match niet wilt gebruiken, verwijder je dit gewoon in de instellingen voor de Assistent. Je kunt de audioclips die je opneemt tijdens het instellen van Voice Match bekijken of verwijderen via <ph name="VOICE_MATCH_SETTINGS_URL" />.
+Als je later besluit dat je Voice Match niet wilt gebruiken, verwijder je dit gewoon in de instellingen voor de Assistent. Je kunt de audiofragmenten die je opneemt tijdens het instellen van Voice Match bekijken of verwijderen via <ph name="VOICE_MATCH_SETTINGS_URL" />.
     <ph name="BR" />
 <ph name="FOOTER_MESSAGE" /></translation>
 <translation id="6810613314571580006">Log automatisch in bij websites met de opgeslagen inloggegevens. Als de functie uitstaat, moet je je identiteit bevestigen voordat je inlogt op een website.</translation>
