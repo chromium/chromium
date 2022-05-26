@@ -2193,6 +2193,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_PERSONALIZATION_APP_AVATAR_TAKE_PHOTO" desc="Label for the button to take a webcam photo">
         Take a photo
       </message>
+      <message name="IDS_PERSONALIZATION_APP_AVATAR_ARIA_LABEL_WEBCAM_VIDEO" desc="Aria label for the webcam video feed">
+        Webcam video feed
+      </message>
       <message name="IDS_PERSONALIZATION_APP_AVATAR_TAKE_VIDEO" desc="Label for the button to take a short webcam video">
         Create a looping video
       </message>
@@ -2211,6 +2214,10 @@ Try tapping the mic to ask me anything.
       <message name="IDS_PERSONALIZATION_APP_ARIA_ANNOUNCE_AVATAR_CHANGED" desc="Text read out by the screen reader after the user avatar image changes">
         Avatar image changed
       </message>
+      <message name="IDS_PERSONALIZATION_APP_AVATAR_ARIA_LABEL_CLOSE_CAMERA" desc="Aria label for the button to close the webcam interface modal">
+        Close the camera
+      </message>
+
       <message name="IDS_PERSONALIZATION_APP_SCREENSAVER_LABEL" desc="Label for the Screensaver page in Personalization app.">
         Screensaver
       </message>

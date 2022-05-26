@@ -132,6 +132,10 @@ void AddStrings(content::WebUIDataSource* source) {
        IDS_PERSONALIZATION_APP_ARIA_LABEL_CURRENT_AVATAR},
       {"ariaAnnounceAvatarChanged",
        IDS_PERSONALIZATION_APP_ARIA_ANNOUNCE_AVATAR_CHANGED},
+      {"ariaLabelCloseCamera",
+       IDS_PERSONALIZATION_APP_AVATAR_ARIA_LABEL_CLOSE_CAMERA},
+      {"ariaLabelWebcamVideo",
+       IDS_PERSONALIZATION_APP_AVATAR_ARIA_LABEL_WEBCAM_VIDEO},
 
       // Ambient mode related string.
       {"screensaverLabel", IDS_PERSONALIZATION_APP_SCREENSAVER_LABEL},

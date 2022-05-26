@@ -95,7 +95,8 @@
     width: 14px;
   }
 </style>
-<cr-dialog id="dialog" show-close-button show-on-attach>
+<cr-dialog id="dialog" show-close-button show-on-attach
+    close-text="$i18n{ariaLabelCloseCamera}">
   <div slot="body">
     <template is="dom-if" if="[[showLoading_(cameraStream_, previewBlobUrl_)]]">
       <paper-spinner-lite id="cameraFeedSpinner" active></paper-spinner-lite>
@@ -113,6 +114,7 @@
       </svg>
     </template>
     <video id="webcamVideo" autoplay
+        aria-label="$i18n{ariaLabelWebcamVideo}"
         hidden$="[[!showCameraFeed_(cameraStream_, previewBlobUrl_)]]"></video>
     <template is="dom-if" if="[[previewBlobUrl_]]">
       <img id="previewImg" src$="[[previewBlobUrl_]]">
