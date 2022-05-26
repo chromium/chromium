@@ -90,24 +90,18 @@ void TextFragmentHandler::GetExistingSelectors(
 }
 
 void TextFragmentHandler::RemoveFragments() {
-  if (TextFragmentAnchor* anchor = GetTextFragmentAnchor()) {
-    if (anchor->Dismiss()) {
-      for (auto& annotation : annotation_agents_)
-        annotation->Remove();
+  // DismissFragmentAnchor normally runs the URL update steps to remove the
+  // selectors from the URL. However, even if the outermost main frame doesn't
+  // have a text fragment anchor, the selectors still need to be removed from
+  // the URL. This is because dismissing the text fragment anchors is a
+  // page-wide operation, and the URL might have selectors for a subframe.
+  FragmentDirectiveUtils::RemoveSelectorsFromUrl(GetFrame());
+  for (auto& annotation : annotation_agents_)
+    annotation->Remove();
 
-      annotation_agents_.clear();
+  annotation_agents_.clear();
 
-      FragmentDirectiveUtils::RemoveSelectorsFromUrl(frame_);
-      GetFrame()->View()->ClearFragmentAnchor();
-    }
-  } else if (GetFrame()->IsOutermostMainFrame()) {
-    // DismissFragmentAnchor normally runs the URL update steps to remove the
-    // selectors from the URL. However, even if the outermost main frame doesn't
-    // have a text fragment anchor, the selectors still need to be removed from
-    // the URL. This is because dismissing the text fragment anchors is a
-    // page-wide operation, and the URL might have selectors for a subframe.
-    FragmentDirectiveUtils::RemoveSelectorsFromUrl(GetFrame());
-  }
+  GetFrame()->View()->ClearFragmentAnchor();
 }
 
 // static

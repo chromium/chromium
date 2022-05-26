@@ -60,14 +60,14 @@ class CORE_EXPORT TextFragmentAnchor final : public SelectorFragmentAnchor {
 
   void PerformPreRafActions() override;
 
-  // Removes text match highlights if any highlight is in view.
-  bool Dismiss() override;
-
   void SetTickClockForTesting(const base::TickClock* tick_clock);
 
   void Trace(Visitor*) const override;
 
-  void DidFinishAttach(const AnnotationAgentImpl& annotation);
+  // Returns true if this was a match and it was processed.
+  // `first_match_found` - true if a prior annotation had a match already.
+  bool DidFinishAttach(const AnnotationAgentImpl& annotation,
+                       bool first_match_found);
 
   bool IsTextFragmentAnchor() override { return true; }
 
@@ -90,27 +90,35 @@ class CORE_EXPORT TextFragmentAnchor final : public SelectorFragmentAnchor {
       std::pair<Member<TextDirective>, Member<AnnotationAgentImpl>>;
   HeapVector<DirectiveAnnotationPair> directive_annotation_pairs_;
 
-  bool search_finished_ = false;
-  // Indicates that we should scroll into view the first match that we find, set
-  // to true each time the anchor is invoked if the user hasn't scrolled.
-  bool first_match_needs_scroll_ = false;
-  // Whether we found a match. Used to determine if we should activate the
-  // element fragment anchor at the end of searching.
+  // Whether any directives have found a match.
   bool did_find_match_ = false;
+
   // If the text fragment anchor is defined as a fragment directive and we don't
   // find a match, we fall back to the element anchor if it is present.
   Member<ElementFragmentAnchor> element_fragment_anchor_;
-  // Whether PerformPreRafActions should run at the next rAF.
-  bool needs_perform_pre_raf_actions_ = false;
 
-  // Whether an annotation agent tried attaching to text in the page.
-  bool has_performed_first_text_search_ = false;
+  // Set to true after the first matching pass (i.e. no matches found or the
+  // first InvokeSelector after the BeforeMatch event was fired). Used to
+  // prevent repeated searches until the load event for performance reasons.
+  bool suppress_text_search_until_load_event_ = false;
 
-  enum BeforematchState {
-    kNoMatchFound,  // DidFinishAttach has not been called.
-    kEventQueued,   // Beforematch event has been queued, but not fired yet.
-    kFiredEvent     // Beforematch event has been fired.
-  } beforematch_state_ = kNoMatchFound;
+  enum AnchorState {
+    // We're still waiting to find any matches. Either a search hasn't yet been
+    // performed or no matches were found.
+    kSearching,
+    // At least one match has been found. The BeforeMatch event was queued and
+    // we need to wait until it fires before we apply highlighting,
+    // scrollIntoView, etc.
+    kBeforeMatchEventQueued,
+    // The BeforeMatch event has been processed, we can now apply highlighting,
+    // scrollIntoView, etc.
+    kBeforeMatchEventFired,
+    // Effects have been applied but there's still something left to do in a
+    // script-allowed section.
+    kScriptableActions,
+    // All actions completed - the anchor can be disposed.
+    kDone
+  } state_ = kSearching;
 
   Member<TextFragmentAnchorMetrics> metrics_;
 };

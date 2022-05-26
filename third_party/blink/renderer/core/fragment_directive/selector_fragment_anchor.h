@@ -26,8 +26,6 @@ class CORE_EXPORT SelectorFragmentAnchor : public FragmentAnchor {
 
   void Trace(Visitor*) const override;
 
-  bool Dismiss() override;
-
  protected:
   // This will be invoked by Invoke() when the page is visible until the
   // fragment has been dismissed. See FragmentAnchor::Invoke for details about
@@ -40,9 +38,6 @@ class CORE_EXPORT SelectorFragmentAnchor : public FragmentAnchor {
   bool should_scroll_ = false;
   // Whether the user has scrolled the page
   bool user_scrolled_ = false;
-  // Whether the fragment anchor has been dismissed yet. This should be
-  // kept alive until dismissed so we can remove highlightings.
-  bool dismissed_ = false;
   // Whether the page has been made visible. Used to ensure we wait until the
   // page has been made visible to start matching, to help prevent brute force
   // search attacks.

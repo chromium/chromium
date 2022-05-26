@@ -57,9 +57,6 @@ class CORE_EXPORT ElementFragmentAnchor final : public FragmentAnchor {
   // so we can't do it in Invoke.
   void PerformPreRafActions() override;
 
-  // Does nothing as an element anchor does not have any dismissal work.
-  bool Dismiss() override;
-
   void Trace(Visitor*) const override;
 
  private:
