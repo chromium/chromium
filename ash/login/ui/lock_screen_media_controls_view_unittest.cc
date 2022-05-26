@@ -681,8 +681,12 @@ TEST_F(LockScreenMediaControlsViewTest, UpdateAppIcon) {
   SimulateMediaSessionChanged(
       media_session::mojom::MediaPlaybackState::kPlaying);
 
+  const bool should_use_dark_color =
+      features::IsDarkLightModeEnabled() &&
+      AshColorProvider::Get()->IsDarkModeEnabled();
   gfx::ImageSkia default_icon = gfx::CreateVectorIcon(
-      message_center::kProductIcon, kAppIconSize, gfx::kGoogleGrey700);
+      message_center::kProductIcon, kAppIconSize,
+      should_use_dark_color ? gfx::kGoogleGrey500 : gfx::kGoogleGrey700);
 
   // Verify that the icon is initialized to the default.
   EXPECT_TRUE(icon_view()->GetImage().BackedBySameObjectAs(default_icon));

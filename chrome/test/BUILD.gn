@@ -2409,6 +2409,7 @@ if (!is_android) {
     if (is_chromeos) {
       deps += [
         "//chrome/browser/web_applications/app_service",
+        "//chromeos/constants",
         "//chromeos/ui/frame",
         "//components/account_manager_core:test_support",
       ]

@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_tester.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
@@ -1205,10 +1206,26 @@ IN_PROC_BROWSER_TEST_P(BrowserNonClientFrameViewChromeOSTest, AppFrameColor) {
 
   SkColor active_frame_color =
       window->GetProperty(chromeos::kFrameActiveColorKey);
-  EXPECT_EQ(active_frame_color, SkColorSetRGB(0xFD, 0xFE, 0xFF))
-      << "RGB: " << SkColorGetR(active_frame_color) << ", "
-      << SkColorGetG(active_frame_color) << ", "
-      << SkColorGetB(active_frame_color);
+
+  if (!chromeos::features::IsDarkLightModeEnabled()) {
+    // `kDefaultFrameColor` will only be used when dark/light mode feature is
+    // not enabled.
+    EXPECT_EQ(active_frame_color, SkColorSetRGB(0xFD, 0xFE, 0xFF))
+        << "RGB: " << SkColorGetR(active_frame_color) << ", "
+        << SkColorGetG(active_frame_color) << ", "
+        << SkColorGetB(active_frame_color);
+  } else {
+    const bool is_dark_mode_state =
+        BrowserView::GetBrowserViewForBrowser(browser())
+            ->GetNativeTheme()
+            ->ShouldUseDarkColors();
+    EXPECT_EQ(active_frame_color, is_dark_mode_state
+                                      ? gfx::kGoogleGrey900
+                                      : SkColorSetRGB(0xFF, 0xFF, 0xFF))
+        << "RGB: " << SkColorGetR(active_frame_color) << ", "
+        << SkColorGetG(active_frame_color) << ", "
+        << SkColorGetB(active_frame_color);
+  }
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

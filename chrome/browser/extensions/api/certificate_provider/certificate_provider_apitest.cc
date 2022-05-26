@@ -572,9 +572,8 @@ class CertificateProviderRequestPinTest : public CertificateProviderApiTest {
     ASSERT_TRUE(listener.WaitUntilSatisfied());
 
     // Check that we have an error message displayed.
-    EXPECT_EQ(
-        gfx::kGoogleRed600,
-        GetActivePinDialogView()->error_label_for_testing()->GetEnabledColor());
+    EXPECT_TRUE(
+        GetActivePinDialogView()->IsTextStyleOfErrorLabelCorrectForTesting());
   }
 
   bool SendCommand(const std::string& command) {

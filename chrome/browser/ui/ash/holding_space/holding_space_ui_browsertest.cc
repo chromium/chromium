@@ -20,6 +20,7 @@
 #include "ash/public/cpp/holding_space/holding_space_test_api.h"
 #include "ash/public/cpp/holding_space/mock_holding_space_client.h"
 #include "ash/public/cpp/holding_space/mock_holding_space_model_observer.h"
+#include "ash/style/ash_color_provider.h"
 #include "ash/test/view_drawn_waiter.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -2061,11 +2062,13 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiInProgressDownloadsBrowserTest,
   EXPECT_TRUE(primary_label->GetVisible());
   EXPECT_EQ(primary_label->GetText(), target_file_name);
 
+  const bool is_dark_mode_state = AshColorProvider::Get()->IsDarkModeEnabled();
   // Initially, no bytes have been received so `secondary_label` should display
   // `0 B` as there is no knowledge of the total number of bytes expected.
   EXPECT_TRUE(secondary_label->GetVisible());
   EXPECT_EQ(secondary_label->GetText(), u"0 B");
-  EXPECT_EQ(secondary_label->GetEnabledColor(), gfx::kGoogleGrey400);
+  EXPECT_EQ(secondary_label->GetEnabledColor(),
+            is_dark_mode_state ? gfx::kGoogleGrey400 : gfx::kGoogleGrey700);
 
   // The accessible name should indicate that the download is in progress.
   EXPECT_EQ(GetAccessibleName(download_chips.at(0)),
@@ -2083,7 +2086,8 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiInProgressDownloadsBrowserTest,
   EXPECT_EQ(primary_label->GetText(), target_file_name);
   EXPECT_TRUE(secondary_label->GetVisible());
   WaitForText(secondary_label, u"Paused, 0 B");
-  EXPECT_EQ(secondary_label->GetEnabledColor(), gfx::kGoogleGrey400);
+  EXPECT_EQ(secondary_label->GetEnabledColor(),
+            is_dark_mode_state ? gfx::kGoogleGrey400 : gfx::kGoogleGrey700);
 
   // The accessible name should indicate that the download is in progress and
   // that progress is paused.
@@ -2101,7 +2105,8 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiInProgressDownloadsBrowserTest,
   EXPECT_EQ(primary_label->GetText(), target_file_name);
   EXPECT_TRUE(secondary_label->GetVisible());
   WaitForText(secondary_label, u"Paused, 1,024 KB");
-  EXPECT_EQ(secondary_label->GetEnabledColor(), gfx::kGoogleGrey400);
+  EXPECT_EQ(secondary_label->GetEnabledColor(),
+            is_dark_mode_state ? gfx::kGoogleGrey400 : gfx::kGoogleGrey700);
 
   // The accessible name should indicate that the download is in progress and
   // that progress is paused.
@@ -2119,7 +2124,8 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiInProgressDownloadsBrowserTest,
   EXPECT_EQ(primary_label->GetText(), target_file_name);
   EXPECT_TRUE(secondary_label->GetVisible());
   WaitForText(secondary_label, u"1,024 KB");
-  EXPECT_EQ(secondary_label->GetEnabledColor(), gfx::kGoogleGrey400);
+  EXPECT_EQ(secondary_label->GetEnabledColor(),
+            is_dark_mode_state ? gfx::kGoogleGrey400 : gfx::kGoogleGrey700);
 
   // The accessible name should indicate that the download is in progress.
   EXPECT_EQ(GetAccessibleName(download_chips.at(0)),
@@ -2137,7 +2143,8 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiInProgressDownloadsBrowserTest,
   EXPECT_EQ(primary_label->GetText(), target_file_name);
   EXPECT_TRUE(secondary_label->GetVisible());
   WaitForText(secondary_label, u"1.0/2.0 MB");
-  EXPECT_EQ(secondary_label->GetEnabledColor(), gfx::kGoogleGrey400);
+  EXPECT_EQ(secondary_label->GetEnabledColor(),
+            is_dark_mode_state ? gfx::kGoogleGrey400 : gfx::kGoogleGrey700);
 
   // The accessible name should indicate that the download is in progress.
   EXPECT_EQ(GetAccessibleName(download_chips.at(0)),
@@ -2155,7 +2162,8 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiInProgressDownloadsBrowserTest,
   EXPECT_EQ(primary_label->GetText(), target_file_name);
   EXPECT_TRUE(secondary_label->GetVisible());
   WaitForText(secondary_label, u"Paused, 1.0/2.0 MB");
-  EXPECT_EQ(secondary_label->GetEnabledColor(), gfx::kGoogleGrey400);
+  EXPECT_EQ(secondary_label->GetEnabledColor(),
+            is_dark_mode_state ? gfx::kGoogleGrey400 : gfx::kGoogleGrey700);
 
   // The accessible name should indicate that the download is in progress and
   // that progress is paused.
@@ -2176,7 +2184,8 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiInProgressDownloadsBrowserTest,
   EXPECT_EQ(primary_label->GetText(), target_file_name);
   EXPECT_TRUE(secondary_label->GetVisible());
   WaitForText(secondary_label, u"Paused, 2.0/2.0 MB");
-  EXPECT_EQ(secondary_label->GetEnabledColor(), gfx::kGoogleGrey400);
+  EXPECT_EQ(secondary_label->GetEnabledColor(),
+            is_dark_mode_state ? gfx::kGoogleGrey400 : gfx::kGoogleGrey700);
 
   // The accessible name should indicate that the download is in progress and
   // that progress is paused.
@@ -2196,7 +2205,8 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiInProgressDownloadsBrowserTest,
   EXPECT_EQ(primary_label->GetText(), target_file_name);
   EXPECT_TRUE(secondary_label->GetVisible());
   WaitForText(secondary_label, u"Dangerous file");
-  EXPECT_EQ(secondary_label->GetEnabledColor(), gfx::kGoogleRed300);
+  EXPECT_EQ(secondary_label->GetEnabledColor(),
+            is_dark_mode_state ? gfx::kGoogleRed300 : gfx::kGoogleRed600);
 
   // The accessible name should indicate that the download is dangerous.
   EXPECT_EQ(GetAccessibleName(download_chips.at(0)),
@@ -2211,7 +2221,8 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiInProgressDownloadsBrowserTest,
   EXPECT_EQ(primary_label->GetText(), target_file_name);
   EXPECT_TRUE(secondary_label->GetVisible());
   WaitForText(secondary_label, u"Scanning");
-  EXPECT_EQ(secondary_label->GetEnabledColor(), gfx::kGoogleBlue300);
+  EXPECT_EQ(secondary_label->GetEnabledColor(),
+            is_dark_mode_state ? gfx::kGoogleBlue300 : gfx::kGoogleBlue600);
 
   // The accessible name should indicate that the download is being scanning.
   EXPECT_EQ(GetAccessibleName(download_chips.at(0)),
@@ -2229,7 +2240,8 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiInProgressDownloadsBrowserTest,
   EXPECT_EQ(primary_label->GetText(), target_file_name);
   EXPECT_TRUE(secondary_label->GetVisible());
   WaitForText(secondary_label, u"Confirm download");
-  EXPECT_EQ(secondary_label->GetEnabledColor(), gfx::kGoogleYellow300);
+  EXPECT_EQ(secondary_label->GetEnabledColor(),
+            is_dark_mode_state ? gfx::kGoogleYellow300 : gfx::kGoogleYellow600);
 
   // The accessible name should indicate that the download must be confirmed.
   EXPECT_EQ(GetAccessibleName(download_chips.at(0)),
@@ -2248,7 +2260,8 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiInProgressDownloadsBrowserTest,
   EXPECT_EQ(primary_label->GetText(), target_file_name);
   EXPECT_TRUE(secondary_label->GetVisible());
   WaitForText(secondary_label, u"Paused, 2.0/2.0 MB");
-  EXPECT_EQ(secondary_label->GetEnabledColor(), gfx::kGoogleGrey400);
+  EXPECT_EQ(secondary_label->GetEnabledColor(),
+            is_dark_mode_state ? gfx::kGoogleGrey400 : gfx::kGoogleGrey700);
 
   // The accessible name should indicate that the download is in progress and
   // that progress is paused.
@@ -2268,7 +2281,8 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiInProgressDownloadsBrowserTest,
   EXPECT_EQ(primary_label->GetText(), target_file_name);
   EXPECT_TRUE(secondary_label->GetVisible());
   WaitForText(secondary_label, u"Dangerous file");
-  EXPECT_EQ(secondary_label->GetEnabledColor(), gfx::kGoogleRed300);
+  EXPECT_EQ(secondary_label->GetEnabledColor(),
+            is_dark_mode_state ? gfx::kGoogleRed300 : gfx::kGoogleRed600);
 
   // The accessible name should indicate that the download is dangerous.
   EXPECT_EQ(GetAccessibleName(download_chips.at(0)),
@@ -2287,7 +2301,8 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiInProgressDownloadsBrowserTest,
   EXPECT_EQ(primary_label->GetText(), target_file_name);
   EXPECT_TRUE(secondary_label->GetVisible());
   WaitForText(secondary_label, u"Paused, 2.0/2.0 MB");
-  EXPECT_EQ(secondary_label->GetEnabledColor(), gfx::kGoogleGrey400);
+  EXPECT_EQ(secondary_label->GetEnabledColor(),
+            is_dark_mode_state ? gfx::kGoogleGrey400 : gfx::kGoogleGrey700);
 
   // The accessible name should indicate that the download is in progress and
   // that progress is paused.
@@ -2301,7 +2316,8 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiInProgressDownloadsBrowserTest,
   EXPECT_TRUE(primary_label->GetVisible());
   EXPECT_EQ(primary_label->GetText(), target_file_name);
   EXPECT_FALSE(secondary_label->GetVisible());
-  EXPECT_EQ(secondary_label->GetEnabledColor(), gfx::kGoogleGrey400);
+  EXPECT_EQ(secondary_label->GetEnabledColor(),
+            is_dark_mode_state ? gfx::kGoogleGrey400 : gfx::kGoogleGrey700);
 
   // The accessible name should indicate the target file name.
   EXPECT_EQ(GetAccessibleName(download_chips.at(0)),

@@ -143,6 +143,10 @@ void RequestPinView::SetExtensionName(const std::string& extension_name) {
   UpdateHeaderText();
 }
 
+bool RequestPinView::IsTextStyleOfErrorLabelCorrectForTesting() const {
+  return STYLE_RED == error_label_->GetTextStyle();
+}
+
 void RequestPinView::UpdateHeaderText() {
   int label_text_id = IDS_REQUEST_PIN_DIALOG_HEADER;
   std::u16string label_text =

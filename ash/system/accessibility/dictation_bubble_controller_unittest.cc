@@ -26,6 +26,8 @@ class DictationBubbleControllerTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
+    scoped_feature_list_.InitAndDisableFeature(
+        chromeos::features::kDarkLightMode);
     AshTestBase::SetUp();
     Shell::Get()->accessibility_controller()->dictation().SetEnabled(true);
   }
@@ -92,6 +94,9 @@ class DictationBubbleControllerTest : public AshTestBase {
   std::vector<std::u16string> GetVisibleHints() {
     return GetView()->GetVisibleHintsForTesting();
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(DictationBubbleControllerTest, ShowText) {
@@ -155,8 +160,7 @@ TEST_F(DictationBubbleControllerTest, ShowMacroFailImage) {
 
 // Verifies text and icon colors when the dark light mode feature is disabled.
 TEST_F(DictationBubbleControllerTest, NoDarkMode) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(chromeos::features::kDarkLightMode);
+  ASSERT_FALSE(chromeos::features::IsDarkLightModeEnabled());
 
   // Show bubble UI.
   EXPECT_FALSE(GetView());

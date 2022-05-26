@@ -82,8 +82,10 @@ class RequestPinView final : public views::DialogDelegateView,
   // the header text displayed by the view.
   void SetExtensionName(const std::string& extension_name);
 
+  // Checking that the text style of `error_label_` is correct.
+  bool IsTextStyleOfErrorLabelCorrectForTesting() const;
+
   views::Textfield* textfield_for_testing() { return textfield_; }
-  views::Label* error_label_for_testing() { return error_label_; }
 
  private:
   // This initializes the view, with all the UI components.
