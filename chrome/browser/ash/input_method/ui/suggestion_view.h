@@ -23,10 +23,10 @@ namespace ui {
 namespace ime {
 
 struct SuggestionDetails;
+class CompletionSuggestionLabelView;
 
 // Font-related constants
 constexpr char kFontStyle[] = "Roboto";
-constexpr int kSuggestionFontSize = 13;
 constexpr int kAnnotationFontSize = 10;
 constexpr int kIndexFontSize = 10;
 
@@ -79,8 +79,8 @@ class UI_CHROMEOS_EXPORT SuggestionView : public views::Button {
                          const size_t confirmed_length);
 
   views::Label* index_label_ = nullptr;
-  // The suggestion label renders suggestions.
-  views::StyledLabel* suggestion_label_ = nullptr;
+  // The suggestion label renders the suggestion text.
+  CompletionSuggestionLabelView* suggestion_label_ = nullptr;
   // The annotation view renders annotations.
   views::View* annotation_container_ = nullptr;
   views::View* down_and_enter_annotation_label_ = nullptr;
