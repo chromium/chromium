@@ -8,8 +8,10 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/files/file_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/url_constants.h"
@@ -62,6 +64,8 @@ class HumanPresenceInternalsUIMessageHandler
   void OnConnected(bool connected);
   void OnLockOnLeaveResult(absl::optional<hps::HpsResultProto>);
   void OnSnoopingProtectionResult(absl::optional<hps::HpsResultProto>);
+  static absl::optional<std::string> ReadManifest();
+  void UpdateManifest(absl::optional<std::string> manifest);
 
   base::ScopedObservation<chromeos::HumanPresenceDBusClient,
                           chromeos::HumanPresenceDBusClient::Observer>
@@ -139,6 +143,36 @@ void HumanPresenceInternalsUIMessageHandler::OnConnected(bool connected) {
   base::DictionaryValue value;
   value.SetBoolean("connected", connected);
   FireWebUIListener(hps::kHumanPresenceInternalsConnectedEvent, value);
+
+  if (connected) {
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock()},
+        base::BindOnce(&HumanPresenceInternalsUIMessageHandler::ReadManifest),
+        base::BindOnce(&HumanPresenceInternalsUIMessageHandler::UpdateManifest,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+}
+
+// static
+absl::optional<std::string>
+HumanPresenceInternalsUIMessageHandler::ReadManifest() {
+  std::string manifest;
+  static const base::FilePath::CharType kManifestPath[] =
+      FILE_PATH_LITERAL("/usr/lib/firmware/hps/manifest.txt");
+  if (!base::ReadFileToString(base::FilePath(kManifestPath), &manifest))
+    return absl::nullopt;
+  return manifest;
+}
+
+void HumanPresenceInternalsUIMessageHandler::UpdateManifest(
+    absl::optional<std::string> manifest) {
+  if (!manifest.has_value()) {
+    FireWebUIListener(hps::kHumanPresenceInternalsManifestEvent,
+                      base::Value("(Failed to read manifest)"));
+    return;
+  }
+  FireWebUIListener(hps::kHumanPresenceInternalsManifestEvent,
+                    base::Value(*manifest));
 }
 
 void HumanPresenceInternalsUIMessageHandler::EnableLockOnLeave(

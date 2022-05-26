@@ -14,7 +14,7 @@
 </head>
 
 <body id="root">
-<h1>HPS Internals</h1>
+<h1>HPS Internals <a id="show-info">ⓘ</a></h1>
 
 <div id="connection-error" style="display: none">
   Unable to connect to HPS. Are the screen privacy settings enabled?
@@ -24,7 +24,15 @@
   Failed to enable feature.
 </div>
 
-<div class="flexbar">
+<dialog id="info-dialog">
+  <label for="manifest">Firmware manifest</label>
+  <pre id="manifest"></pre>
+  <form method="dialog">
+    <button>Close</button>
+  </form>
+</dialog>
+
+<div class="flexbar flexbar-wrap">
 <div class="feature-panel">
   <h2>👤 Sense feature</h2>
   <div class="flexbar">

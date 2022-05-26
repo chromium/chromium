@@ -17,11 +17,25 @@ h2 {
   margin-top: 0;
 }
 
+a, button {
+  cursor: pointer;
+}
+
+dialog {
+  filter: drop-shadow(0px 16px 16px rgba(0, 0, 0, 0.2));
+  border-color: var(--cros-color-prominent-inverted);
+  border-radius: 8px;
+}
+
 .flexbar {
   display: flex;
   flex-direction: row;
   align-items: flex-start;
   margin: 5px 0px;
+}
+
+.flexbar-wrap {
+  flex-wrap: wrap;
 }
 
 .flexbar button {

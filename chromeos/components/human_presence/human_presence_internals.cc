@@ -28,5 +28,6 @@ const char kHumanPresenceInternalsLockOnLeaveChangedEvent[] = "sense_changed";
 const char kHumanPresenceInternalsSnoopingProtectionChangedEvent[] =
     "notify_changed";
 const char kHumanPresenceInternalsEnableErrorEvent[] = "enable_error";
+const char kHumanPresenceInternalsManifestEvent[] = "manifest";
 
 }  // namespace hps
