@@ -95,45 +95,51 @@ void LaunchTerminalImpl(Profile* profile,
                         apps::AppLaunchParams params) {
   // This function is called asynchronously, so we need to check whether
   // `profile` is still valid first.
-  if (g_browser_process) {
-    auto* profile_manager = g_browser_process->profile_manager();
-    if (profile_manager && profile_manager->IsValidProfile(profile)) {
-      // This LaunchSystemWebAppImpl call is necessary. Terminal App uses its
-      // own CrostiniApps publisher for launching. Calling
-      // LaunchSystemWebAppAsync would ask AppService to launch the App, which
-      // routes the launch request to this function, resulting in a loop.
-      //
-      // System Web Apps managed by Web App publisher should call
-      // LaunchSystemWebAppAsync.
-
-      // Launch without a pinned home tab (settings page).
-      if (params.disposition == WindowOpenDisposition::NEW_POPUP) {
-        web_app::LaunchSystemWebAppImpl(
-            profile, ash::SystemWebAppType::TERMINAL, url, params);
-        return;
-      }
-
-      // TODO(crbug.com/1308961): Migrate to use PWA pinned home tab when ready.
-      // If opening a new tab, first pin home tab.
-      full_restore::FullRestoreSaveHandler::GetInstance();
-      GURL home(base::StrCat(
-          {chrome::kChromeUIUntrustedTerminalURL, kTerminalHomePath}));
-      Browser* browser = web_app::LaunchSystemWebAppImpl(
-          profile, ash::SystemWebAppType::TERMINAL, home, params);
-      if (url != home) {
-        chrome::AddTabAt(browser, url, /*index=*/1, /*foreground=*/true);
-      }
-      auto info = std::make_unique<app_restore::AppLaunchInfo>(
-          kCrostiniTerminalSystemAppId, browser->session_id().id(),
-          params.container, params.disposition, params.display_id,
-          std::vector<base::FilePath>{}, nullptr);
-      full_restore::SaveAppLaunchInfo(browser->profile()->GetPath(),
-                                      std::move(info));
-
-      return;
-    }
+  if (!g_browser_process) {
+    LOG(WARNING) << "Abort launching terminal, invalid browser process.";
+    return;
   }
-  LOG(WARNING) << "Profile becomes invalid. Abort launching terminal.";
+
+  auto* profile_manager = g_browser_process->profile_manager();
+  if (!profile_manager || !profile_manager->IsValidProfile(profile)) {
+    LOG(WARNING) << "Abort launching terminal, invalid profile.";
+    return;
+  }
+
+  // This LaunchSystemWebAppImpl call is necessary. Terminal App uses its
+  // own CrostiniApps publisher for launching. Calling
+  // LaunchSystemWebAppAsync would ask AppService to launch the App, which
+  // routes the launch request to this function, resulting in a loop.
+  //
+  // System Web Apps managed by Web App publisher should call
+  // LaunchSystemWebAppAsync.
+
+  // Launch without a pinned home tab (settings page).
+  if (params.disposition == WindowOpenDisposition::NEW_POPUP) {
+    web_app::LaunchSystemWebAppImpl(profile, ash::SystemWebAppType::TERMINAL,
+                                    url, params);
+    return;
+  }
+
+  // TODO(crbug.com/1308961): Migrate to use PWA pinned home tab when ready.
+  // If opening a new tab, first pin home tab.
+  full_restore::FullRestoreSaveHandler::GetInstance();
+  GURL home(
+      base::StrCat({chrome::kChromeUIUntrustedTerminalURL, kTerminalHomePath}));
+  Browser* browser = web_app::LaunchSystemWebAppImpl(
+      profile, ash::SystemWebAppType::TERMINAL, home, params);
+  if (!browser) {
+    return;
+  }
+  if (url != home) {
+    chrome::AddTabAt(browser, url, /*index=*/1, /*foreground=*/true);
+  }
+  auto info = std::make_unique<app_restore::AppLaunchInfo>(
+      kCrostiniTerminalSystemAppId, browser->session_id().id(),
+      params.container, params.disposition, params.display_id,
+      std::vector<base::FilePath>{}, nullptr);
+  full_restore::SaveAppLaunchInfo(browser->profile()->GetPath(),
+                                  std::move(info));
 }
 
 }  // namespace
