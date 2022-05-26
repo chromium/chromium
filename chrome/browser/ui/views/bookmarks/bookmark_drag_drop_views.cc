@@ -226,6 +226,7 @@ class BookmarkDragHelper : public bookmarks::BaseBookmarkModelObserver {
 
   void OnBookmarkIconLoaded(const BookmarkNode* drag_node,
                             const ui::ImageModel& icon) {
+    auto weak_this = GetWeakPtr();
     if (web_contents_) {
       auto* widget =
           views::Widget::GetWidgetForNativeView(web_contents_->GetNativeView());
@@ -254,7 +255,10 @@ class BookmarkDragHelper : public bookmarks::BaseBookmarkModelObserver {
                start_point_, operation_);
     }
 
-    delete this;
+    // The Run() call above could have spun a nested message loop resulting in
+    // our deletion.  Be sure to avoid double-free.
+    if (weak_this)
+      delete this;
   }
 
   base::WeakPtr<BookmarkDragHelper> GetWeakPtr() {
