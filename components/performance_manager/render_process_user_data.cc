@@ -63,6 +63,15 @@ void RenderProcessUserData::SetDestructionObserver(
   destruction_observer_ = destruction_observer;
 }
 
+void RenderProcessUserData::OnProcessLaunched() {
+  DCHECK(host_->GetProcess().IsValid());
+  PerformanceManagerImpl::CallOnGraphImpl(
+      FROM_HERE, base::BindOnce(&ProcessNodeImpl::SetProcess,
+                                base::Unretained(process_node_.get()),
+                                host_->GetProcess().Duplicate(),
+                                /* launch_time=*/base::TimeTicks::Now()));
+}
+
 // static
 RenderProcessUserData* RenderProcessUserData::CreateForRenderProcessHost(
     content::RenderProcessHost* host) {
@@ -72,15 +81,6 @@ RenderProcessUserData* RenderProcessUserData::CreateForRenderProcessHost(
   RenderProcessUserData* raw_user_data = user_data.get();
   host->SetUserData(kRenderProcessUserDataKey, std::move(user_data));
   return raw_user_data;
-}
-
-void RenderProcessUserData::RenderProcessReady(
-    content::RenderProcessHost* host) {
-  PerformanceManagerImpl::CallOnGraphImpl(
-      FROM_HERE, base::BindOnce(&ProcessNodeImpl::SetProcess,
-                                base::Unretained(process_node_.get()),
-                                host->GetProcess().Duplicate(),
-                                /* launch_time=*/base::TimeTicks::Now()));
 }
 
 void RenderProcessUserData::RenderProcessExited(

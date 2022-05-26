@@ -16,6 +16,7 @@
 #include "components/performance_manager/public/performance_manager_main_thread_mechanism.h"
 #include "components/performance_manager/public/performance_manager_main_thread_observer.h"
 #include "components/performance_manager/public/performance_manager_owned.h"
+#include "components/performance_manager/render_process_user_data.h"
 #include "components/performance_manager/service_worker_context_adapter.h"
 #include "components/performance_manager/worker_watcher.h"
 #include "content/public/browser/browser_context.h"
@@ -310,6 +311,19 @@ void PerformanceManagerRegistryImpl::EnsureProcessNodeForRenderProcessHost(
         RenderProcessUserData::CreateForRenderProcessHost(render_process_host);
     user_data->SetDestructionObserver(this);
   }
+}
+
+void PerformanceManagerRegistryImpl::OnRenderProcessHostCreated(
+    content::RenderProcessHost* host) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Create the ProcessNode if it doesn't already exist. This is the case in
+  // web_tests and content_browsertests which do not invoke
+  // CreateProcessNodeAndExposeInterfacesToRendererProcess().
+  EnsureProcessNodeForRenderProcessHost(host);
+
+  // Notify the ProcessNode that its process was launched.
+  RenderProcessUserData::GetForRenderProcessHost(host)->OnProcessLaunched();
 }
 
 }  // namespace performance_manager
