@@ -12,12 +12,12 @@ import '//resources/cr_elements/cr_button/cr_button.m.js';
 import '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import '//resources/cr_elements/cr_radio_button/cr_radio_button.m.js';
 import '//resources/cr_elements/cr_radio_group/cr_radio_group.m.js';
-import '../../prefs/prefs.js';
 
 import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
 import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {PrefsBehavior} from '../prefs_behavior.js';
+import {getNearbyShareSettings} from '../../shared/nearby_share_settings.js';
+import {NearbySettings} from '../../shared/nearby_share_settings_behavior.js';
 
 import {dataUsageStringToEnum, NearbyShareDataUsage} from './types.js';
 
@@ -27,16 +27,9 @@ Polymer({
 
   behaviors: [
     I18nBehavior,
-    PrefsBehavior,
   ],
 
   properties: {
-    /** Preferences state. */
-    prefs: {
-      type: Object,
-      notify: true,
-    },
-
     /** @type {!Object<string, number>} */
     NearbyShareDataUsage: {
       type: Object,
@@ -67,9 +60,8 @@ Polymer({
 
   /** @private */
   onSaveClick_() {
-    this.setPrefValue(
-        'nearby_sharing.data_usage',
-        dataUsageStringToEnum(this.$$('cr-radio-group').selected));
+    getNearbyShareSettings().setDataUsage(
+        (dataUsageStringToEnum(this.$$('cr-radio-group').selected)));
     this.close();
   },
 

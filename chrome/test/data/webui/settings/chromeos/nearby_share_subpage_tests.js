@@ -280,16 +280,19 @@ suite('NearbyShare', function() {
   });
 
   test('update data usage preference', function() {
-    assertEquals(3, subpage.prefs.nearby_sharing.data_usage.value);
+    assertEquals(2, subpage.settings.dataUsage);
 
     subpage.$$('#editDataUsageButton').click();
     flush();
 
     const dialog = subpage.$$('nearby-share-data-usage-dialog');
-    dialog.$$('#dataUsageDataButton').click();
+    dialog.$$('#dataUsageWifiOnlyButton').click();
     dialog.$$('.action-button').click();
+    flush();
+    syncFakeSettings();
+    flush();
 
-    assertEquals(2, subpage.prefs.nearby_sharing.data_usage.value);
+    assertEquals(3, subpage.settings.dataUsage);
   });
 
   test('update visibility shows dialog', function() {

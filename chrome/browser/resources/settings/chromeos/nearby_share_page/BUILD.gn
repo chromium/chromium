@@ -48,7 +48,8 @@ js_library("nearby_share_contact_visibility_dialog") {
 js_library("nearby_share_data_usage_dialog") {
   deps = [
     ":types",
-    "..:prefs_behavior",
+    "//chrome/browser/resources/nearby_share/shared:nearby_share_settings",
+    "//chrome/browser/resources/nearby_share/shared:nearby_share_settings_behavior",
     "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
     "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
     "//ui/webui/resources/cr_elements/cr_radio_button:cr_radio_button.m",
