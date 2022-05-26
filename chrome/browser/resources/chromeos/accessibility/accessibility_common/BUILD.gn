@@ -42,6 +42,7 @@ run_jsbundler("accessibility_common_copied_files") {
     "dictation/earcons/audio_end.wav",
     "dictation/earcons/audio_initiate.wav",
     "dictation/earcons/null_selection.wav",
+    "dictation/focus_handler.js",
     "dictation/input_controller.js",
     "dictation/macros/input_text_view_macro.js",
     "dictation/macros/list_commands_macro.js",
@@ -124,6 +125,7 @@ js2gtest("accessibility_common_extjs_tests") {
     "dictation/dictation_test.js",
     "dictation/dictation_test_base.js",
     "dictation/dictation_ui_test.js",
+    "dictation/focus_handler_test.js",
     "dictation/macros/dictation_macros_test.js",
     "dictation/parse/dictation_parse_test.js",
     "magnifier/magnifier_test.js",
@@ -200,6 +202,7 @@ js_library("magnifier") {
 js_library("dictation") {
   sources = [ "dictation/dictation.js" ]
   deps = [
+    ":dictation_focus_handler",
     ":dictation_input_controller",
     ":dictation_metrics",
     ":dictation_ui_controller",
@@ -214,10 +217,6 @@ js_library("dictation") {
 
 js_library("dictation_input_controller") {
   sources = [ "dictation/input_controller.js" ]
-  deps = [
-    "../common:automation_predicate",
-    "../common:constants",
-  ]
   externs_list = [
     "$externs_path/input_method_private.js",
     "$externs_path/language_settings_private.js",
@@ -269,4 +268,13 @@ js_library("dictation_metrics") {
     "$externs_path/metrics_private.js",
     "$externs_path/speech_recognition_private.js",
   ]
+}
+
+js_library("dictation_focus_handler") {
+  sources = [ "dictation/focus_handler.js" ]
+  deps = [
+    "../common:automation_predicate",
+    "../common:constants",
+  ]
+  externs_list = [ "$externs_path/automation.js" ]
 }
