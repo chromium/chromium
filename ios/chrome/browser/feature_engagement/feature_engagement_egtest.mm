@@ -7,14 +7,21 @@
 #include "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/feature_engagement/feature_engagement_app_interface.h"
+#import "ios/chrome/browser/passwords/password_manager_app_interface.h"
+#import "ios/chrome/browser/ui/bubble/bubble_features.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/browser/ui/table_view/table_view_navigation_controller_constants.h"
+#include "ios/chrome/grit/ios_chromium_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
+#import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#include "ios/testing/earl_grey/app_launch_configuration.h"
+#import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "net/base/mac/url_conversions.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
@@ -41,6 +48,12 @@ const int kMinChromeOpensRequiredForNewTabTip = 3;
 
 // URL path for a page with text in French.
 const char kFrenchPageURLPath[] = "/french";
+
+// URL path for a page with password field form.
+constexpr char kPasswordForm[] = "/username_password_field_form.html";
+
+// Element ID for the username field in the password form.
+constexpr char kPasswordFormUsername[] = "username";
 
 // Matcher for the Reading List Text Badge.
 id<GREYMatcher> ReadingListTextBadge() {
@@ -91,6 +104,12 @@ id<GREYMatcher> LongPressTipBubble() {
 id<GREYMatcher> DefaultSiteViewTip() {
   return grey_accessibilityLabel(
       l10n_util::GetNSStringWithFixup(IDS_IOS_DEFAULT_PAGE_MODE_TIP));
+}
+
+// Matcher for the PasswordSuggestions tip.
+id<GREYMatcher> PasswordSuggestionsTip() {
+  return grey_accessibilityLabel(
+      l10n_util::GetNSStringWithFixup(IDS_IOS_PASSWORD_SUGGESTIONS_TIP));
 }
 
 // Opens the TabGrid and then opens a new tab.
@@ -147,8 +166,16 @@ std::unique_ptr<net::test_server::HttpResponse> LoadFrenchPage(
 
 @implementation FeatureEngagementTestCase
 
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config = [super appConfigurationForTestCase];
+  // Flag to enable password suggestion highlight and tip.
+  config.features_enabled.push_back(kBubbleRichIPH);
+  return config;
+}
+
 - (void)tearDown {
   [FeatureEngagementAppInterface reset];
+  [PasswordManagerAppInterface clearCredentials];
 
   [super tearDown];
 }
@@ -507,6 +534,55 @@ std::unique_ptr<net::test_server::HttpResponse> LoadFrenchPage(
 
   [[EarlGrey selectElementWithMatcher:DefaultSiteViewTip()]
       assertWithMatcher:grey_nil()];
+}
+
+// Verifies that the password suggestion tip is displayed only the first time
+// password suggestions are shown.
+- (void)testPasswordSuggestionsTip {
+  GREYAssert(
+      [FeatureEngagementAppInterface enablePasswordSuggestionsTipTriggering],
+      @"Feature Engagement tracker did not load");
+  self.testServer->AddDefaultHandlers();
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start");
+
+  // Save the password.
+  NSURL* URL = net::NSURLWithGURL(self.testServer->GetURL(kPasswordForm));
+  [PasswordManagerAppInterface storeCredentialWithUsername:@"EgUsername"
+                                                  password:@"EgPassword"
+                                                       URL:URL];
+  int credentialsCount = [PasswordManagerAppInterface storedCredentialsCount];
+  GREYAssertEqual(1, credentialsCount, @"Wrong number of stored credentials.");
+
+  // Reopen the page, and focus the login text fields. This should trigger the
+  // tip.
+  [ChromeEarlGreyUI openNewTab];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kPasswordForm)];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(
+                        kPasswordFormUsername)];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:PasswordSuggestionsTip()];
+
+  // Dismiss the keyboard.
+  NSError* error = nil;
+  GREYAssert([EarlGrey dismissKeyboardWithError:&error] && error == nil,
+             @"Cannot dismiss the keyboard");
+
+  // Second time, the tip should no longer trigger.
+  [ChromeEarlGreyUI openNewTab];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kPasswordForm)];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(
+                        kPasswordFormUsername)];
+  ConditionBlock condition = ^{
+    NSError* error = nil;
+    [[EarlGrey selectElementWithMatcher:PasswordSuggestionsTip()]
+        assertWithMatcher:grey_sufficientlyVisible()
+                    error:&error];
+    return error == nil;
+  };
+  GREYAssert(!WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, condition),
+             @"The password suggestion tip shouldn't appear");
 }
 
 @end
