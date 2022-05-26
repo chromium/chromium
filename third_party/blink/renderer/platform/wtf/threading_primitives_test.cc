@@ -59,7 +59,13 @@ class ThreadConditionTest : public testing::Test {
   ThreadCondition condition_;
 };
 
-TEST_F(ThreadConditionTest, WaitReportsBlockingCall) {
+#if BUILDFLAG(IS_MAC)
+// Flaky: https://crbug.com/897550
+#define MAYBE_WaitReportsBlockingCall DISABLED_WaitReportsBlockingCall
+#else
+#define MAYBE_WaitReportsBlockingCall WaitReportsBlockingCall
+#endif
+TEST_F(ThreadConditionTest, MAYBE_WaitReportsBlockingCall) {
   base::Thread other_thread("other thread");
   other_thread.StartAndWaitForTesting();
   other_thread.task_runner()->PostTask(
