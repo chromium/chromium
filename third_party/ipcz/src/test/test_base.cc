@@ -43,7 +43,7 @@ void TestBase::Close(IpczHandle handle) {
   ASSERT_EQ(IPCZ_RESULT_OK, ipcz().Close(handle, IPCZ_NO_FLAGS, nullptr));
 }
 
-void TestBase::CloseAll(const std::vector<IpczHandle>& handles) {
+void TestBase::CloseAll(absl::Span<const IpczHandle> handles) {
   for (IpczHandle handle : handles) {
     Close(handle);
   }
@@ -155,7 +155,15 @@ IpczResult TestBase::WaitToGet(IpczHandle portal,
   return Get(portal, message, handles);
 }
 
-void TestBase::VerifyEndToEnd(IpczHandle a, IpczHandle b) {
+void TestBase::VerifyEndToEnd(IpczHandle portal) {
+  static const char kTestMessage[] = "Ping!!!";
+  std::string message;
+  EXPECT_EQ(IPCZ_RESULT_OK, Put(portal, kTestMessage));
+  EXPECT_EQ(IPCZ_RESULT_OK, WaitToGet(portal, &message));
+  EXPECT_EQ(kTestMessage, message);
+}
+
+void TestBase::VerifyEndToEndLocal(IpczHandle a, IpczHandle b) {
   const std::string kMessage1 = "psssst";
   const std::string kMessage2 = "ssshhh";
 
