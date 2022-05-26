@@ -1897,6 +1897,25 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram name="ChromeOS.Zram.{HugePageActivityMetric}" units="%"
+    expires_after="2022-11-10">
+  <owner>ctshao@google.com</owner>
+  <owner>raging@google.com</owner>
+  <owner>bgeffon@chromium.org</owner>
+  <owner>chromeos-memory@google.com</owner>
+  <summary>
+    Records activity of {HugePageActivityMetric} (i.e., incompressible) in a
+    period of time. Recorded every 10s from boot to shutdown. Period is the time
+    between recordings (10s).
+  </summary>
+  <token key="HugePageActivityMetric">
+    <variant name="HugePagesRemoved"
+        summary="Number of pages removed in a period"/>
+    <variant name="HugePagesStored"
+        summary="Number of pages added in a period"/>
+  </token>
+</histogram>
+
 <histogram name="ChromeOS.Zram.{PctMetric}" units="%"
     expires_after="2022-11-10">
   <owner>ctshao@google.com</owner>

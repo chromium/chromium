@@ -73,6 +73,13 @@ class COMPONENT_EXPORT(ASH_MEMORY) ZramMetrics
   base::TimeDelta period_;
   base::RepeatingTimer timer_;
 
+  // Last-time old-pages stats for delta computation
+  // (only for kernel v5.15+), using |has_old_huge_pages_| to determine
+  // whether |old_huge_pages_| and |old_huge_pages_since_| are valid.
+  bool has_old_huge_pages_ = false;
+  uint64_t old_huge_pages_ = 0;
+  uint64_t old_huge_pages_since_ = 0;
+
   // The background task runner where the collection takes place.
   scoped_refptr<base::SequencedTaskRunner> runner_;
 };

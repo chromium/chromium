@@ -134,17 +134,20 @@ bool ParseZramMmStat(const std::string& input, ZramMmStat* zram_mm_stat) {
       base::StringToUint64(zram_mm_stat_list[5], &zram_mm_stat->same_pages) &&
       base::StringToUint(zram_mm_stat_list[6], &zram_mm_stat->pages_compacted);
 
-  if (zram_mm_stat_list.size() >= 8) {
+  constexpr static size_t kHugeIdx = 7;
+  constexpr static size_t kHugeSinceIdx = 8;
+
+  if (zram_mm_stat_list.size() > kHugeIdx) {
     uint64_t value = 0;
-    status &= base::StringToUint64(zram_mm_stat_list[7], &value);
+    status &= base::StringToUint64(zram_mm_stat_list[kHugeIdx], &value);
     if (status) {
       zram_mm_stat->huge_pages = value;
     }
   }
 
-  if (zram_mm_stat_list.size() >= 9) {
+  if (zram_mm_stat_list.size() > kHugeSinceIdx) {
     uint64_t value = 0;
-    status &= base::StringToUint64(zram_mm_stat_list[8], &value);
+    status &= base::StringToUint64(zram_mm_stat_list[kHugeSinceIdx], &value);
     if (status) {
       zram_mm_stat->huge_pages_since = value;
     }
@@ -268,6 +271,7 @@ void ZramMetrics::Stop() {
 }
 
 void ZramMetrics::Start() {
+  has_old_huge_pages_ = false;
   if (!runner_->RunsTasksInCurrentSequence()) {
     // Post back to the sequence we want to run on.
     runner_->PostTask(FROM_HERE,
@@ -329,12 +333,29 @@ void ZramMetrics::CollectEvents() {
                              kTotalPagesSwapped ? *zram_mm_stat.huge_pages *
                                                       100.0 / kTotalPagesSwapped
                                                 : 0);
-  }
 
-  if (zram_mm_stat.huge_pages_since) {
-    UMA_HISTOGRAM_CUSTOM_COUNTS("ChromeOS.Zram.HugePagesSince",
-                                *zram_mm_stat.huge_pages_since, 1, kMaxNumPages,
-                                50);
+    if (zram_mm_stat.huge_pages_since) {
+      UMA_HISTOGRAM_CUSTOM_COUNTS("ChromeOS.Zram.HugePagesSince",
+                                  *zram_mm_stat.huge_pages_since, 1,
+                                  kMaxNumPages, 50);
+
+      if (has_old_huge_pages_) {
+        int64_t stored = *zram_mm_stat.huge_pages_since - old_huge_pages_since_;
+        // The delta in 'stored' minus the growth in state is the number of
+        // pages removed.
+        int64_t removed = stored - (*zram_mm_stat.huge_pages - old_huge_pages_);
+        if (stored >= 0 && removed >= 0) {
+          UMA_HISTOGRAM_CUSTOM_COUNTS("ChromeOS.Zram.HugePagesStored", stored,
+                                      1, kMaxNumPages, 50);
+          UMA_HISTOGRAM_CUSTOM_COUNTS("ChromeOS.Zram.HugePagesRemoved", removed,
+                                      1, kMaxNumPages, 50);
+        }
+      }
+      // Save for next time.
+      has_old_huge_pages_ = true;
+      old_huge_pages_ = *zram_mm_stat.huge_pages;
+      old_huge_pages_since_ = *zram_mm_stat.huge_pages_since;
+    }
   }
 
   ZramBdStat zram_bd_stat;
