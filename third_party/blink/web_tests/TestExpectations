@@ -5890,6 +5890,8 @@ crbug.com/1176162 http/tests/devtools/screen-orientation-override.js [ Failure P
 crbug.com/1215949 external/wpt/pointerevents/pointerevent_iframe-touch-action-none_touch.html [ Pass Timeout ]
 crbug.com/1216139 http/tests/devtools/bfcache/bfcache-elements-update.js [ Failure Pass ]
 
+crbug.com/1314739 external/wpt/pointerevents/pointerevent_touch-action-modified_touch.html [ Timeout ]
+
 # Sheriff 2021-06-10
 crbug.com/1177996 [ Mac10.15 ] storage/websql/database-lock-after-reload.html [ Failure Pass ]
 
