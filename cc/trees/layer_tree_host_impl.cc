@@ -753,8 +753,6 @@ void LayerTreeHostImpl::UpdateSyncTreeAfterCommitOrImplSideInvalidation() {
   // and the updated data for the image from the main frame.
   PaintImageIdFlatSet images_to_invalidate =
       tile_manager_.TakeImagesToInvalidateOnSyncTree();
-  if (ukm_manager_)
-    ukm_manager_->AddCheckerboardedImages(images_to_invalidate.size());
 
   const auto& animated_images =
       image_animation_controller_.AnimateForSyncTree(CurrentBeginFrameArgs());
@@ -1294,8 +1292,7 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
   int num_missing_tiles = 0;
   int num_incomplete_tiles = 0;
   int64_t checkerboarded_no_recording_content_area = 0;
-  int64_t checkerboarded_needs_raster_content_area = 0;
-  int64_t total_visible_area = 0;
+
   bool have_copy_request =
       active_tree()->property_trees()->effect_tree().HasCopyRequests();
   bool have_missing_animated_tiles = false;
@@ -1375,9 +1372,7 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
       num_incomplete_tiles += append_quads_data.num_incomplete_tiles;
       checkerboarded_no_recording_content_area +=
           append_quads_data.checkerboarded_no_recording_content_area;
-      checkerboarded_needs_raster_content_area +=
-          append_quads_data.checkerboarded_needs_raster_content_area;
-      total_visible_area += append_quads_data.visible_layer_area;
+
       if (append_quads_data.num_missing_tiles > 0) {
         have_missing_animated_tiles |=
             layer->screen_space_transform_is_animating();
@@ -1475,13 +1470,6 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
 
   frame->has_missing_content =
       num_missing_tiles > 0 || num_incomplete_tiles > 0;
-
-  if (ukm_manager_) {
-    ukm_manager_->AddCheckerboardStatsForFrame(
-        checkerboarded_no_recording_content_area +
-            checkerboarded_needs_raster_content_area,
-        num_missing_tiles, total_visible_area);
-  }
 
   TRACE_EVENT_END2("cc,benchmark", "LayerTreeHostImpl::CalculateRenderPasses",
                    "draw_result", draw_result, "missing tiles",

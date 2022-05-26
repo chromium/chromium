@@ -3492,7 +3492,6 @@ class MissingTilesLayer : public LayerImpl {
                    AppendQuadsData* append_quads_data) override {
     append_quads_data->num_missing_tiles += 10;
     append_quads_data->checkerboarded_no_recording_content_area += 200;
-    append_quads_data->checkerboarded_needs_raster_content_area += 200;
     append_quads_data->visible_layer_area += 200;
   }
 };

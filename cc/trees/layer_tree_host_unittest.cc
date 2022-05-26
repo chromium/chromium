@@ -110,10 +110,6 @@ using testing::StrictMock;
 
 namespace cc {
 namespace {
-const char kUserInteraction[] = "Compositor.UserInteraction";
-const char kCheckerboardArea[] = "CheckerboardedContentArea";
-const char kCheckerboardAreaRatio[] = "CheckerboardedContentAreaRatio";
-const char kMissingTiles[] = "NumMissingTiles";
 
 bool LayerSubtreeHasCopyRequest(Layer* layer) {
   const LayerTreeHost* host = layer->layer_tree_host();
@@ -8754,74 +8750,6 @@ class LayerTreeHostTestImageDecodingHints : public LayerTreeHostTest {
 };
 
 MULTI_THREAD_TEST_F(LayerTreeHostTestImageDecodingHints);
-
-class LayerTreeHostTestCheckerboardUkm : public LayerTreeHostTest {
- public:
-  LayerTreeHostTestCheckerboardUkm() : url_(GURL("https://example.com")),
-                                       ukm_source_id_(123) {}
-  void BeginTest() override {
-    PostSetNeedsCommitToMainThread();
-    layer_tree_host()->SetSourceURL(ukm_source_id_, url_);
-  }
-
-  void SetupTree() override {
-    gfx::Size layer_size(100, 100);
-    content_layer_client_.set_bounds(layer_size);
-    content_layer_client_.set_fill_with_nonsolid_color(true);
-    layer_tree_host()->SetRootLayer(
-        FakePictureLayer::Create(&content_layer_client_));
-    layer_tree_host()->root_layer()->SetBounds(layer_size);
-    LayerTreeTest::SetupTree();
-  }
-
-  void DidActivateTreeOnThread(LayerTreeHostImpl* impl) override {
-    if (impl->active_tree()->source_frame_number() != 0)
-      return;
-
-    // We have an active tree. Start a pinch gesture so we start recording
-    // stats.
-    impl->GetInputHandler().PinchGestureBegin(
-        gfx::Point(100, 100), ui::ScrollInputType::kTouchscreen);
-  }
-
-  void DrawLayersOnThread(LayerTreeHostImpl* impl) override {
-    if (!impl->GetInputHandler().pinch_gesture_active())
-      return;
-
-    // We just drew a frame, stats for it should have been recorded. End the
-    // gesture so they are flushed to the recorder.
-    impl->GetInputHandler().PinchGestureEnd(gfx::Point(50, 50));
-
-    // RenewTreePriority will run when the smoothness expiration timer fires.
-    // Synthetically do it here so the UkmManager is notified.
-    impl->RenewTreePriorityForTesting();
-
-    auto* recorder = static_cast<ukm::TestUkmRecorder*>(
-        impl->ukm_manager()->recorder_for_testing());
-    // Tie the source id to the URL. In production, this is already done in
-    // Document, and the source id is passed down to cc.
-    recorder->UpdateSourceURL(ukm_source_id_, url_);
-
-    const auto& entries = recorder->GetEntriesByName(kUserInteraction);
-    EXPECT_EQ(1u, entries.size());
-    for (const auto* entry : entries) {
-      recorder->ExpectEntrySourceHasUrl(entry, url_);
-      recorder->ExpectEntryMetric(entry, kCheckerboardArea, 0);
-      recorder->ExpectEntryMetric(entry, kMissingTiles, 0);
-      recorder->ExpectEntryMetric(entry, kCheckerboardAreaRatio, 0);
-    }
-
-    EndTest();
-  }
-
- private:
-  const GURL url_;
-  const ukm::SourceId ukm_source_id_;
-  FakeContentLayerClient content_layer_client_;
-};
-
-// Only multi-thread mode needs to record UKMs.
-MULTI_THREAD_TEST_F(LayerTreeHostTestCheckerboardUkm);
 
 class DontUpdateLayersWithEmptyBounds : public LayerTreeTest {
  protected:

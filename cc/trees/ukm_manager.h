@@ -38,15 +38,6 @@ class CC_EXPORT UkmManager {
 
   void SetSourceId(ukm::SourceId source_id);
 
-  // These metrics are recorded while a user interaction is in progress.
-  void SetUserInteractionInProgress(bool in_progress);
-  void AddCheckerboardStatsForFrame(int64_t checkerboard_area,
-                                    int64_t num_missing_tiles,
-                                    int64_t total_visible_area);
-
-  // These metrics are recorded until the source URL changes.
-  void AddCheckerboardedImages(int num_of_checkerboarded_images);
-
   void RecordThroughputUKM(FrameSequenceTrackerType tracker_type,
                            FrameInfo::SmoothEffectDrivingThread thread_type,
                            int64_t throughput) const;
@@ -72,18 +63,6 @@ class CC_EXPORT UkmManager {
   ukm::UkmRecorder* recorder_for_testing() { return recorder_.get(); }
 
  private:
-  void RecordCheckerboardUkm();
-  void RecordRenderingUkm();
-
-  bool user_interaction_in_progress_ = false;
-  int64_t num_of_images_checkerboarded_during_interaction_ = 0;
-  int64_t checkerboarded_content_area_ = 0;
-  int64_t num_missing_tiles_ = 0;
-  int64_t total_visible_area_ = 0;
-  int64_t num_of_frames_ = 0;
-
-  int total_num_of_checkerboarded_images_ = 0;
-
   ukm::SourceId source_id_ = ukm::kInvalidSourceId;
   std::unique_ptr<ukm::UkmRecorder> recorder_;
 };

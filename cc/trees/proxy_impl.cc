@@ -505,11 +505,6 @@ void ProxyImpl::RenewTreePriority() {
   bool user_interaction_in_progress =
       non_scroll_interaction_in_progress || scroll_type_considered_interaction;
 
-  if (host_impl_->ukm_manager()) {
-    host_impl_->ukm_manager()->SetUserInteractionInProgress(
-        user_interaction_in_progress);
-  }
-
   if (host_impl_->CurrentScrollCheckerboardsDueToNoRecording() &&
       base::FeatureList::IsEnabled(
           features::kPreferNewContentForCheckerboardedScrolls)) {
