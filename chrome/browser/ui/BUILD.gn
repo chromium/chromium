@@ -2162,6 +2162,8 @@ static_library("ui") {
       "app_list/search/util/persistent_proto.h",
       "app_list/search/util/score_normalizer.cc",
       "app_list/search/util/score_normalizer.h",
+      "app_list/search/zero_state_sync_controller.cc",
+      "app_list/search/zero_state_sync_controller.h",
       "ash/accessibility/accessibility_controller_client.cc",
       "ash/accessibility/accessibility_controller_client.h",
       "ash/ambient/ambient_client_impl.cc",

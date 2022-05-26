@@ -62,6 +62,8 @@ SearchControllerImplNew::SearchControllerImplNew(
       burnin_controller_(std::make_unique<BurnInController>(
           base::BindRepeating(&SearchControllerImplNew::OnBurnInPeriodElapsed,
                               base::Unretained(this)))),
+      zero_state_sync_controller_(
+          std::make_unique<ZeroStateSyncController>(this)),
       ranker_(std::make_unique<RankerDelegate>(profile, this)),
       metrics_observer_(
           std::make_unique<SearchMetricsObserver>(profile, notifier)),
@@ -78,8 +80,8 @@ void SearchControllerImplNew::StartSearch(const std::u16string& query) {
     burnin_controller_->Start();
   }
 
-  // Cancel a pending zero-state publish if it exists.
-  zero_state_timeout_.Stop();
+  // Cancel any zero state-related operations, such as a pending publish.
+  zero_state_sync_controller_->Stop();
 
   // TODO(crbug.com/1199206): We should move this histogram logic somewhere
   // else.
@@ -136,25 +138,9 @@ void SearchControllerImplNew::StartZeroState(base::OnceClosure on_done,
 
   ranker_->Start(std::u16string(), results_, categories_);
 
-  on_zero_state_done_ = std::move(on_done);
-  returned_zero_state_blockers_ = 0;
   for (const auto& provider : providers_)
     provider->StartZeroState();
-
-  zero_state_timeout_.Start(
-      FROM_HERE, timeout,
-      base::BindOnce(&SearchControllerImplNew::OnZeroStateTimedOut,
-                     base::Unretained(this)));
-}
-
-void SearchControllerImplNew::OnZeroStateTimedOut() {
-  // This will be nullopt if all zero-state blocking providers have returned. If
-  // it isn't, publish whatever results have been returned.
-  if (on_zero_state_done_.has_value()) {
-    Publish();
-    std::move(on_zero_state_done_.value()).Run();
-    on_zero_state_done_.reset();
-  }
+  zero_state_sync_controller_->Start(timeout, std::move(on_done));
 }
 
 void SearchControllerImplNew::OnBurnInPeriodElapsed() {
@@ -227,8 +213,7 @@ size_t SearchControllerImplNew::AddGroup(size_t max_results) {
 void SearchControllerImplNew::AddProvider(
     size_t group_id,
     std::unique_ptr<SearchProvider> provider) {
-  if (provider->ShouldBlockZeroState())
-    ++total_zero_state_blockers_;
+  zero_state_sync_controller_->AddProvider(provider.get());
   provider->set_controller(this);
   provider->set_result_changed_callback(
       base::BindRepeating(&SearchControllerImplNew::OnResultsChangedWithType,
@@ -269,20 +254,7 @@ void SearchControllerImplNew::SetSearchResults(const SearchProvider* provider) {
 void SearchControllerImplNew::SetZeroStateResults(
     const SearchProvider* provider) {
   Rank(provider->ResultType());
-
-  if (provider->ShouldBlockZeroState())
-    ++returned_zero_state_blockers_;
-
-  if (!on_zero_state_done_) {
-    // Zero-state has been unblocked, publish immediately.
-    Publish();
-  } else if (returned_zero_state_blockers_ == total_zero_state_blockers_) {
-    // All zero-state blockers have returned. Publish everything received so
-    // far, and trigger the on-done callback.
-    Publish();
-    std::move(on_zero_state_done_.value()).Run();
-    on_zero_state_done_.reset();
-  }
+  zero_state_sync_controller_->UpdateResults(provider);
 }
 
 void SearchControllerImplNew::Rank(ProviderType provider_type) {
