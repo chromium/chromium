@@ -336,6 +336,26 @@ void Blocklist::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
+void Blocklist::IsDatabaseReady(DatabaseReadyCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (!GetDatabaseManager().get()) {
+    std::move(callback).Run(false);
+    return;
+  }
+  if (GetDatabaseManager().get()) {
+    content::GetIOThreadTaskRunner({})->PostTaskAndReplyWithResult(
+        FROM_HERE,
+        base::BindOnce(
+            [](base::WeakPtr<Blocklist> blocklist_service) {
+                DCHECK_CURRENTLY_ON(BrowserThread::IO);
+                return blocklist_service && GetDatabaseManager().get() &&
+                        GetDatabaseManager().get()->IsDatabaseReady();
+            },
+            AsWeakPtr()),
+        base::BindOnce(std::move(callback)));
+  }
+}
+
 // static
 void Blocklist::SetDatabaseManager(
     scoped_refptr<SafeBrowsingDatabaseManager> database_manager) {

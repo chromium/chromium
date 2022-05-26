@@ -3615,6 +3615,8 @@ TEST_F(ExtensionServiceTest, WillNotLoadBlocklistedExtensionsFromDirectory) {
   service()->Init();
   ASSERT_EQ(3u, loaded_extensions().size());
 
+  // Notify service about new extension is blocklisted.
+  test_blocklist.NotifyUpdate();
   task_environment()->RunUntilIdle();
 
   ASSERT_EQ(1u, registry()->blocklisted_extensions().size());
@@ -3641,8 +3643,6 @@ TEST_F(ExtensionServiceTest, BlocklistedInPrefsFromStartup) {
       good1, BitMapBlocklistState::BLOCKLISTED_MALWARE,
       ExtensionPrefs::Get(profile()));
 
-  test_blocklist.SetBlocklistState(good1, BLOCKLISTED_MALWARE, false);
-
   // Extension service hasn't loaded yet, but IsExtensionEnabled reads out of
   // prefs. Ensure it takes into account the blocklist state (crbug.com/373842).
   EXPECT_FALSE(service()->IsExtensionEnabled(good0));
@@ -3651,12 +3651,18 @@ TEST_F(ExtensionServiceTest, BlocklistedInPrefsFromStartup) {
 
   service()->Init();
 
+  // Give time for state to update
+  // Ensure that extension is loaded.
+  task_environment()->RunUntilIdle();
+
   EXPECT_EQ(2u, registry()->blocklisted_extensions().size());
   EXPECT_EQ(1u, registry()->enabled_extensions().size());
 
   EXPECT_TRUE(registry()->blocklisted_extensions().Contains(good0));
   EXPECT_TRUE(registry()->blocklisted_extensions().Contains(good1));
   EXPECT_TRUE(registry()->enabled_extensions().Contains(good2));
+
+  test_blocklist.SetBlocklistState(good1, BLOCKLISTED_MALWARE, true);
 
   // Give time for the blocklist to update.
   task_environment()->RunUntilIdle();
@@ -3681,7 +3687,7 @@ TEST_F(ExtensionServiceTest, ReloadBlocklistedExtension) {
 
   test_blocklist.SetBlocklistState(good1, BLOCKLISTED_MALWARE, false);
   service()->Init();
-  test_blocklist.SetBlocklistState(good2, BLOCKLISTED_MALWARE, false);
+  test_blocklist.SetBlocklistState(good2, BLOCKLISTED_MALWARE, true);
   task_environment()->RunUntilIdle();
 
   EXPECT_EQ(StringSet(good0), registry()->enabled_extensions().GetIDs());

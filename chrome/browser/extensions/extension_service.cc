@@ -2287,7 +2287,22 @@ void ExtensionService::OnInstalledExtensionsLoaded() {
     EnableExtension(extension->id());
   }
 
-  OnBlocklistUpdated();
+  // Check installed extensions against the blocklist if and only if the
+  // database is ready; otherwise, the database is effectively empty and we'll
+  // re-enable all blocked extensions.
+
+  blocklist_->IsDatabaseReady(base::BindOnce(
+      [](base::WeakPtr<ExtensionService> service, bool is_ready) {
+      DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
+      if (!service || !is_ready) {
+          // Either the service was torn down or the database isn't
+          // ready yet (and is effectively empty). Either way, no need
+          // to update the blocklisted extensions.
+          return;
+        }
+        service->OnBlocklistUpdated();
+      },
+      AsWeakPtr()));
 }
 
 void ExtensionService::UninstallMigratedExtensions() {

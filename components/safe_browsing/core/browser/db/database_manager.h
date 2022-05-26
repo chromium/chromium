@@ -267,6 +267,9 @@ class SafeBrowsingDatabaseManager
   // method at the bottom of it.
   virtual void StopOnIOThread(bool shutdown);
 
+  // Called to check if database is ready or not.
+  virtual bool IsDatabaseReady();
+
  protected:
   // Bundled client info for an API abuse hash prefix check.
   class SafeBrowsingApiCheck {
