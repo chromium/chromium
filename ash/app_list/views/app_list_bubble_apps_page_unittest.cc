@@ -325,6 +325,37 @@ TEST_F(AppListBubbleAppsPageTest, CanShowContinueSectionByClickingButton) {
   EXPECT_TRUE(apps_page->separator_for_test()->GetVisible());
 }
 
+// Regression test for https://crbug.com/1329227
+TEST_F(AppListBubbleAppsPageTest, HiddenContinueSectionDoesNotAnimateOnShow) {
+  base::test::ScopedFeatureList feature_list(
+      features::kLauncherHideContinueSection);
+
+  // Simulate a user with the continue section hidden on startup.
+  Shell::Get()->app_list_controller()->SetHideContinueSection(true);
+
+  // Enable animations.
+  ui::ScopedAnimationDurationScaleMode duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Show the app list with enough items that the continue section and
+  // recent apps would normally be visible.
+  auto* helper = GetAppListTestHelper();
+  helper->AddContinueSuggestionResults(4);
+  helper->AddRecentApps(5);
+  helper->AddAppItems(5);
+  helper->ShowAppList();
+
+  // Continue section view is not visible and does not have a layer animation.
+  auto* continue_section = helper->GetBubbleContinueSectionView();
+  EXPECT_FALSE(continue_section->GetVisible());
+  EXPECT_FALSE(continue_section->layer());
+
+  // Recent apps view is not visible and does not have a layer animation.
+  auto* recent_apps = helper->GetBubbleRecentAppsView();
+  EXPECT_FALSE(recent_apps->GetVisible());
+  EXPECT_FALSE(recent_apps->layer());
+}
+
 TEST_F(AppListBubbleAppsPageTest, SortAppsMakesA11yAnnouncement) {
   auto* helper = GetAppListTestHelper();
   helper->AddAppItems(5);
