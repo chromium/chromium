@@ -67,18 +67,17 @@ void ExtractIOTask::FinishedExtraction(bool success) {
 
 // Recursively walk directory and set 'u+rwx,g+x,o+x'.
 bool SetDirectoryPermissions(base::FilePath directory, bool success) {
-  if (success) {
-    base::FileEnumerator traversal(directory, true,
-                                   base::FileEnumerator::DIRECTORIES);
-    for (base::FilePath current = traversal.Next(); !current.empty();
-         current = traversal.Next()) {
-      base::SetPosixFilePermissions(
-          current, base::FILE_PERMISSION_READ_BY_USER |
-                       base::FILE_PERMISSION_WRITE_BY_USER |
-                       base::FILE_PERMISSION_EXECUTE_BY_USER |
-                       base::FILE_PERMISSION_EXECUTE_BY_GROUP |
-                       base::FILE_PERMISSION_EXECUTE_BY_OTHERS);
-    }
+  // Always set permissions in case of error mid-extract.
+  base::FileEnumerator traversal(directory, true,
+                                 base::FileEnumerator::DIRECTORIES);
+  for (base::FilePath current = traversal.Next(); !current.empty();
+       current = traversal.Next()) {
+    base::SetPosixFilePermissions(current,
+                                  base::FILE_PERMISSION_READ_BY_USER |
+                                      base::FILE_PERMISSION_WRITE_BY_USER |
+                                      base::FILE_PERMISSION_EXECUTE_BY_USER |
+                                      base::FILE_PERMISSION_EXECUTE_BY_GROUP |
+                                      base::FILE_PERMISSION_EXECUTE_BY_OTHERS);
   }
   return success;
 }
