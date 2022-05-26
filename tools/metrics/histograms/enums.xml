@@ -56309,6 +56309,7 @@ from previous Chrome versions.
   <int value="-984052166" label="DoodlesOnLocalNtp:enabled"/>
   <int value="-983342281" label="TabSwitcherLongpressMenu:disabled"/>
   <int value="-983335806" label="DelegatedCompositing:disabled"/>
+  <int value="-982588611" label="ShimlessRMAOsUpdate:disabled"/>
   <int value="-981993135"
       label="DesktopPWAsAdditionalWindowingControls:enabled"/>
   <int value="-981354827" label="SupportSearchSuggestionForPrerender2:enabled"/>
@@ -58098,6 +58099,7 @@ from previous Chrome versions.
   <int value="226590039" label="OverviewButton:disabled"/>
   <int value="228107154"
       label="OmniboxUpdatedConnectionSecurityIndicators:enabled"/>
+  <int value="228845546" label="ShimlessRMAOsUpdate:enabled"/>
   <int value="229476202" label="CryptAuthV2Enrollment:enabled"/>
   <int value="229877058" label="ShelfScrollable:disabled"/>
   <int value="233202090" label="AssistantConsentModal:disabled"/>

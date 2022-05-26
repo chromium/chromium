@@ -5440,6 +5440,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "shimless-rma-os-update",
+    "owners": [ "zentaro", "gavinwill", "cros-peripherals@google.com" ],
+    "expiry_milestone": 114
+  },
+  {
     "name": "shopping-list",
     "owners": [ "mdjones", "chrome-shopping-eng@google.com" ],
     "expiry_milestone": 108
