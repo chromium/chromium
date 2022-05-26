@@ -4367,20 +4367,6 @@
     <ph name="PRINTER_NAME">$1<ex> Google InkJet 1234</ex></ph> is connected but needs configuration
   </message>
 
-  <!-- RequestPin dialog messages -->
-  <message name="IDS_REQUEST_PIN_DIALOG_HEADER" desc="The text displayed in the certificate provider PIN request dialog.">
-    "<ph name="EXTENSION_NAME">$1<ex>My Extension</ex></ph>" is requesting your <ph name="CODE_TYPE">$2<ex>PIN</ex></ph>
-  </message>
-  <message name="IDS_REQUEST_PIN_DIALOG_PROCESSING" desc="The text displayed while the certificate provider API is waiting for response from extension.">
-    Processing request...
-  </message>
-  <message name="IDS_REQUEST_PIN_DIALOG_PIN" desc="The Provider Identification Number abbreviation">
-    PIN
-  </message>
-  <message name="IDS_REQUEST_PIN_DIALOG_PUK" desc="The Personal Unlocking Key (as used in mobile phones) abbreviation">
-    PUK
-  </message>
-
   <message name="IDS_USB_PRINTER_UNKNOWN_DISPLAY_NAME" desc="Display string used for USB printers where we have identified neither the correct manufactuer nor model strings. USB stands for Universal Serial Bus, it indicates how the printer is attached to the computer.">
     Unknown Printer (USB)
   </message>

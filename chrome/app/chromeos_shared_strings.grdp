@@ -9,4 +9,18 @@
     Accounts
   </message>
 
+  <!-- RequestPin dialog messages -->
+  <message name="IDS_REQUEST_PIN_DIALOG_HEADER" desc="The text displayed in the certificate provider PIN request dialog.">
+    "<ph name="EXTENSION_NAME">$1<ex>My Extension</ex></ph>" is requesting your <ph name="CODE_TYPE">$2<ex>PIN</ex></ph>
+  </message>
+  <message name="IDS_REQUEST_PIN_DIALOG_PROCESSING" desc="The text displayed while the certificate provider API is waiting for response from extension.">
+    Processing request...
+  </message>
+  <message name="IDS_REQUEST_PIN_DIALOG_PIN" desc="The Provider Identification Number abbreviation">
+    PIN
+  </message>
+  <message name="IDS_REQUEST_PIN_DIALOG_PUK" desc="The Personal Unlocking Key (as used in mobile phones) abbreviation">
+    PUK
+  </message>
+
 </grit-part>
