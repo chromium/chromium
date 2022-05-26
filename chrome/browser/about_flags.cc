@@ -4198,6 +4198,12 @@ const FeatureEntry kFeatureEntries[] = {
     {"isolation-by-default", flag_descriptions::kIsolationByDefaultName,
      flag_descriptions::kIsolationByDefaultDescription, kOsAll,
      SINGLE_VALUE_TYPE(switches::kIsolationByDefault)},
+#if !BUILDFLAG(IS_ANDROID)
+    {"enable-webview-tag-site-isolation",
+     flag_descriptions::kWebViewTagSiteIsolationName,
+     flag_descriptions::kWebViewTagSiteIsolationDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kSiteIsolationForGuests)},
+#endif
     {"enable-prefetch-proxy",
      flag_descriptions::kEnablePrivatePrefetchProxyName,
      flag_descriptions::kEnablePrivatePrefetchProxyDescription, kOsAll,

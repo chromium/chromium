@@ -1358,6 +1358,9 @@ extern const char kIsolateOriginsDescription[];
 extern const char kIsolationByDefaultName[];
 extern const char kIsolationByDefaultDescription[];
 
+extern const char kWebViewTagSiteIsolationName[];
+extern const char kWebViewTagSiteIsolationDescription[];
+
 extern const char kSiteIsolationOptOutName[];
 extern const char kSiteIsolationOptOutDescription[];
 extern const char kSiteIsolationOptOutChoiceDefault[];

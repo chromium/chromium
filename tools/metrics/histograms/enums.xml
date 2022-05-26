@@ -58468,6 +58468,7 @@ from previous Chrome versions.
   <int value="455698038"
       label="disable-gesture-requirement-for-media-playback"/>
   <int value="455754036" label="MirroringService:disabled"/>
+  <int value="457301531" label="SiteIsolationForGuests:disabled"/>
   <int value="457881889" label="enable-autoplay-muted-videos"/>
   <int value="458410433" label="disable-views-rect-based-targeting"/>
   <int value="460136092" label="MidiManagerAndroid:disabled"/>
@@ -59202,6 +59203,7 @@ from previous Chrome versions.
   <int value="944484780" label="EnableEmbeddedAssistantUI:enabled"/>
   <int value="946185008" label="EnableAppDataSearch:disabled"/>
   <int value="946688335" label="OmniboxSpareRenderer:disabled"/>
+  <int value="946998724" label="SiteIsolationForGuests:enabled"/>
   <int value="948085015" label="WebFilterInterstitialRefresh:disabled"/>
   <int value="948351976" label="WallpaperWebUI:disabled"/>
   <int value="948521531" label="StylusHandwriting:disabled"/>
