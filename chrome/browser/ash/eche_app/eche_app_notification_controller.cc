@@ -138,14 +138,14 @@ void EcheAppNotificationController::ShowScreenLockNotification(
     const std::u16string& title) {
   message_center::RichNotificationData rich_notification_data;
   rich_notification_data.buttons.push_back(message_center::ButtonInfo(
-      l10n_util::GetStringUTF16(IDS_ECHE_APP_SCREEN_LOCK_SETTINGS_BUTTON)));
-  rich_notification_data.buttons.push_back(message_center::ButtonInfo(
       l10n_util::GetStringUTF16(IDS_ECHE_APP_SCREEN_LOCK_LEARN_MORE)));
+  rich_notification_data.buttons.push_back(message_center::ButtonInfo(
+      l10n_util::GetStringUTF16(IDS_ECHE_APP_SCREEN_LOCK_SETTINGS_BUTTON)));
   ShowNotification(CreateNotification(
       kEcheAppScreenLockNotifierId, NotificationCatalogName::kEcheAppScreenLock,
-      l10n_util::GetStringUTF16(IDS_ECHE_APP_SCREEN_LOCK_NOTIFICATION_TITLE),
-      l10n_util::GetStringFUTF16(IDS_ECHE_APP_SCREEN_LOCK_NOTIFICATION_MESSAGE,
+      l10n_util::GetStringFUTF16(IDS_ECHE_APP_SCREEN_LOCK_NOTIFICATION_TITLE,
                                  title),
+      l10n_util::GetStringUTF16(IDS_ECHE_APP_SCREEN_LOCK_NOTIFICATION_MESSAGE),
       ui::ImageModel(), rich_notification_data,
       new NotificationDelegate(kEcheAppScreenLockNotifierId,
                                weak_ptr_factory_.GetWeakPtr())));
@@ -191,10 +191,10 @@ void EcheAppNotificationController::NotificationDelegate::Click(
 
   if (notification_id_ == kEcheAppScreenLockNotifierId) {
     if (*button_index == 0) {
-      notification_controller_->LaunchSettings();
+      notification_controller_->LaunchLearnMore();
     } else {
       DCHECK_EQ(1, *button_index);
-      notification_controller_->LaunchLearnMore();
+      notification_controller_->LaunchSettings();
     }
   } else if (notification_id_ == kEcheAppRetryConnectionNotifierId) {
     if (*button_index == 0) {

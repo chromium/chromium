@@ -172,14 +172,14 @@ TEST_F(EcheAppNotificationControllerTest, ShowScreenLockNotification) {
   ASSERT_EQ(2u, notification->buttons().size());
   EXPECT_EQ(message_center::SYSTEM_PRIORITY, notification->priority());
 
-  // Clicking the first notification button should launch settings.
-  EXPECT_CALL(*notification_controller_, LaunchSettings());
-  notification->delegate()->Click(0, absl::nullopt);
-
-  // Clicking the second notification button should launch learn more.
+  // Clicking the first notification button should launch learn more.
   EXPECT_CALL(*new_window_delegate_,
               OpenUrl(GURL(kEcheAppLearnMoreUrl),
                       NewWindowDelegate::OpenUrlFrom::kUserInteraction));
+  notification->delegate()->Click(0, absl::nullopt);
+
+  // Clicking the second notification button should launch settings.
+  EXPECT_CALL(*notification_controller_, LaunchSettings());
   notification->delegate()->Click(1, absl::nullopt);
 }
 
@@ -196,14 +196,14 @@ TEST_F(EcheAppNotificationControllerTest,
   ASSERT_EQ(2u, notification->buttons().size());
   EXPECT_EQ(message_center::SYSTEM_PRIORITY, notification->priority());
 
-  // Clicking the first notification button should launch settings.
-  EXPECT_CALL(*notification_controller_, LaunchSettings());
-  notification->delegate()->Click(0, absl::nullopt);
-
   // Clicking the second notification button should launch learn more.
   EXPECT_CALL(*new_window_delegate_,
               OpenUrl(GURL(kEcheAppLearnMoreUrl),
                       NewWindowDelegate::OpenUrlFrom::kUserInteraction));
+  notification->delegate()->Click(0, absl::nullopt);
+
+  // Clicking the first notification button should launch settings.
+  EXPECT_CALL(*notification_controller_, LaunchSettings());
   notification->delegate()->Click(1, absl::nullopt);
 }
 

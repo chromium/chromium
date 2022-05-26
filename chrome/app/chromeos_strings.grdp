@@ -5071,7 +5071,7 @@
 
   <!-- Strings for EcheApp -->
   <message name="IDS_ECHE_APP_SCREEN_LOCK_SETTINGS_BUTTON" desc="Label for the button in the screen lock notification of EcheApp to open the settings app.">
-    Open Settings
+    Settings
   </message>
   <message name="IDS_ECHE_APP_SCREEN_LOCK_LEARN_MORE" desc="Learn more link text in screen lock notification of EcheApp.">
     Learn more
@@ -5083,10 +5083,10 @@
     Learn more
   </message>
   <message name="IDS_ECHE_APP_SCREEN_LOCK_NOTIFICATION_TITLE" desc="Title for notification shown when screen lock is not enabled while using app stream of EcheApp.">
-    Can't open app
+    Can't open <ph name="APP_NAME">$1<ex>the app</ex></ph>
   </message>
   <message name="IDS_ECHE_APP_SCREEN_LOCK_NOTIFICATION_MESSAGE" desc="Message for the notification shown when screen lock is not enabled while using app stream of EcheApp.">
-    To open <ph name="APP_NAME">$1<ex>the app</ex></ph>, enable "Show lock screen when waking from sleep"
+    Turn on "Show lock screen when waking from sleep" and try again
   </message>
   <message name="IDS_ECHE_APP_NOTIFICATION_OPEN_AGAIN_BUTTON" desc="Label for the inactivity notification button of EcheApp to open open.">
     Open again
