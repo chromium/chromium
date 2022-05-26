@@ -3416,6 +3416,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kExperimentalWebAssemblyFeaturesName,
      flag_descriptions::kExperimentalWebAssemblyFeaturesDescription, kOsAll,
      SINGLE_VALUE_TYPE(switches::kEnableExperimentalWebAssemblyFeatures)},
+#if defined(ARCH_CPU_X86_64)
+    {"enable-experimental-webassembly-stack-switching",
+     flag_descriptions::kExperimentalWebAssemblyStackSwitchingName,
+     flag_descriptions::kExperimentalWebAssemblyStackSwitchingDescription,
+     kOsAll,
+     SINGLE_VALUE_TYPE(switches::kEnableExperimentalWebAssemblyStackSwitching)},
+#endif  // defined(ARCH_CPU_X86_64)
     {"enable-webassembly-baseline", flag_descriptions::kEnableWasmBaselineName,
      flag_descriptions::kEnableWasmBaselineDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kWebAssemblyBaseline)},

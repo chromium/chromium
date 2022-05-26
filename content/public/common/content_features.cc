@@ -1038,6 +1038,12 @@ const base::Feature kWebAssemblyCodeProtectionPku{
 #endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) &&
         // defined(ARCH_CPU_X86_64)
 
+// Enable WebAssembly stack switching.
+#if defined(ARCH_CPU_X86_64)
+const base::Feature kEnableExperimentalWebAssemblyStackSwitching{
+    "WebAssemblyExperimentalStackSwitching", base::FEATURE_DISABLED_BY_DEFAULT};
+#endif  // defined(ARCH_CPU_X86_64)
+
 // Enable WebAssembly dynamic tiering (only tier up hot functions).
 const base::Feature kWebAssemblyDynamicTiering{
     "WebAssemblyDynamicTiering", base::FEATURE_ENABLED_BY_DEFAULT};

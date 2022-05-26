@@ -721,6 +721,9 @@ extern const char kEnableZeroCopyTabCaptureDescription[];
 extern const char kExperimentalWebAssemblyFeaturesName[];
 extern const char kExperimentalWebAssemblyFeaturesDescription[];
 
+extern const char kExperimentalWebAssemblyStackSwitchingName[];
+extern const char kExperimentalWebAssemblyStackSwitchingDescription[];
+
 extern const char kEnableWasmBaselineName[];
 extern const char kEnableWasmBaselineDescription[];
 

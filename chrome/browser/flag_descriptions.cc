@@ -1294,6 +1294,12 @@ const char kExperimentalWebAssemblyFeaturesName[] = "Experimental WebAssembly";
 const char kExperimentalWebAssemblyFeaturesDescription[] =
     "Enable web pages to use experimental WebAssembly features.";
 
+const char kExperimentalWebAssemblyStackSwitchingName[] =
+    "Experimental WebAssembly Stack Switching";
+const char kExperimentalWebAssemblyStackSwitchingDescription[] =
+    "Enable web pages to use experimental WebAssembly stack switching "
+    "features.";
+
 const char kEnableWasmBaselineName[] = "WebAssembly baseline compiler";
 const char kEnableWasmBaselineDescription[] =
     "Enables WebAssembly baseline compilation and tier up.";

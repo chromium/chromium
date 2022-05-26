@@ -2059,6 +2059,13 @@
     "expiry_milestone": -1
   },
   {
+    "name": "enable-experimental-webassembly-stack-switching",
+    "owners": [ "fgm", "thibaudm", "wasm-team@google.com" ],
+    // This flag is used by developers and partners to test
+    // stack switching features in WebAssembly.
+    "expiry_milestone": 115
+  },
+  {
     "name": "enable-external-keyboards-in-diagnostics-app",
     "owners": [ "//ash/webui/diagnostics_ui/OWNERS" ],
     "expiry_milestone": 110

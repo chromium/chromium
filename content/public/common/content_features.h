@@ -262,6 +262,10 @@ CONTENT_EXPORT extern const base::Feature kWebAssemblyCodeProtectionPku;
 #endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) &&
         // defined(ARCH_CPU_X86_64)
 CONTENT_EXPORT extern const base::Feature kWebAssemblyDynamicTiering;
+#if defined(ARCH_CPU_X86_64)
+CONTENT_EXPORT extern const base::Feature
+    kEnableExperimentalWebAssemblyStackSwitching;
+#endif  // defined(ARCH_CPU_X86_64)
 CONTENT_EXPORT extern const base::Feature kWebAssemblyLazyCompilation;
 CONTENT_EXPORT extern const base::Feature kWebAssemblySimd;
 CONTENT_EXPORT extern const base::Feature kWebAssemblyTiering;
