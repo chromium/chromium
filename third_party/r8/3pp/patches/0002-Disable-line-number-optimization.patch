@@ -1,7 +1,7 @@
 From 87ed7281fb664b3e46aecfe55c54031a38ccc9f3 Mon Sep 17 00:00:00 2001
 From: Andrew Grieve <agrieve@chromium.org>
 Date: Thu, 20 Jan 2022 16:29:40 -0500
-Subject: [PATCH 2/4] Disable line number optimization
+Subject: [PATCH 2/5] Disable line number optimization
 
 ---
  src/main/java/com/android/tools/r8/D8Command.java | 3 +++

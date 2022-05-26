@@ -1,0 +1,27 @@
+From f4848463c527b4ad13a5497e08a78a26200c059b Mon Sep 17 00:00:00 2001
+From: Andrew Grieve <agrieve@chromium.org>
+Date: Thu, 26 May 2022 13:35:04 -0400
+Subject: [PATCH 5/5] Add a way to enable
+ reportUnusedProguardConfigurationRules
+
+Bug: 1303951
+---
+ src/main/java/com/android/tools/r8/utils/InternalOptions.java | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/main/java/com/android/tools/r8/utils/InternalOptions.java b/src/main/java/com/android/tools/r8/utils/InternalOptions.java
+index f3b82e4db..1d7f54c88 100644
+--- a/src/main/java/com/android/tools/r8/utils/InternalOptions.java
++++ b/src/main/java/com/android/tools/r8/utils/InternalOptions.java
+@@ -1827,7 +1827,7 @@ public class InternalOptions implements GlobalKeepInfoConfiguration {
+     public boolean allowInvokeErrors = false;
+     public boolean allowUnnecessaryDontWarnWildcards = true;
+     public boolean allowUnusedDontWarnRules = true;
+-    public boolean reportUnusedProguardConfigurationRules = false;
++    public boolean reportUnusedProguardConfigurationRules = System.getProperty("com.android.tools.r8.reportUnusedProguardConfigurationRules") != null;
+     public boolean alwaysUseExistingAccessInfoCollectionsInMemberRebinding = true;
+     public boolean alwaysUsePessimisticRegisterAllocation = false;
+     public boolean enableCheckCastAndInstanceOfRemoval = true;
+-- 
+2.36.1.124.g0e6072fb45-goog
+

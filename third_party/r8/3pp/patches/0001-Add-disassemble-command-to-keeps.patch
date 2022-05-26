@@ -1,7 +1,7 @@
 From fd3ddc64e97b0c2514ffd05ca60ecc51a6174d51 Mon Sep 17 00:00:00 2001
 From: Mohamed Heikal <mheikal@google.com>
 Date: Wed, 26 May 2021 19:03:39 -0400
-Subject: [PATCH 1/4] Add disassemble command to keeps
+Subject: [PATCH 1/5] Add disassemble command to keeps
 
 ---
  src/main/keep.txt | 1 +
