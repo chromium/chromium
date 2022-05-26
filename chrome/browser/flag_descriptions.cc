@@ -4091,6 +4091,15 @@ const char kAcceleratedMjpegDecodeDescription[] =
     "Enable hardware-accelerated mjpeg decode for captured frame where "
     "available.";
 
+const char kAdaptiveChargingForTestingName[] =
+    "Show adaptive charging notifications for testing";
+const char kAdaptiveChargingForTestingDescription[] =
+    "Show adaptive charging notifications and nudges for testing. This is "
+    "meant to be used by developers to test the feature UI only. The "
+    "notifications will be shown after the device is plugged in to the "
+    "charger. Please DO NOT enable this if you're not a developer who wants to "
+    "test the UI of the adaptive charging feature.";
+
 const char kAdaptiveChargingName[] = "Enable adaptive charging feature";
 const char kAdaptiveChargingDescription[] =
     "Show settings to enable/disable adaptive charging feature.";

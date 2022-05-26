@@ -34,6 +34,12 @@ class ASH_EXPORT AdaptiveChargingNudgeController
     return nudge_delay_timer_.get();
   }
 
+#if DCHECK_IS_ON()
+  // This is intended to be used by developers to test the UI of the adaptive
+  // charging feature.
+  void ShowNudgeForTesting();
+#endif  // DCHECK_IS_ON()
+
  private:
   // SystemNudgeController:
   std::unique_ptr<SystemNudge> CreateSystemNudge() override;

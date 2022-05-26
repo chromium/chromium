@@ -2343,6 +2343,9 @@ extern const char kAcceleratedMjpegDecodeDescription[];
 extern const char kAdaptiveChargingName[];
 extern const char kAdaptiveChargingDescription[];
 
+extern const char kAdaptiveChargingForTestingName[];
+extern const char kAdaptiveChargingForTestingDescription[];
+
 extern const char kAllowDisableTouchpadHapticFeedbackName[];
 extern const char kAllowDisableTouchpadHapticFeedbackDescription[];
 

@@ -4,11 +4,21 @@
 
 #include "ash/system/power/adaptive_charging_controller.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/scoped_observation.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
 
 namespace ash {
+
+namespace {
+
+#if DCHECK_IS_ON()
+// Fake input for notification testing.
+constexpr int kFakeNotificationInputForTesting = 8;
+#endif  // DCHECK_IS_ON()
+
+}  // namespace
 
 AdaptiveChargingController::AdaptiveChargingController()
     : nudge_controller_(std::make_unique<AdaptiveChargingNudgeController>()),
@@ -29,6 +39,23 @@ bool AdaptiveChargingController::IsAdaptiveChargingSupported() {
 
 void AdaptiveChargingController::PowerChanged(
     const power_manager::PowerSupplyProperties& proto) {
+#if DCHECK_IS_ON()
+  if (features::IsAdaptiveChargingForTestingEnabled()) {
+    bool is_on_charger_now = false;
+    if (proto.has_external_power()) {
+      is_on_charger_now =
+          proto.external_power() == power_manager::PowerSupplyProperties::AC;
+    }
+    if (!is_on_charger_ && is_on_charger_now) {
+      nudge_controller_->ShowNudgeForTesting();  // IN-TEST
+      notification_controller_->ShowAdaptiveChargingNotification(
+          kFakeNotificationInputForTesting);
+    }
+    is_on_charger_ = is_on_charger_now;
+    return;
+  }
+#endif  // DCHECK_IS_ON()
+
   // Return if this change does not contain any adaptive_delaying_charge info.
   if (!proto.has_adaptive_delaying_charge())
     return;

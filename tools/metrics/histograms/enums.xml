@@ -57516,6 +57516,7 @@ from previous Chrome versions.
   <int value="-167744090" label="EnableHomeLauncher:enabled"/>
   <int value="-167420098" label="WebBluetoothNewPermissionsBackend:enabled"/>
   <int value="-165756594" label="enable-touch-feedback"/>
+  <int value="-165712979" label="AdaptiveChargingForTesting:enabled"/>
   <int value="-165006916" label="EnableNeuralPalmDetectionFilter:enabled"/>
   <int value="-164673139" label="ForceShowContinueSection:disabled"/>
   <int value="-164539906"
@@ -58509,6 +58510,7 @@ from previous Chrome versions.
   <int value="494939785" label="InsecureFormSubmissionInterstitial:disabled"/>
   <int value="495435958" label="PageInfoAboutThisSiteMoreInfo:enabled"/>
   <int value="496667708" label="ArcInputOverlay:disabled"/>
+  <int value="497039057" label="AdaptiveChargingForTesting:disabled"/>
   <int value="497137719" label="OmniboxVoiceSearchAlwaysVisible:disabled"/>
   <int value="497150691" label="AssistEmojiEnhanced:disabled"/>
   <int value="500177932" label="ArcSmartTextSelection:disabled"/>
