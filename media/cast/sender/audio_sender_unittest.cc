@@ -26,7 +26,8 @@
 #include "media/cast/test/utility/audio_utility.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace media::cast {
+namespace media {
+namespace cast {
 
 namespace {
 
@@ -163,4 +164,5 @@ TEST_F(AudioSenderTest, RtcpTimer) {
   EXPECT_LE(1, transport_->number_of_rtcp_packets());
 }
 
-}  // namespace media::cast
+}  // namespace cast
+}  // namespace media

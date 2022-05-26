@@ -12,19 +12,21 @@
 namespace mirroring {
 namespace features {
 
-COMPONENT_EXPORT(MIRRORING_FEATURES)
+COMPONENT_EXPORT(MIRRORING_SERVICE)
+extern const base::Feature kOpenscreenCastStreamingSession;
+
+COMPONENT_EXPORT(MIRRORING_SERVICE)
 extern const base::Feature kCastStreamingAv1;
 
-COMPONENT_EXPORT(MIRRORING_FEATURES)
+COMPONENT_EXPORT(MIRRORING_SERVICE)
 extern const base::Feature kCastStreamingVp9;
 
-COMPONENT_EXPORT(MIRRORING_FEATURES)
+COMPONENT_EXPORT(MIRRORING_SERVICE)
 extern const base::Feature kCastUseBlocklistForRemotingQuery;
 
-COMPONENT_EXPORT(MIRRORING_FEATURES)
+COMPONENT_EXPORT(MIRRORING_SERVICE)
 extern const base::Feature kCastForceEnableRemotingQuery;
 
-COMPONENT_EXPORT(MIRRORING_FEATURES)
 bool IsCastStreamingAV1Enabled();
 
 }  // namespace features

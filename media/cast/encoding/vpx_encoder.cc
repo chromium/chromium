@@ -318,7 +318,6 @@ void VpxEncoder::Encode(scoped_refptr<media::VideoFrame> video_frame,
   // used as the lossy utilization.
   const double actual_bitrate =
       encoded_frame->data.size() * 8.0 / predicted_frame_duration.InSecondsF();
-  encoded_frame->encoder_bitrate = actual_bitrate;
   const double target_bitrate = 1000.0 * config_.rc_target_bitrate;
   DCHECK_GT(target_bitrate, 0.0);
   const double bitrate_utilization = actual_bitrate / target_bitrate;

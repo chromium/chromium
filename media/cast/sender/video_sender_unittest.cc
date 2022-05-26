@@ -34,7 +34,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace media::cast {
+namespace media {
+namespace cast {
 
 namespace {
 static const uint8_t kPixelValue = 123;
@@ -125,11 +126,8 @@ class PeerVideoSender : public VideoSender {
                     base::BindRepeating(&PeerVideoSender::ProcessFeedback,
                                         base::Unretained(this))) {}
 
-  void OnReceivedCastFeedback(const RtcpCastMessage& cast_feedback) {
-    frame_sender_for_testing()->OnReceivedCastFeedback(cast_feedback);
-  }
-
-  void OnReceivedPli() { frame_sender_for_testing()->OnReceivedPli(); }
+  using VideoSender::OnReceivedCastFeedback;
+  using VideoSender::OnReceivedPli;
 
   void ProcessFeedback(const media::VideoCaptureFeedback& feedback) {
     feedback_ = feedback;
@@ -642,4 +640,5 @@ TEST_F(VideoSenderTest, CancelSendingOnReceivingPli) {
   EXPECT_EQ(2, transport_->number_of_rtp_packets());
 }
 
-}  // namespace media::cast
+}  // namespace cast
+}  // namespace media

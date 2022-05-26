@@ -141,8 +141,7 @@ class RemotingSenderTest : public ::testing::Test {
 
     // Give CastRemotingSender a small RTT measurement to prevent kickstart
     // testing from taking too long.
-    remoting_sender_->frame_sender_->OnMeasuredRoundTripTime(
-        base::Milliseconds(1));
+    remoting_sender_->OnMeasuredRoundTripTime(base::Milliseconds(1));
     RunPendingTasks();
   }
 
@@ -159,11 +158,11 @@ class RemotingSenderTest : public ::testing::Test {
 
  protected:
   media::cast::FrameId latest_acked_frame_id() const {
-    return remoting_sender_->frame_sender_->LatestAckedFrameId();
+    return remoting_sender_->latest_acked_frame_id_;
   }
 
   int NumberOfFramesInFlight() {
-    return remoting_sender_->frame_sender_->GetUnacknowledgedFrameCount();
+    return remoting_sender_->GetUnacknowledgedFrameCount();
   }
 
   size_t GetSizeOfNextFrameData() {
@@ -204,7 +203,7 @@ class RemotingSenderTest : public ::testing::Test {
   void AckUpToAndIncluding(media::cast::FrameId frame_id) {
     media::cast::RtcpCastMessage cast_feedback(receiver_ssrc_);
     cast_feedback.ack_frame_id = frame_id;
-    remoting_sender_->frame_sender_->OnReceivedCastFeedback(cast_feedback);
+    remoting_sender_->OnReceivedCastFeedback(cast_feedback);
   }
 
   void AckOldestInFlightFrames(int count) {
