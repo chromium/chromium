@@ -677,16 +677,23 @@ TEST(StorageKeyTest, CopyWithForceEnabledThirdPartyStoragePartitioning) {
     scope_feature_list.InitWithFeatureState(
         features::kThirdPartyStoragePartitioning, toggle);
 
-    const StorageKey storage_key(kOrigin, kOtherOrigin);
+    const StorageKey storage_key = StorageKey::CreateWithOptionalNonce(
+        kOrigin, net::SchemefulSite(kOtherOrigin), nullptr,
+        blink::mojom::AncestorChainBit::kCrossSite);
     EXPECT_EQ(storage_key.IsThirdPartyContext(), toggle);
     EXPECT_EQ(storage_key.top_level_site(),
               net::SchemefulSite(toggle ? kOtherOrigin : kOrigin));
+    EXPECT_EQ(storage_key.ancestor_chain_bit(),
+              toggle ? blink::mojom::AncestorChainBit::kCrossSite
+                     : blink::mojom::AncestorChainBit::kSameSite);
 
     const StorageKey storage_key_with_3psp =
         storage_key.CopyWithForceEnabledThirdPartyStoragePartitioning();
     EXPECT_TRUE(storage_key_with_3psp.IsThirdPartyContext());
     EXPECT_EQ(storage_key_with_3psp.top_level_site(),
               net::SchemefulSite(kOtherOrigin));
+    EXPECT_EQ(storage_key_with_3psp.ancestor_chain_bit(),
+              blink::mojom::AncestorChainBit::kCrossSite);
   }
 }
 
