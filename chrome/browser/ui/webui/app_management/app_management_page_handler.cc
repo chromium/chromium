@@ -68,10 +68,8 @@ const char* kAppIdsWithHiddenPinToShelf[] = {
     app_constants::kLacrosAppId,
 };
 
-#if !BUILDFLAG(IS_CHROMEOS)
 const char kFileHandlingLearnMore[] =
     "https://support.google.com/chrome/?p=pwa_default_associations";
-#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr char const* kAppIdsWithHiddenStoragePermission[] = {
@@ -443,15 +441,16 @@ app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(
         std::move(run_on_os_login.value()));
   }
 
-// Speculative fix for crbug.com/1315958
-#if !BUILDFLAG(IS_CHROMEOS)
   if (update.AppType() == apps::AppType::kWeb) {
-    auto* provider =
-        web_app::WebAppProvider::GetForLocalAppsUnchecked(profile_);
-    const bool fh_enabled =
-        !provider->registrar().IsAppFileHandlerPermissionBlocked(app->id);
     std::string file_handling_types;
     std::string file_handling_types_label;
+    bool fh_enabled = false;
+// Speculative fix for crbug.com/1315958
+#if !BUILDFLAG(IS_CHROMEOS)
+    auto* provider =
+        web_app::WebAppProvider::GetForLocalAppsUnchecked(profile_);
+    fh_enabled =
+        !provider->registrar().IsAppFileHandlerPermissionBlocked(app->id);
     if (provider->os_integration_manager().IsFileHandlingAPIAvailable(
             app->id) &&
         !provider->registrar().IsSystemApp(app->id) &&
@@ -478,6 +477,10 @@ app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(
                   static_cast<int>(truncated_extensions.size()),
               "LINK", "#"));
     }
+
+    app->hide_window_mode = provider->registrar().IsIsolated(app->id);
+#endif
+
     absl::optional<GURL> learn_more_url;
     if (!CanShowDefaultAppAssociationsUi())
       learn_more_url = GURL(kFileHandlingLearnMore);
@@ -485,10 +488,7 @@ app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(
     app->file_handling_state = app_management::mojom::FileHandlingState::New(
         fh_enabled, /*is_managed=*/false, file_handling_types,
         file_handling_types_label, learn_more_url);
-
-    app->hide_window_mode = provider->registrar().IsIsolated(app->id);
   }
-#endif
 
   app->publisher_id = update.PublisherId();
 
