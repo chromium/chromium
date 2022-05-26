@@ -14,13 +14,15 @@
 
 namespace url_param_filter {
 
+enum ClassificationExperimentStatus { EXPERIMENTAL, NON_EXPERIMENTAL };
+
 // `unordered_map` is used for the outer map of domains, which is likely to have
 // hundreds. `map` is used for the inner map of `UseCase`, which will have a
 // single digit number of keys.
-using ClassificationMap =
-    std::unordered_map<std::string,
-                       std::map<FilterClassification::UseCase,
-                                url_param_filter::FilterClassification>>;
+using ClassificationMap = std::unordered_map<
+    std::string,
+    std::map<FilterClassification::UseCase,
+             std::map<std::string, ClassificationExperimentStatus>>>;
 
 class ClassificationsLoader {
  public:

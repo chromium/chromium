@@ -35,15 +35,6 @@ std::string GetClassifiedSite(const GURL& gurl) {
       gurl, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
 }
 
-// Add the params classified as requiring filtering into the given parameter
-// set.
-void AddParams(std::set<std::string>& parameter_set,
-               FilterClassification classification) {
-  for (auto i : classification.parameters()) {
-    parameter_set.insert(i.name());
-  }
-}
-
 // Filter a given URL according to the passed-in classifications, optionally
 // checking any encoded, nested URLs.
 FilterResult FilterUrl(const GURL& source_url,
@@ -63,7 +54,7 @@ FilterResult FilterUrl(const GURL& source_url,
   std::string source_classified_site = GetClassifiedSite(source_url);
   std::string destination_classified_site = GetClassifiedSite(destination_url);
 
-  std::set<std::string> blocked_parameters;
+  std::map<std::string, bool> blocked_parameters;
   // Check whether source site, as seen by the classifier (eTLD+1 or IP), has
   // params classified as requiring filtering. If so, and the params are present
   // on the destination URL, or any nested URLs, remove them.
@@ -74,8 +65,9 @@ FilterResult FilterUrl(const GURL& source_url,
         source_classification_result->second.find(use_case);
     if (source_classification_with_use_case !=
         source_classification_result->second.end()) {
-      AddParams(blocked_parameters,
-                source_classification_with_use_case->second);
+      blocked_parameters.insert(
+          source_classification_with_use_case->second.begin(),
+          source_classification_with_use_case->second.end());
     }
   }
   auto destination_classification_result =
@@ -86,8 +78,9 @@ FilterResult FilterUrl(const GURL& source_url,
         destination_classification_result->second.find(use_case);
     if (destination_classification_with_use_case !=
         destination_classification_result->second.end()) {
-      AddParams(blocked_parameters,
-                destination_classification_with_use_case->second);
+      blocked_parameters.insert(
+          destination_classification_with_use_case->second.begin(),
+          destination_classification_with_use_case->second.end());
     }
   }
   // Return quickly if there are no parameters we care about.

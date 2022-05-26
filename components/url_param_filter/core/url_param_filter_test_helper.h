@@ -96,12 +96,22 @@ FilterClassification MakeFilterClassification(
     FilterClassification_SiteRole role,
     const std::vector<std::string>& params);
 
+// Make a FilterClassification proto provided a site, role, experiment override,
+// and list of params.
+FilterClassification MakeFilterClassification(
+    const std::string& site,
+    FilterClassification_SiteRole role,
+    const std::vector<std::string>& params,
+    const std::vector<FilterClassification::UseCase>& use_cases,
+    const std::string& experiment_identifier);
+
 // Helper method for adding repeated classifications on a FilterClassification.
 void AddClassification(
     FilterClassification* classification,
     const std::string& site,
     FilterClassification_SiteRole role,
     const std::vector<std::string>& params,
-    const std::vector<FilterClassification::UseCase>& use_cases);
+    const std::vector<FilterClassification::UseCase>& use_cases,
+    const std::string& experiment_identifier);
 }  // namespace url_param_filter
 #endif  // COMPONENTS_URL_PARAM_FILTER_CORE_URL_PARAM_FILTER_TEST_HELPER_H_

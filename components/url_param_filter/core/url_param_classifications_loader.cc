@@ -20,17 +20,34 @@ namespace url_param_filter {
 
 namespace {
 
+void AppendParams(ClassificationMap& map,
+                  const FilterClassification& classification,
+                  FilterClassification::UseCase use_case) {
+  for (const FilterParameter& param : classification.parameters()) {
+    // Any non-matching experimental params have been discarded previously.
+    // We retain whether the classification was experimental, however, to write
+    // a separate metric when those classifications are used.
+    map[classification.site()][use_case][param.name()] =
+        classification.has_experiment_identifier()
+            ? ClassificationExperimentStatus::EXPERIMENTAL
+            : ClassificationExperimentStatus::NON_EXPERIMENTAL;
+  }
+}
+
 void ProcessClassification(ClassificationMap& map,
-                           const FilterClassification& classification) {
+                           const FilterClassification& classification,
+                           std::string experiment_identifier) {
+  if (classification.has_experiment_identifier() &&
+      experiment_identifier != classification.experiment_identifier()) {
+    return;
+  }
   if (classification.use_cases_size() > 0) {
     for (int use_case : classification.use_cases()) {
-      map[classification.site()]
-         [static_cast<FilterClassification::UseCase>(use_case)] =
-             classification;
+      AppendParams(map, classification,
+                   static_cast<FilterClassification::UseCase>(use_case));
     }
   } else {
-    map[classification.site()][FilterClassification::USE_CASE_UNKNOWN] =
-        classification;
+    AppendParams(map, classification, FilterClassification::USE_CASE_UNKNOWN);
   }
 }
 
@@ -46,7 +63,10 @@ ClassificationMap GetClassificationsFromFeature(
     if (classifications.ParseFromString(uncompressed)) {
       for (auto i : classifications.classifications()) {
         if (i.site_role() == role) {
-          ProcessClassification(map, i);
+          // When retrieving classifications from the feature, we do not allow
+          // additional experiment overrides; we instead use the default "".
+          DCHECK(!i.has_experiment_identifier());
+          ProcessClassification(map, i, "");
         }
       }
     }
@@ -61,8 +81,10 @@ ClassificationMap GetClassificationMap(
   if (!classifications.has_value())
     return ClassificationMap();
   ClassificationMap map;
+  std::string experiment_identifier = base::GetFieldTrialParamValueByFeature(
+      features::kIncognitoParamFilterEnabled, "experiment_identifier");
   for (const FilterClassification& classification : classifications.value()) {
-    ProcessClassification(map, classification);
+    ProcessClassification(map, classification, experiment_identifier);
   }
   return map;
 }
