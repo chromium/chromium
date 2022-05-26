@@ -12,6 +12,7 @@
 #include "base/observer_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "build/chromecast_buildflags.h"
 #include "content/browser/utility_process_host.h"
 #include "content/common/child_process.mojom.h"
@@ -100,21 +101,6 @@ class ServiceProcessTracker {
   }
 
  private:
-  void NotifyLaunchOnUIThread(const content::ServiceProcessInfo& info) {
-    for (auto& observer : observers_)
-      observer.OnServiceProcessLaunched(info);
-  }
-
-  void NotifyTerminatedOnUIThread(const content::ServiceProcessInfo& info) {
-    for (auto& observer : observers_)
-      observer.OnServiceProcessTerminatedNormally(info);
-  }
-
-  void NotifyCrashedOnUIThread(const content::ServiceProcessInfo& info) {
-    for (auto& observer : observers_)
-      observer.OnServiceProcessCrashed(info);
-  }
-
   ServiceProcessId GenerateNextId() {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     return service_process_id_generator_.GenerateNextId();
@@ -138,8 +124,11 @@ ServiceProcessTracker& GetServiceProcessTracker() {
 // has a unique instance of this class associated with it.
 class UtilityProcessClient : public UtilityProcessHost::Client {
  public:
-  explicit UtilityProcessClient(const std::string& service_interface_name)
-      : service_interface_name_(service_interface_name) {}
+  UtilityProcessClient(
+      const std::string& service_interface_name,
+      base::OnceCallback<void(const base::Process&)> process_callback)
+      : service_interface_name_(service_interface_name),
+        process_callback_(std::move(process_callback)) {}
 
   UtilityProcessClient(const UtilityProcessClient&) = delete;
   UtilityProcessClient& operator=(const UtilityProcessClient&) = delete;
@@ -148,8 +137,12 @@ class UtilityProcessClient : public UtilityProcessHost::Client {
 
   // UtilityProcessHost::Client:
   void OnProcessLaunched(const base::Process& process) override {
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
     process_info_ =
         GetServiceProcessTracker().AddProcess(process, service_interface_name_);
+    if (process_callback_) {
+      std::move(process_callback_).Run(process);
+    }
   }
 
   void OnProcessTerminatedNormally() override {
@@ -169,6 +162,7 @@ class UtilityProcessClient : public UtilityProcessHost::Client {
 
  private:
   const std::string service_interface_name_;
+  base::OnceCallback<void(const base::Process&)> process_callback_;
   absl::optional<ServiceProcessInfo> process_info_;
 };
 
@@ -177,8 +171,9 @@ class UtilityProcessClient : public UtilityProcessHost::Client {
 void LaunchServiceProcess(mojo::GenericPendingReceiver receiver,
                           ServiceProcessHost::Options options,
                           sandbox::mojom::Sandbox sandbox) {
-  UtilityProcessHost* host = new UtilityProcessHost(
-      std::make_unique<UtilityProcessClient>(*receiver.interface_name()));
+  UtilityProcessHost* host =
+      new UtilityProcessHost(std::make_unique<UtilityProcessClient>(
+          *receiver.interface_name(), std::move(options.process_callback)));
   host->SetName(!options.display_name.empty()
                     ? options.display_name
                     : base::UTF8ToUTF16(*receiver.interface_name()));

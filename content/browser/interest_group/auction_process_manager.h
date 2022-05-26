@@ -14,11 +14,17 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/process/process_handle.h"
 #include "content/common/content_export.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
+
+namespace base {
+class Process;
+}  // namespace base
 
 namespace content {
 
@@ -87,9 +93,23 @@ class CONTENT_EXPORT AuctionProcessManager {
       return site_instance_;
     }
 
+    // Looks up which PID (from browser's perspective) this process is running
+    // in. If it's available immediately, it's returned. If not, nullopt is
+    // returned and |callback| will be invoked when it's available. Should not
+    // be called if the process hasn't been assigned yet.
+    absl::optional<base::ProcessId> GetPid(
+        base::OnceCallback<void(base::ProcessId)> callback);
+
    private:
     friend class AuctionProcessManager;
     friend class InRendererAuctionProcessManager;
+    friend class DedicatedAuctionProcessManager;
+
+    // If the AuctionProcessManager is not using a RenderProcessHost to manage
+    // the process lifetime, it needs to call |OnBaseProcessLaunched| once the
+    // process has been launched successfully in order to properly figure out
+    // the PID.
+    void OnBaseProcessLaunched(const base::Process& process);
 
     // Assigns `worklet_process` to `this`. If `callback_` is non-null, queues a
     // task to invoke it asynchronously, and GetService() will return nullptr

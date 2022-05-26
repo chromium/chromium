@@ -54,6 +54,12 @@ class AuctionProcessManager::WorkletProcess
     if (render_process_host_) {
       render_process_host_->IncrementWorkerRefCount();
       render_process_host_->AddObserver(this);
+
+      // Note the PID if the process has already launched
+      if (render_process_host_->IsReady()) {
+        DCHECK(render_process_host_->GetProcess().IsValid());
+        pid_ = render_process_host_->GetProcess().Pid();
+      }
     }
   }
 
@@ -68,10 +74,36 @@ class AuctionProcessManager::WorkletProcess
     return render_process_host_;
   }
 
+  absl::optional<base::ProcessId> GetPid(
+      base::OnceCallback<void(base::ProcessId)> callback) {
+    if (pid_.has_value()) {
+      return pid_;
+    } else {
+      waiting_for_pid_.push_back(std::move(callback));
+      return absl::nullopt;
+    }
+  }
+
+  void OnLaunchedWithPid(base::ProcessId pid) {
+    DCHECK(!pid_.has_value());
+    pid_ = absl::make_optional<base::ProcessId>(pid);
+    std::vector<base::OnceCallback<void(base::ProcessId)>> waiting_for_pid =
+        std::move(waiting_for_pid_);
+    for (auto& callback : waiting_for_pid) {
+      std::move(callback).Run(pid);
+    }
+  }
+
  private:
   friend class base::RefCounted<WorkletProcess>;
 
-  // From RenderProcessHostObserver.
+  // From RenderProcessHostObserver:
+  void RenderProcessReady(RenderProcessHost* host) override {
+    DCHECK(render_process_host_);
+    DCHECK(render_process_host_->GetProcess().IsValid());
+    OnLaunchedWithPid(render_process_host_->GetProcess().Pid());
+  }
+
   void RenderProcessHostDestroyed(RenderProcessHost* host) override {
     DCHECK_EQ(host, render_process_host_);
     NotifyUnusableOnce();
@@ -101,6 +133,9 @@ class AuctionProcessManager::WorkletProcess
   const WorkletType worklet_type_;
   const url::Origin origin_;
   bool uses_shared_process_;
+
+  absl::optional<base::ProcessId> pid_;
+  std::vector<base::OnceCallback<void(base::ProcessId)>> waiting_for_pid_;
 
   // nulled out once OnWorkletProcessUnusable() called.
   raw_ptr<AuctionProcessManager> auction_process_manager_;
@@ -133,6 +168,12 @@ AuctionProcessManager::ProcessHandle::GetRenderProcessHostForTesting() {
   return worklet_process_->render_process_host();
 }
 
+absl::optional<base::ProcessId> AuctionProcessManager::ProcessHandle::GetPid(
+    base::OnceCallback<void(base::ProcessId)> callback) {
+  DCHECK(worklet_process_);
+  return worklet_process_->GetPid(std::move(callback));
+}
+
 void AuctionProcessManager::ProcessHandle::AssignProcess(
     scoped_refptr<WorkletProcess> worklet_process) {
   worklet_process_ = std::move(worklet_process);
@@ -145,6 +186,12 @@ void AuctionProcessManager::ProcessHandle::AssignProcess(
         FROM_HERE, base::BindOnce(&ProcessHandle::InvokeCallback,
                                   weak_ptr_factory_.GetWeakPtr()));
   }
+}
+
+void AuctionProcessManager::ProcessHandle::OnBaseProcessLaunched(
+    const base::Process& process) {
+  if (worklet_process_)
+    worklet_process_->OnLaunchedWithPid(process.Pid());
 }
 
 void AuctionProcessManager::ProcessHandle::InvokeCallback() {
@@ -379,6 +426,9 @@ RenderProcessHost* DedicatedAuctionProcessManager::LaunchProcess(
           // TODO(https://crbug.com/1281311) add a utility helper for Jit.
           .WithChildFlags(ChildProcessHost::CHILD_RENDERER)
 #endif
+          .WithProcessCallback(
+              base::BindOnce(&ProcessHandle::OnBaseProcessLaunched,
+                             process_handle->weak_ptr_factory_.GetWeakPtr()))
           .Pass());
   return nullptr;
 }

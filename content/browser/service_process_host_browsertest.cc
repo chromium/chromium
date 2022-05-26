@@ -39,11 +39,16 @@ class EchoServiceProcessObserver : public ServiceProcessHost::Observer {
   void WaitForDeath() { death_loop_.Run(); }
   void WaitForCrash() { crash_loop_.Run(); }
 
+  // Valid after WaitForLaunch.
+  base::ProcessId pid() const { return pid_; }
+
  private:
   // ServiceProcessHost::Observer:
   void OnServiceProcessLaunched(const ServiceProcessInfo& info) override {
-    if (info.IsService<echo::mojom::EchoService>())
+    if (info.IsService<echo::mojom::EchoService>()) {
+      pid_ = info.pid;
       launch_loop_.Quit();
+    }
   }
 
   void OnServiceProcessTerminatedNormally(
@@ -60,12 +65,25 @@ class EchoServiceProcessObserver : public ServiceProcessHost::Observer {
   base::RunLoop launch_loop_;
   base::RunLoop death_loop_;
   base::RunLoop crash_loop_;
+  base::ProcessId pid_ = base::kNullProcessId;
 };
 
 IN_PROC_BROWSER_TEST_F(ServiceProcessHostBrowserTest, Launch) {
   EchoServiceProcessObserver observer;
-  auto echo_service = ServiceProcessHost::Launch<echo::mojom::EchoService>();
+  base::ProcessId pid_from_callback = base::kNullProcessId;
+  base::RunLoop pid_loop;
+  auto echo_service = ServiceProcessHost::Launch<echo::mojom::EchoService>(
+      ServiceProcessHost::Options()
+          .WithProcessCallback(
+              base::BindLambdaForTesting([&](const base::Process& process) {
+                pid_from_callback = process.Pid();
+                pid_loop.Quit();
+              }))
+          .Pass());
   observer.WaitForLaunch();
+  pid_loop.Run();
+  EXPECT_EQ(pid_from_callback, observer.pid());
+  EXPECT_NE(base::kNullProcessId, pid_from_callback);
 
   const std::string kTestString =
       "Aurora borealis! At this time of year? At this time of day? "

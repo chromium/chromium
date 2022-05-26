@@ -663,6 +663,82 @@ TEST_P(AuctionProcessManagerTest, ProcessDeleteBeforeHandle) {
   task_environment_.RunUntilIdle();
 }
 
+TEST_F(AuctionProcessManagerTest, PidLookup) {
+  auto handle = GetServiceOfTypeExpectSuccess(
+      AuctionProcessManager::WorkletType::kSeller, kOriginA);
+
+  base::ProcessId expected_pid = base::Process::Current().Pid();
+
+  // Request PID twice. Should happen asynchronously, but only use one RPC.
+  base::RunLoop run_loop0, run_loop1;
+  bool got_pid0 = false, got_pid1 = false;
+  absl::optional<base::ProcessId> pid0 =
+      handle->GetPid(base::BindLambdaForTesting(
+          [&run_loop0, &got_pid0, expected_pid](base::ProcessId pid) {
+            EXPECT_EQ(expected_pid, pid);
+            got_pid0 = true;
+            run_loop0.Quit();
+          }));
+  EXPECT_FALSE(pid0.has_value());
+  absl::optional<base::ProcessId> pid1 =
+      handle->GetPid(base::BindLambdaForTesting(
+          [&run_loop1, &got_pid1, expected_pid](base::ProcessId pid) {
+            EXPECT_EQ(expected_pid, pid);
+            got_pid1 = true;
+            run_loop1.Quit();
+          }));
+  EXPECT_FALSE(pid1.has_value());
+
+  for (std::unique_ptr<MockRenderProcessHost>& proc :
+       *rph_factory_.GetProcesses()) {
+    proc->SimulateReady();
+  }
+
+  run_loop0.Run();
+  EXPECT_TRUE(got_pid0);
+  run_loop1.Run();
+  EXPECT_TRUE(got_pid1);
+
+  // Next attempt should be synchronous.
+  absl::optional<base::ProcessId> pid2 =
+      handle->GetPid(base::BindOnce([](base::ProcessId pid) {
+        ADD_FAILURE() << "Should not get to callback in pid2 case";
+      }));
+  ASSERT_TRUE(pid2.has_value());
+  EXPECT_EQ(expected_pid, pid2.value());
+}
+
+TEST_F(AuctionProcessManagerTest, PidLookupAlreadyRunning) {
+  // "Launch" the appropriate process before we even ask for it, and mark its
+  // launch as completed. |frame_site_instance| will help keep it alive.
+  scoped_refptr<SiteInstance> frame_site_instance =
+      site_instance_->GetRelatedSiteInstance(kOriginA.GetURL());
+  frame_site_instance->GetProcess()->Init();
+  for (std::unique_ptr<MockRenderProcessHost>& proc :
+       *rph_factory_.GetProcesses()) {
+    proc->SimulateReady();
+  }
+
+  auto handle = GetServiceOfTypeExpectSuccess(
+      AuctionProcessManager::WorkletType::kSeller, kOriginA);
+
+  base::ProcessId expected_pid = base::Process::Current().Pid();
+
+  // Request PID twice. Should happen asynchronously, but only use one RPC.
+  absl::optional<base::ProcessId> pid0 =
+      handle->GetPid(base::BindOnce([](base::ProcessId pid) {
+        ADD_FAILURE() << "Should not get to callback in pid0 case";
+      }));
+  ASSERT_TRUE(pid0.has_value());
+  EXPECT_EQ(expected_pid, pid0.value());
+  absl::optional<base::ProcessId> pid1 =
+      handle->GetPid(base::BindOnce([](base::ProcessId pid) {
+        ADD_FAILURE() << "Should not get to callback in pid1 case";
+      }));
+  ASSERT_TRUE(pid1.has_value());
+  EXPECT_EQ(expected_pid, pid1.value());
+}
+
 class PartialSiteIsolationContentBrowserClient
     : public TestContentBrowserClient {
  public:
