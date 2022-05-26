@@ -476,7 +476,7 @@ void DOMWindow::focus(v8::Isolate* isolate) {
   }
 
   // If we're a top level window, bring the window to the front.
-  if (frame->IsMainFrame() && allow_focus) {
+  if (frame->IsOutermostMainFrame() && allow_focus) {
     frame->FocusPage(incumbent_window->GetFrame());
   } else if (auto* local_frame = DynamicTo<LocalFrame>(frame)) {
     // We are depending on user activation twice since IsFocusAllowed() will
