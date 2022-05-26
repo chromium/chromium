@@ -34,6 +34,7 @@ namespace language {
 class GeoLanguageProvider {
  public:
   static const char kCachedGeoLanguagesPref[];
+  static const char kTimeOfLastGeoLanguagesUpdatePref[];
 
   static GeoLanguageProvider* GetInstance();
 
