@@ -32,7 +32,10 @@ Polymer({
 
   /** @private */
   onContinueTap_() {
-    CrostiniBrowserProxyImpl.getInstance().importCrostiniContainer();
+    CrostiniBrowserProxyImpl.getInstance().importCrostiniContainer({
+      vm_name: DEFAULT_CROSTINI_VM,
+      container_name: DEFAULT_CROSTINI_CONTAINER
+    });
     this.$.dialog.close();
   },
 });

@@ -103,13 +103,13 @@ export class TestCrostiniBrowserProxy extends TestBrowserProxy {
   }
 
   /** override */
-  exportCrostiniContainer() {
-    this.methodCalled('exportCrostiniContainer');
+  exportCrostiniContainer(containerId) {
+    this.methodCalled('exportCrostiniContainer', containerId);
   }
 
   /** override */
-  importCrostiniContainer() {
-    this.methodCalled('importCrostiniContainer');
+  importCrostiniContainer(containerId) {
+    this.methodCalled('importCrostiniContainer', containerId);
   }
 
   /** @override */

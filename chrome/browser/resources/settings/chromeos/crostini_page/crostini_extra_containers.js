@@ -196,6 +196,18 @@ class ExtraContainersElement extends ExtraContainersElementBase {
    * @param {!Event} event
    * @private
    */
+  onImportContainerClick_(event) {
+    if (this.lastMenuContainerInfo_) {
+      CrostiniBrowserProxyImpl.getInstance().importCrostiniContainer(
+          this.lastMenuContainerInfo_.id);
+    }
+    this.closeContainerMenu_();
+  }
+
+  /**
+   * @param {!Event} event
+   * @private
+   */
   onContainerColorChange_(event) {
     const containerId =
         /** @type {ContainerId} */ (event.currentTarget['dataContainerId']);

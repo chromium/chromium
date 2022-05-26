@@ -109,6 +109,13 @@
           disabled="[[!enableButtons_]]">
           $i18n{crostiniExport}
       </button>
+      <button id="importContainerButton"
+          class="dropdown-item"
+          role="menuitem"
+          on-click="onImportContainerClick_"
+          disabled="[[!enableButtons_]]">
+          $i18n{crostiniImport}
+      </button>
     </cr-action-menu>
   </template>
 </cr-lazy-render>

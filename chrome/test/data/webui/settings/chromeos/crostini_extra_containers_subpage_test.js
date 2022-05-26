@@ -32,6 +32,21 @@ suite('CrostiniExtraContainersSubpageTests', function() {
     crostiniPage = document.createElement('settings-crostini-page');
     document.body.appendChild(crostiniPage);
     testing.Test.disableAnimationsAndTransitions();
+
+    const allContainers_ = [
+      {
+        'id': {'container_name': 'penguin', 'vm_name': 'termina'},
+      },
+      {
+        'id': {'container_name': 'custom_container_1', 'vm_name': 'termina'},
+      },
+      {
+        'id':
+            {'container_name': 'custom_container_2', 'vm_name': 'not_termina'},
+      },
+    ];
+
+    crostiniBrowserProxy.containerInfo = allContainers_;
     crostiniPage.prefs = {
       crostini: {
         enabled: {value: true},
@@ -45,18 +60,6 @@ suite('CrostiniExtraContainersSubpageTests', function() {
     subpage = crostiniPage.$$('settings-crostini-extra-containers');
     assertTrue(!!subpage);
 
-    subpage.allContainers_ = [
-      {
-        'id': {'container_name': 'penguin', 'vm_name': 'termina'},
-      },
-      {
-        'id': {'container_name': 'custom_container_1', 'vm_name': 'termina'},
-      },
-      {
-        'id':
-            {'container_name': 'custom_container_2', 'vm_name': 'not_termina'},
-      },
-    ];
   });
 
   teardown(function() {
@@ -202,15 +205,29 @@ suite('CrostiniExtraContainersSubpageTests', function() {
     });
   });
 
-  suite('ExportContainer', function() {
+  suite('ExportImportContainer', function() {
     test('Export', async function() {
       subpage.$$('#showContainerMenu1').click();
 
       await flushTasks();
       assertTrue(!!subpage.$$('#exportContainerButton'));
       subpage.$$('#exportContainerButton').click();
-      assertEquals(
-          1, crostiniBrowserProxy.getCallCount('exportCrostiniContainer'));
+      const args = crostiniBrowserProxy.getArgs('exportCrostiniContainer');
+      assertEquals(1, args.length);
+      assertEquals(args[0].vm_name, 'termina');
+      assertEquals(args[0].container_name, 'custom_container_1');
+    });
+
+    test('Import', async function() {
+      subpage.$$('#showContainerMenu1').click();
+
+      await flushTasks();
+      assertTrue(!!subpage.$$('#importContainerButton'));
+      subpage.$$('#importContainerButton').click();
+      const args = crostiniBrowserProxy.getArgs('importCrostiniContainer');
+      assertEquals(1, args.length);
+      assertEquals(args[0].vm_name, 'termina');
+      assertEquals(args[0].container_name, 'custom_container_1');
     });
 
     test('ExportImportButtonsGetDisabledOnOperationStatus', async function() {
@@ -218,16 +235,19 @@ suite('CrostiniExtraContainersSubpageTests', function() {
 
       await flushTasks();
       assertFalse(subpage.$$('#exportContainerButton').disabled);
+      assertFalse(subpage.$$('#importContainerButton').disabled);
       webUIListenerCallback(
           'crostini-export-import-operation-status-changed', true);
 
       await flushTasks();
       assertTrue(subpage.$$('#exportContainerButton').disabled);
+      assertTrue(subpage.$$('#importContainerButton').disabled);
       webUIListenerCallback(
           'crostini-export-import-operation-status-changed', false);
 
       await flushTasks();
       assertFalse(subpage.$$('#exportContainerButton').disabled);
+      assertFalse(subpage.$$('#importContainerButton').disabled);
     });
 
     test(
@@ -237,14 +257,17 @@ suite('CrostiniExtraContainersSubpageTests', function() {
 
           await flushTasks();
           assertFalse(subpage.$$('#exportContainerButton').disabled);
+          assertFalse(subpage.$$('#importContainerButton').disabled);
           webUIListenerCallback('crostini-installer-status-changed', true);
 
           await flushTasks();
           assertTrue(subpage.$$('#exportContainerButton').disabled);
+          assertTrue(subpage.$$('#importContainerButton').disabled);
           webUIListenerCallback('crostini-installer-status-changed', false);
 
           await flushTasks();
           assertFalse(subpage.$$('#exportContainerButton').disabled);
+          assertFalse(subpage.$$('#importContainerButton').disabled);
         });
   });
 });

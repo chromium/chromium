@@ -106,8 +106,9 @@ export class CrostiniBrowserProxy {
 
   /**
    * Import crostini container.
+   * @param {!ContainerId} containerId container id of container to import.
    */
-  importCrostiniContainer() {}
+  importCrostiniContainer(containerId) {}
 
   /** Queries the current status of ARC ADB Sideloading. */
   requestArcAdbSideloadStatus() {}
@@ -295,8 +296,8 @@ export class CrostiniBrowserProxyImpl {
   }
 
   /** @override */
-  importCrostiniContainer() {
-    chrome.send('importCrostiniContainer');
+  importCrostiniContainer(containerId) {
+    chrome.send('importCrostiniContainer', [containerId]);
   }
 
   /** @override */

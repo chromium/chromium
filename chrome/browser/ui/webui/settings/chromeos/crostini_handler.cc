@@ -275,9 +275,11 @@ void CrostiniHandler::HandleExportCrostiniContainer(
 
 void CrostiniHandler::HandleImportCrostiniContainer(
     const base::Value::List& args) {
-  CHECK_EQ(0U, args.size());
+  CHECK_EQ(1U, args.size());
+  crostini::ContainerId container_id(args[0]);
+  VLOG(1) << "Importing  = " << container_id;
   crostini::CrostiniExportImport::GetForProfile(profile_)->ImportContainer(
-      web_ui()->GetWebContents());
+      container_id, web_ui()->GetWebContents());
 }
 
 void CrostiniHandler::HandleCrostiniInstallerStatusRequest(
