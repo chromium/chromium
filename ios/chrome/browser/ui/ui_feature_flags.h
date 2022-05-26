@@ -22,7 +22,7 @@ extern const base::Feature kSharedHighlightingIOS;
 // Feature flag for testing the 'default browser' screen in FRE and different
 // experiments to suggest the users to update the default browser in the
 // Settings.app.
-extern const base::Feature kEnableFREDefaultBrowserPromoScreen;
+extern const base::Feature kEnableFREDefaultBrowserScreenTesting;
 
 // Feature flag that enables using the FRE UI module to show first run screens.
 extern const base::Feature kEnableFREUIModuleIOS;

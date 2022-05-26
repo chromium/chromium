@@ -230,11 +230,11 @@ const char kEnableDiscoverFeedStaticResourceServingDescription[] =
     "When enabled the discover feed will optimize the request of resources "
     "coming from the server.";
 
-const char kEnableFREDefaultBrowserPromoScreenName[] =
-    "Enable FRE default browser screen";
-const char kEnableFREDefaultBrowserPromoScreenDescription[] =
-    "Display the FRE default browser screen and other default browser promo "
-    "depending on experiment.";
+const char kEnableFREDefaultBrowserScreenTestingName[] =
+    "Enable FRE default browser screen testing";
+const char kEnableFREDefaultBrowserScreenTestingDescription[] =
+    "This test display the FRE default browser screen and other default "
+    "browser promo depending on experiment.";
 
 const char kEnableFaviconForPasswordsName[] =
     "Enable favicons for the Password Manager and for the Credential Provider "

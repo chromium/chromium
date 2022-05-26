@@ -224,8 +224,8 @@ extern const char kEnableFeedAblationDescription[];
 
 // Title and description for the flag to test the FRE default browser promo
 // experiment.
-extern const char kEnableFREDefaultBrowserPromoScreenName[];
-extern const char kEnableFREDefaultBrowserPromoScreenDescription[];
+extern const char kEnableFREDefaultBrowserScreenTestingName[];
+extern const char kEnableFREDefaultBrowserScreenTestingDescription[];
 
 // Title and description for the flag to enable FRE UI module.
 extern const char kEnableFREUIModuleIOSName[];

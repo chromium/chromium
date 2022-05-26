@@ -320,21 +320,21 @@ const FeatureEntry::FeatureVariation kStartSurfaceVariations[] = {
      std::size(kStartSurfaceOneHourHideShortcutsReturnToRecentTab), nullptr},
 };
 
-const FeatureEntry::FeatureParam kFREDefaultBrowserPromoDefaultDelay[] = {
-    {kFREDefaultBrowserPromoParam, kFREDefaultBrowserPromoDefaultDelayParam}};
-const FeatureEntry::FeatureParam kFREDefaultBrowserPromoFirstRunOnly[] = {
-    {kFREDefaultBrowserPromoParam, kFREDefaultBrowserPromoFirstRunOnlyParam}};
-const FeatureEntry::FeatureParam kFREDefaultBrowserPromoShortDelay[] = {
-    {kFREDefaultBrowserPromoParam, kFREDefaultBrowserPromoShortDelayParam}};
-const FeatureEntry::FeatureVariation kFREDefaultBrowserPromoVariations[] = {
+const FeatureEntry::FeatureParam kFREDefaultPromoTestingDefaultDelay[] = {
+    {kFREDefaultPromoTestingDefaultDelayParam, "true"}};
+const FeatureEntry::FeatureParam kFREDefaultPromoTestingOnly[] = {
+    {kFREDefaultPromoTestingOnlyParam, "true"}};
+const FeatureEntry::FeatureParam kFREDefaultPromoTestingShortDelay[] = {
+    {kFREDefaultPromoTestingShortDelayParam, "true"}};
+const FeatureEntry::FeatureVariation kFREDefaultPromoTestingVariations[] = {
     {"Wait 14 days after FRE default browser promo",
-     kFREDefaultBrowserPromoDefaultDelay,
-     std::size(kFREDefaultBrowserPromoDefaultDelay), nullptr},
-    {"FRE default browser promo only", kFREDefaultBrowserPromoFirstRunOnly,
-     std::size(kFREDefaultBrowserPromoFirstRunOnly), nullptr},
+     kFREDefaultPromoTestingDefaultDelay,
+     std::size(kFREDefaultPromoTestingDefaultDelay), nullptr},
+    {"FRE default browser promo only", kFREDefaultPromoTestingOnly,
+     std::size(kFREDefaultPromoTestingOnly), nullptr},
     {"Wait 3 days after FRE default browser promo",
-     kFREDefaultBrowserPromoShortDelay,
-     std::size(kFREDefaultBrowserPromoShortDelay), nullptr},
+     kFREDefaultPromoTestingShortDelay,
+     std::size(kFREDefaultPromoTestingShortDelay), nullptr},
 };
 
 const FeatureEntry::FeatureParam kNewMICEFREWithUMADialog[] = {
@@ -526,7 +526,7 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_WITH_PARAMS_VALUE_TYPE(signin::kNewMobileIdentityConsistencyFRE,
                                     kNewMobileIdentityConsistencyFREVariations,
-                                    kIOSMICeAndDefaultBrowserTrialName)},
+                                    "NewMobileIdentityConsistencyFRE")},
     {"enable-long-message-duration",
      flag_descriptions::kEnableLongMessageDurationName,
      flag_descriptions::kEnableLongMessageDurationDescription, flags_ui::kOsIos,
@@ -722,12 +722,12 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
                                     kDiscoverFeedTopSyncPromoVariations,
                                     "EnableDiscoverFeedTopSyncPromo")},
     {"enable-fre-default-browser-screen-testing",
-     flag_descriptions::kEnableFREDefaultBrowserPromoScreenName,
-     flag_descriptions::kEnableFREDefaultBrowserPromoScreenDescription,
+     flag_descriptions::kEnableFREDefaultBrowserScreenTestingName,
+     flag_descriptions::kEnableFREDefaultBrowserScreenTestingDescription,
      flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kEnableFREDefaultBrowserPromoScreen,
-                                    kFREDefaultBrowserPromoVariations,
-                                    kIOSMICeAndDefaultBrowserTrialName)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kEnableFREDefaultBrowserScreenTesting,
+                                    kFREDefaultPromoTestingVariations,
+                                    "EnableFREDefaultBrowserScreenTesting")},
     {"enable-discover-feed-shorter-cache",
      flag_descriptions::kEnableDiscoverFeedShorterCacheName,
      flag_descriptions::kEnableDiscoverFeedShorterCacheDescription,

@@ -17,16 +17,10 @@
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #include "ios/chrome/common/channel_info.h"
 
-const char kIOSMICeAndDefaultBrowserTrialName[] =
-    "IOSTrialMICeAndDefaultBrowser";
-
-// Parameters for new Default Browser Promo FRE.
-const char kFREDefaultBrowserPromoParam[] = "variant_default_browser";
-const char kFREDefaultBrowserPromoDefaultDelayParam[] =
+const char kFREDefaultPromoTestingDefaultDelayParam[] =
     "variant_default_delay_enabled";
-const char kFREDefaultBrowserPromoFirstRunOnlyParam[] =
-    "variant_fre_only_enabled";
-const char kFREDefaultBrowserPromoShortDelayParam[] =
+const char kFREDefaultPromoTestingOnlyParam[] = "variant_fre_only_enabled";
+const char kFREDefaultPromoTestingShortDelayParam[] =
     "variant_short_delay_enabled";
 
 // Parameters for new Mobile Identity Consistency FRE.
@@ -35,68 +29,35 @@ const char kNewMobileIdentityConsistencyFREParamUMADialog[] = "umadialog";
 const char kNewMobileIdentityConsistencyFREParamThreeSteps[] = "3steps";
 const char kNewMobileIdentityConsistencyFREParamTwoSteps[] = "2steps";
 
-namespace {
-
-// Store local state preference with whether the client has participated in
-// IOSTrialMICeAndDefaultBrowser experiment or not.
-const char kTrialGroupMICeAndDefaultBrowserVersionPrefName[] =
-    "fre_refactoring_mice_and_default_browser.trial_version";
-// The placeholder trial version that is stored for a client who has not been
-// enrolled in the experiment.
-const int kPlaceholderTrialVersion = -1;
-// The current trial version; should be updated when the experiment is modified.
-const int kCurrentTrialVersion = 1;
-
-// Group names for the FRE redesign permissions trial.
-const char kDefaultGroup[] = "Default";
-// Group name for the FRE control group.
-const char kControlGroup[] = "Control-V1";
-// Group name for the FRE holdback group. This group holds back clients from the
-// kEnableFREUIModuleIOS behavior, which was launched in M103.
-const char kHoldbackGroup[] = "Disabled-V1";
-// Group names for the default browser promo trial.
-const char kFREDefaultBrowserAndSmallDelayBeforeOtherPromosGroup[] =
-    "FREDefaultBrowserAndSmallDelayBeforeOtherPromos-V1";
-const char kFREDefaultBrowserAndDefaultDelayBeforeOtherPromosGroup[] =
-    "FREDefaultBrowserAndDefaultDelayBeforeOtherPromos-V1";
-const char kDefaultBrowserPromoAtFirstRunOnlyGroup[] =
-    "DefaultBrowserPromoAtFirstRunOnly-V1";
 // Group names for the new Mobile Identity Consistency FRE.
 const char kNewMICEFREWithUMADialogSetGroup[] =
-    "NewMobileIdentityConsistencyFREParamUMADialog-V1";
+    "NewMobileIdentityConsistencyFREParamUMADialog";
 const char kNewMICEFREWithThreeStepsSetGroup[] =
-    "NewMobileIdentityConsistencyFREParamThreeSteps-V1";
+    "NewMobileIdentityConsistencyFREParamThreeSteps";
 const char kNewMICEFREWithTwoStepsSetGroup[] =
-    "NewMobileIdentityConsistencyFREParamTwoSteps-V1";
+    "NewMobileIdentityConsistencyFREParamTwoSteps";
 
+namespace {
+
+// Group names for the default browser promo trial.
+const char kFREDefaultBrowserAndSmallDelayBeforeOtherPromosGroup[] =
+    "FREDefaultBrowserAndSmallDelayBeforeOtherPromos";
+const char kFREDefaultBrowserAndDefaultDelayBeforeOtherPromosGroup[] =
+    "FREDefaultBrowserAndDefaultDelayBeforeOtherPromos";
+const char kDefaultBrowserPromoAtFirstRunOnlyGroup[] =
+    "DefaultBrowserPromoAtFirstRunOnly";
+// Group names for the FRE redesign permissions trial.
+const char kDefaultGroup[] = "Default";
 // Experiment IDs defined for the above field trial groups.
-const variations::VariationID kControlTrialID = 3348210;
-const variations::VariationID kHoldbackTrialID = 3348217;
-const variations::VariationID kDefaultBrowserPromoAtFirstRunOnlyID = 3348842;
+const variations::VariationID kDefaultTrialID = 3330131;
+const variations::VariationID kDefaultBrowserPromoAtFirstRunOnlyID = 3342136;
 const variations::VariationID
-    kFREDefaultBrowserAndDefaultDelayBeforeOtherPromosID = 3348843;
+    kFREDefaultBrowserAndDefaultDelayBeforeOtherPromosID = 3342137;
 const variations::VariationID
-    kFREDefaultBrowserAndSmallDelayBeforeOtherPromosID = 3348844;
-const variations::VariationID kNewMICEFREWithUMADialogSetID = 3348845;
-const variations::VariationID kNewMICEFREWithThreeStepsSetID = 3348846;
-const variations::VariationID kNewMICEFREWithTwoStepsSetID = 3348847;
-
-// Options for kNewDefaultBrowserPromoFREParam.
-constexpr base::FeatureParam<NewDefaultBrowserPromoFRE>::Option
-    kNewDefaultBrowserPromoFREOptions[] = {
-        {NewDefaultBrowserPromoFRE::kDefaultDelay,
-         kFREDefaultBrowserPromoDefaultDelayParam},
-        {NewDefaultBrowserPromoFRE::kFirstRunOnly,
-         kFREDefaultBrowserPromoFirstRunOnlyParam},
-        {NewDefaultBrowserPromoFRE::kShortDelay,
-         kFREDefaultBrowserPromoShortDelayParam}};
-
-// Parameter for kEnableFREDefaultBrowserPromoScreen feature.
-constexpr base::FeatureParam<NewDefaultBrowserPromoFRE>
-    kNewDefaultBrowserPromoFREParam{&kEnableFREDefaultBrowserPromoScreen,
-                                    kFREDefaultBrowserPromoParam,
-                                    NewDefaultBrowserPromoFRE::kDefaultDelay,
-                                    &kNewDefaultBrowserPromoFREOptions};
+    kFREDefaultBrowserAndSmallDelayBeforeOtherPromosID = 3342138;
+// Group name for the FRE disabled group.
+const char kDisabledGroup[] = "Disabled";
+const variations::VariationID kDisabledTrialID = 3346917;
 
 // Options for kkNewMobileIdentityConsistencyFREParam.
 constexpr base::FeatureParam<NewMobileIdentityConsistencyFRE>::Option
@@ -116,16 +77,10 @@ constexpr base::FeatureParam<NewMobileIdentityConsistencyFRE>
         NewMobileIdentityConsistencyFRE::kUMADialog,
         &kNewMobileIdentityConsistencyFREOptions};
 
-// Sets the parameter value of the new default browser parameter.
-void AssociateFieldTrialParamsForDefaultBrowserGroup(
-    const std::string& group_name,
-    const std::string& value) {
-  base::FieldTrialParams params;
-  params[kFREDefaultBrowserPromoParam] = value;
-  bool association_result = base::AssociateFieldTrialParams(
-      kIOSMICeAndDefaultBrowserTrialName, group_name, params);
-  DCHECK(association_result);
-}
+// Experiment IDs defined for the second trial of the FRE UI.
+const variations::VariationID kNewMICEFREWithUMADialogSetID = 3346235;
+const variations::VariationID kNewMICEFREWithThreeStepsSetID = 3346236;
+const variations::VariationID kNewMICEFREWithTwoStepsSetID = 3346237;
 
 // Sets the parameter value of the new MICE FRE parameter.
 void AssociateFieldTrialParamsForNewMICEFREGroup(const std::string& group_name,
@@ -133,7 +88,7 @@ void AssociateFieldTrialParamsForNewMICEFREGroup(const std::string& group_name,
   base::FieldTrialParams params;
   params[kNewMobileIdentityConsistencyFREParam] = value;
   bool association_result = base::AssociateFieldTrialParams(
-      kIOSMICeAndDefaultBrowserTrialName, group_name, params);
+      signin::kNewMobileIdentityConsistencyFRE.name, group_name, params);
   DCHECK(association_result);
 }
 
@@ -141,12 +96,43 @@ void AssociateFieldTrialParamsForNewMICEFREGroup(const std::string& group_name,
 
 namespace fre_field_trial {
 
-NewDefaultBrowserPromoFRE GetFREDefaultBrowserScreenPromoFRE() {
-  if (base::FeatureList::IsEnabled(kEnableFREUIModuleIOS) &&
-      base::FeatureList::IsEnabled(kEnableFREDefaultBrowserPromoScreen)) {
-    return kNewDefaultBrowserPromoFREParam.Get();
+bool IsInFirstRunDefaultBrowserAndSmallDelayBeforeOtherPromosGroup() {
+  if (base::FeatureList::IsEnabled(kEnableFREDefaultBrowserScreenTesting)) {
+    return base::GetFieldTrialParamByFeatureAsBool(
+        kEnableFREDefaultBrowserScreenTesting,
+        kFREDefaultPromoTestingShortDelayParam, false);
   }
-  return NewDefaultBrowserPromoFRE::kDisabled;
+  return base::FeatureList::IsEnabled(kEnableFREUIModuleIOS) &&
+         base::FieldTrialList::FindFullName(kEnableFREUIModuleIOS.name) ==
+             kFREDefaultBrowserAndSmallDelayBeforeOtherPromosGroup;
+}
+
+bool IsInFirstRunDefaultBrowserAndDefaultDelayBeforeOtherPromosGroup() {
+  if (base::FeatureList::IsEnabled(kEnableFREDefaultBrowserScreenTesting)) {
+    return base::GetFieldTrialParamByFeatureAsBool(
+        kEnableFREDefaultBrowserScreenTesting,
+        kFREDefaultPromoTestingDefaultDelayParam, false);
+  }
+  return base::FeatureList::IsEnabled(kEnableFREUIModuleIOS) &&
+         base::FieldTrialList::FindFullName(kEnableFREUIModuleIOS.name) ==
+             kFREDefaultBrowserAndDefaultDelayBeforeOtherPromosGroup;
+}
+
+bool IsInDefaultBrowserPromoAtFirstRunOnlyGroup() {
+  if (base::FeatureList::IsEnabled(kEnableFREDefaultBrowserScreenTesting)) {
+    return base::GetFieldTrialParamByFeatureAsBool(
+        kEnableFREDefaultBrowserScreenTesting, kFREDefaultPromoTestingOnlyParam,
+        false);
+  }
+  return base::FeatureList::IsEnabled(kEnableFREUIModuleIOS) &&
+         base::FieldTrialList::FindFullName(kEnableFREUIModuleIOS.name) ==
+             kDefaultBrowserPromoAtFirstRunOnlyGroup;
+}
+
+bool IsFREDefaultBrowserScreenEnabled() {
+  return IsInFirstRunDefaultBrowserAndSmallDelayBeforeOtherPromosGroup() ||
+         IsInFirstRunDefaultBrowserAndDefaultDelayBeforeOtherPromosGroup() ||
+         IsInDefaultBrowserPromoAtFirstRunOnlyGroup();
 }
 
 NewMobileIdentityConsistencyFRE GetNewMobileIdentityConsistencyFRE() {
@@ -156,31 +142,18 @@ NewMobileIdentityConsistencyFRE GetNewMobileIdentityConsistencyFRE() {
   return NewMobileIdentityConsistencyFRE::kOld;
 }
 
-// Creates the trial config, initializes the trial that puts clients into
-// different groups, and returns the version number of the current trial. There
-// are 9 groups:
-// - Default
-// - Control
-// - Holdback
-// - New MICE FRE with UMA dialog
-// - New MICE FRE with 3 steps
-// - New MICE FRE with 2 steps
-// - FRE default browser promo: show 14 days after first run
-// - FRE default browser promo: show 3 days after first run
-// - FRE default browser promo: only on first run
-int CreateNewMICeAndDefaultBrowserFRETrial(
-    const base::FieldTrial::EntropyProvider& low_entropy_provider,
+// Creates a trial for the first run (when there is no variations seed) if
+// necessary and enables the feature based on the randomly selected trial group.
+// Returns the group number.
+int CreateFirstRunTrial(
+    base::FieldTrial::EntropyProvider const& low_entropy_provider,
     base::FeatureList* feature_list) {
-  // Experiment groups
-  int new_fre_control_percent = 0;
-  int new_fre_holdback_percent = 0;
-  // MICe FRE experiment.
-  int new_fre_with_uma_dialog_set_percent = 0;
-  int new_fre_with_three_steps_set_percent = 0;
-  int new_fre_with_two_steps_set_percent = 0;
+  // New FRE enabled/disabled.
+  int new_fre_default_percent = 0;
+
   // FRE's default browser screen experiment
-  int new_fre_with_default_screen_and_default_cooldown_percent = 0;
   int new_fre_with_default_screen_and_short_cooldown_percent = 0;
+  int new_fre_with_default_screen_and_default_cooldown_percent = 0;
   int new_fre_with_default_screen_only_percent = 0;
 
   switch (GetChannel()) {
@@ -188,51 +161,106 @@ int CreateNewMICeAndDefaultBrowserFRETrial(
     case version_info::Channel::CANARY:
     case version_info::Channel::DEV:
     case version_info::Channel::BETA:
-      new_fre_control_percent = 10;
-      new_fre_holdback_percent = 10;
-      new_fre_with_uma_dialog_set_percent = 10;
-      new_fre_with_three_steps_set_percent = 10;
-      new_fre_with_two_steps_set_percent = 10;
-      new_fre_with_default_screen_and_default_cooldown_percent = 10;
-      new_fre_with_default_screen_and_short_cooldown_percent = 10;
-      new_fre_with_default_screen_only_percent = 10;
+      new_fre_with_default_screen_and_short_cooldown_percent = 0;
+      new_fre_with_default_screen_and_default_cooldown_percent = 0;
+      new_fre_with_default_screen_only_percent = 0;
+      new_fre_default_percent = 100;
       break;
     case version_info::Channel::STABLE:
-      new_fre_control_percent = 8;
-      new_fre_holdback_percent = 8;
-      new_fre_with_uma_dialog_set_percent = 8;
-      new_fre_with_three_steps_set_percent = 8;
-      new_fre_with_two_steps_set_percent = 8;
-      new_fre_with_default_screen_and_default_cooldown_percent = 8;
-      new_fre_with_default_screen_and_short_cooldown_percent = 8;
-      new_fre_with_default_screen_only_percent = 8;
+      new_fre_with_default_screen_and_short_cooldown_percent = 0;
+      new_fre_with_default_screen_and_default_cooldown_percent = 0;
+      new_fre_with_default_screen_only_percent = 0;
+      new_fre_default_percent = 100;
       break;
   }
 
   // Set up the trial and groups.
-  FirstRunFieldTrialConfig config(kIOSMICeAndDefaultBrowserTrialName);
-  // Disabled and control groups.
-  config.AddGroup(kControlGroup, kControlTrialID, new_fre_control_percent);
-  config.AddGroup(kHoldbackGroup, kHoldbackTrialID, new_fre_holdback_percent);
-  // MICe experiment groups. (No default browser promo.)
-  config.AddGroup(kNewMICEFREWithUMADialogSetGroup,
-                  kNewMICEFREWithUMADialogSetID,
-                  new_fre_with_uma_dialog_set_percent);
-  config.AddGroup(kNewMICEFREWithThreeStepsSetGroup,
-                  kNewMICEFREWithThreeStepsSetID,
-                  new_fre_with_three_steps_set_percent);
-  config.AddGroup(kNewMICEFREWithTwoStepsSetGroup, kNewMICEFREWithTwoStepsSetID,
-                  new_fre_with_two_steps_set_percent);
-  // Default browser promo experiment groups. (New FRE with MICe disabled.)
-  config.AddGroup(kFREDefaultBrowserAndDefaultDelayBeforeOtherPromosGroup,
-                  kFREDefaultBrowserAndDefaultDelayBeforeOtherPromosID,
-                  new_fre_with_default_screen_and_default_cooldown_percent);
+  FirstRunFieldTrialConfig config(kEnableFREUIModuleIOS.name);
+  // Default browser promo experiment groups
   config.AddGroup(kFREDefaultBrowserAndSmallDelayBeforeOtherPromosGroup,
                   kFREDefaultBrowserAndSmallDelayBeforeOtherPromosID,
                   new_fre_with_default_screen_and_short_cooldown_percent);
+  config.AddGroup(kFREDefaultBrowserAndDefaultDelayBeforeOtherPromosGroup,
+                  kFREDefaultBrowserAndDefaultDelayBeforeOtherPromosID,
+                  new_fre_with_default_screen_and_default_cooldown_percent);
   config.AddGroup(kDefaultBrowserPromoAtFirstRunOnlyGroup,
                   kDefaultBrowserPromoAtFirstRunOnlyID,
                   new_fre_with_default_screen_only_percent);
+
+  // New FRE groups
+  config.AddGroup(kDefaultGroup, kDefaultTrialID, new_fre_default_percent);
+
+  DCHECK_EQ(100, config.GetTotalProbability());
+
+  scoped_refptr<base::FieldTrial> trial =
+      config.CreateOneTimeRandomizedTrial(kDefaultGroup, low_entropy_provider);
+
+  // Finalize the group choice and activates the trial - similar to a variation
+  // config that's marked with |starts_active| true. This is required for
+  // studies that register variation ids, so they don't reveal extra information
+  // beyond the low-entropy source.
+  int group = trial->group();
+  const std::string& group_name = trial->group_name();
+  if (group_name == kFREDefaultBrowserAndSmallDelayBeforeOtherPromosGroup ||
+      group_name == kFREDefaultBrowserAndDefaultDelayBeforeOtherPromosGroup ||
+      group_name == kDefaultBrowserPromoAtFirstRunOnlyGroup) {
+    feature_list->RegisterFieldTrialOverride(
+        kEnableFREUIModuleIOS.name, base::FeatureList::OVERRIDE_ENABLE_FEATURE,
+        trial.get());
+  }
+  return group;
+}
+
+// Creates the trial config, initialize the trial and returns the ID of the
+// new Mobile Identity Consistency FRE trial group. There are 5 groups:
+// - Control (Default)
+// - Disabled
+// - New MICE FRE with UMA dialog
+// - New MICE FRE with 3 steps
+// - New MICE FRE with 2 steps
+int CreateNewMobileIdentityConsistencyFRETrial(
+    const base::FieldTrial::EntropyProvider& low_entropy_provider,
+    base::FeatureList* feature_list) {
+  // Experiment groups
+  int new_fre_default_percent = 0;
+  int new_fre_disabled_percent = 0;
+  int new_fre_with_uma_dialog_set_percent = 0;
+  int new_fre_with_three_steps_set_percent = 0;
+  int new_fre_with_two_steps_set_percent = 0;
+
+  switch (GetChannel()) {
+    case version_info::Channel::UNKNOWN:
+    case version_info::Channel::CANARY:
+    case version_info::Channel::DEV:
+    case version_info::Channel::BETA:
+    case version_info::Channel::STABLE:
+      new_fre_disabled_percent = 0;
+      new_fre_with_uma_dialog_set_percent = 0;
+      new_fre_with_three_steps_set_percent = 0;
+      new_fre_with_two_steps_set_percent = 0;
+      new_fre_default_percent = 100;
+      break;
+  }
+
+  // Set up the trial and groups.
+  FirstRunFieldTrialConfig config(
+      signin::kNewMobileIdentityConsistencyFRE.name);
+
+  config.AddGroup(kNewMICEFREWithUMADialogSetGroup,
+                  kNewMICEFREWithUMADialogSetID,
+                  new_fre_with_uma_dialog_set_percent);
+
+  config.AddGroup(kNewMICEFREWithThreeStepsSetGroup,
+                  kNewMICEFREWithThreeStepsSetID,
+                  new_fre_with_three_steps_set_percent);
+
+  config.AddGroup(kNewMICEFREWithTwoStepsSetGroup, kNewMICEFREWithTwoStepsSetID,
+                  new_fre_with_two_steps_set_percent);
+
+  config.AddGroup(kDisabledGroup, kDisabledTrialID, new_fre_disabled_percent);
+  config.AddGroup(kDefaultGroup, kDefaultTrialID, new_fre_default_percent);
+
+  DCHECK_EQ(100, config.GetTotalProbability());
 
   // Associate field trial params to each group.
   AssociateFieldTrialParamsForNewMICEFREGroup(
@@ -244,105 +272,36 @@ int CreateNewMICeAndDefaultBrowserFRETrial(
   AssociateFieldTrialParamsForNewMICEFREGroup(
       kNewMICEFREWithTwoStepsSetGroup,
       kNewMobileIdentityConsistencyFREParamTwoSteps);
-  AssociateFieldTrialParamsForDefaultBrowserGroup(
-      kFREDefaultBrowserAndDefaultDelayBeforeOtherPromosGroup,
-      kFREDefaultBrowserPromoDefaultDelayParam);
-  AssociateFieldTrialParamsForDefaultBrowserGroup(
-      kFREDefaultBrowserAndSmallDelayBeforeOtherPromosGroup,
-      kFREDefaultBrowserPromoShortDelayParam);
-  AssociateFieldTrialParamsForDefaultBrowserGroup(
-      kDefaultBrowserPromoAtFirstRunOnlyGroup,
-      kFREDefaultBrowserPromoFirstRunOnlyParam);
 
-  scoped_refptr<base::FieldTrial> trial = config.CreateOneTimeRandomizedTrial(
-      /*default_group_name=*/kDefaultGroup, low_entropy_provider);
+  scoped_refptr<base::FieldTrial> trial =
+      config.CreateOneTimeRandomizedTrial(kDefaultGroup, low_entropy_provider);
 
-  // Finalize the group choice and activate the trial - similar to a variation
+  // Finalize the group choice and activates the trial - similar to a variation
   // config that's marked with |starts_active| true. This is required for
   // studies that register variation ids, so they don't reveal extra information
   // beyond the low-entropy source.
+  int group = trial->group();
   const std::string& group_name = trial->group_name();
-  if (group_name == kDefaultGroup) {
-    // Default behavior should be expected for default group; no configuration
-    // to override any feature status is needed.
-    return kCurrentTrialVersion;
-  }
-  if (group_name == kControlGroup) {
-    // Explicitly set the features to align with the default group behavior in
-    // case the default behavior of any experiment group changes before the
-    // experiment reaches an end.
-    feature_list->RegisterFieldTrialOverride(
-        kEnableFREUIModuleIOS.name, base::FeatureList::OVERRIDE_ENABLE_FEATURE,
-        trial.get());
-    feature_list->RegisterFieldTrialOverride(
-        signin::kNewMobileIdentityConsistencyFRE.name,
-        base::FeatureList::OVERRIDE_DISABLE_FEATURE, trial.get());
-    feature_list->RegisterFieldTrialOverride(
-        kEnableFREDefaultBrowserPromoScreen.name,
-        base::FeatureList::OVERRIDE_DISABLE_FEATURE, trial.get());
-    return kCurrentTrialVersion;
-  }
-  if (group_name == kHoldbackGroup) {
-    feature_list->RegisterFieldTrialOverride(
-        kEnableFREUIModuleIOS.name, base::FeatureList::OVERRIDE_DISABLE_FEATURE,
-        trial.get());
-    feature_list->RegisterFieldTrialOverride(
-        signin::kNewMobileIdentityConsistencyFRE.name,
-        base::FeatureList::OVERRIDE_DISABLE_FEATURE, trial.get());
-    feature_list->RegisterFieldTrialOverride(
-        kEnableFREDefaultBrowserPromoScreen.name,
-        base::FeatureList::OVERRIDE_DISABLE_FEATURE, trial.get());
-    return kCurrentTrialVersion;
-  }
-  feature_list->RegisterFieldTrialOverride(
-      kEnableFREUIModuleIOS.name, base::FeatureList::OVERRIDE_ENABLE_FEATURE,
-      trial.get());
-  if (group_name == kFREDefaultBrowserAndSmallDelayBeforeOtherPromosGroup ||
-      group_name == kFREDefaultBrowserAndDefaultDelayBeforeOtherPromosGroup ||
-      group_name == kDefaultBrowserPromoAtFirstRunOnlyGroup) {
-    feature_list->RegisterFieldTrialOverride(
-        signin::kNewMobileIdentityConsistencyFRE.name,
-        base::FeatureList::OVERRIDE_DISABLE_FEATURE, trial.get());
-    feature_list->RegisterFieldTrialOverride(
-        kEnableFREDefaultBrowserPromoScreen.name,
-        base::FeatureList::OVERRIDE_ENABLE_FEATURE, trial.get());
-    return kCurrentTrialVersion;
-  }
   if (group_name == kNewMICEFREWithUMADialogSetGroup ||
       group_name == kNewMICEFREWithThreeStepsSetGroup ||
       group_name == kNewMICEFREWithTwoStepsSetGroup) {
     feature_list->RegisterFieldTrialOverride(
         signin::kNewMobileIdentityConsistencyFRE.name,
         base::FeatureList::OVERRIDE_ENABLE_FEATURE, trial.get());
+  } else if (group_name == kDisabledGroup) {
     feature_list->RegisterFieldTrialOverride(
-        kEnableFREDefaultBrowserPromoScreen.name,
+        signin::kNewMobileIdentityConsistencyFRE.name,
         base::FeatureList::OVERRIDE_DISABLE_FEATURE, trial.get());
   }
-  return kCurrentTrialVersion;
+  return group;
 }
 
-void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterIntegerPref(kTrialGroupMICeAndDefaultBrowserVersionPrefName,
-                                kPlaceholderTrialVersion);
-}
+void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {}
 
 void Create(const base::FieldTrial::EntropyProvider& low_entropy_provider,
             base::FeatureList* feature_list,
             PrefService* local_state) {
-  if (FirstRun::IsChromeFirstRun()) {
-    // Create trial and group for the first time, and store the experiment
-    // version in prefs for subsequent runs.
-    int trial_version = CreateNewMICeAndDefaultBrowserFRETrial(
-        low_entropy_provider, feature_list);
-    local_state->SetInteger(kTrialGroupMICeAndDefaultBrowserVersionPrefName,
-                            trial_version);
-  } else if (local_state->GetInteger(
-                 kTrialGroupMICeAndDefaultBrowserVersionPrefName) ==
-             kCurrentTrialVersion) {
-    // The user was enrolled in this version of the experiment and was assigned
-    // to a group in a previous run, and should be kept in the same group.
-    CreateNewMICeAndDefaultBrowserFRETrial(low_entropy_provider, feature_list);
-  }
+  return;
 }
 
 }  // namespace fre_field_trial
