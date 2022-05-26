@@ -7,5 +7,5 @@
     android:shape="rectangle">
   <corners android:radius="@dimen/feed_header_background_corner_radius" />
   <stroke android:width="2dp" android:color="@android:color/transparent" />
-  <solid android:color="@color/feed_header_active_tab_bg_color_baseline"/>
+  <solid android:color="@color/section_header_active_tab_bg_color_baseline"/>
 </shape>

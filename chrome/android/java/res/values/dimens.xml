@@ -421,4 +421,8 @@
     <dimen name="virtual_card_enrollment_dialog_google_issuer_message_margin_top">8dp</dimen>
     <dimen name="virtual_card_enrollment_dialog_card_art_width">32dp</dimen>
     <dimen name="virtual_card_enrollment_dialog_card_art_height">20dp</dimen>
+
+    <!-- Section tab dimensions -->
+    <dimen name="section_tab_background_corner_radius">60dp</dimen>
+    <dimen name="section_tab_bezel_width">2dp</dimen>
 </resources>

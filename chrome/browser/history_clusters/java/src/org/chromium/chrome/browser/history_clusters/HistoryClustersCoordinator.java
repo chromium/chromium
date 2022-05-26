@@ -49,6 +49,7 @@ public class HistoryClustersCoordinator implements OnMenuItemClickListener {
     private HistoryClustersToolbar mToolbar;
     private SelectionDelegate mSelectionDelegate;
     private SelectableListLayout mSelectableListLayout;
+    private Function<ViewGroup, ViewGroup> mToggleViewFactory;
 
     /**
      * Construct a new HistoryClustersCoordinator.
@@ -61,11 +62,16 @@ public class HistoryClustersCoordinator implements OnMenuItemClickListener {
      *         tab, e.g. when we're operating in a dedicated history activity.
      * @param openUrlIntentCreator Function that creates an intent that opens the given url in the
      *         correct main browsing activity.
+     * @param toggleViewFactory Function that provides a toggle view container for the given parent
+     *         ViewGroup. This toggle is used to switch between the Journeys UI and the regular
+     *         history UI and is thus controlled by our parent component.
      */
     public HistoryClustersCoordinator(@NonNull Profile profile, @NonNull Context context,
             Supplier<Intent> historyActivityIntentFactory, @Nullable Supplier<Tab> tabSupplier,
-            Function<GURL, Intent> openUrlIntentCreator, TemplateUrlService templateUrlService) {
+            Function<GURL, Intent> openUrlIntentCreator, TemplateUrlService templateUrlService,
+            Function<ViewGroup, ViewGroup> toggleViewFactory) {
         mContext = context;
+        mToggleViewFactory = toggleViewFactory;
         mModelList = new ModelList();
         mToolbarModel = new PropertyModel.Builder(HistoryClustersToolbarProperties.ALL_KEYS)
                                 .with(HistoryClustersToolbarProperties.QUERY_STATE,
@@ -114,6 +120,8 @@ public class HistoryClustersCoordinator implements OnMenuItemClickListener {
                 HistoryClustersViewBinder::bindClusterView);
         mAdapter.registerType(ItemType.RELATED_SEARCHES, this::buildRelatedSearchesView,
                 HistoryClustersViewBinder::bindRelatedSearchesView);
+        mAdapter.registerType(ItemType.TOGGLE, mToggleViewFactory::apply,
+                HistoryClustersViewBinder::bindToggleView);
 
         LayoutInflater layoutInflater = LayoutInflater.from(mContext);
         mActivityContentView = (ViewGroup) layoutInflater.inflate(

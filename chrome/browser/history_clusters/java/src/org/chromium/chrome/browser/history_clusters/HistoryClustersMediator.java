@@ -195,6 +195,12 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
 
     private void queryComplete(HistoryClustersResult result) {
         boolean isQueryless = result.getQuery().isEmpty();
+        if (isQueryless) {
+            PropertyModel toggleModel = new PropertyModel(HistoryClustersItemProperties.ALL_KEYS);
+            ListItem toggleItem = new ListItem(ItemType.TOGGLE, toggleModel);
+            mModelList.add(toggleItem);
+        }
+
         for (HistoryCluster cluster : result.getClusters()) {
             PropertyModel clusterModel = new PropertyModel(HistoryClustersItemProperties.ALL_KEYS);
             clusterModel.set(HistoryClustersItemProperties.TITLE, cluster.getLabel());

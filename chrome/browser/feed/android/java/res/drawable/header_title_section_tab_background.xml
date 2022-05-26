@@ -8,14 +8,14 @@
         <shape
             android:shape="rectangle">
           <corners android:radius="@dimen/feed_header_background_corner_radius" />
-          <solid android:color="@color/feed_header_section_bg_color_disabled_baseline"/>
+          <solid android:color="@color/section_header_bg_color_disabled_baseline"/>
         </shape>
       </item>
       <item android:state_enabled="true">
         <shape
             android:shape="rectangle">
           <corners android:radius="@dimen/feed_header_background_corner_radius" />
-          <solid android:color="@color/feed_header_section_bg_color_baseline"/>
+          <solid android:color="@color/section_header_bg_color_baseline"/>
         </shape>
       </item>
 </selector>

@@ -789,7 +789,8 @@ public class RootUiCoordinator
                                        .setClass(mActivity, HistoryActivity.class)
                                        .putExtra(IntentHandler.EXTRA_PARENT_COMPONENT,
                                                mActivity.getComponentName()),
-                    mActivityTabProvider, (url) -> new Intent(), TemplateUrlServiceFactory.get());
+                    mActivityTabProvider,
+                    (url) -> new Intent(), TemplateUrlServiceFactory.get(), (vg) -> null);
             mHistoryClustersCoordinatorSupplier.set(mHistoryClustersCoordinator);
         }
     }

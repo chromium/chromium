@@ -188,8 +188,12 @@ public class HistoryClustersMediatorTest {
         mMediator.startQuery("");
         fulfillPromise(promise, mHistoryClustersResultEmptyQuery);
 
-        assertEquals(mModelList.size(), 2);
+        // Two clusters + the toggle view
+        assertEquals(mModelList.size(), mHistoryClustersResultEmptyQuery.getClusters().size() + 1);
         ListItem item = mModelList.get(0);
+        assertEquals(item.type, ItemType.TOGGLE);
+
+        item = mModelList.get(1);
         assertEquals(item.type, ItemType.CLUSTER);
         PropertyModel model = item.model;
         assertTrue(model.getAllSetProperties().containsAll(Arrays.asList(

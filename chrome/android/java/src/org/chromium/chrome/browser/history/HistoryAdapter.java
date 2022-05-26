@@ -19,6 +19,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
+import org.chromium.base.Function;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.history.HistoryProvider.BrowsingHistoryObserver;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -51,6 +52,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     private Button mClearBrowsingDataButton;
     private HeaderItem mPrivacyDisclaimerHeaderItem;
     private HeaderItem mClearBrowsingDataButtonHeaderItem;
+    private HeaderItem mHistoryToggleHeaderItem;
 
     // Footers
     private MoreProgressButton mMoreProgressButton;
@@ -69,12 +71,17 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     private String mHostName;
 
     private boolean mDisableScrollToLoadForTest;
+    private boolean mShowHistoryToggle;
+    private Function<ViewGroup, ViewGroup> mToggleViewFactory;
 
-    public HistoryAdapter(HistoryContentManager manager, HistoryProvider provider) {
+    public HistoryAdapter(HistoryContentManager manager, HistoryProvider provider,
+            boolean showHistoryToggle, Function<ViewGroup, ViewGroup> toggleViewFactory) {
+        mToggleViewFactory = toggleViewFactory;
         setHasStableIds(true);
         mHistoryProvider = provider;
         mHistoryProvider.setObserver(this);
         mManager = manager;
+        mShowHistoryToggle = showHistoryToggle;
         mFaviconHelper = new DefaultFaviconHelper();
         mItemViews = new ArrayList<>();
     }
@@ -93,9 +100,9 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     }
 
     /**
-     * Initializes the HistoryAdapter and loads the first set of browsing history items.
+     * Starts loading the first set of browsing history items.
      */
-    public void initialize() {
+    public void startLoadingItems() {
         mAreHeadersInitialized = false;
         mIsLoadingItems = true;
         mClearOnNextQueryComplete = true;
@@ -159,7 +166,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         mIsSearching = false;
 
         // Re-initialize the data in the adapter.
-        initialize();
+        startLoadingItems();
     }
 
     /**
@@ -186,7 +193,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         for (HistoryItemView itemView : mItemViews) {
             itemView.onSignInStateChange();
         }
-        initialize();
+        startLoadingItems();
         updateClearBrowsingDataButtonVisibility();
     }
 
@@ -261,7 +268,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         mManager.clearSelection();
         // TODO(twellington): Account for items that have been paged in due to infinite scroll.
         //                    This currently removes all items and re-issues a query.
-        initialize();
+        startLoadingItems();
     }
 
     @Override
@@ -343,6 +350,12 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
 
         mPrivacyDisclaimerHeaderItem = new HeaderItem(0, privacyDisclaimerContainer);
         mClearBrowsingDataButtonHeaderItem = new HeaderItem(1, clearBrowsingDataButtonContainer);
+
+        ViewGroup toggleContainer = mToggleViewFactory.apply(null);
+        if (toggleContainer != null) {
+            mHistoryToggleHeaderItem = new HeaderItem(2, toggleContainer);
+        }
+
         updateClearBrowsingDataButtonVisibility();
         setPrivacyDisclaimer();
     }
@@ -354,6 +367,10 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         ArrayList<HeaderItem> args = new ArrayList<>();
         if (mPrivacyDisclaimersVisible) args.add(mPrivacyDisclaimerHeaderItem);
         if (mClearBrowsingDataButtonVisible) args.add(mClearBrowsingDataButtonHeaderItem);
+        if (mShowHistoryToggle && mHistoryToggleHeaderItem != null) {
+            args.add(mHistoryToggleHeaderItem);
+        }
+
         setHeaders(args.toArray(new HeaderItem[args.size()]));
     }
 

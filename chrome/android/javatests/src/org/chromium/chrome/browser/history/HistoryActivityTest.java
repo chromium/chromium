@@ -22,6 +22,7 @@ import android.content.Intent;
 import android.provider.Browser;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -30,6 +31,8 @@ import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 import androidx.test.espresso.intent.matcher.IntentMatchers;
 import androidx.test.espresso.intent.rule.IntentsTestRule;
 import androidx.test.filters.SmallTest;
+
+import com.google.android.material.tabs.TabLayout;
 
 import org.hamcrest.Matcher;
 import org.junit.Assert;
@@ -46,8 +49,10 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.history.HistoryTestUtils.TestObserver;
+import org.chromium.chrome.browser.history_clusters.HistoryClustersCoordinator;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.PrefChangeRegistrar;
@@ -97,6 +102,7 @@ public class HistoryActivityTest {
     private RecyclerView mRecyclerView;
     private TestObserver mTestObserver;
     private PrefChangeRegistrar mPrefChangeRegistrar;
+    private HistoryClustersCoordinator mHistoryClustersCoordinator;
 
     private HistoryItem mItem1;
     private HistoryItem mItem2;
@@ -128,12 +134,19 @@ public class HistoryActivityTest {
         launchHistoryActivity();
         HistoryTestUtils.setupHistoryTestHeaders(mAdapter, mTestObserver);
 
-        Assert.assertEquals(4, mAdapter.getItemCount());
+        int expectedItemCount = 4;
+        // When Journeys is enabled, there is an additional header item.
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.HISTORY_JOURNEYS)) {
+            expectedItemCount += 1;
+        }
+
+        Assert.assertEquals(expectedItemCount, mAdapter.getItemCount());
     }
 
     private void launchHistoryActivity() {
         HistoryActivity activity = mActivityTestRule.launchActivity(null);
         mHistoryManager = activity.getHistoryManagerForTests();
+        mHistoryClustersCoordinator = mHistoryManager.getHistoryClustersCoordinatorForTests();
         mAdapter = mHistoryManager.getContentManagerForTests().getAdapter();
         mRecyclerView = mHistoryManager.getContentManagerForTests().getRecyclerView();
         mTestObserver = new TestObserver();
@@ -608,6 +621,35 @@ public class HistoryActivityTest {
             toggleItemSelection(3);
             Assert.assertFalse(toolbar.getItemById(R.id.selection_mode_copy_link).isVisible());
         }
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.HISTORY_JOURNEYS)
+    public void testToggleToJourneysAndBack() {
+        TabLayout toggle =
+                mActivityTestRule.getActivity().findViewById(R.id.history_toggle_tab_layout);
+        TabLayout.Tab journeysTab = toggle.getTabAt(1);
+
+        Assert.assertFalse(journeysTab.isSelected());
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> toggle.selectTab(journeysTab));
+        CriteriaHelper.pollUiThread(() -> {
+            ViewGroup activityContentView = mHistoryClustersCoordinator.getActivityContentView();
+            return mHistoryManager.getView().getChildAt(0) == activityContentView
+                    && activityContentView.findViewById(R.id.history_toggle_tab_layout) != null;
+        });
+
+        TabLayout journeysToggle =
+                mHistoryClustersCoordinator.getActivityContentView().findViewById(
+                        R.id.history_toggle_tab_layout);
+        TabLayout.Tab historyTab = journeysToggle.getTabAt(0);
+        Assert.assertFalse(historyTab.isSelected());
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> journeysToggle.selectTab(historyTab));
+        CriteriaHelper.pollUiThread(()
+                                            -> mHistoryManager.getView().getChildAt(0)
+                        == mHistoryManager.getSelectableListLayout());
     }
 
     // TODO(yolandyan): rewrite this with espresso

@@ -6,10 +6,14 @@ package org.chromium.chrome.browser.history;
 
 import android.app.Activity;
 import android.text.TextUtils;
+import android.transition.AutoTransition;
+import android.transition.Transition;
+import android.transition.TransitionManager;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -18,6 +22,9 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.widget.Toolbar.OnMenuItemClickListener;
 import androidx.recyclerview.widget.LinearLayoutManager;
+
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayout.OnTabSelectedListener;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
@@ -63,11 +70,14 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
     // UMA_MAX_BUCKET_VALUE and UMA_MAX_SUBSET_BUCKET_VALUE, and adds +1
     // for overflow. How do we keep that in sync with this code?
     private static final int UMA_BUCKET_COUNT = 11;
+    private static final int HISTORY_TAB_INDEX = 0;
+    private static final int JOURNEYS_TAB_INDEX = 1;
 
     private final Activity mActivity;
     private final boolean mIsIncognito;
     private final boolean mIsSeparateActivity;
-    private final ViewGroup mRootView;
+    private ViewGroup mRootView;
+    private ViewGroup mContentView;
     private SelectableListLayout<HistoryItem> mSelectableListLayout;
     private HistoryContentManager mContentManager;
     private SelectionDelegate<HistoryItem> mSelectionDelegate;
@@ -108,6 +118,8 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
             return;
         }
 
+        mRootView = new FrameLayout(mActivity);
+
         boolean historyClustersEnabled =
                 ChromeFeatureList.isEnabled(ChromeFeatureList.HISTORY_JOURNEYS);
         if (historyClustersEnabled) {
@@ -115,15 +127,8 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
                     Profile.getLastUsedRegularProfile(), activity, null, tabSupplier,
                     (url)
                             -> HistoryContentManager.createOpenUrlIntent(url, mActivity),
-                    TemplateUrlServiceFactory.get());
-            if (!TextUtils.isEmpty(historyClustersQuery)) {
-                mHistoryClustersCoordinator.setQuery(historyClustersQuery);
-            }
-        }
-
-        if (showHistoryClustersImmediately) {
-            mRootView = mHistoryClustersCoordinator.getActivityContentView();
-            return;
+                    TemplateUrlServiceFactory.get(),
+                    (vg) -> buildToggleView(vg, JOURNEYS_TAB_INDEX));
         }
 
         // 1. Create selectable components.
@@ -132,14 +137,14 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
                         R.layout.history_main, null);
         mSelectionDelegate = new SelectionDelegate<>();
         mSelectionDelegate.addObserver(this);
-        mRootView = mSelectableListLayout;
 
         // 2. Create HistoryContentManager and initialize recycler view.
         boolean shouldShowInfoHeader = SharedPreferencesManager.getInstance().readBoolean(
                 ChromePreferenceKeys.HISTORY_SHOW_HISTORY_INFO, true);
         mContentManager = new HistoryContentManager(mActivity, this, isSeparateActivity,
                 isIncognito, shouldShowInfoHeader, /* shouldShowClearData */ true,
-                /* hostName */ null, mSelectionDelegate, tabSupplier);
+                /* hostName */ null, mSelectionDelegate, tabSupplier, historyClustersEnabled,
+                (vg) -> buildToggleView(vg, HISTORY_TAB_INDEX));
         mSelectableListLayout.initializeRecyclerView(
                 mContentManager.getAdapter(), mContentManager.getRecyclerView());
 
@@ -159,7 +164,46 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
         mEmptyView = mSelectableListLayout.initializeEmptyView(R.string.history_manager_empty);
 
         // 6. Load items.
-        mContentManager.initialize();
+        mContentManager.startLoadingItems();
+
+        if (showHistoryClustersImmediately) {
+            mContentView = mHistoryClustersCoordinator.getActivityContentView();
+            if (!TextUtils.isEmpty(historyClustersQuery)) {
+                mHistoryClustersCoordinator.setQuery(historyClustersQuery);
+            }
+        } else {
+            mContentView = mSelectableListLayout;
+        }
+        mRootView.addView(mContentView);
+    }
+
+    private ViewGroup buildToggleView(ViewGroup parent, int selectedIndex) {
+        ViewGroup viewGroup = (ViewGroup) LayoutInflater.from(mActivity).inflate(
+                R.layout.history_toggle, parent, false);
+
+        TabLayout tabLayout = viewGroup.findViewById(R.id.history_toggle_tab_layout);
+        TabLayout.Tab selectedTab = tabLayout.getTabAt(selectedIndex);
+        tabLayout.selectTab(selectedTab);
+        tabLayout.addOnTabSelectedListener(new OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                if (tab != selectedTab) {
+                    swapContentView();
+                    // One TabLayout exists for each of the two surfaces. In order for the correct
+                    // tab to be selected when returning to the current surface, we need to reset
+                    // it.
+                    tabLayout.selectTab(selectedTab);
+                }
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {}
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {}
+        });
+
+        return viewGroup;
     }
 
     /**
@@ -279,6 +323,24 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
         placeholderView.setFocusable(true);
         placeholderView.setFocusableInTouchMode(true);
         return placeholderView;
+    }
+
+    private void swapContentView() {
+        if (shouldShowIncognitoPlaceholder()) {
+            return;
+        } else if (mContentView == mSelectableListLayout && mHistoryClustersCoordinator != null) {
+            mContentView = mHistoryClustersCoordinator.getActivityContentView();
+            mHistoryClustersCoordinator.setQuery("");
+        } else {
+            mContentView = mSelectableListLayout;
+            mContentManager.startLoadingItems();
+        }
+
+        Transition tabSafeTransition = new AutoTransition();
+        tabSafeTransition.excludeTarget(TabLayout.class, /* exclude= */ true);
+        TransitionManager.beginDelayedTransition(mRootView, tabSafeTransition);
+        mRootView.removeAllViews();
+        mRootView.addView(mContentView);
     }
 
     /**
@@ -487,5 +549,11 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
     @VisibleForTesting
     HistoryManagerToolbar getToolbarForTests() {
         return mToolbar;
+    }
+
+    @VisibleForTesting
+    @Nullable
+    HistoryClustersCoordinator getHistoryClustersCoordinatorForTests() {
+        return mHistoryClustersCoordinator;
     }
 }

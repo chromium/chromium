@@ -86,9 +86,9 @@
     <color name="filled_button_bg_color_disabled">@color/filled_button_bg_color_disabled_light</color>
     <color name="divider_line_bg_color_baseline">@color/divider_line_bg_color_light</color>
     <color name="omnibox_bg_color">@color/omnibox_bg_color_dark</color>
-    <color name="feed_header_active_tab_bg_color_baseline">@color/default_bg_color_dark_elev_4_baseline</color>
-    <color name="feed_header_section_bg_color_baseline">@color/default_bg_color_dark_elev_1_baseline</color>
-    <color name="feed_header_section_bg_color_disabled_baseline">@color/default_bg_color_dark_elev_1_baseline</color>
+    <color name="section_header_active_tab_bg_color_baseline">@color/default_bg_color_dark_elev_4_baseline</color>
+    <color name="section_header_bg_color_baseline">@color/default_bg_color_dark_elev_1_baseline</color>
+    <color name="section_header_bg_color_disabled_baseline">@color/default_bg_color_dark_elev_1_baseline</color>
     <color name="image_loading_color">@color/image_loading_color_light</color>
     <color name="promo_illustration_bg_color">@color/promo_illustration_bg_color_dark</color>
     <color name="preference_highlighted_bg_color">@color/preference_highlighted_bg_color_light</color>

@@ -87,4 +87,10 @@ class HistoryClustersViewBinder {
                     model.get(HistoryClustersItemProperties.VISIBILITY));
         }
     }
+
+    public static void bindToggleView(
+            PropertyModel propertyModel, View view, PropertyKey propertyKey) {
+        // The toggle view's appearance and behavior are dictated by our parent component, so we
+        // don't manipulate it here.
+    }
 }

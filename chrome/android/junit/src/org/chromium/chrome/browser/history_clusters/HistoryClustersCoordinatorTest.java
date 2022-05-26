@@ -12,6 +12,8 @@ import android.view.ViewGroup;
 
 import androidx.test.core.app.ActivityScenario;
 
+import com.google.android.material.tabs.TabLayout;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -72,6 +74,8 @@ public class HistoryClustersCoordinatorTest {
     LargeIconBridge.Natives mMockLargeIconBridgeJni;
     @Mock
     private TemplateUrlService mTemplateUrlService;
+    @Mock
+    private TabLayout mToggleView;
 
     private ActivityScenario<ChromeTabbedActivity> mActivityScenario;
     private HistoryClustersCoordinator mHistoryClustersCoordinator;
@@ -87,7 +91,9 @@ public class HistoryClustersCoordinatorTest {
         mActivityScenario = ActivityScenario.launch(ChromeTabbedActivity.class);
         mActivityScenario.onActivity(activity -> {
             mHistoryClustersCoordinator = new HistoryClustersCoordinator(mProfile, activity,
-                    () -> mIntent, () -> mTab, (url) -> new Intent(), mTemplateUrlService);
+                    ()
+                            -> mIntent,
+                    () -> mTab, (url) -> new Intent(), mTemplateUrlService, (vg) -> mToggleView);
         });
     }
 

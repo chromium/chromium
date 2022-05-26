@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.provider.Browser;
 import android.view.ContextThemeWrapper;
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -23,6 +24,7 @@ import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.Function;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
@@ -122,12 +124,16 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
      *         unselectable items.
      * @param tabSupplier Supplies the current tab, null if the history UI will be shown in a
      *                    separate activity.
+     * @param toggleViewFactory Function that provides a toggle view container for the given parent
+     *         ViewGroup. This toggle is used to switch between the Journeys UI and the regular
+     *         history UI and is thus controlled by our parent component.
      */
     public HistoryContentManager(@NonNull Activity activity, @NonNull Observer observer,
             boolean isSeparateActivity, boolean isIncognito, boolean shouldShowPrivacyDisclaimers,
             boolean shouldShowClearData, @Nullable String hostName,
             @Nullable SelectionDelegate<HistoryItem> selectionDelegate,
-            @Nullable Supplier<Tab> tabSupplier) {
+            @Nullable Supplier<Tab> tabSupplier, boolean showHistoryToggle,
+            Function<ViewGroup, ViewGroup> toggleViewFactory) {
         mActivity = activity;
         mObserver = observer;
         mIsSeparateActivity = isSeparateActivity;
@@ -162,7 +168,8 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
         // explicitly redirects to use regular profile for Incognito case.
         Profile profile = Profile.getLastUsedRegularProfile();
         mHistoryAdapter = new HistoryAdapter(this,
-                sProviderForTests != null ? sProviderForTests : new BrowsingHistoryBridge(profile));
+                sProviderForTests != null ? sProviderForTests : new BrowsingHistoryBridge(profile),
+                showHistoryToggle, toggleViewFactory);
 
         // Create a recycler view.
         mRecyclerView =
@@ -218,11 +225,11 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
         mPrefChangeRegistrar.addObserver(Pref.INCOGNITO_MODE_AVAILABILITY, this);
     }
 
-    /** Initialize the HistoryContentManager to start loading items. */
-    public void initialize() {
+    /** Tell the HistoryContentManager to start loading items. */
+    public void startLoadingItems() {
         // Filtering the adapter to only the results from this particular host.
         mHistoryAdapter.setHostName(mHostName);
-        mHistoryAdapter.initialize();
+        mHistoryAdapter.startLoadingItems();
     }
 
     /** @return The RecyclerView for this HistoryContentManager. */
