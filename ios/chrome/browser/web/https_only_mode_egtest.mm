@@ -497,11 +497,9 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
   // elements. Not currently supported by MetricsAppInterface.
 }
 
-// Navigate to an HTTP URL and allowlist the URL. Then clear browsing data via
-// UI settings. This should clear the HTTP allowlist.
-// Disable the test due to try bot failure.
-// TODO (crbug.com/1328537): please re-enable it after fix.
-- (void)DISABLED_testUpgrade_RemoveBrowsingData_ShouldClearAllowlist {
+// Navigate to an HTTP URL and allowlist the URL. Then clear browsing data.
+// This should clear the HTTP allowlist.
+- (void)testUpgrade_RemoveBrowsingData_ShouldClearAllowlist {
   [HttpsOnlyModeAppInterface setHTTPPortForTesting:self.testServer->port()];
   [HttpsOnlyModeAppInterface
       setHTTPSPortForTesting:self.badHTTPSServer->port()];
@@ -524,15 +522,16 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
   [ChromeEarlGrey waitForWebStateContainingText:"HTTP_RESPONSE"];
   [self assertFailedUpgrade:1];
 
-  // Clear the allowlist by clearing the browsing data.
-  [ChromeEarlGreyUI clearAllBrowsingData];
+  // Clear the allowlist by clearing the browsing data. This clears the history
+  // programmatically, so it won't automatically reload the tabs.
+  [ChromeEarlGrey clearBrowsingHistory];
 
-  // Clearing the browsing data automatically reloads tabs. Check that the
-  // interstitial is showing.
+  // Reloading the should show the interstitial again.
+  [ChromeEarlGrey reload];
   [ChromeEarlGrey waitForWebStateContainingText:kInterstitialText];
   [self assertFailedUpgrade:2];
 
-  // Reloading the should show the interstitial again.
+  // Reload once more.
   [ChromeEarlGrey reload];
   [ChromeEarlGrey waitForWebStateContainingText:kInterstitialText];
   [self assertFailedUpgrade:3];
