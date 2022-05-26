@@ -915,9 +915,9 @@ WebInputEventResult EventHandler::HandleMousePressEvent(
        event_result == WebInputEventResult::kNotHandled) ||
       mev.GetScrollbar()) {
     mouse_event_manager_->SetCapturesDragging(true);
-    // Main frames don't implicitly capture mouse input on MouseDown, just
-    // subframes do (regardless of whether local or remote).
-    if (!frame_->IsMainFrame())
+    // Outermost main frames don't implicitly capture mouse input on MouseDown,
+    // all subframes do (regardless of whether local or remote or fenced).
+    if (frame_->IsAttached() && !frame_->IsOutermostMainFrame())
       CaptureMouseEventsToWidget(true);
   } else {
     mouse_event_manager_->SetCapturesDragging(false);
