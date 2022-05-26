@@ -4,9 +4,10 @@
 # found in the LICENSE file.
 
 import sys
-import os
+from pathlib import Path
 
-sys.path += [os.path.dirname(os.path.dirname(__file__))]
+if len(Path(__file__).parents) > 2:
+    sys.path += [str(Path(__file__).parents[2])]
 
 from style_variable_generator.find_invalid_css_variables import FindInvalidCSSVariables
 import unittest
@@ -103,8 +104,7 @@ a:1:--test-toolbar'''
 }
         '''
         self.assertRaises(KeyError,
-                          FindInvalidCSSVariables,
-                          {'test': json_string},
+                          FindInvalidCSSVariables, {'test': json_string},
                           git_runner=GitResult)
 
 

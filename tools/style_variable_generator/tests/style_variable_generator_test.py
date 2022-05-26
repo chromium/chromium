@@ -5,7 +5,10 @@
 
 import sys
 import os
-sys.path += [os.path.dirname(os.path.dirname(__file__))]
+from pathlib import Path
+
+if len(Path(__file__).parents) > 2:
+    sys.path += [str(Path(__file__).parents[2])]
 
 from style_variable_generator.base_generator import Modes
 from style_variable_generator.css_generator import CSSStyleGenerator
@@ -14,10 +17,13 @@ from style_variable_generator.views_generator import ViewsHStyleGenerator, Views
 from style_variable_generator.ts_generator import TSStyleGenerator
 import unittest
 
+print(os.path.join(os.path.dirname(__file__)))
+
 
 class BaseStyleGeneratorTest:
     def assertEqualToFile(self, value, filename):
-        with open(filename, 'r') as f:
+        path = os.path.join(os.path.dirname(__file__), 'goldens', filename)
+        with open(path, 'r') as f:
             self.maxDiff = None
             self.assertEqual(value, f.read())
 
@@ -27,11 +33,18 @@ class BaseStyleGeneratorTest:
         self.assertEqualToFile(self.generator.Render(),
                                self.expected_output_file)
 
+    def AddJSONFilesToModel(self, files):
+        relpaths_from_cwd = [
+            os.path.relpath(os.path.join(os.path.dirname(__file__), f),
+                            os.getcwd()) for f in files
+        ]
+        self.generator.AddJSONFilesToModel(relpaths_from_cwd)
+
 
 class ViewsStyleHGeneratorTest(unittest.TestCase, BaseStyleGeneratorTest):
     def setUp(self):
         self.generator = ViewsHStyleGenerator()
-        self.generator.AddJSONFilesToModel(
+        self.AddJSONFilesToModel(
             ['colors_test_palette.json5', 'colors_test.json5'])
         self.expected_output_file = 'colors_test_expected.h.generated'
 
@@ -39,7 +52,7 @@ class ViewsStyleHGeneratorTest(unittest.TestCase, BaseStyleGeneratorTest):
 class ViewsStyleCCGeneratorTest(unittest.TestCase, BaseStyleGeneratorTest):
     def setUp(self):
         self.generator = ViewsCCStyleGenerator()
-        self.generator.AddJSONFilesToModel(
+        self.AddJSONFilesToModel(
             ['colors_test_palette.json5', 'colors_test.json5'])
         self.expected_output_file = 'colors_test_expected.cc.generated'
 
@@ -47,7 +60,7 @@ class ViewsStyleCCGeneratorTest(unittest.TestCase, BaseStyleGeneratorTest):
 class CSSStyleGeneratorTest(unittest.TestCase, BaseStyleGeneratorTest):
     def setUp(self):
         self.generator = CSSStyleGenerator()
-        self.generator.AddJSONFilesToModel(
+        self.AddJSONFilesToModel(
             ['colors_test_palette.json5', 'colors_test.json5'])
         self.expected_output_file = 'colors_test_expected.css'
 
@@ -72,13 +85,13 @@ class CSSStyleGeneratorTest(unittest.TestCase, BaseStyleGeneratorTest):
 
     def testUntypedCSS(self):
         self.generator = CSSStyleGenerator()
-        self.generator.AddJSONFilesToModel(['untyped_css_test.json5'])
+        self.AddJSONFilesToModel(['untyped_css_test.json5'])
         expected_file_name = 'untyped_css_test_expected.css'
         self.assertEqualToFile(self.generator.Render(), expected_file_name)
 
     def testTypography(self):
         self.generator = CSSStyleGenerator()
-        self.generator.AddJSONFilesToModel(['typography_test.json5'])
+        self.AddJSONFilesToModel(['typography_test.json5'])
         expected_file_name = 'typography_test_expected.css'
         self.assertEqualToFile(self.generator.Render(), expected_file_name)
 
@@ -91,7 +104,7 @@ class CSSStyleGeneratorTest(unittest.TestCase, BaseStyleGeneratorTest):
 class TSStyleGeneratorTest(unittest.TestCase, BaseStyleGeneratorTest):
     def setUp(self):
         self.generator = TSStyleGenerator()
-        self.generator.AddJSONFilesToModel(
+        self.AddJSONFilesToModel(
             ['colors_test_palette.json5', 'colors_test.json5'])
         self.expected_output_file = 'colors_test_expected.ts'
 
@@ -102,20 +115,20 @@ class TSStyleGeneratorTest(unittest.TestCase, BaseStyleGeneratorTest):
 
     def testTypography(self):
         expected_file_name = 'colors_test_typography_expected.ts'
-        self.generator.AddJSONFilesToModel(['typography_test.json5'])
+        self.AddJSONFilesToModel(['typography_test.json5'])
         self.generator.generator_options = {'include_style_sheet': 'true'}
         self.assertEqualToFile(self.generator.Render(), expected_file_name)
 
     def testUntypedCSS(self):
         expected_file_name = 'colors_test_untyped_css_expected.ts'
-        self.generator.AddJSONFilesToModel(['untyped_css_test.json5'])
+        self.AddJSONFilesToModel(['untyped_css_test.json5'])
         self.generator.generator_options = {'include_style_sheet': 'true'}
         self.assertEqualToFile(self.generator.Render(), expected_file_name)
 
     def testTypographyAndUntypedCSS(self):
         expected_file_name = (
             'colors_test_typography_and_untyped_css_expected.ts')
-        self.generator.AddJSONFilesToModel(
+        self.AddJSONFilesToModel(
             ['typography_test.json5', 'untyped_css_test.json5'])
         self.generator.generator_options = {'include_style_sheet': 'true'}
         self.assertEqualToFile(self.generator.Render(), expected_file_name)
@@ -129,7 +142,7 @@ class TSStyleGeneratorTest(unittest.TestCase, BaseStyleGeneratorTest):
 class ProtoStyleGeneratorTest(unittest.TestCase, BaseStyleGeneratorTest):
     def setUp(self):
         self.generator = ProtoStyleGenerator()
-        self.generator.AddJSONFilesToModel(
+        self.AddJSONFilesToModel(
             ['colors_test_palette.json5', 'colors_test.json5'])
         self.expected_output_file = 'colors_test_expected.proto'
 
@@ -144,14 +157,14 @@ class ProtoJSONStyleGeneratorTest(unittest.TestCase, BaseStyleGeneratorTest):
             # can confirm we do not generate duplicate fields.
             'additional_colors_test.json5',
         ]
-        self.generator.AddJSONFilesToModel(paths)
+        self.AddJSONFilesToModel(paths)
         self.expected_output_file = 'colors_test_expected.protojson'
 
 
 class BlendStyleGeneratorTest(unittest.TestCase, BaseStyleGeneratorTest):
     def setUp(self):
         self.generator = CSSStyleGenerator()
-        self.generator.AddJSONFilesToModel(
+        self.AddJSONFilesToModel(
             ['colors_test_palette.json5', 'blend_colors_test.json5'])
         self.expected_output_file = 'blend_colors_test_expected.css'
 
@@ -159,7 +172,7 @@ class BlendStyleGeneratorTest(unittest.TestCase, BaseStyleGeneratorTest):
 class InvertedStyleGeneratorTest(unittest.TestCase, BaseStyleGeneratorTest):
     def setUp(self):
         self.generator = CSSStyleGenerator()
-        self.generator.AddJSONFilesToModel(
+        self.AddJSONFilesToModel(
             ['colors_test_palette.json5', 'inverted_colors_test.json5'])
         self.expected_output_file = 'inverted_colors_test_expected.css'
 

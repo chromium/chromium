@@ -25,7 +25,7 @@ def _CommonChecks(input_api, output_api):
     results = input_api.canned_checks.RunUnitTestsInDirectory(
         input_api,
         output_api,
-        '.',
+        'tests',
         files_to_check=TEST_PATTERNS,
         env=env,
         run_on_python2=False,

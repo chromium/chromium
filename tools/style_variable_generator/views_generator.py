@@ -101,7 +101,7 @@ class ViewsCCStyleGenerator(ViewsStyleGenerator):
 
     def Render(self):
         self.Validate()
-        return self.ApplyTemplate(self, 'views_generator_cc.tmpl',
+        return self.ApplyTemplate(self, 'templates/views_generator_cc.tmpl',
                                   self.GetParameters())
 
 
@@ -115,5 +115,5 @@ class ViewsHStyleGenerator(ViewsStyleGenerator):
 
     def Render(self):
         self.Validate()
-        return self.ApplyTemplate(self, 'views_generator_h.tmpl',
+        return self.ApplyTemplate(self, 'templates/views_generator_h.tmpl',
                                   self.GetParameters())

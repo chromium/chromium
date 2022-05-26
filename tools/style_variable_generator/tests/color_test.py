@@ -3,9 +3,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import sys
 import os
-sys.path += [os.path.dirname(os.path.dirname(__file__))]
+import sys
+from pathlib import Path
+
+if len(Path(__file__).parents) > 2:
+    sys.path += [str(Path(__file__).parents[2])]
 
 from style_variable_generator.color import Color, split_args
 import unittest

@@ -13,7 +13,8 @@ def _CheckSemanticColors(input_api, output_api):
     indicates we need to verify the variable.
     """
     file_filter = lambda f: input_api.FilterSourceFile(
-        f, files_to_check=(r'.+\.css', r'.+\.htm(l){1,}$', r'.+\.js$'))
+        f, files_to_check=(r'.+\.css', r'.+\.htm(l){1,}$', r'.+\.js$'),
+        files_to_skip=[r'.*test.*'])
     affected_files = input_api.AffectedFiles(include_deletes=False,
                                              file_filter=file_filter)
     if not affected_files:

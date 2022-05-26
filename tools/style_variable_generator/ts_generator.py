@@ -14,7 +14,7 @@ class TSStyleGenerator(CSSStyleGenerator):
 
     def Render(self):
         self.Validate()
-        return self.ApplyTemplate(self, 'ts_generator.tmpl',
+        return self.ApplyTemplate(self, 'templates/ts_generator.tmpl',
                                   self.GetParameters())
 
     def GetParameters(self):

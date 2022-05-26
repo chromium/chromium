@@ -82,7 +82,7 @@ class ProtoStyleGenerator(BaseProtoStyleGenerator):
 
     def Render(self):
         self.Validate()
-        return self.ApplyTemplate(self, 'proto_generator.tmpl',
+        return self.ApplyTemplate(self, 'templates/proto_generator.tmpl',
                                   self.GetParameters())
 
 
@@ -96,5 +96,5 @@ class ProtoJSONStyleGenerator(BaseProtoStyleGenerator):
 
     def Render(self):
         self.Validate()
-        return self.ApplyTemplate(self, 'proto_json_generator.tmpl',
+        return self.ApplyTemplate(self, 'templates/proto_json_generator.tmpl',
                                   self.GetParameters())

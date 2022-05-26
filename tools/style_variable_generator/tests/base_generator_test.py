@@ -3,10 +3,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import os
 import sys
+from pathlib import Path
 
-sys.path += [os.path.dirname(os.path.dirname(__file__))]
+if len(Path(__file__).parents) > 2:
+    sys.path += [str(Path(__file__).parents[2])]
 
 from style_variable_generator.base_generator import BaseGenerator, VariableType, Modes
 import unittest
@@ -22,8 +23,8 @@ class BaseGeneratorTest(unittest.TestCase):
         return opacity_model.ResolveOpacity(opacity, mode).a
 
     def ResolveRGBA(self, name, mode=Modes.LIGHT):
-        return repr(
-            self.generator.model[VariableType.COLOR].ResolveToRGBA(name, mode))
+        return repr(self.generator.model[VariableType.COLOR].ResolveToRGBA(
+            name, mode))
 
     def testMissingColor(self):
         # google_grey_900 is missing.
@@ -136,7 +137,8 @@ class BaseGeneratorTest(unittest.TestCase):
         self.assertEqual(self.ResolveRGBA('google_grey_900'),
                          'rgba(255, 255, 255, 0.5)')
         self.assertEqual(self.ResolveOpacity('disabled_opacity'), 0.5)
-        self.assertEqual(self.ResolveOpacity('disabled_opacity', Modes.DARK), 1)
+        self.assertEqual(self.ResolveOpacity('disabled_opacity', Modes.DARK),
+                         1)
 
     def testMissingOpacity(self):
         # Reference a missing opacity.

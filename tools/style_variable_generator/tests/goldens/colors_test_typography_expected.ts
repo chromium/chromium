@@ -3,10 +3,9 @@
  * found in the LICENSE file. */
 
 /* This file is generated from:
- *  colors_test.json5
- *  colors_test_palette.json5
- *  typography_test.json5
- *  untyped_css_test.json5
+ *  tests/colors_test.json5
+ *  tests/colors_test_palette.json5
+ *  tests/typography_test.json5
  */
 
 import {css} from 'lit';
@@ -55,12 +54,7 @@ const DARK_MODE_OVERRIDES_CSS = window ? `
   --cros-reference-opacity: 1;
 ` : '';
 
-const UNTYPED_CSS = window ? `
-  /* shadows */
-  --cros-elevation-1-shadow: 0px 1px 2px rgba(0, 0, 0, 0.3), 0px 1px 3px rgba(0, 0, 0, 0.15);
-  --cros-elevation-2-shadow: 0px 1px 2px rgba(0, 0, 0, 0.3), 0px 2px 6px rgba(0, 0, 0, 0.15);
-  --cros-elevation-3-shadow: 0px 1px 3px rgba(0, 0, 0, 0.3), 0px 4px 8px rgba(0, 0, 0, 0.15);
-` : '';
+const UNTYPED_CSS = window ? `` : '';
 
 const TYPOGRAPHY_CSS = window ? `
   /* font families */
@@ -141,10 +135,6 @@ export const TOGGLE_COLOR = css`var(--cros-toggle-color)`;
 export const BG_COLOR_ELEVATION_1 = css`var(--cros-bg-color-elevation-1)`;
 export const DISABLED_OPACITY = css`var(--cros-disabled-opacity)`;
 export const REFERENCE_OPACITY = css`var(--cros-reference-opacity)`;
-
-export const ELEVATION_1_SHADOW = css`var(--cros-elevation-1-shadow)`;
-export const ELEVATION_2_SHADOW = css`var(--cros-elevation-2-shadow)`;
-export const ELEVATION_3_SHADOW = css`var(--cros-elevation-3-shadow)`;
 
 export const FONT_FAMILY_TEST = css`var(--cros-font-family-test-font)`;
 export const FONT_FAMILY_OTHER = css`var(--cros-font-family-other-font)`;

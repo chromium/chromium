@@ -42,7 +42,7 @@ template("style_variable_generator") {
 
     inputs = common_inputs + [
                "//tools/style_variable_generator/css_generator.py",
-               "//tools/style_variable_generator/css_generator.tmpl",
+               "//tools/style_variable_generator/templates/css_generator.tmpl",
              ]
     out_file = "$target_gen_dir/${original_target_name}.css"
     outputs = [ out_file ]
@@ -64,10 +64,11 @@ template("style_variable_generator") {
                              "sources",
                            ])
 
-    inputs = common_inputs + [
-               "//tools/style_variable_generator/views_generator.py",
-               "//tools/style_variable_generator/views_generator_h.tmpl",
-             ]
+    inputs =
+        common_inputs + [
+          "//tools/style_variable_generator/views_generator.py",
+          "//tools/style_variable_generator/templates/views_generator_h.tmpl",
+        ]
     out_file = "$target_gen_dir/${original_target_name}.h"
     outputs = [ out_file ]
     args = [
@@ -85,10 +86,11 @@ template("style_variable_generator") {
                              "sources",
                            ])
 
-    inputs = common_inputs + [
-               "//tools/style_variable_generator/views_generator.py",
-               "//tools/style_variable_generator/views_generator_cc.tmpl",
-             ]
+    inputs =
+        common_inputs + [
+          "//tools/style_variable_generator/views_generator.py",
+          "//tools/style_variable_generator/templates/views_generator_cc.tmpl",
+        ]
     out_file = "$target_gen_dir/${original_target_name}.cc"
     outputs = [ out_file ]
     args = [
@@ -120,10 +122,11 @@ template("style_variable_generator") {
                              "sources",
                            ])
 
-    inputs = common_inputs + [
-               "//tools/style_variable_generator/proto_generator.py",
-               "//tools/style_variable_generator/proto_generator.tmpl",
-             ]
+    inputs =
+        common_inputs + [
+          "//tools/style_variable_generator/proto_generator.py",
+          "//tools/style_variable_generator/templates/proto_generator.tmpl",
+        ]
     out_file = "$target_gen_dir/${original_target_name}.proto"
     outputs = [ out_file ]
 
@@ -144,7 +147,7 @@ template("style_variable_generator") {
 
     inputs = common_inputs + [
                "//tools/style_variable_generator/proto_generator.py",
-               "//tools/style_variable_generator/proto_json_generator.tmpl",
+               "//tools/style_variable_generator/templates/proto_json_generator.tmpl",
              ]
     out_file = "$target_gen_dir/${original_target_name}.protojson"
     outputs = [ out_file ]

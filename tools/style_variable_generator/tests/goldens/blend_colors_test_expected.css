@@ -3,8 +3,8 @@
  * found in the LICENSE file. */
 
 /* This file is generated from:
- *  blend_colors_test.json5
- *  colors_test_palette.json5
+ *  tests/blend_colors_test.json5
+ *  tests/colors_test_palette.json5
  */
 :root {
   color-scheme: light dark;

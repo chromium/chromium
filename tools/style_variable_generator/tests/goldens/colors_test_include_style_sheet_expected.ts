@@ -3,9 +3,8 @@
  * found in the LICENSE file. */
 
 /* This file is generated from:
- *  colors_test.json5
- *  colors_test_palette.json5
- *  typography_test.json5
+ *  tests/colors_test.json5
+ *  tests/colors_test_palette.json5
  */
 
 import {css} from 'lit';
@@ -56,18 +55,7 @@ const DARK_MODE_OVERRIDES_CSS = window ? `
 
 const UNTYPED_CSS = window ? `` : '';
 
-const TYPOGRAPHY_CSS = window ? `
-  /* font families */
-  --cros-font-family-test: 'Google Sans', 'Noto Sans', sans-serif;
-  --cros-font-family-other: Roboto, 'Noto Sans', sans-serif;
-
-  /* typefaces */
-  --cros-headline-1-font: 500 15px/22px var(--cros-font-family-test);
-  --cros-headline-1-font-family: var(--cros-font-family-test);
-  --cros-headline-1-font-size: 15px;
-  --cros-headline-1-font-weight: 500;
-  --cros-headline-1-line-height: 22px;
-` : '';
+const TYPOGRAPHY_CSS = window ? `` : '';
 
 /**
  * Returns a string containing all semantic colors exported in this file as
@@ -135,11 +123,3 @@ export const TOGGLE_COLOR = css`var(--cros-toggle-color)`;
 export const BG_COLOR_ELEVATION_1 = css`var(--cros-bg-color-elevation-1)`;
 export const DISABLED_OPACITY = css`var(--cros-disabled-opacity)`;
 export const REFERENCE_OPACITY = css`var(--cros-reference-opacity)`;
-
-export const FONT_FAMILY_TEST = css`var(--cros-font-family-test-font)`;
-export const FONT_FAMILY_OTHER = css`var(--cros-font-family-other-font)`;
-export const HEADLINE_1_FONT = css`var(--cros-headline-1-font)`;
-export const HEADLINE_1_FONT_FAMILY = css`var(--cros-headline-1-font-family)`;
-export const HEADLINE_1_FONT_SIZE = css`var(--cros-headline-1-font-size)`;
-export const HEADLINE_1_FONT_WEIGHT = css`var(--cros-headline-1-font-weight)`;
-export const HEADLINE_1_LINE_HEIGHT = css`var(--cros-headline-1-line-height)`;
