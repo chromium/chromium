@@ -5754,6 +5754,28 @@
       }
     ]
   },
+  "Mac Builder (py2 less)": {
+    "additional_compile_targets": [
+      "all"
+    ],
+    "scripts": [
+      {
+        "name": "check_static_initializers",
+        "script": "check_static_initializers.py",
+        "swarming": {}
+      },
+      {
+        "name": "metrics_python_tests",
+        "script": "metrics_python_tests.py",
+        "swarming": {}
+      },
+      {
+        "name": "webkit_lint",
+        "script": "blink_lint_expectations.py",
+        "swarming": {}
+      }
+    ]
+  },
   "Mac Builder (reclient compare)": {
     "additional_compile_targets": [
       "all"

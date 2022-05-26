@@ -2823,6 +2823,15 @@
           'isolated_scripts': 'vulkan_swiftshader_isolated_scripts',
         },
       },
+      'Mac Builder (py2 less)': {
+        # Copied from 'Mac Builder'.
+        'additional_compile_targets': [
+          'all',
+        ],
+        'test_suites': {
+          'scripts': 'chromium_mac_scripts',
+        }
+      },
       # TODO(crbug.com/1260232): remove this after the migration.
       'Mac Builder (reclient compare)': {
         'additional_compile_targets': [
