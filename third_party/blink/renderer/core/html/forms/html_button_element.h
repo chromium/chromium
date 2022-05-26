@@ -45,19 +45,6 @@ class CORE_EXPORT HTMLButtonElement final : public HTMLFormControlElement {
                          mojom::blink::FocusType,
                          InputDeviceCapabilities*) override;
 
-  struct TogglePopupElement final {
-   public:
-    DISALLOW_NEW();
-    WeakMember<Element> element;
-    PopupTriggerAction action;
-    QualifiedName attribute_name;
-    void Trace(Visitor* visitor) const { visitor->Trace(element); }
-  };
-
-  // Retrieves the element pointed to by 'togglepopup', 'showpopup', and/or
-  // 'hidepopup' content attributes, if any.
-  TogglePopupElement togglePopupElement() const;
-
  private:
   enum Type { kSubmit, kReset, kButton };
 
@@ -73,6 +60,11 @@ class CORE_EXPORT HTMLButtonElement final : public HTMLFormControlElement {
   bool IsPresentationAttribute(const QualifiedName&) const override;
   void DefaultEventHandler(Event&) override;
   bool HasActivationBehavior() const override;
+
+  // Buttons can trigger popups.
+  PopupTriggerSupport SupportsPopupTriggering() const override {
+    return PopupTriggerSupport::kActivate;
+  }
 
   void AppendToFormData(FormData&) override;
 

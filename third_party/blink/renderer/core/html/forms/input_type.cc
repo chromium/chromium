@@ -658,6 +658,11 @@ bool InputType::IsSteppable() const {
   return false;
 }
 
+HTMLFormControlElement::PopupTriggerSupport InputType::SupportsPopupTriggering()
+    const {
+  return HTMLFormControlElement::PopupTriggerSupport::kNone;
+}
+
 bool InputType::ShouldRespectHeightAndWidthAttributes() {
   return false;
 }

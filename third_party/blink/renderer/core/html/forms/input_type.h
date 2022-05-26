@@ -196,6 +196,8 @@ class CORE_EXPORT InputType : public GarbageCollected<InputType> {
   virtual bool IsEnumeratable();
   virtual bool IsCheckable();
   virtual bool IsSteppable() const;
+  virtual HTMLFormControlElement::PopupTriggerSupport SupportsPopupTriggering()
+      const;
   virtual bool ShouldRespectHeightAndWidthAttributes();
   virtual int MaxLength() const;
   virtual int MinLength() const;

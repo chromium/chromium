@@ -27,9 +27,9 @@
 
 #include "third_party/blink/renderer/core/dom/attribute.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
-#include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/form_data.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
@@ -111,31 +111,6 @@ void HTMLButtonElement::ParseAttribute(
 
 void HTMLButtonElement::DefaultEventHandler(Event& event) {
   if (event.type() == event_type_names::kDOMActivate) {
-    auto popup = togglePopupElement();
-    if (popup.element) {
-      DCHECK_NE(popup.action, PopupTriggerAction::kNone);
-      if (popup.element->popupOpen() &&
-          (popup.action == PopupTriggerAction::kToggle ||
-           popup.action == PopupTriggerAction::kHide)) {
-        // Note that the order is: `mousedown` which runs popup light dismiss
-        // code, then (for clicked elements) focus is set to the clicked
-        // element, then |DOMActivate| runs here. Also note that the light
-        // dismiss code will not hide popups when an activating element is
-        // clicked. Taking that together, if the clicked control is a triggering
-        // element for a popup, light dismiss will do nothing, focus will be set
-        // to the triggering element, then this code will run and will set focus
-        // to the previously focused element. If instead the clicked control is
-        // not a triggering element, then the light dismiss code will hide the
-        // popup and set focus to the previously focused element, then the
-        // normal focus management code will reset focus to the clicked control.
-        popup.element->hidePopupInternal(
-            HidePopupFocusBehavior::kFocusPreviousElement);
-      } else if (!popup.element->popupOpen() &&
-                 (popup.action == PopupTriggerAction::kToggle ||
-                  popup.action == PopupTriggerAction::kShow)) {
-        popup.element->InvokePopup(this);
-      }
-    }
     if (!IsDisabledFormControl()) {
       if (Form() && type_ == kSubmit) {
         Form()->PrepareForSubmission(&event, this);
@@ -152,52 +127,6 @@ void HTMLButtonElement::DefaultEventHandler(Event& event) {
     return;
 
   HTMLFormControlElement::DefaultEventHandler(event);
-}
-
-// The element returned if that element a) exists, and b) is a valid Popup
-// element. If multiple toggle attributes are present:
-//  1. Only one idref will ever be used, if multiple attributes are present.
-//  2. If 'togglepopup' is present, its IDREF will be used.
-//  3. If 'showpopup' is present and 'togglepopup' isn't, its IDREF will be
-//  used.
-//  4. If both 'showpopup' and 'hidepopup' are present, the behavior is to
-//  toggle.
-HTMLButtonElement::TogglePopupElement HTMLButtonElement::togglePopupElement()
-    const {
-  const TogglePopupElement no_element{nullptr, PopupTriggerAction::kNone,
-                                      g_null_name};
-  if (!RuntimeEnabledFeatures::HTMLPopupAttributeEnabled())
-    return no_element;
-  if (!IsInTreeScope())
-    return no_element;
-  AtomicString idref;
-  QualifiedName attribute_name = html_names::kTogglepopupAttr;
-  PopupTriggerAction action = PopupTriggerAction::kToggle;
-  if (FastHasAttribute(html_names::kTogglepopupAttr)) {
-    idref = FastGetAttribute(html_names::kTogglepopupAttr);
-  } else if (FastHasAttribute(html_names::kShowpopupAttr)) {
-    idref = FastGetAttribute(html_names::kShowpopupAttr);
-    action = PopupTriggerAction::kShow;
-    attribute_name = html_names::kShowpopupAttr;
-  }
-  if (FastHasAttribute(html_names::kHidepopupAttr)) {
-    if (idref.IsNull()) {
-      idref = FastGetAttribute(html_names::kHidepopupAttr);
-      action = PopupTriggerAction::kHide;
-      attribute_name = html_names::kHidepopupAttr;
-    } else if (FastGetAttribute(html_names::kHidepopupAttr) == idref) {
-      action = PopupTriggerAction::kToggle;
-      // Leave attribute_name as-is in this case.
-    }
-  }
-  if (idref.IsNull()) {
-    return no_element;
-  }
-  Element* popup_element = GetTreeScope().getElementById(idref);
-  if (!popup_element || !popup_element->HasValidPopupAttribute()) {
-    return no_element;
-  }
-  return TogglePopupElement{popup_element, action, attribute_name};
 }
 
 bool HTMLButtonElement::HasActivationBehavior() const {
