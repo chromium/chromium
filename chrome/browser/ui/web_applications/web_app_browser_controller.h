@@ -24,8 +24,12 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/models/image_model.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "components/digital_asset_links/digital_asset_links_handler.h"  // nogncheck
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/mojom/web_app_service.mojom-forward.h"
 #endif
 
 class Browser;
@@ -87,7 +91,7 @@ class WebAppBrowserController : public AppBrowserController,
   bool HasReloadButton() const override;
   const ash::SystemWebAppDelegate* system_app() const override;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   bool ShouldShowCustomTabBar() const override;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -114,10 +118,17 @@ class WebAppBrowserController : public AppBrowserController,
   void OnReadIcon(SkBitmap bitmap);
   void PerformDigitalAssetLinkVerification(Browser* browser);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
+  void CheckDigitalAssetLinkRelationshipForAndroidApp(
+      const std::string& package_name,
+      const std::string& fingerprint);
   void OnRelationshipCheckComplete(
       digital_asset_links::RelationshipCheckResult result);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  void OnGetAssociatedAndroidPackage(crosapi::mojom::WebAppAndroidPackagePtr);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   // Helper function to return the resolved background color from the manifest
   // given the current state of dark/light mode.
@@ -127,14 +138,14 @@ class WebAppBrowserController : public AppBrowserController,
   raw_ptr<const ash::SystemWebAppDelegate> system_app_;
   mutable absl::optional<ui::ImageModel> app_icon_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // The result of digital asset link verification of the web app.
   // Only used for web-only TWAs installed through the Play Store.
   absl::optional<bool> is_verified_;
 
   std::unique_ptr<digital_asset_links::DigitalAssetLinksHandler>
       asset_link_handler_;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   base::ScopedObservation<WebAppInstallManager, WebAppInstallManagerObserver>
       install_manager_observation_{this};

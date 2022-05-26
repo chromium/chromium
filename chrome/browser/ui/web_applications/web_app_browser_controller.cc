@@ -42,7 +42,14 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/apps/apk_web_app_service.h"
+#endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/mojom/web_app_service.mojom.h"
+#include "chromeos/lacros/lacros_service.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
 namespace {
 constexpr char kRelationship[] = "delegate_permission/common.handle_all_urls";
 }
@@ -149,12 +156,24 @@ const ash::SystemWebAppDelegate* WebAppBrowserController::system_app() const {
   return system_app_;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 bool WebAppBrowserController::ShouldShowCustomTabBar() const {
   if (AppBrowserController::ShouldShowCustomTabBar())
     return true;
 
   return is_verified_.value_or(false);
+}
+
+void WebAppBrowserController::CheckDigitalAssetLinkRelationshipForAndroidApp(
+    const std::string& package_name,
+    const std::string& fingerprint) {
+  // base::Unretained is safe as |asset_link_handler_| is owned by this object
+  // and will be destroyed if this object is destroyed.
+  const std::string origin = GetAppStartUrl().DeprecatedGetOriginAsURL().spec();
+  asset_link_handler_->CheckDigitalAssetLinkRelationshipForAndroidApp(
+      origin, kRelationship, fingerprint, package_name,
+      base::BindOnce(&WebAppBrowserController::OnRelationshipCheckComplete,
+                     base::Unretained(this)));
 }
 
 void WebAppBrowserController::OnRelationshipCheckComplete(
@@ -173,7 +192,19 @@ void WebAppBrowserController::OnRelationshipCheckComplete(
   browser()->window()->UpdateCustomTabBarVisibility(should_show_cct,
                                                     false /* animate */);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+void WebAppBrowserController::OnGetAssociatedAndroidPackage(
+    crosapi::mojom::WebAppAndroidPackagePtr package) {
+  if (!package) {
+    // Web app was not installed from an Android package, nothing to check.
+    return;
+  }
+  CheckDigitalAssetLinkRelationshipForAndroidApp(package->package_name,
+                                                 package->sha256_fingerprint);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 void WebAppBrowserController::OnWebAppUninstalled(
     const AppId& uninstalled_app_id) {
@@ -413,18 +444,19 @@ void WebAppBrowserController::OnReadIcon(SkBitmap bitmap) {
 
 void WebAppBrowserController::PerformDigitalAssetLinkVerification(
     Browser* browser) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   asset_link_handler_ =
       std::make_unique<digital_asset_links::DigitalAssetLinksHandler>(
           browser->profile()->GetURLLoaderFactory());
   is_verified_ = absl::nullopt;
+#endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::ApkWebAppService* apk_web_app_service =
       ash::ApkWebAppService::Get(browser->profile());
   if (!apk_web_app_service || !apk_web_app_service->IsWebOnlyTwa(app_id()))
     return;
 
-  const std::string origin = GetAppStartUrl().DeprecatedGetOriginAsURL().spec();
   const absl::optional<std::string> package_name =
       apk_web_app_service->GetPackageNameForWebApp(app_id());
   const absl::optional<std::string> fingerprint =
@@ -434,12 +466,24 @@ void WebAppBrowserController::PerformDigitalAssetLinkVerification(
   DCHECK(package_name.has_value());
   DCHECK(fingerprint.has_value());
 
-  // base::Unretained is safe as |asset_link_handler_| is owned by this object
-  // and will be destroyed if this object is destroyed.
-  asset_link_handler_->CheckDigitalAssetLinkRelationshipForAndroidApp(
-      origin, kRelationship, fingerprint.value(), package_name.value(),
-      base::BindOnce(&WebAppBrowserController::OnRelationshipCheckComplete,
-                     base::Unretained(this)));
+  CheckDigitalAssetLinkRelationshipForAndroidApp(*package_name, *fingerprint);
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  auto* lacros_service = chromeos::LacrosService::Get();
+  if (lacros_service && lacros_service->init_params()->web_apps_enabled &&
+      lacros_service->IsAvailable<crosapi::mojom::WebAppService>() &&
+      lacros_service->GetInterfaceVersion(
+          crosapi::mojom::WebAppService::Uuid_) >=
+          int{crosapi::mojom::WebAppService::MethodMinVersions::
+                  kGetAssociatedAndroidPackageMinVersion}) {
+    lacros_service->GetRemote<crosapi::mojom::WebAppService>()
+        ->GetAssociatedAndroidPackage(
+            app_id(),
+            base::BindOnce(
+                &WebAppBrowserController::OnGetAssociatedAndroidPackage,
+                weak_ptr_factory_.GetWeakPtr()));
+  }
 #endif
 }
 
