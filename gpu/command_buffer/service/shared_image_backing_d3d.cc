@@ -111,7 +111,10 @@ class ScopedRestoreTexture {
                              ? GL_TEXTURE_BINDING_2D
                              : GL_TEXTURE_BINDING_EXTERNAL_OES,
                          &binding);
-    prev_binding_ = binding;
+    // The bound texture could be already deleted by another context, and the
+    // texture ID |binding| could be reused and points to a different texture.
+    if (api->glIsTextureFn(binding))
+      prev_binding_ = binding;
   }
 
   ScopedRestoreTexture(const ScopedRestoreTexture&) = delete;
