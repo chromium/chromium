@@ -197,6 +197,7 @@ void DefaultSearchPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
   dict->SetString(DefaultSearchManager::kID,
                   base::NumberToString(kInvalidTemplateURLID));
   dict->SetInteger(DefaultSearchManager::kPrepopulateID, 0);
+  dict->SetInteger(DefaultSearchManager::kStarterPackId, 0);
   dict->SetString(DefaultSearchManager::kSyncGUID, std::string());
   dict->SetString(DefaultSearchManager::kOriginatingURL, std::string());
   dict->SetBoolean(DefaultSearchManager::kSafeForAutoReplace, true);

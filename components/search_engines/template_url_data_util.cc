@@ -54,6 +54,9 @@ std::unique_ptr<TemplateURLData> TemplateURLDataFromDictionary(
   result->SetShortName(base::UTF8ToUTF16(*short_name));
   result->prepopulate_id = dict.FindIntKey(DefaultSearchManager::kPrepopulateID)
                                .value_or(result->prepopulate_id);
+  result->starter_pack_id =
+      dict.FindIntKey(DefaultSearchManager::kStarterPackId)
+          .value_or(result->starter_pack_id);
   string_value = dict.FindStringKey(DefaultSearchManager::kSyncGUID);
   if (string_value) {
     result->sync_guid = *string_value;
@@ -197,6 +200,8 @@ std::unique_ptr<base::DictionaryValue> TemplateURLDataToDictionary(
   url_dict->SetStringKey(DefaultSearchManager::kKeyword, data.keyword());
   url_dict->SetIntKey(DefaultSearchManager::kPrepopulateID,
                       data.prepopulate_id);
+  url_dict->SetIntKey(DefaultSearchManager::kStarterPackId,
+                      data.starter_pack_id);
   url_dict->SetStringKey(DefaultSearchManager::kSyncGUID, data.sync_guid);
 
   url_dict->SetStringKey(DefaultSearchManager::kURL, data.url());
