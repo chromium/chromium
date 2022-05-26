@@ -10,13 +10,20 @@ namespace ash {
 
 ScopedClipboardHistoryPauseImpl::ScopedClipboardHistoryPauseImpl(
     ClipboardHistory* clipboard_history)
-    : clipboard_history_(clipboard_history->GetWeakPtr()) {
-  clipboard_history_->Pause();
+    : ScopedClipboardHistoryPauseImpl(clipboard_history,
+                                      /*metrics_only=*/false) {}
+
+ScopedClipboardHistoryPauseImpl::ScopedClipboardHistoryPauseImpl(
+    ClipboardHistory* clipboard_history,
+    bool metrics_only)
+    : clipboard_history_(clipboard_history->GetWeakPtr()),
+      metrics_only_(metrics_only) {
+  clipboard_history_->Pause(metrics_only_);
 }
 
 ScopedClipboardHistoryPauseImpl::~ScopedClipboardHistoryPauseImpl() {
   if (clipboard_history_)
-    clipboard_history_->Resume();
+    clipboard_history_->Resume(metrics_only_);
 }
 
 }  // namespace ash

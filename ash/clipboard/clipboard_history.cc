@@ -102,7 +102,7 @@ void ClipboardHistory::OnClipboardDataChanged() {
   ui::DataTransferEndpoint data_dst(ui::EndpointType::kClipboardHistory);
   const auto* clipboard_data = clipboard->GetClipboardData(&data_dst);
   if (!clipboard_data) {
-    // |clipboard_data| is only empty when the Clipboard is cleared. This is
+    // `clipboard_data` is only empty when the Clipboard is cleared. This is
     // done to prevent data leakage into or from locked forms(Locked Fullscreen
     // state). Clear ClipboardHistory.
     commit_data_weak_factory_.InvalidateWeakPtrs();
@@ -115,15 +115,17 @@ void ClipboardHistory::OnClipboardDataChanged() {
   // initiated operation. Add a delay because PostTask is too fast to debounce
   // multiple operations through the async web clipboard API. See
   // https://crbug.com/1167403.
-  clipboard_histogram_weak_factory_.InvalidateWeakPtrs();
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&ClipboardHistory::OnClipboardOperation,
-                     clipboard_histogram_weak_factory_.GetWeakPtr(),
-                     /*copy=*/true),
-      base::Milliseconds(100));
+  if (num_metrics_pause_ == 0) {
+    clipboard_histogram_weak_factory_.InvalidateWeakPtrs();
+    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&ClipboardHistory::OnClipboardOperation,
+                       clipboard_histogram_weak_factory_.GetWeakPtr(),
+                       /*copy=*/true),
+        base::Milliseconds(100));
+  }
 
-  // We post commit |clipboard_data| at the end of the current task sequence to
+  // We post commit `clipboard_data` at the end of the current task sequence to
   // debounce the case where multiple copies are programmatically performed.
   // Since only the most recent copy will be at the top of the clipboard, the
   // user will likely be unaware of the intermediate copies that took place
@@ -139,7 +141,7 @@ void ClipboardHistory::OnClipboardDataChanged() {
 }
 
 void ClipboardHistory::OnClipboardDataRead() {
-  if (num_pause_ > 0)
+  if (num_pause_ > 0 || num_metrics_pause_ > 0)
     return;
 
   // Debounce calls to `OnClipboardOperation()`. Certain surfaces
@@ -195,7 +197,7 @@ void ClipboardHistory::MaybeCommitData(ui::ClipboardData data) {
                    [&data](const auto& item) { return item.data() == data; });
   bool is_duplicate = iter != history_list_.cend();
   if (is_duplicate) {
-    // If |data| already exists in |history_list_| then move it to the front
+    // If `data` already exists in `history_list_` then move it to the front
     // instead of creating a new one because creating a new one will result in a
     // new unique identifier.
     history_list_.splice(history_list_.begin(), history_list_, iter);
@@ -214,12 +216,12 @@ void ClipboardHistory::MaybeCommitData(ui::ClipboardData data) {
   }
 }
 
-void ClipboardHistory::Pause() {
-  ++num_pause_;
+void ClipboardHistory::Pause(bool metrics_only) {
+  ++(metrics_only ? num_metrics_pause_ : num_pause_);
 }
 
-void ClipboardHistory::Resume() {
-  --num_pause_;
+void ClipboardHistory::Resume(bool metrics_only) {
+  --(metrics_only ? num_metrics_pause_ : num_pause_);
 }
 
 }  // namespace ash

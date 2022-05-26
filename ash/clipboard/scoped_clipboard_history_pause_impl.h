@@ -18,6 +18,11 @@ class ASH_EXPORT ScopedClipboardHistoryPauseImpl
     : public ScopedClipboardHistoryPause {
  public:
   explicit ScopedClipboardHistoryPauseImpl(ClipboardHistory* clipboard_history);
+  // If `metrics_only` is true, this pause will not prevent modifications to
+  // clipboard history, but it will prevent updates to the metrics tracked on
+  // clipboard operations.
+  ScopedClipboardHistoryPauseImpl(ClipboardHistory* clipboard_history,
+                                  bool metrics_only);
   ScopedClipboardHistoryPauseImpl(const ScopedClipboardHistoryPauseImpl&) =
       delete;
   ScopedClipboardHistoryPauseImpl& operator=(
@@ -26,6 +31,7 @@ class ASH_EXPORT ScopedClipboardHistoryPauseImpl
 
  private:
   base::WeakPtr<ClipboardHistory> const clipboard_history_;
+  const bool metrics_only_;
 };
 
 }  // namespace ash
