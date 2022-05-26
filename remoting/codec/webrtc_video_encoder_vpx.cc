@@ -9,12 +9,12 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/cpu.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "remoting/base/cpu_utils.h"
 #include "remoting/base/util.h"
 #include "remoting/proto/video.pb.h"
 #include "third_party/libvpx/source/libvpx/vpx/vp8cx.h"
@@ -50,29 +50,6 @@ constexpr int kDefaultTargetBitrateKbps = 1000;
 // above in less than 10 frames.
 // TODO(zijiehe): This value is for VP8 only; reconsider the value for VP9.
 constexpr int kVp8MinimumTargetBitrateKbpsPerMegapixel = 2500;
-
-// Supporting SSE3 is a requirement for Chromium so that is our base alignment.
-// If the CPU supports AVX2, then we will use that alignment instead.
-constexpr int kSse3AlignmentBytes = 16;
-constexpr int kAvx2AlignmentBytes = 32;
-
-int GetRowAlignment() {
-  // We only need to calculate this once since the processor capabilities won't
-  // change while the process is running.
-  static const int alignment =
-      base::CPU().has_avx2() ? kAvx2AlignmentBytes : kSse3AlignmentBytes;
-  return alignment;
-}
-
-webrtc::DesktopRect GetRowAlignedRect(const webrtc::DesktopRect rect,
-                                      int max_right) {
-  static const int align = GetRowAlignment();
-  static const int align_mask = ~(align - 1);
-  int new_left = (rect.left() & align_mask);
-  int new_right = std::min((rect.right() + align - 1) & align_mask, max_right);
-  return webrtc::DesktopRect::MakeLTRB(new_left, rect.top(), new_right,
-                                       rect.bottom());
-}
 
 void SetCommonCodecParameters(vpx_codec_enc_cfg_t* config,
                               const webrtc::DesktopSize& size) {
@@ -520,7 +497,8 @@ void WebrtcVideoEncoderVpx::PrepareImage(
   } else {
     vpx_img_fmt_t fmt = lossless_color_ ? VPX_IMG_FMT_I444 : VPX_IMG_FMT_YV12;
     image_.reset(vpx_img_alloc(nullptr, fmt, frame->size().width(),
-                               frame->size().height(), GetRowAlignment()));
+                               frame->size().height(),
+                               GetSimdMemoryAlignment()));
     updated_region->AddRect(webrtc::DesktopRect::MakeWH(image_->w, image_->h));
   }
 

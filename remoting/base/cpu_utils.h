@@ -11,6 +11,10 @@ namespace remoting {
 // supports a minimum required instruction set), otherwise false.
 bool IsCpuSupported();
 
+// Returns the data alignment (in bytes) required to use the most efficient SIMD
+// instructions (SSE3, AVX2, NEON, etc.) supported by the processor.
+int GetSimdMemoryAlignment();
+
 }  // namespace remoting
 
 #endif  // REMOTING_BASE_CPU_UTILS_H_

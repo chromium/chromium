@@ -21,6 +21,12 @@ int RoundToTwosMultiple(int x);
 // Align the sides of the rectangle to multiples of 2 (expanding outwards).
 webrtc::DesktopRect AlignRect(const webrtc::DesktopRect& rect);
 
+// Align the left and right sides of the rect using the required data alignment
+// of the CPU. This is useful when the rect is to be processed using CPU
+// intrinsics that require aligned data.
+webrtc::DesktopRect GetRowAlignedRect(const webrtc::DesktopRect rect,
+                                      int max_right);
+
 // Copy content of a rectangle in a RGB32 image.
 void CopyRGB32Rect(const uint8_t* source_buffer,
                    int source_stride,

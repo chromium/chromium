@@ -8,6 +8,7 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/system/sys_info.h"
+#include "remoting/base/cpu_utils.h"
 #include "remoting/base/util.h"
 #include "third_party/libyuv/include/libyuv/convert_from_argb.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
@@ -17,9 +18,6 @@
 namespace remoting {
 
 namespace {
-
-constexpr int kBlockAlignSize = 16;
-constexpr int kBlockAlignMask = ~15;
 
 void DestroyAomCodecContext(aom_codec_ctx_t* codec_ctx) {
   if (codec_ctx->name) {
@@ -38,6 +36,7 @@ constexpr int kAv1MinimumTargetBitrateKbpsPerMegapixel = 2500;
 
 WebrtcVideoEncoderAV1::WebrtcVideoEncoderAV1()
     : codec_(nullptr, DestroyAomCodecContext),
+      image_(nullptr, aom_img_free),
       bitrate_filter_(kAv1MinimumTargetBitrateKbpsPerMegapixel) {
   ConfigureCodecParams();
 }
@@ -57,7 +56,7 @@ bool WebrtcVideoEncoderAV1::InitializeCodec(const webrtc::DesktopSize& size) {
   config_.g_h = size.height();
 
   // Initialize an encoder instance.
-  aom_codec_unique_ptr codec(new aom_codec_ctx_t, DestroyAomCodecContext);
+  scoped_aom_codec codec(new aom_codec_ctx_t, DestroyAomCodecContext);
   codec->name = nullptr;
   aom_codec_flags_t flags = 0;
   auto error =
@@ -85,56 +84,16 @@ bool WebrtcVideoEncoderAV1::InitializeCodec(const webrtc::DesktopSize& size) {
   error = aom_codec_control(codec.get(), AV1E_SET_TILE_ROWS, log2_tiles);
   DCHECK_EQ(error, AOM_CODEC_OK) << "Failed to set AV1E_SET_TILE_ROWS";
 
+  // TODO(joedow): Set AV1E_SET_TUNE_CONTENT to AOM_CONTENT_SCREEN once the
+  // performance is more acceptable. Selecting AOM_CONTENT_SCREEN over
+  // AOM_CONTENT_DEFAULT increased the amount of latency during encoding by 15ms
+  // per frame during my testing.
+
   error = aom_codec_control(codec.get(), AV1E_SET_AQ_MODE, 3);
   DCHECK_EQ(error, AOM_CODEC_OK) << "Failed to set AV1E_SET_AQ_MODE";
 
   codec_ = std::move(codec);
   return true;
-}
-
-void WebrtcVideoEncoderAV1::CreateImage(const webrtc::DesktopSize& size) {
-  DCHECK(!size.is_empty());
-
-  std::unique_ptr<aom_image_t> image(new aom_image_t());
-  memset(image.get(), 0, sizeof(aom_image_t));
-
-  image->d_w = size.width();
-  image->w = size.width();
-  image->d_h = size.height();
-  image->h = size.height();
-  image->fmt = AOM_IMG_FMT_I420;
-  image->x_chroma_shift = 1;
-  image->y_chroma_shift = 1;
-
-  // libyuv's fast-path for SSE3 requires 16-byte aligned pointers and strides,
-  // so pad the Y, U and V planes' strides to multiples of 16 bytes.
-  // TODO(joedow): libyuv's fastpath for AVX2 requires 32-byte alignment. Update
-  // this encoder and VPX to test for performance gains with that alignment.
-  const int y_stride = ((image->w - 1) & kBlockAlignMask) + kBlockAlignSize;
-  const int uv_unaligned_stride = y_stride >> image->x_chroma_shift;
-  const int uv_stride =
-      ((uv_unaligned_stride - 1) & kBlockAlignMask) + kBlockAlignSize;
-
-  const int y_rows = ((image->h - 1) & kBlockAlignMask) + kBlockAlignSize;
-  const int uv_rows = y_rows >> image->y_chroma_shift;
-
-  // Allocate a YUV buffer large enough for the aligned data & padding. Init the
-  // memory with 128 so we only need to fill in the y plane.
-  const int buffer_size = y_stride * y_rows + 2 * uv_stride * uv_rows;
-  std::unique_ptr<uint8_t[]> image_buffer(new uint8_t[buffer_size]{128});
-
-  // Fill in the information for |image_|.
-  unsigned char* uchar_buffer =
-      reinterpret_cast<unsigned char*>(image_buffer.get());
-  image->planes[0] = uchar_buffer;
-  image->planes[1] = image->planes[0] + y_stride * y_rows;
-  image->planes[2] = image->planes[1] + uv_stride * uv_rows;
-  image->stride[0] = y_stride;
-  image->stride[1] = uv_stride;
-  image->stride[2] = uv_stride;
-
-  image_ = std::move(image);
-  image_buffer_ = std::move(image_buffer);
 }
 
 void WebrtcVideoEncoderAV1::PrepareImage(const webrtc::DesktopFrame* frame) {
@@ -157,7 +116,9 @@ void WebrtcVideoEncoderAV1::PrepareImage(const webrtc::DesktopFrame* frame) {
     updated_region.IntersectWith(
         webrtc::DesktopRect::MakeWH(image_->w, image_->h));
   } else {
-    CreateImage(frame->size());
+    image_.reset(aom_img_alloc(nullptr, AOM_IMG_FMT_I420, frame->size().width(),
+                               frame->size().height(),
+                               GetSimdMemoryAlignment()));
     updated_region.AddRect(webrtc::DesktopRect::MakeWH(image_->w, image_->h));
   }
 
@@ -174,7 +135,7 @@ void WebrtcVideoEncoderAV1::PrepareImage(const webrtc::DesktopFrame* frame) {
   CHECK_EQ(image_->fmt, AOM_IMG_FMT_I420);
   for (webrtc::DesktopRegion::Iterator r(updated_region); !r.IsAtEnd();
        r.Advance()) {
-    const webrtc::DesktopRect& rect = r.rect();
+    webrtc::DesktopRect rect = GetRowAlignedRect(r.rect(), image_->w);
     int rgb_offset = rgb_stride * rect.top() +
                      rect.left() * webrtc::DesktopFrame::kBytesPerPixel;
     int y_offset = y_stride * rect.top() + rect.left();
@@ -208,9 +169,7 @@ void WebrtcVideoEncoderAV1::ConfigureCodecParams() {
   config_.g_timebase.den = base::Time::kMicrosecondsPerSecond;
   config_.g_threads = (base::SysInfo::NumberOfProcessors() + 1) / 2;
 
-  config_.kf_mode = AOM_KF_AUTO;
-  config_.kf_min_dist = 10000;
-  config_.kf_max_dist = 10000;
+  config_.kf_mode = AOM_KF_DISABLED;
 
   config_.rc_max_quantizer = 0;
   config_.rc_min_quantizer = 0;
@@ -218,7 +177,7 @@ void WebrtcVideoEncoderAV1::ConfigureCodecParams() {
   config_.rc_undershoot_pct = 100;
   config_.rc_overshoot_pct = 15;
   config_.rc_end_usage = AOM_CBR;
-  config_.rc_target_bitrate = 1000000;  // 1Mbps
+  config_.rc_target_bitrate = 1024;  // 1024 Kbps = 1Mbps.
 }
 
 void WebrtcVideoEncoderAV1::UpdateConfig(const FrameParams& params) {
@@ -256,11 +215,6 @@ void WebrtcVideoEncoderAV1::UpdateConfig(const FrameParams& params) {
   }
 }
 
-void WebrtcVideoEncoderAV1::FreeImageMembers() {
-  image_.reset();
-  image_buffer_.reset();
-}
-
 void WebrtcVideoEncoderAV1::Encode(std::unique_ptr<webrtc::DesktopFrame> frame,
                                    const FrameParams& params,
                                    EncodeCallback done) {
@@ -284,7 +238,7 @@ void WebrtcVideoEncoderAV1::Encode(std::unique_ptr<webrtc::DesktopFrame> frame,
 
   // Create or reconfigure the codec to match the size of |frame|.
   if (!codec_ || !frame_size.equals(previous_frame_size)) {
-    FreeImageMembers();
+    image_.reset();
     if (!InitializeCodec(frame_size)) {
       std::move(done).Run(EncodeResult::UNKNOWN_ERROR, nullptr);
       return;

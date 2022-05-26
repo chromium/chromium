@@ -34,18 +34,16 @@ class WebrtcVideoEncoderAV1 : public WebrtcVideoEncoder {
   void ConfigureCodecParams();
   bool InitializeCodec(const webrtc::DesktopSize& size);
   void UpdateConfig(const FrameParams& params);
-  void CreateImage(const webrtc::DesktopSize& size);
   void PrepareImage(const webrtc::DesktopFrame* frame);
-  void FreeImageMembers();
 
-  using aom_codec_unique_ptr =
+  using scoped_aom_codec =
       std::unique_ptr<aom_codec_ctx_t, void (*)(aom_codec_ctx_t*)>;
+  scoped_aom_codec codec_;
 
-  aom_codec_unique_ptr codec_;
   aom_codec_enc_cfg_t config_ = {};
 
-  std::unique_ptr<aom_image_t> image_;
-  std::unique_ptr<uint8_t[]> image_buffer_;
+  using scoped_aom_image = std::unique_ptr<aom_image_t, void (*)(aom_image_t*)>;
+  scoped_aom_image image_;
 
   // This timestamp is monotonically increased using the current frame duration.
   // It's only used for rate control and is not related to the timestamps on the

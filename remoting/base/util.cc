@@ -9,6 +9,7 @@
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
+#include "remoting/base/cpu_utils.h"
 #include "third_party/libyuv/include/libyuv/convert.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_region.h"
 
@@ -41,6 +42,16 @@ webrtc::DesktopRect AlignRect(const webrtc::DesktopRect& rect) {
   int right = RoundToTwosMultiple(rect.right() + 1);
   int bottom = RoundToTwosMultiple(rect.bottom() + 1);
   return webrtc::DesktopRect::MakeLTRB(x, y, right, bottom);
+}
+
+webrtc::DesktopRect GetRowAlignedRect(const webrtc::DesktopRect rect,
+                                      int max_right) {
+  static const int align = GetSimdMemoryAlignment();
+  static const int align_mask = ~(align - 1);
+  int new_left = (rect.left() & align_mask);
+  int new_right = std::min((rect.right() + align - 1) & align_mask, max_right);
+  return webrtc::DesktopRect::MakeLTRB(new_left, rect.top(), new_right,
+                                       rect.bottom());
 }
 
 void CopyRGB32Rect(const uint8_t* source_buffer,
