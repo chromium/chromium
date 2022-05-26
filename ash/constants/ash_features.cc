@@ -29,6 +29,12 @@ const base::Feature kInstantTetheringBackgroundAdvertisementSupport{
 const base::Feature kAdaptiveCharging{"AdaptiveCharging",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enable the logic to show the notifications for Adaptive Charging features.
+// This is intended to be used by developers to test the UI aspect of the
+// feature.
+const base::Feature kAdaptiveChargingForTesting{
+    "AdaptiveChargingForTesting", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Adjusts portrait mode split view to avoid the input field in the bottom
 // window being occluded by the virtual keyboard.
 const base::Feature kAdjustSplitViewForVK{"AdjustSplitViewForVK",
@@ -1609,6 +1615,10 @@ bool DoWindowsFollowCursor() {
 
 bool IsAdaptiveChargingEnabled() {
   return base::FeatureList::IsEnabled(kAdaptiveCharging);
+}
+
+bool IsAdaptiveChargingForTestingEnabled() {
+  return base::FeatureList::IsEnabled(kAdaptiveChargingForTesting);
 }
 
 bool IsAdjustSplitViewForVKEnabled() {
