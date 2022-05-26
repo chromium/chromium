@@ -575,6 +575,8 @@ TEST_F(AppListMetricsProductivityLauncherTest,
 
 TEST_F(AppListMetricsProductivityLauncherTest,
        HideContinueSectionMetricInClamshellMode) {
+  base::test::ScopedFeatureList feature_list(
+      features::kLauncherHideContinueSection);
   base::HistogramTester histograms;
 
   // Show the app list with a full continue section.
@@ -604,6 +606,8 @@ TEST_F(AppListMetricsProductivityLauncherTest,
 
 TEST_F(AppListMetricsProductivityLauncherTest,
        HideContinueSectionMetricInTabletMode) {
+  base::test::ScopedFeatureList feature_list(
+      features::kLauncherHideContinueSection);
   base::HistogramTester histograms;
 
   // Show the tablet mode app list with a full continue section.

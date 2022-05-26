@@ -1494,6 +1494,9 @@ TEST_P(ContinueSectionViewWithReorderNudgeTest, TimeDismissPrivacyNotice) {
 // when this feature works in tablet mode.
 TEST_F(ContinueSectionViewClamshellModeTest,
        HidingContinueSectionHidesPrivacyNotice) {
+  base::test::ScopedFeatureList feature_list(
+      features::kLauncherHideContinueSection);
+
   AddSearchResult("id1", AppListSearchResultType::kZeroStateFile);
   AddSearchResult("id2", AppListSearchResultType::kZeroStateDrive);
   AddSearchResult("id3", AppListSearchResultType::kZeroStateDrive);
