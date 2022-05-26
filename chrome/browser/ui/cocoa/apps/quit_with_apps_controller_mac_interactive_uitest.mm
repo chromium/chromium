@@ -72,7 +72,7 @@ IN_PROC_BROWSER_TEST_F(QuitWithAppsControllerInteractiveTest, QuitBehavior) {
       QuitWithAppsController::kQuitWithAppsNotificationID));
 
   // Open an app window.
-  ExtensionTestMessageListener listener("Launched", false);
+  ExtensionTestMessageListener listener("Launched");
   app_ = InstallAndLaunchPlatformApp("minimal_id");
   ASSERT_TRUE(listener.WaitUntilSatisfied());
 

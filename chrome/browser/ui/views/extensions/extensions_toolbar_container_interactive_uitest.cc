@@ -308,8 +308,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerUITest,
 
   {
     // Click on Alpha and wait for it to open the popup.
-    ExtensionTestMessageListener listener("alpha popup opened",
-                                          /*will_reply=*/false);
+    ExtensionTestMessageListener listener("alpha popup opened");
     ClickOnAction(alpha_action);
     EXPECT_TRUE(listener.WaitUntilSatisfied());
   }
@@ -330,8 +329,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerUITest,
         *process_manager->GetRenderFrameHostsForExtension(alpha->id()).begin();
     content::WebContentsDestroyedWatcher popup_destroyed(
         content::WebContents::FromRenderFrameHost(popup_frame));
-    ExtensionTestMessageListener listener("beta popup opened",
-                                          /*will_reply=*/false);
+    ExtensionTestMessageListener listener("beta popup opened");
     ClickOnAction(beta_action);
     EXPECT_TRUE(listener.WaitUntilSatisfied());
     popup_destroyed.Wait();
@@ -369,7 +367,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerUITest,
       container->GetViewForId(extension->id());
   EXPECT_TRUE(action_view->GetVisible());
 
-  ExtensionTestMessageListener listener("Popup opened", /*will_reply=*/false);
+  ExtensionTestMessageListener listener("Popup opened");
   EXPECT_TRUE(ui_test_utils::SendMouseMoveSync(
       ui_test_utils::GetCenterInScreenCoordinates(action_view)));
   EXPECT_TRUE(ui_controls::SendMouseClick(ui_controls::LEFT));
@@ -715,8 +713,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarRuntimeHostPermissionsBrowserTest,
        l10n_util::GetStringUTF16(IDS_EXTENSIONS_HAS_ACCESS_TO_SITE)},
       u"\n");
 
-  ExtensionTestMessageListener injection_listener(kInjectionSucceededMessage,
-                                                  false /* will_reply */);
+  ExtensionTestMessageListener injection_listener(kInjectionSucceededMessage);
   injection_listener.set_extension_id(extension()->id());
 
   GURL url = embedded_test_server()->GetURL("example.com", "/title1.html");
@@ -807,8 +804,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarRuntimeHostPermissionsBrowserTest,
        l10n_util::GetStringUTF16(IDS_EXTENSIONS_HAS_ACCESS_TO_SITE)},
       u"\n");
 
-  ExtensionTestMessageListener injection_listener(kInjectionSucceededMessage,
-                                                  false /* will_reply */);
+  ExtensionTestMessageListener injection_listener(kInjectionSucceededMessage);
   injection_listener.set_extension_id(extension()->id());
 
   GURL url = embedded_test_server()->GetURL("example.com", "/title1.html");

@@ -297,13 +297,12 @@ class BaseSelectFileDialogExtensionBrowserTest
     }
     // Open the file dialog: Files app will signal that it is loaded via the
     // "ready" chrome.test.sendMessage().
-    const bool will_reply = false;
-    ExtensionTestMessageListener init_listener("ready", will_reply);
+    ExtensionTestMessageListener init_listener("ready");
 
     std::unique_ptr<ExtensionTestMessageListener> additional_listener;
     if (!additional_message.empty()) {
-      additional_listener = std::make_unique<ExtensionTestMessageListener>(
-          additional_message, will_reply);
+      additional_listener =
+          std::make_unique<ExtensionTestMessageListener>(additional_message);
     }
 
     std::u16string title;
@@ -619,7 +618,7 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionBrowserTest, FileInputElement) {
   ASSERT_EQ(url, web_contents->GetLastCommittedURL());
 
   // Create a listener for the file dialog's "ready" message.
-  ExtensionTestMessageListener listener("ready", false);
+  ExtensionTestMessageListener listener("ready");
 
   // Click the file <input> element to open the file dialog.
   constexpr auto kButton = blink::WebMouseEvent::Button::kLeft;

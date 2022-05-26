@@ -86,7 +86,8 @@ class ChromeNativeAppWindowViewsAuraAshBrowserTest
   std::unique_ptr<ExtensionTestMessageListener>
   LaunchPlatformAppWithFocusedWindow() {
     std::unique_ptr<ExtensionTestMessageListener> launched_listener =
-        std::make_unique<ExtensionTestMessageListener>("Launched", true);
+        std::make_unique<ExtensionTestMessageListener>(
+            "Launched", ReplyBehavior::kWillReply);
     LoadAndLaunchPlatformApp("leave_fullscreen", launched_listener.get());
 
     // We start by making sure the window is actually focused.

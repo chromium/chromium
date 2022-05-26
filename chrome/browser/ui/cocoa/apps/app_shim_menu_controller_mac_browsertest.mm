@@ -48,13 +48,13 @@ class AppShimMenuControllerBrowserTest
   void SetUpApps(int flags) {
 
     if (flags & PACKAGED_1) {
-      ExtensionTestMessageListener listener_1("Launched", false);
+      ExtensionTestMessageListener listener_1("Launched");
       app_1_ = InstallAndLaunchPlatformApp("minimal_id");
       ASSERT_TRUE(listener_1.WaitUntilSatisfied());
     }
 
     if (flags & PACKAGED_2) {
-      ExtensionTestMessageListener listener_2("Launched", false);
+      ExtensionTestMessageListener listener_2("Launched");
       app_2_ = InstallAndLaunchPlatformApp("minimal");
       ASSERT_TRUE(listener_2.WaitUntilSatisfied());
     }

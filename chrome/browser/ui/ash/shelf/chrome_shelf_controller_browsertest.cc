@@ -958,7 +958,8 @@ IN_PROC_BROWSER_TEST_F(ShelfPlatformAppBrowserTest, SetIcon) {
   TestAppWindowIconObserver test_observer(browser()->profile());
 
   int base_shelf_item_count = shelf_model()->item_count();
-  ExtensionTestMessageListener ready_listener("ready", true);
+  ExtensionTestMessageListener ready_listener("ready",
+                                              ReplyBehavior::kWillReply);
   const Extension* extension = LoadAndLaunchPlatformApp("app_icon", "Launched");
   ASSERT_TRUE(extension);
 
