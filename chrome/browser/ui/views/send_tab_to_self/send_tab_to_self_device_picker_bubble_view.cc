@@ -158,26 +158,20 @@ void SendTabToSelfDevicePickerBubbleView::AddedToWidget() {
 }
 
 void SendTabToSelfDevicePickerBubbleView::CreateHintTextLabel() {
-  views::View* container = AddChildView(std::make_unique<views::View>());
   auto* provider = ChromeLayoutProvider::Get();
-  container->SetProperty(
-      views::kMarginsKey,
-      gfx::Insets::TLBR(0, 0,
-                        provider->GetDistanceMetric(
-                            views::DISTANCE_UNRELATED_CONTROL_VERTICAL),
-                        0));
-  auto* container_layout =
-      container->SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kVertical,
-          gfx::Insets::VH(0, provider->GetDistanceMetric(
-                                 views::DISTANCE_BUTTON_HORIZONTAL_PADDING))));
-  container_layout->set_cross_axis_alignment(
-      views::BoxLayout::CrossAxisAlignment::kCenter);
-
-  auto* description = container->AddChildView(std::make_unique<views::Label>(
+  auto* description = AddChildView(std::make_unique<views::Label>(
       l10n_util::GetStringUTF16(
           IDS_TOOLBAR_BUTTON_SEND_TAB_TO_SELF_BUTTON_HINT_TEXT),
       views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY));
+  description->SetProperty(
+      views::kMarginsKey,
+      gfx::Insets::TLBR(0,
+                        provider->GetDistanceMetric(
+                            views::DISTANCE_BUTTON_HORIZONTAL_PADDING),
+                        provider->GetDistanceMetric(
+                            views::DISTANCE_UNRELATED_CONTROL_VERTICAL),
+                        provider->GetDistanceMetric(
+                            views::DISTANCE_BUTTON_HORIZONTAL_PADDING)));
   description->SetMultiLine(true);
   description->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 }
