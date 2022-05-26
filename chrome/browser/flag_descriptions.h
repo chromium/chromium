@@ -645,6 +645,10 @@ extern const char kEnableGamepadButtonAxisEventsDescription[];
 extern const char kEnableIphName[];
 extern const char kEnableIphDescription[];
 
+extern const char kEnableLensFullscreenSearchFlagId[];
+extern const char kEnableLensFullscreenSearchName[];
+extern const char kEnableLensFullscreenSearchDescription[];
+
 extern const char kEnableLensStandaloneFlagId[];
 extern const char kEnableLensStandaloneName[];
 extern const char kEnableLensStandaloneDescription[];

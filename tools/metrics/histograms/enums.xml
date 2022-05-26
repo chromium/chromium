@@ -56292,6 +56292,7 @@ from previous Chrome versions.
   <int value="-998310305" label="OmniboxContextMenuShowFullUrls:disabled"/>
   <int value="-998255750" label="ExperimentalKeyboardLockUI:enabled"/>
   <int value="-997491100" label="ShareUsageRanking:disabled"/>
+  <int value="-997185008" label="LensFullscreenSearch:disabled"/>
   <int value="-996868396" label="SmartDimNewMlAgent:enabled"/>
   <int value="-996673716" label="enable-web-app-frame"/>
   <int value="-994558985" label="EnableNotificationIndicator:disabled"/>
@@ -60311,6 +60312,7 @@ from previous Chrome versions.
   <int value="1696139514" label="enable-ble-advertising-in-apps"/>
   <int value="1697189972" label="WebPaymentsSingleAppUiSkip:disabled"/>
   <int value="1698089268" label="WebXRMultiGpu:disabled"/>
+  <int value="1699134522" label="LensFullscreenSearch:enabled"/>
   <int value="1699180023" label="PaymentRequestOptionalTotal:disabled"/>
   <int value="1699182601" label="DockedMagnifier:disabled"/>
   <int value="1699290689" label="CssSelectorFragmentAnchor:enabled"/>

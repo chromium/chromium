@@ -1197,6 +1197,13 @@ const char kEnableAutomaticSnoozeName[] = "Enable Automatic Snooze";
 const char kEnableAutomaticSnoozeDescription[] =
     "Enables automatic snoozing on In-Product Help with no snooze button.";
 
+const char kEnableLensFullscreenSearchFlagId[] =
+    "enable-lens-fullscreen-search";
+const char kEnableLensFullscreenSearchName[] =
+    "Enable Lens fullscreen search features.";
+const char kEnableLensFullscreenSearchDescription[] =
+    "Enables Lens fullscreen search features.";
+
 const char kEnableLensStandaloneFlagId[] = "enable-lens-standalone";
 const char kEnableLensStandaloneName[] = "Enable Lens features in Chrome.";
 const char kEnableLensStandaloneDescription[] =

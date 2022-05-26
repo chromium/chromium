@@ -3428,8 +3428,11 @@ void RenderViewContextMenu::ExecRegionSearch(
     lens_region_search_controller_ =
         std::make_unique<lens::LensRegionSearchController>(source_web_contents_,
                                                            GetBrowser());
+  // If Lens fullscreen search is enabled, we want to send every region search
+  // as a fullscreen capture.
   bool use_fullscreen_capture =
-      GetMenuSourceType(event_flags) == ui::MENU_SOURCE_KEYBOARD;
+      GetMenuSourceType(event_flags) == ui::MENU_SOURCE_KEYBOARD ||
+      lens::features::IsLensFullscreenSearchEnabled();
   lens_region_search_controller_->Start(use_fullscreen_capture,
                                         is_google_default_search_provider);
 #endif

@@ -7804,7 +7804,10 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillSuggestVirtualCardsOnIncompleteForm)},
-
+    {flag_descriptions::kEnableLensFullscreenSearchFlagId,
+     flag_descriptions::kEnableLensFullscreenSearchName,
+     flag_descriptions::kEnableLensFullscreenSearchDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(lens::features::kLensFullscreenSearch)},
     {flag_descriptions::kEnableLensStandaloneFlagId,
      flag_descriptions::kEnableLensStandaloneName,
      flag_descriptions::kEnableLensStandaloneDescription, kOsDesktop,

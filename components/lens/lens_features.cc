@@ -13,6 +13,9 @@ namespace features {
 const base::Feature kLensStandalone{"LensStandalone",
                                     base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kLensFullscreenSearch{"LensFullscreenSearch",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::FeatureParam<bool> kRegionSearchMacCursorFix{
     &kLensStandalone, "region-search-mac-cursor-fix", true};
 
@@ -74,6 +77,10 @@ int GetMaxPixelsForImageSearch() {
 
 std::string GetHomepageURLForLens() {
   return kHomepageURLForLens.Get();
+}
+
+bool IsLensFullscreenSearchEnabled() {
+  return base::FeatureList::IsEnabled(kLensFullscreenSearch);
 }
 
 bool IsLensSidePanelEnabled() {

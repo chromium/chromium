@@ -16,8 +16,8 @@ namespace features {
 // Enables context menu search by image sending to the Lens homepage.
 extern const base::Feature kLensStandalone;
 
-// Enables Lens Region Search from the context menu.
-extern const base::Feature kLensRegionSearch;
+// Enables Lens fullscreen search on Desktop platforms.
+extern const base::Feature kLensFullscreenSearch;
 
 // Enables a fix for cursor pointer/crosshair state over overlay on Mac.
 // TODO(crbug/1266514): make default and remove feature once launched.
@@ -65,6 +65,9 @@ extern int GetMaxPixelsForImageSearch();
 
 // The URL for the Lens home page.
 extern std::string GetHomepageURLForLens();
+
+// Returns whether Lens fullscreen search is enabled.
+extern bool IsLensFullscreenSearchEnabled();
 
 // Returns whether the Lens side panel is enabled.
 extern bool IsLensSidePanelEnabled();

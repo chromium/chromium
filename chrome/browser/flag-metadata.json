@@ -2284,6 +2284,11 @@
     "expiry_milestone": 95
   },
   {
+    "name": "enable-lens-fullscreen-search",
+    "owners": ["stanfield@google.com", "lens-chrome@google.com"],
+    "expiry_milestone": 106
+  },
+  {
     "name": "enable-lens-standalone",
     "owners": [ "stanfield@google.com", "benwgold@google.com", "juanmojica@google.com" ],
     "expiry_milestone": 103

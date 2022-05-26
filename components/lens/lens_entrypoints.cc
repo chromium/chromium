@@ -50,6 +50,14 @@ std::map<std::string, std::string> GetLensQueryParametersMap(
       query_parameters.insert({kEntryPointQueryParameter,
                                kChromeSearchWithGoogleLensContextMenuItem});
       break;
+    case lens::CHROME_FULLSCREEN_SEARCH_MENU_ITEM:
+      query_parameters.insert(
+          {kEntryPointQueryParameter, kChromeRegionSearchMenuItem});
+      // TODO(b/233774783): Remove adding the side panel surface query parameter
+      // when we have a proper AVS entry point that can conform Lens Web to
+      // spec.
+      query_parameters.insert({kSurfaceQueryParameter, kSidePanel});
+      break;
     default:
       // Empty strings are ignored when query parameters are built.
       break;
