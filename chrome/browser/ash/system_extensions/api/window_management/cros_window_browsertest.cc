@@ -87,9 +87,11 @@ class ServiceWorkerConsoleObserver
   // Get the first message added to the console since the observer was
   // constructed. Will wait if there are no messages yet.
   const std::u16string& WaitAndGetNextConsoleMessage() {
+    LOG(ERROR) << "Wainting for console message.";
     if (!message_.has_value())
       run_loop_.Run();
 
+    LOG(ERROR) << "Console message received.";
     return message_.value();
   }
 
@@ -671,6 +673,7 @@ IN_PROC_BROWSER_TEST_F(CrosWindowExtensionBrowserTest, StartEvent) {
       GURL("chrome-untrusted://system-extension-echo-01020304/"));
 
   base::RunLoop run_loop;
+  LOG(ERROR) << "Starting installation.";
   install_manager.InstallUnpackedExtensionFromDir(
       GetWindowManagerExtensionDir(),
       base::BindLambdaForTesting([&](InstallStatusOrSystemExtensionId result) {
@@ -679,6 +682,7 @@ IN_PROC_BROWSER_TEST_F(CrosWindowExtensionBrowserTest, StartEvent) {
         run_loop.Quit();
       }));
   run_loop.Run();
+  LOG(ERROR) << "Installation finished.";
 
   EXPECT_EQ(u"start event fired",
             sw_console_observer.WaitAndGetNextConsoleMessage());
