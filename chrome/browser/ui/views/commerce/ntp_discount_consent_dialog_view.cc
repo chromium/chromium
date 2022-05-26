@@ -48,6 +48,12 @@ NtpDiscountConsentDialogView::NtpDiscountConsentDialogView(
   SetOwnedByWidget(true);
   // TODO(meiliang@): Set text for the button.
   SetButtons(ui::DIALOG_BUTTON_CANCEL | ui::DIALOG_BUTTON_OK);
+  SetButtonLabel(
+      ui::DIALOG_BUTTON_CANCEL,
+      l10n_util::GetStringUTF16(IDS_DISCOUNT_CONTEXTUAL_CONSENT_NO_THANKS));
+  SetButtonLabel(ui::DIALOG_BUTTON_OK,
+                 l10n_util::GetStringUTF16(
+                     IDS_NATIVE_NTP_CART_DISCOUNT_CONSENT_ACCEPT_BUTTON));
   set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_LARGE_MODAL_DIALOG_PREFERRED_WIDTH));
 
