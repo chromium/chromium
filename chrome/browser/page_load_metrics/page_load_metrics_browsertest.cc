@@ -577,7 +577,9 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, NoNavigation) {
       << "Recorded metrics: " << GetRecordedPageLoadMetricNames();
 }
 
-IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, MainFrameViewportRect) {
+// TODO(crbug.com/1324432): Re-enable this test
+IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
+                       DISABLED_MainFrameViewportRect) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url = embedded_test_server()->GetURL(
       "a.com", "/scroll/scrollable_page_with_content.html");
