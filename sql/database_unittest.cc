@@ -2035,6 +2035,13 @@ TEST_P(SQLDatabaseTest, SchemaFailsAfterCorruptSizeInHeader) {
   }
 }
 
+TEST(SQLEmptyPathDatabaseTest, EmptyPathTest) {
+  Database db;
+  EXPECT_TRUE(db.OpenInMemory());
+  EXPECT_TRUE(db.is_open());
+  EXPECT_TRUE(db.DbPath().empty());
+}
+
 // WAL mode is currently not supported on Fuchsia.
 #if !BUILDFLAG(IS_FUCHSIA)
 INSTANTIATE_TEST_SUITE_P(JournalMode, SQLDatabaseTest, testing::Bool());
@@ -2047,5 +2054,4 @@ INSTANTIATE_TEST_SUITE_P(JournalMode,
                          SQLDatabaseTestExclusiveMode,
                          testing::Values(false));
 #endif
-
 }  // namespace sql
