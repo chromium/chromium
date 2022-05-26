@@ -49,6 +49,7 @@ class RemoteDeviceLifeCycleImpl
 
   // RemoteDeviceLifeCycle:
   void Start() override;
+  void Stop() override;
   ash::multidevice::RemoteDeviceRef GetRemoteDevice() const override;
   ash::secure_channel::ClientChannel* GetChannel() const override;
 

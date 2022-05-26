@@ -1360,8 +1360,8 @@ const base::Feature kSmartDimExperimentalComponent{
     "SmartDimExperimentalComponent", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Backs off connection attempt before retrying after a timeout occurs.
-const base::Feature kSmartLockBluetoothScanningFix{
-    "SmartLockBluetoothScanningFix", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kSmartLockBluetoothScanningBackoff{
+    "SmartLockBluetoothScanningBackoff", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Disconnects bluetooth connection when screen turns off.
 const base::Feature kSmartLockBluetoothScreenOffFix{

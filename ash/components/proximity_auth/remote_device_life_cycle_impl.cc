@@ -38,6 +38,13 @@ void RemoteDeviceLifeCycleImpl::Start() {
   FindConnection();
 }
 
+void RemoteDeviceLifeCycleImpl::Stop() {
+  PA_LOG(VERBOSE) << "Life cycle for " << remote_device_.name() << " stopped.";
+  DCHECK(state_ != RemoteDeviceLifeCycle::State::STOPPED);
+  connection_attempt_.reset();
+  TransitionToState(RemoteDeviceLifeCycle::State::STOPPED);
+}
+
 ash::multidevice::RemoteDeviceRef RemoteDeviceLifeCycleImpl::GetRemoteDevice()
     const {
   return remote_device_;
