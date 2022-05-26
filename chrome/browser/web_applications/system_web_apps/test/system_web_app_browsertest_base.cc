@@ -48,7 +48,7 @@ void SystemWebAppBrowserTestBase::WaitForTestSystemAppInstall() {
   } else {
     // Avoid recreating system apps in tests since AppBrowserController keeps a
     // reference to SystemWebAppDelegates.
-    if (!GetManager().GetRegisteredSystemAppsForTesting().empty())
+    if (!GetManager().system_app_delegates().empty())
       return;
     GetManager().InstallSystemAppsForTesting();
   }

@@ -367,12 +367,6 @@ void SystemWebAppManager::InstallSystemAppsForTesting() {
   run_loop.Run();
 }
 
-const base::flat_map<ash::SystemWebAppType,
-                     std::unique_ptr<ash::SystemWebAppDelegate>>&
-SystemWebAppManager::GetRegisteredSystemAppsForTesting() const {
-  return system_app_delegates_;
-}
-
 absl::optional<AppId> SystemWebAppManager::GetAppIdForSystemApp(
     ash::SystemWebAppType type) const {
   return web_app::GetAppIdForSystemApp(*registrar_, system_app_delegates_,

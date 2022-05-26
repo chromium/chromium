@@ -2120,8 +2120,7 @@ AutotestPrivateGetRegisteredSystemWebAppsFunction::Run() {
 
   std::vector<api::autotest_private::SystemApp> result;
 
-  for (const auto& type_and_info :
-       swa_manager->GetRegisteredSystemAppsForTesting()) {
+  for (const auto& type_and_info : swa_manager->system_app_delegates()) {
     api::autotest_private::SystemApp system_app;
     ash::SystemWebAppDelegate* delegate = type_and_info.second.get();
     system_app.internal_name = delegate->GetInternalName();
@@ -2236,8 +2235,7 @@ AutotestPrivateLaunchSystemWebAppFunction::Run() {
     return RespondNow(Error("System Web Apps not enabled for profile."));
 
   absl::optional<ash::SystemWebAppType> app_type;
-  for (const auto& type_and_info :
-       swa_manager->GetRegisteredSystemAppsForTesting()) {
+  for (const auto& type_and_info : swa_manager->system_app_delegates()) {
     if (type_and_info.second->GetInternalName() == params->app_name) {
       app_type = type_and_info.first;
       break;

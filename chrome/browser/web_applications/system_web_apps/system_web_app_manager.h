@@ -144,12 +144,6 @@ class SystemWebAppManager {
   absl::optional<ash::SystemWebAppType> GetCapturingSystemAppForURL(
       const GURL& url) const;
 
-  // Returns a map of registered system app types and infos, these apps will be
-  // installed on the system.
-  // TODO(crbug.com/1321984): Delete this accessor in favor of
-  // system_app_delegates().
-  const ash::SystemWebAppDelegateMap& GetRegisteredSystemAppsForTesting() const;
-
   const base::OneShotEvent& on_apps_synchronized() const {
     return *on_apps_synchronized_;
   }

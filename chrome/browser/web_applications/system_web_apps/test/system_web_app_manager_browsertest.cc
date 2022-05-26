@@ -1151,7 +1151,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerInstallAllAppsBrowserTest,
   // might flake. See https://crbug.com/1286600#c6.
   WaitForSystemAppsSynchronized();
 
-  const auto& app_map = GetManager().GetRegisteredSystemAppsForTesting();
+  const auto& app_map = GetManager().system_app_delegates();
   ASSERT_GT(app_map.size(), 0U);
 
   // Check all system app types has a corresponding SystemWebAppDataProto entry
@@ -1168,7 +1168,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerInstallAllAppsBrowserTest,
 IN_PROC_BROWSER_TEST_P(SystemWebAppManagerInstallAllAppsBrowserTest,
                        PRE_Upgrade) {
   WaitForSystemAppsSynchronized();
-  EXPECT_GE(GetManager().GetRegisteredSystemAppsForTesting().size(),
+  EXPECT_GE(GetManager().system_app_delegates().size(),
             GetManager().GetAppIds().size());
 }
 
@@ -1176,8 +1176,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerInstallAllAppsBrowserTest, Upgrade) {
   WaitForSystemAppsSynchronized();
   const auto& app_ids = GetManager().GetAppIds();
 
-  EXPECT_EQ(GetManager().GetRegisteredSystemAppsForTesting().size(),
-            app_ids.size());
+  EXPECT_EQ(GetManager().system_app_delegates().size(), app_ids.size());
 
   // Some system web apps keep their resources (e.g. html pages) in real
   // Chrome OS images. Here we test a few apps whose resources are bundled in
