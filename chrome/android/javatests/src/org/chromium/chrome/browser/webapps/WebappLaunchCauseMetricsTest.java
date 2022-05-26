@@ -121,4 +121,18 @@ public final class WebappLaunchCauseMetricsTest {
         ++count;
         Assert.assertEquals(count, histogramCountForValue(LaunchCause.EXTERNAL_VIEW_INTENT));
     }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testNullWebAppInfo() throws Throwable {
+        int count = histogramCountForValue(LaunchCause.OTHER);
+
+        WebappLaunchCauseMetrics metrics = new WebappLaunchCauseMetrics(mActivity, null);
+
+        metrics.onReceivedIntent();
+        metrics.recordLaunchCause();
+        ++count;
+        Assert.assertEquals(count, histogramCountForValue(LaunchCause.OTHER));
+    }
 }
