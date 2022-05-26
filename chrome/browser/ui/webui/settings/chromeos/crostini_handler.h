@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ash/crostini/ansible/ansible_file_selector.h"
 #include "chrome/browser/ash/crostini/crostini_export_import.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_port_forwarder.h"
@@ -142,9 +143,16 @@ class CrostiniHandler : public ::settings::SettingsPageUIHandler,
   // Handle a request to stop a running lxd container
   void HandleStopContainer(const base::Value::List& args);
 
+  // Handle a request to upload an Ansible Playbook
+  void HandleApplyAnsiblePlaybook(const base::Value::List& args);
+  // Callback for AnsibleFileSelector
+  void OnAnsiblePlaybookSelected(const std::string& callback_id,
+                                 const base::FilePath& path);
+
   Profile* profile_;
   base::CallbackListSubscription adb_sideloading_device_policy_subscription_;
   PrefChangeRegistrar pref_change_registrar_;
+  std::unique_ptr<crostini::AnsibleFileSelector> ansible_file_selector_;
 
   // |handler_weak_ptr_factory_| is used for callbacks handling messages from
   // the WebUI page, and certain observers. These callbacks usually have the

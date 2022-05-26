@@ -193,11 +193,12 @@ class CrostiniManager : public KeyedService,
     bool stop_after_lxd_available = false;
     // Paths to share with VM on startup.
     std::vector<base::FilePath> share_paths;
-    // These four options only affect new containers.
+    // These five options only affect new containers.
     absl::optional<std::string> container_username;
     absl::optional<int64_t> disk_size_bytes;
     absl::optional<std::string> image_server_url;
     absl::optional<std::string> image_alias;
+    absl::optional<base::FilePath> ansible_playbook;
 
     RestartOptions();
     ~RestartOptions();
@@ -812,9 +813,6 @@ class CrostiniManager : public KeyedService,
   void OnGetContainerSshKeys(
       GetContainerSshKeysCallback callback,
       absl::optional<vm_tools::concierge::ContainerSshKeysResponse> response);
-
-  // Callback for AnsibleManagementService::ConfigureDefaultContainer
-  void OnDefaultContainerConfigured(bool success);
 
   // Helper for CrostiniManager::MaybeUpdateCrostini. Makes blocking calls to
   // check for /dev/kvm.

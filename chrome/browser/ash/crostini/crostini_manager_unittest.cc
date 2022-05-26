@@ -2194,7 +2194,7 @@ TEST_F(CrostiniManagerTest, StartLxdSuccess) {
 }
 
 class CrostiniManagerAnsibleInfraTest
-    : public CrostiniManagerTest,
+    : public CrostiniManagerRestartTest,
       public AnsibleManagementService::Observer {
  public:
   void SetUp() override {
@@ -2261,10 +2261,11 @@ TEST_F(CrostiniManagerAnsibleInfraTest, StartContainerAnsibleInstallFailure) {
   ansible_management_test_helper_->SetUpAnsibleInstallation(
       vm_tools::cicerone::InstallLinuxPackageResponse::FAILED);
 
-  crostini_manager()->StartLxdContainer(
+  crostini_manager()->RestartCrostini(
       ContainerId::GetDefault(),
       base::BindOnce(&ExpectCrostiniResult, run_loop()->QuitClosure(),
-                     CrostiniResult::CONTAINER_CONFIGURATION_FAILED));
+                     CrostiniResult::CONTAINER_CONFIGURATION_FAILED),
+      this);
 
   run_loop()->Run();
 }
@@ -2274,10 +2275,11 @@ TEST_F(CrostiniManagerAnsibleInfraTest, StartContainerInstallSignalFailure) {
       vm_tools::cicerone::InstallLinuxPackageResponse::STARTED);
   SetInstallAnsibleStatus(false);
 
-  crostini_manager()->StartLxdContainer(
+  crostini_manager()->RestartCrostini(
       ContainerId::GetDefault(),
       base::BindOnce(&ExpectCrostiniResult, run_loop()->QuitClosure(),
-                     CrostiniResult::CONTAINER_CONFIGURATION_FAILED));
+                     CrostiniResult::CONTAINER_CONFIGURATION_FAILED),
+      this);
 
   run_loop()->Run();
 }
@@ -2288,10 +2290,11 @@ TEST_F(CrostiniManagerAnsibleInfraTest, StartContainerApplyFailure) {
   ansible_management_test_helper_->SetUpPlaybookApplication(
       vm_tools::cicerone::ApplyAnsiblePlaybookResponse::FAILED);
 
-  crostini_manager()->StartLxdContainer(
+  crostini_manager()->RestartCrostini(
       ContainerId::GetDefault(),
       base::BindOnce(&ExpectCrostiniResult, run_loop()->QuitClosure(),
-                     CrostiniResult::CONTAINER_CONFIGURATION_FAILED));
+                     CrostiniResult::CONTAINER_CONFIGURATION_FAILED),
+      this);
 
   run_loop()->Run();
 }
@@ -2304,10 +2307,11 @@ TEST_F(CrostiniManagerAnsibleInfraTest, StartContainerApplySignalFailure) {
 
   SetApplyAnsibleStatus(false);
 
-  crostini_manager()->StartLxdContainer(
+  crostini_manager()->RestartCrostini(
       ContainerId::GetDefault(),
       base::BindOnce(&ExpectCrostiniResult, run_loop()->QuitClosure(),
-                     CrostiniResult::CONTAINER_CONFIGURATION_FAILED));
+                     CrostiniResult::CONTAINER_CONFIGURATION_FAILED),
+      this);
 
   run_loop()->Run();
 }
@@ -2318,10 +2322,11 @@ TEST_F(CrostiniManagerAnsibleInfraTest, StartContainerSuccess) {
   ansible_management_test_helper_->SetUpPlaybookApplication(
       vm_tools::cicerone::ApplyAnsiblePlaybookResponse::STARTED);
 
-  crostini_manager()->StartLxdContainer(
+  crostini_manager()->RestartCrostini(
       ContainerId::GetDefault(),
       base::BindOnce(&ExpectCrostiniResult, run_loop()->QuitClosure(),
-                     CrostiniResult::SUCCESS));
+                     CrostiniResult::SUCCESS),
+      this);
   run_loop()->Run();
 }
 

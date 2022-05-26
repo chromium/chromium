@@ -377,6 +377,10 @@ void CrostiniSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_CROSTINI_EXTRA_CONTAINERS_CREATE_DIALOG_IMAGE_SERVER},
       {"crostiniExtraContainersCreateDialogImageAlias",
        IDS_SETTINGS_CROSTINI_EXTRA_CONTAINERS_CREATE_DIALOG_IMAGE_ALIAS},
+      {"crostiniPreconfiguredContainersAddPlaybook",
+       IDS_SETTINGS_CROSTINI_PRECONFIGURED_CONTAINERS_ADD_PLAYBOOK},
+      {"crostiniPreconfiguredContainersAttachPlaybookButtonLabel",
+       IDS_SETTINGS_CROSTINI_PRECONFIGURED_CONTAINERS_ATTACH_PLAYBOOK_BUTTON_LABEL},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 

@@ -43,6 +43,14 @@ class ExtraContainersCreateDialog extends PolymerElement {
       /**
        * @private {string}
        */
+      ansiblePlaybook_: {
+        type: String,
+        value: '',
+      },
+
+      /**
+       * @private {string}
+       */
       inputVmName_: {
         type: String,
         value: DEFAULT_CROSTINI_VM,
@@ -162,12 +170,19 @@ class ExtraContainersCreateDialog extends PolymerElement {
       // These elements are part of a dom-if on |advancedToggleExpanded_|
       this.inputImageServer_ = this.$.imageServerInput.value;
       this.inputImageAlias_ = this.$.imageAliasInput.value;
+      this.ansiblePlaybook_ = this.$.preconfiguredContainersInput.value;
     }
 
     CrostiniBrowserProxyImpl.getInstance().createContainer(
         {vm_name: this.inputVmName_, container_name: this.inputContainerName_},
-        this.inputImageServer_, this.inputImageAlias_);
+        this.inputImageServer_, this.inputImageAlias_, this.ansiblePlaybook_);
     this.$.dialog.close();
+  }
+
+  /** @private */
+  onAnsiblePlaybookUploadClick_() {
+    this.$.preconfiguredContainersInput.value =
+        CrostiniBrowserProxyImpl.getInstance().applyAnsiblePlaybook();
   }
 
   /** @private */

@@ -99,7 +99,8 @@ enum class CrostiniResult {
   CONTAINER_STOP_FAILED = 66,
   CONTAINER_STOP_CANCELLED = 67,
   WAYLAND_SERVER_CREATION_FAILED = 68,
-  kMaxValue = WAYLAND_SERVER_CREATION_FAILED,
+  CONFIGURE_CONTAINER_TIMED_OUT = 69,
+  kMaxValue = CONFIGURE_CONTAINER_TIMED_OUT,
   // When adding a new value, check you've followed the steps in the comment at
   // the top of this enum.
 };

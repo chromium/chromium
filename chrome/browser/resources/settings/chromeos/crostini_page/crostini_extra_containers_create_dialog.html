@@ -94,6 +94,15 @@
         label="$i18n{crostiniExtraContainersCreateDialogImageAlias}"
         aria-disabled="false">
       </cr-input>
+      <cr-input id="preconfiguredContainersInput"
+        label="$i18n{crostiniPreconfiguredContainersAddPlaybook}"
+        aria-disabled="true">
+      </cr-input>
+      <cr-button id="uploadButton"
+        on-click="onAnsiblePlaybookUploadClick_"
+        aria-labelledby="preconfiguredContainersInput">
+        $i18n{crostiniPreconfiguredContainersAttachPlaybookButtonLabel}
+      </cr-button>
     </div>
   </div>
 

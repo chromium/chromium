@@ -27,6 +27,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/web_ui.h"
 #include "ui/display/screen.h"
 
 namespace chromeos {
@@ -171,6 +172,10 @@ void CrostiniHandler::RegisterMessages() {
     web_ui()->RegisterMessageCallback(
         "stopContainer",
         base::BindRepeating(&CrostiniHandler::HandleStopContainer,
+                            handler_weak_ptr_factory_.GetWeakPtr()));
+    web_ui()->RegisterMessageCallback(
+        "applyAnsiblePlaybook",
+        base::BindRepeating(&CrostiniHandler::HandleApplyAnsiblePlaybook,
                             handler_weak_ptr_factory_.GetWeakPtr()));
   }
 }
@@ -674,10 +679,11 @@ void CrostiniHandler::HandleShutdownCrostini(const base::Value::List& args) {
 }
 
 void CrostiniHandler::HandleCreateContainer(const base::Value::List& args) {
-  CHECK_EQ(3U, args.size());
+  CHECK_EQ(4U, args.size());
   crostini::ContainerId container_id(args[0]);
   GURL image_server_url(args[1].GetString());
   std::string image_alias(args[2].GetString());
+  base::FilePath ansible_playbook(args[3].GetString());
 
   if (!crostini::CrostiniFeatures::Get()->IsMultiContainerAllowed(profile_)) {
     return;
@@ -698,6 +704,10 @@ void CrostiniHandler::HandleCreateContainer(const base::Value::List& args) {
   if (!image_alias.empty()) {
     options.image_alias = image_alias;
     VLOG(1) << "image_alias = " << image_alias;
+  }
+  if (!ansible_playbook.empty()) {
+    options.ansible_playbook = ansible_playbook;
+    VLOG(1) << "ansible_playbook = " << ansible_playbook;
   }
 
   crostini::CrostiniManager::GetForProfile(profile_)
@@ -807,6 +817,24 @@ void CrostiniHandler::HandleStopContainer(const base::Value::List& args) {
     crostini::CrostiniManager::GetForProfile(profile_)->StopLxdContainer(
         container_id, base::DoNothing());
   }
+}
+
+void CrostiniHandler::HandleApplyAnsiblePlaybook(
+    const base::Value::List& args) {
+  CHECK_EQ(1U, args.size());
+  const std::string& callback_id = args[0].GetString();
+  ansible_file_selector_ =
+      std::make_unique<crostini::AnsibleFileSelector>(web_ui());
+  ansible_file_selector_->SelectFile(
+      base::BindOnce(&CrostiniHandler::OnAnsiblePlaybookSelected,
+                     handler_weak_ptr_factory_.GetWeakPtr(), callback_id),
+      base::DoNothing());
+}
+
+void CrostiniHandler::OnAnsiblePlaybookSelected(const std::string& callback_id,
+                                                const base::FilePath& path) {
+  base::Value filePath(path.value());
+  ResolveJavascriptCallback(base::Value(callback_id), filePath);
 }
 
 }  // namespace settings

@@ -183,7 +183,7 @@ void EmitTimeInStageHistogram(base::TimeDelta duration,
       name = "Crostini.RestarterTimeInState2.StartContainer";
       break;
     case mojom::InstallerState::kConfigureContainer:
-      NOTREACHED();
+      name = "Crostini.RestarterTimeInState2.ConfigureContainer";
       return;
   }
   base::UmaHistogramCustomTimes(name, duration, base::Milliseconds(10),
@@ -284,6 +284,7 @@ class CrostiniManager::CrostiniRestarter
                                const base::FilePath& result_path);
   // chromeos::SchedulerConfigurationManagerBase::Observer:
   void OnConfigurationSet(bool success, size_t num_cores_disabled) override;
+  void OnConfigureContainerFinished(bool success);
   void OnWaylandServerCreated(guest_os::GuestOsWaylandServer::Result result);
   void StartTerminaVmFinished(bool success);
   void SharePathsFinished(bool success, const std::string& failure_reason);
@@ -320,9 +321,9 @@ class CrostiniManager::CrostiniRestarter
       // there's a bit of work that's not covered by heartbeat messages so to be
       // safe set a 5 minute timeout.
       {mojom::InstallerState::kStartContainer, base::Minutes(5)},
-      // ConfigureContainer is special, it's not part of the restarter flow, so
-      // it doesn't have a timeout.
-      {mojom::InstallerState::kConfigureContainer, base::Hours(0)},
+      // Configuration may be slow, making timeout 2 hours at first because some
+      // playbooks are gigantic (e.g. Chromium playbook).
+      {mojom::InstallerState::kConfigureContainer, base::Hours(2)},
   };
 
   Profile* profile_;
@@ -462,6 +463,8 @@ void CrostiniManager::CrostiniRestarter::Timeout(mojom::InstallerState state) {
       result = CrostiniResult::START_CONTAINER_TIMED_OUT;
       break;
     case mojom::InstallerState::kConfigureContainer:
+      result = CrostiniResult::CONFIGURE_CONTAINER_TIMED_OUT;
+      break;
     case mojom::InstallerState::kStart:
       NOTREACHED();
   }
@@ -549,6 +552,24 @@ void CrostiniManager::CrostiniRestarter::StartLxdContainerFinished(
   // If arc sideloading is enabled, configure the container for that.
   crostini_manager_->ConfigureForArcSideload();
 
+  // Additional setup might be required in case of default Crostini container
+  // such as installing Ansible in default container and applying
+  // pre-determined configuration to the default container.
+  if (container_id_ == ContainerId::GetDefault() &&
+      ShouldConfigureDefaultContainer(profile_)) {
+    requests_[0].options.ansible_playbook = profile_->GetPrefs()->GetFilePath(
+        prefs::kCrostiniAnsiblePlaybookFilePath);
+  }
+  if (requests_[0].options.ansible_playbook.has_value()) {
+    // Check to see if there's any additional configuration via Ansible
+    // required.
+    StartStage(mojom::InstallerState::kConfigureContainer);
+    AnsibleManagementService::GetForProfile(profile_)->ConfigureContainer(
+        container_id_, requests_[0].options.ansible_playbook.value(),
+        base::BindOnce(&CrostiniRestarter::OnConfigureContainerFinished,
+                       weak_ptr_factory_.GetWeakPtr()));
+    return;
+  }
   // If default termina/penguin, then sshfs mount and reshare folders, else we
   // are finished. Also, a lot of unit tests don't inject a fake container so
   // it's possible in tests to end up here without a running container. Don't
@@ -558,7 +579,6 @@ void CrostiniManager::CrostiniRestarter::StartLxdContainerFinished(
     crostini_manager_->MountCrostiniFiles(container_id_, base::DoNothing(),
                                           true);
   }
-
   FinishRestart(result);
 }
 
@@ -725,6 +745,20 @@ void CrostiniManager::CrostiniRestarter::OnConfigurationSet(
       ->Get(vm_tools::launch::TERMINA,
             base::BindOnce(&CrostiniRestarter::OnWaylandServerCreated,
                            weak_ptr_factory_.GetWeakPtr()));
+}
+
+void CrostiniManager::CrostiniRestarter::OnConfigureContainerFinished(
+    bool success) {
+  if (ReturnEarlyIfNeeded()) {
+    return;
+  }
+  if (!success) {
+    LOG(ERROR) << "Failed to Configure Lxd Container.";
+    // Failed to configure, time to abort.
+    FinishRestart(CrostiniResult::CONTAINER_CONFIGURATION_FAILED);
+    return;
+  }
+  FinishRestart(CrostiniResult::SUCCESS);
 }
 
 void CrostiniManager::CrostiniRestarter::OnWaylandServerCreated(
@@ -2696,20 +2730,6 @@ void CrostiniManager::OnContainerStarted(
       ContainerInfo(signal.container_name(), signal.container_username(),
                     signal.container_homedir(), signal.ipv4_address()));
 
-  // Additional setup might be required in case of default Crostini container
-  // such as installing Ansible in default container and applying
-  // pre-determined configuration to the default container.
-  if (container_id == ContainerId::GetDefault() &&
-      ShouldConfigureDefaultContainer(profile_)) {
-    AnsibleManagementService::GetForProfile(profile_)->ConfigureContainer(
-        ContainerId::GetDefault(),
-        profile_->GetPrefs()->GetFilePath(
-            prefs::kCrostiniAnsiblePlaybookFilePath),
-        base::BindOnce(&CrostiniManager::OnDefaultContainerConfigured,
-                       weak_ptr_factory_.GetWeakPtr()));
-    return;
-  }
-
   InvokeAndErasePendingContainerCallbacks(
       &start_container_callbacks_, container_id, CrostiniResult::SUCCESS);
 
@@ -2723,17 +2743,6 @@ void CrostiniManager::OnContainerStarted(
   for (auto& observer : container_started_observers_) {
     observer.OnContainerStarted(container_id);
   }
-}
-
-void CrostiniManager::OnDefaultContainerConfigured(bool success) {
-  CrostiniResult result = CrostiniResult::SUCCESS;
-  if (!success) {
-    LOG(ERROR) << "Failed to configure default Crostini container";
-    result = CrostiniResult::CONTAINER_CONFIGURATION_FAILED;
-  }
-
-  InvokeAndErasePendingContainerCallbacks(&start_container_callbacks_,
-                                          ContainerId::GetDefault(), result);
 }
 
 void CrostiniManager::OnGuestFileCorruption(

@@ -779,6 +779,8 @@ source_set("ash") {
     "chrome_browser_main_parts_ash.h",
     "concierge_helper_service.cc",
     "concierge_helper_service.h",
+    "crostini/ansible/ansible_file_selector.cc",
+    "crostini/ansible/ansible_file_selector.h",
     "crostini/ansible/ansible_management_service.cc",
     "crostini/ansible/ansible_management_service.h",
     "crostini/ansible/ansible_management_service_factory.cc",

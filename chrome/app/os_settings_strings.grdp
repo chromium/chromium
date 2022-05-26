@@ -1839,6 +1839,15 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_CROSTINI_EXTRA_CONTAINERS_CREATE_DIALOG_IMAGE_ALIAS" desc="Heading for the input field for entering the image alias string e.g. debian/buster when creating a new Linux container.">
     Image Alias
   </message>
+  <message name="IDS_SETTINGS_CROSTINI_PRECONFIGURED_CONTAINERS_ADD_PLAYBOOK" desc="Heading for the input field for uploading an Ansible playbook to preconfigure a Linux container.">
+    Add playbook
+  </message>
+  <message name="IDS_SETTINGS_CROSTINI_PRECONFIGURED_CONTAINERS_ATTACH_PLAYBOOK_BUTTON_LABEL" desc="Label for button to attach an Ansible Playbook to preconfigure a Linux container.">
+    Apply playbook
+  </message>
+  <message name="IDS_SETTINGS_CROSTINI_ANSIBLE_PLAYBOOK_SELECT_DIALOG_TITLE" desc="The text used as the title for Ansible Playbook selection">
+    Select an Ansible Playbook to add
+  </message>
   <message name="IDS_SETTINGS_CROSTINI_DISK_RESIZE_SHOW_BUTTON" desc="The label of the button/link the user clicks to open the disk resizing dialogue." meaning="The label of the button/link the user clicks to open the disk resizing dialogue.">
     Change
   </message>
