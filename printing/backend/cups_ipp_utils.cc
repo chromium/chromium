@@ -17,28 +17,27 @@
 namespace printing {
 
 std::unique_ptr<CupsConnection> CreateConnection(
-    const base::Value* print_backend_settings) {
+    const base::Value::Dict* print_backend_settings) {
   std::string print_server_url_str;
-  std::string cups_blocking_str;
+  bool cups_blocking = false;
   int encryption = HTTP_ENCRYPT_NEVER;
-  if (print_backend_settings && print_backend_settings->is_dict()) {
+  if (print_backend_settings) {
     const std::string* url_from_settings =
-        print_backend_settings->FindStringKey(kCUPSPrintServerURL);
+        print_backend_settings->FindString(kCUPSPrintServerURL);
     if (url_from_settings)
       print_server_url_str = *url_from_settings;
 
     const std::string* blocking_from_settings =
-        print_backend_settings->FindStringKey(kCUPSBlocking);
+        print_backend_settings->FindString(kCUPSBlocking);
     if (blocking_from_settings)
-      cups_blocking_str = *blocking_from_settings;
+      cups_blocking = *blocking_from_settings == kValueTrue;
 
-    encryption = print_backend_settings->FindIntKey(kCUPSEncryption)
+    encryption = print_backend_settings->FindInt(kCUPSEncryption)
                      .value_or(HTTP_ENCRYPT_NEVER);
   }
 
   // CupsConnection can take an empty GURL.
   GURL print_server_url = GURL(print_server_url_str);
-  bool cups_blocking = cups_blocking_str == kValueTrue;
 
   return CupsConnection::Create(print_server_url,
                                 static_cast<http_encryption_t>(encryption),

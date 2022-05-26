@@ -304,7 +304,7 @@ bool PrintBackendCUPS::IsValidPrinter(const std::string& printer_name) {
 
 #if !BUILDFLAG(IS_CHROMEOS)
 scoped_refptr<PrintBackend> PrintBackend::CreateInstanceImpl(
-    const base::DictionaryValue* print_backend_settings,
+    const base::Value::Dict* print_backend_settings,
     const std::string& locale) {
 #if BUILDFLAG(IS_MAC)
   if (base::FeatureList::IsEnabled(features::kCupsIppPrintingBackend)) {
@@ -312,20 +312,27 @@ scoped_refptr<PrintBackend> PrintBackend::CreateInstanceImpl(
         CreateConnection(print_backend_settings));
   }
 #endif  // BUILDFLAG(IS_MAC)
-  std::string print_server_url_str, cups_blocking;
+  std::string print_server_url_str;
+  bool cups_blocking = false;
   int encryption = HTTP_ENCRYPT_NEVER;
   if (print_backend_settings) {
-    print_backend_settings->GetString(kCUPSPrintServerURL,
-                                      &print_server_url_str);
+    const std::string* url_from_settings =
+        print_backend_settings->FindString(kCUPSPrintServerURL);
+    if (url_from_settings)
+      print_server_url_str = *url_from_settings;
 
-    print_backend_settings->GetString(kCUPSBlocking, &cups_blocking);
+    const std::string* blocking_from_settings =
+        print_backend_settings->FindString(kCUPSBlocking);
+    if (blocking_from_settings)
+      cups_blocking = *blocking_from_settings == kValueTrue;
 
-    print_backend_settings->GetInteger(kCUPSEncryption, &encryption);
+    encryption = print_backend_settings->FindInt(kCUPSEncryption)
+                     .value_or(HTTP_ENCRYPT_NEVER);
   }
   GURL print_server_url(print_server_url_str);
   return base::MakeRefCounted<PrintBackendCUPS>(
       print_server_url, static_cast<http_encryption_t>(encryption),
-      cups_blocking == kValueTrue, locale);
+      cups_blocking, locale);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
