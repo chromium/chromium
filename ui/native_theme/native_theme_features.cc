@@ -24,12 +24,30 @@ constexpr base::FeatureState kOverlayScrollbarFeatureState =
 const base::Feature kOverlayScrollbar{"OverlayScrollbar",
                                       kOverlayScrollbarFeatureState};
 
+// Fluent scrollbars aim to modernize the Chromium scrollbars (both overlay
+// and non-overlay) to fit the Windows 11 Fluent design language. For now,
+// the feature will only support Windows platform and can be later available
+// on Linux as well. The feature is currently in development and disabled
+// by default.
+const base::Feature kFluentScrollbar{"FluentScrollbar",
+                                     base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 
 namespace ui {
 
 bool IsOverlayScrollbarEnabled() {
   return base::FeatureList::IsEnabled(features::kOverlayScrollbar);
+}
+
+bool IsFluentScrollbarEnabled() {
+// Currently, the feature is only supported on Windows.
+#if BUILDFLAG(IS_WIN)
+  return IsOverlayScrollbarEnabled() &&
+         base::FeatureList::IsEnabled(features::kFluentScrollbar);
+#else
+  return false;
+#endif
 }
 
 }  // namespace ui
