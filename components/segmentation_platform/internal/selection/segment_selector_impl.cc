@@ -20,7 +20,6 @@
 #include "components/segmentation_platform/internal/platform_options.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"
-#include "components/segmentation_platform/internal/segment_id_convertor.h"
 #include "components/segmentation_platform/internal/selection/experimental_group_recorder.h"
 #include "components/segmentation_platform/internal/selection/segment_result_provider.h"
 #include "components/segmentation_platform/internal/selection/segmentation_result_prefs.h"
@@ -112,8 +111,7 @@ SegmentSelectorImpl::SegmentSelectorImpl(
       stats::SegmentationKeyToTrialName(config_->segmentation_key);
   std::string group_name;
   if (selected_segment.has_value()) {
-    selected_segment_last_session_.segment =
-        SegmentIdToOptimizationTarget(selected_segment->segment_id);
+    selected_segment_last_session_.segment = selected_segment->segment_id;
     selected_segment_last_session_.is_ready = true;
     stats::RecordSegmentSelectionFailure(
         config_->segmentation_key,
@@ -250,7 +248,7 @@ void SegmentSelectorImpl::GetRankForNextSegment(
     DCHECK(!callback.is_null());
     SegmentSelectionResult result;
     result.is_ready = true;
-    result.segment = SegmentIdToOptimizationTarget(selected_segment);
+    result.segment = selected_segment;
     std::move(callback).Run(result);
   } else {
     DCHECK(callback.is_null());

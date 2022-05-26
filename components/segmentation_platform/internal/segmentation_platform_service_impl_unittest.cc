@@ -106,7 +106,7 @@ class SegmentationPlatformServiceImplTest
     SegmentSelectionResult result;
     result.is_ready = is_ready;
     if (is_ready)
-      result.segment = SegmentIdToOptimizationTarget(expected);
+      result.segment = expected;
     base::RunLoop loop;
     segmentation_platform_service_impl_->GetSelectedSegment(
         segmentation_key,
@@ -123,7 +123,7 @@ class SegmentationPlatformServiceImplTest
     SegmentSelectionResult result;
     result.is_ready = is_ready;
     if (is_ready)
-      result.segment = SegmentIdToOptimizationTarget(expected);
+      result.segment = expected;
     ASSERT_EQ(result,
               segmentation_platform_service_impl_->GetCachedSegmentResult(
                   segmentation_key));
@@ -256,7 +256,7 @@ TEST_F(SegmentationPlatformServiceImplTest,
        GetSelectedSegmentBeforeInitialization) {
   SegmentSelectionResult expected;
   expected.is_ready = true;
-  expected.segment = OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE;
+  expected.segment = proto::SegmentId::OPTIMIZATION_TARGET_SEGMENTATION_SHARE;
   base::RunLoop loop;
   segmentation_platform_service_impl_->GetSelectedSegment(
       kTestSegmentationKey1,

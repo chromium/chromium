@@ -4,7 +4,7 @@
 
 package org.chromium.components.segmentation_platform;
 
-import org.chromium.components.optimization_guide.proto.ModelsProto.OptimizationTarget;
+import org.chromium.components.segmentation_platform.proto.SegmentationProto.SegmentId;
 
 /**
  * Java counterpart of native SegmentSelectionResult. Contains the result of segment selection.
@@ -16,10 +16,10 @@ public class SegmentSelectionResult {
     /**
      * The result of segment selection.
      */
-    public final OptimizationTarget selectedSegment;
+    public final SegmentId selectedSegment;
 
     /** Constructor */
-    public SegmentSelectionResult(boolean isReady, OptimizationTarget selectedSegment) {
+    public SegmentSelectionResult(boolean isReady, SegmentId selectedSegment) {
         this.isReady = isReady;
         this.selectedSegment = selectedSegment;
     }

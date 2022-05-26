@@ -8,8 +8,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.components.optimization_guide.proto.ModelsProto;
-import org.chromium.components.optimization_guide.proto.ModelsProto.OptimizationTarget;
+import org.chromium.components.segmentation_platform.proto.SegmentationProto.SegmentId;
 
 /**
  * Java side of the JNI bridge between SegmentationPlatformServiceImpl in Java
@@ -49,8 +48,8 @@ public class SegmentationPlatformServiceImpl implements SegmentationPlatformServ
     @CalledByNative
     private static SegmentSelectionResult createSegmentSelectionResult(
             boolean isReady, int selectedSegment) {
-        OptimizationTarget segment = ModelsProto.OptimizationTarget.forNumber(selectedSegment);
-        if (segment == null) segment = OptimizationTarget.OPTIMIZATION_TARGET_UNKNOWN;
+        SegmentId segment = SegmentId.forNumber(selectedSegment);
+        if (segment == null) segment = SegmentId.OPTIMIZATION_TARGET_UNKNOWN;
         return new SegmentSelectionResult(isReady, segment);
     }
 

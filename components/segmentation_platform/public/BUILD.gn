@@ -30,7 +30,6 @@ source_set("public") {
   deps = [
     "//base",
     "//components/keyed_service/core",
-    "//components/optimization_guide/proto:optimization_guide_proto",
   ]
 }
 
@@ -56,8 +55,6 @@ if (is_android) {
 
     deps = [ "//base:base_java" ]
 
-    public_deps = [
-      "//components/optimization_guide/proto:optimization_guide_proto_java",
-    ]
+    public_deps = [ "//components/segmentation_platform/public/proto:segmentation_platform_proto_java" ]
   }
 }

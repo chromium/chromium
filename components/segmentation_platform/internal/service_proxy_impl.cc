@@ -14,7 +14,6 @@
 #include "components/segmentation_platform/internal/database/signal_storage_config.h"
 #include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 #include "components/segmentation_platform/internal/scheduler/execution_service.h"
-#include "components/segmentation_platform/internal/segment_id_convertor.h"
 #include "components/segmentation_platform/internal/segmentation_platform_service_impl.h"
 #include "components/segmentation_platform/internal/selection/segment_selector_impl.h"
 #include "components/segmentation_platform/public/config.h"
@@ -172,12 +171,12 @@ void ServiceProxyImpl::OnGetAllSegmentationInfo(
     if (segment_selectors_ &&
         segment_selectors_->find(config->segmentation_key) !=
             segment_selectors_->end()) {
-      absl::optional<OptimizationTarget> target =
+      absl::optional<proto::SegmentId> target =
           segment_selectors_->at(config->segmentation_key)
               ->GetCachedSegmentResult()
               .segment;
       if (target.has_value()) {
-        selected = OptimizationTargetToSegmentId(*target);
+        selected = *target;
       }
     }
     result.emplace_back(config->segmentation_key, selected);

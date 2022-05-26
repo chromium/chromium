@@ -97,7 +97,7 @@ class TestSegmentationPlatformService
                               SegmentSelectionCallback callback) override {
     segmentation_platform::SegmentSelectionResult result;
     result.is_ready = true;
-    result.segment = optimization_guide::proto::OptimizationTarget::
+    result.segment = segmentation_platform::proto::SegmentId::
         OPTIMIZATION_TARGET_SEGMENTATION_CHROME_LOW_USER_ENGAGEMENT;
     std::move(callback).Run(result);
   }
@@ -105,7 +105,7 @@ class TestSegmentationPlatformService
       const std::string& segmentation_key) override {
     segmentation_platform::SegmentSelectionResult result;
     result.is_ready = true;
-    result.segment = optimization_guide::proto::OptimizationTarget::
+    result.segment = segmentation_platform::proto::SegmentId::
         OPTIMIZATION_TARGET_SEGMENTATION_CHROME_LOW_USER_ENGAGEMENT;
     return result;
   }

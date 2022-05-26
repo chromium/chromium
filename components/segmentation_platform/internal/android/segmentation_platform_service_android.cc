@@ -26,7 +26,7 @@ ScopedJavaLocalRef<jobject> CreateJavaSegmentSelectionResult(
     const SegmentSelectionResult& result) {
   int selected_segment = result.segment.has_value()
                              ? result.segment.value()
-                             : OptimizationTarget::OPTIMIZATION_TARGET_UNKNOWN;
+                             : proto::SegmentId::OPTIMIZATION_TARGET_UNKNOWN;
   return Java_SegmentationPlatformServiceImpl_createSegmentSelectionResult(
       env, result.is_ready, selected_segment);
 }

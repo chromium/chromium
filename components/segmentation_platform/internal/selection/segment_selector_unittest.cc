@@ -15,7 +15,6 @@
 #include "components/segmentation_platform/internal/execution/mock_model_provider.h"
 #include "components/segmentation_platform/internal/metadata/metadata_utils.h"
 #include "components/segmentation_platform/internal/metric_filter_utils.h"
-#include "components/segmentation_platform/internal/segment_id_convertor.h"
 #include "components/segmentation_platform/internal/selection/segmentation_result_prefs.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/field_trial_register.h"
@@ -212,8 +211,7 @@ TEST_F(SegmentSelectorTest, RunSelectionOnDemand) {
       base::BindOnce(
           [](base::OnceClosure quit, const SegmentSelectionResult& result) {
             EXPECT_TRUE(result.is_ready);
-            EXPECT_EQ(kSegmentId2,
-                      OptimizationTargetToSegmentId(*result.segment));
+            EXPECT_EQ(kSegmentId2, *result.segment);
             std::move(quit).Run();
           },
           wait_for_selection.QuitClosure()));
@@ -375,7 +373,7 @@ TEST_F(SegmentSelectorTest,
   segment_selector_->OnPlatformInitialized(nullptr);
 
   SegmentSelectionResult result;
-  result.segment = SegmentIdToOptimizationTarget(segment_id0);
+  result.segment = segment_id0;
   result.is_ready = true;
   GetSelectedSegment(result);
   ASSERT_EQ(result, segment_selector_->GetCachedSegmentResult());

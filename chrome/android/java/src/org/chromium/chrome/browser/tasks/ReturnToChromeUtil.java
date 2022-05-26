@@ -59,8 +59,8 @@ import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
-import org.chromium.components.optimization_guide.proto.ModelsProto.OptimizationTarget;
 import org.chromium.components.segmentation_platform.SegmentationPlatformService;
+import org.chromium.components.segmentation_platform.proto.SegmentationProto.SegmentId;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -842,7 +842,7 @@ public final class ReturnToChromeUtil {
             if (!result.isReady) {
                 resultEnum = ShowChromeStartSegmentationResult.UNINITIALIZED;
             } else if (result.selectedSegment
-                    == OptimizationTarget.OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID) {
+                    == SegmentId.OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID) {
                 resultEnum = ShowChromeStartSegmentationResult.SHOW;
             } else {
                 resultEnum = ShowChromeStartSegmentationResult.DONT_SHOW;
