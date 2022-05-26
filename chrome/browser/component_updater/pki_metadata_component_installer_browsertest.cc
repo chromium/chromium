@@ -183,6 +183,8 @@ class PKIMetadataComponentChromeRootStoreUpdateTest
       public PKIMetadataComponentInstallerService::Observer {
  public:
   void SetUpInProcessBrowserTestFixture() override {
+    SystemNetworkContextManager::SetEnableCertificateTransparencyForTesting(
+        false);
     PKIMetadataComponentInstallerService::GetInstance()->AddObserver(this);
     InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
     ASSERT_TRUE(component_dir_.CreateUniqueTempDir());
@@ -191,6 +193,8 @@ class PKIMetadataComponentChromeRootStoreUpdateTest
 
   void TearDownInProcessBrowserTestFixture() override {
     PKIMetadataComponentInstallerService::GetInstance()->RemoveObserver(this);
+    SystemNetworkContextManager::SetEnableCertificateTransparencyForTesting(
+        absl::nullopt);
   }
 
   class CRSWaiter {
