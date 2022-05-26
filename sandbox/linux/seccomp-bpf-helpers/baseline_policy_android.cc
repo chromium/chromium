@@ -212,13 +212,7 @@ ResultExpr BaselinePolicyAndroid::EvaluateSyscall(int sysno) const {
       break;
   }
 
-  // sched_getaffinity() and sched_setaffinity() are required for an
-  // experiment to schedule all Chromium threads onto LITTLE cores
-  // (crbug.com/1111789). Should be removed or reconsidered once
-  // the experiment is complete.
   if (sysno == __NR_sched_setaffinity || sysno == __NR_sched_getaffinity) {
-    if (options_.allow_sched_affinity)
-      return Allow();
     return Error(EPERM);
   }
 

@@ -25,9 +25,6 @@ namespace sandbox {
 class SANDBOX_EXPORT BaselinePolicyAndroid : public BaselinePolicy {
  public:
   struct RuntimeOptions {
-    // Allows sched_setaffinity for a core selection performance experiment.
-    bool allow_sched_affinity = false;
-
     // Allows a subset of the userfaultfd ioctls that are needed for ART GC.
     bool allow_userfaultfd_ioctls = false;
   };
