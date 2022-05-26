@@ -10543,6 +10543,7 @@ chromium-metrics-reviews@google.com.
 <histogram_suffixes name="WebappType" separator=".">
   <suffix name="Default" label="Default-installed app"/>
   <suffix name="Policy" label="Policy-installed app"/>
+  <suffix name="Sync" label="Sync-installed app"/>
   <suffix base="true" name="System" label="System-installed app"/>
   <affected-histogram name="Webapp.InstallResult"/>
 </histogram_suffixes>

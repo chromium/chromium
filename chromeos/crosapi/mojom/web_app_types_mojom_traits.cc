@@ -69,6 +69,8 @@ crosapi::mojom::WebAppInstallResultCode EnumTraits<
     case webapps::InstallResultCode::kAppNotInRegistrarAfterCommit:
       return crosapi::mojom::WebAppInstallResultCode::
           kAppNotInRegistrarAfterCommit;
+    case webapps::InstallResultCode::kHaltedBySyncUninstall:
+      return crosapi::mojom::WebAppInstallResultCode::kHaltedBySyncUninstall;
   };
 }
 
@@ -151,6 +153,9 @@ bool EnumTraits<crosapi::mojom::WebAppInstallResultCode,
       return true;
     case crosapi::mojom::WebAppInstallResultCode::kAppNotInRegistrarAfterCommit:
       *output = webapps::InstallResultCode::kAppNotInRegistrarAfterCommit;
+      return true;
+    case crosapi::mojom::WebAppInstallResultCode::kHaltedBySyncUninstall:
+      *output = webapps::InstallResultCode::kHaltedBySyncUninstall;
       return true;
   };
 

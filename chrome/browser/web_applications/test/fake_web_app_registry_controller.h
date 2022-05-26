@@ -85,6 +85,7 @@ class FakeWebAppRegistryController : public SyncInstallDelegate {
     return *os_integration_manager_;
   }
   WebAppPolicyManager& policy_manager() { return *policy_manager_; }
+  WebAppCommandManager& command_manager() { return *command_manager_; }
 
  private:
   InstallWebAppsAfterSyncDelegate install_web_apps_after_sync_delegate_;

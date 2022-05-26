@@ -19,6 +19,8 @@ source_set("web_applications") {
     "commands/fetch_manifest_and_install_command.h",
     "commands/install_from_info_command.cc",
     "commands/install_from_info_command.h",
+    "commands/install_from_sync_command.cc",
+    "commands/install_from_sync_command.h",
     "commands/install_web_app_with_params_command.cc",
     "commands/install_web_app_with_params_command.h",
     "commands/run_on_os_login_command.cc",
@@ -147,6 +149,8 @@ source_set("web_applications") {
     "web_app_launch_params.h",
     "web_app_launch_queue.cc",
     "web_app_launch_queue.h",
+    "web_app_logging.cc",
+    "web_app_logging.h",
     "web_app_origin_association_manager.cc",
     "web_app_origin_association_manager.h",
     "web_app_origin_association_task.cc",
@@ -422,6 +426,8 @@ source_set("web_applications_test_support") {
     "test/fake_web_app_registry_controller.h",
     "test/fake_web_app_ui_manager.cc",
     "test/fake_web_app_ui_manager.h",
+    "test/mock_data_retriever.cc",
+    "test/mock_data_retriever.h",
     "test/mock_file_utils_wrapper.cc",
     "test/mock_file_utils_wrapper.h",
     "test/mock_os_integration_manager.cc",
@@ -483,6 +489,7 @@ source_set("web_applications_unit_tests") {
 
   sources = [
     "commands/clear_browsing_data_command_unittest.cc",
+    "commands/install_from_sync_command_unittest.cc",
     "commands/run_on_os_login_command_unittest.cc",
     "daily_metrics_helper_unittest.cc",
     "external_install_options_unittest.cc",
@@ -661,6 +668,7 @@ source_set("browser_tests") {
   sources = [
     "commands/fetch_manifest_and_install_command_browsertest.cc",
     "commands/install_from_info_command_browsertest.cc",
+    "commands/install_from_sync_command_browsertest.cc",
     "commands/install_web_app_with_params_command_browsertest.cc",
     "externally_installed_web_app_prefs_browsertest.cc",
     "externally_managed_app_manager_impl_browsertest.cc",

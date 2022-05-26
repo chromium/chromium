@@ -282,23 +282,6 @@ class WebAppInstallTaskTest : public WebAppTest {
     return result;
   }
 
-  InstallResult LoadAndInstallWebAppFromManifestWithFallback(const GURL& url) {
-    InstallResult result;
-    base::RunLoop run_loop;
-    if (!install_task_)
-      InitializeInstallTaskAndRetriever(webapps::WebappInstallSource::SYNC);
-    install_task_->LoadAndInstallWebAppFromManifestWithFallback(
-        url, web_contents(), &url_loader(),
-        base::BindLambdaForTesting([&](const AppId& installed_app_id,
-                                       webapps::InstallResultCode code) {
-          result.app_id = installed_app_id;
-          result.code = code;
-          run_loop.Quit();
-        }));
-    run_loop.Run();
-    return result;
-  }
-
   WebAppInstallTask::WebAppInstallInfoOrErrorCode
   LoadAndRetrieveWebAppInstallInfoWithIcons(const GURL& url) {
     WebAppInstallTask::WebAppInstallInfoOrErrorCode result;
@@ -1300,57 +1283,6 @@ TEST_F(WebAppInstallTaskTest, InstallWebAppFromManifest_ExpectAppId) {
               result.code);
     EXPECT_EQ(app_id2, result.app_id);
     EXPECT_FALSE(registrar().GetAppById(app_id2));
-  }
-}
-
-TEST_F(WebAppInstallTaskTest, LoadAndInstallWebAppFromManifestWithFallback) {
-  const GURL url = GURL("https://example.com/path");
-  const AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, url);
-  {
-    InitializeInstallTaskAndRetriever(
-        webapps::WebappInstallSource::MENU_BROWSER_TAB);
-    CreateDefaultDataToRetrieve(url);
-    url_loader().SetNextLoadUrlResult(
-        url, WebAppUrlLoader::Result::kRedirectedUrlLoaded);
-
-    InstallResult result = LoadAndInstallWebAppFromManifestWithFallback(url);
-    EXPECT_EQ(webapps::InstallResultCode::kInstallURLRedirected, result.code);
-    EXPECT_TRUE(result.app_id.empty());
-    EXPECT_FALSE(registrar().GetAppById(app_id));
-  }
-  {
-    InitializeInstallTaskAndRetriever(
-        webapps::WebappInstallSource::MENU_BROWSER_TAB);
-    CreateDefaultDataToRetrieve(url);
-    url_loader().SetNextLoadUrlResult(
-        url, WebAppUrlLoader::Result::kFailedPageTookTooLong);
-
-    InstallResult result = LoadAndInstallWebAppFromManifestWithFallback(url);
-    EXPECT_EQ(webapps::InstallResultCode::kInstallURLLoadTimeOut, result.code);
-    EXPECT_TRUE(result.app_id.empty());
-    EXPECT_FALSE(registrar().GetAppById(app_id));
-  }
-  {
-    InitializeInstallTaskAndRetriever(
-        webapps::WebappInstallSource::MENU_BROWSER_TAB);
-    CreateDefaultDataToRetrieve(url);
-    url_loader().SetNextLoadUrlResult(url, WebAppUrlLoader::Result::kUrlLoaded);
-
-    InstallResult result = LoadAndInstallWebAppFromManifestWithFallback(url);
-    EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
-    EXPECT_EQ(app_id, result.app_id);
-    EXPECT_TRUE(registrar().GetAppById(app_id));
-  }
-  {
-    InitializeInstallTaskAndRetriever(
-        webapps::WebappInstallSource::MENU_BROWSER_TAB);
-    CreateDefaultDataToRetrieve(url);
-    url_loader().SetNextLoadUrlResult(url, WebAppUrlLoader::Result::kUrlLoaded);
-
-    InstallResult result = LoadAndInstallWebAppFromManifestWithFallback(url);
-    EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
-    EXPECT_EQ(app_id, result.app_id);
-    EXPECT_TRUE(registrar().GetAppById(app_id));
   }
 }
 

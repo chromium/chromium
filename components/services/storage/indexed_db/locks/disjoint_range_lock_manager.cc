@@ -105,6 +105,34 @@ bool DisjointRangeLockManager::AcquireLocks(
   return true;
 }
 
+DisjointRangeLockManager::TestLockResult DisjointRangeLockManager::TestLock(
+    LeveledLockRequest request) {
+  if (request.level < 0 || static_cast<size_t>(request.level) >= locks_.size())
+    return TestLockResult::kInvalid;
+  if (request.range.begin >= request.range.end)
+    return TestLockResult::kInvalid;
+
+  auto& level_locks = locks_[request.level];
+
+  auto it = level_locks.find(request.range);
+  if (it == level_locks.end()) {
+    it = level_locks
+             .emplace(std::piecewise_construct,
+                      std::forward_as_tuple(request.range),
+                      std::forward_as_tuple())
+             .first;
+  }
+
+  if (!IsRangeDisjointFromNeighbors(level_locks, request.range)) {
+    level_locks.erase(it);
+    return TestLockResult::kInvalid;
+  }
+
+  Lock& lock = it->second;
+  return lock.CanBeAcquired(request.type) ? TestLockResult::kFree
+                                          : TestLockResult::kLocked;
+}
+
 void DisjointRangeLockManager::RemoveLockRange(int level,
                                                const LeveledLockRange& range) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

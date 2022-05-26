@@ -77,6 +77,8 @@ std::ostream& operator<<(std::ostream& os, InstallResultCode code) {
       return os << "kUpdateTaskFailed";
     case InstallResultCode::kAppNotInRegistrarAfterCommit:
       return os << "kAppNotInRegistrarAfterCommit";
+    case InstallResultCode::kHaltedBySyncUninstall:
+      return os << "kHaltedBySyncUninstall";
   }
 }
 

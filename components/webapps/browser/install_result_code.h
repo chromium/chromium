@@ -80,7 +80,10 @@ enum class InstallResultCode {
   // commit.
   kAppNotInRegistrarAfterCommit = 27,
 
-  kMaxValue = kAppNotInRegistrarAfterCommit,
+  // The installation stopped due to an uninstall from sync being scheduled.
+  kHaltedBySyncUninstall = 28,
+
+  kMaxValue = kHaltedBySyncUninstall,
 };
 
 // Checks if InstallResultCode is not a failure.

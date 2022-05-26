@@ -17,6 +17,8 @@
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_task.h"
+#include "components/services/storage/indexed_db/locks/disjoint_range_lock_manager.h"
+#include "components/services/storage/indexed_db/locks/leveled_lock_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -220,6 +222,15 @@ void WebAppCommandManager::OnCommandComplete(
   auto command_it = commands_.find(running_command->id());
   DCHECK(command_it != commands_.end());
   commands_.erase(command_it);
+
+  auto lock_free =
+      lock_manager_.TestLock(WebAppCommandLock::GetSharedWebContentsLock());
+  DCHECK_NE(lock_free,
+            content::DisjointRangeLockManager::TestLockResult::kInvalid);
+  if (lock_free == content::DisjointRangeLockManager::TestLockResult::kFree) {
+    AddValueToLog(base::Value("Destroying the shared web contents."));
+    shared_web_contents_.reset();
+  }
 
   std::move(completion_callback).Run();
 

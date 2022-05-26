@@ -98175,6 +98175,7 @@ others/histograms.xml -->
   <int value="25" label="InstallTaskDestroyed"/>
   <int value="26" label="UpdateTaskFailed"/>
   <int value="27" label="AppNotInRegistrarAfterCommit"/>
+  <int value="28" label="HaltedBySyncUninstall"/>
 </enum>
 
 <enum name="WebAppInstallSource">

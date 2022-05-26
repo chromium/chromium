@@ -12,6 +12,7 @@
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "components/services/storage/indexed_db/locks/disjoint_range_lock_manager.h"
+#include "components/services/storage/indexed_db/locks/leveled_lock_manager.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
@@ -79,6 +80,11 @@ class WebAppCommandLock {
   explicit WebAppCommandLock(base::flat_set<AppId> app_ids,
                              LockType lock_type,
                              LockRequestSet lock_requests);
+
+  // Exposed for usage in the WebAppCommandManager to determine if the shared
+  // web contents can be destroyed.
+  static content::LeveledLockManager::LeveledLockRequest
+  GetSharedWebContentsLock();
 
   enum class LockLevel {
     kStatic = 0,
