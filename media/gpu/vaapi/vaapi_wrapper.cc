@@ -2664,7 +2664,8 @@ std::unique_ptr<ScopedVABuffer> VaapiWrapper::CreateVABuffer(VABufferType type,
         sequence_checker_.CalledOnValidSequence());
   TRACE_EVENT0("media,gpu", "VaapiWrapper::CreateVABuffer");
   base::AutoLockMaybe auto_lock(va_lock_);
-  TRACE_EVENT0("media,gpu", "VaapiWrapper::CreateVABufferLocked");
+  TRACE_EVENT2("media,gpu", "VaapiWrapper::CreateVABufferLocked", "type", type,
+               "size", size);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   VAContextID context_id = type == VAProtectedSessionExecuteBufferType
                                ? va_protected_session_id_
@@ -3310,8 +3311,9 @@ bool VaapiWrapper::SubmitBuffer_Locked(const VABufferDescriptor& va_buffer) {
 
   VABufferID buffer_id;
   {
-    TRACE_EVENT0("media,gpu",
-                 "VaapiWrapper::SubmitBuffer_Locked_vaCreateBuffer");
+    TRACE_EVENT2("media,gpu",
+                 "VaapiWrapper::SubmitBuffer_Locked_vaCreateBuffer", "type",
+                 va_buffer.type, "size", va_buffer_size);
     // The type of |data| in vaCreateBuffer() is void*, though a driver must not
     // change the |data| buffer. We execute const_cast to limit the type
     // mismatch. https://github.com/intel/libva/issues/597
