@@ -246,8 +246,11 @@ void MailboxVideoFrameConverter::WrapMailboxAndVideoFrameAndOutput(
   mailbox_frame->set_metadata(frame->metadata());
   mailbox_frame->set_ycbcr_info(frame->ycbcr_info());
   mailbox_frame->metadata().read_lock_fences_enabled = true;
+  // We use origin_frame->metadata().is_webgpu_compatible instead of
+  // frame->metadata().is_webgpu_compatible because the PlatformVideoFramePool
+  // clears the metadata of the outer frame.
   mailbox_frame->metadata().is_webgpu_compatible =
-      enable_unsafe_webgpu_ && frame->metadata().is_webgpu_compatible;
+      enable_unsafe_webgpu_ && origin_frame->metadata().is_webgpu_compatible;
 
   output_cb_.Run(mailbox_frame);
 }
