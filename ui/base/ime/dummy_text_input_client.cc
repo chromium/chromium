@@ -164,7 +164,7 @@ bool DummyTextInputClient::SetCompositionFromExistingText(
 }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 gfx::Range DummyTextInputClient::GetAutocorrectRange() const {
   return autocorrect_range_;
 }

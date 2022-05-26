@@ -1598,7 +1598,7 @@ bool RenderWidgetHostViewAura::SetCompositionFromExistingText(
 
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 gfx::Range RenderWidgetHostViewAura::GetAutocorrectRange() const {
   if (!text_input_manager_ || !text_input_manager_->GetActiveWidget())
     return gfx::Range();

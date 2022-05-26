@@ -181,7 +181,7 @@ bool PrefixSelector::SetCompositionFromExistingText(
 }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 gfx::Range PrefixSelector::GetAutocorrectRange() const {
   NOTIMPLEMENTED_LOG_ONCE();
   return gfx::Range();

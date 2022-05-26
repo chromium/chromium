@@ -9,7 +9,7 @@ namespace ui {
 TextInputClient::~TextInputClient() {
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 absl::optional<GrammarFragment> TextInputClient::GetGrammarFragmentAtCursor()
     const {
   return absl::nullopt;

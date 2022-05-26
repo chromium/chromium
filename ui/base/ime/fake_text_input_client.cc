@@ -174,7 +174,7 @@ bool FakeTextInputClient::SetCompositionFromExistingText(
 }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 gfx::Range FakeTextInputClient::GetAutocorrectRange() const {
   return autocorrect_range_;
 }

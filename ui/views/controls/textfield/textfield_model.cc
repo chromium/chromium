@@ -762,7 +762,7 @@ void TextfieldModel::SetCompositionText(
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 bool TextfieldModel::SetAutocorrectRange(const gfx::Range& range) {
   // TODO(crbug.com/1108170): Add an underline to |range|.
   if (range.GetMax() > render_text()->text().length()) {

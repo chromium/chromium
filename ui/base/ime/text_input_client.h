@@ -55,7 +55,7 @@ class COMPONENT_EXPORT(UI_BASE_IME) TextInputClient {
     FOCUS_REASON_OTHER,
   };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   enum SubClass {
     kRenderWidgetHostViewAura = 0,
     kArcImeService = 1,
@@ -248,7 +248,7 @@ class COMPONENT_EXPORT(UI_BASE_IME) TextInputClient {
       const std::vector<ui::ImeTextSpan>& ui_ime_text_spans) = 0;
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Return the start and end index of the autocorrect range. If non-existent,
   // return an empty Range.
   virtual gfx::Range GetAutocorrectRange() const = 0;
