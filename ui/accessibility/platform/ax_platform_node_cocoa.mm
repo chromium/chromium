@@ -285,9 +285,10 @@ bool IsAXSetter(SEL selector) {
       break;
   }
 
-  // No label for windows.
+  // No label for windows or native dialogs.
   ax::mojom::Role role = _node->GetRole();
-  if (ui::IsWindow(role))
+  if (ui::IsWindow(role) ||
+      (ui::IsDialog(role) && !_node->GetDelegate()->IsWebContent()))
     return false;
 
   // VoiceOver computes the wrong description for a link.

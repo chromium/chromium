@@ -678,14 +678,6 @@ void RootView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   if (!widget_delegate)
     return;
   node_data->SetName(widget_delegate->GetAccessibleWindowTitle());
-  // Set name from contents on Mac to make native dialogs exposing accessible
-  // name as accessibilityTitle rather than accessibilityLabel. Other platforms
-  // such as ChromeOS wants name from attribute, otherwise it breaks expected
-  // speech utterance, see, for example,
-  // SpokenFeedbackTest.DarkenScreenConfirmation test.
-#if BUILDFLAG(IS_MAC)
-  node_data->SetNameFrom(ax::mojom::NameFrom::kContents);
-#endif
   node_data->role = widget_delegate->GetAccessibleWindowRole();
 }
 
