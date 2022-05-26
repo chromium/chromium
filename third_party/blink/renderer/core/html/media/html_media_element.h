@@ -113,6 +113,15 @@ class CORE_EXPORT HTMLMediaElement
   static constexpr double kMinPlaybackRate = 0.0625;
   static constexpr double kMaxPlaybackRate = 16.0;
 
+  enum class PlayPromiseError {
+    kNotSupported,
+    kPaused_Unknown,
+    kPaused_PauseCalled,
+    kPaused_EndOfPlayback,
+    kPaused_RemovedFromDocument,
+    kPaused_AutoplayAutoPause,
+  };
+
   bool IsMediaElement() const override { return true; }
 
   static MIMETypeRegistry::SupportsType GetSupportsType(const ContentType&);
@@ -599,7 +608,7 @@ class CORE_EXPORT HTMLMediaElement
   void PlayInternal();
 
   // This does not stop autoplay visibility observation.
-  void PauseInternal();
+  void PauseInternal(PlayPromiseError code);
 
   void UpdatePlayState();
   bool PotentiallyPlaying() const;
@@ -646,7 +655,7 @@ class CORE_EXPORT HTMLMediaElement
   void AudioTracksTimerFired(TimerBase*);
 
   void ScheduleResolvePlayPromises();
-  void ScheduleRejectPlayPromises(DOMExceptionCode);
+  void ScheduleRejectPlayPromises(PlayPromiseError);
   void ScheduleNotifyPlaying();
   void ResolveScheduledPlayPromises();
   void RejectScheduledPlayPromises();
@@ -802,7 +811,7 @@ class CORE_EXPORT HTMLMediaElement
   TaskHandle play_promise_reject_task_handle_;
   HeapVector<Member<ScriptPromiseResolver>> play_promise_resolve_list_;
   HeapVector<Member<ScriptPromiseResolver>> play_promise_reject_list_;
-  DOMExceptionCode play_promise_error_code_;
+  PlayPromiseError play_promise_error_code_;
 
   // HTMLMediaElement and its MediaElementAudioSourceNode in case it is provided
   // die together.

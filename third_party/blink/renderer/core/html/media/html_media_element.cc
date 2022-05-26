@@ -1735,7 +1735,7 @@ void HTMLMediaElement::NoneSupported(const String& input_message) {
   ScheduleEvent(event_type_names::kError);
 
   // 6 - Reject pending play promises with NotSupportedError.
-  ScheduleRejectPlayPromises(DOMExceptionCode::kNotSupportedError);
+  ScheduleRejectPlayPromises(PlayPromiseError::kNotSupported);
 
   CloseMediaSource();
 
@@ -2745,10 +2745,10 @@ void HTMLMediaElement::pause() {
   DVLOG(2) << "pause(" << *this << ")";
 
   autoplay_policy_->StopAutoplayMutedWhenVisible();
-  PauseInternal();
+  PauseInternal(PlayPromiseError::kPaused_PauseCalled);
 }
 
-void HTMLMediaElement::PauseInternal() {
+void HTMLMediaElement::PauseInternal(PlayPromiseError code) {
   DVLOG(3) << "pauseInternal(" << *this << ")";
 
   if (network_state_ == kNetworkEmpty)
@@ -2767,7 +2767,7 @@ void HTMLMediaElement::PauseInternal() {
     // time to accurately reflect movie time at the moment we paused.
     SetOfficialPlaybackPosition(CurrentPlaybackPosition());
 
-    ScheduleRejectPlayPromises(DOMExceptionCode::kAbortError);
+    ScheduleRejectPlayPromises(code);
   }
 
   UpdatePlayState();
@@ -3004,7 +3004,7 @@ void HTMLMediaElement::PlaybackProgressTimerFired() {
                         WebFeature::kHTMLMediaElementPauseAtFragmentEnd);
       // changes paused to true and fires a simple event named pause at the
       // media element.
-      PauseInternal();
+      PauseInternal(PlayPromiseError::kPaused_EndOfPlayback);
     }
   }
 
@@ -3590,7 +3590,7 @@ void HTMLMediaElement::TimeChanged() {
         // media element.
         paused_ = true;
         ScheduleEvent(event_type_names::kPause);
-        ScheduleRejectPlayPromises(DOMExceptionCode::kAbortError);
+        ScheduleRejectPlayPromises(PlayPromiseError::kPaused_EndOfPlayback);
       }
       // Queue a task to fire a simple event named ended at the media element.
       ScheduleEvent(event_type_names::kEnded);
@@ -4378,7 +4378,7 @@ void HTMLMediaElement::ScheduleResolvePlayPromises() {
                 WrapWeakPersistent(this)));
 }
 
-void HTMLMediaElement::ScheduleRejectPlayPromises(DOMExceptionCode code) {
+void HTMLMediaElement::ScheduleRejectPlayPromises(PlayPromiseError code) {
   // TODO(mlamouri): per spec, we should create a new task but we can't create
   // a new cancellable task without cancelling the previous one. There are two
   // approaches then: cancel the previous task and create a new one with the
@@ -4418,20 +4418,38 @@ void HTMLMediaElement::ResolveScheduledPlayPromises() {
 }
 
 void HTMLMediaElement::RejectScheduledPlayPromises() {
-  // TODO(mlamouri): the message is generated based on the code because
-  // arguments can't be passed to a cancellable task. In order to save space
-  // used by the object, the string isn't saved.
-  DCHECK(play_promise_error_code_ == DOMExceptionCode::kAbortError ||
-         play_promise_error_code_ == DOMExceptionCode::kNotSupportedError);
-  if (play_promise_error_code_ == DOMExceptionCode::kAbortError) {
-    RejectPlayPromisesInternal(DOMExceptionCode::kAbortError,
-                               "The play() request was interrupted by a call "
-                               "to pause(). https://goo.gl/LdLk22");
-  } else {
-    RejectPlayPromisesInternal(
-        DOMExceptionCode::kNotSupportedError,
-        "Failed to load because no supported source was found.");
+  switch (play_promise_error_code_) {
+    case PlayPromiseError::kNotSupported:
+      return RejectPlayPromisesInternal(
+          DOMExceptionCode::kNotSupportedError,
+          "Failed to load because no supported source was found.");
+    case PlayPromiseError::kPaused_Unknown:
+      return RejectPlayPromisesInternal(
+          DOMExceptionCode::kAbortError,
+          "The play() request was interrupted because the media paused. "
+          "https://goo.gl/LdLk22");
+    case PlayPromiseError::kPaused_PauseCalled:
+      return RejectPlayPromisesInternal(
+          DOMExceptionCode::kAbortError,
+          "The play() request was interrupted by a call to pause(). "
+          "https://goo.gl/LdLk22");
+    case PlayPromiseError::kPaused_EndOfPlayback:
+      return RejectPlayPromisesInternal(
+          DOMExceptionCode::kAbortError,
+          "The play() request was interrupted by end of playback. "
+          "https://goo.gl/LdLk22");
+    case PlayPromiseError::kPaused_RemovedFromDocument:
+      return RejectPlayPromisesInternal(
+          DOMExceptionCode::kAbortError,
+          "The play() request was interrupted because the media was removed "
+          "from the document. https://goo.gl/LdLk22");
+    case PlayPromiseError::kPaused_AutoplayAutoPause:
+      return RejectPlayPromisesInternal(
+          DOMExceptionCode::kAbortError,
+          "The play() request was interrupted because autoplaying media was "
+          "auto-paused. https://goo.gl/LdLk22");
   }
+  NOTREACHED();
 }
 
 void HTMLMediaElement::RejectPlayPromises(DOMExceptionCode code,
@@ -4445,7 +4463,6 @@ void HTMLMediaElement::RejectPlayPromisesInternal(DOMExceptionCode code,
                                                   const String& message) {
   DCHECK(code == DOMExceptionCode::kAbortError ||
          code == DOMExceptionCode::kNotSupportedError);
-
   for (auto& resolver : play_promise_reject_list_)
     resolver->Reject(MakeGarbageCollected<DOMException>(code, message));
 
@@ -4459,7 +4476,7 @@ void HTMLMediaElement::OnRemovedFromDocumentTimerFired(TimerBase*) {
   // Video should not pause when playing in Picture-in-Picture and subsequently
   // removed from the Document.
   if (!PictureInPictureController::IsElementInPictureInPicture(this))
-    PauseInternal();
+    PauseInternal(PlayPromiseError::kPaused_RemovedFromDocument);
 }
 
 void HTMLMediaElement::AudioSourceProviderImpl::Wrap(
@@ -4553,7 +4570,7 @@ void HTMLMediaElement::ResumePlayback() {
 }
 
 void HTMLMediaElement::PausePlayback() {
-  PauseInternal();
+  PauseInternal(PlayPromiseError::kPaused_Unknown);
 }
 
 void HTMLMediaElement::DidPlayerStartPlaying() {
@@ -4652,7 +4669,7 @@ void HTMLMediaElement::RequestPause(bool triggered_by_user) {
           frame, mojom::blink::UserActivationNotificationType::kInteraction);
     }
   }
-  PauseInternal();
+  PauseInternal(PlayPromiseError::kPaused_Unknown);
 }
 
 void HTMLMediaElement::RequestSeekForward(base::TimeDelta seek_time) {
