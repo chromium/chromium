@@ -12,6 +12,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/lacros/lacros_service.h"
+#include "chromeos/startup/browser_init_params.h"
 #include "components/policy/core/common/policy_loader_lacros.h"
 #include "components/policy/core/common/policy_service.h"
 #include "content/public/test/browser_test.h"

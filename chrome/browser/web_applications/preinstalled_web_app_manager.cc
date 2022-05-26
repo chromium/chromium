@@ -70,7 +70,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
+#include "chromeos/startup/browser_init_params.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace web_app {
@@ -122,8 +122,8 @@ bool IsArcAvailable() {
   return arc::IsArcAvailable();
 #else
   const crosapi::mojom::BrowserInitParams* init_params =
-      chromeos::LacrosService::Get()->init_params();
-  return init_params && init_params->device_properties &&
+      chromeos::BrowserInitParams::Get();
+  return init_params->device_properties &&
          init_params->device_properties->is_arc_available;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
@@ -133,8 +133,8 @@ bool IsTabletFormFactor() {
   return ash::switches::IsTabletFormFactor();
 #else
   const crosapi::mojom::BrowserInitParams* init_params =
-      chromeos::LacrosService::Get()->init_params();
-  return init_params && init_params->device_properties &&
+      chromeos::BrowserInitParams::Get();
+  return init_params->device_properties &&
          init_params->device_properties->is_tablet_form_factor;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }

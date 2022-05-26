@@ -645,7 +645,7 @@ source_set("browser_sources") {
   if (is_chromeos_lacros) {
     deps += [
       "//chromeos/crosapi/mojom",
-      "//chromeos/lacros",
+      "//chromeos/startup",
     ]
   }
 

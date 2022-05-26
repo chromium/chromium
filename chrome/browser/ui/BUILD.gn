@@ -3290,6 +3290,7 @@ static_library("ui") {
       "//chrome/browser/policy:onc",
       "//chromeos/crosapi/mojom",
       "//chromeos/lacros",
+      "//chromeos/startup",
       "//chromeos/ui/base",
       "//chromeos/ui/frame",
       "//chromeos/ui/wm",

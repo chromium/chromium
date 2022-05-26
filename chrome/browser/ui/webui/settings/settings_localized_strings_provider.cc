@@ -92,7 +92,7 @@
 #include "ui/strings/grit/ui_strings.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_service.h"
+#include "chromeos/startup/browser_init_params.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -209,7 +209,7 @@ void AddCommonStrings(content::WebUIDataSource* html_source, Profile* profile) {
       user_manager::UserManager::Get()->IsLoggedInAsGuest() ||
           user_manager::UserManager::Get()->IsLoggedInAsPublicAccount());
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-      chromeos::LacrosService::Get()->init_params()->session_type ==
+      chromeos::BrowserInitParams::Get()->session_type ==
               crosapi::mojom::SessionType::kPublicSession ||
           profile->IsGuestSession());
 #else

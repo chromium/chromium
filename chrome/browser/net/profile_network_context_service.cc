@@ -110,7 +110,7 @@
 #include "chrome/browser/lacros/cert/cert_db_initializer_factory.h"
 #include "chrome/browser/lacros/cert/client_cert_store_lacros.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
-#include "chromeos/lacros/lacros_service.h"
+#include "chromeos/startup/browser_init_params.h"
 #endif
 
 namespace {
@@ -902,10 +902,8 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
   // moment).
   cert_verifier_creation_params->nss_full_path.reset();
   if (profile_->IsMainProfile()) {
-    DCHECK(chromeos::LacrosService::Get());
-    DCHECK(chromeos::LacrosService::Get()->init_params());
     const crosapi::mojom::DefaultPathsPtr& default_paths =
-        chromeos::LacrosService::Get()->init_params()->default_paths;
+        chromeos::BrowserInitParams::Get()->default_paths;
     // `default_paths` can be nullptr in tests.
     if (default_paths && default_paths->user_nss_database.has_value()) {
       cert_verifier_creation_params->nss_full_path =

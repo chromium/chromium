@@ -46,6 +46,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
+#include "chromeos/startup/browser_init_params.h"
 #include "components/feedback/feedback_common.h"
 #include "components/feedback/feedback_report.h"
 #include "components/feedback/feedback_util.h"
@@ -145,7 +146,7 @@ BrowserServiceLacros::BrowserServiceLacros() {
                               weak_ptr_factory_.GetWeakPtr()));
 
   auto* lacros_service = chromeos::LacrosService::Get();
-  const auto* init_params = lacros_service->init_params();
+  const auto* init_params = chromeos::BrowserInitParams::Get();
 
   if (init_params->initial_keep_alive ==
       crosapi::mojom::BrowserInitParams::InitialKeepAlive::kUnknown) {
@@ -509,7 +510,7 @@ void BrowserServiceLacros::NewFullscreenWindowWithProfile(
 
   browser->window()->Show();
 
-  if (chromeos::LacrosService::Get()->init_params()->session_type ==
+  if (chromeos::BrowserInitParams::Get()->session_type ==
       crosapi::mojom::SessionType::kWebKioskSession) {
     KioskSessionServiceLacros::Get()->InitWebKioskSession(browser, url);
   }

@@ -47,6 +47,7 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/crosapi/mojom/web_app_service.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
+#include "chromeos/startup/browser_init_params.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -471,7 +472,7 @@ void WebAppBrowserController::PerformDigitalAssetLinkVerification(
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   auto* lacros_service = chromeos::LacrosService::Get();
-  if (lacros_service && lacros_service->init_params()->web_apps_enabled &&
+  if (chromeos::BrowserInitParams::Get()->web_apps_enabled && lacros_service &&
       lacros_service->IsAvailable<crosapi::mojom::WebAppService>() &&
       lacros_service->GetInterfaceVersion(
           crosapi::mojom::WebAppService::Uuid_) >=

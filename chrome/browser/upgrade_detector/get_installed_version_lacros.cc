@@ -13,6 +13,7 @@
 #include "base/version.h"
 #include "chromeos/crosapi/mojom/browser_version.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
+#include "chromeos/startup/browser_init_params.h"
 #include "components/version_info/version_info.h"
 
 namespace {
@@ -31,9 +32,10 @@ void GetInstalledVersion(InstalledVersionCallback callback) {
   auto* lacros_service = chromeos::LacrosService::Get();
   if (lacros_service &&
       lacros_service->IsAvailable<crosapi::mojom::BrowserVersionService>() &&
-      lacros_service->init_params()->ash_capabilities.has_value() &&
-      base::Contains(lacros_service->init_params()->ash_capabilities.value(),
-                     kBrowserManagerReloadBrowserCapability)) {
+      chromeos::BrowserInitParams::Get()->ash_capabilities.has_value() &&
+      base::Contains(
+          chromeos::BrowserInitParams::Get()->ash_capabilities.value(),
+          kBrowserManagerReloadBrowserCapability)) {
     lacros_service->GetRemote<crosapi::mojom::BrowserVersionService>()
         ->GetInstalledBrowserVersion(base::BindOnce(
             [](InstalledVersionCallback callback,

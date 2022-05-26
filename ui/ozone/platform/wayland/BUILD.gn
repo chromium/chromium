@@ -306,7 +306,7 @@ source_set("wayland") {
     deps += [
       "//chromeos/crosapi/cpp:crosapi_constants",
       "//chromeos/crosapi/mojom",
-      "//chromeos/lacros",
+      "//chromeos/startup",
     ]
   }
 

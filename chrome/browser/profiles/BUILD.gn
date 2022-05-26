@@ -54,7 +54,10 @@ source_set("profile") {
     deps += [ "//ash/constants" ]
   }
   if (is_chromeos_lacros) {
-    deps += [ "//chromeos/lacros" ]
+    deps += [
+      "//chromeos/lacros",
+      "//chromeos/startup",
+    ]
   }
   if (is_android) {
     deps += [ "//chrome/browser/profiles/android:jni_headers" ]

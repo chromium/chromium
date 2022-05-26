@@ -5458,6 +5458,7 @@ static_library("browser") {
       "//chromeos/dbus/dlp:dlp",
       "//chromeos/lacros",
       "//chromeos/lacros/dbus",
+      "//chromeos/startup",
       "//chromeos/ui/base",
       "//chromeos/ui/frame",
       "//components/arc/common",

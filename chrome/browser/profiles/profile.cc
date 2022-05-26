@@ -60,7 +60,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/common/chrome_constants.h"
-#include "chromeos/lacros/lacros_service.h"
+#include "chromeos/startup/browser_init_params.h"
 #endif
 
 #if DCHECK_IS_ON()
@@ -379,8 +379,7 @@ bool Profile::IsGuestSession() const {
   return is_guest_session;
 #else
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  DCHECK(chromeos::LacrosService::Get());
-  if (chromeos::LacrosService::Get()->init_params()->session_type ==
+  if (chromeos::BrowserInitParams::Get()->session_type ==
       crosapi::mojom::SessionType::kGuestSession) {
     return true;
   }

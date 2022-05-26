@@ -65,7 +65,7 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_service.h"
+#include "chromeos/startup/browser_init_params.h"
 #endif
 
 namespace metrics {
@@ -374,7 +374,7 @@ ChromeMetricsServicesManagerClient::GetMetricsStateManager() {
     std::string client_id;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     // Read metrics service client id from ash chrome if it's present.
-    auto* init_params = chromeos::LacrosService::Get()->init_params();
+    auto* init_params = chromeos::BrowserInitParams::Get();
     if (init_params->metrics_service_client_id.has_value())
       client_id = init_params->metrics_service_client_id.value();
 #endif

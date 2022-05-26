@@ -60,6 +60,7 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/crosapi/mojom/app_service.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
+#include "chromeos/startup/browser_init_params.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace {
@@ -361,7 +362,8 @@ bool IsWebAppsCrosapiEnabled() {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   auto* lacros_service = chromeos::LacrosService::Get();
-  return lacros_service && lacros_service->init_params()->web_apps_enabled &&
+  return chromeos::BrowserInitParams::Get()->web_apps_enabled &&
+         lacros_service &&
          lacros_service->IsAvailable<crosapi::mojom::AppPublisher>();
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }

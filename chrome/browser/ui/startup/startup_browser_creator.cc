@@ -109,7 +109,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/ui/startup/lacros_first_run_service.h"
-#include "chromeos/lacros/lacros_service.h"
+#include "chromeos/startup/browser_init_params.h"
 #endif
 
 #if BUILDFLAG(IS_MAC)
@@ -380,7 +380,7 @@ Profile* GetPrivateProfileIfRequested(const base::CommandLine& command_line,
       /* show_warning= */ true);
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   if (profiles::IsGuestModeEnabled()) {
-    const auto* init_params = chromeos::LacrosService::Get()->init_params();
+    const auto* init_params = chromeos::BrowserInitParams::Get();
     open_guest_profile =
         open_guest_profile ||
         init_params->initial_browser_action ==
@@ -406,7 +406,7 @@ Profile* GetPrivateProfileIfRequested(const base::CommandLine& command_line,
   } else {
     bool expect_incognito = command_line.HasSwitch(switches::kIncognito);
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-    auto* init_params = chromeos::LacrosService::Get()->init_params();
+    auto* init_params = chromeos::BrowserInitParams::Get();
     expect_incognito |=
         init_params->initial_browser_action ==
         crosapi::mojom::InitialBrowserAction::kOpenIncognitoWindow;
@@ -819,7 +819,7 @@ SessionStartupPref StartupBrowserCreator::GetSessionStartupPref(
   bool restore_last_session =
       command_line.HasSwitch(switches::kRestoreLastSession);
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  auto* init_params = chromeos::LacrosService::Get()->init_params();
+  auto* init_params = chromeos::BrowserInitParams::Get();
   if (init_params->initial_browser_action ==
           crosapi::mojom::InitialBrowserAction::kOpenNewTabPageWindow ||
       init_params->initial_browser_action ==
@@ -1476,7 +1476,7 @@ StartupProfilePathInfo GetStartupProfilePath(
   }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (chromeos::LacrosService::Get()->init_params()->session_type ==
+  if (chromeos::BrowserInitParams::Get()->session_type ==
       crosapi::mojom::SessionType::kGuestSession) {
     return {ProfileManager::GetGuestProfilePath(),
             StartupProfileMode::kBrowserWindow};

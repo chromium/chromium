@@ -70,7 +70,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_service.h"
+#include "chromeos/startup/browser_init_params.h"
 #endif
 
 using base::UserMetricsAction;
@@ -214,13 +214,8 @@ bool IsHoldingSpaceIncognitoProfileIntegrationEnabled() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return true;
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  auto* lacros_service = chromeos::LacrosService::Get();
-  if (lacros_service) {
-    auto* init_params = lacros_service->init_params();
-    return init_params &&
-           init_params->is_holding_space_incognito_profile_integration_enabled;
-  }
-  return false;
+  return chromeos::BrowserInitParams::Get()
+      ->is_holding_space_incognito_profile_integration_enabled;
 #else
   return false;
 #endif
@@ -231,14 +226,8 @@ bool IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled() {
   return ash::features::
       IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled();
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  auto* lacros_service = chromeos::LacrosService::Get();
-  if (lacros_service) {
-    auto* init_params = lacros_service->init_params();
-    return init_params &&
-           init_params
-               ->is_holding_space_in_progress_downloads_notification_suppression_enabled;
-  }
-  return false;
+  return chromeos::BrowserInitParams::Get()
+      ->is_holding_space_in_progress_downloads_notification_suppression_enabled;
 #else
   return false;
 #endif

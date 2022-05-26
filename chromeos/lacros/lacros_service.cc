@@ -80,6 +80,7 @@
 #include "chromeos/lacros/native_theme_cache.h"
 #include "chromeos/lacros/system_idle_cache.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
+#include "chromeos/startup/browser_init_params.h"
 #include "components/crash/core/common/crash_key.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
@@ -167,12 +168,12 @@ LacrosService::LacrosService()
       weak_sequenced_state_(sequenced_state_->GetWeakPtr()),
       observer_list_(
           base::MakeRefCounted<base::ObserverListThreadSafe<Observer>>()) {
-  if (init_params()->idle_info) {
+  if (BrowserInitParams::Get()->idle_info) {
     // Presence of initial |idle_info| indicates that ash-chrome can stream
     // idle info updates, so instantiate under Streaming mode, using
     // |idle_info| as initial cached values.
     system_idle_cache_ =
-        std::make_unique<SystemIdleCache>(*init_params()->idle_info);
+        std::make_unique<SystemIdleCache>(*BrowserInitParams::Get()->idle_info);
 
     // After construction finishes, start caching.
     base::SequencedTaskRunnerHandle::Get()->PostTask(
@@ -183,10 +184,10 @@ LacrosService::LacrosService()
     system_idle_cache_ = std::make_unique<SystemIdleCache>();
   }
 
-  if (init_params()->native_theme_info) {
+  if (BrowserInitParams::Get()->native_theme_info) {
     // Start Lacros' native theme caching, since it is available in Ash.
-    native_theme_cache_ =
-        std::make_unique<NativeThemeCache>(*init_params()->native_theme_info);
+    native_theme_cache_ = std::make_unique<NativeThemeCache>(
+        *BrowserInitParams::Get()->native_theme_info);
 
     // After construction finishes, start caching.
     base::SequencedTaskRunnerHandle::Get()->PostTask(
@@ -195,7 +196,7 @@ LacrosService::LacrosService()
   }
 
   static crash_reporter::CrashKeyString<32> session_type("session-type");
-  session_type.Set(SessionTypeToString(init_params()->session_type));
+  session_type.Set(SessionTypeToString(BrowserInitParams::Get()->session_type));
 
   // Short term workaround: if --crosapi-mojo-platform-channel-handle is
   // available, close --mojo-platform-channel-handle, and remove it
@@ -660,18 +661,13 @@ bool LacrosService::IsVideoCaptureDeviceFactoryAvailable() const {
                             kBindVideoCaptureDeviceFactoryMinVersion;
 }
 
-// Returns BrowserInitParams which is passed from ash-chrome.
-const crosapi::mojom::BrowserInitParams* LacrosService::init_params() const {
-  return BrowserInitParams::Get();
-}
-
 int LacrosService::GetInterfaceVersion(base::Token interface_uuid) const {
   if (BrowserInitParams::disable_crosapi_for_testing())
     return -1;
-  if (!init_params()->interface_versions)
+  if (!BrowserInitParams::Get()->interface_versions)
     return -1;
   const base::flat_map<base::Token, uint32_t>& versions =
-      init_params()->interface_versions.value();
+      BrowserInitParams::Get()->interface_versions.value();
   auto it = versions.find(interface_uuid);
   if (it == versions.end())
     return -1;
@@ -682,7 +678,7 @@ absl::optional<uint32_t> LacrosService::CrosapiVersion() const {
   if (BrowserInitParams::disable_crosapi_for_testing())
     return absl::nullopt;
   DCHECK(did_bind_receiver_);
-  return init_params()->crosapi_version;
+  return BrowserInitParams::Get()->crosapi_version;
 }
 
 void LacrosService::StartSystemIdleCache() {

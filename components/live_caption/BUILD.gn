@@ -89,6 +89,6 @@ source_set("utils") {
   }
 
   if (is_chromeos_lacros) {
-    deps += [ "//chromeos/lacros" ]
+    deps += [ "//chromeos/startup" ]
   }
 }

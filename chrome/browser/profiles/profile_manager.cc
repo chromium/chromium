@@ -167,7 +167,7 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/lacros/account_manager/account_profile_mapper.h"
 #include "chrome/browser/ui/startup/lacros_first_run_service.h"
-#include "chromeos/lacros/lacros_service.h"
+#include "chromeos/startup/browser_init_params.h"
 #include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
 #endif
 
@@ -1352,10 +1352,8 @@ void ProfileManager::InitProfileUserPrefs(Profile* profile) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  DCHECK(chromeos::LacrosService::Get());
-  const bool user_is_child =
-      chromeos::LacrosService::Get()->init_params()->session_type ==
-      crosapi::mojom::SessionType::kChildSession;
+  const bool user_is_child = chromeos::BrowserInitParams::Get()->session_type ==
+                             crosapi::mojom::SessionType::kChildSession;
   UpdateSupervisedUserPref(profile, user_is_child);
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 

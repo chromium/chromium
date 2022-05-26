@@ -25,7 +25,7 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_service.h"
+#include "chromeos/startup/browser_init_params.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace device {
@@ -78,8 +78,7 @@ BluetoothAdapter::DeviceList FilterUnknownDevices(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (chromeos::LacrosService::Get()
-          ->init_params()
+  if (chromeos::BrowserInitParams::Get()
           ->is_unfiltered_bluetooth_device_enabled) {
     return devices;
   }
@@ -186,8 +185,7 @@ bool IsUnsupportedDevice(const device::BluetoothDevice* device) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (chromeos::LacrosService::Get()
-          ->init_params()
+  if (chromeos::BrowserInitParams::Get()
           ->is_unfiltered_bluetooth_device_enabled) {
     return false;
   }
