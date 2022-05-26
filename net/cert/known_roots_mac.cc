@@ -12,7 +12,7 @@
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "crypto/mac_security_services_lock.h"
-#include "net/cert/x509_util_mac.h"
+#include "net/cert/x509_util_apple.h"
 
 using base::ScopedCFTypeRef;
 

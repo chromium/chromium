@@ -1174,8 +1174,6 @@ component("net") {
     sources += [
       "cert/cert_verify_proc_ios.cc",
       "cert/cert_verify_proc_ios.h",
-      "cert/x509_util_ios.cc",
-      "cert/x509_util_ios.h",
       "disk_cache/blockfile/file_ios.cc",
       "proxy_resolution/proxy_config_service_ios.cc",
       "proxy_resolution/proxy_config_service_ios.h",

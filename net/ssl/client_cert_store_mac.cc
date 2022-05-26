@@ -32,7 +32,6 @@
 #include "net/cert/internal/parse_certificate.h"
 #include "net/cert/x509_util.h"
 #include "net/cert/x509_util_apple.h"
-#include "net/cert/x509_util_mac.h"
 #include "net/ssl/client_cert_identity_mac.h"
 #include "net/ssl/ssl_platform_key_util.h"
 

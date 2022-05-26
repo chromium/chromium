@@ -5,39 +5,10 @@
 #ifndef NET_CERT_X509_UTIL_MAC_H_
 #define NET_CERT_X509_UTIL_MAC_H_
 
-#include <CoreFoundation/CFArray.h>
 #include <Security/Security.h>
 
-#include <string>
-
-#include "base/mac/scoped_cftyperef.h"
-#include "base/memory/ref_counted.h"
-#include "net/base/hash_value.h"
-#include "net/base/net_export.h"
-#include "net/cert/x509_certificate.h"
-
 namespace net {
-
 namespace x509_util {
-
-// Creates an X509Certificate representing |sec_cert| with intermediates
-// |sec_chain|.
-NET_EXPORT scoped_refptr<X509Certificate>
-CreateX509CertificateFromSecCertificate(
-    base::ScopedCFTypeRef<SecCertificateRef> sec_cert,
-    const std::vector<base::ScopedCFTypeRef<SecCertificateRef>>& sec_chain);
-
-// Creates an X509Certificate with non-standard parsing options.
-// Do not use without consulting //net owners.
-NET_EXPORT scoped_refptr<X509Certificate>
-CreateX509CertificateFromSecCertificate(
-    base::ScopedCFTypeRef<SecCertificateRef> sec_cert,
-    const std::vector<base::ScopedCFTypeRef<SecCertificateRef>>& sec_chain,
-    X509Certificate::UnsafeCreateOptions options);
-
-// Calculates the SHA-256 fingerprint of the certificate.  Returns an empty
-// (all zero) fingerprint on failure.
-NET_EXPORT SHA256HashValue CalculateFingerprint256(SecCertificateRef cert);
 
 // CSSM functions are deprecated as of OSX 10.7, but have no replacement.
 // https://bugs.chromium.org/p/chromium/issues/detail?id=590914#c1
@@ -130,7 +101,6 @@ inline bool CSSMOIDEqual(const CSSM_OID* oid1, const CSSM_OID* oid2) {
 #pragma clang diagnostic pop  // "-Wdeprecated-declarations"
 
 }  // namespace x509_util
-
 }  // namespace net
 
 #endif  // NET_CERT_X509_UTIL_MAC_H_

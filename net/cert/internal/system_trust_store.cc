@@ -42,7 +42,7 @@
 #elif BUILDFLAG(IS_MAC)
 #include "net/base/features.h"
 #include "net/cert/internal/trust_store_mac.h"
-#include "net/cert/x509_util_mac.h"
+#include "net/cert/x509_util_apple.h"
 #elif BUILDFLAG(IS_FUCHSIA)
 #include "base/lazy_instance.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"

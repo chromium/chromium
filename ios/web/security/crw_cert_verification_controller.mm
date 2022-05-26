@@ -19,7 +19,7 @@
 #import "ios/web/security/wk_web_view_security_util.h"
 #include "net/cert/cert_verify_proc_ios.h"
 #include "net/cert/x509_util.h"
-#include "net/cert/x509_util_ios.h"
+#include "net/cert/x509_util_apple.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

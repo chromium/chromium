@@ -4,12 +4,7 @@
 
 #include "net/cert/x509_util_mac.h"
 
-#include <CommonCrypto/CommonDigest.h>
-
 #include "base/check_op.h"
-#include "base/strings/sys_string_conversions.h"
-#include "net/cert/x509_certificate.h"
-#include "third_party/boringssl/src/include/openssl/pool.h"
 
 namespace net {
 
@@ -19,60 +14,6 @@ namespace net {
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
 
 namespace x509_util {
-
-scoped_refptr<X509Certificate> CreateX509CertificateFromSecCertificate(
-    base::ScopedCFTypeRef<SecCertificateRef> sec_cert,
-    const std::vector<base::ScopedCFTypeRef<SecCertificateRef>>& sec_chain) {
-  return CreateX509CertificateFromSecCertificate(sec_cert, sec_chain, {});
-}
-
-scoped_refptr<X509Certificate> CreateX509CertificateFromSecCertificate(
-    base::ScopedCFTypeRef<SecCertificateRef> sec_cert,
-    const std::vector<base::ScopedCFTypeRef<SecCertificateRef>>& sec_chain,
-    X509Certificate::UnsafeCreateOptions options) {
-  CSSM_DATA der_data;
-  if (!sec_cert || SecCertificateGetData(sec_cert, &der_data) != noErr)
-    return nullptr;
-  bssl::UniquePtr<CRYPTO_BUFFER> cert_handle(
-      X509Certificate::CreateCertBufferFromBytes(
-          base::make_span(der_data.Data, der_data.Length)));
-  if (!cert_handle)
-    return nullptr;
-  std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> intermediates;
-  for (const auto& sec_intermediate : sec_chain) {
-    if (!sec_intermediate ||
-        SecCertificateGetData(sec_intermediate, &der_data) != noErr) {
-      return nullptr;
-    }
-    bssl::UniquePtr<CRYPTO_BUFFER> intermediate_cert_handle(
-        X509Certificate::CreateCertBufferFromBytes(
-            base::make_span(der_data.Data, der_data.Length)));
-    if (!intermediate_cert_handle)
-      return nullptr;
-    intermediates.push_back(std::move(intermediate_cert_handle));
-  }
-  scoped_refptr<X509Certificate> result(
-      X509Certificate::CreateFromBufferUnsafeOptions(
-          std::move(cert_handle), std::move(intermediates), options));
-  return result;
-}
-
-SHA256HashValue CalculateFingerprint256(SecCertificateRef cert) {
-  SHA256HashValue sha256;
-  memset(sha256.data, 0, sizeof(sha256.data));
-
-  CSSM_DATA cert_data;
-  OSStatus status = SecCertificateGetData(cert, &cert_data);
-  if (status)
-    return sha256;
-
-  DCHECK(cert_data.Data);
-  DCHECK_NE(cert_data.Length, 0U);
-
-  CC_SHA256(cert_data.Data, cert_data.Length, sha256.data);
-
-  return sha256;
-}
 
 CSSMFieldValue::CSSMFieldValue()
     : cl_handle_(CSSM_INVALID_HANDLE),

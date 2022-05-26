@@ -12,7 +12,6 @@
 #include "base/mac/scoped_cftyperef.h"
 #include "base/notreached.h"
 #include "net/cert/x509_util_apple.h"
-#include "net/cert/x509_util_mac.h"
 
 namespace remote_cocoa {
 

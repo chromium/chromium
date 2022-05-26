@@ -4,19 +4,35 @@
 
 #include "net/cert/x509_util_apple.h"
 
+#include <CommonCrypto/CommonDigest.h>
+
+#include <string>
+
+#include "base/check_op.h"
 #include "base/logging.h"
 #include "build/build_config.h"
 #include "net/cert/x509_certificate.h"
-#if BUILDFLAG(IS_IOS)
-#include "net/cert/x509_util_ios.h"
-#else
-#include "net/cert/x509_util_mac.h"
-#endif
 #include "third_party/boringssl/src/include/openssl/pool.h"
 
 namespace net {
-
 namespace x509_util {
+
+namespace {
+
+bssl::UniquePtr<CRYPTO_BUFFER> CertBufferFromSecCertificate(
+    SecCertificateRef sec_cert) {
+  if (!sec_cert) {
+    return nullptr;
+  }
+  base::ScopedCFTypeRef<CFDataRef> der_data(SecCertificateCopyData(sec_cert));
+  if (!der_data) {
+    return nullptr;
+  }
+  return X509Certificate::CreateCertBufferFromBytes(
+      base::make_span(CFDataGetBytePtr(der_data), CFDataGetLength(der_data)));
+}
+
+}  // namespace
 
 base::ScopedCFTypeRef<SecCertificateRef> CreateSecCertificateFromBytes(
     const uint8_t* data,
@@ -73,6 +89,53 @@ CreateSecCertificateArrayForX509Certificate(
   return cert_list;
 }
 
-}  // namespace x509_util
+scoped_refptr<X509Certificate> CreateX509CertificateFromSecCertificate(
+    base::ScopedCFTypeRef<SecCertificateRef> sec_cert,
+    const std::vector<base::ScopedCFTypeRef<SecCertificateRef>>& sec_chain) {
+  return CreateX509CertificateFromSecCertificate(sec_cert, sec_chain, {});
+}
 
+scoped_refptr<X509Certificate> CreateX509CertificateFromSecCertificate(
+    base::ScopedCFTypeRef<SecCertificateRef> sec_cert,
+    const std::vector<base::ScopedCFTypeRef<SecCertificateRef>>& sec_chain,
+    X509Certificate::UnsafeCreateOptions options) {
+  bssl::UniquePtr<CRYPTO_BUFFER> cert_handle =
+      CertBufferFromSecCertificate(sec_cert);
+  if (!cert_handle) {
+    return nullptr;
+  }
+  std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> intermediates;
+  for (const auto& sec_intermediate : sec_chain) {
+    bssl::UniquePtr<CRYPTO_BUFFER> intermediate_cert_handle =
+        CertBufferFromSecCertificate(sec_intermediate);
+    if (!intermediate_cert_handle) {
+      return nullptr;
+    }
+    intermediates.push_back(std::move(intermediate_cert_handle));
+  }
+  scoped_refptr<X509Certificate> result(
+      X509Certificate::CreateFromBufferUnsafeOptions(
+          std::move(cert_handle), std::move(intermediates), options));
+  return result;
+}
+
+SHA256HashValue CalculateFingerprint256(SecCertificateRef cert) {
+  SHA256HashValue sha256;
+  memset(sha256.data, 0, sizeof(sha256.data));
+
+  base::ScopedCFTypeRef<CFDataRef> cert_data(SecCertificateCopyData(cert));
+  if (!cert_data) {
+    return sha256;
+  }
+
+  DCHECK(CFDataGetBytePtr(cert_data));
+  DCHECK_NE(CFDataGetLength(cert_data), 0);
+
+  CC_SHA256(CFDataGetBytePtr(cert_data), CFDataGetLength(cert_data),
+            sha256.data);
+
+  return sha256;
+}
+
+}  // namespace x509_util
 }  // namespace net

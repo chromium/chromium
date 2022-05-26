@@ -25,7 +25,7 @@
 #include "crypto/openssl_util.h"
 #include "net/base/net_errors.h"
 #include "net/cert/x509_certificate.h"
-#include "net/cert/x509_util_mac.h"
+#include "net/cert/x509_util_apple.h"
 #include "net/ssl/ssl_platform_key_util.h"
 #include "net/ssl/ssl_private_key.h"
 #include "net/ssl/threaded_ssl_private_key.h"
