@@ -42,6 +42,7 @@
 #include "components/optimization_guide/core/top_host_provider.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/prefs/pref_service.h"
+#include "components/variations/synthetic_trials.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
@@ -235,7 +236,8 @@ void OptimizationGuideKeyedService::Initialize() {
                           optimization_guide_fetching_enabled);
     ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
         "SyntheticOptimizationGuideRemoteFetching",
-        optimization_guide_fetching_enabled ? "Enabled" : "Disabled");
+        optimization_guide_fetching_enabled ? "Enabled" : "Disabled",
+        variations::SyntheticTrialAnnotationMode::kCurrentLog);
 
 #if BUILDFLAG(IS_ANDROID)
     tab_url_provider_ = std::make_unique<

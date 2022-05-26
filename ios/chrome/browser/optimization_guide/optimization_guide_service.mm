@@ -24,6 +24,7 @@
 #include "components/optimization_guide/core/prediction_manager.h"
 #import "components/optimization_guide/core/top_host_provider.h"
 #import "components/prefs/pref_service.h"
+#import "components/variations/synthetic_trials.h"
 #import "ios/chrome/browser/application_context.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_paths.h"
@@ -165,7 +166,8 @@ void OptimizationGuideService::DoFinalInit() {
                               optimization_guide_fetching_enabled);
     IOSChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
         "SyntheticOptimizationGuideRemoteFetching",
-        optimization_guide_fetching_enabled ? "Enabled" : "Disabled");
+        optimization_guide_fetching_enabled ? "Enabled" : "Disabled",
+        variations::SyntheticTrialAnnotationMode::kCurrentLog);
   }
 }
 

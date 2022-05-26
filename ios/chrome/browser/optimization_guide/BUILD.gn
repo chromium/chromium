@@ -29,6 +29,7 @@ source_set("optimization_guide") {
     "//components/optimization_guide/core:prediction",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/prefs",
+    "//components/variations",
     "//ios/chrome/browser:application_context",
     "//ios/chrome/browser:chrome_paths",
     "//ios/chrome/browser/browser_state",
