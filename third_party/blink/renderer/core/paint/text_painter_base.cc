@@ -257,7 +257,7 @@ void TextPainterBase::PaintDecorationsExceptLineThrough(
 
     decoration_info.SetDecorationIndex(applied_decoration_index);
 
-    float resolved_thickness = decoration_info.ResolvedThickness();
+    const float resolved_thickness = decoration_info.ResolvedThickness();
     context.SetStrokeThickness(resolved_thickness);
 
     if (is_spelling_error || is_grammar_error) {
@@ -280,16 +280,7 @@ void TextPainterBase::PaintDecorationsExceptLineThrough(
     }
 
     if (has_underline && decoration_info.FontData()) {
-      // Don't apply text-underline-offset to overline.
-      Length line_offset =
-          flip_underline_and_overline ? Length() : decoration.UnderlineOffset();
-
-      const int paint_underline_offset =
-          decoration_offset.ComputeUnderlineOffset(
-              underline_position, decoration_info.ComputedFontSize(),
-              decoration_info.FontData(), line_offset, resolved_thickness);
-      decoration_info.SetLineData(TextDecorationLine::kUnderline,
-                                  paint_underline_offset);
+      decoration_info.SetUnderlineLineData(decoration, decoration_offset);
       PaintDecorationUnderOrOverLine(context, decoration_info,
                                      TextDecorationLine::kUnderline, flags);
     }

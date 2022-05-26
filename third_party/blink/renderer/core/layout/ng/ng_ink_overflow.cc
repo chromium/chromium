@@ -554,16 +554,7 @@ LayoutRect NGInkOverflow::ComputeTextDecorationOverflow(
     float resolved_thickness = decoration_info.ResolvedThickness();
 
     if (has_underline) {
-      // Don't apply text-underline-offset to overline.
-      Length line_offset =
-          flip_underline_and_overline ? Length() : decoration.UnderlineOffset();
-
-      const int paint_underline_offset =
-          decoration_offset.ComputeUnderlineOffset(
-              underline_position, decoration_info.Style().ComputedFontSize(),
-              decoration_info.FontData(), line_offset, resolved_thickness);
-      decoration_info.SetLineData(TextDecorationLine::kUnderline,
-                                  paint_underline_offset);
+      decoration_info.SetUnderlineLineData(decoration, decoration_offset);
       accumulated_bound.Union(decoration_info.Bounds());
     }
     if (has_overline) {

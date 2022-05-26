@@ -24,6 +24,7 @@ namespace blink {
 class ComputedStyle;
 class Font;
 class SimpleFontData;
+class TextDecorationOffsetBase;
 
 enum class ResolvedUnderlinePosition {
   kNearAlphabeticBaselineAuto,
@@ -65,6 +66,8 @@ class CORE_EXPORT TextDecorationInfo {
   // through. Must be called before trying to paint or compute bounds
   // for a line.
   void SetLineData(TextDecorationLine line, float line_offset);
+  void SetUnderlineLineData(const AppliedTextDecoration& decoration,
+                            const TextDecorationOffsetBase& decoration_offset);
 
   // These methods do not depend on SetDecorationIndex
   LayoutUnit Width() const { return width_; }

@@ -2,8 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "build/build_config.h"
 #include "third_party/blink/renderer/core/paint/text_decoration_info.h"
+
+#include "build/build_config.h"
+#include "third_party/blink/renderer/core/layout/text_decoration_offset_base.h"
 #include "third_party/blink/renderer/core/paint/text_paint_style.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
@@ -212,6 +214,23 @@ void TextDecorationInfo::SetLineData(TextDecorationLine line,
     default:
       line_data_.stroke_path.reset();
   }
+}
+
+void TextDecorationInfo::SetUnderlineLineData(
+    const AppliedTextDecoration& decoration,
+    const TextDecorationOffsetBase& decoration_offset) {
+  ResolvedUnderlinePosition underline_position = UnderlinePosition();
+  Length line_offset;
+  if (UNLIKELY(underline_position == ResolvedUnderlinePosition::kOver)) {
+    // Don't apply text-underline-offset to overlines. |line_offset| is zero.
+    underline_position = ResolvedUnderlinePosition::kUnder;
+  } else {
+    line_offset = decoration.UnderlineOffset();
+  }
+  const int paint_underline_offset = decoration_offset.ComputeUnderlineOffset(
+      underline_position, ComputedFontSize(), FontData(), line_offset,
+      ResolvedThickness());
+  SetLineData(TextDecorationLine::kUnderline, paint_underline_offset);
 }
 
 ETextDecorationStyle TextDecorationInfo::DecorationStyle() const {
