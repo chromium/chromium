@@ -58,6 +58,13 @@ void AnchorElementInteractionTracker::OnPointerDown(
   if (url.IsEmpty()) {
     return;
   }
+
+  // interaction_host_ might become unbound: Android's low memory detector
+  // sometimes call NotifyContextDestroyed to save memory. This unbinds mojo
+  // pipes using that ExecutionContext even if those pages can still navigate.
+  if (!interaction_host_.is_bound()) {
+    return;
+  }
   interaction_host_->OnPointerDown(url);
 }
 
