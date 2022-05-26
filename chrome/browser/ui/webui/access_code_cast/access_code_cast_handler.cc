@@ -156,9 +156,10 @@ AccessCodeCastHandler::AccessCodeCastHandler(
       cast_mode_set_(cast_mode_set),
       media_route_starter_(std::move(media_route_starter)) {
   if (media_route_starter_) {
+    // Ensure we don't use an off-the-record profile.
     access_code_sink_service_ =
         AccessCodeCastSinkServiceFactory::GetForProfile(
-            media_route_starter_->GetProfile());
+            media_route_starter_->GetProfile()->GetOriginalProfile());
     Init();
   }
 }
