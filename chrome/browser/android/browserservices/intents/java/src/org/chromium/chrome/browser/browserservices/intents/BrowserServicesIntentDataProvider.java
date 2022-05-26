@@ -460,6 +460,13 @@ public abstract class BrowserServicesIntentDataProvider {
     }
 
     /**
+     * @return Whether the intent is for partial-height custom tabs.
+     */
+    public boolean isPartialHeightCustomTab() {
+        return false;
+    }
+
+    /**
      * @return The value in pixels  of the initial height of the Activity. It will return 0 if there
      *         is no value set.
      */

@@ -12,6 +12,7 @@ import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyObject;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
@@ -119,6 +120,7 @@ public class PartialCustomTabHeightStrategyTest {
 
     private List<WindowManager.LayoutParams> mAttributeResults;
     private DisplayMetrics mRealMetrics;
+    private Point mDisplaySize;
     private ObservableSupplierImpl<FrameLayout> mParentViewSupplier =
             new ObservableSupplierImpl<>();
     private Callback<Integer> mBottomInsetCallback = inset -> {};
@@ -175,10 +177,14 @@ public class PartialCustomTabHeightStrategyTest {
         })
                 .when(mDisplay)
                 .getRealMetrics(any(DisplayMetrics.class));
+
+        mDisplaySize = new Point();
+        mDisplaySize.x = DEVICE_WIDTH;
+        mDisplaySize.y = DEVICE_HEIGHT - NAVBAR_HEIGHT;
         doAnswer(invocation -> {
             Point point = invocation.getArgument(0);
-            point.x = DEVICE_WIDTH;
-            point.y = DEVICE_HEIGHT - NAVBAR_HEIGHT;
+            point.x = mDisplaySize.x;
+            point.y = mDisplaySize.y;
             return null;
         })
                 .when(mDisplay)
@@ -226,6 +232,8 @@ public class PartialCustomTabHeightStrategyTest {
         mConfiguration.orientation = Configuration.ORIENTATION_LANDSCAPE;
         mRealMetrics.widthPixels = DEVICE_HEIGHT;
         mRealMetrics.heightPixels = DEVICE_WIDTH;
+        mDisplaySize.x = DEVICE_HEIGHT - NAVBAR_HEIGHT;
+        mDisplaySize.y = DEVICE_WIDTH;
         new PartialCustomTabHeightStrategy(mActivity, mParentViewSupplier, 800,
                 mMultiWindowModeStateDispatcher, null, null, mOnResizedCallback,
                 mActivityLifecycleDispatcher);
@@ -319,6 +327,7 @@ public class PartialCustomTabHeightStrategyTest {
         PartialCustomTabHeightStrategy strategy = new PartialCustomTabHeightStrategy(mActivity,
                 mParentViewSupplier, 800, mMultiWindowModeStateDispatcher, null, null,
                 mOnResizedCallback, mActivityLifecycleDispatcher);
+        strategy.setMockViewForTesting(mNavbar, mSpinnerView, mSpinner, mToolbarView);
 
         // Pass null because we have a mock Activity and we don't depend on the GestureDetector
         // inside as we test MotionEvents directly.
@@ -332,6 +341,25 @@ public class PartialCustomTabHeightStrategyTest {
         assertFalse(handleStrategy.onInterceptTouchEvent(
                 MotionEvent.obtain(SystemClock.uptimeMillis(), SystemClock.uptimeMillis(),
                         MotionEvent.ACTION_DOWN, DEVICE_WIDTH / 2, 1500, 0)));
+    }
+
+    @Test
+    public void rotateToLandescapeHideCustomNavbar() {
+        PartialCustomTabHeightStrategy strategy = new PartialCustomTabHeightStrategy(mActivity,
+                mParentViewSupplier, 800, mMultiWindowModeStateDispatcher, null, null,
+                mOnResizedCallback, mActivityLifecycleDispatcher);
+        strategy.setMockViewForTesting(mNavbar, mSpinnerView, mSpinner, mToolbarView);
+
+        mConfiguration.orientation = Configuration.ORIENTATION_LANDSCAPE;
+        mRealMetrics.widthPixels = DEVICE_HEIGHT;
+        mRealMetrics.heightPixels = DEVICE_WIDTH;
+        mDisplaySize.x = DEVICE_HEIGHT - NAVBAR_HEIGHT;
+        mDisplaySize.y = DEVICE_WIDTH;
+
+        strategy.onConfigurationChanged(mConfiguration);
+
+        assertEquals(0, strategy.getNavbarHeightForTesting());
+        verify(mNavbar, times(1)).setVisibility(View.GONE);
     }
 
     @Test

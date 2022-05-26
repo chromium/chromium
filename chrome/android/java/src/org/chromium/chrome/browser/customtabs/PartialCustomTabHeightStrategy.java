@@ -87,7 +87,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     private final Activity mActivity;
     private final @Px int mInitialHeight;
     private final @Px int mMaxHeight;
-    private final @Px int mNavbarHeight;
+
     private final @Px int mFullyExpandedAdjustmentHeight;
     private final Integer mNavigationBarColor;
     private final Integer mNavigationBarDividerColor;
@@ -100,6 +100,9 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     private @HeightStatus int mStatus = HeightStatus.INITIAL_HEIGHT;
     private @HeightStatus int mTargetStatus;
 
+    // Bottom navigation bar height. Set to zero when the bar is positioned on the right side
+    // in landcape mode.
+    private @Px int mNavbarHeight;
     private int mOrientation;
     private boolean mIsInMultiWindowMode;
 
@@ -250,13 +253,17 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         mActivity = activity;
         mParentViewSupplier = parentViewSupplier;
         mMaxHeight = getMaximumPossibleHeight();
-        mNavbarHeight = getNavbarHeight(); // Needs mMaxHeight.
         mInitialHeight = MathUtils.clamp(
                 initialHeight, mMaxHeight, (int) (mMaxHeight * MINIMAL_HEIGHT_RATIO));
+
+        // Invoked twice - when populated/destroyed(null)
         parentViewSupplier.addObserver(parentView -> {
-            // Invoked twice: populated(on init) -> null(on destruction)
+            // When the navigation bar on the right side (not at the bottom), no need to call
+            // the methods below since the contents height is fixed and the system navigation
+            // bar works as expected.
+            if (mNavbarHeight == 0) return;
             setContentsHeight();
-            showNavbar(parentView != null);
+            updateNavbarVisibility(parentView != null);
         });
 
         mOnResizedCallback = onResizedCallback;
@@ -302,7 +309,6 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
             @Override
             public void onAnimationCancel(Animator animator) {}
         };
-        mActivity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
         initializeHeight();
     }
 
@@ -314,7 +320,7 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
                     .getInsets(WindowInsets.Type.navigationBars())
                     .bottom;
         }
-        return mMaxHeight - getAppUsableScreenHeight();
+        return getDisplayHeight() - getAppUsableScreenHeight();
     }
 
     private int getAppUsableScreenHeight() {
@@ -358,6 +364,8 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         if (newConfig.orientation != mOrientation) {
             mOrientation = newConfig.orientation;
             initializeHeight();
+            setContentsHeight();
+            updateNavbarVisibility(true);
         }
     }
 
@@ -396,21 +404,24 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         mActivity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL);
         mActivity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
 
+        mNavbarHeight = getNavbarHeight();
         int maxHeight = getDisplayHeight();
         int maxExpandedY = getFullyExpandedYCoordinate();
         final @Px int height;
+
         if (mOrientation == Configuration.ORIENTATION_LANDSCAPE) {
-            height = maxHeight - maxExpandedY;
             // Resizing by user dragging is not supported in landscape mode; no need to set
             // the status here.
+            height = maxHeight - maxExpandedY;
+            mActivity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
         } else {
             height = mInitialHeight;
             mStatus = HeightStatus.INITIAL_HEIGHT;
+            mActivity.getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
         }
 
         WindowManager.LayoutParams attributes = mActivity.getWindow().getAttributes();
-        // TODO(ctzsm): Consider to handle rotation and resizing when entering/exiting multi-window
-        // mode.
+        // TODO(jinsukkim): Handle multi-window mode.
         if (attributes.height == height) return;
 
         // We do not resize Window but just translate its vertical offset, and resize the parent
@@ -435,16 +446,19 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
 
     private void onMoveStart() {
         showSpinnerView();
-        showNavbar(false);
+        updateNavbarVisibility(false);
     }
 
     private void onMoveEnd() {
         setContentsHeight();
+
+        // TODO(crbug.com/1328555): Look into observing a view resize event to ensure the fade
+        // animation can always cover the transition artifact.
         mSpinnerView.animate()
                 .alpha(0f)
                 .setDuration(SPINNER_FADE_DURATION_MS)
                 .setListener(mSpinnerFadeoutAnimatorListener);
-        showNavbar(true);
+        updateNavbarVisibility(true);
     }
 
     private void showSpinnerView() {
@@ -500,15 +514,17 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         int windowPos = mActivity.getWindow().getAttributes().y;
         lp.height = getDisplayHeight() - windowPos - mHandleHeight - mNavbarHeight;
         parentView.setLayoutParams(lp);
-        if (oldHeight >= 0 && lp.height != oldHeight) {
-            mOnResizedCallback.onResized(lp.height);
-        }
+        if (oldHeight >= 0 && lp.height != oldHeight) mOnResizedCallback.onResized(lp.height);
     }
 
     // Show or hide our own navigation bar.
-    // TODO: Handle landscape mode where the 3-button navigation bar is located on a side,
-    //       not at the bottom.
-    private void showNavbar(boolean show) {
+    private void updateNavbarVisibility(boolean show) {
+        // No need draw its own navigation bar when it is located on the right side since
+        // the system navigation bar is visible and can handle API #setNavigationBarColor.
+        if (mNavbarHeight == 0) {
+            if (mNavbar != null) mNavbar.setVisibility(View.GONE);
+            return;
+        }
         if (show) {
             if (mNavbar == null) {
                 mNavbar = (LinearLayout) mActivity.getLayoutInflater().inflate(
@@ -645,5 +661,10 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         mSpinnerView = spinnerView;
         mSpinner = spinner;
         mToolbarView = toolbar;
+    }
+
+    @VisibleForTesting
+    int getNavbarHeightForTesting() {
+        return mNavbarHeight;
     }
 }
