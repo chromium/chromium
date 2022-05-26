@@ -16,6 +16,10 @@
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
+namespace blink {
+
+namespace {
+
 // Note about empirical tuning:
 // The maximum FFT size affects reverb performance and accuracy.
 // If the reverb is single-threaded and processes entirely in the real-time
@@ -25,15 +29,18 @@
 // worse phase errors. Given these constraints 32768 is a good compromise.
 const unsigned MaxFFTSize = 32768;
 
-namespace blink {
+constexpr unsigned kDefaultNumberOfInputChannels = 2;
+constexpr unsigned kDefaultNumberOfOutputChannels = 1;
+
+}  // namespace
 
 ConvolverHandler::ConvolverHandler(AudioNode& node, float sample_rate)
     : AudioHandler(kNodeTypeConvolver, node, sample_rate) {
   AddInput();
-  AddOutput(1);
+  AddOutput(kDefaultNumberOfOutputChannels);
 
   // Node-specific default mixing rules.
-  channel_count_ = 2;
+  channel_count_ = kDefaultNumberOfInputChannels;
   SetInternalChannelCountMode(kClampedMax);
   SetInternalChannelInterpretation(AudioBus::kSpeakers);
 

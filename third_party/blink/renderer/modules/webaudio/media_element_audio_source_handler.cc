@@ -22,6 +22,14 @@
 
 namespace blink {
 
+namespace {
+
+// Default to stereo. This could change depending on what the media element
+// .src is set to.
+constexpr unsigned kDefaultNumberOfOutputChannels = 2;
+
+}  // namespace
+
 class MediaElementAudioSourceHandlerLocker final {
   STACK_ALLOCATED();
 
@@ -51,9 +59,8 @@ MediaElementAudioSourceHandler::MediaElementAudioSourceHandler(
                    node.context()->sampleRate()),
       media_element_(media_element) {
   DCHECK(IsMainThread());
-  // Default to stereo. This could change depending on what the media element
-  // .src is set to.
-  AddOutput(2);
+
+  AddOutput(kDefaultNumberOfOutputChannels);
 
   if (Context()->GetExecutionContext()) {
     task_runner_ = Context()->GetExecutionContext()->GetTaskRunner(

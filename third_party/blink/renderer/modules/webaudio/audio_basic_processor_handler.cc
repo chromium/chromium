@@ -32,6 +32,12 @@
 
 namespace blink {
 
+namespace {
+
+constexpr unsigned kDefaultNumberOfOutputChannels = 1;
+
+}  // namespace
+
 AudioBasicProcessorHandler::AudioBasicProcessorHandler(
     NodeType node_type,
     AudioNode& node,
@@ -40,7 +46,7 @@ AudioBasicProcessorHandler::AudioBasicProcessorHandler(
     : AudioHandler(node_type, node, sample_rate),
       processor_(std::move(processor)) {
   AddInput();
-  AddOutput(1);
+  AddOutput(kDefaultNumberOfOutputChannels);
 }
 
 AudioBasicProcessorHandler::~AudioBasicProcessorHandler() {

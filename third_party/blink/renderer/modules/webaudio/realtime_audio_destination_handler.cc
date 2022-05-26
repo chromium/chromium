@@ -22,6 +22,12 @@
 
 namespace blink {
 
+namespace {
+
+constexpr unsigned kDefaultNumberOfInputChannels = 2;
+
+}  // namespace
+
 scoped_refptr<RealtimeAudioDestinationHandler>
 RealtimeAudioDestinationHandler::Create(AudioNode& node,
                                         const WebAudioLatencyHint& latency_hint,
@@ -41,7 +47,7 @@ RealtimeAudioDestinationHandler::RealtimeAudioDestinationHandler(
       task_runner_(Context()->GetExecutionContext()->GetTaskRunner(
           TaskType::kInternalMediaRealTime)) {
   // Node-specific default channel count and mixing rules.
-  channel_count_ = 2;
+  channel_count_ = kDefaultNumberOfInputChannels;
   SetInternalChannelCountMode(kExplicit);
   SetInternalChannelInterpretation(AudioBus::kSpeakers);
 }

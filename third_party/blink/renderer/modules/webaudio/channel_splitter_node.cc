@@ -34,6 +34,13 @@
 
 namespace blink {
 
+namespace {
+
+// Default number of outputs for the splitter node is 6.
+constexpr unsigned kDefaultNumberOfOutputs = 6;
+
+}  // namespace
+
 ChannelSplitterNode::ChannelSplitterNode(BaseAudioContext& context,
                                          unsigned number_of_outputs)
     : AudioNode(context) {
@@ -46,8 +53,7 @@ ChannelSplitterNode* ChannelSplitterNode::Create(
     ExceptionState& exception_state) {
   DCHECK(IsMainThread());
 
-  // Default number of outputs for the splitter node is 6.
-  return Create(context, 6, exception_state);
+  return Create(context, kDefaultNumberOfOutputs, exception_state);
 }
 
 ChannelSplitterNode* ChannelSplitterNode::Create(

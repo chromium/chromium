@@ -14,10 +14,14 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 
-// Set output to stereo by default.
-static const unsigned defaultNumberOfOutputChannels = 2;
-
 namespace blink {
+
+namespace {
+
+// Set output to stereo by default.
+constexpr unsigned kDefaultNumberOfOutputChannels = 2;
+
+}  // namespace
 
 DynamicsCompressorHandler::DynamicsCompressorHandler(
     AudioNode& node,
@@ -35,7 +39,7 @@ DynamicsCompressorHandler::DynamicsCompressorHandler(
       attack_(&attack),
       release_(&release) {
   AddInput();
-  AddOutput(defaultNumberOfOutputChannels);
+  AddOutput(kDefaultNumberOfOutputChannels);
 
   SetInternalChannelCountMode(kClampedMax);
 
@@ -104,7 +108,7 @@ void DynamicsCompressorHandler::Initialize() {
 
   AudioHandler::Initialize();
   dynamics_compressor_ = std::make_unique<DynamicsCompressor>(
-      Context()->sampleRate(), defaultNumberOfOutputChannels);
+      Context()->sampleRate(), kDefaultNumberOfOutputChannels);
 }
 
 bool DynamicsCompressorHandler::RequiresTailProcessing() const {

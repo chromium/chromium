@@ -20,6 +20,7 @@ namespace blink {
 
 namespace {
 
+// A PannerNode only supports 1 or 2 channels
 constexpr unsigned kMinimumOutputChannels = 1;
 constexpr unsigned kMaximumOutputChannels = 2;
 
@@ -675,7 +676,6 @@ void PannerHandler::SetChannelCount(unsigned channel_count,
   DCHECK(IsMainThread());
   BaseAudioContext::GraphAutoLocker locker(Context());
 
-  // A PannerNode only supports 1 or 2 channels
   if (channel_count >= kMinimumOutputChannels &&
       channel_count <= kMaximumOutputChannels) {
     if (channel_count_ != channel_count) {

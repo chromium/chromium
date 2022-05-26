@@ -14,10 +14,14 @@
 
 namespace blink {
 
+namespace {
+
 // Channel counts greater than 8 are ignored by some audio tracks/sinks (see
 // WebAudioMediaStreamSource), so we set a limit here to avoid anything that
 // could cause a crash.
-static const uint32_t kMaxChannelCount = 8;
+constexpr uint32_t kMaxChannelCountSupported = 8;
+
+}  // namespace
 
 MediaStreamAudioDestinationHandler::MediaStreamAudioDestinationHandler(
     AudioNode& node,
@@ -108,7 +112,7 @@ void MediaStreamAudioDestinationHandler::SetChannelCount(
 }
 
 uint32_t MediaStreamAudioDestinationHandler::MaxChannelCount() const {
-  return kMaxChannelCount;
+  return kMaxChannelCountSupported;
 }
 
 void MediaStreamAudioDestinationHandler::PullInputs(

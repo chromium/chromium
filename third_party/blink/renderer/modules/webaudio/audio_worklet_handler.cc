@@ -33,6 +33,12 @@
 
 namespace blink {
 
+namespace {
+
+constexpr unsigned kDefaultNumberOfOutputChannels = 1;
+
+}  // namespace
+
 AudioWorkletHandler::AudioWorkletHandler(
     AudioNode& node,
     float sample_rate,
@@ -63,7 +69,7 @@ AudioWorkletHandler::AudioWorkletHandler(
   for (unsigned i = 0; i < options->numberOfOutputs(); ++i) {
     // If `options->outputChannelCount` unspecified, all outputs are mono.
     AddOutput(is_output_channel_count_given_ ? options->outputChannelCount()[i]
-                                             : 1);
+                                             : kDefaultNumberOfOutputChannels);
   }
   // Same for the outputs as well.
   outputs_.ReserveInitialCapacity(options->numberOfOutputs());

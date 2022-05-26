@@ -22,10 +22,15 @@
 
 namespace blink {
 
+namespace {
+
 // Breakpoints where we decide to do linear interpolation, 3-point
 // interpolation or 5-point interpolation.  See DoInterpolation().
 constexpr float kInterpolate2Point = 0.3;
 constexpr float kInterpolate3Point = 0.16;
+
+// An oscillator is always mono.
+constexpr unsigned kNumberOfOutputChannels = 1;
 
 // Convert the detune value (in cents) to a frequency scale multiplier:
 // 2^(d/1200)
@@ -154,6 +159,8 @@ static float DoInterpolation(double virtual_read_index,
   return sample;
 }
 
+}  // namespace
+
 OscillatorHandler::OscillatorHandler(AudioNode& node,
                                      float sample_rate,
                                      const String& oscillator_type,
@@ -183,8 +190,7 @@ OscillatorHandler::OscillatorHandler(AudioNode& node,
     }
   }
 
-  // An oscillator is always mono.
-  AddOutput(1);
+  AddOutput(kNumberOfOutputChannels);
 
   Initialize();
 }

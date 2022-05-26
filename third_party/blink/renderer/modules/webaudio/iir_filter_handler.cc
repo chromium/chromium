@@ -16,6 +16,12 @@
 
 namespace blink {
 
+namespace {
+
+constexpr uint32_t kNumberOfChannels = 1;
+
+}  // namespace
+
 IIRFilterHandler::IIRFilterHandler(AudioNode& node,
                                    float sample_rate,
                                    const Vector<double>& feedforward_coef,
@@ -27,7 +33,7 @@ IIRFilterHandler::IIRFilterHandler(AudioNode& node,
           sample_rate,
           std::make_unique<IIRProcessor>(
               sample_rate,
-              1,
+              kNumberOfChannels,
               node.context()->GetDeferredTaskHandler().RenderQuantumFrames(),
               feedforward_coef,
               feedback_coef,

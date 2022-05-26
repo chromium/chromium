@@ -15,7 +15,7 @@ namespace {
 
 // Default to stereo. This could change depending on the format of the
 // MediaStream's audio track.
-constexpr unsigned kNumberOfOutputChannels = 2;
+constexpr unsigned kDefaultNumberOfOutputChannels = 2;
 
 }  // namespace
 
@@ -27,7 +27,7 @@ MediaStreamAudioSourceHandler::MediaStreamAudioSourceHandler(
                    node.context()->sampleRate()),
       audio_source_provider_(std::move(audio_source_provider)) {
   SendLogMessage(String::Format("%s", __func__));
-  AddOutput(kNumberOfOutputChannels);
+  AddOutput(kDefaultNumberOfOutputChannels);
 
   Initialize();
 }

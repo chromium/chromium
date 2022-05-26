@@ -37,6 +37,13 @@
 
 namespace blink {
 
+namespace {
+
+// The default number of inputs for the merger node is 6.
+constexpr unsigned kDefaultNumberOfInputs = 6;
+
+}  // namespace
+
 ChannelMergerNode::ChannelMergerNode(BaseAudioContext& context,
                                      unsigned number_of_inputs)
     : AudioNode(context) {
@@ -48,8 +55,7 @@ ChannelMergerNode* ChannelMergerNode::Create(BaseAudioContext& context,
                                              ExceptionState& exception_state) {
   DCHECK(IsMainThread());
 
-  // The default number of inputs for the merger node is 6.
-  return Create(context, 6, exception_state);
+  return Create(context, kDefaultNumberOfInputs, exception_state);
 }
 
 ChannelMergerNode* ChannelMergerNode::Create(BaseAudioContext& context,

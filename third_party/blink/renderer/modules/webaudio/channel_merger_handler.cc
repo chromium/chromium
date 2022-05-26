@@ -11,12 +11,18 @@
 
 namespace blink {
 
+namespace {
+
+constexpr unsigned kNumberOfInputChannels = 1;
+
+}  // namespace
+
 ChannelMergerHandler::ChannelMergerHandler(AudioNode& node,
                                            float sample_rate,
                                            unsigned number_of_inputs)
     : AudioHandler(kNodeTypeChannelMerger, node, sample_rate) {
   // These properties are fixed for the node and cannot be changed by user.
-  channel_count_ = 1;
+  channel_count_ = kNumberOfInputChannels;
   SetInternalChannelCountMode(kExplicit);
 
   // Create the requested number of inputs.
