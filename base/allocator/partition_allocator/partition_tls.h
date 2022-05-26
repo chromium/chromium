@@ -16,7 +16,7 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
-#include "base/win/windows_types.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/win/windows_types.h"
 #endif
 
 // Barebones TLS implementation for use in PartitionAlloc. This doesn't use the

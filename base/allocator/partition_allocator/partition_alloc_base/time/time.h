@@ -96,7 +96,7 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
-#include "base/win/windows_types.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/win/windows_types.h"
 
 namespace ABI {
 namespace Windows {
