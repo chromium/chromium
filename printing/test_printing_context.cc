@@ -17,6 +17,7 @@
 #include "printing/mojom/print.mojom.h"
 #include "printing/print_settings.h"
 #include "printing/printing_context.h"
+#include "printing/units.h"
 #include "ui/gfx/geometry/size.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -103,8 +104,11 @@ mojom::ResultCode TestPrintingContext::UseDefaultSettings() {
 }
 
 gfx::Size TestPrintingContext::GetPdfPaperSizeDeviceUnits() {
-  NOTIMPLEMENTED();
-  return gfx::Size();
+  // Default to A4 paper size, which is an alternative to Letter size that is
+  // often used as the fallback size for some platform-specific
+  // implementations.
+  return gfx::Size(kA4WidthInch * settings_->device_units_per_inch(),
+                   kA4HeightInch * settings_->device_units_per_inch());
 }
 
 mojom::ResultCode TestPrintingContext::UpdatePrinterSettings(
