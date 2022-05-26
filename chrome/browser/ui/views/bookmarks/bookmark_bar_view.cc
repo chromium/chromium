@@ -460,7 +460,6 @@ BookmarkBarView::BookmarkBarView(Browser* browser, BrowserView* browser_view)
       browser_(browser),
       browser_view_(browser_view) {
   SetID(VIEW_ID_BOOKMARK_BAR);
-  Init();
 
   // TODO(lgrey): This layer was introduced to support clipping the bookmark
   // bar to bounds to prevent it from drawing over the toolbar while animating.
@@ -481,6 +480,8 @@ BookmarkBarView::BookmarkBarView(Browser* browser, BrowserView* browser_view)
   views::SetCascadingThemeProviderColor(
       this, views::kCascadingBackgroundColor,
       ThemeProperties::COLOR_BOOKMARK_BAR_BACKGROUND);
+
+  Init();
 }
 
 BookmarkBarView::~BookmarkBarView() {
