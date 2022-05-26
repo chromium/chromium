@@ -88,6 +88,7 @@ component("qt") {
   deps = [
     ":qt_interface",
     "//base",
+    "//skia",
     "//ui/gfx",
     "//ui/native_theme",
     "//ui/shell_dialogs",

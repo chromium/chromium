@@ -7,6 +7,9 @@
 
 // This file shouldn't include any standard C++ headers (directly or indirectly)
 
+#include <stdint.h>
+#include <stdlib.h>
+
 namespace qt {
 
 // std::string cannot be passed over the library boundary, so this class acts
@@ -20,10 +23,31 @@ class String {
   ~String();
 
   // May be nullptr.
-  char* c_str() { return str_; }
+  const char* c_str() const { return str_; }
 
  private:
   char* str_ = nullptr;
+};
+
+// A generic bag of bytes.
+class Buffer {
+ public:
+  Buffer();
+  // Creates a copy of `data`.
+  Buffer(const uint8_t* data, size_t size);
+  Buffer(Buffer&& other);
+  Buffer& operator=(Buffer&& other);
+  ~Buffer();
+
+  // Take ownership of the data in this buffer (resetting `this`).
+  uint8_t* Take();
+
+  uint8_t* data() { return data_; }
+  size_t size() const { return size_; }
+
+ private:
+  uint8_t* data_ = nullptr;
+  size_t size_ = 0;
 };
 
 enum class FontHinting {
@@ -47,6 +71,14 @@ struct FontDescription {
   int weight;
 };
 
+struct Image {
+  int width = 0;
+  int height = 0;
+  float scale = 1.0f;
+  // The data is stored as ARGB32 (premultiplied).
+  Buffer data_argb;
+};
+
 class QtInterface {
  public:
   class Delegate {
@@ -64,6 +96,7 @@ class QtInterface {
   virtual double GetScaleFactor() const = 0;
   virtual FontRenderParams GetFontRenderParams() const = 0;
   virtual FontDescription GetFontDescription() const = 0;
+  virtual Image GetIconForContentType(const String& content_type, int size) = 0;
 };
 
 }  // namespace qt

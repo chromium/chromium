@@ -11,11 +11,14 @@
 #include "base/cxx17_backports.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/font.h"
 #include "ui/gfx/font_render_params.h"
 #include "ui/gfx/font_render_params_linux.h"
 #include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia_rep.h"
+#include "ui/gfx/image/image_skia_source.h"
 #include "ui/qt/qt_interface.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 #include "ui/views/controls/button/label_button_border.h"
@@ -191,8 +194,21 @@ bool QtUi::GetDefaultUsesSystemTheme() const {
 gfx::Image QtUi::GetIconForContentType(const std::string& content_type,
                                        int size,
                                        float scale) const {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return gfx::Image();
+  Image image =
+      shim_->GetIconForContentType(String(content_type.c_str()), size * scale);
+  if (!image.data_argb.size())
+    return {};
+
+  SkImageInfo image_info = SkImageInfo::Make(
+      image.width, image.height, kBGRA_8888_SkColorType, kPremul_SkAlphaType);
+  SkBitmap bitmap;
+  bitmap.installPixels(
+      image_info, image.data_argb.Take(), image_info.minRowBytes(),
+      [](void* data, void*) { free(data); }, nullptr);
+  gfx::ImageSkia image_skia =
+      gfx::ImageSkia::CreateFromBitmap(bitmap, image.scale);
+  image_skia.MakeThreadSafe();
+  return gfx::Image(image_skia);
 }
 
 QtUi::WindowFrameAction QtUi::GetWindowFrameAction(

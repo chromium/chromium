@@ -8,6 +8,9 @@
 
 #include <QApplication>
 #include <QFont>
+#include <QIcon>
+#include <QMimeDatabase>
+#include <QMimeType>
 
 namespace qt {
 
@@ -72,6 +75,26 @@ FontDescription QtShim::GetFontDescription() const {
       .is_italic = IsStyleItalic(font.style()),
       .weight = font.weight(),
   };
+}
+
+Image QtShim::GetIconForContentType(const String& content_type, int size) {
+  QMimeDatabase db;
+  for (const char* mime : {content_type.c_str(), "application/octet-stream"}) {
+    auto mt = db.mimeTypeForName(mime);
+    for (const auto& name : {mt.iconName(), mt.genericIconName()}) {
+      auto icon = QIcon::fromTheme(name);
+      auto pixmap = icon.pixmap(size);
+      auto image = pixmap.toImage();
+      if (image.format() != QImage::Format_ARGB32_Premultiplied)
+        image = image.convertToFormat(QImage::Format_ARGB32_Premultiplied);
+      if (auto bytes = image.sizeInBytes()) {
+        return {image.width(), image.height(),
+                static_cast<float>(image.devicePixelRatio()),
+                Buffer(image.bits(), bytes)};
+      }
+    }
+  }
+  return {};
 }
 
 void QtShim::FontChanged(const QFont& font) {

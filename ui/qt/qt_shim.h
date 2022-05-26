@@ -26,6 +26,7 @@ class QtShim : public QObject, public QtInterface {
   double GetScaleFactor() const override;
   FontRenderParams GetFontRenderParams() const override;
   FontDescription GetFontDescription() const override;
+  Image GetIconForContentType(const String& content_type, int size) override;
 
  private slots:
   void FontChanged(const QFont& font);
