@@ -10,6 +10,7 @@
 #include "base/process/process_handle.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/task_traits.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -111,6 +112,15 @@ base::Value GetProcessValueDict(const base::Process& process) {
   return ret;
 }
 
+// Converts TimeTicks to Time. The conversion will be incorrect if system
+// time is adjusted between `ticks` and now.
+base::Time TicksToTime(base::TimeTicks ticks) {
+  base::Time now_time = base::Time::Now();
+  base::TimeTicks now_ticks = base::TimeTicks::Now();
+  base::TimeDelta elapsed_since_ticks = now_ticks - ticks;
+  return now_time - elapsed_since_ticks;
+}
+
 }  // namespace
 
 void ProcessNodeImplDescriber::OnPassedToGraph(Graph* graph) {
@@ -157,7 +167,7 @@ base::Value ProcessNodeImplDescriber::DescribeProcessNodeData(
   ret.SetKey("process", GetProcessValueDict(impl->process()));
 
   ret.SetStringKey("launch_time", base::TimeFormatTimeOfDayWithMilliseconds(
-                                      impl->launch_time()));
+                                      TicksToTime(impl->launch_time())));
 
   if (impl->exit_status()) {
     ret.SetIntKey("exit_status", impl->exit_status().value());

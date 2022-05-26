@@ -80,16 +80,15 @@ class ProcessNode : public Node {
   // process ID for a process that has exited (at least until the underlying
   // RenderProcessHost gets reused in the case of a crash). Refrain from using
   // this as a unique identifier as on some platforms PIDs are reused
-  // aggressively. See GetLaunchTime for more information.
+  // aggressively.
   virtual base::ProcessId GetProcessId() const = 0;
 
   // Returns the base::Process backing this process. This will be an invalid
   // process if it has not yet started, or if it has exited.
   virtual const base::Process& GetProcess() const = 0;
 
-  // Returns the launch time associated with the process. Combined with the
-  // process ID this can be used as a unique identifier for the process.
-  virtual base::Time GetLaunchTime() const = 0;
+  // Returns a time captured as early as possible after the process is launched.
+  virtual base::TimeTicks GetLaunchTime() const = 0;
 
   // Returns the exit status of this process. This will be empty if the process
   // has not yet exited.

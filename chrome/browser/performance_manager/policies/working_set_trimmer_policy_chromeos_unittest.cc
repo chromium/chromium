@@ -499,7 +499,8 @@ TEST_F(WorkingSetTrimmerPolicyChromeOSTest, TrimIfInvisibleLongEnough) {
   const base::Process self = base::Process::Current();
   auto duplicate = self.Duplicate();
   ASSERT_TRUE(duplicate.IsValid());
-  process_node->SetProcess(std::move(duplicate), base::Time::Now());
+  process_node->SetProcess(std::move(duplicate),
+                           /* launch_time=*/base::TimeTicks::Now());
 
   // Set it invisible using the current clock, then we will advance the clock
   // and it should result in a TrimWorkingSet since it's been invisible long

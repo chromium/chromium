@@ -1080,7 +1080,7 @@ int ProcessMemoryMetricsEmitter::GetNumberOfExtensions(base::ProcessId pid) {
 }
 
 absl::optional<base::TimeDelta> ProcessMemoryMetricsEmitter::GetProcessUptime(
-    const base::Time& now,
+    base::TimeTicks now,
     base::ProcessId pid) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -1112,7 +1112,7 @@ void ProcessMemoryMetricsEmitter::CollateResults() {
 
   TabFootprintAggregator per_tab_metrics;
 
-  base::Time now = base::Time::Now();
+  base::TimeTicks now = base::TimeTicks::Now();
   for (const auto& pmd : global_dump_->process_dumps()) {
     uint32_t process_pmf_kb = pmd.os_dump().private_footprint_kb;
     private_footprint_total_kb += process_pmf_kb;

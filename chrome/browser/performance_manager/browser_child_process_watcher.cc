@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/process/process.h"
-#include "build/build_config.h"
 #include "components/performance_manager/graph/process_node_impl.h"
 #include "components/performance_manager/performance_manager_impl.h"
 #include "components/performance_manager/public/render_process_host_proxy.h"
@@ -111,21 +110,12 @@ void BrowserChildProcessWatcher::GPUProcessExited(int id, int exit_code) {
 void BrowserChildProcessWatcher::OnProcessLaunched(
     const base::Process& process,
     ProcessNodeImpl* process_node) {
-  const base::Time launch_time =
-#if BUILDFLAG(IS_ANDROID)
-      // Process::CreationTime() is not available on Android. Since this method
-      // is called immediately after the process is launched, the process launch
-      // time can be approximated with the current time.
-      base::Time::Now();
-#else
-      process.CreationTime();
-#endif
-
   DCHECK(PerformanceManagerImpl::IsAvailable());
   PerformanceManagerImpl::CallOnGraphImpl(
-      FROM_HERE, base::BindOnce(&ProcessNodeImpl::SetProcess,
-                                base::Unretained(process_node),
-                                process.Duplicate(), launch_time));
+      FROM_HERE,
+      base::BindOnce(&ProcessNodeImpl::SetProcess,
+                     base::Unretained(process_node), process.Duplicate(),
+                     /* launch_time=*/base::TimeTicks::Now()));
 }
 
 }  // namespace performance_manager

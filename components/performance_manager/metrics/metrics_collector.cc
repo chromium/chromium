@@ -103,7 +103,7 @@ void MetricsCollector::OnBeforeProcessNodeRemoved(
     return;
 
   const base::TimeDelta lifetime =
-      base::Time::Now() - process_node->GetLaunchTime();
+      base::TimeTicks::Now() - process_node->GetLaunchTime();
 
   // Do not record in the rare case system time was adjusted and now < launch
   // time. This could also happen if the process was never launched.

@@ -121,7 +121,8 @@ class UserspaceSwapPolicyTest : public ::testing::Test {
 
   void AttachProcess() {
     // Create a process so this process node doesn't bail on Process.IsValid();
-    process_node()->SetProcess(base::Process::Current(), base::Time::Now());
+    process_node()->SetProcess(base::Process::Current(),
+                               /* launch_time=*/base::TimeTicks::Now());
   }
 
   void TearDown() override {

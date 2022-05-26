@@ -76,20 +76,11 @@ RenderProcessUserData* RenderProcessUserData::CreateForRenderProcessHost(
 
 void RenderProcessUserData::RenderProcessReady(
     content::RenderProcessHost* host) {
-  const base::Time launch_time =
-#if BUILDFLAG(IS_ANDROID)
-      // Process::CreationTime() is not available on Android. Since this
-      // method is called immediately after the process is launched, the
-      // process launch time can be approximated with the current time.
-      base::Time::Now();
-#else
-      host->GetProcess().CreationTime();
-#endif
-
   PerformanceManagerImpl::CallOnGraphImpl(
       FROM_HERE, base::BindOnce(&ProcessNodeImpl::SetProcess,
                                 base::Unretained(process_node_.get()),
-                                host->GetProcess().Duplicate(), launch_time));
+                                host->GetProcess().Duplicate(),
+                                /* launch_time=*/base::TimeTicks::Now()));
 }
 
 void RenderProcessUserData::RenderProcessExited(

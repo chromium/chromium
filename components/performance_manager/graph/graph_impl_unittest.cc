@@ -41,7 +41,8 @@ TEST_F(GraphImplTest, GetProcessNodeByPid) {
   const base::Process self = base::Process::Current();
 
   EXPECT_EQ(nullptr, graph()->GetProcessNodeByPid(self.Pid()));
-  process->SetProcess(self.Duplicate(), base::Time::Now());
+  process->SetProcess(self.Duplicate(),
+                      /* launch_time=*/base::TimeTicks::Now());
   EXPECT_TRUE(process->process().IsValid());
   EXPECT_EQ(self.Pid(), process->process_id());
   EXPECT_EQ(process.get(), graph()->GetProcessNodeByPid(self.Pid()));
@@ -68,7 +69,8 @@ TEST_F(GraphImplTest, PIDReuse) {
   TestNodeWrapper<ProcessNodeImpl> process2 =
       TestNodeWrapper<ProcessNodeImpl>::Create(graph());
 
-  process1->SetProcess(self.Duplicate(), base::Time::Now());
+  process1->SetProcess(self.Duplicate(),
+                       /* launch_time=*/base::TimeTicks::Now());
   EXPECT_EQ(process1.get(), graph()->GetProcessNodeByPid(self.Pid()));
 
   // First process exits, but hasn't been deleted yet.
@@ -76,7 +78,8 @@ TEST_F(GraphImplTest, PIDReuse) {
   EXPECT_EQ(process1.get(), graph()->GetProcessNodeByPid(self.Pid()));
 
   // The second registration for the same PID should override the first one.
-  process2->SetProcess(self.Duplicate(), base::Time::Now());
+  process2->SetProcess(self.Duplicate(),
+                       /* launch_time=*/base::TimeTicks::Now());
   EXPECT_EQ(process2.get(), graph()->GetProcessNodeByPid(self.Pid()));
 
   // The destruction of the first process node shouldn't clear the PID

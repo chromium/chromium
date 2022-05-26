@@ -57,7 +57,7 @@ TEST_F(ProcessNodeImplTest, ProcessLifeCycle) {
 
   // Next go through PID->exit status.
   const base::Process self = base::Process::Current();
-  const base::Time launch_time = base::Time::Now();
+  const base::TimeTicks launch_time = base::TimeTicks::Now();
   process_node->SetProcess(self.Duplicate(), launch_time);
   EXPECT_TRUE(process_node->process().IsValid());
   EXPECT_EQ(self.Pid(), process_node->process_id());
@@ -84,7 +84,7 @@ TEST_F(ProcessNodeImplTest, ProcessLifeCycle) {
 
   // Resurrect again and verify the launch time and measurements
   // are cleared.
-  const base::Time launch2_time = launch_time + base::Seconds(1);
+  const base::TimeTicks launch2_time = launch_time + base::Seconds(1);
   process_node->SetProcess(self.Duplicate(), launch2_time);
 
   EXPECT_EQ(launch2_time, process_node->launch_time());
@@ -165,7 +165,8 @@ TEST_F(ProcessNodeImplTest, ObserverWorks) {
 
   // Test process creation and exit events.
   EXPECT_CALL(obs, OnProcessLifetimeChange(_));
-  process_node->SetProcess(base::Process::Current(), base::Time::Now());
+  process_node->SetProcess(base::Process::Current(),
+                           /* launch_time=*/base::TimeTicks::Now());
   EXPECT_CALL(obs, OnProcessLifetimeChange(_));
   process_node->SetProcessExitStatus(10);
 
@@ -230,8 +231,8 @@ TEST_F(ProcessNodeImplTest, PublicInterface) {
             public_process_node->GetProcessType());
 
   const base::Process self = base::Process::Current();
-  const base::Time launch_time = base::Time::Now();
-  process_node->SetProcess(self.Duplicate(), launch_time);
+  process_node->SetProcess(self.Duplicate(),
+                           /* launch_time=*/base::TimeTicks::Now());
   EXPECT_EQ(process_node->process_id(), public_process_node->GetProcessId());
   EXPECT_EQ(&process_node->process(), &public_process_node->GetProcess());
   EXPECT_EQ(process_node->launch_time(), public_process_node->GetLaunchTime());

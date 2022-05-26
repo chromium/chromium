@@ -169,7 +169,7 @@ void ProcessNodeImpl::SetProcessExitStatus(int32_t exit_status) {
 }
 
 void ProcessNodeImpl::SetProcess(base::Process process,
-                                 base::Time launch_time) {
+                                 base::TimeTicks launch_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(process.IsValid());
   // Either this is the initial process associated with this process node,
@@ -258,8 +258,9 @@ base::WeakPtr<ProcessNodeImpl> ProcessNodeImpl::GetWeakPtr() {
 
 void ProcessNodeImpl::SetProcessImpl(base::Process process,
                                      base::ProcessId new_pid,
-                                     base::Time launch_time) {
+                                     base::TimeTicks launch_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(process.IsValid());
 
   graph()->BeforeProcessPidChange(this, new_pid);
 
@@ -293,7 +294,7 @@ const base::Process& ProcessNodeImpl::GetProcess() const {
   return process();
 }
 
-base::Time ProcessNodeImpl::GetLaunchTime() const {
+base::TimeTicks ProcessNodeImpl::GetLaunchTime() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return launch_time();
 }
