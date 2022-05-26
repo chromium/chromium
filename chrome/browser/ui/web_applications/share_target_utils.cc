@@ -15,6 +15,7 @@
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "components/services/app_service/public/cpp/share_target.h"
 #include "extensions/common/constants.h"
+#include "net/base/filename_util.h"
 #include "net/base/mime_util.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "storage/browser/file_system/file_system_context.h"
@@ -121,7 +122,8 @@ NavigateParams NavigateParamsForShareTarget(
       file_system_url =
           file_system_context->CrackURLInFirstPartyContext(file->url);
 
-      if (!file_system_url.is_valid()) {
+      if (!file_system_url.is_valid() && !file->url.SchemeIsFile()) {
+        // We have an ARC content uri.
         // TODO(crbug.com/1166982): We could be more intelligent here and
         // decide which cracking method to use based on the scheme.
         auto file_system_url_and_handle =
@@ -152,7 +154,13 @@ NavigateParams NavigateParamsForShareTarget(
       names.push_back(name);
 
       if (launch_files.empty()) {
-        values.push_back(file_system_url.path().AsUTF8Unsafe());
+        if (file->url.SchemeIsFile()) {
+          base::FilePath file_path;
+          net::FileURLToFilePath(file->url, &file_path);
+          values.push_back(file_path.value());
+        } else {
+          values.push_back(file_system_url.path().AsUTF8Unsafe());
+        }
       } else {
         values.push_back(launch_files[i].value());
       }

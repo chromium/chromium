@@ -233,12 +233,18 @@ apps::AppLaunchParams CreateAppLaunchParamsForIntent(
   if (intent->files.has_value()) {
     std::vector<GURL> file_urls;
     for (const auto& intent_file : *intent->files) {
+      if (intent_file->url.SchemeIsFile()) {
+        DCHECK(file_urls.empty());
+        break;
+      }
       file_urls.push_back(intent_file->url);
     }
-    std::vector<storage::FileSystemURL> file_system_urls =
-        GetFileSystemURL(profile, file_urls);
-    for (const auto& file_system_url : file_system_urls) {
-      params.launch_files.push_back(file_system_url.path());
+    if (!file_urls.empty()) {
+      std::vector<storage::FileSystemURL> file_system_urls =
+          GetFileSystemURL(profile, file_urls);
+      for (const auto& file_system_url : file_system_urls) {
+        params.launch_files.push_back(file_system_url.path());
+      }
     }
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
