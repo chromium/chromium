@@ -11,7 +11,6 @@
 #include <functional>
 #include <tuple>
 
-#include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
 
 namespace blink {
@@ -252,31 +251,13 @@ class IdentifiableSurface {
     kMax = (1 << kTypeBits) - 1
   };
 
-  // These are metrics names of type 0 and are always reported when the study is
-  // enabled.
-  enum class ReservedSurfaceMetrics : uint64_t {
-    kDocumentCreated_IsCrossOriginFrame = 0,
-    kDocumentCreated_IsCrossSiteFrame = 1,
-    kDocumentCreated_IsMainFrame = 2,
-    kDocumentCreated_NavigationSourceId = 3,
-    kMax = kDocumentCreated_NavigationSourceId
-  };
-  static_assert(
-      static_cast<uint64_t>(ReservedSurfaceMetrics::kMax) <
-          std::min(
-              ukm::builders::Identifiability::kGeneratorVersion_926NameHash,
-              ukm::builders::Identifiability::kStudyGeneration_626NameHash),
-      "All the ReservedSurfaceMetrics enum values should be strictly smaller "
-      "than kGeneratorVersion_926NameHash and kStudyGeneration_626NameHash to "
-      "avoid collisions.");
-
   // HTML canvas readback -- bits [0-3] of the 64-bit input are the context type
   // (Type::kCanvasReadback), bits [4-6] are skipped ops, sensitive ops, and
   // partial image ops bits, respectively. The remaining bits are for the canvas
   // operations digest. If the digest wasn't calculated (there's no digest for
   // WebGL, for instance), the digest field is 0.
   enum CanvasTaintBit : uint64_t {
-    // At least one drawing operation didn't update the digest -- this is either
+    // At least one drawing operation didn't update the digest -- this is ether
     // due to performance or resource consumption reasons.
     kSkipped = UINT64_C(0x10),
 
