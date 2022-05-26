@@ -32,17 +32,15 @@
 #include "components/viz/service/display/overlay_processor_stub.h"
 #include "components/viz/service/display/skia_renderer.h"
 #include "components/viz/service/display/viz_perftest.h"
-#include "components/viz/service/display_embedder/gl_output_surface_offscreen.h"
-#include "components/viz/service/display_embedder/in_process_gpu_memory_buffer_manager.h"
 #include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
 #include "components/viz/service/display_embedder/skia_output_surface_dependency_impl.h"
 #include "components/viz/service/display_embedder/skia_output_surface_impl.h"
-#include "components/viz/service/display_embedder/viz_process_context_provider.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
 #include "components/viz/service/gl/gpu_service_impl.h"
 #include "components/viz/test/compositor_frame_helpers.h"
 #include "components/viz/test/test_gpu_service_holder.h"
+#include "components/viz/test/test_in_process_context_provider.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -258,42 +256,18 @@ class RendererPerfTest : public VizPerfTest {
 
     auto* gpu_service = TestGpuServiceHolder::GetInstance()->gpu_service();
 
-    gpu_memory_buffer_manager_ =
-        std::make_unique<InProcessGpuMemoryBufferManager>(
-            gpu_service->gpu_memory_buffer_factory(),
-            gpu_service->sync_point_manager());
-    gpu::ImageFactory* image_factory = gpu_service->gpu_image_factory();
-    auto* gpu_channel_manager_delegate =
-        gpu_service->gpu_channel_manager()->delegate();
-    auto child_task_scheduler = std::make_unique<gpu::GpuTaskSchedulerHelper>(
-        TestGpuServiceHolder::GetInstance()->task_executor());
-    child_gpu_dependency_ =
-        std::make_unique<DisplayCompositorMemoryAndTaskController>(
-            TestGpuServiceHolder::GetInstance()->task_executor(),
-            image_factory);
-    child_context_provider_ = base::MakeRefCounted<VizProcessContextProvider>(
-        TestGpuServiceHolder::GetInstance()->task_executor(),
-        gpu::kNullSurfaceHandle, gpu_memory_buffer_manager_.get(),
-        image_factory, gpu_channel_manager_delegate,
-        child_gpu_dependency_.get(), renderer_settings_);
+    child_context_provider_ =
+        base::MakeRefCounted<TestInProcessContextProvider>(
+            TestContextType::kGLES2, /*support_locking=*/false);
     child_context_provider_->BindToCurrentThread();
     child_resource_provider_ = std::make_unique<ClientResourceProvider>();
 
-    std::unique_ptr<DisplayCompositorMemoryAndTaskController>
-        display_controller;
-    if (renderer_settings_.use_skia_renderer) {
-      auto skia_deps = std::make_unique<SkiaOutputSurfaceDependencyImpl>(
-          gpu_service, gpu::kNullSurfaceHandle);
-      display_controller =
-          std::make_unique<DisplayCompositorMemoryAndTaskController>(
-              std::move(skia_deps));
-    } else {
-      auto* task_executor =
-          TestGpuServiceHolder::GetInstance()->task_executor();
-      display_controller =
-          std::make_unique<DisplayCompositorMemoryAndTaskController>(
-              task_executor, image_factory);
-    }
+    auto skia_deps = std::make_unique<SkiaOutputSurfaceDependencyImpl>(
+        gpu_service, gpu::kNullSurfaceHandle);
+    auto display_controller =
+        std::make_unique<DisplayCompositorMemoryAndTaskController>(
+            std::move(skia_deps));
+
     auto output_surface =
         CreateOutputSurface(gpu_service, display_controller.get());
     // WaitForSwapDisplayClient depends on this.
@@ -351,8 +325,6 @@ class RendererPerfTest : public VizPerfTest {
     child_resource_provider_->ShutdownAndReleaseAllResources();
     child_resource_provider_.reset();
     child_context_provider_.reset();
-    child_gpu_dependency_.reset();
-    gpu_memory_buffer_manager_.reset();
 
     display_.reset();
   }
@@ -654,12 +626,9 @@ class RendererPerfTest : public VizPerfTest {
   ServerSharedBitmapManager shared_bitmap_manager_;
   FrameSinkManagerImpl manager_;
   std::unique_ptr<CompositorFrameSinkSupport> support_;
-  std::unique_ptr<gpu::GpuMemoryBufferManager> gpu_memory_buffer_manager_;
   RendererSettings renderer_settings_;
   DebugRendererSettings debug_settings_;
   std::unique_ptr<Display> display_;
-  std::unique_ptr<DisplayCompositorMemoryAndTaskController>
-      child_gpu_dependency_;
   scoped_refptr<ContextProvider> child_context_provider_;
   std::unique_ptr<ClientResourceProvider> child_resource_provider_;
   std::vector<TransferableResource> resource_list_;

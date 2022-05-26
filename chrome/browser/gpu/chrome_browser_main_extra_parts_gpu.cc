@@ -6,7 +6,6 @@
 
 #include "base/check.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
-#include "components/viz/common/features.h"
 #include "content/public/browser/gpu_data_manager.h"
 #include "gpu/config/gpu_info.h"
 
@@ -19,8 +18,7 @@ const char kVulkan[] = "Vulkan";
 ChromeBrowserMainExtraPartsGpu::ChromeBrowserMainExtraPartsGpu() = default;
 
 ChromeBrowserMainExtraPartsGpu::~ChromeBrowserMainExtraPartsGpu() {
-  if (features::IsUsingSkiaRenderer())
-    content::GpuDataManager::GetInstance()->RemoveObserver(this);
+  content::GpuDataManager::GetInstance()->RemoveObserver(this);
 }
 
 void ChromeBrowserMainExtraPartsGpu::PreCreateThreads() {
@@ -32,16 +30,14 @@ void ChromeBrowserMainExtraPartsGpu::PreCreateThreads() {
   // 2) Must be after other parts' PreCreateThreads to pick up chrome://flags.
   DCHECK(!content::GpuDataManager::Initialized());
   content::GpuDataManager* manager = content::GpuDataManager::GetInstance();
-  if (features::IsUsingSkiaRenderer())
-    manager->AddObserver(this);
+  manager->AddObserver(this);
 }
 
 void ChromeBrowserMainExtraPartsGpu::OnGpuInfoUpdate() {
-  DCHECK(features::IsUsingSkiaRenderer());
   const auto* backend_name = GetSkiaBackendName();
   if (backend_name) {
-    ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-        kTrialName, backend_name);
+    ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(kTrialName,
+                                                              backend_name);
   }
 }
 
