@@ -78,11 +78,7 @@ const char kChromeUserPolicyType[] = "google/chromeos/user";
 #elif BUILDFLAG(IS_ANDROID)
 const char kChromeUserPolicyType[] = "google/android/user";
 #elif BUILDFLAG(IS_IOS)
-// TODO(crbug.com/1312263): Change this for "google/ios/user" once supported
-// by the dmserver. The type for Desktop is temporarily used on iOS to allow
-// early testing of the feature before the DMServer can support iOS User
-// Policy.
-const char kChromeUserPolicyType[] = "google/chrome/user";
+const char kChromeUserPolicyType[] = "google/ios/user";
 #else
 const char kChromeUserPolicyType[] = "google/chrome/user";
 #endif
