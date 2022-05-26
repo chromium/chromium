@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/cast/net/pacing/mock_paced_packet_sender.h"
+#include "media/cast/test/mock_rtp_payload_feedback.h"
 
 namespace media {
 namespace cast {
 
-MockPacedPacketSender::MockPacedPacketSender() = default;
+MockRtpPayloadFeedback::MockRtpPayloadFeedback() = default;
 
-MockPacedPacketSender::~MockPacedPacketSender() = default;
+MockRtpPayloadFeedback::~MockRtpPayloadFeedback() = default;
 
 }  // namespace cast
 }  // namespace media

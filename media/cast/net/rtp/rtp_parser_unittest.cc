@@ -11,7 +11,7 @@
 
 #include "base/rand_util.h"
 #include "media/cast/net/rtp/rtp_defines.h"
-#include "media/cast/net/rtp/rtp_packet_builder.h"
+#include "media/cast/test/rtp_packet_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {

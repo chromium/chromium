@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/cast/net/rtcp/test_rtcp_packet_builder.h"
+#include "media/cast/test/test_rtcp_packet_builder.h"
 
 #include <memory>
 
@@ -141,7 +141,7 @@ void TestRtcpPacketBuilder::AddCast(uint32_t remote_ssrc,
   big_endian_writer_.WriteU8('S');
   big_endian_writer_.WriteU8('T');
   big_endian_writer_.WriteU8(kAckFrameId);
-  big_endian_writer_.WriteU8(3);     // Loss fields.
+  big_endian_writer_.WriteU8(3);  // Loss fields.
   big_endian_writer_.WriteU16(target_delay.InMilliseconds());
   big_endian_writer_.WriteU8(kLostFrameId);
   big_endian_writer_.WriteU16(kRtcpCastAllPacketsLost);

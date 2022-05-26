@@ -4,8 +4,8 @@
 
 // A very simple packet builder class for building RTCP packets.
 // Used for testing only.
-#ifndef MEDIA_CAST_NET_RTCP_TEST_RTCP_PACKET_BUILDER_H_
-#define MEDIA_CAST_NET_RTCP_TEST_RTCP_PACKET_BUILDER_H_
+#ifndef MEDIA_CAST_TEST_TEST_RTCP_PACKET_BUILDER_H_
+#define MEDIA_CAST_TEST_TEST_RTCP_PACKET_BUILDER_H_
 
 #include <stdint.h>
 #include <vector>
@@ -112,4 +112,4 @@ class TestRtcpPacketBuilder {
 }  // namespace cast
 }  // namespace media
 
-#endif  // MEDIA_CAST_NET_RTCP_TEST_RTCP_PACKET_BUILDER_H_
+#endif  // MEDIA_CAST_TEST_TEST_RTCP_PACKET_BUILDER_H_

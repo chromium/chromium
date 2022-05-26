@@ -7,7 +7,7 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "media/cast/common/encoded_frame.h"
 #include "media/cast/net/cast_transport_defines.h"
-#include "media/cast/net/rtp/mock_rtp_payload_feedback.h"
+#include "media/cast/test/mock_rtp_payload_feedback.h"
 #include "media/cast/test/receiver/framer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

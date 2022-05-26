@@ -16,7 +16,7 @@
 #include "media/cast/net/pacing/paced_sender.h"
 #include "media/cast/net/rtcp/receiver_rtcp_event_subscriber.h"
 #include "media/cast/net/rtcp/rtcp_utility.h"
-#include "media/cast/net/rtcp/test_rtcp_packet_builder.h"
+#include "media/cast/test/test_rtcp_packet_builder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace media {

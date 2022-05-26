@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/cast/net/rtp/rtp_packet_builder.h"
+#include "media/cast/test/rtp_packet_builder.h"
 
 #include "base/big_endian.h"
 #include "base/check_op.h"
@@ -22,7 +22,9 @@ RtpPacketBuilder::RtpPacketBuilder()
       payload_type_(0),
       ssrc_(0) {}
 
-void RtpPacketBuilder::SetKeyFrame(bool is_key) { is_key_ = is_key; }
+void RtpPacketBuilder::SetKeyFrame(bool is_key) {
+  is_key_ = is_key;
+}
 
 void RtpPacketBuilder::SetFrameIds(uint32_t frame_id,
                                    uint32_t reference_frame_id) {
@@ -46,7 +48,9 @@ void RtpPacketBuilder::SetSequenceNumber(uint16_t sequence_number) {
   sequence_number_ = sequence_number;
 }
 
-void RtpPacketBuilder::SetMarkerBit(bool marker) { marker_ = marker; }
+void RtpPacketBuilder::SetMarkerBit(bool marker) {
+  marker_ = marker;
+}
 
 void RtpPacketBuilder::SetPayloadType(int payload_type) {
   payload_type_ = payload_type;

@@ -12,7 +12,7 @@
 #include "media/base/fake_single_thread_task_runner.h"
 #include "media/cast/cast_environment.h"
 #include "media/cast/net/cast_transport_defines.h"
-#include "media/cast/net/rtcp/test_rtcp_packet_builder.h"
+#include "media/cast/test/test_rtcp_packet_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {

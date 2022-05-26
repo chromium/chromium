@@ -4,8 +4,8 @@
 
 // Test helper class that builds rtp packets.
 
-#ifndef MEDIA_CAST_NET_RTP_RTP_PACKET_BUILDER_H_
-#define MEDIA_CAST_NET_RTP_RTP_PACKET_BUILDER_H_
+#ifndef MEDIA_CAST_TEST_RTP_PACKET_BUILDER_H_
+#define MEDIA_CAST_TEST_RTP_PACKET_BUILDER_H_
 
 #include <stdint.h>
 
@@ -51,4 +51,4 @@ class RtpPacketBuilder {
 }  // namespace cast
 }  // namespace media
 
-#endif  // MEDIA_CAST_NET_RTP_RTP_PACKET_BUILDER_H_
+#endif  // MEDIA_CAST_TEST_RTP_PACKET_BUILDER_H_
