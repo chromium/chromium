@@ -29,7 +29,7 @@ class ASH_EXPORT ClipboardNudge : public SystemNudge {
 
  protected:
   // SystemNudge:
-  std::unique_ptr<views::View> CreateLabelView() const override;
+  std::unique_ptr<SystemNudgeLabel> CreateLabelView() const override;
   const gfx::VectorIcon& GetIcon() const override;
   std::u16string GetAccessibilityText() const override;
 

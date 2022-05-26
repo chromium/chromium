@@ -44,36 +44,47 @@ constexpr base::TimeDelta kNudgeBoundsAnimationTime = base::Milliseconds(250);
 
 class SystemNudge::SystemNudgeView : public views::View {
  public:
-  explicit SystemNudgeView(std::unique_ptr<views::View> label_view,
-                           const gfx::VectorIcon& icon_img,
-                           const SystemNudgeParams& params) {
+  explicit SystemNudgeView(const SystemNudge* nudge) : nudge_(nudge) {
     SetPaintToLayer(ui::LAYER_SOLID_COLOR);
-    layer()->SetColor(ShelfConfig::Get()->GetDefaultShelfColor());
     if (features::IsBackgroundBlurEnabled())
       layer()->SetBackgroundBlur(kNudgeBlurRadius);
     layer()->SetRoundedCornerRadius({kNudgeCornerRadius, kNudgeCornerRadius,
                                      kNudgeCornerRadius, kNudgeCornerRadius});
 
-    SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kIconColorPrimary);
-
     icon_ = AddChildView(std::make_unique<views::ImageView>());
     icon_->SetPaintToLayer();
     icon_->layer()->SetFillsBoundsOpaquely(false);
-    icon_->SetBounds(params.nudge_padding, params.nudge_padding,
-                     params.icon_size, params.icon_size);
-    icon_->SetImage(gfx::CreateVectorIcon(icon_img, icon_color));
-
-    label_ = AddChildView(std::move(label_view));
+    icon_->SetBounds(nudge_->params_.nudge_padding,
+                     nudge_->params_.nudge_padding, nudge_->params_.icon_size,
+                     nudge_->params_.icon_size);
+    icon_->SetImage(ui::ImageModel::FromImageGenerator(
+        base::BindRepeating(
+            [](const SystemNudge* nudge, const ui::ColorProvider*) {
+              return gfx::CreateVectorIcon(
+                  nudge->GetIcon(),
+                  AshColorProvider::Get()->GetContentLayerColor(
+                      AshColorProvider::ContentLayerType::kIconColorPrimary));
+            },
+            nudge_),
+        gfx::Size(nudge_->params_.icon_size, nudge_->params_.icon_size)));
+    label_ = AddChildView(nudge->CreateLabelView());
     label_->SetPaintToLayer();
     label_->layer()->SetFillsBoundsOpaquely(false);
-    label_->SetPosition(gfx::Point(
-        params.nudge_padding + params.icon_size + params.icon_label_spacing,
-        params.nudge_padding));
+    label_->SetPosition(gfx::Point(nudge_->params_.nudge_padding +
+                                       nudge_->params_.icon_size +
+                                       nudge_->params_.icon_label_spacing,
+                                   nudge_->params_.nudge_padding));
   }
 
   ~SystemNudgeView() override = default;
 
+  // views::View:
+  void OnThemeChanged() override {
+    views::View::OnThemeChanged();
+    layer()->SetColor(ShelfConfig::Get()->GetDefaultShelfColor());
+  }
+
+  const SystemNudge* const nudge_;
   views::View* label_ = nullptr;
   views::ImageView* icon_ = nullptr;
 };
@@ -120,7 +131,7 @@ void SystemNudge::Show() {
   }
 
   nudge_view_ = widget_->SetContentsView(
-      std::make_unique<SystemNudgeView>(CreateLabelView(), GetIcon(), params_));
+      std::make_unique<SystemNudgeView>(/*nudge=*/this));
   CalculateAndSetWidgetBounds();
   widget_->Show();
 

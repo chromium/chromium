@@ -40,21 +40,9 @@ DarkLightModeNudge::DarkLightModeNudge()
 
 DarkLightModeNudge::~DarkLightModeNudge() = default;
 
-std::unique_ptr<views::View> DarkLightModeNudge::CreateLabelView() const {
-  std::unique_ptr<views::Label> label = std::make_unique<views::Label>();
-  label->SetPaintToLayer();
-  label->layer()->SetFillsBoundsOpaquely(false);
-
-  label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
-  label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kTextColorPrimary));
-  label->SetAutoColorReadabilityEnabled(false);
-
-  label->SetText(GetAccessibilityText());
-  label->SetMultiLine(true);
-  label->SizeToFit(kMinLabelWidth);
-
-  return std::move(label);
+std::unique_ptr<SystemNudgeLabel> DarkLightModeNudge::CreateLabelView() const {
+  return std::make_unique<SystemNudgeLabel>(GetAccessibilityText(),
+                                            kMinLabelWidth);
 }
 
 const gfx::VectorIcon& DarkLightModeNudge::GetIcon() const {

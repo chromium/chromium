@@ -11,6 +11,7 @@
 #include "ash/ash_export.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_observer.h"
+#include "ash/system/tray/system_nudge_label.h"
 #include "base/scoped_observation.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/widget/unique_widget_ptr.h"
@@ -58,9 +59,7 @@ class ASH_EXPORT SystemNudge : public ShelfObserver {
   // being nudged. These will be called only when needed by Show().
 
   // Creates and initializes a view representing the label for the nudge.
-  // Returns a views::View in case the subclass wishes to creates a StyledLabel,
-  // Label, or something else entirely.
-  virtual std::unique_ptr<views::View> CreateLabelView() const = 0;
+  virtual std::unique_ptr<SystemNudgeLabel> CreateLabelView() const = 0;
 
   // Gets the VectorIcon shown to the side of the label for the nudge.
   virtual const gfx::VectorIcon& GetIcon() const = 0;

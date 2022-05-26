@@ -8,7 +8,7 @@
 #include "ash/accessibility/dictation_nudge.h"
 #include "ash/accessibility/dictation_nudge_controller.h"
 #include "ash/shell.h"
-#include "ash/system/tray/system_nudge.h"
+#include "ash/system/tray/system_nudge_label.h"
 #include "ash/test/ash_test_base.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -16,7 +16,6 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
-#include "ui/views/controls/label.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -92,7 +91,8 @@ class DictationNudgeControllerTest : public AshTestBase {
         ->GetDictationNudgeControllerForTest();
   }
 
-  std::unique_ptr<views::View> GetDictationNudgeLabel(DictationNudge* nudge) {
+  std::unique_ptr<SystemNudgeLabel> GetDictationNudgeLabel(
+      DictationNudge* nudge) {
     return nudge->CreateLabelView();
   }
 
@@ -152,9 +152,8 @@ TEST_F(DictationNudgeControllerTest, SetsLabelBasedOnApplicationLocale) {
         static_cast<DictationNudge*>(controller->GetSystemNudgeForTesting());
     ASSERT_TRUE(nudge);
 
-    std::unique_ptr<views::View> label = GetDictationNudgeLabel(nudge);
-    std::string text =
-        base::UTF16ToUTF8(static_cast<views::Label*>(label.get())->GetText());
+    std::unique_ptr<SystemNudgeLabel> label = GetDictationNudgeLabel(nudge);
+    std::string text = base::UTF16ToUTF8(label->GetText());
     EXPECT_THAT(text, HasSubstr(testcase.label));
 
     WaitForWidgetClose(controller, nudge);
