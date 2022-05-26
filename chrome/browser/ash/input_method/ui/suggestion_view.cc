@@ -7,7 +7,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/input_method/ui/colors.h"
-#include "chrome/browser/ash/input_method/ui/completion_suggestion_label_view.h"
 #include "chrome/browser/ash/input_method/ui/suggestion_details.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -48,6 +47,21 @@ std::unique_ptr<views::Label> CreateIndexLabel() {
   index_label->SetBorder(
       views::CreateEmptyBorder(gfx::Insets::VH(kPadding / 2, 0)));
   return index_label;
+}
+
+// Creates the suggestion label, and returns it (never returns nullptr).
+// The label text is not set in this function.
+std::unique_ptr<views::StyledLabel> CreateSuggestionLabel() {
+  auto suggestion_label = std::make_unique<views::StyledLabel>();
+  suggestion_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  suggestion_label->SetBorder(
+      views::CreateEmptyBorder(gfx::Insets::VH(kPadding / 2, 0)));
+  suggestion_label->SetAutoColorReadabilityEnabled(false);
+  // StyledLabel eats event, probably because it has to handle links.
+  // Explicitly sets can_process_events_within_subtree to false for
+  // SuggestionView's hover to work correctly.
+  suggestion_label->SetCanProcessEventsWithinSubtree(false);
+  return suggestion_label;
 }
 
 std::unique_ptr<views::ImageView> CreateDownIcon() {
@@ -101,10 +115,7 @@ SuggestionView::SuggestionView(PressedCallback callback)
     : views::Button(std::move(callback)) {
   index_label_ = AddChildView(CreateIndexLabel());
   index_label_->SetVisible(false);
-  suggestion_label_ =
-      AddChildView(std::make_unique<CompletionSuggestionLabelView>());
-  suggestion_label_->SetBorder(
-      views::CreateEmptyBorder(gfx::Insets::VH(kPadding / 2, 0)));
+  suggestion_label_ = AddChildView(CreateSuggestionLabel());
 
   annotation_container_ = AddChildView(CreateAnnotationContainer());
   down_and_enter_annotation_label_ =
@@ -176,14 +187,39 @@ void SuggestionView::SetViewWithIndex(const std::u16string& index,
   index_label_->SetText(index);
   index_label_->SetVisible(true);
   index_width_ = index_label_->GetPreferredSize().width();
-  suggestion_label_->SetPrefixAndPrediction(u"", text);
+  suggestion_label_->SetText(text);
   suggestion_width_ = suggestion_label_->GetPreferredSize().width();
 }
 
 void SuggestionView::SetSuggestionText(const std::u16string& text,
                                        const size_t confirmed_length) {
-  suggestion_label_->SetPrefixAndPrediction(text.substr(0, confirmed_length),
-                                            text.substr(confirmed_length));
+  // SetText clears the existing style only if the text to set is different from
+  // the previous one.
+  suggestion_label_->SetText(base::EmptyString16());
+  suggestion_label_->SetText(text);
+  gfx::FontList kSuggestionFont({kFontStyle}, gfx::Font::NORMAL,
+                                kSuggestionFontSize, gfx::Font::Weight::NORMAL);
+
+  if (confirmed_length != 0) {
+    views::StyledLabel::RangeStyleInfo confirmed_style;
+    confirmed_style.custom_font = kSuggestionFont;
+    confirmed_style.override_color =
+        ResolveSemanticColor(cros_styles::ColorName::kTextColorPrimary);
+    suggestion_label_->AddStyleRange(gfx::Range(0, confirmed_length),
+                                     confirmed_style);
+  }
+
+  views::StyledLabel::RangeStyleInfo suggestion_style;
+  suggestion_style.custom_font = kSuggestionFont;
+  suggestion_style.override_color =
+      ResolveSemanticColor(cros_styles::ColorName::kTextColorSecondary);
+  suggestion_label_->AddStyleRange(gfx::Range(confirmed_length, text.length()),
+                                   suggestion_style);
+
+  // TODO(crbug/1099146): Add tests to check view's height and width with
+  // confirmed length.
+  // Maximum width for suggestion.
+  suggestion_label_->SizeToFit(448);
 }
 
 void SuggestionView::SetHighlighted(bool highlighted) {
