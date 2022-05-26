@@ -20,14 +20,19 @@ enum class DisplayMode {
   // Display overlay can receive events and action labels can be focused. It
   // shows input mapping in edit mode.
   kEdit,
-  // Display overlay can still receive events. It is a mode after an action
-  // label receives a valid key mapping.
-  kEdited,
   // Display overlay can receive events but action labels can't be focused.
   // It shows expanded menu and input mapping as in view mode.
   kMenu,
-  // It is a mode when an action is removed the input binding.
+
+  // Below are related to edit for |ActionView|.
+  // Edit mode when action is assigned a pending input binding.
+  kEditedSuccess,
+  // Edit mode when an action is removed the input binding.
   kEditedUnbound,
+  // Edit mode when a wrong/unsupported input is trying to bind.
+  kEditedError,
+  // Restore mode when restoring the default input bindings.
+  kRestore,
 };
 
 // Binding options for different ui display stages.
@@ -47,6 +52,21 @@ enum class ActionType {
   kTap,
   // |kMove| involves touch down, move and up.
   kMove,
+};
+
+// Edit states related to the mouse input and focus for |ActionLabel|.
+enum class EditState {
+  kNone,
+  // Default edit state when no mouse hovers or no focus.
+  kEditDefault,
+  // Edit state when the mouse hovers. This can be overridden by |kEditFocus|.
+  kEditHover,
+  // Edit state when the |ActionLabel| is focused.
+  kEditFocus,
+  // Edit state when a wrong/unsupported input tries to bind.
+  kEditError,
+  // Edit state when a input binding is removed.
+  kEditUnbind,
 };
 
 }  // namespace input_overlay

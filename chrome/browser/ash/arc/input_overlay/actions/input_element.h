@@ -80,6 +80,7 @@ class InputElement {
   int mouse_flags() const { return mouse_flags_; }
 
   bool operator==(const InputElement& other) const;
+  bool operator!=(const InputElement& other) const;
 
  private:
   // Input source for this input element, could be keyboard or mouse or both.

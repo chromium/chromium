@@ -41,7 +41,7 @@ ActionView::ActionView(Action* action,
       display_overlay_controller_(display_overlay_controller) {}
 ActionView::~ActionView() = default;
 
-void ActionView::SetDisplayMode(DisplayMode mode) {
+void ActionView::SetDisplayMode(DisplayMode mode, ActionLabel* editing_label) {
   DCHECK(mode != DisplayMode::kEducation);
   if ((!editable_ && mode == DisplayMode::kEdit) || mode == DisplayMode::kMenu)
     return;
@@ -56,10 +56,14 @@ void ActionView::SetDisplayMode(DisplayMode mode) {
       SetVisible(true);
   }
 
-  if (circle_)
+  if (show_circle() && circle_)
     circle_->SetDisplayMode(mode);
-  for (auto* tag : tags_)
-    tag->SetDisplayMode(mode);
+  if (!editing_label) {
+    for (auto* label : labels_)
+      label->SetDisplayMode(mode);
+  } else {
+    editing_label->SetDisplayMode(mode);
+  }
 }
 
 void ActionView::SetPositionFromCenterPosition(gfx::PointF& center_position) {
@@ -86,9 +90,18 @@ void ActionView::RemoveEditMenu() {
   display_overlay_controller_->RemoveActionEditMenu();
 }
 
-void ActionView::ShowErrorMsg(base::StringPiece error_msg) {
+void ActionView::ShowErrorMsg(base::StringPiece error_msg,
+                              ActionLabel* editing_label) {
   display_overlay_controller_->AddEditErrorMsg(this, error_msg);
-  SetDisplayMode(DisplayMode::kEdited);
+  SetDisplayMode(DisplayMode::kEditedError, editing_label);
+}
+
+void ActionView::ChangeBinding(Action* action,
+                               ActionLabel* action_label,
+                               std::unique_ptr<InputElement> input_element) {
+  display_overlay_controller_->OnBindingChange(action,
+                                               std::move(input_element));
+  SetDisplayMode(DisplayMode::kEditedSuccess, action_label);
 }
 
 void ActionView::OnResetBinding() {
@@ -124,7 +137,8 @@ void ActionView::RemoveEditButton() {
   menu_entry_ = nullptr;
 }
 
-bool ActionView::ShouldShowErrorMsg(ui::DomCode code) {
+bool ActionView::ShouldShowErrorMsg(ui::DomCode code,
+                                    ActionLabel* editing_label) {
   // Check if |code| is duplicated with the keys in its action. For example,
   // there are four keys involved in the key-bound |ActionMove|.
   auto& binding = action_->GetCurrentDisplayedBinding();
@@ -132,8 +146,7 @@ bool ActionView::ShouldShowErrorMsg(ui::DomCode code) {
     for (const auto& key : binding.keys()) {
       if (key != code)
         continue;
-      display_overlay_controller_->AddEditErrorMsg(this,
-                                                   kEditErrorDuplicatedKey);
+      ShowErrorMsg(kEditErrorDuplicatedKey, editing_label);
       return true;
     }
   }
@@ -141,8 +154,7 @@ bool ActionView::ShouldShowErrorMsg(ui::DomCode code) {
   if ((!action_->support_modifier_key() &&
        ModifierDomCodeToEventFlag(code) != ui::EF_NONE) ||
       IsReservedDomCode(code)) {
-    display_overlay_controller_->AddEditErrorMsg(this,
-                                                 kEditErrorUnsupportedKey);
+    ShowErrorMsg(kEditErrorUnsupportedKey, editing_label);
     return true;
   }
 

@@ -201,5 +201,9 @@ bool InputElement::operator==(const InputElement& other) const {
   return equal;
 }
 
+bool InputElement::operator!=(const InputElement& other) const {
+  return !(*this == other);
+}
+
 }  // namespace input_overlay
 }  // namespace arc

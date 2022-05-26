@@ -88,8 +88,7 @@ class Action {
 
   // This is called for editing the actions before change is saved. Or for
   // loading the customized data to override the default input mapping.
-  void PrepareToBind(std::unique_ptr<InputElement> input_element,
-                     DisplayMode mode = DisplayMode::kEdit);
+  void PrepareToBind(std::unique_ptr<InputElement> input_element);
   // Save |pending_binding_| as |current_binding_|.
   void BindPending();
   // Cancel |pending_binding_|.

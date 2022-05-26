@@ -64,7 +64,7 @@ void ActionCircle::SetDisplayMode(DisplayMode mode) {
       SetBackground(std::make_unique<CircleBackground>(kEditDefaultColor,
                                                        kEditDefaultStroke));
       break;
-    case DisplayMode::kEdited:
+    case DisplayMode::kEditedSuccess:
     case DisplayMode::kEditedUnbound:
       SetBackground(
           std::make_unique<CircleBackground>(kEditedColor, kEditedStroke));

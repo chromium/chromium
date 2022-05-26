@@ -214,8 +214,7 @@ bool IsMouseBound(const InputElement& input_element) {
   return (input_element.input_sources() & InputSource::IS_MOUSE) != 0;
 }
 
-void Action::PrepareToBind(std::unique_ptr<InputElement> input_element,
-                           DisplayMode mode) {
+void Action::PrepareToBind(std::unique_ptr<InputElement> input_element) {
   if (pending_binding_)
     pending_binding_.reset();
   pending_binding_ = std::move(input_element);
@@ -224,7 +223,6 @@ void Action::PrepareToBind(std::unique_ptr<InputElement> input_element,
   if (!action_view_)
     return;
   action_view_->SetViewContent(BindingOption::kPending, bounds);
-  action_view_->SetDisplayMode(mode);
 }
 
 void Action::BindPending() {
@@ -248,12 +246,17 @@ void Action::CancelPendingBind(const gfx::RectF& content_bounds) {
 
 void Action::RestoreToDefault(const gfx::RectF& content_bounds) {
   DCHECK(action_view_);
-  if (!action_view_ || GetCurrentDisplayedBinding() == *original_binding_)
+  if (!action_view_)
     return;
-  pending_binding_.reset();
-  pending_binding_ = std::make_unique<InputElement>(*original_binding_);
-  action_view_->SetViewContent(BindingOption::kPending, content_bounds);
-  action_view_->SetDisplayMode(DisplayMode::kEdited);
+
+  if (GetCurrentDisplayedBinding() != *original_binding_) {
+    pending_binding_.reset();
+    pending_binding_ = std::make_unique<InputElement>(*original_binding_);
+    action_view_->SetViewContent(BindingOption::kPending, content_bounds);
+  }
+  // Set to |DisplayMode::kRestore| to clear the focus even the current binding
+  // is same as original binding.
+  action_view_->SetDisplayMode(DisplayMode::kRestore);
 }
 
 const InputElement& Action::GetCurrentDisplayedBinding() {
@@ -365,7 +368,12 @@ void Action::PostUnbindProcess() {
     return;
   auto bounds = CalculateWindowContentBounds(target_window_);
   action_view_->SetViewContent(BindingOption::kPending, bounds);
-  action_view_->SetDisplayMode(DisplayMode::kEditedUnbound);
+  const int label_index = action_view_->unbind_label_index();
+  action_view_->SetDisplayMode(DisplayMode::kEditedUnbound,
+                               (label_index == kDefaultLabelIndex
+                                    ? nullptr
+                                    : action_view_->labels()[label_index]));
+  action_view_->set_unbind_label_index(kDefaultLabelIndex);
 }
 
 std::unique_ptr<ActionProto> Action::ConvertToProtoIfCustomized() {

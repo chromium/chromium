@@ -348,8 +348,6 @@ source_set("ash") {
     "arc/input_overlay/ui/action_edit_menu.h",
     "arc/input_overlay/ui/action_label.cc",
     "arc/input_overlay/ui/action_label.h",
-    "arc/input_overlay/ui/action_tag.cc",
-    "arc/input_overlay/ui/action_tag.h",
     "arc/input_overlay/ui/action_view.cc",
     "arc/input_overlay/ui/action_view.h",
     "arc/input_overlay/ui/edit_mode_exit_view.cc",

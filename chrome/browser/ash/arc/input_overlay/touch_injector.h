@@ -105,8 +105,7 @@ class TouchInjector : public ui::EventRewriter {
   // (|mode| = DisplayMode::kEdit) or from customized protobuf data (|mode| =
   // DisplayMode::kView).
   void OnBindingChange(Action* target_action,
-                       std::unique_ptr<InputElement> input_element,
-                       DisplayMode mode = DisplayMode::kEdit);
+                       std::unique_ptr<InputElement> input_element);
   // Apply pending binding as current binding, but don't save into the storage.
   void OnApplyPendingBinding();
   // Save customized input binding/pending binding as current binding and go
