@@ -15,8 +15,7 @@
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {
                 "apply_configs": [
-                  "mb",
-                  "disable_vpython_common_crbug_1329052"
+                  "mb"
                 ],
                 "build_config": "Release",
                 "config": "chromium",
@@ -25,7 +24,8 @@
               },
               "legacy_gclient_config": {
                 "apply_configs": [
-                  "use_clang_coverage"
+                  "use_clang_coverage",
+                  "disable_vpython_common_crbug_1329052"
                 ],
                 "config": "chromium"
               }

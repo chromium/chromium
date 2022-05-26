@@ -962,8 +962,8 @@ ci.builder(
     description_html = "This is mirror of <a href=\"https://ci.chromium.org/p/chromium/builders/ci/Win%20x64%20Builder\">Win x64 Builder</a>, but runs on bots not having python2.",
     builder_spec = builder_config.copy_from("ci/Win x64 Builder", lambda spec: structs.evolve(
         spec,
-        chromium_config = structs.extend(
-            spec.chromium_config,
+        gclient_config = structs.extend(
+            spec.gclient_config,
             apply_configs = [
                 "disable_vpython_common_crbug_1329052",
             ],
