@@ -14,6 +14,7 @@ import '../cros_button_style.js';
 
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {assertInstanceof, assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {WithPersonalizationStore} from '../personalization_store.js';
 
@@ -157,6 +158,8 @@ export class AvatarCamera extends WithPersonalizationStore {
       const video = this.$.webcamVideo;
       // Display the webcam feed to the user by binding it to |video|.
       video.srcObject = this.cameraStream_;
+      await new Promise((resolve) => afterNextRender(this, resolve));
+      this.shadowRoot!.getElementById('takePhoto')!.focus();
     } catch (e) {
       console.error('Unable to start camera', e);
       this.stopCamera_();
@@ -185,6 +188,8 @@ export class AvatarCamera extends WithPersonalizationStore {
           webcamUtils.CAPTURE_INTERVAL_MS, getNumFrames(this.mode));
 
       this.pngBinary_ = webcamUtils.convertFramesToPngBinary(frames);
+      await new Promise(resolve => afterNextRender(this, resolve));
+      this.shadowRoot!.getElementById('clearPhoto')!.focus();
     } catch (e) {
       console.error('Failed to capture from webcam', e);
     } finally {
