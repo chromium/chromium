@@ -820,6 +820,12 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
             transition = PageTransition.LINK;
         }
 
+        // Kick off an action to clear focus and dismiss the suggestions list.
+        // This normally happens when the target site loads and focus is moved to the webcontents.
+        // On Android T we occasionally observe focus events to be lost, resulting with Suggestions
+        // list obscuring the view.
+        mDelegate.clearOmniboxFocus();
+
         if (suggestion.getType() == OmniboxSuggestionType.CLIPBOARD_IMAGE) {
             mDelegate.loadUrlWithPostData(url.getSpec(), transition, inputStart,
                     suggestion.getPostContentType(), suggestion.getPostData());
