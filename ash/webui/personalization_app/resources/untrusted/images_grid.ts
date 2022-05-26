@@ -11,7 +11,7 @@ import {assertNotReached} from '//resources/js/assert.m.js';
 import {afterNextRender, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Events, EventType, ImageTile} from '../common/constants.js';
-import {isSelectionEvent} from '../common/utils.js';
+import {getLoadingPlaceholderAnimationDelay, getLoadingPlaceholders, isSelectionEvent} from '../common/utils.js';
 import {selectImage, validateReceivedData} from '../untrusted/iframe_api.js';
 
 import {getTemplate} from './images_grid.html.js';
@@ -34,7 +34,11 @@ export class ImagesGrid extends PolymerElement {
     return {
       tiles_: {
         type: Array,
-        value: [],
+        value() {
+          // Fill the view with loading tiles. Will be adjusted to the correct
+          // number of tiles when collections are received.
+          return getLoadingPlaceholders(() => 0);
+        }
       },
 
       selectedAssetId_: {
@@ -49,7 +53,7 @@ export class ImagesGrid extends PolymerElement {
     };
   }
 
-  private tiles_: ImageTile[];
+  private tiles_: ImageTile[]|number[];
   private selectedAssetId_: bigint|undefined;
   private pendingSelectedAssetId_: bigint|undefined;
 
@@ -89,6 +93,19 @@ export class ImagesGrid extends PolymerElement {
       default:
         throw new Error('unexpected event type');
     }
+  }
+
+  private isLoadingTile_(tile: number|ImageTile): tile is number {
+    return typeof tile === 'number';
+  }
+
+  private isImageTile_(tile: number|ImageTile): tile is ImageTile {
+    return tile.hasOwnProperty('preview') &&
+        Array.isArray((tile as any).preview);
+  }
+
+  private getLoadingPlaceholderAnimationDelay_(index: number): string {
+    return getLoadingPlaceholderAnimationDelay(index);
   }
 
   private getAriaSelected_(
