@@ -170,8 +170,10 @@ void MainSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       user_manager::UserManager::Get()->IsLoggedInAsAnyKioskApp());
   html_source->AddBoolean("isChildAccount", profile()->IsChild());
 
+  // Personalization hub is only enabled for regular (non-guest) users.
   html_source->AddBoolean("isPersonalizationHubEnabled",
-                          ash::features::IsPersonalizationHubEnabled());
+                          ash::features::IsPersonalizationHubEnabled() &&
+                              profile()->IsRegularProfile());
 
   // Add the System Web App resources for Settings.
   html_source->AddResourcePath("icon-192.png", IDR_SETTINGS_LOGO_192);

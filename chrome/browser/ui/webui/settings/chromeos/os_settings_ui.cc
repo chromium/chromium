@@ -141,9 +141,14 @@ void OSSettingsUI::BindInterface(
   DCHECK(ash::features::IsPersonalizationHubEnabled())
       << "This interface should only be bound if personalization hub feature "
          "is enabled";
+
+  auto* profile = Profile::FromWebUI(web_ui());
+  DCHECK(profile->IsRegularProfile())
+      << "This interface should only be bound for regular profiles";
+
   auto* search_handler =
       ::ash::personalization_app::PersonalizationAppManagerFactory::
-          GetForBrowserContext(Profile::FromWebUI(web_ui()))
+          GetForBrowserContext(profile)
               ->search_handler();
   DCHECK(search_handler);
   search_handler->BindInterface(std::move(receiver));
