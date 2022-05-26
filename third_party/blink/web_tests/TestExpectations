@@ -6913,3 +6913,6 @@ crbug.com/1293679 pending_beacon/pending_beacon-deactivate.html [ Skip ]
 # Sheriff 2022-05-20
 crbug.com/1291841 external/wpt/scroll-to-text-fragment/scroll-to-text-fragment-security.sub.html [ Pass Timeout ]
 crbug.com/1327764 inspector-protocol/overlay/overlay-persistent-overlays.js [ Failure Pass ]
+
+# Sheriff 2022-05-26
+crbug.com/1322004 http/tests/inspector-protocol/conversion/insecure-subresource.js [ Pass Timeout ]
