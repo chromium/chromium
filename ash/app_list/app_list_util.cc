@@ -9,6 +9,7 @@
 #include "ash/constants/ash_constants.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_color_provider.h"
+#include "ash/style/ash_color_provider.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect.h"
@@ -126,14 +127,13 @@ bool ProcessLeftRightKeyTraversalForTextfield(views::Textfield* textfield,
   return true;
 }
 
-gfx::ImageSkia CreateIconWithCircleBackground(const gfx::ImageSkia& icon,
-                                              SkColor background_color) {
+gfx::ImageSkia CreateIconWithCircleBackground(const gfx::ImageSkia& icon) {
   DCHECK_EQ(icon.width(), icon.height());
-  // TODO(crbug.com/1185943): We should not be passing in hardcoded
-  // `background_color`s here. Callers should be updated to use the appropriate
-  // color from the NativeTheme or AshColorProvider.
   return gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
-      icon.width() / 2, background_color, icon);
+      icon.width() / 2,
+      AshColorProvider::Get()->GetBaseLayerColor(
+          AshColorProvider::BaseLayerType::kOpaque),
+      icon);
 }
 
 void PaintFocusBar(gfx::Canvas* canvas,

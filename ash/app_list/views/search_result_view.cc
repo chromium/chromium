@@ -722,8 +722,7 @@ void SearchResultView::UpdateBadgeIcon() {
       result()->badge_icon().Rasterize(GetColorProvider());
 
   if (result()->use_badge_icon_background()) {
-    badge_icon_skia =
-        CreateIconWithCircleBackground(badge_icon_skia, SK_ColorWHITE);
+    badge_icon_skia = CreateIconWithCircleBackground(badge_icon_skia);
   }
 
   gfx::ImageSkia resized_badge_icon(
