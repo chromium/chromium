@@ -245,7 +245,10 @@ SystemWebAppManager::~SystemWebAppManager() = default;
 
 // static
 SystemWebAppManager* SystemWebAppManager::Get(Profile* profile) {
-  WebAppProvider* provider = WebAppProvider::GetForSystemWebApps(profile);
+  if (!AreSystemWebAppsSupported())
+    return nullptr;
+
+  WebAppProvider* provider = WebAppProvider::GetForLocalAppsUnchecked(profile);
   if (!provider)
     return nullptr;
 

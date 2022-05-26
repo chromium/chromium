@@ -64,14 +64,6 @@ WebAppProvider* WebAppProvider::GetDeprecated(Profile* profile) {
 }
 
 // static
-WebAppProvider* WebAppProvider::GetForSystemWebApps(Profile* profile) {
-  if (!AreSystemWebAppsSupported())
-    return nullptr;
-
-  return WebAppProviderFactory::GetForProfile(profile);
-}
-
-// static
 WebAppProvider* WebAppProvider::GetForWebApps(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // If features::kWebAppsCrosapi is enabled, Ash browser only manages system

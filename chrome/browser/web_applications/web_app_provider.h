@@ -55,7 +55,7 @@ class WebAppCommandManager;
 // Similarly, in destruction, subsystems should not refer to each other.
 class WebAppProvider : public KeyedService {
  public:
-  // Deprecated: Use GetForWebApps or GetForSystemWebApps instead.
+  // Deprecated: Use GetForWebApps instead.
   static WebAppProvider* GetDeprecated(Profile* profile);
 
   // On Chrome OS: if Lacros Web App (WebAppsCrosapi) is enabled, returns
@@ -64,21 +64,15 @@ class WebAppProvider : public KeyedService {
   // returns a WebAppProvider.
   static WebAppProvider* GetForWebApps(Profile* profile);
 
-  // On Chrome OS: returns the WebAppProvider that hosts System Web Apps in Ash;
-  // In Lacros, returns nullptr (unless EnableSystemWebAppInLacrosForTesting).
-  // On other platforms, always returns a WebAppProvider.
-  static WebAppProvider* GetForSystemWebApps(Profile* profile);
-
-  // Return the WebAppProvider for the current process. In particular:
+  // Returns the WebAppProvider for the current process. In particular:
   // In Ash: Returns the WebAppProvider that hosts System Web Apps.
   // In Lacros and other platforms: Returns the WebAppProvider that hosts
   // non-system Web Apps.
   //
-  // Avoid using this function where possible and prefer GetForWebApps or
-  // GetForSystemWebApps which provide a guarantee they are being called from
-  // the correct process. Only use this if the calling code is shared between
-  // Ash and Lacros and expects the PWA WebAppProvider in Lacros and the SWA
-  // WebAppProvider in Ash.
+  // Avoid using this function where possible and prefer GetForWebApps which
+  // provides a guarantee they are being called from the correct process. Only
+  // use this if the calling code is shared between Ash and Lacros and expects
+  // the PWA WebAppProvider in Lacros and the SWA WebAppProvider in Ash.
   static WebAppProvider* GetForLocalAppsUnchecked(Profile* profile);
 
   // Return the WebAppProvider for tests, regardless of whether this is running

@@ -82,12 +82,14 @@ content::WebContents* SystemWebAppBrowserTestBase::LaunchApp(
   DCHECK(apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
       browser()->profile()));
 
+  DCHECK(AreSystemWebAppsSupported());
+
   if (!params.launch_files.empty()) {
     // SWA browser tests bypass the code in `WebAppPublisherHelper` that fills
     // in `override_url`, so fill it in here, assuming the file handler action
     // URL matches the start URL.
     params.override_url =
-        WebAppProvider::GetForSystemWebApps(browser()->profile())
+        WebAppProvider::GetForLocalAppsUnchecked(browser()->profile())
             ->registrar()
             .GetAppStartUrl(params.app_id);
   }
@@ -137,9 +139,10 @@ content::WebContents* SystemWebAppBrowserTestBase::LaunchAppWithoutWaiting(
 
 GURL SystemWebAppBrowserTestBase::GetStartUrl(
     const apps::AppLaunchParams& params) {
+  DCHECK(AreSystemWebAppsSupported());
   return params.override_url.is_valid()
              ? params.override_url
-             : WebAppProvider::GetForSystemWebApps(browser()->profile())
+             : WebAppProvider::GetForLocalAppsUnchecked(browser()->profile())
                    ->registrar()
                    .GetAppStartUrl(params.app_id);
 }

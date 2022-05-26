@@ -28,6 +28,7 @@
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/window_open_disposition.h"
@@ -38,7 +39,10 @@
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #endif
 
+namespace web_app {
+
 namespace {
+
 // Returns the profile where we should launch System Web Apps into. It returns
 // the most appropriate profile for launching, if the provided |profile| is
 // unsuitable. It returns nullptr if the we can't find a suitable profile.
@@ -70,9 +74,15 @@ Profile* GetProfileForSystemWebAppLaunch(Profile* profile) {
   // Use the profile provided in other scenarios.
   return profile;
 }
-}  // namespace
 
-namespace web_app {
+WebAppProvider* GetWebAppProviderForSystemWebApps(Profile* profile) {
+  if (!AreSystemWebAppsSupported())
+    return nullptr;
+
+  return WebAppProvider::GetForLocalAppsUnchecked(profile);
+}
+
+}  // namespace
 
 absl::optional<ash::SystemWebAppType> GetSystemWebAppTypeForAppId(
     Profile* profile,
@@ -98,7 +108,7 @@ absl::optional<apps::AppLaunchParams> CreateSystemWebAppLaunchParams(
   if (!app_id)
     return absl::nullopt;
 
-  auto* provider = WebAppProvider::GetForSystemWebApps(profile);
+  auto* provider = GetWebAppProviderForSystemWebApps(profile);
   DCHECK(provider);
 
   DisplayMode display_mode =
@@ -256,7 +266,7 @@ Browser* FindSystemWebAppBrowser(Profile* profile,
   if (!app_id)
     return nullptr;
 
-  auto* provider = WebAppProvider::GetForSystemWebApps(profile);
+  auto* provider = GetWebAppProviderForSystemWebApps(profile);
   DCHECK(provider);
 
   if (!provider->registrar().IsInstalled(app_id.value()))
