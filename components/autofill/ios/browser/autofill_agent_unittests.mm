@@ -179,7 +179,7 @@ TEST_F(AutofillAgentTests,
       fillFormData:form
            inFrame:fake_web_state_.GetWebFramesManager()->GetMainWebFrame()];
   fake_web_state_.WasShown();
-  EXPECT_EQ("__gCrWeb.autofill.fillForm({\"fields\":{\"2\":{\"section\":\"\","
+  EXPECT_EQ(u"__gCrWeb.autofill.fillForm({\"fields\":{\"2\":{\"section\":\"\","
             "\"value\":\"number_value\"},"
             "\"3\":{\"section\":\"\",\"value\":\"name_value\"}},"
             "\"formName\":\"CC form\",\"formRendererID\":1}, 0);",

@@ -38,11 +38,14 @@ class FakeWebFrame : public WebFrame {
   static std::unique_ptr<FakeWebFrame> CreateChildWebFrame(
       GURL security_origin);
 
-  // Returns the most recent JavaScript handler call made to this frame.
-  virtual std::string GetLastJavaScriptCall() const = 0;
+  // Returns the most recent JavaScript call made to this frame.
+  virtual std::u16string GetLastJavaScriptCall() const = 0;
 
   // Returns |javascript_calls|. Use LastJavaScriptCall() if possible.
-  virtual const std::vector<std::string>& GetJavaScriptCallHistory() = 0;
+  virtual const std::vector<std::u16string>& GetJavaScriptCallHistory() = 0;
+
+  // Clears the history of javascript calls sent to this frame.
+  virtual void ClearJavaScriptCallHistory() = 0;
 
   // Sets the browser state associated with this frame.
   virtual void set_browser_state(BrowserState* browser_state) = 0;
