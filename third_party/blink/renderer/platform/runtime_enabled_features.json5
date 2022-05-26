@@ -2177,7 +2177,8 @@
     },
     {
       name: "SharedStorageAPI",
-      status: "test",
+      origin_trial_feature_name: "PrivacySandboxAdsAPIs",
+      origin_trial_allows_third_party: true,
     },
     {
       name: "SharedWorker",

@@ -80,11 +80,12 @@ class PrivacySandboxAdsAPIsAllEnabledBrowserTest
     : public PrivacySandboxAdsAPIsBrowserTestBase {
  public:
   PrivacySandboxAdsAPIsAllEnabledBrowserTest() {
-    feature_list_.InitWithFeatures({blink::features::kPrivacySandboxAdsAPIs,
-                                    blink::features::kBrowsingTopics,
-                                    blink::features::kInterestGroupStorage,
-                                    blink::features::kFencedFrames},
-                                   /*disabled_features=*/{});
+    feature_list_.InitWithFeatures(
+        {blink::features::kPrivacySandboxAdsAPIs,
+         blink::features::kBrowsingTopics,
+         blink::features::kInterestGroupStorage, blink::features::kFencedFrames,
+         blink::features::kSharedStorageAPI},
+        /*disabled_features=*/{});
   }
 
  private:
@@ -106,6 +107,7 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxAdsAPIsAllEnabledBrowserTest,
                          "document.featurePolicy.features().includes('"
                          "join-ad-interest-group')"));
 
+  EXPECT_EQ(true, ExecJs(root(), "sharedStorage !== undefined"));
   EXPECT_EQ(true, EvalJs(shell(), "document.browsingTopics !== undefined"));
   EXPECT_EQ(true, EvalJs(shell(), "navigator.runAdAuction !== undefined"));
   EXPECT_EQ(true,
@@ -131,6 +133,7 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxAdsAPIsAllEnabledBrowserTest,
                           "document.featurePolicy.features().includes('"
                           "join-ad-interest-group')"));
 
+  EXPECT_EQ(true, ExecJs(shell(), "window.sharedStorage === undefined"));
   EXPECT_EQ(true, EvalJs(shell(), "document.browsingTopics === undefined"));
   EXPECT_EQ(true, EvalJs(shell(), "navigator.runAdAuction === undefined"));
   EXPECT_EQ(true,
@@ -165,6 +168,30 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxAdsAPIsTopicsDisabledBrowserTest,
                           "browsing-topics')"));
 
   EXPECT_EQ(false, EvalJs(shell(), "document.browsingTopics !== undefined"));
+}
+
+class PrivacySandboxAdsAPIsSharedStorageDisabledBrowserTest
+    : public PrivacySandboxAdsAPIsBrowserTestBase {
+ public:
+  PrivacySandboxAdsAPIsSharedStorageDisabledBrowserTest() {
+    feature_list_.InitWithFeatures({blink::features::kPrivacySandboxAdsAPIs},
+                                   {blink::features::kSharedStorageAPI});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PrivacySandboxAdsAPIsSharedStorageDisabledBrowserTest,
+                       OriginTrialEnabled_CorrectFeaturesDetected) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), GURL("https://example.test/page_with_ads_apis_ot.html")));
+
+  EXPECT_EQ(true, EvalJs(shell(),
+                         "document.featurePolicy.features().includes('"
+                         "attribution-reporting')"));
+
+  EXPECT_EQ(true, ExecJs(shell(), "window.sharedStorage === undefined"));
 }
 
 class PrivacySandboxAdsAPIsFledgeDisabledBrowserTest
@@ -248,6 +275,7 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxAdsAPIsDisabledBrowserTest,
                           "document.featurePolicy.features().includes('"
                           "join-ad-interest-group')"));
 
+  EXPECT_EQ(true, ExecJs(shell(), "window.sharedStorage === undefined"));
   EXPECT_EQ(true, EvalJs(shell(), "document.browsingTopics === undefined"));
   EXPECT_EQ(true, EvalJs(shell(), "navigator.runAdAuction === undefined"));
   EXPECT_EQ(true,

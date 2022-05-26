@@ -6689,7 +6689,8 @@
                         "FencedFrames",
                         "NoncedPartitionedCookies",
                         "PrivacySandboxAdsAPIs",
-                        "PrivacySandboxSettings3"
+                        "PrivacySandboxSettings3",
+                        "SharedStorageAPI"
                     ]
                 }
             ]

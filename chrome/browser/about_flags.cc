@@ -7486,7 +7486,8 @@ const FeatureEntry kFeatureEntries[] = {
                                  "BiddingAndScoringDebugReportingAPI,"
                                  "AllowURNsInIframes,BrowsingTopics,"
                                  "ConversionMeasurement,FencedFrames,"
-                                 "OverridePrivacySandboxSettingsLocalTesting")},
+                                 "OverridePrivacySandboxSettingsLocalTesting,"
+                                 "SharedStorageAPI")},
 
     {"animated-image-resume", flag_descriptions::kAnimatedImageResumeName,
      flag_descriptions::kAnimatedImageResumeDescription, kOsAll,

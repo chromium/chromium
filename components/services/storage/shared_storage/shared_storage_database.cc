@@ -155,7 +155,6 @@ bool SharedStorageDatabase::Destroy() {
 
 void SharedStorageDatabase::TrimMemory() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(InitStatus::kSuccess, db_status_);
   db_.TrimMemory();
 }
 
