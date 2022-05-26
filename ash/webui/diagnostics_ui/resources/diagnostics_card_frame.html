@@ -5,7 +5,10 @@
   }
 
   ::slotted([slot=title]) {
-    @apply --diagnostics-card-title-font;
+    color: var(--diagnostics-card-title-text-color);
+    font-family: var(--diagnostics-roboto-font-family);
+    font-size: var(--diagnostics-card-title-font-size);
+    font-weight: var(--diagnostics-medium-font-weight);
   }
 
   ::slotted([slot=left-panel]) {

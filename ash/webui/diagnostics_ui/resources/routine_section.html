@@ -7,16 +7,21 @@
   }
 
   .button-container {
-    @apply --diagnostics-button-font;
     padding: 8px 0 4px;
   }
 
   .learn-more-button {
-    @apply --diagnostics-button-font;
     border-radius: 4px;
     height: 32px;
     margin-top: 12px;
     padding: 8px 16px;
+  }
+
+  .button-container,
+  .learn-more-button {
+    font-family: var(--diagnostics-roboto-font-family);
+    font-size: var(--diagnostics-button-font-size);
+    font-weight: var(--diagnostics-medium-font-weight);
   }
 
   #messageIcon {

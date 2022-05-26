@@ -5,13 +5,21 @@
   }
 
   ::slotted([slot=icon]) {
-    @apply --diagnostics-card-icon;
+    --iron-icon-fill-color: var(--cros-color-prominent);
+    --iron-icon-height: 20px;
+    --iron-icon-width: 20px;
+    background-color: var(--cros-highlight-color);
+    border-radius: 50%;
     margin: 0 20px;
+    padding: 8px;
     position: relative;
   }
 
   ::slotted([slot=title]) {
-    @apply --diagnostics-card-title-font;
+    color: var(--diagnostics-card-title-text-color);
+    font-family: var(--diagnostics-roboto-font-family);
+    font-size: var(--diagnostics-card-title-font-size);
+    font-weight: var(--diagnostics-medium-font-weight);
   }
 
   ::slotted([slot=left-panel]) {

@@ -18,10 +18,6 @@
    padding-inline-start: 40px;
  }
 
- #bannerMsg {
-   @apply --diagnostics-caution-banner-font;
- }
-
  #diagnosticsContainer {
    align-items: center;
    box-sizing: border-box;
@@ -73,7 +69,7 @@
   </div>
   <div id="banner" hidden="[[!bannerMessage]]" class$="[[scrollingClass_]]">
     <iron-icon icon="diagnostics:info" id="bannerIcon"></iron-icon>
-    <span id="bannerMsg">[[bannerMessage]]</span>
+    <span id="bannerMsg" class="diagnostics-caution-banner-font">[[bannerMessage]]</span>
   </div>
   <div class="overview-container">
     <overview-card id="overviewCard"></overview-card>

@@ -4,14 +4,6 @@
       --diagnostics-box-shadow: var(--cros-elevation-1-shadow);
       --diagnostics-box-shadow-elevation-2: var(--cros-elevation-2-shadow);
 
-      --diagnostics-card-icon: {
-        --iron-icon-fill-color: var(--cros-color-prominent);
-        --iron-icon-height: 20px;
-        --iron-icon-width: 20px;
-        background-color: var(--cros-highlight-color);
-        border-radius: 50%;
-        padding: 8px;
-      };
       --diagnostics-card-bg-color: var(--cros-bg-color);
       --diagnostics-chip-bg-color: var(--cros-bg-color-dropped-elevation-2);
     }
@@ -148,6 +140,13 @@
       margin-bottom: 16px;
       margin-top: 12px;
       padding-inline: 20px;
+    }
+
+    .diagnostics-caution-banner-font {
+      color: var(--diagnostics-caution-banner-text-color);
+      font-family: var(--diagnostics-roboto-font-family);
+      font-size: var(--diagnostics-caution-banner-font-size);
+      font-weight: var(--diagnostics-regular-font-weight);
     }
 
     @media (min-width:600px) {

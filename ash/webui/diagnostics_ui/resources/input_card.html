@@ -6,8 +6,13 @@
   }
 
   .device iron-icon {
-    @apply --diagnostics-card-icon;
+    --iron-icon-fill-color: var(--cros-color-prominent);
+    --iron-icon-height: 20px;
+    --iron-icon-width: 20px;
+    background-color: var(--cros-highlight-color);
+    border-radius: 50%;
     margin-inline-end: 28px;
+    padding: 8px;
   }
 
   .device-body {
