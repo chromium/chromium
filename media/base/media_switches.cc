@@ -559,14 +559,8 @@ const base::Feature kVaapiH264TemporalLayerHWEncoding{
 const base::Feature kVaapiVp8TemporalLayerHWEncoding{
     "VaapiVp8TemporalLayerEncoding", base::FEATURE_DISABLED_BY_DEFAULT};
 // Enable VP9 k-SVC encoding with HW encoder for webrtc use case on ChromeOS.
-const base::Feature kVaapiVp9kSVCHWEncoding {
-  "VaapiVp9kSVCHWEncoding",
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-      base::FEATURE_ENABLED_BY_DEFAULT
-#else
-      base::FEATURE_DISABLED_BY_DEFAULT
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-};
+const base::Feature kVaapiVp9kSVCHWEncoding{"VaapiVp9kSVCHWEncoding",
+                                            base::FEATURE_ENABLED_BY_DEFAULT};
 #endif  // defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS)
 
 // Inform video blitter of video color space.
