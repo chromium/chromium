@@ -645,7 +645,7 @@ void ThreatDetails::RequestThreatDOMDetails(content::RenderFrameHost* frame) {
       frame,
       back_forward_cache::DisabledReason(
           back_forward_cache::DisabledReasonId::kSafeBrowsingThreatDetails));
-  if (!frame->IsRenderFrameCreated()) {
+  if (!frame->IsRenderFrameLive()) {
     // A child frame may have been created browser-side but has not completed
     // setting up the renderer for it yet. In particular, this occurs if the
     // child frame was blocked and that's why we're showing a safe browsing page

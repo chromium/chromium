@@ -106,7 +106,7 @@ void WebView::SetWebContents(content::WebContents* replacement) {
     wc_owner_.reset();
   AttachWebContentsNativeView();
 
-  if (replacement && replacement->GetMainFrame()->IsRenderFrameCreated()) {
+  if (replacement && replacement->GetMainFrame()->IsRenderFrameLive()) {
     SetUpNewMainFrame(replacement->GetMainFrame());
   } else {
     LostMainFrame();
@@ -138,7 +138,7 @@ void WebView::EnableSizingFromWebContents(const gfx::Size& min_size,
   DCHECK(!max_size.IsEmpty());
   min_size_ = min_size;
   max_size_ = max_size;
-  if (web_contents() && web_contents()->GetMainFrame()->IsRenderFrameCreated())
+  if (web_contents() && web_contents()->GetMainFrame()->IsRenderFrameLive())
     MaybeEnableAutoResize(web_contents()->GetMainFrame());
 }
 
@@ -340,7 +340,7 @@ void WebView::RenderFrameHostChanged(content::RenderFrameHost* old_host,
   // yet. If the DCHECK fires, then we would need to handle the initial main
   // frame when it its renderer frame is created.
   if (!old_host) {
-    DCHECK(!new_host->IsRenderFrameCreated());
+    DCHECK(!new_host->IsRenderFrameLive());
     return;
   }
 
@@ -472,7 +472,7 @@ void WebView::LostMainFrame() {
 }
 
 void WebView::MaybeEnableAutoResize(content::RenderFrameHost* frame_host) {
-  DCHECK(frame_host->IsRenderFrameCreated());
+  DCHECK(frame_host->IsRenderFrameLive());
   if (!max_size_.IsEmpty())
     frame_host->GetView()->EnableAutoResize(min_size_, max_size_);
 }

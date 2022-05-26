@@ -294,7 +294,7 @@ void PaintPreviewTabService::CaptureTabInternal(
   auto* rfh = content::RenderFrameHost::FromID(task->frame_routing_id());
   if (!contents || !rfh || contents->IsBeingDestroyed() ||
       contents->GetMainFrame() != rfh || !rfh->IsActive() ||
-      !rfh->IsRenderFrameCreated() || !rfh->IsRenderFrameLive()) {
+      !rfh->IsRenderFrameLive()) {
     task->OnCaptured(Status::kWebContentsGone);
     return;
   }

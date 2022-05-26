@@ -108,7 +108,7 @@ void AccessibilityServiceImpl::NotifyAccessibilitySettingChanged(
     if (!render_frame_host)
       continue;
 
-    if (!render_frame_host->IsRenderFrameCreated())
+    if (!render_frame_host->IsRenderFrameLive())
       continue;
 
     service_manager::InterfaceProvider* interface_provider =

@@ -86,7 +86,7 @@ PerformanceManagerTabHelper::PerformanceManagerTabHelper(
   // We have an early WebContents creation hook so should see it when there is
   // only a single frame, and it is not yet created. We sanity check that here.
 #if DCHECK_IS_ON()
-  DCHECK(!web_contents->GetMainFrame()->IsRenderFrameCreated());
+  DCHECK(!web_contents->GetMainFrame()->IsRenderFrameLive());
   size_t frame_count = 0;
   web_contents->ForEachRenderFrameHost(base::BindRepeating(
       [](size_t* frame_count, content::RenderFrameHost* render_frame_host) {
@@ -268,7 +268,7 @@ void PerformanceManagerTabHelper::RenderFrameHostChanged(
   if (it != frames_.end()) {
     new_frame = it->second.get();
   } else {
-    DCHECK(!new_host->IsRenderFrameCreated())
+    DCHECK(!new_host->IsRenderFrameLive())
         << "There shouldn't be a case where RenderFrameHostChanged is "
            "dispatched before RenderFrameCreated with a live RenderFrame\n";
   }

@@ -44,7 +44,7 @@ IN_PROC_BROWSER_TEST_F(PerformanceManagerBrowserTest,
   ASSERT_EQ(contents, old_contents);
   ASSERT_EQ(contents->GetLastCommittedURL().possibly_invalid_spec(), kUrl);
   content::RenderFrameHost* rfh = contents->GetMainFrame();
-  ASSERT_TRUE(rfh->IsRenderFrameCreated());
+  ASSERT_TRUE(rfh->IsRenderFrameLive());
 
   base::WeakPtr<FrameNode> frame_node =
       PerformanceManager::GetFrameNodeForRenderFrameHost(rfh);
