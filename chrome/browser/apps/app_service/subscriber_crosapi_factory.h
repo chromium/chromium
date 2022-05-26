@@ -35,6 +35,8 @@ class SubscriberCrosapiFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory overrides.
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
+  content::BrowserContext* GetBrowserContextToUse(
+      content::BrowserContext* context) const override;
 };
 
 }  // namespace apps
