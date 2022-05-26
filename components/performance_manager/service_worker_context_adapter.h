@@ -100,7 +100,8 @@ class ServiceWorkerContextAdapter
   const base::flat_map<int64_t /* version_id */,
                        content::ServiceWorkerRunningInfo>&
   GetRunningServiceWorkerInfos() override;
-  service_manager::InterfaceProvider* GetRemoteInterfaces(
+  bool IsLiveRunningServiceWorker(int64_t service_worker_version_id) override;
+  service_manager::InterfaceProvider& GetRemoteInterfaces(
       int64_t service_worker_version_id) override;
 
   // content::ServiceWorkerContextObserver:

@@ -102,11 +102,19 @@ void FakeServiceWorkerContext::StartWorkerForScope(
   NOTREACHED();
 }
 
-service_manager::InterfaceProvider*
+bool FakeServiceWorkerContext::IsLiveRunningServiceWorker(
+    int64_t service_worker_version_id) {
+  NOTREACHED();
+  return false;
+}
+
+service_manager::InterfaceProvider&
 FakeServiceWorkerContext::GetRemoteInterfaces(
     int64_t service_worker_version_id) {
   NOTREACHED();
-  return nullptr;
+  static service_manager::InterfaceProvider interface_provider(
+      base::ThreadTaskRunnerHandle::Get());
+  return interface_provider;
 }
 
 void FakeServiceWorkerContext::StartServiceWorkerForNavigationHint(

@@ -219,12 +219,14 @@ void SystemExtensionsInstallManager::DispatchWindowManagerStartEvent(
 
   auto* worker_context =
       profile_->GetDefaultStoragePartition()->GetServiceWorkerContext();
-  auto* remote_interfaces = worker_context->GetRemoteInterfaces(version_id);
-  if (!remote_interfaces)
+  if (!worker_context->IsLiveRunningServiceWorker(version_id)) {
+    LOG(ERROR) << "Service Worker version no longer running.";
     return;
+  }
+  auto& remote_interfaces = worker_context->GetRemoteInterfaces(version_id);
 
   mojo::Remote<blink::mojom::CrosWindowManagementStartObserver> observer;
-  remote_interfaces->GetInterface(observer.BindNewPipeAndPassReceiver());
+  remote_interfaces.GetInterface(observer.BindNewPipeAndPassReceiver());
   observer->DispatchStartEvent();
 }
 

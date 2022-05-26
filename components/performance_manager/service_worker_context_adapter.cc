@@ -194,11 +194,19 @@ void ServiceWorkerContextAdapter::StartWorkerForScope(
   NOTIMPLEMENTED();
 }
 
-service_manager::InterfaceProvider*
+bool ServiceWorkerContextAdapter::IsLiveRunningServiceWorker(
+    int64_t service_worker_version_id) {
+  NOTIMPLEMENTED();
+  return false;
+}
+
+service_manager::InterfaceProvider&
 ServiceWorkerContextAdapter::GetRemoteInterfaces(
     int64_t service_worker_version_id) {
   NOTIMPLEMENTED();
-  return nullptr;
+  static service_manager::InterfaceProvider interface_provider(
+      base::ThreadTaskRunnerHandle::Get());
+  return interface_provider;
 }
 
 void ServiceWorkerContextAdapter::StartServiceWorkerAndDispatchMessage(
