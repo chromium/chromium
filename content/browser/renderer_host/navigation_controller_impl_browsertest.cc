@@ -16704,8 +16704,10 @@ IN_PROC_BROWSER_TEST_P(
 // history.back() called twice in the renderer process should not make the user
 // navigate back twice.
 // Regression test for https://crbug.com/869710
-IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
-                       HistoryBackTwiceFromRendererWithoutUserGesture) {
+// TODO(crbug.com/1328912): flaky.
+IN_PROC_BROWSER_TEST_P(
+    NavigationControllerBrowserTest,
+    DISABLED_HistoryBackTwiceFromRendererWithoutUserGesture) {
   GURL url1(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url2(embedded_test_server()->GetURL("b.com", "/title2.html"));
   GURL url3(embedded_test_server()->GetURL("c.com", "/title3.html"));
