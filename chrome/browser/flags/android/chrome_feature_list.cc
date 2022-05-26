@@ -158,6 +158,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAdaptiveButtonInTopToolbarCustomizationV2,
     &kAddToHomescreenIPH,
     &kAllowNewIncognitoTabIntents,
+    &kAndroidScrollOptimizations,
     &kAndroidSearchEngineChoiceNotification,
     &kAssistantConsentModal,
     &kAssistantConsentSimplifiedText,
@@ -410,6 +411,9 @@ const base::Feature kAllowNewIncognitoTabIntents{
 
 const base::Feature kFocusOmniboxInIncognitoTabIntents{
     "FocusOmniboxInIncognitoTabIntents", base::FEATURE_ENABLED_BY_DEFAULT};
+
+const base::Feature kAndroidScrollOptimizations{
+    "AndroidScrollOptimizations", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kAndroidSearchEngineChoiceNotification{
     "AndroidSearchEngineChoiceNotification", base::FEATURE_ENABLED_BY_DEFAULT};
