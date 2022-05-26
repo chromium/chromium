@@ -184,6 +184,10 @@ vars = {
   # qemu on linux-arm64 machines.
   'checkout_fuchsia_for_arm64_host': False,
 
+  # Run 'vpython_common' hook if this is set.
+  # TODO(crbug.com/1329052): remove this when we remove .vpython.
+  'enable_vpython_common_crbug_1329052': True,
+
   # By default, download the fuchsia sdk from the public sdk directory.
   'fuchsia_sdk_cipd_prefix': 'fuchsia/sdk/gn/',
 
@@ -3623,7 +3627,7 @@ hooks = [
     'name': 'vpython_common',
     'pattern': '.',
     # TODO(https://crbug.com/1205263): Run this on mac/arm too once it works.
-    'condition': 'not (host_os == "mac" and host_cpu == "arm64")',
+    'condition': 'not (host_os == "mac" and host_cpu == "arm64") and enable_vpython_common_crbug_1329052',
     'action': [ 'vpython',
                 '-vpython-spec', 'src/.vpython',
                 '-vpython-tool', 'install',

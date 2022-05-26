@@ -10,12 +10,13 @@
               "project": "chromium"
             },
             "builder_spec": {
-              "build_gs_bucket": "chromium-win-archive",
+              "build_gs_bucket": "chromium-fyi-archive",
               "builder_group": "chromium.fyi",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_chromium_config": {
                 "apply_configs": [
-                  "mb"
+                  "mb",
+                  "disable_vpython_common_crbug_1329052"
                 ],
                 "build_config": "Release",
                 "config": "chromium",

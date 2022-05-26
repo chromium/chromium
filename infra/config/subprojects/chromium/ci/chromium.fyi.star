@@ -8,6 +8,7 @@ load("//lib/builder_config.star", "builder_config")
 load("//lib/builders.star", "cpu", "goma", "os", "xcode")
 load("//lib/ci.star", "ci", "rbe_instance", "rbe_jobs")
 load("//lib/consoles.star", "consoles")
+load("//lib/structs.star", "structs")
 
 ci.defaults.set(
     builder_group = "chromium.fyi",
@@ -959,7 +960,16 @@ ci.builder(
 ci.builder(
     name = "Win x64 Builder (py2 less)",
     description_html = "This is mirror of <a href=\"https://ci.chromium.org/p/chromium/builders/ci/Win%20x64%20Builder\">Win x64 Builder</a>, but runs on bots not having python2.",
-    builder_spec = builder_config.copy_from("ci/Win x64 Builder"),
+    builder_spec = builder_config.copy_from("ci/Win x64 Builder", lambda spec: structs.evolve(
+        spec,
+        chromium_config = structs.extend(
+            spec.chromium_config,
+            apply_configs = [
+                "disable_vpython_common_crbug_1329052",
+            ],
+        ),
+        build_gs_bucket = "chromium-fyi-archive",
+    )),
     builderless = True,
     console_view_entry = consoles.console_view_entry(
         category = "win",
