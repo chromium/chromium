@@ -96,6 +96,7 @@ suite('WallpaperImagesTest', function() {
   });
 
   test('displays images for current collection id', async () => {
+    loadTimeData.overrideValues({isDarkLightModeEnabled: false});
     personalizationStore.data.wallpaper.backdrop.images = {
       'id_0': wallpaperProvider.images,
       'id_1': [
