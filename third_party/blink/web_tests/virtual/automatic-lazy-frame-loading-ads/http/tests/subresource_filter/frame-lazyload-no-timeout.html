@@ -13,29 +13,22 @@
 
   <script>
     window.addEventListener('DOMContentLoaded', () => {
+      const checkElementLoadedAfterTimeout = async (t, timeoutMs = 1000) => {
+        return new Promise(resolve => {
+          t.step_timeout(() => {
+            resolve(isElementLoaded('btf'));
+          }, timeoutMs);
+        });
+      }
+
       promise_test(async t => {
         const btf = document.querySelector('#btf_div');
         appendAdFrame('btf', btf, 'lazy');
 
-        const timeoutMs = 1000;
-
-        let result = isElementLoaded('btf');
-        await new Promise(resolve => {
-          t.step_timeout(() => {
-            result = isElementLoaded('btf')
-            resolve();
-          }, timeoutMs);
-        });
-        assert_false(result, "iframe is not loaded until the timeout");
-
-        await waitUntilIdle();
-        await new Promise(resolve => {
-          t.step_timeout(() => {
-            result = isElementLoaded('btf')
-            resolve();
-          }, timeoutMs);
-        });
-        assert_false(result, "iframe is not loaded after the timeout and became idle");
+        // Set 1.5x longer timeout to ensure not trigger loading.
+        const timeoutMs = 1500;
+        let result = await checkElementLoadedAfterTimeout(t, timeoutMs)
+        assert_false(result, "iframe is not loaded after the timeout");
 
         // Then scroll to below the fold.
         btf.scrollIntoView();
