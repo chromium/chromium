@@ -1,7 +1,7 @@
-From 79aabeb77f4cbf5dbaf83d3f43b37bf04984cc77 Mon Sep 17 00:00:00 2001
+From 87ed7281fb664b3e46aecfe55c54031a38ccc9f3 Mon Sep 17 00:00:00 2001
 From: Andrew Grieve <agrieve@chromium.org>
 Date: Thu, 20 Jan 2022 16:29:40 -0500
-Subject: [PATCH 2/3] Disable line number optimization
+Subject: [PATCH 2/4] Disable line number optimization
 
 ---
  src/main/java/com/android/tools/r8/D8Command.java | 3 +++
@@ -36,5 +36,5 @@ index 4e7ca32ab..40bacabea 100644
      internal.featureSplitConfiguration = featureSplitConfiguration;
  
 -- 
-2.36.0.550.gb090851708-goog
+2.36.1.124.g0e6072fb45-goog
 

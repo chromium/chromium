@@ -1,0 +1,26 @@
+From d9fa6e4f573601b60f4c512234e23403a5eaf37e Mon Sep 17 00:00:00 2001
+From: Andrew Grieve <agrieve@chromium.org>
+Date: Wed, 25 May 2022 23:12:52 -0400
+Subject: [PATCH 4/4] Disable write-only field pruning.
+
+Bug: 1329389
+---
+ .../android/tools/r8/shaking/EnqueuerDeferredTracingImpl.java   | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/main/java/com/android/tools/r8/shaking/EnqueuerDeferredTracingImpl.java b/src/main/java/com/android/tools/r8/shaking/EnqueuerDeferredTracingImpl.java
+index 85d14b91e..598ceff61 100644
+--- a/src/main/java/com/android/tools/r8/shaking/EnqueuerDeferredTracingImpl.java
++++ b/src/main/java/com/android/tools/r8/shaking/EnqueuerDeferredTracingImpl.java
+@@ -139,7 +139,7 @@ public class EnqueuerDeferredTracingImpl extends EnqueuerDeferredTracing {
+   }
+ 
+   private boolean isEligibleForPruning(ProgramField field) {
+-    if (enqueuer.isFieldLive(field)) {
++    if (true || enqueuer.isFieldLive(field)) {
+       return false;
+     }
+ 
+-- 
+2.36.1.124.g0e6072fb45-goog
+
