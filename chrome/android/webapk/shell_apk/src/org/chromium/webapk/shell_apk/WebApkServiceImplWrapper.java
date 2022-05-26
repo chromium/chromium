@@ -106,6 +106,12 @@ public class WebApkServiceImplWrapper extends IWebApkApi.Stub {
                         + "String, int, Notification, String)");
     }
 
+    @Override
+    public boolean finishAndRemoveTaskSdk23() {
+        Log.w(TAG, "Should NOT reach WebApkServiceImplWrapper#finishAndRemoveTaskSdk23()");
+        return false;
+    }
+
     /** Creates a WebAPK notification channel on Android O+ if one does not exist. */
     protected void ensureNotificationChannelExists() {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
