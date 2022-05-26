@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "fuchsia/base/legacymetrics_client.h"
+#include "components/fuchsia_legacymetrics/legacymetrics_client.h"
 
 #include <lib/fit/function.h>
 #include <lib/sys/cpp/component_context.h>
@@ -19,9 +19,9 @@
 #include "base/logging.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
-#include "fuchsia/base/legacymetrics_histogram_flattener.h"
+#include "components/fuchsia_legacymetrics/legacymetrics_histogram_flattener.h"
 
-namespace cr_fuchsia {
+namespace fuchsia_legacymetrics {
 
 constexpr size_t LegacyMetricsClient::kMaxBatchSize;
 
@@ -296,4 +296,4 @@ void LegacyMetricsClient::ResetMetricsRecorderState() {
     CompleteFlush();
 }
 
-}  // namespace cr_fuchsia
+}  // namespace fuchsia_legacymetrics

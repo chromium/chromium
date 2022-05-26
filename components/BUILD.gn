@@ -274,7 +274,10 @@ test("components_unittests") {
     deps += [ "//components/nacl/browser:unit_tests" ]
   }
 
-  if (!is_fuchsia) {
+  if (is_fuchsia) {
+    deps += [ "//components/fuchsia_legacymetrics:unit_tests" ]
+  } else {
+    # TODO(crbug.com/1290514): Enable all relevant tests on Fuchsia too.
     deps += [
       "//components/browser_sync:unit_tests",
       "//components/send_tab_to_self:unit_tests",

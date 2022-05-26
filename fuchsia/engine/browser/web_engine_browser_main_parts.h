@@ -29,7 +29,7 @@ namespace content {
 class ContentBrowserClient;
 }
 
-namespace cr_fuchsia {
+namespace fuchsia_legacymetrics {
 class LegacyMetricsClient;
 }
 
@@ -135,7 +135,8 @@ class WEB_ENGINE_EXPORT WebEngineBrowserMainParts
       frame_host_bindings_;
 
   std::unique_ptr<WebEngineDevToolsController> devtools_controller_;
-  std::unique_ptr<cr_fuchsia::LegacyMetricsClient> legacy_metrics_client_;
+  std::unique_ptr<fuchsia_legacymetrics::LegacyMetricsClient>
+      legacy_metrics_client_;
   std::unique_ptr<media::FuchsiaCdmManager> cdm_manager_;
 
   // Used to respond to changes to the system's current locale.

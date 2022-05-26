@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "fuchsia/base/legacymetrics_user_event_recorder.h"
+#include "components/fuchsia_legacymetrics/legacymetrics_user_event_recorder.h"
 
 #include <utility>
 
@@ -10,7 +10,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/time/time.h"
 
-namespace cr_fuchsia {
+namespace fuchsia_legacymetrics {
 
 constexpr size_t LegacyMetricsUserActionRecorder::kMaxEventCount;
 
@@ -45,4 +45,4 @@ void LegacyMetricsUserActionRecorder::OnUserAction(const std::string& action,
   events_.push_back(std::move(fidl_event));
 }
 
-}  // namespace cr_fuchsia
+}  // namespace fuchsia_legacymetrics

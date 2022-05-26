@@ -31,4 +31,7 @@ specific_include_rules = {
   "context_provider_impl_unittest\.cc": [
     "+services/network/public/cpp/network_switches.h"
   ],
+  "web_engine_browser_main_parts\.cc": [
+    "+components/fuchsia_legacymetrics/legacymetrics_client.h"
+  ]
 }

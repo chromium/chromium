@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "fuchsia/base/legacymetrics_histogram_flattener.h"
+#include "components/fuchsia_legacymetrics/legacymetrics_histogram_flattener.h"
 
 #include "base/metrics/histogram_macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -10,7 +10,7 @@
 using fuchsia::legacymetrics::Histogram;
 using fuchsia::legacymetrics::HistogramBucket;
 
-namespace cr_fuchsia {
+namespace fuchsia_legacymetrics {
 namespace {
 
 constexpr char kHistogramCount1M[] = "Foo.Bar";
@@ -164,4 +164,4 @@ TEST_F(LegacyMetricsHistogramFlattenerTest, MultipleBuckets) {
 }
 
 }  // namespace
-}  // namespace cr_fuchsia
+}  // namespace fuchsia_legacymetrics

@@ -30,6 +30,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "components/fuchsia_legacymetrics/legacymetrics_client.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/gpu_data_manager.h"
 #include "content/public/browser/histogram_fetcher.h"
@@ -40,7 +41,6 @@
 #include "content/public/common/main_function_params.h"
 #include "content/public/common/result_codes.h"
 #include "fuchsia/base/inspect.h"
-#include "fuchsia/base/legacymetrics_client.h"
 #include "fuchsia/engine/browser/context_impl.h"
 #include "fuchsia/engine/browser/web_engine_browser_context.h"
 #include "fuchsia/engine/browser/web_engine_devtools_controller.h"
@@ -219,7 +219,7 @@ int WebEngineBrowserMainParts::PreMainMessageLoopRun() {
 
   if (command_line->HasSwitch(switches::kUseLegacyMetricsService)) {
     legacy_metrics_client_ =
-        std::make_unique<cr_fuchsia::LegacyMetricsClient>();
+        std::make_unique<fuchsia_legacymetrics::LegacyMetricsClient>();
 
     // Add a hook to asynchronously pull metrics from child processes just prior
     // to uploading.

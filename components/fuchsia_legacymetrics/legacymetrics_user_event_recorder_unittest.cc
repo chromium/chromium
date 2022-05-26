@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "fuchsia/base/legacymetrics_user_event_recorder.h"
+#include "components/fuchsia_legacymetrics/legacymetrics_user_event_recorder.h"
 
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace cr_fuchsia {
+namespace fuchsia_legacymetrics {
 namespace {
 
 class LegacyMetricsUserActionRecorderTest : public testing::Test {
@@ -87,4 +87,4 @@ TEST_F(LegacyMetricsUserActionRecorderTest, EnforcesMaximumEventCount) {
 }
 
 }  // namespace
-}  // namespace cr_fuchsia
+}  // namespace fuchsia_legacymetrics

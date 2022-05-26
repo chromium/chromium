@@ -88,26 +88,6 @@ source_set("message_port") {
   ]
 }
 
-source_set("legacymetrics") {
-  visibility = [
-    ":cr_fuchsia_base_unittests__exec",
-    "//chromecast/internal/*",
-    "//fuchsia/engine/*",
-  ]
-  sources = [
-    "legacymetrics_client.cc",
-    "legacymetrics_client.h",
-    "legacymetrics_histogram_flattener.cc",
-    "legacymetrics_histogram_flattener.h",
-    "legacymetrics_user_event_recorder.cc",
-    "legacymetrics_user_event_recorder.h",
-  ]
-  public = [ "legacymetrics_client.h" ]
-  deps = [ "//base" ]
-  public_deps = [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.legacymetrics" ]
-  friend = [ ":*" ]
-}
-
 static_library("run_all_integration_tests") {
   testonly = true
   visibility = [
@@ -124,12 +104,8 @@ test("cr_fuchsia_base_unittests") {
     "agent_impl_unittest.cc",
     "config_reader_unittest.cc",
     "inspect_unittest.cc",
-    "legacymetrics_client_unittest.cc",
-    "legacymetrics_histogram_flattener_unittest.cc",
-    "legacymetrics_user_event_recorder_unittest.cc",
   ]
   deps = [
-    ":legacymetrics",
     ":modular",
     "//base",
     "//base:testfidl",

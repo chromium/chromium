@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "fuchsia/base/legacymetrics_histogram_flattener.h"
+#include "components/fuchsia_legacymetrics/legacymetrics_histogram_flattener.h"
 
 #include <memory>
 #include <utility>
@@ -11,7 +11,7 @@
 #include "base/logging.h"
 #include "base/metrics/statistics_recorder.h"
 
-namespace cr_fuchsia {
+namespace fuchsia_legacymetrics {
 namespace {
 
 // Serializes changes to histogram metrics as FIDL structs.
@@ -89,4 +89,4 @@ std::vector<fuchsia::legacymetrics::Histogram> GetLegacyMetricsDeltas() {
   return LegacyMetricsHistogramFlattener().GetDeltas();
 }
 
-}  // namespace cr_fuchsia
+}  // namespace fuchsia_legacymetrics

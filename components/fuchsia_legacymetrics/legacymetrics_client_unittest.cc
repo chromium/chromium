@@ -18,12 +18,12 @@
 #include "base/test/test_future.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
-#include "fuchsia/base/legacymetrics_client.h"
-#include "fuchsia/base/legacymetrics_histogram_flattener.h"
+#include "components/fuchsia_legacymetrics/legacymetrics_client.h"
+#include "components/fuchsia_legacymetrics/legacymetrics_histogram_flattener.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace cr_fuchsia {
+namespace fuchsia_legacymetrics {
 namespace {
 
 using ::testing::Property;
@@ -704,4 +704,4 @@ TEST_F(LegacyMetricsClientTest, SetMetricsRecorderDuringFlush) {
 }
 
 }  // namespace
-}  // namespace cr_fuchsia
+}  // namespace fuchsia_legacymetrics

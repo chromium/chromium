@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef FUCHSIA_BASE_LEGACYMETRICS_USER_EVENT_RECORDER_H_
-#define FUCHSIA_BASE_LEGACYMETRICS_USER_EVENT_RECORDER_H_
+#ifndef COMPONENTS_FUCHSIA_LEGACYMETRICS_LEGACYMETRICS_USER_EVENT_RECORDER_H_
+#define COMPONENTS_FUCHSIA_LEGACYMETRICS_LEGACYMETRICS_USER_EVENT_RECORDER_H_
 
 #include <fuchsia/legacymetrics/cpp/fidl.h>
 #include <string>
@@ -11,7 +11,7 @@
 
 #include "base/metrics/user_metrics.h"
 
-namespace cr_fuchsia {
+namespace fuchsia_legacymetrics {
 
 // Captures and stores user action events, and converts them to
 // fuchsia.legacymetrics equivalent.
@@ -39,6 +39,6 @@ class LegacyMetricsUserActionRecorder {
   const base::ActionCallback on_event_callback_;
 };
 
-}  // namespace cr_fuchsia
+}  // namespace fuchsia_legacymetrics
 
-#endif  // FUCHSIA_BASE_LEGACYMETRICS_USER_EVENT_RECORDER_H_
+#endif  // COMPONENTS_FUCHSIA_LEGACYMETRICS_LEGACYMETRICS_USER_EVENT_RECORDER_H_

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef FUCHSIA_BASE_LEGACYMETRICS_CLIENT_H_
-#define FUCHSIA_BASE_LEGACYMETRICS_CLIENT_H_
+#ifndef COMPONENTS_FUCHSIA_LEGACYMETRICS_LEGACYMETRICS_CLIENT_H_
+#define COMPONENTS_FUCHSIA_LEGACYMETRICS_LEGACYMETRICS_CLIENT_H_
 
 #include <fuchsia/legacymetrics/cpp/fidl.h>
 
@@ -15,9 +15,9 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "fuchsia/base/legacymetrics_user_event_recorder.h"
+#include "components/fuchsia_legacymetrics/legacymetrics_user_event_recorder.h"
 
-namespace cr_fuchsia {
+namespace fuchsia_legacymetrics {
 
 // Used to report events & histogram data to the
 // fuchsia.legacymetrics.MetricsRecorder service.
@@ -119,6 +119,6 @@ class LegacyMetricsClient {
   base::WeakPtrFactory<LegacyMetricsClient> weak_factory_{this};
 };
 
-}  // namespace cr_fuchsia
+}  // namespace fuchsia_legacymetrics
 
-#endif  // FUCHSIA_BASE_LEGACYMETRICS_CLIENT_H_
+#endif  // COMPONENTS_FUCHSIA_LEGACYMETRICS_LEGACYMETRICS_CLIENT_H_
