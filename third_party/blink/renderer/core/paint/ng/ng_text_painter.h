@@ -69,14 +69,18 @@ class CORE_EXPORT NGTextPainter : public TextPainterBase {
                 const gfx::Rect& visual_rect,
                 const PhysicalOffset& text_origin,
                 const PhysicalRect& text_frame_rect,
+                NGInlinePaintContext* inline_context,
                 bool horizontal)
       : TextPainterBase(context,
                         font,
                         text_origin,
                         text_frame_rect,
+                        inline_context,
                         horizontal),
         fragment_paint_info_(fragment_paint_info),
-        visual_rect_(visual_rect) {}
+        visual_rect_(visual_rect) {
+    DCHECK(inline_context_);
+  }
   ~NGTextPainter() = default;
 
   void ClipDecorationsStripe(float upper,

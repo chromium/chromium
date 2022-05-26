@@ -21,6 +21,7 @@ NGTextCombinePainter::NGTextCombinePainter(GraphicsContext& context,
                       style.GetFont(),
                       text_frame_rect.offset,
                       text_frame_rect,
+                      /* inline_context */ nullptr,
                       /* horizontal */ false),
       style_(style) {}
 

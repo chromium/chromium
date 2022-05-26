@@ -117,6 +117,7 @@ blink_core_sources_paint = [
   "ng/ng_highlight_painter.h",
   "ng/ng_inline_box_fragment_painter.cc",
   "ng/ng_inline_box_fragment_painter.h",
+  "ng/ng_inline_paint_context.h",
   "ng/ng_mathml_painter.cc",
   "ng/ng_mathml_painter.h",
   "ng/ng_table_cell_paint_invalidator.cc",

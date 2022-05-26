@@ -26,6 +26,7 @@ class ComputedStyle;
 class Document;
 class GraphicsContext;
 class GraphicsContextStateSaver;
+class NGInlinePaintContext;
 class Node;
 class TextDecorationOffsetBase;
 struct PaintInfo;
@@ -41,6 +42,7 @@ class CORE_EXPORT TextPainterBase {
                   const Font&,
                   const PhysicalOffset& text_origin,
                   const PhysicalRect& text_frame_rect,
+                  NGInlinePaintContext* inline_context,
                   bool horizontal);
   ~TextPainterBase();
 
@@ -126,6 +128,7 @@ class CORE_EXPORT TextPainterBase {
 
   enum PaintInternalStep { kPaintText, kPaintEmphasisMark };
 
+  NGInlinePaintContext* inline_context_ = nullptr;
   GraphicsContext& graphics_context_;
   const Font& font_;
   const PhysicalOffset text_origin_;

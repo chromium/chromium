@@ -376,6 +376,12 @@ PhysicalRect NGBoxFragmentPainter::InkOverflowIncludingFilters() const {
       ->PhysicalVisualOverflowRectIncludingFilters();
 }
 
+NGInlinePaintContext& NGBoxFragmentPainter::EnsureInlineContext() {
+  if (!inline_context_)
+    inline_context_ = &inline_context_storage_.emplace();
+  return *inline_context_;
+}
+
 void NGBoxFragmentPainter::Paint(const PaintInfo& paint_info) {
   if (PhysicalFragment().IsHiddenForPaint())
     return;
@@ -730,6 +736,7 @@ void NGBoxFragmentPainter::PaintBlockFlowContents(
   }
 
   DCHECK(items_);
+  EnsureInlineContext();
   NGInlineCursor children(fragment, *items_);
   if (fragment.IsSvgText()) {
     ScopedSVGPaintState paint_state(*fragment.GetLayoutObject(), paint_info);
@@ -1648,7 +1655,8 @@ void NGBoxFragmentPainter::PaintTextItem(const NGInlineCursor& cursor,
 
   ScopedDisplayItemFragment display_item_fragment(paint_info.context,
                                                   item.FragmentId());
-  NGTextFragmentPainter text_painter(cursor, parent_offset);
+  DCHECK(inline_context_);
+  NGTextFragmentPainter text_painter(cursor, parent_offset, inline_context_);
   text_painter.Paint(paint_info, paint_offset);
 }
 
@@ -1689,7 +1697,8 @@ void NGBoxFragmentPainter::PaintBoxItem(
   }
 
   if (child_fragment.IsInlineBox()) {
-    NGInlineBoxFragmentPainter(cursor, item, child_fragment)
+    DCHECK(inline_context_);
+    NGInlineBoxFragmentPainter(cursor, item, child_fragment, inline_context_)
         .Paint(paint_info, paint_offset);
     return;
   }
@@ -1759,8 +1768,9 @@ void NGBoxFragmentPainter::PaintTextClipMask(const PaintInfo& paint_info,
 
   DCHECK(inline_box_cursor_);
   DCHECK(box_item_);
-  NGInlineBoxFragmentPainter inline_box_painter(*inline_box_cursor_,
-                                                *box_item_);
+  DCHECK(inline_context_);
+  NGInlineBoxFragmentPainter inline_box_painter(*inline_box_cursor_, *box_item_,
+                                                inline_context_);
   PaintTextClipMask(mask_paint_info,
                     paint_offset - box_item_->OffsetInContainerFragment(),
                     &inline_box_painter);
@@ -2195,7 +2205,7 @@ bool NGBoxFragmentPainter::HitTestChildBoxFragment(
       return false;
 
     if (fragment.IsInlineBox()) {
-      return NGBoxFragmentPainter(cursor, *item, fragment)
+      return NGBoxFragmentPainter(cursor, *item, fragment, inline_context_)
           .NodeAtPoint(hit_test, physical_offset);
     }
 
@@ -2206,7 +2216,7 @@ bool NGBoxFragmentPainter::HitTestChildBoxFragment(
 
     // When traversing into a different inline formatting context,
     // |inline_root_offset| needs to be updated.
-    return NGBoxFragmentPainter(cursor, *item, fragment)
+    return NGBoxFragmentPainter(cursor, *item, fragment, inline_context_)
         .NodeAtPoint(*hit_test.result, hit_test.location, physical_offset,
                      hit_test.action);
   }
