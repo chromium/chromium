@@ -457,7 +457,10 @@ class TraceEventDataSourceTest
 
     EXPECT_EQ(packet->track_descriptor().counter().type(),
               perfetto::protos::CounterDescriptor::COUNTER_THREAD_TIME_NS);
+    // TODO(mohitms): Support/enable microsecond thread time counters.
+#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
     EXPECT_EQ(packet->track_descriptor().counter().unit_multiplier(), 1000u);
+#endif
   }
 
   void ExpectProcessTrack(const perfetto::protos::TracePacket* packet,
@@ -524,13 +527,10 @@ class TraceEventDataSourceTest
     ExpectThreadTrack(tt_packet, /*thread_id=*/0, /*min_timestamp=*/1u,
                       privacy_filtering_enabled);
 
-#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-    // TODO(skyostil): Add support for thread time.
     if (base::ThreadTicks::IsSupported()) {
       auto* ttt_packet = GetFinalizedPacket(packet_index++);
       ExpectThreadTimeCounterTrack(ttt_packet);
     }
-#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
     return packet_index;
   }
