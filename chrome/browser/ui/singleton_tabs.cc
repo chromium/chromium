@@ -35,11 +35,6 @@ void ShowSingletonTab(Browser* browser, const GURL& url) {
   Navigate(&params);
 }
 
-void ShowSingletonTabRespectRef(Browser* browser, const GURL& url) {
-  NavigateParams params(GetSingletonTabNavigateParams(browser, url));
-  Navigate(&params);
-}
-
 void ShowSingletonTabOverwritingNTP(Browser* browser, NavigateParams* params) {
   DCHECK(browser);
   DCHECK_EQ(params->disposition, WindowOpenDisposition::SINGLETON_TAB);

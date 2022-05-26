@@ -20,9 +20,6 @@ class GURL;
 // is created.
 void ShowSingletonTab(Browser* browser, const GURL& url);
 
-// Same as ShowSingletonTab, but does not ignore ref.
-void ShowSingletonTabRespectRef(Browser* browser, const GURL& url);
-
 // As ShowSingletonTab, but if the current tab is the new tab page or
 // about:blank, then overwrite it with the passed contents.
 void ShowSingletonTabOverwritingNTP(Browser* browser, NavigateParams* params);
