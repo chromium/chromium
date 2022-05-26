@@ -25,6 +25,7 @@
 #include "ash/system/message_center/message_center_style.h"
 #include "ash/system/message_center/message_center_utils.h"
 #include "ash/system/message_center/metrics_utils.h"
+#include "ash/system/message_center/notification_grouping_controller.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/wm/work_area_insets.h"
 #include "base/bind.h"
@@ -584,6 +585,81 @@ void AshNotificationView::AnimateGroupedChildExpandedCollapse(bool expanded) {
       collapsed_summary_view_, kChildMainViewFadeOutAnimationDurationMs,
       kCollapsedSummaryViewAnimationDurationMs, gfx::Tween::LINEAR,
       "Ash.NotificationView.CollapsedSummaryView.FadeIn.AnimationSmoothness");
+}
+
+void AshNotificationView::AnimateSingleToGroup(
+    NotificationGroupingController* grouping_controller,
+    const std::string& notification_id,
+    std::string parent_id) {
+  ash::message_center_utils::InitLayerForAnimations(left_content());
+  ash::message_center_utils::InitLayerForAnimations(right_content());
+  ash::message_center_utils::InitLayerForAnimations(
+      message_label_in_expanded_state_);
+  ash::message_center_utils::InitLayerForAnimations(image_container_view());
+  ash::message_center_utils::InitLayerForAnimations(action_buttons_row());
+
+  message_center::Notification* parent_notification =
+      message_center::MessageCenter::Get()->FindNotificationById(parent_id);
+
+  auto on_animation_ended = base::BindOnce(
+      [](base::WeakPtr<ash::AshNotificationView> parent,
+         views::View* left_content, views::View* right_content,
+         views::View* message_label_in_expanded_state,
+         views::View* image_container_view, views::View* action_buttons_row,
+         AshNotificationExpandButton* expand_button,
+         NotificationGroupingController* grouping_controller,
+         const std::string& notification_id, std::string parent_id,
+         message_center::Notification* parent_notification) {
+        if (!parent)
+          return;
+
+        grouping_controller->ConvertFromSingleToGroupNotificationAfterAnimation(
+            notification_id, parent_id, parent_notification);
+
+        left_content->layer()->SetOpacity(1.0f);
+        right_content->layer()->SetOpacity(1.0f);
+        message_label_in_expanded_state->layer()->SetOpacity(1.0f);
+        image_container_view->layer()->SetOpacity(1.0f);
+        action_buttons_row->layer()->SetOpacity(1.0f);
+
+        // After fade out single notification and set up a group one, perform
+        // a fade in.
+        parent->AnimateSingleToGroupFadeIn();
+
+        expand_button->set_previous_bounds(expand_button->GetContentsBounds());
+        parent->Layout();
+        expand_button->AnimateSingleToGroupNotification();
+      },
+      weak_factory_.GetWeakPtr(), left_content_, right_content(),
+      message_label_in_expanded_state_, image_container_view(),
+      action_buttons_row(), expand_button_, grouping_controller,
+      notification_id, parent_id, parent_notification);
+
+  std::pair<base::OnceClosure, base::OnceClosure> split =
+      base::SplitOnceCallback(std::move(on_animation_ended));
+
+  ui::AnimationThroughputReporter reporter(
+      left_content()->layer()->GetAnimator(),
+      metrics_util::ForSmoothness(base::BindRepeating([](int smoothness) {
+        base::UmaHistogramPercentage(
+            "Ash.NotificationView.ConvertSingleToGroup.FadeOut."
+            "AnimationSmoothness",
+            smoothness);
+      })));
+
+  views::AnimationBuilder()
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .OnEnded(std::move(split.first))
+      .OnAborted(std::move(split.second))
+      .Once()
+      .SetDuration(
+          base::Milliseconds(kConvertFromSingleToGroupFadeOutDurationMs))
+      .SetOpacity(left_content(), 0.0f, gfx::Tween::LINEAR)
+      .SetOpacity(right_content(), 0.0f, gfx::Tween::LINEAR)
+      .SetOpacity(message_label_in_expanded_state_, 0.0f, gfx::Tween::LINEAR)
+      .SetOpacity(image_container_view(), 0.0f, gfx::Tween::LINEAR)
+      .SetOpacity(action_buttons_row(), 0.0f, gfx::Tween::LINEAR);
 }
 
 void AshNotificationView::ToggleExpand() {
@@ -1401,7 +1477,7 @@ void AshNotificationView::PerformExpandCollapseAnimation() {
       Layout();
     DCHECK(!needs_layout());
 
-    expand_button_->PerformExpandCollapseAnimation();
+    expand_button_->AnimateExpandCollapse();
   }
 }
 
@@ -1588,6 +1664,16 @@ void AshNotificationView::PerformToggleInlineSettingsAnimation(
       main_right_view_, kToggleInlineSettingsFadeInDelayMs,
       kToggleInlineSettingsFadeInDurationMs, gfx::Tween::LINEAR,
       "Ash.NotificationView.MainRightView.FadeIn.AnimationSmoothness");
+}
+
+void AshNotificationView::AnimateSingleToGroupFadeIn() {
+  auto* fade_in_view = shown_in_popup_ ? grouped_notifications_scroll_view_
+                                       : grouped_notifications_container_;
+  message_center_utils::InitLayerForAnimations(fade_in_view);
+  message_center_utils::FadeInView(
+      fade_in_view, /*delay_in_ms=*/0,
+      kConvertFromSingleToGroupFadeInDurationMs, gfx::Tween::LINEAR,
+      "Ash.NotificationView.ConvertSingleToGroup.FadeIn.AnimationSmoothness");
 }
 
 int AshNotificationView::CalculateMaxHeightForGroupedNotifications() {

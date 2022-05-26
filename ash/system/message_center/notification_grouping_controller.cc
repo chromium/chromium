@@ -5,6 +5,7 @@
 #include "ash/system/message_center/notification_grouping_controller.h"
 
 #include "ash/system/message_center/ash_message_popup_collection.h"
+#include "ash/system/message_center/ash_notification_view.h"
 #include "ash/system/message_center/metrics_utils.h"
 #include "ash/system/message_center/unified_message_center_bubble.h"
 #include "ash/system/message_center/unified_message_center_view.h"
@@ -175,10 +176,37 @@ const std::string& NotificationGroupingController::GetParentIdForChildForTest(
   return grouped_notification_list_->GetParentForChild(notification_id);
 }
 
+void NotificationGroupingController::
+    ConvertFromSingleToGroupNotificationAfterAnimation(
+        const std::string& notification_id,
+        std::string& parent_id,
+        Notification* parent_notification) {
+  parent_id = SetupParentNotification(parent_notification, parent_id);
+
+  grouped_notification_list_->AddGroupedNotification(notification_id,
+                                                     parent_id);
+
+  auto* message_center = MessageCenter::Get();
+  Notification* notification =
+      message_center->FindNotificationById(notification_id);
+  MessageView* parent_view =
+      GetActiveNotificationViewController()->GetMessageViewForNotificationId(
+          parent_id);
+  if (parent_view)
+    parent_view->AddGroupNotification(*notification);
+  else
+    message_center->ResetSinglePopup(parent_id);
+
+  metrics_utils::LogCountOfNotificationsInOneGroup(
+      grouped_notification_list_->GetGroupedNotificationsForParent(parent_id)
+          .size());
+  metrics_utils::LogGroupNotificationAddedType(
+      metrics_utils::GroupNotificationType::GROUP_CHILD);
+}
+
 const std::string& NotificationGroupingController::SetupParentNotification(
+    Notification* parent_notification,
     const std::string& parent_id) {
-  Notification* parent_notification =
-      MessageCenter::Get()->FindNotificationById(parent_id);
   std::unique_ptr<Notification> notification_copy =
       CreateCopyForParentNotification(*parent_notification);
 
@@ -314,19 +342,28 @@ void NotificationGroupingController::OnNotificationAdded(
       message_center->FindParentNotification(notification);
   std::string parent_id = parent_notification->id();
 
+  auto* parent_view = static_cast<AshNotificationView*>(
+      GetActiveNotificationViewController()->GetMessageViewForNotificationId(
+          parent_id));
+
   // If we are creating a new notification group for this `notifier_id`,
   // we must create a copy of the designated parent notification and
   // use it to set up a container notification which will hold all
   // notifications for this group.
-  if (!grouped_notification_list_->ParentNotificationExists(parent_id))
-    parent_id = SetupParentNotification(parent_id);
+  if (!grouped_notification_list_->ParentNotificationExists(parent_id)) {
+    if (parent_view) {
+      parent_view->AnimateSingleToGroup(this, notification_id, parent_id);
+      return;
+    }
+
+    Notification* parent_notification =
+        MessageCenter::Get()->FindNotificationById(parent_id);
+    parent_id = SetupParentNotification(parent_notification, parent_id);
+  }
 
   grouped_notification_list_->AddGroupedNotification(notification_id,
                                                      parent_id);
 
-  MessageView* parent_view =
-      GetActiveNotificationViewController()->GetMessageViewForNotificationId(
-          parent_id);
   if (parent_view) {
     parent_view->AddGroupNotification(*notification);
     message_center->ResetPopupTimer(parent_id);

@@ -122,15 +122,12 @@ void AshNotificationExpandButton::UpdateIcons() {
       SkBitmapOperations::ROTATION_180_CW);
 }
 
-void AshNotificationExpandButton::PerformExpandCollapseAnimation() {
+void AshNotificationExpandButton::AnimateExpandCollapse() {
   // If the button is not used for grouped notification, there's no animation to
   // perform here.
   if (!total_grouped_notifications_)
     return;
 
-  // This value is used to add extra width to the view's bounds. We will animate
-  // the view with this extra width to its target state.
-  int extra_width;
   int bounds_animation_duration;
   gfx::Tween::Type bounds_animation_tween_type;
 
@@ -174,36 +171,23 @@ void AshNotificationExpandButton::PerformExpandCollapseAnimation() {
     bounds_animation_tween_type = gfx::Tween::ACCEL_20_DECEL_100;
   }
 
-  // Perform size change animation with layer bounds animation, setting the
-  // bounds to its previous state and then animating to current state. At the
-  // same time, we move `image_` in the opposite direction so that it appears to
-  // stay in the same location when the parent's bounds is moving.
-  const gfx::Rect target_bounds = layer()->GetTargetBounds();
-  const gfx::Rect image_target_bounds = image_->layer()->GetTargetBounds();
+  AnimateBoundsChange(
+      bounds_animation_duration, bounds_animation_tween_type,
+      "Ash.NotificationView.ExpandButton.BoundsChange.AnimationSmoothness");
+}
 
-  extra_width = previous_bounds_.width() - target_bounds.width();
+void AshNotificationExpandButton::AnimateSingleToGroupNotification() {
+  message_center_utils::FadeInView(
+      label_, /*delay_in_ms=*/0, kConvertFromSingleToGroupFadeInDurationMs,
+      gfx::Tween::LINEAR,
+      "Ash.NotificationView.ExpandButton.ConvertSingleToGroup.FadeIn."
+      "AnimationSmoothness");
 
-  ui::AnimationThroughputReporter reporter(
-      layer()->GetAnimator(),
-      metrics_util::ForSmoothness(base::BindRepeating([](int value) {
-        base::UmaHistogramPercentage(
-            "Ash.NotificationView.ExpandButton.BoundsChange."
-            "AnimationSmoothness",
-            value);
-      })));
-
-  layer()->SetBounds(
-      gfx::Rect(target_bounds.x() - extra_width, target_bounds.y(),
-                target_bounds.width() + extra_width, target_bounds.height()));
-  image_->layer()->SetBounds(
-      gfx::Rect(image_target_bounds.x() + extra_width, image_target_bounds.y(),
-                image_target_bounds.width(), image_target_bounds.height()));
-
-  views::AnimationBuilder()
-      .Once()
-      .SetDuration(base::Milliseconds(bounds_animation_duration))
-      .SetBounds(this, target_bounds, bounds_animation_tween_type)
-      .SetBounds(image_, image_target_bounds, bounds_animation_tween_type);
+  AnimateBoundsChange(
+      kConvertFromSingleToGroupBoundsChangeDurationMs,
+      gfx::Tween::ACCEL_20_DECEL_100,
+      "Ash.NotificationView.ExpandButton.ConvertSingleToGroup.BoundsChange."
+      "AnimationSmoothness");
 }
 
 void AshNotificationExpandButton::OnThemeChanged() {
@@ -234,6 +218,43 @@ gfx::Size AshNotificationExpandButton::CalculatePreferredSize() const {
   }
 
   return size;
+}
+
+void AshNotificationExpandButton::AnimateBoundsChange(
+    int duration_in_ms,
+    gfx::Tween::Type tween_type,
+    const std::string& animation_histogram_name) {
+  // Perform size change animation with layer bounds animation, setting the
+  // bounds to its previous state and then animating to current state. At the
+  // same time, we move `image_` in the opposite direction so that it appears to
+  // stay in the same location when the parent's bounds is moving.
+  const gfx::Rect target_bounds = layer()->GetTargetBounds();
+  const gfx::Rect image_target_bounds = image_->layer()->GetTargetBounds();
+
+  // This value is used to add extra width to the view's bounds. We will animate
+  // the view with this extra width to its target state.
+  int extra_width = previous_bounds_.width() - target_bounds.width();
+
+  ui::AnimationThroughputReporter reporter(
+      layer()->GetAnimator(),
+      metrics_util::ForSmoothness(base::BindRepeating(
+          [](const std::string& animation_histogram_name, int smoothness) {
+            base::UmaHistogramPercentage(animation_histogram_name, smoothness);
+          },
+          animation_histogram_name)));
+
+  layer()->SetBounds(
+      gfx::Rect(target_bounds.x() - extra_width, target_bounds.y(),
+                target_bounds.width() + extra_width, target_bounds.height()));
+  image_->layer()->SetBounds(
+      gfx::Rect(image_target_bounds.x() + extra_width, image_target_bounds.y(),
+                image_target_bounds.width(), image_target_bounds.height()));
+
+  views::AnimationBuilder()
+      .Once()
+      .SetDuration(base::Milliseconds(duration_in_ms))
+      .SetBounds(this, target_bounds, tween_type)
+      .SetBounds(image_, image_target_bounds, tween_type);
 }
 
 }  // namespace ash

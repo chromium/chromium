@@ -141,6 +141,27 @@ class AshNotificationViewTest : public AshTestBase, public views::ViewObserver {
     return notification;
   }
 
+  // Create a test notification. All the notifications created by this function
+  // will belong to the same group.
+  std::unique_ptr<Notification> CreateTestNotificationInAGroup() {
+    message_center::NotifierId notifier_id;
+    notifier_id.profile_id = "abc@gmail.com";
+    notifier_id.type = message_center::NotifierType::WEB_PAGE;
+
+    std::unique_ptr<Notification> notification = std::make_unique<Notification>(
+        message_center::NOTIFICATION_TYPE_BASE_FORMAT,
+        base::NumberToString(current_id_++), u"title", u"message",
+        ui::ImageModel::FromImage(CreateTestImage(80, 80)), u"display source",
+        GURL(u"http://test-url.com"), notifier_id,
+        message_center::RichNotificationData(), delegate_);
+    notification->set_small_image(CreateTestImage(16, 16));
+
+    message_center::MessageCenter::Get()->AddNotification(
+        std::make_unique<message_center::Notification>(*notification));
+
+    return notification;
+  }
+
   // Get the tested notification view from message center. This is used in
   // checking smoothness metrics: The check requires the use of the compositor,
   // which we don't have in the customed made `notification_view_`.
@@ -270,6 +291,9 @@ class AshNotificationViewTest : public AshTestBase, public views::ViewObserver {
   }
   views::View* GetInlineSettingsRow(AshNotificationView* view) {
     return view->inline_settings_row();
+  }
+  views::View* GetGroupedNotificationsContainer(AshNotificationView* view) {
+    return view->grouped_notifications_container_;
   }
 
   AshNotificationView* notification_view() { return notification_view_.get(); }
@@ -849,6 +873,39 @@ TEST_F(AshNotificationViewTest, GroupExpandCollapseAnimationsRecordSmoothness) {
       histograms_collapsed,
       GetExpandButton(notification_view)->label_for_test(),
       "Ash.NotificationView.ExpandButton.BoundsChange.AnimationSmoothness");
+}
+
+TEST_F(AshNotificationViewTest, SingleToGroupAnimationsRecordSmoothness) {
+  base::HistogramTester histograms;
+
+  // Enable animations.
+  ui::ScopedAnimationDurationScaleMode duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  message_center::MessageCenter::Get()->RemoveAllNotifications(
+      /*by_user=*/true, message_center::MessageCenter::RemoveType::ALL);
+  GetPrimaryUnifiedSystemTray()->ShowBubble();
+
+  auto notification1 = CreateTestNotificationInAGroup();
+
+  auto* notification_view =
+      GetNotificationViewFromMessageCenter(notification1->id());
+  auto notification2 = CreateTestNotificationInAGroup();
+
+  CheckSmoothnessRecorded(
+      histograms, GetLeftContent(notification_view),
+      "Ash.NotificationView.ConvertSingleToGroup.FadeOut.AnimationSmoothness");
+  CheckSmoothnessRecorded(
+      histograms, GetGroupedNotificationsContainer(notification_view),
+      "Ash.NotificationView.ConvertSingleToGroup.FadeIn.AnimationSmoothness");
+  CheckSmoothnessRecorded(
+      histograms, GetExpandButton(notification_view)->label_for_test(),
+      "Ash.NotificationView.ExpandButton.ConvertSingleToGroup."
+      "FadeIn.AnimationSmoothness");
+  CheckSmoothnessRecorded(
+      histograms, GetExpandButton(notification_view),
+      "Ash.NotificationView.ExpandButton.ConvertSingleToGroup."
+      "BoundsChange.AnimationSmoothness");
 }
 
 TEST_F(AshNotificationViewTest, InlineReplyAnimationsRecordSmoothness) {

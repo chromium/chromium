@@ -30,6 +30,7 @@ namespace ash {
 class RoundedImageView;
 class AshNotificationExpandButton;
 class IconButton;
+class NotificationGroupingController;
 
 // Customized NotificationView for notification on ChromeOS. This view is used
 // to displays all current types of notification on ChromeOS (web, basic, image,
@@ -53,6 +54,11 @@ class ASH_EXPORT AshNotificationView
   // Animate the grouped child notification when switching between expand and
   // collapse state.
   void AnimateGroupedChildExpandedCollapse(bool expanded);
+
+  // Animations when converting from single to group notification.
+  void AnimateSingleToGroup(NotificationGroupingController* grouping_controller,
+                            const std::string& notification_id,
+                            std::string parent_id);
 
   // Toggle the expand state of the notification. This function should only be
   // used to handle user manually expand/collapse a notification.
@@ -225,6 +231,9 @@ class ASH_EXPORT AshNotificationView
 
   // Animations when toggle inline settings.
   void PerformToggleInlineSettingsAnimation(bool should_show_inline_settings);
+
+  // Fade in animation when converting from single to group notification.
+  void AnimateSingleToGroupFadeIn();
 
   // Calculate vertical space available on screen for the
   // grouped_notifications_scroll_view_

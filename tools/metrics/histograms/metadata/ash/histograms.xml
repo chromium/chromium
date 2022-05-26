@@ -2774,6 +2774,22 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Ash.NotificationView.ConvertSingleToGroup.{Animation}.AnimationSmoothness"
+    units="%" expires_after="2023-05-14">
+  <owner>leandre@chromium.org</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Relative smoothness of the {Animation} in notification view when converting
+    from single to group notification. 100% represents ideally smooth 60 frames
+    per second. Emitted when the animation is completed.
+  </summary>
+  <token key="Animation">
+    <variant name="FadeIn"/>
+    <variant name="FadeOut"/>
+  </token>
+</histogram>
+
+<histogram
     name="Ash.NotificationView.ExpandButton.BoundsChange.AnimationSmoothness"
     units="%" expires_after="2023-02-09">
   <owner>leandre@chromium.org</owner>
@@ -2794,6 +2810,23 @@ chromium-metrics-reviews@google.com.
     The actions are expanding or collapsing individual or group notification.
     Emitted when an expand button is clicked.
   </summary>
+</histogram>
+
+<histogram
+    name="Ash.NotificationView.ExpandButton.ConvertSingleToGroup.{Animation}.AnimationSmoothness"
+    units="%" expires_after="2023-05-14">
+  <owner>leandre@chromium.org</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Relative smoothness of the {Animation} inside the expand button of the
+    notification view when converting from single to group notification. 100%
+    represents ideally smooth 60 frames per second. Emitted when the animation
+    is completed.
+  </summary>
+  <token key="Animation">
+    <variant name="BoundsChange"/>
+    <variant name="FadeIn"/>
+  </token>
 </histogram>
 
 <histogram
