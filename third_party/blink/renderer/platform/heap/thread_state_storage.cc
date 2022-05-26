@@ -6,7 +6,7 @@
 
 #include <new>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 
 namespace blink {
 
