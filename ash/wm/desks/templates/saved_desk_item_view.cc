@@ -719,6 +719,8 @@ void SavedDeskItemView::MaybeSwapHighlightedView(bool right) {}
 
 void SavedDeskItemView::OnViewHighlighted() {
   views::FocusRing::Get(this)->SchedulePaint();
+
+  ScrollViewToVisible();
 }
 
 void SavedDeskItemView::OnViewUnhighlighted() {

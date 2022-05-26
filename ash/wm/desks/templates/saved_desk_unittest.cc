@@ -3764,6 +3764,38 @@ TEST_F(SavedDeskTest, ScrollBarVisibility) {
   }
 }
 
+// Tests that the save desk item view is fully visible with the highlight
+// change.
+TEST_F(SavedDeskTest, ScrollWithHighlightChange) {
+  // Add 6 `kTemplate` entries and 6 `kSaveAndRecall` entries.
+  for (size_t i = 1; i <= 6; i++) {
+    AddEntry(base::GUID::GenerateRandomV4(),
+             "desk_template " + base::NumberToString(i), base::Time::Now(),
+             DeskTemplateType::kTemplate);
+    AddEntry(base::GUID::GenerateRandomV4(),
+             "saved_desk " + base::NumberToString(i), base::Time::Now(),
+             DeskTemplateType::kSaveAndRecall);
+  }
+
+  OpenOverviewAndShowTemplatesGrid();
+
+  for (size_t i = 0; i < 12; i++) {
+    SavedDeskItemView* item_view = GetItemViewFromTemplatesGrid(i);
+
+    // Verify item view is fully visible.
+    SendKey(ui::VKEY_TAB);
+    EXPECT_TRUE(item_view->IsViewHighlighted());
+    EXPECT_EQ(item_view->GetPreferredSize(),
+              item_view->GetVisibleBounds().size());
+
+    // Verify name view is fully visible.
+    SendKey(ui::VKEY_TAB);
+    EXPECT_TRUE(item_view->name_view()->IsViewHighlighted());
+    EXPECT_EQ(item_view->name_view()->GetPreferredSize(),
+              item_view->name_view()->GetVisibleBounds().size());
+  }
+}
+
 using DeskSaveAndRecallTest = SavedDeskTest;
 
 TEST_F(DeskSaveAndRecallTest, SaveDeskForLater) {
