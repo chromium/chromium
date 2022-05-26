@@ -227,6 +227,11 @@ UseCounterPageLoadMetricsObserver::GetAllowedUkmFeatures() {
           WebFeature::kCookieHasNotBeenRefreshedIn301To350Days,
           WebFeature::kCookieHasNotBeenRefreshedIn351To400Days,
           WebFeature::kPartitionedCookies,
+          WebFeature::kScriptSchedulingType_Defer,
+          WebFeature::kScriptSchedulingType_ParserBlocking,
+          WebFeature::kScriptSchedulingType_ParserBlockingInline,
+          WebFeature::kScriptSchedulingType_InOrder,
+          WebFeature::kScriptSchedulingType_Async,
       }));
   return *opt_in_features;
 }

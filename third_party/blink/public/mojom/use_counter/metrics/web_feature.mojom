@@ -3556,6 +3556,11 @@ enum WebFeature {
   kV8PaymentInstruments_Set_Method = 4235,
   kPerformanceMeasureFindExistingName = 4236,
   kFlexboxNewAbsPos = 4237,
+  kScriptSchedulingType_Defer = 4238,
+  kScriptSchedulingType_ParserBlocking = 4239,
+  kScriptSchedulingType_ParserBlockingInline = 4240,
+  kScriptSchedulingType_InOrder = 4241,
+  kScriptSchedulingType_Async = 4242,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

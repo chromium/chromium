@@ -1120,6 +1120,32 @@ PendingScript* ScriptLoader::TakePendingScript(
                                   scheduling_type);
   }
 
+  // Record usage histograms per page.
+  switch (scheduling_type) {
+    case ScriptSchedulingType::kDefer:
+      UseCounter::Count(element_->GetDocument(),
+                        WebFeature::kScriptSchedulingType_Defer);
+      break;
+    case ScriptSchedulingType::kParserBlocking:
+      UseCounter::Count(element_->GetDocument(),
+                        WebFeature::kScriptSchedulingType_ParserBlocking);
+      break;
+    case ScriptSchedulingType::kParserBlockingInline:
+      UseCounter::Count(element_->GetDocument(),
+                        WebFeature::kScriptSchedulingType_ParserBlockingInline);
+      break;
+    case ScriptSchedulingType::kInOrder:
+      UseCounter::Count(element_->GetDocument(),
+                        WebFeature::kScriptSchedulingType_InOrder);
+      break;
+    case ScriptSchedulingType::kAsync:
+      UseCounter::Count(element_->GetDocument(),
+                        WebFeature::kScriptSchedulingType_Async);
+      break;
+    default:
+      break;
+  }
+
   PendingScript* pending_script = prepared_pending_script_;
   prepared_pending_script_ = nullptr;
   pending_script->SetSchedulingType(scheduling_type);

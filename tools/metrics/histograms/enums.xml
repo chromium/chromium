@@ -40159,6 +40159,11 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4235" label="V8PaymentInstruments_Set_Method"/>
   <int value="4236" label="PerformanceMeasureFindExistingName"/>
   <int value="4237" label="FlexboxNewAbsPos"/>
+  <int value="4238" label="ScriptSchedulingType_Defer"/>
+  <int value="4239" label="ScriptSchedulingType_ParserBlocking"/>
+  <int value="4240" label="ScriptSchedulingType_ParserBlockingInline"/>
+  <int value="4241" label="ScriptSchedulingType_InOrder"/>
+  <int value="4242" label="ScriptSchedulingType_Async"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
