@@ -5954,6 +5954,7 @@ crbug.com/1228959 [ Linux ] virtual/scroll-unification/fast/scroll-snap/snaps-af
 
 # A number of http/tests/inspector-protocol/network tests are flaky.
 crbug.com/1228246 http/tests/inspector-protocol/network/disable-interception-midway.js [ Crash Failure Pass Skip Timeout ]
+crbug.com/1196027 http/tests/inspector-protocol/network/request-interception.js [ Failure Pass ]
 crbug.com/1228246 http/tests/inspector-protocol/network/request-interception-frame-id.js [ Crash Failure Pass Skip Timeout ]
 crbug.com/1228246 http/tests/inspector-protocol/network/request-interception-patterns.js [ Crash Failure Pass Skip Timeout ]
 crbug.com/1228246 http/tests/inspector-protocol/network/request-response-interception-disable-between.js [ Crash Failure Pass Skip Timeout ]
