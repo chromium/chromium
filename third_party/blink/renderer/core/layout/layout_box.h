@@ -1192,6 +1192,8 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   void RestoreLegacyLayoutResults(const NGLayoutResult* measure_result,
                                   const NGLayoutResult* layout_result);
   void ClearLayoutResults();
+  // Clear LayoutObject fields of physical fragments.
+  void DisassociatePhysicalFragments();
 
   // Call when NG fragment count or size changed. Only call if the fragment
   // count is or was larger than 1.

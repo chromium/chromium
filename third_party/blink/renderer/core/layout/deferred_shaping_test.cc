@@ -244,6 +244,24 @@ MMM MMMMM MMMMM MMM MMMMM MMMM MMM MMMM MMM.
                                      .width);
 }
 
+// crbug.com/1327891
+TEST_F(DeferredShapingTest, FragmentAssociationAfterUnlock) {
+  SetBodyInnerHTML(R"HTML(
+<div style="height:1800px"></div>
+<div id="target">IFC</div>)HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(IsDefer("target"));
+  EXPECT_TRUE(IsLocked("target"));
+  auto* box = GetLayoutBoxByElementId("target");
+  auto* fragment = box->GetPhysicalFragment(0);
+  EXPECT_EQ(box, fragment->GetLayoutObject());
+
+  ScrollAndWaitForIntersectionCheck(1800);
+  EXPECT_FALSE(IsDefer("target"));
+  EXPECT_FALSE(IsLocked("target"));
+  EXPECT_EQ(nullptr, fragment->GetLayoutObject());
+}
+
 TEST_F(DeferredShapingTest, UpdateTextInDeferred) {
   SetBodyInnerHTML(R"HTML(
 <div style="height:1800px"></div>

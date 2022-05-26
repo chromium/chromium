@@ -496,14 +496,7 @@ void LayoutBox::WillBeDestroyed() {
   ShapeOutsideInfo::RemoveInfo(*this);
 
   if (!DocumentBeingDestroyed()) {
-    if (FirstInlineFragmentItemIndex()) {
-      NGFragmentItems::LayoutObjectWillBeDestroyed(*this);
-      ClearFirstInlineFragmentItemIndex();
-    }
-    if (measure_result_)
-      measure_result_->PhysicalFragment().LayoutObjectWillBeDestroyed();
-    for (auto result : layout_results_)
-      result->PhysicalFragment().LayoutObjectWillBeDestroyed();
+    DisassociatePhysicalFragments();
     GetDocument()
         .GetFrame()
         ->GetInputMethodController()
@@ -512,6 +505,17 @@ void LayoutBox::WillBeDestroyed() {
 
   SetSnapContainer(nullptr);
   LayoutBoxModelObject::WillBeDestroyed();
+}
+
+void LayoutBox::DisassociatePhysicalFragments() {
+  if (FirstInlineFragmentItemIndex()) {
+    NGFragmentItems::LayoutObjectWillBeDestroyed(*this);
+    ClearFirstInlineFragmentItemIndex();
+  }
+  if (measure_result_)
+    measure_result_->PhysicalFragment().LayoutObjectWillBeDestroyed();
+  for (auto result : layout_results_)
+    result->PhysicalFragment().LayoutObjectWillBeDestroyed();
 }
 
 void LayoutBox::InsertedIntoTree() {
@@ -3407,7 +3411,7 @@ void LayoutBox::InvalidateItems(const NGLayoutResult& result) {
   // Column fragments are not really associated with a layout object.
   if (IsLayoutFlowThread())
     DCHECK(box_fragment.IsColumnBox());
-  else
+  else if (!IsShapingDeferred())
     DCHECK_EQ(this, box_fragment.GetLayoutObject());
 #endif
   ObjectPaintInvalidator(*this).SlowSetPaintingLayerNeedsRepaint();
