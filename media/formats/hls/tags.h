@@ -166,6 +166,15 @@ struct MEDIA_EXPORT XTargetDurationTag {
   types::DecimalInteger duration;
 };
 
+// Represents the contents of the #EXT-PART-INF tag.
+struct MEDIA_EXPORT XPartInfTag {
+  static constexpr auto kName = MediaPlaylistTagName::kXPartInf;
+  static ParseStatus::Or<XPartInfTag> Parse(TagItem);
+
+  // This value indicates the target duration for partial media segments.
+  types::DecimalFloatingPoint target_duration;
+};
+
 // Represents the contents of the #EXT-X-MEDIA-SEQUENCE tag.
 struct MEDIA_EXPORT XMediaSequenceTag {
   static constexpr auto kName = MediaPlaylistTagName::kXMediaSequence;

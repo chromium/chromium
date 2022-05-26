@@ -99,6 +99,21 @@ inline void HasComputedDuration(base::TimeDelta value,
   EXPECT_EQ(playlist.GetComputedDuration(), value) << from.ToString();
 }
 
+// Checks that the value of `GetPartialSegmentInfo()` matches the given value.
+inline void HasPartialSegmentInfo(
+    absl::optional<MediaPlaylist::PartialSegmentInfo> partial_segment_info,
+    const base::Location& from,
+    const MediaPlaylist& playlist) {
+  ASSERT_EQ(partial_segment_info.has_value(),
+            playlist.GetPartialSegmentInfo().has_value())
+      << from.ToString();
+  if (partial_segment_info.has_value()) {
+    ASSERT_DOUBLE_EQ(partial_segment_info->target_duration,
+                     playlist.GetPartialSegmentInfo()->target_duration)
+        << from.ToString();
+  }
+}
+
 // Checks the media playlist's `HasMediaSequenceTag` property against
 // the given value.
 inline void HasMediaSequenceTag(bool value,

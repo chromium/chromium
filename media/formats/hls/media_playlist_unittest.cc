@@ -1056,4 +1056,45 @@ TEST(HlsMediaPlaylistTest, XBitrateTag) {
   builder.ExpectOk();
 }
 
+TEST(HlsMediaPlaylistTest, XPartInfTag) {
+  MediaPlaylistTestBuilder builder;
+  builder.AppendLine("#EXTM3U");
+  builder.AppendLine("#EXT-X-TARGETDURATION:10");
+
+  // EXT-X-PART-INF tag must be well-formed
+  for (base::StringPiece x : {"", ":", ":TARGET=1", ":PART-TARGET=two"}) {
+    auto fork = builder;
+    fork.AppendLine("#EXT-X-PART-INF", x);
+    fork.ExpectError(ParseStatusCode::kMalformedTag);
+  }
+
+  auto fork = builder;
+  fork.AppendLine("#EXT-X-PART-INF:PART-TARGET=0");
+  fork.ExpectPlaylist(HasPartialSegmentInfo,
+                      MediaPlaylist::PartialSegmentInfo{.target_duration = 0});
+  fork.ExpectOk();
+
+  fork = builder;
+  fork.AppendLine("#EXT-X-PART-INF:PART-TARGET=1");
+  fork.ExpectPlaylist(HasPartialSegmentInfo,
+                      MediaPlaylist::PartialSegmentInfo{.target_duration = 1});
+  fork.ExpectOk();
+
+  fork = builder;
+  fork.AppendLine("#EXT-X-PART-INF:PART-TARGET=1.2");
+  fork.ExpectPlaylist(HasPartialSegmentInfo, MediaPlaylist::PartialSegmentInfo{
+                                                 .target_duration = 1.2});
+  fork.ExpectOk();
+
+  fork = builder;
+  fork.AppendLine("#EXT-X-PART-INF:PART-TARGET=99.99");
+  fork.ExpectPlaylist(HasPartialSegmentInfo, MediaPlaylist::PartialSegmentInfo{
+                                                 .target_duration = 99.99});
+  fork.ExpectOk();
+
+  // The EXT-X-PART-INF tag may not appear twice
+  fork.AppendLine("#EXT-X-PART-INF:PART-TARGET=10");
+  fork.ExpectError(ParseStatusCode::kPlaylistHasDuplicateTags);
+}
+
 }  // namespace media::hls

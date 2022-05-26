@@ -103,6 +103,23 @@ constexpr base::StringPiece GetAttributeName(XStreamInfTagAttribute attribute) {
   return "";
 }
 
+// Attributes expected in `EXT-X-PART-INF` tag contents.
+// These must remain sorted alphabetically.
+enum class XPartInfTagAttribute {
+  kPartTarget,
+  kMaxValue = kPartTarget,
+};
+
+constexpr base::StringPiece GetAttributeName(XPartInfTagAttribute attribute) {
+  switch (attribute) {
+    case XPartInfTagAttribute::kPartTarget:
+      return "PART-TARGET";
+  }
+
+  NOTREACHED();
+  return "";
+}
+
 template <typename T, size_t kLast>
 constexpr bool IsAttributeEnumSorted(std::index_sequence<kLast>) {
   return true;
@@ -443,6 +460,40 @@ ParseStatus::Or<XStreamInfTag> XStreamInfTag::Parse(
 
 ParseStatus::Or<XTargetDurationTag> XTargetDurationTag::Parse(TagItem tag) {
   return ParseDecimalIntegerTag(tag, &XTargetDurationTag::duration);
+}
+
+ParseStatus::Or<XPartInfTag> XPartInfTag::Parse(TagItem tag) {
+  DCHECK(tag.GetName() == ToTagName(XPartInfTag::kName));
+  if (!tag.GetContent().has_value()) {
+    return ParseStatusCode::kMalformedTag;
+  }
+
+  // Parse the attribute-list
+  TypedAttributeMap<XPartInfTagAttribute> map;
+  types::AttributeListIterator iter(*tag.GetContent());
+  auto map_result = map.FillUntilError(&iter);
+
+  if (map_result.code() != ParseStatusCode::kReachedEOF) {
+    return ParseStatus(ParseStatusCode::kMalformedTag)
+        .AddCause(std::move(map_result));
+  }
+
+  XPartInfTag out;
+
+  // Extract the 'PART-TARGET' attribute
+  if (map.HasValue(XPartInfTagAttribute::kPartTarget)) {
+    auto target_duration = types::ParseDecimalFloatingPoint(
+        map.GetValue(XPartInfTagAttribute::kPartTarget));
+    if (target_duration.has_error()) {
+      return ParseStatus(ParseStatusCode::kMalformedTag)
+          .AddCause(std::move(target_duration).error());
+    }
+    out.target_duration = std::move(target_duration).value();
+  } else {
+    return ParseStatusCode::kMalformedTag;
+  }
+
+  return out;
 }
 
 ParseStatus::Or<XMediaSequenceTag> XMediaSequenceTag::Parse(TagItem tag) {

@@ -500,4 +500,33 @@ TEST(HlsTagsTest, ParseXBitrateTag) {
   RunDecimalIntegerTagTest(&XBitrateTag::bitrate);
 }
 
+TEST(HlsTagsTest, ParseXPartInfTag) {
+  RunTagIdenficationTest<XPartInfTag>("#EXT-X-PART-INF:PART-TARGET=1.0\n",
+                                      "PART-TARGET=1.0");
+
+  // PART-TARGET is required, and must be a valid DecimalFloatingPoint
+  ErrorTest<XPartInfTag>(absl::nullopt, ParseStatusCode::kMalformedTag);
+  ErrorTest<XPartInfTag>("", ParseStatusCode::kMalformedTag);
+  ErrorTest<XPartInfTag>("1", ParseStatusCode::kMalformedTag);
+  ErrorTest<XPartInfTag>("PART-TARGET=-1", ParseStatusCode::kMalformedTag);
+  ErrorTest<XPartInfTag>("PART-TARGET={$part-target}",
+                         ParseStatusCode::kMalformedTag);
+  ErrorTest<XPartInfTag>("PART-TARGET=\"1\"", ParseStatusCode::kMalformedTag);
+  ErrorTest<XPartInfTag>("PART-TARGET=one", ParseStatusCode::kMalformedTag);
+  ErrorTest<XPartInfTag>("FOO=BAR", ParseStatusCode::kMalformedTag);
+  ErrorTest<XPartInfTag>("PART-TARGET=10,PART-TARGET=10",
+                         ParseStatusCode::kMalformedTag);
+
+  auto tag = OkTest<XPartInfTag>("PART-TARGET=1.2");
+  EXPECT_DOUBLE_EQ(tag.target_duration, 1.2);
+  tag = OkTest<XPartInfTag>("PART-TARGET=1");
+  EXPECT_DOUBLE_EQ(tag.target_duration, 1);
+  tag = OkTest<XPartInfTag>("PART-TARGET=0");
+  EXPECT_DOUBLE_EQ(tag.target_duration, 0);
+  tag = OkTest<XPartInfTag>("PART-TARGET=99999999.99");
+  EXPECT_DOUBLE_EQ(tag.target_duration, 99999999.99);
+  tag = OkTest<XPartInfTag>("FOO=BAR,PART-TARGET=100,BAR=BAZ");
+  EXPECT_DOUBLE_EQ(tag.target_duration, 100);
+}
+
 }  // namespace media::hls

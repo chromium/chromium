@@ -62,6 +62,7 @@ ParseStatus::Or<MediaPlaylist> MediaPlaylist::Parse(
   absl::optional<XPlaylistTypeTag> playlist_type_tag;
   absl::optional<XEndListTag> end_list_tag;
   absl::optional<XIFramesOnlyTag> i_frames_only_tag;
+  absl::optional<XPartInfTag> part_inf_tag;
   absl::optional<XMediaSequenceTag> media_sequence_tag;
   absl::optional<XDiscontinuitySequenceTag> discontinuity_sequence_tag;
   std::vector<MediaSegment> segments;
@@ -166,6 +167,13 @@ ParseStatus::Or<MediaPlaylist> MediaPlaylist::Parse(
         }
         case MediaPlaylistTagName::kXPlaylistType: {
           auto error = ParseUniqueTag(*tag, playlist_type_tag);
+          if (error.has_value()) {
+            return std::move(error).value();
+          }
+          break;
+        }
+        case MediaPlaylistTagName::kXPartInf: {
+          auto error = ParseUniqueTag(*tag, part_inf_tag);
           if (error.has_value()) {
             return std::move(error).value();
           }
@@ -304,6 +312,12 @@ ParseStatus::Or<MediaPlaylist> MediaPlaylist::Parse(
     return ParseStatusCode::kMediaPlaylistMissingTargetDuration;
   }
 
+  absl::optional<PartialSegmentInfo> partial_segment_info;
+  if (part_inf_tag.has_value()) {
+    partial_segment_info = MediaPlaylist::PartialSegmentInfo{
+        .target_duration = part_inf_tag->target_duration};
+  }
+
   // Ensure that no segment exceeds the target duration
   for (const auto& segment : segments) {
     const auto duration =
@@ -329,22 +343,26 @@ ParseStatus::Or<MediaPlaylist> MediaPlaylist::Parse(
 
   return MediaPlaylist(
       std::move(uri), common_state.GetVersion(), independent_segments,
-      base::Seconds(target_duration_tag->duration), std::move(segments),
-      playlist_type, end_list_tag.has_value(), i_frames_only_tag.has_value(),
+      base::Seconds(target_duration_tag->duration),
+      std::move(partial_segment_info), std::move(segments), playlist_type,
+      end_list_tag.has_value(), i_frames_only_tag.has_value(),
       media_sequence_tag.has_value());
 }
 
-MediaPlaylist::MediaPlaylist(GURL uri,
-                             types::DecimalInteger version,
-                             bool independent_segments,
-                             base::TimeDelta target_duration,
-                             std::vector<MediaSegment> segments,
-                             absl::optional<PlaylistType> playlist_type,
-                             bool end_list,
-                             bool i_frames_only,
-                             bool has_media_sequence_tag)
+MediaPlaylist::MediaPlaylist(
+    GURL uri,
+    types::DecimalInteger version,
+    bool independent_segments,
+    base::TimeDelta target_duration,
+    absl::optional<PartialSegmentInfo> partial_segment_info,
+    std::vector<MediaSegment> segments,
+    absl::optional<PlaylistType> playlist_type,
+    bool end_list,
+    bool i_frames_only,
+    bool has_media_sequence_tag)
     : Playlist(std::move(uri), version, independent_segments),
       target_duration_(target_duration),
+      partial_segment_info_(std::move(partial_segment_info)),
       segments_(std::move(segments)),
       playlist_type_(playlist_type),
       end_list_(end_list),

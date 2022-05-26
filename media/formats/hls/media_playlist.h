@@ -23,6 +23,16 @@ class MultivariantPlaylist;
 
 class MEDIA_EXPORT MediaPlaylist final : public Playlist {
  public:
+  // This structure describes information about partial segments in the
+  // playlist.
+  struct PartialSegmentInfo {
+    // The maximum duration (in seconds) of any partial segment. Each partial
+    // segment must be at least 85% of this, except for any where
+    // `HasDiscontinuity() == true` or the final partial segment of a parent
+    // segment.
+    types::DecimalFloatingPoint target_duration;
+  };
+
   MediaPlaylist(const MediaPlaylist&) = delete;
   MediaPlaylist(MediaPlaylist&&);
   MediaPlaylist& operator=(const MediaPlaylist&) = delete;
@@ -50,6 +60,13 @@ class MEDIA_EXPORT MediaPlaylist final : public Playlist {
   // playlist upon reloading.
   absl::optional<PlaylistType> GetPlaylistType() const {
     return playlist_type_;
+  }
+
+  // Returns information about partial segments in this playlist. This will be
+  // non-empty if this playlist contains at least one partial segment, and may
+  // be empty if this playlist contains no partial segments.
+  absl::optional<PartialSegmentInfo> GetPartialSegmentInfo() const {
+    return partial_segment_info_;
   }
 
   // Returns whether this playlist contained the 'EXT-X-ENDLIST' tag. This
@@ -87,6 +104,7 @@ class MEDIA_EXPORT MediaPlaylist final : public Playlist {
                 types::DecimalInteger version,
                 bool independent_segments,
                 base::TimeDelta target_duration,
+                absl::optional<PartialSegmentInfo> partial_segment_info,
                 std::vector<MediaSegment> segments,
                 absl::optional<PlaylistType> playlist_type,
                 bool end_list,
@@ -94,6 +112,7 @@ class MEDIA_EXPORT MediaPlaylist final : public Playlist {
                 bool has_media_sequence_tag_);
 
   base::TimeDelta target_duration_;
+  absl::optional<PartialSegmentInfo> partial_segment_info_;
   std::vector<MediaSegment> segments_;
   base::TimeDelta computed_duration_;
   absl::optional<PlaylistType> playlist_type_;
