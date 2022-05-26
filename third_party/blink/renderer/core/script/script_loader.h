@@ -53,11 +53,6 @@ class CORE_EXPORT ScriptLoader final : public ResourceFinishObserver,
   const char* NameInHeapSnapshot() const override { return "ScriptLoader"; }
   String DebugName() const override { return "ScriptLoader"; }
 
-  enum LegacyTypeSupport {
-    kDisallowLegacyTypeInTypeAttribute,
-    kAllowLegacyTypeInTypeAttribute
-  };
-
   // Script type at the time of #prepare-a-script. Import maps are included here
   // but not in `mojom::blink::ScriptType` because import maps are handled
   // differently from ordinal scripts after PrepareScript().
@@ -72,8 +67,7 @@ class CORE_EXPORT ScriptLoader final : public ResourceFinishObserver,
 
   static ScriptTypeAtPrepare GetScriptTypeAtPrepare(
       const String& type_attribute_value,
-      const String& language_attribute_value,
-      LegacyTypeSupport support_legacy_types);
+      const String& language_attribute_value);
 
   static bool BlockForNoModule(ScriptTypeAtPrepare, bool nomodule);
 
@@ -82,8 +76,7 @@ class CORE_EXPORT ScriptLoader final : public ResourceFinishObserver,
 
   // https://html.spec.whatwg.org/C/#prepare-a-script
   bool PrepareScript(const TextPosition& script_start_position =
-                         TextPosition::MinimumPosition(),
-                     LegacyTypeSupport = kDisallowLegacyTypeInTypeAttribute);
+                         TextPosition::MinimumPosition());
 
   // Gets a PendingScript for external script whose fetch is started in
   // FetchClassicScript()/FetchModuleScriptTree().

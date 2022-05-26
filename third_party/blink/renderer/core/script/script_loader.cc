@@ -174,18 +174,8 @@ void ScriptLoader::Removed() {
 namespace {
 
 // <specdef href="https://html.spec.whatwg.org/C/#prepare-a-script">
-bool IsValidClassicScriptTypeAndLanguage(
-    const String& type,
-    const String& language,
-    ScriptLoader::LegacyTypeSupport support_legacy_types) {
-  // FIXME: IsLegacySupportedJavaScriptLanguage() is not valid HTML5. It is used
-  // here to maintain backwards compatibility with existing web tests. The
-  // specific violations are:
-  // - Allowing type=javascript. type= should only support MIME types, such as
-  //   text/javascript.
-  // - Allowing a different set of languages for language= and type=. language=
-  //   supports Javascript 1.1 and 1.4-1.6, but type= does not.
-
+bool IsValidClassicScriptTypeAndLanguage(const String& type,
+                                         const String& language) {
   if (type.IsNull()) {
     // <spec step="8">the script element has no type attribute but it has a
     // language attribute and that attribute's value is the empty string,
@@ -215,12 +205,6 @@ bool IsValidClassicScriptTypeAndLanguage(
             type.StripWhiteSpace())) {
       return true;
     }
-
-    // Not spec'ed.
-    if (support_legacy_types == ScriptLoader::kAllowLegacyTypeInTypeAttribute &&
-        MIMETypeRegistry::IsLegacySupportedJavaScriptLanguage(type)) {
-      return true;
-    }
   }
 
   return false;
@@ -235,10 +219,8 @@ enum class ShouldFireErrorEvent {
 
 ScriptLoader::ScriptTypeAtPrepare ScriptLoader::GetScriptTypeAtPrepare(
     const String& type,
-    const String& language,
-    LegacyTypeSupport support_legacy_types) {
-  if (IsValidClassicScriptTypeAndLanguage(type, language,
-                                          support_legacy_types)) {
+    const String& language) {
+  if (IsValidClassicScriptTypeAndLanguage(type, language)) {
     // <spec step="8">... If the script block's type string is a JavaScript MIME
     // type essence match, the script's type is "classic". ...</spec>
     return ScriptTypeAtPrepare::kClassic;
@@ -317,8 +299,7 @@ bool ShouldBlockSyncScriptForDocumentPolicy(
 }
 
 // <specdef href="https://html.spec.whatwg.org/C/#prepare-a-script">
-bool ScriptLoader::PrepareScript(const TextPosition& script_start_position,
-                                 LegacyTypeSupport support_legacy_types) {
+bool ScriptLoader::PrepareScript(const TextPosition& script_start_position) {
   // <spec step="1">If the script element is marked as having "already started",
   // then return. The script is not executed.</spec>
   if (already_started_)
@@ -367,8 +348,7 @@ bool ScriptLoader::PrepareScript(const TextPosition& script_start_position,
 
   // <spec step="7">... Determine the script's type as follows: ...</spec>
   script_type_ = GetScriptTypeAtPrepare(element_->TypeAttributeValue(),
-                                        element_->LanguageAttributeValue(),
-                                        support_legacy_types);
+                                        element_->LanguageAttributeValue());
 
   switch (GetScriptType()) {
     case ScriptTypeAtPrepare::kInvalid:

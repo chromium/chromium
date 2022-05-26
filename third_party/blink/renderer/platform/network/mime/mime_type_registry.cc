@@ -118,32 +118,6 @@ bool MIMETypeRegistry::IsJSONMimeType(const String& mime_type) {
   return blink::IsJSONMimeType(ToLowerASCIIOrEmpty(mime_type));
 }
 
-bool MIMETypeRegistry::IsLegacySupportedJavaScriptLanguage(
-    const String& language) {
-  // Mozilla 1.8 accepts javascript1.0 - javascript1.7, but WinIE 7 accepts only
-  // javascript1.1 - javascript1.3.
-  // Mozilla 1.8 and WinIE 7 both accept javascript and livescript.
-  // WinIE 7 accepts ecmascript and jscript, but Mozilla 1.8 doesn't.
-  // Neither Mozilla 1.8 nor WinIE 7 accept leading or trailing whitespace.
-  // We want to accept all the values that either of these browsers accept, but
-  // not other values.
-
-  // FIXME: This function is not HTML5 compliant. These belong in the MIME
-  // registry as "text/javascript<version>" entries.
-  return EqualIgnoringASCIICase(language, "javascript") ||
-         EqualIgnoringASCIICase(language, "javascript1.0") ||
-         EqualIgnoringASCIICase(language, "javascript1.1") ||
-         EqualIgnoringASCIICase(language, "javascript1.2") ||
-         EqualIgnoringASCIICase(language, "javascript1.3") ||
-         EqualIgnoringASCIICase(language, "javascript1.4") ||
-         EqualIgnoringASCIICase(language, "javascript1.5") ||
-         EqualIgnoringASCIICase(language, "javascript1.6") ||
-         EqualIgnoringASCIICase(language, "javascript1.7") ||
-         EqualIgnoringASCIICase(language, "livescript") ||
-         EqualIgnoringASCIICase(language, "ecmascript") ||
-         EqualIgnoringASCIICase(language, "jscript");
-}
-
 bool MIMETypeRegistry::IsSupportedNonImageMIMEType(const String& mime_type) {
   return blink::IsSupportedNonImageMimeType(ToLowerASCIIOrEmpty(mime_type));
 }

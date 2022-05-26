@@ -686,9 +686,8 @@ class TokenPreloadScanner::StartTagScanner {
       return false;
     if (Match(tag_impl_, html_names::kScriptTag)) {
       ScriptLoader::ScriptTypeAtPrepare script_type =
-          ScriptLoader::GetScriptTypeAtPrepare(
-              type_attribute_value_, language_attribute_value_,
-              ScriptLoader::kDisallowLegacyTypeInTypeAttribute);
+          ScriptLoader::GetScriptTypeAtPrepare(type_attribute_value_,
+                                               language_attribute_value_);
       switch (script_type) {
         case ScriptLoader::ScriptTypeAtPrepare::kInvalid:
           return false;
@@ -1000,8 +999,7 @@ void TokenPreloadScanner::ScanCommon(
         if (type_attribute &&
             ScriptLoader::GetScriptTypeAtPrepare(
                 type_attribute->Value(),
-                /*language_attribute_value=*/g_empty_atom,
-                ScriptLoader::kDisallowLegacyTypeInTypeAttribute) ==
+                /*language_attribute_value=*/g_empty_atom) ==
                 ScriptLoader::ScriptTypeAtPrepare::kWebBundle) {
           in_script_web_bundle_ = true;
         }

@@ -120,9 +120,8 @@ void HTMLScriptElement::ParseAttribute(
 Node::InsertionNotificationRequest HTMLScriptElement::InsertedInto(
     ContainerNode& insertion_point) {
   if (insertion_point.isConnected() && HasSourceAttribute() &&
-      ScriptLoader::GetScriptTypeAtPrepare(
-          TypeAttributeValue(), LanguageAttributeValue(),
-          ScriptLoader::kDisallowLegacyTypeInTypeAttribute) ==
+      ScriptLoader::GetScriptTypeAtPrepare(TypeAttributeValue(),
+                                           LanguageAttributeValue()) ==
           ScriptLoader::ScriptTypeAtPrepare::kInvalid) {
     UseCounter::Count(GetDocument(),
                       WebFeature::kScriptElementWithInvalidTypeHasSrc);
