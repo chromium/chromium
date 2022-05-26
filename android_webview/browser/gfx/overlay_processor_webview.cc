@@ -101,10 +101,18 @@ class OverlayProcessorWebView::Manager
     Resource& operator=(const Resource&) = delete;
 
     void Return(base::ScopedFD end_read_fence) {
-      gfx::GpuFenceHandle fence_handle;
-      fence_handle.owned_fd = std::move(end_read_fence);
-      read_access_->SetReleaseFence(std::move(fence_handle));
-      read_access_.reset();
+      // It's possible that we didn't have buffer for the first frame (see
+      // `GetAHardwareBuffer()`) so there will be no read_access to set fence
+      // to. On the other hand we shouldn't get a fence from flinger for this
+      // surface in this case.
+      if (read_access_) {
+        gfx::GpuFenceHandle fence_handle;
+        fence_handle.owned_fd = std::move(end_read_fence);
+        read_access_->SetReleaseFence(std::move(fence_handle));
+        read_access_.reset();
+      } else {
+        DCHECK(!end_read_fence.is_valid());
+      }
       representation_.reset();
     }
 
