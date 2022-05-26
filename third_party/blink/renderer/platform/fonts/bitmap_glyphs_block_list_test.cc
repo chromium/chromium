@@ -6,11 +6,13 @@
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 
 #include "build/build_config.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/testing/font_test_base.h"
 
 namespace blink {
 
 #if BUILDFLAG(IS_WIN)
+
+class BlockListBitmapGlyphsTest : public FontTestBase {};
 
 static void TestBitmapGlyphsBlockListed(AtomicString windows_family_name,
                                         bool block_listed_expected) {
@@ -30,15 +32,15 @@ static void TestBitmapGlyphsBlockListed(AtomicString windows_family_name,
                 *font_platform_data.Typeface()));
 }
 
-TEST(BlockListBitmapGlyphsTest, Simsun) {
+TEST_F(BlockListBitmapGlyphsTest, Simsun) {
   TestBitmapGlyphsBlockListed("Simsun", false);
 }
 
-TEST(BlockListBitmapGlyphsTest, Arial) {
+TEST_F(BlockListBitmapGlyphsTest, Arial) {
   TestBitmapGlyphsBlockListed("Arial", false);
 }
 
-TEST(BlockListBitmapGlyphsTest, Calibri) {
+TEST_F(BlockListBitmapGlyphsTest, Calibri) {
   TestBitmapGlyphsBlockListed("Calibri", true);
 }
 
