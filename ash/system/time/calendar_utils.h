@@ -97,6 +97,10 @@ base::Time::Exploded GetExplodedUTC(const base::Time& date);
 // (e.g. March 10, 2022)
 ASH_EXPORT std::u16string GetMonthDayYear(const base::Time date);
 
+// Gets the `date`'s month name, numeric day of month, year and day of week.
+// (e.g. Wednesday, May 25, 2022)
+ASH_EXPORT std::u16string GetMonthDayYearWeek(const base::Time date);
+
 // Gets the `date`'s month name in string in the current language.
 // (e.g. March)
 ASH_EXPORT std::u16string GetMonthName(const base::Time date);

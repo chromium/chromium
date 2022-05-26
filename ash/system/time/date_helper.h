@@ -55,6 +55,10 @@ class DateHelper : public system::TimezoneSettings::Observer {
     return month_day_year_formatter_;
   }
 
+  icu::SimpleDateFormat& month_day_year_week_formatter() {
+    return month_day_year_week_formatter_;
+  }
+
   icu::SimpleDateFormat& month_name_formatter() {
     return month_name_formatter_;
   }
@@ -112,6 +116,9 @@ class DateHelper : public system::TimezoneSettings::Observer {
 
   // Formatter for getting the month name, day of month, and year.
   icu::SimpleDateFormat month_day_year_formatter_;
+
+  // Formatter for getting the month, day, year and day of week.
+  icu::SimpleDateFormat month_day_year_week_formatter_;
 
   // Formatter for getting the name of month.
   icu::SimpleDateFormat month_name_formatter_;

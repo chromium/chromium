@@ -178,7 +178,7 @@ void CalendarDateCellView::OnSelectedDateUpdated() {
 
     SetAccessibleName(l10n_util::GetStringFUTF16(
         IDS_ASH_CALENDAR_SELECTED_DATE_CELL_ACCESSIBLE_DESCRIPTION,
-        calendar_utils::GetMonthDayYear(first_day_of_week),
+        calendar_utils::GetMonthDayYearWeek(first_day_of_week),
         calendar_utils::GetDayOfMonth(date_)));
   }
 }
@@ -203,7 +203,7 @@ void CalendarDateCellView::DisableFocus() {
 }
 
 void CalendarDateCellView::SetTooltipAndAccessibleName() {
-  std::u16string formatted_date = calendar_utils::GetMonthDayYear(date_);
+  std::u16string formatted_date = calendar_utils::GetMonthDayYearWeek(date_);
   if (!calendar_utils::IsActiveUser()) {
     tool_tip_ = formatted_date;
   } else {

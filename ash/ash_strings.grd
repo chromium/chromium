@@ -3572,6 +3572,10 @@ Connect your device to power.
         Calendar, week of <ph name="date">$1<ex>July 16th 2021,</ex></ph>, <ph name="selected_date">$2<ex>18</ex></ph> is currently selected.
       </message>
 
+      <message name="IDS_ASH_DATE_TRAY_ACCESSIBLE_DESCRIPTION" desc="The accessible label of the date tray, click on which opens the calendar view.">
+        Calendar view, <ph name="date">$1<ex>Wednesday, May 25, 2022</ex></ph>, <ph name="time">$2<ex>14:07</ex></ph>
+      </message>
+
       <message name="IDS_ASH_CALENDAR_EVENT_ENTRY_ACCESSIBLE_DESCRIPTION" desc="The accessible label of a calendar event entry.">
         <ph name="start_time">$1<ex>12 PM</ex></ph> to 
         <ph name="end_time">$2<ex>1 PM</ex></ph>, 

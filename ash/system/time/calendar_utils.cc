@@ -84,6 +84,11 @@ std::u16string GetMonthDayYear(const base::Time date) {
       DateHelper::GetInstance()->month_day_year_formatter(), date);
 }
 
+std::u16string GetMonthDayYearWeek(const base::Time date) {
+  return calendar_utils::FormatDate(
+      DateHelper::GetInstance()->month_day_year_week_formatter(), date);
+}
+
 std::u16string GetMonthName(const base::Time date) {
   return calendar_utils::FormatDate(
       DateHelper::GetInstance()->month_name_formatter(), date);

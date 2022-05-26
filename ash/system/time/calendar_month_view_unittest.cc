@@ -274,7 +274,7 @@ TEST_F(CalendarMonthViewTest, UpdateEvents) {
   EXPECT_EQ(u"18",
             static_cast<CalendarDateCellView*>(month_view()->children()[17])
                 ->GetText());
-  EXPECT_EQ(u"August 18, 2021, 0 events",
+  EXPECT_EQ(u"Wednesday, August 18, 2021, 0 events",
             static_cast<CalendarDateCellView*>(month_view()->children()[17])
                 ->GetTooltipText());
 
@@ -290,7 +290,7 @@ TEST_F(CalendarMonthViewTest, UpdateEvents) {
   EXPECT_EQ(u"18",
             static_cast<CalendarDateCellView*>(month_view()->children()[17])
                 ->GetText());
-  EXPECT_EQ(u"August 18, 2021, 0 events",
+  EXPECT_EQ(u"Wednesday, August 18, 2021, 0 events",
             static_cast<CalendarDateCellView*>(month_view()->children()[17])
                 ->GetTooltipText());
 
@@ -308,7 +308,7 @@ TEST_F(CalendarMonthViewTest, UpdateEvents) {
   EXPECT_EQ(u"18",
             static_cast<CalendarDateCellView*>(month_view()->children()[17])
                 ->GetText());
-  EXPECT_EQ(u"August 18, 2021, 4 events",
+  EXPECT_EQ(u"Wednesday, August 18, 2021, 4 events",
             static_cast<CalendarDateCellView*>(month_view()->children()[17])
                 ->GetTooltipText());
 }
@@ -340,14 +340,14 @@ TEST_F(CalendarMonthViewTest, TimeZone) {
   EXPECT_EQ(u"18",
             static_cast<CalendarDateCellView*>(month_view()->children()[17])
                 ->GetText());
-  EXPECT_EQ(u"August 18, 2021, 4 events",
+  EXPECT_EQ(u"Wednesday, August 18, 2021, 4 events",
             static_cast<CalendarDateCellView*>(month_view()->children()[17])
                 ->GetTooltipText());
 
   EXPECT_EQ(u"10",
             static_cast<CalendarDateCellView*>(month_view()->children()[9])
                 ->GetText());
-  EXPECT_EQ(u"August 10, 2021, 2 events",
+  EXPECT_EQ(u"Tuesday, August 10, 2021, 2 events",
             static_cast<CalendarDateCellView*>(month_view()->children()[9])
                 ->GetTooltipText());
 
@@ -356,7 +356,7 @@ TEST_F(CalendarMonthViewTest, TimeZone) {
   EXPECT_EQ(u"9",
             static_cast<CalendarDateCellView*>(month_view()->children()[8])
                 ->GetText());
-  EXPECT_EQ(u"August 9, 2021, 1 event",
+  EXPECT_EQ(u"Monday, August 9, 2021, 1 event",
             static_cast<CalendarDateCellView*>(month_view()->children()[8])
                 ->GetTooltipText());
 
@@ -385,7 +385,7 @@ TEST_F(CalendarMonthViewTest, InactiveUserSession) {
   EXPECT_EQ(u"18",
             static_cast<CalendarDateCellView*>(month_view()->children()[17])
                 ->GetText());
-  EXPECT_EQ(u"August 18, 2021, 4 events",
+  EXPECT_EQ(u"Wednesday, August 18, 2021, 4 events",
             static_cast<CalendarDateCellView*>(month_view()->children()[17])
                 ->GetTooltipText());
 
@@ -397,7 +397,7 @@ TEST_F(CalendarMonthViewTest, InactiveUserSession) {
   EXPECT_EQ(u"18",
             static_cast<CalendarDateCellView*>(month_view()->children()[17])
                 ->GetText());
-  EXPECT_EQ(u"August 18, 2021",
+  EXPECT_EQ(u"Wednesday, August 18, 2021",
             static_cast<CalendarDateCellView*>(month_view()->children()[17])
                 ->GetTooltipText());
 
@@ -408,7 +408,7 @@ TEST_F(CalendarMonthViewTest, InactiveUserSession) {
   EXPECT_EQ(u"18",
             static_cast<CalendarDateCellView*>(month_view()->children()[17])
                 ->GetText());
-  EXPECT_EQ(u"August 18, 2021",
+  EXPECT_EQ(u"Wednesday, August 18, 2021",
             static_cast<CalendarDateCellView*>(month_view()->children()[17])
                 ->GetTooltipText());
 }
