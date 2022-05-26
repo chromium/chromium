@@ -523,11 +523,9 @@ void AddTerminalMenuShortcuts(
   }
 
   for (const auto& container : containers) {
-    // Use label 'penguin' if we have only the default container, else use
-    // <vm_name>:<container_name>.
-    std::string label = kCrostiniDefaultContainerName;
-    if (containers.size() > 1 ||
-        container != crostini::ContainerId::GetDefault()) {
+    // Use <container_name> for termina, else <vm_name>:<container_name>.
+    std::string label = container.container_name;
+    if (container.vm_name != kCrostiniDefaultVmName) {
       label = base::StrCat({container.vm_name, ":", container.container_name});
     }
     apps::AddShortcutCommandItem(next_command_id++,
