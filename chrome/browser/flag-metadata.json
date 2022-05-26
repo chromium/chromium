@@ -844,6 +844,11 @@
     "expiry_milestone": 92
   },
   {
+    "name": "clipboard-history-reorder",
+    "owners": ["ckincaid@google.com", "multipaste@google.com"],
+    "expiry_milestone": 110
+  },
+  {
     "name": "closed-tab-cache",
     "owners": [
       "altimin@chromium.org",

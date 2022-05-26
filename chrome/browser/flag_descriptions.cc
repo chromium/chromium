@@ -4391,6 +4391,12 @@ const char kCellularUseSecondEuiccDescription[] =
     "When enabled Cellular Setup and Settings UI will use the second available "
     "Euicc that's exposed by Hermes.";
 
+const char kClipboardHistoryReorderName[] =
+    "Keep the most recently pasted item at the top of clipboard history";
+const char kClipboardHistoryReorderDescription[] =
+    "Enables an experimental behavior change where each time a clipboard "
+    "history item is pasted, that item shifts to the top of the list.";
+
 const char kComponentUpdaterTestRequestName[] =
     "Enable the component updater check 'test-request' parameter";
 const char kComponentUpdaterTestRequestDescription[] =

@@ -56855,6 +56855,7 @@ from previous Chrome versions.
   <int value="-634116286"
       label="OmniboxUIExperimentUnboldSuggestionText:enabled"/>
   <int value="-633955136" label="ShowScrollableMVTOnNTPAndroid:disabled"/>
+  <int value="-633425040" label="ClipboardHistoryReorder:disabled"/>
   <int value="-633274640" label="WebRTCPipeWireCapturer:enabled"/>
   <int value="-633143294" label="MoreVideoCaptureBuffers:enabled"/>
   <int value="-632030508" label="NativeWindowNavButtons:disabled"/>
@@ -58115,6 +58116,7 @@ from previous Chrome versions.
   <int value="228845546" label="ShimlessRMAOsUpdate:enabled"/>
   <int value="229476202" label="CryptAuthV2Enrollment:enabled"/>
   <int value="229877058" label="ShelfScrollable:disabled"/>
+  <int value="231949727" label="ClipboardHistoryReorder:enabled"/>
   <int value="233202090" label="AssistantConsentModal:disabled"/>
   <int value="233721248" label="DownloadRename:disabled"/>
   <int value="235191586"

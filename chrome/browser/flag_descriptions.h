@@ -2509,6 +2509,9 @@ extern const char kCellularUseAttachApnDescription[];
 extern const char kCellularUseSecondEuiccName[];
 extern const char kCellularUseSecondEuiccDescription[];
 
+extern const char kClipboardHistoryReorderName[];
+extern const char kClipboardHistoryReorderDescription[];
+
 extern const char kComponentUpdaterTestRequestName[];
 extern const char kComponentUpdaterTestRequestDescription[];
 

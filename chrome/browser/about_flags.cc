@@ -2784,6 +2784,11 @@ constexpr char kBorealisLinuxModeInternalName[] = "borealis-linux-mode";
 constexpr char kBorealisPermittedInternalName[] = "borealis-enabled";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+constexpr char kClipboardHistoryReorderInternalName[] =
+    "clipboard-history-reorder";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 #if BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kReadLaterUseRootBookmarkAsDefault[] = {
     {"use_root_bookmark_as_default", "true"}};
@@ -6991,6 +6996,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(page_info::kPageInfoAboutThisSiteMoreInfo)},
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+    {kClipboardHistoryReorderInternalName,
+     flag_descriptions::kClipboardHistoryReorderName,
+     flag_descriptions::kClipboardHistoryReorderDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kClipboardHistoryReorder)},
     {"enhanced_clipboard_nudge_session_reset",
      flag_descriptions::kEnhancedClipboardNudgeSessionResetName,
      flag_descriptions::kEnhancedClipboardNudgeSessionResetDescription, kOsCrOS,
@@ -8840,6 +8849,14 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
   if (!strcmp(kWallpaperGooglePhotosIntegrationInternalName,
               entry.internal_name)) {
     return !ash::features::IsWallpaperWebUIEnabled();
+  }
+
+  // Only show clipboard history reorder flag if channel is one of
+  // Dev/Canary/Unknown.
+  if (!strcmp(kClipboardHistoryReorderInternalName, entry.internal_name)) {
+    return channel != version_info::Channel::DEV &&
+           channel != version_info::Channel::CANARY &&
+           channel != version_info::Channel::UNKNOWN;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
