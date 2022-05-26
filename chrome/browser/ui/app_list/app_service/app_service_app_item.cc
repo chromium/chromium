@@ -106,7 +106,7 @@ AppServiceAppItem::AppServiceAppItem(
       SetPosition(CalculateDefaultPositionIfApplicable());
     }
 
-    // Crostini apps and the Terminal System App start in the crostini folder.
+    // Crostini apps start in the crostini folder.
     if (app_type_ == apps::AppType::kCrostini) {
       DCHECK(folder_id().empty());
       SetChromeFolderId(ash::kCrostiniFolderId);
