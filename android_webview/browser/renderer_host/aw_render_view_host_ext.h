@@ -10,7 +10,6 @@
 
 #include "android_webview/common/mojom/frame.mojom.h"
 #include "base/callback_forward.h"
-#include "base/sequence_checker.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host_receiver_set.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -124,8 +123,6 @@ class AwRenderViewHostExt : public content::WebContentsObserver,
 
   // Associated channel to the webview LocalMainFrame extensions.
   mojo::AssociatedRemote<mojom::LocalMainFrame> local_main_frame_remote_;
-
-  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace android_webview

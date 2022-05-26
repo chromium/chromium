@@ -23,36 +23,6 @@
 
 namespace android_webview {
 
-namespace {
-
-void ShouldOverrideUrlLoadingOnUI(
-    content::WebContents* web_contents,
-    const std::u16string& url,
-    bool has_user_gesture,
-    bool is_redirect,
-    bool is_main_frame,
-    mojom::FrameHost::ShouldOverrideUrlLoadingCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  bool ignore_navigation = false;
-  AwContentsClientBridge* client =
-      AwContentsClientBridge::FromWebContents(web_contents);
-  if (client) {
-    if (!client->ShouldOverrideUrlLoading(url, has_user_gesture, is_redirect,
-                                          is_main_frame, &ignore_navigation)) {
-      // If the shouldOverrideUrlLoading call caused a java exception we should
-      // always return immediately here!
-      return;
-    }
-  } else {
-    LOG(WARNING) << "Failed to find the associated render view host for url: "
-                 << url;
-  }
-
-  std::move(callback).Run(ignore_navigation);
-}
-
-}  // namespace
-
 // static
 void AwRenderViewHostExt::BindFrameHost(
     mojo::PendingAssociatedReceiver<mojom::FrameHost> receiver,
@@ -79,11 +49,11 @@ AwRenderViewHostExt::AwRenderViewHostExt(AwRenderViewHostExtClient* client,
 }
 
 AwRenderViewHostExt::~AwRenderViewHostExt() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
 void AwRenderViewHostExt::DocumentHasImages(DocumentHasImagesResult result) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!web_contents()->GetRenderViewHost()) {
     std::move(result).Run(false);
     return;
@@ -109,7 +79,7 @@ void AwRenderViewHostExt::MarkHitTestDataRead() {
 void AwRenderViewHostExt::RequestNewHitTestDataAt(
     const gfx::PointF& touch_center,
     const gfx::SizeF& touch_area) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // We only need to get blink::WebView on the renderer side to invoke the
   // blink hit test Mojo method, so sending this message via LocalMainFrame
   // interface is enough.
@@ -118,24 +88,24 @@ void AwRenderViewHostExt::RequestNewHitTestDataAt(
 }
 
 const mojom::HitTestData& AwRenderViewHostExt::GetLastHitTestData() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   return *last_hit_test_data_;
 }
 
 void AwRenderViewHostExt::SetTextZoomFactor(float factor) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (auto* local_main_frame_remote = GetLocalMainFrameRemote())
     local_main_frame_remote->SetTextZoomFactor(factor);
 }
 
 void AwRenderViewHostExt::ResetScrollAndScaleState() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (auto* local_main_frame_remote = GetLocalMainFrameRemote())
     local_main_frame_remote->ResetScrollAndScaleState();
 }
 
 void AwRenderViewHostExt::SetInitialPageScale(double page_scale_factor) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (auto* local_main_frame_remote = GetLocalMainFrameRemote())
     local_main_frame_remote->SetInitialPageScale(page_scale_factor);
 }
@@ -159,7 +129,7 @@ void AwRenderViewHostExt::DidStartNavigation(
 
 void AwRenderViewHostExt::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!navigation_handle->HasCommitted() ||
       (!navigation_handle->IsInMainFrame() &&
        !navigation_handle->HasSubframeNavigationEntryCommitted()))
@@ -185,7 +155,7 @@ void AwRenderViewHostExt::UpdateHitTestData(
   if (main_frame_host != web_contents()->GetMainFrame())
     return;
 
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   last_hit_test_data_ = std::move(hit_test_data);
   has_new_hit_test_data_ = true;
 }
@@ -207,11 +177,24 @@ void AwRenderViewHostExt::ShouldOverrideUrlLoading(
     bool is_redirect,
     bool is_main_frame,
     ShouldOverrideUrlLoadingCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&ShouldOverrideUrlLoadingOnUI, web_contents(),
-                                url, has_user_gesture, is_redirect,
-                                is_main_frame, std::move(callback)));
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  bool ignore_navigation = false;
+  AwContentsClientBridge* client =
+      AwContentsClientBridge::FromWebContents(web_contents());
+  if (client) {
+    if (!client->ShouldOverrideUrlLoading(url, has_user_gesture, is_redirect,
+                                          is_main_frame, &ignore_navigation)) {
+      // If the shouldOverrideUrlLoading call caused a java exception we should
+      // always return immediately here!
+      return;
+    }
+  } else {
+    LOG(WARNING) << "Failed to find the associated render view host for url: "
+                 << url;
+  }
+
+  std::move(callback).Run(ignore_navigation);
 }
 
 mojom::LocalMainFrame* AwRenderViewHostExt::GetLocalMainFrameRemote() {
