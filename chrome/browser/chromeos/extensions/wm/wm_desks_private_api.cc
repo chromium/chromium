@@ -10,7 +10,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/desks_templates/desks_templates_client.h"
+#include "chrome/browser/ui/ash/desks/desks_client.h"
 #include "chrome/common/extensions/api/wm_desks_private.h"
 
 namespace extensions {
@@ -35,7 +35,7 @@ WmDesksPrivateCaptureActiveDeskAndSaveTemplateFunction::
 
 ExtensionFunction::ResponseAction
 WmDesksPrivateCaptureActiveDeskAndSaveTemplateFunction::Run() {
-  DesksTemplatesClient::Get()->CaptureActiveDeskAndSaveTemplate(
+  DesksClient::Get()->CaptureActiveDeskAndSaveTemplate(
       base::BindOnce(&WmDesksPrivateCaptureActiveDeskAndSaveTemplateFunction::
                          OnCaptureActiveDeskAndSaveTemplateCompleted,
                      this));
@@ -69,7 +69,7 @@ WmDesksPrivateUpdateDeskTemplateFunction::Run() {
       api::wm_desks_private::UpdateDeskTemplate::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  DesksTemplatesClient::Get()->UpdateDeskTemplate(
+  DesksClient::Get()->UpdateDeskTemplate(
       params->desk_template.template_uuid,
       base::UTF8ToUTF16(params->desk_template.template_name),
       base::BindOnce(&WmDesksPrivateUpdateDeskTemplateFunction::
@@ -95,7 +95,7 @@ WmDesksPrivateGetSavedDeskTemplatesFunction::
 
 ExtensionFunction::ResponseAction
 WmDesksPrivateGetSavedDeskTemplatesFunction::Run() {
-  DesksTemplatesClient::Get()->GetDeskTemplates(base::BindOnce(
+  DesksClient::Get()->GetDeskTemplates(base::BindOnce(
       &WmDesksPrivateGetSavedDeskTemplatesFunction::OnGetSavedDeskTemplate,
       this));
   return RespondLater();
@@ -133,7 +133,7 @@ WmDesksPrivateGetDeskTemplateJsonFunction::Run() {
       api::wm_desks_private::GetDeskTemplateJson::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  DesksTemplatesClient::Get()->GetTemplateJson(
+  DesksClient::Get()->GetTemplateJson(
       params->template_uuid, Profile::FromBrowserContext(browser_context()),
       base::BindOnce(
           &WmDesksPrivateGetDeskTemplateJsonFunction::OnGetDeskTemplateJson,
@@ -165,7 +165,7 @@ WmDesksPrivateDeleteDeskTemplateFunction::Run() {
       api::wm_desks_private::DeleteDeskTemplate::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  DesksTemplatesClient::Get()->DeleteDeskTemplate(
+  DesksClient::Get()->DeleteDeskTemplate(
       params->template_uuid,
       base::BindOnce(&WmDesksPrivateDeleteDeskTemplateFunction::
                          OnDeleteDeskTemplateCompleted,
@@ -194,7 +194,7 @@ WmDesksPrivateLaunchDeskTemplateFunction::Run() {
       api::wm_desks_private::LaunchDeskTemplate::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  DesksTemplatesClient::Get()->LaunchDeskTemplate(
+  DesksClient::Get()->LaunchDeskTemplate(
       params->template_uuid,
       base::BindOnce(
           &WmDesksPrivateLaunchDeskTemplateFunction::OnLaunchDeskTemplate,
@@ -203,7 +203,34 @@ WmDesksPrivateLaunchDeskTemplateFunction::Run() {
 }
 
 void WmDesksPrivateLaunchDeskTemplateFunction::OnLaunchDeskTemplate(
-    std::string error_string) {
+    std::string error_string,
+    const base::GUID& desk_uuid) {
+  if (!error_string.empty()) {
+    Respond(Error(std::move(error_string)));
+    return;
+  }
+
+  Respond(
+      ArgumentList(api::wm_desks_private::LaunchDeskTemplate::Results::Create(
+          desk_uuid.AsLowercaseString())));
+}
+
+WmDesksPrivateRemoveDeskFunction::WmDesksPrivateRemoveDeskFunction() = default;
+WmDesksPrivateRemoveDeskFunction::~WmDesksPrivateRemoveDeskFunction() = default;
+
+ExtensionFunction::ResponseAction WmDesksPrivateRemoveDeskFunction::Run() {
+  std::unique_ptr<api::wm_desks_private::RemoveDesk::Params> params(
+      api::wm_desks_private::RemoveDesk::Params::Create(args()));
+  EXTENSION_FUNCTION_VALIDATE(params);
+  DesksClient::Get()->RemoveDesk(
+      base::GUID::ParseCaseInsensitive(params->desk_id),
+      params->remove_desk_options ? params->remove_desk_options->combine_desks
+                                  : false,
+      base::BindOnce(&WmDesksPrivateRemoveDeskFunction::OnRemoveDesk, this));
+  return RespondLater();
+}
+
+void WmDesksPrivateRemoveDeskFunction::OnRemoveDesk(std::string error_string) {
   if (!error_string.empty()) {
     Respond(Error(std::move(error_string)));
     return;

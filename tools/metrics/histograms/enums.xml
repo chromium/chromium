@@ -24094,6 +24094,7 @@ Called by update_debug_scenarios.py.-->
   <int value="3" label="Template Launched"/>
   <int value="4" label="Drag and drop window on the new desk button"/>
   <int value="5" label="Desk Save and Recall"/>
+  <int value="6" label="API invoked"/>
 </enum>
 
 <enum name="DesksMoveWindowFromActiveDeskSource">
@@ -34541,6 +34542,7 @@ Called by update_extension_histograms.py.-->
   <int value="1656" label="ACCESSIBILITY_PRIVATE_INSTALLPUMPKINFORDICTATION"/>
   <int value="1657" label="BOOKMARKMANAGERPRIVATE_OPENINNEWTAB"/>
   <int value="1658" label="BOOKMARKMANAGERPRIVATE_OPENINNEWWINDOW"/>
+  <int value="1659" label="WMDESKSPRIVATE_REMOVEDESKANDCLOSEWINDOWS"/>
 </enum>
 
 <enum name="ExtensionIconState">

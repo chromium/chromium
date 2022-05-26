@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/desks_templates/desks_templates_app_launch_handler.h"
+#include "chrome/browser/ui/ash/desks/desks_templates_app_launch_handler.h"
 
 #include <string>
 
@@ -18,7 +18,7 @@
 #include "chrome/browser/ash/app_restore/app_restore_arc_task_handler.h"
 #include "chrome/browser/ash/app_restore/arc_app_launch_handler.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/desks_templates/desks_templates_client.h"
+#include "chrome/browser/ui/ash/desks/desks_client.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -313,5 +313,5 @@ void DesksTemplatesAppLaunchHandler::RecordRestoredAppLaunch(
 
 void DesksTemplatesAppLaunchHandler::NotifyMovedSingleInstanceApp(
     int32_t window_id) {
-  DesksTemplatesClient::Get()->NotifyMovedSingleInstanceApp(window_id);
+  DesksClient::Get()->NotifyMovedSingleInstanceApp(window_id);
 }

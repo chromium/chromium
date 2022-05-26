@@ -17,6 +17,7 @@
 #include "ash/wm/desks/templates/restore_data_collector.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/guid.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -173,6 +174,10 @@ class ASH_EXPORT DesksController : public chromeos::DesksHelper,
   // the right, and previous and next desks are requested respectively.
   Desk* GetNextDesk(bool use_target_active_desk = true) const;
   Desk* GetPreviousDesk(bool use_target_active_desk = true) const;
+
+  // Returns the desk that matches the desk_uuid, and returns null if no matches
+  // found.
+  Desk* GetDeskByUuid(const base::GUID& desk_uuid) const;
 
   // Creates a new desk. CanCreateDesks() must be checked before calling this.
   void NewDesk(DesksCreationRemovalSource source);

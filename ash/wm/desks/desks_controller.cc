@@ -52,6 +52,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/cxx17_backports.h"
+#include "base/guid.h"
 #include "base/i18n/number_formatting.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -469,6 +470,14 @@ Desk* DesksController::GetPreviousDesk(bool use_target_active_desk) const {
   if (--previous_index < 0)
     return nullptr;
   return desks_[previous_index].get();
+}
+
+Desk* DesksController::GetDeskByUuid(const base::GUID& desk_uuid) const {
+  auto it = std::find_if(desks_.begin(), desks_.end(),
+                         [&desk_uuid](const std::unique_ptr<Desk>& desk) {
+                           return desk->uuid() == desk_uuid;
+                         });
+  return it != desks_.end() ? it->get() : nullptr;
 }
 
 bool DesksController::CanRemoveDesks() const {

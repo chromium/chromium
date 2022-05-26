@@ -33,7 +33,7 @@
 #include "chrome/browser/ui/ash/back_gesture_contextual_nudge_delegate.h"
 #include "chrome/browser/ui/ash/capture_mode/chrome_capture_mode_delegate.h"
 #include "chrome/browser/ui/ash/chrome_accessibility_delegate.h"
-#include "chrome/browser/ui/ash/desks_templates/chrome_desks_templates_delegate.h"
+#include "chrome/browser/ui/ash/desks/chrome_desks_templates_delegate.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_ui.h"
 #include "chrome/browser/ui/ash/session_util.h"
 #include "chrome/browser/ui/ash/window_pin_util.h"

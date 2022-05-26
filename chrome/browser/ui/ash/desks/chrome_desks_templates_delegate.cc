@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/desks_templates/chrome_desks_templates_delegate.h"
+#include "chrome/browser/ui/ash/desks/chrome_desks_templates_delegate.h"
 
 #include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
@@ -27,7 +27,7 @@
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/ash/desks_templates/desks_templates_client.h"
+#include "chrome/browser/ui/ash/desks/desks_client.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -292,7 +292,7 @@ void ChromeDesksTemplatesDelegate::GetAppLaunchDataForDeskTemplate(
 }
 
 desks_storage::DeskModel* ChromeDesksTemplatesDelegate::GetDeskModel() {
-  return DesksTemplatesClient::Get()->GetDeskModel();
+  return DesksClient::Get()->GetDeskModel();
 }
 
 bool ChromeDesksTemplatesDelegate::IsIncognitoWindow(
@@ -393,8 +393,8 @@ void ChromeDesksTemplatesDelegate::LaunchAppsFromTemplate(
   // Show app unavailable toast.
   if (!unavailable_apps.empty())
     ShowUnavailableAppToast(unavailable_apps);
-  DesksTemplatesClient::Get()->LaunchAppsFromTemplate(
-      std::move(desk_template), time_launch_started, delay);
+  DesksClient::Get()->LaunchAppsFromTemplate(std::move(desk_template),
+                                             time_launch_started, delay);
 }
 
 // Returns true if `window` is supported in desk templates feature.

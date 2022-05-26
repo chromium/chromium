@@ -13,11 +13,18 @@ namespace wmDesksPrivate {
     DOMString templateName;
   };
 
+  dictionary RemoveDeskOptions {
+    // Define whether close all windows on the desk and combine them to the
+    // active desk to the left.
+    boolean combineDesks;
+  };
+
   callback CaptureDeskAndSaveTemplateCallback =
       void (DeskTemplate deskTemplate);
   callback GetSavedDeskTemplatesCallback =
       void (DeskTemplate[] deskTemplates);
-  callback DeskTemplateVoidCallback = void ();
+  callback LaunchDeskTemplateCallback = void (DOMString deskId);
+  callback VoidCallback = void ();
   callback GetDeskTemplateJsonCallback = void (DOMString templateJson);
 
   interface Functions {
@@ -33,7 +40,7 @@ namespace wmDesksPrivate {
     // template to the local storage. If no such existing desk template can be
     // found or the file operation has failed, an error will be returned.
     static void updateDeskTemplate(DeskTemplate deskTemplate,
-                                   DeskTemplateVoidCallback callback);
+                                   VoidCallback callback);
 
     // Returns all available previously-saved desk templates.
     static void getSavedDeskTemplates(
@@ -44,19 +51,26 @@ namespace wmDesksPrivate {
     // as a successful operation. If the file operation has failed, an error
     // will be returned.
     static void deleteDeskTemplate(DOMString templateUuid,
-                                   DeskTemplateVoidCallback callback);
+                                   VoidCallback callback);
 
     // Launches the desk template with |templateUuid| as a new desk.
     // |templateId| should be the unique id for an existing desk template. If
     // no such id can be found or a new desk can't be created, an error will be
     // returned.
     static void launchDeskTemplate(DOMString templateUuid,
-                                   DeskTemplateVoidCallback callback);
+                                   LaunchDeskTemplateCallback callback);
 
-    // Gets the template associated wit the templateUuid and returns its JSON
+    // Gets the template associated with the templateUuid and returns its JSON
     // representation.  Returns an error if either the template could not be
     // found or the user profile is not valid.
     static void getDeskTemplateJson(DOMString templateUuid,
                                     GetDeskTemplateJsonCallback callback);
+
+    // Removes a desk as specified in `deskId`. If `combineDesks` of
+    // `RemoveDeskOptions` is present or set to true, remove the desk and combine
+    // windows to the active desk to the left. Otherwise close all windows on
+    // the desk.
+    static void removeDesk(DOMString deskId, optional RemoveDeskOptions removeDeskOptions,
+                                          VoidCallback callback);
   };
 };

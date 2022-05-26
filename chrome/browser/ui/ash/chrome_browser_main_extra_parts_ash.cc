@@ -36,7 +36,7 @@
 #include "chrome/browser/ui/ash/chrome_new_window_client.h"
 #include "chrome/browser/ui/ash/chrome_new_window_delegate_provider.h"
 #include "chrome/browser/ui/ash/crosapi_new_window_delegate.h"
-#include "chrome/browser/ui/ash/desks_templates/desks_templates_client.h"
+#include "chrome/browser/ui/ash/desks/desks_client.h"
 #include "chrome/browser/ui/ash/ime_controller_client_impl.h"
 #include "chrome/browser/ui/ash/in_session_auth_dialog_client.h"
 #include "chrome/browser/ui/ash/login_screen_client_impl.h"
@@ -231,7 +231,7 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
     projector_app_client_ = std::make_unique<ProjectorAppClientImpl>();
   }
 
-  desks_templates_client_ = std::make_unique<DesksTemplatesClient>();
+  desks_client_ = std::make_unique<DesksClient>();
 
   if (ash::features::IsBluetoothRevampEnabled()) {
     chromeos::bluetooth_config::FastPairDelegate* delegate =
@@ -324,7 +324,7 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
   night_light_client_.reset();
   mobile_data_notifications_.reset();
   chrome_shelf_controller_initializer_.reset();
-  desks_templates_client_.reset();
+  desks_client_.reset();
 
   projector_app_client_.reset();
   projector_client_.reset();

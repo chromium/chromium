@@ -242,7 +242,8 @@ class DeskContainerObserver : public aura::WindowObserver {
 // Desk:
 
 Desk::Desk(int associated_container_id, bool desk_being_restored)
-    : container_id_(associated_container_id),
+    : uuid_(base::GUID::GenerateRandomV4()),
+      container_id_(associated_container_id),
       creation_time_(base::Time::Now()) {
   // For the very first default desk added during initialization, there won't be
   // any root windows yet. That's OK, OnRootWindowAdded() will be called

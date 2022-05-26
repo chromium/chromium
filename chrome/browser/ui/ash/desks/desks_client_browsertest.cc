@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/desks_templates/desks_templates_client.h"
+#include "chrome/browser/ui/ash/desks/desks_client.h"
 
 #include <cstdint>
 #include <cstdlib>
@@ -18,10 +18,13 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desk.h"
+#include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/desks/templates/saved_desk_test_util.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/overview/overview_test_util.h"
+#include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/guid.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -43,7 +46,7 @@
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/desks_templates/desks_templates_app_launch_handler.h"
+#include "chrome/browser/ui/ash/desks/desks_templates_app_launch_handler.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -74,7 +77,6 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/common/constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/focus_client.h"
@@ -148,7 +150,7 @@ Browser* FindLaunchedBrowserByURLs(const std::vector<GURL>& urls) {
 std::unique_ptr<ash::DeskTemplate> CaptureActiveDeskAndSaveTemplate() {
   base::RunLoop run_loop;
   std::unique_ptr<ash::DeskTemplate> desk_template;
-  DesksTemplatesClient::Get()->CaptureActiveDeskAndSaveTemplate(
+  DesksClient::Get()->CaptureActiveDeskAndSaveTemplate(
       base::BindLambdaForTesting(
           [&](std::unique_ptr<ash::DeskTemplate> captured_desk_template,
               std::string error_string) {
@@ -164,7 +166,7 @@ std::vector<const ash::DeskTemplate*> GetDeskTemplates() {
   base::RunLoop run_loop;
   std::vector<const ash::DeskTemplate*> templates;
 
-  DesksTemplatesClient::Get()->GetDeskTemplates(base::BindLambdaForTesting(
+  DesksClient::Get()->GetDeskTemplates(base::BindLambdaForTesting(
       [&](const std::vector<const ash::DeskTemplate*>& desk_templates,
           std::string error_string) {
         templates = desk_templates;
@@ -194,7 +196,7 @@ bool ContainUuidInTemplates(
 std::string GetTemplateJson(const std::string& uuid, Profile* profile) {
   base::RunLoop run_loop;
   std::string template_json_result;
-  DesksTemplatesClient::Get()->GetTemplateJson(
+  DesksClient::Get()->GetTemplateJson(
       uuid, profile,
       base::BindLambdaForTesting(
           [&](const std::string& template_json, std::string error_string) {
@@ -208,7 +210,7 @@ std::string GetTemplateJson(const std::string& uuid, Profile* profile) {
 
 void DeleteDeskTemplate(const base::GUID uuid) {
   base::RunLoop run_loop;
-  DesksTemplatesClient::Get()->DeleteDeskTemplate(
+  DesksClient::Get()->DeleteDeskTemplate(
       uuid.AsLowercaseString(),
       base::BindLambdaForTesting(
           [&](std::string error_string) { run_loop.Quit(); }));
@@ -295,15 +297,13 @@ void ClickFirstTemplateItem() {
 const std::vector<const ash::DeskTemplate*> GetAllEntries() {
   std::vector<const ash::DeskTemplate*> templates;
   base::RunLoop loop;
-  DesksTemplatesClient::Get()->GetDeskModel()->GetAllEntries(
-      base::BindLambdaForTesting(
-          [&](desks_storage::DeskModel::GetAllEntriesStatus status,
-              const std::vector<const ash::DeskTemplate*>& entries) {
-            DCHECK_EQ(desks_storage::DeskModel::GetAllEntriesStatus::kOk,
-                      status);
-            templates = entries;
-            loop.Quit();
-          }));
+  DesksClient::Get()->GetDeskModel()->GetAllEntries(base::BindLambdaForTesting(
+      [&](desks_storage::DeskModel::GetAllEntriesStatus status,
+          const std::vector<const ash::DeskTemplate*>& entries) {
+        DCHECK_EQ(desks_storage::DeskModel::GetAllEntriesStatus::kOk, status);
+        templates = entries;
+        loop.Quit();
+      }));
   loop.Run();
   return templates;
 }
@@ -340,7 +340,7 @@ class ScopedDesksTemplatesAppLaunchHandlerSetter {
     DCHECK(!instance_active_);
     instance_active_ = true;
 
-    DesksTemplatesClient* desks_client = DesksTemplatesClient::Get();
+    DesksClient* desks_client = DesksClient::Get();
     DCHECK(desks_client);
     desks_client->app_launch_handlers_[launch_id_] = std::move(launch_handler);
   }
@@ -352,7 +352,7 @@ class ScopedDesksTemplatesAppLaunchHandlerSetter {
     DCHECK(instance_active_);
     instance_active_ = false;
 
-    DesksTemplatesClient* desks_client = DesksTemplatesClient::Get();
+    DesksClient* desks_client = DesksClient::Get();
     DCHECK(desks_client);
     desks_client->app_launch_handlers_[launch_id_] = nullptr;
   }
@@ -380,13 +380,12 @@ class DesksTemplatesClientTest : public extensions::PlatformAppBrowserTest {
   // extension. Avoid further uses of this method and create or launch templates
   // by mocking clicks on the system UI.
   void SetTemplate(std::unique_ptr<ash::DeskTemplate> launch_template) {
-    DesksTemplatesClient::Get()->launch_template_for_test_ =
-        std::move(launch_template);
+    DesksClient::Get()->launch_template_for_test_ = std::move(launch_template);
   }
 
   void LaunchTemplate(const base::GUID& uuid) {
-    DesksTemplatesClient::Get()->LaunchDeskTemplate(uuid.AsLowercaseString(),
-                                                    base::DoNothing());
+    DesksClient::Get()->LaunchDeskTemplate(uuid.AsLowercaseString(),
+                                           base::DoNothing());
   }
 
   void SetAndLaunchTemplate(std::unique_ptr<ash::DeskTemplate> desk_template) {
@@ -508,7 +507,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, CaptureIncognitoBrowserTest) {
 IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
                        CaptureActiveDeskAsTemplateTest) {
   // Test that Singleton was properly initialized.
-  ASSERT_TRUE(DesksTemplatesClient::Get());
+  ASSERT_TRUE(DesksClient::Get());
 
   // Change |browser|'s bounds.
   const gfx::Rect browser_bounds = gfx::Rect(0, 0, 800, 200);
@@ -642,7 +641,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, LaunchMultipleDeskTemplates) {
 // Tests that launching a template that contains a system web app works as
 // expected.
 IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, LaunchTemplateWithSystemApp) {
-  ASSERT_TRUE(DesksTemplatesClient::Get());
+  ASSERT_TRUE(DesksClient::Get());
 
   // Create the settings app, which is a system web app.
   CreateSettingsSystemWebApp(browser()->profile());
@@ -688,7 +687,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, LaunchTemplateWithSystemApp) {
 // existing instance of the system web app to the current desk.
 IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
                        LaunchTemplateWithSystemAppExisting) {
-  ASSERT_TRUE(DesksTemplatesClient::Get());
+  ASSERT_TRUE(DesksClient::Get());
   Profile* profile = browser()->profile();
 
   // Create the settings app, which is a system web app.
@@ -731,7 +730,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
 
 // Tests that launching a template that contains a chrome app works as expected.
 IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, LaunchTemplateWithChromeApp) {
-  DesksTemplatesClient* desks_client = DesksTemplatesClient::Get();
+  DesksClient* desks_client = DesksClient::Get();
   ASSERT_TRUE(desks_client);
 
   // Create a chrome app.
@@ -787,7 +786,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, LaunchTemplateWithChromeApp) {
 // expected.
 IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
                        LaunchTemplateWithBrowserWindow) {
-  ASSERT_TRUE(DesksTemplatesClient::Get());
+  ASSERT_TRUE(DesksClient::Get());
 
   // Create a new browser and add a few tabs to it, and specify the active tab
   // index.
@@ -835,7 +834,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
 // that contains a browser window.
 IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
                        PreventBrowserSessionRestoreTest) {
-  ASSERT_TRUE(DesksTemplatesClient::Get());
+  ASSERT_TRUE(DesksClient::Get());
 
   // Do not exit from test or delete the Profile* when last browser is closed.
   ScopedKeepAlive keep_alive(KeepAliveOrigin::BROWSER,
@@ -875,7 +874,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
 // Tests that browser windows created from a template have the correct bounds
 // and window state.
 IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, BrowserWindowRestorationTest) {
-  ASSERT_TRUE(DesksTemplatesClient::Get());
+  ASSERT_TRUE(DesksClient::Get());
 
   // Create a new browser and set its bounds.
   std::vector<GURL> browser_urls_1 = {GURL(kExampleUrl1), GURL(kExampleUrl2)};
@@ -932,7 +931,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, BrowserWindowRestorationTest) {
 // Tests that saving and launching a template that contains a PWA works as
 // expected.
 IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, LaunchTemplateWithPWA) {
-  ASSERT_TRUE(DesksTemplatesClient::Get());
+  ASSERT_TRUE(DesksClient::Get());
 
   Browser* pwa_browser =
       InstallAndLaunchPWA(GURL(kExampleUrl1), /*launch_in_browser=*/false);
@@ -988,7 +987,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, LaunchTemplateWithPWA) {
 // window works as expected.
 IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
                        LaunchTemplateWithPWAInBrowser) {
-  ASSERT_TRUE(DesksTemplatesClient::Get());
+  ASSERT_TRUE(DesksClient::Get());
 
   Browser* pwa_browser =
       InstallAndLaunchPWA(GURL(kYoutubeUrl), /*launch_in_browser=*/true);
@@ -1021,7 +1020,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
 // Tests that captured desk templates can be recalled as a JSON string.
 IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, GetDeskTemplateJson) {
   // Test that Singleton was properly initialized.
-  ASSERT_TRUE(DesksTemplatesClient::Get());
+  ASSERT_TRUE(DesksClient::Get());
 
   // Change |browser|'s bounds.
   const gfx::Rect browser_bounds = gfx::Rect(0, 0, 800, 200);
@@ -1058,7 +1057,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, GetDeskTemplateJson) {
 // the tests that do not have the SystemUI prefix other than GetDeskTemplateJson
 // once the extension is deprecated.
 IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, SystemUIBasic) {
-  auto* desk_model = DesksTemplatesClient::Get()->GetDeskModel();
+  auto* desk_model = DesksClient::Get()->GetDeskModel();
   ASSERT_EQ(0u, desk_model->GetEntryCount());
 
   ash::ToggleOverview();
@@ -2041,6 +2040,43 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
   histogram_tester.ExpectTotalCount("Ash.DeskTemplate.TimeToLoadTemplate", 1ul);
 }
 
+// Tests launch a template to a new desk and clean up desk.
+IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest, LaunchTemplateAndCleanUpDesk) {
+  auto* desks_controller = ash::DesksController::Get();
+  // Should have 1 default active desk.
+  EXPECT_EQ(1, desks_controller->desks().size());
+
+  // Capture and create a desk template.
+  std::unique_ptr<ash::DeskTemplate> desk_template =
+      CaptureActiveDeskAndSaveTemplate();
+
+  // Set template for testing.
+  SetTemplate(std::move(desk_template));
+
+  // Retrieve the `desk_uuid` from `LaunchDeskTemplate` operation and
+  // `closeAll` on it.
+  base::RunLoop loop;
+  base::GUID desk_id;
+  // Launch one template, desk size should increase by 1.
+  DesksClient::Get()->LaunchDeskTemplate(
+      "", base::BindLambdaForTesting(
+              [&](std::string error, const base::GUID& desk_uuid) {
+                EXPECT_TRUE(error.empty());
+                EXPECT_EQ(2, desks_controller->desks().size());
+                desk_id = desk_uuid;
+                loop.Quit();
+              }));
+  loop.Run();
+
+  DesksClient::Get()->RemoveDesk(
+      desk_id, false, base::BindLambdaForTesting([](std::string error) {
+        EXPECT_TRUE(error.empty());
+      }));
+  ash::DeskSwitchAnimationWaiter waiter;
+  waiter.Wait();
+  EXPECT_EQ(1, desks_controller->desks().size());
+}
+
 class DesksTemplatesClientArcTest : public InProcessBrowserTest {
  public:
   DesksTemplatesClientArcTest() {
@@ -2079,7 +2115,7 @@ class DesksTemplatesClientArcTest : public InProcessBrowserTest {
 // Tests that launching a template that contains an ARC app works as expected.
 IN_PROC_BROWSER_TEST_F(DesksTemplatesClientArcTest,
                        SystemUILaunchTemplateWithArcApp) {
-  auto* desk_model = DesksTemplatesClient::Get()->GetDeskModel();
+  auto* desk_model = DesksClient::Get()->GetDeskModel();
   ASSERT_EQ(0u, desk_model->GetEntryCount());
 
   constexpr char kTestAppPackage[] = "test.arc.app.package";
@@ -2276,10 +2312,10 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientMultiProfileTest, MultiProfileTest) {
 // Tests that admin templates policy can be set.
 IN_PROC_BROWSER_TEST_F(DesksTemplatesClientMultiProfileTest,
                        SetAndClearAdminTemplates) {
-  EXPECT_TRUE(DesksTemplatesClient::Get());
+  EXPECT_TRUE(DesksClient::Get());
 
   // Set an admin template policy.
-  DesksTemplatesClient::Get()->SetPolicyPreconfiguredTemplate(
+  DesksClient::Get()->SetPolicyPreconfiguredTemplate(
       account_id1_, std::make_unique<std::string>(base::StringPrintf(
                         kTestAdminTemplateFormat, kTestAdminTemplateUuid)));
 
@@ -2288,7 +2324,7 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientMultiProfileTest,
       ContainUuidInTemplates(kTestAdminTemplateUuid, GetDeskTemplates()));
 
   // Clear admin templates.
-  DesksTemplatesClient::Get()->RemovePolicyPreconfiguredTemplate(account_id1_);
+  DesksClient::Get()->RemovePolicyPreconfiguredTemplate(account_id1_);
 
   // Verify that the admin templates is removed.
   EXPECT_FALSE(

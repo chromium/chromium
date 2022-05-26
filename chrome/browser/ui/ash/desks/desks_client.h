@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_DESKS_TEMPLATES_DESKS_TEMPLATES_CLIENT_H_
-#define CHROME_BROWSER_UI_ASH_DESKS_TEMPLATES_DESKS_TEMPLATES_CLIENT_H_
+#ifndef CHROME_BROWSER_UI_ASH_DESKS_DESKS_CLIENT_H_
+#define CHROME_BROWSER_UI_ASH_DESKS_DESKS_CLIENT_H_
 
 #include <map>
 #include <memory>
@@ -33,14 +33,14 @@ class DeskModelWrapper;
 
 // Class to handle all Desks in-browser functionalities. Will call into
 // ash::DesksController to do actual desk related operations.
-class DesksTemplatesClient : public ash::SessionObserver {
+class DesksClient : public ash::SessionObserver {
  public:
-  DesksTemplatesClient();
-  DesksTemplatesClient(const DesksTemplatesClient&) = delete;
-  DesksTemplatesClient& operator=(const DesksTemplatesClient&) = delete;
-  ~DesksTemplatesClient() override;
+  DesksClient();
+  DesksClient(const DesksClient&) = delete;
+  DesksClient& operator=(const DesksClient&) = delete;
+  ~DesksClient() override;
 
-  static DesksTemplatesClient* Get();
+  static DesksClient* Get();
 
   // ash::SessionObserver:
   void OnActiveUserSessionChanged(const AccountId& account_id) override;
@@ -104,16 +104,23 @@ class DesksTemplatesClient : public ash::SessionObserver {
                        GetTemplateJsonCallback callback);
 
   using LaunchDeskTemplateCallback =
-      base::OnceCallback<void(const std::string error)>;
+      base::OnceCallback<void(std::string error, const base::GUID& desk_uuid)>;
   // Launches the desk template with |template_uuid| as a new desk.
   // |template_uuid| should be the unique id for an existing desk template. If
   // no such id can be found or we are at the max desk limit (currently is 8)
   // so can't create new desk for the desk template, |callback| will be invoked
-  // with a description of the error.
+  // with a description of the error and the new desk uuid.
   // TODO(crbug.com/1286515): This will be removed with the extension. Avoid
   // further uses of this method.
   void LaunchDeskTemplate(const std::string& template_uuid,
                           LaunchDeskTemplateCallback callback);
+
+  using CloseAllCallBack = base::OnceCallback<void(std::string error)>;
+  // Remove a desk, close all windows if `close_all` set to true, otherwise
+  // combine the windows to the active desk to the left.
+  void RemoveDesk(const base::GUID& desk_uuid,
+                  bool close_all,
+                  CloseAllCallBack);
 
   // Uses `app_launch_handler_` to launch apps from the restore data found in
   // `desk_template`.
@@ -194,7 +201,7 @@ class DesksTemplatesClient : public ash::SessionObserver {
 
   // Callback function that handles the JSON representation of a specific
   // template.
-  void OnGetTemplateJson(DesksTemplatesClient::GetTemplateJsonCallback callback,
+  void OnGetTemplateJson(DesksClient::GetTemplateJsonCallback callback,
                          desks_storage::DeskModel::GetTemplateJsonStatus status,
                          const std::string& json_representation);
 
@@ -237,7 +244,7 @@ class DesksTemplatesClient : public ash::SessionObserver {
   base::flat_map<base::GUID, std::unique_ptr<LaunchPerformanceTracker>>
       template_ids_to_launch_performance_trackers_;
 
-  base::WeakPtrFactory<DesksTemplatesClient> weak_ptr_factory_{this};
+  base::WeakPtrFactory<DesksClient> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_UI_ASH_DESKS_TEMPLATES_DESKS_TEMPLATES_CLIENT_H_
+#endif  // CHROME_BROWSER_UI_ASH_DESKS_DESKS_TEMPLATES_CLIENT_H_
