@@ -706,7 +706,7 @@ export class FileManager extends EventTarget {
 
     this.scanController_ = new ScanController(
         this.directoryModel_, this.ui_.listContainer, this.spinnerController_,
-        this.commandHandler_, this.selectionHandler_);
+        this.selectionHandler_);
     this.sortMenuController_ = new SortMenuController(
         this.ui_.sortButton, this.ui_.sortButtonToggleRipple,
         assert(this.directoryModel_.getFileList()));
