@@ -570,7 +570,9 @@ const base::Feature kVideoBlitColorAccuracy{"video-blit-color-accuracy",
 // Enable VP9 k-SVC decoding with HW decoder for webrtc use case.
 const base::Feature kVp9kSVCHWDecoding {
   "Vp9kSVCHWDecoding",
-#if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)
+// TODO(crbug.com/1325698): Remove  defined(ARCH_CPU_X86_FAMILY) once this is
+// enabled by default on ChromeOS AMD devices.
+#if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS)
       base::FEATURE_ENABLED_BY_DEFAULT
 #else
       base::FEATURE_DISABLED_BY_DEFAULT
