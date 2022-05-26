@@ -626,8 +626,7 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
                  @"The collection has not moved.");
 
   // Unfocus the omnibox.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]
-      performAction:grey_tapAtPoint(CGPointMake(0, offsetAfterTap.y + 100))];
+  [self unfocusFakeBox];
 
   // Check the fake omnibox is displayed again at the same position.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
@@ -661,9 +660,7 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
   [self focusFakebox];
 
   // Unfocus the omnibox.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]
-      performAction:grey_tapAtPoint(
-                        CGPointMake(0, collectionView.contentOffset.y + 100))];
+  [self unfocusFakeBox];
 
   // Check the fake omnibox is displayed again at the same position.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::FakeOmnibox()]
@@ -1058,6 +1055,20 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
       performAction:grey_tap()];
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
+}
+
+// Unfocus the omnibox.
+- (void)unfocusFakeBox {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    [ChromeEarlGrey simulatePhysicalKeyboardEvent:UIKeyInputEscape flags:0];
+  } else {
+    id<GREYMatcher> cancelButton =
+        grey_accessibilityID(kToolbarCancelOmniboxEditButtonIdentifier);
+    [[EarlGrey
+        selectElementWithMatcher:grey_allOf(cancelButton,
+                                            grey_sufficientlyVisible(), nil)]
+        performAction:grey_tap()];
+  }
 }
 
 - (void)testNTPInitialPositionAndContent:(UICollectionView*)collectionView {
