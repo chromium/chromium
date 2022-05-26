@@ -7,8 +7,10 @@ import("//testing/test.gni")
 # Public target on which all external code requiring a resource_provider
 # implementation should depend.
 source_set("renderer") {
-  public_deps = [ ":resource_provider" ]
-  deps = [ ":resource_provider_impl" ]
+  public_deps = [
+    ":resource_provider",
+    ":resource_provider_factory",
+  ]
 }
 
 # Public target used by the //content code to inject the Renderer used for
@@ -41,6 +43,11 @@ source_set("resource_provider") {
   sources = [ "resource_provider.cc" ]
 }
 
+source_set("resource_provider_factory") {
+  public = [ "public/resource_provider_factory.h" ]
+  deps = [ ":resource_provider_impl" ]
+}
+
 source_set("resource_provider_impl") {
   public_deps = [ ":resource_provider" ]
   deps = [
@@ -48,12 +55,9 @@ source_set("resource_provider_impl") {
     "//base",
     "//components/cast_streaming/public",
     "//components/cast_streaming/public/mojom",
-    "//content/public/renderer",
     "//media",
     "//media/mojo/common",
     "//mojo/public/cpp/bindings",
-    "//third_party/blink/public:blink_headers",
-    "//third_party/blink/public/common",
   ]
   sources = [
     "cast_streaming_demuxer.cc",

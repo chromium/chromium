@@ -264,4 +264,9 @@ ContentRendererClient::GetBaseRendererFactory(
   return nullptr;
 }
 
+std::unique_ptr<cast_streaming::ResourceProvider>
+ContentRendererClient::CreateCastStreamingResourceProvider() {
+  return nullptr;
+}
+
 }  // namespace content

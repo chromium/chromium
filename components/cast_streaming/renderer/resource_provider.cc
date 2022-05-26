@@ -5,27 +5,9 @@
 #include "components/cast_streaming/renderer/public/resource_provider.h"
 
 namespace cast_streaming {
-namespace {
 
-ResourceProvider* g_instance = nullptr;
+ResourceProvider::ResourceProvider() = default;
 
-}  // namespace
-
-// static
-mojo::PendingReceiver<media::mojom::Renderer> ResourceProvider::GetReceiver(
-    content::RenderFrame* render_frame) {
-  DCHECK(g_instance);
-  return g_instance->GetReceiverImpl(render_frame);
-}
-
-ResourceProvider::ResourceProvider() {
-  DCHECK(!g_instance);
-  g_instance = this;
-}
-
-ResourceProvider::~ResourceProvider() {
-  DCHECK(g_instance);
-  g_instance = nullptr;
-}
+ResourceProvider::~ResourceProvider() = default;
 
 }  // namespace cast_streaming

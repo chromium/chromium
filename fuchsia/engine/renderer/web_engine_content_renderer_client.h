@@ -51,16 +51,14 @@ class WebEngineContentRendererClient : public content::ContentRendererClient {
   bool DeferMediaLoad(content::RenderFrame* render_frame,
                       bool has_played_media_before,
                       base::OnceClosure closure) override;
-  std::unique_ptr<media::Demuxer> OverrideDemuxerForUrl(
-      content::RenderFrame* render_frame,
-      const GURL& url,
-      scoped_refptr<base::SingleThreadTaskRunner> media_task_runner) override;
   std::unique_ptr<media::RendererFactory> GetBaseRendererFactory(
       content::RenderFrame* render_frame,
       media::MediaLog* media_log,
       media::DecoderFactory* decoder_factory,
       base::RepeatingCallback<media::GpuVideoAcceleratorFactories*()>
           get_gpu_factories_cb) override;
+  std::unique_ptr<cast_streaming::ResourceProvider>
+  CreateCastStreamingResourceProvider() override;
 
   bool RunClosureWhenInForeground(content::RenderFrame* render_frame,
                                   base::OnceClosure closure);
@@ -68,10 +66,6 @@ class WebEngineContentRendererClient : public content::ContentRendererClient {
   // Overrides the default Content/Blink audio pipeline, to allow Renderers to
   // use the AudioConsumer service directly.
   WebEngineAudioDeviceFactory audio_device_factory_;
-
-  // Handles interaction with cast_streaming component.
-  std::unique_ptr<cast_streaming::ResourceProvider>
-      cast_streaming_resource_provider_;
 
   // Map of RenderFrame ID to WebEngineRenderFrameObserver.
   std::map<int, std::unique_ptr<WebEngineRenderFrameObserver>>

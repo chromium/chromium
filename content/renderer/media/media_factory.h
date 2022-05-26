@@ -42,9 +42,13 @@ class WebMediaPlayerClient;
 class WebMediaPlayerEncryptedMediaClient;
 }  // namespace blink
 
+namespace cast_streaming {
+class ResourceProvider;
+}  // namespace cast_streaming
+
 namespace cc {
 class LayerTreeSettings;
-}
+}  // namespace cc
 
 namespace media {
 class CdmFactory;
@@ -179,6 +183,9 @@ class MediaFactory {
   // process. Always use the GetRemoterFactory() accessor instead of this.
   mojo::Remote<media::mojom::RemoterFactory> remoter_factory_;
 #endif
+
+  std::unique_ptr<cast_streaming::ResourceProvider>
+      cast_streaming_resource_provider_;
 };
 
 }  // namespace content

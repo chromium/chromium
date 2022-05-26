@@ -5,22 +5,10 @@
 #include "components/cast_streaming/renderer/demuxer_connector.h"
 
 #include "components/cast_streaming/renderer/cast_streaming_demuxer.h"
-#include "content/public/renderer/render_frame.h"
-#include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 
 namespace cast_streaming {
 
-DemuxerConnector::DemuxerConnector(content::RenderFrame* render_frame) {
-  DVLOG(1) << __func__;
-  DCHECK(render_frame);
-
-  // It is fine to use an unretained pointer to |this| here as the
-  // AssociatedInterfaceRegistry, owned by |render_frame| will be torn-down at
-  // the same time as |this|.
-  render_frame->GetAssociatedInterfaceRegistry()->AddInterface(
-      base::BindRepeating(&DemuxerConnector::BindToReceiver,
-                          base::Unretained(this)));
-}
+DemuxerConnector::DemuxerConnector() = default;
 
 DemuxerConnector::~DemuxerConnector() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -62,7 +50,7 @@ void DemuxerConnector::OnDemuxerDestroyed() {
   demuxer_connector_receiver_.reset();
 }
 
-void DemuxerConnector::BindToReceiver(
+void DemuxerConnector::BindReceiver(
     mojo::PendingAssociatedReceiver<mojom::DemuxerConnector> receiver) {
   DVLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

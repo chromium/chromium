@@ -11,10 +11,6 @@
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 
-namespace content {
-class RenderFrame;
-}  // namespace content
-
 namespace cast_streaming {
 
 class CastStreamingDemuxer;
@@ -28,11 +24,13 @@ class CastStreamingDemuxer;
 // destruction first.
 class DemuxerConnector final : public mojom::DemuxerConnector {
  public:
-  explicit DemuxerConnector(content::RenderFrame* render_frame);
+  DemuxerConnector();
   ~DemuxerConnector() override;
-
   DemuxerConnector(const DemuxerConnector&) = delete;
   DemuxerConnector& operator=(const DemuxerConnector&) = delete;
+
+  void BindReceiver(
+      mojo::PendingAssociatedReceiver<mojom::DemuxerConnector> connector);
 
   void SetDemuxer(CastStreamingDemuxer* demuxer);
   void OnDemuxerDestroyed();
@@ -41,9 +39,6 @@ class DemuxerConnector final : public mojom::DemuxerConnector {
   bool IsBound() const;
 
  private:
-  void BindToReceiver(
-      mojo::PendingAssociatedReceiver<mojom::DemuxerConnector> connector);
-
   void MaybeCallEnableReceiverCallback();
 
   void OnReceiverDisconnected();

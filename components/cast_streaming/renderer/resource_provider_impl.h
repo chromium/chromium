@@ -9,23 +9,22 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
+#include "components/cast_streaming/public/mojom/demuxer_connector.mojom.h"
 #include "components/cast_streaming/public/mojom/renderer_controller.mojom.h"
 #include "components/cast_streaming/renderer/demuxer_connector.h"
 #include "components/cast_streaming/renderer/public/resource_provider.h"
 #include "components/cast_streaming/renderer/renderer_controller_proxy.h"
-#include "content/public/renderer/render_frame_observer.h"
 #include "media/mojo/mojom/renderer.mojom.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "url/gurl.h"
 
 namespace base {
 class SingleThreadTaskRunner;
 }
-
-namespace content {
-class RenderFrame;
-}  // namespace content
 
 namespace media {
 class Demuxer;
@@ -49,63 +48,50 @@ class ResourceProviderImpl : public ResourceProvider {
   // serves to tie their lifetimes to that of the |render_frame| with which
   // they are associated, and ensures that their destruction occurs when any
   // such resource becomes invalid.
-  class PerRenderFrameResources : public content::RenderFrameObserver {
+  class PerRenderFrameResources {
    public:
-    using EndOfLifeCB = base::OnceCallback<void()>;
-
-    // |end_of_life_callback| is the callback to be provided to both
-    // |cast_streaming_receiver_| as the RenderFrameDeletionCB and to
-    // |renderer_controller_proxy_| as the MojoDisconnectCB. It is expected to
-    // delete this instance.
-    PerRenderFrameResources(content::RenderFrame* render_frame,
-                            EndOfLifeCB end_of_life_cb);
-    ~PerRenderFrameResources() override;
+    // |on_error| is the callback to be provided to |renderer_controller_proxy_|
+    // as the MojoDisconnectCB. It is expected to delete this instance.
+    explicit PerRenderFrameResources(base::OnceClosure on_error);
+    ~PerRenderFrameResources();
 
     DemuxerConnector& demuxer_connector() { return demuxer_connector_; }
 
     RendererControllerProxy& renderer_controller_proxy() {
-      DCHECK(renderer_controller_proxy_);
-      return renderer_controller_proxy_.value();
-    }
-
-    bool has_renderer_controller_proxy() const {
-      return !!renderer_controller_proxy_;
+      return renderer_controller_proxy_;
     }
 
    private:
-    // content::RenderFrameObserver implementation.
-    void OnDestruct() override;
-
     // The singleton associated with forming the mojo connection used to pass
     // DecoderBuffers from the browser process into the renderer process's
     // DemuxerStream used by the media pipeline.
     DemuxerConnector demuxer_connector_;
 
     // The singleton associated with sending playback commands from the browser
-    // to the renderer process. Only populated if remoting is enabled.
-    absl::optional<RendererControllerProxy> renderer_controller_proxy_;
-
-    // Callback to be called when the first of |cast_streaming_receiver_| or
-    // |renderer_controller_proxy_| becomes invalid.
-    EndOfLifeCB end_of_life_cb_;
+    // to the renderer process.
+    RendererControllerProxy renderer_controller_proxy_;
   };
 
+  void BindRendererController(
+      mojo::PendingAssociatedReceiver<mojom::RendererController> receiver);
+  void BindDemuxerConnector(
+      mojo::PendingAssociatedReceiver<mojom::DemuxerConnector> receiver);
+
+  void OnError();
+
   // ResourceProvider overrides.
-  void RenderFrameCreated(content::RenderFrame* render_frame) override;
-  std::unique_ptr<media::Demuxer> OverrideDemuxerForUrl(
-      content::RenderFrame* render_frame,
+  ReceiverBinder<mojom::RendererController> GetRendererControllerBinder()
+      override;
+  ReceiverBinder<mojom::DemuxerConnector> GetDemuxerConnectorBinder() override;
+  std::unique_ptr<media::Demuxer> MaybeGetDemuxerOverride(
       const GURL& url,
       scoped_refptr<base::SingleThreadTaskRunner> media_task_runner) override;
-  mojo::PendingReceiver<media::mojom::Renderer> GetReceiverImpl(
-      content::RenderFrame* render_frame) override;
+  mojo::PendingReceiver<media::mojom::Renderer> GetRendererCommandReceiver()
+      override;
 
-  // Called by this instance when its corresponding RenderFrame is in the
-  // process of being deleted.
-  void OnRenderFrameDeleted(int render_frame_id);
+  std::unique_ptr<PerRenderFrameResources> per_frame_resources_;
 
-  // Map of RenderFrame ID to per-render-frame resources.
-  std::map<int, std::unique_ptr<PerRenderFrameResources>>
-      render_frame_id_to_resources_map_;
+  base::WeakPtrFactory<ResourceProviderImpl> weak_factory_;
 };
 
 }  // namespace cast_streaming

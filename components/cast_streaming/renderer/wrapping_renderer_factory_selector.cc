@@ -12,12 +12,12 @@
 namespace cast_streaming {
 
 WrappingRendererFactorySelector::WrappingRendererFactorySelector(
-    content::RenderFrame* render_frame) {
-  DCHECK(render_frame);
-  auto receiver = ResourceProvider::GetReceiver(render_frame);
+    ResourceProvider* resource_provider) {
+  DCHECK(resource_provider);
+
   wrapping_factory_ =
       std::make_unique<PlaybackCommandForwardingRendererFactory>(
-          std::move(receiver));
+          resource_provider->GetRendererCommandReceiver());
 }
 
 WrappingRendererFactorySelector::~WrappingRendererFactorySelector() = default;

@@ -60,6 +60,10 @@ struct WebURLError;
 enum class ProtocolHandlerSecurityLevel;
 }  // namespace blink
 
+namespace cast_streaming {
+class ResourceProvider;
+}  // namespace cast_streaming
+
 namespace media {
 class DecoderFactory;
 class Demuxer;
@@ -405,6 +409,11 @@ class CONTENT_EXPORT ContentRendererClient {
       media::DecoderFactory* decoder_factory,
       base::RepeatingCallback<media::GpuVideoAcceleratorFactories*()>
           get_gpu_factories_cb);
+
+  // Creates a new cast_streaming::ResourceProvider. Will only be called once
+  // per RenderFrame.
+  virtual std::unique_ptr<cast_streaming::ResourceProvider>
+  CreateCastStreamingResourceProvider();
 };
 
 }  // namespace content

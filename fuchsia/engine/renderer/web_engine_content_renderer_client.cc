@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "components/cast_streaming/renderer/public/resource_provider.h"
+#include "components/cast_streaming/renderer/public/resource_provider_factory.h"
 #include "components/cdm/renderer/widevine_key_system_properties.h"
 #include "components/media_control/renderer/media_playback_options.h"
 #include "components/memory_pressure/multi_source_memory_pressure_monitor.h"
@@ -109,9 +110,7 @@ class PlayreadyKeySystemProperties : public ::media::KeySystemProperties {
 
 }  // namespace
 
-WebEngineContentRendererClient::WebEngineContentRendererClient()
-    : cast_streaming_resource_provider_(
-          cast_streaming::ResourceProvider::Create()) {}
+WebEngineContentRendererClient::WebEngineContentRendererClient() = default;
 
 WebEngineContentRendererClient::~WebEngineContentRendererClient() = default;
 
@@ -155,9 +154,6 @@ void WebEngineContentRendererClient::RenderFrameCreated(
   auto render_frame_observer_iter = render_frame_id_to_observer_map_.emplace(
       render_frame_id, std::move(render_frame_observer));
   DCHECK(render_frame_observer_iter.second);
-
-  // Call into the cast_streaming-specific frame creation logic.
-  cast_streaming_resource_provider_->RenderFrameCreated(render_frame);
 
   // Lifetime is tied to |render_frame| via content::RenderFrameObserver.
   new media_control::MediaPlaybackOptions(render_frame);
@@ -260,19 +256,6 @@ bool WebEngineContentRendererClient::DeferMediaLoad(
   return RunClosureWhenInForeground(render_frame, std::move(closure));
 }
 
-std::unique_ptr<media::Demuxer>
-WebEngineContentRendererClient::OverrideDemuxerForUrl(
-    content::RenderFrame* render_frame,
-    const GURL& url,
-    scoped_refptr<base::SingleThreadTaskRunner> media_task_runner) {
-  if (!IsCastStreamingEnabled()) {
-    return nullptr;
-  }
-
-  return cast_streaming_resource_provider_->OverrideDemuxerForUrl(
-      render_frame, url, std::move(media_task_runner));
-}
-
 std::unique_ptr<media::RendererFactory>
 WebEngineContentRendererClient::GetBaseRendererFactory(
     content::RenderFrame* render_frame,
@@ -304,4 +287,13 @@ bool WebEngineContentRendererClient::RunClosureWhenInForeground(
       media_control::MediaPlaybackOptions::Get(render_frame);
   DCHECK(playback_options);
   return playback_options->RunWhenInForeground(std::move(closure));
+}
+
+std::unique_ptr<cast_streaming::ResourceProvider>
+WebEngineContentRendererClient::CreateCastStreamingResourceProvider() {
+  if (!IsCastStreamingEnabled()) {
+    return nullptr;
+  }
+
+  return cast_streaming::CreateResourceProvider();
 }
