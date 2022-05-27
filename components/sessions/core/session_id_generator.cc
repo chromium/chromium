@@ -100,4 +100,8 @@ void SessionIdGenerator::IncrementValueBy(int increment) {
   last_value_ += increment;
 }
 
+bool SessionIdGenerator::IsInitializedForTest() const {
+  return local_state_ != nullptr;
+}
+
 }  // namespace sessions

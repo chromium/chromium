@@ -1986,6 +1986,7 @@ if (!is_android) {
       "../browser/sessions/better_session_restore_browsertest.cc",
       "../browser/sessions/closed_tab_cache_browsertest.cc",
       "../browser/sessions/exit_type_service_browsertest.cc",
+      "../browser/sessions/session_id_generator_browsertest.cc",
       "../browser/sessions/session_restore_browsertest.cc",
       "../browser/sessions/session_restore_observer_browsertest.cc",
       "../browser/sessions/session_service_log_browsertest.cc",

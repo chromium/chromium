@@ -248,6 +248,10 @@ BrowserProcessImpl::BrowserProcessImpl(StartupData* startup_data)
       platform_part_(std::make_unique<BrowserProcessPlatformPart>()) {
   g_browser_process = this;
 
+  // Initialize the SessionIdGenerator instance, providing a PrefService to
+  // ensure the persistent storage of current max SessionId.
+  sessions::SessionIdGenerator::GetInstance()->Init(local_state_.get());
+
   DCHECK(local_state_);
   DCHECK(startup_data);
   // Most work should be done in Init().

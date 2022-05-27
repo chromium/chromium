@@ -44,6 +44,9 @@ class SESSIONS_EXPORT SessionIdGenerator {
   using RandomGenerator = base::RepeatingCallback<SessionID::id_type()>;
   void SetRandomGeneratorForTest(const RandomGenerator& rand_generator);
 
+  // Used for test only, verify the SessionIdGenerator is initialized.
+  bool IsInitializedForTest() const;
+
  private:
   friend struct base::DefaultSingletonTraits<SessionIdGenerator>;
 
