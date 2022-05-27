@@ -332,6 +332,9 @@ std::vector<std::string> GenerateKernelCmdline(
   if (start_params.enable_tts_caching)
     result.push_back("androidboot.arc.tts.caching=1");
 
+  if (base::FeatureList::IsEnabled(arc::kVmBroadcastPreNotifyANR))
+    result.push_back("androidboot.arc.broadcast_anr_prenotify=1");
+
   return result;
 }
 

@@ -17,6 +17,9 @@ namespace {
 constexpr base::TimeDelta kHandleDefaultAnrTime = base::Seconds(10);
 // Time to recover ANR in services.
 constexpr base::TimeDelta kHandleServiceAnrTime = base::Seconds(20);
+// Time to recover ANR in broadcast queue.
+// TODO(khmel): This might require to separate foreground/background queue.
+constexpr base::TimeDelta kHandleBroadcastAnrTime = base::Seconds(10);
 
 }  // namespace
 
@@ -61,6 +64,9 @@ void ArcPowerThrottleObserver::OnPreAnr(mojom::AnrType type) {
     case mojom::AnrType::FOREGROUND_SERVICE:
     case mojom::AnrType::BACKGROUND_SERVICE:
       delta = kHandleServiceAnrTime;
+      break;
+    case mojom::AnrType::BROADCAST:
+      delta = kHandleBroadcastAnrTime;
       break;
     default:
       delta = kHandleDefaultAnrTime;

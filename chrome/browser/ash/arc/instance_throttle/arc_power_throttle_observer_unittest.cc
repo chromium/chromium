@@ -213,4 +213,29 @@ TEST_F(ArcPowerThrottleObserverTest, ActiveTimePreserved) {
   EXPECT_FALSE(observer.active());
 }
 
+TEST_F(ArcPowerThrottleObserverTest, Broadcast) {
+  ArcPowerThrottleObserver observer;
+  int call_count = 0;
+  int active_count = 0;
+  observer.StartObserving(
+      profile(),
+      base::BindRepeating(&TestCallback, &call_count, &active_count));
+
+  observer.OnPreAnr(mojom::AnrType::BROADCAST);
+  EXPECT_EQ(1, call_count);
+  EXPECT_EQ(1, active_count);
+  EXPECT_TRUE(observer.active());
+
+  task_environment().FastForwardBy(base::Milliseconds(9999));
+  EXPECT_EQ(1, call_count);
+  EXPECT_EQ(1, active_count);
+  EXPECT_TRUE(observer.active());
+
+  // Only now the lock becomes inactive.
+  task_environment().FastForwardBy(base::Milliseconds(1));
+  EXPECT_EQ(2, call_count);
+  EXPECT_EQ(1, active_count);
+  EXPECT_FALSE(observer.active());
+}
+
 }  // namespace arc

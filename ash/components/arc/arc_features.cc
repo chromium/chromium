@@ -231,6 +231,11 @@ const base::FeatureParam<int> kVmBalloonPolicyReclaimKiB{&kVmBalloonPolicy,
 const base::Feature kVmGmsCoreLowMemoryKillerProtection{
     "ArcVmGmsCoreLowMemoryKillerProtection", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Controls experimental key to enable pre-ANR handling for BroadcastQueue in
+// ARCVM.
+const base::Feature kVmBroadcastPreNotifyANR{"ArcVmBroadcastPreAnrHandling",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
+
 // If set, enable responsive balloon sizing. Concierge will listen on a VSOCK
 // for connections from LMKD in Android. When LMKD is about to kill an App, it
 // will signal the balloon sizing code, which may deflate the balloon instead
