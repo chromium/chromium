@@ -2090,7 +2090,7 @@ CommandHandler.COMMANDS_['toggle-pinned'] = new (class extends FilesCommand {
  */
 CommandHandler.COMMANDS_['extract-all'] = new (class extends FilesCommand {
   execute(event, fileManager) {
-    const dirEntry = fileManager.getCurrentDirectoryEntry();
+    let dirEntry = fileManager.getCurrentDirectoryEntry();
     if (!dirEntry ||
         !fileManager.getSelection().entries.every(
             CommandUtil.shouldShowMenuItemsForEntry.bind(
@@ -2100,6 +2100,9 @@ CommandHandler.COMMANDS_['extract-all'] = new (class extends FilesCommand {
 
     const selectionEntries = fileManager.getSelection().entries;
     if (util.isExtractArchiveEnabled()) {
+      if (fileManager.directoryModel.isReadOnly()) {
+        dirEntry = fileManager.directoryModel.getMyFiles();
+      }
       startIOTask(
           chrome.fileManagerPrivate.IOTaskType.EXTRACT, selectionEntries,
           {destinationFolder: /** @type {!DirectoryEntry} */ (dirEntry)});
@@ -2116,8 +2119,7 @@ CommandHandler.COMMANDS_['extract-all'] = new (class extends FilesCommand {
     const dirEntry = fileManager.getCurrentDirectoryEntry();
     const selection = fileManager.getSelection();
 
-    if (!dirEntry || fileManager.directoryModel.isReadOnly() || !selection ||
-        selection.totalCount === 0) {
+    if (!dirEntry || !selection || selection.totalCount === 0) {
       event.command.setHidden(true);
       event.canExecute = false;
     } else {

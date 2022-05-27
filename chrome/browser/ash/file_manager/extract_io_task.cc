@@ -38,6 +38,7 @@ ExtractIOTask::ExtractIOTask(
       file_system_context_(std::move(file_system_context)) {
   progress_.type = OperationType::kExtract;
   progress_.state = State::kQueued;
+  progress_.destination_folder = parent_folder_;
   progress_.bytes_transferred = 0;
   progress_.total_bytes = 0;
   // Store all the ZIP files in the selection so we have

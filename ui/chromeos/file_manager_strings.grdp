@@ -662,6 +662,9 @@
   <message name="IDS_FILE_BROWSER_EXTRACT_ITEMS_REMAINING" desc="File Manager status message. 'Item' is used here as a generic term for file or directory.">
     Extracting <ph name="NUMBER_OF_ITEMS">$1<ex>3</ex></ph> items...
   </message>
+  <message name="IDS_FILE_BROWSER_EXTRACT_FILE_NAME_LONG" desc="File Manager status message including destination folder when extracting one file.">
+    Extracting <ph name="FILE_NAME">$1<ex>movie.avi</ex></ph> to <ph name="FOLDER_NAME">$2<ex>images</ex></ph>
+  </message>
   <message name="IDS_FILE_BROWSER_TIME_REMAINING_ESTIMATE"
            desc="The progress panel message indicating estimate of remaining time of a file operation. The time will be in 1 part (hour or minute) like '2 hours' or '3 min'.">
     About <ph name="REMAINING_TIME">$1<ex>1 min</ex></ph> remaining

@@ -1076,6 +1076,14 @@ export class DirectoryModel extends EventTarget {
   }
 
   /**
+   * Gets the current MyFilesEntry.
+   * @return {FilesAppDirEntry} myFilesEntry
+   */
+  getMyFiles() {
+    return this.myFilesEntry_;
+  }
+
+  /**
    * Sets the current MyFilesEntry.
    * @param {FilesAppDirEntry} myFilesEntry
    */

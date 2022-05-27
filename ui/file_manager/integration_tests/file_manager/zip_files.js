@@ -344,7 +344,7 @@ testcase.zipExtractShowPanel = async () => {
   await repeatUntil(async () => {
     element = await remoteCall.waitForElement(
         appId, ['#progress-panel', 'xf-panel-item']);
-    const expectedMsg = `Extracting ${entry.nameText}…`;
+    const expectedMsg = `Extracting ${entry.nameText} to Downloads`;
     const actualMsg = element.attributes['primary-text'];
 
     if (actualMsg === expectedMsg) {
