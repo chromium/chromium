@@ -116,17 +116,16 @@ void WorkerInspectorController::AttachSession(DevToolsSession* session,
     thread_->GetWorkerBackingThread().BackingThread().AddTaskObserver(this);
   session->ConnectToV8(debugger_->GetV8Inspector(),
                        debugger_->ContextGroupId(thread_));
-  session->Append(MakeGarbageCollected<InspectorLogAgent>(
-      thread_->GetConsoleMessageStorage(), nullptr, session->V8Session()));
+  session->CreateAndAppend<InspectorLogAgent>(
+      thread_->GetConsoleMessageStorage(), nullptr, session->V8Session());
   if (auto* scope = DynamicTo<WorkerGlobalScope>(thread_->GlobalScope())) {
-    auto* network_agent = MakeGarbageCollected<InspectorNetworkAgent>(
+    auto* network_agent = session->CreateAndAppend<InspectorNetworkAgent>(
         inspected_frames_.Get(), scope, session->V8Session());
-    session->Append(network_agent);
-    session->Append(MakeGarbageCollected<InspectorEmulationAgent>(nullptr));
-    session->Append(MakeGarbageCollected<InspectorAuditsAgent>(
-        network_agent, thread_->GetInspectorIssueStorage(), nullptr));
-    session->Append(MakeGarbageCollected<InspectorMediaAgent>(
-        inspected_frames_.Get(), scope));
+    session->CreateAndAppend<InspectorEmulationAgent>(nullptr);
+    session->CreateAndAppend<InspectorAuditsAgent>(
+        network_agent, thread_->GetInspectorIssueStorage(), nullptr);
+    session->CreateAndAppend<InspectorMediaAgent>(inspected_frames_.Get(),
+                                                  scope);
   }
   ++session_count_;
 }

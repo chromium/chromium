@@ -226,24 +226,24 @@ ServiceWorkerDevToolsAgentHost::~ServiceWorkerDevToolsAgentHost() {
 
 bool ServiceWorkerDevToolsAgentHost::AttachSession(DevToolsSession* session,
                                                    bool acquire_wake_lock) {
-  session->AddHandler(std::make_unique<protocol::IOHandler>(GetIOContext()));
-  session->AddHandler(std::make_unique<protocol::InspectorHandler>());
-  session->AddHandler(std::make_unique<protocol::NetworkHandler>(
+  session->CreateAndAddHandler<protocol::IOHandler>(GetIOContext());
+  session->CreateAndAddHandler<protocol::InspectorHandler>();
+  session->CreateAndAddHandler<protocol::NetworkHandler>(
       GetId(), devtools_worker_token_, GetIOContext(), base::DoNothing(),
-      session->GetClient()->MayReadLocalFiles()));
+      session->GetClient()->MayReadLocalFiles());
 
-  session->AddHandler(std::make_unique<protocol::FetchHandler>(
+  session->CreateAndAddHandler<protocol::FetchHandler>(
       GetIOContext(),
       base::BindRepeating(
           &ServiceWorkerDevToolsAgentHost::UpdateLoaderFactories,
-          base::Unretained(this))));
-  session->AddHandler(std::make_unique<protocol::SchemaHandler>());
+          base::Unretained(this)));
+  session->CreateAndAddHandler<protocol::SchemaHandler>();
 
-  auto target_handler = std::make_unique<protocol::TargetHandler>(
+  auto* target_handler = session->CreateAndAddHandler<protocol::TargetHandler>(
       protocol::TargetHandler::AccessMode::kAutoAttachOnly, GetId(),
       auto_attacher_.get(), session->GetRootSession());
+  DCHECK(target_handler);
   target_handler->DisableAutoAttachOfServiceWorkers();
-  session->AddHandler(std::move(target_handler));
 
   if (state_ == WORKER_READY && sessions().empty())
     UpdateIsAttached(true);

@@ -65,7 +65,9 @@ InspectorAnimationAgent::InspectorAnimationAgent(
       v8_session_(v8_session),
       is_cloning_(false),
       enabled_(&agent_state_, /*default_value=*/false),
-      playback_rate_(&agent_state_, /*default_value=*/1.0) {}
+      playback_rate_(&agent_state_, /*default_value=*/1.0) {
+  DCHECK(css_agent);
+}
 
 void InspectorAnimationAgent::Restore() {
   if (enabled_.Get()) {

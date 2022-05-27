@@ -1050,6 +1050,8 @@ Response PageHandler::SetDownloadBehavior(const std::string& behavior,
   Response response = AssureTopLevelActiveFrame(host_);
   if (response.IsError())
     return response;
+  if (!browser_handler_)
+    return Response::ServerError("Cannot not access browser-level commands");
   return browser_handler_->DoSetDownloadBehavior(behavior, browser_context,
                                                  std::move(download_path));
 }

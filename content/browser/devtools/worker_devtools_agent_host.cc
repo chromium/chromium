@@ -131,13 +131,13 @@ bool WorkerDevToolsAgentHost::Close() {
 
 bool WorkerDevToolsAgentHost::AttachSession(DevToolsSession* session,
                                             bool acquire_wake_lock) {
-  session->AddHandler(std::make_unique<protocol::IOHandler>(GetIOContext()));
-  session->AddHandler(std::make_unique<protocol::TargetHandler>(
+  session->CreateAndAddHandler<protocol::IOHandler>(GetIOContext());
+  session->CreateAndAddHandler<protocol::TargetHandler>(
       protocol::TargetHandler::AccessMode::kAutoAttachOnly, GetId(),
-      auto_attacher_.get(), session->GetRootSession()));
-  session->AddHandler(std::make_unique<protocol::NetworkHandler>(
+      auto_attacher_.get(), session->GetRootSession());
+  session->CreateAndAddHandler<protocol::NetworkHandler>(
       GetId(), devtools_worker_token_, GetIOContext(), base::DoNothing(),
-      session->GetClient()->MayReadLocalFiles()));
+      session->GetClient()->MayReadLocalFiles());
   return true;
 }
 

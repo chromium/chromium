@@ -300,31 +300,27 @@ bool RenderFrameDevToolsAgentHost::AttachSession(DevToolsSession* session,
     frame_host_->DidAccessInitialMainDocument();
   }
 
-  auto emulation_handler = std::make_unique<protocol::EmulationHandler>();
-  protocol::EmulationHandler* emulation_handler_ptr = emulation_handler.get();
-
-  session->AddHandler(std::make_unique<protocol::AuditsHandler>());
-  session->AddHandler(std::make_unique<protocol::BackgroundServiceHandler>());
-  auto browser_handler = std::make_unique<protocol::BrowserHandler>(
-      session->GetClient()->MayWriteLocalFiles());
-  auto* browser_handler_ptr = browser_handler.get();
-  session->AddHandler(std::move(browser_handler));
-  session->AddHandler(std::make_unique<protocol::DOMHandler>(
-      session->GetClient()->MayReadLocalFiles()));
-  session->AddHandler(std::move(emulation_handler));
-  auto input_handler = std::make_unique<protocol::InputHandler>(
+  session->CreateAndAddHandler<protocol::AuditsHandler>();
+  session->CreateAndAddHandler<protocol::BackgroundServiceHandler>();
+  auto* browser_handler =
+      session->CreateAndAddHandler<protocol::BrowserHandler>(
+          session->GetClient()->MayWriteLocalFiles());
+  session->CreateAndAddHandler<protocol::DOMHandler>(
+      session->GetClient()->MayReadLocalFiles());
+  auto* emulation_handler =
+      session->CreateAndAddHandler<protocol::EmulationHandler>();
+  session->CreateAndAddHandler<protocol::InputHandler>(
       session->GetClient()->MayReadLocalFiles(),
       session->GetClient()->IsTrusted());
-  session->AddHandler(std::move(input_handler));
-  session->AddHandler(std::make_unique<protocol::InspectorHandler>());
-  session->AddHandler(std::make_unique<protocol::IOHandler>(GetIOContext()));
-  session->AddHandler(std::make_unique<protocol::MemoryHandler>());
+  session->CreateAndAddHandler<protocol::InspectorHandler>();
+  session->CreateAndAddHandler<protocol::IOHandler>(GetIOContext());
+  session->CreateAndAddHandler<protocol::MemoryHandler>();
 #if BUILDFLAG(USE_VIZ_DEBUGGER)
-  session->AddHandler(std::make_unique<protocol::VisualDebuggerHandler>());
+  session->CreateAndAddHandler<protocol::VisualDebuggerHandler>();
 #endif
   if (!frame_tree_node_ || !frame_tree_node_->parent())
-    session->AddHandler(std::make_unique<protocol::OverlayHandler>());
-  session->AddHandler(std::make_unique<protocol::NetworkHandler>(
+    session->CreateAndAddHandler<protocol::OverlayHandler>();
+  session->CreateAndAddHandler<protocol::NetworkHandler>(
       GetId(),
       frame_tree_node_ ? frame_tree_node_->devtools_frame_token()
                        : base::UnguessableToken(),
@@ -332,38 +328,37 @@ bool RenderFrameDevToolsAgentHost::AttachSession(DevToolsSession* session,
       base::BindRepeating(
           &RenderFrameDevToolsAgentHost::UpdateResourceLoaderFactories,
           base::Unretained(this)),
-      session->GetClient()->MayReadLocalFiles()));
-  session->AddHandler(std::make_unique<protocol::FetchHandler>(
+      session->GetClient()->MayReadLocalFiles());
+  session->CreateAndAddHandler<protocol::FetchHandler>(
       GetIOContext(), base::BindRepeating(
                           [](RenderFrameDevToolsAgentHost* self,
                              base::OnceClosure done_callback) {
                             self->UpdateResourceLoaderFactories();
                             std::move(done_callback).Run();
                           },
-                          base::Unretained(this))));
-  session->AddHandler(std::make_unique<protocol::SchemaHandler>());
+                          base::Unretained(this)));
+  session->CreateAndAddHandler<protocol::SchemaHandler>();
   const bool may_attach_to_brower = session->GetClient()->IsTrusted();
-  session->AddHandler(std::make_unique<protocol::ServiceWorkerHandler>(
-      /* allow_inspect_worker= */ may_attach_to_brower));
-  session->AddHandler(std::make_unique<protocol::StorageHandler>());
-  session->AddHandler(std::make_unique<protocol::TargetHandler>(
+  session->CreateAndAddHandler<protocol::ServiceWorkerHandler>(
+      /* allow_inspect_worker= */ may_attach_to_brower);
+  session->CreateAndAddHandler<protocol::StorageHandler>();
+  session->CreateAndAddHandler<protocol::TargetHandler>(
       may_attach_to_brower
           ? protocol::TargetHandler::AccessMode::kRegular
           : protocol::TargetHandler::AccessMode::kAutoAttachOnly,
-      GetId(), auto_attacher_.get(), session->GetRootSession()));
-  session->AddHandler(std::make_unique<protocol::PageHandler>(
-      emulation_handler_ptr, browser_handler_ptr,
+      GetId(), auto_attacher_.get(), session->GetRootSession());
+  session->CreateAndAddHandler<protocol::PageHandler>(
+      emulation_handler, browser_handler,
       session->GetClient()->AllowUnsafeOperations(),
       session->GetClient()->IsTrusted(),
-      session->GetClient()->GetNavigationInitiatorOrigin()));
-  session->AddHandler(std::make_unique<protocol::SecurityHandler>());
+      session->GetClient()->GetNavigationInitiatorOrigin());
+  session->CreateAndAddHandler<protocol::SecurityHandler>();
   if (!frame_tree_node_ || !frame_tree_node_->parent()) {
-    session->AddHandler(
-        std::make_unique<protocol::TracingHandler>(GetIOContext()));
+    session->CreateAndAddHandler<protocol::TracingHandler>(GetIOContext());
   }
-  session->AddHandler(std::make_unique<protocol::LogHandler>());
+  session->CreateAndAddHandler<protocol::LogHandler>();
 #if !BUILDFLAG(IS_ANDROID)
-  session->AddHandler(std::make_unique<protocol::WebAuthnHandler>());
+  session->CreateAndAddHandler<protocol::WebAuthnHandler>();
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   if (sessions().empty()) {

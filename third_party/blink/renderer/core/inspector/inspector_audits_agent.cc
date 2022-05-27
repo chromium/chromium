@@ -120,7 +120,9 @@ InspectorAuditsAgent::InspectorAuditsAgent(InspectorNetworkAgent* network_agent,
     : inspector_issue_storage_(storage),
       enabled_(&agent_state_, false),
       network_agent_(network_agent),
-      inspected_frames_(inspected_frames) {}
+      inspected_frames_(inspected_frames) {
+  DCHECK(network_agent);
+}
 
 InspectorAuditsAgent::~InspectorAuditsAgent() = default;
 

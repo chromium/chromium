@@ -591,7 +591,10 @@ InspectorCSSAgent::InspectorCSSAgent(
       enable_requested_(&agent_state_, /*default_value=*/false),
       enable_completed_(false),
       coverage_enabled_(&agent_state_, /*default_value=*/false),
-      local_fonts_enabled_(&agent_state_, /*default_value=*/true) {}
+      local_fonts_enabled_(&agent_state_, /*default_value=*/true) {
+  DCHECK(dom_agent);
+  DCHECK(network_agent);
+}
 
 InspectorCSSAgent::~InspectorCSSAgent() = default;
 

@@ -203,7 +203,9 @@ InspectorDOMSnapshotAgent::InspectorDOMSnapshotAgent(
     InspectorDOMDebuggerAgent* dom_debugger_agent)
     : inspected_frames_(inspected_frames),
       dom_debugger_agent_(dom_debugger_agent),
-      enabled_(&agent_state_, /*default_value=*/false) {}
+      enabled_(&agent_state_, /*default_value=*/false) {
+  DCHECK(dom_debugger_agent);
+}
 
 InspectorDOMSnapshotAgent::~InspectorDOMSnapshotAgent() = default;
 

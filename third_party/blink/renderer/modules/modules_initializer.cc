@@ -268,19 +268,16 @@ void ModulesInitializer::InitInspectorAgentSession(
     InspectorDOMAgent* dom_agent,
     InspectedFrames* inspected_frames,
     Page* page) const {
-  session->Append(MakeGarbageCollected<InspectorIndexedDBAgent>(
-      inspected_frames, session->V8Session()));
-  session->Append(
-      MakeGarbageCollected<DeviceOrientationInspectorAgent>(inspected_frames));
-  session->Append(
-      MakeGarbageCollected<InspectorDOMStorageAgent>(inspected_frames));
-  session->Append(MakeGarbageCollected<InspectorAccessibilityAgent>(
-      inspected_frames, dom_agent));
-  session->Append(MakeGarbageCollected<InspectorWebAudioAgent>(page));
+  session->CreateAndAppend<InspectorIndexedDBAgent>(inspected_frames,
+                                                    session->V8Session());
+  session->CreateAndAppend<DeviceOrientationInspectorAgent>(inspected_frames);
+  session->CreateAndAppend<InspectorDOMStorageAgent>(inspected_frames);
+  session->CreateAndAppend<InspectorAccessibilityAgent>(inspected_frames,
+                                                        dom_agent);
+  session->CreateAndAppend<InspectorWebAudioAgent>(page);
   if (allow_view_agents) {
-    session->Append(MakeGarbageCollected<InspectorDatabaseAgent>(page));
-    session->Append(
-        MakeGarbageCollected<InspectorCacheStorageAgent>(inspected_frames));
+    session->CreateAndAppend<InspectorDatabaseAgent>(page);
+    session->CreateAndAppend<InspectorCacheStorageAgent>(inspected_frames);
   }
 }
 

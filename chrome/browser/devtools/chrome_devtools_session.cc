@@ -5,6 +5,7 @@
 #include "chrome/browser/devtools/chrome_devtools_session.h"
 
 #include <memory>
+#include <type_traits>
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/strings/string_number_conversions.h"
@@ -25,25 +26,50 @@
 #include "chrome/browser/devtools/protocol/window_manager_handler.h"
 #endif
 
+namespace {
+
+template <typename Handler>
+bool IsDomainAvailableToUntrustedClient() {
+  return std::disjunction_v<std::is_same<Handler, PageHandler>,
+                            std::is_same<Handler, EmulationHandler>,
+                            std::is_same<Handler, TargetHandler>>;
+}
+
+}  // namespace
+
 ChromeDevToolsSession::ChromeDevToolsSession(
     content::DevToolsAgentHostClientChannel* channel)
     : dispatcher_(this), client_channel_(channel) {
   content::DevToolsAgentHost* agent_host = channel->GetAgentHost();
   if (agent_host->GetWebContents() &&
       agent_host->GetType() == content::DevToolsAgentHost::kTypePage) {
-    page_handler_ = std::make_unique<PageHandler>(
-        agent_host, agent_host->GetWebContents(), &dispatcher_);
-    security_handler_ = std::make_unique<SecurityHandler>(
-        agent_host->GetWebContents(), &dispatcher_);
-    if (channel->GetClient()->IsTrusted()) {
+    if (IsDomainAvailableToUntrustedClient<PageHandler>() ||
+        channel->GetClient()->IsTrusted()) {
+      page_handler_ = std::make_unique<PageHandler>(
+          agent_host, agent_host->GetWebContents(), &dispatcher_);
+    }
+    if (IsDomainAvailableToUntrustedClient<SecurityHandler>() ||
+        channel->GetClient()->IsTrusted()) {
+      security_handler_ = std::make_unique<SecurityHandler>(
+          agent_host->GetWebContents(), &dispatcher_);
+    }
+    if (IsDomainAvailableToUntrustedClient<CastHandler>() ||
+        channel->GetClient()->IsTrusted()) {
       cast_handler_ = std::make_unique<CastHandler>(
           agent_host->GetWebContents(), &dispatcher_);
     }
   }
-  emulation_handler_ =
-      std::make_unique<EmulationHandler>(agent_host, &dispatcher_);
-  target_handler_ = std::make_unique<TargetHandler>(&dispatcher_);
-  if (channel->GetClient()->IsTrusted()) {
+  if (IsDomainAvailableToUntrustedClient<EmulationHandler>() ||
+      channel->GetClient()->IsTrusted()) {
+    emulation_handler_ =
+        std::make_unique<EmulationHandler>(agent_host, &dispatcher_);
+  }
+  if (IsDomainAvailableToUntrustedClient<TargetHandler>() ||
+      channel->GetClient()->IsTrusted()) {
+    target_handler_ = std::make_unique<TargetHandler>(&dispatcher_);
+  }
+  if (IsDomainAvailableToUntrustedClient<BrowserHandler>() ||
+      channel->GetClient()->IsTrusted()) {
     browser_handler_ =
         std::make_unique<BrowserHandler>(&dispatcher_, agent_host->GetId());
   }

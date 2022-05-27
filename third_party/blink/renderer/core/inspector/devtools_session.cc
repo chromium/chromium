@@ -127,6 +127,7 @@ DevToolsSession::DevToolsSession(
       inspector_backend_dispatcher_(new protocol::UberDispatcher(this)),
       session_state_(std::move(reattach_session_state)),
       client_expects_binary_responses_(client_expects_binary_responses),
+      client_is_trusted_(client_is_trusted),
       v8_session_state_(kV8StateKey),
       v8_session_state_cbor_(&v8_session_state_, /*default_value=*/{}),
       session_id_(session_id) {
@@ -157,9 +158,11 @@ DevToolsSession::~DevToolsSession() {
 void DevToolsSession::ConnectToV8(v8_inspector::V8Inspector* inspector,
                                   int context_group_id) {
   const auto& cbor = v8_session_state_cbor_.Get();
-  v8_session_ =
-      inspector->connect(context_group_id, this,
-                         v8_inspector::StringView(cbor.data(), cbor.size()));
+  v8_session_ = inspector->connect(
+      context_group_id, this,
+      v8_inspector::StringView(cbor.data(), cbor.size()),
+      client_is_trusted_ ? v8_inspector::V8Inspector::kFullyTrusted
+                         : v8_inspector::V8Inspector::kUntrusted);
 }
 
 bool DevToolsSession::IsDetached() {

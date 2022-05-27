@@ -87,20 +87,20 @@ bool SharedWorkerDevToolsAgentHost::Close() {
 
 bool SharedWorkerDevToolsAgentHost::AttachSession(DevToolsSession* session,
                                                   bool acquire_wake_lock) {
-  session->AddHandler(std::make_unique<protocol::IOHandler>(GetIOContext()));
-  session->AddHandler(std::make_unique<protocol::InspectorHandler>());
-  session->AddHandler(std::make_unique<protocol::NetworkHandler>(
+  session->CreateAndAddHandler<protocol::IOHandler>(GetIOContext());
+  session->CreateAndAddHandler<protocol::InspectorHandler>();
+  session->CreateAndAddHandler<protocol::NetworkHandler>(
       GetId(), devtools_worker_token_, GetIOContext(),
-      base::BindRepeating([] {}), session->GetClient()->MayReadLocalFiles()));
+      base::BindRepeating([] {}), session->GetClient()->MayReadLocalFiles());
   // TODO(crbug.com/1143100): support pushing updated loader factories down to
   // renderer.
-  session->AddHandler(std::make_unique<protocol::FetchHandler>(
+  session->CreateAndAddHandler<protocol::FetchHandler>(
       GetIOContext(),
-      base::BindRepeating([](base::OnceClosure cb) { std::move(cb).Run(); })));
-  session->AddHandler(std::make_unique<protocol::SchemaHandler>());
-  session->AddHandler(std::make_unique<protocol::TargetHandler>(
+      base::BindRepeating([](base::OnceClosure cb) { std::move(cb).Run(); }));
+  session->CreateAndAddHandler<protocol::SchemaHandler>();
+  session->CreateAndAddHandler<protocol::TargetHandler>(
       protocol::TargetHandler::AccessMode::kAutoAttachOnly, GetId(),
-      auto_attacher_.get(), session->GetRootSession()));
+      auto_attacher_.get(), session->GetRootSession());
   return true;
 }
 
