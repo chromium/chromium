@@ -13,14 +13,13 @@ import '../../prefs/prefs.js';
 import '../../settings_shared_css.js';
 import './privacy_guide_page.js';
 
-import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './privacy_guide_dialog.html.js';
 
 export interface SettingsPrivacyGuideDialogElement {
   $: {
-    dialog: CrDialogElement,
+    dialog: HTMLDialogElement,
   };
 }
 
@@ -48,6 +47,8 @@ export class SettingsPrivacyGuideDialogElement extends PolymerElement {
   override connectedCallback() {
     super.connectedCallback();
 
+    this.$.dialog.showModal();
+
     // TODO(crbug/1215630): Instead of this focus code, it should be possible to
     // use |autofocus| on the corresponding element in the cr-dialog to put the
     // focus on it when the dialog is shown. For an unknown reason this does not
@@ -58,14 +59,31 @@ export class SettingsPrivacyGuideDialogElement extends PolymerElement {
     afterNextRender(this, () => elementToFocus!.focus());
   }
 
-  private onClose_(event: Event) {
-    // Closing the cr-dialog fires its own close event.
-    event.stopPropagation();
+  private onDialogCancel_(e: Event) {
+    if (e.target === this.$.dialog) {
+      e.preventDefault();
+    }
+  }
 
+  private onDialogClose_(e: Event) {
+    // Ignore any 'close' events not fired directly by the <dialog> element.
+    if (e.target !== this.$.dialog) {
+      return;
+    }
+
+    // Catch and re-fire the 'close' event such that it bubbles across Shadow
+    // DOM v1.
+    this.dispatchEvent(
+        new CustomEvent('close', {bubbles: true, composed: true}));
+  }
+
+  private onPrivacyGuidePageClose_() {
     this.$.dialog.close();
   }
 
-  private onSettingsBackClick_() {
+  private onSettingsBackClick_(e: Event) {
+    e.stopPropagation();
+
     this.$.dialog.close();
   }
 }
