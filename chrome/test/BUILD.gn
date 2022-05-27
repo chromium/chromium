@@ -493,8 +493,6 @@ static_library("test_support") {
       "../browser/ash/login/users/avatar/fake_user_image_file_selector.h",
       "../browser/ash/login/users/fake_chrome_user_manager.cc",
       "../browser/ash/login/users/fake_chrome_user_manager.h",
-      "../browser/ash/ownership/fake_owner_settings_service.cc",
-      "../browser/ash/ownership/fake_owner_settings_service.h",
       "../browser/ash/policy/core/device_policy_cros_browser_test.cc",
       "../browser/ash/policy/core/device_policy_cros_browser_test.h",
       "../browser/ash/policy/login/signin_profile_extensions_policy_test_base.cc",
