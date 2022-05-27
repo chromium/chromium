@@ -64,10 +64,6 @@ void ChangeListPref(int index,
                     const char* pref_name,
                     const base::ListValue& new_value);
 
-// Reads preferences from a given profile's pref file (after flushing) and loads
-// them into a new created pref store.
-scoped_refptr<PrefStore> BuildPrefStoreFromPrefsFile(Profile* profile);
-
 // Used to verify that the boolean preference with name |pref_name| has the
 // same value across all profiles.
 [[nodiscard]] bool BooleanPrefMatches(const char* pref_name);

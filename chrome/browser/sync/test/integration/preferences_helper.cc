@@ -8,13 +8,10 @@
 
 #include "base/bind.h"
 #include "base/notreached.h"
-#include "base/threading/thread_restrictions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
-#include "chrome/common/chrome_constants.h"
 #include "components/pref_registry/pref_registry_syncable.h"
-#include "components/prefs/persistent_pref_store.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -65,24 +62,6 @@ void ChangeListPref(int index,
   for (const base::Value& it : new_value.GetListDeprecated()) {
     list->Append(it.Clone());
   }
-}
-
-scoped_refptr<PrefStore> BuildPrefStoreFromPrefsFile(Profile* profile) {
-  base::RunLoop run_loop;
-  profile->GetPrefs()->CommitPendingWrite(run_loop.QuitClosure());
-  run_loop.Run();
-
-  auto pref_store = base::MakeRefCounted<JsonPrefStore>(
-      profile->GetPath().Append(chrome::kPreferencesFilename));
-  base::ScopedAllowBlockingForTesting allow_blocking;
-  PersistentPrefStore::PrefReadError result = pref_store->ReadPrefs();
-  if (result != PersistentPrefStore::PREF_READ_ERROR_NONE) {
-    ADD_FAILURE()
-        << " Failed reading the prefs file into the store, error code "
-        << result;
-  }
-
-  return pref_store;
 }
 
 bool BooleanPrefMatches(const char* pref_name) {
