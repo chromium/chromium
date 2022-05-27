@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "build/build_config.h"
+
 #include "base/containers/contains.h"
 #include "chrome/browser/page_load_metrics/integration_tests/metric_integration_test.h"
 #include "chrome/browser/prerender/prerender_utils.h"
@@ -56,8 +58,14 @@ class PrerenderPageLoadMetricsObserverBrowserTest
   content::test::PrerenderTestHelper prerender_helper_;
 };
 
+// TODO(crbug.com/1329881): Re-enable this test
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_Activate_SpeculationRule DISABLED_Activate_SpeculationRule
+#else
+#define MAYBE_Activate_SpeculationRule Activate_SpeculationRule
+#endif
 IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
-                       Activate_SpeculationRule) {
+                       MAYBE_Activate_SpeculationRule) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Navigate to an initial page.
@@ -185,8 +193,15 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
       PrerenderPageLoad::kTiming_ActivationToLargestContentfulPaintName));
 }
 
+// TODO(crbug.com/1329881): Re-enable this test
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_Activate_Embedder_DirectURLInput \
+  DISABLED_Activate_Embedder_DirectURLInput
+#else
+#define MAYBE_Activate_Embedder_DirectURLInput Activate_Embedder_DirectURLInput
+#endif
 IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
-                       Activate_Embedder_DirectURLInput) {
+                       MAYBE_Activate_Embedder_DirectURLInput) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   GURL prerender_url = embedded_test_server()->GetURL("/title2.html");
@@ -329,8 +344,14 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
   EXPECT_FALSE(base::Contains(entries, prerender_url));
 }
 
+// TODO(crbug.com/1329881): Re-enable this test
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_Redirection DISABLED_Redirection
+#else
+#define MAYBE_Redirection Redirection
+#endif
 IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
-                       Redirection) {
+                       MAYBE_Redirection) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Navigate to an initial page.
