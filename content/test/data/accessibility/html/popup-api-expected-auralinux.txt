@@ -1,0 +1,35 @@
+[document web]
+++[push button] name='Button pointing to hidden popup'
+++[entry] selectable-text
+++[static] name='Text input pointing to hidden popup '
+++[push button] name='Show button pointing to hidden hint' description='Hint' description-from:tooltip
+++[entry] description='Hint' selectable-text description-from:tooltip
+++[static] name='Search input pointing to hidden hint '
+++[push button] name='Hide button pointing to hidden async'
+++[entry] selectable-text
+++[static] name='Email input pointing to hidden async '
+++[push button] name='Button pointing to showing popup'
+++[entry] selectable-text
+++[static] name='Tel input pointing to showing popup '
+++[push button] name='Show button pointing to showing hint' description='Hint (nested)' described-by description-from:tooltip
+++[entry] description='Hint (nested)' selectable-text described-by description-from:tooltip
+++[static] name='Url input pointing to showing hint '
+++[section]
+++++[static] name='Popup'
+++++[section] description-for
+++++++[static] name='Hint (nested)'
+++[push button] name='Hide button pointing to showing async'
+++[entry] selectable-text
+++[static] name='Text input pointing to showing async '
+++[section]
+++++[static] name='Async'
+++[push button] name='Button pointing to non-popup'
+++[entry] selectable-text
+++[static] name='Text input pointing to non-popup'
+++[section]
+++++[static] name='No popup attribute'
+++[push button] name='Button pointing to invalid popup value'
+++[entry] selectable-text
+++[static] name='Text input pointing to invalid popup value'
+++[section]
+++++[static] name='Invalid popup attribute value'

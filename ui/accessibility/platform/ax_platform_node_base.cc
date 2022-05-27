@@ -1233,7 +1233,7 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
     switch (static_cast<ax::mojom::DescriptionFrom>(desc_from)) {
       case ax::mojom::DescriptionFrom::kAriaDescription:
         // Descriptions are exposed via each platform's usual description field.
-        // Also, only aria-description is exposed via tha "description" object
+        // Also, only aria-description is exposed via the "description" object
         // attribute, in order to match Firefox.
         AddAttributeToList(ax::mojom::StringAttribute::kDescription,
                            "description", attributes);
@@ -1242,11 +1242,8 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
       case ax::mojom::DescriptionFrom::kButtonLabel:
         from = "button-label";
         break;
-      case ax::mojom::DescriptionFrom::kPopupElement:
-        from = "popup-element";
-        break;
       case ax::mojom::DescriptionFrom::kRelatedElement:
-        // Both @title an aria-describedby=tooltip get "tooltip".
+        // aria-describedby=tooltip is mapped to "tooltip".
         from = IsDescribedByTooltip() ? "tooltip" : "aria-describedby";
         break;
       case ax::mojom::DescriptionFrom::kRubyAnnotation:
@@ -1262,7 +1259,11 @@ void AXPlatformNodeBase::ComputeAttributes(PlatformAttributeList* attributes) {
         from = "table-caption";
         break;
       case ax::mojom::DescriptionFrom::kTitle:
-        // Both @title an aria-describedby=tooltip get "tooltip".
+      case ax::mojom::DescriptionFrom::kPopupElement:
+        // The following types of markup are mapped to "tooltip":
+        // * The title attribute.
+        // * A related popup=hint related via togglepopup/showpopup/hidepopup.
+        // * A tooltip related via aria-describedby (see kRelatedElement above).
         from = "tooltip";
         break;
       case ax::mojom::DescriptionFrom::kNone:
