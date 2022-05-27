@@ -61,9 +61,6 @@ declare_args() {
   # Compile the 'wayland' platform.
   ozone_platform_wayland = false
 
-  # Compile the 'windows' platform.
-  ozone_platform_windows = false
-
   if (ozone_auto_platforms) {
     # Use headless as the default platform unless modified below.
     ozone_platform = "headless"
@@ -95,9 +92,6 @@ declare_args() {
       ozone_platform = "x11"
       ozone_platform_wayland = true
       ozone_platform_x11 = true
-    } else if (is_win) {
-      ozone_platform = "windows"
-      ozone_platform_windows = true
     } else if (is_fuchsia) {
       ozone_platform = "scenic"
       ozone_platform_scenic = true
@@ -120,12 +114,11 @@ _ozone_extra_directory = get_path_info(ozone_extra_path, "dir")
 ozone_external_platform_visibility = [ "$_ozone_extra_directory/*" ]
 
 if (is_a_target_toolchain) {
-  assert(
-      use_ozone || !(ozone_platform_cast || ozone_platform_drm ||
-                         ozone_platform_flatland || ozone_platform_headless ||
-                         ozone_platform_x11 || ozone_platform_wayland ||
-                         ozone_platform_windows || ozone_platform_scenic),
-      "Must set use_ozone to select ozone platforms")
+  assert(use_ozone || !(ozone_platform_cast || ozone_platform_drm ||
+                            ozone_platform_flatland ||
+                            ozone_platform_headless || ozone_platform_x11 ||
+                            ozone_platform_wayland || ozone_platform_scenic),
+         "Must set use_ozone to select ozone platforms")
 }
 
 # TODO(petermcneeley): Backwards compatiblity support for VM images.

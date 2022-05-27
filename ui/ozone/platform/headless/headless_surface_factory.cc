@@ -49,15 +49,8 @@ base::FilePath GetPathForWidget(const base::FilePath& base_path,
   if (base_path.empty() || base_path == base::FilePath(kDevNull))
     return base_path;
 
-    // Disambiguate multiple window output files with the window id.
-#if BUILDFLAG(IS_WIN)
-  std::string path =
-      base::NumberToString(reinterpret_cast<int>(widget)) + ".png";
-  std::wstring wpath(path.begin(), path.end());
-  return base_path.Append(wpath);
-#else
+  // Disambiguate multiple window output files with the window id.
   return base_path.Append(base::NumberToString(widget) + ".png");
-#endif
 }
 
 void WriteDataToFile(const base::FilePath& location, const SkBitmap& bitmap) {
