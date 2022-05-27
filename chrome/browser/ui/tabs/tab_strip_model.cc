@@ -2133,15 +2133,19 @@ void TabStripModel::MoveTabRelative(TabRelativeDirection direction) {
       GetTabGroupForTab(current_index);
 
   const int first_non_pinned_tab_index = IndexOfFirstNonPinnedTab();
-  int first_valid_index =
+  const int first_valid_index =
       IsTabPinned(current_index) ? 0 : first_non_pinned_tab_index;
-  int last_valid_index =
+  const int last_valid_index =
       IsTabPinned(current_index) ? first_non_pinned_tab_index - 1 : count() - 1;
   int target_index = std::max(
       std::min(current_index + offset, last_valid_index), first_valid_index);
 
-  absl::optional<tab_groups::TabGroupId> target_group =
-      GetTabGroupForTab(target_index);
+  // If the target index is the same as the current index, then the tab is at a
+  // min/max boundary and being moved further in that direction. In that case,
+  // the tab could still be ungrouped to move one more slot.
+  const absl::optional<tab_groups::TabGroupId> target_group =
+      (target_index == current_index) ? absl::nullopt
+                                      : GetTabGroupForTab(target_index);
 
   // If the tab is at a group boundary and the group is expanded, instead of
   // actually moving the tab just change its group membership.

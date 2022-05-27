@@ -2600,6 +2600,25 @@ TEST_F(TabStripModelTest, MoveTabNext_Group) {
   strip.CloseAllTabs();
 }
 
+TEST_F(TabStripModelTest, MoveTabNext_GroupAtEnd) {
+  TestTabStripModelDelegate delegate;
+  TabStripModel strip(&delegate, profile());
+  ASSERT_NO_FATAL_FAILURE(PrepareTabstripForSelectionTest(&strip, 2, 0, "0"));
+  EXPECT_EQ("0 1", GetTabStripStateString(strip));
+
+  tab_groups::TabGroupId group = strip.AddToNewGroup({0, 1});
+
+  strip.MoveTabNext();
+  EXPECT_EQ("1 0", GetTabStripStateString(strip));
+  EXPECT_EQ(strip.GetTabGroupForTab(1), group);
+
+  strip.MoveTabNext();
+  EXPECT_EQ("1 0", GetTabStripStateString(strip));
+  EXPECT_EQ(strip.GetTabGroupForTab(1), absl::nullopt);
+
+  strip.CloseAllTabs();
+}
+
 TEST_F(TabStripModelTest, MoveTabNext_PinnedDoesNotGroup) {
   TestTabStripModelDelegate delegate;
   TabStripModel strip(&delegate, profile());
@@ -2676,6 +2695,25 @@ TEST_F(TabStripModelTest, MoveTabPrevious_Group) {
   strip.MoveTabPrevious();
   EXPECT_EQ("0 3 1 2", GetTabStripStateString(strip));
   EXPECT_EQ(strip.GetTabGroupForTab(1), absl::nullopt);
+
+  strip.CloseAllTabs();
+}
+
+TEST_F(TabStripModelTest, MoveTabPrevious_GroupAtEnd) {
+  TestTabStripModelDelegate delegate;
+  TabStripModel strip(&delegate, profile());
+  ASSERT_NO_FATAL_FAILURE(PrepareTabstripForSelectionTest(&strip, 2, 0, "1"));
+  EXPECT_EQ("0 1", GetTabStripStateString(strip));
+
+  tab_groups::TabGroupId group = strip.AddToNewGroup({0, 1});
+
+  strip.MoveTabPrevious();
+  EXPECT_EQ("1 0", GetTabStripStateString(strip));
+  EXPECT_EQ(strip.GetTabGroupForTab(0), group);
+
+  strip.MoveTabPrevious();
+  EXPECT_EQ("1 0", GetTabStripStateString(strip));
+  EXPECT_EQ(strip.GetTabGroupForTab(0), absl::nullopt);
 
   strip.CloseAllTabs();
 }
