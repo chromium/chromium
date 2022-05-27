@@ -191,7 +191,7 @@ void ThreatDetailsCacheCollector::ReadResponse(
   std::string name, value;
   while (headers->EnumerateHeaderLines(&iter, &name, &value)) {
     // Strip any Set-Cookie headers.
-    if (base::LowerCaseEqualsASCII(name, "set-cookie"))
+    if (base::EqualsCaseInsensitiveASCII(name, "set-cookie"))
       continue;
     ClientSafeBrowsingReportRequest::HTTPHeader* pb_header =
         pb_response->add_headers();
