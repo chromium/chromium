@@ -337,7 +337,12 @@ IN_PROC_BROWSER_TEST_F(TabContentsTagTest, NavigateToPageNoFavicon) {
   gfx::Image default_favicon_image =
       ui::ResourceBundle::GetSharedInstance().GetNativeImageNamed(
           IDR_DEFAULT_FAVICON);
+  gfx::Image default_dark_favicon_image =
+      ui::ResourceBundle::GetSharedInstance().GetNativeImageNamed(
+          IDR_DEFAULT_FAVICON_DARK);
   EXPECT_TRUE(gfx::test::AreImagesEqual(default_favicon_image,
+                                        gfx::Image(task->icon())) ||
+              gfx::test::AreImagesEqual(default_dark_favicon_image,
                                         gfx::Image(task->icon())));
 }
 
