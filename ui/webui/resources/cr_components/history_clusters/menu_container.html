@@ -1,19 +1,7 @@
 <style include="history-clusters-shared-style">
-  :host(:not([is-top-menu])) #openAllButton,
-  :host(:not([is-top-menu])) #removeAllButton {
-    display: none;
-  }
-
   #actionMenuButton {
-    --cr-icon-button-margin-end: 8px;
-  }
-
-  :host([is-top-menu]) #actionMenuButton {
     --cr-icon-button-icon-size: 24px;
-  }
-
-  :host([is-cluster-menu]) #removeSelfButton {
-    display: none;
+    --cr-icon-button-margin-end: 8px;
   }
 </style>
 
@@ -29,12 +17,9 @@
           on-click="onOpenAllButtonClick_">
         $i18n{openAllInTabGroup}
       </button>
-      <button id="removeSelfButton" class="dropdown-item"
-          on-click="onRemoveSelfButtonClick_">
-        $i18n{removeFromHistory}
-      </button>
       <button id="removeAllButton" class="dropdown-item"
-          on-click="onRemoveAllButtonClick_">
+          on-click="onRemoveAllButtonClick_"
+          hidden="[[!allowDeletingHistory_]]">
         $i18n{removeAllFromHistory}
       </button>
     </cr-action-menu>

@@ -10,13 +10,14 @@
     background-color: var(--cr-hover-background-color);
   }
 
-  .timestamp-and-menu {
+  #actionMenuButton {
     opacity: 0; /* Hides the element while keeping it in tab order. */
     position: absolute; /* Surrender its layout space to other elements. */
+    --cr-icon-button-margin-end: 8px;
   }
 
-  :host(:hover) .timestamp-and-menu,
-  .timestamp-and-menu:focus-within {
+  :host(:hover) #actionMenuButton,
+  #actionMenuButton:focus-within {
     opacity: 1;
     position: static;
   }
@@ -107,8 +108,20 @@
       </span>
     </div>
   </a>
-  <div class="timestamp-and-menu">
-    <menu-container cluster-index="[[clusterIndex]]" visit="[[visit]]">
-    </menu-container>
-  </div>
+  <cr-icon-button id="actionMenuButton" class="icon-more-vert"
+      title="$i18n{actionMenuDescription}" aria-haspopup="menu"
+      on-click="onActionMenuButtonClick_"
+      hidden="[[!allowDeletingHistory_]]">
+  </cr-icon-button>
 </div>
+
+<cr-lazy-render id="actionMenu">
+  <template>
+    <cr-action-menu role-description="$i18n{actionMenuDescription}">
+      <button id="removeSelfButton" class="dropdown-item"
+          on-click="onRemoveSelfButtonClick_">
+        $i18n{removeFromHistory}
+      </button>
+    </cr-action-menu>
+  </template>
+</cr-lazy-render>
