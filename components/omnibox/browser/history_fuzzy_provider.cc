@@ -28,6 +28,7 @@
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/autocomplete_result.h"
+#include "components/omnibox/browser/bookmark_provider.h"
 #include "components/omnibox/browser/history_quick_provider.h"
 #include "components/search_engines/omnibox_focus_type.h"
 #include "components/url_formatter/elide_url.h"
@@ -532,13 +533,14 @@ void HistoryFuzzyProvider::DoAutocomplete() {
     std::vector<fuzzy::Correction> corrections;
     DVLOG(1) << "FindCorrections: <" << text << "> ---> ?{";
     if (root_.FindCorrections(text, kToleranceSchedule, corrections)) {
-      DVLOG(1) << "Trie contains input; no fuzzy results needed?";
-      AddMatchForText(u"INPUT ON TRIE");
+      DVLOG(1) << "Trie contains input; no fuzzy results needed";
     }
     if (!corrections.empty()) {
       // Use of `scoped_refptr` is required here because destructor is private.
       scoped_refptr<HistoryQuickProvider> history_quick_provider =
           new HistoryQuickProvider(client());
+      scoped_refptr<BookmarkProvider> bookmark_provider =
+          new BookmarkProvider(client());
       for (const auto& correction : corrections) {
         std::u16string fixed = text;
         correction.ApplyTo(fixed);
@@ -554,33 +556,14 @@ void HistoryFuzzyProvider::DoAutocomplete() {
             fixed, fixed.length(),
             autocomplete_input_.current_page_classification(),
             client()->GetSchemeClassifier());
+
         history_quick_provider->Start(corrected_input, false);
         DCHECK(history_quick_provider->done());
+        bookmark_provider->Start(corrected_input, false);
+        DCHECK(bookmark_provider->done());
 
-        // TODO(orinj): Optimize with move not copy; requires provider change.
-        //  Consider taking only the most relevant match.
-        for (const auto& history_quick_match :
-             history_quick_provider->matches()) {
-          DVLOG(1) << "HQP match: " << history_quick_match.contents;
-          matches_.push_back(history_quick_match);
-
-          // Update match in place.
-          AutocompleteMatch& match = matches_.back();
-          match.provider = this;
-          match.inline_autocompletion.clear();
-          match.allowed_to_be_default_match = false;
-          // TODO(orinj): Determine suitable relevance penalty; it should
-          //  likely take into account the edit distance or size of correction.
-          //  Using 9/10 reasonably took a 1334 relevance match down to 1200,
-          //  but was harmful to HQP suggestions: as soon as a '.' was
-          //  appended, a bunch of ~800 navsuggest results overtook a better
-          //  HQP result that was bumped down to ~770. Using 95/100 lets this
-          //  result compete in the navsuggest range.
-          match.relevance = match.relevance * 95 / 100;
-          match.contents_class.clear();
-          match.contents_class.push_back(
-              {0, AutocompleteMatch::ACMatchClassification::DIM});
-        }
+        AddConvertedMatches(history_quick_provider->matches());
+        AddConvertedMatches(bookmark_provider->matches());
       }
     }
     DVLOG(1) << "}?";
@@ -594,6 +577,32 @@ void HistoryFuzzyProvider::AddMatchForText(std::u16string text) {
   match.contents_class.push_back(
       {0, AutocompleteMatch::ACMatchClassification::DIM});
   matches_.push_back(std::move(match));
+}
+
+void HistoryFuzzyProvider::AddConvertedMatches(const ACMatches& matches) {
+  // TODO(orinj): Optimize with move not copy; requires provider change.
+  //  Consider taking only the most relevant match.
+  for (const auto& original_match : matches) {
+    DVLOG(1) << "Converted match: " << original_match.contents;
+    matches_.push_back(original_match);
+
+    // Update match in place.
+    AutocompleteMatch& match = matches_.back();
+    match.provider = this;
+    match.inline_autocompletion.clear();
+    match.allowed_to_be_default_match = false;
+    // TODO(orinj): Determine suitable relevance penalty; it should
+    //  likely take into account the edit distance or size of correction.
+    //  Using 9/10 reasonably took a 1334 relevance match down to 1200,
+    //  but was harmful to HQP suggestions: as soon as a '.' was
+    //  appended, a bunch of ~800 navsuggest results overtook a better
+    //  HQP result that was bumped down to ~770. Using 95/100 lets this
+    //  result compete in the navsuggest range.
+    match.relevance = match.relevance * 95 / 100;
+    match.contents_class.clear();
+    match.contents_class.push_back(
+        {0, AutocompleteMatch::ACMatchClassification::DIM});
+  }
 }
 
 void HistoryFuzzyProvider::OnUrlsLoaded(fuzzy::Node node) {

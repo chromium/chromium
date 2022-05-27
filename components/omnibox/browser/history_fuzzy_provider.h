@@ -198,6 +198,9 @@ class HistoryFuzzyProvider : public HistoryProvider,
   // Adds one match for the given corrected `text`.
   void AddMatchForText(std::u16string text);
 
+  // Add multiple matches, converting them to fuzzy suggestions in the process.
+  void AddConvertedMatches(const ACMatches& matches);
+
   // Main thread callback to receive trie of URLs loaded from database.
   void OnUrlsLoaded(fuzzy::Node node);
 
