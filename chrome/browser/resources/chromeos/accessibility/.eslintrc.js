@@ -3,13 +3,14 @@
 // found in the LICENSE file.
 
 module.exports = {
-  'rules': {
-    'brace-style': ['error', '1tbs'],
-    'curly': ['error', 'multi-line', 'consistent'],
-    'eqeqeq': ['error', 'always', {'null': 'ignore'}],
-    'no-console': 'off',
-    'no-throw-literal': 'off',
-    'object-shorthand': ['error', 'always'],
-    'prefer-const': ['error', {'destructuring': 'all'}],
+  'rules' : {
+    'brace-style' : ['error', '1tbs'],
+    'curly' : ['error', 'multi-line', 'consistent'],
+    'eqeqeq' : ['error', 'always', {'null' : 'ignore'}],
+    'no-console' : 'off',
+    'no-throw-literal' : 'off',
+    'object-shorthand' : ['error', 'always'],
+    'prefer-arrow-callback' : ['error', {'allowNamedFunctions' : true}],
+    'prefer-const' : ['error', {'destructuring' : 'all'}],
   },
 };
