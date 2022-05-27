@@ -10,9 +10,11 @@
 
 namespace blink {
 
-static __m128 WrapVirtualIndexVector(__m128 x,
-                                     __m128 wave_size,
-                                     __m128 inv_wave_size) {
+namespace {
+
+__m128 WrapVirtualIndexVector(__m128 x,
+                              __m128 wave_size,
+                              __m128 inv_wave_size) {
   // Wrap the virtual index `x` to the range 0 to wave_size - 1.  This is done
   // by computing `x` - floor(`x`/`wave_size`)*`wave_size`.
   //
@@ -40,9 +42,9 @@ static __m128 WrapVirtualIndexVector(__m128 x,
   return _mm_sub_ps(x, _mm_mul_ps(_mm_cvtepi32_ps(f), wave_size));
 }
 
-static __m128d WrapVirtualIndexVectorPd(__m128d x,
-                                        __m128d wave_size,
-                                        __m128d inv_wave_size) {
+__m128d WrapVirtualIndexVectorPd(__m128d x,
+                                 __m128d wave_size,
+                                 __m128d inv_wave_size) {
   // Wrap the virtual index `x` to the range 0 to wave_size - 1.  This is done
   // by computing `x` - floor(`x`/`wave_size`)*`wave_size`.
   //
@@ -73,6 +75,8 @@ static __m128d WrapVirtualIndexVectorPd(__m128d x,
   // from x.
   return _mm_sub_pd(x, _mm_mul_pd(_mm_cvtepi32_pd(f), wave_size));
 }
+
+}  // namespace
 
 std::tuple<int, double> OscillatorHandler::ProcessKRateVector(
     int n,

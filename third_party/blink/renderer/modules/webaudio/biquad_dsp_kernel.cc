@@ -31,7 +31,9 @@
 
 namespace blink {
 
-static bool hasConstantValues(float* values, int frames_to_process) {
+namespace {
+
+bool HasConstantValues(float* values, int frames_to_process) {
   // TODO(rtoy): Use SIMD to optimize this.  This would speed up
   // processing by a factor of 4 because we can process 4 floats at a
   // time.
@@ -45,6 +47,8 @@ static bool hasConstantValues(float* values, int frames_to_process) {
 
   return true;
 }
+
+}  // namespace
 
 void BiquadDSPKernel::UpdateCoefficientsIfNecessary(int frames_to_process) {
   if (GetBiquadProcessor()->FilterCoefficientsDirty()) {
@@ -72,10 +76,10 @@ void BiquadDSPKernel::UpdateCoefficientsIfNecessary(int frames_to_process) {
       // to compute filter coefficients for each frame since they would be the
       // same as the first.
       bool isConstant =
-          hasConstantValues(cutoff_frequency, frames_to_process) &&
-          hasConstantValues(q, frames_to_process) &&
-          hasConstantValues(gain, frames_to_process) &&
-          hasConstantValues(detune, frames_to_process);
+          HasConstantValues(cutoff_frequency, frames_to_process) &&
+          HasConstantValues(q, frames_to_process) &&
+          HasConstantValues(gain, frames_to_process) &&
+          HasConstantValues(detune, frames_to_process);
 
       UpdateCoefficients(isConstant ? 1 : frames_to_process, cutoff_frequency,
                          q, gain, detune);
@@ -154,7 +158,7 @@ void BiquadDSPKernel::UpdateTailTime(int coef_index) {
   // this, limit the maximum to this value so that we don't keep such
   // nodes alive "forever".
   // TODO: What is a reasonable upper limit?
-  const double kMaxTailTime = 30;
+  constexpr double kMaxTailTime = 30.0;
 
   double sample_rate = SampleRate();
   double tail =

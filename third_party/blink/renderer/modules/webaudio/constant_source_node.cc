@@ -11,13 +11,19 @@
 
 namespace blink {
 
+namespace {
+
+constexpr double kDefaultOffsetValue = 1.0;
+
+}  // namespace
+
 ConstantSourceNode::ConstantSourceNode(BaseAudioContext& context)
     : AudioScheduledSourceNode(context),
       offset_(AudioParam::Create(
           context,
           Uuid(),
           AudioParamHandler::kParamTypeConstantSourceOffset,
-          1,
+          kDefaultOffsetValue,
           AudioParamHandler::AutomationRate::kAudio,
           AudioParamHandler::AutomationRateMode::kVariable)) {
   SetHandler(ConstantSourceHandler::Create(*this, context.sampleRate(),

@@ -16,9 +16,9 @@ namespace {
 
 // Use for ref-counting of all SemiRealtimeAudioWorkletThread instances in a
 // process. Incremented by the constructor and decremented by destructor.
-static int ref_count = 0;
+int ref_count = 0;
 
-static void EnsureSharedBackingThread(const ThreadCreationParams& params) {
+void EnsureSharedBackingThread(const ThreadCreationParams& params) {
   DCHECK(IsMainThread());
   DCHECK_EQ(ref_count, 1);
   WorkletThreadHolder<SemiRealtimeAudioWorkletThread>::EnsureInstance(params);

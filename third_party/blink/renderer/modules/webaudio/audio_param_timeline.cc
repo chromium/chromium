@@ -47,16 +47,18 @@
 
 namespace blink {
 
-// For a SetTarget event, we want the event to terminate eventually so that
-// we can stop using the timeline to compute the values.  See
+namespace {
+
+// For a SetTarget event, we want the event to terminate eventually so that we
+// can stop using the timeline to compute the values.  See
 // `HasSetTargetConverged()` for the algorithm.  `kSetTargetThreshold` is
 // exp(-`kTimeConstantsToConverge`).
-const float kTimeConstantsToConverge = 10;
-const float kSetTargetThreshold = 4.539992976248485e-05;
+constexpr float kTimeConstantsToConverge = 10.0f;
+constexpr float kSetTargetThreshold = 4.539992976248485e-05f;
 
-static bool IsNonNegativeAudioParamTime(double time,
-                                        ExceptionState& exception_state,
-                                        String message = "Time") {
+bool IsNonNegativeAudioParamTime(double time,
+                                 ExceptionState& exception_state,
+                                 String message = "Time") {
   if (time >= 0) {
     return true;
   }
@@ -67,9 +69,9 @@ static bool IsNonNegativeAudioParamTime(double time,
   return false;
 }
 
-static bool IsPositiveAudioParamTime(double time,
-                                     ExceptionState& exception_state,
-                                     String message) {
+bool IsPositiveAudioParamTime(double time,
+                              ExceptionState& exception_state,
+                              String message) {
   if (time > 0) {
     return true;
   }
@@ -82,11 +84,11 @@ static bool IsPositiveAudioParamTime(double time,
 // Test that for a SetTarget event, the current value is close enough
 // to the target value that we can consider the event to have
 // converged to the target.
-static bool HasSetTargetConverged(float value,
-                                  float target,
-                                  double current_time,
-                                  double start_time,
-                                  double time_constant) {
+bool HasSetTargetConverged(float value,
+                           float target,
+                           double current_time,
+                           double start_time,
+                           double time_constant) {
   // Converged if enough time constants (`kTimeConstantsToConverge`) have passed
   // since the start of the event.
   if (current_time > start_time + kTimeConstantsToConverge * time_constant) {
@@ -108,6 +110,8 @@ static bool HasSetTargetConverged(float value,
 
   return false;
 }
+
+}  // namespace
 
 String AudioParamTimeline::EventToString(const ParamEvent& event) const {
   // The default arguments for most automation methods is the value and the

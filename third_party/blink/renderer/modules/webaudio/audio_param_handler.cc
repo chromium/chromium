@@ -24,13 +24,15 @@
 
 namespace blink {
 
-const double AudioParamHandler::kDefaultSmoothingConstant = 0.05;
-const double AudioParamHandler::kSnapThreshold = 0.001;
+namespace {
+
+constexpr double kDefaultSmoothingConstant = 0.05;
+constexpr double kSnapThreshold = 0.001;
 
 // Replace NaN values in `values` with `default_value`.
-static void HandleNaNValues(float* values,
-                            unsigned number_of_values,
-                            float default_value) {
+void HandleNaNValues(float* values,
+                     unsigned number_of_values,
+                     float default_value) {
   unsigned k = 0;
 #if defined(ARCH_CPU_X86_FAMILY)
   if (number_of_values >= 4) {
@@ -71,6 +73,8 @@ static void HandleNaNValues(float* values,
     }
   }
 }
+
+}  // namespace
 
 AudioParamHandler::AudioParamHandler(BaseAudioContext& context,
                                      AudioParamType param_type,

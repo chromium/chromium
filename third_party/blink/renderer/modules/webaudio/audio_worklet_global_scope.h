@@ -128,7 +128,7 @@ class MODULES_EXPORT AudioWorkletGlobalScope final : public WorkletGlobalScope {
   std::unique_ptr<ProcessorCreationParams> processor_creation_params_;
 
   size_t current_frame_ = 0;
-  float sample_rate_ = 0.0;
+  float sample_rate_ = 0.0f;
 
   // Default initialized to generate a distinct token for this worklet.
   const AudioWorkletToken token_;

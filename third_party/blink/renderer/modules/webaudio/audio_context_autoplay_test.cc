@@ -67,7 +67,7 @@ class AudioContextAutoplayTestPlatform : public TestingPlatformSupport {
   size_t AudioHardwareBufferSize() override { return 128; }
 };
 
-}  // anonymous namespace
+}  // namespace
 
 class AudioContextAutoplayTest
     : public testing::TestWithParam<AutoplayPolicy::Type> {

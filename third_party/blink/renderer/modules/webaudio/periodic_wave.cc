@@ -48,15 +48,19 @@
 
 namespace blink {
 
+namespace {
+
 // The number of bands per octave.  Each octave will have this many entries in
 // the wave tables.
-const unsigned kNumberOfOctaveBands = 3;
+constexpr unsigned kNumberOfOctaveBands = 3;
 
 // The max length of a periodic wave. This must be a power of two greater than
 // or equal to 2048 and must be supported by the FFT routines.
-const unsigned kMaxPeriodicWaveSize = 16384;
+constexpr unsigned kMaxPeriodicWaveSize = 16384;
 
-const float kCentsPerRange = 1200 / kNumberOfOctaveBands;
+constexpr float kCentsPerRange = 1200 / kNumberOfOctaveBands;
+
+}  // namespace
 
 PeriodicWave* PeriodicWave::Create(BaseAudioContext& context,
                                    const Vector<float>& real,

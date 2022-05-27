@@ -34,8 +34,8 @@ class OscillatorHandler final : public AudioScheduledSourceHandler {
 
   // Breakpoints where we decide to do linear interpolation, 3-point
   // interpolation or 5-point interpolation.  See DoInterpolation().
-  static constexpr float kInterpolate2Point = 0.3;
-  static constexpr float kInterpolate3Point = 0.16;
+  static constexpr float kInterpolate2Point = 0.3f;
+  static constexpr float kInterpolate3Point = 0.16f;
 
   static scoped_refptr<OscillatorHandler> Create(AudioNode&,
                                                  float sample_rate,

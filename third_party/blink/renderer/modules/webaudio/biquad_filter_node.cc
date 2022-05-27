@@ -36,40 +36,52 @@
 
 namespace blink {
 
+namespace {
+
+constexpr double kDefaultFrequencyValue = 350.0;
+constexpr float kMinFrequencyValue = 0.0f;
+constexpr double kDefaultQValue = 1.0;
+constexpr double kDefaultGainValue = 0.0;
+constexpr float kMinGainValue = std::numeric_limits<float>::lowest();
+constexpr double kDefaultDetuneValue = 0.0;
+
+}  // namespace
+
 BiquadFilterNode::BiquadFilterNode(BaseAudioContext& context)
     : AudioNode(context),
       frequency_(
           AudioParam::Create(context,
                              Uuid(),
                              AudioParamHandler::kParamTypeBiquadFilterFrequency,
-                             350.0,
+                             kDefaultFrequencyValue,
                              AudioParamHandler::AutomationRate::kAudio,
                              AudioParamHandler::AutomationRateMode::kVariable,
-                             0,
-                             context.sampleRate() / 2)),
+                             kMinFrequencyValue,
+                             /*max_value=*/context.sampleRate() / 2)),
       q_(AudioParam::Create(context,
                             Uuid(),
                             AudioParamHandler::kParamTypeBiquadFilterQ,
-                            1.0,
+                            kDefaultQValue,
                             AudioParamHandler::AutomationRate::kAudio,
                             AudioParamHandler::AutomationRateMode::kVariable)),
-      gain_(AudioParam::Create(context,
-                               Uuid(),
-                               AudioParamHandler::kParamTypeBiquadFilterGain,
-                               0.0,
-                               AudioParamHandler::AutomationRate::kAudio,
-                               AudioParamHandler::AutomationRateMode::kVariable,
-                               std::numeric_limits<float>::lowest(),
-                               40 * log10f(std::numeric_limits<float>::max()))),
-      detune_(
-          AudioParam::Create(context,
-                             Uuid(),
-                             AudioParamHandler::kParamTypeBiquadFilterDetune,
-                             0.0,
-                             AudioParamHandler::AutomationRate::kAudio,
-                             AudioParamHandler::AutomationRateMode::kVariable,
-                             -1200 * log2f(std::numeric_limits<float>::max()),
-                             1200 * log2f(std::numeric_limits<float>::max()))) {
+      gain_(AudioParam::Create(
+          context,
+          Uuid(),
+          AudioParamHandler::kParamTypeBiquadFilterGain,
+          kDefaultGainValue,
+          AudioParamHandler::AutomationRate::kAudio,
+          AudioParamHandler::AutomationRateMode::kVariable,
+          kMinGainValue,
+          /*max_value=*/40 * log10f(std::numeric_limits<float>::max()))),
+      detune_(AudioParam::Create(
+          context,
+          Uuid(),
+          AudioParamHandler::kParamTypeBiquadFilterDetune,
+          kDefaultDetuneValue,
+          AudioParamHandler::AutomationRate::kAudio,
+          AudioParamHandler::AutomationRateMode::kVariable,
+          /*min_value=*/-1200 * log2f(std::numeric_limits<float>::max()),
+          /*max_value=*/1200 * log2f(std::numeric_limits<float>::max()))) {
   SetHandler(BiquadFilterHandler::Create(*this, context.sampleRate(),
                                          frequency_->Handler(), q_->Handler(),
                                          gain_->Handler(), detune_->Handler()));

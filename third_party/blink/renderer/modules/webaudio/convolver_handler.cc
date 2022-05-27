@@ -27,7 +27,7 @@ namespace {
 // a good value.  But, the Reverb object is multi-threaded, so we want this as
 // high as possible without losing too much accuracy.  Very large FFTs will have
 // worse phase errors. Given these constraints 32768 is a good compromise.
-const unsigned MaxFFTSize = 32768;
+constexpr unsigned kMaxFftSize = 32768;
 
 constexpr unsigned kDefaultNumberOfInputChannels = 2;
 constexpr unsigned kDefaultNumberOfOutputChannels = 1;
@@ -172,7 +172,7 @@ void ConvolverHandler::SetBuffer(AudioBuffer* buffer,
   // Create the reverb with the given impulse response.
   std::unique_ptr<Reverb> reverb = std::make_unique<Reverb>(
       buffer_bus.get(), GetDeferredTaskHandler().RenderQuantumFrames(),
-      MaxFFTSize, Context() && Context()->HasRealtimeConstraint(), normalize_);
+      kMaxFftSize, Context() && Context()->HasRealtimeConstraint(), normalize_);
 
   {
     // The context must be locked since changing the buffer can

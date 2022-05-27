@@ -20,8 +20,6 @@
 
 namespace blink {
 
-const double AudioScheduledSourceHandler::kUnknownTime = -1;
-
 AudioScheduledSourceHandler::AudioScheduledSourceHandler(NodeType node_type,
                                                          AudioNode& node,
                                                          float sample_rate)

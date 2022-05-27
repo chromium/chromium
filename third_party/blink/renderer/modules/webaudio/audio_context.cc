@@ -47,15 +47,15 @@
 
 namespace blink {
 
+namespace {
+
 // Number of AudioContexts still alive.  It's incremented when an
 // AudioContext is created and decremented when the context is closed.
-static unsigned g_hardware_context_count = 0;
+unsigned hardware_context_count = 0;
 
 // A context ID that is incremented for each context that is created.
 // This initializes the internal id for the context.
-static unsigned g_context_id = 0;
-
-namespace {
+unsigned context_id = 0;
 
 // When the client does not have enough permission, the outputLatency property
 // is quantized by 8ms to reduce the precision for privacy concerns.
@@ -96,7 +96,7 @@ String GetAudioContextLogString(const WebAudioLatencyHint& latency_hint,
   return builder.ToString();
 }
 
-static bool IsAudible(const AudioBus* rendered_data) {
+bool IsAudible(const AudioBus* rendered_data) {
   // Compute the energy in each channel and sum up the energy in each channel
   // for the total energy.
   float energy = 0;
@@ -174,7 +174,7 @@ AudioContext* AudioContext::Create(Document& document,
   SCOPED_UMA_HISTOGRAM_TIMER("WebAudio.AudioContext.CreateTime");
   AudioContext* audio_context =
       MakeGarbageCollected<AudioContext>(document, latency_hint, sample_rate);
-  ++g_hardware_context_count;
+  ++hardware_context_count;
   audio_context->UpdateStateIfNeeded();
 
   // This starts the audio thread. The destination node's
@@ -192,7 +192,7 @@ AudioContext* AudioContext::Create(Document& document,
   }
 #if DEBUG_AUDIONODE_REFERENCES
   fprintf(stderr, "[%16p]: AudioContext::AudioContext(): %u #%u\n",
-          audio_context, audio_context->context_id_, g_hardware_context_count);
+          audio_context, audio_context->context_id_, hardware_context_count);
 #endif
 
   base::UmaHistogramSparse("WebAudio.AudioContext.MaxChannelsAvailable",
@@ -207,7 +207,7 @@ AudioContext::AudioContext(Document& document,
                            const WebAudioLatencyHint& latency_hint,
                            absl::optional<float> sample_rate)
     : BaseAudioContext(&document, kRealtimeContext),
-      context_id_(g_context_id++),
+      context_id_(context_id++),
       audio_context_manager_(document.GetExecutionContext()),
       permission_service_(document.GetExecutionContext()),
       permission_receiver_(this, document.GetExecutionContext()) {
@@ -271,9 +271,9 @@ AudioContext::AudioContext(Document& document,
 
 void AudioContext::Uninitialize() {
   DCHECK(IsMainThread());
-  DCHECK_NE(g_hardware_context_count, 0u);
+  DCHECK_NE(hardware_context_count, 0u);
   SendLogMessage(String::Format("%s", __func__));
-  --g_hardware_context_count;
+  --hardware_context_count;
   StopRendering();
   DidClose();
   RecordAutoplayMetrics();

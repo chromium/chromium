@@ -98,9 +98,6 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
   // Return a nice name for the AudioParam.
   String GetParamName() const;
 
-  static const double kDefaultSmoothingConstant;
-  static const double kSnapThreshold;
-
   static scoped_refptr<AudioParamHandler> Create(BaseAudioContext& context,
                                                  AudioParamType param_type,
                                                  double default_value,

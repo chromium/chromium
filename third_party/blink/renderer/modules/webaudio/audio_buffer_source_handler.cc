@@ -21,12 +21,20 @@
 
 namespace blink {
 
-const double kDefaultGrainDuration = 0.020;  // 20ms
+namespace {
+
+constexpr double kDefaultGrainDuration = 0.020;  // 20ms
 
 // Arbitrary upper limit on playback rate.
 // Higher than expected rates can be useful when playing back oversampled
 // buffers to minimize linear interpolation aliasing.
-const double kMaxRate = 1024;
+constexpr double kMaxRate = 1024.0;
+
+// Default to mono. A call to setBuffer() will set the number of output
+// channels to that of the buffer.
+constexpr unsigned kDefaultNumberOfOutputChannels = 1;
+
+}  // namespace
 
 AudioBufferSourceHandler::AudioBufferSourceHandler(
     AudioNode& node,
@@ -39,9 +47,7 @@ AudioBufferSourceHandler::AudioBufferSourceHandler(
       playback_rate_(&playback_rate),
       detune_(&detune),
       grain_duration_(kDefaultGrainDuration) {
-  // Default to mono. A call to setBuffer() will set the number of output
-  // channels to that of the buffer.
-  AddOutput(1);
+  AddOutput(kDefaultNumberOfOutputChannels);
 
   Initialize();
 }

@@ -67,8 +67,8 @@ bool BufferTopologyMatches(AudioBuffer* buffer_1, AudioBuffer* buffer_2) {
          (buffer_1->sampleRate() == buffer_2->sampleRate());
 }
 
-static uint32_t ChooseBufferSize(uint32_t callback_buffer_size) {
-  // Choose a buffer size based on the audio hardware buffer size. Arbitarily
+uint32_t ChooseBufferSize(uint32_t callback_buffer_size) {
+  // Choose a buffer size based on the audio hardware buffer size. Arbitrarily
   // make it a power of two that is 4 times greater than the hardware buffer
   // size.
   // TODO(crbug.com/855758): What is the best way to choose this?

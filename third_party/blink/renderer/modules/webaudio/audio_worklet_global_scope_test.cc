@@ -51,7 +51,7 @@ namespace blink {
 
 namespace {
 
-static const size_t kRenderQuantumFrames = 128;
+constexpr size_t kRenderQuantumFrames = 128;
 
 }  // namespace
 

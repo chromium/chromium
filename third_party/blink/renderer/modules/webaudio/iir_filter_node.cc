@@ -18,6 +18,8 @@
 
 namespace blink {
 
+namespace {
+
 // Determine if filter is stable based on the feedback coefficients.
 // We compute the reflection coefficients for the filter.  If, at any
 // point, the magnitude of the reflection coefficient is greater than
@@ -32,7 +34,7 @@ namespace blink {
 //
 // stopping at A[1](z).  If at any point |k[n]| >= 1, the filter is
 // unstable.
-static bool IsFilterStable(const Vector<double>& feedback_coef) {
+bool IsFilterStable(const Vector<double>& feedback_coef) {
   // Make a copy of the feedback coefficients
   Vector<double> coef(feedback_coef);
   int order = coef.size() - 1;
@@ -65,6 +67,8 @@ static bool IsFilterStable(const Vector<double>& feedback_coef) {
 
   return true;
 }
+
+}  // namespace
 
 IIRFilterNode::IIRFilterNode(BaseAudioContext& context,
                              const Vector<double>& feedforward_coef,

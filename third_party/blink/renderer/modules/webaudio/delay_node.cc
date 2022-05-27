@@ -35,7 +35,11 @@ namespace blink {
 
 namespace {
 
-constexpr double kMaximumAllowedDelayTime = 180;
+constexpr double kDefaultDelayTimeValue = 0.0;
+constexpr float kMinDelayTimeValue = 0.0f;
+
+constexpr double kDefaultMaximumDelayTime = 1.0;  // 1 second
+constexpr double kMaximumAllowedDelayTime = 180.0;
 
 }  // namespace
 
@@ -45,10 +49,10 @@ DelayNode::DelayNode(BaseAudioContext& context, double max_delay_time)
           AudioParam::Create(context,
                              Uuid(),
                              AudioParamHandler::kParamTypeDelayDelayTime,
-                             0.0,
+                             kDefaultDelayTimeValue,
                              AudioParamHandler::AutomationRate::kAudio,
                              AudioParamHandler::AutomationRateMode::kVariable,
-                             0.0,
+                             kMinDelayTimeValue,
                              max_delay_time)) {
   SetHandler(DelayHandler::Create(*this, context.sampleRate(),
                                   delay_time_->Handler(), max_delay_time));
@@ -58,8 +62,7 @@ DelayNode* DelayNode::Create(BaseAudioContext& context,
                              ExceptionState& exception_state) {
   DCHECK(IsMainThread());
 
-  // The default maximum delay time for the delay node is 1 sec.
-  return Create(context, 1, exception_state);
+  return Create(context, kDefaultMaximumDelayTime, exception_state);
 }
 
 DelayNode* DelayNode::Create(BaseAudioContext& context,

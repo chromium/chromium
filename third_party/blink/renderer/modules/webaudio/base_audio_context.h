@@ -390,7 +390,7 @@ class MODULES_EXPORT BaseAudioContext
  private:
   // This is considering 32 is large enough for multiple channels audio.
   // It is somewhat arbitrary and could be increased if necessary.
-  enum { kMaxNumberOfChannels = 32 };
+  static constexpr uint32_t kMaxNumberOfChannels = 32;
 
   void Clear();
 

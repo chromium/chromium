@@ -41,14 +41,16 @@ class RealtimeAnalyser final {
   DISALLOW_NEW();
 
  public:
-  static const double kDefaultSmoothingTimeConstant;
-  static const double kDefaultMinDecibels;
-  static const double kDefaultMaxDecibels;
+  static constexpr double kDefaultSmoothingTimeConstant = 0.8;
+  static constexpr double kDefaultMinDecibels = -100.0;
+  static constexpr double kDefaultMaxDecibels = -30.0;
 
-  static const unsigned kDefaultFFTSize;
-  static const unsigned kMinFFTSize;
-  static const unsigned kMaxFFTSize;
-  static const unsigned kInputBufferSize;
+  static constexpr unsigned kDefaultFFTSize = 2048;
+  // All FFT implementations are expected to handle power-of-two sizes
+  // MinFFTSize <= size <= MaxFFTSize.
+  static constexpr unsigned kMinFFTSize = 32;
+  static constexpr unsigned kMaxFFTSize = 32768;
+  static constexpr unsigned kInputBufferSize = kMaxFFTSize * 2;
 
   explicit RealtimeAnalyser(unsigned render_quantum_frames);
 

@@ -24,25 +24,18 @@ namespace blink {
 
 namespace {
 
-// Breakpoints where we decide to do linear interpolation, 3-point
-// interpolation or 5-point interpolation.  See DoInterpolation().
-constexpr float kInterpolate2Point = 0.3;
-constexpr float kInterpolate3Point = 0.16;
-
 // An oscillator is always mono.
 constexpr unsigned kNumberOfOutputChannels = 1;
 
 // Convert the detune value (in cents) to a frequency scale multiplier:
 // 2^(d/1200)
-static float DetuneToFrequencyMultiplier(float detune_value) {
+float DetuneToFrequencyMultiplier(float detune_value) {
   return std::exp2(detune_value / 1200);
 }
 
 // Clamp the frequency value to lie with Nyquist frequency. For NaN, arbitrarily
 // clamp to +Nyquist.
-static void ClampFrequency(float* frequency,
-                           int frames_to_process,
-                           float nyquist) {
+void ClampFrequency(float* frequency, int frames_to_process, float nyquist) {
   for (int k = 0; k < frames_to_process; ++k) {
     float f = frequency[k];
 
@@ -54,12 +47,12 @@ static void ClampFrequency(float* frequency,
   }
 }
 
-static float DoInterpolation(double virtual_read_index,
-                             float incr,
-                             unsigned read_index_mask,
-                             float table_interpolation_factor,
-                             const float* lower_wave_data,
-                             const float* higher_wave_data) {
+float DoInterpolation(double virtual_read_index,
+                      float incr,
+                      unsigned read_index_mask,
+                      float table_interpolation_factor,
+                      const float* lower_wave_data,
+                      const float* higher_wave_data) {
   DCHECK_GE(incr, 0);
   DCHECK(std::isfinite(virtual_read_index));
 
@@ -80,7 +73,7 @@ static float DoInterpolation(double virtual_read_index,
   // We use Lagrange interpolation because it's relatively simple to
   // implement and fairly inexpensive, and the interpolator always
   // passes through known points.
-  if (incr >= kInterpolate2Point) {
+  if (incr >= OscillatorHandler::kInterpolate2Point) {
     // Increment is fairly large, so we're doing no more than about 3
     // points between each wave table entry. Assume linear
     // interpolation between points is good enough.
@@ -103,7 +96,7 @@ static float DoInterpolation(double virtual_read_index,
     sample_lower = (1 - interpolation_factor) * sample1_lower +
                    interpolation_factor * sample2_lower;
 
-  } else if (incr >= kInterpolate3Point) {
+  } else if (incr >= OscillatorHandler::kInterpolate3Point) {
     // We're doing about 6 interpolation values between each wave
     // table sample. Just use a 3-point Lagrange interpolator to get a
     // better estimate than just linear.
