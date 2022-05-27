@@ -41,7 +41,6 @@
 namespace content {
 class VideoCaptureController;
 class VideoCaptureControllerEventHandler;
-class ScreenlockMonitor;
 
 // VideoCaptureManager is used to open/close, start/stop, enumerate available
 // video capture devices, and manage VideoCaptureController's.
@@ -61,8 +60,7 @@ class CONTENT_EXPORT VideoCaptureManager
 
   explicit VideoCaptureManager(
       std::unique_ptr<VideoCaptureProvider> video_capture_provider,
-      base::RepeatingCallback<void(const std::string&)> emit_log_message_cb,
-      ScreenlockMonitor* monitor = nullptr);
+      base::RepeatingCallback<void(const std::string&)> emit_log_message_cb);
 
   VideoCaptureManager(const VideoCaptureManager&) = delete;
   VideoCaptureManager& operator=(const VideoCaptureManager&) = delete;
@@ -337,7 +335,6 @@ class CONTENT_EXPORT VideoCaptureManager
 
   const std::unique_ptr<VideoCaptureProvider> video_capture_provider_;
   base::RepeatingCallback<void(const std::string&)> emit_log_message_cb_;
-  raw_ptr<ScreenlockMonitor> screenlock_monitor_;
 
   base::ObserverList<media::VideoCaptureObserver>::Unchecked capture_observers_;
 

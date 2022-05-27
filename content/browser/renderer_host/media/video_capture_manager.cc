@@ -76,20 +76,20 @@ VideoCaptureManager::CaptureDeviceStartRequest::CaptureDeviceStartRequest(
 
 VideoCaptureManager::VideoCaptureManager(
     std::unique_ptr<VideoCaptureProvider> video_capture_provider,
-    base::RepeatingCallback<void(const std::string&)> emit_log_message_cb,
-    ScreenlockMonitor* monitor)
+    base::RepeatingCallback<void(const std::string&)> emit_log_message_cb)
     : video_capture_provider_(std::move(video_capture_provider)),
-      emit_log_message_cb_(std::move(emit_log_message_cb)),
-      screenlock_monitor_(monitor) {
-  if (screenlock_monitor_) {
-    screenlock_monitor_->AddObserver(this);
+      emit_log_message_cb_(std::move(emit_log_message_cb)) {
+  ScreenlockMonitor* screenlock_monitor = ScreenlockMonitor::Get();
+  if (screenlock_monitor) {
+    screenlock_monitor->AddObserver(this);
   }
 }
 
 VideoCaptureManager::~VideoCaptureManager() {
   DCHECK(device_start_request_queue_.empty());
-  if (screenlock_monitor_) {
-    screenlock_monitor_->RemoveObserver(this);
+  ScreenlockMonitor* screenlock_monitor = ScreenlockMonitor::Get();
+  if (screenlock_monitor) {
+    screenlock_monitor->RemoveObserver(this);
   }
 }
 
