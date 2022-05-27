@@ -16,22 +16,26 @@
       "timestamp": "1643235574000",
       "reporting_origin": "https://r.test",
       "destination_origin": "https://d.test",
-      "Attribution-Reporting-Register-Event-Trigger": [
-        {
-          "trigger_data": "0"
-        }
-      ]
+      "Attribution-Reporting-Register-Trigger": {
+        "event_trigger_data": [
+          {
+            "trigger_data": "0"
+          }
+        ]
+      }
     },
     {
       "timestamp": "1643235575000",
       "reporting_origin": "https://r.test",
       "destination_origin": "https://d.test",
-      "Attribution-Reporting-Register-Event-Trigger": [
-        {
-          "trigger_data": "1",
-          "priority": "5"
-        }
-      ]
+      "Attribution-Reporting-Register-Trigger": {
+        "event_trigger_data": [
+          {
+            "trigger_data": "1",
+            "priority": "5"
+          }
+        ]
+      }
     }
   ]
 }

@@ -43,11 +43,6 @@ namespace {
 
 constexpr char kTimestampKey[] = "timestamp";
 
-constexpr char kAggregatableTriggerDataKey[] =
-    "Attribution-Reporting-Register-Aggregatable-Trigger-Data";
-constexpr char kAggregatableValuesKey[] =
-    "Attribution-Reporting-Register-Aggregatable-Values";
-
 class AttributionSimulatorInputParser {
  public:
   AttributionSimulatorInputParser(base::Time offset_time,
@@ -248,8 +243,8 @@ class AttributionSimulatorInputParser {
     base::TimeDelta expiry;
     AttributionFilterData filter_data;
 
-    if (!ParseAttributionSource(
-            source_dict,
+    if (!ParseAttributionEvent(
+            source_dict, "Attribution-Reporting-Register-Source",
             base::BindLambdaForTesting([&](const base::Value::Dict& dict) {
               source_event_id = ParseRequiredUint64(dict, "source_event_id");
               destination_origin = ParseOrigin(dict, "destination");
@@ -284,22 +279,34 @@ class AttributionSimulatorInputParser {
     if (!EnsureDictionary(trigger))
       return;
 
-    const base::Value::Dict& dict = trigger.GetDict();
+    const base::Value::Dict& trigger_dict = trigger.GetDict();
 
-    base::Time trigger_time = ParseTime(dict, kTimestampKey);
-    url::Origin reporting_origin = ParseOrigin(dict, "reporting_origin");
-    url::Origin destination_origin = ParseOrigin(dict, "destination_origin");
+    base::Time trigger_time = ParseTime(trigger_dict, kTimestampKey);
+    url::Origin reporting_origin =
+        ParseOrigin(trigger_dict, "reporting_origin");
+    url::Origin destination_origin =
+        ParseOrigin(trigger_dict, "destination_origin");
 
-    absl::optional<uint64_t> debug_key =
-        ParseOptionalUint64(dict, "Attribution-Reporting-Trigger-Debug-Key");
-    AttributionFilterData filters =
-        ParseFilterData(dict, "Attribution-Reporting-Filters",
-                        &AttributionFilterData::FromTriggerFilterValues);
-    std::vector<AttributionTrigger::EventTriggerData> event_triggers =
-        ParseEventTriggers(dict);
+    absl::optional<uint64_t> debug_key;
+    AttributionFilterData filters;
+    std::vector<AttributionTrigger::EventTriggerData> event_triggers;
+    AttributionAggregatableTrigger aggregatable_trigger;
 
-    AttributionAggregatableTrigger aggregatable_trigger =
-        ParseAggregatableTrigger(dict);
+    if (!ParseAttributionEvent(
+            trigger_dict,
+            "Attribution-Reporting-Register-Trigger",
+            base::BindLambdaForTesting(
+                [&](const base::Value::Dict& dict) {
+                  debug_key = ParseOptionalUint64(dict, "debug_key");
+                  filters = ParseFilterData(
+                      dict, "filters",
+                      &AttributionFilterData::FromTriggerFilterValues);
+                  event_triggers = ParseEventTriggers(dict);
+
+                  aggregatable_trigger = ParseAggregatableTrigger(dict);
+                }))) {
+      return;
+    }
 
     if (has_error())
       return;
@@ -319,8 +326,7 @@ class AttributionSimulatorInputParser {
       const base::Value::Dict& cfg) {
     std::vector<AttributionTrigger::EventTriggerData> event_triggers;
 
-    static constexpr char kKey[] =
-        "Attribution-Reporting-Register-Event-Trigger";
+    static constexpr char kKey[] = "event_trigger_data";
 
     const base::Value* values = cfg.Find(kKey);
     if (!values)
@@ -466,14 +472,13 @@ class AttributionSimulatorInputParser {
     return source_type;
   }
 
-  bool ParseAttributionSource(
+  bool ParseAttributionEvent(
       const base::Value::Dict& value,
+      base::StringPiece key,
       base::OnceCallback<void(const base::Value::Dict&)> callback) {
-    static constexpr char kKey[] = "Attribution-Reporting-Register-Source";
+    auto context = PushContext(key);
 
-    auto context = PushContext(kKey);
-
-    const base::Value* dict = value.Find(kKey);
+    const base::Value* dict = value.Find(key);
     if (!dict) {
       *Error() << "must be present";
       return false;
@@ -646,17 +651,16 @@ class AttributionSimulatorInputParser {
 
   std::vector<blink::mojom::AttributionAggregatableTriggerDataPtr>
   ParseAggregatableTriggerData(const base::Value::Dict& dict) {
+    static constexpr char kKey[] = "aggregatable_trigger_data";
+
     std::vector<blink::mojom::AttributionAggregatableTriggerDataPtr>
         aggregatable_triggers;
 
-    auto context = PushContext(kAggregatableTriggerDataKey);
-
-    const base::Value* values = dict.Find(kAggregatableTriggerDataKey);
-    if (!values) {
-      *Error() << "must be present";
+    const base::Value* values = dict.Find(kKey);
+    if (!values)
       return aggregatable_triggers;
-    }
 
+    auto context = PushContext(kKey);
     ParseList(
         *values,
         base::BindLambdaForTesting(
@@ -697,15 +701,15 @@ class AttributionSimulatorInputParser {
 
   AttributionAggregatableTrigger::Values ParseAggregatableValues(
       const base::Value::Dict& dict) {
+    static constexpr char kKey[] = "aggregatable_values";
+
     AttributionAggregatableTrigger::Values aggregatable_values;
 
-    auto context = PushContext(kAggregatableValuesKey);
-
-    const base::Value* value = dict.Find(kAggregatableValuesKey);
-    if (!value) {
-      *Error() << "must be present";
+    const base::Value* value = dict.Find(kKey);
+    if (!value)
       return aggregatable_values;
-    }
+
+    auto context = PushContext(kKey);
 
     if (!EnsureDictionary(*value))
       return aggregatable_values;
@@ -726,11 +730,6 @@ class AttributionSimulatorInputParser {
 
   AttributionAggregatableTrigger ParseAggregatableTrigger(
       const base::Value::Dict& dict) {
-    if (!dict.Find(kAggregatableTriggerDataKey) &&
-        !dict.Find(kAggregatableValuesKey)) {
-      return AttributionAggregatableTrigger();
-    }
-
     auto mojo = blink::mojom::AttributionAggregatableTrigger::New(
         ParseAggregatableTriggerData(dict), ParseAggregatableValues(dict));
 

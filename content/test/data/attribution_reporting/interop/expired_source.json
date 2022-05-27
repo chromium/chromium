@@ -31,11 +31,13 @@
         "responses": [{
           "url": "https://reporter.test/register-trigger",
           "response": {
-            "Attribution-Reporting-Register-Event-Trigger": [
-              {
-                "trigger_data": "7"
-              }
-            ]
+            "Attribution-Reporting-Register-Trigger": {
+              "event_trigger_data": [
+                {
+                  "trigger_data": "7"
+                }
+              ]
+            }
           }
         }]
       }

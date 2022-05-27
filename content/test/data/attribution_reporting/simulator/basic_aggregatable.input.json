@@ -22,19 +22,21 @@
       "timestamp": "1643235574123",
       "reporting_origin": "https://r.test",
       "destination_origin": "https://d.test",
-      "Attribution-Reporting-Register-Event-Trigger": [
-        {
-          "trigger_data": "7"
+      "Attribution-Reporting-Register-Trigger": {
+        "event_trigger_data": [
+          {
+            "trigger_data": "7"
+          }
+        ],
+        "aggregatable_trigger_data": [
+          {
+            "source_keys": ["a"],
+            "key_piece": "0x400"
+          }
+        ],
+        "aggregatable_values": {
+          "a": 123
         }
-      ],
-      "Attribution-Reporting-Register-Aggregatable-Trigger-Data": [
-        {
-          "source_keys": ["a"],
-          "key_piece": "0x400"
-        }
-      ],
-      "Attribution-Reporting-Register-Aggregatable-Values": {
-        "a": 123
       }
     }
   ]
