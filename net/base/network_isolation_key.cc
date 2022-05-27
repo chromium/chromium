@@ -165,6 +165,12 @@ bool NetworkIsolationKey::FromValue(
   if (!frame_site || frame_site->opaque())
     return false;
 
+  if (base::FeatureList::IsEnabled(
+          net::features::kForceIsolationInfoFrameOriginToTopLevelFrame) &&
+      frame_site != top_frame_site) {
+    return false;
+  }
+
   *network_isolation_key =
       NetworkIsolationKey(std::move(*top_frame_site), std::move(*frame_site));
   return true;

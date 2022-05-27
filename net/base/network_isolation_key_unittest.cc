@@ -284,6 +284,21 @@ TEST_P(NetworkIsolationKeyTest, FromValueBadData) {
     // Write the value on failure.
     EXPECT_FALSE(NetworkIsolationKey::FromValue(test_case, &key)) << test_case;
   }
+
+  base::Value::ListStorage triple_key_list;
+  triple_key_list.emplace_back(base::Value("http://www.triple.com"));
+  triple_key_list.emplace_back(base::Value("http://www.key.com"));
+  NetworkIsolationKey key;
+  const auto triple_key_case = base::Value(std::move(triple_key_list));
+
+  // When double key is enabled top_level_site must equal frame_site.
+  bool expect_fail_on_different_sites =
+      ForceIsolationInfoFrameOriginToTopLevelFrameEnabled();
+
+  if (expect_fail_on_different_sites) {
+    EXPECT_FALSE(NetworkIsolationKey::FromValue(triple_key_case, &key))
+        << triple_key_case;
+  }
 }
 
 TEST_P(NetworkIsolationKeyTest, WithFrameSite) {
