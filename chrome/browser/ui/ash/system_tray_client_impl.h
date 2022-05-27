@@ -100,6 +100,7 @@ class SystemTrayClientImpl : public ash::SystemTrayClient,
   void ShowAccessCodeCastingDialog(
       AccessCodeCastDialogOpenLocation open_location) override;
   void ShowCalendarEvent(const absl::optional<GURL>& event_url,
+                         const base::Time& date,
                          bool& opened_pwa,
                          GURL& finalized_event_url) override;
 

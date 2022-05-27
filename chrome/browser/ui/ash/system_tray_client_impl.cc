@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/system_tray_client_impl.h"
 
+#include <cstdio>
 #include <memory>
 
 #include "ash/constants/ash_features.h"
@@ -21,6 +22,7 @@
 #include "base/notreached.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
@@ -687,21 +689,33 @@ void SystemTrayClientImpl::ShowAccessCodeCastingDialog(
 
 void SystemTrayClientImpl::ShowCalendarEvent(
     const absl::optional<GURL>& event_url,
+    const base::Time& date,
     bool& opened_pwa,
     GURL& final_event_url) {
   // Default is that we didn't open the calendar PWA.
   opened_pwa = false;
 
-  // By default, open the calendar to no particular event, i.e. today's date.
+  // Calendar URL we'll actually open, today's date by default.
   GURL official_url(kOfficialCalendarUrlPrefix);
 
-  // Needed in order for us to pass the "in app scope" guards in
-  // WebAppLaunchProcess::Run().  See http://b/214428922
+  // Compose the actual URL to be opened.
   if (event_url.has_value()) {
+    // An event URL was passed in, so modify it as needed for us to pass the "in
+    // app scope" guards in WebAppLaunchProcess::Run().  See http://b/214428922
     GURL::Replacements replacements;
     replacements.SetSchemeStr("https");
     replacements.SetHostStr("calendar.google.com");
     official_url = event_url->ReplaceComponents(replacements);
+  } else {
+    // No event URL provided, so fall back on opening calendar with `date`.
+    std::string calendar_url_str = kOfficialCalendarUrlPrefix;
+    base::Time::Exploded date_exp;
+    date.UTCExplode(&date_exp);
+    std::string date_url =
+        base::StringPrintf("r/week/%d/%d/%d", date_exp.year, date_exp.month,
+                           date_exp.day_of_month);
+    calendar_url_str.append(date_url);
+    official_url = GURL(calendar_url_str);
   }
 
   // Return the URL we actually opened.

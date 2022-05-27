@@ -63,6 +63,7 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
   void ShowAccessCodeCastingDialog(
       AccessCodeCastDialogOpenLocation open_location) override;
   void ShowCalendarEvent(const absl::optional<GURL>& event_url,
+                         const base::Time& date,
                          bool& opened_pwa,
                          GURL& final_event_url) override;
 

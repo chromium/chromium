@@ -144,17 +144,17 @@ class ASH_PUBLIC_EXPORT SystemTrayClient {
   virtual void ShowAccessCodeCastingDialog(
       AccessCodeCastDialogOpenLocation open_location) = 0;
 
-  // Shows a calendar event. If an event is present then we open it, otherwise
-  // we open Google Calendar with no arguments, which as of now just opens on
-  // today's date. We open the calendar PWA if it's installed (and assign true
-  // to |opened_pwa|), a new browser tab otherwise (and assign false to
-  // |opened_pwa|).
+  // Shows a calendar event. If an event is present then it's opened, otherwise
+  // Google Calendar is opened to `date`. Open in the calendar PWA if
+  // installed (and assign true to `opened_pwa`), in a new browser tab otherwise
+  // (and assign false to |opened_pwa|).
   //
   // The calendar PWA requires the event URL to have a specific prefix,
-  // so the URL we actually open may not be the same as the URL that was passed
-  // in.  This is guaranteed to be the case if no event URL was passed in.  The
-  // URL we actually opened is assigned to |finalized_event_url|.
+  // so the URL actually opened may not be the same as the passed-in URL.  This
+  // is guaranteed to be the case if no event URL was passed in.  The URL that's
+  // actually opened is assigned to `finalized_event_url`.
   virtual void ShowCalendarEvent(const absl::optional<GURL>& event_url,
+                                 const base::Time& date,
                                  bool& opened_pwa,
                                  GURL& finalized_event_url) = 0;
 

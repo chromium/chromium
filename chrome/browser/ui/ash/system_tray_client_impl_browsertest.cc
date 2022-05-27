@@ -471,24 +471,27 @@ IN_PROC_BROWSER_TEST_F(SystemTrayClientShowCalendarTest, NoEventUrl) {
   // Login a user.
   LoginUser(account_id_);
 
-  // Show the calendar, no URL and no PWA installed.
-  const char kOfficialCalendarUrlPrefix[] =
-      "https://calendar.google.com/calendar/";
+  // Show the calendar, no URL and no PWA installed. We expect to navigate to
+  // `date`.
+  const char kExpectedUrlStr[] =
+      "https://calendar.google.com/calendar/r/week/2021/11/18";
   GURL final_url;
   bool opened_pwa = false;
+  base::Time date;
+  ASSERT_TRUE(base::Time::FromString("18 Nov 2021 10:00 GMT", &date));
   ash::Shell::Get()->system_tray_model()->client()->ShowCalendarEvent(
-      absl::nullopt, opened_pwa, final_url);
+      absl::nullopt, date, opened_pwa, final_url);
   EXPECT_FALSE(opened_pwa);
-  EXPECT_EQ(final_url.spec(), GURL(kOfficialCalendarUrlPrefix).spec());
+  EXPECT_EQ(final_url.spec(), GURL(kExpectedUrlStr).spec());
 
   // Now install the calendar PWA.
   InstallApp(web_app::kGoogleCalendarAppId, "Google Calendar");
   opened_pwa = false;
   final_url = GURL();
   ash::Shell::Get()->system_tray_model()->client()->ShowCalendarEvent(
-      absl::nullopt, opened_pwa, final_url);
+      absl::nullopt, date, opened_pwa, final_url);
   EXPECT_TRUE(opened_pwa);
-  EXPECT_EQ(final_url.spec(), GURL(kOfficialCalendarUrlPrefix).spec());
+  EXPECT_EQ(final_url.spec(), GURL(kExpectedUrlStr).spec());
 }
 
 IN_PROC_BROWSER_TEST_F(SystemTrayClientShowCalendarTest, OfficialEventUrl) {
@@ -503,8 +506,10 @@ IN_PROC_BROWSER_TEST_F(SystemTrayClientShowCalendarTest, OfficialEventUrl) {
   GURL event_url(kOfficialCalendarEventUrl);
   GURL final_url;
   bool opened_pwa = false;
+  base::Time date;
+  ASSERT_TRUE(base::Time::FromString("18 Nov 2021 10:00 GMT", &date));
   ash::Shell::Get()->system_tray_model()->client()->ShowCalendarEvent(
-      event_url, opened_pwa, final_url);
+      event_url, date, opened_pwa, final_url);
   EXPECT_FALSE(opened_pwa);
   EXPECT_EQ(final_url.spec(), event_url.spec());
 
@@ -513,7 +518,7 @@ IN_PROC_BROWSER_TEST_F(SystemTrayClientShowCalendarTest, OfficialEventUrl) {
   opened_pwa = false;
   final_url = GURL();
   ash::Shell::Get()->system_tray_model()->client()->ShowCalendarEvent(
-      event_url, opened_pwa, final_url);
+      event_url, date, opened_pwa, final_url);
   EXPECT_TRUE(opened_pwa);
   EXPECT_EQ(final_url.spec(), event_url.spec());
 }
@@ -532,8 +537,10 @@ IN_PROC_BROWSER_TEST_F(SystemTrayClientShowCalendarTest, UnofficialEventUrl) {
   GURL event_url(kUnofficialCalendarEventUrl);
   GURL final_url;
   bool opened_pwa = false;
+  base::Time date;
+  ASSERT_TRUE(base::Time::FromString("18 Nov 2021 10:00 GMT", &date));
   ash::Shell::Get()->system_tray_model()->client()->ShowCalendarEvent(
-      event_url, opened_pwa, final_url);
+      event_url, date, opened_pwa, final_url);
   EXPECT_FALSE(opened_pwa);
   EXPECT_EQ(final_url.spec(), GURL(kOfficialCalendarEventUrl).spec());
 
@@ -542,7 +549,7 @@ IN_PROC_BROWSER_TEST_F(SystemTrayClientShowCalendarTest, UnofficialEventUrl) {
   opened_pwa = false;
   final_url = GURL();
   ash::Shell::Get()->system_tray_model()->client()->ShowCalendarEvent(
-      event_url, opened_pwa, final_url);
+      event_url, date, opened_pwa, final_url);
   EXPECT_TRUE(opened_pwa);
   EXPECT_EQ(final_url.spec(), GURL(kOfficialCalendarEventUrl).spec());
 }

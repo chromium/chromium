@@ -89,8 +89,10 @@ class CalendarEmptyEventListView : public views::LabelButton {
 
     GURL finalized_url;
     bool opened_pwa = false;
+    DCHECK(controller_->selected_date().has_value());
     Shell::Get()->system_tray_model()->client()->ShowCalendarEvent(
-        absl::nullopt, opened_pwa, finalized_url);
+        absl::nullopt, controller_->selected_date().value(), opened_pwa,
+        finalized_url);
   }
 
  private:
