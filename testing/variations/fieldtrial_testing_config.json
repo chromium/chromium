@@ -6325,25 +6325,6 @@
             ]
         }
     ],
-    "PerProcessReclaimArcVmOnFirstMemoryPressure": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledGroupB_DropCachesOnly_20220513",
-                    "params": {
-                        "OnlyDropCachesOnFirstMemoryPressureAfterArcVmBoot": "true",
-                        "TrimArcVmOnFirstMemoryPressureAfterArcVmBoot": "true"
-                    },
-                    "enable_features": [
-                        "TrimArcVmOnMemoryPressure"
-                    ]
-                }
-            ]
-        }
-    ],
     "PercentDroppedFramesSlidingWindow": [
         {
             "platforms": [
