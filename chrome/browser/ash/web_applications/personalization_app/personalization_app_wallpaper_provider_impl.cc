@@ -281,7 +281,7 @@ void PersonalizationAppWallpaperProviderImpl::FetchGooglePhotosPhotos(
             profile_);
   }
   google_photos_photos_fetcher_->AddRequestAndStartIfNecessary(
-      item_id, album_id, resume_token, std::move(callback));
+      item_id, album_id, resume_token, /*shuffle=*/false, std::move(callback));
 }
 
 void PersonalizationAppWallpaperProviderImpl::GetDefaultImageThumbnail(

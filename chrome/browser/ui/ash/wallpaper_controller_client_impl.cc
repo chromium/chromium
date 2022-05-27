@@ -786,7 +786,8 @@ void WallpaperControllerClientImpl::FetchGooglePhotosPhoto(
                      weak_factory_.GetWeakPtr(), std::move(callback));
   google_photos_photos_fetchers_[account_id]->AddRequestAndStartIfNecessary(
       id, /*album_id=*/absl::nullopt,
-      /*resume_token=*/absl::nullopt, std::move(fetched_callback));
+      /*resume_token=*/absl::nullopt, /*shuffle=*/false,
+      std::move(fetched_callback));
 }
 
 void WallpaperControllerClientImpl::FetchDailyGooglePhotosPhoto(
@@ -806,7 +807,8 @@ void WallpaperControllerClientImpl::FetchDailyGooglePhotosPhoto(
       weak_factory_.GetWeakPtr(), account_id, std::move(callback));
   google_photos_photos_fetchers_[account_id]->AddRequestAndStartIfNecessary(
       /*item_id=*/absl::nullopt, album_id,
-      /*resume_token=*/absl::nullopt, std::move(fetched_callback));
+      /*resume_token=*/absl::nullopt, /*shuffle=*/true,
+      std::move(fetched_callback));
 }
 
 void WallpaperControllerClientImpl::FetchGooglePhotosAccessToken(

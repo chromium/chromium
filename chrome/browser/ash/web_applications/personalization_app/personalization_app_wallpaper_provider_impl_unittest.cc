@@ -593,7 +593,7 @@ TEST_P(PersonalizationAppWallpaperProviderImplGooglePhotosTest, FetchPhotos) {
   EXPECT_CALL(*google_photos_photos_fetcher,
               AddRequestAndStartIfNecessary(
                   absl::make_optional(item_id), absl::make_optional(album_id),
-                  absl::make_optional(kResumeToken), ::testing::_))
+                  absl::make_optional(kResumeToken), false, ::testing::_))
       .Times(GooglePhotosEnabled() ? kNumFetches : 0);
 
   // Test fetching Google Photos photos before fetching the enterprise setting.

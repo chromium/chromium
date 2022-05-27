@@ -79,6 +79,11 @@ constexpr char kGooglePhotosAlbumUrl[] =
     "https://photosfirstparty-pa.googleapis.com/v1/chromeos/"
     "collectionById:read";
 
+// The collectionById endpoint accepts a "return_order" parameter that
+// determines what order the photos are returned in, using these values.
+constexpr char kGooglePhotosAlbumCollectionOrder[] = "1";
+constexpr char kGooglePhotosAlbumShuffledOrder[] = "2";
+
 // The URL to download the albums in a user's Google Photos library.
 constexpr char kGooglePhotosAlbumsUrl[] =
     "https://photosfirstparty-pa.googleapis.com/v1/chromeos/"
@@ -831,16 +836,22 @@ void GooglePhotosPhotosFetcher::AddRequestAndStartIfNecessary(
     const absl::optional<std::string>& item_id,
     const absl::optional<std::string>& album_id,
     const absl::optional<std::string>& resume_token,
+    bool shuffle,
     base::OnceCallback<void(GooglePhotosPhotosCbkArgs)> callback) {
   GURL service_url;
   if (item_id.has_value()) {
-    DCHECK(!album_id.has_value() && !resume_token.has_value());
+    DCHECK(!album_id.has_value() && !resume_token.has_value() && !shuffle);
     service_url = net::AppendQueryParameter(GURL(kGooglePhotosPhotoUrl),
                                             "item_id", item_id.value());
   } else if (album_id.has_value()) {
     service_url = net::AppendQueryParameter(GURL(kGooglePhotosAlbumUrl),
                                             "collection_id", album_id.value());
+    service_url =
+        net::AppendQueryParameter(service_url, "return_order",
+                                  shuffle ? kGooglePhotosAlbumShuffledOrder
+                                          : kGooglePhotosAlbumCollectionOrder);
   } else {
+    DCHECK(!shuffle);
     service_url = GURL(kGooglePhotosPhotosUrl);
   }
 
