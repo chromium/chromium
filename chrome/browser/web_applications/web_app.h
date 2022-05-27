@@ -12,12 +12,12 @@
 
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_data.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_chromeos_data.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
-#include "chrome/browser/web_applications/web_app_system_web_app_data.h"
 #include "components/services/app_service/public/cpp/file_handler.h"
 #include "components/services/app_service/public/cpp/protocol_handler_info.h"
 #include "components/services/app_service/public/cpp/share_target.h"
@@ -102,7 +102,7 @@ class WebApp {
     ClientData(const ClientData& client_data);
     base::Value AsDebugValue() const;
 
-    absl::optional<WebAppSystemWebAppData> system_web_app_data;
+    absl::optional<ash::SystemWebAppData> system_web_app_data;
   };
 
   const ClientData& client_data() const { return client_data_; }

@@ -13,12 +13,12 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_data.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_chromeos_data.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
-#include "chrome/browser/web_applications/web_app_system_web_app_data.h"
 #include "chrome/browser/web_applications/web_app_uninstall_job.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
@@ -69,7 +69,7 @@ class WebAppInstallFinalizer {
     bool overwrite_existing_manifest_fields = true;
 
     absl::optional<WebAppChromeOsData> chromeos_data;
-    absl::optional<WebAppSystemWebAppData> system_web_app_data;
+    absl::optional<ash::SystemWebAppData> system_web_app_data;
     absl::optional<AppId> parent_app_id;
 
     // If true, OsIntegrationManager::InstallOsHooks won't be called at all,

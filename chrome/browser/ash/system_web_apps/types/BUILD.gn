@@ -18,6 +18,8 @@ source_set("types") {
   sources = [
     "system_web_app_background_task_info.cc",
     "system_web_app_background_task_info.h",
+    "system_web_app_data.cc",
+    "system_web_app_data.h",
     "system_web_app_delegate.cc",
     "system_web_app_delegate.h",
     "system_web_app_delegate_map.cc",

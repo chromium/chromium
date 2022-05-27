@@ -802,7 +802,7 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
   }
 
   if (local_data.client_data().has_system_web_app_data()) {
-    WebAppSystemWebAppData& swa_data =
+    ash::SystemWebAppData& swa_data =
         web_app->client_data()->system_web_app_data.emplace();
 
     swa_data.system_app_type = static_cast<ash::SystemWebAppType>(
