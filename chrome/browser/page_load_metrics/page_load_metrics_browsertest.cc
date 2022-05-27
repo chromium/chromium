@@ -3480,7 +3480,7 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, PageLCPStopsUponInput) {
   ASSERT_EQ(all_frames_value, main_frame_value);
 }
 
-#if BUILDFLAG(IS_MAC)  // crbug.com/1277391
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)  // crbug.com/1277391
 #define MAYBE_PageLCPAnimatedImage DISABLED_PageLCPAnimatedImage
 #else
 #define MAYBE_PageLCPAnimatedImage PageLCPAnimatedImage
