@@ -198,13 +198,13 @@ MAYBE_PLATFORM_CONFIG_TEST_F(ThreadProfilerPlatformConfigurationTest,
   EXPECT_TRUE(config()->IsEnabledForThread(
       metrics::CallStackProfileParams::Process::kRenderer,
       metrics::CallStackProfileParams::Thread::kMain));
-  EXPECT_FALSE(config()->IsEnabledForThread(
+  EXPECT_TRUE(config()->IsEnabledForThread(
       metrics::CallStackProfileParams::Process::kRenderer,
       metrics::CallStackProfileParams::Thread::kIo));
-  EXPECT_FALSE(config()->IsEnabledForThread(
+  EXPECT_TRUE(config()->IsEnabledForThread(
       metrics::CallStackProfileParams::Process::kRenderer,
       metrics::CallStackProfileParams::Thread::kCompositor));
-  EXPECT_FALSE(config()->IsEnabledForThread(
+  EXPECT_TRUE(config()->IsEnabledForThread(
       metrics::CallStackProfileParams::Process::kRenderer,
       metrics::CallStackProfileParams::Thread::kServiceWorker));
 
