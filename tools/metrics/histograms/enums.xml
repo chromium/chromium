@@ -4152,7 +4152,7 @@ Unknown properties are collapsed to zero. -->
   <int value="139" label="Terminated by SIGSEGV">
     MINIJAIL_ERR_SIG_BASE + SIGSEGV from libminijail
   </int>
-  <int value="251" label="Cannot mount file in mount namespace">
+  <int value="251" label="Cannot bind-mount file">
     MINIJAIL_ERR_MOUNT from libminijail
   </int>
   <int value="253" label="Seccomp violation">
@@ -42748,36 +42748,33 @@ Called by update_permissions_policy_enum.py.-->
 
 <enum name="FuseArchiveError">
   <int value="0" label="Success">EXIT_SUCCESS</int>
-  <int value="1" label="Generic Failure">EXIT_CODE_GENERIC_FAILURE</int>
-  <int value="11" label="Cannot Open Archive">
-    EXIT_CODE_CANNOT_OPEN_ARCHIVE
-  </int>
-  <int value="20" label="Passphrase Required">
-    EXIT_CODE_PASSPHRASE_REQUIRED
-  </int>
-  <int value="21" label="Passphrase Incorrect">
-    EXIT_CODE_PASSPHRASE_INCORRECT
-  </int>
-  <int value="22" label="Passphrase Not Supported">
+  <int value="1" label="Generic error">EXIT_CODE_GENERIC_FAILURE</int>
+  <int value="11" label="Cannot open">EXIT_CODE_CANNOT_OPEN_ARCHIVE</int>
+  <int value="20" label="Missing password">EXIT_CODE_PASSPHRASE_REQUIRED</int>
+  <int value="21" label="Bad password">EXIT_CODE_PASSPHRASE_INCORRECT</int>
+  <int value="22" label="Encryption method not supported">
     EXIT_CODE_PASSPHRASE_NOT_SUPPORTED
   </int>
-  <int value="30" label="Invalid Archive">EXIT_CODE_INVALID_RAW_ARCHIVE</int>
-  <int value="31" label="Invalid Archive Header">
+  <int value="30" label="Invalid archive">EXIT_CODE_INVALID_RAW_ARCHIVE</int>
+  <int value="31" label="Invalid archive header">
     EXIT_CODE_INVALID_ARCHIVE_HEADER
   </int>
-  <int value="32" label="Invalid Archive Contents">
+  <int value="32" label="Invalid archive contents">
     EXIT_CODE_INVALID_ARCHIVE_CONTENTS
   </int>
   <int value="132" label="Terminated by SIGILL">
-    MINIJAIL_ERR_SIG_BASE + SIGILL from libminijail
+    MINIJAIL_ERR_SIG_BASE (128) + SIGILL (4) from libminijail
   </int>
   <int value="134" label="Terminated by SIGABRT">
-    MINIJAIL_ERR_SIG_BASE + SIGABRT from libminijail
+    MINIJAIL_ERR_SIG_BASE (128) + SIGABRT (6) from libminijail
   </int>
   <int value="139" label="Terminated by SIGSEGV">
-    MINIJAIL_ERR_SIG_BASE + SIGSEGV from libminijail
+    MINIJAIL_ERR_SIG_BASE (128) + SIGSEGV (11) from libminijail
   </int>
-  <int value="251" label="Cannot mount file in mount namespace">
+  <int value="143" label="Terminated by SIGTERM">
+    MINIJAIL_ERR_SIG_BASE (128) + SIGTERM (15) from libminijail
+  </int>
+  <int value="251" label="Cannot bind-mount file">
     MINIJAIL_ERR_MOUNT from libminijail
   </int>
   <int value="253" label="Seccomp violation">
@@ -42786,38 +42783,56 @@ Called by update_permissions_policy_enum.py.-->
 </enum>
 
 <enum name="FuseZipError">
-  <int value="0" label="Success">Hardcoded in fuse-zip</int>
+  <int value="0" label="Success">EXIT_SUCCESS</int>
   <int value="11" label="Multipart ZIP">
-    ZIP_ER_BASE from fuse-zip + ZIP_ER_MULTIDISK from libzip
+    ZIP_ER_BASE (10) from fuse-zip + ZIP_ER_MULTIDISK (1) from libzip
   </int>
   <int value="15" label="Cannot read">
-    ZIP_ER_BASE from fuse-zip + ZIP_ER_READ from libzip
+    ZIP_ER_BASE (10) from fuse-zip + ZIP_ER_READ (5) from libzip
+  </int>
+  <int value="19" label="No such file">
+    ZIP_ER_BASE (10) from fuse-zip + ZIP_ER_NOENT (9) from libzip
   </int>
   <int value="21" label="Cannot open">
-    ZIP_ER_BASE from fuse-zip + ZIP_ER_OPEN from libzip
+    ZIP_ER_BASE (10) from fuse-zip + ZIP_ER_OPEN (11) from libzip
+  </int>
+  <int value="23" label="Malloc failure">
+    ZIP_ER_BASE (10) from fuse-zip + ZIP_ER_MEMORY (13) from libzip
+  </int>
+  <int value="26" label="Compression method not supported">
+    ZIP_ER_BASE (10) from fuse-zip + ZIP_ER_COMPNOTSUPP (16) from libzip
+  </int>
+  <int value="27" label="Premature end of file">
+    ZIP_ER_BASE (10) from fuse-zip + ZIP_ER_EOF (17) from libzip
   </int>
   <int value="29" label="Not a ZIP">
-    ZIP_ER_BASE from fuse-zip + ZIP_ER_NOZIP from libzip
+    ZIP_ER_BASE (10) from fuse-zip + ZIP_ER_NOZIP (19) from libzip
   </int>
   <int value="31" label="Inconsistent ZIP">
-    ZIP_ER_BASE from fuse-zip + ZIP_ER_INCONS from libzip
+    ZIP_ER_BASE (10) from fuse-zip + ZIP_ER_INCONS (21) from libzip
+  </int>
+  <int value="34" label="Encryption method not supported">
+    ZIP_ER_BASE (10) from fuse-zip + ZIP_ER_ENCRNOTSUPP (24) from libzip
   </int>
   <int value="36" label="Missing password">
-    ZIP_ER_BASE from fuse-zip + ZIP_ER_NOPASSWD from libzip
+    ZIP_ER_BASE (10) from fuse-zip + ZIP_ER_NOPASSWD (26) from libzip
   </int>
   <int value="37" label="Bad password">
-    ZIP_ER_BASE from fuse-zip + ZIP_ER_WRONGPASSWD from libzip
+    ZIP_ER_BASE (10) from fuse-zip + ZIP_ER_WRONGPASSWD (27) from libzip
   </int>
   <int value="132" label="Terminated by SIGILL">
-    MINIJAIL_ERR_SIG_BASE + SIGILL from libminijail
+    MINIJAIL_ERR_SIG_BASE (128) + SIGILL (4) from libminijail
   </int>
   <int value="134" label="Terminated by SIGABRT">
-    MINIJAIL_ERR_SIG_BASE + SIGABRT from libminijail
+    MINIJAIL_ERR_SIG_BASE (128) + SIGABRT (6) from libminijail
   </int>
   <int value="139" label="Terminated by SIGSEGV">
-    MINIJAIL_ERR_SIG_BASE + SIGSEGV from libminijail
+    MINIJAIL_ERR_SIG_BASE (128) + SIGSEGV (11) from libminijail
   </int>
-  <int value="251" label="Cannot mount file in mount namespace">
+  <int value="143" label="Terminated by SIGTERM">
+    MINIJAIL_ERR_SIG_BASE (128) + SIGTERM (15) from libminijail
+  </int>
+  <int value="251" label="Cannot bind-mount file">
     MINIJAIL_ERR_MOUNT from libminijail
   </int>
   <int value="253" label="Seccomp violation">
@@ -80086,15 +80101,18 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   </int>
   <int value="24" label="Bad password">ERAR_BAD_PASSWORD from libunrar</int>
   <int value="132" label="Terminated by SIGILL">
-    MINIJAIL_ERR_SIG_BASE + SIGILL from libminijail
+    MINIJAIL_ERR_SIG_BASE (128) + SIGILL (4) from libminijail
   </int>
   <int value="134" label="Terminated by SIGABRT">
-    MINIJAIL_ERR_SIG_BASE + SIGABRT from libminijail
+    MINIJAIL_ERR_SIG_BASE (128) + SIGABRT (6) from libminijail
   </int>
   <int value="139" label="Terminated by SIGSEGV">
-    MINIJAIL_ERR_SIG_BASE + SIGSEGV from libminijail
+    MINIJAIL_ERR_SIG_BASE (128) + SIGSEGV (11) from libminijail
   </int>
-  <int value="251" label="Cannot mount file in mount namespace">
+  <int value="143" label="Terminated by SIGTERM">
+    MINIJAIL_ERR_SIG_BASE (128) + SIGTERM (15) from libminijail
+  </int>
+  <int value="251" label="Cannot bind-mount file">
     MINIJAIL_ERR_MOUNT from libminijail
   </int>
   <int value="253" label="Seccomp violation">
