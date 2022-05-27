@@ -717,6 +717,8 @@ function triggerStatusToText(status: WebUITrigger_Status): string {
       return 'Failure: No aggregatable data present';
     case WebUITrigger_Status.kProhibitedByBrowserPolicy:
       return 'Failure: Prohibited by browser policy';
+    case WebUITrigger_Status.kNoMatchingConfigurations:
+      return 'Rejected: no matching event-level configurations';
     default:
       return status.toString();
   }

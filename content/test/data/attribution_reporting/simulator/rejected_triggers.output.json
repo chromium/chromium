@@ -55,6 +55,15 @@
           }
         }
       }
+    },
+    {
+      "event_level_reason": "noMatchingConfigurations",
+      "trigger": {
+        "timestamp": "1643235579000",
+        "reporting_origin": "https://r.test",
+        "destination_origin": "https://d.test",
+        "Attribution-Reporting-Register-Trigger": {}
+      }
     }
   ],
   "event_level_reports": [

@@ -386,6 +386,7 @@ class AttributionEventHandler : public AttributionObserver {
       case AttributionTrigger::EventLevelResult::kExcessiveReportingOrigins:
       case AttributionTrigger::EventLevelResult::kNoMatchingSourceFilterData:
       case AttributionTrigger::EventLevelResult::kProhibitedByBrowserPolicy:
+      case AttributionTrigger::EventLevelResult::kNoMatchingConfigurations:
         event_level_reason << result.event_level_status();
         break;
     }

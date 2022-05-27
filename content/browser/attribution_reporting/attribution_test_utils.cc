@@ -919,6 +919,9 @@ std::ostream& operator<<(std::ostream& out,
     case AttributionTrigger::EventLevelResult::kProhibitedByBrowserPolicy:
       out << "prohibitedByBrowserPolicy";
       break;
+    case AttributionTrigger::EventLevelResult::kNoMatchingConfigurations:
+      out << "noMatchingConfigurations";
+      break;
   }
   return out;
 }

@@ -1009,9 +1009,6 @@ EventLevelResult AttributionStorageSql::MaybeCreateEventLevelReport(
 
   const AttributionSourceType source_type = common_info.source_type();
 
-  uint64_t trigger_data = 0;
-  int64_t priority = 0;
-
   auto event_trigger = base::ranges::find_if(
       trigger.event_triggers(),
       [&](const AttributionTrigger::EventTriggerData& event_trigger) {
@@ -1020,16 +1017,11 @@ EventLevelResult AttributionStorageSql::MaybeCreateEventLevelReport(
                                        event_trigger.not_filters);
       });
 
-  // If there's a match, use its data. Otherwise use default values instead of
-  // returning an error so that a report is still sent.
-  // TODO(apaseltiner): Consider recording a metric for no match.
-  if (event_trigger != trigger.event_triggers().end()) {
-    trigger_data = event_trigger->data;
-    priority = event_trigger->priority;
-    dedup_key = event_trigger->dedup_key;
-  }
+  if (event_trigger == trigger.event_triggers().end())
+    return EventLevelResult::kNoMatchingConfigurations;
 
-  switch (ReportAlreadyStored(attribution_info.source.source_id(), dedup_key)) {
+  switch (ReportAlreadyStored(attribution_info.source.source_id(),
+                              event_trigger->dedup_key)) {
     case ReportAlreadyStoredStatus::kNotStored:
       break;
     case ReportAlreadyStoredStatus::kStored:
@@ -1069,9 +1061,11 @@ EventLevelResult AttributionStorageSql::MaybeCreateEventLevelReport(
   report = AttributionReport(
       attribution_info, report_time, delegate_->NewReportID(),
       AttributionReport::EventLevelData(
-          delegate_->SanitizeTriggerData(trigger_data, source_type), priority,
-          randomized_response_rate,
+          delegate_->SanitizeTriggerData(event_trigger->data, source_type),
+          event_trigger->priority, randomized_response_rate,
           AttributionReport::EventLevelData::Id(kUnsetReportId)));
+
+  dedup_key = event_trigger->dedup_key;
 
   return EventLevelResult::kSuccess;
 }

@@ -156,6 +156,7 @@ struct WebUITrigger {
     kDeduplicated,
     kLowPriority,
     kNoised,
+    kNoMatchingConfigurations,
 
     // Aggregatable statuses:
     kNoHistograms,

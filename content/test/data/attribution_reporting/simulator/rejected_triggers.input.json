@@ -102,6 +102,12 @@
           "b": 123
         }
       }
+    },
+    {
+      "timestamp": "1643235579000",
+      "reporting_origin": "https://r.test",
+      "destination_origin": "https://d.test",
+      "Attribution-Reporting-Register-Trigger": {}
     }
   ]
 }

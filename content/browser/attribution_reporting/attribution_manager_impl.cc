@@ -94,9 +94,9 @@ bool IsOriginSessionOnly(
 void RecordCreateReportStatus(CreateReportResult result) {
   static_assert(
       AttributionTrigger::EventLevelResult::kMaxValue ==
-          AttributionTrigger::EventLevelResult::kProhibitedByBrowserPolicy,
-      "Bump version of Conversions.CreateReportStatus2 histogram.");
-  base::UmaHistogramEnumeration("Conversions.CreateReportStatus2",
+          AttributionTrigger::EventLevelResult::kNoMatchingConfigurations,
+      "Bump version of Conversions.CreateReportStatus3 histogram.");
+  base::UmaHistogramEnumeration("Conversions.CreateReportStatus3",
                                 result.event_level_status());
   base::UmaHistogramEnumeration(
       "Conversions.AggregatableReport.CreateReportStatus2",
