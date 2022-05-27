@@ -280,7 +280,7 @@ public class ContextualSearchInstrumentationBase {
     /**
      * Parameter provider for enabling/disabling triggering-related Features.
      */
-    public static class BaseFeatureParamProvider implements ParameterProvider {
+    public static class FeatureParamProvider implements ParameterProvider {
         @Override
         public Iterable<ParameterSet> getParameters() {
             return Arrays.asList(new ParameterSet().value(EnabledFeature.NONE).name("default"),
@@ -325,21 +325,14 @@ public class ContextualSearchInstrumentationBase {
     /** This represents the current fully-launched configuration, with no other Features. */
     protected static final ImmutableMap<String, Boolean> ENABLE_NONE = ImmutableMap.of();
 
-    /** This is the Translations Feature addition. */
-    private static final ImmutableMap<String, Boolean> ENABLE_TRANSLATIONS =
-            ImmutableMap.of(ChromeFeatureList.CONTEXTUAL_SEARCH_TRANSLATIONS, true);
-
-    /** This is the privacy-neutral-engagement feature set. */
-    private static final ImmutableMap<String, Boolean> ENABLE_PRIVACY_NEUTRAL =
+    /** This is the helper-test Feature. */
+    private static final ImmutableMap<String, Boolean> ENABLE_FORCE_CAPTION =
             ImmutableMap.of(ChromeFeatureList.CONTEXTUAL_SEARCH_FORCE_CAPTION, true);
 
-    /** This is the privacy-neutral-engagement feature set, plus Related Searches. */
-    private static final ImmutableMap<String, Boolean>
-            ENABLE_PRIVACY_NEUTRAL_WITH_RELATED_SEARCHES =
-                    ImmutableMap.of(ChromeFeatureList.CONTEXTUAL_SEARCH_FORCE_CAPTION, true,
-                            ChromeFeatureList.RELATED_SEARCHES, true,
-                            ChromeFeatureList.RELATED_SEARCHES_IN_BAR, true,
-                            ChromeFeatureList.RELATED_SEARCHES_UI, true);
+    /** This is the Related Searches Feature in the MVP configuration. */
+    private static final ImmutableMap<String, Boolean> ENABLE_RELATED_SEARCHES = ImmutableMap.of(
+            ChromeFeatureList.RELATED_SEARCHES, true, ChromeFeatureList.RELATED_SEARCHES_IN_BAR,
+            true, ChromeFeatureList.RELATED_SEARCHES_UI, true);
 
     /** This is the contextual triggers feature set that alters tap to show selection handles. */
     private static final ImmutableMap<String, Boolean> ENABLE_CONTEXTUAL_TRIGGERS =
@@ -357,9 +350,7 @@ public class ContextualSearchInstrumentationBase {
     // Feature maps that we use for individual tests.
     //--------------------------------------------------------------------------------------------
     protected static final ImmutableMap<String, Boolean> ENABLE_RELATED_SEARCHES_IN_BAR =
-            ImmutableMap.of(ChromeFeatureList.RELATED_SEARCHES, true,
-                    ChromeFeatureList.RELATED_SEARCHES_UI, true,
-                    ChromeFeatureList.RELATED_SEARCHES_IN_BAR, true);
+            ENABLE_RELATED_SEARCHES;
 
     protected ContextualSearchManager mManager;
     protected ContextualSearchPolicy mPolicy;
@@ -399,7 +390,7 @@ public class ContextualSearchInstrumentationBase {
     // Tracks whether a long-press triggering experiment is active.
     private @EnabledFeature int mEnabledFeature;
 
-    @ParameterAnnotations.UseMethodParameterBefore(BaseFeatureParamProvider.class)
+    @ParameterAnnotations.UseMethodParameterBefore(FeatureParamProvider.class)
     public void setFeatureParameterForTest(@EnabledFeature int enabledFeature) {
         mEnabledFeature = enabledFeature;
     }
@@ -468,14 +459,11 @@ public class ContextualSearchInstrumentationBase {
             case EnabledFeature.NONE:
                 whichFeature = ENABLE_NONE;
                 break;
-            case EnabledFeature.TRANSLATIONS:
-                whichFeature = ENABLE_TRANSLATIONS;
-                break;
             case EnabledFeature.PRIVACY_NEUTRAL:
-                whichFeature = ENABLE_PRIVACY_NEUTRAL;
+                whichFeature = ENABLE_FORCE_CAPTION;
                 break;
             case EnabledFeature.PRIVACY_NEUTRAL_WITH_RELATED_SEARCHES:
-                whichFeature = ENABLE_PRIVACY_NEUTRAL_WITH_RELATED_SEARCHES;
+                whichFeature = ENABLE_RELATED_SEARCHES;
                 break;
             case EnabledFeature.CONTEXTUAL_TRIGGERS:
                 whichFeature = ENABLE_CONTEXTUAL_TRIGGERS;

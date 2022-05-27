@@ -19,8 +19,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.params.ParameterAnnotations;
-import org.chromium.base.test.params.ParameterProvider;
-import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -42,8 +40,6 @@ import org.chromium.content_public.browser.test.util.KeyUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
 
-import java.util.Arrays;
-
 /**
  * Tests system and application interaction with Contextual Search using instrumentation tests.
  */
@@ -57,31 +53,6 @@ import java.util.Arrays;
 @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
 @Batch(Batch.PER_CLASS)
 public class ContextualSearchSystemTest extends ContextualSearchInstrumentationBase {
-    /**
-     * Parameter provider for enabling/disabling Features under development.
-     */
-    public static class FeatureParamProvider implements ParameterProvider {
-        @Override
-        public Iterable<ParameterSet> getParameters() {
-            return Arrays.asList(new ParameterSet().value(EnabledFeature.NONE).name("default"),
-                    new ParameterSet()
-                            .value(EnabledFeature.TRANSLATIONS)
-                            .name("enableTranslations"),
-                    new ParameterSet()
-                            .value(EnabledFeature.CONTEXTUAL_TRIGGERS)
-                            .name("enableContextualTriggers"),
-                    new ParameterSet()
-                            .value(EnabledFeature.CONTEXTUAL_TRIGGERS_MENU)
-                            .name("enableContextualTriggersMenu"),
-                    new ParameterSet()
-                            .value(EnabledFeature.PRIVACY_NEUTRAL)
-                            .name("enablePrivacyNeutralEngagement"),
-                    new ParameterSet()
-                            .value(EnabledFeature.PRIVACY_NEUTRAL_WITH_RELATED_SEARCHES)
-                            .name("enablePrivacyNeutralWithRelatedSearches"));
-        }
-    }
-
     @Override
     @Before
     public void setUp() throws Exception {

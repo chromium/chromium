@@ -34,8 +34,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.FeatureList;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.params.ParameterAnnotations;
-import org.chromium.base.test.params.ParameterProvider;
-import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
@@ -86,7 +84,6 @@ import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.test.util.UiRestriction;
 import org.chromium.url.GURL;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -107,17 +104,6 @@ import java.util.Set;
 @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
 @Batch(Batch.PER_CLASS)
 public class ContextualSearchManagerTest extends ContextualSearchInstrumentationBase {
-    /** Parameter provider for enabling/disabling triggering-related Features. */
-    public static class FeatureParamProvider implements ParameterProvider {
-        @Override
-        public Iterable<ParameterSet> getParameters() {
-            return Arrays.asList(new ParameterSet().value(EnabledFeature.NONE).name("default"),
-                    new ParameterSet()
-                            .value(EnabledFeature.TRANSLATIONS)
-                            .name("enableTranslations"));
-        }
-    }
-
     // DOM element IDs in our test page based on what functions they trigger.
     // TODO(donnd): add more, and also the associated Search Term, or build a similar mapping.
     /**
