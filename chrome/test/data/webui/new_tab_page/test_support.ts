@@ -81,6 +81,7 @@ export function createBackgroundImage(url: string): BackgroundImage {
     positionY: undefined,
     repeatX: undefined,
     repeatY: undefined,
+    scrimDisplay: undefined,
     size: undefined,
     url2x: undefined,
   };
