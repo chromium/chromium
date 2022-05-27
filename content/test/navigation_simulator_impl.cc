@@ -279,6 +279,16 @@ NavigationSimulatorImpl::CreateRendererInitiated(
           static_cast<TestRenderFrameHost*>(render_frame_host)));
 
   sim->SetInitiatorFrame(render_frame_host);
+
+  if (render_frame_host->IsNestedWithinFencedFrame()) {
+    sim->set_supports_loading_mode_header("fenced-frame");
+    sim->SetTransition(ui::PAGE_TRANSITION_AUTO_SUBFRAME);
+    // When InitialNavigationEntry is enabled, set should_replace_current_entry
+    // to true, to pass the DidCommitParams check that expects the initial
+    // NavigationEntry to always be replaced.
+    sim->set_should_replace_current_entry(
+        blink::features::IsInitialNavigationEntryEnabled());
+  }
   return sim;
 }
 
@@ -321,24 +331,6 @@ NavigationSimulatorImpl::CreateFromPendingInFrame(
       WebContentsImpl::FromFrameTreeNode(frame_tree_node), test_frame_host));
   simulator->frame_tree_node_ = frame_tree_node;
   simulator->InitializeFromStartedRequest(request);
-  return simulator;
-}
-
-// static
-std::unique_ptr<NavigationSimulator> NavigationSimulator::CreateForFencedFrame(
-    const GURL& original_url,
-    RenderFrameHost* fenced_frame_root) {
-  DCHECK(fenced_frame_root->IsFencedFrameRoot());
-  std::unique_ptr<NavigationSimulatorImpl> simulator =
-      NavigationSimulatorImpl::CreateRendererInitiated(original_url,
-                                                       fenced_frame_root);
-  simulator->set_supports_loading_mode_header("fenced-frame");
-  simulator->SetTransition(ui::PAGE_TRANSITION_AUTO_SUBFRAME);
-  // When InitialNavigationEntry is enabled, set should_replace_current_entry to
-  // true, to pass the DidCommitParams check that expects the initial
-  // NavigationEntry to always be replaced.
-  simulator->set_should_replace_current_entry(
-      blink::features::IsInitialNavigationEntryEnabled());
   return simulator;
 }
 

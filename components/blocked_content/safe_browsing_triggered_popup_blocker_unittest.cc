@@ -587,8 +587,8 @@ TEST_F(SafeBrowsingTriggeredPopupBlockerFencedFrameTest,
   const GURL fenced_frame_url("https://fencedframe.test");
   MarkUrlAsAbusiveEnforce(fenced_frame_url);
   std::unique_ptr<content::NavigationSimulator> navigation_simulator =
-      content::NavigationSimulator::CreateForFencedFrame(fenced_frame_url,
-                                                         fenced_frame_root);
+      content::NavigationSimulator::CreateRendererInitiated(fenced_frame_url,
+                                                            fenced_frame_root);
   navigation_simulator->Commit();
 
   // The popup blocker is not triggered for a fenced frame.

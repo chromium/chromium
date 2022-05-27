@@ -407,8 +407,8 @@ TEST_F(ContentPasswordManagerDriverFencedFramesTest,
   // Navigate a fenced frame.
   GURL fenced_frame_url = GURL("https://hostname/path?query#hash");
   std::unique_ptr<content::NavigationSimulator> navigation_simulator =
-      content::NavigationSimulator::CreateForFencedFrame(fenced_frame_url,
-                                                         fenced_frame_root);
+      content::NavigationSimulator::CreateRendererInitiated(fenced_frame_url,
+                                                            fenced_frame_root);
   navigation_simulator->Commit();
 
   autofill::FormData initial_form;

@@ -4557,7 +4557,7 @@ TEST_F(NavigationControllerFencedFrameTest, NoURLRewriteForFencedFrames) {
   RenderFrameHostImpl* fenced_frame_root = main_test_rfh()->AppendFencedFrame();
   // Navigate fenced frame.
   std::unique_ptr<NavigationSimulator> navigation_simulator =
-      NavigationSimulator::CreateForFencedFrame(kUrl2, fenced_frame_root);
+      NavigationSimulator::CreateRendererInitiated(kUrl2, fenced_frame_root);
   navigation_simulator->Commit();
 
   // Simulate the fenced frame receiving a request from a RenderFrameProxyHost

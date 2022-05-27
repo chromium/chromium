@@ -2297,8 +2297,8 @@ TEST_F(ControllerFencedFrameTest, DoNotNavigateInFencedFrame) {
       CreateFencedFrame(web_contents()->GetMainFrame());
   GURL kFencedFrameUrl("https://fencedframe.com");
   std::unique_ptr<content::NavigationSimulator> navigation_simulator =
-      content::NavigationSimulator::CreateForFencedFrame(kFencedFrameUrl,
-                                                         fenced_frame_rfh);
+      content::NavigationSimulator::CreateRendererInitiated(kFencedFrameUrl,
+                                                            fenced_frame_rfh);
   navigation_simulator->Commit();
   fenced_frame_rfh = navigation_simulator->GetFinalRenderFrameHost();
   EXPECT_TRUE(fenced_frame_rfh->IsFencedFrameRoot());

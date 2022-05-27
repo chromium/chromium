@@ -517,11 +517,7 @@ class AdsPageLoadMetricsObserverTest
   std::unique_ptr<NavigationSimulator> CreateNavigationSimulator(
       const std::string& url,
       content::RenderFrameHost* frame) {
-    if (WithFencedFrames() && !frame->IsInPrimaryMainFrame()) {
-      return NavigationSimulator::CreateForFencedFrame(GURL(url), frame);
-    } else {
-      return NavigationSimulator::CreateRendererInitiated(GURL(url), frame);
-    }
+    return NavigationSimulator::CreateRendererInitiated(GURL(url), frame);
   }
 
   // Returns the final RenderFrameHost after navigation commits.

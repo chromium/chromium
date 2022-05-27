@@ -504,8 +504,8 @@ TEST_F(OfflinePageTabHelperFencedFrameTest, DoNotRecordMetricsInFencedFrame) {
   content::RenderFrameHost* fenced_frame_rfh = CreateFencedFrame(main_rfh());
   GURL kFencedFrameUrl("https://fencedframe.com");
   std::unique_ptr<content::NavigationSimulator> navigation_simulator =
-      content::NavigationSimulator::CreateForFencedFrame(kFencedFrameUrl,
-                                                         fenced_frame_rfh);
+      content::NavigationSimulator::CreateRendererInitiated(kFencedFrameUrl,
+                                                            fenced_frame_rfh);
   navigation_simulator->Commit();
   EXPECT_TRUE(fenced_frame_rfh->IsFencedFrameRoot());
 

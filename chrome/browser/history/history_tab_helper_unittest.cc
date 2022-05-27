@@ -489,7 +489,7 @@ TEST_P(HistoryTabHelperMPArchTest, DoNotAffectToLimitTitleUpdates) {
     GURL fenced_frame_url = GURL("https://fencedframe.com");
     content::RenderFrameHost* fenced_frame_root =
         content::RenderFrameHostTester::For(main_rfh())->AppendFencedFrame();
-    simulator = content::NavigationSimulator::CreateForFencedFrame(
+    simulator = content::NavigationSimulator::CreateRendererInitiated(
         fenced_frame_url, fenced_frame_root);
   } else if (GetParam() == MPArchType::kPrerender) {
     // Navigate a prerendering page.

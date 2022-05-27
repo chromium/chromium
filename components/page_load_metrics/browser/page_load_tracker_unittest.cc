@@ -172,7 +172,7 @@ TEST_F(PageLoadTrackerTest, EventForwarding) {
           ->AppendFencedFrame();
   {
     const char kFencedFramesUrl[] = "https://a.test/fenced_frames";
-    auto simulator = content::NavigationSimulator::CreateForFencedFrame(
+    auto simulator = content::NavigationSimulator::CreateRendererInitiated(
         GURL(kFencedFramesUrl), fenced_frame_root);
     ASSERT_NE(nullptr, simulator);
     simulator->Commit();
@@ -191,7 +191,7 @@ TEST_F(PageLoadTrackerTest, EventForwarding) {
   // Navigate out.
   {
     const char kFencedFramesNavigationUrl[] = "https://b.test/fenced_frames";
-    auto simulator = content::NavigationSimulator::CreateForFencedFrame(
+    auto simulator = content::NavigationSimulator::CreateRendererInitiated(
         GURL(kFencedFramesNavigationUrl), fenced_frame_root);
     ASSERT_NE(nullptr, simulator);
     simulator->Commit();
@@ -249,7 +249,7 @@ TEST_F(PageLoadTrackerTest, FencedFramesPageType) {
       content::RenderFrameHostTester::For(web_contents()->GetMainFrame())
           ->AppendFencedFrame();
   {
-    auto simulator = content::NavigationSimulator::CreateForFencedFrame(
+    auto simulator = content::NavigationSimulator::CreateRendererInitiated(
         GURL(kFencedFramesUrl), fenced_frame_root);
     ASSERT_NE(nullptr, simulator);
     simulator->Commit();
@@ -277,7 +277,7 @@ TEST_F(PageLoadTrackerTest, FencedFramesPageType) {
 
   // Navigate out.
   {
-    auto simulator = content::NavigationSimulator::CreateForFencedFrame(
+    auto simulator = content::NavigationSimulator::CreateRendererInitiated(
         GURL(kTestUrl), fenced_frame_root);
     ASSERT_NE(nullptr, simulator);
     simulator->Commit();
@@ -320,7 +320,7 @@ TEST_F(PageLoadTrackerTest, StopObservingOnFencedFrames) {
   content::RenderFrameHost* fenced_frame_root =
       content::RenderFrameHostTester::For(web_contents()->GetMainFrame())
           ->AppendFencedFrame();
-  auto simulator = content::NavigationSimulator::CreateForFencedFrame(
+  auto simulator = content::NavigationSimulator::CreateRendererInitiated(
       GURL(kFencedFramesUrl), fenced_frame_root);
   ASSERT_NE(nullptr, simulator);
   simulator->Commit();

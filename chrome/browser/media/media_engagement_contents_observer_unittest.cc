@@ -1442,7 +1442,8 @@ TEST_F(MediaEngagementContentsObserverFencedFrameTest,
       ->InitializeRenderFrameIfNeeded();
   content::RenderFrameHost* fenced_frame_rfh = CreateFencedFrame(main_rfh());
   std::unique_ptr<content::NavigationSimulator> navigation_simulator =
-      content::NavigationSimulator::CreateForFencedFrame(url, fenced_frame_rfh);
+      content::NavigationSimulator::CreateRendererInitiated(url,
+                                                            fenced_frame_rfh);
   navigation_simulator->Commit();
   EXPECT_TRUE(fenced_frame_rfh->IsFencedFrameRoot());
   EXPECT_EQ(1u, GetAudioContextPlayersCount());

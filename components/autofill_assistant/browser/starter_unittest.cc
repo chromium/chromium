@@ -2298,8 +2298,8 @@ TEST_F(StarterFencedFrameTest, NoImplicitTriggeringForFencedFrames) {
   content::RenderFrameHost* fenced_frame_rfh =
       CreateFencedFrame(web_contents()->GetMainFrame());
   std::unique_ptr<content::NavigationSimulator> navigation_simulator =
-      content::NavigationSimulator::CreateForFencedFrame(GURL(kExampleDeeplink),
-                                                         fenced_frame_rfh);
+      content::NavigationSimulator::CreateRendererInitiated(
+          GURL(kExampleDeeplink), fenced_frame_rfh);
   navigation_simulator->Start();
 }
 

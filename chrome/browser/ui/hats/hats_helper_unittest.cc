@@ -105,8 +105,8 @@ TEST_F(HatsHelperFencedFrameTest,
   content::RenderFrameHost* fenced_frame_rfh = CreateFencedFrame(main_rfh());
   GURL fenced_frame_url = GURL("https://unrelated.com");
   std::unique_ptr<content::NavigationSimulator> navigation_simulator =
-      content::NavigationSimulator::CreateForFencedFrame(fenced_frame_url,
-                                                         fenced_frame_rfh);
+      content::NavigationSimulator::CreateRendererInitiated(fenced_frame_url,
+                                                            fenced_frame_rfh);
   navigation_simulator->Commit();
   EXPECT_TRUE(fenced_frame_rfh->IsFencedFrameRoot());
 }

@@ -34,8 +34,8 @@ TEST_F(FencedFrameTest, FencedFrameSanityTest) {
   // Navigate fenced frame.
   GURL fenced_frame_url = GURL("https://fencedframe.com");
   std::unique_ptr<NavigationSimulator> navigation_simulator =
-      NavigationSimulator::CreateForFencedFrame(fenced_frame_url,
-                                                fenced_frame_root);
+      NavigationSimulator::CreateRendererInitiated(fenced_frame_url,
+                                                   fenced_frame_root);
   navigation_simulator->Commit();
   fenced_frame_root = static_cast<RenderFrameHostImpl*>(
       navigation_simulator->GetFinalRenderFrameHost());
@@ -54,8 +54,8 @@ TEST_F(FencedFrameTest, CredentialedSubresourceRequestsAreBlocked) {
   GURL fenced_frame_url =
       GURL("https://username:password@hostname/path?query#hash");
   std::unique_ptr<content::NavigationSimulator> navigation_simulator =
-      content::NavigationSimulator::CreateForFencedFrame(fenced_frame_url,
-                                                         fenced_frame_root);
+      content::NavigationSimulator::CreateRendererInitiated(fenced_frame_url,
+                                                            fenced_frame_root);
   navigation_simulator->Commit();
   EXPECT_TRUE(navigation_simulator->HasFailed());
 }

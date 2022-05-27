@@ -712,8 +712,8 @@ class PageSpecificContentSettingsWithFencedFrameTest
         content::RenderFrameHostTester::For(web_contents()->GetMainFrame())
             ->AppendFencedFrame();
     std::unique_ptr<content::NavigationSimulator> navigation_simulator =
-        content::NavigationSimulator::CreateForFencedFrame(url,
-                                                           fenced_frame_root);
+        content::NavigationSimulator::CreateRendererInitiated(
+            url, fenced_frame_root);
     navigation_simulator->Commit();
     return navigation_simulator->GetFinalRenderFrameHost();
   }

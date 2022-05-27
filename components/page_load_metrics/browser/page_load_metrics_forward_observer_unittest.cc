@@ -113,7 +113,7 @@ TEST_F(PageLoadMetricsForwardObserverTest, Basic) {
       content::RenderFrameHostTester::For(web_contents()->GetMainFrame())
           ->AppendFencedFrame();
   {
-    auto simulator = content::NavigationSimulator::CreateForFencedFrame(
+    auto simulator = content::NavigationSimulator::CreateRendererInitiated(
         GURL(kTestUrl), fenced_frame_root);
     ASSERT_NE(nullptr, simulator);
     simulator->Commit();

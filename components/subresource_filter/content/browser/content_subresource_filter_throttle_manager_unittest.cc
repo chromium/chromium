@@ -288,15 +288,9 @@ class ContentSubresourceFilterThrottleManagerTest
   void CreateTestNavigation(const GURL& url,
                             content::RenderFrameHost* render_frame_host) {
     DCHECK(render_frame_host);
-    if (render_frame_host->IsFencedFrameRoot()) {
-      navigation_simulator_ =
-          content::NavigationSimulator::CreateForFencedFrame(url,
-                                                             render_frame_host);
-    } else {
-      navigation_simulator_ =
-          content::NavigationSimulator::CreateRendererInitiated(
-              url, render_frame_host);
-    }
+    navigation_simulator_ =
+        content::NavigationSimulator::CreateRendererInitiated(
+            url, render_frame_host);
   }
 
   content::NavigationSimulator* navigation_simulator() {

@@ -92,7 +92,7 @@ class UseCounterPageLoadMetricsObserverTest
               ->AppendFencedFrame();
       ASSERT_TRUE(fenced_frame_root->IsFencedFrameRoot());
 
-      auto simulator = content::NavigationSimulator::CreateForFencedFrame(
+      auto simulator = content::NavigationSimulator::CreateRendererInitiated(
           GURL(kFencedFramesUrl), fenced_frame_root);
       ASSERT_NE(nullptr, simulator);
       simulator->Commit();

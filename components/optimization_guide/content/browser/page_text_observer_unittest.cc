@@ -1223,8 +1223,8 @@ TEST_F(PageTextObserverFencedFramesTest, AMPRequestedOnOOPIFInFencedFrame) {
       content::RenderFrameHostTester::For(main_rfh())->AppendFencedFrame();
   GURL kFencedFrameUrl("http://fencedframe.com");
   std::unique_ptr<content::NavigationSimulator> navigation_simulator =
-      content::NavigationSimulator::CreateForFencedFrame(kFencedFrameUrl,
-                                                         fenced_frame_rfh);
+      content::NavigationSimulator::CreateRendererInitiated(kFencedFrameUrl,
+                                                            fenced_frame_rfh);
   navigation_simulator->Commit();
 
   // Add an OOPIF subframe.
