@@ -162,6 +162,8 @@ void SystemExtensionsInstallManager::RegisterServiceWorker(
       blink::mojom::ServiceWorkerUpdateViaCache::kImports);
   blink::StorageKey key(url::Origin::Create(options.scope));
 
+  // TODO(ortuno): Remove after fixing flakiness.
+  DLOG(ERROR) << "Registering service worker";
   auto* worker_context =
       profile_->GetDefaultStoragePartition()->GetServiceWorkerContext();
   worker_context->RegisterServiceWorker(
@@ -185,6 +187,8 @@ void SystemExtensionsInstallManager::OnRegisterServiceWorker(
     LOG(ERROR) << "Tried to start service worker for non-existent extension";
     return;
   }
+
+  DLOG(ERROR) << "Starting service worker";
 
   const SystemExtension& system_extension = it->second;
   const GURL& scope = system_extension.base_url;
@@ -224,6 +228,8 @@ void SystemExtensionsInstallManager::DispatchWindowManagerStartEvent(
     return;
   }
   auto& remote_interfaces = worker_context->GetRemoteInterfaces(version_id);
+
+  DLOG(ERROR) << "Dispatching start event";
 
   mojo::Remote<blink::mojom::CrosWindowManagementStartObserver> observer;
   remote_interfaces.GetInterface(observer.BindNewPipeAndPassReceiver());

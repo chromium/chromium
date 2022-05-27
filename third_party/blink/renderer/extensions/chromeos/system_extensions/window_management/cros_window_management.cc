@@ -102,6 +102,7 @@ void CrosWindowManagement::WindowsCallback(
 }
 
 void CrosWindowManagement::DispatchStartEvent() {
+  DLOG(INFO) << "Dispatching event";
   DispatchEvent(*Event::Create(event_type_names::kStart));
 }
 
