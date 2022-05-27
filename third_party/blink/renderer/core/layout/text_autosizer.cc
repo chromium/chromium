@@ -1258,7 +1258,7 @@ void TextAutosizer::ApplyMultiplier(LayoutObject* layout_object,
       else
         DCHECK(false);
 
-      layout_object->SetTextAutoSizedStyle(
+      layout_object->SetModifiedStyleOutsideStyleRecalc(
           std::move(style), LayoutObject::ApplyStyleChanges::kNo);
       if (layout_object->IsText())
         To<LayoutText>(layout_object)->AutosizingMultiplerChanged();
@@ -1270,7 +1270,7 @@ void TextAutosizer::ApplyMultiplier(LayoutObject* layout_object,
 
     case kLayoutNeeded:
       DCHECK(!layouter);
-      layout_object->SetTextAutoSizedStyle(
+      layout_object->SetModifiedStyleOutsideStyleRecalc(
           std::move(style), LayoutObject::ApplyStyleChanges::kYes);
       break;
   }
