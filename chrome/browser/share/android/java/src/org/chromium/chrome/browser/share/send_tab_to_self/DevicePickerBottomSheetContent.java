@@ -5,13 +5,7 @@
 package org.chromium.chrome.browser.share.send_tab_to_self;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.net.Uri;
-import android.provider.Browser;
-import android.text.SpannableString;
-import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,22 +14,11 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import org.chromium.base.IntentUtils;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
-import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.widget.RoundedCornerImageView;
-import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.components.signin.base.AccountInfo;
-import org.chromium.components.signin.identitymanager.ConsentLevel;
-import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.ui.text.NoUnderlineClickableSpan;
-import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.widget.Toast;
 
 import java.util.List;
@@ -84,53 +67,7 @@ public class DevicePickerBottomSheetContent implements BottomSheetContent, OnIte
         listView.setAdapter(mAdapter);
         listView.setOnItemClickListener(this);
 
-        createManageDevicesLink(listView);
-    }
-
-    private void createManageDevicesLink(ListView deviceListView) {
-        ViewGroup containerView = (ViewGroup) LayoutInflater.from(mContext).inflate(
-                R.layout.send_tab_to_self_manage_devices_link, null);
-        deviceListView.addFooterView(containerView);
-
-        AccountInfo account = getSharingAccountInfo();
-        assert account != null : "The user must be signed in to share a tab";
-
-        // The avatar can be null in tests.
-        if (account.getAccountImage() != null) {
-            RoundedCornerImageView avatarView = containerView.findViewById(R.id.account_avatar);
-            int accountAvatarSizePx = Math.round(
-                    ACCOUNT_AVATAR_SIZE_DP * mContext.getResources().getDisplayMetrics().density);
-            avatarView.setImageBitmap(Bitmap.createScaledBitmap(
-                    account.getAccountImage(), accountAvatarSizePx, accountAvatarSizePx, false));
-            avatarView.setRoundedCorners(accountAvatarSizePx / 2, accountAvatarSizePx / 2,
-                    accountAvatarSizePx / 2, accountAvatarSizePx / 2);
-        }
-
-        Resources resources = mContext.getResources();
-        // The link is opened in a new tab to avoid exiting the current page, which the user
-        // possibly wants to share (maybe they just clicked "Manage devices" by mistake).
-        SpannableString linkText = SpanApplier.applySpans(
-                resources.getString(
-                        R.string.send_tab_to_self_manage_devices_link, account.getEmail()),
-                new SpanApplier.SpanInfo("<link>", "</link>",
-                        new NoUnderlineClickableSpan(
-                                mContext, this::openManageDevicesPageInNewTab)));
-        TextView linkView = containerView.findViewById(R.id.manage_devices_link);
-        linkView.setText(linkText);
-        linkView.setMovementMethod(LinkMovementMethod.getInstance());
-    }
-
-    private void openManageDevicesPageInNewTab(View unused) {
-        Intent intent =
-                new Intent()
-                        .setAction(Intent.ACTION_VIEW)
-                        .setData(Uri.parse(UrlConstants.GOOGLE_ACCOUNT_DEVICE_ACTIVITY_URL))
-                        .setClass(mContext, ChromeLauncherActivity.class)
-                        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                        .putExtra(Browser.EXTRA_APPLICATION_ID, mContext.getPackageName())
-                        .putExtra(WebappConstants.REUSE_URL_MATCHING_TAB_ELSE_NEW_TAB, true);
-        IntentUtils.addTrustedIntentExtras(intent);
-        mContext.startActivity(intent);
+        listView.addFooterView(new ManageAccountDevicesLinkView(mContext));
     }
 
     @Override
@@ -226,12 +163,5 @@ public class DevicePickerBottomSheetContent implements BottomSheetContent, OnIte
         }
 
         mController.hideContent(this, true);
-    }
-
-    private static AccountInfo getSharingAccountInfo() {
-        IdentityManager identityManager = IdentityServicesProvider.get().getIdentityManager(
-                Profile.getLastUsedRegularProfile());
-        return identityManager.findExtendedAccountInfoByEmailAddress(
-                identityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN).getEmail());
     }
 }

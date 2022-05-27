@@ -9,8 +9,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 
 /** Content shown if the send-tab-to-self feature is ready but there are no target devices. */
@@ -18,8 +21,17 @@ public class NoTargetDeviceBottomSheetContent implements BottomSheetContent {
     private final View mContentView;
 
     public NoTargetDeviceBottomSheetContent(Context context) {
+        this(context, ChromeFeatureList.isEnabled(ChromeFeatureList.SEND_TAB_TO_SELF_SIGNIN_PROMO));
+    }
+
+    /** Exposed so tests don't call ChromeFeatureList.isEnabled(), which requires native. */
+    @VisibleForTesting
+    public NoTargetDeviceBottomSheetContent(Context context, boolean isPromoFeatureEnabled) {
         mContentView = (ViewGroup) LayoutInflater.from(context).inflate(
                 R.layout.send_tab_to_self_feature_unavailable_prompt, null);
+        if (isPromoFeatureEnabled) {
+            mContentView.findViewById(R.id.manage_account_devices_link).setVisibility(View.VISIBLE);
+        }
         // TODO(crbug.com/1298185): This is cumulating both signed-out and single device users.
         // Those should be recorded separately instead.
         RecordUserAction.record("SharingHubAndroid.SendTabToSelf.NoTargetDevices");

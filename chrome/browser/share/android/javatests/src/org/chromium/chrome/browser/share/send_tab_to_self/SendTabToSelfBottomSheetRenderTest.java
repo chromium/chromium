@@ -14,6 +14,7 @@ import android.view.View;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.test.filters.MediumTest;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -64,10 +65,9 @@ public class SendTabToSelfBottomSheetRenderTest extends BlankUiTestActivityTestC
     @Mock
     private BottomSheetController mBottomSheetController;
 
-    @Test
-    @MediumTest
-    @Feature("RenderTest")
-    public void testDevicePickerBottomSheet() throws Throwable {
+    @Before
+    public void setUp() {
+        // Set up account data to be shown by the UI.
         AccountInfo account = createFakeAccount();
         when(mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN)).thenReturn(account);
         when(mIdentityManager.findExtendedAccountInfoByEmailAddress(account.getEmail()))
@@ -75,7 +75,12 @@ public class SendTabToSelfBottomSheetRenderTest extends BlankUiTestActivityTestC
         when(mIdentityServicesProvider.getIdentityManager(mProfile)).thenReturn(mIdentityManager);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
         Profile.setLastUsedProfileForTesting(mProfile);
+    }
 
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    public void testDevicePickerBottomSheet() throws Throwable {
         long todayTimestamp = Calendar.getInstance().getTimeInMillis();
         List<TargetDeviceInfo> devices = Arrays.asList(
                 new TargetDeviceInfo("My Phone", "guid1", DeviceType.PHONE, todayTimestamp),
@@ -94,14 +99,27 @@ public class SendTabToSelfBottomSheetRenderTest extends BlankUiTestActivityTestC
     @Test
     @MediumTest
     @Feature("RenderTest")
-    public void testNoTargetDeviceBottomSheet() throws Throwable {
+    public void testNoTargetDeviceBottomSheetWithPromoFeatureDisabled() throws Throwable {
         View view = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
-            NoTargetDeviceBottomSheetContent sheetContent =
-                    new NoTargetDeviceBottomSheetContent(getActivity());
+            NoTargetDeviceBottomSheetContent sheetContent = new NoTargetDeviceBottomSheetContent(
+                    getActivity(), /*isPromoFeatureEnabled=*/false);
             getActivity().setContentView(sheetContent.getContentView());
             return sheetContent.getContentView();
         });
         mRenderTestRule.render(view, "no_target_device");
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    public void testNoTargetDeviceBottomSheetWithPromoFeatureEnabled() throws Throwable {
+        View view = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+            NoTargetDeviceBottomSheetContent sheetContent = new NoTargetDeviceBottomSheetContent(
+                    getActivity(), /*isPromoFeatureEnabled=*/true);
+            getActivity().setContentView(sheetContent.getContentView());
+            return sheetContent.getContentView();
+        });
+        mRenderTestRule.render(view, "no_target_device_with_account");
     }
 
     // TODO(crbug.com/1219434): This duplicates the account in AccountManagerTestRule, so tests can

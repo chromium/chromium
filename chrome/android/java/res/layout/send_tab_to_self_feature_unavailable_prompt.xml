@@ -11,8 +11,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:minHeight="@dimen/min_touch_target_size"
-    android:orientation="vertical"
-    android:paddingBottom="32dp">
+    android:orientation="vertical">
 
   <ImageView
     android:id="@+id/empty_state_image"
@@ -40,7 +39,16 @@
     android:paddingStart="30dp"
     android:paddingEnd="30dp"
     android:paddingTop="16dp"
+    android:paddingBottom="32dp"
     android:ellipsize="end"
     android:textAppearance="@style/TextAppearance.TextLarge.Secondary"
     android:text="@string/send_tab_to_self_when_signed_in_unavailable"/>
+
+  <!-- TODO(crbug.com/1295204): Make this visible by default after launch. -->
+  <org.chromium.chrome.browser.share.send_tab_to_self.ManageAccountDevicesLinkView
+      android:id="@+id/manage_account_devices_link"
+      android:visibility="gone"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:paddingTop="16dp" />
 </LinearLayout>
