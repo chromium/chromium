@@ -628,9 +628,7 @@
     },
     {
       "channel": "dev",
-      "extension_types": ["extension"],
-      "platforms": ["chromeos", "lacros"],
-      "session_types": ["kiosk"]
+      "extension_types": ["extension"]
     }
   ],
   "system.storage": [
