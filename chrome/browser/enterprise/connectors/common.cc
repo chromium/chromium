@@ -6,6 +6,9 @@
 
 #include "base/notreached.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate_base.h"
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_dialog.h"
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_downloads_delegate.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/profiles/profile.h"
@@ -212,17 +215,64 @@ bool ShouldPromptReviewForDownload(Profile* profile,
   if (danger_type == download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING ||
       danger_type == download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK) {
     return ConnectorsServiceFactory::GetForBrowserContext(profile)
-        ->HasCustomInfoToDisplay(
-            enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED, kDlpTag);
+        ->HasCustomInfoToDisplay(AnalysisConnector::FILE_DOWNLOADED, kDlpTag);
   } else if (danger_type == download::DOWNLOAD_DANGER_TYPE_DANGEROUS_FILE ||
              danger_type == download::DOWNLOAD_DANGER_TYPE_DANGEROUS_URL ||
              danger_type == download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT) {
     return ConnectorsServiceFactory::GetForBrowserContext(profile)
-        ->HasCustomInfoToDisplay(
-            enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED,
-            kMalwareTag);
+        ->HasCustomInfoToDisplay(AnalysisConnector::FILE_DOWNLOADED,
+                                 kMalwareTag);
   }
   return false;
+}
+
+void ShowDownloadReviewDialog(const std::u16string& filename,
+                              Profile* profile,
+                              download::DownloadItem* download_item,
+                              content::WebContents* web_contents,
+                              download::DownloadDangerType danger_type,
+                              base::OnceClosure keep_closure,
+                              base::OnceClosure discard_closure) {
+  auto state = FinalContentAnalysisResult::FAILURE;
+  if (danger_type == download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING) {
+    state = FinalContentAnalysisResult::WARNING;
+  }
+
+  const char* tag =
+      (danger_type ==
+                   download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING ||
+               danger_type ==
+                   download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_BLOCK
+           ? kDlpTag
+           : kMalwareTag);
+
+  auto* connectors_service =
+      ConnectorsServiceFactory::GetForBrowserContext(profile);
+
+  std::u16string custom_message =
+      connectors_service
+          ->GetCustomMessage(AnalysisConnector::FILE_DOWNLOADED, tag)
+          .value_or(u"");
+  GURL learn_more_url =
+      connectors_service
+          ->GetLearnMoreUrl(AnalysisConnector::FILE_DOWNLOADED, tag)
+          .value_or(GURL());
+
+  bool bypass_justification_required =
+      connectors_service
+          ->GetBypassJustificationRequired(AnalysisConnector::FILE_DOWNLOADED,
+                                           tag)
+          .value_or(false);
+
+  // This dialog opens itself, and is thereafter owned by constrained window
+  // code.
+  new ContentAnalysisDialog(
+      std::make_unique<ContentAnalysisDownloadsDelegate>(
+          filename, custom_message, learn_more_url,
+          bypass_justification_required, std::move(keep_closure),
+          std::move(discard_closure), download_item),
+      web_contents, safe_browsing::DeepScanAccessPoint::DOWNLOAD,
+      /* file_count */ 1, state, download_item);
 }
 
 }  // namespace enterprise_connectors

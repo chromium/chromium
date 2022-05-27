@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/callback_forward.h"
 #include "base/supports_user_data.h"
 #include "components/download/public/common/download_danger_type.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
@@ -17,6 +18,14 @@
 #include "url/gurl.h"
 
 class Profile;
+
+namespace content {
+class WebContents;
+}  // namespace content
+
+namespace download {
+class DownloadItem;
+}  // namespace download
 
 namespace enterprise_connectors {
 
@@ -241,6 +250,16 @@ bool IncludeDeviceInfo(Profile* profile, bool per_profile);
 // to review the download.
 bool ShouldPromptReviewForDownload(Profile* profile,
                                    download::DownloadDangerType danger_type);
+
+// Shows the review dialog after a user has clicked the "Review" button
+// corresponding to a download.
+void ShowDownloadReviewDialog(const std::u16string& filename,
+                              Profile* profile,
+                              download::DownloadItem* download_item,
+                              content::WebContents* web_contents,
+                              download::DownloadDangerType danger_type,
+                              base::OnceClosure keep_closure,
+                              base::OnceClosure discard_closure);
 
 }  // namespace enterprise_connectors
 
