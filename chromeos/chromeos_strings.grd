@@ -2356,6 +2356,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_PERSONALIZATION_APP_KEYBOARD_BACKLIGHT_WALLPAPER_COLOR_LABEL" desc="Label for the wallpaper extracted color in the keyboard backlight section of personalization hub.">
         Wallpaper color
       </message>
+      <message name="IDS_PERSONALIZATION_APP_KEYBOARD_BACKLIGHT_WALLPAPER_COLOR_TOOLTIP_TEXT" desc="The text label of the tooltip for the wallpaper extracted color in the keyboard backlight section of personalization hub.">
+        Keyboard color is based on wallpaper
+      </message>
       <message name="IDS_PERSONALIZATION_APP_KEYBOARD_BACKLIGHT_WHITE_COLOR_LABEL" desc="Label for the white color in the keyboard backlight section of personalization hub.">
         White
       </message>

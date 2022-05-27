@@ -103,6 +103,10 @@
         <iron-icon icon="personalization:auto"></iron-icon>
       </div>
     </div>
+    <paper-tooltip id="wallpaperColorTooltip" for$="[[wallpaperColorId_]]"
+        offset="0" aria-hidden="true">
+      <span>$i18n{wallpaperColorTooltipText}</span>
+    </paper-tooltip>
     <div class="divider"></div>
     <template is="dom-repeat" items="[[presetColorIds_]]" as="presetColorId">
       <div id$="[[presetColorId]]" class$="[[getPresetColorContainerClass_(presetColorId, presetColors_, backlightColor_)]]"
