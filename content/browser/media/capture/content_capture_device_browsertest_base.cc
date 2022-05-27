@@ -21,6 +21,7 @@
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/common/shell_switches.h"
+#include "media/base/video_types.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -94,12 +95,17 @@ ContentCaptureDeviceBrowserTestBase::SnapshotCaptureParams() {
 
   media::VideoCaptureParams params;
   params.requested_format = media::VideoCaptureFormat(
-      capture_size, kMaxFramesPerSecond, media::PIXEL_FORMAT_I420);
+      capture_size, kMaxFramesPerSecond, GetVideoPixelFormat());
   params.resolution_change_policy =
       IsFixedAspectRatioTest()
           ? media::ResolutionChangePolicy::FIXED_ASPECT_RATIO
           : media::ResolutionChangePolicy::ANY_WITHIN_LIMIT;
   return params;
+}
+
+media::VideoPixelFormat
+ContentCaptureDeviceBrowserTestBase::GetVideoPixelFormat() const {
+  return media::VideoPixelFormat::PIXEL_FORMAT_I420;
 }
 
 base::TimeDelta ContentCaptureDeviceBrowserTestBase::GetMinCapturePeriod() {
