@@ -561,6 +561,10 @@ extern const base::FeatureParam<bool> kZeroSuggestIgnoreDuplicateVisits;
 // interval smaller than kAutocompleteDuplicateVisitIntervalThreshold.
 extern const base::FeatureParam<bool> kPrefixSuggestIgnoreDuplicateVisits;
 
+// Specifies the relevance scores for the Site Search Starter Pack ACMatches
+// (e.g. @bookmarks, @history) provided by the Builtin Provider.
+extern const base::FeatureParam<int> kSiteSearchStarterPackRelevanceScore;
+
 // New params should be inserted above this comment and formatted as:
 // - Short comment categorizing the relevant features & params.
 // - Optional: `bool Is[FeatureName]Enabled();` helpers that check if the

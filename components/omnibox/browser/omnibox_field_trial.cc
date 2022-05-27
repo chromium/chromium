@@ -937,6 +937,11 @@ const base::FeatureParam<bool> kPrefixSuggestIgnoreDuplicateVisits(
     "PrefixSuggestIgnoreDuplicateVisits",
     false);
 
+const base::FeatureParam<int> kSiteSearchStarterPackRelevanceScore(
+    &omnibox::kSiteSearchStarterPack,
+    "SiteSearchStarterPackRelevanceScore",
+    1200);
+
 }  // namespace OmniboxFieldTrial
 
 std::string OmniboxFieldTrial::internal::GetValueForRuleInContext(

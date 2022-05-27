@@ -27,7 +27,6 @@
 #include "url/url_constants.h"
 
 const int BuiltinProvider::kRelevance = 860;
-const int BuiltinProvider::kStarterPackRelevance = 1200;
 
 BuiltinProvider::BuiltinProvider(AutocompleteProviderClient* client)
     : AutocompleteProvider(AutocompleteProvider::TYPE_BUILTIN),
@@ -201,8 +200,9 @@ void BuiltinProvider::AddBuiltinMatch(const std::u16string& match_string,
 }
 
 void BuiltinProvider::AddStarterPackMatch(const TemplateURL& template_url) {
-  AutocompleteMatch match(this, kStarterPackRelevance, false,
-                          AutocompleteMatchType::SEARCH_OTHER_ENGINE);
+  AutocompleteMatch match(
+      this, OmniboxFieldTrial::kSiteSearchStarterPackRelevanceScore.Get(),
+      false, AutocompleteMatchType::SEARCH_OTHER_ENGINE);
 
   match.fill_into_edit = template_url.keyword();
   match.destination_url = GURL(template_url.url());
