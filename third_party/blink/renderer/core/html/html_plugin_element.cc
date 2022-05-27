@@ -400,6 +400,8 @@ v8::Local<v8::Object> HTMLPlugInElement::PluginWrapper() {
       // is handled externally. Also note that it is possible to call
       // PluginWrapper before the plugin has gone through the update phase(see
       // https://crbug.com/946709).
+      if (!frame->Client())
+        return v8::Local<v8::Object>();
       plugin_wrapper_.Reset(
           isolate, frame->Client()->GetScriptableObject(*this, isolate));
     }
