@@ -9,6 +9,7 @@
 #include "base/android/callback_android.h"
 #include "base/android/jni_string.h"
 #include "base/bind.h"
+#include "components/segmentation_platform/internal/android/segmentation_platform_conversion_bridge.h"
 #include "components/segmentation_platform/internal/jni_headers/SegmentationPlatformServiceImpl_jni.h"
 #include "components/segmentation_platform/public/segment_selection_result.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
@@ -21,21 +22,13 @@ namespace {
 const char kSegmentationPlatformServiceBridgeKey[] =
     "segmentation_platform_service_bridge";
 
-ScopedJavaLocalRef<jobject> CreateJavaSegmentSelectionResult(
-    JNIEnv* env,
-    const SegmentSelectionResult& result) {
-  int selected_segment = result.segment.has_value()
-                             ? result.segment.value()
-                             : proto::SegmentId::OPTIMIZATION_TARGET_UNKNOWN;
-  return Java_SegmentationPlatformServiceImpl_createSegmentSelectionResult(
-      env, result.is_ready, selected_segment);
-}
-
 void RunGetSelectedSegmentCallback(const JavaRef<jobject>& j_callback,
                                    const SegmentSelectionResult& result) {
   JNIEnv* env = AttachCurrentThread();
-  RunObjectCallbackAndroid(j_callback,
-                           CreateJavaSegmentSelectionResult(env, result));
+  RunObjectCallbackAndroid(
+      j_callback,
+      SegmentationPlatformConversionBridge::CreateJavaSegmentSelectionResult(
+          env, result));
 }
 
 }  // namespace
@@ -89,7 +82,7 @@ SegmentationPlatformServiceAndroid::GetCachedSegmentResult(
     JNIEnv* env,
     const JavaParamRef<jobject>& jcaller,
     const JavaParamRef<jstring>& j_segmentation_key) {
-  return CreateJavaSegmentSelectionResult(
+  return SegmentationPlatformConversionBridge::CreateJavaSegmentSelectionResult(
       env, segmentation_platform_service_->GetCachedSegmentResult(
                ConvertJavaStringToUTF8(env, j_segmentation_key)));
 }
