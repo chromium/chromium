@@ -6,9 +6,11 @@
 
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_collection.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/html/html_style_element.h"
+#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace blink {
@@ -16,7 +18,11 @@ namespace blink {
 FencedFrameShadowDOMDelegate::FencedFrameShadowDOMDelegate(
     HTMLFencedFrameElement* outer_element)
     : HTMLFencedFrameElement::FencedFrameDelegate(outer_element) {
-  DCHECK_EQ(features::kFencedFramesImplementationTypeParam.Get(),
+  DCHECK_EQ(outer_element->GetDocument()
+                .GetFrame()
+                ->GetPage()
+                ->FencedFramesImplementationType()
+                .value(),
             features::FencedFramesImplementationType::kShadowDOM);
   GetElement().EnsureUserAgentShadowRoot();
 
@@ -59,6 +65,12 @@ void FencedFrameShadowDOMDelegate::Navigate(const KURL& url) {
   DCHECK(internal_iframe);
   AtomicString url_string(url.GetString());
   internal_iframe->setAttribute(html_names::kSrcAttr, url_string);
+}
+
+void FencedFrameShadowDOMDelegate::FreezeFrameSize() {
+  // With Shadow DOM, update the CSS `transform` property whenever
+  // |content_rect_| or |frozen_frame_size_| change.
+  GetElement().UpdateInnerStyleOnFrozenInternalFrame();
 }
 
 }  // namespace blink

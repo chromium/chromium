@@ -23,6 +23,7 @@ class CORE_EXPORT FencedFrameShadowDOMDelegate
   explicit FencedFrameShadowDOMDelegate(HTMLFencedFrameElement* outer_element);
 
   void Navigate(const KURL&) override;
+  void FreezeFrameSize() override;
 
  private:
   void AddUserAgentShadowContent(ShadowRoot&);

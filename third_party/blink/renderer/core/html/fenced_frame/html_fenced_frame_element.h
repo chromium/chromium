@@ -53,6 +53,10 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
     // collection.
     virtual void Dispose() {}
 
+    virtual void AttachLayoutTree() {}
+    virtual bool SupportsFocus() { return false; }
+    virtual void FreezeFrameSize() {}
+
    protected:
     HTMLFencedFrameElement& GetElement() const { return *outer_element_; }
 
@@ -165,6 +169,8 @@ class CORE_EXPORT HTMLFencedFrameElement : public HTMLFrameOwnerElement {
   mojom::blink::FencedFrameMode mode_ = mojom::blink::FencedFrameMode::kDefault;
   bool freeze_mode_attribute_ = false;
 
+  friend class FencedFrameMPArchDelegate;
+  friend class FencedFrameShadowDOMDelegate;
   friend class ResizeObserverDelegate;
   FRIEND_TEST_ALL_PREFIXES(HTMLFencedFrameElementTest,
                            FreezeSizePageZoomFactor);
