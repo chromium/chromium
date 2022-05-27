@@ -7,6 +7,8 @@
  * Type aliases for the mojo API.
  */
 
+import '//resources/mojo/mojo/public/mojom/base/big_buffer.mojom-lite.js';
+import '//resources/mojo/mojo/public/mojom/base/string16.mojom-lite.js';
 import '//resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 import '//resources/mojo/url/mojom/url.mojom-lite.js';
 import './mojom/os_feedback_ui.mojom-lite.js';

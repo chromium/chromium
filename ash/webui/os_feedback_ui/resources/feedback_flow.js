@@ -11,7 +11,7 @@ import './strings.m.js';
 import {stringToMojoString16} from 'chrome://resources/ash/common/mojo_utils.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {FeedbackContext, FeedbackServiceProviderInterface, Report} from './feedback_types.js';
+import {FeedbackContext, FeedbackServiceProviderInterface, Report, SendReportStatus} from './feedback_types.js';
 import {getFeedbackServiceProvider} from './mojo_interface_provider.js';
 
 /**
@@ -70,6 +70,13 @@ export class FeedbackFlowElement extends PolymerElement {
      * @private
      */
     this.description_;
+
+    /**
+     * The status of sending report.
+     * @type {?SendReportStatus}
+     * @private
+     */
+    this.sendReportStatus_;
   }
 
   ready() {
@@ -118,6 +125,7 @@ export class FeedbackFlowElement extends PolymerElement {
         // take a while.
         this.feedbackServiceProvider_.sendReport(report).then((response) => {
           this.currentState_ = FeedbackFlowState.CONFIRMATION;
+          this.sendReportStatus_ = response.status;
         });
         break;
       default:
@@ -144,6 +152,13 @@ export class FeedbackFlowElement extends PolymerElement {
    */
   setCurrentStateForTesting(newState) {
     this.currentState_ = newState;
+  }
+
+  /**
+   * @param {!SendReportStatus} status
+   */
+  setSendReportStatusForTesting(status) {
+    this.sendReportStatus_ = status;
   }
 
   /**

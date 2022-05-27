@@ -12,32 +12,29 @@
   }
 </style>
 <!--TODO(xiangdongkong): use localized strings -->
-<!--TODO(xiangdongkong): handle offline case -->
 <div id="container">
   <div id="header">
-    <h1 id="title">Thanks for your feedback</h1>
+    <h1 id="title">[[getTitle_(sendReportStatus)]]</h1>
   </div>
-  <div id="message">
-    Your feedback helps improve ChromeOS and will be reviewed by our team.
-    Because of the large number of reports, we won’t be able to send a reply.
-  </div>
-  <div id="helpResources">
-    <p id="helpResourcesLabel">Here are some other helpful resources:</p>
-    <cr-link-row id="explore"
-        start-icon="help-resources:explore"
-        label="Explore app" external
-        sub-label="Find help articles and answers to common Chromebook questions">
-    </cr-link-row>
-    <cr-link-row id="diagnostics"
-        start-icon="help-resources:diagnostics"
-        label="Diagnostics app" external
-        sub-label="Run tests and troubleshooting for hardware issues">
-    </cr-link-row>
-    <cr-link-row id="chromebookCommunity"
-        start-icon="help-resources2:chromebook-community"
-        label="Chromebook community"
-        sub-label="Ask the experts in the Chromebook help forum" external>
-    </cr-link-row>
+  <div id="content">
+    <div id="message">[[getMessage_(sendReportStatus)]]</div>
+    <div id="helpResources">
+      <p id="helpResourcesLabel">Here are some other helpful resources:</p>
+      <cr-link-row id="explore" start-icon="help-resources:explore"
+          label="Explore app" external
+          sub-label="Find help articles and answers to common Chromebook questions">
+      </cr-link-row>
+      <cr-link-row id="diagnostics" start-icon="help-resources:diagnostics"
+          label="Diagnostics app" external
+          sub-label="Run tests and troubleshooting for hardware issues">
+      </cr-link-row>
+      <cr-link-row id="chromebookCommunity"
+          start-icon="help-resources2:chromebook-community"
+          label="Chromebook community"
+          sub-label="Ask the experts in the Chromebook help forum"
+          hidden="[[isOffline_(sendReportStatus)]]" external>
+      </cr-link-row>
+    </div>
   </div>
   <div id="navButtons">
     <cr-button id="buttonNewReport" class="action-button">

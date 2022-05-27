@@ -6,6 +6,7 @@ import {fakeFeedbackContext, fakePngData, fakeSearchResponse} from 'chrome://os-
 import {FakeFeedbackServiceProvider} from 'chrome://os-feedback/fake_feedback_service_provider.js';
 import {FakeHelpContentProvider} from 'chrome://os-feedback/fake_help_content_provider.js';
 import {FeedbackFlowElement, FeedbackFlowState} from 'chrome://os-feedback/feedback_flow.js';
+import {SendReportStatus} from 'chrome://os-feedback/feedback_types.js';
 import {setFeedbackServiceProviderForTesting, setHelpContentProviderForTesting} from 'chrome://os-feedback/mojo_interface_provider.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
@@ -104,6 +105,7 @@ export function FeedbackFlowTestSuite() {
   test('ConfirmationPageIsShown', async () => {
     await initializePage();
     page.setCurrentStateForTesting(FeedbackFlowState.CONFIRMATION);
+    page.setSendReportStatusForTesting(SendReportStatus.kSuccess);
 
     const activePage = page.shadowRoot.querySelector('.iron-selected');
     assertTrue(!!activePage);
@@ -226,6 +228,7 @@ export function FeedbackFlowTestSuite() {
     activePage = page.shadowRoot.querySelector('.iron-selected');
     assertTrue(!!activePage);
     assertEquals('confirmationPage', activePage.id);
+    assertEquals(SendReportStatus.kSuccess, activePage.sendReportStatus);
   });
 
   // Test that the getUserEmail is called after initialization.

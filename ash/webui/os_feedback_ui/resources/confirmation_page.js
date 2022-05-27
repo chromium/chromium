@@ -7,9 +7,10 @@ import './os_feedback_shared_css.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
-import './os_feedback_shared_css.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {SendReportStatus} from './feedback_types.js';
 
 /**
  * @fileoverview
@@ -24,13 +25,57 @@ export class ConfirmationPageElement extends PolymerElement {
     return html`{__html_template__}`;
   }
 
-  /** @override */
-  ready() {
-    super.ready();
+  static get properties() {
+    return {
+      sendReportStatus: {type: SendReportStatus, readOnly: false, notify: true},
+    };
   }
 
-  close_() {
-    window.close();
+  constructor() {
+    super();
+
+    /**
+     * The status of sending the report.
+     * @type {?SendReportStatus}
+     */
+    this.sendReportStatus;
+  }
+
+  /**
+   * The page shows different information when the device is offline.
+   * @returns {boolean}
+   * @protected
+   */
+  isOffline_() {
+    return this.sendReportStatus === SendReportStatus.kDelayed;
+  }
+
+  /**
+   * @returns {string}
+   * @protected
+   */
+  getTitle_() {
+    // TODO(xiangdongkong): Localize the strings.
+    if (this.isOffline_()) {
+      return 'You are offline now. Feedback will be sent later.';
+    }
+    return 'Thanks for your feedback';
+  }
+
+  /**
+   * @returns {string}
+   * @protected
+   */
+  getMessage_() {
+    // TODO(xiangdongkong): Localize the strings.
+    if (this.isOffline_()) {
+      return 'Thanks for the feedback. Your feedback helps improve Chrome OS ' +
+          'and will be reviewed by the Chrome OS team. Because of the number ' +
+          ' of reports submitted, you won’t receive a direct reply. ';
+    }
+    return 'Your feedback helps improve ChromeOS and will be reviewed by ' +
+        'our team. Because of the large number of reports, we won\’t be able ' +
+        ' to send a reply.';
   }
 }
 

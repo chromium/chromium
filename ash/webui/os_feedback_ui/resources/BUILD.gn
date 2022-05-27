@@ -69,6 +69,7 @@ js_type_check("closure_compile_module") {
 
 js_library("confirmation_page") {
   deps = [
+    ":feedback_types",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
