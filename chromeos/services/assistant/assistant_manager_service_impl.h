@@ -195,9 +195,8 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
       const chromeos::DlcserviceClient::InstallResult& result);
 
   // Optional `dlc_path`, where the DLC libassistant.so is mounted.
-  void InitAssistant(
-      const absl::optional<UserInfo>& user,
-      const absl::optional<std::string>& dlc_path = absl::nullopt);
+  void InitAssistant(const absl::optional<UserInfo>& user,
+                     const absl::optional<std::string>& dlc_path);
   void OnServiceStarted();
   void OnServiceRunning();
   bool IsServiceStarted() const;
@@ -277,6 +276,9 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   // Configuration passed to libassistant.
   chromeos::libassistant::mojom::BootupConfigPtr bootup_config_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+
+  // Mounted path of libassistant.so. Will not change within a chrome session.
+  absl::optional<std::string> dlc_path_;
 
   base::ScopedObservation<DeviceActions,
                           AppListEventSubscriber,
