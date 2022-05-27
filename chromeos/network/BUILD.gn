@@ -292,6 +292,7 @@ source_set("unit_tests") {
     "cellular_utils_unittest.cc",
     "certificate_helper_unittest.cc",
     "client_cert_resolver_unittest.cc",
+    "client_cert_util_unittest.cc",
     "device_state_unittest.cc",
     "fast_transition_observer_unittest.cc",
     "firewall_hole_unittest.cc",

@@ -557,7 +557,8 @@ bool ClientCertResolver::ResolveClientCertificateSync(
 
   if (cert_it == client_cert_and_issuers.end()) {
     VLOG(1) << "Couldn't find a matching client cert";
-    client_cert::SetEmptyShillProperties(client_cert_type, shill_properties);
+    client_cert::SetEmptyShillProperties(client_cert_type,
+                                         shill_properties->GetDict());
     return false;
   }
 
@@ -570,8 +571,8 @@ bool ClientCertResolver::ResolveClientCertificateSync(
     // the worst case the user can remove the problematic cert.
     return false;
   }
-  client_cert::SetShillProperties(
-      client_cert_type, slot_id, pkcs11_id, shill_properties);
+  client_cert::SetShillProperties(client_cert_type, slot_id, pkcs11_id,
+                                  shill_properties->GetDict());
   return true;
 }
 
@@ -721,7 +722,7 @@ void ClientCertResolver::ResolveNetworks(
 
     VLOG(2) << "Inspecting network " << network->path();
     client_cert::ClientCertConfig cert_config;
-    OncToClientCertConfig(onc_source, *policy, &cert_config);
+    OncToClientCertConfig(onc_source, policy->GetDict(), &cert_config);
 
     // Skip networks that don't have a ClientCertPattern or ClientCertRef.
     if (!ShouldResolveCert(cert_config))
@@ -817,7 +818,7 @@ void ClientCertResolver::ConfigureCertificates(
       const MatchingCert& matching_cert = match.matching_cert.value();
       client_cert::SetShillProperties(
           match.cert_config_type, matching_cert.key_slot_id,
-          matching_cert.pkcs11_id, &shill_properties);
+          matching_cert.pkcs11_id, shill_properties.GetDict());
       resolved_networks_info.push_back(GetNetworkIdWithGuid(network_state) +
                                        ":match,identity='" +
                                        matching_cert.identity + "'");
@@ -829,7 +830,7 @@ void ClientCertResolver::ConfigureCertificates(
       resolved_networks_info.push_back(GetNetworkIdWithGuid(network_state) +
                                        ":no_match");
       client_cert::SetEmptyShillProperties(match.cert_config_type,
-                                           &shill_properties);
+                                           shill_properties.GetDict());
     }
     ShillServiceClient::Get()->SetProperties(
         dbus::ObjectPath(match.service_path), shill_properties,

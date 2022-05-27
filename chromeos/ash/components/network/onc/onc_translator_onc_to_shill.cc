@@ -69,7 +69,8 @@ void SetClientCertProperties(client_cert::ConfigType config_type,
   if (pkcs11_id.empty()) {
     // If the cert type is PKCS11 but the pkcs11 id is empty, set empty
     // properties to indicate 'no certificate'.
-    client_cert::SetEmptyShillProperties(config_type, shill_dictionary);
+    client_cert::SetEmptyShillProperties(config_type,
+                                         shill_dictionary->GetDict());
     return;
   }
 
@@ -77,7 +78,7 @@ void SetClientCertProperties(client_cert::ConfigType config_type,
   std::string cert_id =
       client_cert::GetPkcs11AndSlotIdFromEapCertId(pkcs11_id, &slot_id);
   client_cert::SetShillProperties(config_type, slot_id, cert_id,
-                                  shill_dictionary);
+                                  shill_dictionary->GetDict());
 }
 
 // This class is responsible to translate the local fields of the given

@@ -97,7 +97,7 @@ class NetworkCertMigrator::MigrationTask
     chromeos::client_cert::ConfigType config_type =
         chromeos::client_cert::ConfigType::kNone;
     chromeos::client_cert::GetClientCertFromShillProperties(
-        properties, &config_type, &configured_slot_id, &pkcs11_id);
+        properties.GetDict(), &config_type, &configured_slot_id, &pkcs11_id);
     if (config_type == chromeos::client_cert::ConfigType::kNone ||
         pkcs11_id.empty()) {
       return result;
@@ -113,7 +113,8 @@ class NetworkCertMigrator::MigrationTask
     if (!cert) {
       LOG(WARNING) << "No matching cert found, removing the certificate "
                       "configuration from network " << service_path;
-      chromeos::client_cert::SetEmptyShillProperties(config_type, &result);
+      chromeos::client_cert::SetEmptyShillProperties(config_type,
+                                                     result.GetDict());
       return result;
     }
     if (real_slot_id == -1) {
@@ -125,7 +126,7 @@ class NetworkCertMigrator::MigrationTask
       VLOG(1) << "Network " << service_path
               << " is configured with no or an incorrect slot id.";
       chromeos::client_cert::SetShillProperties(config_type, real_slot_id,
-                                                pkcs11_id, &result);
+                                                pkcs11_id, result.GetDict());
     }
     return result;
   }

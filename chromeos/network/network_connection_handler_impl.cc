@@ -697,7 +697,7 @@ void NetworkConnectionHandlerImpl::VerifyConfiguredAndConnect(
 
   client_cert::ClientCertConfig cert_config_from_policy;
   if (policy) {
-    client_cert::OncToClientCertConfig(onc_source, *policy,
+    client_cert::OncToClientCertConfig(onc_source, policy->GetDict(),
                                        &cert_config_from_policy);
   }
 
