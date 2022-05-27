@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
@@ -21,6 +22,7 @@
 #include "content/browser/attribution_reporting/attribution_utils.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "third_party/blink/public/common/attribution_reporting/constants.h"
 
 namespace content {
 
@@ -28,7 +30,7 @@ std::vector<AggregatableHistogramContribution> CreateAggregatableHistogram(
     const AttributionFilterData& source_filter_data,
     const AttributionAggregatableSource& source,
     const AttributionAggregatableTrigger& trigger) {
-  // TODO(linnan): Log metrics for early returns.
+  int num_trigger_data_filtered = 0;
 
   AttributionAggregatableSource::Keys buckets = source.keys();
 
@@ -38,6 +40,7 @@ std::vector<AggregatableHistogramContribution> CreateAggregatableHistogram(
   for (const auto& data : trigger.trigger_data()) {
     if (!AttributionFiltersMatch(source_filter_data, data.filters(),
                                  data.not_filters())) {
+      ++num_trigger_data_filtered;
       continue;
     }
 
@@ -58,6 +61,28 @@ std::vector<AggregatableHistogramContribution> CreateAggregatableHistogram(
 
     contributions.emplace_back(key, value->second);
   }
+
+  if (!trigger.trigger_data().empty()) {
+    base::UmaHistogramPercentage(
+        "Conversions.AggregatableReport.FilteredTriggerDataPercentage",
+        100 * num_trigger_data_filtered / trigger.trigger_data().size());
+  }
+
+  DCHECK(!buckets.empty());
+  base::UmaHistogramPercentage(
+      "Conversions.AggregatableReport.DroppedKeysPercentage",
+      100 * (buckets.size() - contributions.size()) / buckets.size());
+
+  const int kExclusiveMaxHistogramValue = 101;
+
+  static_assert(blink::kMaxAttributionAggregatableKeysPerSourceOrTrigger <
+                    kExclusiveMaxHistogramValue,
+                "Bump the version for histogram "
+                "Conversions.AggregatableReport.NumContributionsPerReport");
+
+  base::UmaHistogramCounts100(
+      "Conversions.AggregatableReport.NumContributionsPerReport",
+      contributions.size());
 
   return contributions;
 }

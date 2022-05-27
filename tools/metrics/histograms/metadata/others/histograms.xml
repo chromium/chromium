@@ -3284,6 +3284,43 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Conversions.AggregatableReport.DroppedKeysPercentage"
+    units="%" expires_after="2022-11-23">
+  <owner>linnan@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures the percentage of aggregation keys dropped per trigger. Recorded
+    when creating the aggregatable histogram. Not recorded if no aggregation
+    keys were declared.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.AggregatableReport.FilteredTriggerDataPercentage"
+    units="%" expires_after="2022-11-23">
+  <owner>linnan@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures the percentage of aggregatable trigger data filtered per trigger.
+    Recorded when creating the aggregatable histogram. Not recorded if no
+    trigger data was declared. This is effectively how many trigger side
+    dimensions the reporter declared, but were not used for histogram
+    generation.
+  </summary>
+</histogram>
+
+<histogram name="Conversions.AggregatableReport.NumContributionsPerReport"
+    units="contribution" expires_after="2022-11-23">
+  <owner>linnan@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures the number of aggregatable histogram contributions per report.
+    Recorded when creating the aggregatable histogram.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.AggregatableReport.ReportSendOutcome"
     enum="ConversionReportSendOutcome" expires_after="2022-11-13">
   <obsolete>

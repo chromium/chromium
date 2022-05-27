@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "content/browser/attribution_reporting/aggregatable_histogram_contribution.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_source.h"
 #include "content/browser/attribution_reporting/attribution_aggregatable_trigger.h"
@@ -32,6 +33,8 @@ using FilterValues = base::flat_map<std::string, std::vector<std::string>>;
 }  // namespace
 
 TEST(AggregatableAttributionUtilsTest, CreateAggregatableHistogram) {
+  base::HistogramTester histograms;
+
   auto source = AttributionAggregatableSource::FromKeys(
       {{"key1", 345}, {"key2", 5}, {"key3", 123}});
   ASSERT_TRUE(source.has_value());
@@ -97,6 +100,13 @@ TEST(AggregatableAttributionUtilsTest, CreateAggregatableHistogram) {
       ElementsAre(
           AggregatableHistogramContribution(/*key=*/1369, /*value=*/32768u),
           AggregatableHistogramContribution(/*key=*/2693, /*value=*/1664u)));
+
+  histograms.ExpectUniqueSample(
+      "Conversions.AggregatableReport.FilteredTriggerDataPercentage", 50, 1);
+  histograms.ExpectUniqueSample(
+      "Conversions.AggregatableReport.DroppedKeysPercentage", 33, 1);
+  histograms.ExpectUniqueSample(
+      "Conversions.AggregatableReport.NumContributionsPerReport", 2, 1);
 }
 
 TEST(AggregatableAttributionUtilsTest, HexEncodeAggregatableKey) {
@@ -119,6 +129,31 @@ TEST(AggregatableAttributionUtilsTest, HexEncodeAggregatableKey) {
     EXPECT_EQ(HexEncodeAggregatableKey(test_case.input), test_case.output)
         << test_case.input;
   }
+}
+
+TEST(AggregatableAttributionUtilsTest,
+     NoTriggerData_FilteredPercentageNotRecorded) {
+  base::HistogramTester histograms;
+
+  auto source = AttributionAggregatableSource::FromKeys({{"key1", 345}});
+  ASSERT_TRUE(source.has_value());
+
+  auto trigger_mojo = blink::mojom::AttributionAggregatableTrigger::New();
+  trigger_mojo->values = {{"key2", 32768}};
+
+  absl::optional<AttributionAggregatableTrigger> trigger =
+      AttributionAggregatableTrigger::FromMojo(std::move(trigger_mojo));
+  ASSERT_TRUE(trigger.has_value());
+
+  std::vector<AggregatableHistogramContribution> contributions =
+      CreateAggregatableHistogram(AttributionFilterData(), *source, *trigger);
+
+  histograms.ExpectTotalCount(
+      "Conversions.AggregatableReport.FilteredTriggerDataPercentage", 0);
+  histograms.ExpectUniqueSample(
+      "Conversions.AggregatableReport.DroppedKeysPercentage", 100, 1);
+  histograms.ExpectUniqueSample(
+      "Conversions.AggregatableReport.NumContributionsPerReport", 0, 1);
 }
 
 }  // namespace content
