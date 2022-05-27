@@ -137,7 +137,7 @@ void AppWindowMetricsTracker::Reset() {
 
 void AppWindowMetricsTracker::RenderFrameCreated(
     content::RenderFrameHost* frame_host) {
-  if (frame_host->GetParent())
+  if (frame_host->GetParentOrOuterDocument())
     return;
   SetState(State::kWindowShown);
 
