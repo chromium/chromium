@@ -370,7 +370,7 @@ ios_builder(
 
 ios_builder(
     name = "ios16-beta-simulator",
-    os = os.MAC_11,
+    os = os.MAC_DEFAULT,
     mirrors = [
         "ci/ios16-beta-simulator",
     ],
@@ -378,7 +378,7 @@ ios_builder(
 
 ios_builder(
     name = "ios16-sdk-simulator",
-    os = os.MAC_11,
+    os = os.MAC_DEFAULT,
     mirrors = [
         "ci/ios16-sdk-simulator",
     ],

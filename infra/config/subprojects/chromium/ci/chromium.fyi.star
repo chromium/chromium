@@ -1463,7 +1463,7 @@ fyi_ios_builder(
         category = "iOS|iOS16",
         short_name = "ios16",
     ),
-    os = os.MAC_11,
+    os = os.MAC_DEFAULT,
     schedule = "0 0,4,8,12,16,20 * * *",
     triggered_by = [],
 )
@@ -1490,7 +1490,7 @@ fyi_ios_builder(
         category = "iOS|iOS16",
         short_name = "sdk16",
     ),
-    os = os.MAC_11,
+    os = os.MAC_DEFAULT,
     schedule = "0 2,6,10,14,18,22 * * *",
     triggered_by = [],
 )
