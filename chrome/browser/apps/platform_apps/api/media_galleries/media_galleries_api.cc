@@ -24,6 +24,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "chrome/browser/apps/platform_apps/api/deprecation_features.h"
 #include "chrome/browser/apps/platform_apps/api/media_galleries/blob_data_source_factory.h"
 #include "chrome/browser/apps/platform_apps/api/media_galleries/media_galleries_api_util.h"
 #include "chrome/browser/browser_process.h"
@@ -99,6 +100,8 @@ const char kSizeKey[] = "size";
 
 const char kInvalidGalleryId[] = "-1";
 
+const char kDeprecatedError[] =
+    "Media Galleries API is deprecated on this platform.";
 const char kNoRenderFrameOrRenderProcessError[] =
     "No render frame or render process.";
 const char kNoWebContentsError[] = "Could not find web contents.";
@@ -394,6 +397,10 @@ MediaGalleriesGetMediaFileSystemsFunction::
 ExtensionFunction::ResponseAction
 MediaGalleriesGetMediaFileSystemsFunction::Run() {
   ::media_galleries::UsageCount(::media_galleries::GET_MEDIA_FILE_SYSTEMS);
+
+  if (base::FeatureList::IsEnabled(features::kDeprecateMediaGalleriesApis))
+    return RespondNow(Error(kDeprecatedError));
+
   std::unique_ptr<GetMediaFileSystems::Params> params(
       GetMediaFileSystems::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
@@ -513,6 +520,10 @@ MediaGalleriesAddUserSelectedFolderFunction::
 ExtensionFunction::ResponseAction
 MediaGalleriesAddUserSelectedFolderFunction::Run() {
   ::media_galleries::UsageCount(::media_galleries::ADD_USER_SELECTED_FOLDER);
+
+  if (base::FeatureList::IsEnabled(features::kDeprecateMediaGalleriesApis))
+    return RespondNow(Error(kDeprecatedError));
+
   std::string error;
   const bool result =
       Setup(Profile::FromBrowserContext(browser_context()), &error,
@@ -622,6 +633,10 @@ MediaGalleriesGetMetadataFunction::~MediaGalleriesGetMetadataFunction() {}
 
 ExtensionFunction::ResponseAction MediaGalleriesGetMetadataFunction::Run() {
   ::media_galleries::UsageCount(::media_galleries::GET_METADATA);
+
+  if (base::FeatureList::IsEnabled(features::kDeprecateMediaGalleriesApis))
+    return RespondNow(Error(kDeprecatedError));
+
   EXTENSION_FUNCTION_VALIDATE(args().size() >= 1);
   EXTENSION_FUNCTION_VALIDATE(args()[0].is_string());
   const std::string& blob_uuid = args()[0].GetString();
@@ -809,8 +824,13 @@ MediaGalleriesAddGalleryWatchFunction::
 
 ExtensionFunction::ResponseAction MediaGalleriesAddGalleryWatchFunction::Run() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (base::FeatureList::IsEnabled(features::kDeprecateMediaGalleriesApis))
+    return RespondNow(Error(kDeprecatedError));
+
   Profile* profile = Profile::FromBrowserContext(browser_context());
   DCHECK(profile);
+
   if (!render_frame_host() || !render_frame_host()->GetProcess())
     return RespondNow(Error(kNoRenderFrameOrRenderProcessError));
 
@@ -884,6 +904,10 @@ MediaGalleriesRemoveGalleryWatchFunction::
 ExtensionFunction::ResponseAction
 MediaGalleriesRemoveGalleryWatchFunction::Run() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (base::FeatureList::IsEnabled(features::kDeprecateMediaGalleriesApis))
+    return RespondNow(Error(kDeprecatedError));
+
   if (!render_frame_host() || !render_frame_host()->GetProcess())
     return RespondNow(Error(kNoRenderFrameOrRenderProcessError));
 
