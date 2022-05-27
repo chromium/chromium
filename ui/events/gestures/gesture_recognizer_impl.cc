@@ -62,7 +62,13 @@ bool RemoveValueFromMap(std::map<Key, T>* map, const Value& value) {
 
 GestureRecognizerImpl::GestureRecognizerImpl() = default;
 
-GestureRecognizerImpl::~GestureRecognizerImpl() = default;
+GestureRecognizerImpl::~GestureRecognizerImpl() {
+  // The gesture recognizer impl observes the gesture providers that are owned
+  // by `consumer_gesture_provider_`. Clear `consumer_gesture_provider_`
+  // explicitly so that the notifications sent by gesture providers during
+  // destruction are handled properly.
+  consumer_gesture_provider_.clear();
+}
 
 // Checks if this finger is already down, if so, returns the current target.
 // Otherwise, returns nullptr.
