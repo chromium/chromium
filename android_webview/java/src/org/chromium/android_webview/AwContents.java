@@ -961,32 +961,39 @@ public class AwContents implements SmartClipProvider {
                     (int) mRootView.getY() + mRootView.getHeight());
             int rootArea = RectUtils.getRectArea(rootVisibleRect);
 
+            int globalPercentage = 0;
+
             // Note that a scheme could occur more than once at a time.
             List<String> schemes = new ArrayList<>();
             List<Integer> schemePercentages = new ArrayList<>();
 
-            for (AwContents content : mAwContentsList) {
-                // A workaround for a deeper problem: https://crbug.com/1232765#c19
-                if (content.isDestroyed(NO_WARN)) continue;
-                if (content.mIsAttachedToWindow && content.mIsViewVisible
-                        && content.mIsWindowVisible) {
-                    // The result of getGlobalVisibleRect can change underneath us, so take a
-                    // protective copy.
-                    Rect contentRect = new Rect(content.getGlobalVisibleRect());
+            // If the root view has a width or height of 0 then nothing is visible, so leave the
+            // lists empty and pass them on like that. Also, we don't want to divide by 0.
+            if (rootArea > 0) {
+                for (AwContents content : mAwContentsList) {
+                    // A workaround for a deeper problem: https://crbug.com/1232765#c19
+                    if (content.isDestroyed(NO_WARN)) continue;
+                    if (content.mIsAttachedToWindow && content.mIsViewVisible
+                            && content.mIsWindowVisible) {
+                        // The result of getGlobalVisibleRect can change underneath us, so take a
+                        // protective copy.
+                        Rect contentRect = new Rect(content.getGlobalVisibleRect());
 
-                    // If the intersect method returns true then it has modified contentRect.
-                    if (contentRect.intersect(rootVisibleRect)) {
-                        contentRects.add(contentRect);
-                        schemes.add(
-                                AwContentsJni.get().getScheme(content.mNativeAwContents, content));
-                        schemePercentages.add(RectUtils.getRectArea(contentRect) * 100 / rootArea);
+                        // If the intersect method returns true then it has modified contentRect.
+                        if (contentRect.intersect(rootVisibleRect)) {
+                            contentRects.add(contentRect);
+                            schemes.add(AwContentsJni.get().getScheme(
+                                    content.mNativeAwContents, content));
+                            schemePercentages.add(
+                                    RectUtils.getRectArea(contentRect) * 100 / rootArea);
+                        }
                     }
                 }
-            }
 
-            int globalPercentage =
-                    RectUtils.calculatePixelsOfCoverage(rootVisibleRect, contentRects) * 100
-                    / rootArea;
+                globalPercentage =
+                        RectUtils.calculatePixelsOfCoverage(rootVisibleRect, contentRects) * 100
+                        / rootArea;
+            }
 
             AwContentsJni.get().updateScreenCoverage(globalPercentage,
                     schemes.toArray(new String[schemes.size()]), toIntArray(schemePercentages));
