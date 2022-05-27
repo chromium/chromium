@@ -31,7 +31,7 @@ bool IsNonSniffableImageMimeType(base::StringPiece mime_type) {
 
   // This function returns true for image formats that are not recognized by
   // net::SniffMimeTypeFromLocalData.  This helps to allow such images.
-  return base::LowerCaseEqualsASCII(mime_type, "image/svg+xml");
+  return base::EqualsCaseInsensitiveASCII(mime_type, "image/svg+xml");
 }
 
 bool IsAudioOrVideoMimeType(base::StringPiece mime_type) {
@@ -59,7 +59,7 @@ bool IsAudioOrVideoMimeType(base::StringPiece mime_type) {
   // (sniffing audio/video in the OpaqueResponseBlockingAnalyzer::Sniff method
   // below) because net::SniffMimeTypeFromLocalData may return
   // "application/ogg".
-  if (base::LowerCaseEqualsASCII(mime_type, "application/ogg"))
+  if (base::EqualsCaseInsensitiveASCII(mime_type, "application/ogg"))
     return true;
 
   // TODO(lukasza): Address this departure from the spec (which doesn't
@@ -69,18 +69,19 @@ bool IsAudioOrVideoMimeType(base::StringPiece mime_type) {
   // modify ORB spec to match this implementation.  If there is too much
   // web-compatibility risk, then ORB might need to fully parse DASH/HLS
   // manifests.
-  if (base::LowerCaseEqualsASCII(mime_type, "application/dash+xml"))
+  if (base::EqualsCaseInsensitiveASCII(mime_type, "application/dash+xml"))
     return true;
-  if (base::LowerCaseEqualsASCII(mime_type, "application/vnd.apple.mpegurl"))
+  if (base::EqualsCaseInsensitiveASCII(mime_type,
+                                       "application/vnd.apple.mpegurl"))
     return true;
-  if (base::LowerCaseEqualsASCII(mime_type, "text/vtt"))
+  if (base::EqualsCaseInsensitiveASCII(mime_type, "text/vtt"))
     return true;
 
   return false;
 }
 
 bool IsTextCssMimeType(base::StringPiece mime_type) {
-  return base::LowerCaseEqualsASCII(mime_type, "text/css");
+  return base::EqualsCaseInsensitiveASCII(mime_type, "text/css");
 }
 
 // ORB spec says that "An opaque-safelisted MIME type" is a JavaScript MIME type
