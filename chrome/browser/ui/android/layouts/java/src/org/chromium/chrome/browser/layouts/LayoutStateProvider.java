@@ -60,6 +60,12 @@ public interface LayoutStateProvider {
     boolean isLayoutVisible(@LayoutType int layoutType);
 
     /**
+     * @return Whether or not the {@link Layout} is starting to hide.
+     * @param layoutType whether the {@link Layout} give {@link LayoutType} is starting to hide.
+     */
+    boolean isLayoutStartingToHide(@LayoutType int layoutType);
+
+    /**
      * Get the type of the layout that is currently active.
      * @return The {@link LayoutType} of the active layout.
      */

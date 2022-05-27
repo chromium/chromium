@@ -299,6 +299,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
     private boolean isInTabSwitcher() {
         return mLayoutStateProvider != null
                 && mLayoutStateProvider.isLayoutVisible(LayoutType.TAB_SWITCHER)
+                && !mLayoutStateProvider.isLayoutStartingToHide(LayoutType.TAB_SWITCHER)
                 && !isInStartSurfaceHomepage();
     }
 

@@ -1186,6 +1186,11 @@ public class LayoutManagerImpl
     }
 
     @Override
+    public boolean isLayoutStartingToHide(int layoutType) {
+        return isLayoutVisible(layoutType) && getActiveLayout().isStartingToHide();
+    }
+
+    @Override
     public void addObserver(LayoutStateObserver listener) {
         mLayoutObservers.addObserver(listener);
     }
