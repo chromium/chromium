@@ -22,7 +22,6 @@
 #include "base/allocator/partition_allocator/partition_root.h"
 #include "base/allocator/partition_allocator/reservation_offset_table.h"
 #include "base/allocator/partition_allocator/tagging.h"
-#include "base/dcheck_is_on.h"
 
 namespace partition_alloc::internal {
 
@@ -151,7 +150,7 @@ SlotSpanMetadata<thread_safe>::SlotSpanMetadata(
 
 template <bool thread_safe>
 void SlotSpanMetadata<thread_safe>::FreeSlowPath(size_t number_of_freed) {
-#if DCHECK_IS_ON()
+#if BUILDFLAG(PA_DCHECK_IS_ON)
   auto* root = PartitionRoot<thread_safe>::FromSlotSpan(this);
   root->lock_.AssertAcquired();
 #endif
@@ -189,7 +188,7 @@ void SlotSpanMetadata<thread_safe>::FreeSlowPath(size_t number_of_freed) {
       PartitionDirectUnmap(this);
       return;
     }
-#if DCHECK_IS_ON()
+#if BUILDFLAG(PA_DCHECK_IS_ON)
     freelist_head->CheckFreeList(bucket->slot_size);
 #endif
     // If it's the current active slot span, change it. We bounce the slot span
@@ -304,7 +303,7 @@ void UnmapNow(uintptr_t reservation_start,
               size_t reservation_size,
               pool_handle pool) {
   PA_DCHECK(reservation_start && reservation_size > 0);
-#if DCHECK_IS_ON()
+#if BUILDFLAG(PA_DCHECK_IS_ON)
   // When USE_BACKUP_REF_PTR is off, BRP pool isn't used.
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
   if (pool == GetBRPPool()) {
@@ -328,7 +327,7 @@ void UnmapNow(uintptr_t reservation_start,
     PA_DCHECK(IsManagedByPartitionAllocRegularPool(reservation_start) ||
               IsManagedByPartitionAllocConfigurablePool(reservation_start));
   }
-#endif  // DCHECK_IS_ON()
+#endif  // BUILDFLAG(PA_DCHECK_IS_ON)
 
   PA_DCHECK((reservation_start & kSuperPageOffsetMask) == 0);
   uintptr_t reservation_end = reservation_start + reservation_size;

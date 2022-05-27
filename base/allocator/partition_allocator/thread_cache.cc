@@ -10,6 +10,7 @@
 #include <atomic>
 #include <cstdint>
 
+#include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/cxx17_backports.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/immediate_crash.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
@@ -17,7 +18,6 @@
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_root.h"
 #include "base/base_export.h"
-#include "base/dcheck_is_on.h"
 #include "build/build_config.h"
 
 namespace partition_alloc {
@@ -167,7 +167,7 @@ void ThreadCacheRegistry::ForcePurgeAllThreadAfterForkUnsafe() {
   internal::ScopedGuard scoped_locker(GetLock());
   ThreadCache* tcache = list_head_;
   while (tcache) {
-#if DCHECK_IS_ON()
+#if BUILDFLAG(PA_DCHECK_IS_ON)
     // Before fork(), locks are acquired in the parent process. This means that
     // a concurrent allocation in the parent which must be filled by the central
     // allocator (i.e. the thread cache bucket is empty) will block inside the

@@ -4,6 +4,7 @@
 
 #include "base/allocator/partition_allocator/partition_lock.h"
 
+#include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/migration_adapter.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/thread_annotations.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/threading/platform_thread_for_testing.h"
@@ -164,7 +165,7 @@ TEST(PartitionAllocLockTest, AssertAcquired) {
 }
 
 // AssertAcquired() is only enforced with DCHECK()s.
-#if defined(GTEST_HAS_DEATH_TEST) && DCHECK_IS_ON()
+#if defined(GTEST_HAS_DEATH_TEST) && BUILDFLAG(PA_DCHECK_IS_ON)
 
 TEST(PartitionAllocLockTest, AssertAcquiredDeathTest) {
   Lock lock;
@@ -235,6 +236,6 @@ TEST(PartitionAllocLockTest, ReinitInOtherThread) PA_NO_THREAD_SAFETY_ANALYSIS {
 }
 #endif  // BUILDFLAG(IS_APPLE)
 
-#endif  // defined(GTEST_HAS_DEATH_TEST) && DCHECK_IS_ON()
+#endif  // defined(GTEST_HAS_DEATH_TEST) && BUILDFLAG(PA_DCHECK_IS_ON)
 
 }  // namespace partition_alloc::internal

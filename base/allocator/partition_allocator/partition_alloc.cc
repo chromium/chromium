@@ -20,7 +20,6 @@
 #include "base/allocator/partition_allocator/partition_root.h"
 #include "base/allocator/partition_allocator/partition_stats.h"
 #include "base/allocator/partition_allocator/starscan/pcscan.h"
-#include "base/dcheck_is_on.h"
 
 namespace partition_alloc {
 
@@ -106,7 +105,8 @@ void PartitionAllocator<thread_safe>::init(PartitionOptions opts) {
 template PartitionAllocator<internal::ThreadSafe>::~PartitionAllocator();
 template void PartitionAllocator<internal::ThreadSafe>::init(PartitionOptions);
 
-#if (DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)) && \
+#if (BUILDFLAG(PA_DCHECK_IS_ON) ||                    \
+     BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)) && \
     BUILDFLAG(USE_BACKUP_REF_PTR)
 void CheckThatSlotOffsetIsZero(uintptr_t address) {
   // Add kPartitionPastAllocationAdjustment, because

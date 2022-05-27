@@ -12,11 +12,11 @@
 #include <sstream>
 #include <string>
 
+#include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/migration_adapter.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/scoped_clear_last_error.h"
 #include "base/base_export.h"
-#include "base/dcheck_is_on.h"
 #include "build/build_config.h"
 
 // TODO(1151236): Need to update the description, because logging for PA
@@ -177,7 +177,7 @@ constexpr LogSeverity LOGGING_NUM_SEVERITIES = 4;
 
 // LOGGING_DFATAL is LOGGING_FATAL in DCHECK-enabled builds, ERROR in normal
 // mode.
-#if DCHECK_IS_ON()
+#if BUILDFLAG(PA_DCHECK_IS_ON)
 constexpr LogSeverity LOGGING_DFATAL = LOGGING_FATAL;
 #else
 constexpr LogSeverity LOGGING_DFATAL = LOGGING_ERROR;
@@ -361,7 +361,7 @@ BASE_EXPORT extern std::ostream* g_swallow_stream;
 
 // Definitions for DLOG et al.
 
-#if DCHECK_IS_ON()
+#if BUILDFLAG(PA_DCHECK_IS_ON)
 
 #define PA_DLOG_IS_ON(severity) PA_LOG_IS_ON(severity)
 #define PA_DLOG_IF(severity, condition) PA_LOG_IF(severity, condition)
@@ -371,11 +371,12 @@ BASE_EXPORT extern std::ostream* g_swallow_stream;
 #define PA_DVPLOG_IF(verboselevel, condition) \
   PA_VPLOG_IF(verboselevel, condition)
 
-#else  // DCHECK_IS_ON()
+#else  // BUILDFLAG(PA_DCHECK_IS_ON)
 
-// If !DCHECK_IS_ON(), we want to avoid emitting any references to |condition|
-// (which may reference a variable defined only if DCHECK_IS_ON()).
-// Contrast this with DCHECK et al., which has different behavior.
+// If !BUILDFLAG(PA_DCHECK_IS_ON), we want to avoid emitting any references to
+// |condition| (which may reference a variable defined only if
+// BUILDFLAG(PA_DCHECK_IS_ON)). Contrast this with DCHECK et al., which has
+// different behavior.
 
 #define PA_DLOG_IS_ON(severity) false
 #define PA_DLOG_IF(severity, condition) PA_EAT_STREAM_PARAMETERS
@@ -384,7 +385,7 @@ BASE_EXPORT extern std::ostream* g_swallow_stream;
 #define PA_DVLOG_IF(verboselevel, condition) PA_EAT_STREAM_PARAMETERS
 #define PA_DVPLOG_IF(verboselevel, condition) PA_EAT_STREAM_PARAMETERS
 
-#endif  // DCHECK_IS_ON()
+#endif  // BUILDFLAG(PA_DCHECK_IS_ON)
 
 #define PA_DLOG(severity) \
   PA_LAZY_STREAM(PA_LOG_STREAM(severity), PA_DLOG_IS_ON(severity))

@@ -67,7 +67,6 @@
 #include "base/allocator/partition_allocator/tagging.h"
 #include "base/allocator/partition_allocator/thread_cache.h"
 #include "base/base_export.h"
-#include "base/dcheck_is_on.h"
 #include "base/debug/debugging_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
@@ -106,7 +105,7 @@ namespace partition_alloc {
 namespace internal {
 // Avoid including partition_address_space.h from this .h file, by moving the
 // call to IsManagedByPartitionAllocBRPPool into the .cc file.
-#if DCHECK_IS_ON()
+#if BUILDFLAG(PA_DCHECK_IS_ON)
 BASE_EXPORT void DCheckIfManagedByPartitionAllocBRPPool(uintptr_t address);
 #else
 PA_ALWAYS_INLINE void DCheckIfManagedByPartitionAllocBRPPool(
@@ -893,7 +892,7 @@ PartitionAllocGetDirectMapSlotStartInBRPPool(uintptr_t address) {
   auto* slot_span = &page->slot_span_metadata;
   uintptr_t slot_start =
       SlotSpanMetadata<ThreadSafe>::ToSlotSpanStart(slot_span);
-#if DCHECK_IS_ON()
+#if BUILDFLAG(PA_DCHECK_IS_ON)
   auto* metadata =
       PartitionDirectMapMetadata<ThreadSafe>::FromSlotSpan(slot_span);
   size_t padding_for_alignment =
@@ -901,7 +900,7 @@ PartitionAllocGetDirectMapSlotStartInBRPPool(uintptr_t address) {
   PA_DCHECK(padding_for_alignment == (page - first_page) * PartitionPageSize());
   PA_DCHECK(slot_start ==
             reservation_start + PartitionPageSize() + padding_for_alignment);
-#endif  // DCHECK_IS_ON()
+#endif  // BUILDFLAG(PA_DCHECK_IS_ON)
   return slot_start;
 }
 
@@ -1239,7 +1238,7 @@ PA_ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
   // For more context, see the other "Layout inside the slot" comment inside
   // AllocWithFlagsNoHooks().
 
-#if DCHECK_IS_ON()
+#if BUILDFLAG(PA_DCHECK_IS_ON)
   if (flags.allow_cookie) {
     // Verify the cookie after the allocated region.
     // If this assert fires, you probably corrupted memory.
@@ -1737,7 +1736,7 @@ PA_ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocWithFlagsNoHooks(
       // Keep it in sync!
       usable_size = AdjustSizeForExtrasSubtract(slot_size);
 
-#if DCHECK_IS_ON()
+#if BUILDFLAG(PA_DCHECK_IS_ON)
       // Make sure that the allocated pointer comes from the same place it would
       // for a non-thread cache allocation.
       SlotSpan* slot_span = SlotSpan::FromSlotStart(slot_start);
@@ -1780,7 +1779,7 @@ PA_ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocWithFlagsNoHooks(
   //     (f) slot_size
   // Notes:
   // - Ref-count may or may not exist in the slot, depending on brp_enabled().
-  // - Cookie exists only in the DCHECK_IS_ON() case.
+  // - Cookie exists only in the BUILDFLAG(PA_DCHECK_IS_ON) case.
   // - Think of raw_size as the minimum size required internally to satisfy
   //   the allocation request (i.e. requested_size + extras)
   // - Note, at most one "empty" or "unused" space can occur at a time. It
@@ -1811,7 +1810,7 @@ PA_ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocWithFlagsNoHooks(
 
   void* object = SlotStartToObject(slot_start);
 
-#if DCHECK_IS_ON()
+#if BUILDFLAG(PA_DCHECK_IS_ON)
   // Add the cookie after the allocation.
   if (this->flags.allow_cookie) {
     internal::PartitionCookieWriteValue(static_cast<unsigned char*>(object) +

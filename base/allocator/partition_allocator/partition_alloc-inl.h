@@ -8,10 +8,10 @@
 #include <algorithm>
 #include <cstring>
 
+#include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_ref_count.h"
 #include "base/allocator/partition_allocator/random.h"
-#include "base/dcheck_is_on.h"
 #include "build/build_config.h"
 
 // Prefetch *x into memory.
@@ -48,7 +48,7 @@ PA_ALWAYS_INLINE void DebugMemset(void* ptr, int value, size_t size) {
 // Returns true if we've hit the end of a random-length period. We don't want to
 // invoke `RandomValue` too often, because we call this function in a hot spot
 // (`Free`), and `RandomValue` incurs the cost of atomics.
-#if !DCHECK_IS_ON()
+#if !BUILDFLAG(PA_DCHECK_IS_ON)
 PA_ALWAYS_INLINE bool RandomPeriod() {
   static thread_local uint8_t counter = 0;
   if (PA_UNLIKELY(counter == 0)) {
@@ -59,7 +59,7 @@ PA_ALWAYS_INLINE bool RandomPeriod() {
   counter--;
   return counter == 0;
 }
-#endif  // !DCHECK_IS_ON()
+#endif  // !BUILDFLAG(PA_DCHECK_IS_ON)
 
 }  // namespace partition_alloc::internal
 
@@ -68,9 +68,9 @@ namespace base::internal {
 // TODO(https://crbug.com/1288247): Remove these 'using' declarations once
 // the migration to the new namespaces gets done.
 using ::partition_alloc::internal::SecureMemset;
-#if !DCHECK_IS_ON()
+#if !BUILDFLAG(PA_DCHECK_IS_ON)
 using ::partition_alloc::internal::RandomPeriod;
-#endif  // !DCHECK_IS_ON()
+#endif  // !BUILDFLAG(PA_DCHECK_IS_ON)
 
 }  // namespace base::internal
 

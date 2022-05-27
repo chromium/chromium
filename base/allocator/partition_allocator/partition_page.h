@@ -27,7 +27,6 @@
 #include "base/allocator/partition_allocator/starscan/state_bitmap.h"
 #include "base/allocator/partition_allocator/tagging.h"
 #include "base/base_export.h"
-#include "base/dcheck_is_on.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
@@ -470,7 +469,7 @@ PA_ALWAYS_INLINE size_t SuperPagePayloadSize(uintptr_t super_page,
 template <bool thread_safe>
 PA_ALWAYS_INLINE void PartitionSuperPageExtentEntry<
     thread_safe>::IncrementNumberOfNonemptySlotSpans() {
-#if DCHECK_IS_ON()
+#if BUILDFLAG(PA_DCHECK_IS_ON)
   uintptr_t super_page = base::bits::AlignDown(
       reinterpret_cast<uintptr_t>(this), kSuperPageAlignment);
   PA_DCHECK((SuperPagePayloadSize(super_page, root->IsQuarantineAllowed()) /
@@ -522,7 +521,7 @@ PA_ALWAYS_INLINE PartitionPage<thread_safe>*
 PartitionPage<thread_safe>::FromAddr(uintptr_t address) {
   uintptr_t super_page = address & kSuperPageBaseMask;
 
-#if DCHECK_IS_ON()
+#if BUILDFLAG(PA_DCHECK_IS_ON)
   PA_DCHECK(IsReservationStart(super_page));
   auto* extent = PartitionSuperPageToExtent<thread_safe>(super_page);
   PA_DCHECK(IsWithinSuperPagePayload(address,
@@ -605,13 +604,13 @@ template <bool thread_safe>
 PA_ALWAYS_INLINE SlotSpanMetadata<thread_safe>*
 SlotSpanMetadata<thread_safe>::FromSlotStart(uintptr_t slot_start) {
   auto* slot_span = FromAddr(slot_start);
-#if DCHECK_IS_ON()
+#if BUILDFLAG(PA_DCHECK_IS_ON)
   // Checks that the pointer is a multiple of slot size.
   uintptr_t slot_span_start = ToSlotSpanStart(slot_span);
   PA_DCHECK(!((::partition_alloc::internal::UnmaskPtr(slot_start) -
                ::partition_alloc::internal::UnmaskPtr(slot_span_start)) %
               slot_span->bucket->slot_size));
-#endif  // DCHECK_IS_ON()
+#endif  // BUILDFLAG(PA_DCHECK_IS_ON)
   return slot_span;
 }
 
@@ -624,7 +623,7 @@ PA_ALWAYS_INLINE SlotSpanMetadata<thread_safe>*
 SlotSpanMetadata<thread_safe>::FromObject(void* object) {
   uintptr_t object_addr = PartitionRoot<thread_safe>::ObjectPtr2Addr(object);
   auto* slot_span = FromAddr(object_addr);
-#if DCHECK_IS_ON()
+#if BUILDFLAG(PA_DCHECK_IS_ON)
   // Checks that the object is exactly |extras_offset| away from a multiple of
   // slot size (i.e. from a slot start).
   uintptr_t slot_span_start = ToSlotSpanStart(slot_span);
@@ -633,7 +632,7 @@ SlotSpanMetadata<thread_safe>::FromObject(void* object) {
              ::partition_alloc::internal::UnmaskPtr(slot_span_start)) %
                 slot_span->bucket->slot_size ==
             root->flags.extras_offset);
-#endif  // DCHECK_IS_ON()
+#endif  // BUILDFLAG(PA_DCHECK_IS_ON)
   return slot_span;
 }
 
@@ -646,7 +645,7 @@ template <bool thread_safe>
 PA_ALWAYS_INLINE SlotSpanMetadata<thread_safe>*
 SlotSpanMetadata<thread_safe>::FromObjectInnerAddr(uintptr_t address) {
   auto* slot_span = FromAddr(address);
-#if DCHECK_IS_ON()
+#if BUILDFLAG(PA_DCHECK_IS_ON)
   // Checks that the address is within the expected object boundaries.
   uintptr_t slot_span_start = ToSlotSpanStart(slot_span);
   auto* root = PartitionRoot<thread_safe>::FromSlotSpan(slot_span);
@@ -656,7 +655,7 @@ SlotSpanMetadata<thread_safe>::FromObjectInnerAddr(uintptr_t address) {
   // Use <= to allow an address immediately past the object.
   PA_DCHECK(shift_from_slot_start <=
             root->flags.extras_offset + slot_span->GetUsableSize(root));
-#endif  // DCHECK_IS_ON()
+#endif  // BUILDFLAG(PA_DCHECK_IS_ON)
   return slot_span;
 }
 template <bool thread_safe>
@@ -712,7 +711,7 @@ template <bool thread_safe>
 PA_ALWAYS_INLINE void SlotSpanMetadata<thread_safe>::Free(uintptr_t slot_start)
     PA_EXCLUSIVE_LOCKS_REQUIRED(
         PartitionRoot<thread_safe>::FromSlotSpan(this)->lock_) {
-#if DCHECK_IS_ON()
+#if BUILDFLAG(PA_DCHECK_IS_ON)
   auto* root = PartitionRoot<thread_safe>::FromSlotSpan(this);
   root->lock_.AssertAcquired();
 #endif
@@ -746,7 +745,7 @@ PA_ALWAYS_INLINE void SlotSpanMetadata<thread_safe>::AppendFreeList(
     size_t number_of_freed)
     PA_EXCLUSIVE_LOCKS_REQUIRED(
         PartitionRoot<thread_safe>::FromSlotSpan(this)->lock_) {
-#if DCHECK_IS_ON()
+#if BUILDFLAG(PA_DCHECK_IS_ON)
   auto* root = PartitionRoot<thread_safe>::FromSlotSpan(this);
   root->lock_.AssertAcquired();
   PA_DCHECK(!tail->GetNext(bucket->slot_size));
@@ -857,7 +856,7 @@ template <bool thread_safe, typename Callback>
 void IterateSlotSpans(uintptr_t super_page,
                       bool with_quarantine,
                       Callback callback) {
-#if DCHECK_IS_ON()
+#if BUILDFLAG(PA_DCHECK_IS_ON)
   PA_DCHECK(!(super_page % kSuperPageAlignment));
   auto* extent_entry = PartitionSuperPageToExtent<thread_safe>(super_page);
   extent_entry->root->lock_.AssertAcquired();

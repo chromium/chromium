@@ -10,6 +10,7 @@
 #include <limits>
 #include <memory>
 
+#include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/gtest_prod_util.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/thread_annotations.h"
@@ -22,7 +23,6 @@
 #include "base/allocator/partition_allocator/partition_stats.h"
 #include "base/allocator/partition_allocator/partition_tls.h"
 #include "base/base_export.h"
-#include "base/dcheck_is_on.h"
 #include "build/build_config.h"
 
 #if defined(ARCH_CPU_X86_64) && defined(PA_HAS_64_BITS_POINTERS)
@@ -183,7 +183,7 @@ constexpr ThreadCacheRegistry::ThreadCacheRegistry() = default;
   } while (0)
 #endif  // defined(PA_THREAD_CACHE_ENABLE_STATISTICS)
 
-#if DCHECK_IS_ON()
+#if BUILDFLAG(PA_DCHECK_IS_ON)
 
 namespace internal {
 
@@ -205,13 +205,13 @@ class ReentrancyGuard {
 #define PA_REENTRANCY_GUARD(x) \
   internal::ReentrancyGuard guard { x }
 
-#else  // DCHECK_IS_ON()
+#else  // BUILDFLAG(PA_DCHECK_IS_ON)
 
 #define PA_REENTRANCY_GUARD(x) \
   do {                         \
   } while (0)
 
-#endif  // DCHECK_IS_ON()
+#endif  // BUILDFLAG(PA_DCHECK_IS_ON)
 
 // Per-thread cache. *Not* threadsafe, must only be accessed from a single
 // thread.
@@ -422,7 +422,7 @@ class BASE_EXPORT ThreadCache {
   PartitionRoot<>* const root_;
 
   const internal::base::PlatformThreadId thread_id_;
-#if DCHECK_IS_ON()
+#if BUILDFLAG(PA_DCHECK_IS_ON)
   bool is_in_thread_cache_ = false;
 #endif
 

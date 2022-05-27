@@ -15,7 +15,6 @@
 #include "base/allocator/partition_allocator/partition_alloc_base/threading/platform_thread.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/spinning_mutex.h"
-#include "base/dcheck_is_on.h"
 #include "build/build_config.h"
 
 namespace partition_alloc::internal {
@@ -24,7 +23,7 @@ class PA_LOCKABLE Lock {
  public:
   inline constexpr Lock();
   void Acquire() PA_EXCLUSIVE_LOCK_FUNCTION() {
-#if DCHECK_IS_ON()
+#if BUILDFLAG(PA_DCHECK_IS_ON)
     // When PartitionAlloc is malloc(), it can easily become reentrant. For
     // instance, a DCHECK() triggers in external code (such as
     // base::Lock). DCHECK() error message formatting allocates, which triggers
@@ -61,7 +60,7 @@ class PA_LOCKABLE Lock {
   }
 
   void Release() PA_UNLOCK_FUNCTION() {
-#if DCHECK_IS_ON()
+#if BUILDFLAG(PA_DCHECK_IS_ON)
     owning_thread_ref_.store(base::PlatformThreadRef(),
                              std::memory_order_release);
 #endif
@@ -69,7 +68,7 @@ class PA_LOCKABLE Lock {
   }
   void AssertAcquired() const PA_ASSERT_EXCLUSIVE_LOCK() {
     lock_.AssertAcquired();
-#if DCHECK_IS_ON()
+#if BUILDFLAG(PA_DCHECK_IS_ON)
     PA_DCHECK(owning_thread_ref_.load(std ::memory_order_acquire) ==
               base::PlatformThread::CurrentRef());
 #endif
@@ -77,7 +76,7 @@ class PA_LOCKABLE Lock {
 
   void Reinit() PA_UNLOCK_FUNCTION() {
     lock_.AssertAcquired();
-#if DCHECK_IS_ON()
+#if BUILDFLAG(PA_DCHECK_IS_ON)
     owning_thread_ref_.store(base::PlatformThreadRef(),
                              std::memory_order_release);
 #endif
@@ -87,7 +86,7 @@ class PA_LOCKABLE Lock {
  private:
   SpinningMutex lock_;
 
-#if DCHECK_IS_ON()
+#if BUILDFLAG(PA_DCHECK_IS_ON)
   // Should in theory be protected by |lock_|, but we need to read it to detect
   // recursive lock acquisition (and thus, the allocator becoming reentrant).
   std::atomic<base::PlatformThreadRef> owning_thread_ref_{};

@@ -17,7 +17,6 @@
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
 #include "base/allocator/partition_allocator/tagging.h"
 #include "base/base_export.h"
-#include "base/dcheck_is_on.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
@@ -332,12 +331,12 @@ static_assert((sizeof(PartitionRefCount) * (kSuperPageSize / SystemPageSize()) *
 PA_ALWAYS_INLINE PartitionRefCount* PartitionRefCountPointer(
     uintptr_t slot_start) {
   PA_DCHECK(slot_start == ::partition_alloc::internal::RemaskPtr(slot_start));
-#if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
+#if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
   CheckThatSlotOffsetIsZero(slot_start);
 #endif
   if (PA_LIKELY(slot_start & SystemPageOffsetMask())) {
     uintptr_t refcount_address = slot_start - sizeof(PartitionRefCount);
-#if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
+#if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
     PA_CHECK(refcount_address % alignof(PartitionRefCount) == 0);
 #endif
     return reinterpret_cast<PartitionRefCount*>(refcount_address);
@@ -346,7 +345,7 @@ PA_ALWAYS_INLINE PartitionRefCount* PartitionRefCountPointer(
         (slot_start & kSuperPageBaseMask) + SystemPageSize() * 2);
     size_t index = ((slot_start & kSuperPageOffsetMask) >> SystemPageShift()) *
                    kPartitionRefCountIndexMultiplier;
-#if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
+#if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
     PA_CHECK(sizeof(PartitionRefCount) * index <= SystemPageSize());
 #endif
     return bitmap_base + index;
@@ -367,7 +366,7 @@ constexpr size_t kPartitionPastAllocationAdjustment = 1;
 
 PA_ALWAYS_INLINE PartitionRefCount* PartitionRefCountPointer(
     uintptr_t slot_start) {
-#if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
+#if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
   CheckThatSlotOffsetIsZero(slot_start);
 #endif
   return reinterpret_cast<PartitionRefCount*>(slot_start);

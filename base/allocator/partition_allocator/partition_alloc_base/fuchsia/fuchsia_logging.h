@@ -8,6 +8,7 @@
 #include <lib/fit/function.h>
 #include <zircon/types.h>
 
+#include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/logging.h"
 #include "base/base_export.h"
 #include "build/build_config.h"
@@ -52,17 +53,17 @@ class BASE_EXPORT ZxLogMessage : public logging::LogMessage {
 #define PA_ZX_DLOG(severity, zx_err) \
   PA_LAZY_STREAM(PA_ZX_LOG_STREAM(severity, zx_err), PA_DLOG_IS_ON(severity))
 
-#if DCHECK_IS_ON()
+#if BUILDFLAG(PA_DCHECK_IS_ON)
 #define PA_ZX_DLOG_IF(severity, condition, zx_err)   \
   PA_LAZY_STREAM(PA_ZX_LOG_STREAM(severity, zx_err), \
                  PA_DLOG_IS_ON(severity) && (condition))
-#else  // DCHECK_IS_ON()
+#else  // BUILDFLAG(PA_DCHECK_IS_ON)
 #define PA_ZX_DLOG_IF(severity, condition, zx_err) PA_EAT_STREAM_PARAMETERS
-#endif  // DCHECK_IS_ON()
+#endif  // BUILDFLAG(PA_DCHECK_IS_ON)
 
-#define PA_ZX_DCHECK(condition, zx_err)            \
-  PA_LAZY_STREAM(PA_ZX_LOG_STREAM(DCHECK, zx_err), \
-                 DCHECK_IS_ON() && !(condition))   \
+#define PA_ZX_DCHECK(condition, zx_err)                      \
+  PA_LAZY_STREAM(PA_ZX_LOG_STREAM(DCHECK, zx_err),           \
+                 BUILDFLAG(PA_DCHECK_IS_ON) && !(condition)) \
       << "Check failed: " #condition << ". "
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_BASE_FUCHSIA_FUCHSIA_LOGGING_H_

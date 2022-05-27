@@ -116,7 +116,7 @@ void AddressPoolManager::Pool::Initialize(uintptr_t ptr, size_t length) {
   PA_CHECK(!(ptr & kSuperPageOffsetMask));
   PA_CHECK(!(length & kSuperPageOffsetMask));
   address_begin_ = ptr;
-#if DCHECK_IS_ON()
+#if BUILDFLAG(PA_DCHECK_IS_ON)
   address_end_ = ptr + length;
   PA_DCHECK(address_begin_ < address_end_);
 #endif
@@ -193,7 +193,7 @@ uintptr_t AddressPoolManager::Pool::FindChunk(size_t requested_size) {
         bit_hint_ = end_bit;
       }
       uintptr_t address = address_begin_ + beg_bit * kSuperPageSize;
-#if DCHECK_IS_ON()
+#if BUILDFLAG(PA_DCHECK_IS_ON)
       PA_DCHECK(address + requested_size <= address_end_);
 #endif
       return address;
@@ -234,7 +234,7 @@ void AddressPoolManager::Pool::FreeChunk(uintptr_t address, size_t free_size) {
   PA_DCHECK(!(free_size & kSuperPageOffsetMask));
 
   PA_DCHECK(address_begin_ <= address);
-#if DCHECK_IS_ON()
+#if BUILDFLAG(PA_DCHECK_IS_ON)
   PA_DCHECK(address + free_size <= address_end_);
 #endif
 

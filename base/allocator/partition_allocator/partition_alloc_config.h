@@ -6,7 +6,6 @@
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_CONFIG_H_
 
 #include "base/allocator/buildflags.h"
-#include "base/dcheck_is_on.h"
 #include "build/build_config.h"
 
 // ARCH_CPU_64_BITS implies 64-bit instruction set, but not necessarily 64-bit
@@ -131,7 +130,7 @@ static_assert(sizeof(void*) != 8, "");
 #endif
 
 // Specifies whether allocation extras need to be added.
-#if DCHECK_IS_ON() || BUILDFLAG(USE_BACKUP_REF_PTR)
+#if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(USE_BACKUP_REF_PTR)
 #define PA_EXTRAS_REQUIRED
 #endif
 
@@ -163,10 +162,10 @@ static_assert(sizeof(void*) != 8, "");
 // calling malloc() again.
 //
 // Limitations:
-// - DCHECK_IS_ON() due to runtime cost
+// - BUILDFLAG(PA_DCHECK_IS_ON) due to runtime cost
 // - thread_local TLS to simplify the implementation
 // - Not on Android due to bot failures
-#if DCHECK_IS_ON() && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
+#if BUILDFLAG(PA_DCHECK_IS_ON) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
     defined(PA_THREAD_LOCAL_TLS) && !BUILDFLAG(IS_ANDROID)
 #define PA_HAS_ALLOCATION_GUARD
 #endif
@@ -203,7 +202,8 @@ constexpr bool kUseLazyCommit = false;
 // raw_ptr at the same time.
 #if !(BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS) &&  \
       BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)) && \
-    (DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS))
+    (BUILDFLAG(PA_DCHECK_IS_ON) ||                  \
+     BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS))
 #define PA_REF_COUNT_CHECK_COOKIE
 #endif
 

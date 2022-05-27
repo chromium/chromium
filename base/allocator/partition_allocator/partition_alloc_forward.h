@@ -11,7 +11,6 @@
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/base_export.h"
-#include "base/dcheck_is_on.h"
 
 namespace partition_alloc {
 
@@ -44,7 +43,8 @@ constexpr bool ThreadSafe = true;
 template <bool thread_safe>
 struct SlotSpanMetadata;
 
-#if (DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)) && \
+#if (BUILDFLAG(PA_DCHECK_IS_ON) ||                    \
+     BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)) && \
     BUILDFLAG(USE_BACKUP_REF_PTR)
 BASE_EXPORT void CheckThatSlotOffsetIsZero(uintptr_t address);
 #endif

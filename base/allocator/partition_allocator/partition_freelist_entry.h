@@ -18,7 +18,6 @@
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_ref_count.h"
-#include "base/dcheck_is_on.h"
 #include "build/build_config.h"
 
 namespace partition_alloc::internal {
@@ -178,7 +177,7 @@ class PartitionFreelistEntry {
     // SetNext() is either called on the freelist head, when provisioning new
     // slots, or when GetNext() has been called before, no need to pass the
     // size.
-#if DCHECK_IS_ON()
+#if BUILDFLAG(PA_DCHECK_IS_ON)
     // Regular freelists always point to an entry within the same super page.
     //
     // This is most likely a PartitionAlloc bug if this triggers.
@@ -188,7 +187,7 @@ class PartitionFreelistEntry {
                 (reinterpret_cast<uintptr_t>(ptr) & kSuperPageBaseMask))) {
       FreelistCorruptionDetected(0);
     }
-#endif  // DCHECK_IS_ON()
+#endif  // BUILDFLAG(PA_DCHECK_IS_ON)
 
     encoded_next_ = EncodedPartitionFreelistEntryPtr(ptr);
 #if defined(PA_HAS_FREELIST_SHADOW_ENTRY)

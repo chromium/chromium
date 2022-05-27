@@ -7,10 +7,10 @@
 
 #include <iosfwd>
 
+#include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/immediate_crash.h"
 #include "base/base_export.h"
-#include "base/dcheck_is_on.h"
 
 // This header defines the CHECK, DCHECK, and DPCHECK macros.
 //
@@ -141,7 +141,7 @@ class BASE_EXPORT CheckError {
 
 #endif
 
-#if DCHECK_IS_ON()
+#if BUILDFLAG(PA_DCHECK_IS_ON)
 
 #define PA_BASE_DCHECK(condition)                               \
   PA_LAZY_CHECK_STREAM(                                         \

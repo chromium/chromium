@@ -37,7 +37,7 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_BASE_THREAD_ANNOTATIONS_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_BASE_THREAD_ANNOTATIONS_H_
 
-#include "base/dcheck_is_on.h"
+#include "base/allocator/buildflags.h"
 #include "build/build_config.h"
 
 #if defined(__clang__)
@@ -246,7 +246,7 @@ inline T& ts_unchecked_read(T& v) PA_NO_THREAD_SAFETY_ANALYSIS {
 
 // The above is imported as-is from abseil-cpp. The following Chromium-specific
 // synonyms are added for Chromium concepts (SequenceChecker/ThreadChecker).
-#if DCHECK_IS_ON()
+#if BUILDFLAG(PA_DCHECK_IS_ON)
 
 // Equivalent to PA_GUARDED_BY for SequenceChecker/ThreadChecker. Currently,
 #define PA_GUARDED_BY_CONTEXT(name) PA_GUARDED_BY(name)
@@ -254,11 +254,11 @@ inline T& ts_unchecked_read(T& v) PA_NO_THREAD_SAFETY_ANALYSIS {
 // Equivalent to PA_EXCLUSIVE_LOCKS_REQUIRED for SequenceChecker/ThreadChecker.
 #define PA_VALID_CONTEXT_REQUIRED(name) PA_EXCLUSIVE_LOCKS_REQUIRED(name)
 
-#else  // DCHECK_IS_ON()
+#else  // BUILDFLAG(PA_DCHECK_IS_ON)
 
 #define PA_GUARDED_BY_CONTEXT(name)
 #define PA_VALID_CONTEXT_REQUIRED(name)
 
-#endif  // DCHECK_IS_ON()
+#endif  // BUILDFLAG(PA_DCHECK_IS_ON)
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_BASE_THREAD_ANNOTATIONS_H_

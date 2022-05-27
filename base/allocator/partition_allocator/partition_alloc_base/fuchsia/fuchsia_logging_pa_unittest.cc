@@ -8,6 +8,7 @@
 #include <lib/fidl/cpp/binding.h>
 #include <lib/sys/cpp/component_context.h>
 
+#include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/logging.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -26,14 +27,20 @@ class MockLogSource {
 // Verifies the Fuchsia-specific PA_ZX_*() logging macros.
 TEST(FuchsiaLoggingTest, FuchsiaLogging) {
   MockLogSource mock_log_source;
+  constexpr int kTimes =
+#if BUILDFLAG(PA_DCHECK_IS_ON)
+      2;
+#else
+      1;
+#endif
   EXPECT_CALL(mock_log_source, Log())
-      .Times(DCHECK_IS_ON() ? 2 : 1)
+      .Times(kTimes)
       .WillRepeatedly(testing::Return("log message"));
 
   logging::SetMinLogLevel(logging::LOGGING_INFO);
 
   EXPECT_TRUE(PA_LOG_IS_ON(INFO));
-  EXPECT_EQ(DCHECK_IS_ON(), PA_DLOG_IS_ON(INFO));
+  EXPECT_EQ(BUILDFLAG(PA_DCHECK_IS_ON), PA_DLOG_IS_ON(INFO));
 
   PA_ZX_LOG(INFO, ZX_ERR_INTERNAL) << mock_log_source.Log();
   PA_ZX_DLOG(INFO, ZX_ERR_INTERNAL) << mock_log_source.Log();

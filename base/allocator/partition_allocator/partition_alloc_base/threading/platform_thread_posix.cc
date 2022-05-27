@@ -12,6 +12,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/logging.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/threading/platform_thread_internal_posix.h"
 #include "build/build_config.h"
@@ -93,7 +94,7 @@ PlatformThreadId PlatformThread::CurrentId() {
       g_is_main_thread = false;
     }
   } else {
-#if DCHECK_IS_ON()
+#if BUILDFLAG(PA_DCHECK_IS_ON)
     if (g_thread_id != syscall(__NR_gettid)) {
       PA_RAW_LOG(
           FATAL,

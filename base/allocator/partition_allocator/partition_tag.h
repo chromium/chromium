@@ -19,7 +19,6 @@
 #include "base/allocator/partition_allocator/partition_tag_bitmap.h"
 #include "base/allocator/partition_allocator/reservation_offset_table.h"
 #include "base/allocator/partition_allocator/tagging.h"
-#include "base/dcheck_is_on.h"
 #include "build/build_config.h"
 
 namespace partition_alloc {
@@ -95,7 +94,7 @@ PA_ALWAYS_INLINE void PartitionTagIncrementValue(void* ptr, size_t size) {
   PartitionTag new_tag = tag;
   ++new_tag;
   new_tag += !new_tag;  // Avoid 0.
-#if DCHECK_IS_ON()
+#if BUILDFLAG(PA_DCHECK_IS_ON)
   // This verifies that tags for the entire slot have the same value and that
   // |size| doesn't exceed the slot size.
   size_t tag_count = size >> tag_bitmap::kBytesPerPartitionTagShift;

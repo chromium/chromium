@@ -12,11 +12,11 @@
 
 #include <sys/mman.h>
 
+#include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/oom.h"
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/posix/eintr_wrapper.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
-#include "base/dcheck_is_on.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_APPLE)
@@ -256,13 +256,14 @@ void DecommitSystemPagesInternal(
 
   bool change_permissions =
       accessibility_disposition == PageAccessibilityDisposition::kRequireUpdate;
-#if DCHECK_IS_ON()
+#if BUILDFLAG(PA_DCHECK_IS_ON)
   // This is not guaranteed, show that we're serious.
   //
   // More specifically, several callers have had issues with assuming that
   // memory is zeroed, this would hopefully make these bugs more visible.  We
   // don't memset() everything, because ranges can be very large, and doing it
-  // over the entire range could make Chrome unusable with DCHECK_IS_ON().
+  // over the entire range could make Chrome unusable with
+  // BUILDFLAG(PA_DCHECK_IS_ON).
   //
   // Only do it when we are about to change the permissions, since we don't know
   // the previous permissions, and cannot restore them.

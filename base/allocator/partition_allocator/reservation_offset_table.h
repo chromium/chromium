@@ -18,7 +18,6 @@
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/tagging.h"
 #include "base/base_export.h"
-#include "base/dcheck_is_on.h"
 #include "build/build_config.h"
 
 namespace partition_alloc::internal {
@@ -166,20 +165,20 @@ PA_ALWAYS_INLINE uintptr_t ComputeReservationStart(uintptr_t address,
 // If the given address doesn't point to direct-map allocated memory,
 // returns 0.
 PA_ALWAYS_INLINE uintptr_t GetDirectMapReservationStart(uintptr_t address) {
-#if DCHECK_IS_ON()
+#if BUILDFLAG(PA_DCHECK_IS_ON)
   bool is_in_brp_pool = IsManagedByPartitionAllocBRPPool(address);
   bool is_in_regular_pool = IsManagedByPartitionAllocRegularPool(address);
   // When USE_BACKUP_REF_PTR is off, BRP pool isn't used.
 #if !BUILDFLAG(USE_BACKUP_REF_PTR)
   PA_DCHECK(!is_in_brp_pool);
 #endif
-#endif  // DCHECK_IS_ON()
+#endif  // BUILDFLAG(PA_DCHECK_IS_ON)
   uint16_t* offset_ptr = ReservationOffsetPointer(address);
   PA_DCHECK(*offset_ptr != kOffsetTagNotAllocated);
   if (*offset_ptr == kOffsetTagNormalBuckets)
     return 0;
   uintptr_t reservation_start = ComputeReservationStart(address, offset_ptr);
-#if DCHECK_IS_ON()
+#if BUILDFLAG(PA_DCHECK_IS_ON)
   // Make sure the reservation start is in the same pool as |address|.
   // In the 32-bit mode, the beginning of a reservation may be excluded from the
   // BRP pool, so shift the pointer. The other pools don't have this logic.
@@ -194,7 +193,7 @@ PA_ALWAYS_INLINE uintptr_t GetDirectMapReservationStart(uintptr_t address) {
   PA_DCHECK(is_in_regular_pool ==
             IsManagedByPartitionAllocRegularPool(reservation_start));
   PA_DCHECK(*ReservationOffsetPointer(reservation_start) == 0);
-#endif  // DCHECK_IS_ON()
+#endif  // BUILDFLAG(PA_DCHECK_IS_ON)
 
   return reservation_start;
 }

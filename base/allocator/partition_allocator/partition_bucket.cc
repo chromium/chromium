@@ -246,7 +246,7 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
     const size_t reservation_size =
         PartitionRoot<thread_safe>::GetDirectMapReservationSize(
             raw_size + padding_for_alignment);
-#if DCHECK_IS_ON()
+#if BUILDFLAG(PA_DCHECK_IS_ON)
     const size_t available_reservation_size =
         reservation_size - padding_for_alignment -
         PartitionRoot<thread_safe>::GetDirectMapMetadataAndGuardPagesSize();
@@ -649,7 +649,7 @@ PartitionBucket<thread_safe>::AllocNewSlotSpan(PartitionRoot<thread_safe>* root,
                               PartitionTagPointer(root->next_partition_page)),
                           SystemPageSize());
   if (root->next_tag_bitmap_page < next_tag_bitmap_page) {
-#if DCHECK_IS_ON()
+#if BUILDFLAG(PA_DCHECK_IS_ON)
     uintptr_t super_page =
         reinterpret_cast<uintptr_t>(slot_span) & kSuperPageBaseMask;
     uintptr_t tag_bitmap = super_page + PartitionPageSize();
@@ -913,12 +913,12 @@ PartitionBucket<thread_safe>::ProvisionMoreSlotsAndAllocOne(
     next_slot = next_slot_end;
     next_slot_end = next_slot + size;
     prev_entry = entry;
-#if DCHECK_IS_ON()
+#if BUILDFLAG(PA_DCHECK_IS_ON)
     free_list_entries_added++;
 #endif
   }
 
-#if DCHECK_IS_ON()
+#if BUILDFLAG(PA_DCHECK_IS_ON)
   // The only provisioned slot not added to the free list is the one being
   // returned.
   PA_DCHECK(slots_to_provision == free_list_entries_added + 1);

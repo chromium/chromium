@@ -223,7 +223,7 @@ namespace partition_alloc::internal {
 using SlotSpan = SlotSpanMetadata<ThreadSafe>;
 
 const size_t kTestAllocSize = 16;
-#if !DCHECK_IS_ON()
+#if !BUILDFLAG(PA_DCHECK_IS_ON)
 const size_t kPointerOffset = kPartitionRefCountOffsetAdjustment;
 const size_t kExtraAllocSize = kInSlotRefCountBufferSize;
 #else
@@ -1414,7 +1414,7 @@ TEST_P(PartitionAllocTest, Realloc) {
   char_ptr2 = static_cast<char*>(ptr2);
   EXPECT_EQ('A', char_ptr2[0]);
   EXPECT_EQ('A', char_ptr2[size / 2 - 1]);
-#if DCHECK_IS_ON()
+#if BUILDFLAG(PA_DCHECK_IS_ON)
   // For single-slot slot spans, the cookie is always placed immediately after
   // the allocation.
   EXPECT_EQ(kCookieValue[0], static_cast<unsigned char>(char_ptr2[size / 2]));
@@ -2069,8 +2069,8 @@ INSTANTIATE_TEST_SUITE_P(AlternateBucketDistribution,
 // Performing them as death tests causes them to be forked into their own
 // process, so they won't pollute other tests.
 //
-// These tests are *very* slow when DCHECK_IS_ON(), because they memset() many
-// GiB of data (see crbug.com/1168168).
+// These tests are *very* slow when BUILDFLAG(PA_DCHECK_IS_ON), because they
+// memset() many GiB of data (see crbug.com/1168168).
 // TODO(lizeb): make these tests faster.
 TEST_P(PartitionAllocDeathTest, RepeatedAllocReturnNullDirect) {
   // A direct-mapped allocation size.
@@ -2289,8 +2289,8 @@ TEST_P(PartitionAllocDeathTest, FreelistCorruption) {
   uaf_data[0] = previous_uaf_data;
 }
 
-// With DCHECK_IS_ON(), cookie already handles off-by-one detection.
-#if !DCHECK_IS_ON()
+// With BUILDFLAG(PA_DCHECK_IS_ON), cookie already handles off-by-one detection.
+#if !BUILDFLAG(PA_DCHECK_IS_ON)
 TEST_P(PartitionAllocDeathTest, OffByOneDetection) {
   base::CPU cpu;
   const size_t alloc_size = 2 * sizeof(void*);
@@ -2332,7 +2332,7 @@ TEST_P(PartitionAllocDeathTest, OffByOneDetectionWithRealisticData) {
     array[2] = previous_value;
   }
 }
-#endif  // !DCHECK_IS_ON()
+#endif  // !BUILDFLAG(PA_DCHECK_IS_ON)
 
 #endif  // !BUILDFLAG(USE_BACKUP_REF_PTR) &&
         // defined(PA_HAS_FREELIST_SHADOW_ENTRY)
@@ -4076,7 +4076,7 @@ TEST_P(PartitionAllocTest, CheckReservationType) {
   // Freeing releases direct-map super pages.
   address_to_check =
       partition_alloc::internal::base::bits::AlignDown(address, kSuperPageSize);
-#if DCHECK_IS_ON()
+#if BUILDFLAG(PA_DCHECK_IS_ON)
   // Expect to DCHECK on unallocated region.
   EXPECT_DEATH_IF_SUPPORTED(IsReservationStart(address_to_check), "");
 #endif
@@ -4153,7 +4153,7 @@ TEST_P(PartitionAllocTest, FastPathOrReturnNull) {
 
 TEST_P(PartitionAllocDeathTest, CheckTriggered) {
   using ::testing::ContainsRegex;
-#if DCHECK_IS_ON()
+#if BUILDFLAG(PA_DCHECK_IS_ON)
   EXPECT_DEATH(PA_CHECK(5 == 7), ContainsRegex("Check failed.*5 == 7"));
 #endif
   EXPECT_DEATH(PA_CHECK(5 == 7), ContainsRegex("Check failed.*5 == 7"));

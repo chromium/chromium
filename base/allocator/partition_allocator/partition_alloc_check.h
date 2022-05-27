@@ -13,7 +13,6 @@
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/debug/alias.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/immediate_crash.h"
-#include "base/dcheck_is_on.h"
 #include "build/build_config.h"
 
 #define PA_STRINGIFY_IMPL(s) #s
@@ -46,11 +45,11 @@
   : PA_EAT_CHECK_STREAM_PARAMS()
 #endif  // defined(OFFICIAL_BUILD) && defined(NDEBUG)
 
-#if DCHECK_IS_ON()
+#if BUILDFLAG(PA_DCHECK_IS_ON)
 #define PA_DCHECK(condition) PA_CHECK(condition)
 #else
 #define PA_DCHECK(condition) PA_EAT_CHECK_STREAM_PARAMS(!(condition))
-#endif  // DCHECK_IS_ON()
+#endif  // BUILDFLAG(PA_DCHECK_IS_ON)
 
 #define PA_PCHECK(condition)                                 \
   if (!(condition)) {                                        \
@@ -59,11 +58,11 @@
     PA_IMMEDIATE_CRASH();                                    \
   }
 
-#if DCHECK_IS_ON()
+#if BUILDFLAG(PA_DCHECK_IS_ON)
 #define PA_DPCHECK(condition) PA_PCHECK(condition)
 #else
 #define PA_DPCHECK(condition) PA_EAT_CHECK_STREAM_PARAMS(!(condition))
-#endif  // DCHECK_IS_ON()
+#endif  // BUILDFLAG(PA_DCHECK_IS_ON)
 
 #else
 #define PA_CHECK(condition) PA_BASE_CHECK(condition)
@@ -75,7 +74,7 @@
 // Expensive dchecks that run within *Scan. These checks are only enabled in
 // debug builds with dchecks enabled.
 #if !defined(NDEBUG)
-#define PA_SCAN_DCHECK_IS_ON() DCHECK_IS_ON()
+#define PA_SCAN_DCHECK_IS_ON() BUILDFLAG(PA_DCHECK_IS_ON)
 #else
 #define PA_SCAN_DCHECK_IS_ON() 0
 #endif

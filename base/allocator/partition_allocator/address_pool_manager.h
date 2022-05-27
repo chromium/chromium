@@ -8,6 +8,7 @@
 #include <bitset>
 #include <limits>
 
+#include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/address_pool_manager_bitmap.h"
 #include "base/allocator/partition_allocator/address_pool_manager_types.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
@@ -18,7 +19,6 @@
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_lock.h"
 #include "base/base_export.h"
-#include "base/dcheck_is_on.h"
 #include "build/build_config.h"
 
 namespace base {
@@ -147,7 +147,7 @@ class BASE_EXPORT AddressPoolManager {
 
     size_t total_bits_ = 0;
     uintptr_t address_begin_ = 0;
-#if DCHECK_IS_ON()
+#if BUILDFLAG(PA_DCHECK_IS_ON)
     uintptr_t address_end_ = 0;
 #endif
   };
