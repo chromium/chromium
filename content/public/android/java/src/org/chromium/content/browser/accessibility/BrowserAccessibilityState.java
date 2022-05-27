@@ -4,6 +4,8 @@
 
 package org.chromium.content.browser.accessibility;
 
+import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.TAG;
+
 import android.accessibilityservice.AccessibilityServiceInfo;
 import android.content.ComponentName;
 import android.content.ContentResolver;
@@ -43,8 +45,6 @@ public class BrowserAccessibilityState {
     public interface Listener {
         public void onBrowserAccessibilityStateChanged(boolean newScreenReaderEnabledState);
     }
-
-    private static final String TAG = "ClankAccessibility";
 
     // Analysis of the most popular accessibility services on Android suggests
     // that any service that requests any of these three events is a screen reader

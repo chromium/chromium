@@ -81,6 +81,7 @@ import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.core.view.accessibility.AccessibilityNodeProviderCompat;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.Log;
 import org.chromium.base.UserData;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
@@ -121,6 +122,9 @@ import java.util.Set;
 public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompat
         implements AccessibilityStateChangeListener, WebContentsAccessibility, WindowEventObserver,
                    UserData, BrowserAccessibilityState.Listener {
+    // Public catch-all TAG for logging in the accessibility component.
+    public static final String TAG = "ClankAccessibility";
+
     // The following constants have been hard coded so we can support actions newer than our
     // minimum SDK without having to break methods into a series of subclasses.
     // TODO(mschillaci): Remove these once they are added to the AccessibilityNodeInfoCompat class.
@@ -400,14 +404,22 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         // actually requested.
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            AutofillManager autofillManager = mContext.getSystemService(AutofillManager.class);
-            if (autofillManager != null && autofillManager.isEnabled()) {
-                // Native accessibility is usually initialized when getAccessibilityNodeProvider is
-                // called, but the Autofill compatibility bridge only calls that method after it has
-                // received the first accessibility events. To solve the chicken-and-egg problem,
-                // always initialize the native parts when the user has an Autofill service enabled.
-                refreshState();
-                getAccessibilityNodeProvider();
+            // The system service call for AutofillManager can timeout and throws an Exception.
+            // This is treated differently in each version of Android, so we must catch a
+            // generic Exception. (refer to crbug.com/1186406 or AutofillManagerWrapper ctor).
+            try {
+                AutofillManager autofillManager = mContext.getSystemService(AutofillManager.class);
+                if (autofillManager != null && autofillManager.isEnabled()) {
+                    // Native accessibility is usually initialized when getAccessibilityNodeProvider
+                    // is called, but the Autofill compatibility bridge only calls that method after
+                    // it has received the first accessibility events. To solve the chicken-and-egg
+                    // problem, always initialize the native parts when the user has an Autofill
+                    // service enabled.
+                    refreshState();
+                    getAccessibilityNodeProvider();
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "AutofillManager did not resolve before time limit.");
             }
         }
     }
