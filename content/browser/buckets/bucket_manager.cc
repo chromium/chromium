@@ -25,9 +25,8 @@ void BucketManager::BindReceiverForRenderFrame(
   auto permission_decision = base::BindRepeating(
       [](GlobalRenderFrameHostId id, blink::PermissionType permission_type) {
         auto* rfh = RenderFrameHost::FromID(id);
-        // The callback will be invoked in the handler for a mojo message from
-        // the renderer so the rfh should still exist.
-        DCHECK(rfh);
+        if (!rfh)
+          return blink::mojom::PermissionStatus::DENIED;
         return rfh->GetBrowserContext()
             ->GetPermissionController()
             ->GetPermissionStatusForCurrentDocument(permission_type, rfh);
@@ -49,9 +48,8 @@ void BucketManager::BindReceiverForWorker(
       [](int render_process_id, const url::Origin& origin,
          blink::PermissionType permission_type) {
         RenderProcessHost* rph = RenderProcessHost::FromID(render_process_id);
-        // The callback will be invoked in the handler for a mojo message from
-        // the renderer so the rph should still exist.
-        DCHECK(rph);
+        if (!rph)
+          return blink::mojom::PermissionStatus::DENIED;
         return rph->GetBrowserContext()
             ->GetPermissionController()
             ->GetPermissionStatusForWorker(permission_type, rph, origin);
