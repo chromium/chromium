@@ -46,6 +46,8 @@ class CORE_EXPORT TextPainterBase {
                   bool horizontal);
   ~TextPainterBase();
 
+  const NGInlinePaintContext* InlineContext() const { return inline_context_; }
+
   virtual void ClipDecorationsStripe(float upper,
                                      float stripe_width,
                                      float dilation) = 0;

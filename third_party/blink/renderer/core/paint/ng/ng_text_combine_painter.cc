@@ -101,7 +101,8 @@ void NGTextCombinePainter::PaintDecorations(const PaintInfo& paint_info,
   TextDecorationInfo decoration_info(
       text_frame_rect_.offset, text_frame_rect_.size.width,
       style_.GetFontBaseline(), style_, style_.GetFont(),
-      selection_text_decoration, decorating_box_style);
+      /* inline_context */ nullptr, selection_text_decoration,
+      decorating_box_style);
 
   const NGTextDecorationOffset decoration_offset(style_, style_, nullptr);
   const auto& applied_text_decorations = style_.AppliedTextDecorations();

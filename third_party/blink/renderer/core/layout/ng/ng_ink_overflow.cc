@@ -522,7 +522,9 @@ LayoutRect NGInkOverflow::ComputeTextDecorationOverflow(
   const MinimumThickness1 kMinimumThicknessIsOne(true);
   TextDecorationInfo decoration_info(
       offset, ink_overflow.Width(), style.GetFontBaseline(), style, scaled_font,
-      absl::nullopt, nullptr, kMinimumThicknessIsOne);
+      /* inline_context */ nullptr,
+      /* selection_text_decoration */ absl::nullopt,
+      /* decorating_box_style */ nullptr, kMinimumThicknessIsOne);
   NGTextDecorationOffset decoration_offset(decoration_info.Style(), style,
                                            nullptr);
   const Vector<AppliedTextDecoration>& decorations =

@@ -124,6 +124,7 @@ TextDecorationInfo::TextDecorationInfo(
     FontBaseline baseline_type,
     const ComputedStyle& style,
     const Font& scaled_font,
+    const NGInlinePaintContext* inline_context,
     const absl::optional<AppliedTextDecoration> selection_text_decoration,
     const ComputedStyle* decorating_box_style,
     MinimumThickness1 minimum_thickness1,
