@@ -1445,7 +1445,8 @@ absl::optional<base::Value> Schema::ParseToDictAndValidate(
     std::string* error) {
   base::JSONReader::ValueWithError value_with_error =
       base::JSONReader::ReadAndReturnValueWithError(
-          schema, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
+          schema, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS |
+                      base::JSONParserOptions::JSON_PARSE_CHROMIUM_EXTENSIONS);
   *error = value_with_error.error_message;
 
   if (!value_with_error.value)
