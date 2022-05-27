@@ -951,6 +951,15 @@ chromium-metrics-reviews@google.com.
   <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
+<histogram name="Ash.CaptureModeController.NumberOfConnectedCameras"
+    units="connected cameras" expires_after="2023-05-20">
+  <owner>conniekxu@chromium.org</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Records the number of connected cameras to the device whenever it changes.
+  </summary>
+</histogram>
+
 <histogram
     name="Ash.CaptureModeController.Projector.CaptureConfiguration.{TabletOrClamshell}"
     enum="CaptureModeConfiguration" expires_after="2022-09-29">

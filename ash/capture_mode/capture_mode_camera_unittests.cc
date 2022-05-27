@@ -2436,6 +2436,50 @@ TEST_F(CaptureModeCameraTest,
   }
 }
 
+// Tests that the number of connected cameras to the device is recorded whenever
+// the number changes.
+TEST_F(CaptureModeCameraTest, RecordNumberOfConnectedCamerasHistogramTest) {
+  constexpr char kHistogramNameBase[] =
+      "Ash.CaptureModeController.NumberOfConnectedCameras";
+
+  base::HistogramTester histogram_tester;
+  // Make sure the device change alert triggered by the SystemMonitor is handled
+  // before we connect a camera device.
+  {
+    base::RunLoop loop;
+    GetCameraController()->SetOnCameraListReceivedForTesting(
+        loop.QuitClosure());
+    base::SystemMonitor::Get()->ProcessDevicesChanged(
+        base::SystemMonitor::DEVTYPE_VIDEO_CAPTURE);
+    loop.Run();
+  }
+
+  // Verify that before we connect any camera device, there's 0 cameras and it
+  // has been recorded.
+  histogram_tester.ExpectBucketCount(kHistogramNameBase, 0, 1);
+
+  // Connect one camera, verify that the number of one camera device has been
+  // recorded once.
+  AddFakeCamera("/dev/video", "fake cam ", "model 1");
+  histogram_tester.ExpectBucketCount(kHistogramNameBase, 1, 1);
+
+  // Connect the second camera, verify that the number of two camera devices has
+  // been recorded once.
+  AddFakeCamera("/dev/video1", "fake cam 2", "model 2");
+  histogram_tester.ExpectBucketCount(kHistogramNameBase, 2, 1);
+
+  // Disconnect the second camera, now the number of connected cameres drops
+  // back to one, verify that the number of one camera device has been recorded
+  // twice.
+  RemoveFakeCamera("/dev/video1");
+  histogram_tester.ExpectBucketCount(kHistogramNameBase, 1, 2);
+
+  // Connect the third camera, now the number of connected cameras is two again,
+  // verify that the number of two camera devices has been recorded twice.
+  AddFakeCamera("/dev/video2", "fake cam 3", "model 3");
+  histogram_tester.ExpectBucketCount(kHistogramNameBase, 2, 2);
+}
+
 // Tests that the duration for disconnected camera to become available again is
 // recorded correctly both in clamshell and tablet mode.
 TEST_F(CaptureModeCameraTest, RecordCameraReconnectDurationHistogramTest) {

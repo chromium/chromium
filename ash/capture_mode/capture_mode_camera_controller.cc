@@ -754,6 +754,14 @@ void CaptureModeCameraController::OnCameraDevicesReceived(
         std::move(on_camera_list_received_for_test_));
   }
 
+  const bool should_report_cameras_number =
+      !did_report_number_of_cameras_before_ ||
+      (devices.size() != available_cameras_.size());
+  if (should_report_cameras_number) {
+    did_report_number_of_cameras_before_ = true;
+    RecordNumberOfConnectedCameras(devices.size());
+  }
+
   if (!DidDevicesChange(devices, available_cameras_))
     return;
 

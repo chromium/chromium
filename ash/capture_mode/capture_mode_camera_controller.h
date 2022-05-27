@@ -401,6 +401,10 @@ class ASH_EXPORT CaptureModeCameraController
   // while recording is in progress.
   absl::optional<int> in_recording_camera_disconnections_;
 
+  // Will be set to true the first time the number of connected cameras is
+  // reported.
+  bool did_report_number_of_cameras_before_ = false;
+
   base::WeakPtrFactory<CaptureModeCameraController> weak_ptr_factory_{this};
 };
 
