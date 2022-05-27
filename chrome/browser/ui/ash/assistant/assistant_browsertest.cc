@@ -174,6 +174,23 @@ IN_PROC_BROWSER_TEST_F(AssistantBrowserTest, ShouldDisplayTextResponse) {
   });
 }
 
+IN_PROC_BROWSER_TEST_F(AssistantBrowserTest,
+                       ShouldDisplayTextResponseWithTwoContiniousQueries) {
+  tester()->StartAssistantAndWaitForReady();
+
+  ShowAssistantUi();
+
+  tester()->SendTextQuery("phone");
+  tester()->SendTextQuery("test");
+  tester()->ExpectAnyOfTheseTextResponses({
+      "No one told me there would be a test",
+      "You're coming in loud and clear",
+      "debug OK",
+      "I can assure you, this thing's on",
+      "Is this thing on?",
+  });
+}
+
 IN_PROC_BROWSER_TEST_F(AssistantBrowserTest, ShouldDisplayCardResponse) {
   tester()->StartAssistantAndWaitForReady();
 

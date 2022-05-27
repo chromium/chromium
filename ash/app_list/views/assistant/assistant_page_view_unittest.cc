@@ -814,8 +814,9 @@ TEST_P(AssistantPageClamshellTest,
   EXPECT_HAS_FOCUS(input_text_field());
 }
 
+// TODO(b/234164113): Test is flaky.
 TEST_P(AssistantPageClamshellTest,
-       ShouldFocusMicWhenSubmittingSuggestionChipInVoiceMode) {
+       DISABLED_ShouldFocusMicWhenSubmittingSuggestionChipInVoiceMode) {
   ShowAssistantUi();
   ash::SuggestionChipView* suggestion_chip =
       CreateAndGetSuggestionChip("<suggestion chip query>");

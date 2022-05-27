@@ -8,6 +8,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -225,14 +227,10 @@ void TestAssistantService::StartTextInteraction(
     chromeos::assistant::AssistantQuerySource source,
     bool allow_tts) {
   StartInteraction(AssistantInteractionType::kText, source, query);
-  if (interaction_response_)
-    SendInteractionResponse();
 }
 
 void TestAssistantService::StartVoiceInteraction() {
   StartInteraction(AssistantInteractionType::kVoice);
-  if (interaction_response_)
-    SendInteractionResponse();
 }
 
 void TestAssistantService::StopActiveInteraction(bool cancel_conversation) {
@@ -292,12 +290,30 @@ void TestAssistantService::StartInteraction(
     chromeos::assistant::AssistantInteractionType type,
     chromeos::assistant::AssistantQuerySource source,
     const std::string& query) {
+  if (running_active_interaction_) {
+    StopActiveInteraction(/*cancel_conversation=*/false);
+  }
+
+  // Pretend to respond asynchronously.
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&TestAssistantService::InteractionStarted,
+                     weak_factory_.GetWeakPtr(), type, source, query));
+}
+
+void TestAssistantService::InteractionStarted(
+    chromeos::assistant::AssistantInteractionType type,
+    chromeos::assistant::AssistantQuerySource source,
+    const std::string& query) {
   DCHECK(!running_active_interaction_);
   AssistantInteractionMetadata metadata{type, source, query};
   for (auto& subscriber : interaction_subscribers_) {
     subscriber.OnInteractionStarted(metadata);
   }
   running_active_interaction_ = true;
+
+  if (interaction_response_)
+    SendInteractionResponse();
 }
 
 void TestAssistantService::SendInteractionResponse() {

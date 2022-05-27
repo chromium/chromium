@@ -139,8 +139,6 @@ void AssistantInteractionControllerImpl::StartTextInteraction(
     AssistantQuerySource query_source) {
   DCHECK(assistant_);
 
-  StopActiveInteraction(false);
-
   model_.SetPendingQuery(
       std::make_unique<AssistantTextQuery>(text, query_source));
 
@@ -184,7 +182,6 @@ void AssistantInteractionControllerImpl::OnDeepLinkReceived(
         const absl::optional<std::string>& client_id =
             GetDeepLinkParam(params, DeepLinkParam::kClientId);
         if (client_id && !client_id.value().empty()) {
-          StopActiveInteraction(false);
           model_.SetPendingQuery(std::make_unique<AssistantTextQuery>(
               l10n_util::GetStringUTF8(IDS_ASSISTANT_EDIT_REMINDER_QUERY),
               /*query_source=*/AssistantQuerySource::kDeepLink));
@@ -814,8 +811,6 @@ void AssistantInteractionControllerImpl::StartScreenContextInteraction(
 }
 
 void AssistantInteractionControllerImpl::StartVoiceInteraction() {
-  StopActiveInteraction(false);
-
   model_.SetPendingQuery(std::make_unique<AssistantVoiceQuery>());
 
   assistant_->StartVoiceInteraction();
