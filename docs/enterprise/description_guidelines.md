@@ -13,6 +13,7 @@ how various product names and the like should be referenced.
 * Google Cast: `<ph name="PRODUCT_NAME">Google Cast</ph>`
 * Google Cloud Print: `<ph name="CLOUD_PRINT_NAME">Google Cloud Print</ph>`
 * Google Drive: `<ph name="GOOGLE_DRIVE_NAME">Google Drive</ph>`
+* Google Update: `<ph name="GOOGLE_UPDATE_NAME">Google Update</ph>`
 * Google Workspace: `<ph name="GOOGLE_WORKSPACE_PRODUCT_NAME">Google Workspace</ph>`
 * Lacros: `<ph name="LACROS_NAME">Lacros</ph>`
 * Android: `<ph name="ANDROID_NAME">Android</ph>`
