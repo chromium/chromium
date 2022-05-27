@@ -526,7 +526,7 @@ public class TabUiThemeProvider {
      * @param context {@link Context} to retrieve dimension.
      * @return The margin between tab cards in float number.
      */
-    public static float getTabGridCardMarginForDialogAnimation(Context context) {
+    public static float getTabGridCardMargin(Context context) {
         int[] attrs = {R.attr.tabGridMargin};
 
         TypedArray ta = context.obtainStyledAttributes(getThemeOverlayStyleResourceId(), attrs);

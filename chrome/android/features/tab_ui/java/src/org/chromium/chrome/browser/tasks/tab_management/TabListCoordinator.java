@@ -32,8 +32,6 @@ import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.pseudotab.PseudoTab;
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.tab_ui.R;
-import org.chromium.ui.base.DeviceFormFactor;
-import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -317,31 +315,20 @@ public class TabListCoordinator
 
     private void updateThumbnailAndSpanCount() {
         updateThumbnailLocation();
-        if (mMode == TabListMode.GRID && DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)
-                && TabUiFeatureUtilities.isGridTabSwitcherEnabled(mContext)) {
+        if (mMode == TabListMode.GRID
+                && TabUiFeatureUtilities.isTabletGridTabSwitcherEnabled(mContext)) {
             // Determine and set span count
             final GridLayoutManager layoutManager =
                     (GridLayoutManager) mRecyclerView.getLayoutManager();
             mMediator.updateSpanCount(layoutManager,
                     mContext.getResources().getConfiguration().orientation,
                     mContext.getResources().getConfiguration().screenWidthDp);
-
-            float expectedThumbnailAspectRatio = 1.f;
-            if (TabUiFeatureUtilities.isTabThumbnailAspectRatioNotOne()) {
-                expectedThumbnailAspectRatio = TabUtils.getTabThumbnailAspectRatio(mContext);
-            }
-            final int screenWidthPx = ViewUtils.dpToPx(
-                    mContext, mContext.getResources().getConfiguration().screenWidthDp);
-            // Determine column width and account for margins on left and right.
-            int itemWidthPx = (screenWidthPx / layoutManager.getSpanCount());
-            // Determine thumbnail height based on width and image aspect ratio. Add top title
-            // height and account for margins on top and bottom.
-            int itemHeightPx = ((int) ((itemWidthPx * 1f) / expectedThumbnailAspectRatio))
-                    + (int) mContext.getResources().getDimension(
-                            R.dimen.tab_list_card_title_height);
+            // Determine grid card width and account for margins on left and right.
+            final int cardWidthPx = (layoutManager.getWidth() / layoutManager.getSpanCount());
+            final int cardHeightPx = TabUtils.deriveGridCardHeight(cardWidthPx, mContext);
             for (int i = 0; i < mModel.size(); i++) {
-                mModel.get(i).model.set(TabProperties.GRID_CARD_WIDTH, itemWidthPx);
-                mModel.get(i).model.set(TabProperties.GRID_CARD_HEIGHT, itemHeightPx);
+                mModel.get(i).model.set(TabProperties.GRID_CARD_WIDTH, cardWidthPx);
+                mModel.get(i).model.set(TabProperties.GRID_CARD_HEIGHT, cardHeightPx);
             }
         }
     }

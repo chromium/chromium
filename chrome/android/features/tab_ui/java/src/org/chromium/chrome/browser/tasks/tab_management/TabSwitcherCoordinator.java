@@ -46,6 +46,7 @@ import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator.SystemUiScrimDelegate;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -299,10 +300,12 @@ public class TabSwitcherCoordinator
                 });
 
         if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled(activity)) {
+            ScrimCoordinator gridDialogScrimCoordinator =
+                    shouldUseNewScrim() ? createScrimCoordinator() : scrimCoordinator;
             mTabGridDialogCoordinator = new TabGridDialogCoordinator(activity, tabModelSelector,
                     tabContentManager, tabCreatorManager, mCoordinatorView, this, mMediator,
                     this::getTabGridDialogAnimationSourceView, shareDelegateSupplier,
-                    scrimCoordinator, rootView);
+                    gridDialogScrimCoordinator, rootView);
             mMediator.setTabGridDialogController(mTabGridDialogCoordinator.getDialogController());
         } else {
             mTabGridDialogCoordinator = null;
@@ -354,6 +357,29 @@ public class TabSwitcherCoordinator
 
         mLifecycleDispatcher = lifecycleDispatcher;
         mLifecycleDispatcher.register(this);
+    }
+
+    /**
+     * Tablet Tab Switcher polish uses a scrim to show/hide tab switcher.
+     * Create a new scrim via a new scrim coordinator for tab group dialog.
+     * @return if tab switcher polish is enabled on tablets.
+     */
+    private boolean shouldUseNewScrim() {
+        return TabUiFeatureUtilities.isTabletGridTabSwitcherPolishEnabled(mRootView.getContext());
+    }
+
+    private ScrimCoordinator createScrimCoordinator() {
+        ViewGroup coordinator = mActivity.findViewById(org.chromium.chrome.R.id.coordinator);
+        SystemUiScrimDelegate delegate = new SystemUiScrimDelegate() {
+            @Override
+            public void setStatusBarScrimFraction(float scrimFraction) {}
+
+            @Override
+            public void setNavigationBarScrimFraction(float scrimFraction) {}
+        };
+        return new ScrimCoordinator(mActivity, delegate, coordinator,
+                coordinator.getContext().getColor(
+                        org.chromium.chrome.R.color.omnibox_focused_fading_background_color));
     }
 
     @VisibleForTesting

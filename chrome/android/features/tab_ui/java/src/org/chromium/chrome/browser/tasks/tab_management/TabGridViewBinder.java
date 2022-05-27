@@ -10,6 +10,7 @@ import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.text.TextUtils;
+import android.util.Size;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
@@ -26,6 +27,7 @@ import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
+import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -334,11 +336,15 @@ class TabGridViewBinder {
         // Use placeholder drawable before the real thumbnail is available.
         thumbnail.setColorThumbnailPlaceHolder(
                 model.get(TabProperties.IS_INCOGNITO), model.get(TabProperties.IS_SELECTED));
+
         Callback<Bitmap> callback = result -> {
             if (result != null) {
                 if (TabUiFeatureUtilities.isTabletGridTabSwitcherPolishEnabled(view.getContext())) {
                     // Adjust bitmap to thumbnail.
-                    updateThumbnailMatrix(thumbnail, result, model);
+                    final Size thumbnailSize =
+                            TabUtils.deriveThumbnailSize(model.get(TabProperties.GRID_CARD_WIDTH),
+                                    model.get(TabProperties.GRID_CARD_HEIGHT), view.getContext());
+                    updateThumbnailMatrix(thumbnail, result, thumbnailSize);
                 } else {
                     thumbnail.setScaleType(ScaleType.FIT_CENTER);
                     thumbnail.setAdjustViewBounds(true);
@@ -354,15 +360,16 @@ class TabGridViewBinder {
     }
 
     /**
-     * Update @{@link Matrix} of ImageView. Bitmap is scaled to larger of the two dimens, then top-center
-     * aligned.
+     * Update @{@link Matrix} of ImageView. Bitmap is scaled to larger of the two dimens, then
+     * top-center aligned.
      * @param thumbnail Destination image view @{@link TabGridThumbnailView}.
      * @param source Image bitmap to resize.
-     * @param model PropertyModel containing the destination properties.
+     * @param destinationSize Desired width and height for source.
      */
-    private static void updateThumbnailMatrix(TabGridThumbnailView thumbnail, Bitmap source,  PropertyModel model) {
-        int newWidth = model.get(TabProperties.GRID_CARD_WIDTH);
-        int newHeight = model.get(TabProperties.GRID_CARD_HEIGHT);
+    private static void updateThumbnailMatrix(
+            TabGridThumbnailView thumbnail, Bitmap source, Size destinationSize) {
+        int newWidth = destinationSize.getWidth();
+        int newHeight = destinationSize.getHeight();
         if (newWidth <= 0 || newHeight <= 0
                 || (newWidth == source.getWidth() && newHeight == source.getHeight())) {
             thumbnail.setScaleType(ScaleType.FIT_CENTER);

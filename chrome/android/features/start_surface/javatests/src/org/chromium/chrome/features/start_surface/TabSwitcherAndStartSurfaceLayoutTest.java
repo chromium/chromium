@@ -1054,8 +1054,7 @@ public class TabSwitcherAndStartSurfaceLayoutTest {
         @Override
         public void check(View view, NoMatchingViewException noMatchException) {
             if (noMatchException != null) throw noMatchException;
-            float tabListPadding =
-                    TabUiThemeProvider.getTabGridCardMarginForDialogAnimation(view.getContext());
+            float tabListPadding = TabUiThemeProvider.getTabGridCardMargin(view.getContext());
             float messageCardMargin =
                     TabUiThemeProvider.getMessageCardMarginDimension(view.getContext());
 

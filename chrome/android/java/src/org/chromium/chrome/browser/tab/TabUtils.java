@@ -10,6 +10,7 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.util.Size;
 import android.view.Display;
 
 import androidx.annotation.Nullable;
@@ -21,6 +22,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeProvider;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
@@ -175,5 +177,48 @@ public class TabUtils {
         }
         float value = (float) TabUiFeatureUtilities.THUMBNAIL_ASPECT_RATIO.getValue();
         return MathUtils.clamp(value, 0.5f, 2.0f);
+    }
+
+    /**
+     * Derive grid card height based on width, expected thumbnail aspect ratio and margins.
+     * @param cardWidthPx width of the card
+     * @param context to derive view margins
+     * @return computed card height.
+     */
+    public static int deriveGridCardHeight(int cardWidthPx, Context context) {
+        int tabThumbnailHeight = (int) ((cardWidthPx - getThumbnailWidthDiff(context))
+                / getTabThumbnailAspectRatio(context));
+        int cardHeightPx = tabThumbnailHeight + getThumbnailHeightDiff(context);
+        return cardHeightPx;
+    }
+
+    /**
+     * Derive thumbnail size based on parent card size.
+     * @param gridCardWidth width of parent card.
+     * @param gridCardHeight height of parent card.
+     * @param context to derive view margins.
+     * @return computed width and height of thumbnail.
+     */
+    public static Size deriveThumbnailSize(int gridCardWidth, int gridCardHeight, Context context) {
+        int thumbnailWidth = gridCardWidth - getThumbnailWidthDiff(context);
+        int thumbnailHeight = gridCardHeight - getThumbnailHeightDiff(context);
+        return new Size(thumbnailWidth, thumbnailHeight);
+    }
+
+    private static int getThumbnailHeightDiff(Context context) {
+        final int tabGridCardMargin = (int) TabUiThemeProvider.getTabGridCardMargin(context);
+        final int thumbnailMargin = (int) context.getResources().getDimension(
+                org.chromium.chrome.tab_ui.R.dimen.tab_grid_card_thumbnail_margin);
+        int heightMargins = (2 * tabGridCardMargin) + thumbnailMargin;
+        final int titleHeight = (int) context.getResources().getDimension(
+                org.chromium.chrome.tab_ui.R.dimen.tab_list_card_title_height);
+        return titleHeight + heightMargins;
+    }
+
+    private static int getThumbnailWidthDiff(Context context) {
+        final int tabGridCardMargin = (int) TabUiThemeProvider.getTabGridCardMargin(context);
+        final int thumbnailMargin = (int) context.getResources().getDimension(
+                org.chromium.chrome.tab_ui.R.dimen.tab_grid_card_thumbnail_margin);
+        return 2 * (tabGridCardMargin + thumbnailMargin);
     }
 }
