@@ -221,9 +221,14 @@ IN_PROC_BROWSER_TEST_F(OsInstallScreenTest, OsInstallGenericError) {
 
 // Check that a successful install shows the success step and countdown timer,
 // which will shut down the computer automatically after 60 seconds.
-// TODO(crbug.com/1318903): Re-enable this test
+// TODO(crbug.com/1318903): Re-enable this test on linux-chromeos-dbg.
+#if !defined(NDEBUG)
+#define MAYBE_OsInstallSuccessAutoShutdown DISABLED_OsInstallSuccessAutoShutdown
+#else
+#define MAYBE_OsInstallSuccessAutoShutdown OsInstallSuccessAutoShutdown
+#endif
 IN_PROC_BROWSER_TEST_F(OsInstallScreenTest,
-                       DISABLED_OsInstallSuccessAutoShutdown) {
+                       MAYBE_OsInstallSuccessAutoShutdown) {
   base::ScopedMockTimeMessageLoopTaskRunner mocked_task_runner;
   SetTickClockForTesting(mocked_task_runner->GetMockTickClock());
   auto* ti = OsInstallClient::Get()->GetTestInterface();
