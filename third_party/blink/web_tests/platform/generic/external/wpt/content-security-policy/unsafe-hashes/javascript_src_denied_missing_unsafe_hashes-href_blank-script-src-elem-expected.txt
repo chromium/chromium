@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL javascript: navigation using <a href target=_blank> should be refused due to missing unsafe-hashes assert_unreached: Should not have run javascript: URL Reached unreachable code
+Harness: the test ran to completion.
+
