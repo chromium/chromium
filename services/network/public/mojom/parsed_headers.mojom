@@ -10,6 +10,7 @@ import "services/network/public/mojom/cross_origin_embedder_policy.mojom";
 import "services/network/public/mojom/cross_origin_opener_policy.mojom";
 import "services/network/public/mojom/link_header.mojom";
 import "services/network/public/mojom/timing_allow_origin.mojom";
+import "services/network/public/mojom/variants_header.mojom";
 import "services/network/public/mojom/web_client_hints_types.mojom";
 import "services/network/public/mojom/x_frame_options.mojom";
 
@@ -87,4 +88,26 @@ struct ParsedHeaders {
   // header. Will be null if that header was not present in the response.
   // URLs are represented here as strings, and have not been validated.
   map<string,string>? reporting_endpoints;
+
+  // The parsed Variants response header.
+  //
+  // Indicates that representations are available for a given resource at the
+  // time that the response is produced, by enumerating the request header
+  // fields that it varies on, along with a representation of the values that
+  // are available for each.
+  //
+  // If Structured Header parsing fails or a member's value does have the
+  // structure outlined as defined, the client MUST treat the representation as
+  // having no Variants header field.
+  //
+  // Variants header only contains Accept-Language values. Please update the
+  // description if it extends to support other header values. Also, it only be
+  // populated when kReduceAcceptLanguage feature enabled.
+  //
+  // For more information, see:
+  // https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-variants-06#section-2.
+  array<VariantsHeader>? variants_headers;
+
+  // The parsed value of the Content-Language header.
+  array<string>? content_language;
 };

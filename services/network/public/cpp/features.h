@@ -122,6 +122,9 @@ COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::FeatureParam<std::string>
     kCacheTransparencyPervasivePayloads;
 
+COMPONENT_EXPORT(NETWORK_CPP)
+extern const base::Feature kReduceAcceptLanguage;
+
 }  // namespace features
 }  // namespace network
 

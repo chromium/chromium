@@ -288,6 +288,7 @@ mojom("url_loader_base") {
     "url_loader_network_service_observer.mojom",
     "url_request.mojom",
     "url_response_head.mojom",
+    "variants_header.mojom",
     "web_bundle_handle.mojom",
     "web_client_hints_types.mojom",
     "web_sandbox_flags.mojom",

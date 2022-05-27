@@ -36,6 +36,8 @@ component("cpp") {
     "client_hints.h",
     "constants.cc",
     "constants.h",
+    "content_language_parser.cc",
+    "content_language_parser.h",
     "content_security_policy/content_security_policy.cc",
     "content_security_policy/content_security_policy.h",
     "content_security_policy/csp_context.cc",
@@ -129,6 +131,8 @@ component("cpp") {
     "trust_token_operation_authorization.h",
     "url_util.cc",
     "url_util.h",
+    "variants_header_parser.cc",
+    "variants_header_parser.h",
     "weak_wrapper_shared_url_loader_factory.cc",
     "weak_wrapper_shared_url_loader_factory.h",
     "web_sandbox_flags.cc",
@@ -407,6 +411,7 @@ source_set("tests") {
   sources = [
     "bfcache_opt_in_parser_unittest.cc",
     "client_hints_unittest.cc",
+    "content_language_parser_unittest.cc",
     "content_security_policy/content_security_policy_unittest.cc",
     "content_security_policy/csp_context_unittest.cc",
     "content_security_policy/csp_source_list_unittest.cc",
@@ -454,6 +459,7 @@ source_set("tests") {
     "transferable_directory_unittest.cc",
     "url_loader_completion_status_mojom_traits_unittest.cc",
     "url_request_mojom_traits_unittest.cc",
+    "variants_header_parser_unittest.cc",
     "web_sandbox_flags_unittests.cc",
     "x_frame_options_parser_unittest.cc",
   ]
