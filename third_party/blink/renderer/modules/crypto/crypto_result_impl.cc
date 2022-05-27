@@ -65,7 +65,6 @@ static void RejectWithTypeError(const String& error_details,
 class CryptoResultImpl::Resolver final : public ScriptPromiseResolver {
  public:
   static Resolver* Create(ScriptState* script_state, CryptoResultImpl* result) {
-    DCHECK(script_state->ContextIsValid());
     Resolver* resolver = MakeGarbageCollected<Resolver>(script_state, result);
     resolver->KeepAliveWhilePending();
     return resolver;
@@ -114,7 +113,7 @@ CryptoResultImpl::CryptoResultImpl(ScriptState* script_state)
       cancel_(base::MakeRefCounted<CryptoResultCancel>()) {
   // Sync cancellation state.
   if (ExecutionContext::From(script_state)->IsContextDestroyed())
-    cancel_->Cancel();
+    Cancel();
 }
 
 CryptoResultImpl::~CryptoResultImpl() {
@@ -245,9 +244,7 @@ void CryptoResultImpl::CompleteWithError(ExceptionState& exception_state) {
 }
 
 void CryptoResultImpl::Cancel() {
-  DCHECK(cancel_);
   cancel_->Cancel();
-  cancel_ = nullptr;
   ClearResolver();
 }
 
