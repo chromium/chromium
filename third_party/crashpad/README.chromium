@@ -46,3 +46,7 @@ Local Modifications:
  - CloseMultipleNowOrOnExec has been updated to invoke the new
    base::subtle::ResetFDOwnership() API
  - FALLTHROUGH macro has been replaced with C++17 attribute [[fallthrough]]
+ - M102 CP 4581a355b1
+     94242690d57b ios: Check dyld_image_info->imageFilePath for nullptr
+     4581a355b17e ios: Limit depth of intermediate dump parser
+

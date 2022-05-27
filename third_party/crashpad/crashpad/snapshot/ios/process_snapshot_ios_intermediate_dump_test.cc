@@ -198,14 +198,16 @@ class ProcessSnapshotIOSIntermediateDumpTest : public testing::Test {
     }
   }
 
-  void WriteModules(IOSIntermediateDumpWriter* writer) {
+  void WriteModules(IOSIntermediateDumpWriter* writer, bool has_module_path) {
     IOSIntermediateDumpWriter::ScopedArray moduleArray(writer, Key::kModules);
     for (uint32_t image_index = 0; image_index < 2; ++image_index) {
       IOSIntermediateDumpWriter::ScopedArrayMap modules(writer);
 
-      constexpr char image_file[] = "/path/to/module";
-      EXPECT_TRUE(
-          writer->AddProperty(Key::kName, image_file, strlen(image_file)));
+      if (has_module_path) {
+        constexpr char image_file[] = "/path/to/module";
+        EXPECT_TRUE(
+            writer->AddProperty(Key::kName, image_file, strlen(image_file)));
+      }
 
       uint64_t address = 0;
       uint64_t vmsize = 1;
@@ -241,12 +243,16 @@ class ProcessSnapshotIOSIntermediateDumpTest : public testing::Test {
     }
   }
 
-  void ExpectModules(const std::vector<const ModuleSnapshot*>& modules) {
+  void ExpectModules(const std::vector<const ModuleSnapshot*>& modules,
+                     bool expect_module_path) {
     for (auto module : modules) {
       EXPECT_EQ(module->GetModuleType(),
                 ModuleSnapshot::kModuleTypeSharedLibrary);
-      EXPECT_STREQ(module->Name().c_str(), "/path/to/module");
-      EXPECT_STREQ(module->DebugFileName().c_str(), "module");
+
+      if (expect_module_path) {
+        EXPECT_STREQ(module->Name().c_str(), "/path/to/module");
+        EXPECT_STREQ(module->DebugFileName().c_str(), "module");
+      }
       UUID uuid;
       uint32_t age;
       module->UUIDAndAge(&uuid, &age);
@@ -424,7 +430,8 @@ class ProcessSnapshotIOSIntermediateDumpTest : public testing::Test {
     EXPECT_STREQ(daylight_name.c_str(), "Daylight");
   }
 
-  void ExpectSnapshot(const ProcessSnapshot& snapshot) {
+  void ExpectSnapshot(const ProcessSnapshot& snapshot,
+                      bool expect_module_path) {
     EXPECT_EQ(snapshot.ProcessID(), 2);
     EXPECT_EQ(snapshot.ParentProcessID(), 1);
 
@@ -447,7 +454,7 @@ class ProcessSnapshotIOSIntermediateDumpTest : public testing::Test {
 
     ExpectSystem(*snapshot.System());
     ExpectThreads(snapshot.Threads());
-    ExpectModules(snapshot.Modules());
+    ExpectModules(snapshot.Modules(), expect_module_path);
     ExpectMachException(*snapshot.Exception());
   }
 
@@ -626,14 +633,14 @@ TEST_F(ProcessSnapshotIOSIntermediateDumpTest, ShortContext) {
     WriteSystemInfo(writer());
     WriteProcessInfo(writer());
     WriteThreads(writer());
-    WriteModules(writer());
+    WriteModules(writer(), /*has_module_path=*/false);
     WriteMachException(writer(), true /* short_context=true*/);
   }
   ProcessSnapshotIOSIntermediateDump process_snapshot;
   ASSERT_TRUE(process_snapshot.InitializeWithFilePath(path(), annotations()));
   EXPECT_FALSE(IsRegularFile(path()));
   EXPECT_TRUE(DumpSnapshot(process_snapshot));
-  ExpectSnapshot(process_snapshot);
+  ExpectSnapshot(process_snapshot, /*expect_module_path=*/false);
 }
 
 TEST_F(ProcessSnapshotIOSIntermediateDumpTest, FullReport) {
@@ -644,14 +651,14 @@ TEST_F(ProcessSnapshotIOSIntermediateDumpTest, FullReport) {
     WriteSystemInfo(writer());
     WriteProcessInfo(writer());
     WriteThreads(writer());
-    WriteModules(writer());
+    WriteModules(writer(), /*has_module_path=*/true);
     WriteMachException(writer());
   }
   ProcessSnapshotIOSIntermediateDump process_snapshot;
   ASSERT_TRUE(process_snapshot.InitializeWithFilePath(path(), annotations()));
   EXPECT_FALSE(IsRegularFile(path()));
   EXPECT_TRUE(DumpSnapshot(process_snapshot));
-  ExpectSnapshot(process_snapshot);
+  ExpectSnapshot(process_snapshot, /*expect_module_path=*/true);
 }
 
 TEST_F(ProcessSnapshotIOSIntermediateDumpTest, FuzzTestCases) {
@@ -672,6 +679,11 @@ TEST_F(ProcessSnapshotIOSIntermediateDumpTest, FuzzTestCases) {
   map = process_snapshot2.AnnotationsSimpleMap();
   ASSERT_TRUE(map.find("crashpad_intermediate_dump_incomplete") != map.end());
   EXPECT_EQ(map["crashpad_intermediate_dump_incomplete"], "yes");
+
+  fuzz_path = TestPaths::TestDataRoot().Append(
+      FILE_PATH_LITERAL("snapshot/ios/testdata/crash-6605504629637120"));
+  crashpad::internal::ProcessSnapshotIOSIntermediateDump process_snapshot3;
+  EXPECT_FALSE(process_snapshot3.InitializeWithFilePath(fuzz_path, {}));
 }
 
 }  // namespace
