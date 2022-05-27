@@ -19,6 +19,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/values.h"
+#include "ios/web/public/js_messaging/web_frame.h"
+#import "ios/web/public/js_messaging/web_frame_util.h"
 #include "ios/web/public/thread/web_thread.h"
 #import "ios/web/public/web_state.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
@@ -213,7 +215,10 @@ base::Value MojoFacade::HandleMojoHandleWatch(base::Value args) {
             stringWithFormat:
                 @"Mojo.internal.watchCallbacksHolder.callCallback(%d, %d)",
                 callback_id, result];
-        web_state_->ExecuteJavaScript(base::SysNSStringToUTF16(script));
+        web::WebFrame* main_frame = web::GetMainFrame(web_state_);
+        if (main_frame) {
+          main_frame->ExecuteJavaScript(base::SysNSStringToUTF16(script));
+        }
       },
       *callback_id);
   auto watcher = std::make_unique<mojo::SimpleWatcher>(
