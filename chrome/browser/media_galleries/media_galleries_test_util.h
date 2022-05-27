@@ -28,10 +28,6 @@ class RegistryOverrideManager;
 
 class Profile;
 
-#if BUILDFLAG(IS_MAC)
-class MockPreferences;
-#endif
-
 scoped_refptr<extensions::Extension> AddMediaGalleriesApp(
     const std::string& name,
     const std::vector<std::string>& media_galleries_permissions,
@@ -75,9 +71,6 @@ class EnsureMediaDirectoriesExists {
   std::unique_ptr<base::ScopedPathOverride> local_app_data_override_;
 
   registry_util::RegistryOverrideManager registry_override_;
-#endif
-#if BUILDFLAG(IS_MAC)
-  std::unique_ptr<MockPreferences> mac_preferences_;
 #endif
 };
 
