@@ -421,7 +421,10 @@ void NGTablePainter::PaintBoxDecorationBackground(
     const PaintInfo& paint_info,
     const PhysicalRect& paint_rect,
     const BoxDecorationData& box_decoration_data) {
-  PhysicalRect grid_paint_rect = fragment_.TableGridRect();
+  WritingModeConverter converter(fragment_.Style().GetWritingDirection(),
+                                 fragment_.Size());
+  PhysicalRect grid_paint_rect =
+      converter.ToPhysical(fragment_.TableGridRect());
   grid_paint_rect.offset += paint_rect.offset;
 
   // Paint the table background on the grid-rect.

@@ -761,7 +761,7 @@ void NGTableLayoutAlgorithm::ComputeTableSpecificFragmentData(
     const Vector<NGTableColumnLocation>& column_locations,
     const NGTableTypes::Rows& rows,
     const NGTableBorders& table_borders,
-    const PhysicalRect& table_grid_rect,
+    const LogicalRect& table_grid_rect,
     const LayoutUnit table_grid_block_size) {
   container_builder_.SetTableGridRect(table_grid_rect);
   container_builder_.SetTableColumnCount(column_locations.size());
@@ -1186,14 +1186,9 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
 
   container_builder_.SetFragmentsTotalBlockSize(block_size);
 
-  const WritingModeConverter grid_converter(
-      Style().GetWritingDirection(),
-      ToPhysicalSize(container_builder_.Size(),
-                     table_writing_direction.GetWritingMode()));
-
-  ComputeTableSpecificFragmentData(
-      grouped_children, column_locations, rows, table_borders,
-      grid_converter.ToPhysical(table_grid_rect), column_block_size);
+  ComputeTableSpecificFragmentData(grouped_children, column_locations, rows,
+                                   table_borders, table_grid_rect,
+                                   column_block_size);
 
   if (RuntimeEnabledFeatures::MathMLCoreEnabled() && Node().GetDOMNode() &&
       Node().GetDOMNode()->HasTagName(mathml_names::kMtableTag))

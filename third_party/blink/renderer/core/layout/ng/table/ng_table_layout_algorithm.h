@@ -74,7 +74,7 @@ class CORE_EXPORT NGTableLayoutAlgorithm
       const Vector<NGTableColumnLocation>& column_locations,
       const NGTableTypes::Rows& rows,
       const NGTableBorders& table_borders,
-      const PhysicalRect& table_grid_rect,
+      const LogicalRect& table_grid_rect,
       LayoutUnit table_grid_block_size);
 
   const NGLayoutResult* GenerateFragment(

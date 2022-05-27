@@ -137,7 +137,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
     return absl::nullopt;
   }
 
-  PhysicalRect TableGridRect() const {
+  LogicalRect TableGridRect() const {
     return ComputeRareDataAddress()->table_grid_rect;
   }
 
@@ -441,7 +441,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
     const std::unique_ptr<const NGMathMLPaintInfo> mathml_paint_info;
 
     // Table rare-data.
-    PhysicalRect table_grid_rect;
+    LogicalRect table_grid_rect;
     NGTableFragmentData::ColumnGeometries table_column_geometries;
     scoped_refptr<const NGTableBorders> table_collapsed_borders;
     std::unique_ptr<NGTableFragmentData::CollapsedBordersGeometry>

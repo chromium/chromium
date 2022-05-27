@@ -579,7 +579,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   // circumstances. This function updates |LastBaseline| in such cases.
   void SetLastBaselineToBlockEndMarginEdgeIfNeeded();
 
-  void SetTableGridRect(const PhysicalRect& table_grid_rect) {
+  void SetTableGridRect(const LogicalRect& table_grid_rect) {
     table_grid_rect_ = table_grid_rect;
   }
 
@@ -773,7 +773,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   LayoutUnit math_italic_correction_;
 
   // Table specific types.
-  absl::optional<PhysicalRect> table_grid_rect_;
+  absl::optional<LogicalRect> table_grid_rect_;
   NGTableFragmentData::ColumnGeometries table_column_geometries_;
   scoped_refptr<const NGTableBorders> table_collapsed_borders_;
   std::unique_ptr<NGTableFragmentData::CollapsedBordersGeometry>
