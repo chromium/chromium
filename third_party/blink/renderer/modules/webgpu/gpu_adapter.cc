@@ -10,9 +10,12 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_device_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_request_adapter_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_enum_conversions.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu.h"
+#include "third_party/blink/renderer/modules/webgpu/gpu_adapter_info.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_supported_features.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_supported_limits.h"
@@ -89,6 +92,15 @@ GPUAdapter::GPUAdapter(
   WGPUAdapterProperties properties = {};
   GetProcs().adapterGetProperties(handle_, &properties);
   is_fallback_adapter_ = properties.adapterType == WGPUAdapterType_CPU;
+
+  vendor_ = properties.vendorName;
+  architecture_ = properties.architecture;
+  if (properties.deviceID <= 0xffff) {
+    device_ = String::Format("0x%04x", properties.deviceID);
+  } else {
+    device_ = String::Format("0x%08x", properties.deviceID);
+  }
+  description_ = properties.name;
 
   WGPUSupportedLimits limits = {};
   GetProcs().adapterGetLimits(handle_, &limits);
@@ -205,6 +217,36 @@ ScriptPromise GPUAdapter::requestDevice(ScriptState* script_state,
   GetProcs().adapterRequestDevice(
       handle_, &dawn_desc, callback->UnboundCallback(), callback->AsUserdata());
   EnsureFlush();
+
+  return promise;
+}
+
+ScriptPromise GPUAdapter::requestAdapterInfo(
+    ScriptState* script_state,
+    const Vector<String>& unmask_hints) {
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromise promise = resolver->Promise();
+
+  // If any unmask hints have been given, the method must also have been called
+  // during user activation. If not, reject the promise.
+  if (unmask_hints.size()) {
+    LocalDOMWindow* domWindow = gpu_->DomWindow();
+    if (!domWindow ||
+        !LocalFrame::HasTransientUserActivation(domWindow->GetFrame())) {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotAllowedError,
+          "requestAdapterInfo requires user activation if any unmaskHints are "
+          "given."));
+      return promise;
+    }
+  }
+
+  // TODO(dawn:1427): If unmask_hints are given ask the user for consent to
+  // expose more information and, if given, include device_ and description_ in
+  // the returned GPUAdapterInfo.
+  auto* adapter_info =
+      MakeGarbageCollected<GPUAdapterInfo>(vendor_, architecture_, "", "");
+  resolver->Resolve(adapter_info);
 
   return promise;
 }

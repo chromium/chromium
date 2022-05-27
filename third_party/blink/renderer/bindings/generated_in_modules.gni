@@ -1789,6 +1789,8 @@ generated_interface_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_geolocation_position_error.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_adapter_info.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_adapter_info.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_adapter.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_adapter.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_bind_group.cc",

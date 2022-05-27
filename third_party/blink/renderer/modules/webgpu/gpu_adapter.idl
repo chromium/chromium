@@ -14,4 +14,5 @@
     readonly attribute boolean isFallbackAdapter;
 
     [CallWith=ScriptState] Promise<GPUDevice> requestDevice(optional GPUDeviceDescriptor descriptor = {});
+    [CallWith=ScriptState] Promise<GPUAdapterInfo> requestAdapterInfo(optional sequence<DOMString> unmaskHints = []);
 };
