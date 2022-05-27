@@ -221,7 +221,7 @@ void PerFrameContentTranslateDriver::InitiateTranslationIfReload(
   if (response_code == 0 || response_code == net::HTTP_INTERNAL_SERVER_ERROR)
     return;
 
-  if (!navigation_handle->IsInMainFrame() &&
+  if (!navigation_handle->IsInPrimaryMainFrame() &&
       translate_manager()->GetLanguageState()->translation_declined()) {
     // Some sites (such as Google map) may trigger sub-frame navigations
     // when the user interacts with the page.  We don't want to show a new
