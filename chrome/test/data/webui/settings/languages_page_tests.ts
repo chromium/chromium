@@ -5,13 +5,13 @@
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {LanguageHelper, LanguagesBrowserProxyImpl, SettingsLanguagesPageElement} from 'chrome://settings/lazy_load.js';
-import {CrSettingsPrefs, Router, routes} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs} from 'chrome://settings/settings.js';
 // <if expr="not is_macosx">
 import {loadTimeData, SettingsToggleButtonElement} from 'chrome://settings/settings.js';
-import {assertDeepEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertDeepEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 // </if>
 
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertFalse} from 'chrome://webui-test/chai_assert.js';
 // <if expr="_google_chrome">
 import {assertNotEquals} from 'chrome://webui-test/chai_assert.js';
 // </if>
@@ -20,7 +20,7 @@ import {assertNotEquals} from 'chrome://webui-test/chai_assert.js';
 import {FakeChromeEvent} from 'chrome://webui-test/fake_chrome_event.js';
 // </if>
 
-import {fakeDataBind, isChildVisible} from 'chrome://webui-test/test_util.js';
+import {fakeDataBind} from 'chrome://webui-test/test_util.js';
 
 import {FakeLanguageSettingsPrivate, getFakeLanguagePrefs} from './fake_language_settings_private.js';
 import {FakeSettingsPrivate} from './fake_settings_private.js';
@@ -34,7 +34,6 @@ const languages_page_tests = {
     // <if expr="_google_chrome">
     SpellcheckOfficialBuild: 'spellcheck_official',
     // </if>
-    RestructuredLanguageSettings: 'restructured language settings',
   },
 };
 
@@ -322,61 +321,4 @@ suite('languages page', function() {
     });
   });
   // </if>
-});
-
-suite(languages_page_tests.TestNames.RestructuredLanguageSettings, function() {
-  let languageHelper: LanguageHelper;
-  let languagesPage: SettingsLanguagesPageElement;
-  let browserProxy: TestLanguagesBrowserProxy;
-
-  suiteSetup(function() {
-    document.body.innerHTML = '';
-    CrSettingsPrefs.deferInitialization = true;
-  });
-
-  setup(function() {
-    const settingsPrefs = document.createElement('settings-prefs');
-    const settingsPrivate = new FakeSettingsPrivate(getFakeLanguagePrefs());
-    settingsPrefs.initialize(
-        settingsPrivate as unknown as typeof chrome.settingsPrivate);
-    document.body.appendChild(settingsPrefs);
-    return CrSettingsPrefs.initialized.then(function() {
-      // Set up test browser proxy.
-      browserProxy = new TestLanguagesBrowserProxy();
-      LanguagesBrowserProxyImpl.setInstance(browserProxy);
-
-      // Set up fake languageSettingsPrivate API.
-      const languageSettingsPrivate =
-          browserProxy.getLanguageSettingsPrivate() as unknown as
-          FakeLanguageSettingsPrivate;
-      languageSettingsPrivate.setSettingsPrefs(settingsPrefs);
-
-      languagesPage = document.createElement('settings-languages-page');
-
-      // Prefs would normally be data-bound to settings-languages-page.
-      languagesPage.prefs = settingsPrefs.prefs;
-      fakeDataBind(settingsPrefs, languagesPage, 'prefs');
-
-      document.body.appendChild(languagesPage);
-      flush();
-
-      languageHelper = languagesPage.languageHelper;
-      return languageHelper.whenReady();
-    });
-  });
-
-  teardown(function() {
-    document.body.innerHTML = '';
-  });
-
-  test('languageSubpageTriggerVisible', function() {
-    assertTrue(isChildVisible(languagesPage, '#languagesSubpageTrigger'));
-  });
-
-  test('languageSubpageTriggerClicked', function() {
-    languagesPage.shadowRoot!
-        .querySelector<HTMLElement>('#languagesSubpageTrigger')!.click();
-    assertEquals(
-        Router.getInstance().getCurrentRoute(), routes.LANGUAGE_SETTINGS);
-  });
 });

@@ -60,20 +60,11 @@
     <settings-animated-pages id="pages" section="languages"
         focus-config="[[focusConfig_]]">
       <div route-path="default">
-        <template is="dom-if" if="[[enableDesktopRestructuredLanguageSettings_]]">
-          <cr-link-row on-click="onLanguagesSubpageClick_"
-              id="languagesSubpageTrigger"
-              label="$i18n{languagesListTitle}"
-              role-description="$i18n{subpageArrowRoleDescription}">
-          </cr-link-row>
-        </template>
-        <template is="dom-if" if="[[!enableDesktopRestructuredLanguageSettings_]]">
-          <settings-languages-subpage
-              languages="{{languages}}"
-              prefs="{{prefs}}"
-              language-helper="{{languageHelper}}">
-          </settings-languages-subpage>
-        </template>
+        <settings-languages-subpage
+            languages="{{languages}}"
+            prefs="{{prefs}}"
+            language-helper="{{languageHelper}}">
+        </settings-languages-subpage>
         <settings-toggle-button
             id="enableSpellcheckingToggle"
             class="hr"
@@ -185,17 +176,4 @@
         </settings-subpage>
       </template>
 </if> <!-- not is_macosx -->
-      <template is="dom-if" route-path="/languageSettings"
-          no-search="[[!enableDesktopRestructuredLanguageSettings_]]">
-        <settings-subpage
-            associated-control="[[$$('#languagesSubpageTrigger')]]"
-            page-title="$i18n{languagesListTitle}"
-            no-search="[[!enableDesktopRestructuredLanguageSettings_]]">
-          <settings-languages-subpage
-              languages="{{languages}}"
-              prefs="{{prefs}}"
-              language-helper="{{languageHelper}}">
-          </settings-languages-subpage>
-        </settings-subpage>
-      </template>
     </settings-animated-pages>

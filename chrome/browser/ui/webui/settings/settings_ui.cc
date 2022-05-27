@@ -280,9 +280,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       base::FeatureList::IsEnabled(password_manager::features::kSendPasswords));
 
 #if !BUILDFLAG(IS_CHROMEOS)
-  html_source->AddBoolean("enableDesktopRestructuredLanguageSettings",
-                          base::FeatureList::IsEnabled(
-                              language::kDesktopRestructuredLanguageSettings));
   html_source->AddBoolean(
       "enableDesktopDetailedLanguageSettings",
       base::FeatureList::IsEnabled(language::kDesktopDetailedLanguageSettings));

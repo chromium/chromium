@@ -117,22 +117,6 @@ TEST_F('CrSettingsLanguagesPageTest', 'SpellcheckOfficialBuild', function() {
 });
 GEN('#endif');
 
-GEN('#if !BUILDFLAG(IS_CHROMEOS_LACROS)');
-var CrSettingsLanguagesPageRestructuredTest =
-    class extends CrSettingsLanguagesPageTest {
-  /** @override */
-  get featureListInternal() {
-    return {enabled: ['language::kDesktopRestructuredLanguageSettings']};
-  }
-};
-TEST_F(
-    'CrSettingsLanguagesPageRestructuredTest', 'RestructuredLanguageSettings',
-    function() {
-      mocha.grep(languages_page_tests.TestNames.RestructuredLanguageSettings)
-          .run();
-    });
-GEN('#endif');
-
 var CrSettingsLanguagesSubpageTest = class extends CrSettingsBrowserTest {
   /** @override */
   get browsePreload() {
