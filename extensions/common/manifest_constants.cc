@@ -158,12 +158,14 @@ const char kWebview[] = "webview";
 const char kWebviewAccessibleResources[] = "accessible_resources";
 const char kWebviewName[] = "name";
 const char kWebviewPartitions[] = "partitions";
+#if BUILDFLAG(IS_CHROMEOS)
+const char kFileSystemProviderCapabilities[] =
+    "file_system_provider_capabilities";
+#endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kActionHandlers[] = "action_handlers";
 const char kActionHandlerActionKey[] = "action";
 const char kActionHandlerEnabledOnLockScreenKey[] = "enabled_on_lock_screen";
-const char kFileSystemProviderCapabilities[] =
-    "file_system_provider_capabilities";
 #endif
 
 }  // namespace manifest_keys
@@ -699,6 +701,15 @@ const char kUnrecognizedManifestProperty[] =
     "Unrecognized property '*' of manifest key '*'.";
 const char16_t kWebRequestConflictsWithLazyBackground[] =
     u"The 'webRequest' API cannot be used with event pages.";
+#if BUILDFLAG(IS_CHROMEOS)
+const char16_t kInvalidFileSystemProviderMissingCapabilities[] =
+    u"The 'fileSystemProvider' permission requires the "
+    "'file_system_provider_capabilities' section to be specified in the "
+    "manifest.";
+const char kInvalidFileSystemProviderMissingPermission[] =
+    "The 'file_system_provider_capabilities' section requires the "
+    "'fileSystemProvider' permission to be specified in the manifest.";
+#endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kDuplicateActionHandlerFound[] =
     "'action_handlers' list contains duplicate entries for the action: \"*\".";
@@ -713,13 +724,6 @@ const char16_t kInvalidActionHandlersType[] =
     u"Invalid value for 'action_handlers'. Value must be a list of strings or "
     u"a "
     "dictionary with 'action' key.";
-const char16_t kInvalidFileSystemProviderMissingCapabilities[] =
-    u"The 'fileSystemProvider' permission requires the "
-    "'file_system_provider_capabilities' section to be specified in the "
-    "manifest.";
-const char kInvalidFileSystemProviderMissingPermission[] =
-    "The 'file_system_provider_capabilities' section requires the "
-    "'fileSystemProvider' permission to be specified in the manifest.";
 #endif
 
 }  // namespace manifest_errors

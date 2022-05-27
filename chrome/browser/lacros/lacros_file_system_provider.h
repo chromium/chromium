@@ -5,13 +5,19 @@
 #ifndef CHROME_BROWSER_LACROS_LACROS_FILE_SYSTEM_PROVIDER_H_
 #define CHROME_BROWSER_LACROS_LACROS_FILE_SYSTEM_PROVIDER_H_
 
+#include "base/scoped_observation.h"
 #include "chromeos/crosapi/mojom/file_system_provider.mojom.h"
+#include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_registry_observer.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
-// This class is responsible for receiving file system provider events from Ash.
-// These are forwarded to the corresponding main profile file system provider
-// extension.
-class LacrosFileSystemProvider : public crosapi::mojom::FileSystemProvider {
+// This class has two responsibilities:
+//   (1) It receives file system provider events from Ash. These are forwarded
+//   to the corresponding main profile file system provider extension.
+//   (2) It detects extension loading/unloading in the main profile and forwards
+//   events to ash.
+class LacrosFileSystemProvider : public crosapi::mojom::FileSystemProvider,
+                                 public extensions::ExtensionRegistryObserver {
  public:
   LacrosFileSystemProvider();
   ~LacrosFileSystemProvider() override;
@@ -24,9 +30,20 @@ class LacrosFileSystemProvider : public crosapi::mojom::FileSystemProvider {
                         const std::string& event_name,
                         std::vector<base::Value> args) override;
 
+  // extensions::ExtensionRegistryObserver overrides.
+  void OnExtensionLoaded(content::BrowserContext* browser_context,
+                         const extensions::Extension* extension) override;
+  void OnExtensionUnloaded(content::BrowserContext* browser_context,
+                           const extensions::Extension* extension,
+                           extensions::UnloadedExtensionReason reason) override;
+
  private:
   // Mojo endpoint that's responsible for receiving messages from Ash.
   mojo::Receiver<crosapi::mojom::FileSystemProvider> receiver_;
+
+  base::ScopedObservation<extensions::ExtensionRegistry,
+                          extensions::ExtensionRegistryObserver>
+      extension_observation_{this};
 
   base::WeakPtrFactory<LacrosFileSystemProvider> weak_factory_{this};
 };

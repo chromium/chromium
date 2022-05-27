@@ -140,7 +140,7 @@
   }, {
     "channel": "stable",
     "extension_types": ["legacy_packaged_app"],
-    "platforms": ["chromeos"],
+    "platforms": ["chromeos", "lacros"],
     "allowlist": [
       "0EA6B717932AD64C469C1CCB6911457733295907",  // http://crbug.com/673004
       "58B0C2968C335964D5433E89CA4D86628A0E3D4B"   // http://crbug.com/673004

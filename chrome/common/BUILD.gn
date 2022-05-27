@@ -359,11 +359,17 @@ static_library("common_lib") {
     public_deps += [ ":app_mode_app_support" ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     assert(enable_extensions)
     sources += [
       "extensions/api/file_system_provider_capabilities/file_system_provider_capabilities_handler.cc",
       "extensions/api/file_system_provider_capabilities/file_system_provider_capabilities_handler.h",
+    ]
+    deps += [ "//chrome/common/chromeos/extensions" ]
+  }
+  if (is_chromeos_ash) {
+    assert(enable_extensions)
+    sources += [
       "extensions/api/input_ime/input_components_handler.cc",
       "extensions/api/input_ime/input_components_handler.h",
     ]

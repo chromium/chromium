@@ -20,6 +20,14 @@ struct FileSystemId {
   string id@1;
 };
 
+// The primary data source for the file system.
+[Stable, Extensible]
+enum FileSystemSource {
+  [Default] kFile,
+  kNetwork,
+  kDevice
+};
+
 // Provides immutable metadata about a file system.
 [Stable]
 struct FileSystemMetadata {
@@ -187,4 +195,13 @@ interface FileSystemProviderService {
   OperationFinished@6(FSPOperationResponse response,
       FileSystemId file_system_id, int64 request_id,
       array<mojo_base.mojom.Value> args) => (string error);
+
+  // Called by Lacros when a filesystem providing extension is loaded.
+  [MinVersion=2]
+  ExtensionLoaded@7(bool configurable, bool watchable, bool multiple_mounts,
+      FileSystemSource source, string extension_name, string extension_id);
+
+  // Called by Lacros when a filesystem providing extension is unloaded.
+  [MinVersion=2]
+  ExtensionUnloaded@8(string id, bool due_to_shutdown);
 };

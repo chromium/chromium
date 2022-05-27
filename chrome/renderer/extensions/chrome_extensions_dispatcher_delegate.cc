@@ -152,6 +152,8 @@ void ChromeExtensionsDispatcherDelegate::PopulateSourceMap(
                              IDR_ENTERPRISE_PLATFORM_KEYS_TOKEN_JS);
   source_map->RegisterSource("fileBrowserHandler",
                              IDR_FILE_BROWSER_HANDLER_CUSTOM_BINDINGS_JS);
+  source_map->RegisterSource("fileSystemProvider",
+                             IDR_FILE_SYSTEM_PROVIDER_CUSTOM_BINDINGS_JS);
   source_map->RegisterSource("platformKeys",
                              IDR_PLATFORM_KEYS_CUSTOM_BINDINGS_JS);
   source_map->RegisterSource("platformKeys.getPublicKeyUtil",
@@ -175,8 +177,6 @@ void ChromeExtensionsDispatcherDelegate::PopulateSourceMap(
                              IDR_CERTIFICATE_PROVIDER_CUSTOM_BINDINGS_JS);
   source_map->RegisterSource("fileManagerPrivate",
                              IDR_FILE_MANAGER_PRIVATE_CUSTOM_BINDINGS_JS);
-  source_map->RegisterSource("fileSystemProvider",
-                             IDR_FILE_SYSTEM_PROVIDER_CUSTOM_BINDINGS_JS);
   source_map->RegisterSource("terminalPrivate",
                              IDR_TERMINAL_PRIVATE_CUSTOM_BINDINGS_JS);
 

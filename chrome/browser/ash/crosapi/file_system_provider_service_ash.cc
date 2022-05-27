@@ -252,6 +252,52 @@ void FileSystemProviderServiceAsh::OperationFinished(
                                ProfileManager::GetPrimaryUserProfile());
 }
 
+void FileSystemProviderServiceAsh::ExtensionLoaded(
+    bool configurable,
+    bool watchable,
+    bool multiple_mounts,
+    mojom::FileSystemSource source,
+    const std::string& name,
+    const std::string& id) {
+  Service* const service =
+      Service::Get(ProfileManager::GetPrimaryUserProfile());
+  DCHECK(service);
+
+  ProviderId provider_id = ProviderId::CreateFromExtensionId(id);
+  extensions::FileSystemProviderSource extension_source;
+  switch (source) {
+    case crosapi::mojom::FileSystemSource::kFile:
+      extension_source = extensions::FileSystemProviderSource::SOURCE_FILE;
+      break;
+    case crosapi::mojom::FileSystemSource::kNetwork:
+      extension_source = extensions::FileSystemProviderSource::SOURCE_NETWORK;
+      break;
+    case crosapi::mojom::FileSystemSource::kDevice:
+      extension_source = extensions::FileSystemProviderSource::SOURCE_DEVICE;
+      break;
+  }
+  ash::file_system_provider::Capabilities capabilities{
+      configurable, watchable, multiple_mounts, extension_source};
+  auto provider =
+      std::make_unique<ash::file_system_provider::ExtensionProvider>(
+          ProfileManager::GetPrimaryUserProfile(), std::move(provider_id),
+          std::move(capabilities), name);
+  service->RegisterProvider(std::move(provider));
+}
+
+void FileSystemProviderServiceAsh::ExtensionUnloaded(const std::string& id,
+                                                     bool due_to_shutdown) {
+  Service* const service =
+      Service::Get(ProfileManager::GetPrimaryUserProfile());
+  DCHECK(service);
+  ProviderId provider_id = ProviderId::CreateFromExtensionId(id);
+  service->UnregisterProvider(
+      provider_id,
+      due_to_shutdown
+          ? ash::file_system_provider::Service::UNMOUNT_REASON_SHUTDOWN
+          : ash::file_system_provider::Service::UNMOUNT_REASON_USER);
+}
+
 void FileSystemProviderServiceAsh::MountWithProfile(
     mojom::FileSystemMetadataPtr metadata,
     bool persistent,

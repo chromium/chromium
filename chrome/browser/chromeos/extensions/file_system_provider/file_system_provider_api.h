@@ -5,13 +5,22 @@
 #ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_FILE_SYSTEM_PROVIDER_FILE_SYSTEM_PROVIDER_API_H_
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_FILE_SYSTEM_PROVIDER_FILE_SYSTEM_PROVIDER_API_H_
 
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/file_system_provider_service_ash.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/extensions/file_system_provider/provider_function.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/crosapi/mojom/file_system_provider.mojom.h"
 #include "extensions/browser/extension_function.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/crosapi/file_system_provider_service_ash.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/lacros/lacros_service.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace extensions {
 
@@ -19,6 +28,15 @@ class FileSystemProviderBase : public ExtensionFunction {
  protected:
   ~FileSystemProviderBase() override {}
   void RespondWithError(const std::string& error);
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Whether ash supports the FileSystemProviderService interface.
+  bool InterfaceAvailable();
+
+  // A helper function that returns a reference to a functional remote. Should
+  // only be called if InterfaceAvailable is true.
+  mojo::Remote<crosapi::mojom::FileSystemProviderService>& GetRemote();
+#endif
 };
 
 class FileSystemProviderMountFunction : public FileSystemProviderBase {
@@ -41,7 +59,7 @@ class FileSystemProviderUnmountFunction : public FileSystemProviderBase {
   ResponseAction Run() override;
 };
 
-class FileSystemProviderGetAllFunction : public ExtensionFunction {
+class FileSystemProviderGetAllFunction : public FileSystemProviderBase {
  public:
   DECLARE_EXTENSION_FUNCTION("fileSystemProvider.getAll",
                              FILESYSTEMPROVIDER_GETALL)
@@ -52,7 +70,7 @@ class FileSystemProviderGetAllFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
-class FileSystemProviderGetFunction : public ExtensionFunction {
+class FileSystemProviderGetFunction : public FileSystemProviderBase {
  public:
   DECLARE_EXTENSION_FUNCTION("fileSystemProvider.get", FILESYSTEMPROVIDER_GET)
 
@@ -93,8 +111,9 @@ class FileSystemProviderInternal : public FileSystemProviderBase {
   }
 
   // Forwards the result of the operation to the file system provider service.
+  // Returns false if the forwarding failed.
   template <typename Params>
-  void ForwardOperationResult(const Params& params,
+  bool ForwardOperationResult(const Params& params,
                               std::vector<base::Value>& args,
                               crosapi::mojom::FSPOperationResponse response) {
     crosapi::mojom::FileSystemIdPtr file_system_id;
@@ -102,6 +121,7 @@ class FileSystemProviderInternal : public FileSystemProviderBase {
     GetOperationMetadata(params, &file_system_id, &request_id);
     auto callback =
         base::BindOnce(&FileSystemProviderInternal::RespondWithError, this);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     crosapi::CrosapiManager::Get()
         ->crosapi_ash()
         ->file_system_provider_service_ash()
@@ -109,6 +129,15 @@ class FileSystemProviderInternal : public FileSystemProviderBase {
             response, std::move(file_system_id), request_id, std::move(args),
             std::move(callback),
             Profile::FromBrowserContext(browser_context()));
+    return true;
+#else
+    if (!InterfaceAvailable())
+      return false;
+    GetRemote()->OperationFinished(response, std::move(file_system_id),
+                                   request_id, std::move(args),
+                                   std::move(callback));
+    return true;
+#endif
   }
 };
 

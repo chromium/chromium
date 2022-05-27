@@ -8,9 +8,13 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/common/extensions/api/file_system_provider_capabilities/file_system_provider_capabilities_handler.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_event_histogram_value.h"
+#include "extensions/browser/unloaded_extension_reason.h"
+#include "extensions/common/manifest_constants.h"
+#include "extensions/common/permissions/permissions_data.h"
 
 namespace {
 
@@ -31,6 +35,19 @@ LacrosFileSystemProvider::LacrosFileSystemProvider() : receiver_{this} {
     return;
   service->GetRemote<crosapi::mojom::FileSystemProviderService>()
       ->RegisterFileSystemProvider(receiver_.BindNewPipeAndPassRemote());
+
+  Profile* main_profile = GetMainProfile();
+  if (main_profile) {
+    extensions::ExtensionRegistry* registry =
+        extensions::ExtensionRegistry::Get(main_profile);
+    extension_observation_.Observe(registry);
+
+    // Initial conditions
+    for (const scoped_refptr<const extensions::Extension> extension :
+         registry->enabled_extensions()) {
+      OnExtensionLoaded(main_profile, extension.get());
+    }
+  }
 }
 LacrosFileSystemProvider::~LacrosFileSystemProvider() = default;
 
@@ -65,4 +82,60 @@ void LacrosFileSystemProvider::ForwardOperation(const std::string& provider,
   auto event = std::make_unique<extensions::Event>(histogram, event_name,
                                                    std::move(args));
   router->DispatchEventToExtension(provider, std::move(event));
+}
+
+void LacrosFileSystemProvider::OnExtensionLoaded(
+    content::BrowserContext* browser_context,
+    const extensions::Extension* extension) {
+  if (!extension->permissions_data()->HasAPIPermission(
+          extensions::mojom::APIPermissionID::kFileSystemProvider)) {
+    return;
+  }
+  const extensions::FileSystemProviderCapabilities* const capabilities =
+      extensions::FileSystemProviderCapabilities::Get(extension);
+  if (!capabilities)
+    return;
+
+  chromeos::LacrosService* service = chromeos::LacrosService::Get();
+  if (service->GetInterfaceVersion(
+          crosapi::mojom::FileSystemProviderService::Uuid_) <
+      int{crosapi::mojom::FileSystemProviderService::MethodMinVersions::
+              kExtensionLoadedMinVersion}) {
+    return;
+  }
+
+  crosapi::mojom::FileSystemSource source;
+  switch (capabilities->source()) {
+    case extensions::FileSystemProviderSource::SOURCE_FILE:
+      source = crosapi::mojom::FileSystemSource::kFile;
+      break;
+    case extensions::FileSystemProviderSource::SOURCE_NETWORK:
+      source = crosapi::mojom::FileSystemSource::kNetwork;
+      break;
+    case extensions::FileSystemProviderSource::SOURCE_DEVICE:
+      source = crosapi::mojom::FileSystemSource::kDevice;
+      break;
+  }
+
+  service->GetRemote<crosapi::mojom::FileSystemProviderService>()
+      ->ExtensionLoaded(capabilities->configurable(), capabilities->watchable(),
+                        capabilities->multiple_mounts(), source,
+                        extension->name(), extension->id());
+}
+
+void LacrosFileSystemProvider::OnExtensionUnloaded(
+    content::BrowserContext* browser_context,
+    const extensions::Extension* extension,
+    extensions::UnloadedExtensionReason reason) {
+  chromeos::LacrosService* service = chromeos::LacrosService::Get();
+  if (service->GetInterfaceVersion(
+          crosapi::mojom::FileSystemProviderService::Uuid_) <
+      int{crosapi::mojom::FileSystemProviderService::MethodMinVersions::
+              kExtensionUnloadedMinVersion}) {
+    return;
+  }
+  service->GetRemote<crosapi::mojom::FileSystemProviderService>()
+      ->ExtensionUnloaded(
+          extension->id(),
+          reason == extensions::UnloadedExtensionReason::PROFILE_SHUTDOWN);
 }

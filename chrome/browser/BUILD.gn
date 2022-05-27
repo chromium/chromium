@@ -5254,6 +5254,10 @@ static_library("browser") {
       "chromeos/app_mode/startup_app_launcher_update_checker.h",
       "chromeos/extensions/echo_private/echo_private_api.cc",
       "chromeos/extensions/echo_private/echo_private_api.h",
+      "chromeos/extensions/file_system_provider/file_system_provider_api.cc",
+      "chromeos/extensions/file_system_provider/file_system_provider_api.h",
+      "chromeos/extensions/file_system_provider/provider_function.cc",
+      "chromeos/extensions/file_system_provider/provider_function.h",
       "chromeos/extensions/info_private_api.cc",
       "chromeos/extensions/info_private_api.h",
       "chromeos/extensions/public_session_permission_helper.cc",
@@ -5446,6 +5450,7 @@ static_library("browser") {
     deps += [
       ":dlp_policy_event_proto",
       "//chrome/browser/chromeos/extensions/login_screen",
+      "//chrome/common/chromeos/extensions",
       "//chromeos/crosapi/cpp",
       "//chromeos/crosapi/cpp:crosapi_constants",
       "//chromeos/crosapi/mojom",
