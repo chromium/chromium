@@ -121,12 +121,12 @@ process is determined by command-line arguments:
 *   --crash-handler
     *   Starts a crash handler for the parent process.
 *   --server
-    *   Launch the updater RPC server. The server will answer RPC messages on
+    *   Launch the updater RPC server. The server answers RPC messages on
         the UpdateService interface only.
     *   --service=update|update-internal
-        *   If `update`, the server will answer RPC messages on the
+        *   If `update`, the server answers RPC messages on the
             UpdateService interface only.
-        *   If `update-internal`, the server will answer RPC messages on the
+        *   If `update-internal`, the server answers RPC messages on the
             UpdateServiceInternal interface only.
 *   --windows-service
     *   This switch starts the Windows service. This switch is invoked by the
@@ -159,7 +159,7 @@ process is determined by command-line arguments:
 *   --healthcheck
     *   Exit immediately with no error.
 
-If none of the above arguments are set, the updater will exit with an error.
+If none of the above arguments are set, the updater exits with an error.
 
 Additionally, the mode may be modified by combining it with:
 *   --system
@@ -170,14 +170,60 @@ Additionally, the mode may be modified by combining it with:
 The updater communicates with update servers using the
 [Omaha Protocol](protocol_3_1.md).
 
+#### Security
+It is not possible to MITM the updater even if the network (including TLS) is
+compromised. The integrity of the client-server communication is guaranteed
+by the [Client Update Protocol (CUP)](cup.md).
+
+#### Retries
+The updater does not retry an update check that transacted with the backend,
+even if the response was erroneous (misformatted or unparsable), until the
+next normally scheduled update check.
+
+#### DOS Mitigation
+The updater sends DoS mitigation headers in requests to the server.
+
+When the server responds with an `X-Retry-After header`, the client does not
+issue another update check until the specified period has passed (maximum 24
+hours).
+
+* The updater distinguishes between foreground and background priority: if an
+  `X-Retry-After` was received in the background case, a foreground update is
+  still permitted (but not if it was received in response to a foreground
+  update).
+
+#### Load Smoothing
+TODO(crbug.com/1329868) - implement the algorithm.
+The updater scatters its routine updates:
+* Two updaters installed in identical situations and at the same time, after
+  some period of time, do not have synchronized times at which they check
+  for updates.
+  * For example, the updater may randomly choose to wait 6 hours instead of 5 to
+    perform the next check. The probability of choosing 6 hours is .1.
+  * The change only applies to users who have not overridden their
+    `UpdateCheckMs` feature.
+  * For testing purposes, the feature can be disabled by creating an
+    DWORD value `DisableUpdateAppsHourlyJitter` in `UpdateDev`.
+  * For testing purposes, an `UpdateDev` value can set the jitter time to a
+    constant value, in the same [0, 60) seconds range. The name of the value is
+    `AutoUpdateJitterMs` and it represents the time to wait before an update
+    check is made in milliseconds.
+* The global load from updaters is scattered among the minutes of the hour, the
+  seconds of the minute, and the milliseconds of the second.
+  * For example, load spikes on the first minute of the hour, or
+    the first second of every minute, or even the first millisecond of every
+    second are undesirable.
+
+#### Usage Counts
+TODO(crbug.com/1329328) - document the client responsibilities.
+
 ### Update Formats
-The updater accepts updates packaged as CRX₃ files. All files must be signed
-with a publisher key. The corresponding public key is hardcoded into the
-updater.
+The updater accepts updates packaged as CRX₃ files. All files are signed with a
+publisher key. The corresponding public key is hardcoded into the updater.
 
 ### Installation
 
-The updater must handle the installation of new applications. The updater can
+The updater handles the installation of new applications. The updater can
 download, install, and update an applications when the application is running.
 
 One or more applications can be installed at once, as a bundle.
@@ -204,8 +250,8 @@ network is unreachable for any reason, or the program has crashed.
 This type of installs is done with a [standalone/offline installer]
 (#Standalone-Installer). This is an installer which embeds all data required to
 install the application, including the payload and various configuration data
-needed by the application setup. Such an install must be able to complete when
-a network connection is not available.
+needed by the application setup. Such an install completes even if a network
+connection is not available.
 
 There are a couple of scenarios where the standalone/offline installer is used:
 
@@ -241,7 +287,7 @@ the command line of the metainstaller.
 TODO(crbug.com/1327491) - is this needed? If yes, document the algorithm.
 
 #### Installer APIs
-As part of installing or updating an application, the updater will execute the
+As part of installing or updating an application, the updater executes the
 application's installer. The API for the application installer is platform-
 specific.
 
@@ -487,7 +533,7 @@ file contents:
 {"logging":{"verbose":true}}
 ```
 
-The updater client will now create a temporary file, say `c:\my
+The updater client creates a temporary file, say `c:\my
 path\temporaryfile.dat` (assuming the application installer is running from
 `c:\my path\YesExe.exe`), with the following file contents:
 ```
@@ -501,14 +547,14 @@ and then provide the file as a parameter to the application installer:
 
 * Notice above that the temp file contents are prefixed with an UTF-8 Byte Order
 Mark of `EF BB BF`.
-* For MSI installers, a property will passed to the installer:
+* For MSI installers, a property is passed to the installer:
 `INSTALLERDATA="pathtofile"`.
-* For exe-based installers, as shown above, a command line parameter will be
+* For exe-based installers, as shown above, a command line parameter is
 passed to the installer: `--installerdata="pathtofile"`.
-* For Mac installers, an environment variable will be set:
+* For Mac installers, an environment variable is set:
 `INSTALLERDATA="pathtofile"`.
 * Ownership of the temp file is the responsibility of the application installer.
-The updater will not delete this file.
+The updater does not delete this file.
 * This installerdata is not persisted anywhere else, and it is not sent as a
 part of pings to the update server.
 
@@ -551,7 +597,9 @@ The caller provides the ID of the item to update, the install data index to
 request, the priority, whether a same-version update (repair) is permitted, and
 callbacks to monitor the progress and completion of the operation.
 
-Regardless of the normal update check timing, the update check will be attempted
+The interface provides the version of the update, if an update is available.
+
+Regardless of the normal update check timing, the update check is attempted
 immediately.
 
 ### App Registration
@@ -559,22 +607,21 @@ The updater exposes an RPC interface for users to register an application with
 the updater. Unlike on-demand updates, cross-user application registration is
 not permitted.
 
-If the application is already installed, it should be registered with the
-version present on disk. If it has not yet been installed, a version of 0
-should be used.
+If the application is already installed, it is registered with the version
+present on disk. If it has not yet been installed, a version of `0` is used.
 
 ### App Activity Reporting
 Applications can report whether they are actively used or not through the
 updater. Update servers can then aggregate this information to produce user
 counts.
 
-Windows:
+#### Windows:
 *   When active, the application sets
     HKCU\SOFTWARE\{Company}\Update\ClientState\{AppID} → dr (REG_SZ): 1.
     *   Note: both user-scoped and system-scoped updaters use HKCU.
-*   When reporting active use, the updater will reset the value to 0.
+*   When reporting active use, the updater resets the value to 0.
 
-macOS:
+#### macOS:
 *   The application touches
     ~/Library/{Company}/{Company}SoftwareUpdate/Actives/{APPID}.
 *   The updater deletes the file when reporting active use.
@@ -590,7 +637,7 @@ TODO(crbug.com/1035895): Document EULA signals.
 The updater may upload its crash reports and send usage stats if and only if
 any piece of software it manages is permitted to send usage stats.
 
-Windows:
+#### Windows:
 *   Applications enable usage stats by writing:
     `HKCU\SOFTWARE\{Company}\Update\ClientState\{APPID}` → usagestats (DWORD): 1
     or
@@ -598,28 +645,31 @@ Windows:
     (DWORD): 1
 *   Applications rescind this permission by writing a value of 0.
 
-macOS:
+#### macOS:
 *   Application enable usage stats by setting `IsUploadEnabled` to true for a
     crashpad database maintained in a "Crashpad" subdirectory of their
     application data directory.
-*   The updater will search the file system for Crashpad directories belonging
+*   The updater searches the file system for Crashpad directories belonging
     to {Company}.
 
 ### Enterprise Policies
 TODO(crbug.com/1035895): Document relevant enterprise policies.
 
+#### Windows
+ADMX templates are provided.
+
 ### Telemetry
-When the updater installs an application (an installer is run) it will send an
+When the updater installs an application (an installer is run) it sends an
 event with `"eventtype": 2` indicating the outcome of installation. The updater
 does not send such a ping for its own installation.
 
-When the updater updates an application (including itself) it will send an
+When the updater updates an application (including itself) it sends an
 event with `"eventtype": 3` indicating the outcome of update operation.
 
-When the updater detects the uninstallation of an application, it will send an
+When the updater detects the uninstallation of an application, it sends an
 event with `"eventtype": 4` to notify the server of the uninstallation.
 
-When the updater attempts to download a file, it will send an event with
+When the updater attempts to download a file, it sends an event with
 `"eventtype": 14` describing the parameters and outcome of the download.
 
 Multiple events associated with an update session are bundled together into a
@@ -645,8 +695,8 @@ lines in the format `c:\path-to-exe\exe.exe {params}` (elevated for system
 applications). `{params}` is optional and can also include replaceable
 parameters substituted at runtime.
 
-The program path must always be an absolute path. Additionally, for system
-applications,  the program path must also be a child of %ProgramFiles% or
+The program path is always an absolute path. Additionally, for system
+applications,  the program path is also a child of %ProgramFiles% or
 %ProgramFiles(x86)%. For instance:
 * `c:\path-to-exe\exe.exe` is an invalid path.
 * `"c:\Program Files\subdir\exe.exe"` is a valid path.
@@ -705,8 +755,8 @@ cmd.execute();
 ```
 
 Parameters placeholders (`%1-%9`) are filled by the numbered parameters in
-`IAppCommandWeb::execute`. Placeholders without corresponding parameters will
-cause execution to fail.
+`IAppCommandWeb::execute`. Placeholders without corresponding parameters
+cause the execution to fail.
 
 Clients may poll for the execution status of commands that they have invoked by
 using the `status` method of `IAppCommandWeb`. When the status is
@@ -714,11 +764,11 @@ using the `status` method of `IAppCommandWeb`. When the status is
 exit code.
 
 #### Command-Line Format
-* for system applications, the executable path must be in a secure location such
-as `%ProgramFiles%` for security, since it will be run elevated.
+* for system applications, the executable path is in a secure location such
+as `%ProgramFiles%` for security, since it runs elevated.
 * placeholders are not permitted in the executable path.
 * placeholders take the form of a percent character `%` followed by a digit.
-Literal `%` characters must be escaped by doubling them.
+Literal `%` characters are escaped by doubling them.
 
 For example, if parameters to `IAppCommandWeb::execute` are `AA` and `BB`
 respectively, a command format of:
@@ -729,21 +779,20 @@ becomes the command line
 ## Uninstallation
 On Mac and Linux, if the application was registered with an existence path
 checker and no file at that path exists (or if the file at that path is owned
-by another user), the updater will consider the application uninstalled, send
-the ping, and cease trying to keep it up to date.
+by another user), the updater considers the application uninstalled, sends
+the ping, and stops trying to keep it up to date.
 
 On Windows, if the ClientState entry for for the application is deleted, the
 app is considered uninstalled.
 
-On Windows, the updater registers a "UninstallCmdLine" under the
-`Software\{Company}\Updater` key. This command line can be invoked by
-application uninstallers to cause the updater to immediately update its
-registrations. The updater will also check for uninstallations in every periodic
-task execution.
+On Windows, the updater registers a "UninstallCmdLine" under the `Software\
+{Company}\Updater` key. This command line can be invoked by application
+uninstallers to cause the updater to  update its registrations. The updater
+also checks for uninstallations in every periodic task execution.
 
-When the last registered application is uninstalled, the updater will uninstall
-itself. The updater will also uninstall itself if it has started 24 times but
-never had a product (besides itself) registered for updates.
+When the last registered application is uninstalled, the updater uninstalls
+itself immediately. The updater also uninstalls itself if it has started
+24 times but never had a product (besides itself) registered for updates.
 
 The updater uninstaller removes all updater files, registry keys, RPC hooks,
 scheduled tasks, and so forth from the file system, except that it leaves a
