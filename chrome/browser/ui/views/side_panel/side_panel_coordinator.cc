@@ -123,11 +123,11 @@ class SidePanelContentSwappingContainer : public views::View {
       std::move(callback).Run(entry, std::move(content_view));
     } else {
       entry->CacheView(std::move(content_view));
+      loading_entry_ = entry;
+      loaded_callback_ = std::move(callback);
       content_proxy->SetAvailableCallback(
           base::BindOnce(&SidePanelContentSwappingContainer::RunLoadedCallback,
                          base::Unretained(this)));
-      loading_entry_ = entry;
-      loaded_callback_ = std::move(callback);
     }
   }
 
