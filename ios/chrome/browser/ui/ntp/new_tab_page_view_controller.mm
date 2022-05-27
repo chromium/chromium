@@ -346,16 +346,15 @@
   UIViewController* parentViewController =
       self.isFeedVisible ? self.discoverFeedWrapperViewController.discoverFeed
                          : self.discoverFeedWrapperViewController;
-  [self addViewController:[self contentSuggestionsViewController]
-      toParentViewController:parentViewController];
-  if (!IsContentSuggestionsUIViewControllerMigrationEnabled()) {
-    self.contentSuggestionsLayout.parentCollectionView = self.collectionView;
-  }
-
   // Configures the feed header in the view hierarchy if it is visible.
   if (self.feedHeaderViewController) {
     [self addViewController:self.feedHeaderViewController
         toParentViewController:parentViewController];
+  }
+  [self addViewController:[self contentSuggestionsViewController]
+      toParentViewController:parentViewController];
+  if (!IsContentSuggestionsUIViewControllerMigrationEnabled()) {
+    self.contentSuggestionsLayout.parentCollectionView = self.collectionView;
   }
 
   // Adds the feed top section to the view hierarchy if it exists.
