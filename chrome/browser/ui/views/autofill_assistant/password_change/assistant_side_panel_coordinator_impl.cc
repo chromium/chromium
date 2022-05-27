@@ -5,11 +5,15 @@
 #include "chrome/browser/ui/views/autofill_assistant/password_change/assistant_side_panel_coordinator_impl.h"
 
 #include "base/bind.h"
-#include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/ui/autofill_assistant/password_change/apc_utils.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
+
+namespace {
+constexpr int kAssistantIconSize = 16;
+}  // namespace
 
 std::unique_ptr<AssistantSidePanelCoordinator>
 AssistantSidePanelCoordinator::Create(content::WebContents* web_contents) {
@@ -23,16 +27,14 @@ AssistantSidePanelCoordinator::Create(content::WebContents* web_contents) {
 AssistantSidePanelCoordinatorImpl::AssistantSidePanelCoordinatorImpl(
     content::WebContents* web_contents)
     : web_contents_(web_contents) {
-  // TODO(cr/1322419): User a proper assistant icon and style once
-  // available/discovered. For now using dummmy icon.
-
   // TODO(cr/1322419): Check with designers if this string should be "Google
   // Assistant" as it is in other places. Also make make sure whether it should
   // be translated.
   SidePanelRegistry::Get(web_contents)
       ->Register(std::make_unique<SidePanelEntry>(
           SidePanelEntry::Id::kAssistant, u"Assistant",
-          ui::ImageModel::FromVectorIcon(kKeyIcon, ui::kColorIcon, 16),
+          ui::ImageModel::FromVectorIcon(GetAssistantIconOrFallback(),
+                                         ui::kColorIcon, kAssistantIconSize),
           base::BindRepeating(
               &AssistantSidePanelCoordinatorImpl::CreateSidePanelView,
               base::Unretained(this))));

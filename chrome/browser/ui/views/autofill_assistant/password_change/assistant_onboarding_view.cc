@@ -11,8 +11,7 @@
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
-#include "build/branding_buildflags.h"
-#include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/ui/autofill_assistant/password_change/apc_utils.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/assistant_onboarding_controller.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/assistant_onboarding_prompt.h"
 #include "components/constrained_window/constrained_window_views.h"
@@ -118,19 +117,15 @@ void AssistantOnboardingView::InitDialog() {
     return static_cast<int>((1.0 - scale_factor) * dialog_width / 2.0);
   };
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  const gfx::VectorIcon& assistant_icon = kAssistantIcon;
-#else
-  // Only developer builds will ever use this branch and the color used in
-  // `FromVectorIcon` below.
-  const gfx::VectorIcon& assistant_icon = kProductIcon;
-#endif
-  AddChildView(views::Builder<views::ImageView>()
-                   .SetImage(gfx::CreateVectorIcon(
-                       assistant_icon, kAssistantLogoScaleFactor * dialog_width,
-                       gfx::kPlaceholderColor))
-                   .SetID(static_cast<int>(DialogViewID::HEADER_ICON))
-                   .Build());
+  // The icon. The placeholder color is only used on non-branded developer
+  // builds.
+  AddChildView(
+      views::Builder<views::ImageView>()
+          .SetImage(gfx::CreateVectorIcon(
+              GetAssistantIconOrFallback(),
+              kAssistantLogoScaleFactor * dialog_width, gfx::kPlaceholderColor))
+          .SetID(static_cast<int>(DialogViewID::HEADER_ICON))
+          .Build());
 
   // The title.
   AddChildView(
