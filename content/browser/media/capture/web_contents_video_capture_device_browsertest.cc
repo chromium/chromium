@@ -6,9 +6,7 @@
 
 #include <tuple>
 
-#include "base/bind.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "cc/test/pixel_test_utils.h"
@@ -25,17 +23,15 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/shell/browser/shell.h"
-#include "media/base/video_frame.h"
-#include "media/base/video_types.h"
 #include "media/base/video_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 #if BUILDFLAG(IS_WIN)
+#include "base/test/scoped_feature_list.h"
 #include "ui/aura/test/aura_test_utils.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
@@ -130,7 +126,7 @@ class WebContentsVideoCaptureDeviceBrowserTest
         }
 
         if (testing::Test::HasFailure()) {
-          ADD_FAILURE() << "Test failure occurred at this frame; PNG dump:\n"
+          ADD_FAILURE() << "Test failure occurred at this frame; PNG dump: "
                         << cc::GetPNGDataUrl(rgb_frame);
           return;
         }
@@ -151,7 +147,7 @@ class WebContentsVideoCaptureDeviceBrowserTest
           VLOG(1) << "Observed desired frame.";
           return;
         } else {
-          VLOG(3) << "PNG dump of undesired frame:\n"
+          VLOG(3) << "PNG dump of undesired frame: "
                   << cc::GetPNGDataUrl(rgb_frame);
         }
       }
@@ -415,8 +411,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTest,
 
 class WebContentsVideoCaptureDeviceBrowserTestP
     : public WebContentsVideoCaptureDeviceBrowserTest,
-      public testing::WithParamInterface<
-          std::tuple<bool, bool, bool, media::VideoPixelFormat>> {
+      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
  public:
   bool IsSoftwareCompositingTest() const override {
     return std::get<0>(GetParam());
@@ -426,9 +421,6 @@ class WebContentsVideoCaptureDeviceBrowserTestP
   }
   bool IsCrossSiteCaptureTest() const override {
     return std::get<2>(GetParam());
-  }
-  media::VideoPixelFormat GetVideoPixelFormat() const override {
-    return std::get<3>(GetParam());
   }
 };
 
@@ -442,24 +434,7 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(false /* variable aspect ratio */,
                         true /* fixed aspect ratio */),
         testing::Values(false /* page has only a main frame */,
-                        true /* page contains a cross-site iframe */),
-        testing::Values(media::VideoPixelFormat::PIXEL_FORMAT_I420)));
-#elif BUILDFLAG(IS_MAC)
-// On MacOS, there is a newly added support for NV12-in-GMB. It relies on GPU
-// acceleration, but has a feature detection built-in if the format is
-// specified as media::VideoPixelFormat::PIXEL_FORMAT_UNKNOWN.
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    WebContentsVideoCaptureDeviceBrowserTestP,
-    testing::Combine(
-        testing::Values(false /* GPU-accelerated compositing */,
-                        true /* software compositing */),
-        testing::Values(false /* variable aspect ratio */,
-                        true /* fixed aspect ratio */),
-        testing::Values(false /* page has only a main frame */,
-                        true /* page contains a cross-site iframe */),
-        testing::Values(media::VideoPixelFormat::PIXEL_FORMAT_I420,
-                        media::VideoPixelFormat::PIXEL_FORMAT_UNKNOWN)));
+                        true /* page contains a cross-site iframe */)));
 #else
 INSTANTIATE_TEST_SUITE_P(
     All,
@@ -470,9 +445,8 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(false /* variable aspect ratio */,
                         true /* fixed aspect ratio */),
         testing::Values(false /* page has only a main frame */,
-                        true /* page contains a cross-site iframe */),
-        testing::Values(media::VideoPixelFormat::PIXEL_FORMAT_I420)));
-#endif
+                        true /* page contains a cross-site iframe */)));
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Tests that the device successfully captures a series of content changes,
 // whether the browser is running with software compositing or GPU-accelerated
@@ -487,22 +461,6 @@ IN_PROC_BROWSER_TEST_P(WebContentsVideoCaptureDeviceBrowserTestP,
                << " with "
                << (IsFixedAspectRatioTest() ? "Fixed Video Aspect Ratio"
                                             : "Variable Video Aspect Ratio"));
-
-  media::VideoPixelFormat specified_format = GetVideoPixelFormat();
-  media::VideoPixelFormat expected_format = specified_format;
-  if (specified_format == media::VideoPixelFormat::PIXEL_FORMAT_UNKNOWN) {
-    if (IsSoftwareCompositingTest()) {
-      expected_format = media::VideoPixelFormat::PIXEL_FORMAT_I420;
-    } else {
-      expected_format = media::VideoPixelFormat::PIXEL_FORMAT_NV12;
-    }
-  }
-
-  capture_stack()->SetFrameReceivedCallback(base::BindRepeating(
-      [](media::VideoPixelFormat expected_format, media::VideoFrame* frame) {
-        EXPECT_EQ(frame->format(), expected_format);
-      },
-      expected_format));
 
   NavigateToInitialDocument();
   AllocateAndStartAndWaitForFirstFrame();
