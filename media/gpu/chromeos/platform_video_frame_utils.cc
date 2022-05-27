@@ -125,7 +125,7 @@ class GbmDeviceWrapper {
           version->name,
           base::checked_cast<std::string::size_type>(version->name_len));
       drmFreeVersion(version);
-      if (base::LowerCaseEqualsASCII(version_name, "vgem"))
+      if (base::EqualsCaseInsensitiveASCII(version_name, "vgem"))
         continue;
       gbm_device_ = ui::CreateGbmDevice(render_node_file_.GetPlatformFile());
       if (gbm_device_)
