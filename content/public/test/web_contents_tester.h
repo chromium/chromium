@@ -14,6 +14,7 @@
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/mojom/favicon/favicon_url.mojom-forward.h"
 #include "ui/base/page_transition_types.h"
 
 class GURL;
@@ -118,6 +119,14 @@ class WebContentsTester {
       int http_status_code,
       const std::vector<SkBitmap>& bitmaps,
       const std::vector<gfx::Size>& original_bitmap_sizes) = 0;
+
+  // Simulates initial favicon urls set.
+  virtual void TestSetFaviconURL(
+      const std::vector<blink::mojom::FaviconURLPtr>& favicon_urls) = 0;
+
+  // Simulates favicon urls update.
+  virtual void TestUpdateFaviconURL(
+      const std::vector<blink::mojom::FaviconURLPtr>& favicon_urls) = 0;
 
   // Sets the return value of GetLastCommittedUrl() of TestWebContents.
   virtual void SetLastCommittedURL(const GURL& url) = 0;

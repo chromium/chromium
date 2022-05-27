@@ -589,6 +589,7 @@ source_set("web_applications_unit_tests") {
     "//components/webapps/browser:test_support",
     "//components/webapps/common:mojo_bindings",
     "//content/public/browser",
+    "//content/public/common",
     "//content/test:test_support",
     "//services/metrics/public/cpp:ukm_builders",
     "//services/preferences/public/cpp",

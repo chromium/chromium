@@ -33,6 +33,7 @@
 #include "content/public/test/prerender_test_util.h"
 #include "content/test/navigation_simulator_impl.h"
 #include "content/test/test_render_view_host.h"
+#include "mojo/public/cpp/bindings/clone_traits.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/page_state/page_state.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom.h"
@@ -178,6 +179,16 @@ bool TestWebContents::TestDidDownloadImage(
                                       url, http_status_code, bitmaps,
                                       original_bitmap_sizes);
   return true;
+}
+
+void TestWebContents::TestSetFaviconURL(
+    const std::vector<blink::mojom::FaviconURLPtr>& favicon_urls) {
+  GetPrimaryPage().set_favicon_urls(mojo::Clone(favicon_urls));
+}
+
+void TestWebContents::TestUpdateFaviconURL(
+    const std::vector<blink::mojom::FaviconURLPtr>& favicon_urls) {
+  GetMainFrame()->UpdateFaviconURL(mojo::Clone(favicon_urls));
 }
 
 void TestWebContents::SetLastCommittedURL(const GURL& url) {

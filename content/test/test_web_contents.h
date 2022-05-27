@@ -90,6 +90,10 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
       int http_status_code,
       const std::vector<SkBitmap>& bitmaps,
       const std::vector<gfx::Size>& original_bitmap_sizes) override;
+  void TestSetFaviconURL(
+      const std::vector<blink::mojom::FaviconURLPtr>& favicon_urls) override;
+  void TestUpdateFaviconURL(
+      const std::vector<blink::mojom::FaviconURLPtr>& favicon_urls) override;
   void SetLastCommittedURL(const GURL& url) override;
   void SetTitle(const std::u16string& new_title) override;
   void SetMainFrameMimeType(const std::string& mime_type) override;
