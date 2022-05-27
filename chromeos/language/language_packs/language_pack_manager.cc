@@ -118,6 +118,14 @@ absl::optional<std::string> GetDlcIdForBasePayload(
   return it->second;
 }
 
+void InstallDlc(const std::string& dlc_id,
+                DlcserviceClient::InstallCallback install_callback) {
+  dlcservice::InstallRequest install_request;
+  install_request.set_id(dlc_id);
+  DlcserviceClient::Get()->Install(install_request, std::move(install_callback),
+                                   base::DoNothing());
+}
+
 void OnInstallDlcComplete(OnInstallCompleteCallback callback,
                           const DlcserviceClient::InstallResult& dlc_result) {
   PackResult result;
@@ -192,12 +200,8 @@ void LanguagePackManager::InstallPack(const std::string& feature_id,
     return;
   }
 
-  dlcservice::InstallRequest install_request;
-  install_request.set_id(*dlc_id);
-  DlcserviceClient::Get()->Install(
-      install_request,
-      base::BindOnce(&OnInstallDlcComplete, std::move(callback)),
-      base::DoNothing());
+  InstallDlc(*dlc_id,
+             base::BindOnce(&OnInstallDlcComplete, std::move(callback)));
 }
 
 void LanguagePackManager::GetPackState(const std::string& feature_id,
@@ -246,12 +250,8 @@ void LanguagePackManager::InstallBasePayload(
     return;
   }
 
-  dlcservice::InstallRequest install_request;
-  install_request.set_id(*dlc_id);
-  DlcserviceClient::Get()->Install(
-      install_request,
-      base::BindOnce(&OnInstallDlcComplete, std::move(callback)),
-      base::DoNothing());
+  InstallDlc(*dlc_id,
+             base::BindOnce(&OnInstallDlcComplete, std::move(callback)));
 }
 
 void LanguagePackManager::AddObserver(Observer* const observer) {
