@@ -23,6 +23,8 @@
 #include "chromeos/crosapi/mojom/sync.mojom.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/chromeos/explicit_passphrase_mojo_utils.h"
+#include "components/sync/driver/sync_service.h"
+#include "components/sync/driver/sync_user_settings.h"
 #include "components/sync/engine/loopback_server/persistent_unique_client_entity.h"
 #include "components/sync/engine/nigori/nigori.h"
 #include "components/sync/nigori/cryptographer_impl.h"
@@ -33,6 +35,9 @@
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace {
+
+using testing::Eq;
+using testing::NotNull;
 
 void InjectEncryptedServerOsPreference(
     const sync_pb::OsPreferenceSpecifics& unencrypted_specifics,
@@ -65,26 +70,45 @@ std::string PrefValueToProtoString(const base::Value& value) {
   return result;
 }
 
-class PassphraseRequiredNotifiedToCrosapiObserverChecker
+std::string ComputeKeyName(const syncer::Nigori& nigori) {
+  std::string key_name;
+  nigori.Permute(syncer::Nigori::Password, syncer::kNigoriKeyName, &key_name);
+  return key_name;
+}
+
+std::string GetServerNigoriKeyName(fake_server::FakeServer* fake_server) {
+  sync_pb::NigoriSpecifics specifics;
+  fake_server::GetServerNigori(fake_server, &specifics);
+  return specifics.encryption_keybag().key_name();
+}
+
+class PassphraseStateNotifiedToCrosapiObserverChecker
     : public StatusChangeChecker,
       public crosapi::mojom::SyncExplicitPassphraseClientObserver {
  public:
-  explicit PassphraseRequiredNotifiedToCrosapiObserverChecker(
+  enum class ExpectedState { kPassphraseRequired, kPassphraseAvailable };
+
+  explicit PassphraseStateNotifiedToCrosapiObserverChecker(
       mojo::Remote<crosapi::mojom::SyncExplicitPassphraseClient>*
-          remote_explicit_passphrase_client) {
+          remote_explicit_passphrase_client,
+      ExpectedState expected_state)
+      : expected_state_(expected_state) {
     DCHECK(remote_explicit_passphrase_client);
     remote_explicit_passphrase_client->get()->AddObserver(
         receiver_.BindNewPipeAndPassRemote());
   }
 
-  PassphraseRequiredNotifiedToCrosapiObserverChecker(
-      const PassphraseRequiredNotifiedToCrosapiObserverChecker&) = delete;
-  PassphraseRequiredNotifiedToCrosapiObserverChecker& operator=(
-      const PassphraseRequiredNotifiedToCrosapiObserverChecker&) = delete;
-  ~PassphraseRequiredNotifiedToCrosapiObserverChecker() override = default;
+  PassphraseStateNotifiedToCrosapiObserverChecker(
+      const PassphraseStateNotifiedToCrosapiObserverChecker&) = delete;
+  PassphraseStateNotifiedToCrosapiObserverChecker& operator=(
+      const PassphraseStateNotifiedToCrosapiObserverChecker&) = delete;
+  ~PassphraseStateNotifiedToCrosapiObserverChecker() override = default;
 
   // crosapi::mojom::SyncExplicitPassphraseClientObserver implementation.
-  void OnPassphraseAvailable() override {}
+  void OnPassphraseAvailable() override {
+    passphrase_available_notified_ = true;
+    CheckExitCondition();
+  }
 
   void OnPassphraseRequired() override {
     passphrase_required_notified_ = true;
@@ -93,12 +117,24 @@ class PassphraseRequiredNotifiedToCrosapiObserverChecker
 
   // StatusChangeChecker implementation.
   bool IsExitConditionSatisfied(std::ostream* os) override {
-    *os << "Waiting for OnPassphraseRequired() call for crosapi observer";
-    return passphrase_required_notified_;
+    switch (expected_state_) {
+      case ExpectedState::kPassphraseAvailable: {
+        *os << "Waiting for OnPassphraseAvailable() call for crosapi observer";
+        return passphrase_available_notified_;
+      }
+      case ExpectedState::kPassphraseRequired: {
+        *os << "Waiting for OnPassphraseRequired() call for crosapi observer";
+        return passphrase_required_notified_;
+      }
+    }
+    NOTREACHED();
+    return false;
   }
 
  private:
   bool passphrase_required_notified_ = false;
+  bool passphrase_available_notified_ = false;
+  ExpectedState expected_state_;
   mojo::Receiver<crosapi::mojom::SyncExplicitPassphraseClientObserver>
       receiver_{this};
 };
@@ -144,21 +180,40 @@ class AshCustomPassphraseSharingSyncTest : public SyncTest {
     return &explicit_passphrase_client_remote_;
   }
 
+  std::unique_ptr<syncer::Nigori> GetDecryptionKeyExposedViaCrosapi() {
+    crosapi::mojom::SyncExplicitPassphraseClientAsyncWaiter
+        explicit_passphrase_client_async_waiter(
+            explicit_passphrase_client_remote_.get());
+
+    crosapi::mojom::NigoriKeyPtr mojo_nigori_key;
+    explicit_passphrase_client_async_waiter.GetDecryptionNigoriKey(
+        GetSyncingUserAccountKey(), &mojo_nigori_key);
+
+    if (!mojo_nigori_key) {
+      return nullptr;
+    }
+
+    return syncer::NigoriFromMojo(*mojo_nigori_key);
+  }
+
   void MimicDecryptionKeyProvidedByLacros(
       const syncer::KeyParamsForTesting& key_params) {
     auto nigori = syncer::Nigori::CreateByDerivation(
         key_params.derivation_params, key_params.password);
 
-    auto account_key = crosapi::mojom::AccountKey::New();
-    account_key->id = GetSyncService(0)->GetAccountInfo().gaia;
-    account_key->account_type = crosapi::mojom::AccountType::kGaia;
-
     explicit_passphrase_client_remote_.get()->SetDecryptionNigoriKey(
-        std::move(account_key),
+        GetSyncingUserAccountKey(),
         /*decryption_key=*/syncer::NigoriToMojo(*nigori));
   }
 
  private:
+  crosapi::mojom::AccountKeyPtr GetSyncingUserAccountKey() {
+    auto account_key = crosapi::mojom::AccountKey::New();
+    account_key->id = GetSyncService(0)->GetAccountInfo().gaia;
+    account_key->account_type = crosapi::mojom::AccountType::kGaia;
+    return account_key;
+  }
+
   base::test::ScopedFeatureList feature_list_;
 
   mojo::Remote<crosapi::mojom::SyncService> sync_mojo_service_remote_;
@@ -171,9 +226,11 @@ IN_PROC_BROWSER_TEST_F(AshCustomPassphraseSharingSyncTest,
   ASSERT_TRUE(SetupSync());
   SetupCrosapi();
 
-  PassphraseRequiredNotifiedToCrosapiObserverChecker
+  PassphraseStateNotifiedToCrosapiObserverChecker
       passphrase_required_notified_to_crosapi_observer_checker(
-          explicit_passphrase_client_remote());
+          explicit_passphrase_client_remote(),
+          PassphraseStateNotifiedToCrosapiObserverChecker::ExpectedState::
+              kPassphraseRequired);
 
   // Mimic custom passphrase being set by other client.
   const syncer::KeyParamsForTesting kKeyParams =
@@ -213,6 +270,75 @@ IN_PROC_BROWSER_TEST_F(AshCustomPassphraseSharingSyncTest,
                   prefs::kResolveTimezoneByGeolocationMigratedToMethod,
                   kNewPrefValue.GetBool())
                   .Wait());
+}
+
+IN_PROC_BROWSER_TEST_F(AshCustomPassphraseSharingSyncTest,
+                       ShouldExposeEncryptionKeyWhenSetDecryptionPassphrase) {
+  ASSERT_TRUE(SetupSync());
+  SetupCrosapi();
+
+  PassphraseStateNotifiedToCrosapiObserverChecker
+      passphrase_available_notified_to_crosapi_observer_checker(
+          explicit_passphrase_client_remote(),
+          PassphraseStateNotifiedToCrosapiObserverChecker::ExpectedState::
+              kPassphraseAvailable);
+
+  // Mimic custom passphrase being set by other client.
+  const syncer::KeyParamsForTesting kKeyParams =
+      syncer::ScryptPassphraseKeyParamsForTesting("hunter2");
+  const sync_pb::NigoriSpecifics kCustomPassphraseSpecifics =
+      syncer::BuildCustomPassphraseNigoriSpecifics(kKeyParams);
+  fake_server::SetNigoriInFakeServer(kCustomPassphraseSpecifics,
+                                     GetFakeServer());
+  ASSERT_TRUE(
+      PassphraseRequiredStateChecker(GetSyncService(0), /*desired_state=*/true)
+          .Wait());
+
+  // Mimic that user entered the passphrase.
+  ASSERT_TRUE(GetSyncService(0)->GetUserSettings()->SetDecryptionPassphrase(
+      kKeyParams.password));
+  ASSERT_TRUE(
+      PassphraseRequiredStateChecker(GetSyncService(0), /*desired_state=*/false)
+          .Wait());
+
+  // Lacros should be eventually notified that passphrase is available and be
+  // able to retrieve it.
+  EXPECT_TRUE(passphrase_available_notified_to_crosapi_observer_checker.Wait());
+
+  std::unique_ptr<syncer::Nigori> exposed_key =
+      GetDecryptionKeyExposedViaCrosapi();
+  ASSERT_THAT(exposed_key, NotNull());
+  EXPECT_THAT(ComputeKeyName(*exposed_key),
+              Eq(kCustomPassphraseSpecifics.encryption_keybag().key_name()));
+}
+
+IN_PROC_BROWSER_TEST_F(AshCustomPassphraseSharingSyncTest,
+                       ShouldExposeDecryptionKeyWhenSetEncryptionPassphrase) {
+  ASSERT_TRUE(SetupSync());
+  SetupCrosapi();
+
+  PassphraseStateNotifiedToCrosapiObserverChecker
+      passphrase_available_notified_to_crosapi_observer_checker(
+          explicit_passphrase_client_remote(),
+          PassphraseStateNotifiedToCrosapiObserverChecker::ExpectedState::
+              kPassphraseAvailable);
+
+  // Mimic that user set custom passphrase using current client.
+  const std::string kPassphrase = "hunter2";
+  GetSyncService(0)->GetUserSettings()->SetEncryptionPassphrase(kPassphrase);
+  ASSERT_TRUE(ServerNigoriChecker(GetSyncService(0), GetFakeServer(),
+                                  syncer::PassphraseType::kCustomPassphrase)
+                  .Wait());
+
+  // Lacros should be eventually notified that passphrase is available and be
+  // able to retrieve it.
+  EXPECT_TRUE(passphrase_available_notified_to_crosapi_observer_checker.Wait());
+
+  std::unique_ptr<syncer::Nigori> exposed_key =
+      GetDecryptionKeyExposedViaCrosapi();
+  ASSERT_THAT(exposed_key, NotNull());
+  EXPECT_THAT(ComputeKeyName(*exposed_key),
+              Eq(GetServerNigoriKeyName(GetFakeServer())));
 }
 
 }  // namespace
