@@ -87,7 +87,7 @@ namespace {
 constexpr char kRandomTokenStrForTesting[] = "random-token-str-for-testing";
 
 policy::CloudPolicyStore* GetStoreForUser(const user_manager::User* user) {
-  Profile* profile = ProfileHelper::Get()->GetProfileByUserUnsafe(user);
+  Profile* profile = ProfileHelper::Get()->GetProfileByUser(user);
   if (!profile) {
     ADD_FAILURE();
     return NULL;
@@ -507,7 +507,7 @@ IN_PROC_BROWSER_TEST_F(UserImageManagerTest, SaveUserImageFromProfileImage) {
 
   UserImageManagerImpl::IgnoreProfileDataDownloadDelayForTesting();
   LoginUser(test_account_id1_);
-  UpdatePrimaryAccountInfo(ProfileHelper::Get()->GetProfileByUserUnsafe(user));
+  UpdatePrimaryAccountInfo(ProfileHelper::Get()->GetProfileByUser(user));
 
   run_loop_ = std::make_unique<base::RunLoop>();
   UserImageManager* user_image_manager =
