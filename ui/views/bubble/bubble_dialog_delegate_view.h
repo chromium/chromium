@@ -293,15 +293,6 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   // anchor, while retaining the other anchor view logic.
   virtual gfx::Rect GetBubbleBounds();
 
-  // Update the button highlight, which may be the anchor view or an explicit
-  // view set in |highlighted_button_tracker_|. This can be overridden to
-  // provide different highlight effects.
-  //
-  // TODO(ellyjones): Remove this; it is only used in one place, to disable
-  // highlighting the button, but this is trivial to achieve using other
-  // methods.
-  virtual void UpdateHighlightedButton(bool highlight);
-
   // Override this to perform initialization after the Widget is created but
   // before it is shown.
   // TODO(pbos): Turn this into a (Once?)Callback and add set_init(cb).
@@ -375,6 +366,8 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   // primary status. This method is only called when this bubble becomes primary
   // after losing it.
   void NotifyAnchoredBubbleIsPrimary();
+
+  void UpdateHighlightedButton(bool highlight);
 
   void SetAnchoredDialogKey();
 

@@ -63,9 +63,6 @@ class HelpBubbleView : public views::BubbleDialogDelegateView {
   // BubbleDialogDelegateView:
   bool OnMousePressed(const ui::MouseEvent& event) override;
   std::u16string GetAccessibleWindowTitle() const override;
-  void UpdateHighlightedButton(bool highlighted) override {
-    // Do nothing: the anchor for promo bubbles should not highlight.
-  }
   void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
   void OnThemeChanged() override;
   gfx::Size CalculatePreferredSize() const override;
