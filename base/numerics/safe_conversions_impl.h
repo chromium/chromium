@@ -71,8 +71,9 @@ constexpr typename std::make_signed<T>::type ConditionalNegate(
   static_assert(std::is_integral<T>::value, "Type must be integral");
   using SignedT = typename std::make_signed<T>::type;
   using UnsignedT = typename std::make_unsigned<T>::type;
-  return static_cast<SignedT>(
-      (static_cast<UnsignedT>(x) ^ -SignedT(is_negative)) + is_negative);
+  return static_cast<SignedT>((static_cast<UnsignedT>(x) ^
+                               static_cast<UnsignedT>(-SignedT(is_negative))) +
+                              is_negative);
 }
 
 // This performs a safe, absolute value via unsigned overflow.
@@ -244,9 +245,10 @@ struct NarrowingRange {
   static constexpr T Adjust(T value) {
     static_assert(std::is_same<T, Dst>::value, "");
     static_assert(kShift < DstLimits::digits, "");
-    return static_cast<T>(
-        ConditionalNegate(SafeUnsignedAbs(value) & ~((T(1) << kShift) - T(1)),
-                          IsValueNegative(value)));
+    using UnsignedDst = typename std::make_unsigned_t<T>;
+    return static_cast<T>(ConditionalNegate(
+        SafeUnsignedAbs(value) & ~((UnsignedDst{1} << kShift) - UnsignedDst{1}),
+        IsValueNegative(value)));
   }
 
   template <typename T,
