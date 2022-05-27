@@ -6,7 +6,7 @@
 load("//lib/args.star", "args")
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
-load("//lib/builders.star", "goma", "os", "sheriff_rotations")
+load("//lib/builders.star", "goma", "os", "sheriff_rotations", "xcode")
 load("//lib/ci.star", "ci", "rbe_instance", "rbe_jobs")
 load("//lib/consoles.star", "consoles")
 
@@ -594,4 +594,5 @@ ci.builder(
     ),
     goma_backend = goma.backend.RBE_PROD,
     sheriff_rotations = args.ignore_default(sheriff_rotations.IOS),
+    xcode = xcode.x13main,
 )
