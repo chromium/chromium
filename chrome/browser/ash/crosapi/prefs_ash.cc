@@ -29,27 +29,29 @@ namespace {
 // corresponding paths in the prefstore. Initialized on first use.
 const std::string& GetProfilePrefNameForPref(mojom::PrefPath path) {
   static base::NoDestructor<std::map<mojom::PrefPath, std::string>>
-      profile_prefpath_to_name(
-          {{mojom::PrefPath::kAccessibilitySpokenFeedbackEnabled,
-            ash::prefs::kAccessibilitySpokenFeedbackEnabled},
-           {mojom::PrefPath::kQuickAnswersEnabled,
-            quick_answers::prefs::kQuickAnswersEnabled},
-           {mojom::PrefPath::kQuickAnswersConsentStatus,
-            quick_answers::prefs::kQuickAnswersConsentStatus},
-           {mojom::PrefPath::kQuickAnswersDefinitionEnabled,
-            quick_answers::prefs::kQuickAnswersDefinitionEnabled},
-           {mojom::PrefPath::kQuickAnswersTranslationEnabled,
-            quick_answers::prefs::kQuickAnswersTranslationEnabled},
-           {mojom::PrefPath::kQuickAnswersUnitConversionEnabled,
-            quick_answers::prefs::kQuickAnswersUnitConversionEnabled},
-           {mojom::PrefPath::kQuickAnswersNoticeImpressionCount,
-            quick_answers::prefs::kQuickAnswersNoticeImpressionCount},
-           {mojom::PrefPath::kQuickAnswersNoticeImpressionDuration,
-            quick_answers::prefs::kQuickAnswersNoticeImpressionDuration},
-           {mojom::PrefPath::kPreferredLanguages,
-            language::prefs::kPreferredLanguages},
-           {mojom::PrefPath::kApplicationLocale,
-            language::prefs::kApplicationLocale}});
+      profile_prefpath_to_name({
+          {mojom::PrefPath::kAccessibilitySpokenFeedbackEnabled,
+           ash::prefs::kAccessibilitySpokenFeedbackEnabled},
+          {mojom::PrefPath::kQuickAnswersEnabled,
+           quick_answers::prefs::kQuickAnswersEnabled},
+          {mojom::PrefPath::kQuickAnswersConsentStatus,
+           quick_answers::prefs::kQuickAnswersConsentStatus},
+          {mojom::PrefPath::kQuickAnswersDefinitionEnabled,
+           quick_answers::prefs::kQuickAnswersDefinitionEnabled},
+          {mojom::PrefPath::kQuickAnswersTranslationEnabled,
+           quick_answers::prefs::kQuickAnswersTranslationEnabled},
+          {mojom::PrefPath::kQuickAnswersUnitConversionEnabled,
+           quick_answers::prefs::kQuickAnswersUnitConversionEnabled},
+          {mojom::PrefPath::kQuickAnswersNoticeImpressionCount,
+           quick_answers::prefs::kQuickAnswersNoticeImpressionCount},
+          {mojom::PrefPath::kQuickAnswersNoticeImpressionDuration,
+           quick_answers::prefs::kQuickAnswersNoticeImpressionDuration},
+          {mojom::PrefPath::kPreferredLanguages,
+           language::prefs::kPreferredLanguages},
+          {mojom::PrefPath::kApplicationLocale,
+           language::prefs::kApplicationLocale},
+          {mojom::PrefPath::kSharedStorage, prefs::kSharedStorage},
+      });
   auto pref_name = profile_prefpath_to_name->find(path);
   DCHECK(pref_name != profile_prefpath_to_name->end());
   return pref_name->second;
@@ -252,6 +254,9 @@ void PrefsAsh::OnProfileAdded(Profile* profile) {
 
 absl::optional<PrefsAsh::State> PrefsAsh::GetState(mojom::PrefPath path) {
   switch (path) {
+    case mojom::PrefPath::kUnknown:
+      LOG(WARNING) << "Unknown pref path: " << path;
+      return absl::nullopt;
     case mojom::PrefPath::kMetricsReportingEnabled:
       return State{local_state_, &local_state_registrar_, false,
                    metrics::prefs::kMetricsReportingEnabled};
@@ -264,7 +269,8 @@ absl::optional<PrefsAsh::State> PrefsAsh::GetState(mojom::PrefPath path) {
     case mojom::PrefPath::kQuickAnswersNoticeImpressionCount:
     case mojom::PrefPath::kQuickAnswersNoticeImpressionDuration:
     case mojom::PrefPath::kPreferredLanguages:
-    case mojom::PrefPath::kApplicationLocale: {
+    case mojom::PrefPath::kApplicationLocale:
+    case mojom::PrefPath::kSharedStorage: {
       if (!profile_prefs_registrar_) {
         LOG(WARNING) << "Primary profile is not yet initialized";
         return absl::nullopt;
@@ -304,9 +310,6 @@ absl::optional<PrefsAsh::State> PrefsAsh::GetState(mojom::PrefPath path) {
       std::string pref_name = GetExtensionPrefNameForPref(path);
       return State{profile_prefs_registrar_->prefs(), nullptr, true, pref_name};
     }
-    default:
-      LOG(WARNING) << "Unknown pref path: " << path;
-      return absl::nullopt;
   }
 }
 

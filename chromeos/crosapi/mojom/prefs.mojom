@@ -85,6 +85,8 @@ enum PrefPath {
   [MinVersion=4] kPreferredLanguages = 28,
   // M100: language::prefs::kApplicationLocale (profile)
   [MinVersion=4] kApplicationLocale = 29,
+  // M104: prefs::kSharedStorage (profile)
+  [MinVersion=5] kSharedStorage = 30,
 };
 
 // Information about who or what is controlling a particular pref. This is used

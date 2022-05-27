@@ -3088,6 +3088,7 @@ if (!is_android) {
           "../browser/extensions/api/platform_keys/platform_keys_test_base.cc",
           "../browser/extensions/api/platform_keys/platform_keys_test_base.h",
           "../browser/extensions/api/settings_private/settings_private_browsertest_chromeos.cc",
+          "../browser/extensions/api/shared_storage/shared_storage_private_apitest.cc",
           "../browser/extensions/api/system_display/system_display_chromeos_apitest.cc",
           "../browser/extensions/api/terminal/terminal_private_apitest.cc",
           "../browser/extensions/api/terminal/terminal_private_browsertest.cc",
@@ -4525,6 +4526,7 @@ if (is_chromeos_lacros) {
       "../browser/chromeos/policy/dlp/dlp_content_manager_lacros_browsertest.cc",
       "../browser/chromeos/policy/dlp/dlp_content_manager_test_helper.cc",
       "../browser/chromeos/policy/dlp/dlp_content_manager_test_helper.h",
+      "../browser/extensions/api/shared_storage/shared_storage_private_apitest.cc",
       "../browser/lacros/browser_test_util.cc",
       "../browser/lacros/browser_test_util.h",
       "../browser/lacros/device_attributes_lacros_browsertest.cc",
@@ -4550,6 +4552,7 @@ if (is_chromeos_lacros) {
 
     data = [
       "data/media/",
+      "data/extensions/api_test/shared_storage_private/",
       "data/extensions/api_test/login_screen_apis/",
       "data/extensions/platform_apps/minimal/",
     ]

@@ -120,6 +120,8 @@ namespace {
 // Capability to support reloading the lacros browser on receiving a
 // notification that the browser component was successfully updated.
 constexpr char kBrowserManagerReloadBrowserCapability[] = "crbug/1237235";
+// Capability to support shared_storage in prefs.
+constexpr char kSharedStoragePrefsCapability[] = "b/231890240";
 
 // Returns the vector containing policy data of the device account. In case of
 // an error, returns nullopt.
@@ -460,7 +462,8 @@ mojom::BrowserInitParamsPtr GetBrowserInitParams(
       ash::features::
           IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled();
 
-  params->ash_capabilities = {{kBrowserManagerReloadBrowserCapability}};
+  params->ash_capabilities = {
+      {kBrowserManagerReloadBrowserCapability, kSharedStoragePrefsCapability}};
 
   params->is_device_enterprised_managed =
       ash::InstallAttributes::Get()->IsEnterpriseManaged();
