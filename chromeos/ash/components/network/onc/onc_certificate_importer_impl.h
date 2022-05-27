@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_NETWORK_ONC_ONC_CERTIFICATE_IMPORTER_IMPL_H_
-#define CHROMEOS_NETWORK_ONC_ONC_CERTIFICATE_IMPORTER_IMPL_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_NETWORK_ONC_ONC_CERTIFICATE_IMPORTER_IMPL_H_
+#define CHROMEOS_ASH_COMPONENTS_NETWORK_ONC_ONC_CERTIFICATE_IMPORTER_IMPL_H_
 
 #include <map>
 #include <memory>
@@ -13,8 +13,8 @@
 #include "base/component_export.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "chromeos/ash/components/network/onc/onc_certificate_importer.h"
 #include "chromeos/components/onc/onc_parsed_certificates.h"
-#include "chromeos/network/onc/onc_certificate_importer.h"
 #include "components/onc/onc_constants.h"
 
 namespace base {
@@ -110,4 +110,4 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CertificateImporterImpl
 }  // namespace onc
 }  // namespace chromeos
 
-#endif  // CHROMEOS_NETWORK_ONC_ONC_CERTIFICATE_IMPORTER_IMPL_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_ONC_ONC_CERTIFICATE_IMPORTER_IMPL_H_

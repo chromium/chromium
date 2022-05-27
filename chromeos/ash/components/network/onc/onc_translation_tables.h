@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_NETWORK_ONC_ONC_TRANSLATION_TABLES_H_
-#define CHROMEOS_NETWORK_ONC_ONC_TRANSLATION_TABLES_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_NETWORK_ONC_ONC_TRANSLATION_TABLES_H_
+#define CHROMEOS_ASH_COMPONENTS_NETWORK_ONC_ONC_TRANSLATION_TABLES_H_
 
 #include <string>
 #include <vector>
@@ -98,4 +98,4 @@ bool TranslateStringToONC(const StringTranslationEntry table[],
 }  // namespace onc
 }  // namespace chromeos
 
-#endif  // CHROMEOS_NETWORK_ONC_ONC_TRANSLATION_TABLES_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_ONC_ONC_TRANSLATION_TABLES_H_

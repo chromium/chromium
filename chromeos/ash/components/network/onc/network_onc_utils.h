@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_NETWORK_ONC_NETWORK_ONC_UTILS_H_
-#define CHROMEOS_NETWORK_ONC_NETWORK_ONC_UTILS_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_NETWORK_ONC_NETWORK_ONC_UTILS_H_
+#define CHROMEOS_ASH_COMPONENTS_NETWORK_ONC_NETWORK_ONC_UTILS_H_
 
 #include <map>
 #include <memory>
@@ -99,4 +99,4 @@ bool HasUserPasswordSubsitutionVariable(const base::Value* network_configs);
 }  // namespace onc
 }  // namespace chromeos
 
-#endif  // CHROMEOS_NETWORK_ONC_NETWORK_ONC_UTILS_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_ONC_NETWORK_ONC_UTILS_H_

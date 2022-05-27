@@ -10,7 +10,7 @@
 
 #include "base/component_export.h"
 #include "base/memory/ref_counted.h"
-#include "chromeos/network/onc/onc_certificate_pattern.h"
+#include "chromeos/ash/components/network/onc/onc_certificate_pattern.h"
 #include "components/onc/onc_constants.h"
 
 namespace base {

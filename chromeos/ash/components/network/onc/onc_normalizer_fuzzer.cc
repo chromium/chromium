@@ -8,8 +8,8 @@
 #include "base/json/json_reader.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"
+#include "chromeos/ash/components/network/onc/onc_normalizer.h"
 #include "chromeos/components/onc/onc_signature.h"
-#include "chromeos/network/onc/onc_normalizer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_NETWORK_ONC_ONC_MERGER_H_
-#define CHROMEOS_NETWORK_ONC_ONC_MERGER_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_NETWORK_ONC_ONC_MERGER_H_
+#define CHROMEOS_ASH_COMPONENTS_NETWORK_ONC_ONC_MERGER_H_
 
 #include "base/component_export.h"
 
@@ -51,4 +51,4 @@ base::Value MergeSettingsAndPoliciesToAugmented(
 }  // namespace onc
 }  // namespace chromeos
 
-#endif  // CHROMEOS_NETWORK_ONC_ONC_MERGER_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_ONC_ONC_MERGER_H_

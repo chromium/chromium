@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/network/onc/onc_certificate_pattern.h"
+#include "chromeos/ash/components/network/onc/onc_certificate_pattern.h"
 
 #include <stddef.h>
 

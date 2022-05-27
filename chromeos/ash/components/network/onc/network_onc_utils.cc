@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/network/onc/network_onc_utils.h"
+#include "chromeos/ash/components/network/onc/network_onc_utils.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -20,6 +20,9 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
+#include "chromeos/ash/components/network/onc/network_onc_utils.h"
+#include "chromeos/ash/components/network/onc/onc_normalizer.h"
+#include "chromeos/ash/components/network/onc/onc_translator.h"
 #include "chromeos/components/onc/onc_mapper.h"
 #include "chromeos/components/onc/onc_signature.h"
 #include "chromeos/components/onc/onc_utils.h"
@@ -32,9 +35,6 @@
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_ui_data.h"
-#include "chromeos/network/onc/network_onc_utils.h"
-#include "chromeos/network/onc/onc_normalizer.h"
-#include "chromeos/network/onc/onc_translator.h"
 #include "chromeos/network/tether_constants.h"
 #include "components/account_id/account_id.h"
 #include "components/device_event_log/device_event_log.h"

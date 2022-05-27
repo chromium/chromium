@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_NETWORK_ONC_ONC_CERTIFICATE_PATTERN_H_
-#define CHROMEOS_NETWORK_ONC_ONC_CERTIFICATE_PATTERN_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_NETWORK_ONC_ONC_CERTIFICATE_PATTERN_H_
+#define CHROMEOS_ASH_COMPONENTS_NETWORK_ONC_ONC_CERTIFICATE_PATTERN_H_
 
 #include <memory>
 #include <string>
@@ -75,4 +75,4 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) OncCertificatePattern {
 
 }  // namespace chromeos
 
-#endif  // CHROMEOS_NETWORK_ONC_ONC_CERTIFICATE_PATTERN_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_ONC_ONC_CERTIFICATE_PATTERN_H_

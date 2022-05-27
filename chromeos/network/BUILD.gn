@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 import("//third_party/protobuf/proto_library.gni")
 
@@ -14,7 +13,10 @@ config("network_config") {
 
 component("network") {
   configs += [ ":network_config" ]
-  public_deps = [ "//chromeos/ash/components/network/metrics" ]
+  public_deps = [
+    "//chromeos/ash/components/network/metrics",
+    "//chromeos/ash/components/network/onc",
+  ]
   deps = [
     "//ash/constants",
     "//base",
@@ -28,7 +30,6 @@ component("network") {
     "//chromeos/login/login_state",
     "//chromeos/services/network_config/public/mojom",
     "//components/account_id",
-    "//components/certificate_matching",
     "//components/crx_file",
     "//components/device_event_log",
     "//components/onc",
@@ -47,7 +48,10 @@ component("network") {
 
   # Allow circular dependency from sub-directories of
   # chromeos/ash/components/network.
-  allow_circular_includes_from = [ "//chromeos/ash/components/network/metrics" ]
+  allow_circular_includes_from = [
+    "//chromeos/ash/components/network/metrics",
+    "//chromeos/ash/components/network/onc",
+  ]
   sources = [
     "auto_connect_handler.cc",
     "auto_connect_handler.h",
@@ -153,22 +157,6 @@ component("network") {
     "network_ui_data.h",
     "network_util.cc",
     "network_util.h",
-    "onc/network_onc_utils.cc",
-    "onc/network_onc_utils.h",
-    "onc/onc_certificate_importer.h",
-    "onc/onc_certificate_importer_impl.cc",
-    "onc/onc_certificate_importer_impl.h",
-    "onc/onc_certificate_pattern.cc",
-    "onc/onc_certificate_pattern.h",
-    "onc/onc_merger.cc",
-    "onc/onc_merger.h",
-    "onc/onc_normalizer.cc",
-    "onc/onc_normalizer.h",
-    "onc/onc_translation_tables.cc",
-    "onc/onc_translation_tables.h",
-    "onc/onc_translator.h",
-    "onc/onc_translator_onc_to_shill.cc",
-    "onc/onc_translator_shill_to_onc.cc",
     "policy_applicator.cc",
     "policy_applicator.h",
     "policy_certificate_provider.h",
@@ -267,6 +255,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chromeos:test_utils",
     "//chromeos/ash/components/network/metrics:unit_tests",
+    "//chromeos/ash/components/network/onc:unit_tests",
     "//chromeos/components/feature_usage",
     "//chromeos/components/onc",
     "//chromeos/components/onc:test_support",
@@ -324,12 +313,6 @@ source_set("unit_tests") {
     "network_type_pattern_unittest.cc",
     "network_ui_data_unittest.cc",
     "network_util_unittest.cc",
-    "onc/network_onc_utils_unittest.cc",
-    "onc/onc_certificate_importer_impl_unittest.cc",
-    "onc/onc_certificate_pattern_unittest.cc",
-    "onc/onc_merger_unittest.cc",
-    "onc/onc_normalizer_unittest.cc",
-    "onc/onc_translator_unittest.cc",
     "profile_policies_unittest.cc",
     "prohibited_technologies_handler_unittest.cc",
     "proxy/proxy_config_service_impl_unittest.cc",
@@ -338,14 +321,5 @@ source_set("unit_tests") {
     "shill_property_util_unittest.cc",
     "stub_cellular_networks_provider_unittest.cc",
     "system_token_cert_db_storage_unittest.cc",
-  ]
-}
-
-fuzzer_test("onc_normalizer_fuzzer") {
-  sources = [ "onc/onc_normalizer_fuzzer.cc" ]
-  deps = [
-    ":network",
-    "//base",
-    "//chromeos/components/onc:onc",
   ]
 }

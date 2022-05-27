@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/test/task_environment.h"
+#include "chromeos/ash/components/network/onc/network_onc_utils.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/update_engine/fake_update_engine_client.h"
 #include "chromeos/dbus/update_engine/update_engine.pb.h"
@@ -20,7 +21,6 @@
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_profile_handler.h"
 #include "chromeos/network/network_state_test_helper.h"
-#include "chromeos/network/onc/network_onc_utils.h"
 #include "chromeos/network/proxy/ui_proxy_config_service.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
