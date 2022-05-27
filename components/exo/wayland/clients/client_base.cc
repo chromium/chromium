@@ -533,7 +533,7 @@ bool ClientBase::Init(const InitParams& params) {
         return false;
       }
       // We can't actually use the virtual GEM, so discard it like we do in CrOS
-      if (base::LowerCaseEqualsASCII("vgem", drm_version->name))
+      if (base::EqualsCaseInsensitiveASCII("vgem", drm_version->name))
         continue;
       if (strstr(drm_version->name, params.use_drm_value.c_str())) {
         drm_fd_ = std::move(drm_fd);
