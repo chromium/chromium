@@ -825,10 +825,12 @@ void flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::insert(
 
   // Provide a convenience lambda to obtain an iterator pointing past the last
   // old element. This needs to be dymanic due to possible re-allocations.
-  auto middle = [this, size = size()] { return std::next(begin(), size); };
+  auto middle = [this, size = size()] {
+    return std::next(begin(), static_cast<difference_type>(size));
+  };
 
   // For batch updates initialize the first insertion point.
-  difference_type pos_first_new = size();
+  auto pos_first_new = static_cast<difference_type>(size());
 
   // Loop over the input range while appending new values and overwriting
   // existing ones, if applicable. Keep track of the first insertion point.
@@ -904,7 +906,8 @@ template <typename K>
 auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::erase(const K& val)
     -> size_type {
   auto eq_range = equal_range(val);
-  auto res = std::distance(eq_range.first, eq_range.second);
+  auto res =
+      static_cast<size_type>(std::distance(eq_range.first, eq_range.second));
   erase(eq_range.first, eq_range.second);
   return res;
 }
@@ -941,7 +944,7 @@ template <typename K>
 auto flat_tree<Key, GetKeyFromValue, KeyCompare, Container>::count(
     const K& key) const -> size_type {
   auto eq_range = equal_range(key);
-  return std::distance(eq_range.first, eq_range.second);
+  return static_cast<size_type>(std::distance(eq_range.first, eq_range.second));
 }
 
 template <class Key, class GetKeyFromValue, class KeyCompare, class Container>

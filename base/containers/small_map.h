@@ -487,7 +487,7 @@ class small_map {
       return iterator(map_.erase(position.map_iter_));
     }
 
-    size_t i = position.array_iter_ - array_;
+    size_t i = static_cast<size_t>(position.array_iter_ - array_);
     // TODO(crbug.com/817982): When we have a checked iterator, this CHECK might
     // not be necessary.
     CHECK_LE(i, size_);
