@@ -58,8 +58,4 @@ const ui::TemplateReplacements* URLDataSourceIOSImpl::GetReplacements() const {
   return nullptr;
 }
 
-bool URLDataSourceIOSImpl::ShouldReplaceI18nInJS() const {
-  return false;
-}
-
 }  // namespace web

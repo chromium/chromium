@@ -39,8 +39,4 @@ bool URLDataSourceIOS::ShouldServiceRequest(const GURL& url) const {
   return GetWebClient()->IsAppSpecificURL(url);
 }
 
-bool URLDataSourceIOS::ShouldReplaceI18nInJS() const {
-  return false;
-}
-
 }  // namespace web
