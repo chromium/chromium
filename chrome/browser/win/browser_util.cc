@@ -9,62 +9,44 @@
 #include <algorithm>
 #include <string>
 
-#include "base/logging.h"
+#include "base/base_paths.h"
+#include "base/files/file_path.h"
+#include "base/path_service.h"
+#include "sandbox/win/src/win_utils.h"
 
 namespace browser_util {
 
-namespace {
-
-// Determine the NT path name for the current process. Returns an empty path if
-// a failure occurs.
-std::wstring GetCurrentProcessExecutablePath() {
-  std::wstring image_path;
-  image_path.resize(MAX_PATH);
-  DWORD path_length = image_path.size();
-  BOOL success =
-      ::QueryFullProcessImageNameW(::GetCurrentProcess(), PROCESS_NAME_NATIVE,
-                                   image_path.data(), &path_length);
-  if (!success && ::GetLastError() == ERROR_INSUFFICIENT_BUFFER) {
-    // Process name is potentially greater than MAX_PATH, try larger max size.
-    // https://docs.microsoft.com/en-us/windows/win32/fileio/maximum-file-path-limitation
-    image_path.resize(UNICODE_STRING_MAX_CHARS);
-    path_length = image_path.size();
-    success =
-        ::QueryFullProcessImageNameW(::GetCurrentProcess(), PROCESS_NAME_NATIVE,
-                                     image_path.data(), &path_length);
-  }
-  if (!success) {
-    PLOG_IF(ERROR, ::GetLastError() != ERROR_GEN_FAILURE)
-        << "Failed to get process image path";
-    return std::wstring();
-  }
-  image_path.resize(path_length);
-  return image_path;
-}
-
-}  // namespace
-
 bool IsBrowserAlreadyRunning() {
-  static HANDLE handle = NULL;
-
-  std::wstring nt_path_name = GetCurrentProcessExecutablePath();
-  if (nt_path_name.empty()) {
+  static HANDLE handle = nullptr;
+  base::FilePath exe_dir_path;
+  // DIR_EXE is obtained from the path of FILE_EXE and, on Windows, FILE_EXE is
+  // obtained from reading the PEB of the currently running process. This means
+  // that even if the EXE file is moved, the DIR_EXE will still reflect the
+  // original location of the EXE from when it was started. This is important as
+  // IsBrowserAlreadyRunning must detect any running browser in Chrome's install
+  // directory, and not in a temporary directory if it is subsequently renamed
+  // or moved while running.
+  if (!base::PathService::Get(base::DIR_EXE, &exe_dir_path)) {
     // If this fails, there isn't much that can be done. However, assuming that
     // browser is *not* already running is the safer action here, as it means
     // that any pending upgrade actions will occur and hopefully the issue that
     // caused this failure will be resolved by the newer version. This might
     // cause the currently running browser to be temporarily broken, but it's
-    // probably broken already if QueryFullProcessImageNameW is failing.
+    // probably broken already if this API is failing.
     return false;
   }
-
-  std::replace(nt_path_name.begin(), nt_path_name.end(), '\\', '!');
-  std::transform(nt_path_name.begin(), nt_path_name.end(), nt_path_name.begin(),
+  std::wstring nt_dir_name;
+  if (!sandbox::GetNtPathFromWin32Path(exe_dir_path.value(), &nt_dir_name)) {
+    // See above for why false is returned here.
+    return false;
+  }
+  std::replace(nt_dir_name.begin(), nt_dir_name.end(), '\\', '!');
+  std::transform(nt_dir_name.begin(), nt_dir_name.end(), nt_dir_name.begin(),
                  tolower);
-  nt_path_name = L"Global\\" + nt_path_name;
+  nt_dir_name = L"Global\\" + nt_dir_name;
   if (handle != NULL)
     ::CloseHandle(handle);
-  handle = ::CreateEventW(NULL, TRUE, TRUE, nt_path_name.c_str());
+  handle = ::CreateEventW(NULL, TRUE, TRUE, nt_dir_name.c_str());
   int error = ::GetLastError();
   return (error == ERROR_ALREADY_EXISTS || error == ERROR_ACCESS_DENIED);
 }
