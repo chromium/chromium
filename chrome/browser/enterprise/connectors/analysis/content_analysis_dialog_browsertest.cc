@@ -390,7 +390,9 @@ class ContentAnalysisDialogAppearanceBrowserTest
     // The top image is the pending one corresponding to the access point.
     const gfx::ImageSkia& actual_image =
         dialog->GetTopImageForTesting()->GetImage();
-    int expected_image_id = IDR_UPLOAD_SCANNING;
+    const bool use_dark = dialog->ShouldUseDarkTopImage();
+    int expected_image_id =
+        use_dark ? IDR_UPLOAD_SCANNING_DARK : IDR_UPLOAD_SCANNING;
     gfx::ImageSkia* expected_image =
         ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
             expected_image_id);
@@ -413,8 +415,11 @@ class ContentAnalysisDialogAppearanceBrowserTest
     // point and scan type.
     const gfx::ImageSkia& actual_image =
         dialog->GetTopImageForTesting()->GetImage();
+    const bool use_dark = dialog->ShouldUseDarkTopImage();
     int expected_image_id =
-        success() ? IDR_UPLOAD_SUCCESS : IDR_UPLOAD_VIOLATION;
+        success()
+            ? (use_dark ? IDR_UPLOAD_SUCCESS_DARK : IDR_UPLOAD_SUCCESS)
+            : (use_dark ? IDR_UPLOAD_VIOLATION_DARK : IDR_UPLOAD_VIOLATION);
     gfx::ImageSkia* expected_image =
         ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
             expected_image_id);

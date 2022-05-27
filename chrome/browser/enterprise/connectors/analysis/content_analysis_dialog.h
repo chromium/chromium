@@ -146,6 +146,9 @@ class ContentAnalysisDialog : public views::DialogDelegate,
   // `dialog_state_`.
   ui::ColorId GetSideImageBackgroundColor() const;
 
+  // Returns true if should use dark version of top image.
+  bool ShouldUseDarkTopImage() const;
+
   // Returns the appropriate top image depending on `dialog_state_`.
   const gfx::ImageSkia* GetTopImage() const;
 

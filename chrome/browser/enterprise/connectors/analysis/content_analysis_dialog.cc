@@ -874,11 +874,14 @@ void ContentAnalysisDialog::AddJustificationTextLengthToDialog() {
   //         ui::kColorAlertHighSeverity));
 }
 
-const gfx::ImageSkia* ContentAnalysisDialog::GetTopImage() const {
-  const bool use_dark = color_utils::IsDark(
+bool ContentAnalysisDialog::ShouldUseDarkTopImage() const {
+  return color_utils::IsDark(
       contents_view_->GetColorProvider()->GetColor(ui::kColorDialogBackground));
+}
+
+const gfx::ImageSkia* ContentAnalysisDialog::GetTopImage() const {
   return ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-      GetTopImageId(use_dark));
+      GetTopImageId(ShouldUseDarkTopImage()));
 }
 
 bool ContentAnalysisDialog::is_print_scan() const {
