@@ -129,6 +129,12 @@ const char kContentSuggestionsHeaderMigrationDescription[] =
     "When enabled, the Content Suggestions header will be logically moved to "
     "the Discover feed ScrollView";
 
+const char kContentSuggestionsUIModuleRefreshName[] =
+    "Content Suggestions UI Module Refresh";
+const char kContentSuggestionsUIModuleRefreshDescription[] =
+    "When enabled, the Content Suggestions will be redesigned to be contained "
+    "into distinct modules.";
+
 const char kContentSuggestionsUIViewControllerMigrationName[] =
     "Content Suggestions UIViewController migration";
 const char kContentSuggestionsUIViewControllerMigrationDescription[] =

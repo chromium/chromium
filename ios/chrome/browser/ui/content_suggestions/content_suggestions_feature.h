@@ -25,6 +25,9 @@ extern const base::Feature kContentSuggestionsHeaderMigration;
 // Feature to move the Content Suggestions ViewController to a UIViewController.
 extern const base::Feature kContentSuggestionsUIViewControllerMigration;
 
+// Feature to section the Content Suggestions into modules.
+extern const base::Feature kContentSuggestionsUIModuleRefresh;
+
 // A parameter to indicate whether the native UI is enabled for the discover
 // feed.
 extern const char kDiscoverFeedIsNativeUIEnabled[];
@@ -44,5 +47,8 @@ bool IsContentSuggestionsHeaderMigrationEnabled();
 // Whether the Content Suggestions UIViewController migration feature is
 // enabled.
 bool IsContentSuggestionsUIViewControllerMigrationEnabled();
+
+// Whether the Content Suggestions UI Module Refresh feature is enabled.
+bool IsContentSuggestionsUIModuleRefreshEnabled();
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_FEATURE_H_

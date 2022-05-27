@@ -108,6 +108,11 @@ extern const char kCalendarExperienceKitDescription[];
 extern const char kContentSuggestionsHeaderMigrationName[];
 extern const char kContentSuggestionsHeaderMigrationDescription[];
 
+// Title and description for the flag that updates the Content Suggestions to a
+// new module design.
+extern const char kContentSuggestionsUIModuleRefreshName[];
+extern const char kContentSuggestionsUIModuleRefreshDescription[];
+
 // Title and description for the flag that moves the Content Suggestions to a
 // UIViewController.
 extern const char kContentSuggestionsUIViewControllerMigrationName[];

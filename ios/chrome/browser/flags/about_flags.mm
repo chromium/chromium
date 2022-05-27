@@ -944,6 +944,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"enable-feed-ablation", flag_descriptions::kEnableFeedAblationName,
      flag_descriptions::kEnableFeedAblationDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kEnableFeedAblation)},
+    {"content-suggestions-ui-module-refresh",
+     flag_descriptions::kContentSuggestionsUIModuleRefreshName,
+     flag_descriptions::kContentSuggestionsUIModuleRefreshDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kContentSuggestionsUIModuleRefresh)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
