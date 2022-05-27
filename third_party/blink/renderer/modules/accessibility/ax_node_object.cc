@@ -69,6 +69,7 @@
 #include "third_party/blink/renderer/core/html/fenced_frame/html_fenced_frame_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_button_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_field_set_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_label_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_legend_element.h"
@@ -1837,12 +1838,11 @@ AccessibilityExpanded AXNodeObject::IsExpanded() const {
                : kExpandedCollapsed;
   }
 
-  // For buttons that contain the |togglepopup|, |showpopup|, or |hidepopup|
-  // popup triggering attributes, and the pointed-to element is a valid popup
-  // with type kPopup, then set aria-expanded=false when the popup is hidden,
-  // and aria-expanded=true when it is showing.
-  if (auto* button = DynamicTo<HTMLButtonElement>(element)) {
-    if (auto popup = button->togglePopupElement().element;
+  // For form controls that act as triggering elements for popups of type
+  // kPopup, then set aria-expanded=false when the popup is hidden, and
+  // aria-expanded=true when it is showing.
+  if (auto* form_control = DynamicTo<HTMLFormControlElement>(element)) {
+    if (auto popup = form_control->togglePopupElement().element;
         popup && popup->PopupType() == PopupValueType::kPopup) {
       return popup->popupOpen() ? kExpandedExpanded : kExpandedCollapsed;
     }
@@ -5600,11 +5600,10 @@ String AXNodeObject::Description(
     }
   }
 
-  // For buttons that contain the |togglepopup|, |showpopup|, or |hidepopup|
-  // popup triggering attributes, and the pointed-to element is a valid popup
-  // with type kHint, then set aria-describedby to the hint popup.
-  if (auto* button = DynamicTo<HTMLButtonElement>(element)) {
-    auto popup = button->togglePopupElement();
+  // For form controls that act as triggering elements for popups of type kHint,
+  // then set aria-describedby to the hint popup.
+  if (auto* form_control = DynamicTo<HTMLFormControlElement>(element)) {
+    auto popup = form_control->togglePopupElement();
     if (popup.element && popup.element->PopupType() == PopupValueType::kHint) {
       description_from = ax::mojom::blink::DescriptionFrom::kPopupElement;
       if (description_sources) {
