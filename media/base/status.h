@@ -538,7 +538,12 @@ class MEDIA_EXPORT TypedStatus {
 
     // Return constref of the value, if we have one.
     // Callers should ensure that this |has_value()|.
-    const OtherType& operator->() {
+    const OtherType& operator->() const {
+      CHECK(value_);
+      return std::get<0>(*value_);
+    }
+
+    const OtherType& operator*() const {
       CHECK(value_);
       return std::get<0>(*value_);
     }

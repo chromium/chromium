@@ -25,6 +25,8 @@ class DecoderSelector {
   typedef media::DecoderStreamTraits<StreamType> StreamTraits;
   typedef typename StreamTraits::DecoderType Decoder;
   typedef typename StreamTraits::DecoderConfigType DecoderConfig;
+  using DecoderOrError =
+      typename media::DecoderSelector<StreamType>::DecoderOrError;
 
   // Callback to create a list of decoders to select from.
   using CreateDecodersCB =
@@ -63,7 +65,7 @@ class DecoderSelector {
 
   // Proxy SelectDecoderCB from impl_ to our |select_decoder_cb|.
   void OnDecoderSelected(SelectDecoderCB select_decoder_cb,
-                         std::unique_ptr<Decoder> decoder,
+                         DecoderOrError decoder_or_error,
                          std::unique_ptr<media::DecryptingDemuxerStream>);
 
   // Implements heavy lifting for decoder selection.

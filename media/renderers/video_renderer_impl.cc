@@ -575,12 +575,16 @@ void VideoRendererImpl::FrameReady(VideoDecoderStream::ReadResult result) {
     default:
       // Anything other than `kOk` or `kAborted` is treated as an error.
       DCHECK(result.has_error());
-      auto status = result.code() == DecoderStatus::Codes::kDisconnected
-                        ? PIPELINE_ERROR_DISCONNECTED
-                        : PIPELINE_ERROR_DECODE;
+
+      PipelineStatus::Codes code =
+          result.code() == DecoderStatus::Codes::kDisconnected
+              ? PIPELINE_ERROR_DISCONNECTED
+              : PIPELINE_ERROR_DECODE;
+      PipelineStatus status = {code, std::move(result).error()};
       task_runner_->PostTask(
-          FROM_HERE, base::BindOnce(&VideoRendererImpl::OnPlaybackError,
-                                    weak_factory_.GetWeakPtr(), status));
+          FROM_HERE,
+          base::BindOnce(&VideoRendererImpl::OnPlaybackError,
+                         weak_factory_.GetWeakPtr(), std::move(status)));
       return;
   }
 

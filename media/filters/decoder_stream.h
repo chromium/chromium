@@ -173,13 +173,14 @@ class MEDIA_EXPORT DecoderStream {
   // Returns true if one more decode request can be submitted to the decoder.
   bool CanDecodeMore() const;
 
-  void SelectDecoder();
+  void BeginDecoderSelection();
+  void ResumeDecoderSelection(DecoderStatus&& reinit_cause);
 
   // Called when |decoder_selector| selected the |selected_decoder|.
   // |decrypting_demuxer_stream| was also populated if a DecryptingDemuxerStream
   // is created to help decrypt the encrypted stream.
   void OnDecoderSelected(
-      std::unique_ptr<Decoder> selected_decoder,
+      DecoderStatus::Or<std::unique_ptr<Decoder>> decoder_or_error,
       std::unique_ptr<DecryptingDemuxerStream> decrypting_demuxer_stream);
 
   // Satisfy pending |read_cb_| with |result|.
@@ -214,7 +215,7 @@ class MEDIA_EXPORT DecoderStream {
 
   void ReinitializeDecoder();
 
-  void CompleteDecoderReinitialization(bool success);
+  void CompleteDecoderReinitialization(DecoderStatus status);
 
   void ResetDecoder();
   void OnDecoderReset();
