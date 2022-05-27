@@ -205,14 +205,6 @@ void DialogModelCheckbox::OnChecked(base::PassKey<DialogModelHost>,
 DialogModelCombobox::Params::Params() = default;
 DialogModelCombobox::Params::~Params() = default;
 
-DialogModelCombobox::Params& DialogModelCombobox::Params::SetId(
-    ElementIdentifier id) {
-  DCHECK(!id_);
-  DCHECK(id);
-  id_ = id;
-  return *this;
-}
-
 DialogModelCombobox::Params& DialogModelCombobox::Params::SetCallback(
     base::RepeatingClosure callback) {
   callback_ = std::move(callback);
@@ -228,14 +220,11 @@ DialogModelCombobox::Params& DialogModelCombobox::Params::AddAccelerator(
 DialogModelCombobox::DialogModelCombobox(
     base::PassKey<DialogModel> pass_key,
     DialogModel* model,
+    ElementIdentifier id,
     std::u16string label,
     std::unique_ptr<ui::ComboboxModel> combobox_model,
     const DialogModelCombobox::Params& params)
-    : DialogModelField(pass_key,
-                       model,
-                       kCombobox,
-                       params.id_,
-                       params.accelerators_),
+    : DialogModelField(pass_key, model, kCombobox, id, params.accelerators_),
       label_(std::move(label)),
       accessible_name_(params.accessible_name_),
       selected_index_(combobox_model->GetDefaultIndex()),
@@ -282,14 +271,6 @@ DialogModelSeparator::~DialogModelSeparator() = default;
 DialogModelTextfield::Params::Params() = default;
 DialogModelTextfield::Params::~Params() = default;
 
-DialogModelTextfield::Params& DialogModelTextfield::Params::SetId(
-    ElementIdentifier id) {
-  DCHECK(!id_);
-  DCHECK(id);
-  id_ = id;
-  return *this;
-}
-
 DialogModelTextfield::Params& DialogModelTextfield::Params::AddAccelerator(
     Accelerator accelerator) {
   accelerators_.insert(std::move(accelerator));
@@ -299,14 +280,11 @@ DialogModelTextfield::Params& DialogModelTextfield::Params::AddAccelerator(
 DialogModelTextfield::DialogModelTextfield(
     base::PassKey<DialogModel> pass_key,
     DialogModel* model,
+    ElementIdentifier id,
     std::u16string label,
     std::u16string text,
     const ui::DialogModelTextfield::Params& params)
-    : DialogModelField(pass_key,
-                       model,
-                       kTextfield,
-                       params.id_,
-                       params.accelerators_),
+    : DialogModelField(pass_key, model, kTextfield, id, params.accelerators_),
       label_(label),
       accessible_name_(params.accessible_name_),
       text_(std::move(text)) {}

@@ -227,11 +227,13 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
     }
 
     // Adds a combobox. See DialogModel::AddCombobox().
-    Builder& AddCombobox(std::u16string label,
+    Builder& AddCombobox(ElementIdentifier id,
+                         std::u16string label,
                          std::unique_ptr<ui::ComboboxModel> combobox_model,
                          const DialogModelCombobox::Params& params =
                              DialogModelCombobox::Params()) {
-      model_->AddCombobox(std::move(label), std::move(combobox_model), params);
+      model_->AddCombobox(id, std::move(label), std::move(combobox_model),
+                          params);
       return *this;
     }
 
@@ -251,11 +253,12 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
     }
 
     // Adds a textfield. See DialogModel::AddTextfield().
-    Builder& AddTextfield(std::u16string label,
+    Builder& AddTextfield(ElementIdentifier id,
+                          std::u16string label,
                           std::u16string text,
                           const DialogModelTextfield::Params& params =
                               DialogModelTextfield::Params()) {
-      model_->AddTextfield(std::move(label), std::move(text), params);
+      model_->AddTextfield(id, std::move(label), std::move(text), params);
       return *this;
     }
 
@@ -297,7 +300,8 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
                        DialogModelCheckbox::Params());
 
   // Adds a labeled combobox (label: [model]) at the end of the dialog model.
-  void AddCombobox(std::u16string label,
+  void AddCombobox(ElementIdentifier id,
+                   std::u16string label,
                    std::unique_ptr<ui::ComboboxModel> combobox_model,
                    const DialogModelCombobox::Params& params =
                        DialogModelCombobox::Params());
@@ -311,7 +315,8 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
   void AddSeparator();
 
   // Adds a labeled textfield (label: [text]) at the end of the dialog model.
-  void AddTextfield(std::u16string label,
+  void AddTextfield(ElementIdentifier id,
+                    std::u16string label,
                     std::u16string text,
                     const DialogModelTextfield::Params& params =
                         DialogModelTextfield::Params());

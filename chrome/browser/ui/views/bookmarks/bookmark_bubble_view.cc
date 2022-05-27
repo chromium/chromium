@@ -204,22 +204,20 @@ void BookmarkBubbleView::ShowBubble(
               ui::DialogModelButton::Params().AddAccelerator(
                   ui::Accelerator(ui::VKEY_E, ui::EF_ALT_DOWN)))
           .AddTextfield(
+              kBookmarkName,
               l10n_util::GetStringUTF16(IDS_BOOKMARK_BUBBLE_NAME_LABEL),
               bookmark_node->GetTitle(),
-              ui::DialogModelTextfield::Params()
-                  .SetId(kBookmarkName)
-                  .SetAccessibleName(l10n_util::GetStringUTF16(
-                      IDS_BOOKMARK_AX_BUBBLE_NAME_LABEL)))
+              ui::DialogModelTextfield::Params().SetAccessibleName(
+                  l10n_util::GetStringUTF16(IDS_BOOKMARK_AX_BUBBLE_NAME_LABEL)))
           .AddCombobox(
+              kBookmarkFolder,
               l10n_util::GetStringUTF16(IDS_BOOKMARK_BUBBLE_FOLDER_LABEL),
               std::make_unique<RecentlyUsedFoldersComboModel>(
                   bookmark_model,
                   bookmark_model->GetMostRecentlyAddedUserNodeForURL(url)),
-              ui::DialogModelCombobox::Params()
-                  .SetId(kBookmarkFolder)
-                  .SetCallback(base::BindRepeating(
-                      &BookmarkBubbleDelegate::OnComboboxAction,
-                      base::Unretained(bubble_delegate))))
+              ui::DialogModelCombobox::Params().SetCallback(
+                  base::BindRepeating(&BookmarkBubbleDelegate::OnComboboxAction,
+                                      base::Unretained(bubble_delegate))))
           .SetInitiallyFocusedField(kBookmarkName)
           .Build();
 

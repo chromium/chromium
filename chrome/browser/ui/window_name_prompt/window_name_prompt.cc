@@ -37,10 +37,10 @@ std::unique_ptr<ui::DialogModel> CreateWindowNamePromptDialogModel(
                                   dialog_builder.model()))
       .AddCancelButton(base::DoNothing())
       .AddTextfield(
+          kWindowNameFieldId,
           // Deliberately use no label - the dialog contains only this
           // textfield, and its title serves as a label for the textfield.
-          {}, base::UTF8ToUTF16(browser->user_title()),
-          ui::DialogModelTextfield::Params().SetId(kWindowNameFieldId))
+          {}, base::UTF8ToUTF16(browser->user_title()))
       .SetInitiallyFocusedField(kWindowNameFieldId)
       .Build();
 }

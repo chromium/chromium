@@ -298,8 +298,6 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelCombobox : public DialogModelField {
     Params& operator=(const Params&) = delete;
     ~Params();
 
-    Params& SetId(ElementIdentifier id);
-
     Params& AddAccelerator(Accelerator accelerator);
 
     Params& SetAccessibleName(std::u16string accessible_name) {
@@ -327,6 +325,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelCombobox : public DialogModelField {
   // fields.
   DialogModelCombobox(base::PassKey<DialogModel> pass_key,
                       DialogModel* model,
+                      ElementIdentifier id,
                       std::u16string label,
                       std::unique_ptr<ui::ComboboxModel> combobox_model,
                       const Params& params);
@@ -415,8 +414,6 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelTextfield : public DialogModelField {
     Params& operator=(const Params&) = delete;
     ~Params();
 
-    Params& SetId(ElementIdentifier id);
-
     Params& AddAccelerator(Accelerator accelerator);
 
     Params& SetAccessibleName(std::u16string accessible_name) {
@@ -436,6 +433,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelTextfield : public DialogModelField {
   // fields.
   DialogModelTextfield(base::PassKey<DialogModel> pass_key,
                        DialogModel* model,
+                       ElementIdentifier id,
                        std::u16string label,
                        std::u16string text,
                        const Params& params);

@@ -110,11 +110,13 @@ void DialogModel::AddCheckbox(ElementIdentifier id,
                                                  params));
 }
 
-void DialogModel::AddCombobox(std::u16string label,
+void DialogModel::AddCombobox(ElementIdentifier id,
+                              std::u16string label,
                               std::unique_ptr<ui::ComboboxModel> combobox_model,
                               const DialogModelCombobox::Params& params) {
   AddField(std::make_unique<DialogModelCombobox>(
-      GetPassKey(), this, std::move(label), std::move(combobox_model), params));
+      GetPassKey(), this, id, std::move(label), std::move(combobox_model),
+      params));
 }
 
 void DialogModel::AddSeparator() {
@@ -129,11 +131,12 @@ void DialogModel::AddMenuItem(ImageModel icon,
       std::move(callback)));
 }
 
-void DialogModel::AddTextfield(std::u16string label,
+void DialogModel::AddTextfield(ElementIdentifier id,
+                               std::u16string label,
                                std::u16string text,
                                const DialogModelTextfield::Params& params) {
   AddField(std::make_unique<DialogModelTextfield>(
-      GetPassKey(), this, std::move(label), std::move(text), params));
+      GetPassKey(), this, id, std::move(label), std::move(text), params));
 }
 
 void DialogModel::AddCustomField(
