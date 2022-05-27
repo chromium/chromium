@@ -1094,45 +1094,73 @@ TEST_F(ChromePasswordManagerClientAndroidTest, HideFillingUIOnNavigatingAway) {
 }
 
 TEST_F(ChromePasswordManagerClientAndroidTest,
-       FormSubmissionTrackingAfterTouchToLogin) {
-  base::HistogramTester uma_recorder;
-
+       FormSubmissionTrackingAfterTouchToLogin_NotStarted) {
   // As tracking is not started yet, no metric reports are expected.
+  base::HistogramTester uma_recorder;
   GetClient()->NotifyOnSuccessfulLogin(u"username");
   uma_recorder.ExpectTotalCount(
       "PasswordManager.TouchToFill.TimeToSuccessfulLogin", 0);
+  uma_recorder.ExpectTotalCount(
+      "PasswordManager.TouchToFill.SuccessfulSubmissionWasObserved", 0);
+}
 
-  // As tracking was reset, no metric reports are expected.
+TEST_F(ChromePasswordManagerClientAndroidTest,
+       FormSubmissionTrackingAfterTouchToLogin_Resetted) {
+  // Tracking started, but was reset before a successful login (e.g. a user
+  // manually edited a field).
+  base::HistogramTester uma_recorder;
   GetClient()->StartSubmissionTrackingAfterTouchToFill(u"username");
   GetClient()->ResetSubmissionTrackingAfterTouchToFill();
   GetClient()->NotifyOnSuccessfulLogin(u"username");
   uma_recorder.ExpectTotalCount(
       "PasswordManager.TouchToFill.TimeToSuccessfulLogin", 0);
+  uma_recorder.ExpectUniqueSample(
+      "PasswordManager.TouchToFill.SuccessfulSubmissionWasObserved", false, 1);
+}
 
-  // Tracking started but a successful login was observed for a wrong username.
-  // No reports are expected.
+TEST_F(ChromePasswordManagerClientAndroidTest,
+       FormSubmissionTrackingAfterTouchToLogin_AnotherUsername) {
+  // Tracking started but a successful login was observed for a wrong
+  // username.
+  base::HistogramTester uma_recorder;
   GetClient()->StartSubmissionTrackingAfterTouchToFill(u"username");
   GetClient()->NotifyOnSuccessfulLogin(u"another_username");
   uma_recorder.ExpectTotalCount(
       "PasswordManager.TouchToFill.TimeToSuccessfulLogin", 0);
+  uma_recorder.ExpectUniqueSample(
+      "PasswordManager.TouchToFill.SuccessfulSubmissionWasObserved", false, 1);
+}
 
+TEST_F(ChromePasswordManagerClientAndroidTest,
+       FormSubmissionTrackingAfterTouchToLogin_StaleTracking) {
   // Tracking started too long ago, ignore a successful login.
+  base::HistogramTester uma_recorder;
   GetClient()->StartSubmissionTrackingAfterTouchToFill(u"username");
   AdvanceClock(base::Minutes(2));
   GetClient()->NotifyOnSuccessfulLogin(u"username");
   uma_recorder.ExpectTotalCount(
       "PasswordManager.TouchToFill.TimeToSuccessfulLogin", 0);
+  uma_recorder.ExpectUniqueSample(
+      "PasswordManager.TouchToFill.SuccessfulSubmissionWasObserved", false, 1);
+}
 
+TEST_F(ChromePasswordManagerClientAndroidTest,
+       FormSubmissionTrackingAfterTouchToLogin_Succeeded) {
   // Tracking started and a successful login was observed for the correct
   // username recently, expect a metric report.
+  base::HistogramTester uma_recorder;
   GetClient()->StartSubmissionTrackingAfterTouchToFill(u"username");
   GetClient()->NotifyOnSuccessfulLogin(u"username");
   uma_recorder.ExpectTotalCount(
       "PasswordManager.TouchToFill.TimeToSuccessfulLogin", 1);
+  uma_recorder.ExpectUniqueSample(
+      "PasswordManager.TouchToFill.SuccessfulSubmissionWasObserved", true, 1);
   // Should be reported only once.
   GetClient()->NotifyOnSuccessfulLogin(u"username");
   uma_recorder.ExpectTotalCount(
       "PasswordManager.TouchToFill.TimeToSuccessfulLogin", 1);
+  uma_recorder.ExpectUniqueSample(
+      "PasswordManager.TouchToFill.SuccessfulSubmissionWasObserved", true, 1);
 }
 
 TEST_F(ChromePasswordManagerClientAndroidTest,

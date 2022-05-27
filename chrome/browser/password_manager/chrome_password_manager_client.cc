@@ -565,13 +565,21 @@ void ChromePasswordManagerClient::NotifyOnSuccessfulLogin(
         .SetTimeToSuccessfulLogin(
             ukm::GetExponentialBucketMinForUserTiming(delta.InMilliseconds()))
         .Record(ukm::UkmRecorder::Get());
-  }
 
-  username_filled_by_touch_to_fill_.reset();
+    base::UmaHistogramBoolean(
+        "PasswordManager.TouchToFill.SuccessfulSubmissionWasObserved", true);
+    username_filled_by_touch_to_fill_.reset();
+  } else {
+    ResetSubmissionTrackingAfterTouchToFill();
+  }
 }
 
 void ChromePasswordManagerClient::ResetSubmissionTrackingAfterTouchToFill() {
-  username_filled_by_touch_to_fill_.reset();
+  if (username_filled_by_touch_to_fill_.has_value()) {
+    base::UmaHistogramBoolean(
+        "PasswordManager.TouchToFill.SuccessfulSubmissionWasObserved", false);
+    username_filled_by_touch_to_fill_.reset();
+  }
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
