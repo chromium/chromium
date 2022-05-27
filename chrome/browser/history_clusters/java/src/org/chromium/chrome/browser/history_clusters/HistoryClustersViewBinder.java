@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.history_clusters;
 import android.view.View;
 import android.view.View.OnClickListener;
 
-import org.chromium.chrome.browser.history_clusters.HistoryClustersToolbarProperties.QueryState;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListLayout;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;

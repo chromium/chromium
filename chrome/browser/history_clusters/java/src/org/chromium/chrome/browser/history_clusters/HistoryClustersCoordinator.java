@@ -20,7 +20,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.base.Function;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.history_clusters.HistoryClustersItemProperties.ItemType;
-import org.chromium.chrome.browser.history_clusters.HistoryClustersToolbarProperties.QueryState;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableItemView;
@@ -90,8 +89,8 @@ public class HistoryClustersCoordinator implements OnMenuItemClickListener {
         }
     }
 
-    public void setQuery(String query) {
-        mMediator.startSearch(query);
+    public void setQueryState(QueryState queryState) {
+        mMediator.setQueryState(queryState);
     }
 
     /**
@@ -176,7 +175,7 @@ public class HistoryClustersCoordinator implements OnMenuItemClickListener {
     @Override
     public boolean onMenuItemClick(MenuItem menuItem) {
         if (menuItem.getItemId() == R.id.search_menu_id) {
-            mMediator.startSearch("");
+            mMediator.setQueryState(QueryState.forQuery(""));
             return true;
         }
         return false;

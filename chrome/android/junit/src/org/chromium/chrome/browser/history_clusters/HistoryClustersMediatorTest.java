@@ -239,8 +239,8 @@ public class HistoryClustersMediatorTest {
     }
 
     @Test
-    public void testStartSearch() {
-        mMediator.startSearch("pandas");
+    public void testSetQueryState() {
+        mMediator.setQueryState(QueryState.forQuery("pandas"));
         assertEquals(mToolbarModel.get(HistoryClustersToolbarProperties.QUERY_STATE).getQuery(),
                 "pandas");
     }

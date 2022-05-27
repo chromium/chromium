@@ -33,6 +33,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataTabsFragment;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.history_clusters.HistoryClustersCoordinator;
+import org.chromium.chrome.browser.history_clusters.QueryState;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -168,9 +169,10 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
 
         if (showHistoryClustersImmediately) {
             mContentView = mHistoryClustersCoordinator.getActivityContentView();
-            if (!TextUtils.isEmpty(historyClustersQuery)) {
-                mHistoryClustersCoordinator.setQuery(historyClustersQuery);
-            }
+            QueryState queryState = TextUtils.isEmpty(historyClustersQuery)
+                    ? QueryState.forQueryless()
+                    : QueryState.forQuery(historyClustersQuery);
+            mHistoryClustersCoordinator.setQueryState(queryState);
         } else {
             mContentView = mSelectableListLayout;
         }
@@ -330,7 +332,7 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
             return;
         } else if (mContentView == mSelectableListLayout && mHistoryClustersCoordinator != null) {
             mContentView = mHistoryClustersCoordinator.getActivityContentView();
-            mHistoryClustersCoordinator.setQuery("");
+            mHistoryClustersCoordinator.setQueryState(QueryState.forQueryless());
         } else {
             mContentView = mSelectableListLayout;
             mContentManager.startLoadingItems();

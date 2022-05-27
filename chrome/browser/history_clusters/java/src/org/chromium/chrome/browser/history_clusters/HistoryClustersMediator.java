@@ -25,7 +25,6 @@ import org.chromium.base.Function;
 import org.chromium.base.Promise;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.history_clusters.HistoryClustersItemProperties.ItemType;
-import org.chromium.chrome.browser.history_clusters.HistoryClustersToolbarProperties.QueryState;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
@@ -146,10 +145,15 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
         mCallbackController.destroy();
     }
 
-    void startSearch(String query) {
-        mToolbarModel.set(HistoryClustersToolbarProperties.QUERY_STATE, QueryState.forQuery(query));
+    void setQueryState(QueryState queryState) {
+        mToolbarModel.set(HistoryClustersToolbarProperties.QUERY_STATE, queryState);
+        if (!queryState.isSearching()) {
+            mModelList.clear();
+            startQuery("");
+        }
     }
 
+    @VisibleForTesting
     void startQuery(String query) {
         mPromise = mHistoryClustersBridge.queryClusters(query);
         mPromise.then(mCallbackController.makeCancelable(this::queryComplete));
@@ -195,10 +199,10 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
 
     private void queryComplete(HistoryClustersResult result) {
         boolean isQueryless = result.getQuery().isEmpty();
-        if (isQueryless) {
+        if (isQueryless && !hasToggleItem()) {
             PropertyModel toggleModel = new PropertyModel(HistoryClustersItemProperties.ALL_KEYS);
             ListItem toggleItem = new ListItem(ItemType.TOGGLE, toggleModel);
-            mModelList.add(toggleItem);
+            mModelList.add(0, toggleItem);
         }
 
         for (HistoryCluster cluster : result.getClusters()) {
@@ -211,7 +215,7 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
             mModelList.add(clusterItem);
             if (isQueryless) {
                 clusterModel.set(HistoryClustersItemProperties.CLICK_HANDLER,
-                        (v) -> startSearch(cluster.getLabel()));
+                        (v) -> setQueryState(QueryState.forQuery(cluster.getLabel())));
                 clusterModel.set(HistoryClustersItemProperties.END_BUTTON_DRAWABLE, null);
                 clusterModel.set(HistoryClustersItemProperties.LABEL, null);
                 continue;
@@ -265,6 +269,10 @@ class HistoryClustersMediator extends RecyclerView.OnScrollListener implements S
             clusterModel.set(
                     HistoryClustersItemProperties.LABEL, getTimeString(cluster.getTimestamp()));
         }
+    }
+
+    private boolean hasToggleItem() {
+        return mModelList.size() > 0 && mModelList.get(0).type == ItemType.TOGGLE;
     }
 
     @VisibleForTesting
