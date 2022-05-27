@@ -25,6 +25,8 @@
 #include "ash/components/smbfs/smbfs_mounter.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/public/cpp/style/color_provider.h"
+#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/webui/file_manager/url_constants.h"
 #include "base/bind.h"
@@ -3003,6 +3005,12 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
 
   if (name == "isFiltersInRecentsEnabledV2") {
     *output = options.enable_filters_in_recents_v2 ? "true" : "false";
+    return;
+  }
+
+  if (name == "isDarkModeEnabled") {
+    ash::ScopedLightModeAsDefault scoped_light_mode_as_default;
+    *output = ash::ColorProvider::Get()->IsDarkModeEnabled() ? "true" : "false";
     return;
   }
 
