@@ -2616,10 +2616,6 @@ extern const char kMultiMonitorsInCrdDescription[];
 
 extern const char kUseHDRTransferFunctionName[];
 extern const char kUseHDRTransferFunctionDescription[];
-
-extern const char kDisableOfficeEditingComponentAppName[];
-extern const char kDisableOfficeEditingComponentAppDescription[];
-
 extern const char kDoubleTapToZoomInTabletModeName[];
 extern const char kDoubleTapToZoomInTabletModeDescription[];
 
@@ -3258,6 +3254,9 @@ extern const char kDefaultCalculatorWebAppDescription[];
 #if BUILDFLAG(IS_CHROMEOS)
 extern const char kDeprecateLowUsageCodecsName[];
 extern const char kDeprecateLowUsageCodecsDescription[];
+
+extern const char kDisableOfficeEditingComponentAppName[];
+extern const char kDisableOfficeEditingComponentAppDescription[];
 
 extern const char kVaapiAV1DecoderName[];
 extern const char kVaapiAV1DecoderDescription[];

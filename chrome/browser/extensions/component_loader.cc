@@ -70,6 +70,10 @@
 #include "ui/file_manager/grit/file_manager_resources.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/constants/chromeos_features.h"
+#endif
+
 #if BUILDFLAG(ENABLE_PDF)
 #include "chrome/browser/pdf/pdf_extension_util.h"
 #endif
@@ -507,7 +511,15 @@ void ComponentLoader::AddDefaultComponentExtensionsWithBackgroundPages(
 #if BUILDFLAG(IS_CHROMEOS)
     Add(IDR_ECHO_MANIFEST,
         base::FilePath(FILE_PATH_LITERAL("/usr/share/chromeos-assets/echo")));
-#endif
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    if (!base::FeatureList::IsEnabled(
+            chromeos::features::kDisableOfficeEditingComponentApp)) {
+      Add(IDR_QUICKOFFICE_MANIFEST,
+          base::FilePath(
+              FILE_PATH_LITERAL("/usr/share/chromeos-assets/quickoffice")));
+    }
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     if (command_line->HasSwitch(switches::kLoadGuestModeTestExtension)) {
@@ -520,13 +532,6 @@ void ComponentLoader::AddDefaultComponentExtensionsWithBackgroundPages(
     AddImageLoaderExtension();
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    if (!base::FeatureList::IsEnabled(
-            chromeos::features::kDisableOfficeEditingComponentApp)) {
-      Add(IDR_QUICKOFFICE_MANIFEST,
-          base::FilePath(
-              FILE_PATH_LITERAL("/usr/share/chromeos-assets/quickoffice")));
-    }
-
     // TODO(https://crbug.com/1005083): Force the off the record profile to be
     // created to allow the virtual keyboard to work in guest mode.
     if (!IsNormalSession())

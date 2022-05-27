@@ -26,6 +26,8 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kBluetoothPhoneFilter;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const base::Feature kDarkLightMode;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+extern const base::Feature kDisableOfficeEditingComponentApp;
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kDisableQuickAnswersV2Translation;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kQuickAnswersV2SettingsSubToggle;

@@ -21,6 +21,12 @@ const base::Feature kBluetoothPhoneFilter{"BluetoothPhoneFilter",
 const base::Feature kDarkLightMode{"DarkLightMode",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Disables "Office Editing for Docs, Sheets & Slides" component app so handlers
+// won't be registered, making it possible to install another version for
+// testing.
+const base::Feature kDisableOfficeEditingComponentApp{
+    "DisableOfficeEditingComponentApp", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Disables translation services of the Quick Answers V2.
 const base::Feature kDisableQuickAnswersV2Translation{
     "DisableQuickAnswersV2Translation", base::FEATURE_DISABLED_BY_DEFAULT};
