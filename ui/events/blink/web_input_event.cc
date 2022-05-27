@@ -22,10 +22,6 @@ namespace ui {
 
 namespace {
 
-// The scroll percentage per mousewheel tick. Used to determine scroll delta
-// if percent based scrolling is enabled.
-const float kScrollPercentPerLineOrChar = 0.05;
-
 gfx::PointF GetScreenLocationFromEvent(const LocatedEvent& event) {
   return event.target() ? event.target()->GetScreenLocationF(event)
                         : event.root_location_f();

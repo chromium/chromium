@@ -1751,9 +1751,6 @@ TEST_F(RenderWidgetHostViewAuraTest,
 
 void RenderWidgetHostViewAuraTest::RunTimerBasedWheelEventPhaseInfoTest(
     bool percent_based_scrolling_enabled) {
-  // TODO(clchambers): consolidate into one header along with other declarations
-  // of this constant
-  const float kScrollPercentPerLineOrChar = 0.05f;
   InitViewForFrame(nullptr);
   view_->Show();
   sink_->ClearMessages();
@@ -1786,11 +1783,11 @@ void RenderWidgetHostViewAuraTest::RunTimerBasedWheelEventPhaseInfoTest(
   EXPECT_EQ(WebInputEvent::Type::kGestureScrollUpdate,
             gesture_event->GetType());
   EXPECT_EQ(0U, gesture_event->data.scroll_update.delta_x);
-  EXPECT_EQ(
-      percent_based_scrolling_enabled
-          ? 5 * kScrollPercentPerLineOrChar / ui::MouseWheelEvent::kWheelDelta
-          : 5U,
-      gesture_event->data.scroll_update.delta_y);
+  EXPECT_EQ(percent_based_scrolling_enabled
+                ? 5 * ui::kScrollPercentPerLineOrChar /
+                      ui::MouseWheelEvent::kWheelDelta
+                : 5U,
+            gesture_event->data.scroll_update.delta_y);
   events[1]->ToEvent()->CallCallback(
       blink::mojom::InputEventResultState::kConsumed);
 
