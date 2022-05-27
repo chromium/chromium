@@ -201,6 +201,15 @@ void SidePanelCoordinator::Show(absl::optional<SidePanelEntry::Id> entry_id) {
     browser_view_->browser()->window()->CloseFeaturePromo(
         feature_engagement::kIPHReadingListInSidePanelFeature);
   }
+
+  // Ensure that the correct combobox entry is selected. This may not be the
+  // case if `Show()` was called after registering a contextual entry.
+  if (entry_id.has_value()) {
+    DCHECK(header_combobox_);
+    header_combobox_->SetSelectedIndex(
+        combobox_model_->GetIndexForId(entry_id.value()));
+  }
+
   SidePanelContentSwappingContainer* content_wrapper =
       static_cast<SidePanelContentSwappingContainer*>(
           GetContentView()->GetViewByID(kSidePanelContentWrapperViewId));
@@ -238,6 +247,7 @@ void SidePanelCoordinator::Close() {
       l10n_util::GetStringUTF16(IDS_TOOLTIP_SIDE_PANEL_SHOW));
 
   browser_view_->right_aligned_side_panel()->RemoveChildViewT(content_view);
+  header_combobox_ = nullptr;
   base::RecordAction(base::UserMetricsAction("SidePanel.Hide"));
 }
 
@@ -358,6 +368,12 @@ absl::optional<SidePanelEntry::Id> SidePanelCoordinator::GetLastActiveEntryId()
     return last_active_global_entry_id_.value();
 
   return absl::nullopt;
+}
+
+absl::optional<SidePanelEntry::Id> SidePanelCoordinator::GetSelectedId() const {
+  if (!header_combobox_)
+    return absl::nullopt;
+  return combobox_model_->GetIdAt(header_combobox_->GetSelectedIndex());
 }
 
 SidePanelRegistry* SidePanelCoordinator::GetActiveContextualRegistry() const {

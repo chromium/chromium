@@ -77,6 +77,9 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   // entry exists.
   absl::optional<SidePanelEntry::Id> GetLastActiveEntryId() const;
 
+  // Returns the currently selected id in the combobox, if one is shown.
+  absl::optional<SidePanelEntry::Id> GetSelectedId() const;
+
   SidePanelRegistry* GetActiveContextualRegistry() const;
 
   std::unique_ptr<views::View> CreateHeader();

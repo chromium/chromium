@@ -87,6 +87,14 @@ class SidePanelCoordinatorTest : public TestWithBrowserView {
     return coordinator_->last_active_global_entry_id_;
   }
 
+  absl::optional<SidePanelEntry::Id> GetSelectedId() {
+    return coordinator_->GetSelectedId();
+  }
+
+  bool ComboboxViewExists() {
+    return coordinator_->header_combobox_ != nullptr;
+  }
+
  protected:
   raw_ptr<SidePanelCoordinator> coordinator_;
   raw_ptr<SidePanelRegistry> global_registry_;
@@ -127,6 +135,41 @@ TEST_F(SidePanelCoordinatorTest, ShowOpensSidePanel) {
   EXPECT_TRUE(browser_view()->right_aligned_side_panel()->GetVisible());
   EXPECT_TRUE(GetLastActiveEntryId().has_value());
   EXPECT_EQ(GetLastActiveEntryId().value(), SidePanelEntry::Id::kBookmarks);
+
+  // Verify that the combobox entry for bookmarks is selected.
+  EXPECT_EQ(GetSelectedId(), SidePanelEntry::Id::kBookmarks);
+}
+
+TEST_F(SidePanelCoordinatorTest, CloseInvalidatesComboboxPointer) {
+  // Verify no combobox exists before opening the side panel.
+  EXPECT_FALSE(ComboboxViewExists());
+
+  coordinator_->Toggle();
+  EXPECT_TRUE(ComboboxViewExists());
+
+  // Verify that the pointer to the combobox view is invalidated after closing
+  // the side panel.
+  coordinator_->Toggle();
+  EXPECT_FALSE(ComboboxViewExists());
+}
+
+TEST_F(SidePanelCoordinatorTest, TabSwitchInvalidatesComboboxPointerOnClose) {
+  // Verify no combobox exists before opening the side panel.
+  EXPECT_FALSE(ComboboxViewExists());
+
+  // Show a contextual entry on the first tab.
+  browser_view()->browser()->tab_strip_model()->ActivateTabAt(0);
+  coordinator_->Show(SidePanelEntry::Id::kSideSearch);
+
+  // Switch to the second tab.
+  browser_view()->browser()->tab_strip_model()->ActivateTabAt(1);
+
+  // Expect that the side panel closes.
+  EXPECT_FALSE(browser_view()->right_aligned_side_panel()->GetVisible());
+
+  // Verify that the pointer to the combobox view is invalidated after closing
+  // the side panel.
+  EXPECT_FALSE(ComboboxViewExists());
 }
 
 TEST_F(SidePanelCoordinatorTest, SwapBetweenTabsWithReadingListOpen) {
@@ -209,7 +252,7 @@ TEST_F(SidePanelCoordinatorTest, ContextualEntryDeregisteredWhileVisible) {
 }
 
 // Test that the side panel closes if a contextual entry is deregistered while
-// visible when no globel entries have been shown since the panel was opened.
+// visible when no global entries have been shown since the panel was opened.
 TEST_F(
     SidePanelCoordinatorTest,
     ContextualEntryDeregisteredWhileVisibleClosesPanelIfNoLastSeenGlobalEntryExists) {
@@ -244,7 +287,7 @@ TEST_F(SidePanelCoordinatorTest, ShowContextualEntry) {
 }
 
 TEST_F(SidePanelCoordinatorTest,
-       SwapBetweenTabsAfterNavaigatingToContextualEntry) {
+       SwapBetweenTabsAfterNavigatingToContextualEntry) {
   // Open side panel and verify it opens to kReadingList by default.
   browser_view()->browser()->tab_strip_model()->ActivateTabAt(0);
   coordinator_->Toggle();
