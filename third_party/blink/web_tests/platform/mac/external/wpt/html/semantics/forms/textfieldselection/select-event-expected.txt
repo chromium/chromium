@@ -32,18 +32,18 @@ PASS textarea: setRangeText() event queue
 FAIL textarea: setRangeText() twice in disconnected node (must fire select only once) assert_equals: expected 0 but got 15
 PASS textarea: selectionStart out of range
 PASS textarea: selectionStart out of range a second time (must not fire select)
-FAIL textarea: selectionStart out of range disconnected node step_wait_func: event didn't fire Timed out waiting on condition
-FAIL textarea: selectionStart out of range event queue step_wait_func: event didn't fire Timed out waiting on condition
+FAIL textarea: selectionStart out of range disconnected node assert_true: event didn't fire expected true got false
+FAIL textarea: selectionStart out of range event queue assert_true: event didn't fire expected true got false
 FAIL textarea: selectionStart out of range twice in disconnected node (must fire select only once) assert_equals: expected 0 but got 6
 PASS textarea: selectionEnd out of range
 PASS textarea: selectionEnd out of range a second time (must not fire select)
-FAIL textarea: selectionEnd out of range disconnected node step_wait_func: event didn't fire Timed out waiting on condition
-FAIL textarea: selectionEnd out of range event queue step_wait_func: event didn't fire Timed out waiting on condition
+FAIL textarea: selectionEnd out of range disconnected node assert_true: event didn't fire expected true got false
+FAIL textarea: selectionEnd out of range event queue assert_true: event didn't fire expected true got false
 FAIL textarea: selectionEnd out of range twice in disconnected node (must fire select only once) assert_equals: expected 0 but got 6
 PASS textarea: setSelectionRange out of range
 PASS textarea: setSelectionRange out of range a second time (must not fire select)
-FAIL textarea: setSelectionRange out of range disconnected node step_wait_func: event didn't fire Timed out waiting on condition
-FAIL textarea: setSelectionRange out of range event queue step_wait_func: event didn't fire Timed out waiting on condition
+FAIL textarea: setSelectionRange out of range disconnected node assert_true: event didn't fire expected true got false
+FAIL textarea: setSelectionRange out of range event queue assert_true: event didn't fire expected true got false
 FAIL textarea: setSelectionRange out of range twice in disconnected node (must fire select only once) assert_equals: expected 0 but got 6
 PASS input type text: select()
 PASS input type text: select() a second time (must not fire select)

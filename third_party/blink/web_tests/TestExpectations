@@ -5487,9 +5487,6 @@ crbug.com/1157861 http/tests/devtools/console/paintworklet-console-selector.js [
 # Wpt importer Sheriff 2020-12-11
 crbug.com/626703 [ Linux ] wpt_internal/storage/estimate-usage-details-filesystem.https.tentative.any.html [ Failure Pass ]
 
-# Wpt importer sheriff 2020-12-23
-crbug.com/1161590 external/wpt/html/semantics/forms/textfieldselection/select-event.html [ Pass Timeout ]
-
 # Wpt importer sheriff 2021-01-05
 crbug.com/1163175 external/wpt/css/css-pseudo/first-letter-punctuation-and-space.html [ Failure ]
 
