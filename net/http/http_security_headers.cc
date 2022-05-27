@@ -102,10 +102,11 @@ bool ParseHSTSHeader(const std::string& value,
       case DIRECTIVE_END:
         if (base::IsAsciiWhitespace(token[0]))
           continue;
-        if (base::LowerCaseEqualsASCII(token, "max-age")) {
+        if (base::EqualsCaseInsensitiveASCII(token, "max-age")) {
           state = AFTER_MAX_AGE_LABEL;
           max_age_observed++;
-        } else if (base::LowerCaseEqualsASCII(token, "includesubdomains")) {
+        } else if (base::EqualsCaseInsensitiveASCII(token,
+                                                    "includesubdomains")) {
           state = AFTER_INCLUDE_SUBDOMAINS;
           include_subdomains_observed++;
           include_subdomains_candidate = true;
@@ -198,7 +199,7 @@ bool ParseExpectCTHeader(const std::string& value,
 
   while (name_value_pairs.GetNext()) {
     base::StringPiece name = name_value_pairs.name_piece();
-    if (base::LowerCaseEqualsASCII(name, "max-age")) {
+    if (base::EqualsCaseInsensitiveASCII(name, "max-age")) {
       // "A given directive MUST NOT appear more than once in a given header
       // field."
       if (parsed_max_age)
@@ -208,7 +209,7 @@ bool ParseExpectCTHeader(const std::string& value,
         return false;
       }
       parsed_max_age = true;
-    } else if (base::LowerCaseEqualsASCII(name, "enforce")) {
+    } else if (base::EqualsCaseInsensitiveASCII(name, "enforce")) {
       // "A given directive MUST NOT appear more than once in a given header
       // field."
       if (enforce_candidate)
@@ -216,7 +217,7 @@ bool ParseExpectCTHeader(const std::string& value,
       if (!name_value_pairs.value_piece().empty())
         return false;
       enforce_candidate = true;
-    } else if (base::LowerCaseEqualsASCII(name, "report-uri")) {
+    } else if (base::EqualsCaseInsensitiveASCII(name, "report-uri")) {
       // "A given directive MUST NOT appear more than once in a given header
       // field."
       if (has_report_uri)

@@ -110,7 +110,7 @@ const char* const kNonUpdatedHeaderPrefixes[] = {
 
 bool ShouldUpdateHeader(base::StringPiece name) {
   for (size_t i = 0; i < std::size(kNonUpdatedHeaders); ++i) {
-    if (base::LowerCaseEqualsASCII(name, kNonUpdatedHeaders[i]))
+    if (base::EqualsCaseInsensitiveASCII(name, kNonUpdatedHeaders[i]))
       return false;
   }
   for (size_t i = 0; i < std::size(kNonUpdatedHeaderPrefixes); ++i) {
@@ -1293,7 +1293,7 @@ bool HttpResponseHeaders::IsKeepAlive() const {
     std::string token;
     while (EnumerateHeader(&iterator, header, &token)) {
       for (const KeepAliveToken& keep_alive_token : kKeepAliveTokens) {
-        if (base::LowerCaseEqualsASCII(token, keep_alive_token.token))
+        if (base::EqualsCaseInsensitiveASCII(token, keep_alive_token.token))
           return keep_alive_token.keep_alive;
       }
     }

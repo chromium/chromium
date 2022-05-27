@@ -28,7 +28,7 @@
 #include "base/power_monitor/power_monitor.h"
 #include "base/strings/string_number_conversions.h"  // For HexEncode.
 #include "base/strings/string_piece.h"
-#include "base/strings/string_util.h"  // For LowerCaseEqualsASCII.
+#include "base/strings/string_util.h"  // For EqualsCaseInsensitiveASCII.
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/clock.h"
@@ -150,7 +150,7 @@ static bool HeaderMatches(const HttpRequestHeaders& headers,
 
     HttpUtil::ValuesIterator v(header_value.begin(), header_value.end(), ',');
     while (v.GetNext()) {
-      if (base::LowerCaseEqualsASCII(v.value_piece(), search->value))
+      if (base::EqualsCaseInsensitiveASCII(v.value_piece(), search->value))
         return true;
     }
   }

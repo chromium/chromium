@@ -45,7 +45,7 @@ bool ParseRealm(const HttpAuthChallengeTokenizer& tokenizer,
   realm->clear();
   HttpUtil::NameValuePairsIterator parameters = tokenizer.param_pairs();
   while (parameters.GetNext()) {
-    if (!base::LowerCaseEqualsASCII(parameters.name_piece(), "realm"))
+    if (!base::EqualsCaseInsensitiveASCII(parameters.name_piece(), "realm"))
       continue;
 
     if (!ConvertToUtf8AndNormalize(parameters.value_piece(), kCharsetLatin1,

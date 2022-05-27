@@ -168,8 +168,10 @@ HttpStreamFactory::Job::Job(Delegate* delegate,
       stream_type_(HttpStreamRequest::BIDIRECTIONAL_STREAM),
       init_connection_already_resumed_(false) {
   // Websocket `destination` schemes should be converted to HTTP(S).
-  DCHECK(base::LowerCaseEqualsASCII(destination_.scheme(), url::kHttpScheme) ||
-         base::LowerCaseEqualsASCII(destination_.scheme(), url::kHttpsScheme));
+  DCHECK(base::EqualsCaseInsensitiveASCII(destination_.scheme(),
+                                          url::kHttpScheme) ||
+         base::EqualsCaseInsensitiveASCII(destination_.scheme(),
+                                          url::kHttpsScheme));
 
   // This class is specific to a single `ProxyServer`, so `proxy_info_` must be
   // non-empty. Entries beyond the first are ignored. It should simply take a
@@ -362,7 +364,8 @@ bool HttpStreamFactory::Job::ShouldForceQuic(
           base::Contains(quic_params->origins_to_force_quic_on,
                          HostPortPair::FromSchemeHostPort(destination))) &&
          proxy_info.is_direct() &&
-         base::LowerCaseEqualsASCII(destination.scheme(), url::kHttpsScheme);
+         base::EqualsCaseInsensitiveASCII(destination.scheme(),
+                                          url::kHttpsScheme);
 }
 
 // static

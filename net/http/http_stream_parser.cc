@@ -1019,7 +1019,7 @@ int HttpStreamParser::ParseResponseHeaders(int end_offset) {
       // See
       // https://groups.google.com/a/chromium.org/forum/#!topic/blink-dev/qS63pYso4P0
       if (read_buf_->offset() < 3 || scheme != "http" ||
-          !base::LowerCaseEqualsASCII(
+          !base::EqualsCaseInsensitiveASCII(
               base::StringPiece(read_buf_->StartOfBuffer(), 3), "icy")) {
         return ERR_INVALID_HTTP_RESPONSE;
       }
