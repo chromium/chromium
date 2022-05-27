@@ -18,27 +18,30 @@ namespace ash {
 class KerberosCredentialsManager;
 
 // Singleton that creates and owns one KerberosCredentialsManager instance
-// associated with primary profile. Note that KerberosCredentialsManager holds
-// non-owning pointer to primary profile, so its life-time depends on the
-// life-time of the primary profile.
+// associated with each primary profile. Note that each
+// KerberosCredentialsManager holds a non-owned pointer to its respective
+// primary profile, so its life-time depends on the life-time of that profile.
+// Multiple primary profiles only happen in tests.
 class KerberosCredentialsManagerFactory
     : public BrowserContextKeyedServiceFactory {
  public:
-  // Get existing service instance associated with the primary profile.
-  // Note that the interface still expects the context in case primary profile
-  // creation is not finalized. It returns nullptr if primary profile doesn't
-  // exist or primary profile has changed.
+  // Gets the existing service instance associated with the given profile.
+  // Returns nullptr for non-primary profiles.
   static KerberosCredentialsManager* GetExisting(
       content::BrowserContext* context);
 
-  // Get existing service instance or create a service instance associated with
-  // the primary profile.
-  // Note that the interface still expects the context in case primary profile
-  // creation is not finalized. It returns nullptr if primary profile doesn't
-  // exist or primary profile has changed.
+  // Gets the existing service instance or creates a service instance associated
+  // with the given profile. Returns nullptr for non-primary profiles.
   static KerberosCredentialsManager* Get(content::BrowserContext* context);
 
+  // Gets a singleton instance of the factory.
   static KerberosCredentialsManagerFactory* GetInstance();
+
+  // Disallow copy and assignment.
+  KerberosCredentialsManagerFactory(const KerberosCredentialsManagerFactory&) =
+      delete;
+  KerberosCredentialsManagerFactory& operator=(
+      const KerberosCredentialsManagerFactory&) = delete;
 
  private:
   friend struct base::DefaultSingletonTraits<KerberosCredentialsManagerFactory>;
@@ -46,28 +49,13 @@ class KerberosCredentialsManagerFactory
   KerberosCredentialsManagerFactory();
   ~KerberosCredentialsManagerFactory() override;
 
-  // Not copyable.
-  KerberosCredentialsManagerFactory(const KerberosCredentialsManagerFactory&) =
-      delete;
-  KerberosCredentialsManagerFactory& operator=(
-      const KerberosCredentialsManagerFactory&) = delete;
-
+  // BrowserContextKeyedServiceFactory overrides: -----------------------------
   bool ServiceIsCreatedWithBrowserContext() const override;
 
   // Returns nullptr in case context is not a primary profile. Otherwise returns
-  // valid KerberosCredentialsManager.
+  // a valid KerberosCredentialsManager.
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  // This is workaround to make sure we create only one service (singleton) and
-  // prevent errors when two primary profiles are present (which normally
-  // shouldn't happen, except in tests).
-  // Additional reason to keep this workaround for now is that
-  // KerberosCredentialsManager cannot be restarted at the moment, because it's
-  // tightly coupled with KerberosClient singleton.
-  // Note that it is potential risk for multi-threaded initialization (which is
-  // not supported at the moment).
-  mutable bool service_instance_created_;
 };
 
 }  // namespace ash

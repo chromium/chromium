@@ -138,7 +138,7 @@ class MockKerberosFilesHandler : public KerberosFilesHandler {
   explicit MockKerberosFilesHandler(base::RepeatingClosure get_kerberos_files)
       : KerberosFilesHandler(get_kerberos_files) {}
 
-  ~MockKerberosFilesHandler() = default;
+  ~MockKerberosFilesHandler() override = default;
 
   MOCK_METHOD(void, DeleteFiles, ());
 };

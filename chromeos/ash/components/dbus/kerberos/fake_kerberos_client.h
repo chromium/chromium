@@ -46,9 +46,9 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeKerberosClient
                           AcquireKerberosTgtCallback callback) override;
   void GetKerberosFiles(const kerberos::GetKerberosFilesRequest& request,
                         GetKerberosFilesCallback callback) override;
-  void ConnectToKerberosFileChangedSignal(
+  base::CallbackListSubscription SubscribeToKerberosFileChangedSignal(
       KerberosFilesChangedCallback callback) override;
-  void ConnectToKerberosTicketExpiringSignal(
+  base::CallbackListSubscription SubscribeToKerberosTicketExpiringSignal(
       KerberosTicketExpiringCallback callback) override;
   KerberosClient::TestInterface* GetTestInterface() override;
 
@@ -119,9 +119,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeKerberosClient
   // The simulated number of network failures on |AcquireKerberosTgt()| (for
   // testing).
   int simulated_number_of_network_failures_ = 0;
-
-  KerberosFilesChangedCallback kerberos_files_changed_callback_;
-  KerberosTicketExpiringCallback kerberos_ticket_expiring_callback_;
 };
 
 }  // namespace ash

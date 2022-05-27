@@ -14,7 +14,6 @@
 #include "chrome/browser/ash/multidevice_setup/multidevice_setup_client_factory.h"
 #include "chrome/browser/ash/phonehub/phone_hub_manager_factory.h"
 #include "chrome/browser/ash/printing/cups_printers_manager_factory.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -54,10 +53,7 @@ class OsSettingsManagerTest : public testing::Test {
         pref_service_.registry());
     local_search_service::LocalSearchServiceProxyFactory::GetInstance()
         ->SetLocalState(&pref_service_);
-    KerberosCredentialsManager* kerberos_credentials_manager =
-        ProfileHelper::IsPrimaryProfile(profile)
-            ? KerberosCredentialsManagerFactory::Get(profile)
-            : nullptr;
+
     manager_ = std::make_unique<OsSettingsManager>(
         profile, local_search_service_proxy_.get(),
         multidevice_setup::MultiDeviceSetupClientFactory::GetForProfile(
@@ -65,7 +61,7 @@ class OsSettingsManagerTest : public testing::Test {
         phonehub::PhoneHubManagerFactory::GetForProfile(profile),
         SyncServiceFactory::GetForProfile(profile),
         SupervisedUserServiceFactory::GetForProfile(profile),
-        kerberos_credentials_manager,
+        KerberosCredentialsManagerFactory::Get(profile),
         ArcAppListPrefsFactory::GetForBrowserContext(profile),
         IdentityManagerFactory::GetForProfile(profile),
         android_sms::AndroidSmsServiceFactory::GetForBrowserContext(profile),

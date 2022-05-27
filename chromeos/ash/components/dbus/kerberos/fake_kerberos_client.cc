@@ -309,18 +309,20 @@ void FakeKerberosClient::GetKerberosFiles(
   PostProtoResponse(std::move(callback), response, task_delay_);
 }
 
-void FakeKerberosClient::ConnectToKerberosFileChangedSignal(
+base::CallbackListSubscription
+FakeKerberosClient::SubscribeToKerberosFileChangedSignal(
     KerberosFilesChangedCallback callback) {
   MaybeRecordFunctionCallForTesting(__FUNCTION__);
-  DCHECK(!kerberos_files_changed_callback_);
-  kerberos_files_changed_callback_ = callback;
+  DCHECK(callback);
+  return base::CallbackListSubscription();
 }
 
-void FakeKerberosClient::ConnectToKerberosTicketExpiringSignal(
+base::CallbackListSubscription
+FakeKerberosClient::SubscribeToKerberosTicketExpiringSignal(
     KerberosTicketExpiringCallback callback) {
   MaybeRecordFunctionCallForTesting(__FUNCTION__);
-  DCHECK(!kerberos_ticket_expiring_callback_);
-  kerberos_ticket_expiring_callback_ = callback;
+  DCHECK(callback);
+  return base::CallbackListSubscription();
 }
 
 void FakeKerberosClient::SetTaskDelay(base::TimeDelta delay) {

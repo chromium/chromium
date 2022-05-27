@@ -6,6 +6,7 @@
 #define CHROMEOS_ASH_COMPONENTS_DBUS_KERBEROS_KERBEROS_CLIENT_H_
 
 #include "base/callback.h"
+#include "base/callback_list.h"
 #include "base/component_export.h"
 #include "chromeos/ash/components/dbus/kerberos/kerberos_service.pb.h"
 #include "dbus/object_proxy.h"
@@ -37,10 +38,11 @@ class COMPONENT_EXPORT(KERBEROS) KerberosClient {
       const kerberos::AcquireKerberosTgtResponse& response)>;
   using GetKerberosFilesCallback = base::OnceCallback<void(
       const kerberos::GetKerberosFilesResponse& response)>;
+  using PrincipalNameFunc = void(const std::string& principal_name);
   using KerberosFilesChangedCallback =
-      base::RepeatingCallback<void(const std::string& principal_name)>;
+      base::RepeatingCallback<PrincipalNameFunc>;
   using KerberosTicketExpiringCallback =
-      base::RepeatingCallback<void(const std::string& principal_name)>;
+      base::RepeatingCallback<PrincipalNameFunc>;
 
   // Interface with testing functionality. Accessed through GetTestInterface(),
   // only implemented in the fake implementation.
@@ -67,7 +69,7 @@ class COMPONENT_EXPORT(KERBEROS) KerberosClient {
         int number_of_failures) = 0;
 
    protected:
-    virtual ~TestInterface() {}
+    virtual ~TestInterface() = default;
   };
 
   // Creates and initializes the global instance. |bus| must not be null.
@@ -115,10 +117,11 @@ class COMPONENT_EXPORT(KERBEROS) KerberosClient {
       const kerberos::GetKerberosFilesRequest& request,
       GetKerberosFilesCallback callback) = 0;
 
-  virtual void ConnectToKerberosFileChangedSignal(
+  virtual base::CallbackListSubscription SubscribeToKerberosFileChangedSignal(
       KerberosFilesChangedCallback callback) = 0;
 
-  virtual void ConnectToKerberosTicketExpiringSignal(
+  virtual base::CallbackListSubscription
+  SubscribeToKerberosTicketExpiringSignal(
       KerberosTicketExpiringCallback callback) = 0;
 
   // Returns an interface for testing (fake only), or returns nullptr.

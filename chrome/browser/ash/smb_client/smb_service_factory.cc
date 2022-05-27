@@ -35,12 +35,12 @@ bool DoesProfileHaveUser(const Profile* profile) {
 
 SmbService* SmbServiceFactory::Get(content::BrowserContext* context) {
   return static_cast<SmbService*>(
-      GetInstance()->GetServiceForBrowserContext(context, true));
+      GetInstance()->GetServiceForBrowserContext(context, /*create=*/true));
 }
 
 SmbService* SmbServiceFactory::FindExisting(content::BrowserContext* context) {
   return static_cast<SmbService*>(
-      GetInstance()->GetServiceForBrowserContext(context, false));
+      GetInstance()->GetServiceForBrowserContext(context, /*create=*/false));
 }
 
 SmbServiceFactory* SmbServiceFactory::GetInstance() {
@@ -49,7 +49,7 @@ SmbServiceFactory* SmbServiceFactory::GetInstance() {
 
 SmbServiceFactory::SmbServiceFactory()
     : BrowserContextKeyedServiceFactory(
-          "SmbService",
+          /*name=*/"SmbService",
           BrowserContextDependencyManager::GetInstance()) {
   DependsOn(file_system_provider::ServiceFactory::GetInstance());
   DependsOn(AuthPolicyCredentialsManagerFactory::GetInstance());
@@ -57,7 +57,7 @@ SmbServiceFactory::SmbServiceFactory()
   DependsOn(file_manager::VolumeManagerFactory::GetInstance());
 }
 
-SmbServiceFactory::~SmbServiceFactory() {}
+SmbServiceFactory::~SmbServiceFactory() = default;
 
 bool SmbServiceFactory::ServiceIsCreatedWithBrowserContext() const {
   return true;
