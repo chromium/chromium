@@ -6,8 +6,8 @@ import './history_clusters_shared_style.css.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {SearchQuery} from './history_clusters.mojom-webui.js';
-import {MetricsProxyImpl, RelatedSearchAction} from './metrics_proxy.js';
+import {RelatedSearchAction, SearchQuery} from './history_clusters.mojom-webui.js';
+import {MetricsProxyImpl} from './metrics_proxy.js';
 import {OpenWindowProxyImpl} from './open_window_proxy.js';
 import {getTemplate} from './search_query.html.js';
 
@@ -60,7 +60,7 @@ class SearchQueryElement extends PolymerElement {
 
   private onAuxClick_() {
     MetricsProxyImpl.getInstance().recordRelatedSearchAction(
-        RelatedSearchAction.CLICKED, this.index);
+        RelatedSearchAction.kClicked, this.index);
 
     // Notify the parent <history-cluster> element of this event.
     this.dispatchEvent(new CustomEvent('related-search-clicked', {

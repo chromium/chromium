@@ -35,6 +35,38 @@ enum Annotation {
   kSearchResultsPage,
 };
 
+/**
+ * The following enums must be kept in sync with their respective variants in
+ * //tools/metrics/histograms/metadata/history/histograms.xml and
+ * //components/history_clusters/core/cluster_metrics_utils.h
+ */
+
+// Actions that can be performed on clusters.
+enum ClusterAction {
+  kDeleted,
+  kOpenedInTabGroup,
+  kRelatedSearchClicked,
+  kRelatedVisitsVisibilityToggled,
+  kVisitClicked,
+};
+
+// Actions that can be performed on related search items.
+enum RelatedSearchAction {
+  kClicked,
+};
+
+// Actions that can be performed on visits.
+enum VisitAction {
+  kClicked,
+  kDeleted,
+};
+
+// Types of visits that can be shown and acted on.
+enum VisitType {
+  kSRP,
+  kNonSRP
+};
+
 // Represents the most recent visit to a URL within a Cluster. Visits for which
 // there are more recent visits to the same (or a qualifying near-duplicate) URL
 // within the Cluster are omitted.
@@ -151,6 +183,20 @@ interface PageHandler {
 
   // Requests to open the URLs in `visits` in a new tab group.
   OpenVisitUrlsInTabGroup(array<URLVisit> visits);
+
+  // Records visit actions.
+  RecordVisitAction(VisitAction visit_action,
+                    uint32 visit_index,
+                    VisitType visit_type);
+
+  // Records related search click action.
+  RecordRelatedSearchAction(RelatedSearchAction action, uint32 visit_index);
+
+  // Records cluster actions.
+  RecordClusterAction(ClusterAction cluster_action, uint32 cluster_index);
+
+  // Records that the journeys visibility was toggled.
+  RecordToggledVisibility(bool visible);
 };
 
 // WebUI-side handler for requests from the browser.

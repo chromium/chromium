@@ -348,10 +348,10 @@ void HistoryClustersTabHelper::DidStartNavigation(
     auto* logger =
         history_clusters::HistoryClustersMetricsLogger::GetOrCreateForPage(
             navigation_handle->GetWebContents()->GetPrimaryPage());
+    // TODO(crbug.com/1326954): Clean up once the metrics are refactored
+    // to be driven by UI events rather than navigation state.
     logger->set_final_state(
         history_clusters::HistoryClustersFinalState::kLinkClick);
-    if (CanAddURLToHistory(navigation_handle->GetURL()))
-      logger->IncrementLinksOpenedCount();
   }
 }
 
@@ -406,28 +406,6 @@ void HistoryClustersTabHelper::DidFinishNavigation(
   }
 
   logger->set_initial_state(initial_state);
-}
-
-void HistoryClustersTabHelper::DidOpenRequestedURL(
-    content::WebContents* new_contents,
-    content::RenderFrameHost* source_render_frame_host,
-    const GURL& url,
-    const content::Referrer& referrer,
-    WindowOpenDisposition disposition,
-    ui::PageTransition transition,
-    bool started_from_context_menu,
-    bool renderer_initiated) {
-  // Will detect when a link was followed from the history clusters page in a
-  // new web contents (e.g. new tab or window).
-  // And will update this page's associated `HistoryClustersMetricsLogger`.
-  if (IsHistoryPage(web_contents()->GetLastCommittedURL(),
-                    GURL(chrome::kChromeUIHistoryClustersURL)) &&
-      CanAddURLToHistory(url)) {
-    auto* logger =
-        history_clusters::HistoryClustersMetricsLogger::GetOrCreateForPage(
-            web_contents()->GetPrimaryPage());
-    logger->IncrementLinksOpenedCount();
-  }
 }
 
 void HistoryClustersTabHelper::WebContentsDestroyed() {

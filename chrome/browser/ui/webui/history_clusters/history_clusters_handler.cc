@@ -23,6 +23,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/common/pref_names.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/history_clusters/core/cluster_metrics_utils.h"
 #include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/features.h"
 #include "components/history_clusters/core/history_clusters_prefs.h"
@@ -343,6 +344,39 @@ void HistoryClustersHandler::OnClustersQueryResult(
 void HistoryClustersHandler::OnVisitsRemoved(
     std::vector<mojom::URLVisitPtr> visits) {
   page_->OnVisitsRemoved(std::move(visits));
+}
+
+void HistoryClustersHandler::RecordVisitAction(mojom::VisitAction visit_action,
+                                               uint32_t visit_index,
+                                               mojom::VisitType visit_type) {
+  HistoryClustersMetricsLogger::GetOrCreateForPage(
+      web_contents_->GetPrimaryPage())
+      ->RecordVisitAction(static_cast<VisitAction>(visit_action), visit_index,
+                          static_cast<VisitType>(visit_type));
+}
+
+void HistoryClustersHandler::RecordClusterAction(
+    mojom::ClusterAction cluster_action,
+    uint32_t cluster_index) {
+  HistoryClustersMetricsLogger::GetOrCreateForPage(
+      web_contents_->GetPrimaryPage())
+      ->RecordClusterAction(static_cast<ClusterAction>(cluster_action),
+                            cluster_index);
+}
+
+void HistoryClustersHandler::RecordRelatedSearchAction(
+    mojom::RelatedSearchAction action,
+    uint32_t related_search_index) {
+  HistoryClustersMetricsLogger::GetOrCreateForPage(
+      web_contents_->GetPrimaryPage())
+      ->RecordRelatedSearchAction(static_cast<RelatedSearchAction>(action),
+                                  related_search_index);
+}
+
+void HistoryClustersHandler::RecordToggledVisibility(bool visible) {
+  HistoryClustersMetricsLogger::GetOrCreateForPage(
+      web_contents_->GetPrimaryPage())
+      ->RecordToggledVisibility(visible);
 }
 
 }  // namespace history_clusters

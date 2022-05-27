@@ -17,8 +17,8 @@ import {loadTimeData} from '../../js/load_time_data.m.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
 import {getTemplate} from './cluster.html.js';
-import {Cluster, PageCallbackRouter, URLVisit} from './history_clusters.mojom-webui.js';
-import {ClusterAction, MetricsProxyImpl, VisitAction} from './metrics_proxy.js';
+import {Cluster, ClusterAction, PageCallbackRouter, URLVisit, VisitAction} from './history_clusters.mojom-webui.js';
+import {MetricsProxyImpl} from './metrics_proxy.js';
 import {insertHighlightedTextWithMatchesIntoElement} from './utils.js';
 
 /**
@@ -151,16 +151,16 @@ class HistoryClusterElement extends PolymerElement {
 
   private onRelatedSearchClicked_() {
     MetricsProxyImpl.getInstance().recordClusterAction(
-        ClusterAction.RELATED_SEARCH_CLICKED, this.index);
+        ClusterAction.kRelatedSearchClicked, this.index);
   }
 
   private onVisitClicked_(event: CustomEvent<URLVisit>) {
     MetricsProxyImpl.getInstance().recordClusterAction(
-        ClusterAction.VISIT_CLICKED, this.index);
+        ClusterAction.kVisitClicked, this.index);
 
     const visit = event.detail;
     MetricsProxyImpl.getInstance().recordVisitAction(
-        VisitAction.CLICKED, this.getVisitIndex_(visit),
+        VisitAction.kClicked, this.getVisitIndex_(visit),
         MetricsProxyImpl.getVisitType(visit));
   }
 
@@ -176,7 +176,7 @@ class HistoryClusterElement extends PolymerElement {
         visitsToOpen);
 
     MetricsProxyImpl.getInstance().recordClusterAction(
-        ClusterAction.OPENED_IN_TAB_GROUP, this.index);
+        ClusterAction.kOpenedInTabGroup, this.index);
   }
 
   private onRemoveAllVisits_() {
@@ -193,7 +193,7 @@ class HistoryClusterElement extends PolymerElement {
     // place to record the metric.
     const visit = event.detail;
     MetricsProxyImpl.getInstance().recordVisitAction(
-        VisitAction.DELETED, this.getVisitIndex_(visit),
+        VisitAction.kDeleted, this.getVisitIndex_(visit),
         MetricsProxyImpl.getVisitType(visit));
 
     this.dispatchEvent(new CustomEvent('remove-visits', {
@@ -218,7 +218,7 @@ class HistoryClusterElement extends PolymerElement {
     this.expanded_ = !this.expanded_;
 
     MetricsProxyImpl.getInstance().recordClusterAction(
-        ClusterAction.RELATED_VISITS_VISIBILITY_TOGGLED, this.index);
+        ClusterAction.kRelatedVisitsVisibilityToggled, this.index);
 
     // Dispatch an event to notify the parent elements of a resize. Note that
     // this simple solution only works because the child iron-collapse has
@@ -266,7 +266,7 @@ class HistoryClusterElement extends PolymerElement {
       }));
 
       MetricsProxyImpl.getInstance().recordClusterAction(
-          ClusterAction.DELETED, this.index);
+          ClusterAction.kDeleted, this.index);
     } else {
       this.set('cluster.visits', remainingVisits);
     }

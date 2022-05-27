@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_HISTORY_CLUSTERS_HISTORY_CLUSTERS_METRICS_LOGGER_H_
 #define CHROME_BROWSER_HISTORY_CLUSTERS_HISTORY_CLUSTERS_METRICS_LOGGER_H_
 
+#include "components/history_clusters/core/cluster_metrics_utils.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/page_user_data.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -32,6 +33,8 @@ enum class HistoryClustersInitialState {
 };
 
 // The final state, or outcome, of an interaction on the HistoryClusters UI.
+// TODO(crbug.com/1326954): Clean up once the metrics are refactored
+// to be driven by UI events rather than navigation state.
 //
 // Keep in sync with HistoryClustersFinalState in
 // tools/metrics/histograms/enums.xml.
@@ -92,7 +95,23 @@ class HistoryClustersMetricsLogger
     navigation_id_ = navigation_id;
   }
 
-  void IncrementLinksOpenedCount() { links_opened_count_++; }
+  // Records that an |visit_action| in the UI occurred at |visit_index| position
+  // on a specified |visit_type|.
+  void RecordVisitAction(VisitAction visit_action,
+                         uint32_t visit_index,
+                         VisitType visit_type);
+
+  // Records that a related search link was clicked at |related_search_index|.
+  void RecordRelatedSearchAction(RelatedSearchAction action,
+                                 uint32_t related_search_index);
+
+  // Records that the journeys UI visibility was toggled.
+  void RecordToggledVisibility(bool visible);
+
+  // Records that an |cluster_action| in the UI occurred at |cluster_index|
+  // position
+  void RecordClusterAction(ClusterAction cluster_action,
+                           uint32_t cluster_index);
 
  private:
   // The navigation ID of the navigation handle that this data is associated
@@ -113,12 +132,6 @@ class HistoryClustersMetricsLogger
   // The number of times in this interaction with HistoryClusters included the
   // user toggled to the basic History UI from the HistoryClusters UI.
   int num_toggles_to_basic_history_ = 0;
-
-  // The number of links opened from the HistoryClusters UI. Includes both
-  // same-tab and new-tab/window navigations. Includes both visit and related
-  // search links. Does not include sidebar navigations (e.g. 'Clear browsing
-  // data').
-  int links_opened_count_ = 0;
 };
 
 }  // namespace history_clusters

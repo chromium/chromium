@@ -9,6 +9,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
 static_library("core") {
   sources = [
     "cluster_finalizer.h",
+    "cluster_metrics_utils.cc",
     "cluster_metrics_utils.h",
     "cluster_processor.h",
     "clusterer.cc",
