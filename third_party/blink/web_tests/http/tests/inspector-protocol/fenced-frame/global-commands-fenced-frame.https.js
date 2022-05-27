@@ -1,7 +1,8 @@
-(async function (testRunner) {
-  const { session, dp } = await testRunner.startURL('resources/page-with-fenced-frame.php',
-    'Tests that global commands such as captureSnapshot, captureScreenshot, or getAppManifest'+
-    'returns an error with Fenced Frame target');
+(async function(testRunner) {
+  const {session, dp} = await testRunner.startURL(
+      'resources/page-with-fenced-frame.php',
+      'Tests that global commands such as captureSnapshot, captureScreenshot, getAppManifest, startScreencast, or setDownloadBehavior ' +
+          'returns an error with Fenced Frame target');
   await dp.Page.enable();
 
   dp.Target.setAutoAttach({ autoAttach: true, waitForDebuggerOnStart: false, flatten: true });
@@ -24,6 +25,8 @@
   await checkCommand('Page.captureSnapshot', {});
   await checkCommand('Page.captureScreenshot', {});
   await checkCommand('Page.getAppManifest', {});
+  await checkCommand('Page.startScreencast', {});
+  await checkCommand('Page.setDownloadBehavior', {behavior: 'deny'});
 
   testRunner.completeTest();
 });

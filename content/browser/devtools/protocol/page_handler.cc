@@ -86,8 +86,6 @@ constexpr char kCommandIsOnlyAvailableAtTopTarget[] =
     "Command can only be executed on top-level targets";
 constexpr char kErrorNotAttached[] = "Not attached to a page";
 constexpr char kErrorInactivePage[] = "Not attached to an active page";
-constexpr char kErrorNonTopLevelFrames[] =
-    "This is only supported for top-level frames";
 
 Binary EncodeImage(const gfx::Image& image,
                    const std::string& format,
@@ -182,14 +180,29 @@ void GetMetadataFromFrame(const media::VideoFrame& frame,
   *top_controls_visible_height = *frame.metadata().top_controls_visible_height;
 }
 
+Response AssureTopLevelActiveFrame(RenderFrameHost* host) {
+  if (!host)
+    return Response::ServerError(kErrorNotAttached);
+
+  if (host->GetParentOrOuterDocument())
+    return Response::ServerError(kCommandIsOnlyAvailableAtTopTarget);
+
+  if (!host->IsActive())
+    return Response::ServerError(kErrorInactivePage);
+
+  return Response::Success();
+}
+
 template <typename ProtocolCallback>
 bool CanExecuteGlobalCommands(
     RenderFrameHost* host,
     const std::unique_ptr<ProtocolCallback>& callback) {
-  if (!host || host->IsInPrimaryMainFrame())
+  if (!host)
     return true;
-  callback->sendFailure(
-      Response::ServerError(kCommandIsOnlyAvailableAtTopTarget));
+  Response response = AssureTopLevelActiveFrame(host);
+  if (!response.IsError())
+    return true;
+  callback->sendFailure(response);
   return false;
 }
 
@@ -407,11 +420,9 @@ Response PageHandler::Crash() {
 }
 
 Response PageHandler::Close() {
-  if (!host_)
-    return Response::ServerError(kErrorNotAttached);
-
-  if (!host_->IsOutermostMainFrame())
-    return Response::ServerError(kCommandIsOnlyAvailableAtTopTarget);
+  Response response = AssureTopLevelActiveFrame(host_);
+  if (response.IsError())
+    return response;
 
   host_->DispatchBeforeUnload(RenderFrameHostImpl::BeforeUnloadType::TAB_CLOSE,
                               false);
@@ -421,14 +432,9 @@ Response PageHandler::Close() {
 void PageHandler::Reload(Maybe<bool> bypassCache,
                          Maybe<std::string> script_to_evaluate_on_load,
                          std::unique_ptr<ReloadCallback> callback) {
-  if (!host_) {
-    callback->sendFailure(Response::ServerError(kErrorNotAttached));
-    return;
-  }
-
-  if (host_->GetParentOrOuterDocument()) {
-    callback->sendFailure(
-        Response::ServerError("Reload is only supported for top-level frames"));
+  Response response = AssureTopLevelActiveFrame(host_);
+  if (response.IsError()) {
+    callback->sendFailure(response);
     return;
   }
 
@@ -931,11 +937,10 @@ Response PageHandler::StartScreencast(Maybe<std::string> format,
                                       Maybe<int> max_width,
                                       Maybe<int> max_height,
                                       Maybe<int> every_nth_frame) {
-  WebContentsImpl* web_contents = GetWebContents();
-  if (!web_contents)
-    return Response::InternalError();
-  RenderWidgetHostImpl* widget_host =
-      host_ ? host_->GetRenderWidgetHost() : nullptr;
+  Response response = AssureTopLevelActiveFrame(host_);
+  if (response.IsError())
+    return response;
+  RenderWidgetHostImpl* widget_host = host_->GetRenderWidgetHost();
   if (!widget_host)
     return Response::InternalError();
 
@@ -998,7 +1003,7 @@ Response PageHandler::ScreencastFrameAck(int session_id) {
 
 Response PageHandler::HandleJavaScriptDialog(bool accept,
                                              Maybe<std::string> prompt_text) {
-  Response response = AssureTopLevelActiveFrame();
+  Response response = AssureTopLevelActiveFrame(host_);
   if (response.IsError())
     return response;
 
@@ -1041,18 +1046,16 @@ Response PageHandler::SetDownloadBehavior(const std::string& behavior,
       host_ ? host_->GetProcess()->GetBrowserContext() : nullptr;
   if (!browser_context)
     return Response::ServerError("Could not fetch browser context");
-  if (host_ && host_->GetParent())
-    return Response::ServerError(kCommandIsOnlyAvailableAtTopTarget);
+
+  Response response = AssureTopLevelActiveFrame(host_);
+  if (response.IsError())
+    return response;
   return browser_handler_->DoSetDownloadBehavior(behavior, browser_context,
                                                  std::move(download_path));
 }
 
 void PageHandler::GetAppManifest(
     std::unique_ptr<GetAppManifestCallback> callback) {
-  if (!host_) {
-    callback->sendFailure(Response::ServerError("Cannot retrieve manifest"));
-    return;
-  }
   if (!CanExecuteGlobalCommands(host_, callback))
     return;
   ManifestManagerHost::GetOrCreateForPage(host_->GetPage())
@@ -1077,19 +1080,6 @@ void PageHandler::NotifyScreencastVisibility(bool visible) {
 bool PageHandler::ShouldCaptureNextScreencastFrame() {
   return frames_in_flight_ <= kMaxScreencastFramesInFlight &&
          !(++frame_counter_ % capture_every_nth_frame_);
-}
-
-Response PageHandler::AssureTopLevelActiveFrame() {
-  if (!host_)
-    return Response::ServerError(kErrorNotAttached);
-
-  if (!host_->IsActive())
-    return Response::ServerError(kErrorInactivePage);
-
-  if (host_->GetParentOrOuterDocument())
-    return Response::ServerError(kErrorNonTopLevelFrames);
-
-  return Response::Success();
 }
 
 void PageHandler::InnerSwapCompositorFrame() {
@@ -1297,7 +1287,7 @@ Response PageHandler::StopLoading() {
 Response PageHandler::SetWebLifecycleState(const std::string& state) {
   // Inactive pages(e.g., a prerendered or back-forward cached page) should not
   // affect the state.
-  Response response = AssureTopLevelActiveFrame();
+  Response response = AssureTopLevelActiveFrame(host_);
   if (response.IsError())
     return response;
 
