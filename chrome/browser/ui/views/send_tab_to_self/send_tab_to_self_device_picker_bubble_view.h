@@ -19,10 +19,6 @@ namespace content {
 class WebContents;
 }  // namespace content
 
-namespace ui {
-class Event;
-}  // namespace ui
-
 namespace send_tab_to_self {
 
 class SendTabToSelfBubbleController;
@@ -56,8 +52,6 @@ class SendTabToSelfDevicePickerBubbleView
   void BackButtonPressed();
 
   void DeviceButtonPressed(SendTabToSelfBubbleDeviceButton* device_button);
-
-  void OnManageDevicesClicked(const ui::Event& event);
 
   const views::View* GetButtonContainerForTesting() const;
 
