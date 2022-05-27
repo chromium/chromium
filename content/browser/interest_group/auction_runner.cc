@@ -38,6 +38,7 @@
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/interest_group/ad_auction_constants.h"
+#include "third_party/blink/public/common/interest_group/auction_config.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "url/gurl.h"
@@ -171,7 +172,7 @@ AuctionRunner::ScoredBid::ScoredBid(
 AuctionRunner::ScoredBid::~ScoredBid() = default;
 
 AuctionRunner::Auction::Auction(
-    blink::mojom::AuctionAdConfig* config,
+    const blink::AuctionConfig* config,
     const Auction* parent,
     AuctionWorkletManager* auction_worklet_manager,
     InterestGroupManagerImpl* interest_group_manager,
@@ -187,12 +188,12 @@ AuctionRunner::Auction::Auction(
                                     config_->decision_logic_url);
 
   for (const auto& component_auction_config :
-       config->auction_ad_config_non_shared_params->component_auctions) {
+       config->non_shared_params.component_auctions) {
     // Nested component auctions are not supported.
     DCHECK(!parent_);
     component_auctions_.emplace_back(std::make_unique<Auction>(
-        component_auction_config.get(), /*parent=*/this,
-        auction_worklet_manager, interest_group_manager, auction_start_time));
+        &component_auction_config, /*parent=*/this, auction_worklet_manager,
+        interest_group_manager, auction_start_time));
   }
 }
 
@@ -269,9 +270,9 @@ void AuctionRunner::Auction::StartLoadInterestGroupsPhase(
     ++num_pending_loads_;
   }
 
-  if (config_->auction_ad_config_non_shared_params->interest_group_buyers) {
+  if (config_->non_shared_params.interest_group_buyers) {
     for (const auto& buyer :
-         *config_->auction_ad_config_non_shared_params->interest_group_buyers) {
+         *config_->non_shared_params.interest_group_buyers) {
       if (!is_interest_group_api_allowed_callback.Run(
               ContentBrowserClient::InterestGroupApiOperation::kBuy, buyer)) {
         continue;
@@ -362,9 +363,7 @@ void AuctionRunner::Auction::StartReportingPhase(
     DCHECK(top_seller_signals);
     if (!auction_worklet_manager_->RequestSellerWorklet(
             config_->decision_logic_url, config_->trusted_scoring_signals_url,
-            config_->has_seller_experiment_group_id
-                ? absl::make_optional(config_->seller_experiment_group_id)
-                : absl::nullopt,
+            config_->seller_experiment_group_id,
             base::BindOnce(&Auction::ReportSellerResult, base::Unretained(this),
                            top_seller_signals),
             base::BindOnce(&Auction::OnWinningComponentSellerWorkletFatalError,
@@ -604,14 +603,13 @@ void AuctionRunner::Auction::OnInterestGroupRead(
     std::vector<StorageInterestGroup> interest_groups) {
   ++num_owners_loaded_;
   if (!interest_groups.empty()) {
-    size_t size_limit =
-        config_->auction_ad_config_non_shared_params->all_buyers_group_limit;
+    size_t size_limit = config_->non_shared_params.all_buyers_group_limit;
     const url::Origin& owner = interest_groups[0].interest_group.owner;
     post_auction_update_owners_.push_back(owner);
-    const auto limit_iter = config_->auction_ad_config_non_shared_params
-                                ->per_buyer_group_limits.find(owner);
-    if (limit_iter != config_->auction_ad_config_non_shared_params
-                          ->per_buyer_group_limits.cend()) {
+    const auto limit_iter =
+        config_->non_shared_params.per_buyer_group_limits.find(owner);
+    if (limit_iter !=
+        config_->non_shared_params.per_buyer_group_limits.cend()) {
       size_limit = static_cast<size_t>(limit_iter->second);
     }
     StorageInterestGroupDescByPriority cmp;
@@ -751,9 +749,7 @@ void AuctionRunner::Auction::RequestSellerWorklet() {
                                     trace_id_);
   if (auction_worklet_manager_->RequestSellerWorklet(
           config_->decision_logic_url, config_->trusted_scoring_signals_url,
-          config_->has_seller_experiment_group_id
-              ? absl::make_optional(config_->seller_experiment_group_id)
-              : absl::nullopt,
+          config_->seller_experiment_group_id,
           base::BindOnce(&Auction::OnSellerWorkletReceived,
                          base::Unretained(this)),
           base::BindOnce(&Auction::OnSellerWorkletFatalError,
@@ -834,8 +830,8 @@ void AuctionRunner::Auction::OnBidderWorkletReceived(BidState* bid_state) {
           interest_group.trusted_bidding_signals_keys,
           interest_group.user_bidding_signals, interest_group.ads,
           interest_group.ad_components),
-      config_->auction_ad_config_non_shared_params->auction_signals,
-      PerBuyerSignals(bid_state), PerBuyerTimeout(bid_state), config_->seller,
+      config_->non_shared_params.auction_signals, PerBuyerSignals(bid_state),
+      PerBuyerTimeout(bid_state), config_->seller,
       parent_ ? parent_->config_->seller : absl::optional<url::Origin>(),
       bid_state->bidder.bidding_browser_signals.Clone(), auction_start_time_,
       *bid_state->trace_id,
@@ -1003,8 +999,7 @@ void AuctionRunner::Auction::ScoreBidIfReady(std::unique_ptr<Bid> bid) {
 
   Bid* bid_raw = bid.get();
   seller_worklet_handle_->GetSellerWorklet()->ScoreAd(
-      bid_raw->ad_metadata, bid_raw->bid,
-      config_->auction_ad_config_non_shared_params.Clone(),
+      bid_raw->ad_metadata, bid_raw->bid, config_->non_shared_params,
       GetOtherSellerParam(*bid_raw), bid_raw->interest_group->owner,
       bid_raw->render_url, bid_raw->ad_components,
       bid_raw->bid_duration.InMilliseconds(), SellerTimeout(),
@@ -1182,8 +1177,7 @@ void AuctionRunner::Auction::OnNewHighestScoringOtherBid(
 
 absl::optional<std::string> AuctionRunner::Auction::PerBuyerSignals(
     const BidState* state) {
-  const auto& per_buyer_signals =
-      config_->auction_ad_config_non_shared_params->per_buyer_signals;
+  const auto& per_buyer_signals = config_->non_shared_params.per_buyer_signals;
   if (per_buyer_signals.has_value()) {
     auto it =
         per_buyer_signals.value().find(state->bidder.interest_group.owner);
@@ -1196,7 +1190,7 @@ absl::optional<std::string> AuctionRunner::Auction::PerBuyerSignals(
 absl::optional<base::TimeDelta> AuctionRunner::Auction::PerBuyerTimeout(
     const BidState* state) {
   const auto& per_buyer_timeouts =
-      config_->auction_ad_config_non_shared_params->per_buyer_timeouts;
+      config_->non_shared_params.per_buyer_timeouts;
   if (per_buyer_timeouts.has_value()) {
     auto it =
         per_buyer_timeouts.value().find(state->bidder.interest_group.owner);
@@ -1204,18 +1198,16 @@ absl::optional<base::TimeDelta> AuctionRunner::Auction::PerBuyerTimeout(
       return std::min(it->second, kMaxTimeout);
   }
   const auto& all_buyers_timeout =
-      config_->auction_ad_config_non_shared_params->all_buyers_timeout;
+      config_->non_shared_params.all_buyers_timeout;
   if (all_buyers_timeout.has_value())
     return std::min(all_buyers_timeout.value(), kMaxTimeout);
   return absl::nullopt;
 }
 
 absl::optional<base::TimeDelta> AuctionRunner::Auction::SellerTimeout() {
-  if (config_->auction_ad_config_non_shared_params->seller_timeout
-          .has_value()) {
-    return std::min(
-        config_->auction_ad_config_non_shared_params->seller_timeout.value(),
-        kMaxTimeout);
+  if (config_->non_shared_params.seller_timeout.has_value()) {
+    return std::min(config_->non_shared_params.seller_timeout.value(),
+                    kMaxTimeout);
   }
   return absl::nullopt;
 }
@@ -1326,10 +1318,9 @@ void AuctionRunner::Auction::ReportSellerResult(
   }
 
   seller_worklet_handle_->GetSellerWorklet()->ReportResult(
-      config_->auction_ad_config_non_shared_params.Clone(),
-      GetOtherSellerParam(*top_bid_->bid), top_bid_->bid->interest_group->owner,
-      top_bid_->bid->render_url, top_bid_->bid->bid, top_bid_->score,
-      highest_scoring_other_bid_,
+      config_->non_shared_params, GetOtherSellerParam(*top_bid_->bid),
+      top_bid_->bid->interest_group->owner, top_bid_->bid->render_url,
+      top_bid_->bid->bid, top_bid_->score, highest_scoring_other_bid_,
       std::move(browser_signals_component_auction_report_result_params),
       top_bid_->scoring_signals_data_version.value_or(0),
       top_bid_->scoring_signals_data_version.has_value(), trace_id_,
@@ -1423,7 +1414,7 @@ void AuctionRunner::Auction::ReportBidWin(
 
   top_bid_->bid->bid_state->worklet_handle->GetBidderWorklet()->ReportWin(
       top_bid_->bid->interest_group->name,
-      config_->auction_ad_config_non_shared_params->auction_signals,
+      config_->non_shared_params.auction_signals,
       PerBuyerSignals(top_bid_->bid->bid_state), signals_for_winner,
       top_bid_->bid->render_url, top_bid_->bid->bid,
       /*browser_signal_highest_scoring_other_bid=*/highest_scoring_other_bid_,
@@ -1591,10 +1582,11 @@ bool AuctionRunner::Auction::RequestBidderWorklet(
 
   absl::optional<uint16_t> experiment_group_id = absl::nullopt;
   auto it = config_->per_buyer_experiment_group_ids.find(interest_group.owner);
-  if (it != config_->per_buyer_experiment_group_ids.end())
+  if (it != config_->per_buyer_experiment_group_ids.end()) {
     experiment_group_id = it->second;
-  else if (config_->has_all_buyer_experiment_group_id)
+  } else {
     experiment_group_id = config_->all_buyer_experiment_group_id;
+  }
 
   return auction_worklet_manager_->RequestBidderWorklet(
       interest_group.bidding_url.value_or(GURL()),
@@ -1607,7 +1599,7 @@ bool AuctionRunner::Auction::RequestBidderWorklet(
 std::unique_ptr<AuctionRunner> AuctionRunner::CreateAndStart(
     AuctionWorkletManager* auction_worklet_manager,
     InterestGroupManagerImpl* interest_group_manager,
-    blink::mojom::AuctionAdConfigPtr auction_config,
+    const blink::AuctionConfig& auction_config,
     network::mojom::ClientSecurityStatePtr client_security_state,
     IsInterestGroupApiAllowedCallback is_interest_group_api_allowed_callback,
     RunAuctionCallback callback) {
@@ -1646,7 +1638,7 @@ void AuctionRunner::FailAuction() {
 AuctionRunner::AuctionRunner(
     AuctionWorkletManager* auction_worklet_manager,
     InterestGroupManagerImpl* interest_group_manager,
-    blink::mojom::AuctionAdConfigPtr auction_config,
+    const blink::AuctionConfig& auction_config,
     network::mojom::ClientSecurityStatePtr client_security_state,
     IsInterestGroupApiAllowedCallback is_interest_group_api_allowed_callback,
     RunAuctionCallback callback)
@@ -1654,9 +1646,9 @@ AuctionRunner::AuctionRunner(
       client_security_state_(std::move(client_security_state)),
       is_interest_group_api_allowed_callback_(
           is_interest_group_api_allowed_callback),
-      owned_auction_config_(std::move(auction_config)),
+      owned_auction_config_(auction_config),
       callback_(std::move(callback)),
-      auction_(owned_auction_config_.get(),
+      auction_(&owned_auction_config_,
                /*parent=*/nullptr,
                auction_worklet_manager,
                interest_group_manager,

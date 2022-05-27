@@ -29,6 +29,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/interest_group/auction_config.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom-forward.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -80,7 +81,7 @@ class SellerWorklet : public mojom::SellerWorklet {
   void ScoreAd(
       const std::string& ad_metadata_json,
       double bid,
-      blink::mojom::AuctionAdConfigNonSharedParamsPtr
+      const blink::AuctionConfig::NonSharedParams&
           auction_ad_config_non_shared_params,
       mojom::ComponentAuctionOtherSellerPtr browser_signals_other_seller,
       const url::Origin& browser_signal_interest_group_owner,
@@ -92,7 +93,7 @@ class SellerWorklet : public mojom::SellerWorklet {
       ScoreAdCallback callback) override;
   void SendPendingSignalsRequests() override;
   void ReportResult(
-      blink::mojom::AuctionAdConfigNonSharedParamsPtr
+      const blink::AuctionConfig::NonSharedParams&
           auction_ad_config_non_shared_params,
       mojom::ComponentAuctionOtherSellerPtr browser_signals_other_seller,
       const url::Origin& browser_signal_interest_group_owner,
@@ -122,8 +123,7 @@ class SellerWorklet : public mojom::SellerWorklet {
     // safe to access after that happens.
     std::string ad_metadata_json;
     double bid;
-    blink::mojom::AuctionAdConfigNonSharedParamsPtr
-        auction_ad_config_non_shared_params;
+    blink::AuctionConfig::NonSharedParams auction_ad_config_non_shared_params;
     mojom::ComponentAuctionOtherSellerPtr browser_signals_other_seller;
     url::Origin browser_signal_interest_group_owner;
     GURL browser_signal_render_url;
@@ -157,8 +157,7 @@ class SellerWorklet : public mojom::SellerWorklet {
     // These fields all correspond to the arguments of ReportResult(). They're
     // std::move()ed when calling out to V8State to run Javascript, so are not
     // safe to access after that happens.
-    blink::mojom::AuctionAdConfigNonSharedParamsPtr
-        auction_ad_config_non_shared_params;
+    blink::AuctionConfig::NonSharedParams auction_ad_config_non_shared_params;
     mojom::ComponentAuctionOtherSellerPtr browser_signals_other_seller;
     url::Origin browser_signal_interest_group_owner;
     GURL browser_signal_render_url;
@@ -210,7 +209,7 @@ class SellerWorklet : public mojom::SellerWorklet {
     void ScoreAd(
         const std::string& ad_metadata_json,
         double bid,
-        blink::mojom::AuctionAdConfigNonSharedParamsPtr
+        const blink::AuctionConfig::NonSharedParams&
             auction_ad_config_non_shared_params,
         scoped_refptr<TrustedSignals::Result> trusted_scoring_signals,
         mojom::ComponentAuctionOtherSellerPtr browser_signals_other_seller,
@@ -223,7 +222,7 @@ class SellerWorklet : public mojom::SellerWorklet {
         ScoreAdCallbackInternal callback);
 
     void ReportResult(
-        blink::mojom::AuctionAdConfigNonSharedParamsPtr
+        const blink::AuctionConfig::NonSharedParams&
             auction_ad_config_non_shared_params,
         mojom::ComponentAuctionOtherSellerPtr browser_signals_other_seller,
         const url::Origin& browser_signal_interest_group_owner,

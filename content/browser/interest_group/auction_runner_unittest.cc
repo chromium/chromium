@@ -993,7 +993,7 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
 
   void ScoreAd(const std::string& ad_metadata_json,
                double bid,
-               blink::mojom::AuctionAdConfigNonSharedParamsPtr
+               const blink::AuctionConfig::NonSharedParams&
                    auction_ad_config_non_shared_params,
                auction_worklet::mojom::ComponentAuctionOtherSellerPtr
                    browser_signals_other_seller,
@@ -1032,7 +1032,7 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
   }
 
   void ReportResult(
-      blink::mojom::AuctionAdConfigNonSharedParamsPtr
+      const blink::AuctionConfig::NonSharedParams&
           auction_ad_config_non_shared_params,
       auction_worklet::mojom::ComponentAuctionOtherSellerPtr
           browser_signals_other_seller,
@@ -1453,24 +1453,18 @@ class AuctionRunnerTest : public testing::Test,
   std::string TakeBadMessage() { return std::move(bad_message_); }
 
   // Helper to create an auction config with the specified values.
-  blink::mojom::AuctionAdConfigPtr CreateAuctionConfig(
+  blink::AuctionConfig CreateAuctionConfig(
       const GURL& seller_decision_logic_url,
       absl::optional<std::vector<url::Origin>> buyers) {
-    blink::mojom::AuctionAdConfigPtr auction_config =
-        blink::mojom::AuctionAdConfig::New();
-    auction_config->seller = url::Origin::Create(seller_decision_logic_url);
-    auction_config->decision_logic_url = seller_decision_logic_url;
+    blink::AuctionConfig auction_config;
+    auction_config.seller = url::Origin::Create(seller_decision_logic_url);
+    auction_config.decision_logic_url = seller_decision_logic_url;
 
-    auction_config->auction_ad_config_non_shared_params =
-        blink::mojom::AuctionAdConfigNonSharedParams::New();
-    auction_config->auction_ad_config_non_shared_params->interest_group_buyers =
-        std::move(buyers);
+    auction_config.non_shared_params.interest_group_buyers = std::move(buyers);
 
-    auction_config->auction_ad_config_non_shared_params->seller_signals =
-        base::StringPrintf(R"({"url": "%s"})",
-                           seller_decision_logic_url.spec().c_str());
-    auction_config->auction_ad_config_non_shared_params->seller_timeout =
-        base::Milliseconds(1000);
+    auction_config.non_shared_params.seller_signals = base::StringPrintf(
+        R"({"url": "%s"})", seller_decision_logic_url.spec().c_str());
+    auction_config.non_shared_params.seller_timeout = base::Milliseconds(1000);
 
     base::flat_map<url::Origin, std::string> per_buyer_signals;
     // Use a combination of bidder and seller values, so can make sure bidders
@@ -1478,40 +1472,31 @@ class AuctionRunnerTest : public testing::Test,
     // as a defense against pulling the right values from the wrong places.
     per_buyer_signals[kBidder1] = base::StringPrintf(
         R"({"%sSignals": "%sSignals"})",
-        auction_config->seller.Serialize().c_str(), kBidder1Name.c_str());
+        auction_config.seller.Serialize().c_str(), kBidder1Name.c_str());
     per_buyer_signals[kBidder2] = base::StringPrintf(
         R"({"%sSignals": "%sSignals"})",
-        auction_config->seller.Serialize().c_str(), kBidder2Name.c_str());
-    auction_config->auction_ad_config_non_shared_params->per_buyer_signals =
+        auction_config.seller.Serialize().c_str(), kBidder2Name.c_str());
+    auction_config.non_shared_params.per_buyer_signals =
         std::move(per_buyer_signals);
 
     base::flat_map<url::Origin, base::TimeDelta> per_buyer_timeouts;
     // Any per buyer timeout higher than 500 ms will be clamped to 500 ms by the
     // AuctionRunner.
     per_buyer_timeouts[kBidder1] = base::Milliseconds(1000);
-    auction_config->auction_ad_config_non_shared_params->per_buyer_timeouts =
+    auction_config.non_shared_params.per_buyer_timeouts =
         std::move(per_buyer_timeouts);
-    auction_config->auction_ad_config_non_shared_params->all_buyers_timeout =
+    auction_config.non_shared_params.all_buyers_timeout =
         base::Milliseconds(150);
 
-    auction_config->auction_ad_config_non_shared_params->auction_signals =
-        base::StringPrintf(R"("auctionSignalsFor %s")",
-                           auction_config->seller.Serialize().c_str());
+    auction_config.non_shared_params.auction_signals = base::StringPrintf(
+        R"("auctionSignalsFor %s")", auction_config.seller.Serialize().c_str());
 
-    if (seller_experiment_group_id_.has_value()) {
-      auction_config->has_seller_experiment_group_id = true;
-      auction_config->seller_experiment_group_id =
-          seller_experiment_group_id_.value();
-    }
-
-    if (all_buyer_experiment_group_id_.has_value()) {
-      auction_config->has_all_buyer_experiment_group_id = true;
-      auction_config->all_buyer_experiment_group_id =
-          all_buyer_experiment_group_id_.value();
-    }
+    auction_config.seller_experiment_group_id = seller_experiment_group_id_;
+    auction_config.all_buyer_experiment_group_id =
+        all_buyer_experiment_group_id_;
 
     for (const auto& kv : per_buyer_experiment_group_id_) {
-      auction_config->per_buyer_experiment_group_ids[kv.first] = kv.second;
+      auction_config.per_buyer_experiment_group_ids[kv.first] = kv.second;
     }
 
     return auction_config;
@@ -1529,14 +1514,14 @@ class AuctionRunnerTest : public testing::Test,
                     std::vector<StorageInterestGroup> bidders) {
     auction_complete_ = false;
 
-    blink::mojom::AuctionAdConfigPtr auction_config =
+    auto auction_config =
         CreateAuctionConfig(seller_decision_logic_url, interest_group_buyers_);
 
-    auction_config->trusted_scoring_signals_url = trusted_scoring_signals_url_;
+    auction_config.trusted_scoring_signals_url = trusted_scoring_signals_url_;
 
     for (const auto& component_auction : component_auctions_) {
-      auction_config->auction_ad_config_non_shared_params->component_auctions
-          .emplace_back(component_auction.Clone());
+      auction_config.non_shared_params.component_auctions.push_back(
+          component_auction);
     }
 
     interest_group_manager_ = std::make_unique<InterestGroupManagerImpl>(
@@ -1982,7 +1967,7 @@ class AuctionRunnerTest : public testing::Test,
   absl::optional<std::vector<url::Origin>> interest_group_buyers_ = {
       {kBidder1, kBidder2}};
 
-  std::vector<blink::mojom::AuctionAdConfigPtr> component_auctions_;
+  std::vector<blink::AuctionConfig> component_auctions_;
 
   // Origins which are not allowed to take part in auctions, as the
   // corresponding participant types.

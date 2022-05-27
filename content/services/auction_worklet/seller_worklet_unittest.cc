@@ -30,6 +30,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/interest_group/auction_config.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "url/gurl.h"
 
@@ -137,7 +138,7 @@ class SellerWorkletTest : public testing::Test {
     decision_logic_url_ = GURL("https://url.test/");
     trusted_scoring_signals_url_.reset();
     auction_ad_config_non_shared_params_ =
-        blink::mojom::AuctionAdConfigNonSharedParams::New();
+        blink::AuctionConfig::NonSharedParams();
 
     top_window_origin_ = url::Origin::Create(GURL("https://window.test/"));
     experiment_group_id_ = absl::nullopt;
@@ -247,7 +248,7 @@ class SellerWorkletTest : public testing::Test {
       const absl::optional<GURL>& expected_debug_win_report_url,
       base::OnceClosure done_closure) {
     seller_worklet->ScoreAd(
-        ad_metadata_, bid_, auction_ad_config_non_shared_params_.Clone(),
+        ad_metadata_, bid_, auction_ad_config_non_shared_params_,
         browser_signals_other_seller_.Clone(),
         browser_signal_interest_group_owner_, browser_signal_render_url_,
         browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
@@ -303,7 +304,7 @@ class SellerWorkletTest : public testing::Test {
   void RunScoreAdOnWorkletExpectingCallbackNeverInvoked(
       mojom::SellerWorklet* seller_worklet) {
     seller_worklet->ScoreAd(
-        ad_metadata_, bid_, auction_ad_config_non_shared_params_.Clone(),
+        ad_metadata_, bid_, auction_ad_config_non_shared_params_,
         browser_signals_other_seller_.Clone(),
         browser_signal_interest_group_owner_, browser_signal_render_url_,
         browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
@@ -414,7 +415,7 @@ class SellerWorkletTest : public testing::Test {
       const std::vector<std::string>& expected_errors,
       base::OnceClosure done_closure) {
     seller_worklet->ReportResult(
-        auction_ad_config_non_shared_params_.Clone(),
+        auction_ad_config_non_shared_params_,
         browser_signals_other_seller_.Clone(),
         browser_signal_interest_group_owner_, browser_signal_render_url_, bid_,
         browser_signal_desireability_,
@@ -446,7 +447,7 @@ class SellerWorkletTest : public testing::Test {
   void RunReportResultExpectingCallbackNeverInvoked(
       mojom::SellerWorklet* seller_worklet) {
     seller_worklet->ReportResult(
-        auction_ad_config_non_shared_params_.Clone(),
+        auction_ad_config_non_shared_params_,
         browser_signals_other_seller_.Clone(),
         browser_signal_interest_group_owner_, browser_signal_render_url_, bid_,
         browser_signal_desireability_,
@@ -554,8 +555,7 @@ class SellerWorkletTest : public testing::Test {
   double bid_;
   GURL decision_logic_url_;
   absl::optional<GURL> trusted_scoring_signals_url_;
-  blink::mojom::AuctionAdConfigNonSharedParamsPtr
-      auction_ad_config_non_shared_params_;
+  blink::AuctionConfig::NonSharedParams auction_ad_config_non_shared_params_;
   url::Origin top_window_origin_;
   absl::optional<uint16_t> experiment_group_id_;
   mojom::ComponentAuctionOtherSellerPtr browser_signals_other_seller_;
@@ -2068,29 +2068,28 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParam) {
   decision_logic_url_ = GURL("https://example.com/auction.js");
   trusted_scoring_signals_url_ =
       GURL("https://example.com/scoring_signals.json");
-  auction_ad_config_non_shared_params_->interest_group_buyers = {
+  auction_ad_config_non_shared_params_.interest_group_buyers = {
       url::Origin::Create(GURL("https://buyer1.com")),
       url::Origin::Create(GURL("https://another-buyer.com"))};
-  auction_ad_config_non_shared_params_->auction_signals =
+  auction_ad_config_non_shared_params_.auction_signals =
       R"({"is_auction_signals": true})";
-  auction_ad_config_non_shared_params_->seller_signals =
+  auction_ad_config_non_shared_params_.seller_signals =
       R"({"is_seller_signals": true})";
-  auction_ad_config_non_shared_params_->seller_timeout =
-      base::Milliseconds(200);
+  auction_ad_config_non_shared_params_.seller_timeout = base::Milliseconds(200);
   base::flat_map<url::Origin, std::string> per_buyer_signals;
   per_buyer_signals[url::Origin::Create(GURL("https://a.com"))] =
       R"({"signals_a": "A"})";
   per_buyer_signals[url::Origin::Create(GURL("https://b.com"))] =
       R"({"signals_b": "B"})";
-  auction_ad_config_non_shared_params_->per_buyer_signals =
+  auction_ad_config_non_shared_params_.per_buyer_signals =
       std::move(per_buyer_signals);
 
   base::flat_map<url::Origin, base::TimeDelta> per_buyer_timeouts;
   per_buyer_timeouts[url::Origin::Create(GURL("https://a.com"))] =
       base::Milliseconds(100);
-  auction_ad_config_non_shared_params_->per_buyer_timeouts =
+  auction_ad_config_non_shared_params_.per_buyer_timeouts =
       std::move(per_buyer_timeouts);
-  auction_ad_config_non_shared_params_->all_buyers_timeout =
+  auction_ad_config_non_shared_params_.all_buyers_timeout =
       base::Milliseconds(150);
 
   // Add and populate two component auctions, each with one the mandatory
@@ -2099,27 +2098,23 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParam) {
   // non-shared params.
 
   auto& component_auctions =
-      auction_ad_config_non_shared_params_->component_auctions;
+      auction_ad_config_non_shared_params_.component_auctions;
 
-  component_auctions.emplace_back(blink::mojom::AuctionAdConfig::New());
-  component_auctions[0]->auction_ad_config_non_shared_params =
-      blink::mojom::AuctionAdConfigNonSharedParams::New();
-  component_auctions[0]->seller =
-      url::Origin::Create(GURL("http://component1.com"));
-  component_auctions[0]->decision_logic_url =
-      GURL("http://component1.com/script.js");
-  component_auctions[0]->auction_ad_config_non_shared_params->seller_timeout =
+  component_auctions.emplace_back(blink::AuctionConfig());
+  component_auctions[0].seller =
+      url::Origin::Create(GURL("https://component1.com"));
+  component_auctions[0].decision_logic_url =
+      GURL("https://component1.com/script.js");
+  component_auctions[0].non_shared_params.seller_timeout =
       base::Milliseconds(111);
 
-  component_auctions.emplace_back(blink::mojom::AuctionAdConfig::New());
-  component_auctions[1]->auction_ad_config_non_shared_params =
-      blink::mojom::AuctionAdConfigNonSharedParams::New();
-  component_auctions[1]->seller =
-      url::Origin::Create(GURL("http://component2.com"));
-  component_auctions[1]->decision_logic_url =
-      GURL("http://component2.com/script.js");
-  component_auctions[1]->trusted_scoring_signals_url =
-      GURL("http://component2.com/signals.json");
+  component_auctions.emplace_back(blink::AuctionConfig());
+  component_auctions[1].seller =
+      url::Origin::Create(GURL("https://component2.com"));
+  component_auctions[1].decision_logic_url =
+      GURL("https://component2.com/script.js");
+  component_auctions[1].trusted_scoring_signals_url =
+      GURL("https://component2.com/signals.json");
 
   const char kExpectedJson[] =
       R"({"seller":"https://example.com",)"
@@ -2132,12 +2127,12 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParam) {
       R"("perBuyerSignals":{"https://a.com":{"signals_a":"A"},)"
       R"("https://b.com":{"signals_b":"B"}},)"
       R"("perBuyerTimeouts":{"https://a.com":100,"*":150},)"
-      R"("componentAuctions":[{"seller":"http://component1.com",)"
-      R"("decisionLogicUrl":"http://component1.com/script.js",)"
+      R"("componentAuctions":[{"seller":"https://component1.com",)"
+      R"("decisionLogicUrl":"https://component1.com/script.js",)"
       R"("sellerTimeout":111},)"
-      R"({"seller":"http://component2.com",)"
-      R"("decisionLogicUrl":"http://component2.com/script.js",)"
-      R"("trustedScoringSignalsUrl":"http://component2.com/signals.json"}]})";
+      R"({"seller":"https://component2.com",)"
+      R"("decisionLogicUrl":"https://component2.com/script.js",)"
+      R"("trustedScoringSignalsUrl":"https://component2.com/signals.json"}]})";
   RunReportResultCreatedScriptExpectingResult(
       "auctionConfig", /*extra_code=*/std::string(), kExpectedJson,
       /*expected_report_url=*/absl::nullopt);
@@ -2154,7 +2149,7 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParamPerBuyerTimeouts) {
       /*expected_report_url=*/absl::nullopt);
 
   base::flat_map<url::Origin, base::TimeDelta> per_buyer_timeouts;
-  auction_ad_config_non_shared_params_->per_buyer_timeouts =
+  auction_ad_config_non_shared_params_.per_buyer_timeouts =
       std::move(per_buyer_timeouts);
 
   RunReportResultCreatedScriptExpectingResult(
@@ -2164,7 +2159,7 @@ TEST_F(SellerWorkletTest, ReportResultAuctionConfigParamPerBuyerTimeouts) {
       R"("perBuyerTimeouts":{}})",
       /*expected_report_url=*/absl::nullopt);
 
-  auction_ad_config_non_shared_params_->all_buyers_timeout =
+  auction_ad_config_non_shared_params_.all_buyers_timeout =
       base::Milliseconds(150);
   RunReportResultCreatedScriptExpectingResult(
       "auctionConfig", /*extra_code=*/std::string(),
@@ -2228,7 +2223,7 @@ TEST_F(SellerWorkletTest, ScriptIsolation) {
     for (int j = 0; j < 2; ++j) {
       base::RunLoop run_loop;
       seller_worklet->ScoreAd(
-          ad_metadata_, bid_, auction_ad_config_non_shared_params_.Clone(),
+          ad_metadata_, bid_, auction_ad_config_non_shared_params_,
           browser_signals_other_seller_.Clone(),
           browser_signal_interest_group_owner_, browser_signal_render_url_,
           browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
@@ -2254,7 +2249,7 @@ TEST_F(SellerWorkletTest, ScriptIsolation) {
     for (int j = 0; j < 2; ++j) {
       base::RunLoop run_loop;
       seller_worklet->ReportResult(
-          auction_ad_config_non_shared_params_.Clone(),
+          auction_ad_config_non_shared_params_,
           browser_signals_other_seller_.Clone(),
           browser_signal_interest_group_owner_, browser_signal_render_url_,
           bid_, browser_signal_desireability_,
@@ -2286,7 +2281,7 @@ TEST_F(SellerWorkletTest, DeleteBeforeScoreAdCallback) {
 
   base::WaitableEvent* event_handle = WedgeV8Thread(v8_helper_.get());
   seller_worklet->ScoreAd(
-      ad_metadata_, bid_, auction_ad_config_non_shared_params_.Clone(),
+      ad_metadata_, bid_, auction_ad_config_non_shared_params_,
       browser_signals_other_seller_.Clone(),
       browser_signal_interest_group_owner_, browser_signal_render_url_,
       browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,
@@ -2318,7 +2313,7 @@ TEST_F(SellerWorkletTest, DeleteBeforeReportResultCallback) {
 
   base::WaitableEvent* event_handle = WedgeV8Thread(v8_helper_.get());
   seller_worklet->ReportResult(
-      auction_ad_config_non_shared_params_.Clone(),
+      auction_ad_config_non_shared_params_,
       browser_signals_other_seller_.Clone(),
       browser_signal_interest_group_owner_, browser_signal_render_url_, bid_,
       browser_signal_desireability_, browser_signal_highest_scoring_other_bid_,
@@ -2994,7 +2989,7 @@ TEST_F(SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
 TEST_F(SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
        ForDebuggingOnlyReportsInvalidScoreAdParameter) {
   // Auction config param is invalid.
-  auction_ad_config_non_shared_params_->auction_signals = "{invalid json";
+  auction_ad_config_non_shared_params_.auction_signals = "{invalid json";
   RunScoreAdWithJavascriptExpectingResult(
       CreateScoreAdScript(
           "1",
@@ -3002,7 +2997,7 @@ TEST_F(SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
             forDebuggingOnly.reportAdAuctionWin("https://win.url"))"),
       0);
   // Setting it back to default value to avoid affecting following tests.
-  auction_ad_config_non_shared_params_->auction_signals =
+  auction_ad_config_non_shared_params_.auction_signals =
       R"({"is_auction_signals": true})";
 
   // `ad_metadata_` is an invalid json.
@@ -3165,7 +3160,7 @@ TEST_F(SellerWorkletBiddingAndScoringDebugReportingAPIEnabledTest,
   for (int i = 0; i < 2; ++i) {
     base::RunLoop run_loop;
     seller_worklet->ScoreAd(
-        ad_metadata_, i + 1, auction_ad_config_non_shared_params_.Clone(),
+        ad_metadata_, i + 1, auction_ad_config_non_shared_params_,
         browser_signals_other_seller_.Clone(),
         browser_signal_interest_group_owner_, browser_signal_render_url_,
         browser_signal_ad_components_, browser_signal_bidding_duration_msecs_,

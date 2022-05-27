@@ -31,6 +31,10 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+namespace blink {
+struct AuctionConfig;
+}
+
 namespace content {
 
 class InterestGroupManagerImpl;
@@ -198,7 +202,7 @@ class CONTENT_EXPORT AuctionRunner {
   static std::unique_ptr<AuctionRunner> CreateAndStart(
       AuctionWorkletManager* auction_worklet_manager,
       InterestGroupManagerImpl* interest_group_manager,
-      blink::mojom::AuctionAdConfigPtr auction_config,
+      const blink::AuctionConfig& auction_config,
       network::mojom::ClientSecurityStatePtr client_security_state,
       IsInterestGroupApiAllowedCallback is_interest_group_api_allowed_callback,
       RunAuctionCallback callback);
@@ -393,7 +397,7 @@ class CONTENT_EXPORT AuctionRunner {
     // destroyed. `config` is typically owned by the AuctionRunner's
     // `owned_auction_config_` field. `parent` should be the parent Auction if
     // this is a component auction, and null, otherwise.
-    Auction(blink::mojom::AuctionAdConfig* config,
+    Auction(const blink::AuctionConfig* config,
             const Auction* parent,
             AuctionWorkletManager* auction_worklet_manager,
             InterestGroupManagerImpl* interest_group_manager,
@@ -732,7 +736,7 @@ class CONTENT_EXPORT AuctionRunner {
     const raw_ptr<InterestGroupManagerImpl> interest_group_manager_;
 
     // Configuration of this auction.
-    raw_ptr<const blink::mojom::AuctionAdConfig> config_;
+    raw_ptr<const blink::AuctionConfig> config_;
     // If this is a component auction, the parent Auction. Null, otherwise.
     const raw_ptr<const Auction> parent_;
 
@@ -871,7 +875,7 @@ class CONTENT_EXPORT AuctionRunner {
   AuctionRunner(
       AuctionWorkletManager* auction_worklet_manager,
       InterestGroupManagerImpl* interest_group_manager,
-      blink::mojom::AuctionAdConfigPtr auction_config,
+      const blink::AuctionConfig& auction_config,
       network::mojom::ClientSecurityStatePtr client_security_state,
       IsInterestGroupApiAllowedCallback is_interest_group_api_allowed_callback,
       RunAuctionCallback callback);
@@ -912,7 +916,7 @@ class CONTENT_EXPORT AuctionRunner {
   IsInterestGroupApiAllowedCallback is_interest_group_api_allowed_callback_;
 
   // Configuration.
-  blink::mojom::AuctionAdConfigPtr owned_auction_config_;
+  blink::AuctionConfig owned_auction_config_;
   RunAuctionCallback callback_;
 
   Auction auction_;

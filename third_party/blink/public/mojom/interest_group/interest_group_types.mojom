@@ -55,12 +55,13 @@ struct InterestGroup {
 // parameters all must be the same for two auctions to share a Sellerworklet.
 struct AuctionAdConfigNonSharedParams {
   // Owners of interest groups allowed to participate in the auction.
+  // Must all be HTTPS.
   array<url.mojom.Origin>? interest_group_buyers;
 
-  // Opaque JSON data, passed as object to auction worklet.
+  // Opaque JSON data, passed as object to all worklets.
   string? auction_signals;
 
-  // Opaque JSON data, passed as object to auction worklet.
+  // Opaque JSON data, passed as object to the seller worklet.
   string? seller_signals;
 
   // The value restricts the runtime of the seller's scoreAd() script.
@@ -100,7 +101,7 @@ struct AuctionAdConfigNonSharedParams {
 // https://github.com/WICG/turtledove/blob/main/FLEDGE.md#21-initiating-an-on-device-auction
 struct AuctionAdConfig {
   // The entity running the ad auction. Unlike for interest groups, `seller`
-  // *doesn't* need to match the the current frame URL's origin since the
+  // *doesn't* need to match the current frame URL's origin since the
   // `decision_logic_url` determines the behavior of the auction. This allows
   // the publisher page embedding the ad to call runAdAuction() directly if it
   // desires, rather than requiring the runAdAuction() call to be made inside a
@@ -109,7 +110,7 @@ struct AuctionAdConfig {
   // seller and publisher could be different entities, or the same entity.
   url.mojom.Origin seller;
 
-  // `decision_logic_url`'s origin must match the the seller's origin.
+  // `decision_logic_url`'s origin must match the seller's origin.
   url.mojom.Url decision_logic_url;
 
   // Base URL for per-bid data passed to the seller worklet. Must be same

@@ -39,6 +39,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/fenced_frame/fenced_frame_utils.h"
+#include "third_party/blink/public/common/interest_group/auction_config.h"
 #include "third_party/blink/public/common/interest_group/interest_group.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -66,50 +67,6 @@ bool IsAdRequestValid(const blink::mojom::AdRequestConfig& config) {
   if (config.fallback_source &&
       (config.fallback_source->scheme() != url::kHttpsScheme)) {
     return false;
-  }
-
-  return true;
-}
-
-bool IsAuctionValid(const blink::mojom::AuctionAdConfig& config,
-                    bool is_top_level_auction) {
-  // The seller origin has to be HTTPS.
-  if (config.seller.scheme() != url::kHttpsScheme)
-    return false;
-
-  // Opaque Origins have empty schemes.
-  DCHECK(!config.seller.opaque());
-
-  // `decision_logic_url` and, if present, `trusted_scoring_signals_url` must
-  // share the seller's origin.
-  if (url::SchemeHostPort(config.decision_logic_url) !=
-          config.seller.GetTupleOrPrecursorTupleIfOpaque() ||
-      (config.trusted_scoring_signals_url &&
-       url::SchemeHostPort(*config.trusted_scoring_signals_url) !=
-           config.seller.GetTupleOrPrecursorTupleIfOpaque())) {
-    return false;
-  }
-
-  const auto& non_shared_params = config.auction_ad_config_non_shared_params;
-  // This isn't marked as optional in the Mojo struct, so Mojo should make sure
-  // it is non-null.
-  DCHECK(non_shared_params);
-
-  // All interest group owners must be HTTPS.
-  if (non_shared_params->interest_group_buyers) {
-    for (const url::Origin& buyer : *non_shared_params->interest_group_buyers) {
-      if (buyer.scheme() != url::kHttpsScheme)
-        return false;
-    }
-  }
-
-  for (const auto& component_auction :
-       config.auction_ad_config_non_shared_params->component_auctions) {
-    // Component auctions may not have their own nested component auctions.
-    if (!is_top_level_auction)
-      return false;
-    if (!IsAuctionValid(*component_auction, /*is_top_level_auction=*/false))
-      return false;
   }
 
   return true;
@@ -240,17 +197,13 @@ void AdAuctionServiceImpl::UpdateAdInterestGroups() {
       origin(), GetClientSecurityState());
 }
 
-void AdAuctionServiceImpl::RunAdAuction(blink::mojom::AuctionAdConfigPtr config,
+void AdAuctionServiceImpl::RunAdAuction(const blink::AuctionConfig& config,
                                         RunAdAuctionCallback callback) {
   // If the run ad auction API is not allowed for this context by Permissions
   // Policy, do nothing
   if (!render_frame_host()->IsFeatureEnabled(
           blink::mojom::PermissionsPolicyFeature::kRunAdAuction)) {
     ReportBadMessageAndDeleteThis("Unexpected request");
-    return;
-  }
-  if (!IsAuctionValid(*config, /*is_top_level_auction=*/true)) {
-    std::move(callback).Run(absl::nullopt);
     return;
   }
 
@@ -356,13 +309,8 @@ void AdAuctionServiceImpl::CreateAdRequest(
 }
 
 void AdAuctionServiceImpl::FinalizeAd(const std::string& ads_guid,
-                                      ::blink::mojom::AuctionAdConfigPtr config,
+                                      const blink::AuctionConfig& config,
                                       FinalizeAdCallback callback) {
-  if (!IsAuctionValid(*config, /*is_top_level_auction=*/true)) {
-    ReportBadMessageAndDeleteThis("Invalid auction");
-    return;
-  }
-
   if (ads_guid.empty()) {
     ReportBadMessageAndDeleteThis("GUID empty");
     return;
