@@ -19,7 +19,7 @@ class BruteForceParameterOptimizer(
   optimize multiple parameters.
   """
 
-  def _VerifyArgs(self):
+  def _VerifyArgs(self) -> None:
     # range/xrange(x, y) returns the range in [x, y), so adjust by 1 to make
     # the range inclusive.
     # We go from max to min instead of min to max for this parameter, so
@@ -28,7 +28,7 @@ class BruteForceParameterOptimizer(
     self._args.max_max_diff += 1
     self._args.max_delta_threshold += 1
 
-  def _RunOptimizationImpl(self):
+  def _RunOptimizationImpl(self) -> None:
     # Look for the minimum max_delta that results in a successful comparison
     # for each possible edge_threshold/max_diff combination.
     for edge_threshold in range(self._args.max_edge_threshold,

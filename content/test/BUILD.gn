@@ -3072,6 +3072,7 @@ group("gpu_pytype") {
     "//content/test/gpu/validate_tag_consistency.py",
 
     "//build/util/lib/results/",
+    "//content/test/gpu/gold_inexact_matching/",
     "//content/test/gpu/flake_suppressor/",
     "//testing/unexpected_passes_common/",
   ]
