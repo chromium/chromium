@@ -29,7 +29,6 @@
 
 namespace blink {
 
-class BlockingAttribute;
 class ContainerNode;
 class Document;
 class Element;
@@ -46,7 +45,6 @@ class CORE_EXPORT StyleElement : public GarbageCollectedMixin {
 
   virtual const AtomicString& type() const = 0;
   virtual const AtomicString& media() const = 0;
-  virtual BlockingAttribute* blocking() const = 0;
 
   // Returns whether |this| and |node| are the same object. Helps us verify
   // parameter validity in certain member functions with an Element parameter
@@ -66,6 +64,9 @@ class CORE_EXPORT StyleElement : public GarbageCollectedMixin {
   ProcessingResult FinishParsingChildren(Element&);
 
   Member<CSSStyleSheet> sheet_;
+
+ protected:
+  bool CreatedByParser() const { return created_by_parser_; }
 
  private:
   ProcessingResult CreateSheet(Element&, const String& text = String());

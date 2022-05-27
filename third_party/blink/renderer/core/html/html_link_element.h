@@ -144,15 +144,11 @@ class CORE_EXPORT HTMLLinkElement final : public HTMLElement,
   void SetToPendingState() override;
   void FinishParsingChildren() override;
   bool HasActivationBehavior() const override;
+  bool IsPotentiallyRenderBlocking() const override;
 
   // From LinkLoaderClient
   void LinkLoaded() override;
   void LinkLoadingErrored() override;
-
-  // https://html.spec.whatwg.org/C/#implicitly-render-blocking
-  bool IsImplicitlyRenderBlocking() const;
-  // https://html.spec.whatwg.org/C/#render-blocking
-  bool IsRenderBlocking() const;
 
   Member<LinkResource> link_;
   Member<LinkLoader> link_loader_;

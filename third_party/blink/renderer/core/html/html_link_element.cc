@@ -85,7 +85,7 @@ void HTMLLinkElement::ParseAttribute(
              RuntimeEnabledFeatures::BlockingAttributeEnabled()) {
     blocking_attribute_->DidUpdateAttributeValue(params.old_value, value);
     blocking_attribute_->CountTokenUsage();
-    if (!IsRenderBlocking()) {
+    if (!IsPotentiallyRenderBlocking()) {
       if (GetLinkStyle() && GetLinkStyle()->StyleSheetIsLoading())
         GetLinkStyle()->UnblockRenderingForPendingSheet();
     }
@@ -334,13 +334,9 @@ void HTMLLinkElement::SetToPendingState() {
   GetLinkStyle()->SetToPendingState();
 }
 
-bool HTMLLinkElement::IsImplicitlyRenderBlocking() const {
-  return IsCreatedByParser() && rel_attribute_.IsStyleSheet();
-}
-
-bool HTMLLinkElement::IsRenderBlocking() const {
-  return blocking_attribute_->IsExplicitlyRenderBlocking() ||
-         IsImplicitlyRenderBlocking();
+bool HTMLLinkElement::IsPotentiallyRenderBlocking() const {
+  return blocking_attribute_->HasRenderToken() ||
+         (IsCreatedByParser() && rel_attribute_.IsStyleSheet());
 }
 
 bool HTMLLinkElement::IsURLAttribute(const Attribute& attribute) const {

@@ -309,8 +309,7 @@ class TokenPreloadScanner::StartTagScanner {
     } else if (is_script &&
                (is_module || defer_ == FetchParameters::kLazyLoad)) {
       render_blocking_behavior =
-          BlockingAttribute::IsExplicitlyRenderBlocking(
-              blocking_attribute_value_)
+          BlockingAttribute::HasRenderToken(blocking_attribute_value_)
               ? RenderBlockingBehavior::kBlocking
               : (is_async_ ? RenderBlockingBehavior::kPotentiallyBlocking
                            : RenderBlockingBehavior::kNonBlocking);

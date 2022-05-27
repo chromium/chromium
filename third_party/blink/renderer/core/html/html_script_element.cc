@@ -108,7 +108,7 @@ void HTMLScriptElement::ParseAttribute(
                                                  params.new_value);
     blocking_attribute_->CountTokenUsage();
     if (GetDocument().GetRenderBlockingResourceManager() &&
-        !blocking_attribute_->IsExplicitlyRenderBlocking()) {
+        !IsPotentiallyRenderBlocking()) {
       GetDocument().GetRenderBlockingResourceManager()->RemovePendingScript(
           *this);
     }
@@ -332,6 +332,14 @@ Element& HTMLScriptElement::CloneWithoutAttributesAndChildren(
       CreateElementFlags::ByCloneNode().SetAlreadyStarted(
           loader_->AlreadyStarted());
   return *factory.CreateElement(TagQName(), flags, IsValue());
+}
+
+bool HTMLScriptElement::IsPotentiallyRenderBlocking() const {
+  return blocking_attribute_->HasRenderToken() ||
+         (loader_->IsParserInserted() &&
+          loader_->GetScriptType() ==
+              ScriptLoader::ScriptTypeAtPrepare::kClassic &&
+          !AsyncAttributeValue() && !DeferAttributeValue());
 }
 
 // static

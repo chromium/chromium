@@ -156,7 +156,7 @@ void StyleRuleImport::RequestStyleSheet() {
   DCHECK(!style_sheet_client_->GetResource());
 
   params.SetRenderBlockingBehavior(root_sheet->GetRenderBlockingBehavior());
-  // TODO(yoav): Set defer status based on the IsExplicitlyRenderBlocking flag.
+  // TODO(yoav): Set defer status based on the IsRenderBlocking flag.
   // https://bugs.chromium.org/p/chromium/issues/detail?id=1001078
   CSSStyleSheetResource::Fetch(params, fetcher, style_sheet_client_);
   if (loading_) {

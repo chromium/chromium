@@ -235,8 +235,10 @@ void StyleElement::BlockingAttributeChanged(Element& element) {
   // rendering.
   if (pending_sheet_type_ != PendingSheetType::kDynamicRenderBlocking)
     return;
-  if (blocking() && blocking()->IsExplicitlyRenderBlocking())
+  if (!IsA<HTMLElement>(element) ||
+      To<HTMLElement>(element).IsPotentiallyRenderBlocking()) {
     return;
+  }
   element.GetDocument().GetStyleEngine().RemovePendingBlockingSheet(
       element, pending_sheet_type_);
   pending_sheet_type_ = PendingSheetType::kNonBlocking;

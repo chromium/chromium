@@ -154,6 +154,10 @@ void HTMLStyleElement::setDisabled(bool set_disabled) {
     style_sheet->setDisabled(set_disabled);
 }
 
+bool HTMLStyleElement::IsPotentiallyRenderBlocking() const {
+  return blocking_attribute_->HasRenderToken() || CreatedByParser();
+}
+
 void HTMLStyleElement::Trace(Visitor* visitor) const {
   visitor->Trace(blocking_attribute_);
   StyleElement::Trace(visitor);
