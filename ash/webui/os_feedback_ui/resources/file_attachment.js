@@ -21,6 +21,87 @@ export class FileAttachmentElement extends PolymerElement {
   static get template() {
     return html`{__html_template__}`;
   }
+
+  static get properties() {
+    return {
+      hasSelectedAFile_: {
+        type: Boolean,
+        computed: 'computeHasSelectedAFile_(selectedFile)',
+      },
+
+      selectedFile: {
+        type: File,
+        notify: true,
+        readOnly: true,
+        reflectToAttribute: true,
+      },
+    };
+  }
+
+  constructor() {
+    super();
+
+    /**
+     * The file selected if any to be attached to the report.
+     * @type {?File}
+     */
+    this.selectedFile = null;
+
+    /**
+     * True when there is a file selected.
+     * @protected {boolean}
+     */
+    this.hasSelectedAFile_;
+  }
+
+  /**
+   * @returns {boolean}
+   * @private
+   */
+  computeHasSelectedAFile_() {
+    return !!this.selectedFile;
+  }
+
+  /**
+   * @param {string} selector
+   * @return {?Element}
+   * @private
+   */
+  getElement_(selector) {
+    return this.shadowRoot.querySelector(selector);
+  }
+
+  /**
+   * @param {!Event} e
+   * @protected
+   */
+  handleOpenFileInputClick_(e) {
+    const fileInput = this.getElement_('#selectFileDialog');
+    fileInput.click();
+  }
+
+  /**
+   * @param {!Event} e
+   * @protected
+   */
+  handleFileSelectChange_(e) {
+    const fileInput = /**@type {HTMLInputElement} */ (e.target);
+    // The feedback app takes maximum one attachment. And the file dialog is set
+    // to accept one file only.
+    if (fileInput.files.length > 0) {
+      const selectedFileName = this.getElement_('#selectedFileName');
+      selectedFileName.textContent = fileInput.files[0].name;
+      this.getElement_('#selectFileCheckbox').checked = true;
+      this.selectedFile = fileInput.files[0];
+    }
+  }
+
+  /**
+   * @param {!File} file
+   */
+  setSelectedFileForTesting(file) {
+    this.selectedFile = file;
+  }
 }
 
 customElements.define(FileAttachmentElement.is, FileAttachmentElement);

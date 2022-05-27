@@ -1,21 +1,49 @@
 <style>
-  .button-content {
+  /* Special attribute to hide elements. */
+  [hidden] {
+    display: none !important;
+  }
+
+  :host {
     align-items: center;
-    background-color: white;
-    border: none;
-    box-sizing: border-box;
-    cursor: pointer;
     display: flex;
-    height: 48px;
-    padding-inline-end: 10px;
-    padding-inline-start: 12px;
+    flex-direction: column;
+  }
+
+  .file-input {
+    cursor: pointer;
+  }
+
+  #addFileContainer,
+  #replaceFileContainer {
+    width: 248px;
+  }
+
+  #replaceFileContainer {
+    display: flex;
+    flex-direction: row;
+  }
+
+  #selectFileDialog {
+    height: 0;
+    opacity: 0;
+    width: 0;
   }
 </style>
-<div>
-  <button class="button-content" title="Add file">
-    <span>
-      <iron-icon icon="attachment:add-file"></iron-icon>
-    </span>
-    <span id="AddFileLabel">Add file</span>
-  </button>
+<div id="addFileContainer" hidden="[[hasSelectedAFile_]]">
+  <label id="addFileLabel" class="file-input"
+      on-click="handleOpenFileInputClick_">
+    <iron-icon icon="attachment:add-file"></iron-icon>Add file
+  </label>
+</div>
+<input id="selectFileDialog" type="file" on-change="handleFileSelectChange_">
+<div id="replaceFileContainer" hidden="[[!hasSelectedAFile_]]">
+  <input type="checkbox" id="selectFileCheckbox">
+  <div>
+    <div id="selectedFileName"></div>
+    <label id="replaceFileLabel" class="file-input"
+        on-click="handleOpenFileInputClick_">
+      Replace
+    </label>
+  </div>
 </div>
