@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ANDROID_USB_WEB_USB_CHOOSER_ANDROID_H_
 
 #include <memory>
-#include <vector>
 
 #include "chrome/browser/usb/web_usb_chooser.h"
 
@@ -18,7 +17,7 @@ class UsbChooserDialogAndroid;
 // to access a certain device.
 class WebUsbChooserAndroid : public WebUsbChooser {
  public:
-  explicit WebUsbChooserAndroid(content::RenderFrameHost* render_frame_host);
+  WebUsbChooserAndroid();
 
   WebUsbChooserAndroid(const WebUsbChooserAndroid&) = delete;
   WebUsbChooserAndroid& operator=(const WebUsbChooserAndroid&) = delete;
@@ -26,16 +25,13 @@ class WebUsbChooserAndroid : public WebUsbChooser {
   ~WebUsbChooserAndroid() override;
 
   // WebUsbChooser implementation
-  void ShowChooser(std::unique_ptr<UsbChooserController> controller) override;
-  base::WeakPtr<WebUsbChooser> GetWeakPtr() override;
+  void ShowChooser(content::RenderFrameHost* render_frame_host,
+                   std::unique_ptr<UsbChooserController> controller) override;
 
  private:
   void OnDialogClosed();
 
-  // Only a single dialog can be shown at a time.
   std::unique_ptr<UsbChooserDialogAndroid> dialog_;
-
-  base::WeakPtrFactory<WebUsbChooserAndroid> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_ANDROID_USB_WEB_USB_CHOOSER_ANDROID_H_

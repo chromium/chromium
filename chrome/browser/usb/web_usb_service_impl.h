@@ -20,7 +20,8 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "services/device/public/mojom/usb_device.mojom-forward.h"
-#include "third_party/blink/public/mojom/usb/web_usb_service.mojom-forward.h"
+#include "services/device/public/mojom/usb_enumeration_options.mojom.h"
+#include "third_party/blink/public/mojom/usb/web_usb_service.mojom.h"
 #include "url/origin.h"
 
 namespace content {
@@ -38,8 +39,13 @@ class WebUsbServiceImpl
       public permissions::ObjectPermissionContextBase::PermissionObserver,
       public UsbChooserContext::DeviceObserver {
  public:
-  WebUsbServiceImpl(content::RenderFrameHost* render_frame_host,
-                    base::WeakPtr<WebUsbChooser> usb_chooser);
+  using ChooserFactoryCallback =
+      base::RepeatingCallback<std::unique_ptr<WebUsbChooser>(
+          content::RenderFrameHost&,
+          std::vector<device::mojom::UsbDeviceFilterPtr>,
+          WebUsbServiceImpl::GetPermissionCallback)>;
+
+  explicit WebUsbServiceImpl(content::RenderFrameHost* render_frame_host);
 
   WebUsbServiceImpl(const WebUsbServiceImpl&) = delete;
   WebUsbServiceImpl& operator=(const WebUsbServiceImpl&) = delete;
@@ -48,6 +54,9 @@ class WebUsbServiceImpl
 
   void BindReceiver(
       mojo::PendingReceiver<blink::mojom::WebUsbService> receiver);
+
+  // Allow tests to define and create the WebUsbChooser.
+  void SetChooserFactoryForTesting(ChooserFactoryCallback chooser_factory);
 
  private:
   class UsbDeviceClient;
@@ -90,7 +99,7 @@ class WebUsbServiceImpl
   void OnConnectionError();
 
   const raw_ptr<content::RenderFrameHost> render_frame_host_;
-  base::WeakPtr<WebUsbChooser> usb_chooser_;
+  std::unique_ptr<WebUsbChooser> usb_chooser_;
   raw_ptr<UsbChooserContext> chooser_context_;
   url::Origin origin_;
 
@@ -100,6 +109,8 @@ class WebUsbServiceImpl
 
   // A UsbDeviceClient tracks a UsbDevice pipe that has been passed to Blink.
   std::vector<std::unique_ptr<UsbDeviceClient>> device_clients_;
+
+  ChooserFactoryCallback chooser_factory_;
 
   base::ScopedObservation<UsbChooserContext, UsbChooserContext::DeviceObserver>
       device_observation_{this};

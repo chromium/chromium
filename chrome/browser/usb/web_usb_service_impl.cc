@@ -15,6 +15,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/usb/usb_blocklist.h"
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
+#include "chrome/browser/usb/usb_chooser_controller.h"
 #include "chrome/browser/usb/usb_tab_helper.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/buildflags/buildflags.h"
@@ -73,6 +74,15 @@ bool IsDevicePermissionAutoGranted(
   return false;
 }
 
+std::unique_ptr<WebUsbChooser> RunChooser(
+    content::RenderFrameHost& frame,
+    std::vector<device::mojom::UsbDeviceFilterPtr> filters,
+    WebUsbServiceImpl::GetPermissionCallback callback) {
+  auto controller = std::make_unique<UsbChooserController>(
+      &frame, std::move(filters), std::move(callback));
+  return WebUsbChooser::Create(&frame, std::move(controller));
+}
+
 }  // namespace
 
 // A UsbDeviceClient represents a UsbDevice pipe that has been passed to the
@@ -126,10 +136,8 @@ class WebUsbServiceImpl::UsbDeviceClient
 };
 
 WebUsbServiceImpl::WebUsbServiceImpl(
-    content::RenderFrameHost* render_frame_host,
-    base::WeakPtr<WebUsbChooser> usb_chooser)
-    : render_frame_host_(render_frame_host),
-      usb_chooser_(std::move(usb_chooser)) {
+    content::RenderFrameHost* render_frame_host)
+    : render_frame_host_(render_frame_host) {
   DCHECK(render_frame_host_);
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(render_frame_host_);
@@ -143,6 +151,8 @@ WebUsbServiceImpl::WebUsbServiceImpl(
 
   receivers_.set_disconnect_handler(base::BindRepeating(
       &WebUsbServiceImpl::OnConnectionError, base::Unretained(this)));
+
+  chooser_factory_ = base::BindRepeating(&RunChooser);
 }
 
 WebUsbServiceImpl::~WebUsbServiceImpl() = default;
@@ -160,6 +170,11 @@ void WebUsbServiceImpl::BindReceiver(
     device_observation_.Observe(chooser_context_.get());
   if (!permission_observation_.IsObserving())
     permission_observation_.Observe(chooser_context_.get());
+}
+
+void WebUsbServiceImpl::SetChooserFactoryForTesting(
+    ChooserFactoryCallback chooser_factory) {
+  chooser_factory_ = std::move(chooser_factory);
 }
 
 bool WebUsbServiceImpl::HasDevicePermission(
@@ -316,12 +331,14 @@ void WebUsbServiceImpl::GetDevice(
 void WebUsbServiceImpl::GetPermission(
     std::vector<device::mojom::UsbDeviceFilterPtr> device_filters,
     GetPermissionCallback callback) {
-  if (!usb_chooser_) {
+  if (!chooser_context_ ||
+      !chooser_context_->CanRequestObjectPermission(origin_)) {
     std::move(callback).Run(nullptr);
     return;
   }
 
-  usb_chooser_->GetPermission(std::move(device_filters), std::move(callback));
+  usb_chooser_ = chooser_factory_.Run(
+      *render_frame_host_, std::move(device_filters), std::move(callback));
 }
 
 void WebUsbServiceImpl::ForgetDevice(const std::string& guid,

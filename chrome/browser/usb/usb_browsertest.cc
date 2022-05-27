@@ -6,6 +6,7 @@
 #include <string>
 #include <utility>
 
+#include "base/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -97,15 +98,15 @@ class FakeChooserView : public permissions::ChooserController::View {
 
 class FakeUsbChooser : public WebUsbChooser {
  public:
-  explicit FakeUsbChooser(RenderFrameHost* render_frame_host)
-      : WebUsbChooser(render_frame_host) {}
+  FakeUsbChooser() = default;
 
   FakeUsbChooser(const FakeUsbChooser&) = delete;
   FakeUsbChooser& operator=(const FakeUsbChooser&) = delete;
 
-  ~FakeUsbChooser() override {}
+  ~FakeUsbChooser() override = default;
 
-  void ShowChooser(std::unique_ptr<UsbChooserController> controller) override {
+  void ShowChooser(content::RenderFrameHost* render_frame_host,
+                   std::unique_ptr<UsbChooserController> controller) override {
     // Device list initialization in UsbChooserController may completed before
     // having a valid view in which case OnOptionsInitialized() has no chance to
     // be triggered, so select the first option directly if options are ready.
@@ -114,14 +115,18 @@ class FakeUsbChooser : public WebUsbChooser {
     else
       new FakeChooserView(std::move(controller));
   }
-
-  base::WeakPtr<WebUsbChooser> GetWeakPtr() override {
-    return weak_factory_.GetWeakPtr();
-  }
-
- private:
-  base::WeakPtrFactory<FakeUsbChooser> weak_factory_{this};
 };
+
+std::unique_ptr<WebUsbChooser> RunChooser(
+    RenderFrameHost& frame,
+    std::vector<device::mojom::UsbDeviceFilterPtr> filters,
+    blink::mojom::WebUsbService::GetPermissionCallback callback) {
+  auto controller = std::make_unique<UsbChooserController>(
+      &frame, std::move(filters), std::move(callback));
+  auto chooser = std::make_unique<FakeUsbChooser>();
+  chooser->ShowChooser(&frame, std::move(controller));
+  return chooser;
+}
 
 class TestContentBrowserClient : public ChromeContentBrowserClient {
  public:
@@ -140,9 +145,9 @@ class TestContentBrowserClient : public ChromeContentBrowserClient {
       ChromeContentBrowserClient::CreateWebUsbService(render_frame_host,
                                                       std::move(receiver));
     } else {
-      usb_chooser_ = std::make_unique<FakeUsbChooser>(render_frame_host);
-      web_usb_service_ = std::make_unique<WebUsbServiceImpl>(
-          render_frame_host, usb_chooser_->GetWeakPtr());
+      web_usb_service_ = std::make_unique<WebUsbServiceImpl>(render_frame_host);
+      web_usb_service_->SetChooserFactoryForTesting(
+          base::BindRepeating(&RunChooser));
       web_usb_service_->BindReceiver(std::move(receiver));
     }
   }
@@ -152,7 +157,6 @@ class TestContentBrowserClient : public ChromeContentBrowserClient {
  private:
   bool use_real_chooser_ = false;
   std::unique_ptr<WebUsbServiceImpl> web_usb_service_;
-  std::unique_ptr<WebUsbChooser> usb_chooser_;
 };
 
 scoped_refptr<device::FakeUsbDeviceInfo> CreateSmartCardDevice() {
