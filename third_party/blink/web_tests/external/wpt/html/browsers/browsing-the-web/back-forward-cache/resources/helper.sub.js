@@ -187,3 +187,16 @@ function runBfcacheTest(params, description) {
     }
   }, description);
 }
+
+// Call clients.claim() on the service worker
+async function claim(t, worker) {
+  const channel = new MessageChannel();
+  const saw_message = new Promise(function(resolve) {
+    channel.port1.onmessage = t.step_func(function(e) {
+      assert_equals(e.data, 'PASS', 'Worker call to claim() should fulfill.');
+      resolve();
+    });
+  });
+  worker.postMessage({port: channel.port2}, [channel.port2]);
+  await saw_message;
+}
