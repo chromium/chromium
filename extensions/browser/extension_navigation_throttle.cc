@@ -158,8 +158,8 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
   const Extension* target_extension = nullptr;
   if (url_has_extension_scheme) {
     // "chrome-extension://" URL.
-    target_extension =
-        registry->enabled_extensions().GetExtensionOrAppByURL(url);
+    target_extension = registry->enabled_extensions().GetExtensionOrAppByURL(
+        url, true /*include_guid*/);
   } else if (target_origin.scheme() == kExtensionScheme) {
     // "blob:chrome-extension://" or "filesystem:chrome-extension://" URL.
     DCHECK(url.SchemeIsFileSystem() || url.SchemeIsBlob());

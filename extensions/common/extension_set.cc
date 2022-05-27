@@ -12,6 +12,8 @@
 namespace extensions {
 
 // static
+// TODO(solomonkinard): Take GUID-based dynamic URLs in account. Also,
+// disambiguate ExtensionHost.
 ExtensionId ExtensionSet::GetExtensionIdByURL(const GURL& url) {
   if (url.SchemeIs(kExtensionScheme))
     return url.host();
@@ -97,10 +99,11 @@ ExtensionId ExtensionSet::GetExtensionOrAppIDByURL(const GURL& url) const {
   return extension->id();
 }
 
-const Extension* ExtensionSet::GetExtensionOrAppByURL(const GURL& url) const {
+const Extension* ExtensionSet::GetExtensionOrAppByURL(const GURL& url,
+                                                      bool include_guid) const {
   ExtensionId extension_id = GetExtensionIdByURL(url);
   if (!extension_id.empty())
-    return GetByID(extension_id);
+    return include_guid ? GetByIDorGUID(extension_id) : GetByID(extension_id);
 
   // GetHostedAppByURL already supports filesystem: URLs (via MatchesURL).
   // TODO(crbug/852162): Add support for blob: URLs in MatchesURL.
@@ -142,6 +145,21 @@ const Extension* ExtensionSet::GetByID(const ExtensionId& id) const {
   if (i != extensions_.end())
     return i->second.get();
   return nullptr;
+}
+
+const Extension* ExtensionSet::GetByGUID(const std::string& guid) const {
+  for (const auto& extension : extensions_) {
+    if (extension.second.get()->guid() == guid)
+      return extension.second.get();
+  }
+  return nullptr;
+}
+
+const Extension* ExtensionSet::GetByIDorGUID(
+    const std::string& id_or_guid) const {
+  if (auto* extension = GetByID(id_or_guid))
+    return extension;
+  return GetByGUID(id_or_guid);
 }
 
 ExtensionIdSet ExtensionSet::GetIDs() const {

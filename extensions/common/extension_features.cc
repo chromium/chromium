@@ -86,4 +86,8 @@ extern const base::Feature kCheckingNoExtensionIdInExtensionIpcs{
 const base::Feature kNewExtensionFaviconHandling{
     "ExtensionsNewFaviconHandling", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Determine if dynamic extension URLs are handled and redirected.
+const base::Feature kExtensionDynamicURLRedirection{
+    "kExtensionDynamicURLRedirection", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace extensions_features

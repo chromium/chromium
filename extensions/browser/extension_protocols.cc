@@ -91,6 +91,7 @@
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_response_info.h"
+#include "net/http/http_status_code.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/self_deleting_url_loader_factory.h"
@@ -574,7 +575,13 @@ class ExtensionURLLoader : public network::mojom::URLLoader {
       const std::vector<std::string>& removed_headers,
       const net::HttpRequestHeaders& modified_headers,
       const net::HttpRequestHeaders& modified_cors_exempt_headers,
-      const absl::optional<GURL>& new_url) override {}
+      const absl::optional<GURL>& new_url) override {
+    // new_url isn't expected to have a value, but prefer it if it's populated.
+    if (new_url.has_value())
+      request_.url = new_url.value();
+
+    Start();
+  }
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override {}
   void PauseReadingBodyFromNet() override {}
@@ -624,11 +631,29 @@ class ExtensionURLLoader : public network::mojom::URLLoader {
     const std::string extension_id = request_.url.host();
     ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context_);
     scoped_refptr<const Extension> extension =
-        registry->GetExtensionById(extension_id, ExtensionRegistry::EVERYTHING);
+        registry->GenerateInstalledExtensionsSet()->GetByIDorGUID(extension_id);
     const ExtensionSet& enabled_extensions = registry->enabled_extensions();
     const ProcessMap* process_map = ProcessMap::Get(browser_context_);
     bool incognito_enabled =
         extensions::util::IsIncognitoEnabled(extension_id, browser_context_);
+
+    // Redirect guid to id.
+    if (base::FeatureList::IsEnabled(
+            extensions_features::kExtensionDynamicURLRedirection) &&
+        extension && request_.url.host() == extension->guid()) {
+      GURL::Replacements replace_host;
+      replace_host.SetHostStr(extension->id());
+      GURL new_url = request_.url.ReplaceComponents(replace_host);
+      request_.url = new_url;
+      net::RedirectInfo redirect_info;
+      redirect_info.new_method = request_.method,
+      redirect_info.new_url = request_.url;
+      redirect_info.status_code = net::HTTP_TEMPORARY_REDIRECT;
+      network::mojom::URLResponseHeadPtr response_head(
+          ::network::mojom::URLResponseHead::New());
+      client_->OnReceiveRedirect(redirect_info, std::move(response_head));
+      return;
+    }
 
     if (!AllowExtensionResourceLoad(
             request_, request_.destination,
@@ -965,6 +990,7 @@ class ExtensionURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
       override {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    DCHECK_EQ(kExtensionScheme, request.url.scheme());
     ExtensionURLLoader::CreateAndStart(std::move(loader), std::move(client),
                                        request, is_web_view_request_,
                                        render_process_id_, extension_info_map_,

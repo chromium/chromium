@@ -47,10 +47,12 @@ class RendererExtensionRegistry {
 
   // Forwards to the ExtensionSet methods by the same name.
   bool Contains(const std::string& id) const;
+  bool ContainsGUID(const std::string& guid) const;
   bool Insert(const scoped_refptr<const Extension>& extension);
   bool Remove(const std::string& id);
   std::string GetExtensionOrAppIDByURL(const GURL& url) const;
-  const Extension* GetExtensionOrAppByURL(const GURL& url) const;
+  const Extension* GetExtensionOrAppByURL(const GURL& url,
+                                          bool include_guid = false) const;
   const Extension* GetHostedAppByURL(const GURL& url) const;
   const Extension* GetByID(const std::string& id) const;
   ExtensionIdSet GetIDs() const;

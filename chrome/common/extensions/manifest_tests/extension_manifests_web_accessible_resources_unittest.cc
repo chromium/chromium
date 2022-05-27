@@ -327,28 +327,28 @@ TEST_F(WebAccessibleResourcesManifestTest,
     EXPECT_EQ(base::Value::Type::DICTIONARY, manifest_value.type());
     return ManifestData(std::move(manifest_value), "test");
   };
-  scoped_refptr<const Extension> extension1 =
+  scoped_refptr<const Extension> extension_callee =
       LoadAndExpectSuccess(get_manifest_data());
-  scoped_refptr<const Extension> extension2 =
-      LoadAndExpectSuccess(get_manifest_data(extension1->id()));
-  auto initiator_origin = url::Origin::Create(extension2->url());
+  scoped_refptr<const Extension> extension_caller =
+      LoadAndExpectSuccess(get_manifest_data(extension_callee->id()));
+  auto caller_origin = url::Origin::Create(extension_caller->url());
   EXPECT_TRUE(WebAccessibleResourcesInfo::IsResourceWebAccessible(
-      extension2.get(), "test", initiator_origin));
+      extension_caller.get(), "test", caller_origin));
   EXPECT_FALSE(WebAccessibleResourcesInfo::IsResourceWebAccessible(
-      extension2.get(), "inaccessible", initiator_origin));
-  EXPECT_FALSE(WebAccessibleResourcesInfo::IsResourceWebAccessible(
-      extension1.get(), "test", initiator_origin));
+      extension_caller.get(), "inaccessible", caller_origin));
+  EXPECT_TRUE(WebAccessibleResourcesInfo::IsResourceWebAccessible(
+      extension_callee.get(), "test", caller_origin));
 
   // Test web accessible resource access by specifying an extension wildcard.
   scoped_refptr<const Extension> wildcard_extension =
       LoadAndExpectSuccess(get_manifest_data("*"));
   EXPECT_TRUE(WebAccessibleResourcesInfo::IsResourceWebAccessible(
-      wildcard_extension.get(), "test", initiator_origin));
+      wildcard_extension.get(), "test", caller_origin));
   auto web_origin = url::Origin::Create(GURL("http://example.com"));
   EXPECT_FALSE(WebAccessibleResourcesInfo::IsResourceWebAccessible(
       wildcard_extension.get(), "test", web_origin));
   EXPECT_FALSE(WebAccessibleResourcesInfo::IsResourceWebAccessible(
-      wildcard_extension.get(), "inaccessible", initiator_origin));
+      wildcard_extension.get(), "inaccessible", caller_origin));
 }
 
 // Tests wildcards of matches.

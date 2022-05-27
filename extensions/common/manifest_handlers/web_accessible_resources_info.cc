@@ -187,6 +187,7 @@ bool WebAccessibleResourcesInfo::IsResourceWebAccessible(
         return true;
       if (initiator_url.SchemeIs(extensions::kExtensionScheme) &&
           (entry.allow_all_extensions ||
+           extension->id() == initiator_url.host() ||
            base::Contains(entry.extension_ids, initiator_url.host()))) {
         return true;
       }

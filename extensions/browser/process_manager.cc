@@ -95,6 +95,7 @@ base::TimeDelta GetEventPageSuspendDelay() {
   return base::Milliseconds(kEventPageSuspendDelayMs.Get());
 }
 
+// TODO(solomonkinard): Take into account GUID-based dynamic URLs.
 std::string GetExtensionIdForSiteInstance(
     content::SiteInstance* site_instance) {
   // <webview> guests always store the ExtensionId in the partition domain.
