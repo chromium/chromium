@@ -37,7 +37,6 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid : public BrowserAccessibility {
   std::u16string GetLocalizedStringForImageAnnotationStatus(
       ax::mojom::ImageAnnotationStatus status) const override;
 
-  bool IsAndroidTextView() const;
   bool IsCheckable() const;
   bool IsChecked() const;
   bool IsClickable() const override;
