@@ -683,8 +683,9 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.DiagnosticsUi.InitialScreen"
-    enum="CrosDiagnosticsNavigationView" expires_after="2022-10-04">
-  <owner>gavindodd@chromium.org</owner>
+    units="CrosDiagnosticsNavigationView" expires_after="2022-10-04">
+  <owner>ashleydp@google.com</owner>
+  <owner>gavinwill@chromium.org</owner>
   <owner>zentaro@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -694,7 +695,8 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ChromeOS.DiagnosticsUi.MemoryRoutineDuration" units="s"
     expires_after="2022-10-04">
-  <owner>gavindodd@chromium.org</owner>
+  <owner>ashleydp@google.com</owner>
+  <owner>gavinwill@chromium.org</owner>
   <owner>zentaro@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -705,7 +707,8 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ChromeOS.DiagnosticsUi.OpenDuration" units="ms"
     expires_after="2022-10-04">
-  <owner>gavindodd@chromium.org</owner>
+  <owner>ashleydp@google.com</owner>
+  <owner>gavinwill@chromium.org</owner>
   <owner>zentaro@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -716,7 +719,8 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ChromeOS.DiagnosticsUi.RoutineCount" units="routines"
     expires_after="2022-10-04">
-  <owner>gavindodd@chromium.org</owner>
+  <owner>ashleydp@google.com</owner>
+  <owner>gavinwill@chromium.org</owner>
   <owner>zentaro@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>
@@ -727,8 +731,9 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.DiagnosticsUi.{RoutineType}Result"
-    enum="CrosDiagnosticsRoutineResult" expires_after="2022-06-15">
-  <owner>gavindodd@chromium.org</owner>
+    enum="CrosDiagnosticsRoutineResult" expires_after="2023-06-15">
+  <owner>ashleydp@google.com</owner>
+  <owner>gavinwill@chromium.org</owner>
   <owner>zentaro@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>Records the result of the {RoutineType} Routine.</summary>
