@@ -401,6 +401,10 @@ void SavedDeskItemView::OnViewFocused(views::View* observed_view) {
     return;
 
   DCHECK_EQ(observed_view, name_view_);
+
+  // Make sure the current desk item view is fully visible.
+  ScrollViewToVisible();
+
   is_template_name_being_modified_ = true;
 
   // Assume we should commit the name change unless `HandleKeyEvent` detects the

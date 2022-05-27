@@ -3834,6 +3834,38 @@ TEST_F(SavedDeskTest, ScrollWithKeyboard) {
   }
 }
 
+// Tests that the save desk item view is fully visible when it gains focus.
+TEST_F(SavedDeskTest, FocusedDeskItemFullyVisible) {
+  // Set up a small display, so that the new saved desk may fall completely
+  // outside the display.
+  UpdateDisplay("800x500");
+
+  // Add 6 `kTemplate` entries.
+  for (size_t i = 1; i <= 6; i++) {
+    AddEntry(base::GUID::GenerateRandomV4(),
+             "desk_template " + base::NumberToString(i), base::Time::Now(),
+             DeskTemplateType::kTemplate);
+  }
+
+  // Create a window then save the current desk for later.
+  CreateAppWindow().release();
+  ToggleOverview();
+  WaitForDesksTemplatesUI();
+  auto* save_desk_button =
+      GetSaveDeskForLaterButtonForRoot(Shell::Get()->GetPrimaryRootWindow());
+  ClickOnView(save_desk_button);
+  WaitForDesksTemplatesUI();
+
+  // The newly saved desk item should be fully visible.
+  SavedDeskItemView* item_view = GetItemViewFromTemplatesGrid(6);
+  ASSERT_EQ(u"Desk 1", item_view->name_view()->GetText());
+  ASSERT_TRUE(item_view->name_view()->HasFocus());
+  EXPECT_EQ(item_view->name_view()->GetPreferredSize(),
+            item_view->name_view()->GetVisibleBounds().size());
+  EXPECT_EQ(item_view->GetPreferredSize(),
+            item_view->GetVisibleBounds().size());
+}
+
 using DeskSaveAndRecallTest = SavedDeskTest;
 
 TEST_F(DeskSaveAndRecallTest, SaveDeskForLater) {
