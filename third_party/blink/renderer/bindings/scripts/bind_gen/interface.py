@@ -1653,12 +1653,9 @@ def make_v8_set_return_value(cg_context):
         return T("bindings::V8SetReturnValue(${info}, ${return_value});")
 
     return_type = cg_context.return_type
-    if return_type.is_typedef:
-        if return_type.identifier in ("EventHandler",
-                                      "OnBeforeUnloadEventHandler",
-                                      "OnErrorEventHandler"):
-            return T("bindings::V8SetReturnValue(${info}, ${return_value}, "
-                     "${isolate}, ${blink_receiver});")
+    if return_type.is_event_handler:
+        return T("bindings::V8SetReturnValue(${info}, ${return_value}, "
+                 "${isolate}, ${blink_receiver});")
 
     # [CheckSecurity=ReturnValue]
     #
@@ -1887,17 +1884,13 @@ def make_attribute_set_callback_def(cg_context, function_name):
     #   Web IDL.
     # 2. Leverage the nature of [LegacyTreatNonObjectAsNull] (ES to IDL
     #   conversion never fails).
-    if (cg_context.attribute.idl_type.is_typedef
-            and (cg_context.attribute.idl_type.identifier in (
-                "EventHandler", "OnBeforeUnloadEventHandler",
-                "OnErrorEventHandler"))):
-        body.extend([
+    if cg_context.attribute.idl_type.is_event_handler:
+        body.append(
             TextNode("""\
 EventListener* event_handler = JSEventHandler::CreateOrNull(
     ${v8_property_value},
     JSEventHandler::HandlerType::k${attribute.idl_type.identifier});\
-"""),
-        ])
+"""))
         code_generator_info = cg_context.attribute.code_generator_info
         func_name = name_style.api_func("set", cg_context.attribute.identifier)
         if code_generator_info.defined_in_partial:

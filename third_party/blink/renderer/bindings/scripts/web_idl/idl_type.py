@@ -464,6 +464,20 @@ class IdlType(WithExtendedAttributes, WithDebugInfo):
         return False
 
     @property
+    def is_event_handler(self):
+        """
+        Returns True if this is an event handler type.
+
+        Event handler types are EventHandler, OnBeforeUnloadEventHandler,
+        and OnErrorEventHandler.
+        """
+
+        return (self.is_typedef
+                and self.identifier in ("EventHandler",
+                                        "OnBeforeUnloadEventHandler",
+                                        "OnErrorEventHandler"))
+
+    @property
     def is_nullable(self):
         """
         Returns True if this is a nullable type.

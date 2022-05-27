@@ -34,15 +34,11 @@ def main(argv):
         parser.error("No positional arguments supported.")
 
     event_handlers = set()
-    event_handler_types = ("EventHandler", "OnBeforeUnloadEventHandler",
-                           "OnErrorEventHandler")
 
     web_idl_database = web_idl.Database.read_from_file(options.webidl)
     for interface in web_idl_database.interfaces:
         for attribute in interface.attributes:
-            idl_type = attribute.idl_type
-            if (idl_type.is_typedef
-                    and idl_type.identifier in event_handler_types):
+            if attribute.idl_type.is_event_handler:
                 event_handlers.add(attribute.identifier)
 
     license_and_header = """\
