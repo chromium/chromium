@@ -1293,11 +1293,9 @@ void DownloadItemView::ReviewButtonPressed() {
   dropdown_button_->SetEnabled(false);
 
   auto danger_type = model_->GetDangerType();
-  auto state =
-      enterprise_connectors::ContentAnalysisDelegateBase::FinalResult::FAILURE;
+  auto state = enterprise_connectors::FinalContentAnalysisResult::FAILURE;
   if (danger_type == download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING) {
-    state = enterprise_connectors::ContentAnalysisDelegateBase::FinalResult::
-        WARNING;
+    state = enterprise_connectors::FinalContentAnalysisResult::WARNING;
   }
 
   const char* tag =

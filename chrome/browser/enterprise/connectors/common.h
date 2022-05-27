@@ -195,6 +195,25 @@ struct ScanResult : public base::SupportsUserData::Data {
   absl::optional<std::u16string> user_justification;
 };
 
+// Enum to identify which message to show once scanning is complete. Ordered
+// by precedence for when multiple files have conflicting results.
+enum class FinalContentAnalysisResult {
+  // Show that an issue was found and that the upload is blocked.
+  FAILURE = 0,
+
+  // Show that files were not uploaded since they were too large.
+  LARGE_FILES = 1,
+
+  // Show that files were not uploaded since they were encrypted.
+  ENCRYPTED_FILES = 2,
+
+  // Show that DLP checks failed, but that the user can proceed if they want.
+  WARNING = 3,
+
+  // Show that no issue was found and that the user may proceed.
+  SUCCESS = 4,
+};
+
 // User data to persist a save package's final callback allowing/denying
 // completion. This is used since the callback can be called either when
 // scanning completes on a block/allow verdict, when the user cancels the scan,

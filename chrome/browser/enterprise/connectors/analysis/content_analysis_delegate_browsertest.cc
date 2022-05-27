@@ -1146,7 +1146,7 @@ class ContentAnalysisDelegateUnauthorizedBrowserTest
   }
 
   void DialogUpdated(ContentAnalysisDialog* dialog,
-                     ContentAnalysisDelegateBase::FinalResult result) override {
+                     FinalContentAnalysisResult result) override {
     ASSERT_TRUE(file_scan_ && blocking_scan());
   }
 

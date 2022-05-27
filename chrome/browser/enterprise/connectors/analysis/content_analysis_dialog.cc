@@ -214,7 +214,7 @@ ContentAnalysisDialog::ContentAnalysisDialog(
     content::WebContents* web_contents,
     safe_browsing::DeepScanAccessPoint access_point,
     int files_count,
-    ContentAnalysisDelegateBase::FinalResult final_result,
+    FinalContentAnalysisResult final_result,
     download::DownloadItem* download_item)
     : content::WebContentsObserver(web_contents),
       delegate_(std::move(delegate)),
@@ -231,7 +231,7 @@ ContentAnalysisDialog::ContentAnalysisDialog(
   if (observer_for_testing)
     observer_for_testing->ConstructorCalled(this, base::TimeTicks::Now());
 
-  if (final_result_ != ContentAnalysisDelegateBase::FinalResult::SUCCESS)
+  if (final_result_ != FinalContentAnalysisResult::SUCCESS)
     UpdateStateFromFinalResult(final_result_);
 
   SetupButtons();
@@ -402,8 +402,7 @@ void ContentAnalysisDialog::PrimaryPageChanged(content::Page& page) {
   CancelDialogWithoutCallback();
 }
 
-void ContentAnalysisDialog::ShowResult(
-    ContentAnalysisDelegateBase::FinalResult result) {
+void ContentAnalysisDialog::ShowResult(FinalContentAnalysisResult result) {
   DCHECK(is_pending());
 
   UpdateStateFromFinalResult(result);
@@ -430,18 +429,18 @@ ContentAnalysisDialog::~ContentAnalysisDialog() {
 }
 
 void ContentAnalysisDialog::UpdateStateFromFinalResult(
-    ContentAnalysisDelegateBase::FinalResult final_result) {
+    FinalContentAnalysisResult final_result) {
   final_result_ = final_result;
   switch (final_result_) {
-    case ContentAnalysisDelegateBase::FinalResult::ENCRYPTED_FILES:
-    case ContentAnalysisDelegateBase::FinalResult::LARGE_FILES:
-    case ContentAnalysisDelegateBase::FinalResult::FAILURE:
+    case FinalContentAnalysisResult::ENCRYPTED_FILES:
+    case FinalContentAnalysisResult::LARGE_FILES:
+    case FinalContentAnalysisResult::FAILURE:
       dialog_state_ = State::FAILURE;
       break;
-    case ContentAnalysisDelegateBase::FinalResult::SUCCESS:
+    case FinalContentAnalysisResult::SUCCESS:
       dialog_state_ = State::SUCCESS;
       break;
-    case ContentAnalysisDelegateBase::FinalResult::WARNING:
+    case FinalContentAnalysisResult::WARNING:
       dialog_state_ = State::WARNING;
       break;
   }
@@ -732,7 +731,7 @@ std::u16string ContentAnalysisDialog::GetFailureMessage() const {
   if (has_custom_message())
     return GetCustomMessage();
 
-  if (final_result_ == ContentAnalysisDelegateBase::FinalResult::LARGE_FILES) {
+  if (final_result_ == FinalContentAnalysisResult::LARGE_FILES) {
     if (is_print_scan()) {
       return l10n_util::GetStringUTF16(
           IDS_DEEP_SCANNING_DIALOG_LARGE_PRINT_FAILURE_MESSAGE);
@@ -741,8 +740,7 @@ std::u16string ContentAnalysisDialog::GetFailureMessage() const {
         IDS_DEEP_SCANNING_DIALOG_LARGE_FILE_FAILURE_MESSAGE, files_count_);
   }
 
-  if (final_result_ ==
-      ContentAnalysisDelegateBase::FinalResult::ENCRYPTED_FILES) {
+  if (final_result_ == FinalContentAnalysisResult::ENCRYPTED_FILES) {
     return l10n_util::GetPluralStringFUTF16(
         IDS_DEEP_SCANNING_DIALOG_ENCRYPTED_FILE_FAILURE_MESSAGE, files_count_);
   }
