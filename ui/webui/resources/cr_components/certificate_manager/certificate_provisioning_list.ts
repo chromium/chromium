@@ -113,6 +113,8 @@ export class CertificateProvisioningListElement extends
           this.previousAnchor_ = detail.anchor;
           this.showProvisioningDetailsDialog_ = true;
           event.stopPropagation();
+          CertificateProvisioningBrowserProxyImpl.getInstance()
+              .refreshCertificateProvisioningProcesses();
         });
   }
 

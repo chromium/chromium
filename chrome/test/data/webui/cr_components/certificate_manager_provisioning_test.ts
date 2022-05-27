@@ -128,6 +128,7 @@ suite('CertificateManagerProvisioningTests', function() {
 
     return browserProxy.whenCalled('refreshCertificateProvisioningProcesses')
         .then(function() {
+          browserProxy.resetResolver('refreshCertificateProvisioningProcesses');
           webUIListenerCallback(
               'certificate-provisioning-processes-changed',
               [createSampleCertificateProvisioningProcess(false)]);
@@ -171,6 +172,25 @@ suite('CertificateManagerProvisioningTests', function() {
               certProvisioningList.shadowRoot!.querySelector(dialogId);
           assertFalse(!!dialog);
         });
+  });
+
+  test('OpensDialog_RefreshesData', async function() {
+    const dialogId = 'certificate-provisioning-details-dialog';
+    const anchorForTest = document.createElement('a');
+    document.body.appendChild(anchorForTest);
+    assertFalse(!!certProvisioningList.shadowRoot!.querySelector(dialogId));
+    certProvisioningList.dispatchEvent(
+        new CustomEvent(CertificateProvisioningViewDetailsActionEvent, {
+          bubbles: true,
+          composed: true,
+          detail: {
+            model: createSampleCertificateProvisioningProcess(false),
+            anchor: anchorForTest
+          }
+        }));
+    const whenRefreshCalled =
+        browserProxy.whenCalled('refreshCertificateProvisioningProcesses');
+    await whenRefreshCalled;
   });
 });
 
