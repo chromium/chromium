@@ -2106,10 +2106,6 @@ chromium-metrics-reviews@google.com.
                  maximum event duration for the keydown, keypress, keyup,
                  pointerdown, pointerup, mousedown, mouseup, and click event
                  is reported."/>
-    <variant name="ClickOrTap"
-        summary="of type click or tap. The maximum event duration for the
-                 pointerdown, pointerup, mousedown, mouseup, and click event
-                 is reported."/>
     <variant name="Drag"
         summary="of type drag. The maximum event duration for the
                  pointerdown, pointerup, mousedown, mouseup, and click event
@@ -2117,6 +2113,10 @@ chromium-metrics-reviews@google.com.
     <variant name="Keyboard"
         summary="of type keyboard. The maximum event duration for the
                  keydown, keypress, and keyup event is reported."/>
+    <variant name="TapOrClick"
+        summary="of type click or tap. The maximum event duration for the
+                 pointerdown, pointerup, mousedown, mouseup, and click event
+                 is reported."/>
   </token>
 </histogram>
 
