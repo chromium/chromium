@@ -39,7 +39,7 @@ std::unique_ptr<google_apis::calendar::EventList> CreateMockEventList() {
   event_list->InjectItemForTesting(calendar_test_utils::CreateEvent(
       "id_5", "summary_5", "2 Sep 2021 10:30 GMT", "21 Nov 2021 11:30 GMT"));
   event_list->InjectItemForTesting(calendar_test_utils::CreateEvent(
-      "id_6", "summary_6", "10 Aug 2021 4:30 GMT", "10 Aug 2021 8:30 GMT"));
+      "id_6", "summary_6", "10 Aug 2021 4:30 GMT", "10 Aug 2021 5:30 GMT"));
   event_list->InjectItemForTesting(calendar_test_utils::CreateEvent(
       "id_7", "summary_7", "10 Aug 2021 7:30 GMT", "10 Aug 2021 9:30 GMT"));
   event_list->InjectItemForTesting(calendar_test_utils::CreateEvent(

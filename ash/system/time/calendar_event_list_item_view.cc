@@ -108,9 +108,28 @@ CalendarEventListItemView::CalendarEventListItemView(
       time_range_(new views::Label()),
       event_url_(event.html_link()) {
   SetLayoutManager(std::make_unique<views::FillLayout>());
+  DCHECK(calendar_view_controller_->selected_date().has_value());
 
-  const base::Time start_time = event.start_time().date_time();
-  const base::Time end_time = event.end_time().date_time();
+  const base::Time event_start_time = event.start_time().date_time();
+  const base::Time event_end_time = event.end_time().date_time();
+
+  const base::TimeDelta time_difference = calendar_utils::GetTimeDifference(
+      calendar_view_controller_->selected_date().value());
+
+  const base::Time selected_midnight =
+      calendar_view_controller_->selected_date_midnight();
+  const base::Time selected_midnight_utc =
+      calendar_view_controller_->selected_date_midnight_utc();
+  const base::Time selected_last_minute =
+      calendar_utils::GetNextDayMidnight(selected_midnight) - base::Minutes(1);
+  const base::Time selected_last_minute_utc =
+      selected_last_minute - time_difference;
+
+  base::Time start_time =
+      calendar_utils::GetMaxTime(event_start_time, selected_midnight_utc);
+  base::Time end_time =
+      calendar_utils::GetMinTime(event_end_time, selected_last_minute_utc);
+
   bool use_12_hour_clock =
       Shell::Get()->system_tray_model()->clock()->hour_clock_type() ==
       base::k12HourClock;

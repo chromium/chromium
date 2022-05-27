@@ -141,13 +141,24 @@ class ASH_EXPORT CalendarModel : public SessionObserver {
   bool ShouldInsertEvent(
       const google_apis::calendar::CalendarEvent* event) const;
 
-  // Inserts a single `event` in the EventCache.
-  void InsertEvent(const google_apis::calendar::CalendarEvent* event);
+  // Checks if the event spans more than one day.
+  bool IsMultiDayEvent(google_apis::calendar::CalendarEvent* event) const;
 
-  // Inserts a single `event` in the EventMap for the month that contains its
-  // start date.
-  void InsertEventInMonth(SingleMonthEventMap& month,
-                          const google_apis::calendar::CalendarEvent* event);
+  // Inserts a single `event` that spans more than one day in the EventCache.
+  void InsertMultiDayEvent(const google_apis::calendar::CalendarEvent* event,
+                           const base::Time start_of_month);
+
+  // Finds or creates a new SingleMonthEventMap to then insert the `event` into
+  // an event list of that month.
+  void InsertEventInMonth(const google_apis::calendar::CalendarEvent* event,
+                          const base::Time start_of_month,
+                          const base::Time start_time_midnight);
+
+  // Inserts a single `event` in a SingleDayEventList of a SingleMonthEventMap.
+  void InsertEventInMonthEventList(
+      SingleMonthEventMap& month,
+      const google_apis::calendar::CalendarEvent* event,
+      const base::Time start_time_midnight);
 
   // Returns the `start_time` of `event` adjusted by time difference, to ensure
   // that each event is stored by its local time, e.g. an event that starts at
@@ -160,12 +171,13 @@ class ASH_EXPORT CalendarModel : public SessionObserver {
   base::Time GetEndTimeAdjusted(
       const google_apis::calendar::CalendarEvent* event) const;
 
-  // Returns midnight on the day of the state time of `event`.
+  // Returns midnight on the day of the start time of `event`.
   base::Time GetStartTimeMidnightAdjusted(
       const google_apis::calendar::CalendarEvent* event) const;
 
-  // Inserts EventList `events` in the EventCache.
-  void InsertEvents(const google_apis::calendar::EventList* events);
+  // Returns midnight on the day of the end time of `event`.
+  base::Time GetEndTimeMidnightAdjusted(
+      const google_apis::calendar::CalendarEvent* event) const;
 
   // Inserts EventList `events` in the EventCache. For testing only, it clears
   // out the entire cache and inserts the `events`.

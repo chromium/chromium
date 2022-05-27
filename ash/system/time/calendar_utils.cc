@@ -157,6 +157,14 @@ int GetMonthsBetween(const base::Time& start_date, const base::Time& end_date) {
          (end_exp.month - start_exp.month) % 12;
 }
 
+base::Time GetMaxTime(const base::Time d1, const base::Time d2) {
+  return (d1 > d2) ? d1 : d2;
+}
+
+base::Time GetMinTime(const base::Time d1, const base::Time d2) {
+  return (d1 < d2) ? d1 : d2;
+}
+
 SkColor GetPrimaryTextColor() {
   const ash::AshColorProvider* color_provider = ash::AshColorProvider::Get();
   return color_provider->GetContentLayerColor(
@@ -193,6 +201,11 @@ base::Time GetStartOfNextMonthLocal(base::Time date) {
 ASH_EXPORT base::Time GetStartOfMonthUTC(const base::Time& date) {
   return (date -
           base::Days(calendar_utils::GetExplodedUTC(date).day_of_month - 1))
+      .UTCMidnight();
+}
+
+base::Time GetNextDayMidnight(base::Time date) {
+  return (date.UTCMidnight() + base::Days(1) + kDurationForAdjustingDST)
       .UTCMidnight();
 }
 

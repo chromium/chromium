@@ -206,4 +206,19 @@ TEST_F(CalendarUtilsUnittest, GetFetchStartEndTimes) {
   EXPECT_EQ(fetch.second, expected_end);
 }
 
+TEST_F(CalendarUtilsUnittest, MinMaxTime) {
+  base::Time date_1;
+  base::Time date_2;
+  base::Time date_3;
+  base::Time date_4;
+  ASSERT_TRUE(base::Time::FromString("01 Apr 2022 00:00 GMT", &date_1));
+  ASSERT_TRUE(base::Time::FromString("01 Apr 2023 00:00 GMT", &date_2));
+  ASSERT_TRUE(base::Time::FromString("01 Apr 2022 20:00 GMT", &date_3));
+  ASSERT_TRUE(base::Time::FromString("31 Mar 2022 00:00 GMT", &date_4));
+
+  EXPECT_EQ(date_2, calendar_utils::GetMaxTime(date_1, date_2));
+  EXPECT_EQ(date_3, calendar_utils::GetMaxTime(date_1, date_3));
+  EXPECT_EQ(date_4, calendar_utils::GetMinTime(date_1, date_4));
+}
+
 }  // namespace ash

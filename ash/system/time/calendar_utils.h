@@ -63,6 +63,10 @@ constexpr base::TimeDelta kAnimationDurationForMoving = base::Milliseconds(300);
 // expected date.
 constexpr base::TimeDelta kDurationForAdjustingDST = base::Hours(5);
 
+// Duration subtracted from an existing midnight in UTC to get the
+// previous day. It is less than 24 hours to consider daylight savings.
+constexpr base::TimeDelta kDurationForGettingPreviousDay = base::Hours(20);
+
 // Event fetch will terminate if we don't receive a response sooner than this.
 constexpr base::TimeDelta kEventFetchTimeout = base::Seconds(10);
 
@@ -149,6 +153,12 @@ void SetUpWeekColumns(views::TableLayout* layout);
 ASH_EXPORT int GetMonthsBetween(const base::Time& start_date,
                                 const base::Time& end_date);
 
+// Gets date with greater value between `d1` and `d2`.
+ASH_EXPORT base::Time GetMaxTime(const base::Time d1, const base::Time d2);
+
+// Gets date with lesser value between `d1` and `d2`.
+ASH_EXPORT base::Time GetMinTime(const base::Time d1, const base::Time d2);
+
 // Colors.
 SkColor GetPrimaryTextColor();
 SkColor GetSecondaryTextColor();
@@ -173,6 +183,9 @@ base::Time GetStartOfPreviousMonthUTC(base::Time date);
 // Get UTC midnight on the first day of the month after the one that includes
 // |date|.
 base::Time GetStartOfNextMonthUTC(base::Time date);
+
+// Returns UTC midnight of `date`'s next day without adjusting time difference.
+ASH_EXPORT base::Time GetNextDayMidnight(base::Time date);
 
 // Returns true if it's a regular user or the user session is not blocked.
 bool IsActiveUser();

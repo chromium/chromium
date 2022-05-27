@@ -181,6 +181,11 @@ void CalendarViewController::ShowEventListView(base::Time selected_date,
   selected_date_row_index_ = row_index;
   expanded_row_index_ = row_index;
 
+  base::TimeDelta time_difference =
+      calendar_utils::GetTimeDifference(selected_date);
+  selected_date_midnight_ = (selected_date + time_difference).UTCMidnight();
+  selected_date_midnight_utc_ = selected_date_midnight_ - time_difference;
+
   // Notify observers.
   for (auto& observer : observers_)
     observer.OnSelectedDateUpdated();

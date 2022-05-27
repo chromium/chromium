@@ -193,16 +193,26 @@ TEST_F(CalendarViewEventListViewTest, LaunchItem) {
 TEST_F(CalendarViewEventListViewTest, CheckTimeFormat) {
   ash::system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"GMT");
 
+  // Date of first day which holds a normal event and a multi-day event.
   base::Time date;
   ASSERT_TRUE(base::Time::FromString("22 Nov 2021 10:00 GMT", &date));
+
+  // Date of the second day which holds the second day of the multi-day event.
+  base::Time date_2;
+  ASSERT_TRUE(base::Time::FromString("23 Nov 2021 10:00 GMT", &date_2));
 
   // Set the time in AM/PM format.
   Shell::Get()->system_tray_model()->SetUse24HourClock(false);
 
   CreateEventListView(date);
 
+  SetSelectedDate(date);
   EXPECT_EQ(u"8:30 - 9:30 PM", GetTimeRange(0)->GetText());
-  EXPECT_EQ(u"11:30 PM - 12:30 AM", GetTimeRange(1)->GetText());
+  EXPECT_EQ(u"11:30 - 11:59 PM", GetTimeRange(1)->GetText());
+
+  // Select the second day of the multi-day event.
+  SetSelectedDate(date_2);
+  EXPECT_EQ(u"12:00 - 12:30 AM", GetTimeRange(0)->GetText());
 
   // Set the time in 24 hour format.
   Shell::Get()->system_tray_model()->SetUse24HourClock(true);
@@ -210,8 +220,12 @@ TEST_F(CalendarViewEventListViewTest, CheckTimeFormat) {
   // Regenerate the event list to refresh events time range.
   CreateEventListView(date);
 
+  SetSelectedDate(date);
   EXPECT_EQ(u"20:30 - 21:30", GetTimeRange(0)->GetText());
-  EXPECT_EQ(u"23:30 - 00:30", GetTimeRange(1)->GetText());
+  EXPECT_EQ(u"23:30 - 23:59", GetTimeRange(1)->GetText());
+
+  SetSelectedDate(date_2);
+  EXPECT_EQ(u"00:00 - 00:30", GetTimeRange(0)->GetText());
 }
 
 }  // namespace ash

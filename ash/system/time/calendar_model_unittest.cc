@@ -297,6 +297,10 @@ class CalendarModelTest : public AshTestBase {
     AshTestBase::TearDown();
   }
 
+  void InsertEvents(const google_apis::calendar::EventList* events) {
+    calendar_model_->InsertEventsForTesting(events);
+  }
+
   int EventsNumberOfDay(const char* day, SingleDayEventList* events) {
     base::Time day_base = calendar_test_utils::GetTimeFromString(day);
 
@@ -447,6 +451,23 @@ class CalendarModelTest : public AshTestBase {
     bool result = base::Time::FromString(date_str, &current_date);
     DCHECK(result);
     SetFakeNowFromTime(current_date);
+  }
+
+  void TestMultiDayEvent(SingleDayEventList events,
+                         const char* start_date_str,
+                         const char* end_date_str) {
+    base::Time start_time_midnight =
+        calendar_test_utils::GetTimeFromString(start_date_str).UTCMidnight();
+    base::Time end_time_midnight =
+        calendar_test_utils::GetTimeFromString(end_date_str).UTCMidnight();
+
+    // Each day inside the event's time range should have an event.
+    while (start_time_midnight <= end_time_midnight) {
+      EXPECT_EQ(1, EventsNumberOfDay(start_time_midnight, &events));
+      // Add more than 24 hours to consider daylight savings.
+      start_time_midnight =
+          (start_time_midnight + base::Hours(30)).UTCMidnight();
+    }
   }
 
   static void SetFakeNow(base::Time fake_now) { fake_time_ = fake_now; }
@@ -1219,6 +1240,62 @@ TEST_F(CalendarModelTest, EdgeOfMonthEvent) {
       calendar_utils::GetStartOfNextMonthUTC(base::Time::Now()));
 
   EXPECT_TRUE(next_month_map->second.empty());
+}
+
+TEST_F(CalendarModelTest, MultiDayEvents) {
+  // Generic event id and summary.
+  const char* kId = "id";
+  const char* kSummary = "summary";
+
+  // Multi-day event ranges in the two surrounding months.
+  const char* kMultiDayStartTime = "20 Nov 2022 22:00 GMT";
+  const char* kMultiDayEndTime = "25 Nov 2022 10:00 GMT";
+  const char* kMultiMonthStartTime = "10 Sep 2022 22:00 GMT";
+  const char* kMultiMonthEndTime = "2 Nov 2022 10:00 GMT";
+  const char* kMultiYearStartTime = "10 Dec 2022 22:00 GMT";
+  const char* kMultiYearEndTime = "10 Jan 2023 10:00 GMT";
+
+  // Set timezone and fake now.
+  const char* kNow = "10 Nov 2022 13:00 GMT";
+  ash::system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"GMT");
+  SetFakeNowFromStr(kNow);
+
+  // Get ready to inject events.
+  calendar_model_ = std::make_unique<TestableCalendarModel>();
+  std::unique_ptr<google_apis::calendar::EventList> event_list =
+      std::make_unique<google_apis::calendar::EventList>();
+  SingleDayEventList events;
+
+  // Create multi-day events.
+  std::unique_ptr<google_apis::calendar::CalendarEvent> multi_day_event =
+      calendar_test_utils::CreateEvent(kId, kSummary, kMultiDayStartTime,
+                                       kMultiDayEndTime);
+  std::unique_ptr<google_apis::calendar::CalendarEvent> multi_month_event =
+      calendar_test_utils::CreateEvent(kId, kSummary, kMultiMonthStartTime,
+                                       kMultiMonthEndTime);
+  std::unique_ptr<google_apis::calendar::CalendarEvent> multi_year_event =
+      calendar_test_utils::CreateEvent(kId, kSummary, kMultiYearStartTime,
+                                       kMultiYearEndTime);
+
+  // Haven't injected anything yet, so no events on the start times.
+  EXPECT_EQ(0, EventsNumberOfDay(kMultiDayStartTime, &events));
+  EXPECT_EQ(0, EventsNumberOfDay(kMultiMonthStartTime, &events));
+  EXPECT_EQ(0, EventsNumberOfDay(kMultiYearStartTime, &events));
+
+  // Inject events.
+  event_list->InjectItemForTesting(std::move(multi_day_event));
+  event_list->InjectItemForTesting(std::move(multi_month_event));
+  event_list->InjectItemForTesting(std::move(multi_year_event));
+  InsertEvents(event_list.get());
+
+  // Test a multi-day event whose start and end are in the same month.
+  TestMultiDayEvent(events, kMultiDayStartTime, kMultiDayEndTime);
+
+  // Test a multi-day event whose start and end are in different months.
+  TestMultiDayEvent(events, kMultiMonthStartTime, kMultiMonthEndTime);
+
+  // Test a multi-day event whose start and end are in different years.
+  TestMultiDayEvent(events, kMultiYearStartTime, kMultiYearEndTime);
 }
 
 // A mock `CalendarClient`. This mock client's `GetEventList` waits for a short
