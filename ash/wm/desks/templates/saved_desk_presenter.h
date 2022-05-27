@@ -36,17 +36,11 @@ class ASH_EXPORT SavedDeskPresenter : desks_storage::DeskModelObserver {
 
   bool should_show_templates_ui() { return should_show_templates_ui_; }
 
-  size_t GetEntryCount() const;
-
-  size_t GetMaxEntryCount() const;
-
-  size_t GetDeskTemplateEntryCount() const;
-
-  size_t GetMaxDeskTemplateEntryCount() const;
-
-  size_t GetSaveAndRecallDeskEntryCount() const;
-
-  size_t GetMaxSaveAndRecallDeskEntryCount() const;
+  // Retrieve the current and max count for a given saved desk type. Note that
+  // these are snapshots of the model state, which may not match the current UI
+  // state.
+  size_t GetEntryCount(DeskTemplateType type) const;
+  size_t GetMaxEntryCount(DeskTemplateType type) const;
 
   // Update the buttons of the desks templates UI and the visibility of the
   // templates grid. The grid contents are not updated. Updates

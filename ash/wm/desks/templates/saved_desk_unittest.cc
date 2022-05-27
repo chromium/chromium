@@ -947,8 +947,9 @@ TEST_F(SavedDeskTest, SaveDeskButtonsEnabledDisabled) {
     OpenOverviewAndShowTemplatesGrid();
     const SavedDeskPresenter* saved_desk_presenter =
         saved_desk_util::GetSavedDeskPresenter();
-    ASSERT_EQ(saved_desk_presenter->GetMaxDeskTemplateEntryCount(),
-              saved_desk_presenter->GetDeskTemplateEntryCount());
+    ASSERT_EQ(
+        saved_desk_presenter->GetMaxEntryCount(DeskTemplateType::kTemplate),
+        saved_desk_presenter->GetEntryCount(DeskTemplateType::kTemplate));
 
     // Verify that the button is re-enabled after we delete all entries.
     std::vector<const DeskTemplate*> entries = GetAllEntries();
@@ -991,8 +992,10 @@ TEST_F(SavedDeskTest, SaveDeskButtonsEnabledDisabled) {
     OpenOverviewAndShowTemplatesGrid();
     const SavedDeskPresenter* saved_desk_presenter =
         saved_desk_util::GetSavedDeskPresenter();
-    ASSERT_EQ(saved_desk_presenter->GetMaxSaveAndRecallDeskEntryCount(),
-              saved_desk_presenter->GetSaveAndRecallDeskEntryCount());
+    ASSERT_EQ(
+        saved_desk_presenter->GetMaxEntryCount(
+            DeskTemplateType::kSaveAndRecall),
+        saved_desk_presenter->GetEntryCount(DeskTemplateType::kSaveAndRecall));
 
     // Verify that the button is re-enabled after we delete all entries.
     std::vector<const DeskTemplate*> entries = GetAllEntries();
@@ -2931,9 +2934,10 @@ TEST_F(SavedDeskTest, SaveDeskRecordsWindowAndTabCountMetrics) {
       /*is_update=*/false, Shell::GetPrimaryRootWindow(),
       std::move(desk_template));
 
-  histogram_tester.ExpectBucketCount(kWindowCountHistogramName, 2, 1);
-  histogram_tester.ExpectBucketCount(kTabCountHistogramName, 6, 1);
-  histogram_tester.ExpectBucketCount(kWindowAndTabCountHistogramName, 6, 1);
+  histogram_tester.ExpectBucketCount(kTemplateWindowCountHistogramName, 2, 1);
+  histogram_tester.ExpectBucketCount(kTemplateTabCountHistogramName, 6, 1);
+  histogram_tester.ExpectBucketCount(kTemplateWindowAndTabCountHistogramName, 6,
+                                     1);
 }
 
 // Tests that the user template count metric is recorded correctly.
@@ -3870,6 +3874,8 @@ TEST_F(DeskSaveAndRecallTest, SaveDeskForLaterWithSingleDesk) {
 }
 
 TEST_F(DeskSaveAndRecallTest, RecallSavedDesk) {
+  base::HistogramTester histogram_tester;
+
   UpdateDisplay("800x600");
 
   constexpr char16_t kDeskName[] = u"Save for later";
@@ -3899,6 +3905,9 @@ TEST_F(DeskSaveAndRecallTest, RecallSavedDesk) {
 
   // Verify that the saved desk has been deleted.
   EXPECT_TRUE(GetAllEntries().empty());
+
+  // Assert that histogram metrics were recorded.
+  histogram_tester.ExpectTotalCount(kLaunchSaveAndRecallHistogramName, 1);
 }
 
 TEST_F(DeskSaveAndRecallTest, DeleteSaveAndRecallRecordsMetric) {

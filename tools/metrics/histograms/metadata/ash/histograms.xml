@@ -1828,6 +1828,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.DeskTemplate.LaunchSaveAndRecall" enum="BooleanHit"
+    expires_after="2022-11-24">
+  <owner>dandersson@chromium.org</owner>
+  <owner>janetmac@chromium.org</owner>
+  <summary>Emitted when a Save and Recall desk is launched.</summary>
+</histogram>
+
 <histogram name="Ash.DeskTemplate.LoadTemplateGrid" enum="BooleanHit"
     expires_after="2022-11-12">
   <owner>avynn@google.com</owner>
@@ -1862,6 +1869,34 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.DeskTemplate.SaveAndRecallTabCount" units="count"
+    expires_after="2022-11-24">
+  <owner>dandersson@chromium.org</owner>
+  <owner>janetmac@chromium.org</owner>
+  <summary>
+    Records the number of tabs in a Save and Recall desk when it is saved.
+  </summary>
+</histogram>
+
+<histogram name="Ash.DeskTemplate.SaveAndRecallWindowAndTabCount" units="count"
+    expires_after="2022-11-24">
+  <owner>dandersson@chromium.org</owner>
+  <owner>janetmac@chromium.org</owner>
+  <summary>
+    Records the number of windows and tabs in a Save and Recall desk when it is
+    saved.
+  </summary>
+</histogram>
+
+<histogram name="Ash.DeskTemplate.SaveAndRecallWindowCount" units="count"
+    expires_after="2022-11-24">
+  <owner>dandersson@chromium.org</owner>
+  <owner>janetmac@chromium.org</owner>
+  <summary>
+    Records the number of windows in a Save and Recall desk when it is saved.
+  </summary>
+</histogram>
+
 <histogram name="Ash.DeskTemplate.TabCount" units="count"
     expires_after="2022-10-04">
   <owner>richui@chromium.org</owner>
@@ -1888,6 +1923,16 @@ chromium-metrics-reviews@google.com.
     triggered when a user attempts to save a template that contains an
     unsupported app type. Currently the desks templates feature only supports
     PWAs, Extensions, and browser instances.
+  </summary>
+</histogram>
+
+<histogram name="Ash.DeskTemplate.UserSaveAndRecallCount" units="count"
+    expires_after="2022-11-24">
+  <owner>dandersson@chromium.org</owner>
+  <owner>janetmac@chromium.org</owner>
+  <summary>
+    Records the number of Save and Recall desks a user has saved when a desk is
+    saved or deleted.
   </summary>
 </histogram>
 

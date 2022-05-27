@@ -20,6 +20,7 @@
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_test_util.h"
+#include "ash/wm/desks/templates/saved_desk_metrics_util.h"
 #include "ash/wm/desks/templates/saved_desk_test_util.h"
 #include "ash/wm/desks/templates/saved_desk_util.h"
 #include "ash/wm/overview/overview_test_util.h"
@@ -2013,9 +2014,8 @@ IN_PROC_BROWSER_TEST_F(DesksTemplatesClientTest,
     ClickExpandedStateTemplatesButton();
   }
 
-  constexpr char kLaunchFromTemplateHistogramName[] =
-      "Ash.DeskTemplate.LaunchFromTemplate";
-  histogram_tester.ExpectTotalCount(kLaunchFromTemplateHistogramName, launches);
+  histogram_tester.ExpectTotalCount(ash::kLaunchTemplateHistogramName,
+                                    launches);
 }
 
 // Tests that launching a desk template records the appropriate performance

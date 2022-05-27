@@ -11,7 +11,7 @@
 
 namespace ash {
 
-void RecordLoadTemplateHistogram() {
+void RecordLoadSavedDeskLibraryHistogram() {
   base::UmaHistogramBoolean(kLoadTemplateGridHistogramName, true);
 }
 
@@ -22,8 +22,11 @@ void RecordDeleteSavedDeskHistogram(DeskTemplateType type) {
                             true);
 }
 
-void RecordLaunchTemplateHistogram() {
-  base::UmaHistogramBoolean(kLaunchTemplateHistogramName, true);
+void RecordLaunchSavedDeskHistogram(DeskTemplateType type) {
+  base::UmaHistogramBoolean(type == DeskTemplateType::kTemplate
+                                ? kLaunchTemplateHistogramName
+                                : kLaunchSaveAndRecallHistogramName,
+                            true);
 }
 
 void RecordNewSavedDeskHistogram(DeskTemplateType type) {
@@ -39,15 +42,21 @@ void RecordAddOrUpdateTemplateStatusHistogram(
                                 status);
 }
 
-void RecordUserTemplateCountHistogram(size_t entry_count,
-                                      size_t max_entry_count) {
-  UMA_HISTOGRAM_EXACT_LINEAR(kUserTemplateCountHistogramName, entry_count,
-                             max_entry_count);
+void RecordUserSavedDeskCountHistogram(DeskTemplateType type,
+                                       size_t entry_count,
+                                       size_t max_entry_count) {
+  if (type == DeskTemplateType::kTemplate) {
+    UMA_HISTOGRAM_EXACT_LINEAR(kUserTemplateCountHistogramName, entry_count,
+                               max_entry_count);
+  } else {
+    UMA_HISTOGRAM_EXACT_LINEAR(kUserSaveAndRecallCountHistogramName,
+                               entry_count, max_entry_count);
+  }
 }
 
-void RecordWindowAndTabCountHistogram(DeskTemplate* desk_template) {
+void RecordWindowAndTabCountHistogram(const DeskTemplate& desk_template) {
   const app_restore::RestoreData* restore_data =
-      desk_template->desk_restore_data();
+      desk_template.desk_restore_data();
   DCHECK(restore_data);
 
   int window_count = 0;
@@ -65,7 +74,7 @@ void RecordWindowAndTabCountHistogram(DeskTemplate* desk_template) {
     }
 
     for (const auto& window_iter : iter.second) {
-      absl::optional<std::vector<GURL>> urls = window_iter.second->urls;
+      const absl::optional<std::vector<GURL>>& urls = window_iter.second->urls;
       if (!urls || urls->empty())
         continue;
 
@@ -75,9 +84,19 @@ void RecordWindowAndTabCountHistogram(DeskTemplate* desk_template) {
     }
   }
 
-  base::UmaHistogramCounts100(kWindowCountHistogramName, window_count);
-  base::UmaHistogramCounts100(kTabCountHistogramName, tab_count);
-  base::UmaHistogramCounts100(kWindowAndTabCountHistogramName, total_count);
+  if (desk_template.type() == DeskTemplateType::kTemplate) {
+    base::UmaHistogramCounts100(kTemplateWindowCountHistogramName,
+                                window_count);
+    base::UmaHistogramCounts100(kTemplateTabCountHistogramName, tab_count);
+    base::UmaHistogramCounts100(kTemplateWindowAndTabCountHistogramName,
+                                total_count);
+  } else {
+    base::UmaHistogramCounts100(kSaveAndRecallWindowCountHistogramName,
+                                window_count);
+    base::UmaHistogramCounts100(kSaveAndRecallTabCountHistogramName, tab_count);
+    base::UmaHistogramCounts100(kSaveAndRecallWindowAndTabCountHistogramName,
+                                total_count);
+  }
 }
 
 void RecordUnsupportedAppDialogShowHistogram() {

@@ -57,33 +57,25 @@ SavedDeskPresenter::SavedDeskPresenter(OverviewSession* overview_session)
   desk_model_observation_.Observe(desk_model);
   GetAllEntries(base::GUID(), Shell::GetPrimaryRootWindow());
 
-  should_show_templates_ui_ = GetEntryCount() > 0;
+  should_show_templates_ui_ =
+      (GetEntryCount(DeskTemplateType::kTemplate) +
+       GetEntryCount(DeskTemplateType::kSaveAndRecall)) > 0u;
 }
 
 SavedDeskPresenter::~SavedDeskPresenter() = default;
 
-size_t SavedDeskPresenter::GetEntryCount() const {
-  return GetDeskModel()->GetEntryCount();
+size_t SavedDeskPresenter::GetEntryCount(DeskTemplateType type) const {
+  auto* model = GetDeskModel();
+  return type == DeskTemplateType::kTemplate
+             ? model->GetDeskTemplateEntryCount()
+             : model->GetSaveAndRecallDeskEntryCount();
 }
 
-size_t SavedDeskPresenter::GetMaxEntryCount() const {
-  return GetDeskModel()->GetMaxEntryCount();
-}
-
-size_t SavedDeskPresenter::GetDeskTemplateEntryCount() const {
-  return GetDeskModel()->GetDeskTemplateEntryCount();
-}
-
-size_t SavedDeskPresenter::GetMaxDeskTemplateEntryCount() const {
-  return GetDeskModel()->GetMaxDeskTemplateEntryCount();
-}
-
-size_t SavedDeskPresenter::GetSaveAndRecallDeskEntryCount() const {
-  return GetDeskModel()->GetSaveAndRecallDeskEntryCount();
-}
-
-size_t SavedDeskPresenter::GetMaxSaveAndRecallDeskEntryCount() const {
-  return GetDeskModel()->GetMaxSaveAndRecallDeskEntryCount();
+size_t SavedDeskPresenter::GetMaxEntryCount(DeskTemplateType type) const {
+  auto* model = GetDeskModel();
+  return type == DeskTemplateType::kTemplate
+             ? model->GetMaxDeskTemplateEntryCount()
+             : model->GetMaxSaveAndRecallDeskEntryCount();
 }
 
 void SavedDeskPresenter::UpdateDesksTemplatesUI() {
@@ -98,7 +90,9 @@ void SavedDeskPresenter::UpdateDesksTemplatesUI() {
   const bool in_tablet_mode =
       Shell::Get()->tablet_mode_controller()->InTabletMode();
 
-  const bool has_saved_desks = GetEntryCount() > 0u;
+  const bool has_saved_desks =
+      (GetEntryCount(DeskTemplateType::kTemplate) +
+       GetEntryCount(DeskTemplateType::kSaveAndRecall)) > 0u;
 
   for (auto& overview_grid : overview_session_->grid_list()) {
     const bool is_showing_library =
@@ -188,7 +182,7 @@ void SavedDeskPresenter::SaveOrUpdateDeskTemplate(
   if (is_update)
     desk_template->set_updated_time(base::Time::Now());
   else
-    RecordWindowAndTabCountHistogram(desk_template.get());
+    RecordWindowAndTabCountHistogram(*desk_template);
 
   // Clone the desk template so one can be sent to the model, and the other as
   // part of the callback.
@@ -260,9 +254,13 @@ void SavedDeskPresenter::OnDeleteEntry(
   if (status != desks_storage::DeskModel::DeleteEntryStatus::kOk)
     return;
 
-  if (record_for_type)
+  if (record_for_type) {
     RecordDeleteSavedDeskHistogram(*record_for_type);
-  RecordUserTemplateCountHistogram(GetEntryCount(), GetMaxEntryCount());
+    RecordUserSavedDeskCountHistogram(*record_for_type,
+                                      GetEntryCount(*record_for_type),
+                                      GetMaxEntryCount(*record_for_type));
+  }
+
   RemoveUIEntries({uuid});
 }
 
@@ -280,10 +278,11 @@ void SavedDeskPresenter::OnGetTemplateForDeskLaunch(
   base::OnceClosure on_update_ui_closure_for_testing =
       std::move(on_update_ui_closure_for_testing_);
 
-  const auto template_name = entry->template_name();
-  const bool activate_desk = entry->type() == DeskTemplateType::kTemplate;
+  const auto saved_desk_name = entry->template_name();
+  const auto saved_desk_type = entry->type();
+  const bool activate_desk = saved_desk_type == DeskTemplateType::kTemplate;
   DesksController::Get()->CreateNewDeskForTemplate(
-      template_name, activate_desk,
+      saved_desk_name, activate_desk,
       base::BindOnce(&SavedDeskPresenter::OnNewDeskCreatedForTemplate,
                      weak_ptr_factory_.GetWeakPtr(), std::move(entry),
                      time_launch_started, delay, root_window));
@@ -291,7 +290,7 @@ void SavedDeskPresenter::OnGetTemplateForDeskLaunch(
   if (on_update_ui_closure_for_testing)
     std::move(on_update_ui_closure_for_testing).Run();
 
-  RecordLaunchTemplateHistogram();
+  RecordLaunchSavedDeskHistogram(saved_desk_type);
 }
 
 void SavedDeskPresenter::OnNewDeskCreatedForTemplate(
@@ -384,7 +383,8 @@ void SavedDeskPresenter::OnAddOrUpdateEntry(
       is_zero_state, desk_template->uuid(), root_window);
 
   if (!was_update) {
-    if (desk_template->type() == DeskTemplateType::kSaveAndRecall) {
+    const auto saved_desk_type = desk_template->type();
+    if (saved_desk_type == DeskTemplateType::kSaveAndRecall) {
       // We have successfully created a *new* desk template for Save & Recall,
       // so we are now going to close all the windows on the active desk and
       // also remove the desk.
@@ -401,8 +401,10 @@ void SavedDeskPresenter::OnAddOrUpdateEntry(
                                    DeskCloseType::kCloseAllWindows);
     }
 
-    RecordNewSavedDeskHistogram(desk_template->type());
-    RecordUserTemplateCountHistogram(GetEntryCount(), GetMaxEntryCount());
+    RecordNewSavedDeskHistogram(saved_desk_type);
+    RecordUserSavedDeskCountHistogram(saved_desk_type,
+                                      GetEntryCount(saved_desk_type),
+                                      GetMaxEntryCount(saved_desk_type));
   }
 
   // Note we do not run `on_update_ui_closure_for_testing` here as we want to

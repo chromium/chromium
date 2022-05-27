@@ -1931,13 +1931,13 @@ void OverviewGrid::UpdateSaveDeskButtons() {
           save_desk_button_container_widget_->GetContentsView());
   container->UpdateButtonEnableStateAndTooltip(
       SaveDeskTemplateButton::Type::kSaveAsTemplate,
-      saved_desk_presenter->GetDeskTemplateEntryCount(),
-      saved_desk_presenter->GetMaxDeskTemplateEntryCount(),
+      saved_desk_presenter->GetEntryCount(DeskTemplateType::kTemplate),
+      saved_desk_presenter->GetMaxEntryCount(DeskTemplateType::kTemplate),
       num_incognito_windows_, num_unsupported_windows_, size());
   container->UpdateButtonEnableStateAndTooltip(
       SaveDeskTemplateButton::Type::kSaveForLater,
-      saved_desk_presenter->GetSaveAndRecallDeskEntryCount(),
-      saved_desk_presenter->GetMaxSaveAndRecallDeskEntryCount(),
+      saved_desk_presenter->GetEntryCount(DeskTemplateType::kSaveAndRecall),
+      saved_desk_presenter->GetMaxEntryCount(DeskTemplateType::kSaveAndRecall),
       num_incognito_windows_, num_unsupported_windows_, size());
 
   // Set the widget position above the overview item window and default width
