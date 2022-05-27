@@ -13,14 +13,12 @@
   </div>
   <dom-bind>
     <template>
-      <dom-repeat items="[[moduleListData.naclInfo]]">
-        <template>
-          <div>
-            <span class="key">[[item.key]]</span>
-            <span class="value">[[item.value]]</span>
-          </div>
-        </template>
-      </dom-repeat>
+      <template is="dom-repeat" items="[[naclInfo]]">
+        <div>
+          <span class="key">[[item.key]]</span>
+          <span class="value">[[item.value]]</span>
+        </div>
+      </template>
     </template>
   </dom-bind>
 </div>

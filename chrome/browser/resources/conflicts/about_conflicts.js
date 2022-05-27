@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 import {$} from 'chrome://resources/js/util.m.js';
 
@@ -26,15 +28,15 @@ const moduleListDataFormat = {
 
 /**
  * Takes the |moduleListData| input argument which represents data about
- * the currently available modules and populates the html jstemplate
+ * the currently available modules and populates the HTML template
  * with that data. It expects an object structure like the above.
  * @param {Object} moduleListData Information about available modules.
  */
 function renderTemplate(moduleListData) {
-  // This is the javascript code that processes the template:
-  const input = new JsEvalContext(moduleListData);
-  const output = $('modulesTemplate');
-  jstProcess(input, output);
+  const bind = document.body.querySelector('dom-bind');
+
+  moduleListData.hasModules = moduleListData.moduleList.length > 0;
+  bind.data = moduleListData;
 }
 
 /**
@@ -57,7 +59,7 @@ function filterModuleListData() {
   // Loop through all modules, and hide all that don't match the filter.
   for (const module of modules) {
     module.style.display =
-        module.dataset['process'].includes(filter) ? '' : 'none';
+        module.dataset['process'].toLowerCase().includes(filter) ? '' : 'none';
   }
 }
 

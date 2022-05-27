@@ -10,7 +10,6 @@ js_type_check("closure_compile") {
 
 js_library("about_conflicts") {
   deps = [
-    "//third_party/jstemplate:jstemplate",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:util.m",
   ]
