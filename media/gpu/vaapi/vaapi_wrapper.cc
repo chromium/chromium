@@ -577,7 +577,7 @@ void VADisplayState::PreSandboxInitialization() {
         version->name,
         base::checked_cast<std::string::size_type>(version->name_len));
     drmFreeVersion(version);
-    if (base::LowerCaseEqualsASCII(version_name, "vgem"))
+    if (base::EqualsCaseInsensitiveASCII(version_name, "vgem"))
       continue;
     VADisplayState::Get()->SetDrmFd(drm_file.GetPlatformFile());
     return;

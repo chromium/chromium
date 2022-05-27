@@ -785,7 +785,7 @@ TEST_P(VaapiMinigbmTest, AllocateAndCompareWithMinigbm) {
         version->name,
         base::checked_cast<std::string::size_type>(version->name_len));
     drmFreeVersion(version);
-    if (base::LowerCaseEqualsASCII(version_name, "vgem"))
+    if (base::EqualsCaseInsensitiveASCII(version_name, "vgem"))
       continue;
 
     gbm = gbm_create_device(drm_fd.GetPlatformFile());
