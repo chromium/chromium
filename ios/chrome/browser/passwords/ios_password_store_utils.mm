@@ -55,9 +55,7 @@ class StoreMetricReporterHelper : public base::SupportsUserData::Data {
             browser_state_);
     PrefService* pref_service = browser_state_->GetPrefs();
 
-    // StoreMetricsReporter will delay the actual reporting by 30 seconds, to
-    // ensure it doesn't happen during the "hot phase" of Chrome startup.
-    auto metrics_reporter = std::make_unique<
+    metrics_reporter_ = std::make_unique<
         password_manager::StoreMetricsReporter>(
         profile_store, /*account_store=*/nullptr, sync_service,
         identity_manager, pref_service, password_reuse_manager,
