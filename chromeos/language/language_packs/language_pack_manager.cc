@@ -19,6 +19,14 @@
 namespace chromeos::language_packs {
 namespace {
 
+// PackResult that is returned by an invalid feature ID is specified.
+PackResult CreateInvalidDlcPackResult() {
+  return {
+      .operation_error = dlcservice::kErrorInvalidDlc,
+      .pack_state = PackResult::WRONG_ID,
+  };
+}
+
 PackResult ConvertDlcStateToPackResult(const dlcservice::DlcState& dlc_state) {
   PackResult result;
 
@@ -180,10 +188,7 @@ void LanguagePackManager::InstallPack(const std::string& feature_id,
   // If the given Language Pack doesn't exist, run callback and don't reach the
   // DLC Service.
   if (!dlc_id) {
-    PackResult result;
-    result.operation_error = dlcservice::kErrorInvalidDlc;
-    result.pack_state = PackResult::WRONG_ID;
-    std::move(callback).Run(result);
+    std::move(callback).Run(CreateInvalidDlcPackResult());
     return;
   }
 
@@ -204,10 +209,7 @@ void LanguagePackManager::GetPackState(const std::string& feature_id,
   // If the given Language Pack doesn't exist, run callback and don't reach the
   // DLC Service.
   if (!dlc_id) {
-    PackResult result;
-    result.operation_error = dlcservice::kErrorInvalidDlc;
-    result.pack_state = PackResult::WRONG_ID;
-    std::move(callback).Run(result);
+    std::move(callback).Run(CreateInvalidDlcPackResult());
     return;
   }
 
@@ -224,10 +226,7 @@ void LanguagePackManager::RemovePack(const std::string& feature_id,
   // If the given Language Pack doesn't exist, run callback and don't reach the
   // DLC Service.
   if (!dlc_id) {
-    PackResult result;
-    result.operation_error = dlcservice::kErrorInvalidDlc;
-    result.pack_state = PackResult::WRONG_ID;
-    std::move(callback).Run(result);
+    std::move(callback).Run(CreateInvalidDlcPackResult());
     return;
   }
 
@@ -243,10 +242,7 @@ void LanguagePackManager::InstallBasePayload(
   // If the given |feature_id| doesn't have a Base Payload, run callback and
   // don't reach the DLC Service.
   if (!dlc_id) {
-    PackResult result;
-    result.operation_error = dlcservice::kErrorInvalidDlc;
-    result.pack_state = PackResult::WRONG_ID;
-    std::move(callback).Run(result);
+    std::move(callback).Run(CreateInvalidDlcPackResult());
     return;
   }
 
