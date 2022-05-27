@@ -4,12 +4,7 @@
 
 function createAttributionSrcImg(src) {
   const img = document.createElement('img');
-  img.setAttribute('target', "top");
-  img.width = 100;
-  img.height = 100;
-  img.setAttribute("attributionsrc", src);
-  document.body.appendChild(img);
-  return img;
+  img.attributionSrc = src;
 }
 
 function createAttributionSrcAnchor({
@@ -22,8 +17,8 @@ function createAttributionSrcAnchor({
 } = {}) {
   const anchor = document.createElement('a');
   anchor.href = url;
-  anchor.setAttribute('target', target);
-  anchor.setAttribute("attributionsrc", attributionsrc);
+  anchor.target = target;
+  anchor.attributionSrc = attributionsrc;
   anchor.width = 100;
   anchor.height = 100;
   anchor.id = id;
