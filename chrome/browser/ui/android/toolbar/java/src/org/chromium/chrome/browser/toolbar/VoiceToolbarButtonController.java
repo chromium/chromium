@@ -198,13 +198,7 @@ public class VoiceToolbarButtonController
             return;
         }
 
-        ButtonData.ButtonSpec currentSpec = mButtonData.getButtonSpec();
-        ButtonData.ButtonSpec newSpec = new ButtonData.ButtonSpec(currentSpec.getDrawable(),
-                currentSpec.getOnClickListener(), currentSpec.getContentDescriptionResId(),
-                currentSpec.getSupportsTinting(), iphCommandBuilder,
-                currentSpec.getButtonVariant());
-
-        mButtonData.setButtonSpec(newSpec);
+        mButtonData.updateIPHCommandBuilder(iphCommandBuilder);
     }
 
     private boolean shouldShowVoiceButton(Tab tab) {

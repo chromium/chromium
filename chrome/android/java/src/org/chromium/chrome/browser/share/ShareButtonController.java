@@ -241,13 +241,6 @@ public class ShareButtonController implements ButtonDataProvider, ConfigurationC
                 /* stringId = */ R.string.adaptive_toolbar_button_share_iph,
                 /* accessibilityStringId = */ R.string.adaptive_toolbar_button_share_iph)
                                                       .setHighlightParams(params);
-
-        ButtonData.ButtonSpec currentSpec = mButtonData.getButtonSpec();
-        ButtonData.ButtonSpec newSpec = new ButtonData.ButtonSpec(currentSpec.getDrawable(),
-                currentSpec.getOnClickListener(), currentSpec.getContentDescriptionResId(),
-                currentSpec.getSupportsTinting(), iphCommandBuilder,
-                currentSpec.getButtonVariant());
-
-        mButtonData.setButtonSpec(newSpec);
+        mButtonData.updateIPHCommandBuilder(iphCommandBuilder);
     }
 }

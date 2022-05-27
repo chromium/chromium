@@ -63,21 +63,6 @@ public interface ButtonData {
             mButtonVariant = buttonVariant;
         }
 
-        public ButtonSpec(@NonNull Drawable drawable, @NonNull View.OnClickListener onClickListener,
-                int contentDescriptionResId, boolean supportsTinting,
-                @Nullable IPHCommandBuilder iphCommandBuilder,
-                @AdaptiveToolbarButtonVariant int buttonVariant) {
-            this(drawable, onClickListener, /*onLongClickListener=*/null, contentDescriptionResId,
-                    supportsTinting, iphCommandBuilder, buttonVariant);
-        }
-
-        public ButtonSpec(Drawable drawable, View.OnClickListener onClickListener,
-                int contentDescriptionResId, boolean supportsTinting,
-                IPHCommandBuilder iphCommandBuilder) {
-            this(drawable, onClickListener, contentDescriptionResId, supportsTinting,
-                    iphCommandBuilder, AdaptiveToolbarButtonVariant.UNKNOWN);
-        }
-
         /** Returns the {@link Drawable} for the button icon. */
         @NonNull
         public Drawable getDrawable() {

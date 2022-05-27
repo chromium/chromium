@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.chrome.browser.toolbar.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.toolbar.ButtonDataImpl;
 import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
@@ -113,7 +114,7 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
                 new IPHCommandBuilder(mContext.getResources(),
                         FeatureConstants.IDENTITY_DISC_FEATURE, R.string.iph_identity_disc_text,
                         R.string.iph_identity_disc_accessibility_text),
-                /*isEnabled=*/true);
+                /*isEnabled=*/true, AdaptiveToolbarButtonVariant.UNKNOWN);
     }
 
     /**
@@ -182,8 +183,9 @@ public class IdentityDiscController implements NativeInitObserver, ProfileDataCa
     private static ButtonSpec buttonSpecWithDrawable(ButtonSpec buttonSpec, Drawable drawable) {
         if (buttonSpec.getDrawable() == drawable) return buttonSpec;
         return new ButtonSpec(drawable, buttonSpec.getOnClickListener(),
-                buttonSpec.getContentDescriptionResId(), buttonSpec.getSupportsTinting(),
-                buttonSpec.getIPHCommandBuilder());
+                /*onLongClickListener=*/null, buttonSpec.getContentDescriptionResId(),
+                buttonSpec.getSupportsTinting(), buttonSpec.getIPHCommandBuilder(),
+                AdaptiveToolbarButtonVariant.UNKNOWN);
     }
 
     /**

@@ -23,6 +23,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ButtonDataImpl;
 import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
+import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 
 import java.util.Arrays;
@@ -209,6 +210,7 @@ public class OptionalBrowsingModeButtonControllerTest {
         return new ButtonDataImpl(
                 /*canShow=*/true, /*drawable=*/null, /*onClickListener=*/null,
                 /*contentDescriptionResId=*/0, /*supportsTinting=*/false,
-                /*iphCommandBuilder=*/null, /*isEnabled=*/true);
+                /*iphCommandBuilder=*/null, /*isEnabled=*/true,
+                AdaptiveToolbarButtonVariant.UNKNOWN);
     }
 }

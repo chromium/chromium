@@ -124,7 +124,8 @@ public class AdaptiveToolbarButtonControllerTest {
         mButtonData = new ButtonDataImpl(
                 /*canShow=*/true, /*drawable=*/null, mock(View.OnClickListener.class),
                 /*contentDescriptionResId=*/0, /*supportsTinting=*/false,
-                /*iphCommandBuilder=*/null, /*isEnabled=*/true);
+                /*iphCommandBuilder=*/null, /*isEnabled=*/true,
+                AdaptiveToolbarButtonVariant.UNKNOWN);
     }
 
     @After
@@ -500,6 +501,7 @@ public class AdaptiveToolbarButtonControllerTest {
 
     private static ButtonSpec makeButtonSpec(@AdaptiveToolbarButtonVariant int variant) {
         return new ButtonSpec(/*drawable=*/null, mock(View.OnClickListener.class),
+                /*onLongClickListener=*/null,
                 /*contentDescriptionResId=*/101, /*supportsTinting=*/false,
                 /*iphCommandBuilder=*/null, variant);
     }

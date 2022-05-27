@@ -7,6 +7,9 @@ package org.chromium.chrome.browser.toolbar;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 
@@ -19,22 +22,14 @@ public class ButtonDataImpl implements ButtonData {
 
     public ButtonDataImpl() {}
 
-    public ButtonDataImpl(boolean canShow, Drawable drawable, View.OnClickListener onClickListener,
-            int contentDescriptionResId, boolean supportsTinting,
-            IPHCommandBuilder iphCommandBuilder, boolean isEnabled,
-            @AdaptiveToolbarButtonVariant int buttonVariant) {
+    public ButtonDataImpl(boolean canShow, @NonNull Drawable drawable,
+            @NonNull View.OnClickListener onClickListener, int contentDescriptionResId,
+            boolean supportsTinting, @Nullable IPHCommandBuilder iphCommandBuilder,
+            boolean isEnabled, @AdaptiveToolbarButtonVariant int buttonVariant) {
         mCanShow = canShow;
         mIsEnabled = isEnabled;
-        mButtonSpec = new ButtonSpec(drawable, onClickListener, contentDescriptionResId,
-                supportsTinting, iphCommandBuilder, buttonVariant);
-    }
-
-    // A convenience constructor, doesn't require callers to import AdaptiveToolbarButtonVariant
-    public ButtonDataImpl(boolean canShow, Drawable drawable, View.OnClickListener onClickListener,
-            int contentDescriptionResId, boolean supportsTinting,
-            IPHCommandBuilder iphCommandBuilder, boolean isEnabled) {
-        this(canShow, drawable, onClickListener, contentDescriptionResId, supportsTinting,
-                iphCommandBuilder, isEnabled, AdaptiveToolbarButtonVariant.UNKNOWN);
+        mButtonSpec = new ButtonSpec(drawable, onClickListener, /*onLongClickListener=*/null,
+                contentDescriptionResId, supportsTinting, iphCommandBuilder, buttonVariant);
     }
 
     @Override
@@ -52,6 +47,10 @@ public class ButtonDataImpl implements ButtonData {
         return mButtonSpec;
     }
 
+    public void setButtonSpec(ButtonSpec buttonSpec) {
+        mButtonSpec = buttonSpec;
+    }
+
     public void setCanShow(boolean canShow) {
         mCanShow = canShow;
     }
@@ -60,7 +59,13 @@ public class ButtonDataImpl implements ButtonData {
         mIsEnabled = enabled;
     }
 
-    public void setButtonSpec(ButtonSpec buttonSpec) {
-        mButtonSpec = buttonSpec;
+    /** Convenience method to update the IPH command builder. */
+    public void updateIPHCommandBuilder(@Nullable IPHCommandBuilder iphCommandBuilder) {
+        ButtonSpec currentSpec = getButtonSpec();
+        ButtonSpec newSpec = new ButtonSpec(currentSpec.getDrawable(),
+                currentSpec.getOnClickListener(), currentSpec.getOnLongClickListener(),
+                currentSpec.getContentDescriptionResId(), currentSpec.getSupportsTinting(),
+                iphCommandBuilder, currentSpec.getButtonVariant());
+        setButtonSpec(newSpec);
     }
 }
