@@ -29,6 +29,7 @@
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/field_trial_register.h"
 #include "components/segmentation_platform/public/model_provider.h"
+#include "components/segmentation_platform/public/trigger_context.h"
 
 namespace segmentation_platform {
 namespace {
@@ -134,6 +135,21 @@ SegmentSelectionResult SegmentationPlatformServiceImpl::GetCachedSegmentResult(
   auto& selector = segment_selectors_.at(segmentation_key);
   return selector->GetCachedSegmentResult();
 }
+
+int SegmentationPlatformServiceImpl::RegisterOnDemandSegmentSelectionCallback(
+    const std::string& segmentation_key,
+    const OnDemandSegmentSelectionCallback& callback) {
+  return 0;
+}
+
+void SegmentationPlatformServiceImpl::
+    UnregisterOnDemandSegmentSelectionCallback(
+        int callback_id,
+        const std::string& segmentation_key) {}
+
+void SegmentationPlatformServiceImpl::OnTrigger(
+    TriggerType trigger,
+    const TriggerContext& trigger_context) {}
 
 void SegmentationPlatformServiceImpl::EnableMetrics(
     bool signal_collection_allowed) {

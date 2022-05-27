@@ -92,6 +92,14 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
                           SegmentSelectionCallback callback) override;
   SegmentSelectionResult GetCachedSegmentResult(
       const std::string& segmentation_key) override;
+  int RegisterOnDemandSegmentSelectionCallback(
+      const std::string& segmentation_key,
+      const OnDemandSegmentSelectionCallback& callback) override;
+  void UnregisterOnDemandSegmentSelectionCallback(
+      int callback_id,
+      const std::string& segmentation_key) override;
+  void OnTrigger(TriggerType trigger,
+                 const TriggerContext& trigger_context) override;
   void EnableMetrics(bool signal_collection_allowed) override;
   ServiceProxy* GetServiceProxy() override;
   bool IsPlatformInitialized() override;

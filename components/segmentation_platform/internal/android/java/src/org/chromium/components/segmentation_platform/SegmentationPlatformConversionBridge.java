@@ -20,4 +20,10 @@ public class SegmentationPlatformConversionBridge {
         if (segment == null) segment = SegmentId.OPTIMIZATION_TARGET_UNKNOWN;
         return new SegmentSelectionResult(isReady, segment);
     }
+
+    @CalledByNative
+    private static OnDemandSegmentSelectionResult createOnDemandSegmentSelectionResult(
+            SegmentSelectionResult selectedSegment, TriggerContext triggerContext) {
+        return new OnDemandSegmentSelectionResult(selectedSegment, triggerContext);
+    }
 }

@@ -26,4 +26,21 @@ public interface SegmentationPlatformService {
      * @return The result of segment selection
      */
     SegmentSelectionResult getCachedSegmentResult(String segmentationKey);
+
+    /**
+     * Called to register a callback to be invoked after a segment selection. Only used for
+     * on-demand segment selection.
+     * @param segmentationKey The key to be used to distinguish between different clients.
+     * @param callback The callback to be invoked after a segment selection is computed.
+     * @return A callback ID to be used when unregistering.
+     */
+    int registerOnDemandSegmentSelectionCallback(
+            String segmentationKey, Callback<OnDemandSegmentSelectionResult> callback);
+
+    /**
+     * Called to unregister a previously registered callback for segment selection result.
+     * @param segmentationKey The key to be used to distinguish between different clients.
+     * @param callbackId The associated callback ID obtained when registering.
+     */
+    void unregisterOnDemandSegmentSelectionCallback(String segmentationKey, int callbackId);
 }

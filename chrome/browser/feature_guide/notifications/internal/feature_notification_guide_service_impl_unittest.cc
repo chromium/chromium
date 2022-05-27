@@ -20,6 +20,7 @@
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/segmentation_platform/public/segment_selection_result.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
+#include "components/segmentation_platform/public/trigger_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -109,6 +110,17 @@ class TestSegmentationPlatformService
         OPTIMIZATION_TARGET_SEGMENTATION_CHROME_LOW_USER_ENGAGEMENT;
     return result;
   }
+  int RegisterOnDemandSegmentSelectionCallback(
+      const std::string& segmentation_key,
+      const OnDemandSegmentSelectionCallback& callback) override {
+    return 0;
+  }
+  void UnregisterOnDemandSegmentSelectionCallback(
+      int callback_id,
+      const std::string& segmentation_key) override {}
+  void OnTrigger(
+      segmentation_platform::TriggerType trigger,
+      const segmentation_platform::TriggerContext& trigger_context) override {}
   void EnableMetrics(bool signal_collection_allowed) override {}
   segmentation_platform::ServiceProxy* GetServiceProxy() override {
     return nullptr;
