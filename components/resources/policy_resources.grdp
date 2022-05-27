@@ -4,4 +4,9 @@
   <include name="IDR_POLICY_HTML" file="../policy/resources/webui/policy.html" type="BINDATA" />
   <include name="IDR_POLICY_BASE_JS" file="../policy/resources/webui/policy_base.js" preprocess="true" type="BINDATA" />
   <include name="IDR_POLICY_JS" file="../policy/resources/webui/policy.js" type="BINDATA" />
+  <include name="IDR_POLICY_POLICY_CONFLICT_JS" file="${root_gen_dir}/components/policy/resources/webui/policy_conflict.js" use_base_dir="false" type="BINDATA" />
+  <include name="IDR_POLICY_POLICY_ROW_JS" file="${root_gen_dir}/components/policy/resources/webui/policy_row.js" use_base_dir="false" type="BINDATA" />
+  <include name="IDR_POLICY_POLICY_PRECEDENCE_ROW_JS" file="${root_gen_dir}/components/policy/resources/webui/policy_precedence_row.js" use_base_dir="false" type="BINDATA" />
+  <include name="IDR_POLICY_POLICY_TABLE_JS" file="${root_gen_dir}/components/policy/resources/webui/policy_table.js" use_base_dir="false" type="BINDATA" />
+  <include name="IDR_POLICY_STATUS_BOX_JS" file="${root_gen_dir}/components/policy/resources/webui/status_box.js" use_base_dir="false" type="BINDATA" />
 </grit-part>
