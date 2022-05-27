@@ -35,36 +35,6 @@ namespace autofill {
 
 namespace {
 
-// Extend `components` using Autofill's address format extensions. These are
-// used to add support for fields that are not strictly required for a valid
-// address, and thus not provided by libaddressinput, but still commonly appear
-// in forms.
-void ExtendAddressComponents(std::vector<AddressUiComponent>& components,
-                             const std::string& country_code,
-                             const Localization& localization) {
-  AutofillCountry country(country_code);
-  for (const AutofillCountry::AddressFormatExtension& rule :
-       country.address_format_extensions()) {
-    // Find the location of `rule.placed_after` in `components`.
-    auto prev_component = base::ranges::find(
-        components, rule.placed_after,
-        [](const AddressUiComponent& component) { return component.field; });
-    DCHECK(prev_component != components.end());
-
-    // Insert the separator and `rule.type` afterwards.
-    components.insert(
-        ++prev_component,
-        {AddressUiComponent{.literal =
-                                std::string(rule.separator_before_label)},
-         AddressUiComponent{
-             .field = rule.type,
-             .name = localization.GetString(rule.label_id),
-             .length_hint = rule.large_sized
-                                ? AddressUiComponent::HINT_LONG
-                                : AddressUiComponent::HINT_SHORT}});
-  }
-}
-
 // Returns a vector of AddressUiComponent for `country_code` when using
 // `ui_language_code`. If no components are available for `country_code`, it
 // defaults back to the US. If `ui_language_code` is not valid,  the default
@@ -82,10 +52,8 @@ std::vector<AddressUiComponent> GetAddressComponents(
     std::vector<AddressUiComponent> components =
         ::i18n::addressinput::BuildComponentsWithLiterals(
             country, localization, ui_language_code, components_language_code);
-    if (!components.empty()) {
-      ExtendAddressComponents(components, country, localization);
+    if (!components.empty())
       return components;
-    }
   }
   NOTREACHED();
   return {};
