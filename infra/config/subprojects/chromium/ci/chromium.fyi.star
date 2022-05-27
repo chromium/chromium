@@ -1010,7 +1010,7 @@ fyi_mac_builder(
     reclient_rewrapper_env = {"RBE_compare": "true"},
     reclient_ensure_verified = True,
     description_html = "verify artifacts. should be removed after the migration. crbug.com/1260232",
-    execution_timeout = 12 * time.hour,
+    execution_timeout = 14 * time.hour,
 )
 
 fyi_mac_builder(
