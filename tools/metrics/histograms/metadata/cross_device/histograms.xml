@@ -2316,9 +2316,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     The duration of time between when the user locks their screen or wakes their
     device (either opening a clamshell device or waking up a tablet), and when
-    the user is first provided a visible indication of Smart Lock's status (the
-    Smart Lock icon presents as either yellow or green, with a tooltip
-    explaining the status).
+    the user is first provided a visible indication of Smart Lock's status after
+    Smart Lock has communicated with the phone.
 
     Suffixed by the type of status which the user is first presented with. View
     the base histogram to see results for all status types aggregated together,

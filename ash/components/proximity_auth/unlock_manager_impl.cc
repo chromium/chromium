@@ -189,6 +189,37 @@ void RecordExtendedDurationTimerMetric(const std::string& histogram_name,
       kMaxExtendedDuration /* max */, kNumDurationMetricBuckets /* buckets */);
 }
 
+bool HasCommunicatedWithPhone(SmartLockState state) {
+  switch (state) {
+    case SmartLockState::kDisabled:
+      [[fallthrough]];
+    case SmartLockState::kInactive:
+      [[fallthrough]];
+    case SmartLockState::kBluetoothDisabled:
+      [[fallthrough]];
+    case SmartLockState::kPhoneNotFound:
+      [[fallthrough]];
+    case SmartLockState::kConnectingToPhone:
+      [[fallthrough]];
+    case SmartLockState::kPasswordReentryRequired:
+      return false;
+    case SmartLockState::kPhoneNotLockable:
+      [[fallthrough]];
+    case SmartLockState::kPhoneNotAuthenticated:
+      [[fallthrough]];
+    case SmartLockState::kPhoneFoundLockedAndDistant:
+      [[fallthrough]];
+    case SmartLockState::kPhoneFoundLockedAndProximate:
+      [[fallthrough]];
+    case SmartLockState::kPhoneFoundUnlockedAndDistant:
+      [[fallthrough]];
+    case SmartLockState::kPhoneAuthenticated:
+      [[fallthrough]];
+    case SmartLockState::kPrimaryUserAbsent:
+      return true;
+  }
+}
+
 }  // namespace
 
 UnlockManagerImpl::UnlockManagerImpl(
@@ -945,10 +976,6 @@ void UnlockManagerImpl::RecordFirstStatusShownToUser(SmartLockState new_state) {
   base::UmaHistogramEnumeration("SmartLock.FirstStatusToUser",
                                 first_status.value());
 
-  const std::string histogram_status_suffix = GetHistogramStatusSuffix(
-      /*unlockable=*/(first_status ==
-                      FirstSmartLockStatus::kPhoneAuthenticated));
-
   base::Time now = base::DefaultClock::GetInstance()->Now();
   base::TimeDelta show_lock_screen_to_show_first_status_to_user_duration =
       now - show_lock_screen_time_;
@@ -958,11 +985,23 @@ void UnlockManagerImpl::RecordFirstStatusShownToUser(SmartLockState new_state) {
         "SmartLock.Performance.ShowLockScreenToShowFirstStatusToUserDuration."
         "Unlock",
         show_lock_screen_to_show_first_status_to_user_duration);
-    RecordExtendedDurationTimerMetric(
-        "SmartLock.Performance.ShowLockScreenToShowFirstStatusToUserDuration."
-        "Unlock." +
-            histogram_status_suffix,
-        show_lock_screen_to_show_first_status_to_user_duration);
+
+    if (new_state == SmartLockState::kPhoneAuthenticated) {
+      RecordExtendedDurationTimerMetric(
+          "SmartLock.Performance.ShowLockScreenToShowFirstStatusToUserDuration."
+          "Unlock.Unlockable",
+          show_lock_screen_to_show_first_status_to_user_duration);
+    } else if (HasCommunicatedWithPhone(new_state)) {
+      // Only log to Unlock.Other if we aren't in an unlockable state since
+      // that's covered by the other metric, and only if we are in a state that
+      // indicates we were able to communicate with the phone over Bluetooth
+      // since in all other cases the time to show the first status is highly
+      // deterministic.
+      RecordExtendedDurationTimerMetric(
+          "SmartLock.Performance.ShowLockScreenToShowFirstStatusToUserDuration."
+          "Unlock.Other",
+          show_lock_screen_to_show_first_status_to_user_duration);
+    }
   }
 }
 
