@@ -76,11 +76,17 @@ class HidDetectionManagerImpl : public HidDetectionManager,
   bool AttemptSetDeviceAsConnectedHid(
       const device::mojom::InputDeviceInfo& device);
 
-  // Returns InputMetadata based on |device_id|. A null |device_id| means no HID
-  // for that input is connected. If |device_id| is not null, it must be a
-  // key for an entry in |device_id_to_device_map_|.
+  // Computes an InputMetadata based on if an input device is connected or if a
+  // Bluetooth device of the same type as |input_type| is pairing. A null
+  // |connected_device_id| means no HID for that input is connected. If
+  // |connected_device_id| is not null, it must be a key for an entry in
+  // |device_id_to_device_map_|. A null |current_pairing_device| means no
+  // Bluetooth device is pairing.
   InputMetadata GetInputMetadata(
-      const absl::optional<std::string>& device_id) const;
+      const absl::optional<std::string>& connected_device_id,
+      BluetoothHidDetector::BluetoothHidType input_type,
+      const absl::optional<BluetoothHidDetector::BluetoothHidMetadata>&
+          current_pairing_device) const;
 
   // Informs |bluetooth_hid_detector_| what devices are missing.
   void SetInputDevicesStatus();

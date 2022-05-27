@@ -22,6 +22,12 @@ class HidDetectionManager {
     // A device is connected via USB.
     kConnectedViaUsb,
 
+    // A device is being paired with via Bluetooth.
+    kPairingViaBluetooth,
+
+    // A device is connected via Bluetooth.
+    kPairedViaBluetooth,
+
     // A device is connected, but is not known to be USB (Bluetooth vs USB vs
     // serial).
     kConnected

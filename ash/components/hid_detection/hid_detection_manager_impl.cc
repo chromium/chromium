@@ -10,6 +10,7 @@
 
 namespace ash::hid_detection {
 namespace {
+using BluetoothHidType = BluetoothHidDetector::BluetoothHidType;
 using InputState = HidDetectionManager::InputState;
 
 // Global InputDeviceManagerBinder instance that can be overridden in tests.
@@ -59,9 +60,13 @@ void HidDetectionManagerImpl::PerformStopHidDetection() {
 
 HidDetectionManager::HidDetectionStatus
 HidDetectionManagerImpl::ComputeHidDetectionStatus() const {
+  BluetoothHidDetector::BluetoothHidDetectionStatus bluetooth_status =
+      bluetooth_hid_detector_->GetBluetoothHidDetectionStatus();
   return HidDetectionManager::HidDetectionStatus{
-      GetInputMetadata(connected_pointer_id_),
-      GetInputMetadata(connected_keyboard_id_),
+      GetInputMetadata(connected_pointer_id_, BluetoothHidType::kPointer,
+                       bluetooth_status.current_pairing_device),
+      GetInputMetadata(connected_keyboard_id_, BluetoothHidType::kKeyboard,
+                       bluetooth_status.current_pairing_device),
       connected_touchscreen_id_.has_value()};
 }
 
@@ -111,7 +116,7 @@ void HidDetectionManagerImpl::InputDeviceRemoved(const std::string& id) {
 }
 
 void HidDetectionManagerImpl::OnBluetoothHidStatusChanged() {
-  // TODO(gordonseto): Implement this.
+  NotifyHidDetectionStatusChanged();
 }
 
 void HidDetectionManagerImpl::BindToInputDeviceManagerIfNeeded() {
@@ -204,30 +209,41 @@ bool HidDetectionManagerImpl::AttemptSetDeviceAsConnectedHid(
 }
 
 HidDetectionManager::InputMetadata HidDetectionManagerImpl::GetInputMetadata(
-    const absl::optional<std::string>& device_id) const {
-  if (!device_id.has_value()) {
-    return InputMetadata();
+    const absl::optional<std::string>& connected_device_id,
+    BluetoothHidType input_type,
+    const absl::optional<BluetoothHidDetector::BluetoothHidMetadata>&
+        current_pairing_device) const {
+  if (connected_device_id.has_value()) {
+    const device::mojom::InputDeviceInfoPtr& device =
+        device_id_to_device_map_.find(connected_device_id.value())->second;
+    DCHECK(device)
+        << " |connected_device_id| not found in |device_id_to_device_map_|";
+    InputState state;
+    switch (device->type) {
+      case device::mojom::InputDeviceType::TYPE_BLUETOOTH:
+        state = InputState::kPairedViaBluetooth;
+        break;
+      case device::mojom::InputDeviceType::TYPE_USB:
+        state = InputState::kConnectedViaUsb;
+        break;
+      case device::mojom::InputDeviceType::TYPE_SERIO:
+        [[fallthrough]];
+      case device::mojom::InputDeviceType::TYPE_UNKNOWN:
+        state = InputState::kConnected;
+        break;
+    }
+    return InputMetadata{state, device->name};
   }
 
-  const device::mojom::InputDeviceInfoPtr& device =
-      device_id_to_device_map_.find(device_id.value())->second;
-  DCHECK(device) << " |device_id| not found in |device_id_to_device_map_|";
-  InputState state;
-  switch (device->type) {
-    case device::mojom::InputDeviceType::TYPE_BLUETOOTH:
-      // TODO(gordonseto): Handle Bluetooth type.
-      state = InputState::kConnected;
-      break;
-    case device::mojom::InputDeviceType::TYPE_USB:
-      state = InputState::kConnectedViaUsb;
-      break;
-    case device::mojom::InputDeviceType::TYPE_SERIO:
-      [[fallthrough]];
-    case device::mojom::InputDeviceType::TYPE_UNKNOWN:
-      state = InputState::kConnected;
-      break;
+  if (current_pairing_device.has_value() &&
+      (current_pairing_device.value().type == input_type ||
+       current_pairing_device.value().type ==
+           BluetoothHidType::kKeyboardPointerCombo)) {
+    return InputMetadata{InputState::kPairingViaBluetooth,
+                         current_pairing_device.value().name};
   }
-  return InputMetadata{state, device->name};
+
+  return InputMetadata();
 }
 
 void HidDetectionManagerImpl::SetInputDevicesStatus() {
