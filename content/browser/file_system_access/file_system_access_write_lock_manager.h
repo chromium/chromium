@@ -9,6 +9,7 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/types/pass_key.h"
@@ -72,13 +73,14 @@ class CONTENT_EXPORT FileSystemAccessWriteLockManager {
     const absl::optional<storage::BucketLocator> bucket_locator;
   };
 
-  // This class represents an active write lock on a file. The lock is released
-  // on destruction.
+  // This class represents an active write lock on a file or directory. The lock
+  // is released on destruction.
   class CONTENT_EXPORT WriteLock : public base::RefCounted<WriteLock> {
    public:
     WriteLock(base::WeakPtr<FileSystemAccessWriteLockManager> lock_manager,
               const EntryLocator& entry_locator,
               const WriteLockType& type,
+              const scoped_refptr<WriteLock> parent_lock,
               base::PassKey<FileSystemAccessWriteLockManager> pass_key);
 
     WriteLock(WriteLock const&) = delete;
@@ -103,6 +105,13 @@ class CONTENT_EXPORT FileSystemAccessWriteLockManager {
     const EntryLocator entry_locator_;
 
     const WriteLockType type_;
+
+    // When a file or directory is locked, it acquires a shared lock on its
+    // parent directory, which acquires a shared lock on its parent, and so
+    // forth. When this instance goes away, the associated ancestor locks are
+    // automatically released. May be null if this instance represents the root
+    // of its file system.
+    const scoped_refptr<WriteLock> parent_lock_;
   };
 
   explicit FileSystemAccessWriteLockManager(
@@ -120,6 +129,10 @@ class CONTENT_EXPORT FileSystemAccessWriteLockManager {
       WriteLockType lock_type);
 
  private:
+  absl::optional<scoped_refptr<WriteLock>> TakeLockImpl(
+      const EntryLocator& entry_locator,
+      WriteLockType lock_type);
+
   // Releases the lock on `entry_locator`. Called from the WriteLock destructor.
   void ReleaseLock(const EntryLocator& entry_locator);
 

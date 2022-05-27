@@ -4,6 +4,7 @@
 
 #include "content/browser/file_system_access/file_system_access_write_lock_manager.h"
 #include "base/files/file_path.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/common/file_system/file_system_types.h"
@@ -78,8 +79,12 @@ WriteLock::WriteLock(
     base::WeakPtr<FileSystemAccessWriteLockManager> lock_manager,
     const EntryLocator& entry_locator,
     const WriteLockType& type,
-    base::PassKey<FileSystemAccessWriteLockManager> /*pass_key*/)
-    : lock_manager_(lock_manager), entry_locator_(entry_locator), type_(type) {}
+    const scoped_refptr<WriteLock> parent_lock,
+    base::PassKey<FileSystemAccessWriteLockManager> pass_key)
+    : lock_manager_(lock_manager),
+      entry_locator_(entry_locator),
+      type_(type),
+      parent_lock_(std::move(parent_lock)) {}
 
 WriteLock::~WriteLock() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -98,17 +103,42 @@ FileSystemAccessWriteLockManager::TakeLock(const storage::FileSystemURL& url,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   EntryLocator entry_locator = EntryLocator::FromFileSystemURL(url);
+  return TakeLockImpl(entry_locator, lock_type);
+}
+
+absl::optional<scoped_refptr<WriteLock>>
+FileSystemAccessWriteLockManager::TakeLockImpl(
+    const EntryLocator& entry_locator,
+    WriteLockType lock_type) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   auto lock_it = locks_.find(entry_locator);
   WriteLock* existing_lock =
       lock_it != locks_.end() ? lock_it->second : nullptr;
 
   if (!existing_lock) {
+    // Recursively try to acquire shared locks on all parent directories. If any
+    // parent directories are locked, lock acquisition should fail.
+    scoped_refptr<WriteLock> parent_lock;
+    auto parent_path = entry_locator.path.DirName();
+    if (parent_path != entry_locator.path) {
+      EntryLocator parent_entry_locator{entry_locator.type, parent_path,
+                                        entry_locator.bucket_locator};
+      auto maybe_parent_lock =
+          TakeLockImpl(parent_entry_locator, WriteLockType::kShared);
+      if (!maybe_parent_lock.has_value())
+        return absl::nullopt;
+
+      parent_lock = std::move(maybe_parent_lock.value());
+    }
+
     // There are no locks on the file, we can take any type of lock.
-    WriteLock* new_lock = new WriteLock(weak_factory_.GetWeakPtr(),
-                                        entry_locator, lock_type, PassKey());
-    // The lock is owned by the caller, a raw pointer is stored `locks_` to be
-    // able to increase the refcount when a new shared lock is requested on a
-    // URL that has an existing one.
+    WriteLock* new_lock =
+        new WriteLock(weak_factory_.GetWeakPtr(), entry_locator, lock_type,
+                      std::move(parent_lock), PassKey());
+    // The lock is owned by the caller or its child lock. A raw pointer is
+    // stored `locks_` to be able to increase the refcount when a new shared
+    // lock is requested on a URL that has an existing one.
     //
     // It is safe to store raw pointers in `locks_` because when a lock is
     // destroyed, it's entry in the map is erased. This means that any raw

@@ -66,15 +66,100 @@ class FileSystemAccessWriteLockManagerTest : public testing::Test {
     EXPECT_TRUE(dir_.Delete());
   }
 
+  void AssertAncestorLockBehavior(const FileSystemURL& parent_url,
+                                  const FileSystemURL& child_url) {
+    // Parent cannot take exclusive lock if child is exclusively locked.
+    {
+      auto child_lock =
+          manager_->TakeWriteLock(child_url, WriteLockType::kExclusive);
+      ASSERT_TRUE(child_lock.has_value());
+
+      auto parent_lock =
+          manager_->TakeWriteLock(parent_url, WriteLockType::kExclusive);
+      ASSERT_FALSE(parent_lock.has_value());
+    }
+
+    // Parent can take shared lock if child is exclusively locked.
+    {
+      auto child_lock =
+          manager_->TakeWriteLock(child_url, WriteLockType::kExclusive);
+      ASSERT_TRUE(child_lock.has_value());
+
+      auto parent_lock =
+          manager_->TakeWriteLock(parent_url, WriteLockType::kShared);
+      ASSERT_TRUE(parent_lock.has_value());
+    }
+
+    // Child cannot take exclusive lock if parent is exclusively locked.
+    {
+      auto parent_lock =
+          manager_->TakeWriteLock(parent_url, WriteLockType::kExclusive);
+      ASSERT_TRUE(parent_lock.has_value());
+
+      auto child_lock =
+          manager_->TakeWriteLock(child_url, WriteLockType::kExclusive);
+      ASSERT_FALSE(child_lock.has_value());
+    }
+
+    // Child cannot take shared lock if parent is exclusively locked.
+    {
+      auto parent_lock =
+          manager_->TakeWriteLock(parent_url, WriteLockType::kExclusive);
+      ASSERT_TRUE(parent_lock.has_value());
+
+      auto child_lock =
+          manager_->TakeWriteLock(child_url, WriteLockType::kShared);
+      ASSERT_FALSE(child_lock.has_value());
+    }
+
+    // Parent cannot take exclusive lock if child holds a shared lock.
+    {
+      auto child_lock =
+          manager_->TakeWriteLock(child_url, WriteLockType::kShared);
+      ASSERT_TRUE(child_lock.has_value());
+
+      auto parent_lock =
+          manager_->TakeWriteLock(parent_url, WriteLockType::kExclusive);
+      ASSERT_FALSE(parent_lock.has_value());
+    }
+
+    // Parent can take shared lock if child holds a shared lock.
+    {
+      auto child_lock =
+          manager_->TakeWriteLock(child_url, WriteLockType::kShared);
+      ASSERT_TRUE(child_lock.has_value());
+
+      auto parent_lock =
+          manager_->TakeWriteLock(parent_url, WriteLockType::kShared);
+      ASSERT_TRUE(parent_lock.has_value());
+    }
+
+    // Child can take exclusive lock if parent holds a shared lock.
+    {
+      auto parent_lock =
+          manager_->TakeWriteLock(parent_url, WriteLockType::kShared);
+      ASSERT_TRUE(parent_lock.has_value());
+
+      auto child_lock =
+          manager_->TakeWriteLock(child_url, WriteLockType::kExclusive);
+      ASSERT_TRUE(child_lock.has_value());
+    }
+
+    // Child can take shared lock if parent holds a shared lock.
+    {
+      auto parent_lock =
+          manager_->TakeWriteLock(parent_url, WriteLockType::kShared);
+      ASSERT_TRUE(parent_lock.has_value());
+
+      auto child_lock =
+          manager_->TakeWriteLock(child_url, WriteLockType::kShared);
+      ASSERT_TRUE(child_lock.has_value());
+    }
+  }
+
  protected:
-  const GURL kTestURL = GURL("https://example.com/test");
   const blink::StorageKey kTestStorageKey =
       blink::StorageKey::CreateFromStringForTesting("https://example.com/test");
-  const int kProcessId = 1;
-  const int kFrameRoutingId = 2;
-  const GlobalRenderFrameHostId kFrameId{kProcessId, kFrameRoutingId};
-  const FileSystemAccessManagerImpl::BindingContext kBindingContext = {
-      kTestStorageKey, kTestURL, kFrameId};
 
   BrowserTaskEnvironment task_environment_;
 
@@ -248,6 +333,40 @@ TEST_F(FileSystemAccessWriteLockManagerTest, LockAcrossSites) {
   auto exclusive_lock =
       manager_->TakeWriteLock(url2, WriteLockType::kExclusive);
   ASSERT_TRUE(exclusive_lock.has_value());
+}
+
+TEST_F(FileSystemAccessWriteLockManagerTest, AncestorLocks) {
+  base::FilePath parent_path = dir_.GetPath().AppendASCII("foo");
+  auto parent_url = manager_->CreateFileSystemURLFromPath(
+      FileSystemAccessEntryFactory::PathType::kLocal, parent_path);
+  auto child_url = manager_->CreateFileSystemURLFromPath(
+      FileSystemAccessEntryFactory::PathType::kLocal,
+      parent_path.Append(FILE_PATH_LITERAL("child")));
+
+  AssertAncestorLockBehavior(parent_url, child_url);
+}
+
+TEST_F(FileSystemAccessWriteLockManagerTest, AncestorLocksExternal) {
+  base::FilePath parent_path =
+      base::FilePath::FromUTF8Unsafe(kTestMountPoint).AppendASCII("foo");
+  auto parent_url = manager_->CreateFileSystemURLFromPath(
+      FileSystemAccessEntryFactory::PathType::kExternal, parent_path);
+  auto child_url = manager_->CreateFileSystemURLFromPath(
+      FileSystemAccessEntryFactory::PathType::kExternal,
+      parent_path.Append(FILE_PATH_LITERAL("child")));
+
+  AssertAncestorLockBehavior(parent_url, child_url);
+}
+
+TEST_F(FileSystemAccessWriteLockManagerTest, AncestorLocksSandboxed) {
+  auto parent_path = base::FilePath::FromUTF8Unsafe("test/foo/bar");
+  auto parent_url = file_system_context_->CreateCrackedFileSystemURL(
+      kTestStorageKey, storage::kFileSystemTypeTemporary, parent_path);
+  auto child_url = file_system_context_->CreateCrackedFileSystemURL(
+      kTestStorageKey, storage::kFileSystemTypeTemporary,
+      parent_path.Append(FILE_PATH_LITERAL("child")));
+
+  AssertAncestorLockBehavior(parent_url, child_url);
 }
 
 }  // namespace content
