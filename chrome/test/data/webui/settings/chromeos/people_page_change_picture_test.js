@@ -121,7 +121,7 @@ suite('ChangePictureTests', function() {
 
   setup(async function() {
     browserProxy = new TestChangePictureBrowserProxy();
-    ChangePictureBrowserProxyImpl.instance_ = browserProxy;
+    ChangePictureBrowserProxyImpl.setInstance(browserProxy);
     PolymerTest.clearBody();
     changePicture = document.createElement('settings-change-picture');
     document.body.appendChild(changePicture);

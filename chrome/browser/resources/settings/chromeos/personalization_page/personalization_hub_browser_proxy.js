@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
-// clang-format on
-
 /** @interface */
 export class PersonalizationHubBrowserProxy {
   openPersonalizationHub() {}
@@ -19,6 +15,17 @@ export class PersonalizationHubBrowserProxyImpl {
   openPersonalizationHub() {
     chrome.send('openPersonalizationHub');
   }
+
+  /** @return {!PersonalizationHubBrowserProxy} */
+  static getInstance() {
+    return instance || (instance = new PersonalizationHubBrowserProxyImpl());
+  }
+
+  /** @param {!PersonalizationHubBrowserProxy} obj */
+  static setInstance(obj) {
+    instance = obj;
+  }
 }
 
-addSingletonGetter(PersonalizationHubBrowserProxyImpl);
+/** @type {?PersonalizationHubBrowserProxy} */
+let instance = null;

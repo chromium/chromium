@@ -52,7 +52,7 @@ suite('PersonalizationHandler', function() {
 
   setup(function() {
     WallpaperBrowserProxy = new TestWallpaperBrowserProxy();
-    WallpaperBrowserProxyImpl.instance_ = WallpaperBrowserProxy;
+    WallpaperBrowserProxyImpl.setInstance(WallpaperBrowserProxy);
     createPersonalizationPage();
   });
 
@@ -78,7 +78,8 @@ suite('PersonalizationHandler', function() {
   test('wallpaperSettingVisible', function() {
     personalizationPage.showWallpaperRow_ = false;
     flush();
-    assertTrue(personalizationPage.$$('#wallpaperButton').hidden);
+    assertTrue(personalizationPage.shadowRoot.querySelector('#wallpaperButton')
+                   .hidden);
   });
 
   test('wallpaperPolicyControlled', async () => {
@@ -88,8 +89,11 @@ suite('PersonalizationHandler', function() {
     createPersonalizationPage();
     await WallpaperBrowserProxy.whenCalled('isWallpaperPolicyControlled');
     flush();
-    assertFalse(personalizationPage.$$('#wallpaperPolicyIndicator').hidden);
-    assertTrue(personalizationPage.$$('#wallpaperButton').disabled);
+    assertFalse(personalizationPage.shadowRoot
+                    .querySelector('#wallpaperPolicyIndicator')
+                    .hidden);
+    assertTrue(personalizationPage.shadowRoot.querySelector('#wallpaperButton')
+                   .disabled);
   });
 
   test('Deep link to open wallpaper button', async () => {
@@ -119,7 +123,8 @@ suite('PersonalizationHandler', function() {
     const isAmbientModeEnabled = loadTimeData.getBoolean('isAmbientModeEnabled');
 
     if(!isGuest && isAmbientModeEnabled){
-      const row = personalizationPage.$$('#ambientModeRow');
+      const row =
+          personalizationPage.shadowRoot.querySelector('#ambientModeRow');
       assertTrue(!!row);
       row.click();
       assertEquals(routes.AMBIENT_MODE, Router.getInstance().getCurrentRoute());
@@ -135,11 +140,13 @@ suite('PersonalizationHandler', function() {
 
     await waitAfterNextRender(personalizationPage);
 
-    const changePicturePage = personalizationPage.$$('settings-change-picture');
+    const changePicturePage =
+        personalizationPage.shadowRoot.querySelector('settings-change-picture');
     assertTrue(!!changePicturePage);
-    const deepLinkElement = changePicturePage.$$('#pictureList')
-                                .$$('#selector')
-                                .$$('[class="iron-selected"]');
+    const deepLinkElement =
+        changePicturePage.shadowRoot.querySelector('#pictureList')
+            .shadowRoot.querySelector('#selector')
+            .$$('[class="iron-selected"]');
     await waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
