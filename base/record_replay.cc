@@ -133,4 +133,17 @@ void* IdPointer(int id) {
   return OP2(V8RecordReplayIdPointer(id), nullptr);
 }
 
+AutoLockMaybeEventsDisallowed::AutoLockMaybeEventsDisallowed(base::Lock& lock) : lock_(lock) {
+  if (AreEventsDisallowed()) {
+    AutoPassThroughEvents pt;
+    lock.Acquire();
+  } else {
+    lock.Acquire();
+  }
+}
+
+AutoLockMaybeEventsDisallowed::~AutoLockMaybeEventsDisallowed() {
+  lock_.Release();
+}
+
 } // namespace recordreplay

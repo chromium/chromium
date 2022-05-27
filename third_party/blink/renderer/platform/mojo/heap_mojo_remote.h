@@ -80,13 +80,6 @@ class HeapMojoRemote {
    public:
     explicit Wrapper(ContextLifecycleNotifier* notifier) {
       SetContextLifecycleNotifier(notifier);
-
-      // Destroying mojo objects generally will interact with the recording,
-      // so we avoid collecting GC'ed wrappers for this and other mojo wrapper
-      // classes.
-      if (recordreplay::IsRecordingOrReplaying()) {
-        new Persistent<Wrapper>(this);
-      }
     }
     Wrapper(const Wrapper&) = delete;
     Wrapper& operator=(const Wrapper&) = delete;

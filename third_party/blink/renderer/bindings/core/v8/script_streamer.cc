@@ -659,12 +659,6 @@ ScriptStreamer::ScriptStreamer(
       // one we don't stream.
       encoding_(v8::ScriptCompiler::StreamedSource::TWO_BYTE),
       loading_task_runner_(std::move(loading_task_runner)) {
-  // Destroying the stramer interacts with the recording, so never collect
-  // streamers when recording/replaying.
-  if (recordreplay::IsRecordingOrReplaying()) {
-    new Persistent<ScriptStreamer>(this);
-  }
-
   watcher_ = std::make_unique<mojo::SimpleWatcher>(
       FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL,
       loading_task_runner_);

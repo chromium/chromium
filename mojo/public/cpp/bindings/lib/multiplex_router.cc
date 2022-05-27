@@ -331,12 +331,6 @@ MultiplexRouter::MultiplexRouter(
       control_message_proxy_(&connector_) {
   recordreplay::RegisterPointer(this);
 
-  // Leak when recording/replaying to avoid running the destructor at
-  // non-deterministic points.
-  if (recordreplay::IsRecordingOrReplaying()) {
-    AddRef();
-  }
-
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
   if (config == MULTI_INTERFACE)

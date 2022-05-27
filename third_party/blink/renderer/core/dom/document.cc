@@ -760,12 +760,6 @@ Document::Document(const DocumentInit& initializer,
           MakeGarbageCollected<DisplayLockDocumentState>(this)),
       font_preload_manager_(MakeGarbageCollected<FontPreloadManager>(*this)),
       data_(MakeGarbageCollected<DocumentData>(GetExecutionContext())) {
-  // Never collect documents when recording/replaying, to avoid interacting
-  // with the recording.
-  if (recordreplay::IsRecordingOrReplaying()) {
-    new Persistent<Document>(this);
-  }
-
   if (GetFrame()) {
     DCHECK(GetFrame()->GetPage());
     ProvideContextFeaturesToDocumentFrom(*this, *GetFrame()->GetPage());

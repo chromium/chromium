@@ -110,11 +110,19 @@ void PictureLayerTiling::CreateMissingTilesInLiveTilesRect() {
        iter; ++iter) {
     TileMapKey key(iter.index());
     auto find = tiles_.find(key);
+
+    // https://github.com/RecordReplay/backend/issues/5707
+    recordreplay::Assert("PictureLayerTiling::CreateMissingTilesInLiveTilesRect #1 %d %d %d",
+                         key.index_x, key.index_y, find != tiles_.end());
+
     if (find != tiles_.end())
       continue;
 
     Tile::CreateInfo info = CreateInfoForTile(key.index_x, key.index_y);
     if (ShouldCreateTileAt(info)) {
+      // https://github.com/RecordReplay/backend/issues/5707
+      recordreplay::Assert("PictureLayerTiling::CreateMissingTilesInLiveTilesRect #2");
+
       Tile* tile = CreateTile(info);
 
       // If this is the pending tree, then the active twin tiling may contain
@@ -135,6 +143,9 @@ void PictureLayerTiling::CreateMissingTilesInLiveTilesRect() {
         }
       }
     }
+
+    // https://github.com/RecordReplay/backend/issues/5707
+    recordreplay::Assert("PictureLayerTiling::CreateMissingTilesInLiveTilesRect #3");
   }
   VerifyLiveTilesRect();
 }

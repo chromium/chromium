@@ -8,6 +8,8 @@
 #define BASE_RECORD_REPLAY_H_
 
 #include "base/check.h"
+#include "base/optional.h"
+#include "base/synchronization/lock.h"
 
 #include <cstdint>
 
@@ -102,6 +104,17 @@ struct CompareMemberByPointerId {
     }
     return a < b;
   }
+};
+
+// For taking ordered locks when events might be disallowed. Passes through
+// events during the acquire to avoid generating a warning.
+class SCOPED_LOCKABLE AutoLockMaybeEventsDisallowed {
+ public:
+  AutoLockMaybeEventsDisallowed(base::Lock& lock) EXCLUSIVE_LOCK_FUNCTION(lock);
+  ~AutoLockMaybeEventsDisallowed() UNLOCK_FUNCTION();
+
+ private:
+  base::Lock& lock_;
 };
 
 } // namespace recordreplay

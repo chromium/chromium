@@ -85,10 +85,6 @@ class HeapMojoAssociatedReceiver {
     Wrapper(Owner* owner, ContextLifecycleNotifier* notifier)
         : owner_(owner), associated_receiver_(owner) {
       SetContextLifecycleNotifier(notifier);
-
-      if (recordreplay::IsRecordingOrReplaying()) {
-        new Persistent<Wrapper>(this);
-      }
     }
 
     void Trace(Visitor* visitor) const override {
