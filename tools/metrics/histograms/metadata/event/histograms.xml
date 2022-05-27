@@ -60,16 +60,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Event.AsyncTargeting.AsyncClientDepth" units="clients"
-    expires_after="2021-08-09">
-  <owner>sadrul@chromium.org</owner>
-  <owner>event-targeting@chromium.org</owner>
-  <summary>
-    Tracks how many clients were queried (asynchronously) to determine the
-    target for an input event.
-  </summary>
-</histogram>
-
 <histogram name="Event.AsyncTargeting.ResponseTime" units="ms"
     expires_after="2022-10-09">
   <owner>sadrul@chromium.org</owner>
@@ -556,17 +546,6 @@ chromium-metrics-reviews@google.com.
     swap was induced by the event, no recording is made.
 
     Team: input-dev@chromium.org.
-  </summary>
-</histogram>
-
-<histogram name="Event.Latency.ScrollBegin.TopControlsMoved" enum="Boolean"
-    expires_after="2020-12-06">
-  <owner>sadrul@chromium.org</owner>
-  <owner>chrome-gpu-metrics@google.com</owner>
-  <summary>
-    Records whether the browser top-controls (i.e. omnibox, toolbar) moved
-    because of the scroll-begin event (i.e. the first scroll-update event of
-    that sequence).
   </summary>
 </histogram>
 
@@ -1140,17 +1119,6 @@ chromium-metrics-reviews@google.com.
     every scrolling sequence is excluded from this metric.
 
     Team: input-dev@chromium.org.
-  </summary>
-</histogram>
-
-<histogram name="Event.Latency.ScrollUpdate.TopControlsMoved" enum="Boolean"
-    expires_after="2020-08-02">
-  <owner>sadrul@chromium.org</owner>
-  <owner>chrome-gpu-metrics@google.com</owner>
-  <summary>
-    Records whether the browser top-controls (i.e. omnibox, toolbar) moved
-    because of the scroll-update event (other than the first update event in the
-    sequence).
   </summary>
 </histogram>
 
@@ -1770,26 +1738,6 @@ chromium-metrics-reviews@google.com.
     <variant name="Sticky"/>
     <variant name="Transient"/>
   </token>
-</histogram>
-
-<histogram name="Event.VizHitTest.AsyncHitTestReasons"
-    enum="AsyncHitTestReasons" expires_after="2021-10-10">
-  <owner>sadrul@chromium.org</owner>
-  <owner>event-targeting@chromium.org</owner>
-  <summary>
-    Tracks the reasons why sychronous hit testing could not be done for each hit
-    test requests processd by HitTestQuery.
-  </summary>
-</histogram>
-
-<histogram name="Event.VizHitTest.HitTestDataIsEqualAccuracy"
-    enum="BooleanAccuracy" expires_after="2021-01-03">
-  <owner>zandershah@google.com</owner>
-  <owner>event-targeting@chromium.org</owner>
-  <summary>
-    Tracks the result of AsyncLayerTreeFrameSink calls to
-    HitTestRegionList::IsEqual.
-  </summary>
 </histogram>
 
 <histogram name="Event.WaylandDragDrop.IncomingDataTransferTime" units="ms"

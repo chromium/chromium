@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/containers/stack.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/hit_test/hit_test_region_list.h"
@@ -194,9 +193,6 @@ bool HitTestQuery::FindTargetInRegionForLocation(
       target->frame_sink_id = hit_test_data_[region_index].frame_sink_id;
       target->location_in_target = gfx::PointF();
       target->flags = HitTestRegionFlags::kHitTestAsk;
-      RecordSlowPathHitTestReasons(
-          AsyncHitTestReasons::kPerspectiveTransform |
-          hit_test_data_[region_index].async_hit_test_reasons);
       return true;
     }
 
@@ -243,8 +239,6 @@ bool HitTestQuery::FindTargetInRegionForLocation(
     target->frame_sink_id = hit_test_data_[region_index].frame_sink_id;
     target->location_in_target = location_in_target;
     target->flags = flags;
-    RecordSlowPathHitTestReasons(
-        hit_test_data_[region_index].async_hit_test_reasons);
     return true;
   }
 
@@ -273,18 +267,14 @@ bool HitTestQuery::FindTargetInRegionForLocation(
       !(flags & HitTestRegionFlags::kHitTestIgnore)) {
     target->frame_sink_id = hit_test_data_[region_index].frame_sink_id;
     target->location_in_target = location_in_target;
-    uint32_t async_hit_test_reasons =
-        hit_test_data_[region_index].async_hit_test_reasons;
     uint32_t target_flags = flags;
     if (root_view_overlapped) {
       DCHECK_EQ(hit_test_data_[region_index].async_hit_test_reasons,
                 AsyncHitTestReasons::kOverlappedRegion);
       target_flags &= ~HitTestRegionFlags::kHitTestAsk;
-      async_hit_test_reasons = AsyncHitTestReasons::kNotAsyncHitTest;
     }
     target->flags = target_flags;
     // We record fast path hit testing instances with reason kNotAsyncHitTest.
-    RecordSlowPathHitTestReasons(async_hit_test_reasons);
     return true;
   }
   return false;
@@ -363,27 +353,6 @@ bool HitTestQuery::GetTransformToTargetRecursively(
   }
 
   return false;
-}
-
-void HitTestQuery::RecordSlowPathHitTestReasons(uint32_t reasons) const {
-  static const char* kAsyncHitTestReasonsHistogramName =
-      "Event.VizHitTest.AsyncHitTestReasons";
-  if (reasons == AsyncHitTestReasons::kNotAsyncHitTest) {
-    UMA_HISTOGRAM_ENUMERATION(
-        kAsyncHitTestReasonsHistogramName,
-        AsyncHitTestReasons::kNotAsyncHitTest,
-        AsyncHitTestReasons::kAsyncHitTestReasonCount + 1);
-    return;
-  }
-
-  for (uint32_t i = 0; i < AsyncHitTestReasons::kAsyncHitTestReasonCount; ++i) {
-    unsigned val = 1 << i;
-    if (reasons & val) {
-      UMA_HISTOGRAM_ENUMERATION(
-          kAsyncHitTestReasonsHistogramName, i + 1,
-          AsyncHitTestReasons::kAsyncHitTestReasonCount + 1);
-    }
-  }
 }
 
 std::string HitTestQuery::PrintHitTestData() const {
