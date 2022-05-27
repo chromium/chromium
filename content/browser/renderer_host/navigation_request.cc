@@ -3395,8 +3395,8 @@ void NavigationRequest::OnResponseStarted(
   response_should_be_rendered_ =
       !is_download &&
       (!response_head_->headers.get() ||
-       (response_head_->headers->response_code() != 204 &&
-        response_head_->headers->response_code() != 205 &&
+       (response_head_->headers->response_code() != net::HTTP_NO_CONTENT &&
+        response_head_->headers->response_code() != net::HTTP_RESET_CONTENT &&
         !ShouldRenderFallbackContentForResponse(*response_head_->headers)));
 
   // Response that will not commit should be marked as aborted in the
