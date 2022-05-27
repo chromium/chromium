@@ -3009,7 +3009,7 @@
             ],
             "experiments": [
                 {
-                    "name": "RecipeTasksRuleBasedDiscountDriveManagedUsersPhotos_Enabled",
+                    "name": "RecipeTasksRuleBasedDiscountDriveManagedUsersCartOptimizeRecipeTasksSAPIV2Fre_Enabled",
                     "params": {
                         "NtpChromeCartModuleAbandonedCartDiscountParam": "true",
                         "NtpChromeCartModuleAbandonedCartDiscountUseUtmParam": "true",
@@ -3017,8 +3017,8 @@
                         "NtpDriveModuleExperimentGroupParam": "foo:bar",
                         "NtpDriveModuleManagedUsersOnlyParam": "true",
                         "NtpModulesLoadTimeoutMillisecondsParam": "3000",
-                        "NtpModulesOrderParam": "",
-                        "discount-fetch-delay": "1h"
+                        "discount-fetch-delay": "1h",
+                        "use_sapi_v2": "true"
                     },
                     "enable_features": [
                         "NtpChromeCartModule",
@@ -3047,6 +3047,7 @@
                         "NtpChromeCartModule",
                         "NtpDriveModule",
                         "NtpModules",
+                        "NtpModulesFirstRunExperience",
                         "NtpRecipeTasksModule"
                     ],
                     "disable_features": [
