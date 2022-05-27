@@ -228,7 +228,7 @@ bool AndroidPlatformConfiguration::IsEnabledForThread(
   // TODO(https://crbug.com/1326430): Enable for all the default processes.
   switch (process) {
     case metrics::CallStackProfileParams::Process::kRenderer:
-      return true;
+      return thread == metrics::CallStackProfileParams::Thread::kMain;
 
     default:
       return false;
