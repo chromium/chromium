@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/new_window_delegate.h"
+#include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/rgb_keyboard/rgb_keyboard_manager.h"
 #include "ash/rgb_keyboard/rgb_keyboard_util.h"
@@ -20,6 +21,7 @@
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/dbus/power/power_manager_client.h"
+#include "ui/base/resource/resource_bundle.h"
 
 namespace ash {
 
@@ -74,10 +76,21 @@ class UnifiedKeyboardBrightnessView : public UnifiedSliderView,
             weak_factory_.GetWeakPtr()),
         IconButton::Type::kSmall, &kUnifiedMenuKeyboardBacklightIcon,
         IDS_ASH_STATUS_TRAY_KEYBOARD_BACKLIGHT_ACCESSIBLE_NAME);
-    button->SetBackgroundColor(ConvertBacklightColorToIconBackgroundColor(
+
+    personalization_app::mojom::BacklightColor backlight_color =
         Shell::Get()
             ->keyboard_backlight_color_controller()
-            ->GetBacklightColor()));
+            ->GetBacklightColor();
+    if (backlight_color ==
+        personalization_app::mojom::BacklightColor::kRainbow) {
+      ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
+      auto* image =
+          rb.GetImageSkiaNamed(IDR_SETTINGS_RGB_KEYBOARD_RAINBOW_COLOR_48_PNG);
+      button->SetBackgroundImage(*image);
+    } else {
+      button->SetBackgroundColor(
+          ConvertBacklightColorToIconBackgroundColor(backlight_color));
+    }
     button->SetBorder(views::CreateRoundedRectBorder(
         /*thickness=*/4, /*corner_radius=*/16,
         AshColorProvider::Get()->GetContentLayerColor(

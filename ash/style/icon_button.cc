@@ -17,6 +17,7 @@
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/border.h"
@@ -143,6 +144,12 @@ void IconButton::SetBackgroundColor(const SkColor background_color) {
   SchedulePaint();
 }
 
+void IconButton::SetBackgroundImage(const gfx::ImageSkia& background_image) {
+  background_image_ = gfx::ImageSkiaOperations::CreateResizedImage(
+      background_image, skia::ImageOperations::RESIZE_BEST, GetPreferredSize());
+  SchedulePaint();
+}
+
 void IconButton::SetIconColor(const SkColor icon_color) {
   if (icon_color_ == icon_color)
     return;
@@ -187,6 +194,15 @@ void IconButton::PaintButtonContents(gfx::Canvas* canvas) {
     flags.setStyle(cc::PaintFlags::kFill_Style);
     canvas->DrawCircle(gfx::PointF(rect.CenterPoint()), rect.width() / 2,
                        flags);
+
+    // Apply the background image. This is painted on top of the |color|.
+    if (!background_image_.isNull()) {
+      SkPath mask;
+      mask.addCircle(rect.CenterPoint().x(), rect.CenterPoint().y(),
+                     rect.width() / 2);
+      canvas->ClipPath(mask, true);
+      canvas->DrawImageInt(background_image_, 0, 0, flags);
+    }
   }
 
   views::ImageButton::PaintButtonContents(canvas);

@@ -10,6 +10,7 @@
 #include "ui/views/controls/button/image_button.h"
 
 namespace gfx {
+class ImageSkia;
 struct VectorIcon;
 }  // namespace gfx
 
@@ -86,6 +87,11 @@ class ASH_EXPORT IconButton : public views::ImageButton {
   // Sets the button's background color. Note, do this only when the button
   // wants to have different color from the default one.
   void SetBackgroundColor(const SkColor background_color);
+
+  // Sets the button's background image. The |background_image| is resized to
+  // fit the button. Note, if set, |background_image| is painted on top of
+  // the button's existing background color.
+  void SetBackgroundImage(const gfx::ImageSkia& background_image);
 
   // Sets the icon's color. If the button is togglable, this will be the color
   // when it's not toggled.
