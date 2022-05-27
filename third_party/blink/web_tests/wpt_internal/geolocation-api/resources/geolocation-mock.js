@@ -112,6 +112,7 @@ export class GeolocationMock {
         timestamp: {internalValue: 0n},
         errorMessage: "User has not allowed access to system location.",
         errorCode: Geoposition_ErrorCode.PERMISSION_DENIED,
+        errorTechnical: "",
       };
     }
 
@@ -139,9 +140,10 @@ export class GeolocationMock {
     const timestamp =
         {internalValue: BigInt((new Date().getTime() + epochDeltaInMs) * 1000)};
     const errorMessage = '';
+    const errorTechnical = '';
     const valid = true;
     return {latitude, longitude, accuracy, altitude, altitudeAccuracy, heading,
-            speed, timestamp, errorMessage, valid};
+            speed, timestamp, errorMessage, valid, errorTechnical};
   }
 
   /**
@@ -166,6 +168,7 @@ export class GeolocationMock {
       timestamp: {internalValue: 0n},
       errorMessage: message,
       errorCode: Geoposition_ErrorCode.POSITION_UNAVAILABLE,
+      errorTechnical: "",
     };
   }
 

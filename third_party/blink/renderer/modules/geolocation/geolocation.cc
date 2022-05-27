@@ -502,6 +502,16 @@ void Geolocation::OnPositionUpdated(
   } else {
     GeolocationPositionError* position_error =
         CreatePositionError(position->error_code, position->error_message);
+
+    auto* context = GetExecutionContext();
+    DCHECK(context);
+    if (!position->error_technical.IsEmpty()) {
+      context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+          mojom::blink::ConsoleMessageSource::kNetwork,
+          mojom::blink::ConsoleMessageLevel::kError,
+          position->error_technical));
+    }
+
     if (position_error->code() == GeolocationPositionError::kPermissionDenied) {
       position_error->SetIsFatal(true);
     }

@@ -57,4 +57,6 @@ struct Geoposition {
   ErrorCode error_code = NONE;
   // Human-readable error message.
   string error_message;
+  // Technical detail of the error.
+  string error_technical;
 };

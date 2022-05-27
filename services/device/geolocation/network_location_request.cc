@@ -166,6 +166,7 @@ bool NetworkLocationRequest::MakeRequest(
 
   url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
                                                  traffic_annotation);
+  url_loader_->SetAllowHttpErrorResults(true);
 
   std::string upload_data;
   FormUploadData(wifi_data, wifi_timestamp, &upload_data);
@@ -290,16 +291,22 @@ void AddWifiData(const WifiData& wifi_data,
 }
 
 void FormatPositionError(const GURL& server_url,
-                         const std::string& message,
+                         const std::string& error_message,
+                         const std::string& error_technical,
                          mojom::Geoposition* position) {
   position->error_code = mojom::Geoposition::ErrorCode::POSITION_UNAVAILABLE;
-  position->error_message = "Network location provider at '";
-  position->error_message += server_url.DeprecatedGetOriginAsURL().spec();
-  position->error_message += "' : ";
-  position->error_message += message;
-  position->error_message += ".";
+  position->error_message = error_message;
   VLOG(1) << "NetworkLocationRequest::GetLocationFromResponse() : "
           << position->error_message;
+  if (!error_technical.empty()) {
+    position->error_technical = "Network location provider at '";
+    position->error_technical += server_url.DeprecatedGetOriginAsURL().spec();
+    position->error_technical += "' : ";
+    position->error_technical += error_technical;
+    position->error_technical += ".";
+    VLOG(1) << "NetworkLocationRequest::GetLocationFromResponse() : "
+            << position->error_technical;
+  }
 }
 
 void GetLocationFromResponse(int net_error,
@@ -312,8 +319,10 @@ void GetLocationFromResponse(int net_error,
   // HttpPost can fail for a number of reasons. Most likely this is because
   // we're offline, or there was no response.
   if (net_error != net::OK) {
-    FormatPositionError(server_url, net::ErrorToShortString(net_error),
-                        position);
+    FormatPositionError(server_url,
+                        "Network error. Check "
+                        "DevTools console for more information.",
+                        net::ErrorToShortString(net_error), position);
     RecordUmaEvent(NETWORK_LOCATION_REQUEST_EVENT_RESPONSE_EMPTY);
     RecordUmaNetError(net_error);
     return;
@@ -322,7 +331,10 @@ void GetLocationFromResponse(int net_error,
   if (status_code != 200) {  // HTTP OK.
     std::string message = "Returned error code ";
     message += base::NumberToString(status_code);
-    FormatPositionError(server_url, message, position);
+    FormatPositionError(server_url,
+                        "Failed to query location from network service. Check "
+                        "the DevTools console for more information.",
+                        message, position);
     RecordUmaEvent(NETWORK_LOCATION_REQUEST_EVENT_RESPONSE_NOT_OK);
     return;
   }
@@ -331,8 +343,8 @@ void GetLocationFromResponse(int net_error,
   // this position fix.
   DCHECK(response_body);
   if (!ParseServerResponse(*response_body, wifi_timestamp, position)) {
-    // We failed to parse the repsonse.
-    FormatPositionError(server_url, "Response was malformed", position);
+    // We failed to parse the response.
+    FormatPositionError(server_url, "Response was malformed", "", position);
     RecordUmaEvent(NETWORK_LOCATION_REQUEST_EVENT_RESPONSE_MALFORMED);
     return;
   }
@@ -340,7 +352,7 @@ void GetLocationFromResponse(int net_error,
   // The response was successfully parsed, but it may not be a valid
   // position fix.
   if (!ValidateGeoposition(*position)) {
-    FormatPositionError(server_url, "Did not provide a good position fix",
+    FormatPositionError(server_url, "Did not provide a good position fix", "",
                         position);
     RecordUmaEvent(NETWORK_LOCATION_REQUEST_EVENT_RESPONSE_INVALID_FIX);
     return;
