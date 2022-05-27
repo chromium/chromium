@@ -13,6 +13,7 @@
  * extended to override methods that extract lines for multiline fields
  * or to provide other customizations.
  */
+import {ChromeVoxState} from '/chromevox/background/chromevox_state.js';
 import {AbstractTts} from '/chromevox/common/abstract_tts.js';
 
 /**

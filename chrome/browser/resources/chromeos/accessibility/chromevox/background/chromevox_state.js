@@ -8,29 +8,19 @@
  *     object and to facilitate mocking for tests.
  */
 
-goog.provide('ChromeVoxState');
-goog.provide('ChromeVoxStateObserver');
-
-goog.require('cursors.Cursor');
-goog.require('cursors.Range');
-goog.require('BrailleKeyEvent');
-goog.require('BridgeHelper');
-goog.require('UserActionMonitor');
-
 /**
- * An interface implemented by objects that want to observe ChromeVox state
- * changes.
+ * An interface implemented by objects to observe ChromeVox state changes.
  * @interface
  */
-ChromeVoxStateObserver = class {
+export class ChromeVoxStateObserver {
   /**
    * @param {cursors.Range} range The new range.
    * @param {boolean=} opt_fromEditing
    */
   onCurrentRangeChanged(range, opt_fromEditing) {}
-};
+}
 
-ChromeVoxState = class {
+export class ChromeVoxState {
   /** @param {ChromeVoxStateObserver} observer */
   static addObserver(observer) {
     ChromeVoxState.observers.push(observer);
@@ -142,7 +132,7 @@ ChromeVoxState = class {
    * @abstract
    */
   readNextClipboardDataChange() {}
-};
+}
 
 /** @type {ChromeVoxState} */
 ChromeVoxState.instance;

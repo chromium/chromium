@@ -5,6 +5,7 @@
 /**
  * @fileoverview ChromeVox braille commands.
  */
+import {ChromeVoxState} from '/chromevox/background/chromevox_state.js';
 import {DesktopAutomationInterface} from '/chromevox/background/desktop_automation_interface.js';
 import {BrailleCommandData} from '/chromevox/common/braille/braille_command_data.js';
 import {EventGenerator} from '/common/event_generator.js';

@@ -10,6 +10,7 @@ goog.require('AutomationTreeWalker');
 goog.require('AutomationUtil');
 goog.require('BackgroundBridge');
 goog.require('BridgeHelper');
+goog.require('EarconDescription');
 goog.require('EventSourceType');
 goog.require('KeyCode');
 goog.require('KeySequence');
@@ -21,6 +22,7 @@ goog.require('PanelCommand');
 goog.require('PanelNodeMenuData');
 goog.require('QueueMode');
 goog.require('UserActionMonitor');
+
 goog.require('constants');
 goog.require('cursors.Cursor');
 goog.require('cursors.Range');

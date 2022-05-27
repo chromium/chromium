@@ -15,6 +15,8 @@ ChromeVoxSmartStickyModeTest = class extends ChromeVoxNextE2ETest {
     await importModule(
         'ChromeVoxBackground', '/chromevox/background/classic_background.js');
     await importModule(
+        'ChromeVoxState', '/chromevox/background/chromevox_state.js');
+    await importModule(
         'SmartStickyMode', '/chromevox/background/smart_sticky_mode.js');
     this.ssm_ = new SmartStickyMode();
     // Deregister from actual range changes.

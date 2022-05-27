@@ -20,6 +20,13 @@ ChromeVoxPortalsTest = class extends ChromeVoxNextE2ETest {
     return {enabled: ['blink::features::kPortals']};
   }
 
+  /** @override */
+  async setUpDeferred() {
+    await super.setUpDeferred();
+    await importModule(
+        'ChromeVoxState', '/chromevox/background/chromevox_state.js');
+  }
+
   get testServer() {
     return true;
   }

@@ -5,6 +5,7 @@
 /**
  * @fileoverview Implements support for live regions in ChromeVox Next.
  */
+import {ChromeVoxState} from '/chromevox/background/chromevox_state.js';
 
 const AutomationNode = chrome.automation.AutomationNode;
 const RoleType = chrome.automation.RoleType;

@@ -8,6 +8,7 @@
 import {AutoScrollHandler} from '/chromevox/background/auto_scroll_handler.js';
 import {BrailleBackground} from '/chromevox/background/braille/braille_background.js';
 import {BrailleCaptionsBackground} from '/chromevox/background/braille/braille_captions_background.js';
+import {ChromeVoxState} from '/chromevox/background/chromevox_state.js';
 import {ChromeVoxBackground} from '/chromevox/background/classic_background.js';
 import {Color} from '/chromevox/background/color.js';
 import {DesktopAutomationInterface} from '/chromevox/background/desktop_automation_interface.js';

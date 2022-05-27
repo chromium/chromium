@@ -5,6 +5,7 @@
 /**
  * @fileoverview Handles output for Chrome's built-in find.
  */
+import {ChromeVoxState} from '/chromevox/background/chromevox_state.js';
 
 const TreeChangeObserverFilter = chrome.automation.TreeChangeObserverFilter;
 

@@ -6,6 +6,7 @@
  * @fileoverview Handles page loading sounds based on automation events.
  */
 import {BaseAutomationHandler} from '/chromevox/background/base_automation_handler.js';
+import {ChromeVoxState, ChromeVoxStateObserver} from '/chromevox/background/chromevox_state.js';
 import {ChromeVoxEvent} from '/chromevox/common/custom_automation_event.js';
 
 const ActionType = chrome.automation.ActionType;

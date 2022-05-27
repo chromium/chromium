@@ -33,6 +33,8 @@ ChromeVoxBackgroundTest = class extends ChromeVoxNextE2ETest {
     await importModule(
         'ChromeVoxBackground', '/chromevox/background/classic_background.js');
     await importModule(
+        'ChromeVoxState', '/chromevox/background/chromevox_state.js');
+    await importModule(
         'CustomAutomationEvent',
         '/chromevox/common/custom_automation_event.js');
     await importModule(

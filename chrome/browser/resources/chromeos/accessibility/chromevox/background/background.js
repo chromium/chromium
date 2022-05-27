@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {BrailleCommandHandler} from '/chromevox/background/braille/braille_command_handler.js';
+import {ChromeVoxState} from '/chromevox/background/chromevox_state.js';
 import {ChromeVoxBackground} from '/chromevox/background/classic_background.js';
 import {CommandHandler} from '/chromevox/background/command_handler.js';
 import {DesktopAutomationHandler} from '/chromevox/background/desktop_automation_handler.js';

@@ -16,8 +16,6 @@ goog.require('BrailleKeyCommand');
 goog.require('BrailleKeyEvent');
 goog.require('BridgeHelper');
 goog.require('ChromeVox');
-goog.require('ChromeVoxState');
-goog.require('ChromeVoxStateObserver');
 goog.require('CommandHandlerInterface');
 goog.require('EventSourceState');
 goog.require('ExtraCellsSpan');
@@ -44,6 +42,7 @@ goog.require('StringUtil');
 goog.require('TreeDumper');
 goog.require('TreePathRecoveryStrategy');
 goog.require('TtsInterface');
+goog.require('UserActionMonitor');
 goog.require('ValueSelectionSpan');
 goog.require('ValueSpan');
 

@@ -10,6 +10,13 @@ GEN_INCLUDE(['../testing/mock_feedback.js']);
  * Test fixture for the interactive tutorial.
  */
 ChromeVoxTutorialTest = class extends ChromeVoxPanelTestBase {
+  /** @override */
+  async setUpDeferred() {
+    await super.setUpDeferred();
+    await importModule(
+        'ChromeVoxState', '/chromevox/background/chromevox_state.js');
+  }
+
   assertActiveLessonIndex(expectedIndex) {
     assertEquals(expectedIndex, this.getTutorial().activeLessonIndex);
   }

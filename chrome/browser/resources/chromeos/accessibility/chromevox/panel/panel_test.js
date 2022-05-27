@@ -9,6 +9,13 @@ GEN_INCLUDE(['panel_test_base.js']);
  * Test fixture for Panel.
  */
 ChromeVoxPanelTest = class extends ChromeVoxPanelTestBase {
+  /** @override */
+  async setUpDeferred() {
+    await super.setUpDeferred();
+    await importModule(
+        'ChromeVoxState', '/chromevox/background/chromevox_state.js');
+  }
+
   fireMockEvent(key) {
     return function() {
       const obj = {};

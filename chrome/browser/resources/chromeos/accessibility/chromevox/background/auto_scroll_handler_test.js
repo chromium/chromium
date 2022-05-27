@@ -22,6 +22,8 @@ ChromeVoxAutoScrollHandlerTest = class extends ChromeVoxNextE2ETest {
     await super.setUpDeferred();
     await importModule(
         'AutoScrollHandler', '/chromevox/background/auto_scroll_handler.js');
+    await importModule(
+        'ChromeVoxState', '/chromevox/background/chromevox_state.js');
   }
 
   /** @return {chrome.automation.AutomationNode} */

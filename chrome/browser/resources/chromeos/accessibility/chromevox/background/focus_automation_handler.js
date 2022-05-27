@@ -6,6 +6,7 @@
  * @fileoverview Handles automation events on the currently focused node.
  */
 import {BaseAutomationHandler} from '/chromevox/background/base_automation_handler.js';
+import {ChromeVoxState} from '/chromevox/background/chromevox_state.js';
 import {ChromeVoxEvent} from '/chromevox/common/custom_automation_event.js';
 
 const AutomationEvent = chrome.automation.AutomationEvent;

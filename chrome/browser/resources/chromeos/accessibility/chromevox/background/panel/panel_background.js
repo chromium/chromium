@@ -6,6 +6,7 @@
  * @fileoverview Handles logic for the ChromeVox panel that requires state from
  * the background context.
  */
+import {ChromeVoxState, ChromeVoxStateObserver} from '/chromevox/background/chromevox_state.js';
 import {ISearch} from '/chromevox/background/panel/i_search.js';
 import {ISearchHandler} from '/chromevox/background/panel/i_search_handler.js';
 import {PanelNodeMenuBackground} from '/chromevox/background/panel/panel_node_menu_background.js';

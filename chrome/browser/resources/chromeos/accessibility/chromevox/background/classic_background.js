@@ -7,6 +7,7 @@
  */
 import {BrailleBackground} from '/chromevox/background/braille/braille_background.js';
 import {BrailleCaptionsBackground} from '/chromevox/background/braille/braille_captions_background.js';
+import {ChromeVoxState} from '/chromevox/background/chromevox_state.js';
 import {ConsoleTts} from '/chromevox/background/console_tts.js';
 import {InjectedScriptLoader} from '/chromevox/background/injected_script_loader.js';
 import {ChromeVoxPrefs} from '/chromevox/background/prefs.js';

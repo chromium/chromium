@@ -17,6 +17,8 @@ ChromeVoxUserActionMonitorTest = class extends ChromeVoxNextE2ETest {
         '/chromevox/background/keyboard_handler.js');
     await importModule(
         'ChromeVoxKbHandler', '/chromevox/common/keyboard_handler.js');
+    await importModule(
+        'ChromeVoxState', '/chromevox/background/chromevox_state.js');
   }
 
   /**

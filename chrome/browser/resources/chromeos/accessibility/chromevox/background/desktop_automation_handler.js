@@ -7,6 +7,7 @@
  */
 import {AutoScrollHandler} from '/chromevox/background/auto_scroll_handler.js';
 import {AutomationObjectConstructorInstaller} from '/chromevox/background/automation_object_constructor_installer.js';
+import {ChromeVoxState} from '/chromevox/background/chromevox_state.js';
 import {DesktopAutomationInterface} from '/chromevox/background/desktop_automation_interface.js';
 import {TextEditHandler} from '/chromevox/background/editing/editing.js';
 import {ChromeVoxEvent, CustomAutomationEvent} from '/chromevox/common/custom_automation_event.js';
