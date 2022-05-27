@@ -479,7 +479,7 @@ void SpdySessionPool::CloseAllSessions() {
 
 std::unique_ptr<base::Value> SpdySessionPool::SpdySessionPoolInfoToValue()
     const {
-  auto list = std::make_unique<base::ListValue>();
+  base::Value::List list;
 
   for (auto it = available_sessions_.begin(); it != available_sessions_.end();
        ++it) {
@@ -488,9 +488,9 @@ std::unique_ptr<base::Value> SpdySessionPool::SpdySessionPoolInfoToValue()
     const SpdySessionKey& key = it->first;
     const SpdySessionKey& session_key = it->second->spdy_session_key();
     if (key == session_key)
-      list->Append(it->second->GetInfoAsValue());
+      list.Append(it->second->GetInfoAsValue());
   }
-  return std::move(list);
+  return std::make_unique<base::Value>(std::move(list));
 }
 
 void SpdySessionPool::OnIPAddressChanged() {

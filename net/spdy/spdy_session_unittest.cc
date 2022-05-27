@@ -2247,26 +2247,26 @@ TEST_F(SpdySessionTest, ChangeStreamRequestPriority) {
 // makes |source| an invalid source on failure.
 bool NetLogSourceFromEventParameters(const base::Value* event_params,
                                      NetLogSource* source) {
-  const base::Value* source_dict = nullptr;
+  const base::Value::Dict* source_dict = nullptr;
   int source_id = -1;
   int source_type = static_cast<int>(NetLogSourceType::COUNT);
   if (!event_params) {
     *source = NetLogSource();
     return false;
   }
-  source_dict = event_params->FindDictKey("source_dependency");
+  source_dict = event_params->GetDict().FindDict("source_dependency");
   if (!source_dict) {
     *source = NetLogSource();
     return false;
   }
   absl::optional<int> opt_int;
-  opt_int = source_dict->FindIntKey("id");
+  opt_int = source_dict->FindInt("id");
   if (!opt_int) {
     *source = NetLogSource();
     return false;
   }
   source_id = opt_int.value();
-  opt_int = source_dict->FindIntKey("type");
+  opt_int = source_dict->FindInt("type");
   if (!opt_int) {
     *source = NetLogSource();
     return false;

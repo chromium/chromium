@@ -311,12 +311,12 @@ void QuicHttp3Logger::OnHeadersFrameSent(
   net_log_.AddEvent(
       NetLogEventType::HTTP3_HEADERS_SENT,
       [stream_id, &header_block](NetLogCaptureMode capture_mode) {
-        base::Value dict(base::Value::Type::DICTIONARY);
-        dict.SetKey("stream_id",
-                    NetLogNumberValue(static_cast<uint64_t>(stream_id)));
-        dict.SetKey("headers",
-                    ElideHttp2HeaderBlockForNetLog(header_block, capture_mode));
-        return dict;
+        base::Value::Dict dict;
+        dict.Set("stream_id",
+                 NetLogNumberValue(static_cast<uint64_t>(stream_id)));
+        dict.Set("headers",
+                 ElideHttp2HeaderBlockForNetLog(header_block, capture_mode));
+        return base::Value(std::move(dict));
       });
 }
 

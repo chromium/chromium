@@ -8,12 +8,9 @@
 #include <stdint.h>
 
 #include "base/time/time.h"
+#include "base/values.h"
 #include "net/base/net_export.h"
 #include "net/log/net_log_source_type.h"
-
-namespace base {
-class Value;
-}
 
 namespace net {
 
@@ -33,6 +30,8 @@ struct NET_EXPORT NetLogSource {
 
   // Adds the source to a dictionary containing event parameters,
   // using the name "source_dependency".
+  void AddToEventParameters(base::Value::Dict& event_params) const;
+  // Legacy version of above method. Should be removed once no longer used.
   void AddToEventParameters(base::Value* event_params) const;
 
   // Returns a dictionary with a single entry named "source_dependency" that
