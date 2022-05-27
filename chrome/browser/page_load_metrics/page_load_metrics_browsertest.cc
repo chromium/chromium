@@ -511,7 +511,7 @@ class PageLoadMetricsBrowserTestAnimatedLCP
     })
   };
   await double_raf();
-  await new Promise(r => setTimeout(r, 50));
+  await new Promise(r => setTimeout(r, 500));
   const timestamp = performance.now();
   await new Promise(r => setTimeout(r, 50));
   return timestamp;
