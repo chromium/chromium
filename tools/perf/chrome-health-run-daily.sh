@@ -7,9 +7,8 @@ releaseBranchNo=5005
 pinnedReleaseMinusOne=93c720db8323b3ec10d056025ab95c23a31997c9 #101.0.4951.41
 pinnedMain=6ee574c7eb5719153bbe0d1eff07fd0acbd864cc #refs/heads/main@{#966041}
 
+# NOTE: If you are doing active development in this branch, the rest of this script may not work (it will attempt to check out different branches)
 cd ~/chromium/src
-
-gclient sync --with_branch_heads --with_tags
 git fetch
 
 # Current release branch
