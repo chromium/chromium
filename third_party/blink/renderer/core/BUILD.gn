@@ -1476,6 +1476,7 @@ source_set("unit_tests") {
     "paint/link_highlight_impl_test.cc",
     "paint/ng/ng_box_fragment_painter_test.cc",
     "paint/ng/ng_highlight_overlay_test.cc",
+    "paint/ng/ng_inline_paint_context_test.cc",
     "paint/ng/ng_text_fragment_painter_test.cc",
     "paint/nine_piece_image_grid_test.cc",
     "paint/object_paint_invalidator_test.cc",
