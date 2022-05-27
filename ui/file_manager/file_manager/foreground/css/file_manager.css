@@ -1436,7 +1436,7 @@ body.files-ng grid .grid-title.files {
   padding-top: calc(20px + 16px);
 }
 
-body[type='full-page'] .thumbnail-frame > .img-container {
+body.files-ng .thumbnail-frame > .img-container {
   position: relative;
 }
 
