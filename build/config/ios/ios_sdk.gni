@@ -46,7 +46,7 @@ declare_args() {
   # Prefix for CFBundleIdentifier property of iOS bundles (correspond to the
   # "Organization Identifier" in Xcode). Code signing will fail if no mobile
   # provisioning for the selected code signing identify support that prefix.
-  ios_app_bundle_id_prefix = "org.chromium"
+  ios_app_bundle_id_prefix = "org.chromium.ost"
 
   # Paths to the mobileprovision files for the chosen code signing
   # identity description and app bundle id prefix.
