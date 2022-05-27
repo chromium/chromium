@@ -22,6 +22,7 @@
 #include "remoting/codec/webrtc_video_encoder_vpx.h"
 #include "remoting/protocol/video_channel_state_observer.h"
 #include "remoting/protocol/webrtc_video_frame_adapter.h"
+#include "third_party/webrtc/api/video_codecs/sdp_video_format.h"
 #include "third_party/webrtc/api/video_codecs/vp9_profile.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 #include "third_party/webrtc/modules/video_coding/include/video_codec_interface.h"
@@ -101,9 +102,10 @@ WebrtcVideoEncoderWrapper::WebrtcVideoEncoderWrapper(
       encoder_ = WebrtcVideoEncoderVpx::CreateForVP8();
       break;
     case webrtc::kVideoCodecVP9: {
-      const auto iter = format.parameters.find(webrtc::kVP9FmtpProfileId);
-      bool lossless_color =
-          iter != format.parameters.end() && iter->second == "1";
+      absl::optional<webrtc::VP9Profile> profile =
+          webrtc::ParseSdpForVP9Profile(format.parameters);
+      bool lossless_color = profile.has_value() &&
+                            profile.value() == webrtc::VP9Profile::kProfile1;
       VLOG(0) << "Creating VP9 encoder, lossless_color="
               << (lossless_color ? "true" : "false");
       encoder_ = WebrtcVideoEncoderVpx::CreateForVP9();
@@ -399,11 +401,8 @@ WebrtcVideoEncoderWrapper::ReturnEncodedFrame(
     NOTREACHED();
 #endif
   } else if (frame.codec == webrtc::kVideoCodecAV1) {
-#if defined(USE_AV1_ENCODER)
     // TODO(joedow): Set codec specific params for AV1 here.
-#else
-    NOTREACHED();
-#endif
+    NOTIMPLEMENTED();
   } else {
     NOTREACHED();
   }
