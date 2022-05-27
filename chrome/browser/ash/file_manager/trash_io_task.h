@@ -74,6 +74,9 @@ struct DirectoryInfo {
 // Constant representing the Trash folder name.
 extern const char kTrashFolderName[];
 
+// Constant representing the Trash folder name with the chronos UID suffix.
+extern const char kTrashUIDFolderName[];
+
 // Constant representing the "info" folder name inside .Trash.
 extern const char kInfoFolderName[];
 
@@ -126,10 +129,16 @@ class TrashIOTask : public IOTask {
   using FreeSpaceMap = std::map<base::FilePath, DirectoryInfo>;
   void ValidateAndDecrementFreeSpace(size_t source_idx,
                                      FreeSpaceMap::iterator& it);
+  // Get the free disk space for `trash_parent_path` to know whether the
+  // metadata can be written. The `folder_name` is used to differentiate between
+  // .Trash and .Trash-1000 folder names on various file systems (both are valid
+  // in the XDG spec).
   void GetFreeDiskSpace(size_t source_idx,
-                        const base::FilePath& trash_parent_path);
+                        const base::FilePath& trash_parent_path,
+                        const std::string& folder_name);
   void GotFreeDiskSpace(size_t source_idx,
                         const base::FilePath& trash_parent_path,
+                        const std::string& folder_name,
                         int64_t free_space);
 
   // Sets up the .Trash/files and .Trash/info subdirectories specified by the
@@ -197,6 +206,9 @@ class TrashIOTask : public IOTask {
   // Speedometer for this operation, used to calculate the remaining time to
   // finish the operation.
   Speedometer speedometer_;
+
+  // Any paths which are descendants from this list are enabled for trash.
+  std::map<const base::FilePath, const std::string> enabled_trash_paths_;
 
   // Stores the id of the operations currently behind undertaken by Trash,
   // including directory creation. Enables cancelling an inflight operation.

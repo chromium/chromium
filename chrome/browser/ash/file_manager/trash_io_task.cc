@@ -11,6 +11,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time_to_iso8601.h"
+#include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/io_task_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
@@ -22,6 +23,7 @@ namespace file_manager {
 namespace io_task {
 
 constexpr char kTrashFolderName[] = ".Trash";
+constexpr char kTrashUIDFolderName[] = ".Trash-1000";
 constexpr char kInfoFolderName[] = "info";
 constexpr char kFilesFolderName[] = "files";
 
@@ -145,6 +147,24 @@ void TrashIOTask::Execute(IOTask::ProgressCallback progress_callback,
   progress_callback_ = std::move(progress_callback);
   complete_callback_ = std::move(complete_callback);
 
+  // Build the list of known paths that are enabled, for now Downloads is a bind
+  // mount at MyFiles/Downloads so treat them as separate volumes.
+  // TODO(b/233976434): Consider storing this data in the `DirectoryInfo` struct
+  // instead of separately.
+  enabled_trash_paths_.insert(
+      std::pair{util::GetMyFilesFolderForProfile(profile_), kTrashFolderName});
+  enabled_trash_paths_.insert(std::pair{
+      util::GetDownloadsFolderForProfile(profile_), kTrashFolderName});
+
+  auto* integration_service =
+      drive::DriveIntegrationServiceFactory::FindForProfile(profile_);
+  if (integration_service) {
+    enabled_trash_paths_.insert(std::pair{
+        integration_service->GetMountPointPath(), kTrashUIDFolderName});
+  }
+
+  // TODO(b/231830443): Add in support for crostini.
+
   progress_.state = State::kInProgress;
 
   UpdateTrashEntry(0);
@@ -165,17 +185,14 @@ void TrashIOTask::UpdateTrashEntry(size_t source_idx) {
   if (!base_path_.empty() && !source_path.IsAbsolute()) {
     source_path = base_path_.Append(source_path);
   }
-  const base::FilePath my_files_path =
-      util::GetMyFilesFolderForProfile(profile_);
-  const base::FilePath downloads_path =
-      util::GetDownloadsFolderForProfile(profile_);
 
-  base::FilePath trash_parent_path;
-  if (downloads_path.IsParent(source_path)) {
-    trash_parent_path = downloads_path;
-  } else if (my_files_path.IsParent(source_path)) {
-    trash_parent_path = my_files_path;
-  } else {
+  const auto& trash_parent_path_it =
+      std::find_if(enabled_trash_paths_.rbegin(), enabled_trash_paths_.rend(),
+                   [&source_path](const auto& it) -> bool {
+                     return it.first.IsParent(source_path);
+                   });
+
+  if (trash_parent_path_it == enabled_trash_paths_.rend()) {
     // The `source_path` is not parented at a supported Trash location, bail
     // out completely.
     // TODO(b/231830211): This may be better handled more gracefully by
@@ -186,8 +203,11 @@ void TrashIOTask::UpdateTrashEntry(size_t source_idx) {
     return;
   }
 
+  const base::FilePath trash_parent_path = trash_parent_path_it->first;
+  const std::string folder_name = trash_parent_path_it->second;
+
   TrashEntry& entry = trash_entries_[source_idx];
-  entry.trash_path = trash_parent_path.Append(kTrashFolderName);
+  entry.trash_path = trash_parent_path.Append(folder_name);
 
   if (!UpdateTrashInfoContents(source_path, trash_parent_path, entry)) {
     // If we can't update the trash entry, update the source error and finish
@@ -200,7 +220,7 @@ void TrashIOTask::UpdateTrashEntry(size_t source_idx) {
 
   auto it = free_space_map_.find(trash_parent_path);
   if (it == free_space_map_.end()) {
-    GetFreeDiskSpace(source_idx, trash_parent_path);
+    GetFreeDiskSpace(source_idx, trash_parent_path, folder_name);
     return;
   }
 
@@ -268,13 +288,14 @@ void TrashIOTask::GotFileSize(size_t source_idx,
 }
 
 void TrashIOTask::GetFreeDiskSpace(size_t source_idx,
-                                   const base::FilePath& trash_parent_path) {
+                                   const base::FilePath& trash_parent_path,
+                                   const std::string& folder_name) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(&base::SysInfo::AmountOfFreeDiskSpace, trash_parent_path),
       base::BindOnce(&TrashIOTask::GotFreeDiskSpace,
                      weak_ptr_factory_.GetWeakPtr(), source_idx,
-                     trash_parent_path));
+                     trash_parent_path, folder_name));
 }
 
 base::FilePath TrashIOTask::MakeRelativeFromBasePath(
@@ -293,9 +314,10 @@ base::FilePath TrashIOTask::MakeRelativeFromBasePath(
 
 void TrashIOTask::GotFreeDiskSpace(size_t source_idx,
                                    const base::FilePath& trash_parent_path,
+                                   const std::string& folder_name,
                                    int64_t free_space) {
   base::FilePath trash_path =
-      MakeRelativeFromBasePath(trash_parent_path.Append(kTrashFolderName));
+      MakeRelativeFromBasePath(trash_parent_path.Append(folder_name));
   const storage::FileSystemURL files_url = CreateFileSystemURL(
       progress_.sources[source_idx].url, trash_path.Append(kFilesFolderName));
   const storage::FileSystemURL info_url = CreateFileSystemURL(
