@@ -682,7 +682,7 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest,
   }
 }
 
-#if defined(THREAD_SANITIZER)
+#if defined(THREAD_SANITIZER) || BUILDFLAG(IS_LINUX)
 // TODO(https://crbug.com/1224978): Times out flakily on TSAN builds.
 #define MAYBE_HitTest_WithPinchZoom DISABLED_HitTest_WithPinchZoom
 #else
