@@ -242,8 +242,6 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
 
   ready() {
     super.ready();
-    getBluetoothConfig().observeSystemProperties(
-        this.systemPropertiesObserverReceiver_.$.bindNewPipeAndPassRemote());
 
     // If there's a specific device to pair with, immediately go to the spinner
     // page.
@@ -252,11 +250,27 @@ export class SettingsBluetoothPairingUiElement extends PolymerElement {
     }
   }
 
+  connectedCallback() {
+    super.connectedCallback();
+
+    getBluetoothConfig().observeSystemProperties(
+        this.systemPropertiesObserverReceiver_.$.bindNewPipeAndPassRemote());
+  }
+
   disconnectedCallback() {
     super.disconnectedCallback();
 
+    if (this.systemPropertiesObserverReceiver_) {
+      this.systemPropertiesObserverReceiver_.$.close();
+    }
     if (this.bluetoothDiscoveryDelegateReceiver_) {
       this.bluetoothDiscoveryDelegateReceiver_.$.close();
+    }
+    if (this.pairingDelegateReceiver_) {
+      this.pairingDelegateReceiver_.$.close();
+    }
+    if (this.keyEnteredReceiver_) {
+      this.keyEnteredReceiver_.close();
     }
   }
 

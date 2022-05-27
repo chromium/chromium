@@ -1055,4 +1055,25 @@ suite('CrComponentsBluetoothPairingUiTest', function() {
     // Error text should no longer be showing.
     assertEquals(getDeviceSelectionPage().failedPairingDeviceId, '');
   });
+
+  // Regression test for b/231738454.
+  test(
+      'Mojo connections are closed after dialog is removed from DOM',
+      async function() {
+        await init();
+        assertEquals(1, bluetoothConfig.getNumStartDiscoveryCalls());
+
+        // Remove the pairing dialog from the DOM.
+        bluetoothPairingUi.remove();
+
+        // Disable Bluetooth.
+        bluetoothConfig.setSystemState(BluetoothSystemState.kDisabled);
+        await flushTasks();
+
+        // Re-enable Bluetooth. If the Mojo connections are still alive, this
+        // will trigger discovery to start again.
+        bluetoothConfig.setSystemState(BluetoothSystemState.kEnabled);
+        await flushTasks();
+        assertEquals(1, bluetoothConfig.getNumStartDiscoveryCalls());
+      });
 });
