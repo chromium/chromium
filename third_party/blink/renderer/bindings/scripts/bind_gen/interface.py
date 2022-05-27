@@ -8010,7 +8010,13 @@ def generate_interfaces(task_queue):
     web_idl_database = package_initializer().web_idl_database()
 
     for interface in web_idl_database.interfaces:
-        task_queue.post_task(generate_interface, interface.identifier)
+        # Use the number of attributes + constants + operations as a very rough
+        # heuristic for workload. This is by no means close-to-accurate, but is
+        # better than nothing.
+        task_queue.post_task_with_workload(
+            len(interface.attributes) + len(interface.constants) +
+            len(interface.operations), generate_interface,
+            interface.identifier)
 
     task_queue.post_task(generate_install_properties_per_feature,
                          "InstallPropertiesPerFeature",

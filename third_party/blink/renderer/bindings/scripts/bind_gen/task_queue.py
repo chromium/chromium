@@ -36,17 +36,31 @@ class TaskQueue(object):
                 self._pool_size = min(self._pool_size, 56)
             self._pool = multiprocessing.Pool(self._pool_size,
                                               package_initializer().init)
-        self._requested_tasks = []  # List of (func, args, kwargs)
+        self._requested_tasks = []  # List of (workload, func, args, kwargs)
         self._worker_tasks = []  # List of multiprocessing.pool.AsyncResult
         self._did_run = False
 
     def post_task(self, func, *args, **kwargs):
         """
-        Schedules a new task to be executed when |run| method is invoked.  This
+        Schedules a new task to be executed when |run| method is invoked. This
         method does not kick any execution, only puts a new task in the queue.
+        This task will be scheduled without any workload hint, therefore will be
+        queued in an arbitrary order. Use |post_task_with_workload| to influence
+        the order this task is scheduled in.
+        """
+        self.post_task_with_workload(0, func, *args, **kwargs)
+
+    def post_task_with_workload(self, workload, func, *args, **kwargs):
+        """
+        Schedules a new task to be executed when |run| method is invoked,
+        including a hint regarding how long this task is expected to take. This
+        method does not kick any execution, only puts a new task in the queue.
+        Tasks with higher workload values will be run first. This tries to
+        reduce the impact of long-running tasks on total wall time on
+        multiprocessor systems.
         """
         assert not self._did_run
-        self._requested_tasks.append((func, args, kwargs))
+        self._requested_tasks.append((workload, func, args, kwargs))
 
     def run(self, report_progress=None):
         """
@@ -66,16 +80,22 @@ class TaskQueue(object):
         else:
             self._run_in_parallel(report_progress)
 
+    def _tasks_by_workload(self):
+        return sorted(
+            self._requested_tasks,
+            key=lambda task: task[0],  # workload
+            reverse=True)
+
     def _run_in_sequence(self, report_progress):
-        for index, task in enumerate(self._requested_tasks):
-            func, args, kwargs = task
+        for index, task in enumerate(self._tasks_by_workload()):
+            _, func, args, kwargs = task
             report_progress(len(self._requested_tasks), index)
             func(*args, **kwargs)
         report_progress(len(self._requested_tasks), len(self._requested_tasks))
 
     def _run_in_parallel(self, report_progress):
-        for task in self._requested_tasks:
-            func, args, kwargs = task
+        for task in self._tasks_by_workload():
+            _, func, args, kwargs = task
             self._worker_tasks.append(
                 self._pool.apply_async(func, args, kwargs))
         self._pool.close()
