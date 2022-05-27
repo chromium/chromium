@@ -574,6 +574,7 @@ class CONTENT_EXPORT RenderFrameImpl
   void WillFreezePage() override;
   void DidOpenDocumentInputStream(const blink::WebURL& url) override;
   void DidSetPageLifecycleState() override;
+  void NotifyCurrentHistoryItemChanged() override;
   void DidUpdateCurrentHistoryItem() override;
   base::UnguessableToken GetDevToolsFrameToken() override;
   void AbortClientNavigation() override;

@@ -290,9 +290,13 @@ void LocalFrameClientImpl::DidChangeScrollOffset() {
     web_frame_->Client()->DidChangeScrollOffset();
 }
 
-void LocalFrameClientImpl::DidUpdateCurrentHistoryItem() {
+void LocalFrameClientImpl::NotifyCurrentHistoryItemChanged() {
   if (web_frame_->Client())
-    web_frame_->Client()->DidUpdateCurrentHistoryItem();
+    web_frame_->Client()->NotifyCurrentHistoryItemChanged();
+}
+
+void LocalFrameClientImpl::DidUpdateCurrentHistoryItem() {
+  web_frame_->Client()->DidUpdateCurrentHistoryItem();
 }
 
 bool LocalFrameClientImpl::AllowContentInitiatedDataUrlNavigations(

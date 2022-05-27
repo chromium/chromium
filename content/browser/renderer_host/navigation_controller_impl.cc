@@ -4400,7 +4400,7 @@ NavigationControllerImpl::PopulateSingleNavigationApiHistoryEntryVector(
               frame_state.navigation_api_id.value_or(std::u16string()), url,
               frame_state.item_sequence_number,
               frame_state.document_sequence_number,
-              frame_state.navigation_api_state.value_or(std::u16string()));
+              frame_state.navigation_api_state);
 
       DCHECK(entry->url.empty() ||
              pending_origin.CanBeDerivedFrom(GURL(entry->url)));

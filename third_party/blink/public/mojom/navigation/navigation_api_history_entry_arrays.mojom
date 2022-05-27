@@ -18,7 +18,7 @@ struct NavigationApiHistoryEntry {
   mojo_base.mojom.String16 url;
   int64 item_sequence_number;
   int64 document_sequence_number;
-  mojo_base.mojom.String16 state;
+  mojo_base.mojom.String16? state;
 };
 
 // A same-origin subset of the back/forward list exposed by the

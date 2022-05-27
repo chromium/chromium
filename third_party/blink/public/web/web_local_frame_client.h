@@ -452,6 +452,10 @@ class BLINK_EXPORT WebLocalFrameClient {
   // Called when a frame's page lifecycle state gets updated.
   virtual void DidSetPageLifecycleState() {}
 
+  // Immediately notifies the browser of a change in the current HistoryItem.
+  // Prefer DidUpdateCurrentHistoryItem().
+  virtual void NotifyCurrentHistoryItemChanged() {}
+
   // Called upon update to scroll position, document state, and other
   // non-navigational events related to the data held by WebHistoryItem.
   // WARNING: This method may be called very frequently.

@@ -978,8 +978,10 @@ WebHistoryItem NavigationApiHistoryEntryPtrToWebHistoryItem(
   item.SetURLString(WebString::FromUTF16(entry.url));
   item.SetItemSequenceNumber(entry.item_sequence_number);
   item.SetDocumentSequenceNumber(entry.document_sequence_number);
-  item.SetNavigationApiState(
-      WebSerializedScriptValue::FromString(WebString::FromUTF16(entry.state)));
+  if (entry.state) {
+    item.SetNavigationApiState(WebSerializedScriptValue::FromString(
+        WebString::FromUTF16(entry.state)));
+  }
   return item;
 }
 
@@ -4138,6 +4140,10 @@ void RenderFrameImpl::DidOpenDocumentInputStream(const blink::WebURL& url) {
 void RenderFrameImpl::DidSetPageLifecycleState() {
   for (auto& observer : observers_)
     observer.DidSetPageLifecycleState();
+}
+
+void RenderFrameImpl::NotifyCurrentHistoryItemChanged() {
+  SendUpdateState();
 }
 
 void RenderFrameImpl::DidUpdateCurrentHistoryItem() {

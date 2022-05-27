@@ -303,6 +303,12 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
   virtual bool AllowScriptExtensions() = 0;
 
   virtual void DidChangeScrollOffset() {}
+
+  // Immediately notifies the browser of a change in the current HistoryItem.
+  // Prefer DidUpdateCurrentHistoryItem().
+  virtual void NotifyCurrentHistoryItemChanged() {}
+  // Notifies the browser of a change in the current HistoryItem on a timer,
+  // allowing batching of updates.
   virtual void DidUpdateCurrentHistoryItem() {}
 
   // Called when a content-initiated, main frame navigation to a data URL is

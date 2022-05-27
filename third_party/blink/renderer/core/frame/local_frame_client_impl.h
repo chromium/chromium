@@ -193,6 +193,7 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
   WebRemotePlaybackClient* CreateWebRemotePlaybackClient(
       HTMLMediaElement&) override;
   void DidChangeScrollOffset() override;
+  void NotifyCurrentHistoryItemChanged() override;
   void DidUpdateCurrentHistoryItem() override;
 
   bool AllowContentInitiatedDataUrlNavigations(const KURL&) override;

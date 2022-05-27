@@ -340,7 +340,7 @@ NavigationHistoryEntry* NavigationApi::GetEntryForRestore(
   return MakeGarbageCollected<NavigationHistoryEntry>(
       GetSupplementable(), entry->key, entry->id, KURL(entry->url),
       entry->document_sequence_number,
-      SerializedScriptValue::Create(entry->state));
+      entry->state ? SerializedScriptValue::Create(entry->state) : nullptr);
 }
 
 // static
