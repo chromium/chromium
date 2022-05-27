@@ -3,10 +3,7 @@
 // found in the LICENSE file.
 
 [
-    // Use `Global` to be able to expose other interfaces to ChromeOS. This is
-    // not the intended use of Global.
-    // TODO(yukishiino): Replace with a more appropriate extended attribute.
-    Global=ChromeOSExtensions
+    TargetOfExposed=ChromeOSExtensions
 ] interface ChromeOS {
   [RuntimeEnabled=BlinkExtensionChromeOSWindowManagement,CallWith=ExecutionContext]
   readonly attribute CrosWindowManagement windowManagement;

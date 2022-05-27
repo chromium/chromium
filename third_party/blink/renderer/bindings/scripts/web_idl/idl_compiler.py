@@ -681,7 +681,11 @@ class IdlCompiler(object):
             self._ir_map.add(new_ir)
 
             assert not new_ir.exposed_constructs
-            global_names = new_ir.extended_attributes.values_of('Global')
+            # Not only [Global] but also [TargetOfExposed] will expose IDL
+            # constructs with [Exposed].
+            global_names = (
+                new_ir.extended_attributes.values_of('Global') +
+                new_ir.extended_attributes.values_of('TargetOfExposed'))
             if not global_names:
                 continue
             constructs = set()

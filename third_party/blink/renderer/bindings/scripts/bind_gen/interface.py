@@ -5288,7 +5288,12 @@ def make_property_entries_and_callback_defs(cg_context, attribute_entries,
 
     class_like = cg_context.class_like
     interface = cg_context.interface
-    global_names = class_like.extended_attributes.values_of("Global")
+    # This function produces the property installation code and we'd like to
+    # expose IDL constructs with [Exposed] not only on [Global] but also on
+    # [TargetOfExposed].
+    global_names = (
+        class_like.extended_attributes.values_of("Global") +
+        class_like.extended_attributes.values_of("TargetOfExposed"))
 
     callback_def_nodes = ListNode()
 
