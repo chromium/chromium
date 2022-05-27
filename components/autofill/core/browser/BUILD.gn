@@ -480,6 +480,7 @@ static_library("browser") {
     "//components/translate/core/browser",
     "//skia",
     "//third_party/abseil-cpp:absl",
+    "//third_party/libaddressinput:strings_grit",
     "//third_party/libaddressinput",
     "//ui/base",
     "//ui/gfx/geometry",

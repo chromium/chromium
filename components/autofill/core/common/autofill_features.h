@@ -76,6 +76,8 @@ extern const base::Feature kAutofillEnableCompatibilitySupportForBirthdates;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillEnableDependentLocalityParsing;
 COMPONENT_EXPORT(AUTOFILL)
+extern const base::Feature kAutofillEnableExtendedAddressFormats;
+COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillEnableImportWhenMultiplePhoneNumbers;
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::Feature kAutofillEnableMultiStepImports;
