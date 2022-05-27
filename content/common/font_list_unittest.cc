@@ -88,7 +88,7 @@ TEST(FontList, GetFontListDoesNotIncludeHiddenFonts) {
     const std::string& font_id = font_names[0].GetString();
 
     // The checks are inspired by Gecko's gfxMacPlatformFontList::AddFamily.
-    EXPECT_FALSE(base::LowerCaseEqualsASCII(font_id, "lastresort"))
+    EXPECT_FALSE(base::EqualsCaseInsensitiveASCII(font_id, "lastresort"))
         << font_id << " seems to be LastResort, which should be filtered";
     EXPECT_FALSE(font_id[0] == '.')
         << font_id << " seems like a hidden font, which should be filtered";
