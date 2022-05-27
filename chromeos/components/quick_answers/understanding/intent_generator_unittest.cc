@@ -577,12 +577,41 @@ TEST_F(IntentGeneratorTest, ShouldTriggerForSingleWordInDictionary) {
   EXPECT_EQ(kWord, intent_info_.intent_text);
 }
 
-TEST_F(IntentGeneratorTest, ShouldTriggerForSingleWordInDictionaryWithDigits) {
+TEST_F(IntentGeneratorTest,
+       ShouldNotTriggerForSingleWordInDictionaryWithDigits) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       chromeos::features::kQuickAnswersAlwaysTriggerForSingleWord);
 
   const std::string kWord = "1st";
+
+  // No Annotation provided.
+  std::vector<TextAnnotationPtr> annotations;
+  UseFakeServiceConnection(annotations);
+
+  // Add word to the dictionary.
+  spell_checker()->AddWordToDictionary(kWord);
+
+  // Word selected.
+  std::unique_ptr<QuickAnswersRequest> quick_answers_request =
+      std::make_unique<QuickAnswersRequest>();
+  quick_answers_request->selected_text = kWord;
+
+  intent_generator_->GenerateIntent(*quick_answers_request);
+  task_environment_.RunUntilIdle();
+
+  // Should not generate dictionary intent if the word contains digits even if
+  // it is in the dictionary.
+  EXPECT_EQ(IntentType::kUnknown, intent_info_.intent_type);
+  EXPECT_EQ(kWord, intent_info_.intent_text);
+}
+
+TEST_F(IntentGeneratorTest, ShouldNotTriggerForProperNounInDictionary) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      chromeos::features::kQuickAnswersAlwaysTriggerForSingleWord);
+
+  const std::string kWord = "Amy";
 
   // No Annotation provided.
   std::vector<TextAnnotationPtr> annotations;

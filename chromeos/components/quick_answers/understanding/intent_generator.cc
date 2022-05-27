@@ -164,10 +164,14 @@ void IntentGenerator::GenerateIntent(const QuickAnswersRequest& request) {
                                     "always trigger feature is enabled";
     // Check spelling if the selected text is a valid single word.
     if (iter.IsWord() && iter.prev() == 0 && iter.pos() == u16_text.length()) {
+      // Search server do not provide useful information for proper nouns and
+      // abbreviations (such as "Amy" and "ASAP"). Check spelling of the word in
+      // lower case to filter out such cases.
+      auto text = base::UTF16ToUTF8(
+          base::i18n::ToLower(base::UTF8ToUTF16(request.selected_text)));
       spell_checker_->CheckSpelling(
-          request.selected_text,
-          base::BindOnce(&IntentGenerator::CheckSpellingCallback,
-                         weak_factory_.GetWeakPtr(), request));
+          text, base::BindOnce(&IntentGenerator::CheckSpellingCallback,
+                               weak_factory_.GetWeakPtr(), request));
       return;
     }
   }
