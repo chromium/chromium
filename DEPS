@@ -1210,7 +1210,7 @@ deps = {
     Var('chromium_git') + '/external/github.com/khaledhosny/ots.git' + '@' + Var('ots_revision'),
 
   'src/third_party/libgav1/src':
-    Var('chromium_git') + '/codecs/libgav1.git' + '@' + '76a86fcb8cdc93d651eb0f001c3ffda9c290c420',
+    Var('chromium_git') + '/codecs/libgav1.git' + '@' + '38ca0c62d9079820bbb872d81738770c0a28ae6d',
 
   'src/third_party/google_toolbox_for_mac/src': {
       'url': Var('chromium_git') + '/external/github.com/google/google-toolbox-for-mac.git' + '@' + Var('google_toolbox_for_mac_revision'),
