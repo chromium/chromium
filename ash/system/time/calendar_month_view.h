@@ -28,6 +28,7 @@ class CalendarDateCellView : public CalendarViewController::Observer,
 
   CalendarDateCellView(CalendarViewController* calendar_view_controller,
                        base::Time date,
+                       base::TimeDelta time_difference,
                        bool is_grayed_out_date,
                        int row_index);
   CalendarDateCellView(const CalendarDateCellView& other) = delete;
@@ -98,6 +99,9 @@ class CalendarDateCellView : public CalendarViewController::Observer,
   // The tool tip for this view. Before events data is back, only show date.
   // After the events date is back, show date and event numbers.
   std::u16string tool_tip_;
+
+  // The time difference from UTC time based on `date_`;
+  base::TimeDelta time_difference_;
 
   // Owned by UnifiedCalendarViewController.
   CalendarViewController* const calendar_view_controller_;

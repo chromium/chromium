@@ -114,11 +114,6 @@ class ASH_EXPORT CalendarModel : public SessionObserver {
   // time difference. This method is only called when there's a timezone change.
   void RedistributeEvents();
 
-  // Updates the time difference in minutes.
-  void set_time_difference_minutes(int minutes) {
-    time_difference_minutes_ = minutes;
-  }
-
  protected:
   // Fetch events for `start_of_month`.
   virtual void MaybeFetchMonth(base::Time start_of_month);
@@ -154,14 +149,14 @@ class ASH_EXPORT CalendarModel : public SessionObserver {
   void InsertEventInMonth(SingleMonthEventMap& month,
                           const google_apis::calendar::CalendarEvent* event);
 
-  // Returns the `start_time` of `event` adjusted by
-  // `time_difference_minutes_`, to ensure that each event is stored by its
-  // local time, e.g. an event that starts at 2022-05-31 22:00:00.000 PST
-  // (2022-06-01 05:00:00.000 UTC) is stored in the map for 05-2022.
+  // Returns the `start_time` of `event` adjusted by time difference, to ensure
+  // that each event is stored by its local time, e.g. an event that starts at
+  // 2022-05-31 22:00:00.000 PST (2022-06-01 05:00:00.000 UTC) is stored in the
+  // map for 05-2022.
   base::Time GetStartTimeAdjusted(
       const google_apis::calendar::CalendarEvent* event) const;
 
-  // Returns the `end_time` of `event` adjusted by `time_difference_minutes_`.
+  // Returns the `end_time` of `event` adjusted by time difference.
   base::Time GetEndTimeAdjusted(
       const google_apis::calendar::CalendarEvent* event) const;
 
@@ -220,9 +215,6 @@ class ASH_EXPORT CalendarModel : public SessionObserver {
 
   // All fetch requests that are still in-progress.
   std::map<base::Time, std::unique_ptr<CalendarEventFetch>> pending_fetches_;
-
-  // Time difference between the UTC time and the local time in minutes.
-  absl::optional<int> time_difference_minutes_;
 
   // The first on-screen month to have been displayed when the calendar was
   // opened.

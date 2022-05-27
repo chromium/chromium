@@ -333,10 +333,6 @@ TEST_F(CalendarMonthViewTest, TimeZone) {
   month_view()->SchedulePaintChildren();
   TriggerPaint();
 
-  // August is before the daylight saving, time difference between UTC and PST
-  // should be 7 hours.
-  EXPECT_EQ(base::Minutes(-420), controller()->time_difference_minutes());
-
   EXPECT_EQ(u"18",
             static_cast<CalendarDateCellView*>(month_view()->children()[17])
                 ->GetText());

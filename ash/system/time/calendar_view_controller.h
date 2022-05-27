@@ -102,10 +102,6 @@ class ASH_EXPORT CalendarViewController {
   int row_height() const { return row_height_; }
   void set_row_height(int height) { row_height_ = height; }
 
-  base::TimeDelta time_difference_minutes() const {
-    return time_difference_minutes_;
-  }
-
   // Getters of the today's row position, top and bottom.
   int GetTodayRowTopHeight() const;
   int GetTodayRowBottomHeight() const;
@@ -144,7 +140,7 @@ class ASH_EXPORT CalendarViewController {
   friend class CalendarViewTest;
   friend class CalendarViewAnimationTest;
 
-  // Adds the `time_difference_minutes_` and returns the adjusted time.
+  // Adds the time difference and returns the adjusted time.
   base::Time ApplyTimeDifference(base::Time date);
 
   // The currently shown date, which can be today or the first day of the
@@ -181,9 +177,6 @@ class ASH_EXPORT CalendarViewController {
 
   // The current row index when the event list view is shown.
   int expanded_row_index_ = 0;
-
-  // The time difference between UTC and local time.
-  const base::TimeDelta time_difference_minutes_;
 
   base::ObserverList<Observer> observers_;
 

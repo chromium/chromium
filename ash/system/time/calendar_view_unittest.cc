@@ -266,8 +266,7 @@ TEST_F(CalendarViewTest, Init) {
 }
 
 // Test the init view of the `CalendarView` starting with December.
-// TODO(crbug.com/1329028): Re-enable this test
-TEST_F(CalendarViewTest, DISABLED_InitDec) {
+TEST_F(CalendarViewTest, InitDec) {
   base::Time dec_date;
   ASSERT_TRUE(base::Time::FromString("24 Dec 2021 10:00 GMT", &dec_date));
 

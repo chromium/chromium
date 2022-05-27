@@ -74,18 +74,19 @@ void MoveToNextDay(int& column,
 CalendarDateCellView::CalendarDateCellView(
     CalendarViewController* calendar_view_controller,
     base::Time date,
+    base::TimeDelta time_difference,
     bool is_grayed_out_date,
     int row_index)
     : views::LabelButton(
           views::Button::PressedCallback(
               base::BindRepeating(&CalendarDateCellView::OnDateCellActivated,
                                   base::Unretained(this))),
-          calendar_utils::GetDayIntOfMonth(
-              date + calendar_view_controller->time_difference_minutes()),
+          calendar_utils::GetDayIntOfMonth(date + time_difference),
           CONTEXT_CALENDAR_DATE),
       date_(date),
       grayed_out_(is_grayed_out_date),
       row_index_(row_index),
+      time_difference_(time_difference),
       calendar_view_controller_(calendar_view_controller) {
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
   SetBorder(views::CreateEmptyBorder(calendar_utils::kDateCellInsets));
@@ -169,8 +170,7 @@ void CalendarDateCellView::OnSelectedDateUpdated() {
     }
     // Sets accessible label. E.g. Calendar, week of July 16th 2021, [selected
     // date] is currently selected.
-    base::Time local_date =
-        date_ + calendar_view_controller_->time_difference_minutes();
+    base::Time local_date = date_ + time_difference_;
     base::Time::Exploded date_exploded =
         calendar_utils::GetExplodedUTC(local_date);
     base::Time first_day_of_week =
@@ -334,7 +334,6 @@ CalendarMonthView::CalendarMonthView(
   base::Time current_date =
       calendar_utils::GetFirstDayOfWeekLocalMidnight(first_day_of_month);
   base::Time current_date_local = current_date + time_difference;
-
   base::Time::Exploded current_date_exploded =
       calendar_utils::GetExplodedUTC(current_date_local);
 
@@ -439,6 +438,7 @@ CalendarDateCellView* CalendarMonthView::AddDateCellToLayout(
     layout_manager->AddRows(1, views::TableLayout::kFixedSize);
   return AddChildView(std::make_unique<CalendarDateCellView>(
       calendar_view_controller_, current_date,
+      calendar_utils::GetTimeDifference(current_date),
       /*is_grayed_out_date=*/!is_in_current_month, /*row_index=*/row_index));
 }
 

@@ -328,10 +328,6 @@ class CalendarModelTest : public AshTestBase {
     return calendar_model_->GetStartTimeMidnightAdjusted(event);
   }
 
-  void set_time_difference_minutes(int minutes) {
-    calendar_model_->set_time_difference_minutes(minutes);
-  }
-
   bool IsEventPresent(const char* event_id, SingleDayEventList& events) {
     const auto it =
         std::find_if(events.begin(), events.end(),

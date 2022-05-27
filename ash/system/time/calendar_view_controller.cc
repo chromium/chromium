@@ -34,11 +34,10 @@ constexpr float kExpandedCalendarViewHeightScale = 1.1;
 CalendarViewController::CalendarViewController()
     : currently_shown_date_(base::Time::Now()),
       calendar_open_time_(base::TimeTicks::Now()),
-      month_dwell_time_(base::TimeTicks::Now()),
-      time_difference_minutes_(
-          calendar_utils::GetTimeDifference(currently_shown_date_)) {
+      month_dwell_time_(base::TimeTicks::Now()) {
   std::set<base::Time> months = calendar_utils::GetSurroundingMonthsUTC(
-      base::Time::Now() + time_difference_minutes_,
+      base::Time::Now() +
+          calendar_utils::GetTimeDifference(currently_shown_date_),
       calendar_utils::kNumSurroundingMonthsCached);
   Shell::Get()->system_tray_model()->calendar_model()->AddNonPrunableMonths(
       months);
