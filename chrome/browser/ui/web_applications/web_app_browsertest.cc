@@ -434,24 +434,26 @@ INSTANTIATE_TEST_SUITE_P(
 
 IN_PROC_BROWSER_TEST_P(BackgroundColorChangeWebAppBrowserTest,
                        BackgroundColorChange) {
+  const bool is_non_swa = GetBackgroundColorChangeTestMode() ==
+                          BackgroundColorChangeTestMode::kNonSWA;
   // Skip test parameterizations for non-system web apps that don't make sense.
-  if (GetBackgroundColorChangeTestMode() ==
-          BackgroundColorChangeTestMode::kNonSWA &&
-      PreferManifestBackgroundColor()) {
+  if (is_non_swa && PreferManifestBackgroundColor())
     GTEST_SKIP();
-  }
 
   const AppId app_id = WaitForAppInstall();
   Browser* const app_browser = LaunchWebAppBrowser(app_id);
   content::WebContents* const web_contents =
       app_browser->tab_strip_model()->GetActiveWebContents();
 
+  const bool is_dark_mode_state =
+      ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors();
   // Wait for original background color to load.
   {
     content::BackgroundColorChangeWaiter waiter(web_contents);
     waiter.Wait();
-    EXPECT_EQ(app_browser->app_controller()->GetBackgroundColor().value(),
-              SK_ColorWHITE);
+    EXPECT_EQ(
+        app_browser->app_controller()->GetBackgroundColor().value(),
+        !is_non_swa && is_dark_mode_state ? SK_ColorBLACK : SK_ColorWHITE);
   }
   content::AwaitDocumentOnLoadCompleted(web_contents);
 
@@ -464,12 +466,16 @@ IN_PROC_BROWSER_TEST_P(BackgroundColorChangeWebAppBrowserTest,
         web_contents, "document.body.style.backgroundColor = 'cyan';"));
     waiter.Wait();
     EXPECT_EQ(app_browser->app_controller()->GetBackgroundColor().value(),
-              PreferManifestBackgroundColor() ? SK_ColorWHITE : SK_ColorCYAN);
+              PreferManifestBackgroundColor()
+                  ? (is_dark_mode_state ? SK_ColorBLACK : SK_ColorWHITE)
+                  : SK_ColorCYAN);
     SkColor download_shelf_color;
     app_browser->app_controller()->GetThemeSupplier()->GetColor(
         ThemeProperties::COLOR_DOWNLOAD_SHELF, &download_shelf_color);
     EXPECT_EQ(download_shelf_color,
-              PreferManifestBackgroundColor() ? SK_ColorWHITE : SK_ColorCYAN);
+              PreferManifestBackgroundColor()
+                  ? (is_dark_mode_state ? SK_ColorBLACK : SK_ColorWHITE)
+                  : SK_ColorCYAN);
   }
 }
 
