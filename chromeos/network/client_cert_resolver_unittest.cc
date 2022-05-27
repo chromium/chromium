@@ -344,7 +344,8 @@ class ClientCertResolverTest : public testing::Test,
 
     client_cert_config->onc_source = onc_source;
     client_cert_config->client_cert_type = ::onc::client_cert::kPattern;
-    client_cert_config->pattern.ReadFromONCDictionary(*(parsed_json.value));
+    client_cert_config->pattern.ReadFromONCDictionary(
+        parsed_json.value->GetDict());
   }
 
   // Sets up a policy with a certificate pattern that matches any client cert

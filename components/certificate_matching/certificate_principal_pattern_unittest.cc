@@ -89,16 +89,8 @@ TEST(CertificatePrincipalPatternTest, ParseFromNullptr) {
   EXPECT_TRUE(pattern.Empty());
 }
 
-TEST(CertificatePrincipalPatternTest, ParseFromNonDict) {
-  base::Value string_value("test");
-  CertificatePrincipalPattern pattern =
-      CertificatePrincipalPattern::ParseFromOptionalDict(&string_value, kKeyCN,
-                                                         kKeyL, kKeyO, kKeyOU);
-  EXPECT_TRUE(pattern.Empty());
-}
-
 TEST(CertificatePrincipalPatternTest, ParseFromEmptyDict) {
-  base::Value dict_value(base::Value::Type::DICTIONARY);
+  base::Value::Dict dict_value;
   CertificatePrincipalPattern pattern =
       CertificatePrincipalPattern::ParseFromOptionalDict(&dict_value, kKeyCN,
                                                          kKeyL, kKeyO, kKeyOU);
@@ -106,11 +98,11 @@ TEST(CertificatePrincipalPatternTest, ParseFromEmptyDict) {
 }
 
 TEST(CertificatePrincipalPatternTest, Parse) {
-  base::Value dict_value(base::Value::Type::DICTIONARY);
-  dict_value.SetKey(kKeyCN, base::Value("ValueCN"));
-  dict_value.SetKey(kKeyL, base::Value("ValueL"));
-  dict_value.SetKey(kKeyO, base::Value("ValueO"));
-  dict_value.SetKey(kKeyOU, base::Value("ValueOU"));
+  base::Value::Dict dict_value;
+  dict_value.Set(kKeyCN, "ValueCN");
+  dict_value.Set(kKeyL, "ValueL");
+  dict_value.Set(kKeyO, "ValueO");
+  dict_value.Set(kKeyOU, "ValueOU");
   CertificatePrincipalPattern pattern =
       CertificatePrincipalPattern::ParseFromOptionalDict(&dict_value, kKeyCN,
                                                          kKeyL, kKeyO, kKeyOU);

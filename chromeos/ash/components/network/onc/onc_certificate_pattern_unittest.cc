@@ -72,8 +72,8 @@ TEST_F(OncCertificatePatternTest, ParsePatternFromOnc) {
           pattern_json, base::JSON_ALLOW_TRAILING_COMMAS);
   ASSERT_TRUE(parsed_json.value) << parsed_json.error_message;
 
-  auto pattern =
-      OncCertificatePattern::ReadFromONCDictionary(*parsed_json.value);
+  auto pattern = OncCertificatePattern::ReadFromONCDictionary(
+      parsed_json.value->GetDict());
   ASSERT_TRUE(pattern);
   EXPECT_FALSE(pattern.value().Empty());
 
@@ -106,8 +106,8 @@ TEST_F(OncCertificatePatternTest, PatternMatchingIssuer) {
   ASSERT_TRUE(parsed_json.value) << parsed_json.error_message;
 
   {
-    auto pattern =
-        OncCertificatePattern::ReadFromONCDictionary(*parsed_json.value);
+    auto pattern = OncCertificatePattern::ReadFromONCDictionary(
+        parsed_json.value->GetDict());
     ASSERT_TRUE(pattern);
     EXPECT_FALSE(pattern.value().Empty());
 
@@ -120,8 +120,8 @@ TEST_F(OncCertificatePatternTest, PatternMatchingIssuer) {
     ASSERT_TRUE(issuer);
     issuer->SetKey("CommonName", base::Value("SomeOtherCA"));
 
-    auto pattern =
-        OncCertificatePattern::ReadFromONCDictionary(*parsed_json.value);
+    auto pattern = OncCertificatePattern::ReadFromONCDictionary(
+        parsed_json.value->GetDict());
     ASSERT_TRUE(pattern);
     EXPECT_FALSE(pattern.value().Matches(*cert_, kFakePemEncodedIssuer));
   }
@@ -143,8 +143,8 @@ TEST_F(OncCertificatePatternTest, PatternMatchingSubject) {
   ASSERT_TRUE(parsed_json.value) << parsed_json.error_message;
 
   {
-    auto pattern =
-        OncCertificatePattern::ReadFromONCDictionary(*parsed_json.value);
+    auto pattern = OncCertificatePattern::ReadFromONCDictionary(
+        parsed_json.value->GetDict());
     ASSERT_TRUE(pattern);
     EXPECT_FALSE(pattern.value().Empty());
 
@@ -157,8 +157,8 @@ TEST_F(OncCertificatePatternTest, PatternMatchingSubject) {
     ASSERT_TRUE(issuer);
     issuer->SetKey("CommonName", base::Value("B CA"));
 
-    auto pattern =
-        OncCertificatePattern::ReadFromONCDictionary(*parsed_json.value);
+    auto pattern = OncCertificatePattern::ReadFromONCDictionary(
+        parsed_json.value->GetDict());
     ASSERT_TRUE(pattern);
     EXPECT_FALSE(pattern.value().Matches(*cert_, kFakePemEncodedIssuer));
   }
@@ -174,8 +174,8 @@ TEST_F(OncCertificatePatternTest, PatternMatchingIssuerCAPEM) {
           pattern_json, base::JSON_ALLOW_TRAILING_COMMAS);
   ASSERT_TRUE(parsed_json.value) << parsed_json.error_message;
 
-  auto pattern =
-      OncCertificatePattern::ReadFromONCDictionary(*parsed_json.value);
+  auto pattern = OncCertificatePattern::ReadFromONCDictionary(
+      parsed_json.value->GetDict());
   ASSERT_TRUE(pattern);
   EXPECT_FALSE(pattern.value().Empty());
 

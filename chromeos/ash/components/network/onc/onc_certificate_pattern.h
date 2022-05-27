@@ -58,7 +58,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) OncCertificatePattern {
 
   // Reads a |OncCertificatePattern| from an ONC dictionary.
   static absl::optional<OncCertificatePattern> ReadFromONCDictionary(
-      const base::Value& dictionary);
+      const base::Value::Dict& dictionary);
 
  private:
   OncCertificatePattern(

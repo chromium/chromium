@@ -18,14 +18,11 @@ namespace chromeos {
 
 namespace {
 
-bool GetAsListOfStrings(const base::Value& value,
+bool GetAsListOfStrings(const base::Value::List& value,
                         std::vector<std::string>* result) {
-  if (!value.is_list())
-    return false;
-
   result->clear();
-  result->reserve(value.GetListDeprecated().size());
-  for (const auto& entry : value.GetListDeprecated()) {
+  result->reserve(value.size());
+  for (const auto& entry : value) {
     if (!entry.is_string())
       return false;
     result->push_back(entry.GetString());
@@ -79,10 +76,10 @@ bool OncCertificatePattern::Matches(
 
 // static
 absl::optional<OncCertificatePattern>
-OncCertificatePattern::ReadFromONCDictionary(const base::Value& dict) {
+OncCertificatePattern::ReadFromONCDictionary(const base::Value::Dict& dict) {
   // All of these are optional.
-  const base::Value* pem_encoded_issuer_cas_value = dict.FindKeyOfType(
-      onc::client_cert::kIssuerCAPEMs, base::Value::Type::LIST);
+  const base::Value::List* pem_encoded_issuer_cas_value =
+      dict.FindList(onc::client_cert::kIssuerCAPEMs);
   std::vector<std::string> pem_encoded_issuer_cas;
   if (pem_encoded_issuer_cas_value &&
       !GetAsListOfStrings(*pem_encoded_issuer_cas_value,
@@ -90,8 +87,8 @@ OncCertificatePattern::ReadFromONCDictionary(const base::Value& dict) {
     return absl::nullopt;
   }
 
-  const base::Value* enrollment_uri_list_value = dict.FindKeyOfType(
-      onc::client_cert::kEnrollmentURI, base::Value::Type::LIST);
+  const base::Value::List* enrollment_uri_list_value =
+      dict.FindList(onc::client_cert::kEnrollmentURI);
   std::vector<std::string> enrollment_uri_list;
   if (enrollment_uri_list_value &&
       !GetAsListOfStrings(*enrollment_uri_list_value, &enrollment_uri_list)) {
@@ -100,15 +97,13 @@ OncCertificatePattern::ReadFromONCDictionary(const base::Value& dict) {
 
   auto issuer_pattern =
       certificate_matching::CertificatePrincipalPattern::ParseFromOptionalDict(
-          dict.FindKeyOfType(onc::client_cert::kIssuer,
-                             base::Value::Type::DICTIONARY),
+          dict.FindDict(onc::client_cert::kIssuer),
           onc::client_cert::kCommonName, onc::client_cert::kLocality,
           onc::client_cert::kOrganization,
           onc::client_cert::kOrganizationalUnit);
   auto subject_pattern =
       certificate_matching::CertificatePrincipalPattern::ParseFromOptionalDict(
-          dict.FindKeyOfType(onc::client_cert::kSubject,
-                             base::Value::Type::DICTIONARY),
+          dict.FindDict(onc::client_cert::kSubject),
           onc::client_cert::kCommonName, onc::client_cert::kLocality,
           onc::client_cert::kOrganization,
           onc::client_cert::kOrganizationalUnit);

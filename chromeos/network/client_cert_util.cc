@@ -51,8 +51,9 @@ void GetClientCertTypeAndDescriptor(onc::ONCSource onc_source,
     cert_config->client_cert_type = *client_cert_type;
 
   if (cert_config->client_cert_type == ::onc::client_cert::kPattern) {
-    const base::Value* pattern_value = dict_with_client_cert.FindKeyOfType(
-        ::onc::client_cert::kClientCertPattern, base::Value::Type::DICTIONARY);
+    const base::Value::Dict* pattern_value =
+        dict_with_client_cert.GetDict().FindDict(
+            ::onc::client_cert::kClientCertPattern);
     if (pattern_value) {
       absl::optional<OncCertificatePattern> pattern =
           OncCertificatePattern::ReadFromONCDictionary(*pattern_value);

@@ -9,10 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/strings/string_piece_forward.h"
-
-namespace base {
-class Value;
-}
+#include "base/values.h"
 
 namespace net {
 struct CertPrincipal;
@@ -61,7 +58,7 @@ class COMPONENT_EXPORT(CERTIFICATE_MATCHING) CertificatePrincipalPattern {
   // empty (putting no constraint on the principal field). If |value| is nullptr
   // or not a dictionary, returns an empty pattern.
   static CertificatePrincipalPattern ParseFromOptionalDict(
-      const base::Value* dict,
+      const base::Value::Dict* dict,
       base::StringPiece key_common_name,
       base::StringPiece key_locality,
       base::StringPiece key_organization,
