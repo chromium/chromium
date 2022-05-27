@@ -4,8 +4,6 @@
 
 #include "media/gpu/v4l2/test/av1_decoder.h"
 
-#include <linux/media/av1-ctrls.h>
-
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "media/filters/ivf_parser.h"
@@ -19,61 +17,6 @@ constexpr uint32_t kNumberOfBuffersInCaptureQueue = 10;
 static_assert(kNumberOfBuffersInCaptureQueue <= 16,
               "Too many CAPTURE buffers are used. The number of CAPTURE "
               "buffers is currently assumed to be no larger than 16.");
-
-// TODO(stevecho): Remove this provision when av1-ctrls.h includes linux/bits.h.
-#ifndef BIT
-#define BIT(nr) (1U << (nr))
-#endif
-
-inline void conditionally_set_flags(__u8* flags,
-                                    const bool condition,
-                                    const bool mask) {
-  *flags |= (condition ? mask : 0);
-}
-
-// Section 5.9.11. Loop filter params syntax in AV1 spec.
-// https://aomediacodec.github.io/av1-spec/av1-spec.pdf
-// Note that |update_ref_delta| and |update_mode_delta| flags in the spec
-// are not needed for V4L2 AV1 API.
-// TODO(stevecho): sanity check data structures in libgav1 against the AV1 spec.
-void FillLoopFilterParams(struct v4l2_av1_loop_filter* v4l2_lf,
-                          const libgav1::LoopFilter& lf) {
-  conditionally_set_flags(&v4l2_lf->flags, lf.delta_enabled,
-                          V4L2_AV1_LOOP_FILTER_FLAG_DELTA_ENABLED);
-  conditionally_set_flags(&v4l2_lf->flags, lf.delta_update,
-                          V4L2_AV1_LOOP_FILTER_FLAG_DELTA_UPDATE);
-
-  static_assert(std::size(decltype(v4l2_lf->level){}) == libgav1::kFrameLfCount,
-                "Invalid size of loop filter level (strength) array");
-  for (size_t i = 0; i < libgav1::kFrameLfCount; i++)
-    v4l2_lf->level[i] = base::checked_cast<__u8>(lf.level[i]);
-
-  v4l2_lf->sharpness = lf.sharpness;
-
-  static_assert(std::size(decltype(v4l2_lf->ref_deltas){}) ==
-                    libgav1::kNumReferenceFrameTypes,
-                "Invalid size of ref deltas array");
-  for (size_t i = 0; i < libgav1::kNumReferenceFrameTypes; i++)
-    v4l2_lf->ref_deltas[i] = lf.ref_deltas[i];
-
-  static_assert(std::size(decltype(v4l2_lf->mode_deltas){}) ==
-                    libgav1::kLoopFilterMaxModeDeltas,
-                "Invalid size of mode deltas array");
-  for (size_t i = 0; i < libgav1::kLoopFilterMaxModeDeltas; i++)
-    v4l2_lf->mode_deltas[i] = lf.mode_deltas[i];
-}
-
-// Section 5.9.18. Loop filter delta parameters syntax.
-// Note that |delta_lf_res| in |v4l2_av1_loop_filter| corresponds to
-// |delta_lf.scale| in the frame header defined in libgav1.
-void FillLoopFilterDeltaParams(struct v4l2_av1_loop_filter* v4l2_lf,
-                               const libgav1::Delta& delta_lf) {
-  conditionally_set_flags(&v4l2_lf->flags, delta_lf.present,
-                          V4L2_AV1_LOOP_FILTER_FLAG_DELTA_LF_PRESENT);
-
-  v4l2_lf->delta_lf_res = delta_lf.scale;
-  v4l2_lf->delta_lf_multi = delta_lf.multi;
-}
 
 Av1Decoder::Av1Decoder(std::unique_ptr<IvfParser> ivf_parser,
                        std::unique_ptr<V4L2IoctlShim> v4l2_ioctl,
@@ -314,14 +257,7 @@ VideoDecoder::Result Av1Decoder::DecodeNextFrame(std::vector<char>& y_plane,
   }
 
   // TODO(b/228534730): add changes to prepare parameters for V4L2 AV1 stateless
-  // decoding and make VIDIOC_S_EXT_CTRLS v4l2 ioctl call
-  struct v4l2_ctrl_av1_frame_header v4l2_frame_params = {};
-
-  FillLoopFilterParams(&v4l2_frame_params.loop_filter,
-                       current_frame_header.loop_filter);
-
-  FillLoopFilterDeltaParams(&v4l2_frame_params.loop_filter,
-                            current_frame_header.delta_lf);
+  // decoding
 
   if (!v4l2_ioctl_->MediaRequestIocQueue(OUTPUT_queue_))
     LOG(FATAL) << "MEDIA_REQUEST_IOC_QUEUE failed.";
