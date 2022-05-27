@@ -4648,6 +4648,11 @@
     "expiry_milestone": 105
   },
   {
+    "name": "one-group-per-renderer",
+    "owners": ["youssefesmat", "baseos-perf@google.com"],
+    "expiry_milestone": 120
+  },
+  {
     "name": "oobe-hid-detection-revamp",
     "owners": [ "gordonseto", "cros-connectivity@google.com"],
     "expiry_milestone": 105

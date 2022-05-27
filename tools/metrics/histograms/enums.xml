@@ -58079,6 +58079,7 @@ from previous Chrome versions.
   <int value="178693406" label="LockScreenMediaControls:disabled"/>
   <int value="179083323" label="HelpAppBackgroundPage:disabled"/>
   <int value="179871410" label="ui-debug-tools:disabled"/>
+  <int value="180040169" label="OneGroupPerRenderer:disabled"/>
   <int value="180074362" label="memory-pressure-thresholds"/>
   <int value="181150000" label="CrosVmCupsProxy:enabled"/>
   <int value="182358203" label="AddToHomescreenIPH:enabled"/>
@@ -59438,6 +59439,7 @@ from previous Chrome versions.
   <int value="1077758422" label="LeakDetectionUnauthenticated:disabled"/>
   <int value="1079032226" label="ParallelDownloading:enabled"/>
   <int value="1079302639" label="ArcEnableWebAppShare:disabled"/>
+  <int value="1080108820" label="OneGroupPerRenderer:enabled"/>
   <int value="1081546525" label="ash-enable-docked-windows"/>
   <int value="1082054180" label="PersistentWindowBounds:disabled"/>
   <int value="1082840061" label="LinkDoctorDeprecationAndroid:disabled"/>

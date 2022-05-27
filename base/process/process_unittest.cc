@@ -17,6 +17,22 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include <unistd.h>
+
+#include <vector>
+
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
+#include "base/time/time.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 #if BUILDFLAG(IS_WIN)
 #include "base/win/base_win_buildflags.h"
 #include "base/win/windows_version.h"
@@ -43,6 +59,44 @@ class FakePortProvider : public base::PortProvider {
   }
 };
 #endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+const char kForeground[] = "/chrome_renderers/foreground";
+const char kCgroupRoot[] = "/sys/fs/cgroup/cpu";
+const char kFullRendererCgroupRoot[] = "/sys/fs/cgroup/cpu/chrome_renderers";
+const char kProcPath[] = "/proc/%d/cgroup";
+
+std::string GetProcessCpuCgroup(const base::Process& process) {
+  std::string proc;
+  if (!base::ReadFileToString(
+          base::FilePath(base::StringPrintf(kProcPath, process.Pid())),
+          &proc)) {
+    return std::string();
+  }
+
+  std::vector<base::StringPiece> lines = SplitStringPiece(
+      proc, "\n", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  for (const auto& line : lines) {
+    std::vector<base::StringPiece> fields = SplitStringPiece(
+        line, ":", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+    if (fields.size() != 3U) {
+      continue;
+    }
+
+    if (fields[1] == "cpu") {
+      return static_cast<std::string>(fields[2]);
+    }
+  }
+
+  return std::string();
+}
+
+bool AddProcessToCpuCgroup(const base::Process& process, std::string& cgroup) {
+  base::FilePath path(cgroup);
+  path = path.Append("cgroup.procs");
+  return base::WriteFile(path, base::NumberToString(process.Pid()));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
@@ -417,6 +471,188 @@ TEST_F(ProcessTest, TestIsProcessBackgroundedCGroup) {
   EXPECT_TRUE(IsProcessBackgroundedCGroup(kBackgrounded));
 }
 
+TEST_F(ProcessTest, InitializePriorityEmptyProcess) {
+  // TODO(b/172213843): base::Process is used by base::TestSuite::Initialize
+  // before we can use ScopedFeatureList here. Update the test to allow the
+  // use of ScopedFeatureList before base::TestSuite::Initialize runs.
+  if (!Process::OneGroupPerRendererEnabled())
+    return;
+
+  Process process;
+  process.InitializePriority();
+  const std::string unique_token = process.unique_token();
+  ASSERT_TRUE(unique_token.empty());
+}
+
+TEST_F(ProcessTest, SetProcessBackgroundedOneCgroupPerRender) {
+  if (!Process::OneGroupPerRendererEnabled())
+    return;
+
+  base::test::TaskEnvironment task_env;
+
+  Process process(SpawnChild("SimpleChildProcess"));
+  process.InitializePriority();
+  const std::string unique_token = process.unique_token();
+  ASSERT_FALSE(unique_token.empty());
+
+  EXPECT_TRUE(process.SetProcessBackgrounded(false));
+  EXPECT_FALSE(process.IsProcessBackgrounded());
+  std::string cgroup = GetProcessCpuCgroup(process);
+  EXPECT_FALSE(cgroup.empty());
+  EXPECT_NE(cgroup.find(unique_token), std::string::npos);
+
+  EXPECT_TRUE(process.SetProcessBackgrounded(true));
+  EXPECT_TRUE(process.IsProcessBackgrounded());
+
+  EXPECT_TRUE(process.Terminate(0, false));
+  // Terminate should post a task, wait for it to run
+  task_env.RunUntilIdle();
+
+  cgroup = std::string(kCgroupRoot) + cgroup;
+  EXPECT_FALSE(base::DirectoryExists(FilePath(cgroup)));
+}
+
+TEST_F(ProcessTest, CleanUpBusyProcess) {
+  if (!Process::OneGroupPerRendererEnabled())
+    return;
+
+  base::test::TaskEnvironment task_env;
+
+  Process process(SpawnChild("SimpleChildProcess"));
+  process.InitializePriority();
+  const std::string unique_token = process.unique_token();
+  ASSERT_FALSE(unique_token.empty());
+
+  EXPECT_TRUE(process.SetProcessBackgrounded(false));
+  EXPECT_FALSE(process.IsProcessBackgrounded());
+  std::string cgroup = GetProcessCpuCgroup(process);
+  EXPECT_FALSE(cgroup.empty());
+  EXPECT_NE(cgroup.find(unique_token), std::string::npos);
+
+  // Add another process to the cgroup to ensure it stays busy.
+  cgroup = std::string(kCgroupRoot) + cgroup;
+  Process process2(SpawnChild("SimpleChildProcess"));
+  EXPECT_TRUE(AddProcessToCpuCgroup(process2, cgroup));
+
+  // Terminate the first process that should tirgger a cleanup of the cgroup
+  EXPECT_TRUE(process.Terminate(0, false));
+  // Wait until the background task runs once. This should fail and requeue
+  // another task to retry.
+  task_env.RunUntilIdle();
+  EXPECT_TRUE(base::DirectoryExists(FilePath(cgroup)));
+
+  // Move the second process to free the cgroup
+  std::string foreground_path =
+      std::string(kCgroupRoot) + std::string(kForeground);
+  EXPECT_TRUE(AddProcessToCpuCgroup(process2, foreground_path));
+
+  // Wait for the retry.
+  PlatformThread::Sleep(base::Milliseconds(1100));
+  task_env.RunUntilIdle();
+  // The cgroup should be deleted now.
+  EXPECT_FALSE(base::DirectoryExists(FilePath(cgroup)));
+
+  process2.Terminate(0, false);
+}
+
+TEST_F(ProcessTest, SetProcessBackgroundedEmptyToken) {
+  if (!Process::OneGroupPerRendererEnabled())
+    return;
+
+  Process process(SpawnChild("SimpleChildProcess"));
+  const std::string unique_token = process.unique_token();
+  ASSERT_TRUE(unique_token.empty());
+
+  // Moving to the foreground should use the default foregorund path
+  EXPECT_TRUE(process.SetProcessBackgrounded(false));
+  EXPECT_FALSE(process.IsProcessBackgrounded());
+  std::string cgroup = GetProcessCpuCgroup(process);
+  EXPECT_FALSE(cgroup.empty());
+  EXPECT_EQ(cgroup, kForeground);
+}
+
+TEST_F(ProcessTest, CleansUpStaleGroups) {
+  if (!Process::OneGroupPerRendererEnabled())
+    return;
+
+  base::test::TaskEnvironment task_env;
+
+  // Create a process that will not be cleaned up
+  Process process(SpawnChild("SimpleChildProcess"));
+  process.InitializePriority();
+  const std::string unique_token = process.unique_token();
+  ASSERT_FALSE(unique_token.empty());
+
+  EXPECT_TRUE(process.SetProcessBackgrounded(true));
+  EXPECT_TRUE(process.IsProcessBackgrounded());
+
+  // Create a stale cgroup
+  std::string root = kFullRendererCgroupRoot;
+  std::string cgroup = root + "/" + unique_token;
+  std::vector<std::string> tokens = base::SplitString(
+      cgroup, "-", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+  tokens[1] = "fake";
+  std::string fake_cgroup = base::JoinString(tokens, "-");
+  EXPECT_TRUE(base::CreateDirectory(FilePath(fake_cgroup)));
+
+  // Clean up stale groups
+  Process::CleanUpStaleProcessStates();
+
+  // validate the fake group is deleted
+  EXPECT_FALSE(base::DirectoryExists(FilePath(fake_cgroup)));
+
+  // validate the active process cgroup is not deleted
+  EXPECT_TRUE(base::DirectoryExists(FilePath(cgroup)));
+
+  // validate foreground and background are not deleted
+  EXPECT_TRUE(base::DirectoryExists(FilePath(root + "/foreground")));
+  EXPECT_TRUE(base::DirectoryExists(FilePath(root + "/background")));
+
+  // clean up the process
+  EXPECT_TRUE(process.Terminate(0, false));
+  // Terminate should post a task, wait for it to run
+  task_env.RunUntilIdle();
+  EXPECT_FALSE(base::DirectoryExists(FilePath(cgroup)));
+}
+
+TEST_F(ProcessTest, OneCgroupDoesNotCleanUpGroupsWithWrongPrefix) {
+  if (!Process::OneGroupPerRendererEnabled())
+    return;
+
+  base::test::TaskEnvironment task_env;
+
+  // Create a process that will not be cleaned up
+  Process process(SpawnChild("SimpleChildProcess"));
+  process.InitializePriority();
+  const std::string unique_token = process.unique_token();
+  ASSERT_FALSE(unique_token.empty());
+
+  EXPECT_TRUE(process.SetProcessBackgrounded(false));
+  EXPECT_FALSE(process.IsProcessBackgrounded());
+  std::string cgroup = GetProcessCpuCgroup(process);
+  EXPECT_FALSE(cgroup.empty());
+  EXPECT_NE(cgroup.find(unique_token), std::string::npos);
+
+  // Create a stale cgroup
+  FilePath cgroup_path = FilePath(std::string(kCgroupRoot) + cgroup);
+  FilePath fake_cgroup = FilePath(kFullRendererCgroupRoot).AppendASCII("fake");
+  EXPECT_TRUE(base::CreateDirectory(fake_cgroup));
+
+  // Clean up stale groups
+  Process::CleanUpStaleProcessStates();
+
+  // validate the fake group is deleted
+  EXPECT_TRUE(base::DirectoryExists(fake_cgroup));
+  EXPECT_TRUE(base::DirectoryExists(cgroup_path));
+
+  // clean up the process
+  EXPECT_TRUE(process.SetProcessBackgrounded(true));
+  EXPECT_TRUE(process.IsProcessBackgrounded());
+  EXPECT_TRUE(process.Terminate(0, false));
+  task_env.RunUntilIdle();
+  EXPECT_FALSE(base::DirectoryExists(cgroup_path));
+  base::DeleteFile(fake_cgroup);
+}
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace base

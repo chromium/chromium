@@ -207,6 +207,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "base/process/process.h"
 #include "chrome/browser/apps/intent_helper/intent_picker_features.h"
 #include "chromeos/constants/chromeos_features.h"
 #endif
@@ -3787,6 +3788,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableTtsLacrosSupportName,
      flag_descriptions::kEnableTtsLacrosSupportDescription, kOsCrOS | kOsLacros,
      FEATURE_VALUE_TYPE(chromeos::kLacrosTtsSupport)},
+    {"one-group-per-renderer", flag_descriptions::kOneGroupPerRendererName,
+     flag_descriptions::kOneGroupPerRendererDescription, kOsCrOS | kOsLacros,
+     FEATURE_VALUE_TYPE(base::kOneGroupPerRenderer)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_LINUX)

@@ -20,15 +20,26 @@
 #include <lib/zx/process.h>
 #endif
 
-#if BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS)
 #include "base/feature_list.h"
+#endif  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_APPLE)
 #include "base/process/port_provider_mac.h"
-#endif
+#endif  // BUILDFLAG(IS_APPLE)
 
 namespace base {
 
 #if BUILDFLAG(IS_APPLE)
 extern const Feature kMacAllowBackgroundingProcesses;
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+// OneGroupPerRenderer feature places each foreground renderer process into
+// its own cgroup. This will cause the scheduler to use the aggregate runtime
+// of all threads in the process when deciding on the next thread to schedule.
+// It will help guarantee fairness between renderers.
+BASE_EXPORT extern const Feature kOneGroupPerRenderer;
 #endif
 
 // Provides a move-only encapsulation of a process.
@@ -113,6 +124,12 @@ class BASE_EXPORT Process {
   // Returns true if this process is the current process.
   bool is_current() const;
 
+#if BUILDFLAG(IS_CHROMEOS)
+  // A unique token generated for each process, this is used to create a unique
+  // cgroup for each renderer.
+  const std::string& unique_token() const { return unique_token_; }
+#endif
+
   // Close the process handle. This will not terminate the process.
   void Close();
 
@@ -171,8 +188,8 @@ class BASE_EXPORT Process {
 #if BUILDFLAG(IS_MAC)
   // The Mac needs a Mach port in order to manipulate a process's priority,
   // and there's no good way to get that from base given the pid. These Mac
-  // variants of the IsProcessBackgrounded and SetProcessBackgrounded API take
-  // a port provider for this reason. See crbug.com/460102
+  // variants of the IsProcessBackgrounded() and SetProcessBackgrounded() API
+  // take a port provider for this reason. See crbug.com/460102
   //
   // A process is backgrounded when its task priority is
   // |TASK_BACKGROUND_APPLICATION|.
@@ -211,7 +228,39 @@ class BASE_EXPORT Process {
   ProcessId GetPidInNamespace() const;
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+  // Returns true if the 'OneGroupPerRenderer' feature is enabled. The feature
+  // is enabled if the kOneGroupPerRenderer feature flag is enabled and the
+  // system supports the chrome cgroups.
+  static bool OneGroupPerRendererEnabled();
+
+  // If OneGroupPerRenderer is enabled, runs at process startup to clean up
+  // any stale cgroups that were left behind from any unclean exits of the
+  // browser process.
+  static void CleanUpStaleProcessStates();
+
+  // Initializes the process's priority. If OneGroupPerRenderer is enabled, it
+  // creates a unique cgroup for the process. This should be called before
+  // SetProcessBackgrounded(). This is a no-op if the Process is not valid
+  // or if it has already been called.
+  void InitializePriority();
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
  private:
+#if BUILDFLAG(IS_CHROMEOS)
+  // Cleans up process state. If OneGroupPerRenderer is enabled, it cleans up
+  // the cgroup created by InitializePriority(). If the process has not
+  // fully terminated yet, it will post a background task to try again.
+  void CleanUpProcess(int remaining_retries) const;
+
+  // Calls CleanUpProcess() on a background thread.
+  void CleanUpProcessAsync() const;
+
+  // Used to call CleanUpProcess() on a background thread because Process is not
+  // refcounted.
+  static void CleanUpProcessScheduled(Process process, int remaining_retries);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 #if BUILDFLAG(IS_WIN)
   win::ScopedHandle process_;
 #elif BUILDFLAG(IS_FUCHSIA)
@@ -222,6 +271,14 @@ class BASE_EXPORT Process {
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
   bool is_current_process_;
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // A unique token per process not per class instance (`base::Process`). This
+  // is similar to the PID of a process but should not be reused after the
+  // process's termination. The token will be copied during Duplicate()
+  // and move semantics as is the PID/ProcessHandle.
+  std::string unique_token_;
 #endif
 };
 

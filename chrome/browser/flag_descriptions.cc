@@ -5723,6 +5723,11 @@ const char kMessagesPreinstallName[] = "Preinstall  Messages PWA";
 const char kMessagesPreinstallDescription[] =
     "Enables preinstallation of the Messages for Web PWA for unmanaged users.";
 
+const char kOneGroupPerRendererName[] =
+    "Use one cgroup for each foreground renderer";
+const char kOneGroupPerRendererDescription[] =
+    "Places each Chrome foreground renderer into its own cgroup";
+
 const char kSyncChromeOSExplicitPassphraseSharingName[] =
     "Sync passphrase sharing";
 const char kSyncChromeOSExplicitPassphraseSharingDescription[] =

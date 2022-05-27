@@ -231,20 +231,26 @@ bool WaitForExitWithTimeoutImpl(base::ProcessHandle handle,
 
 namespace base {
 
-Process::Process(ProcessHandle handle) : process_(handle) {
-}
-
-Process::~Process() = default;
+Process::Process(ProcessHandle handle) : process_(handle) {}
 
 Process::Process(Process&& other) : process_(other.process_) {
+#if BUILDFLAG(IS_CHROMEOS)
+  unique_token_ = std::move(other.unique_token_);
+#endif
+
   other.Close();
 }
 
 Process& Process::operator=(Process&& other) {
   process_ = other.process_;
+#if BUILDFLAG(IS_CHROMEOS)
+  unique_token_ = std::move(other.unique_token_);
+#endif
   other.Close();
   return *this;
 }
+
+Process::~Process() = default;
 
 // static
 Process Process::Current() {
@@ -286,7 +292,13 @@ Process Process::Duplicate() const {
   if (is_current())
     return Current();
 
+#if BUILDFLAG(IS_CHROMEOS)
+  Process duplicate = Process(process_);
+  duplicate.unique_token_ = unique_token_;
+  return duplicate;
+#else
   return Process(process_);
+#endif
 }
 
 ProcessHandle Process::Release() {
@@ -318,6 +330,11 @@ bool Process::Terminate(int exit_code, bool wait) const {
     DPLOG(ERROR) << "Unable to terminate process " << process_;
     return false;
   }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  CleanUpProcessAsync();
+#endif
+
   if (!wait || WaitForExitWithTimeout(Seconds(60), nullptr)) {
     return true;
   }
@@ -354,7 +371,11 @@ bool Process::WaitForExitWithTimeout(TimeDelta timeout, int* exit_code) const {
   return exited;
 }
 
-void Process::Exited(int exit_code) const {}
+void Process::Exited(int exit_code) const {
+#if BUILDFLAG(IS_CHROMEOS)
+  CleanUpProcessAsync();
+#endif
+}
 
 int Process::GetPriority() const {
   DCHECK(IsValid());

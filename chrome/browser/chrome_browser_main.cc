@@ -215,6 +215,11 @@
 #include "chrome/browser/first_run/upgrade_util.h"
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "base/process/process.h"
+#include "base/task/task_traits.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1840,6 +1845,16 @@ void ChromeBrowserMainParts::OnFirstIdle() {
   sharing::ShareHistory::CreateForProfile(
       ProfileManager::GetPrimaryUserProfile());
 #endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // If OneGroupPerRenderer feature is enabled, post a task to clean any left
+  // over cgroups due to any unclean exits.
+  if (base::Process::OneGroupPerRendererEnabled()) {
+    base::ThreadPool::PostTask(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+        base::BindOnce(&base::Process::CleanUpStaleProcessStates));
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void ChromeBrowserMainParts::PostMainMessageLoopRun() {
