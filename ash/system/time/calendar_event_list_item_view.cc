@@ -34,9 +34,6 @@
 namespace ash {
 namespace {
 
-// The meeting title is too long, it is truncated in this length.
-constexpr int kTruncatedTitleLength = 20;
-
 // Paddings in this view.
 constexpr int kEntryHorizontalPadding = 20;
 
@@ -56,10 +53,12 @@ std::map<std::string, std::string> event_hex_color_codes = {
     {"9", "5484ed"}, {"10", "51b749"}, {"11", "dc2127"}};
 
 // Sets up the event label.
-void SetUpLabel(views::Label* label) {
-  label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
+void SetUpLabel(views::Label* label,
+                gfx::ElideBehavior elide_behavior,
+                gfx::HorizontalAlignment horizontal_alignment) {
+  label->SetHorizontalAlignment(horizontal_alignment);
   label->SetAutoColorReadabilityEnabled(false);
-  label->SetElideBehavior(gfx::NO_ELIDE);
+  label->SetElideBehavior(elide_behavior);
   label->SetSubpixelRenderingEnabled(false);
   label->SetTextContext(CONTEXT_CALENDAR_DATE);
 }
@@ -131,10 +130,10 @@ CalendarEventListItemView::CalendarEventListItemView(
   summary_->SetText(event.summary().empty()
                         ? l10n_util::GetStringUTF16(IDS_ASH_CALENDAR_NO_TITLE)
                         : base::UTF8ToUTF16(event.summary()));
-  SetUpLabel(summary_);
-  summary_->SetTruncateLength(kTruncatedTitleLength);
-  summary_->SetBorder(views::CreateEmptyBorder(
-      gfx::Insets::TLBR(0, kEntryHorizontalPadding, 0, 0)));
+  SetUpLabel(summary_, gfx::ElideBehavior::ELIDE_TAIL,
+             gfx::HorizontalAlignment::ALIGN_LEFT);
+  summary_->SetBorder(
+      views::CreateEmptyBorder(gfx::Insets::VH(0, kEntryHorizontalPadding)));
 
   // When using AM/PM time format and the start time and end time are in the
   // same meridiem, remove the first one and the space before it, which are the
@@ -148,15 +147,20 @@ CalendarEventListItemView::CalendarEventListItemView(
 
   auto time_range = start_time_string + u" - " + end_time_string;
   time_range_->SetText(time_range);
-  SetUpLabel(time_range_);
+  SetUpLabel(time_range_, gfx::NO_ELIDE,
+             gfx::HorizontalAlignment::ALIGN_CENTER);
 
-  // Creates a `TriView` which carries the `color_dot` and `summary_` at the
-  // entry start and the `time_range_` at the entry end.
+  // Creates a `TriView` which carries the `color_dot`, `summary_` and
+  // `time_range_`.
   TriView* tri_view = TrayPopupUtils::CreateDefaultRowView();
+  tri_view->SetMinSize(
+      TriView::Container::START,
+      gfx::Size(kColorDotViewSize,
+                tri_view->GetMinSize(TriView::Container::START).height()));
   tri_view->AddView(TriView::Container::START,
                     AddChildView(std::make_unique<CalendarEventListItemDot>(
                         event.color_id())));
-  tri_view->AddView(TriView::Container::START, summary_);
+  tri_view->AddView(TriView::Container::CENTER, summary_);
   tri_view->AddView(TriView::Container::END, time_range_);
 
   auto tooltip_text = l10n_util::GetStringFUTF16(
