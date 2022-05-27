@@ -199,7 +199,7 @@ std::vector<gfx::BufferFormat> EnumerateSupportedBufferFormatsForTexturing() {
 
     // Skip the virtual graphics memory manager device.
     ScopedDrmVersionPtr version(drmGetVersion(dev_path_file.GetPlatformFile()));
-    if (!version || base::LowerCaseEqualsASCII(version->name, "vgem")) {
+    if (!version || base::EqualsCaseInsensitiveASCII(version->name, "vgem")) {
       continue;
     }
 
