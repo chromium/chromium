@@ -1227,8 +1227,6 @@ TEST_F(RealTimeUrlLookupServiceTest,
   // Enable extended reporting.
   EnableExtendedReporting();
   rt_service()->set_bypass_probability_for_tests(true);
-  // When feature is not enabled, a sampled ping should not be sent.
-  EXPECT_FALSE(CanSendRTSampleRequest());
   feature_list_.InitAndDisableFeature(
       safe_browsing::kSendSampledPingsForProtegoAllowlistDomains);
   // After enabling the feature, a sampled ping should be sent.

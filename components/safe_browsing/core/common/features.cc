@@ -133,7 +133,7 @@ const base::Feature kSafeBrowsingRemoveCookiesInAuthRequests{
 
 const base::Feature kSendSampledPingsForProtegoAllowlistDomains{
     "SafeBrowsingSendSampledPingsForProtegoAllowlistDomains",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kSuspiciousSiteTriggerQuotaFeature{
     "SafeBrowsingSuspiciousSiteTriggerQuota", base::FEATURE_ENABLED_BY_DEFAULT};
