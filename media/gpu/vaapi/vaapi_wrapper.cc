@@ -2146,21 +2146,37 @@ scoped_refptr<VASurface> VaapiWrapper::CreateVASurfaceForPixmap(
         sequence_checker_.CalledOnValidSequence());
   const gfx::BufferFormat buffer_format = pixmap->GetBufferFormat();
 
+  const uint32_t va_fourcc = BufferFormatToVAFourCC(buffer_format);
+  if (!va_fourcc) {
+    LOG(ERROR) << "Failed to get the VA fourcc from the buffer format";
+    return nullptr;
+  }
+
+  const size_t num_planes = pixmap->GetNumberOfPlanes();
+
   // Create a VASurface for a NativePixmap by importing the underlying dmabufs.
   const gfx::Size size = pixmap->GetBufferSize();
   VASurfaceAttribExternalBuffers va_attrib_extbuf{};
-  va_attrib_extbuf.pixel_format = BufferFormatToVAFourCC(buffer_format);
-  va_attrib_extbuf.width = size.width();
-  va_attrib_extbuf.height = size.height();
+  va_attrib_extbuf.pixel_format = va_fourcc;
+  va_attrib_extbuf.width = base::checked_cast<uint32_t>(size.width());
+  va_attrib_extbuf.height = base::checked_cast<uint32_t>(size.height());
 
-  const size_t num_planes = pixmap->GetNumberOfPlanes();
+  static_assert(std::size(va_attrib_extbuf.pitches) ==
+                std::size(va_attrib_extbuf.offsets));
+  if (num_planes > std::size(va_attrib_extbuf.pitches)) {
+    LOG(ERROR) << "Too many planes in the NativePixmap; got " << num_planes
+               << " but the maximum number is "
+               << std::size(va_attrib_extbuf.pitches);
+    return nullptr;
+  }
   for (size_t i = 0; i < num_planes; ++i) {
     va_attrib_extbuf.pitches[i] = pixmap->GetDmaBufPitch(i);
-    va_attrib_extbuf.offsets[i] = pixmap->GetDmaBufOffset(i);
+    va_attrib_extbuf.offsets[i] =
+        base::checked_cast<uint32_t>(pixmap->GetDmaBufOffset(i));
     DVLOG(4) << "plane " << i << ": pitch: " << va_attrib_extbuf.pitches[i]
              << " offset: " << va_attrib_extbuf.offsets[i];
   }
-  va_attrib_extbuf.num_planes = num_planes;
+  va_attrib_extbuf.num_planes = base::checked_cast<uint32_t>(num_planes);
 
   const int dma_buf_fd = pixmap->GetDmaBufFd(0);
   if (dma_buf_fd < 0) {
@@ -2189,7 +2205,12 @@ scoped_refptr<VASurface> VaapiWrapper::CreateVASurfaceForPixmap(
   DCHECK_EQ(va_attrib_extbuf.flags, 0u);
   DCHECK_EQ(va_attrib_extbuf.private_data, nullptr);
 
-  uint32_t va_format = BufferFormatToVARTFormat(buffer_format);
+  unsigned int va_format =
+      base::strict_cast<unsigned int>(BufferFormatToVARTFormat(buffer_format));
+  if (!va_format) {
+    LOG(ERROR) << "Failed to get the VA RT format from the buffer format";
+    return nullptr;
+  }
 
   if (protected_content) {
     if (GetImplementationType() == VAImplementation::kMesaGallium)
