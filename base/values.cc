@@ -25,6 +25,7 @@
 #include "base/cxx17_backports.h"
 #include "base/cxx20_to_address.h"
 #include "base/json/json_writer.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"

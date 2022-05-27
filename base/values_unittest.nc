@@ -74,6 +74,22 @@ Value::List F(int64_t value) {
   return list;
 }
 
+#elif defined(NCTEST_VALUEVIEW_FROM_CONST_NON_CHAR_POINTER)  // [r"fatal error: conversion function from 'const int \*' to 'base::ValueView' invokes a deleted function"]
+
+void F() {
+  const int* ptr = nullptr;
+  ValueView v = ptr;
+  G(v);
+}
+
+#elif defined(NCTEST_VALUEVIEW_FROM_NON_CHAR_POINTER)  // [r"fatal error: conversion function from 'int \*' to 'base::ValueView' invokes a deleted function"]
+
+void F() {
+  int* ptr = nullptr;
+  ValueView v = ptr;
+  G(v);
+}
+
 #elif defined(NCTEST_VALUEVIEW_FROM_STRING_TEMPORARY)  // [r"fatal error: object backing the pointer will be destroyed at the end of the full-expression"]
 
 void F() {
