@@ -7018,3 +7018,8 @@ crbug.com/1327764 inspector-protocol/overlay/overlay-persistent-overlays.js [ Fa
 # Sheriff 2022-05-26
 crbug.com/1322004 http/tests/inspector-protocol/attribution-reporting/insecure-subresource.js [ Pass Timeout ]
 crbug.com/1329596 virtual/gpu-rasterization/images/jpeg-with-non-interleaved-dc-channels.html [ Failure Pass ]
+
+# Sheriff 2022-05-27
+crbug.com/1325307 fast/css-grid-layout/grid-auto-repeat-huge-grid-003.html [ Skip ]
+crbug.com/1325307 fast/css-grid-layout/grid-auto-repeat-huge-grid-009.html [ Skip ]
+crbug.com/1325307 fast/css-grid-layout/grid-auto-repeat-huge-grid-010.html [ Skip ]
