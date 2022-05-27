@@ -3432,10 +3432,6 @@
         "name": "system_health.common_desktop/browse:tools:docs_scrolling"
     },
     {
-        "duration": "79.0",
-        "name": "system_health.common_desktop/browse:tools:earth:2020"
-    },
-    {
         "duration": "11.0",
         "name": "system_health.common_desktop/browse:tools:gmail-compose:2020"
     },
@@ -3734,10 +3730,6 @@
     {
         "duration": "35.0",
         "name": "system_health.memory_desktop/browse:tools:docs_scrolling"
-    },
-    {
-        "duration": "4.0",
-        "name": "system_health.memory_desktop/browse:tools:earth:2020"
     },
     {
         "duration": "4.0",
@@ -4080,10 +4072,6 @@
         "name": "v8.browsing_desktop-future/browse:tools:docs_scrolling"
     },
     {
-        "duration": "94.0",
-        "name": "v8.browsing_desktop-future/browse:tools:earth:2020"
-    },
-    {
         "duration": "24.0",
         "name": "v8.browsing_desktop-future/browse:tools:gmail-compose:2020"
     },
@@ -4174,10 +4162,6 @@
     {
         "duration": "55.0",
         "name": "v8.browsing_desktop/browse:tools:docs_scrolling"
-    },
-    {
-        "duration": "95.0",
-        "name": "v8.browsing_desktop/browse:tools:earth:2020"
     },
     {
         "duration": "25.0",

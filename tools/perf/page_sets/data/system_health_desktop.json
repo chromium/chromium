@@ -1,8 +1,5 @@
 {
     "archives": {
-        "browse:media:earth:2020": {
-            "DEFAULT": "system_health_desktop_27ca4caf21.wprgo"
-        },
         "browse:media:flickr_infinite_scroll": {
             "DEFAULT": "system_health_desktop_057.wprgo"
         },
@@ -126,9 +123,6 @@
         },
         "browse:tools:earth": {
             "DEFAULT": "system_health_desktop_050.wprgo"
-        },
-        "browse:tools:earth:2020": {
-            "DEFAULT": "system_health_desktop_df060e3191.wprgo"
         },
         "browse:tools:gmail-compose:2020": {
             "DEFAULT": "system_health_desktop_1d2b5dbaab.wprgo"

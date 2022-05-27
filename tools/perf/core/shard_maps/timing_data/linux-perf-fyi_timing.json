@@ -164,10 +164,6 @@
         "name": "system_health.common_desktop/browse:tools:docs_scrolling"
     },
     {
-        "duration": "71.0",
-        "name": "system_health.common_desktop/browse:tools:earth:2020"
-    },
-    {
         "duration": "9.0",
         "name": "system_health.common_desktop/browse:tools:gmail-compose:2020"
     },
