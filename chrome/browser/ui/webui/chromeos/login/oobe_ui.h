@@ -40,10 +40,9 @@ class SigninScreenHandler;
 class OobeUI : public ui::MojoWebUIController {
  public:
   // List of known types of OobeUI. Type added as path in chrome://oobe url, for
-  // example chrome://oobe/login.
+  // example chrome://oobe/gaia-signin.
   static const char kAppLaunchSplashDisplay[];
   static const char kGaiaSigninDisplay[];
-  static const char kLockDisplay[];
   static const char kLoginDisplay[];
   static const char kOobeDisplay[];
 
