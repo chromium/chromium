@@ -121,6 +121,7 @@
 <translation id="1942765061641586207">Ubora wa picha</translation>
 <translation id="1972984168337863910">Panua vidirisha vya maoni ya faili</translation>
 <translation id="1995337122023280937">Nenda mahali faili ilipo</translation>
+<translation id="1996806196681857869">Faili iliyobanwa na Z</translation>
 <translation id="2001796770603320721">Dhibiti katika Hifadhi ya Google</translation>
 <translation id="2009067268969781306">Hatua ya kubadilisha muundo wa hifadhi itafuta data yote iliyomo. Kitendo hiki hakiwezi kutenduliwa.</translation>
 <translation id="2025955442973426285">Kitigrinya</translation>
@@ -589,6 +590,7 @@
 <translation id="5955954492236143329">Faili <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">Chaguo za kupanga</translation>
+<translation id="5985041959109124139">Faili ya tar iliyobanwa na Z</translation>
 <translation id="6007237601604674381">Kusogezwa kumeshindika. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Mtandao wa Ethaneti</translation>
 <translation id="60357267506638014">QWERTY ya Kicheki</translation>
@@ -619,6 +621,7 @@
 <translation id="6220423280121890987">Kipunjabi</translation>
 <translation id="6224240818060029162">Kidenmaki</translation>
 <translation id="6224253798271602650">Badilisha muundo <ph name="DRIVE_NAME" /></translation>
+<translation id="6224665423283788195">Faili iliyobanwa na Zstandard</translation>
 <translation id="6227235786875481728">Faili hii isingeweza kuchezwa.</translation>
 <translation id="6241349547798190358">Kiholanzi (Ubelgiji)</translation>
 <translation id="6267547857941397424">Mtandao wa <ph name="NETWORK_INDEX" /> kati ya <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, Uthabiti wa Mtandao <ph name="SIGNAL_STRENGTH" />%, Betri ya Simu <ph name="BATTERY_STATUS" />%, Unganisha</translation>
@@ -646,6 +649,7 @@
 <translation id="6509122719576673235">Kinorwei</translation>
 <translation id="6528513914570774834">Waruhusu watumiaji wengine wa kifaa hiki kutumia mtandao huu</translation>
 <translation id="653019979737152879">Inasawazisha <ph name="FILE_NAME" />...</translation>
+<translation id="6530595303336443929">Faili ya tar iliyobanwa na Zstandard</translation>
 <translation id="6549689063733911810">Za hivi karibuni</translation>
 <translation id="6558280019477628686">Hitilafu imetokea. Huenda baadhi ya vipengee havijafutwa.</translation>
 <translation id="656398493051028875">Inafuta "<ph name="FILENAME" />"...</translation>

@@ -333,7 +333,6 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1327794256477341646">Le funzionalità che richiedono la tua posizione non funzioneranno</translation>
 <translation id="1329191040029425999">Assicurati che il dispositivo sia aggiornato e riprova</translation>
 <translation id="1330145147221172764">Attiva tastiera sullo schermo</translation>
-<translation id="1331625853030156663">Per aprire l'app <ph name="APP_NAME" /> devi attivare l'opzione "Mostra la schermata di blocco quando il dispositivo viene riattivato dopo la sospensione"</translation>
 <translation id="1331977651797684645">Ero io.</translation>
 <translation id="1333489022424033687">Alcune funzionalità sul sito <ph name="ORIGIN" /> potrebbero non funzionare se non cancelli i dati memorizzati da altri siti sul dispositivo</translation>
 <translation id="1333965224356556482">Non consentire ai siti di vedere la tua posizione</translation>
@@ -6313,7 +6312,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Esci dalla pagina}other{Esci dalle pagine}}</translation>
 <translation id="7207457272187520234">Invia dati diagnostici e sull'utilizzo. Attualmente, questo dispositivo invia a Google dati diagnostici e sull'utilizzo delle app e del dispositivo. Tali dati contribuiranno alla stabilità delle app e del sistema, nonché ad altri miglioramenti. Alcuni dati aggregati saranno utili anche alle app e ai partner di Google, come ad esempio agli sviluppatori Android. Questa impostazione è applicata dal proprietario. Se hai attivato l'impostazione Attività web e app aggiuntiva, queste informazioni potrebbero essere salvate nel tuo Account Google.</translation>
 <translation id="7207631048330366454">Cerca nelle app</translation>
-<translation id="720808544705441386">Impossibile aprire l'app</translation>
 <translation id="7210499381659830293">Stampanti estensione</translation>
 <translation id="7211783048245131419">Nessun sensore assegnato per il momento</translation>
 <translation id="7212097698621322584">Inserisci il PIN attuale per modificarlo. Se non conosci il PIN, devi reimpostare il token di sicurezza, quindi creare un nuovo PIN.</translation>

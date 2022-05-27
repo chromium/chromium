@@ -336,7 +336,6 @@ I-<ph name="DOMAIN" /> idinga ukuba ugcine ikhadi lakho elimsathi lifakiwe.}}</t
 <translation id="1327794256477341646">Izici ezidinga indawo yakho ngeke zize zisebenze</translation>
 <translation id="1329191040029425999">Qinisekisa ukuthi idivayisi yakho isesikhathini bese sicela uzame futhi</translation>
 <translation id="1330145147221172764">Nika amandla ikhibhodi yesikrini</translation>
-<translation id="1331625853030156663">Ukuze uvule i-<ph name="APP_NAME" />, nika amandla "Ukubonisa isikrini sokukhiya uma uvuka ebuthongweni"</translation>
 <translation id="1331977651797684645">Lo kwakuyimina.</translation>
 <translation id="1333489022424033687">Ezinye izici ku-<ph name="ORIGIN" /> kungenzeka zingasebenzi uze usule idatha amanye amasayithi ayigcine kudivayisi yakho</translation>
 <translation id="1333965224356556482">Ungavumeli amasayithi abone indawo yakho</translation>
@@ -6337,7 +6336,6 @@ Unamaphasiwedi onakalisiwe angu-# ngokwengeziwe. Umphathi Wephasiwedi Ye-Google 
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Phuma ekhasini}one{Phuma emakhasini}other{Phuma emakhasini}}</translation>
 <translation id="7207457272187520234">Thumela idatha yokusetshenziswa neyokuxilonga. Le divayisi manje ithumela ngokuzenzakalela idatha yokuxilonga, yedivayisi, neyokusetshenziswa kwedatha ku-Google. Lokhu kuzosiza ukuzinza kwesistimu nokohlelo lokusebenza nokunye ukuthuthukiswa. Enye idatha izophinda isize izinhlelo zokusebenza ze-Google nozakwethu, abafana nonjiniyela be-Android. Lesi silungiselelo siphoqelelwa umnikazi. Uma isilungiselelo sakho esingeziwe somsebenzi wewebhu nowohlelo lokusebenza sivuliwe, le datha ingalondolozwa ku-akhawunti yakho ye-Google.</translation>
 <translation id="7207631048330366454">Sesha izinhlelo zokusebenza</translation>
-<translation id="720808544705441386">Ayikwazi ukuvula i-app</translation>
 <translation id="7210499381659830293">Amaphrinta ezandiso</translation>
 <translation id="7211783048245131419">Ayikho iswishi enikeziwe okwamanje</translation>
 <translation id="7212097698621322584">Faka i-PIN yakho yamanje ukuze uyishintshe. Uma ungazi i-PIN yakho, uzodinga ukusetha kabusha ukhiye wokuqinisekisa ubunikazi, bese udale i-PIN entsha.</translation>

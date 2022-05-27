@@ -301,7 +301,6 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="2791421900609674576">Gomendioak ikusiko dituzu utzi zenuen tokitik jarraitu ahal izateko. Haiek kentzeko, eduki itzazu sakatuta.</translation>
 <translation id="2792498699870441125">Alt + Bilaketa</translation>
 <translation id="2797741504905337289">Apal-festa</translation>
-<translation id="2803313416453193357">Ireki karpeta</translation>
 <translation id="2805756323405976993">Aplikazioak</translation>
 <translation id="2814448776515246190">Pantaila-kaptura partziala</translation>
 <translation id="2819276065543622893">Saioa amaituko zaizu.</translation>
@@ -700,6 +699,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="5071064518267176975">Aplikazio batek mikrofonoa erabili nahi du</translation>
 <translation id="5078796286268621944">Okerra da PINa</translation>
 <translation id="5083553833479578423">Desblokeatu Laguntzailea zerbitzuaren eginbide gehiago.</translation>
+<translation id="509790653408515442">Telefonoko aplikazioak zuzenean igortzen dituzunean, hemen agertuko dira</translation>
 <translation id="5107522548814527560">Sarea</translation>
 <translation id="5117590920725113268">Erakutsi hurrengo hilabetea</translation>
 <translation id="5136175204352732067">Beste teklatu bat konektatu duzu</translation>
@@ -722,6 +722,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="523505283826916779">Erabilerraztasun-ezarpenak</translation>
 <translation id="5245201184978705914">Ezin da sortu transkripzioa</translation>
 <translation id="5253783950165989294">Konektatu da <ph name="DEVICE_NAME" /> izeneko gailu batera. Bateria: % <ph name="BATTERY_PERCENTAGE" />.</translation>
+<translation id="5258528442992323769">Ez dago lan-eremurik gordeta</translation>
 <translation id="5260676007519551770">4. lan-eremua</translation>
 <translation id="5283099933536931082">Zure arreta behar du <ph name="APP_ITEM_TITLE" /> aplikazioak.</translation>
 <translation id="5283198616748585639">Gehitu 1 minutu</translation>
@@ -1261,6 +1262,7 @@ Berriki instalatu da</translation>
 <translation id="851458219935658693">Erakutsi lan-eremu honetan dauden leihoak, aukera-botoia hautatuta dago</translation>
 <translation id="8517041960877371778">Baliteke <ph name="DEVICE_TYPE" /> gailua ez kargatzea piztuta dagoen bitartean.</translation>
 <translation id="8535393432370007982">Desegin kolorearen arabera ordenatzeko irizpidea ezartzeko aukera</translation>
+<translation id="8542053257095774575">Ez dago lan-eremu edo txantiloirik gordeta</translation>
 <translation id="8546059259582788728">Desegin da ordenatzeko irizpidea ezartzeko aukera</translation>
 <translation id="8551588720239073785">Data- eta ordu-ezarpenak</translation>
 <translation id="8553395910833293175">Lan-eremu guztiei esleitu zaie dagoeneko.</translation>

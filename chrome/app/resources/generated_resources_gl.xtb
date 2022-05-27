@@ -333,7 +333,6 @@ Comproba os teus contrasinais cando queiras no <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1327794256477341646">As funcións que requiran a túa localización non estarán dispoñibles</translation>
 <translation id="1329191040029425999">Asegúrate de que o dispositivo estea actualizado e téntao de novo</translation>
 <translation id="1330145147221172764">Activar teclado en pantalla</translation>
-<translation id="1331625853030156663">Para abrir <ph name="APP_NAME" />, activa Mostrar pantalla de bloqueo ao reactivarse despois da suspensión</translation>
 <translation id="1331977651797684645">Era eu.</translation>
 <translation id="1333489022424033687">Algunhas funcións de <ph name="ORIGIN" /> poderían non funcionar ata que borres os datos que almacenasen no teu dispositivo outros sitios</translation>
 <translation id="1333965224356556482">Non permitir que os sitios vexan a túa localización</translation>
@@ -4319,6 +4318,7 @@ Código de erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="520568280985468584">Engadiuse a rede correctamente. Pode que a rede de telefonía móbil tarde varios minutos en activarse.</translation>
 <translation id="5206215183583316675">Queres eliminar "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="520621735928254154">Produciuse un erro ao importar o certificado</translation>
+<translation id="5206562235913517859">O código de identificación da tenda retallista ten o formato ABC-1234</translation>
 <translation id="5206787458656075734">{COUNT,plural, =1{Cambiouse correctamente o contrasinal vulnerado. Quédache # máis. Chrome recomenda comprobar este contrasinal agora.}other{Cambiouse correctamente o contrasinal vulnerado. Quédanche # máis. Chrome recomenda comprobar estes contrasinais agora.}}</translation>
 <translation id="5207949376430453814">Destacar o cursor de texto</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> quere comprobar se usas un dispositivo Chrome OS compatible.</translation>
@@ -4838,6 +4838,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5729712731028706266">&amp;Ver</translation>
 <translation id="5731247495086897348">Pe&amp;gar e acceder</translation>
 <translation id="5732392974455271431">Os teus pais poden desbloquealo por ti</translation>
+<translation id="5733866499231170760">O código de identificación non é válido. O formato que utilizaches é incorrecto. Consulta as instrucións que recibiches para asegurarte de meter o código no formato axeitado. Se non dás solucionado este problema, deixa o campo en branco e continúa coa instalación.</translation>
 <translation id="5734362860645681824">Comunicacións</translation>
 <translation id="5734697361979786483">Engadir un sistema de ficheiros compartido</translation>
 <translation id="5736796278325406685">Introduce un nome de usuario válido</translation>
@@ -6309,7 +6310,6 @@ Se máis tarde decides que non queres usar Voice Match, tan só tes que desactiv
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Páxina de saída}other{Páxinas de saída}}</translation>
 <translation id="7207457272187520234">Enviar datos de uso e diagnóstico. Este dispositivo envía automaticamente datos de diagnóstico e de uso do dispositivo e das aplicacións a Google. Esta información permitirá aumentar a estabilidade do sistema e das aplicacións, e realizar outras melloras. Algúns datos agregados tamén serán útiles para as aplicacións e os socios de Google, como os programadores de Android. Esta opción de configuración contrólaa o propietario. Se está activada a opción Actividade web e das aplicacións adicional, estes datos pódense gardar na túa Conta de Google.</translation>
 <translation id="7207631048330366454">Buscar aplicacións</translation>
-<translation id="720808544705441386">Non se puido abrir a aplicación</translation>
 <translation id="7210499381659830293">Impresoras da extensión</translation>
 <translation id="7211783048245131419">Aínda non se asignou ningún interruptor</translation>
 <translation id="7212097698621322584">Introduce o teu PIN actual para cambialo. Se non sabes cal é, deberás restablecer a chave de seguranza e, despois, crear un novo.</translation>
@@ -6944,6 +6944,7 @@ Podes xestionar a configuración desta tarxeta desde o menú correspondente ou v
 <translation id="7824864914877854148">Non se puido completar a copia de seguranza debido a un erro</translation>
 <translation id="782590969421016895">Usar páxinas actuais</translation>
 <translation id="7826174860695147464">Compatibilidade con navegadores antigos: elementos internos</translation>
+<translation id="7826190688224781865">Código de identificación da tenda retallista</translation>
 <translation id="7826249772873145665">Desactivouse a depuración de ADB</translation>
 <translation id="7826254698725248775">Identificador de dispositivos en conflito.</translation>
 <translation id="7828731929332799387">Ao realizar esta acción, eliminaranse todas as cookies e os datos dos sitios de terceiros. Queres continuar?</translation>
@@ -8412,6 +8413,7 @@ Consulta máis información sobre os datos que recompila Google e por que o fai 
 <translation id="987897973846887088">Non hai imaxes dispoñibles</translation>
 <translation id="988320949174893488">Pestanexo ocasional</translation>
 <translation id="988978206646512040">A frase de acceso non pode estar baleira</translation>
+<translation id="991097196715779457">Código de identificación da tenda retallista (opcional)</translation>
 <translation id="992032470292211616">As extensións, as aplicacións e os temas poden danar o teu dispositivo. Seguro que queres continuar?</translation>
 <translation id="992256792861109788">Rosa</translation>
 <translation id="992592832486024913">Desactivar ChromeVox (comentarios orais)</translation>

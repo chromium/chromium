@@ -301,7 +301,6 @@
 <translation id="2791421900609674576">Следуйте рекомендациям, чтобы продолжить работу с того места, на котором вы остановились. Нажмите на них и удерживайте, чтобы удалить.</translation>
 <translation id="2792498699870441125">Alt + Search</translation>
 <translation id="2797741504905337289">Совместный просмотр панели запуска</translation>
-<translation id="2803313416453193357">Открыть папку.</translation>
 <translation id="2805756323405976993">Сервисы</translation>
 <translation id="2814448776515246190">Запись части экрана</translation>
 <translation id="2819276065543622893">Сеанс завершен.</translation>
@@ -699,6 +698,7 @@
 <translation id="5071064518267176975">Приложение запрашивает доступ к микрофону</translation>
 <translation id="5078796286268621944">Неверный PIN-код</translation>
 <translation id="5083553833479578423">Получите доступ к другим возможностям Ассистента.</translation>
+<translation id="509790653408515442">Приложения, которые вы транслируете с телефона, появляются здесь.</translation>
 <translation id="5107522548814527560">Интернет</translation>
 <translation id="5117590920725113268">Показать следующий месяц</translation>
 <translation id="5136175204352732067">Подключена другая клавиатура</translation>
@@ -721,6 +721,7 @@
 <translation id="523505283826916779">Настройки специальных возможностей</translation>
 <translation id="5245201184978705914">Не удается создать расшифровку.</translation>
 <translation id="5253783950165989294">Установлено подключение к устройству "<ph name="DEVICE_NAME" />", заряд батареи – <ph name="BATTERY_PERCENTAGE" /> %</translation>
+<translation id="5258528442992323769">Нет сохраненных рабочих столов.</translation>
 <translation id="5260676007519551770">Рабочий стол 4</translation>
 <translation id="5283099933536931082">Приложение "<ph name="APP_ITEM_TITLE" />" требует вашего внимания.</translation>
 <translation id="5283198616748585639">Добавить 1 мин.</translation>
@@ -1059,6 +1060,7 @@
 <translation id="7348093485538360975">Экранная клавиатура</translation>
 <translation id="735745346212279324">VPN-соединение прервано</translation>
 <translation id="7360036564632145207">Чтобы оптимизировать производительность, измените настройки доступа к данным для периферийных устройств.</translation>
+<translation id="736045644501761622">Выбрать обои и стиль</translation>
 <translation id="7371404428569700291">Запись контента в окне</translation>
 <translation id="7377169924702866686">Включен режим Caps Lock.</translation>
 <translation id="7377481913241237033">Подключиться с помощью кода</translation>
@@ -1260,6 +1262,7 @@
 <translation id="851458219935658693">Показ окон текущего рабочего стола. Выбран переключатель.</translation>
 <translation id="8517041960877371778">Не удается зарядить устройство <ph name="DEVICE_TYPE" />, пока оно включено.</translation>
 <translation id="8535393432370007982">Отменить упорядочивание по цвету</translation>
+<translation id="8542053257095774575">Нет сохраненных шаблонов или рабочих столов.</translation>
 <translation id="8546059259582788728">Действие "Сортировать" отменено</translation>
 <translation id="8551588720239073785">Настройки даты и времени</translation>
 <translation id="8553395910833293175">Уже доступно на всех рабочих столах.</translation>
@@ -1292,6 +1295,7 @@
 <translation id="8721053961083920564">Включить или выключить звук. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Запись всего экрана</translation>
 <translation id="8734991477317290293">Это может быть попыткой узнать, какие клавиши вы нажимаете.</translation>
+<translation id="8735678380411481005">Цвет подсветки клавиатуры</translation>
 <translation id="8735953464173050365">Показать настройки клавиатуры. Выбрана клавиатура "<ph name="KEYBOARD_NAME" />".</translation>
 <translation id="8755498163081687682"><ph name="ORIGIN_NAME" /> запрашивает подтверждение вашей личности</translation>
 <translation id="875593634123171288">Показать настройки VPN</translation>

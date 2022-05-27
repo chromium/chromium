@@ -3643,6 +3643,7 @@ Jika kebijakan ini disetel, <ph name="PRODUCT_OS_NAME" /> hanya mengizinkan peng
 <translation id="4960597185231686653">Tanda boolean menunjukkan apakah keyboard virtual dapat memberikan input suara.</translation>
 <translation id="4970046075219007744">Izinkan aplikasi web meminta pengguna memberikan akses ke berbagai jenis file melalui File Handling API</translation>
 <translation id="4970855112942626932">Nonaktifkan login browser</translation>
+<translation id="4974091268178043378">Mode warna ChromeOS</translation>
 <translation id="4976928720873547342">Jika kebijakan ini disetel, semua jenis data yang ditentukan akan dikecualikan dari sinkronisasi, baik untuk <ph name="CHROME_SYNC_NAME" /> maupun sinkronisasi profil roaming. Hal ini berguna untuk mengurangi ukuran profil roaming atau membatasi jenis data yang diupload ke Server <ph name="CHROME_SYNC_NAME" />.
 
       Jenis data saat ini untuk kebijakan ini adalah: "bookmarks", "readingList", "preferences", "passwords", "autofill", "themes", "typedUrls", "extensions", "apps", "tabs", "wifiConfigurations". Nama-nama tersebut peka huruf besar/kecil.</translation>
@@ -4405,6 +4406,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 
       Pengguna tidak dapat mengubah setelan ini.</translation>
 <translation id="5848438019586925019">Algoritme untuk pembuatan pasangan kunci.</translation>
+<translation id="5851248808417680865">Gunakan Tema gelap</translation>
 <translation id="585270638818921943">Cegah pengguna menggunakan aplikasi Android dari sumber yang tidak tepercaya</translation>
 <translation id="5853547031212075792">Izinkan pengguna mengaktifkan Mode Khusus HTTPS</translation>
 <translation id="5859344336338527083">Menyetel kebijakan akan menentukan URL mana yang dapat menginstal ekstensi, aplikasi, dan tema. Sebelum <ph name="PRODUCT_NAME" /> 21, pengguna dapat mengklik link ke file *.crx, dan <ph name="PRODUCT_NAME" /> akan menawarkan untuk menginstal file setelah menampilkan beberapa peringatan. Setelah itu, file tersebut harus didownload dan ditarik ke halaman setelan <ph name="PRODUCT_NAME" />. Setelan ini memungkinkan URL tertentu menggunakan alur penginstalan lama yang lebih mudah.
@@ -4581,6 +4583,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 
       Kebijakan ini hanya berlaku saat perangkat didaftarkan dengan <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> untuk <ph name="PRODUCT_NAME" />.
       Kebijakan ini selalu berlaku untuk <ph name="PRODUCT_OS_NAME" />.</translation>
+<translation id="6019162469732742754">Gunakan Mode otomatis</translation>
 <translation id="6019606564278029236">Izinkan interaksi pengguna jarak jauh dengan jendela administrator di sesi bantuan jarak jauh</translation>
 <translation id="6022948604095165524">Tindakan saat permulaan</translation>
 <translation id="602318745029752898">Mengizinkan suara text-to-speech enhanced network di fitur Klik untuk Diucapkan</translation>
@@ -5584,6 +5587,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 <translation id="7019805045859631636">Cepat</translation>
 <translation id="7025332601572838001">Mengonfigurasi perilaku ToS saat CCT pertama kali dijalankan</translation>
 <translation id="7026351325994257733">Mengizinkan konfigurasi jaringan Wi-Fi disinkronkan di seluruh perangkat <ph name="PRODUCT_OS_NAME" /> dan ponsel Android yang terhubung.</translation>
+<translation id="7027057540229843762">Gunakan Tema terang</translation>
 <translation id="7027785306666625591">Mengonfigurasi pengelolaan daya di <ph name="PRODUCT_OS_NAME" />.
 
       Kebijakan ini memungkinkan Anda mengonfigurasi cara <ph name="PRODUCT_OS_NAME" /> berperilaku saat pengguna tetap menganggur dalam beberapa waktu.</translation>
@@ -7134,6 +7138,9 @@ Kebijakan akan dihapus pada M75.</translation>
 
       "http://acme.com/ABC" hanya cocok dalam mode 'IESiteListMode'.</translation>
 <translation id="8736538322216687231">Memaksa Mode Terbatas YouTube minimum</translation>
+<translation id="8744844164152340112">Mengontrol tema yang digunakan untuk merender UI selama OOBE dan dalam sesi (gelap/terang/otomatis).
+      Mode otomatis akan mengubah tema antara gelap dan terang secara otomatis saat matahari terbit dan tenggelam.
+      Kebijakan ini harus direkomendasikan, sehingga memungkinkan pengguna untuk mengubah tema di setelan sistem.</translation>
 <translation id="8745669971728319820">Kebijakan ini mengontrol apakah informasi ekstensi dan plugin akan dilaporkan atau tidak.
 
       Jika kebijakan <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> tidak disetel atau disetel ke nonaktif, kebijakan ini akan diabaikan.

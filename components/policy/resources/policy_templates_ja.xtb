@@ -3438,6 +3438,7 @@
 <translation id="4960597185231686653">画面キーボードで音声入力を有効にするかどうかを示すブール値のフラグです。</translation>
 <translation id="4970046075219007744">File Handling API を通じたファイル形式へのアクセスをユーザーに求めることをウェブアプリに許可する</translation>
 <translation id="4970855112942626932">ブラウザのログインを無効にする</translation>
+<translation id="4974091268178043378">ChromeOS のカラーモード</translation>
 <translation id="4976928720873547342">このポリシーを設定した場合、指定したすべてのデータタイプが <ph name="CHROME_SYNC_NAME" /> とローミング プロファイルの同期から除外されます。これにより、ローミング プロファイルのサイズを抑えたり、<ph name="CHROME_SYNC_NAME" /> サーバーにアップロードされるデータのタイプを制限したりできます。
 
       現在、このポリシーで指定できるデータタイプは次のとおりです: "bookmarks"、"readingList"、"preferences"、"passwords"、"autofill"、"themes"、"typedUrls"、"extensions"、"apps"、"tabs"、"wifiConfigurations"。データタイプの名前では大文字と小文字が区別されます。</translation>
@@ -4142,6 +4143,7 @@
 
       ユーザーはこの設定を変更できません。</translation>
 <translation id="5848438019586925019">鍵ペアの生成に使用するアルゴリズムです。</translation>
+<translation id="5851248808417680865">ダークモードを使用する</translation>
 <translation id="585270638818921943">信頼できない提供元の Android アプリの使用をユーザーに許可しない</translation>
 <translation id="5853547031212075792">ユーザーに HTTPS 専用モードの有効化を許可する</translation>
 <translation id="5859344336338527083">このポリシーを設定することで、どの URL から拡張機能、アプリ、テーマのインストールを許可するかを指定できます。<ph name="PRODUCT_NAME" /> 21 より前では、*.crx ファイルのリンクをクリックすると、いくつかの警告が表示された後、<ph name="PRODUCT_NAME" /> によりファイルのインストールを申し出るメッセージが表示されました。それ以降のバージョンでは、このようなファイルは、ダウンロードしてから <ph name="PRODUCT_NAME" /> の設定ページにドラッグする必要があります。この設定を利用することで、特定の URL に以前の簡単なインストール フローを適用できます。
@@ -4306,6 +4308,7 @@
 
       <ph name="PRODUCT_NAME" /> の場合、このポリシーは <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> で登録されたマシンでのみ有効です。
       <ph name="PRODUCT_OS_NAME" /> の場合、このポリシーは常に有効です。</translation>
+<translation id="6019162469732742754">自動モードを使用する</translation>
 <translation id="6019606564278029236">リモート ユーザーがリモート アシスタンス セッションで権限昇格ウィンドウとやり取りできるようにする</translation>
 <translation id="6022948604095165524">起動時の操作</translation>
 <translation id="602318745029752898">「選択して読み上げ」で Enhanced Network のテキスト読み上げ音声を許可する</translation>
@@ -5230,6 +5233,7 @@
 <translation id="7019805045859631636">速い</translation>
 <translation id="7025332601572838001">CCT の初回実行時の利用規約処理を設定します</translation>
 <translation id="7026351325994257733">Wi-Fi ネットワーク設定を <ph name="PRODUCT_OS_NAME" /> デバイスと接続された Android スマートフォンとの間で同期できるようにします。</translation>
+<translation id="7027057540229843762">ライトモードを使用する</translation>
 <translation id="7027785306666625591"><ph name="PRODUCT_OS_NAME" /> の電源管理を設定します。
 
       これらのポリシーでは、アイドル状態が一定時間続いたときの <ph name="PRODUCT_OS_NAME" /> の動作を設定できます。</translation>
@@ -6711,6 +6715,9 @@
 
       「http://acme.com/ABC」は [IESiteListMode] モードの場合のみ一致します。</translation>
 <translation id="8736538322216687231">YouTube で一定レベル以上の制限付きモードを強制する</translation>
+<translation id="8744844164152340112">OOBE 中とセッション中に UI のレンダリングに使用するモード（ダーク、ライト、自動）を管理します。
+      自動モードでは、日の出と日の入りに合わせてダークモードとライトモードを自動的に切り替えます。
+      このポリシーは、ユーザーがシステム設定でモードを変更する可能性を考慮して設定することをおすすめします。</translation>
 <translation id="8745669971728319820">このポリシーでは、拡張機能とプラグインの情報について、レポートを作成するかどうかを管理します。
 
       ポリシー <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> を未設定のままにするか無効にすると、このポリシーは無視されます。

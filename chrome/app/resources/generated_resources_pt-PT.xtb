@@ -333,7 +333,6 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1327794256477341646">As funcionalidades que precisam da sua localização não funcionam</translation>
 <translation id="1329191040029425999">Certifique-se de que o seu dispositivo está atualizado e tente novamente</translation>
 <translation id="1330145147221172764">Ativar o teclado no ecrã</translation>
-<translation id="1331625853030156663">Para abrir a app <ph name="APP_NAME" />, ative a opção "Mostrar o ecrã de bloqueio quando for ativado após a suspensão"</translation>
 <translation id="1331977651797684645">Fui eu.</translation>
 <translation id="1333489022424033687">Algumas funcionalidades em <ph name="ORIGIN" /> poderão não funcionar até limpar os dados que outros sites armazenaram no seu dispositivo.</translation>
 <translation id="1333965224356556482">Não permitir que os sites vejam a sua localização</translation>
@@ -663,7 +662,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1627408615528139100">Já transferido</translation>
 <translation id="1628948239858170093">Pretende analisar o ficheiro antes de abrir?</translation>
 <translation id="1629314197035607094">A palavra-passe expirou.</translation>
-<translation id="1629451755632656601">Pretende permitir que a Google encontre descontos personalizados nos seus carrinhos?</translation>
+<translation id="1629451755632656601">Permitir que a Google encontre descontos personalizados nos seus carrinhos?</translation>
 <translation id="163072119192489970">Com autorização para concluir o envio e a receção de dados</translation>
 <translation id="1630768113285622200">Reiniciar e continuar</translation>
 <translation id="1632082166874334883">Palavra-passe armazenada na sua Conta Google.</translation>
@@ -1944,7 +1943,7 @@ e Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="281504910091592009">Veja e faça a gestão das palavras-passe guardadas na sua <ph name="BEGIN_LINK" />Conta Google<ph name="END_LINK" />.</translation>
 <translation id="2815693974042551705">Pasta de marcadores</translation>
 <translation id="2816319641769218778">Para guardar palavras-passe na sua Conta Google, ative a sincronização.</translation>
-<translation id="2816628817680324566">Pretende permitir que este site veja a sua chave de segurança?</translation>
+<translation id="2816628817680324566">Permitir que este site veja a sua chave de segurança?</translation>
 <translation id="2818476747334107629">Detalhes da impressora</translation>
 <translation id="2819167288942847344">Utilize predefinições para janelas redimensionáveis, de telemóveis ou de tablets para impedir o funcionamento incorreto da app</translation>
 <translation id="2820957248982571256">A analisar...</translation>
@@ -2412,7 +2411,7 @@ Pretende pará-lo?</translation>
 <translation id="33022249435934718">Identificadores de GDI</translation>
 <translation id="3302388252085547855">Introduza a justificação…</translation>
 <translation id="3303260552072730022">Uma extensão acionou o ecrã inteiro.</translation>
-<translation id="3303795387212510132">Pretende permitir que a app abra os links <ph name="PROTOCOL_SCHEME" />?</translation>
+<translation id="3303795387212510132">Permitir que a app abra os links <ph name="PROTOCOL_SCHEME" />?</translation>
 <translation id="3303818374450886607">Cópias</translation>
 <translation id="3303855915957856445">Não foram encontrados resultados da pesquisa</translation>
 <translation id="3304212451103136496"><ph name="DISCOUNT_AMOUNT" /> de desconto</translation>
@@ -6318,7 +6317,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Sair da página}other{Sair das páginas}}</translation>
 <translation id="7207457272187520234">Envie dados de utilização e diagnóstico. Agora, este dispositivo está a enviar automaticamente dados de diagnóstico, de utilização de apps e do dispositivo para a Google. Deste modo, ajudará a melhorar a estabilidade das apps e do sistema, entre outras melhorias. Alguns dados agregados também ajudarão as apps e os parceiros Google, como os programadores Android. Esta definição é aplicada pelo proprietário. Se a definição Atividade da Web e de apps adicional estiver ativada, estes dados podem ser guardados na sua Conta Google.</translation>
 <translation id="7207631048330366454">Pesquisar aplicações</translation>
-<translation id="720808544705441386">Não é possível abrir a app</translation>
 <translation id="7210499381659830293">Impressoras por extensão</translation>
 <translation id="7211783048245131419">Ainda não foi atribuído qualquer comutador</translation>
 <translation id="7212097698621322584">Introduza o seu PIN atual para o alterar. Se não souber qual é o PIN, tem de repor a chave de segurança e, em seguida, criar um novo PIN.</translation>

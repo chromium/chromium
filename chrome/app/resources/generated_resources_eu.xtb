@@ -333,7 +333,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="1327794256477341646">Kokapenerako sarbidea behar duten eginbideek ez dute funtzionatuko</translation>
 <translation id="1329191040029425999">Ziurtatu gailua eguneratuta dagoela eta saiatu berriro</translation>
 <translation id="1330145147221172764">Gaitu pantailako teklatua</translation>
-<translation id="1331625853030156663"><ph name="APP_NAME" /> irekitzeko, gaitu "Inaktibo egoeratik irtetean, erakutsi pantaila blokeatua"</translation>
 <translation id="1331977651797684645">Ni izan naiz.</translation>
 <translation id="1333489022424033687">Baliteke <ph name="ORIGIN" /> webguneko eginbide batzuek ez funtzionatzea beste webgune batzuek zure gailuan gorde dituzten datuak garbitu arte</translation>
 <translation id="1333965224356556482">Ez eman kokapena ikusteko baimena webguneei</translation>
@@ -6312,7 +6311,6 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Irten orritik}other{Irten orrietatik}}</translation>
 <translation id="7207457272187520234">Bidali erabilera- eta diagnostiko-datuak. Gailu honek automatikoki bidaltzen dizkio Google-ri diagnostikoak eta gailu zein aplikazioen erabilera-datuak. Horri esker, sistemaren eta aplikazioen egonkortasuna hobetuko da, besteak beste. Gainera, multzokatutako datu batzuk oso baliagarriak izango dira Google-ren aplikazioak hobetzeko eta bazkideei laguntzeko (adibidez, Android-en garatzaileei). Jabeak konfiguratu du ezarpen hori. Sareko eta aplikazioetako jarduera gehigarriak ezarpena aktibatuta badago, baliteke datu horiek Google-ko kontuan gordetzea.</translation>
 <translation id="7207631048330366454">Bilatu aplikazioak</translation>
-<translation id="720808544705441386">Ezin da ireki aplikazioa</translation>
 <translation id="7210499381659830293">Luzapen bidezko inprimagailuak</translation>
 <translation id="7211783048245131419">Oraindik ez da esleitu erabilerraztasun-etengailurik</translation>
 <translation id="7212097698621322584">PINa aldatzeko, idatzi unekoa lehendabizi. Ez badakizu PINa zein den, segurtasun-giltza berrezarri beharko duzu, eta beste PIN bat sortu.</translation>

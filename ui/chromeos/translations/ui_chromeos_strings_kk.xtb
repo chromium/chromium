@@ -121,6 +121,7 @@
 <translation id="1942765061641586207">Кескін ажыратымдылығы</translation>
 <translation id="1972984168337863910">Файлдар пікірі панельдерін жаю</translation>
 <translation id="1995337122023280937">Файл орнына өту</translation>
+<translation id="1996806196681857869">Z сығылған мұрағаты</translation>
 <translation id="2001796770603320721">Drive қызметінде басқару</translation>
 <translation id="2009067268969781306">Дискіні форматтасаңыз, онда сақталған деректердің барлығы өшіп қалады. Бұл әрекеттен бас тарту мүмкін емес.</translation>
 <translation id="2025955442973426285">Тигринья</translation>
@@ -588,6 +589,7 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> элемент</translation>
 <translation id="5957366693331451795">Chromebox құрылғылары</translation>
 <translation id="5982621672636444458">Сұрыптау параметрлері</translation>
+<translation id="5985041959109124139">Z сығылған TAR мұрағаты</translation>
 <translation id="6007237601604674381">Жылжыту сәтсіз аяқталды. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Ethernet желісі</translation>
 <translation id="60357267506638014">Чех QWERTY пернетақтасы</translation>
@@ -618,6 +620,7 @@
 <translation id="6220423280121890987">Панджаб</translation>
 <translation id="6224240818060029162">Дат</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" /> жадын форматтау</translation>
+<translation id="6224665423283788195">Zstandard сығылған мұрағаты</translation>
 <translation id="6227235786875481728">Бқұл файлды ойнату мүмкін болмады.</translation>
 <translation id="6241349547798190358">Нидерланд (Бельгия)</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="PHONE_NAME" />, сигнал күші: <ph name="SIGNAL_STRENGTH" />%, телефон батареясы: <ph name="BATTERY_STATUS" />%, қосылу</translation>
@@ -645,6 +648,7 @@
 <translation id="6509122719576673235">норвег</translation>
 <translation id="6528513914570774834">Бұл құрылғының басқа пайдаланушыларына осы желіні пайдалануға рұқсат ету</translation>
 <translation id="653019979737152879"><ph name="FILE_NAME" /> синхрондалуда…</translation>
+<translation id="6530595303336443929">Zstandard сығылған TAR мұрағаты</translation>
 <translation id="6549689063733911810">Соңғы</translation>
 <translation id="6558280019477628686">Қате пайда болды. Кейбір элементтер жойылмаған болуы мүмкін.</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />" жойылуда…</translation>

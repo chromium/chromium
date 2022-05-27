@@ -121,6 +121,7 @@
 <translation id="1942765061641586207">படத் தெளிவுத்திறன்</translation>
 <translation id="1972984168337863910">ஃபைல்கள்  காட்டப்படும் பேனல்களை விரிக்கும்</translation>
 <translation id="1995337122023280937">ஃபைலின் இடத்திற்குச் செல்</translation>
+<translation id="1996806196681857869">Z சுருக்கப்பட்ட காப்பகம்</translation>
 <translation id="2001796770603320721">இயக்ககத்தில் நிர்வகி</translation>
 <translation id="2009067268969781306">இயக்ககத்தை ஃபார்மேட் செய்தால் அதில் சேமிக்கப்பட்டுள்ள தரவு அனைத்தும் நீக்கப்படும். அவற்றைத் திரும்பப் பெற முடியாது.</translation>
 <translation id="2025955442973426285">டிக்ரின்யா</translation>
@@ -589,6 +590,7 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> ஃபைல்கள் </translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">வரிசைப்படுத்தல் விருப்பங்கள்</translation>
+<translation id="5985041959109124139">Z சுருக்கப்பட்ட tar காப்பகம்</translation>
 <translation id="6007237601604674381">நகர்வு தோல்வி. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">ஈத்தர்நெட் நெட்வொர்க்</translation>
 <translation id="60357267506638014">செக் க்வெர்டி</translation>
@@ -619,6 +621,7 @@
 <translation id="6220423280121890987">பஞ்சாபி</translation>
 <translation id="6224240818060029162">டேனிஷ்</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" /> சாதனத்தை ஃபார்மேட் செய்</translation>
+<translation id="6224665423283788195">Zstandard சுருக்கப்பட்ட காப்பகம்</translation>
 <translation id="6227235786875481728">இந்த ஃபைலை இயக்க முடியாது.</translation>
 <translation id="6241349547798190358">டச்சு (பெல்ஜியம்)</translation>
 <translation id="6267547857941397424">நெட்வொர்க்: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, சிக்னல் வலிமை: <ph name="SIGNAL_STRENGTH" />%, மொபைல் பேட்டரி: <ph name="BATTERY_STATUS" />%, இணை</translation>
@@ -646,6 +649,7 @@
 <translation id="6509122719576673235">நார்வேஜியன்</translation>
 <translation id="6528513914570774834">இந்தச் சாதனத்தின் பிற பயனர்களையும் இந்த நெட்வொர்க்கைப் பயன்படுத்த அனுமதி</translation>
 <translation id="653019979737152879"><ph name="FILE_NAME" /> ஐ ஒத்திசைக்கிறது...</translation>
+<translation id="6530595303336443929">Zstandard சுருக்கப்பட்ட tar காப்பகம்</translation>
 <translation id="6549689063733911810">சமீபத்தியவை</translation>
 <translation id="6558280019477628686">பிழை ஏற்பட்டது. சில உருப்படிகள் நீக்கப்படாமல் இருக்கக்கூடும்.</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />" ஐ நீக்குகிறது...</translation>

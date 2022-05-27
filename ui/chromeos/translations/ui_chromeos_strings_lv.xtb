@@ -121,6 +121,7 @@
 <translation id="1942765061641586207">Attēla izšķirtspēja</translation>
 <translation id="1972984168337863910">Notiek failu atsauksmju paneļu izvēršana</translation>
 <translation id="1995337122023280937">Pāriet uz faila atrašanās vietu</translation>
+<translation id="1996806196681857869">Z saspiests arhīvs</translation>
 <translation id="2001796770603320721">Pārvaldīt Diskā</translation>
 <translation id="2009067268969781306">Formatējot disku, tiks dzēsti visi tajā uzglabātie dati. Šo darbību nevar atsaukt.</translation>
 <translation id="2025955442973426285">Tigrinja</translation>
@@ -589,6 +590,7 @@
 <translation id="5955954492236143329">Vienumu skaits: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">Kārtošanas iespējas</translation>
+<translation id="5985041959109124139">Z saspiests Tar arhīvs</translation>
 <translation id="6007237601604674381">Pārvietošana neizdevās. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Ethernet tīkls</translation>
 <translation id="60357267506638014">Čehu QWERTY</translation>
@@ -619,6 +621,7 @@
 <translation id="6220423280121890987">Pandžabu</translation>
 <translation id="6224240818060029162">Dāņu</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" /> formatēšana</translation>
+<translation id="6224665423283788195">Zstandard saspiests arhīvs</translation>
 <translation id="6227235786875481728">Šo failu nevarēja demonstrēt.</translation>
 <translation id="6241349547798190358">Holandiešu (Beļģija)</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_INDEX" />. tīkls no <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, signāla stiprums: <ph name="SIGNAL_STRENGTH" />%, tālruņa akumulatora statuss: <ph name="BATTERY_STATUS" />%, savienojums</translation>
@@ -646,6 +649,7 @@
 <translation id="6509122719576673235">Norvēģu valoda</translation>
 <translation id="6528513914570774834">Atļaut citiem lietotājiem šajā ierīcē izmantot šo tīklu</translation>
 <translation id="653019979737152879">Notiek faila <ph name="FILE_NAME" /> sinhronizēšana...</translation>
+<translation id="6530595303336443929">Zstandard saspiests Tar arhīvs</translation>
 <translation id="6549689063733911810">Pēdējie</translation>
 <translation id="6558280019477628686">Radās kļūda. Iespējams, netika izdzēsti daži vienumi.</translation>
 <translation id="656398493051028875">Notiek faila “<ph name="FILENAME" />” dzēšana...</translation>

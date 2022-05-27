@@ -335,7 +335,6 @@ Paroole saate alati kontrollida menüüs <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1327794256477341646">Teie asukohateavet vajavad funktsioonid ei tööta</translation>
 <translation id="1329191040029425999">Veenduge, et teie seade oleks ajakohane, ja proovige uuesti</translation>
 <translation id="1330145147221172764">Luba ekraanil kuvatav klaviatuur</translation>
-<translation id="1331625853030156663">Rakenduse <ph name="APP_NAME" /> avamiseks lubage seade „Kuva unerežiimist ärgates lukustuskuva“</translation>
 <translation id="1331977651797684645">See olin mina.</translation>
 <translation id="1333489022424033687">Mõni funktsioon saidil <ph name="ORIGIN" /> ei pruugi töötada enne, kui kustutate andmed, mille teised saidid on teie seadmesse salvestanud</translation>
 <translation id="1333965224356556482">Ära luba saitidel minu asukohta näha</translation>
@@ -4327,6 +4326,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="520568280985468584">Võrgu lisamine õnnestus. Teie mobiilsidevõrgu aktiveerimine võib võtta mitu minutit.</translation>
 <translation id="5206215183583316675">Kas kustutada „<ph name="CERTIFICATE_NAME" />”?</translation>
 <translation id="520621735928254154">Viga sertifikaadi importimisel</translation>
+<translation id="5206562235913517859">Jaekaupluse ID on vormingus ABC-1234</translation>
 <translation id="5206787458656075734">{COUNT,plural, =1{Ohustatud parooli muutmine õnnestus. Teil on veel # ohustatud parool. Chrome soovitab seda parooli kohe kontrollida.}other{Ohustatud parooli muutmine õnnestus. Teil on veel # ohustatud parooli. Chrome soovitab neid paroole kohe kontrollida.}}</translation>
 <translation id="5207949376430453814">Tekstisisestusmärgi esiletõstmine</translation>
 <translation id="520840839826327499">Teenus <ph name="SERVICE_NAME" /> soovib kontrollida, kas kasutate sobilikku Chrome OS-i seadet.</translation>
@@ -4848,6 +4848,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="5729712731028706266">&amp;Kuva</translation>
 <translation id="5731247495086897348">Kl&amp;eebi ja mine</translation>
 <translation id="5732392974455271431">Vanemad saavad blokeeringu teie eest tühistada</translation>
+<translation id="5733866499231170760">Kehtetu ID. Teie sisestatud vorming on sobimatu. Kontrollige teile saadetud juhiseid ja veenduge, et sisestaksite ID õiges vormingus. Kui teil ei õnnestu seda probleemi lahendada, jätke see väli tühjaks ja jätkake installimisega.</translation>
 <translation id="5734362860645681824">Vestlusteenused</translation>
 <translation id="5734697361979786483">Lisa failide võrguhoidla</translation>
 <translation id="5736796278325406685">Sisestage kehtiv kasutajanimi</translation>
@@ -6320,7 +6321,6 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Välju lehelt}other{Välju lehtedelt}}</translation>
 <translation id="7207457272187520234">Kasutus- ja diagnostikaandmete saatmine. See seade saadab Google'ile praegu automaatselt seadme teavet ning rakenduse kasutus- ja diagnostikaandmeid. See aitab parandada süsteemi ja rakenduse stabiilsust ning muud. Teatud koondandmed on abiks ka Google'i rakendustele ja partneritele, näiteks Androidi arendajatele. Selle seade on jõustanud omanik. Kui täiendavad veebi- ja rakendustegevused on sisse lülitatud, võidakse need andmed salvestada teie Google'i kontole.</translation>
 <translation id="7207631048330366454">Otsi rakendusi</translation>
-<translation id="720808544705441386">Rakendust ei saa avada</translation>
 <translation id="7210499381659830293">Laienduse printerid</translation>
 <translation id="7211783048245131419">Ühtegi lülitit pole veel määratud</translation>
 <translation id="7212097698621322584">PIN-koodi muutmiseks sisestage see. Kui te oma PIN-koodi ei tea, peate lähtestama turvavõtme ja looma siis uue PIN-koodi.</translation>
@@ -6955,6 +6955,7 @@ Määrangu eemaldamiseks vajutage määratud lülitit või klahvi.</translation>
 <translation id="7824864914877854148">Varundamist ei saanud vea tõttu lõpule viia</translation>
 <translation id="782590969421016895">Kasuta praegusi lehti</translation>
 <translation id="7826174860695147464">Pärandbrauserite tugi (LBS) – sisemised</translation>
+<translation id="7826190688224781865">Jaekaupluse ID-kood</translation>
 <translation id="7826249772873145665">ADB silumine on keelatud</translation>
 <translation id="7826254698725248775">Seadme identifikaatori vastuolu.</translation>
 <translation id="7828731929332799387">See kustutab kõik kolmanda osapoole pakutavad küpsisefailid ja saidi andmed. Kas soovite jätkata?</translation>
@@ -8425,6 +8426,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="987897973846887088">Kujutisi pole saadaval</translation>
 <translation id="988320949174893488">Aeg-ajalt katkendlik</translation>
 <translation id="988978206646512040">Tühi parool ei ole lubatud</translation>
+<translation id="991097196715779457">Jaekaupluse ID-kood (valikuline)</translation>
 <translation id="992032470292211616">Laiendused, rakendused ja teemad võivad teie seadet kahjustada. Kas soovite kindlasti jätkata?</translation>
 <translation id="992256792861109788">Roosa</translation>
 <translation id="992592832486024913">Keela ChromeVox (kõnena esitatud tagasiside)</translation>

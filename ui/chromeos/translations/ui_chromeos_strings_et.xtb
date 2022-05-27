@@ -121,6 +121,7 @@
 <translation id="1942765061641586207">Kujutise eraldusvõime</translation>
 <translation id="1972984168337863910">Laienda failide tagasisidepaneele</translation>
 <translation id="1995337122023280937">Ava faili asukoht</translation>
+<translation id="1996806196681857869">Z-vormingus tihendatud arhiiv</translation>
 <translation id="2001796770603320721">Halda Drive'is</translation>
 <translation id="2009067268969781306">Ketta vormindamisel kustutatakse kõik sellel olevad andmed. Seda toimingut ei saa tagasi võtta.</translation>
 <translation id="2025955442973426285">tigrinja</translation>
@@ -589,6 +590,7 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> üksust</translation>
 <translation id="5957366693331451795">Chromeboxid</translation>
 <translation id="5982621672636444458">Sortimisvalikud</translation>
+<translation id="5985041959109124139">Z-vormingus tihendatud TAR-arhiiv</translation>
 <translation id="6007237601604674381">Teisaldamine ebaõnnestus. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Etherneti-võrk</translation>
 <translation id="60357267506638014">Tšehhi QWERTY</translation>
@@ -619,6 +621,7 @@
 <translation id="6220423280121890987">pandžabi</translation>
 <translation id="6224240818060029162">taani</translation>
 <translation id="6224253798271602650">Ketta <ph name="DRIVE_NAME" /> vormindamine</translation>
+<translation id="6224665423283788195">Zstandard-vormingus tihendatud arhiiv</translation>
 <translation id="6227235786875481728">Faili ei saanud esitada.</translation>
 <translation id="6241349547798190358">hollandi (Belgia)</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_INDEX" />. võrk <ph name="NETWORK_COUNT" />-st, <ph name="PHONE_NAME" />, <ph name="SIGNAL_STRENGTH" />, signaalitugevus: <ph name="BATTERY_STATUS" />%, telefoni aku: %, ühenda</translation>
@@ -646,6 +649,7 @@
 <translation id="6509122719576673235">norra keel</translation>
 <translation id="6528513914570774834">Luba teistel selle seadme kasutajatel seda võrku kasutada</translation>
 <translation id="653019979737152879">Faili <ph name="FILE_NAME" /> sünkroonimine ...</translation>
+<translation id="6530595303336443929">Zstandard-vormingus tihendatud TAR-arhiiv</translation>
 <translation id="6549689063733911810">Hiljutised</translation>
 <translation id="6558280019477628686">Ilmnes viga. Mõnda üksust ei pruugitud kustutada.</translation>
 <translation id="656398493051028875">Faili „<ph name="FILENAME" />” kustutamine ...</translation>

@@ -121,6 +121,7 @@
 <translation id="1942765061641586207">Resolució de la imatge</translation>
 <translation id="1972984168337863910">Desplega els taulers amb informació dels fitxers</translation>
 <translation id="1995337122023280937">Ves a la ubicació del fitxer</translation>
+<translation id="1996806196681857869">Arxiu comprimit Z</translation>
 <translation id="2001796770603320721">Gestiona a Drive</translation>
 <translation id="2009067268969781306">En formatar una unitat, se'n suprimeixen totes les dades que s'hi hagin emmagatzemat. Aquesta acció no es pot desfer.</translation>
 <translation id="2025955442973426285">Tigrinya</translation>
@@ -589,6 +590,7 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> elements</translation>
 <translation id="5957366693331451795">dispositius Chromebox</translation>
 <translation id="5982621672636444458">Ordena les opcions</translation>
+<translation id="5985041959109124139">Arxiu comprimit tar Z</translation>
 <translation id="6007237601604674381">El trasllat ha fallat. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Xarxa Ethernet</translation>
 <translation id="60357267506638014">QWERTY txec</translation>
@@ -619,6 +621,7 @@
 <translation id="6220423280121890987">Panjabi</translation>
 <translation id="6224240818060029162">Danès</translation>
 <translation id="6224253798271602650">Formata <ph name="DRIVE_NAME" /></translation>
+<translation id="6224665423283788195">Arxiu comprimit Zstandard</translation>
 <translation id="6227235786875481728">No s'ha pogut reproduir aquest fitxer.</translation>
 <translation id="6241349547798190358">Neerlandès (Bèlgica)</translation>
 <translation id="6267547857941397424">Xarxa <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="SIGNAL_STRENGTH" />% d'intensitat del senyal, <ph name="BATTERY_STATUS" />% de bateria al telèfon, connecta</translation>
@@ -646,6 +649,7 @@
 <translation id="6509122719576673235">Noruec</translation>
 <translation id="6528513914570774834">Permet que els altres usuaris d'aquest dispositiu facin servir aquesta xarxa</translation>
 <translation id="653019979737152879">S'està sincronitzant <ph name="FILE_NAME" />...</translation>
+<translation id="6530595303336443929">Arxiu comprimit tar Zstandard</translation>
 <translation id="6549689063733911810">Recent</translation>
 <translation id="6558280019477628686">S'ha produït un error. És possible que alguns elements no s'hagin suprimit.</translation>
 <translation id="656398493051028875">S'està suprimint "<ph name="FILENAME" />"...</translation>

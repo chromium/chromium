@@ -335,7 +335,6 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1327794256477341646">Các tính năng cần dùng thông tin vị trí của bạn sẽ không hoạt động</translation>
 <translation id="1329191040029425999">Hãy đảm bảo rằng thiết bị của bạn đã được cập nhật rồi vui lòng thử lại</translation>
 <translation id="1330145147221172764">Bật bàn phím ảo</translation>
-<translation id="1331625853030156663">Để mở ứng dụng <ph name="APP_NAME" />, hãy bật chế độ "Hiện màn hình khoá khi đánh thức từ chế độ ngủ"</translation>
 <translation id="1331977651797684645">Đây chính là tôi.</translation>
 <translation id="1333489022424033687">Một số tính năng trên <ph name="ORIGIN" /> có thể không hoạt động cho đến khi bạn xóa dữ liệu mà các trang web khác đã lưu trữ trên thiết bị của bạn</translation>
 <translation id="1333965224356556482">Không cho phép trang web xem thông tin vị trí của bạn</translation>
@@ -6332,7 +6331,6 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Thoát khỏi trang}other{Thoát khỏi các trang}}</translation>
 <translation id="7207457272187520234">Gửi dữ liệu chẩn đoán và dữ liệu về mức sử dụng. Thiết bị này hiện tự động gửi dữ liệu chẩn đoán, dữ liệu về thiết bị và mức sử dụng ứng dụng cho Google. Những thông tin này sẽ giúp tăng độ ổn định của hệ thống và ứng dụng cũng như cải thiện các mặt khác. Một số dữ liệu tổng hợp cũng sẽ hữu ích cho các ứng dụng và đối tác của Google, chẳng hạn như những nhà phát triển Android. Tùy chọn cài đặt này do chủ sở hữu thực thi. Nếu bạn bật tùy chọn cài đặt Hoạt động trên web và ứng dụng bổ sung, thì dữ liệu này có thể được lưu vào Tài khoản Google của bạn.</translation>
 <translation id="7207631048330366454">Tìm kiếm ứng dụng</translation>
-<translation id="720808544705441386">Không mở được ứng dụng</translation>
 <translation id="7210499381659830293">Máy in tiện ích</translation>
 <translation id="7211783048245131419">Bạn chưa gán công tắc nào</translation>
 <translation id="7212097698621322584">Nhập mã PIN hiện tại của bạn để thay đổi. Nếu không nhớ mã PIN, thì bạn cần đặt lại khóa bảo mật rồi tạo mã PIN mới.</translation>

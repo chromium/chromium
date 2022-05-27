@@ -1076,6 +1076,7 @@
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />，分頁，已選取</translation>
 <translation id="6828070228333235514">停止追蹤價格</translation>
 <translation id="6833996806551876956">私隱沙箱試用</translation>
+<translation id="6836206421467243968">還原分頁群組 <ph name="TITLE_OF_GROUP" /> 做新嘅背景分頁群組。</translation>
 <translation id="6846298663435243399">載入中…</translation>
 <translation id="6850409657436465440">仍在下載</translation>
 <translation id="6850830437481525139">已關閉 <ph name="TAB_COUNT" /> 個分頁</translation>
@@ -1138,6 +1139,7 @@
 <translation id="7187993566681480880">確保您登入使用 Chrome 的安全，並可提升您在其他 Google 應用程式的安全性。</translation>
 <translation id="7191430249889272776">已在背景開啟分頁。</translation>
 <translation id="7196215469483532480">私隱權指南說明宜家顯示喺成個畫面</translation>
+<translation id="7207760545532569765">還原 <ph name="TAB_COUNT" /> 個分頁做新嘅背景分頁群組。</translation>
 <translation id="7208109991155904980">已經移動咗反應</translation>
 <translation id="7222235798733126207">限制網站共用</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 項下載操作尚待處理}other{# 項下載操作尚待處理}}</translation>
@@ -1516,6 +1518,7 @@
 <translation id="9148126808321036104">重新登入</translation>
 <translation id="9155898266292537608">您亦可以透過快速輕按某個字詞進行搜尋</translation>
 <translation id="9158770349521403363">只分享內容</translation>
+<translation id="9159716826369098114">還原有 <ph name="TAB_COUNT" /> 個分頁嘅分頁群組做新嘅背景分頁群組。</translation>
 <translation id="916446198114569890">系統會將您瀏覽的網址儲存至 Google 帳戶</translation>
 <translation id="9169507124922466868">導覽記錄喺畫面下半部分顯示</translation>
 <translation id="9187955620966010988">調整咗反應</translation>

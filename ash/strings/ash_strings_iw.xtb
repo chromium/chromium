@@ -301,7 +301,6 @@
 <translation id="2791421900609674576">יוצגו לך המלצות כדי שתהיה לך אפשרות להמשיך מאיפה שהפסקת. ניתן להסיר את ההמלצות בלחיצה ארוכה.</translation>
 <translation id="2792498699870441125">‏Alt + חיפוש</translation>
 <translation id="2797741504905337289">קבוצת מדפים</translation>
-<translation id="2803313416453193357">פתיחת התיקייה</translation>
 <translation id="2805756323405976993">אפליקציות</translation>
 <translation id="2814448776515246190">צילום חלקי</translation>
 <translation id="2819276065543622893">המערכת תוציא אותך עכשיו מהחשבון.</translation>
@@ -699,6 +698,7 @@
 <translation id="5071064518267176975">אפליקציה כלשהי מבקשת להשתמש במיקרופון</translation>
 <translation id="5078796286268621944">‏PIN שגוי</translation>
 <translation id="5083553833479578423">‏אפשר להפעיל תכונות Assistant נוספות.</translation>
+<translation id="509790653408515442">כשמשדרים את האפליקציות של הטלפון, הן מופיעות כאן</translation>
 <translation id="5107522548814527560">אינטרנט</translation>
 <translation id="5117590920725113268">הצגת החודש הבא</translation>
 <translation id="5136175204352732067">חוברה מקלדת אחרת</translation>
@@ -721,6 +721,7 @@
 <translation id="523505283826916779">הגדרות נגישות</translation>
 <translation id="5245201184978705914">לא ניתן ליצור תמליל</translation>
 <translation id="5253783950165989294">המכשיר <ph name="DEVICE_NAME" /> מחובר, <ph name="BATTERY_PERCENTAGE" />% סוללה</translation>
+<translation id="5258528442992323769">אין שולחנות עבודה וירטואליים שמורים</translation>
 <translation id="5260676007519551770">שולחן עבודה 4</translation>
 <translation id="5283099933536931082">האפליקציה <ph name="APP_ITEM_TITLE" /> מבקשת את תשומת לבך.</translation>
 <translation id="5283198616748585639">הוספת דקה</translation>
@@ -1262,6 +1263,7 @@
 <translation id="851458219935658693">הצגת חלונות משולחן העבודה הווירטואלי הנוכחי, לחצן הבחירה נבחר</translation>
 <translation id="8517041960877371778">ייתכן שה-<ph name="DEVICE_TYPE" /> לא ייטען כשהוא פועל.</translation>
 <translation id="8535393432370007982">ביטול של סדר המיון לפי צבע</translation>
+<translation id="8542053257095774575">אין תבניות או שולחנות עבודה וירטואליים שמורים</translation>
 <translation id="8546059259582788728">הביטול של המיון הצליח</translation>
 <translation id="8551588720239073785">הגדרות תאריך ושעה</translation>
 <translation id="8553395910833293175">כבר מוקצה לכל שולחנות העבודה הווירטואליים.</translation>

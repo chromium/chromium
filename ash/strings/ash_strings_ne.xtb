@@ -252,6 +252,7 @@
 <translation id="243878895369688216">हिजो खोलिएको</translation>
 <translation id="2441427462554639370">भण्डारणमा अत्यन्तै कम खाली ठाउँ भएकाले रेकर्डिङ बन्द भयो</translation>
 <translation id="24452542372838207">सूचना विस्तृत गर्नुहोस्‌</translation>
+<translation id="2449089818483227734">ब्याट्री कम छ</translation>
 <translation id="2450205753526923158">स्क्रिनसट मोड</translation>
 <translation id="2456008742792828469">पात्रो, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2473177541599297363">रिजोल्युसन पुष्टि गर्नुहोस्</translation>
@@ -301,7 +302,6 @@
 <translation id="2791421900609674576">तपाईं आफूले छाडेकै ठाउँबाट जारी राख्न सक्नुहोस् भन्नाका लागि तपाईंलाई सिफारिसहरू देखाइने छन्।  तपाईं टच एण्ड होल्ड गरेर ती सिफारिसहरू हटाउन सक्नुहुन्छ।</translation>
 <translation id="2792498699870441125">Alt + खोज</translation>
 <translation id="2797741504905337289">सेल्फ पार्टी</translation>
-<translation id="2803313416453193357">फोल्डर खोल्नुहोस्</translation>
 <translation id="2805756323405976993">एप्स</translation>
 <translation id="2814448776515246190">स्क्रिनको केही भाग क्याप्चर गर्ने सुविधा</translation>
 <translation id="2819276065543622893">तपाइँलाई अब साइन आउट गराइनेछ।</translation>
@@ -413,11 +413,13 @@
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> मिनेट</translation>
 <translation id="3445925074670675829">USB-C यन्त्र</translation>
+<translation id="3455468639467374593">टेम्प्लेट, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3465223694362104965">तपाईंले पछिल्लो पटक साइन इन गरेयता यो डिभाइसमा अर्को किबोर्ड जडान गरिएको छ। यो किबोर्डको प्रयोग थाल्नुअघि तपाईं यसमाथि भरोसा गर्नुहुन्छ भन्ने कुरा सुनिश्चित गर्नुहोस्।</translation>
 <translation id="3465356146291925647">तपाईंका प्रशासकले व्यवस्थित गर्नुभएको छ</translation>
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">सेल्फ स्वतः लुक्ने छ</translation>
+<translation id="3505066820268455558">ब्याट्री चार्ज हुँदै छ</translation>
 <translation id="3509391053705095206">तपाईंको फोन भेट्टाउन सकिएन। आफ्नो फोनको ब्लुटुथ अन गरिएको छ भन्ने कुरा सुनिश्चित गर्नुहोस्।</translation>
 <translation id="3510164367642747937">माउसको कर्सरलाई हाइलाइट</translation>
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" /> ले व्यवस्थापन गरेको खाता</translation>
@@ -458,6 +460,8 @@
 <translation id="3633097874324966332">आफ्नो डिभाइस कनेक्ट गर्न ब्लुटुथका सेटिङ खोल्नुहोस्</translation>
 <translation id="3638400994746983214">गोपनीयताको स्क्रिन टगल गर्नुहोस्। <ph name="STATE_TEXT" />।</translation>
 <translation id="3649505501900178324">अद्यावधिक हुन बाँकी</translation>
+<translation id="3659814201068740063">लगभग <ph name="TIME_LEFT" /> बाँकी (<ph name="PERCENTAGE" />%)।
+आफ्नो डिभाइस बिजुलीको स्रोतमा जोड्नुहोस्।</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> व्यवस्थापन गरिएका प्रयोगकर्ता</translation>
 <translation id="36813544980941320">तपाईंको फोन र <ph name="DEVICE_NAME" /> का बिचमा Wi-Fi नेटवर्कहरू सेयर गरिने छन्</translation>
 <translation id="3694122362646626770">वेबसाइटहरू</translation>
@@ -512,6 +516,7 @@
 <translation id="3962859241508114581">अघिल्लो ट्र्याक</translation>
 <translation id="3969043077941541451">अफ छ</translation>
 <translation id="397105322502079400">हिसाब गर्दै...</translation>
+<translation id="397726367135689299">ब्याट्री राम्रोसँग चार्ज नहुन सक्छ।</translation>
 <translation id="3977512764614765090">ब्याट्री <ph name="PERCENTAGE" />% छ र चार्ज हुँदै छ।</translation>
 <translation id="3986082989454912832">कल उठाउनुहोस्</translation>
 <translation id="3995138139523574647">USB-C यन्त्र (दायाँ भागको पछाडिको पोर्ट)</translation>
@@ -1039,6 +1044,7 @@
 <translation id="7130207228079676353">सबैभन्दा बढी क्लिक हुने सम्भावना भएका एपहरू</translation>
 <translation id="7131634465328662194">तपाईं स्वतः साइन आउट हुनु हुने छ।</translation>
 <translation id="7143207342074048698">जडान गर्दै...</translation>
+<translation id="7144942256906679589">ब्याट्रीको स्थिति</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" /> सेकेन्डमा पुरानो रिजोल्युसनमा फिर्ता जाँदै</translation>
 <translation id="7180611975245234373">ताजा गर्नुहोस्</translation>
@@ -1061,6 +1067,7 @@
 <translation id="7348093485538360975">अन्-स्क्रिन कुञ्जीपाटी</translation>
 <translation id="735745346212279324">VPN को जडान विच्छेद भयो</translation>
 <translation id="7360036564632145207">तपाईंले 'सहायक यन्त्रलाई डेटा प्रयोग गर्न रोक लगाउने सुविधा' का सेटिङ बदल्नुभयो भने ती यन्त्रहरूले अझ राम्रोसँग काम गर्न सक्छन्</translation>
+<translation id="736045644501761622">वालपेपर र शैली तय गर्नुहोस्</translation>
 <translation id="7371404428569700291">विन्डोको भिडियो रेकर्ड गर्नुहोस्</translation>
 <translation id="7377169924702866686">क्याप्स लक सक्रिय छ।</translation>
 <translation id="7377481913241237033">कोड प्रयोग गरी कनेक्ट गर्नुहोस्</translation>
@@ -1104,6 +1111,7 @@
 <translation id="7593891976182323525">सिफ्टको लागि खोज्नुहोस्</translation>
 <translation id="7600875258240007829">सबै सूचनाहरू हेर्नुहोस्</translation>
 <translation id="7607002721634913082">रोकिएको छ</translation>
+<translation id="7609951632080598826">पात्रोको भ्यू, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">क्यामेरा पुनः कनेक्ट गरियो।</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7633755430369750696">नजिकैका डिभाइससँग सेयर गर्ने सुविधासम्बन्धी सेटिङ देखाउनुहोस्।</translation>
@@ -1229,6 +1237,7 @@
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> नामक विन्डो चयन गरियो</translation>
 <translation id="8351131234907093545">टिपोट सिर्जना गर्नुहोस्</translation>
 <translation id="8364673525741149932">सेल्फ पार्टी टगल गर्नुहोस्। <ph name="STATE_TEXT" /></translation>
+<translation id="8369166482916924789">सेभ गरिएको डेस्क, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">कर्सरलाई एक अक्षर अगाडि लैजानुहोस्</translation>
 <translation id="8371991222807690464">गेस्ट मोडमा भएका बेला सहायक यन्त्रले पूर्ण रूपमा काम नगर्न सक्छ</translation>
 <translation id="8374601332003098278">आंशिक स्क्रिन रेकर्ड गर्न इन्टर थिच्नुहोस्</translation>
@@ -1295,6 +1304,7 @@
 <translation id="8721053961083920564">भोल्युम टगल गर्नुहोस्। <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">फुल स्क्रिन क्याप्चर</translation>
 <translation id="8734991477317290293">यसले तपाईंका किस्ट्रोकहरू चोर्न खोजिरहेको हुन सक्छ</translation>
+<translation id="8735678380411481005">किबोर्डको ब्याकलाइटको रङ</translation>
 <translation id="8735953464173050365">किबोर्डका सेटिङहरू देखाउनुहोस्। <ph name="KEYBOARD_NAME" /> चयन गरिएको छ</translation>
 <translation id="8755498163081687682">आफ्नो पहिचान पुष्टि गर्नुहोस्: <ph name="ORIGIN_NAME" /> तपाईंको पहिचान पुष्टि गर्न चाहन्छ</translation>
 <translation id="875593634123171288">VPN सेटिङहरू देखाउनुहोस्</translation>
@@ -1340,6 +1350,7 @@
 <translation id="9000771174482730261">भण्डारण व्यवस्थापन गर्नुहोस्</translation>
 <translation id="9017320285115481645">Family Link को अभिभावकको पहुँचसम्बन्धी कोड प्रविष्टि गर्नुहोस्।</translation>
 <translation id="9024331582947483881">फुल स्क्रिन</translation>
+<translation id="9029736946581028033">डिभाइस चाँडै नै पावर डाउन हुने छ</translation>
 <translation id="9030319654231318877">सूर्यास्त नहुँदासम्म अफ</translation>
 <translation id="9034924485347205037">Linux का फाइलहरू</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> को सेटिङ खोल्नुहोस्</translation>
@@ -1369,6 +1380,7 @@
 <translation id="9168436347345867845">यो कार्य पछि गर्नुहोस्‌</translation>
 <translation id="9178475906033259337"><ph name="QUERY" /> सम्बन्धी १ परिणाम देखाउँदै</translation>
 <translation id="9179259655489829027">यस सुविधाले तपाईंलाई पासवर्ड प्रविष्ट नगरिकनै साइन इन भएका जुनसुकै प्रयोगकर्तामाथि द्रुत रूपमा पहुँच राख्न दिन्छ।आफूले विश्वास गर्ने खाताहरूमा मात्र यो सुविधाको प्रयोग गर्नुहोस्।</translation>
+<translation id="9180906851711123156">बन्द गर्न Ctrl+W थिच्नुहोस्</translation>
 <translation id="9183456764293710005">फुल स्क्रिन म्याग्निफायर</translation>
 <translation id="9193626018745640770">कुनै अज्ञात प्रापकमा cast गर्दै</translation>
 <translation id="9194617393863864469">अर्को प्रयोगकर्तालाई साइन इन गर्नुहोस् ...</translation>

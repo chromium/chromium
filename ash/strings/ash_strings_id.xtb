@@ -301,7 +301,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="2791421900609674576">Rekomendasi akan ditampilkan sehingga Anda dapat melanjutkan aktivitas terakhir yang Anda lakukan. Anda dapat menyentuh lama untuk menghapus rekomendasi.</translation>
 <translation id="2792498699870441125">Alt+Telusuri</translation>
 <translation id="2797741504905337289">Shelf Party</translation>
-<translation id="2803313416453193357">Buka folder</translation>
 <translation id="2805756323405976993">Apl</translation>
 <translation id="2814448776515246190">Tangkapan layar sebagian</translation>
 <translation id="2819276065543622893">Anda akan dikeluarkan sekarang.</translation>
@@ -699,6 +698,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="5071064518267176975">Sebuah aplikasi ingin menggunakan mikrofon</translation>
 <translation id="5078796286268621944">PIN salah</translation>
 <translation id="5083553833479578423">Dapatkan lebih banyak fitur Asisten.</translation>
+<translation id="509790653408515442">Jika Anda menstreaming aplikasi ponsel, aplikasi akan muncul di sini</translation>
 <translation id="5107522548814527560">Web</translation>
 <translation id="5117590920725113268">Tampilkan bulan berikutnya</translation>
 <translation id="5136175204352732067">Keyboard yang berbeda terhubung</translation>
@@ -721,6 +721,7 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="523505283826916779">Setelan aksesibilitas</translation>
 <translation id="5245201184978705914">Tidak dapat membuat transkrip</translation>
 <translation id="5253783950165989294">Terhubung ke perangkat bernama <ph name="DEVICE_NAME" />, baterai <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="5258528442992323769">Tidak ada desktop tersimpan</translation>
 <translation id="5260676007519551770">Halaman kerja 4</translation>
 <translation id="5283099933536931082">Anda perlu memeriksa <ph name="APP_ITEM_TITLE" />.</translation>
 <translation id="5283198616748585639">Tambahkan 1 mnt</translation>
@@ -1260,6 +1261,7 @@ Baru diinstal</translation>
 <translation id="851458219935658693">Menampilkan jendela dari desktop saat ini, tombol pilihan dipilih</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> Anda mungkin tidak diisi daya saat dinyalakan.</translation>
 <translation id="8535393432370007982">Urungkan tata urutan menurut warna</translation>
+<translation id="8542053257095774575">Tidak ada desktop atau template tersimpan</translation>
 <translation id="8546059259582788728">Berhasil mengurungkan pengurutan</translation>
 <translation id="8551588720239073785">Setelan tanggal dan waktu</translation>
 <translation id="8553395910833293175">Telah ditetapkan ke semua desktop.</translation>

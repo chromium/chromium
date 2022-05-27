@@ -59,6 +59,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="2583187216237139145">Toate datele Chromium generate în timpul folosirii acestui profil (precum marcajele create, istoricul, parolele și alte setări) pot fi eliminate de administratorul profilului de serviciu. <ph name="LEARN_MORE" /></translation>
 <translation id="2648074677641340862">S-a produs o eroare de sistem de operare în timpul instalării. Descărcați din nou Chromium.</translation>
 <translation id="2661879430930417727">Dacă permiți accesul la un dispozitiv, familia și prietenii pot să navigheze separat și să configureze Chromium cum doresc</translation>
+<translation id="268602741124540128">Bun venit la Chromium, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="2711502716910134313">Fila Chromium</translation>
 <translation id="2718390899429598676">Pentru un plus de securitate, Chromium îți va cripta datele.</translation>
 <translation id="2770231113462710648">Schimbă browserul prestabilit la:</translation>
@@ -117,9 +118,11 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="3830894615770080216">Sistemul de operare Chromium</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
 <translation id="386822487697155367">Solicită ajutor privind sistemul de operare Chromium</translation>
+<translation id="3871664619793219264">Obține datele din browserul Chromium din <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="388648406173476553">Personalizează și controlează Chromium. Ceva are nevoie de atenția ta – dă clic pentru detalii.</translation>
 <translation id="3889543394854987837">Dați clic pe numele dvs. pentru a deschide Chromium și a începe să navigați.</translation>
 <translation id="390528597099634151"><ph name="EXISTING_USER" /> s-a conectat deja la acest profil Chromium. Ca să separi navigarea, poți crea propriul profil în Chromium.</translation>
+<translation id="391789666908693569">Contul tău este gestionat de <ph name="MANAGER_NAME" />. Administratorul poate să vadă și să editeze acest profil și datele asociate din browserul Chromium, cum ar fi marcajele, istoricul și parolele.</translation>
 <translation id="3945058413678539331">Chromium încearcă să copieze parolele. Pentru a permite acest lucru, introdu parola pentru Windows.</translation>
 <translation id="3962623956404948996">Chromium îți recomandă să scanezi acest fișier, deoarece ar putea fi periculos</translation>
 <translation id="3997429360543082038">Despre sistemul de operare Chromium</translation>

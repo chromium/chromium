@@ -1076,6 +1076,7 @@
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />、タブ、選択中</translation>
 <translation id="6828070228333235514">価格のトラッキングを停止する</translation>
 <translation id="6833996806551876956">プライバシー サンドボックス（試用版）</translation>
+<translation id="6836206421467243968">「<ph name="TITLE_OF_GROUP" />」タブグループを新しいバックグラウンドのタブグループとして復元します。</translation>
 <translation id="6846298663435243399">読み込んでいます…</translation>
 <translation id="6850409657436465440">ダウンロードが進行中です</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> 個のタブを閉じました</translation>
@@ -1138,6 +1139,7 @@
 <translation id="7187993566681480880">ログイン時に、Chrome を安全に利用できるようにするほか、他の Google アプリのセキュリティ強化に使用されることがあります。</translation>
 <translation id="7191430249889272776">バックグラウンドでタブを開きました。</translation>
 <translation id="7196215469483532480">プライバシー ガイドの説明が画面全体に表示されています</translation>
+<translation id="7207760545532569765"><ph name="TAB_COUNT" /> 個のタブを新しいバックグラウンドのタブとして復元します。</translation>
 <translation id="7208109991155904980">リアクションを移動しました</translation>
 <translation id="7222235798733126207">サイト間での共有の制限</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 件のダウンロードが保留中です}other{# 件のダウンロードが保留中です}}</translation>
@@ -1516,6 +1518,7 @@
 <translation id="9148126808321036104">もう一度ログインする</translation>
 <translation id="9155898266292537608">単語をタップするだけでも検索できます</translation>
 <translation id="9158770349521403363">コンテンツのみ共有</translation>
+<translation id="9159716826369098114"><ph name="TAB_COUNT" /> 個のタブのタブグループを新しいバックグラウンドのタブグループとして復元します。</translation>
 <translation id="916446198114569890">アクセスした URL は Google アカウントに保存されます</translation>
 <translation id="9169507124922466868">ナビゲーション履歴が半分開いています</translation>
 <translation id="9187955620966010988">リアクションを調整しました</translation>

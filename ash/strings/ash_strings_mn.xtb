@@ -301,7 +301,6 @@
 <translation id="2791421900609674576">Та зөвлөмжүүд харах бөгөөд ингэснээр орхисон газраасаа үргэлжлүүлэх боломжтой.  Та зөвлөмжүүдийг хасахын тулд удаан дарж болно.</translation>
 <translation id="2792498699870441125">Alt+ Хайлт</translation>
 <translation id="2797741504905337289">Shelf Party</translation>
-<translation id="2803313416453193357">Хавтсыг нээ</translation>
 <translation id="2805756323405976993">Програм</translation>
 <translation id="2814448776515246190">Хэсэгчилсэн зураг авах</translation>
 <translation id="2819276065543622893">Та нэвтрэх хэсгээс яг одоо гарч байна.</translation>
@@ -1062,6 +1061,7 @@
 <translation id="7348093485538360975">Дэлгэцэн дээрх компьютерийн гар</translation>
 <translation id="735745346212279324">VPN салгагдсан</translation>
 <translation id="7360036564632145207">Та дагалдах төхөөрөмжүүдийн тохиргооны өгөгдлийн хандалтын хамгаалалтаа өөрчилснөөр гүйцэтгэлийг оновчлох боломжтой</translation>
+<translation id="736045644501761622">Дэлгэцийн зураг ба загвар тохируулах</translation>
 <translation id="7371404428569700291">Цонхыг бичих</translation>
 <translation id="7377169924702866686">Caps Lock идэвхжсэн байна.</translation>
 <translation id="7377481913241237033">Кодоор холбогдох</translation>
@@ -1297,6 +1297,7 @@
 <translation id="8721053961083920564">Дууг хаах/нээх. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Бүтэн дэлгэцийн зураг авах</translation>
 <translation id="8734991477317290293">Энэ нь таны түлхүүрийн цуглуулгыг хулгайлахаар оролдож байж болзошгүй</translation>
+<translation id="8735678380411481005">Гарын арын гэрлийн өнгө</translation>
 <translation id="8735953464173050365">Гарын тохиргоог харуулна уу. <ph name="KEYBOARD_NAME" />-г сонгосон</translation>
 <translation id="8755498163081687682">Өөрийгөө баталгаажуулах: <ph name="ORIGIN_NAME" /> таныг мөн болохыг баталгаажуулахыг хүсэж байна</translation>
 <translation id="875593634123171288">VPN тохиргоог харуулах</translation>

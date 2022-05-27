@@ -121,6 +121,7 @@
 <translation id="1942765061641586207">රූප විභේදනය</translation>
 <translation id="1972984168337863910">ගොනු ප්‍රතිපෝෂණ පැනල් දිග හරින්න</translation>
 <translation id="1995337122023280937">ගොනු ස්ථානයට යන්න</translation>
+<translation id="1996806196681857869">Z සම්පීඩිත සංරක්ෂිතය</translation>
 <translation id="2001796770603320721">Drive හි කළමනාකරණය කරන්න</translation>
 <translation id="2009067268969781306">ධාවකයක් ආකෘති කිරීම එහි ගබඩා කර ඇති සියලුම දත්ත මකා දමයි. මෙම ක්‍රියාව අස් කළ නොහැක.</translation>
 <translation id="2025955442973426285">ටිග්රින්යා</translation>
@@ -588,6 +589,7 @@
 <translation id="5955954492236143329">අයිතම <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">අනුපිළිවෙලට සකසන්න විකල්ප</translation>
+<translation id="5985041959109124139">Z සම්පීඩිත tar සංරක්ෂිතය</translation>
 <translation id="6007237601604674381">චලනය අසාර්ථකයි. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">ඊතර්නෙට් ජාලය</translation>
 <translation id="60357267506638014">චෙක් QWERTY</translation>
@@ -618,6 +620,7 @@
 <translation id="6220423280121890987">පන්ජාබි</translation>
 <translation id="6224240818060029162">ඩෙන්මාර්ක</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" /> ආකෘති කරන්න</translation>
+<translation id="6224665423283788195">Zසම්මත සම්පීඩිත සංරක්ෂිතය</translation>
 <translation id="6227235786875481728">මෙම ගොනුව වාදනය කළ නොහැකි විය.</translation>
 <translation id="6241349547798190358">ලන්දේසි (බෙල්ජියම)</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_COUNT" />න් <ph name="NETWORK_INDEX" /> වැනි ජාලය, <ph name="PHONE_NAME" />, සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />%, දුරකථන බැටරිය <ph name="BATTERY_STATUS" />%, සබඳින්න</translation>
@@ -645,6 +648,7 @@
 <translation id="6509122719576673235">Norwegian</translation>
 <translation id="6528513914570774834">මෙම උපාංගයේ වෙනත් පරිශීලකයින්ට මෙම ජාලය භාවිතා කිරීමට ඉඩ දෙන්න</translation>
 <translation id="653019979737152879"><ph name="FILE_NAME" /> සමමු වෙමින්...</translation>
+<translation id="6530595303336443929">Zසම්මත සම්පීඩිත tar සංරක්ෂිතය</translation>
 <translation id="6549689063733911810">මෑත</translation>
 <translation id="6558280019477628686">දෝෂයක් සිදු විය. සමහර අයිතම මැකී නොතිබීමට ඉඩ ඇත.</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />" මැකෙමින්...</translation>

@@ -298,7 +298,6 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="2791421900609674576">Empfehlungen werden angezeigt, damit du dort fortfahren kannst, wo du aufgehört hast. Durch Berühren und Halten kannst du Empfehlungen entfernen.</translation>
 <translation id="2792498699870441125">Alt+Suchtaste</translation>
 <translation id="2797741504905337289">Shelf Party</translation>
-<translation id="2803313416453193357">Ordner öffnen</translation>
 <translation id="2805756323405976993">Apps</translation>
 <translation id="2814448776515246190">Ausschnitt aufnehmen</translation>
 <translation id="2819276065543622893">Du wirst jetzt abgemeldet.</translation>
@@ -696,6 +695,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="5071064518267176975">Eine App möchte das Mikrofon verwenden</translation>
 <translation id="5078796286268621944">Falsche PIN</translation>
 <translation id="5083553833479578423">Möchtest du weitere Assistant-Funktionen freischalten?</translation>
+<translation id="509790653408515442">Wenn du Apps von deinem Smartphone streamst, werden sie hier angezeigt</translation>
 <translation id="5107522548814527560">Web</translation>
 <translation id="5117590920725113268">Nächsten Monat anzeigen</translation>
 <translation id="5136175204352732067">Andere Tastatur angeschlossen</translation>
@@ -718,6 +718,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="523505283826916779">Einstellungen für Bedienungshilfen</translation>
 <translation id="5245201184978705914">Transkript konnte nicht erstellt werden</translation>
 <translation id="5253783950165989294">Mit einem Gerät namens „<ph name="DEVICE_NAME" />“ verbunden, <ph name="BATTERY_PERCENTAGE" /> % Akku</translation>
+<translation id="5258528442992323769">Keine gespeicherten Desktops</translation>
 <translation id="5260676007519551770">Desktop 4</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> erfordert deine Aufmerksamkeit.</translation>
 <translation id="5283198616748585639">1 min hinzufügen</translation>
@@ -1256,6 +1257,7 @@ Neuinstallation</translation>
 <translation id="851458219935658693">Fenster des aktuellen Desktops werden angezeigt, Optionsfeld ausgewählt</translation>
 <translation id="8517041960877371778">Dein <ph name="DEVICE_TYPE" /> wird möglicherweise nicht aufgeladen, wenn es eingeschaltet ist.</translation>
 <translation id="8535393432370007982">Sortierung nach Farbe rückgängig machen</translation>
+<translation id="8542053257095774575">Keine gespeicherten Desktops oder Vorlagen</translation>
 <translation id="8546059259582788728">Sortierung rückgängig gemacht</translation>
 <translation id="8551588720239073785">Datums- und Uhrzeiteinstellungen</translation>
 <translation id="8553395910833293175">Ist bereits allen Desktops zugewiesen.</translation>

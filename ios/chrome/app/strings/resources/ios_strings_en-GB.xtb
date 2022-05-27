@@ -250,6 +250,7 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 See your search engine’s instructions for deleting your search history, if applicable.</translation>
 <translation id="3080525922482950719">You can save pages to read later or offline</translation>
 <translation id="3081338492074632642">Make sure that the password that you are saving matches your password for <ph name="WEBSITE" /></translation>
+<translation id="3103603146121354983">Auto-fill passwords</translation>
 <translation id="3112556859945124369">Mark…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />See what you can sync<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">Block all</translation>
@@ -661,6 +662,7 @@ Sites can't use cookies to see your browsing activity across different sites, fo
 
 Try to use a unique password for every site.</translation>
 <translation id="650279896687777322">Learn more…</translation>
+<translation id="6510072653668207258">Remind me later</translation>
 <translation id="651505212789431520">Cancel sync? You can turn on sync at any time in Settings.</translation>
 <translation id="6524918542306337007">Incognito mode is unavailable</translation>
 <translation id="6530992499366869131">Warn you if passwords are exposed in a data breach</translation>

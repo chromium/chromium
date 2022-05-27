@@ -301,7 +301,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="2791421900609674576">Matysite rekomendacijas, kad galėtumėte tęsti nuo ten, kur baigėte. Palieskite ir palaikykite, jei norite pašalinti rekomendacijas.</translation>
 <translation id="2792498699870441125">„Alt“ + paieškos klavišas</translation>
 <translation id="2797741504905337289">Shelf Party</translation>
-<translation id="2803313416453193357">Atidaryti aplanką</translation>
 <translation id="2805756323405976993">Taikomosios programos</translation>
 <translation id="2814448776515246190">Dalinio vaizdo užfiksavimas</translation>
 <translation id="2819276065543622893">Būsite atjungti.</translation>
@@ -699,6 +698,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="5071064518267176975">Programa nori naudoti mikrofoną</translation>
 <translation id="5078796286268621944">Neteisingas PIN kodas</translation>
 <translation id="5083553833479578423">Atrakinkite daugiau Padėjėjo funkcijų.</translation>
+<translation id="509790653408515442">Kai srautu perduodate telefono programas, jos rodomos čia</translation>
 <translation id="5107522548814527560">Žiniatinklis</translation>
 <translation id="5117590920725113268">Rodyti kitą mėnesį</translation>
 <translation id="5136175204352732067">Prijungta kita klaviatūra</translation>
@@ -721,6 +721,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="523505283826916779">Pasiekiamumo nustatymai</translation>
 <translation id="5245201184978705914">Nepavyko sugeneruoti transkribuoto teksto</translation>
 <translation id="5253783950165989294">Prisijungta prie įrenginio pavadinimu „<ph name="DEVICE_NAME" />“, akumuliatoriaus įkrovos lygis: <ph name="BATTERY_PERCENTAGE" /> proc.</translation>
+<translation id="5258528442992323769">Nėra jokių išsaugotų darbalaukių</translation>
 <translation id="5260676007519551770">4 pultas</translation>
 <translation id="5283099933536931082">Reikia atkreipti dėmesį į „<ph name="APP_ITEM_TITLE" />“.</translation>
 <translation id="5283198616748585639">Pridėti 1 min.</translation>
@@ -1260,6 +1261,7 @@ Naujas įdiegimas</translation>
 <translation id="851458219935658693">Rodyti dabartinio darbalaukio langus, pasirinkta akutė</translation>
 <translation id="8517041960877371778">„<ph name="DEVICE_TYPE" />“ gali nebūti kraunamas, kai yra įjungtas.</translation>
 <translation id="8535393432370007982">Anuliuoti rūšiavimo tvarką pagal spalvą</translation>
+<translation id="8542053257095774575">Nėra jokių išsaugotų darbalaukių ar šablonų</translation>
 <translation id="8546059259582788728">Rūšiavimas sėkmingai anuliuotas</translation>
 <translation id="8551588720239073785">Datos ir laiko nustatymai</translation>
 <translation id="8553395910833293175">Jau priskirta visiems darbalaukiams.</translation>

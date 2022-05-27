@@ -333,7 +333,6 @@ Pots comprovar les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_
 <translation id="1327794256477341646">Les funcions que necessiten la teva ubicació no funcionaran</translation>
 <translation id="1329191040029425999">Comprova que el dispositiu estigui actualitzat i torna-ho a provar</translation>
 <translation id="1330145147221172764">Activa el teclat en pantalla</translation>
-<translation id="1331625853030156663">Per obrir <ph name="APP_NAME" />, activa Mostra la pantalla de bloqueig en reactivar el dispositiu</translation>
 <translation id="1331977651797684645">Sí que era jo.</translation>
 <translation id="1333489022424033687">Pot ser que algunes funcions que inclou <ph name="ORIGIN" /> no es puguin executar fins que no esborris les dades que altres llocs web han emmagatzemat al teu dispositiu</translation>
 <translation id="1333965224356556482">No permetis que els llocs web vegin la teva ubicació</translation>
@@ -4320,6 +4319,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="520568280985468584">La xarxa s'ha afegit correctament. La xarxa mòbil pot tardar uns quants minuts a estar activa.</translation>
 <translation id="5206215183583316675">Vols suprimir "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="520621735928254154">S'ha produït un error en importar el certificat</translation>
+<translation id="5206562235913517859">L'identificador de la botiga té el format ABC-1234</translation>
 <translation id="5206787458656075734">{COUNT,plural, =1{La contrasenya en perill s'ha canviat correctament. Tens # contrasenya més en perill. Chrome et recomana que comprovis aquesta contrasenya ara.}other{La contrasenya en perill s'ha canviat correctament. Tens # contrasenyes més en perill. Chrome et recomana que comprovis aquestes contrasenyes ara.}}</translation>
 <translation id="5207949376430453814">Ressalta la marca d'inserció de text</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> vol comprovar si fas servir un dispositiu Chrome OS apte.</translation>
@@ -4841,6 +4841,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5729712731028706266">&amp;Lector</translation>
 <translation id="5731247495086897348">En&amp;ganxa i ves-hi</translation>
 <translation id="5732392974455271431">Els teus pares te'l poden desbloquejar</translation>
+<translation id="5733866499231170760">L'identificador no és vàlid. El format que has introduït no és correcte. Comprova les instruccions que has rebut per assegurar-te que el format de l'identificador és correcte. Si no pots resoldre aquest problema, deixa el camp en blanc i continua amb la instal·lació.</translation>
 <translation id="5734362860645681824">Comunicacions</translation>
 <translation id="5734697361979786483">Afegeix compartició de fitxers</translation>
 <translation id="5736796278325406685">Introdueix un nom d'usuari vàlid</translation>
@@ -6312,7 +6313,6 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Surt de la pàgina}other{Surt de les pàgines}}</translation>
 <translation id="7207457272187520234">Envia dades d'ús i de diagnòstic. En aquests moments aquest dispositiu envia automàticament a Google dades de diagnòstic, del dispositiu i d'ús d'aplicacions. Aquestes dades ajudaran a millorar l'estabilitat del sistema i de les aplicacions, entre altres característiques. Una part de les dades agregades també serà útil per a les aplicacions i per als partners de Google, com ara els desenvolupadors d'Android. El propietari ha aplicat aquesta opció de configuració. Si tens activada l'opció Activitat al web i en aplicacions addicional, és possible que aquestes dades es desin al teu Compte de Google.</translation>
 <translation id="7207631048330366454">Cerca aplicacions</translation>
-<translation id="720808544705441386">No es pot obrir l'aplicació</translation>
 <translation id="7210499381659830293">Impressores d'extensions</translation>
 <translation id="7211783048245131419">Encara no s'ha assignat cap interruptor</translation>
 <translation id="7212097698621322584">Introdueix el PIN actual per canviar-lo. Si no el saps, hauràs de restablir la clau de seguretat i, a continuació, crear un PIN nou.</translation>
@@ -6947,6 +6947,7 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="7824864914877854148">La còpia de seguretat no s'ha pogut completar a causa d'un error</translation>
 <translation id="782590969421016895">Utilitza les pàgines actuals</translation>
 <translation id="7826174860695147464">Compatibilitat amb navegadors antics (LBS): configuració interna</translation>
+<translation id="7826190688224781865">Codi d'identificació de la botiga</translation>
 <translation id="7826249772873145665">S'ha desactivat la depuració d'ADB</translation>
 <translation id="7826254698725248775">L'identificador del dispositiu ja s'està utilitzant.</translation>
 <translation id="7828731929332799387">Se suprimiran totes les galetes i les dades de llocs web disponibles en contexts de tercers. Vols continuar?</translation>
@@ -8418,6 +8419,7 @@ Obtén informació sobre les dades que Google recull i sobre el motiu pel qual h
 <translation id="987897973846887088">No hi ha cap imatge disponible</translation>
 <translation id="988320949174893488">S'entretalla de tant en tant</translation>
 <translation id="988978206646512040">No es permeten les frases de contrasenya buides</translation>
+<translation id="991097196715779457">Codi d'identificació de la botiga (opcional)</translation>
 <translation id="992032470292211616">Les extensions, les aplicacions i els temes poden malmetre el vostre dispositiu. Confirmeu que voleu continuar?</translation>
 <translation id="992256792861109788">Rosa</translation>
 <translation id="992592832486024913">Desactiva ChromeVox (avisos de veu)</translation>

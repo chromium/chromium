@@ -337,7 +337,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="1327794256477341646">Funkcije za koje je potrebna vaša lokacija neće funkcionirati</translation>
 <translation id="1329191040029425999">Provjerite je li uređaj ažuriran i pokušajte ponovo</translation>
 <translation id="1330145147221172764">Omogući tastaturu na ekranu</translation>
-<translation id="1331625853030156663">Da otvorite aplikaciju <ph name="APP_NAME" />, omogućite opciju "Prikaži zaključani ekran prilikom vraćanja iz mirovanja"</translation>
 <translation id="1331977651797684645">To sam ja.</translation>
 <translation id="1333489022424033687">Neke funkcije web lokacije <ph name="ORIGIN" /> možda neće raditi dok ne obrišete podatke koje su druge web lokacije pohranile na vašem uređaju</translation>
 <translation id="1333965224356556482">Nemoj dozvoliti web lokacijama prikaz lokacije</translation>
@@ -849,6 +848,7 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="1794051631868188691">Nikad ne prikazuj <ph name="MERCHANT" /></translation>
 <translation id="1794791083288629568">Šaljite nam povratne informacije kako bismo riješili ovaj problem.</translation>
 <translation id="1795214765651529549">Koristi klasičnu</translation>
+<translation id="1796105431091975902">Odaberite Ansible Playbook za dodavanje</translation>
 <translation id="1796588414813960292">Funkcije za koje je potreban zvuk neće funkcionirati</translation>
 <translation id="1800502858278951817">Nijedna ekstenzija nije zatražila da čita i mijenja <ph name="SITE_NAME" /></translation>
 <translation id="1802624026913571222">Uključi stanje mirovanje kada se zatvori poklopac</translation>
@@ -3053,6 +3053,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="389901847090970821">Odaberite tastaturu</translation>
 <translation id="3900966090527141178">Izvezite lozinke</translation>
 <translation id="3903187154317825986">Ugrađena tastatura</translation>
+<translation id="3903191712482985591">Dodajte playbook</translation>
 <translation id="3904326018476041253">Usluge lokacije</translation>
 <translation id="3904849010307028014">Na osnovu vaše interakcije s web lokacijom, kao što je redovna prijava na račun, ta web lokacija može izdati token povjerenja vašem pregledniku. Kasnije, ako druga web lokacija koju ste posjetili provjeri i pronađe važeći token povjerenja, veća je vjerovatnoća da će vas tretirati kao stvarnu osobu, a ne kao bota.</translation>
 <translation id="3905761538810670789">Popravi aplikaciju</translation>
@@ -3664,6 +3665,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="4510479820467554003">Lista roditeljskih računa</translation>
 <translation id="451102079304155829">kolica</translation>
 <translation id="4513872120116766993">Predvidljivo pisanje</translation>
+<translation id="4513909579793564731">Primijeni playbook</translation>
 <translation id="4513946894732546136">Povratne informacije</translation>
 <translation id="451407183922382411">Omogućuje <ph name="COMPANY_NAME" /></translation>
 <translation id="4514610446763173167">Reproduciraj ili pauziraj videozapis</translation>
@@ -5497,6 +5499,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="635609604405270300">Ne isključujte uređaj</translation>
 <translation id="63566973648609420">Vaše šifrirane podatke može čitati isključivo osoba koja ima vašu šifru za pristup. Šifra za pristup se ne šalje Googleu niti je Google pohranjuje. Ukoliko zaboravite šifru za pristup ili želite promijeniti ovu postavku, morat ćete <ph name="BEGIN_LINK" />poništiti sinhronizaciju<ph name="END_LINK" />.</translation>
 <translation id="6357305427698525450">Neki podržani linkovi će se i dalje otvarati u aplikaciji <ph name="APP_NAME" /> ili <ph name="APP_NAME_2" />.</translation>
+<translation id="6357794994761110294">Nijedno proširenje nema dopuštenje za čitanje i promjenu web-lokacije <ph name="SITE_NAME" /></translation>
 <translation id="6358884629796491903">Zmaj</translation>
 <translation id="6361850914223837199">Detalji o grešci</translation>
 <translation id="6362853299801475928">&amp;Prijavi problem...</translation>
@@ -6349,7 +6352,6 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Napusti stranicu}one{Napusti stranice}few{Napusti stranice}other{Napusti stranice}}</translation>
 <translation id="7207457272187520234">Šaljite podatke o korištenju i dijagnostici. Ovaj uređaj trenutno automatski šalje Googleu podatke o dijagnostici, uređaju i korištenju aplikacija. To će pomoći stabilnosti sistema i aplikacija, kao i drugim poboljšanjima. Neki zbirni podaci će također pomoći Googleovim aplikacijama i partnerima, kao što su Androidovi programeri. Ovu postavku je nametnuo vlasnik. Ako vam je uključena postavka dodatna Aktivnost na webu i u aplikacijama, ti podaci će možda biti sačuvani na vašem Google računu.</translation>
 <translation id="7207631048330366454">Pretražite aplikacije</translation>
-<translation id="720808544705441386">Nije moguće otvoriti aplikaciju</translation>
 <translation id="7210499381659830293">Štampači ekstenzija</translation>
 <translation id="7211783048245131419">Još uvijek nije dodijeljen nijedan prekidač za pristup</translation>
 <translation id="7212097698621322584">Unesite sadašnji PIN da ga promijenite. Ako ne znate svoj PIN, moraćete poništiti sigurnosni ključ, a zatim kreirati novi PIN.</translation>

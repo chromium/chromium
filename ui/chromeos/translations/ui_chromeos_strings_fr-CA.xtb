@@ -121,6 +121,7 @@
 <translation id="1942765061641586207">Résolution de l'image</translation>
 <translation id="1972984168337863910">Développer les panneaux de commentaires sur les fichiers</translation>
 <translation id="1995337122023280937">Accéder au dossier du fichier</translation>
+<translation id="1996806196681857869">Archive compressée Z</translation>
 <translation id="2001796770603320721">Gérer dans Google Disque</translation>
 <translation id="2009067268969781306">Le formatage d'un lecteur effacera toutes les données qu'il contient. Cette action est irréversible.</translation>
 <translation id="2025955442973426285">Tigrina</translation>
@@ -590,6 +591,7 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> éléments</translation>
 <translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">Options de tri</translation>
+<translation id="5985041959109124139">Archive tar compressée Z</translation>
 <translation id="6007237601604674381">Le déplacement a échoué. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Réseau Ethernet</translation>
 <translation id="60357267506638014">QWERTY tchèque</translation>
@@ -620,6 +622,7 @@
 <translation id="6220423280121890987">Panjabi</translation>
 <translation id="6224240818060029162">Danois</translation>
 <translation id="6224253798271602650">Formater <ph name="DRIVE_NAME" /></translation>
+<translation id="6224665423283788195">Archive compressée Zstandard</translation>
 <translation id="6227235786875481728">Impossible de lire ce fichier.</translation>
 <translation id="6241349547798190358">Néerlandais (Belgique)</translation>
 <translation id="6267547857941397424">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %, pile du téléphone : <ph name="BATTERY_STATUS" /> %, connexion</translation>
@@ -647,6 +650,7 @@
 <translation id="6509122719576673235">Norvégien</translation>
 <translation id="6528513914570774834">Autoriser d'autres utilisateurs de cet appareil à utiliser ce réseau</translation>
 <translation id="653019979737152879">Synchronisation de <ph name="FILE_NAME" /> en cours...</translation>
+<translation id="6530595303336443929">Archive tar compressée Zstandard</translation>
 <translation id="6549689063733911810">Récent</translation>
 <translation id="6558280019477628686">Une erreur s'est produite. Il est possible que certains éléments n'aient pas été supprimés.</translation>
 <translation id="656398493051028875">Suppression de « <ph name="FILENAME" /> » en cours...</translation>

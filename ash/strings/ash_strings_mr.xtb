@@ -301,7 +301,6 @@
 <translation id="2791421900609674576">तुम्हाला शिफारशी दिसतील, जेणेकरून तुम्ही जिथे सोडले होते तेथून सुरू ठेवू शकता. तुम्ही शिफारशी काढून टाकण्यासाठी स्पर्श करून धरून ठेवू शकता.</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
 <translation id="2797741504905337289">शेल्फ पार्टी</translation>
-<translation id="2803313416453193357">फोल्डर उघडा</translation>
 <translation id="2805756323405976993">ॲप्लिकेशन</translation>
 <translation id="2814448776515246190">आंशिक कॅप्चर</translation>
 <translation id="2819276065543622893">आता तुम्हाला साइन आउट केले जाईल.</translation>
@@ -699,6 +698,7 @@
 <translation id="5071064518267176975">ॲपला मायक्रोफोन वापरायचा आहे</translation>
 <translation id="5078796286268621944">चुकीचा पिन</translation>
 <translation id="5083553833479578423">असिस्टंटची आणखी वैशिष्ट्ये अनलॉक करा.</translation>
+<translation id="509790653408515442">तुम्ही तुमच्या फोनची अ‍ॅप्स स्ट्रीम कराल, तेव्हा ती येथे दिसतील</translation>
 <translation id="5107522548814527560">वेब</translation>
 <translation id="5117590920725113268">पुढील महिना दर्शवा</translation>
 <translation id="5136175204352732067">वेगळा कीबोर्ड कनेक्ट केला आहे</translation>
@@ -721,6 +721,7 @@
 <translation id="523505283826916779">ॲक्सेसिबिलिटी सेटिंग्ज</translation>
 <translation id="5245201184978705914">ट्रान्स्क्रिप्ट जनरेट करू शकत नाही</translation>
 <translation id="5253783950165989294"><ph name="DEVICE_NAME" /> नावाच्या डिव्‍हाइसशी कनेक्ट केले, बॅटरी<ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="5258528442992323769">कोणतीही सेव्ह केलेली डेस्‍क नाहीत</translation>
 <translation id="5260676007519551770">डेस्‍क ४</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> तुम्हाला लक्ष देण्याची विनंती करते.</translation>
 <translation id="5283198616748585639">एक मिनिट जोडा</translation>
@@ -787,7 +788,7 @@
 <translation id="5669267381087807207">सक्रिय करत आहे</translation>
 <translation id="5673434351075758678">तुमच्या सेटिंग्ज सिंक केल्यानंतर "<ph name="FROM_LOCALE" />" पासून "<ph name="TO_LOCALE" />" पर्यंत.</translation>
 <translation id="5675363643668471212">शेल्‍फ आयटम</translation>
-<translation id="5677928146339483299">अवरोधित</translation>
+<translation id="5677928146339483299">ब्लॉक केले</translation>
 <translation id="5678564054339031017">पुढील आठवडा दाखवा</translation>
 <translation id="5679050765726761783">कमी पॉवरचे अडॅप्टर कनेक्ट केले</translation>
 <translation id="5682642926269496722">सध्याच्या वापरकर्ता खात्यावर Google असिस्टंट उपलब्ध नाही.</translation>
@@ -1059,6 +1060,7 @@
 <translation id="7348093485538360975">ऑन-स्क्रीन कीबोर्ड</translation>
 <translation id="735745346212279324">VPN डिस्कनेक्ट केले</translation>
 <translation id="7360036564632145207">पेरिफेरल सेटिंगसाठी डेटा अ‍ॅक्सेस संरक्षण बदलल्याने परफॉर्मन्स ऑप्टिमाइझ होऊ शकतो</translation>
+<translation id="736045644501761622">वॉलपेपर आणि स्टाइल सेट करा</translation>
 <translation id="7371404428569700291">विंडो रेकॉर्ड करा</translation>
 <translation id="7377169924702866686">Caps Lock सुरू आहे.</translation>
 <translation id="7377481913241237033">कोड वापरून कनेक्ट करा</translation>
@@ -1260,6 +1262,7 @@
 <translation id="851458219935658693">सध्याच्या डेस्कवरील विंडो दाखवा, रेडिओ बटण निवडले</translation>
 <translation id="8517041960877371778">तुमचे <ph name="DEVICE_TYPE" /> सुरू केले असताना कदाचित चार्ज होणार नाही.</translation>
 <translation id="8535393432370007982">रंगानुसार क्रमवारीचा क्रम पहिल्यासारखा करा</translation>
+<translation id="8542053257095774575">कोणतीही सेव्ह केलेली डेस्‍क किंवा टेंप्लेट नाहीत</translation>
 <translation id="8546059259582788728">क्रमाने लावणे पहिल्यासारखे करण्यात यश आले</translation>
 <translation id="8551588720239073785">तारीख आणि वेळ सेटिंग्ज</translation>
 <translation id="8553395910833293175">सर्व डेस्कना आधीपासून असाइन केले आहे.</translation>
@@ -1292,6 +1295,7 @@
 <translation id="8721053961083920564">व्‍हॉल्‍यूम टॉगल करा. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">फुल स्‍क्रीन कॅप्‍चर</translation>
 <translation id="8734991477317290293">तो कदाचित तुमचे कीस्ट्रोक चोरण्याचा प्रयत्न करत असेल.</translation>
+<translation id="8735678380411481005">कीबोर्ड बॅकलाइटचा रंग</translation>
 <translation id="8735953464173050365">कीबोर्ड सेटिंग्ज दाखवा. <ph name="KEYBOARD_NAME" /> निवडले आहे</translation>
 <translation id="8755498163081687682">तुमच्या ओळखीची पडताळणी करा: हे तुम्हीच असल्याची <ph name="ORIGIN_NAME" /> ला खात्री करायची आहे</translation>
 <translation id="875593634123171288">VPN सेटिंग्ज दाखवा</translation>

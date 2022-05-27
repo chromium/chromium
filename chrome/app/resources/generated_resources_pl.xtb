@@ -335,7 +335,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1327794256477341646">Nie będą działać funkcje, które potrzebują lokalizacji</translation>
 <translation id="1329191040029425999">Sprawdź, czy urządzenie jest aktualne, i spróbuj ponownie</translation>
 <translation id="1330145147221172764">Włącz klawiaturę ekranową</translation>
-<translation id="1331625853030156663">Aby otworzyć aplikację <ph name="APP_NAME" />, włącz opcję „Pokaż ekran blokady po wybudzeniu”</translation>
 <translation id="1331977651797684645">To ja.</translation>
 <translation id="1333489022424033687">Dopóki nie usuniesz danych zapisanych na Twoim urządzeniu przez inne strony, niektóre funkcje na stronie <ph name="ORIGIN" /> mogą nie działać</translation>
 <translation id="1333965224356556482">Nie zezwalaj witrynom na wyświetlanie lokalizacji</translation>
@@ -6320,7 +6319,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Zamknij stronę}few{Zamknij strony}many{Zamknij strony}other{Zamknij strony}}</translation>
 <translation id="7207457272187520234">Wysyłaj dane diagnostyczne oraz informacje o użytkowaniu. To urządzenie automatycznie wysyła do Google dane diagnostyczne oraz informacje o używaniu urządzenia i aplikacji. Dzięki temu będziemy mogli poprawić stabilność systemu i aplikacji oraz wprowadzić inne ulepszenia. Niektóre dane zbiorcze pomogą nam też udoskonalić aplikacje Google lub zostaną wykorzystane przez naszych partnerów, na przykład deweloperów aplikacji na Androida. To ustawienie jest wymuszone przez właściciela. Jeśli włączysz ustawienie Dodatkowa aktywność w internecie i aplikacjach, te dane mogą być zapisywane na Twoim koncie Google.</translation>
 <translation id="7207631048330366454">Szukaj aplikacji</translation>
-<translation id="720808544705441386">Nie można otworzyć aplikacji</translation>
 <translation id="7210499381659830293">Drukarki dostępne za pomocą rozszerzeń</translation>
 <translation id="7211783048245131419">Jeszcze nie przypisano żadnego przełącznika</translation>
 <translation id="7212097698621322584">Wpisz obecny kod PIN, by go zmienić. Jeśli go nie znasz, musisz zresetować klucz bezpieczeństwa, a potem utworzyć nowy kod PIN.</translation>

@@ -335,7 +335,6 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1327794256477341646">Features that need your location won't work</translation>
 <translation id="1329191040029425999">Ensure that your device is up to date and please try again</translation>
 <translation id="1330145147221172764">Enable on-screen keyboard</translation>
-<translation id="1331625853030156663">To open <ph name="APP_NAME" />, enable ‘Show lock screen when waking from sleep’</translation>
 <translation id="1331977651797684645">This was me.</translation>
 <translation id="1333489022424033687">Some features on <ph name="ORIGIN" /> might not work until you clear data that other sites have stored on your device</translation>
 <translation id="1333965224356556482">Don't allow sites to see your location</translation>
@@ -850,6 +849,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1794051631868188691">Never show <ph name="MERCHANT" /></translation>
 <translation id="1794791083288629568">Send feedback to help us fix this issue.</translation>
 <translation id="1795214765651529549">Use Classic</translation>
+<translation id="1796105431091975902">Select an Ansible playbook to add</translation>
 <translation id="1796588414813960292">Features that need sound won't work</translation>
 <translation id="1800502858278951817">No extensions have requested to read and change <ph name="SITE_NAME" /></translation>
 <translation id="1802624026913571222">Sleep when cover is closed</translation>
@@ -3055,6 +3055,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="389901847090970821">Select keyboard</translation>
 <translation id="3900966090527141178">Export passwords</translation>
 <translation id="3903187154317825986">Built-in keyboard</translation>
+<translation id="3903191712482985591">Add playbook</translation>
 <translation id="3904326018476041253">Location Services</translation>
 <translation id="3904849010307028014">Based on your interaction with a site, like regularly signing in to an account, that site can issue a trust token to your browser. Later, if other sites that you visit check for and find a valid trust token, they're more likely to treat you like a person and not a bot.</translation>
 <translation id="3905761538810670789">Repair app</translation>
@@ -3666,6 +3667,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4510479820467554003">Parent account list</translation>
 <translation id="451102079304155829">baskets</translation>
 <translation id="4513872120116766993">Predictive writing</translation>
+<translation id="4513909579793564731">Apply playbook</translation>
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="451407183922382411">Powered by <ph name="COMPANY_NAME" /></translation>
 <translation id="4514610446763173167">Toggle video to play or pause</translation>
@@ -5499,6 +5501,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="635609604405270300">Keep device turned on</translation>
 <translation id="63566973648609420">Only someone with your passphrase can read your encrypted data. The passphrase is not sent to or stored by Google. If you forget your passphrase or want to change this setting, you'll need to <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />.</translation>
 <translation id="6357305427698525450">Some supported links will still open in <ph name="APP_NAME" /> or <ph name="APP_NAME_2" />.</translation>
+<translation id="6357794994761110294">No extensions are allowed to read and change <ph name="SITE_NAME" /></translation>
 <translation id="6358884629796491903">Dragon</translation>
 <translation id="6361850914223837199">Error details:</translation>
 <translation id="6362853299801475928">&amp;Report an issue...</translation>
@@ -6347,7 +6350,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Exit page}other{Exit pages}}</translation>
 <translation id="7207457272187520234">Send usage and diagnostic data. This device is currently automatically sending diagnostic, device and app usage data to Google. This will help system and app stability and other improvements. Some aggregate data will also help Google apps and partners, such as Android developers. This setting is enforced by the owner. If your additional Web &amp; App Activity setting is turned on, this data may be saved to your Google Account.</translation>
 <translation id="7207631048330366454">Search apps</translation>
-<translation id="720808544705441386">Can't open app</translation>
 <translation id="7210499381659830293">Extension printers</translation>
 <translation id="7211783048245131419">No switch has been assigned yet</translation>
 <translation id="7212097698621322584">Enter your current PIN to change it. If you don’t know your PIN, you’ll need to reset the security key, then create a new PIN.</translation>

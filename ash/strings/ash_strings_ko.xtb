@@ -301,7 +301,6 @@
 <translation id="2791421900609674576">이전에 중단한 부분부터 계속할 수 있도록 추천 항목이 표시됩니다. 추천 항목을 삭제하려면 길게 터치하세요.</translation>
 <translation id="2792498699870441125">Alt+검색 키</translation>
 <translation id="2797741504905337289">Shelf Party</translation>
-<translation id="2803313416453193357">폴더 열기</translation>
 <translation id="2805756323405976993">앱</translation>
 <translation id="2814448776515246190">부분 캡처</translation>
 <translation id="2819276065543622893">지금 로그아웃됩니다.</translation>
@@ -699,6 +698,7 @@
 <translation id="5071064518267176975">앱에서 마이크를 사용하려고 함</translation>
 <translation id="5078796286268621944">잘못된 PIN</translation>
 <translation id="5083553833479578423">더 많은 어시스턴트 기능을 사용해 보세요.</translation>
+<translation id="509790653408515442">휴대전화의 앱을 스트리밍하면 여기 표시됩니다.</translation>
 <translation id="5107522548814527560">웹</translation>
 <translation id="5117590920725113268">다음 달 표시</translation>
 <translation id="5136175204352732067">다른 키보드 연결됨</translation>
@@ -721,6 +721,7 @@
 <translation id="523505283826916779">접근성 설정</translation>
 <translation id="5245201184978705914">스크립트를 생성할 수 없음</translation>
 <translation id="5253783950165989294">이름이 <ph name="DEVICE_NAME" />인 기기에 연결됨(배터리 <ph name="BATTERY_PERCENTAGE" />%)</translation>
+<translation id="5258528442992323769">저장된 데스크 없음</translation>
 <translation id="5260676007519551770">데스크 4</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> 알림이 있습니다.</translation>
 <translation id="5283198616748585639">1분 추가</translation>
@@ -1260,6 +1261,7 @@
 <translation id="851458219935658693">현재 데스크의 창 표시, 라디오 버튼 선택됨</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" />이(가) 켜져 있는 동안에는 충전되지 않을 수 있습니다.</translation>
 <translation id="8535393432370007982">색상별 정렬 순서 실행취소</translation>
+<translation id="8542053257095774575">저장된 데스크 또는 템플릿 없음</translation>
 <translation id="8546059259582788728">정렬이 실행취소됨</translation>
 <translation id="8551588720239073785">날짜 및 시간 설정</translation>
 <translation id="8553395910833293175">이미 모든 데스크에 할당되어 있습니다.</translation>

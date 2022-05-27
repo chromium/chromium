@@ -301,7 +301,6 @@
 <translation id="2791421900609674576">توصیه‌هایی خواهید دید تا بتوانید کارتان را از جایی که رها کرده‌اید ادامه دهید. برای حذف توصیه‌ها می‌توانید لمس کنید و نگه دارید.</translation>
 <translation id="2792498699870441125">‏Alt+جستجو</translation>
 <translation id="2797741504905337289">گروه قفسه‌ها</translation>
-<translation id="2803313416453193357">بازکردن پوشه</translation>
 <translation id="2805756323405976993">برنامه‌ها</translation>
 <translation id="2814448776515246190">ضبط جزئی</translation>
 <translation id="2819276065543622893">هم‌اکنون از سیستم خارج خواهید شد.</translation>
@@ -699,6 +698,7 @@
 <translation id="5071064518267176975">برنامه‌ای می‌خواهد از میکروفون شما استفاده کند</translation>
 <translation id="5078796286268621944">پین اشتباه</translation>
 <translation id="5083553833479578423">باز کردن قفل ویژگی‌های بیشتری از «دستیار».</translation>
+<translation id="509790653408515442">وقتی برنامه‌های تلفنتان را جاری‌سازی می‌کنید، اینجا نشان داده می‌شوند</translation>
 <translation id="5107522548814527560">وب</translation>
 <translation id="5117590920725113268">نمایش ماه بعدی</translation>
 <translation id="5136175204352732067">صفحه‌کلید دیگری متصل شد</translation>
@@ -721,6 +721,7 @@
 <translation id="523505283826916779">تنظیمات دسترس‌پذیری</translation>
 <translation id="5245201184978705914">ترانویسی ایجاد نشد</translation>
 <translation id="5253783950165989294">متصل به دستگاهی با نام <ph name="DEVICE_NAME" />، شارژ باتری <ph name="BATTERY_PERCENTAGE" />٪</translation>
+<translation id="5258528442992323769">میزکار ذخیره‌شده‌ای ندارید</translation>
 <translation id="5260676007519551770">میز ۴</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> به توجه شما نیاز دارد.</translation>
 <translation id="5283198616748585639">افزودن ۱ دقیقه</translation>
@@ -1260,6 +1261,7 @@
 <translation id="851458219935658693">نمایش پنجره‌ها از میزکار فعلی، دکمه رادیو انتخاب شد</translation>
 <translation id="8517041960877371778">ممکن است وقتی <ph name="DEVICE_TYPE" /> شما خاموش است، شارژ نشود.</translation>
 <translation id="8535393432370007982">واگرد کردن مرتب‌سازی براساس رنگ</translation>
+<translation id="8542053257095774575">میزکار یا الگوی ذخیره‌شده‌ای ندارید</translation>
 <translation id="8546059259582788728">مرتب‌سازی واگرد شد</translation>
 <translation id="8551588720239073785">تنظیمات تاریخ و ساعت</translation>
 <translation id="8553395910833293175">قبلاً به همه میزکارها اختصاص داده شده است.</translation>

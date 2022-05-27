@@ -335,7 +335,6 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1327794256477341646">Fitur yang memerlukan lokasi Anda tidak akan berfungsi</translation>
 <translation id="1329191040029425999">Pastikan perangkat sudah diupdate dan coba lagi</translation>
 <translation id="1330145147221172764">Aktifkan keyboard di layar</translation>
-<translation id="1331625853030156663">Untuk membuka <ph name="APP_NAME" />, aktifkan "Tampilkan layar kunci saat keluar dari mode tidur"</translation>
 <translation id="1331977651797684645">Ini saya.</translation>
 <translation id="1333489022424033687">Beberapa fitur di <ph name="ORIGIN" /> mungkin tidak berfungsi kecuali Anda menghapus data yang telah disimpan di perangkat Anda oleh situs lain</translation>
 <translation id="1333965224356556482">Jangan izinkan situs melihat lokasi Anda</translation>
@@ -6332,7 +6331,6 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Keluar dari halaman}other{Keluar dari halaman}}</translation>
 <translation id="7207457272187520234">Kirimkan data penggunaan dan diagnostik. Perangkat ini saat ini otomatis mengirimkan data diagnostik, perangkat, dan penggunaan aplikasi ke Google. Data ini akan membantu sistem dan stabilitas aplikasi serta penyempurnaan lainnya. Beberapa data gabungan juga akan membantu aplikasi dan partner Google, seperti developer Android. Setelan ini diterapkan oleh pemilik. Jika setelan Aktivitas Web &amp; Aplikasi tambahan Anda diaktifkan, data ini mungkin akan disimpan ke Akun Google Anda.</translation>
 <translation id="7207631048330366454">Telusuri aplikasi</translation>
-<translation id="720808544705441386">Tidak dapat membuka aplikasi</translation>
 <translation id="7210499381659830293">Printer ekstensi</translation>
 <translation id="7211783048245131419">Belum ada kunci tombol akses yang ditetapkan</translation>
 <translation id="7212097698621322584">Masukkan PIN saat ini untuk mengubahnya. Jika tidak mengetahui PIN Anda, reset kunci keamanan, lalu buat PIN baru.</translation>

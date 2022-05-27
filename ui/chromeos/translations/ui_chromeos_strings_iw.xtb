@@ -121,6 +121,7 @@
 <translation id="1942765061641586207">רזולוציית תמונה</translation>
 <translation id="1972984168337863910">הרחבת חלוניות המשוב של קבצים</translation>
 <translation id="1995337122023280937">מעבר אל מיקום הקובץ</translation>
+<translation id="1996806196681857869">‏ארכיון דחוס מסוג Z</translation>
 <translation id="2001796770603320721">‏ניהול ב-Drive</translation>
 <translation id="2009067268969781306">פירמוט של התקן אחסון מוחק את כל הנתונים שמאוחסנים בו. לא ניתן לבטל את הפעולה הזו.</translation>
 <translation id="2025955442973426285">תיגרינית</translation>
@@ -590,6 +591,7 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> פריטים</translation>
 <translation id="5957366693331451795">‏מכשירי Chromebox</translation>
 <translation id="5982621672636444458">אפשרויות מיון</translation>
+<translation id="5985041959109124139">‏ארכיון TAR דחוס מסוג Z</translation>
 <translation id="6007237601604674381">ההעברה נכשלה. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">‏רשת Ethernet</translation>
 <translation id="60357267506638014">‏צ'כית - QWERTY</translation>
@@ -620,6 +622,7 @@
 <translation id="6220423280121890987">פונג'בית</translation>
 <translation id="6224240818060029162">דנית</translation>
 <translation id="6224253798271602650">פירמוט של <ph name="DRIVE_NAME" /></translation>
+<translation id="6224665423283788195">‏ארכיון דחוס מסוג Zstandard</translation>
 <translation id="6227235786875481728">לא ניתן להפעיל קובץ זה.</translation>
 <translation id="6241349547798190358">הולנדית (בלגיה)</translation>
 <translation id="6267547857941397424">‏רשת <ph name="NETWORK_INDEX" /> מתוך <ph name="NETWORK_COUNT" />,‏ <ph name="PHONE_NAME" />, עוצמת האות: ‎<ph name="SIGNAL_STRENGTH" />%‎, סוללת הטלפון: ‎<ph name="BATTERY_STATUS" />%‎, התחברות</translation>
@@ -647,6 +650,7 @@
 <translation id="6509122719576673235">נורווגית</translation>
 <translation id="6528513914570774834">אישור למשתמשים האחרים במכשיר הזה להשתמש ברשת הזו</translation>
 <translation id="653019979737152879">הסנכרון של <ph name="FILE_NAME" /> מתבצע...</translation>
+<translation id="6530595303336443929">‏ארכיון TAR דחוס מסוג Zstandard</translation>
 <translation id="6549689063733911810">מהזמן האחרון</translation>
 <translation id="6558280019477628686">אירעה שגיאה. ייתכן שפריטים מסוימים לא נמחקו.</translation>
 <translation id="656398493051028875">מחיקת "<ph name="FILENAME" />" מתבצעת...</translation>

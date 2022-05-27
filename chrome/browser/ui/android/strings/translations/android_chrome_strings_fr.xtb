@@ -313,6 +313,7 @@ Appuyez sur n'importe quel mot pour effectuer une recherche. Pour affiner la rec
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# fichier audio}one{# fichier audio}other{# fichiers audio}}</translation>
 <translation id="265156376773362237">Préchargement standard</translation>
 <translation id="2656405586795711023">Applications Web</translation>
+<translation id="2669454659051515572">Toute personne utilisant cet appareil peut voir les fichiers téléchargés</translation>
 <translation id="2702516483241149200">Nouveau : partagez un lien vers ce texte</translation>
 <translation id="2704606927547763573">Copié</translation>
 <translation id="2707726405694321444">Actualiser la page</translation>
@@ -778,6 +779,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5246093389635966745">Modifier le raccourci sur la barre d'outils</translation>
 <translation id="526421993248218238">Impossible de charger cette page</translation>
 <translation id="5271967389191913893">Impossible d'ouvrir le contenu à télécharger sur l'appareil.</translation>
+<translation id="5274286919938458946">Associée à <ph name="CARD_DETAIL" /></translation>
 <translation id="5292796745632149097">Envoyer sur</translation>
 <translation id="5300426565656326054">Personnalisation des annonces basée sur le navigateur</translation>
 <translation id="5304593522240415983">Champ obligatoire.</translation>

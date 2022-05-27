@@ -301,7 +301,6 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2791421900609674576">Jy sal aanbevelings sien sodat jy kan aanhou waar jy opgehou het. Jy kan raak en hou om aanbevelings te verwyder.</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
 <translation id="2797741504905337289">Rakgroep</translation>
-<translation id="2803313416453193357">Maak vouer oop</translation>
 <translation id="2805756323405976993">Programme</translation>
 <translation id="2814448776515246190">Gedeeltelike opname</translation>
 <translation id="2819276065543622893">Jy sal nou afgemeld word.</translation>
@@ -1062,6 +1061,7 @@ Nuwe installasie</translation>
 <translation id="7348093485538360975">Opskerm-sleutelbord</translation>
 <translation id="735745346212279324">VPN ontkoppel</translation>
 <translation id="7360036564632145207">As jy jou datatoegangbeskerming vir randtoestelle se instelling verander, kan dit werkverrigting optimeer</translation>
+<translation id="736045644501761622">Stel muurpapier en styl</translation>
 <translation id="7371404428569700291">Neem venster op</translation>
 <translation id="7377169924702866686">Hoofletterslot is aan.</translation>
 <translation id="7377481913241237033">Koppel met 'n kode</translation>
@@ -1296,6 +1296,7 @@ Nuwe installasie</translation>
 <translation id="8721053961083920564">Wissel volume. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Volskermskoot</translation>
 <translation id="8734991477317290293">Dit kan dalk probeer om jou sleuteldrukke te steel</translation>
+<translation id="8735678380411481005">Kleur van sleutelbord se agterlig</translation>
 <translation id="8735953464173050365">Wys sleutelbordinstellings. <ph name="KEYBOARD_NAME" /> is gekies</translation>
 <translation id="8755498163081687682">Verifieer jou identiteit: <ph name="ORIGIN_NAME" /> wil bevestig dat dit jy is</translation>
 <translation id="875593634123171288">Wys VPN-instellings</translation>

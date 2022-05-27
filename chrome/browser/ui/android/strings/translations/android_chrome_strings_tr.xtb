@@ -313,6 +313,7 @@ Arama yapmak için herhangi bir kelimeye dokunup basılı tutun. Aramanızı has
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# Ses dosyası}other{# Ses dosyası}}</translation>
 <translation id="265156376773362237">Standart önceden yükleme</translation>
 <translation id="2656405586795711023">Web uygulamaları</translation>
+<translation id="2669454659051515572">Bu cihazı kullanan herkes indirilen dosyaları görebilir</translation>
 <translation id="2702516483241149200">Yeni: bu metne kaydıran bir bağlantı paylaşın</translation>
 <translation id="2704606927547763573">Kopyalandı</translation>
 <translation id="2707726405694321444">Sayfayı yenile</translation>
@@ -778,6 +779,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />senkronizasyonu sıfırlay
 <translation id="5246093389635966745">Araç çubuğu düzenleme kısayolu</translation>
 <translation id="526421993248218238">Bu sayfa yüklenemiyor</translation>
 <translation id="5271967389191913893">Cihaz, indirilecek içeriği açamıyor.</translation>
+<translation id="5274286919938458946"><ph name="CARD_DETAIL" /> ile bağlantı oluşturuldu</translation>
 <translation id="5292796745632149097">Alıcılar</translation>
 <translation id="5300426565656326054">Tarayıcıya dayalı reklam kişiselleştirme</translation>
 <translation id="5304593522240415983">Bu alan boş olamaz</translation>

@@ -336,7 +336,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1327794256477341646">Hindi gagana ang mga feature na nangangailangan ng iyong lokasyon</translation>
 <translation id="1329191040029425999">Tiyaking up to date ang iyong device at pakisubukan ulit</translation>
 <translation id="1330145147221172764">I-enable ang on-screen na keyboard</translation>
-<translation id="1331625853030156663">Para buksan ang <ph name="APP_NAME" />, i-enable ang "Ipakita ang lock screen kapag pinagana mula sa sleep"</translation>
 <translation id="1331977651797684645">Ako ito.</translation>
 <translation id="1333489022424033687">Posibleng hindi gumana ang ilang feature sa <ph name="ORIGIN" /> hanggang sa i-clear mo ang data na na-store ng iba pang site sa iyong device</translation>
 <translation id="1333965224356556482">Huwag payagan ang mga site na makita ang iyong lokasyon</translation>
@@ -4348,6 +4347,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="520568280985468584">Naidagdag na ang network. Posibleng abutin nang ilang minuto para maging aktibo ang iyong celluar network.</translation>
 <translation id="5206215183583316675">I-delete ang "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="520621735928254154">Error sa Pag-import ng Certificate</translation>
+<translation id="5206562235913517859">Ang retailer-store ID ay nasa format na ABC-1234</translation>
 <translation id="5206787458656075734">{COUNT,plural, =1{Napalitan ang nakompromisong password. May # ka pang nakompromisong password. Inirerekomenda ng Chrome na suriin ngayon ang password na ito.}one{Napalitan ang nakompromisong password. May # ka pang nakompromisong password. Inirerekomenda ng Chrome na suriin ngayon ang mga password na ito.}other{Napalitan ang nakompromisong password. May # ka pang nakompromisong password. Inirerekomenda ng Chrome na suriin ngayon ang mga password na ito.}}</translation>
 <translation id="5207949376430453814">I-highlight ang text caret</translation>
 <translation id="520840839826327499">Gustong suriin ng <ph name="SERVICE_NAME" /> kung gumagamit ka ng kwalipikadong ChromeOS device.</translation>
@@ -4870,6 +4870,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="5729712731028706266">&amp;Tingnan</translation>
 <translation id="5731247495086897348">I-pa&amp;ste at Umalis</translation>
 <translation id="5732392974455271431">Maaari itong i-unblock ng iyong mga magulang para sa iyo</translation>
+<translation id="5733866499231170760">Invalid ang ID. Mali ang inilagay mong format. Pakitingnan ang mga tagubiling natanggap mo para matiyak na inilalagay mo ang ID sa tamang format. Kung hindi mo malutas ang isyu, iwang blangko ang field at magpatuloy sa pag-install.</translation>
 <translation id="5734362860645681824">Komunikasyon</translation>
 <translation id="5734697361979786483">Magdagdag ng file share</translation>
 <translation id="5736796278325406685">Mangyaring maglagay ng wastong username</translation>
@@ -6348,7 +6349,6 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Umalis sa Page}one{Umalis sa Mga Page}other{Umalis sa Mga Page}}</translation>
 <translation id="7207457272187520234">Magpadala ng data ng paggamit at diagnostic. Sa kasalukuyan, ang device na ito ay awtomatikong nagpapadala ng diagnostic na data, data ng device, at data ng paggamit sa app sa Google. Makakatulong ito sa stability ng system at ng app, at sa iba pang pagpapahusay. Makakatulong din ang ilang pinagsama-samang data sa mga app at partner ng Google, gaya ng mga developer ng Android. Ipinapatupad ng may-ari ang setting na ito. Kung naka-on ang iyong karagdagang setting ng Aktibidad sa Web at App, posibleng ma-save ang data na ito sa Google Account mo.</translation>
 <translation id="7207631048330366454">Maghanap ng mga app</translation>
-<translation id="720808544705441386">Hindi mabuksan ang app</translation>
 <translation id="7210499381659830293">Mga extension na printer</translation>
 <translation id="7211783048245131419">Wala pang switch na naitalaga</translation>
 <translation id="7212097698621322584">Ilagay ang kasalukuyan mong PIN para palitan ito. Kung hindi mo alam ang iyong PIN, kakailanganin mong i-reset ang security key, pagkatapos ay gumawa ng bagong PIN.</translation>
@@ -6983,6 +6983,7 @@ Pumindot ng nakatalagang switch o key para alisin ang pagtatalaga.</translation>
 <translation id="7824864914877854148">Hindi makumpleto ang pag-back up dahil sa error</translation>
 <translation id="782590969421016895">Gamitin ang mga kasalukuyang page</translation>
 <translation id="7826174860695147464">Legacy Browser Support (LBS) - Mga Internal</translation>
+<translation id="7826190688224781865">Retailer-store ID code</translation>
 <translation id="7826249772873145665">Na-disable ang pag-debug ng ADB</translation>
 <translation id="7826254698725248775">Hindi tumutugma ang pagkakakilanlan ng device</translation>
 <translation id="7828731929332799387">Ide-delete nito ang lahat ng cookies at data ng site na available sa mga konteksto ng third party. Gusto mo bang magpatuloy?</translation>
@@ -8457,6 +8458,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="987897973846887088">Walang available na larawan</translation>
 <translation id="988320949174893488">Paminsan-minsang Putol</translation>
 <translation id="988978206646512040">Hindi pinapayagan ang passphrase na walang laman</translation>
+<translation id="991097196715779457">Retailer-store ID code (opsyonal)</translation>
 <translation id="992032470292211616">Maaaring mapinsala ng mga extension, apps at mga tema ang iyong device. Sigurado kang gusto mong magpatuloy?</translation>
 <translation id="992256792861109788">Pink</translation>
 <translation id="992592832486024913">I-disable ang ChromeVox (pasalitang feedback)</translation>

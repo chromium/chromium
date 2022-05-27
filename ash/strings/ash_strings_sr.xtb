@@ -252,6 +252,7 @@
 <translation id="243878895369688216">Отварано јуче</translation>
 <translation id="2441427462554639370">Снимање је прекинуто због изузетно мало простора</translation>
 <translation id="24452542372838207">Прошири обавештење</translation>
+<translation id="2449089818483227734">Низак ниво батерије</translation>
 <translation id="2450205753526923158">Режим снимка екрана</translation>
 <translation id="2456008742792828469">Календар, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2473177541599297363">Потврдите резолуцију</translation>
@@ -301,7 +302,6 @@
 <translation id="2791421900609674576">Видећете препоруке да бисте могли да наставите тамо где сте стали.  Можете да додирнете и задржите да бисте уклонили препоруке.</translation>
 <translation id="2792498699870441125">Alt + тастер за претрагу</translation>
 <translation id="2797741504905337289">Журка на полици</translation>
-<translation id="2803313416453193357">Отворите директоријум</translation>
 <translation id="2805756323405976993">Апликације</translation>
 <translation id="2814448776515246190">Делимично снимање</translation>
 <translation id="2819276065543622893">Бићете одмах одјављени.</translation>
@@ -413,11 +413,13 @@
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> мин</translation>
 <translation id="3445925074670675829">Уређај са USB прикључком типа C</translation>
+<translation id="3455468639467374593">Шаблон, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3465223694362104965">Још једна тастатура је повезана са овим уређајем откад сте се последњи пут пријавили. Уверите се да је у питању поуздана тастатура пре него што је користите.</translation>
 <translation id="3465356146291925647">Управља администратор</translation>
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, јачина сигнала <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Полица је аутоматски сакривена</translation>
+<translation id="3505066820268455558">Батерија се пуни</translation>
 <translation id="3509391053705095206">Проналажење телефона није успело. Проверите да ли је Bluetooth на телефону укључен.</translation>
 <translation id="3510164367642747937">Истакни курсор миша</translation>
 <translation id="3513798432020909783">Налогом управља <ph name="MANAGER_EMAIL" /></translation>
@@ -458,6 +460,8 @@
 <translation id="3633097874324966332">Отворите подешавања Bluetooth-а да бисте упарили уређај</translation>
 <translation id="3638400994746983214">Укључује/искључује екран за приватност. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Ажурирајте истекло</translation>
+<translation id="3659814201068740063">Преостало је око <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" />%).
+Прикључите уређај на напајање.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Корисник којим се управља</translation>
 <translation id="36813544980941320">WiFi мреже ће се делити између вашег телефона и уређаја <ph name="DEVICE_NAME" /></translation>
 <translation id="3694122362646626770">Веб-сајтови</translation>
@@ -512,6 +516,7 @@
 <translation id="3962859241508114581">Претходна песма</translation>
 <translation id="3969043077941541451">Искључи</translation>
 <translation id="397105322502079400">Израчунавање...</translation>
+<translation id="397726367135689299">Пуњење батерије је можда непоуздано.</translation>
 <translation id="3977512764614765090">Батерија је на <ph name="PERCENTAGE" />% и пуни се.</translation>
 <translation id="3986082989454912832">Одговори</translation>
 <translation id="3995138139523574647">Уређај са USB прикључком типа C (десни задњи порт)</translation>
@@ -699,6 +704,7 @@
 <translation id="5071064518267176975">Апликација жели да користи микрофон</translation>
 <translation id="5078796286268621944">Нетачан PIN</translation>
 <translation id="5083553833479578423">Откључајте још функција Помоћника.</translation>
+<translation id="509790653408515442">Када стримујете апликације са телефона, оне се приказују овде</translation>
 <translation id="5107522548814527560">Веб</translation>
 <translation id="5117590920725113268">Прикажи следећи месец</translation>
 <translation id="5136175204352732067">Нека друга тастатура је повезана</translation>
@@ -721,6 +727,7 @@
 <translation id="523505283826916779">Подешавања приступачности</translation>
 <translation id="5245201184978705914">Генерисање транскрипта није успело</translation>
 <translation id="5253783950165989294">Повезани сте са уређајем под називом <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" />% батерије</translation>
+<translation id="5258528442992323769">Нема сачуваних радних површина</translation>
 <translation id="5260676007519551770">Радна површина 4</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> захтева вашу пажњу.</translation>
 <translation id="5283198616748585639">Додај 1 мин</translation>
@@ -1037,6 +1044,7 @@
 <translation id="7130207228079676353">НАЈВЕРОВАТНИЈЕ</translation>
 <translation id="7131634465328662194">Одјавићемо вас аутоматски.</translation>
 <translation id="7143207342074048698">Повезивање</translation>
+<translation id="7144942256906679589">Статус батерије</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358">Враћање на стару резолуцију за <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Освежи</translation>
@@ -1102,6 +1110,7 @@
 <translation id="7593891976182323525">Тастер за претрагу или Shift</translation>
 <translation id="7600875258240007829">Погледајте сва обавештења</translation>
 <translation id="7607002721634913082">Паузирано</translation>
+<translation id="7609951632080598826">Приказ календара, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Камера је поново повезана.</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7633755430369750696">Прикажите подешавања Дељења у близини.</translation>
@@ -1227,6 +1236,7 @@
 <translation id="8345019317483336363">Прозор <ph name="WINDOW_TITLE" /> је изабран</translation>
 <translation id="8351131234907093545">Направите белешку</translation>
 <translation id="8364673525741149932">Укључите/искључите Журку на полици. <ph name="STATE_TEXT" /></translation>
+<translation id="8369166482916924789">Сачувана радна површина, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">Слово унапред</translation>
 <translation id="8371991222807690464">Учинак периферног уређаја је можда ограничен у режиму госта</translation>
 <translation id="8374601332003098278">Притисните Enter да бисте снимили део екрана</translation>
@@ -1260,6 +1270,7 @@
 <translation id="851458219935658693">Приказујте прозоре са актуелне радне површине, дугме за избор је изабрано</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> се можда неће пунити док је укључен.</translation>
 <translation id="8535393432370007982">Опозовите редослед сортирања према боји</translation>
+<translation id="8542053257095774575">Нема сачуваних радних површина нити шаблона</translation>
 <translation id="8546059259582788728">Опозвали сте сортирање</translation>
 <translation id="8551588720239073785">Подешавања датума и времена</translation>
 <translation id="8553395910833293175">Већ је додељено свим радним површинама.</translation>
@@ -1337,6 +1348,7 @@
 <translation id="9000771174482730261">УПРАВЉАЈТЕ МЕМОРИЈСКИМ ПРОСТОРОМ</translation>
 <translation id="9017320285115481645">Унесите приступни кôд родитеља за Family Link.</translation>
 <translation id="9024331582947483881">цео екран</translation>
+<translation id="9029736946581028033">Уређај ће се ускоро искључити</translation>
 <translation id="9030319654231318877">Искључено до сумрака</translation>
 <translation id="9034924485347205037">Linux датотеке</translation>
 <translation id="9047624247355796468">Отворите подешавања за <ph name="NETWORK_NAME" /></translation>
@@ -1366,6 +1378,7 @@
 <translation id="9168436347345867845">Урадићу то касније</translation>
 <translation id="9178475906033259337">Приказује се један резултат за: <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Ова функција вам омогућава да брзо приступите било ком пријављеном кориснику без лозинке. Користите ову функцију само са налозима у које имате поверења.</translation>
+<translation id="9180906851711123156">Притисните Ctrl+W да бисте затворили.</translation>
 <translation id="9183456764293710005">Лупа за цео екран</translation>
 <translation id="9193626018745640770">Пребацује се на непознати пријемник</translation>
 <translation id="9194617393863864469">Пријавите још једног корисника...</translation>

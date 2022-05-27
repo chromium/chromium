@@ -336,7 +336,6 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1327794256477341646">Recursos que precisam da localização não funcionarão</translation>
 <translation id="1329191040029425999">Confira se o dispositivo está atualizado e tente novamente</translation>
 <translation id="1330145147221172764">Ativar o teclado na tela</translation>
-<translation id="1331625853030156663">Para abrir o app <ph name="APP_NAME" />, ative a opção "Mostrar tela de bloqueio ao sair do modo de suspensão"</translation>
 <translation id="1331977651797684645">Fui eu.</translation>
 <translation id="1333489022424033687">Alguns recursos em <ph name="ORIGIN" /> podem não funcionar até que você limpe os dados de outros sites armazenados no dispositivo</translation>
 <translation id="1333965224356556482">Não permitir que os sites acessem seu local</translation>
@@ -4339,6 +4338,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="520568280985468584">A rede foi adicionada. Pode demorar vários minutos para que sua rede celular fique ativa.</translation>
 <translation id="5206215183583316675">Quer excluir "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="520621735928254154">Erro ao importar certificado</translation>
+<translation id="5206562235913517859">O formato do ID da loja do varejista é ABC-1234</translation>
 <translation id="5206787458656075734">{COUNT,plural, =1{A senha comprometida foi modificada. Você tem # outra senha comprometida. O Chrome recomenda verificá-la imediatamente.}one{A senha comprometida foi modificada. Você tem # outra senha comprometida. O Chrome recomenda verificá-la imediatamente.}other{A senha comprometida foi modificada. Você tem # outras senhas comprometidas. O Chrome recomenda verificá-las imediatamente.}}</translation>
 <translation id="5207949376430453814">Destacar cursor de texto</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> quer verificar se você está usando um dispositivo ChromeOS qualificado.</translation>
@@ -4846,7 +4846,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5711010025974903573">Registros do serviço</translation>
 <translation id="5711983031544731014">Não foi possível realizar o desbloqueio. Insira sua senha.</translation>
 <translation id="5712153969432126546">Às vezes, os sites podem publicar PDFs, como documentos, contratos, e formulários</translation>
-<translation id="571222594670061844">Sites podem mostrar solicitações de login de serviços de identidade</translation>
+<translation id="571222594670061844">Sites podem mostrar solicitações de login de serviços de identificação</translation>
 <translation id="5713158217420111469">Conectado a <ph name="DEVICE" /></translation>
 <translation id="5715711091495208045">Agente do plug-in: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Mecanismos de pesquisa padrão</translation>
@@ -4861,6 +4861,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5729712731028706266">&amp;Visualizar</translation>
 <translation id="5731247495086897348">&amp;Colar e ir</translation>
 <translation id="5732392974455271431">Seus responsáveis podem desbloqueá-lo para você</translation>
+<translation id="5733866499231170760">ID inválido. O formato inserido está incorreto. Leia as instruções que você recebeu para garantir que está inserindo o ID no formato correto. Se não for possível solucionar esse problema, deixe o campo em branco e continue a instalação.</translation>
 <translation id="5734362860645681824">Comunicações</translation>
 <translation id="5734697361979786483">Adicionar compartilhamento de arquivos</translation>
 <translation id="5736796278325406685">Insira um nome de usuário válido</translation>
@@ -5004,7 +5005,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5876851302954717356">Nova guia à direita</translation>
 <translation id="5877064549588274448">Canal alterado. Reinicie o dispositivo para aplicar as alterações.</translation>
 <translation id="5877584842898320529">A impressora selecionada não está disponível ou não foi instalada corretamente. <ph name="BR" /> Verifique a impressora ou selecione outra.</translation>
-<translation id="5878945009165002849">Bloquear solicitações de login de serviços de identidade</translation>
+<translation id="5878945009165002849">Bloquear solicitações de login de serviços de identificação</translation>
 <translation id="5882919346125742463">Redes conhecidas</translation>
 <translation id="5883356647197510494">Bloqueados automaticamente: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="5884474295213649357">Esta guia está conectada a um dispositivo USB.</translation>
@@ -6335,7 +6336,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Sair da página}one{Sair da página}other{Sair das páginas}}</translation>
 <translation id="7207457272187520234">Envie dados de uso e diagnóstico. No momento, este dispositivo está enviando automaticamente ao Google dados de diagnóstico, de uso de apps e do dispositivo. Eles ajudarão a melhorar o sistema, a estabilidade de apps e muito mais. Alguns dados agregados também ajudarão os apps do Google e nossos parceiros, como os desenvolvedores Android. Essa configuração é aplicada pelo proprietário, Se a configuração "Atividade na Web e de apps adicional" estiver ativada, esses dados poderão ser salvos na sua Conta do Google.</translation>
 <translation id="7207631048330366454">Pesquisar apps</translation>
-<translation id="720808544705441386">Não é possível abrir o app</translation>
 <translation id="7210499381659830293">Impressoras de extensão</translation>
 <translation id="7211783048245131419">Nenhum interruptor foi atribuído até o momento</translation>
 <translation id="7212097698621322584">Insira seu PIN atual para alterá-lo. Se você não sabe seu PIN, redefina a chave de segurança e crie um novo.</translation>
@@ -6970,6 +6970,7 @@ Pressione um interruptor ou tecla atribuídos para remover a atribuição.</tran
 <translation id="7824864914877854148">Ocorreu um erro e não foi possível concluir o backup</translation>
 <translation id="782590969421016895">Usar as páginas atuais</translation>
 <translation id="7826174860695147464">Suporte a navegadores legados (LBS): configurações internas</translation>
+<translation id="7826190688224781865">ID da loja do varejista</translation>
 <translation id="7826249772873145665">Depuração do adb desativada</translation>
 <translation id="7826254698725248775">Conflito no identificador de dispositivo.</translation>
 <translation id="7828731929332799387">Essa ação excluirá todos os cookies e dados de sites disponíveis em contextos de terceiros. Quer continuar?</translation>
@@ -8441,6 +8442,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="987897973846887088">Não há imagens disponíveis</translation>
 <translation id="988320949174893488">Tem falhas intermitentes</translation>
 <translation id="988978206646512040">A senha longa não pode ficar em branco</translation>
+<translation id="991097196715779457">ID da loja do varejista (opcional)</translation>
 <translation id="992032470292211616">Extensões, aplicativos e temas podem danificar seu dispositivo. Você quer mesmo continuar?</translation>
 <translation id="992256792861109788">Rosa</translation>
 <translation id="992592832486024913">Desativar ChromeVox (resposta falada)</translation>

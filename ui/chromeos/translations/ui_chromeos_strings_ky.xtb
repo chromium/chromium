@@ -121,6 +121,7 @@
 <translation id="1942765061641586207">Сүрөттүн чечилиши</translation>
 <translation id="1972984168337863910">Файлдардын маалымат камтылган панелдерин жайып көрсөтүү</translation>
 <translation id="1995337122023280937">Файл жайгашкан папкага өтүү</translation>
+<translation id="1996806196681857869">ZIP менен кысылган архив</translation>
 <translation id="2001796770603320721">Google Drive'да ачуу</translation>
 <translation id="2009067268969781306">Дискти форматтасаңыз, анда сакталган бардык маалыматтар өчүрүлөт. Бул аракетти артка кайтаруу мүмкүн эмес.</translation>
 <translation id="2025955442973426285">Тигринче</translation>
@@ -588,6 +589,7 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> элемент</translation>
 <translation id="5957366693331451795">Chromebox түзмөктөрү</translation>
 <translation id="5982621672636444458">Иреттөө опциясы</translation>
+<translation id="5985041959109124139">Z менен кысылган tar архиви</translation>
 <translation id="6007237601604674381">Жылдырылбай калды. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Ethernet тармагы</translation>
 <translation id="60357267506638014">Чехче QWERTY</translation>
@@ -618,6 +620,7 @@
 <translation id="6220423280121890987">Пунжабиче</translation>
 <translation id="6224240818060029162">Датча</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" /> форматталсын</translation>
+<translation id="6224665423283788195">Zstandard менен кысылган архив</translation>
 <translation id="6227235786875481728">Бул файл ойнотулган жок.</translation>
 <translation id="6241349547798190358">Голландча (Бельгия)</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак, <ph name="PHONE_NAME" />, Сигналдын күчү <ph name="SIGNAL_STRENGTH" />%, Телефондун батареясы <ph name="BATTERY_STATUS" />%, Туташуу</translation>
@@ -645,6 +648,7 @@
 <translation id="6509122719576673235">Норвежче</translation>
 <translation id="6528513914570774834">Бул түзмөктү колдонгон кишилерге ушул тармакты колдонууга уруксат берилсин</translation>
 <translation id="653019979737152879"><ph name="FILE_NAME" />… шайкештештирилүүдө</translation>
+<translation id="6530595303336443929">Z менен кысылган tar архиви</translation>
 <translation id="6549689063733911810">Акыркы</translation>
 <translation id="6558280019477628686">Ката кетти. Айрым элементтер өчкөн жок окшойт.</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />"… жок кылуу</translation>

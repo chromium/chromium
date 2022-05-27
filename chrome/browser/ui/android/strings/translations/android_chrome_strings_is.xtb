@@ -313,6 +313,7 @@ Haltu fingri á hvaða orði sem er til að leita að því. Veldu fleiri eða f
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# hljóðskrá}one{# hljóðskrá}other{# hljóðskrár}}</translation>
 <translation id="265156376773362237">Hefðbundin forhleðsla</translation>
 <translation id="2656405586795711023">Vefforrit</translation>
+<translation id="2669454659051515572">Allir sem nota þetta tæki geta séð sóttar skrár</translation>
 <translation id="2702516483241149200">Nýtt: Deildu tengli sem flettir að þessum texta</translation>
 <translation id="2704606927547763573">Afritað</translation>
 <translation id="2707726405694321444">Endurnýja síðu</translation>
@@ -778,6 +779,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="5246093389635966745">Breyta flýtileið tækjastiku</translation>
 <translation id="526421993248218238">Ekki hægt að hlaða þessari síðu</translation>
 <translation id="5271967389191913893">Tækið getur ekki opnað efnið sem á að sækja.</translation>
+<translation id="5274286919938458946">Tengt við <ph name="CARD_DETAIL" /></translation>
 <translation id="5292796745632149097">Senda í</translation>
 <translation id="5300426565656326054">Sérsniðnar auglýsingar út frá vafravirkni</translation>
 <translation id="5304593522240415983">Þessi reitur má ekki vera auður</translation>

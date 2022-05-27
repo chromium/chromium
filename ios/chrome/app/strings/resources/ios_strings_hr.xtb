@@ -250,6 +250,7 @@ Web-lokacije ne mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregled
 Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povijest pretraživanja, ako je primjenjivo.</translation>
 <translation id="3080525922482950719">Stranice možete spremati da biste ih čitali kasnije ili izvanmrežno</translation>
 <translation id="3081338492074632642">Provjerite podudara li se zaporka koju spremate sa zaporkom za <ph name="WEBSITE" /></translation>
+<translation id="3103603146121354983">Automatski unos zaporki</translation>
 <translation id="3112556859945124369">Označi...</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Pogledajte što možete sinkronizirati<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">Blokiraj sve</translation>
@@ -661,6 +662,7 @@ Web-lokacije ne mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregled
 
 Pokušajte koristiti jedinstvenu zaporku za svaku web-lokaciju.</translation>
 <translation id="650279896687777322">Saznajte više...</translation>
+<translation id="6510072653668207258">Podsjeti me kasnije</translation>
 <translation id="651505212789431520">Otkazati sinkronizaciju? Sinkronizaciju možete uvijek uključiti u Postavkama.</translation>
 <translation id="6524918542306337007">Anonimni način nije dostupan</translation>
 <translation id="6530992499366869131">Upozori ako su zaporke ugrožene zbog povrede podataka</translation>

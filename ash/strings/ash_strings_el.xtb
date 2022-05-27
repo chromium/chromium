@@ -301,7 +301,6 @@
 <translation id="2791421900609674576">Θα βλέπετε προτάσεις για να συνεχίσετε από εκεί που σταματήσατε. Μπορείτε να αγγίξετε παρατεταμένα για να καταργήσετε προτάσεις.</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
 <translation id="2797741504905337289">Shelf Party</translation>
-<translation id="2803313416453193357">Άνοιγμα φακέλου</translation>
 <translation id="2805756323405976993">Εφαρμογές </translation>
 <translation id="2814448776515246190">Μερική λήψη</translation>
 <translation id="2819276065543622893">Θα αποσυνδεθείτε τώρα.</translation>
@@ -699,6 +698,7 @@
 <translation id="5071064518267176975">Μια εφαρμογή θέλει να χρησιμοποιήσει το μικρόφωνο</translation>
 <translation id="5078796286268621944">Εσφαλμένο PIN</translation>
 <translation id="5083553833479578423">Ξεκλειδώστε περισσότερες λειτουργίες του Βοηθού.</translation>
+<translation id="509790653408515442">Όταν μεταδίδετε τις εφαρμογές του τηλεφώνου σας σε ροή, θα εμφανίζονται εδώ.</translation>
 <translation id="5107522548814527560">Ιστός</translation>
 <translation id="5117590920725113268">Εμφάνιση επόμενου μήνα</translation>
 <translation id="5136175204352732067">Συνδέθηκε διαφορετικό πληκτρολόγιο</translation>
@@ -721,6 +721,7 @@
 <translation id="523505283826916779">Ρυθμίσεις προσβασιμότητας</translation>
 <translation id="5245201184978705914">Δεν είναι δυνατή η δημιουργία μεταγραφής</translation>
 <translation id="5253783950165989294">Πραγματοποιήθηκε σύνδεση σε συσκευή με όνομα <ph name="DEVICE_NAME" />, μπαταρία <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="5258528442992323769">Δεν υπάρχουν αποθηκευμένα γραφεία.</translation>
 <translation id="5260676007519551770">Γραφείο 4</translation>
 <translation id="5283099933536931082">Η εφαρμογή <ph name="APP_ITEM_TITLE" /> χρειάζεται την προσοχή σας.</translation>
 <translation id="5283198616748585639">Προσθήκη 1 λεπτού</translation>
@@ -1260,6 +1261,7 @@
 <translation id="851458219935658693">Εμφάνιση παραθύρων από το τρέχον γραφείο, επιλέχτηκε το κουμπί επιλογής.</translation>
 <translation id="8517041960877371778">Δεν είναι δυνατή η φόρτιση της συσκευής <ph name="DEVICE_TYPE" /> ενώ είναι ενεργοποιημένη.</translation>
 <translation id="8535393432370007982">Αναίρεση σειράς ταξινόμησης κατά χρώμα</translation>
+<translation id="8542053257095774575">Δεν υπάρχουν αποθηκευμένα γραφεία ή πρότυπα.</translation>
 <translation id="8546059259582788728">Η αναίρεση ταξινόμησης ήταν επιτυχής</translation>
 <translation id="8551588720239073785">Ρυθμίσεις ημερομηνίας και ώρας</translation>
 <translation id="8553395910833293175">Έχει εκχωρηθεί ήδη σε όλα τα γραφεία.</translation>

@@ -59,6 +59,7 @@
 <translation id="2583187216237139145">Администратор рабочего профиля может удалять любые данные, сохраненные в браузере Chromium при использовании этого профиля (например, добавленные закладки, историю, пароли и настройки). <ph name="LEARN_MORE" /></translation>
 <translation id="2648074677641340862">В процессе установки произошла ошибка в операционной системе. Скачайте Chromium ещё раз.</translation>
 <translation id="2661879430930417727">Если кроме вас устройством пользуется кто-то ещё, например родные или друзья, они тоже смогут настроить Chromium на свой вкус.</translation>
+<translation id="268602741124540128"><ph name="ACCOUNT_FIRST_NAME" />, добро пожаловать в Chromium!</translation>
 <translation id="2711502716910134313">Вкладка Chromium</translation>
 <translation id="2718390899429598676">В целях повышения безопасности Chromium шифрует ваши данные.</translation>
 <translation id="2770231113462710648">Назначить браузером по умолчанию:</translation>
@@ -115,9 +116,11 @@
 <translation id="3830894615770080216">Chromium OS</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> – Chromium</translation>
 <translation id="386822487697155367">Подробнее о Chromium OS</translation>
+<translation id="3871664619793219264">Получите доступ к данным браузера Chromium, сохраненным в аккаунте <ph name="ACCOUNT_EMAIL" />.</translation>
 <translation id="388648406173476553">Настройка и управление Chromium Требуется ваше внимание. Нажмите, чтобы получить подробную информацию.</translation>
 <translation id="3889543394854987837">Нажмите на свое имя, чтобы войти в Chromium.</translation>
 <translation id="390528597099634151">Пользователь <ph name="EXISTING_USER" /> уже выполнил вход в профиль Chromium. Вы можете создать свой профиль, чтобы использовать Chromium отдельно.</translation>
+<translation id="391789666908693569">Вашим аккаунтом управляет <ph name="MANAGER_NAME" />. Администратор может просматривать и изменять этот профиль Chromium и данные в нем, включая закладки, историю и пароли.</translation>
 <translation id="3945058413678539331">Chromium пытается скопировать пароли. Чтобы разрешить это действие, введите свой пароль Windows.</translation>
 <translation id="3962623956404948996">Chromium рекомендует просканировать этот потенциально вредоносный файл.</translation>
 <translation id="3997429360543082038">О Chromium OS</translation>

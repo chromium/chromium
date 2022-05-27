@@ -252,6 +252,7 @@
 <translation id="243878895369688216">မနေ့က ဖွင့်ထားသည်</translation>
 <translation id="2441427462554639370">သိုလှောင်ခန်းနေရာ အလွန်နည်းနေသဖြင့် ရိုက်ကူးမှု ရပ်သွားသည်</translation>
 <translation id="24452542372838207">အကြောင်းကြားချက်ကို ချဲ့ရန်</translation>
+<translation id="2449089818483227734">ဘက်ထရီ အားနည်းနေသည်</translation>
 <translation id="2450205753526923158">ဖန်သားပြင်ဓာတ်ပုံမုဒ်</translation>
 <translation id="2456008742792828469">ပြက္ခဒိန်၊ <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2473177541599297363">ပုံရိပ်ပြတ်သားကိန်း အတည်ပြုခြင်း</translation>
@@ -301,7 +302,6 @@
 <translation id="2791421900609674576">ထားခဲ့သည့်နေရာမှ ဆက်လုပ်နိုင်ရန် အကြံပြုချက်များ မြင်ရပါမည်။ တို့ထိ၍ ဖိထားပြီး အကြံပြုချက်များ ဖျက်နိုင်သည်။</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
 <translation id="2797741504905337289">Shelf Party</translation>
-<translation id="2803313416453193357">ဖိုင်တွဲဖွင့်</translation>
 <translation id="2805756323405976993">အက်ပ်များ</translation>
 <translation id="2814448776515246190">တစ်စိတ်တစ်ပိုင်း ပုံဖမ်းယူရန်</translation>
 <translation id="2819276065543622893">သင်ယခု ထွက်ပါမည်။</translation>
@@ -413,11 +413,13 @@
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> မိနစ်</translation>
 <translation id="3445925074670675829">USB-C ကိရိယာ</translation>
+<translation id="3455468639467374593">ပုံစံ၊ <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3465223694362104965">သင်နောက်ဆုံးအကြိမ် လက်မှတ်ထိုးဝင်သည့်အချိန်မှစ၍ အခြားကီးဘုတ်တစ်ခုကို ဤစက်ပစ္စည်းသို့ ချိတ်ဆက်ထားပါသည်။ ကီးဘုတ်ကို အသုံးမပြုမီ သင်ယုံကြည်မှုရှိမရှိ သေချာစစ်ဆေးပါ။</translation>
 <translation id="3465356146291925647">သင့် 'ကြီးကြပ်သူ' က စီမံထားသည်</translation>
 <translation id="3477079411857374384">Control−Shift−Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />၊ <ph name="CONNECTION_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">စင်ကို အလိုလိုဖျောက်ထားသည်</translation>
+<translation id="3505066820268455558">ဘက်ထရီ အားသွင်းနေသည်</translation>
 <translation id="3509391053705095206">သင့်ဖုန်းကို ရှာမတွေ့ပါ။ သင့်ဖုန်း၏ ဘလူးတုသ်ကို ဖွင့်ထားပါ။</translation>
 <translation id="3510164367642747937">မောက်စ်ကာဆာကို ထင်သာမြင်သာဖြစ်အောင်ပြုလုပ်ရန်</translation>
 <translation id="3513798432020909783">အကောင့်ကို <ph name="MANAGER_EMAIL" /> က စီမံပါသည်</translation>
@@ -458,6 +460,8 @@
 <translation id="3633097874324966332">သင်၏စက်နှင့် တွဲချိတ်ရန် ဘလူးတုသ်ဆက်တင်များ ဖွင့်ပါ</translation>
 <translation id="3638400994746983214">ကိုယ်ရေးလုံခြုံမှု ဖန်သားပြင်ကို အဖွင့်အပိတ်လုပ်ရန်။ <ph name="STATE_TEXT" />။</translation>
 <translation id="3649505501900178324">အပ်ဒိတ် ရက်လွန်နေသည်</translation>
+<translation id="3659814201068740063"><ph name="TIME_LEFT" /> ခန့် ကျန်သည် (<ph name="PERCENTAGE" />%)။
+စက်ကို အားသွင်းပါ။</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> စီမံခန့်ခွဲသော အသုံးပြုသူ</translation>
 <translation id="36813544980941320">သင့်ဖုန်းနှင့် <ph name="DEVICE_NAME" /> အကြားတွင် Wi-Fi ကွန်ရက်များကို မျှဝေပါမည်</translation>
 <translation id="3694122362646626770">ဝဘ်ဆိုက်များ</translation>
@@ -512,6 +516,7 @@
 <translation id="3962859241508114581">ယခင်တစ်ပုဒ်</translation>
 <translation id="3969043077941541451">ပိတ်ရန်</translation>
 <translation id="397105322502079400">တွက်ချက်နေ...</translation>
+<translation id="397726367135689299">ဘက်ထရီ အားသွင်းခြင်းသည် စိတ်ချရမှုမရှိနိုင်ပါ။</translation>
 <translation id="3977512764614765090">ဘက်ထရီသည် <ph name="PERCENTAGE" />% ရှိပြီး အားသွင်းနေပါသည်။</translation>
 <translation id="3986082989454912832">ဖြေဆိုရန်</translation>
 <translation id="3995138139523574647">USB-C ကိရိယာ (ညာဘက် နောက်ပိုင်း ပို့တ်)</translation>
@@ -1039,6 +1044,7 @@
 <translation id="7130207228079676353">ဖြစ်နိုင်ချေအများဆုံး</translation>
 <translation id="7131634465328662194">သင့်ကို အလိုအလျောက် ထွက်လိုက်ပါမည်။</translation>
 <translation id="7143207342074048698">ချိတ်ဆက်နေသည်</translation>
+<translation id="7144942256906679589">ဘက်ထရီ အခြေအနေ</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358">စက္ကန့် <ph name="TIMEOUT_SECONDS" /> အတွင်းမှာ ပြတ်သားမှု အဟောင်းဆီကို ပြန်ပြောင်းမည်</translation>
 <translation id="7180611975245234373">ပြန်လည်စတင်ရန်</translation>
@@ -1104,6 +1110,7 @@
 <translation id="7593891976182323525">ရှာဖွေမည် သို့မဟုတ် ပြောင်းလဲမည်</translation>
 <translation id="7600875258240007829">အကြောင်းကြားချက်အားလုံးကို ကြည့်ရန်</translation>
 <translation id="7607002721634913082">ဆိုင်းငံ့ထား</translation>
+<translation id="7609951632080598826">ပြက္ခဒိန်ပြသခြင်း၊ <ph name="DATE" />၊ <ph name="TIME" /></translation>
 <translation id="7611213136657090146">ကင်မရာကို ပြန်လည်ချိတ်ဆက်ထားသည်။</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7633755430369750696">'အနီးတစ်ဝိုက် မျှဝေခြင်း' ဆက်တင်များ ပြပေးသည်။</translation>
@@ -1229,6 +1236,7 @@
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> ဝင်းဒိုးကို ရွေးထားသည်</translation>
 <translation id="8351131234907093545">မှတ်စုရေးရန်</translation>
 <translation id="8364673525741149932">Shelf Party ပြောင်းရန်။ <ph name="STATE_TEXT" /></translation>
+<translation id="8369166482916924789">သိမ်းထားသည့်မျက်နှာပြင်၊ <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">အက္ခရာအလိုက် ရှေ့သို့သွားရန်</translation>
 <translation id="8371991222807690464">‘ဧည့်သည်မုဒ်’ တွင် ချိတ်ဆက်ပစ္စည်း၏ စွမ်းဆောင်ရည်ကို ကန့်သတ်ထားနိုင်သည်</translation>
 <translation id="8374601332003098278">ဖန်သားပြင်တစ်စိတ်တစ်ပိုင်းကို မှတ်တမ်းတင်ရန် Enter နှိပ်ပါ</translation>
@@ -1340,6 +1348,7 @@
 <translation id="9000771174482730261">သိုလှောင်ခန်း စီမံခန့်ခွဲရန်</translation>
 <translation id="9017320285115481645">Family Link မိဘသုံးကုဒ် ထည့်ပါ။</translation>
 <translation id="9024331582947483881">မျက်နှာပြင်အပြည့်</translation>
+<translation id="9029736946581028033">စက်သည် မကြာမီ အားကုန်တော့မည်</translation>
 <translation id="9030319654231318877">နေဝင်ချိန်အထိ ပိတ်ရန်</translation>
 <translation id="9034924485347205037">Linux ဖိုင်များ</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> အတွက် ဆက်တင်များကို ဖွင့်ရန်</translation>
@@ -1369,6 +1378,7 @@
 <translation id="9168436347345867845">နောက်မှလုပ်ရန်</translation>
 <translation id="9178475906033259337"><ph name="QUERY" /> အတွက် ရလဒ် ၁ ခုကို ပြနေသည်</translation>
 <translation id="9179259655489829027">ဤဝန်ဆောင်မှုက လက်မှတ်ထိုးဝင်ထားသူ မည်သူမဆိုအား စကားဝှက်မလိုအပ်ဘဲ အသုံးပြုခွင့်ပေးပါသည်။ သင်ယုံကြည်စိတ်ချရသည့် အကောင့်များဖြင့်သာ ဤဝန်ဆောင်မှုကို အသုံးပြုပါ။</translation>
+<translation id="9180906851711123156">ပိတ်ရန် Ctrl+W နှိပ်ပါ</translation>
 <translation id="9183456764293710005">မျက်နှာပြင်အပြည့် မှန်ဘီလူး</translation>
 <translation id="9193626018745640770">အမည်မသိလက်ခံစက်တွင် ကာ့စ်လုပ်နေသည်</translation>
 <translation id="9194617393863864469">အခြားသူ အနေဖြင့် လက်မှတ်ထိုးဝင်ပါ...</translation>

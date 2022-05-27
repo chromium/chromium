@@ -313,6 +313,7 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# аудиодатотека}one{# аудиодатотека}other{# аудиодатотеки}}</translation>
 <translation id="265156376773362237">Стандардно вчитување однапред</translation>
 <translation id="2656405586795711023">Веб-апликации</translation>
+<translation id="2669454659051515572">Сите кои го користат уредов може да ги видат преземените датотеки</translation>
 <translation id="2702516483241149200">Ново: споделете линк што ќе ве одведе до текстов со лизгање</translation>
 <translation id="2704606927547763573">Копирано</translation>
 <translation id="2707726405694321444">Освежи ја страницата</translation>
@@ -778,6 +779,7 @@
 <translation id="5246093389635966745">Изменете ја кратенката за алатникот</translation>
 <translation id="526421993248218238">Страницава не може да се вчита</translation>
 <translation id="5271967389191913893">Уредот не може да ја отвори содржината за да се преземе.</translation>
+<translation id="5274286919938458946">Поврзана со <ph name="CARD_DETAIL" /></translation>
 <translation id="5292796745632149097">Испрати до</translation>
 <translation id="5300426565656326054">Персонализирање на рекламите според прелистувач</translation>
 <translation id="5304593522240415983">Ова поле не може да биде празно</translation>
@@ -1074,6 +1076,7 @@
 <translation id="6824899148643461612">Избрана е картичката <ph name="TAB_TITLE" /></translation>
 <translation id="6828070228333235514">Запри го следењето цени</translation>
 <translation id="6833996806551876956">Пробен период за Sandbox за приватност</translation>
+<translation id="6836206421467243968">Врати ја групата картички <ph name="TITLE_OF_GROUP" /> како нова заднинска група картички.</translation>
 <translation id="6846298663435243399">Се вчитува…</translation>
 <translation id="6850409657436465440">Вашето преземање е сѐ уште е во тек</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> затворени картички</translation>
@@ -1136,6 +1139,7 @@
 <translation id="7187993566681480880">Ја чува вашата безбедност на Chrome и може да се користи за да ја подобри безбедноста на други апликации на Google кога сте најавени.</translation>
 <translation id="7191430249889272776">Отворена е картичка во заднина.</translation>
 <translation id="7196215469483532480">Објаснувањето за водичот за приватност е отворено на цел екран</translation>
+<translation id="7207760545532569765">Врати <ph name="TAB_COUNT" /> картички како нова заднинска група картички.</translation>
 <translation id="7208109991155904980">Реакцијата се премести</translation>
 <translation id="7222235798733126207">Ограничено споделување меѓу сајтовите</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 преземање чека на ред}one{# преземање чека на ред}other{# преземања чекаат на ред}}</translation>
@@ -1514,6 +1518,7 @@
 <translation id="9148126808321036104">Најави се повторно</translation>
 <translation id="9155898266292537608">Може да пребарувате и со брзо допирање збор</translation>
 <translation id="9158770349521403363">Сподели само содржини</translation>
+<translation id="9159716826369098114">Врати ја групата картички од <ph name="TAB_COUNT" /> картички како нова заднинска група картички.</translation>
 <translation id="916446198114569890">URL-адресите што ги посетувате се зачувуваат во вашата сметка на Google</translation>
 <translation id="9169507124922466868">Историјата на навигација е отворена до половина екран</translation>
 <translation id="9187955620966010988">Реакцијата е приспособена</translation>

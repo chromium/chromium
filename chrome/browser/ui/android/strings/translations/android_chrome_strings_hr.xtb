@@ -1076,6 +1076,7 @@ Oznake povjerenja poboljšavaju privatnost na webu i ne mogu se upotrebljavati d
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, kartica, odabrana</translation>
 <translation id="6828070228333235514">Zaustavi praćenje cijene</translation>
 <translation id="6833996806551876956">Proba za Privacy Sandbox</translation>
+<translation id="6836206421467243968">Vratite grupu kartica <ph name="TITLE_OF_GROUP" /> kao novu pozadinsku grupu kartica.</translation>
 <translation id="6846298663435243399">Učitavanje…</translation>
 <translation id="6850409657436465440">Preuzimanje je još u tijeku</translation>
 <translation id="6850830437481525139">Kartice su zatvorene (njih <ph name="TAB_COUNT" />)</translation>
@@ -1138,6 +1139,7 @@ Oznake povjerenja poboljšavaju privatnost na webu i ne mogu se upotrebljavati d
 <translation id="7187993566681480880">Štiti vas na Chromeu i može se upotrebljavati za poboljšanje vaše sigurnosti u drugim Googleovim aplikacijama kad ste prijavljeni.</translation>
 <translation id="7191430249889272776">Kartica je otvorena u pozadini.</translation>
 <translation id="7196215469483532480">Objašnjenje vodiča za privatnost otvoreno u punoj visini</translation>
+<translation id="7207760545532569765">Vratite <ph name="TAB_COUNT" /> kartica kao nove pozadinske kartice.</translation>
 <translation id="7208109991155904980">Reakcija je premještena</translation>
 <translation id="7222235798733126207">Ograničeno dijeljenje između web-lokacija</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 preuzimanje na čekanju}one{# preuzimanje na čekanju}few{# preuzimanja na čekanju}other{# preuzimanja na čekanju}}</translation>
@@ -1516,6 +1518,7 @@ Oznake povjerenja poboljšavaju privatnost na webu i ne mogu se upotrebljavati d
 <translation id="9148126808321036104">Prijavite se ponovno</translation>
 <translation id="9155898266292537608">Možete i kratko dodirnuti riječ da biste je pretražili</translation>
 <translation id="9158770349521403363">Podijeli samo sadržaj</translation>
+<translation id="9159716826369098114">Vratite grupu od <ph name="TAB_COUNT" /> kartica kao novu pozadinsku grupu kartica.</translation>
 <translation id="916446198114569890">URL-ovi koje posjećujete spremaju se na vaš Google račun</translation>
 <translation id="9169507124922466868">Povijest navigacije je poluotvorena</translation>
 <translation id="9187955620966010988">Reakcija je prilagođena</translation>

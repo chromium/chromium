@@ -301,7 +301,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2791421900609674576">Näete soovitusi, et saaksite jätkata sealt, kus pooleli jäite. Soovituste eemaldamiseks võite pikalt puudutada.</translation>
 <translation id="2792498699870441125">Alt + otsinguklahv</translation>
 <translation id="2797741504905337289">Shelf Party</translation>
-<translation id="2803313416453193357">Kausta avamine</translation>
 <translation id="2805756323405976993">Rakendused</translation>
 <translation id="2814448776515246190">Osaline jäädvustamine</translation>
 <translation id="2819276065543622893">Teid logitakse nüüd välja.</translation>
@@ -700,6 +699,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="5071064518267176975">Rakendus soovib mikrofoni kasutada</translation>
 <translation id="5078796286268621944">Vale PIN-kood</translation>
 <translation id="5083553833479578423">Avage rohkem assistendi funktsioone.</translation>
+<translation id="509790653408515442">Telefoni rakenduste voogesitamisel kuvatakse need siin</translation>
 <translation id="5107522548814527560">Veeb</translation>
 <translation id="5117590920725113268">Järgmise kuu kuvamine</translation>
 <translation id="5136175204352732067">Ühendatud on teine klaviatuur</translation>
@@ -722,6 +722,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="523505283826916779">Juurdepääsuseaded</translation>
 <translation id="5245201184978705914">Ei saa transkriptsiooni luua</translation>
 <translation id="5253783950165989294">Ühendatud seadmega <ph name="DEVICE_NAME" /> (akutase <ph name="BATTERY_PERCENTAGE" />%)</translation>
+<translation id="5258528442992323769">Salvestatud töölaudu ei ole</translation>
 <translation id="5260676007519551770">Töölaud 4</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> vajab teie tähelepanu.</translation>
 <translation id="5283198616748585639">Lisa 1 min</translation>
@@ -1261,6 +1262,7 @@ Uus installimine</translation>
 <translation id="851458219935658693">Valitud on raadionupp Näita praeguse töölaua aknaid</translation>
 <translation id="8517041960877371778">Kui seade <ph name="DEVICE_TYPE" /> on sisse lülitatud, ei pruugita seda laadida.</translation>
 <translation id="8535393432370007982">Võta värvi järgi sortimine tagasi</translation>
+<translation id="8542053257095774575">Salvestatud töölaudu ega malle ei ole</translation>
 <translation id="8546059259582788728">Sortimise tagasivõtmine õnnestus</translation>
 <translation id="8551588720239073785">Kuupäeva ja kellaaja seaded</translation>
 <translation id="8553395910833293175">Juba määratud kõigile töölaudadele.</translation>

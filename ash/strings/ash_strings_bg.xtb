@@ -301,7 +301,6 @@
 <translation id="2791421900609674576">Ще виждате препоръки, така че да можете да продължавате оттам, откъдето сте прекъснали. Имате възможност да докоснете и задържите дадена препоръка, за да я премахнете.</translation>
 <translation id="2792498699870441125">Alt + търсене</translation>
 <translation id="2797741504905337289">Shelf Party</translation>
-<translation id="2803313416453193357">Отваряне на папката</translation>
 <translation id="2805756323405976993">Приложения</translation>
 <translation id="2814448776515246190">Частично заснемане</translation>
 <translation id="2819276065543622893">Ще излезете сега.</translation>
@@ -699,6 +698,7 @@
 <translation id="5071064518267176975">Приложение иска да използва микрофона</translation>
 <translation id="5078796286268621944">Неправилен ПИН</translation>
 <translation id="5083553833479578423">Отключете още функции на Асистент.</translation>
+<translation id="509790653408515442">Когато предавате поточно приложенията на телефона си, те ще се показват тук</translation>
 <translation id="5107522548814527560">Мрежата</translation>
 <translation id="5117590920725113268">Показване на следващия месец</translation>
 <translation id="5136175204352732067">Свързана е различна клавиатура</translation>
@@ -721,6 +721,7 @@
 <translation id="523505283826916779">Настройки за достъпност</translation>
 <translation id="5245201184978705914">Преписът не може да се генерира</translation>
 <translation id="5253783950165989294">Установена е връзка с устройство на име <ph name="DEVICE_NAME" />. Ниво на батерията: <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="5258528442992323769">Няма запазени работни кътове</translation>
 <translation id="5260676007519551770">Работен кът 4</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> се нуждае от вниманието ви.</translation>
 <translation id="5283198616748585639">Добавяне на 1 мин</translation>
@@ -1260,6 +1261,7 @@
 <translation id="851458219935658693">Показват се прозорците от текущия работен кът, активиран е бутон за избор</translation>
 <translation id="8517041960877371778">Възможно е вашият <ph name="DEVICE_TYPE" /> да не се зарежда, докато е включен.</translation>
 <translation id="8535393432370007982">Отмяна на сортирането по цвят</translation>
+<translation id="8542053257095774575">Няма запазени работни кътове или шаблони</translation>
 <translation id="8546059259582788728">Отмяната на сортирането е успешна</translation>
 <translation id="8551588720239073785">Настройки за дата и час</translation>
 <translation id="8553395910833293175">Вече е прехвърлено във всички работни кътове.</translation>

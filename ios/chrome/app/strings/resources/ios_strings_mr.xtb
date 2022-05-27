@@ -787,7 +787,7 @@
 <translation id="7561196759112975576">नेहमी</translation>
 <translation id="7583004045319035904">तुमचे गुप्त टॅब अनलॉक करण्यासाठी <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> वापरा.</translation>
 <translation id="7600965453749440009">कधीही <ph name="LANGUAGE" /> चा भाषांतर करु नका</translation>
-<translation id="7603852183842204213">पॉप-अप अवरोधित (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
+<translation id="7603852183842204213">(<ph name="NUMBER_OF_BLOCKED_POPUPS" />) पॉप-अप ब्लॉक केले</translation>
 <translation id="7607521702806708809">पासवर्ड हटवा</translation>
 <translation id="7638584964844754484">अयोग्य सांकेतिक पासफ्रेझ</translation>
 <translation id="7646263789464975852">मेनू → सेटिंग्ज → सुरक्षितता तपासणी</translation>
@@ -831,7 +831,7 @@
 
 वेगवेगळ्या साइटवरील तुमची ब्राउझिंग ॲक्टिव्हिटी पाहण्यासाठी साइट कुकी वापरू शकतात, उदाहरणार्थ, जाहिराती पर्सनलाइझ करण्यासाठी.</translation>
 <translation id="7966904497916178308">मानक संरक्षण सुरू आहे</translation>
-<translation id="7971521879845308059">पॉप-अप अवरोधित करा</translation>
+<translation id="7971521879845308059">पॉप-अप ब्लॉक करा</translation>
 <translation id="797413074872316787">सर्व डिव्हाइसवर सिंक आणि पर्सनलाइझ करण्यासाठी, सिंक सुरू करा.</translation>
 <translation id="7978018860671536736">३. AutoFill पासवर्ड वर टॅप करा</translation>
 <translation id="7982789257301363584">नेटवर्क</translation>

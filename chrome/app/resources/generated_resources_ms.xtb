@@ -335,7 +335,6 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1327794256477341646">Ciri yang memerlukan lokasi anda tidak akan berfungsi</translation>
 <translation id="1329191040029425999">Pastikan peranti anda terkini dan sila cuba lagi</translation>
 <translation id="1330145147221172764">Dayakan papan kekunci pada skrin</translation>
-<translation id="1331625853030156663">Untuk membuka <ph name="APP_NAME" />, dayakan "Tunjukkan skrin kunci apabila bangkit daripada tidur"</translation>
 <translation id="1331977651797684645">Ini saya.</translation>
 <translation id="1333489022424033687">Sesetengah ciri di <ph name="ORIGIN" /> mungkin tidak berfungsi sehingga anda mengosongkan data yang telah disimpan pada peranti anda oleh tapak lain itu</translation>
 <translation id="1333965224356556482">Jangan benarkan laman melihat lokasi anda</translation>
@@ -6332,7 +6331,6 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Keluar daripada halaman}other{Keluar daripada halaman}}</translation>
 <translation id="7207457272187520234">Hantar data penggunaan dan diagnostik. Pada masa ini, peranti ini menghantar data diagnostik dan penggunaan peranti serta apl kepada Google secara automatik. Data ini akan membantu peningkatan kestabilan sistem dan apl serta pelbagai lagi. Sesetengah data agregat juga akan membantu apl dan rakan kongsi Google, seperti pembangun Android. Tetapan ini dikuatkuasakan oleh pemilik. Jika tetapan Aktiviti Web &amp; Apl tambahan anda dihidupkan, data ini mungkin disimpan pada Akaun Google anda.</translation>
 <translation id="7207631048330366454">Cari apl</translation>
-<translation id="720808544705441386">Tidak dapat membuka apl</translation>
 <translation id="7210499381659830293">Pencetak sambungan</translation>
 <translation id="7211783048245131419">Belum ada suis yang telah ditetapkan</translation>
 <translation id="7212097698621322584">Masukkan PIN semasa anda untuk menukar PIN. Jika anda tidak tahu PIN anda, anda perlu menetapkan semula kunci keselamatan, kemudian buat PIN baharu.</translation>

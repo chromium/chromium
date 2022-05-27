@@ -252,6 +252,7 @@
 <translation id="243878895369688216">ഇന്നലെ തുറന്നത്</translation>
 <translation id="2441427462554639370">സ്റ്റോറേജ് ഇടം വളരെ കുറവായതിനാൽ റെക്കോർഡിംഗ് അവസാനിച്ചു</translation>
 <translation id="24452542372838207">അറിയിപ്പ് വികസിപ്പിക്കുക</translation>
+<translation id="2449089818483227734">ബാറ്ററി ചാർജ് കുറവാണ്</translation>
 <translation id="2450205753526923158">സ്ക്രീൻഷോട്ട് മോഡ്</translation>
 <translation id="2456008742792828469">കലണ്ടർ, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2473177541599297363">റെസല്യൂഷൻ സ്ഥിരീകരിക്കുക</translation>
@@ -301,7 +302,6 @@
 <translation id="2791421900609674576">നിർത്തിയ ഇടത്ത് നിന്ന് തുടരാനാകുന്ന തരത്തിൽ നിങ്ങൾക്ക് നിർദ്ദേശങ്ങൾ കാണാം.  നിർദ്ദേശങ്ങൾ നീക്കം ചെയ്യാൻ സ്പർശിച്ച് പിടിക്കുക.</translation>
 <translation id="2792498699870441125">Alt+തിരയൽ</translation>
 <translation id="2797741504905337289">ഷെൽഫ് പാർട്ടി</translation>
-<translation id="2803313416453193357">ഫോൾഡർ തുറക്കുക</translation>
 <translation id="2805756323405976993">ആപ്സ്</translation>
 <translation id="2814448776515246190">ഭാഗികമായി ക്യാപ്‌ചർ ചെയ്യൽ</translation>
 <translation id="2819276065543622893">നിങ്ങൾ ഇപ്പോൾ സൈൻ ഔട്ട് ചെയ്യും.</translation>
@@ -413,11 +413,13 @@
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> മി.</translation>
 <translation id="3445925074670675829">USB-C ഉപകരണം</translation>
+<translation id="3455468639467374593">ടെംപ്ലേറ്റ്, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3465223694362104965">നിങ്ങൾ അവസാനമായി സൈൻ ഇൻ ചെയ്‌തതിന് ശേഷം ഈ ഉപകരണത്തിലേക്ക് മറ്റൊരു കീബോഡ് കണക്‌റ്റ് ചെയ്‌തിരിക്കുന്നു. ഉപയോഗിക്കുന്നതിന് മുമ്പായി, വിശ്വസിക്കാനാവുന്ന കീബോഡാണ് ഇതെന്ന് ഉറപ്പ് വരുത്തുക.</translation>
 <translation id="3465356146291925647">നിങ്ങളുടെ അഡ്‌മിൻ മാനേജ് ചെയ്യുന്നത്</translation>
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, സിഗ്‌നൽ ശക്തി <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">ഷെൽഫ് സ്വയമേവ മറച്ചു</translation>
+<translation id="3505066820268455558">ബാറ്ററി ചാർജ് ചെയ്യുന്നു</translation>
 <translation id="3509391053705095206">നിങ്ങളുടെ ഫോൺ കണ്ടെത്താനാകുന്നില്ല. ഫോണിൻ്റെ Bluetooth ഓണാണെന്ന് ഉറപ്പുവരുത്തുക.</translation>
 <translation id="3510164367642747937">മൗസ് കഴ്‌സർ ഹൈലൈറ്റ് ചെയ്യുക</translation>
 <translation id="3513798432020909783">അക്കൗണ്ട് മാനേജ് ചെയ്യുന്നത് <ph name="MANAGER_EMAIL" /> ആണ്</translation>
@@ -458,6 +460,8 @@
 <translation id="3633097874324966332">നിങ്ങളുടെ ഉപകരണം ജോടിയാക്കാൻ Bluetooth ക്രമീകരണം തുറക്കുക</translation>
 <translation id="3638400994746983214">സ്വകാര്യതാ സ്‌ക്രീൻ മാറ്റുക. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">അപ്‌ഡേറ്റ് കാലാവധി കഴിഞ്ഞിരിക്കുന്നു</translation>
+<translation id="3659814201068740063">ഏതാണ്ട് <ph name="TIME_LEFT" /> ശേഷിക്കുന്നു (<ph name="PERCENTAGE" />%).
+നിങ്ങളുടെ ഉപകരണം വൈദ്യുതി സ്രോതസ്സിലേക്ക് കണക്റ്റ് ചെയ്യുക.</translation>
 <translation id="366222428570480733">നിയന്ത്രിത ഉപയോക്താവ് <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="36813544980941320">നിങ്ങളുടെ ഫോണിനും <ph name="DEVICE_NAME" /> എന്നതിനുമിടയിൽ വെെഫെെ നെറ്റ്‌വർക്കുകൾ പങ്കിടും</translation>
 <translation id="3694122362646626770">വെബ്‌സൈറ്റുകൾ</translation>
@@ -512,6 +516,7 @@
 <translation id="3962859241508114581">മുമ്പത്തെ ട്രാക്ക്</translation>
 <translation id="3969043077941541451">ഓഫാണ്</translation>
 <translation id="397105322502079400">കണക്കാക്കുന്നു...</translation>
+<translation id="397726367135689299">ബാറ്ററി ശരിയായി ചാർജ് ആകുന്നുണ്ടാകില്ല.</translation>
 <translation id="3977512764614765090">ബാറ്ററി <ph name="PERCENTAGE" />% ഉണ്ട്, ചാർജ് ചെയ്യുകയുമാണ്.</translation>
 <translation id="3986082989454912832">കോൾ സ്വീകരിക്കുക</translation>
 <translation id="3995138139523574647">USB-C ഉപകരണം (വലതുവശത്ത് പിന്നിലെ പോർട്ട്)</translation>
@@ -1039,6 +1044,7 @@
 <translation id="7130207228079676353">ഏറ്റവും കൂടുതൽ പേർ ലൈക്കുചെയ്‌‌തത്</translation>
 <translation id="7131634465328662194">നിങ്ങൾ സ്വമേധയാ സൈൻ ഔട്ടാകും.</translation>
 <translation id="7143207342074048698">കണക്റ്റിംഗ്</translation>
+<translation id="7144942256906679589">ബാറ്ററി നില</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" />-ൽ പഴയ റെസല്യൂഷനിലേക്ക് മാറ്റുന്നു</translation>
 <translation id="7180611975245234373">റീഫ്രഷ് ചെയ്യുക</translation>
@@ -1061,6 +1067,7 @@
 <translation id="7348093485538360975">ഓൺ-സ്‌ക്രീൻ കീബോർഡ്</translation>
 <translation id="735745346212279324">VPN വിച്‍ഛേദിച്ചു</translation>
 <translation id="7360036564632145207">പെരിഫറലുകളുടെ ക്രമീകരണത്തിനുള്ള നിങ്ങളുടെ ഡാറ്റാ ആക്‌സസ് പരിരക്ഷ മാറ്റുന്നത് പ്രകടനം ഒപ്റ്റിമൈസ് ചെയ്യും</translation>
+<translation id="736045644501761622">വാൾപേപ്പറും സ്‌റ്റൈലും സജ്ജീകരിക്കുക</translation>
 <translation id="7371404428569700291">വിൻഡോ റെക്കോർഡ് ചെയ്യുക</translation>
 <translation id="7377169924702866686">Caps Lock ഓൺ ആണ്.</translation>
 <translation id="7377481913241237033">കോഡ് ഉപയോഗിച്ച് കണക്റ്റ് ചെയ്യുക</translation>
@@ -1104,6 +1111,7 @@
 <translation id="7593891976182323525">തിരയൽ അല്ലെങ്കിൽ Shift</translation>
 <translation id="7600875258240007829">എല്ലാ അറിയിപ്പുകളും കാണുക</translation>
 <translation id="7607002721634913082">അല്പംനിര്‍ത്തി</translation>
+<translation id="7609951632080598826">കലണ്ടർ കാഴ്‌ച, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">ക്യാമറ വീണ്ടും കണക്റ്റ് ചെയ്തു.</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7633755430369750696">'സമീപമുള്ള പങ്കിടൽ' ക്രമീകരണം കാണിക്കുക.</translation>
@@ -1229,6 +1237,7 @@
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> വിന്‍ഡോ തിരഞ്ഞടുത്തു</translation>
 <translation id="8351131234907093545">കുറിപ്പ് സൃഷ്‌ടിക്കുക</translation>
 <translation id="8364673525741149932">ഷെൽഫ് പാർട്ടി മാറ്റുക. <ph name="STATE_TEXT" /></translation>
+<translation id="8369166482916924789">സംരക്ഷിച്ച ഡെസ്‌ക്, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">ഒരക്ഷരം മുന്നിലേക്ക് പോവുക</translation>
 <translation id="8371991222807690464">അതിഥി മോഡിൽ പെരിഫറൽ പ്രകടനം പരിമിതപ്പെട്ടേക്കാം</translation>
 <translation id="8374601332003098278">ഭാഗിക സ്ക്രീൻ റെക്കോർഡ് ചെയ്യാൻ Enter അമർത്തുക</translation>
@@ -1295,6 +1304,7 @@
 <translation id="8721053961083920564">വോളിയം മാറ്റുക. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">പൂർണ്ണ സ്ക്രീൻ ക്യാപ്‌ചർ ചെയ്യൽ</translation>
 <translation id="8734991477317290293">ഇത് നിങ്ങളുടെ കീസ്ട്രോക്കുകൾ മോഷ്‌ടിക്കാൻ ശ്രമിച്ചേക്കാം.</translation>
+<translation id="8735678380411481005">കീബോർഡ് ബാക്ക്‌ലൈറ്റ് നിറം</translation>
 <translation id="8735953464173050365">കീബോഡ് ക്രമീകരണം കാണിക്കുക. <ph name="KEYBOARD_NAME" /> തിരഞ്ഞെടുത്തിരിക്കുന്നു</translation>
 <translation id="8755498163081687682">നിങ്ങളുടെ ഐഡന്റിറ്റി പരിശോധിച്ചുറപ്പിക്കുക: ഇത് നിങ്ങൾ തന്നെയാണെന്ന് സ്ഥിരീകരിക്കാൻ <ph name="ORIGIN_NAME" /> ആഗ്രഹിക്കുന്നു</translation>
 <translation id="875593634123171288">VPN ക്രമീകരണം കാണിക്കുക</translation>
@@ -1340,6 +1350,7 @@
 <translation id="9000771174482730261">സ്‌റ്റോറേജ് മാനേജ് ചെയ്യുക</translation>
 <translation id="9017320285115481645">Family Link രക്ഷാകർതൃ ആക്‌സസ് കോഡ് നൽകുക.</translation>
 <translation id="9024331582947483881">പൂര്‍ണ്ണ സ്‌ക്രീന്‍</translation>
+<translation id="9029736946581028033">ഉപകരണം ഉടൻ ഓഫാകും</translation>
 <translation id="9030319654231318877">സൂര്യാസ്തമയം വരെ ഓഫാണ്</translation>
 <translation id="9034924485347205037">Linux ഫയലുകൾ</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> എന്നതിനുള്ള ക്രമീകരണം തുറക്കുക</translation>
@@ -1369,6 +1380,7 @@
 <translation id="9168436347345867845">ഇത് പിന്നീട് ചെയ്യുക</translation>
 <translation id="9178475906033259337"><ph name="QUERY" /> എന്നതിനുള്ള ഒരു ഫലം കാണിക്കുന്നു</translation>
 <translation id="9179259655489829027">സൈൻ ഇൻ ചെയ്‌ത ഏതൊരു ഉപയോക്താവിനെ പാസ്‌വേഡ് ഇല്ലാതെ തന്നെ വേഗത്തിൽ ആക്‌സസ് ചെയ്യാൻ ഈ ഫീച്ചർ നിങ്ങളെ അനുവദിക്കുന്നു. നിങ്ങൾക്ക് വിശ്വാസമുള്ള അക്കൗണ്ടുകളിൽ മാത്രം ഈ ഫീച്ചർ ഉപയോഗിക്കുക.</translation>
+<translation id="9180906851711123156">അടയ്‌ക്കാൻ Ctrl+W അമർത്തുക</translation>
 <translation id="9183456764293710005">പൂർണ്ണ സ്ക്രീൻ മാഗ്നിഫയർ</translation>
 <translation id="9193626018745640770">ഒരു അജ്ഞാത റിസീവറിൽ കാസ്‌റ്റ് ചെയ്യുന്നു</translation>
 <translation id="9194617393863864469">മറ്റൊരു ഉപയോക്താവായി സൈൻ ഇൻ ചെയ്യുക...</translation>

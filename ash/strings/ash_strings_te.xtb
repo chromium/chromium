@@ -301,7 +301,6 @@
 <translation id="2791421900609674576">మీకు సిఫార్సులు కనిపిస్తాయి, కాబట్టి మీరు ఆపివేసిన చోటు నుండే కొనసాగించవచ్చు.  మీరు తాకి, నొక్కి ఉంచి, సిఫార్సులను తీసివేయవచ్చు.</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
 <translation id="2797741504905337289">షెల్ఫ్ పార్టీ మోడ్</translation>
-<translation id="2803313416453193357">ఫోల్డర్‌ను తెరవండి</translation>
 <translation id="2805756323405976993">యాప్స్</translation>
 <translation id="2814448776515246190">పాక్షికంగా క్యాప్చర్ చేయండి</translation>
 <translation id="2819276065543622893">మీరు ఇప్పుడు సైన్ అవుట్ చేయబడతారు.</translation>
@@ -700,6 +699,7 @@
 <translation id="5071064518267176975">యాప్ మైక్రోఫోన్‌ను ఉపయోగించాలనుకుంటోంది</translation>
 <translation id="5078796286268621944"> సరి కానటువంటి PIN</translation>
 <translation id="5083553833479578423">మరిన్ని Assistant ఫీచర్‌లను అన్‌లాక్ చేయండి.</translation>
+<translation id="509790653408515442">మీరు మీ ఫోన్ యాప్‌లను స్ట్రీమ్ చేసినప్పుడు, అవి ఇక్కడ కనిపిస్తాయి</translation>
 <translation id="5107522548814527560">వెబ్</translation>
 <translation id="5117590920725113268">తరువాత నెలను చూపుతుంది</translation>
 <translation id="5136175204352732067">వేరే కీబోర్డ్ కనెక్ట్ చేయబడింది</translation>
@@ -722,6 +722,7 @@
 <translation id="523505283826916779">యాక్సెస్‌ సెట్టింగ్‌లు</translation>
 <translation id="5245201184978705914">టైప్ చేసిన మాటల ఫైల్‌‌ను జెనరేట్ చేయడం సాధ్యపడదు</translation>
 <translation id="5253783950165989294"><ph name="DEVICE_NAME" /> అనే పేరుతో ఉన్న పరికరానికి కనెక్ట్ చేయబడింది, బ్యాటరీ<ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="5258528442992323769">సేవ్ చేసిన డెస్క్‌లు లేవు</translation>
 <translation id="5260676007519551770">డెస్క్ 4</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" />, మీ అటెన్షన్ కోసం రిక్వెస్ట్ చేస్తోంది.</translation>
 <translation id="5283198616748585639">1 నిమి జోడించు</translation>
@@ -1261,6 +1262,7 @@
 <translation id="851458219935658693">ప్రస్తుత డెస్క్ నుండి విండోలను చూపండి, అనే రేడియో బటన్ ఎంచుకోబడింది</translation>
 <translation id="8517041960877371778">మీ <ph name="DEVICE_TYPE" /> ఆన్‌లో ఉన్నప్పుడు ఛార్జ్ కాకపోవచ్చు.</translation>
 <translation id="8535393432370007982">రంగు ఆధారంగా క్రమపద్ధతిలో అమర్చిన దానిని రద్దు చేశారు</translation>
+<translation id="8542053257095774575">సేవ్ చేసిన డెస్క్‌లు లేదా టెంప్లేట్‌లు లేవు</translation>
 <translation id="8546059259582788728">క్రమపద్ధతిలో అమర్చిన దానిని విజయవంతంగా రద్దు చేశారు</translation>
 <translation id="8551588720239073785">తేదీ, సమయం సెట్టింగ్‌లు</translation>
 <translation id="8553395910833293175">ఇప్పటికే అన్ని డెస్క్‌లకు కేటాయింపు జరిగిపోయింది.</translation>

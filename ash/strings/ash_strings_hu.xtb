@@ -301,7 +301,6 @@
 <translation id="2791421900609674576">Ajánlásokat tekinthet meg, hogy ott folytathassa, ahol abbahagyta. Érintéssel és nyomva tartással eltávolíthatja az ajánlásokat.</translation>
 <translation id="2792498699870441125">Alt + Keresés</translation>
 <translation id="2797741504905337289">Shelf Party</translation>
-<translation id="2803313416453193357">Mappa megnyitása</translation>
 <translation id="2805756323405976993">Alkalmazások</translation>
 <translation id="2814448776515246190">Részleges rögzítés</translation>
 <translation id="2819276065543622893">A rendszer most kijelentkezteti Önt.</translation>
@@ -700,6 +699,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="5071064518267176975">Egy alkalmazás használni szeretné a mikrofont</translation>
 <translation id="5078796286268621944">Helytelen PIN-kód</translation>
 <translation id="5083553833479578423">Hozzáférés a Segéd további funkcióihoz</translation>
+<translation id="509790653408515442">Telefonja alkalmazásai itt jelennek majd meg streameléskor</translation>
 <translation id="5107522548814527560">Internet</translation>
 <translation id="5117590920725113268">A következő hónap megjelenítése</translation>
 <translation id="5136175204352732067">Új billentyűzet lett csatlakoztatva</translation>
@@ -722,6 +722,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="523505283826916779">Kisegítő beállítások</translation>
 <translation id="5245201184978705914">Nem sikerült az átirat létrehozása</translation>
 <translation id="5253783950165989294">Csatlakoztatva van a(z) <ph name="DEVICE_NAME" /> nevű eszközhöz, akkumulátor töltöttségi szintje: <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="5258528442992323769">Nincsenek mentett asztalok</translation>
 <translation id="5260676007519551770">4. asztal</translation>
 <translation id="5283099933536931082">A(z) <ph name="APP_ITEM_TITLE" /> alkalmazás a figyelmét igényli.</translation>
 <translation id="5283198616748585639">1 perc hozzáadása</translation>
@@ -1060,6 +1061,7 @@ Frissen telepítve</translation>
 <translation id="7348093485538360975">Képernyő-billentyűzet</translation>
 <translation id="735745346212279324">A VPN nincs csatlakoztatva</translation>
 <translation id="7360036564632145207">A perifériás adathozzáférési védelemre vonatkozó beállítás módosítása optimalizálhatja a teljesítményt.</translation>
+<translation id="736045644501761622">Háttérkép és stílus beállítása</translation>
 <translation id="7371404428569700291">Felvétel készítése az ablakról</translation>
 <translation id="7377169924702866686">A Caps Lock be van kapcsolva.</translation>
 <translation id="7377481913241237033">Összekapcsolás kód használatával</translation>
@@ -1261,6 +1263,7 @@ Frissen telepítve</translation>
 <translation id="851458219935658693">A jelenlegi asztal ablakainak megjelenítésére vonatkozó kapcsológomb van kiválasztva</translation>
 <translation id="8517041960877371778">Előfordulhat, hogy a(z) <ph name="DEVICE_TYPE" /> nem töltődik, amíg be van kapcsolva.</translation>
 <translation id="8535393432370007982">Szín szerinti rendezés visszavonása</translation>
+<translation id="8542053257095774575">Nincsenek mentett asztalok vagy sablonok</translation>
 <translation id="8546059259582788728">Rendezés visszavonása sikeres</translation>
 <translation id="8551588720239073785">Dátum- és időbeállítások</translation>
 <translation id="8553395910833293175">Már minden asztalhoz hozzá van rendelve.</translation>
@@ -1293,6 +1296,7 @@ Frissen telepítve</translation>
 <translation id="8721053961083920564">Hang ki-, illetve bekapcsolása. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Felvétel készítése a teljes képernyőről</translation>
 <translation id="8734991477317290293">Előfordulhat, hogy így kísérlik meg a billentyűleütések rögzítését</translation>
+<translation id="8735678380411481005">Billentyűzet háttérvilágításának színe</translation>
 <translation id="8735953464173050365">A billentyűzet beállításainak megjelenítése. <ph name="KEYBOARD_NAME" /> van kiválasztva</translation>
 <translation id="8755498163081687682">Igazolja személyazonosságát, a következő szeretne meggyőződni a személyazonosságáról: <ph name="ORIGIN_NAME" /></translation>
 <translation id="875593634123171288">VPN-beállítások megjelenítése</translation>

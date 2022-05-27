@@ -335,7 +335,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="1327794256477341646">Funkcijas, kurām nepieciešama piekļuve atrašanās vietas datiem, nedarbosies</translation>
 <translation id="1329191040029425999">Gādājiet, lai ierīce būtu atjaunināta, un mēģiniet vēlreiz</translation>
 <translation id="1330145147221172764">Iespējot ekrāna tastatūru</translation>
-<translation id="1331625853030156663">Lai atvērtu lietotni <ph name="APP_NAME" />, iespējojiet opciju “Rādīt bloķēšanas ekrānu, kad tiek izslēgts miega režīms”.</translation>
 <translation id="1331977651797684645">Tas biju es.</translation>
 <translation id="1333489022424033687">Noteiktas funkcijas vietnē <ph name="ORIGIN" />, iespējams, nedarbosies, kamēr nenotīrīsiet datus, ko citas vietnes ir saglabājušas jūsu ierīcē.</translation>
 <translation id="1333965224356556482">Neļaut vietnēm piekļūt jūsu atrašanās vietas informācijai</translation>
@@ -4323,6 +4322,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="520568280985468584">Tīkls ir sekmīgi pievienots. Mobilā tīkla aktivizēšana var ilgt vairākas minūtes.</translation>
 <translation id="5206215183583316675">Vai dzēst “<ph name="CERTIFICATE_NAME" />”?</translation>
 <translation id="520621735928254154">Sertifikāta importēšanas kļūda</translation>
+<translation id="5206562235913517859">Mazumtirdzniecības veikala ID ir šādā formātā: ABC-1234</translation>
 <translation id="5206787458656075734">{COUNT,plural, =1{Uzlauztā parole tika sekmīgi nomainīta. Jums ir vēl # uzlauzta parole. Chrome ieteikums: nekavējoties pārbaudiet šo paroli.}zero{Uzlauztā parole tika sekmīgi nomainīta. Jums ir vēl # uzlauztu paroļu. Chrome ieteikums: nekavējoties pārbaudiet šīs paroles.}one{Uzlauztā parole tika sekmīgi nomainīta. Jums ir vēl # uzlauzta parole. Chrome ieteikums: nekavējoties pārbaudiet šīs paroles.}other{Uzlauztā parole tika sekmīgi nomainīta. Jums ir vēl # uzlauztas paroles. Chrome ieteikums: nekavējoties pārbaudiet šīs paroles.}}</translation>
 <translation id="5207949376430453814">Izcelt teksta ievietošanas punktu</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> vēlas pārbaudīt, vai izmantojat piemērotu Chrome OS ierīci.</translation>
@@ -4842,6 +4842,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="5729712731028706266">&amp;Skatīt</translation>
 <translation id="5731247495086897348">Ielīmēt un dotie&amp;s</translation>
 <translation id="5732392974455271431">Lai atbloķētu, vērsieties pie vecākiem</translation>
+<translation id="5733866499231170760">Nederīgs ID. Jūsu ievadītais formāts nav pareizs. Lūdzu, skatiet saņemtos norādījumus, lai ievadītu ID pareizajā formātā. Ja nevarat novērst šo problēmu, atstājiet lauku tukšu un turpiniet ar instalēšanu.</translation>
 <translation id="5734362860645681824">Saziņa</translation>
 <translation id="5734697361979786483">Pievienot failu kopīgošanu</translation>
 <translation id="5736796278325406685">Lūdzu, ievadiet derīgu lietotājvārdu.</translation>
@@ -6317,7 +6318,6 @@ Jums ir vēl # uzlauztas paroles. Google paroļu pārvaldnieks iesaka nekavējot
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Iziet no lapas}zero{Iziet no lapām}one{Iziet no lapām}other{Iziet no lapām}}</translation>
 <translation id="7207457272187520234">Lietojuma un diagnostikas datu sūtīšana. Pašlaik dati par šo ierīci un ierīces diagnostikas un lietotņu lietojuma dati tiek automātiski sūtīti uzņēmumam Google. Šī informācija palīdzēs uzlabot sistēmas un lietotņu stabilitāti un daudz ko citu. Noteiktus apkopotus datus izmantos arī Google lietotņu izstrādātāji un partneri, piemēram, Android izstrādātāji. Šo iestatījumu ir noteicis īpašnieks. Ja ir ieslēgts iestatījums “papildu darbības tīmeklī un lietotnēs”, šie dati var tikt saglabāti jūsu Google kontā.</translation>
 <translation id="7207631048330366454">Meklēt lietotnes</translation>
-<translation id="720808544705441386">Nevar atvērt lietotni</translation>
 <translation id="7210499381659830293">Paplašinājuma printeri</translation>
 <translation id="7211783048245131419">Vēl nav piešķirts neviens slēdzis</translation>
 <translation id="7212097698621322584">Ievadiet pašreizējo PIN, lai to mainītu. Ja nezināt savu PIN, būs jāatiestata drošības atslēga un pēc tam jāizveido jauns PIN.</translation>
@@ -6951,6 +6951,7 @@ Lai noņemtu piešķīrumu, nospiediet piešķirto slēdzi vai taustiņu.</trans
 <translation id="7824864914877854148">Kļūdas dēļ neizdevās pabeigt dublēšanu</translation>
 <translation id="782590969421016895">Izmantot esošās lapas</translation>
 <translation id="7826174860695147464">Mantoto pārlūku atbalsts — iekšējie iestatījumi</translation>
+<translation id="7826190688224781865">Mazumtirdzniecības veikala ID kods</translation>
 <translation id="7826249772873145665">ADB atkļūdošanas atspējošana</translation>
 <translation id="7826254698725248775">Ierīces identifikators rada konfliktu.</translation>
 <translation id="7828731929332799387">Tiks dzēsti visi sīkfaili un vietņu dati, kas pieejami trešo pušu kontekstā. Vai vēlaties turpināt?</translation>
@@ -8423,6 +8424,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="987897973846887088">Nav pieejams neviens attēls</translation>
 <translation id="988320949174893488">Neregulāra raustīšanās</translation>
 <translation id="988978206646512040">Nav atļauta tukša ieejas frāze.</translation>
+<translation id="991097196715779457">Mazumtirdzniecības veikala ID kods (neobligāti)</translation>
 <translation id="992032470292211616">Paplašinājumi, lietotnes un motīvi var kaitēt jūsu ierīcei. Vai tiešām vēlaties turpināt?</translation>
 <translation id="992256792861109788">Rozā</translation>
 <translation id="992592832486024913">Atspējot ChromeVox (balss komentārus)</translation>

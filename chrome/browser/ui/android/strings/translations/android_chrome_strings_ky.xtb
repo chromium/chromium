@@ -313,6 +313,7 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# аудио файл}other{# аудио файл}}</translation>
 <translation id="265156376773362237">Стандарттуу алдын ала жүктөө</translation>
 <translation id="2656405586795711023">Веб колдонмолор</translation>
+<translation id="2669454659051515572">Бул түзмөктү колдонгондордун баары жүктөлүп алынган файлдарды көрө алышат</translation>
 <translation id="2702516483241149200">Жаңы: Бул текстке сыдырылган шилтемени бөлүшө аласыз</translation>
 <translation id="2704606927547763573">Көчүрүлдү</translation>
 <translation id="2707726405694321444">Бетти жаңылоо</translation>
@@ -778,6 +779,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="5246093389635966745">Куралдар тилкесинин ыкчам баскычын түзөтүү</translation>
 <translation id="526421993248218238">Бул бет жүктөлбөй жатат</translation>
 <translation id="5271967389191913893">Жүктөлүп алына турган мазмунду түзмөк ача албайт.</translation>
+<translation id="5274286919938458946"><ph name="CARD_DETAIL" /> менен байланышкан</translation>
 <translation id="5292796745632149097">Төмөнкүгө жөнөтүү</translation>
 <translation id="5300426565656326054">Жарнамаларды серепчинин негизинде жекелештирүү</translation>
 <translation id="5304593522240415983">Бул талаа бош болбошу керек</translation>

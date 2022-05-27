@@ -301,7 +301,6 @@
 <translation id="2791421900609674576">ನೀವು ಶಿಫಾರಸುಗಳನ್ನು ನೋಡುತ್ತೀರಿ ಆದ್ದರಿಂದ ನೀವು ಎಲ್ಲಿಗೆ ನಿಲ್ಲಿಸಿರುವಿರೋ ಅಲ್ಲಿಂದಲೇ ಮುಂದುವರಿಸಬಹುದು. ಶಿಫಾರಸುಗಳನ್ನು ತೆಗೆದುಹಾಕಲು ನೀವು ಸ್ಪರ್ಶಿಸಿ ಮತ್ತು ಹೋಲ್ಡ್‌ ಮಾಡಬಹುದು.</translation>
 <translation id="2792498699870441125">Alt+ಹುಡುಕಾಟ</translation>
 <translation id="2797741504905337289">ಶೆಲ್ಫ್ ಪಾರ್ಟಿ</translation>
-<translation id="2803313416453193357">ಫೋಲ್ಡರ್ ತೆರೆಯಿರಿ</translation>
 <translation id="2805756323405976993">ಆಪ್ಸ್‌‌</translation>
 <translation id="2814448776515246190">ಭಾಗಶಃ ಕ್ಯಾಪ್ಚರ್</translation>
 <translation id="2819276065543622893">ಈಗ ನಿಮ್ಮನ್ನು ಸೈನ್ ಔಟ್ ಮಾಡಲಾಗುತ್ತದೆ.</translation>
@@ -699,6 +698,7 @@
 <translation id="5071064518267176975">ಮೈಕ್ರೊಫೋನ್ ಬಳಸಲು ಆ್ಯಪ್ ಬಯಸುತ್ತದೆ</translation>
 <translation id="5078796286268621944">ತಪ್ಪಾದ PIN</translation>
 <translation id="5083553833479578423">ಇನ್ನಷ್ಟು ಅಸಿಸ್ಟೆಂಟ್ ವೈಶಿಷ್ಟ್ಯಗಳನ್ನು ಅನ್‌ಲಾಕ್‌ ಮಾಡಿ.</translation>
+<translation id="509790653408515442">ನಿಮ್ಮ ಫೋನ್‌ನ ಆ್ಯಪ್‌ಗಳನ್ನು ನೀವು ಸ್ಟ್ರೀಮ್ ಮಾಡಿದಾಗ, ಅವು ಇಲ್ಲಿ ಗೋಚರಿಸುತ್ತವೆ</translation>
 <translation id="5107522548814527560">ವೆಬ್</translation>
 <translation id="5117590920725113268">ಮುಂದಿನ ತಿಂಗಳು ತೋರಿಸಿ</translation>
 <translation id="5136175204352732067">ವಿವಿಧ ಕೀಬೋರ್ಡ್ ಸಂಪರ್ಕಗೊಂಡಿದೆ</translation>
@@ -721,6 +721,7 @@
 <translation id="523505283826916779">ಪ್ರವೇಶಿಸುವಿಕೆ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="5245201184978705914">ಟ್ರಾನ್ಸ್‌ಕ್ರಿಪ್ಟ್ ಅನ್ನು ರಚಿಸಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="5253783950165989294"><ph name="DEVICE_NAME" /> ಹೆಸರಿನ ಸಾಧನಕ್ಕೆ ಕನೆಕ್ಟ್ ಮಾಡಲಾಗಿದೆ, <ph name="BATTERY_PERCENTAGE" />% ಬ್ಯಾಟರಿ</translation>
+<translation id="5258528442992323769">ಯಾವುದೇ ಉಳಿಸಿದ ಡೆಸ್ಕ್‌ಗಳಿಲ್ಲ</translation>
 <translation id="5260676007519551770">ಡೆಸ್ಕ್ 4</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" />, ನಿಮ್ಮ ಗಮನವನ್ನು ವಿನಂತಿಸುತ್ತದೆ.</translation>
 <translation id="5283198616748585639">1 ನಿಮಿಷ ಸೇರಿಸಿ</translation>
@@ -1060,6 +1061,7 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="7348093485538360975">ಆನ್ ಸ್ಕ್ರೀನ್ ಕೀಬೋರ್ಡ್</translation>
 <translation id="735745346212279324">VPN ಸಂಪರ್ಕ ಕಡಿತಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="7360036564632145207">ಬಾಹ್ಯ ಸಾಧನಗಳ ಸೆಟ್ಟಿಂಗ್‌ಗಾಗಿ ನಿಮ್ಮ ಡೇಟಾ ಪ್ರವೇಶ ರಕ್ಷಣೆಯನ್ನು ಬದಲಾಯಿಸಿದರೆ, ಅವುಗಳ ಕಾರ್ಯಕ್ಷಮತೆಯನ್ನು ಉತ್ತಮಗೊಳಿಸಬಹುದು</translation>
+<translation id="736045644501761622">ವಾಲ್‌ಪೇಪರ್ ಮತ್ತು ಸ್ಟೈಲ್ ಅನ್ನು ಸೆಟ್ ಮಾಡಿ</translation>
 <translation id="7371404428569700291">ವಿಂಡೋ ರೆಕಾರ್ಡ್ ಮಾಡಿ</translation>
 <translation id="7377169924702866686">CAPS LOCK ಆನ್ ಆಗಿದೆ.</translation>
 <translation id="7377481913241237033">ಕೋಡ್ ಮೂಲಕ ಕನೆಕ್ಟ್ ಮಾಡಿ</translation>
@@ -1261,6 +1263,7 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="851458219935658693">ಪ್ರಸ್ತುತ ಡೆಸ್ಕ್‌ನಿಂದ ವಿಂಡೋಗಳನ್ನು ತೋರಿಸಿ, ರೇಡಿಯೋ ಬಟನ್ ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ</translation>
 <translation id="8517041960877371778">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಅನ್ನು ಆನ್ ಮಾಡಿರುವಾಗ ಅದನ್ನು ಚಾರ್ಜ್ ಮಾಡಲಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="8535393432370007982">ಬಣ್ಣದ ಪ್ರಕಾರ ಮಾಡಿರುವ ವಿಂಗಡಣೆಯನ್ನು ರದ್ದುಗೊಳಿಸಿ</translation>
+<translation id="8542053257095774575">ಯಾವುದೇ ಡೆಸ್ಕ್‌ಗಳು ಅಥವಾ ಟೆಂಪ್ಲೇಟ್‌ಗಳನ್ನು ಉಳಿಸಲಾಗಿಲ್ಲ</translation>
 <translation id="8546059259582788728">ವಿಂಗಡಣೆಯ ರದ್ದತಿ ಯಶಸ್ವಿಯಾಗಿದೆ</translation>
 <translation id="8551588720239073785">ದಿನಾಂಕ ಮತ್ತು ಸಮಯದ ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="8553395910833293175">ಈಗಾಗಲೇ ಎಲ್ಲಾ ಡೆಸ್ಕ್‌ಗಳಿಗೆ ನಿಯೋಜಿಸಲಾಗಿದೆ.</translation>
@@ -1293,6 +1296,7 @@ Ctrl+ಹುಡುಕಾಟ+H ಅನ್ನು ಒತ್ತಿರಿ.</translation
 <translation id="8721053961083920564">ವಾಲ್ಯೂಮ್ ಅನ್ನು ಟಾಗಲ್ ಮಾಡಿ. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">ಪೂರ್ಣ ಸ್ಕ್ರೀನ್ ಕ್ಯಾಪ್ಚರ್</translation>
 <translation id="8734991477317290293">ನಿಮ್ಮ ಕೀಸ್ಟ್ರೋಕ್‌ಗಳನ್ನು ಕಳವು ಮಾಡಲು ಇದು ಪ್ರಯತ್ನಿಸುತ್ತಿರಬಹುದು</translation>
+<translation id="8735678380411481005">ಕೀಬೋರ್ಡ್ ಬ್ಯಾಕ್‌ಲೈಟ್ ಬಣ್ಣ</translation>
 <translation id="8735953464173050365">ಕೀಬೋರ್ಡ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೋರಿಸಿ. <ph name="KEYBOARD_NAME" /> ಅನ್ನು ಆಯ್ಕೆ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="8755498163081687682">ನಿಮ್ಮ ಗುರುತನ್ನು ಖಚಿತಪಡಿಸಿ: ಇದು ನೀವೇ ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಲು <ph name="ORIGIN_NAME" /> ಬಯಸುತ್ತದೆ</translation>
 <translation id="875593634123171288">VPN ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೋರಿಸಿ</translation>

@@ -333,7 +333,6 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1327794256477341646">No se habilitarán las funciones que necesitan tu ubicación.</translation>
 <translation id="1329191040029425999">Asegúrate de que el dispositivo esté actualizado y vuelve a intentarlo</translation>
 <translation id="1330145147221172764">Habilitar el teclado en pantalla</translation>
-<translation id="1331625853030156663">Para abrir <ph name="APP_NAME" />, habilita "Mostrar la pantalla bloqueada al salir del modo de suspensión"</translation>
 <translation id="1331977651797684645">Era yo.</translation>
 <translation id="1333489022424033687">Es posible que algunas características de <ph name="ORIGIN" /> no funcionen hasta que borres los datos que almacenaron otros sitios en el dispositivo</translation>
 <translation id="1333965224356556482">No permitir que los sitios visualicen tu ubicación</translation>
@@ -6313,7 +6312,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Salir de la página}other{Salir de las páginas}}</translation>
 <translation id="7207457272187520234">Envía datos de uso y diagnóstico. De forma automática, este dispositivo está enviando a Google datos de diagnóstico y sobre el uso del dispositivo y las apps. Esta información ayudará a lograr la estabilidad de las apps y el sistema, entre otras mejoras. Algunos datos agregados también ayudarán a las apps y los socios de Google, como los desarrolladores de Android. El propietario controla esta configuración. Si habilitaste la Actividad de web y de aplicaciones adicional, es posible que se almacenen estos datos en tu Cuenta de Google.</translation>
 <translation id="7207631048330366454">Buscar apps</translation>
-<translation id="720808544705441386">No se puede abrir la app</translation>
 <translation id="7210499381659830293">Impresoras de extensiones</translation>
 <translation id="7211783048245131419">Aún no se asignaron interruptores</translation>
 <translation id="7212097698621322584">Ingresa tu PIN actual para cambiarlo. Si no sabes cuál es, deberás restablecer la llave de seguridad y, luego, crear uno nuevo.</translation>

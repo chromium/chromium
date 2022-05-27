@@ -301,7 +301,6 @@
 <translation id="2791421900609674576">আপনি সাজেশন দেখতে পাবেন যাতে যেখানে শেষ কাজ করেছিলেন সেখান থেকেই আবার শুরু করতে পারেন। সাজেশন সরিয়ে দেওয়ার জন্য আপনি টাচ করে ধরে থাকতে পারেন।</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
 <translation id="2797741504905337289">শেল্ফ পার্টি</translation>
-<translation id="2803313416453193357">ফোল্ডার খুলুন</translation>
 <translation id="2805756323405976993">অ্যাপ্স</translation>
 <translation id="2814448776515246190">আংশিক ক্যাপচার</translation>
 <translation id="2819276065543622893">আপনি এখনই প্রস্থান করুন হবেন৷</translation>
@@ -1059,6 +1058,7 @@
 <translation id="7348093485538360975">অন-স্ক্রীণ কীবোর্ড</translation>
 <translation id="735745346212279324">VPN ডিসকানেক্ট করা হয়েছে</translation>
 <translation id="7360036564632145207">পেরিফেরাল সেটিংসের জন্য আপনার 'ডেটা অ্যাক্সেস সুরক্ষা' ব্যবস্থায় পরিবর্তন করলে পারফর্ম্যান্স অপ্টিমাইজ হতে পারে</translation>
+<translation id="736045644501761622">'ওয়ালপেপার ও স্টাইল' ফিচার সেট করুন</translation>
 <translation id="7371404428569700291">উইন্ডো রেকর্ড করুন</translation>
 <translation id="7377169924702866686">Caps Lock চালু আছে৷</translation>
 <translation id="7377481913241237033">কোড ব্যবহার করে কানেক্ট করুন</translation>
@@ -1292,6 +1292,7 @@
 <translation id="8721053961083920564">ভলিউম টগল করুন। <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">ফুল-স্ক্রিন ক্যাপচার</translation>
 <translation id="8734991477317290293">এটি আপনার পাসওয়ার্ড চুরি করার চেষ্টা করতে পারে</translation>
+<translation id="8735678380411481005">কীবোর্ড ব্যাকলাইটের রঙ</translation>
 <translation id="8735953464173050365">কীবোর্ড সেটিংস দেখান। <ph name="KEYBOARD_NAME" /> বেছে নেওয়া হয়েছে</translation>
 <translation id="8755498163081687682">আপনার পরিচয় যাচাই করুন: <ph name="ORIGIN_NAME" /> আপনার পরিচয় যাচাই করতে চায়</translation>
 <translation id="875593634123171288">VPN সেটিংস দেখান</translation>

@@ -336,7 +336,6 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1327794256477341646">Eiginleikar sem þurfa staðsetningu þína munu ekki virka</translation>
 <translation id="1329191040029425999">Gakktu úr skugga um að tækið sé uppfært og reyndu aftur</translation>
 <translation id="1330145147221172764">Kveikja á skjályklaborði</translation>
-<translation id="1331625853030156663">Til að opna <ph name="APP_NAME" /> skaltu opna „Sýna lásskjá þegar komið er úr hvíldarstillingu“</translation>
 <translation id="1331977651797684645">Þetta var ég.</translation>
 <translation id="1333489022424033687">Sumir eiginleikar á <ph name="ORIGIN" /> virka hugsanlega ekki þar til þú hreinsar gögn sem önnur vefsvæði hafa vistað í tækinu þínu</translation>
 <translation id="1333965224356556482">Ekki leyfa vefsvæðum að sjá staðsetninguna þína</translation>
@@ -4337,6 +4336,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="520568280985468584">Netkerfi var bætt við. Nokkrar mínútur gætu liðið áður en farsímakerfið virkjast.</translation>
 <translation id="5206215183583316675">Eyða „<ph name="CERTIFICATE_NAME" />“?</translation>
 <translation id="520621735928254154">Villa við innflutning á vottorði</translation>
+<translation id="5206562235913517859">Verslunarauðkenni söluaðila er á sniðinu ABC-1234</translation>
 <translation id="5206787458656075734">{COUNT,plural, =1{Aðgangsorði í hættu var breytt. # aðgangsorð í viðbót er í hættu. Chrome mælir með að þú athugir þetta aðgangsorð núna.}one{Aðgangsorði í hættu var breytt. # aðgangsorð í viðbót er í hættu. Chrome mælir með að þú athugir þessi aðgangsorð núna.}other{Aðgangsorði í hættu var breytt. # aðgangsorð í viðbót eru í hættu. Chrome mælir með að þú athugir þessi aðgangsorð núna.}}</translation>
 <translation id="5207949376430453814">Auðkenna textainnskotsmerki</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> vill kanna hvort þú sért að nota gjaldgengt ChromeOS tæki.</translation>
@@ -4858,6 +4858,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="5729712731028706266">Skoða</translation>
 <translation id="5731247495086897348">Líma og opna</translation>
 <translation id="5732392974455271431">Foreldrar þínir geta opnað fyrir þetta</translation>
+<translation id="5733866499231170760">Ógilt auðkenni. Sniðið sem þú færðir inn er rangt. Skoðaðu leiðbeiningarnar sem þú fékkst til að ganga úr skugga um að þú hafir fært inn auðkenni á réttu sniði. Ef þér tekst ekki að leysa úr vandamálinu skaltu skilja reitinn eftir auðan og halda áfram með uppsetninguna.</translation>
 <translation id="5734362860645681824">Samskipti</translation>
 <translation id="5734697361979786483">Bæta samnýttri skráageymslu við</translation>
 <translation id="5736796278325406685">Sláðu inn gilt notendanafn</translation>
@@ -6332,7 +6333,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Loka síðu}one{Loka síðum}other{Loka síðum}}</translation>
 <translation id="7207457272187520234">Senda notkunar- og greiningargögn. Þetta tæki sendir núna sjálfkrafa greiningargögn, tækisgögn og upplýsingar um forritanotkun til Google. Þetta mun stuðla að stöðugleika kerfa og forrita og öðrum endurbótum. Sum uppsöfnuð gögn munu einnig gagnast forritum og samstarfsaðilum Google, til dæmis þróunaraðilum Android. Eigandi valdi þessa stillingu. Ef kveikt er á ítarlegri vef- og forritavirkni geta þessi gögn verið vistuð á Google reikningnum þínum.</translation>
 <translation id="7207631048330366454">Leita í forritum</translation>
-<translation id="720808544705441386">Ekki er hægt að opna forritið</translation>
 <translation id="7210499381659830293">Prentaraviðbætur</translation>
 <translation id="7211783048245131419">Ekki er búið að úthluta neinum rofa</translation>
 <translation id="7212097698621322584">Sláðu inn núverandi PIN-númer til að breyta því. Ef þú veist ekki PIN-númerið þitt þarftu að endurstilla öryggislykilinn og búa svo til nýtt PIN-númer.</translation>
@@ -6967,6 +6967,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="7824864914877854148">Villa kom í veg fyrir að hægt væri að ljúka afritun</translation>
 <translation id="782590969421016895">Nota núverandi síður</translation>
 <translation id="7826174860695147464">Stuðningur við eldri vafra – innri stillingar</translation>
+<translation id="7826190688224781865">Auðkenniskóði verslunar söluaðila</translation>
 <translation id="7826249772873145665">Slökkt á ADB-villuleit</translation>
 <translation id="7826254698725248775">Ósamræmi í auðkenni tækis.</translation>
 <translation id="7828731929332799387">Þetta mun eyða öllum fótsporum og vefsvæðisgögnum frá þriðju aðilum. Ertu viss um að þú viljir halda áfram?</translation>
@@ -8437,6 +8438,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="987897973846887088">Engar myndir til staðar</translation>
 <translation id="988320949174893488">Einstaka hökt</translation>
 <translation id="988978206646512040">Ekki er leyft að hafa autt aðgangsorð</translation>
+<translation id="991097196715779457">Auðkenniskóði verslunar söluaðila (valfrjáls)</translation>
 <translation id="992032470292211616">Viðbætur, forrit og þemu geta skaðað tækið þitt. Ertu viss um að þú viljir halda áfram?</translation>
 <translation id="992256792861109788">Bleikur</translation>
 <translation id="992592832486024913">Gera ChromeVox (raddsvörun) óvirkt</translation>

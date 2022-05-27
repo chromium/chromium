@@ -333,7 +333,6 @@ Parollarni istalgan vaqtda <ph name="GOOGLE_PASSWORD_MANAGER" /> orqali tekshiri
 <translation id="1327794256477341646">Joylashuvga ruxsat talab qiladigan funksiyalar ishlamaydi</translation>
 <translation id="1329191040029425999">Qurilma eng oxirgi tizimda ekanini tekshiring va qaytadan urining</translation>
 <translation id="1330145147221172764">Ekran klaviaturasini yoqish</translation>
-<translation id="1331625853030156663"><ph name="APP_NAME" /> ilovasini ochish uchun qurilma uyqu rejimidan chiqarilishida ekran qulfi koʻrsatishni yoqing.</translation>
 <translation id="1331977651797684645">Bu men</translation>
 <translation id="1333489022424033687">Qurilmangizda boshqa saytlar tomonidan saqlangan maʼlumotlar tozalanmaguncha ayrim <ph name="ORIGIN" /> funksiyalari yaxshi ishlamasligi mumkin</translation>
 <translation id="1333965224356556482">Saytlarga joylashuvingiz axborotini koʻrishni taqiqlash</translation>
@@ -6334,7 +6333,6 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Sahifani yopish}other{Sahifalarni yopish}}</translation>
 <translation id="7207457272187520234">Foydalanish statistikasi va diagnostika axborotini yuborish. Bu qurilma hozirda qurilma va ilovalardan foydalanish haqidagi hamda diagnostika axborotini avtomatik tarzda Google kompaniyasiga yubormoqda. Ular tizim va ilovalar barqarorligi kabilarni yaxshilash uchun ishlatiladi. Ayrim toʻplangan maʼlumotlar Android dasturchilar kabi hamkorlarimizga ham oʻz ilovalari va mahsulotlarini yanada yaxshilashga yordam beradi. Bu parametr qurilma egasi tomonidan oʻrnatilgan. Agar Kengaytirilgan veb-qidiruv va ilovalar tarixi yoqilsa, bu maʼlumotlar Google hisobingizda saqlanadi.</translation>
 <translation id="7207631048330366454">Ilovalar ichidan qidirish</translation>
-<translation id="720808544705441386">Ilova ochilmadi</translation>
 <translation id="7210499381659830293">Kengaytmalar ishlatuvchi printerlar</translation>
 <translation id="7211783048245131419">Hech qaysi tugma belgilanmagan</translation>
 <translation id="7212097698621322584">PIN kodni oʻzgartirish uchun joriy kodni kiriting. PIN kodni bilmasangiz, avval elektron kalit sozlamalarini qayta tiklab, keyingina yangi PIN belgilash mumkin.</translation>

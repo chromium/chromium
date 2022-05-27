@@ -252,6 +252,7 @@
 <translation id="243878895369688216">昨日開いたファイル</translation>
 <translation id="2441427462554639370">保存容量が非常に少なくなっているため、録画を終了しました</translation>
 <translation id="24452542372838207">通知を展開</translation>
+<translation id="2449089818483227734">バッテリー残量が少なくなっています</translation>
 <translation id="2450205753526923158">スクリーンショット モード</translation>
 <translation id="2456008742792828469">カレンダー、<ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2473177541599297363">解像度の確定</translation>
@@ -301,7 +302,6 @@
 <translation id="2791421900609674576">前回中断したところから再開できるように、おすすめが表示されます。おすすめは長押しで削除できます。</translation>
 <translation id="2792498699870441125">Alt+ 検索</translation>
 <translation id="2797741504905337289">シェルフ グループ</translation>
-<translation id="2803313416453193357">フォルダを開く</translation>
 <translation id="2805756323405976993">アプリ</translation>
 <translation id="2814448776515246190">画面の一部のキャプチャ</translation>
 <translation id="2819276065543622893">ログアウトします。</translation>
@@ -413,11 +413,13 @@
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" />分</translation>
 <translation id="3445925074670675829">USB-C デバイス</translation>
+<translation id="3455468639467374593">テンプレート、<ph name="TEMPLATE_NAME" /></translation>
 <translation id="3465223694362104965">前回のログイン後に、別のキーボードがこのデバイスに接続されました。このキーボードを使用する前に信頼できるものかどうか確認してください。</translation>
 <translation id="3465356146291925647">管理者によって管理</translation>
 <translation id="3477079411857374384">Control+Shift+Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />、<ph name="CONNECTION_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">シェルフは自動的に非表示になります</translation>
+<translation id="3505066820268455558">バッテリー充電中</translation>
 <translation id="3509391053705095206">スマートフォンが見つかりません。スマートフォンの Bluetooth がオンであることを確認してください</translation>
 <translation id="3510164367642747937">マウスカーソルをハイライト表示する</translation>
 <translation id="3513798432020909783">このアカウントは <ph name="MANAGER_EMAIL" /> により管理されています</translation>
@@ -458,6 +460,8 @@
 <translation id="3633097874324966332">デバイスをペア設定するには、Bluetooth 設定を開いてください</translation>
 <translation id="3638400994746983214">プライバシー スクリーンを切り替えます。<ph name="STATE_TEXT" />。</translation>
 <translation id="3649505501900178324">更新の期限が過ぎています</translation>
+<translation id="3659814201068740063">残り <ph name="TIME_LEFT" />（<ph name="PERCENTAGE" /> %）。
+デバイスを電源に接続してください。</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> の管理対象ユーザー</translation>
 <translation id="36813544980941320">スマートフォンと <ph name="DEVICE_NAME" /> で Wi-Fi ネットワークが共有されます</translation>
 <translation id="3694122362646626770">ウェブサイト</translation>
@@ -512,6 +516,7 @@
 <translation id="3962859241508114581">前の曲</translation>
 <translation id="3969043077941541451">オフ</translation>
 <translation id="397105322502079400">計算しています...</translation>
+<translation id="397726367135689299">バッテリーの充電が不安定になっている可能性があります</translation>
 <translation id="3977512764614765090">電池残量は <ph name="PERCENTAGE" />% です（現在充電中）。</translation>
 <translation id="3986082989454912832">応答</translation>
 <translation id="3995138139523574647">USB-C デバイス（右奥のポート）</translation>
@@ -699,6 +704,7 @@
 <translation id="5071064518267176975">アプリがマイクの使用を求めています</translation>
 <translation id="5078796286268621944">PIN が正しくありません</translation>
 <translation id="5083553833479578423">さらに多くのアシスタント機能をぜひご活用ください。</translation>
+<translation id="509790653408515442">スマートフォンのアプリでストリーミングした場合、そのアプリがここに表示されます</translation>
 <translation id="5107522548814527560">ウェブ</translation>
 <translation id="5117590920725113268">次の月を表示</translation>
 <translation id="5136175204352732067">別のキーボードが接続されています</translation>
@@ -721,6 +727,7 @@
 <translation id="523505283826916779">ユーザー補助機能の設定</translation>
 <translation id="5245201184978705914">文字起こしを生成できません</translation>
 <translation id="5253783950165989294"><ph name="DEVICE_NAME" /> という名前のデバイスに接続しています、電池残量 <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="5258528442992323769">保存したデスクはありません</translation>
 <translation id="5260676007519551770">デスク 4</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> から通知が届いています。</translation>
 <translation id="5283198616748585639">1 分追加</translation>
@@ -1037,6 +1044,7 @@
 <translation id="7130207228079676353">これですか？</translation>
 <translation id="7131634465328662194">制限時間になると自動的にログアウトします。</translation>
 <translation id="7143207342074048698">接続中</translation>
+<translation id="7144942256906679589">バッテリーの状態</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" /> 秒後に元の解像度に戻ります</translation>
 <translation id="7180611975245234373">更新</translation>
@@ -1059,6 +1067,7 @@
 <translation id="7348093485538360975">画面キーボード</translation>
 <translation id="735745346212279324">VPN が切断されました</translation>
 <translation id="7360036564632145207">周辺機器の設定でデータアクセスの保護を変更すると、パフォーマンスを最適化できます。</translation>
+<translation id="736045644501761622">壁紙とスタイルを設定</translation>
 <translation id="7371404428569700291">ウィンドウを録画</translation>
 <translation id="7377169924702866686">CapsLock 
 がオンになっています。</translation>
@@ -1103,6 +1112,7 @@
 <translation id="7593891976182323525">検索/Shift</translation>
 <translation id="7600875258240007829">通知をすべて表示</translation>
 <translation id="7607002721634913082">一時停止中</translation>
+<translation id="7609951632080598826">カレンダー表示、<ph name="DATE" />、<ph name="TIME" /></translation>
 <translation id="7611213136657090146">カメラが再接続されました。</translation>
 <translation id="7624117708979618027">華氏 <ph name="TEMPERATURE_F" /> 度</translation>
 <translation id="7633755430369750696">ニアバイシェア設定を表示します。</translation>
@@ -1228,6 +1238,7 @@
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> ウィンドウが選択されています</translation>
 <translation id="8351131234907093545">メモを作成</translation>
 <translation id="8364673525741149932">シェルフ グループを切り替えます。<ph name="STATE_TEXT" /></translation>
+<translation id="8369166482916924789">保存したデスク、<ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">1 字進む</translation>
 <translation id="8371991222807690464">ゲストモードでは、周辺機器のパフォーマンスが制限される場合があります</translation>
 <translation id="8374601332003098278">画面の一部を録画するには Enter キーを押してください</translation>
@@ -1261,6 +1272,7 @@
 <translation id="851458219935658693">現在のデスクのウィンドウを表示する、ラジオボタンが選択されています</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> は電源がオンのままでは充電できない可能性があります。</translation>
 <translation id="8535393432370007982">色による並べ替えを元に戻す</translation>
+<translation id="8542053257095774575">保存したデスクやテンプレートはありません</translation>
 <translation id="8546059259582788728">並べ替えを元に戻しました</translation>
 <translation id="8551588720239073785">日時の設定</translation>
 <translation id="8553395910833293175">すべてのデスクに割り当て済みです。</translation>
@@ -1293,6 +1305,7 @@
 <translation id="8721053961083920564">音量を切り替えます。<ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">全画面キャプチャ</translation>
 <translation id="8734991477317290293">キー入力が読み取られる可能性があります</translation>
+<translation id="8735678380411481005">キーボードのバックライトの色</translation>
 <translation id="8735953464173050365">キーボード設定を表示します。<ph name="KEYBOARD_NAME" /> が選択されています</translation>
 <translation id="8755498163081687682">本人確認: <ph name="ORIGIN_NAME" /> が本人確認をリクエストしています</translation>
 <translation id="875593634123171288">VPN 設定を表示</translation>
@@ -1338,6 +1351,7 @@
 <translation id="9000771174482730261">ストレージを管理</translation>
 <translation id="9017320285115481645">ファミリー リンクの保護者のアクセスコードを入力してください。</translation>
 <translation id="9024331582947483881">全画面表示</translation>
+<translation id="9029736946581028033">デバイスの電源がまもなく切れます</translation>
 <translation id="9030319654231318877">日の入りまでオフ</translation>
 <translation id="9034924485347205037">Linux ファイル</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> の設定を開く</translation>
@@ -1367,6 +1381,7 @@
 <translation id="9168436347345867845">後で行う</translation>
 <translation id="9178475906033259337"><ph name="QUERY" /> の結果 1 件を表示しています</translation>
 <translation id="9179259655489829027">この機能を使用すると、パスワードを入力せずにログイン ユーザーにすばやくアクセスできます。この機能は信頼できるアカウントにのみ使用してください。</translation>
+<translation id="9180906851711123156">閉じるには Ctrl+W キーを押します</translation>
 <translation id="9183456764293710005">全画面拡大鏡</translation>
 <translation id="9193626018745640770">不明な受信デバイスにキャストしています</translation>
 <translation id="9194617393863864469">別のユーザーとしてログイン...</translation>

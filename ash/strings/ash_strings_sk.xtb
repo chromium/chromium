@@ -301,7 +301,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="2791421900609674576">Zobrazia sa vám odporúčania, aby ste mohli pokračovať tam, kde ste prestali. Odstránite ich pridržaním.</translation>
 <translation id="2792498699870441125">Alt + Hľadať</translation>
 <translation id="2797741504905337289">Shelf Party</translation>
-<translation id="2803313416453193357">Otvoriť priečinok</translation>
 <translation id="2805756323405976993">Aplikácie</translation>
 <translation id="2814448776515246190">Čiastočná snímka</translation>
 <translation id="2819276065543622893">Teraz prebehne odhlásenie.</translation>
@@ -699,6 +698,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="5071064518267176975">Určitá aplikácia chce používať mikrofón</translation>
 <translation id="5078796286268621944">Nesprávny kód PIN</translation>
 <translation id="5083553833479578423">Odblokujte ďalšie funkcie Asistenta.</translation>
+<translation id="509790653408515442">Tu sa zobrazia aplikácie streamované z telefónu</translation>
 <translation id="5107522548814527560">Internet</translation>
 <translation id="5117590920725113268">Zobraziť ďalší mesiac</translation>
 <translation id="5136175204352732067">Bola pripojená iná klávesnica</translation>
@@ -721,6 +721,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="523505283826916779">Nastavenia zjednodušenia prístupu</translation>
 <translation id="5245201184978705914">Prepis sa nedá vygenerovať</translation>
 <translation id="5253783950165989294">Pripojené k zariadeniu <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" /> % batéria</translation>
+<translation id="5258528442992323769">Žiadne uložené plochy</translation>
 <translation id="5260676007519551770">4. plocha</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> vyžaduje vašu pozornosť.</translation>
 <translation id="5283198616748585639">Pridať 1 minútu</translation>
@@ -1059,6 +1060,7 @@ Nová inštalácia</translation>
 <translation id="7348093485538360975">Klávesnica na obrazovke</translation>
 <translation id="735745346212279324">Sieť VPN je odpojená</translation>
 <translation id="7360036564632145207">Zmenou ochrany prístupu k údajom pre nastavenie periférií môžete optimalizovať výkonnosť</translation>
+<translation id="736045644501761622">Nastaviť tapety a štýl</translation>
 <translation id="7371404428569700291">Okno nahrávania</translation>
 <translation id="7377169924702866686">Kláves Caps Lock je zapnutý.</translation>
 <translation id="7377481913241237033">Pripojiť pomocou kódu</translation>
@@ -1260,6 +1262,7 @@ Nová inštalácia</translation>
 <translation id="851458219935658693">Prepínač je prepnutý na možnosť zobrazenia okien z aktuálnej plochy</translation>
 <translation id="8517041960877371778">Vaše zariadenie <ph name="DEVICE_TYPE" /> sa nemusí nabíjať, keď je zapnuté.</translation>
 <translation id="8535393432370007982">Vrátiť späť poradie zoradenia podľa farby</translation>
+<translation id="8542053257095774575">Žiadne uložené plochy ani šablóny</translation>
 <translation id="8546059259582788728">Zoradenie sa podarilo vrátiť späť</translation>
 <translation id="8551588720239073785">Nastavenia dátumu a času</translation>
 <translation id="8553395910833293175">Už bolo pridelené všetkým plochám.</translation>
@@ -1292,6 +1295,7 @@ Nová inštalácia</translation>
 <translation id="8721053961083920564">Prepínač zvuku. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Záznam celej obrazovky</translation>
 <translation id="8734991477317290293">Je možné, že sa pokúša ukradnúť vaše stlačenia klávesov</translation>
+<translation id="8735678380411481005">Farba podsvietenia klávesnice</translation>
 <translation id="8735953464173050365">Zobraziť nastavenia klávesnice. Vybraná klávesnica: <ph name="KEYBOARD_NAME" /></translation>
 <translation id="8755498163081687682">Overte svoju totožnosť: <ph name="ORIGIN_NAME" /> chce potvrdiť, že ste to vy</translation>
 <translation id="875593634123171288">Zobraziť nastavenia VPN</translation>

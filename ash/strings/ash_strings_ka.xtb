@@ -301,7 +301,6 @@
 <translation id="2791421900609674576">თქვენ იხილავთ რეკომენდაციებს, რომ შეძლოთ იქიდან გაგრძელება, სადაც შეჩერდით. რეკომენდაციების ამოშლა შეგიძლიათ ხანგრძლივად შეხებით.</translation>
 <translation id="2792498699870441125">Alt+ძიება</translation>
 <translation id="2797741504905337289">Shelf Party</translation>
-<translation id="2803313416453193357">გახსენით საქაღალდე</translation>
 <translation id="2805756323405976993">პროგრამები</translation>
 <translation id="2814448776515246190">ნაწილობრივი აღბეჭდვა</translation>
 <translation id="2819276065543622893">თქვენ ახლა გამოხვალთ.</translation>
@@ -1061,6 +1060,7 @@
 <translation id="7348093485538360975">ეკრანული კლავიატურა</translation>
 <translation id="735745346212279324">VPN გამორთულია</translation>
 <translation id="7360036564632145207">პერიფერიული მოწყობილობებისთვის მონაცემებზე წვდომის დაცვის პარამეტრების შეცვლით შესაძლებელია წარმადობის ოპტიმიზაცია</translation>
+<translation id="736045644501761622">ფონის და სტილის დაყენება</translation>
 <translation id="7371404428569700291">ფანჯრის ჩაწერა</translation>
 <translation id="7377169924702866686">Caps Lock ჩართულია.</translation>
 <translation id="7377481913241237033">კოდით დაკავშირება</translation>
@@ -1295,6 +1295,7 @@
 <translation id="8721053961083920564">ხმის გადართვა. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">სრული ეკრანის აღბეჭდვა</translation>
 <translation id="8734991477317290293">ეს შეიძლება იყოს თქვენ მიერ აკრეფილი ტექსტის მოპარვის მცდელობა</translation>
+<translation id="8735678380411481005">კლავიატურის ფონური განათების ფერი</translation>
 <translation id="8735953464173050365">კლავიატურის პარამეტრების ჩვენება. არჩეულია <ph name="KEYBOARD_NAME" /></translation>
 <translation id="8755498163081687682">დაადასტურეთ ვინაობა: <ph name="ORIGIN_NAME" /> ითხოვს თქვენი ვინაობის დადასტურებას</translation>
 <translation id="875593634123171288">VPN-ის პარამეტრების ჩვენება</translation>

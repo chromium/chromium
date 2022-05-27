@@ -301,7 +301,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2791421900609674576">Du ser anbefalinger, slik at du kan fortsette der du slapp. Trykk og hold for å fjerne anbefalinger.</translation>
 <translation id="2792498699870441125">Alt + Søk</translation>
 <translation id="2797741504905337289">Hyllegruppe</translation>
-<translation id="2803313416453193357">Åpne mappen</translation>
 <translation id="2805756323405976993">Apper</translation>
 <translation id="2814448776515246190">Delvis opptak</translation>
 <translation id="2819276065543622893">Du blir nå logget av.</translation>
@@ -699,6 +698,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="5071064518267176975">En app vil bruke mikrofonen</translation>
 <translation id="5078796286268621944">Feil personlig kode</translation>
 <translation id="5083553833479578423">Lås opp flere Assistent-funksjoner.</translation>
+<translation id="509790653408515442">Når du strømmer appene på telefonen din, vises de her</translation>
 <translation id="5107522548814527560">Nettet</translation>
 <translation id="5117590920725113268">Se neste måned</translation>
 <translation id="5136175204352732067">Et annet tastatur er koblet til</translation>
@@ -721,6 +721,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="523505283826916779">Tilgjengelighetsinnstillinger</translation>
 <translation id="5245201184978705914">Kan ikke generere noen transkripsjon</translation>
 <translation id="5253783950165989294">Koblet til enheten <ph name="DEVICE_NAME" /> – <ph name="BATTERY_PERCENTAGE" /> % batteri</translation>
+<translation id="5258528442992323769">Ingen lagrede skrivebord</translation>
 <translation id="5260676007519551770">Skrivebord 4</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> ber om din oppmerksomhet.</translation>
 <translation id="5283198616748585639">Legg til 1 min</translation>
@@ -1260,6 +1261,7 @@ Nylig installert</translation>
 <translation id="851458219935658693">Vis vinduer fra det gjeldende skrivebordet – alternativknappen er valgt</translation>
 <translation id="8517041960877371778">Det kan hende at din <ph name="DEVICE_TYPE" /> ikke lader når den er slått på.</translation>
 <translation id="8535393432370007982">Angre sortering etter farge</translation>
+<translation id="8542053257095774575">Ingen lagrede skrivebord eller maler</translation>
 <translation id="8546059259582788728">Sorteringen ble angret</translation>
 <translation id="8551588720239073785">Innstillinger for dato og klokkeslett</translation>
 <translation id="8553395910833293175">Allerede tilordnet til alle skrivebord.</translation>

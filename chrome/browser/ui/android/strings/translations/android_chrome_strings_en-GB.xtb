@@ -1076,6 +1076,7 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
 <translation id="6824899148643461612"><ph name="TAB_TITLE" /> tab, selected</translation>
 <translation id="6828070228333235514">Stop tracking price</translation>
 <translation id="6833996806551876956">Privacy sandbox trial</translation>
+<translation id="6836206421467243968">Restore tab group <ph name="TITLE_OF_GROUP" /> as a new background tab group.</translation>
 <translation id="6846298663435243399">Loading…</translation>
 <translation id="6850409657436465440">Your download is still in progress</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> tabs closed</translation>
@@ -1138,6 +1139,7 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
 <translation id="7187993566681480880">Keeps you safe on Chrome and may be used to improve your security in other Google apps when you are signed in.</translation>
 <translation id="7191430249889272776">Tab opened in background.</translation>
 <translation id="7196215469483532480">Privacy guide explanation opened at full height</translation>
+<translation id="7207760545532569765">Restore <ph name="TAB_COUNT" /> tabs as new background tabs.</translation>
 <translation id="7208109991155904980">Reaction moved</translation>
 <translation id="7222235798733126207">Limited sharing between sites</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 download pending}other{# downloads pending}}</translation>
@@ -1516,6 +1518,7 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
 <translation id="9148126808321036104">Sign in again</translation>
 <translation id="9155898266292537608">You can also search with a quick tap on a word</translation>
 <translation id="9158770349521403363">Share content only</translation>
+<translation id="9159716826369098114">Restore tab group of <ph name="TAB_COUNT" /> tabs as a new background tab group.</translation>
 <translation id="916446198114569890">The URLs that you visit are saved to your Google Account</translation>
 <translation id="9169507124922466868">Navigation history is half-opened</translation>
 <translation id="9187955620966010988">Reaction adjusted</translation>

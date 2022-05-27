@@ -333,7 +333,6 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1327794256477341646">Funktionen, die deinen Standort benötigen, funktionieren dann nicht</translation>
 <translation id="1329191040029425999">Achte darauf, dass dein Gerät auf dem neuesten Stand ist, und versuche es noch einmal</translation>
 <translation id="1330145147221172764">Bildschirmtastatur aktivieren</translation>
-<translation id="1331625853030156663">Um <ph name="APP_NAME" /> zu öffnen, aktiviere „Sperrbildschirm anzeigen, wenn der Ruhemodus beendet wird“</translation>
 <translation id="1331977651797684645">Das war ich.</translation>
 <translation id="1333489022424033687">Einige Funkionen auf <ph name="ORIGIN" /> funktionieren möglicherweise erst, wenn du Daten löschst, die durch andere Websites auf deinem Gerät gespeichert wurden</translation>
 <translation id="1333965224356556482">Websites dürfen meinen Standort nicht sehen</translation>
@@ -4318,6 +4317,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="520568280985468584">Das Netzwerk wurde hinzugefügt. Es kann einige Minuten dauern, bis das Mobilfunknetz aktiv wird.</translation>
 <translation id="5206215183583316675">"<ph name="CERTIFICATE_NAME" />" löschen?</translation>
 <translation id="520621735928254154">Fehler beim Importieren des Zertifikats</translation>
+<translation id="5206562235913517859">Geschäfts-ID des Händlers hat das Format „ABC-1234“</translation>
 <translation id="5206787458656075734">{COUNT,plural, =1{Das gehackte Passwort wurde erfolgreich geändert. Du hast # weiteres gehacktes Passwort. Chrome empfiehlt, dieses Passwort jetzt zu prüfen.}other{Das gehackte Passwort wurde erfolgreich geändert. Du hast # weitere gehackte Passwörter. Chrome empfiehlt, diese Passwörter jetzt zu prüfen.}}</translation>
 <translation id="5207949376430453814">Textcursor hervorheben</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> möchte überprüfen, ob du ein unterstütztes Chrome OS-Gerät verwendest.</translation>
@@ -4837,6 +4837,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5729712731028706266">&amp;Ansicht</translation>
 <translation id="5731247495086897348">Einfügen und &amp;aufrufen</translation>
 <translation id="5732392974455271431">Deine Eltern können die Blockierung aufheben</translation>
+<translation id="5733866499231170760">Ungültige ID. Das verwendete Format ist falsch. Bitte orientiere dich an der Anleitung, die du erhalten hast, um die ID im korrekten Format einzugeben. Wenn du dieses Problem nicht beheben kannst, lasse das Feld leer und fahre mit der Installation fort.</translation>
 <translation id="5734362860645681824">Kommunikation</translation>
 <translation id="5734697361979786483">Dateifreigabe hinzufügen</translation>
 <translation id="5736796278325406685">Bitte gib einen gültigen Nutzernamen ein</translation>
@@ -6308,7 +6309,6 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Seite verlassen}other{Seiten verlassen}}</translation>
 <translation id="7207457272187520234">Du hast die Möglichkeit, Nutzungsdaten &amp; Fehlerberichte zu senden. Dieses Gerät sendet momentan automatisch Diagnose- und Gerätedaten sowie App-Nutzungsdaten an Google. Die Daten helfen unter anderem dabei, die Stabilität des Systems und der Apps zu verbessern. Einige aggregierte Daten sind auch für Apps und Partner von Google nützlich, beispielsweise Android-Entwickler. Diese Einstellung wird vom Inhaber erzwungen. Wenn die Einstellung "Zusätzliche Web- &amp; App-Aktivitäten" aktiviert ist, werden diese Daten möglicherweise in deinem Google-Konto gespeichert.</translation>
 <translation id="7207631048330366454">Apps finden</translation>
-<translation id="720808544705441386">App kann nicht geöffnet werden</translation>
 <translation id="7210499381659830293">Erweiterungsdrucker</translation>
 <translation id="7211783048245131419">Es wurde noch keine Schaltertaste zugewiesen</translation>
 <translation id="7212097698621322584">Gib deine aktuelle PIN ein, um sie zu ändern. Falls du deine PIN nicht kennst, musst du den Sicherheitsschlüssel zurücksetzen und dann eine neue PIN erstellen.</translation>
@@ -6943,6 +6943,7 @@ Drücke zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter oder ein
 <translation id="7824864914877854148">Sicherung konnte aufgrund eines Fehlers nicht abgeschlossen werden</translation>
 <translation id="782590969421016895">Aktuelle Seiten verwenden</translation>
 <translation id="7826174860695147464">Unterstützung älterer Browser – interne Elemente</translation>
+<translation id="7826190688224781865">Geschäfts-ID-Code des Händlers</translation>
 <translation id="7826249772873145665">ADB-Fehlerbehebung deaktiviert</translation>
 <translation id="7826254698725248775">In Konflikt stehende Gerätekennung.</translation>
 <translation id="7828731929332799387">Dadurch werden alle Cookies und Websitedaten von Drittanbietern gelöscht. Möchtest du fortfahren?</translation>
@@ -8412,6 +8413,7 @@ Informationen dazu, welche Daten von Google erhoben werden und warum, findest du
 <translation id="987897973846887088">Keine Bilder verfügbar</translation>
 <translation id="988320949174893488">Gelegentliches Stocken</translation>
 <translation id="988978206646512040">Eine leere Passphrase ist nicht zulässig</translation>
+<translation id="991097196715779457">Geschäfts-ID-Code des Händlers (optional)</translation>
 <translation id="992032470292211616">Erweiterungen, Apps und Designs können Schäden auf deinem Gerät verursachen. Möchtest du wirklich fortfahren?</translation>
 <translation id="992256792861109788">Rosa</translation>
 <translation id="992592832486024913">ChromeVox deaktivieren (gesprochenes Feedback)</translation>

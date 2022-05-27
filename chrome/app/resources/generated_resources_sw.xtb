@@ -335,7 +335,6 @@ Kagua manenosiri yako wakati wowote katika <ph name="GOOGLE_PASSWORD_MANAGER" />
 <translation id="1327794256477341646">Vipengele vinavyohitaji maelezo ya mahali ulipo havitafanya kazi</translation>
 <translation id="1329191040029425999">Hakikisha kuwa kifaa chako kimesasishwa kisha ujaribu tena</translation>
 <translation id="1330145147221172764">Washa kibodi ya skrini</translation>
-<translation id="1331625853030156663">Ili kufungua <ph name="APP_NAME" />, ruhusu kipengele cha '"Onyesha skrini iliyofungwa unapofungua kifaa kutoka kwenye hali tuli"</translation>
 <translation id="1331977651797684645">Ni mimi.</translation>
 <translation id="1333489022424033687">Baadhi ya vipengele kwenye <ph name="ORIGIN" /> huenda visifanye kazi hadi utakapofuta data ambayo tovuti nyingine zimehifadhi kwenye kifaa chako</translation>
 <translation id="1333965224356556482">Usiruhusu tovuti zione mahali ulipo</translation>
@@ -4332,6 +4331,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="520568280985468584">Mtandao umewekwa. Huenda ikachukua dakika kadhaa kabla ya mtandao wako wa simu kuanza kutumika.</translation>
 <translation id="5206215183583316675">Ungependa kufuta "<ph name="CERTIFICATE_NAME" />"?</translation>
 <translation id="520621735928254154">Hitilafu ya Kuleta Cheti</translation>
+<translation id="5206562235913517859">Kitambulisho cha duka la muuzaji wa rejareja kina muundo wa ABC-1234</translation>
 <translation id="5206787458656075734">{COUNT,plural, =1{Imebadilisha nenosiri lililoathiriwa. Una nenosiri # zaidi lililoathiriwa. Chrome inapendekeza ukague nenosiri hili sasa.}other{Imebadilisha nenosiri lililoathiriwa. Una manenosiri # zaidi yaliyoathiriwa. Chrome inapendekeza ukague manenosiri haya sasa.}}</translation>
 <translation id="5207949376430453814">Angazia kareti ya maandishi</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> inataka kuthibitisha kama unatumia kifaa kinachostahiki cha Mfumo wa Uendeshaji wa Chrome.</translation>
@@ -4853,6 +4853,7 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="5729712731028706266">&amp;Ona</translation>
 <translation id="5731247495086897348">&amp;Bandika Uende</translation>
 <translation id="5732392974455271431">Wazazi wako wanaweza kukuondolea kizuizi</translation>
+<translation id="5733866499231170760">Kitambulisho si sahihi. Muundo ulioweka si sahihi. Tafadhali angalia maagizo uliyopokea na uhakikishe unaweka kitambulisho katika muundo sahihi. Iwapo hutaweza kutatua hililafu hii, tafadhali usijaze sehemu hii na uendelee na usakinishaji.</translation>
 <translation id="5734362860645681824">Mawasiliano</translation>
 <translation id="5734697361979786483">Ongeza faili ya kushiriki</translation>
 <translation id="5736796278325406685">Tafadhali andika jina sahihi la mtumiaji</translation>
@@ -6325,7 +6326,6 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Funga ukurasa}other{Funga kurasa}}</translation>
 <translation id="7207457272187520234">Tuma data ya matumizi na uchunguzi. Kwa sasa, kifaa hiki kinatuma kiotomatiki data ya uchunguzi na matumizi ya programu na kifaa kwa Google. Maelezo haya yatatusaidia kuboresha uthabiti wa programu na mfumo na maboresho mengine. Baadhi ya maelezo yaliyojumlishwa pia yatasaidia programu na washirika wa Google kama vile wasanidi programu za Android. Mipangilio hii hutekelezwa na mmiliki. Ikiwa umewasha mipangilio ya historia ya Shughuli za ziada kwenye Wavuti na Programu, huenda data hii itahifadhiwa kwenye Akaunti yako ya Google.</translation>
 <translation id="7207631048330366454">Tafuta programu</translation>
-<translation id="720808544705441386">Imeshindwa kufungua programu</translation>
 <translation id="7210499381659830293">Printa za viendelezi</translation>
 <translation id="7211783048245131419">Bado hujakabidhi swichi yoyote</translation>
 <translation id="7212097698621322584">Weka PIN yako ya sasa ili uibadilishe. Ikiwa hujui PIN yako, utahitaji kubadilisha ufunguo wako wa usalama, kisha uunde PIN mpya.</translation>
@@ -6961,6 +6961,7 @@ Bonyeza swichi au kitufe ulichokabidhi ili uondoe kitendo ulichokabidhi.</transl
 <translation id="7824864914877854148">Imeshindwa kukamilisha kuhifadhi nakala kutokana na hitilafu</translation>
 <translation id="782590969421016895">Tumia kurasa za sasa</translation>
 <translation id="7826174860695147464">Uwezo wa Kutumia Kivinjari Kilichopitwa na Wakati (LBS) - Mipangilio ya ndani</translation>
+<translation id="7826190688224781865">Msimbo wa kitambulisho cha duka la muuzaji wa rejareja</translation>
 <translation id="7826249772873145665">Utatuzi wa ADB umezimwa</translation>
 <translation id="7826254698725248775">Kitambulishi cha kifaa kinachokinzana.</translation>
 <translation id="7828731929332799387">Hatua hii itafuta vidakuzi na data yote ya tovuti inayopatikana katika muktadha wa watu au kampuni nyingine. Je, ungependa kuendelea?</translation>
@@ -8431,6 +8432,7 @@ Sidhani tovuti hii inapaswa kuzuiwa!</translation>
 <translation id="987897973846887088">Hakuna picha zinazopatikana</translation>
 <translation id="988320949174893488">Kigugumizi Hapa na Pale</translation>
 <translation id="988978206646512040">Kauli ya siri tupu hairuhusiwi</translation>
+<translation id="991097196715779457">Msimbo wa kitambulisho cha duka la muuzaji wa rejareja (si lazima)</translation>
 <translation id="992032470292211616">Viendelezi, programu, na mandhari vinaweza kudhuru kifaa chako. Je, una uhakika unataka kuendelea?</translation>
 <translation id="992256792861109788">Waridi</translation>
 <translation id="992592832486024913">Zima ChromeVox (maoni ya yaliyotamkwa)</translation>

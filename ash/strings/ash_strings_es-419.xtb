@@ -301,7 +301,6 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2791421900609674576">Verás recomendaciones para continuar desde donde dejaste. Para quitarlas, manténlas presionadas.</translation>
 <translation id="2792498699870441125">Alt+tecla de búsqueda</translation>
 <translation id="2797741504905337289">Grupo de barras</translation>
-<translation id="2803313416453193357">Abrir carpeta</translation>
 <translation id="2805756323405976993">Aplicaciones</translation>
 <translation id="2814448776515246190">Captura parcial</translation>
 <translation id="2819276065543622893">Saldrás de la sesión ahora.</translation>
@@ -700,6 +699,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="5071064518267176975">Una app quiere usar el micrófono</translation>
 <translation id="5078796286268621944">Número de PIN incorrecto</translation>
 <translation id="5083553833479578423">Desbloquea más funciones del Asistente.</translation>
+<translation id="509790653408515442">Cuando transmitas las apps del teléfono, aparecerán aquí</translation>
 <translation id="5107522548814527560">Web</translation>
 <translation id="5117590920725113268">Mostrar el mes siguiente</translation>
 <translation id="5136175204352732067">Se conectó otro teclado</translation>
@@ -722,6 +722,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="523505283826916779">Configuración de accesibilidad</translation>
 <translation id="5245201184978705914">No se puede generar una transcripción</translation>
 <translation id="5253783950165989294">Se estableció la conexión con un dispositivo llamado <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" />% de batería</translation>
+<translation id="5258528442992323769">No hay escritorios guardados</translation>
 <translation id="5260676007519551770">Escritorio 4</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> requiere tu atención.</translation>
 <translation id="5283198616748585639">Agregar 1 min</translation>
@@ -1261,6 +1262,7 @@ Nueva instalación</translation>
 <translation id="851458219935658693">Está seleccionado el botón que muestra las ventanas del escritorio actual</translation>
 <translation id="8517041960877371778">Tu <ph name="DEVICE_TYPE" /> podría no cargarse si el dispositivo está encendido.</translation>
 <translation id="8535393432370007982">Deshacer el orden por color</translation>
+<translation id="8542053257095774575">No hay escritorios ni plantillas guardados</translation>
 <translation id="8546059259582788728">Se deshizo el orden correctamente</translation>
 <translation id="8551588720239073785">Configuración de fecha y hora</translation>
 <translation id="8553395910833293175">Ya se asignó a todos los escritorios.</translation>

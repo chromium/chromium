@@ -335,7 +335,6 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1327794256477341646">Funktioner där din plats behövs slutar fungera</translation>
 <translation id="1329191040029425999">Kontrollera att enheten är uppdaterad och försök igen</translation>
 <translation id="1330145147221172764">Aktivera skärmtangentbordet</translation>
-<translation id="1331625853030156663">Om du vill öppna <ph name="APP_NAME" /> aktiverar du Visa låsskärm efter viloläge</translation>
 <translation id="1331977651797684645">Det var jag.</translation>
 <translation id="1333489022424033687">Vissa funktioner på <ph name="ORIGIN" /> kanske inte fungerar förrän du rensar data som andra webbplatser har lagrat på enheten</translation>
 <translation id="1333965224356556482">Tillåt inte att webbplatser ser din plats</translation>
@@ -4337,6 +4336,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="520568280985468584">Nätverket har lagts till. Det kan ta flera minuter innan mobilnätverket blir aktivt.</translation>
 <translation id="5206215183583316675">Vill du radera <ph name="CERTIFICATE_NAME" />?</translation>
 <translation id="520621735928254154">Fel vid import av certifikat</translation>
+<translation id="5206562235913517859">Id:n för återförsäljarbutiker har formatet ABC-1234</translation>
 <translation id="5206787458656075734">{COUNT,plural, =1{Det utsatta lösenordet har ändrats. Det finns # utsatt lösenord till. Du rekommenderas att kontrollera detta lösenord nu.}other{Det utsatta lösenordet har ändrats. Det finns # utsatta lösenord till. Du rekommenderas att kontrollera dessa lösenord nu.}}</translation>
 <translation id="5207949376430453814">Markera textmarkören</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> vill kontrollera om du använder en Chrome OS-enhet som uppfyller villkoren.</translation>
@@ -4858,6 +4858,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5729712731028706266">&amp;Visa</translation>
 <translation id="5731247495086897348">Kl&amp;istra in och öppna</translation>
 <translation id="5732392974455271431">Dina föräldrar kan ta bort blockeringen</translation>
+<translation id="5733866499231170760">Ogiltigt id. Det angivna formatet är felaktigt. Läs de tillhandahållna anvisningarna för att se till att det angivna id:t har rätt format. Om du inte kan lösa problemet lämnar du fältet tomt och fortsätter med installationen.</translation>
 <translation id="5734362860645681824">Kommunikation</translation>
 <translation id="5734697361979786483">Lägg till filresurs</translation>
 <translation id="5736796278325406685">Ange ett giltigt användarnamn</translation>
@@ -6330,7 +6331,6 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Lämna sidan}other{Lämna sidorna}}</translation>
 <translation id="7207457272187520234">Skicka diagnostik- och användningsdata. Den här enheten skickar för närvarande diagnostikdata, enhetsdata och data om appanvändning till Google automatiskt. Denna data används till att förbättra systemets och apparnas stabilitet med mera. Viss samlad data används även till att förbättra appar från Google och Googles partner, till exempel Android-utvecklare. Ägaren har gjort denna inställning obligatorisk. Om ytterligare webb- och appaktivitet har aktiverats kan denna data sparas i Google-kontot.</translation>
 <translation id="7207631048330366454">Sök efter appar</translation>
-<translation id="720808544705441386">Det gick inte att öppna appen</translation>
 <translation id="7210499381659830293">Tilläggsskrivare</translation>
 <translation id="7211783048245131419">Ingen brytare har tilldelats ännu</translation>
 <translation id="7212097698621322584">Ange den nuvarande pinkoden om du vill ändra den. Om du inte kan pinkoden måste du återställa säkerhetsnyckeln och sedan ställa in en ny pinkod.</translation>
@@ -6965,6 +6965,7 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="7824864914877854148">Det gick inte att slutföra säkerhetskopieringen på grund av ett fel</translation>
 <translation id="782590969421016895">Använd aktuella sidor</translation>
 <translation id="7826174860695147464">Stöd för äldre webbläsare – interna inställningar</translation>
+<translation id="7826190688224781865">Id-kod för återförsäljarbutik</translation>
 <translation id="7826249772873145665">Felsökning med ADB har inaktiverats</translation>
 <translation id="7826254698725248775">Motstridiga enhetsidentifierare.</translation>
 <translation id="7828731929332799387">Med denna åtgärd raderas alla cookies och webbplatsuppgifter som är tillgängliga i sammanhang där en tredje part är inblandad. Vill du fortsätta?</translation>
@@ -8435,6 +8436,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="987897973846887088">Det finns inga bilder</translation>
 <translation id="988320949174893488">Hackar ibland</translation>
 <translation id="988978206646512040">Lösenfrasen får inte vara tom</translation>
+<translation id="991097196715779457">Id-kod för återförsäljarbutik (valfritt)</translation>
 <translation id="992032470292211616">Tillägg, appar och teman kan skada enheten. Vill du fortsätta?</translation>
 <translation id="992256792861109788">Rosa</translation>
 <translation id="992592832486024913">Inaktivera ChromeVox (talad feedback)</translation>

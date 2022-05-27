@@ -121,6 +121,7 @@
 <translation id="1942765061641586207">Vaizdo skyra</translation>
 <translation id="1972984168337863910">Išskleisti failų atsiliepimų skydelius</translation>
 <translation id="1995337122023280937">Eiti į failo vietą</translation>
+<translation id="1996806196681857869">Z suglaudintas archyvas</translation>
 <translation id="2001796770603320721">Tvarkyti Diske</translation>
 <translation id="2009067268969781306">Formatuojant atmintuką bus ištrinti visi jame saugomi duomenys. Šio veiksmo anuliuoti negalima.</translation>
 <translation id="2025955442973426285">Tigrinų k.</translation>
@@ -589,6 +590,7 @@
 <translation id="5955954492236143329">Elementų: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">Rūšiuoti parinktis</translation>
+<translation id="5985041959109124139">Z suglaudintas TAR archyvas</translation>
 <translation id="6007237601604674381">Nepavyko perkelti. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Eterneto tinklas</translation>
 <translation id="60357267506638014">Čekiška QWERTY</translation>
@@ -619,6 +621,7 @@
 <translation id="6220423280121890987">Pendžabų k.</translation>
 <translation id="6224240818060029162">Danų k.</translation>
 <translation id="6224253798271602650">Formatuoti: <ph name="DRIVE_NAME" /></translation>
+<translation id="6224665423283788195">Z standarto suglaudintas archyvas</translation>
 <translation id="6227235786875481728">Nepavyko paleisti šio failo.</translation>
 <translation id="6241349547798190358">Nyderlandų k. (Belgija)</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_INDEX" /> tinklas iš <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, signalo stiprumas <ph name="SIGNAL_STRENGTH" /> %, telefono akumuliatorius <ph name="BATTERY_STATUS" /> %, prisijungti</translation>
@@ -646,6 +649,7 @@
 <translation id="6509122719576673235">Norvegų</translation>
 <translation id="6528513914570774834">Leisti kitiems šio įrenginio naudotojams naudoti šį tinklą</translation>
 <translation id="653019979737152879">Sinchronizuojamas failas „<ph name="FILE_NAME" />“...</translation>
+<translation id="6530595303336443929">Z standarto suglaudintas TAR archyvas</translation>
 <translation id="6549689063733911810">Naujausi</translation>
 <translation id="6558280019477628686">Įvyko klaida. Kai kurie elementai galėjo nebūti ištrinti.</translation>
 <translation id="656398493051028875">Ištrinamas failas „<ph name="FILENAME" />“...</translation>

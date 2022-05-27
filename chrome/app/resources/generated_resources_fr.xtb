@@ -334,7 +334,6 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1327794256477341646">Les fonctionnalités qui nécessitent l'accès à votre position ne seront pas disponibles</translation>
 <translation id="1329191040029425999">Assurez-vous que votre appareil est à jour et veuillez réessayer</translation>
 <translation id="1330145147221172764">Activer le clavier à l'écran</translation>
-<translation id="1331625853030156663">Pour ouvrir <ph name="APP_NAME" />, activez "Afficher l'écran de verrouillage en sortant du mode veille"</translation>
 <translation id="1331977651797684645">C'était moi.</translation>
 <translation id="1333489022424033687">Certaines fonctionnalités du site <ph name="ORIGIN" /> risquent de ne pas s'exécuter si vous n'effacez pas les données que d'autres sites ont stockées sur votre appareil</translation>
 <translation id="1333965224356556482">Ne pas autoriser les sites à accéder à votre position</translation>
@@ -4322,6 +4321,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="520568280985468584">Le réseau a bien été ajouté. L'activation de votre réseau cellulaire peut prendre plusieurs minutes.</translation>
 <translation id="5206215183583316675">Supprimer "<ph name="CERTIFICATE_NAME" />" ?</translation>
 <translation id="520621735928254154">Erreur d'importation du certificat</translation>
+<translation id="5206562235913517859">L'ID du marchand-magasin est au format ABC-1234</translation>
 <translation id="5206787458656075734">{COUNT,plural, =1{Le mot de passe compromis a bien été changé. Vous avez # mot de passe compromis supplémentaire. Chrome vous recommande de vérifier ce mot de passe maintenant.}one{Le mot de passe compromis a bien été changé. Vous avez # mot de passe compromis supplémentaire. Chrome vous recommande de vérifier ce mot de passe maintenant.}other{Le mot de passe compromis a bien été changé. Vous avez # mots de passe compromis supplémentaires. Chrome vous recommande de vérifier ces mots de passe maintenant.}}</translation>
 <translation id="5207949376430453814">Mettre le curseur de texte en surbrillance</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> veut vérifier si vous utilisez un appareil Chrome OS éligible.</translation>
@@ -4844,6 +4844,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5729712731028706266">&amp;Afficher</translation>
 <translation id="5731247495086897348">Coller l'URL et y a&amp;ccéder</translation>
 <translation id="5732392974455271431">Tes parents peuvent te le débloquer</translation>
+<translation id="5733866499231170760">ID incorrect. Le format que vous avez saisi est incorrect. Veuillez consulter les instructions que vous avez reçues pour vous assurer de saisir l'ID au format correct. Si vous ne parvenez pas à résoudre ce problème, veuillez laisser le champ vide et continuer l'installation.</translation>
 <translation id="5734362860645681824">Communications</translation>
 <translation id="5734697361979786483">Ajouter un partage de fichiers</translation>
 <translation id="5736796278325406685">Veuillez saisir un nom d'utilisateur valide</translation>
@@ -5534,7 +5535,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6419524191360800346">Une mise à niveau vers Debian 11 (Bullseye) est disponible</translation>
 <translation id="6419546358665792306">Charger l'extension non empaquetée</translation>
 <translation id="642469772702851743">Le propriétaire de cet appareil (n° de série : <ph name="SERIAL_NUMBER" />) l'a verrouillé.</translation>
-<translation id="6425556984042222041">Débit de la voix de la synthèse vocale</translation>
+<translation id="6425556984042222041">Débit de parole de la synthèse vocale</translation>
 <translation id="6426200009596957090">Ouvrir les paramètres ChromeVox</translation>
 <translation id="642729974267661262">Non autorisé à lire des sons</translation>
 <translation id="6429384232893414837">Erreur de mise à jour</translation>
@@ -6318,7 +6319,6 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Quitter la page}one{Quitter la page}other{Quitter les pages}}</translation>
 <translation id="7207457272187520234">Envoyer des données d'utilisation et de diagnostic. À l'heure actuelle, cet appareil envoie automatiquement à Google des données liées à son utilisation et à celle des applications, ainsi que des données de diagnostic. Ces informations nous aideront à améliorer, entre autres, la stabilité du système et des applications. Certaines données globales seront également utiles aux développeurs des applications Google et à nos partenaires tels que les développeurs Android. Ce paramètre est appliqué par le propriétaire. Si vous avez activé le paramètre "Activité supplémentaire sur le Web et les applications", ces données peuvent être enregistrées dans votre compte Google.</translation>
 <translation id="7207631048330366454">Rechercher dans les applications</translation>
-<translation id="720808544705441386">Impossible d'ouvrir l'appli</translation>
 <translation id="7210499381659830293">Imprimantes d'extension</translation>
 <translation id="7211783048245131419">Aucune action n'a encore été associée à un contacteur</translation>
 <translation id="7212097698621322584">Saisissez votre code actuel pour pouvoir le modifier. Si vous ne vous en souvenez plus, vous devez réinitialiser la clé de sécurité, puis créer un autre code.</translation>
@@ -6953,6 +6953,7 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="7824864914877854148">Échec de la sauvegarde en raison d'une erreur</translation>
 <translation id="782590969421016895">Utiliser les pages actuelles</translation>
 <translation id="7826174860695147464">Legacy Browser Support (LBS) – Paramètres internes</translation>
+<translation id="7826190688224781865">Code de l'ID du marchand-magasin</translation>
 <translation id="7826249772873145665">Débogage ADB désactivé</translation>
 <translation id="7826254698725248775">Identifiant de l'appareil en conflit.</translation>
 <translation id="7828731929332799387">Cette action supprimera l'ensemble des cookies et données de sites disponibles dans des contextes tiers. Voulez-vous continuer ?</translation>
@@ -8424,6 +8425,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="987897973846887088">Aucune image disponible</translation>
 <translation id="988320949174893488">Saccadée de façon occasionnelle</translation>
 <translation id="988978206646512040">Phrase secrète obligatoire</translation>
+<translation id="991097196715779457">Code de l'ID du marchand-magasin (facultatif)</translation>
 <translation id="992032470292211616">Les extensions, les applications et les thèmes peuvent endommager votre appareil. Voulez-vous vraiment continuer ?</translation>
 <translation id="992256792861109788">Rose</translation>
 <translation id="992592832486024913">Désactiver ChromeVox (commentaires audio)</translation>

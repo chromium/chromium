@@ -338,7 +338,6 @@ Bet kuriuo metu patikrinkite slaptažodžius skiltyje „<ph name="GOOGLE_PASSWO
 <translation id="1327794256477341646">Funkcijos, kurioms reikalinga jūsų vietovės informacija, neveiks</translation>
 <translation id="1329191040029425999">Įsitikinkite, kad įrenginys atnaujintas, ir bandykite dar kartą</translation>
 <translation id="1330145147221172764">Įgalinti ekrano klaviatūrą</translation>
-<translation id="1331625853030156663">Jei norite atidaryti „<ph name="APP_NAME" />“, įgalinkite parinktį „Rodyti užrakto ekraną pažadinant iš miego būsenos“.</translation>
 <translation id="1331977651797684645">Tai buvau aš.</translation>
 <translation id="1333489022424033687">Kai kurios svetainės <ph name="ORIGIN" /> funkcijos gali neveikti, iki kol išvalysite duomenis, kuriuos kitos svetainės išsaugojo jūsų įrenginyje</translation>
 <translation id="1333965224356556482">Neleisti svetainėms peržiūrėti vietovės informacijos</translation>
@@ -4340,6 +4339,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="520568280985468584">Tinklas pridėtas sėkmingai. Gali užtrukti kelias minutes, kol mobiliojo ryšio tinklas taps aktyvus.</translation>
 <translation id="5206215183583316675">Ištrinti „<ph name="CERTIFICATE_NAME" />“?</translation>
 <translation id="520621735928254154">Sertifikato importavimo klaida</translation>
+<translation id="5206562235913517859">Mažmenininko parduotuvės ID ABC-1234 formatu</translation>
 <translation id="5206787458656075734">{COUNT,plural, =1{Pažeistas slaptažodis sėkmingai pakeistas. Turite dar # pažeistą slaptažodį. „Chrome“ rekomenduoja patikrinti šį slaptažodį dabar.}one{Pažeistas slaptažodis sėkmingai pakeistas. Turite dar # pažeistą slaptažodį. „Chrome“ rekomenduoja patikrinti šiuos slaptažodžius dabar.}few{Pažeistas slaptažodis sėkmingai pakeistas. Turite dar # pažeistus slaptažodžius. „Chrome“ rekomenduoja patikrinti šiuos slaptažodžius dabar.}many{Pažeistas slaptažodis sėkmingai pakeistas. Turite dar # pažeisto slaptažodžio. „Chrome“ rekomenduoja patikrinti šiuos slaptažodžius dabar.}other{Pažeistas slaptažodis sėkmingai pakeistas. Turite dar # pažeistų slaptažodžių. „Chrome“ rekomenduoja patikrinti šiuos slaptažodžius dabar.}}</translation>
 <translation id="5207949376430453814">Paryškinti teksto žymeklį</translation>
 <translation id="520840839826327499">„<ph name="SERVICE_NAME" />“ nori patikrinti, ar naudojate tinkamą „Chrome“ OS įrenginį.</translation>
@@ -4862,6 +4862,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="5729712731028706266">Žiūrėti</translation>
 <translation id="5731247495086897348">Įk&amp;lijuoti ir pradėti</translation>
 <translation id="5732392974455271431">Jūsų tėvai gali atblokuoti ją už jus</translation>
+<translation id="5733866499231170760">Netinkamas ID. Įvestas netinkamas formatas. Įsitikinkite, kad ID pateikiate tinkamu formatu, peržiūrėję gautas instrukcijas. Jei nepavyksta išspręsti šios problemos, palikite lauką tuščią ir toliau vykdykite diegimo procesą.</translation>
 <translation id="5734362860645681824">Ryšiai</translation>
 <translation id="5734697361979786483">Pridėti failų bendrinimo įrenginį</translation>
 <translation id="5736796278325406685">Įveskite tinkamą naudotojo vardą</translation>
@@ -6340,7 +6341,6 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Išeiti iš puslapio}one{Išeiti iš puslapių}few{Išeiti iš puslapių}many{Išeiti iš puslapių}other{Išeiti iš puslapių}}</translation>
 <translation id="7207457272187520234">Siųskite naudojimo ir diagnostikos duomenis. Šiuo metu šis įrenginys automatiškai siunčia „Google“ diagnostikos, įrenginio ir programų naudojimo duomenis. Tai padės pagerinti sistemos bei programos stabilumą ir teikti kitus patobulinimus. Kai kurie sukaupti duomenys taip pat bus naudingi „Google“ programoms ir partneriams, pvz., „Android“ kūrėjams. Šį nustatymą taiko savininkas. Jei papildomas Žiniatinklio ir programų veiklos nustatymas įjungtas, šie duomenys gali būti išsaugoti „Google“ paskyroje.</translation>
 <translation id="7207631048330366454">Ieškoti programų</translation>
-<translation id="720808544705441386">Nepavyko atidaryti programos</translation>
 <translation id="7210499381659830293">Plėtinio spausdintuvai</translation>
 <translation id="7211783048245131419">Dar nepriskirtas joks jungiklis</translation>
 <translation id="7212097698621322584">Įveskite dabartinį PIN kodą, jei norite jį pakeisti. Jei dabartinio PIN kodo nežinote, turėsite nustatyti saugos raktą iš naujo ir sukurti naują PIN kodą.</translation>
@@ -6975,6 +6975,7 @@ Paspauskite priskirtą jungiklį ar klavišą, kad pašalintumėte priskyrimą</
 <translation id="7824864914877854148">Nepavyko sukurti atsarginės kopijos dėl klaidos</translation>
 <translation id="782590969421016895">Naudoti esamus puslapius</translation>
 <translation id="7826174860695147464">Pasenusių naršyklių palaikymas – vidinė struktūra</translation>
+<translation id="7826190688224781865">Mažmenininko parduotuvės ID kodas</translation>
 <translation id="7826249772873145665">ADB derinimas išjungtas</translation>
 <translation id="7826254698725248775">Nesuderinamas įrenginio identifikatorius.</translation>
 <translation id="7828731929332799387">Bus ištrinti visi su trečiosiomis šalimis susiję slapukai ir svetainių duomenys. Ar norite tęsti?</translation>
@@ -8448,6 +8449,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="987897973846887088">Nėra pasiekiamų vaizdų</translation>
 <translation id="988320949174893488">Kartais stringa</translation>
 <translation id="988978206646512040">Neleidžiama naudoti tuščio slaptafrazės lauko</translation>
+<translation id="991097196715779457">Mažmenininko parduotuvės ID kodas (pasirenkama)</translation>
 <translation id="992032470292211616">Plėtiniai, programos ir temos gali pakenkti įrenginiui. Tikrai norite tęsti?</translation>
 <translation id="992256792861109788">Rožinė</translation>
 <translation id="992592832486024913">Išjungti „ChromeVox“ (ekrano skaitymą balsu)</translation>

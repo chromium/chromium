@@ -335,7 +335,6 @@
 <translation id="1327794256477341646">위치가 필요한 기능이 작동하지 않음</translation>
 <translation id="1329191040029425999">기기가 최신 상태인지 확인하고 다시 시도해 보세요</translation>
 <translation id="1330145147221172764">터치 키보드 사용</translation>
-<translation id="1331625853030156663"><ph name="APP_NAME" /> 앱을 열려면 ‘절전 모드 해제 시 잠금 화면 표시’를 사용 설정하세요.</translation>
 <translation id="1331977651797684645">본인이 맞습니다.</translation>
 <translation id="1333489022424033687">기기에 저장된 다른 사이트의 데이터를 삭제할 때까지 <ph name="ORIGIN" />의 일부 기능을 사용하지 못할 수 있습니다.</translation>
 <translation id="1333965224356556482">사이트에서 내 위치를 확인하도록 허용하지 않음</translation>
@@ -6331,7 +6330,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{페이지 나가기}other{페이지 나가기}}</translation>
 <translation id="7207457272187520234">사용 및 진단 데이터를 보냅니다. 이 기기는 현재 진단, 기기 및 앱 사용 데이터를 Google에 자동으로 보내고 있습니다. 데이터는 시스템 및 앱 안정성 등을 개선하는 데 활용됩니다. 일부 수집 데이터는 Google 앱과 파트너(Android 개발자 등)에게도 도움을 줍니다. 설정은 소유자가 지정합니다. 추가 웹 및 앱 활동이 사용 설정되어 있다면 이 데이터가 Google 계정에 저장될 수 있습니다.</translation>
 <translation id="7207631048330366454">앱 검색</translation>
-<translation id="720808544705441386">앱을 열 수 없음</translation>
 <translation id="7210499381659830293">확장 프로그램 프린터</translation>
 <translation id="7211783048245131419">아직 할당된 스위치가 없음</translation>
 <translation id="7212097698621322584">PIN을 변경하려면 현재 PIN을 입력하세요. PIN을 모르는 경우 보안 키를 재설정한 다음 새 PIN을 만들어야 합니다.</translation>

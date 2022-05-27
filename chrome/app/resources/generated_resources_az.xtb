@@ -331,7 +331,6 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1327794256477341646">Məkanınızı tələb edən xüsusiyyətlər işləməyəcək</translation>
 <translation id="1329191040029425999">Cihazınızın güncəl olduğuna əmin olun və yenidən cəhd edin</translation>
 <translation id="1330145147221172764">Ekranüstü klaviaturaları aktiv edin</translation>
-<translation id="1331625853030156663"><ph name="APP_NAME" /> tətbiqini açmaq üçün "Yuxudan oyanarkən kilid ekranını göstər" seçimini aktiv edin</translation>
 <translation id="1331977651797684645">Mən idim.</translation>
 <translation id="1333489022424033687">Digər saytların cihazınızda saxladığı datanı silməsəniz,<ph name="ORIGIN" /> üzərindəki bəzi xüsusiyyətlər işləməyə bilər</translation>
 <translation id="1333965224356556482">Saytlara məkanınıza baxmaq icazəsi verməyin</translation>
@@ -6310,7 +6309,6 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Səhifədən Çıxın}other{Səhifələrdən Çıxın}}</translation>
 <translation id="7207457272187520234">İstifadə və diaqnostika datasını göndərin. Bu cihaz hazırda diaqnostika, cihaz və tətbiqdən istifadə datasını avtomatik Google'a göndərir. Bu, sistem və tətbiq sabitliyi və digər təkmilləşdirmələrə kömək edəcək. Bəzi ümumiləşdirilmiş məlumatlar Google tətbiqlərinə və Android tərtibatçıları kimi partnyorlara da kömək edəcək. Bu ayar sahibi tərəfindən tətbiq edilir. Əlavə Veb və Tətbiq Fəaliyyəti ayarı aktiv edilərsə, bu data Google Hesabınızda yadda saxlanıla bilər.</translation>
 <translation id="7207631048330366454">Tətbiqlərdə axtarın</translation>
-<translation id="720808544705441386">Tətbiqi açmaq mümkün deyil</translation>
 <translation id="7210499381659830293">Artırma printerləri</translation>
 <translation id="7211783048245131419">Hələ heç bir düymə təyin edilməyib</translation>
 <translation id="7212097698621322584">Dəyişmək üçün cari PIN-i daxil edin. PIN-i bilmirsinizsə, güvənlik açarını sıfırlamalı, sonra isə yeni PIN yaratmalısınız.</translation>

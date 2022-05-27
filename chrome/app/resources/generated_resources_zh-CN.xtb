@@ -333,7 +333,6 @@
 <translation id="1327794256477341646">所有需要使用您的位置信息的功能都将无法正常运行</translation>
 <translation id="1329191040029425999">请确保您的设备已更新到最新版本，然后重试</translation>
 <translation id="1330145147221172764">启用屏幕键盘</translation>
-<translation id="1331625853030156663">若要打开<ph name="APP_NAME" />，请启用“从休眠状态唤醒时显示锁定屏幕”</translation>
 <translation id="1331977651797684645">是我本人。</translation>
 <translation id="1333489022424033687">请清除您设备上存储的其他网站的数据，否则 <ph name="ORIGIN" /> 上的某些功能可能无法正常运行</translation>
 <translation id="1333965224356556482">不允许网站查看您所在的位置</translation>
@@ -6301,7 +6300,6 @@
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{退出网页}other{退出网页}}</translation>
 <translation id="7207457272187520234">发送使用情况数据和诊断数据。目前，此设备会自动向 Google 发送诊断数据、设备数据和应用使用情况数据。这些数据会有助于提高系统和应用的稳定性以及实现其他方面的改进。部分汇总数据还会对 Google 应用和合作伙伴（例如 Android 开发者）有所帮助。这项设置是由此设备的所有者强制指定的。如果您已开启“其他网络与应用活动记录”设置，这些数据可能会被保存到您的 Google 帐号中。</translation>
 <translation id="7207631048330366454">搜索应用</translation>
-<translation id="720808544705441386">无法打开应用</translation>
 <translation id="7210499381659830293">扩展打印机</translation>
 <translation id="7211783048245131419">尚未分配任何开关</translation>
 <translation id="7212097698621322584">请输入您的当前 PIN 码以更改它。如果您不知道 PIN 码，则需要重置安全密钥，然后创建新 PIN 码。</translation>

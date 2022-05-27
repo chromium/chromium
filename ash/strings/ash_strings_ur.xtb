@@ -301,7 +301,6 @@
 <translation id="2791421900609674576">آپ کو تجاویز نظر آئیں گی تاکہ آپ نے جہاں چھوڑا تھا وہاں سے جاری رکھ سکیں۔ آپ تجاویز کو ہٹانے کے لیے  ٹچ کر کے دبائے رکھ سکتے ہیں۔</translation>
 <translation id="2792498699870441125">‏Alt+تلاش</translation>
 <translation id="2797741504905337289">شیلف پارٹی</translation>
-<translation id="2803313416453193357">فولڈر کھولیں</translation>
 <translation id="2805756323405976993">اطلاقات</translation>
 <translation id="2814448776515246190">جزوی کیپچر</translation>
 <translation id="2819276065543622893">آپ اب سائن آؤٹ ہو جائیں گے۔</translation>
@@ -699,6 +698,7 @@
 <translation id="5071064518267176975">ایک ایپ مائیکروفون کا استعمال کرنا چاہتی ہے</translation>
 <translation id="5078796286268621944">‏غلط PIN</translation>
 <translation id="5083553833479578423">اسسٹنٹ کی مزید خصوصیات کو غیر مقفل کریں۔</translation>
+<translation id="509790653408515442">جب آپ اپنے فون کی ایپس کی سلسلہ بندی کریں گے تو وہ یہاں ظاہر ہوں گی</translation>
 <translation id="5107522548814527560">ویب</translation>
 <translation id="5117590920725113268">اگلا مہینہ دکھائیں</translation>
 <translation id="5136175204352732067">مختلف کی بورڈ منسلک کر دیا گیا</translation>
@@ -721,6 +721,7 @@
 <translation id="523505283826916779">ایکسیسبیلٹی کی ترتیبات</translation>
 <translation id="5245201184978705914">ٹرانسکرپٹ کو تیار نہیں کیا جا سکتا</translation>
 <translation id="5253783950165989294"><ph name="DEVICE_NAME" /> نام والے آلے سے منسلک، <ph name="BATTERY_PERCENTAGE" /> فیصد بیٹری ہے</translation>
+<translation id="5258528442992323769">محفوظ کردہ کوئی ڈیسک نہیں ہے</translation>
 <translation id="5260676007519551770">ڈیسک 4</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> کو آپ کی توجہ درکار ہے۔</translation>
 <translation id="5283198616748585639">1 منٹ شامل کریں</translation>
@@ -1259,6 +1260,7 @@
 <translation id="851458219935658693">موجودہ ڈیسک سے ونڈوز دکھائیں، ریڈیو بٹن کا انتخاب کیا گیا</translation>
 <translation id="8517041960877371778">ہو سکتا ہے کہ آپ کا <ph name="DEVICE_TYPE" /> آن ہونے کی صورت میں چارج نہ ہو۔</translation>
 <translation id="8535393432370007982">رنگ کے لحاظ سے ترتیب کو کالعدم کریں</translation>
+<translation id="8542053257095774575">محفوظ کردہ کوئی ڈیسک یا تمثیل نہیں ہے</translation>
 <translation id="8546059259582788728">ترتیب کو کالعدم کرنا کامیاب</translation>
 <translation id="8551588720239073785">تاریخ اور وقت کی ترتیبات</translation>
 <translation id="8553395910833293175">پہلے ہی تمام ڈیسکس کو تفویض کر دیا گیا۔</translation>

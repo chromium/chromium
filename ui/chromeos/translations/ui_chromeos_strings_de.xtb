@@ -121,6 +121,7 @@
 <translation id="1942765061641586207">Bildauflösung</translation>
 <translation id="1972984168337863910">Erweiterte Dateiinformationen maximieren</translation>
 <translation id="1995337122023280937">Zum Dateispeicherort</translation>
+<translation id="1996806196681857869">Z-komprimiertes Archiv</translation>
 <translation id="2001796770603320721">In Drive verwalten</translation>
 <translation id="2009067268969781306">Durch die Formatierung eines Laufwerks werden alle darauf gespeicherten Daten gelöscht. Diese Aktion kann nicht rückgängig gemacht werden.</translation>
 <translation id="2025955442973426285">Tigrinya</translation>
@@ -589,6 +590,7 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> Elemente</translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">Sortieroptionen</translation>
+<translation id="5985041959109124139">Z-komprimiertes TAR-Archiv</translation>
 <translation id="6007237601604674381">Fehler beim Verschieben. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Ethernet-Netzwerk</translation>
 <translation id="60357267506638014">Tschechisch – QWERTY</translation>
@@ -619,6 +621,7 @@
 <translation id="6220423280121890987">Punjabi</translation>
 <translation id="6224240818060029162">Dänisch</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" /> formatieren</translation>
+<translation id="6224665423283788195">Zstandard-komprimiertes Archiv</translation>
 <translation id="6227235786875481728">Diese Datei kann nicht wiedergegeben werden.</translation>
 <translation id="6241349547798190358">Niederländisch (Belgien)</translation>
 <translation id="6267547857941397424">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" /> %, Smartphone-Akku bei <ph name="BATTERY_STATUS" /> %, Verbinden</translation>
@@ -646,6 +649,7 @@
 <translation id="6509122719576673235">Norwegisch</translation>
 <translation id="6528513914570774834">Anderen Nutzern des Geräts erlauben, dieses Netzwerk zu verwenden</translation>
 <translation id="653019979737152879"><ph name="FILE_NAME" /> wird synchronisiert...</translation>
+<translation id="6530595303336443929">Zstandard-komprimiertes TAR-Archiv</translation>
 <translation id="6549689063733911810">Zuletzt geöffnet</translation>
 <translation id="6558280019477628686">Ein Fehler ist aufgetreten. Einige Elemente wurden möglicherweise nicht gelöscht.</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />" wird gelöscht...</translation>

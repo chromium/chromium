@@ -313,6 +313,7 @@ Prek dhe mbaj shtypur një fjalë për ta kërkuar. Për të përsosur kërkimin
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# skedar audio}other{# skedarë audio}}</translation>
 <translation id="265156376773362237">Ngarkimi paraprak standard</translation>
 <translation id="2656405586795711023">Aplikacionet e uebit</translation>
+<translation id="2669454659051515572">Çdo person që e përdor këtë pajisje mund t'i shikojë skedarët e shkarkuar</translation>
 <translation id="2702516483241149200">E re: Ndaj një lidhje që të drejton te ky tekst</translation>
 <translation id="2704606927547763573">Kopjuar</translation>
 <translation id="2707726405694321444">Rifresko faqen</translation>
@@ -778,6 +779,7 @@ Për të ndryshuar këtë cilësim, <ph name="BEGIN_LINK" />rivendos sinkronizim
 <translation id="5246093389635966745">Shkurtorja e modifikimit të shiritit të veglave</translation>
 <translation id="526421993248218238">Kjo faqe nuk mund të ngarkohet</translation>
 <translation id="5271967389191913893">Pajisja nuk mund të hapë përmbajtjen që do të shkarkohet.</translation>
+<translation id="5274286919938458946">Lidhur me <ph name="CARD_DETAIL" /></translation>
 <translation id="5292796745632149097">Dërgo te</translation>
 <translation id="5300426565656326054">Personalizimi i reklamave në bazë të shfletuesit</translation>
 <translation id="5304593522240415983">Kjo fushë nuk mund të jetë bosh</translation>

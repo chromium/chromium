@@ -61,6 +61,7 @@
 <translation id="2583187216237139145">Энэ профайлыг ашиглах үед үүссэн Chromium-н аливаа өгөгдлийг (хавчуурга, түүх, нууц үг болон бусад тохиргоог үүсгэх зэрэг) ажлын профайлын админ хасах боломжтой. <ph name="LEARN_MORE" /></translation>
 <translation id="2648074677641340862">Суулгалтын явцад үйлдлийн системийн алдаа гарлаа. Chromium-ыг дахин татаж авна уу.</translation>
 <translation id="2661879430930417727">Хэрэв та төхөөрөмжийг дундаа ашигладаг бол найз нөхөд, гэр бүл тань хөтчөөр тусдаа үзэж, Chromium-г хүссэнээрээ тохируулах боломжтой</translation>
+<translation id="268602741124540128">Chromium-д тавтай морилно уу, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="2711502716910134313">Chromium таб</translation>
 <translation id="2718390899429598676">Таны аюулгүй байдлыг сайжруулахын тулд Chromium таны өгөгдлийг шифрлэх болно.</translation>
 <translation id="2770231113462710648">Стандарт веб хөтчийг дараах руу өөрчил:</translation>
@@ -117,9 +118,11 @@
 <translation id="3830894615770080216">ChromiumOS систем</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
 <translation id="386822487697155367">ChromiumOS-тэй холбоотой тусламж авах</translation>
+<translation id="3871664619793219264">Chromium хөтчийн зүйлсээ <ph name="ACCOUNT_EMAIL" />-с авна уу</translation>
 <translation id="388648406173476553">Chromium-г өөрчилж, хянана уу. Та ямар нэг зүйлд анхаарлаа хандуулах шаардлагатай байна. Дэлгэрэнгүй мэдээлэл авахын тулд товшино уу.</translation>
 <translation id="3889543394854987837">Chromium-г нээх мөн хөтөчийг ашиглаж эхлэхийн тулд өөрийн нэр дээр дарна уу.</translation>
 <translation id="390528597099634151"><ph name="EXISTING_USER" /> Chromium-н энэ профайлд аль хэдийн нэвтэрсэн байна. Таны хөтчийн үзэлтийг тусад нь байлгахын тулд Chromium танд өөрийн гэсэн профайл үүсгэж өгөх боломжтой.</translation>
+<translation id="391789666908693569">Таны бүртгэлийг <ph name="MANAGER_NAME" /> удирддаг. Танай администратор энэ Chromium хөтчийн профайл болон үүний хавчуурга, түүх, нууц үг зэрэг өгөгдлийг харах болон засах боломжтой.</translation>
 <translation id="3945058413678539331">Chromium нь нууц үгс хуулахыг оролдож байна. Үүнийг зөвшөөрөхийн тулд Windows-н нууц үгээ бичнэ үү.</translation>
 <translation id="3962623956404948996">Энэ файл аюултай байж магадгүй тул Chromium үүнийг скан хийхийг зөвлөж байна</translation>
 <translation id="3997429360543082038">ChromiumOS-н тухай</translation>

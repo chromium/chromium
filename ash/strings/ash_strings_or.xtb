@@ -301,7 +301,6 @@
 <translation id="2791421900609674576">ଆପଣ ଯେଉଁଠାରେ ଛାଡ଼ିଥିଲେ ସେଠାରୁ ଜାରି ରଖିବା ପାଇଁ ସୁପାରିଶଗୁଡ଼ିକ ଦେଖିବେ। ଆପଣ ସୁପାରିଶଗୁଡ଼ିକୁ କାଢ଼ି ଦେବା ପାଇଁ ସ୍ପର୍ଶ କରି ଧରି ରଖିପାରିବେ।</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
 <translation id="2797741504905337289">ସେଲ୍ଫ ପାର୍ଟି</translation>
-<translation id="2803313416453193357">ଫୋଲ୍ଡର ଖୋଲନ୍ତୁ</translation>
 <translation id="2805756323405976993">ଆପ୍ସ</translation>
 <translation id="2814448776515246190">ଆଂଶିକ କ୍ୟାପଚର୍</translation>
 <translation id="2819276065543622893">ବର୍ତ୍ତମାନ, ଆପଣଙ୍କୁ ସାଇନ୍‌ ଆଉଟ୍‌ କରିଦିଆଯିବ।</translation>
@@ -699,6 +698,7 @@
 <translation id="5071064518267176975">ଏକ ଆପ୍ ମାଇକ୍ରୋଫୋନ୍ ବ୍ୟବହାର କରିବାକୁ ଚାହେଁ</translation>
 <translation id="5078796286268621944">ଭୁଲ ପିନ୍</translation>
 <translation id="5083553833479578423">ଆହୁରି ଆସିଷ୍ଟାଣ୍ଟ ବୈଶିଷ୍ଟ୍ୟଗୁଡ଼ିକ ଅନ୍‌ଲକ୍‌ କରନ୍ତୁ</translation>
+<translation id="509790653408515442">ଆପଣ ଆପଣଙ୍କ ଫୋନର ଆପ୍ସକୁ ଷ୍ଟ୍ରିମ କଲେ, ସେଗୁଡ଼ିକ ଏଠାରେ ଦେଖାଯିବ</translation>
 <translation id="5107522548814527560">ୱେବ</translation>
 <translation id="5117590920725113268">ପରବର୍ତ୍ତୀ ମାସ ଦେଖାନ୍ତୁ</translation>
 <translation id="5136175204352732067">ଅଲଗା କୀବୋର୍ଡ ସଂଯୁକ୍ତ ହୋ‍ଇଛି</translation>
@@ -721,6 +721,7 @@
 <translation id="523505283826916779">ଆକ୍ସେସିବିଲିଟୀ ସେଟିଂସ୍‌</translation>
 <translation id="5245201184978705914">ଟ୍ରାନ୍ସକ୍ରିପ୍ଟ ତିଆରି କରାଯାଇପାରିବ ନାହିଁ</translation>
 <translation id="5253783950165989294"><ph name="DEVICE_NAME" /> ନାମକ ଏକ ଡିଭାଇସ୍ ସହ ସଂଯୋଗ କରାଯାଇଛି, ବ୍ୟାଟେରୀରେ <ph name="BATTERY_PERCENTAGE" />% ଚାର୍ଜ ଅଛି</translation>
+<translation id="5258528442992323769">କୌଣସି ସେଭ ହୋଇଥିବା ଡେସ୍କ ନାହିଁ</translation>
 <translation id="5260676007519551770">ଡେସ୍କ 4</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> ଆପଣଙ୍କୁ ଧ୍ୟାନ ଦେବା ପାଇଁ ଅନୁରୋଧ କରୁଛି।</translation>
 <translation id="5283198616748585639">1 ମିନିଟ୍ ଯୋଗ କରନ୍ତୁ</translation>
@@ -1259,6 +1260,7 @@
 <translation id="851458219935658693">ବର୍ତ୍ତମାନର ଡେସ୍କରୁ ୱିଣ୍ଡୋଗୁଡ଼ିକୁ ଦେଖାନ୍ତୁ, ରେଡିଓ ବଟନକୁ ଚୟନ କରାଯାଇଛି</translation>
 <translation id="8517041960877371778">ଯେତେବେଳେ ଏହା ଚାଲୁ ଅଛି, ସେତେବେଳେ ଆପଣଙ୍କର <ph name="DEVICE_TYPE" /> ଚାର୍ଜ ହୋ‍ଇନପାରେ।</translation>
 <translation id="8535393432370007982">ରଙ୍ଗ ଅନୁସାରେ ସର୍ଟ କରିବାକୁ ପୂର୍ବବତ୍ କରନ୍ତୁ</translation>
+<translation id="8542053257095774575">କୌଣସି ସେଭ ହୋଇଥିବା ଡେସ୍କ କିମ୍ବା ଟେମ୍ପଲେଟ ନାହିଁ</translation>
 <translation id="8546059259582788728">ସର୍ଟ କରିବାକୁ ପୂର୍ବବତ୍ କରିବା ବିଫଳ ହୋଇଛି</translation>
 <translation id="8551588720239073785">ତାରିଖ ଏବଂ ସମୟ ସେଟିଂସ୍</translation>
 <translation id="8553395910833293175">ସମସ୍ତ ଡେସ୍କକୁ ପୂର୍ବରୁ ଆସାଇନ୍ କରାଯାଇଛି।</translation>

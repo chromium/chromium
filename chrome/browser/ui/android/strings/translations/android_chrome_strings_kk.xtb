@@ -313,6 +313,7 @@
 <translation id="2651091186440431324">{FILE_COUNT,plural, =1{# аудиофайл}other{# аудиофайл}}</translation>
 <translation id="265156376773362237">Стандартты алдын ала жүктеу</translation>
 <translation id="2656405586795711023">Веб-қолданбалар</translation>
+<translation id="2669454659051515572">Осы құрылғыны пайдаланатын кез келген адам жүктеп алынған файлдарды көре алады.</translation>
 <translation id="2702516483241149200">Жаңа: осы мәтінге бағыттайтын сілтемені бөлісу</translation>
 <translation id="2704606927547763573">Көшірілген</translation>
 <translation id="2707726405694321444">Бетті жаңарту</translation>
@@ -778,6 +779,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="5246093389635966745">Құралдар тақтасын өзгерту таңбашасы</translation>
 <translation id="526421993248218238">Бұл бет жүктелмеді</translation>
 <translation id="5271967389191913893">Құрылғы жүктелетін мазмұнды аша алмайды.</translation>
+<translation id="5274286919938458946"><ph name="CARD_DETAIL" /> картасымен байланыстырылды.</translation>
 <translation id="5292796745632149097">Қойынды жіберілетін құрылғы:</translation>
 <translation id="5300426565656326054">Жарнаманы браузерге негіздеп жекелендіру</translation>
 <translation id="5304593522240415983">Бұл өріс бос болмауы керек</translation>

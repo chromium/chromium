@@ -117,6 +117,7 @@
 <translation id="1942765061641586207">ಚಿತ್ರದ ರೆಸಲ್ಯೂಷನ್‌‌</translation>
 <translation id="1972984168337863910">ಫೈಲ್‌ಗಳ ಪ್ರತಿಕ್ರಿಯೆ ಫಲಕಗಳನ್ನು ವಿಸ್ತರಿಸಿ</translation>
 <translation id="1995337122023280937">ಫೈಲ್ ಸ್ಥಳಕ್ಕೆ ಹೋಗಿ</translation>
+<translation id="1996806196681857869">Z ಕುಗ್ಗಿಸಲಾದ ಆರ್ಕೈವ್</translation>
 <translation id="2001796770603320721">ಡ್ರೈವ್‌ನಲ್ಲಿ ನಿರ್ವಹಿಸಿ</translation>
 <translation id="2009067268969781306">ಡ್ರೈವ್ ಅನ್ನು ಫಾರ್ಮ್ಯಾಟ್ ಮಾಡುವುದರಿಂದ, ಅದರಲ್ಲಿ ಸಂಗ್ರಣೆಯಾಗಿರುವ ಎಲ್ಲಾ ಡೇಟಾವನ್ನು ಅಳಿಸಲಾಗುತ್ತದೆ. ಈ ಕ್ರಿಯೆಯನ್ನು ರದ್ದುಪಡಿಸಲಾಗುವುದಿಲ್ಲ.</translation>
 <translation id="2025955442973426285">ಟಿಗ್ರಿನ್ಯಾ</translation>
@@ -585,6 +586,7 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> ಐಟಂಗಳು</translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">ಆಯ್ಕೆಗಳನ್ನು ವಿಂಗಡಿಸು</translation>
+<translation id="5985041959109124139">Z ಕುಗ್ಗಿಸಲಾದ tar ಆರ್ಕೈವ್</translation>
 <translation id="6007237601604674381">ಸರಿಸುವುದು ವಿಫಲವಾಗಿದೆ. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">ಈಥರ್‌ನೆಟ್ ನೆಟ್‌ವರ್ಕ್</translation>
 <translation id="60357267506638014">ಜೆಕ್ QWERTY</translation>
@@ -615,6 +617,7 @@
 <translation id="6220423280121890987">ಪಂಜಾಬಿ</translation>
 <translation id="6224240818060029162">ಡ್ಯಾನಿಶ್</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" /> ಅನ್ನು ಫಾರ್ಮ್ಯಾಟ್ ಮಾಡಿ</translation>
+<translation id="6224665423283788195">Z ಸ್ಟ್ಯಾಂಡರ್ಡ್ ಕುಗ್ಗಿಸಲಾದ ಆರ್ಕೈವ್</translation>
 <translation id="6227235786875481728">ಈ ಫೈಲ್ ಅನ್ನು ಪ್ರದರ್ಶಿಸಲಾಗಿಲ್ಲ.</translation>
 <translation id="6241349547798190358">ಡಚ್ (ಬೆಲ್ಜಿಯಂ)</translation>
 <translation id="6267547857941397424"><ph name="NETWORK_COUNT" /> ರಲ್ಲಿ <ph name="NETWORK_INDEX" /> ನೆಟ್‌ವರ್ಕ್, <ph name="PHONE_NAME" />, ಸಿಗ್ನಲ್ ಸಾಮರ್ಥ್ಯ <ph name="SIGNAL_STRENGTH" />%, ಫೋನ್ ಬ್ಯಾಟರಿ <ph name="BATTERY_STATUS" />%, ಕನೆಕ್ಟ್</translation>
@@ -642,6 +645,7 @@
 <translation id="6509122719576673235">ನಾರ್ವೆಜಿಯನ್</translation>
 <translation id="6528513914570774834">ಈ ನೆಟ್‌ವರ್ಕ್ ಬಳಸಲು, ಈ ಸಾಧನದ ಇತರ ಬಳಕೆದಾರರಿಗೆ ಅವಕಾಶ ನೀಡಿ</translation>
 <translation id="653019979737152879"><ph name="FILE_NAME" /> ಸಿಂಕ್‌ ಮಾಡಲಾಗುತ್ತಿದೆ...</translation>
+<translation id="6530595303336443929">Z ಸ್ಟ್ಯಾಂಡರ್ಡ್ ಕುಗ್ಗಿಸಲಾದ tar ಆರ್ಕೈವ್</translation>
 <translation id="6549689063733911810">ಇತ್ತೀಚಿನದು</translation>
 <translation id="6558280019477628686">ದೋಷ ಸಂಭವಿಸಿದೆ. ಕೆಲವು ಐಟಂಗಳನ್ನು ಅಳಿಸಲು ಸಾಧ್ಯವಾಗದಿರಬಹುದು.</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />" ಅಳಿಸಲಾಗುತ್ತಿದೆ...</translation>

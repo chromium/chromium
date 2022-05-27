@@ -335,7 +335,6 @@
 <translation id="1327794256477341646">需要所在位置的功能將無法運作</translation>
 <translation id="1329191040029425999">請確保裝置為最新版本，然後再試一次</translation>
 <translation id="1330145147221172764">啟用螢幕小鍵盤</translation>
-<translation id="1331625853030156663">如要開啟「<ph name="APP_NAME" />」，請啟用「從休眠狀態喚醒時顯示螢幕上鎖畫面」功能</translation>
 <translation id="1331977651797684645">這是我本人。</translation>
 <translation id="1333489022424033687">如不清除其他網站在裝置上儲存的資料，<ph name="ORIGIN" /> 的部分功能可能無法正常運作</translation>
 <translation id="1333965224356556482">不允許網站查看您的位置</translation>
@@ -849,6 +848,7 @@
 <translation id="1794051631868188691">永不顯示 <ph name="MERCHANT" /></translation>
 <translation id="1794791083288629568">請提供寶貴意見，協助我們修正此問題。</translation>
 <translation id="1795214765651529549">使用經典主題</translation>
+<translation id="1796105431091975902">選取 Ansible 腳本以新增</translation>
 <translation id="1796588414813960292">需要使用音訊的功能將無法運作</translation>
 <translation id="1800502858278951817">沒有擴充程式要求讀取和變更 <ph name="SITE_NAME" /></translation>
 <translation id="1802624026913571222">蓋上機蓋時進入休眠狀態</translation>
@@ -3048,6 +3048,7 @@
 <translation id="389901847090970821">選取鍵盤</translation>
 <translation id="3900966090527141178">匯出密碼</translation>
 <translation id="3903187154317825986">內置鍵盤</translation>
+<translation id="3903191712482985591">新增腳本</translation>
 <translation id="3904326018476041253">定位服務</translation>
 <translation id="3904849010307028014">網站可根據您與網站的互動 (例如定期登入網站)，向您的瀏覽器發出信任憑證。日後，如果您瀏覽的其他網站檢查並找到有效的信任憑證，則這些網站更有可能將您視為真人，而不是機器人。</translation>
 <translation id="3905761538810670789">修復應用程式</translation>
@@ -3657,6 +3658,7 @@
 <translation id="4510479820467554003">家長帳戶清單</translation>
 <translation id="451102079304155829">購物車</translation>
 <translation id="4513872120116766993">預測輸入內容</translation>
+<translation id="4513909579793564731">套用腳本</translation>
 <translation id="4513946894732546136">意見反映</translation>
 <translation id="451407183922382411">由 <ph name="COMPANY_NAME" /> 提供</translation>
 <translation id="4514610446763173167">喺播放同暫停影片之間切換</translation>
@@ -5485,6 +5487,7 @@
 <translation id="635609604405270300">保持裝置開啟</translation>
 <translation id="63566973648609420">只有知道密碼短語的使用者才能讀取您的加密資料。系統不會將密碼短語傳送給 Google，Google 也不會儲存密碼短語。如果您忘記自己的密碼短語，或希望變更這項設定，則必須<ph name="BEGIN_LINK" />重設同步功能<ph name="END_LINK" />。</translation>
 <translation id="6357305427698525450">部分支援連結將仍會在 <ph name="APP_NAME" /> 或 <ph name="APP_NAME_2" /> 中開啟。</translation>
+<translation id="6357794994761110294">沒有擴充程式可以讀取並變更 <ph name="SITE_NAME" /></translation>
 <translation id="6358884629796491903">龍</translation>
 <translation id="6361850914223837199">錯誤詳情：</translation>
 <translation id="6362853299801475928">報告問題(&amp;R)…</translation>
@@ -6330,7 +6333,6 @@
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{離開網頁}other{離開網頁}}</translation>
 <translation id="7207457272187520234">傳送使用情況和診斷資料。此裝置目前會自動將診斷、裝置及應用程式的使用情況資料傳送至 Google。這可協助改善系統及應用程式的穩定性及其他功能。部分彙整資料也會用於協助 Google 應用程式與合作夥伴 (例如 Android 開發人員)。擁有者可強制執行此設定。如果已開啟其他「網絡及應用程式活動記錄」設定，系統可能會將此資料儲存至您的 Google 帳戶。</translation>
 <translation id="7207631048330366454">搜尋應用程式</translation>
-<translation id="720808544705441386">無法開啟應用程式</translation>
 <translation id="7210499381659830293">擴充程式打印機</translation>
 <translation id="7211783048245131419">未指派任何按鈕</translation>
 <translation id="7212097698621322584">請輸入目前的 PIN 以進行變更。如果您不知道自己的 PIN，請重設安全密鑰，然後建立新的 PIN。</translation>

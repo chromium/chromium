@@ -334,7 +334,6 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1327794256477341646">Les fonctionnalités qui nécessitent l'accès à votre position ne seront pas accessibles</translation>
 <translation id="1329191040029425999">Veuillez vous assurer que votre appareil est à jour et réessayez</translation>
 <translation id="1330145147221172764">Activer le clavier à l'écran</translation>
-<translation id="1331625853030156663">Pour ouvrir <ph name="APP_NAME" />, activez « Afficher l'écran de verrouillage à l'activation »</translation>
 <translation id="1331977651797684645">C'était moi.</translation>
 <translation id="1333489022424033687">Certaines fonctionnalités de <ph name="ORIGIN" /> risquent de ne pas fonctionner si vous n'effacez pas les données que d'autres sites ont stockées sur votre appareil</translation>
 <translation id="1333965224356556482">Ne pas autoriser les sites à accéder à votre position</translation>
@@ -2656,7 +2655,7 @@ et sur Ctrl+Alt+diminuer la luminosité pour effectuer un zoom arrière.</transl
 <translation id="353316712352074340"><ph name="WINDOW_TITLE" /> - Audio désactivé</translation>
 <translation id="3537881477201137177">Vous pouvez modifier cela plus tard dans le menu Paramètres</translation>
 <translation id="3538066758857505094">Erreur lors de la désinstallation de Linux. Veuillez réessayer.</translation>
-<translation id="354060433403403521">Adaptateur c.a.</translation>
+<translation id="354060433403403521">Adaptateur CA</translation>
 <translation id="354068948465830244">Cette extension pourra lire et modifier les données du site</translation>
 <translation id="3541823293333232175">Attribué</translation>
 <translation id="3543393733900874979">Échec de la mise à jour (erreur : <ph name="ERROR_NUMBER" />)</translation>
@@ -4323,6 +4322,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="520568280985468584">Le réseau a bien été ajouté. L'activation de votre réseau cellulaire peut prendre plusieurs minutes.</translation>
 <translation id="5206215183583316675">Supprimer « <ph name="CERTIFICATE_NAME" /> »?</translation>
 <translation id="520621735928254154">Erreur d'importation du certificat</translation>
+<translation id="5206562235913517859">L'identifiant du magasin-détaillant est au format ABC-1234</translation>
 <translation id="5206787458656075734">{COUNT,plural, =1{Le mot de passe compromis a été changé. Vous avez # autre mot de passe compromis. Chrome recommande de vérifier ce mot de passe maintenant.}one{Le mot de passe compromis a été changé. Vous avez # autre mot de passe compromis. Chrome recommande de vérifier ce mot de passe maintenant.}other{Le mot de passe compromis a été changé. Vous avez # autres mots de passe compromis. Chrome recommande de vérifier ces mots de passe maintenant.}}</translation>
 <translation id="5207949376430453814">Mettre le point d'insertion de texte en surbrillance</translation>
 <translation id="520840839826327499"><ph name="SERVICE_NAME" /> veut vérifier si vous utilisez un appareil Chrome OS admissible.</translation>
@@ -4844,6 +4844,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="5729712731028706266">&amp;Affichage</translation>
 <translation id="5731247495086897348">Co&amp;ller et rechercher</translation>
 <translation id="5732392974455271431">Tes parents peuvent le débloquer pour toi</translation>
+<translation id="5733866499231170760">Identifiant incorrect. Le format que vous avez entré est incorrect. Veuillez vérifier les instructions que vous avez reçues pour vous assurer d'entrer l'identifiant au format correct. Si vous ne parvenez pas à résoudre ce problème, veuillez laisser le champ vide et poursuivre l'installation.</translation>
 <translation id="5734362860645681824">Communications</translation>
 <translation id="5734697361979786483">Ajouter un partage de fichier</translation>
 <translation id="5736796278325406685">Veuillez entrer un nom d'utilisateur valide</translation>
@@ -6318,7 +6319,6 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Quitter la page}one{Quitter la page}other{Quitter les pages}}</translation>
 <translation id="7207457272187520234">Envoyer les données d'utilisation et de diagnostic. Actuellement, cet appareil envoie automatiquement à Google des données de diagnostic, de l'appareil et d'utilisation des applications. Cela nous permettra d'assurer la stabilité du système et des applications, et d'apporter d'autres améliorations. Certaines données collectées contribueront également à améliorer les applications Google et aideront nos partenaires, comme les développeurs Android. Ce paramètre est appliqué par le propriétaire du compte. Si le paramètre relatif aux autres activités sur le Web et dans les applications est activé, ces données peuvent être enregistrées dans votre compte Google.</translation>
 <translation id="7207631048330366454">Rechercher dans les applications</translation>
-<translation id="720808544705441386">Impossible d'ouvrir l'application</translation>
 <translation id="7210499381659830293">Imprimantes d'extension</translation>
 <translation id="7211783048245131419">Aucun commutateur n'a été attribué</translation>
 <translation id="7212097698621322584">Entrez votre NIP actuel pour le modifier. Si vous ne connaissez pas votre NIP, vous devrez réinitialiser la clé de sécurité, puis créer un nouveau NIP.</translation>
@@ -6953,6 +6953,7 @@ Appuyez sur un commutateur attribué ou une touche du clavier pour retirer l'att
 <translation id="7824864914877854148">Une erreur s'est produite et la sauvegarde n'a pas pu être terminée</translation>
 <translation id="782590969421016895">Utilisez les pages actuelles</translation>
 <translation id="7826174860695147464">Prise en charge de navigateurs hérités (LBS) – paramètres internes</translation>
+<translation id="7826190688224781865">Code d'identification du magasin-détaillant</translation>
 <translation id="7826249772873145665">Le débogage PDA est désactivé</translation>
 <translation id="7826254698725248775">Identifiant d'appareil en conflit.</translation>
 <translation id="7828731929332799387">Cela supprimera tous les témoins et les données des sites proposés dans les contextes tiers. Voulez-vous continuer?</translation>
@@ -8423,6 +8424,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="987897973846887088">Aucune image disponible</translation>
 <translation id="988320949174893488">Occasionnellement saccadée</translation>
 <translation id="988978206646512040">La phrase de passe est obligatoire</translation>
+<translation id="991097196715779457">Code d'identification du magasin-détaillant (facultatif)</translation>
 <translation id="992032470292211616">Les extensions, les applications et les thèmes peuvent nuire à votre appareil. Voulez-vous vraiment continuer?</translation>
 <translation id="992256792861109788">Rose</translation>
 <translation id="992592832486024913">Désactiver ChromeVox (commentaires audio)</translation>

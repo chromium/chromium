@@ -86,6 +86,7 @@
 <translation id="1645954272419197032">デバイス情報を確認してください</translation>
 <translation id="1662989795263954667">停止 - インク切れ</translation>
 <translation id="1668469839109562275">組み込みの VPN</translation>
+<translation id="1672499492233627739">ウェブカメラの動画フィード</translation>
 <translation id="1676557873873341166">動画を撮影しています</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS Resolver の存在</translation>
@@ -216,6 +217,7 @@
 <translation id="3008341117444806826">更新</translation>
 <translation id="3009958530611748826">保存先のフォルダを選択</translation>
 <translation id="3017079585324758401">背景</translation>
+<translation id="3027578600144895987">カメラを閉じる</translation>
 <translation id="3031560714565892478">デバイスの種類はビデオカメラです。</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">エンドポイント</translation>
@@ -234,6 +236,7 @@
 <translation id="315738237743207937">キャプティブ ポータルが検出されました</translation>
 <translation id="3170673040743561620">スキャナにドキュメントを置いてください</translation>
 <translation id="3188257591659621405">マイファイル</translation>
+<translation id="319101249942218879">アバター画像を変更しました</translation>
 <translation id="3192947282887913208">音声ファイル</translation>
 <translation id="3199982728237701504">ドキュメント フィーダー（両面）</translation>
 <translation id="320091191259649613">更新しても問題が解決しない場合は、新たに資格を満たしたコンポーネントがデータベースに反映されていない可能性があります。</translation>

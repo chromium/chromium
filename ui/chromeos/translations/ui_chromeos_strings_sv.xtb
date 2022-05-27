@@ -121,6 +121,7 @@
 <translation id="1942765061641586207">Bildupplösning</translation>
 <translation id="1972984168337863910">Utöka panel med information om filåtgärder</translation>
 <translation id="1995337122023280937">Gå till filens plats</translation>
+<translation id="1996806196681857869">Z-komprimerat arkiv</translation>
 <translation id="2001796770603320721">Hantera i Drive</translation>
 <translation id="2009067268969781306">Om du formaterar en enhet raderas all data som lagras på den. Det går inte att ångra åtgärden.</translation>
 <translation id="2025955442973426285">tigrinja</translation>
@@ -589,6 +590,7 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> objekt</translation>
 <translation id="5957366693331451795">Chromebox-modeller</translation>
 <translation id="5982621672636444458">Sorteringsalternativ</translation>
+<translation id="5985041959109124139">Z-komprimerat tar-arkiv</translation>
 <translation id="6007237601604674381">Flytten misslyckades. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Ethernet-nätverk</translation>
 <translation id="60357267506638014">Tjeckiska (QWERTY)</translation>
@@ -619,6 +621,7 @@
 <translation id="6220423280121890987">punjabi</translation>
 <translation id="6224240818060029162">danska</translation>
 <translation id="6224253798271602650">Formatera <ph name="DRIVE_NAME" /></translation>
+<translation id="6224665423283788195">Zstandard-komprimerat arkiv</translation>
 <translation id="6227235786875481728">Det gick inte att spela upp filen.</translation>
 <translation id="6241349547798190358">nederländska (Belgien)</translation>
 <translation id="6267547857941397424">Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, signalstyrka <ph name="SIGNAL_STRENGTH" /> %, telefonens batterinivå <ph name="BATTERY_STATUS" /> %, anslut</translation>
@@ -646,6 +649,7 @@
 <translation id="6509122719576673235">norska</translation>
 <translation id="6528513914570774834">Tillåt att andra användare på den här enheten kan använda det här nätverket</translation>
 <translation id="653019979737152879">Synkroniserar <ph name="FILE_NAME" /> ...</translation>
+<translation id="6530595303336443929">Zstandard-komprimerat tar-arkiv</translation>
 <translation id="6549689063733911810">Senaste</translation>
 <translation id="6558280019477628686">Ett fel uppstod. Vissa objekt kanske inte har raderats.</translation>
 <translation id="656398493051028875"><ph name="FILENAME" /> tas bort ...</translation>

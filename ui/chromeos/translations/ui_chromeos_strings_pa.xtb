@@ -121,6 +121,7 @@
 <translation id="1942765061641586207">ਚਿੱਤਰ ਰੈਜ਼ੋਲਿਊਸ਼ਨ</translation>
 <translation id="1972984168337863910">ਫ਼ਾਈਲਾਂ ਦੇ ਪ੍ਰਤੀਕਰਮ ਪੈਨਲਾਂ ਦਾ ਵਿਸਤਾਰ ਕਰੋ</translation>
 <translation id="1995337122023280937">ਫ਼ਾਈਲ ਟਿਕਾਣੇ 'ਤੇ ਜਾਓ</translation>
+<translation id="1996806196681857869">Z ਨਪੀੜਿਆ ਪੁਰਾਲੇਖ</translation>
 <translation id="2001796770603320721">'ਡਰਾਈਵ' ਵਿੱਚ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="2009067268969781306">ਕਿਸੇ ਡਰਾਈਵ ਨੂੰ ਫਾਰਮੈਟ ਕਰਨ ਨਾਲ ਇਸ 'ਤੇ ਸਟੋਰ ਕੀਤਾ ਸਾਰਾ ਡਾਟਾ ਮਿਟ ਜਾਵੇਗਾ। ਇਸ ਕਾਰਵਾਈ ਨੂੰ ਅਣਕੀਤਾ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ।</translation>
 <translation id="2025955442973426285">ਟਿਗਰੀਨਿਆ</translation>
@@ -588,6 +589,7 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> ਆਈਟਮਾਂ</translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
 <translation id="5982621672636444458">ਵਿਕਲਪ ਕ੍ਰਮਬੱਧ ਕਰੋ</translation>
+<translation id="5985041959109124139">Z ਨਪੀੜਿਆ tar ਪੁਰਾਲੇਖ</translation>
 <translation id="6007237601604674381">ਮੂਵ ਅਸਫਲ। <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">ਈਥਰਨੈੱਟ ਨੈੱਟਵਰਕ</translation>
 <translation id="60357267506638014">ਚੈਕ QWERTY</translation>
@@ -618,6 +620,7 @@
 <translation id="6220423280121890987">ਪੰਜਾਬੀ</translation>
 <translation id="6224240818060029162">ਡੈਨਿਸ਼</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" /> ਨੂੰ ਫਾਰਮੈਟ ਕਰੋ</translation>
+<translation id="6224665423283788195">Zstandard ਨਪੀੜਿਆ ਪੁਰਾਲੇਖ</translation>
 <translation id="6227235786875481728">ਇਹ ਫਾਈਲ ਪਲੇ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕੀ।</translation>
 <translation id="6241349547798190358">ਡੱਚ (ਬੈਲਜੀਅਮ)</translation>
 <translation id="6267547857941397424">ਨੈੱਟਵਰਕ <ph name="NETWORK_COUNT" /> ਵਿੱਚੋਂ <ph name="NETWORK_INDEX" />, <ph name="PHONE_NAME" />, ਸਿਗਨਲ ਦੀ ਤੀਬਰਤਾ <ph name="SIGNAL_STRENGTH" />%, ਫ਼ੋਨ ਦੀ ਬੈਟਰੀ <ph name="BATTERY_STATUS" />%, ਕਨੈਕਟ ਕਰੋ</translation>
@@ -645,6 +648,7 @@
 <translation id="6509122719576673235">ਨਾਰਵੇਜੀਅਨ</translation>
 <translation id="6528513914570774834">ਇਸ ਡੀਵਾਈਸ ਦੇ ਹੋਰ ਵਰਤੋਂਕਾਰਾਂ ਨੂੰ ਇਸ ਨੈੱਟਵਰਕ ਦੀ ਵਰਤੋਂ ਕਰਨ ਦੀ ਇਜਾਜ਼ਤ ਦਿਓ</translation>
 <translation id="653019979737152879"><ph name="FILE_NAME" /> ਨੂੰ ਸਿੰਕ ਕਰ ਰਿਹਾ ਹੈ...</translation>
+<translation id="6530595303336443929">Zstandard ਨਪੀੜਿਆ tar ਪੁਰਾਲੇਖ</translation>
 <translation id="6549689063733911810">ਹਾਲੀਆ</translation>
 <translation id="6558280019477628686">ਕੋਈ ਗੜਬੜ ਹੋਈ। ਸ਼ਾਇਦ ਕੁਝ ਆਈਟਮਾਂ ਮਿਟਾਈਆਂ ਨਹੀਂ ਗਈਆਂ ਹਨ।</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />" ਨੂੰ ਮਿਟਾ ਰਿਹਾ ਹੈ...</translation>

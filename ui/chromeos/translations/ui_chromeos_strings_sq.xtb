@@ -121,6 +121,7 @@
 <translation id="1942765061641586207">Rezolucioni i imazhit</translation>
 <translation id="1972984168337863910">Zgjero panelet e komenteve të skedarëve</translation>
 <translation id="1995337122023280937">Shko te vendndodhja e skedarit</translation>
+<translation id="1996806196681857869">Arkiv i ngjeshur Z</translation>
 <translation id="2001796770603320721">Menaxhoje te "Disku"</translation>
 <translation id="2009067268969781306">Formatimi i një disku do të fshijë të gjitha të dhënat e ruajtura në të. Ky veprim nuk mund të zhbëhet.</translation>
 <translation id="2025955442973426285">Tigrinja</translation>
@@ -588,6 +589,7 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> artikuj</translation>
 <translation id="5957366693331451795">Pajisjet Chromebox</translation>
 <translation id="5982621672636444458">Opsionet e renditjes</translation>
+<translation id="5985041959109124139">Arkiv i ngjeshur tar Z</translation>
 <translation id="6007237601604674381">Lëvizja dështoi. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Rrjeti i eternetit</translation>
 <translation id="60357267506638014">Tastierë çeke QWERTY</translation>
@@ -618,6 +620,7 @@
 <translation id="6220423280121890987">Panxhabi</translation>
 <translation id="6224240818060029162">Danisht</translation>
 <translation id="6224253798271602650">Formato <ph name="DRIVE_NAME" /></translation>
+<translation id="6224665423283788195">Arkiv i ngjeshur Zstandard</translation>
 <translation id="6227235786875481728">Ky skedar nuk mund të luhej.</translation>
 <translation id="6241349547798190358">Holandisht (Belgjikë)</translation>
 <translation id="6267547857941397424">Rrjeti <ph name="NETWORK_INDEX" /> nga <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />%, bateria e telefonit <ph name="BATTERY_STATUS" />%, lidhu</translation>
@@ -645,6 +648,7 @@
 <translation id="6509122719576673235">Norvegjisht</translation>
 <translation id="6528513914570774834">Lejo që përdoruesit e tjerë të kësaj pajisjeje të përdorin këtë rrjet</translation>
 <translation id="653019979737152879">Po sinkronizon <ph name="FILE_NAME" />...</translation>
+<translation id="6530595303336443929">Arkivi i ngjeshur tar Zstandard</translation>
 <translation id="6549689063733911810">Të fundit</translation>
 <translation id="6558280019477628686">Ndodhi një gabim. Disa artikuj mund të mos jenë fshirë.</translation>
 <translation id="656398493051028875">Po fshin "<ph name="FILENAME" />"...</translation>

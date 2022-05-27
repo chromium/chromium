@@ -121,6 +121,7 @@
 <translation id="1942765061641586207">Раздзяляльнасць відарыса</translation>
 <translation id="1972984168337863910">Разгарнуць панэлі водгукаў для файлаў</translation>
 <translation id="1995337122023280937">Адкрыць месцазнаходжанне файла</translation>
+<translation id="1996806196681857869">Сціснуты архіў Z</translation>
 <translation id="2001796770603320721">Кіраваць на Дыску</translation>
 <translation id="2009067268969781306">Фармаціраванне дыска прывядзе да выдалення ўсіх захаваных на ім даных. Гэта дзеянне нельга адрабіць.</translation>
 <translation id="2025955442973426285">Тыгрынья</translation>
@@ -588,6 +589,7 @@
 <translation id="5955954492236143329">Элементаў: <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="5957366693331451795">Chromebox</translation>
 <translation id="5982621672636444458">Параметры сартавання</translation>
+<translation id="5985041959109124139">Сціснуты архіў Z у фармаце TAR</translation>
 <translation id="6007237601604674381">Не ўдалося перамясціць. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Сетка Ethernet</translation>
 <translation id="60357267506638014">Чэшская QWERTY</translation>
@@ -618,6 +620,7 @@
 <translation id="6220423280121890987">Панджабі</translation>
 <translation id="6224240818060029162">Дацкая</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" />: фармаціраванне</translation>
+<translation id="6224665423283788195">Сціснуты архіў Zstandard</translation>
 <translation id="6227235786875481728">Не атрымалася прайграць файл.</translation>
 <translation id="6241349547798190358">Нідэрландская (Бельгія)</translation>
 <translation id="6267547857941397424">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, зарад акумулятара тэлефона – <ph name="BATTERY_STATUS" />%, падключыцца</translation>
@@ -645,6 +648,7 @@
 <translation id="6509122719576673235">Нарвежская</translation>
 <translation id="6528513914570774834">Дазволіць іншым карыстальнікам прылады выкарыстоўваць гэту сетку</translation>
 <translation id="653019979737152879">Ідзе сінхранізацыя файла "<ph name="FILE_NAME" />"...</translation>
+<translation id="6530595303336443929">Сціснуты архіў Zstandard у фармаце TAR</translation>
 <translation id="6549689063733911810">Нядаўнія</translation>
 <translation id="6558280019477628686">Адбылася памылка. Некаторыя элементы маглі не выдаліцца.</translation>
 <translation id="656398493051028875">Ідзе выдаленне файла "<ph name="FILENAME" />"...</translation>

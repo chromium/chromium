@@ -301,7 +301,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2791421900609674576">Vei vedea recomandări ca să poți continua de unde ai rămas. Poți să atingi lung ca să elimini recomandările.</translation>
 <translation id="2792498699870441125">Alt+Căutare</translation>
 <translation id="2797741504905337289">Shelf Party</translation>
-<translation id="2803313416453193357">Deschideți dosarul</translation>
 <translation id="2805756323405976993">Aplicații</translation>
 <translation id="2814448776515246190">Captură parțială</translation>
 <translation id="2819276065543622893">Veți fi deconectat(ă) acum.</translation>
@@ -699,6 +698,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="5071064518267176975">O aplicație solicită permisiunea de a folosi microfonul</translation>
 <translation id="5078796286268621944">Cod PIN incorect</translation>
 <translation id="5083553833479578423">Deblochează mai multe funcții ale Asistentului.</translation>
+<translation id="509790653408515442">Când redai în stream aplicații de pe telefon, ele vor apărea aici</translation>
 <translation id="5107522548814527560">Web</translation>
 <translation id="5117590920725113268">Afișează luna următoare</translation>
 <translation id="5136175204352732067">Altă tastatură conectată</translation>
@@ -721,6 +721,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="523505283826916779">Setări de accesibilitate</translation>
 <translation id="5245201184978705914">Nu se poate genera transcrierea</translation>
 <translation id="5253783950165989294">S-a conectat la dispozitivul <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" />% baterie</translation>
+<translation id="5258528442992323769">Nu există desktopuri salvate</translation>
 <translation id="5260676007519551770">Desktop 4</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> are nevoie de atenție.</translation>
 <translation id="5283198616748585639">Adaugă 1 min.</translation>
@@ -1059,6 +1060,7 @@ Instalare nouă</translation>
 <translation id="7348093485538360975">Tastatură pe ecran</translation>
 <translation id="735745346212279324">Rețea VPN deconectată</translation>
 <translation id="7360036564632145207">Modificarea setării pentru protecția accesului la date pentru dispozitive periferice poate optimiza performanța</translation>
+<translation id="736045644501761622">Setează imaginea de fundal și stilul</translation>
 <translation id="7371404428569700291">Înregistrează fereastra</translation>
 <translation id="7377169924702866686">Tasta Caps Lock este activată.</translation>
 <translation id="7377481913241237033">Conectează-te cu un cod</translation>
@@ -1260,6 +1262,7 @@ Instalare nouă</translation>
 <translation id="851458219935658693">Se afișează ferestrele de pe desktopul actual, buton radio selectat</translation>
 <translation id="8517041960877371778">Este posibil ca <ph name="DEVICE_TYPE" /> să nu se încarce cât timp este pornit.</translation>
 <translation id="8535393432370007982">Anulează sortarea după culoare</translation>
+<translation id="8542053257095774575">Nu există desktopuri sau șabloane salvate</translation>
 <translation id="8546059259582788728">Sortarea a fost anulată</translation>
 <translation id="8551588720239073785">Setări de dată și oră</translation>
 <translation id="8553395910833293175">A fost deja atribuită tuturor desktopurilor.</translation>
@@ -1292,6 +1295,7 @@ Instalare nouă</translation>
 <translation id="8721053961083920564">Activează sau dezactivează volumul: <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Captură pe ecran complet</translation>
 <translation id="8734991477317290293">Aceasta ar putea încerca să înregistreze ce taste apeși</translation>
+<translation id="8735678380411481005">Culoarea retroiluminării tastaturii</translation>
 <translation id="8735953464173050365">Afișează setările pentru tastatură. Este selectată <ph name="KEYBOARD_NAME" /></translation>
 <translation id="8755498163081687682">Confirmă-ți identitatea: <ph name="ORIGIN_NAME" /> solicită să îți confirmi identitatea</translation>
 <translation id="875593634123171288">Afișează setările VPN</translation>

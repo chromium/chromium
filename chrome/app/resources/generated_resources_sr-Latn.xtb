@@ -335,7 +335,6 @@ Proverite lozinke u bilo kom trenutku u: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1327794256477341646">Funkcije kojima je potrebna vaša lokacija neće raditi</translation>
 <translation id="1329191040029425999">Proverite da li je uređaj ažuran i probajte ponovo</translation>
 <translation id="1330145147221172764">Omogući tastaturu na ekranu</translation>
-<translation id="1331625853030156663">Da biste otvorili aplikaciju <ph name="APP_NAME" />, omogućite opciju Prikaži zaključani ekran pri pokretanju iz režima spavanja</translation>
 <translation id="1331977651797684645">To sam ja.</translation>
 <translation id="1333489022424033687">Neke funkcije na <ph name="ORIGIN" /> možda neće raditi dok ne obrišete podatke koje su drugi sajtovi sačuvali na uređaju</translation>
 <translation id="1333965224356556482">Ne dozvoljavaj sajtovima da vide vašu lokaciju</translation>
@@ -838,6 +837,7 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="1794051631868188691">Nikada ne prikazuj korpu prodavca <ph name="MERCHANT" /></translation>
 <translation id="1794791083288629568">Šalji povratne informacije kao pomoć za rešavanje ovog problema.</translation>
 <translation id="1795214765651529549">Koristi klasičnu</translation>
+<translation id="1796105431091975902">Izaberite Ansible vodič za dodavanje</translation>
 <translation id="1796588414813960292">Funkcije kojima treba zvuk neće raditi</translation>
 <translation id="1800502858278951817">Nijedan dodatak nije zatražio da čita i menja <ph name="SITE_NAME" /></translation>
 <translation id="1802624026913571222">Pređi u stanje spavanja kada se poklopac zatvori</translation>
@@ -3032,6 +3032,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="389901847090970821">Izaberite tastaturu</translation>
 <translation id="3900966090527141178">Izvezite lozinke</translation>
 <translation id="3903187154317825986">Ugrađena tastatura</translation>
+<translation id="3903191712482985591">Dodajte vodič</translation>
 <translation id="3904326018476041253">Usluge lokacije</translation>
 <translation id="3904849010307028014">Taj sajt može da izda pouzdan token za pregledač na osnovu vaše interakcije sa sajtom, poput redovnog prijavljivanja na nalog. Ako drugi sajtovi koje posećujete kasnije potraže i pronađu važeći pouzdani token, veća je verovatnoća da će vas tretirati kao osobu, a ne kao robota.</translation>
 <translation id="3905761538810670789">Popravi aplikaciju</translation>
@@ -3640,6 +3641,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="4510479820467554003">Lista naloga roditelja</translation>
 <translation id="451102079304155829">korpe</translation>
 <translation id="4513872120116766993">Pisanje sa predviđanjem</translation>
+<translation id="4513909579793564731">Primeni vodič</translation>
 <translation id="4513946894732546136">Povratne informacije</translation>
 <translation id="451407183922382411">Omogućava <ph name="COMPANY_NAME" /></translation>
 <translation id="4514610446763173167">Pušta ili pauzira video</translation>
@@ -5470,6 +5472,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="635609604405270300">Ne isključujte uređaj</translation>
 <translation id="63566973648609420">Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Google ne šalje niti čuva pristupnu frazu. Ako zaboravite pristupnu frazu ili želite da promenite ovo podešavanje, moraćete da <ph name="BEGIN_LINK" />resetujete sinhronizaciju<ph name="END_LINK" />.</translation>
 <translation id="6357305427698525450">Neki podržani linkovi će se i dalje otvarati u <ph name="APP_NAME" /> ili <ph name="APP_NAME_2" />.</translation>
+<translation id="6357794994761110294">Nijednom dodatku nije dozvoljeno da čita i menja <ph name="SITE_NAME" /></translation>
 <translation id="6358884629796491903">Zmaj</translation>
 <translation id="6361850914223837199">Detalji greške:</translation>
 <translation id="6362853299801475928">P&amp;rijavi problem...</translation>
@@ -6319,7 +6322,6 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Zatvori stranicu}one{Zatvori stranice}few{Zatvori stranice}other{Zatvori stranice}}</translation>
 <translation id="7207457272187520234">Šaljite podatke o korišćenju i dijagnostičke podatke. Ovaj uređaj trenutno automatski šalje podatke o dijagnostici, uređaju i korišćenju aplikacija Google-u. To doprinosi održavanju stabilnosti sistema i aplikacije i drugim podešavanjima. Neki objedinjeni podaci će takođe pomoći Google aplikacijama i partnerima, poput Android programera. To podešavanje primenjuje vlasnik. Ako uključite podešavanje dodatne aktivnosti na vebu i u aplikacijama, ti podaci će se možda čuvati na Google nalogu.</translation>
 <translation id="7207631048330366454">Pretražite aplikacije</translation>
-<translation id="720808544705441386">Otvaranje aplikacije nije uspelo</translation>
 <translation id="7210499381659830293">Štampači dodaci</translation>
 <translation id="7211783048245131419">Još nije dodeljen nijedan prekidač</translation>
 <translation id="7212097698621322584">Unesite aktuelni PIN da biste ga promenili. Ako ne znate PIN, morate da resetujete bezbednosni ključ, pa da napravite novi PIN.</translation>

@@ -3596,6 +3596,7 @@ Wenn diese Richtlinie konfiguriert ist, erlaubt <ph name="PRODUCT_OS_NAME" /> es
 <translation id="4960597185231686653">Boolescher Parameter, der angibt, ob für die Bildschirmtastatur die Spracheingabe aktiviert ist.</translation>
 <translation id="4970046075219007744">Webanwendungen erlauben, um Zugriff auf Dateitypen über die File Handling API zu bitten</translation>
 <translation id="4970855112942626932">Browseranmeldung deaktivieren</translation>
+<translation id="4974091268178043378">Chrome OS-Farbmodus</translation>
 <translation id="4976928720873547342">Wenn du diese Richtlinie konfigurierst, werden alle angegebenen Datentypen von der Synchronisierung ausgeschlossen. Dies gilt sowohl für die <ph name="CHROME_SYNC_NAME" /> als auch für die Synchronisierung von Roaming-Profilen. Dadurch lässt sich die Größe von Roaming-Profilen reduzieren und du kannst einschränken, welche Arten von Daten auf die <ph name="CHROME_SYNC_NAME" />-Server hochgeladen werden.
 
       Aktuell werden folgende Datentypen unterstützt: „bookmarks“, „readingList“, „preferences“, „passwords“, „autofill“, „themes“, „typedUrls“, „extensions“, „apps“, „tabs“ und „wifiConfigurations“. Bei diesen Namen muss die Groß- und Kleinschreibung beachtet werden.</translation>
@@ -4346,6 +4347,7 @@ Wenn die Richtlinie auf "True" gesetzt oder nicht konfiguriert ist, können Nutz
 
       Nutzer können diese Einstellung nicht ändern.</translation>
 <translation id="5848438019586925019">Algorithmus für die Generierung von Schlüsselpaaren.</translation>
+<translation id="5851248808417680865">Dunkles Design verwenden</translation>
 <translation id="585270638818921943">Nutzer daran hindern, Android-Apps aus nicht vertrauenswürdigen Quellen zu verwenden</translation>
 <translation id="5853547031212075792">Nutzern erlauben, den Nur-HTTPS-Modus zu aktivieren</translation>
 <translation id="5859344336338527083">Wenn diese Richtlinie konfiguriert ist, wird festgelegt, über welche URLs Erweiterungen, Apps und Designs installiert werden dürfen. Vor <ph name="PRODUCT_NAME" />-Version 21 konnten Nutzer auf den Link zu einer CRX-Datei klicken und die Datei nach einigen Hinweisen in <ph name="PRODUCT_NAME" /> installieren. In allen nachfolgenden Versionen müssen solche Dateien zuerst heruntergeladen und dann auf die Seite "Einstellungen" in <ph name="PRODUCT_NAME" /> gezogen werden. Anhand dieser Einstellung kann bei bestimmten URLs der alte, einfachere Installationsvorgang angewendet werden.
@@ -4512,6 +4514,7 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
 
       Diese Richtlinie wird nur angewendet, wenn das Gerät für <ph name="PRODUCT_NAME" /> mit <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> registriert ist.
       Für <ph name="PRODUCT_OS_NAME" /> wird diese Richtlinie immer angewendet.</translation>
+<translation id="6019162469732742754">Automatischen Modus verwenden</translation>
 <translation id="6019606564278029236">Zulassen, dass Remote-Nutzer bei der Remote-Unterstützung mit geöffneten Fenstern interagieren können</translation>
 <translation id="6022948604095165524">Aktion beim Start</translation>
 <translation id="602318745029752898">Stimmen für die Sprachausgabe bei Enhanced Network in der Funktion „Vorlesen“ zulassen</translation>
@@ -5496,6 +5499,7 @@ Hinweis: Nutzer können Cookies blockieren und so auf Google-Dienste zugreifen, 
 <translation id="7019805045859631636">Schnell</translation>
 <translation id="7025332601572838001">Konfiguriert die Nutzungsbedingungen während der ersten Ausführung für CCT</translation>
 <translation id="7026351325994257733">Erlauben, dass WLAN-Konfigurationen auf allen <ph name="PRODUCT_OS_NAME" />-Geräten und einem verbundenen Android-Smartphone synchronisiert werden.</translation>
+<translation id="7027057540229843762">Helles Design verwenden</translation>
 <translation id="7027785306666625591">Hiermit wird die Energieverwaltung in <ph name="PRODUCT_OS_NAME" /> konfiguriert.
 
       Mit diesen Richtlinien kannst du festlegen, wie <ph name="PRODUCT_OS_NAME" /> sich verhalten soll, wenn der Nutzer für einen bestimmten Zeitraum inaktiv ist.</translation>
@@ -7058,6 +7062,9 @@ Ist die Richtlinie auf "false" gesetzt oder nicht konfiguriert, kann der Nutzer 
 
       „http://acme.de/ABC“ stimmt nur in „IESiteListMode“ überein.</translation>
 <translation id="8736538322216687231">Minimalen eingeschränkten Modus auf YouTube erzwingen</translation>
+<translation id="8744844164152340112">Dadurch wird festgelegt, welches Design zum Rendern der Benutzeroberfläche während der OOBE (Out-of-Box-Experience) und während einer Sitzung verwendet wird.
+      Dieser automatische Modus wechselt bei Sonnenauf- und untergang zwischen dem hellen und dunklen Design.
+      Diese Richtlinie sollte Nutzern empfohlen werden, damit sie das Design in den Systemeinstellungen ändern können.</translation>
 <translation id="8745669971728319820">Mit dieser Richtlinie wird festgelegt, ob Daten zu Erweiterungen und Plug-ins gesendet werden.
 
       Wenn die Richtlinie <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> deaktiviert oder nicht konfiguriert ist, wird diese Richtlinie ignoriert.

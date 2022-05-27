@@ -121,6 +121,7 @@
 <translation id="1942765061641586207">Резолуција на слика</translation>
 <translation id="1972984168337863910">Проширете ги таблите со повратни информации за датотеките</translation>
 <translation id="1995337122023280937">Оди на локацијата на датотеката</translation>
+<translation id="1996806196681857869">Архива компримирана со Z</translation>
 <translation id="2001796770603320721">Управување во Drive</translation>
 <translation id="2009067268969781306">Форматирањето на USB-дискот ќе ги избрише сите податоци складирани во него. Дејството не може да се врати.</translation>
 <translation id="2025955442973426285">тигрејски</translation>
@@ -588,6 +589,7 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> ставки</translation>
 <translation id="5957366693331451795">Уреди Chromebox</translation>
 <translation id="5982621672636444458">Подреди опции</translation>
+<translation id="5985041959109124139">tar-архива компримирана со Z</translation>
 <translation id="6007237601604674381">Потегот не успеа. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Етернет-мрежа</translation>
 <translation id="60357267506638014">чешка QWERTY</translation>
@@ -618,6 +620,7 @@
 <translation id="6220423280121890987">пенџапски</translation>
 <translation id="6224240818060029162">дански</translation>
 <translation id="6224253798271602650">Форматирање на <ph name="DRIVE_NAME" /></translation>
+<translation id="6224665423283788195">Архива компримирана со ZST</translation>
 <translation id="6227235786875481728">Датотеката не може да се репродуцира.</translation>
 <translation id="6241349547798190358">холандски (Белгија)</translation>
 <translation id="6267547857941397424">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" /> %, батерија на телефонот: <ph name="BATTERY_STATUS" /> %, поврзи</translation>
@@ -645,6 +648,7 @@
 <translation id="6509122719576673235">норвешки</translation>
 <translation id="6528513914570774834">Дозволи други корисници на уредов да ја користат мрежава</translation>
 <translation id="653019979737152879">Се синхронизира <ph name="FILE_NAME" />...</translation>
+<translation id="6530595303336443929">tar-архива компримирана со ZST</translation>
 <translation id="6549689063733911810">Неодамнешни</translation>
 <translation id="6558280019477628686">Грешка. Некои ставки може да не се избришани.</translation>
 <translation id="656398493051028875">Се брише „<ph name="FILENAME" />“...</translation>

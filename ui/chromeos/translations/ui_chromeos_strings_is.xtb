@@ -121,6 +121,7 @@
 <translation id="1942765061641586207">Upplausn myndar</translation>
 <translation id="1972984168337863910">Stækka svæði með ábendingum fyrir skrár</translation>
 <translation id="1995337122023280937">Fara í staðsetningu skráar</translation>
+<translation id="1996806196681857869">Z-þjöppuð geymsla</translation>
 <translation id="2001796770603320721">Stjórna á Drive</translation>
 <translation id="2009067268969781306">Þegar drif er forsniðið eyðast öll gögn af því. Ekki er hægt að afturkalla þessa aðgerð.</translation>
 <translation id="2025955442973426285">Tigriníska</translation>
@@ -588,6 +589,7 @@
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> atriði</translation>
 <translation id="5957366693331451795">Chromebox tæki</translation>
 <translation id="5982621672636444458">Röðunarvalkostir</translation>
+<translation id="5985041959109124139">Z-þjöppuð tar-geymsla</translation>
 <translation id="6007237601604674381">Mistókst að færa. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="6011074160056912900">Ethernet</translation>
 <translation id="60357267506638014">Tékkneskt QWERTY</translation>
@@ -618,6 +620,7 @@
 <translation id="6220423280121890987">Púnjabí</translation>
 <translation id="6224240818060029162">Danska</translation>
 <translation id="6224253798271602650">Forsníða <ph name="DRIVE_NAME" /></translation>
+<translation id="6224665423283788195">Zstandard-þjöppuð geymsla</translation>
 <translation id="6227235786875481728">Ekki tókst að spila þessa skrá.</translation>
 <translation id="6241349547798190358">Hollenska (Belgía)</translation>
 <translation id="6267547857941397424">Netkerfi <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="SIGNAL_STRENGTH" />% sendistyrkur, <ph name="BATTERY_STATUS" />% hleðsla á rafhlöðu símans, tengjast</translation>
@@ -645,6 +648,7 @@
 <translation id="6509122719576673235">Norskt</translation>
 <translation id="6528513914570774834">Heimila öðrum notendum tækisins að nota þetta netkerfi</translation>
 <translation id="653019979737152879">Samstillir <ph name="FILE_NAME" />...</translation>
+<translation id="6530595303336443929">Zstandard-þjöppuð tar-geymsla</translation>
 <translation id="6549689063733911810">Nýlegt</translation>
 <translation id="6558280019477628686">Villa kom upp. Hugsanlega tókst ekki að eyða einhverjum atriðum.</translation>
 <translation id="656398493051028875">Eyðir „<ph name="FILENAME" />“...</translation>

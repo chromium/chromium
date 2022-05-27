@@ -298,7 +298,6 @@
 <translation id="2791421900609674576">ካቆሙበት መቀጠል እንዲችሉ ምክሮችን ይመለከታሉ። ምክሮችን ለማስወገድ መንካት እና መያዝ ይችላሉ።</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
 <translation id="2797741504905337289">የመደርደሪያ ፓርቲ</translation>
-<translation id="2803313416453193357">አቃፊ ክፈት</translation>
 <translation id="2805756323405976993">መተግበሪያዎች</translation>
 <translation id="2814448776515246190">ከፊል መያዝ</translation>
 <translation id="2819276065543622893">አሁን ዘግተው እንዲወጡ ይደረጋሉ።</translation>
@@ -696,6 +695,7 @@
 <translation id="5071064518267176975">አንድ መተግበሪያ ማይክሮፎኑን መጠቀም ይፈልጋል</translation>
 <translation id="5078796286268621944">የተሳሳተ ፒን</translation>
 <translation id="5083553833479578423">ተጨማሪ የረዳት ባህሪያትን ያስከፍቱ።</translation>
+<translation id="509790653408515442">የስልክዎን መተግበሪያዎች በዥረት ሲለቅቁ እዚህ ይታያሉ</translation>
 <translation id="5107522548814527560">ድር</translation>
 <translation id="5117590920725113268">ቀጣዩን ወር አሳይ</translation>
 <translation id="5136175204352732067">የተለየ የቁልፍ ሰሌዳ ተገናኝቷል</translation>
@@ -718,6 +718,7 @@
 <translation id="523505283826916779">የተደራሽነት ቅንብሮች</translation>
 <translation id="5245201184978705914">ትራንስክሪፕት መፍጠር አልተቻለም</translation>
 <translation id="5253783950165989294"><ph name="DEVICE_NAME" /> ከተሰኘ መሣሪያ ጋር ተገናኝቷል፣ <ph name="BATTERY_PERCENTAGE" />% ባትሪ</translation>
+<translation id="5258528442992323769">ምንም የተቀመጡ ዴስኮች የሉም</translation>
 <translation id="5260676007519551770">ዴስክ 4</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> የእርስዎን ትኩረት ይፈልጋል።</translation>
 <translation id="5283198616748585639">1 ደቂቃ ያክሉ</translation>
@@ -1257,6 +1258,7 @@
 <translation id="851458219935658693">አሁን ካለ ዴስክ መስኮቶችን አሳይ፣ የራዲዮ አዝራር ተመርጧል</translation>
 <translation id="8517041960877371778">የእርሰዎ <ph name="DEVICE_TYPE" /> እንደበራ ኃይል መሙላት አይችሉ ይሆናል።</translation>
 <translation id="8535393432370007982">በቀለም የተደረደረበት ቅደም-ተከተል ቀልብስ</translation>
+<translation id="8542053257095774575">ምንም የተቀመጡ ዴስኮች ወይም ቅንብር ደንቦች የሉም</translation>
 <translation id="8546059259582788728">ድርደራም መቀልበስ ተሳክቷል</translation>
 <translation id="8551588720239073785">የቀን እና የጊዜ ቅንብሮች</translation>
 <translation id="8553395910833293175">ለሁሉም ዴስኮች ቀድሞውኑ ተመድቧል።</translation>

@@ -335,7 +335,6 @@ Zaporke uvijek možete provjeriti u odjeljku <ph name="GOOGLE_PASSWORD_MANAGER" 
 <translation id="1327794256477341646">Značajke kojima je potrebna vaša lokacija neće raditi</translation>
 <translation id="1329191040029425999">Provjerite je li vaš uređaj ažuriran i pokušajte ponovo</translation>
 <translation id="1330145147221172764">Omogući tipkovnicu na zaslonu</translation>
-<translation id="1331625853030156663">Da biste otvorili aplikaciju <ph name="APP_NAME" />, omogućite opciju "Prikaži zaključan zaslon prilikom vraćanja iz mirovanja"</translation>
 <translation id="1331977651797684645">To sam bio ja.</translation>
 <translation id="1333489022424033687">Neke značajke na web-lokaciji <ph name="ORIGIN" /> možda neće raditi dok ne izbrišete podatke koje su druge web-lokacije pohranile na vašem uređaju</translation>
 <translation id="1333965224356556482">Ne dopuštaj web-lokacijama prikazivanje vaše lokacije</translation>
@@ -841,6 +840,7 @@ Dopuštenja koja ste već dali aplikacijama mogu se primijeniti na ovaj račun. 
 <translation id="1794051631868188691">Nikad nemoj prikazivati trgovca <ph name="MERCHANT" /></translation>
 <translation id="1794791083288629568">Pošaljite povratne informacije da biste nam pomogli riješiti taj problem.</translation>
 <translation id="1795214765651529549">Koristi klasičnu</translation>
+<translation id="1796105431091975902">Odaberite Ansible Playbook za dodavanje</translation>
 <translation id="1796588414813960292">Značajke kojima je potreban zvuk neće funkcionirati</translation>
 <translation id="1800502858278951817">Nijedno proširenje nije zatražilo da čita i miijenja <ph name="SITE_NAME" /></translation>
 <translation id="1802624026913571222">U mirovanje kada se zatvori poklopac.</translation>
@@ -3043,6 +3043,7 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="389901847090970821">Odaberite tipkovnicu</translation>
 <translation id="3900966090527141178">Izvoz zaporki</translation>
 <translation id="3903187154317825986">Ugrađena tipkovnica</translation>
+<translation id="3903191712482985591">Dodajte playbook</translation>
 <translation id="3904326018476041253">Usluge lokacije</translation>
 <translation id="3904849010307028014">Na temelju vaše interakcije s određenom web-lokacijom, kao što je redovito prijavljivanje na račun, ta web-lokacija može vašem pregledniku izdati oznaku povjerenja. Ako druge web-lokacije koje poslije posjetite provjere postoji li važeća oznaka povjerenja i pronađu je, vjerojatnije je da će vas tretirati kao osobu, a ne bot.</translation>
 <translation id="3905761538810670789">Popravi aplikaciju</translation>
@@ -3653,6 +3654,7 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="4510479820467554003">Popis roditeljskih računa</translation>
 <translation id="451102079304155829">košarice</translation>
 <translation id="4513872120116766993">Prediktivno pisanje</translation>
+<translation id="4513909579793564731">Primijeni playbook</translation>
 <translation id="4513946894732546136">Povratne informacije</translation>
 <translation id="451407183922382411">Omogućuje <ph name="COMPANY_NAME" /></translation>
 <translation id="4514610446763173167">Reproduciraj ili pauziraj videozapis</translation>
@@ -5483,6 +5485,7 @@ Toj radnji možete dodijeliti više prekidača.</translation>
 <translation id="635609604405270300">Neka uređaj ostane uključen</translation>
 <translation id="63566973648609420">Samo osoba koja ima vašu šifru može čitati vaše kriptirane podatke. Šifra se ne šalje Googleu i ne pohranjuje na njemu. Ako zaboravite šifru ili želite promijeniti tu postavku, morat ćete <ph name="BEGIN_LINK" />poništiti sinkronizaciju<ph name="END_LINK" />.</translation>
 <translation id="6357305427698525450">Neke podržane veze i dalje će se otvarati u aplikacijama <ph name="APP_NAME" /> ili <ph name="APP_NAME_2" />.</translation>
+<translation id="6357794994761110294">Nijedno proširenje nema dopuštenje za čitanje i promjenu web-lokacije <ph name="SITE_NAME" /></translation>
 <translation id="6358884629796491903">Zmaj</translation>
 <translation id="6361850914223837199">Detalji pogreške:</translation>
 <translation id="6362853299801475928">&amp;Prijavljivanje problema...</translation>
@@ -6335,7 +6338,6 @@ Imate još # ugroženih zaporki. Google upravitelj zaporki preporučuje da odmah
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Zatvori stranicu}one{Zatvori stranicu}few{Zatvori stranice}other{Zatvori stranica}}</translation>
 <translation id="7207457272187520234">Slanje podataka o upotrebi i dijagnostici. Ovaj uređaj trenutačno Googleu automatski šalje dijagnostičke podatke te podatke o upotrebi uređaja i aplikacija. Ti podaci pomoći će poboljšati stabilnost sustava, aplikacija i drugo. Neki skupni podaci pomoći će i Googleovim aplikacijama i partnerima, na primjer razvojnim programerima za Android. Tu postavku zadao je vlasnik. Ako je uključena dodatna aktivnost na webu i u aplikacijama, ti se podaci mogu spremati na vaš Google račun.</translation>
 <translation id="7207631048330366454">Pretraži aplikacije</translation>
-<translation id="720808544705441386">Aplikacija se ne može otvoriti</translation>
 <translation id="7210499381659830293">Pisači povezani putem proširenja</translation>
 <translation id="7211783048245131419">Još nije dodijeljen nijedan prekidač</translation>
 <translation id="7212097698621322584">Unesite svoj trenutačni PIN da biste ga promijenili. Ako ne znate PIN, vratite sigurnosni ključ na zadano, a zatim izradite novi PIN.</translation>
