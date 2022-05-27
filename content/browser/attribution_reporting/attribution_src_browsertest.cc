@@ -9,15 +9,19 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
+#include "base/test/scoped_feature_list.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/prerender_test_util.h"
+#include "content/public/test/test_frame_navigation_observer.h"
 #include "content/shell/browser/shell.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/dns/mock_host_resolver.h"
@@ -27,6 +31,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/mojom/conversions/attribution_data_host.mojom.h"
 #include "url/gurl.h"
@@ -82,6 +87,7 @@ class AttributionSrcBrowserTest : public ContentBrowserTest {
     net::test_server::RegisterDefaultHandlers(https_server_.get());
     https_server_->ServeFilesFromSourceDirectory(
         "content/test/data/attribution_reporting");
+    https_server_->ServeFilesFromSourceDirectory("content/test/data");
     ASSERT_TRUE(https_server_->Start());
 
     mock_attribution_host_ = MockAttributionHost::Override(web_contents());
@@ -998,6 +1004,88 @@ IN_PROC_BROWSER_TEST_F(AttributionSrcPrerenderBrowserTest,
 
   EXPECT_EQ(source_data.size(), 1u);
   EXPECT_EQ(source_data.front()->source_event_id, 5UL);
+}
+
+class AttributionSrcFencedFrameBrowserTest
+    : public AttributionSrcBrowserTest,
+      public ::testing::WithParamInterface<
+          blink::features::FencedFramesImplementationType> {
+ public:
+  AttributionSrcFencedFrameBrowserTest() {
+    switch (GetParam()) {
+      case blink::features::FencedFramesImplementationType::kMPArch:
+        fenced_frame_helper_ = std::make_unique<test::FencedFrameTestHelper>();
+        break;
+      case blink::features::FencedFramesImplementationType::kShadowDOM:
+        feature_list_.InitWithFeaturesAndParameters(
+            {{blink::features::kFencedFrames,
+              {{"implementation_type", "shadow_dom"}}},
+             {features::kPrivacySandboxAdsAPIsOverride, {}}},
+            /*disabled_features=*/{});
+        break;
+    }
+  }
+
+  ~AttributionSrcFencedFrameBrowserTest() override = default;
+
+ protected:
+  std::unique_ptr<test::FencedFrameTestHelper> fenced_frame_helper_;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    AttributionSrcFencedFrameBrowserTest,
+    ::testing::Values(
+        blink::features::FencedFramesImplementationType::kShadowDOM,
+        blink::features::FencedFramesImplementationType::kMPArch));
+
+// TODO(crbug.com/1329240): Add test for opaque-ads mode fenced frames.
+
+IN_PROC_BROWSER_TEST_P(AttributionSrcFencedFrameBrowserTest,
+                       DefaultMode_SourceNotRegistered) {
+  GURL main_url = https_server()->GetURL("b.test", "/title1.html");
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  GURL fenced_frame_url =
+      https_server()->GetURL("b.test", "/page_with_impression_creator.html");
+
+  RenderFrameHost* parent = web_contents()->GetMainFrame();
+
+  RenderFrameHost* fenced_frame_host;
+  if (fenced_frame_helper_) {
+    fenced_frame_host =
+        fenced_frame_helper_->CreateFencedFrame(parent, fenced_frame_url);
+  } else {
+    EXPECT_TRUE(ExecJs(parent, R"(
+      var fenced_frame = document.createElement('fencedframe');
+      document.body.appendChild(fenced_frame);
+    )"));
+
+    fenced_frame_host = ChildFrameAt(parent, 0);
+
+    TestFrameNavigationObserver observer(fenced_frame_host);
+    EXPECT_TRUE(
+        ExecJs(parent, JsReplace("fenced_frame.src = $1;", fenced_frame_url)));
+    observer.Wait();
+  }
+
+  ASSERT_NE(fenced_frame_host, nullptr);
+  EXPECT_TRUE(fenced_frame_host->IsFencedFrameRoot());
+
+  EXPECT_CALL(mock_attribution_host(), RegisterDataHost).Times(0);
+
+  EXPECT_TRUE(ExecJs(
+      fenced_frame_host,
+      JsReplace(
+          "createAttributionSrcImg($1);",
+          https_server()->GetURL("c.test", "/register_source_headers.html"))));
+
+  // If a data host were registered, it would arrive in the browser process
+  // before the navigation finished.
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
 }
 
 }  // namespace content
