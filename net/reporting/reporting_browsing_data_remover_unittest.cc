@@ -45,8 +45,8 @@ class ReportingBrowsingDataRemoverTest : public ReportingTestBase {
   void AddReport(const GURL& url) {
     cache()->AddReport(absl::nullopt, NetworkIsolationKey(), url, kUserAgent_,
                        kGroup_, kType_,
-                       std::make_unique<base::DictionaryValue>(), 0,
-                       tick_clock()->NowTicks(), 0);
+                       std::make_unique<base::Value>(base::Value::Type::DICT),
+                       0, tick_clock()->NowTicks(), 0);
   }
 
   // TODO(chlily): Take NIK.

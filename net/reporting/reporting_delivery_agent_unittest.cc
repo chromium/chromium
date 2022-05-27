@@ -53,7 +53,7 @@ class ReportingDeliveryAgentTest : public ReportingTestBase {
     policy.endpoint_backoff_policy.entry_lifetime_ms = 0;
     policy.endpoint_backoff_policy.always_use_initial_delay = false;
     UsePolicy(policy);
-    report_body_.SetStringKey("key", "value");
+    report_body_.GetDict().Set("key", "value");
   }
 
   void AddReport(const absl::optional<base::UnguessableToken>& reporting_source,
@@ -108,7 +108,7 @@ class ReportingDeliveryAgentTest : public ReportingTestBase {
 
   base::test::ScopedFeatureList feature_list_;
 
-  base::Value report_body_{base::Value::Type::DICTIONARY};
+  base::Value report_body_{base::Value::Type::DICT};
   const GURL kUrl_ = GURL("https://origin/path");
   const GURL kOtherUrl_ = GURL("https://other-origin/path");
   const GURL kSubdomainUrl_ = GURL("https://sub.origin/path");
@@ -158,18 +158,18 @@ TEST_F(ReportingDeliveryAgentTest, SuccessfulImmediateUpload) {
     auto value = pending_uploads()[0]->GetValue();
 
     ASSERT_TRUE(value->is_list());
-    ASSERT_EQ(1u, value->GetListDeprecated().size());
+    ASSERT_EQ(1u, value->GetList().size());
 
-    base::Value& report = value->GetListDeprecated()[0];
+    base::Value& report = value->GetList()[0];
     ASSERT_TRUE(report.is_dict());
-    EXPECT_EQ(5u, report.DictSize());
+    EXPECT_EQ(5u, report.GetDict().size());
 
     ExpectDictIntegerValue(0, report, "age");
     ExpectDictStringValue(kType_, report, "type");
     ExpectDictStringValue(kUrl_.spec(), report, "url");
     ExpectDictStringValue(kUserAgent_, report, "user_agent");
-    base::Value* body = report.FindDictKey("body");
-    EXPECT_EQ("value", *body->FindStringKey("key"));
+    const base::Value::Dict* body = report.GetDict().FindDict("body");
+    EXPECT_EQ("value", *body->FindString("key"));
   }
   pending_uploads()[0]->Complete(ReportingUploader::Outcome::SUCCESS);
 
@@ -234,17 +234,17 @@ TEST_F(ReportingDeliveryAgentTest, SuccessfulImmediateUploadDocumentReport) {
     const auto value = pending_uploads()[0]->GetValue();
 
     ASSERT_TRUE(value->is_list());
-    ASSERT_EQ(1u, value->GetListDeprecated().size());
+    ASSERT_EQ(1u, value->GetList().size());
 
-    const base::Value& report = value->GetListDeprecated()[0];
+    const base::Value& report = value->GetList()[0];
     ASSERT_TRUE(report.is_dict());
 
     ExpectDictIntegerValue(0, report, "age");
     ExpectDictStringValue(kType_, report, "type");
     ExpectDictStringValue(kUrl_.spec(), report, "url");
     ExpectDictStringValue(kUserAgent_, report, "user_agent");
-    const base::Value* body = report.FindDictKey("body");
-    EXPECT_EQ("value", *body->FindStringKey("key"));
+    const base::Value::Dict* body = report.GetDict().FindDict("body");
+    EXPECT_EQ("value", *body->FindString("key"));
   }
   pending_uploads()[0]->Complete(ReportingUploader::Outcome::SUCCESS);
 
@@ -312,18 +312,18 @@ TEST_F(ReportingDeliveryAgentTest, SuccessfulImmediateSubdomainUpload) {
     auto value = pending_uploads()[0]->GetValue();
 
     ASSERT_TRUE(value->is_list());
-    ASSERT_EQ(1u, value->GetListDeprecated().size());
+    ASSERT_EQ(1u, value->GetList().size());
 
-    base::Value& report = value->GetListDeprecated()[0];
+    base::Value& report = value->GetList()[0];
     ASSERT_TRUE(report.is_dict());
-    EXPECT_EQ(5u, report.DictSize());
+    EXPECT_EQ(5u, report.GetDict().size());
 
     ExpectDictIntegerValue(0, report, "age");
     ExpectDictStringValue(kType_, report, "type");
     ExpectDictStringValue(kSubdomainUrl_.spec(), report, "url");
     ExpectDictStringValue(kUserAgent_, report, "user_agent");
-    base::Value* body = report.FindDictKey("body");
-    EXPECT_EQ("value", *body->FindStringKey("key"));
+    const base::Value::Dict* body = report.GetDict().FindDict("body");
+    EXPECT_EQ("value", *body->FindString("key"));
   }
   pending_uploads()[0]->Complete(ReportingUploader::Outcome::SUCCESS);
 
@@ -391,18 +391,18 @@ TEST_F(ReportingDeliveryAgentTest, SuccessfulDelayedUpload) {
     auto value = pending_uploads()[0]->GetValue();
 
     ASSERT_TRUE(value->is_list());
-    ASSERT_EQ(1u, value->GetListDeprecated().size());
+    ASSERT_EQ(1u, value->GetList().size());
 
-    base::Value& report = value->GetListDeprecated()[0];
+    base::Value& report = value->GetList()[0];
     ASSERT_TRUE(report.is_dict());
-    EXPECT_EQ(5u, report.DictSize());
+    EXPECT_EQ(5u, report.GetDict().size());
 
     ExpectDictIntegerValue(0, report, "age");
     ExpectDictStringValue(kType_, report, "type");
     ExpectDictStringValue(kUrl_.spec(), report, "url");
     ExpectDictStringValue(kUserAgent_, report, "user_agent");
-    base::Value* body = report.FindDictKey("body");
-    EXPECT_EQ("value", *body->FindStringKey("key"));
+    const base::Value::Dict* body = report.GetDict().FindDict("body");
+    EXPECT_EQ("value", *body->FindString("key"));
   }
   pending_uploads()[0]->Complete(ReportingUploader::Outcome::SUCCESS);
 
@@ -471,9 +471,6 @@ TEST_F(ReportingDeliveryAgentTest, DisallowedUpload) {
   context()->test_delegate()->set_disallow_report_uploads(true);
 
   static const int kAgeMillis = 12345;
-
-  base::DictionaryValue body;
-  body.SetString("key", "value");
 
   ASSERT_TRUE(SetEndpointInCache(kGroupKey_, kEndpoint_, kExpires_));
   AddReport(kEmptyReportingSource_, kNik_, kUrl_, kGroup_);

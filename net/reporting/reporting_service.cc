@@ -157,11 +157,11 @@ class ReportingServiceImpl : public ReportingService {
   }
 
   base::Value StatusAsValue() const override {
-    base::Value dict(base::Value::Type::DICTIONARY);
-    dict.SetKey("reportingEnabled", base::Value(true));
-    dict.SetKey("clients", context_->cache()->GetClientsAsValue());
-    dict.SetKey("reports", context_->cache()->GetReportsAsValue());
-    return dict;
+    base::Value::Dict dict;
+    dict.Set("reportingEnabled", true);
+    dict.Set("clients", context_->cache()->GetClientsAsValue());
+    dict.Set("reports", context_->cache()->GetReportsAsValue());
+    return base::Value(std::move(dict));
   }
 
   std::vector<const ReportingReport*> GetReports() const override {

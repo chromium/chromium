@@ -49,7 +49,7 @@ TEST_F(ReportingGarbageCollectorTest, Timer) {
   EXPECT_FALSE(garbage_collection_timer()->IsRunning());
 
   cache()->AddReport(absl::nullopt, kNik_, kUrl_, kUserAgent_, kGroup_, kType_,
-                     std::make_unique<base::DictionaryValue>(), 0,
+                     std::make_unique<base::Value>(base::Value::Type::DICT), 0,
                      tick_clock()->NowTicks(), 0);
 
   EXPECT_TRUE(garbage_collection_timer()->IsRunning());
@@ -61,7 +61,7 @@ TEST_F(ReportingGarbageCollectorTest, Timer) {
 
 TEST_F(ReportingGarbageCollectorTest, Report) {
   cache()->AddReport(absl::nullopt, kNik_, kUrl_, kUserAgent_, kGroup_, kType_,
-                     std::make_unique<base::DictionaryValue>(), 0,
+                     std::make_unique<base::Value>(base::Value::Type::DICT), 0,
                      tick_clock()->NowTicks(), 0);
   garbage_collection_timer()->Fire();
 
@@ -70,7 +70,7 @@ TEST_F(ReportingGarbageCollectorTest, Report) {
 
 TEST_F(ReportingGarbageCollectorTest, ExpiredReport) {
   cache()->AddReport(absl::nullopt, kNik_, kUrl_, kUserAgent_, kGroup_, kType_,
-                     std::make_unique<base::DictionaryValue>(), 0,
+                     std::make_unique<base::Value>(base::Value::Type::DICT), 0,
                      tick_clock()->NowTicks(), 0);
   tick_clock()->Advance(2 * policy().max_report_age);
   garbage_collection_timer()->Fire();
@@ -80,7 +80,7 @@ TEST_F(ReportingGarbageCollectorTest, ExpiredReport) {
 
 TEST_F(ReportingGarbageCollectorTest, FailedReport) {
   cache()->AddReport(absl::nullopt, kNik_, kUrl_, kUserAgent_, kGroup_, kType_,
-                     std::make_unique<base::DictionaryValue>(), 0,
+                     std::make_unique<base::Value>(base::Value::Type::DICT), 0,
                      tick_clock()->NowTicks(), 0);
 
   std::vector<const ReportingReport*> reports;
@@ -120,7 +120,8 @@ TEST_F(ReportingGarbageCollectorTest, ExpiredSourceWithPendingReports) {
   cache()->SetV1EndpointForTesting(group_key, *kReportingSource_,
                                    kIsolationInfo_, kUrl_);
   cache()->AddReport(kReportingSource_, kNik_, kUrl_, kUserAgent_, kGroup_,
-                     kType_, std::make_unique<base::DictionaryValue>(), 0,
+                     kType_,
+                     std::make_unique<base::Value>(base::Value::Type::DICT), 0,
                      tick_clock()->NowTicks(), 0);
   // Mark the source as expired. The source data should be removed as soon as
   // all reports are delivered.

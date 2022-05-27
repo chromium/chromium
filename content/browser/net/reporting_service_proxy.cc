@@ -52,16 +52,17 @@ class ReportingServiceProxyImpl : public blink::mojom::ReportingServiceProxy {
                                const absl::optional<std::string>& source_file,
                                int line_number,
                                int column_number) override {
-    auto body = std::make_unique<base::DictionaryValue>();
-    body->SetString("id", id);
-    body->SetString("message", message);
+    base::Value::Dict body;
+    body.Set("id", id);
+    body.Set("message", message);
     if (source_file)
-      body->SetString("sourceFile", *source_file);
+      body.Set("sourceFile", *source_file);
     if (line_number)
-      body->SetInteger("lineNumber", line_number);
+      body.Set("lineNumber", line_number);
     if (column_number)
-      body->SetInteger("columnNumber", column_number);
-    QueueReport(url, "default", "intervention", std::move(body));
+      body.Set("columnNumber", column_number);
+    QueueReport(url, "default", "intervention",
+                std::make_unique<base::Value>(std::move(body)));
   }
 
   void QueueDeprecationReport(const GURL& url,
@@ -71,19 +72,21 @@ class ReportingServiceProxyImpl : public blink::mojom::ReportingServiceProxy {
                               const absl::optional<std::string>& source_file,
                               int line_number,
                               int column_number) override {
-    auto body = std::make_unique<base::DictionaryValue>();
-    body->SetString("id", id);
-    if (anticipated_removal)
-      body->SetDouble("anticipatedRemoval",
-                      anticipated_removal->ToJsTimeIgnoringNull());
-    body->SetString("message", message);
+    base::Value::Dict body;
+    body.Set("id", id);
+    if (anticipated_removal) {
+      body.Set("anticipatedRemoval",
+               anticipated_removal->ToJsTimeIgnoringNull());
+    }
+    body.Set("message", message);
     if (source_file)
-      body->SetString("sourceFile", *source_file);
+      body.Set("sourceFile", *source_file);
     if (line_number)
-      body->SetInteger("lineNumber", line_number);
+      body.Set("lineNumber", line_number);
     if (column_number)
-      body->SetInteger("columnNumber", column_number);
-    QueueReport(url, "default", "deprecation", std::move(body));
+      body.Set("columnNumber", column_number);
+    QueueReport(url, "default", "deprecation",
+                std::make_unique<base::Value>(std::move(body)));
   }
 
   void QueueCspViolationReport(const GURL& url,
@@ -99,25 +102,26 @@ class ReportingServiceProxyImpl : public blink::mojom::ReportingServiceProxy {
                                uint16_t status_code,
                                int line_number,
                                int column_number) override {
-    auto body = std::make_unique<base::DictionaryValue>();
-    body->SetString("documentURL", document_url);
+    base::Value::Dict body;
+    body.Set("documentURL", document_url);
     if (referrer)
-      body->SetString("referrer", *referrer);
+      body.Set("referrer", *referrer);
     if (blocked_url)
-      body->SetString("blockedURL", *blocked_url);
-    body->SetString("effectiveDirective", effective_directive);
-    body->SetString("originalPolicy", original_policy);
+      body.Set("blockedURL", *blocked_url);
+    body.Set("effectiveDirective", effective_directive);
+    body.Set("originalPolicy", original_policy);
     if (source_file)
-      body->SetString("sourceFile", *source_file);
+      body.Set("sourceFile", *source_file);
     if (script_sample)
-      body->SetString("sample", *script_sample);
-    body->SetString("disposition", disposition);
-    body->SetInteger("statusCode", status_code);
+      body.Set("sample", *script_sample);
+    body.Set("disposition", disposition);
+    body.Set("statusCode", status_code);
     if (line_number)
-      body->SetInteger("lineNumber", line_number);
+      body.Set("lineNumber", line_number);
     if (column_number)
-      body->SetInteger("columnNumber", column_number);
-    QueueReport(url, group, "csp-violation", std::move(body));
+      body.Set("columnNumber", column_number);
+    QueueReport(url, group, "csp-violation",
+                std::make_unique<base::Value>(std::move(body)));
   }
 
   void QueuePermissionsPolicyViolationReport(
@@ -128,19 +132,19 @@ class ReportingServiceProxyImpl : public blink::mojom::ReportingServiceProxy {
       const absl::optional<std::string>& source_file,
       int line_number,
       int column_number) override {
-    auto body = std::make_unique<base::DictionaryValue>();
-    body->SetString("policyId", policy_id);
-    body->SetString("disposition", disposition);
+    base::Value::Dict body;
+    body.Set("policyId", policy_id);
+    body.Set("disposition", disposition);
     if (message)
-      body->SetString("message", *message);
+      body.Set("message", *message);
     if (source_file)
-      body->SetString("sourceFile", *source_file);
+      body.Set("sourceFile", *source_file);
     if (line_number)
-      body->SetInteger("lineNumber", line_number);
+      body.Set("lineNumber", line_number);
     if (column_number)
-      body->SetInteger("columnNumber", column_number);
+      body.Set("columnNumber", column_number);
     QueueReport(url, "default", "permissions-policy-violation",
-                std::move(body));
+                std::make_unique<base::Value>(std::move(body)));
   }
 
   void QueueDocumentPolicyViolationReport(
@@ -152,18 +156,19 @@ class ReportingServiceProxyImpl : public blink::mojom::ReportingServiceProxy {
       const absl::optional<std::string>& source_file,
       int line_number,
       int column_number) override {
-    auto body = std::make_unique<base::DictionaryValue>();
-    body->SetString("policyId", policy_id);
-    body->SetString("disposition", disposition);
+    base::Value::Dict body;
+    body.Set("policyId", policy_id);
+    body.Set("disposition", disposition);
     if (message)
-      body->SetString("message", *message);
+      body.Set("message", *message);
     if (source_file)
-      body->SetString("sourceFile", *source_file);
+      body.Set("sourceFile", *source_file);
     if (line_number)
-      body->SetInteger("lineNumber", line_number);
+      body.Set("lineNumber", line_number);
     if (column_number)
-      body->SetInteger("columnNumber", column_number);
-    QueueReport(url, group, "document-policy-violation", std::move(body));
+      body.Set("columnNumber", column_number);
+    QueueReport(url, group, "document-policy-violation",
+                std::make_unique<base::Value>(std::move(body)));
   }
 
   int render_process_id() const { return render_process_id_; }
