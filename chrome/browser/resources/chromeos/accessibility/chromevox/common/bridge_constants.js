@@ -17,6 +17,7 @@ BridgeTargets = {
   LOG_STORE: 'LogStore',
   PANEL: 'Panel',
   PANEL_BACKGROUND: 'PanelBackground',
+  USER_ACTION_MONITOR: 'UserActionMonitor',
 };
 /**
  * The class that a message is being sent to.
@@ -100,16 +101,6 @@ BridgeConstants = {
       SET_ENABLED: 'setEnabled',
     },
   },
-
-  UserActionMonitor: {
-    /** @public {BridgeTarget} */
-    TARGET: 'UserActionMonitor',
-    /** @enum {string} */
-    Action: {
-      CREATE: 'create',
-      DESTROY: 'destroy',
-    },
-  },
 };
 
 /**
@@ -118,8 +109,10 @@ BridgeConstants = {
 BridgeActions = {
   ADD_MENU_ITEM: 'addMenuItem',
   CLEAR_LOG: 'clearLog',
+  CREATE: 'create',
   CREATE_ALL_NODE_MENU_BACKGROUNDS: 'createAllNodeMenuBackgrounds',
   CREATE_NEW_I_SEARCH: 'createNewISearch',
+  DESTROY: 'destroy',
   DESTROY_I_SEARCH: 'destroyISearch',
   FOCUS_TAB: 'focusTab',
   GET_ACTIONS_FOR_CURRENT_NODE: 'getActionsForCurrentNode',
@@ -145,7 +138,6 @@ BridgeActions = {
  *           BridgeConstants.ChromeVoxState.Action |
  *           BridgeConstants.CommandHandler.Action |
  *           BridgeConstants.EventSourceState.Action |
- *           BridgeConstants.GestureCommandHandler.Action |
- *           BridgeConstants.UserActionMonitor.Action}
+ *           BridgeConstants.GestureCommandHandler.Action}
  */
 BridgeAction;

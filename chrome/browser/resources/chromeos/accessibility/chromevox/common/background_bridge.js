@@ -323,8 +323,7 @@ BackgroundBridge.UserActionMonitor = {
    */
   async create(actions) {
     return BridgeHelper.sendMessage(
-        BridgeConstants.UserActionMonitor.TARGET,
-        BridgeConstants.UserActionMonitor.Action.CREATE, actions);
+        BridgeTargets.USER_ACTION_MONITOR, BridgeActions.CREATE, actions);
   },
 
   /**
@@ -333,7 +332,6 @@ BackgroundBridge.UserActionMonitor = {
    */
   async destroy() {
     return BridgeHelper.sendMessage(
-        BridgeConstants.UserActionMonitor.TARGET,
-        BridgeConstants.UserActionMonitor.Action.DESTORY);
+        BridgeTargets.USER_ACTION_MONITOR, BridgeActions.DESTROY);
   },
 };
