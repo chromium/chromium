@@ -7,14 +7,11 @@
 #include <iterator>
 #include <vector>
 
-#include "base/command_line.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/queue.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
-#include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/task_environment.h"
-#include "base/test/test_suite.h"
 #include "components/exo/wayland/clients/client_base.h"
 #include "components/exo/wayland/clients/client_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -42,11 +39,11 @@ std::string DrmCodeToBufferFormatString(uint64_t drm_format) {
 
 namespace exo {
 namespace wayland {
-namespace clients {
+namespace test {
 
 namespace {
 
-class BufferCheckerTestClient : public ClientBase {
+class BufferCheckerTestClient : public ::exo::wayland::clients::ClientBase {
  public:
   explicit BufferCheckerTestClient() = default;
   ~BufferCheckerTestClient() override = default;
@@ -161,11 +158,11 @@ class BufferCheckerTestClient : public ClientBase {
 };
 
 }  // namespace
-}  // namespace clients
+}  // namespace test
 }  // namespace wayland
 }  // namespace exo
 
-class IntegrationTestClientTest : public testing::Test {
+class BufferCheckerClientTest : public testing::Test {
  protected:
   void SetUp() override {
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
@@ -193,8 +190,8 @@ void PrintReportedFormats(std::vector<uint32_t>& formats) {
              << base::JoinString(buffer_names, ", ");
 }
 
-TEST_F(IntegrationTestClientTest, CanUseAllReportedBuffers) {
-  exo::wayland::clients::BufferCheckerTestClient client;
+TEST_F(BufferCheckerClientTest, CanUseAllReportedBuffers) {
+  exo::wayland::test::BufferCheckerTestClient client;
   auto params = base_params_;
   // Initialize no buffers when we start, wait until we've gotten the list
   params.num_buffers = 0;
@@ -202,14 +199,4 @@ TEST_F(IntegrationTestClientTest, CanUseAllReportedBuffers) {
   PrintReportedFormats(client.reported_formats);
   for (auto format : client.reported_formats)
     EXPECT_TRUE(client.HasAnySupportedUsages(format));
-}
-
-int main(int argc, char* argv[]) {
-  base::CommandLine::Init(argc, argv);
-  base::TestSuite test_suite(argc, argv);
-
-  // Tests may not run to completion if we do not run them serially.
-  return base::LaunchUnitTestsSerially(
-      argc, argv,
-      base::BindOnce(&base::TestSuite::Run, base::Unretained(&test_suite)));
 }

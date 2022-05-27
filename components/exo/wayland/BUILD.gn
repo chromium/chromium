@@ -723,7 +723,10 @@ test("wayland_client_compatibility_tests") {
 
 if (ozone_platform_drm) {
   test("wayland_client_integration_tests") {
-    sources = [ "clients/wayland_client_integration_tests.cc" ]
+    sources = [
+      "test/integration/buffer_checker_test.cc",
+      "test/integration/wayland_client_integration_tests_main.cc",
+    ]
     deps = [
       ":client_support",
       "//base",
