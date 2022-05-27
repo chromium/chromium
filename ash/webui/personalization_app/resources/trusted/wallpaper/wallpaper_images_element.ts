@@ -116,6 +116,14 @@ export class WallpaperImages extends WithPersonalizationStore {
       },
 
       /**
+       * Whether dark mode is the active preferred color scheme.
+       */
+      isDarkModeActive: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
        * The current collection id to display.
        */
       collectionId: String,
@@ -163,19 +171,12 @@ export class WallpaperImages extends WithPersonalizationStore {
         type: Boolean,
         computed: 'computeHasImages_(images_, imagesLoading_, collectionId)',
       },
-
-      /**
-       * Whether dark mode is the active preferred color scheme.
-       */
-      isDarkModeActive_: {
-        type: Boolean,
-        value: false,
-      },
     };
   }
 
   override hidden: boolean;
   collectionId: string;
+  isDarkModeActive: boolean;
   private collections_: WallpaperCollection[]|null;
   private collectionsLoading_: boolean;
   private images_: Record<string, WallpaperImage[]|null>;
@@ -184,11 +185,10 @@ export class WallpaperImages extends WithPersonalizationStore {
   private pendingSelected_: DisplayableImage|null;
   private hasError_: boolean;
   private hasImages_: boolean;
-  private isDarkModeActive_: boolean;
 
   static get observers() {
     return [
-      'onImagesUpdated_(hasImages_, hasError_, collectionId, isDarkModeActive_)',
+      'onImagesUpdated_(hasImages_, hasError_, collectionId, isDarkModeActive)',
     ];
   }
 
