@@ -92,6 +92,25 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestChipBrowserTest,
             GetLayoutConstant(LOCATION_BAR_ELEMENT_PADDING));
 }
 
+IN_PROC_BROWSER_TEST_F(PermissionRequestChipBrowserTest,
+                       ChipIsNotShownWhenInteractingWithOmnibox) {
+  LocationBarView* lbv = GetLocationBarView(browser());
+
+  // The chip is not shown because there is no active permission request.
+  EXPECT_FALSE(lbv->chip());
+
+  // Type something in the omnibox.
+  auto* omnibox_view = lbv->GetOmniboxView();
+  omnibox_view->SetUserText(u"search query");
+  omnibox_view->model()->SetInputInProgress(true);
+
+  RequestPermission(browser());
+
+  // While the user is interacting with the omnibox, an incoming permission
+  // request will be automatically ignored. The chip is not shown.
+  EXPECT_FALSE(lbv->chip());
+}
+
 class PermissionRequestChipDialogBrowserTest : public UiBrowserTest {
  public:
   PermissionRequestChipDialogBrowserTest() {

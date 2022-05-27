@@ -43,6 +43,17 @@ bool IsFullScreenMode(content::WebContents* web_contents, Browser* browser) {
   return !location_bar || !location_bar->IsDrawn();
 }
 
+bool IsLocationBarEditingOrEmpty(Browser* browser) {
+  DCHECK(browser);
+
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+  if (!browser_view)
+    return false;
+
+  LocationBarView* location_bar = browser_view->GetLocationBarView();
+  return location_bar && location_bar->IsEditingOrEmpty();
+}
+
 bool ShouldBubbleStartOpen(permissions::PermissionPrompt::Delegate* delegate) {
   if (base::FeatureList::IsEnabled(
           permissions::features::kPermissionChipGestureSensitive)) {
@@ -91,6 +102,11 @@ std::unique_ptr<permissions::PermissionPrompt> CreatePermissionPrompt(
 
   if (delegate->ShouldDropCurrentRequestIfCannotShowQuietly() &&
       IsFullScreenMode(web_contents, browser)) {
+    return nullptr;
+  }
+
+  // Auto-ignore the permission request if a user is typing into location bar.
+  if (IsLocationBarEditingOrEmpty(browser)) {
     return nullptr;
   }
 
