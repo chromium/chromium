@@ -58,6 +58,7 @@ class TtsPlatformImplLacros : public content::TtsPlatform,
       content::TtsUtterance* utterance,
       const content::VoiceData& voice_data) override {}
   void Shutdown() override {}
+  void RefreshVoices() override {}
 
  private:
   friend class base::NoDestructor<TtsPlatformImplLacros>;

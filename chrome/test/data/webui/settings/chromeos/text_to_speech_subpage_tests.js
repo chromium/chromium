@@ -21,6 +21,7 @@ class TestTtsSubpageBrowserProxy extends TestBrowserProxy {
       'getTtsExtensions',
       'previewTtsVoice',
       'wakeTtsEngine',
+      'refreshTtsVoices',
     ]);
   }
 
@@ -42,6 +43,11 @@ class TestTtsSubpageBrowserProxy extends TestBrowserProxy {
   /** @override */
   wakeTtsEngine() {
     this.methodCalled('wakeTtsEngine');
+  }
+
+  /** @override */
+  refreshTtsVoices() {
+    this.methodCalled('refreshTtsVoices');
   }
 }
 

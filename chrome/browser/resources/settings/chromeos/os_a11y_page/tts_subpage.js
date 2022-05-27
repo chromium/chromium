@@ -145,6 +145,7 @@ Polymer({
         'tts-preview-state-changed',
         isSpeaking => this.onTtsPreviewStateChanged_(isSpeaking));
     this.ttsBrowserProxy_.getTtsExtensions();
+    this.ttsBrowserProxy_.refreshTtsVoices();
   },
 
   /**

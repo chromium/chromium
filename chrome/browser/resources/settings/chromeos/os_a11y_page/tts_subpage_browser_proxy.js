@@ -32,6 +32,12 @@ export class TtsSubpageBrowserProxy {
    * Awakens the tts engine.
    */
   wakeTtsEngine() {}
+
+  /**
+   * Triggers the TtsPlatform to update its list of voices and relay that update
+   * through VoicesChanged.
+   */
+  refreshTtsVoices() {}
 }
 
 /**
@@ -56,6 +62,11 @@ export class TtsSubpageBrowserProxyImpl {
   /** @override */
   wakeTtsEngine() {
     chrome.send('wakeTtsEngine');
+  }
+
+  /** @override */
+  refreshTtsVoices() {
+    chrome.send('refreshTtsVoices');
   }
 }
 

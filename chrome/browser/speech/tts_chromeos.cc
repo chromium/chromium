@@ -163,6 +163,22 @@ void TtsPlatformImplChromeOs::FinalizeVoiceOrdering(
       [](const content::VoiceData& voice) { return !voice.native; });
 }
 
+void TtsPlatformImplChromeOs::RefreshVoices() {
+  // Android voices can be updated silently.
+  // If it happens, we can't return the latest voices here, but below
+  // eventually calls TtsController::VoicesChanged.
+  auto* const arc_service_manager = arc::ArcServiceManager::Get();
+  if (!arc_service_manager)
+    return;
+
+  arc::mojom::TtsInstance* tts = ARC_GET_INSTANCE_FOR_METHOD(
+      arc_service_manager->arc_bridge_service()->tts(), RefreshVoices);
+  if (!tts)
+    return;
+
+  tts->RefreshVoices();
+}
+
 // static
 TtsPlatformImplChromeOs*
 TtsPlatformImplChromeOs::GetInstance() {

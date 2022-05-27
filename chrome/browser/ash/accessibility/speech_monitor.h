@@ -102,6 +102,7 @@ class SpeechMonitor : public content::TtsPlatform {
   void SetError(const std::string& error) override;
   void Shutdown() override;
   void FinalizeVoiceOrdering(std::vector<content::VoiceData>& voices) override;
+  void RefreshVoices() override;
 
   void MaybeContinueReplay();
   void MaybePrintExpectations();

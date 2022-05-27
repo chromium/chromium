@@ -139,6 +139,8 @@ class MockTtsPlatformImpl : public content::TtsPlatform {
         [](const content::VoiceData& voice) { return !voice.native; });
   }
 
+  void RefreshVoices() override {}
+
   void GetVoicesForBrowserContext(
       content::BrowserContext* browser_context,
       const GURL& source_url,

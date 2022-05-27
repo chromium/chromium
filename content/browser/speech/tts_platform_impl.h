@@ -33,6 +33,7 @@ class TtsPlatformImpl : public TtsPlatform {
       content::BrowserContext* browser_context,
       const GURL& source_url,
       std::vector<content::VoiceData>* out_voices) override {}
+  void RefreshVoices() override {}
 
  protected:
   TtsPlatformImpl() {}

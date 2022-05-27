@@ -44,6 +44,7 @@ class MockTtsController : public content::TtsController {
   content::TtsEngineDelegate* GetTtsEngineDelegate() override {
     return nullptr;
   }
+  void RefreshVoices() override {}
   void SetTtsPlatform(content::TtsPlatform* tts_platform) override {}
   int QueueSize() override { return 0; }
   void StripSSML(
