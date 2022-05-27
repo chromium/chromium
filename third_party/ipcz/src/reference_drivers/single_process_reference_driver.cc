@@ -35,30 +35,97 @@ class TransportWrapper : public RefCounted {
                    IpczTransportActivityHandler activity_handler)
       : transport_(transport), activity_handler_(activity_handler) {}
 
-  IpczResult Notify(absl::Span<const uint8_t> data,
-                    absl::Span<const IpczDriverHandle> handles) {
-    IpczResult result =
-        activity_handler_(transport_, data.data(), data.size(), handles.data(),
-                          handles.size(), IPCZ_NO_FLAGS, nullptr);
-    if (result != IPCZ_RESULT_OK && result != IPCZ_RESULT_UNIMPLEMENTED) {
-      NotifyError();
-    }
-    return result;
+  void Notify(absl::Span<const uint8_t> data,
+              absl::Span<const IpczDriverHandle> handles) {
+    DoNotify(IPCZ_NO_FLAGS, data, handles);
   }
 
-  IpczResult NotifyError() {
-    return activity_handler_(transport_, nullptr, 0, nullptr, 0,
-                             IPCZ_TRANSPORT_ACTIVITY_ERROR, nullptr);
-  }
+  void NotifyError() { DoNotify(IPCZ_TRANSPORT_ACTIVITY_ERROR); }
 
  private:
   ~TransportWrapper() override {
-    activity_handler_(transport_, nullptr, 0, nullptr, 0,
-                      IPCZ_TRANSPORT_ACTIVITY_DEACTIVATED, nullptr);
+    // Since this is destruction, we can safely assume the invocation will be
+    // exclusive. Otherwise someone is mismanaging a reference count or has
+    // a UAF bug.
+    DoNotifyExclusive(IPCZ_TRANSPORT_ACTIVITY_DEACTIVATED, {}, {});
+  }
+
+  // Helper to serialize the invocation of potentially overlapping or reentrant
+  // notifications from this transport.
+  void DoNotify(IpczTransportActivityFlags flags,
+                absl::Span<const uint8_t> data = {},
+                absl::Span<const IpczDriverHandle> handles = {}) {
+    {
+      absl::MutexLock lock(&mutex_);
+      if (in_notification_) {
+        DeferredNotification notification = {.flags = flags};
+        if (!data.empty()) {
+          notification.data = std::vector<uint8_t>(data.begin(), data.end());
+        }
+        if (!handles.empty()) {
+          notification.handles =
+              std::vector<IpczDriverHandle>(handles.begin(), handles.end());
+        }
+        deferred_notifications_.push_back(std::move(notification));
+        return;
+      }
+
+      in_notification_ = true;
+    }
+
+    DoNotifyExclusive(flags, data, handles);
+
+    // Now flush any notifications that queued while this one was in progress.
+    // This continues until we complete an iteration with no new notifications
+    // being queued.
+    for (;;) {
+      std::vector<DeferredNotification> notifications;
+      {
+        absl::MutexLock lock(&mutex_);
+        if (deferred_notifications_.empty()) {
+          in_notification_ = false;
+          return;
+        }
+
+        notifications.swap(deferred_notifications_);
+      }
+
+      for (const auto& n : notifications) {
+        DoNotifyExclusive(n.flags, n.data, n.handles);
+      }
+    }
+  }
+
+  // Invokes the activity handler unguarded. The caller must ensure that this is
+  // mututally exclusive with any other invocation of the method.
+  void DoNotifyExclusive(IpczTransportActivityFlags flags,
+                         absl::Span<const uint8_t> data,
+                         absl::Span<const IpczDriverHandle> handles) {
+    const IpczResult result = activity_handler_(
+        transport_, data.empty() ? nullptr : data.data(), data.size(),
+        handles.empty() ? nullptr : handles.data(), handles.size(), flags,
+        nullptr);
+    if (result != IPCZ_RESULT_OK && result != IPCZ_RESULT_UNIMPLEMENTED) {
+      NotifyError();
+    }
   }
 
   const IpczHandle transport_;
   const IpczTransportActivityHandler activity_handler_;
+
+  // Queues copies of any pending notifications which were issued while another
+  // notification was already in progress, either concurrently or reentrantly.
+  // The queue is always flushed completely as the active notification stack
+  // unwinds.
+  struct DeferredNotification {
+    IpczTransportActivityFlags flags;
+    std::vector<uint8_t> data;
+    std::vector<IpczDriverHandle> handles;
+  };
+  absl::Mutex mutex_;
+  bool in_notification_ ABSL_GUARDED_BY(mutex_) = false;
+  std::vector<DeferredNotification> deferred_notifications_
+      ABSL_GUARDED_BY(mutex_);
 };
 
 struct SavedMessage {

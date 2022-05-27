@@ -196,14 +196,13 @@ typedef uintptr_t IpczDriverHandle;
 typedef uint32_t IpczTransportActivityFlags;
 
 // If set, the driver encountered an unrecoverable error using the transport and
-// ipcz should discard it. This also implies that the driver will not invoke the
-// activity handler again for the same transport. In such cases, ipcz does not
-// invoke DeactivateTransport(), as the transport's deactivation is implied by
-// the error notification.
+// ipcz should discard it. Note that the driver is free to issue such
+// notifications many times as long as it remans active, but ipcz will generally
+// request deactivation ASAP once an error is signaled.
 #define IPCZ_TRANSPORT_ACTIVITY_ERROR IPCZ_FLAG_BIT(0)
 
 // When ipcz wants to deactivate a transport, it invokes the driver's
-// DeactivateTransport function. Once the driver has finished any clean up and
+// DeactivateTransport() function. Once the driver has finished any clean up and
 // can ensure that the transport's activity handler will no longer be invoked,
 // it must then invoke the activity handler one final time with this flag set.
 // This finalizes deactivation and allows ipcz to free any associated resources.
@@ -224,12 +223,14 @@ extern "C" {
 //
 // If the driver encounters an unrecoverable error while performing I/O on the
 // transport, it should invoke this with the IPCZ_TRANSPORT_ACTIVITY_ERROR flag
-// to instigate immediate destruction of the transport. This implies that the
-// driver will not invoke this function ever again for `transport`, and that the
-// transport is automatically deactivated without an explicit call to the
-// driver's DeactivateTransport() function.
+// to instigate deactivation of the transport by ipcz via a subsequent
+// DeactivateTransport() call.
 //
 // `options` is currently unused and must be null.
+//
+// NOTE: It is the driver's responsibility to ensure that calls to this function
+// for the same value of `transport` are mututally exclusive. Overlapping calls
+// are unsafe and will result in undefined behavior.
 typedef IpczResult(IPCZ_API* IpczTransportActivityHandler)(
     IpczHandle transport,                    // in
     const void* data,                        // in
@@ -395,10 +396,15 @@ struct IPCZ_ALIGN(8) IpczDriver {
       uint32_t flags,                                 // in
       const void* options);                           // in
 
-  // Called by ipcz to deactivate a transport. Once this returns successfully,
-  // the driver must make no further calls into this transport's activity
-  // handler. ipcz may continue to use the transport for outgoing transmissions
-  // until the driver's Close() is also called on `driver_transport`.
+  // Called by ipcz to deactivate a transport. The driver does not need to
+  // complete deactivation synchronously, but it must begin to deactivate the
+  // transport and must invoke the transport's activity handler one final time
+  // with IPCZ_TRANSPORT_ACTIVITY_DEACTIVATED once finished. Beyond that point,
+  // the activity handler must no longer be invoked for that transport.
+  //
+  // Note that even after deactivatoin, ipcz may continue to call into the
+  // transport until it's closed with an explicit call to the driver's Close()
+  // by ipcz.
   IpczResult(IPCZ_API* DeactivateTransport)(
       IpczDriverHandle driver_transport,  // in
       uint32_t flags,                     // in
