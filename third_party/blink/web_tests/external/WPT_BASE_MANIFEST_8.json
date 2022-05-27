@@ -87022,6 +87022,19 @@
         {}
        ]
       ],
+      "table-collapsed-borders-paint-at-boundary.tentative.html": [
+       "0227b571a248a1843e5fd5abadce177f64951caa",
+       [
+        null,
+        [
+         [
+          "/css/css-break/table/table-collapsed-borders-paint-at-boundary-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "table-collapsed-borders-paint-htb-ltr.html": [
        "60e146296b226faf1914715aa837a86ac497ce25",
        [
@@ -98695,6 +98708,19 @@
        [
         [
          "/css/css-content/reference/quotes-034-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "quotes-slot-scoping.html": [
+      "3caeabef4eccc76d8703825bf5db09e129186987",
+      [
+       null,
+       [
+        [
+         "/css/css-content/quotes-slot-scoping-ref.html",
          "=="
         ]
        ],
@@ -133130,6 +133156,19 @@
        {}
       ]
      ],
+     "counter-list-item-slot-order.html": [
+      "09bdb25e0f9c2d1c248086c2b5ecbbaf3b6b6480",
+      [
+       null,
+       [
+        [
+         "/css/css-lists/counter-list-item-slot-order-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "counter-list-item.html": [
       "c0b89d49fd0bb38cacb71e7d875ba29bab31da70",
       [
@@ -133137,6 +133176,19 @@
        [
         [
          "/css/css-lists/counter-list-item-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "counter-order-display-contents.html": [
+      "70dbc5de8ed09725d42fcce595b4d8efab093ae0",
+      [
+       null,
+       [
+        [
+         "/css/css-lists/counter-order-display-contents-ref.html",
          "=="
         ]
        ],
@@ -133254,6 +133306,32 @@
        [
         [
          "/css/css-lists/counter-set-002-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "counter-slot-order-scoping.html": [
+      "ca87761901aa0abdcc6ef6166e5775dfc3efeac2",
+      [
+       null,
+       [
+        [
+         "/css/css-lists/counter-slot-order-scoping-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "counter-slot-order.html": [
+      "e481402911c527237a71aeaae66df54085200d58",
+      [
+       null,
+       [
+        [
+         "/css/css-lists/counter-slot-order-ref.html",
          "=="
         ]
        ],
@@ -261265,6 +261343,10 @@
        "0fde8bacc51d23a2065246727daf90fef8885f0c",
        []
       ],
+      "table-collapsed-borders-paint-at-boundary-ref.html": [
+       "04d643437fe72c60d0f5f46342e6038d9e268eb6",
+       []
+      ],
       "table-collapsed-borders-paint-htb-ltr-ref.html": [
        "1841ff582124124a97bc49046abf9ab6f2377354",
        []
@@ -262892,6 +262974,10 @@
      ],
      "pseudo-element-inline-box-ref.html": [
       "8294ae672d15643b1d8eeb8c9914fa93fe4e879a",
+      []
+     ],
+     "quotes-slot-scoping-ref.html": [
+      "e3e907cba589deb2e2c950a0a109cc639d0d16bd",
       []
      ],
      "reference": {
@@ -276528,12 +276614,28 @@
       "70d2febaae29ac4fd255c37b310d638374bd3d17",
       []
      ],
+     "counter-list-item-slot-order-ref.html": [
+      "3d045965de805bf16513ac9f6dfd6d6ab602ffc7",
+      []
+     ],
+     "counter-order-display-contents-ref.html": [
+      "a876204f6662323754546406e557a934807571ca",
+      []
+     ],
      "counter-set-001-ref.html": [
       "301197904a5af79eb5024bb7d97ac161e5ada3ad",
       []
      ],
      "counter-set-002-ref.html": [
       "26d11b32f64a170f65a37d572950fe37e78594bc",
+      []
+     ],
+     "counter-slot-order-ref.html": [
+      "a876204f6662323754546406e557a934807571ca",
+      []
+     ],
+     "counter-slot-order-scoping-ref.html": [
+      "c78bb263a935e905a07e6405de367b0a162dae2b",
       []
      ],
      "inline-block-list-marker-ref.html": [
@@ -494087,6 +494189,20 @@
     "state": {
      "cross-document-away-and-back.html": [
       "cccaebdf7b9af3bf4f5715f1592b29f12ee12022",
+      [
+       null,
+       {}
+      ]
+     ],
+     "cross-document-getState-undefined.html": [
+      "cbd5cdd52ed985b4769ac805c43293ccfab9f8cb",
+      [
+       null,
+       {}
+      ]
+     ],
+     "cross-document-getState.html": [
+      "aedbc471e0540e22f67ae72715a84499165b0ed7",
       [
        null,
        {}
