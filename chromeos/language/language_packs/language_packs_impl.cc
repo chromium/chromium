@@ -33,27 +33,28 @@ absl::optional<std::string> ConvertMojoFeatureToPackId(FeatureId mojo_id) {
   }
 }
 
+PackState GetPackStateFromStatusCode(const PackResult::StatusCode status_code) {
+  switch (status_code) {
+    case PackResult::NOT_INSTALLED:
+      return PackState::NOT_INSTALLED;
+    case PackResult::IN_PROGRESS:
+      return PackState::INSTALLING;
+    case PackResult::INSTALLED:
+      return PackState::INSTALLED;
+    // Catch all remaining cases as error.
+    default:
+      return PackState::ERROR;
+  }
+}
+
 // Called when GetPackState() or InstallPack() functions from Language Packs
 // are complete.
 void OnOperationComplete(LanguagePacksImpl::GetPackInfoCallback mojo_callback,
                          const PackResult& pack_result) {
   auto info = LanguagePackInfo::New();
-  switch (pack_result.pack_state) {
-    case PackResult::NOT_INSTALLED:
-      info->pack_state = PackState::NOT_INSTALLED;
-      break;
-    case PackResult::IN_PROGRESS:
-      info->pack_state = PackState::INSTALLING;
-      break;
-    case PackResult::INSTALLED:
-      info->pack_state = PackState::INSTALLED;
-      info->path = pack_result.path;
-      break;
-
-    // Catch all remaining cases as error.
-    default:
-      info->pack_state = PackState::ERROR;
-      break;
+  info->pack_state = GetPackStateFromStatusCode(pack_result.pack_state);
+  if (pack_result.pack_state == PackResult::INSTALLED) {
+    info->path = pack_result.path;
   }
 
   base::UmaHistogramEnumeration("ChromeOS.LanguagePacks.Mojo.PackStateResponse",
