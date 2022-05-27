@@ -238,7 +238,7 @@ IN_PROC_BROWSER_TEST_F(SecurityIndicatorTest, CheckIndicatorText) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), kMockNonsecureURL));
   EXPECT_EQ(security_state::WARNING, helper->GetSecurityLevel());
   EXPECT_TRUE(location_bar_view->location_icon_view()->ShouldShowLabel());
-  EXPECT_TRUE(base::LowerCaseEqualsASCII(
+  EXPECT_TRUE(base::EqualsCaseInsensitiveASCII(
       location_bar_view->location_icon_view()->GetText(), "not secure"));
 }
 
