@@ -10,8 +10,10 @@
 #include "ash/frame_throttler/frame_throttling_controller.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
+#include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
+#include "ash/system/unified/unified_system_tray.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
@@ -331,6 +333,14 @@ void WindowCycleList::InitWindowCycleView() {
   if (cycle_view_)
     return;
   aura::Window* root_window = GetRootWindowForCycleView();
+
+  // Close the system quick settings tray before creating the cycle view.
+  UnifiedSystemTray* tray = RootWindowController::ForWindow(root_window)
+                                ->GetStatusAreaWidget()
+                                ->unified_system_tray();
+  if (tray->IsBubbleShown())
+    tray->CloseBubble();
+
   cycle_view_ = new WindowCycleView(root_window, windows_);
   const bool is_interactive_alt_tab_mode_allowed =
       Shell::Get()->window_cycle_controller()->IsInteractiveAltTabModeAllowed();
