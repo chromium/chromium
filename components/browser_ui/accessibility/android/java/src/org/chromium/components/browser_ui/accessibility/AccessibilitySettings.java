@@ -15,7 +15,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.components.browser_ui.accessibility.AccessibilitySettingsDelegate.BooleanPreferenceDelegate;
 import org.chromium.components.browser_ui.accessibility.FontSizePrefs.FontSizePrefsObserver;
 import org.chromium.components.browser_ui.settings.ChromeBaseCheckBoxPreference;
-import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 
 /**
@@ -24,15 +23,11 @@ import org.chromium.components.browser_ui.settings.SettingsUtils;
 public class AccessibilitySettings
         extends PreferenceFragmentCompat implements Preference.OnPreferenceChangeListener {
     public static final String PREF_TEXT_SCALE = "text_scale";
-    public static final String PREF_PAGE_ZOOM_DEFAULT_ZOOM = "page_zoom_default_zoom";
-    public static final String PREF_PAGE_ZOOM_ALWAYS_SHOW = "page_zoom_always_show";
     public static final String PREF_FORCE_ENABLE_ZOOM = "force_enable_zoom";
     public static final String PREF_READER_FOR_ACCESSIBILITY = "reader_for_accessibility";
     public static final String PREF_CAPTIONS = "captions";
 
     private TextScalePreference mTextScalePref;
-    private PageZoomPreference mPageZoomDefaultZoomPref;
-    private ChromeSwitchPreference mPageZoomAlwaysShowPref;
     private ChromeBaseCheckBoxPreference mForceEnableZoomPref;
     private boolean mRecordFontSizeChangeOnStop;
     private AccessibilitySettingsDelegate mDelegate;
@@ -71,23 +66,9 @@ public class AccessibilitySettings
         SettingsUtils.addPreferencesFromResource(this, R.xml.accessibility_preferences);
 
         mTextScalePref = (TextScalePreference) findPreference(PREF_TEXT_SCALE);
-        mPageZoomDefaultZoomPref = (PageZoomPreference) findPreference(PREF_PAGE_ZOOM_DEFAULT_ZOOM);
-        mPageZoomAlwaysShowPref =
-                (ChromeSwitchPreference) findPreference(PREF_PAGE_ZOOM_ALWAYS_SHOW);
-
-        if (mDelegate.showPageZoomSettingsUI()) {
-            mTextScalePref.setVisible(false);
-            mPageZoomDefaultZoomPref.setInitialValue(PageZoomUtils.getDefaultZoomValue());
-            mPageZoomDefaultZoomPref.setOnPreferenceChangeListener(this);
-            mPageZoomAlwaysShowPref.setChecked(PageZoomUtils.getShouldAlwaysShowZoomValue());
-            mPageZoomAlwaysShowPref.setOnPreferenceChangeListener(this);
-        } else {
-            mPageZoomDefaultZoomPref.setVisible(false);
-            mPageZoomAlwaysShowPref.setVisible(false);
-            mTextScalePref.setOnPreferenceChangeListener(this);
-            mTextScalePref.updateFontScaleFactors(mFontSizePrefs.getFontScaleFactor(),
-                    mFontSizePrefs.getUserFontScaleFactor(), false);
-        }
+        mTextScalePref.setOnPreferenceChangeListener(this);
+        mTextScalePref.updateFontScaleFactors(mFontSizePrefs.getFontScaleFactor(),
+                mFontSizePrefs.getUserFontScaleFactor(), false);
 
         mForceEnableZoomPref =
                 (ChromeBaseCheckBoxPreference) findPreference(PREF_FORCE_ENABLE_ZOOM);
@@ -156,10 +137,6 @@ public class AccessibilitySettings
             if (mReaderForAccessibilityDelegate != null) {
                 mReaderForAccessibilityDelegate.setEnabled((Boolean) newValue);
             }
-        } else if (PREF_PAGE_ZOOM_DEFAULT_ZOOM.equals(preference.getKey())) {
-            PageZoomUtils.setDefaultZoomValue((Integer) newValue);
-        } else if (PREF_PAGE_ZOOM_ALWAYS_SHOW.equals(preference.getKey())) {
-            PageZoomUtils.setShouldAlwaysShowZoomValue((Boolean) newValue);
         }
         return true;
     }

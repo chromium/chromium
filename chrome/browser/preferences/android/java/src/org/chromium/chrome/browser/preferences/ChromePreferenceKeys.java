@@ -571,6 +571,15 @@ public final class ChromePreferenceKeys {
     public static final KeyPrefix OPTIMIZATION_GUIDE_PUSH_NOTIFICATION_CACHE =
             new KeyPrefix("Chrome.OptimizationGuide.PushNotificationCache.*");
 
+    /**
+     * Page Zoom feature preferences. Tracks if a user wants the menu item always visible, and
+     * what their default level of zoom should be.
+     */
+    public static final String PAGE_ZOOM_ALWAYS_SHOW_MENU_ITEM =
+            "Chrome.PageZoom.AlwaysShowMenuItem";
+    public static final String PAGE_ZOOM_DEFAULT_ZOOM_SETTING =
+            "Chrome.PageZoom.DefaultZoomSetting";
+
     /** The shared preference for the 'save card to device' checkbox status. */
     public static final String PAYMENTS_CHECK_SAVE_CARD_TO_DEVICE = "check_save_card_to_device";
 
@@ -1048,6 +1057,8 @@ public final class ChromePreferenceKeys {
                 OPEN_NEW_TAB_PAGE_COUNT,
                 OPEN_RECENT_TABS_COUNT,
                 OPTIMIZATION_GUIDE_PUSH_NOTIFICATION_CACHE.pattern(),
+                PAGE_ZOOM_ALWAYS_SHOW_MENU_ITEM,
+                PAGE_ZOOM_DEFAULT_ZOOM_SETTING,
                 PERSISTENT_OFFLINE_CONTENT_AVAILABILITY_STATUS,
                 PRICE_TRACKING_ANNOTATIONS_ENABLED_METRICS_TIMESTAMP,
                 PRICE_TRACKING_CHROME_MANAGED_NOTIFICATIONS_TIMESTAMPS,

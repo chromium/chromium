@@ -5,7 +5,6 @@
 
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/page_zoom_view_container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/page_zoom_background"
@@ -25,12 +24,6 @@
         android:id="@+id/page_zoom_slider"
         android:layout_width="0dp"
         android:layout_weight="1"
-        android:paddingStart="0dp"
-        android:paddingEnd="0dp"
-        android:background="@drawable/page_zoom_seekbar_track"
-        android:progressDrawable="@drawable/page_zoom_seekbar_progress"
-        android:thumb="@drawable/page_zoom_seekbar_thumb"
-        android:splitTrack="false"
         android:layout_height="wrap_content" />
 
     <org.chromium.ui.widget.ChromeImageButton

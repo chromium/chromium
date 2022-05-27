@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.components.browser_ui.accessibility;
+package org.chromium.chrome.browser.page_zoom;
 
+import android.app.Activity;
+import android.content.Context;
 import android.view.View;
+import android.view.ViewStub;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
@@ -19,22 +22,15 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  * zoom should be calling methods in this class only.
  */
 public class PageZoomCoordinator {
-    private final Delegate mDelegate;
+    private final Context mContext;
     private final PropertyModel mModel;
     private final PageZoomMediator mMediator;
     private View mView;
 
     private static Boolean sShouldShowMenuItemForTesting;
 
-    /**
-     * Delegate interface for any class that wants a |PageZoomCoordinator| and to display the view.
-     */
-    public interface Delegate {
-        View getZoomControlView();
-    }
-
-    public PageZoomCoordinator(Delegate delegate) {
-        mDelegate = delegate;
+    public PageZoomCoordinator(Context context) {
+        mContext = context;
         mModel = new PropertyModel.Builder(PageZoomProperties.ALL_KEYS).build();
         mMediator = new PageZoomMediator(mModel);
     }
@@ -55,7 +51,10 @@ public class PageZoomCoordinator {
     public void show(WebContents webContents) {
         // If the view has not been created, lazily inflate from the view stub.
         if (mView == null) {
-            mView = mDelegate.getZoomControlView();
+            ViewStub viewStub =
+                    (ViewStub) ((Activity) mContext).findViewById(R.id.page_zoom_container);
+            mView = viewStub.inflate();
+
             PropertyModelChangeProcessor.create(mModel, mView, PageZoomViewBinder::bind);
         } else {
             mView.setVisibility(View.VISIBLE);

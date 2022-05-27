@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.components.browser_ui.accessibility;
+package org.chromium.chrome.browser.page_zoom;
 
 import org.chromium.base.Callback;
 import org.chromium.ui.modelutil.PropertyKey;

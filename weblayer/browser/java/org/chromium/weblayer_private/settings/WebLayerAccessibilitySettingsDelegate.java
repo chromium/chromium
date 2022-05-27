@@ -35,9 +35,4 @@ public class WebLayerAccessibilitySettingsDelegate implements AccessibilitySetti
 
     @Override
     public void addExtraPreferences(PreferenceFragmentCompat fragment) {}
-
-    @Override
-    public boolean showPageZoomSettingsUI() {
-        return false;
-    }
 }

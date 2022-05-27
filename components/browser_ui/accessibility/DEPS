@@ -3,5 +3,4 @@ include_rules = [
   "+components/user_prefs",
   "+content/public/android/java",
   "+content/public/browser",
-  "+ui/android",
 ]
