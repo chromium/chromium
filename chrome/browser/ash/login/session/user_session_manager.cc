@@ -1133,25 +1133,21 @@ void UserSessionManager::OnConnectionChanged(
   }
 
   // Need to iterate over all users and their OAuth2 session state.
-  const user_manager::UserList& users = user_manager->GetLoggedInUsers();
-  for (user_manager::UserList::const_iterator it = users.begin();
-       it != users.end(); ++it) {
-    if (!(*it)->is_profile_created())
+  for (const user_manager::User* user : user_manager->GetLoggedInUsers()) {
+    if (!user->is_profile_created())
       continue;
 
-    Profile* user_profile = ProfileHelper::Get()->GetProfileByUserUnsafe(*it);
-    bool should_restore_session = pending_signin_restore_sessions_.find(
-                                      (*it)->GetAccountId().GetUserEmail()) !=
-                                  pending_signin_restore_sessions_.end();
+    Profile* user_profile = ProfileHelper::Get()->GetProfileByUser(user);
+    DCHECK(user_profile);
     OAuth2LoginManager* login_manager =
         OAuth2LoginManagerFactory::GetInstance()->GetForProfile(user_profile);
     if (login_manager->SessionRestoreIsRunning()) {
       // If we come online for the first time after successful offline login,
       // we need to kick off OAuth token verification process again.
       login_manager->ContinueSessionRestore();
-    } else if (should_restore_session) {
-      pending_signin_restore_sessions_.erase(
-          (*it)->GetAccountId().GetUserEmail());
+    } else if (pending_signin_restore_sessions_.erase(
+                   user->GetAccountId().GetUserEmail()) > 0) {
+      // Restore it, if the account is contained in the pending set.
       RestoreAuthSessionImpl(user_profile, false /* has_auth_cookies */);
     }
   }
