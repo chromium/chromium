@@ -20,6 +20,7 @@
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/permissions_updater.h"
 #include "chrome/browser/extensions/scripting_permissions_modifier.h"
+#include "chrome/browser/extensions/site_permissions_helper.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -90,12 +91,26 @@ ExtensionAction::ShowAction ExtensionActionRunner::RunAction(
     bool grant_tab_permissions) {
   if (grant_tab_permissions) {
     int blocked = GetBlockedActions(extension);
-    if ((blocked & kRefreshRequiredActionsMask) != 0) {
+    if (blocked & kRefreshRequiredActionsMask) {
+      const GURL& url = web_contents()->GetLastCommittedURL();
+      // An extension that wants to run but it is currently blocked must have
+      // "on click" access.
+      constexpr SitePermissionsHelper::SiteAccess kExpectedSiteAccess =
+          SitePermissionsHelper::SiteAccess::kOnClick;
+      DCHECK_EQ(
+          kExpectedSiteAccess,
+          SitePermissionsHelper(Profile::FromBrowserContext(browser_context_))
+              .GetSiteAccess(*extension, url));
+
+      // Display the checkbox so the user has the option to always run the
+      // action on this site.
+      bool show_checkbox = true;
       ShowBlockedActionBubble(
-          extension,
-          base::BindOnce(
-              &ExtensionActionRunner::OnBlockedActionBubbleForRunActionClosed,
-              weak_factory_.GetWeakPtr(), extension->id()));
+          extension, show_checkbox,
+          base::BindOnce(&ExtensionActionRunner::OnBlockedActionBubbleClosed,
+                         weak_factory_.GetWeakPtr(), extension->id(), url,
+                         kExpectedSiteAccess, kExpectedSiteAccess));
+
       return ExtensionAction::ACTION_NONE;
     }
     TabHelper::FromWebContents(web_contents())
@@ -145,10 +160,12 @@ void ExtensionActionRunner::HandlePageAccessModified(
   if (blocked_actions & kRefreshRequiredActionsMask) {
     // TODO(devlin): The bubble text should make it clear that permissions are
     // granted only after the user accepts the refresh.
+    // Since the user already changed site access, don't display the checkbox
+    // to always run on site.
+    bool show_checkbox = false;
     ShowBlockedActionBubble(
-        extension,
-        base::BindOnce(&ExtensionActionRunner::
-                           OnBlockedActionBubbleForPageAccessGrantClosed,
+        extension, show_checkbox,
+        base::BindOnce(&ExtensionActionRunner::OnBlockedActionBubbleClosed,
                        weak_factory_.GetWeakPtr(), extension->id(),
                        web_contents()->GetLastCommittedURL(), current_access,
                        new_access));
@@ -355,7 +372,8 @@ void ExtensionActionRunner::LogUMA() const {
 
 void ExtensionActionRunner::ShowBlockedActionBubble(
     const Extension* extension,
-    base::OnceClosure callback) {
+    bool show_checkbox,
+    base::OnceCallback<void(bool)> callback) {
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
   ExtensionsContainer* const extensions_container =
       browser ? browser->window()->GetExtensionsContainer() : nullptr;
@@ -367,40 +385,25 @@ void ExtensionActionRunner::ShowBlockedActionBubble(
   if (accept_bubble_for_testing_.has_value()) {
     if (*accept_bubble_for_testing_) {
       base::ThreadTaskRunnerHandle::Get()->PostTask(
-          FROM_HERE, base::BindOnce(std::move(callback)));
+          FROM_HERE,
+          base::BindOnce(std::move(callback), bubble_is_checked_for_testing_));
     }
     return;
   }
 
-  ShowBlockedActionDialog(browser, extension->id(), std::move(callback));
+  ShowBlockedActionDialog(browser, extension->id(), show_checkbox,
+                          std::move(callback));
 }
 
-void ExtensionActionRunner::OnBlockedActionBubbleForRunActionClosed(
-    const std::string& extension_id) {
-  const Extension* extension = ExtensionRegistry::Get(browser_context_)
-                                   ->enabled_extensions()
-                                   .GetByID(extension_id);
-  if (!extension)
-    return;
-  {
-    // Ignore the active tab permission being granted because we don't want
-    // to run scripts right before we refresh the page.
-    base::AutoReset<bool> ignore_active_tab(&ignore_active_tab_granted_, true);
-    TabHelper::FromWebContents(web_contents())
-        ->active_tab_permission_granter()
-        ->GrantIfRequested(extension);
-  }
-  web_contents()->GetController().Reload(content::ReloadType::NORMAL, false);
-}
-
-void ExtensionActionRunner::OnBlockedActionBubbleForPageAccessGrantClosed(
+void ExtensionActionRunner::OnBlockedActionBubbleClosed(
     const std::string& extension_id,
     const GURL& page_url,
     SitePermissionsHelper::SiteAccess current_access,
-    SitePermissionsHelper::SiteAccess new_access) {
-  DCHECK(new_access == SitePermissionsHelper::SiteAccess::kOnSite ||
-         new_access == SitePermissionsHelper::SiteAccess::kOnAllSites);
-  DCHECK_EQ(SitePermissionsHelper::SiteAccess::kOnClick, current_access);
+    SitePermissionsHelper::SiteAccess new_access,
+    bool is_checked) {
+  // Blocked action dialog could have only be shown if the extension's action
+  // was blocked, which means the current site access must be "on click".
+  DCHECK_EQ(current_access, SitePermissionsHelper::SiteAccess::kOnClick);
 
   // If the web contents have navigated to a different origin, do nothing.
   if (!url::IsSameOriginWith(page_url, web_contents()->GetLastCommittedURL()))
@@ -412,7 +415,25 @@ void ExtensionActionRunner::OnBlockedActionBubbleForPageAccessGrantClosed(
   if (!extension)
     return;
 
-  UpdatePageAccessSettings(extension, current_access, new_access);
+  // If the user selected the checkbox, always grant access to this site. Note
+  // that the checkbox should only be visible if the dialog wasn't triggered
+  // after a site access change (which would be evidenced in `new_access`).
+  if (is_checked) {
+    DCHECK_EQ(current_access, new_access);
+    new_access = SitePermissionsHelper::SiteAccess::kOnSite;
+  }
+
+  if (current_access != new_access) {
+    UpdatePageAccessSettings(extension, current_access, new_access);
+  } else {
+    // Ignore the active tab permission being granted because we don't want
+    // to run scripts right before we refresh the page.
+    base::AutoReset<bool> ignore_active_tab(&ignore_active_tab_granted_, true);
+    TabHelper::FromWebContents(web_contents())
+        ->active_tab_permission_granter()
+        ->GrantIfRequested(extension);
+  }
+
   web_contents()->GetController().Reload(content::ReloadType::NORMAL, false);
 }
 

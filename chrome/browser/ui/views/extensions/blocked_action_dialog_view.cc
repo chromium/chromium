@@ -4,7 +4,10 @@
 
 #include "chrome/browser/ui/views/extensions/blocked_action_dialog_view.h"
 
+#include "base/bind.h"
+#include "base/callback_forward.h"
 #include "base/feature_list.h"
+#include "chrome/browser/extensions/site_permissions_helper.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/extensions/extensions_dialogs_utils.h"
@@ -23,8 +26,10 @@ namespace extensions {
 
 void ShowBlockedActionDialog(Browser* browser,
                              const ExtensionId& extension_id,
-                             base::OnceClosure callback) {
-  ShowBlockedActionDialogView(browser, extension_id, std::move(callback));
+                             bool show_checkbox,
+                             base::OnceCallback<void(bool)> callback) {
+  ShowBlockedActionDialogView(browser, extension_id, show_checkbox,
+                              std::move(callback));
 }
 
 }  // namespace extensions
@@ -35,10 +40,12 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kCheckboxId);
 
 }  // namespace
 
+// }
 // static
 void ShowBlockedActionDialogView(Browser* browser,
                                  const extensions::ExtensionId& extension_id,
-                                 base::OnceClosure callback) {
+                                 bool show_checkbox,
+                                 base::OnceCallback<void(bool)> callback) {
   // TODO(crbug.com/1322796): Multiple classes use this. We should pull getting
   // an anchor view and showing a BubbleDialogDelegate into a common location.
   BrowserView* const browser_view =
@@ -50,44 +57,46 @@ void ShowBlockedActionDialogView(Browser* browser,
   DCHECK(container);
   auto* extension = container->GetActionForId(extension_id);
 
-  std::unique_ptr<ui::DialogModel> dialog_model;
+  auto on_ok_button_clicked = [](ui::DialogModel* dialog_model,
+                                 bool did_show_checkbox,
+                                 base::OnceCallback<void(bool)> callback) {
+    bool checkbox_checked =
+        dialog_model->GetCheckboxByUniqueId(kCheckboxId)->is_checked();
+    std::move(callback).Run(did_show_checkbox && checkbox_checked);
+  };
+
+  ui::DialogModel::Builder dialog_builder;
   if (base::FeatureList::IsEnabled(features::kExtensionsMenuAccessControl)) {
     content::WebContents* web_contents =
         browser->tab_strip_model()->GetActiveWebContents();
-    dialog_model =
-        ui::DialogModel::Builder()
-            .SetTitle(l10n_util::GetStringFUTF16(
-                IDS_EXTENSION_BLOCKED_ACTION_BUBBLE_SINGLE_EXTENSION_TITLE,
-                extension->GetActionName()))
-            .SetIcon(GetIcon(extension, web_contents))
-            .AddBodyText(ui::DialogModelLabel(l10n_util::GetStringUTF16(
-                IDS_EXTENSION_BLOCKED_ACTION_BUBBLE_BODY_TEXT)))
-            // TODO(crbug.com/1319555): Show checkbox only when the site access
-            // can be set to "on site".
-            // TODO(crbug.com/1319555): Handle checkbox selection.
-            .AddCheckbox(
-                kCheckboxId,
-                ui::DialogModelLabel(l10n_util::GetStringUTF16(
-                    IDS_EXTENSION_BLOCKED_ACTION_BUBBLE_CHECKBOX_LABEL)))
-            .AddOkButton(
-                std::move(callback),
-                l10n_util::GetStringUTF16(
-                    IDS_EXTENSION_BLOCKED_ACTION_BUBBLE_OK_BUTTON_LABEL))
-            .Build();
+    dialog_builder
+        .SetTitle(l10n_util::GetStringFUTF16(
+            IDS_EXTENSION_BLOCKED_ACTION_BUBBLE_SINGLE_EXTENSION_TITLE,
+            extension->GetActionName()))
+        .SetIcon(GetIcon(extension, web_contents))
+        .AddBodyText(ui::DialogModelLabel(l10n_util::GetStringUTF16(
+            IDS_EXTENSION_BLOCKED_ACTION_BUBBLE_BODY_TEXT)))
+        .AddOkButton(base::BindOnce(on_ok_button_clicked,
+                                    dialog_builder.model(), show_checkbox,
+                                    std::move(callback)));
+    if (show_checkbox) {
+      dialog_builder.AddCheckbox(
+          kCheckboxId,
+          ui::DialogModelLabel(l10n_util::GetStringUTF16(
+              IDS_EXTENSION_BLOCKED_ACTION_BUBBLE_CHECKBOX_LABEL)));
+    }
   } else {
-    dialog_model =
-        ui::DialogModel::Builder()
-            .SetTitle(l10n_util::GetStringUTF16(
-                IDS_EXTENSION_BLOCKED_ACTION_BUBBLE_HEADING))
-            .AddOkButton(std::move(callback),
-                         l10n_util::GetStringUTF16(
-                             IDS_EXTENSION_BLOCKED_ACTION_BUBBLE_OK_BUTTON))
-            .Build();
+    dialog_builder
+        .SetTitle(l10n_util::GetStringUTF16(
+            IDS_EXTENSION_BLOCKED_ACTION_BUBBLE_HEADING))
+        .AddOkButton(base::BindOnce(std::move(callback), /*is_checked=*/false),
+                     l10n_util::GetStringUTF16(
+                         IDS_EXTENSION_BLOCKED_ACTION_BUBBLE_OK_BUTTON));
   }
 
   views::View* const anchor_view = container->GetViewForId(extension_id);
   auto bubble = std::make_unique<views::BubbleDialogModelHost>(
-      std::move(dialog_model),
+      dialog_builder.Build(),
       anchor_view ? anchor_view : container->GetExtensionsButton(),
       views::BubbleBorder::TOP_RIGHT);
 

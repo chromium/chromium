@@ -13,10 +13,13 @@ class Browser;
 namespace extensions {
 
 // Shows a dialog when an extension requires a refresh after gaining access to
-// the current site in order to run its blocked action.
+// the current site in order to run its blocked action. When the dialog is
+// accepted, `callback` is invoked. with a booleand indication whether the
+// checkbox (if shown) was checked by the user.
 void ShowBlockedActionDialog(Browser* browser,
                              const ExtensionId& extension_id,
-                             base::OnceClosure callback);
+                             bool show_checkbox,
+                             base::OnceCallback<void(bool)> callback);
 
 }  // namespace extensions
 

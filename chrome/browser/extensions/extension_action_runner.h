@@ -99,6 +99,10 @@ class ExtensionActionRunner : public content::WebContentsObserver,
     accept_bubble_for_testing_ = accept_bubble;
   }
 
+  void bubble_is_checked_for_testing(bool is_checked) {
+    bubble_is_checked_for_testing_ = is_checked;
+  }
+
   void set_observer_for_testing(TestObserver* observer) {
     test_observer_ = observer;
   }
@@ -178,19 +182,16 @@ class ExtensionActionRunner : public content::WebContentsObserver,
   // actions for the given |extension|. |callback| is invoked when the bubble is
   // closed.
   void ShowBlockedActionBubble(const Extension* extension,
-                               base::OnceClosure callback);
+                               bool show_checkbox,
+                               base::OnceCallback<void(bool)> callback);
 
-  // Called when the blocked actions bubble invoked to run the extension action
-  // is closed.
-  void OnBlockedActionBubbleForRunActionClosed(const std::string& extension_id);
-
-  // Called when the blocked actions bubble invoked for the page access grant is
-  // closed.
-  void OnBlockedActionBubbleForPageAccessGrantClosed(
+  // Called when the blocked actions bubble is closed.
+  void OnBlockedActionBubbleClosed(
       const std::string& extension_id,
       const GURL& page_url,
       SitePermissionsHelper::SiteAccess current_access,
-      SitePermissionsHelper::SiteAccess new_access);
+      SitePermissionsHelper::SiteAccess new_access,
+      bool is_checked);
 
   // Handles permission changes necessary for page access modification of the
   // |extension|.
@@ -250,6 +251,10 @@ class ExtensionActionRunner : public content::WebContentsObserver,
   // If true, immediately accept the blocked action dialog by running the
   // callback.
   absl::optional<bool> accept_bubble_for_testing_;
+
+  // If `accept_bubble_for_testing_` is true, signals whether the checkbox is
+  // checked or not.
+  bool bubble_is_checked_for_testing_{false};
 
   raw_ptr<TestObserver> test_observer_;
 

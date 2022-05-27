@@ -12,8 +12,9 @@ class BlockedActionDialogViewBrowserTest : public ExtensionsDialogBrowserTest {
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
     auto extension = InstallExtension("Extension");
+    bool show_checkbox = true;
     extensions::ShowBlockedActionDialog(browser(), extension->id(),
-                                        base::DoNothing());
+                                        show_checkbox, base::DoNothing());
   }
 };
 
