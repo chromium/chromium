@@ -68,24 +68,32 @@ void AuthPerformer::AuthenticateUsingKnowledgeKey(
   DCHECK(context->GetChallengeResponseKeys().empty());
   if (context->GetKey()->GetKeyType() == Key::KEY_TYPE_PASSWORD_PLAIN) {
     DCHECK(!context->IsUsingPin());
-    if (context->GetKey()->GetLabel().empty()) {
-      const AuthFactorsData& auth_factors = context->GetAuthFactorsData();
-      const cryptohome::KeyDefinition* key_def =
-          auth_factors.FindOnlinePasswordKey();
-      if (!key_def) {
-        LOGIN_LOG(ERROR) << "Could not find Password key";
-        std::move(callback).Run(
-            std::move(context),
-            CryptohomeError{user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND});
-        return;
-      }
-      context->GetKey()->SetLabel(key_def->label);
-    }  // empty label
     SystemSaltGetter::Get()->GetSystemSalt(base::BindOnce(
         &AuthPerformer::HashKeyAndAuthenticate, weak_factory_.GetWeakPtr(),
         std::move(context), std::move(callback)));
     return;
   }  // plain-text password
+
+  // The login code might speculatively set the "gaia" label in the user
+  // context, however at the cryptohome level the existing user key's label can
+  // be either "gaia" or "legacy-N" - which is what we need to use when talking
+  // to cryptohome. If in cryptohome, "gaia" is indeed the label, then at the
+  // end of this operation, gaia would be returned. This case applies to only
+  // "gaia" labels only because they are created at oobe.
+  if (context->GetKey()->GetLabel() == kCryptohomeGaiaKeyLabel ||
+      context->GetKey()->GetLabel().empty()) {
+    const AuthFactorsData& auth_factors = context->GetAuthFactorsData();
+    const cryptohome::KeyDefinition* key_def =
+        auth_factors.FindOnlinePasswordKey();
+    if (!key_def) {
+      LOGIN_LOG(ERROR) << "Could not find Password key";
+      std::move(callback).Run(
+          std::move(context),
+          CryptohomeError{user_data_auth::CRYPTOHOME_ERROR_KEY_NOT_FOUND});
+      return;
+    }
+    context->GetKey()->SetLabel(key_def->label);
+  }
 
   LOGIN_LOG(EVENT) << "Authenticating using key "
                    << context->GetKey()->GetKeyType();
