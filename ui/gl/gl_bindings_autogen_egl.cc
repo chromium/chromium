@@ -235,8 +235,8 @@ void DriverEGL::InitializeExtensionBindings() {
   ext.b_GL_CHROMIUM_egl_khr_fence_sync_hack =
       gfx::HasExtension(extensions, "GL_CHROMIUM_egl_khr_fence_sync_hack");
 
-  if (ext.b_EGL_KHR_image || ext.b_EGL_KHR_image_base ||
-      ext.b_EGL_KHR_gl_texture_2D_image) {
+  if (ext.b_EGL_KHR_gl_texture_2D_image || ext.b_EGL_KHR_image ||
+      ext.b_EGL_KHR_image_base) {
     fn.eglCreateImageKHRFn = reinterpret_cast<eglCreateImageKHRProc>(
         GetGLProcAddress("eglCreateImageKHR"));
   }

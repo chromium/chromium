@@ -6790,6 +6790,10 @@ static const GLEnums::EnumToString enum_to_string_table[] = {
         "GL_FRAMEBUFFER_FETCH_NONCOHERENT_QCOM",
     },
     {
+        0x96BA,
+        "GL_RGBX8_ANGLE",
+    },
+    {
         0xC0,
         "GL_SHARED_EDGE_NV",
     },

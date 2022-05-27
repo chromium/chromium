@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright (c) 2012 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -3287,8 +3287,8 @@ namespace gl {
     else:
       num_dynamic = num_dynamic + 1
 
-  print "[%s] %d static bindings, %d dynamic bindings" % (
-      set_name, len(functions) - num_dynamic, num_dynamic)
+  print("[%s] %d static bindings, %d dynamic bindings" % (
+      set_name, len(functions) - num_dynamic, num_dynamic))
 
   # Write function to initialize the function pointers that are always the same
   # and to initialize bindings where choice of the function depends on the
@@ -3329,10 +3329,10 @@ namespace gl {
     conditions = []
     if 'gl_versions' in version:
       conditions.extend(
-          [GetGLVersionCondition(v) for v in version['gl_versions']])
+          sorted([GetGLVersionCondition(v) for v in version['gl_versions']]))
     if 'extensions' in version and version['extensions']:
       conditions.extend(
-          ['ext.b_%s' % e for e in version['extensions']])
+          sorted(['ext.b_%s' % e for e in version['extensions']]))
     return ' || '.join(conditions)
 
   def WriteConditionalFuncBinding(file, func):
@@ -3644,7 +3644,7 @@ def GenerateMockBindingsHeader(file, functions):
 """)
   uniquely_named_functions = GetUniquelyNamedFunctions(functions)
 
-  for key in sorted(uniquely_named_functions.iterkeys()):
+  for key in sorted(uniquely_named_functions.keys()):
     func = uniquely_named_functions[key]
     file.write('static %s GL_BINDING_CALL Mock_%s(%s);\n' %
         (func['return_type'], func['name'], func['arguments']))
@@ -3676,7 +3676,7 @@ namespace gl {
 
   # Write functions that trampoline into the set MockGLInterface instance.
   uniquely_named_functions = GetUniquelyNamedFunctions(functions)
-  sorted_function_names = sorted(uniquely_named_functions.iterkeys())
+  sorted_function_names = sorted(uniquely_named_functions.keys())
 
   for key in sorted_function_names:
     func = uniquely_named_functions[key]
@@ -3955,12 +3955,12 @@ def FillExtensionsFromHeaders(functions, extension_headers, extra_extensions):
 
       in_both = explicit_extensions.intersection(extensions_from_headers)
       if len(in_both):
-        print "[%s] Specified redundant extensions for binding: %s" % (
-            name, ', '.join(in_both))
+        print("[%s] Specified redundant extensions for binding: %s" % (
+            name, ', '.join(in_both)))
       diff = explicit_extensions - extensions_from_headers
       if len(diff):
-        print "[%s] Specified extra extensions for binding: %s" % (
-            name, ', '.join(diff))
+        print("[%s] Specified extra extensions for binding: %s" % (
+            name, ', '.join(diff)))
 
       if version.get('explicit_only', False):
         all_extensions = explicit_extensions
@@ -3993,11 +3993,11 @@ def FillExtensionsFromHeaders(functions, extension_headers, extra_extensions):
 
   # Print out used function count by GL(ES) version.
   for v in sorted([v for v in used_functions_by_version if v.is_es]):
-    print "OpenGL ES %d.%d: %d used functions" % (
-        v.major_version, v.minor_version, len(used_functions_by_version[v]))
+    print("OpenGL ES %d.%d: %d used functions" % (
+        v.major_version, v.minor_version, len(used_functions_by_version[v])))
   for v in sorted([v for v in used_functions_by_version if not v.is_es]):
-    print "OpenGL %d.%d: %d used functions" % (
-        v.major_version, v.minor_version, len(used_functions_by_version[v]))
+    print("OpenGL %d.%d: %d used functions" % (
+        v.major_version, v.minor_version, len(used_functions_by_version[v])))
 
   return used_extensions, used_client_extensions
 
@@ -4034,7 +4034,7 @@ def main(argv):
   if options.inputs:
     for [_, _, headers, _] in FUNCTION_SETS:
       for header in headers:
-        print ResolveHeader(header, HEADER_PATHS)
+        print(ResolveHeader(header, HEADER_PATHS))
     return 0
 
   directory = SELF_LOCATION
@@ -4078,7 +4078,7 @@ def main(argv):
         functions, extension_headers, extensions)
 
     header_file = open(
-        os.path.join(directory, 'gl_bindings_autogen_%s.h' % set_name), 'wb')
+        os.path.join(directory, 'gl_bindings_autogen_%s.h' % set_name), 'w')
     GenerateHeader(header_file, functions, set_name,
                    used_extensions, used_client_extensions)
     header_file.close()
@@ -4086,13 +4086,13 @@ def main(argv):
 
     header_file = open(
         os.path.join(directory, 'gl_bindings_api_autogen_%s.h' % set_name),
-        'wb')
+        'w')
     GenerateAPIHeader(header_file, functions, set_name)
     header_file.close()
     ClangFormat(header_file.name)
 
     source_file = open(
-        os.path.join(directory, 'gl_bindings_autogen_%s.cc' % set_name), 'wb')
+        os.path.join(directory, 'gl_bindings_autogen_%s.cc' % set_name), 'w')
     GenerateSource(source_file, functions, set_name,
                    used_extensions, used_client_extensions, options)
     source_file.close()
@@ -4100,37 +4100,37 @@ def main(argv):
 
   if not options.verify_order:
     header_file = open(
-        os.path.join(directory, 'gl_mock_autogen_gl.h'), 'wb')
+        os.path.join(directory, 'gl_mock_autogen_gl.h'), 'w')
     GenerateMockHeader(header_file, GL_FUNCTIONS, 'gl')
     header_file.close()
     ClangFormat(header_file.name)
 
     header_file = open(os.path.join(directory, 'gl_bindings_autogen_mock.h'),
-                       'wb')
+                       'w')
     GenerateMockBindingsHeader(header_file, GL_FUNCTIONS)
     header_file.close()
     ClangFormat(header_file.name)
 
     source_file = open(os.path.join(directory, 'gl_bindings_autogen_mock.cc'),
-                       'wb')
+                       'w')
     GenerateMockBindingsSource(source_file, GL_FUNCTIONS, 'gl')
     source_file.close()
     ClangFormat(source_file.name)
 
     header_file = open(
-        os.path.join(directory, 'gl_mock_autogen_egl.h'), 'wb')
+        os.path.join(directory, 'gl_mock_autogen_egl.h'), 'w')
     GenerateMockHeader(header_file, EGL_FUNCTIONS, 'egl')
     header_file.close()
     ClangFormat(header_file.name)
 
     header_file = open(os.path.join(directory, 'egl_bindings_autogen_mock.h'),
-                       'wb')
+                       'w')
     GenerateMockBindingsHeader(header_file, EGL_FUNCTIONS)
     header_file.close()
     ClangFormat(header_file.name)
 
     source_file = open(os.path.join(directory, 'egl_bindings_autogen_mock.cc'),
-                       'wb')
+                       'w')
     GenerateMockBindingsSource(source_file, EGL_FUNCTIONS, 'egl')
     source_file.close()
     ClangFormat(source_file.name)
@@ -4139,19 +4139,19 @@ def main(argv):
                              for h in GLES2_HEADERS_WITH_ENUMS]
     header_file = open(os.path.join(directory,
                                     'gl_enums_implementation_autogen.h'),
-                       'wb')
+                       'w')
     GenerateEnumUtils(header_file, enum_header_filenames)
     header_file.close()
     ClangFormat(header_file.name)
 
     header_file = open(
-        os.path.join(directory, 'gl_stub_autogen_gl.h'), 'wb')
+        os.path.join(directory, 'gl_stub_autogen_gl.h'), 'w')
     GenerateStubHeader(header_file, GL_FUNCTIONS)
     header_file.close()
     ClangFormat(header_file.name)
 
     header_file = open(
-        os.path.join(directory, 'gl_stub_autogen_gl.cc'), 'wb')
+        os.path.join(directory, 'gl_stub_autogen_gl.cc'), 'w')
     GenerateStubSource(header_file, GL_FUNCTIONS)
     header_file.close()
     ClangFormat(header_file.name)
