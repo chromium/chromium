@@ -5046,10 +5046,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxMostVisitedTilesName,
      flag_descriptions::kOmniboxMostVisitedTilesDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(omnibox::kMostVisitedTiles)},
-    {"omnibox-pedals-android-batch1",
-     flag_descriptions::kOmniboxPedalsAndroidBatch1Name,
-     flag_descriptions::kOmniboxPedalsAndroidBatch1Description, kOsAndroid,
-     FEATURE_VALUE_TYPE(omnibox::kOmniboxPedalsAndroidBatch1)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"omnibox-on-focus-suggestions-contextual-web",

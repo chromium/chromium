@@ -2114,9 +2114,6 @@ extern const char kWebNotesPublishDescription[];
 extern const char kWebNotesDynamicTemplatesName[];
 extern const char kWebNotesDynamicTemplatesDescription[];
 
-extern const char kOmniboxPedalsAndroidBatch1Name[];
-extern const char kOmniboxPedalsAndroidBatch1Description[];
-
 extern const char kPasswordEditDialogWithDetailsName[];
 extern const char kPasswordEditDialogWithDetailsDescription[];
 

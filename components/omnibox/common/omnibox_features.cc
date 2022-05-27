@@ -266,11 +266,6 @@ const base::Feature kNtpRealboxTailSuggest{"NtpRealboxTailSuggest",
 const base::Feature kOmniboxFuzzyUrlSuggestions{
     "OmniboxFuzzyUrlSuggestions", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Feature used to enable the first batch of Pedals on Android. The Pedals,
-// which will be enabled on Android, should be already enabled on desktop.
-const base::Feature kOmniboxPedalsAndroidBatch1{
-    "OmniboxPedalsAndroidBatch1", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // When enabled, use Assistant for omnibox voice query recognition instead of
 // Android's built-in voice recognition service. Only works on Android.
 const base::Feature kOmniboxAssistantVoiceSearch{

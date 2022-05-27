@@ -1630,20 +1630,18 @@ GetPedalImplementations(bool incognito, bool testing) {
   };
 
 #if BUILDFLAG(IS_ANDROID)
-  if (testing || OmniboxFieldTrial::IsPedalsAndroidBatch1Enabled()) {
-    if (!incognito) {
-      add(new OmniboxPedalClearBrowsingData(incognito));
-    }
-    add(new OmniboxPedalManagePasswords());
-    add(new OmniboxPedalUpdateCreditCard());
-    add(new OmniboxPedalLaunchIncognito());
-    add(new OmniboxPedalRunChromeSafetyCheck());
-    add(new OmniboxPedalPlayChromeDinoGame());
-    add(new OmniboxPedalManageSiteSettings());
-    add(new OmniboxPedalManageChromeSettings());
-    add(new OmniboxPedalViewChromeHistory());
-    add(new OmniboxPedalManageChromeAccessibility());
+  if (!incognito) {
+    add(new OmniboxPedalClearBrowsingData(incognito));
   }
+  add(new OmniboxPedalManagePasswords());
+  add(new OmniboxPedalUpdateCreditCard());
+  add(new OmniboxPedalLaunchIncognito());
+  add(new OmniboxPedalRunChromeSafetyCheck());
+  add(new OmniboxPedalPlayChromeDinoGame());
+  add(new OmniboxPedalManageSiteSettings());
+  add(new OmniboxPedalManageChromeSettings());
+  add(new OmniboxPedalViewChromeHistory());
+  add(new OmniboxPedalManageChromeAccessibility());
 #else  // BUILDFLAG(IS_ANDROID)
 
   add(new OmniboxPedalClearBrowsingData(incognito));

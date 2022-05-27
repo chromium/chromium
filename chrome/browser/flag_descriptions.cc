@@ -3718,10 +3718,6 @@ const char kWebNotesDynamicTemplatesName[] = "Dynamic Templates";
 const char kWebNotesDynamicTemplatesDescription[] =
     "Allows templates to be modified remotely on short notice.";
 
-const char kOmniboxPedalsAndroidBatch1Name[] = "Omnibox Pedals Android batch 1";
-const char kOmniboxPedalsAndroidBatch1Description[] =
-    "Enable the first batch of Omnibox Pedals on Android.";
-
 const char kPasswordEditDialogWithDetailsName[] =
     "Password edit dialog with details UI";
 const char kPasswordEditDialogWithDetailsDescription[] =

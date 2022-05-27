@@ -610,10 +610,6 @@ bool OmniboxFieldTrial::IsFuzzyUrlSuggestionsEnabled() {
   return base::FeatureList::IsEnabled(omnibox::kOmniboxFuzzyUrlSuggestions);
 }
 
-bool OmniboxFieldTrial::IsPedalsAndroidBatch1Enabled() {
-  return base::FeatureList::IsEnabled(omnibox::kOmniboxPedalsAndroidBatch1);
-}
-
 bool OmniboxFieldTrial::IsExperimentalKeywordModeEnabled() {
   return base::FeatureList::IsEnabled(omnibox::kExperimentalKeywordMode);
 }

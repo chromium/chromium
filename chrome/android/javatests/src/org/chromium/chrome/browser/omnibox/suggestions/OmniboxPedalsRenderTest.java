@@ -52,8 +52,7 @@ import java.util.List;
  * Tests of the Omnibox Pedals feature.
  */
 @RunWith(ParameterizedRunner.class)
-@CommandLineFlags.
-Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "enable-features=OmniboxPedalsAndroidBatch1"})
+@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @EnableFeatures(ChromeFeatureList.ENABLE_IPH)
 public class OmniboxPedalsRenderTest {
