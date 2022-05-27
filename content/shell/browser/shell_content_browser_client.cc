@@ -73,6 +73,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
 #include "url/gurl.h"
@@ -742,6 +743,16 @@ void ShellContentBrowserClient::OnNetworkServiceCreated(
         run_loop.QuitClosure());
     run_loop.Run();
   }
+}
+
+blink::ParsedPermissionsPolicy
+ShellContentBrowserClient::GetPermissionsPolicyForIsolatedApp(
+    content::BrowserContext* browser_context,
+    const url::Origin& app_origin) {
+  blink::ParsedPermissionsPolicyDeclaration decl(
+      blink::mojom::PermissionsPolicyFeature::kDirectSockets, {app_origin},
+      /*matches_all_origins=*/false, /*matches_opaque_src=*/false);
+  return {decl};
 }
 
 }  // namespace content

@@ -140,6 +140,12 @@ class ShellContentBrowserClient : public ContentBrowserClient {
   void OnNetworkServiceCreated(
       network::mojom::NetworkService* network_service) override;
 
+  // Turns on features via permissions policy for Isolated App
+  // Web Platform Tests.
+  blink::ParsedPermissionsPolicy GetPermissionsPolicyForIsolatedApp(
+      content::BrowserContext* browser_context,
+      const url::Origin& app_origin) override;
+
   void CreateFeatureListAndFieldTrials();
 
   ShellBrowserContext* browser_context();
