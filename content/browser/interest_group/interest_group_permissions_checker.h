@@ -91,6 +91,8 @@ class CONTENT_EXPORT InterestGroupPermissionsChecker {
 
   void ClearCache();
 
+  InterestGroupPermissionsCache& cache_for_testing() { return cache_; }
+
  private:
   using Permissions = InterestGroupPermissionsCache::Permissions;
 

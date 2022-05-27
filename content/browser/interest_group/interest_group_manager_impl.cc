@@ -366,6 +366,10 @@ void InterestGroupManagerImpl::EnqueueReports(
     SendReports();
 }
 
+void InterestGroupManagerImpl::ClearPermissionsCache() {
+  permissions_checker_.ClearCache();
+}
+
 void InterestGroupManagerImpl::SendReports() {
   if (reporting_started_ == base::TimeTicks::Min()) {
     // It appears we're staring a new reporting round; mark the time we started

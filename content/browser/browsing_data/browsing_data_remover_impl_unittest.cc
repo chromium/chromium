@@ -1300,13 +1300,16 @@ TEST_F(BrowsingDataRemoverImplTest, RemoveCodeCache) {
   EXPECT_TRUE(removal_data[1].remove_code_cache);
 }
 
-TEST_F(BrowsingDataRemoverImplTest, RemoveShaderCache) {
+TEST_F(BrowsingDataRemoverImplTest,
+       RemoveShaderCacheAndInterstGroupPermissionsCache) {
   BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
                                 BrowsingDataRemover::DATA_TYPE_CACHE, false);
   auto removal_data = GetStoragePartitionRemovalDataListAndReset();
   EXPECT_EQ(removal_data.size(), 2u);
-  EXPECT_EQ(removal_data[0].remove_mask,
-            StoragePartition::REMOVE_DATA_MASK_SHADER_CACHE);
+  EXPECT_EQ(
+      removal_data[0].remove_mask,
+      StoragePartition::REMOVE_DATA_MASK_SHADER_CACHE |
+          StoragePartition::REMOVE_DATA_MASK_INTEREST_GROUP_PERMISSIONS_CACHE);
 }
 
 TEST_F(BrowsingDataRemoverImplTest, RemoveConversions) {

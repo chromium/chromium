@@ -56,6 +56,8 @@
 #include "content/browser/code_cache/generated_code_cache_context.h"
 #include "content/browser/gpu/shader_cache_factory.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
+#include "content/browser/interest_group/interest_group_permissions_cache.h"
+#include "content/browser/interest_group/interest_group_permissions_checker.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/generated_code_cache_settings.h"
@@ -903,6 +905,16 @@ void ClearInterestGroups(content::StoragePartition* partition,
                        delete_begin, delete_end, run_loop->QuitClosure());
 }
 
+void ClearInterestGroupPermissionsCache(content::StoragePartition* partition,
+                                        const base::Time delete_begin,
+                                        const base::Time delete_end,
+                                        base::RunLoop* run_loop) {
+  partition->ClearData(
+      StoragePartition::REMOVE_DATA_MASK_INTEREST_GROUP_PERMISSIONS_CACHE,
+      StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL, GURL(), delete_begin,
+      delete_end, run_loop->QuitClosure());
+}
+
 bool FilterMatchesCookie(const CookieDeletionFilterPtr& filter,
                          const net::CanonicalCookie& cookie) {
   return network::DeletionFilterToInfo(filter.Clone())
@@ -1482,6 +1494,41 @@ TEST_F(StoragePartitionImplTest, RemoveInterestGroupForever) {
   run_loop.Run();
 
   EXPECT_FALSE(tester.ContainsInterestGroupOwner(kOrigin));
+}
+
+TEST_F(StoragePartitionImplTest, RemoveInterestGroupPermissionsCacheForever) {
+  const url::Origin kFrameOrigin =
+      url::Origin::Create(GURL("https://host1.test:1/"));
+  const url::Origin kInterestGroupOrigin =
+      url::Origin::Create(GURL("https://host2.test:2/"));
+  const net::NetworkIsolationKey kNetworkIsolationKey(kFrameOrigin,
+                                                      kFrameOrigin);
+
+  StoragePartitionImpl* partition = static_cast<StoragePartitionImpl*>(
+      browser_context()->GetDefaultStoragePartition());
+  ASSERT_TRUE(partition->GetInterestGroupManager());
+
+  InterestGroupPermissionsCache& permissions_cache =
+      static_cast<InterestGroupManagerImpl*>(
+          partition->GetInterestGroupManager())
+          ->permissions_checker_for_testing()
+          .cache_for_testing();
+
+  permissions_cache.CachePermissions(InterestGroupPermissionsCache::Permissions{
+                                         /*can_join=*/true, /*can_leave=*/true},
+                                     kFrameOrigin, kInterestGroupOrigin,
+                                     kNetworkIsolationKey);
+  EXPECT_TRUE(permissions_cache.GetPermissions(
+      kFrameOrigin, kInterestGroupOrigin, kNetworkIsolationKey));
+
+  base::RunLoop run_loop;
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(&ClearInterestGroupPermissionsCache, partition,
+                                base::Time(), base::Time::Max(), &run_loop));
+  run_loop.Run();
+
+  EXPECT_FALSE(permissions_cache.GetPermissions(
+      kFrameOrigin, kInterestGroupOrigin, kNetworkIsolationKey));
 }
 
 TEST_F(StoragePartitionImplTest, RemoveUnprotectedLocalStorageForever) {

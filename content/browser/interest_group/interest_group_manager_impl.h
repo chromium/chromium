@@ -187,6 +187,10 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
       network::mojom::ClientSecurityStatePtr client_security_state,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
+  // Clears the InterestGroupPermissionsChecker's cache of the results of
+  // .well-known fetches.
+  void ClearPermissionsCache();
+
   AuctionProcessManager& auction_process_manager() {
     return *auction_process_manager_;
   }
@@ -226,6 +230,10 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
 
   size_t report_queue_length_for_testing() const {
     return report_requests_.size();
+  }
+
+  InterestGroupPermissionsChecker& permissions_checker_for_testing() {
+    return permissions_checker_;
   }
 
  private:
