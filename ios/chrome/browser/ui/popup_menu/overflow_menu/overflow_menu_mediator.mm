@@ -49,7 +49,7 @@
 #import "ios/chrome/browser/ui/icons/action_icon.h"
 #import "ios/chrome/browser/ui/icons/chrome_symbol.h"
 #import "ios/chrome/browser/ui/ntp/feed_metrics_recorder.h"
-#import "ios/chrome/browser/ui/popup_menu/overflow_menu/destination_usage_history.h"
+#import "ios/chrome/browser/ui/popup_menu/overflow_menu/destination_usage_history/destination_usage_history.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_constants.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/overflow_menu_swift.h"
@@ -801,8 +801,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(int nameID,
     overflow_menu::RecordUmaActionForDestination(destination);
 
     if (IsSmartSortingNewOverflowMenuEnabled()) {
-      // NOTE: swapping name for destination coming in subsequent CL very soon!
-      [weakSelf.destinationUsageHistory trackDestinationClick:name];
+      [weakSelf.destinationUsageHistory trackDestinationClick:destination];
     }
 
     handler();

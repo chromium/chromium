@@ -9,7 +9,6 @@
 #include "base/notreached.h"
 
 namespace overflow_menu {
-
 // WARNING - PLEASE READ: Sadly, we cannot switch over strings in C++, so be
 // very careful when updating this method to ensure all enums are accounted for.
 Destination DestinationForStringName(std::string destination) {

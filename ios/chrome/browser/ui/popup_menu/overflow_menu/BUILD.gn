@@ -15,8 +15,6 @@ source_set("overflow_menu_constants") {
 source_set("overflow_menu") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "destination_usage_history.h",
-    "destination_usage_history.mm",
     "overflow_menu_mediator.h",
     "overflow_menu_mediator.mm",
   ]
@@ -94,6 +92,7 @@ source_set("overflow_menu") {
     "//ios/chrome/browser/ui/ntp:metrics",
     "//ios/chrome/browser/ui/popup_menu:constants",
     "//ios/chrome/browser/ui/popup_menu:metrics_protocols",
+    "//ios/chrome/browser/ui/popup_menu/overflow_menu/destination_usage_history",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/web",
     "//ios/chrome/browser/web/font_size",
@@ -157,10 +156,7 @@ source_set("feature_flags") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "destination_usage_history_unittest.mm",
-    "overflow_menu_mediator_unittest.mm",
-  ]
+  sources = [ "overflow_menu_mediator_unittest.mm" ]
   deps = [
     ":overflow_menu",
     "//base",
