@@ -144,22 +144,22 @@ PIMAGE_SECTION_HEADER PEImage::GetImageSectionFromAddr(PVOID address) const {
 
 PIMAGE_SECTION_HEADER PEImage::GetImageSectionHeaderByName(
     LPCSTR section_name) const {
-  if (nullptr == section_name)
+  if (section_name == nullptr)
     return nullptr;
 
-  PIMAGE_SECTION_HEADER ret = nullptr;
   int num_sections = GetNumSections();
+  if (num_sections <= 0)
+    return nullptr;
 
-  for (int i = 0; i < num_sections; i++) {
+  for (UINT i = 0; i < static_cast<UINT>(num_sections); ++i) {
     PIMAGE_SECTION_HEADER section = GetSectionHeader(i);
     if (_strnicmp(reinterpret_cast<LPCSTR>(section->Name), section_name,
                   sizeof(section->Name)) == 0) {
-      ret = section;
-      break;
+      return section;
     }
   }
 
-  return ret;
+  return nullptr;
 }
 
 bool PEImage::GetDebugId(LPGUID guid,
@@ -199,7 +199,9 @@ bool PEImage::GetDebugId(LPGUID guid,
       for (const char* const end = pdb_info->PdbFileName + length_max;
            eos < end && *eos; ++eos)
         ;
-      *pdb_filename_length = eos - pdb_info->PdbFileName;
+      // This static_cast is safe because the loop above only increments eos,
+      // and ensures it won't wrap.
+      *pdb_filename_length = static_cast<size_t>(eos - pdb_info->PdbFileName);
       *pdb_filename = pdb_info->PdbFileName;
     }
     return true;
