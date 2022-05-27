@@ -12,12 +12,6 @@ import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js
  */
 export class ProjectorBrowserProxy {
   /**
-   * Notifies the embedder content that tool has been set for annotator.
-   * @param {!projectorApp.AnnotatorToolParams} tool
-   */
-  onToolSet(tool) {}
-
-  /**
    * Notifies the embedder content that undo/redo availability changed for
    * annotator.
    * @param {boolean} undoAvailable
@@ -134,11 +128,6 @@ export class ProjectorBrowserProxy {
  * @implements {ProjectorBrowserProxy}
  */
 export class ProjectorBrowserProxyImpl {
-  /** @override */
-  onToolSet(tool) {
-    return chrome.send('onToolSet', [tool]);
-  }
-
   /** @override */
   onUndoRedoAvailabilityChanged(undoAvailable, redoAvailable) {
     return chrome.send(

@@ -58,10 +58,7 @@ Polymer({
 
     this.addWebUIListener('setTool', async (tool) => {
       try {
-        const success = await client.setTool(tool);
-        if (success) {
-          ProjectorBrowserProxyImpl.getInstance().onToolSet(tool);
-        }
+        client.setTool(tool);
       } catch (error) {
         ProjectorBrowserProxyImpl.getInstance().onError(
             [AnnotatorToolErrorType.SET_TOOL_ERROR]);

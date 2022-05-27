@@ -282,11 +282,6 @@ ProjectorControllerImpl::GetNewScreencastPrecondition() const {
   return result;
 }
 
-void ProjectorControllerImpl::OnToolSet(const AnnotatorTool& tool) {
-  // TODO(b/198184362): Reflect the annotator tool changes on the Projector
-  // toolbar.
-}
-
 void ProjectorControllerImpl::OnUndoRedoAvailabilityChanged(
     bool undo_available,
     bool redo_available) {
