@@ -280,7 +280,7 @@ class CORE_EXPORT CSSSelector {
     kPseudoListBox,
     kPseudoMultiSelectFocus,
     kPseudoHostHasAppearance,
-    kPseudoPopupOpen,
+    kPseudoTopLayer,
     kPseudoSlotted,
     kPseudoVideoPersistent,
     kPseudoVideoPersistentAncestor,

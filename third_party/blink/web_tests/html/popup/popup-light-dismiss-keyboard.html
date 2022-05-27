@@ -36,10 +36,10 @@
     popup1.showPopup();
     popup2.showPopup();
     eventSender.keyDown("Escape");
-    assert_true(popup1.matches(':popup-open'));
-    assert_false(popup2.matches(':popup-open'));
+    assert_true(popup1.matches(':top-layer'));
+    assert_false(popup2.matches(':top-layer'));
     eventSender.keyDown("Escape");
-    assert_false(popup1.matches(':popup-open'));
-    assert_false(popup2.matches(':popup-open'));
+    assert_false(popup1.matches(':top-layer'));
+    assert_false(popup2.matches(':top-layer'));
   },'Escape key should close top level popup');
 </script>

@@ -12,10 +12,10 @@
 
 <script>
 function assert_state_1(popupOpen,hintOpen,asyncOpen,async2Open) {
-  assert_equals(popup.matches(':popup-open'),popupOpen,'popup open state is incorrect');
-  assert_equals(hint.matches(':popup-open'),hintOpen,'hint open state is incorrect');
-  assert_equals(async.matches(':popup-open'),asyncOpen,'async open state is incorrect');
-  assert_equals(async2.matches(':popup-open'),async2Open,'async2 open state is incorrect');
+  assert_equals(popup.matches(':top-layer'),popupOpen,'popup open state is incorrect');
+  assert_equals(hint.matches(':top-layer'),hintOpen,'hint open state is incorrect');
+  assert_equals(async.matches(':top-layer'),asyncOpen,'async open state is incorrect');
+  assert_equals(async2.matches(':top-layer'),async2Open,'async2 open state is incorrect');
 }
 test(() => {
   assert_state_1(false,false,false,false);
@@ -67,10 +67,10 @@ test(() => {
 <div id=hint2 popup=hint anchor=anchorid>Hint anchored to popup</div>
 <script>
 function assert_state_2(popup1Open,popup2Open,popup3Open,hintOpen) {
-  assert_equals(popup1.matches(':popup-open'),popup1Open,'popup1 open state is incorrect');
-  assert_equals(popup2.matches(':popup-open'),popup2Open,'popup2 open state is incorrect');
-  assert_equals(popup3.matches(':popup-open'),popup3Open,'popup3 open state is incorrect');
-  assert_equals(hint2.matches(':popup-open'),hintOpen,'hint2 open state is incorrect');
+  assert_equals(popup1.matches(':top-layer'),popup1Open,'popup1 open state is incorrect');
+  assert_equals(popup2.matches(':top-layer'),popup2Open,'popup2 open state is incorrect');
+  assert_equals(popup3.matches(':top-layer'),popup3Open,'popup3 open state is incorrect');
+  assert_equals(hint2.matches(':top-layer'),hintOpen,'hint2 open state is incorrect');
 }
 test(() => {
   assert_state_2(false,false,false,false);

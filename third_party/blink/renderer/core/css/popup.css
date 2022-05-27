@@ -9,9 +9,9 @@
 
 @namespace "http://www.w3.org/1999/xhtml";
 
-[popup=popup i]:not(:popup-open),
-[popup=hint i]:not(:popup-open),
-[popup=async i]:not(:popup-open) {
+[popup=popup i]:not(:top-layer),
+[popup=hint i]:not(:top-layer),
+[popup=async i]:not(:top-layer) {
   display: none;
 }
 

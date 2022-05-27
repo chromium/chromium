@@ -22,10 +22,10 @@
     const isVisible = !!(popup.offsetWidth || popup.offsetHeight || popup.getClientRects().length);
     if (isVisible) {
       assert_not_equals(window.getComputedStyle(popup).display,'none');
-      assert_equals(isPopup,popup.matches(':popup-open'));
+      assert_equals(isPopup,popup.matches(':top-layer'));
     } else {
       assert_equals(window.getComputedStyle(popup).display,'none');
-      assert_false(popup.matches(':popup-open'));
+      assert_false(popup.matches(':top-layer'));
     }
     return isVisible;
   }
@@ -138,17 +138,17 @@
   test(() => {
     const popup = createPopup();
     popup.showPopup();
-    assert_true(popup.matches(':popup-open'));
+    assert_true(popup.matches(':top-layer'));
     popup.setAttribute('popup','hint'); // Change popup type
-    assert_false(popup.matches(':popup-open'));
+    assert_false(popup.matches(':top-layer'));
     popup.showPopup();
-    assert_true(popup.matches(':popup-open'));
+    assert_true(popup.matches(':top-layer'));
     popup.setAttribute('popup','async');
-    assert_false(popup.matches(':popup-open'));
+    assert_false(popup.matches(':top-layer'));
     popup.showPopup();
-    assert_true(popup.matches(':popup-open'));
+    assert_true(popup.matches(':top-layer'));
     popup.setAttribute('popup','invalid');
-    assert_false(popup.matches(':popup-open'));
+    assert_false(popup.matches(':top-layer'));
   },'Changing attribute values should close open popups');
 
 
@@ -157,11 +157,11 @@
       const popup = createPopup();
       popup.setAttribute('popup',type);
       popup.showPopup();
-      assert_true(popup.matches(':popup-open'));
+      assert_true(popup.matches(':top-layer'));
       popup.remove();
-      assert_false(popup.matches(':popup-open'));
+      assert_false(popup.matches(':top-layer'));
       document.body.appendChild(popup);
-      assert_false(popup.matches(':popup-open'));
+      assert_false(popup.matches(':top-layer'));
     },`Removing a visible popup=${type} element from the document should close the popup`);
   });
 </script>

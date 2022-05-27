@@ -2485,7 +2485,7 @@ void Element::showPopup(ExceptionState& exception_state) {
   }
   GetPopupData()->setOpen(true);
   GetDocument().AddToTopLayer(this);
-  PseudoStateChanged(CSSSelector::kPseudoPopupOpen);
+  PseudoStateChanged(CSSSelector::kPseudoTopLayer);
   GetPopupData()->setPreviouslyFocusedElement(
       should_restore_focus ? GetDocument().FocusedElement() : nullptr);
   SetPopupFocusOnShow();
@@ -2527,7 +2527,7 @@ void Element::hidePopupInternal(HidePopupFocusBehavior focus_behavior) {
   GetPopupData()->setInvoker(nullptr);
   GetPopupData()->setNeedsRepositioningForSelectMenu(false);
   GetDocument().RemoveFromTopLayer(this);
-  PseudoStateChanged(CSSSelector::kPseudoPopupOpen);
+  PseudoStateChanged(CSSSelector::kPseudoTopLayer);
   // Queue the hide event.
   Event* event = Event::CreateBubble(event_type_names::kHide);
   event->SetTarget(this);

@@ -1393,7 +1393,7 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       }
       break;
     }
-    case CSSSelector::kPseudoPopupOpen:
+    case CSSSelector::kPseudoTopLayer:
       if (element.HasValidPopupAttribute()) {
         return element.popupOpen();
       }

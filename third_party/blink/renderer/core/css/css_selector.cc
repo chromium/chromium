@@ -339,8 +339,8 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoListBox:
     case kPseudoMultiSelectFocus:
     case kPseudoHostHasAppearance:
-    case kPseudoPopupOpen:
     case kPseudoSlotted:
+    case kPseudoTopLayer:
     case kPseudoVideoPersistent:
     case kPseudoVideoPersistentAncestor:
     case kPseudoXrOverlay:
@@ -452,7 +452,6 @@ const static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"placeholder", CSSSelector::kPseudoPlaceholder},
     {"placeholder-shown", CSSSelector::kPseudoPlaceholderShown},
     {"playing", CSSSelector::kPseudoPlaying},
-    {"popup-open", CSSSelector::kPseudoPopupOpen},
     {"read-only", CSSSelector::kPseudoReadOnly},
     {"read-write", CSSSelector::kPseudoReadWrite},
     {"required", CSSSelector::kPseudoRequired},
@@ -465,6 +464,7 @@ const static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"start", CSSSelector::kPseudoStart},
     {"target", CSSSelector::kPseudoTarget},
     {"target-text", CSSSelector::kPseudoTargetText},
+    {"top-layer", CSSSelector::kPseudoTopLayer},
     {"valid", CSSSelector::kPseudoValid},
     {"vertical", CSSSelector::kPseudoVertical},
     {"visited", CSSSelector::kPseudoVisited},
@@ -553,7 +553,7 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(const AtomicString& name,
       !RuntimeEnabledFeatures::CSSPseudoPlayingPausedEnabled())
     return CSSSelector::kPseudoUnknown;
 
-  if (match->type == CSSSelector::kPseudoPopupOpen &&
+  if (match->type == CSSSelector::kPseudoTopLayer &&
       !RuntimeEnabledFeatures::HTMLPopupAttributeEnabled())
     return CSSSelector::kPseudoUnknown;
 
@@ -749,7 +749,6 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoPictureInPicture:
     case kPseudoPlaceholderShown:
     case kPseudoPlaying:
-    case kPseudoPopupOpen:
     case kPseudoReadOnly:
     case kPseudoReadWrite:
     case kPseudoRelativeLeftmost:
@@ -761,6 +760,7 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoStart:
     case kPseudoState:
     case kPseudoTarget:
+    case kPseudoTopLayer:
     case kPseudoUnknown:
     case kPseudoValid:
     case kPseudoVertical:
