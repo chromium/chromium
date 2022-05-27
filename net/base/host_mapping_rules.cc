@@ -110,7 +110,8 @@ bool HostMappingRules::AddRuleFromString(base::StringPiece rule_string) {
       base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
 
   // Test for EXCLUSION rule.
-  if (parts.size() == 2 && base::LowerCaseEqualsASCII(parts[0], "exclude")) {
+  if (parts.size() == 2 &&
+      base::EqualsCaseInsensitiveASCII(parts[0], "exclude")) {
     ExclusionRule rule;
     rule.hostname_pattern = base::ToLowerASCII(parts[1]);
     exclusion_rules_.push_back(rule);
@@ -118,7 +119,7 @@ bool HostMappingRules::AddRuleFromString(base::StringPiece rule_string) {
   }
 
   // Test for MAP rule.
-  if (parts.size() == 3 && base::LowerCaseEqualsASCII(parts[0], "map")) {
+  if (parts.size() == 3 && base::EqualsCaseInsensitiveASCII(parts[0], "map")) {
     MapRule rule;
     rule.hostname_pattern = base::ToLowerASCII(parts[1]);
 
