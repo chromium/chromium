@@ -716,13 +716,15 @@ void PropertyTreeBuilderContext::AddScrollNodeIfNeeded(
 void SetSafeOpaqueBackgroundColor(const DataForRecursion& data_from_ancestor,
                                   Layer* layer,
                                   DataForRecursion* data_for_children) {
-  SkColor background_color = layer->background_color();
+  // TODO(crbug/1308932): Remove toSkColor and make all SkColor4f.
+  SkColor background_color = layer->background_color().toSkColor();
   data_for_children->safe_opaque_background_color =
       SkColorGetA(background_color) == 255
           ? background_color
           : data_from_ancestor.safe_opaque_background_color;
+  // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
   layer->SetSafeOpaqueBackgroundColor(
-      data_for_children->safe_opaque_background_color);
+      SkColor4f::FromColor(data_for_children->safe_opaque_background_color));
 }
 
 void PropertyTreeBuilderContext::BuildPropertyTreesInternal(

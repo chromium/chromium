@@ -169,9 +169,12 @@ void ContextualSearchLayer::SetProperties(
     // Apply a blend based on the ripple opacity. The resulting color will
     // be an interpolation between the background color of the Search Bar and
     // a lighter shade of the background color of the Ripple.
-    bar_banner_container_->SetBackgroundColor(color_utils::AlphaBlend(
-        kBarBannerRippleBackgroundColor, search_bar_background_color,
-        0.25f * search_bar_banner_ripple_opacity));
+    // TODO(crbug/1308932): Remove toSkColor and FromColor and make all
+    // SkColor4f.
+    bar_banner_container_->SetBackgroundColor(
+        SkColor4f::FromColor(color_utils::AlphaBlend(
+            kBarBannerRippleBackgroundColor, search_bar_background_color,
+            0.25f * search_bar_banner_ripple_opacity)));
 
     // -----------------------------------------------------------------
     // Bar Banner Ripple
@@ -318,8 +321,9 @@ void ContextualSearchLayer::SetProperties(
       search_promo_container_->SetBounds(search_promo_size);
       search_promo_container_->SetPosition(gfx::PointF(0.f, next_section_top));
       search_promo_container_->SetMasksToBounds(true);
+      // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
       search_promo_container_->SetBackgroundColor(
-          search_promo_background_color);
+          SkColor4f::FromColor(search_promo_background_color));
 
       // Search Promo
       if (search_promo_->parent() != search_promo_container_)
@@ -706,7 +710,8 @@ ContextualSearchLayer::ContextualSearchLayer(
       touch_highlight_layer_(cc::SolidColorLayer::Create()) {
   // Search Bar Banner
   bar_banner_container_->SetIsDrawable(true);
-  bar_banner_container_->SetBackgroundColor(kSearchBarBackgroundColor);
+  bar_banner_container_->SetBackgroundColor(
+      SkColor4f::FromColor(kSearchBarBackgroundColor));
   bar_banner_ripple_->SetIsDrawable(true);
   bar_banner_ripple_->SetFillCenter(true);
   bar_banner_text_->SetIsDrawable(true);
@@ -721,7 +726,8 @@ ContextualSearchLayer::ContextualSearchLayer(
 
   // Search Opt Out Promo
   search_promo_container_->SetIsDrawable(true);
-  search_promo_container_->SetBackgroundColor(kSearchBackgroundColor);
+  search_promo_container_->SetBackgroundColor(
+      SkColor4f::FromColor(kSearchBackgroundColor));
   search_promo_->SetIsDrawable(true);
 
   // Related Searches sections
@@ -749,7 +755,8 @@ ContextualSearchLayer::ContextualSearchLayer(
 
   // Touch Highlight Layer
   touch_highlight_layer_->SetIsDrawable(true);
-  touch_highlight_layer_->SetBackgroundColor(kTouchHighlightColor);
+  touch_highlight_layer_->SetBackgroundColor(
+      SkColor4f::FromColor(kTouchHighlightColor));
 }
 
 ContextualSearchLayer::~ContextualSearchLayer() {

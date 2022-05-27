@@ -138,7 +138,7 @@ TEST_F(SurfaceLayerTest, PushProperties) {
   layer->SetSurfaceId(primary_id, DeadlinePolicy::UseSpecifiedDeadline(2u));
   layer->SetSurfaceId(primary_id, DeadlinePolicy::UseExistingDeadline());
   layer->SetOldestAcceptableFallback(primary_id);
-  layer->SetBackgroundColor(SK_ColorBLUE);
+  layer->SetBackgroundColor(SkColors::kBlue);
   layer->SetStretchContentToFillBounds(true);
 
   EXPECT_TRUE(
@@ -175,7 +175,7 @@ TEST_F(SurfaceLayerTest, PushProperties) {
       viz::LocalSurfaceId(2, base::UnguessableToken::Create()));
   layer->SetOldestAcceptableFallback(fallback_id);
   layer->SetSurfaceId(fallback_id, DeadlinePolicy::UseExistingDeadline());
-  layer->SetBackgroundColor(SK_ColorGREEN);
+  layer->SetBackgroundColor(SkColors::kGreen);
   layer->SetStretchContentToFillBounds(false);
 
   // Verify that fallback surface id is not recorded on the layer tree host as

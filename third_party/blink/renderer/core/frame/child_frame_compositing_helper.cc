@@ -55,7 +55,7 @@ void ChildFrameCompositingHelper::SetSurfaceId(
   surface_layer_ = cc::SurfaceLayer::Create();
   surface_layer_->SetMasksToBounds(true);
   surface_layer_->SetSurfaceHitTestable(true);
-  surface_layer_->SetBackgroundColor(SK_ColorTRANSPARENT);
+  surface_layer_->SetBackgroundColor(SkColors::kTransparent);
 
   // If we're synchronizing surfaces, then use an infinite deadline to ensure
   // everything is synchronized.

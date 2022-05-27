@@ -51,7 +51,7 @@ TabStripSceneLayer::TabStripSceneLayer(JNIEnv* env,
     scrollable_strip_layer_->AddChild(new_tab_button_);
   }
 
-  tab_strip_layer_->SetBackgroundColor(SK_ColorBLACK);
+  tab_strip_layer_->SetBackgroundColor(SkColors::kBlack);
   tab_strip_layer_->SetIsDrawable(true);
   tab_strip_layer_->AddChild(scrollable_strip_layer_);
 
@@ -165,7 +165,8 @@ void TabStripSceneLayer::UpdateStripScrim(JNIEnv* env,
   }
 
   scrim_layer_->SetIsDrawable(true);
-  scrim_layer_->SetBackgroundColor(color);
+  // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
+  scrim_layer_->SetBackgroundColor(SkColor4f::FromColor(color));
   scrim_layer_->SetBounds(gfx::Size(width, height));
   scrim_layer_->SetPosition(gfx::PointF(x, y));
   scrim_layer_->SetOpacity(alpha);

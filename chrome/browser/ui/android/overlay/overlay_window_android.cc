@@ -38,7 +38,7 @@ OverlayWindowAndroid::OverlayWindowAndroid(
   surface_layer_->SetIsDrawable(true);
   surface_layer_->SetStretchContentToFillBounds(true);
   surface_layer_->SetMayContainVideo(true);
-  surface_layer_->SetBackgroundColor(SK_ColorBLACK);
+  surface_layer_->SetBackgroundColor(SkColors::kBlack);
 
   gfx::Rect source_bounds = controller_->GetSourceBounds();
 

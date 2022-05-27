@@ -490,7 +490,7 @@ class NotifySwapTimesWebFrameWidgetTest : public SimTest {
     color_layer->SetBounds(gfx::Size(100, 100));
     cc::CopyProperties(root_layer, color_layer.get());
     root_layer->SetChildLayerList(cc::LayerList({color_layer}));
-    color_layer->SetBackgroundColor(SK_ColorRED);
+    color_layer->SetBackgroundColor(SkColors::kRed);
   }
 
   WebFrameWidgetImpl* FrameWidgetBase() {

@@ -254,7 +254,7 @@ class LayerTreeHostMaskPixelTest_MaskWithEffectNoContentToMask
     LayerList layers = layer_tree_host()->root_layer()->children();
     DCHECK_EQ(3u, layers.size());
     // Set background to red.
-    layers[0]->SetBackgroundColor(SK_ColorRED);
+    layers[0]->SetBackgroundColor(SkColors::kRed);
     // Remove the green layer.
     layers.erase(layers.begin() + 1);
     layer_tree_host()->root_layer()->SetChildLayerList(layers);

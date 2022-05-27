@@ -58,7 +58,9 @@ void ToolbarLayer::PushResource(int toolbar_resource_id,
   toolbar_background_layer_->SetBounds(resource->toolbar_rect().size());
   toolbar_background_layer_->SetPosition(
       gfx::PointF(resource->toolbar_rect().origin()));
-  toolbar_background_layer_->SetBackgroundColor(toolbar_background_color);
+  // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
+  toolbar_background_layer_->SetBackgroundColor(
+      SkColor4f::FromColor(toolbar_background_color));
 
   bool url_bar_visible = resource->location_bar_content_rect().width() != 0;
   url_bar_background_layer_->SetHideLayerAndSubtree(!url_bar_visible);
@@ -145,8 +147,9 @@ void ToolbarLayer::UpdateProgressBar(int progress_bar_x,
     progress_bar_background_layer_->SetBounds(
         gfx::Size(progress_bar_background_width,
                   progress_bar_background_height));
+    // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
     progress_bar_background_layer_->SetBackgroundColor(
-        progress_bar_background_color);
+        SkColor4f::FromColor(progress_bar_background_color));
   }
 
   bool is_progress_bar_visible = SkColorGetA(progress_bar_background_color);
@@ -156,7 +159,9 @@ void ToolbarLayer::UpdateProgressBar(int progress_bar_x,
         gfx::PointF(progress_bar_x, progress_bar_y));
     progress_bar_layer_->SetBounds(
         gfx::Size(progress_bar_width, progress_bar_height));
-    progress_bar_layer_->SetBackgroundColor(progress_bar_color);
+    // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
+    progress_bar_layer_->SetBackgroundColor(
+        SkColor4f::FromColor(progress_bar_color));
   }
 }
 
@@ -202,7 +207,7 @@ ToolbarLayer::ToolbarLayer(ui::ResourceManager* resource_manager)
   }
 
   debug_layer_->SetIsDrawable(true);
-  debug_layer_->SetBackgroundColor(SK_ColorGREEN);
+  debug_layer_->SetBackgroundColor(SkColors::kGreen);
   debug_layer_->SetOpacity(0.5f);
 }
 

@@ -8503,7 +8503,7 @@ class LayerTreeHostTestDiscardAckAfterRelease : public LayerTreeHostTest {
         // LayerTreeFrameSink was not released. We must receive the ack.
         EXPECT_TRUE(received_ack_);
         // Cause damage so that we draw and swap.
-        layer_tree_host()->root_layer()->SetBackgroundColor(SK_ColorGREEN);
+        layer_tree_host()->root_layer()->SetBackgroundColor(SkColors::kGreen);
         break;
       case 2:
         // LayerTreeFrameSink was released. The ack must be discarded.
@@ -10023,7 +10023,7 @@ class LayerTreeHostTestOccludedTileReleased
   void AddLayerThatObscuresPictureLayer() {
     auto covering_layer = SolidColorLayer::Create();
     covering_layer->SetBounds(gfx::Size(100, 100));
-    covering_layer->SetBackgroundColor(SK_ColorRED);
+    covering_layer->SetBackgroundColor(SkColors::kRed);
     covering_layer->SetIsDrawable(true);
     layer_tree_host()->root_layer()->AddChild(covering_layer);
     added_obscuring_layer_ = true;

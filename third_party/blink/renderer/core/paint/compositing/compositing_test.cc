@@ -459,8 +459,8 @@ TEST_P(CompositingTest, BackgroundColorInScrollingContentsLayer) {
   // blending the CSS background-color of the <html> element with
   // LocalFrameView::BaseBackgroundColor(), which is white by default.
   auto* layer = CcLayersByName(RootCcLayer(), "LayoutView #document")[0];
-  SkColor expected_color = SkColorSetRGB(10, 20, 30);
-  EXPECT_EQ(layer->background_color(), SK_ColorTRANSPARENT);
+  SkColor4f expected_color = SkColor4f::FromColor(SkColorSetRGB(10, 20, 30));
+  EXPECT_EQ(layer->background_color(), SkColors::kTransparent);
   auto* scrollable_area = GetLocalFrameView()->LayoutViewport();
   layer = ScrollingContentsCcLayerByScrollElementId(
       RootCcLayer(), scrollable_area->GetScrollElementId());
@@ -468,9 +468,9 @@ TEST_P(CompositingTest, BackgroundColorInScrollingContentsLayer) {
 
   // Non-root layers set background_color based on the CSS background color of
   // the layer-defining element.
-  expected_color = SkColorSetRGB(30, 40, 50);
+  expected_color = SkColor4f::FromColor(SkColorSetRGB(30, 40, 50));
   layer = CcLayerByDOMElementId("scroller");
-  EXPECT_EQ(layer->background_color(), SK_ColorTRANSPARENT);
+  EXPECT_EQ(layer->background_color(), SkColors::kTransparent);
   scrollable_area = scroller_box->GetScrollableArea();
   layer = ScrollingContentsCcLayerByScrollElementId(
       RootCcLayer(), scrollable_area->GetScrollElementId());
@@ -521,23 +521,24 @@ TEST_P(CompositingTest, BackgroundColorInGraphicsLayer) {
   // contents layer should not checkerboard, so its background color should be
   // transparent.
   auto* layer = CcLayersByName(RootCcLayer(), "LayoutView #document")[0];
-  EXPECT_EQ(layer->background_color(), SK_ColorWHITE);
+  EXPECT_EQ(layer->background_color(), SkColors::kWhite);
   auto* scrollable_area = GetLocalFrameView()->LayoutViewport();
   layer = ScrollingContentsCcLayerByScrollElementId(
       RootCcLayer(), scrollable_area->GetScrollElementId());
-  EXPECT_EQ(layer->background_color(), SK_ColorTRANSPARENT);
-  EXPECT_EQ(layer->SafeOpaqueBackgroundColor(), SK_ColorTRANSPARENT);
+  EXPECT_EQ(layer->background_color(), SkColors::kTransparent);
+  EXPECT_EQ(layer->SafeOpaqueBackgroundColor(), SkColors::kTransparent);
 
   // Non-root layers set background_color based on the CSS background color of
   // the layer-defining element.
-  SkColor expected_color = SkColorSetARGB(roundf(255. * 0.6), 30, 40, 50);
+  SkColor4f expected_color =
+      SkColor4f::FromColor(SkColorSetARGB(roundf(255. * 0.6), 30, 40, 50));
   layer = CcLayerByDOMElementId("scroller");
   EXPECT_EQ(layer->background_color(), expected_color);
   scrollable_area = scroller_box->GetScrollableArea();
   layer = ScrollingContentsCcLayerByScrollElementId(
       RootCcLayer(), scrollable_area->GetScrollElementId());
-  EXPECT_EQ(layer->background_color(), SK_ColorTRANSPARENT);
-  EXPECT_EQ(layer->SafeOpaqueBackgroundColor(), SK_ColorTRANSPARENT);
+  EXPECT_EQ(layer->background_color(), SkColors::kTransparent);
+  EXPECT_EQ(layer->SafeOpaqueBackgroundColor(), SkColors::kTransparent);
 }
 
 TEST_P(CompositingTest, ContainPaintLayerBounds) {
@@ -1383,38 +1384,38 @@ TEST_P(CompositingSimTest, SafeOpaqueBackgroundColor) {
 
   auto* opaque_color = CcLayerByDOMElementId("opaque-color");
   EXPECT_TRUE(opaque_color->contents_opaque());
-  EXPECT_EQ(SK_ColorBLUE, opaque_color->background_color());
-  EXPECT_EQ(SK_ColorBLUE, opaque_color->SafeOpaqueBackgroundColor());
+  EXPECT_EQ(opaque_color->background_color(), SkColors::kBlue);
+  EXPECT_EQ(opaque_color->SafeOpaqueBackgroundColor(), SkColors::kBlue);
 
   auto* opaque_image = CcLayerByDOMElementId("opaque-image");
   EXPECT_TRUE(opaque_image->contents_opaque());
-  EXPECT_EQ(SK_ColorTRANSPARENT, opaque_image->background_color());
+  EXPECT_EQ(opaque_image->background_color(), SkColors::kTransparent);
   // Fallback to use the viewport background.
-  EXPECT_EQ(SK_ColorYELLOW, opaque_image->SafeOpaqueBackgroundColor());
+  EXPECT_EQ(opaque_image->SafeOpaqueBackgroundColor(), SkColors::kYellow);
 
-  const SkColor kTranslucentCyan = SkColorSetARGB(128, 0, 255, 255);
+  const SkColor4f kTranslucentCyan{0.0f, 1.0f, 1.0f, 128.0f / 255.0f};
   auto* opaque_image_translucent_color =
       CcLayerByDOMElementId("opaque-image-translucent-color");
   EXPECT_TRUE(opaque_image_translucent_color->contents_opaque());
-  EXPECT_EQ(kTranslucentCyan,
-            opaque_image_translucent_color->background_color());
+  EXPECT_EQ(opaque_image_translucent_color->background_color(),
+            kTranslucentCyan);
   // Use background_color() with the alpha channel forced to be opaque.
-  EXPECT_EQ(SK_ColorCYAN,
-            opaque_image_translucent_color->SafeOpaqueBackgroundColor());
+  EXPECT_EQ(opaque_image_translucent_color->SafeOpaqueBackgroundColor(),
+            SkColors::kCyan);
 
   auto* partly_opaque = CcLayerByDOMElementId("partly-opaque");
   EXPECT_FALSE(partly_opaque->contents_opaque());
-  EXPECT_EQ(SK_ColorBLUE, partly_opaque->background_color());
+  EXPECT_EQ(partly_opaque->background_color(), SkColors::kBlue);
   // SafeOpaqueBackgroundColor() returns SK_ColorTRANSPARENT when
   // background_color() is opaque and contents_opaque() is false.
-  EXPECT_EQ(SK_ColorTRANSPARENT, partly_opaque->SafeOpaqueBackgroundColor());
+  EXPECT_EQ(partly_opaque->SafeOpaqueBackgroundColor(), SkColors::kTransparent);
 
   auto* translucent = CcLayerByDOMElementId("translucent");
   EXPECT_FALSE(translucent->contents_opaque());
-  EXPECT_EQ(kTranslucentCyan, translucent->background_color());
+  EXPECT_EQ(translucent->background_color(), kTranslucentCyan);
   // SafeOpaqueBackgroundColor() returns background_color() if it's not opaque
   // and contents_opaque() is false.
-  EXPECT_EQ(kTranslucentCyan, translucent->SafeOpaqueBackgroundColor());
+  EXPECT_EQ(translucent->SafeOpaqueBackgroundColor(), kTranslucentCyan);
 }
 
 TEST_P(CompositingSimTest, SquashingLayerSafeOpaqueBackgroundColor) {
@@ -1463,10 +1464,11 @@ TEST_P(CompositingSimTest, SquashingLayerSafeOpaqueBackgroundColor) {
   EXPECT_FALSE(squashing_layer->contents_opaque());
   // The background color of #bottomright is used as the background color
   // because it covers the most significant area of the squashing layer.
-  EXPECT_EQ(squashing_layer->background_color(), SK_ColorCYAN);
+  EXPECT_EQ(squashing_layer->background_color(), SkColors::kCyan);
   // SafeOpaqueBackgroundColor() returns SK_ColorTRANSPARENT when
   // background_color() is opaque and contents_opaque() is false.
-  EXPECT_EQ(squashing_layer->SafeOpaqueBackgroundColor(), SK_ColorTRANSPARENT);
+  EXPECT_EQ(squashing_layer->SafeOpaqueBackgroundColor(),
+            SkColors::kTransparent);
 }
 
 // Test that a pleasant checkerboard color is used in the presence of blending.
@@ -1481,8 +1483,8 @@ TEST_P(CompositingSimTest, RootScrollingContentsSafeOpaqueBackgroundColor) {
   auto* scrolling_contents = ScrollingContentsCcLayerByScrollElementId(
       RootCcLayer(),
       MainFrame().GetFrameView()->LayoutViewport()->GetScrollElementId());
-  EXPECT_EQ(scrolling_contents->background_color(), SK_ColorWHITE);
-  EXPECT_EQ(scrolling_contents->SafeOpaqueBackgroundColor(), SK_ColorWHITE);
+  EXPECT_EQ(scrolling_contents->background_color(), SkColors::kWhite);
+  EXPECT_EQ(scrolling_contents->SafeOpaqueBackgroundColor(), SkColors::kWhite);
 }
 
 TEST_P(CompositingSimTest, NonDrawableLayersIgnoredForRenderSurfaces) {
@@ -2043,7 +2045,8 @@ TEST_P(CompositingSimTest, BackgroundColorChangeUsesRepaintUpdate) {
 
   Compositor().BeginFrame();
 
-  EXPECT_EQ(CcLayerByDOMElementId("target")->background_color(), SK_ColorWHITE);
+  EXPECT_EQ(CcLayerByDOMElementId("target")->background_color(),
+            SkColors::kWhite);
 
   // Initially, no update is needed.
   EXPECT_FALSE(paint_artifact_compositor()->NeedsUpdate());
@@ -2060,7 +2063,8 @@ TEST_P(CompositingSimTest, BackgroundColorChangeUsesRepaintUpdate) {
 
   // Though a repaint-only update was done, the background color should still
   // be updated.
-  EXPECT_EQ(CcLayerByDOMElementId("target")->background_color(), SK_ColorBLACK);
+  EXPECT_EQ(CcLayerByDOMElementId("target")->background_color(),
+            SkColors::kBlack);
 }
 
 // Similar to |BackgroundColorChangeUsesRepaintUpdate| but with multiple paint
@@ -2102,7 +2106,7 @@ TEST_P(CompositingSimTest, MultipleChunkBackgroundColorChangeRepaintUpdate) {
       RootCcLayer(),
       MainFrame().GetFrameView()->LayoutViewport()->GetScrollElementId());
 
-  EXPECT_EQ(scrolling_contents->background_color(), SK_ColorBLACK);
+  EXPECT_EQ(scrolling_contents->background_color(), SkColors::kBlack);
 
   // Clear the previous update to ensure we record a new one in the next update.
   paint_artifact_compositor()->ClearPreviousUpdateForTesting();
@@ -2116,7 +2120,7 @@ TEST_P(CompositingSimTest, MultipleChunkBackgroundColorChangeRepaintUpdate) {
 
   // Though a repaint-only update was done, the background color should still
   // be updated.
-  EXPECT_EQ(scrolling_contents->background_color(), SK_ColorWHITE);
+  EXPECT_EQ(scrolling_contents->background_color(), SkColors::kWhite);
 }
 
 // Similar to |BackgroundColorChangeUsesRepaintUpdate| but with post-paint

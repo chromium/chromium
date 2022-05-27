@@ -43,7 +43,7 @@ ContextualSearchSceneLayer::ContextualSearchSceneLayer(
 
   color_overlay_->SetIsDrawable(true);
   color_overlay_->SetOpacity(0.0f);
-  color_overlay_->SetBackgroundColor(SK_ColorBLACK);
+  color_overlay_->SetBackgroundColor(SkColors::kBlack);
   color_overlay_->SetPosition(gfx::PointF(0.f, 0.f));
   layer()->AddChild(color_overlay_);
 }

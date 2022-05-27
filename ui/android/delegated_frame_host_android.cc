@@ -217,7 +217,7 @@ void DelegatedFrameHostAndroid::ResetFallbackToFirstNavigationSurface() {
   if (pre_navigation_local_surface_id_.is_valid() &&
       !first_local_surface_id_after_navigation_.is_valid()) {
     EvictDelegatedFrame();
-    content_layer_->SetBackgroundColor(SK_ColorTRANSPARENT);
+    content_layer_->SetBackgroundColor(SkColors::kTransparent);
   }
 
   content_layer_->SetOldestAcceptableFallback(
@@ -322,8 +322,8 @@ void DelegatedFrameHostAndroid::EmbedSurface(
       content_layer_->SetOldestAcceptableFallback(new_primary_surface_id);
 
       // We default to black background for fullscreen case.
-      content_layer_->SetBackgroundColor(is_fullscreen ? SK_ColorBLACK
-                                                       : SK_ColorTRANSPARENT);
+      content_layer_->SetBackgroundColor(
+          is_fullscreen ? SkColors::kBlack : SkColors::kTransparent);
     }
   }
 

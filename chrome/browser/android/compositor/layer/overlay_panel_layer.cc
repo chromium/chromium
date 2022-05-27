@@ -175,7 +175,9 @@ void OverlayPanelLayer::SetProperties(
   bar_background_->SetBounds(background_size);
   bar_background_->SetPosition(
       gfx::PointF(0.f, bar_top_y + rounded_top_height));
-  bar_background_->SetBackgroundColor(bar_background_color);
+  // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
+  bar_background_->SetBackgroundColor(
+      SkColor4f::FromColor(bar_background_color));
 
   // ---------------------------------------------------------------------------
   // Bar Text
@@ -307,7 +309,8 @@ void OverlayPanelLayer::SetProperties(
   content_container_->SetPosition(
       gfx::PointF(0.f, content_offset_y));
   content_container_->SetBounds(gfx::Size(panel_width, panel_height));
-  content_container_->SetBackgroundColor(bar_background_color);
+  content_container_->SetBackgroundColor(
+      SkColor4f::FromColor(bar_background_color));
   if (content_layer) {
     if (content_layer->parent() != content_container_)
       content_container_->AddChild(content_layer);
@@ -349,7 +352,7 @@ void OverlayPanelLayer::SetProperties(
     bar_border_->SetBounds(bar_border_size);
     bar_border_->SetPosition(
         gfx::PointF(0.f, border_y));
-    bar_border_->SetBackgroundColor(separator_line_color);
+    bar_border_->SetBackgroundColor(SkColor4f::FromColor(separator_line_color));
     if (bar_border_->parent() != layer_)
       layer_->AddChild(bar_border_);
   } else if (bar_border_.get() && bar_border_->parent()) {

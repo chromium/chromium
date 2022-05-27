@@ -842,7 +842,8 @@ static void UpdateBackgroundColor(cc::Layer& layer,
   Color background_color;
   for (Color color : base::Reversed(background_colors))
     background_color = background_color.Blend(color);
-  layer.SetBackgroundColor(background_color.Rgb());
+  // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
+  layer.SetBackgroundColor(SkColor4f::FromColor(background_color.Rgb()));
 }
 
 static void UpdateTouchActionRegion(

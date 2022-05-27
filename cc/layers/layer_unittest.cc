@@ -1001,7 +1001,7 @@ TEST_F(LayerTest, CheckPropertyChangeCausesCorrectBehavior) {
   // SetNeedsCommit to be called.
   EXPECT_SET_NEEDS_COMMIT(
       1, test_layer->SetTransformOrigin(gfx::Point3F(1.23f, 4.56f, 0.f)));
-  EXPECT_SET_NEEDS_COMMIT(1, test_layer->SetBackgroundColor(SK_ColorLTGRAY));
+  EXPECT_SET_NEEDS_COMMIT(1, test_layer->SetBackgroundColor(SkColors::kLtGray));
   EXPECT_SET_NEEDS_COMMIT(1, test_layer->SetMasksToBounds(true));
   EXPECT_SET_NEEDS_COMMIT(1, test_layer->SetClipRect(gfx::Rect(1, 2, 3, 4)));
   EXPECT_SET_NEEDS_COMMIT(1, test_layer->SetRoundedCorner({1, 2, 3, 4}));
@@ -1360,23 +1360,17 @@ TEST_F(LayerTest, SafeOpaqueBackgroundColor) {
     for (int layer_opaque = 0; layer_opaque < 2; ++layer_opaque) {
       for (int host_opaque = 0; host_opaque < 2; ++host_opaque) {
         layer->SetContentsOpaque(!!contents_opaque);
-        layer->SetBackgroundColor(layer_opaque ? SK_ColorRED
-                                               : SK_ColorTRANSPARENT);
+        layer->SetBackgroundColor(layer_opaque ? SkColors::kRed
+                                               : SkColors::kTransparent);
         layer_tree_host->set_background_color(
             host_opaque ? SK_ColorRED : SK_ColorTRANSPARENT);
 
         layer_tree_host->property_trees()->set_needs_rebuild(true);
         layer_tree_host->BuildPropertyTreesForTesting();
-        SkColor safe_color = layer->SafeOpaqueBackgroundColor();
-        if (contents_opaque) {
-          EXPECT_EQ(SkColorGetA(safe_color), 255u)
-              << "Flags: " << contents_opaque << ", " << layer_opaque << ", "
-              << host_opaque << "\n";
-        } else {
-          EXPECT_NE(SkColorGetA(safe_color), 255u)
-              << "Flags: " << contents_opaque << ", " << layer_opaque << ", "
-              << host_opaque << "\n";
-        }
+        EXPECT_EQ(contents_opaque,
+                  layer->SafeOpaqueBackgroundColor().isOpaque())
+            << "Flags: " << contents_opaque << ", " << layer_opaque << ", "
+            << host_opaque << "\n";
       }
     }
   }

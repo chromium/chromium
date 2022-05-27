@@ -52,7 +52,7 @@ struct SameSizeAsLayer : public base::RefCounted<SameSizeAsLayer>,
     LayerList children;
     gfx::Size bounds;
     unsigned bitfields;
-    SkColor background_color;
+    SkColor4f background_color;
     TouchActionRegion touch_action_region;
     ElementId element_id;
     void* rare_inputs;
@@ -83,7 +83,7 @@ Layer::Inputs::Inputs()
       contents_opaque_for_text(false),
       is_drawable(false),
       double_sided(true),
-      background_color(0) {}
+      background_color(SkColors::kTransparent) {}
 
 Layer::Inputs::~Inputs() = default;
 
@@ -526,7 +526,7 @@ void Layer::RequestCopyOfOutput(
     layer_tree_host()->SetHasCopyRequest(true);
 }
 
-void Layer::SetBackgroundColor(SkColor background_color) {
+void Layer::SetBackgroundColor(SkColor4f background_color) {
   DCHECK(IsPropertyChangeAllowed());
   auto& inputs = inputs_.Write(*this);
   if (inputs.background_color == background_color)
@@ -536,9 +536,9 @@ void Layer::SetBackgroundColor(SkColor background_color) {
   SetNeedsCommit();
 }
 
-void Layer::SetSafeOpaqueBackgroundColor(SkColor background_color) {
+void Layer::SetSafeOpaqueBackgroundColor(SkColor4f background_color) {
   DCHECK(IsPropertyChangeAllowed());
-  SkColor opaque_color = SkColorSetA(background_color, SK_AlphaOPAQUE);
+  SkColor4f opaque_color = background_color.makeOpaque();
   auto& inputs = EnsureLayerTreeInputs();
   if (inputs.safe_opaque_background_color == opaque_color)
     return;
@@ -546,39 +546,42 @@ void Layer::SetSafeOpaqueBackgroundColor(SkColor background_color) {
   SetNeedsPushProperties();
 }
 
-SkColor Layer::SafeOpaqueBackgroundColor(SkColor host_background_color) const {
+SkColor4f Layer::SafeOpaqueBackgroundColor(
+    SkColor4f host_background_color) const {
   if (contents_opaque()) {
     if (!IsAttached() || !IsUsingLayerLists()) {
       // In layer tree mode, PropertyTreeBuilder should have calculated the safe
       // opaque background color and called SetSafeOpaqueBackgroundColor().
       DCHECK(layer_tree_inputs());
-      DCHECK_EQ(SkColorGetA(layer_tree_inputs()->safe_opaque_background_color),
-                SK_AlphaOPAQUE);
+      DCHECK(layer_tree_inputs()->safe_opaque_background_color.isOpaque());
       return layer_tree_inputs()->safe_opaque_background_color;
     }
     // In layer list mode, the PropertyTreeBuilder algorithm doesn't apply
     // because it depends on the layer tree hierarchy. Instead we use
     // background_color() if it's not transparent, or layer_tree_host_'s
     // background_color(), with the alpha channel forced to be opaque.
-    SkColor color = background_color() == SK_ColorTRANSPARENT
-                        ? host_background_color
-                        : background_color();
-    return SkColorSetA(color, SK_AlphaOPAQUE);
+    SkColor4f color = background_color() == SkColors::kTransparent
+                          ? host_background_color
+                          : background_color();
+    return color.makeOpaque();
   }
-  if (SkColorGetA(background_color()) == SK_AlphaOPAQUE) {
+  if (background_color().isOpaque()) {
     // The layer is not opaque while the background color is, meaning that the
-    // background color doesn't cover the whole layer. Use SK_ColorTRANSPARENT
-    // to avoid intrusive checkerboard where the layer is not covered by the
-    // background color.
-    return SK_ColorTRANSPARENT;
+    // background color doesn't cover the whole layer. Use
+    // SkColors::kTransparent to avoid intrusive checkerboard where the layer is
+    // not covered by the background color.
+    return SkColors::kTransparent;
   }
   return background_color();
 }
 
-SkColor Layer::SafeOpaqueBackgroundColor() const {
-  SkColor host_background_color =
-      IsAttached() ? layer_tree_host()->pending_commit_state()->background_color
-                   : layer_tree_inputs()->safe_opaque_background_color;
+SkColor4f Layer::SafeOpaqueBackgroundColor() const {
+  // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
+  SkColor4f host_background_color =
+      IsAttached()
+          ? SkColor4f::FromColor(
+                layer_tree_host()->pending_commit_state()->background_color)
+          : layer_tree_inputs()->safe_opaque_background_color;
   return SafeOpaqueBackgroundColor(host_background_color);
 }
 
@@ -1464,9 +1467,12 @@ void Layer::PushPropertiesTo(LayerImpl* layer,
   const auto& inputs = inputs_.Read(*this);
   layer->SetElementId(inputs.element_id);
   layer->SetHasTransformNode(has_transform_node());
-  layer->SetBackgroundColor(inputs.background_color);
+  // TODO(crbug/1308932): Remove toSkColor and FromColor and make all SkColor4f.
+  layer->SetBackgroundColor(inputs.background_color.toSkColor());
   layer->SetSafeOpaqueBackgroundColor(
-      SafeOpaqueBackgroundColor(commit_state.background_color));
+      SafeOpaqueBackgroundColor(
+          SkColor4f::FromColor(commit_state.background_color))
+          .toSkColor());
   layer->SetBounds(inputs.bounds);
   layer->SetTransformTreeIndex(transform_tree_index(property_trees));
   layer->SetEffectTreeIndex(effect_tree_index(property_trees));

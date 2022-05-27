@@ -184,7 +184,7 @@ TEST_F(SolidColorLayerImplTest, VerifyNeedsBlending) {
   UpdateDrawProperties(host.get());
 
   EXPECT_FALSE(layer->contents_opaque());
-  layer->SetBackgroundColor(SkColorSetARGB(255, 10, 20, 30));
+  layer->SetBackgroundColor({0.2f, 0.3f, 0.4f, 1.0f});
   EXPECT_TRUE(layer->contents_opaque());
 
   auto& unsafe_state = host->GetUnsafeStateForCommit();
@@ -220,7 +220,7 @@ TEST_F(SolidColorLayerImplTest, VerifyNeedsBlending) {
   host->CommitComplete({base::TimeTicks(), base::TimeTicks::Now()});
 
   EXPECT_TRUE(layer->contents_opaque());
-  layer->SetBackgroundColor(SkColorSetARGB(254, 10, 20, 30));
+  layer->SetBackgroundColor({0.2f, 0.3f, 0.4f, 0.9f});
   EXPECT_FALSE(layer->contents_opaque());
 
   completion_event_ptr = std::make_unique<CompletionEvent>(

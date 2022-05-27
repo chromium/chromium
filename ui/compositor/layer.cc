@@ -262,9 +262,10 @@ std::unique_ptr<Layer> Layer::Clone() const {
     clone->SetAlphaShape(std::make_unique<ShapeRects>(*alpha_shape_));
 
   // cc::Layer state.
+  // TODO(crbug/1308932): Remove toSkColor and make all SkColor4f.
   if (surface_layer_) {
     clone->SetShowSurface(surface_layer_->surface_id(), frame_size_in_dip_,
-                          surface_layer_->background_color(),
+                          surface_layer_->background_color().toSkColor(),
                           surface_layer_->deadline_in_frames()
                               ? cc::DeadlinePolicy::UseSpecifiedDeadline(
                                     *surface_layer_->deadline_in_frames())
@@ -1003,8 +1004,11 @@ void Layer::SetShowSurface(const viz::SurfaceId& surface_id,
   CreateSurfaceLayerIfNecessary();
 
   surface_layer_->SetSurfaceId(surface_id, deadline_policy);
-  surface_layer_->SetBackgroundColor(default_background_color);
-  surface_layer_->SetSafeOpaqueBackgroundColor(default_background_color);
+  // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
+  surface_layer_->SetBackgroundColor(
+      SkColor4f::FromColor(default_background_color));
+  surface_layer_->SetSafeOpaqueBackgroundColor(
+      SkColor4f::FromColor(default_background_color));
   surface_layer_->SetStretchContentToFillBounds(stretch_content_to_fill_bounds);
 
   frame_size_in_dip_ = frame_size_in_dip;
@@ -1042,8 +1046,8 @@ void Layer::SetShowReflectedSurface(const viz::SurfaceId& surface_id,
 
   surface_layer_->SetSurfaceId(surface_id,
                                cc::DeadlinePolicy::UseInfiniteDeadline());
-  surface_layer_->SetBackgroundColor(SK_ColorBLACK);
-  surface_layer_->SetSafeOpaqueBackgroundColor(SK_ColorBLACK);
+  surface_layer_->SetBackgroundColor(SkColors::kBlack);
+  surface_layer_->SetSafeOpaqueBackgroundColor(SkColors::kBlack);
   surface_layer_->SetStretchContentToFillBounds(true);
   surface_layer_->SetIsReflection(true);
 
@@ -1128,11 +1132,13 @@ SkColor Layer::GetTargetColor() const {
   if (animator_ && animator_->IsAnimatingProperty(
       LayerAnimationElement::COLOR))
     return animator_->GetTargetColor();
-  return cc_layer_->background_color();
+  // TODO(crbug/1308932): Remove toSkColor and make all SkColor4f.
+  return cc_layer_->background_color().toSkColor();
 }
 
 SkColor Layer::background_color() const {
-  return cc_layer_->background_color();
+  // TODO(crbug/1308932): Remove toSkColor and make all SkColor4f.
+  return cc_layer_->background_color().toSkColor();
 }
 
 bool Layer::SchedulePaint(const gfx::Rect& invalid_rect) {
@@ -1512,8 +1518,9 @@ void Layer::SetGrayscaleFromAnimation(float grayscale,
 
 void Layer::SetColorFromAnimation(SkColor color, PropertyChangeReason reason) {
   DCHECK_EQ(type_, LAYER_SOLID_COLOR);
-  cc_layer_->SetBackgroundColor(color);
-  cc_layer_->SetSafeOpaqueBackgroundColor(color);
+  // TODO(crbug/1308932): Remove FromColor and make all SkColor4f.
+  cc_layer_->SetBackgroundColor(SkColor4f::FromColor(color));
+  cc_layer_->SetSafeOpaqueBackgroundColor(SkColor4f::FromColor(color));
   SetFillsBoundsOpaquelyWithReason(SkColorGetA(color) == 0xFF, reason);
 }
 
@@ -1577,8 +1584,10 @@ float Layer::GetGrayscaleForAnimation() const {
 SkColor Layer::GetColorForAnimation() const {
   // The NULL check is here since this is invoked regardless of whether we have
   // been configured as LAYER_SOLID_COLOR.
-  return solid_color_layer_.get() ?
-      solid_color_layer_->background_color() : SK_ColorBLACK;
+  // TODO(crbug/1308932): Remove toSkColor and make all SkColor4f.
+  return solid_color_layer_.get()
+             ? solid_color_layer_->background_color().toSkColor()
+             : SK_ColorBLACK;
 }
 
 gfx::Rect Layer::GetClipRectForAnimation() const {
@@ -1643,7 +1652,7 @@ void Layer::CreateCcLayer() {
   }
   cc_layer_->SetTransformOrigin(gfx::Point3F());
   cc_layer_->SetContentsOpaque(true);
-  cc_layer_->SetSafeOpaqueBackgroundColor(SK_ColorWHITE);
+  cc_layer_->SetSafeOpaqueBackgroundColor(SkColors::kWhite);
   cc_layer_->SetIsDrawable(type_ != LAYER_NOT_DRAWN);
   cc_layer_->SetHitTestable(IsHitTestableForCC());
   cc_layer_->SetElementId(cc::ElementId(cc_layer_->id()));
