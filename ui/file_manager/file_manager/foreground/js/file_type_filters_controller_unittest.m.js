@@ -147,9 +147,9 @@ export function testCreatedButtonLabels() {
 
   assertEquals(buttons[0].textContent, 'All');
   assertEquals(buttons[1].textContent, 'Audio');
-  assertEquals(buttons[2].textContent, 'Images');
-  assertEquals(buttons[3].textContent, 'Videos');
-  assertEquals(buttons[4].textContent, 'Documents');
+  assertEquals(buttons[2].textContent, 'Documents');
+  assertEquals(buttons[3].textContent, 'Images');
+  assertEquals(buttons[4].textContent, 'Videos');
 }
 
 /**
@@ -309,21 +309,21 @@ export function testAppliedFilters() {
   buttons[2].click();
   assertEquals(
       recentEntry.recentFileType,
-      chrome.fileManagerPrivate.RecentFileType.IMAGE);
+      chrome.fileManagerPrivate.RecentFileType.DOCUMENT);
   assertTrue(window.isRescanCalled);
   window.isRescanCalled = false;
 
   buttons[3].click();
   assertEquals(
       recentEntry.recentFileType,
-      chrome.fileManagerPrivate.RecentFileType.VIDEO);
+      chrome.fileManagerPrivate.RecentFileType.IMAGE);
   assertTrue(window.isRescanCalled);
   window.isRescanCalled = false;
 
   buttons[4].click();
   assertEquals(
       recentEntry.recentFileType,
-      chrome.fileManagerPrivate.RecentFileType.DOCUMENT);
+      chrome.fileManagerPrivate.RecentFileType.VIDEO);
   assertTrue(window.isRescanCalled);
   window.isRescanCalled = false;
 
