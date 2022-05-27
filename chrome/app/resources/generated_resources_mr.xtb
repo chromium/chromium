@@ -520,7 +520,7 @@
 <translation id="150411034776756821"><ph name="SITE" /> काढून टाका</translation>
 <translation id="1504551620756424144">शेअर केलेली फोल्डर Windows मध्ये <ph name="BASE_DIR" /> येथे उपलब्ध आहेत.</translation>
 <translation id="1506061864768559482">शोध इंजीन</translation>
-<translation id="1507170440449692343">हे पृष्ठ आपल्या कॅमेर्‍यावर प्रवेश करण्यापासून अवरोधित केले गेले आहे.</translation>
+<translation id="1507170440449692343">तुमच्या कॅमेराचा अ‍ॅक्सेस या पेजसाठी ब्लॉक केला आहे.</translation>
 <translation id="1507246803636407672">&amp;टाकून द्या</translation>
 <translation id="1507884455975553832">मेसेजिंग ॲप्स स्ट्रीम करा</translation>
 <translation id="1509163368529404530">&amp;गट रिस्टोअर करा</translation>
@@ -2317,7 +2317,7 @@
 <translation id="3163201441334626963"><ph name="VENDOR_ID" /> विक्रेत्याकडील <ph name="PRODUCT_ID" /> अज्ञात उत्पादन</translation>
 <translation id="3163511056918491211">तुमचा डेटा सहजरीत्‍या रिस्टोअर करा किंवा डिव्हाइस कधीही स्विच करा. तुमचे बॅकअप Google वर अपलोड केले जातात आणि तुमचा Google खाते पासवर्ड वापरून एंक्रिप्ट केले जातात.</translation>
 <translation id="3164329792803560526"><ph name="APP_NAME" /> यावर हा टॅब शेअर करत आहे</translation>
-<translation id="3165390001037658081">काही वाहक हे वैशिष्ट्य अवरोधित शकतात.</translation>
+<translation id="3165390001037658081">काही वाहक हे वैशिष्ट्य ब्लॉक करू शकतात.</translation>
 <translation id="3170072451822350649">तुम्ही साइन इन वगळुन <ph name="LINK_START" />अतिथी म्हणून ब्राउझ<ph name="LINK_END" /> देखील करू शकता.</translation>
 <translation id="31774765611822736">डावीकडील नवीन टॅब</translation>
 <translation id="3177909033752230686">पृष्ठ भाषा:</translation>
@@ -2578,7 +2578,7 @@
 <translation id="3446274660183028131">Windows इंस्टॉल करण्यासाठी कृपया Parallels Desktop लाँच करा.</translation>
 <translation id="344630545793878684">अनेक वेबसाइटवर तुमचा डेटा वाचा</translation>
 <translation id="3446650212859500694">या फाइलमध्ये संवेदनशील आशय आहे</translation>
-<translation id="3447644283769633681">सर्व तृतीय-पक्ष कुकीज अवरोधित करा</translation>
+<translation id="3447644283769633681">सर्व तृतीय-पक्ष कुकीज ब्लॉक करा</translation>
 <translation id="3448492834076427715">खाते अपडेट करा</translation>
 <translation id="3449393517661170867">नवीन टॅब असलेल्या विंडोमध्ये उघडा</translation>
 <translation id="3449839693241009168"><ph name="EXTENSION_NAME" /> कडे कमांड पाठविण्यासाठी <ph name="SEARCH_KEY" /> दाबा</translation>
@@ -2891,7 +2891,7 @@
 <translation id="3757733214359997190">कोणत्याही साइट आढळल्या नाहीत</translation>
 <translation id="375841316537350618">प्रॉक्सी स्क्रिप्ट डाउनलोड करत आहे...</translation>
 <translation id="3758842566811519622">कुकीज सेट केल्या</translation>
-<translation id="3759933321830434300">वेब पृष्ठांचे भाग अवरोधित करा</translation>
+<translation id="3759933321830434300">वेब पेजचे भाग ब्लॉक करा</translation>
 <translation id="3760460896538743390">&amp;पार्श्वभूमी पृष्ठाचे निरीक्षण करा</translation>
 <translation id="37613671848467444">&amp;गुप्त विंडोमध्ये उघडा</translation>
 <translation id="3761556954875533505">साइटला फाइल संपादित करू द्यायच्या?</translation>
@@ -3390,7 +3390,7 @@
 <translation id="4247901771970415646"><ph name="USERNAME" /> शी सिंक करू शकत नाही</translation>
 <translation id="4248098802131000011">डेटा भंग आणि इतर सुरक्षितता समस्यांपासून तुमचे पासवर्ड सुरक्षित ठेवा</translation>
 <translation id="4249248555939881673">नेटवर्क कनेक्शनची प्रतीक्षा करत आहे...</translation>
-<translation id="4249373718504745892">हे पृष्‍ठ तुमचा कॅमेरा आणि मायक्रोफोनवर प्रवेश करण्यापासून अवरोधित केले गेले आहे.</translation>
+<translation id="4249373718504745892">तुमचा कॅमेरा आणि मायक्रोफोनचा अ‍ॅक्सेस या पेजसाठी ब्लॉक केला आहे.</translation>
 <translation id="424963718355121712">परिणाम होतो अशा होस्टवरून ॲप्स दिली जाणे आवश्यक आहे</translation>
 <translation id="4250229828105606438">स्क्रीनशॉट</translation>
 <translation id="4250680216510889253">नाही</translation>
@@ -4144,7 +4144,7 @@
 <translation id="4997086284911172121">इंटरनेट कनेक्‍शन नाही.</translation>
 <translation id="4998430619171209993">सुरू</translation>
 <translation id="4999804342505941663">व्यत्यय आणू नका सुरू करा</translation>
-<translation id="5000922062037820727">अवरोधित केली (शिफारस केलेले)</translation>
+<translation id="5000922062037820727">ब्लॉक केले (शिफारस केलेले)</translation>
 <translation id="5005498671520578047">पासवर्ड कॉपी करा</translation>
 <translation id="5006118752738286774">दोन वर्षांपूर्वी</translation>
 <translation id="5006218871145547804">Crostini Android अ‍ॅप ADB</translation>
@@ -4809,7 +4809,7 @@
 <translation id="567643736130151854">सर्व डिव्हाइसवर तुमचे बुकमार्क, पासवर्ड आणि बरेच काही मिळविण्यासाठी साइन इन करा आणि सिंक सुरू करा</translation>
 <translation id="567740581294087470">तुम्ही कोणत्या प्रकारचा फीडबॅक देत आहात?</translation>
 <translation id="5677503058916217575">पृष्ठ भाषा:</translation>
-<translation id="5677928146339483299">अवरोधित</translation>
+<translation id="5677928146339483299">ब्लॉक केले</translation>
 <translation id="5678550637669481956"><ph name="VOLUME_NAME" /> ला रीड आणि राइट ॲक्सेस मंजूर केला आहे.</translation>
 <translation id="5678821117681811450"><ph name="WEB_DRIVE" /> ला पाठवत आहे</translation>
 <translation id="5678955352098267522"><ph name="WEBSITE_1" /> वर तुमचा डेटा वाचा</translation>
@@ -6026,7 +6026,7 @@
 <translation id="6876155724392614295">सायकल</translation>
 <translation id="6876469544038980967">उपयुक्त नाही</translation>
 <translation id="6878422606530379992">सेन्सरना अनुमती आहे</translation>
-<translation id="6880587130513028875">या पृष्ठावरील इमेज अवरोधित केलेल्या होत्या.</translation>
+<translation id="6880587130513028875">या पेजवरील इमेज ब्लॉक केलेल्या होत्या.</translation>
 <translation id="688312408602122936">Steam द्वारे इंस्टॉल केलेले सर्व गेम आणि अ‍ॅप्सदेखील या डिव्हाइसमधून काढून टाकली जातील</translation>
 <translation id="6883319974225028188">अरेरे! डिव्हाइस कॉंफिगरेशन सेव्ह करण्यात सिस्टम अयशस्वी झाले.</translation>
 <translation id="6884474387073389421">तुम्हाला तुम्ही निवडलेला साइन इन डेटा नक्की हटवायचा आहे का?</translation>
@@ -6521,7 +6521,7 @@
 <translation id="7403642243184989645">स्रोत डाउनलोड करत आहे</translation>
 <translation id="7404065585741198296">USB केबल असलेला तुमचा फोन</translation>
 <translation id="7405938989981604410">{NUM_HOURS,plural, =1{सुरक्षा तपासणी एका तासापूर्वी रन केली गेली}other{सुरक्षा तपासणी {NUM_HOURS} तासांपूर्वी रन केली गेली}}</translation>
-<translation id="740624631517654988">पॉप-अप अवरोधित</translation>
+<translation id="740624631517654988">पॉप-अप ब्लॉक केलेले होते</translation>
 <translation id="7407430846095439694">इंपोर्ट करा आणि प्रतिबद्ध करा</translation>
 <translation id="7407504355934009739">बहुतेक लोक या साइटवरून येणार्‍या सूचना ब्लॉक करतात</translation>
 <translation id="740810853557944681">एखादा प्रिंट सर्व्हर जोडा</translation>
@@ -6959,7 +6959,7 @@
 <translation id="7807067443225230855">शोध आणि साहाय्यक</translation>
 <translation id="7807117920154132308"><ph name="SUPERVISED_USER_NAME" /> ने आधीच दुसर्‍या डिव्हाइसवर Google Assistant सेट केले आहे असे दिसते. या डिव्हाइसवर स्क्रीन संदर्भ सुरू करून <ph name="SUPERVISED_USER_NAME" /> हे Assistant चा पुरेपूर वापर करू शकतात.</translation>
 <translation id="7807711621188256451">तुमचा कॅमेरा ॲक्सेस करण्यासाठी <ph name="HOST" /> ला नेहमी परवानगी द्या</translation>
-<translation id="7810202088502699111">या पेजवर पॉप-अप अवरोधित केलेले होते.</translation>
+<translation id="7810202088502699111">या पेजवर पॉप-अप ब्लॉक केलेले होते.</translation>
 <translation id="781167124805380294"><ph name="FILE_NAME" /> कास्ट करा</translation>
 <translation id="7811886112806886172">Google ला निदान आणि वापर डेटा आपोआप पाठवून Chrome व ChromeOS वैशिष्ट्ये आणि परफॉर्मन्स यांमध्ये सुधारणा करण्यात मदत करा. काही एकत्रित डेटा Android अ‍ॅप्स आणि Google भागीदारांनादेखील मदत करेल. तुमच्या Google खाते साठी वेब आणि अ‍ॅप अ‍ॅक्टिव्हिटी सेटिंग सुरू असल्यास, तुमचा Android डेटा तुमच्या Google खाते मध्ये सेव्ह केला जाऊ शकतो.</translation>
 <translation id="7814458197256864873">&amp;कॉपी करा</translation>
@@ -7489,7 +7489,7 @@
 <translation id="8317671367883557781">नेटवर्क कनेक्शन जोडा</translation>
 <translation id="8319414634934645341">विस्तारित की वापर</translation>
 <translation id="8321837372750396788">हे <ph name="DEVICE_TYPE" /> <ph name="MANAGER" /> द्वारे व्यवस्थापित केले जाईल.</translation>
-<translation id="8322814362483282060">या पृष्ठाला आपल्या मायक्रोफोनवर प्रवेश करण्यापासून अवरोधित केले गेले आहे.</translation>
+<translation id="8322814362483282060">तुमच्या मायक्रोफोनचा अ‍ॅक्सेस या पेजसाठी ब्लॉक केला आहे.</translation>
 <translation id="8323167517179506834">URL टाइप करा</translation>
 <translation id="8323317289166663449">तुमच्या कॉंप्युटरवरील आणि सर्व वेबसाइटवरील तुमचा सर्व डेटा वाचू व बदलू शकते</translation>
 <translation id="8324784016256120271">वेगवेगळ्या साइटवरील तुमची ब्राउझिंग ॲक्टिव्हिटी पाहण्यासाठी साइट कुकी वापरू शकतात, उदाहरणार्थ, जाहिराती पर्सनलाइझ करण्यासाठी</translation>

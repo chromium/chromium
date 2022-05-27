@@ -4851,7 +4851,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5711010025974903573">Registros do serviço</translation>
 <translation id="5711983031544731014">Não foi possível realizar o desbloqueio. Insira sua senha.</translation>
 <translation id="5712153969432126546">Às vezes, os sites podem publicar PDFs, como documentos, contratos, e formulários</translation>
-<translation id="571222594670061844">Sites podem mostrar solicitações de login de serviços de identidade</translation>
+<translation id="571222594670061844">Sites podem mostrar solicitações de login de serviços de identificação</translation>
 <translation id="5713158217420111469">Conectado a <ph name="DEVICE" /></translation>
 <translation id="5715711091495208045">Agente do plug-in: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Mecanismos de pesquisa padrão</translation>
@@ -5010,7 +5010,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5876851302954717356">Nova guia à direita</translation>
 <translation id="5877064549588274448">Canal alterado. Reinicie o dispositivo para aplicar as alterações.</translation>
 <translation id="5877584842898320529">A impressora selecionada não está disponível ou não foi instalada corretamente. <ph name="BR" /> Verifique a impressora ou selecione outra.</translation>
-<translation id="5878945009165002849">Bloquear solicitações de login de serviços de identidade</translation>
+<translation id="5878945009165002849">Bloquear solicitações de login de serviços de identificação</translation>
 <translation id="5882919346125742463">Redes conhecidas</translation>
 <translation id="5883356647197510494">Bloqueados automaticamente: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="5884474295213649357">Esta guia está conectada a um dispositivo USB.</translation>

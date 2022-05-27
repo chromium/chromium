@@ -778,6 +778,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />setze die S
 <translation id="5246093389635966745">Verknüpfung auf Symbolleiste bearbeiten</translation>
 <translation id="526421993248218238">Fehler beim Laden der Seite</translation>
 <translation id="5271967389191913893">Das Gerät kann den Inhalt, der heruntergeladen werden soll, nicht öffnen.</translation>
+<translation id="5274286919938458946">Verknüpft mit <ph name="CARD_DETAIL" /></translation>
 <translation id="5292796745632149097">Senden an</translation>
 <translation id="5300426565656326054">Browserbasierte personalisierte Werbung</translation>
 <translation id="5304593522240415983">Dieses Feld darf nicht leer sein.</translation>
