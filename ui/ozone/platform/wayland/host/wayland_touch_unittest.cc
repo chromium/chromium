@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <linux/input.h>
+#include <stylus-unstable-v2-server-protocol.h>
 #include <wayland-server.h>
 #include <cstdint>
 #include <memory>
@@ -14,6 +15,7 @@
 #include "ui/events/event_constants.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
+#include "ui/ozone/platform/wayland/test/mock_zcr_touch_stylus.h"
 #include "ui/ozone/platform/wayland/test/test_keyboard.h"
 #include "ui/ozone/platform/wayland/test/test_touch.h"
 #include "ui/ozone/platform/wayland/test/test_wayland_server_thread.h"
@@ -58,12 +60,15 @@ class WaylandTouchTest : public WaylandTest {
   }
 
  protected:
-  void CheckEventType(ui::EventType event_type, ui::Event* event) {
+  void CheckEventType(
+      ui::EventType event_type,
+      ui::Event* event,
+      ui::EventPointerType pointer_type = ui::EventPointerType::kTouch) {
     ASSERT_TRUE(event);
     ASSERT_TRUE(event->IsTouchEvent());
 
-    auto* key_event = event->AsTouchEvent();
-    EXPECT_EQ(event_type, key_event->type());
+    auto* touch_event = event->AsTouchEvent();
+    EXPECT_EQ(event_type, touch_event->type());
   }
 
   wl::TestTouch* touch_;
@@ -84,6 +89,33 @@ TEST_P(WaylandTouchTest, TouchPressAndMotion) {
 
   Sync();
   CheckEventType(ui::ET_TOUCH_MOVED, event.get());
+
+  wl_touch_send_up(touch_->resource(), 1, 1000, 0 /* id */);
+
+  Sync();
+  CheckEventType(ui::ET_TOUCH_RELEASED, event.get());
+}
+
+// Tests that touch events with stylus pen work.
+TEST_P(WaylandTouchTest, TouchPressAndMotionWithStylus) {
+  std::unique_ptr<Event> event;
+  EXPECT_CALL(delegate_, DispatchEvent(_)).WillRepeatedly(CloneEvent(&event));
+
+  zcr_touch_stylus_v2_send_tool(touch_->touch_stylus()->resource(), 0 /* id */,
+                                ZCR_TOUCH_STYLUS_V2_TOOL_TYPE_PEN);
+  Sync();
+
+  wl_touch_send_down(touch_->resource(), 1, 0, surface_->resource(), 0 /* id */,
+                     wl_fixed_from_int(50), wl_fixed_from_int(100));
+
+  Sync();
+  CheckEventType(ui::ET_TOUCH_PRESSED, event.get(), ui::EventPointerType::kPen);
+
+  wl_touch_send_motion(touch_->resource(), 500, 0 /* id */,
+                       wl_fixed_from_int(100), wl_fixed_from_int(100));
+
+  Sync();
+  CheckEventType(ui::ET_TOUCH_MOVED, event.get(), ui::EventPointerType::kPen);
 
   wl_touch_send_up(touch_->resource(), 1, 1000, 0 /* id */);
 

@@ -346,7 +346,7 @@ void WaylandEventSource::OnTouchPressEvent(WaylandWindow* window,
     return;
   }
 
-  PointerDetails details(EventPointerType::kTouch, id);
+  PointerDetails details(PointerDetailsForDispatching(id));
   TouchEvent event(ET_TOUCH_PRESSED, location, location, timestamp, details,
                    keyboard_modifiers_);
   DispatchEvent(&event);
@@ -384,6 +384,11 @@ void WaylandEventSource::OnTouchReleaseEvent(base::TimeTicks timestamp,
 
   HandleTouchFocusChange(touch_point->window, false, id);
   touch_points_.erase(it);
+
+  // Clean up stylus touch tracking, if any.
+  const auto stylus_it = last_touch_stylus_tool_.find(id);
+  if (stylus_it != last_touch_stylus_tool_.end())
+    last_touch_stylus_tool_.erase(stylus_it);
 }
 
 void WaylandEventSource::OnTouchMotionEvent(const gfx::PointF& location,
@@ -396,7 +401,7 @@ void WaylandEventSource::OnTouchMotionEvent(const gfx::PointF& location,
     return;
   }
   it->second->last_known_location = location;
-  PointerDetails details(EventPointerType::kTouch, id);
+  PointerDetails details(PointerDetailsForDispatching(id));
   TouchEvent event(ET_TOUCH_MOVED, location, location, timestamp, details,
                    keyboard_modifiers_);
   DispatchEvent(&event);
@@ -420,6 +425,7 @@ void WaylandEventSource::OnTouchCancelEvent() {
     HandleTouchFocusChange(touch_point.second->window, false);
   }
   touch_points_.clear();
+  last_touch_stylus_tool_.clear();
 }
 
 void WaylandEventSource::OnTouchFocusChanged(WaylandWindow* window) {
@@ -431,6 +437,12 @@ std::vector<PointerId> WaylandEventSource::GetActiveTouchPointIds() {
   for (auto& touch_point : touch_points_)
     pointer_ids.push_back(touch_point.first);
   return pointer_ids;
+}
+
+void WaylandEventSource::OnTouchStylusToolChanged(
+    PointerId pointer_id,
+    EventPointerType pointer_type) {
+  last_touch_stylus_tool_[pointer_id] = pointer_type;
 }
 
 const WaylandWindow* WaylandEventSource::GetTouchTarget(PointerId id) const {
@@ -578,6 +590,17 @@ PointerDetails WaylandEventSource::PointerDetailsForDispatching() const {
 
   DCHECK_NE(*last_pointer_stylus_tool_, EventPointerType::kUnknown);
   return PointerDetails(*last_pointer_stylus_tool_);
+}
+
+PointerDetails WaylandEventSource::PointerDetailsForDispatching(
+    PointerId pointer_id) const {
+  const auto it = last_touch_stylus_tool_.find(pointer_id);
+  if (it == last_touch_stylus_tool_.end() || !it->second ||
+      it->second == EventPointerType::kTouch) {
+    return PointerDetails(EventPointerType::kTouch, pointer_id);
+  }
+
+  return PointerDetails(it->second.value(), pointer_id);
 }
 
 }  // namespace ui

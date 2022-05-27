@@ -127,6 +127,8 @@ class WaylandEventSource : public PlatformEventSource,
   void OnTouchFocusChanged(WaylandWindow* window) override;
   std::vector<PointerId> GetActiveTouchPointIds() override;
   const WaylandWindow* GetTouchTarget(PointerId id) const override;
+  void OnTouchStylusToolChanged(PointerId pointer_id,
+                                EventPointerType pointer_type) override;
 
   // WaylandZwpPointerGesture::Delegate:
   void OnPinchEvent(EventType event_type,
@@ -175,7 +177,11 @@ class WaylandEventSource : public PlatformEventSource,
 
   bool SurfaceSubmissionInPixelCoordinates() const;
 
+  // For pointer events.
   PointerDetails PointerDetailsForDispatching() const;
+
+  // For touch events.
+  PointerDetails PointerDetailsForDispatching(PointerId pointer_id) const;
 
   WaylandWindowManager* const window_manager_;
 
@@ -202,8 +208,13 @@ class WaylandEventSource : public PlatformEventSource,
   // Time of the last pointer frame event.
   base::TimeTicks last_pointer_frame_time_;
 
-  // Last known pointer stylus type (eg mouse, pointer, eraser, touch).
+  // Last known pointer stylus type (eg mouse, pen, eraser or touch).
   absl::optional<EventPointerType> last_pointer_stylus_tool_;
+
+  // Last known touch stylus type (eg touch, pen or eraser).
+  // absl::optional<PointerId, EventPointerType> last_touch_stylus_tool_;
+  base::flat_map<PointerId, absl::optional<EventPointerType>>
+      last_touch_stylus_tool_;
 
   // Recent pointer frames to compute fling scroll.
   // Front is newer, and back is older.

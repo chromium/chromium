@@ -115,8 +115,22 @@ void WaylandTouch::SetupStylus() {
 void WaylandTouch::Tool(void* data,
                         struct zcr_touch_stylus_v2* obj,
                         uint32_t id,
-                        uint32_t type) {
-  NOTIMPLEMENTED_LOG_ONCE();
+                        uint32_t stylus_type) {
+  auto* pointer = static_cast<WaylandTouch*>(data);
+
+  ui::EventPointerType pointer_type = ui::EventPointerType::kTouch;
+  switch (stylus_type) {
+    case ZCR_TOUCH_STYLUS_V2_TOOL_TYPE_PEN:
+      pointer_type = EventPointerType::kPen;
+      break;
+    case ZCR_TOUCH_STYLUS_V2_TOOL_TYPE_ERASER:
+      pointer_type = ui::EventPointerType::kEraser;
+      break;
+    case ZCR_POINTER_STYLUS_V2_TOOL_TYPE_TOUCH:
+      break;
+  }
+
+  pointer->delegate_->OnTouchStylusToolChanged(id, pointer_type);
 }
 
 // static

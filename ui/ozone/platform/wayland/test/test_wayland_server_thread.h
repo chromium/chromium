@@ -28,6 +28,7 @@
 #include "ui/ozone/platform/wayland/test/test_surface_augmenter.h"
 #include "ui/ozone/platform/wayland/test/test_viewporter.h"
 #include "ui/ozone/platform/wayland/test/test_wp_pointer_gestures.h"
+#include "ui/ozone/platform/wayland/test/test_zcr_stylus.h"
 #include "ui/ozone/platform/wayland/test/test_zcr_text_input_extension.h"
 #include "ui/ozone/platform/wayland/test/test_zwp_linux_explicit_synchronization.h"
 #include "ui/ozone/platform/wayland/test/test_zwp_text_input_manager.h"
@@ -174,6 +175,7 @@ class TestWaylandServerThread : public base::Thread,
   TestSeat seat_;
   MockXdgShell xdg_shell_;
   MockZxdgShellV6 zxdg_shell_v6_;
+  TestZcrStylus zcr_stylus_;
   TestZcrTextInputExtensionV1 zcr_text_input_extension_v1_;
   TestZwpTextInputManagerV1 zwp_text_input_manager_v1_;
   TestZwpLinuxExplicitSynchronizationV1 zwp_linux_explicit_synchronization_v1_;

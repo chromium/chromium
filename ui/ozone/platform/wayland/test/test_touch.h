@@ -15,6 +15,8 @@ namespace wl {
 
 extern const struct wl_pointer_interface kTestTouchImpl;
 
+class MockZcrTouchStylus;
+
 class TestTouch : public ServerObject {
  public:
   explicit TestTouch(wl_resource* resource);
@@ -23,6 +25,14 @@ class TestTouch : public ServerObject {
   TestTouch& operator=(const TestTouch&) = delete;
 
   ~TestTouch() override;
+
+  void set_touch_stylus(MockZcrTouchStylus* touch_stylus) {
+    touch_stylus_ = touch_stylus;
+  }
+  MockZcrTouchStylus* touch_stylus() const { return touch_stylus_; }
+
+ private:
+  MockZcrTouchStylus* touch_stylus_ = nullptr;
 };
 
 }  // namespace wl
