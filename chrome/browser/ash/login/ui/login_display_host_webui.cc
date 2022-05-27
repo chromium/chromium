@@ -14,6 +14,7 @@
 #include "ash/components/settings/cros_settings_provider.h"
 #include "ash/components/settings/timezone_settings.h"
 #include "ash/components/timezone/timezone_resolver.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/locale_update_controller.h"
 #include "ash/public/cpp/login_accelerators.h"
@@ -606,6 +607,7 @@ void LoginDisplayHostWebUI::OnStartSignInScreen() {
         "ui", "StartSignInScreen",
         TRACE_ID_WITH_SCOPE(kShowLoginWebUIid, TRACE_ID_GLOBAL(1)));
     BootTimesRecorder::Get()->RecordCurrentStats("login-start-signin-screen");
+    CHECK(base::FeatureList::IsEnabled(features::kOobeLoginUrl));
     LoadURL(GURL(kLoginURL));
   }
 
