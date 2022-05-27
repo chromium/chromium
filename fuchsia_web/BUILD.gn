@@ -1,0 +1,19 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_fuchsia)
+
+visibility = [ "//:gn_all" ]
+
+# Ensures every target within this directory is reachable.
+# Used by "//:gn_all".
+# TODO(crbug.com/1081525): Update these to targets within this directory as
+# they are moved.
+group("gn_all") {
+  deps = [
+    "//fuchsia/engine:web_engine",
+    "//fuchsia/runners:cast_runner",
+    "//fuchsia/runners:web_runner",
+  ]
+}

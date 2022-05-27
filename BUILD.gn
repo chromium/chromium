@@ -260,12 +260,11 @@ group("gn_all") {
   }
 
   if (is_fuchsia && !is_chromecast) {
+    # Add targets that only exist on Fuchsia.
     deps += [
       ":d8_fuchsia",
       "//build/fuchsia/cipd",
-      "//fuchsia/engine:web_engine",
-      "//fuchsia/runners:cast_runner",
-      "//fuchsia/runners:web_runner",
+      "//fuchsia_web:gn_all",
       "//tools/fuchsia/size_tests:fuchsia_sizes",
 
       # Ensure this target, used by cipd, is built in all configurations.

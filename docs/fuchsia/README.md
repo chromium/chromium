@@ -41,7 +41,7 @@ See [Debugging](debug_instructions.md)
 * [Running Telemetry Benchmarks on Fuchsia](telemetry.md)
 
 ## Fuchsia WebEngine and Runners
-See [Fuchsia WebEngine and Runners](../../fuchsia_webengine/README.md).
+See [Fuchsia WebEngine and Runners](../../fuchsia_web/README.md).
 
 ## Resources for developers working on Chromium for Fuchsia
 
