@@ -494,7 +494,7 @@ export class FileTasks {
             verbButtonLabel = 'OPEN_WITH_VERB_BUTTON_LABEL';
             break;
           default:
-            console.error('Invalid task verb: ' + task.verb + '.');
+            console.error('Invalid task verb: ' + task.verb);
         }
         if (verbButtonLabel) {
           task.label = loadTimeData.getStringF(verbButtonLabel, task.title);
@@ -1031,7 +1031,7 @@ export class FileTasks {
       item.state = ProgressItemState.ERROR;
       this.progressCenter_.updateItem(item);
 
-      console.error('Cannot mount (redacted):', error);
+      console.warn('Cannot mount (redacted):', error);
       console.debug(`Cannot mount '${url}':`, error);
     }
   }

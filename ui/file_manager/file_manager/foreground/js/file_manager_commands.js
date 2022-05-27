@@ -689,7 +689,7 @@ CommandHandler.COMMANDS_['unmount'] = new (class extends FilesCommand {
       try {
         await fileManager.volumeManager.unmount(volume);
       } catch (error) {
-        console.error(`Cannot unmount (redacted):`, error);
+        console.warn('Cannot unmount (redacted):', error);
         console.debug(`Cannot unmount '${volume.volumeId}':`, error);
         if (error != VolumeManagerCommon.VolumeError.PATH_NOT_MOUNTED) {
           errorCallback(volume.volumeType);

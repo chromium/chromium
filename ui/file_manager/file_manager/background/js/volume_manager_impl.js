@@ -268,7 +268,7 @@ export class VolumeManagerImpl extends EventTarget {
           case VolumeManagerCommon.VolumeError.NEED_PASSWORD:
           case VolumeManagerCommon.VolumeError.CANCELLED:
           default:
-            console.error('Cannot mount (redacted):', status);
+            console.warn('Cannot mount (redacted):', status);
             console.debug(`Cannot mount '${sourcePath}':`, status);
             this.finishRequest_(requestKey, status);
             return;
@@ -299,7 +299,7 @@ export class VolumeManagerImpl extends EventTarget {
           }
 
           default:
-            console.error('Cannot unmount (redacted):', status);
+            console.warn('Cannot unmount (redacted):', status);
             console.debug(`Cannot unmount '${volumeId}':`, status);
             this.finishRequest_(requestKey, status);
             return;
