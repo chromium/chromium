@@ -401,7 +401,8 @@ bool RendererBlinkPlatformImpl::IsRedirectSafe(const GURL& from_url,
                                                const GURL& to_url) {
   return IsSafeRedirectTarget(from_url, to_url) &&
          (!GetContentClient()->renderer() ||  // null in unit tests.
-          GetContentClient()->renderer()->IsSafeRedirectTarget(to_url));
+          GetContentClient()->renderer()->IsSafeRedirectTarget(from_url,
+                                                               to_url));
 }
 
 blink::WebResourceRequestSenderDelegate*

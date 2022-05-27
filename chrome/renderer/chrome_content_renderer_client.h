@@ -193,7 +193,7 @@ class ChromeContentRendererClient
       blink::URLLoaderThrottleProviderType provider_type) override;
   blink::WebFrame* FindFrame(blink::WebLocalFrame* relative_to_frame,
                              const std::string& name) override;
-  bool IsSafeRedirectTarget(const GURL& url) override;
+  bool IsSafeRedirectTarget(const GURL& from_url, const GURL& to_url) override;
   void DidSetUserAgent(const std::string& user_agent) override;
   void AppendContentSecurityPolicy(
       const blink::WebURL& url,

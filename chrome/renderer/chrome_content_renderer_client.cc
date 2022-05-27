@@ -1683,16 +1683,17 @@ blink::WebFrame* ChromeContentRendererClient::FindFrame(
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 }
 
-bool ChromeContentRendererClient::IsSafeRedirectTarget(const GURL& url) {
+bool ChromeContentRendererClient::IsSafeRedirectTarget(const GURL& from_url,
+                                                       const GURL& to_url) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  if (url.SchemeIs(extensions::kExtensionScheme)) {
+  if (to_url.SchemeIs(extensions::kExtensionScheme)) {
     const extensions::Extension* extension =
-        extensions::RendererExtensionRegistry::Get()->GetByID(url.host());
+        extensions::RendererExtensionRegistry::Get()->GetByID(to_url.host());
     if (!extension)
       return false;
     // TODO(solomonkinard): Use initiator_origin and add tests.
     return extensions::WebAccessibleResourcesInfo::IsResourceWebAccessible(
-        extension, url.path(), absl::optional<url::Origin>());
+        extension, to_url.path(), absl::optional<url::Origin>());
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
   return true;
