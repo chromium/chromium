@@ -7,9 +7,9 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "components/webcrypto/algorithm_implementation.h"
 #include "components/webcrypto/algorithms/util.h"
-#include "components/webcrypto/crypto_data.h"
 #include "components/webcrypto/status.h"
 #include "crypto/openssl_util.h"
 #include "third_party/boringssl/src/include/openssl/digest.h"
@@ -21,10 +21,8 @@ namespace {
 class ShaImplementation : public AlgorithmImplementation {
  public:
   Status Digest(const blink::WebCryptoAlgorithm& algorithm,
-                const CryptoData& data,
+                base::span<const uint8_t> data,
                 std::vector<uint8_t>* buffer) const override {
-    // http://crbug.com/366427: the spec does not define any other failures for
-    // digest, so none of the subsequent errors are spec compliant.
     bssl::ScopedEVP_MD_CTX digest_context;
     crypto::OpenSSLErrStackTracer err_tracer(FROM_HERE);
 
@@ -35,8 +33,7 @@ class ShaImplementation : public AlgorithmImplementation {
     if (!EVP_DigestInit_ex(digest_context.get(), digest_algorithm, nullptr))
       return Status::OperationError();
 
-    if (!EVP_DigestUpdate(digest_context.get(), data.bytes(),
-                          data.byte_length()))
+    if (!EVP_DigestUpdate(digest_context.get(), data.data(), data.size()))
       return Status::OperationError();
 
     const size_t hash_expected_size = EVP_MD_CTX_size(digest_context.get());

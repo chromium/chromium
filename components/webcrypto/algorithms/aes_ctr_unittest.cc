@@ -5,9 +5,9 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/containers/span.h"
 #include "components/webcrypto/algorithm_dispatch.h"
 #include "components/webcrypto/algorithms/test_helpers.h"
-#include "components/webcrypto/crypto_data.h"
 #include "components/webcrypto/status.h"
 #include "third_party/blink/public/platform/web_crypto_algorithm_params.h"
 #include "third_party/blink/public/platform/web_crypto_key_algorithm.h"
@@ -112,13 +112,13 @@ TEST_F(WebCryptoAesCtrTest, EncryptDecryptKnownAnswer) {
     // Test encryption.
     EXPECT_EQ(Status::Success(),
               Encrypt(CreateAesCtrAlgorithm(counter, test.counter_length), key,
-                      CryptoData(plaintext), &output));
+                      plaintext, &output));
     EXPECT_EQ(ciphertext, output);
 
     // Test decryption.
     EXPECT_EQ(Status::Success(),
               Decrypt(CreateAesCtrAlgorithm(counter, test.counter_length), key,
-                      CryptoData(ciphertext), &output));
+                      ciphertext, &output));
     EXPECT_EQ(plaintext, output);
   }
 }
@@ -133,13 +133,13 @@ TEST_F(WebCryptoAesCtrTest, InvalidCounterBlockLength) {
   for (size_t bad_length : {0, 15, 17}) {
     std::vector<uint8_t> bad_counter(bad_length);
 
-    EXPECT_EQ(Status::ErrorIncorrectSizeAesCtrCounter(),
-              Encrypt(CreateAesCtrAlgorithm(bad_counter, 128), key,
-                      CryptoData(input), &output));
+    EXPECT_EQ(
+        Status::ErrorIncorrectSizeAesCtrCounter(),
+        Encrypt(CreateAesCtrAlgorithm(bad_counter, 128), key, input, &output));
 
-    EXPECT_EQ(Status::ErrorIncorrectSizeAesCtrCounter(),
-              Decrypt(CreateAesCtrAlgorithm(bad_counter, 128), key,
-                      CryptoData(input), &output));
+    EXPECT_EQ(
+        Status::ErrorIncorrectSizeAesCtrCounter(),
+        Decrypt(CreateAesCtrAlgorithm(bad_counter, 128), key, input, &output));
   }
 }
 
@@ -153,12 +153,12 @@ TEST_F(WebCryptoAesCtrTest, InvalidCounterLength) {
   // The counter length cannot be less than 1 or greater than 128.
   for (uint8_t bad_length : {0, 129}) {
     EXPECT_EQ(Status::ErrorInvalidAesCtrCounterLength(),
-              Encrypt(CreateAesCtrAlgorithm(counter, bad_length), key,
-                      CryptoData(input), &output));
+              Encrypt(CreateAesCtrAlgorithm(counter, bad_length), key, input,
+                      &output));
 
     EXPECT_EQ(Status::ErrorInvalidAesCtrCounterLength(),
-              Decrypt(CreateAesCtrAlgorithm(counter, bad_length), key,
-                      CryptoData(input), &output));
+              Decrypt(CreateAesCtrAlgorithm(counter, bad_length), key, input,
+                      &output));
   }
 }
 
@@ -178,8 +178,8 @@ TEST_F(WebCryptoAesCtrTest, OverflowAndRepeatCounter) {
 
   // 16 and 17 AES blocks worth of data respectively (AES blocks are 16 bytes
   // long).
-  CryptoData input_16(buffer.data(), 256);
-  CryptoData input_17(buffer.data(), 272);
+  auto input_16 = base::make_span(buffer).first(256);
+  auto input_17 = base::make_span(buffer).first(272);
 
   std::vector<uint8_t> output;
 

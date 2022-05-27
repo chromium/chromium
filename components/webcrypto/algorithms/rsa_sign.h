@@ -9,13 +9,14 @@
 
 #include <vector>
 
+#include "base/containers/span.h"
+
 namespace blink {
 class WebCryptoKey;
 }
 
 namespace webcrypto {
 
-class CryptoData;
 class Status;
 
 // Helper functions for doing RSA-SSA signing and verification
@@ -26,13 +27,13 @@ class Status;
 
 Status RsaSign(const blink::WebCryptoKey& key,
                unsigned int pss_salt_length_bytes,
-               const CryptoData& data,
+               base::span<const uint8_t> data,
                std::vector<uint8_t>* buffer);
 
 Status RsaVerify(const blink::WebCryptoKey& key,
                  unsigned int pss_salt_length_bytes,
-                 const CryptoData& signature,
-                 const CryptoData& data,
+                 base::span<const uint8_t> signature,
+                 base::span<const uint8_t> data,
                  bool* signature_match);
 
 }  // namespace webcrypto

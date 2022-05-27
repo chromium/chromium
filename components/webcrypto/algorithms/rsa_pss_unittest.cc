@@ -8,7 +8,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "components/webcrypto/algorithm_dispatch.h"
 #include "components/webcrypto/algorithms/test_helpers.h"
-#include "components/webcrypto/crypto_data.h"
 #include "components/webcrypto/jwk.h"
 #include "components/webcrypto/status.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -54,31 +53,26 @@ TEST_F(WebCryptoRsaPssTest, SignIsRandom) {
   std::vector<uint8_t> signature1;
   std::vector<uint8_t> signature2;
 
-  ASSERT_EQ(Status::Success(),
-            Sign(params, private_key, CryptoData(message), &signature1));
-  ASSERT_EQ(Status::Success(),
-            Sign(params, private_key, CryptoData(message), &signature2));
+  ASSERT_EQ(Status::Success(), Sign(params, private_key, message, &signature1));
+  ASSERT_EQ(Status::Success(), Sign(params, private_key, message, &signature2));
 
   // The signatures will be different because of the salt.
-  EXPECT_NE(CryptoData(signature1), CryptoData(signature2));
+  EXPECT_NE(signature1, signature2);
 
   // However both signatures should work when verifying.
   bool is_match = false;
 
   ASSERT_EQ(Status::Success(),
-            Verify(params, public_key, CryptoData(signature1),
-                   CryptoData(message), &is_match));
+            Verify(params, public_key, signature1, message, &is_match));
   EXPECT_TRUE(is_match);
 
   ASSERT_EQ(Status::Success(),
-            Verify(params, public_key, CryptoData(signature2),
-                   CryptoData(message), &is_match));
+            Verify(params, public_key, signature2, message, &is_match));
   EXPECT_TRUE(is_match);
 
   // Corrupt the signature and verification must fail.
-  ASSERT_EQ(Status::Success(),
-            Verify(params, public_key, CryptoData(Corrupted(signature2)),
-                   CryptoData(message), &is_match));
+  ASSERT_EQ(Status::Success(), Verify(params, public_key, Corrupted(signature2),
+                                      message, &is_match));
   EXPECT_FALSE(is_match);
 }
 
@@ -107,25 +101,21 @@ TEST_F(WebCryptoRsaPssTest, SignVerifyNoSalt) {
   std::vector<uint8_t> signature1;
   std::vector<uint8_t> signature2;
 
-  ASSERT_EQ(Status::Success(),
-            Sign(params, private_key, CryptoData(message), &signature1));
-  ASSERT_EQ(Status::Success(),
-            Sign(params, private_key, CryptoData(message), &signature2));
+  ASSERT_EQ(Status::Success(), Sign(params, private_key, message, &signature1));
+  ASSERT_EQ(Status::Success(), Sign(params, private_key, message, &signature2));
 
   // The signatures will be the same this time.
-  EXPECT_EQ(CryptoData(signature1), CryptoData(signature2));
+  EXPECT_EQ(signature1, signature2);
 
   // Make sure that verification works.
   bool is_match = false;
   ASSERT_EQ(Status::Success(),
-            Verify(params, public_key, CryptoData(signature1),
-                   CryptoData(message), &is_match));
+            Verify(params, public_key, signature1, message, &is_match));
   EXPECT_TRUE(is_match);
 
   // Corrupt the signature and verification must fail.
-  ASSERT_EQ(Status::Success(),
-            Verify(params, public_key, CryptoData(Corrupted(signature2)),
-                   CryptoData(message), &is_match));
+  ASSERT_EQ(Status::Success(), Verify(params, public_key, Corrupted(signature2),
+                                      message, &is_match));
   EXPECT_FALSE(is_match);
 }
 
@@ -146,19 +136,17 @@ TEST_F(WebCryptoRsaPssTest, SignEmptyMessage) {
   std::vector<uint8_t> message;  // Empty message.
   std::vector<uint8_t> signature;
 
-  ASSERT_EQ(Status::Success(),
-            Sign(params, private_key, CryptoData(message), &signature));
+  ASSERT_EQ(Status::Success(), Sign(params, private_key, message, &signature));
 
   // Make sure that verification works.
   bool is_match = false;
-  ASSERT_EQ(Status::Success(), Verify(params, public_key, CryptoData(signature),
-                                      CryptoData(message), &is_match));
+  ASSERT_EQ(Status::Success(),
+            Verify(params, public_key, signature, message, &is_match));
   EXPECT_TRUE(is_match);
 
   // Corrupt the signature and verification must fail.
-  ASSERT_EQ(Status::Success(),
-            Verify(params, public_key, CryptoData(Corrupted(signature)),
-                   CryptoData(message), &is_match));
+  ASSERT_EQ(Status::Success(), Verify(params, public_key, Corrupted(signature),
+                                      message, &is_match));
   EXPECT_FALSE(is_match);
 }
 
@@ -237,7 +225,7 @@ blink::WebCryptoKey RsaPssKeyFromBytes(blink::WebCryptoAlgorithmId hash,
                                        const char* key) {
   auto pubkey = blink::WebCryptoKey::CreateNull();
   webcrypto::Status result = ImportKey(
-      blink::kWebCryptoKeyFormatSpki, CryptoData(HexStringToBytes(key)),
+      blink::kWebCryptoKeyFormatSpki, HexStringToBytes(key),
       CreateRsaHashedImportAlgorithm(blink::kWebCryptoAlgorithmIdRsaPss, hash),
       true, blink::kWebCryptoKeyUsageVerify, &pubkey);
   CHECK(result == Status::Success());
@@ -249,8 +237,8 @@ bool VerifySignature(size_t salt_length,
                      const std::vector<uint8_t>& signature,
                      const std::vector<uint8_t>& message) {
   bool is_match = false;
-  auto result = Verify(CreateRsaPssAlgorithm(salt_length), pubkey,
-                       CryptoData(signature), CryptoData(message), &is_match);
+  auto result = Verify(CreateRsaPssAlgorithm(salt_length), pubkey, signature,
+                       message, &is_match);
   CHECK(result == Status::Success());
   return is_match;
 }

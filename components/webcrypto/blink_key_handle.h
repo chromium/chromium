@@ -9,6 +9,7 @@
 
 #include <vector>
 
+#include "base/containers/span.h"
 #include "third_party/blink/public/platform/web_crypto_key.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
 
@@ -21,8 +22,6 @@
 // properties from it.
 
 namespace webcrypto {
-
-class CryptoData;
 
 // Returns a reference to the symmetric key data wrapped by the given Blink
 // key. The returned reference is owned by |key|. This function must only be
@@ -42,7 +41,7 @@ const std::vector<uint8_t>& GetSerializedKeyData(
 // Creates a symmetric key handle that can be passed to Blink. The caller takes
 // ownership of the returned pointer.
 blink::WebCryptoKeyHandle* CreateSymmetricKeyHandle(
-    const CryptoData& key_bytes);
+    base::span<const uint8_t> key_bytes);
 
 // Creates an asymmetric key handle that can be passed to Blink. The caller
 // takes

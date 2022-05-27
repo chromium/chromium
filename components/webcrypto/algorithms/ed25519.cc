@@ -19,7 +19,7 @@ class Ed25519Implementation : public AlgorithmImplementation {
  public:
   Status Sign(const blink::WebCryptoAlgorithm& algorithm,
               const blink::WebCryptoKey& key,
-              const CryptoData& data,
+              base::span<const uint8_t> data,
               std::vector<uint8_t>* buffer) const override {
     // TODO(crbug.com/1032821): Implement this.
     return Status::ErrorUnsupported();
@@ -27,8 +27,8 @@ class Ed25519Implementation : public AlgorithmImplementation {
 
   Status Verify(const blink::WebCryptoAlgorithm& algorithm,
                 const blink::WebCryptoKey& key,
-                const CryptoData& signature,
-                const CryptoData& data,
+                base::span<const uint8_t> signature,
+                base::span<const uint8_t> data,
                 bool* signature_match) const override {
     // TODO(crbug.com/1032821): Implement this.
     return Status::ErrorUnsupported();

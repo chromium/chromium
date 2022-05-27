@@ -16,7 +16,6 @@
 #include "components/webcrypto/algorithms/aes.h"
 #include "components/webcrypto/algorithms/util.h"
 #include "components/webcrypto/blink_key_handle.h"
-#include "components/webcrypto/crypto_data.h"
 #include "components/webcrypto/status.h"
 #include "crypto/openssl_util.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
@@ -44,23 +43,23 @@ const EVP_CIPHER* GetAESCipherByKeyLength(size_t key_length_bytes) {
 //
 // |output| must have the same length as |input|.
 Status AesCtrEncrypt128BitCounter(const EVP_CIPHER* cipher,
-                                  const CryptoData& raw_key,
-                                  const CryptoData& input,
+                                  base::span<const uint8_t> raw_key,
+                                  base::span<const uint8_t> input,
                                   base::span<const uint8_t, 16> counter,
                                   base::span<uint8_t> output) {
   DCHECK(cipher);
-  DCHECK_EQ(input.byte_length(), output.size());
+  DCHECK_EQ(input.size(), output.size());
 
   crypto::OpenSSLErrStackTracer err_tracer(FROM_HERE);
   bssl::ScopedEVP_CIPHER_CTX context;
-  if (!EVP_CipherInit_ex(context.get(), cipher, nullptr, raw_key.bytes(),
+  if (!EVP_CipherInit_ex(context.get(), cipher, nullptr, raw_key.data(),
                          counter.data(), ENCRYPT)) {
     return Status::OperationError();
   }
 
   int output_len = 0;
-  if (!EVP_CipherUpdate(context.get(), output.data(), &output_len,
-                        input.bytes(), input.byte_length())) {
+  if (!EVP_CipherUpdate(context.get(), output.data(), &output_len, input.data(),
+                        base::checked_cast<int>(input.size()))) {
     return Status::OperationError();
   }
   int final_output_chunk_len = 0;
@@ -70,7 +69,7 @@ Status AesCtrEncrypt128BitCounter(const EVP_CIPHER* cipher,
   }
 
   output_len += final_output_chunk_len;
-  if (static_cast<unsigned int>(output_len) != input.byte_length())
+  if (static_cast<size_t>(output_len) != input.size())
     return Status::ErrorUnexpected();
 
   return Status::Success();
@@ -139,7 +138,7 @@ std::array<uint8_t, AES_BLOCK_SIZE> BlockWithZeroedCounter(
 // encrypt/decrypt.
 Status AesCtrEncryptDecrypt(const blink::WebCryptoAlgorithm& algorithm,
                             const blink::WebCryptoKey& key,
-                            const CryptoData& data,
+                            base::span<const uint8_t> data,
                             std::vector<uint8_t>* buffer) {
   const blink::WebCryptoAesCtrParams* params = algorithm.AesCtrParams();
   const std::vector<uint8_t>& raw_key = GetSymmetricKeyData(key);
@@ -155,7 +154,7 @@ Status AesCtrEncryptDecrypt(const blink::WebCryptoAlgorithm& algorithm,
 
   // The output of AES-CTR is the same size as the input. However BoringSSL
   // expects buffer sizes as an "int".
-  base::CheckedNumeric<int> output_max_len = data.byte_length();
+  base::CheckedNumeric<int> output_max_len = data.size();
   if (!output_max_len.IsValid())
     return Status::ErrorDataTooLarge();
 
@@ -168,8 +167,8 @@ Status AesCtrEncryptDecrypt(const blink::WebCryptoAlgorithm& algorithm,
       GetCounter(counter_block, counter_length_bits);
 
   if (counter_length_bits == 128) {
-    return AesCtrEncrypt128BitCounter(cipher, CryptoData(raw_key), data,
-                                      counter_block, *buffer);
+    return AesCtrEncrypt128BitCounter(cipher, raw_key, data, counter_block,
+                                      *buffer);
   }
 
   // The total number of possible counter values is pow(2, counter_length_bits)
@@ -192,28 +191,28 @@ Status AesCtrEncryptDecrypt(const blink::WebCryptoAlgorithm& algorithm,
   // If the counter can be incremented for the entire input without
   // wrapping-around, do it as a single call into BoringSSL.
   if (num_blocks_until_reset >= num_output_blocks) {
-    return AesCtrEncrypt128BitCounter(cipher, CryptoData(raw_key), data,
-                                      counter_block, *buffer);
+    return AesCtrEncrypt128BitCounter(cipher, raw_key, data, counter_block,
+                                      *buffer);
   }
 
   // Otherwise the encryption needs to be done in 2 parts. The first part using
   // the current counter_block, and the next part resetting the counter portion
   // of the block to zero.
 
-  // This is guaranteed to fit in an "unsigned int" because input size in bytes
-  // fits in an "unsigned int".
-  unsigned int input_size_part1 =
-      static_cast<unsigned int>(num_blocks_until_reset * AES_BLOCK_SIZE);
-  DCHECK_LT(input_size_part1, data.byte_length());
+  // This is guaranteed to fit in an `size_t` because it is bounded by the input
+  // size.
+  size_t input_size_part1 =
+      static_cast<size_t>(num_blocks_until_reset * AES_BLOCK_SIZE);
+  DCHECK_LT(input_size_part1, data.size());
   base::span<uint8_t> output_part1 =
       base::make_span(*buffer).first(input_size_part1);
   base::span<uint8_t> output_part2 =
       base::make_span(*buffer).subspan(input_size_part1);
 
   // Encrypt the first part (before wrap-around).
-  Status status = AesCtrEncrypt128BitCounter(
-      cipher, CryptoData(raw_key), CryptoData(data.bytes(), input_size_part1),
-      counter_block, output_part1);
+  Status status =
+      AesCtrEncrypt128BitCounter(cipher, raw_key, data.first(input_size_part1),
+                                 counter_block, output_part1);
   if (status.IsError())
     return status;
 
@@ -221,11 +220,9 @@ Status AesCtrEncryptDecrypt(const blink::WebCryptoAlgorithm& algorithm,
   std::array<uint8_t, AES_BLOCK_SIZE> counter_block_part2 =
       BlockWithZeroedCounter(counter_block, counter_length_bits);
 
-  return AesCtrEncrypt128BitCounter(
-      cipher, CryptoData(raw_key),
-      CryptoData(data.bytes() + input_size_part1,
-                 data.byte_length() - input_size_part1),
-      counter_block_part2, output_part2);
+  return AesCtrEncrypt128BitCounter(cipher, raw_key,
+                                    data.subspan(input_size_part1),
+                                    counter_block_part2, output_part2);
 }
 
 class AesCtrImplementation : public AesAlgorithm {
@@ -234,14 +231,14 @@ class AesCtrImplementation : public AesAlgorithm {
 
   Status Encrypt(const blink::WebCryptoAlgorithm& algorithm,
                  const blink::WebCryptoKey& key,
-                 const CryptoData& data,
+                 base::span<const uint8_t> data,
                  std::vector<uint8_t>* buffer) const override {
     return AesCtrEncryptDecrypt(algorithm, key, data, buffer);
   }
 
   Status Decrypt(const blink::WebCryptoAlgorithm& algorithm,
                  const blink::WebCryptoKey& key,
-                 const CryptoData& data,
+                 base::span<const uint8_t> data,
                  std::vector<uint8_t>* buffer) const override {
     return AesCtrEncryptDecrypt(algorithm, key, data, buffer);
   }

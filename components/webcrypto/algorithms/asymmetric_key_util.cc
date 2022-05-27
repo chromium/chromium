@@ -9,7 +9,6 @@
 
 #include "components/webcrypto/algorithms/util.h"
 #include "components/webcrypto/blink_key_handle.h"
-#include "components/webcrypto/crypto_data.h"
 #include "components/webcrypto/generate_key_result.h"
 #include "components/webcrypto/status.h"
 #include "crypto/openssl_util.h"
@@ -93,13 +92,13 @@ Status CreateWebCryptoPrivateKey(bssl::UniquePtr<EVP_PKEY> private_key,
   return Status::Success();
 }
 
-Status ImportUnverifiedPkeyFromSpki(const CryptoData& key_data,
+Status ImportUnverifiedPkeyFromSpki(base::span<const uint8_t> key_data,
                                     int expected_pkey_id,
                                     bssl::UniquePtr<EVP_PKEY>* out_pkey) {
   crypto::OpenSSLErrStackTracer err_tracer(FROM_HERE);
 
   CBS cbs;
-  CBS_init(&cbs, key_data.bytes(), key_data.byte_length());
+  CBS_init(&cbs, key_data.data(), key_data.size());
   bssl::UniquePtr<EVP_PKEY> pkey(EVP_parse_public_key(&cbs));
   if (!pkey || CBS_len(&cbs) != 0)
     return Status::DataError();
@@ -111,13 +110,13 @@ Status ImportUnverifiedPkeyFromSpki(const CryptoData& key_data,
   return Status::Success();
 }
 
-Status ImportUnverifiedPkeyFromPkcs8(const CryptoData& key_data,
+Status ImportUnverifiedPkeyFromPkcs8(base::span<const uint8_t> key_data,
                                      int expected_pkey_id,
                                      bssl::UniquePtr<EVP_PKEY>* out_pkey) {
   crypto::OpenSSLErrStackTracer err_tracer(FROM_HERE);
 
   CBS cbs;
-  CBS_init(&cbs, key_data.bytes(), key_data.byte_length());
+  CBS_init(&cbs, key_data.data(), key_data.size());
   bssl::UniquePtr<EVP_PKEY> pkey(EVP_parse_private_key(&cbs));
   if (!pkey || CBS_len(&cbs) != 0)
     return Status::DataError();

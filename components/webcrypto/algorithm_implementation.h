@@ -10,11 +10,11 @@
 #include <memory>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "third_party/blink/public/platform/web_crypto.h"
 
 namespace webcrypto {
 
-class CryptoData;
 class GenerateKeyResult;
 class Status;
 
@@ -51,7 +51,7 @@ class AlgorithmImplementation {
   // (crypto.subtle.encrypt() dispatches to this)
   virtual Status Encrypt(const blink::WebCryptoAlgorithm& algorithm,
                          const blink::WebCryptoKey& key,
-                         const CryptoData& data,
+                         base::span<const uint8_t> data,
                          std::vector<uint8_t>* buffer) const;
 
   // This is what is run whenever the spec says:
@@ -60,7 +60,7 @@ class AlgorithmImplementation {
   // (crypto.subtle.decrypt() dispatches to this)
   virtual Status Decrypt(const blink::WebCryptoAlgorithm& algorithm,
                          const blink::WebCryptoKey& key,
-                         const CryptoData& data,
+                         base::span<const uint8_t> data,
                          std::vector<uint8_t>* buffer) const;
 
   // This is what is run whenever the spec says:
@@ -69,7 +69,7 @@ class AlgorithmImplementation {
   // (crypto.subtle.sign() dispatches to this)
   virtual Status Sign(const blink::WebCryptoAlgorithm& algorithm,
                       const blink::WebCryptoKey& key,
-                      const CryptoData& data,
+                      base::span<const uint8_t> data,
                       std::vector<uint8_t>* buffer) const;
 
   // This is what is run whenever the spec says:
@@ -78,8 +78,8 @@ class AlgorithmImplementation {
   // (crypto.subtle.verify() dispatches to this)
   virtual Status Verify(const blink::WebCryptoAlgorithm& algorithm,
                         const blink::WebCryptoKey& key,
-                        const CryptoData& signature,
-                        const CryptoData& data,
+                        base::span<const uint8_t> signature,
+                        base::span<const uint8_t> data,
                         bool* signature_match) const;
 
   // This is what is run whenever the spec says:
@@ -87,7 +87,7 @@ class AlgorithmImplementation {
   //
   // (crypto.subtle.digest() dispatches to this)
   virtual Status Digest(const blink::WebCryptoAlgorithm& algorithm,
-                        const CryptoData& data,
+                        base::span<const uint8_t> data,
                         std::vector<uint8_t>* buffer) const;
 
   // This is what is run whenever the spec says:
@@ -126,7 +126,7 @@ class AlgorithmImplementation {
   //
   // (crypto.subtle.importKey() dispatches to this).
   virtual Status ImportKey(blink::WebCryptoKeyFormat format,
-                           const CryptoData& key_data,
+                           base::span<const uint8_t> key_data,
                            const blink::WebCryptoAlgorithm& algorithm,
                            bool extractable,
                            blink::WebCryptoKeyUsageMask usages,
@@ -193,7 +193,7 @@ class AlgorithmImplementation {
       blink::WebCryptoKeyType type,
       bool extractable,
       blink::WebCryptoKeyUsageMask usages,
-      const CryptoData& key_data,
+      base::span<const uint8_t> key_data,
       blink::WebCryptoKey* key) const;
 };
 

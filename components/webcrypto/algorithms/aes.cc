@@ -9,7 +9,6 @@
 #include "components/webcrypto/algorithms/secret_key_util.h"
 #include "components/webcrypto/algorithms/util.h"
 #include "components/webcrypto/blink_key_handle.h"
-#include "components/webcrypto/crypto_data.h"
 #include "components/webcrypto/jwk.h"
 #include "components/webcrypto/status.h"
 #include "third_party/blink/public/platform/web_crypto_algorithm_params.h"
@@ -77,7 +76,7 @@ Status AesAlgorithm::GenerateKey(const blink::WebCryptoAlgorithm& algorithm,
 }
 
 Status AesAlgorithm::ImportKey(blink::WebCryptoKeyFormat format,
-                               const CryptoData& key_data,
+                               base::span<const uint8_t> key_data,
                                const blink::WebCryptoAlgorithm& algorithm,
                                bool extractable,
                                blink::WebCryptoKeyUsageMask usages,
@@ -105,7 +104,7 @@ Status AesAlgorithm::ExportKey(blink::WebCryptoKeyFormat format,
   }
 }
 
-Status AesAlgorithm::ImportKeyRaw(const CryptoData& key_data,
+Status AesAlgorithm::ImportKeyRaw(base::span<const uint8_t> key_data,
                                   const blink::WebCryptoAlgorithm& algorithm,
                                   bool extractable,
                                   blink::WebCryptoKeyUsageMask usages,
@@ -114,7 +113,7 @@ Status AesAlgorithm::ImportKeyRaw(const CryptoData& key_data,
   if (status.IsError())
     return status;
 
-  const unsigned int keylen_bytes = key_data.byte_length();
+  const size_t keylen_bytes = key_data.size();
 
   // 192-bit AES is intentionally unsupported (http://crbug.com/533699).
   if (keylen_bytes == 24)
@@ -132,7 +131,7 @@ Status AesAlgorithm::ImportKeyRaw(const CryptoData& key_data,
       extractable, usages, key);
 }
 
-Status AesAlgorithm::ImportKeyJwk(const CryptoData& key_data,
+Status AesAlgorithm::ImportKeyJwk(base::span<const uint8_t> key_data,
                                   const blink::WebCryptoAlgorithm& algorithm,
                                   bool extractable,
                                   blink::WebCryptoKeyUsageMask usages,
@@ -169,8 +168,7 @@ Status AesAlgorithm::ImportKeyJwk(const CryptoData& key_data,
     }
   }
 
-  return ImportKeyRaw(CryptoData(raw_data), algorithm, extractable, usages,
-                      key);
+  return ImportKeyRaw(raw_data, algorithm, extractable, usages, key);
 }
 
 Status AesAlgorithm::ExportKeyRaw(const blink::WebCryptoKey& key,
@@ -183,7 +181,7 @@ Status AesAlgorithm::ExportKeyJwk(const blink::WebCryptoKey& key,
                                   std::vector<uint8_t>* buffer) const {
   const std::vector<uint8_t>& raw_data = GetSymmetricKeyData(key);
 
-  WriteSecretKeyJwk(CryptoData(raw_data),
+  WriteSecretKeyJwk(raw_data,
                     MakeJwkAesAlgorithmName(jwk_suffix_, raw_data.size()),
                     key.Extractable(), key.Usages(), buffer);
 
@@ -195,7 +193,7 @@ Status AesAlgorithm::DeserializeKeyForClone(
     blink::WebCryptoKeyType type,
     bool extractable,
     blink::WebCryptoKeyUsageMask usages,
-    const CryptoData& key_data,
+    base::span<const uint8_t> key_data,
     blink::WebCryptoKey* key) const {
   if (algorithm.ParamsType() != blink::kWebCryptoKeyAlgorithmParamsTypeAes ||
       type != blink::kWebCryptoKeyTypeSecret)

@@ -12,14 +12,17 @@
 #include <string>
 #include <vector>
 
+#include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/web_crypto_algorithm.h"
 #include "third_party/blink/public/platform/web_crypto_key.h"
 
+// Compare the input in hex, because `base::span` supports neither equality nor
+// printing.
 #define EXPECT_BYTES_EQ(expected, actual) \
-  EXPECT_EQ(CryptoData(expected), CryptoData(actual))
+  EXPECT_EQ(base::HexEncode(expected), base::HexEncode(actual))
 
 #define EXPECT_BYTES_EQ_HEX(expected_hex, actual_bytes) \
   EXPECT_BYTES_EQ(HexStringToBytes(expected_hex), actual_bytes)
@@ -45,18 +48,12 @@ class WebCryptoTestBase : public testing::Test {
 };
 
 class Status;
-class CryptoData;
 
 // These functions are used by GTEST to support EXPECT_EQ() for
-// webcrypto::Status and webcrypto::CryptoData
-
+// webcrypto::Status.
 void PrintTo(const Status& status, ::std::ostream* os);
 bool operator==(const Status& a, const Status& b);
 bool operator!=(const Status& a, const Status& b);
-
-void PrintTo(const CryptoData& data, ::std::ostream* os);
-bool operator==(const CryptoData& a, const CryptoData& b);
-bool operator!=(const CryptoData& a, const CryptoData& b);
 
 // Gives a human-readable description of |status| and any error it represents.
 std::string StatusToString(const Status& status);

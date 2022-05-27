@@ -12,7 +12,6 @@
 #include "base/numerics/safe_math.h"
 #include "components/webcrypto/algorithms/aes.h"
 #include "components/webcrypto/blink_key_handle.h"
-#include "components/webcrypto/crypto_data.h"
 #include "components/webcrypto/status.h"
 #include "crypto/openssl_util.h"
 #include "third_party/boringssl/src/include/openssl/aes.h"
@@ -30,15 +29,15 @@ class AesKwImplementation : public AesAlgorithm {
 
   Status Encrypt(const blink::WebCryptoAlgorithm& algorithm,
                  const blink::WebCryptoKey& key,
-                 const CryptoData& data,
+                 base::span<const uint8_t> data,
                  std::vector<uint8_t>* buffer) const override {
     crypto::OpenSSLErrStackTracer err_tracer(FROM_HERE);
 
     // These length checks are done in order to give a more specific
     // error. These are not required for correctness.
-    if (data.byte_length() < 16)
+    if (data.size() < 16)
       return Status::ErrorDataTooSmall();
-    if (data.byte_length() % 8)
+    if (data.size() % 8)
       return Status::ErrorInvalidAesKwDataLength();
 
     // Key import validates key sizes, so the bits computation will not
@@ -52,14 +51,14 @@ class AesKwImplementation : public AesAlgorithm {
     }
 
     // Key wrap's overhead is 8 bytes.
-    base::CheckedNumeric<size_t> length(data.byte_length());
+    base::CheckedNumeric<size_t> length(data.size());
     length += 8;
     if (!length.IsValid())
       return Status::ErrorDataTooLarge();
 
     buffer->resize(length.ValueOrDie());
     if (AES_wrap_key(&aes_key, nullptr /* default IV */, buffer->data(),
-                     data.bytes(), data.byte_length()) < 0) {
+                     data.data(), data.size()) < 0) {
       return Status::OperationError();
     }
 
@@ -68,15 +67,15 @@ class AesKwImplementation : public AesAlgorithm {
 
   Status Decrypt(const blink::WebCryptoAlgorithm& algorithm,
                  const blink::WebCryptoKey& key,
-                 const CryptoData& data,
+                 base::span<const uint8_t> data,
                  std::vector<uint8_t>* buffer) const override {
     crypto::OpenSSLErrStackTracer err_tracer(FROM_HERE);
 
     // These length checks are done in order to give a more specific
     // error. These are not required for correctness.
-    if (data.byte_length() < 24)
+    if (data.size() < 24)
       return Status::ErrorDataTooSmall();
-    if (data.byte_length() % 8)
+    if (data.size() % 8)
       return Status::ErrorInvalidAesKwDataLength();
 
     // Key import validates key sizes, so the bits computation will not
@@ -90,10 +89,10 @@ class AesKwImplementation : public AesAlgorithm {
     }
 
     // Key wrap's overhead is 8 bytes.
-    buffer->resize(data.byte_length() - 8);
+    buffer->resize(data.size() - 8);
 
     if (AES_unwrap_key(&aes_key, nullptr /* default IV */, buffer->data(),
-                       data.bytes(), data.byte_length()) < 0) {
+                       data.data(), data.size()) < 0) {
       return Status::OperationError();
     }
 

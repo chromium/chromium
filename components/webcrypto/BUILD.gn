@@ -45,8 +45,6 @@ static_library("webcrypto") {
     "algorithms/x25519.cc",
     "blink_key_handle.cc",
     "blink_key_handle.h",
-    "crypto_data.cc",
-    "crypto_data.h",
     "generate_key_result.cc",
     "generate_key_result.h",
     "jwk.cc",

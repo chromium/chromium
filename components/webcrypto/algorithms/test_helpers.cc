@@ -18,7 +18,6 @@
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "components/webcrypto/algorithm_dispatch.h"
-#include "components/webcrypto/crypto_data.h"
 #include "components/webcrypto/generate_key_result.h"
 #include "components/webcrypto/jwk.h"
 #include "components/webcrypto/status.h"
@@ -74,19 +73,6 @@ bool operator==(const Status& a, const Status& b) {
 }
 
 bool operator!=(const Status& a, const Status& b) {
-  return !(a == b);
-}
-
-void PrintTo(const CryptoData& data, ::std::ostream* os) {
-  *os << "[" << base::HexEncode(data.bytes(), data.byte_length()) << "]";
-}
-
-bool operator==(const CryptoData& a, const CryptoData& b) {
-  return a.byte_length() == b.byte_length() &&
-         memcmp(a.bytes(), b.bytes(), a.byte_length()) == 0;
-}
-
-bool operator!=(const CryptoData& a, const CryptoData& b) {
   return !(a == b);
 }
 
@@ -297,9 +283,8 @@ blink::WebCryptoKey ImportSecretKeyFromRaw(
     blink::WebCryptoKeyUsageMask usage) {
   blink::WebCryptoKey key;
   bool extractable = true;
-  EXPECT_EQ(Status::Success(),
-            ImportKey(blink::kWebCryptoKeyFormatRaw, CryptoData(key_raw),
-                      algorithm, extractable, usage, &key));
+  EXPECT_EQ(Status::Success(), ImportKey(blink::kWebCryptoKeyFormatRaw, key_raw,
+                                         algorithm, extractable, usage, &key));
 
   EXPECT_FALSE(key.IsNull());
   EXPECT_TRUE(key.Handle());
@@ -319,8 +304,8 @@ void ImportRsaKeyPair(const std::vector<uint8_t>& spki_der,
                       blink::WebCryptoKey* public_key,
                       blink::WebCryptoKey* private_key) {
   ASSERT_EQ(Status::Success(),
-            ImportKey(blink::kWebCryptoKeyFormatSpki, CryptoData(spki_der),
-                      algorithm, true, public_key_usages, public_key));
+            ImportKey(blink::kWebCryptoKeyFormatSpki, spki_der, algorithm, true,
+                      public_key_usages, public_key));
   EXPECT_FALSE(public_key->IsNull());
   EXPECT_TRUE(public_key->Handle());
   EXPECT_EQ(blink::kWebCryptoKeyTypePublic, public_key->GetType());
@@ -329,8 +314,8 @@ void ImportRsaKeyPair(const std::vector<uint8_t>& spki_der,
   EXPECT_EQ(public_key_usages, public_key->Usages());
 
   ASSERT_EQ(Status::Success(),
-            ImportKey(blink::kWebCryptoKeyFormatPkcs8, CryptoData(pkcs8_der),
-                      algorithm, extractable, private_key_usages, private_key));
+            ImportKey(blink::kWebCryptoKeyFormatPkcs8, pkcs8_der, algorithm,
+                      extractable, private_key_usages, private_key));
   EXPECT_FALSE(private_key->IsNull());
   EXPECT_TRUE(private_key->Handle());
   EXPECT_EQ(blink::kWebCryptoKeyTypePrivate, private_key->GetType());
@@ -344,9 +329,8 @@ Status ImportKeyJwkFromDict(const base::ValueView& dict,
                             bool extractable,
                             blink::WebCryptoKeyUsageMask usages,
                             blink::WebCryptoKey* key) {
-  return ImportKey(blink::kWebCryptoKeyFormatJwk,
-                   CryptoData(MakeJsonVector(dict)), algorithm, extractable,
-                   usages, key);
+  return ImportKey(blink::kWebCryptoKeyFormatJwk, MakeJsonVector(dict),
+                   algorithm, extractable, usages, key);
 }
 
 Status ImportKeyJwkFromDict(const base::DictionaryValue& dict,
@@ -529,9 +513,8 @@ void ImportExportJwkSymmetricKey(
   EXPECT_TRUE(VerifySecretJwk(json, jwk_alg, key_hex, usages));
 
   // Import the JWK-formatted key.
-  ASSERT_EQ(Status::Success(),
-            ImportKey(blink::kWebCryptoKeyFormatJwk, CryptoData(json),
-                      import_algorithm, true, usages, &key));
+  ASSERT_EQ(Status::Success(), ImportKey(blink::kWebCryptoKeyFormatJwk, json,
+                                         import_algorithm, true, usages, &key));
   EXPECT_TRUE(key.Handle());
   EXPECT_EQ(blink::kWebCryptoKeyTypeSecret, key.GetType());
   EXPECT_EQ(import_algorithm.Id(), key.Algorithm().Id());

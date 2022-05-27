@@ -15,7 +15,7 @@ AlgorithmImplementation::~AlgorithmImplementation() {
 Status AlgorithmImplementation::Encrypt(
     const blink::WebCryptoAlgorithm& algorithm,
     const blink::WebCryptoKey& key,
-    const CryptoData& data,
+    base::span<const uint8_t> data,
     std::vector<uint8_t>* buffer) const {
   return Status::ErrorUnsupported();
 }
@@ -23,14 +23,14 @@ Status AlgorithmImplementation::Encrypt(
 Status AlgorithmImplementation::Decrypt(
     const blink::WebCryptoAlgorithm& algorithm,
     const blink::WebCryptoKey& key,
-    const CryptoData& data,
+    base::span<const uint8_t> data,
     std::vector<uint8_t>* buffer) const {
   return Status::ErrorUnsupported();
 }
 
 Status AlgorithmImplementation::Sign(const blink::WebCryptoAlgorithm& algorithm,
                                      const blink::WebCryptoKey& key,
-                                     const CryptoData& data,
+                                     base::span<const uint8_t> data,
                                      std::vector<uint8_t>* buffer) const {
   return Status::ErrorUnsupported();
 }
@@ -38,15 +38,15 @@ Status AlgorithmImplementation::Sign(const blink::WebCryptoAlgorithm& algorithm,
 Status AlgorithmImplementation::Verify(
     const blink::WebCryptoAlgorithm& algorithm,
     const blink::WebCryptoKey& key,
-    const CryptoData& signature,
-    const CryptoData& data,
+    base::span<const uint8_t> signature,
+    base::span<const uint8_t> data,
     bool* signature_match) const {
   return Status::ErrorUnsupported();
 }
 
 Status AlgorithmImplementation::Digest(
     const blink::WebCryptoAlgorithm& algorithm,
-    const CryptoData& data,
+    base::span<const uint8_t> data,
     std::vector<uint8_t>* buffer) const {
   return Status::ErrorUnsupported();
 }
@@ -77,7 +77,7 @@ Status AlgorithmImplementation::GetKeyLength(
 
 Status AlgorithmImplementation::ImportKey(
     blink::WebCryptoKeyFormat format,
-    const CryptoData& key_data,
+    base::span<const uint8_t> key_data,
     const blink::WebCryptoAlgorithm& algorithm,
     bool extractable,
     blink::WebCryptoKeyUsageMask usages,
@@ -103,7 +103,7 @@ Status AlgorithmImplementation::DeserializeKeyForClone(
     blink::WebCryptoKeyType type,
     bool extractable,
     blink::WebCryptoKeyUsageMask usages,
-    const CryptoData& key_data,
+    base::span<const uint8_t> key_data,
     blink::WebCryptoKey* key) const {
   return Status::ErrorUnsupported();
 }
