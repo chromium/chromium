@@ -437,6 +437,17 @@ TEST_F(SegmentSelectorTest, SubsegmentRecording) {
       &config_, &field_trial_register_, &clock_,
       PlatformOptions::CreateDefault(), default_manager_.get());
 
+  // When segment result is missing, unknown subsegment is recorded.
+  EXPECT_CALL(
+      field_trial_register_,
+      RegisterSubsegmentFieldTrialIfNeeded(
+          base::StringPiece("Segmentation_TestKey_Share"), segment_id0, 0));
+  EXPECT_CALL(
+      field_trial_register_,
+      RegisterSubsegmentFieldTrialIfNeeded(
+          base::StringPiece("Segmentation_TestKey_NewTab"),
+          OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB, 0));
+
   // The new selector will record subsegment metric groups based on the mapping.
   base::RunLoop wait_for_subsegment;
   EXPECT_CALL(field_trial_register_,

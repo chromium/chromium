@@ -189,8 +189,8 @@ IN_PROC_BROWSER_TEST_F(SegmentationPlatformUkmModelTest,
   MockModelProvider* provider = utils_.GetDefaultOverride(kSegmentId);
 
   EXPECT_CALL(*provider, ExecuteModelWithInput(_, _))
-      .WillOnce(Invoke([&](const std::vector<float>& inputs,
-                           ModelProvider::ExecutionCallback callback) {
+      .WillRepeatedly(Invoke([&](const std::vector<float>& inputs,
+                                 ModelProvider::ExecutionCallback callback) {
         // There are no UKM metrics written to the database, count = 0.
         EXPECT_EQ(std::vector<float>({0}), inputs);
         std::move(callback).Run(0.5);
@@ -219,8 +219,8 @@ IN_PROC_BROWSER_TEST_F(SegmentationPlatformUkmModelTest,
   MockModelProvider* provider = utils_.GetDefaultOverride(kSegmentId);
 
   EXPECT_CALL(*provider, ExecuteModelWithInput(_, _))
-      .WillOnce(Invoke([](const std::vector<float>& inputs,
-                          ModelProvider::ExecutionCallback callback) {
+      .WillRepeatedly(Invoke([](const std::vector<float>& inputs,
+                                ModelProvider::ExecutionCallback callback) {
         // Expected input is 2 since we recorded 2 UKM metrics in the previous
         // session.
         EXPECT_EQ(std::vector<float>({2}), inputs);
