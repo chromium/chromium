@@ -72,6 +72,7 @@ if (!is_win) {
   source_set("streaming_session") {
     deps = [
       ":core",
+      ":demuxer_stream_data_provider",
       ":receiver_session_public",
       ":renderer_controls",
       ":streaming_initialization_info",
@@ -176,6 +177,7 @@ if (!is_win) {
 
 source_set("demuxer_stream_data_provider") {
   deps = [
+    ":demuxer_stream_client",
     "//base",
     "//components/cast_streaming/public/mojom",
     "//media",
@@ -199,7 +201,7 @@ source_set("network_context") {
 
 source_set("streaming_initialization_info") {
   public_deps = [
-    ":demuxer_stream_data_provider",
+    ":demuxer_stream_client",
     "//media",
     "//third_party/openscreen/src/cast/streaming:receiver",
   ]
@@ -210,8 +212,15 @@ source_set("streaming_initialization_info") {
   ]
 }
 
+source_set("demuxer_stream_client") {
+  visibility = [ ":*" ]
+  sources = [ "demuxer_stream_client.h" ]
+  public_deps = [ "//base" ]
+}
+
 source_set("renderer_controls") {
   public_deps = [
+    ":demuxer_stream_client",
     ":streaming_initialization_info",
     "//base",
     "//components/cast_streaming/public:remoting_utils",
@@ -254,6 +263,7 @@ source_set("unit_tests") {
   testonly = true
   deps = [
     ":browser",
+    ":demuxer_stream_client",
     ":demuxer_stream_data_provider",
     ":renderer_controls",
     "//base",

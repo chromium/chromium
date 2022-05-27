@@ -182,6 +182,8 @@ class CastStreamingDemuxerStream : public media::DemuxerStream {
     }
   }
 
+  void OnBitstreamConverterEnabled(bool success) { NOTIMPLEMENTED_LOG_ONCE(); }
+
   // DemuxerStream partial implementation.
   void Read(ReadCB read_cb) final {
     DVLOG(3) << __func__;
@@ -210,6 +212,12 @@ class CastStreamingDemuxerStream : public media::DemuxerStream {
 
     // Eventually this will call OnBufferReady().
     buffer_reader_->ReadBufferAsync();
+  }
+
+  void EnableBitstreamConverter() final {
+    remote_->EnableBitstreamConverter(
+        base::BindOnce(&CastStreamingDemuxerStream::OnBitstreamConverterEnabled,
+                       weak_factory_.GetWeakPtr()));
   }
 
   media::StreamLiveness liveness() const final {

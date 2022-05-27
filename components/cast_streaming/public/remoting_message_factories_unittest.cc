@@ -208,6 +208,13 @@ TEST_F(RemotingMessageFactoriesTest, CreateMessageForDemuxerStreamReadUntil) {
   EXPECT_EQ(message.callback_handle(), kTestHandle);
 }
 
+TEST_F(RemotingMessageFactoriesTest,
+       CreateMessageForDemuxerStreamEnableBitstreamConverter) {
+  const auto rpc = CreateMessageForDemuxerStreamEnableBitstreamConverter();
+  EXPECT_EQ(rpc->proc(),
+            openscreen::cast::RpcMessage::RPC_DS_ENABLEBITSTREAMCONVERTER);
+}
+
 TEST_F(RemotingMessageFactoriesTest, CreateMessageForDemuxerStreamError) {
   const auto rpc = CreateMessageForDemuxerStreamError();
   EXPECT_EQ(rpc->proc(), openscreen::cast::RpcMessage::RPC_DS_ONERROR);

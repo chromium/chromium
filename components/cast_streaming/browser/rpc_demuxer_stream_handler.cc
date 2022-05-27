@@ -20,13 +20,12 @@ constexpr int kNumFramesInEachReadUntil = 16;
 RpcDemuxerStreamHandler::RpcDemuxerStreamHandler(
     Client* client,
     HandleFactory handle_factory,
-    RpcProcessMessageCB message_processor)
+    RpcProcessMessageCB process_message_cb)
     : client_(client),
       handle_factory_(std::move(handle_factory)),
-      message_processor_(std::move(message_processor)),
-      weak_factory_(this) {
+      process_message_cb_(std::move(process_message_cb)) {
   DCHECK(handle_factory_);
-  DCHECK(message_processor_);
+  DCHECK(process_message_cb_);
 }
 
 RpcDemuxerStreamHandler::~RpcDemuxerStreamHandler() = default;
@@ -38,81 +37,25 @@ void RpcDemuxerStreamHandler::OnRpcAcquireDemuxer(
   // initialize the DemuxerStreams.
   if (audio_stream_handle != openscreen::cast::RpcMessenger::kInvalidHandle) {
     audio_message_processor_ = std::make_unique<MessageProcessor>(
-        client_, handle_factory_.Run(), audio_stream_handle,
-        MessageProcessor::Type::kAudio);
+        client_, process_message_cb_, handle_factory_.Run(),
+        audio_stream_handle, MessageProcessor::Type::kAudio);
     std::unique_ptr<openscreen::cast::RpcMessage> message =
         remoting::CreateMessageForDemuxerStreamInitialize(
             audio_message_processor_->local_handle());
-    message_processor_.Run(audio_message_processor_->remote_handle(),
-                           std::move(message));
+    process_message_cb_.Run(audio_message_processor_->remote_handle(),
+                            std::move(message));
   }
 
   if (video_stream_handle != openscreen::cast::RpcMessenger::kInvalidHandle) {
     video_message_processor_ = std::make_unique<MessageProcessor>(
-        client_, handle_factory_.Run(), video_stream_handle,
-        MessageProcessor::Type::kVideo);
+        client_, process_message_cb_, handle_factory_.Run(),
+        video_stream_handle, MessageProcessor::Type::kVideo);
     std::unique_ptr<openscreen::cast::RpcMessage> message =
         remoting::CreateMessageForDemuxerStreamInitialize(
             video_message_processor_->local_handle());
-    message_processor_.Run(video_message_processor_->remote_handle(),
-                           std::move(message));
+    process_message_cb_.Run(video_message_processor_->remote_handle(),
+                            std::move(message));
   }
-}
-
-void RpcDemuxerStreamHandler::RequestMoreAudioBuffers() {
-  if (!audio_message_processor_) {
-    return;
-  }
-
-  RequestMoreBuffers(audio_message_processor_.get());
-}
-
-void RpcDemuxerStreamHandler::RequestMoreVideoBuffers() {
-  if (!video_message_processor_) {
-    return;
-  }
-
-  RequestMoreBuffers(video_message_processor_.get());
-}
-
-void RpcDemuxerStreamHandler::RequestMoreBuffers(
-    MessageProcessor* message_processor) {
-  if (message_processor->is_read_until_call_pending()) {
-    return;
-  }
-
-  message_processor->set_read_until_call_pending();
-  auto message = CreateMessageForDemuxerStreamReadUntil(
-      message_processor->local_handle(),
-      message_processor->total_frames_received() + kNumFramesInEachReadUntil);
-  message_processor_.Run(message_processor->remote_handle(),
-                         std::move(message));
-}
-
-void RpcDemuxerStreamHandler::OnAudioError() {
-  if (!audio_message_processor_) {
-    return;
-  }
-
-  OnError(audio_message_processor_.get());
-}
-
-void RpcDemuxerStreamHandler::OnVideoError() {
-  if (!video_message_processor_) {
-    return;
-  }
-
-  OnError(video_message_processor_.get());
-}
-
-void RpcDemuxerStreamHandler::OnError(MessageProcessor* message_processor) {
-  auto message = CreateMessageForDemuxerStreamError();
-  message_processor_.Run(message_processor->remote_handle(),
-                         std::move(message));
-}
-
-base::WeakPtr<RpcDemuxerStreamHandler> RpcDemuxerStreamHandler::GetWeakPtr() {
-  return weak_factory_.GetWeakPtr();
 }
 
 void RpcDemuxerStreamHandler::OnRpcInitializeCallback(
@@ -152,21 +95,57 @@ void RpcDemuxerStreamHandler::OnRpcReadUntilCallback(
   }
 }
 
+void RpcDemuxerStreamHandler::OnRpcBitstreamConverterEnabled(
+    openscreen::cast::RpcMessenger::Handle handle,
+    bool success) {
+  if (audio_message_processor_ &&
+      handle == audio_message_processor_->local_handle()) {
+    audio_message_processor_->OnBitstreamConverterEnabled(success);
+  } else if (video_message_processor_ &&
+             handle == video_message_processor_->local_handle()) {
+    video_message_processor_->OnBitstreamConverterEnabled(success);
+  } else {
+    LOG(WARNING)
+        << "OnRpcBitstreamConverterEnabled received for invalid handle";
+  }
+}
+
+base::WeakPtr<DemuxerStreamClient> RpcDemuxerStreamHandler::GetAudioClient() {
+  if (!audio_message_processor_) {
+    return nullptr;
+  }
+
+  return audio_message_processor_->GetWeakPtr();
+}
+
+base::WeakPtr<DemuxerStreamClient> RpcDemuxerStreamHandler::GetVideoClient() {
+  if (!video_message_processor_) {
+    return nullptr;
+  }
+
+  return video_message_processor_->GetWeakPtr();
+}
+
 RpcDemuxerStreamHandler::Client::~Client() = default;
 
 RpcDemuxerStreamHandler::MessageProcessor::MessageProcessor(
     Client* client,
+    RpcProcessMessageCB process_message_cb,
     openscreen::cast::RpcMessenger::Handle local_handle,
     openscreen::cast::RpcMessenger::Handle remote_handle,
     Type type)
     : client_(client),
+      process_message_cb_(std::move(process_message_cb)),
       local_handle_(local_handle),
       remote_handle_(remote_handle),
-      type_(type) {
+      type_(type),
+      weak_factory_(this) {
   DCHECK(client_);
   DCHECK_NE(local_handle_, openscreen::cast::RpcMessenger::kInvalidHandle);
   DCHECK_NE(remote_handle_, openscreen::cast::RpcMessenger::kInvalidHandle);
 }
+
+RpcDemuxerStreamHandler::MessageProcessor::~MessageProcessor() = default;
 
 bool RpcDemuxerStreamHandler::MessageProcessor::OnRpcInitializeCallback(
     absl::optional<media::AudioDecoderConfig> audio_config,
@@ -194,12 +173,52 @@ bool RpcDemuxerStreamHandler::MessageProcessor::OnRpcReadUntilCallback(
     uint32_t total_frames_received) {
   if (!OnRpcInitializeCallback(std::move(audio_config),
                                std::move(video_config))) {
+    LOG(WARNING) << "Failed to process OnRpcReadUntilCallback.";
     return false;
   }
 
   total_frames_received_ = total_frames_received;
   is_read_until_call_pending_ = false;
   return true;
+}
+
+void RpcDemuxerStreamHandler::MessageProcessor::OnBitstreamConverterEnabled(
+    bool success) {
+  if (!bitstream_converter_enabled_cb_) {
+    return;
+  }
+
+  std::move(bitstream_converter_enabled_cb_).Run(success);
+}
+
+base::WeakPtr<RpcDemuxerStreamHandler::MessageProcessor>
+RpcDemuxerStreamHandler::MessageProcessor::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
+void RpcDemuxerStreamHandler::MessageProcessor::EnableBitstreamConverter(
+    BitstreamConverterEnabledCB cb) {
+  DCHECK(!bitstream_converter_enabled_cb_);
+  bitstream_converter_enabled_cb_ = std::move(cb);
+
+  auto message = CreateMessageForDemuxerStreamEnableBitstreamConverter();
+  process_message_cb_.Run(remote_handle(), std::move(message));
+}
+
+void RpcDemuxerStreamHandler::MessageProcessor::OnNoBuffersAvailable() {
+  if (is_read_until_call_pending()) {
+    return;
+  }
+
+  set_read_until_call_pending();
+  auto message = CreateMessageForDemuxerStreamReadUntil(
+      local_handle(), total_frames_received() + kNumFramesInEachReadUntil);
+  process_message_cb_.Run(remote_handle(), std::move(message));
+}
+
+void RpcDemuxerStreamHandler::MessageProcessor::OnError() {
+  auto message = CreateMessageForDemuxerStreamError();
+  process_message_cb_.Run(remote_handle(), std::move(message));
 }
 
 }  // namespace cast_streaming::remoting

@@ -80,6 +80,9 @@ CreateMessageForDemuxerStreamReadUntil(
     uint32_t buffers_requested);
 
 std::unique_ptr<openscreen::cast::RpcMessage>
+CreateMessageForDemuxerStreamEnableBitstreamConverter();
+
+std::unique_ptr<openscreen::cast::RpcMessage>
 CreateMessageForDemuxerStreamError();
 
 }  // namespace remoting

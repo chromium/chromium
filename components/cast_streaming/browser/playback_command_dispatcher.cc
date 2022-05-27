@@ -90,39 +90,15 @@ void PlaybackCommandDispatcher::ConfigureRemotingAsync(
   absl::optional<StreamingInitializationInfo::AudioStreamInfo>
       audio_stream_info;
   if (receivers.audio_receiver) {
-    auto no_buffers_cb = base::BindPostTask(
-        task_runner_,
-        base::BindRepeating(
-            &remoting::RpcDemuxerStreamHandler::RequestMoreAudioBuffers,
-            demuxer_stream_handler_->GetWeakPtr()),
-        FROM_HERE);
-    auto error_cb = base::BindPostTask(
-        task_runner_,
-        base::BindRepeating(&remoting::RpcDemuxerStreamHandler::OnAudioError,
-                            demuxer_stream_handler_->GetWeakPtr()),
-        FROM_HERE);
     audio_stream_info.emplace(media::AudioDecoderConfig(),
-                              receivers.audio_receiver,
-                              std::move(no_buffers_cb), std::move(error_cb));
+                              receivers.audio_receiver);
   }
 
   absl::optional<StreamingInitializationInfo::VideoStreamInfo>
       video_stream_info;
   if (receivers.video_receiver) {
-    auto no_buffers_cb = base::BindPostTask(
-        task_runner_,
-        base::BindRepeating(
-            &remoting::RpcDemuxerStreamHandler::RequestMoreVideoBuffers,
-            demuxer_stream_handler_->GetWeakPtr()),
-        FROM_HERE);
-    auto error_cb = base::BindPostTask(
-        task_runner_,
-        base::BindRepeating(&remoting::RpcDemuxerStreamHandler::OnVideoError,
-                            demuxer_stream_handler_->GetWeakPtr()),
-        FROM_HERE);
     video_stream_info.emplace(media::VideoDecoderConfig(),
-                              receivers.video_receiver,
-                              std::move(no_buffers_cb), std::move(error_cb));
+                              receivers.video_receiver);
   }
 
   streaming_init_info_.emplace(receiver_session_, std::move(audio_stream_info),
@@ -276,10 +252,18 @@ void PlaybackCommandDispatcher::MaybeStartStreamingSession() {
 
   DCHECK(demuxer_stream_handler_);
   if (streaming_init_info_->audio_stream_info) {
-    demuxer_stream_handler_->RequestMoreAudioBuffers();
+    auto client = demuxer_stream_handler_->GetAudioClient();
+    DCHECK(client);
+    client->OnNoBuffersAvailable();
+    streaming_init_info_->audio_stream_info->demuxer_stream_client =
+        std::move(client);
   }
   if (streaming_init_info_->video_stream_info) {
-    demuxer_stream_handler_->RequestMoreVideoBuffers();
+    auto client = demuxer_stream_handler_->GetVideoClient();
+    DCHECK(client);
+    client->OnNoBuffersAvailable();
+    streaming_init_info_->video_stream_info->demuxer_stream_client =
+        std::move(client);
   }
 
   // |streaming_init_info_| is intentionally copied here.

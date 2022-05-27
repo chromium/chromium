@@ -6,7 +6,9 @@
 #define COMPONENTS_CAST_STREAMING_BROWSER_DEMUXER_STREAM_DATA_PROVIDER_H_
 
 #include "base/callback_forward.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "components/cast_streaming/browser/demuxer_stream_client.h"
 #include "components/cast_streaming/public/mojom/demuxer_connector.mojom.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -90,23 +92,21 @@ class DemuxerStreamDataProvider : public TMojoReceiverType {
     return config_;
   }
 
-  void SetOnNoBuffersAvailableCallback(
-      base::RepeatingClosure on_no_buffers_available) {
+  void SetClient(base::WeakPtr<DemuxerStreamClient> client) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    on_no_buffers_available_ = std::move(on_no_buffers_available);
-  }
-
-  void SetOnErrorCallback(base::OnceClosure on_error) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    on_error_ = std::move(on_error);
+    client_ = std::move(client);
   }
 
  private:
   using GetBufferCallback = typename TMojoReceiverType::GetBufferCallback;
+  using EnableBitstreamConverterCallback =
+      typename TMojoReceiverType::EnableBitstreamConverterCallback;
 
   void OnFatalError() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    std::move(on_error_).Run();
+    if (client_) {
+      client_->OnError();
+    }
     std::move(on_mojo_disconnect_).Run();
   }
 
@@ -123,7 +123,19 @@ class DemuxerStreamDataProvider : public TMojoReceiverType {
     }
 
     current_callback_ = std::move(callback);
-    request_buffer_.Run(on_no_buffers_available_);
+    request_buffer_.Run(
+        base::BindOnce(&DemuxerStreamClient::OnNoBuffersAvailable, client_));
+  }
+
+  void EnableBitstreamConverter(
+      EnableBitstreamConverterCallback callback) override {
+    if (client_) {
+      client_->EnableBitstreamConverter(std::move(callback));
+    } else {
+      std::move(callback).Run(false);
+      LOG(WARNING)
+          << "EnableBitstreamConverter() called when no client was available";
+    }
   }
 
   // The most recently set config.
@@ -139,12 +151,9 @@ class DemuxerStreamDataProvider : public TMojoReceiverType {
   // Callback to request a new buffer be read from the receiver.
   RequestBufferCB request_buffer_;
 
-  // Callback called when no buffers are available for reading.
-  base::RepeatingClosure on_no_buffers_available_;
-
-  // Callback called on an unrecoverable error, prior to shutdown of the
-  // component.
-  base::OnceClosure on_error_;
+  // Client to use when the associated DemuxerStream requires an action be
+  // performed.
+  base::WeakPtr<DemuxerStreamClient> client_;
 
   // Callback called upon a mojo disconnection.
   base::OnceClosure on_mojo_disconnect_;
