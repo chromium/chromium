@@ -25,10 +25,15 @@ class LacrosFileSystemProvider : public crosapi::mojom::FileSystemProvider,
   LacrosFileSystemProvider& operator=(const LacrosFileSystemProvider&) = delete;
 
   // crosapi::mojom::FileSystemProvider
+  void DeprecatedForwardOperation(const std::string& provider,
+                                  int32_t histogram_value,
+                                  const std::string& event_name,
+                                  std::vector<base::Value> args) override;
   void ForwardOperation(const std::string& provider,
                         int32_t histogram_value,
                         const std::string& event_name,
-                        std::vector<base::Value> args) override;
+                        std::vector<base::Value> args,
+                        ForwardOperationCallback callback) override;
 
   // extensions::ExtensionRegistryObserver overrides.
   void OnExtensionLoaded(content::BrowserContext* browser_context,

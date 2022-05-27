@@ -64,7 +64,10 @@ class Operation : public RequestManager::HandlerInterface {
 
  private:
   using DispatchEventInternalCallback =
-      base::RepeatingCallback<bool(extensions::events::HistogramValue,
+      base::RepeatingCallback<bool(ProviderId provider_id,
+                                   const std::string& file_system_id,
+                                   int request_id,
+                                   extensions::events::HistogramValue,
                                    const std::string&,
                                    std::vector<base::Value>)>;
   DispatchEventInternalCallback dispatch_event_impl_;

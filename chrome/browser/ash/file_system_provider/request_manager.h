@@ -148,6 +148,9 @@ class RequestManager {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
+  // Destroys the request with the passed |request_id|.
+  void DestroyRequest(int request_id);
+
  private:
   struct Request {
     Request();
@@ -163,9 +166,6 @@ class RequestManager {
     // Handler tied to this request.
     std::unique_ptr<HandlerInterface> handler;
   };
-
-  // Destroys the request with the passed |request_id|.
-  void DestroyRequest(int request_id);
 
   // Called when a request with |request_id| timeouts.
   void OnRequestTimeout(int request_id);

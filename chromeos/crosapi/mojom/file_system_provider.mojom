@@ -136,9 +136,16 @@ interface FileSystemProvider {
   // cannot be type-mapped due to build-time dependency inversions.
   // Provider will typically be an extension_id but is intentionally left
   // abstract to support multi-profile in the future.
+  // |delivery_failure| is set to true if the operation could not be forwarded
+  // to the extension for any reason.
   [MinVersion=1]
-  ForwardOperation@0(string provider, int32 histogram_value, string event_name,
-                     array<mojo_base.mojom.Value> args);
+  DeprecatedForwardOperation@0(
+      string provider, int32 histogram_value, string event_name,
+      array<mojo_base.mojom.Value> args);
+  [MinVersion=2]
+  ForwardOperation@1(
+      string provider, int32 histogram_value, string event_name,
+      array<mojo_base.mojom.Value> args) => (bool delivery_failure);
 };
 
 // Implemented by Ash. Extensions in Lacros can register themselves as file

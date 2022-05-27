@@ -51,20 +51,40 @@ LacrosFileSystemProvider::LacrosFileSystemProvider() : receiver_{this} {
 }
 LacrosFileSystemProvider::~LacrosFileSystemProvider() = default;
 
-void LacrosFileSystemProvider::ForwardOperation(const std::string& provider,
-                                                int32_t histogram_value,
-                                                const std::string& event_name,
-                                                std::vector<base::Value> args) {
+void LacrosFileSystemProvider::DeprecatedForwardOperation(
+    const std::string& provider,
+    int32_t histogram_value,
+    const std::string& event_name,
+    std::vector<base::Value> args) {
+  ForwardOperation(provider, histogram_value, event_name, std::move(args),
+                   base::DoNothing());
+}
+
+void LacrosFileSystemProvider::ForwardOperation(
+    const std::string& provider,
+    int32_t histogram_value,
+    const std::string& event_name,
+    std::vector<base::Value> args,
+    ForwardOperationCallback callback) {
   Profile* main_profile = GetMainProfile();
-  if (!main_profile)
+  if (!main_profile) {
+    LOG(ERROR) << "Could not get main profile";
+    std::move(callback).Run(/*delivery_failure=*/true);
     return;
+  }
 
   extensions::EventRouter* router = extensions::EventRouter::Get(main_profile);
-  if (!router)
+  if (!router) {
+    LOG(ERROR) << "Could not get event router";
+    std::move(callback).Run(/*delivery_failure=*/true);
     return;
+  }
 
-  if (!router->ExtensionHasEventListener(provider, event_name))
+  if (!router->ExtensionHasEventListener(provider, event_name)) {
+    LOG(ERROR) << "Could not get event listener";
+    std::move(callback).Run(/*delivery_failure=*/true);
     return;
+  }
 
   // Conversions are safe since the enum is stable. See documentation.
   int32_t lowest_valid_enum =
@@ -74,6 +94,8 @@ void LacrosFileSystemProvider::ForwardOperation(const std::string& provider,
       1;
   if (histogram_value < lowest_valid_enum ||
       histogram_value > highest_valid_enum) {
+    LOG(ERROR) << "Invalid histogram";
+    std::move(callback).Run(/*delivery_failure=*/true);
     return;
   }
   extensions::events::HistogramValue histogram =
@@ -82,6 +104,7 @@ void LacrosFileSystemProvider::ForwardOperation(const std::string& provider,
   auto event = std::make_unique<extensions::Event>(histogram, event_name,
                                                    std::move(args));
   router->DispatchEventToExtension(provider, std::move(event));
+  std::move(callback).Run(/*delivery_failure=*/false);
 }
 
 void LacrosFileSystemProvider::OnExtensionLoaded(
