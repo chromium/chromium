@@ -31,15 +31,9 @@ constexpr int kCPUUsageHistogramBucketCount = 50;
 void RecordProcessHistograms(const char* histogram_suffix,
                              const ProcessMonitor::Metrics& metrics) {
   base::UmaHistogramCustomCounts(
-      base::StrCat({"PerformanceMonitor.AverageCPU2.", histogram_suffix}),
+      base::StrCat({"PerformanceMonitor.AverageCPU3.", histogram_suffix}),
       metrics.cpu_usage * kCPUUsageFactor, kCPUUsageHistogramMin,
       kCPUUsageHistogramMax, kCPUUsageHistogramBucketCount);
-#if BUILDFLAG(IS_WIN)
-  base::UmaHistogramCustomCounts(
-      base::StrCat({"PerformanceMonitor.AverageCPU3.", histogram_suffix}),
-      metrics.precise_cpu_usage * kCPUUsageFactor, kCPUUsageHistogramMin,
-      kCPUUsageHistogramMax, kCPUUsageHistogramBucketCount);
-#endif
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
     BUILDFLAG(IS_AIX)
   base::UmaHistogramCounts10000(

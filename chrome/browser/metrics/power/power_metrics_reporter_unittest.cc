@@ -237,7 +237,7 @@ TEST_F(PowerMetricsReporterUnitTest, LongIntervalHistograms) {
   const char* kScenarioSuffix = ".VideoCapture";
   const std::vector<const char*> suffixes({"", kScenarioSuffix});
   ExpectHistogramSamples(&histogram_tester_, suffixes,
-                         {{"PerformanceMonitor.AverageCPU2.Total", 500}});
+                         {{"PerformanceMonitor.AverageCPU3.Total", 500}});
 }
 
 #if BUILDFLAG(IS_MAC)
