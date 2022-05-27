@@ -6953,5 +6953,5 @@ crbug.com/1291841 external/wpt/scroll-to-text-fragment/scroll-to-text-fragment-s
 crbug.com/1327764 inspector-protocol/overlay/overlay-persistent-overlays.js [ Failure Pass ]
 
 # Sheriff 2022-05-26
-crbug.com/1322004 http/tests/inspector-protocol/conversion/insecure-subresource.js [ Pass Timeout ]
+crbug.com/1322004 http/tests/inspector-protocol/attribution-reporting/insecure-subresource.js [ Pass Timeout ]
 crbug.com/1329596 virtual/gpu-rasterization/images/jpeg-with-non-interleaved-dc-channels.html [ Failure Pass ]

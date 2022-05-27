@@ -4,11 +4,11 @@
 
 (async function(testRunner) {
   const {page, dp} = await testRunner.startBlank(
-      `Test that clicking an anchor with attributionsrc in an insecure context triggers an issue.`);
+      `Test that clicking an anchor with attributionsrc triggers an issue when the attribution-reporting Permissions Policy is disabled.`);
 
   await dp.Audits.enable();
   await page.navigate(
-      'http://devtools.test:8000/inspector-protocol/conversion/resources/impression.html');
+      'https://devtools.test:8443/inspector-protocol/attribution-reporting/resources/permissions-policy-no-conversion-measurement.php');
 
   await page.loadHTML(`
   <a id="adlink" href="https://a.com"

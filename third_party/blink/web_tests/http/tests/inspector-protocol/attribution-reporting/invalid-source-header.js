@@ -8,10 +8,10 @@
 
   await dp.Audits.enable();
   await page.navigate(
-      'https://devtools.test:8443/inspector-protocol/conversion/resources/impression.html');
+      'https://devtools.test:8443/inspector-protocol/attribution-reporting/resources/impression.html');
 
   await page.loadHTML(
-      `<img attributionsrc="https://devtools.test:8443/inspector-protocol/conversion/resources/register-invalid-source.php">`);
+      `<img attributionsrc="https://devtools.test:8443/inspector-protocol/attribution-reporting/resources/register-invalid-source.php">`);
 
   const issuePromise = dp.Audits.onceIssueAdded();
   const issue = await issuePromise;

@@ -4,14 +4,12 @@
 
 (async function(testRunner) {
   const {page, dp} = await testRunner.startBlank(
-      `Test that registering a trigger using a subresource request triggers an issue when the attribution-reporting Permissions Policy is disabled.`);
+      `Test that registering a trigger using a subbresource request to an insecure reporting origin triggers an issue.`);
 
   await dp.Audits.enable();
-  await page.navigate(
-      'https://devtools.test:8443/inspector-protocol/conversion/resources/permissions-policy-no-conversion-measurement.php');
 
   await page.loadHTML(
-      `<img src="https://devtools.test:8443/inspector-protocol/conversion/resources/register-trigger.php">`);
+      `<img src="http://devtools.test:8000/inspector-protocol/attribution-reporting/resources/register-trigger.php">`);
 
   const issuePromise = dp.Audits.onceIssueAdded();
   const issue = await issuePromise;
