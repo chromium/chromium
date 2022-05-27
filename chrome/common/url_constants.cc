@@ -419,6 +419,9 @@ const char kTPMFirmwareUpdateLearnMoreURL[] =
 const char kTimeZoneSettingsLearnMoreURL[] =
     "https://support.google.com/chromebook?p=chromebook_timezone&hl=%s";
 
+const char kSmartPrivacySettingsLearnMoreURL[] =
+    "https://support.google.com/chromebook?p=screen_privacy_m100";
+
 const char kSmbSharesLearnMoreURL[] =
     "https://support.google.com/chromebook?p=network_file_shares";
 
