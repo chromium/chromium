@@ -133,12 +133,6 @@ BitmapFetcherService::~BitmapFetcherService() {
   // latter.
   requests_.clear();
   active_fetchers_.clear();
-
-  // Need to delete |shared_data_decoder_| in the same IO thread in which it is
-  // used. This avoids the possibility of deleting it prior to decoding requests
-  // using it completing.
-  content::GetIOThreadTaskRunner({})->DeleteSoon(
-      FROM_HERE, std::move(shared_data_decoder_));
 }
 
 void BitmapFetcherService::CancelRequest(int request_id) {
