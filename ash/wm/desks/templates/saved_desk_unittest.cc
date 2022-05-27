@@ -3965,4 +3965,43 @@ TEST_F(DeskSaveAndRecallTest, DeleteSaveAndRecallRecordsMetric) {
   histogram_tester.ExpectTotalCount(kDeleteSaveAndRecallHistogramName, 1);
 }
 
+// Tests that if we've been in the library, then switched to a different desk,
+// and then save the desk, that the desk is closed. Regression test for
+// https://crbug.com/1329350.
+TEST_F(DeskSaveAndRecallTest, ReEnterLibraryAndSaveDesk) {
+  UpdateDisplay("800x600");
+
+  auto* root = Shell::Get()->GetPrimaryRootWindow();
+
+  // Create a template that has a window. We can't use `AddEntry` here since we
+  // want a template that actually contains a window. The "Save desk for later"
+  // button is not enabled on empty desks.
+  auto test_window1 = CreateAppWindow();
+
+  OpenOverviewAndSaveTemplate(root);
+
+  DesksController* desks_controller = DesksController::Get();
+  EXPECT_EQ(1ul, desks_controller->desks().size());
+
+  // Click on the "Use template" button to launch the template.
+  SavedDeskItemView* item_view = GetItemViewFromTemplatesGrid(0);
+  ClickOnView(SavedDeskItemViewTestApi(item_view).launch_button());
+  WaitForDesksTemplatesUI();
+
+  // Verify that we're still in overview mode and that a new desk has been
+  // created and activated.
+  EXPECT_TRUE(InOverviewSession());
+  EXPECT_EQ(2ul, desks_controller->desks().size());
+  EXPECT_EQ(1, desks_controller->GetActiveDeskIndex());
+
+  // Now save the desk. This should close the desk.
+  auto* save_desk_button = GetSaveDeskForLaterButtonForRoot(root);
+  EXPECT_TRUE(save_desk_button);
+  ClickOnView(save_desk_button);
+  WaitForDesksTemplatesUI();
+
+  // Verify that we're back to one desk.
+  EXPECT_EQ(1ul, desks_controller->desks().size());
+}
+
 }  // namespace ash

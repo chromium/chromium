@@ -359,6 +359,9 @@ void SavedDeskPresenter::OnAddOrUpdateEntry(
   const bool is_zero_state = overview_grid->desks_bar_view()->IsZeroState();
 
   if (auto* library_view = overview_grid->GetSavedDeskLibraryView()) {
+    // TODO(dandersson): Rework literally all of this. This path is only taken
+    // if the library has been visible in a session and we then save a desk. We
+    // should not need this special case.
     AddOrUpdateUIEntries({desk_template.get()});
 
     if (!was_update) {
@@ -374,13 +377,12 @@ void SavedDeskPresenter::OnAddOrUpdateEntry(
 
     if (on_update_ui_closure_for_testing_)
       std::move(on_update_ui_closure_for_testing_).Run();
-    return;
+  } else {
+    // This will update the templates button and save as desks button too. This
+    // will call `GetAllEntries`.
+    overview_session_->ShowDesksTemplatesGrids(
+        is_zero_state, desk_template->uuid(), root_window);
   }
-
-  // This will update the templates button and save as desks button too. This
-  // will call `GetAllEntries`.
-  overview_session_->ShowDesksTemplatesGrids(
-      is_zero_state, desk_template->uuid(), root_window);
 
   if (!was_update) {
     const auto saved_desk_type = desk_template->type();
