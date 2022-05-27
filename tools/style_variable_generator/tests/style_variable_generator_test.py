@@ -36,7 +36,7 @@ class BaseStyleGeneratorTest:
     def AddJSONFilesToModel(self, files):
         relpaths_from_cwd = [
             os.path.relpath(os.path.join(os.path.dirname(__file__), f),
-                            os.getcwd()) for f in files
+                            os.getcwd()).replace('\\', '/') for f in files
         ]
         self.generator.AddJSONFilesToModel(relpaths_from_cwd)
 
