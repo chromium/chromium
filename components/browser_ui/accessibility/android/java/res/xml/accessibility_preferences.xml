@@ -10,6 +10,15 @@
         android:title="@string/font_size"
         android:selectable="false" />
 
+    <org.chromium.components.browser_ui.accessibility.PageZoomPreference
+        android:key="page_zoom_default_zoom"
+        android:selectable="false" />
+
+    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
+        android:key="page_zoom_always_show"
+        android:summary="@string/page_zoom_always_show_preference_summary"
+        android:title="@string/page_zoom_always_show_preference_title" />
+
     <org.chromium.components.browser_ui.settings.ChromeBaseCheckBoxPreference
         android:key="force_enable_zoom"
         android:summary="@string/force_enable_zoom_summary"

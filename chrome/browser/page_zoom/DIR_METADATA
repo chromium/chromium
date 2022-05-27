@@ -1,5 +1,0 @@
-monorail: {
-  component: "UI>Accessibility"
-}
-team_email: "chrome-a11y-core@google.com"
-os: ANDROID
