@@ -316,6 +316,8 @@ public class ExternalNavigationHandler {
                 Log.w(TAG, "Bad URI %s", params.getUrl().getSpec(), ex);
                 return OverrideUrlLoadingResult.forNoOverride();
             }
+        } else if (isSupportedWtaiProtocol(params.getUrl())) {
+            targetIntent = parseWtaiMcProtocol(params.getUrl());
         } else {
             targetIntent = new Intent(Intent.ACTION_VIEW);
             targetIntent.setData(Uri.parse(params.getUrl().getSpec()));
@@ -528,23 +530,21 @@ public class ExternalNavigationHandler {
      * If accessing a file URL, ensure that the user has granted the necessary file access
      * to the app.
      */
-    private boolean startFileIntentIfNecessary(ExternalNavigationParams params) {
-        if (params.getUrl().getScheme().equals(UrlConstants.FILE_SCHEME)) {
-            @MimeTypeUtils.Type
-            int mimeType = MimeTypeUtils.getMimeTypeForUrl(params.getUrl());
-            RecordHistogram.recordEnumeratedHistogram(
-                    "Android.Intent.OpenFileType", mimeType, MimeTypeUtils.NUM_MIME_TYPE_ENTRIES);
-            String permissionNeeded = MimeTypeUtils.getPermissionNameForMimeType(mimeType);
+    private boolean handleFileUrlPermissions(ExternalNavigationParams params) {
+        if (!params.getUrl().getScheme().equals(UrlConstants.FILE_SCHEME)) return false;
 
-            if (permissionNeeded == null) return false;
+        @MimeTypeUtils.Type
+        int mimeType = MimeTypeUtils.getMimeTypeForUrl(params.getUrl());
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.Intent.OpenFileType", mimeType, MimeTypeUtils.NUM_MIME_TYPE_ENTRIES);
+        String permissionNeeded = MimeTypeUtils.getPermissionNameForMimeType(mimeType);
 
-            if (shouldRequestFileAccess(params.getUrl(), permissionNeeded)) {
-                startFileIntent(params, permissionNeeded);
-                if (DEBUG) Log.i(TAG, "Requesting filesystem access");
-                return true;
-            }
-        }
-        return false;
+        if (permissionNeeded == null) return false;
+
+        if (!shouldRequestFileAccess(params.getUrl(), permissionNeeded)) return false;
+        requestFilePermissions(params, permissionNeeded);
+        if (DEBUG) Log.i(TAG, "Requesting filesystem access");
+        return true;
     }
 
     /**
@@ -555,7 +555,8 @@ public class ExternalNavigationHandler {
      * @param permissionNeeded The name of the Android permission needed to access the file.
      */
     @VisibleForTesting
-    protected void startFileIntent(ExternalNavigationParams params, String permissionNeeded) {
+    protected void requestFilePermissions(
+            ExternalNavigationParams params, String permissionNeeded) {
         PermissionCallback permissionCallback = new PermissionCallback() {
             @Override
             public void onRequestPermissionsResult(String[] permissions, int[] grantResults) {
@@ -731,20 +732,23 @@ public class ExternalNavigationHandler {
         return false;
     }
 
-    private boolean handleWtaiMcProtocol(ExternalNavigationParams params) {
-        if (!params.getUrl().getSpec().startsWith(WTAI_MC_URL_PREFIX)) return false;
-        // wtai://wp/mc;number
-        // number=string(phone-number)
-        String phoneNumber = params.getUrl().getSpec().substring(WTAI_MC_URL_PREFIX.length());
-        startActivity(
-                new Intent(Intent.ACTION_VIEW, Uri.parse(WebView.SCHEME_TEL + phoneNumber)), false);
-        if (DEBUG) Log.i(TAG, "wtai:// link handled");
-        RecordUserAction.record("Android.PhoneIntent");
-        return true;
+    private static boolean isSupportedWtaiProtocol(GURL url) {
+        return url.getSpec().startsWith(WTAI_MC_URL_PREFIX);
     }
 
-    private boolean isUnhandledWtaiProtocol(ExternalNavigationParams params) {
+    private static Intent parseWtaiMcProtocol(GURL url) {
+        assert isSupportedWtaiProtocol(url);
+        // wtai://wp/mc;number
+        // number=string(phone-number)
+        String phoneNumber = url.getSpec().substring(WTAI_MC_URL_PREFIX.length());
+        if (DEBUG) Log.i(TAG, "wtai:// link handled");
+        RecordUserAction.record("Android.PhoneIntent");
+        return new Intent(Intent.ACTION_VIEW, Uri.parse(WebView.SCHEME_TEL + phoneNumber));
+    }
+
+    private static boolean isUnhandledWtaiProtocol(ExternalNavigationParams params) {
         if (!params.getUrl().getSpec().startsWith(WTAI_URL_PREFIX)) return false;
+        if (isSupportedWtaiProtocol(params.getUrl())) return false;
         if (DEBUG) Log.i(TAG, "Unsupported wtai:// link");
         return true;
     }
@@ -1327,9 +1331,18 @@ public class ExternalNavigationHandler {
         // Don't allow external fallback URLs by default.
         canLaunchExternalFallbackResult.set(false);
 
+        if (!maybeSetSmsPackage(targetIntent)) maybeRecordPhoneIntentMetrics(targetIntent);
+
         // http://crbug.com/170925: We need to show the intent picker when we receive an intent from
         // another app that 30x redirects to a YouTube/Google Maps/Play Store/Google+ URL etc.
         boolean incomingIntentRedirect = isIncomingIntentRedirect(params);
+        boolean isExternalProtocol = !UrlUtilities.isAcceptedScheme(params.getUrl());
+
+        GURL intentDataUrl = new GURL(targetIntent.getDataString());
+        // intent: URLs are considered an external protocol, but may still contain a Data URI that
+        // this app does support, and may still end up launching this app.
+        boolean isIntentWithSupportedProtocol = UrlUtilities.hasIntentScheme(params.getUrl())
+                && UrlUtilities.isAcceptedScheme(intentDataUrl);
 
         if (shouldBlockAllExternalAppLaunches(params, incomingIntentRedirect)) {
             return OverrideUrlLoadingResult.forNoOverride();
@@ -1339,20 +1352,9 @@ public class ExternalNavigationHandler {
             return OverrideUrlLoadingResult.forNoOverride();
         }
 
-        GURL intentDataUrl = new GURL(targetIntent.getDataString());
-        boolean isExternalProtocol = !UrlUtilities.isAcceptedScheme(params.getUrl());
-        // intent: URLs are considered an external protocol, but may still contain a Data URI that
-        // this app does support, and may still end up launching this app.
-        boolean isIntentWithSupportedProtocol = UrlUtilities.hasIntentScheme(params.getUrl())
-                && UrlUtilities.isAcceptedScheme(intentDataUrl);
-
-        if (isInternalPdfDownload(isExternalProtocol, params)) {
-            return OverrideUrlLoadingResult.forNoOverride();
-        }
-
         // This check should happen for reloads, navigations, etc..., which is why
         // it occurs before the subsequent blocks.
-        if (startFileIntentIfNecessary(params)) {
+        if (handleFileUrlPermissions(params)) {
             return OverrideUrlLoadingResult.forAsyncAction(
                     OverrideUrlLoadingAsyncActionType.UI_GATING_BROWSER_NAVIGATION);
         }
@@ -1363,35 +1365,7 @@ public class ExternalNavigationHandler {
             return OverrideUrlLoadingResult.forNoOverride();
         }
 
-        int pageTransitionCore = params.getPageTransition() & PageTransition.CORE_MASK;
-        boolean isLink = params.isLinkTransition();
-        boolean isFromIntent = params.isFromIntent();
-        boolean isFormSubmit = pageTransitionCore == PageTransition.FORM_SUBMIT;
-        boolean linkNotFromIntent = isLink && !isFromIntent;
-
-        if (handleCCTRedirectsToInstantApps(params, isExternalProtocol, incomingIntentRedirect)) {
-            return OverrideUrlLoadingResult.forExternalIntent();
-        } else if (redirectShouldStayInApp(params, isExternalProtocol, targetIntent)) {
-            return OverrideUrlLoadingResult.forNoOverride();
-        }
-
-        if (!maybeSetSmsPackage(targetIntent)) maybeRecordPhoneIntentMetrics(targetIntent);
-
-        Intent debugIntent = new Intent(targetIntent);
-        QueryIntentActivitiesSupplier resolvingInfos =
-                new QueryIntentActivitiesSupplier(targetIntent);
-        if (!preferToShowIntentPicker(params, pageTransitionCore, isExternalProtocol, isFormSubmit,
-                    incomingIntentRedirect, isFromIntent, resolvingInfos)) {
-            return OverrideUrlLoadingResult.forNoOverride();
-        }
-
         if (isLinkFromChromeInternalPage(params)) return OverrideUrlLoadingResult.forNoOverride();
-
-        if (handleWtaiMcProtocol(params)) {
-            return OverrideUrlLoadingResult.forExternalIntent();
-        }
-        // TODO: handle other WTAI schemes.
-        if (isUnhandledWtaiProtocol(params)) return OverrideUrlLoadingResult.forNoOverride();
 
         if (hasInternalScheme(params.getUrl(), targetIntent)
                 || hasContentScheme(params.getUrl(), targetIntent)
@@ -1402,6 +1376,34 @@ public class ExternalNavigationHandler {
         if (isYoutubePairingCode(params.getUrl())) return OverrideUrlLoadingResult.forNoOverride();
 
         if (shouldStayInIncognito(params, isExternalProtocol)) {
+            return OverrideUrlLoadingResult.forNoOverride();
+        }
+
+        if (isInternalPdfDownload(isExternalProtocol, params)) {
+            return OverrideUrlLoadingResult.forNoOverride();
+        }
+
+        if (isUnhandledWtaiProtocol(params)) return OverrideUrlLoadingResult.forNoOverride();
+
+        int pageTransitionCore = params.getPageTransition() & PageTransition.CORE_MASK;
+        boolean isLink = params.isLinkTransition();
+        boolean isFromIntent = params.isFromIntent();
+        boolean isFormSubmit = pageTransitionCore == PageTransition.FORM_SUBMIT;
+        boolean linkNotFromIntent = isLink && !isFromIntent;
+
+        if (handleCCTRedirectsToInstantApps(params, isExternalProtocol, incomingIntentRedirect)) {
+            return OverrideUrlLoadingResult.forExternalIntent();
+        }
+
+        if (redirectShouldStayInApp(params, isExternalProtocol, targetIntent)) {
+            return OverrideUrlLoadingResult.forNoOverride();
+        }
+
+        Intent debugIntent = new Intent(targetIntent);
+        QueryIntentActivitiesSupplier resolvingInfos =
+                new QueryIntentActivitiesSupplier(targetIntent);
+        if (!preferToShowIntentPicker(params, pageTransitionCore, isExternalProtocol, isFormSubmit,
+                    incomingIntentRedirect, isFromIntent, resolvingInfos)) {
             return OverrideUrlLoadingResult.forNoOverride();
         }
 

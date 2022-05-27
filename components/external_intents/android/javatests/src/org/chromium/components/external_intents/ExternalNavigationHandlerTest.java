@@ -430,12 +430,6 @@ public class ExternalNavigationHandlerTest {
     @Test
     @SmallTest
     public void testWtai() {
-        // Start the telephone application with the given number.
-        checkUrl("wtai://wp/mc;0123456789")
-                .withIsIncognito(true)
-                .expecting(OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT,
-                        START_OTHER_ACTIVITY | INTENT_SANITIZATION_EXCEPTION);
-
         // These two cases are currently unimplemented.
         checkUrl("wtai://wp/sd;0123456789")
                 .expecting(OverrideUrlLoadingResultType.NO_OVERRIDE,
@@ -2571,7 +2565,7 @@ public class ExternalNavigationHandlerTest {
         public boolean mShouldRequestFileAccess;
         public String mNewUrlAfterClobbering;
         public String mReferrerUrlForClobbering;
-        public boolean mStartFileIntentCalled;
+        public boolean mRequestFilePermissionsCalled;
         public Intent mStartActivityInIncognitoIntent;
         public boolean mStartIncognitoIntentCalled;
         public boolean mCanShowIncognitoDialog;
@@ -2633,8 +2627,9 @@ public class ExternalNavigationHandlerTest {
         }
 
         @Override
-        protected void startFileIntent(ExternalNavigationParams params, String permissionNeeded) {
-            mStartFileIntentCalled = true;
+        protected void requestFilePermissions(
+                ExternalNavigationParams params, String permissionNeeded) {
+            mRequestFilePermissionsCalled = true;
         }
 
         @Override
@@ -3148,7 +3143,7 @@ public class ExternalNavigationHandlerTest {
             Assert.assertEquals(expectStartIncognito, mUrlHandler.mStartIncognitoIntentCalled);
             Assert.assertEquals(expectStartActivity, startActivityCalled);
             Assert.assertEquals(expectStartWebApk, startWebApkCalled);
-            Assert.assertEquals(expectStartFile, mUrlHandler.mStartFileIntentCalled);
+            Assert.assertEquals(expectStartFile, mUrlHandler.mRequestFilePermissionsCalled);
             Assert.assertEquals(expectProxyForIA, mUrlHandler.mCalledWithProxy);
 
             if (startActivityCalled && expectSaneIntent) {
