@@ -12,6 +12,7 @@
 #include "base/guid.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/events/event.h"
 #include "ui/views/animation/bounds_animator.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
@@ -85,6 +86,7 @@ class SavedDeskLibraryView : public views::View, public aura::WindowObserver {
   // views::View:
   void AddedToWidget() override;
   void Layout() override;
+  void OnKeyEvent(ui::KeyEvent* event) override;
   void OnThemeChanged() override;
 
   // aura::WindowObserver:

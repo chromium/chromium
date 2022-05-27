@@ -168,6 +168,8 @@ class SavedDeskLibraryEventHandler : public ui::EventHandler {
     owner_->OnLocatedEvent(event, /*is_touch=*/true);
   }
 
+  void OnKeyEvent(ui::KeyEvent* event) override { owner_->OnKeyEvent(event); }
+
  private:
   SavedDeskLibraryView* const owner_;
 };
@@ -213,8 +215,7 @@ SavedDeskLibraryView::SavedDeskLibraryView() {
   scroll_view_->SetDrawOverflowIndicator(false);
   // Don't paint a background. The overview grid already has one.
   scroll_view_->SetBackgroundColor(absl::nullopt);
-  // Arrow keys are used to select app icons.
-  scroll_view_->SetAllowKeyboardScrolling(false);
+  scroll_view_->SetAllowKeyboardScrolling(true);
 
   // Scroll view will have a gradient mask layer.
   scroll_view_->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
@@ -460,6 +461,34 @@ void SavedDeskLibraryView::Layout() {
 
   scroll_view_->SetBoundsRect({0, 0, width(), height()});
   scroll_view_gradient_helper_->UpdateGradientZone();
+}
+
+void SavedDeskLibraryView::OnKeyEvent(ui::KeyEvent* event) {
+  bool is_scrolling_event;
+  switch (event->key_code()) {
+    case ui::VKEY_HOME:
+    case ui::VKEY_END:
+      is_scrolling_event = true;
+      // Do not process if home/end key are for text editing.
+      for (SavedDeskGridView* grid_view : grid_views_) {
+        if (grid_view->IsTemplateNameBeingModified()) {
+          is_scrolling_event = false;
+          break;
+        }
+      }
+      break;
+    case ui::VKEY_PRIOR:
+    case ui::VKEY_NEXT:
+      is_scrolling_event = true;
+      break;
+    default:
+      // Ignore all other key events as arrow keys are used for moving
+      // highlight.
+      is_scrolling_event = false;
+      break;
+  }
+  if (is_scrolling_event)
+    scroll_view_->vertical_scroll_bar()->OnKeyEvent(event);
 }
 
 void SavedDeskLibraryView::OnThemeChanged() {

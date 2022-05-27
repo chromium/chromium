@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <array>
 #include <string>
 
 #include "ash/accessibility/test_accessibility_controller_client.h"
@@ -73,6 +74,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -3797,6 +3799,38 @@ TEST_F(SavedDeskTest, ScrollWithHighlightChange) {
     EXPECT_TRUE(item_view->name_view()->IsViewHighlighted());
     EXPECT_EQ(item_view->name_view()->GetPreferredSize(),
               item_view->name_view()->GetVisibleBounds().size());
+  }
+}
+
+// Tests that the scroll bar works with the keyboard.
+TEST_F(SavedDeskTest, ScrollWithKeyboard) {
+  // Add 6 `kTemplate` entries and 6 `kSaveAndRecall` entries.
+  for (size_t i = 1; i <= 6; i++) {
+    AddEntry(base::GUID::GenerateRandomV4(),
+             "desk_template " + base::NumberToString(i), base::Time::Now(),
+             DeskTemplateType::kTemplate);
+    AddEntry(base::GUID::GenerateRandomV4(),
+             "saved_desk " + base::NumberToString(i), base::Time::Now(),
+             DeskTemplateType::kSaveAndRecall);
+  }
+
+  OpenOverviewAndShowTemplatesGrid();
+
+  // Press keys to scroll through the whole library page, and verify the scroll
+  // position.
+  std::array<ui::KeyboardCode, 4> keys = {ui::VKEY_END, ui::VKEY_HOME,
+                                          ui::VKEY_NEXT, ui::VKEY_PRIOR};
+  SavedDeskLibraryView* library_view =
+      GetOverviewGridList()[0]->GetSavedDeskLibraryView();
+  SavedDeskLibraryViewTestApi test_api(library_view);
+  int scroll_position =
+      test_api.scroll_view()->vertical_scroll_bar()->GetPosition();
+  for (ui::KeyboardCode key : keys) {
+    SendKey(key);
+    int new_scroll_position =
+        test_api.scroll_view()->vertical_scroll_bar()->GetPosition();
+    EXPECT_NE(scroll_position, new_scroll_position);
+    scroll_position = new_scroll_position;
   }
 }
 
