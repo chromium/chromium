@@ -11,6 +11,8 @@
 
 #include "base/check.h"
 #include "base/no_destructor.h"
+#include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "ui/gl/gl_display.h"
 #include "ui/gl/gl_export.h"
 #include "ui/gl/gpu_preference.h"
@@ -41,6 +43,7 @@ class GL_EXPORT GLDisplayManager {
   GLDisplayManager& operator=(const GLDisplayManager&) = delete;
 
   GLDisplayPlatform* GetDisplay(uint64_t system_device_id) {
+    base::AutoLock auto_lock(lock_);
     for (const auto& display : displays_) {
       if (display->system_device_id() == system_device_id) {
         return display.get();
@@ -82,7 +85,9 @@ class GL_EXPORT GLDisplayManager {
   GLDisplayManager() = default;
   virtual ~GLDisplayManager() = default;
 
-  std::vector<std::unique_ptr<GLDisplayPlatform>> displays_;
+  mutable base::Lock lock_;
+  std::vector<std::unique_ptr<GLDisplayPlatform>> displays_ GUARDED_BY(lock_);
+
   std::map<GpuPreference, uint64_t> gpu_preference_map_;
 };
 
