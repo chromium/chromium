@@ -6214,25 +6214,6 @@
             ]
         }
     ],
-    "PasswordAddCredentialManuallyInDesktop": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20211214",
-                    "enable_features": [
-                        "SupportForAddPasswordsInSettings"
-                    ]
-                }
-            ]
-        }
-    ],
     "PasswordChangeAndroid": [
         {
             "platforms": [
