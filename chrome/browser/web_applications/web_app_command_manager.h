@@ -79,10 +79,6 @@ class WebAppCommandManager {
 
   void AwaitAllCommandsCompleteForTesting();
 
-  bool has_web_contents_for_testing() const {
-    return shared_web_contents_.get();
-  }
-
  protected:
   friend class WebAppCommand;
 

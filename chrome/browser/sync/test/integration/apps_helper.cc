@@ -39,23 +39,17 @@ std::string CreateFakeAppName(int index) {
 
 std::unique_ptr<web_app::WebAppTestInstallObserver>
 SetupSyncInstallObserverForProfile(Profile* profile) {
-  auto apps_to_be_installed = web_app::WebAppProvider::GetForTest(profile)
-                                  ->install_manager()
-                                  .GetEnqueuedInstallAppIdsForTesting();
-
   auto apps_to_be_sync_installed = web_app::WebAppProvider::GetForTest(profile)
-                                       ->registrar()
-                                       .GetAppsFromSyncAndPendingInstallation();
+                                       ->install_manager()
+                                       .GetEnqueuedInstallAppIdsForTesting();
 
-  apps_to_be_installed.insert(apps_to_be_sync_installed.begin(),
-                              apps_to_be_sync_installed.end());
-
-  if (apps_to_be_installed.empty())
+  if (apps_to_be_sync_installed.empty()) {
     return nullptr;
+  }
 
   auto install_observer =
       std::make_unique<web_app::WebAppTestInstallObserver>(profile);
-  install_observer->BeginListening(apps_to_be_installed);
+  install_observer->BeginListening(apps_to_be_sync_installed);
   return install_observer;
 }
 
