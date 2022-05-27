@@ -39,18 +39,6 @@ MediaStreamDevicePermissionContext::MediaStreamDevicePermissionContext(
 
 MediaStreamDevicePermissionContext::~MediaStreamDevicePermissionContext() {}
 
-void MediaStreamDevicePermissionContext::DecidePermission(
-    content::WebContents* web_contents,
-    const permissions::PermissionRequestID& id,
-    const GURL& requesting_origin,
-    const GURL& embedding_origin,
-    bool user_gesture,
-    permissions::BrowserPermissionCallback callback) {
-  permissions::PermissionContextBase::DecidePermission(
-      web_contents, id, requesting_origin, embedding_origin, user_gesture,
-      std::move(callback));
-}
-
 ContentSetting MediaStreamDevicePermissionContext::GetPermissionStatusInternal(
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin,

@@ -42,8 +42,7 @@ class NfcPermissionContext : public PermissionContextBase {
       const GURL& requesting_origin,
       const GURL& embedding_origin) const override;
 #endif
-  void DecidePermission(content::WebContents* web_contents,
-                        const PermissionRequestID& id,
+  void DecidePermission(const PermissionRequestID& id,
                         const GURL& requesting_origin,
                         const GURL& embedding_origin,
                         bool user_gesture,

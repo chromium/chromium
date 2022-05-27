@@ -49,7 +49,6 @@ GeolocationPermissionContextExtensions::
 }
 
 bool GeolocationPermissionContextExtensions::DecidePermission(
-    content::WebContents* web_contents,
     const permissions::PermissionRequestID& request_id,
     const GURL& requesting_frame,
     bool user_gesture,
@@ -57,6 +56,13 @@ bool GeolocationPermissionContextExtensions::DecidePermission(
     bool* permission_set,
     bool* new_permission) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+
+  content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(
+      request_id.render_process_id(), request_id.render_frame_id());
+
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(rfh);
+
   GURL requesting_frame_origin = requesting_frame.DeprecatedGetOriginAsURL();
 
   extensions::WebViewPermissionHelper* web_view_permission_helper =

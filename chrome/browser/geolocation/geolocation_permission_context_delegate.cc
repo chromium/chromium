@@ -21,7 +21,6 @@ GeolocationPermissionContextDelegate::~GeolocationPermissionContextDelegate() =
     default;
 
 bool GeolocationPermissionContextDelegate::DecidePermission(
-    content::WebContents* web_contents,
     const permissions::PermissionRequestID& id,
     const GURL& requesting_origin,
     bool user_gesture,
@@ -31,9 +30,9 @@ bool GeolocationPermissionContextDelegate::DecidePermission(
 
   bool permission_set;
   bool new_permission;
-  if (extensions_context_.DecidePermission(web_contents, id, requesting_origin,
-                                           user_gesture, callback,
-                                           &permission_set, &new_permission)) {
+  if (extensions_context_.DecidePermission(id, requesting_origin, user_gesture,
+                                           callback, &permission_set,
+                                           &new_permission)) {
     DCHECK_EQ(!!*callback, permission_set);
     if (permission_set) {
       content::RenderFrameHost* const render_frame_host =

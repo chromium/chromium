@@ -88,8 +88,7 @@ class PermissionContextBase : public KeyedService,
 
   // |callback| is called upon resolution of the request, but not if a prompt
   // is shown and ignored.
-  virtual void RequestPermission(content::WebContents* web_contents,
-                                 const PermissionRequestID& id,
+  virtual void RequestPermission(const PermissionRequestID& id,
                                  const GURL& requesting_frame,
                                  bool user_gesture,
                                  BrowserPermissionCallback callback);
@@ -134,8 +133,7 @@ class PermissionContextBase : public KeyedService,
 
   // Called if generic checks (existing content setting, embargo, etc.) fail to
   // resolve a permission request. The default implementation prompts the user.
-  virtual void DecidePermission(content::WebContents* web_contents,
-                                const PermissionRequestID& id,
+  virtual void DecidePermission(const PermissionRequestID& id,
                                 const GURL& requesting_origin,
                                 const GURL& embedding_origin,
                                 bool user_gesture,

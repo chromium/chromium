@@ -28,7 +28,6 @@ GeolocationPermissionContext::GeolocationPermissionContext(
 GeolocationPermissionContext::~GeolocationPermissionContext() = default;
 
 void GeolocationPermissionContext::DecidePermission(
-    content::WebContents* web_contents,
     const PermissionRequestID& id,
     const GURL& requesting_origin,
     const GURL& embedding_origin,
@@ -36,10 +35,10 @@ void GeolocationPermissionContext::DecidePermission(
     BrowserPermissionCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (!delegate_->DecidePermission(web_contents, id, requesting_origin,
-                                   user_gesture, &callback, this)) {
+  if (!delegate_->DecidePermission(id, requesting_origin, user_gesture,
+                                   &callback, this)) {
     DCHECK(callback);
-    PermissionContextBase::DecidePermission(web_contents, id, requesting_origin,
+    PermissionContextBase::DecidePermission(id, requesting_origin,
                                             embedding_origin, user_gesture,
                                             std::move(callback));
   }
