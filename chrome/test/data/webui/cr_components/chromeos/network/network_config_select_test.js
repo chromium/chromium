@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/strings.m.js';
-// #import 'chrome://resources/cr_components/chromeos/network/network_config_select.m.js';
+import 'chrome://os-settings/strings.m.js';
+import 'chrome://resources/cr_components/chromeos/network/network_config_select.m.js';
 
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// clang-format on
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 suite('NetworkConfigSelectTest', function() {
   /** @type {!NetworkConfigSelect|undefined} */
@@ -17,7 +15,7 @@ suite('NetworkConfigSelectTest', function() {
     configSelect = document.createElement('network-config-select');
     configSelect.oncPrefix = 'Cellular.ActivationState';
     document.body.appendChild(configSelect);
-    Polymer.dom.flush();
+    flush();
   });
 
   test('Item enabled state', function() {
@@ -32,7 +30,7 @@ suite('NetworkConfigSelectTest', function() {
 
     // Add a non-cert item.
     configSelect.items = ['Activated'];
-    Polymer.dom.flush();
+    flush();
 
     const optionEl = configSelect.$$('option');
     assertTrue(!!optionEl);
@@ -48,7 +46,7 @@ suite('NetworkConfigSelectTest', function() {
     configSelect.items = [
       {deviceWide: true, hash: 'hash', issuedBy: 'me'}
     ];
-    Polymer.dom.flush();
+    flush();
 
     optionEnabled = !optionEl.disabled;
     assertTrue(optionEnabled);
@@ -57,7 +55,7 @@ suite('NetworkConfigSelectTest', function() {
     configSelect.items = [
       {deviceWide: true, hash: null, issuedBy: 'me'}
     ];
-    Polymer.dom.flush();
+    flush();
     optionEnabled = !optionEl.disabled;
     assertFalse(optionEnabled);
 
@@ -65,7 +63,7 @@ suite('NetworkConfigSelectTest', function() {
     configSelect.items = [
       {deviceWide: true, hash: null, issuedBy: 'me'}
     ];
-    Polymer.dom.flush();
+    flush();
     optionEnabled = !optionEl.disabled;
     assertFalse(optionEnabled);
 
@@ -75,7 +73,7 @@ suite('NetworkConfigSelectTest', function() {
     configSelect.items = [
       {deviceWide: true, hash: 'hash', issuedBy: 'me'}
     ];
-    Polymer.dom.flush();
+    flush();
     optionEnabled = !optionEl.disabled;
     assertTrue(optionEnabled);
 
@@ -83,7 +81,7 @@ suite('NetworkConfigSelectTest', function() {
     configSelect.items = [
       {deviceWide: false, hash: 'hash', issuedBy: 'me'}
     ];
-    Polymer.dom.flush();
+    flush();
     optionEnabled = !optionEl.disabled;
     assertFalse(optionEnabled);
   });

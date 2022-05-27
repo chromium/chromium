@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/strings.m.js';
-// #import 'chrome://resources/cr_components/chromeos/network/network_ip_config.m.js';
+import 'chrome://os-settings/strings.m.js';
+import 'chrome://resources/cr_components/chromeos/network/network_ip_config.m.js';
 
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
-// clang-format on
+import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 suite('NetworkIpConfigTest', function() {
   /** @type {!NetworkIpConfig|undefined} */
@@ -17,7 +15,7 @@ suite('NetworkIpConfigTest', function() {
   setup(function() {
     ipConfig = document.createElement('network-ip-config');
     document.body.appendChild(ipConfig);
-    Polymer.dom.flush();
+    flush();
   });
 
   test('Enabled', function() {
@@ -31,7 +29,7 @@ suite('NetworkIpConfigTest', function() {
       },
       type: mojom.NetworkType.kWiFi,
     };
-    Polymer.dom.flush();
+    flush();
     assertFalse(ipConfig.$$('#autoConfigIpToggle').disabled);
   });
 
@@ -44,7 +42,7 @@ suite('NetworkIpConfigTest', function() {
     ipConfig.managedProperties = {
       ipAddressConfigType: null,
     };
-    Polymer.dom.flush();
+    flush();
     assertFalse(ipConfig.$$('#autoConfigIpToggle').disabled);
 
     // ipAddressConfigType policy is not enforced (kNone).
@@ -54,7 +52,7 @@ suite('NetworkIpConfigTest', function() {
         policySource: mojom.PolicySource.kNone,
       },
     };
-    Polymer.dom.flush();
+    flush();
     assertFalse(ipConfig.$$('#autoConfigIpToggle').disabled);
 
     // ipAddressConfigType policy is enforced.
@@ -64,7 +62,7 @@ suite('NetworkIpConfigTest', function() {
         policySource: mojom.PolicySource.kUserPolicyEnforced,
       },
     };
-    Polymer.dom.flush();
+    flush();
     assertTrue(ipConfig.$$('#autoConfigIpToggle').disabled);
   });
 
@@ -84,7 +82,7 @@ suite('NetworkIpConfigTest', function() {
       connectionState: mojom.ConnectionStateType.kNotConnected,
       type: mojom.NetworkType.kWiFi,
     };
-    Polymer.dom.flush();
+    flush();
 
     const autoConfigIpToggle = ipConfig.$$('#autoConfigIpToggle');
     const propertyList = ipConfig.$$('network-property-list-mojo');
@@ -105,14 +103,14 @@ suite('NetworkIpConfigTest', function() {
     const properties = OncMojo.getDefaultManagedProperties(
         mojom.NetworkType.kCellular, 'cellular');
     ipConfig.managedProperties = properties;
-    Polymer.dom.flush();
+    flush();
 
     assertFalse(!!getAutoConfig());
 
     const wifi = OncMojo.getDefaultManagedProperties(
         chromeos.networkConfig.mojom.NetworkType.kWiFi, 'someguid', '');
     ipConfig.managedProperties = wifi;
-    Polymer.dom.flush();
+    flush();
 
     assertTrue(!!getAutoConfig());
   });

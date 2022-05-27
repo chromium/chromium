@@ -2,15 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/strings.m.js';
-// #import 'chrome://resources/cr_components/chromeos/network/sim_lock_dialogs.m.js';
+import 'chrome://os-settings/strings.m.js';
+import 'chrome://resources/cr_components/chromeos/network/sim_lock_dialogs.m.js';
 
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {FakeNetworkConfig} from 'chrome://test/chromeos/fake_network_config_mojom.js';
-// #import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
-// #import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
-// clang-format on
+import {MojoInterfaceProviderImpl} from 'chrome://resources/cr_components/chromeos/network/mojo_interface_provider.m.js';
+import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {FakeNetworkConfig} from 'chrome://test/chromeos/fake_network_config_mojom.js';
 
 suite('NetworkSimLockDialogsTest', function() {
   let simLockDialog;
@@ -21,17 +19,16 @@ suite('NetworkSimLockDialogsTest', function() {
 
   setup(function() {
     networkConfigRemote_ = new FakeNetworkConfig();
-    network_config.MojoInterfaceProviderImpl.getInstance().remote_ =
-        networkConfigRemote_;
+    MojoInterfaceProviderImpl.getInstance().remote_ = networkConfigRemote_;
 
     simLockDialog = document.createElement('sim-lock-dialogs');
     simLockDialog.deviceState = {};
     document.body.appendChild(simLockDialog);
-    Polymer.dom.flush();
+    flush();
   });
 
   async function flushAsync() {
-    Polymer.dom.flush();
+    flush();
     // Use setTimeout to wait for the next macrotask.
     return new Promise(resolve => setTimeout(resolve));
   }

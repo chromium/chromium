@@ -2,19 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/strings.m.js';
-// #import 'chrome://resources/cr_components/chromeos/network/network_proxy.m.js';
-//
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// clang-format on
+import 'chrome://os-settings/strings.m.js';
+import 'chrome://resources/cr_components/chromeos/network/network_proxy.m.js';
+
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 suite('NetworkProxyTest', function() {
   /** @type {!NetworkProxy|undefined} */
   let netProxy;
 
   function flushAsync() {
-    Polymer.dom.flush();
+    flush();
     // Use setTimeout to wait for the next macrotask.
     return new Promise(resolve => setTimeout(resolve));
   }
@@ -22,7 +20,7 @@ suite('NetworkProxyTest', function() {
   setup(function() {
     netProxy = document.createElement('network-proxy');
     document.body.appendChild(netProxy);
-    Polymer.dom.flush();
+    flush();
   });
 
   test('Proxy select option change fires proxy-change event', function(done) {

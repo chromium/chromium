@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/strings.m.js';
-// #import 'chrome://resources/cr_components/chromeos/network/network_proxy_input.m.js';
-//
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// clang-format on
+import 'chrome://os-settings/strings.m.js';
+import 'chrome://resources/cr_components/chromeos/network/network_proxy_input.m.js';
+
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 suite('NetworkProxyInputTest', function() {
   /** @type {!NetworkProxyInput|undefined} */
@@ -16,7 +14,7 @@ suite('NetworkProxyInputTest', function() {
   setup(function() {
     proxyInput = document.createElement('network-proxy-input');
     document.body.appendChild(proxyInput);
-    Polymer.dom.flush();
+    flush();
   });
 
   test('Editable inputs', function() {
@@ -25,7 +23,7 @@ suite('NetworkProxyInputTest', function() {
     assertTrue(proxyInput.$$('#port').readonly);
 
     proxyInput.editable = true;
-    Polymer.dom.flush();
+    flush();
 
     assertFalse(proxyInput.$$('#host').readonly);
     assertFalse(proxyInput.$$('#port').readonly);

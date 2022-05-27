@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/strings.m.js';
-// #import 'chrome://resources/cr_components/chromeos/network/network_choose_mobile.m.js';
+import 'chrome://os-settings/strings.m.js';
+import 'chrome://resources/cr_components/chromeos/network/network_choose_mobile.m.js';
 
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// clang-format on
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 suite('NetworkChooseMobileTest', function() {
   /** @type {!NetworkChooseMobile|undefined} */
@@ -25,7 +23,7 @@ suite('NetworkChooseMobileTest', function() {
       }
     };
     document.body.appendChild(chooseMobile);
-    Polymer.dom.flush();
+    flush();
   });
 
   test('Scan button enabled state', function() {
@@ -44,7 +42,7 @@ suite('NetworkChooseMobileTest', function() {
     chooseMobile.deviceState = {
       scanning: false
     };
-    Polymer.dom.flush();
+    flush();
 
     // Scan button is enabled.
     const isScanEnabled = !scanButton.disabled;
@@ -54,7 +52,7 @@ suite('NetworkChooseMobileTest', function() {
     chooseMobile.deviceState = {
       scanning: true
     };
-    Polymer.dom.flush();
+    flush();
 
     // Scan button is disabled while the device is currently scanning.
     assertTrue(scanButton.disabled);
@@ -74,7 +72,7 @@ suite('NetworkChooseMobileTest', function() {
           cellular: {}
         }
       };
-      Polymer.dom.flush();
+      flush();
 
       assertTrue(scanButton.disabled);
     }
@@ -93,7 +91,7 @@ suite('NetworkChooseMobileTest', function() {
       }
     };
     chooseMobile.deviceState = {scanning: false};
-    Polymer.dom.flush();
+    flush();
 
     const scanButton = chooseMobile.$$('cr-button');
     const select = chooseMobile.$$('select');

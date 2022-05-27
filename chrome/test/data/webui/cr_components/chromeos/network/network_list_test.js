@@ -2,20 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://os-settings/strings.m.js';
-// #import 'chrome://resources/cr_components/chromeos/network/network_list.m.js';
+import 'chrome://os-settings/strings.m.js';
+import 'chrome://resources/cr_components/chromeos/network/network_list.m.js';
+import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+import 'chrome://resources/mojo/services/network/public/mojom/ip_address.mojom-lite.js';
+import 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-lite.js';
+import 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-lite.js';
+import 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-lite.js';
 
-// #import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-// #import 'chrome://resources/mojo/services/network/public/mojom/ip_address.mojom-lite.js';
-// #import 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-lite.js';
-// #import 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-lite.js';
-// #import 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-lite.js';
-
-// #import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
-// clang-format on
+import {OncMojo} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 suite('NetworkListTest', function() {
   /** @type {!NetworkList|undefined} */
@@ -32,7 +29,7 @@ suite('NetworkListTest', function() {
     networkList.style.height = '100%';
     networkList.style.width = '100%';
     document.body.appendChild(networkList);
-    Polymer.dom.flush();
+    flush();
   });
 
   test('focus() focuses the first item', function() {
@@ -41,7 +38,7 @@ suite('NetworkListTest', function() {
       OncMojo.getDefaultNetworkState(mojom.NetworkType.kWiFi, 'wifi'),
     ];
     networkList.networks = testNetworks;
-    Polymer.dom.flush();
+    flush();
 
     // No items are focused initially.
     const items = networkList.shadowRoot.querySelectorAll('network-list-item');

@@ -2,11 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://resources/cr_components/chromeos/network/network_select.m.js';
+import 'chrome://resources/cr_components/chromeos/network/network_select.m.js';
 
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// clang-format on
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 suite('NetworkSelectTest', function() {
   /** @type {!NetworkSelect|undefined} */
@@ -17,10 +15,10 @@ suite('NetworkSelectTest', function() {
     // imports have finished loading before initiating any tests. The Polymer 3
     // version of the test does not use the OOBE host so this line should not
     // execute.
-    /* #ignore */ await cr.ui.Oobe.waitForOobeToLoad();
+    // await cr.ui.Oobe.waitForOobeToLoad();
     networkSelect = document.createElement('network-select');
     document.body.appendChild(networkSelect);
-    Polymer.dom.flush();
+    flush();
   });
 
   test('Scan progress visibility', function() {
@@ -30,7 +28,7 @@ suite('NetworkSelectTest', function() {
     assertFalse(networkSelect.showScanProgress);
 
     networkSelect.showScanProgress = true;
-    Polymer.dom.flush();
+    flush();
 
     paperProgress = networkSelect.$$('paper-progress');
     assertTrue(!!paperProgress);
@@ -43,12 +41,12 @@ suite('NetworkSelectTest', function() {
 
     // Setting |enableWifiScans| to false should clear the scheduled scans.
     networkSelect.enableWifiScans = false;
-    Polymer.dom.flush();
+    flush();
     assertTrue(networkSelect.scanIntervalId_ === null);
 
     // Setting |enableWifiScans| back to true should re-schedule them.
     networkSelect.enableWifiScans = true;
-    Polymer.dom.flush();
+    flush();
     assertTrue(networkSelect.scanIntervalId_ !== null);
   });
 });

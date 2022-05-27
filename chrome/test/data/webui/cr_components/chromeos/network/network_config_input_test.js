@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://resources/cr_components/chromeos/network/network_config_input.m.js';
+import 'chrome://resources/cr_components/chromeos/network/network_config_input.m.js';
 
-// #import {keyEventOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
-// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// clang-format on
+import {keyEventOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 suite('NetworkConfigInputTest', function() {
   /** @type {!NetworkConfigInput|undefined} */
@@ -16,7 +14,7 @@ suite('NetworkConfigInputTest', function() {
   setup(function() {
     configInput = document.createElement('network-config-input');
     document.body.appendChild(configInput);
-    Polymer.dom.flush();
+    flush();
   });
 
   test('Enter key propagates up enter event', function(done) {
@@ -27,7 +25,7 @@ suite('NetworkConfigInputTest', function() {
 
     // Simulate pressing enter on the input element.
     const inputEl = configInput.$$('cr-input');
-    MockInteractions.keyEventOn(
+    keyEventOn(
         inputEl, 'keypress', /* keyCode */ 13, /* modifiers */ undefined,
         'Enter');
   });
