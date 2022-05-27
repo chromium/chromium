@@ -423,6 +423,13 @@ public class StripLayoutHelperManager implements SceneOverlay, PauseResumeWithNa
         return getActiveStripLayoutHelper().getNewTabButton();
     }
 
+    /**
+     * @return The touch target offset to be applied to the new tab button.
+     */
+    public float getNewTabBtnTouchTargetOffset() {
+        return getActiveStripLayoutHelper().getNewTabButtonTouchTargetOffset();
+    }
+
     public CompositorButton getModelSelectorButton() {
         return mModelSelectorButton;
     }

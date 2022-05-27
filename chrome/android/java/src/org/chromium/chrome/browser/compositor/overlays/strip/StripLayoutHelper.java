@@ -99,7 +99,8 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
     private static final float NEW_TAB_BUTTON_CLICK_SLOP_DP = 12.f;
     private static final float NEW_TAB_BUTTON_WIDTH_DP = 24.f;
     private static final float NEW_TAB_BUTTON_HEIGHT_DP = 24.f;
-    private static final float NEW_TAB_BUTTON_PADDING_DP = 12.f;
+    private static final float NEW_TAB_BUTTON_PADDING_DP = 24.f;
+    private static final float NEW_TAB_BUTTON_TOUCH_TARGET_OFFSET = 12.f;
     static final float FADE_FULL_OPACITY_THRESHOLD_DP = 24.f;
     private static final float TAB_WIDTH_SMALL = 108.f;
 
@@ -293,6 +294,14 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
      */
     public TintedCompositorButton getNewTabButton() {
         return mNewTabButton;
+    }
+
+    /**
+     * @return The touch target offset to be applied to the new tab button.
+     */
+    public float getNewTabButtonTouchTargetOffset() {
+        boolean isRtl = LocalizationUtils.isLayoutRtl();
+        return isRtl ? NEW_TAB_BUTTON_TOUCH_TARGET_OFFSET : -NEW_TAB_BUTTON_TOUCH_TARGET_OFFSET;
     }
 
     /**
@@ -1396,8 +1405,9 @@ public class StripLayoutHelper implements StripLayoutTab.StripLayoutTabDelegate 
         }
 
         // 1. Get offset from strip stacker.
-        float offset = mStripStacker.computeNewTabButtonOffset(mStripTabs,
-                mTabOverlapWidth, mLeftMargin, mRightMargin, mWidth, mNewTabButtonWidth);
+        float offset = mStripStacker.computeNewTabButtonOffset(mStripTabs, mTabOverlapWidth,
+                mLeftMargin, mRightMargin, mWidth, mNewTabButtonWidth,
+                NEW_TAB_BUTTON_TOUCH_TARGET_OFFSET);
 
         // 2. Hide the new tab button if it's not visible on the screen.
         boolean isRtl = LocalizationUtils.isLayoutRtl();

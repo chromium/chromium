@@ -25,6 +25,8 @@ import org.chromium.chrome.browser.compositor.layouts.components.CompositorButto
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton.CompositorOnClickHandler;
 import org.chromium.chrome.browser.compositor.layouts.components.TintedCompositorButton;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabLoadTracker.TabLoadTrackerCallback;
+import org.chromium.chrome.browser.flags.CachedFeatureFlags;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.layouts.animation.FloatProperty;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
@@ -119,6 +121,7 @@ public class StripLayoutTab implements VirtualView {
 
     // Close button width
     private static final int CLOSE_BUTTON_WIDTH_DP = 36;
+    private static final int CLOSE_BUTTON_WIDTH_SCROLLING_STRIP_DP = 48;
 
     private int mId = Tab.INVALID_TAB_ID;
 
@@ -613,26 +616,32 @@ public class StripLayoutTab implements VirtualView {
     }
 
     private RectF getCloseRect() {
+        boolean tabStripImprovementsEnabled =
+                CachedFeatureFlags.isEnabled(ChromeFeatureList.TAB_STRIP_IMPROVEMENTS);
+        int closeButtonWidth = tabStripImprovementsEnabled ? CLOSE_BUTTON_WIDTH_SCROLLING_STRIP_DP
+                                                           : CLOSE_BUTTON_WIDTH_DP;
         if (!LocalizationUtils.isLayoutRtl()) {
-            mClosePlacement.left = getWidth() - CLOSE_BUTTON_WIDTH_DP;
-            mClosePlacement.right = mClosePlacement.left + CLOSE_BUTTON_WIDTH_DP;
+            mClosePlacement.left = getWidth() - closeButtonWidth;
+            mClosePlacement.right = mClosePlacement.left + closeButtonWidth;
         } else {
             mClosePlacement.left = 0;
-            mClosePlacement.right = CLOSE_BUTTON_WIDTH_DP;
+            mClosePlacement.right = closeButtonWidth;
         }
 
         mClosePlacement.top = 0;
         mClosePlacement.bottom = getHeight();
 
         float xOffset = 0;
-        ResourceManager manager = mRenderHost.getResourceManager();
-        if (manager != null) {
-            LayoutResource resource =
-                    manager.getResource(AndroidResourceType.STATIC, getResourceId());
-            if (resource != null) {
-                xOffset = LocalizationUtils.isLayoutRtl()
-                        ? resource.getPadding().left
-                        : -(resource.getBitmapSize().width() - resource.getPadding().right);
+        if (!tabStripImprovementsEnabled) {
+            ResourceManager manager = mRenderHost.getResourceManager();
+            if (manager != null) {
+                LayoutResource resource =
+                        manager.getResource(AndroidResourceType.STATIC, getResourceId());
+                if (resource != null) {
+                    xOffset = LocalizationUtils.isLayoutRtl()
+                            ? resource.getPadding().left
+                            : -(resource.getBitmapSize().width() - resource.getPadding().right);
+                }
             }
         }
 

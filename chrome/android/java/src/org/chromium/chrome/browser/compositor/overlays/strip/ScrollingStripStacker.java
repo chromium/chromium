@@ -28,16 +28,16 @@ public class ScrollingStripStacker extends StripStacker {
     }
 
     @Override
-    public float computeNewTabButtonOffset(StripLayoutTab[] indexOrderedTabs,
-            float tabOverlapWidth, float stripLeftMargin, float stripRightMargin, float stripWidth,
-            float newTabButtonWidth) {
+    public float computeNewTabButtonOffset(StripLayoutTab[] indexOrderedTabs, float tabOverlapWidth,
+            float stripLeftMargin, float stripRightMargin, float stripWidth, float buttonWidth,
+            float touchTargetOffset) {
         if (CachedFeatureFlags.isEnabled(ChromeFeatureList.TAB_STRIP_IMPROVEMENTS)) {
             return super.computeNewTabButtonOffset(indexOrderedTabs, tabOverlapWidth,
-                    stripLeftMargin, stripRightMargin, stripWidth, newTabButtonWidth);
+                    stripLeftMargin, stripRightMargin, stripWidth, buttonWidth, touchTargetOffset);
         }
         return LocalizationUtils.isLayoutRtl()
                 ? computeNewTabButtonOffsetRtl(indexOrderedTabs, tabOverlapWidth, stripRightMargin,
-                        stripWidth, newTabButtonWidth)
+                        stripWidth, buttonWidth)
                 : computeNewTabButtonOffsetLtr(indexOrderedTabs, tabOverlapWidth, stripLeftMargin);
     }
 
