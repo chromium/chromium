@@ -46,10 +46,7 @@ namespace blink {
 // Legacy grid expands out auto-repeaters, so it has a lower cap than GridNG.
 // Note that this actually allows a [-999,999] range.
 const int kLegacyGridMaxTracks = 1000;
-// GridNG's cap can be higher than 100k tracks. What would prevent us from
-// having an extremely large cap (say, INT_MAX - 1) is rendering tracks but
-// being unable to query their computed style.
-const int kGridMaxTracks = 100000;
+const int kGridMaxTracks = INT_MAX - 1;
 
 // A span in a single direction (either rows or columns). Note that |start_line|
 // and |end_line| are grid lines' indexes.
