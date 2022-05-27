@@ -629,6 +629,15 @@
       default: false,
       valid_type: "bool",
     },
+
+    // - valid_for_keyframe: true
+    //
+    // Whether the property can be used in @keyframes.
+    // https://www.w3.org/TR/css-animations-1/#typedef-keyframe-block
+    valid_for_keyframe: {
+      default: true,
+      valid_type: "bool",
+    },
   },
 
   // Members in the data objects should appear in the same order as in the
@@ -648,6 +657,7 @@
       separator: ",",
       valid_for_marker: true,
       is_animation_property: true,
+      valid_for_keyframe: false,
     },
     {
       name: "animation-direction",
@@ -662,6 +672,7 @@
       separator: ",",
       valid_for_marker: true,
       is_animation_property: true,
+      valid_for_keyframe: false,
     },
     {
       name: "animation-duration",
@@ -675,6 +686,7 @@
       separator: ",",
       valid_for_marker: true,
       is_animation_property: true,
+      valid_for_keyframe: false,
     },
     {
       name: "animation-fill-mode",
@@ -688,6 +700,7 @@
       separator: ",",
       valid_for_marker: true,
       is_animation_property: true,
+      valid_for_keyframe: false,
     },
     {
       name: "animation-iteration-count",
@@ -703,6 +716,7 @@
       separator: ",",
       valid_for_marker: true,
       is_animation_property: true,
+      valid_for_keyframe: false,
     },
     {
       name: "animation-name",
@@ -717,6 +731,7 @@
       valid_for_marker: true,
       tree_scoped_value: true,
       is_animation_property: true,
+      valid_for_keyframe: false,
     },
     {
       name: "animation-play-state",
@@ -730,6 +745,7 @@
       separator: ",",
       valid_for_marker: true,
       is_animation_property: true,
+      valid_for_keyframe: false,
     },
     {
       name: "animation-timeline",
@@ -6226,6 +6242,7 @@
         "animation-timeline"
       ],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      valid_for_keyframe: false,
     },
     {
       name: "background",

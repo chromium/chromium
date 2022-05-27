@@ -72,6 +72,7 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
   bool IsValidForCanvasFormattedTextRun() const {
     return flags_ & kValidForCanvasFormattedTextRun;
   }
+  bool IsValidForKeyframe() const { return flags_ & kValidForKeyframe; }
   bool IsSurrogate() const { return flags_ & kSurrogate; }
   bool AffectsFont() const { return flags_ & kAffectsFont; }
   bool IsBackground() const { return flags_ & kBackground; }
@@ -188,6 +189,8 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
     kOverlapping = 1 << 28,
     // See legacy_overlapping in css_properties.json5.
     kLegacyOverlapping = 1 << 29,
+    // See valid_for_keyframes in css_properties.json5
+    kValidForKeyframe = 1 << 30,
   };
 
   constexpr CSSProperty(CSSPropertyID property_id,

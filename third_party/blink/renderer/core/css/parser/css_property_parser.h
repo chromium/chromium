@@ -66,7 +66,9 @@ class CORE_EXPORT CSSPropertyParser {
                     HeapVector<CSSPropertyValue, 64>*);
 
   // TODO(timloh): Rename once the CSSParserValue-based parseValue is removed
-  bool ParseValueStart(CSSPropertyID unresolved_property, bool important);
+  bool ParseValueStart(CSSPropertyID unresolved_property,
+                       StyleRule::RuleType rule_type,
+                       bool important);
   bool ConsumeCSSWideKeyword(CSSPropertyID unresolved_property, bool important);
 
   bool ParseViewportDescriptor(CSSPropertyID prop_id, bool important);

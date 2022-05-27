@@ -45,6 +45,9 @@ enum CSSParserMode : uint8_t {
   // CSSOM modifications don't treat them as style rules.
   kCSSViewportRuleMode,
   kCSSFontFaceRuleMode,
+  // @keyframes rules are specially tagged in CSSPropertyValueSet so CSSOM
+  // modifications don't allow setting animation-* in their keyframes.
+  kCSSKeyframeRuleMode,
   // User agent stylesheets are parsed in standards mode but also allows
   // internal properties and values.
   kUASheetMode,

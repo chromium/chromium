@@ -96,6 +96,20 @@ StyleRuleBase::LayerName ConsumeCascadeLayerName(CSSParserTokenRange& range) {
   return name;
 }
 
+StyleRule::RuleType RuleTypeForMutableDeclaration(
+    MutableCSSPropertyValueSet* declaration) {
+  switch (declaration->CssParserMode()) {
+    case kCSSViewportRuleMode:
+      return StyleRule::kViewport;
+    case kCSSFontFaceRuleMode:
+      return StyleRule::kFontFace;
+    case kCSSKeyframeRuleMode:
+      return StyleRule::kKeyframe;
+    default:
+      return StyleRule::kStyle;
+  }
+}
+
 }  // namespace
 
 CSSParserImpl::CSSParserImpl(const CSSParserContext* context,
@@ -112,11 +126,7 @@ MutableCSSPropertyValueSet::SetResult CSSParserImpl::ParseValue(
     bool important,
     const CSSParserContext* context) {
   STACK_UNINITIALIZED CSSParserImpl parser(context);
-  StyleRule::RuleType rule_type = StyleRule::kStyle;
-  if (declaration->CssParserMode() == kCSSViewportRuleMode)
-    rule_type = StyleRule::kViewport;
-  else if (declaration->CssParserMode() == kCSSFontFaceRuleMode)
-    rule_type = StyleRule::kFontFace;
+  StyleRule::RuleType rule_type = RuleTypeForMutableDeclaration(declaration);
   CSSTokenizer tokenizer(string);
   CSSParserTokenStream stream(tokenizer);
   CSSTokenizedValue tokenized_value = ConsumeValue(stream);
@@ -230,9 +240,7 @@ bool CSSParserImpl::ParseDeclarationList(
     const String& string,
     const CSSParserContext* context) {
   CSSParserImpl parser(context);
-  StyleRule::RuleType rule_type = StyleRule::kStyle;
-  if (declaration->CssParserMode() == kCSSViewportRuleMode)
-    rule_type = StyleRule::kViewport;
+  StyleRule::RuleType rule_type = RuleTypeForMutableDeclaration(declaration);
   CSSTokenizer tokenizer(string);
   CSSParserTokenStream stream(tokenizer);
   parser.ConsumeDeclarationList(stream, rule_type);
@@ -1274,7 +1282,7 @@ StyleRuleKeyframe* CSSParserImpl::ConsumeKeyframeStyleRule(
 
   return MakeGarbageCollected<StyleRuleKeyframe>(
       std::move(key_list),
-      CreateCSSPropertyValueSet(parsed_properties_, context_->Mode()));
+      CreateCSSPropertyValueSet(parsed_properties_, kCSSKeyframeRuleMode));
 }
 
 StyleRule* CSSParserImpl::ConsumeStyleRule(CSSParserTokenStream& stream) {
