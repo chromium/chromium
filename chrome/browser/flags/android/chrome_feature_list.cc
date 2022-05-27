@@ -10,8 +10,11 @@
 
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/no_destructor.h"
+#include "base/strings/string_piece_forward.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/feature_guide/notifications/feature_notification_guide_service.h"
 #include "chrome/browser/flags/android/chrome_session_state.h"
@@ -383,10 +386,19 @@ const base::Feature* const kFeaturesExposedToJava[] = {
 };
 
 const base::Feature* FindFeatureExposedToJava(const std::string& feature_name) {
-  for (const auto* feature : kFeaturesExposedToJava) {
-    if (feature->name == feature_name)
-      return feature;
+  static auto kFeaturesExposedToJavaMap = base::NoDestructor(
+      base::MakeFlatMap<base::StringPiece, const base::Feature*>(
+          kFeaturesExposedToJava, {},
+          [](const base::Feature* a)
+              -> std::pair<base::StringPiece, const base::Feature*> {
+            return std::make_pair(a->name, a);
+          }));
+
+  auto it = kFeaturesExposedToJavaMap->find(base::StringPiece(feature_name));
+  if (it != kFeaturesExposedToJavaMap->end()) {
+    return it->second;
   }
+
   NOTREACHED() << "Queried feature cannot be found in ChromeFeatureList: "
                << feature_name;
   return nullptr;
