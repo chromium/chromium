@@ -82,12 +82,12 @@ FilterSourceStream::SourceType FilterSourceStream::ParseEncodingType(
     const std::string& encoding) {
   if (encoding.empty()) {
     return TYPE_NONE;
-  } else if (base::LowerCaseEqualsASCII(encoding, kBrotli)) {
+  } else if (base::EqualsCaseInsensitiveASCII(encoding, kBrotli)) {
     return TYPE_BROTLI;
-  } else if (base::LowerCaseEqualsASCII(encoding, kDeflate)) {
+  } else if (base::EqualsCaseInsensitiveASCII(encoding, kDeflate)) {
     return TYPE_DEFLATE;
-  } else if (base::LowerCaseEqualsASCII(encoding, kGZip) ||
-             base::LowerCaseEqualsASCII(encoding, kXGZip)) {
+  } else if (base::EqualsCaseInsensitiveASCII(encoding, kGZip) ||
+             base::EqualsCaseInsensitiveASCII(encoding, kXGZip)) {
     return TYPE_GZIP;
   } else {
     return TYPE_UNKNOWN;

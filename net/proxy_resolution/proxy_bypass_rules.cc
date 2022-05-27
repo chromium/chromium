@@ -108,9 +108,9 @@ std::unique_ptr<SchemeHostPortMatcherRule> ParseRule(
 
   // <local> and <-loopback> are special syntax used by WinInet's bypass list
   // -- we allow it on all platforms and interpret it the same way.
-  if (base::LowerCaseEqualsASCII(raw, kBypassSimpleHostnames))
+  if (base::EqualsCaseInsensitiveASCII(raw, kBypassSimpleHostnames))
     return std::make_unique<BypassSimpleHostnamesRule>();
-  if (base::LowerCaseEqualsASCII(raw, kSubtractImplicitBypasses))
+  if (base::EqualsCaseInsensitiveASCII(raw, kSubtractImplicitBypasses))
     return std::make_unique<SubtractImplicitBypassesRule>();
 
   return SchemeHostPortMatcherRule::FromUntrimmedRawString(raw_untrimmed);

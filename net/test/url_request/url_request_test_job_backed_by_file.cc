@@ -156,7 +156,7 @@ URLRequestTestJobBackedByFile::~URLRequestTestJobBackedByFile() = default;
 std::unique_ptr<SourceStream>
 URLRequestTestJobBackedByFile::SetUpSourceStream() {
   std::unique_ptr<SourceStream> source = URLRequestJob::SetUpSourceStream();
-  if (!base::LowerCaseEqualsASCII(file_path_.Extension(), ".svgz"))
+  if (!base::EqualsCaseInsensitiveASCII(file_path_.Extension(), ".svgz"))
     return source;
 
   return GzipSourceStream::Create(std::move(source), SourceStream::TYPE_GZIP);
