@@ -213,8 +213,9 @@ export function shareDataPageTestSuite() {
   /**
    * Test that when when the send button is clicked, an on-continue is fired.
    * Case 4: Do not share email or screenshot.
+   * 4.1) No screenshot and screenshot checkbox is unchecked.
    */
-  test('SendReportDoNotShareEmail', async () => {
+  test('SendReportDoNotShareEmailNoScreenshotUnchecked', async () => {
     await initializePage();
     page.feedbackContext = fakeFeedbackContext;
     // When there is not a screenshot.
@@ -224,28 +225,72 @@ export function shareDataPageTestSuite() {
     // Select the "Don't include email address" option.
     getElement('#userEmailDropDown').value = '';
 
-    let request = (await clickSendAndWait(page)).report;
+    const request = (await clickSendAndWait(page)).report;
 
     assertFalse(!!request.feedbackContext.email);
     assertFalse(request.includeScreenshot);
+  });
+
+  /**
+   * Test that when when the send button is clicked, an on-continue is fired.
+   * Case 4: Do not share email or screenshot.
+   * 4.2) No screenshot and screenshot checkbox is checked.
+   */
+  test('SendReportDoNotShareEmailNoScreenshotChecked', async () => {
+    await initializePage();
+    page.feedbackContext = fakeFeedbackContext;
+    // When there is not a screenshot.
+    page.screenshotUrl = '';
+    assertFalse(!!getElement('#screenshotImage').src);
+
+    // Select the "Don't include email address" option.
+    getElement('#userEmailDropDown').value = '';
 
     // When the checkbox is selected but there is not a screenshot.
     getElement('#screenshotCheckbox').checked = true;
     assertFalse(!!getElement('#screenshotImage').src);
 
-    request = (await clickSendAndWait(page)).report;
+    const request = (await clickSendAndWait(page)).report;
 
     assertFalse(!!request.feedbackContext.email);
     assertFalse(request.includeScreenshot);
+  });
+
+  /**
+   * Test that when when the send button is clicked, an on-continue is fired.
+   * Case 4: Do not share email or screenshot.
+   * 4.3) Has screenshot but screenshot checkbox is unchecked.
+   */
+  test('SendReportDoNotShareEmailHasScreenshotUnchecked', async () => {
+    await initializePage();
+    page.feedbackContext = fakeFeedbackContext;
+
+    // Select the "Don't include email address" option.
+    getElement('#userEmailDropDown').value = '';
 
     // When there is a screenshot but it is not selected.
     page.screenshotUrl = fakeImageUrl;
     assertEquals(fakeImageUrl, getElement('#screenshotImage').src);
     getElement('#screenshotCheckbox').checked = false;
-    request = (await clickSendAndWait(page)).report;
+
+    const request = (await clickSendAndWait(page)).report;
 
     assertFalse(!!request.feedbackContext.email);
     assertFalse(request.includeScreenshot);
+  });
+
+  // Test that the send button will be disabled once clicked.
+  test('DisableSendButtonAfterClick', async () => {
+    await initializePage();
+    page.feedbackContext = fakeFeedbackContext;
+
+    const sendButton = getElement('#buttonSend');
+
+    assertFalse(sendButton.disabled);
+
+    await clickSendAndWait(page);
+
+    assertTrue(sendButton.disabled);
   });
 
   // Test that the screenshot checkbox is disabled when no screenshot.

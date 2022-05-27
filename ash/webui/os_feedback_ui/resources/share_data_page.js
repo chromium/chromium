@@ -81,9 +81,10 @@ export class ShareDataPageElement extends PolymerElement {
    * @protected
    */
   handleSendButtonClicked_(e) {
+    this.getElement_('#buttonSend').disabled = true;
+
     e.stopPropagation();
-    // TODO(xiangdongkong): Disable the button to prevent sending the same
-    // report again.
+
     this.dispatchEvent(new CustomEvent('continue-click', {
       composed: true,
       bubbles: true,
