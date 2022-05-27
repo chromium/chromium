@@ -97,17 +97,17 @@ void RecordNetLogQuicSessionClientStateChanged(
     const absl::optional<WebTransportError>& error) {
   net_log.AddEvent(
       NetLogEventType::QUIC_SESSION_WEBTRANSPORT_CLIENT_STATE_CHANGED, [&] {
-        base::Value dict(base::Value::Type::DICTIONARY);
-        dict.SetStringKey("last_state", WebTransportStateString(last_state));
-        dict.SetStringKey("next_state", WebTransportStateString(next_state));
+        base::Value::Dict dict;
+        dict.Set("last_state", WebTransportStateString(last_state));
+        dict.Set("next_state", WebTransportStateString(next_state));
         if (error.has_value()) {
-          base::Value error_dict(base::Value::Type::DICTIONARY);
-          error_dict.SetIntKey("net_error", error->net_error);
-          error_dict.SetIntKey("quic_error", error->quic_error);
-          error_dict.SetStringKey("details", error->details);
-          dict.SetKey("error", std::move(error_dict));
+          base::Value::Dict error_dict;
+          error_dict.Set("net_error", error->net_error);
+          error_dict.Set("quic_error", error->quic_error);
+          error_dict.Set("details", error->details);
+          dict.Set("error", std::move(error_dict));
         }
-        return dict;
+        return base::Value(std::move(dict));
       });
 }
 
@@ -281,14 +281,13 @@ DedicatedWebTransportHttp3Client::DedicatedWebTransportHttp3Client(
       // requires implementing ProofHandler::OnProofVerifyDetailsAvailable.
       crypto_config_(CreateProofVerifier(isolation_key_, context, parameters),
                      /* session_cache */ nullptr) {
-  net_log_.BeginEvent(NetLogEventType::QUIC_SESSION_WEBTRANSPORT_CLIENT_ALIVE,
-                      [&] {
-                        base::Value dict(base::Value::Type::DICTIONARY);
-                        dict.SetStringKey("url", url.possibly_invalid_spec());
-                        dict.SetStringKey("network_isolation_key",
-                                          isolation_key.ToDebugString());
-                        return dict;
-                      });
+  net_log_.BeginEvent(
+      NetLogEventType::QUIC_SESSION_WEBTRANSPORT_CLIENT_ALIVE, [&] {
+        base::Value::Dict dict;
+        dict.Set("url", url.possibly_invalid_spec());
+        dict.Set("network_isolation_key", isolation_key.ToDebugString());
+        return base::Value(std::move(dict));
+      });
 }
 
 DedicatedWebTransportHttp3Client::~DedicatedWebTransportHttp3Client() {

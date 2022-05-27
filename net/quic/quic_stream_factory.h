@@ -298,7 +298,7 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
   // It sends connection close packet when closing connections.
   void CloseAllSessions(int error, quic::QuicErrorCode quic_error);
 
-  std::unique_ptr<base::Value> QuicStreamFactoryInfoToValue() const;
+  base::Value QuicStreamFactoryInfoToValue() const;
 
   // Delete cached state objects in |crypto_config_|. If |origin_filter| is not
   // null, only objects on matching origins will be deleted.

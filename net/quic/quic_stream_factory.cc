@@ -122,14 +122,14 @@ enum class JobProtocolErrorLocation {
 
 base::Value NetLogQuicStreamFactoryJobParams(
     const QuicStreamFactory::QuicSessionAliasKey* key) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("host", key->server_id().host());
-  dict.SetIntKey("port", key->server_id().port());
-  dict.SetStringKey("privacy_mode", PrivacyModeToDebugString(
-                                        key->session_key().privacy_mode()));
-  dict.SetStringKey("network_isolation_key",
-                    key->session_key().network_isolation_key().ToDebugString());
-  return dict;
+  base::Value::Dict dict;
+  dict.Set("host", key->server_id().host());
+  dict.Set("port", key->server_id().port());
+  dict.Set("privacy_mode",
+           PrivacyModeToDebugString(key->session_key().privacy_mode()));
+  dict.Set("network_isolation_key",
+           key->session_key().network_isolation_key().ToDebugString());
+  return base::Value(std::move(dict));
 }
 
 std::string QuicPlatformNotificationToString(
@@ -1436,9 +1436,8 @@ void QuicStreamFactory::CloseAllSessions(int error,
   DCHECK(all_sessions_.empty());
 }
 
-std::unique_ptr<base::Value> QuicStreamFactory::QuicStreamFactoryInfoToValue()
-    const {
-  std::unique_ptr<base::ListValue> list(new base::ListValue());
+base::Value QuicStreamFactory::QuicStreamFactoryInfoToValue() const {
+  base::Value::List list;
 
   for (auto it = active_sessions_.begin(); it != active_sessions_.end(); ++it) {
     const quic::QuicServerId& server_id = it->first.server_id();
@@ -1452,10 +1451,10 @@ std::unique_ptr<base::Value> QuicStreamFactory::QuicStreamFactoryInfoToValue()
         hosts.insert(HostPortPair(alias_it->server_id().host(),
                                   alias_it->server_id().port()));
       }
-      list->Append(session->GetInfoAsValue(hosts));
+      list.Append(session->GetInfoAsValue(hosts));
     }
   }
-  return std::move(list);
+  return base::Value(std::move(list));
 }
 
 void QuicStreamFactory::ClearCachedStatesInCryptoConfig(

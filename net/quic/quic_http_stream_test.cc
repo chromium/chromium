@@ -129,7 +129,7 @@ bool CheckHeader(const base::Value& params,
   if (!params.is_dict()) {
     return false;
   }
-  const base::Value* headers = params.FindListKey("headers");
+  const base::Value::List* headers = params.GetDict().FindList("headers");
   if (!headers) {
     return false;
   }
@@ -137,24 +137,21 @@ bool CheckHeader(const base::Value& params,
   std::string header_prefix = base::StrCat({key, ": "});
   std::string expected_header = base::StrCat({header_prefix, expected_value});
 
-  auto header_list = headers->GetListDeprecated();
-  auto header_it = header_list.begin();
   bool header_found = false;
-  while (header_it != header_list.end()) {
-    if (!header_it->is_string()) {
+  for (const auto& header_value : *headers) {
+    const std::string* header = header_value.GetIfString();
+    if (!header) {
       return false;
     }
-    const std::string& header = header_it->GetString();
-    if (base::StartsWith(header, header_prefix)) {
+    if (base::StartsWith(*header, header_prefix)) {
       if (header_found) {
         return false;
       }
-      if (header != expected_header) {
+      if (*header != expected_header) {
         return false;
       }
       header_found = true;
     }
-    ++header_it;
   }
   return header_found;
 }

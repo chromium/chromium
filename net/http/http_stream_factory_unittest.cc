@@ -1067,10 +1067,10 @@ int GetHandedOutSocketCount(ClientSocketPool* pool) {
 // Return count of distinct QUIC sessions.
 int GetQuicSessionCount(HttpNetworkSession* session) {
   base::Value dict(session->QuicInfoToValue());
-  base::Value* session_list = dict.FindListKey("sessions");
+  base::Value::List* session_list = dict.GetDict().FindList("sessions");
   if (!session_list)
     return -1;
-  return session_list->GetListDeprecated().size();
+  return session_list->size();
 }
 
 TEST_F(HttpStreamFactoryTest, PrivacyModeUsesDifferentSocketPoolGroup) {

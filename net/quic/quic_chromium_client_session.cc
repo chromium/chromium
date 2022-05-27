@@ -187,36 +187,36 @@ void RecordConnectionCloseErrorCode(const quic::QuicConnectionCloseFrame& frame,
 base::Value NetLogQuicMigrationFailureParams(
     quic::QuicConnectionId connection_id,
     base::StringPiece reason) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("connection_id", connection_id.ToString());
-  dict.SetStringKey("reason", reason);
-  return dict;
+  base::Value::Dict dict;
+  dict.Set("connection_id", connection_id.ToString());
+  dict.Set("reason", reason);
+  return base::Value(std::move(dict));
 }
 
 base::Value NetLogQuicMigrationSuccessParams(
     quic::QuicConnectionId connection_id) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("connection_id", connection_id.ToString());
-  return dict;
+  base::Value::Dict dict;
+  dict.Set("connection_id", connection_id.ToString());
+  return base::Value(std::move(dict));
 }
 
 base::Value NetLogProbingResultParams(
     NetworkChangeNotifier::NetworkHandle network,
     const quic::QuicSocketAddress* peer_address,
     bool is_success) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("network", base::NumberToString(network));
-  dict.SetStringKey("peer address", peer_address->ToString());
-  dict.SetBoolKey("is_success", is_success);
-  return dict;
+  base::Value::Dict dict;
+  dict.Set("network", base::NumberToString(network));
+  dict.Set("peer address", peer_address->ToString());
+  dict.Set("is_success", is_success);
+  return base::Value(std::move(dict));
 }
 
 base::Value NetLogAcceptChFrameReceivedParams(
     spdy::AcceptChOriginValuePair entry) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("origin", entry.origin);
-  dict.SetStringKey("accept_ch", entry.value);
-  return dict;
+  base::Value::Dict dict;
+  dict.Set("origin", entry.origin);
+  dict.Set("accept_ch", entry.value);
+  return base::Value(std::move(dict));
 }
 
 // Histogram for recording the different reasons that a QUIC session is unable
@@ -290,22 +290,21 @@ base::Value NetLogQuicClientSessionParams(
     const quic::ParsedQuicVersionVector& supported_versions,
     int cert_verify_flags,
     bool require_confirmation) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("host", session_key->server_id().host());
-  dict.SetIntKey("port", session_key->server_id().port());
-  dict.SetStringKey("privacy_mode",
-                    PrivacyModeToDebugString(session_key->privacy_mode()));
-  dict.SetStringKey("network_isolation_key",
-                    session_key->network_isolation_key().ToDebugString());
-  dict.SetBoolKey("require_confirmation", require_confirmation);
-  dict.SetIntKey("cert_verify_flags", cert_verify_flags);
-  dict.SetStringKey("connection_id", connection_id.ToString());
+  base::Value::Dict dict;
+  dict.Set("host", session_key->server_id().host());
+  dict.Set("port", session_key->server_id().port());
+  dict.Set("privacy_mode",
+           PrivacyModeToDebugString(session_key->privacy_mode()));
+  dict.Set("network_isolation_key",
+           session_key->network_isolation_key().ToDebugString());
+  dict.Set("require_confirmation", require_confirmation);
+  dict.Set("cert_verify_flags", cert_verify_flags);
+  dict.Set("connection_id", connection_id.ToString());
   if (!client_connection_id.IsEmpty()) {
-    dict.SetStringKey("client_connection_id", client_connection_id.ToString());
+    dict.Set("client_connection_id", client_connection_id.ToString());
   }
-  dict.SetStringKey("versions",
-                    ParsedQuicVersionVectorToString(supported_versions));
-  return dict;
+  dict.Set("versions", ParsedQuicVersionVectorToString(supported_versions));
+  return base::Value(std::move(dict));
 }
 
 base::Value NetLogQuicPushPromiseReceivedParams(
@@ -3278,44 +3277,43 @@ void QuicChromiumClientSession::HistogramAndLogMigrationSuccess(
 
 base::Value QuicChromiumClientSession::GetInfoAsValue(
     const std::set<HostPortPair>& aliases) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("version",
-                    ParsedQuicVersionToString(connection()->version()));
-  dict.SetIntKey("open_streams", GetNumActiveStreams());
+  base::Value::Dict dict;
+  dict.Set("version", ParsedQuicVersionToString(connection()->version()));
+  dict.Set("open_streams", static_cast<int>(GetNumActiveStreams()));
 
-  std::vector<base::Value> stream_list;
+  base::Value::List stream_list;
   auto* stream_list_ptr = &stream_list;
 
   PerformActionOnActiveStreams([stream_list_ptr](quic::QuicStream* stream) {
-    stream_list_ptr->emplace_back(base::NumberToString(stream->id()));
+    stream_list_ptr->Append(base::NumberToString(stream->id()));
     return true;
   });
 
-  dict.SetKey("active_streams", base::Value(std::move(stream_list)));
+  dict.Set("active_streams", std::move(stream_list));
 
-  dict.SetIntKey("total_streams", num_total_streams_);
-  dict.SetStringKey("peer_address", peer_address().ToString());
-  dict.SetStringKey("network_isolation_key",
-                    session_key_.network_isolation_key().ToDebugString());
-  dict.SetStringKey("connection_id", connection_id().ToString());
+  dict.Set("total_streams", static_cast<int>(num_total_streams_));
+  dict.Set("peer_address", peer_address().ToString());
+  dict.Set("network_isolation_key",
+           session_key_.network_isolation_key().ToDebugString());
+  dict.Set("connection_id", connection_id().ToString());
   if (!connection()->client_connection_id().IsEmpty()) {
-    dict.SetStringKey("client_connection_id",
-                      connection()->client_connection_id().ToString());
+    dict.Set("client_connection_id",
+             connection()->client_connection_id().ToString());
   }
-  dict.SetBoolKey("connected", connection()->connected());
+  dict.Set("connected", connection()->connected());
   const quic::QuicConnectionStats& stats = connection()->GetStats();
-  dict.SetIntKey("packets_sent", stats.packets_sent);
-  dict.SetIntKey("packets_received", stats.packets_received);
-  dict.SetIntKey("packets_lost", stats.packets_lost);
+  dict.Set("packets_sent", static_cast<int>(stats.packets_sent));
+  dict.Set("packets_received", static_cast<int>(stats.packets_received));
+  dict.Set("packets_lost", static_cast<int>(stats.packets_lost));
   SSLInfo ssl_info;
 
-  std::vector<base::Value> alias_list;
+  base::Value::List alias_list;
   for (const auto& alias : aliases) {
-    alias_list.emplace_back(alias.ToString());
+    alias_list.Append(alias.ToString());
   }
-  dict.SetKey("aliases", base::Value(std::move(alias_list)));
+  dict.Set("aliases", std::move(alias_list));
 
-  return dict;
+  return base::Value(std::move(dict));
 }
 
 bool QuicChromiumClientSession::gquic_zero_rtt_disabled() const {

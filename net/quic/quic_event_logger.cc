@@ -18,11 +18,11 @@ namespace {
 base::Value NetLogQuicPacketParams(const quic::QuicSocketAddress& self_address,
                                    const quic::QuicSocketAddress& peer_address,
                                    size_t packet_size) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("self_address", self_address.ToString());
-  dict.SetStringKey("peer_address", peer_address.ToString());
-  dict.SetIntKey("size", packet_size);
-  return dict;
+  base::Value::Dict dict;
+  dict.Set("self_address", self_address.ToString());
+  dict.Set("peer_address", peer_address.ToString());
+  dict.Set("size", static_cast<int>(packet_size));
+  return base::Value(std::move(dict));
 }
 
 base::Value NetLogQuicPacketSentParams(quic::QuicPacketNumber packet_number,
@@ -30,34 +30,33 @@ base::Value NetLogQuicPacketSentParams(quic::QuicPacketNumber packet_number,
                                        quic::TransmissionType transmission_type,
                                        quic::EncryptionLevel encryption_level,
                                        quic::QuicTime sent_time) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("transmission_type",
-                    quic::TransmissionTypeToString(transmission_type));
-  dict.SetKey("packet_number", NetLogNumberValue(packet_number.ToUint64()));
-  dict.SetIntKey("size", packet_length);
-  dict.SetKey("sent_time_us", NetLogNumberValue(sent_time.ToDebuggingValue()));
-  dict.SetStringKey("encryption_level",
-                    quic::EncryptionLevelToString(encryption_level));
-  return dict;
+  base::Value::Dict dict;
+  dict.Set("transmission_type",
+           quic::TransmissionTypeToString(transmission_type));
+  dict.Set("packet_number", NetLogNumberValue(packet_number.ToUint64()));
+  dict.Set("size", packet_length);
+  dict.Set("sent_time_us", NetLogNumberValue(sent_time.ToDebuggingValue()));
+  dict.Set("encryption_level", quic::EncryptionLevelToString(encryption_level));
+  return base::Value(std::move(dict));
 }
 
 base::Value NetLogQuicPacketLostParams(quic::QuicPacketNumber packet_number,
                                        quic::TransmissionType transmission_type,
                                        quic::QuicTime detection_time) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("transmission_type",
-                    quic::TransmissionTypeToString(transmission_type));
-  dict.SetKey("packet_number", NetLogNumberValue(packet_number.ToUint64()));
-  dict.SetKey("detection_time_us",
-              NetLogNumberValue(detection_time.ToDebuggingValue()));
-  return dict;
+  base::Value::Dict dict;
+  dict.Set("transmission_type",
+           quic::TransmissionTypeToString(transmission_type));
+  dict.Set("packet_number", NetLogNumberValue(packet_number.ToUint64()));
+  dict.Set("detection_time_us",
+           NetLogNumberValue(detection_time.ToDebuggingValue()));
+  return base::Value(std::move(dict));
 }
 
 base::Value NetLogQuicDuplicatePacketParams(
     quic::QuicPacketNumber packet_number) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetKey("packet_number", NetLogNumberValue(packet_number.ToUint64()));
-  return dict;
+  base::Value::Dict dict;
+  dict.Set("packet_number", NetLogNumberValue(packet_number.ToUint64()));
+  return base::Value(std::move(dict));
 }
 
 base::Value NetLogReceivedQuicPacketHeaderParams(
@@ -65,72 +64,69 @@ base::Value NetLogReceivedQuicPacketHeaderParams(
     const quic::ParsedQuicVersion& session_version,
     const quic::QuicConnectionId& connection_id,
     const quic::QuicConnectionId& client_connection_id) {
-  base::Value dict(base::Value::Type::DICTIONARY);
+  base::Value::Dict dict;
   quic::ParsedQuicVersion version = session_version;
   if (header.version_flag &&
       header.version != quic::ParsedQuicVersion::Unsupported()) {
     version = header.version;
     if (version != session_version) {
-      dict.SetStringKey("version", quic::ParsedQuicVersionToString(version));
+      dict.Set("version", quic::ParsedQuicVersionToString(version));
     }
   }
-  dict.SetStringKey("connection_id", connection_id.ToString());
+  dict.Set("connection_id", connection_id.ToString());
   if (!client_connection_id.IsEmpty()) {
-    dict.SetStringKey("client_connection_id", client_connection_id.ToString());
+    dict.Set("client_connection_id", client_connection_id.ToString());
   }
   if (version.HasIetfInvariantHeader()) {
     if (header.destination_connection_id_included ==
             quic::CONNECTION_ID_PRESENT &&
         header.destination_connection_id != client_connection_id &&
         !header.destination_connection_id.IsEmpty()) {
-      dict.SetStringKey("destination_connection_id",
-                        header.destination_connection_id.ToString());
+      dict.Set("destination_connection_id",
+               header.destination_connection_id.ToString());
     }
     if (header.source_connection_id_included == quic::CONNECTION_ID_PRESENT &&
         header.source_connection_id != connection_id &&
         !header.source_connection_id.IsEmpty()) {
-      dict.SetStringKey("source_connection_id",
-                        header.source_connection_id.ToString());
+      dict.Set("source_connection_id", header.source_connection_id.ToString());
     }
   } else {
     if (header.destination_connection_id_included ==
             quic::CONNECTION_ID_PRESENT &&
         header.destination_connection_id != connection_id &&
         !header.destination_connection_id.IsEmpty()) {
-      dict.SetStringKey("destination_connection_id",
-                        header.destination_connection_id.ToString());
+      dict.Set("destination_connection_id",
+               header.destination_connection_id.ToString());
     }
-    dict.SetIntKey("reset_flag", header.reset_flag);
-    dict.SetIntKey("version_flag", header.version_flag);
+    dict.Set("reset_flag", header.reset_flag);
+    dict.Set("version_flag", header.version_flag);
   }
-  dict.SetKey("packet_number",
-              NetLogNumberValue(header.packet_number.ToUint64()));
-  dict.SetStringKey("header_format",
-                    quic::PacketHeaderFormatToString(header.form));
+  dict.Set("packet_number", NetLogNumberValue(header.packet_number.ToUint64()));
+  dict.Set("header_format", quic::PacketHeaderFormatToString(header.form));
   if (header.form == quic::IETF_QUIC_LONG_HEADER_PACKET) {
-    dict.SetStringKey("long_header_type", quic::QuicLongHeaderTypeToString(
-                                              header.long_packet_type));
+    dict.Set("long_header_type",
+             quic::QuicLongHeaderTypeToString(header.long_packet_type));
   }
-  return dict;
+  return base::Value(std::move(dict));
 }
 
 base::Value NetLogQuicStreamFrameParams(const quic::QuicStreamFrame& frame) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetIntKey("stream_id", frame.stream_id);
-  dict.SetBoolKey("fin", frame.fin);
-  dict.SetKey("offset", NetLogNumberValue(frame.offset));
-  dict.SetIntKey("length", frame.data_length);
-  return dict;
+  base::Value::Dict dict;
+  dict.Set("stream_id", static_cast<int>(frame.stream_id));
+  dict.Set("fin", frame.fin);
+  dict.Set("offset", NetLogNumberValue(frame.offset));
+  dict.Set("length", frame.data_length);
+  return base::Value(std::move(dict));
 }
 
 base::Value NetLogQuicAckFrameParams(const quic::QuicAckFrame* frame) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetKey("largest_observed",
-              NetLogNumberValue(frame->largest_acked.ToUint64()));
-  dict.SetKey("delta_time_largest_observed_us",
-              NetLogNumberValue(frame->ack_delay_time.ToMicroseconds()));
+  base::Value::Dict dict;
+  dict.Set("largest_observed",
+           NetLogNumberValue(frame->largest_acked.ToUint64()));
+  dict.Set("delta_time_largest_observed_us",
+           NetLogNumberValue(frame->ack_delay_time.ToMicroseconds()));
 
-  base::Value missing(base::Value::Type::LIST);
+  base::Value::List missing;
   quic::QuicPacketNumber smallest_observed;
   if (!frame->packets.Empty()) {
     // V34 and above express acked packets, but only print
@@ -145,38 +141,38 @@ base::Value NetLogQuicAckFrameParams(const quic::QuicAckFrame* frame) {
   } else {
     smallest_observed = frame->largest_acked;
   }
-  dict.SetKey("smallest_observed",
-              NetLogNumberValue(smallest_observed.ToUint64()));
-  dict.SetKey("missing_packets", std::move(missing));
+  dict.Set("smallest_observed",
+           NetLogNumberValue(smallest_observed.ToUint64()));
+  dict.Set("missing_packets", std::move(missing));
 
-  base::Value received(base::Value::Type::LIST);
-  const quic::PacketTimeVector& received_times = frame->received_packet_times;
-  for (auto it = received_times.begin(); it != received_times.end(); ++it) {
-    base::Value info(base::Value::Type::DICTIONARY);
-    info.SetKey("packet_number", NetLogNumberValue(it->first.ToUint64()));
-    info.SetKey("received", NetLogNumberValue(it->second.ToDebuggingValue()));
+  base::Value::List received;
+  for (const auto& packet_time : frame->received_packet_times) {
+    base::Value::Dict info;
+    info.Set("packet_number", NetLogNumberValue(packet_time.first.ToUint64()));
+    info.Set("received",
+             NetLogNumberValue(packet_time.second.ToDebuggingValue()));
     received.Append(std::move(info));
   }
-  dict.SetKey("received_packet_times", std::move(received));
+  dict.Set("received_packet_times", std::move(received));
 
-  return dict;
+  return base::Value(std::move(dict));
 }
 
 base::Value NetLogQuicRstStreamFrameParams(
     const quic::QuicRstStreamFrame* frame) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetIntKey("stream_id", frame->stream_id);
-  dict.SetIntKey("quic_rst_stream_error", frame->error_code);
-  dict.SetKey("offset", NetLogNumberValue(frame->byte_offset));
-  return dict;
+  base::Value::Dict dict;
+  dict.Set("stream_id", static_cast<int>(frame->stream_id));
+  dict.Set("quic_rst_stream_error", static_cast<int>(frame->error_code));
+  dict.Set("offset", NetLogNumberValue(frame->byte_offset));
+  return base::Value(std::move(dict));
 }
 
 base::Value NetLogQuicConnectionCloseFrameParams(
     const quic::QuicConnectionCloseFrame* frame) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetIntKey("quic_error", frame->quic_error_code);
+  base::Value::Dict dict;
+  dict.Set("quic_error", frame->quic_error_code);
   if (frame->wire_error_code != frame->quic_error_code) {
-    dict.SetIntKey("quic_wire_error", frame->wire_error_code);
+    dict.Set("quic_wire_error", static_cast<int>(frame->wire_error_code));
   }
   std::string close_type;
   switch (frame->close_type) {
@@ -190,110 +186,106 @@ base::Value NetLogQuicConnectionCloseFrameParams(
       close_type = "Application";
       break;
   }
-  dict.SetStringKey("close_type", close_type);
+  dict.Set("close_type", close_type);
   if (frame->transport_close_frame_type != 0) {
-    dict.SetKey("transport_close_frame_type",
-                NetLogNumberValue(frame->transport_close_frame_type));
+    dict.Set("transport_close_frame_type",
+             NetLogNumberValue(frame->transport_close_frame_type));
   }
-  dict.SetStringKey("details", frame->error_details);
-  return dict;
+  dict.Set("details", frame->error_details);
+  return base::Value(std::move(dict));
 }
 
 base::Value NetLogQuicWindowUpdateFrameParams(
     const quic::QuicWindowUpdateFrame& frame) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetIntKey("stream_id", frame.stream_id);
-  dict.SetKey("byte_offset", NetLogNumberValue(frame.max_data));
-  return dict;
+  base::Value::Dict dict;
+  dict.Set("stream_id", static_cast<int>(frame.stream_id));
+  dict.Set("byte_offset", NetLogNumberValue(frame.max_data));
+  return base::Value(std::move(dict));
 }
 
 base::Value NetLogQuicBlockedFrameParams(const quic::QuicBlockedFrame& frame) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetIntKey("stream_id", frame.stream_id);
-  return dict;
+  base::Value::Dict dict;
+  dict.Set("stream_id", static_cast<int>(frame.stream_id));
+  return base::Value(std::move(dict));
 }
 
 base::Value NetLogQuicGoAwayFrameParams(const quic::QuicGoAwayFrame* frame) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetIntKey("quic_error", frame->error_code);
-  dict.SetIntKey("last_good_stream_id", frame->last_good_stream_id);
-  dict.SetStringKey("reason_phrase", frame->reason_phrase);
-  return dict;
+  base::Value::Dict dict;
+  dict.Set("quic_error", frame->error_code);
+  dict.Set("last_good_stream_id", static_cast<int>(frame->last_good_stream_id));
+  dict.Set("reason_phrase", frame->reason_phrase);
+  return base::Value(std::move(dict));
 }
 
 base::Value NetLogQuicStopWaitingFrameParams(
     const quic::QuicStopWaitingFrame* frame) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetKey("least_unacked",
-              NetLogNumberValue(frame->least_unacked.ToUint64()));
-  return dict;
+  base::Value::Dict dict;
+  dict.Set("least_unacked", NetLogNumberValue(frame->least_unacked.ToUint64()));
+  return base::Value(std::move(dict));
 }
 
 base::Value NetLogQuicVersionNegotiationPacketParams(
     const quic::QuicVersionNegotiationPacket* packet) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  base::Value versions(base::Value::Type::LIST);
-  for (auto it = packet->versions.begin(); it != packet->versions.end(); ++it) {
-    versions.Append(ParsedQuicVersionToString(*it));
+  base::Value::Dict dict;
+  base::Value::List versions;
+  for (const auto& version : packet->versions) {
+    versions.Append(ParsedQuicVersionToString(version));
   }
-  dict.SetKey("versions", std::move(versions));
-  return dict;
+  dict.Set("versions", std::move(versions));
+  return base::Value(std::move(dict));
 }
 
 base::Value NetLogQuicPublicResetPacketParams(
     const IPEndPoint& server_hello_address,
     const quic::QuicSocketAddress& public_reset_address) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("server_hello_address", server_hello_address.ToString());
-  dict.SetStringKey("public_reset_address", public_reset_address.ToString());
-  return dict;
+  base::Value::Dict dict;
+  dict.Set("server_hello_address", server_hello_address.ToString());
+  dict.Set("public_reset_address", public_reset_address.ToString());
+  return base::Value(std::move(dict));
 }
 
 base::Value NetLogQuicPathData(const quic::QuicPathFrameBuffer& buffer) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetKey("data", NetLogBinaryValue(buffer));
-  return dict;
+  base::Value::Dict dict;
+  dict.Set("data", NetLogBinaryValue(buffer));
+  return base::Value(std::move(dict));
 }
 
 base::Value NetLogQuicCryptoHandshakeMessageParams(
     const quic::CryptoHandshakeMessage* message) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("quic_crypto_handshake_message", message->DebugString());
-  return dict;
+  base::Value::Dict dict;
+  dict.Set("quic_crypto_handshake_message", message->DebugString());
+  return base::Value(std::move(dict));
 }
 
 base::Value NetLogQuicTransportParametersParams(
     const quic::TransportParameters& transport_parameters) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("quic_transport_parameters",
-                    transport_parameters.ToString());
-  return dict;
+  base::Value::Dict dict;
+  dict.Set("quic_transport_parameters", transport_parameters.ToString());
+  return base::Value(std::move(dict));
 }
 
 base::Value NetLogQuicZeroRttRejectReason(int reason) {
-  base::Value dict(base::Value::Type::DICTIONARY);
+  base::Value::Dict dict;
   const char* reason_detail = SSL_early_data_reason_string(
       static_cast<ssl_early_data_reason_t>(reason));
   if (reason_detail) {
-    dict.SetStringKey("reason", reason_detail);
+    dict.Set("reason", reason_detail);
   } else {
-    dict.SetStringKey("reason",
-                      "Unknown reason " + base::NumberToString(reason));
+    dict.Set("reason", "Unknown reason " + base::NumberToString(reason));
   }
-  return dict;
+  return base::Value(std::move(dict));
 }
 
 base::Value NetLogQuicOnConnectionClosedParams(
     quic::QuicErrorCode error,
     std::string error_details,
     quic::ConnectionCloseSource source) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetIntKey("quic_error", error);
-  dict.SetStringKey("details", error_details);
-  dict.SetBoolKey("from_peer", source == quic::ConnectionCloseSource::FROM_PEER
-                                   ? true
-                                   : false);
-  return dict;
+  base::Value::Dict dict;
+  dict.Set("quic_error", error);
+  dict.Set("details", error_details);
+  dict.Set("from_peer",
+           source == quic::ConnectionCloseSource::FROM_PEER ? true : false);
+  return base::Value(std::move(dict));
 }
 
 base::Value NetLogQuicCertificateVerifiedParams(
@@ -302,77 +294,76 @@ base::Value NetLogQuicCertificateVerifiedParams(
   // More fields could be logged in the future.
   std::vector<std::string> dns_names;
   cert->GetSubjectAltName(&dns_names, nullptr);
-  base::Value dict(base::Value::Type::DICTIONARY);
-  base::Value subjects(base::Value::Type::LIST);
+  base::Value::Dict dict;
+  base::Value::List subjects;
   for (auto& dns_name : dns_names) {
     subjects.Append(std::move(dns_name));
   }
-  dict.SetKey("subjects", std::move(subjects));
-  return dict;
+  dict.Set("subjects", std::move(subjects));
+  return base::Value(std::move(dict));
 }
 
 base::Value NetLogQuicCryptoFrameParams(const quic::QuicCryptoFrame* frame,
                                         bool has_buffer) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("encryption_level",
-                    quic::EncryptionLevelToString(frame->level));
-  dict.SetIntKey("data_length", frame->data_length);
-  dict.SetKey("offset", NetLogNumberValue(frame->offset));
+  base::Value::Dict dict;
+  dict.Set("encryption_level", quic::EncryptionLevelToString(frame->level));
+  dict.Set("data_length", frame->data_length);
+  dict.Set("offset", NetLogNumberValue(frame->offset));
   if (has_buffer) {
-    dict.SetKey("bytes", NetLogBinaryValue(
-                             reinterpret_cast<const void*>(frame->data_buffer),
-                             frame->data_length));
+    dict.Set("bytes", NetLogBinaryValue(
+                          reinterpret_cast<const void*>(frame->data_buffer),
+                          frame->data_length));
   }
-  return dict;
+  return base::Value(std::move(dict));
 }
 
 base::Value NetLogQuicStopSendingFrameParams(
     const quic::QuicStopSendingFrame& frame) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetIntKey("stream_id", frame.stream_id);
-  dict.SetIntKey("quic_rst_stream_error", frame.error_code);
-  return dict;
+  base::Value::Dict dict;
+  dict.Set("stream_id", static_cast<int>(frame.stream_id));
+  dict.Set("quic_rst_stream_error", static_cast<int>(frame.error_code));
+  return base::Value(std::move(dict));
 }
 
 base::Value NetLogQuicStreamsBlockedFrameParams(
     const quic::QuicStreamsBlockedFrame& frame) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetIntKey("stream_count", frame.stream_count);
-  dict.SetBoolKey("is_unidirectional", frame.unidirectional);
-  return dict;
+  base::Value::Dict dict;
+  dict.Set("stream_count", static_cast<int>(frame.stream_count));
+  dict.Set("is_unidirectional", frame.unidirectional);
+  return base::Value(std::move(dict));
 }
 
 base::Value NetLogQuicMaxStreamsFrameParams(
     const quic::QuicMaxStreamsFrame& frame) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetIntKey("stream_count", frame.stream_count);
-  dict.SetBoolKey("is_unidirectional", frame.unidirectional);
-  return dict;
+  base::Value::Dict dict;
+  dict.Set("stream_count", static_cast<int>(frame.stream_count));
+  dict.Set("is_unidirectional", frame.unidirectional);
+  return base::Value(std::move(dict));
 }
 
 base::Value NetLogQuicNewConnectionIdFrameParams(
     const quic::QuicNewConnectionIdFrame* frame) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("connection_id", frame->connection_id.ToString());
-  dict.SetKey("sequence_number", NetLogNumberValue(frame->sequence_number));
-  dict.SetKey("retire_prior_to", NetLogNumberValue(frame->retire_prior_to));
-  return dict;
+  base::Value::Dict dict;
+  dict.Set("connection_id", frame->connection_id.ToString());
+  dict.Set("sequence_number", NetLogNumberValue(frame->sequence_number));
+  dict.Set("retire_prior_to", NetLogNumberValue(frame->retire_prior_to));
+  return base::Value(std::move(dict));
 }
 
 base::Value NetLogQuicRetireConnectionIdFrameParams(
     const quic::QuicRetireConnectionIdFrame* frame) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetKey("sequence_number", NetLogNumberValue(frame->sequence_number));
-  return dict;
+  base::Value::Dict dict;
+  dict.Set("sequence_number", NetLogNumberValue(frame->sequence_number));
+  return base::Value(std::move(dict));
 }
 
 base::Value NetLogQuicNewTokenFrameParams(
     const quic::QuicNewTokenFrame* frame) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetKey("token", NetLogBinaryValue(
-                           reinterpret_cast<const void*>(frame->token.data()),
-                           frame->token.length()));
-  return dict;
+  base::Value::Dict dict;
+  dict.Set("token",
+           NetLogBinaryValue(reinterpret_cast<const void*>(frame->token.data()),
+                             frame->token.length()));
+  return base::Value(std::move(dict));
 }
 
 }  // namespace
