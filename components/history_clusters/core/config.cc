@@ -108,6 +108,10 @@ Config::Config() {
       history_clusters::features::kOnDeviceClusteringKeywordFiltering,
       "keyword_filter_on_noisy_visits", keyword_filter_on_noisy_visits);
 
+  keyword_filter_on_search_terms = GetFieldTrialParamByFeatureAsBool(
+      history_clusters::features::kOnDeviceClusteringKeywordFiltering,
+      "keyword_filter_on_search_terms", keyword_filter_on_search_terms);
+
   non_user_visible_debug =
       base::FeatureList::IsEnabled(internal::kNonUserVisibleDebug);
 

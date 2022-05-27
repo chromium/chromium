@@ -99,6 +99,9 @@ struct Config {
   // cluster.
   bool keyword_filter_on_entity_aliases = false;
 
+  // If enabled, adds the search terms of the visits that have them.
+  bool keyword_filter_on_search_terms = false;
+
   // If greater than 0, the max number of aliases to include in keywords. If <=
   // 0, all aliases will be included.
   size_t max_entity_aliases_in_keywords = 0;

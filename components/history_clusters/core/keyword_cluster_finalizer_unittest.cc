@@ -32,6 +32,7 @@ class KeywordClusterFinalizerTest : public ::testing::Test {
     config_.keyword_filter_on_noisy_visits = false;
     config_.keyword_filter_on_categories = false;
     config_.keyword_filter_on_entity_aliases = false;
+    config_.keyword_filter_on_search_terms = false;
     SetConfigForTesting(config_);
   }
 
@@ -55,6 +56,7 @@ TEST_F(KeywordClusterFinalizerTest, IncludesKeywordsBasedOnFeatureParameters) {
       {"github", 1}};
   visit.annotated_visit.content_annotations.model_annotations.categories = {
       {"category", 1}};
+  visit.annotated_visit.content_annotations.search_terms = u"search";
 
   history::ClusterVisit visit2 =
       testing::CreateClusterVisit(testing::CreateDefaultAnnotatedVisit(
@@ -73,6 +75,7 @@ TEST_F(KeywordClusterFinalizerTest, IncludesKeywordsBasedOnFeatureParameters) {
       {"github", 1}, {"otherentity", 1}};
   visit3.annotated_visit.content_annotations.model_annotations.categories = {
       {"category", 1}};
+  visit3.annotated_visit.content_annotations.search_terms = u"search";
 
   history::Cluster cluster;
   cluster.visits = {visit2, visit3};
@@ -91,6 +94,7 @@ class KeywordClusterFinalizerIncludeAllTest
     config_.keyword_filter_on_categories = true;
     config_.keyword_filter_on_entity_aliases = true;
     config_.max_entity_aliases_in_keywords = 1;
+    config_.keyword_filter_on_search_terms = true;
     SetConfigForTesting(config_);
   }
 
@@ -107,6 +111,7 @@ TEST_F(KeywordClusterFinalizerIncludeAllTest,
       {"github", 1}};
   visit.annotated_visit.content_annotations.model_annotations.categories = {
       {"category", 1}};
+  visit.annotated_visit.content_annotations.search_terms = u"search";
 
   history::ClusterVisit visit2 =
       testing::CreateClusterVisit(testing::CreateDefaultAnnotatedVisit(
@@ -125,13 +130,14 @@ TEST_F(KeywordClusterFinalizerIncludeAllTest,
       {"github", 1}, {"otherentity", 1}};
   visit3.annotated_visit.content_annotations.model_annotations.categories = {
       {"category", 1}};
+  visit3.annotated_visit.content_annotations.search_terms = u"search";
 
   history::Cluster cluster;
   cluster.visits = {visit2, visit3};
   FinalizeCluster(cluster);
   EXPECT_THAT(cluster.keywords,
               UnorderedElementsAre(u"github", u"category", u"onlyinnoisyvisit",
-                                   u"otherentity", u"git hub"));
+                                   u"otherentity", u"git hub", u"search"));
 }
 
 }  // namespace

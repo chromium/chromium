@@ -51,6 +51,12 @@ void KeywordClusterFinalizer::FinalizeCluster(history::Cluster& cluster) {
         keywords_set.insert(base::UTF8ToUTF16(category.id));
       }
     }
+
+    if (GetConfig().keyword_filter_on_search_terms &&
+        !visit.annotated_visit.content_annotations.search_terms.empty()) {
+      keywords_set.insert(
+          visit.annotated_visit.content_annotations.search_terms);
+    }
   }
   cluster.keywords =
       std::vector<std::u16string>(keywords_set.begin(), keywords_set.end());
