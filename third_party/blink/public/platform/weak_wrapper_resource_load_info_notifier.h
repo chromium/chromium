@@ -26,6 +26,9 @@ class BLINK_PLATFORM_EXPORT WeakWrapperResourceLoadInfoNotifier
 
   // blink::mojom::ResourceLoadInfoNotifier overrides, these methods should be
   // called from the same thread.
+#if BUILDFLAG(IS_ANDROID)
+  void NotifyUpdateUserGestureCarryoverInfo() override;
+#endif
   void NotifyResourceRedirectReceived(
       const net::RedirectInfo& redirect_info,
       network::mojom::URLResponseHeadPtr redirect_response) override;

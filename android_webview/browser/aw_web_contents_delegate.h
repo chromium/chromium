@@ -72,6 +72,8 @@ class AwWebContentsDelegate
   void ExitFullscreenModeForTab(content::WebContents* web_contents) override;
   bool IsFullscreenForTabOrPending(
       const content::WebContents* web_contents) override;
+  void UpdateUserGestureCarryoverInfo(
+      content::WebContents* web_contents) override;
 
   scoped_refptr<content::FileSelectListener> TakeFileSelectListener();
 

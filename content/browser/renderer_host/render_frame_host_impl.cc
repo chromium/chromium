@@ -5715,6 +5715,16 @@ void RenderFrameHostImpl::SetVirtualKeyboardOverlayPolicy(
   GetPage().set_virtual_keyboard_overlays_content(vk_overlays_content);
 }
 
+#if BUILDFLAG(IS_ANDROID)
+void RenderFrameHostImpl::UpdateUserGestureCarryoverInfo() {
+  // This should not occur for prerenders but may occur for pages in
+  // the BackForwardCache depending on timing.
+  if (!IsActive())
+    return;
+  delegate_->UpdateUserGestureCarryoverInfo();
+}
+#endif
+
 void RenderFrameHostImpl::VisibilityChanged(
     blink::mojom::FrameVisibility visibility) {
   visibility_ = visibility;

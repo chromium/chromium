@@ -102,7 +102,8 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
     }
 
     @Override
-    public boolean shouldIgnoreNavigation(NavigationHandle navigationHandle, GURL escapedUrl) {
+    public boolean shouldIgnoreNavigation(
+            NavigationHandle navigationHandle, GURL escapedUrl, boolean applyUserGestureCarryover) {
         mClient.onNavigationStarted(navigationHandle);
 
         GURL url = escapedUrl;
@@ -132,6 +133,13 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
             assert false;
             return false;
         }
+
+        // Temporarily apply User Gesture Carryover exception for resource requests to the
+        // NavigationHandle.
+        if (applyUserGestureCarryover) {
+            assert !navigationHandle.hasUserGesture();
+            navigationHandle.setUserGestureForCarryover(true);
+        }
         redirectHandler.updateNewUrlLoading(navigationHandle.pageTransition(),
                 navigationHandle.isRedirect(), navigationHandle.hasUserGesture(),
                 lastUserInteractionTime, getLastCommittedEntryIndex(), isInitialNavigation());
@@ -146,6 +154,10 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
         }
 
         mClient.onDecisionReachedForNavigation(navigationHandle, result);
+
+        if (applyUserGestureCarryover) {
+            navigationHandle.setUserGestureForCarryover(false);
+        }
 
         boolean isExternalProtocol = !UrlUtilities.isAcceptedScheme(params.getUrl());
         String protocolType = isExternalProtocol ? "ExternalProtocol" : "InternalProtocol";

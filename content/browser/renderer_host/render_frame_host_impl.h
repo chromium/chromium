@@ -2757,6 +2757,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void OpenURL(blink::mojom::OpenURLParamsPtr params) override;
   void DidStopLoading() override;
 
+#if BUILDFLAG(IS_ANDROID)
+  void UpdateUserGestureCarryoverInfo() override;
+#endif
+
   friend class RenderAccessibilityHost;
   void HandleAXEvents(const ui::AXTreeID& tree_id,
                       mojom::AXUpdatesAndEventsPtr updates_and_events,

@@ -32,6 +32,8 @@ namespace navigation_interception {
 
 namespace {
 
+const int kMaxValidityOfUserGestureCarryoverInSeconds = 10;
+
 const void* const kInterceptNavigationDelegateUserDataKey =
     &kInterceptNavigationDelegateUserDataKey;
 
@@ -117,9 +119,16 @@ bool InterceptNavigationDelegate::ShouldIgnoreNavigation(
   if (jdelegate.is_null())
     return false;
 
+  bool has_user_gesture = navigation_handle->HasUserGesture();
+  bool apply_user_gesture_carryover =
+      !has_user_gesture &&
+      base::TimeTicks::Now() - last_user_gesture_carryover_timestamp_ <=
+          base::Seconds(kMaxValidityOfUserGestureCarryoverInSeconds);
+
   return Java_InterceptNavigationDelegate_shouldIgnoreNavigation(
       env, jdelegate, navigation_handle->GetJavaNavigationHandle(),
-      url::GURLAndroid::FromNativeGURL(env, escaped_url));
+      url::GURLAndroid::FromNativeGURL(env, escaped_url),
+      apply_user_gesture_carryover);
 }
 
 void InterceptNavigationDelegate::HandleExternalProtocolDialog(
@@ -142,6 +151,10 @@ void InterceptNavigationDelegate::HandleExternalProtocolDialog(
       env, jdelegate, url::GURLAndroid::FromNativeGURL(env, escaped_url),
       page_transition, has_user_gesture,
       initiating_origin ? initiating_origin->CreateJavaObject() : nullptr);
+}
+
+void InterceptNavigationDelegate::UpdateLastUserGestureCarryoverTimestamp() {
+  last_user_gesture_carryover_timestamp_ = base::TimeTicks::Now();
 }
 
 }  // namespace navigation_interception

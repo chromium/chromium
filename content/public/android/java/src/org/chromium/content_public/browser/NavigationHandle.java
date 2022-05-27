@@ -36,7 +36,7 @@ public class NavigationHandle {
     private int mHttpStatusCode;
     private final Origin mInitiatorOrigin;
     private final boolean mIsPost;
-    private final boolean mHasUserGesture;
+    private boolean mHasUserGesture;
     private boolean mIsRedirect;
     private final boolean mIsExternalProtocol;
     private final long mNavigationId;
@@ -298,6 +298,14 @@ public class NavigationHandle {
      */
     public boolean isPageActivation() {
         return mIsPageActivation;
+    }
+
+    /**
+     * TODO(https://crbug.com/1310013): This is a hack, restoring M99 Chrome behavior for gesture
+     * carryover on resource requests. To be deleted as soon as a better alternative is agreed upon.
+     */
+    public void setUserGestureForCarryover(boolean hasUserGesture) {
+        mHasUserGesture = hasUserGesture;
     }
 
     @NativeMethods

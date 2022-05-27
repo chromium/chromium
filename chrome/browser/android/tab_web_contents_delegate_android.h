@@ -92,6 +92,8 @@ class TabWebContentsDelegateAndroid
       const GURL& blocked_url,
       const GURL& initiator_url,
       blink::mojom::NavigationBlockedReason reason) override;
+  void UpdateUserGestureCarryoverInfo(
+      content::WebContents* web_contents) override;
   content::PictureInPictureResult EnterPictureInPicture(
       content::WebContents* web_contents) override;
   void ExitPictureInPicture() override;
