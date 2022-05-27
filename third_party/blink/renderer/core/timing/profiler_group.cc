@@ -169,12 +169,11 @@ Profiler* ProfilerGroup::CreateProfiler(ScriptState* script_state,
 
   String profiler_id = NextProfilerId();
 
-  v8::CpuProfilingOptions options(
-      v8::kLeafNodeLineNumbers, init_options.maxBufferSize(),
-      static_cast<int>(sample_interval_us), script_state->GetContext());
-
   v8::CpuProfilingStatus status = cpu_profiler_->StartProfiling(
-      V8String(isolate_, profiler_id), options,
+      V8String(isolate_, profiler_id),
+      v8::CpuProfilingOptions(
+          v8::kLeafNodeLineNumbers, init_options.maxBufferSize(),
+          static_cast<int>(sample_interval_us), script_state->GetContext()),
       std::make_unique<DiscardedSamplesDelegate>(this, profiler_id));
 
   switch (status) {
