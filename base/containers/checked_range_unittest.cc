@@ -10,6 +10,7 @@
 
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
+#include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -233,16 +234,21 @@ TEST(CheckedContiguousRange, Conversions) {
       "");
 }
 
-TEST(CheckedContiguousRange, OutOfBoundsDeath) {
+TEST(CheckedContiguousRangeDeathTest, OutOfBounds) {
   std::vector<int> empty_vector;
   CheckedContiguousRange<std::vector<int>> empty_range(empty_vector);
-  ASSERT_DEATH_IF_SUPPORTED(empty_range[0], "");
-  ASSERT_DEATH_IF_SUPPORTED(empty_range.front(), "");
-  ASSERT_DEATH_IF_SUPPORTED(empty_range.back(), "");
+  EXPECT_CHECK_DEATH(empty_range[0]);
+  EXPECT_CHECK_DEATH(empty_range.front());
+  EXPECT_CHECK_DEATH(empty_range.back());
 
   static constexpr int array[] = {0, 1, 2};
   constexpr CheckedContiguousRange<const int[3]> range(array);
-  ASSERT_DEATH_IF_SUPPORTED(range[3], "");
+  EXPECT_CHECK_DEATH(range[3]);
+
+  CheckedContiguousRange<std::vector<int>> default_range;
+  EXPECT_CHECK_DEATH(default_range[0]);
+  EXPECT_CHECK_DEATH(default_range.front());
+  EXPECT_CHECK_DEATH(default_range.back());
 }
 
 }  // namespace base
