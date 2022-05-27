@@ -3443,9 +3443,6 @@ String AXNodeObject::TextFromDescendants(
     AXObjectSet& visited,
     const AXObject* aria_label_or_description_root,
     bool recursive) const {
-#if defined(AX_FAIL_FAST_BUILD)
-  DCHECK(!is_adding_children_);
-#endif
   if (!CanHaveChildren())
     return recursive ? String() : GetElement()->GetInnerTextWithoutUpdate();
 
@@ -3458,11 +3455,12 @@ String AXNodeObject::TextFromDescendants(
   // included in tree status change), that we do it now, rather than while
   // traversing the children.
   UpdateCachedAttributeValuesIfNeeded();
+
+  const AXObjectVector& children = ChildrenIncludingIgnored();
 #if defined(AX_FAIL_FAST_BUILD)
   base::AutoReset<bool> auto_reset(&is_computing_text_from_descendants_, true);
 #endif
-
-  for (AXObject* child : ChildrenIncludingIgnored()) {
+  for (AXObject* child : children) {
     constexpr size_t kMaxDescendantsForTextAlternativeComputation = 100;
     if (visited.size() > kMaxDescendantsForTextAlternativeComputation)
       break;
@@ -4158,6 +4156,10 @@ void AXNodeObject::AddChildren() {
 #endif
 
 #if defined(AX_FAIL_FAST_BUILD)
+  SANITIZER_CHECK(!is_computing_text_from_descendants_)
+      << "Should not attempt to simultaneously compute text from descendants "
+         "and add children on: "
+      << ToString(true, true);
   SANITIZER_CHECK(!is_adding_children_)
       << " Reentering method on " << GetNode();
   base::AutoReset<bool> reentrancy_protector(&is_adding_children_, true);

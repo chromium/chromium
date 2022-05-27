@@ -4911,11 +4911,12 @@ void AXObject::ClearChildren() const {
   // AccessibilityExposeIgnoredNodes().
 
   // Loop through AXObject children.
+
 #if defined(AX_FAIL_FAST_BUILD)
-  CHECK(!is_adding_children_)
+  SANITIZER_CHECK(!is_adding_children_)
       << "Should not attempt to simultaneously add and clear children on: "
       << ToString(true, true);
-  CHECK(!is_computing_text_from_descendants_)
+  SANITIZER_CHECK(!is_computing_text_from_descendants_)
       << "Should not attempt to simultaneously compute text from descendants "
          "and clear children on: "
       << ToString(true, true);
