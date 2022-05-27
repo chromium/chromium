@@ -44,7 +44,7 @@
     }
   },
   "$build/reclient": {
-    "instance": "goma-foundry-experiments",
+    "instance": "rbe-chromium-trusted-test",
     "metrics_project": "chromium-reclient-metrics"
   },
   "$recipe_engine/resultdb/test_presentation": {

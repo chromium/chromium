@@ -74,7 +74,7 @@ def fyi_reclient_test_builder(
     return fyi_reclient_staging_builder(
         name = name,
         console_view_category = console_view_category,
-        reclient_instance = "goma-foundry-experiments",
+        reclient_instance = "rbe-chromium-trusted-test",
         **kwargs
     )
 
