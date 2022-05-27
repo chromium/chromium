@@ -1346,6 +1346,13 @@ void StyleResolver::ApplyBaseStyle(
       state.StyleRef().SetHasExplicitInheritance();
     }
 
+    // Similarly, if a style went from using viewport units to not,
+    // the flags can stick around in the incremental version. This can cause
+    // invalidations when none are needed, but is otherwise harmless.
+    state.StyleRef().SetViewportUnitFlags(
+        state.StyleRef().ViewportUnitFlags() |
+        incremental_style->ViewportUnitFlags());
+
     DCHECK_EQ(g_null_atom, ComputeBaseComputedStyleDiff(incremental_style.get(),
                                                         *state.Style()));
     // The incremental style must not contain BaseData, otherwise we'd risk
