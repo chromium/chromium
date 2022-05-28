@@ -21,8 +21,21 @@ export class TimeZoneBrowserProxy {
   getTimeZones() {}
 }
 
+/** @type {?TimeZoneBrowserProxy} */
+let instance = null;
+
 /** @implements {TimeZoneBrowserProxy} */
 export class TimeZoneBrowserProxyImpl {
+  /** @return {!TimeZoneBrowserProxy} */
+  static getInstance() {
+    return instance || (instance = new TimeZoneBrowserProxyImpl());
+  }
+
+  /** @param {!TimeZoneBrowserProxy} obj */
+  static setInstance(obj) {
+    instance = obj;
+  }
+
   /** @override */
   showParentAccessForTimeZone() {
     chrome.send('handleShowParentAccessForTimeZone');
@@ -42,17 +55,4 @@ export class TimeZoneBrowserProxyImpl {
   getTimeZones() {
     return sendWithPromise('getTimeZones');
   }
-
-  /** @return {!TimeZoneBrowserProxy} */
-  static getInstance() {
-    return instance || (instance = new TimeZoneBrowserProxyImpl());
-  }
-
-  /** @param {!TimeZoneBrowserProxy} obj */
-  static setInstance(obj) {
-    instance = obj;
-  }
 }
-
-/** @type {?TimeZoneBrowserProxy} */
-let instance = null;

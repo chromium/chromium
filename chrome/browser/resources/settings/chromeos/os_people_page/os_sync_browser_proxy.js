@@ -49,10 +49,23 @@ export class OsSyncBrowserProxy {
   setOsSyncDatatypes(osSyncPrefs) {}
 }
 
+/** @type {?OsSyncBrowserProxy} */
+let instance = null;
+
 /**
  * @implements {OsSyncBrowserProxy}
  */
 export class OsSyncBrowserProxyImpl {
+  /** @return {!OsSyncBrowserProxy} */
+  static getInstance() {
+    return instance || (instance = new OsSyncBrowserProxyImpl());
+  }
+
+  /** @param {!OsSyncBrowserProxy} obj */
+  static setInstance(obj) {
+    instance = obj;
+  }
+
   /** @override */
   didNavigateToOsSyncPage() {
     chrome.send('DidNavigateToOsSyncPage');
@@ -72,17 +85,4 @@ export class OsSyncBrowserProxyImpl {
   setOsSyncDatatypes(osSyncPrefs) {
     return chrome.send('SetOsSyncDatatypes', [osSyncPrefs]);
   }
-
-  /** @return {!OsSyncBrowserProxy} */
-  static getInstance() {
-    return instance || (instance = new OsSyncBrowserProxyImpl());
-  }
-
-  /** @param {!OsSyncBrowserProxy} obj */
-  static setInstance(obj) {
-    instance = obj;
-  }
 }
-
-/** @type {?OsSyncBrowserProxy} */
-let instance = null;

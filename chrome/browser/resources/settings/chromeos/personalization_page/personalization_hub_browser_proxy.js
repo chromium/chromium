@@ -7,15 +7,13 @@ export class PersonalizationHubBrowserProxy {
   openPersonalizationHub() {}
 }
 
+/** @type {?PersonalizationHubBrowserProxy} */
+let instance = null;
+
 /**
  * @implements {PersonalizationHubBrowserProxy}
  */
 export class PersonalizationHubBrowserProxyImpl {
-  /** @override */
-  openPersonalizationHub() {
-    chrome.send('openPersonalizationHub');
-  }
-
   /** @return {!PersonalizationHubBrowserProxy} */
   static getInstance() {
     return instance || (instance = new PersonalizationHubBrowserProxyImpl());
@@ -25,7 +23,9 @@ export class PersonalizationHubBrowserProxyImpl {
   static setInstance(obj) {
     instance = obj;
   }
-}
 
-/** @type {?PersonalizationHubBrowserProxy} */
-let instance = null;
+  /** @override */
+  openPersonalizationHub() {
+    chrome.send('openPersonalizationHub');
+  }
+}

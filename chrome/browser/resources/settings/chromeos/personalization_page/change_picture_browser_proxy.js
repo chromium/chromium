@@ -61,10 +61,23 @@ export class ChangePictureBrowserProxy {
   requestSelectedImage() {}
 }
 
+/** @type {?ChangePictureBrowserProxy} */
+let instance = null;
+
 /**
  * @implements {ChangePictureBrowserProxy}
  */
 export class ChangePictureBrowserProxyImpl {
+  /** @return {!ChangePictureBrowserProxy} */
+  static getInstance() {
+    return instance || (instance = new ChangePictureBrowserProxyImpl());
+  }
+
+  /** @param {!ChangePictureBrowserProxy} obj */
+  static setInstance(obj) {
+    instance = obj;
+  }
+
   /** @override */
   initialize() {
     chrome.send('onChangePicturePageInitialized');
@@ -99,17 +112,4 @@ export class ChangePictureBrowserProxyImpl {
   requestSelectedImage() {
     chrome.send('requestSelectedImage');
   }
-
-  /** @return {!ChangePictureBrowserProxy} */
-  static getInstance() {
-    return instance || (instance = new ChangePictureBrowserProxyImpl());
-  }
-
-  /** @param {!ChangePictureBrowserProxy} obj */
-  static setInstance(obj) {
-    instance = obj;
-  }
 }
-
-/** @type {?ChangePictureBrowserProxy} */
-let instance = null;

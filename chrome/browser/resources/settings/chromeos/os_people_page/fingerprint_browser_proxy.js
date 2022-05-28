@@ -97,10 +97,23 @@ export class FingerprintBrowserProxy {
   fakeScanComplete() {}
 }
 
+/** @type {?FingerprintBrowserProxy} */
+let instance = null;
+
 /**
  * @implements {FingerprintBrowserProxy}
  */
 export class FingerprintBrowserProxyImpl {
+  /** @return {!FingerprintBrowserProxy} */
+  static getInstance() {
+    return instance || (instance = new FingerprintBrowserProxyImpl());
+  }
+
+  /** @param {!FingerprintBrowserProxy} obj */
+  static setInstance(obj) {
+    instance = obj;
+  }
+
   /** @override */
   getFingerprintsList() {
     return sendWithPromise('getFingerprintsList');
@@ -140,17 +153,4 @@ export class FingerprintBrowserProxyImpl {
   fakeScanComplete() {
     chrome.send('fakeScanComplete');
   }
-
-  /** @return {!FingerprintBrowserProxy} */
-  static getInstance() {
-    return instance || (instance = new FingerprintBrowserProxyImpl());
-  }
-
-  /** @param {!FingerprintBrowserProxy} obj */
-  static setInstance(obj) {
-    instance = obj;
-  }
 }
-
-/** @type {?FingerprintBrowserProxy} */
-let instance = null;

@@ -236,10 +236,23 @@ export class DevicePageBrowserProxy {
   openMyFiles() {}
 }
 
+/** @type {?DevicePageBrowserProxy} */
+let instance = null;
+
 /**
  * @implements {DevicePageBrowserProxy}
  */
 export class DevicePageBrowserProxyImpl {
+  /** @return {!DevicePageBrowserProxy} */
+  static getInstance() {
+    return instance || (instance = new DevicePageBrowserProxyImpl());
+  }
+
+  /** @param {!DevicePageBrowserProxy} obj */
+  static setInstance(obj) {
+    instance = obj;
+  }
+
   /** @override */
   initializePointers() {
     chrome.send('initializePointerSettings');
@@ -354,17 +367,4 @@ export class DevicePageBrowserProxyImpl {
   openMyFiles() {
     chrome.send('openMyFiles');
   }
-
-  /** @return {!DevicePageBrowserProxy} */
-  static getInstance() {
-    return instance || (instance = new DevicePageBrowserProxyImpl());
-  }
-
-  /** @param {!DevicePageBrowserProxy} obj */
-  static setInstance(obj) {
-    instance = obj;
-  }
 }
-
-/** @type {?DevicePageBrowserProxy} */
-let instance = null;

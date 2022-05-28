@@ -63,10 +63,23 @@ export class AccountManagerBrowserProxy {
   changeArcAvailability(account, isAvailableInArc) {}
 }
 
+/** @type {?AccountManagerBrowserProxy} */
+let instance = null;
+
 /**
  * @implements {AccountManagerBrowserProxy}
  */
 export class AccountManagerBrowserProxyImpl {
+  /** @return {!AccountManagerBrowserProxy} */
+  static getInstance() {
+    return instance || (instance = new AccountManagerBrowserProxyImpl());
+  }
+
+  /** @param {!AccountManagerBrowserProxy} obj */
+  static setInstance(obj) {
+    instance = obj;
+  }
+
   /** @override */
   getAccounts() {
     return sendWithPromise('getAccounts');
@@ -96,17 +109,4 @@ export class AccountManagerBrowserProxyImpl {
   changeArcAvailability(account, isAvailableInArc) {
     chrome.send('changeArcAvailability', [account, isAvailableInArc]);
   }
-
-  /** @return {!AccountManagerBrowserProxy} */
-  static getInstance() {
-    return instance || (instance = new AccountManagerBrowserProxyImpl());
-  }
-
-  /** @param {!AccountManagerBrowserProxy} obj */
-  static setInstance(obj) {
-    instance = obj;
-  }
 }
-
-/** @type {?AccountManagerBrowserProxy} */
-let instance = null;

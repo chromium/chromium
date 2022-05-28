@@ -50,20 +50,13 @@ export class SearchEnginesBrowserProxy {
   getSearchEnginesList() {}
 }
 
+/** @type {?SearchEnginesBrowserProxy} */
+let instance = null;
+
 /**
  * @implements {SearchEnginesBrowserProxy}
  */
 export class SearchEnginesBrowserProxyImpl {
-  /** @override */
-  setDefaultSearchEngine(modelIndex) {
-    chrome.send('setDefaultSearchEngine', [modelIndex]);
-  }
-
-  /** @override */
-  getSearchEnginesList() {
-    return sendWithPromise('getSearchEnginesList');
-  }
-
   /** @return {!SearchEnginesBrowserProxy} */
   static getInstance() {
     return instance || (instance = new SearchEnginesBrowserProxyImpl());
@@ -73,7 +66,14 @@ export class SearchEnginesBrowserProxyImpl {
   static setInstance(obj) {
     instance = obj;
   }
-}
 
-/** @type {?SearchEnginesBrowserProxy} */
-let instance = null;
+  /** @override */
+  setDefaultSearchEngine(modelIndex) {
+    chrome.send('setDefaultSearchEngine', [modelIndex]);
+  }
+
+  /** @override */
+  getSearchEnginesList() {
+    return sendWithPromise('getSearchEnginesList');
+  }
+}

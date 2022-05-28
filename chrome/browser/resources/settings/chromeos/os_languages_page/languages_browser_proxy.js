@@ -28,10 +28,23 @@ export class LanguagesBrowserProxy {
   getInputMethodPrivate() {}
 }
 
+/** @type {?LanguagesBrowserProxy} */
+let instance = null;
+
 /**
  * @implements {LanguagesBrowserProxy}
  */
 export class LanguagesBrowserProxyImpl {
+  /** @return {!LanguagesBrowserProxy} */
+  static getInstance() {
+    return instance || (instance = new LanguagesBrowserProxyImpl());
+  }
+
+  /** @param {!LanguagesBrowserProxy} obj */
+  static setInstance(obj) {
+    instance = obj;
+  }
+
   /** @override */
   setProspectiveUILanguage(languageCode) {
     chrome.send('setProspectiveUILanguage', [languageCode]);
@@ -52,17 +65,4 @@ export class LanguagesBrowserProxyImpl {
   getInputMethodPrivate() {
     return /** @type {!InputMethodPrivate} */ (chrome.inputMethodPrivate);
   }
-
-  /** @return {!LanguagesBrowserProxy} */
-  static getInstance() {
-    return instance || (instance = new LanguagesBrowserProxyImpl());
-  }
-
-  /** @param {!LanguagesBrowserProxy} obj */
-  static setInstance(obj) {
-    instance = obj;
-  }
 }
-
-/** @type {?LanguagesBrowserProxy} */
-let instance = null;

@@ -22,18 +22,11 @@ export class PluginVmBrowserProxy {
   relaunchPluginVm() {}
 }
 
+/** @type {?PluginVmBrowserProxy} */
+let instance = null;
+
 /** @implements {PluginVmBrowserProxy} */
 export class PluginVmBrowserProxyImpl {
-  /** @override */
-  isRelaunchNeededForNewPermissions() {
-    return sendWithPromise('isRelaunchNeededForNewPermissions');
-  }
-
-  /** @override */
-  relaunchPluginVm() {
-    chrome.send('relaunchPluginVm');
-  }
-
   /** @return {!PluginVmBrowserProxy} */
   static getInstance() {
     return instance || (instance = new PluginVmBrowserProxyImpl());
@@ -43,7 +36,14 @@ export class PluginVmBrowserProxyImpl {
   static setInstance(obj) {
     instance = obj;
   }
-}
 
-/** @type {?PluginVmBrowserProxy} */
-let instance = null;
+  /** @override */
+  isRelaunchNeededForNewPermissions() {
+    return sendWithPromise('isRelaunchNeededForNewPermissions');
+  }
+
+  /** @override */
+  relaunchPluginVm() {
+    chrome.send('relaunchPluginVm');
+  }
+}

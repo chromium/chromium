@@ -39,8 +39,21 @@ export class AmbientModeBrowserProxy {
   setSelectedAlbums(settings) {}
 }
 
+/** @type {?AmbientModeBrowserProxy} */
+let instance = null;
+
 /** @implements {AmbientModeBrowserProxy} */
 export class AmbientModeBrowserProxyImpl {
+  /** @return {!AmbientModeBrowserProxy} */
+  static getInstance() {
+    return instance || (instance = new AmbientModeBrowserProxyImpl());
+  }
+
+  /** @param {!AmbientModeBrowserProxy} obj */
+  static setInstance(obj) {
+    instance = obj;
+  }
+
   /** @override */
   requestSettings() {
     chrome.send('requestSettings');
@@ -60,17 +73,4 @@ export class AmbientModeBrowserProxyImpl {
   setSelectedAlbums(settings) {
     chrome.send('setSelectedAlbums', [settings]);
   }
-
-  /** @return {!AmbientModeBrowserProxy} */
-  static getInstance() {
-    return instance || (instance = new AmbientModeBrowserProxyImpl());
-  }
-
-  /** @param {!AmbientModeBrowserProxy} obj */
-  static setInstance(obj) {
-    instance = obj;
-  }
 }
-
-/** @type {?AmbientModeBrowserProxy} */
-let instance = null;

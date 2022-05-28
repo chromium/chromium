@@ -43,18 +43,11 @@ export class MetricsConsentBrowserProxy {
   updateMetricsConsent(consent) {}
 }
 
+/** @type {?MetricsConsentBrowserProxy} */
+let instance = null;
+
 /** @implements {MetricsConsentBrowserProxy} */
 export class MetricsConsentBrowserProxyImpl {
-  /** @override */
-  getMetricsConsentState() {
-    return sendWithPromise('getMetricsConsentState');
-  }
-
-  /** @override */
-  updateMetricsConsent(consent) {
-    return sendWithPromise('updateMetricsConsent', {consent: consent});
-  }
-
   /** @return {!MetricsConsentBrowserProxy} */
   static getInstance() {
     return instance || (instance = new MetricsConsentBrowserProxyImpl());
@@ -64,7 +57,14 @@ export class MetricsConsentBrowserProxyImpl {
   static setInstance(obj) {
     instance = obj;
   }
-}
 
-/** @type {?MetricsConsentBrowserProxy} */
-let instance = null;
+  /** @override */
+  getMetricsConsentState() {
+    return sendWithPromise('getMetricsConsentState');
+  }
+
+  /** @override */
+  updateMetricsConsent(consent) {
+    return sendWithPromise('updateMetricsConsent', {consent: consent});
+  }
+}

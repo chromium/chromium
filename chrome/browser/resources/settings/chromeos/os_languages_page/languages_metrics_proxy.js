@@ -87,8 +87,21 @@ export class LanguagesMetricsProxy {
   recordShortcutReminderDismissed(value) {}
 }
 
+/** @type {?LanguagesMetricsProxy} */
+let instance = null;
+
 /** @implements {LanguagesMetricsProxy} */
 export class LanguagesMetricsProxyImpl {
+  /** @return {!LanguagesMetricsProxy} */
+  static getInstance() {
+    return instance || (instance = new LanguagesMetricsProxyImpl());
+  }
+
+  /** @param {!LanguagesMetricsProxy} obj */
+  static setInstance(obj) {
+    instance = obj;
+  }
+
   /** @override */
   recordInteraction(interaction) {
     chrome.metricsPrivate.recordEnumerationValue(
@@ -144,17 +157,4 @@ export class LanguagesMetricsProxyImpl {
         'ChromeOS.Settings.Inputs.ShortcutReminderDismissed', value,
         Object.keys(InputsShortcutReminderState).length);
   }
-
-  /** @return {!LanguagesMetricsProxy} */
-  static getInstance() {
-    return instance || (instance = new LanguagesMetricsProxyImpl());
-  }
-
-  /** @param {!LanguagesMetricsProxy} obj */
-  static setInstance(obj) {
-    instance = obj;
-  }
 }
-
-/** @type {?LanguagesMetricsProxy} */
-let instance = null;

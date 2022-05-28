@@ -13,11 +13,10 @@ import {reduceAction} from './reducers.js';
  * the store.
  */
 
-export class AppManagementStore extends Store {
-  constructor() {
-    super(createEmptyState(), reduceAction);
-  }
+/** @type {?AppManagementStore} */
+let instance = null;
 
+export class AppManagementStore extends Store {
   /** @return {!AppManagementStore} */
   static getInstance() {
     return instance || (instance = new AppManagementStore());
@@ -27,7 +26,8 @@ export class AppManagementStore extends Store {
   static setInstance(obj) {
     instance = obj;
   }
-}
 
-/** @type {?AppManagementStore} */
-let instance = null;
+  constructor() {
+    super(createEmptyState(), reduceAction);
+  }
+}

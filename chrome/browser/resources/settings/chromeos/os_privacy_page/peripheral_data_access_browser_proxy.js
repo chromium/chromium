@@ -32,8 +32,21 @@ export class PeripheralDataAccessBrowserProxy {
   getPolicyState() {}
 }
 
+/** @type {?PeripheralDataAccessBrowserProxy} */
+let instance = null;
+
 /** @implements {PeripheralDataAccessBrowserProxy} */
 export class PeripheralDataAccessBrowserProxyImpl {
+  /** @return {!PeripheralDataAccessBrowserProxy} */
+  static getInstance() {
+    return instance || (instance = new PeripheralDataAccessBrowserProxyImpl());
+  }
+
+  /** @param {!PeripheralDataAccessBrowserProxy} obj */
+  static setInstance(obj) {
+    instance = obj;
+  }
+
   /**
    * @override
    * @return {!Promise<boolean>}
@@ -49,17 +62,4 @@ export class PeripheralDataAccessBrowserProxyImpl {
   getPolicyState() {
     return sendWithPromise('getPolicyState');
   }
-
-  /** @return {!PeripheralDataAccessBrowserProxy} */
-  static getInstance() {
-    return instance || (instance = new PeripheralDataAccessBrowserProxyImpl());
-  }
-
-  /** @param {!PeripheralDataAccessBrowserProxy} obj */
-  static setInstance(obj) {
-    instance = obj;
-  }
 }
-
-/** @type {?PeripheralDataAccessBrowserProxy} */
-let instance = null;

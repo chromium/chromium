@@ -11,15 +11,13 @@ export class OsBluetoothDevicesSubpageBrowserProxy {
   requestFastPairDeviceSupport() {}
 }
 
+/** @type {?OsBluetoothDevicesSubpageBrowserProxy} */
+let instance = null;
+
 /**
  * @implements {OsBluetoothDevicesSubpageBrowserProxy}
  */
 export class OsBluetoothDevicesSubpageBrowserProxyImpl {
-  /** @override */
-  requestFastPairDeviceSupport() {
-    chrome.send('requestFastPairDeviceSupportStatus');
-  }
-
   /** @return {!OsBluetoothDevicesSubpageBrowserProxy} */
   static getInstance() {
     return instance ||
@@ -30,7 +28,9 @@ export class OsBluetoothDevicesSubpageBrowserProxyImpl {
   static setInstance(obj) {
     instance = obj;
   }
-}
 
-/** @type {?OsBluetoothDevicesSubpageBrowserProxy} */
-let instance = null;
+  /** @override */
+  requestFastPairDeviceSupport() {
+    chrome.send('requestFastPairDeviceSupportStatus');
+  }
+}

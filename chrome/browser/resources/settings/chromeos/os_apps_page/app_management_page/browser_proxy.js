@@ -18,7 +18,20 @@ import {PermissionType, TriState} from 'chrome://resources/cr_components/app_man
 
 import {FakePageHandler} from './fake_page_handler.js';
 
+/** @type {?BrowserProxy} */
+let instance = null;
+
 export class BrowserProxy {
+  /** @return {!BrowserProxy} */
+  static getInstance() {
+    return instance || (instance = new BrowserProxy());
+  }
+
+  /** @param {!BrowserProxy} obj */
+  static setInstance(obj) {
+    instance = obj;
+  }
+
   constructor() {
     /** @type {appManagement.mojom.PageCallbackRouter} */
     this.callbackRouter = new appManagement.mojom.PageCallbackRouter();
@@ -114,17 +127,4 @@ export class BrowserProxy {
       this.callbackRouter = ComponentBrowserProxy.getInstance().callbackRouter;
     }
   }
-
-  /** @return {!BrowserProxy} */
-  static getInstance() {
-    return instance || (instance = new BrowserProxy());
-  }
-
-  /** @param {!BrowserProxy} obj */
-  static setInstance(obj) {
-    instance = obj;
-  }
 }
-
-/** @type {?BrowserProxy} */
-let instance = null;

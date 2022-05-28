@@ -15,20 +15,13 @@ export class OsResetBrowserProxy {
   requestFactoryResetRestart() {}
 }
 
+/** @type {?OsResetBrowserProxy} */
+let instance = null;
+
 /**
  * @implements {OsResetBrowserProxy}
  */
 export class OsResetBrowserProxyImpl {
-  /** @override */
-  onPowerwashDialogShow() {
-    chrome.send('onPowerwashDialogShow');
-  }
-
-  /** @override */
-  requestFactoryResetRestart() {
-    chrome.send('requestFactoryResetRestart');
-  }
-
   /** @return {!OsResetBrowserProxy} */
   static getInstance() {
     return instance || (instance = new OsResetBrowserProxyImpl());
@@ -38,7 +31,14 @@ export class OsResetBrowserProxyImpl {
   static setInstance(obj) {
     instance = obj;
   }
-}
 
-/** @type {?OsResetBrowserProxy} */
-let instance = null;
+  /** @override */
+  onPowerwashDialogShow() {
+    chrome.send('onPowerwashDialogShow');
+  }
+
+  /** @override */
+  requestFactoryResetRestart() {
+    chrome.send('requestFactoryResetRestart');
+  }
+}

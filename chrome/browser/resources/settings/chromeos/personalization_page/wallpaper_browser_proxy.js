@@ -20,10 +20,23 @@ export class WallpaperBrowserProxy {
   openWallpaperManager() {}
 }
 
+/** @type {?WallpaperBrowserProxy} */
+let instance = null;
+
 /**
  * @implements {WallpaperBrowserProxy}
  */
 export class WallpaperBrowserProxyImpl {
+  /** @return {!WallpaperBrowserProxy} */
+  static getInstance() {
+    return instance || (instance = new WallpaperBrowserProxyImpl());
+  }
+
+  /** @param {!WallpaperBrowserProxy} obj */
+  static setInstance(obj) {
+    instance = obj;
+  }
+
   /** @override */
   isWallpaperSettingVisible() {
     return sendWithPromise('isWallpaperSettingVisible');
@@ -38,17 +51,4 @@ export class WallpaperBrowserProxyImpl {
   openWallpaperManager() {
     chrome.send('openWallpaperManager');
   }
-
-  /** @return {!WallpaperBrowserProxy} */
-  static getInstance() {
-    return instance || (instance = new WallpaperBrowserProxyImpl());
-  }
-
-  /** @param {!WallpaperBrowserProxy} obj */
-  static setInstance(obj) {
-    instance = obj;
-  }
 }
-
-/** @type {?WallpaperBrowserProxy} */
-let instance = null;

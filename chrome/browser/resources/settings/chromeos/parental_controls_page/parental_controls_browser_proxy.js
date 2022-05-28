@@ -22,18 +22,11 @@ export class ParentalControlsBrowserProxy {
   launchFamilyLinkSettings() {}
 }
 
+/** @type {?ParentalControlsBrowserProxy} */
+let instance = null;
+
 /** @implements {ParentalControlsBrowserProxy} */
 export class ParentalControlsBrowserProxyImpl {
-  /** @override */
-  showAddSupervisionDialog() {
-    chrome.send('showAddSupervisionDialog');
-  }
-
-  /** @override */
-  launchFamilyLinkSettings() {
-    chrome.send('launchFamilyLinkSettings');
-  }
-
   /** @return {!ParentalControlsBrowserProxy} */
   static getInstance() {
     return instance || (instance = new ParentalControlsBrowserProxyImpl());
@@ -43,7 +36,14 @@ export class ParentalControlsBrowserProxyImpl {
   static setInstance(obj) {
     instance = obj;
   }
-}
 
-/** @type {?ParentalControlsBrowserProxy} */
-let instance = null;
+  /** @override */
+  showAddSupervisionDialog() {
+    chrome.send('showAddSupervisionDialog');
+  }
+
+  /** @override */
+  launchFamilyLinkSettings() {
+    chrome.send('launchFamilyLinkSettings');
+  }
+}

@@ -30,20 +30,13 @@ export class AndroidAppsBrowserProxy {
   showAndroidAppsSettings(keyboardAction) {}
 }
 
+/** @type {?AndroidAppsBrowserProxy} */
+let instance = null;
+
 /**
  * @implements {AndroidAppsBrowserProxy}
  */
 export class AndroidAppsBrowserProxyImpl {
-  /** @override */
-  requestAndroidAppsInfo() {
-    chrome.send('requestAndroidAppsInfo');
-  }
-
-  /** @override */
-  showAndroidAppsSettings(keyboardAction) {
-    chrome.send('showAndroidAppsSettings', [keyboardAction]);
-  }
-
   /** @return {!AndroidAppsBrowserProxy} */
   static getInstance() {
     return instance || (instance = new AndroidAppsBrowserProxyImpl());
@@ -53,7 +46,14 @@ export class AndroidAppsBrowserProxyImpl {
   static setInstance(obj) {
     instance = obj;
   }
-}
 
-/** @type {?AndroidAppsBrowserProxy} */
-let instance = null;
+  /** @override */
+  requestAndroidAppsInfo() {
+    chrome.send('requestAndroidAppsInfo');
+  }
+
+  /** @override */
+  showAndroidAppsSettings(keyboardAction) {
+    chrome.send('showAndroidAppsSettings', [keyboardAction]);
+  }
+}
