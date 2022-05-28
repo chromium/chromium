@@ -2057,6 +2057,11 @@
       }
     ]
   },
+  "Win Builder (dbg)": {
+    "additional_compile_targets": [
+      "all"
+    ]
+  },
   "Win x64 Builder": {
     "additional_compile_targets": [
       "pdf_fuzzers"
