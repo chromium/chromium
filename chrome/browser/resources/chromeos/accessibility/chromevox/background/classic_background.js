@@ -24,10 +24,6 @@ export class ChromeVoxBackground {
   constructor() {
     ChromeVoxBackground.readPrefs();
 
-    const consoleTts = ConsoleTts.getInstance();
-    consoleTts.setEnabled(
-        ChromeVoxPrefs.instance.getPrefs()['enableSpeechLogging'] === 'true');
-
     /**
      * Chrome's actual TTS which knows and cares about pitch, volume, etc.
      * @type {TtsBackground}
@@ -38,7 +34,9 @@ export class ChromeVoxBackground {
     /**
      * @type {TtsInterface}
      */
-    this.tts = new CompositeTts().add(this.backgroundTts_).add(consoleTts);
+    this.tts = new CompositeTts()
+                   .add(this.backgroundTts_)
+                   .add(ConsoleTts.getInstance());
 
     this.addBridgeListener();
 
@@ -58,12 +56,11 @@ export class ChromeVoxBackground {
 
     // Set up a message passing system for goog.provide() calls from
     // within the content scripts.
-    chrome.extension.onMessage.addListener(function(request, sender, callback) {
+    chrome.extension.onMessage.addListener((request, sender, callback) => {
       if (request['srcFile']) {
         const srcFile = request['srcFile'];
-        InjectedScriptLoader.fetchCode([srcFile], function(code) {
-          callback({'code': code[srcFile]});
-        });
+        InjectedScriptLoader.fetchCode(
+            [srcFile], code => callback({'code': code[srcFile]}));
       }
       return true;
     });
@@ -204,9 +201,7 @@ export class ChromeVoxBackground {
             'window.CLOSURE_NO_DEPS = true\n');
 
         // Now inject the ChromeVox content script code into the tab.
-        listOfFiles.forEach(function(file) {
-          executeScript(code[file]);
-        });
+        listOfFiles.forEach(file => executeScript(code[file]));
       }
     };
 

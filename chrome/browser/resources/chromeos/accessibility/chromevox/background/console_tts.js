@@ -5,6 +5,7 @@
 /**
  * @fileoverview A TTS engine that writes to window.console.
  */
+import {ChromeVoxPrefs} from '/chromevox/background/prefs.js';
 
 /**
  * @implements {TtsInterface}
@@ -17,6 +18,12 @@ export class ConsoleTts {
      * @private
      */
     this.enabled_ = false;
+  }
+
+  static init() {
+    const consoleTts = ConsoleTts.getInstance();
+    consoleTts.setEnabled(
+        ChromeVoxPrefs.instance.getPrefs()['enableSpeechLogging'] === 'true');
   }
 
   /** @return {!ConsoleTts} */

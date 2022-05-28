@@ -6,6 +6,7 @@ import {BrailleCommandHandler} from '/chromevox/background/braille/braille_comma
 import {ChromeVoxState} from '/chromevox/background/chromevox_state.js';
 import {ChromeVoxBackground} from '/chromevox/background/classic_background.js';
 import {CommandHandler} from '/chromevox/background/command_handler.js';
+import {ConsoleTts} from '/chromevox/background/console_tts.js';
 import {DesktopAutomationHandler} from '/chromevox/background/desktop_automation_handler.js';
 import {DesktopAutomationInterface} from '/chromevox/background/desktop_automation_interface.js';
 import {DownloadHandler} from '/chromevox/background/download_handler.js';
@@ -85,6 +86,7 @@ export class Background extends ChromeVoxState {
     });
 
     BackgroundKeyboardHandler.init();
+    ConsoleTts.init();
     DesktopAutomationHandler.init();
     DownloadHandler.init();
     FindHandler.init();
