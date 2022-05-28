@@ -63,11 +63,11 @@ class PrintingEventObserver : public TestEventRouter::EventObserver {
                            api::printing::JobStatus expected_status) const {
     EXPECT_EQ(expected_extension_id, extension_id_);
     ASSERT_TRUE(event_args_.is_list());
-    ASSERT_EQ(2u, event_args_.GetListDeprecated().size());
-    const base::Value& job_id = event_args_.GetListDeprecated()[0];
+    ASSERT_EQ(2u, event_args_.GetList().size());
+    const base::Value& job_id = event_args_.GetList()[0];
     ASSERT_TRUE(job_id.is_string());
     EXPECT_EQ(expected_job_id, job_id.GetString());
-    const base::Value& job_status = event_args_.GetListDeprecated()[1];
+    const base::Value& job_status = event_args_.GetList()[1];
     ASSERT_TRUE(job_status.is_string());
     EXPECT_EQ(expected_status,
               api::printing::ParseJobStatus(job_status.GetString()));
@@ -646,9 +646,9 @@ TEST_F(PrintingAPIHandlerUnittest, GetPrinterInfo_OutOfPaper) {
   ASSERT_TRUE(color);
   const base::Value* color_options = color->FindListKey("option");
   ASSERT_TRUE(color_options);
-  ASSERT_EQ(1u, color_options->GetListDeprecated().size());
+  ASSERT_EQ(1u, color_options->GetList().size());
   const std::string* color_type =
-      color_options->GetListDeprecated()[0].FindStringKey("type");
+      color_options->GetList()[0].FindStringKey("type");
   ASSERT_TRUE(color_type);
   EXPECT_EQ("STANDARD_MONOCHROME", *color_type);
 
@@ -658,10 +658,10 @@ TEST_F(PrintingAPIHandlerUnittest, GetPrinterInfo_OutOfPaper) {
   const base::Value* page_orientation_options =
       page_orientation->FindListKey("option");
   ASSERT_TRUE(page_orientation_options);
-  ASSERT_EQ(3u, page_orientation_options->GetListDeprecated().size());
+  ASSERT_EQ(3u, page_orientation_options->GetList().size());
   std::vector<std::string> page_orientation_types;
   for (const base::Value& page_orientation_option :
-       page_orientation_options->GetListDeprecated()) {
+       page_orientation_options->GetList()) {
     const std::string* page_orientation_type =
         page_orientation_option.FindStringKey("type");
     ASSERT_TRUE(page_orientation_type);

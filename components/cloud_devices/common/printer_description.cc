@@ -1038,8 +1038,7 @@ class PwgRasterConfigTraits : public NoValueValidation,
     if (document_types_supported) {
       if (!document_types_supported->is_list())
         return false;
-      for (const auto& type_value :
-           document_types_supported->GetListDeprecated()) {
+      for (const auto& type_value : document_types_supported->GetList()) {
         if (!type_value.is_string())
           return false;
 

@@ -108,7 +108,7 @@ TEST_F(PrintingMetricsApiUnittest, GetPrintJobs_NoPrintJobs) {
 
   ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_list());
-  EXPECT_TRUE(result->GetListDeprecated().empty());
+  EXPECT_TRUE(result->GetList().empty());
 }
 
 // Test that calling |printingMetrics.getPrintJobs()| returns the mock print
@@ -122,10 +122,9 @@ TEST_F(PrintingMetricsApiUnittest, GetPrintJobs_OnePrintJob) {
 
   ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_list());
-  ASSERT_EQ(1u, result->GetListDeprecated().size());
+  ASSERT_EQ(1u, result->GetList().size());
   std::unique_ptr<api::printing_metrics::PrintJobInfo> print_job_info =
-      api::printing_metrics::PrintJobInfo::FromValue(
-          result->GetListDeprecated()[0]);
+      api::printing_metrics::PrintJobInfo::FromValue(result->GetList()[0]);
   EXPECT_TRUE(print_job_info);
   EXPECT_EQ(kTitle1, print_job_info->title);
   EXPECT_EQ(api::printing_metrics::PRINT_JOB_STATUS_FAILED,
@@ -144,15 +143,13 @@ TEST_F(PrintingMetricsApiUnittest, GetPrintJobs_TwoPrintJobs) {
 
   ASSERT_TRUE(result);
   ASSERT_TRUE(result->is_list());
-  ASSERT_EQ(2u, result->GetListDeprecated().size());
+  ASSERT_EQ(2u, result->GetList().size());
   std::unique_ptr<api::printing_metrics::PrintJobInfo> print_job_info1 =
-      api::printing_metrics::PrintJobInfo::FromValue(
-          result->GetListDeprecated()[0]);
+      api::printing_metrics::PrintJobInfo::FromValue(result->GetList()[0]);
   EXPECT_TRUE(print_job_info1);
   EXPECT_EQ(kTitle1, print_job_info1->title);
   std::unique_ptr<api::printing_metrics::PrintJobInfo> print_job_info2 =
-      api::printing_metrics::PrintJobInfo::FromValue(
-          result->GetListDeprecated()[1]);
+      api::printing_metrics::PrintJobInfo::FromValue(result->GetList()[1]);
   EXPECT_TRUE(print_job_info2);
   EXPECT_EQ(kTitle2, print_job_info2->title);
 }

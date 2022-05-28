@@ -525,9 +525,8 @@ void PrintPreviewHandler::ReadPrinterTypeDenyListFromPrefs() {
     return;
 
   std::vector<mojom::PrinterType> deny_list;
-  deny_list.reserve(deny_list_from_prefs->GetListDeprecated().size());
-  for (const base::Value& deny_list_value :
-       deny_list_from_prefs->GetListDeprecated()) {
+  deny_list.reserve(deny_list_from_prefs->GetList().size());
+  for (const base::Value& deny_list_value : deny_list_from_prefs->GetList()) {
     const std::string& deny_list_str = deny_list_value.GetString();
     mojom::PrinterType printer_type;
     if (deny_list_str == "extension")

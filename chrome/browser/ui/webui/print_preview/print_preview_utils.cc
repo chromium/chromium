@@ -119,8 +119,8 @@ bool VendorCapabilityInvalid(const base::Value& val) {
     return true;
   const base::Value* options_list =
       select_cap->FindKeyOfType(kOptionKey, base::Value::Type::LIST);
-  if (!options_list || options_list->GetListDeprecated().empty() ||
-      GetFilteredList(options_list, ValueIsNull).GetListDeprecated().empty()) {
+  if (!options_list || options_list->GetList().empty() ||
+      GetFilteredList(options_list, ValueIsNull).GetList().empty()) {
     return true;
   }
   return false;

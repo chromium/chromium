@@ -81,7 +81,7 @@ bool IsUserConfirmationRequired(content::BrowserContext* browser_context,
       Profile::FromBrowserContext(browser_context)
           ->GetPrefs()
           ->GetList(prefs::kPrintingAPIExtensionsAllowlist);
-  return !base::Contains(list->GetListDeprecated(), base::Value(extension_id));
+  return !base::Contains(list->GetList(), base::Value(extension_id));
 }
 
 }  // namespace

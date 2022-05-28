@@ -36,13 +36,13 @@ GetPrintJobFinishedEventValue(
 
   const extensions::Event& event = *iter->second;
   if (!event.event_args || !event.event_args->is_list() ||
-      event.event_args->GetListDeprecated().size() != 1u) {
+      event.event_args->GetList().size() != 1u) {
     ADD_FAILURE() << "Invalid event args";
     return nullptr;
   }
 
   return extensions::api::printing_metrics::PrintJobInfo::FromValue(
-      event.event_args->GetListDeprecated()[0]);
+      event.event_args->GetList()[0]);
 }
 
 // Creates a new MockPrintJobHistoryService for the given |context|.
