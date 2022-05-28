@@ -122,7 +122,7 @@ void WebPerformanceMetricsJavaScriptFeature::LogAggregateFirstContentfulPaint(
   WebPerformanceMetricsTabHelper* tab_helper =
       WebPerformanceMetricsTabHelper::FromWebState(web_state);
 
-  if (!tab_helper) {
+  if (!tab_helper || tab_helper->HasBeenHiddenSinceNavigationStarted()) {
     return;
   }
 
@@ -195,7 +195,7 @@ void WebPerformanceMetricsJavaScriptFeature::LogAggregateFirstInputDelay(
   WebPerformanceMetricsTabHelper* tab_helper =
       WebPerformanceMetricsTabHelper::FromWebState(web_state);
 
-  if (!tab_helper) {
+  if (!tab_helper || tab_helper->HasBeenHiddenSinceNavigationStarted()) {
     return;
   }
 

@@ -42,6 +42,10 @@ class WebPerformanceMetricsTabHelper
   // returns |true| otherwise it returns |false|
   bool GetFirstInputDelayLoggingStatus() const;
 
+  // Returns whether the WebState has been hidden at any point since the start
+  // of the most recent navigation.
+  bool HasBeenHiddenSinceNavigationStarted() const;
+
   // Sets the boolean variable that indicates whether the First Input Delay
   // has been logged in UMA for the current web page.
   void SetFirstInputDelayLoggingStatus(bool first_input_delay_logging_status);
@@ -56,6 +60,7 @@ class WebPerformanceMetricsTabHelper
 
   void DidStartNavigation(web::WebState* web_state,
                           web::NavigationContext* navigation_context) override;
+  void WasHidden(web::WebState* web_state) override;
 
   // Manages the tab helper's connection to the WebState
   base::ScopedObservation<web::WebState, web::WebStateObserver>
@@ -69,6 +74,10 @@ class WebPerformanceMetricsTabHelper
   // Stores whether the First Input Delay has been logged to UMA for the
   // current web page
   bool first_input_delay_has_been_logged = false;
+
+  // Stores whether the WebState has been hidden at any point since the most
+  // recent navigation started.
+  bool has_been_hidden_since_navigation_started_ = false;
 
   WEB_STATE_USER_DATA_KEY_DECL();
 };
