@@ -42,13 +42,13 @@ if (include_polymer) {
 }
 
 group("preprocess") {
-  public_deps = [ ":preprocess_generated_ts" ]
+  public_deps = [
+    ":preprocess_generated_ts",
+    ":preprocess_src_ts",
+  ]
 
   if (include_polymer) {
-    public_deps += [
-      ":preprocess_generated",
-      ":preprocess_src_ts",
-    ]
+    public_deps += [ ":preprocess_generated" ]
   }
 
   if (is_chromeos_ash) {
@@ -76,11 +76,12 @@ if (is_chromeos_ash) {
 
 # TS files are passed to a separate target so that they are not listed in the
 # |out_manifest|.
-if (include_polymer) {
-  preprocess_if_expr("preprocess_src_ts") {
-    in_folder = "."
-    out_folder = preprocess_folder
-    in_files = [
+preprocess_if_expr("preprocess_src_ts") {
+  in_folder = "."
+  out_folder = preprocess_folder
+  in_files = [ "cr_tree/cr_tree_base.ts" ]
+  if (include_polymer) {
+    in_files += [
       "cr_a11y_announcer/cr_a11y_announcer.ts",
       "cr_action_menu/cr_action_menu.ts",
       "cr_auto_img/cr_auto_img.ts",
@@ -233,7 +234,11 @@ preprocess_if_expr("preprocess_generated_ts") {
   deps = [ ":custom_elements" ]
   in_folder = target_gen_dir
   out_folder = preprocess_folder
-  in_files = [ "cr_tab_box/cr_tab_box.ts" ]
+  in_files = [
+    "cr_tab_box/cr_tab_box.ts",
+    "cr_tree/cr_tree.ts",
+    "cr_tree/cr_tree_item.ts",
+  ]
   if (include_polymer) {
     deps += [
       ":css_wrapper_files",
@@ -398,7 +403,6 @@ group("custom_elements") {
       ":modulize",
       ":shared_style_css_module",
       ":shared_vars_css_module",
-      ":web_components",
       "cr_button:cr_button_module",
       "cr_checkbox:cr_checkbox_module",
       "cr_dialog:cr_dialog_module",
@@ -502,5 +506,9 @@ if (include_polymer) {
 }
 
 html_to_js("web_components") {
-  js_files = [ "cr_tab_box/cr_tab_box.ts" ]
+  js_files = [
+    "cr_tab_box/cr_tab_box.ts",
+    "cr_tree/cr_tree.ts",
+    "cr_tree/cr_tree_item.ts",
+  ]
 }

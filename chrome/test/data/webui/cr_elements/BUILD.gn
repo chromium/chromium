@@ -62,6 +62,7 @@ ts_library("build_ts") {
     "cr_toolbar_focus_tests.ts",
     "cr_toolbar_search_field_tests.ts",
     "cr_toolbar_test.ts",
+    "cr_tree_test.ts",
     "cr_view_manager_test.ts",
     "find_shortcut_mixin_test.ts",
     "iron_list_focus_test.ts",

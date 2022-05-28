@@ -388,3 +388,14 @@ var CrElementsToolbarTest = class extends CrElementsBrowserTest {
 TEST_F('CrElementsToolbarTest', 'All', function() {
   mocha.run();
 });
+
+var CrElementsTreeTest = class extends CrElementsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://test/test_loader.html?module=cr_elements/cr_tree_test.js&host=webui-test';
+  }
+};
+
+TEST_F('CrElementsTreeTest', 'All', function() {
+  mocha.run();
+});

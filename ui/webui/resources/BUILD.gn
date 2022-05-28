@@ -307,6 +307,9 @@ ts_library("library") {
 
   in_files = [
     "cr_elements/cr_tab_box/cr_tab_box.ts",
+    "cr_elements/cr_tree/cr_tree.ts",
+    "cr_elements/cr_tree/cr_tree_base.ts",
+    "cr_elements/cr_tree/cr_tree_item.ts",
     "js/assert_ts.ts",
     "js/custom_element.ts",
   ]
