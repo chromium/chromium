@@ -66,7 +66,15 @@ class MockGitCL(object):
         return 'closed'
 
     def latest_try_jobs(self, builder_names=None, **_):
-        return self.filter_latest(self._try_job_results)
+        if builder_names:
+            jobs = {
+                build: status
+                for build, status in self._try_job_results.items()
+                if build.builder_name in builder_names
+            }
+        else:
+            jobs = self._try_job_results
+        return self.filter_latest(jobs)
 
     @staticmethod
     def filter_latest(try_results):

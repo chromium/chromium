@@ -92,13 +92,21 @@ class BuilderListTest(unittest.TestCase):
             'Flag Specific A': {
                 'port_name': 'port-c',
                 'specifiers': ['C', 'Release'],
-                'flag_specific': 'highdpi',
+                'steps': {
+                    'high_dpi_blink_web_tests (with patch)': {
+                        'flag_specific': 'highdpi'
+                    },
+                },
                 "is_try_builder": True
             },
             'Flag Specific B': {
                 'port_name': 'port-c',
                 'specifiers': ['C', 'Release'],
-                'flag_specific': 'disable-layout-ng',
+                'steps': {
+                    'layout_ng_disabled_blink_web_tests (with patch)': {
+                        'flag_specific': 'disable-layout-ng',
+                    },
+                },
                 "is_try_builder": True
             },
         })
@@ -208,15 +216,23 @@ class BuilderListTest(unittest.TestCase):
             BuilderList({
                 'Flag Specific A': {
                     'port_name': 'port-a',
-                    'specifiers': ['C', 'Release'],
-                    'flag_specific': 'highdpi',
-                    "is_try_builder": True
+                    'specifiers': ['A', 'Release'],
+                    'steps': {
+                        'blink_web_tests (with patch)': {
+                            'flag_specific': 'highdpi',
+                        },
+                    },
+                    'is_try_builder': True
                 },
                 'Flag Specific B': {
                     'port_name': 'port-b',
-                    'specifiers': ['C', 'Release'],
-                    'flag_specific': 'highdpi',
-                    "is_try_builder": True
+                    'specifiers': ['B', 'Release'],
+                    'steps': {
+                        'blink_web_tests (with patch)': {
+                            'flag_specific': 'highdpi',
+                        },
+                    },
+                    'is_try_builder': True
                 },
             })
 

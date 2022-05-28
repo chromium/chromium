@@ -63,7 +63,9 @@
         "main": "tryserver.chromium.linux",
         "port_name": "fuchsia",
         "specifiers": ["Fuchsia", "Release"],
-        "step_name": "blink_web_tests (with patch)",
+        "steps": {
+            "blink_web_tests (with patch)": {}
+        },
         "is_try_builder": true
     },
     "linux-wpt-identity-fyi-rel": {
@@ -71,14 +73,18 @@
         "port_name": "linux-trusty",
         "specifiers": ["Trusty", "Release"],
         "is_try_builder": true,
-        "step_name": "wpt_tests_suite (with patch)"
+        "steps": {
+            "wpt_tests_suite (with patch)": {}
+        }
     },
     "linux-wpt-input-fyi-rel": {
         "main": "tryserver.chromium.linux",
         "port_name": "linux-trusty",
         "specifiers": ["Trusty", "Release"],
         "is_try_builder": true,
-        "step_name": "wpt_tests_suite (with patch, experimental)"
+        "steps": {
+            "wpt_tests_suite (with patch, experimental)": {}
+        }
     },
     "linux-blink-rel": {
         "main": "tryserver.blink",
@@ -152,7 +158,18 @@
         "port_name": "linux-trusty",
         "specifiers": ["Trusty", "Release"],
         "has_webdriver_tests": true,
-        "step_name": "blink_web_tests (with patch)",
+        "steps": {
+            "blink_web_tests (with patch)": {},
+            "high_dpi_blink_web_tests (with patch)": {
+                "flag_specific": "highdpi"
+            },
+            "vulkan_swiftshader_blink_web_tests (with patch)": {
+                "flag_specific": "skia-vulkan-swiftshader"
+            },
+            "not_site_per_process_blink_web_tests (with patch)": {
+                "flag_specific": "disable-site-isolation-trials"
+            }
+        },
         "is_try_builder": true,
         "is_cq_builder":true
     },
@@ -174,8 +191,11 @@
         "main": "tryserver.chromium.linux",
         "port_name": "linux-trusty",
         "specifiers": ["Trusty", "Release"],
-        "flag_specific": "disable-layout-ng",
-        "step_name": "blink_web_tests (with patch)",
+        "steps": {
+            "blink_web_tests (with patch)": {
+                "flag_specific": "disable-layout-ng"
+            }
+        },
         "is_try_builder": true,
         "is_cq_builder":true
     },
@@ -204,7 +224,11 @@
         "main": "tryserver.blink",
         "port_name": "linux-trusty",
         "specifiers": ["Trusty", "Release"],
-        "flag_specific": "highdpi",
+        "steps": {
+            "high_dpi_blink_web_tests (with patch)": {
+                "flag_specific": "highdpi"
+            }
+        },
         "is_try_builder": true
     }
 }

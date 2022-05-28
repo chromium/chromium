@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 """A command to fetch new baselines from try jobs for the current CL."""
 
+import collections
+import itertools
 import json
 import logging
 import optparse
@@ -81,8 +83,11 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
             optparse.make_option(
                 '--flag-specific',
                 dest='flag_specific',
-                # TODO: try to get the list from builders.json
-                choices=["disable-layout-ng", "highdpi"],
+                # TODO(crbug/1291020): try to get the list from builders.json
+                choices=[
+                    "disable-layout-ng", "highdpi",
+                    "disable-site-isolation-trials", "skia-vulkan-swiftshader"
+                ],
                 default=None,
                 action='store',
                 help=('Name of a flag-specific configuration defined in '
@@ -194,11 +199,6 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
         if options.fill_missing:
             self.fill_in_missing_results(test_baseline_set)
 
-        for builder in test_baseline_set.all_builders():
-            if self._tool.builders.is_flag_specific_builder(builder):
-                options.flag_specific = self._tool.builders.flag_specific_option(
-                    builder)
-
         if not options.dry_run:
             self.rebaseline(options, test_baseline_set)
         return 0
@@ -291,40 +291,56 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
             jobs: A dict mapping Build objects to TryJobStatus objects.
 
         Returns:
-            A dict mapping Build to WebTestResults for all completed jobs.
+            A dict mapping Builds to lists of WebTestResults for all completed
+            jobs.
         """
         results_fetcher = self._tool.results_fetcher
-        results = {}
-        results_url = ''
+        builds_to_results = collections.defaultdict(list)
 
         for build, status in jobs.items():
             if status == TryJobStatus('COMPLETED', 'SUCCESS'):
-                # Builds with passing try jobs are mapped to None, to indicate
-                # that there are no baselines to download.
-                results[build] = None
+                _log.debug('No baselines to download for passing %r build %s.',
+                           build.builder_name, build.build_number
+                           or '(unknown)')
+                # This empty entry indicates the builder is not missing.
+                builds_to_results[build] = []
                 continue
             if status != TryJobStatus('COMPLETED', 'FAILURE'):
                 # Only completed failed builds will contain actual failed
                 # web tests to download baselines for.
                 continue
-            if self._resultdb_fetcher:
-                web_test_results = results_fetcher.fetch_results_from_resultdb_layout_tests(
-                    self._tool, build, True)
-            else:
-                results_url = results_fetcher.results_url(
-                    build.builder_name, build.build_number)
-                web_test_results = results_fetcher.fetch_results(build)
 
-            if web_test_results is None:
-                _log.info('Failed to fetch results for "%s".',
-                          build.builder_name)
-                _log.info('Results URL: %s/results.html', results_url)
-                continue
-            results[build] = web_test_results
-        return results
+            step_names = results_fetcher.get_layout_test_step_names(build)
+            unavailable_step_names = []
+            if self._resultdb_fetcher:
+                maybe_results = results_fetcher.fetch_results_from_resultdb_layout_tests(
+                    self._tool, build, True)
+                if maybe_results:
+                    builds_to_results[build].append(maybe_results)
+                else:
+                    # The results don't have step-level granularity, so just
+                    # log all of them.
+                    unavailable_step_names.extend(step_names)
+            else:
+                for step_name in step_names:
+                    maybe_result = results_fetcher.fetch_results(
+                        build, False, step_name)
+                    if maybe_result:
+                        builds_to_results[build].append(maybe_result)
+                    else:
+                        unavailable_step_names.append(step_name)
+
+            if unavailable_step_names:
+                _log.warning('Failed to fetch some results for "%s".',
+                             build.builder_name)
+                for step_name in unavailable_step_names:
+                    results_url = results_fetcher.results_url(
+                        build.builder_name, build.build_number, step_name)
+                    _log.warning('Results URL: %s/results.html', results_url)
+        return builds_to_results
 
     def _make_test_baseline_set_from_file(self, filename, builds_to_results):
-        test_baseline_set = TestBaselineSet(self._tool)
+        tests = []
         try:
             with self._tool.filesystem.open_text_file_for_reading(
                     filename) as fh:
@@ -334,38 +350,35 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
                     test = test.strip()
                     if not test or test.startswith('#'):
                         continue
-                    for build, results in builds_to_results.items():
-                        if self._resultdb_fetcher:
-                            # In the current flow, similar check to check for the presence of
-                            # a result is done later in rebaseline by sending the request again.
-                            # This can be done here itself to get an optimal test_baseline_set.
-                            if results and results.fail_result_exists_resultdb(
-                                    test):
-                                test_baseline_set.add(test, build)
-                        else:
-                            test_baseline_set.add(test, build)
+                    tests.append(test)
         except IOError:
             _log.info('Could not read test names from %s', filename)
-        return test_baseline_set
+        return self._make_test_baseline_set_for_tests(tests, builds_to_results)
+
+    def _test_exists(self, results, test):
+        if self._resultdb_fetcher:
+            return results.fail_result_exists_resultdb(test)
+        return results.result_for_test(test)
 
     def _make_test_baseline_set_for_tests(self, tests, builds_to_results):
         """Determines the set of test baselines to fetch from a list of tests.
 
         Args:
             tests: A list of tests.
-            builds_to_results: A dict mapping Builds to WebTestResults.
+            builds_to_results: A dict mapping Builds to lists of WebTestResults.
 
         Returns:
             A TestBaselineSet object.
         """
         test_baseline_set = TestBaselineSet(self._tool)
-        for test in tests:
-            for build, results in builds_to_results.items():
-                if self._resultdb_fetcher:
-                    if results and results.fail_result_exists_resultdb(test):
-                        test_baseline_set.add(test, build)
-                else:
-                    test_baseline_set.add(test, build)
+        for test, (build, builder_results) in itertools.product(
+                tests, builds_to_results.items()):
+            for step_results in builder_results:
+                # Check for bad user-supplied test names early to create a
+                # smaller test baseline set and send fewer bad requests.
+                if self._test_exists(step_results, test):
+                    test_baseline_set.add(test, build,
+                                          step_results.step_name())
         return test_baseline_set
 
     def _make_test_baseline_set(self, builds_to_results, only_changed_tests):
@@ -375,7 +388,7 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
         modified tests will be rebaselined (depending on only_changed_tests).
 
         Args:
-            builds_to_results: A dict mapping Builds to WebTestResults.
+            builds_to_results: A dict mapping Builds to lists of WebTestResults.
             only_changed_tests: Whether to only include baselines for tests that
                are changed in this CL. If False, all new baselines for failing
                tests will be downloaded, even for tests that were not modified.
@@ -383,31 +396,31 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
         Returns:
             A TestBaselineSet object.
         """
-        builds_to_tests = {}
-        for build, results in builds_to_results.items():
-            if self._resultdb_fetcher:
-                builds_to_tests[build] = self._tests_to_rebaseline_resultDB(
-                    build, results)
-            else:
-                builds_to_tests[build] = self._tests_to_rebaseline(
-                    build, results)
         if only_changed_tests:
             files_in_cl = self._tool.git().changed_files(diff_filter='AM')
             # In the changed files list from Git, paths always use "/" as
             # the path separator, and they're always relative to repo root.
             test_base = self._test_base_path()
-            tests_in_cl = [
-                f[len(test_base):] for f in files_in_cl
-                if f.startswith(test_base)
-            ]
+            tests_in_cl = {
+                f[len(test_base):]
+                for f in files_in_cl if f.startswith(test_base)
+            }
 
-        # Here we have a concrete list of tests so we don't need prefix lookup.
         test_baseline_set = TestBaselineSet(self._tool, prefix_mode=False)
-        for build, tests in builds_to_tests.items():
-            for test in tests:
-                if only_changed_tests and test not in tests_in_cl:
-                    continue
-                test_baseline_set.add(test, build)
+        for build, builder_results in builds_to_results.items():
+            for step_results in builder_results:
+                if self._resultdb_fetcher:
+                    tests_to_rebaseline = self._tests_to_rebaseline_resultDB(
+                        build, step_results)
+                else:
+                    tests_to_rebaseline = self._tests_to_rebaseline(
+                        build, step_results)
+                # Here we have a concrete list of tests so we don't need prefix lookup.
+                for test in tests_to_rebaseline:
+                    if only_changed_tests and test not in tests_in_cl:
+                        continue
+                    test_baseline_set.add(test, build,
+                                          step_results.step_name())
         return test_baseline_set
 
     def _test_base_path(self):
@@ -450,14 +463,11 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
 
         Args:
             build: A Build instance.
-            web_test_results: A WebTestResults instance or None.
+            web_test_results: A WebTestResults instance.
 
         Returns:
             A sorted list of tests to rebaseline for this build.
         """
-        if web_test_results is None:
-            return []
-
         unexpected_results = web_test_results.didnt_run_as_expected_results()
         tests = sorted(
             r.test_name() for r in unexpected_results
@@ -486,7 +496,7 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
             return None
         try:
             retry_summary = json.loads(content)
-            return retry_summary['failures']
+            return set(retry_summary['failures'])
         except (ValueError, KeyError):
             _log.warning('Unexpected retry summary content:\n%s', content)
             return None
@@ -516,7 +526,7 @@ class RebaselineCL(AbstractParallelRebaselineCommand):
                 build = self._choose_fill_in_build(port, build_port_pairs)
                 _log.info('Using "%s" build %d for %s.', build.builder_name,
                           build.build_number, port)
-                test_baseline_set.add(test_prefix, build, port)
+                test_baseline_set.add(test_prefix, build, port_name=port)
         return test_baseline_set
 
     def _choose_fill_in_build(self, target_port, build_port_pairs):

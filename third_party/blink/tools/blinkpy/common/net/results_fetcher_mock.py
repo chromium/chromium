@@ -35,40 +35,42 @@ BuilderStep = namedtuple('BuilderStep', ['build', 'step_name'])
 # TODO(qyearsley): To be consistent with other fake ("mock") classes, this
 # could be changed so it's not a subclass of TestResultsFetcher.
 class MockTestResultsFetcher(TestResultsFetcher):
-    def __init__(self):
-        super(MockTestResultsFetcher, self).__init__()
+    def __init__(self, builders=None):
+        super(MockTestResultsFetcher, self).__init__(builders)
         self._canned_results = {}
         self._canned_artifacts_resultdb = {}
         self._canned_retry_summary_json = {}
         self._webdriver_results = {}
         self.fetched_builds = []
         self.fetched_webdriver_builds = []
-        self._layout_test_step_name = 'blink_web_tests (with patch)'
 
     def set_results(self, build, results, step_name=None):
-        step_name = step_name or self.get_layout_test_step_name(build)
+        step_name = step_name or results.step_name()
         step = BuilderStep(build=build, step_name=step_name)
         self._canned_results[step] = results
 
     def fetch_results(self, build, full=False, step_name=None):
-        step_name = step_name or self.get_layout_test_step_name(build)
         step = BuilderStep(build=build, step_name=step_name)
         self.fetched_builds.append(step)
         return self._canned_results.get(step)
 
     def set_results_to_resultdb(self, build, results):
-        self._canned_results[build.build_id] = results
+        # The step name is not relevant for ResultDB, so just set it to None.
+        step = BuilderStep(build, step_name=None)
+        self._canned_results[step] = results
 
     def fetch_results_from_resultdb(self, host, builds, predicate):
         rv = []
         for build in builds:
-            results = self._canned_results.get(build.build_id)
+            step = BuilderStep(build, step_name=None)
+            results = self._canned_results.get(step)
             if results:
                 rv.extend(results)
         return rv
 
     def fetch_results_from_resultdb_layout_tests(self, host, build, predicate):
-        return self._canned_results.get(build.build_id)
+        step = BuilderStep(build, step_name=None)
+        return self._canned_results.get(step)
 
     def get_artifact_list_for_test(self, host, result_id):
         return self._canned_artifacts_resultdb[result_id]
@@ -89,8 +91,8 @@ class MockTestResultsFetcher(TestResultsFetcher):
     def fetch_retry_summary_json(self, build):
         return self._canned_retry_summary_json.get(build)
 
-    def set_layout_test_step_name(self, name):
-        self._layout_test_step_name = name
-
-    def get_layout_test_step_name(self, build):
-        return self._layout_test_step_name
+    def get_layout_test_step_names(self, build):
+        return [
+            step.step_name for step in self._canned_results
+            if build == step.build
+        ]
