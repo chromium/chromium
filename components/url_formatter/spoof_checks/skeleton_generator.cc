@@ -76,7 +76,7 @@ SkeletonGenerator::SkeletonGenerator(const USpoofChecker* checker)
   lgc_letters_n_ascii_.freeze();
 
   // Supplement the Unicode confusable list by the following mapping.
-  // NOTE: Adding a digit-lookalike? Add it to digit_lookalikes_ in
+  // IMPORTANT: Adding a digit-lookalike? Add it to digit_lookalikes_ in
   // idn_spoof_checker.cc, too.
   //   - {U+00E6 (æ), U+04D5 (ӕ)}  => "ae"
   //   - {U+03FC (ϼ), U+048F (ҏ)} => p
@@ -111,7 +111,7 @@ SkeletonGenerator::SkeletonGenerator(const USpoofChecker* checker)
   //      U+0ce9 (೩), U+0ced (೭), U+0577 (շ)} => 2,
   //   - {U+0437 (з), U+0499 (ҙ), U+04E1 (ӡ), U+0909 (उ), U+0993 (ও),
   //      U+0A24 (ਤ), U+0A69 (੩), U+0AE9 (૩), U+0C69 (౩),
-  //      U+1012 (ဒ), U+10D5 (ვ), U+10DE (პ)} => 3
+  //      U+1012 (ဒ), U+10D5 (ვ), U+10DE (პ), U+0A5C (ੜ), U+10D9 (კ)} => 3
   //   - {U+0A6B (੫), U+4E29 (丩), U+3110 (ㄐ)} => 4,
   //   - U+0573 (ճ) => 6
   //   - {U+09EA (৪), U+0A6A (੪), U+0b6b (୫)} => 8,
@@ -134,7 +134,7 @@ SkeletonGenerator::SkeletonGenerator(const USpoofChecker* checker)
               "[บບ] > u;"
               "[θ] > 0;"
               "[२২੨੨૨೩೭շ] > 2;"
-              "[зҙӡउওਤ੩૩౩ဒვპ] > 3;"
+              "[зҙӡउওਤ੩૩౩ဒვპੜკ] > 3;"
               "[੫丩ㄐ] > 4;"
               "[ճ] > 6;"
               "[৪੪୫] > 8;"

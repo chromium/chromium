@@ -1079,6 +1079,22 @@ const IDNTestCase kIdnCases[] = {
     // not a top domain. Should not be decoded to unicode.
     {"xn--xample-9ua.test.xn--nt-bja", u"\u00e9xample.test.n\u00e9t", kUnsafe},
 
+    // Digit lookalike check of 16კ.com with character “კ” (U+10D9)
+    // Test case for https://crbug.com/1156531
+    {"xn--16-1ik.com", u"16\u10d9.com", kUnsafe},
+
+    // Skeleton generator check of officeკ65.com with character “კ” (U+10D9)
+    // Test case for https://crbug.com/1156531
+    {"xn--office65-l04a.com", u"office\u10d965.com", kUnsafe},
+
+    // Digit lookalike check of 16ੜ.com with character “ੜ” (U+0A5C)
+    // Test case for https://crbug.com/1156531 (missed skeleton map)
+    {"xn--16-ogg.com", u"16\u0a5c.com", kUnsafe},
+
+    // Skeleton generator check of officeੜ65.com with character “ੜ” (U+0A5C)
+    // Test case for https://crbug.com/1156531 (missed skeleton map)
+    {"xn--office65-hts.com", u"office\u0a5c65.com", kUnsafe},
+
     // New test cases go ↑↑ above.
 
     // /!\ WARNING: You MUST use tools/security/idn_test_case_generator.py to
@@ -1178,7 +1194,11 @@ TEST_F(IDNSpoofCheckerTest, GetSimilarTopDomain) {
       {u"łest.net", "test.net"},
       {u"łesł.net", "test.net"},
       // Test case for https://crbug.com/1207187
-      {u"စ2.com", "o2.com"}};
+      {u"စ2.com", "o2.com"},
+      // Test case for https://crbug.com/1156531
+      {u"კ9.com", "39.com"},
+      // Test case for https://crbug.com/1156531 (missed skeleton map)
+      {u"ੜ9.com", "39.com"}};
   for (const TestCase& test_case : kTestCases) {
     const TopDomainEntry entry =
         IDNSpoofChecker().GetSimilarTopDomain(test_case.hostname);
