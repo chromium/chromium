@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
-import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 
 import {KeyInfo, KeyManagerInitializedValue, KeyTrustLevel, KeyType, PageHandler, PageHandlerInterface, ZeroTrustState} from './connectors_internals.mojom-webui.js';
+import {getTemplate} from './zero_trust_connector.html.js';
 
 const TrustLevelStringMap = {
   [KeyTrustLevel.UNSPECIFIED]: 'Unspecified',
@@ -25,7 +25,7 @@ export class ZeroTrustConnectorElement extends CustomElement {
   }
 
   static override get template() {
-    return getTrustedHTML`{__html_template__}`;
+    return getTemplate();
   }
 
   public set enabledString(str: string) {

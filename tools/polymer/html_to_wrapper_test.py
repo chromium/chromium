@@ -25,14 +25,23 @@ class HtmlToWrapperTest(unittest.TestCase):
     with open(os.path.join(self._out_folder, file_name), 'rb') as f:
       return f.read()
 
-  def _run_test(self, html_file, wrapper_file, wrapper_file_expected):
+  def _run_test(self,
+                html_file,
+                wrapper_file,
+                wrapper_file_expected,
+                template=None):
     assert not self._out_folder
     self._out_folder = tempfile.mkdtemp(dir=_HERE_DIR)
-    html_to_wrapper.main([
+    args = [
         '--in_folder',
         os.path.join(_HERE_DIR, 'tests'), '--out_folder', self._out_folder,
         '--in_files', html_file
-    ])
+    ]
+
+    if template:
+      args += ['--template', template]
+
+    html_to_wrapper.main(args)
 
     actual_wrapper = self._read_out_file(wrapper_file)
     with open(os.path.join(_HERE_DIR, 'tests', wrapper_file_expected),
@@ -40,9 +49,14 @@ class HtmlToWrapperTest(unittest.TestCase):
       expected_wrapper = f.read()
     self.assertMultiLineEqual(str(expected_wrapper), str(actual_wrapper))
 
-  def testHtmlToWrapperElement(self):
+  def testHtmlToWrapperPolymerElement(self):
     self._run_test('html_to_wrapper/foo.html', 'html_to_wrapper/foo.html.ts',
                    'html_to_wrapper/foo_expected.html.ts')
+
+  def testHtmlToWrapperNativeElement(self):
+    self._run_test('html_to_wrapper/foo_native.html',
+                   'html_to_wrapper/foo_native.html.ts',
+                   'html_to_wrapper/foo_native_expected.html.ts', 'native')
 
   def testHtmlToWrapperIcons(self):
     self._run_test('html_to_wrapper/icons.html',

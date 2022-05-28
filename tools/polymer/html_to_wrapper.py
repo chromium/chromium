@@ -25,6 +25,13 @@ from os import path, getcwd, makedirs
 
 _CWD = getcwd()
 
+# Template for non-Polymer elements.
+_NON_POLYMER_ELEMENT_TEMPLATE = """import {getTrustedHTML} from \'chrome://resources/js/static_types.js\';
+export function getTemplate() {
+  return getTrustedHTML`<!--_html_template_start_-->%s<!--_html_template_end_-->`;
+}"""
+
+# Template for Polymer elements.
 _ELEMENT_TEMPLATE = """import {html} from \'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js\';
 export function getTemplate() {
   return html`<!--_html_template_start_-->%s<!--_html_template_end_-->`;
@@ -43,6 +50,10 @@ def main(argv):
   parser.add_argument('--in_folder', required=True)
   parser.add_argument('--out_folder', required=True)
   parser.add_argument('--in_files', required=True, nargs="*")
+  parser.add_argument('--template',
+                      choices=['polymer', 'native'],
+                      default='polymer')
+
   args = parser.parse_args(argv)
 
   in_folder = path.normpath(path.join(_CWD, args.in_folder))
@@ -57,7 +68,8 @@ def main(argv):
       html_content = f.read()
 
       wrapper = None
-      template = _ELEMENT_TEMPLATE
+      template = _ELEMENT_TEMPLATE \
+          if args.template == 'polymer' else _NON_POLYMER_ELEMENT_TEMPLATE
 
       filename = path.basename(in_file)
       if filename == 'icons.html' or filename.endswith('_icons.html'):

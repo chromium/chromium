@@ -29,5 +29,12 @@ template("html_to_wrapper") {
              rebase_path(target_gen_dir, root_build_dir),
              "--in_files",
            ] + invoker.in_files
+
+    if (defined(invoker.template)) {
+      args += [
+        "--template",
+        invoker.template,
+      ]
+    }
   }
 }
