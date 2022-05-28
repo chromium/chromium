@@ -179,7 +179,8 @@ BackgroundBridge.LogStore = {
    */
   async clearLog() {
     return BridgeHelper.sendMessage(
-        BridgeTargets.LOG_STORE, BridgeActions.CLEAR_LOG);
+        BridgeConstants.LogStore.TARGET,
+        BridgeConstants.LogStore.Action.CLEAR_LOG);
   },
 
   /**

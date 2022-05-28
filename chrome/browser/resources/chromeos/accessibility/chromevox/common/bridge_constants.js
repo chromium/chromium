@@ -14,7 +14,6 @@ goog.provide('BridgeTargets');
 /** @enum {string} */
 BridgeTargets = {
   EVENT_STREAM_LOGGER: 'EventStreamLogger',
-  LOG_STORE: 'LogStore',
   PANEL: 'Panel',
   PANEL_BACKGROUND: 'PanelBackground',
   USER_ACTION_MONITOR: 'UserActionMonitor',
@@ -101,6 +100,16 @@ BridgeConstants = {
       SET_ENABLED: 'setEnabled',
     },
   },
+
+  LogStore: {
+    /** @public {BridgeTarget} */
+    TARGET: 'LogStore',
+    /** @enum {string} */
+    Action: {
+      CLEAR_LOG: 'clearLog',
+      GET_LOGS: 'getLogs',
+    },
+  },
 };
 
 /**
@@ -108,7 +117,6 @@ BridgeConstants = {
  */
 BridgeActions = {
   ADD_MENU_ITEM: 'addMenuItem',
-  CLEAR_LOG: 'clearLog',
   CREATE: 'create',
   CREATE_ALL_NODE_MENU_BACKGROUNDS: 'createAllNodeMenuBackgrounds',
   CREATE_NEW_I_SEARCH: 'createNewISearch',
@@ -116,7 +124,6 @@ BridgeActions = {
   DESTROY_I_SEARCH: 'destroyISearch',
   FOCUS_TAB: 'focusTab',
   GET_ACTIONS_FOR_CURRENT_NODE: 'getActionsForCurrentNode',
-  GET_LOGS: 'getLogs',
   GET_TAB_MENU_DATA: 'getTabMenuData',
   INCREMENTAL_SEARCH: 'incrementalSearch',
   NODE_MENU_CALLBACK: 'nodeMenuCallback',
@@ -138,6 +145,7 @@ BridgeActions = {
  *           BridgeConstants.ChromeVoxState.Action |
  *           BridgeConstants.CommandHandler.Action |
  *           BridgeConstants.EventSourceState.Action |
- *           BridgeConstants.GestureCommandHandler.Action}
+ *           BridgeConstants.GestureCommandHandler.Action |
+ *           BridgeConstants.LogStore.Action}
  */
 BridgeAction;

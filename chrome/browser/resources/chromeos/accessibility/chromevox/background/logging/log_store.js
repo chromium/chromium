@@ -160,8 +160,8 @@ LogStore.LOG_LIMIT = 3000;
 LogStore.instance;
 
 BridgeHelper.registerHandler(
-    BridgeTargets.LOG_STORE, BridgeActions.CLEAR_LOG,
+    BridgeConstants.LogStore.TARGET, BridgeConstants.LogStore.Action.CLEAR_LOG,
     () => LogStore.instance.clearLog());
 BridgeHelper.registerHandler(
-    BridgeTargets.LOG_STORE, BridgeActions.GET_LOGS,
+    BridgeConstants.LogStore.TARGET, BridgeConstants.LogStore.Action.GET_LOGS,
     () => LogStore.instance.getLogs());
