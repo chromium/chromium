@@ -876,16 +876,6 @@ class CONTENT_EXPORT RenderFrameImpl
       mojo::PendingRemote<mojom::FrameHTMLSerializerHandler> handler_remote)
       override;
 
-  // IPC message handlers ------------------------------------------------------
-  //
-  // The documentation for these functions should be in
-  // content/common/*_messages.h for the message that the function is handling.
-  void OnShowContextMenu(const gfx::Point& location);
-  void OnMoveCaret(const gfx::Point& point);
-  void OnScrollFocusedEditableNodeIntoRect(const gfx::Rect& rect);
-  void OnSelectRange(const gfx::Point& base, const gfx::Point& extent);
-  void OnSuppressFurtherDialogs();
-
   // Callback scheduled from SerializeAsMHTML for when writing serialized
   // MHTML to the handle has been completed in the file thread.
   void OnWriteMHTMLComplete(
