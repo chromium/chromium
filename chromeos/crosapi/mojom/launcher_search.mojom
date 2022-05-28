@@ -157,13 +157,17 @@ interface SearchResultsPublisher {
   OnSearchResultsReceived@0(SearchStatus status, array<SearchResult>? result);
 };
 
-// Interface to send query from ash to lacros. Implemented in lacros.
+// Interface to send search queries from ash to lacros. Implemented in lacros.
 // Next min method ID: 2
 [Stable, Uuid="c2d77467-b04d-4b10-8f54-de52c3cbe30d"]
 interface SearchController {
   // Sends search queries from ash to lacros. If a search query is called while
   // there is an in-flight search query, the in-flight search query will be
-  // cancelled before the new search query being executed.
+  // cancelled before the new search query is executed.
+  //
+  // Returns the pipe to bind to the implementation of `SearchResultsPublisher`
+  // that should receive the results of this search. Returns a new pipe each
+  // invocation so that each pipe conceptually represents a single search.
   Search@0(mojo_base.mojom.String16 query) =>
       (pending_associated_receiver<SearchResultsPublisher> publisher);
 };
