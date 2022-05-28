@@ -698,6 +698,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="5071064518267176975">Gustong gamitin ng isang app ang mikropono</translation>
 <translation id="5078796286268621944">Maling PIN</translation>
 <translation id="5083553833479578423">Mag-unlock ng higit pang feature ng Assistant.</translation>
+<translation id="509790653408515442">Kapag na-stream mo ang mga app sa iyong telepono, lalabas ang mga ito dito</translation>
 <translation id="5107522548814527560">Web</translation>
 <translation id="5117590920725113268">Ipakita ang susunod na buwan</translation>
 <translation id="5136175204352732067">Ibang keyboard ang nakakonekta</translation>
@@ -720,6 +721,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="523505283826916779">Mga setting ng accessibility</translation>
 <translation id="5245201184978705914">Hindi makabuo ng transcript</translation>
 <translation id="5253783950165989294">Nakakonekta sa isang device na may pangalang <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" />% baterya</translation>
+<translation id="5258528442992323769">Walang naka-save na desk</translation>
 <translation id="5260676007519551770">Desk 4</translation>
 <translation id="5283099933536931082">Hinihiling ng <ph name="APP_ITEM_TITLE" /> ang iyong atensyon.</translation>
 <translation id="5283198616748585639">Magdagdag ng 1 minuto</translation>
@@ -1260,6 +1262,7 @@ Kaka-install lang</translation>
 <translation id="851458219935658693">Ipakita ang mga window mula sa kasalukuyang desk at piniling radio button</translation>
 <translation id="8517041960877371778">Maaaring hindi mag-charge ang iyong <ph name="DEVICE_TYPE" /> habang naka-on ito.</translation>
 <translation id="8535393432370007982">I-undo ang ayos ng pagkakasunod-sunod ayon sa kulay</translation>
+<translation id="8542053257095774575">Walang naka-save na desk o template</translation>
 <translation id="8546059259582788728">Na-undo ang pagbubukod-bukod</translation>
 <translation id="8551588720239073785">Mga setting ng petsa at oras</translation>
 <translation id="8553395910833293175">Naitalaga na sa lahat ng desk.</translation>

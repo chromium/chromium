@@ -86,6 +86,7 @@
 <translation id="1645954272419197032">Confirme as informações do dispositivo</translation>
 <translation id="1662989795263954667">Parada – Sem tinta</translation>
 <translation id="1668469839109562275">VPN incorporada</translation>
+<translation id="1672499492233627739">Feed de vídeo da câmara Web</translation>
 <translation id="1676557873873341166">A gravar vídeo</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Resolvedor de DNS presente</translation>
@@ -216,6 +217,7 @@
 <translation id="3008341117444806826">ATUALIZAR</translation>
 <translation id="3009958530611748826">Selecione uma pasta onde guardar</translation>
 <translation id="3017079585324758401">Fundo</translation>
+<translation id="3027578600144895987">Fechar câmara</translation>
 <translation id="3031560714565892478">O dispositivo é uma câmara de vídeo.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Ponto final</translation>
@@ -491,6 +493,7 @@ Experimente tocar no microfone para me perguntar o que quiser.</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} tentativa restante.}other{{0} tentativas restantes.}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Não foi possível concluir a digitalização</translation>
+<translation id="5499762266711462226">A cor do teclado baseia-se na imagem de fundo</translation>
 <translation id="5502931783115429516">O Android não está a funcionar</translation>
 <translation id="5507300744274596613">Certifique-se de que o Chrome OS está atualizado</translation>
 <translation id="5519195206574732858">LTE</translation>

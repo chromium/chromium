@@ -698,6 +698,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="5071064518267176975">Una aplicació vol utilitzar el micròfon</translation>
 <translation id="5078796286268621944">PIN incorrecte</translation>
 <translation id="5083553833479578423">Desbloqueja més funcions de l'Assistent.</translation>
+<translation id="509790653408515442">Quan reprodueixis en continu aplicacions del telèfon, apareixeran aquí</translation>
 <translation id="5107522548814527560">Web</translation>
 <translation id="5117590920725113268">Mostra el mes següent</translation>
 <translation id="5136175204352732067">S'ha connectat un altre teclat</translation>
@@ -720,6 +721,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="523505283826916779">Configuració d'accessibilitat</translation>
 <translation id="5245201184978705914">No es pot generar una transcripció</translation>
 <translation id="5253783950165989294">Connectat a un dispositiu anomenat <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" />% de bateria</translation>
+<translation id="5258528442992323769">No s'ha desat cap escriptori</translation>
 <translation id="5260676007519551770">Escriptori 4</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> sol·licita la teva atenció.</translation>
 <translation id="5283198616748585639">Afegeix 1 minut</translation>
@@ -1259,6 +1261,7 @@ Instal·lació nova</translation>
 <translation id="851458219935658693">Mostra les finestres de l'escriptori actual amb el botó d'opció seleccionat</translation>
 <translation id="8517041960877371778">És possible que el dispositiu <ph name="DEVICE_TYPE" /> no es carregui mentre està encès.</translation>
 <translation id="8535393432370007982">Desfés l'ordenació per color</translation>
+<translation id="8542053257095774575">No s'ha desat cap escriptori ni cap plantilla</translation>
 <translation id="8546059259582788728">L'ordenació s'ha desfet correctament</translation>
 <translation id="8551588720239073785">Configuració de data i hora</translation>
 <translation id="8553395910833293175">Ja està assignada a tots els escriptoris.</translation>

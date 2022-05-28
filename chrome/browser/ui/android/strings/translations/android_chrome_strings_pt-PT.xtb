@@ -1076,6 +1076,7 @@ Os símbolos fidedignos melhoram a privacidade na Web e não podem ser usados pa
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, separador, selecionado</translation>
 <translation id="6828070228333235514">Parar monitorização do preço</translation>
 <translation id="6833996806551876956">Avaliação do Privacy Sandbox</translation>
+<translation id="6836206421467243968">Restaure o grupo de separadores <ph name="TITLE_OF_GROUP" /> como um novo grupo de separadores em segundo plano.</translation>
 <translation id="6846298663435243399">A carregar...</translation>
 <translation id="6850409657436465440">A transferência ainda está em curso.</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> separadores fechados</translation>
@@ -1138,6 +1139,7 @@ Os símbolos fidedignos melhoram a privacidade na Web e não podem ser usados pa
 <translation id="7187993566681480880">Mantém a sua segurança no Chrome e pode ser utilizada para melhorar a sua segurança noutras apps Google quando tem sessão iniciada.</translation>
 <translation id="7191430249889272776">Separador aberto em segundo plano.</translation>
 <translation id="7196215469483532480">Explicação do guia de privacidade aberta à altura total</translation>
+<translation id="7207760545532569765">Restaure <ph name="TAB_COUNT" /> separadores como novos separadores em segundo plano.</translation>
 <translation id="7208109991155904980">Reação movida</translation>
 <translation id="7222235798733126207">Partilha limitada entre sites</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 transferência pendente}other{# transferências pendentes}}</translation>
@@ -1516,6 +1518,7 @@ Os símbolos fidedignos melhoram a privacidade na Web e não podem ser usados pa
 <translation id="9148126808321036104">Iniciar sessão novamente</translation>
 <translation id="9155898266292537608">Também pode pesquisar ao tocar rapidamente numa palavra.</translation>
 <translation id="9158770349521403363">Apenas partilhar conteúdo</translation>
+<translation id="9159716826369098114">Restaure o grupo de <ph name="TAB_COUNT" /> separadores como um novo grupo de separadores em segundo plano.</translation>
 <translation id="916446198114569890">Os URLs que visita são guardados na sua Conta Google</translation>
 <translation id="9169507124922466868">O histórico de navegação está aberto até meio.</translation>
 <translation id="9187955620966010988">Reação ajustada</translation>

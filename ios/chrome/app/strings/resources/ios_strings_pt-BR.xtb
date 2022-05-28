@@ -250,6 +250,7 @@ Eles também não podem usar cookies para ver sua atividade de navegação em di
 Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de pesquisa, se aplicável.</translation>
 <translation id="3080525922482950719">Você pode salvar páginas para ler depois ou off-line</translation>
 <translation id="3081338492074632642">A senha que você está salvando precisa corresponder à usada em <ph name="WEBSITE" /></translation>
+<translation id="3103603146121354983">Preenchimento automático de senhas</translation>
 <translation id="3112556859945124369">Marcar...</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Veja o que pode ser sincronizado<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">Bloquear tudo</translation>
@@ -661,6 +662,7 @@ No entanto, eles não podem usar cookies para ver sua atividade de navegação e
 
 Tente usar uma senha exclusiva para cada site.</translation>
 <translation id="650279896687777322">Saiba mais…</translation>
+<translation id="6510072653668207258">Lembrar mais tarde</translation>
 <translation id="651505212789431520">Cancelar sincronização? É possível ativar esse recurso a qualquer momento nas configurações.</translation>
 <translation id="6524918542306337007">O modo de navegação anônima está indisponível</translation>
 <translation id="6530992499366869131">Avisar se as suas senhas forem expostas em uma violação de dados</translation>

@@ -1076,6 +1076,7 @@ Tokeny dôveryhodnosti zlepšujú ochranu súkromia na internete a nedá sa pod
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, karta, vybrané</translation>
 <translation id="6828070228333235514">Prestať sledovať cenu</translation>
 <translation id="6833996806551876956">Skúšobné obdobie karantény ochrany súkromia</translation>
+<translation id="6836206421467243968">Obnovte skupinu kariet <ph name="TITLE_OF_GROUP" /> ako novú skupinu kariet na pozadí.</translation>
 <translation id="6846298663435243399">Načítava sa…</translation>
 <translation id="6850409657436465440">Sťahovanie stále prebieha</translation>
 <translation id="6850830437481525139">Všetky karty sú zatvorené (<ph name="TAB_COUNT" />)</translation>
@@ -1138,6 +1139,7 @@ Tokeny dôveryhodnosti zlepšujú ochranu súkromia na internete a nedá sa pod
 <translation id="7187993566681480880">Chráni vás v Chrome a môže zlepšiť zabezpečenie v ďalších aplikáciách Google, keď sa prihlásite.</translation>
 <translation id="7191430249889272776">Karta je otvorená na pozadí.</translation>
 <translation id="7196215469483532480">Vysvetlenie sprievodcu ochranou súkromia je otvorené na celú výšku</translation>
+<translation id="7207760545532569765">Obnovte karty (<ph name="TAB_COUNT" />) ako nové karty na pozadí.</translation>
 <translation id="7208109991155904980">Reakcia bola presunutá</translation>
 <translation id="7222235798733126207">Obmedzené zdieľanie medzi webmi</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{Na stiahnutie čaká 1 položka}few{Na stiahnutie čakajú # položky}many{# downloads pending}other{Na stiahnutie čaká # položiek}}</translation>
@@ -1516,6 +1518,7 @@ Tokeny dôveryhodnosti zlepšujú ochranu súkromia na internete a nedá sa pod
 <translation id="9148126808321036104">Znova sa prihlásiť</translation>
 <translation id="9155898266292537608">Vyhľadávať môžete aj rýchlym klepnutím na slovo</translation>
 <translation id="9158770349521403363">Zdieľať iba obsah</translation>
+<translation id="9159716826369098114">Obnovte skupinu kariet s <ph name="TAB_COUNT" /> kartami ako novú skupinu kariet na pozadí.</translation>
 <translation id="916446198114569890">Webové adresy, ktoré navštívite, sa uložia do vášho účtu Google</translation>
 <translation id="9169507124922466868">História navigácie je dopoly otvorená</translation>
 <translation id="9187955620966010988">Reakcia bola upravená</translation>

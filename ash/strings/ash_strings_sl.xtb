@@ -698,6 +698,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="5071064518267176975">Aplikacija želi uporabljati mikrofon</translation>
 <translation id="5078796286268621944">Napačen PIN</translation>
 <translation id="5083553833479578423">Odklenite več funkcij Pomočnika.</translation>
+<translation id="509790653408515442">Ko pretočno predvajate aplikacije v telefonu, so prikazane tukaj</translation>
 <translation id="5107522548814527560">Splet</translation>
 <translation id="5117590920725113268">Prikaz naslednjega meseca</translation>
 <translation id="5136175204352732067">Priklopljena je druga tipkovnica</translation>
@@ -720,6 +721,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="523505283826916779">Nastavitve funkcij za ljudi s posebnimi potrebami</translation>
 <translation id="5245201184978705914">Prepisa ni mogoče ustvariti</translation>
 <translation id="5253783950165989294">Vzpostavljena je povezava z napravo <ph name="DEVICE_NAME" />, napolnjenost baterije: <ph name="BATTERY_PERCENTAGE" /> %</translation>
+<translation id="5258528442992323769">Ni shranjenih namizij</translation>
 <translation id="5260676007519551770">Namizje 4</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> potrebuje vašo pozornost.</translation>
 <translation id="5283198616748585639">Dodaj 1 min</translation>
@@ -1259,6 +1261,7 @@ Nova namestitev</translation>
 <translation id="851458219935658693">Prikaz oken na trenutnem namizju, izbran je izbirni gumb</translation>
 <translation id="8517041960877371778">Akumulator naprave <ph name="DEVICE_TYPE" /> se morda ne bo polnil, medtem ko je naprava vklopljena.</translation>
 <translation id="8535393432370007982">Razveljavi način razvrščanja po barvi</translation>
+<translation id="8542053257095774575">Ni shranjenih namizij ali predlogov</translation>
 <translation id="8546059259582788728">Razveljavitev razvrščanja je uspela</translation>
 <translation id="8551588720239073785">Nastavitve datuma in ure</translation>
 <translation id="8553395910833293175">Že dodeljeno vsem namizjem.</translation>

@@ -698,6 +698,7 @@
 <translation id="5071064518267176975">Додаток хоче використовувати мікрофон</translation>
 <translation id="5078796286268621944">Неправильний PIN-код</translation>
 <translation id="5083553833479578423">Розблокуйте інші функції Асистента.</translation>
+<translation id="509790653408515442">Тут з’являтимуться додатки, які ви транслюєте з телефона</translation>
 <translation id="5107522548814527560">Інтернет</translation>
 <translation id="5117590920725113268">Показати наступний місяць</translation>
 <translation id="5136175204352732067">Під’єднано іншу клавіатуру</translation>
@@ -720,6 +721,7 @@
 <translation id="523505283826916779">Налаштування доступності</translation>
 <translation id="5245201184978705914">Не вдалося створити текстову версію</translation>
 <translation id="5253783950165989294">Підключено до пристрою "<ph name="DEVICE_NAME" />", заряд акумулятора – <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="5258528442992323769">Немає збережених робочих столів</translation>
 <translation id="5260676007519551770">Робочий стіл 4</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" />: потрібно переглянути.</translation>
 <translation id="5283198616748585639">Додати 1 хв</translation>
@@ -1259,6 +1261,7 @@
 <translation id="851458219935658693">Показувати вікна з поточного робочого столу, перемикач вибрано</translation>
 <translation id="8517041960877371778">Пристрій <ph name="DEVICE_TYPE" /> може не заряджатися, коли він увімкнений.</translation>
 <translation id="8535393432370007982">Скасувати сортування за кольором</translation>
+<translation id="8542053257095774575">Немає збережених робочих столів або шаблонів</translation>
 <translation id="8546059259582788728">Сортування скасовано</translation>
 <translation id="8551588720239073785">Налаштування дати й часу</translation>
 <translation id="8553395910833293175">Уже призначено для всіх робочих столів.</translation>

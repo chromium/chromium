@@ -1077,6 +1077,7 @@ Os tokens de confiança melhoram a privacidade na Web e não podem ser usados pa
 <translation id="6824899148643461612">A guia <ph name="TAB_TITLE" /> está selecionada</translation>
 <translation id="6828070228333235514">Parar de monitorar preço</translation>
 <translation id="6833996806551876956">Teste da Privacy Sandbox</translation>
+<translation id="6836206421467243968">Restaurar grupo <ph name="TITLE_OF_GROUP" /> como um novo grupo de guias em segundo plano.</translation>
 <translation id="6846298663435243399">Carregando…</translation>
 <translation id="6850409657436465440">Seu download ainda está em andamento</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> guias fechadas</translation>
@@ -1139,6 +1140,7 @@ Os tokens de confiança melhoram a privacidade na Web e não podem ser usados pa
 <translation id="7187993566681480880">Protege você no Chrome e pode ser usado para melhorar a segurança em outros apps do Google quando sua conta está conectada.</translation>
 <translation id="7191430249889272776">Guia aberta no plano de fundo.</translation>
 <translation id="7196215469483532480">Explicação sobre o Guia de privacidade aberta no tamanho máximo</translation>
+<translation id="7207760545532569765">Restaurar <ph name="TAB_COUNT" /> guias como novas guias em segundo plano.</translation>
 <translation id="7208109991155904980">Reação movida</translation>
 <translation id="7222235798733126207">Compartilhamento entre sites limitado</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 download pendente}one{# download pendente}other{# downloads pendentes}}</translation>
@@ -1517,6 +1519,7 @@ Os tokens de confiança melhoram a privacidade na Web e não podem ser usados pa
 <translation id="9148126808321036104">Faça login novamente</translation>
 <translation id="9155898266292537608">Você também pode pesquisar com um toque rápido em uma palavra</translation>
 <translation id="9158770349521403363">Compartilhar apenas o conteúdo</translation>
+<translation id="9159716826369098114">Restaurar grupo de <ph name="TAB_COUNT" /> guias como um novo grupo de guias em segundo plano.</translation>
 <translation id="916446198114569890">Os URLs que você acessa ficam armazenados na sua Conta do Google</translation>
 <translation id="9169507124922466868">Histórico de navegação parcialmente aberto</translation>
 <translation id="9187955620966010988">Reação ajustada</translation>

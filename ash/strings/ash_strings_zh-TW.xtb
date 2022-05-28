@@ -695,6 +695,7 @@
 <translation id="5071064518267176975">某個應用程式要求使用麥克風</translation>
 <translation id="5078796286268621944">PIN 不正確</translation>
 <translation id="5083553833479578423">啟用更多 Google 助理功能。</translation>
+<translation id="509790653408515442">串流播放手機的應用程式時，這些應用程式會顯示在這裡</translation>
 <translation id="5107522548814527560">網頁</translation>
 <translation id="5117590920725113268">顯示下一個月</translation>
 <translation id="5136175204352732067">已連接其他鍵盤</translation>
@@ -717,6 +718,7 @@
 <translation id="523505283826916779">無障礙設定</translation>
 <translation id="5245201184978705914">無法產生轉錄稿</translation>
 <translation id="5253783950165989294">已連線至名為「<ph name="DEVICE_NAME" />」的裝置，電池電力：<ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="5258528442992323769">沒有已儲存的桌面</translation>
 <translation id="5260676007519551770">桌面 4</translation>
 <translation id="5283099933536931082">「<ph name="APP_ITEM_TITLE" />」有通知需要查看。</translation>
 <translation id="5283198616748585639">增加 1 分鐘</translation>
@@ -1254,6 +1256,7 @@
 <translation id="851458219935658693">顯示目前桌面的視窗，已點選圓形按鈕</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> 在開啟時可能無法充電。</translation>
 <translation id="8535393432370007982">復原依顏色排列順序</translation>
+<translation id="8542053257095774575">沒有已儲存的桌面或範本</translation>
 <translation id="8546059259582788728">已成功復原排列順序</translation>
 <translation id="8551588720239073785">日期和時間設定</translation>
 <translation id="8553395910833293175">已指派給所有桌面。</translation>

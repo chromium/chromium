@@ -61,6 +61,7 @@
 <translation id="2583187216237139145">ଏହି ପ୍ରୋଫାଇଲର ବ୍ୟବହାର ସମୟରେ ସୃଷ୍ଟି ହୋଇଥିବା ଯେ କୌଣସି Chromium ଡାଟା (ଯେପରି ବୁକମାର୍କ୍, ଇତିହାସ, ପାସୱାର୍ଡ ଏବଂ ଅନ୍ୟ ସେଟିଂସର କ୍ରିଏସନ୍) ୱାର୍କ ପ୍ରୋଫାଇଲ୍ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ୱାରା କାଢ଼ି ଦିଆଯାଇପାରିବ। <ph name="LEARN_MORE" /></translation>
 <translation id="2648074677641340862">ଇନ୍‍ଷ୍ଟଲେସନ୍ ସମୟରେ ଏକ ଅପରେଟିଂ ସିଷ୍ଟମ୍ ତ୍ରୁଟି ଦେଖାଦେଲା। ଦୟାକରି Chromium ପୁଣି ଡାଉନ୍‌ଲୋଡ୍ କରନ୍ତୁ।</translation>
 <translation id="2661879430930417727">ଯଦି ଆପଣ ଏକ ଡିଭାଇସକୁ ସେୟାର୍ କରନ୍ତି, ତେବେ ସାଙ୍ଗ ଏବଂ ପରିବାରର ଲୋକମାନେ ଅଲଗା ଭାବରେ ବ୍ରାଉଜ୍ କରିପାରିବେ ଓ ସେମାନଙ୍କ ପସନ୍ଦ ଅନୁସାରେ Chromiumକୁ ସେଟ୍ ଅପ୍ କରିପାରିବେ</translation>
+<translation id="268602741124540128">Chromiumକୁ ସ୍ଵାଗତ, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="2711502716910134313">Chromium ଟାବ୍</translation>
 <translation id="2718390899429598676">ଅତିରିକ୍ତ ସୁରକ୍ଷା ପାଇଁ, Chromium ଆପଣଙ୍କର ଡାଟା ଏନ୍‍କ୍ରିପ୍ଟ କରିବ।</translation>
 <translation id="2770231113462710648">ଏଠାକୁ ଡିଫଲ୍ଟ ବ୍ରାଉଜର୍‌କୁ ପରିବର୍ତ୍ତନ କରନ୍ତୁ:</translation>
@@ -119,9 +120,11 @@
 <translation id="3830894615770080216">ChromiumOS ସିଷ୍ଟମ</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
 <translation id="386822487697155367">ChromiumOS ମାଧ୍ୟମରେ ସାହାଯ୍ୟ ପାଆନ୍ତୁ</translation>
+<translation id="3871664619793219264"><ph name="ACCOUNT_EMAIL" />ରୁ ଆପଣଙ୍କ Chromium ବ୍ରାଉଜର ଷ୍ଟଫ ପାଆନ୍ତୁ</translation>
 <translation id="388648406173476553">Chromium କଷ୍ଟମାଇଜ୍ ଓ ନିୟନ୍ତ୍ରଣ କରନ୍ତୁ କିଛି ଆପଣଙ୍କର ଧ୍ୟାନ ଦେବା ଆବଶ୍ୟକ କରୁଛି - ବିବରଣୀ ପାଇଁ କ୍ଲିକ୍ କରନ୍ତୁ।</translation>
 <translation id="3889543394854987837">Chromium ଖୋଲିବା ପାଇଁ ଆପଣଙ୍କର ନାମ ଉପରେ କ୍ଲିକ୍ କରନ୍ତୁ ଏବଂ ବ୍ରାଉଜ୍ କରିବା ଆରମ୍ଭ କରନ୍ତୁ।</translation>
 <translation id="390528597099634151"><ph name="EXISTING_USER" /> ଏହି Chromium ପ୍ରୋଫାଇଲରେ ପୂର୍ବରୁ ସାଇନ୍ ଇନ୍ କରିସାରିଛନ୍ତି। ଆପଣଙ୍କ ବ୍ରାଉଜିଂକୁ ଅଲଗା ରଖିବା ପାଇଁ, Chromium ଆପଣଙ୍କ ପାଇଁ ଆପଣଙ୍କର ନିଜର ପ୍ରୋଫାଇଲ୍ ତିଆରି କରିପାରିବ।</translation>
+<translation id="391789666908693569">ଆପଣଙ୍କ ଆକାଉଣ୍ଟ <ph name="MANAGER_NAME" />ଙ୍କ ଦ୍ୱାରା ପରିଚାଳନା କରାଯାଉଛି। ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର ଏହି Chromium ବ୍ରାଉଜର ପ୍ରୋଫାଇଲ ଏବଂ ଏହାର ବୁକମାର୍କ, ଇତିହାସ ଏବଂ ପାସୱାର୍ଡଗୁଡ଼ିକ ପରି ଡାଟାକୁ ଦେଖିପାରିବେ ଓ ଏଡିଟ କରିପାରିବେ।</translation>
 <translation id="3945058413678539331">Chromium ପାସୱାର୍ଡଗୁଡ଼ିକ କପି କରିବାକୁ ଚେଷ୍ଟା କରୁଛି। ଏହାକୁ ଅନୁମତି ଦେବା ପାଇଁ ଆପଣଙ୍କର Windows ପାସୱାର୍ଡ ଟାଇପ୍ କରନ୍ତୁ।</translation>
 <translation id="3962623956404948996">ଏହି ଫାଇଲଟି ବିପଦଜନକ ହୋଇଥାଇପାରେ ବୋଲି Chromium ଏହାକୁ ସ୍କାନ କରିବାକୁ ସୁପାରିଶ କରୁଛି</translation>
 <translation id="3997429360543082038">ChromiumOS ବିଷୟରେ</translation>

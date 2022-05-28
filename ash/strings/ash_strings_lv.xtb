@@ -698,6 +698,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="5071064518267176975">Lietotne pieprasa atļauju izmantot mikrofonu</translation>
 <translation id="5078796286268621944">Nepareizs PIN</translation>
 <translation id="5083553833479578423">Piekļūstiet citām Asistenta funkcijām</translation>
+<translation id="509790653408515442">Šeit būs redzamas jūsu tālruņa lietotnes, kad tās straumēsiet.</translation>
 <translation id="5107522548814527560">Tīmeklis</translation>
 <translation id="5117590920725113268">Rādīt nākamo mēnesi</translation>
 <translation id="5136175204352732067">Ir pievienota cita tastatūra</translation>
@@ -720,6 +721,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="523505283826916779">Pieejamības iestatījumi</translation>
 <translation id="5245201184978705914">Nevar ģenerēt transkripciju.</translation>
 <translation id="5253783950165989294">Izveidots savienojums ar ierīci “<ph name="DEVICE_NAME" />”, akumulatora uzlādes līmenis: <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="5258528442992323769">Nav saglabātu darbvietu</translation>
 <translation id="5260676007519551770">4. galds</translation>
 <translation id="5283099933536931082">Lietotne <ph name="APP_ITEM_TITLE" /> aicina pievērst tai uzmanību.</translation>
 <translation id="5283198616748585639">Pievienot 1 min</translation>
@@ -1259,6 +1261,7 @@ Jauna instalācija</translation>
 <translation id="851458219935658693">Atlasīta poga “Rādīt pašreizējās darbvietas logus”</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> ierīce, iespējams, netiks uzlādēta, kamēr tā būs ieslēgta.</translation>
 <translation id="8535393432370007982">Atsaukt kārtošanu pēc krāsas</translation>
+<translation id="8542053257095774575">Nav saglabātu darbvietu vai veidņu</translation>
 <translation id="8546059259582788728">Kārtošana sekmīgi atsaukta</translation>
 <translation id="8551588720239073785">Datuma un laika iestatījumi</translation>
 <translation id="8553395910833293175">Jau ir redzams visās darbvietās.</translation>

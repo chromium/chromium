@@ -3573,6 +3573,7 @@
 <translation id="4960597185231686653">布林值標記，表示螢幕小鍵盤是否能提供語音輸入功能。</translation>
 <translation id="4970046075219007744">允許網頁應用程式要求使用者授予透過 File Handling API 存取特定類型檔案的權限</translation>
 <translation id="4970855112942626932">禁止登入瀏覽器</translation>
+<translation id="4974091268178043378">Chrome OS 色彩模式</translation>
 <translation id="4976928720873547342">如果設定了這項政策，系統會將所有指定的資料類型從同步處理作業 (包含 <ph name="CHROME_SYNC_NAME" />和漫遊設定檔的同步處理作業) 中排除。這有助於縮減漫遊設定檔的大小，或限制上傳到 <ph name="CHROME_SYNC_NAME" />伺服器的資料類型。
 
       這項政策目前涵蓋的資料類型為：「bookmarks」、「readingList」、「preferences」、「passwords」、「autofill」、「themes」、「typedUrls」、「extensions」、「apps」、「tabs」、「wifiConfigurations」。這些名稱有大小寫之分。</translation>
@@ -4308,6 +4309,7 @@
 
       使用者無法變更這項設定。</translation>
 <translation id="5848438019586925019">用於產生金鑰組的演算法。</translation>
+<translation id="5851248808417680865">使用深色主題</translation>
 <translation id="585270638818921943">禁止使用者使用來源不受信任的 Android 應用程式</translation>
 <translation id="5853547031212075792">允許使用者啟用僅限 HTTPS 模式</translation>
 <translation id="5859344336338527083">你可以透過這項政策，指定可安裝擴充功能、應用程式和主題的網址。在 <ph name="PRODUCT_NAME" /> 21 以前的版本中，使用者只要點選 *.crx 檔案的連結，<ph name="PRODUCT_NAME" /> 就會在顯示幾則警告訊息後，詢問使用者是否要安裝該檔案。在後續版本中，使用者則必須先下載這類檔案，再將檔案拖曳至 <ph name="PRODUCT_NAME" /> 設定頁面中。透過這項設定，你可以允許特定網址使用較簡易的舊式安裝流程。
@@ -4474,6 +4476,7 @@
 
       如果是 <ph name="PRODUCT_NAME" />，只有在已透過 <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> 註冊裝置的情況下，這項政策才會生效。
       如果是 <ph name="PRODUCT_OS_NAME" />，這項政策會一律生效。</translation>
+<translation id="6019162469732742754">使用自動模式</translation>
 <translation id="6019606564278029236">允許遠端使用者在遠端協助工作階段中操控權限較高的視窗</translation>
 <translation id="6022948604095165524">起始動作</translation>
 <translation id="602318745029752898">允許使用隨選朗讀中的加強型網路文字轉語音功能</translation>
@@ -5453,6 +5456,7 @@
 <translation id="7019805045859631636">快</translation>
 <translation id="7025332601572838001">設定第一次執行 CCT 時的《服務條款》相關行為</translation>
 <translation id="7026351325994257733">允許在搭載 <ph name="PRODUCT_OS_NAME" />的裝置和已連結的 Android 手機上，將 Wi-Fi 網路設定保持同步。</translation>
+<translation id="7027057540229843762">使用淺色主題</translation>
 <translation id="7027785306666625591">設定 <ph name="PRODUCT_OS_NAME" /> 的電源管理。
 
       這些政策可讓你設定當使用者閒置一段時間後，要讓 <ph name="PRODUCT_OS_NAME" /> 採取的動作。</translation>
@@ -6979,6 +6983,9 @@
 
       不過，「http://notexample.com/」、「http://example.com.invalid.com/」、「http://example.comabc/」只有在「Default」模式下才會是相符的結果；「http://acme.com/ABC」則只會在「IESiteListMode」模式下才會是相符的結果。</translation>
 <translation id="8736538322216687231">強制執行低度的 YouTube 嚴格篩選模式</translation>
+<translation id="8744844164152340112">控管在 OOBE 和工作階段期間用於算繪 UI 的主題 (深色/淺色/自動)。
+      自動模式會在日出和日落時，自動在深色和淺色主題間切換。
+      建議採用這項政策，讓使用者能夠在系統設定中變更主題。</translation>
 <translation id="8745669971728319820">這項政策可控管系統是否要回報擴充功能和外掛程式資訊。
 
       如果不設定 <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> 政策或設為停用，系統會忽略這項政策。

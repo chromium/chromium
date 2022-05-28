@@ -252,6 +252,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="243878895369688216">Otwierane wczoraj</translation>
 <translation id="2441427462554639370">Nagrywanie zostało zakończone z powodu krytycznie małej ilości dostępnego miejsca</translation>
 <translation id="24452542372838207">Rozwiń powiadomienie</translation>
+<translation id="2449089818483227734">Słaba bateria</translation>
 <translation id="2450205753526923158">Tryb zrzutu ekranu</translation>
 <translation id="2456008742792828469">Kalendarz, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2473177541599297363">Potwierdź rozdzielczość</translation>
@@ -412,11 +413,13 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">Urządzenie USB-C</translation>
+<translation id="3455468639467374593">Szablon, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3465223694362104965">Od czasu Twojego ostatniego logowania do tego urządzenia podłączono inną klawiaturę. Zanim jej użyjesz, upewnij się, że masz do niej zaufanie.</translation>
 <translation id="3465356146291925647">Zarządzana przez administratora</translation>
 <translation id="3477079411857374384">Control+Shift+spacja</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, siła sygnału: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Półka ukryta automatycznie</translation>
+<translation id="3505066820268455558">Bateria się ładuje</translation>
 <translation id="3509391053705095206">Nie udało się znaleźć telefonu. Sprawdź, czy jest na nim włączony Bluetooth.</translation>
 <translation id="3510164367642747937">Podświetlaj wskaźnik myszy</translation>
 <translation id="3513798432020909783">Kontem zarządza <ph name="MANAGER_EMAIL" /></translation>
@@ -457,6 +460,8 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="3633097874324966332">Otwórz ustawienia Bluetooth, aby sparować urządzenie</translation>
 <translation id="3638400994746983214">Przełącz ekran chroniący prywatność. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Zaległa aktualizacja</translation>
+<translation id="3659814201068740063">Pozostało około <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" />%).
+Podłącz urządzenie do zasilania.</translation>
 <translation id="366222428570480733">Użytkownik zarządzany <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="36813544980941320">Twój telefon i <ph name="DEVICE_NAME" /> będą wspólnie korzystać z sieci Wi-Fi</translation>
 <translation id="3694122362646626770">Witryny</translation>
@@ -511,6 +516,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="3962859241508114581">Poprzedni utwór</translation>
 <translation id="3969043077941541451">Wyłączone</translation>
 <translation id="397105322502079400">Obliczanie...</translation>
+<translation id="397726367135689299">Ładowanie baterii może przebiegać nieprawidłowo.</translation>
 <translation id="3977512764614765090">Naładowanie baterii: <ph name="PERCENTAGE" />%. Trwa ładowanie.</translation>
 <translation id="3986082989454912832">Odpowiedz</translation>
 <translation id="3995138139523574647">Urządzenie USB-C (tylny port na prawym boku)</translation>
@@ -1037,6 +1043,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="7130207228079676353">NAJBARDZIEJ PRAWDOPODOBNE</translation>
 <translation id="7131634465328662194">Nastąpi automatyczne wylogowanie.</translation>
 <translation id="7143207342074048698">Łączenie</translation>
+<translation id="7144942256906679589">Stan baterii</translation>
 <translation id="7165278925115064263">Alt + Shift + K</translation>
 <translation id="7168224885072002358">Powrót do wcześniejszej rozdzielczości za <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Odśwież</translation>
@@ -1103,6 +1110,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="7593891976182323525">Szukaj lub Shift</translation>
 <translation id="7600875258240007829">Zobacz wszystkie powiadomienia</translation>
 <translation id="7607002721634913082">Wstrzymano</translation>
+<translation id="7609951632080598826">Widok kalendarza, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Kamera została ponownie połączona.</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7633755430369750696">Pokaż ustawienia Udostępniania w pobliżu.</translation>
@@ -1228,6 +1236,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="8345019317483336363">Wybrano okno <ph name="WINDOW_TITLE" /></translation>
 <translation id="8351131234907093545">Utwórz notatkę</translation>
 <translation id="8364673525741149932">Przełączanie trybu Shelf Party. <ph name="STATE_TEXT" /></translation>
+<translation id="8369166482916924789">Zapisane biurko, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">Do przodu o jedną literę</translation>
 <translation id="8371991222807690464">W trybie gościa urządzenia peryferyjne mogą działać mniej wydajnie.</translation>
 <translation id="8374601332003098278">Aby nagrać fragment ekranu, naciśnij Enter</translation>
@@ -1340,6 +1349,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="9000771174482730261">ZARZĄDZAJ MIEJSCEM NA DANE</translation>
 <translation id="9017320285115481645">Wpisz kod dostępu rodzica w Family Link.</translation>
 <translation id="9024331582947483881">pełny ekran</translation>
+<translation id="9029736946581028033">Urządzenie wkrótce straci zasilanie</translation>
 <translation id="9030319654231318877">Wyłączony do zachodu słońca</translation>
 <translation id="9034924485347205037">Pliki Linuksa</translation>
 <translation id="9047624247355796468">Otwórz ustawienia sieci <ph name="NETWORK_NAME" /></translation>
@@ -1369,6 +1379,7 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="9168436347345867845">Później</translation>
 <translation id="9178475906033259337">Wyświetlam 1 wynik dla zapytania <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Ta funkcja umożliwia szybki dostęp do każdego konta zalogowanego użytkownika bez konieczności podawania hasła. Używaj jej tylko w przypadku kont, którym ufasz.</translation>
+<translation id="9180906851711123156">Aby zamknąć, naciśnij Ctrl+W</translation>
 <translation id="9183456764293710005">Lupa pełnego ekranu</translation>
 <translation id="9193626018745640770">Przesyłam do nieznanego odbiornika</translation>
 <translation id="9194617393863864469">Zaloguj innego użytkownika...</translation>

@@ -252,7 +252,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="243878895369688216">Otvoreno jučer</translation>
 <translation id="2441427462554639370">Snimanje je prekinuto zbog jako malo slobodnog prostora za pohranu</translation>
 <translation id="24452542372838207">Proširi obavještenje</translation>
-<translation id="2449089818483227734">Slaba baterija</translation>
+<translation id="2449089818483227734">Baterija je slaba</translation>
 <translation id="2450205753526923158">Način rada za snimak ekrana</translation>
 <translation id="2456008742792828469">Kalendar, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2473177541599297363">Potvrdite rezoluciju</translation>
@@ -413,7 +413,7 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">USB-C uređaj</translation>
-<translation id="3455468639467374593">Predložak, <ph name="TEMPLATE_NAME" /></translation>
+<translation id="3455468639467374593">Šablon, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3465223694362104965">Od vaše posljednje prijave na ovaj uređaj je povezana još jedna tastatura. Prije nego što upotrijebite tu tastaturu, provjerite je li pouzdana.</translation>
 <translation id="3465356146291925647">Upravlja vaš administrator</translation>
 <translation id="3477079411857374384">Ctrl + Shift + razmak</translation>
@@ -460,8 +460,8 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="3633097874324966332">Otvorite postavke Bluetootha da uparite uređaj</translation>
 <translation id="3638400994746983214">Uključite/isključite ekran za privatnost. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Rok za ažuriranje je prekoračen</translation>
-<translation id="3659814201068740063">Još oko <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" />%).
-Priključite uređaj na napajanje.</translation>
+<translation id="3659814201068740063">Preostalo je oko <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" />%).
+Povežite uređaj na napajanje.</translation>
 <translation id="366222428570480733">Korisnik kojim upravlja <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="36813544980941320">WiFi mreže će se dijeliti između vašeg telefona i uređaja <ph name="DEVICE_NAME" /></translation>
 <translation id="3694122362646626770">Web-lokacije</translation>
@@ -516,7 +516,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="3962859241508114581">Prethodna numera</translation>
 <translation id="3969043077941541451">Isključeno</translation>
 <translation id="397105322502079400">Računanje…</translation>
-<translation id="397726367135689299">Punjenje baterije možda nije pouzdano.</translation>
+<translation id="397726367135689299">Punjenje baterije može biti nepouzdano.</translation>
 <translation id="3977512764614765090">Baterija je na <ph name="PERCENTAGE" />% i puni se.</translation>
 <translation id="3986082989454912832">Odgovori</translation>
 <translation id="3995138139523574647">USB-C uređaj (stražnji desni priključak)</translation>
@@ -1237,7 +1237,7 @@ Nova instalacija</translation>
 <translation id="8345019317483336363">Odabran je prozor <ph name="WINDOW_TITLE" /></translation>
 <translation id="8351131234907093545">Napravite bilješku</translation>
 <translation id="8364673525741149932">Uključite Shelf Party. <ph name="STATE_TEXT" /></translation>
-<translation id="8369166482916924789">Spremljena radna površina, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
+<translation id="8369166482916924789">Sačuvana radna površina, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">Slovo unaprijed</translation>
 <translation id="8371991222807690464">Performanse perifernog uređaja mogu biti ograničene u Načinu rada za gosta</translation>
 <translation id="8374601332003098278">Pritisnite Enter da snimite dio ekrana</translation>
@@ -1380,7 +1380,7 @@ Nova instalacija</translation>
 <translation id="9168436347345867845">Uradit ću to kasnije</translation>
 <translation id="9178475906033259337">Prikaz 1 rezultata za upit <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Ova funkcija vam omogućava da brzo pristupite prijavljenim korisnicima bez lozinke. Ovu funkciju koristite samo s računima kojima vjerujete.</translation>
-<translation id="9180906851711123156">Pritisnite Ctrl + W da biste zatvorili</translation>
+<translation id="9180906851711123156">Pritisnite Ctrl + W da zatvorite</translation>
 <translation id="9183456764293710005">Povećalo za cijeli ekran</translation>
 <translation id="9193626018745640770">Emitiranje na nepoznatom prijemniku</translation>
 <translation id="9194617393863864469">Prijavite još jednog korisnika...</translation>

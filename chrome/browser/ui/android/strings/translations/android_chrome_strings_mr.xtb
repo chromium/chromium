@@ -1076,6 +1076,7 @@
 <translation id="6824899148643461612"><ph name="TAB_TITLE" /> हा टॅब निवडला</translation>
 <translation id="6828070228333235514">किमतीचा माग ठेवणे बंद करा</translation>
 <translation id="6833996806551876956">गोपनीयता सॅंडबॉक्स याची चाचणी</translation>
+<translation id="6836206421467243968">नवीन बॅकग्राउंड टॅब गट म्हणून <ph name="TITLE_OF_GROUP" /> टॅब गट रिस्टोअर करा.</translation>
 <translation id="6846298663435243399">लोड करत आहे...</translation>
 <translation id="6850409657436465440">तुमचे डाउनलोड अजून प्रगतीपथावर आहे</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> टॅब बंद केले</translation>
@@ -1138,6 +1139,7 @@
 <translation id="7187993566681480880">तुम्हाला Chrome वर सुरक्षित ठेवते आणि तुम्ही साइन इन केलेले असताना इतर Google अ‍ॅप्समध्ये तुमच्या सुरक्षेत सुधारणा करण्यासाठी वापरले जाऊ शकते.</translation>
 <translation id="7191430249889272776">पार्श्वभूमीवर उघडा असलेला टॅब.</translation>
 <translation id="7196215469483532480">गोपनीयता मार्गदर्शक स्पष्टीकरण पूर्ण उंचीवर उघडले आहे</translation>
+<translation id="7207760545532569765">नवीन बॅकग्राउंड टॅब गट म्हणून <ph name="TAB_COUNT" /> टॅब रिस्टोअर करा.</translation>
 <translation id="7208109991155904980">प्रतिक्रिया हलवली</translation>
 <translation id="7222235798733126207">साइटदरम्यान मर्यादित शेअरिंग</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{एक डाउनलोड बाकी आहे}other{# डाउनलोड बाकी आहेत}}</translation>
@@ -1516,6 +1518,7 @@
 <translation id="9148126808321036104">पुन्हा साइन इन करा </translation>
 <translation id="9155898266292537608">तुम्ही शब्दावर जलद टॅप करूनदेखील शोधू शकता</translation>
 <translation id="9158770349521403363">फक्त आशय शेअर करा</translation>
+<translation id="9159716826369098114">नवीन बॅकग्राउंड टॅब गट म्हणून <ph name="TAB_COUNT" /> टॅबचा टॅब गट रिस्टोअर करा.</translation>
 <translation id="916446198114569890">तुम्ही भेट देता त्या URL तुमच्या Google खात्यामध्ये सेव्ह केल्या जातात</translation>
 <translation id="9169507124922466868">नेव्हिगेशन इतिहास अर्धा उघडा आहे</translation>
 <translation id="9187955620966010988">प्रतिक्रिया अ‍ॅडजस्ट केली आहे</translation>

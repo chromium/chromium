@@ -698,6 +698,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="5071064518267176975">Une appli souhaite utiliser le micro</translation>
 <translation id="5078796286268621944">Code PIN incorrect</translation>
 <translation id="5083553833479578423">Déverrouiller plus de fonctionnalités de l'Assistant.</translation>
+<translation id="509790653408515442">Lorsque vous diffusez les applis de votre téléphone en streaming, elles s'affichent ici</translation>
 <translation id="5107522548814527560">Web</translation>
 <translation id="5117590920725113268">Afficher le mois suivant</translation>
 <translation id="5136175204352732067">Clavier différent branché</translation>
@@ -720,6 +721,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="523505283826916779">Paramètres d'accessibilité</translation>
 <translation id="5245201184978705914">Impossible de générer la transcription</translation>
 <translation id="5253783950165989294">Connecté à un appareil nommé "<ph name="DEVICE_NAME" />", batterie à <ph name="BATTERY_PERCENTAGE" /> %</translation>
+<translation id="5258528442992323769">Aucun bureau enregistré</translation>
 <translation id="5260676007519551770">Bureau 4</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> requiert votre attention.</translation>
 <translation id="5283198616748585639">Ajouter une minute</translation>
@@ -1259,6 +1261,7 @@ Nouvelle installation</translation>
 <translation id="851458219935658693">Afficher les fenêtres du bureau actuel, case d'option cochée</translation>
 <translation id="8517041960877371778">Il est possible que votre appareil <ph name="DEVICE_TYPE" /> ne se recharge pas lorsqu'il est allumé.</translation>
 <translation id="8535393432370007982">Annuler le tri par couleur</translation>
+<translation id="8542053257095774575">Aucun bureau ni modèle enregistré</translation>
 <translation id="8546059259582788728">Le tri a bien été annulé</translation>
 <translation id="8551588720239073785">Paramètres de date et d'heure</translation>
 <translation id="8553395910833293175">Association déjà faite sur tous les bureaux.</translation>

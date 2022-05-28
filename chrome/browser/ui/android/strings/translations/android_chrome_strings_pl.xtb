@@ -1076,6 +1076,7 @@ Tokeny zaufania zwiększają prywatność w sieci i nie można za ich pomocą 
 <translation id="6824899148643461612">Wybrano kartę <ph name="TAB_TITLE" /></translation>
 <translation id="6828070228333235514">Przestań monitorować cenę</translation>
 <translation id="6833996806551876956">Okres próbny piaskownicy prywatności</translation>
+<translation id="6836206421467243968">Przywróć grupę kart <ph name="TITLE_OF_GROUP" /> jako nową grupę kart w tle.</translation>
 <translation id="6846298663435243399">Wczytuję…</translation>
 <translation id="6850409657436465440">Pobieranie wciąż trwa</translation>
 <translation id="6850830437481525139">Zamknięte karty: <ph name="TAB_COUNT" /></translation>
@@ -1138,6 +1139,7 @@ Tokeny zaufania zwiększają prywatność w sieci i nie można za ich pomocą 
 <translation id="7187993566681480880">Dba o Twoje bezpieczeństwo w Chrome i może poprawiać Twoje bezpieczeństwo w innych aplikacjach Google, gdy się w nich zalogujesz.</translation>
 <translation id="7191430249889272776">Karta otwarta w tle.</translation>
 <translation id="7196215469483532480">Wyjaśnienie dotyczące Przewodnika po prywatności jest otwarte na całą wysokość</translation>
+<translation id="7207760545532569765">Przywróć karty (<ph name="TAB_COUNT" />) jako nowe karty w tle.</translation>
 <translation id="7208109991155904980">Reakcja została przeniesiona</translation>
 <translation id="7222235798733126207">Ograniczone udostępnianie treści między witrynami</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 plik oczekuje na pobranie}few{# pliki oczekują na pobranie}many{# plików oczekuje na pobranie}other{# pliku oczekuje na pobranie}}</translation>
@@ -1516,6 +1518,7 @@ Tokeny zaufania zwiększają prywatność w sieci i nie można za ich pomocą 
 <translation id="9148126808321036104">Zaloguj się ponownie</translation>
 <translation id="9155898266292537608">Możesz też wyszukiwać szybkim kliknięciem słowa</translation>
 <translation id="9158770349521403363">Udostępnij tylko treść</translation>
+<translation id="9159716826369098114">Przywróć grupę <ph name="TAB_COUNT" /> kart jako nową grupę kart w tle.</translation>
 <translation id="916446198114569890">Odwiedzane adresy URL są zapisywane na Twoim koncie Google</translation>
 <translation id="9169507124922466868">Historia nawigacji jest otwarta w połowie</translation>
 <translation id="9187955620966010988">Reakcja została dostosowana</translation>

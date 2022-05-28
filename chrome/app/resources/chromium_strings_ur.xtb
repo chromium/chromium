@@ -61,6 +61,7 @@
 <translation id="2583187216237139145">‏دفتری پروفائل کا منتظم اس پروفائل کے استعمال کے دوران جنریٹ ہونے والے کسی بھی Chromium ڈیٹا (جیسے، بُک مارکس کی تخلیق، سرگزشت، پاس ورڈز اور دیگر ترتیبات) کو ہٹا سکتا ہے۔ <ph name="LEARN_MORE" /></translation>
 <translation id="2648074677641340862">‏انسٹالیشن کے دوران آپریٹنگ سسٹم کی ایک خرابی پیش آ گئی۔ براہ کرم Chromium دوبارہ ڈاؤن لوڈ کریں۔</translation>
 <translation id="2661879430930417727">‏اگر آپ کسی آلے کا اشتراک کرتے ہیں تو دوست اور اہل خانہ الگ الگ براؤز کر سکتے ہیں اور Chromium کو اپنی مرضی کے مطابق سیٹ اپ کر سکتے ہیں</translation>
+<translation id="268602741124540128">‏Chromium میں خوش آمدید، <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="2711502716910134313">‏Chromium ٹیب</translation>
 <translation id="2718390899429598676">‏اضافی سیکیورٹی کیلئے، Chromium آپ کا ڈیٹا مرموز کر دے گا۔</translation>
 <translation id="2770231113462710648">ڈیفالٹ براؤزر کو اس میں تبدیل کریں:</translation>
@@ -119,9 +120,11 @@
 <translation id="3830894615770080216">‏ChromiumOS سسٹم</translation>
 <translation id="3848258323044014972">‎<ph name="PAGE_TITLE" /> - Chromium</translation>
 <translation id="386822487697155367">‏ChromiumOS کے بارے میں مدد حاصل کریں</translation>
+<translation id="3871664619793219264">‏<ph name="ACCOUNT_EMAIL" /> سے اپنے Chromium براؤزر کا مواد حاصل کریں</translation>
 <translation id="388648406173476553">‏Chromium کو حسب ضرورت بنائیں اور کنٹرول کریں۔ کچھ چیزوں کو آپ کی توجہ درکار ہے۔ تفصیلات کیلئے کلک کریں۔</translation>
 <translation id="3889543394854987837">‏Chromium کو کھولنے اور براؤزنگ شروع کرنے کیلئے اپنے نام پر کلک کریں۔</translation>
 <translation id="390528597099634151">‏<ph name="EXISTING_USER" /> اس Chromium پروفائل میں پہلے سے سائن ان ہے۔ اپنی براؤزنگ کو الگ رکھنے کیلئے، Chromium آپ کیلئے آپ کی ذاتی پروفائل تخلیق کر سکتا ہے۔</translation>
+<translation id="391789666908693569">‏<ph name="MANAGER_NAME" /> آپ کے اکاؤنٹ کا نظم کرتا ہے۔ آپ کا منتظم اس Chromium براؤزر کی پروفائل اور اس کا ڈیٹا جیسے بُک مارکس، سرگزشت اور پاس ورڈز دیکھ اور ان میں ترمیم کر سکتا ہے۔</translation>
 <translation id="3945058413678539331">‏Chromium پاس ورڈز کاپی کرنے کی کوشش کر رہا ہے۔ اس کی اجازت دینے کے لیے اپنا Windows پاس ورڈ ٹائپ کریں۔</translation>
 <translation id="3962623956404948996">‏Chromium اس فائل کو اسکین کرنے کی تجویز کرتا ہے کیونکہ یہ خطرناک ہو سکتی ہے</translation>
 <translation id="3997429360543082038">‏ChromiumOS کے بارے میں</translation>

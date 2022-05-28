@@ -838,6 +838,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1794051631868188691">Nunca mostrar <ph name="MERCHANT" /></translation>
 <translation id="1794791083288629568">Envie-nos comentários para nos ajudar a corrigir este problema.</translation>
 <translation id="1795214765651529549">Utilizar tema clássico</translation>
+<translation id="1796105431091975902">Selecione um guia interativo do Ansible para adicionar</translation>
 <translation id="1796588414813960292">As funcionalidades que necessitam de som não funcionarão</translation>
 <translation id="1800502858278951817">Nenhuma extensão pediu para ler e alterar <ph name="SITE_NAME" /></translation>
 <translation id="1802624026913571222">Suspender quando a tampa for fechada</translation>
@@ -2460,6 +2461,7 @@ Pretende pará-lo?</translation>
 <translation id="3348038390189153836">Detetado dispositivo removível</translation>
 <translation id="3348131053948466246">Emoji sugerido. Prima a seta para cima ou para baixo para navegar e Enter para inserir.</translation>
 <translation id="3349933790966648062">Utilização da memória</translation>
+<translation id="3353786022389205125">Ative a opção "Mostrar o ecrã de bloqueio quando for ativado após a suspensão" e tente novamente</translation>
 <translation id="3354972872297836698">Não foi possível sincronizar com o dispositivo <ph name="DEVICE_NAME" />; selecione o dispositivo para tentar novamente</translation>
 <translation id="3355936511340229503">Erro de ligação</translation>
 <translation id="3356469410714175391">(Cartão virtual ativado)</translation>
@@ -3033,6 +3035,7 @@ Pretende pará-lo?</translation>
 <translation id="389901847090970821">Selecionar teclado</translation>
 <translation id="3900966090527141178">Exportar palavras-passe</translation>
 <translation id="3903187154317825986">Teclado incorporado</translation>
+<translation id="3903191712482985591">Adicione um guia interativo</translation>
 <translation id="3904326018476041253">Serviços de localização</translation>
 <translation id="3904849010307028014">Com base na sua interação com um site, como iniciar sessão regularmente numa conta, esse site pode emitir um símbolo fidedigno para o seu navegador. Posteriormente, se outros sites que visitar verificarem e encontrarem um símbolo fidedigno válido, é mais provável que tratem o utilizador como uma pessoa e não como um bot.</translation>
 <translation id="3905761538810670789">Reparar aplicação</translation>
@@ -3641,6 +3644,7 @@ Pretende pará-lo?</translation>
 <translation id="4510479820467554003">Lista de contas parentais</translation>
 <translation id="451102079304155829">carrinhos</translation>
 <translation id="4513872120116766993">Escrita preditiva</translation>
+<translation id="4513909579793564731">Aplicar guia interativo</translation>
 <translation id="4513946894732546136">Comentários</translation>
 <translation id="451407183922382411">Com tecnologia da <ph name="COMPANY_NAME" /></translation>
 <translation id="4514610446763173167">Ativar/desativar vídeo para reprodução ou pausa.</translation>
@@ -4933,6 +4937,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5827733057563115968">Previsão da palavra seguinte</translation>
 <translation id="5828545842856466741">Adicionar perfil…</translation>
 <translation id="5828633471261496623">A imprimir...</translation>
+<translation id="5830205393314753525">Não é possível abrir a app <ph name="APP_NAME" /></translation>
 <translation id="5830720307094128296">Guard&amp;ar Página Como...</translation>
 <translation id="5832813618714645810">Perfis</translation>
 <translation id="583281660410589416">Desconhecido</translation>
@@ -5472,6 +5477,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="635609604405270300">Manter o dispositivo ativado</translation>
 <translation id="63566973648609420">Apenas alguém que conheça a sua frase de acesso pode ler os seus dados encriptados. A frase de acesso não é enviada para a Google nem armazenada pela mesma. Se se esquecer da frase de acesso ou pretender alterar esta definição, tem de <ph name="BEGIN_LINK" />repor a sincronização<ph name="END_LINK" />.</translation>
 <translation id="6357305427698525450">Alguns links suportados continuarão a ser abertos na app <ph name="APP_NAME" /> ou <ph name="APP_NAME_2" />.</translation>
+<translation id="6357794994761110294">Nenhuma extensão tem autorização para ler e alterar <ph name="SITE_NAME" /></translation>
 <translation id="6358884629796491903">Dragão</translation>
 <translation id="6361850914223837199">Detalhes do erro:</translation>
 <translation id="6362853299801475928">&amp;Comunicar um problema...</translation>

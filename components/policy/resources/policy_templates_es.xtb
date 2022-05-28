@@ -3642,6 +3642,7 @@ Si se define esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que l
 <translation id="4960597185231686653">Un indicador booleano que especifica si el teclado en pantalla permite usar la función de entrada de voz.</translation>
 <translation id="4970046075219007744">Permite que las aplicaciones web soliciten al usuario que les conceda acceso a ciertos tipos de archivo a través de la API File Handling</translation>
 <translation id="4970855112942626932">Inhabilitar inicio de sesión en el navegador</translation>
+<translation id="4974091268178043378">Modo de color de Chrome OS</translation>
 <translation id="4976928720873547342">Si se establece esta política, todos los tipos de datos especificados se excluirán de la sincronización de <ph name="CHROME_SYNC_NAME" /> y de la sincronización del perfil de roaming. Esto puede ser útil para reducir el tamaño del perfil de roaming o para limitar el tipo de datos que se suban a los servidores de <ph name="CHROME_SYNC_NAME" />.
 
       Los tipos de datos actuales para esta política son los siguientes: "bookmarks", "readingList", "preferences", "passwords", "autofill", "themes", "typedUrls", "extensions", "apps", "tabs" y "wifiConfigurations". Estos nombres distinguen entre mayúsculas y minúsculas.</translation>
@@ -4405,6 +4406,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 
       Los usuarios no podrán modificar este ajuste.</translation>
 <translation id="5848438019586925019">El algoritmo para generar pares de claves.</translation>
+<translation id="5851248808417680865">Usar el tema oscuro</translation>
 <translation id="585270638818921943">Evitar que el usuario utilice aplicaciones Android de fuentes que no son de confianza</translation>
 <translation id="5853547031212075792">Permitir que los usuarios habiliten el modo solo‑HTTPS</translation>
 <translation id="5859344336338527083">Si se define esta política, se especificarán las URL que pueden instalar extensiones, aplicaciones y temas. Antes de la versión 21 de <ph name="PRODUCT_NAME" />, los usuarios podían hacer clic en un enlace a un archivo .crx y <ph name="PRODUCT_NAME" /> les ofrecería la opción de instalar el archivo después de mostrar algunas advertencias. A continuación, esos archivos debían descargarse y arrastrarse a la página de configuración de <ph name="PRODUCT_NAME" />. Esta opción permite que determinadas URL sigan utilizando el proceso de instalación anterior, que era más sencillo.
@@ -4581,6 +4583,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 
       Esta política solo es efectiva cuando el equipo está registrado en <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> para <ph name="PRODUCT_NAME" />.
       Para <ph name="PRODUCT_OS_NAME" />, esta política siempre es efectiva.</translation>
+<translation id="6019162469732742754">Usar el modo automático</translation>
 <translation id="6019606564278029236">Habilitar la interacción de los usuarios remotos con ventanas con permisos de administrador en sesiones de asistencia remota</translation>
 <translation id="6022948604095165524">Acción al iniciar</translation>
 <translation id="602318745029752898">Permitir las voces de conversión de texto a voz de red mejorada en Enunciar selección</translation>
@@ -5584,6 +5587,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 <translation id="7019805045859631636">Rápido</translation>
 <translation id="7025332601572838001">Configuración del comportamiento de los Términos del Servicio durante la primera ejecución de CCT</translation>
 <translation id="7026351325994257733">Permitir que las configuraciones de la red Wi‑Fi se sincronicen en los dispositivos <ph name="PRODUCT_OS_NAME" /> y en un teléfono Android conectado.</translation>
+<translation id="7027057540229843762">Usar el tema claro</translation>
 <translation id="7027785306666625591">Configura la administración de energía en <ph name="PRODUCT_OS_NAME" />.
 
 Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_OS_NAME" /> cuando el usuario permanece inactivo durante un periodo de tiempo determinado.</translation>
@@ -7148,6 +7152,9 @@ Si se configura la política, los usuarios no podrán cambiar esta función. Si 
 
       "http://acme.com/ABC" solo sería coincidencia en IESiteListMode.</translation>
 <translation id="8736538322216687231">Aplicar el modo restringido en YouTube como mínimo</translation>
+<translation id="8744844164152340112">Controla el tema utilizado para renderizar la interfaz de usuario la primera vez que se usa el dispositivo y durante la sesión (oscuro/claro/automático).
+      El modo automático cambia automáticamente entre los temas oscuro y claro al amanecer y al atardecer.
+      Esta política debería recomendarse para ofrecer a los usuarios la opción de cambiar el tema en la configuración del sistema.</translation>
 <translation id="8745669971728319820">Esta política determina si se recoge información sobre extensiones y complementos.
 
       Si no se establece la política <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> o se inhabilita, esta se ignorará.

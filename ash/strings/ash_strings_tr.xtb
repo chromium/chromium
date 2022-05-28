@@ -698,6 +698,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="5071064518267176975">Bir uygulama, mikrofonu kullanmak istiyor</translation>
 <translation id="5078796286268621944">Yanlış PIN</translation>
 <translation id="5083553833479578423">Diğer Asistan özelliklerinin kilidini açın.</translation>
+<translation id="509790653408515442">Telefonunuzdan yayınladığınız uygulamalar burada görünür</translation>
 <translation id="5107522548814527560">Web</translation>
 <translation id="5117590920725113268">Sonraki ayı göster</translation>
 <translation id="5136175204352732067">Farklı klavye bağlandı</translation>
@@ -720,6 +721,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="523505283826916779">Erişilebilirlik ayarları</translation>
 <translation id="5245201184978705914">Transkript oluşturulamıyor</translation>
 <translation id="5253783950165989294"><ph name="DEVICE_NAME" /> adlı cihaza bağlanıldı, pil %<ph name="BATTERY_PERCENTAGE" /></translation>
+<translation id="5258528442992323769">Kayıtlı masa yok</translation>
 <translation id="5260676007519551770">Çalışma Masası 4</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" />, ilgilenmenizi gerektiriyor.</translation>
 <translation id="5283198616748585639">1 dk ekle</translation>
@@ -1259,6 +1261,7 @@ Yeni yüklenmiş</translation>
 <translation id="851458219935658693">Geçerli masadaki pencereleri göster, radyo düğmesi seçildi</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> cihazınız açıkken şarj olmayabilir.</translation>
 <translation id="8535393432370007982">Renge göre sıralama ölçütünü geri al</translation>
+<translation id="8542053257095774575">Kayıtlı masa veya şablon yok</translation>
 <translation id="8546059259582788728">Sıralama işlemi başarıyla geri alındı</translation>
 <translation id="8551588720239073785">Tarih ve zaman ayarları</translation>
 <translation id="8553395910833293175">Zaten tüm masalara atandı.</translation>

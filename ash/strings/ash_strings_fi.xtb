@@ -697,6 +697,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="5071064518267176975">Sovellus haluaa käyttää mikrofonia</translation>
 <translation id="5078796286268621944">Väärä PIN-koodi</translation>
 <translation id="5083553833479578423">Käytä lisää Assistantin ominaisuuksia.</translation>
+<translation id="509790653408515442">Kun striimaat puhelimen sovelluksia, ne näkyvät täällä</translation>
 <translation id="5107522548814527560">Verkko</translation>
 <translation id="5117590920725113268">Näytä seuraava kuukausi</translation>
 <translation id="5136175204352732067">Eri näppäimistö kytketty</translation>
@@ -719,6 +720,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="523505283826916779">Esteettömyysasetukset</translation>
 <translation id="5245201184978705914">Transkriptiota ei voi luoda</translation>
 <translation id="5253783950165989294">Yhdistetty laitteeseen nimeltä <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" /> % virtaa</translation>
+<translation id="5258528442992323769">Ei tallennettuja virtuaalityöpöytiä</translation>
 <translation id="5260676007519551770">Pöytä 4</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> pyytää huomiotasi.</translation>
 <translation id="5283198616748585639">Lisää 1 min</translation>
@@ -1258,6 +1260,7 @@ Uusi asennus</translation>
 <translation id="851458219935658693">Näytä ikkunat nykyiseltä työpöydältä, valintanappi valittu</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> ei välttämättä lataudu, kun se on käynnissä.</translation>
 <translation id="8535393432370007982">Kumoa värin mukaan lajittelu</translation>
+<translation id="8542053257095774575">Ei tallennettuja virtuaalityöpöytiä tai malleja</translation>
 <translation id="8546059259582788728">Lajittelun kumoaminen ei onnistunut</translation>
 <translation id="8551588720239073785">Aika- ja päivämääräasetukset</translation>
 <translation id="8553395910833293175">Lisätty jo kaikille työpöydille.</translation>

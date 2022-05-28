@@ -493,6 +493,7 @@
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{剩餘嘗試次數：{0} 次}other{剩餘嘗試次數：{0} 次}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />：<ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">無法完成掃描</translation>
+<translation id="5499762266711462226">鍵盤顏色是根據桌布而定</translation>
 <translation id="5502931783115429516">Android 未執行</translation>
 <translation id="5507300744274596613">確保 Chrome OS 為最新版本</translation>
 <translation id="5519195206574732858">LTE</translation>

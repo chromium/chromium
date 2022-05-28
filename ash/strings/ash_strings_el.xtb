@@ -252,6 +252,7 @@
 <translation id="243878895369688216">Ανοίχτηκαν χθες</translation>
 <translation id="2441427462554639370">Η εγγραφή ολοκληρώθηκε λόγω του εξαιρετικά περιορισμένου αποθηκευτικού χώρου.</translation>
 <translation id="24452542372838207">Ανάπτυξη ειδοποίησης</translation>
+<translation id="2449089818483227734">Χαμηλή ισχύς μπαταρίας</translation>
 <translation id="2450205753526923158">Λειτουργία στιγμιότυπου οθόνης</translation>
 <translation id="2456008742792828469">Ημερολόγιο, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2473177541599297363">Επιβεβαίωση ανάλυσης</translation>
@@ -412,11 +413,13 @@
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> λεπτά</translation>
 <translation id="3445925074670675829">Συσκευή USB-C</translation>
+<translation id="3455468639467374593">Πρότυπο, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3465223694362104965">Ένα άλλο πληκτρολόγιο έχει συνδεθεί με αυτήν τη συσκευή από την τελευταία σύνδεσή σας. Βεβαιωθείτε ότι εμπιστεύεστε αυτό το πληκτρολόγιο πριν το χρησιμοποιήσετε.</translation>
 <translation id="3465356146291925647">Διαχειριζόμενο από τον διαχειριστή σας</translation>
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Ισχύς σήματος <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Αυτόματη απόκρυψη ραφιού</translation>
+<translation id="3505066820268455558">Φόρτιση μπαταρίας</translation>
 <translation id="3509391053705095206">Δεν βρέθηκε το τηλέφωνό σας. Βεβαιωθείτε ότι το Bluetooth του τηλεφώνου είναι ενεργό.</translation>
 <translation id="3510164367642747937">Επισήμανση δείκτη ποντικιού</translation>
 <translation id="3513798432020909783">Ο λογαριασμός είναι διαχειριζόμενος από τον χρήστη <ph name="MANAGER_EMAIL" /></translation>
@@ -457,6 +460,8 @@
 <translation id="3633097874324966332">Ανοίξτε τις ρυθμίσεις Bluetooth για σύζευξη της συσκευής σας</translation>
 <translation id="3638400994746983214">Εναλλαγή οθόνης απορρήτου. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Εκπρόθεσμη ενημέρωση</translation>
+<translation id="3659814201068740063">Απομένουν περίπου <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" />%).
+Συνδέστε τη συσκευή σας στο ρεύμα.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Διαχειριζόμενος χρήστης</translation>
 <translation id="36813544980941320">Θα γίνει κοινοποίηση των δικτύων Wi-Fi μεταξύ του τηλεφώνου σας και της συσκευής <ph name="DEVICE_NAME" /></translation>
 <translation id="3694122362646626770">Ιστότοποι</translation>
@@ -511,6 +516,7 @@
 <translation id="3962859241508114581">Προηγούμενο κομμάτι</translation>
 <translation id="3969043077941541451">Ανενεργό</translation>
 <translation id="397105322502079400">Υπολογισμός…</translation>
+<translation id="397726367135689299">Η φόρτιση της μπαταρίας ενδέχεται να μην είναι αξιόπιστη.</translation>
 <translation id="3977512764614765090">Η μπαταρία είναι στο <ph name="PERCENTAGE" />% και φορτίζει.</translation>
 <translation id="3986082989454912832">Απάντηση</translation>
 <translation id="3995138139523574647">Συσκευή USB-C (πίσω δεξιά θύρα)</translation>
@@ -1038,6 +1044,7 @@
 <translation id="7130207228079676353">ΔΗΜΟΦΙΛΕΣΤΕΡΕΣ</translation>
 <translation id="7131634465328662194">Θα αποσυνδεθείτε αυτόματα.</translation>
 <translation id="7143207342074048698">Σύνδεση</translation>
+<translation id="7144942256906679589">Κατάσταση μπαταρίας</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358">Επαναφορά στην προηγούμενη ανάλυση σε <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Ανανέωση</translation>
@@ -1103,6 +1110,7 @@
 <translation id="7593891976182323525">Search ή Shift</translation>
 <translation id="7600875258240007829">Δείτε όλες τις ειδοποιήσεις</translation>
 <translation id="7607002721634913082">Έγινε παύση</translation>
+<translation id="7609951632080598826">Προβολή ημερολογίου, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Επανασύνδεση κάμερας.</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7633755430369750696">Εμφάνιση ρυθμίσεων της λειτουργίας Κοινοποίηση κοντά.</translation>
@@ -1228,6 +1236,7 @@
 <translation id="8345019317483336363">Επιλέχτηκε το παράθυρο <ph name="WINDOW_TITLE" />.</translation>
 <translation id="8351131234907093545">Δημιουργία σημείωσης</translation>
 <translation id="8364673525741149932">Εναλλαγή Shelf Party. <ph name="STATE_TEXT" /></translation>
+<translation id="8369166482916924789">Αποθηκευμένο γραφείο, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">Προώθηση ανά γράμμα</translation>
 <translation id="8371991222807690464">Η απόδοση των περιφερειακών ενδέχεται να περιορίζεται στη Λειτουργία επισκέπτη</translation>
 <translation id="8374601332003098278">Πατήστε Enter για εγγραφή μέρους της οθόνης</translation>
@@ -1339,6 +1348,7 @@
 <translation id="9000771174482730261">ΔΙΑΧΕΙΡΙΣΗ ΑΠΟΘΗΚΕΥΤΙΚΟΥ ΧΩΡΟΥ</translation>
 <translation id="9017320285115481645">Εισαγάγετε τον κωδικό πρόσβασης γονέα του Family Link.</translation>
 <translation id="9024331582947483881">πλήρης οθόνη</translation>
+<translation id="9029736946581028033">Η συσκευή θα απενεργοποιηθεί σύντομα</translation>
 <translation id="9030319654231318877">Ανενεργό μέχρι το ηλιοβασίλεμα</translation>
 <translation id="9034924485347205037">Αρχεία Linux</translation>
 <translation id="9047624247355796468">Άνοιγμα ρυθμίσεων για το δίκτυο <ph name="NETWORK_NAME" /></translation>
@@ -1368,6 +1378,7 @@
 <translation id="9168436347345867845">Αργότερα</translation>
 <translation id="9178475906033259337">Προβολή 1 αποτελέσματος για την αναζήτηση <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Αυτή η λειτουργία σάς επιτρέπει να έχετε γρήγορη πρόσβαση σε οποιονδήποτε συνδεδεμένο χρήστη, χωρίς να απαιτείται κωδικός πρόσβασης. Χρησιμοποιήστε αυτήν τη λειτουργία μόνο με λογαριασμούς που εμπιστεύεστε.</translation>
+<translation id="9180906851711123156">Πατήστε Ctrl+W για κλείσιμο</translation>
 <translation id="9183456764293710005">Μεγέθυνση πλήρους οθόνης</translation>
 <translation id="9193626018745640770">Μετάδοση σε άγνωστο δέκτη</translation>
 <translation id="9194617393863864469">Σύνδεση με άλλον χρήστη...</translation>

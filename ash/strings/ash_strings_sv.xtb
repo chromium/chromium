@@ -698,6 +698,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="5071064518267176975">En app vill använda mikrofonen</translation>
 <translation id="5078796286268621944">Fel pinkod</translation>
 <translation id="5083553833479578423">Lås upp fler funktioner för Assistent</translation>
+<translation id="509790653408515442">När du streamar telefonens appar visas de här</translation>
 <translation id="5107522548814527560">Webb</translation>
 <translation id="5117590920725113268">Visa nästa månad</translation>
 <translation id="5136175204352732067">Ett annat tangentbord har anslutits</translation>
@@ -720,6 +721,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="523505283826916779">Inställningar för tillgänglighet</translation>
 <translation id="5245201184978705914">Det gick inte att generera transkription</translation>
 <translation id="5253783950165989294">Ansluten till enheten <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" /> % batteri</translation>
+<translation id="5258528442992323769">Det finns inga sparade skrivbord</translation>
 <translation id="5260676007519551770">Skrivbord 4</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> begär din uppmärksamhet.</translation>
 <translation id="5283198616748585639">Lägg till en min</translation>
@@ -1259,6 +1261,7 @@ Nyligen installerad</translation>
 <translation id="851458219935658693">Visa fönster från det aktuella skrivbordet, alternativknapp har markerats</translation>
 <translation id="8517041960877371778">Din <ph name="DEVICE_TYPE" /> laddas eventuellt inte så länge den är på.</translation>
 <translation id="8535393432370007982">Ångra sortering efter färg</translation>
+<translation id="8542053257095774575">Det finns inga sparade skrivbord eller mallar</translation>
 <translation id="8546059259582788728">Sorteringen har ångrats.</translation>
 <translation id="8551588720239073785">Inställningar för datum och tid</translation>
 <translation id="8553395910833293175">Detta har redan tilldelats alla skrivbord.</translation>

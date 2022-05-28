@@ -252,6 +252,7 @@
 <translation id="243878895369688216">काल उघडलेली</translation>
 <translation id="2441427462554639370">स्टोरेज जागा अतिशय कमी असल्यामुळे रेकॉर्डिंग संपले</translation>
 <translation id="24452542372838207">सूचना विस्तार करा</translation>
+<translation id="2449089818483227734">बॅटरी कमी आहे</translation>
 <translation id="2450205753526923158">स्क्रीनशॉट मोड</translation>
 <translation id="2456008742792828469">कॅलेंडर, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2473177541599297363">रेझोल्यूशनची खात्री करा</translation>
@@ -412,11 +413,13 @@
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> मिनिटे</translation>
 <translation id="3445925074670675829">USB-C डिव्‍हाइस</translation>
+<translation id="3455468639467374593">टेंप्लेट, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3465223694362104965">तुम्ही शेवटचे साइन इन केल्यापासून या डिव्हाइसवर दुसरा कीबोर्ड कनेक्ट करण्यात आला आहे. तो वापरण्यापूर्वी तुमचा या कीबोर्डवर विश्वास असल्याची खात्री करा.</translation>
 <translation id="3465356146291925647">तुमच्या अ‍ॅडमिनिस्ट्रेटरने व्यवस्थापित केलेले</translation>
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">शेल्फ आपोआप लपवले</translation>
+<translation id="3505066820268455558">बॅटरी चार्ज होत आहे</translation>
 <translation id="3509391053705095206">तुमचा फोन शोधू शकत नाही. तुमच्या फोनचे ब्लूटूथ सुरू असल्याची खात्री करा.</translation>
 <translation id="3510164367642747937">माउसचा कर्सर हायलाइट करा</translation>
 <translation id="3513798432020909783">खाते <ph name="MANAGER_EMAIL" /> ने व्‍यवस्‍थापित केले आहे</translation>
@@ -457,6 +460,8 @@
 <translation id="3633097874324966332">तुमचे डिव्हाइस पेअर करण्यासाठी ब्लूटूथ सेटिंग्ज उघडा</translation>
 <translation id="3638400994746983214">गोपनीयता स्क्रीन टॉगल करा. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">अपडेटची मुदत संपली आहे</translation>
+<translation id="3659814201068740063">सुमारे <ph name="TIME_LEFT" /> शिल्लक (<ph name="PERCENTAGE" />%).
+तुमचे डिव्हाइस पॉवरशी कनेक्ट करा.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> व्यवस्थापित वापरकर्ता</translation>
 <translation id="36813544980941320">तुमचा फोन आणि <ph name="DEVICE_NAME" /> यांच्या दरम्यान वाय-फाय नेटवर्क शेअर केली जातील</translation>
 <translation id="3694122362646626770">वेबसाइट</translation>
@@ -511,6 +516,7 @@
 <translation id="3962859241508114581">मागील ट्रॅक</translation>
 <translation id="3969043077941541451">बंद आहे</translation>
 <translation id="397105322502079400">गणना करत आहे...</translation>
+<translation id="397726367135689299">बॅटरी चार्जिंग बेभरवशाचे असू शकते.</translation>
 <translation id="3977512764614765090">बॅटरी <ph name="PERCENTAGE" />% वर आहे आणि चार्ज होत आहे.</translation>
 <translation id="3986082989454912832">उत्तर</translation>
 <translation id="3995138139523574647">USB-C डिव्‍हाइस (उजव्या बाजूचे मागील पोर्ट)</translation>
@@ -1038,6 +1044,7 @@
 <translation id="7130207228079676353">सर्वाधिक शक्यता</translation>
 <translation id="7131634465328662194">तुम्हाला आपोआप साइन आउट केले जाईल.</translation>
 <translation id="7143207342074048698">कनेक्ट करत आहे</translation>
+<translation id="7144942256906679589">बॅटरीची स्थिती</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" /> मध्ये जुन्या रिझोल्युशनवर परत करत आहे</translation>
 <translation id="7180611975245234373">रिफ्रेश करा</translation>
@@ -1104,6 +1111,7 @@
 <translation id="7593891976182323525">Search किंवा Shift</translation>
 <translation id="7600875258240007829">सर्व सूचना पहा</translation>
 <translation id="7607002721634913082">विराम द्या</translation>
+<translation id="7609951632080598826">कॅलेंडर दृश्य, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">कॅमेरा पुन्हा कनेक्ट केला.</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° फॅ</translation>
 <translation id="7633755430369750696">Nearby सह शेअरिंग सेटिंग्ज दाखवा.</translation>
@@ -1229,6 +1237,7 @@
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> विंडो निवडली</translation>
 <translation id="8351131234907093545">टीप तयार करा</translation>
 <translation id="8364673525741149932">शेल्फ पार्टी टॉगल करा. <ph name="STATE_TEXT" /></translation>
+<translation id="8369166482916924789">सेव्ह केलेला डेस्‍क, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">एक अक्षर पुढे जा</translation>
 <translation id="8371991222807690464">अतिथी मोडमध्ये पेरिफेरल परफॉर्मन्स मर्यादित असू शकतो</translation>
 <translation id="8374601332003098278">आंशिक स्क्रीन रेकॉर्ड करण्यासाठी एंटर दाबा</translation>
@@ -1341,6 +1350,7 @@
 <translation id="9000771174482730261">स्टोरेज व्यवस्थापित करा</translation>
 <translation id="9017320285115481645">Family Link पालक ॲक्सेस कोड एंटर करा.</translation>
 <translation id="9024331582947483881">फुल स्क्रीन</translation>
+<translation id="9029736946581028033">डिव्हाइसची पॉवर लवकरच संपेल</translation>
 <translation id="9030319654231318877">सूर्यास्तापर्यंत बंद</translation>
 <translation id="9034924485347205037">Linux फाइल</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> साठी सेटिंग्ज उघडा</translation>
@@ -1371,6 +1381,7 @@
 <translation id="9168436347345867845">ते नंतर करा</translation>
 <translation id="9178475906033259337"><ph name="QUERY" /> साठी एक परिणाम दाखवत आहे</translation>
 <translation id="9179259655489829027">हे वैशिष्ट्य तुम्हाला पासवर्ड शिवाय कोणत्याही साइन-इन केलेल्या वापरकर्त्यास जलदपणे ॲक्सेस करण्याची परवानगी  देते. तुमचा विश्वास असलेल्या खात्यांसाठीच फक्त या वैशिष्ट्याचा वापर करा.</translation>
+<translation id="9180906851711123156">बंद करण्यासाठी Ctrl+W दाबा</translation>
 <translation id="9183456764293710005">फुल-स्क्रीन मॅग्निफायर</translation>
 <translation id="9193626018745640770">एका अज्ञात मिळवणाऱ्यावर कास्ट करत आहे</translation>
 <translation id="9194617393863864469">दुसरा वापरकर्ता साइन इन करा...</translation>

@@ -840,6 +840,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1794051631868188691">Nigdy tego nie pokazuj (<ph name="MERCHANT" />)</translation>
 <translation id="1794791083288629568">Wyślij opinię, by pomóc nam rozwiązać ten problem.</translation>
 <translation id="1795214765651529549">Użyj motywu klasycznego</translation>
+<translation id="1796105431091975902">Wybierz playbook Ansible, który chcesz dodać</translation>
 <translation id="1796588414813960292">Funkcje, które wymagają dźwięku, nie będą działać</translation>
 <translation id="1800502858278951817">Żadne rozszerzenia nie prosiły o uprawnienie do odczytywania i modyfikowania witryny <ph name="SITE_NAME" /></translation>
 <translation id="1802624026913571222">Uśpij po zamknięciu pokrywy</translation>
@@ -3025,6 +3026,7 @@ Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="389901847090970821">Wybierz klawiaturę</translation>
 <translation id="3900966090527141178">Eksportuj hasła</translation>
 <translation id="3903187154317825986">Klawiatura wbudowana</translation>
+<translation id="3903191712482985591">Dodaj playbook</translation>
 <translation id="3904326018476041253">Usługi lokalizacyjne</translation>
 <translation id="3904849010307028014">Na podstawie Twoich interakcji z witryną, na przykład regularnego logowania się na konto, może ona wystawić token zaufania do Twojej przeglądarki. Jeśli później inne odwiedzane przez Ciebie witryny znajdą ważny token zaufania, z większym prawdopodobieństwem uznają Cię za człowieka, a nie bota.</translation>
 <translation id="3905761538810670789">Napraw aplikację</translation>
@@ -3635,6 +3637,7 @@ Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="4510479820467554003">Lista kont rodzica</translation>
 <translation id="451102079304155829">koszyki</translation>
 <translation id="4513872120116766993">Przewidywanie tekstu podczas pisania</translation>
+<translation id="4513909579793564731">Zastosuj playbook</translation>
 <translation id="4513946894732546136">Twoja opinia</translation>
 <translation id="451407183922382411">Technologia <ph name="COMPANY_NAME" /></translation>
 <translation id="4514610446763173167">Przełącz, by odtworzyć lub wstrzymać wideo</translation>
@@ -5467,6 +5470,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="635609604405270300">Nie wyłączaj urządzenia</translation>
 <translation id="63566973648609420">Twoje zaszyfrowane dane może odczytać tylko ktoś znający hasło. Google nie otrzyma Twojego hasła ani nie będzie go przechowywać. Jeśli je zapomnisz lub zechcesz zmienić to ustawienie, musisz <ph name="BEGIN_LINK" />zresetować synchronizację<ph name="END_LINK" />.</translation>
 <translation id="6357305427698525450">Niektóre obsługiwane linki nadal będą się otwierać w aplikacjach <ph name="APP_NAME" /> lub <ph name="APP_NAME_2" />.</translation>
+<translation id="6357794994761110294">Żadne rozszerzenia nie mają uprawnień do odczytywania i modyfikowania witryny <ph name="SITE_NAME" /></translation>
 <translation id="6358884629796491903">Smok</translation>
 <translation id="6361850914223837199">Szczegóły błędu:</translation>
 <translation id="6362853299801475928">&amp;Zgłoś problem</translation>

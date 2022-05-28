@@ -1139,7 +1139,7 @@ Tokeni povjerenja poboljšavaju privatnosti na webu i ne mogu se koristi za utvr
 <translation id="7187993566681480880">Štiti vas na Chromeu i može se koristiti da poboljša vašu sigurnost u drugim Googleovim aplikacijama kada ste prijavljeni.</translation>
 <translation id="7191430249889272776">Kartica je otvorena u pozadini.</translation>
 <translation id="7196215469483532480">Objašnjenje vodiča za privatnost je otvoreno u punoj veličini</translation>
-<translation id="7207760545532569765">Vratite <ph name="TAB_COUNT" /> kartica kao nove pozadinske kartice.</translation>
+<translation id="7207760545532569765">Vratite kartice (njih <ph name="TAB_COUNT" />) kao nove pozadinske kartice.</translation>
 <translation id="7208109991155904980">Reakcija je pomjerena</translation>
 <translation id="7222235798733126207">Ograničeno dijeljenje između web lokacija</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 preuzimanje na čekanju}one{# preuzimanje na čekanju}few{# preuzimanja na čekanju}other{# preuzimanja na čekanju}}</translation>
@@ -1518,7 +1518,7 @@ Tokeni povjerenja poboljšavaju privatnosti na webu i ne mogu se koristi za utvr
 <translation id="9148126808321036104">Prijavi se ponovo</translation>
 <translation id="9155898266292537608">Također možete pretraživati brzim dodirom riječi</translation>
 <translation id="9158770349521403363">Dijeli samo sadržaj</translation>
-<translation id="9159716826369098114">Vratite grupu od <ph name="TAB_COUNT" /> kartica kao novu pozadinsku grupu kartica.</translation>
+<translation id="9159716826369098114">Vratite grupu kartica (broj kartica: <ph name="TAB_COUNT" />) kao novu pozadinsku grupu kartica.</translation>
 <translation id="916446198114569890">URL-ovi koje posjećujete pohranjuju se na vaš Google račun</translation>
 <translation id="9169507124922466868">Historija navigacije je napola otvorena</translation>
 <translation id="9187955620966010988">Reakcija je podešena</translation>

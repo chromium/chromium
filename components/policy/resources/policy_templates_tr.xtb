@@ -3607,6 +3607,7 @@ Bu politika ayarlandığında <ph name="PRODUCT_OS_NAME" />, listenin boş olmam
 <translation id="4960597185231686653">Dokunmatik klavyede ses girişi özelliği sunulup sunulamayacağını gösteren bir boole flag'i.</translation>
 <translation id="4970046075219007744">Web uygulamalarının, kullanıcıdan File Handling API üzerinden dosya türlerine erişim istemesine izin ver</translation>
 <translation id="4970855112942626932">Tarayıcıda oturum açmayı devre dışı bırak</translation>
+<translation id="4974091268178043378">ChromeOS renk modu</translation>
 <translation id="4976928720873547342">Bu politika ayarlanırsa belirtilen tüm veri türleri hem <ph name="CHROME_SYNC_NAME" /> senkronizasyonunun hem de dolaşım profili senkronizasyonunun dışında tutulur. Bu, dolaşım profilinin boyutunu küçültmeye veya <ph name="CHROME_SYNC_NAME" /> sunucularına yüklenen veri türlerini sınırlandırmaya yarayabilir.
 
       Şu anda bu politika kapsamında bulunan veri türleri şunlardır: "bookmarks", "readingList", "preferences", "passwords", "autofill", "themes", "typedUrls", "extensions", "apps", "tabs", "wifiConfigurations". Bu adlar büyük/küçük harfe duyarlıdır.</translation>
@@ -4358,6 +4359,7 @@ Bu ayarı etkinleştirirseniz veya yapılandırmazsanız kullanıcılar şifrele
 
       Kullanıcılar bu ayarı değiştiremez.</translation>
 <translation id="5848438019586925019">Anahtar çifti oluşturmak için kullanılan algoritma.</translation>
+<translation id="5851248808417680865">Koyu temayı kullan</translation>
 <translation id="585270638818921943">Kullanıcının güvenilmeyen kaynaklardan Android uygulamaları kullanmasını engelle</translation>
 <translation id="5853547031212075792">Kullanıcıların Yalnızca HTTPS Modunu etkinleştirmesine izin ver</translation>
 <translation id="5859344336338527083">Politikayı ayarlamak uzantı, uygulama ve tema yükleyebilecek URL'leri belirtir. <ph name="PRODUCT_NAME" /> 21 sürümünden önce, kullanıcılar bir *.crx dosyası bağlantısını tıklayarak <ph name="PRODUCT_NAME" /> ürününün birkaç uyarıdan sonra dosyayı yüklemesini sağlayabiliyordu. Daha sonra, bu tür dosyaların indirilip <ph name="PRODUCT_NAME" /> ayarları sayfasına sürüklenmesi zorunlu hale getirilmiştir. Bu ayar, belirli URL'lerin eski, daha kolay yükleme akışına sahip olmasına olanak tanır.
@@ -4528,6 +4530,7 @@ Bu ayarı etkinleştirirseniz veya yapılandırmazsanız kullanıcılar şifrele
 
       Bu politika yalnızca <ph name="PRODUCT_NAME" /> için makinenin <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> kaydı yapıldığında geçerli olur.
       <ph name="PRODUCT_OS_NAME" /> için bu politika her zaman geçerlidir.</translation>
+<translation id="6019162469732742754">Otomatik modu kullan</translation>
 <translation id="6019606564278029236">Uzaktan destek oturumlarında yükseltilmiş pencerelerle uzaktan kullanıcı etkileşimini etkinleştir</translation>
 <translation id="6022948604095165524">Başlangıçtaki işlem</translation>
 <translation id="602318745029752898">Seç ve Dinle özelliğinde gelişmiş ağ metin okuma seslerine izin ver</translation>
@@ -5528,6 +5531,7 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
 <translation id="7019805045859631636">Hızlı</translation>
 <translation id="7025332601572838001">CCT için ilk çalıştırma sırasında Hizmet Şartları davranışını yapılandırma</translation>
 <translation id="7026351325994257733"><ph name="PRODUCT_OS_NAME" /> cihazlar ve bağlı Android telefon arasında kablosuz ağ yapılandırmalarının senkronize edilmesine izin ver.</translation>
+<translation id="7027057540229843762">Açık temayı kullan</translation>
 <translation id="7027785306666625591"><ph name="PRODUCT_OS_NAME" /> sisteminde güç yönetimini yapılandırın.
 
       Bu politikalar, kullanıcı belirli bir süre boyunca hiçbir şey yapmadığında <ph name="PRODUCT_OS_NAME" /> sisteminin çalışma biçimini yapılandırmanıza olanak verir.</translation>
@@ -7077,6 +7081,9 @@ Bu politika "true" (doğru) olarak ayarlanırsa kullanıcının tarayıcıyı ku
 
       "http://acme.com/ABC" yalnızca "IESiteListMode" modunda eşleşir.</translation>
 <translation id="8736538322216687231">Minimum YouTube Kısıtlı Modu'nu zorla</translation>
+<translation id="8744844164152340112">OOBE ve oturum sırasında kullanıcı arayüzü oluşturmak için kullanılan temayı kontrol eder (koyu/açık/otomatik).
+      Otomatik mod, gün doğumu ve gün batımında otomatik olarak koyu ve açık tema arasında geçiş yapar.
+      Kullanıcıların sistem ayarlarında temayı değiştirmesine imkan veren bu politika önerilmelidir.</translation>
 <translation id="8745669971728319820">Bu politika, uzantı ve eklenti bilgilerinin bildirilip bildirilmeyeceğini kontrol eder.
 
       <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> politikası ayarlanmadan bırakıldığında veya devre dışı değerine ayarlandığında bu politika yok sayılır.

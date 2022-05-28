@@ -252,6 +252,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="243878895369688216">Otvorené včera</translation>
 <translation id="2441427462554639370">Nahrávanie bolo ukončené, pretože sa takmer úplne minul voľný priestor</translation>
 <translation id="24452542372838207">Rozbaliť upozornenie</translation>
+<translation id="2449089818483227734">Nízky stav batérie</translation>
 <translation id="2450205753526923158">Režim snímky obrazovky</translation>
 <translation id="2456008742792828469">Kalendár, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2473177541599297363">Potvrďte rozlíšenie</translation>
@@ -412,11 +413,13 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">Zariadenie USB-C</translation>
+<translation id="3455468639467374593">Šablóna, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3465223694362104965">Od vášho posledného prihlásenia bola k tomuto zariadeniu pripojená ďalšia klávesnica. Skôr ako ju použijete, uistite sa, že je dôveryhodná.</translation>
 <translation id="3465356146291925647">Ovládané správcom</translation>
 <translation id="3477079411857374384">Ctrl-Shift-medzerník</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, sila signálu <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Polička sa bude automaticky skrývať</translation>
+<translation id="3505066820268455558">Batéria sa nabíja</translation>
 <translation id="3509391053705095206">Váš telefón sa nedá nájsť. Skontrolujte, či v ňom máte zapnuté rozhranie Bluetooth.</translation>
 <translation id="3510164367642747937">Zvýrazniť ukazovateľ myši</translation>
 <translation id="3513798432020909783">Správca účtu: <ph name="MANAGER_EMAIL" /></translation>
@@ -457,6 +460,8 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="3633097874324966332">Ak chcete zariadenie spárovať, otvorte nastavenia rozhrania Bluetooth</translation>
 <translation id="3638400994746983214">Prepnúť obrazovku ochrany súkromia. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Termín aktualizácie ubehol</translation>
+<translation id="3659814201068740063">Približný zostávajúci čas: <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" /> %).
+Pripojte svoje zariadenie k napájaniu.</translation>
 <translation id="366222428570480733">Spravovaný používateľ <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="36813544980941320">Siete Wi‑Fi sa budú zdieľať medzi vaším telefónom a zariadením <ph name="DEVICE_NAME" /></translation>
 <translation id="3694122362646626770">Webové stránky</translation>
@@ -511,6 +516,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="3962859241508114581">Predchádzajúca stopa</translation>
 <translation id="3969043077941541451">Vypnuté</translation>
 <translation id="397105322502079400">Prebieha výpočet...</translation>
+<translation id="397726367135689299">Nabíjanie batérie môže byť nespoľahlivé.</translation>
 <translation id="3977512764614765090">Batéria je nabitá na <ph name="PERCENTAGE" /> % a nabíja sa.</translation>
 <translation id="3986082989454912832">Prijať</translation>
 <translation id="3995138139523574647">zariadenia USB-C (port vpravo vzadu)</translation>
@@ -1038,6 +1044,7 @@ Nová inštalácia</translation>
 <translation id="7130207228079676353">S NAJVÄČŠOU PRAVDEPODOBNOSŤOU</translation>
 <translation id="7131634465328662194">Odhlásenie prebehne automaticky.</translation>
 <translation id="7143207342074048698">Pripája sa</translation>
+<translation id="7144942256906679589">Stav batérie</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358">Vrátenie starého rozlíšenia prebehne o <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Obnoviť</translation>
@@ -1104,6 +1111,7 @@ Nová inštalácia</translation>
 <translation id="7593891976182323525">Hľadať alebo Shift</translation>
 <translation id="7600875258240007829">Zobraziť všetky upozornenia</translation>
 <translation id="7607002721634913082">Pozastavené</translation>
+<translation id="7609951632080598826">Zobrazenie kalendára, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Kamera bola odpojená</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7633755430369750696">Zobraziť nastavenia Zdieľania nablízku</translation>
@@ -1229,6 +1237,7 @@ Nová inštalácia</translation>
 <translation id="8345019317483336363">Bolo vybrané okno <ph name="WINDOW_TITLE" /></translation>
 <translation id="8351131234907093545">Vytvoriť poznámku</translation>
 <translation id="8364673525741149932">Prepnúť na režim Shelf Party. <ph name="STATE_TEXT" /></translation>
+<translation id="8369166482916924789">Uložená plocha, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">Dopredu o písmeno</translation>
 <translation id="8371991222807690464">V režime pre hostí môže byť výkonnosť periférie obmedzená</translation>
 <translation id="8374601332003098278">Čiastočnú obrazovku nahráte stlačením klávesa Enter</translation>
@@ -1341,6 +1350,7 @@ Nová inštalácia</translation>
 <translation id="9000771174482730261">SPRAVOVAŤ PRIESTOR</translation>
 <translation id="9017320285115481645">Zadajte prístupový kód rodiča Family Link.</translation>
 <translation id="9024331582947483881">celá obrazovka</translation>
+<translation id="9029736946581028033">Zariadenie sa čoskoro vypne</translation>
 <translation id="9030319654231318877">Vypnutý do západu slnka</translation>
 <translation id="9034924485347205037">Súbory systému Linux</translation>
 <translation id="9047624247355796468">Otvoriť nastavenia siete <ph name="NETWORK_NAME" /></translation>
@@ -1370,6 +1380,7 @@ Nová inštalácia</translation>
 <translation id="9168436347345867845">Neskôr</translation>
 <translation id="9178475906033259337">Zobrazuje sa jeden výsledok pre <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Táto funkcia vám umožní rýchly prístup k ľubovoľnému prihlásenému používateľovi bez hesla. Používajte ju iba s dôveryhodnými účtami.</translation>
+<translation id="9180906851711123156">Zavrite stlačením klávesov Ctrl + W</translation>
 <translation id="9183456764293710005">Lupa na celú obrazovku</translation>
 <translation id="9193626018745640770">Prebieha prenášanie do neznámeho prijímača</translation>
 <translation id="9194617393863864469">Prihlásiť ďalšieho používateľa...</translation>

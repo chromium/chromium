@@ -698,6 +698,7 @@
 <translation id="5071064518267176975">Қолданба микрофонды пайдалануға рұқсат сұрайды</translation>
 <translation id="5078796286268621944">PIN коды дұрыс емес</translation>
 <translation id="5083553833479578423">Басқа да Assistant мүмкіндіктерін ашыңыз.</translation>
+<translation id="509790653408515442">Телефондағы қолданбаларды трансляциялау кезінде олар осы жерде шығады.</translation>
 <translation id="5107522548814527560">Интернет</translation>
 <translation id="5117590920725113268">Келесі айды көрсету</translation>
 <translation id="5136175204352732067">Басқа пернетақта жалғанды</translation>
@@ -720,6 +721,7 @@
 <translation id="523505283826916779">Арнайы мүмкіндіктер параметрлері</translation>
 <translation id="5245201184978705914">Транскриптіні құру мүмкін емес</translation>
 <translation id="5253783950165989294">"<ph name="DEVICE_NAME" />" деп аталатын, батарея заряды <ph name="BATTERY_PERCENTAGE" />% құрылғыға қосылды.</translation>
+<translation id="5258528442992323769">Сақталған жұмыс үстелі жоқ.</translation>
 <translation id="5260676007519551770">4-ші жұмыс үстелі</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> қолданбасы назар аударуыңызды сұрайды.</translation>
 <translation id="5283198616748585639">1 мин қосу</translation>
@@ -1259,6 +1261,7 @@
 <translation id="851458219935658693">Терезелерді қазіргі жұмыс үстелінен көрсету, ауыстырып қосқыш таңдалды.</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> іске қосылғанда зарядталмауы мүмкін.</translation>
 <translation id="8535393432370007982">Түс бойынша сұрыптау ретін қайтару</translation>
+<translation id="8542053257095774575">Сақталған жұмыс үстелі немесе үлгі жоқ.</translation>
 <translation id="8546059259582788728">Сұрыптау реті қайтарылды.</translation>
 <translation id="8551588720239073785">Күн және уақыт параметрлері</translation>
 <translation id="8553395910833293175">Барлық жұмыс үстеліне әлдеқашан тағайындалған.</translation>

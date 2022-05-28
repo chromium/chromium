@@ -61,6 +61,7 @@
 <translation id="2583187216237139145">Администратор пословног профила може да уклони све податке Chromium-а који се генеришу током коришћења овог профила (попут прављења обележивача, историје, лозинки и других подешавања). <ph name="LEARN_MORE" /></translation>
 <translation id="2648074677641340862">Током инсталације је дошло до грешке у оперативном систему. Преузмите Chromium поново.</translation>
 <translation id="2661879430930417727">Ако делите уређај, пријатељи и породица могу засебно да прегледају и да подесе Chromium баш онако како желе</translation>
+<translation id="268602741124540128">Добро дошли у Chromium, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="2711502716910134313">Картица Chromium</translation>
 <translation id="2718390899429598676">Chromium ће шифровати податке ради додатне сигурности.</translation>
 <translation id="2770231113462710648">Промени подразумевани прегледач у:</translation>
@@ -119,9 +120,11 @@
 <translation id="3830894615770080216">Систем Chromium ОС</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> – Chromium</translation>
 <translation id="386822487697155367">Пронађите помоћ за Chromium OS</translation>
+<translation id="3871664619793219264">Преузмите садржај из Chromium прегледача са: <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="388648406173476553">Прилагодите и контролишите Chromium. Треба да обратите пажњу на нешто – кликните за више детаља.</translation>
 <translation id="3889543394854987837">Кликните на име да бисте отворили Chromium и почните да прегледате.</translation>
 <translation id="390528597099634151">Корисник <ph name="EXISTING_USER" /> је већ пријављен на овај Chromium профил. Да би вам прегледање било раздвојено, Chromium може да направи засебан профил за вас.</translation>
+<translation id="391789666908693569">Вашим налогом управља <ph name="MANAGER_NAME" />. Администратор може да види и мења овај профил у Chromium прегледачу и његове податке, попут обележивача, историје и лозинки.</translation>
 <translation id="3945058413678539331">Chromium покушава да копира лозинке. Унесите лозинку за Windows да бисте то омогућили.</translation>
 <translation id="3962623956404948996">Chromium препоручује скенирање овог фајла јер може да буде опасан</translation>
 <translation id="3997429360543082038">О Chromium ОС-у</translation>
