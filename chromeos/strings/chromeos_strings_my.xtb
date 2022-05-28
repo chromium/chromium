@@ -32,7 +32,7 @@
 <translation id="1270369111467284986">စတင်ဝင်ရန်စာမျက်နှာကို သံသယရှိသည်</translation>
 <translation id="1290331692326790741">လိုင်းအား မကောင်းပါ</translation>
 <translation id="1301069673413256657">GSM</translation>
-<translation id="1308067967278144752">Write Protect ဖွင့်ခြင်း</translation>
+<translation id="1308067967278144752">‘ပြင်ခွင့်မရှိမုဒ်’ ဖွင့်ခြင်း</translation>
 <translation id="1308754910631152188">အပ်ဒိတ်လုပ်နေသည် (<ph name="PERCENTAGE_VALUE" />% ပြီးပါပြီ)</translation>
 <translation id="1310380015393971138"><ph name="NETWORK_NAME" /> ကွန်ရက်ကို မရနိုင်ပါ</translation>
 <translation id="131421566576084655">နောက်ဆုံး ဒေတာပြင်ဆင်သတ်မှတ်သည့်ရက်စွဲ ရှာမတွေ့ပါ</translation>
@@ -102,7 +102,7 @@
 <translation id="1801418420130173017">မှောင်သည့် အပြင်အဆင် ပိတ်ရန်</translation>
 <translation id="1807246157184219062">အလင်း</translation>
 <translation id="1827738518074806965">ပန်းချီပြခန်း</translation>
-<translation id="1840835860961531162">Write Protect ပိတ်ရန်</translation>
+<translation id="1840835860961531162">‘ပြင်ခွင့်မရှိမုဒ်’ ပိတ်ခြင်း</translation>
 <translation id="1851218745569890714">ဗီဒီယိုအစည်းအဝေး</translation>
 <translation id="1852934301711881861">ChromeOS Flex ထည့်သွင်းရန်</translation>
 <translation id="1856388568474281774">အောက်ညွှန်မြား</translation>
@@ -278,7 +278,7 @@
 <translation id="3621202678540785336">ထည့်သွင်းမှု</translation>
 <translation id="3632579075709132555">အချက်အလက်ကာကွယ်ရေး ဖန်သားပြင်ပြောင်းရန်</translation>
 <translation id="3643810137582748570">ချိန်ညှိမှုကို ကျော်ရန်</translation>
-<translation id="3678765385266369662">Write Protect ကို ပိတ်လိုသည့်ပုံစံကို ရွေးချယ်ပါ</translation>
+<translation id="3678765385266369662">‘ပြင်ခွင့်မရှိမုဒ်’ ပိတ်လိုသည့်ပုံစံကို ရွေးပါ</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> စစ်ဆေးမှု</translation>
 <translation id="370665806235115550">တင်ပေးနေ...</translation>
 <translation id="3708186454126126312">ယခင် ချိတ်ဆက်ထားသည်များ</translation>
@@ -443,7 +443,7 @@
 <translation id="5166918508782100047">အမြန်အဖြေများ ဆက်တင်</translation>
 <translation id="5168185087976003268">ဘက်ထရီအခြေအနေ</translation>
 <translation id="5170568018924773124">ဖိုလ်ဒါ ထဲမှာ ပြရန်</translation>
-<translation id="5179530508336824319">လာမည့်စခရင်သို့ ရှေ့ဆက်ရန် Write Protect ဖွင့်ပါ။ ညွှန်ကြားချက်များအတွက် စက်ထုတ်လုပ်သူ၏ အကူအညီစာမျက်နှာသို့ သွားပါ။</translation>
+<translation id="5179530508336824319">လာမည့်စခရင်သို့ ရှေ့ဆက်ရန် ပြင်ခွင့်မရှိမုဒ်ကို ဖွင့်ပါ။ ညွှန်ကြားချက်များအတွက် စက်ထုတ်လုပ်သူ၏ အကူအညီစာမျက်နှာသို့ သွားပါ။</translation>
 <translation id="5190187232518914472">သင့်အကြိုက်ဆုံး အမှတ်တရအချိန်များကို ပြန်လည်ခံစားကြည့်ပါ။ အယ်လ်ဘမ်များ ထည့်ရန် သို့မဟုတ် တည်းဖြတ်ရန် <ph name="LINK_BEGIN" />Google Photos<ph name="LINK_END" /> သို့သွားပါ။</translation>
 <translation id="5212543919916444558">သင့်မျက်နှာပြင်တွင် ကျွန်ုပ်ကူညီနိုင်သည့် အကြောင်းအရာများကို မတွေ့ပါ။ မိုက်ကို တို့ပြီး နှစ်သက်ရာ မေးနိုင်ပါသည်။</translation>
 <translation id="5212593641110061691">Tabloid</translation>
@@ -457,7 +457,7 @@
 <translation id="5275828089655680674">ပုံမှန်အစီအစဉ်များသို့ ပြန်သွားရန်</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5294769550414936029">ဗားရှင်း <ph name="MILESTONE_VERSION" /></translation>
-<translation id="5298334025463010990">လာမည့်စခရင်သို့ ရှေ့ဆက်ရန် Write Protect ပိတ်ပါ။ ညွှန်ကြားချက်များအတွက် စက်ထုတ်လုပ်သူ၏ အကူအညီစာမျက်နှာသို့ သွားပါ။</translation>
+<translation id="5298334025463010990">လာမည့်စခရင်သို့ ရှေ့ဆက်ရန် ပြင်ခွင့်မရှိမုဒ်ကို ပိတ်ပါ။ ညွှန်ကြားချက်များအတွက် စက်ထုတ်လုပ်သူ၏ အကူအညီစာမျက်နှာသို့ သွားပါ။</translation>
 <translation id="5300814202279832142">ဝင်းဒိုးကို မျက်နှာပြင်နေရာသို့ ရွှေ့ရန်</translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5308380583665731573">ချိတ်ဆက်ရန်</translation>
