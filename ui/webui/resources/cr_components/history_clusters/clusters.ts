@@ -44,7 +44,7 @@ declare global {
   }
 }
 
-interface HistoryClustersElement {
+export interface HistoryClustersElement {
   $: {
     clusters: IronListElement,
     confirmationDialog: CrLazyRenderElement<CrDialogElement>,
@@ -53,7 +53,7 @@ interface HistoryClustersElement {
   };
 }
 
-class HistoryClustersElement extends PolymerElement {
+export class HistoryClustersElement extends PolymerElement {
   static get is() {
     return 'history-clusters';
   }

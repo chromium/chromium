@@ -32,6 +32,18 @@ TEST_F('CrComponentsCustomizeThemesTest', 'All', function() {
   mocha.run();
 });
 
+var CrComponentsHistoryClustersTest =
+    class extends CrComponentsMojoBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://history/test_loader.html?module=cr_components/history_clusters_test.js&host=webui-test';
+  }
+};
+
+TEST_F('CrComponentsHistoryClustersTest', 'All', function() {
+  mocha.run();
+});
+
 var CrComponentsMostVisitedTest = class extends CrComponentsMojoBrowserTest {
   /** @override */
   get browsePreload() {

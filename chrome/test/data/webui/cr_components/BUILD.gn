@@ -27,6 +27,7 @@ non_preprocessed_files = [
   "app_management/permission_item_test.ts",
   "app_management/window_mode_item_test.ts",
   "customize_themes_test.ts",
+  "history_clusters_test.ts",
   "managed_dialog_test.ts",
   "most_visited_focus_test.ts",
   "most_visited_test.ts",
@@ -66,6 +67,7 @@ ts_library("build_ts") {
   deps = [
     "//ui/webui/resources/cr_components/app_management:build_ts",
     "//ui/webui/resources/cr_components/customize_themes:build_ts",
+    "//ui/webui/resources/cr_components/history_clusters:build_ts",
     "//ui/webui/resources/cr_components/most_visited:build_ts",
   ]
 
