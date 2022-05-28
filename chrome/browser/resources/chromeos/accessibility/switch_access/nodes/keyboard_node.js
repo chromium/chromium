@@ -185,9 +185,9 @@ export class KeyboardRootNode extends BasicRootNode {
    */
   static isKeyboardVisible_() {
     const keyboardObject = KeyboardRootNode.getKeyboardObject();
-    return !!keyboardObject &&
-        SwitchAccessPredicate.isVisible(keyboardObject) &&
-        !!keyboardObject.find({role: chrome.automation.RoleType.ROOT_WEB_AREA});
+    return Boolean(
+        keyboardObject && SwitchAccessPredicate.isVisible(keyboardObject) &&
+        keyboardObject.find({role: chrome.automation.RoleType.ROOT_WEB_AREA}));
   }
 
   /**

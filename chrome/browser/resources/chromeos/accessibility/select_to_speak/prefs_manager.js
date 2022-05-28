@@ -265,7 +265,7 @@ export class PrefsManager {
             if (pref === undefined) {
               return;
             }
-            this.enhancedNetworkVoicesAllowed_ = !!pref.value;
+            this.enhancedNetworkVoicesAllowed_ = Boolean(pref.value);
           });
     };
     const updatePrefs = () => {

@@ -1311,7 +1311,7 @@ var parser = (function() {
             // info.value = null;
             // info.value_stack = null;
             // ...
-            var rec = !!this.recoverable;
+            var rec = Boolean(this.recoverable);
             for (var key in this) {
               if (this.hasOwnProperty(key) && typeof key === 'object') {
                 this[key] = undefined;
@@ -2043,7 +2043,7 @@ var parser = (function() {
         /** @constructor */
         var pei = {
           errStr: msg,
-          recoverable: !!recoverable,
+          recoverable: Boolean(recoverable),
           text: this.match,  // This one MAY be empty; userland code should use
                              // the `upcomingInput` API to obtain more text
                              // which follows the 'lexer cursor position'...
@@ -2070,7 +2070,7 @@ var parser = (function() {
             // info.yy = null;
             // info.lexer = null;
             // ...
-            var rec = !!this.recoverable;
+            var rec = Boolean(this.recoverable);
 
             for (var key in this) {
               if (this.hasOwnProperty(key) && typeof key === 'object') {

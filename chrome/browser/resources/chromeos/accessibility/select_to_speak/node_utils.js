@@ -66,7 +66,7 @@ export class NodeUtils {
    * @return {boolean} whether this node was marked user-select:none
    */
   static isNotSelectable(node) {
-    return !!(
+    return Boolean(
         node &&
         (node.notUserSelectableStyle ||
          (node.parent && node.parent.notUserSelectableStyle)));

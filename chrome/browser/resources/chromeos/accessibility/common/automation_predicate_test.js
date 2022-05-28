@@ -15,10 +15,11 @@ TEST_F('AutomationPredicateTest', 'EquivalentRoles', async function() {
   const root = await this.runWithLoadedTree(site);
   // Text field is equivalent to text field with combo box.
   const textField = root.find({role: chrome.automation.RoleType.TEXT_FIELD});
-  assertTrue(!!textField, 'No text field found.');
+  assertTrue(Boolean(textField), 'No text field found.');
   const textFieldWithComboBox =
       root.find({role: chrome.automation.RoleType.TEXT_FIELD_WITH_COMBO_BOX});
-  assertTrue(!!textFieldWithComboBox, 'No text field with combo box found.');
+  assertTrue(
+      Boolean(textFieldWithComboBox), 'No text field with combo box found.');
 
   // Gather all potential predicate names.
   const keys = Object.getOwnPropertyNames(AutomationPredicate);
@@ -32,7 +33,7 @@ TEST_F('AutomationPredicateTest', 'EquivalentRoles', async function() {
     const predicate = AutomationPredicate[key];
     if (predicate(textField)) {
       assertTrue(
-          !!predicate(textFieldWithComboBox),
+          Boolean(predicate(textFieldWithComboBox)),
           `Textfield with combo box should match predicate ${key}`);
     }
   }

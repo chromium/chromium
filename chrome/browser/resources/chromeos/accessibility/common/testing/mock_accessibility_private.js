@@ -179,7 +179,7 @@ var MockAccessibilityPrivate = {
    * Called when AccessibilityCommon wants to set the focus rings. We can
    * assume that it is only setting one set of rings at a time, and safely
    * extract focusRingInfos[0].rects.
-   * @param {!Array<!!chrome.accessibilityPrivate.FocusRingInfo>} focusRingInfos
+   * @param {!Array<!chrome.accessibilityPrivate.FocusRingInfo>} focusRingInfos
    */
   setFocusRings: (focusRingInfos) => {
     MockAccessibilityPrivate.focusRings_ = focusRingInfos;

@@ -180,7 +180,7 @@ export class SAChildNode {
    * @return {boolean}
    */
   isValidAndVisible() {
-    return this.valid_ && !!this.location;
+    return this.valid_ && Boolean(this.location);
   }
 
   /**

@@ -62,18 +62,18 @@ TEST_F('AccessibilityCommonE2ETest', 'ToggleFeatures', function() {
     let pref = await this.getPref('settings.a11y.autoclick');
     assertEquals('settings.a11y.autoclick', pref.key);
     assertTrue(pref.value);
-    assertTrue(!!accessibilityCommon.getAutoclickForTest());
+    assertTrue(Boolean(accessibilityCommon.getAutoclickForTest()));
 
     // Next, flip on screen magnifier and verify all prefs and internal state.
     await this.setPref('settings.a11y.screen_magnifier', true);
     pref = await this.getPref('settings.a11y.autoclick');
     assertEquals('settings.a11y.autoclick', pref.key);
     assertTrue(pref.value);
-    assertTrue(!!accessibilityCommon.getAutoclickForTest());
+    assertTrue(Boolean(accessibilityCommon.getAutoclickForTest()));
     pref = await this.getPref('settings.a11y.screen_magnifier');
     assertEquals('settings.a11y.screen_magnifier', pref.key);
     assertTrue(pref.value);
-    assertTrue(!!accessibilityCommon.getMagnifierForTest());
+    assertTrue(Boolean(accessibilityCommon.getMagnifierForTest()));
 
     // Then, flip off autoclick and verify all prefs and internal state.
     await this.setPref('settings.a11y.autoclick', false);
@@ -84,7 +84,7 @@ TEST_F('AccessibilityCommonE2ETest', 'ToggleFeatures', function() {
     pref = await this.getPref('settings.a11y.screen_magnifier');
     assertEquals('settings.a11y.screen_magnifier', pref.key);
     assertTrue(pref.value);
-    assertTrue(!!accessibilityCommon.getMagnifierForTest());
+    assertTrue(Boolean(accessibilityCommon.getMagnifierForTest()));
 
     // Unfortunately, turning off all features would remove the extension. Flip
     // autoclick back on.
@@ -92,18 +92,18 @@ TEST_F('AccessibilityCommonE2ETest', 'ToggleFeatures', function() {
     pref = await this.getPref('settings.a11y.autoclick');
     assertEquals('settings.a11y.autoclick', pref.key);
     assertTrue(pref.value);
-    assertTrue(!!accessibilityCommon.getAutoclickForTest());
+    assertTrue(Boolean(accessibilityCommon.getAutoclickForTest()));
     pref = await this.getPref('settings.a11y.screen_magnifier');
     assertEquals('settings.a11y.screen_magnifier', pref.key);
     assertTrue(pref.value);
-    assertTrue(!!accessibilityCommon.getMagnifierForTest());
+    assertTrue(Boolean(accessibilityCommon.getMagnifierForTest()));
 
     // And, finally flip screen magnifier off.
     await this.setPref('settings.a11y.screen_magnifier', false);
     pref = await this.getPref('settings.a11y.autoclick');
     assertEquals('settings.a11y.autoclick', pref.key);
     assertTrue(pref.value);
-    assertTrue(!!accessibilityCommon.getAutoclickForTest());
+    assertTrue(Boolean(accessibilityCommon.getAutoclickForTest()));
     pref = await this.getPref('settings.a11y.screen_magnifier');
     assertEquals('settings.a11y.screen_magnifier', pref.key);
     assertFalse(pref.value);

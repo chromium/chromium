@@ -173,7 +173,7 @@ export class Magnifier {
     prefs.forEach((pref) => {
       switch (pref.key) {
         case Magnifier.Prefs.SCREEN_MAGNIFIER_FOCUS_FOLLOWING:
-          this.screenMagnifierFocusFollowing_ = !!pref.value;
+          this.screenMagnifierFocusFollowing_ = Boolean(pref.value);
           break;
         default:
           return;

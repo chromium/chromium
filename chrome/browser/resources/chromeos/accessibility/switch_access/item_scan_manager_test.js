@@ -483,11 +483,11 @@ TEST_F(
       // Trigger a children changed on the group.
       const automationGroup =
           rootWebArea.find({role: chrome.automation.RoleType.GROUP});
-      assertTrue(!!automationGroup);
+      assertTrue(Boolean(automationGroup));
       const group = Navigator.byItem.group_;
-      assertTrue(!!group);
+      assertTrue(Boolean(group));
       const handler = group.childrenChangedHandler_;
-      assertTrue(!!handler);
+      assertTrue(Boolean(handler));
 
       // Fake a children changed event.
       handler.eventStack_ = [{
@@ -545,21 +545,21 @@ TEST_F(
              widget1.className !== 'Widget') {
         widget1 = widget1.parent;
       }
-      assertTrue(!!widget1);
+      assertTrue(Boolean(widget1));
 
       let widget2 = button2.automationNode;
       while (widget2.role !== chrome.automation.RoleType.WINDOW ||
              widget2.className !== 'Widget') {
         widget2 = widget2.parent;
       }
-      assertTrue(!!widget2);
+      assertTrue(Boolean(widget2));
 
       const titleBar1 =
           widget1.find({role: chrome.automation.RoleType.TITLE_BAR});
-      assertTrue(!!titleBar1);
+      assertTrue(Boolean(titleBar1));
       const titleBar2 =
           widget2.find({role: chrome.automation.RoleType.TITLE_BAR});
-      assertTrue(!!titleBar2);
+      assertTrue(Boolean(titleBar2));
 
       // The focus is currently on widget2 (since button2 has focus). Start with
       // focusing widget1 which should occur as a result of moving SA to title
