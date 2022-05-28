@@ -72,9 +72,9 @@ GEN('#include "content/public/test/browser_test.h"');
 ].forEach(test => registerTest('TrafficCounters', 'network', ...test));
 
 [
- ['Integration', 'multidevice_setup/integration_test.m.js'],
- ['SetupSucceededPage', 'multidevice_setup/setup_succeeded_page_test.m.js'],
- ['StartSetupPage', 'multidevice_setup/start_setup_page_test.m.js'],
+ ['Integration', 'multidevice_setup/integration_test.js'],
+ ['SetupSucceededPage', 'multidevice_setup/setup_succeeded_page_test.js'],
+ ['StartSetupPage', 'multidevice_setup/start_setup_page_test.js'],
 ].forEach(test => registerTest('MultiDeviceSetup', 'multidevice-setup', ...test));
 
 [

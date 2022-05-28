@@ -2,17 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://multidevice-setup/strings.m.js';
-// #import 'chrome://resources/cr_components/chromeos/multidevice_setup/multidevice_setup.m.js';
+import 'chrome://multidevice-setup/strings.m.js';
+import 'chrome://resources/cr_components/chromeos/multidevice_setup/multidevice_setup.m.js';
 
-// #import {TestMultideviceSetupBrowserProxy} from './setup_succeeded_page_test.m.js';
-// #import {FakeQuickUnlockPrivate} from '../../../settings/chromeos/fake_quick_unlock_private.js';
-// #import {BrowserProxyImpl} from 'chrome://resources/cr_components/chromeos/multidevice_setup/multidevice_setup_browser_proxy.m.js';
-// #import {FakeMojoService} from 'chrome://resources/cr_components/chromeos/multidevice_setup/fake_mojo_service.m.js';
-// #import {waitBeforeNextRender, eventToPromise} from '../../../test_util.js';
-// #import {flush, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// clang-format on
+import {FakeMojoService} from 'chrome://resources/cr_components/chromeos/multidevice_setup/fake_mojo_service.m.js';
+import {BrowserProxyImpl} from 'chrome://resources/cr_components/chromeos/multidevice_setup/multidevice_setup_browser_proxy.m.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {FakeQuickUnlockPrivate} from '../../../settings/chromeos/fake_quick_unlock_private.js';
+import {eventToPromise, waitBeforeNextRender} from '../../../test_util.js';
+
+import {TestMultideviceSetupBrowserProxy} from './setup_succeeded_page_test.js';
+
 
 /** @fileoverview Suite of integration tests for MultiDevice setup WebUI. */
 /** @implements {multidevice_setup.MultiDeviceSetupDelegate} */
@@ -105,7 +106,7 @@ suite('MultiDeviceSetup', () => {
   /** @type {!FakeMojoService} */
   let fakeMojoService;
 
-  /** @type {!settings.FakeQuickUnlockPrivate} */
+  /** @type {!FakeQuickUnlockPrivate} */
   let fakeQuickUnlockPrivate;
 
   /** @type {?TestMultideviceSetupBrowserProxy} */
@@ -119,13 +120,8 @@ suite('MultiDeviceSetup', () => {
   const WRONG_PASSWORD = 'wrongPassword';
 
   setup(async () => {
-    // The OOBE host uses polyfill which requires the test to wait until HTML
-    // imports have finished loading before initiating any tests. The Polymer 3
-    // version of the test does not use the OOBE host so this line should not
-    // execute.
-    /* #ignore */ await cr.ui.Oobe.waitForOobeToLoad();
     browserProxy = new TestMultideviceSetupBrowserProxy();
-    multidevice_setup.BrowserProxyImpl.instance_ = browserProxy;
+    BrowserProxyImpl.instance_ = browserProxy;
 
     multiDeviceSetupElement = document.createElement('multidevice-setup');
     multiDeviceSetupElement.delegate = new FakeDelegate();
@@ -134,13 +130,13 @@ suite('MultiDeviceSetup', () => {
         new FakeMojoInterfaceProviderImpl(fakeMojoService);
 
     document.body.appendChild(multiDeviceSetupElement);
-    Polymer.dom.flush();
+    flush();
 
     forwardButton = multiDeviceSetupElement.$$('button-bar').$$('#forward');
     cancelButton = multiDeviceSetupElement.$$('button-bar').$$('#cancel');
     backwardButton = multiDeviceSetupElement.$$('button-bar').$$('#backward');
 
-    fakeQuickUnlockPrivate = new settings.FakeQuickUnlockPrivate();
+    fakeQuickUnlockPrivate = new FakeQuickUnlockPrivate();
     fakeQuickUnlockPrivate.accountPassword = CORRECT_PASSWORD;
     multiDeviceSetupElement.$$(PASSWORD).quickUnlockPrivate_ =
         fakeQuickUnlockPrivate;
@@ -159,9 +155,8 @@ suite('MultiDeviceSetup', () => {
    */
   function setVisiblePage(visiblePageName) {
     multiDeviceSetupElement.visiblePageName = visiblePageName;
-    Polymer.dom.flush();
-    return test_util.waitBeforeNextRender(
-        multiDeviceSetupElement.$$(visiblePageName));
+    flush();
+    return waitBeforeNextRender(multiDeviceSetupElement.$$(visiblePageName));
   }
 
   /**
@@ -170,8 +165,8 @@ suite('MultiDeviceSetup', () => {
    */
   function enterPassword(input) {
     multiDeviceSetupElement.$$(PASSWORD).$$('#passwordInput').value = input;
-    Polymer.dom.flush();
-    return test_util.waitBeforeNextRender(multiDeviceSetupElement);
+    flush();
+    return waitBeforeNextRender(multiDeviceSetupElement);
   }
 
   function getNumSetHostDeviceCalls() {
@@ -191,7 +186,7 @@ suite('MultiDeviceSetup', () => {
   test('SetupSucceededPage forward button closes UI', () => {
     return setVisiblePage(SUCCESS).then(() => {
       const whenSetupExits =
-          test_util.eventToPromise('setup-exited', multiDeviceSetupElement);
+          eventToPromise('setup-exited', multiDeviceSetupElement);
       forwardButton.click();
       return whenSetupExits;
     });
@@ -203,7 +198,7 @@ suite('MultiDeviceSetup', () => {
     setMode(false /* isOobeMode */);
     return setVisiblePage(SUCCESS).then(() => {
       const whenSetupExits =
-          test_util.eventToPromise('setup-exited', multiDeviceSetupElement);
+          eventToPromise('setup-exited', multiDeviceSetupElement);
       multiDeviceSetupElement.$$(SUCCESS).$$('#settings-link').click();
       return whenSetupExits;
     });
@@ -227,7 +222,7 @@ suite('MultiDeviceSetup', () => {
     return setVisiblePage(START)
         .then(() => {
           const whenSetupExits =
-              test_util.eventToPromise('setup-exited', multiDeviceSetupElement);
+              eventToPromise('setup-exited', multiDeviceSetupElement);
           cancelButton.click();
           return whenSetupExits;
         })
@@ -245,8 +240,8 @@ suite('MultiDeviceSetup', () => {
         return setVisiblePage(START)
             .then(() => {
               multiDeviceSetupElement.delegate.shouldSetHostSucceed = true;
-              const whenSetupExits = test_util.eventToPromise(
-                  'setup-exited', multiDeviceSetupElement);
+              const whenSetupExits =
+                  eventToPromise('setup-exited', multiDeviceSetupElement);
               forwardButton.click();
               return whenSetupExits;
             })
@@ -263,7 +258,7 @@ suite('MultiDeviceSetup', () => {
     return setVisiblePage(START)
         .then(() => {
           const whenSetupExits =
-              test_util.eventToPromise('setup-exited', multiDeviceSetupElement);
+              eventToPromise('setup-exited', multiDeviceSetupElement);
           cancelButton.click();
           return whenSetupExits;
         })
@@ -290,7 +285,7 @@ suite('MultiDeviceSetup', () => {
     return setVisiblePage(PASSWORD)
         .then(() => {
           const whenSetupExits =
-              test_util.eventToPromise('setup-exited', multiDeviceSetupElement);
+              eventToPromise('setup-exited', multiDeviceSetupElement);
           cancelButton.click();
           return whenSetupExits;
         })
@@ -304,7 +299,7 @@ suite('MultiDeviceSetup', () => {
 
     return setVisiblePage(PASSWORD)
         .then(() => {
-          const whenPageChanges = test_util.eventToPromise(
+          const whenPageChanges = eventToPromise(
               'visible-page-name-changed', multiDeviceSetupElement);
           backwardButton.click();
           return whenPageChanges;
@@ -327,7 +322,7 @@ suite('MultiDeviceSetup', () => {
             })
             .then(() => {
               multiDeviceSetupElement.delegate.shouldSetHostSucceed = true;
-              const whenPageChanges = test_util.eventToPromise(
+              const whenPageChanges = eventToPromise(
                   'visible-page-name-changed', multiDeviceSetupElement);
               forwardButton.click();
               return whenPageChanges;
@@ -351,8 +346,8 @@ suite('MultiDeviceSetup', () => {
             .then(() => {
               multiDeviceSetupElement.delegate.shouldSetHostSucceed = true;
               forwardButton.click();
-              Polymer.dom.flush();
-              return test_util.waitBeforeNextRender(multiDeviceSetupElement);
+              flush();
+              return waitBeforeNextRender(multiDeviceSetupElement);
             })
             .then(() => {
               assertEquals(PASSWORD, multiDeviceSetupElement.visiblePageName);
@@ -372,8 +367,8 @@ suite('MultiDeviceSetup', () => {
             })
             .then(() => {
               forwardButton.click();
-              Polymer.dom.flush();
-              return test_util.waitBeforeNextRender(multiDeviceSetupElement);
+              flush();
+              return waitBeforeNextRender(multiDeviceSetupElement);
             })
             .then(() => {
               assertTrue(multiDeviceSetupElement.forwardButtonDisabled);

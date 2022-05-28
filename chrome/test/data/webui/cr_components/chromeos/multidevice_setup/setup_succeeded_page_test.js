@@ -2,23 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-// #import 'chrome://multidevice-setup/strings.m.js';
-// #import 'chrome://resources/cr_components/chromeos/multidevice_setup/setup_succeeded_page.m.js';
-
-// #import {TestBrowserProxy} from '../../../test_browser_proxy.js';
-// #import {BrowserProxyImpl} from 'chrome://resources/cr_components/chromeos/multidevice_setup/multidevice_setup_browser_proxy.m.js';
-// clang-format on
-
 /**
  * @fileoverview Suite of tests for page-specific behaviors of
  * SetupSucceededPage.
  */
 
+import 'chrome://multidevice-setup/strings.m.js';
+import 'chrome://resources/cr_components/chromeos/multidevice_setup/setup_succeeded_page.m.js';
+
+import {BrowserProxyImpl} from 'chrome://resources/cr_components/chromeos/multidevice_setup/multidevice_setup_browser_proxy.m.js';
+
+import {TestBrowserProxy} from '../../../test_browser_proxy.js';
+
 /**
- * @implements {multidevice_setup.BrowserProxy}
+ * @implements {BrowserProxy}
  */
-/* #export */ class TestMultideviceSetupBrowserProxy extends TestBrowserProxy {
+export class TestMultideviceSetupBrowserProxy extends TestBrowserProxy {
   constructor() {
     super(['getProfileInfo', 'openMultiDeviceSettings']);
   }
@@ -45,9 +44,8 @@ suite('MultiDeviceSetup', () => {
   let browserProxy = null;
 
   setup(async () => {
-    /* #ignore */ await cr.ui.Oobe.waitForOobeToLoad();
     browserProxy = new TestMultideviceSetupBrowserProxy();
-    multidevice_setup.BrowserProxyImpl.instance_ = browserProxy;
+    BrowserProxyImpl.instance_ = browserProxy;
 
     setupSucceededPageElement = document.createElement('setup-succeeded-page');
     document.body.appendChild(setupSucceededPageElement);
