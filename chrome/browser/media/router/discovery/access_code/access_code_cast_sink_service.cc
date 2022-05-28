@@ -194,13 +194,21 @@ void AccessCodeCastSinkService::HandleMediaRouteDiscoveredByAccessCode(
   if (!sink)
     return;
 
-  // Check to see if route was created by an access code sink.
   if (!sink->is_cast_sink()) {
     return;
   }
+
+  // Check to see if route was created by an access code sink.
+  CastDiscoveryType type = sink->cast_data().discovery_type;
+  if (type != CastDiscoveryType::kAccessCodeManualEntry &&
+        type != CastDiscoveryType::kAccessCodeRememberedDevice) {
+    return;
+  }
+
   media_router_->GetLogger()->LogInfo(
-      mojom::LogCategory::kDiscovery, kLoggerComponent,
-      "An Access Code Cast route has ended.", sink->id(), "", "");
+    mojom::LogCategory::kDiscovery, kLoggerComponent,
+    "An Access Code Cast route has ended.", sink->id(), "", "");
+
   // There are two possible cases here. The common case is that a route for
   // the specified sink has been terminated by local or remote user
   // interaction. In this case, call OnAccessCodeRouteRemoved to check whether
@@ -218,9 +226,6 @@ void AccessCodeCastSinkService::HandleMediaRouteDiscoveredByAccessCode(
     std::move(it->second).Run(AddSinkResultCode::OK, sink->id());
     pending_callbacks_.erase(sink->id());
   } else {
-    CastDiscoveryType type = sink->cast_data().discovery_type;
-    if (type == CastDiscoveryType::kAccessCodeManualEntry ||
-        type == CastDiscoveryType::kAccessCodeRememberedDevice) {
       // Need to pause just a little bit before attempting to remove the sink.
       // Sometimes sinks terminate their routes and immediately start another
       // (tab content transitions for example), so wait just a little while
@@ -230,7 +235,6 @@ void AccessCodeCastSinkService::HandleMediaRouteDiscoveredByAccessCode(
           base::BindOnce(&AccessCodeCastSinkService::OnAccessCodeRouteRemoved,
                          weak_ptr_factory_.GetWeakPtr(), sink),
           kExpirationDelay);
-    }
   }
 }
 
