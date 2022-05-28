@@ -151,7 +151,6 @@ PrinterProviderInternalReportPrintersFunction::Run() {
       internal_api::ReportPrinters::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
-  base::ListValue printers;
   if (params->printers) {
     PrinterProviderInternalAPI::GetFactoryInstance()
         ->Get(browser_context())

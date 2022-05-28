@@ -301,17 +301,18 @@ TEST_F(PrintServersProviderTest, Allowlist) {
       std::make_unique<std::string>(kPrintServersPolicyJson1));
   // Apply an empty allowlist on the top.
   pref_service_.SetManagedPref(kAllowlistPrefName,
-                               std::make_unique<base::ListValue>());
+                               base::Value(base::Value::Type::LIST));
   // Check the resultant list - is is supposed to be empty.
   task_environment_.RunUntilIdle();
   ASSERT_FALSE(obs.GetCalls().empty());
   EXPECT_TRUE(obs.GetCalls().back().complete);
   EXPECT_TRUE(obs.GetCalls().back().servers.empty());
   // Apply allowlist.
-  auto value = std::make_unique<base::ListValue>();
-  for (const std::string& id : {"id3", "idX", "id1"})
-    value->Append(base::Value(id));
-  pref_service_.SetManagedPref(kAllowlistPrefName, std::move(value));
+  base::Value::List value;
+  for (std::string id : {"id3", "idX", "id1"})
+    value.Append(std::move(id));
+  pref_service_.SetManagedPref(kAllowlistPrefName,
+                               base::Value(std::move(value)));
   // Check the resultant list.
   task_environment_.RunUntilIdle();
   EXPECT_TRUE(obs.GetCalls().back().complete);

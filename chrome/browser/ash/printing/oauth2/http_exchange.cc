@@ -267,15 +267,15 @@ bool HttpExchange::ParamArrayStringContains(const std::string& name,
                                             bool required,
                                             const std::string& value) {
   base::Value* node = FindNode(name, required);
-  if (node == nullptr) {
+  if (!node) {
     return !required;
   }
   if (!node->is_list()) {
     error_msg_ = "Field " + name + " must be an array.";
     return false;
   }
-  auto nodeAsList = base::Value::AsListValue(*node).GetListDeprecated();
-  for (auto& element : nodeAsList) {
+  const auto& node_as_list = node->GetList();
+  for (auto& element : node_as_list) {
     if (element.is_string() && element.GetString() == value) {
       // Success!
       return true;

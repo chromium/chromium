@@ -864,10 +864,11 @@ void CupsPrintersHandler::HandleGetCupsPrinterModels(
   // Empty manufacturer queries may be triggered as a part of the ui
   // initialization, and should just return empty results.
   if (manufacturer.empty()) {
-    base::DictionaryValue response;
-    response.SetBoolKey("success", true);
-    response.SetKey("models", base::ListValue());
-    ResolveJavascriptCallback(base::Value(callback_id), response);
+    base::Value::Dict response;
+    response.Set("success", true);
+    response.Set("models", base::Value::List());
+    ResolveJavascriptCallback(base::Value(callback_id),
+                              base::Value(std::move(response)));
     return;
   }
 
@@ -911,16 +912,17 @@ void CupsPrintersHandler::ResolveManufacturersDone(
     const std::string& callback_id,
     PpdProvider::CallbackResultCode result_code,
     const std::vector<std::string>& manufacturers) {
-  base::ListValue manufacturers_value;
+  base::Value::List manufacturers_value;
   if (result_code == PpdProvider::SUCCESS) {
     for (const std::string& manufacturer : manufacturers) {
       manufacturers_value.Append(manufacturer);
     }
   }
-  base::DictionaryValue response;
-  response.SetBoolKey("success", result_code == PpdProvider::SUCCESS);
-  response.SetKey("manufacturers", std::move(manufacturers_value));
-  ResolveJavascriptCallback(base::Value(callback_id), response);
+  base::Value::Dict response;
+  response.Set("success", result_code == PpdProvider::SUCCESS);
+  response.Set("manufacturers", std::move(manufacturers_value));
+  ResolveJavascriptCallback(base::Value(callback_id),
+                            base::Value(std::move(response)));
 }
 
 void CupsPrintersHandler::ResolvePrintersDone(
@@ -928,17 +930,18 @@ void CupsPrintersHandler::ResolvePrintersDone(
     const std::string& callback_id,
     PpdProvider::CallbackResultCode result_code,
     const PpdProvider::ResolvedPrintersList& printers) {
-  base::ListValue printers_value;
+  base::Value::List printers_value;
   if (result_code == PpdProvider::SUCCESS) {
     resolved_printers_[manufacturer] = printers;
     for (const auto& printer : printers) {
       printers_value.Append(printer.name);
     }
   }
-  base::DictionaryValue response;
-  response.SetBoolKey("success", result_code == PpdProvider::SUCCESS);
-  response.SetKey("models", std::move(printers_value));
-  ResolveJavascriptCallback(base::Value(callback_id), response);
+  base::Value::Dict response;
+  response.Set("success", result_code == PpdProvider::SUCCESS);
+  response.Set("models", std::move(printers_value));
+  ResolveJavascriptCallback(base::Value(callback_id),
+                            base::Value(std::move(response)));
 }
 
 void CupsPrintersHandler::FileSelected(const base::FilePath& path,
@@ -1043,24 +1046,20 @@ void CupsPrintersHandler::UpdateDiscoveredPrinters() {
     return;
   }
 
-  std::unique_ptr<base::ListValue> automatic_printers_list =
-      std::make_unique<base::ListValue>();
-  for (const Printer& printer : automatic_printers_) {
-    automatic_printers_list->Append(GetCupsPrinterInfo(printer));
-  }
+  base::Value::List automatic_printers_list;
+  for (const Printer& printer : automatic_printers_)
+    automatic_printers_list.Append(GetCupsPrinterInfo(printer));
 
-  std::unique_ptr<base::ListValue> discovered_printers_list =
-      std::make_unique<base::ListValue>();
-  for (const Printer& printer : discovered_printers_) {
-    discovered_printers_list->Append(GetCupsPrinterInfo(printer));
-  }
+  base::Value::List discovered_printers_list;
+  for (const Printer& printer : discovered_printers_)
+    discovered_printers_list.Append(GetCupsPrinterInfo(printer));
 
   PRINTER_LOG(DEBUG) << "Discovered printers updating. Automatic: "
-                     << automatic_printers_list->GetListDeprecated().size()
-                     << " Discovered: "
-                     << discovered_printers_list->GetListDeprecated().size();
-  FireWebUIListener("on-nearby-printers-changed", *automatic_printers_list,
-                    *discovered_printers_list);
+                     << automatic_printers_list.size()
+                     << " Discovered: " << discovered_printers_list.size();
+  FireWebUIListener("on-nearby-printers-changed",
+                    base::Value(std::move(automatic_printers_list)),
+                    base::Value(std::move(discovered_printers_list)));
 }
 
 void CupsPrintersHandler::HandleAddDiscoveredPrinter(

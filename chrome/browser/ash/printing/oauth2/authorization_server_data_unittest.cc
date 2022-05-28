@@ -29,11 +29,11 @@ void ExpectOneElementListOfStrings(
     const std::string& value) {
   auto it = value_dict.find(name);
   ASSERT_NE(it, value_dict.end());
-  ASSERT_EQ(it->second.type(), base::Value::Type::LIST);
-  auto nodeAsList = base::Value::AsListValue(it->second).GetListDeprecated();
-  ASSERT_EQ(nodeAsList.size(), 1);
-  ASSERT_TRUE(nodeAsList.front().is_string());
-  EXPECT_EQ(nodeAsList.front().GetString(), value);
+  ASSERT_TRUE(it->second.is_list());
+  const base::Value::List& list = it->second.GetList();
+  ASSERT_EQ(list.size(), 1);
+  ASSERT_TRUE(list.front().is_string());
+  EXPECT_EQ(list.front().GetString(), value);
 }
 
 TEST(PrintingOAuth2AuthorizationServerDataTest, InitialState) {
