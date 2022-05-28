@@ -335,20 +335,31 @@ bool FocusgroupController::AdvanceBackward(Element* initial_element,
             wrap_result, parent, direction);
         parent = FlatTreeTraversal::ParentElement(*current);
       } else {
-        // Wrapping wasn't an option. Validate that we're still in a focusgroup
-        // even though we went up to the parent element.
-        Element* parent_focusgroup = utils::FindNearestFocusgroupAncestor(
-            current, FocusgroupType::kLinear);
-        if (!parent_focusgroup ||
-            !utils::IsAxisSupported(parent_focusgroup->GetFocusgroupFlags(),
-                                    direction)) {
-          // At this point, we moved from inside of a focusgroup to the
-          // focusgroup root and it can't wrap. Furthermore, if there's a
-          // parent focusgroup, it doesn't support the axis of the arrow
-          // key, so it doesn't make sense to move into that focusgroup.
+        // Wrapping wasn't an option. At this point, we can only attempt to
+        // ascend to the parent.
+
+        // We can't ascend out of a non-extending focusgroup.
+        FocusgroupFlags current_flags = current->GetFocusgroupFlags();
+        if (current_flags != FocusgroupFlags::kNone &&
+            !(current_flags & FocusgroupFlags::kExtend)) {
           return false;
         }
 
+        // We can't ascend if there is no focusgroup ancestor.
+        Element* parent_focusgroup = utils::FindNearestFocusgroupAncestor(
+            current, FocusgroupType::kLinear);
+        if (!parent_focusgroup)
+          return false;
+
+        // We can't ascend if the parent focusgroup doesn't support the axis of
+        // the arrow key pressed.
+        if (!utils::IsAxisSupported(parent_focusgroup->GetFocusgroupFlags(),
+                                    direction)) {
+          return false;
+        }
+
+        // At this point, we are certain that we can ascend to the parent
+        // element.
         ascended = true;
         parent = FlatTreeTraversal::ParentElement(*parent);
         // No need to check if the new |parent| is null or not because, if that
