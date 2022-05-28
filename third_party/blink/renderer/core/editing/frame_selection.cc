@@ -1305,9 +1305,9 @@ LayoutSelectionStatus FrameSelection::ComputeLayoutSelectionStatus(
   return layout_selection_->ComputeSelectionStatus(cursor);
 }
 
-SelectionState FrameSelection::ComputeLayoutSelectionStateForCursor(
+SelectionState FrameSelection::ComputePaintingSelectionStateForCursor(
     const NGInlineCursorPosition& position) const {
-  return layout_selection_->ComputeSelectionStateForCursor(position);
+  return layout_selection_->ComputePaintingSelectionStateForCursor(position);
 }
 
 SelectionState FrameSelection::ComputeLayoutSelectionStateForInlineTextBox(

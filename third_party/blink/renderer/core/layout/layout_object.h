@@ -2749,6 +2749,15 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   }
   bool CanUpdateSelectionOnRootLineBoxes() const;
 
+  SelectionState GetSelectionStateForPaint() const {
+    NOT_DESTROYED();
+    return bitfields_.GetSelectionStateForPaint();
+  }
+  void SetSelectionStateForPaint(SelectionState state) {
+    NOT_DESTROYED();
+    bitfields_.SetSelectionStateForPaint(state);
+  }
+
   // A single rectangle that encompasses all of the selected objects within this
   // object. Used to determine the tightest possible bounding box for the
   // selection. The rect is in the object's local physical coordinate space.
@@ -3966,6 +3975,8 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
           needs_devtools_info_(false),
           positioned_state_(kIsStaticallyPositioned),
           selection_state_(static_cast<unsigned>(SelectionState::kNone)),
+          selection_state_for_paint_(
+              static_cast<unsigned>(SelectionState::kNone)),
           subtree_paint_property_update_reasons_(
               static_cast<unsigned>(SubtreePaintPropertyUpdateReason::kNone)),
           background_paint_location_(kBackgroundPaintInBorderBoxSpace),
@@ -4314,7 +4325,15 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     // This is the cached 'position' value of this object
     // (see ComputedStyle::position).
     unsigned positioned_state_ : 2;  // PositionedState
+
+    // `selection_state_` is direct mapping of the DOM selection into the
+    // respective LayoutObjects that `CanBeSelectionLeaf()`.
+    // `selection_state_for_paint_` is adjusted so that the state takes into
+    // account whether such a LayoutObject will be painted. If selection
+    // starts/ends in an object that is not painted, we won't be able to record
+    // the bounds for composited selection state that is pushed to cc.
     unsigned selection_state_ : 3;   // SelectionState
+    unsigned selection_state_for_paint_ : 3;  // SelectionState
 
     // Reasons for the full subtree invalidation.
     unsigned subtree_paint_property_update_reasons_
@@ -4372,6 +4391,14 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     }
     ALWAYS_INLINE void SetSelectionState(SelectionState selection_state) {
       selection_state_ = static_cast<unsigned>(selection_state);
+    }
+
+    ALWAYS_INLINE SelectionState GetSelectionStateForPaint() const {
+      return static_cast<SelectionState>(selection_state_for_paint_);
+    }
+    ALWAYS_INLINE void SetSelectionStateForPaint(
+        SelectionState selection_state) {
+      selection_state_for_paint_ = static_cast<unsigned>(selection_state);
     }
 
     ALWAYS_INLINE unsigned SubtreePaintPropertyUpdateReasons() const {

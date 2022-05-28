@@ -62,7 +62,7 @@ class LayoutSelection final : public GarbageCollected<LayoutSelection> {
   // starts within the position (and ends elsewhere), where kStartAndEnd means
   // the selection both starts and ends within the position. This information is
   // used at paint time to determine the edges of the layout selection.
-  SelectionState ComputeSelectionStateForCursor(
+  SelectionState ComputePaintingSelectionStateForCursor(
       const NGInlineCursorPosition&) const;
 
   // Compute the layout selection state relative to the InlineTextBox.

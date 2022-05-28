@@ -216,7 +216,7 @@ NGHighlightPainter::SelectionPaintState::SelectionPaintState(
     const FrameSelection& frame_selection)
     : selection_status_(
           frame_selection.ComputeLayoutSelectionStatus(containing_block)),
-      state_(frame_selection.ComputeLayoutSelectionStateForCursor(
+      state_(frame_selection.ComputePaintingSelectionStateForCursor(
           containing_block.Current())),
       containing_block_(containing_block),
       box_offset_(box_offset),

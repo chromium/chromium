@@ -1045,12 +1045,12 @@ class NGLayoutSelectionTest
     return Selection().ComputeLayoutSelectionStatus(cursor);
   }
 
-  SelectionState ComputeLayoutSelectionStateForCursor(
+  SelectionState ComputePaintingSelectionStateForCursor(
       const LayoutObject& layout_object) const {
     DCHECK(layout_object.IsText());
     NGInlineCursor cursor;
     cursor.MoveTo(layout_object);
-    return Selection().ComputeLayoutSelectionStateForCursor(cursor.Current());
+    return Selection().ComputePaintingSelectionStateForCursor(cursor.Current());
   }
 
   void SetSelectionAndUpdateLayoutSelection(const std::string& selection_text) {
@@ -1104,7 +1104,8 @@ TEST_F(NGLayoutSelectionTest, TwoNGBlockFlows) {
       GetDocument().body()->firstChild()->firstChild()->GetLayoutObject();
   EXPECT_EQ(LayoutSelectionStatus(1u, 3u, SelectSoftLineBreak::kSelected),
             ComputeLayoutSelectionStatus(*foo));
-  EXPECT_EQ(SelectionState::kStart, ComputeLayoutSelectionStateForCursor(*foo));
+  EXPECT_EQ(SelectionState::kStart,
+            ComputePaintingSelectionStateForCursor(*foo));
   LayoutObject* const bar = GetDocument()
                                 .body()
                                 ->firstChild()
@@ -1113,7 +1114,7 @@ TEST_F(NGLayoutSelectionTest, TwoNGBlockFlows) {
                                 ->GetLayoutObject();
   EXPECT_EQ(LayoutSelectionStatus(0u, 2u, SelectSoftLineBreak::kNotSelected),
             ComputeLayoutSelectionStatus(*bar));
-  EXPECT_EQ(SelectionState::kEnd, ComputeLayoutSelectionStateForCursor(*bar));
+  EXPECT_EQ(SelectionState::kEnd, ComputePaintingSelectionStateForCursor(*bar));
 }
 
 TEST_F(NGLayoutSelectionTest, StartAndEndState) {
@@ -1123,7 +1124,7 @@ TEST_F(NGLayoutSelectionTest, StartAndEndState) {
   EXPECT_EQ(LayoutSelectionStatus(1u, 3u, SelectSoftLineBreak::kNotSelected),
             ComputeLayoutSelectionStatus(*foo));
   EXPECT_EQ(SelectionState::kStartAndEnd,
-            ComputeLayoutSelectionStateForCursor(*foo));
+            ComputePaintingSelectionStateForCursor(*foo));
   LayoutObject* const bar = GetDocument()
                                 .body()
                                 ->firstChild()
@@ -1132,7 +1133,27 @@ TEST_F(NGLayoutSelectionTest, StartAndEndState) {
                                 ->GetLayoutObject();
   EXPECT_EQ(LayoutSelectionStatus(0u, 0u, SelectSoftLineBreak::kNotSelected),
             ComputeLayoutSelectionStatus(*bar));
-  EXPECT_EQ(SelectionState::kNone, ComputeLayoutSelectionStateForCursor(*bar));
+  EXPECT_EQ(SelectionState::kNone,
+            ComputePaintingSelectionStateForCursor(*bar));
+}
+
+TEST_F(NGLayoutSelectionTest, UnpaintedStartAndEndState) {
+  SetSelectionAndUpdateLayoutSelection(
+      "<img width=10px height=10px>^<div>\n<span "
+      "id=selected>foo</span>\n</div>|<img width=10px height=10px>"
+      "<div id=trailing>bar</div>");
+  LayoutObject* const foo =
+      GetElementById("selected")->firstChild()->GetLayoutObject();
+  EXPECT_EQ(LayoutSelectionStatus(0u, 3u, SelectSoftLineBreak::kSelected),
+            ComputeLayoutSelectionStatus(*foo));
+  EXPECT_EQ(SelectionState::kStartAndEnd,
+            ComputePaintingSelectionStateForCursor(*foo));
+  LayoutObject* const bar =
+      GetElementById("trailing")->firstChild()->GetLayoutObject();
+  EXPECT_EQ(LayoutSelectionStatus(0u, 0u, SelectSoftLineBreak::kNotSelected),
+            ComputeLayoutSelectionStatus(*bar));
+  EXPECT_EQ(SelectionState::kNone,
+            ComputePaintingSelectionStateForCursor(*bar));
 }
 
 TEST_F(NGLayoutSelectionTest, StartAndEndMultilineState) {
@@ -1145,8 +1166,9 @@ TEST_F(NGLayoutSelectionTest, StartAndEndMultilineState) {
   cursor.MoveTo(*div_text);
   EXPECT_EQ(LayoutSelectionStatus(1u, 3u, SelectSoftLineBreak::kNotSelected),
             Selection().ComputeLayoutSelectionStatus(cursor));
-  EXPECT_EQ(SelectionState::kStart,
-            Selection().ComputeLayoutSelectionStateForCursor(cursor.Current()));
+  EXPECT_EQ(
+      SelectionState::kStart,
+      Selection().ComputePaintingSelectionStateForCursor(cursor.Current()));
 
   // Move to 'bar' text.
   cursor.MoveToNext();
@@ -1154,8 +1176,9 @@ TEST_F(NGLayoutSelectionTest, StartAndEndMultilineState) {
   cursor.MoveToNext();
   EXPECT_EQ(LayoutSelectionStatus(4u, 7u, SelectSoftLineBreak::kNotSelected),
             Selection().ComputeLayoutSelectionStatus(cursor));
-  EXPECT_EQ(SelectionState::kInside,
-            Selection().ComputeLayoutSelectionStateForCursor(cursor.Current()));
+  EXPECT_EQ(
+      SelectionState::kInside,
+      Selection().ComputePaintingSelectionStateForCursor(cursor.Current()));
 
   // Move to 'baz' text.
   cursor.MoveToNext();
@@ -1163,8 +1186,9 @@ TEST_F(NGLayoutSelectionTest, StartAndEndMultilineState) {
   cursor.MoveToNext();
   EXPECT_EQ(LayoutSelectionStatus(8u, 10u, SelectSoftLineBreak::kNotSelected),
             Selection().ComputeLayoutSelectionStatus(cursor));
-  EXPECT_EQ(SelectionState::kEnd,
-            Selection().ComputeLayoutSelectionStateForCursor(cursor.Current()));
+  EXPECT_EQ(
+      SelectionState::kEnd,
+      Selection().ComputePaintingSelectionStateForCursor(cursor.Current()));
 }
 
 TEST_F(NGLayoutSelectionTest, BeforeStartAndAfterEndMultilineState) {
@@ -1177,8 +1201,9 @@ TEST_F(NGLayoutSelectionTest, BeforeStartAndAfterEndMultilineState) {
   cursor.MoveTo(*div_text);
   EXPECT_EQ(LayoutSelectionStatus(3u, 3u, SelectSoftLineBreak::kNotSelected),
             Selection().ComputeLayoutSelectionStatus(cursor));
-  EXPECT_EQ(SelectionState::kNone,
-            Selection().ComputeLayoutSelectionStateForCursor(cursor.Current()));
+  EXPECT_EQ(
+      SelectionState::kNone,
+      Selection().ComputePaintingSelectionStateForCursor(cursor.Current()));
 
   // Move to 'bar' text.
   cursor.MoveToNext();
@@ -1186,8 +1211,9 @@ TEST_F(NGLayoutSelectionTest, BeforeStartAndAfterEndMultilineState) {
   cursor.MoveToNext();
   EXPECT_EQ(LayoutSelectionStatus(6u, 7u, SelectSoftLineBreak::kSelected),
             Selection().ComputeLayoutSelectionStatus(cursor));
-  EXPECT_EQ(SelectionState::kStart,
-            Selection().ComputeLayoutSelectionStateForCursor(cursor.Current()));
+  EXPECT_EQ(
+      SelectionState::kStart,
+      Selection().ComputePaintingSelectionStateForCursor(cursor.Current()));
 
   LayoutObject* const second_div_text =
       GetDocument().body()->lastChild()->firstChild()->GetLayoutObject();
@@ -1196,7 +1222,7 @@ TEST_F(NGLayoutSelectionTest, BeforeStartAndAfterEndMultilineState) {
   EXPECT_EQ(LayoutSelectionStatus(0u, 2u, SelectSoftLineBreak::kNotSelected),
             Selection().ComputeLayoutSelectionStatus(second_cursor));
   EXPECT_EQ(SelectionState::kEnd,
-            Selection().ComputeLayoutSelectionStateForCursor(
+            Selection().ComputePaintingSelectionStateForCursor(
                 second_cursor.Current()));
 
   // Move to 'quu' text.
@@ -1206,7 +1232,7 @@ TEST_F(NGLayoutSelectionTest, BeforeStartAndAfterEndMultilineState) {
   EXPECT_EQ(LayoutSelectionStatus(4u, 4u, SelectSoftLineBreak::kNotSelected),
             Selection().ComputeLayoutSelectionStatus(second_cursor));
   EXPECT_EQ(SelectionState::kNone,
-            Selection().ComputeLayoutSelectionStateForCursor(
+            Selection().ComputePaintingSelectionStateForCursor(
                 second_cursor.Current()));
 }
 
@@ -1303,7 +1329,7 @@ TEST_F(NGLayoutSelectionTest, BRStatus) {
   EXPECT_EQ(LayoutSelectionStatus(3u, 4u, SelectSoftLineBreak::kNotSelected),
             ComputeLayoutSelectionStatus(*layout_br));
   EXPECT_EQ(SelectionState::kStartAndEnd,
-            ComputeLayoutSelectionStateForCursor(*layout_br));
+            ComputePaintingSelectionStateForCursor(*layout_br));
 }
 
 // https://crbug.com/907186
@@ -1315,7 +1341,7 @@ TEST_F(NGLayoutSelectionTest, WBRStatus) {
   EXPECT_EQ(LayoutSelectionStatus(3u, 4u, SelectSoftLineBreak::kSelected),
             ComputeLayoutSelectionStatus(*layout_wbr));
   EXPECT_EQ(SelectionState::kInside,
-            ComputeLayoutSelectionStateForCursor(*layout_wbr));
+            ComputePaintingSelectionStateForCursor(*layout_wbr));
 }
 
 TEST_F(NGLayoutSelectionTest, SoftHyphen0to1) {

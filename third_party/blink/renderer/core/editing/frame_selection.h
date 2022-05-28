@@ -313,7 +313,7 @@ class CORE_EXPORT FrameSelection final
       const LayoutText& text) const;
   LayoutSelectionStatus ComputeLayoutSelectionStatus(
       const NGInlineCursor& cursor) const;
-  SelectionState ComputeLayoutSelectionStateForCursor(
+  SelectionState ComputePaintingSelectionStateForCursor(
       const NGInlineCursorPosition& position) const;
   SelectionState ComputeLayoutSelectionStateForInlineTextBox(
       const InlineTextBox& text_box) const;
