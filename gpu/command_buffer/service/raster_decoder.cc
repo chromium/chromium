@@ -803,12 +803,6 @@ class RasterDecoderImpl final : public RasterDecoder,
       GLsizei n,
       const volatile GLuint* paint_cache_ids);
   void DoClearPaintCacheINTERNAL();
-
-  // Generates a DDL, if necessary, and compiles shaders requires to raster it.
-  // Returns false each time a shader needed to be compiled and the decoder
-  // should yield. Returns true once all shaders in the DDL have been compiled.
-  bool EnsureDDLReadyForRaster();
-
   void FlushAndSubmitIfNecessary(
       SkSurface* surface,
       std::unique_ptr<GrBackendSurfaceMutableState> TakeEndState,
