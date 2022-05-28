@@ -427,7 +427,7 @@ std::unique_ptr<HistogramBase> PersistentHistogramAllocator::AllocateHistogram(
     // next import (which will happen before the next histogram creation)
     // will know to skip it.
     // See also the comment in ImportHistogramsToStatisticsRecorder().
-    subtle::NoBarrier_Store(&last_created_, histogram_ref);
+    last_created_.store(histogram_ref, std::memory_order_relaxed);
     return histogram;
   }
 
@@ -505,7 +505,7 @@ void PersistentHistogramAllocator::SetRangesManager(
 }
 
 void PersistentHistogramAllocator::ClearLastCreatedReferenceForTesting() {
-  subtle::NoBarrier_Store(&last_created_, 0);
+  last_created_.store(0, std::memory_order_relaxed);
 }
 
 std::unique_ptr<HistogramBase> PersistentHistogramAllocator::CreateHistogram(

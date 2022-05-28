@@ -878,8 +878,10 @@ bool PersistentMemoryAllocator::IsFull() const {
 // having internal dereferences go through this same function, the allocator
 // is hardened against corruption.
 const volatile PersistentMemoryAllocator::BlockHeader*
-PersistentMemoryAllocator::GetBlock(Reference ref, uint32_t type_id,
-                                    uint32_t size, bool queue_ok,
+PersistentMemoryAllocator::GetBlock(Reference ref,
+                                    uint32_t type_id,
+                                    size_t size,
+                                    bool queue_ok,
                                     bool free_ok) const {
   // Handle special cases.
   if (ref == kReferenceQueue && queue_ok)
@@ -929,7 +931,7 @@ void PersistentMemoryAllocator::RecordError(int error) const {
 const volatile void* PersistentMemoryAllocator::GetBlockData(
     Reference ref,
     uint32_t type_id,
-    uint32_t size) const {
+    size_t size) const {
   DCHECK(size > 0);
   const volatile BlockHeader* block =
       GetBlock(ref, type_id, size, false, false);

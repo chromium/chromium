@@ -104,16 +104,16 @@ void HistogramBase::ClearFlags(int32_t flags) {
 }
 
 void HistogramBase::AddScaled(Sample value, int count, int scale) {
-  DCHECK_LT(0, scale);
+  DCHECK_GT(scale, 0);
 
   // Convert raw count and probabilistically round up/down if the remainder
   // is more than a random number [0, scale). This gives a more accurate
   // count when there are a large number of records. RandInt is "inclusive",
   // hence the -1 for the max value.
-  int64_t count_scaled = count / scale;
+  int count_scaled = count / scale;
   if (count - (count_scaled * scale) > base::RandInt(0, scale - 1))
-    count_scaled += 1;
-  if (count_scaled == 0)
+    ++count_scaled;
+  if (count_scaled <= 0)
     return;
 
   AddCount(value, count_scaled);

@@ -329,7 +329,7 @@ class BASE_EXPORT HistogramBase {
   const char* const histogram_name_;
 
   // Additional information about the histogram.
-  std::atomic<uint32_t> flags_{0};
+  std::atomic<int32_t> flags_{0};
 };
 
 }  // namespace base

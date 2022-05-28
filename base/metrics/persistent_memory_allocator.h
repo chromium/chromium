@@ -661,24 +661,29 @@ class BASE_EXPORT PersistentMemoryAllocator {
   Reference AllocateImpl(size_t size, uint32_t type_id);
 
   // Get the block header associated with a specific reference.
-  const volatile BlockHeader* GetBlock(Reference ref, uint32_t type_id,
-                                       uint32_t size, bool queue_ok,
+  const volatile BlockHeader* GetBlock(Reference ref,
+                                       uint32_t type_id,
+                                       size_t size,
+                                       bool queue_ok,
                                        bool free_ok) const;
-  volatile BlockHeader* GetBlock(Reference ref, uint32_t type_id, uint32_t size,
-                                 bool queue_ok, bool free_ok) {
-      return const_cast<volatile BlockHeader*>(
-          const_cast<const PersistentMemoryAllocator*>(this)->GetBlock(
-              ref, type_id, size, queue_ok, free_ok));
+  volatile BlockHeader* GetBlock(Reference ref,
+                                 uint32_t type_id,
+                                 size_t size,
+                                 bool queue_ok,
+                                 bool free_ok) {
+    return const_cast<volatile BlockHeader*>(
+        const_cast<const PersistentMemoryAllocator*>(this)->GetBlock(
+            ref, type_id, size, queue_ok, free_ok));
   }
 
   // Get the actual data within a block associated with a specific reference.
-  const volatile void* GetBlockData(Reference ref, uint32_t type_id,
-                                    uint32_t size) const;
-  volatile void* GetBlockData(Reference ref, uint32_t type_id,
-                              uint32_t size) {
-      return const_cast<volatile void*>(
-          const_cast<const PersistentMemoryAllocator*>(this)->GetBlockData(
-              ref, type_id, size));
+  const volatile void* GetBlockData(Reference ref,
+                                    uint32_t type_id,
+                                    size_t size) const;
+  volatile void* GetBlockData(Reference ref, uint32_t type_id, size_t size) {
+    return const_cast<volatile void*>(
+        const_cast<const PersistentMemoryAllocator*>(this)->GetBlockData(
+            ref, type_id, size));
   }
 
   // Record an error in the internal histogram.
