@@ -122,11 +122,6 @@ void ConversationStateListenerImpl::OnConversationTurnFinished(
     case Resolution::LONGFORM_KEEP_MIC_OPEN:
       NOTREACHED();
       return;
-#if BUILDFLAG(IS_PREBUILT_LIBASSISTANT)
-    case Resolution::BLUE_STEEL_ON_DEVICE_REJECTION:
-      NOTREACHED();
-      return;
-#endif  // BUILDFLAG(IS_PREBUILT_LIBASSISTANT)
   }
 }
 

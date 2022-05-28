@@ -120,7 +120,10 @@ void ServiceController::Initialize(
     return;
   }
 
-  libassistant_factory_.LoadLibassistantLibraryFromDlc(config->dlc_path);
+  // Currently only V1 library is uploaded to DLC.
+  if (!chromeos::assistant::features::IsLibAssistantV2Enabled()) {
+    libassistant_factory_.LoadLibassistantLibraryFromDlc(config->dlc_path);
+  }
 
   auto assistant_manager = libassistant_factory_.CreateAssistantManager(
       ToLibassistantConfig(*config));
@@ -321,9 +324,9 @@ void ServiceController::CreateAndRegisterChromiumApiDelegate(
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         url_loader_factory_remote) {
   CreateChromiumApiDelegate(std::move(url_loader_factory_remote));
-#if !BUILDFLAG(IS_PREBUILT_LIBASSISTANT)
-  assistant_client_->SetChromeOSApiDelegate(chromium_api_delegate_.get());
-#endif  // !BUILDFLAG(IS_PREBUILT_LIBASSISTANT)
+  if (!chromeos::assistant::features::IsLibAssistantV2Enabled()) {
+    assistant_client_->SetChromeOSApiDelegate(chromium_api_delegate_.get());
+  }
 }
 
 void ServiceController::CreateChromiumApiDelegate(
