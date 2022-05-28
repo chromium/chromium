@@ -9,9 +9,11 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/ref_counted.h"
 #include "chromeos/ash/components/network/onc/onc_certificate_pattern.h"
 #include "components/onc/onc_constants.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace base {
 class Value;
@@ -67,6 +69,66 @@ struct COMPONENT_EXPORT(CHROMEOS_NETWORK) ClientCertConfig {
   ::onc::ONCSource onc_source;
 };
 
+// Identifies a resolved client certificate (e.g. after matching existing client
+// certificates against an ONC ClientCertPattern).
+// Can also signify that no certificate has been resolved yet - see the Status
+// enum.
+class COMPONENT_EXPORT(CHROMEOS_NETWORK) ResolvedCert {
+ public:
+  ~ResolvedCert();
+  ResolvedCert(ResolvedCert&& other);
+  ResolvedCert& operator=(ResolvedCert&& other);
+
+  static ResolvedCert NotKnownYet();
+  static ResolvedCert NothingMatched();
+  static ResolvedCert CertMatched(
+      int slot_id,
+      const std::string& pkcs11_id,
+      base::flat_map<std::string, std::string> variable_expansions);
+
+  enum class Status {
+    // It is not known yet if a matching client certificate exists.
+    kNotKnownYet,
+    // No matching client certificate has been found.
+    kNothingMatched,
+    // A matching client certificate has been found.
+    kCertMatched
+  };
+
+  Status status() const;
+
+  // The PKCS#11 slot id the resolved certificate is stored on.
+  // Only callable if `status()` is `Status::kCertMatched`.
+  int slot_id() const;
+  // The PKCS#11 object id of the resolved certificiate.
+  // Only callable if `status()` is `Status::kCertMatched`.
+  const std::string& pkcs11_id() const;
+  // ONC Variable expansions extracted from the resolved certificate.
+  // Only callable if `status()` is `Status::kCertMatched`.
+  const base::flat_map<std::string, std::string> variable_expansions() const;
+
+ private:
+  ResolvedCert(Status status,
+               int slot_id,
+               const std::string& pkcs11_id,
+               base::flat_map<std::string, std::string> variable_expansions);
+  // The status of certificate resolution.
+  Status status_;
+
+  // The PKCS11 slot on which the certificate is stored.
+  // Only relevant if `status` is `Status::kCertMatched`.
+  int slot_id_;
+  // The PKCS11 object id of the certificate and private key.
+  // Only relevant if `status` is `Status::kCertMatched`.
+  std::string pkcs11_id_;
+  // ONC Variable expansions generated from the certificate's contents.
+  // Only relevant if `status` is `Status::kCertMatched`.
+  base::flat_map<std::string, std::string> variable_expansions_;
+};
+
+COMPONENT_EXPORT(CHROMEOS_NETWORK)
+bool operator==(const ResolvedCert& lhs, const ResolvedCert& rhs);
+
 // Returns the PKCS11 and slot ID of |cert_id|, which is expected to be a
 // value of the Shill property |kEapCertIdProperty| or |kEapKeyIdProperty|,
 // either of format "<pkcs11_id>" or "<slot_id>:<pkcs11_id>".
@@ -108,6 +170,16 @@ COMPONENT_EXPORT(CHROMEOS_NETWORK)
 void OncToClientCertConfig(::onc::ONCSource onc_source,
                            const base::Value::Dict& network_config,
                            ClientCertConfig* cert_config);
+
+// Sets the client certificate described by `network_config` as the selected
+// client certificate of `network_config`.
+// If `resolved_cert` has `Status::kNotKnownYet`, will not modify
+// `network_config`. If `resolved_cert` is `Status::kNoCert`, will set an empty
+// PKCS11Id. Otherwise will configure `network_config` to use the PKCS11Id from
+// `resolved_cert`.
+COMPONENT_EXPORT(CHROMEOS_NETWORK)
+void SetResolvedCertInOnc(const ResolvedCert& resolved_cert,
+                          base::Value& network_config);
 
 }  // namespace client_cert
 

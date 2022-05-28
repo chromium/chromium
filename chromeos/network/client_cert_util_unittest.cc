@@ -343,6 +343,7 @@ TEST(ClientCertUtilTest, OncToClientCertConfig_Empty) {
 TEST(ClientCertUtilTest, OncToClientCertConfig_Wifi_Pattern) {
   base::Value network_config = base::test::ParseJson(
       R"({
+         "Type": "WiFi",
          "WiFi": {
            "EAP": {
              "Identity": "identity_value",
@@ -370,6 +371,7 @@ TEST(ClientCertUtilTest, OncToClientCertConfig_Wifi_Pattern) {
 TEST(ClientCertUtilTest, OncToClientCertConfig_Wifi_Ref) {
   base::Value network_config = base::test::ParseJson(
       R"({
+         "Type": "WiFi",
          "WiFi": {
            "EAP": {
              "Identity": "identity_value",
@@ -393,6 +395,7 @@ TEST(ClientCertUtilTest, OncToClientCertConfig_Wifi_Ref) {
 TEST(ClientCertUtilTest, OncToClientCertConfig_Wifi_ProvisioningProfileId) {
   base::Value network_config = base::test::ParseJson(
       R"({
+         "Type": "WiFi",
          "WiFi": {
            "EAP": {
              "Identity": "identity_value",
@@ -420,6 +423,7 @@ TEST(ClientCertUtilTest, OncToClientCertConfig_Wifi_ProvisioningProfileId) {
 TEST(ClientCertUtilTest, OncToClientCertConfig_Ethernet_ProvisioningProfileId) {
   base::Value network_config = base::test::ParseJson(
       R"({
+         "Type": "Ethernet",
          "Ethernet": {
            "EAP": {
              "Identity": "identity_value",
@@ -444,6 +448,7 @@ TEST(ClientCertUtilTest, OncToClientCertConfig_Ethernet_ProvisioningProfileId) {
 TEST(ClientCertUtilTest, OncToClientCertConfig_OpenVPN_ProvisioningProfileId) {
   base::Value network_config = base::test::ParseJson(
       R"({
+         "Type": "VPN",
          "VPN": {
            "OpenVPN": {
              "Identity": "identity_value",
@@ -469,6 +474,7 @@ TEST(ClientCertUtilTest,
      OncToClientCertConfig_L2TPIPsec_ProvisioningProfileId) {
   base::Value network_config = base::test::ParseJson(
       R"({
+         "Type": "VPN",
          "VPN": {
            "L2TP": { },
            "IPsec": {
@@ -494,6 +500,7 @@ TEST(ClientCertUtilTest,
 TEST(ClientCertUtilTest, OncToClientCertConfig_IKEv2_ProvisioningProfileId) {
   base::Value network_config = base::test::ParseJson(
       R"({
+         "Type": "VPN",
          "VPN": {
            "IPsec": {
              "Identity": "identity_value",
@@ -513,6 +520,182 @@ TEST(ClientCertUtilTest, OncToClientCertConfig_IKEv2_ProvisioningProfileId) {
   EXPECT_EQ(cert_config.provisioning_profile_id, "profile_id");
   EXPECT_EQ(cert_config.policy_identity, "identity_value");
   EXPECT_EQ(cert_config.onc_source, ::onc::ONC_SOURCE_USER_POLICY);
+}
+
+TEST(ClientCertUtilTest, SetResolvedCertForEthernetEap) {
+  base::Value network_config = base::test::ParseJson(
+      R"({
+         "Type": "Ethernet",
+         "Ethernet": {
+           "Authentication": "8021X",
+           "EAP": {
+             "ClientCertType": "Pattern",
+             "ClientCertPattern": {
+               "Subject": {
+                 "CommonName": "Test"
+               }
+             }
+           }
+         }
+       })");
+  SetResolvedCertInOnc(ResolvedCert::CertMatched(1, "pkcs11_id", {}),
+                       network_config);
+  EXPECT_THAT(network_config, base::test::IsJson(
+                                  R"({
+         "Type": "Ethernet",
+         "Ethernet": {
+           "Authentication": "8021X",
+           "EAP": {
+             "ClientCertType": "PKCS11Id",
+             "ClientCertPKCS11Id": "1:pkcs11_id"
+           }
+         }
+       })"));
+}
+
+TEST(ClientCertUtilTest, SetResolvedCertForWifiEap) {
+  base::Value network_config = base::test::ParseJson(
+      R"({
+         "Type": "WiFi",
+         "WiFi": {
+           "Security": "WPA-EAP",
+           "EAP": {
+             "ClientCertType": "Pattern",
+             "ClientCertPattern": {
+               "Subject": {
+                 "CommonName": "Test"
+               }
+             }
+           }
+         }
+       })");
+  SetResolvedCertInOnc(ResolvedCert::CertMatched(1, "pkcs11_id", {}),
+                       network_config);
+  EXPECT_THAT(network_config, base::test::IsJson(
+                                  R"({
+         "Type": "WiFi",
+         "WiFi": {
+           "Security": "WPA-EAP",
+           "EAP": {
+             "ClientCertType": "PKCS11Id",
+             "ClientCertPKCS11Id": "1:pkcs11_id"
+           }
+         }
+       })"));
+}
+
+TEST(ClientCertUtilTest, SetResolvedCertForOpenVpn) {
+  base::Value network_config = base::test::ParseJson(
+      R"({
+         "Type": "VPN",
+         "VPN": {
+           "Type": "OpenVPN",
+           "OpenVPN": {
+             "ClientCertType": "Pattern",
+             "ClientCertPattern": {
+               "Subject": {
+                 "CommonName": "Test"
+               }
+             }
+           }
+         }
+       })");
+  SetResolvedCertInOnc(ResolvedCert::CertMatched(1, "pkcs11_id", {}),
+                       network_config);
+  EXPECT_THAT(network_config, base::test::IsJson(
+                                  R"({
+         "Type": "VPN",
+         "VPN": {
+           "Type": "OpenVPN",
+           "OpenVPN": {
+             "ClientCertType": "PKCS11Id",
+             "ClientCertPKCS11Id": "1:pkcs11_id"
+           }
+         }
+       })"));
+}
+
+TEST(ClientCertUtilTest, SetResolvedCertForLt2pIpsecVpn) {
+  base::Value network_config = base::test::ParseJson(
+      R"({
+         "Type": "VPN",
+         "VPN": {
+           "Type": "L2TP-IPsec",
+           "IPsec": {
+             "ClientCertType": "Pattern",
+             "ClientCertPattern": {
+               "Subject": {
+                 "CommonName": "Test"
+               }
+             }
+           }
+         }
+       })");
+  SetResolvedCertInOnc(ResolvedCert::CertMatched(1, "pkcs11_id", {}),
+                       network_config);
+  EXPECT_THAT(network_config, base::test::IsJson(
+                                  R"({
+         "Type": "VPN",
+         "VPN": {
+           "Type": "L2TP-IPsec",
+           "IPsec": {
+             "ClientCertType": "PKCS11Id",
+             "ClientCertPKCS11Id": "1:pkcs11_id"
+           }
+         }
+       })"));
+}
+
+// Tests that the NotKnownYet state doesn't change the ONC value.
+TEST(ClientCertUtilTest, NotKnownYet) {
+  base::Value network_config = base::test::ParseJson(
+      R"({
+         "Type": "Ethernet",
+         "Ethernet": {
+           "Authentication": "8021X",
+           "EAP": {
+             "ClientCertType": "Pattern",
+             "ClientCertPattern": {
+               "Subject": {
+                 "CommonName": "Test"
+               }
+             }
+           }
+         }
+       })");
+  base::Value network_config_orig = network_config.Clone();
+  SetResolvedCertInOnc(ResolvedCert::NotKnownYet(), network_config);
+  EXPECT_THAT(network_config, base::test::IsJson(network_config_orig));
+}
+
+TEST(ClientCertUtilTest, NoCert) {
+  base::Value network_config = base::test::ParseJson(
+      R"({
+         "Type": "Ethernet",
+         "Ethernet": {
+           "Authentication": "8021X",
+           "EAP": {
+             "ClientCertType": "Pattern",
+             "ClientCertPattern": {
+               "Subject": {
+                 "CommonName": "Test"
+               }
+             }
+           }
+         }
+       })");
+  SetResolvedCertInOnc(ResolvedCert::NothingMatched(), network_config);
+  EXPECT_THAT(network_config, base::test::IsJson(
+                                  R"({
+         "Type": "Ethernet",
+         "Ethernet": {
+           "Authentication": "8021X",
+           "EAP": {
+             "ClientCertType": "PKCS11Id",
+             "ClientCertPKCS11Id": ""
+           }
+         }
+       })"));
 }
 
 }  // namespace chromeos::client_cert

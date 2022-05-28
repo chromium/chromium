@@ -10,6 +10,7 @@
 
 #include <list>
 
+#include "base/check.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
@@ -21,6 +22,7 @@
 #include "net/cert/scoped_nss_types.h"
 #include "net/cert/x509_certificate.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace chromeos {
@@ -280,60 +282,152 @@ ClientCertConfig::ClientCertConfig(const ClientCertConfig& other) = default;
 
 ClientCertConfig::~ClientCertConfig() = default;
 
+ResolvedCert::ResolvedCert(
+    Status status,
+    int slot_id,
+    const std::string& pkcs11_id,
+    base::flat_map<std::string, std::string> variable_expansions)
+    : status_(status),
+      slot_id_(slot_id),
+      pkcs11_id_(pkcs11_id),
+      variable_expansions_(variable_expansions) {}
+
+ResolvedCert::~ResolvedCert() = default;
+
+ResolvedCert::ResolvedCert(ResolvedCert&& other) = default;
+
+ResolvedCert& ResolvedCert::operator=(ResolvedCert&& other) = default;
+
+// static
+ResolvedCert ResolvedCert::NotKnownYet() {
+  return ResolvedCert(Status::kNotKnownYet, -1, std::string(), {});
+}
+
+// static
+ResolvedCert ResolvedCert::NothingMatched() {
+  return ResolvedCert(Status::kNothingMatched, -1, std::string(), {});
+}
+
+// static
+ResolvedCert ResolvedCert::CertMatched(
+    int slot_id,
+    const std::string& pkcs11_id,
+    base::flat_map<std::string, std::string> variable_expansions) {
+  return ResolvedCert(Status::kCertMatched, slot_id, pkcs11_id,
+                      std::move(variable_expansions));
+}
+
+ResolvedCert::Status ResolvedCert::status() const {
+  return status_;
+}
+
+int ResolvedCert::slot_id() const {
+  DCHECK_EQ(status(), Status::kCertMatched);
+  return slot_id_;
+}
+
+const std::string& ResolvedCert::pkcs11_id() const {
+  DCHECK_EQ(status(), Status::kCertMatched);
+  return pkcs11_id_;
+}
+
+const base::flat_map<std::string, std::string>
+ResolvedCert::variable_expansions() const {
+  DCHECK_EQ(status(), Status::kCertMatched);
+  return variable_expansions_;
+}
+
+bool operator==(const ResolvedCert& lhs, const ResolvedCert& rhs) {
+  return lhs.status() == rhs.status() && lhs.slot_id() == rhs.slot_id() &&
+         lhs.pkcs11_id() == rhs.pkcs11_id() &&
+         lhs.variable_expansions() == rhs.variable_expansions();
+}
+
+// Uses a template type to easily implement a const and a non-const version.
+template <typename DictType>
+DictType* GetOncClientCertConfigDict(DictType& network_config,
+                                     ConfigType* out_config_type) {
+  DictType* wifi = network_config.FindDict(::onc::network_config::kWiFi);
+  if (wifi) {
+    DictType* eap = wifi->FindDict(::onc::wifi::kEAP);
+    if (!eap)
+      return nullptr;
+    if (out_config_type)
+      *out_config_type = ConfigType::kEap;
+    return eap;
+  }
+
+  DictType* ethernet =
+      network_config.FindDict(::onc::network_config::kEthernet);
+  if (ethernet) {
+    DictType* eap = ethernet->FindDict(::onc::wifi::kEAP);
+    if (!eap)
+      return nullptr;
+    if (out_config_type)
+      *out_config_type = ConfigType::kEap;
+    return eap;
+  }
+
+  DictType* vpn = network_config.FindDict(::onc::network_config::kVPN);
+  if (vpn) {
+    DictType* openvpn = vpn->FindDict(::onc::vpn::kOpenVPN);
+    DictType* ipsec = vpn->FindDict(::onc::vpn::kIPsec);
+    DictType* l2tp = vpn->FindDict(::onc::vpn::kL2TP);
+    if (openvpn) {
+      if (out_config_type)
+        *out_config_type = ConfigType::kOpenVpn;
+      return openvpn;
+    }
+    if (ipsec) {
+      // Currently we support two kinds of IPsec-based VPN:
+      // - L2TP/IPsec: IKE version is 1 and |l2tp| is set;
+      // - IKEv2: IKE version is 2 and |l2tp| is not set.
+      // Thus we only use |l2tp| to distinguish between these two cases.
+      if (out_config_type)
+        *out_config_type = l2tp ? ConfigType::kL2tpIpsec : ConfigType::kIkev2;
+      return ipsec;
+    }
+  }
+
+  return nullptr;
+}
+
 void OncToClientCertConfig(::onc::ONCSource onc_source,
                            const base::Value::Dict& network_config,
                            ClientCertConfig* cert_config) {
   *cert_config = ClientCertConfig();
 
-  const base::Value::Dict* dict_with_client_cert = nullptr;
-
-  const base::Value::Dict* wifi =
-      network_config.FindDict(::onc::network_config::kWiFi);
-  if (wifi) {
-    const base::Value::Dict* eap = wifi->FindDict(::onc::wifi::kEAP);
-    if (!eap)
-      return;
-
-    dict_with_client_cert = eap;
-    cert_config->location = ConfigType::kEap;
-  }
-
-  const base::Value::Dict* vpn =
-      network_config.FindDict(::onc::network_config::kVPN);
-  if (vpn) {
-    const base::Value::Dict* openvpn = vpn->FindDict(::onc::vpn::kOpenVPN);
-    const base::Value::Dict* ipsec = vpn->FindDict(::onc::vpn::kIPsec);
-    const base::Value::Dict* l2tp = vpn->FindDict(::onc::vpn::kL2TP);
-    if (openvpn) {
-      dict_with_client_cert = openvpn;
-      cert_config->location = ConfigType::kOpenVpn;
-    } else if (ipsec) {
-      dict_with_client_cert = ipsec;
-      // Currently we support two kinds of IPsec-based VPN:
-      // - L2TP/IPsec: IKE version is 1 and |l2tp| is set;
-      // - IKEv2: IKE version is 2 and |l2tp| is not set.
-      // Thus we only use |l2tp| to distinguish between these two cases.
-      cert_config->location =
-          l2tp ? ConfigType::kL2tpIpsec : ConfigType::kIkev2;
-    } else {
-      return;
-    }
-  }
-
-  const base::Value::Dict* ethernet =
-      network_config.FindDict(::onc::network_config::kEthernet);
-  if (ethernet) {
-    const base::Value::Dict* eap = ethernet->FindDict(::onc::wifi::kEAP);
-    if (!eap)
-      return;
-    dict_with_client_cert = eap;
-    cert_config->location = ConfigType::kEap;
-  }
-
+  const base::Value::Dict* dict_with_client_cert =
+      GetOncClientCertConfigDict(network_config, &(cert_config->location));
   if (dict_with_client_cert) {
     GetClientCertTypeAndDescriptor(onc_source, *dict_with_client_cert,
                                    cert_config);
   }
+}
+
+void SetResolvedCertInOnc(const ResolvedCert& resolved_cert,
+                          base::Value& network_config) {
+  if (resolved_cert.status() == ResolvedCert::Status::kNotKnownYet)
+    return;
+
+  base::Value::Dict* dict_with_client_cert = GetOncClientCertConfigDict(
+      network_config.GetDict(), /*out_config_type=*/nullptr);
+  if (!dict_with_client_cert)
+    return;
+  dict_with_client_cert->Set(::onc::client_cert::kClientCertType,
+                             base::Value(::onc::client_cert::kPKCS11Id));
+  if (resolved_cert.status() == ResolvedCert::Status::kNothingMatched) {
+    // Empty PKCS11Id means that no certificate has been selected and it
+    // should be cleared in shill.
+    dict_with_client_cert->Set(::onc::client_cert::kClientCertPKCS11Id,
+                               std::string());
+  } else {
+    dict_with_client_cert->Set(
+        ::onc::client_cert::kClientCertPKCS11Id,
+        base::Value(base::StringPrintf("%i:%s", resolved_cert.slot_id(),
+                                       resolved_cert.pkcs11_id().c_str())));
+  }
+  dict_with_client_cert->Remove(::onc::client_cert::kClientCertPattern);
 }
 
 }  // namespace client_cert
