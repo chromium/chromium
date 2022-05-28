@@ -126,6 +126,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/context_menu_data/untrustworthy_context_menu_params.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enum_util.h"
@@ -2061,9 +2062,55 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest,
   menu_interceptor.Wait();
 }
 
+IN_PROC_BROWSER_TEST_F(PDFExtensionTest,
+                       ContextMenuPrintCommandEmbeddedExtensionMainFrame) {
+  content::WebContents* guest_contents = LoadPdfGetGuestContents(
+      embedded_test_server()->GetURL("/pdf/pdf_embed.html"));
+  content::RenderFrameHost* plugin_frame = GetPluginFrame(guest_contents);
+  ASSERT_TRUE(plugin_frame);
+
+  // Makes sure that the correct frame invoked the context menu.
+  content::ContextMenuInterceptor menu_interceptor(
+      guest_contents->GetMainFrame());
+
+  // Executes the print command as soon as the context menu is shown.
+  ContextMenuNotificationObserver context_menu_observer(IDC_PRINT);
+
+  PrintObserver print_observer(guest_contents, plugin_frame);
+  content::SimulateMouseClickAt(guest_contents,
+                                blink::WebInputEvent::kNoModifiers,
+                                blink::WebMouseEvent::Button::kLeft, {1, 1});
+  guest_contents->GetMainFrame()->GetRenderWidgetHost()->ShowContextMenuAtPoint(
+      {1, 1}, ui::MENU_SOURCE_MOUSE);
+  print_observer.WaitForPrintPreview();
+  menu_interceptor.Wait();
+}
+
 IN_PROC_BROWSER_TEST_F(PDFExtensionTest, ContextMenuPrintCommandPluginFrame) {
   content::WebContents* guest_contents =
       LoadPdfGetGuestContents(embedded_test_server()->GetURL("/pdf/test.pdf"));
+  content::RenderFrameHost* plugin_frame = GetPluginFrame(guest_contents);
+  ASSERT_TRUE(plugin_frame);
+
+  // Makes sure that the correct frame invoked the context menu.
+  content::ContextMenuInterceptor menu_interceptor(plugin_frame);
+
+  // Executes the print command as soon as the context menu is shown.
+  ContextMenuNotificationObserver context_menu_observer(IDC_PRINT);
+
+  PrintObserver print_observer(guest_contents, plugin_frame);
+  SetInputFocusOnPlugin(guest_contents);
+  plugin_frame->GetRenderWidgetHost()->ShowContextMenuAtPoint(
+      {1, 1}, ui::MENU_SOURCE_MOUSE);
+  print_observer.WaitForPrintPreview();
+  menu_interceptor.Wait();
+}
+
+// TODO(crbug.com/1330032): Fix flakiness.
+IN_PROC_BROWSER_TEST_F(PDFExtensionTest,
+                       DISABLED_ContextMenuPrintCommandEmbeddedPluginFrame) {
+  content::WebContents* guest_contents = LoadPdfGetGuestContents(
+      embedded_test_server()->GetURL("/pdf/pdf_embed.html"));
   content::RenderFrameHost* plugin_frame = GetPluginFrame(guest_contents);
   ASSERT_TRUE(plugin_frame);
 

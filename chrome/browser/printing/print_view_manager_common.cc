@@ -28,24 +28,15 @@
 namespace printing {
 
 namespace {
-// Returns true if `contents` is a full page MimeHandlerViewGuest plugin.
-bool IsFullPagePlugin(content::WebContents* contents) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  auto* guest_view =
-      extensions::MimeHandlerViewGuest::FromWebContents(contents);
-  if (guest_view && guest_view->is_full_page_plugin())
-    return true;
-#endif
-  return false;
-}
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-// Stores `guest_contents` in `result` and returns true if
-// `IsFullPagePlugin(guest_contents)`. Otherwise, returns false and `result`
-// remains unchanged.
+// Stores `guest_contents` in `result` and returns true if `guest_contents` is a
+// full-page `MimeHandlerViewGuest`.
 bool StoreFullPagePlugin(content::WebContents** result,
                          content::WebContents* guest_contents) {
-  if (IsFullPagePlugin(guest_contents)) {
+  auto* guest_view =
+      extensions::MimeHandlerViewGuest::FromWebContents(guest_contents);
+  if (guest_view && guest_view->is_full_page_plugin()) {
     *result = guest_contents;
     return true;
   }
@@ -56,16 +47,14 @@ bool StoreFullPagePlugin(content::WebContents** result,
 // Pick the right RenderFrameHost based on the WebContents.
 content::RenderFrameHost* GetRenderFrameHostToUse(
     content::WebContents* contents) {
-  if (!IsFullPagePlugin(contents))
-    return GetFrameToPrint(contents);
-
 #if BUILDFLAG(ENABLE_PDF)
+  // Pick the plugin frame if `contents` is a PDF viewer guest.
   content::RenderFrameHost* pdf_rfh =
       pdf_frame_util::FindPdfChildFrame(contents->GetMainFrame());
   if (pdf_rfh)
     return pdf_rfh;
 #endif
-  return contents->GetMainFrame();
+  return GetFrameToPrint(contents);
 }
 
 }  // namespace
