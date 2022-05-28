@@ -35,6 +35,8 @@
 #include "third_party/blink/renderer/core/html/parser/html_token.h"
 #include "third_party/blink/renderer/core/html_element_lookup_trie.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/hash_set.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
 
 namespace blink {
 
@@ -186,6 +188,11 @@ inline void AtomicHTMLToken::InitializeAttributes(
   if (!size)
     return;
 
+  // Track which attributes have already been inserted to avoid N^2
+  // behavior with repeated linear searches when populating `attributes_`.
+  HashSet<AtomicString> added_attributes;
+  added_attributes.ReserveCapacityForSize(size);
+
   attributes_.clear();
   attributes_.ReserveInitialCapacity(size);
   for (const auto& attribute : attributes) {
@@ -203,8 +210,7 @@ inline void AtomicHTMLToken::InitializeAttributes(
       value = g_empty_atom;
     }
     const QualifiedName& name = NameForAttribute(attribute);
-    // FIXME: This is N^2 for the number of attributes.
-    if (!FindAttributeInVector(attributes_, name)) {
+    if (added_attributes.insert(name.LocalName()).is_new_entry) {
       attributes_.push_back(Attribute(name, value));
     } else {
       duplicate_attribute_ = true;
