@@ -23,10 +23,10 @@ source_set("vpn_provider") {
 
   deps = [
     "//base",
+    "//chrome/browser/ash/crosapi",
     "//chrome/common/extensions/api",
-    "//chromeos/dbus",
+    "//chromeos/crosapi/mojom",
     "//chromeos/login/login_state",
-    "//chromeos/network",
     "//components/keyed_service/content",
     "//content/public/browser",
     "//extensions/browser",

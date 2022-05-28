@@ -6,12 +6,8 @@
 
 #include "base/memory/singleton.h"
 #include "chrome/browser/chromeos/extensions/vpn_provider/vpn_service.h"
-#include "chromeos/dbus/shill/shill_third_party_vpn_driver_client.h"
 #include "chromeos/login/login_state/login_state.h"
-#include "chromeos/network/network_handler.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "extensions/browser/event_router.h"
-#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extensions_browser_client.h"
 
 namespace chromeos {
@@ -45,6 +41,10 @@ bool VpnServiceFactory::ServiceIsNULLWhileTesting() const {
 
 KeyedService* VpnServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
+  if (!VpnService::GetVpnService()) {
+    return nullptr;
+  }
+
   std::string context_user_hash =
       extensions::ExtensionsBrowserClient::Get()->GetUserIdHashFromContext(
           context);
@@ -54,13 +54,7 @@ KeyedService* VpnServiceFactory::BuildServiceInstanceFor(
     return nullptr;
   }
 
-  return new VpnService(context, context_user_hash,
-                        extensions::ExtensionRegistry::Get(context),
-                        extensions::EventRouter::Get(context),
-                        ShillThirdPartyVpnDriverClient::Get(),
-                        NetworkHandler::Get()->network_configuration_handler(),
-                        NetworkHandler::Get()->network_profile_handler(),
-                        NetworkHandler::Get()->network_state_handler());
+  return new VpnService(context);
 }
 
 }  // namespace chromeos

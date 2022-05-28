@@ -189,6 +189,8 @@ source_set("crosapi") {
     "video_frame_handler_ash.h",
     "vpn_extension_observer_ash.cc",
     "vpn_extension_observer_ash.h",
+    "vpn_service_ash.cc",
+    "vpn_service_ash.h",
     "web_app_service_ash.cc",
     "web_app_service_ash.h",
     "web_page_info_ash.cc",

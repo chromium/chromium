@@ -72,14 +72,13 @@ class VpnServiceInterface : public KeyedService {
                           SuccessCallback,
                           FailureCallback) = 0;
 
-  // Notifies connection state |state| to the active VPN configuration after
+  // Notifies new connection state to the active VPN configuration after
   // verifying that it belongs to the extension with id |extension_id|.
   // Calls |success| or |failure| based on the outcome.
-  virtual void NotifyConnectionStateChanged(
-      const std::string& extension_id,
-      extensions::api::vpn_provider::VpnConnectionState,
-      SuccessCallback,
-      FailureCallback) = 0;
+  virtual void NotifyConnectionStateChanged(const std::string& extension_id,
+                                            bool connection_success,
+                                            SuccessCallback,
+                                            FailureCallback) = 0;
 
   // Returns a VpnServiceProxy that is used by Pepper API.
   virtual std::unique_ptr<content::VpnServiceProxy> GetVpnServiceProxy() = 0;

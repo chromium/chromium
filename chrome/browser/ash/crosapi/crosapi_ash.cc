@@ -78,6 +78,7 @@
 #include "chrome/browser/ash/crosapi/url_handler_ash.h"
 #include "chrome/browser/ash/crosapi/video_capture_device_factory_ash.h"
 #include "chrome/browser/ash/crosapi/vpn_extension_observer_ash.h"
+#include "chrome/browser/ash/crosapi/vpn_service_ash.h"
 #include "chrome/browser/ash/crosapi/web_app_service_ash.h"
 #include "chrome/browser/ash/crosapi/web_page_info_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -210,15 +211,16 @@ CrosapiAsh::CrosapiAsh(CrosapiDependencyRegistry* registry)
       structured_metrics_service_ash_(
           std::make_unique<StructuredMetricsServiceAsh>()),
       system_display_ash_(std::make_unique<SystemDisplayAsh>()),
-      web_app_service_ash_(std::make_unique<WebAppServiceAsh>()),
-      web_page_info_factory_ash_(std::make_unique<WebPageInfoFactoryAsh>()),
       task_manager_ash_(std::make_unique<TaskManagerAsh>()),
       time_zone_service_ash_(std::make_unique<TimeZoneServiceAsh>()),
       tts_ash_(std::make_unique<TtsAsh>(g_browser_process->profile_manager())),
       url_handler_ash_(std::make_unique<UrlHandlerAsh>()),
       video_capture_device_factory_ash_(
           std::make_unique<VideoCaptureDeviceFactoryAsh>()),
-      vpn_extension_observer_ash_(std::make_unique<VpnExtensionObserverAsh>()) {
+      vpn_extension_observer_ash_(std::make_unique<VpnExtensionObserverAsh>()),
+      vpn_service_ash_(std::make_unique<VpnServiceAsh>()),
+      web_app_service_ash_(std::make_unique<WebAppServiceAsh>()),
+      web_page_info_factory_ash_(std::make_unique<WebPageInfoFactoryAsh>()) {
   receiver_set_.set_disconnect_handler(base::BindRepeating(
       &CrosapiAsh::OnDisconnected, weak_factory_.GetWeakPtr()));
 }
@@ -656,6 +658,11 @@ void CrosapiAsh::BindVideoCaptureDeviceFactory(
 void CrosapiAsh::BindVpnExtensionObserver(
     mojo::PendingReceiver<crosapi::mojom::VpnExtensionObserver> receiver) {
   vpn_extension_observer_ash_->BindReceiver(std::move(receiver));
+}
+
+void CrosapiAsh::BindVpnService(
+    mojo::PendingReceiver<mojom::VpnService> receiver) {
+  vpn_service_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindWebAppPublisher(

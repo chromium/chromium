@@ -90,6 +90,7 @@
 #include "chromeos/crosapi/mojom/url_handler.mojom.h"
 #include "chromeos/crosapi/mojom/video_capture.mojom.h"
 #include "chromeos/crosapi/mojom/vpn_extension_observer.mojom.h"
+#include "chromeos/crosapi/mojom/vpn_service.mojom.h"
 #include "chromeos/crosapi/mojom/web_app_service.mojom.h"
 #include "chromeos/crosapi/mojom/web_page_info.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
@@ -257,9 +258,10 @@ constexpr InterfaceVersionEntry kInterfaceVersionEntries[] = {
     MakeInterfaceVersionEntry<crosapi::mojom::Tts>(),
     MakeInterfaceVersionEntry<crosapi::mojom::UrlHandler>(),
     MakeInterfaceVersionEntry<crosapi::mojom::VideoCaptureDeviceFactory>(),
+    MakeInterfaceVersionEntry<crosapi::mojom::VpnExtensionObserver>(),
+    MakeInterfaceVersionEntry<crosapi::mojom::VpnService>(),
     MakeInterfaceVersionEntry<crosapi::mojom::WebAppService>(),
     MakeInterfaceVersionEntry<crosapi::mojom::WebPageInfoFactory>(),
-    MakeInterfaceVersionEntry<crosapi::mojom::VpnExtensionObserver>(),
     MakeInterfaceVersionEntry<device::mojom::HidConnection>(),
     MakeInterfaceVersionEntry<device::mojom::HidManager>(),
     MakeInterfaceVersionEntry<

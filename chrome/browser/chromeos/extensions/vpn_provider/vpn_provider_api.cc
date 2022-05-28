@@ -305,8 +305,13 @@ VpnProviderNotifyConnectionStateChangedFunction::Run() {
     return RespondNow(Error("Invalid profile."));
   }
 
+  // Cannot be VPN_CONNECTION_STATE_NONE at this point -- see !params guard
+  // above.
+  bool connection_success =
+      params->state ==
+      api_vpn::VpnConnectionState::VPN_CONNECTION_STATE_CONNECTED;
   service->NotifyConnectionStateChanged(
-      extension_id(), params->state,
+      extension_id(), connection_success,
       base::BindOnce(&VpnProviderNotifyConnectionStateChangedFunction::
                          SignalCallCompletionSuccess,
                      this),

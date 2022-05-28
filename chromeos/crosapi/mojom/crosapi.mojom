@@ -67,6 +67,7 @@ import "chromeos/crosapi/mojom/test_controller.mojom";
 import "chromeos/crosapi/mojom/timezone.mojom";
 import "chromeos/crosapi/mojom/tts.mojom";
 import "chromeos/crosapi/mojom/url_handler.mojom";
+import "chromeos/crosapi/mojom/vpn_service.mojom";
 import "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom";
 import "chromeos/crosapi/mojom/video_capture.mojom";
 import "chromeos/crosapi/mojom/kiosk_session_service.mojom";
@@ -109,8 +110,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 79
-// Next method id: 82
+// Next version: 80
+// Next method id: 83
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -509,12 +510,18 @@ interface Crosapi {
   // lacros to ash.
   // Added in M96.
   [MinVersion=49] BindKioskSessionService@53(
-    pending_receiver<KioskSessionService> receiver);
+      pending_receiver<KioskSessionService> receiver);
 
   // Binds the chrome app kiosk service. This service is used to install and
   // launch the chrome app inside lacros.
   [MinVersion=73] BindChromeAppKioskService@76(
-    pending_receiver<ChromeAppKioskService> receiver);
+      pending_receiver<ChromeAppKioskService> receiver);
+
+  // Binds the vpn service. This service is used to facilirate
+  // communication between chrome.vpnProvider extension in lacros and the
+  // network services in ash.
+  [MinVersion=79] BindVpnService@82(
+      pending_receiver<VpnService> receiver);
 
   // Binds the web page info factory interface which allows ash to request web
   // page info from Lacros.
