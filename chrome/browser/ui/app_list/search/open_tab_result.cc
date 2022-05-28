@@ -104,15 +104,15 @@ void OpenTabResult::UpdateText() {
   std::u16string url = base::UTF8ToUTF16(match_.destination_url.spec());
   SetDetailsTextVector(
       {CreateStringTextItem(url).SetTextTags({Tag(Tag::URL, 0, url.length())}),
-       CreateStringTextItem(kUrlDelimiter),
-       CreateStringTextItem(IDS_APP_LIST_OPEN_TAB_HINT)
+       CreateStringTextItem(l10n_util::GetStringFUTF16(
+                                IDS_APP_LIST_OPEN_TAB_HINT, kUrlDelimiter))
            .SetOverflowBehavior(
                ash::SearchResultTextItem::OverflowBehavior::kNoElide)});
 
-  SetAccessibleName(
-      base::JoinString({match_.description, url,
-                        l10n_util::GetStringUTF16(IDS_APP_LIST_OPEN_TAB_HINT)},
-                       kA11yDelimiter));
+  SetAccessibleName(base::JoinString(
+      {match_.description, url,
+       l10n_util::GetStringFUTF16(IDS_APP_LIST_OPEN_TAB_HINT, u"")},
+      kA11yDelimiter));
 }
 
 void OpenTabResult::UpdateIcon() {
