@@ -1270,5 +1270,14 @@
     "args": [
       "--disable-blink-features=RestrictBatteryStatusToSecureContexts"
     ]
+  },
+  {
+    "prefix": "precompile-inline-scripts",
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "external/wpt/html/semantics/scripting-1",
+      "fast/dom/HTMLScriptElement"
+    ],
+    "args": ["--enable-features=PrecompileInlineScripts"]
   }
 ]

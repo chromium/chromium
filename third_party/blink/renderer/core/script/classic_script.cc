@@ -79,21 +79,22 @@ ClassicScript* ClassicScript::Create(
     SanitizeScriptErrors sanitize_script_errors,
     SingleCachedMetadataHandler* cache_handler,
     const TextPosition& start_position,
-    ScriptStreamer::NotStreamingReason not_streaming_reason) {
+    ScriptStreamer::NotStreamingReason not_streaming_reason,
+    InlineScriptStreamer* streamer) {
   // External files should use CreateFromResource().
   DCHECK(source_location_type != ScriptSourceLocationType::kExternalFile);
 
   return MakeGarbageCollected<ClassicScript>(
       ParkableString(source_text.Impl()), source_url, base_url, fetch_options,
       source_location_type, sanitize_script_errors, cache_handler,
-      start_position, nullptr, not_streaming_reason);
+      start_position, streamer, not_streaming_reason);
 }
 
 ClassicScript* ClassicScript::CreateFromResource(
     ScriptResource* resource,
     const KURL& base_url,
     const ScriptFetchOptions& fetch_options,
-    ScriptStreamer* streamer,
+    ResourceScriptStreamer* streamer,
     ScriptStreamer::NotStreamingReason not_streamed_reason,
     ScriptCacheConsumer* cache_consumer) {
   DCHECK_EQ(!streamer, not_streamed_reason !=

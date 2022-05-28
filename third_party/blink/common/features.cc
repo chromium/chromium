@@ -1472,6 +1472,9 @@ const base::Feature kPrefetchFontLookupTables{
     "PrefetchFontLookupTables", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
+const base::Feature kPrecompileInlineScripts{"PrecompileInlineScripts",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kSimulateClickOnAXFocus {
   "SimulateClickOnAXFocus",
 #if BUILDFLAG(IS_WIN)

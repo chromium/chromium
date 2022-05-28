@@ -337,6 +337,9 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(BlinkFeatures.EVENT_PATH, "Enables the deprecated Event.path API."),
             Flag.baseFeature(BlinkFeatures.PREFETCH_FONT_LOOKUP_TABLES,
                     "If enabled, font lookup tables will be prefetched on renderer startup."),
+            Flag.baseFeature(BlinkFeatures.PRECOMPILE_INLINE_SCRIPTS,
+                    "If enabled, inline scripts will be stream compiled using a background HTML"
+                            + " scanner."),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };

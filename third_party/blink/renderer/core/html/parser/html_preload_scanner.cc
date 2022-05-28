@@ -76,21 +76,9 @@ namespace blink {
 
 namespace {
 
-bool Match(const StringImpl* impl, const QualifiedName& q_name) {
-  return impl == q_name.LocalName().Impl();
-}
-
 bool Match(const AtomicString& name, const QualifiedName& q_name) {
   DCHECK(IsMainThread());
   return q_name.LocalName() == name;
-}
-
-const StringImpl* TagImplFor(const HTMLToken::DataVector& data) {
-  AtomicString tag_name = data.AsAtomicString();
-  const StringImpl* result = tag_name.Impl();
-  if (result->IsStatic())
-    return result;
-  return nullptr;
 }
 
 String InitiatorFor(const StringImpl* tag_impl) {
@@ -153,6 +141,18 @@ void ScanScriptWebBundle(
 }
 
 }  // namespace
+
+bool Match(const StringImpl* impl, const QualifiedName& q_name) {
+  return impl == q_name.LocalName().Impl();
+}
+
+const StringImpl* TagImplFor(const HTMLToken::DataVector& data) {
+  AtomicString tag_name = data.AsAtomicString();
+  const StringImpl* result = tag_name.Impl();
+  if (result->IsStatic())
+    return result;
+  return nullptr;
+}
 
 class TokenPreloadScanner::StartTagScanner {
   STACK_ALLOCATED();

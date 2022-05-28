@@ -129,8 +129,6 @@ v8::MaybeLocal<v8::Script> CompileScriptInternal(
     // Final compile call for a streamed compilation.
     // Streaming compilation may involve use of code cache.
     // TODO(leszeks): Add compile timer to streaming compilation.
-    DCHECK(streamer->IsFinished());
-    DCHECK(!streamer->IsStreamingSuppressed());
     return v8::ScriptCompiler::Compile(
         script_state->GetContext(), streamer->Source(v8::ScriptType::kClassic),
         code, origin);
@@ -318,8 +316,6 @@ v8::MaybeLocal<v8::Module> V8ScriptRunner::CompileModule(
     // Final compile call for a streamed compilation.
     // Streaming compilation may involve use of code cache.
     // TODO(leszeks): Add compile timer to streaming compilation.
-    DCHECK(streamer->IsFinished());
-    DCHECK(!streamer->IsStreamingSuppressed());
     script = v8::ScriptCompiler::CompileModule(
         isolate->GetCurrentContext(), streamer->Source(v8::ScriptType::kModule),
         code, origin);

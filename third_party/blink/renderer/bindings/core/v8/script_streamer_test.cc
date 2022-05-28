@@ -19,10 +19,12 @@
 #include "third_party/blink/public/platform/web_url_loader_mock_factory.h"
 #include "third_party/blink/public/platform/web_url_request_extra_data.h"
 #include "third_party/blink/renderer/bindings/core/v8/referrer_script_info.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_evaluation_result.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_code_cache.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_script_runner.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/script/classic_pending_script.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
@@ -39,9 +41,11 @@
 #include "third_party/blink/renderer/platform/loader/testing/mock_fetch_context.h"
 #include "third_party/blink/renderer/platform/loader/testing/test_resource_fetcher_properties.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
+#include "third_party/blink/renderer/platform/scheduler/public/worker_pool.h"
 #include "third_party/blink/renderer/platform/testing/mock_context_lifecycle_notifier.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
 #include "v8/include/v8.h"
 
@@ -169,7 +173,7 @@ class ScriptStreamingTest : public testing::Test {
   }
 
   ClassicScript* CreateClassicScript() const {
-    ScriptStreamer* streamer = resource_->TakeStreamer();
+    ResourceScriptStreamer* streamer = resource_->TakeStreamer();
     ScriptCacheConsumer* cache_consumer = resource_->TakeCacheConsumer();
     if (streamer) {
       if (streamer->IsStreamingSuppressed()) {
@@ -184,10 +188,6 @@ class ScriptStreamingTest : public testing::Test {
     return ClassicScript::CreateFromResource(
         resource_, KURL(), ScriptFetchOptions(), nullptr,
         resource_->NoStreamerReason(), cache_consumer);
-  }
-
-  Settings* GetSettings() const {
-    return &dummy_page_holder_->GetPage().GetSettings();
   }
 
  protected:
@@ -239,8 +239,6 @@ class ScriptStreamingTest : public testing::Test {
   Persistent<ScriptResource> resource_;
   mojo::ScopedDataPipeProducerHandle producer_handle_;
   mojo::ScopedDataPipeConsumerHandle consumer_handle_;
-
-  std::unique_ptr<DummyPageHolder> dummy_page_holder_;
 };
 
 TEST_F(ScriptStreamingTest, CompilingStreamedScript) {
@@ -565,6 +563,34 @@ TEST_F(ScriptStreamingTest, ResourceSetRevalidatingRequest) {
   EXPECT_FALSE(resource_->HasStreamer());
   EXPECT_EQ(resource_->NoStreamerReason(),
             ScriptStreamer::NotStreamingReason::kRevalidate);
+}
+
+TEST_F(ScriptStreamingTest, InlineScript) {
+  // Test that we can successfully compile an inline script.
+  V8TestingScope scope;
+
+  String source = u"function foo() {return 5;} foo();";
+  source.Ensure16Bit();
+  auto* streamer = MakeGarbageCollected<InlineScriptStreamer>();
+  worker_pool::PostTask(
+      FROM_HERE, {},
+      CrossThreadBindOnce(&InlineScriptStreamer::Run,
+                          WrapCrossThreadPersistent(streamer), source));
+
+  ClassicScript* classic_script = ClassicScript::Create(
+      source, KURL(), KURL(), ScriptFetchOptions(),
+      ScriptSourceLocationType::kUnknown, SanitizeScriptErrors::kSanitize,
+      nullptr, TextPosition::MinimumPosition(),
+      ScriptStreamer::NotStreamingReason::kInvalid, streamer);
+
+  DummyPageHolder holder;
+  ScriptEvaluationResult result = classic_script->RunScriptAndReturnValue(
+      holder.GetFrame().DomWindow(),
+      ExecuteScriptPolicy::kExecuteScriptWhenScriptsDisabled);
+  EXPECT_EQ(result.GetResultType(),
+            ScriptEvaluationResult::ResultType::kSuccess);
+  EXPECT_EQ(
+      5, result.GetSuccessValue()->Int32Value(scope.GetContext()).FromJust());
 }
 
 }  // namespace blink

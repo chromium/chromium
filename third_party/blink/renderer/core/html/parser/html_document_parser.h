@@ -47,10 +47,12 @@
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
+#include "third_party/blink/renderer/platform/wtf/sequence_bound.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_position.h"
 
 namespace blink {
 
+class BackgroundHTMLScanner;
 class Document;
 class DocumentFragment;
 class Element;
@@ -186,6 +188,7 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
   void FetchQueuedPreloads();
   std::string GetPreloadHistogramSuffix();
   void FinishAppend();
+  void ScanInBackground(const String& source);
 
   HTMLToken& Token() { return *token_; }
 
@@ -202,6 +205,7 @@ class CORE_EXPORT HTMLDocumentParser : public ScriptableDocumentParser,
   std::unique_ptr<HTMLPreloadScanner> preload_scanner_;
   // A scanner used only for input provided to the insert() method.
   std::unique_ptr<HTMLPreloadScanner> insertion_preload_scanner_;
+  WTF::SequenceBound<BackgroundHTMLScanner> background_scanner_;
 
   scoped_refptr<base::SingleThreadTaskRunner> loading_task_runner_;
 

@@ -414,7 +414,7 @@ void ScriptResource::ResponseBodyReceived(
   CheckStreamingState();
   CHECK(!ErrorOccurred());
 
-  streamer_ = MakeGarbageCollected<ScriptStreamer>(
+  streamer_ = MakeGarbageCollected<ResourceScriptStreamer>(
       this, std::move(data_pipe), response_body_loader_client,
       std::move(stream_text_decoder_), loader_task_runner);
   CHECK_EQ(no_streamer_reason_, ScriptStreamer::NotStreamingReason::kInvalid);
@@ -484,12 +484,12 @@ void ScriptResource::SetEncoding(const String& chs) {
   }
 }
 
-ScriptStreamer* ScriptResource::TakeStreamer() {
+ResourceScriptStreamer* ScriptResource::TakeStreamer() {
   CHECK(IsLoaded());
   if (!streamer_)
     return nullptr;
 
-  ScriptStreamer* streamer = streamer_;
+  ResourceScriptStreamer* streamer = streamer_;
   // A second use of the streamer is not possible, so we null it out and disable
   // streaming for subsequent uses.
   streamer_ = nullptr;

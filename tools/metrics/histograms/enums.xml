@@ -55870,6 +55870,7 @@ from previous Chrome versions.
   <int value="-1308389775" label="PermissionChipGestureSensitive:enabled"/>
   <int value="-1308184869" label="MediaFeedsBackgroundFetching:enabled"/>
   <int value="-1306581260" label="AutofillParsingPatternProvider:enabled"/>
+  <int value="-1305690805" label="PrecompileInlineScripts:enabled"/>
   <int value="-1304957199" label="OfflinePagesShowAlternateDinoPage:enabled"/>
   <int value="-1304758527" label="SyncSendTabToSelf:disabled"/>
   <int value="-1304401930" label="CSSContainerQueries:enabled"/>
@@ -58409,6 +58410,7 @@ from previous Chrome versions.
   <int value="375785554" label="UserActivationV2:disabled"/>
   <int value="375934458" label="PortalsCrossOrigin:enabled"/>
   <int value="377093001" label="WebRtcHWH264Encoding:disabled"/>
+  <int value="378093891" label="PrecompileInlineScripts:disabled"/>
   <int value="378948081"
       label="AutofillEnableInfoBarAccountIndicationFooter:disabled"/>
   <int value="378994579" label="Previews:enabled"/>

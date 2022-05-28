@@ -54,6 +54,9 @@ class LazyLoadImageObserver;
 class SegmentedString;
 class SubresourceRedirectOriginsPreloader;
 
+bool Match(const StringImpl* impl, const QualifiedName& q_name);
+const StringImpl* TagImplFor(const HTMLToken::DataVector& data);
+
 struct CORE_EXPORT CachedDocumentParameters {
   USING_FAST_MALLOC(CachedDocumentParameters);
 

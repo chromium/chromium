@@ -34,6 +34,22 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
+namespace {
+
+InlineScriptStreamer* GetInlineScriptStreamer(const String& source,
+                                              Document& document) {
+  ScriptableDocumentParser* scriptable_parser =
+      document.GetScriptableDocumentParser();
+  if (!scriptable_parser)
+    return nullptr;
+
+  // The inline script streamers are keyed by the full source text to make sure
+  // the script that was parsed in the background scanner exactly matches the
+  // script we want to compile here.
+  return scriptable_parser->TakeInlineScriptStreamer(source);
+}
+
+}  // namespace
 
 // <specdef href="https://html.spec.whatwg.org/C/#fetch-a-classic-script">
 ClassicPendingScript* ClassicPendingScript::Fetch(
@@ -329,6 +345,7 @@ ClassicScript* ClassicPendingScript::GetSource(const KURL& document_url) const {
 
   TRACE_EVENT0("blink", "ClassicPendingScript::GetSource");
   if (!is_external_) {
+    InlineScriptStreamer* streamer = nullptr;
     SingleCachedMetadataHandler* cache_handler = nullptr;
     // We only create an inline cache handler for html-embedded scripts, not
     // for scripts produced by document.write, or not parser-inserted. This is
@@ -341,19 +358,23 @@ ClassicScript* ClassicPendingScript::GetSource(const KURL& document_url) const {
     if (source_location_type_ == ScriptSourceLocationType::kInline) {
       cache_handler = GetInlineCacheHandler(source_text_for_inline_script_,
                                             GetElement()->GetDocument());
+      streamer = GetInlineScriptStreamer(source_text_for_inline_script_,
+                                         GetElement()->GetDocument());
     }
 
     DCHECK(!GetResource());
     ScriptStreamer::RecordStreamingHistogram(
-        GetSchedulingType(), false,
+        GetSchedulingType(), streamer,
         ScriptStreamer::NotStreamingReason::kInlineScript);
 
     return ClassicScript::Create(
         source_text_for_inline_script_,
         ClassicScript::StripFragmentIdentifier(document_url),
         base_url_for_inline_script_, options_, source_location_type_,
-        SanitizeScriptErrors::kDoNotSanitize, cache_handler,
-        StartingPosition());
+        SanitizeScriptErrors::kDoNotSanitize, cache_handler, StartingPosition(),
+        streamer ? ScriptStreamer::NotStreamingReason::kInvalid
+                 : ScriptStreamer::NotStreamingReason::kInlineScript,
+        streamer);
   }
 
   DCHECK(GetResource()->IsLoaded());
@@ -370,10 +391,10 @@ ClassicScript* ClassicPendingScript::GetSource(const KURL& document_url) const {
   }
 
   // Check if we can use the script streamer.
-  ScriptStreamer* streamer;
+  ResourceScriptStreamer* streamer;
   ScriptStreamer::NotStreamingReason not_streamed_reason;
-  std::tie(streamer, not_streamed_reason) =
-      ScriptStreamer::TakeFrom(resource, mojom::blink::ScriptType::kClassic);
+  std::tie(streamer, not_streamed_reason) = ResourceScriptStreamer::TakeFrom(
+      resource, mojom::blink::ScriptType::kClassic);
 
   if (ready_state_ == kErrorOccurred) {
     not_streamed_reason = ScriptStreamer::NotStreamingReason::kErrorOccurred;
