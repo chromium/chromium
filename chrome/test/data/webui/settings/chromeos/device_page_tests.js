@@ -10,7 +10,7 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {flushTasks, waitAfterNextRender} from 'chrome://test/test_util.js';
+import {flushTasks, isVisible, waitAfterNextRender} from 'chrome://test/test_util.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 
@@ -625,17 +625,6 @@ suite('SettingsDevicePage', function() {
     assertEquals(expected, reverseScrollToggle.checked);
     assertEquals(
         expected, devicePage.prefs.settings.touchpad.natural_scroll.value);
-  }
-
-  /**
-   * Returns whether the element both exists and is visible.
-   * @param {?Element} element
-   * @return {boolean}
-   */
-  function isVisible(element) {
-    // offsetWidth and offsetHeight reflect more ways that an element could be
-    // hidden, compared to checking the hidden attribute directly.
-    return !!element && element.offsetWidth > 0 && element.offsetHeight > 0;
   }
 
   /**

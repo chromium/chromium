@@ -9,7 +9,7 @@ import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {FakeSettingsPrivate} from 'chrome://test/settings/chromeos/fake_settings_private.js';
 
-import {eventToPromise, waitAfterNextRender, waitBeforeNextRender} from '../../../test_util.js';
+import {eventToPromise, isVisible as testUtilIsVisible, waitAfterNextRender, waitBeforeNextRender} from '../../../test_util.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
 
 import {FakeQuickUnlockPrivate} from './fake_quick_unlock_private.js';
@@ -25,28 +25,8 @@ let fakeUma = null;
  * @param {!Element} element
  */
 function isVisible(element) {
-  while (element) {
-    if (element.offsetWidth <= 0 || element.offsetHeight <= 0 ||
-        element.hidden ||
-        window.getComputedStyle(element).visibility === 'hidden') {
-      return false;
-    }
-
-    element = element.parentElement;
-
-    if (element) {
-      // cr-dialog itself will always be 0x0. It's the inner native <dialog>
-      // that has actual dimensions.
-      // (The same about PIN-KEYBOARD.)
-      if (element.tagName === 'CR-DIALOG') {
-        element = element.getNative();
-      } else if (element.tagName === 'PIN-KEYBOARD') {
-        element = element.$.root;
-      }
-    }
-  }
-
-  return true;
+  return testUtilIsVisible(element) &&
+      window.getComputedStyle(element).visibility !== 'hidden';
 }
 
 /**

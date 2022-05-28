@@ -2,16 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {TestGuestOsBrowserProxy} from './test_guest_os_browser_proxy.js';
-import {TestCrostiniBrowserProxy} from './test_crostini_browser_proxy.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {flush} from'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
+import {CrostiniBrowserProxyImpl, GuestOsBrowserProxyImpl} from 'chrome://os-settings/chromeos/lazy_load.js';
 import {Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
-import {eventToPromise, flushTasks, waitAfterNextRender} from 'chrome://test/test_util.js';
-import {GuestOsBrowserProxyImpl, CrostiniBrowserProxyImpl} from 'chrome://os-settings/chromeos/lazy_load.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {eventToPromise, flushTasks, isVisible, waitAfterNextRender} from 'chrome://test/test_util.js';
+
+import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
+
+import {TestCrostiniBrowserProxy} from './test_crostini_browser_proxy.js';
+import {TestGuestOsBrowserProxy} from './test_guest_os_browser_proxy.js';
 
 /** @type {?SettingsCrostiniPageElement} */
 let crostiniPage = null;
@@ -45,15 +47,6 @@ function setCrostiniPrefs(enabled, optional = {}) {
     },
   };
   flush();
-}
-
-/**
- * Checks whether a given element is visible to the user.
- * @param {!Element} element
- * @returns {boolean}
- */
-function isVisible(element) {
-  return !!(element && element.getBoundingClientRect().width > 0);
 }
 
 suite('CrostiniPageTests', function() {

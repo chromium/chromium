@@ -3,20 +3,13 @@
 // found in the LICENSE file.
 
 import 'chrome://os-settings/chromeos/lazy_load.js';
-import {DevicePageBrowserProxy, DevicePageBrowserProxyImpl, routes, Router} from 'chrome://os-settings/chromeos/os_settings.js';
-import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
-import {eventToPromise, waitBeforeNextRender, waitAfterNextRender} from 'chrome://test/test_util.js';
 
-/**
- * Checks whether a given element is visible to the user.
- * @param {!Element} element
- * @returns {boolean}
- */
-function isVisible(element) {
-  return !!(element && element.getBoundingClientRect().width > 0);
-}
+import {DevicePageBrowserProxy, DevicePageBrowserProxyImpl, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {eventToPromise, isVisible, waitAfterNextRender, waitBeforeNextRender} from 'chrome://test/test_util.js';
+
+import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 
 suite('ManageAccessibilityPageTests', function() {
   let page = null;

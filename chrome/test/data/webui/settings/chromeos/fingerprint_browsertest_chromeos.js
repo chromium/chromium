@@ -5,7 +5,7 @@
 import {FingerprintBrowserProxyImpl, FingerprintResultType, FingerprintSetupStep, Router, routes} from 'chrome://os-settings/chromeos/os_settings.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {flushTasks, waitAfterNextRender} from 'chrome://test/test_util.js';
+import {flushTasks, isVisible, waitAfterNextRender} from 'chrome://test/test_util.js';
 
 import {TestBrowserProxy} from '../../test_browser_proxy.js';
 
@@ -119,13 +119,6 @@ suite('settings-fingerprint-list', function() {
     dialog = fingerprintList.shadowRoot.querySelector(
         'settings-setup-fingerprint-dialog');
     addAnotherButton = dialog.shadowRoot.querySelector('#addAnotherButton');
-  }
-
-  /**
-   * @param {!Element} element
-   */
-  function isVisible(element) {
-    return element.offsetWidth > 0 && element.offsetHeight > 0;
   }
 
   setup(function() {
