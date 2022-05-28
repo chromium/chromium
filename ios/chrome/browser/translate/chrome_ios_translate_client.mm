@@ -19,6 +19,7 @@
 #include "components/translate/core/browser/page_translated_details.h"
 #include "components/translate/core/browser/translate_infobar_delegate.h"
 #include "components/translate/core/browser/translate_manager.h"
+#include "components/translate/core/browser/translate_metrics_logger_impl.h"
 #include "components/translate/core/browser/translate_step.h"
 #include "components/translate/core/common/language_detection_details.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
@@ -32,6 +33,7 @@
 #include "ios/chrome/browser/translate/translate_service_ios.h"
 #include "ios/chrome/grit/ios_theme_resources.h"
 #include "ios/web/public/browser_state.h"
+#include "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/web_state.h"
 #include "third_party/metrics_proto/translate_event.pb.h"
 #include "url/gurl.h"
@@ -154,15 +156,64 @@ bool ChromeIOSTranslateClient::IsAutofillAssistantRunning() const {
   return false;
 }
 
+void ChromeIOSTranslateClient::DidStartNavigation(
+    web::WebState* web_state,
+    web::NavigationContext* navigation_context) {
+  if (navigation_context->IsSameDocument())
+    return;
+
+  DidPageLoadComplete();
+  // Lifetime of TranslateMetricsLogger should be each page load. So, we need to
+  // detect the page load completion, i.e. the tab was closed, new navigation
+  // replaced the page load, etc, and clear the logger.
+  translate_metrics_logger_ =
+      std::make_unique<translate::TranslateMetricsLoggerImpl>(
+          translate_manager_->GetWeakPtr());
+  translate_metrics_logger_->OnPageLoadStart(web_state->IsVisible());
+}
+
+void ChromeIOSTranslateClient::DidFinishNavigation(
+    web::WebState* web_state,
+    web::NavigationContext* navigation_context) {
+  if (navigation_context->GetError()) {
+    translate_metrics_logger_.reset();
+    return;
+  }
+
+  if (!navigation_context->IsSameDocument() && translate_metrics_logger_) {
+    translate_metrics_logger_->SetUkmSourceId(
+        translate_driver_.GetUkmSourceId());
+  }
+}
+
+void ChromeIOSTranslateClient::WasShown(web::WebState* web_state) {
+  if (translate_metrics_logger_)
+    translate_metrics_logger_->OnForegroundChange(true);
+};
+
+void ChromeIOSTranslateClient::WasHidden(web::WebState* web_state) {
+  if (translate_metrics_logger_)
+    translate_metrics_logger_->OnForegroundChange(false);
+};
+
 void ChromeIOSTranslateClient::WebStateDestroyed(web::WebState* web_state) {
   DCHECK_EQ(web_state_, web_state);
   web_state_->RemoveObserver(this);
   web_state_ = nullptr;
 
+  DidPageLoadComplete();
+
   // Translation process can be interrupted.
   // Destroying the TranslateManager now guarantees that it never has to deal
   // with nullptr WebState.
   translate_manager_.reset();
+}
+
+void ChromeIOSTranslateClient::DidPageLoadComplete() {
+  if (translate_metrics_logger_) {
+    translate_metrics_logger_->RecordMetrics(true);
+    translate_metrics_logger_.reset();
+  }
 }
 
 WEB_STATE_USER_DATA_KEY_IMPL(ChromeIOSTranslateClient)
