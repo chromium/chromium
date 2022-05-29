@@ -170,6 +170,41 @@ TEST_P(NGInlineCursorTest, GetLayoutBlockFlowWithScopedCursor) {
   EXPECT_EQ(line.GetLayoutBlockFlow(), cursor.GetLayoutBlockFlow());
 }
 
+TEST_P(NGInlineCursorTest, Parent) {
+  NGInlineCursor cursor = SetupCursor(R"HTML(
+    <style>
+    span { background: yellow; } /* Ensure not culled. */
+    </style>
+    <body>
+      <div id="root">
+        text1
+        <span id="span1">
+          span1
+          <span></span>
+          <span id="span2">
+            span2
+            <span style="display: inline-block"></span>
+            <span id="span3">
+              span3
+            </span>
+          </span>
+        </span>
+      </div>
+    <body>
+)HTML");
+  cursor.MoveTo(*GetLayoutObjectByElementId("span3"));
+  ASSERT_TRUE(cursor);
+  Vector<AtomicString> ids;
+  for (;;) {
+    cursor.MoveToParent();
+    if (!cursor)
+      break;
+    const auto* element = To<Element>(cursor.Current()->GetNode());
+    ids.push_back(element->GetIdAttribute());
+  }
+  EXPECT_THAT(ids, testing::ElementsAre("span2", "span1", "root"));
+}
+
 TEST_P(NGInlineCursorTest, ContainingLine) {
   // TDOO(yosin): Remove <style> once NGFragmentItem don't do culled inline.
   InsertStyleElement("a, b { background: gray; }");

@@ -965,6 +965,20 @@ void NGInlineCursor::MoveTo(const NGInlineCursor& cursor) {
   *this = cursor;
 }
 
+void NGInlineCursor::MoveToParent() {
+  wtf_size_t count = 0;
+  if (UNLIKELY(!Current()))
+    return;
+  for (;;) {
+    MoveToPrevious();
+    if (!Current())
+      return;
+    ++count;
+    if (Current()->DescendantsCount() > count)
+      return;
+  }
+}
+
 void NGInlineCursor::MoveToContainingLine() {
   DCHECK(!Current().IsLineBox());
   if (current_.item_) {

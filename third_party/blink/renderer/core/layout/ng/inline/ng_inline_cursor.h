@@ -407,6 +407,9 @@ class CORE_EXPORT NGInlineCursor {
   // should be part of |this| cursor.
   void MoveTo(const NGInlineCursor& cursor);
 
+  // Move to the parent box or line box.
+  void MoveToParent();
+
   // Move to containing line box. It is error if the current position is line.
   void MoveToContainingLine();
 
