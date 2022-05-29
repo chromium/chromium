@@ -36,7 +36,9 @@ RenderFrameHost* CreateFrameImpl(const content::ToRenderFrameHost& adapter,
   std::string ad_type = ad_script ? "Ad" : "";
 
   RenderFrameHost* previous_most_recent_fenced_frame =
-      FencedFrameTestHelper::GetMostRecentlyAddedFencedFrame(rfh);
+      is_fenced_frame
+          ? FencedFrameTestHelper::GetMostRecentlyAddedFencedFrame(rfh)
+          : nullptr;
 
   if (is_prerender) {
     // TODO(bokan): We must avoid using a TestNavigationObserver if executing

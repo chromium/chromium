@@ -1047,11 +1047,8 @@ class FencedFrameNestedFrameBrowserTest
  protected:
   FencedFrameNestedFrameBrowserTest() {
     if (std::get<1>(GetParam())) {
-      feature_list_.InitWithFeaturesAndParameters(
-          {{blink::features::kFencedFrames,
-            {{"implementation_type", "shadow_dom"}}},
-           {features::kPrivacySandboxAdsAPIsOverride, {}}},
-          {/* disabled_features */});
+      fenced_frame_helper_ = std::make_unique<test::FencedFrameTestHelper>(
+          test::FencedFrameTestHelper::FencedFrameType::kShadowDOM);
     } else {
       fenced_frame_helper_ = std::make_unique<test::FencedFrameTestHelper>();
     }
@@ -1104,27 +1101,8 @@ class FencedFrameNestedFrameBrowserTest
         "/fenced_frames/title1.html?depth=" + base::NumberToString(depth));
 
     if (IsFencedFrameType(type)) {
-      if (fenced_frame_helper_) {
-        return static_cast<RenderFrameHostImpl*>(
-            fenced_frame_helper_->CreateFencedFrame(parent, url));
-      }
-      // FencedFrameTestHelper only supports the MPArch version of fenced
-      // frames. So need to maually create a fenced frame for the ShadowDOM
-      // version.
-      constexpr char kAddFencedFrameScript[] = R"({
-          frame = document.createElement('fencedframe');
-          document.body.appendChild(frame);
-        })";
-      EXPECT_TRUE(ExecJs(parent, kAddFencedFrameScript));
-      constexpr char kNavigateFencedFrameScript[] = R"({
-          document.body.getElementsByTagName('fencedframe')[0].src = $1;
-        })";
-      RenderFrameHostImpl* rfh = static_cast<RenderFrameHostImpl*>(
-          parent->child_at(0)->current_frame_host());
-      TestFrameNavigationObserver observer(rfh);
-      EXPECT_TRUE(ExecJs(parent, JsReplace(kNavigateFencedFrameScript, url)));
-      observer.Wait();
-      return static_cast<RenderFrameHostImpl*>(ChildFrameAt(parent, 0));
+      return static_cast<RenderFrameHostImpl*>(
+          fenced_frame_helper_->CreateFencedFrame(parent, url));
     }
     EXPECT_TRUE(ExecJs(parent, JsReplace(kAddIframeScript, url)));
 
