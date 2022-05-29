@@ -517,7 +517,7 @@ LayoutRect NGInkOverflow::ComputeTextDecorationOverflow(
   // Ideally we should pass MinimumThickness1(false) if this function is
   // called for NGFragmentItem::kSvgText. However it requires to add arguments
   // to some functions.
-  // We pass MinimumTHickness1(true) even for kSvgText.  it's acceptable
+  // We pass MinimumThickness1(true) even for kSvgText.  it's acceptable
   // because it just makes the resultant ink overflow slightly larger.
   const MinimumThickness1 kMinimumThicknessIsOne(true);
   TextDecorationInfo decoration_info(
