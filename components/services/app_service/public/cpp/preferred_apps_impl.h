@@ -83,7 +83,7 @@ class PreferredAppsImpl {
       apps::mojom::AppType app_type,
       const std::string& app_id,
       std::vector<apps::mojom::IntentFilterPtr> all_link_filters);
-  void RemoveSupportedLinksPreference(apps::mojom::AppType app_type,
+  void RemoveSupportedLinksPreference(AppType app_type,
                                       const std::string& app_id);
 
   const PreferredAppsList& preferred_apps_list() const {
@@ -125,7 +125,7 @@ class PreferredAppsImpl {
       apps::mojom::AppType app_type,
       const std::string& app_id,
       std::vector<apps::mojom::IntentFilterPtr> all_link_filters);
-  void RemoveSupportedLinksPreferenceImpl(apps::mojom::AppType app_type,
+  void RemoveSupportedLinksPreferenceImpl(AppType app_type,
                                           const std::string& app_id);
 
   // `host_` owns `this`.

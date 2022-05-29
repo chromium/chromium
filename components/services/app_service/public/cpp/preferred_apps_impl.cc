@@ -135,7 +135,7 @@ void PreferredAppsImpl::SetSupportedLinksPreference(
 }
 
 void PreferredAppsImpl::RemoveSupportedLinksPreference(
-    apps::mojom::AppType app_type,
+    AppType app_type,
     const std::string& app_id) {
   RunAfterPreferredAppsReady(
       base::BindOnce(&PreferredAppsImpl::RemoveSupportedLinksPreferenceImpl,
@@ -389,9 +389,8 @@ void PreferredAppsImpl::SetSupportedLinksPreferenceImpl(
   }
 }
 void PreferredAppsImpl::RemoveSupportedLinksPreferenceImpl(
-    apps::mojom::AppType mojom_app_type,
+    AppType app_type,
     const std::string& app_id) {
-  AppType app_type = ConvertMojomAppTypToAppType(mojom_app_type);
   if (!host_->HasPublisher(app_type)) {
     return;
   }

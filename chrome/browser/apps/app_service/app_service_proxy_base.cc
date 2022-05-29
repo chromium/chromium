@@ -702,6 +702,13 @@ void AppServiceProxyBase::SetSupportedLinksPreference(
 void AppServiceProxyBase::RemoveSupportedLinksPreference(
     const std::string& app_id) {
   DCHECK(!app_id.empty());
+
+  if (preferred_apps_impl_) {
+    preferred_apps_impl_->RemoveSupportedLinksPreference(
+        app_registry_cache_.GetAppType(app_id), app_id);
+    return;
+  }
+
   if (app_service_.is_connected()) {
     app_service_->RemoveSupportedLinksPreference(
         ConvertAppTypeToMojomAppType(app_registry_cache_.GetAppType(app_id)),
