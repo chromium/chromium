@@ -42767,6 +42767,12 @@ Called by update_permissions_policy_enum.py.-->
   <int value="32" label="Invalid archive contents">
     EXIT_CODE_INVALID_ARCHIVE_CONTENTS
   </int>
+  <int value="33" label="Duplicate entry (explicit)">
+    EXIT_CODE_INVALID_EXPLICIT_DUPLICATE_ENTRY
+  </int>
+  <int value="34" label="Duplicate entry (implicit)">
+    EXIT_CODE_INVALID_IMPLICIT_DUPLICATE_ENTRY
+  </int>
   <int value="132" label="Terminated by SIGILL">
     MINIJAIL_ERR_SIG_BASE (128) + SIGILL (4) from libminijail
   </int>
