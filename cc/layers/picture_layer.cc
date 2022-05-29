@@ -125,8 +125,7 @@ bool PictureLayer::Update() {
   gfx::Size layer_size = bounds();
 
   auto& recording_source = recording_source_.Write(*this);
-  // TODO(crbug/1308932): Remove toSkColor and make all SkColor4f.
-  recording_source->SetBackgroundColor(SafeOpaqueBackgroundColor().toSkColor());
+  recording_source->SetBackgroundColor(SafeOpaqueBackgroundColor());
   recording_source->SetRequiresClear(
       !contents_opaque() &&
       !picture_layer_inputs_.client->FillsBoundsCompletely());

@@ -1915,7 +1915,7 @@ TEST_F(PixelInspectTileManagerTest, LowResHasNoImage) {
 
     std::unique_ptr<FakeRecordingSource> recording_source =
         FakeRecordingSource::CreateFilledRecordingSource(size);
-    recording_source->SetBackgroundColor(SK_ColorTRANSPARENT);
+    recording_source->SetBackgroundColor(SkColors::kTransparent);
     recording_source->SetRequiresClear(true);
     PaintFlags flags;
     flags.setColor(SK_ColorGREEN);
