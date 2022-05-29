@@ -25,6 +25,7 @@
 #include "net/http/http_request_info.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_response_info.h"
+#include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
 #include "net/log/net_log_event_type.h"
 #include "net/socket/ssl_client_socket.h"
@@ -913,7 +914,7 @@ int HttpStreamParser::HandleReadHeaderResult(int result) {
         response_body_length_ = -1;
         // Record the timing of the 103 Early Hints response for the experiment
         // (https://crbug.com/1093693).
-        if (response_->headers->response_code() == 103 &&
+        if (response_->headers->response_code() == net::HTTP_EARLY_HINTS &&
             first_early_hints_time_.is_null()) {
           first_early_hints_time_ = current_response_start_time_;
         }
@@ -1088,9 +1089,9 @@ void HttpStreamParser::CalculateResponseBodySize() {
     response_body_length_ = 0;
   } else {
     switch (response_->headers->response_code()) {
-      case 204:  // No Content
-      case 205:  // Reset Content
-      case 304:  // Not Modified
+      case net::HTTP_NO_CONTENT:     // No Content
+      case net::HTTP_RESET_CONTENT:  // Reset Content
+      case net::HTTP_NOT_MODIFIED:   // Not Modified
         response_body_length_ = 0;
         break;
     }

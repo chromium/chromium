@@ -31,6 +31,7 @@
 #include "net/base/parse_number.h"
 #include "net/http/http_byte_range.h"
 #include "net/http/http_log_util.h"
+#include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
 #include "net/log/net_log_capture_mode.h"
 #include "net/log/net_log_values.h"
@@ -263,8 +264,8 @@ void HttpResponseHeaders::Persist(base::Pickle* pickle,
 }
 
 void HttpResponseHeaders::Update(const HttpResponseHeaders& new_headers) {
-  DCHECK(new_headers.response_code() == 304 ||
-         new_headers.response_code() == 206);
+  DCHECK(new_headers.response_code() == net::HTTP_NOT_MODIFIED ||
+         new_headers.response_code() == net::HTTP_PARTIAL_CONTENT);
 
   // Copy up to the null byte.  This just copies the status line.
   std::string new_raw_headers(raw_headers_.c_str());
@@ -707,7 +708,7 @@ void HttpResponseHeaders::ParseStatusLine(
   if (p == line_end) {
     DVLOG(1) << "missing response status; assuming 200 OK";
     raw_headers_.append(" 200 OK");
-    response_code_ = 200;
+    response_code_ = net::HTTP_OK;
     return;
   }
 
@@ -722,7 +723,7 @@ void HttpResponseHeaders::ParseStatusLine(
   if (p == code) {
     DVLOG(1) << "missing response status number; assuming 200";
     raw_headers_.append(" 200");
-    response_code_ = 200;
+    response_code_ = net::HTTP_OK;
     return;
   }
   raw_headers_.push_back(' ');
@@ -972,8 +973,11 @@ bool HttpResponseHeaders::IsRedirect(std::string* location) const {
 bool HttpResponseHeaders::IsRedirectResponseCode(int response_code) {
   // Users probably want to see 300 (multiple choice) pages, so we don't count
   // them as redirects that need to be followed.
-  return (response_code == 301 || response_code == 302 ||
-          response_code == 303 || response_code == 307 || response_code == 308);
+  return (response_code == net::HTTP_MOVED_PERMANENTLY ||
+          response_code == net::HTTP_FOUND ||
+          response_code == net::HTTP_SEE_OTHER ||
+          response_code == net::HTTP_TEMPORARY_REDIRECT ||
+          response_code == net::HTTP_PERMANENT_REDIRECT);
 }
 
 // From RFC 2616 section 13.2.4:
@@ -1101,8 +1105,9 @@ HttpResponseHeaders::GetFreshnessLifetimes(const Time& response_time) const {
   // https://datatracker.ietf.org/doc/draft-reschke-http-status-308/ is an
   // experimental RFC that adds 308 permanent redirect as well, for which "any
   // future references ... SHOULD use one of the returned URIs."
-  if ((response_code_ == 200 || response_code_ == 203 ||
-       response_code_ == 206) &&
+  if ((response_code_ == net::HTTP_OK ||
+       response_code_ == net::HTTP_NON_AUTHORITATIVE_INFORMATION ||
+       response_code_ == net::HTTP_PARTIAL_CONTENT) &&
       !must_revalidate) {
     // TODO(darin): Implement a smarter heuristic.
     Time last_modified_value;
@@ -1116,8 +1121,10 @@ HttpResponseHeaders::GetFreshnessLifetimes(const Time& response_time) const {
   }
 
   // These responses are implicitly fresh (unless otherwise overruled):
-  if (response_code_ == 300 || response_code_ == 301 || response_code_ == 308 ||
-      response_code_ == 410) {
+  if (response_code_ == net::HTTP_MULTIPLE_CHOICES ||
+      response_code_ == net::HTTP_MOVED_PERMANENTLY ||
+      response_code_ == net::HTTP_PERMANENT_REDIRECT ||
+      response_code_ == net::HTTP_GONE) {
     lifetimes.freshness = base::TimeDelta::Max();
     lifetimes.staleness = base::TimeDelta();  // It should never be stale.
     return lifetimes;

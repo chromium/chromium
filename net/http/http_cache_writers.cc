@@ -21,6 +21,7 @@
 #include "net/disk_cache/disk_cache.h"
 #include "net/http/http_cache_transaction.h"
 #include "net/http/http_response_info.h"
+#include "net/http/http_status_code.h"
 #include "net/http/partial_data.h"
 
 namespace net {
@@ -46,8 +47,9 @@ bool IsValidResponseForWriter(bool is_partial,
 
   // Return false if the response code sent by the server is garbled.
   // Both 200 and 304 are valid since concurrent writing is supported.
-  if (!is_partial && (response_info->headers->response_code() != 200 &&
-                      response_info->headers->response_code() != 304)) {
+  if (!is_partial &&
+      (response_info->headers->response_code() != net::HTTP_OK &&
+       response_info->headers->response_code() != net::HTTP_NOT_MODIFIED)) {
     return false;
   }
 
