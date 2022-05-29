@@ -9,7 +9,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/publishers/extension_apps.h"
 #include "chrome/browser/web_applications/app_service/web_apps.h"
-#include "chrome/common/chrome_features.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/apps/app_service/browser_app_instance_registry.h"
@@ -113,11 +112,9 @@ void PublisherHost::Initialize() {
       std::make_unique<ExtensionAppsChromeOs>(proxy_, AppType::kChromeApp);
   chrome_apps_->Initialize();
 
-  if (base::FeatureList::IsEnabled(features::kAppServiceExtension)) {
-    extension_apps_ =
-        std::make_unique<ExtensionAppsChromeOs>(proxy_, AppType::kExtension);
-    extension_apps_->Initialize();
-  }
+  extension_apps_ =
+      std::make_unique<ExtensionAppsChromeOs>(proxy_, AppType::kExtension);
+  extension_apps_->Initialize();
 
   if (!g_omit_plugin_vm_apps_for_testing_) {
     plugin_vm_apps_ = std::make_unique<PluginVmApps>(proxy_);

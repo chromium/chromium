@@ -72,8 +72,6 @@ extern const base::Feature kAppProvisioningStatic;
 #if !BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kAppServiceLoadIconWithoutMojom;
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::Feature kAppServiceExtension;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_MAC)
