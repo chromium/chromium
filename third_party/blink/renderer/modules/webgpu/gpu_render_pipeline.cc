@@ -195,7 +195,11 @@ void AsDawnVertexBufferLayouts(GPUDevice* device,
   for (wtf_size_t i = 0; i < dawn_vertex->bufferCount; ++i) {
     const auto& maybe_buffer = descriptor->buffers()[i];
     if (!maybe_buffer) {
-      // This buffer layout is empty
+      // This buffer layout is empty.
+      // Explicitly set VertexBufferNotUsed step mode to represent
+      // this slot is empty for Dawn, and continue the loop.
+      dawn_desc_info->buffers[i].stepMode =
+          WGPUVertexStepMode::WGPUVertexStepMode_VertexBufferNotUsed;
       continue;
     }
     const GPUVertexBufferLayout* buffer = maybe_buffer.Get();
