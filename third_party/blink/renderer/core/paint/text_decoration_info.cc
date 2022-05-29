@@ -15,11 +15,13 @@ namespace blink {
 
 namespace {
 
-static int kUndefinedDecorationIndex = -1;
-
 static ResolvedUnderlinePosition ResolveUnderlinePosition(
     const ComputedStyle& style,
-    FontBaseline baseline_type) {
+    const absl::optional<FontBaseline>& baseline_type_override) {
+  const FontBaseline baseline_type = baseline_type_override
+                                         ? *baseline_type_override
+                                         : style.GetFontBaseline();
+
   // |auto| should resolve to |under| to avoid drawing through glyphs in
   // scripts where it would not be appropriate (e.g., ideographs.)
   // However, this has performance implications. For now, we only work with
@@ -121,52 +123,77 @@ static enum StrokeStyle TextDecorationStyleToStrokeStyle(
 TextDecorationInfo::TextDecorationInfo(
     PhysicalOffset local_origin,
     LayoutUnit width,
-    FontBaseline baseline_type,
-    const ComputedStyle& style,
-    const Font& scaled_font,
+    const ComputedStyle& target_style,
     const NGInlinePaintContext* inline_context,
     const absl::optional<AppliedTextDecoration> selection_text_decoration,
-    const ComputedStyle* decorating_box_style,
+    const Font* font_override,
     MinimumThickness1 minimum_thickness1,
-    float scaling_factor)
-    : style_(style),
+    float scaling_factor,
+    absl::optional<FontBaseline> baseline_type_override,
+    const ComputedStyle* decorating_box_style)
+    : target_style_(target_style),
       selection_text_decoration_(selection_text_decoration),
-      baseline_type_(baseline_type),
+      font_override_(font_override && font_override != &target_style.GetFont()
+                         ? font_override
+                         : nullptr),
+      decorating_box_style_override_(decorating_box_style),
+      baseline_type_override_(baseline_type_override),
+      local_origin_(local_origin),
       width_(width),
-      font_data_(scaled_font.PrimaryFont()),
-      baseline_(font_data_ ? font_data_->GetFontMetrics().FloatAscent() : 0),
-      computed_font_size_(scaled_font.GetFontDescription().ComputedSize()),
       scaling_factor_(scaling_factor),
-      underline_position_(ResolveUnderlinePosition(style_, baseline_type_)),
-      local_origin_(gfx::PointF(local_origin)),
       minimum_thickness_is_one_(minimum_thickness1),
-      antialias_(ShouldSetDecorationAntialias(style)),
-      decoration_index_(kUndefinedDecorationIndex) {
-  DCHECK(font_data_);
-
-  for (const AppliedTextDecoration& decoration :
-       style_.AppliedTextDecorations()) {
-    if (EnumHasFlags(decoration.Lines(), TextDecorationLine::kSpellingError) ||
-        EnumHasFlags(decoration.Lines(), TextDecorationLine::kGrammarError)) {
-      // Spelling and grammar error thickness doesn't depend on the font size.
-#if BUILDFLAG(IS_MAC)
-      applied_decorations_thickness_.push_back(2.f);
-#else
-      applied_decorations_thickness_.push_back(1.f);
-#endif
-    } else {
-      applied_decorations_thickness_.push_back(ComputeUnderlineThickness(
-          decoration.Thickness(), decorating_box_style));
-    }
-  }
-  DCHECK_EQ(style_.AppliedTextDecorations().size(),
-            applied_decorations_thickness_.size());
+      antialias_(ShouldSetDecorationAntialias(target_style)) {
+  UpdateForDecorationIndex();
 }
 
 void TextDecorationInfo::SetDecorationIndex(int decoration_index) {
   DCHECK_LT(decoration_index,
-            static_cast<int>(applied_decorations_thickness_.size()));
+            static_cast<int>(target_style_.AppliedTextDecorations().size()));
+  if (decoration_index_ == decoration_index)
+    return;
   decoration_index_ = decoration_index;
+  UpdateForDecorationIndex();
+}
+
+// Update cached properties of |this| for the |decoration_index_|.
+void TextDecorationInfo::UpdateForDecorationIndex() {
+  DCHECK_LT(decoration_index_,
+            static_cast<int>(target_style_.AppliedTextDecorations().size()));
+  applied_text_decoration_ =
+      &target_style_.AppliedTextDecorations()[decoration_index_];
+
+  // Compute the |ComputedStyle| of the decorating box.
+  //
+  // |decorating_box_style_override_| is intentionally ignored, as it is used
+  // only by the legacy, and the legacy uses it only when computing thickness.
+  // See |ComputeThickness|.
+  //
+  // TODO(crbug.com/1008951): Using |&target_style_| doesn't take decoration box
+  // into account.
+  const ComputedStyle* decorating_box_style = &target_style_;
+  DCHECK(decorating_box_style);
+  if (decorating_box_style != decorating_box_style_) {
+    decorating_box_style_ = decorating_box_style;
+    underline_position_ = ResolveUnderlinePosition(*decorating_box_style,
+                                                   baseline_type_override_);
+  }
+
+  // Compute the |Font| and its properties.
+  const Font* font =
+      font_override_ ? font_override_ : &decorating_box_style_->GetFont();
+  DCHECK(font);
+  if (font != font_) {
+    font_ = font;
+    computed_font_size_ = font->GetFontDescription().ComputedSize();
+
+    const SimpleFontData* font_data = font->PrimaryFont();
+    if (font_data != font_data_) {
+      font_data_ = font_data;
+      baseline_ = font_data ? font_data->GetFontMetrics().FloatAscent() : 0;
+    }
+  }
+
+  resolved_thickness_ = ComputeThickness();
 }
 
 void TextDecorationInfo::SetLineData(TextDecorationLine line,
@@ -243,7 +270,8 @@ ETextDecorationStyle TextDecorationInfo::DecorationStyle() const {
 #endif
   }
 
-  return style_.AppliedTextDecorations()[decoration_index_].Style();
+  DCHECK(applied_text_decoration_);
+  return applied_text_decoration_->Style();
 }
 
 Color TextDecorationInfo::LineColor() const {
@@ -258,17 +286,18 @@ Color TextDecorationInfo::LineColor() const {
 
   // Find the matched normal and selection |AppliedTextDecoration|
   // and use the text-decoration-color from selection when it is.
+  DCHECK(applied_text_decoration_);
   if (selection_text_decoration_ &&
-      style_.AppliedTextDecorations()[decoration_index_].Lines() ==
+      applied_text_decoration_->Lines() ==
           selection_text_decoration_.value().Lines()) {
     return selection_text_decoration_.value().GetColor();
   }
 
-  return style_.AppliedTextDecorations()[decoration_index_].GetColor();
+  return applied_text_decoration_->GetColor();
 }
 
 gfx::PointF TextDecorationInfo::StartPoint() const {
-  return local_origin_ + gfx::Vector2dF(0, line_data_.line_offset);
+  return gfx::PointF(local_origin_) + gfx::Vector2dF(0, line_data_.line_offset);
 }
 float TextDecorationInfo::DoubleOffset() const {
   return line_data_.double_offset;
@@ -278,9 +307,30 @@ enum StrokeStyle TextDecorationInfo::StrokeStyle() const {
   return TextDecorationStyleToStrokeStyle(DecorationStyle());
 }
 
+float TextDecorationInfo::ComputeThickness() const {
+  DCHECK(applied_text_decoration_);
+  const AppliedTextDecoration& decoration = *applied_text_decoration_;
+  if (EnumHasFlags(decoration.Lines(), TextDecorationLine::kSpellingError) ||
+      EnumHasFlags(decoration.Lines(), TextDecorationLine::kGrammarError)) {
+    // Spelling and grammar error thickness doesn't depend on the font size.
+#if BUILDFLAG(IS_MAC)
+    return 2.f;
+#else
+    return 1.f;
+#endif
+  }
+
+  // Use |decorating_box_style_override_| to compute thickness. It is used only
+  // by the legacy, and this matches the legacy behavior.
+  return ComputeUnderlineThickness(decoration.Thickness(),
+                                   decorating_box_style_override_
+                                       ? decorating_box_style_override_
+                                       : decorating_box_style_);
+}
+
 float TextDecorationInfo::ComputeUnderlineThickness(
     const TextDecorationThickness& applied_decoration_thickness,
-    const ComputedStyle* decorating_box_style) {
+    const ComputedStyle* decorating_box_style) const {
   const float minimum_thickness = minimum_thickness_is_one_ ? 1.0f : 0.0f;
   float thickness = 0;
   if ((underline_position_ ==
