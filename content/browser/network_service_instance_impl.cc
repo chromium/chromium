@@ -817,10 +817,37 @@ void CreateNetworkContextInNetworkService(
   MaybeCleanCacheDirectory(params.get());
 
 #if BUILDFLAG(IS_ANDROID)
+  // On Android, if a cookie_manager pending receiver was passed then migration
+  // should not be attempted as the cookie file is already being accessed by the
+  // browser instance.
+  if (params->cookie_manager) {
+    if (params->file_paths) {
+      // No migration should ever be attempted under this configuration.
+      DCHECK(!params->file_paths->unsandboxed_data_path);
+    }
+    CreateNetworkContextInternal(
+        std::move(context), std::move(params),
+        SandboxGrantResult::kDidNotAttemptToGrantSandboxAccess);
+    return;
+  }
+
+  // Note: This logic is duplicated from MaybeGrantAccessToDataPath to this fast
+  // path. This should be kept in sync if there are any changes to the logic.
+  SandboxGrantResult grant_result = SandboxGrantResult::kNoMigrationRequested;
+  if (!params->file_paths) {
+    // No file paths (e.g. in-memory context) so nothing to do.
+    grant_result = SandboxGrantResult::kDidNotAttemptToGrantSandboxAccess;
+  } else {
+    // If no `unsandboxed_data_path` is supplied, it means this is network
+    // context has been created by Android Webview, which does not understand
+    // the concept of `unsandboxed_data_path`. In this case, `data_directory`
+    // should always be used, if present.
+    if (!params->file_paths->unsandboxed_data_path)
+      grant_result = SandboxGrantResult::kDidNotAttemptToGrantSandboxAccess;
+  }
   // Create network context immediately without thread hops.
-  CreateNetworkContextInternal(
-      std::move(context), std::move(params),
-      SandboxGrantResult::kDidNotAttemptToGrantSandboxAccess);
+  CreateNetworkContextInternal(std::move(context), std::move(params),
+                               grant_result);
 #else
   // Restrict disk access to a certain path (on another thread) and continue
   // with network context creation.
