@@ -2293,6 +2293,10 @@
       implied_by: ["TestFeature"],
     },
     {
+      // crbug.com/1008951
+      name: "TextDecoratingBox",
+    },
+    {
       name: "TextDetector",
       status: "experimental",
     },
