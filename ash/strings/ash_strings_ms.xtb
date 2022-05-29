@@ -252,6 +252,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="243878895369688216">Dibuka semalam</translation>
 <translation id="2441427462554639370">Rakaman ditamatkan kerana ruang storan hampir habis</translation>
 <translation id="24452542372838207">Kembangkan pemberitahuan</translation>
+<translation id="2449089818483227734">Bateri Lemah</translation>
 <translation id="2450205753526923158">Mod tangkapan skrin</translation>
 <translation id="2456008742792828469">Kalendar, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2473177541599297363">Sahkan Peleraian</translation>
@@ -412,11 +413,13 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">Peranti USB-C</translation>
+<translation id="3455468639467374593">Templat, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3465223694362104965">Papan kekunci lain telah disambungkan ke peranti ini sejak kali terakhir anda log masuk. Pastikan anda mempercayai papan kekunci ini sebelum anda menggunakannya.</translation>
 <translation id="3465356146291925647">Diurus oleh Pentadbir anda</translation>
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Kekuatan Isyarat <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Rak disembunyikan secara automatik</translation>
+<translation id="3505066820268455558">Pengecasan Bateri</translation>
 <translation id="3509391053705095206">Tidak dapat menemukan telefon anda. Pastikan Bluetooth telefon anda dihidupkan.</translation>
 <translation id="3510164367642747937">Serlahkan kursor tetikus</translation>
 <translation id="3513798432020909783">Akaun diurus oleh <ph name="MANAGER_EMAIL" /></translation>
@@ -457,6 +460,8 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="3633097874324966332">Buka tetapan Bluetooth untuk menggandingkan peranti anda</translation>
 <translation id="3638400994746983214">Togol skrin privasi. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Kemas kini terlewat</translation>
+<translation id="3659814201068740063">Kira-kira <ph name="TIME_LEFT" /> lagi (<ph name="PERCENTAGE" />%).
+Sambungkan peranti anda kepada sumber kuasa.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Pengguna terurus</translation>
 <translation id="36813544980941320">Rangkaian Wi-Fi akan dikongsi antara telefon anda dengan <ph name="DEVICE_NAME" /></translation>
 <translation id="3694122362646626770">Laman web</translation>
@@ -512,6 +517,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="3962859241508114581">Lagu Sebelumnya</translation>
 <translation id="3969043077941541451">Mati</translation>
 <translation id="397105322502079400">Mengira...</translation>
+<translation id="397726367135689299">Pengecasan bateri mungkin tidak boleh dipercayai.</translation>
 <translation id="3977512764614765090">Kuasa bateri pada tahap <ph name="PERCENTAGE" />% dan sedang dicas.</translation>
 <translation id="3986082989454912832">Jawab</translation>
 <translation id="3995138139523574647">Peranti USB-C (port belakang sebelah kanan)</translation>
@@ -1039,6 +1045,7 @@ Pemasangan baharu</translation>
 <translation id="7130207228079676353">KEMUNGKINAN BESAR</translation>
 <translation id="7131634465328662194">Anda akan dilog keluar secara automatik.</translation>
 <translation id="7143207342074048698">Menyambung</translation>
+<translation id="7144942256906679589">Status bateri</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358">Kembali kepada peleraian lama dalam <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Muat semula</translation>
@@ -1104,6 +1111,7 @@ Pemasangan baharu</translation>
 <translation id="7593891976182323525">Search atau Shift</translation>
 <translation id="7600875258240007829">Lihat semua pemberitahuan</translation>
 <translation id="7607002721634913082">Dijeda</translation>
+<translation id="7609951632080598826">Paparan kalendar, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Kamera disambung semula.</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7633755430369750696">Paparkan tetapan Kongsi Berdekatan.</translation>
@@ -1229,6 +1237,7 @@ Pemasangan baharu</translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> tetingkap dipilih</translation>
 <translation id="8351131234907093545">Buat nota</translation>
 <translation id="8364673525741149932">Togol mod Shelf Party. <ph name="STATE_TEXT" /></translation>
+<translation id="8369166482916924789">Meja yang disimpan, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">Maju satu huruf</translation>
 <translation id="8371991222807690464">Prestasi peranti persisian mungkin terhad dalam mod Tetamu</translation>
 <translation id="8374601332003098278">Tekan kekunci enter untuk merakam skrin separa</translation>
@@ -1340,6 +1349,7 @@ Pemasangan baharu</translation>
 <translation id="9000771174482730261">URUS STORAN</translation>
 <translation id="9017320285115481645">Masukkan kod akses ibu bapa Family Link.</translation>
 <translation id="9024331582947483881">skrin penuh</translation>
+<translation id="9029736946581028033">Peranti akan dimatikan tidak lama lagi</translation>
 <translation id="9030319654231318877">Dimatikan sehingga matahari terbenam</translation>
 <translation id="9034924485347205037">Fail Linux</translation>
 <translation id="9047624247355796468">Buka tetapan untuk <ph name="NETWORK_NAME" /></translation>
@@ -1369,6 +1379,7 @@ Pemasangan baharu</translation>
 <translation id="9168436347345867845">Lakukan kemudian</translation>
 <translation id="9178475906033259337">Memaparkan 1 hasil carian untuk <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Ciri ini membolehkan anda mengakses dengan cepat mana-mana pengguna yang telah log masuk tanpa memerlukan kata laluan. Gunakan ciri ini dengan akaun yang dipercayai sahaja.</translation>
+<translation id="9180906851711123156">Tekan Ctrl+W untuk tutup</translation>
 <translation id="9183456764293710005">Penggadang skrin penuh</translation>
 <translation id="9193626018745640770">Menghantar pada penerima yang tidak diketahui</translation>
 <translation id="9194617393863864469">Log masuk pengguna lain...</translation>

@@ -483,6 +483,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2215963164070968490">Dogs</translation>
 <translation id="2218879909401188352">Attackers currently on <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> could install dangerous apps that damage your device, add hidden charges to your mobile bill or steal your personal information. <ph name="BEGIN_LEARN_MORE_LINK" />Learn more<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2219658597883514593">Restart tutorial</translation>
+<translation id="2219735899272417925">Device reset required</translation>
 <translation id="2224337661447660594">No Internet</translation>
 <translation id="2230458221926704099">Fix your connection using the <ph name="BEGIN_LINK" />diagnostics app<ph name="END_LINK" /></translation>
 <translation id="2239100178324503013">Send now</translation>

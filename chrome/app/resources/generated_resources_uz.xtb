@@ -836,6 +836,7 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
 <translation id="1794051631868188691"><ph name="MERCHANT" /> hech qachon chiqarilmasin</translation>
 <translation id="1794791083288629568">Muammoni bartaraf etishga yordam beruvchi fikrlar yuborish.</translation>
 <translation id="1795214765651529549">Klassik mavzu ishlatilsin</translation>
+<translation id="1796105431091975902">Kiritiladigan Ansible Pleybukni tanlang</translation>
 <translation id="1796588414813960292">Ovozdan foydalanadigan funksiyalar ishlamaydi</translation>
 <translation id="1800502858278951817">Hech qaysi kengaytma <ph name="SITE_NAME" /> saytini oʻqish va oʻzgartirishga ruxsat olishga urinmagan</translation>
 <translation id="1802624026913571222">Muqova yopilganda uyqu rejimiga oʻtish</translation>
@@ -3041,6 +3042,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="389901847090970821">Klaviaturani tanlang</translation>
 <translation id="3900966090527141178">Parollarni eksport qilish</translation>
 <translation id="3903187154317825986">Ichki klaviatura</translation>
+<translation id="3903191712482985591">Pleybukni kiritish</translation>
 <translation id="3904326018476041253">Joylashuvni aniqlash xizmatlari</translation>
 <translation id="3904849010307028014">Doim hisobga kirish kabi saytdagi harakatlaringiz asosida sayt brauzerga ishonch tokenini taqdim qilishi mumkin. Keyinroq siz ochadigan boshqa saytlar ishonch tokeni yaroqliligini tekshirish orqali sizning bot emas shaxs ekanligingizni aniqlay oladi.</translation>
 <translation id="3905761538810670789">Ilovani ta’mirlash</translation>
@@ -3652,6 +3654,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4510479820467554003">Ota-ona hisoblari roʻyxati</translation>
 <translation id="451102079304155829">savatchalar</translation>
 <translation id="4513872120116766993">Matn kiritishda takliflar</translation>
+<translation id="4513909579793564731">Pleybuk sozlamalarini tadbiq qilish</translation>
 <translation id="4513946894732546136">Fikr-mulohaza</translation>
 <translation id="451407183922382411"><ph name="COMPANY_NAME" /> asosida ishlaydi</translation>
 <translation id="4514610446763173167">Videoni ijro yoki pauza qilish</translation>
@@ -5485,6 +5488,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="635609604405270300">Qurilma yoniq tursin</translation>
 <translation id="63566973648609420">Shifrlangan ma’lumotlaringizni faqat kodli iborani biladiganlar ko‘ra oladi. Bu iborani Google bilmaydi va o‘z serverlarida saqlamaydi. Agar kodli iborani unutsangiz yoki bu sozlamani o‘zgaritrmoqchi bo‘lsangiz <ph name="BEGIN_LINK" />sinxronizatsiya sozlamalarini qayta tiklashingiz<ph name="END_LINK" /> lozim.</translation>
 <translation id="6357305427698525450">Ayrim tegishli havolalar <ph name="APP_NAME" /> yoki  <ph name="APP_NAME_2" /> ilovalarida ochilaveradi.</translation>
+<translation id="6357794994761110294">Hech qaysi kengaytmaga <ph name="SITE_NAME" /> saytini oʻqish va oʻzgartirishga ruxsat berilmagan</translation>
 <translation id="6358884629796491903">Ajdar</translation>
 <translation id="6361850914223837199">Xatolik tafsilotlari:</translation>
 <translation id="6362853299801475928">&amp;Muammo haqida xabar qilish</translation>

@@ -1076,6 +1076,7 @@ Token amanah meningkatkan privasi pada web dan tidak boleh digunakan untuk menge
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, tab, dipilih</translation>
 <translation id="6828070228333235514">Berhenti menjejaki harga</translation>
 <translation id="6833996806551876956">Percubaan Kotak Pasir Privasi</translation>
+<translation id="6836206421467243968">Pulihkan kumpulan tab <ph name="TITLE_OF_GROUP" /> sebagai kumpulan tab latar baharu.</translation>
 <translation id="6846298663435243399">Memuatkan…</translation>
 <translation id="6850409657436465440">Muat turun anda masih berlangsung</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> tab telah ditutup</translation>
@@ -1138,6 +1139,7 @@ Token amanah meningkatkan privasi pada web dan tidak boleh digunakan untuk menge
 <translation id="7187993566681480880">Memastikan anda selamat pada Chrome dan mungkin digunakan untuk meningkatkan keselamatan anda dalam apl Google yang lain apabila anda log masuk.</translation>
 <translation id="7191430249889272776">Tab dibuka di latar belakang.</translation>
 <translation id="7196215469483532480">Penjelasan panduan privasi dibuka pada ketinggian penuh</translation>
+<translation id="7207760545532569765">Pulihkan <ph name="TAB_COUNT" /> tab sebagai tab latar baharu.</translation>
 <translation id="7208109991155904980">Reaksi dialihkan</translation>
 <translation id="7222235798733126207">Perkongsian terhad antara laman</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 muat turun belum selesai}other{# muat turun belum selesai}}</translation>
@@ -1516,6 +1518,7 @@ Token amanah meningkatkan privasi pada web dan tidak boleh digunakan untuk menge
 <translation id="9148126808321036104">Log masuk semula</translation>
 <translation id="9155898266292537608">Anda juga boleh mencari dengan mengetik pantas pada perkataan</translation>
 <translation id="9158770349521403363">Kongsi kandungan sahaja</translation>
+<translation id="9159716826369098114">Pulihkan kumpulan tab <ph name="TAB_COUNT" /> tab sebagai kumpulan tab latar baharu.</translation>
 <translation id="916446198114569890">URL yang anda lawati disimpan pada akaun Google anda</translation>
 <translation id="9169507124922466868">Sejarah navigasi separa terbuka</translation>
 <translation id="9187955620966010988">Reaksi dilaraskan</translation>

@@ -849,6 +849,7 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="1794051631868188691">Jangan tunjukkan <ph name="MERCHANT" /></translation>
 <translation id="1794791083288629568">Hantar maklum balas untuk membantu kami menyelesaikan isu ini.</translation>
 <translation id="1795214765651529549">Gunakan Klasik</translation>
+<translation id="1796105431091975902">Pilih Ansible Playbook untuk ditambah</translation>
 <translation id="1796588414813960292">Ciri yang memerlukan bunyi tidak akan berfungsi</translation>
 <translation id="1800502858278951817">Tiada sambungan telah meminta untuk membaca dan menukar <ph name="SITE_NAME" /></translation>
 <translation id="1802624026913571222">Tidur apabila penutup ditutup</translation>
@@ -3047,6 +3048,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="389901847090970821">Pilih papan kekunci</translation>
 <translation id="3900966090527141178">Eksport kata laluan</translation>
 <translation id="3903187154317825986">Papan Kekunci Terbina Dalam</translation>
+<translation id="3903191712482985591">Tambah panduan</translation>
 <translation id="3904326018476041253">Perkhidmatan Lokasi</translation>
 <translation id="3904849010307028014">Berdasarkan interaksi anda dengan laman, seperti kerap log masuk ke akaun, laman tersebut boleh mengeluarkan token amanah kepada penyemak imbas anda. Kemudian, jika laman lain yang anda lawati menyemak dan menemukan token amanah yang sah, laman tersebut lebih berkemungkinan untuk melayan anda seperti orang dan bukannya bot.</translation>
 <translation id="3905761538810670789">Baiki apl</translation>
@@ -3656,6 +3658,7 @@ dan Ctrl+Alt+Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="4510479820467554003">Senarai akaun ibu bapa</translation>
 <translation id="451102079304155829">troli</translation>
 <translation id="4513872120116766993">Penulisan ramalan</translation>
+<translation id="4513909579793564731">Gunakan panduan</translation>
 <translation id="4513946894732546136">Maklum balas</translation>
 <translation id="451407183922382411">Dikuasakan oleh <ph name="COMPANY_NAME" /></translation>
 <translation id="4514610446763173167">Togol video kepada main atau jeda</translation>
@@ -5486,6 +5489,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="635609604405270300">Sentiasa hidupkan peranti</translation>
 <translation id="63566973648609420">Hanya orang yang tahu ungkapan laluan anda boleh membaca data anda yang disulitkan. Ungkapan laluan tidak dihantar atau disimpan oleh Google. Jika anda terlupa ungkapan laluan atau ingin menukar tetapan ini, anda perlu <ph name="BEGIN_LINK" />menetapkan semula penyegerakan<ph name="END_LINK" />.</translation>
 <translation id="6357305427698525450">Sesetengah pautan yang disokong masih akan dibuka dalam <ph name="APP_NAME" /> atau <ph name="APP_NAME_2" />.</translation>
+<translation id="6357794994761110294">Tiada sambungan dibenarkan untuk membaca dan mengubah <ph name="SITE_NAME" /></translation>
 <translation id="6358884629796491903">Naga</translation>
 <translation id="6361850914223837199">Butiran ralat:</translation>
 <translation id="6362853299801475928">&amp;Laporkan isu...</translation>

@@ -494,6 +494,7 @@ Try tapping the mic to ask me anything.</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} attempt left}other{{0} attempts left}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Couldn't complete scan</translation>
+<translation id="5499762266711462226">Keyboard colour is based on the wallpaper</translation>
 <translation id="5502931783115429516">Android not running</translation>
 <translation id="5507300744274596613">Make sure that Chrome OS is up to date</translation>
 <translation id="5519195206574732858">LTE</translation>

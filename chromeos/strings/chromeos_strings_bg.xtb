@@ -491,6 +491,7 @@
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Остава {0} опит}other{Остават {0} опита}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Сканирането не бе изпълнено</translation>
+<translation id="5499762266711462226">Цветът на клавиатурата е въз основа на тапета</translation>
 <translation id="5502931783115429516">Android не работи</translation>
 <translation id="5507300744274596613">Уверете се, че версията на Chrome OS е актуална</translation>
 <translation id="5519195206574732858">LTE</translation>
