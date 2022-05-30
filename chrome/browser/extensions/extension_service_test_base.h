@@ -70,6 +70,7 @@ class ExtensionServiceTestBase : public testing::Test {
     bool profile_is_supervised = false;
     bool profile_is_guest = false;
     bool enable_bookmark_model = false;
+    bool enable_install_limiter = false;
 
     raw_ptr<policy::PolicyService> policy_service = nullptr;
 
