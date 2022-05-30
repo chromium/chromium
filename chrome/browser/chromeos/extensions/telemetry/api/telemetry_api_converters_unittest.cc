@@ -44,7 +44,10 @@ TEST(TelemetryApiConverters, CpuCStateInfo) {
       kName, telemetry_service::UInt64Value::New(kTimeInStateSinceLastBootUs));
 
   auto result = ConvertPtr<telemetry_api::CpuCStateInfo>(std::move(input));
+  ASSERT_TRUE(result.name);
   EXPECT_EQ(kName, *result.name);
+
+  ASSERT_TRUE(result.time_in_state_since_last_boot_us);
   EXPECT_EQ(kTimeInStateSinceLastBootUs,
             *result.time_in_state_since_last_boot_us);
 }
@@ -70,15 +73,27 @@ TEST(TelemetryApiConverters, LogicalCpuInfo) {
       std::move(expected_c_states));
 
   auto result = ConvertPtr<telemetry_api::LogicalCpuInfo>(std::move(input));
+  ASSERT_TRUE(result.max_clock_speed_khz);
   EXPECT_EQ(kMaxClockSpeedKhz,
             static_cast<uint32_t>(*result.max_clock_speed_khz));
+
+  ASSERT_TRUE(result.scaling_max_frequency_khz);
   EXPECT_EQ(kScalingMaxFrequencyKhz,
             static_cast<uint32_t>(*result.scaling_max_frequency_khz));
+
+  ASSERT_TRUE(result.scaling_current_frequency_khz);
   EXPECT_EQ(kScalingCurrentFrequencyKhz,
             static_cast<uint32_t>(*result.scaling_current_frequency_khz));
+
+  ASSERT_TRUE(result.idle_time_ms);
   EXPECT_EQ(kIdleTime, *result.idle_time_ms);
+
   EXPECT_EQ(1u, result.c_states.size());
+
+  ASSERT_TRUE(result.c_states[0].name);
   EXPECT_EQ(kCpuCStateName, *result.c_states[0].name);
+
+  ASSERT_TRUE(result.c_states[0].time_in_state_since_last_boot_us);
   EXPECT_EQ(kCpuCStateTime,
             *result.c_states[0].time_in_state_since_last_boot_us);
 }
@@ -110,19 +125,35 @@ TEST(TelemetryApiConverters, PhysicalCpuInfo) {
                                                        std::move(logical_cpus));
 
   auto result = ConvertPtr<telemetry_api::PhysicalCpuInfo>(std::move(input));
+  ASSERT_TRUE(result.model_name);
   EXPECT_EQ(kModelName, *result.model_name);
+
   EXPECT_EQ(1u, result.logical_cpus.size());
+
+  ASSERT_TRUE(result.logical_cpus[0].max_clock_speed_khz);
   EXPECT_EQ(kMaxClockSpeedKhz,
             static_cast<uint32_t>(*result.logical_cpus[0].max_clock_speed_khz));
+
+  ASSERT_TRUE(result.logical_cpus[0].scaling_max_frequency_khz);
   EXPECT_EQ(
       kScalingMaxFrequencyKhz,
       static_cast<uint32_t>(*result.logical_cpus[0].scaling_max_frequency_khz));
+
+  ASSERT_TRUE(result.logical_cpus[0].scaling_current_frequency_khz);
   EXPECT_EQ(kScalingCurrentFrequencyKhz,
             static_cast<uint32_t>(
                 *result.logical_cpus[0].scaling_current_frequency_khz));
+
+  ASSERT_TRUE(result.logical_cpus[0].idle_time_ms);
   EXPECT_EQ(kIdleTime, *result.logical_cpus[0].idle_time_ms);
+
   EXPECT_EQ(1u, result.logical_cpus[0].c_states.size());
+
+  ASSERT_TRUE(result.logical_cpus[0].c_states[0].name);
   EXPECT_EQ(kCpuCStateName, *result.logical_cpus[0].c_states[0].name);
+
+  ASSERT_TRUE(
+      result.logical_cpus[0].c_states[0].time_in_state_since_last_boot_us);
   EXPECT_EQ(
       kCpuCStateTime,
       *result.logical_cpus[0].c_states[0].time_in_state_since_last_boot_us);
@@ -155,22 +186,47 @@ TEST(TelemetryApiConverters, BatteryInfo) {
       kManufacturerDate, telemetry_service::UInt64Value::New(kTemperature));
 
   auto result = ConvertPtr<telemetry_api::BatteryInfo>(std::move(input));
+  ASSERT_TRUE(result.cycle_count);
   EXPECT_EQ(kCycleCount, static_cast<int64_t>(*result.cycle_count));
+
+  ASSERT_TRUE(result.voltage_now);
   EXPECT_EQ(kVoltageNow, static_cast<double_t>(*result.voltage_now));
+
+  ASSERT_TRUE(result.vendor);
   EXPECT_EQ(kVendor, *result.vendor);
   // serial_number is not converted in ConvertPtr().
   EXPECT_TRUE(result.serial_number == nullptr);
+
+  ASSERT_TRUE(result.charge_full_design);
   EXPECT_EQ(kChargeFullDesign,
             static_cast<double_t>(*result.charge_full_design));
+
+  ASSERT_TRUE(result.charge_full);
   EXPECT_EQ(kChargeFull, static_cast<double_t>(*result.charge_full));
+
+  ASSERT_TRUE(result.voltage_min_design);
   EXPECT_EQ(kVoltageMinDesign,
             static_cast<double_t>(*result.voltage_min_design));
+
+  ASSERT_TRUE(result.model_name);
   EXPECT_EQ(kModelName, *result.model_name);
+
+  ASSERT_TRUE(result.charge_now);
   EXPECT_EQ(kChargeNow, static_cast<double_t>(*result.charge_now));
+
+  ASSERT_TRUE(result.current_now);
   EXPECT_EQ(kCurrentNow, static_cast<double_t>(*result.current_now));
+
+  ASSERT_TRUE(result.technology);
   EXPECT_EQ(kTechnology, *result.technology);
+
+  ASSERT_TRUE(result.status);
   EXPECT_EQ(kStatus, *result.status);
+
+  ASSERT_TRUE(result.manufacture_date);
   EXPECT_EQ(kManufacturerDate, *result.manufacture_date);
+
+  ASSERT_TRUE(result.temperature);
   EXPECT_EQ(kTemperature, static_cast<uint64_t>(*result.temperature));
 }
 
