@@ -3515,6 +3515,126 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
   EXPECT_EQ(true, EvalJs(iframe_rfh, "parent.opener == null"));
 }
 
+// Check whether not using COOP causes a RenderProcessHost change during
+// same-origin navigations. This is a control test for the subsequent tests.
+IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
+                       Process_CoopUnsafeNone_SameOrigin) {
+  GURL url_1(https_server()->GetURL("a.test", "/empty.html?1"));
+  GURL url_2(https_server()->GetURL("a.test", "/empty.html?2"));
+  GURL url_3(https_server()->GetURL("a.test", "/empty.html?3"));
+
+  EXPECT_TRUE(NavigateToURL(shell(), url_1));
+  int rph_id_1 = current_frame_host()->GetProcess()->GetID();
+  EXPECT_TRUE(NavigateToURL(shell(), url_2));
+  int rph_id_2 = current_frame_host()->GetProcess()->GetID();
+  EXPECT_TRUE(NavigateToURL(shell(), url_3));
+  int rph_id_3 = current_frame_host()->GetProcess()->GetID();
+
+  EXPECT_EQ(rph_id_1, rph_id_2);
+  EXPECT_EQ(rph_id_2, rph_id_3);
+  EXPECT_EQ(rph_id_3, rph_id_1);
+}
+
+// Check whether using COOP causes a RenderProcessHost change during
+// same-origin navigations.
+IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
+                       Process_CoopSameOrigin_SameOrigin) {
+  GURL url_1(https_server()->GetURL(
+      "a.test", "/set-header?Cross-Origin-Opener-Policy: same-origin&1"));
+  GURL url_2(https_server()->GetURL(
+      "a.test", "/set-header?Cross-Origin-Opener-Policy: same-origin&2"));
+  GURL url_3(https_server()->GetURL(
+      "a.test", "/set-header?Cross-Origin-Opener-Policy: same-origin&3"));
+
+  EXPECT_TRUE(NavigateToURL(shell(), url_1));
+  int rph_id_1 = current_frame_host()->GetProcess()->GetID();
+  EXPECT_TRUE(NavigateToURL(shell(), url_2));
+  int rph_id_2 = current_frame_host()->GetProcess()->GetID();
+  EXPECT_TRUE(NavigateToURL(shell(), url_3));
+  int rph_id_3 = current_frame_host()->GetProcess()->GetID();
+
+  EXPECT_EQ(rph_id_1, rph_id_2);
+  EXPECT_EQ(rph_id_2, rph_id_3);
+  EXPECT_EQ(rph_id_3, rph_id_1);
+}
+
+// Check whether COOP causes a RenderProcessHost change during same-origin
+// navigations.
+IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
+                       Process_CoopAlternate_SameOrigin) {
+  GURL url_1(https_server()->GetURL("a.test", "/empty.html"));
+  GURL url_2(https_server()->GetURL(
+      "a.test", "/set-header?Cross-Origin-Opener-Policy: same-origin"));
+  GURL url_3(https_server()->GetURL("a.test", "/empty.html"));
+
+  EXPECT_TRUE(NavigateToURL(shell(), url_1));
+  int rph_id_1 = current_frame_host()->GetProcess()->GetID();
+  EXPECT_TRUE(NavigateToURL(shell(), url_2));
+  int rph_id_2 = current_frame_host()->GetProcess()->GetID();
+  EXPECT_TRUE(NavigateToURL(shell(), url_3));
+  int rph_id_3 = current_frame_host()->GetProcess()->GetID();
+
+  if (!SiteIsolationPolicy::IsSiteIsolationForCOOPEnabled() &&
+      IsBackForwardCacheEnabled()) {
+    EXPECT_EQ(rph_id_1, rph_id_2);
+    EXPECT_EQ(rph_id_2, rph_id_3);
+    EXPECT_EQ(rph_id_3, rph_id_1);
+  } else {
+    EXPECT_NE(rph_id_1, rph_id_2);
+    EXPECT_NE(rph_id_2, rph_id_3);
+    EXPECT_NE(rph_id_3, rph_id_1);
+  }
+}
+
+// Check whether COOP causes a RenderProcessHost change during same-site
+// navigations.
+IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
+                       Process_CoopAlternate_SameSite) {
+  GURL url_1(https_server()->GetURL("a.a.test", "/empty.html"));
+  GURL url_2(https_server()->GetURL(
+      "b.a.test", "/set-header?Cross-Origin-Opener-Policy: same-origin"));
+  GURL url_3(https_server()->GetURL("c.a.test", "/empty.html"));
+
+  EXPECT_TRUE(NavigateToURL(shell(), url_1));
+  int rph_id_1 = current_frame_host()->GetProcess()->GetID();
+  EXPECT_TRUE(NavigateToURL(shell(), url_2));
+  int rph_id_2 = current_frame_host()->GetProcess()->GetID();
+  EXPECT_TRUE(NavigateToURL(shell(), url_3));
+  int rph_id_3 = current_frame_host()->GetProcess()->GetID();
+
+  if (!SiteIsolationPolicy::IsSiteIsolationForCOOPEnabled() &&
+      IsBackForwardCacheEnabled()) {
+    EXPECT_EQ(rph_id_1, rph_id_2);
+    EXPECT_EQ(rph_id_2, rph_id_3);
+    EXPECT_EQ(rph_id_3, rph_id_1);
+  } else {
+    EXPECT_NE(rph_id_1, rph_id_2);
+    EXPECT_NE(rph_id_2, rph_id_3);
+    EXPECT_NE(rph_id_3, rph_id_1);
+  }
+}
+
+// Check whether COOP causes a RenderProcessHost change during cross-origin
+// navigations.
+IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
+                       Process_CoopSameOrigin_CrossOrigin) {
+  GURL url_1(https_server()->GetURL("a.test", "/empty.html"));
+  GURL url_2(https_server()->GetURL(
+      "b.test", "/set-header?Cross-Origin-Opener-Policy: same-origin"));
+  GURL url_3(https_server()->GetURL("c.test", "/empty.html"));
+
+  EXPECT_TRUE(NavigateToURL(shell(), url_1));
+  int rph_id_1 = current_frame_host()->GetProcess()->GetID();
+  EXPECT_TRUE(NavigateToURL(shell(), url_2));
+  int rph_id_2 = current_frame_host()->GetProcess()->GetID();
+  EXPECT_TRUE(NavigateToURL(shell(), url_3));
+  int rph_id_3 = current_frame_host()->GetProcess()->GetID();
+
+  EXPECT_NE(rph_id_1, rph_id_2);
+  EXPECT_NE(rph_id_2, rph_id_3);
+  EXPECT_NE(rph_id_3, rph_id_1);
+}
+
 // TODO(https://crbug.com/1101339). Test inheritance of the virtual browsing
 // context group when using window.open from an iframe, same-origin and
 // cross-origin.
