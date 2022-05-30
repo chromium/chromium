@@ -181,9 +181,14 @@ class NoteTakingHelper : public arc::ArcIntentHelperObserver,
   // shown in UI.
   std::vector<NoteTakingAppInfo> GetAvailableApps(Profile* profile);
 
-  // Returns info for the preferred lock screen app, if it exists.
-  std::unique_ptr<NoteTakingAppInfo> GetPreferredLockScreenAppInfo(
-      Profile* profile);
+  // Returns the ID of the preferred note-taking app. Empty if uninstalled or
+  // not set.
+  std::string GetPreferredAppId(Profile* profile);
+
+  // Returns the state of the app's support for running on the lock screen.
+  NoteTakingLockScreenSupport GetLockScreenSupportForApp(
+      Profile* profile,
+      const std::string& app_id);
 
   // Sets the preferred note-taking app. |app_id| is a value from a
   // NoteTakingAppInfo object.
@@ -234,10 +239,6 @@ class NoteTakingHelper : public arc::ArcIntentHelperObserver,
   NoteTakingHelper();
   ~NoteTakingHelper() override;
 
-  // Returns whether |app_id| has been explicitly allowed as a note-taking app
-  // by command-line or default. |app_id| is a Chrome app or web app ID.
-  bool IsAllowedApp(const std::string& app_id) const;
-
   // Queries and returns the app IDs of note-taking Chrome/web apps that are
   // installed, enabled, and allowed for |profile|.
   std::vector<std::string> GetNoteTakingAppIds(Profile* profile) const;
@@ -265,12 +266,6 @@ class NoteTakingHelper : public arc::ArcIntentHelperObserver,
   void OnAppRegistryCacheWillBeDestroyed(
       apps::AppRegistryCache* cache) override;
 
-  // Determines the state of the app's support for lock screen note taking using
-  // installation information from |profile|.
-  NoteTakingLockScreenSupport GetLockScreenSupportForAppId(
-      Profile* profile,
-      const std::string& app_id);
-
   // Called when kNoteTakingAppsLockScreenAllowlist pref changes for
   // |profile_with_enabled_lock_screen_apps_|.
   void OnAllowedNoteTakingAppsChanged();
@@ -295,8 +290,9 @@ class NoteTakingHelper : public arc::ArcIntentHelperObserver,
 
   // IDs of allowed (but not necessarily installed) Chrome apps or web apps for
   // note-taking, in the order in which they're chosen if the user hasn't
-  // expressed a preference.
-  std::vector<std::string> allowed_app_ids_;
+  // expressed a preference. Explicitly set by command-line and a default
+  // hard-coded list.
+  std::vector<std::string> force_allowed_app_ids_;
 
   // Cached information about available Android note-taking apps.
   std::vector<NoteTakingAppInfo> android_apps_;

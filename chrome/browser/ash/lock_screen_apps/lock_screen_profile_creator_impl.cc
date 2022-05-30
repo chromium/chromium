@@ -37,13 +37,12 @@ void LockScreenProfileCreatorImpl::OnPreferredNoteTakingAppUpdated(
   if (profile != primary_profile_)
     return;
 
-  std::unique_ptr<ash::NoteTakingAppInfo> note_taking_app =
-      ash::NoteTakingHelper::Get()->GetPreferredLockScreenAppInfo(
-          primary_profile_);
+  ash::NoteTakingHelper* helper = ash::NoteTakingHelper::Get();
+  std::string app_id = helper->GetPreferredAppId(primary_profile_);
+  ash::NoteTakingLockScreenSupport support =
+      helper->GetLockScreenSupportForApp(primary_profile_, app_id);
 
-  if (!note_taking_app || !note_taking_app->preferred ||
-      note_taking_app->lock_screen_support !=
-          ash::NoteTakingLockScreenSupport::kEnabled) {
+  if (support != ash::NoteTakingLockScreenSupport::kEnabled) {
     return;
   }
 

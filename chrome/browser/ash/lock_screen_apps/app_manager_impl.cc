@@ -72,12 +72,9 @@ enum class AppUnloadStatus {
   kCount = 3
 };
 
-ActionAvailability GetLockScreenNoteTakingAvailability(
-    ash::NoteTakingAppInfo* app_info) {
-  if (!app_info || !app_info->preferred)
-    return ActionAvailability::kNoActionHandlerApp;
-
-  switch (app_info->lock_screen_support) {
+ActionAvailability ToActionAvailability(
+    ash::NoteTakingLockScreenSupport lock_screen_support) {
+  switch (lock_screen_support) {
     case ash::NoteTakingLockScreenSupport::kNotSupported:
       return ActionAvailability::kAppNotSupportingLockScreen;
     case ash::NoteTakingLockScreenSupport::kSupported:
@@ -353,13 +350,14 @@ void AppManagerImpl::UpdateLockScreenAppState() {
 }
 
 std::string AppManagerImpl::FindLockScreenAppId() const {
-  // Note that lock screen does not currently support Android apps, so
-  // it's enough to only check the state of the preferred Chrome app.
-  std::unique_ptr<ash::NoteTakingAppInfo> note_taking_app =
-      ash::NoteTakingHelper::Get()->GetPreferredLockScreenAppInfo(
-          primary_profile_);
+  ash::NoteTakingHelper* helper = ash::NoteTakingHelper::Get();
+  std::string app_id = helper->GetPreferredAppId(primary_profile_);
+  ash::NoteTakingLockScreenSupport lock_screen_support =
+      helper->GetLockScreenSupportForApp(primary_profile_, app_id);
+
   ActionAvailability availability =
-      GetLockScreenNoteTakingAvailability(note_taking_app.get());
+      app_id.empty() ? ActionAvailability::kNoActionHandlerApp
+                     : ToActionAvailability(lock_screen_support);
 
   // |lock_screen_profile_| is created only if a note taking app is available
   // on the lock screen. If an app is not available, the profile is expected to
@@ -379,7 +377,7 @@ std::string AppManagerImpl::FindLockScreenAppId() const {
   if (availability != ActionAvailability::kAvailable)
     return std::string();
 
-  return note_taking_app->app_id;
+  return app_id;
 }
 
 AppManagerImpl::State AppManagerImpl::AddAppToLockScreenProfile(
