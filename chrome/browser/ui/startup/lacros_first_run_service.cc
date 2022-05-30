@@ -18,7 +18,9 @@
 #include "base/notreached.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/lacros/device_settings_lacros.h"
 #include "chrome/browser/lacros/lacros_prefs.h"
+#include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_window.h"
@@ -150,7 +152,11 @@ bool IsSyncRequired(Profile* profile) {
   if (!profile->GetPrefs()->GetBoolean(prefs::kEnableSyncConsent))
     return true;
 
-  // TODO(crbug.com/1324569): Also support ephemeral users.
+  crosapi::mojom::DeviceSettings* device_settings =
+      g_browser_process->browser_policy_connector()->GetDeviceSettings();
+  if (device_settings->device_ephemeral_users_enabled ==
+      crosapi::mojom::DeviceSettings::OptionalBool::kTrue)
+    return true;
 
   return false;
 }

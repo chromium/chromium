@@ -13,7 +13,9 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/lacros/device_settings_lacros.h"
 #include "chrome/browser/lacros/lacros_prefs.h"
+#include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -21,6 +23,9 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "chromeos/crosapi/mojom/crosapi.mojom.h"
+#include "chromeos/crosapi/mojom/device_settings_service.mojom.h"
+#include "chromeos/startup/browser_init_params.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
 #include "components/prefs/pref_service.h"
@@ -160,6 +165,42 @@ IN_PROC_BROWSER_TEST_F(LacrosFirstRunServiceBrowserTest,
   base::HistogramTester histogram_tester;
 
   profile->GetPrefs()->SetBoolean(prefs::kEnableSyncConsent, false);
+
+  base::RunLoop run_loop;
+  fre_service()->TryMarkFirstRunAlreadyFinished(run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_TRUE(g_browser_process->local_state()->GetBoolean(
+      lacros_prefs::kPrimaryProfileFirstRunFinished));
+  EXPECT_FALSE(ShouldOpenPrimaryProfileFirstRun(profile));
+  EXPECT_TRUE(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
+  histogram_tester.ExpectUniqueSample(
+      "Profile.LacrosPrimaryProfileFirstRunOutcome",
+      ProfileMetrics::ProfileSignedInFlowOutcome::kSkippedByPolicies, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    LacrosFirstRunServiceBrowserTest,
+    TryMarkFirstRunAlreadyFinished_DeviceEphemeralUsersEnabled) {
+  base::CommandLine::ForCurrentProcess()->RemoveSwitch(switches::kNoFirstRun);
+  Profile* profile = browser()->profile();
+  signin::IdentityManager* identity_manager =
+      identity_test_env()->identity_manager();
+  base::HistogramTester histogram_tester;
+
+  // The `DeviceEphemeralUsersEnabled` is read through DeviceSettings provided
+  // on startup.
+  auto init_params = chromeos::BrowserInitParams::Get()->Clone();
+  init_params->device_settings->device_ephemeral_users_enabled =
+      crosapi::mojom::DeviceSettings::OptionalBool::kTrue;
+  auto device_settings = init_params->device_settings.Clone();
+
+  chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
+  // TODO(crbug.com/1330310): Ideally this should be done as part of
+  // `SetInitParamsForTests()`.
+  g_browser_process->browser_policy_connector()
+      ->device_settings_for_test()
+      ->UpdateDeviceSettings(std::move(device_settings));
 
   base::RunLoop run_loop;
   fre_service()->TryMarkFirstRunAlreadyFinished(run_loop.QuitClosure());
