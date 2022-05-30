@@ -26,7 +26,7 @@ enum CpuArchitectureEnum {
 
 // An enumeration of each category of information that cros_healthd can report.
 //
-// NextMinVersion: 1, NextIndex: 19
+// NextMinVersion: 1, NextIndex: 20
 [Extensible]
 enum ProbeCategoryEnum {
   [Default] kUnknown = 16,
@@ -48,6 +48,7 @@ enum ProbeCategoryEnum {
   kGraphics = 15,
   kDisplay = 17,
   kNetworkInterface = 18,
+  kInput = 19,
 
   // TODO(b/190459636): Rename it to kSystem after migration.
   kSystem2 = 0x10000,
@@ -739,7 +740,7 @@ struct OsVersion {
 [Extensible]
 enum BootMode {
   [Default] kUnknown = 0,
-  // Boot with Chrome OS firmware.
+  // Boot with ChromeOS firmware.
   kCrosSecure = 1,
   // Boot with EFI
   kCrosEfi = 2,
@@ -1312,6 +1313,70 @@ struct ThunderboltBusInfo {
   array<ThunderboltBusInterfaceInfo> thunderbolt_interfaces@1;
 };
 
+// Input result.
+union InputResult {
+  // Valid InputInfo.
+  InputInfo input_info;
+  // The error that occurred attempting to retrieve the InputInfo.
+  ProbeError error;
+};
+
+// Input software and hardware information.
+//
+// NextMinVersion: 1, NextIndex: 2
+struct InputInfo {
+  // The touchpad library name used by the input stack.
+  string touchpad_library_name@0;
+  // The touchscreen devices.
+  array<TouchscreenDevice> touchscreen_devices@1;
+};
+
+// Data of a touch screen device.
+//
+// NextMinVersion: 1, NextIndex: 4
+struct TouchscreenDevice {
+  // The input device of this touchscreen.
+  InputDevice input_device@0;
+  // Number of touch points this device supports (0 if unknown).
+  int32 touch_points@1;
+  // True if the specified touchscreen device is stylus capable.
+  bool has_stylus@2;
+  // True if there is a garage/dock switch associated with the stylus.
+  bool has_stylus_garage_switch@3;
+};
+
+// Data of a input device.
+//
+// NextMinVersion: 1, NextIndex: 4
+struct InputDevice {
+  // Name of the device.
+  string name@0;
+
+  // The connection type of the input device.
+  [Extensible]
+  enum ConnectionType {
+    // For mojo backward compatibility.
+    [Default] kUnmappedEnumField,
+    // Internally connected input device.
+    kInternal,
+    // Known externally connected usb input device.
+    kUSB,
+    // Known externally connected bluetooth input device.
+    kBluetooth,
+    // Device that may or may not be an external device.
+    kUnknown,
+  };
+
+  ConnectionType connection_type@1;
+  // The physical location(port) associated with the input device. This is
+  // (supposed to be) stable between reboots and hotplugs. However this may not
+  // always be set and will change when the device is connected via a different
+  // port.
+  string physical_location@2;
+  // If the device is enabled, and whether events should be dispatched to UI.
+  bool is_enabled@3;
+};
+
 // A collection of all the device's telemetry information that cros_healthd is
 // capable of reporting. Note that every field in TelemetryInfo is nullable, and
 // the response for a particular ProbeTelemetryInfo request will only contain
@@ -1320,7 +1385,7 @@ struct ThunderboltBusInfo {
 // attempt to fetch that information, and size zero if cros_healthd did attempt
 // to fetch that information, but was unable to.
 //
-// NextMinVersion: 3, NextIndex: 19
+// NextMinVersion: 4, NextIndex: 20
 struct TelemetryInfo {
   // Information about the device's main battery. Only present when kBattery was
   // included in the categories input to ProbeTelemetryInfo.
@@ -1384,4 +1449,7 @@ struct TelemetryInfo {
   // kNetworkInterface was included in the categories input to
   // ProbeTelemetryInfo.
   [MinVersion=2] NetworkInterfaceResult? network_interface_result@18;
+  // Information about the input software and hardware. Only present when
+  // kInput was included in the categories input to ProbeTelemetryInfo.
+  [MinVersion=3] InputResult? input_result@19;
 };

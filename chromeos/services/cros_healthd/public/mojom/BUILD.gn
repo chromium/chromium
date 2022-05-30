@@ -16,6 +16,7 @@ mojom("mojom") {
   ]
 
   public_deps = [
+    "//chromeos/services/cros_healthd/private/mojom",
     "//chromeos/services/network_health/public/mojom",
     "//mojo/public/mojom/base",
   ]

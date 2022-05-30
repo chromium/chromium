@@ -205,6 +205,10 @@ class FakeCrosHealthd final
   void GetSystemService(mojo::PendingReceiver<
                         chromeos::cros_healthd::mojom::CrosHealthdSystemService>
                             service) override;
+  void SendChromiumDataCollector(
+      mojo::PendingRemote<
+          chromeos::cros_healthd::internal::mojom::ChromiumDataCollector>
+          remote) override;
 
   // CrosHealthdDiagnosticsService overrides:
   void GetAvailableRoutines(GetAvailableRoutinesCallback callback) override;

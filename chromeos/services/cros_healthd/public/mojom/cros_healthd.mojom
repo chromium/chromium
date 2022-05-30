@@ -10,6 +10,7 @@
 
 module chromeos.cros_healthd.mojom;
 
+import "chromeos/services/cros_healthd/private/mojom//cros_healthd_internal.mojom";
 import "chromeos/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom";
 import "chromeos/services/cros_healthd/public/mojom/cros_healthd_events.mojom";
 import "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom";
@@ -22,7 +23,7 @@ import "chromeos/services/network_health/public/mojom/network_health.mojom";
 // probe, diagnostics, or event services. Additionally, the browser can send
 // network-related implementations to the cros_healthd daemon.
 //
-// NextMinVersion: 1, NextIndex: 6
+// NextMinVersion: 2, NextIndex: 7
 interface CrosHealthdServiceFactory {
   // Returns a bound interface to the diagnostics service.
   GetDiagnosticsService@0(pending_receiver<CrosHealthdDiagnosticsService> service);
@@ -43,6 +44,11 @@ interface CrosHealthdServiceFactory {
   // TODO(http://b/181133872): Move this service out of this interface
   // Returns a bound interface to the system service.
   GetSystemService@5(pending_receiver<CrosHealthdSystemService> service);
+  // Sends a NetworkDiagnosticsRoutines pending remote to the cros_healthd
+  // daemon.
+  [MinVersion=1] SendChromiumDataCollector@6(
+      pending_remote<
+          chromeos.cros_healthd.internal.mojom.ChromiumDataCollector> remote);
 };
 
 // Diagnostics interface exposed by the cros_healthd daemon.

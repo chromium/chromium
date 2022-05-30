@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/check.h"
+#include "base/notreached.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/ash/components/dbus/cros_healthd/cros_healthd_client.h"
 #include "chromeos/ash/components/dbus/cros_healthd/fake_cros_healthd_client.h"
@@ -381,6 +382,13 @@ void FakeCrosHealthd::SendNetworkDiagnosticsRoutines(
 void FakeCrosHealthd::GetSystemService(
     mojo::PendingReceiver<mojom::CrosHealthdSystemService> service) {
   system_receiver_set_.Add(this, std::move(service));
+}
+
+void FakeCrosHealthd::SendChromiumDataCollector(
+    mojo::PendingRemote<
+        chromeos::cros_healthd::internal::mojom::ChromiumDataCollector>
+        remote) {
+  NOTIMPLEMENTED();
 }
 
 void FakeCrosHealthd::GetServiceStatus(GetServiceStatusCallback callback) {

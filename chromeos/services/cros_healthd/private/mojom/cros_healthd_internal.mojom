@@ -46,7 +46,7 @@ struct InputDevice {
   [Extensible]
   enum ConnectionType {
     // For mojo backward compatibility.
-    [Default] kUnmappedEnumValue,
+    [Default] kUnmappedEnumField,
     // Internally connected input device.
     kInternal,
     // Known externally connected usb input device.
