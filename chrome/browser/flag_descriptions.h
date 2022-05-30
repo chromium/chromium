@@ -801,6 +801,9 @@ extern const char kCastUseBlocklistForRemotingQueryDescription[];
 extern const char kCastForceEnableRemotingQueryName[];
 extern const char kCastForceEnableRemotingQueryDescription[];
 
+extern const char kContextualPageActionsWithPriceTrackingName[];
+extern const char kContextualPageActionsWithPriceTrackingDescription[];
+
 extern const char kGpuRasterizationName[];
 extern const char kGpuRasterizationDescription[];
 

@@ -956,6 +956,11 @@
     "expiry_milestone": 83
   },
   {
+    "name": "contextual-page-actions-with-price-tracking",
+    "owners": [ "shaktisahu@google.com", "salg@google.com" ],
+    "expiry_milestone": 109
+  },
+  {
     "name": "contextual-search-debug",
     "owners": [ "//chrome/android/java/src/org/chromium/chrome/browser/contextualsearch/OWNERS" ],
     // This is used to enable debugging of server and backend code.

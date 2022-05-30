@@ -29,6 +29,9 @@ extern const base::Feature kSegmentationPlatformLowEngagementFeature;
 // Feature flag for enabling Feed user segments feature.
 extern const base::Feature kSegmentationPlatformFeedSegmentFeature;
 
+// Feature flag for enabling price tracking feature.
+extern const base::Feature kContextualPageActionsWithPriceTracking;
+
 }  // namespace segmentation_platform::features
 
 #endif  // COMPONENTS_SEGMENTATION_PLATFORM_PUBLIC_FEATURES_H_

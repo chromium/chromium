@@ -285,6 +285,8 @@ public abstract class ChromeFeatureList {
     public static final String CONTEXT_MENU_TRANSLATE_WITH_GOOGLE_LENS =
             "ContextMenuTranslateWithGoogleLens";
     public static final String LENS_CAMERA_ASSISTED_SEARCH = "LensCameraAssistedSearch";
+    public static final String CONTEXTUAL_PAGE_ACTIONS_PRICE_TRACKING =
+            "ContextualPageActionsPriceTracking";
     /** Used only in native code. */
     public static final String CONTEXTUAL_SEARCH_DEBUG = "ContextualSearchDebug";
     public static final String CONTEXTUAL_SEARCH_DELAYED_INTELLIGENCE =

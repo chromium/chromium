@@ -129,6 +129,7 @@
 #include "components/search/ntp_features.h"
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
 #include "components/security_state/core/security_state.h"
+#include "components/segmentation_platform/public/features.h"
 #include "components/send_tab_to_self/features.h"
 #include "components/services/heap_profiling/public/cpp/switches.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_features.h"
@@ -4040,6 +4041,12 @@ const FeatureEntry kFeatureEntries[] = {
          chrome::android::kAdaptiveButtonInTopToolbarCustomizationV2,
          kAdaptiveButtonInTopToolbarCustomizationVariations,
          "OptionalToolbarButtonCustomization")},
+    {"contextual-page-actions-with-price-tracking",
+     flag_descriptions::kContextualPageActionsWithPriceTrackingName,
+     flag_descriptions::kContextualPageActionsWithPriceTrackingDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(segmentation_platform::features::
+                            kContextualPageActionsWithPriceTracking)},
     {"reader-mode-heuristics", flag_descriptions::kReaderModeHeuristicsName,
      flag_descriptions::kReaderModeHeuristicsDescription, kOsAndroid,
      MULTI_VALUE_TYPE(kReaderModeHeuristicsChoices)},

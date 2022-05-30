@@ -1443,6 +1443,11 @@ const char kCastForceEnableRemotingQueryDescription[] =
 const char kGpuRasterizationName[] = "GPU rasterization";
 const char kGpuRasterizationDescription[] = "Use GPU to rasterize web content.";
 
+const char kContextualPageActionsWithPriceTrackingName[] =
+    "Contextual page actions with price tracking";
+const char kContextualPageActionsWithPriceTrackingDescription[] =
+    "Enables price tracking as a contextual page action.";
+
 const char kHandwritingGestureEditingName[] = "Handwriting Gestures Editing";
 const char kHandwritingGestureEditingDescription[] =
     "Enables editing with handwriting gestures within the virtual keyboard.";
