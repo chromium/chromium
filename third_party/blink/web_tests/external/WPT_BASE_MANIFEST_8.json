@@ -324123,7 +324123,7 @@
      ]
     },
     "idlharness-shadowrealm.js": [
-     "631278db22d8fb34b73e5f2fddf723630ddb40d8",
+     "05c4a1affc8699b6cd2a1fe02aa0ac2085b04a8a",
      []
     ],
     "idlharness.js": [
@@ -398021,6 +398021,13 @@
         {}
        ]
       ],
+      "host-pseudo-class-in-has.html": [
+       "a2c63d546355c33144d787d603c3c27a8f6e4e07",
+       [
+        null,
+        {}
+       ]
+      ],
       "input-pseudo-classes-in-has.html": [
        "67aeedf315e686133c444455255ed7bbdf3b20e0",
        [
@@ -398057,7 +398064,7 @@
        ]
       ],
       "is-pseudo-containing-complex-in-has.html": [
-       "4b0225eb428fa0d55816cd115c26feacaf8468c3",
+       "4e6d4c8832e31cad61d5ada85ce12b1024311887",
        [
         null,
         {}
@@ -398106,7 +398113,7 @@
        ]
       ],
       "not-pseudo-containing-complex-in-has.html": [
-       "b99b309efd9d0e6ec4ff9ef2f679d323da98b7e3",
+       "d24abf69f7348093d214e03d0845bccc23dc11a4",
        [
         null,
         {}
