@@ -61,12 +61,6 @@ const base::Feature kCacheControlNoStoreEnterBackForwardCache{
     "CacheControlNoStoreEnterBackForwardCache",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Allows pages with MediaSession's playback state change to stay eligible for
-// the back/forward cache.
-const base::Feature kBackForwardCacheMediaSessionPlaybackStateChange{
-    "BackForwardCacheMediaSessionPlaybackStateChange",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Enables controlling the time to live for pages in the backforward cache.
 // The time to live is defined by the param 'time_to_live_seconds'; if this
 // param is not specified then this feature is ignored and the default is used.
@@ -185,10 +179,6 @@ class CONTENT_EXPORT BackForwardCacheImpl
   BackForwardCacheImpl& operator=(const BackForwardCacheImpl&) = delete;
 
   ~BackForwardCacheImpl() override;
-
-  // Returns whether MediaSession's playback state change is allowed for the
-  // BackForwardCache.
-  static bool IsMediaSessionPlaybackStateChangedAllowed();
 
   // Returns whether MediaSession's service is allowed for the BackForwardCache.
   static bool IsMediaSessionServiceAllowed();

@@ -32,7 +32,7 @@ class CONTENT_EXPORT BackForwardCacheDisable {
     kWebUSB = 9,
 
     // MediaSession's playback state is changed (crbug.com/1177661).
-    kMediaSession = 10,
+    // kMediaSession = 10 Removed after implementing support
 
     // MediaSession's service is used (crbug.com/1243599).
     kMediaSessionService = 11,

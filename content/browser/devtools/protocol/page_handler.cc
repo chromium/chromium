@@ -1696,9 +1696,6 @@ DisableForRenderFrameHostReasonToProtocol(
               ContentWebBluetooth;
         case BackForwardCacheDisable::DisabledReasonId::kWebUSB:
           return Page::BackForwardCacheNotRestoredReasonEnum::ContentWebUSB;
-        case BackForwardCacheDisable::DisabledReasonId::kMediaSession:
-          return Page::BackForwardCacheNotRestoredReasonEnum::
-              ContentMediaSession;
         case BackForwardCacheDisable::DisabledReasonId::kMediaSessionService:
           return Page::BackForwardCacheNotRestoredReasonEnum::
               ContentMediaSessionService;
