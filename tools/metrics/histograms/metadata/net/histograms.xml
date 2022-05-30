@@ -61,6 +61,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="HttpCache.CreateDiskEntry" units="ms"
+    expires_after="2022-11-25">
+  <owner>yhirano@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    The time taken to create a disk cache entry. Recorded when the entry is
+    created for the first time in the HttpCacheTransaction. Not recorded if the
+    cache is memory-backed.
+  </summary>
+</histogram>
+
 <histogram name="HttpCache.MaxFileSizeOnInit" units="KB"
     expires_after="2022-02-20">
   <owner>shivanisha@chromium.org</owner>
@@ -68,6 +79,16 @@ chromium-metrics-reviews@google.com.
   <summary>
     Max file size allowed to be cached in the http cache. This is logged at the
     time the backend is created.
+  </summary>
+</histogram>
+
+<histogram name="HttpCache.OpenDiskEntry" units="ms" expires_after="2022-11-25">
+  <owner>yhirano@chromium.org</owner>
+  <owner>net-dev@chromium.org</owner>
+  <summary>
+    The time taken to open a disk cache entry. Recorded when the entry is
+    created for the first time in the HttpCacheTransaction. Not recorded if the
+    cache is memory-backed.
   </summary>
 </histogram>
 

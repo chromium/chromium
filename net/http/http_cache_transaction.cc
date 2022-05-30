@@ -1153,6 +1153,9 @@ int HttpCache::Transaction::DoOpenOrCreateEntry() {
   cache_pending_ = true;
   net_log_.BeginEvent(NetLogEventType::HTTP_CACHE_OPEN_OR_CREATE_ENTRY);
   first_cache_access_since_ = TimeTicks::Now();
+  const bool has_opened_or_created_entry = has_opened_or_created_entry_;
+  has_opened_or_created_entry_ = true;
+  record_entry_open_or_creation_time_ = false;
 
   // See if we already have something working with this cache key.
   new_entry_ = cache_->FindActiveEntry(cache_key_);
@@ -1181,6 +1184,10 @@ int HttpCache::Transaction::DoOpenOrCreateEntry() {
     UpdateCacheEntryStatus(CacheEntryStatus::ENTRY_CANT_CONDITIONALIZE);
   }
 
+  if (!has_opened_or_created_entry) {
+    record_entry_open_or_creation_time_ = true;
+  }
+
   // mode_ can be anything but NONE or WRITE at this point (READ, UPDATE, or
   // READ_WRITE).
   // READ, UPDATE, certain READ_WRITEs, and some methods shouldn't create, so
@@ -1202,6 +1209,13 @@ int HttpCache::Transaction::DoOpenOrCreateEntryComplete(int result) {
                          "HttpCacheTransaction::DoOpenOrCreateEntryComplete",
                          net_log().source().id,
                          TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+
+  const bool record_uma =
+      record_entry_open_or_creation_time_ && cache_ &&
+      cache_->GetCurrentBackend() &&
+      cache_->GetCurrentBackend()->GetCacheType() != MEMORY_CACHE;
+  record_entry_open_or_creation_time_ = false;
+
   // It is important that we go to STATE_ADD_TO_ENTRY whenever the result is
   // OK, otherwise the cache will end up with an active entry without any
   // transaction attached.
@@ -1211,7 +1225,19 @@ int HttpCache::Transaction::DoOpenOrCreateEntryComplete(int result) {
   cache_pending_ = false;
 
   if (result == OK) {
-    if (new_entry_->opened == false) {
+    if (new_entry_->opened) {
+      if (record_uma) {
+        base::UmaHistogramTimes(
+            "HttpCache.OpenDiskEntry",
+            base::TimeTicks::Now() - first_cache_access_since_);
+      }
+    } else {
+      if (record_uma) {
+        base::UmaHistogramTimes(
+            "HttpCache.CreateDiskEntry",
+            base::TimeTicks::Now() - first_cache_access_since_);
+      }
+
       // Entry was created so mode changes to WRITE.
       mode_ = WRITE;
     }

@@ -700,6 +700,8 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   base::TimeTicks read_headers_since_;
   base::Time open_entry_last_used_;
   bool recorded_histograms_;
+  bool has_opened_or_created_entry_ = false;
+  bool record_entry_open_or_creation_time_ = false;
 
   NetworkTransactionInfo network_transaction_info_;
 
