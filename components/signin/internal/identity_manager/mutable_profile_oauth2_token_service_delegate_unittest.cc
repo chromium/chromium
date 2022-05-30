@@ -270,71 +270,31 @@ class MutableProfileOAuth2TokenServiceDelegateTest
 
 TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, PersistenceDBUpgrade) {
   InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDice);
-  CoreAccountId main_account_id("account_id");
-  std::string main_refresh_token("old_refresh_token");
+  CoreAccountId primary_account_id("primaryAccount");
 
-  // Populate DB with legacy tokens.
+  // Populate DB with legacy tokens (Expected to be discarded).
   AddAuthTokenManually(GaiaConstants::kSyncService, "syncServiceToken");
   AddAuthTokenManually(kLSOService, "lsoToken");
   AddAuthTokenManually(GaiaConstants::kGaiaOAuth2LoginRefreshToken,
-                       main_refresh_token);
+                       "primaryLegacyRefreshToken");
 
   // Force LoadCredentials.
-  oauth2_service_delegate_->LoadCredentials(main_account_id,
+  oauth2_service_delegate_->LoadCredentials(primary_account_id,
                                             /*is_syncing=*/false);
   base::RunLoop().RunUntilIdle();
 
-  // Legacy tokens get discarded, but the old refresh token is kept.
+  // 1. Legacy tokens get all discarded.
+  // 2. Token for primary account is set to invalid as it cannot be found.
+  // 3. Token for secondary account is loaded.
   EXPECT_EQ(1, tokens_loaded_count_);
   EXPECT_EQ(1, token_available_count_);
   EXPECT_EQ(1, end_batch_changes_);
-  EXPECT_TRUE(
-      oauth2_service_delegate_->RefreshTokenIsAvailable(main_account_id));
   EXPECT_EQ(1U, oauth2_service_delegate_->refresh_tokens_.size());
-  EXPECT_EQ(
-      main_refresh_token,
-      oauth2_service_delegate_->refresh_tokens_[main_account_id].refresh_token);
-
-  // Add an old legacy token to the DB, to ensure it will not overwrite existing
-  // credentials for main account.
-  AddAuthTokenManually(GaiaConstants::kGaiaOAuth2LoginRefreshToken,
-                       "secondOldRefreshToken");
-  // Add some other legacy token. (Expected to get discarded).
-  AddAuthTokenManually(kLSOService, "lsoToken");
-  // Also add a token using PO2TS.UpdateCredentials and make sure upgrade does
-  // not wipe it.
-  CoreAccountId other_account_id("other_account_id");
-  std::string other_refresh_token("other_refresh_token");
-  oauth2_service_delegate_->UpdateCredentials(other_account_id,
-                                              other_refresh_token);
-  ResetObserverCounts();
-
-  // Force LoadCredentials.
-  oauth2_service_delegate_->LoadCredentials(main_account_id,
-                                            /*is_syncing=*/false);
-  base::RunLoop().RunUntilIdle();
-
-  // Again legacy tokens get discarded, but since the main porfile account
-  // token is present it is not overwritten.
-  EXPECT_EQ(2, token_available_count_);
-  EXPECT_EQ(1, tokens_loaded_count_);
-  EXPECT_EQ(1, end_batch_changes_);
-  EXPECT_EQ(main_refresh_token,
-            oauth2_service_delegate_->GetRefreshToken(main_account_id));
   EXPECT_TRUE(
-      oauth2_service_delegate_->RefreshTokenIsAvailable(main_account_id));
-  // TODO(fgorski): cover both using RefreshTokenIsAvailable() and then get the
-  // tokens using GetRefreshToken()
-  EXPECT_EQ(2U, oauth2_service_delegate_->refresh_tokens_.size());
-  EXPECT_EQ(
-      main_refresh_token,
-      oauth2_service_delegate_->refresh_tokens_[main_account_id].refresh_token);
-  EXPECT_EQ(other_refresh_token,
-            oauth2_service_delegate_->refresh_tokens_[other_account_id]
+      oauth2_service_delegate_->RefreshTokenIsAvailable(primary_account_id));
+  EXPECT_EQ(GaiaConstants::kInvalidRefreshToken,
+            oauth2_service_delegate_->refresh_tokens_[primary_account_id]
                 .refresh_token);
-
-  oauth2_service_delegate_->RevokeAllCredentials();
-  EXPECT_EQ(2, end_batch_changes_);
 }
 
 TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,

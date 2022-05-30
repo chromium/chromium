@@ -465,7 +465,6 @@ void MutableProfileOAuth2TokenServiceDelegate::OnWebDataServiceRequestDone(
 
 void MutableProfileOAuth2TokenServiceDelegate::LoadAllCredentialsIntoMemory(
     const std::map<std::string, std::string>& db_tokens) {
-  std::string old_login_token;
   bool migrate_to_dice =
       ShouldMigrateToDice(account_consistency_, client_->GetPrefs());
 
@@ -478,10 +477,8 @@ void MutableProfileOAuth2TokenServiceDelegate::LoadAllCredentialsIntoMemory(
       std::string prefixed_account_id = iter->first;
       std::string refresh_token = iter->second;
 
-      if (IsLegacyRefreshTokenId(prefixed_account_id) && !refresh_token.empty())
-        old_login_token = refresh_token;
-
-      if (IsLegacyServiceId(prefixed_account_id)) {
+      if (IsLegacyRefreshTokenId(prefixed_account_id) ||
+          IsLegacyServiceId(prefixed_account_id)) {
         if (token_web_data_) {
           VLOG(1) << "MutablePO2TS remove legacy refresh token for account id "
                   << prefixed_account_id;
@@ -547,12 +544,6 @@ void MutableProfileOAuth2TokenServiceDelegate::LoadAllCredentialsIntoMemory(
           FireRefreshTokenRevoked(account_id);
         }
       }
-    }
-
-    if (!old_login_token.empty()) {
-      DCHECK(!loading_primary_account_id_.empty());
-      if (refresh_tokens_.count(loading_primary_account_id_) == 0)
-        UpdateCredentials(loading_primary_account_id_, old_login_token);
     }
   }
 
