@@ -31,6 +31,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/animation/animation_test_api.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget_utils.h"
@@ -400,6 +401,9 @@ class IntentPickerDialogTest : public DialogBrowserTest {
 
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
+    animation_mode_reset_ = gfx::AnimationTestApi::SetRichAnimationRenderMode(
+        gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
+
     std::vector<apps::IntentPickerAppInfo> app_info;
     const auto add_entry = [&app_info](const std::string& str) {
       app_info.emplace_back(
@@ -428,6 +432,9 @@ class IntentPickerDialogTest : public DialogBrowserTest {
         ->toolbar_button_provider()
         ->GetPageActionIconView(PageActionIconType::kIntentPicker);
   }
+
+  std::unique_ptr<base::AutoReset<gfx::Animation::RichAnimationRenderMode>>
+      animation_mode_reset_;
 };
 
 IN_PROC_BROWSER_TEST_F(IntentPickerDialogTest, InvokeUi_default) {
