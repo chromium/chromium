@@ -304,7 +304,9 @@ export class FileOperationHandler {
             case util.FileOperationType.ZIP:
               return strf('ZIP_TARGET_EXISTS_ERROR', name);
             default:
-              return strf('TRANSFER_TARGET_EXISTS_ERROR', name);
+              console.warn(
+                  `Unexpected operation type: ${event.status.operationType}`);
+              return strf('FILE_ERROR_GENERIC');
           }
 
         case util.FileOperationErrorType.FILESYSTEM_ERROR:
@@ -321,7 +323,9 @@ export class FileOperationHandler {
             case util.FileOperationType.RESTORE:
               return str('RESTORE_FROM_TRASH_ERROR');
             default:
-              return strf('TRANSFER_FILESYSTEM_ERROR', detail);
+              console.warn(
+                  `Unexpected operation type: ${event.status.operationType}`);
+              return strf('FILE_ERROR_GENERIC');
           }
 
         default:
@@ -337,7 +341,9 @@ export class FileOperationHandler {
             case util.FileOperationType.RESTORE:
               return str('RESTORE_FROM_TRASH_ERROR');
             default:
-              return strf('TRANSFER_UNEXPECTED_ERROR', event.error.code);
+              console.warn(
+                  `Unexpected operation type: ${event.status.operationType}`);
+              return strf('FILE_ERROR_GENERIC');
           }
       }
     } else if (event.status.numRemainingItems === 1) {
@@ -354,7 +360,9 @@ export class FileOperationHandler {
         case util.FileOperationType.RESTORE:
           return strf('RESTORE_FROM_TRASH_FILE_NAME', name);
         default:
-          return strf('TRANSFER_FILE_NAME', name);
+          console.warn(
+              `Unexpected operation type: ${event.status.operationType}`);
+          return strf('FILE_ERROR_GENERIC');
       }
     } else {
       const remainNumber = event.status.numRemainingItems;
@@ -370,7 +378,9 @@ export class FileOperationHandler {
         case util.FileOperationType.RESTORE:
           return strf('RESTORE_FROM_TRASH_ITEMS_REMAINING', remainNumber);
         default:
-          return strf('TRANSFER_ITEMS_REMAINING', remainNumber);
+          console.warn(
+              `Unexpected operation type: ${event.status.operationType}`);
+          return strf('FILE_ERROR_GENERIC');
       }
     }
   }
@@ -456,7 +466,9 @@ function getMessageFromProgressEvent_(event) {
       // case chrome.fileManagerPrivate.IOTaskType.RESTORE:
       //  return str('RESTORE_FROM_TRASH_ERROR');
       default:
-        return strf('TRANSFER_FILESYSTEM_ERROR', detail);
+        console.warn(
+            `Unexpected operation type: ${event.status.operationType}`);
+        return strf('FILE_ERROR_GENERIC');
     }
   }
 
