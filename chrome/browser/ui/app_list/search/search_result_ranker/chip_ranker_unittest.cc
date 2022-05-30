@@ -13,6 +13,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/search/mixer.h"
+#include "chrome/browser/ui/app_list/search/test/ranking_test_util.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -27,14 +28,10 @@ namespace {
 
 using ResultType = ash::AppListSearchResultType;
 
-class TestSearchResult : public ChromeSearchResult {
+class ChipTestResult : public TestResult {
  public:
-  TestSearchResult(const std::string& id, ResultType type)
-      : instance_id_(instantiation_count++) {
-    set_id(id);
-    SetTitle(base::UTF8ToUTF16(id));
-    SetResultType(type);
-
+  ChipTestResult(const std::string& id, ResultType type)
+      : TestResult(id, type), instance_id_(instantiation_count++) {
     switch (type) {
       case ResultType::kFileChip:
       case ResultType::kDriveChip:
@@ -55,10 +52,10 @@ class TestSearchResult : public ChromeSearchResult {
     }
   }
 
-  TestSearchResult(const TestSearchResult&) = delete;
-  TestSearchResult& operator=(const TestSearchResult&) = delete;
+  ChipTestResult(const ChipTestResult&) = delete;
+  ChipTestResult& operator=(const ChipTestResult&) = delete;
 
-  ~TestSearchResult() override {}
+  ~ChipTestResult() override {}
 
   // ChromeSearchResult overrides:
   void Open(int event_flags) override {}
@@ -69,7 +66,7 @@ class TestSearchResult : public ChromeSearchResult {
   int instance_id_;
 };
 
-int TestSearchResult::instantiation_count = 0;
+int ChipTestResult::instantiation_count = 0;
 
 MATCHER_P(HasId, id, "") {
   bool match = base::UTF16ToUTF8(arg.result->title()) == id;
@@ -128,10 +125,10 @@ class ChipRankerTest : public testing::Test {
 
   std::unique_ptr<ChipRanker> ranker_;
 
-  // This is used only to make the ownership clear for the TestSearchResult
+  // This is used only to make the ownership clear for the ChipTestResult
   // objects that the return value of MakeSearchResults() contains raw pointers
   // to.
-  std::list<TestSearchResult> results_;
+  std::list<ChipTestResult> results_;
 };
 
 // Check that ranking an empty list has no effect.

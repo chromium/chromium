@@ -12,6 +12,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/search/search_controller.h"
+#include "chrome/browser/ui/app_list/search/test/ranking_test_util.h"
 #include "chrome/browser/ui/app_list/test/test_app_list_controller_delegate.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 
@@ -19,19 +20,6 @@ namespace app_list {
 namespace test {
 
 using ::test::TestAppListControllerDelegate;
-
-// TestSearchResult ------------------------------------------------------------
-
-class TestSearchResult : public ChromeSearchResult {
- public:
-  TestSearchResult() = default;
-  TestSearchResult(const TestSearchResult&) = delete;
-  TestSearchResult& operator=(const TestSearchResult&) = delete;
-  ~TestSearchResult() override = default;
-
- private:
-  void Open(int event_flags) override { NOTIMPLEMENTED(); }
-};
 
 // SearchControllerImplTest
 // --------------------------------------------------------
@@ -89,7 +77,7 @@ TEST_F(SearchControllerImplTest,
                         /*request_to_dismiss_view=*/true,
                         /*expect_to_dismiss_view=*/true});
 
-  auto result = std::make_unique<TestSearchResult>();
+  auto result = std::make_unique<TestResult>();
   for (auto& test_case : test_cases) {
     ash::ShellTestApi().SetTabletModeEnabledForTest(test_case.is_tablet_mode);
 

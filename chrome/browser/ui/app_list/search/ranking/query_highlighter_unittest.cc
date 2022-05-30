@@ -7,6 +7,7 @@
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/search/ranking/ranker.h"
 #include "chrome/browser/ui/app_list/search/ranking/types.h"
+#include "chrome/browser/ui/app_list/search/test/ranking_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -14,15 +15,6 @@ namespace app_list {
 namespace {
 
 using Tag = ash::SearchResultTag;
-
-class TestResult : public ChromeSearchResult {
- public:
-  TestResult() = default;
-  ~TestResult() override = default;
-
-  // ChromeSearchResult overrides:
-  void Open(int event_flags) override {}
-};
 
 Results MakeResults(const std::vector<std::u16string>& titles) {
   Results results;
