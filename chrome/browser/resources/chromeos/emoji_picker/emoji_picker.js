@@ -6,7 +6,6 @@ import './icons.js';
 import './emoji_group.js';
 import './emoji_group_button.js';
 import './emoji_search.js';
-import './emoticon_group.js';
 import './text_group_button.js';
 import 'chrome://resources/cr_elements/cr_icons_css.m.js';
 
