@@ -5,7 +5,6 @@
 import 'chrome://resources/cr_elements/cr_search_field/cr_search_field.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
 import {EmojiButton} from './emoji_button.js';
 import {EmojiCategoryButton} from './emoji_category_button.js';
 import Fuse from './fuse.js';
@@ -99,6 +98,11 @@ export class EmojiSearch extends PolymerElement {
    * @param {KeyboardEvent} ev
    */
   onKeyDown(ev) {
+    // TODO(b/233567886): Implement navigation by keyboard for V2.
+    if (this.v2Enabled) {
+      return;
+    }
+
     const isUp = ev.key === 'ArrowUp';
     const isDown = ev.key === 'ArrowDown';
     const isEnter = ev.key === 'Enter';
@@ -165,23 +169,23 @@ export class EmojiSearch extends PolymerElement {
           firstButton.querySelector('emoji-button').click();
         }
       } else {
-        const emojiButton = this.shadowRoot.querySelector('emoji-group')
-                                .shadowRoot.querySelector('emoji-button');
-        const emoticonButton =
-            this.shadowRoot.querySelector('emoticon-group')
-                .shadowRoot.querySelector('.emoticon-button');
-        if (this.emojiResults.length > 0) {
-          emojiButton.shadowRoot.querySelector('#emoji-button').focus();
-        } else if (this.emoticonResults.length > 0) {
-          emoticonButton.focus();
+        const resultsCount =
+          this.emojiResults.length + this.emoticonResults.length;
+
+        if (resultsCount === 0) {
+          return;
         }
-        if (isEnter && this.emojiResults.length === 1 &&
-            this.emoticonResults.length === 0) {
-          emojiButton.shadowRoot.querySelector('#emoji-button').click();
-        } else if (
-            isEnter && this.emojiResults.length === 0 &&
-            this.emoticonResults.length === 1) {
-          emoticonButton.click();
+
+        const firstResultButton = this.findFirstResultButton();
+
+        if (!firstResultButton) {
+          throw new Error('Cannot find search result buttons.');
+        }
+
+        if (isEnter && resultsCount === 1) {
+          firstResultButton.click();
+        } else {
+          firstResultButton.focus();
         }
       }
     }
@@ -273,6 +277,23 @@ export class EmojiSearch extends PolymerElement {
     ev.currentTarget.querySelector('emoji-button')
         .shadowRoot.querySelector('button')
         .click();
+  }
+
+  /**
+   * Find the first button in the search result page.
+   *
+   * @returns {?HTMLElement} First button or null for no results.
+   */
+  findFirstResultButton() {
+    const results = this.shadowRoot.querySelector(
+      '#search-results').querySelectorAll('emoji-group');
+    for (const result of results) {
+      const button = result.firstEmojiButton();
+      if (button) {
+        return button;
+      }
+    }
+    return null;
   }
 
   /**

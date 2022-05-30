@@ -179,13 +179,13 @@
       </template>
     </template>
     <template is="dom-if" if="[[v2Enabled]]">
-      <div id="emoji-result">
-        <emoji-group data="[[emojiResults]]" preferred="{}">
+      <div id="search-results">
+        <emoji-group id="emoji-result" data="[[emojiResults]]"
+          category="emoji">
         </emoji-group>
-      </div>
-      <div id="emoticon-result">
-        <emoticon-group id="emoticon-result" data="[[emoticonResults]]">
-        </emoticon-group>
+        <emoji-group id="emoticon-result" data="[[emoticonResults]]"
+          category="emoticon" use-flex-layout>
+        </emoji-group>
       </div>
     </template>
     <template is="dom-if"

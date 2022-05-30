@@ -62,8 +62,9 @@ suite('emoji-search', () => {
                                  .shadowRoot.querySelectorAll('emoji-button');
         assertGT(emojiResults.length, 0);
         const emoticonResults =
-            findInEmojiPicker('emoji-search', 'emoticon-group')
-                .shadowRoot.querySelectorAll('.emoticon-button');
+          findInEmojiPicker(
+            'emoji-search', 'emoji-group[category="emoticon"]')
+              .shadowRoot.querySelectorAll('emoji-button');
         assertGT(emoticonResults.length, 0);
       });
 
