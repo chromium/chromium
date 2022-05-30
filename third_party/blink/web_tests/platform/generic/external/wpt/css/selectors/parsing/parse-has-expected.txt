@@ -24,7 +24,7 @@ PASS ".a:has(:not(.b))" should be a valid selector
 PASS ".a:has(.b):has(.c)" should be a valid selector
 PASS "*|*:has(*)" should be a valid selector
 PASS ":has(*|*)" should be a valid selector
-FAIL ".a:has()" should be an invalid selector assert_throws_dom: ".a:has()" should throw in querySelector function "() => document.querySelector(selector)" did not throw
+PASS ".a:has()" should be a valid selector
 PASS ":has" should be an invalid selector
 PASS ".a:has" should be an invalid selector
 PASS ".a:has b" should be an invalid selector
