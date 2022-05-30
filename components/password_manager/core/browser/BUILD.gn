@@ -706,6 +706,7 @@ source_set("unit_tests") {
     "password_manager_client_helper_unittest.cc",
     "password_manager_features_util_unittest.cc",
     "password_manager_metrics_recorder_unittest.cc",
+    "password_manager_metrics_util_unittest.cc",
     "password_manager_unittest.cc",
     "password_manager_util_unittest.cc",
     "password_notes_table_unittest.cc",

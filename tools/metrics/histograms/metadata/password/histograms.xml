@@ -1897,6 +1897,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="PasswordManager.NewlySavedPasswordHasEmptyUsername.{PasswordType}"
+    enum="Boolean" expires_after="2022-10-23">
+  <owner>khamutov@google.com</owner>
+  <owner>kolos@chromium.org</owner>
+  <summary>
+    Whether a newly saved password has an empty username. Recorded right before
+    a new credential is commited to the store.
+  </summary>
+  <token key="PasswordType" variants="PasswordType"/>
+</histogram>
+
 <histogram name="PasswordManager.NewlySavedPasswordIsGenerated"
     enum="BooleanNewlySavedPasswordIsGenerated" expires_after="2022-10-23">
   <owner>nepper@chromium.org</owner>
