@@ -376,7 +376,7 @@ class UserSessionManager
   friend class test::UserSessionManagerTestApi;
   friend struct base::DefaultSingletonTraits<UserSessionManager>;
 
-  typedef std::set<std::string> SigninSessionRestoreStateSet;
+  using SigninSessionRestoreStateSet = std::set<AccountId>;
 
   void SetNetworkConnectionTracker(
       network::NetworkConnectionTracker* network_connection_tracker);

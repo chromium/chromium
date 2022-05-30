@@ -775,15 +775,14 @@ void UserSessionManager::RestoreAuthenticationSession(Profile* user_profile) {
   DCHECK(user);
   if (network_connection_tracker_ &&
       !network_connection_tracker_->IsOffline()) {
-    pending_signin_restore_sessions_.erase(user->GetAccountId().GetUserEmail());
+    pending_signin_restore_sessions_.erase(user->GetAccountId());
     RestoreAuthSessionImpl(user_profile, false /* has_auth_cookies */);
   } else {
     // Even if we're online we should wait till initial
     // OnConnectionTypeChanged() call. Otherwise starting fetchers too early may
     // end up canceling all request when initial network connection type is
     // processed. See http://crbug.com/121643.
-    pending_signin_restore_sessions_.insert(
-        user->GetAccountId().GetUserEmail());
+    pending_signin_restore_sessions_.insert(user->GetAccountId());
   }
 }
 
@@ -1145,8 +1144,8 @@ void UserSessionManager::OnConnectionChanged(
       // If we come online for the first time after successful offline login,
       // we need to kick off OAuth token verification process again.
       login_manager->ContinueSessionRestore();
-    } else if (pending_signin_restore_sessions_.erase(
-                   user->GetAccountId().GetUserEmail()) > 0) {
+    } else if (pending_signin_restore_sessions_.erase(user->GetAccountId()) >
+               0) {
       // Restore it, if the account is contained in the pending set.
       RestoreAuthSessionImpl(user_profile, false /* has_auth_cookies */);
     }
