@@ -692,12 +692,20 @@ export class EmojiPicker extends PolymerElement {
     }
 
     if (this.emoticonHistory.emoji.length > 0) {
+      /**
+       * When disabling V2, V1 can still access the history even though there
+       * is be no emoticon-history element.
+       * For V2, emoticon can be there but emoji-groups can be loaded later.
+       */
       const emoticonHistoryElement = this.shadowRoot.querySelector(
-        `div[data-group="emoticon-history"]`).querySelector('emoticon-group');
-      if (emoticonHistoryElement != null) {
-        emoticonHistoryElement.showClearRecents = false;
+        `div[data-group="emoticon-history"]`);
+      if (emoticonHistoryElement) {
+        const emoticonGroup = emoticonHistoryElement.querySelector(
+          'emoji-group');
+        if (emoticonGroup) {
+          emoticonGroup.showClearRecents = false;
+        }
       }
-
     }
   }
 
@@ -934,8 +942,8 @@ export class EmojiPicker extends PolymerElement {
   }
 
   /**
-   * Calculate the data group index for emoji-group and emoticon-group that
-   * matches with the group id from subcategory metadata.
+   * Calculate the data group index for different categories
+   * that matches with the group id from subcategory metadata.
    * @param {string} category
    * @param {number} offsetIndex
    * @returns

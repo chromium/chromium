@@ -79,6 +79,22 @@ class EmojiGroupComponent extends PolymerElement {
     this.dispatchEvent(createCustomEvent(
       EMOJI_CLEAR_RECENTS_CLICK,  {category: this.category}));
   }
+
+  /**
+   * Returns the first emoji button (<button>) in the group.
+   *
+   * @returns {Element} The first button if exist, otherwise null.
+   */
+  firstEmojiButton() {
+    // TODO(b/234074956): Change to optional chaining in typescript.
+    const emojiButton = this.shadowRoot.querySelector('emoji-button');
+
+    if (emojiButton) {
+      return emojiButton.shadowRoot.querySelector('#emoji-button');
+    }
+
+    return null;
+  }
 }
 
 customElements.define(EmojiGroupComponent.is, EmojiGroupComponent);

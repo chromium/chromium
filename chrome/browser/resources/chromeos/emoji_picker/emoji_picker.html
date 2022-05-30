@@ -359,7 +359,8 @@
       <template is="dom-if" if="[[emojiHistory.emoji.length]]">
         <emoji-group data="[[emojiHistory.emoji]]"
           group="[[emojiHistory.group]]" preferred="{}" clearable
-          class="group history" v2-enabled$="[[v2Enabled]]">
+          class="group history" v2-enabled$="[[v2Enabled]]"
+          category="emoji">
         </emoji-group>
       </template>
     </div>
@@ -367,27 +368,29 @@
       <div data-group$="[[getDataGroupIndex('emoji', index)]]">
         <emoji-group data="[[item.emoji]]" group="[[item.group]]"
           preferred="[[preferenceMapping]]" class="group"
-          v2-enabled$="[[v2Enabled]]">
+          v2-enabled$="[[v2Enabled]]" category="emoji">
         </emoji-group>
       </div>
     </template>
     <div class="category-gap"></div>
+    <!-- Start of emoticon groups. -->
     <template is="dom-if" if="[[v2Enabled]]">
       <div data-group="emoticon-history">
         <template is="dom-if"
           if="[[_isHistoryReadyToPresent(
             emojiGroupsFullyLoaded,emoticonHistory.emoji.length)]]">
-            <emoticon-group data="[[emoticonHistory.emoji]]"
-              group="[[emoticonHistory.group]]" class="group"
-              data-group="emoticon-history" clearable>
-            </emoticon-group>
+            <emoji-group data="[[emoticonHistory.emoji]]"
+              group="[[emoticonHistory.group]]"
+              clearable class="group history"
+              category="emoticon" use-flex-layout>
+            </emoji-group>
         </template>
       </div>
       <template is="dom-repeat" items="[[emoticonData]]">
         <div data-group$="[[getDataGroupIndex('emoticon', index)]]">
-          <emoticon-group data="[[item.emoji]]" group="[[item.group]]"
-            class="group">
-          </emoticon-group>
+          <emoji-group data="[[item.emoji]]" group="[[item.group]]"
+            class="group" category="emoticon" use-flex-layout>
+          </emoji-group>
         </div>
       </template>
     </template>
