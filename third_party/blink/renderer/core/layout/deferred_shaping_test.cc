@@ -158,23 +158,6 @@ TEST_F(DeferredShapingTest, DynamicPropertyChange) {
   EXPECT_TRUE(IsLocked("target"));
 }
 
-TEST_F(DeferredShapingTest, NoAutoLock) {
-  SetBodyInnerHTML(R"HTML(
-<div style="height:1800px"></div>
-<div id="target">IFC</div>
-)HTML");
-  UpdateAllLifecyclePhasesForTest();
-  EXPECT_TRUE(IsDefer("target"));
-  EXPECT_TRUE(IsLocked("target"));
-
-  auto* context = GetElementById("target")->GetDisplayLockContext();
-  context->NotifySubtreeGainedSelection();
-  EXPECT_FALSE(IsLocked("target"));
-
-  context->NotifySubtreeLostSelection();
-  EXPECT_FALSE(IsLocked("target"));
-}
-
 TEST_F(DeferredShapingTest, ListMarkerCrash) {
   SetBodyInnerHTML(R"HTML(
 <div style="height:1800px"></div>
