@@ -129,24 +129,8 @@ void BucketManagerHost::RemoveBucketHost(const std::string& bucket_name) {
   bucket_map_.erase(bucket_name);
 }
 
-void BucketManagerHost::UpdateBucketExpiration(
-    storage::BucketId id,
-    const base::Time& expiration,
-    base::OnceCallback<void(bool)> callback) {
-  manager_->quota_manager_proxy()->UpdateBucketExpiration(
-      id, expiration, base::SequencedTaskRunnerHandle::Get(),
-      base::BindOnce(&BucketManagerHost::DidUpdateBucket,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void BucketManagerHost::UpdateBucketPersistence(
-    storage::BucketId id,
-    bool persistent,
-    base::OnceCallback<void(bool)> callback) {
-  manager_->quota_manager_proxy()->UpdateBucketPersistence(
-      id, persistent, base::SequencedTaskRunnerHandle::Get(),
-      base::BindOnce(&BucketManagerHost::DidUpdateBucket,
-                     weak_factory_.GetWeakPtr(), std::move(callback)));
+storage::QuotaManagerProxy* BucketManagerHost::GetQuotaManagerProxy() {
+  return manager_->quota_manager_proxy().get();
 }
 
 void BucketManagerHost::OnReceiverDisconnect() {
@@ -190,26 +174,6 @@ void BucketManagerHost::DidDeleteBucket(const std::string& bucket_name,
     return;
   }
   bucket_map_.erase(bucket_name);
-  std::move(callback).Run(true);
-}
-
-void BucketManagerHost::DidUpdateBucket(
-    base::OnceCallback<void(bool)> callback,
-    storage::QuotaErrorOr<storage::BucketInfo> bucket_info) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!bucket_info.ok()) {
-    std::move(callback).Run(false);
-    return;
-  }
-
-  auto bucket = bucket_map_.find(bucket_info->name);
-  if (bucket == bucket_map_.end()) {
-    std::move(callback).Run(false);
-    return;
-  }
-
-  bucket->second->OnUpdate(bucket_info.value());
   std::move(callback).Run(true);
 }
 

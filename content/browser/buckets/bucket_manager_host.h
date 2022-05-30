@@ -8,6 +8,7 @@
 #include <map>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/services/storage/public/cpp/quota_error_or.h"
 #include "content/browser/buckets/bucket_host.h"
@@ -21,6 +22,7 @@
 
 namespace storage {
 struct BucketInfo;
+class QuotaManagerProxy;
 }  // namespace storage
 
 namespace content {
@@ -67,13 +69,7 @@ class BucketManagerHost : public blink::mojom::BucketManagerHost {
 
   void RemoveBucketHost(const std::string& name);
 
-  // These functions update bucket policies in the quota database.
-  void UpdateBucketExpiration(storage::BucketId bucket,
-                              const base::Time& expiration,
-                              base::OnceCallback<void(bool)> callback);
-  void UpdateBucketPersistence(storage::BucketId bucket,
-                               bool persistent,
-                               base::OnceCallback<void(bool)> callback);
+  storage::QuotaManagerProxy* GetQuotaManagerProxy();
 
  private:
   // Called when a receiver in the receiver set is disconnected.
@@ -87,9 +83,6 @@ class BucketManagerHost : public blink::mojom::BucketManagerHost {
   void DidDeleteBucket(const std::string& bucket_name,
                        DeleteBucketCallback callback,
                        blink::mojom::QuotaStatusCode status);
-
-  void DidUpdateBucket(base::OnceCallback<void(bool)> callback,
-                       storage::QuotaErrorOr<storage::BucketInfo> bucket_info);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

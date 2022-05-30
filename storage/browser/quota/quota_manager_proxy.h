@@ -220,6 +220,11 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       UsageAndQuotaCallback callback);
 
+  void GetBucketUsageAndQuota(
+      const BucketInfo& bucket,
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+      UsageAndQuotaCallback callback);
+
   virtual void IsStorageUnlimited(
       const blink::StorageKey& storage_key,
       blink::mojom::StorageType type,

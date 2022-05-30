@@ -405,6 +405,11 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
                                        UsageWithBreakdownCallback callback);
   void GetBucketUsageWithBreakdown(const BucketLocator& bucket,
                                    UsageWithBreakdownCallback callback);
+  void GetBucketUsageAndQuota(const BucketInfo& bucket,
+                              UsageAndQuotaCallback callback);
+
+  bool IsSessionOnly(const blink::StorageKey& storage_key,
+                     blink::mojom::StorageType type) const;
 
   bool IsStorageUnlimited(const blink::StorageKey& storage_key,
                           blink::mojom::StorageType type) const;

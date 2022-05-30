@@ -30,10 +30,6 @@ BucketHost::CreateStorageBucketBinding(
   return remote;
 }
 
-void BucketHost::OnUpdate(const storage::BucketInfo& bucket_info) {
-  bucket_info_ = bucket_info;
-}
-
 void BucketHost::Persist(PersistCallback callback) {
   if (bucket_info_.persistent) {
     std::move(callback).Run(true, true);
@@ -48,8 +44,12 @@ void BucketHost::Persist(PersistCallback callback) {
   }
   if (it->second.Run(blink::PermissionType::DURABLE_STORAGE) ==
       blink::mojom::PermissionStatus::GRANTED) {
-    bucket_manager_host_->UpdateBucketPersistence(
-        bucket_info_.id, true, base::BindOnce(std::move(callback), true));
+    GetQuotaManagerProxy()->UpdateBucketPersistence(
+        bucket_info_.id, /*persistent=*/true,
+        base::SequencedTaskRunnerHandle::Get(),
+        base::BindOnce(
+            &BucketHost::DidUpdateBucket, weak_factory_.GetWeakPtr(),
+            base::BindOnce(std::move(callback), /*persisted=*/true)));
   } else {
     std::move(callback).Run(false, false);
   }
@@ -60,8 +60,10 @@ void BucketHost::Persisted(PersistedCallback callback) {
 }
 
 void BucketHost::Estimate(EstimateCallback callback) {
-  // TODO(ayui): Add implementation once connected to QuotaManager.
-  std::move(callback).Run(0, 0, true);
+  GetQuotaManagerProxy()->GetBucketUsageAndQuota(
+      bucket_info_, base::SequencedTaskRunnerHandle::Get(),
+      base::BindOnce(&BucketHost::DidGetUsageAndQuota,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void BucketHost::Durability(DurabilityCallback callback) {
@@ -69,8 +71,10 @@ void BucketHost::Durability(DurabilityCallback callback) {
 }
 
 void BucketHost::SetExpires(base::Time expires, SetExpiresCallback callback) {
-  bucket_manager_host_->UpdateBucketExpiration(bucket_info_.id, expires,
-                                               std::move(callback));
+  GetQuotaManagerProxy()->UpdateBucketExpiration(
+      bucket_info_.id, expires, base::SequencedTaskRunnerHandle::Get(),
+      base::BindOnce(&BucketHost::DidUpdateBucket, weak_factory_.GetWeakPtr(),
+                     std::move(callback)));
 }
 
 void BucketHost::Expires(ExpiresCallback callback) {
@@ -86,6 +90,33 @@ void BucketHost::OnReceiverDisconnected() {
     return;
   // Destroys `this`.
   bucket_manager_host_->RemoveBucketHost(bucket_info_.name);
+}
+
+storage::QuotaManagerProxy* BucketHost::GetQuotaManagerProxy() {
+  return bucket_manager_host_->GetQuotaManagerProxy();
+}
+
+void BucketHost::DidUpdateBucket(
+    base::OnceCallback<void(bool)> callback,
+    storage::QuotaErrorOr<storage::BucketInfo> bucket_info) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!bucket_info.ok()) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  bucket_info_ = bucket_info.value();
+  std::move(callback).Run(true);
+}
+
+void BucketHost::DidGetUsageAndQuota(EstimateCallback callback,
+                                     blink::mojom::QuotaStatusCode code,
+                                     int64_t usage,
+                                     int64_t quota) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::move(callback).Run(usage, quota,
+                          code == blink::mojom::QuotaStatusCode::kOk);
 }
 
 }  // namespace content

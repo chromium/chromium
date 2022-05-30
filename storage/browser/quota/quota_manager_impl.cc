@@ -172,22 +172,29 @@ class QuotaManagerImpl::UsageAndQuotaInfoGatherer : public QuotaTask {
   UsageAndQuotaInfoGatherer(QuotaManagerImpl* manager,
                             const StorageKey& storage_key,
                             StorageType type,
-                            bool is_unlimited,
-                            bool is_session_only,
                             bool is_incognito,
-                            absl::optional<int64_t> quota_override_size,
                             UsageAndQuotaForDevtoolsCallback callback)
       : QuotaTask(manager),
         storage_key_(storage_key),
         callback_(std::move(callback)),
         type_(type),
-        is_unlimited_(is_unlimited),
-        is_session_only_(is_session_only),
-        is_incognito_(is_incognito),
-        is_override_enabled_(quota_override_size.has_value()),
-        quota_override_size_(quota_override_size) {
+        is_unlimited_(manager->IsStorageUnlimited(storage_key_, type_)),
+        is_incognito_(is_incognito) {
     DCHECK(manager);
     DCHECK(callback_);
+  }
+
+  UsageAndQuotaInfoGatherer(QuotaManagerImpl* manager,
+                            const BucketInfo& bucket_info,
+                            bool is_incognito,
+                            UsageAndQuotaForDevtoolsCallback callback)
+      : UsageAndQuotaInfoGatherer(manager,
+                                  bucket_info.storage_key,
+                                  bucket_info.type,
+                                  is_incognito,
+                                  std::move(callback)) {
+    bucket_info_ = bucket_info;
+    DCHECK_EQ(StorageType::kTemporary, type_);
   }
 
  protected:
@@ -206,10 +213,18 @@ class QuotaManagerImpl::UsageAndQuotaInfoGatherer : public QuotaTask {
     manager()->GetQuotaSettings(
         base::BindOnce(&UsageAndQuotaInfoGatherer::OnGotSettings,
                        weak_factory_.GetWeakPtr(), barrier));
-    manager()->GetStorageKeyUsageWithBreakdown(
-        storage_key_, type_,
-        base::BindOnce(&UsageAndQuotaInfoGatherer::OnGotStorageKeyUsage,
-                       weak_factory_.GetWeakPtr(), barrier));
+
+    if (bucket_info_) {
+      manager()->GetBucketUsageWithBreakdown(
+          bucket_info_->ToBucketLocator(),
+          base::BindOnce(&UsageAndQuotaInfoGatherer::OnGotUsage,
+                         weak_factory_.GetWeakPtr(), barrier));
+    } else {
+      manager()->GetStorageKeyUsageWithBreakdown(
+          storage_key_, type_,
+          base::BindOnce(&UsageAndQuotaInfoGatherer::OnGotUsage,
+                         weak_factory_.GetWeakPtr(), barrier));
+    }
 
     // Determine host_quota differently depending on type.
     if (is_unlimited_) {
@@ -248,33 +263,36 @@ class QuotaManagerImpl::UsageAndQuotaInfoGatherer : public QuotaTask {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     weak_factory_.InvalidateWeakPtrs();
 
-    int64_t storage_key_quota = quota_override_size_.has_value()
-                                    ? quota_override_size_.value()
-                                    : desired_storage_key_quota_;
+    int64_t quota = desired_storage_key_quota_;
+    absl::optional<int64_t> quota_override_size =
+        manager()->GetQuotaOverrideForStorageKey(storage_key_);
+    if (quota_override_size)
+      quota = *quota_override_size;
+
+    // For an individual bucket, the quota is the minimum of the requested quota
+    // and the host quota.
+    if (bucket_info_ && bucket_info_->quota > 0)
+      quota = std::min(quota, bucket_info_->quota);
 
     if (is_unlimited_) {
       int64_t temp_pool_free_space =
-          std::max(static_cast<int64_t>(0),
-                   available_space_ - settings_.must_remain_available);
-      // Constrain the desired |storage_key_quota| to something that fits.
-      if (storage_key_quota > temp_pool_free_space) {
-        storage_key_quota = available_space_ + storage_key_usage_;
-      }
+          available_space_ - settings_.must_remain_available;
+      // Constrain the desired quota to something that fits.
+      if (quota > temp_pool_free_space)
+        quota = available_space_ + usage_;
     }
 
-    std::move(callback_).Run(blink::mojom::QuotaStatusCode::kOk,
-                             storage_key_usage_, storage_key_quota,
-                             is_override_enabled_,
-                             std::move(storage_key_usage_breakdown_));
-    if (type_ == StorageType::kTemporary && !is_incognito_ &&
-        !is_unlimited_) {
-      UMA_HISTOGRAM_MBYTES("Quota.QuotaForOrigin", storage_key_quota);
-      UMA_HISTOGRAM_MBYTES("Quota.UsageByOrigin", storage_key_usage_);
-      if (storage_key_quota > 0) {
+    std::move(callback_).Run(blink::mojom::QuotaStatusCode::kOk, usage_, quota,
+                             quota_override_size.has_value(),
+                             std::move(usage_breakdown_));
+    if (type_ == StorageType::kTemporary && !is_incognito_ && !is_unlimited_ &&
+        !bucket_info_) {
+      UMA_HISTOGRAM_MBYTES("Quota.QuotaForOrigin", quota);
+      UMA_HISTOGRAM_MBYTES("Quota.UsageByOrigin", usage_);
+      if (quota > 0) {
         UMA_HISTOGRAM_PERCENTAGE(
             "Quota.PercentUsedByOrigin",
-            std::min(100, static_cast<int>((storage_key_usage_ * 100) /
-                                           storage_key_quota)));
+            std::min(100, static_cast<int>((usage_ * 100) / quota)));
       }
     }
     DeleteSoon();
@@ -294,7 +312,7 @@ class QuotaManagerImpl::UsageAndQuotaInfoGatherer : public QuotaTask {
     settings_ = settings;
     barrier_closure.Run();
     if (type_ == StorageType::kTemporary && !is_unlimited_) {
-      int64_t storage_key_quota = is_session_only_
+      int64_t storage_key_quota = manager()->IsSessionOnly(storage_key_, type_)
                                       ? settings.session_only_per_host_quota
                                       : settings.per_host_quota;
       SetDesiredStorageKeyQuota(std::move(barrier_closure),
@@ -316,9 +334,9 @@ class QuotaManagerImpl::UsageAndQuotaInfoGatherer : public QuotaTask {
     std::move(barrier_closure).Run();
   }
 
-  void OnGotStorageKeyUsage(base::OnceClosure barrier_closure,
-                            int64_t usage,
-                            blink::mojom::UsageBreakdownPtr usage_breakdown) {
+  void OnGotUsage(base::OnceClosure barrier_closure,
+                  int64_t usage,
+                  blink::mojom::UsageBreakdownPtr usage_breakdown) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK(barrier_closure);
     DCHECK_GE(usage, -1);
@@ -330,8 +348,8 @@ class QuotaManagerImpl::UsageAndQuotaInfoGatherer : public QuotaTask {
     DCHECK_GE(usage_breakdown->serviceWorkerCache, 0);
     DCHECK_GE(usage_breakdown->webSql, 0);
 
-    storage_key_usage_ = usage;
-    storage_key_usage_breakdown_ = std::move(usage_breakdown);
+    usage_ = usage;
+    usage_breakdown_ = std::move(usage_breakdown);
     std::move(barrier_closure).Run();
   }
 
@@ -348,20 +366,24 @@ class QuotaManagerImpl::UsageAndQuotaInfoGatherer : public QuotaTask {
 
   void OnBarrierComplete() { CallCompleted(); }
 
+  // These fields are passed at construction time.
   const StorageKey storage_key_;
+  // Non-null iff usage info is to be gathered for an individual bucket. If
+  // null, usage is gathered for all buckets in the given host/StorageKey.
+  absl::optional<BucketInfo> bucket_info_;
   QuotaManagerImpl::UsageAndQuotaForDevtoolsCallback callback_;
   const StorageType type_;
   const bool is_unlimited_;
-  const bool is_session_only_;
   const bool is_incognito_;
+
+  // Fields retrieved while running.
   int64_t available_space_ = 0;
   int64_t total_space_ = 0;
   int64_t desired_storage_key_quota_ = 0;
-  int64_t storage_key_usage_ = 0;
-  const bool is_override_enabled_;
-  absl::optional<int64_t> quota_override_size_;
-  blink::mojom::UsageBreakdownPtr storage_key_usage_breakdown_;
+  int64_t usage_ = 0;
+  blink::mojom::UsageBreakdownPtr usage_breakdown_;
   QuotaSettings settings_;
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Weak pointers are used to support cancelling work.
@@ -1307,17 +1329,8 @@ void QuotaManagerImpl::GetUsageAndQuotaForDevtools(
   }
   EnsureDatabaseOpened();
 
-  bool is_session_only = type == StorageType::kTemporary &&
-                         special_storage_policy_ &&
-                         special_storage_policy_->IsStorageSessionOnly(
-                             storage_key.origin().GetURL());
-
-  absl::optional<int64_t> quota_override =
-      GetQuotaOverrideForStorageKey(storage_key);
-
   UsageAndQuotaInfoGatherer* helper = new UsageAndQuotaInfoGatherer(
-      this, storage_key, type, IsStorageUnlimited(storage_key, type),
-      is_session_only, is_incognito_, quota_override, std::move(callback));
+      this, storage_key, type, is_incognito_, std::move(callback));
   helper->Start();
 }
 
@@ -1334,27 +1347,16 @@ void QuotaManagerImpl::GetUsageAndQuota(const StorageKey& storage_key,
     return;
   }
 
-  if (!IsSupportedType(type) ||
-      (is_incognito_ && !IsSupportedIncognitoType(type))) {
-    std::move(callback).Run(
-        /*status*/ blink::mojom::QuotaStatusCode::kErrorNotSupported,
-        /*usage*/ 0,
-        /*quota*/ 0);
-    return;
-  }
-  EnsureDatabaseOpened();
+  GetUsageAndQuotaWithBreakdown(
+      storage_key, type,
+      base::BindOnce(&DidGetUsageAndQuotaStripBreakdown, std::move(callback)));
+}
 
-  bool is_session_only = type == StorageType::kTemporary &&
-                         special_storage_policy_ &&
-                         special_storage_policy_->IsStorageSessionOnly(
-                             storage_key.origin().GetURL());
-
-  absl::optional<int64_t> quota_override =
-      GetQuotaOverrideForStorageKey(storage_key);
-
+void QuotaManagerImpl::GetBucketUsageAndQuota(const BucketInfo& bucket,
+                                              UsageAndQuotaCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   UsageAndQuotaInfoGatherer* helper = new UsageAndQuotaInfoGatherer(
-      this, storage_key, type, IsStorageUnlimited(storage_key, type),
-      is_session_only, is_incognito_, quota_override,
+      this, bucket, is_incognito_,
       base::BindOnce(&DidGetUsageAndQuotaStripOverride,
                      base::BindOnce(&DidGetUsageAndQuotaStripBreakdown,
                                     std::move(callback))));
@@ -1741,6 +1743,13 @@ void QuotaManagerImpl::GetHostUsageForInternals(
   usage_tracker->GetHostUsageWithBreakdown(
       host, base::BindOnce(&QuotaManagerImpl::OnGetHostUsageForInternals,
                            weak_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+bool QuotaManagerImpl::IsSessionOnly(const StorageKey& storage_key,
+                                     StorageType type) const {
+  return type == StorageType::kTemporary && special_storage_policy_ &&
+         special_storage_policy_->IsStorageSessionOnly(
+             storage_key.origin().GetURL());
 }
 
 bool QuotaManagerImpl::IsStorageUnlimited(const StorageKey& storage_key,

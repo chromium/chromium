@@ -290,6 +290,13 @@ class QuotaManagerImplTest : public testing::Test {
     return {future.Get<0>(), future.Get<1>(), future.Get<2>()};
   }
 
+  UsageAndQuotaResult GetUsageAndQuotaForBucket(const BucketInfo& bucket_info) {
+    base::test::TestFuture<QuotaStatusCode, int64_t, int64_t> future;
+    quota_manager_impl_->GetBucketUsageAndQuota(bucket_info,
+                                                future.GetCallback());
+    return {future.Get<0>(), future.Get<1>(), future.Get<2>()};
+  }
+
   void GetUsageAndQuotaWithBreakdown(const StorageKey& storage_key,
                                      StorageType type) {
     base::RunLoop run_loop;
@@ -1068,6 +1075,42 @@ TEST_F(QuotaManagerImplTest, GetUsageAndQuota_Simple) {
   EXPECT_EQ(result.status, QuotaStatusCode::kOk);
   EXPECT_EQ(result.usage, 0);
   EXPECT_EQ(result.quota, quota_returned_for_foo);
+}
+
+TEST_F(QuotaManagerImplTest, GetUsageAndQuota_SingleBucket) {
+  static const ClientBucketData kData[] = {
+      {"http://foo.com/", "logs", kTemp, 10},
+      {"http://foo.com/", "inbox", kTemp, 60},
+  };
+  MockQuotaClient* fs_client =
+      CreateAndRegisterClient(QuotaClientType::kFileSystem, {kTemp, kPerm});
+
+  // Initialize the logs bucket with a non-default quota.
+  BucketInitParams params(ToStorageKey("http://foo.com/"), "logs");
+  params.quota = 117;
+  ASSERT_TRUE(UpdateOrCreateBucket(params).ok());
+
+  RegisterClientBucketData(fs_client, kData);
+
+  {
+    QuotaErrorOr<BucketInfo> bucket =
+        UpdateOrCreateBucket({ToStorageKey("http://foo.com/"), "logs"});
+    ASSERT_TRUE(bucket.ok());
+    auto result = GetUsageAndQuotaForBucket(bucket.value());
+    EXPECT_EQ(result.status, QuotaStatusCode::kOk);
+    EXPECT_EQ(result.usage, 10);
+    EXPECT_EQ(result.quota, params.quota);
+  }
+
+  {
+    QuotaErrorOr<BucketInfo> bucket =
+        UpdateOrCreateBucket({ToStorageKey("http://foo.com/"), "inbox"});
+    ASSERT_TRUE(bucket.ok());
+    auto result = GetUsageAndQuotaForBucket(bucket.value());
+    EXPECT_EQ(result.status, QuotaStatusCode::kOk);
+    EXPECT_EQ(result.usage, 60);
+    EXPECT_EQ(result.quota, kDefaultPerHostQuota);
+  }
 }
 
 TEST_F(QuotaManagerImplTest, GetUsage_NoClient) {

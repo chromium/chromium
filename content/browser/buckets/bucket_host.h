@@ -6,13 +6,20 @@
 #define CONTENT_BROWSER_BUCKETS_BUCKET_HOST_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "components/services/storage/public/cpp/buckets/bucket_info.h"
+#include "components/services/storage/public/cpp/quota_error_or.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/buckets/bucket_manager_host.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
+
+namespace storage {
+class QuotaManagerProxy;
+}  // namespace storage
 
 namespace content {
 
@@ -46,8 +53,6 @@ class BucketHost : public blink::mojom::BucketHost {
   mojo::PendingRemote<blink::mojom::BucketHost> CreateStorageBucketBinding(
       const PermissionDecisionCallback& permission_decision);
 
-  void OnUpdate(const storage::BucketInfo& bucket_info);
-
   // blink::mojom::BucketHost
   void Persist(PersistCallback callback) override;
   void Persisted(PersistedCallback callback) override;
@@ -58,6 +63,18 @@ class BucketHost : public blink::mojom::BucketHost {
 
  private:
   void OnReceiverDisconnected();
+
+  storage::QuotaManagerProxy* GetQuotaManagerProxy();
+
+  void DidUpdateBucket(base::OnceCallback<void(bool)> callback,
+                       storage::QuotaErrorOr<storage::BucketInfo> bucket_info);
+
+  void DidGetUsageAndQuota(EstimateCallback callback,
+                           blink::mojom::QuotaStatusCode code,
+                           int64_t usage,
+                           int64_t quota);
+
+  SEQUENCE_CHECKER(sequence_checker_);
 
   // Raw pointer use is safe here because BucketManagerHost owns this
   // BucketHost.
@@ -73,6 +90,8 @@ class BucketHost : public blink::mojom::BucketHost {
   // permission to use certain web features (namely, DURABLE_STORAGE).
   std::map<mojo::ReceiverId, PermissionDecisionCallback>
       permission_decider_map_;
+
+  base::WeakPtrFactory<BucketHost> weak_factory_{this};
 };
 
 }  // namespace content
