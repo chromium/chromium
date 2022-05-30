@@ -11,6 +11,7 @@
 
 #include "base/barrier_callback.h"
 #include "base/callback.h"
+#include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
@@ -26,6 +27,7 @@
 #include "chrome/browser/password_manager/android/password_sync_controller_delegate_android.h"
 #include "chrome/browser/password_manager/android/password_sync_controller_delegate_bridge_impl.h"
 #include "components/autofill/core/browser/autofill_regexes.h"
+#include "components/crash/core/common/crash_key.h"
 #include "components/password_manager/core/browser/login_database.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store_backend.h"
@@ -45,6 +47,8 @@ namespace {
 // Tasks that are older than this timeout are cleaned up whenever Chrome starts
 // a new foreground session since it's likely that Chrome missed the response.
 constexpr base::TimeDelta kAsyncTaskTimeout = base::Seconds(30);
+
+constexpr int kGmsDeveloperErrorCode = 10;
 
 using autofill::MatchesPattern;
 using base::UTF8ToUTF16;
@@ -195,6 +199,26 @@ void RecordApiErrorInCombinationWithSyncStatus(
       error_code);
 }
 
+// TODO(crbug.com/1324588): Remove once the dumps are replaced by DCHECK.
+void SendDumpWithInfo(absl::optional<std::string> signon_realm,
+                      absl::optional<std::string> origin) {
+  static crash_reporter::CrashKeyString<1024> signon_realm_key(
+      "PwdMgr.BackendError.signon_realm");
+  static crash_reporter::CrashKeyString<1024> origin_key(
+      "PwdMgr.BackendError.origin");
+
+  if (signon_realm.has_value()) {
+    signon_realm_key.Set(signon_realm->substr(1020));
+  }
+  if (origin.has_value()) {
+    origin_key.Set(origin->substr(1020));
+  }
+
+  base::debug::DumpWithoutCrashing();
+  signon_realm_key.Clear();
+  origin_key.Clear();
+}
+
 }  // namespace
 
 class PasswordStoreAndroidBackend::ClearAllLocalPasswordsMetricRecorder {
@@ -236,15 +260,19 @@ PasswordStoreAndroidBackend::JobReturnHandler::JobReturnHandler() = default;
 
 PasswordStoreAndroidBackend::JobReturnHandler::JobReturnHandler(
     LoginsOrErrorReply callback,
-    PasswordStoreBackendMetricsRecorder metrics_recorder)
+    PasswordStoreBackendMetricsRecorder metrics_recorder,
+    base::OnceClosure crash_dump_callback)
     : success_callback_(std::move(callback)),
-      metrics_recorder_(std::move(metrics_recorder)) {}
+      metrics_recorder_(std::move(metrics_recorder)),
+      crash_dump_callback_(std::move(crash_dump_callback)) {}
 
 PasswordStoreAndroidBackend::JobReturnHandler::JobReturnHandler(
     PasswordStoreChangeListReply callback,
-    PasswordStoreBackendMetricsRecorder metrics_recorder)
+    PasswordStoreBackendMetricsRecorder metrics_recorder,
+    base::OnceClosure crash_dump_callback)
     : success_callback_(std::move(callback)),
-      metrics_recorder_(std::move(metrics_recorder)) {}
+      metrics_recorder_(std::move(metrics_recorder)),
+      crash_dump_callback_(std::move(crash_dump_callback)) {}
 
 PasswordStoreAndroidBackend::JobReturnHandler::JobReturnHandler(
     JobReturnHandler&&) = default;
@@ -259,6 +287,10 @@ void PasswordStoreAndroidBackend::JobReturnHandler::RecordMetrics(
     absl::optional<AndroidBackendError> error) const {
   metrics_recorder_.RecordMetrics(GetSuccessStatusFromError(error),
                                   std::move(error));
+}
+
+void PasswordStoreAndroidBackend::JobReturnHandler::SendCrashDump() {
+  std::move(crash_dump_callback_).Run();
 }
 
 base::TimeDelta
@@ -329,7 +361,8 @@ void PasswordStoreAndroidBackend::GetAutofillableLoginsAsync(
   JobId job_id = bridge_->GetAutofillableLogins(
       GetAccount(sync_delegate_->GetSyncingAccount()));
   QueueNewJob(job_id, std::move(callback),
-              MetricInfix("GetAutofillableLoginsAsync"));
+              MetricInfix("GetAutofillableLoginsAsync"),
+              /*signon_realm=*/absl::nullopt, /*origin=*/absl::nullopt);
 }
 
 void PasswordStoreAndroidBackend::GetAllLoginsForAccountAsync(
@@ -376,7 +409,8 @@ void PasswordStoreAndroidBackend::AddLoginAsync(
     PasswordStoreChangeListReply callback) {
   JobId job_id =
       bridge_->AddLogin(form, GetAccount(sync_delegate_->GetSyncingAccount()));
-  QueueNewJob(job_id, std::move(callback), MetricInfix("AddLoginAsync"));
+  QueueNewJob(job_id, std::move(callback), MetricInfix("AddLoginAsync"),
+              form.signon_realm, form.url.spec());
 }
 
 void PasswordStoreAndroidBackend::UpdateLoginAsync(
@@ -384,7 +418,8 @@ void PasswordStoreAndroidBackend::UpdateLoginAsync(
     PasswordStoreChangeListReply callback) {
   JobId job_id = bridge_->UpdateLogin(
       form, GetAccount(sync_delegate_->GetSyncingAccount()));
-  QueueNewJob(job_id, std::move(callback), MetricInfix("UpdateLoginAsync"));
+  QueueNewJob(job_id, std::move(callback), MetricInfix("UpdateLoginAsync"),
+              form.signon_realm, form.url.spec());
 }
 
 void PasswordStoreAndroidBackend::RemoveLoginAsync(
@@ -599,9 +634,11 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
   if (!reply.has_value())
     return;  // Task cleaned up after returning from background.
   if (error.api_error_code.has_value() && sync_service_) {
-    // TODO(crbug.com/1324588): DCHECK_EQ(api_error_code, 10) to catch dev
-    // errors.
-    DCHECK_EQ(AndroidBackendErrorType::kExternalError, error.type);
+    // TODO(crbug.com/1324588): DCHECK_EQ(api_error_code, 10) instead of dumping
+    // to catch dev errors.
+    if (error.api_error_code == kGmsDeveloperErrorCode) {
+      reply->SendCrashDump();
+    }
     RecordApiErrorInCombinationWithSyncStatus(error.api_error_code.value(),
                                               sync_service_->GetAuthError());
   }
@@ -620,15 +657,20 @@ void PasswordStoreAndroidBackend::OnError(JobId job_id,
 }
 
 template <typename Callback>
-void PasswordStoreAndroidBackend::QueueNewJob(JobId job_id,
-                                              Callback callback,
-                                              MetricInfix metric_infix) {
+void PasswordStoreAndroidBackend::QueueNewJob(
+    JobId job_id,
+    Callback callback,
+    MetricInfix metric_infix,
+    absl::optional<std::string> signon_realm,
+    absl::optional<std::string> origin) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   request_for_job_.emplace(
-      job_id,
-      JobReturnHandler(std::move(callback), PasswordStoreBackendMetricsRecorder(
-                                                BackendInfix("AndroidBackend"),
-                                                std::move(metric_infix))));
+      job_id, JobReturnHandler(
+                  std::move(callback),
+                  PasswordStoreBackendMetricsRecorder(
+                      BackendInfix("AndroidBackend"), std::move(metric_infix)),
+                  base::BindOnce(SendDumpWithInfo, std::move(signon_realm),
+                                 std::move(origin))));
 }
 
 absl::optional<PasswordStoreAndroidBackend::JobReturnHandler>
@@ -648,10 +690,13 @@ void PasswordStoreAndroidBackend::GetLoginsAsync(const PasswordFormDigest& form,
   JobId job_id = bridge_->GetLoginsForSignonRealm(
       FormToSignonRealmQuery(form, include_psl),
       GetAccount(sync_delegate_->GetSyncingAccount()));
+  std::string signon_realm = form.signon_realm;
+  std::string origin = form.url.spec();
   QueueNewJob(job_id,
               base::BindOnce(&ValidateSignonRealm, std::move(form), include_psl,
                              std::move(callback)),
-              MetricInfix("GetLoginsAsync"));
+              MetricInfix("GetLoginsAsync"), std::move(signon_realm),
+              std::move(origin));
 }
 
 void PasswordStoreAndroidBackend::FilterAndDisableAutoSignIn(
@@ -739,7 +784,8 @@ void PasswordStoreAndroidBackend::GetAllLoginsForAccount(
     PasswordStoreAndroidBackendBridge::Account account,
     LoginsOrErrorReply callback) {
   JobId job_id = bridge_->GetAllLogins(std::move(account));
-  QueueNewJob(job_id, std::move(callback), MetricInfix("GetAllLoginsAsync"));
+  QueueNewJob(job_id, std::move(callback), MetricInfix("GetAllLoginsAsync"),
+              /*signon_realm=*/absl::nullopt, /*origin=*/absl::nullopt);
 }
 
 void PasswordStoreAndroidBackend::RemoveLoginForAccount(
@@ -747,7 +793,8 @@ void PasswordStoreAndroidBackend::RemoveLoginForAccount(
     PasswordStoreAndroidBackendBridge::Account account,
     PasswordStoreChangeListReply callback) {
   JobId job_id = bridge_->RemoveLogin(form, std::move(account));
-  QueueNewJob(job_id, std::move(callback), MetricInfix("RemoveLoginAsync"));
+  QueueNewJob(job_id, std::move(callback), MetricInfix("RemoveLoginAsync"),
+              /*signon_realm=*/absl::nullopt, /*origin=*/absl::nullopt);
 }
 
 void PasswordStoreAndroidBackend::OnForegroundSessionStart() {
