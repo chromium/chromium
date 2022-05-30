@@ -22,6 +22,10 @@ class NetworkPolicyObserver {
 
   // Called every time a policy application for |userhash| finished. This is
   // only called once no more policies are pending for |userhash|.
+  // Because cellular policy application can be slow, the notification can be
+  // dispatched even if cellular policy application is still in progress. In
+  // this case, another |PoliciesApplied| notification will be invoked when
+  // cellular policy application is done.
   virtual void PoliciesApplied(const std::string& userhash) {}
 
   // Called every time a network is created or updated because of a policy.

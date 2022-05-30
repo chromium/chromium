@@ -28,6 +28,7 @@
 #include "chromeos/dbus/shill/shill_manager_client.h"
 #include "chromeos/dbus/shill/shill_profile_client.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
+#include "chromeos/network/cellular_policy_handler.h"
 #include "chromeos/network/device_state.h"
 #include "chromeos/network/network_configuration_handler.h"
 #include "chromeos/network/network_device_handler.h"
@@ -560,8 +561,7 @@ bool ManagedNetworkConfigurationHandlerImpl::ApplyOrQueuePolicies(
   auto policy_applicator = std::make_unique<PolicyApplicator>(
       *profile, policies->GetGuidToPolicyMap(),
       policies->GetGlobalNetworkConfig()->Clone(), this,
-      cellular_policy_handler_, managed_cellular_pref_handler_,
-      modified_policies);
+      managed_cellular_pref_handler_, modified_policies);
   auto* policy_applicator_unowned = policy_applicator.get();
   policy_applicators_[userhash] = std::move(policy_applicator);
   policy_applicator_unowned->Run();
@@ -638,18 +638,62 @@ void ManagedNetworkConfigurationHandlerImpl::
                      std::move(split_callback.second), FROM_HERE));
 }
 
+void ManagedNetworkConfigurationHandlerImpl::TriggerCellularPolicyApplication(
+    const NetworkProfile& profile,
+    const base::flat_set<std::string>& new_cellular_policy_guids) {
+  const ProfilePolicies* policies = GetPoliciesForUser(profile.userhash);
+  DCHECK(policies);
+
+  for (const std::string& guid : new_cellular_policy_guids) {
+    const base::Value* network_policy = policies->GetPolicyByGuid(guid);
+    DCHECK(network_policy);
+
+    const std::string* smdp_address =
+        policy_util::GetSMDPAddressFromONC(*network_policy);
+    if (features::IsESimPolicyEnabled() && smdp_address) {
+      NET_LOG(EVENT)
+          << "Found ONC configuration with SMDP: " << *smdp_address
+          << ". Start installing policy eSim profile with ONC config: "
+          << *network_policy;
+      if (cellular_policy_handler_)
+        cellular_policy_handler_->InstallESim(*smdp_address, *network_policy);
+      else
+        NET_LOG(ERROR) << "Unable to install eSIM. CellularPolicyHandler not "
+                          "initialized.";
+    } else {
+      NET_LOG(EVENT) << "Skip installing policy eSIM either because "
+                        "the eSIM policy feature is not enabled or the SMDP "
+                        "address is missing from ONC.";
+    }
+  }
+}
+
 void ManagedNetworkConfigurationHandlerImpl::OnCellularPoliciesApplied(
     const NetworkProfile& profile) {
-  OnPoliciesApplied(profile);
+  const std::string& userhash = profile.userhash;
+  bool is_device_policy = userhash.empty();
+
+  // Inform observers that cellular policy application has finished.
+  // Only do this if non-cellular policy application is already done for
+  // `profile`, otherwise wait for OnPoliciesApplied to send the notification.
+  // Note that currently there is no separate observer signal for this.
+  if ((is_device_policy && device_policy_applied_) ||
+      (!is_device_policy && user_policy_applied_)) {
+    for (auto& observer : observers_)
+      observer.PoliciesApplied(userhash);
+  }
 }
 
 void ManagedNetworkConfigurationHandlerImpl::OnPoliciesApplied(
-    const NetworkProfile& profile) {
+    const NetworkProfile& profile,
+    const base::flat_set<std::string>& new_cellular_policy_guids) {
   const std::string& userhash = profile.userhash;
   VLOG(1) << "Policy application for user '" << userhash << "' finished.";
   base::ThreadTaskRunnerHandle::Get()->DeleteSoon(
       FROM_HERE, policy_applicators_[userhash].release());
   policy_applicators_.erase(userhash);
+
+  TriggerCellularPolicyApplication(profile, new_cellular_policy_guids);
 
   if (base::Contains(queued_modified_policies_, userhash)) {
     base::flat_set<std::string> modified_policies;

@@ -119,6 +119,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
   void NotifyPolicyAppliedToNetwork(
       const std::string& service_path) const override;
 
+  void TriggerCellularPolicyApplication(
+      const NetworkProfile& profile,
+      const base::flat_set<std::string>& new_cellular_policy_guids);
   void OnCellularPoliciesApplied(const NetworkProfile& profile) override;
 
   bool AllowCellularSimLock() const override;
@@ -141,7 +144,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandlerImpl
       const base::Value& new_properties,
       base::OnceClosure callback) override;
 
-  void OnPoliciesApplied(const NetworkProfile& profile) override;
+  void OnPoliciesApplied(
+      const NetworkProfile& profile,
+      const base::flat_set<std::string>& new_cellular_policy_guids) override;
 
   void Shutdown() override;
 

@@ -1060,10 +1060,9 @@ TEST_F(ManagedNetworkConfigurationHandlerTest,
   InitializeStandardProfiles();
   InitializeEuicc();
 
-  // Check transfer to NetworkStateHandler. Expect one call for each policy
-  // application.
+  // Check transfer to NetworkStateHandler.
   EXPECT_CALL(*network_state_handler_, UpdateBlockedCellularNetworks(true))
-      .Times(2);
+      .Times(1);
 
   // Set 'AllowOnlyPolicyCellularNetworks' policy.
   SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY, std::string(),
