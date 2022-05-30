@@ -250,7 +250,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordGeneration.SubmissionAvailableEvent"
-    enum="PasswordSubmissionEvent" expires_after="M105">
+    enum="PasswordSubmissionEvent" expires_after="M111">
   <owner>kazinova@google.com</owner>
   <owner>kolos@chromium.org</owner>
   <summary>
@@ -272,7 +272,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordGeneration.UploadStarted" enum="Boolean"
-    expires_after="M105">
+    expires_after="M111">
   <owner>kazinova@google.com</owner>
   <owner>kolos@chromium.org</owner>
   <owner>vasilii@chromium.org</owner>
@@ -1312,7 +1312,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.CredentialsWithMismatchedDuplicates2"
-    units="units" expires_after="2022-06-30">
+    units="units" expires_after="M111">
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -1415,7 +1415,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.FilledCredentialWasFromAndroidApp"
-    enum="PasswordManagerFilledAndroidCredentials" expires_after="M105">
+    enum="PasswordManagerFilledAndroidCredentials" expires_after="M111">
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -1496,7 +1496,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.FormDataDeserializationStatus"
-    enum="FormDataDeserializationStatus" expires_after="M105">
+    enum="FormDataDeserializationStatus" expires_after="M111">
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -2549,7 +2549,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.ReauthToAccessPasswordInSettings"
-    enum="PasswordManager.ReauthResult" expires_after="M105">
+    enum="PasswordManager.ReauthResult" expires_after="M111">
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
@@ -2760,7 +2760,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.SubmittedFormType" enum="PasswordFormType"
-    expires_after="M105">
+    expires_after="M111">
   <owner>kazinova@google.com</owner>
   <owner>kolos@chromium.org</owner>
   <summary>
