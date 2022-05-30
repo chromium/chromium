@@ -120,6 +120,7 @@
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
+#include "chrome/browser/ash/mojo_service_manager/connection_helper.h"
 #include "chrome/browser/ash/net/bluetooth_pref_state_observer.h"
 #include "chrome/browser/ash/net/network_health/network_health_service.h"
 #include "chrome/browser/ash/net/network_portal_detector_impl.h"
@@ -695,6 +696,18 @@ void ChromeBrowserMainPartsAsh::PostCreateMainMessageLoop() {
 
   dbus_services_ = std::make_unique<internal::DBusServices>(
       std::move(feature_list_accessor_));
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kAshUseCrOSMojoServiceManager)) {
+    DCHECK(base::CommandLine::ForCurrentProcess()->HasSwitch(
+        ::switches::kDisableMojoBroker))
+        << "Mojo broker must be disabled to use the ChromeOS mojo service "
+           "manager.";
+    // Initialize mojo service manager. Note that this depends on the
+    // |mojo_ipc_support_| in |content::BrowserMainLoop| to be created.
+    mojo_service_manager_closer_ =
+        mojo_service_manager::CreateConnectionAndPassCloser();
+  }
 
   // Need to be done after LoginState has been initialized in DBusServices().
   ::memory::MemoryKillsMonitor::Initialize();
@@ -1587,6 +1600,12 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   g_browser_process->platform_part()->ShutdownSessionManager();
   // Ash needs to be closed before UserManager is destroyed.
   g_browser_process->platform_part()->DestroyChromeUserManager();
+
+  // Shutdown mojo service manager. This should be called before the
+  // |mojo_ipc_support_| in |content::BrowserMainLoop| being reset. It is reset
+  // after calling |PostMainMessageLoopRun()| and before calling
+  // |PostDestroyThreads()|.
+  mojo_service_manager_closer_.RunAndReset();
 }
 
 void ChromeBrowserMainPartsAsh::PostDestroyThreads() {

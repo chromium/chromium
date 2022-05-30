@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -62,8 +63,8 @@ class LockToSingleUserManager;
 
 namespace ash {
 class AccessibilityEventRewriterDelegateImpl;
-class AudioSurveyHandler;
 class ArcKioskAppManager;
+class AudioSurveyHandler;
 class BluetoothPrefStateObserver;
 class BulkPrintersCalculatorFactory;
 class CrosUsbDetector;
@@ -79,8 +80,8 @@ class LoginScreenExtensionsStorageCleaner;
 class LowDiskNotification;
 class NetworkPrefStateObserver;
 class NetworkThrottlingObserver;
-class PowerMetricsReporter;
 class PSIMemoryMetrics;
+class PowerMetricsReporter;
 class RendererFreezer;
 class SessionTerminationManager;
 class ShortcutMappingPrefService;
@@ -94,6 +95,10 @@ class DeviceActivityController;
 
 namespace internal {
 class DBusServices;
+}
+
+namespace mojo_service_manager {
+class Helper;
 }
 
 namespace platform_keys {
@@ -171,6 +176,8 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
   std::unique_ptr<DebugdNotificationHandler> debugd_notification_handler_;
 
   std::unique_ptr<internal::DBusServices> dbus_services_;
+
+  base::ScopedClosureRunner mojo_service_manager_closer_;
 
   std::unique_ptr<SystemTokenCertDBInitializer>
       system_token_certdb_initializer_;
