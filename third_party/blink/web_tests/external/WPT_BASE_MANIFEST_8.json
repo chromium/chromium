@@ -420246,7 +420246,7 @@
        ]
       ],
       "scheme-about.any.js": [
-       "4329bd070320ddf8e475de2b97a8859f201cebbd",
+       "9ef44183c1750a95594af11d166ea2d4879d307e",
        [
         "fetch/api/basic/scheme-about.any.html",
         {
@@ -429949,6 +429949,31 @@
      ]
     },
     "range": {
+     "data.any.js": [
+      "22ef11e9317275cc70b9a23653b87f089afe4457",
+      [
+       "fetch/range/data.any.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/utils.js"
+         ]
+        ]
+       }
+      ],
+      [
+       "fetch/range/data.any.worker.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/utils.js"
+         ]
+        ]
+       }
+      ]
+     ],
      "general.any.js": [
       "3c4669ad0bbc1c3f10bca384194cd75dd54aa171",
       [
