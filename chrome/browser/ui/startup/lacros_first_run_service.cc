@@ -96,6 +96,9 @@ class SilentSyncEnablerDelegate : public TurnSyncOnHelper::Delegate {
     // we get all the way here, we assume that we can proceed with it.
     std::move(callback).Run(LoginUIService::SyncConfirmationUIClosedResult::
                                 SYNC_WITH_DEFAULT_SETTINGS);
+
+    ProfileMetrics::LogLacrosPrimaryProfileFirstRunOutcome(
+        ProfileMetrics::ProfileSignedInFlowOutcome::kSkippedByPolicies);
   }
 
   void ShowSyncDisabledConfirmation(
@@ -105,6 +108,9 @@ class SilentSyncEnablerDelegate : public TurnSyncOnHelper::Delegate {
     // `SYNC_WITH_DEFAULT_SETTINGS` for the sync disable confirmation means
     // "stay signed in". See https://crbug.com/1141341.
     std::move(callback).Run(LoginUIService::SYNC_WITH_DEFAULT_SETTINGS);
+
+    ProfileMetrics::LogLacrosPrimaryProfileFirstRunOutcome(
+        ProfileMetrics::ProfileSignedInFlowOutcome::kSkippedByPolicies);
   }
 
   void ShowLoginError(const SigninUIError& error) override { NOTREACHED(); }
@@ -225,6 +231,8 @@ void LacrosFirstRunService::TryMarkFirstRunAlreadyFinished(
 
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
   if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+    ProfileMetrics::LogLacrosPrimaryProfileFirstRunOutcome(
+        ProfileMetrics::ProfileSignedInFlowOutcome::kSkippedAlreadySyncing);
     SetFirstRunFinished();
     return;
   }

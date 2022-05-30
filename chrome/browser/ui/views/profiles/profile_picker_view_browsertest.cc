@@ -1866,7 +1866,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerLacrosFirstRunBrowserTest, PRE_QuitEarly) {
   WaitForPickerClosed();
   EXPECT_EQ(0u, BrowserList::GetInstance()->size());
   EXPECT_TRUE(ShouldOpenPrimaryProfileFirstRun(profile));
-  histogram_tester.ExpectBucketCount(
+
+  histogram_tester.ExpectUniqueSample(
       "Profile.LacrosPrimaryProfileFirstRunOutcome",
       ProfileMetrics::ProfileSignedInFlowOutcome::kAbortedOnEnterpriseWelcome,
       1);
@@ -1915,7 +1916,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerLacrosFirstRunBrowserTest, PRE_QuitAtEnd) {
   // Because we quit, we should also quit chrome, but mark the FRE finished.
   EXPECT_FALSE(ShouldOpenPrimaryProfileFirstRun(profile));
   EXPECT_EQ(0u, BrowserList::GetInstance()->size());
-  histogram_tester.ExpectBucketCount(
+  histogram_tester.ExpectUniqueSample(
       "Profile.LacrosPrimaryProfileFirstRunOutcome",
       ProfileMetrics::ProfileSignedInFlowOutcome::kAbortedAfterSignIn, 1);
 }
@@ -1963,7 +1964,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerLacrosFirstRunBrowserTest, PRE_OptIn) {
   WaitForPickerClosed();
   EXPECT_FALSE(ShouldOpenPrimaryProfileFirstRun(profile));
   EXPECT_EQ(1u, BrowserList::GetInstance()->size());
-  histogram_tester.ExpectBucketCount(
+  histogram_tester.ExpectUniqueSample(
       "Profile.LacrosPrimaryProfileFirstRunOutcome",
       ProfileMetrics::ProfileSignedInFlowOutcome::kConsumerSync, 1);
 }

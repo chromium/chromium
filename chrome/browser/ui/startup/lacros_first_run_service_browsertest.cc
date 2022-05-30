@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/metrics/histogram_tester.h"
+#include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/ui/startup/lacros_first_run_service.h"
 
 #include "base/callback_forward.h"
@@ -86,10 +88,10 @@ IN_PROC_BROWSER_TEST_F(LacrosFirstRunServiceBrowserTest,
   // is opened to simplify the setup. This allows us to call FRE-related methods
   // without having to do more elaborate things to avoid it triggering before
   // the test starts.
-
   EXPECT_FALSE(fre_service()->ShouldOpenFirstRun());
   base::CommandLine::ForCurrentProcess()->RemoveSwitch(switches::kNoFirstRun);
   EXPECT_TRUE(fre_service()->ShouldOpenFirstRun());
+  base::HistogramTester histogram_tester;
 
   base::RunLoop run_loop;
   fre_service()->TryMarkFirstRunAlreadyFinished(run_loop.QuitClosure());
@@ -98,6 +100,8 @@ IN_PROC_BROWSER_TEST_F(LacrosFirstRunServiceBrowserTest,
   EXPECT_FALSE(g_browser_process->local_state()->GetBoolean(
       lacros_prefs::kPrimaryProfileFirstRunFinished));
   EXPECT_TRUE(fre_service()->ShouldOpenFirstRun());
+  histogram_tester.ExpectTotalCount(
+      "Profile.LacrosPrimaryProfileFirstRunOutcome", 0);
 }
 
 IN_PROC_BROWSER_TEST_F(LacrosFirstRunServiceBrowserTest,
@@ -111,6 +115,7 @@ IN_PROC_BROWSER_TEST_F(LacrosFirstRunServiceBrowserTest,
   ASSERT_FALSE(account_id.empty());
   identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
       account_id, signin::ConsentLevel::kSync);
+  base::HistogramTester histogram_tester;
 
   base::RunLoop run_loop;
   fre_service()->TryMarkFirstRunAlreadyFinished(run_loop.QuitClosure());
@@ -119,6 +124,9 @@ IN_PROC_BROWSER_TEST_F(LacrosFirstRunServiceBrowserTest,
   EXPECT_TRUE(g_browser_process->local_state()->GetBoolean(
       lacros_prefs::kPrimaryProfileFirstRunFinished));
   EXPECT_FALSE(fre_service()->ShouldOpenFirstRun());
+  histogram_tester.ExpectUniqueSample(
+      "Profile.LacrosPrimaryProfileFirstRunOutcome",
+      ProfileMetrics::ProfileSignedInFlowOutcome::kSkippedAlreadySyncing, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(LacrosFirstRunServiceBrowserTest,
@@ -126,6 +134,7 @@ IN_PROC_BROWSER_TEST_F(LacrosFirstRunServiceBrowserTest,
   base::CommandLine::ForCurrentProcess()->RemoveSwitch(switches::kNoFirstRun);
   signin::IdentityManager* identity_manager =
       identity_test_env()->identity_manager();
+  base::HistogramTester histogram_tester;
 
   testing::ScopedSyncRequiredInFirstRun sync_required_override{true};
 
@@ -137,6 +146,9 @@ IN_PROC_BROWSER_TEST_F(LacrosFirstRunServiceBrowserTest,
       lacros_prefs::kPrimaryProfileFirstRunFinished));
   EXPECT_FALSE(fre_service()->ShouldOpenFirstRun());
   EXPECT_TRUE(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
+  histogram_tester.ExpectUniqueSample(
+      "Profile.LacrosPrimaryProfileFirstRunOutcome",
+      ProfileMetrics::ProfileSignedInFlowOutcome::kSkippedByPolicies, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(LacrosFirstRunServiceBrowserTest,
@@ -145,6 +157,7 @@ IN_PROC_BROWSER_TEST_F(LacrosFirstRunServiceBrowserTest,
   Profile* profile = browser()->profile();
   signin::IdentityManager* identity_manager =
       identity_test_env()->identity_manager();
+  base::HistogramTester histogram_tester;
 
   profile->GetPrefs()->SetBoolean(prefs::kEnableSyncConsent, false);
 
@@ -156,4 +169,7 @@ IN_PROC_BROWSER_TEST_F(LacrosFirstRunServiceBrowserTest,
       lacros_prefs::kPrimaryProfileFirstRunFinished));
   EXPECT_FALSE(ShouldOpenPrimaryProfileFirstRun(profile));
   EXPECT_TRUE(identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync));
+  histogram_tester.ExpectUniqueSample(
+      "Profile.LacrosPrimaryProfileFirstRunOutcome",
+      ProfileMetrics::ProfileSignedInFlowOutcome::kSkippedByPolicies, 1);
 }

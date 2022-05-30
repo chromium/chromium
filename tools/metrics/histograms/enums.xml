@@ -78561,6 +78561,10 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
       label="The flow got aborted after sign-in (not in enterprise welcome)."/>
   <int value="12"
       label="The flow got aborted after sign-in (in enterprise welcome)."/>
+  <int value="13"
+      label="The flow was skipped because the profile is already syncing."/>
+  <int value="14"
+      label="The flow was skipped due to the value of some policy(ies)."/>
 </enum>
 
 <enum name="ProfileSignInStatus">

@@ -70,7 +70,9 @@ class ProfileMetrics {
     kAbortedBeforeSignIn = 10,
     kAbortedAfterSignIn = 11,
     kAbortedOnEnterpriseWelcome = 12,
-    kMaxValue = kAbortedOnEnterpriseWelcome,
+    kSkippedAlreadySyncing = 13,
+    kSkippedByPolicies = 14,
+    kMaxValue = kSkippedByPolicies,
   };
 
   // These values are persisted to logs. Entries should not be renumbered and
