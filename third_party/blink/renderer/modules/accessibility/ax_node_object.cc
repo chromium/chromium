@@ -378,8 +378,8 @@ void AXNodeObject::AlterSliderOrSpinButtonValue(bool increase) {
     return;
   }
 
-  // TODO(crbug.com/1099069): add a separate flag for keyboard event synthesis
-  if (!RuntimeEnabledFeatures::AccessibilityObjectModelEnabled())
+  if (!RuntimeEnabledFeatures::
+          SynthesizedKeyboardEventsForAccessibilityActionsEnabled())
     return;
 
   // Otherwise, fire a keyboard event instead.

@@ -2277,6 +2277,10 @@
       status: "stable"
     },
     {
+      name: "SynthesizedKeyboardEventsForAccessibilityActions",
+      status: "experimental",
+    },
+    {
       name: "SystemWakeLock",
       status: "experimental",
     },
