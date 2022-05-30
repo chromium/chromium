@@ -630,7 +630,6 @@ crbug.com/1050754 external/wpt/css/css-backgrounds/inheritance.sub.html [ Failur
 crbug.com/1050754 external/wpt/css/css-cascade/all-prop-initial-xml.html [ Failure ]
 crbug.com/1050754 external/wpt/css/css-color-adjust/print-color-adjust-parsing.html [ Failure ]
 crbug.com/1050754 external/wpt/css/css-color-adjust/rendering/dark-color-scheme/color-scheme-system-colors.html [ Failure Pass ]
-crbug.com/1050754 external/wpt/css/css-color/system-color-compute.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/css/css-contain/contain-size-grid-003.html [ Failure ]
 crbug.com/1050754 external/wpt/css/css-contain/contain-size-grid-004.html [ Failure ]
 crbug.com/1050754 external/wpt/css/css-contain/content-visibility/content-visibility-047.html [ Crash Failure Pass ]

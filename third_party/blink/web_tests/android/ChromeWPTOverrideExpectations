@@ -573,7 +573,6 @@ crbug.com/1050754 external/wpt/css/css-backgrounds/animations/border-width-inter
 crbug.com/1050754 external/wpt/css/css-backgrounds/inheritance.sub.html [ Failure ]
 crbug.com/1050754 external/wpt/css/css-cascade/all-prop-initial-xml.html [ Failure ]
 crbug.com/1050754 external/wpt/css/css-color-adjust/rendering/dark-color-scheme/color-scheme-system-colors.html [ Failure ]
-crbug.com/1050754 external/wpt/css/css-color/system-color-compute.html [ Failure ]
 crbug.com/1050754 external/wpt/css/css-contain/contain-size-grid-003.html [ Failure ]
 crbug.com/1050754 external/wpt/css/css-contain/contain-size-grid-004.html [ Failure ]
 crbug.com/1050754 external/wpt/css/css-contain/content-visibility/content-visibility-068.html [ Failure ]

@@ -295018,6 +295018,14 @@
       []
      ]
     },
+    "tools": {
+     "_virtualenv": {
+      ".gitignore": [
+       "ede80b85f0f30f7d19ce1a46d6b421fac3c1f82f",
+       []
+      ]
+     }
+    },
     "vendor-imports": {
      "mozilla": {
       "mozilla-central-reftests": {
