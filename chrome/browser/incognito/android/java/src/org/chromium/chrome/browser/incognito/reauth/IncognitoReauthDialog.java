@@ -47,7 +47,8 @@ class IncognitoReauthDialog {
     void showIncognitoReauthDialog(boolean showFullScreen) {
         mModalDialogManager.showDialog(mModalDialogModel,
                 (showFullScreen) ? ModalDialogManager.ModalDialogType.APP
-                                 : ModalDialogManager.ModalDialogType.TAB);
+                                 : ModalDialogManager.ModalDialogType.TAB,
+                ModalDialogManager.ModalDialogPriority.VERY_HIGH);
     }
 
     void dismissIncognitoReauthDialog(@DialogDismissalCause int dismissalCause) {
