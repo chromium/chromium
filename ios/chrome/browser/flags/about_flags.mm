@@ -948,6 +948,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kContentSuggestionsUIModuleRefreshName,
      flag_descriptions::kContentSuggestionsUIModuleRefreshDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kContentSuggestionsUIModuleRefresh)},
+    {"3p-intents-in-incognito", flag_descriptions::kIOS3PIntentsInIncognitoName,
+     flag_descriptions::kIOS3PIntentsInIncognitoDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kIOS3PIntentsInIncognito)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

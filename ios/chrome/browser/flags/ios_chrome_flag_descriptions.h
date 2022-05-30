@@ -309,6 +309,11 @@ extern const char
 extern const char kInProductHelpDemoModeName[];
 extern const char kInProductHelpDemoModeDescription[];
 
+// Title and description for the flag to enable third-party intents in
+// Incognito.
+extern const char kIOS3PIntentsInIncognitoName[];
+extern const char kIOS3PIntentsInIncognitoDescription[];
+
 // Title and description for the flag to enable updated password manager
 // branding.
 extern const char kIOSEnablePasswordManagerBrandingUpdateName[];

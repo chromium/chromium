@@ -30,6 +30,9 @@ const base::Feature kIncognitoBrandConsistencyForIOS{
 const base::Feature kIncognitoNtpRevamp{"IncognitoNtpRevamp",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kIOS3PIntentsInIncognito{"kIOS3pIntentsInIncognito",
+                                             base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kDefaultBrowserFullscreenPromoExperiment{
     "DefaultBrowserFullscreenPromoExperiment",
     base::FEATURE_DISABLED_BY_DEFAULT};

@@ -348,6 +348,11 @@ const char kInProductHelpDemoModeDescription[] =
     "an individual promotion causes that promotion but no other promotions to "
     "occur.";
 
+const char kIOS3PIntentsInIncognitoName[] = "Third-party intents in Incognito";
+const char kIOS3PIntentsInIncognitoDescription[] =
+    "When enabled, an additional setting lets the user open links from other "
+    "apps in Incognito.";
+
 const char kIOSEnablePasswordManagerBrandingUpdateName[] =
     "Enable new Google Password Manager branding";
 const char kIOSEnablePasswordManagerBrandingUpdateDescription[] =

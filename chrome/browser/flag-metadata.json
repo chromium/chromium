@@ -29,6 +29,11 @@
 
 [
   {
+    "name": "3p-intents-in-incognito",
+    "owners": ["qpubert@google.com", "djean@google.com"],
+    "expiry_milestone": 110
+  },
+  {
     "name": "access-code-cast-device-duration",
     "owners": [ "gbj@google.com", "cros-edu-team@google.com" ],
     "expiry_milestone": 105
