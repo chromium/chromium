@@ -7,7 +7,9 @@
 """Create an Android application bundle from one or more bundle modules."""
 
 import argparse
+import concurrent.futures
 import json
+import logging
 import os
 import shutil
 import sys
@@ -405,6 +407,15 @@ def _GetComponentNames(manifest, tag_name):
   return [s.attrib.get(android_name) for s in manifest.iter(tag_name)]
 
 
+def _ClassesFromZip(module_zip):
+  classes = set()
+  for package in dexdump.Dump(module_zip):
+    for java_package, package_dict in package.items():
+      java_package += '.' if java_package else ''
+      classes.update(java_package + c for c in package_dict['classes'])
+  return classes
+
+
 def _MaybeCheckServicesAndProvidersPresentInBase(bundle_path, module_zips):
   """Checks bundles with isolated splits define all services in the base module.
 
@@ -413,13 +424,31 @@ def _MaybeCheckServicesAndProvidersPresentInBase(bundle_path, module_zips):
   startup, and keeping them in the base module gives more time for the chrome
   split to load.
   """
-  base_manifest = _GetManifestForModule(bundle_path, 'base')
+  logging.info('Reading manifests and running dexdump')
+  base_zip = next(p for p in module_zips if os.path.basename(p) == 'base.zip')
+  module_names = [os.path.basename(p)[:-len('.zip')] for p in module_zips]
+  # Using threads makes these step go from 7s -> 1s on my machine.
+  with concurrent.futures.ThreadPoolExecutor() as executor:
+    # Create list of classes from the base module's dex.
+    classes_future = executor.submit(_ClassesFromZip, base_zip)
+
+    # Create xmltrees of all module manifests.
+    manifest_futures = [
+        executor.submit(_GetManifestForModule, bundle_path, name)
+        for name in module_names
+    ]
+    manifests_by_name = dict(
+        zip(module_names, (f.result() for f in manifest_futures)))
+    base_classes = classes_future.result()
+
+  base_manifest = manifests_by_name['base']
   isolated_splits = base_manifest.get('{%s}isolatedSplits' %
                                       manifest_utils.ANDROID_NAMESPACE)
   if isolated_splits != 'true':
     return
 
   # Collect service names from all split manifests.
+  logging.info('Performing checks')
   base_zip = None
   service_names = _GetComponentNames(base_manifest, 'service')
   provider_names = _GetComponentNames(base_manifest, 'provider')
@@ -428,24 +457,12 @@ def _MaybeCheckServicesAndProvidersPresentInBase(bundle_path, module_zips):
     if name == 'base':
       base_zip = module_zip
     else:
-      service_names.extend(
-          _GetComponentNames(_GetManifestForModule(bundle_path, name),
-                             'service'))
-      module_providers = _GetComponentNames(
-          _GetManifestForModule(bundle_path, name), 'provider')
+      cur_manifest = manifests_by_name[name]
+      service_names += _GetComponentNames(cur_manifest, 'service')
+      module_providers = _GetComponentNames(cur_manifest, 'provider')
       if module_providers:
         raise Exception("Providers should all be declared in the base manifest."
                         " '%s' module declared: %s" % (name, module_providers))
-
-  # Extract classes from the base module's dex.
-  classes = set()
-  base_package_name = manifest_utils.GetPackage(base_manifest)
-  for package in dexdump.Dump(base_zip):
-    for name, package_dict in package.items():
-      if not name:
-        name = base_package_name
-      classes.update('%s.%s' % (name, c)
-                     for c in package_dict['classes'].keys())
 
   ignored_service_names = {
       # Defined in the chime DFM manifest, but unused.
@@ -461,7 +478,7 @@ def _MaybeCheckServicesAndProvidersPresentInBase(bundle_path, module_zips):
 
   # Ensure all services are present in base module.
   for service_name in service_names:
-    if service_name not in classes:
+    if service_name not in base_classes:
       if service_name in ignored_service_names:
         continue
       raise Exception("Service %s should be present in the base module's dex."
@@ -469,13 +486,14 @@ def _MaybeCheckServicesAndProvidersPresentInBase(bundle_path, module_zips):
 
   # Ensure all providers are present in base module.
   for provider_name in provider_names:
-    if provider_name not in classes:
+    if provider_name not in base_classes:
       raise Exception(
           "Provider %s should be present in the base module's dex." %
           provider_name)
 
 
 def main(args):
+  build_utils.InitLogging('AAB_DEBUG')
   args = build_utils.ExpandFileArgs(args)
   options = _ParseArgs(args)
 
@@ -485,15 +503,18 @@ def main(args):
 
 
   with build_utils.TempDir() as tmp_dir:
+    logging.info('Splitting locale assets')
     module_zips = [
         _SplitModuleForAssetTargeting(module, tmp_dir, split_dimensions) \
         for module in options.module_zips]
 
     base_master_resource_ids = None
     if options.base_module_rtxt_path:
+      logging.info('Creating R.txt allowlist')
       base_master_resource_ids = _GenerateBaseResourcesAllowList(
           options.base_module_rtxt_path, options.base_allowlist_rtxt_path)
 
+    logging.info('Creating BundleConfig.pb.json')
     bundle_config = _GenerateBundleConfigJson(options.uncompressed_assets,
                                               options.compress_dex,
                                               options.compress_shared_libraries,
@@ -509,6 +530,7 @@ def main(args):
     with open(tmp_bundle_config, 'w') as f:
       f.write(bundle_config)
 
+    logging.info('Running bundletool')
     cmd_args = build_utils.JavaCmd(options.warnings_as_errors) + [
         '-jar',
         bundletool.BUNDLETOOL_JAR_PATH,
@@ -530,8 +552,10 @@ def main(args):
       # isolated splits disabled and 2s for bundles with isolated splits
       # enabled.  Consider making this run in parallel or move into a separate
       # step before enabling isolated splits by default.
+      logging.info('Validating isolated split manifests')
       _MaybeCheckServicesAndProvidersPresentInBase(tmp_bundle, module_zips)
 
+    logging.info('Writing final output artifacts')
     shutil.move(tmp_bundle, options.out_bundle)
 
   if options.rtxt_out_path:
