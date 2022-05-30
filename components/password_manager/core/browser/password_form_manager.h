@@ -319,6 +319,11 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   void CalculateFillingAssistanceMetric(
       const autofill::FormData& submitted_form);
 
+  // Calculates SubmittedPasswordFormFrame metric value (main frame, iframe,
+  // etc) for |submitted_form|. The metric is recorded when the form manager is
+  // destroyed.
+  void CalculateSubmittedFormFrameMetric();
+
   // Save/update |pending_credentials_| to the password store.
   void SavePendingToStore(bool update);
 

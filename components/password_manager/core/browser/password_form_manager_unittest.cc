@@ -39,6 +39,7 @@
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_save_manager_impl.h"
 #include "components/password_manager/core/browser/possible_username_data.h"
+#include "components/password_manager/core/browser/psl_matching_helper.h"
 #include "components/password_manager/core/browser/stub_form_saver.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/browser/stub_password_manager_driver.h"
@@ -123,10 +124,15 @@ MATCHER_P(FormDataPointeeEqualTo, form_data, "") {
 
 class MockPasswordManagerDriver : public StubPasswordManagerDriver {
  public:
-  MOCK_METHOD1(FillPasswordForm, void(const PasswordFormFillData&));
-  MOCK_METHOD1(AllowPasswordGenerationForForm, void(const PasswordForm&));
-  MOCK_METHOD1(FormEligibleForGenerationFound,
-               void(const autofill::PasswordFormGenerationData&));
+  MOCK_METHOD(void,
+              FillPasswordForm,
+              (const PasswordFormFillData&),
+              (override));
+  MOCK_METHOD(void,
+              FormEligibleForGenerationFound,
+              (const autofill::PasswordFormGenerationData&),
+              (override));
+  MOCK_METHOD(bool, IsInPrimaryMainFrame, (), (const, override));
 };
 
 class MockAutofillDownloadManager : public autofill::AutofillDownloadManager {
@@ -172,6 +178,7 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
   MOCK_METHOD(FieldInfoManager*, GetFieldInfoManager, (), (const, override));
   MOCK_METHOD(signin::IdentityManager*, GetIdentityManager, (), (override));
   MOCK_METHOD(PrefService*, GetPrefs, (), (const, override));
+  MOCK_METHOD(const GURL&, GetLastCommittedURL, (), (const, override));
   MOCK_METHOD(WebAuthnCredentialsDelegate*,
               GetWebAuthnCredentialsDelegate,
               (),
@@ -444,6 +451,8 @@ class PasswordFormManagerTest : public testing::Test,
     ON_CALL(*client_.GetPasswordFeatureManager(), GetDefaultPasswordStore)
         .WillByDefault(Return(PasswordForm::Store::kProfileStore));
 
+    ON_CALL(client_, GetLastCommittedURL())
+        .WillByDefault(ReturnRef(observed_form_.url));
     ON_CALL(client_, GetWebAuthnCredentialsDelegate)
         .WillByDefault(Return(&webauthn_credentials_delegate_));
     ON_CALL(webauthn_credentials_delegate_, IsWebAuthnAutofillEnabled)
@@ -2687,6 +2696,95 @@ TEST_P(PasswordFormManagerTest, MovableToAccountStore) {
   ON_CALL(client_, GetIdentityManager())
       .WillByDefault(Return(identity_test_env_.identity_manager()));
   EXPECT_TRUE(form_manager_->IsMovableToAccountStore());
+}
+
+TEST_P(PasswordFormManagerTest, ReportSubmittedFormFrameMainFrame) {
+  base::HistogramTester histogram_tester;
+  EXPECT_CALL(driver_, IsInPrimaryMainFrame).WillRepeatedly(Return(true));
+
+  form_manager_->ProvisionallySave(submitted_form_, &driver_, nullptr);
+
+  // Check metrics recorded on the form manager destruction.
+  form_manager_.reset();
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.SubmittedFormFrame2",
+      metrics_util::SubmittedFormFrame::MAIN_FRAME, 1);
+}
+
+TEST_P(PasswordFormManagerTest, ReportSubmittedFormFrameSameOriginIframe) {
+  base::HistogramTester histogram_tester;
+  EXPECT_CALL(driver_, IsInPrimaryMainFrame).WillRepeatedly(Return(false));
+
+  EXPECT_CALL(client_, GetLastCommittedURL)
+      .WillOnce(ReturnRef(submitted_form_.url));
+  form_manager_->ProvisionallySave(submitted_form_, &driver_, nullptr);
+
+  // Check metrics recorded on the form manager destruction.
+  form_manager_.reset();
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.SubmittedFormFrame2",
+      metrics_util::SubmittedFormFrame::IFRAME_WITH_SAME_URL_AS_MAIN_FRAME, 1);
+}
+
+TEST_P(PasswordFormManagerTest, ReportSubmittedFormFrameSameSignOnRealmIframe) {
+  base::HistogramTester histogram_tester;
+  EXPECT_CALL(driver_, IsInPrimaryMainFrame).WillRepeatedly(Return(false));
+
+  GURL main_frame_url = GURL(GetSignonRealm(submitted_form_.url));
+  ASSERT_NE(submitted_form_.url, main_frame_url);
+  EXPECT_CALL(client_, GetLastCommittedURL)
+      .WillRepeatedly(ReturnRef(main_frame_url));
+  form_manager_->ProvisionallySave(submitted_form_, &driver_, nullptr);
+
+  // Check metrics recorded on the form manager destruction.
+  form_manager_.reset();
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.SubmittedFormFrame2",
+      metrics_util::SubmittedFormFrame::
+          IFRAME_WITH_DIFFERENT_URL_SAME_SIGNON_REALM_AS_MAIN_FRAME,
+      1);
+}
+
+TEST_P(PasswordFormManagerTest, ReportSubmittedFormFramePSLMatchedIframe) {
+  base::HistogramTester histogram_tester;
+  EXPECT_CALL(driver_, IsInPrimaryMainFrame).WillRepeatedly(Return(false));
+
+  submitted_form_.url = GURL("http://facebook.com");
+  GURL main_frame_url = GURL("http://m.facebook.com");
+  ASSERT_TRUE(IsPublicSuffixDomainMatch(submitted_form_.url.spec(),
+                                        main_frame_url.spec()));
+  EXPECT_CALL(client_, GetLastCommittedURL)
+      .WillRepeatedly(ReturnRef(main_frame_url));
+  form_manager_->ProvisionallySave(submitted_form_, &driver_, nullptr);
+
+  // Check metrics recorded on the form manager destruction.
+  form_manager_.reset();
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.SubmittedFormFrame2",
+      metrics_util::SubmittedFormFrame::IFRAME_WITH_PSL_MATCHED_SIGNON_REALM,
+      1);
+}
+
+TEST_P(PasswordFormManagerTest, ReportSubmittedFormFrameCrossOriginIframe) {
+  base::HistogramTester histogram_tester;
+  EXPECT_CALL(driver_, IsInPrimaryMainFrame).WillRepeatedly(Return(false));
+
+  GURL main_frame_url = GURL("http://www.crossorigin.com/login");
+  ASSERT_NE(GetSignonRealm(submitted_form_.url),
+            GetSignonRealm(main_frame_url));
+  ASSERT_FALSE(IsPublicSuffixDomainMatch(submitted_form_.url.spec(),
+                                         main_frame_url.spec()));
+  EXPECT_CALL(client_, GetLastCommittedURL)
+      .WillRepeatedly(ReturnRef(main_frame_url));
+  form_manager_->ProvisionallySave(submitted_form_, &driver_, nullptr);
+
+  // Check metrics recorded on the form manager destruction.
+  form_manager_.reset();
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.SubmittedFormFrame2",
+      metrics_util::SubmittedFormFrame::
+          IFRAME_WITH_DIFFERENT_AND_NOT_PSL_MATCHED_SIGNON_REALM,
+      1);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

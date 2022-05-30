@@ -266,11 +266,6 @@ void LogPasswordAcceptedSaveUpdateSubmissionIndicatorEvent(
       "PasswordManager.AcceptedSaveUpdateSubmissionIndicatorEvent", event);
 }
 
-void LogSubmittedFormFrame(SubmittedFormFrame frame) {
-  base::UmaHistogramEnumeration("PasswordManager.SubmittedFormFrame", frame,
-                                SubmittedFormFrame::SUBMITTED_FORM_FRAME_COUNT);
-}
-
 void LogPasswordsCountFromAccountStoreAfterUnlock(
     int account_store_passwords_count) {
   base::UmaHistogramCounts100(

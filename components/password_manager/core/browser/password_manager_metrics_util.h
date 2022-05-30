@@ -214,7 +214,10 @@ enum class SubmittedFormFrame {
   MAIN_FRAME = 0,
   IFRAME_WITH_SAME_URL_AS_MAIN_FRAME = 1,
   IFRAME_WITH_DIFFERENT_URL_SAME_SIGNON_REALM_AS_MAIN_FRAME = 2,
-  IFRAME_WITH_DIFFERENT_SIGNON_REALM = 3,
+  // Deprecated and replaced with a combination of buckets 4 & 5.
+  // IFRAME_WITH_DIFFERENT_SIGNON_REALM = 3,
+  IFRAME_WITH_PSL_MATCHED_SIGNON_REALM = 4,
+  IFRAME_WITH_DIFFERENT_AND_NOT_PSL_MATCHED_SIGNON_REALM = 5,
   SUBMITTED_FORM_FRAME_COUNT
 };
 
@@ -670,9 +673,6 @@ void LogPasswordSuccessfulSubmissionIndicatorEvent(
 // or update.
 void LogPasswordAcceptedSaveUpdateSubmissionIndicatorEvent(
     autofill::mojom::SubmissionIndicatorEvent event);
-
-// Log a frame of a submitted password form.
-void LogSubmittedFormFrame(SubmittedFormFrame frame);
 
 // Logs how many account-stored passwords are available for filling in the
 // current password form right after unlock.

@@ -2751,11 +2751,26 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.SubmittedFormFrame"
     enum="SubmittedPasswordFormFrame" expires_after="2022-10-30">
+  <obsolete>
+    Removed in M104. Replaced with PasswordManager.SubmittedFormFrame2.
+  </obsolete>
   <owner>kazinova@google.com</owner>
   <owner>vasilii@chromium.org</owner>
   <summary>
     Records a frame type (eg. main frame, iframe with the same url as the main
-    frame) of a submitted password form.
+    frame) of a submitted password form. Logged at every provisional save (i.e.
+    on every user keystroke).
+  </summary>
+</histogram>
+
+<histogram name="PasswordManager.SubmittedFormFrame2"
+    enum="SubmittedPasswordFormFrame" expires_after="2022-10-30">
+  <owner>kazinova@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    Records a frame type (eg. main frame, iframe with the same url as the main
+    frame, etc) of a submitted password form. Logged only once per submitted
+    form.
   </summary>
 </histogram>
 

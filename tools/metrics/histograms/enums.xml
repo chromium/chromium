@@ -89953,7 +89953,10 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="0" label="Main frame"/>
   <int value="1" label="Iframe with the same url as main frame"/>
   <int value="2" label="Iframe with different url and the same signon realm"/>
-  <int value="3" label="Iframe with different signon realm"/>
+  <int value="3" label="(obsolete) Iframe with different signon realm"/>
+  <int value="4" label="Iframe with PSL matched signon realm"/>
+  <int value="5"
+      label="Iframe with different and not PSL matched signon realm"/>
 </enum>
 
 <enum name="SubprocessType">
