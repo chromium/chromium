@@ -7,6 +7,7 @@
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/search/ranking/types.h"
 #include "chrome/browser/ui/app_list/search/search_controller.h"
+#include "chrome/browser/ui/app_list/search/test/ranking_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -17,15 +18,12 @@ namespace {
 using testing::UnorderedElementsAre;
 using testing::UnorderedElementsAreArray;
 
-class TestDriveIdResult : public ChromeSearchResult {
+class TestDriveIdResult : public TestResult {
  public:
   TestDriveIdResult(const std::string& id,
                     ResultType type,
                     const absl::optional<std::string>& drive_id)
-      : drive_id_(drive_id) {
-    set_id(id);
-    SetResultType(type);
-  }
+      : TestResult(id, type), drive_id_(drive_id) {}
 
   ~TestDriveIdResult() override {}
 

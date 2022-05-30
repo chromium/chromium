@@ -18,10 +18,31 @@ namespace app_list {
 
 class TestResult : public ChromeSearchResult {
  public:
+  // TestResult is used by many test suites. Each test suite operates on
+  // different members of ChromeSearchResult. This set of constructors aims to
+  //
+  // (a) generalize across the use cases (to minimize constructor number) and
+  // (b) retain flexibility (to keep points-of-use from becoming cumbersome).
+  TestResult() = default;
+
   TestResult(const std::string& id,
-             double score,
              ResultType result_type = ResultType::kUnknown,
-             Category category = Category::kUnknown);
+             Category category = Category::kUnknown,
+             double display_score = 0.0,
+             double normalized_relevance = 0.0);
+
+  TestResult(const std::string& id,
+             double relevance,
+             double normalized_relevance = 0.0,
+             DisplayType display_type = DisplayType::kNone,
+             bool best_match = false);
+
+  TestResult(const std::string& id,
+             Category category,
+             int best_match_rank,
+             double relevance,
+             double ftrl_result_score);
+
   ~TestResult() override;
 
   // ChromeSearchResult overrides:
