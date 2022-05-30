@@ -35,15 +35,13 @@ class UnresponsiveContentAnalysisDelegate
   static std::unique_ptr<enterprise_connectors::ContentAnalysisDelegate> Create(
       base::RepeatingClosure delete_closure,
       StatusCallback status_callback,
-      EncryptionStatusCallback encryption_callback,
       std::string dm_token,
       content::WebContents* web_contents,
       Data data,
       CompletionCallback callback) {
     auto ret = std::make_unique<UnresponsiveContentAnalysisDelegate>(
-        delete_closure, status_callback, encryption_callback,
-        std::move(dm_token), web_contents, std::move(data),
-        std::move(callback));
+        delete_closure, status_callback, std::move(dm_token), web_contents,
+        std::move(data), std::move(callback));
     return ret;
   }
 
@@ -100,9 +98,6 @@ void DeepScanningBrowserTestBase::SetUpDelegate() {
           base::DoNothing(),
           base::BindRepeating(&DeepScanningBrowserTestBase::StatusCallback,
                               base::Unretained(this)),
-          base::BindRepeating(
-              &DeepScanningBrowserTestBase::EncryptionStatusCallback,
-              base::Unretained(this)),
           kDmToken));
 }
 
@@ -113,9 +108,6 @@ void DeepScanningBrowserTestBase::SetUpUnresponsiveDelegate() {
           &UnresponsiveContentAnalysisDelegate::Create, base::DoNothing(),
           base::BindRepeating(&DeepScanningBrowserTestBase::StatusCallback,
                               base::Unretained(this)),
-          base::BindRepeating(
-              &DeepScanningBrowserTestBase::EncryptionStatusCallback,
-              base::Unretained(this)),
           kDmToken));
 }
 
@@ -137,11 +129,6 @@ void DeepScanningBrowserTestBase::SetStatusCallbackResponse(
 enterprise_connectors::ContentAnalysisResponse
 DeepScanningBrowserTestBase::StatusCallback(const base::FilePath& path) {
   return connector_status_callback_response_;
-}
-
-bool DeepScanningBrowserTestBase::EncryptionStatusCallback(
-    const base::FilePath& path) {
-  return false;
 }
 
 void DeepScanningBrowserTestBase::CreateFilesForTest(

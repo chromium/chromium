@@ -3492,11 +3492,6 @@ class ContentAnalysisPrintBrowserTest
             base::BindRepeating(
                 &ContentAnalysisPrintBrowserTest::ScanningResponse,
                 base::Unretained(this)),
-            /*file_encrypted=*/
-            base::BindRepeating([](const base::FilePath& path) {
-              NOTREACHED();
-              return false;
-            }),
             kFakeDmToken));
 
     feature_list_.InitAndEnableFeature(features::kEnablePrintContentAnalysis);

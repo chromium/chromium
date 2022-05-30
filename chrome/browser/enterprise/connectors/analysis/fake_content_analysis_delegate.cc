@@ -26,7 +26,6 @@ safe_browsing::BinaryUploadService::Result
 FakeContentAnalysisDelegate::FakeContentAnalysisDelegate(
     base::RepeatingClosure delete_closure,
     StatusCallback status_callback,
-    EncryptionStatusCallback encryption_callback,
     std::string dm_token,
     content::WebContents* web_contents,
     Data data,
@@ -37,7 +36,6 @@ FakeContentAnalysisDelegate::FakeContentAnalysisDelegate(
                               safe_browsing::DeepScanAccessPoint::UPLOAD),
       delete_closure_(delete_closure),
       status_callback_(status_callback),
-      encryption_callback_(encryption_callback),
       dm_token_(std::move(dm_token)) {}
 
 FakeContentAnalysisDelegate::~FakeContentAnalysisDelegate() {
@@ -55,14 +53,13 @@ void FakeContentAnalysisDelegate::SetResponseResult(
 std::unique_ptr<ContentAnalysisDelegate> FakeContentAnalysisDelegate::Create(
     base::RepeatingClosure delete_closure,
     StatusCallback status_callback,
-    EncryptionStatusCallback encryption_callback,
     std::string dm_token,
     content::WebContents* web_contents,
     Data data,
     CompletionCallback callback) {
   auto ret = std::make_unique<FakeContentAnalysisDelegate>(
-      delete_closure, status_callback, encryption_callback, std::move(dm_token),
-      web_contents, std::move(data), std::move(callback));
+      delete_closure, status_callback, std::move(dm_token), web_contents,
+      std::move(data), std::move(callback));
   return ret;
 }
 
