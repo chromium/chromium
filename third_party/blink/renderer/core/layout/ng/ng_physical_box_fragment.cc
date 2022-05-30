@@ -240,8 +240,7 @@ NGPhysicalBoxFragment::CloneWithPostLayoutFragments(
 
   return MakeGarbageCollected<NGPhysicalBoxFragment>(
       AdditionalBytes(byte_size), PassKey(), other, has_layout_overflow,
-      layout_overflow,
-      /* recalculate_layout_overflow */ updated_layout_overflow.has_value());
+      layout_overflow);
 }
 
 // static
@@ -370,9 +369,8 @@ NGPhysicalBoxFragment::NGPhysicalBoxFragment(
     PassKey key,
     const NGPhysicalBoxFragment& other,
     bool has_layout_overflow,
-    const PhysicalRect& layout_overflow,
-    bool recalculate_layout_overflow)
-    : NGPhysicalFragment(other, recalculate_layout_overflow),
+    const PhysicalRect& layout_overflow)
+    : NGPhysicalFragment(other),
       is_inline_formatting_context_(other.is_inline_formatting_context_),
       const_has_fragment_items_(other.const_has_fragment_items_),
       include_border_top_(other.include_border_top_),

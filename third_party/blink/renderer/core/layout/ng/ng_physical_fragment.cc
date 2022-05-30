@@ -401,8 +401,7 @@ NGPhysicalFragment::OutOfFlowData* NGPhysicalFragment::OutOfFlowDataFromBuilder(
 
 // Even though the other constructors don't initialize many of these fields
 // (instead set by their super-classes), the copy constructor does.
-NGPhysicalFragment::NGPhysicalFragment(const NGPhysicalFragment& other,
-                                       bool recalculate_layout_overflow)
+NGPhysicalFragment::NGPhysicalFragment(const NGPhysicalFragment& other)
     : layout_object_(other.layout_object_),
       size_(other.size_),
       has_floating_descendants_for_paint_(

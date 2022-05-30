@@ -55,8 +55,7 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
   NGPhysicalBoxFragment(PassKey,
                         const NGPhysicalBoxFragment& other,
                         bool has_layout_overflow,
-                        const PhysicalRect& layout_overflow,
-                        bool recalculate_layout_overflow);
+                        const PhysicalRect& layout_overflow);
 
   ~NGPhysicalBoxFragment();
 

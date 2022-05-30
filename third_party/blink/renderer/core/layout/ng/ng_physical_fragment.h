@@ -86,8 +86,7 @@ class CORE_EXPORT NGPhysicalFragment
                      NGFragmentType type,
                      unsigned sub_type);
 
-  NGPhysicalFragment(const NGPhysicalFragment& other,
-                     bool recalculate_layout_overflow);
+  NGPhysicalFragment(const NGPhysicalFragment& other);
 
   ~NGPhysicalFragment();
 
