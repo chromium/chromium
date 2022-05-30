@@ -229,10 +229,6 @@ Channel GetStatefulLacrosChannel() {
              ? kStabilitySwitchToChannelMap.at(*stability_switch_value)
              : chrome::GetChannel();
 }
-
-static_assert(
-    crosapi::mojom::Crosapi::Version_ == 79,
-    "if you add a new crosapi, please add it to kInterfaceVersionEntries");
 }  // namespace
 
 // NOTE: If you change the lacros component names, you must also update

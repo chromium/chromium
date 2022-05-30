@@ -186,6 +186,10 @@ constexpr InterfaceVersionEntry MakeInterfaceVersionEntry() {
   return {T::Uuid_, T::Version_};
 }
 
+static_assert(crosapi::mojom::Crosapi::Version_ == 79,
+              "If you add a new crosapi, please add it to "
+              "kInterfaceVersionEntries below.");
+
 constexpr InterfaceVersionEntry kInterfaceVersionEntries[] = {
     MakeInterfaceVersionEntry<chromeos::cdm::mojom::BrowserCdmFactory>(),
     MakeInterfaceVersionEntry<
