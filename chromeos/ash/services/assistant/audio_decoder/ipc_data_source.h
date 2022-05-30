@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_SERVICES_ASSISTANT_AUDIO_DECODER_IPC_DATA_SOURCE_H_
-#define CHROMEOS_SERVICES_ASSISTANT_AUDIO_DECODER_IPC_DATA_SOURCE_H_
+#ifndef CHROMEOS_ASH_SERVICES_ASSISTANT_AUDIO_DECODER_IPC_DATA_SOURCE_H_
+#define CHROMEOS_ASH_SERVICES_ASSISTANT_AUDIO_DECODER_IPC_DATA_SOURCE_H_
 
 #include <stdint.h>
 
@@ -63,4 +63,4 @@ class IPCDataSource : public media::DataSource {
 }  // namespace assistant
 }  // namespace chromeos
 
-#endif  // CHROMEOS_SERVICES_ASSISTANT_AUDIO_DECODER_IPC_DATA_SOURCE_H_
+#endif  // CHROMEOS_ASH_SERVICES_ASSISTANT_AUDIO_DECODER_IPC_DATA_SOURCE_H_

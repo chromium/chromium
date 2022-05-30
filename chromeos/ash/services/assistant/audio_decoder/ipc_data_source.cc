@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/assistant/audio_decoder/ipc_data_source.h"
+#include "chromeos/ash/services/assistant/audio_decoder/ipc_data_source.h"
 
 #include <algorithm>
 #include <utility>

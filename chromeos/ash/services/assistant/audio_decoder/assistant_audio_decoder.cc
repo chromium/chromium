@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/assistant/audio_decoder/assistant_audio_decoder.h"
+#include "chromeos/ash/services/assistant/audio_decoder/assistant_audio_decoder.h"
 
 #include <utility>
 #include <vector>
 
 #include "base/bind.h"
 #include "base/threading/thread.h"
-#include "chromeos/services/assistant/audio_decoder/ipc_data_source.h"
+#include "chromeos/ash/services/assistant/audio_decoder/ipc_data_source.h"
 #include "media/base/audio_bus.h"
 #include "media/base/data_source.h"
 #include "media/filters/audio_file_reader.h"

@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/assistant/audio_decoder/assistant_audio_decoder_factory.h"
+#include "chromeos/ash/services/assistant/audio_decoder/assistant_audio_decoder_factory.h"
 
-#include "chromeos/services/assistant/audio_decoder/assistant_audio_decoder.h"
+#include "chromeos/ash/services/assistant/audio_decoder/assistant_audio_decoder.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace chromeos {

@@ -187,7 +187,7 @@ static_library("utility") {
 
     if (enable_cros_libassistant) {
       deps += [
-        "//chromeos/services/assistant/audio_decoder:lib",
+        "//chromeos/ash/services/assistant/audio_decoder:lib",
         "//chromeos/services/assistant/public/mojom",
         "//chromeos/services/libassistant",
         "//chromeos/services/libassistant/public/mojom",
