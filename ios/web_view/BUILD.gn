@@ -24,6 +24,9 @@ group("all_tests") {
 }
 
 config("config") {
+  common_flags = [ "-fapplication-extension" ]
+  cflags_objc = common_flags
+  cflags_objcc = common_flags
   defines = [ "CWV_IMPLEMENTATION" ]
   frameworks = [
     "CoreGraphics.framework",
@@ -401,6 +404,8 @@ tweak_info_plist("info_plist") {
 ios_framework_bundle("web_view") {
   output_name = ios_web_view_output_name
   info_plist_target = ":info_plist"
+
+  ldflags = [ "-fapplication-extension" ]
 
   public_headers = get_target_outputs(":web_view_umbrella_header")
   public_headers += ios_web_view_public_headers
