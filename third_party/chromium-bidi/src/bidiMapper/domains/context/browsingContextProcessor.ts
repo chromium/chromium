@@ -177,15 +177,21 @@ export class BrowsingContextProcessor {
   async process_browsingContext_getTree(
     commandData: BrowsingContext.GetTreeCommand
   ): Promise<BrowsingContext.GetTreeResult> {
+    // TODO sadym: consider replacing with known targets.
     const { targetInfos } = await this._cdpConnection
       .browserClient()
       .Target.getTargets();
     // TODO sadym: implement.
-    if (commandData.params.maxDepth || commandData.params.parent)
-      throw new Error('not implemented yet');
+    if (commandData.params.maxDepth) throw new Error('not implemented yet');
     const contexts = targetInfos
       // Don't expose any information about the tab with Mapper running.
       .filter((target) => this._isValidTarget(target))
+      // Filter by `root`, if specified.
+      .filter(
+        (target) =>
+          commandData.params.root === undefined ||
+          commandData.params.root === target.targetId
+      )
       .map(BrowsingContextProcessor._targetToBiDiContext);
     return { result: { contexts } };
   }

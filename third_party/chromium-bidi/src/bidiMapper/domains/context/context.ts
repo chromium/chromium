@@ -103,32 +103,37 @@ export class Context {
     wait: BrowsingContext.ReadinessState
   ): Promise<BrowsingContext.NavigateResult> {
     // TODO: handle loading errors.
-    // noinspection TypeScriptValidateJSTypes
     const cdpNavigateResult = await this.#cdpClient.Page.navigate({ url });
 
-    // Wait for `wait` condition.
-    switch (wait) {
-      case 'none':
-        break;
+    // No `loaderId` means same-document navigation.
+    if (cdpNavigateResult.loaderId !== undefined) {
+      // Wait for `wait` condition.
+      switch (wait) {
+        case 'none':
+          break;
 
-      case 'interactive':
-        await this.#waitPageLifeCycleEvent(
-          'DOMContentLoaded',
-          cdpNavigateResult.loaderId!
-        );
-        break;
+        case 'interactive':
+          await this.#waitPageLifeCycleEvent(
+            'DOMContentLoaded',
+            cdpNavigateResult.loaderId!
+          );
+          break;
 
-      case 'complete':
-        await this.#waitPageLifeCycleEvent('load', cdpNavigateResult.loaderId!);
-        break;
+        case 'complete':
+          await this.#waitPageLifeCycleEvent(
+            'load',
+            cdpNavigateResult.loaderId!
+          );
+          break;
 
-      default:
-        throw new Error(`Not implemented wait '${wait}'`);
+        default:
+          throw new Error(`Not implemented wait '${wait}'`);
+      }
     }
 
     return {
       result: {
-        navigation: cdpNavigateResult.loaderId,
+        navigation: cdpNavigateResult.loaderId || null,
         url: url,
       },
     };
