@@ -19,7 +19,7 @@ IOSurface = collections.namedtuple('IOSurface', [
 ])
 
 
-def _ExecuteVmmap(pid: int) -> str:
+def ExecuteVmmap(pid: int) -> str:
   """Runs vmmap PID and returns its output."""
   ret = subprocess.run(['vmmap', str(pid)], capture_output=True)
   ret.check_returncode()
@@ -51,7 +51,7 @@ def _PrettyPrint(size: int) -> str:
     return str(size)
 
 
-def _ParseIOSurface(contents: str) -> list:
+def ParseIOSurface(contents: str, quiet=False) -> list:
   """From the content of a vmmap file, returns a list of IOSurfaces."""
   io_surfaces = []
   for line in contents.split('\n'):
@@ -83,7 +83,8 @@ def _ParseIOSurface(contents: str) -> list:
 
     matches = regexp.match(line)
     if matches:
-      print(line)
+      if not quiet:
+        print(line)
       start = int(matches.group('start'), 16)
       end = int(matches.group('end'), 16)
       virtual = _ParseSize(matches.group('virtual'))
@@ -92,7 +93,6 @@ def _ParseIOSurface(contents: str) -> list:
       swapped = _ParseSize(matches.group('swapped'))
       width = int(matches.group('width'))
       height = int(matches.group('height'))
-      print(matches.group('size'))
       size = _ParseSize(matches.group('size'))
 
       io_surface = IOSurface(start, end, virtual, resident, dirty, swapped,
@@ -113,13 +113,13 @@ def main():
 
   contents = None
   if args.pid:
-    contents = _ExecuteVmmap(args.pid)
+    contents = ExecuteVmmap(args.pid)
   else:
     assert args.filename
     with open(args.filename, 'r') as f:
       contents = f.read()
 
-  io_surfaces = _ParseIOSurface(contents)
+  io_surfaces = ParseIOSurface(contents)
   io_surfaces.sort(key=operator.attrgetter('virtual'))
   print('\nIOSurfaces sorted by virtual size:')
   for io_surface in io_surfaces:
