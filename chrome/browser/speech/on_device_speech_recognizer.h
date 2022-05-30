@@ -87,8 +87,8 @@ class OnDeviceSpeechRecognizer
   // to override default behavior.
   std::unique_ptr<media::AudioSystem> audio_system_;
 
-  mojo::Remote<media::mojom::SpeechRecognitionContext>
-      speech_recognition_context_;
+  mojo::Remote<media::mojom::AudioSourceSpeechRecognitionContext>
+      audio_source_speech_recognition_context_;
   mojo::Remote<media::mojom::AudioSourceFetcher> audio_source_fetcher_;
   mojo::Receiver<media::mojom::SpeechRecognitionRecognizerClient>
       speech_recognition_client_receiver_{this};

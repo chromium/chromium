@@ -20,11 +20,11 @@ enum ConfidenceLevel {
   kHighlyConfident,
 };
 
-// The main interface a client uses to interact with a speech recognition
-// service process. In Live Caption, every renderer can own one or more
-// Remote<SpeechRecognitionContext>, with the receiver bound through the
-// BrowserInterfaceBroker. In Chrome OS features like Dictation and Projector,
-// every OnDeviceSpeechRecognizer can own a Remote<SpeechRecognitionContext>.
+// The main interface a renderer client uses to interact with a speech
+// recognition service process. In Live Caption, every renderer can own one or
+// more Remote<SpeechRecognitionContext>, with the receiver bound through the
+// BrowserInterfaceBroker. This is a stable interface that is used across the
+// LaCrOS/Ash boundary.
 interface SpeechRecognitionContext {
   // Bind the recognizers to the speech recognition service. Returns a flag
   // indicating whether multichannel audio is supported by the speech
@@ -33,15 +33,22 @@ interface SpeechRecognitionContext {
                  pending_remote<SpeechRecognitionRecognizerClient> client,
                  SpeechRecognitionOptions options)
                  => (bool is_multichannel_supported);
+};
 
+// Like a SpeechRecognitionContext, except it binds AudioSourceFetcher speech
+// recognizer objects, rather than SpeechRecognitionRecognizer objects.  In
+// Chrome OS features like Dictation and Projector, every
+// OnDeviceSpeechRecognizer can own a
+// Remote<AudioSourceSpeechRecognitionContext>.
+interface AudioSourceSpeechRecognitionContext {
   // Prepares microphone audio to be captured from within the
   // SpeechRecognitionService process, with results passed back to the
   // SpeechRecognitionRecognizerClient.
   BindAudioSourceFetcher(
-                 pending_receiver<AudioSourceFetcher> fetcher_receiver,
-                 pending_remote<SpeechRecognitionRecognizerClient> client,
-                 SpeechRecognitionOptions options)
-                 => (bool is_multichannel_supported);
+      pending_receiver<AudioSourceFetcher> fetcher_receiver,
+      pending_remote<SpeechRecognitionRecognizerClient> client,
+      SpeechRecognitionOptions options)
+      => (bool is_multichannel_supported);
 };
 
 // The main interface to a speech secognition service process.
@@ -49,13 +56,19 @@ interface SpeechRecognitionContext {
 // acquired during process launch.
 [ServiceSandbox=sandbox.mojom.Sandbox.kSpeechRecognition]
 interface SpeechRecognitionService {
-  // Bind the context to a new instance of the speech recognition.
-  BindContext(pending_receiver<SpeechRecognitionContext> context);
+  // Binds a new SpeechRecognitionContext hosted in the service process.
+  BindSpeechRecognitionContext(
+      pending_receiver<SpeechRecognitionContext> context);
+
+  // Binds a new AudioSourceSpeechRecognitionContext hosted in the service
+  // process.
+  BindAudioSourceSpeechRecognitionContext(
+      pending_receiver<AudioSourceSpeechRecognitionContext> context);
 
   // Sets the file path to the Speech On-Device API (SODA) binary and
   // the config file for the language pack.
   SetSodaPath(mojo_base.mojom.FilePath binary_path,
-      mojo_base.mojom.FilePath config_path);
+              mojo_base.mojom.FilePath config_path);
 };
 
 // The interface used to start and stop fetching audio from the microphone

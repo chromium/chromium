@@ -538,11 +538,11 @@ void BindSpeechRecognitionContextHandler(
       frame_host->GetProcess()->GetBrowserContext());
   if (captions::IsLiveCaptionFeatureSupported()) {
 #if BUILDFLAG(ENABLE_BROWSER_SPEECH_SERVICE)
-    SpeechRecognitionServiceFactory::GetForProfile(profile)->Create(
-        std::move(receiver));
+    SpeechRecognitionServiceFactory::GetForProfile(profile)
+        ->BindSpeechRecognitionContext(std::move(receiver));
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
-    CrosSpeechRecognitionServiceFactory::GetForProfile(profile)->Create(
-        std::move(receiver));
+    CrosSpeechRecognitionServiceFactory::GetForProfile(profile)
+        ->BindSpeechRecognitionContext(std::move(receiver));
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
     // TODO(b:223493879): Provide LaCrOS implementation, via go/crosapi.
 #error "LaCrOS speech recognition service factory not implemented yet."

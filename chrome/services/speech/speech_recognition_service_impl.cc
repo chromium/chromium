@@ -21,7 +21,13 @@ SpeechRecognitionServiceImpl::SpeechRecognitionServiceImpl(
 
 SpeechRecognitionServiceImpl::~SpeechRecognitionServiceImpl() = default;
 
-void SpeechRecognitionServiceImpl::BindContext(
+void SpeechRecognitionServiceImpl::BindAudioSourceSpeechRecognitionContext(
+    mojo::PendingReceiver<media::mojom::AudioSourceSpeechRecognitionContext>
+        context) {
+  audio_source_speech_recognition_contexts_.Add(this, std::move(context));
+}
+
+void SpeechRecognitionServiceImpl::BindSpeechRecognitionContext(
     mojo::PendingReceiver<media::mojom::SpeechRecognitionContext> context) {
   speech_recognition_contexts_.Add(this, std::move(context));
 }

@@ -49,9 +49,15 @@ CrosSpeechRecognitionService::CrosSpeechRecognitionService(
 
 CrosSpeechRecognitionService::~CrosSpeechRecognitionService() {}
 
-void CrosSpeechRecognitionService::Create(
+void CrosSpeechRecognitionService::BindSpeechRecognitionContext(
     mojo::PendingReceiver<media::mojom::SpeechRecognitionContext> receiver) {
   speech_recognition_contexts_.Add(this, std::move(receiver));
+}
+
+void CrosSpeechRecognitionService::BindAudioSourceSpeechRecognitionContext(
+    mojo::PendingReceiver<media::mojom::AudioSourceSpeechRecognitionContext>
+        receiver) {
+  audio_source_speech_recognition_contexts_.Add(this, std::move(receiver));
 }
 
 void CrosSpeechRecognitionService::BindRecognizer(

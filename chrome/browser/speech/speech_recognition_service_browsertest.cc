@@ -176,6 +176,8 @@ class SpeechRecognitionServiceTest
   base::FilePath test_data_dir_;
 
   base::test::ScopedFeatureList scoped_feature_list_;
+  mojo::Remote<media::mojom::AudioSourceSpeechRecognitionContext>
+      audio_source_speech_recognition_context_;
   mojo::Remote<media::mojom::SpeechRecognitionContext>
       speech_recognition_context_;
 
@@ -255,20 +257,14 @@ void SpeechRecognitionServiceTest::LaunchService() {
       static_cast<content::BrowserContext*>(browser()->profile());
   auto* service = new ChromeSpeechRecognitionService(browser_context);
 
-  mojo::PendingReceiver<media::mojom::SpeechRecognitionContext>
-      speech_recognition_context_receiver =
-          speech_recognition_context_.BindNewPipeAndPassReceiver();
-  service->Create(std::move(speech_recognition_context_receiver));
-
-  mojo::PendingReceiver<media::mojom::SpeechRecognitionRecognizer>
-      pending_recognizer_receiver =
-          speech_recognition_recognizer_.BindNewPipeAndPassReceiver();
+  service->BindSpeechRecognitionContext(
+      speech_recognition_context_.BindNewPipeAndPassReceiver());
 
   bool is_multichannel_supported = true;
   auto run_loop = std::make_unique<base::RunLoop>();
   // Bind the recognizer pipes used to send audio and receive results.
   speech_recognition_context_->BindRecognizer(
-      std::move(pending_recognizer_receiver),
+      speech_recognition_recognizer_.BindNewPipeAndPassReceiver(),
       speech_recognition_client_receiver_.BindNewPipeAndPassRemote(),
       media::mojom::SpeechRecognitionOptions::New(
           media::mojom::SpeechRecognitionMode::kCaption,
@@ -291,15 +287,13 @@ void SpeechRecognitionServiceTest::LaunchServiceWithAudioSourceFetcher() {
       static_cast<content::BrowserContext*>(browser()->profile());
   auto* service = new ChromeSpeechRecognitionService(browser_context);
 
-  mojo::PendingReceiver<media::mojom::SpeechRecognitionContext>
-      speech_recognition_context_receiver =
-          speech_recognition_context_.BindNewPipeAndPassReceiver();
-  service->Create(std::move(speech_recognition_context_receiver));
+  service->BindAudioSourceSpeechRecognitionContext(
+      audio_source_speech_recognition_context_.BindNewPipeAndPassReceiver());
 
   bool is_multichannel_supported = true;
   auto run_loop = std::make_unique<base::RunLoop>();
   // Bind the recognizer pipes used to send audio and receive results.
-  speech_recognition_context_->BindAudioSourceFetcher(
+  audio_source_speech_recognition_context_->BindAudioSourceFetcher(
       audio_source_fetcher_.BindNewPipeAndPassReceiver(),
       speech_recognition_client_receiver_.BindNewPipeAndPassRemote(),
       media::mojom::SpeechRecognitionOptions::New(

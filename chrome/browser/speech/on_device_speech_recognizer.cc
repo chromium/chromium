@@ -79,11 +79,13 @@ OnDeviceSpeechRecognizer::OnDeviceSpeechRecognizer(
       waiting_for_params_(false) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  // Connect the SpeechRecognitionContext.
-  mojo::PendingReceiver<media::mojom::SpeechRecognitionContext>
-      speech_recognition_context_receiver =
-          speech_recognition_context_.BindNewPipeAndPassReceiver();
-  speech_recognition_context_->BindAudioSourceFetcher(
+  // Connect the AudioSourceSpeechRecognitionContext & bind an
+  // AudioSourceFetcher recognizer.
+  CrosSpeechRecognitionServiceFactory::GetForProfile(profile)
+      ->BindAudioSourceSpeechRecognitionContext(
+          audio_source_speech_recognition_context_
+              .BindNewPipeAndPassReceiver());
+  audio_source_speech_recognition_context_->BindAudioSourceFetcher(
       audio_source_fetcher_.BindNewPipeAndPassReceiver(),
       speech_recognition_client_receiver_.BindNewPipeAndPassRemote(),
       media::mojom::SpeechRecognitionOptions::New(
@@ -94,19 +96,17 @@ OnDeviceSpeechRecognizer::OnDeviceSpeechRecognizer(
           base::BindOnce(&OnDeviceSpeechRecognizer::OnRecognizerBound,
                          weak_factory_.GetWeakPtr())));
 
-  CrosSpeechRecognitionServiceFactory::GetForProfile(profile)->Create(
-      std::move(speech_recognition_context_receiver));
-
-  speech_recognition_context_.set_disconnect_handler(media::BindToCurrentLoop(
-      base::BindOnce(&OnDeviceSpeechRecognizer::OnRecognizerDisconnected,
-                     weak_factory_.GetWeakPtr())));
+  audio_source_speech_recognition_context_.set_disconnect_handler(
+      media::BindToCurrentLoop(
+          base::BindOnce(&OnDeviceSpeechRecognizer::OnRecognizerDisconnected,
+                         weak_factory_.GetWeakPtr())));
 }
 
 OnDeviceSpeechRecognizer::~OnDeviceSpeechRecognizer() {
   audio_source_fetcher_->Stop();
   audio_source_fetcher_.reset();
   speech_recognition_client_receiver_.reset();
-  speech_recognition_context_.reset();
+  audio_source_speech_recognition_context_.reset();
 }
 
 void OnDeviceSpeechRecognizer::Start() {
