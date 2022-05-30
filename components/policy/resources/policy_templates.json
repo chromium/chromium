@@ -20010,7 +20010,9 @@
 
       Setting the policy to Disabled or leaving it unset means platform policy takes precedence if it conflicts with cloud policy.
 
-      This mandatory policy affects machine scope cloud policies.''',
+      This mandatory policy affects machine scope cloud policies.
+
+      This policy is only available on <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>; it has no effect on <ph name="GOOGLE_UPDATE_NAME">Google Update</ph>.''',
     },
     {
       'name': 'CloudUserPolicyOverridesCloudMachinePolicy',
