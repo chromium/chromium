@@ -7807,6 +7807,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSanitizerApiDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kSanitizerAPI)},
 
+    {"sanitizer-api-v0", flag_descriptions::kSanitizerApiv0Name,
+     flag_descriptions::kSanitizerApiv0Description, kOsAll,
+     FEATURE_VALUE_TYPE(blink::features::kSanitizerAPIv0)},
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"productivity-reorder-apps", flag_descriptions::kLauncherAppSortName,
      flag_descriptions::kLauncherAppSortDescription, kOsCrOS,

@@ -371,6 +371,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            blink::features::kPrefersColorSchemeClientHintHeader},
           {"FirstPartySets", features::kFirstPartySets},
           {"SanitizerAPI", blink::features::kSanitizerAPI},
+          {"SanitizerAPIv0", blink::features::kSanitizerAPIv0},
           {"SecureContextFixForWorkers",
            blink::features::kSecureContextFixForWorkers},
           {"StorageAccessAPI", blink::features::kStorageAccessAPI},
