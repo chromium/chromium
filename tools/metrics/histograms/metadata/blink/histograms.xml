@@ -791,6 +791,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.Experimental.Cookies.CacheLookupResult"
+    enum="CookieCacheLookupResult" expires_after="2023-01-01">
+  <owner>carlscab@google.com</owner>
+  <owner>woa-performance@google</owner>
+  <summary>
+    Whether a GetCookiesString request for a document returned the same result
+    as the previous one. This is an experiment to determine the usefulness of a
+    cookie cache in the Renderer.
+
+    A sample is recorded for every GetCookiesString request sent from the
+    Document owned CookieJar.
+  </summary>
+</histogram>
+
 <histogram name="Blink.FedCm.ApprovedClientsExistence" enum="Boolean"
     expires_after="M110">
   <owner>yigu@chromium.org</owner>

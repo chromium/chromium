@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "net/base/features.h"
 #include "net/cookies/parsed_cookie.h"
@@ -18,9 +19,21 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl_hash.h"
+#include "third_party/blink/renderer/platform/wtf/hash_functions.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 
 namespace blink {
 namespace {
+
+enum class CookieCacheLookupResult {
+  kCacheMissFirstAccess = 0,
+  kCacheHitAfterGet = 1,
+  kCacheHitAfterSet = 2,
+  kCacheMissAfterGet = 3,
+  kCacheMissAfterSet = 4,
+  kMaxValue = kCacheMissAfterSet,
+};
 
 void LogCookieHistogram(const char* prefix,
                         bool cookie_manager_requested,
@@ -86,6 +99,7 @@ void CookieJar::SetCookie(const String& value) {
       value,
       RuntimeEnabledFeatures::PartitionedCookiesEnabled(
           document_->GetExecutionContext()));
+  last_operation_was_set_ = true;
   LogCookieHistogram("Blink.SetCookieTime.", requested, timer.Elapsed());
 
   // TODO(crbug.com/1276520): Remove after truncating characters are fully
@@ -108,7 +122,11 @@ String CookieJar::Cookies() {
                              RuntimeEnabledFeatures::PartitionedCookiesEnabled(
                                  document_->GetExecutionContext()),
                              &value);
+  last_operation_was_set_ = false;
   LogCookieHistogram("Blink.CookiesTime.", requested, timer.Elapsed());
+
+  UpdateCacheAfterGetRequest(cookie_url, value);
+
   return value;
 }
 
@@ -158,6 +176,33 @@ void CookieJar::CheckPartitionedCookiesOriginTrial(
                         timer.Elapsed());
     backend_->ConvertPartitionedCookiesToUnpartitioned(response.ResponseUrl());
   }
+}
+
+void CookieJar::UpdateCacheAfterGetRequest(const KURL& cookie_url,
+                                           const String& cookie_string) {
+  absl::optional<unsigned> new_hash = WTF::HashInts(
+      KURLHash::GetHash(cookie_url),
+      cookie_string.IsNull() ? 0 : StringHash::GetHash(cookie_string));
+
+  CookieCacheLookupResult result =
+      CookieCacheLookupResult::kCacheMissFirstAccess;
+
+  if (last_cookies_hash_.has_value()) {
+    if (last_cookies_hash_ == new_hash) {
+      result = last_operation_was_set_
+                   ? CookieCacheLookupResult::kCacheHitAfterSet
+                   : CookieCacheLookupResult::kCacheHitAfterGet;
+    } else {
+      result = last_operation_was_set_
+                   ? CookieCacheLookupResult::kCacheMissAfterSet
+                   : CookieCacheLookupResult::kCacheMissAfterGet;
+    }
+  }
+
+  UMA_HISTOGRAM_ENUMERATION("Blink.Experimental.Cookies.CacheLookupResult",
+                            result);
+
+  last_cookies_hash_ = new_hash;
 }
 
 }  // namespace blink

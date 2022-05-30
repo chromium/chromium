@@ -18819,6 +18819,14 @@ Called by update_net_error_codes.py.-->
   <int value="4" label="Flushed"/>
 </enum>
 
+<enum name="CookieCacheLookupResult">
+  <int value="0" label="kCacheMissFirstAccess"/>
+  <int value="1" label="kCacheHitAfterGet"/>
+  <int value="2" label="kCacheHitAfterSet"/>
+  <int value="3" label="kCacheMissAfterGet"/>
+  <int value="4" label="kCacheMissAfterSet"/>
+</enum>
+
 <enum name="CookieCommitProblem">
   <int value="0" label="Entry encryption failed"/>
   <int value="1" label="Adding cookie to DB failed."/>

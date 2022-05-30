@@ -7,9 +7,11 @@
 
 #include "services/network/public/mojom/restricted_cookie_manager.mojom-blink.h"
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -41,8 +43,34 @@ class CookieJar : public GarbageCollected<CookieJar> {
  private:
   bool RequestRestrictedCookieManagerIfNeeded();
 
+  // Updates the fake cookie cache after a
+  // RestrictedCookieManager::GetCookiesString request returns.
+  //
+  // We want to evaluate the possible performance gain from having a cookie
+  // cache. There is no real cache right now and this class just stores a hash
+  // to determine if the current request could have been served from a real
+  // cache.
+  void UpdateCacheAfterGetRequest(const KURL& cookie_url,
+                                  const String& cookie_string);
+
   HeapMojoRemote<network::mojom::blink::RestrictedCookieManager> backend_;
   Member<blink::Document> document_;
+
+  // Hash used to determine if the value returned by a call to
+  // RestrictedCookieManager::GetCookiesString is the same as a previous one.
+  // Used to answer the question: "had we keep the last cookie_string around
+  // would it have been possible to return that instead of making a new IPC?".
+  // Combines hashes for the `cookie_string` returned by the call and the
+  // `cookie_url` used as a parameter to the call.
+  //
+  // ATTENTION: Just use hashes for now to keep space overhead low, but more
+  // importantly, because keeping cookies around is tricky from a security
+  // perspective.
+  absl::optional<unsigned> last_cookies_hash_;
+  // Whether the last operation performed on this jar was a set or get. Used
+  // along with `last_cookies_hash_` when updating the histogram that tracks
+  // cookie access results.
+  bool last_operation_was_set_{false};
 };
 
 }  // namespace blink
