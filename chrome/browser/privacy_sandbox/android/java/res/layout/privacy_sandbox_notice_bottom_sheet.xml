@@ -39,10 +39,10 @@
             style="@style/TextAppearance.Headline.Primary" />
 
         <TextView
+            android:id="@+id/privacy_sandbox_notice_sheet_description"
             android:layout_marginBottom="@dimen/list_item_default_margin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/privacy_sandbox_notice_sheet_description"
             style="@style/TextAppearance.TextLarge.Secondary" />
 
         <LinearLayout

@@ -5,8 +5,10 @@
 package org.chromium.chrome.browser.privacy_sandbox;
 
 import android.content.Context;
+import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 
@@ -15,6 +17,9 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.ui.text.SpanApplier;
+import org.chromium.ui.text.SpanApplier.SpanInfo;
 
 /** Bottom sheet view for displaying the Privacy Sandbox notice. */
 public class PrivacySandboxBottomSheetNotice implements BottomSheetContent {
@@ -54,6 +59,17 @@ public class PrivacySandboxBottomSheetNotice implements BottomSheetContent {
                 }
             }
         };
+
+        TextView description =
+                mContentView.findViewById(R.id.privacy_sandbox_notice_sheet_description);
+        description.setText(SpanApplier.applySpans(
+                context.getString(R.string.privacy_sandbox_notice_sheet_description),
+                new SpanInfo(
+                        "<link>", "</link>", new NoUnderlineClickableSpan(context, (widget) -> {
+                            mSettingsLauncher.launchSettingsActivity(
+                                    context, LearnMoreFragment.class);
+                        }))));
+        description.setMovementMethod(LinkMovementMethod.getInstance());
 
         View ackButton = mContentView.findViewById(R.id.ack_button);
         ackButton.setOnClickListener((v) -> {

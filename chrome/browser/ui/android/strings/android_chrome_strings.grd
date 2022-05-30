@@ -1070,7 +1070,7 @@ Trust tokens improve privacy on the web and can’t be used to find out who you 
         Help us build a better web
       </message>
       <message name="IDS_PRIVACY_SANDBOX_NOTICE_SHEET_DESCRIPTION" desc="" translateable="false">
-        During trials, Chrome is exploring ways to limit spam, fraud, and sharing between sites. Chrome also estimates your interests that sites can use to show you ads. You can manage your interests in settings.
+        During trials, Chrome is exploring ways to limit spam, fraud, and sharing between sites. Chrome also <ph name="BEGIN_LINK">&lt;link&gt;</ph>estimates your interests<ph name="END_LINK">&lt;/link&gt;</ph> that sites can use to show you ads. You can manage your interests in settings.
       </message>
 
       <!-- Secure DNS Settings.  Used by //chrome/browser/privacy. -->
