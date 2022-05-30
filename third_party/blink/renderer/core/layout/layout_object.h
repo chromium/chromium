@@ -650,6 +650,16 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     return StyleRef().ContainsBlockSize() && IsEligibleForSizeContainment();
   }
+  inline bool ShouldApplyWidthContainment() const {
+    NOT_DESTROYED();
+    return IsHorizontalWritingMode() ? ShouldApplyInlineSizeContainment()
+                                     : ShouldApplyBlockSizeContainment();
+  }
+  inline bool ShouldApplyHeightContainment() const {
+    NOT_DESTROYED();
+    return IsHorizontalWritingMode() ? ShouldApplyBlockSizeContainment()
+                                     : ShouldApplyInlineSizeContainment();
+  }
   inline bool ShouldApplyStyleContainment() const {
     NOT_DESTROYED();
     return StyleRef().ContainsStyle();

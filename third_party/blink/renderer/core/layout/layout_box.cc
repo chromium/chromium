@@ -1216,7 +1216,7 @@ bool LayoutBox::ShouldUseAutoIntrinsicSize() const {
 
 bool LayoutBox::HasOverrideIntrinsicContentWidth() const {
   NOT_DESTROYED();
-  if (!ShouldApplySizeContainment())
+  if (!ShouldApplyWidthContainment())
     return false;
 
   return StyleRef().ContainIntrinsicWidth().has_value();
@@ -1224,7 +1224,7 @@ bool LayoutBox::HasOverrideIntrinsicContentWidth() const {
 
 bool LayoutBox::HasOverrideIntrinsicContentHeight() const {
   NOT_DESTROYED();
-  if (!ShouldApplySizeContainment())
+  if (!ShouldApplyHeightContainment())
     return false;
 
   return StyleRef().ContainIntrinsicHeight().has_value();
