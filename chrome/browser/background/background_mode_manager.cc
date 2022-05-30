@@ -39,6 +39,7 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
+#include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
@@ -68,7 +69,6 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
-#include "content/public/browser/notification_service.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
@@ -350,8 +350,9 @@ BackgroundModeManager::BackgroundModeManager(
     StartBackgroundMode();
 
   // Listen for the application shutting down so we can release our KeepAlive.
-  registrar_.Add(this, chrome::NOTIFICATION_APP_TERMINATING,
-                 content::NotificationService::AllSources());
+  on_app_terminating_subscription_ =
+      browser_shutdown::AddAppTerminatingCallback(base::BindOnce(
+          &BackgroundModeManager::OnAppTerminating, base::Unretained(this)));
   BrowserList::AddObserver(this);
 }
 
@@ -483,13 +484,7 @@ size_t BackgroundModeManager::NumberOfBackgroundModeData() {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-//  BackgroundModeManager, content::NotificationObserver overrides
-void BackgroundModeManager::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  DCHECK_EQ(chrome::NOTIFICATION_APP_TERMINATING, type);
-
+void BackgroundModeManager::OnAppTerminating() {
   // Make sure we aren't still keeping the app alive (only happens if we
   // don't receive an EXTENSIONS_READY notification for some reason).
   ReleaseStartupKeepAlive();
@@ -498,7 +493,6 @@ void BackgroundModeManager::Observe(
   EndBackgroundMode();
   // Shutting down, so don't listen for any more notifications so we don't
   // try to re-enter/exit background mode again.
-  registrar_.RemoveAll();
   for (const auto& it : background_mode_data_)
     it.second->applications()->RemoveObserver(this);
 }
