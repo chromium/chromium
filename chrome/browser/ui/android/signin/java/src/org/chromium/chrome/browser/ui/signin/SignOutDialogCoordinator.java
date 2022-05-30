@@ -111,13 +111,13 @@ public class SignOutDialogCoordinator {
         }
     }
 
-    private static void updateVisibility(CheckBox checkBox, String managedDomain) {
+    private static int getCheckBoxVisibility(String managedDomain) {
         // TODO(crbug.com/1294761): extract logic for whether data wiping is allowed into
         // SigninManager.
         final boolean allowDeletingData = UserPrefs.get(Profile.getLastUsedRegularProfile())
                                                   .getBoolean(Pref.ALLOW_DELETING_BROWSER_HISTORY);
         final boolean showCheckBox = (managedDomain == null) && allowDeletingData;
-        checkBox.setVisibility(showCheckBox ? View.VISIBLE : View.GONE);
+        return showCheckBox ? View.VISIBLE : View.GONE;
     }
 
     @VisibleForTesting
@@ -129,7 +129,7 @@ public class SignOutDialogCoordinator {
                                              .getManagementDomain();
         final View view = inflateView(context, managedDomain, actionType);
         mCheckBox = view.findViewById(R.id.remove_local_data);
-        updateVisibility(mCheckBox, managedDomain);
+        mCheckBox.setVisibility(getCheckBoxVisibility(managedDomain));
 
         mGaiaServiceType = gaiaServiceType;
         mListener = listener;
