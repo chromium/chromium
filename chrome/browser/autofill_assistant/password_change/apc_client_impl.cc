@@ -8,10 +8,12 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/autofill_assistant/password_change/apc_onboarding_coordinator.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/autofill_assistant/password_change/assistant_display_delegate.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
@@ -23,6 +25,11 @@ ApcClientImpl::~ApcClientImpl() = default;
 bool ApcClientImpl::Start(const GURL& url,
                           const std::string& username,
                           bool skip_login) {
+  // If the unified side panel is not enabled, trying to register an entry in it
+  // later on will crash.
+  if (!base::FeatureList::IsEnabled(features::kUnifiedSidePanel))
+    return false;
+
   // Ensure that only one run is ongoing.
   if (is_running_)
     return false;
