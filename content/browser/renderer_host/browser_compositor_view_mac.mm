@@ -194,6 +194,13 @@ void BrowserCompositorMac::UpdateVSyncParameters(
 void BrowserCompositorMac::SetRenderWidgetHostIsHidden(bool hidden) {
   render_widget_host_is_hidden_ = hidden;
   UpdateState();
+  if (state_ == UseParentLayerCompositor) {
+    // UpdateState might not call WasShown when showing a frame using the same
+    // ParentLayerCompositor, since it returns early on a no-op state
+    // transition.
+    delegated_frame_host_->WasShown(GetRendererLocalSurfaceId(), dfh_size_dip_,
+                                    {} /* record_tab_switch_time_request */);
+  }
 }
 
 void BrowserCompositorMac::SetViewVisible(bool visible) {
