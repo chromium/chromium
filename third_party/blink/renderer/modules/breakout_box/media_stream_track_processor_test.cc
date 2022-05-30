@@ -91,12 +91,22 @@ MediaStreamTrack* CreateAudioMediaStreamTrack(
 class MediaStreamTrackProcessorTest : public testing::Test {
  public:
   ~MediaStreamTrackProcessorTest() override {
-    platform_->RunUntilIdle();
+    RunIOUntilIdle();
     WebHeap::CollectAllGarbageForTesting();
   }
 
  protected:
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform_;
+
+ private:
+  void RunIOUntilIdle() const {
+    // Make sure that tasks on IO thread are completed before moving on.
+    base::RunLoop run_loop;
+    Platform::Current()->GetIOTaskRunner()->PostTaskAndReply(
+        FROM_HERE, base::BindOnce([] {}), run_loop.QuitClosure());
+    run_loop.Run();
+    base::RunLoop().RunUntilIdle();
+  }
 };
 
 TEST_F(MediaStreamTrackProcessorTest, VideoFramesAreExposed) {
