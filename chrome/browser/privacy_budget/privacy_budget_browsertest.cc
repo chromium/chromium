@@ -381,10 +381,8 @@ IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTestWithTestRecorder,
   }
 }
 
-// TODO(crbug.com/1268787): Test has been broken on Windows CI since it was
-// first landed.
 IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTestWithScopedConfig,
-                       DISABLED_IncludesMetadata) {
+                       IncludesMetadata) {
   ASSERT_TRUE(base::FeatureList::IsEnabled(features::kIdentifiabilityStudy));
   ASSERT_TRUE(EnableUkmRecording());
 
@@ -402,6 +400,7 @@ IN_PROC_BROWSER_TEST_F(PrivacyBudgetBrowserTestWithScopedConfig,
   ukm::UkmTestHelper ukm_test_helper(ukm_service());
   ukm_test_helper.BuildAndStoreLog();
   std::unique_ptr<ukm::Report> ukm_report = ukm_test_helper.GetUkmReport();
+  ASSERT_TRUE(ukm_test_helper.HasUnsentLogs());
   ASSERT_TRUE(ukm_report);
   ASSERT_NE(ukm_report->entries_size(), 0);
 
