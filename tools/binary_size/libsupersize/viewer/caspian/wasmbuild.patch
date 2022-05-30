@@ -1,5 +1,5 @@
 diff --git a/build/config/BUILDCONFIG.gn b/build/config/BUILDCONFIG.gn
-index d960648941d8b..fc8e041d2bc66 100644
+index c737e53c2ce72..963a095d14a19 100644
 --- a/build/config/BUILDCONFIG.gn
 +++ b/build/config/BUILDCONFIG.gn
 @@ -301,10 +301,11 @@ is_ios = current_os == "ios"
@@ -16,7 +16,7 @@ index d960648941d8b..fc8e041d2bc66 100644
  # =============================================================================
  # TARGET DEFAULTS
 diff --git a/build/config/compiler/BUILD.gn b/build/config/compiler/BUILD.gn
-index 719de1f28fb64..da8adfa8e52c7 100644
+index c3ae8f2250358..9a756be9b3c51 100644
 --- a/build/config/compiler/BUILD.gn
 +++ b/build/config/compiler/BUILD.gn
 @@ -635,6 +635,20 @@ config("compiler") {
@@ -40,7 +40,7 @@ index 719de1f28fb64..da8adfa8e52c7 100644
    # Add flags for link-time optimization. These flags enable
    # optimizations/transformations that require whole-program visibility at link
    # time, so they need to be applied to all translation units, and we may end up
-@@ -749,9 +763,7 @@ config("compiler") {
+@@ -751,9 +765,7 @@ config("compiler") {
    if (use_lld && !enable_call_graph_profile_sort) {
      if (is_win) {
        ldflags += [ "/call-graph-profile-sort:no" ]
@@ -51,16 +51,16 @@ index 719de1f28fb64..da8adfa8e52c7 100644
        ldflags += [ "-Wl,--no-call-graph-profile-sort" ]
      }
    }
-@@ -1537,7 +1549,7 @@ config("default_warnings") {
-         cflags += [ "-Wno-deprecated-non-prototype" ]
+@@ -1536,7 +1548,7 @@ config("default_warnings") {
+         cflags += [ "-Wno-unqualified-std-cast-call" ]
        }
  
 -      if (!is_nacl && !(is_chromeos ||
 +      if (!is_wasm && !is_nacl && !(is_chromeos ||
                          default_toolchain == "//build/toolchain/cros:target")) {
-         # TODO(https://crbug.com/1316298): Re-enable once test failure is figured out
+         # TODO(https://crbug.com/1322823): Remove flags once potential miscompile is investigated.
          cflags += [
-@@ -2307,6 +2319,9 @@ config("symbols") {
+@@ -2305,6 +2317,9 @@ config("symbols") {
  
      # All configs using /DEBUG should include this:
      configs = [ ":win_pdbaltpath" ]
