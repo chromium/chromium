@@ -297,7 +297,7 @@ void LocalTranslator::TranslateL2TP() {
       onc_object_->FindStringKey(::onc::l2tp::kPassword);
   if (password &&
       *password == ::onc::substitutes::kPasswordPlaceholderVerbatim) {
-    // TODO(b/147658302): shill::kL2TPIPsecUseLoginPasswordProperty is a string
+    // TODO(b/220249018): shill::kL2tpIpsecUseLoginPasswordProperty is a string
     // property containing "false" or "true". Migrate it to a bool to match
     // shill::kEapUseLoginPasswordProperty.
     shill_dictionary_->SetKey(shill::kL2TPIPsecUseLoginPasswordProperty,

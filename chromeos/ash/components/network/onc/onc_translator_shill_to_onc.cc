@@ -363,7 +363,7 @@ void ShillToONCTranslator::TranslateL2TP() {
                        std::move(lcp_echo_disabled_value));
   }
 
-  // TODO(b/147658302): shill::kL2TPIPsecUseLoginPasswordProperty is a string
+  // TODO(b/220249018): shill::kL2tpIpsecUseLoginPasswordProperty is a string
   // property containing "false" or "true". Migrate it to a bool to match
   // shill::kEapUseLoginPasswordProperty.
   const std::string* use_login_password = shill_dictionary_->FindStringKey(
