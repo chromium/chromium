@@ -5618,8 +5618,8 @@
           "dimension_sets": [
             {
               "gpu": "1002:7340",
-              "os": "Ubuntu",
-              "pool": "chromium.tests.gpu.experimental"
+              "os": "Ubuntu-18.04.6",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "expiration": 21600,
@@ -7236,8 +7236,8 @@
           "dimension_sets": [
             {
               "gpu": "1002:7340",
-              "os": "Ubuntu",
-              "pool": "chromium.tests.gpu.experimental"
+              "os": "Ubuntu-18.04.6",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "expiration": 21600,
@@ -7266,8 +7266,8 @@
           "dimension_sets": [
             {
               "gpu": "1002:7340",
-              "os": "Ubuntu",
-              "pool": "chromium.tests.gpu.experimental"
+              "os": "Ubuntu-18.04.6",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "expiration": 21600,
@@ -7294,8 +7294,8 @@
           "dimension_sets": [
             {
               "gpu": "1002:7340",
-              "os": "Ubuntu",
-              "pool": "chromium.tests.gpu.experimental"
+              "os": "Ubuntu-18.04.6",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "expiration": 21600,
@@ -7320,8 +7320,8 @@
           "dimension_sets": [
             {
               "gpu": "1002:7340",
-              "os": "Ubuntu",
-              "pool": "chromium.tests.gpu.experimental"
+              "os": "Ubuntu-18.04.6",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "expiration": 21600,
@@ -7344,8 +7344,8 @@
           "dimension_sets": [
             {
               "gpu": "1002:7340",
-              "os": "Ubuntu",
-              "pool": "chromium.tests.gpu.experimental"
+              "os": "Ubuntu-18.04.6",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "expiration": 21600,
@@ -7382,8 +7382,8 @@
           "dimension_sets": [
             {
               "gpu": "1002:7340",
-              "os": "Ubuntu",
-              "pool": "chromium.tests.gpu.experimental"
+              "os": "Ubuntu-18.04.6",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "expiration": 21600,
@@ -7418,8 +7418,8 @@
           "dimension_sets": [
             {
               "gpu": "1002:7340",
-              "os": "Ubuntu",
-              "pool": "chromium.tests.gpu.experimental"
+              "os": "Ubuntu-18.04.6",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "expiration": 21600,
@@ -7454,8 +7454,8 @@
           "dimension_sets": [
             {
               "gpu": "1002:7340",
-              "os": "Ubuntu",
-              "pool": "chromium.tests.gpu.experimental"
+              "os": "Ubuntu-18.04.6",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "expiration": 21600,
@@ -7494,8 +7494,8 @@
           "dimension_sets": [
             {
               "gpu": "1002:7340",
-              "os": "Ubuntu",
-              "pool": "chromium.tests.gpu.experimental"
+              "os": "Ubuntu-18.04.6",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "expiration": 21600,
@@ -7539,8 +7539,8 @@
           "dimension_sets": [
             {
               "gpu": "1002:7340",
-              "os": "Ubuntu",
-              "pool": "chromium.tests.gpu.experimental"
+              "os": "Ubuntu-18.04.6",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "expiration": 21600,
@@ -7575,8 +7575,8 @@
           "dimension_sets": [
             {
               "gpu": "1002:7340",
-              "os": "Ubuntu",
-              "pool": "chromium.tests.gpu.experimental"
+              "os": "Ubuntu-18.04.6",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "expiration": 21600,
@@ -7620,8 +7620,8 @@
           "dimension_sets": [
             {
               "gpu": "1002:7340",
-              "os": "Ubuntu",
-              "pool": "chromium.tests.gpu.experimental"
+              "os": "Ubuntu-18.04.6",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "expiration": 21600,
@@ -7657,8 +7657,8 @@
           "dimension_sets": [
             {
               "gpu": "1002:7340",
-              "os": "Ubuntu",
-              "pool": "chromium.tests.gpu.experimental"
+              "os": "Ubuntu-18.04.6",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "expiration": 21600,
@@ -7693,8 +7693,8 @@
           "dimension_sets": [
             {
               "gpu": "1002:7340",
-              "os": "Ubuntu",
-              "pool": "chromium.tests.gpu.experimental"
+              "os": "Ubuntu-18.04.6",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "expiration": 21600,
@@ -7731,8 +7731,8 @@
           "dimension_sets": [
             {
               "gpu": "1002:7340",
-              "os": "Ubuntu",
-              "pool": "chromium.tests.gpu.experimental"
+              "os": "Ubuntu-18.04.6",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "expiration": 21600,
@@ -7769,8 +7769,8 @@
           "dimension_sets": [
             {
               "gpu": "1002:7340",
-              "os": "Ubuntu",
-              "pool": "chromium.tests.gpu.experimental"
+              "os": "Ubuntu-18.04.6",
+              "pool": "chromium.tests.gpu"
             }
           ],
           "expiration": 21600,
