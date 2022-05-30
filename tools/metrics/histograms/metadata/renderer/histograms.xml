@@ -22,9 +22,26 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<variants name="ProcessLifetimeResolution">
-  <variant name="HighResolution" summary="Tops out at 5 minutes."/>
-  <variant name="LowResolution" summary="Tops out at 24 hours"/>
+<variants name="RendererHostedContentType">
+  <variant name="" summary="all renderers"/>
+  <variant name=".Empty"
+      summary="renderers that never hosted a frame or a worker"/>
+  <variant name=".Extension"
+      summary="renderers that hosted an extension background page"/>
+  <variant name=".MainFrame"
+      summary="renderers that hosted a navigated main frame"/>
+  <variant name=".Speculative"
+      summary="speculative renderers, i.e. renderers that hosted frames but
+               in which no navigation commit occured"/>
+  <variant name=".Subframe_Ad"
+      summary="renderers that hosted a navigated subframe (tagged as an ad),
+               but no main frame"/>
+  <variant name=".Subframe_NoAd"
+      summary="renderers that hosted a navigated subframe (not tagged as an
+               ad), but no main frame"/>
+  <variant name=".Worker"
+      summary="renderers that hosted a worker (service, dedicated or shared),
+               but no navigated frame"/>
 </variants>
 
 <histogram name="Renderer.BrowserLaunchToRunLoopStart" units="ms"
@@ -378,15 +395,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Renderer.ProcessLifetime2.{Resolution}" units="ms"
-    expires_after="2023-02-28">
+<histogram name="Renderer.ProcessLifetime3{RendererHostedContentType}"
+    units="ms" expires_after="2023-02-28">
+  <owner>fdoray@chromium.org</owner>
   <owner>olivierli@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
-    The total time for which a renderer process was live. Recorded when the
-    browser identifies the process as having gone away.
+    The time elapsed between the creation and destruction of a renderer.
+    Recorded for {RendererHostedContentType}.
   </summary>
-  <token key="Resolution" variants="ProcessLifetimeResolution"/>
+  <token key="RendererHostedContentType" variants="RendererHostedContentType"/>
 </histogram>
 
 <histogram name="Renderer.RenderThreadImpl.Init" units="ms"
