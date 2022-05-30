@@ -884,7 +884,8 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<media_router::AccessCodeCastUI>;
   }
   if (base::FeatureList::IsEnabled(features::kSupportTool) &&
-      url.host_piece() == chrome::kChromeUISupportToolHost)
+      url.host_piece() == chrome::kChromeUISupportToolHost &&
+      SupportToolUI::IsEnabled(profile))
     return &NewWebUI<SupportToolUI>;
 #endif  // !BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_WIN)

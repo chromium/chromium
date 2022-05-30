@@ -716,3 +716,7 @@ SupportToolUI::SupportToolUI(content::WebUI* web_ui) : WebUIController(web_ui) {
 }
 
 SupportToolUI::~SupportToolUI() = default;
+
+bool SupportToolUI::IsEnabled(Profile* profile) {
+  return webui::IsEnterpriseManaged() || !profile->IsGuestSession();
+}
