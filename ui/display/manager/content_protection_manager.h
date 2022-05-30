@@ -15,6 +15,7 @@
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/display/manager/content_protection_key_manager.h"
 #include "ui/display/manager/display_configurator.h"
 #include "ui/display/manager/display_manager_export.h"
 
@@ -45,9 +46,6 @@ class DISPLAY_MANAGER_EXPORT ContentProtectionManager
 
   using ContentProtections =
       base::flat_map<int64_t /* display_id */, uint32_t /* protection_mask */>;
-
-  using GetHdcpKeyRequest = base::RepeatingCallback<void(
-      base::OnceCallback<void(const std::string&)>)>;
 
   // Though only run once, a task must outlive its asynchronous operations, so
   // cannot be a OnceCallback.
@@ -82,10 +80,6 @@ class DISPLAY_MANAGER_EXPORT ContentProtectionManager
     native_display_delegate_ = delegate;
   }
 
-  void set_hdcp_key_request(GetHdcpKeyRequest callback) {
-    hdcp_key_request_ = std::move(callback);
-  }
-
   using ClientId = absl::optional<uint64_t>;
 
   // On display reconfiguration, pending requests are cancelled, i.e. clients
@@ -116,6 +110,11 @@ class DISPLAY_MANAGER_EXPORT ContentProtectionManager
                               int64_t display_id,
                               uint32_t protection_mask,
                               ApplyContentProtectionCallback callback);
+
+  void SetProvisionedKeyRequest(
+      ContentProtectionKeyManager::ProvisionedKeyRequest request) {
+    hdcp_key_manager_.set_provisioned_key_request(request);
+  }
 
  private:
   friend class test::ContentProtectionManagerTest;
@@ -172,9 +171,6 @@ class DISPLAY_MANAGER_EXPORT ContentProtectionManager
 
   void QueueContentProtectionTask(ApplyContentProtectionCallback callback,
                                   ClientId client_id);
-  void OnGetHdcpKey(ApplyContentProtectionCallback callback,
-                    ClientId client_id,
-                    const std::string& key);
 
   DisplayLayoutManager* const layout_manager_;                // Not owned.
   NativeDisplayDelegate* native_display_delegate_ = nullptr;  // Not owned.
@@ -194,8 +190,7 @@ class DISPLAY_MANAGER_EXPORT ContentProtectionManager
   // Used for periodic queries to notify observers of display security changes.
   base::RepeatingTimer security_timer_;
 
-  GetHdcpKeyRequest hdcp_key_request_;
-  std::string cached_hdcp_provisioned_key_;
+  ContentProtectionKeyManager hdcp_key_manager_;
 
   base::WeakPtrFactory<ContentProtectionManager> weak_ptr_factory_{this};
 };

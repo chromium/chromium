@@ -41,6 +41,8 @@ component("manager") {
       "apply_content_protection_task.h",
       "configure_displays_task.cc",
       "configure_displays_task.h",
+      "content_protection_key_manager.cc",
+      "content_protection_key_manager.h",
       "content_protection_manager.cc",
       "content_protection_manager.h",
       "default_touch_transform_setter.cc",

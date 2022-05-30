@@ -59,7 +59,7 @@ CdmFactoryDaemonProxyAsh::CdmFactoryDaemonProxyAsh() : CdmFactoryDaemonProxy() {
   ash::Shell::Get()
       ->display_configurator()
       ->content_protection_manager()
-      ->set_hdcp_key_request(base::BindRepeating(
+      ->SetProvisionedKeyRequest(base::BindRepeating(
           &CdmFactoryDaemonProxyAsh::GetHdcp14Key, base::Unretained(this)));
 }
 
