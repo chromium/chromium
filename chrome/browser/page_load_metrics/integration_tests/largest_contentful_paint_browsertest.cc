@@ -83,8 +83,9 @@ void ValidateTraceEvents(std::unique_ptr<TraceAnalyzer> analyzer) {
 
 }  // namespace
 
-// TODO(crbug.com/1223602): Flaky on all platforms.
-IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, DISABLED_LargestContentfulPaint) {
+IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, LargestContentfulPaint) {
+  auto waiter = std::make_unique<page_load_metrics::PageLoadMetricsTestWaiter>(
+      web_contents());
   Start();
   StartTracing({"loading"});
   Load("/largest_contentful_paint.html");
@@ -100,24 +101,33 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, DISABLED_LargestContentfulPaint) {
       base::StrCat({window_origin, "/images/blue96x96.png"});
   const std::string image_3_url_expected =
       base::StrCat({window_origin, "/images/green-256x256.png"});
-
-  content::EvalJsResult result = EvalJs(web_contents(), "run_test()");
-  EXPECT_EQ("", result.error);
+  const std::string expected_url[3] = {
+      image_1_url_expected, image_2_url_expected, image_3_url_expected};
 
   // Verify that the JS API yielded three LCP reports. Note that, as we resolve
   // https://github.com/WICG/largest-contentful-paint/issues/41, this test may
   // need to be updated to reflect new semantics.
-  const auto& list = result.value.GetListDeprecated();
-  const std::string expected_url[3] = {
-      image_1_url_expected, image_2_url_expected, image_3_url_expected};
+  const std::string test_name[3] = {"test_first_image()", "test_larger_image()",
+                                    "test_largest_image()"};
   absl::optional<double> lcp_timestamps[3];
   for (size_t i = 0; i < 3; i++) {
-    const std::string* url = list[i].FindStringPath("url");
+    waiter->AddPageExpectation(page_load_metrics::PageLoadMetricsTestWaiter::
+                                   TimingField::kLargestContentfulPaint);
+
+    // std::string function_name = base::StringPrintf("run_test%zu()", i);
+    content::EvalJsResult result = EvalJs(web_contents(), test_name[i]);
+    EXPECT_EQ("", result.error);
+    const auto& list = result.value.GetListDeprecated();
+    EXPECT_EQ(1u, list.size());
+    const std::string* url = list[0].FindStringPath("url");
     EXPECT_TRUE(url);
     EXPECT_EQ(*url, expected_url[i]);
-    lcp_timestamps[i] = list[i].FindDoublePath("time");
+    lcp_timestamps[i] = list[0].FindDoublePath("time");
     EXPECT_TRUE(lcp_timestamps[i].has_value());
+
+    waiter->Wait();
   }
+
   EXPECT_LT(lcp_timestamps[0], lcp_timestamps[1])
       << "The first LCP report should be before the second";
   EXPECT_LT(lcp_timestamps[1], lcp_timestamps[2])
