@@ -66,7 +66,7 @@ void ThreadedMessagingProxyBase::InitializeWorkerThread(
     const absl::optional<const blink::DedicatedWorkerToken>& token) {
   DCHECK(IsParentContextThread());
 
-  KURL script_url = global_scope_creation_params->script_url.Copy();
+  KURL script_url = global_scope_creation_params->script_url;
 
   if (global_scope_creation_params->web_worker_fetch_context) {
     global_scope_creation_params->web_worker_fetch_context

@@ -37,14 +37,11 @@ WebServiceWorkerFetchContext::Create(
         mojom::blink::SubresourceLoaderUpdaterInterfaceBase>
         pending_subresource_loader_updater,
     const WebVector<WebString>& cors_exempt_header_list) {
-  // Create isolated copies for `worker_script_url` and
-  // `script_url_to_skip_throttling` as the fetch context will be used on a
-  // service worker thread that is different from the current thread.
   return base::MakeRefCounted<WebServiceWorkerFetchContextImpl>(
-      renderer_preferences, KURL::CreateIsolated(worker_script_url.GetString()),
+      renderer_preferences, KURL(worker_script_url.GetString()),
       std::move(pending_url_loader_factory),
       std::move(pending_script_loader_factory),
-      KURL::CreateIsolated(script_url_to_skip_throttling.GetString()),
+      KURL(script_url_to_skip_throttling.GetString()),
       std::move(throttle_provider),
       std::move(websocket_handshake_throttle_provider),
       std::move(preference_watcher_receiver),

@@ -105,8 +105,7 @@ void WorkerMeasurementDelegate::MeasurementComplete(
   memory_usage->bytes = bytes;
   if (worker_global_scope->IsUrlValid() &&
       worker_global_scope->Url().GetString().length() < kMaxReportedUrlLength) {
-    // Copy the URL to send it over to the main thread.
-    memory_usage->url = worker_global_scope->Url().Copy();
+    memory_usage->url = worker_global_scope->Url();
   }
   NotifyMeasurementSuccess(std::move(memory_usage));
 }

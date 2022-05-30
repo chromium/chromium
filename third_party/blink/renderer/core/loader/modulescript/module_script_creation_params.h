@@ -63,7 +63,7 @@ class ModuleScriptCreationParams {
     String isolated_source_text =
         isolated_source_text_ ? isolated_source_text_.IsolatedCopy()
                               : GetSourceText().ToString().IsolatedCopy();
-    return ModuleScriptCreationParams(SourceURL().Copy(), BaseURL().Copy(),
+    return ModuleScriptCreationParams(SourceURL(), BaseURL(),
                                       source_location_type_, GetModuleType(),
                                       isolated_source_text);
   }

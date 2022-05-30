@@ -822,7 +822,7 @@ ResourceScriptStreamer::ResourceScriptStreamer(
                                         std::move(decoder),
                                         loading_task_runner)),
       data_pipe_(std::move(data_pipe)),
-      script_url_string_(script_resource->Url().Copy().GetString()),
+      script_url_string_(script_resource->Url().GetString()),
       script_resource_identifier_(script_resource->InspectorId()),
       // Unfortunately there's no dummy encoding value in the enum; let's use
       // one we don't stream.

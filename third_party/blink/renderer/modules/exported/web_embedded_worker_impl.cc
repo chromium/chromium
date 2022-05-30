@@ -304,13 +304,10 @@ WebEmbeddedWorkerImpl::CreateFetchClientSettingsObjectData(
           : mojom::blink::InsecureRequestPolicy::kBlockAllMixedContent;
 
   return std::make_unique<CrossThreadFetchClientSettingsObjectData>(
-      script_url.Copy() /* global_object_url */,
-      script_url.Copy() /* base_url */, security_origin->IsolatedCopy(),
-      passed_settings_object.referrer_policy,
-      KURL::CreateIsolated(
-          passed_settings_object.outgoing_referrer.GetString()),
-      https_state, AllowedByNosniff::MimeTypeCheck::kLaxForWorker,
-      insecure_requests_policy,
+      script_url /* global_object_url */, script_url /* base_url */,
+      security_origin->IsolatedCopy(), passed_settings_object.referrer_policy,
+      KURL(passed_settings_object.outgoing_referrer.GetString()), https_state,
+      AllowedByNosniff::MimeTypeCheck::kLaxForWorker, insecure_requests_policy,
       FetchClientSettingsObject::InsecureNavigationsSet());
 }
 

@@ -274,7 +274,7 @@ ServiceWorkerInstalledScriptsManager::ServiceWorkerInstalledScriptsManager(
   // worker thread later, so they should keep isolated from the current thread.
   for (const WebURL& url :
        installed_scripts_manager_params->installed_scripts_urls) {
-    installed_urls_.insert(KURL(url).Copy());
+    installed_urls_.insert(KURL(url));
   }
 
   PostCrossThreadTask(

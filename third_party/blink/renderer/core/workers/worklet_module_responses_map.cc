@@ -113,7 +113,7 @@ bool WorkletModuleResponsesMap::GetEntry(
   // Step 5: "Create an entry in cache with key url and value "fetching"."
   std::unique_ptr<Entry> entry = std::make_unique<Entry>();
   entry->AddClient(client, client_task_runner);
-  entries_.insert(std::make_pair(url.Copy(), module_type), std::move(entry));
+  entries_.insert(std::make_pair(url, module_type), std::move(entry));
 
   // Step 6: "Fetch request."
   // Running the callback with an empty params will make the fetcher to fallback

@@ -1090,7 +1090,7 @@ void TokenPreloadScanner::UpdatePredictedBaseURL(const Token& token) {
                                 href_attribute->Value8BitIfNecessary()));
     bool is_valid_base_url =
         url.IsValid() && !url.ProtocolIsData() && !url.ProtocolIsJavaScript();
-    predicted_base_element_url_ = is_valid_base_url ? url.Copy() : KURL();
+    predicted_base_element_url_ = is_valid_base_url ? url : KURL();
   }
 }
 

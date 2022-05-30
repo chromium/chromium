@@ -247,12 +247,6 @@ KURL::KURL(const GURL& gurl) {
        nullptr /* query_encoding */);
 }
 
-KURL KURL::CreateIsolated(const String& url) {
-  // FIXME: We should be able to skip this extra copy and created an
-  // isolated KURL more efficiently.
-  return KURL(url).Copy();
-}
-
 // Constructs a new URL given a base URL and a possibly relative input URL.
 // This assumes UTF-8 encoding.
 KURL::KURL(const KURL& base, const String& relative) {
@@ -285,7 +279,7 @@ KURL::KURL(const KURL& other)
       parsed_(other.parsed_),
       string_(other.string_) {
   if (other.inner_url_.get())
-    inner_url_ = std::make_unique<KURL>(other.inner_url_->Copy());
+    inner_url_ = std::make_unique<KURL>(*other.inner_url_);
 }
 
 KURL::~KURL() = default;
@@ -297,22 +291,10 @@ KURL& KURL::operator=(const KURL& other) {
   parsed_ = other.parsed_;
   string_ = other.string_;
   if (other.inner_url_)
-    inner_url_ = std::make_unique<KURL>(other.inner_url_->Copy());
+    inner_url_ = std::make_unique<KURL>(*other.inner_url_);
   else
     inner_url_.reset();
   return *this;
-}
-
-KURL KURL::Copy() const {
-  KURL result;
-  result.is_valid_ = is_valid_;
-  result.protocol_is_in_http_family_ = protocol_is_in_http_family_;
-  result.protocol_ = protocol_.IsolatedCopy();
-  result.parsed_ = parsed_;
-  result.string_ = string_.IsolatedCopy();
-  if (inner_url_)
-    result.inner_url_ = std::make_unique<KURL>(inner_url_->Copy());
-  return result;
 }
 
 bool KURL::IsNull() const {

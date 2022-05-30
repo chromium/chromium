@@ -46,7 +46,7 @@ GlobalScopeCreationParams::GlobalScopeCreationParams(
     bool parent_cross_origin_isolated_capability,
     bool parent_direct_socket_capability,
     InterfaceRegistry* interface_registry)
-    : script_url(script_url.Copy()),
+    : script_url(script_url),
       script_type(script_type),
       global_scope_name(global_scope_name.IsolatedCopy()),
       user_agent(user_agent.IsolatedCopy()),

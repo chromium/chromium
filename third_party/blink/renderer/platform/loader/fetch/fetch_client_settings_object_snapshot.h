@@ -128,9 +128,8 @@ class PLATFORM_EXPORT FetchClientSettingsObjectSnapshot final
   // Gets a copy of the data suitable for passing to another thread.
   std::unique_ptr<CrossThreadFetchClientSettingsObjectData> CopyData() const {
     return std::make_unique<CrossThreadFetchClientSettingsObjectData>(
-        global_object_url_.Copy(), base_url_.Copy(),
-        security_origin_->IsolatedCopy(), referrer_policy_,
-        outgoing_referrer_.IsolatedCopy(), https_state_,
+        global_object_url_, base_url_, security_origin_->IsolatedCopy(),
+        referrer_policy_, outgoing_referrer_.IsolatedCopy(), https_state_,
         mime_type_check_for_classic_worker_script_, insecure_requests_policy_,
         insecure_navigations_set_);
   }
