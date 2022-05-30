@@ -755,7 +755,7 @@ source_set("unit_tests") {
     sources += [
       "capabilities_service_impl_unittest.cc",
       "http_credentials_cleaner_unittest.cc",
-      "password_scripts_fetcher_impl_unittests.cc",
+      "password_scripts_fetcher_impl_unittest.cc",
       "saved_passwords_capabilities_fetcher_unittest.cc",
     ]
   }

@@ -62,6 +62,9 @@ KeyedService* PasswordScriptsFetcherFactory::BuildServiceInstanceFor(
   }
 
   return new password_manager::PasswordScriptsFetcherImpl(
-      version_info::GetVersion(), browser_context->GetDefaultStoragePartition()
-                                      ->GetURLLoaderFactoryForBrowserProcess());
+      std::make_unique<autofill_assistant::CommonDependenciesChrome>()
+          ->IsSupervisedUser(browser_context),
+      version_info::GetVersion(),
+      browser_context->GetDefaultStoragePartition()
+          ->GetURLLoaderFactoryForBrowserProcess());
 }

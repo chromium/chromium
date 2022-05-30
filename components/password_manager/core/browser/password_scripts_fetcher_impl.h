@@ -19,12 +19,12 @@
 #include "components/password_manager/core/browser/password_scripts_fetcher.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 
-namespace url {
-class Origin;
-}
-
 namespace network {
 class SharedURLLoaderFactory;
+}
+
+namespace url {
+class Origin;
 }
 
 namespace password_manager {
@@ -51,9 +51,11 @@ class PasswordScriptsFetcherImpl
   // The first constructor calls the second one. The second one is called
   // directly only from tests.
   PasswordScriptsFetcherImpl(
+      bool is_supervised_user,
       const base::Version& version,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
   PasswordScriptsFetcherImpl(
+      bool is_supervised_user,
       const base::Version& version,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::string scripts_list_url);
@@ -94,6 +96,11 @@ class PasswordScriptsFetcherImpl
   bool IsCacheStale() const;
   // Runs |callback| immediately with the script availability for |origin|.
   void RunResponseCallback(url::Origin origin, ResponseCallback callback);
+
+  // Indicates whether the user has a supervised account - for those, script
+  // availability already returns `false` unless overwritten by the
+  // `kForceEnablePasswordDomainCapabilities` feature.
+  const bool is_supervised_user_;
 
   const base::Version version_;
 

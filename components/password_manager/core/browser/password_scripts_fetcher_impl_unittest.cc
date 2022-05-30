@@ -16,6 +16,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::Pair;
+using ::testing::Return;
 using ::testing::UnorderedElementsAre;
 
 namespace {
@@ -68,7 +69,8 @@ base::Version GetVersion() {
 namespace password_manager {
 class PasswordScriptsFetcherImplTest : public ::testing::Test {
  public:
-  void Reinitialize(const base::Version& version) {
+  void Reinitialize(const base::Version& version,
+                    bool is_supervised_user = false) {
     recorded_responses_.clear();
     test_url_loader_factory_ =
         std::make_unique<network::TestURLLoaderFactory>();
@@ -76,7 +78,8 @@ class PasswordScriptsFetcherImplTest : public ::testing::Test {
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             test_url_loader_factory_.get());
     fetcher_ = std::make_unique<PasswordScriptsFetcherImpl>(
-        version, test_shared_loader_factory_);
+        /* is_supervised_user= */ is_supervised_user, version,
+        test_shared_loader_factory_);
   }
 
   void SetUp() override {
@@ -362,6 +365,41 @@ TEST_F(PasswordScriptsFetcherImplTest, IsScriptAvailable) {
   EXPECT_EQ(0, GetNumberOfPendingRequests());
 }
 
+TEST_F(PasswordScriptsFetcherImplTest, IsScriptAvailableForSupervisedUser) {
+  // Simulate a supervised user.
+  Reinitialize(GetVersion(), /*is_supervised_user=*/true);
+  // `IsScriptAvailable` does not trigger any network requests and returns
+  // false.
+  EXPECT_FALSE(fetcher()->IsScriptAvailable(GetOriginWithScript1()));
+  EXPECT_FALSE(fetcher()->IsScriptAvailable(GetOriginWithoutScript()));
+  EXPECT_EQ(0, GetNumberOfPendingRequests());
+  StartBulkCheck();
+  // No request is ever started.
+  EXPECT_EQ(0, GetNumberOfPendingRequests());
+
+  // The results are still false.
+  EXPECT_FALSE(fetcher()->IsScriptAvailable(GetOriginWithScript1()));
+  EXPECT_FALSE(fetcher()->IsScriptAvailable(GetOriginWithoutScript()));
+}
+
+TEST_F(PasswordScriptsFetcherImplTest,
+       IsScriptAvailableForSupervisedUserWithDomainFlagSet) {
+  // Simulate a supervised user.
+  Reinitialize(GetVersion(), /*is_supervised_user=*/true);
+
+  EXPECT_FALSE(fetcher()->IsScriptAvailable(GetOriginWithScript1()));
+  EXPECT_FALSE(fetcher()->IsScriptAvailable(GetOriginWithoutScript()));
+  EXPECT_EQ(0, GetNumberOfPendingRequests());
+
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(
+      password_manager::features::kForceEnablePasswordDomainCapabilities);
+
+  // The flag overrides even supervised users.
+  EXPECT_TRUE(fetcher()->IsScriptAvailable(GetOriginWithScript1()));
+  EXPECT_TRUE(fetcher()->IsScriptAvailable(GetOriginWithoutScript()));
+}
+
 TEST_F(PasswordScriptsFetcherImplTest, EnablePasswordDomainCapabilitiesFlag) {
   // |kEnablePasswordDomainCapabilities| flag is disabled, |IsScriptAvailable|
   // returns the default value (false).
@@ -403,7 +441,8 @@ TEST_F(PasswordScriptsFetcherImplTest, AnotherScriptsListUrl) {
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory =
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &test_url_loader_factory);
-  PasswordScriptsFetcherImpl fetcher(GetVersion(), test_shared_loader_factory,
+  PasswordScriptsFetcherImpl fetcher(/*is_supervised_user=*/false, GetVersion(),
+                                     test_shared_loader_factory,
                                      kNonDefaultScriptsListUrl);
 
   fetcher.PrewarmCache();
