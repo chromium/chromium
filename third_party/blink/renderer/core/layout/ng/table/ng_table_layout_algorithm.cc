@@ -971,6 +971,7 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
     const NGBlockBreakToken* child_break_token = entry.GetBreakToken();
     const NGLayoutResult* child_result;
     LayoutUnit child_inline_offset;
+    absl::optional<TableBoxExtent> new_table_box_extent;
     if (child.IsTableCaption()) {
       if (!relayout_captions)
         continue;
@@ -1026,7 +1027,7 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
         // in a previous fragment.
         if (entry.GetSectionIndex() > 0 || IsResumingLayout(child_break_token))
           border_padding_sides_to_include.block_start = false;
-        table_box_extent =
+        new_table_box_extent =
             BeginTableBoxLayout(child_block_offset, TableBoxBorderPadding());
         // Only include border-spacing if we're at the start of the section.
         if (!IsResumingLayout(child_break_token))
@@ -1082,6 +1083,12 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
         break;
       }
       DCHECK_EQ(break_status, NGBreakStatus::kContinue);
+    }
+
+    if (new_table_box_extent) {
+      // The first section was added successfully. We're officially inside the
+      // table box!
+      table_box_extent = new_table_box_extent;
     }
 
     const auto& physical_fragment =
