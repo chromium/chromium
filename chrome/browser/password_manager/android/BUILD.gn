@@ -118,6 +118,7 @@ android_library("java") {
 
   sources = [
     "java/src/org/chromium/chrome/browser/password_manager/ConfirmationDialogHelper.java",
+    "java/src/org/chromium/chrome/browser/password_manager/PasswordCheckupClientMetricsRecorder.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordManagerAndroidBackendUtil.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordManagerHelper.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordManagerLifecycleHelper.java",
@@ -158,6 +159,7 @@ junit_binary("password_manager_junit_tests") {
   testonly = true
 
   sources = [
+    "junit/src/org/chromium/chrome/browser/password_manager/PasswordCheckupClientMetricsRecorderTest.java",
     "junit/src/org/chromium/chrome/browser/password_manager/PasswordManagerAndroidBackendUtilTest.java",
     "junit/src/org/chromium/chrome/browser/password_manager/PasswordManagerHelperTest.java",
     "junit/src/org/chromium/chrome/browser/password_manager/PasswordManagerLifecycleHelperTest.java",

@@ -586,8 +586,8 @@ class SafetyCheckMediator
 
         mPasswordStoreBridge.addObserver(this, true);
         WeakReference<SafetyCheckMediator> weakRef = new WeakReference(this);
-        mPasswordCheckupHelper.getNumberOfBreachedCredentials(PasswordCheckReferrer.SAFETY_CHECK,
-                getSyncingAccount(),
+        PasswordManagerHelper.getBreachedCredentialsCount(PasswordCheckReferrer.SAFETY_CHECK,
+                mPasswordCheckupHelper, getSyncingAccount(),
                 count
                 -> {
                     if (weakRef.get() == null) return;
@@ -612,8 +612,8 @@ class SafetyCheckMediator
         }
 
         WeakReference<SafetyCheckMediator> weakRef = new WeakReference(this);
-        mPasswordCheckupHelper.runPasswordCheckup(PasswordCheckReferrer.SAFETY_CHECK,
-                getSyncingAccount(),
+        PasswordManagerHelper.runPasswordCheckupInBackground(PasswordCheckReferrer.SAFETY_CHECK,
+                mPasswordCheckupHelper, getSyncingAccount(),
                 unused
                 -> {
                     if (weakRef.get() == null) return;
@@ -651,8 +651,8 @@ class SafetyCheckMediator
 
     private void onPasswordCheckFinished() {
         WeakReference<SafetyCheckMediator> weakRef = new WeakReference(this);
-        mPasswordCheckupHelper.getNumberOfBreachedCredentials(PasswordCheckReferrer.SAFETY_CHECK,
-                getSyncingAccount(),
+        PasswordManagerHelper.getBreachedCredentialsCount(PasswordCheckReferrer.SAFETY_CHECK,
+                mPasswordCheckupHelper, getSyncingAccount(),
                 count
                 -> {
                     if (weakRef.get() == null) return;
@@ -664,7 +664,7 @@ class SafetyCheckMediator
                 });
     }
 
-    private void onPasswordCheckFailed(Integer error) {
+    private void onPasswordCheckFailed(Exception error) {
         setRunnablePasswords(() -> {
             if (mModel != null) {
                 RecordHistogram.recordEnumeratedHistogram("Settings.SafetyCheck.PasswordsResult",
