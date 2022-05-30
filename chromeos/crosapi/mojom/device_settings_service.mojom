@@ -35,6 +35,9 @@ struct DeviceSettings {
   // The value of UsbDetachableAllowlist device policy.
   UsbDetachableAllowlist? usb_detachable_allow_list@2;
 
+  // The value of DeviceEphemeralUsersEnabled device policy.
+  [MinVersion=1] OptionalBool device_ephemeral_users_enabled@3;
+
   [Stable]
   enum OptionalBool {
     kUnset,

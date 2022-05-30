@@ -509,6 +509,7 @@ mojom::DeviceSettingsPtr GetDeviceSettings() {
   mojom::DeviceSettingsPtr result = mojom::DeviceSettings::New();
 
   result->attestation_for_content_protection_enabled = MojoOptionalBool::kUnset;
+  result->device_ephemeral_users_enabled = MojoOptionalBool::kUnset;
   if (ash::CrosSettings::IsInitialized()) {
     // It's expected that the CrosSettings values are trusted. The only
     // theoretical exception is when device ownership is taken on consumer
@@ -549,6 +550,14 @@ mojom::DeviceSettingsPtr GetDeviceSettings() {
           allow_list->usb_device_ids.push_back(std::move(usb_device_id));
         }
         result->usb_detachable_allow_list = std::move(allow_list);
+      }
+
+      bool ephemeral_users_enabled = false;
+      if (cros_settings->GetBoolean(ash::kAccountsPrefEphemeralUsersEnabled,
+                                    &ephemeral_users_enabled)) {
+        result->device_ephemeral_users_enabled = ephemeral_users_enabled
+                                                     ? MojoOptionalBool::kTrue
+                                                     : MojoOptionalBool::kFalse;
       }
     } else {
       LOG(WARNING) << "Unexpected crossettings trusted values status: "

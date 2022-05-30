@@ -134,6 +134,9 @@ TEST_F(CrosapiUtilTest, DeviceSettingsWithData) {
   testing_profile_.ScopedCrosSettingsTestHelper()
       ->GetStubbedProvider()
       ->SetBoolean(ash::kAttestationForContentProtectionEnabled, true);
+  testing_profile_.ScopedCrosSettingsTestHelper()
+      ->GetStubbedProvider()
+      ->SetBoolean(ash::kAccountsPrefEphemeralUsersEnabled, false);
 
   base::Value allowlist(base::Value::Type::LIST);
   base::Value ids(base::Value::Type::DICTIONARY);
@@ -150,6 +153,8 @@ TEST_F(CrosapiUtilTest, DeviceSettingsWithData) {
 
   EXPECT_EQ(settings->attestation_for_content_protection_enabled,
             crosapi::mojom::DeviceSettings::OptionalBool::kTrue);
+  EXPECT_EQ(settings->device_ephemeral_users_enabled,
+            crosapi::mojom::DeviceSettings::OptionalBool::kFalse);
   ASSERT_EQ(settings->usb_detachable_allow_list->usb_device_ids.size(), 1u);
   EXPECT_EQ(
       settings->usb_detachable_allow_list->usb_device_ids[0]->has_vendor_id,
