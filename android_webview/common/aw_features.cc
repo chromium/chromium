@@ -14,7 +14,7 @@ namespace features {
 // Enables package name logging for the most popular WebView embedders that are
 // on a dynamically generated allowlist.
 const base::Feature kWebViewAppsPackageNamesAllowlist{
-    "WebViewAppsPackageNamesAllowlist", base::FEATURE_DISABLED_BY_DEFAULT};
+    "WebViewAppsPackageNamesAllowlist", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Maximum time to throttle querying the app package names allowlist from the
 // component updater service, used when there is a valid cached allowlist
