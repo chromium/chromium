@@ -624,9 +624,8 @@ void TouchEventManager::HandleTouchPoint(
     return;
   }
 
-  // In touch event model only touch starts can set the target and after that
-  // the touch event always goes to that target.
-  if (event.GetType() == WebInputEvent::Type::kPointerDown) {
+  if (!RuntimeEnabledFeatures::TouchActionEffectiveAtPointerDownEnabled() &&
+      event.GetType() == WebInputEvent::Type::kPointerDown) {
     UpdateTouchAttributeMapsForPointerDown(event, pointer_event_target);
   }
 
