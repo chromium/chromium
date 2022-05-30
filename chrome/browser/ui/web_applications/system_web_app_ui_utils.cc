@@ -15,6 +15,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
@@ -24,7 +25,6 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_manager.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -87,14 +87,14 @@ WebAppProvider* GetWebAppProviderForSystemWebApps(Profile* profile) {
 absl::optional<ash::SystemWebAppType> GetSystemWebAppTypeForAppId(
     Profile* profile,
     const AppId& app_id) {
-  auto* swa_manager = SystemWebAppManager::Get(profile);
+  auto* swa_manager = ash::SystemWebAppManager::Get(profile);
   return swa_manager ? swa_manager->GetSystemAppTypeForAppId(app_id)
                      : absl::nullopt;
 }
 
 absl::optional<AppId> GetAppIdForSystemWebApp(Profile* profile,
                                               ash::SystemWebAppType app_type) {
-  auto* swa_manager = SystemWebAppManager::Get(profile);
+  auto* swa_manager = ash::SystemWebAppManager::Get(profile);
   return swa_manager ? swa_manager->GetAppIdForSystemApp(app_type)
                      : absl::nullopt;
 }
@@ -199,7 +199,8 @@ Browser* LaunchSystemWebAppImpl(Profile* profile,
     return nullptr;
   }
 
-  SystemWebAppManager* swa_manager = SystemWebAppManager::Get(profile);
+  ash::SystemWebAppManager* swa_manager =
+      ash::SystemWebAppManager::Get(profile);
   if (!swa_manager)
     return nullptr;
 
@@ -315,7 +316,8 @@ bool IsBrowserForSystemWebApp(Browser* browser, ash::SystemWebAppType type) {
 absl::optional<ash::SystemWebAppType> GetCapturingSystemAppForURL(
     Profile* profile,
     const GURL& url) {
-  SystemWebAppManager* swa_manager = SystemWebAppManager::Get(profile);
+  ash::SystemWebAppManager* swa_manager =
+      ash::SystemWebAppManager::Get(profile);
   return swa_manager ? swa_manager->GetCapturingSystemAppForURL(url)
                      : absl::nullopt;
 }

@@ -29,6 +29,7 @@
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/ash/release_notes/release_notes_notification.h"
 #include "chrome/browser/ash/release_notes/release_notes_storage.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/web_applications/help_app/help_app_discover_tab_notification.h"
 #include "chrome/browser/ash/web_applications/system_web_app_integration_test.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
@@ -38,7 +39,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/system_web_apps/test/system_web_app_browsertest_base.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -694,7 +694,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
 
   // Wait for system apps background tasks to start.
   base::RunLoop run_loop;
-  web_app::SystemWebAppManager::GetForTest(browser()->profile())
+  ash::SystemWebAppManager::GetForTest(browser()->profile())
       ->on_tasks_started()
       .Post(FROM_HERE, run_loop.QuitClosure());
   run_loop.Run();

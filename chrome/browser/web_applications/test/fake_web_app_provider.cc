@@ -17,7 +17,6 @@
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_manager.h"
 #include "chrome/browser/web_applications/test/fake_externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/test/fake_os_integration_manager.h"
@@ -144,7 +143,7 @@ void FakeWebAppProvider::SetWebAppUiManager(
 }
 
 void FakeWebAppProvider::SetSystemWebAppManager(
-    std::unique_ptr<SystemWebAppManager> system_web_app_manager) {
+    std::unique_ptr<ash::SystemWebAppManager> system_web_app_manager) {
   CheckNotStarted();
   system_web_app_manager_ = std::move(system_web_app_manager);
 }

@@ -13,6 +13,7 @@
 #include "ash/webui/projector_app/projector_app_client.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "base/bind.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_prefs.h"
@@ -22,7 +23,6 @@
 #include "chrome/browser/ui/ash/projector/projector_utils.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chromeos/login/login_state/login_state.h"
@@ -270,8 +270,8 @@ void ProjectorClientImpl::MaybeSwitchDriveIntegrationServiceObservation() {
 
 void ProjectorClientImpl::OnEnablementPolicyChanged() {
   Profile* profile = ProfileManager::GetActiveUserProfile();
-  web_app::SystemWebAppManager* swa_manager =
-      web_app::SystemWebAppManager::Get(profile);
+  ash::SystemWebAppManager* swa_manager =
+      ash::SystemWebAppManager::Get(profile);
   const bool is_installed =
       swa_manager &&
       swa_manager->IsSystemWebApp(ash::kChromeUITrustedProjectorSwaAppId);

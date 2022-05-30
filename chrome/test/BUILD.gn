@@ -1173,6 +1173,7 @@ if (!is_android) {
       "//chrome/browser:theme_properties",
       "//chrome/browser/accessibility:test_support",
       "//chrome/browser/apps/app_service:test_support",
+      "//chrome/browser/ash/system_web_apps/types:types",
       "//chrome/browser/breadcrumbs:browser_tests",
       "//chrome/browser/browsing_data:constants",
       "//chrome/browser/continuous_search:browser_tests",

@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"
 #include "chrome/browser/apps/intent_helper/common_apps_navigation_throttle.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/browser.h"
@@ -20,7 +21,6 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -58,7 +58,7 @@ class ProjectorNavigationThrottleTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-    web_app::SystemWebAppManager::GetForTest(profile())
+    ash::SystemWebAppManager::GetForTest(profile())
         ->InstallSystemAppsForTesting();
 
     base::Time start_time;
@@ -279,7 +279,7 @@ class ProjectorNavigationThrottleDisabledTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-    web_app::SystemWebAppManager::GetForTest(profile())
+    ash::SystemWebAppManager::GetForTest(profile())
         ->InstallSystemAppsForTesting();
   }
 

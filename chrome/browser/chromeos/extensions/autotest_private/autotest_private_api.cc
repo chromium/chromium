@@ -100,6 +100,7 @@
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/settings/stats_reporting_controller.h"
 #include "chrome/browser/ash/system/input_device_settings.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/banners/app_banner_manager_desktop.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -131,7 +132,6 @@
 #include "chrome/browser/ui/webui/chromeos/crostini_installer/crostini_installer_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/crostini_installer/crostini_installer_ui.h"
 #include "chrome/browser/web_applications/app_registrar_observer.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/extensions/api/autotest_private.h"
@@ -2084,8 +2084,8 @@ AutotestPrivateWaitForSystemWebAppsInstallFunction::
 ExtensionFunction::ResponseAction
 AutotestPrivateWaitForSystemWebAppsInstallFunction::Run() {
   Profile* profile = Profile::FromBrowserContext(browser_context());
-  web_app::SystemWebAppManager* swa_manager =
-      web_app::SystemWebAppManager::GetForTest(profile);
+  ash::SystemWebAppManager* swa_manager =
+      ash::SystemWebAppManager::GetForTest(profile);
 
   if (!swa_manager)
     return RespondNow(Error("System Web Apps are not available for profile."));
@@ -2111,8 +2111,8 @@ AutotestPrivateGetRegisteredSystemWebAppsFunction::
 ExtensionFunction::ResponseAction
 AutotestPrivateGetRegisteredSystemWebAppsFunction::Run() {
   Profile* profile = Profile::FromBrowserContext(browser_context());
-  web_app::SystemWebAppManager* swa_manager =
-      web_app::SystemWebAppManager::GetForTest(profile);
+  ash::SystemWebAppManager* swa_manager =
+      ash::SystemWebAppManager::GetForTest(profile);
 
   if (!swa_manager)
     return RespondNow(Error("System Web Apps are not available for profile."));
@@ -2228,8 +2228,8 @@ AutotestPrivateLaunchSystemWebAppFunction::Run() {
            << params->app_name << " url: " << params->url;
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
-  web_app::SystemWebAppManager* swa_manager =
-      web_app::SystemWebAppManager::GetForTest(profile);
+  ash::SystemWebAppManager* swa_manager =
+      ash::SystemWebAppManager::GetForTest(profile);
   if (!swa_manager)
     return RespondNow(Error("System Web Apps not enabled for profile."));
 

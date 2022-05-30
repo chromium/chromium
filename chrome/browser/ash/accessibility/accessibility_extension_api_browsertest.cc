@@ -8,12 +8,12 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/dictation_bubble_test_helper.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/test/browser_test.h"
@@ -76,8 +76,7 @@ IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest, OpenSettingsSubpage) {
   Profile* profile = AccessibilityManager::Get()->profile();
 
   // Install the Settings App.
-  web_app::SystemWebAppManager::GetForTest(profile)
-      ->InstallSystemAppsForTesting();
+  ash::SystemWebAppManager::GetForTest(profile)->InstallSystemAppsForTesting();
 
   ASSERT_TRUE(RunSubtest("testOpenSettingsSubpage")) << message_;
 
@@ -101,8 +100,7 @@ IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest,
   Profile* profile = AccessibilityManager::Get()->profile();
 
   // Install the Settings App.
-  web_app::SystemWebAppManager::GetForTest(profile)
-      ->InstallSystemAppsForTesting();
+  ash::SystemWebAppManager::GetForTest(profile)->InstallSystemAppsForTesting();
 
   ASSERT_TRUE(RunSubtest("testOpenSettingsSubpageInvalidSubpage")) << message_;
 

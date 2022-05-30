@@ -93,8 +93,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/services/multidevice_setup/public/cpp/prefs.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #endif
 
@@ -176,7 +176,7 @@ class SaveCardBubbleViewsFullFormBrowserTest
     ASSERT_TRUE(SetupClients());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // Install the Settings App.
-    web_app::SystemWebAppManager::GetForTest(GetProfile(0))
+    ash::SystemWebAppManager::GetForTest(GetProfile(0))
         ->InstallSystemAppsForTesting();
 #endif
 

@@ -8,11 +8,11 @@
 #include <string>
 
 #include "base/unguessable_token.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/manifest_update_manager.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_audio_focus_id_map.h"
 #include "chrome/browser/web_applications/web_app_launch_queue.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -82,11 +82,12 @@ void WebAppTabHelper::ReadyToCommitNavigation(
   }
 
   // If navigating to a System Web App (including navigation in sub frames), let
-  // SystemWebAppManager perform tab-secific setup for navigations in System Web
-  // Apps.
+  // ash::SystemWebAppManager perform tab-secific setup for navigations in
+  // System Web Apps.
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-  auto* swa_manager = SystemWebAppManager::GetForLocalAppsUnchecked(profile);
+  auto* swa_manager =
+      ash::SystemWebAppManager::GetForLocalAppsUnchecked(profile);
   if (swa_manager && swa_manager->IsSystemWebApp(GetAppId())) {
     swa_manager->OnReadyToCommitNavigation(GetAppId(), navigation_handle);
   }

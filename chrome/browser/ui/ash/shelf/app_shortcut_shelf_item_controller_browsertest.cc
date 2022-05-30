@@ -8,6 +8,7 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "base/callback_helpers.h"
 #include "chrome/browser/ash/crostini/crostini_terminal.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #include "chrome/browser/ui/browser.h"
@@ -17,7 +18,6 @@
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
@@ -64,7 +64,7 @@ class AppShortcutShelfItemControllerBrowserTest : public InProcessBrowserTest {
   }
 
   void InstallApp() {
-    web_app::SystemWebAppManager::GetForTest(browser()->profile())
+    ash::SystemWebAppManager::GetForTest(browser()->profile())
         ->InstallSystemAppsForTesting();
 
     app_id_ = *web_app::GetAppIdForSystemWebApp(

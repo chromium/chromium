@@ -12,9 +12,9 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
@@ -93,12 +93,13 @@ WebApps::WebApps(apps::AppServiceProxy* proxy)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       instance_registry_(&proxy->InstanceRegistry()),
 #endif
-      publisher_helper_(profile_,
-                        provider_,
-                        SystemWebAppManager::GetForLocalAppsUnchecked(profile_),
-                        app_type_,
-                        this,
-                        ShouldObserveMediaRequests()) {
+      publisher_helper_(
+          profile_,
+          provider_,
+          ash::SystemWebAppManager::GetForLocalAppsUnchecked(profile_),
+          app_type_,
+          this,
+          ShouldObserveMediaRequests()) {
   Initialize(proxy->AppService());
 }
 
@@ -396,7 +397,7 @@ void WebApps::GetMenuModel(const std::string& app_id,
         web_app->client_data().system_web_app_data->system_app_type;
 
     auto* system_app =
-        SystemWebAppManager::Get(profile())->GetSystemApp(swa_type);
+        ash::SystemWebAppManager::Get(profile())->GetSystemApp(swa_type);
     if (system_app && system_app->ShouldShowNewWindowMenuOption()) {
       apps::AddCommandItem(menu_type == apps::mojom::MenuType::kAppList
                                ? ash::LAUNCH_NEW

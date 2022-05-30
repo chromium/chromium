@@ -9,6 +9,7 @@
 
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/chromeos/arc/arc_web_contents_data.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -19,7 +20,6 @@
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_navigation_browsertest.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -100,7 +100,7 @@ void TestOpenSettingFromArc(Browser* browser,
                             const GURL& expected_url,
                             size_t expected_setting_window_count) {
   // Install the Settings App.
-  web_app::SystemWebAppManager::GetForTest(browser->profile())
+  ash::SystemWebAppManager::GetForTest(browser->profile())
       ->InstallSystemAppsForTesting();
 
   ArcOpenUrlDelegateImpl::GetForTesting()->OpenChromePageFromArc(page);
@@ -378,7 +378,7 @@ void TestAllAboutPages() {
 
 IN_PROC_BROWSER_TEST_F(ArcOpenUrlDelegateImplBrowserTest, TestOpenChromePage) {
   // Install the Settings App.
-  web_app::SystemWebAppManager::GetForTest(browser()->profile())
+  ash::SystemWebAppManager::GetForTest(browser()->profile())
       ->InstallSystemAppsForTesting();
 
   TestAllOSSettingPages(GURL(chrome::kChromeUIOSSettingsURL));

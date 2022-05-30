@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 
 #include <memory>
 #include <vector>
@@ -99,7 +99,8 @@ struct SystemAppData {
 
 class SystemWebAppWaiter {
  public:
-  explicit SystemWebAppWaiter(SystemWebAppManager* system_web_app_manager) {
+  explicit SystemWebAppWaiter(
+      ash::SystemWebAppManager* system_web_app_manager) {
     system_web_app_manager->ResetOnAppsSynchronizedForTesting();
     system_web_app_manager->on_apps_synchronized().Post(
         FROM_HERE, base::BindLambdaForTesting([&]() {
@@ -362,7 +363,7 @@ TEST_F(SystemWebAppManagerTest, UninstallAppInstalledInPreviousSession) {
 
 TEST_F(SystemWebAppManagerTest, AlwaysUpdate) {
   system_web_app_manager().SetUpdatePolicy(
-      SystemWebAppManager::UpdatePolicy::kAlwaysUpdate);
+      ash::SystemWebAppManager::UpdatePolicy::kAlwaysUpdate);
 
   InitEmptyRegistrar();
   {
@@ -407,7 +408,7 @@ TEST_F(SystemWebAppManagerTest, UpdateOnVersionChange) {
       externally_managed_app_manager().install_requests();
 
   system_web_app_manager().SetUpdatePolicy(
-      SystemWebAppManager::UpdatePolicy::kOnVersionChange);
+      ash::SystemWebAppManager::UpdatePolicy::kOnVersionChange);
 
   InitEmptyRegistrar();
   {
@@ -498,7 +499,7 @@ TEST_F(SystemWebAppManagerTest, UpdateOnLocaleChange) {
       externally_managed_app_manager().install_requests();
 
   system_web_app_manager().SetUpdatePolicy(
-      SystemWebAppManager::UpdatePolicy::kOnVersionChange);
+      ash::SystemWebAppManager::UpdatePolicy::kOnVersionChange);
 
   InitEmptyRegistrar();
 
@@ -535,19 +536,19 @@ TEST_F(SystemWebAppManagerTest, UpdateOnLocaleChange) {
 TEST_F(SystemWebAppManagerTest, InstallResultHistogram) {
   base::HistogramTester histograms;
   const std::string settings_app_install_result_histogram =
-      std::string(SystemWebAppManager::kInstallResultHistogramName) + ".Apps." +
-      kSettingsAppInternalName;
+      std::string(ash::SystemWebAppManager::kInstallResultHistogramName) +
+      ".Apps." + kSettingsAppInternalName;
   const std::string camera_app_install_result_histogram =
-      std::string(SystemWebAppManager::kInstallResultHistogramName) + ".Apps." +
-      kCameraAppInternalName;
+      std::string(ash::SystemWebAppManager::kInstallResultHistogramName) +
+      ".Apps." + kCameraAppInternalName;
   // Profile category for Chrome OS testing environment is "Other".
   const std::string profile_install_result_histogram =
-      std::string(SystemWebAppManager::kInstallResultHistogramName) +
+      std::string(ash::SystemWebAppManager::kInstallResultHistogramName) +
       ".Profiles.Other";
 
   InitEmptyRegistrar();
   system_web_app_manager().SetUpdatePolicy(
-      SystemWebAppManager::UpdatePolicy::kAlwaysUpdate);
+      ash::SystemWebAppManager::UpdatePolicy::kAlwaysUpdate);
 
   {
     ash::SystemWebAppDelegateMap system_apps;
@@ -559,18 +560,18 @@ TEST_F(SystemWebAppManagerTest, InstallResultHistogram) {
     system_web_app_manager().SetSystemAppsForTesting(std::move(system_apps));
 
     histograms.ExpectTotalCount(
-        SystemWebAppManager::kInstallResultHistogramName, 0);
+        ash::SystemWebAppManager::kInstallResultHistogramName, 0);
     histograms.ExpectTotalCount(settings_app_install_result_histogram, 0);
     histograms.ExpectTotalCount(profile_install_result_histogram, 0);
     histograms.ExpectTotalCount(
-        SystemWebAppManager::kInstallDurationHistogramName, 0);
+        ash::SystemWebAppManager::kInstallDurationHistogramName, 0);
 
     StartAndWaitForAppsToSynchronize();
 
     histograms.ExpectTotalCount(
-        SystemWebAppManager::kInstallResultHistogramName, 1);
+        ash::SystemWebAppManager::kInstallResultHistogramName, 1);
     histograms.ExpectBucketCount(
-        SystemWebAppManager::kInstallResultHistogramName,
+        ash::SystemWebAppManager::kInstallResultHistogramName,
         webapps::InstallResultCode::kSuccessOfflineOnlyInstall, 1);
     histograms.ExpectTotalCount(settings_app_install_result_histogram, 1);
     histograms.ExpectBucketCount(
@@ -581,7 +582,7 @@ TEST_F(SystemWebAppManagerTest, InstallResultHistogram) {
         profile_install_result_histogram,
         webapps::InstallResultCode::kSuccessOfflineOnlyInstall, 1);
     histograms.ExpectTotalCount(
-        SystemWebAppManager::kInstallDurationHistogramName, 1);
+        ash::SystemWebAppManager::kInstallDurationHistogramName, 1);
   }
 
   externally_managed_app_manager().SetHandleInstallRequestCallback(
@@ -609,9 +610,9 @@ TEST_F(SystemWebAppManagerTest, InstallResultHistogram) {
     StartAndWaitForAppsToSynchronize();
 
     histograms.ExpectTotalCount(
-        SystemWebAppManager::kInstallResultHistogramName, 3);
+        ash::SystemWebAppManager::kInstallResultHistogramName, 3);
     histograms.ExpectBucketCount(
-        SystemWebAppManager::kInstallResultHistogramName,
+        ash::SystemWebAppManager::kInstallResultHistogramName,
         webapps::InstallResultCode::kWebAppDisabled, 2);
     histograms.ExpectTotalCount(settings_app_install_result_histogram, 2);
     histograms.ExpectBucketCount(settings_app_install_result_histogram,
@@ -632,7 +633,7 @@ TEST_F(SystemWebAppManagerTest, InstallResultHistogram) {
     system_web_app_manager().SetSystemAppsForTesting(std::move(system_apps));
 
     histograms.ExpectTotalCount(
-        SystemWebAppManager::kInstallDurationHistogramName, 2);
+        ash::SystemWebAppManager::kInstallDurationHistogramName, 2);
     histograms.ExpectBucketCount(
         settings_app_install_result_histogram,
         webapps::InstallResultCode::kCancelledOnWebAppProviderShuttingDown, 0);
@@ -648,10 +649,10 @@ TEST_F(SystemWebAppManagerTest, InstallResultHistogram) {
     }
 
     histograms.ExpectBucketCount(
-        SystemWebAppManager::kInstallResultHistogramName,
+        ash::SystemWebAppManager::kInstallResultHistogramName,
         webapps::InstallResultCode::kCancelledOnWebAppProviderShuttingDown, 1);
     histograms.ExpectBucketCount(
-        SystemWebAppManager::kInstallResultHistogramName,
+        ash::SystemWebAppManager::kInstallResultHistogramName,
         webapps::InstallResultCode::kWebAppDisabled, 2);
 
     histograms.ExpectBucketCount(
@@ -662,7 +663,7 @@ TEST_F(SystemWebAppManagerTest, InstallResultHistogram) {
         webapps::InstallResultCode::kCancelledOnWebAppProviderShuttingDown, 1);
     // If install was interrupted by shutdown, do not report duration.
     histograms.ExpectTotalCount(
-        SystemWebAppManager::kInstallDurationHistogramName, 2);
+        ash::SystemWebAppManager::kInstallDurationHistogramName, 2);
   }
 }
 
@@ -670,14 +671,14 @@ TEST_F(SystemWebAppManagerTest,
        InstallResultHistogram_ExcludeAlreadyInstalled) {
   base::HistogramTester histograms;
   const std::string settings_app_install_result_histogram =
-      std::string(SystemWebAppManager::kInstallResultHistogramName) + ".Apps." +
-      kSettingsAppInternalName;
+      std::string(ash::SystemWebAppManager::kInstallResultHistogramName) +
+      ".Apps." + kSettingsAppInternalName;
   const std::string camera_app_install_result_histogram =
-      std::string(SystemWebAppManager::kInstallResultHistogramName) + ".Apps." +
-      kCameraAppInternalName;
+      std::string(ash::SystemWebAppManager::kInstallResultHistogramName) +
+      ".Apps." + kCameraAppInternalName;
   // Profile category for Chrome OS testing environment is "Other".
   const std::string profile_install_result_histogram =
-      std::string(SystemWebAppManager::kInstallResultHistogramName) +
+      std::string(ash::SystemWebAppManager::kInstallResultHistogramName) +
       ".Profiles.Other";
 
   InitEmptyRegistrar();
@@ -707,8 +708,8 @@ TEST_F(SystemWebAppManagerTest,
   StartAndWaitForAppsToSynchronize();
 
   // Record results that aren't kSuccessAlreadyInstalled.
-  histograms.ExpectTotalCount(SystemWebAppManager::kInstallResultHistogramName,
-                              1);
+  histograms.ExpectTotalCount(
+      ash::SystemWebAppManager::kInstallResultHistogramName, 1);
   histograms.ExpectTotalCount(settings_app_install_result_histogram, 0);
   histograms.ExpectTotalCount(camera_app_install_result_histogram, 1);
   histograms.ExpectTotalCount(profile_install_result_histogram, 1);
@@ -731,7 +732,7 @@ TEST_F(SystemWebAppManagerTest,
                           AppUrl2(), GetApp2WebAppInfoFactory()));
   system_web_app_manager().SetSystemAppsForTesting(std::move(system_apps));
   system_web_app_manager().SetUpdatePolicy(
-      SystemWebAppManager::UpdatePolicy::kOnVersionChange);
+      ash::SystemWebAppManager::UpdatePolicy::kOnVersionChange);
 
   {
     externally_managed_app_manager().SetHandleInstallRequestCallback(
@@ -750,7 +751,7 @@ TEST_F(SystemWebAppManagerTest,
     // The install duration histogram should be recorded, because the first
     // install happens on a clean profile.
     histograms.ExpectTotalCount(
-        SystemWebAppManager::kInstallDurationHistogramName, 1);
+        ash::SystemWebAppManager::kInstallDurationHistogramName, 1);
   }
 
   {
@@ -769,7 +770,7 @@ TEST_F(SystemWebAppManagerTest,
     // Don't record install duration histogram, because this time we don't ask
     // to force install all apps.
     histograms.ExpectTotalCount(
-        SystemWebAppManager::kInstallDurationHistogramName, 1);
+        ash::SystemWebAppManager::kInstallDurationHistogramName, 1);
   }
 }
 
@@ -778,7 +779,7 @@ TEST_F(SystemWebAppManagerTest, AbandonFailedInstalls) {
       externally_managed_app_manager().install_requests();
 
   system_web_app_manager().SetUpdatePolicy(
-      SystemWebAppManager::UpdatePolicy::kOnVersionChange);
+      ash::SystemWebAppManager::UpdatePolicy::kOnVersionChange);
 
   InitEmptyRegistrar();
 
@@ -851,7 +852,7 @@ TEST_F(SystemWebAppManagerTest, AbandonFailedInstallsLocaleChange) {
       externally_managed_app_manager().install_requests();
 
   system_web_app_manager().SetUpdatePolicy(
-      SystemWebAppManager::UpdatePolicy::kOnVersionChange);
+      ash::SystemWebAppManager::UpdatePolicy::kOnVersionChange);
 
   InitEmptyRegistrar();
 
@@ -922,7 +923,7 @@ TEST_F(SystemWebAppManagerTest, SucceedsAfterOneRetry) {
       externally_managed_app_manager().install_requests();
 
   system_web_app_manager().SetUpdatePolicy(
-      SystemWebAppManager::UpdatePolicy::kOnVersionChange);
+      ash::SystemWebAppManager::UpdatePolicy::kOnVersionChange);
 
   InitEmptyRegistrar();
 
@@ -997,7 +998,7 @@ TEST_F(SystemWebAppManagerTest, ForceReinstallFeature) {
 
   InitEmptyRegistrar();
   system_web_app_manager().SetUpdatePolicy(
-      SystemWebAppManager::UpdatePolicy::kOnVersionChange);
+      ash::SystemWebAppManager::UpdatePolicy::kOnVersionChange);
 
   // Register a test system app.
   ash::SystemWebAppDelegateMap system_apps;
@@ -1033,7 +1034,7 @@ TEST_F(SystemWebAppManagerTest, ForceReinstallFeature) {
 
 TEST_F(SystemWebAppManagerTest, IsSWABeforeSync) {
   system_web_app_manager().SetUpdatePolicy(
-      SystemWebAppManager::UpdatePolicy::kOnVersionChange);
+      ash::SystemWebAppManager::UpdatePolicy::kOnVersionChange);
 
   InitEmptyRegistrar();
 

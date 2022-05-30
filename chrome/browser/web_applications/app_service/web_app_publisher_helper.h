@@ -63,6 +63,10 @@ class ContentSettingsPattern;
 class ContentSettingsTypeSet;
 class Profile;
 
+namespace ash {
+class SystemWebAppManager;
+}
+
 namespace apps {
 struct AppLaunchParams;
 }
@@ -77,7 +81,6 @@ class WebContents;
 
 namespace web_app {
 
-class SystemWebAppManager;
 class WebApp;
 class WebAppProvider;
 class WebAppLaunchManager;
@@ -120,7 +123,7 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
 
   WebAppPublisherHelper(Profile* profile,
                         WebAppProvider* provider,
-                        SystemWebAppManager* swa_manager,
+                        ash::SystemWebAppManager* swa_manager,
                         apps::AppType app_type,
                         Delegate* delegate,
                         bool observe_media_requests);
@@ -412,7 +415,7 @@ class WebAppPublisherHelper : public AppRegistrarObserver,
 
   const raw_ptr<WebAppProvider> provider_;
   // nullptr for Lacros Chrome, valid pointer otherwise.
-  const raw_ptr<SystemWebAppManager> swa_manager_;
+  const raw_ptr<ash::SystemWebAppManager> swa_manager_;
 
   // The app type of the publisher. The app type is kSystemWeb if the web apps
   // are serving from Lacros, and the app type is kWeb for all other cases.

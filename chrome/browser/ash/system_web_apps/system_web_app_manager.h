@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_SYSTEM_WEB_APPS_SYSTEM_WEB_APP_MANAGER_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_SYSTEM_WEB_APPS_SYSTEM_WEB_APP_MANAGER_H_
+#ifndef CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_SYSTEM_WEB_APP_MANAGER_H_
+#define CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_SYSTEM_WEB_APP_MANAGER_H_
 
 #include <map>
 #include <memory>
@@ -42,14 +42,16 @@ namespace user_prefs {
 class PrefRegistrySyncable;
 }
 
-class PrefService;
-class Profile;
-
 namespace web_app {
-
 class WebAppUiManager;
 class WebAppSyncBridge;
 class WebAppPolicyManager;
+}  // namespace web_app
+
+class PrefService;
+class Profile;
+
+namespace ash {
 
 // Installs, uninstalls, and updates System Web Apps.
 // System Web Apps are built-in, highly-privileged Web Apps for Chrome OS. They
@@ -70,7 +72,7 @@ class SystemWebAppManager {
       "Webapp.SystemApps.FreshInstallDuration";
 
   // Returns whether the given app type is enabled.
-  bool IsAppEnabled(ash::SystemWebAppType type) const;
+  bool IsAppEnabled(SystemWebAppType type) const;
 
   explicit SystemWebAppManager(Profile* profile);
   SystemWebAppManager(const SystemWebAppManager&) = delete;
@@ -96,11 +98,11 @@ class SystemWebAppManager {
   static SystemWebAppManager* GetForTest(Profile* profile);
 
   void SetSubsystems(
-      ExternallyManagedAppManager* externally_managed_app_manager,
-      WebAppRegistrar* registrar,
-      WebAppSyncBridge* sync_bridge,
-      WebAppUiManager* ui_manager,
-      WebAppPolicyManager* web_app_policy_manager);
+      web_app::ExternallyManagedAppManager* externally_managed_app_manager,
+      web_app::WebAppRegistrar* registrar,
+      web_app::WebAppSyncBridge* sync_bridge,
+      web_app::WebAppUiManager* ui_manager,
+      web_app::WebAppPolicyManager* web_app_policy_manager);
 
   void Start();
 
@@ -118,30 +120,30 @@ class SystemWebAppManager {
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
   // Returns the app id for the given System App |type|.
-  absl::optional<AppId> GetAppIdForSystemApp(ash::SystemWebAppType type) const;
+  absl::optional<web_app::AppId> GetAppIdForSystemApp(
+      SystemWebAppType type) const;
 
   // Returns the System App Type for the given |app_id|.
-  absl::optional<ash::SystemWebAppType> GetSystemAppTypeForAppId(
-      const AppId& app_id) const;
+  absl::optional<SystemWebAppType> GetSystemAppTypeForAppId(
+      const web_app::AppId& app_id) const;
 
   // Returns the System App Delegate for the given App |type|.
-  const ash::SystemWebAppDelegate* GetSystemApp(
-      ash::SystemWebAppType type) const;
+  const SystemWebAppDelegate* GetSystemApp(SystemWebAppType type) const;
 
   // Returns the App Ids for all installed System Web Apps.
-  std::vector<AppId> GetAppIds() const;
+  std::vector<web_app::AppId> GetAppIds() const;
 
   // Returns whether |app_id| points to an installed System App.
-  bool IsSystemWebApp(const AppId& app_id) const;
+  bool IsSystemWebApp(const web_app::AppId& app_id) const;
 
   // Perform tab-specific setup when a navigation in a System Web App is about
   // to be committed.
-  void OnReadyToCommitNavigation(const AppId& app_id,
+  void OnReadyToCommitNavigation(const web_app::AppId& app_id,
                                  content::NavigationHandle* navigation_handle);
 
-  // Returns the ash::SystemWebAppType that should capture the navigation to
+  // Returns the SystemWebAppType that should capture the navigation to
   // |url|.
-  absl::optional<ash::SystemWebAppType> GetCapturingSystemAppForURL(
+  absl::optional<SystemWebAppType> GetCapturingSystemAppForURL(
       const GURL& url) const;
 
   const base::OneShotEvent& on_apps_synchronized() const {
@@ -156,13 +158,13 @@ class SystemWebAppManager {
 
   // Returns a map of registered system app types and infos, these apps will be
   // installed on the system.
-  const ash::SystemWebAppDelegateMap& system_app_delegates() const {
+  const SystemWebAppDelegateMap& system_app_delegates() const {
     return system_app_delegates_;
   }
 
   // This call will override default System Apps configuration. You should call
   // Start() after this call to install |system_apps|.
-  void SetSystemAppsForTesting(ash::SystemWebAppDelegateMap system_apps);
+  void SetSystemAppsForTesting(SystemWebAppDelegateMap system_apps);
 
   // Overrides the update policy. If AlwaysReinstallSystemWebApps feature is
   // enabled, this method does nothing, and system apps will be reinstalled.
@@ -173,7 +175,7 @@ class SystemWebAppManager {
   void Shutdown();
 
   // Get the timers. Only use this for testing.
-  const std::vector<std::unique_ptr<ash::SystemWebAppBackgroundTask>>&
+  const std::vector<std::unique_ptr<SystemWebAppBackgroundTask>>&
   GetBackgroundTasksForTesting();
 
   const Profile* profile() const { return profile_; }
@@ -187,7 +189,7 @@ class SystemWebAppManager {
   // App |type|. Returns an empty vector if the App does not specify origin
   // trials for |url|.
   const std::vector<std::string>* GetEnabledOriginTrials(
-      const ash::SystemWebAppDelegate* system_app,
+      const SystemWebAppDelegate* system_app,
       const GURL& url) const;
 
   void StopBackgroundTasks();
@@ -195,7 +197,7 @@ class SystemWebAppManager {
   void OnAppsSynchronized(
       bool did_force_install_apps,
       const base::TimeTicks& install_start_time,
-      std::map<GURL, ExternallyManagedAppManager::InstallResult>
+      std::map<GURL, web_app::ExternallyManagedAppManager::InstallResult>
           install_results,
       std::map<GURL, bool> uninstall_results);
   bool ShouldForceInstallApps() const;
@@ -205,7 +207,7 @@ class SystemWebAppManager {
   bool CheckAndIncrementRetryAttempts();
 
   void RecordSystemWebAppInstallResults(
-      const std::map<GURL, ExternallyManagedAppManager::InstallResult>&
+      const std::map<GURL, web_app::ExternallyManagedAppManager::InstallResult>&
           install_results) const;
 
   void RecordSystemWebAppInstallDuration(
@@ -224,27 +226,27 @@ class SystemWebAppManager {
 
   UpdatePolicy update_policy_;
 
-  ash::SystemWebAppDelegateMap system_app_delegates_;
+  SystemWebAppDelegateMap system_app_delegates_;
 
   const raw_ptr<PrefService> pref_service_;
 
   // Used to install, uninstall, and update apps. Should outlive this class.
-  raw_ptr<ExternallyManagedAppManager> externally_managed_app_manager_ =
-      nullptr;
+  raw_ptr<web_app::ExternallyManagedAppManager>
+      externally_managed_app_manager_ = nullptr;
 
-  raw_ptr<WebAppRegistrar> registrar_ = nullptr;
+  raw_ptr<web_app::WebAppRegistrar> registrar_ = nullptr;
 
-  raw_ptr<WebAppSyncBridge> sync_bridge_ = nullptr;
+  raw_ptr<web_app::WebAppSyncBridge> sync_bridge_ = nullptr;
 
-  raw_ptr<WebAppUiManager> ui_manager_ = nullptr;
+  raw_ptr<web_app::WebAppUiManager> ui_manager_ = nullptr;
 
-  raw_ptr<WebAppPolicyManager> web_app_policy_manager_ = nullptr;
+  raw_ptr<web_app::WebAppPolicyManager> web_app_policy_manager_ = nullptr;
 
-  std::vector<std::unique_ptr<ash::SystemWebAppBackgroundTask>> tasks_;
+  std::vector<std::unique_ptr<SystemWebAppBackgroundTask>> tasks_;
 
   base::WeakPtrFactory<SystemWebAppManager> weak_ptr_factory_{this};
 };
 
-}  // namespace web_app
+}  // namespace ash
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_SYSTEM_WEB_APPS_SYSTEM_WEB_APP_MANAGER_H_
+#endif  // CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_SYSTEM_WEB_APP_MANAGER_H_

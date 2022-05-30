@@ -30,6 +30,7 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/url_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/web_applications/calculator_app/calculator_app_utils.h"
 #include "chrome/browser/ash/web_applications/camera_app/chrome_camera_app_ui_delegate.h"
 #include "chrome/browser/chromeos/arc/arc_web_contents_data.h"
@@ -57,7 +58,6 @@
 #include "chrome/browser/ui/webui/chrome_web_contents_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_util.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
@@ -536,7 +536,7 @@ void ChromeNewWindowClient::CloseCameraApp() {
 
 bool ChromeNewWindowClient::IsCameraAppEnabled() {
   Profile* const profile = ProfileManager::GetActiveUserProfile();
-  auto* swa_manager = web_app::SystemWebAppManager::Get(profile);
+  auto* swa_manager = ash::SystemWebAppManager::Get(profile);
   return swa_manager &&
          swa_manager->IsAppEnabled(ash::SystemWebAppType::CAMERA);
 }

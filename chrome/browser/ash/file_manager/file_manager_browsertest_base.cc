@@ -78,6 +78,7 @@
 #include "chrome/browser/ash/guest_os/public/types.h"
 #include "chrome/browser/ash/smb_client/smb_service.h"
 #include "chrome/browser/ash/smb_client/smb_service_factory.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/extensions/file_manager/event_router.h"
@@ -95,7 +96,6 @@
 #include "chrome/browser/ui/views/extensions/extension_dialog.h"
 #include "chrome/browser/ui/views/select_file_dialog_extension.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
@@ -2097,7 +2097,7 @@ void FileManagerBrowserTestBase::SetUpOnMainThread() {
 
   // Enable System Web Apps if needed.
   if (options.media_swa || options.files_swa) {
-    web_app::SystemWebAppManager::GetForTest(profile())
+    ash::SystemWebAppManager::GetForTest(profile())
         ->InstallSystemAppsForTesting();
   }
 

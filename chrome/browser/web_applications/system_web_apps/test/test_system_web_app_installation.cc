@@ -13,7 +13,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
-#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_installation.h"
@@ -781,7 +780,8 @@ TestSystemWebAppInstallation::CreateWebAppProvider(
   }
 
   auto provider = std::make_unique<FakeWebAppProvider>(profile);
-  auto system_web_app_manager = std::make_unique<SystemWebAppManager>(profile);
+  auto system_web_app_manager =
+      std::make_unique<ash::SystemWebAppManager>(profile);
 
   system_web_app_manager->SetSystemAppsForTesting(
       std::move(system_app_delegates_));
@@ -802,7 +802,8 @@ TestSystemWebAppInstallation::CreateWebAppProviderWithNoSystemWebApps(
     Profile* profile) {
   profile_ = profile;
   auto provider = std::make_unique<FakeWebAppProvider>(profile);
-  auto system_web_app_manager = std::make_unique<SystemWebAppManager>(profile);
+  auto system_web_app_manager =
+      std::make_unique<ash::SystemWebAppManager>(profile);
   system_web_app_manager->SetSystemAppsForTesting({});
   system_web_app_manager->SetUpdatePolicyForTesting(update_policy_);
   provider->SetSystemWebAppManager(std::move(system_web_app_manager));
@@ -812,7 +813,7 @@ TestSystemWebAppInstallation::CreateWebAppProviderWithNoSystemWebApps(
 
 void TestSystemWebAppInstallation::WaitForAppInstall() {
   base::RunLoop run_loop;
-  SystemWebAppManager::GetForTest(profile_)->on_apps_synchronized().Post(
+  ash::SystemWebAppManager::GetForTest(profile_)->on_apps_synchronized().Post(
       FROM_HERE, base::BindLambdaForTesting([&]() {
         // Wait one execution loop for on_apps_synchronized() to be
         // called on all listeners.
@@ -823,7 +824,7 @@ void TestSystemWebAppInstallation::WaitForAppInstall() {
 }
 
 AppId TestSystemWebAppInstallation::GetAppId() {
-  return SystemWebAppManager::GetForTest(profile_)
+  return ash::SystemWebAppManager::GetForTest(profile_)
       ->GetAppIdForSystemApp(type_.value())
       .value();
 }

@@ -22,8 +22,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
-#include "chrome/browser/web_applications/web_app_tab_helper.h"
-// TODO(b/174811949): Hide behind ChromeOS build flag.
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/web_applications/camera_app/chrome_camera_app_ui_constants.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
@@ -31,7 +30,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_launch_queue.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -200,7 +198,7 @@ void ChromeCameraAppUIDelegate::SetLaunchDirectory() {
       file_manager::util::GetMyFilesFolderForProfile(profile);
 
   absl::optional<web_app::AppId> app_id =
-      web_app::SystemWebAppManager::Get(profile)->GetAppIdForSystemApp(
+      ash::SystemWebAppManager::Get(profile)->GetAppIdForSystemApp(
           ash::SystemWebAppType::CAMERA);
 
   // The launch directory is passed here rather than

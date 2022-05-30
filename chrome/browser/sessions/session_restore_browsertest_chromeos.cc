@@ -12,6 +12,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/defaults.h"
@@ -442,7 +443,7 @@ class SystemWebAppSessionRestoreTestChromeOS
     maybe_installation_ =
         web_app::TestSystemWebAppInstallation::SetUpStandaloneSingleWindowApp();
     maybe_installation_->set_update_policy(
-        web_app::SystemWebAppManager::UpdatePolicy::kOnVersionChange);
+        ash::SystemWebAppManager::UpdatePolicy::kOnVersionChange);
   }
 
   ~SystemWebAppSessionRestoreTestChromeOS() override = default;

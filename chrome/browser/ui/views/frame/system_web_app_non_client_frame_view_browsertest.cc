@@ -8,11 +8,14 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/system_web_apps/test/system_web_app_browsertest_base.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
+
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
+#endif
 
 using SystemWebAppNonClientFrameViewBrowserTest =
     web_app::SystemWebAppManagerBrowserTest;

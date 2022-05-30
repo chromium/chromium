@@ -72,6 +72,7 @@
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/speech_monitor.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
 #include "chrome/browser/ui/app_list/app_list_model_updater.h"
@@ -1129,7 +1130,7 @@ class SystemWebAppManagerInstallAllAppsBrowserTest
   // resets the OnAppsSynchronized signal, and starts a new synchronize request.
   void WaitForSystemAppsSynchronized() {
     base::RunLoop run_loop;
-    SystemWebAppManager::Get(browser()->profile())
+    ash::SystemWebAppManager::Get(browser()->profile())
         ->on_apps_synchronized()
         .Post(FROM_HERE, run_loop.QuitClosure());
     run_loop.Run();
@@ -1559,7 +1560,7 @@ class SystemWebAppManagerBackgroundTaskTest
 
   void WaitForSystemAppsBackgroundTasksStart() {
     base::RunLoop run_loop;
-    SystemWebAppManager::Get(browser()->profile())
+    ash::SystemWebAppManager::Get(browser()->profile())
         ->on_tasks_started()
         .Post(FROM_HERE, run_loop.QuitClosure());
 

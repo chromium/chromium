@@ -130,7 +130,7 @@ enum class ExternalInstallSource {
   // Installed as a Chrome component, such as a help app, or a settings app.
   // The corresponding ExternallyManagedAppManager::SynchronizeInstalledApps
   // call site is
-  // in SystemWebAppManager::RefreshPolicyInstalledApps.
+  // in ash::SystemWebAppManager::RefreshPolicyInstalledApps.
   kSystemInstalled = 3,
 
   // Installed from ARC.

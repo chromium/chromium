@@ -8,8 +8,8 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_web_ui_controller_factory.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -223,7 +223,7 @@ class TestSystemWebAppInstallation {
   ash::SystemWebAppDelegate* GetDelegate();
   ash::SystemWebAppType GetType();
 
-  void set_update_policy(SystemWebAppManager::UpdatePolicy update_policy) {
+  void set_update_policy(ash::SystemWebAppManager::UpdatePolicy update_policy) {
     update_policy_ = update_policy;
   }
 
@@ -242,8 +242,8 @@ class TestSystemWebAppInstallation {
   void RegisterAutoGrantedPermissions(ContentSettingsType permission);
 
   raw_ptr<Profile> profile_;
-  SystemWebAppManager::UpdatePolicy update_policy_ =
-      SystemWebAppManager::UpdatePolicy::kAlwaysUpdate;
+  ash::SystemWebAppManager::UpdatePolicy update_policy_ =
+      ash::SystemWebAppManager::UpdatePolicy::kAlwaysUpdate;
   std::unique_ptr<FakeWebAppProviderCreator> fake_web_app_provider_creator_;
   // nullopt if SetUpWithoutApps() was used.
   const absl::optional<ash::SystemWebAppType> type_;

@@ -19,6 +19,7 @@
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/app_session_service.h"
 #include "chrome/browser/sessions/app_session_service_factory.h"
@@ -35,7 +36,6 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
@@ -227,7 +227,7 @@ std::unique_ptr<AppBrowserController> MaybeCreateAppBrowserController(
         GetSystemWebAppTypeForAppId(browser->profile(), app_id);
     if (system_app_type) {
       system_app =
-          SystemWebAppManager::GetForLocalAppsUnchecked(browser->profile())
+          ash::SystemWebAppManager::GetForLocalAppsUnchecked(browser->profile())
               ->GetSystemApp(*system_app_type);
     }
     const bool has_tab_strip =
@@ -309,8 +309,8 @@ content::WebContents* NavigateWebAppUsingParams(const std::string& app_id,
     WebAppProvider* web_app_provider =
         WebAppProvider::GetForLocalAppsUnchecked(browser->profile());
     DCHECK(web_app_provider);
-    SystemWebAppManager* swa_manager =
-        SystemWebAppManager::GetForLocalAppsUnchecked(browser->profile());
+    ash::SystemWebAppManager* swa_manager =
+        ash::SystemWebAppManager::GetForLocalAppsUnchecked(browser->profile());
     DCHECK(swa_manager);
 
     TRACE_EVENT_INSTANT(

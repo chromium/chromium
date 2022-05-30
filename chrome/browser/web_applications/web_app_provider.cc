@@ -13,6 +13,7 @@
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/daily_metrics_helper.h"
 #include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
@@ -29,7 +30,6 @@
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut_manager.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/user_uninstalled_preinstalled_web_app_prefs.h"
 #include "chrome/browser/web_applications/web_app_audio_focus_id_map.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
@@ -237,7 +237,7 @@ void WebAppProvider::CreateSubsystems(Profile* profile) {
       std::make_unique<ExternallyManagedAppManagerImpl>(profile);
   preinstalled_web_app_manager_ =
       std::make_unique<PreinstalledWebAppManager>(profile);
-  system_web_app_manager_ = std::make_unique<SystemWebAppManager>(profile);
+  system_web_app_manager_ = std::make_unique<ash::SystemWebAppManager>(profile);
   web_app_policy_manager_ = std::make_unique<WebAppPolicyManager>(profile);
 
   database_factory_ = std::make_unique<WebAppDatabaseFactory>(profile);
@@ -372,7 +372,7 @@ void WebAppProvider::RegisterProfilePrefs(
   ExternallyInstalledWebAppPrefs::RegisterProfilePrefs(registry);
   PreinstalledWebAppManager::RegisterProfilePrefs(registry);
   WebAppPolicyManager::RegisterProfilePrefs(registry);
-  SystemWebAppManager::RegisterProfilePrefs(registry);
+  ash::SystemWebAppManager::RegisterProfilePrefs(registry);
   WebAppPrefsUtilsRegisterProfilePrefs(registry);
   IsolationPrefsUtilsRegisterProfilePrefs(registry);
   RegisterInstallBounceMetricProfilePrefs(registry);

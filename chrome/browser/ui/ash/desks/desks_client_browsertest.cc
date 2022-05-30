@@ -41,6 +41,7 @@
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/ui/user_adding_screen.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
@@ -55,7 +56,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/user_display_mode.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -436,7 +436,7 @@ class DesksTemplatesClientTest : public extensions::PlatformAppBrowserTest {
   // extensions::PlatformAppBrowserTest:
   void SetUpOnMainThread() override {
     ::full_restore::SetActiveProfilePath(profile()->GetPath());
-    web_app::SystemWebAppManager::GetForTest(profile())
+    ash::SystemWebAppManager::GetForTest(profile())
         ->InstallSystemAppsForTesting();
     extensions::PlatformAppBrowserTest::SetUpOnMainThread();
   }

@@ -16,6 +16,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/ui/app_list/app_service/app_service_app_item.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -530,7 +531,7 @@ class SystemWebAppManagerMultiDesktopLaunchBrowserTest
   void WaitForSystemWebAppInstall(Profile* profile) {
     base::RunLoop run_loop;
 
-    web_app::SystemWebAppManager::Get(profile)->on_apps_synchronized().Post(
+    ash::SystemWebAppManager::Get(profile)->on_apps_synchronized().Post(
         FROM_HERE, base::BindLambdaForTesting([&]() {
           // Wait one execution loop for
           // on_apps_synchronized() to be called on all
@@ -543,7 +544,7 @@ class SystemWebAppManagerMultiDesktopLaunchBrowserTest
 
   AppId GetAppId(Profile* profile) {
     absl::optional<AppId> app_id =
-        web_app::SystemWebAppManager::Get(profile)->GetAppIdForSystemApp(
+        ash::SystemWebAppManager::Get(profile)->GetAppIdForSystemApp(
             installation_->GetType());
     CHECK(app_id.has_value());
     return *app_id;

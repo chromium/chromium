@@ -9,14 +9,14 @@
 #include <vector>
 
 #include "base/version.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "url/gurl.h"
 
 class Profile;
 
 namespace web_app {
 
-class TestSystemWebAppManager : public SystemWebAppManager {
+class TestSystemWebAppManager : public ash::SystemWebAppManager {
  public:
   explicit TestSystemWebAppManager(Profile* profile);
   TestSystemWebAppManager(const TestSystemWebAppManager&) = delete;
@@ -33,7 +33,7 @@ class TestSystemWebAppManager : public SystemWebAppManager {
     current_locale_ = locale;
   }
 
-  // SystemWebAppManager:
+  // ash::SystemWebAppManager:
   const base::Version& CurrentVersion() const override;
   const std::string& CurrentLocale() const override;
 

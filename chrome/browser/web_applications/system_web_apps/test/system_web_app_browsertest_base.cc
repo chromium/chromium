@@ -9,6 +9,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
@@ -30,8 +31,8 @@ SystemWebAppBrowserTestBase::SystemWebAppBrowserTestBase(bool install_mock) {
 
 SystemWebAppBrowserTestBase::~SystemWebAppBrowserTestBase() = default;
 
-SystemWebAppManager& SystemWebAppBrowserTestBase::GetManager() {
-  auto* swa_manager = SystemWebAppManager::Get(browser()->profile());
+ash::SystemWebAppManager& SystemWebAppBrowserTestBase::GetManager() {
+  auto* swa_manager = ash::SystemWebAppManager::Get(browser()->profile());
   DCHECK(swa_manager);
   return *swa_manager;
 }

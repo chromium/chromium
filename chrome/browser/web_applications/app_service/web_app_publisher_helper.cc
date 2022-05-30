@@ -81,8 +81,8 @@
 #include "chrome/browser/ash/crostini/crostini_terminal.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/chromeos/arc/arc_web_contents_data.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/full_restore_save_handler.h"
 #include "components/app_restore/full_restore_utils.h"
@@ -273,12 +273,13 @@ void WebAppPublisherHelper::BadgeManagerDelegate::OnAppBadgeUpdated(
 }
 #endif
 
-WebAppPublisherHelper::WebAppPublisherHelper(Profile* profile,
-                                             WebAppProvider* provider,
-                                             SystemWebAppManager* swa_manager,
-                                             apps::AppType app_type,
-                                             Delegate* delegate,
-                                             bool observe_media_requests)
+WebAppPublisherHelper::WebAppPublisherHelper(
+    Profile* profile,
+    WebAppProvider* provider,
+    ash::SystemWebAppManager* swa_manager,
+    apps::AppType app_type,
+    Delegate* delegate,
+    bool observe_media_requests)
     : profile_(profile),
       provider_(provider),
       swa_manager_(swa_manager),

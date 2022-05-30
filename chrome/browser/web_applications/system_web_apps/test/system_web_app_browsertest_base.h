@@ -27,6 +27,7 @@ class WebContents;
 
 namespace ash {
 enum class SystemWebAppType;
+class SystemWebAppManager;
 }
 
 namespace web_app {
@@ -47,7 +48,7 @@ class SystemWebAppBrowserTestBase : public InProcessBrowserTest {
   // Returns the SystemWebAppManager for browser()->profile(). For incognito
   // profiles, this will be the SystemWebAppManager of the original profile.
   // Returns TestSystemWebAppManager if initialized with |install_mock| true.
-  SystemWebAppManager& GetManager();
+  ash::SystemWebAppManager& GetManager();
 
   // Returns ash::SystemWebAppType of mocked app, only valid if |install_mock|
   // is true.

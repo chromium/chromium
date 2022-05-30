@@ -8,6 +8,7 @@
 #include "chrome/browser/apps/app_service/browser_app_instance.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_observer.h"
 #include "chrome/browser/apps/app_service/browser_app_instance_tracker.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/web_applications/crosh_system_web_app_info.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -16,7 +17,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -718,8 +718,8 @@ IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, WindowedWebApp) {
 IN_PROC_BROWSER_TEST_F(BrowserAppInstanceTrackerTest, TabbedSystemWebApp) {
   // Make sure we can use crosh.
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
-  DCHECK(web_app::SystemWebAppManager::Get(profile));
-  web_app::SystemWebAppManager::Get(profile)->InstallSystemAppsForTesting();
+  DCHECK(ash::SystemWebAppManager::Get(profile));
+  ash::SystemWebAppManager::Get(profile)->InstallSystemAppsForTesting();
 
   Browser* browser = nullptr;
   aura::Window* window = nullptr;

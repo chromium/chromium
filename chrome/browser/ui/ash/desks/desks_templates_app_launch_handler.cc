@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/app_restore/app_launch_handler.h"
 #include "chrome/browser/ash/app_restore/app_restore_arc_task_handler.h"
 #include "chrome/browser/ash/app_restore/arc_app_launch_handler.h"
+#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/desks/desks_client.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
@@ -24,7 +25,6 @@
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
-#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/app_constants/constants.h"
 #include "components/app_restore/app_restore_data.h"
@@ -120,7 +120,7 @@ bool DesksTemplatesAppLaunchHandler::ShouldLaunchSystemWebAppOrChromeApp(
         web_app::GetSystemWebAppTypeForAppId(profile(), app_id);
     if (swa_type.has_value()) {
       auto* system_app =
-          web_app::SystemWebAppManager::Get(profile())->GetSystemApp(*swa_type);
+          ash::SystemWebAppManager::Get(profile())->GetSystemApp(*swa_type);
       DCHECK(system_app);
       is_multi_instance_window = system_app->ShouldShowNewWindowMenuOption();
     }
