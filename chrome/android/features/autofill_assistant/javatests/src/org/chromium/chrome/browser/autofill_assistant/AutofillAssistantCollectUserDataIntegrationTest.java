@@ -146,25 +146,18 @@ public class AutofillAssistantCollectUserDataIntegrationTest {
      */
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1274144")
     public void testEnterPayment() throws Exception {
         String profileId = mHelper.addDummyProfile("John Doe", "johndoe@gmail.com");
         mHelper.addDummyCreditCard(profileId);
 
         ArrayList<ActionProto> list = new ArrayList<>();
-        list.add(
-                ActionProto.newBuilder()
-                        .setCollectUserData(CollectUserDataProto.newBuilder()
-                                                    .setRequestPaymentMethod(true)
-                                                    .setBillingAddressName("billing_address")
-                                                    .addSupportedBasicCardNetworks("visa")
-                                                    .setPrivacyNoticeText("3rd party privacy text")
-                                                    .setShowTermsAsCheckbox(true)
-                                                    .setRequestTermsAndConditions(true)
-                                                    .setAcceptTermsAndConditionsText("accept terms")
-                                                    .setTermsAndConditionsState(
-                                                            TermsAndConditionsState.ACCEPTED))
-                        .build());
+        list.add(ActionProto.newBuilder()
+                         .setCollectUserData(CollectUserDataProto.newBuilder()
+                                                     .setRequestPaymentMethod(true)
+                                                     .setBillingAddressName("billing_address")
+                                                     .addSupportedBasicCardNetworks("visa")
+                                                     .setRequestTermsAndConditions(false))
+                         .build());
 
         RequiredFieldProto fallbackTextField =
                 RequiredFieldProto.newBuilder()
@@ -210,12 +203,6 @@ public class AutofillAssistantCollectUserDataIntegrationTest {
         startAutofillAssistant(mTestRule.getActivity(), testService);
 
         waitUntilViewMatchesCondition(withText("Continue"), isCompletelyDisplayed());
-        onView(allOf(isDescendantOfA(withTagValue(
-                             is(AssistantTagsForTesting
-                                             .COLLECT_USER_DATA_CHECKBOX_TERMS_SECTION_TAG))),
-                       withId(R.id.collect_data_privacy_notice)))
-                .check(matches(isDisplayed()));
-
         onView(withText("Continue")).perform(click());
         waitUntilViewMatchesCondition(withId(R.id.card_unmask_input), isCompletelyDisplayed());
         onView(withId(R.id.card_unmask_input)).perform(typeText("123"), pressImeActionButton());
@@ -228,6 +215,65 @@ public class AutofillAssistantCollectUserDataIntegrationTest {
         assertThat(getElementValue(getWebContents(), "fallback_entry"), is("12/2050"));
         assertThat(getElementValue(getWebContents(), "fallback_dropdown"), is("visa"));
         assertThat(getElementValue(getWebContents(), "js_dropdown_value"), is("2050"));
+    }
+
+    /**
+     * Fill a form with a saved contact's details.
+     */
+    @Test
+    @MediumTest
+    public void testEnterContact() throws Exception {
+        mHelper.addDummyProfile("John Doe", "johndoe@gmail.com");
+
+        ArrayList<ActionProto> list = new ArrayList<>();
+        list.add(
+                ActionProto.newBuilder()
+                        .setCollectUserData(
+                                CollectUserDataProto.newBuilder()
+                                        .setContactDetails(ContactDetailsProto.newBuilder()
+                                                                   .setContactDetailsName("contact")
+                                                                   .setRequestPayerName(true)
+                                                                   .setRequestPayerEmail(true))
+                                        .setRequestTermsAndConditions(false))
+                        .build());
+
+        RequiredFieldProto nameField = RequiredFieldProto.newBuilder()
+                                               .setValueExpression(buildValueExpression(7))
+                                               .setElement(toCssSelector("#profile_name"))
+                                               .setForced(true) // Make sure we do actual work.
+                                               .build();
+        RequiredFieldProto emailField = RequiredFieldProto.newBuilder()
+                                                .setValueExpression(buildValueExpression(9))
+                                                .setElement(toCssSelector("#email"))
+                                                .setForced(true) // Make sure we do actual work.
+                                                .build();
+        list.add(ActionProto.newBuilder()
+                         .setUseAddress(UseAddressProto.newBuilder()
+                                                .setName("contact")
+                                                .setFormFieldElement(toCssSelector("#profile_name"))
+                                                .addRequiredFields(nameField)
+                                                .addRequiredFields(emailField))
+                         .build());
+        list.add(ActionProto.newBuilder()
+                         .setPrompt(PromptProto.newBuilder().setMessage("Prompt").addChoices(
+                                 PromptProto.Choice.newBuilder()))
+                         .build());
+        AutofillAssistantTestScript script = new AutofillAssistantTestScript(
+                SupportedScriptProto.newBuilder()
+                        .setPath("form_target_website.html")
+                        .setPresentation(PresentationProto.newBuilder().setAutostart(true))
+                        .build(),
+                list);
+
+        AutofillAssistantTestService testService =
+                new AutofillAssistantTestService(Collections.singletonList(script));
+        startAutofillAssistant(mTestRule.getActivity(), testService);
+
+        waitUntilViewMatchesCondition(withText("Continue"), isCompletelyDisplayed());
+        onView(withText("Continue")).perform(click());
+        waitUntilViewMatchesCondition(withText("Prompt"), isCompletelyDisplayed(), 6000L);
+        assertThat(getElementValue(getWebContents(), "profile_name"), is("John Doe"));
+        assertThat(getElementValue(getWebContents(), "email"), is("johndoe@gmail.com"));
     }
 
     @Test

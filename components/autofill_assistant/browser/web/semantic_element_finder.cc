@@ -75,7 +75,8 @@ void SemanticElementFinder::GiveUpWithError(const ClientStatus& status) {
 
 void SemanticElementFinder::ResultFound(
     content::RenderFrameHost* render_frame_host,
-    const std::string& object_id) {
+    const std::string& object_id,
+    int backend_node_id) {
   if (!callback_) {
     return;
   }
@@ -83,6 +84,7 @@ void SemanticElementFinder::ResultFound(
   ElementFinderResult result;
   result.SetRenderFrameHost(render_frame_host);
   result.SetObjectId(object_id);
+  result.SetBackendNodeId(backend_node_id);
 
   SendResult(OkClientStatus(), result);
 }
@@ -225,16 +227,16 @@ void SemanticElementFinder::OnRunAnnotateDomModel(
       /* current_frame_id= */ std::string(),
       base::BindOnce(&SemanticElementFinder::OnResolveNodeForAnnotateDom,
                      weak_ptr_factory_.GetWeakPtr(),
-                     semantic_node_results_[0].host_id()));
+                     semantic_node_results_[0]));
 }
 
 void SemanticElementFinder::OnResolveNodeForAnnotateDom(
-    content::GlobalRenderFrameHostId host_id,
+    GlobalBackendNodeId node,
     const DevtoolsClient::ReplyStatus& reply_status,
     std::unique_ptr<dom::ResolveNodeResult> result) {
   if (result && result->GetObject() && result->GetObject()->HasObjectId()) {
-    ResultFound(content::RenderFrameHost::FromID(host_id),
-                result->GetObject()->GetObjectId());
+    ResultFound(content::RenderFrameHost::FromID(node.host_id()),
+                result->GetObject()->GetObjectId(), node.backend_node_id());
     return;
   }
   SendResult(ClientStatus(ELEMENT_RESOLUTION_FAILED),

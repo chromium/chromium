@@ -44,6 +44,10 @@ class ElementFinderResult {
     return dom_object_.object_data.object_id;
   }
 
+  absl::optional<int> backend_node_id() const {
+    return dom_object_.object_data.backend_node_id;
+  }
+
   const std::string& node_frame_id() const {
     return dom_object_.object_data.node_frame_id;
   }
@@ -65,6 +69,10 @@ class ElementFinderResult {
 
   void SetObjectId(const std::string& object_id) {
     dom_object_.object_data.object_id = object_id;
+  }
+
+  void SetBackendNodeId(absl::optional<int> backend_node_id) {
+    dom_object_.object_data.backend_node_id = backend_node_id;
   }
 
   void SetNodeFrameId(const std::string& node_frame_id) {

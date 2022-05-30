@@ -464,14 +464,6 @@ class WebController {
       base::OnceCallback<void(const ClientStatus&, int)> callback,
       const DevtoolsClient::ReplyStatus& reply_status,
       std::unique_ptr<dom::DescribeNodeResult> result);
-  void OnGetBackendNodeIdForFormAndFieldData(
-      const ElementFinderResult& element,
-      base::OnceCallback<void(const ClientStatus&,
-                              autofill::ContentAutofillDriver* driver,
-                              const autofill::FormData&,
-                              const autofill::FormFieldData&)> callback,
-      const ClientStatus& node_status,
-      int backend_node_id);
   void OnGetFormAndFieldData(
       base::OnceCallback<void(const ClientStatus&,
                               autofill::ContentAutofillDriver* driver,

@@ -1000,11 +1000,26 @@ void WebController::GetElementFormAndFieldData(
                             ContentAutofillDriver* driver,
                             const autofill::FormData&,
                             const autofill::FormFieldData&)> callback) {
-  GetBackendNodeId(
-      element,
-      base::BindOnce(&WebController::OnGetBackendNodeIdForFormAndFieldData,
-                     weak_ptr_factory_.GetWeakPtr(), element,
-                     std::move(callback)));
+  if (!element.backend_node_id()) {
+    std::move(callback).Run(UnexpectedErrorStatus(__FILE__, __LINE__), nullptr,
+                            autofill::FormData(), autofill::FormFieldData());
+    return;
+  }
+
+  ContentAutofillDriver* driver =
+      ContentAutofillDriver::GetForRenderFrameHost(element.render_frame_host());
+  if (driver == nullptr) {
+    DVLOG(1) << __func__ << " Failed to get the autofill driver.";
+    std::move(callback).Run(UnexpectedErrorStatus(__FILE__, __LINE__), nullptr,
+                            autofill::FormData(), autofill::FormFieldData());
+    return;
+  }
+
+  driver->GetAutofillAgent()->GetElementFormAndFieldDataForDevToolsNodeId(
+      *element.backend_node_id(),
+      base::BindOnce(&WebController::OnGetFormAndFieldData,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     driver));
 }
 
 void WebController::GetBackendNodeId(
@@ -1032,35 +1047,6 @@ void WebController::OnGetBackendNodeId(
 
   std::move(callback).Run(OkClientStatus(),
                           result->GetNode()->GetBackendNodeId());
-}
-
-void WebController::OnGetBackendNodeIdForFormAndFieldData(
-    const ElementFinderResult& element,
-    base::OnceCallback<void(const ClientStatus&,
-                            ContentAutofillDriver* driver,
-                            const autofill::FormData&,
-                            const autofill::FormFieldData&)> callback,
-    const ClientStatus& node_status,
-    const int backend_node_id) {
-  if (!node_status.ok()) {
-    std::move(callback).Run(node_status, nullptr, autofill::FormData(),
-                            autofill::FormFieldData());
-    return;
-  }
-
-  ContentAutofillDriver* driver =
-      ContentAutofillDriver::GetForRenderFrameHost(element.render_frame_host());
-  if (driver == nullptr) {
-    DVLOG(1) << __func__ << " Failed to get the autofill driver.";
-    std::move(callback).Run(UnexpectedErrorStatus(__FILE__, __LINE__), nullptr,
-                            autofill::FormData(), autofill::FormFieldData());
-    return;
-  }
-
-  driver->GetAutofillAgent()->GetElementFormAndFieldDataForDevToolsNodeId(
-      backend_node_id, base::BindOnce(&WebController::OnGetFormAndFieldData,
-                                      weak_ptr_factory_.GetWeakPtr(),
-                                      std::move(callback), driver));
 }
 
 void WebController::OnGetFormAndFieldData(

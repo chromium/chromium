@@ -11,6 +11,7 @@
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill_assistant {
 
@@ -25,6 +26,9 @@ struct JsObjectIdentifier {
   // context of the frame. Might be empty if no frame id needs to be
   // specified.
   std::string node_frame_id;
+
+  // The node id of this object. This is only available for nodes.
+  absl::optional<int> backend_node_id;
 };
 
 // DomObjectFrameStack contains all data required to use an object including
