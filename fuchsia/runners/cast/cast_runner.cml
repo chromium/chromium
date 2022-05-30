@@ -14,6 +14,8 @@
   capabilities: [
     {
       protocol: [
+        "chromium.cast.DataReset",
+        "fuchsia.web.FrameHost",
         "fuchsia.sys.Runner",
       ]
     }
@@ -21,6 +23,8 @@
   expose: [
     {
       protocol: [
+        "chromium.cast.DataReset",
+        "fuchsia.web.FrameHost",
         "fuchsia.sys.Runner",
       ],
       from: "self",
