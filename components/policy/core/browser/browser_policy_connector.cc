@@ -141,30 +141,31 @@ bool BrowserPolicyConnector::ProviderHasPolicies(
 }
 
 std::string BrowserPolicyConnector::GetDeviceManagementUrl() const {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(switches::kDeviceManagementUrl) &&
-      IsCommandLineSwitchSupported())
-    return command_line->GetSwitchValueASCII(switches::kDeviceManagementUrl);
-  else
-    return kDefaultDeviceManagementServerUrl;
+  return GetUrlOverride(switches::kDeviceManagementUrl,
+                        kDefaultDeviceManagementServerUrl);
 }
 
 std::string BrowserPolicyConnector::GetRealtimeReportingUrl() const {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(switches::kRealtimeReportingUrl) &&
-      IsCommandLineSwitchSupported())
-    return command_line->GetSwitchValueASCII(switches::kRealtimeReportingUrl);
-  else
-    return kDefaultRealtimeReportingServerUrl;
+  return GetUrlOverride(switches::kRealtimeReportingUrl,
+                        kDefaultRealtimeReportingServerUrl);
 }
 
 std::string BrowserPolicyConnector::GetEncryptedReportingUrl() const {
+  return GetUrlOverride(switches::kEncryptedReportingUrl,
+                        kDefaultEncryptedReportingServerUrl);
+}
+
+std::string BrowserPolicyConnector::GetUrlOverride(
+    const char* flag,
+    const char* default_value) const {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(switches::kEncryptedReportingUrl) &&
-      IsCommandLineSwitchSupported())
-    return command_line->GetSwitchValueASCII(switches::kEncryptedReportingUrl);
-  else
-    return kDefaultEncryptedReportingServerUrl;
+  if (command_line->HasSwitch(flag)) {
+    if (IsCommandLineSwitchSupported())
+      return command_line->GetSwitchValueASCII(flag);
+    else
+      LOG(WARNING) << flag << " not supported on this channel";
+  }
+  return default_value;
 }
 
 // static
