@@ -14,7 +14,6 @@ import org.chromium.base.UserDataHost;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.external_intents.RedirectHandler;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.ui.base.WindowAndroid;
@@ -119,7 +118,6 @@ public class RedirectHandlerTabHelper extends EmptyTabObserver implements UserDa
                 LaunchIntentDispatcher.isCustomTabIntent(intent),
                 IntentUtils.safeGetBooleanExtra(intent,
                         CustomTabIntentDataProvider.EXTRA_SEND_TO_EXTERNAL_DEFAULT_HANDLER, false),
-                ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_EXTERNAL_LINK_HANDLING),
                 IntentUtils.safeGetBooleanExtra(
                         intent, IntentHandler.EXTRA_STARTED_TABBED_CHROME_TASK, false));
     }

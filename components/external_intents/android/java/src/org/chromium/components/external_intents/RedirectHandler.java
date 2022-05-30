@@ -42,16 +42,16 @@ public class RedirectHandler {
     private static class IntentState {
         final Intent mInitialIntent;
         final boolean mIsCustomTabIntent;
-        final boolean mIsInitialIntentHeadingToChrome;
+        final boolean mPreferToStayInChrome;
         final boolean mExternalIntentStartedTask;
 
         // A resolver list which includes all resolvers of |mInitialIntent|.
         HashSet<ComponentName> mCachedResolvers = new HashSet<ComponentName>();
 
-        IntentState(Intent initialIntent, boolean isInitialIntentHeadingToChrome,
-                boolean isCustomTabIntent, boolean externalIntentStartedTask) {
+        IntentState(Intent initialIntent, boolean preferToStayInChrome, boolean isCustomTabIntent,
+                boolean externalIntentStartedTask) {
             mInitialIntent = initialIntent;
-            mIsInitialIntentHeadingToChrome = isInitialIntentHeadingToChrome;
+            mPreferToStayInChrome = preferToStayInChrome;
             mIsCustomTabIntent = isCustomTabIntent;
             mExternalIntentStartedTask = externalIntentStartedTask;
         }
@@ -90,28 +90,24 @@ public class RedirectHandler {
      * Resets |mIntentState| for the newly received Intent.
      */
     public void updateIntent(Intent intent, boolean isCustomTabIntent, boolean sendToExternalApps,
-            boolean isCCTExternalLinkHandlingEnabled, boolean externalIntentStartedTask) {
+            boolean externalIntentStartedTask) {
         if (intent == null || !Intent.ACTION_VIEW.equals(intent.getAction())) {
             mIntentState = null;
             return;
         }
 
-        boolean isInitialIntentHeadingToChrome = false;
-        boolean checkIsToChrome = true;
-        // All custom tabs VIEW intents are by design explicit intents, so the presence of package
-        // name doesn't imply they have to be handled by Chrome explicitly. Check if external apps
-        // should be checked for handling the initial redirect chain.
-        if (isCustomTabIntent) {
-            checkIsToChrome = !(sendToExternalApps && isCCTExternalLinkHandlingEnabled);
-        }
+        boolean preferToStayInChrome = isIntentToChrome(intent);
 
-        if (checkIsToChrome) isInitialIntentHeadingToChrome = isIntentToChrome(intent);
+        // A Custom Tab Intent from a Custom Tab Session will always have the package set, so the
+        // Intent will always be to Chrome. Therefore, we provide an Extra to allow the initial
+        // Intent navigation chain to leave Chrome.
+        if (isCustomTabIntent && sendToExternalApps) preferToStayInChrome = false;
 
         // A sanitized copy of the initial intent for detecting if resolvers have changed.
         Intent initialIntent = new Intent(intent);
         ExternalNavigationHandler.sanitizeQueryIntentActivitiesIntent(initialIntent);
-        mIntentState = new IntentState(initialIntent, isInitialIntentHeadingToChrome,
-                isCustomTabIntent, externalIntentStartedTask);
+        mIntentState = new IntentState(
+                initialIntent, preferToStayInChrome, isCustomTabIntent, externalIntentStartedTask);
     }
 
     private static boolean isIntentToChrome(Intent intent) {
@@ -248,8 +244,7 @@ public class RedirectHandler {
     public boolean shouldStayInApp(boolean hasExternalProtocol, boolean isForTrustedCallingApp) {
         // http://crbug/424029 : Need to stay in Chrome for an intent heading explicitly to Chrome.
         // http://crbug/881740 : Relax stay in Chrome restriction for Custom Tabs.
-        return (mIntentState != null && mIntentState.mIsInitialIntentHeadingToChrome
-                       && !hasExternalProtocol)
+        return (mIntentState != null && mIntentState.mPreferToStayInChrome && !hasExternalProtocol)
                 || shouldNavigationTypeStayInApp(isForTrustedCallingApp);
     }
 
