@@ -1680,9 +1680,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.MachineLevelUserCloudPolicyEnrollment.RequestSuccessTime"
-    units="ms" expires_after="2022-06-01">
-  <owner>rogerta@chromium.org</owner>
+    units="ms" expires_after="2023-06-01">
   <owner>zmin@chromium.org</owner>
+  <owner>rogerta@chromium.org</owner>
   <summary>
     Time since the enrollment request was made until a successful enrollment
     response is returned from the server.
@@ -1691,18 +1691,18 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Enterprise.MachineLevelUserCloudPolicyEnrollment.Result"
     enum="MachineLevelUserCloudPolicyEnrollmentResult"
-    expires_after="2022-07-31">
-  <owner>rogerta@chromium.org</owner>
+    expires_after="2023-07-31">
   <owner>zmin@chromium.org</owner>
+  <owner>rogerta@chromium.org</owner>
   <summary>The result of machine level user cloud policy enrollment.</summary>
 </histogram>
 
 <histogram
     name="Enterprise.MachineLevelUserCloudPolicyEnrollment.StartupDialog"
     enum="MachineLevelUserCloudPolicyEnrollmentStartupDialog"
-    expires_after="2022-06-01">
-  <owner>rogerta@chromium.org</owner>
+    expires_after="2023-06-01">
   <owner>zmin@chromium.org</owner>
+  <owner>rogerta@chromium.org</owner>
   <summary>
     Records whether the machine level user cloud policy enrollment dialog is
     shown to the user and the action they took.
@@ -1711,9 +1711,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.MachineLevelUserCloudPolicyEnrollment.StartupDialogTime"
-    units="ms" expires_after="2022-06-01">
-  <owner>rogerta@chromium.org</owner>
+    units="ms" expires_after="2023-06-01">
   <owner>zmin@chromium.org</owner>
+  <owner>rogerta@chromium.org</owner>
   <summary>
     The length of time the machine level user cloud policy enrollment dialog was
     visible to the user.
@@ -1722,9 +1722,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.MachineLevelUserCloudPolicyEnrollment.UnenrollSuccess"
-    enum="BooleanSuccess" expires_after="2022-06-01">
-  <owner>domfc@chromium.org</owner>
+    enum="BooleanSuccess" expires_after="2023-06-01">
   <owner>zmin@chromium.org</owner>
+  <owner>domfc@chromium.org</owner>
   <summary>
     Records whether a browser unenrollment was completed succcessfully by
     writing an invalid DM token to storage or not.
