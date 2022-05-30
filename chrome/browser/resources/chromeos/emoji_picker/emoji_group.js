@@ -5,7 +5,6 @@
 import './emoji_button.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
 import {createCustomEvent, EMOJI_CLEAR_RECENTS_CLICK} from './events.js';
 import {CategoryEnum, EmojiVariants} from './types.js';
 
@@ -23,13 +22,24 @@ class EmojiGroupComponent extends PolymerElement {
       /** @type {!Array<EmojiVariants>} */
       data: {type: Array, readonly: true},
       /** @type {Object<string,string>} */
-      preferred: {type: Object},
+      preferred: {type: Object, value: {}},
       /** @type {boolean} */
       clearable: {type: Boolean, value: false},
       /** @type {boolean} */
       showClearRecents: {type: Boolean, value: false},
       /** @type {string} */
-      category: {type: String, value: CategoryEnum.EMOJI},
+      category: {
+        type: String,
+        value: CategoryEnum.EMOJI,
+        readonly: true,
+      },
+      /** @type {boolean} */
+      useFlexLayout: {
+        type: Boolean,
+        value: false,
+        readonly: true,
+        reflectToAttribute: true,
+      },
     };
   }
 

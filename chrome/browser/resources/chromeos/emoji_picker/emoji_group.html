@@ -4,13 +4,80 @@
     position: relative;
   }
 
+
+  :host([v2-enabled]:not([use-flex-layout])) {
+    --emoji-size: var(--v2-emoji-size);
+    --emoji-spacing: var(--v2-emoji-spacing);
+  }
+
+  /* TODO(b/233268914): Allow adding per emoji category style.
+   * The refactor should make setting styles per emoji category
+   * (e.g. emoji, emoticon, symbol) easy. Also, base styles need to be
+   * defined for common parts of different emoji categories styles.
+   */
+
+  /* Grid layout styles. */
+  :host(:not([use-flex-layout])) #emoji {
+    display: grid;
+    gap: var(--emoji-spacing);
+    grid-auto-rows: max-content;
+    grid-template-columns: repeat(var(--emoji-per-row), 1fr);
+    justify-items: center;
+  }
+
+  :host(:not([use-flex-layout])) emoji-button {
+    --emoji-button-button-style: {
+      background: var(--emoji-background);
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      display: block;
+      font-family: 'Noto Color Emoji';
+      font-size: 19px;
+      height: 100%;
+      line-height: var(--emoji-size);
+      outline: none;
+      padding: 0;
+      text-align: center;
+      user-select: none;
+      width: 100%;
+    };
+    --emoji-button-height: var(--emoji-size);
+    --emoji-button-width: var(--emoji-size);
+  }
+
+  /* Flex layout styles. */
+  :host([use-flex-layout]) #emoji {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px 20px;
+  }
+
+  :host([use-flex-layout]) emoji-button {
+    --emoji-button-button-style: {
+      background: var(--emoji-background);
+      border: none;
+      color: var(--cros-text-color-primary);
+      cursor: pointer;
+      font-family: 'Noto Sans CJK JP';
+      font-size: 13px;
+      height: 100%;
+      padding: 6px;
+      width: max-content;
+    };
+    --emoji-button-height: var(--emoji-size);
+    --emoji-button-width: max-content;
+  }
+
   #heading {
     color: var(--cros-text-color-secondary);
     display: flex;
+    /* TODO(b/233133645): The sizes need to match the design. */
     font-size: 10pt;
     padding-bottom: var(--emoji-group-heading-padding-bottom);
     padding-top: var(--emoji-group-heading-padding-top);
   }
+
   #heading:focus,
   #heading:active {
     outline-color: var(--cros-text-color-prominent);
@@ -22,14 +89,6 @@
     line-height: var(--emoji-group-heading-size);
     user-select: none;
     width: 100%;
-  }
-
-  #emoji {
-    display: grid;
-    gap: var(--emoji-spacing);
-    grid-auto-rows: max-content;
-    grid-template-columns: repeat(var(--emoji-per-row), 1fr);
-    justify-items: center;
   }
 
   #show-clear {
@@ -82,11 +141,6 @@
     background-color: var(--cros-button-background-color-secondary-hover);
     border: 2px solid var(--cros-button-background-color-secondary-hover);
   }
-
-  :host([v2-enabled]) {
-    --emoji-size: var(--v2-emoji-size);
-    --emoji-spacing: var(--v2-emoji-spacing);
-  }
 </style>
 
 <template is="dom-if" if="[[group]]">
@@ -99,19 +153,20 @@
     </template>
   </div>
 </template>
-  <template is = "dom-if" if="[[showClearRecents]]">
+<template is = "dom-if" if="[[showClearRecents]]">
   <button id="clear-recents" on-click="onClearRecentsClick">
     <div id="clear-recents-hover">
-    Clear recently used emojis
+      Clear recently used [[category]]
     </div>
   </button>
 </template>
 <div id="emoji">
   <div id="fake-focus-target" tabindex="-1"></div>
   <template is="dom-repeat" items="[[data]]">
+    <!-- TODO(b/233130994): Replace emoji-button with button. -->
     <emoji-button emoji="[[getDisplayEmojiForEmoji(item.base.string)]]"
-      variants="[[item.alternates]]" tooltip="[[getTooltipForEmoji(item.base)]]"
-    >
+      variants="[[item.alternates]]" category="[[category]]"
+      tooltip="[[getTooltipForEmoji(item.base)]]">
     </emoji-button>
   </template>
 </div>
