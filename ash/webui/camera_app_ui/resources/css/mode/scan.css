@@ -354,7 +354,6 @@ body.enable-scan-barcode .barcode-scan-box {
 
 #view-crop-document .review-image .dot {
   --icon-size: 12px;
-  --focus-ring-style: none;
   --focus-size: 32px;
 
   border-radius: 50%;
@@ -363,6 +362,10 @@ body.enable-scan-barcode .barcode-scan-box {
   touch-action: none;
   transform: translate(-50%, -50%);
   width: 48px;
+}
+
+#view-crop-document .review-image .dot:focus-visible {
+  outline: none;
 }
 
 #view-crop-document .review-image .dot::before,

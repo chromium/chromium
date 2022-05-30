@@ -121,6 +121,13 @@ input[type=checkbox] {
   width: 40px;
 }
 
+.menu-item > input.icon {
+  outline-offset: -4px;
+}
+input[type=radio].icon {
+  border-radius: 50%;
+}
+
 ::-webkit-scrollbar {
   height: 0;
   width: 0;
@@ -246,6 +253,7 @@ body.tablet-landscape .actions-group {
 #modes-group {
   display: block;
   overflow: auto;
+  padding: 10px 0;
   pointer-events: auto;
   text-align: center;
   user-select: none;
@@ -281,9 +289,6 @@ body.should-handle-intent-result #modes-group {
 }
 
 #modes-group .mode-item {
-  --focus-ring-gap: 7px;
-  --focus-ring-border: 2px;
-
   display: inline-block;
   font-size: 0; /* Remove space between inline-block. */
   margin: 0 8px;
@@ -307,6 +312,10 @@ body.should-handle-intent-result #modes-group {
   transform: none;
 }
 
+div.mode-item>input {
+  border-radius: 16px/50%;
+}
+
 div.mode-item>span {
   border-radius: 16px/50%;
   color: white;
@@ -320,10 +329,8 @@ div.mode-item>span {
 }
 
 .mode-item>input {
-  --focus-ring-size: 7px;
-  --focus-ring-style: mode-item-input;
-
   height: 100%;
+  outline-offset: 7px;
   position: absolute;
   width: 100%;
   z-index: 1;
@@ -336,15 +343,10 @@ div.mode-item>span {
   text-shadow: none;
 }
 
-#focus-ring.mode-item-input {
-  border-radius: 23px/50%;
-}
-
 button.shutter {
-  --focus-ring-size: 9px;
-
   display: none;
   height: 60px;
+  outline-offset: 9px;
   width: 60px;
   z-index: 1;  /* On top of transforming switch-mode buttons. */
 }
@@ -544,10 +546,9 @@ body.mode-switching:not(.streaming) #camera-mode {
 }
 
 #switch-device {
-  --focus-ring-size: 8px;
-
   background-image: url(/images/camera_button_switch_device.svg);
   height: var(--big-icon);
+  outline-offset: 8px;
   width: var(--big-icon);
 }
 
@@ -1220,14 +1221,13 @@ body:not(.has-front-camera):not(.has-back-camera) #builtin-video-header {
 }
 
 button.menu-item {
-  --focus-ring-size: -3px;
+  outline-offset: -3px;
 }
 
 .menu-header button.icon {
   /* Icon image is small enough and won't be covered by -1px */
-  --focus-ring-size: -1px;
-
   background-image: url(/images/settings_button_back.svg);
+  outline-offset: -1px;
 }
 
 html[dir=rtl] .menu-header .icon {
@@ -1491,4 +1491,17 @@ body:not(.video) #settings-video-resolution {
 
 #view-video-resolution-settings .fps-60.checked {
   background-image: url(/images/camera_button_fps_60_checked.svg);
+}
+
+[tabindex='0'] {
+  outline: none;
+  outline-offset: 3px;
+}
+
+[tabindex='0']:focus-visible {
+  outline: 2px solid var(--blue-300);
+}
+
+.circle :is(button, input) {
+  border-radius: 50%;
 }

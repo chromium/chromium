@@ -5,7 +5,6 @@
 import {assert, assertExists, assertInstanceof} from '../assert.js';
 import {ClearableAsyncJobQueue} from '../async_job_queue.js';
 import * as dom from '../dom.js';
-import * as focusRing from '../focus_ring.js';
 import * as metrics from '../metrics.js';
 import * as nav from '../nav.js';
 import * as state from '../state.js';
@@ -146,29 +145,6 @@ export class PTZPanel extends View {
     super(
         ViewName.PTZ_PANEL,
         {dismissByEsc: true, dismissByBackgroundClick: true});
-
-    for (const el
-             of [this.panLeft, this.panRight, this.tiltUp, this.tiltDown,
-                 this.zoomIn, this.zoomOut]) {
-      el.addEventListener(focusRing.FOCUS_RING_UI_RECT_EVENT_NAME, (evt) => {
-        if (!(state.get(state.State.HAS_PAN_SUPPORT) &&
-              state.get(state.State.HAS_TILT_SUPPORT) &&
-              state.get(state.State.HAS_ZOOM_SUPPORT))) {
-          return;
-        }
-        const style = getComputedStyle(el, '::before');
-        function getStyleValue(attr: string) {
-          const px = style.getPropertyValue(attr);
-          return Number(px.replace(/^([\d.]+)px$/, '$1'));
-        }
-        const pRect = el.getBoundingClientRect();
-        focusRing.setUIRect(new DOMRectReadOnly(
-            /* x */ pRect.left + getStyleValue('left'),
-            /* y */ pRect.top + getStyleValue('top'), getStyleValue('width'),
-            getStyleValue('height')));
-        evt.preventDefault();
-      });
-    }
 
     state.addObserver(state.State.STREAMING, (streaming) => {
       if (!streaming && state.get(this.name)) {

@@ -17,6 +17,11 @@
   border-radius: var(--border-radius-rounded-with-short-side);
   height: 32px;
   margin-bottom: 8px;
+  overflow: unset;
+}
+
+#reset-all-container>button {
+  border-radius: var(--border-radius-rounded-with-short-side);
 }
 
 #ptz-reset-all {
@@ -54,8 +59,6 @@
 #ptz-panel-container button {
   --svg-width: 20px;
   --svg-height: 20px;
-  --focus-ring-size: 8px;
-  --focus-ring-style: circle;
 
   height: 48px;
   position: absolute;
@@ -64,6 +67,16 @@
 
 #ptz-panel-container button:disabled::before {
   opacity: 0.38;
+}
+
+#ptz-panel-container>button:focus {
+  outline: none;
+}
+
+#ptz-panel-container>button:focus-visible::before {
+  border-radius: 50%;
+  outline: 2px solid var(--blue-300);
+  outline-offset: 3px;
 }
 
 body:not(.has-pan-support) :is(#pan-left, #pan-right),
@@ -99,9 +112,11 @@ body:not(.has-zoom-support) :is(#zoom-in, #zoom-out) {
 }
 
 #ptz-panel-container button::before {
+  height: var(--svg-height);
   left: calc(50% - var(--svg-width) / 2);
   position: absolute;
   top: calc(50% - var(--svg-height) / 2);
+  width: var(--svg-width);
 }
 
 

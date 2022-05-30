@@ -4,7 +4,6 @@
 
 import {assert} from './assert.js';
 import {toggleExpertMode} from './expert.js';
-import {checkFocusRingVisibility} from './focus_ring.js';
 import * as state from './state.js';
 import * as toast from './toast.js';
 import {ViewName} from './type.js';
@@ -42,11 +41,9 @@ export function setup(views: View[]): void {
   allViews = views.flatMap((v) => [...getRecursiveViews(v)]);
   document.addEventListener('pointerdown', () => {
     state.set(state.State.KEYBOARD_NAVIGATION, false);
-    checkFocusRingVisibility();
   });
   document.addEventListener('keydown', () => {
     state.set(state.State.KEYBOARD_NAVIGATION, true);
-    checkFocusRingVisibility();
   });
 }
 

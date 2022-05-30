@@ -32,7 +32,6 @@ compile_js_files = [
   "expert.ts",
   "face.ts",
   "flag.ts",
-  "focus_ring.ts",
   "gallerybutton.ts",
   "geometry.ts",
   "h264.ts",

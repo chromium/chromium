@@ -10,7 +10,6 @@ import {CameraManager} from './device/index.js';
 import {ModeConstraints} from './device/type.js';
 import * as dom from './dom.js';
 import {reportError} from './error.js';
-import * as focusRing from './focus_ring.js';
 import {GalleryButton} from './gallerybutton.js';
 import {I18nString} from './i18n_string.js';
 import {Intent} from './intent.js';
@@ -111,7 +110,6 @@ export class App {
     this.setupToggles();
     localStorage.cleanup();
     this.setupEffect();
-    focusRing.initialize();
 
     // Set up views navigation by their DOM z-order.
     nav.setup([
