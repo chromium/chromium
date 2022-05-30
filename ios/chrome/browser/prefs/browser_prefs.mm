@@ -74,6 +74,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_mediator.h"
 #include "ios/chrome/browser/ui/first_run/fre_field_trial.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
+#import "ios/chrome/browser/ui/ui_feature_flags.h"
 #include "ios/chrome/browser/voice/voice_search_prefs_registration.h"
 #import "ios/chrome/browser/web/font_size/font_size_tab_helper.h"
 #import "ios/web/common/features.h"
@@ -344,6 +345,12 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(kOptimizationGuideRemoteFetchingEnabled, true);
 
   registry->RegisterBooleanPref(prefs::kHttpsOnlyModeEnabled, false);
+
+  // Register pref storing whether the Incognito interstitial for third-party
+  // intents is enabled.
+  if (base::FeatureList::IsEnabled(kIOS3PIntentsInIncognito)) {
+    registry->RegisterBooleanPref(prefs::kIncognitoInterstitialEnabled, false);
+  }
 
   // Register pref used to determine whether the User Policy notification was
   // already shown.

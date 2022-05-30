@@ -21,6 +21,7 @@ extern const char kDefaultCharset[];
 extern const char kEnableDoNotTrack[];
 extern const char kHttpServerProperties[];
 extern const char kIncognitoModeAvailability[];
+extern const char kIncognitoInterstitialEnabled[];
 extern const char kIosBookmarkCachedFolderId[];
 extern const char kIosBookmarkCachedTopMostRow[];
 extern const char kIosBookmarkFolderDefault[];

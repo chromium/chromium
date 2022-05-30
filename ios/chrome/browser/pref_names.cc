@@ -62,6 +62,11 @@ const char kHttpServerProperties[] = "net.http_server_properties";
 // 2 - Forced. All pages/sessions are forced into Incognito.
 const char kIncognitoModeAvailability[] = "incognito.mode_availability";
 
+// Boolean that is true when the Incognito interstitial for third-party intents
+// is enabled.
+const char kIncognitoInterstitialEnabled[] =
+    "ios.settings.incognito_interstitial_enabled";
+
 // Caches the folder id of user's position in the bookmark hierarchy navigator.
 const char kIosBookmarkCachedFolderId[] = "ios.bookmark.cached_folder_id";
 
