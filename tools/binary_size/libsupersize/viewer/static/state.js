@@ -278,7 +278,7 @@ function _makeIconTemplateGetter() {
    */
   const symbolIcons = {
     D: _icons.querySelector('.foldericon'),
-    C: _icons.querySelector('.componenticon'),
+    G: _icons.querySelector('.groupicon'),
     J: _icons.querySelector('.javaclassicon'),
     F: _icons.querySelector('.fileicon'),
     b: _icons.querySelector('.bssicon'),
@@ -291,7 +291,7 @@ function _makeIconTemplateGetter() {
     m: _icons.querySelector('.dexmethodicon'),
     p: _icons.querySelector('.localpakicon'),
     P: _icons.querySelector('.nonlocalpakicon'),
-    o: _icons.querySelector('.othericon'), // used as default icon
+    o: _icons.querySelector('.othericon'),  // used as default icon
   };
 
   const _statuses = document.getElementById('symbol-diff-status-icons');

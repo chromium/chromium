@@ -27,7 +27,7 @@ namespace caspian {
 enum class ArtifactType : char {
   kSymbol = '\0',
   kDirectory = 'D',
-  kComponent = 'C',
+  kGroup = 'G',
   kFile = 'F',
   kJavaClass = 'J',
 };
