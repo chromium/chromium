@@ -21,10 +21,12 @@ ChromiumApiDelegate::ChromiumApiDelegate(
 
 ChromiumApiDelegate::~ChromiumApiDelegate() = default;
 
+#if !BUILDFLAG(IS_PREBUILT_LIBASSISTANT)
 assistant_client::HttpConnectionFactory*
 ChromiumApiDelegate::GetHttpConnectionFactory() {
   return &http_connection_factory_;
 }
+#endif  // !BUILDFLAG(IS_PREBUILT_LIBASSISTANT)
 
 }  // namespace libassistant
 }  // namespace chromeos

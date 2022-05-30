@@ -128,6 +128,7 @@ source_set("internal") {
     "//chromeos/ash/components/assistant:buildflags",
     "//chromeos/ash/resources",
     "//chromeos/assistant/internal",
+    "//chromeos/assistant/internal:buildflags",
     "//chromeos/assistant/internal:libassistant",
     "//chromeos/assistant/internal:libassistant_shared_headers",
     "//chromeos/assistant/internal:support",
