@@ -176,11 +176,6 @@ bool DisplayDamageTracker::OnSurfaceDamaged(const SurfaceId& surface_id,
   return display_damaged;
 }
 
-void DisplayDamageTracker::OnSurfaceDestroyed(const SurfaceId& surface_id) {
-  TRACE_EVENT0("viz", "DisplayDamageTracker::SurfaceDestroyed");
-  aggregator_->ReleaseResources(surface_id);
-}
-
 void DisplayDamageTracker::OnSurfaceDamageExpected(const SurfaceId& surface_id,
                                                    const BeginFrameArgs& args) {
   TRACE_EVENT1("viz", "DisplayDamageTracker::SurfaceDamageExpected",

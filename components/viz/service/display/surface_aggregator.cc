@@ -305,12 +305,16 @@ SurfaceAggregator::SurfaceAggregator(
       extra_pass_for_readback_option_(extra_pass_option) {
   DCHECK(manager_);
   DCHECK(provider_);
+  manager_->AddObserver(this);
 }
 
 SurfaceAggregator::~SurfaceAggregator() {
-  // Notify client of all surfaces being removed.
+  manager_->RemoveObserver(this);
+
   contained_surfaces_.clear();
   contained_frame_sinks_.clear();
+
+  // Notify client of all surfaces being removed.
   ProcessAddedAndRemovedSurfaces();
 }
 
@@ -533,10 +537,21 @@ bool SurfaceAggregator::CanPotentiallyMergePass(
          sqs->de_jelly_delta_y == 0;
 }
 
+void SurfaceAggregator::OnSurfaceDestroyed(const SurfaceId& surface_id) {
+  DCHECK(!is_inside_aggregate_);
+
+  auto iter = resolved_frames_.find(surface_id);
+  if (iter != resolved_frames_.end()) {
+    TRACE_EVENT0("viz", "SurfaceAggregator::SurfaceDestroyed");
+    ReleaseResources(surface_id);
+    resolved_frames_.erase(iter);
+  }
+}
+
 const ResolvedFrameData* SurfaceAggregator::GetLatestFrameData(
     const SurfaceId& surface_id) {
-  auto* surface = manager_->GetSurfaceForId(surface_id);
-  return GetResolvedFrame(surface, /*inside_aggregation=*/false);
+  DCHECK(!is_inside_aggregate_);
+  return GetResolvedFrame(surface_id);
 }
 
 ResolvedFrameData* SurfaceAggregator::GetResolvedFrame(
@@ -545,59 +560,51 @@ ResolvedFrameData* SurfaceAggregator::GetResolvedFrame(
   // this aggregation, then find ResolvedFrameData for that surface.
   auto iter = resolved_surface_ranges_.find(range);
   if (iter == resolved_surface_ranges_.end()) {
-    iter = resolved_surface_ranges_
-               .emplace(range, manager_->GetLatestInFlightSurface(range))
-               .first;
+    auto* surface = manager_->GetLatestInFlightSurface(range);
+    SurfaceId surface_id = surface ? surface->surface_id() : SurfaceId();
+    iter = resolved_surface_ranges_.emplace(range, surface_id).first;
   }
 
-  return GetResolvedFrame(iter->second, /*inside_aggregation=*/true);
+  if (!iter->second.is_valid()) {
+    // There is no surface for `range`.
+    return nullptr;
+  }
+
+  return GetResolvedFrame(iter->second);
 }
 
 ResolvedFrameData* SurfaceAggregator::GetResolvedFrame(
     const SurfaceId& surface_id) {
-  return GetResolvedFrame(manager_->GetSurfaceForId(surface_id),
-                          /*inside_aggregation=*/true);
-}
+  DCHECK(surface_id.is_valid());
 
-ResolvedFrameData* SurfaceAggregator::GetResolvedFrame(
-    Surface* surface,
-    bool inside_aggregation) {
-  if (!surface || !surface->HasActiveFrame()) {
-    // If there is no resolved surface or the surface has no active frame there
-    // is no resolved frame data to return.
-    return nullptr;
-  }
-
-  auto iter = resolved_frames_.find(surface);
+  auto iter = resolved_frames_.find(surface_id);
   if (iter == resolved_frames_.end()) {
-    iter =
-        resolved_frames_
-            .emplace(std::piecewise_construct, std::forward_as_tuple(surface),
-                     std::forward_as_tuple(surface->surface_id(), surface))
-            .first;
+    auto* surface = manager_->GetSurfaceForId(surface_id);
+    if (!surface || !surface->HasActiveFrame()) {
+      // If there is no resolved surface or the surface has no active frame
+      // there is no resolved frame data to return.
+      return nullptr;
+    }
+
+    iter = resolved_frames_
+               .emplace(std::piecewise_construct,
+                        std::forward_as_tuple(surface_id),
+                        std::forward_as_tuple(surface->surface_id(), surface))
+               .first;
   }
 
   ResolvedFrameData& resolved_frame = iter->second;
-  DCHECK_EQ(resolved_frame.surface(), surface);
-
-  // Verify that a new surface wasn't created at the same address as a deleted
-  // surface with a different SurfaceId.
-  // TODO(kylechar): Invalidate cached resolved frame data when
-  // SurfaceObserver signals the surface has been destroyed instead.
-  if (resolved_frame.surface_id() != surface->surface_id()) {
-    resolved_frames_.erase(iter);
-    return GetResolvedFrame(surface, inside_aggregation);
-  }
+  Surface* surface = resolved_frame.surface();
 
   // Mark the frame as used this aggregation so it persists.
-  bool first_use = inside_aggregation ? resolved_frame.MarkAsUsed() : true;
+  bool first_use = is_inside_aggregate_ ? resolved_frame.MarkAsUsed() : true;
 
   if (first_use) {
     // If there is a new CompositorFrame for `surface` compute resolved frame
     // data for the new resolved CompositorFrame.
     if (resolved_frame.frame_index() != surface->GetActiveFrameIndex() ||
         surface->HasSurfaceAnimationDamage()) {
-      DCHECK(inside_aggregation);
+      DCHECK(is_inside_aggregate_);
       base::ElapsedTimer timer;
       ProcessResolvedFrame(resolved_frame);
       stats_->declare_resources_time += timer.Elapsed();
@@ -1980,23 +1987,26 @@ AggregatedFrame SurfaceAggregator::Aggregate(
     const gfx::Rect& target_damage,
     int64_t display_trace_id) {
   DCHECK(!expected_display_time.is_null());
-
-  root_surface_id_ = surface_id;
-  Surface* surface = manager_->GetSurfaceForId(surface_id);
-  DCHECK(surface);
   DCHECK(contained_surfaces_.empty());
 
-  CheckFrameSinksChanged(surface);
+  DCHECK(!is_inside_aggregate_);
+  is_inside_aggregate_ = true;
+
+  root_surface_id_ = surface_id;
 
   // Start recording new stats for this aggregation.
   stats_.emplace();
 
   base::ElapsedTimer prewalk_timer;
-  ResolvedFrameData* resolved_frame =
-      GetResolvedFrame(surface, /*inside_aggregation=*/true);
+  ResolvedFrameData* resolved_frame = GetResolvedFrame(surface_id);
 
-  if (!resolved_frame || !resolved_frame->is_valid())
+  if (!resolved_frame || !resolved_frame->is_valid()) {
+    ResetAfterAggregate();
     return {};
+  }
+
+  Surface* surface = resolved_frame->surface();
+  CheckFrameSinksChanged(surface);
 
   display_trace_id_ = display_trace_id;
   expected_display_time_ = expected_display_time;
@@ -2160,6 +2170,9 @@ void SurfaceAggregator::RecordStatHistograms() {
 }
 
 void SurfaceAggregator::ResetAfterAggregate() {
+  DCHECK(is_inside_aggregate_);
+
+  is_inside_aggregate_ = false;
   dest_pass_list_ = nullptr;
   surface_damage_rect_list_ = nullptr;
   current_zero_damage_rect_is_not_recorded_ = false;

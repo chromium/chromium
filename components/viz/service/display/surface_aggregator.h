@@ -23,6 +23,7 @@
 #include "components/viz/common/surfaces/surface_range.h"
 #include "components/viz/service/display/aggregated_frame.h"
 #include "components/viz/service/display/resolved_frame_data.h"
+#include "components/viz/service/surfaces/surface_observer.h"
 #include "components/viz/service/viz_service_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/delegated_ink_metadata.h"
@@ -37,7 +38,7 @@ class SurfaceManager;
 
 struct MaskFilterInfoExt;
 
-class VIZ_SERVICE_EXPORT SurfaceAggregator {
+class VIZ_SERVICE_EXPORT SurfaceAggregator : public SurfaceObserver {
  public:
   using SurfaceIndexMap = base::flat_map<SurfaceId, uint64_t>;
   using FrameSinkIdMap = base::flat_map<FrameSinkId, LocalSurfaceId>;
@@ -73,7 +74,7 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
   SurfaceAggregator(const SurfaceAggregator&) = delete;
   SurfaceAggregator& operator=(const SurfaceAggregator&) = delete;
 
-  ~SurfaceAggregator();
+  ~SurfaceAggregator() override;
 
   // These constants are used for all time related metrics recorded in
   // SurfaceAggregator.
@@ -96,7 +97,6 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
   // Aggregate() to make sure no CompositorFrame did arrive between the calls.
   const ResolvedFrameData* GetLatestFrameData(const SurfaceId& surface_id);
 
-  void ReleaseResources(const SurfaceId& surface_id);
   const SurfaceIndexMap& previous_contained_surfaces() const {
     return previous_contained_surfaces_;
   }
@@ -135,13 +135,16 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
     base::TimeDelta declare_resources_time;
   };
 
+  // SurfaceObserver implementation.
+  void OnSurfaceDestroyed(const SurfaceId& surface_id) override;
+
+  void ReleaseResources(const SurfaceId& surface_id);
+
   // Get resolved frame data for the resolved surfaces active frame. Returns
   // null if there is no matching surface or the surface doesn't have an active
   // CompositorFrame.
   ResolvedFrameData* GetResolvedFrame(const SurfaceRange& range);
   ResolvedFrameData* GetResolvedFrame(const SurfaceId& surface_id);
-  ResolvedFrameData* GetResolvedFrame(Surface* surface,
-                                      bool inside_aggregation);
 
   // - |source_pass| is the render pass that contains |surface_quad|.
   // - |target_transform| is the transform from the coordinate space of
@@ -388,6 +391,9 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
 
   const ExtraPassForReadbackOption extra_pass_for_readback_option_;
 
+  // Will be true for duration of Aggregate() function.
+  bool is_inside_aggregate_ = false;
+
   bool output_is_secure_ = false;
 
   // Whether |CopyOutputRequests| should be moved over to the aggregated frame.
@@ -407,6 +413,9 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
   AggregatedRenderPassId readback_render_pass_id_;
   // The id for the optional render pass used to apply the display transform.
   AggregatedRenderPassId display_transform_render_pass_id_;
+
+  // Persistent storage for ResolvedFrameData.
+  std::map<SurfaceId, ResolvedFrameData> resolved_frames_;
 
   base::flat_map<SurfaceId, int> surface_id_to_resource_child_id_;
 
@@ -437,8 +446,8 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
   base::TimeTicks expected_display_time_;
   int64_t display_trace_id_ = -1;
 
-  // Map from SurfaceRange to Surface for current aggregation.
-  base::flat_map<SurfaceRange, Surface*> resolved_surface_ranges_;
+  // Map from SurfaceRange to SurfaceId for current aggregation.
+  base::flat_map<SurfaceRange, SurfaceId> resolved_surface_ranges_;
 
   // The root damage rect of the currently-aggregating frame.
   gfx::Rect root_damage_rect_;
@@ -500,9 +509,6 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator {
   // surface_damage_rect_list_ . Set by AddSurfaceDamageToDamageList() and read
   // by FindQuadWithOverlayDamage().
   bool current_zero_damage_rect_is_not_recorded_ = false;
-
-  // Persistent storage for ResolvedFrameData.
-  std::map<Surface*, ResolvedFrameData> resolved_frames_;
 
   // Used to generate new unique render pass ids in the aggregated namespace.
   AggregatedRenderPassId::Generator render_pass_id_generator_;
