@@ -259,7 +259,8 @@ class AutofillAgent : public content::RenderFrameObserver,
 
   // Set |node| to display the given |value|.
   void DoFillFieldWithValue(const std::u16string& value,
-                            blink::WebInputElement& node);
+                            blink::WebInputElement& node,
+                            blink::WebAutofillState autofill_state);
 
   // Set |node| to display the given |value| as a preview.  The preview is
   // visible on screen to the user, but not visible to the page via the DOM or

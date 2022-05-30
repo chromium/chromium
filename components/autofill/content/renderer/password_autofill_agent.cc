@@ -716,18 +716,12 @@ void PasswordAutofillAgent::PasswordValueGatekeeper::Reset() {
 
 void PasswordAutofillAgent::PasswordValueGatekeeper::ShowValue(
     WebInputElement* element) {
-  if (!element->IsNull() && !element->SuggestedValue().IsEmpty()) {
+  if (!element->IsNull() && !element->SuggestedValue().IsEmpty())
     element->SetAutofillValue(element->SuggestedValue());
-    element->SetAutofillState(WebAutofillState::kAutofilled);
-  }
 }
 
 bool PasswordAutofillAgent::TextDidChangeInTextField(
     const WebInputElement& element) {
-  // TODO(crbug.com/415449): Do this through const WebInputElement.
-  WebInputElement mutable_element = element;  // We need a non-const.
-  mutable_element.SetAutofillState(WebAutofillState::kNotFilled);
-
   auto iter = web_input_to_password_info_.find(element);
   if (iter != web_input_to_password_info_.end()) {
     iter->second.password_was_edited_last = false;
@@ -860,7 +854,6 @@ void PasswordAutofillAgent::FillField(WebInputElement* input,
   DCHECK(input);
   DCHECK(!input->IsNull());
   input->SetAutofillValue(WebString::FromUTF16(credential));
-  input->SetAutofillState(WebAutofillState::kAutofilled);
   const FieldRendererId input_id(input->UniqueRendererFormControlId());
   field_data_manager_->UpdateFieldDataMap(
       input_id, credential, FieldPropertiesFlags::kAutofilledOnUserTrigger);
@@ -903,14 +896,12 @@ bool PasswordAutofillAgent::PreviewSuggestion(
 
     username_autofill_state_ = username_element.GetAutofillState();
     username_element.SetSuggestedValue(username);
-    username_element.SetAutofillState(WebAutofillState::kPreviewed);
     form_util::PreviewSuggestion(username_element.SuggestedValue().Utf16(),
                                  username_query_prefix_, &username_element);
   }
   if (!password_element.IsNull()) {
     password_autofill_state_ = password_element.GetAutofillState();
     password_element.SetSuggestedValue(password);
-    password_element.SetAutofillState(WebAutofillState::kPreviewed);
   }
 
   return true;
@@ -1499,12 +1490,11 @@ void PasswordAutofillAgent::InformNoSavedCredentials(
   for (WebFormControlElement& element : elements) {
     if (element.IsNull())
       continue;
-    element.SetSuggestedValue(blink::WebString());
     // Don't clear the actual value of fields that the user has edited manually
     // (which changes the autofill state back to kNotFilled).
     if (element.GetAutofillState() == WebAutofillState::kAutofilled)
       element.SetValue(blink::WebString());
-    element.SetAutofillState(WebAutofillState::kNotFilled);
+    element.SetSuggestedValue(blink::WebString());
   }
   all_autofilled_elements_.clear();
 
@@ -2141,6 +2131,10 @@ void PasswordAutofillAgent::TryFixAutofilledForm(
     if (cached_element == autofilled_elements_cache_.end())
       continue;
 
+    // autofilled_elements_cache_ stores values filled at page load time and
+    // gets wiped when we observe a user gesture. During this time, the
+    // username/password fields can be in preview state and we restore this
+    // state if JavaScript modifies the field's value.
     const WebString& cached_value = cached_element->second;
     if (cached_value != element.SuggestedValue())
       element.SetSuggestedValue(cached_value);

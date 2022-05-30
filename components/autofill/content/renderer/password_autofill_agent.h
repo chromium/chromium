@@ -574,7 +574,8 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
 
   bool prefilled_username_metrics_logged_ = false;
 
-  // Keeps autofilled values for the form elements.
+  // Keeps autofilled values for the form elements until a user gesture
+  // is observed. At that point, the map is cleared.
   std::map<FieldRendererId, blink::WebString> autofilled_elements_cache_;
   std::set<FieldRendererId> all_autofilled_elements_;
   // Keeps forms structure (amount of elements, element types etc).

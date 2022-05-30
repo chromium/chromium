@@ -444,7 +444,10 @@ void HTMLTextAreaElement::setValueForBinding(const String& value) {
     SetValue(value);
   } else {
     String old_value = this->Value();
-    SetValue(value);
+    SetValue(value, TextFieldEventBehavior::kDispatchNoEvent,
+             TextControlSetValueSelection::kSetSelectionToEnd,
+             value != old_value ? WebAutofillState::kNotFilled
+                                : WebAutofillState::kAutofilled);
     if (Page* page = GetDocument().GetPage()) {
       page->GetChromeClient().JavaScriptChangedAutofilledValue(*this,
                                                                old_value);
@@ -454,22 +457,24 @@ void HTMLTextAreaElement::setValueForBinding(const String& value) {
 
 void HTMLTextAreaElement::SetValue(const String& value,
                                    TextFieldEventBehavior event_behavior,
-                                   TextControlSetValueSelection selection) {
-  SetValueCommon(value, event_behavior, selection);
+                                   TextControlSetValueSelection selection,
+                                   WebAutofillState autofill_state) {
+  SetValueCommon(value, event_behavior, selection, autofill_state);
   is_dirty_ = true;
 }
 
 void HTMLTextAreaElement::SetNonDirtyValue(
     const String& value,
     TextControlSetValueSelection selection) {
-  SetValueCommon(value, TextFieldEventBehavior::kDispatchNoEvent, selection);
+  SetValueCommon(value, TextFieldEventBehavior::kDispatchNoEvent, selection,
+                 WebAutofillState::kNotFilled);
   is_dirty_ = false;
 }
 
-void HTMLTextAreaElement::SetValueCommon(
-    const String& new_value,
-    TextFieldEventBehavior event_behavior,
-    TextControlSetValueSelection selection) {
+void HTMLTextAreaElement::SetValueCommon(const String& new_value,
+                                         TextFieldEventBehavior event_behavior,
+                                         TextControlSetValueSelection selection,
+                                         WebAutofillState autofill_state) {
   // Code elsewhere normalizes line endings added by the user via the keyboard
   // or pasting.  We normalize line endings coming from JavaScript here.
   String normalized_value = new_value;
@@ -514,6 +519,7 @@ void HTMLTextAreaElement::SetValueCommon(
                       std::min(end_of_string, selection_end));
   }
 
+  SetAutofillState(autofill_state);
   NotifyFormStateChanged();
   switch (event_behavior) {
     case TextFieldEventBehavior::kDispatchChangeEvent:
@@ -532,6 +538,13 @@ void HTMLTextAreaElement::SetValueCommon(
     case TextFieldEventBehavior::kDispatchNoEvent:
       break;
   }
+
+  // We set the Autofilled state again because setting the autofill value
+  // triggers JavaScript events and the site may override the autofilled value,
+  // which resets the autofill state. Even if the website modifies the from
+  // control element's content during the autofill operation, we want the state
+  // to show as as autofilled.
+  SetAutofillState(autofill_state);
 }
 
 String HTMLTextAreaElement::defaultValue() const {
@@ -551,6 +564,8 @@ void HTMLTextAreaElement::setDefaultValue(const String& default_value) {
 }
 
 void HTMLTextAreaElement::SetSuggestedValue(const String& value) {
+  SetAutofillState(!value.IsEmpty() ? WebAutofillState::kPreviewed
+                                    : WebAutofillState::kNotFilled);
   TextControlElement::SetSuggestedValue(value);
   SetNeedsStyleRecalc(
       kSubtreeStyleChange,
@@ -712,7 +727,8 @@ void HTMLTextAreaElement::CloneNonAttributePropertiesFrom(
   const auto& source_element = To<HTMLTextAreaElement>(source);
   SetValueCommon(source_element.Value(),
                  TextFieldEventBehavior::kDispatchNoEvent,
-                 TextControlSetValueSelection::kSetSelectionToEnd);
+                 TextControlSetValueSelection::kSetSelectionToEnd,
+                 source_element.GetAutofillState());
   is_dirty_ = source_element.is_dirty_;
   TextControlElement::CloneNonAttributePropertiesFrom(source, flag);
 }

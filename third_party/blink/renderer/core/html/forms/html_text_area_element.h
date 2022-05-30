@@ -49,13 +49,17 @@ class CORE_EXPORT HTMLTextAreaElement final : public TextControlElement {
       const String&,
       TextFieldEventBehavior = TextFieldEventBehavior::kDispatchNoEvent,
       TextControlSetValueSelection =
-          TextControlSetValueSelection::kSetSelectionToEnd) override;
+          TextControlSetValueSelection::kSetSelectionToEnd,
+      WebAutofillState = WebAutofillState::kNotFilled) override;
   String valueForBinding() const { return Value(); }
   void setValueForBinding(const String&);
   String defaultValue() const;
   void setDefaultValue(const String&);
   int textLength() const { return Value().length(); }
 
+  // Sets the suggested value and puts the element into
+  // WebAutofillState::kPreviewed state if |value| is non-empty, or
+  // WebAutofillState::kNotFilled otherwise.
   void SetSuggestedValue(const String& value) override;
 
   // For ValidityState
@@ -82,7 +86,8 @@ class CORE_EXPORT HTMLTextAreaElement final : public TextControlElement {
   void SetNonDirtyValue(const String&, TextControlSetValueSelection);
   void SetValueCommon(const String&,
                       TextFieldEventBehavior,
-                      TextControlSetValueSelection);
+                      TextControlSetValueSelection,
+                      WebAutofillState autofill_state);
 
   bool IsPlaceholderVisible() const override { return is_placeholder_visible_; }
   void SetPlaceholderVisibility(bool) override;

@@ -114,10 +114,15 @@ class CORE_EXPORT HTMLInputElement
   bool HasBeenPasswordField() const;
 
   bool IsCheckable() const;
+  bool checkedForBinding() const { return checked(); }
+  void setCheckedForBinding(bool);
+  // TODO(crbug.com/1314360) Capitalize checked() and setChecked() because they
+  // are not called by v8 anymore.
   bool checked() const;
   void setChecked(
       bool,
-      TextFieldEventBehavior = TextFieldEventBehavior::kDispatchNoEvent);
+      TextFieldEventBehavior = TextFieldEventBehavior::kDispatchNoEvent,
+      WebAutofillState = WebAutofillState::kNotFilled);
   void DispatchChangeEventIfNeeded();
   void DispatchInputAndChangeEventIfNeeded();
 
@@ -145,7 +150,8 @@ class CORE_EXPORT HTMLInputElement
       const String&,
       TextFieldEventBehavior = TextFieldEventBehavior::kDispatchNoEvent,
       TextControlSetValueSelection =
-          TextControlSetValueSelection::kSetSelectionToEnd) override;
+          TextControlSetValueSelection::kSetSelectionToEnd,
+      WebAutofillState = WebAutofillState::kNotFilled) override;
   String valueForBinding() const { return Value(); }
   void setValueForBinding(const String&, ExceptionState&);
   void SetValueForUser(const String&);
@@ -161,6 +167,9 @@ class CORE_EXPORT HTMLInputElement
 
   String LocalizeValue(const String&) const;
 
+  // Sets the suggested value and puts the element into
+  // WebAutofillState::kPreviewed state if |value| is non-empty, or
+  // WebAutofillState::kNotFilled otherwise.
   void SetSuggestedValue(const String& value) override;
 
   void SetEditingValue(const String&);

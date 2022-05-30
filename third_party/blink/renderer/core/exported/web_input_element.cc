@@ -108,11 +108,14 @@ bool WebInputElement::IsValidValue(const WebString& value) const {
   return ConstUnwrap<HTMLInputElement>()->IsValidValue(value);
 }
 
-void WebInputElement::SetChecked(bool now_checked, bool send_events) {
+void WebInputElement::SetChecked(bool now_checked,
+                                 bool send_events,
+                                 WebAutofillState autofill_state) {
   Unwrap<HTMLInputElement>()->setChecked(
-      now_checked, send_events
-                       ? TextFieldEventBehavior::kDispatchInputAndChangeEvent
-                       : TextFieldEventBehavior::kDispatchNoEvent);
+      now_checked,
+      send_events ? TextFieldEventBehavior::kDispatchInputAndChangeEvent
+                  : TextFieldEventBehavior::kDispatchNoEvent,
+      autofill_state);
 }
 
 bool WebInputElement::IsChecked() const {

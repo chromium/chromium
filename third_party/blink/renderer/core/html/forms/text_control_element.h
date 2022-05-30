@@ -126,7 +126,8 @@ class CORE_EXPORT TextControlElement : public HTMLFormControlElementWithState {
       const String&,
       TextFieldEventBehavior = TextFieldEventBehavior::kDispatchNoEvent,
       TextControlSetValueSelection =
-          TextControlSetValueSelection::kSetSelectionToEnd) = 0;
+          TextControlSetValueSelection::kSetSelectionToEnd,
+      WebAutofillState = WebAutofillState::kNotFilled) = 0;
 
   TextControlInnerEditorElement* InnerEditorElement() const {
     return inner_editor_;
@@ -144,8 +145,10 @@ class CORE_EXPORT TextControlElement : public HTMLFormControlElementWithState {
   String DirectionForFormData() const;
 
   // Set the value trimmed to the max length of the field and dispatch the input
-  // and change events.
-  void SetAutofillValue(const String& value);
+  // and change events. If |value| is empty, the autofill state is always
+  // set to WebAutofillState::kNotFilled.
+  void SetAutofillValue(const String& value,
+                        WebAutofillState = WebAutofillState::kAutofilled);
 
   virtual void SetSuggestedValue(const String& value);
   const String& SuggestedValue() const;

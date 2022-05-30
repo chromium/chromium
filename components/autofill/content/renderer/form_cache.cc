@@ -231,7 +231,7 @@ void FormCache::Reset() {
 }
 
 void FormCache::ClearElement(WebFormControlElement& control_element,
-                             const WebFormControlElement& element) {
+                             const WebFormControlElement& trigger_element) {
   // Don't modify the value of disabled fields.
   if (!control_element.IsEnabled())
     return;
@@ -240,25 +240,30 @@ void FormCache::ClearElement(WebFormControlElement& control_element,
   if (!control_element.IsAutofilled())
     return;
 
-  if (control_element.AutofillSection() != element.AutofillSection())
+  if (control_element.AutofillSection() != trigger_element.AutofillSection())
     return;
 
-  control_element.SetAutofillState(WebAutofillState::kNotFilled);
+  if (!form_util::IsAutofillableElement(control_element)) {
+    NOTREACHED();
+    return;
+  }
 
   WebInputElement web_input_element =
       control_element.DynamicTo<WebInputElement>();
   if (form_util::IsTextInput(web_input_element) ||
       form_util::IsMonthInput(web_input_element)) {
-    web_input_element.SetAutofillValue(blink::WebString());
+    web_input_element.SetAutofillValue(blink::WebString(),
+                                       WebAutofillState::kNotFilled);
 
     // Clearing the value in the focused node (above) can cause the selection
     // to be lost. We force the selection range to restore the text cursor.
-    if (element == web_input_element) {
+    if (trigger_element == web_input_element) {
       size_t length = web_input_element.Value().length();
       web_input_element.SetSelectionRange(length, length);
     }
   } else if (form_util::IsTextAreaElement(control_element)) {
-    control_element.SetAutofillValue(blink::WebString());
+    control_element.SetAutofillValue(blink::WebString(),
+                                     WebAutofillState::kNotFilled);
   } else if (form_util::IsSelectElement(control_element)) {
     WebSelectElement select_element = control_element.To<WebSelectElement>();
     auto initial_value_iter = initial_select_values_.find(
@@ -266,18 +271,23 @@ void FormCache::ClearElement(WebFormControlElement& control_element,
     if (initial_value_iter != initial_select_values_.end() &&
         select_element.Value().Utf16() != initial_value_iter->second) {
       select_element.SetAutofillValue(
-          blink::WebString::FromUTF16(initial_value_iter->second));
+          blink::WebString::FromUTF16(initial_value_iter->second),
+          blink::WebAutofillState::kNotFilled);
       select_element.SetUserHasEditedTheField(false);
+    } else {
+      select_element.SetAutofillState(WebAutofillState::kNotFilled);
     }
-  } else {
+  } else if (form_util::IsCheckableElement(web_input_element)) {
     WebInputElement input_element = control_element.To<WebInputElement>();
-    DCHECK(form_util::IsCheckableElement(input_element));
     auto checkable_element_it = initial_checked_state_.find(
         FieldRendererId(input_element.UniqueRendererFormControlId()));
     if (checkable_element_it != initial_checked_state_.end() &&
         input_element.IsChecked() != checkable_element_it->second) {
-      input_element.SetChecked(checkable_element_it->second, true);
+      input_element.SetChecked(checkable_element_it->second, true,
+                               WebAutofillState::kNotFilled);
     }
+  } else {
+    NOTREACHED();
   }
 }
 

@@ -1192,7 +1192,8 @@ void FillFormField(const FormFieldData& data,
   WebInputElement input_element = field->DynamicTo<WebInputElement>();
 
   if (IsCheckableElement(input_element)) {
-    input_element.SetChecked(IsChecked(data.check_status), true);
+    input_element.SetChecked(IsChecked(data.check_status), true,
+                             WebAutofillState::kAutofilled);
   } else {
     std::u16string value = data.value;
     if (IsTextInput(input_element) || IsMonthInput(input_element)) {
@@ -1200,14 +1201,13 @@ void FillFormField(const FormFieldData& data,
       // returns the default maxlength value.
       TruncateString(&value, input_element.MaxLength());
     }
-    field->SetAutofillValue(blink::WebString::FromUTF16(value));
+    field->SetAutofillValue(blink::WebString::FromUTF16(value),
+                            WebAutofillState::kAutofilled);
   }
   // Setting the form might trigger JavaScript, which is capable of
   // destroying the frame.
   if (!field->GetDocument().GetFrame())
     return;
-
-  field->SetAutofillState(WebAutofillState::kAutofilled);
 
   if (is_initiating_node &&
       ((IsTextInput(input_element) || IsMonthInput(input_element)) ||
@@ -1240,10 +1240,8 @@ void PreviewFormField(const FormFieldData& data,
     // returns the default maxlength value.
     input_element.SetSuggestedValue(blink::WebString::FromUTF16(
         data.value.substr(0, input_element.MaxLength())));
-    input_element.SetAutofillState(WebAutofillState::kPreviewed);
   } else if (IsTextAreaElement(*field) || IsSelectElement(*field)) {
     field->SetSuggestedValue(blink::WebString::FromUTF16(data.value));
-    field->SetAutofillState(WebAutofillState::kPreviewed);
   }
 
   if (is_initiating_node &&

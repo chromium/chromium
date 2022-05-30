@@ -1646,7 +1646,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, OnDeleteValueAfterAutofill) {
   EXPECT_EQ("Milton", GetFieldValue(GetElementById("firstname")));
 }
 
-// Test that an input field is not rendered with the yellow autofilled
+// Test that an input field is not rendered with the blue autofilled
 // background color when choosing an option from the datalist suggestion list.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, OnSelectOptionFromDatalist) {
   static const char kTestForm[] =

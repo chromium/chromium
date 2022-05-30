@@ -178,14 +178,16 @@ void WebFormControlElement::DispatchBlurEvent() {
       nullptr, mojom::blink::FocusType::kForward, nullptr);
 }
 
-void WebFormControlElement::SetAutofillValue(const WebString& value) {
+void WebFormControlElement::SetAutofillValue(const WebString& value,
+                                             WebAutofillState autofill_state) {
   // The input and change events will be sent in setValue.
   if (IsA<HTMLInputElement>(*private_) || IsA<HTMLTextAreaElement>(*private_)) {
     if (!Focused())
       DispatchFocusEvent();
     Unwrap<Element>()->DispatchScopedEvent(
         *Event::CreateBubble(event_type_names::kKeydown));
-    Unwrap<TextControlElement>()->SetAutofillValue(value);
+    Unwrap<TextControlElement>()->SetAutofillValue(
+        value, value.IsEmpty() ? WebAutofillState::kNotFilled : autofill_state);
     Unwrap<Element>()->DispatchScopedEvent(
         *Event::CreateBubble(event_type_names::kKeyup));
     if (!Focused())
@@ -193,7 +195,7 @@ void WebFormControlElement::SetAutofillValue(const WebString& value) {
   } else if (auto* select = ::blink::DynamicTo<HTMLSelectElement>(*private_)) {
     if (!Focused())
       DispatchFocusEvent();
-    select->SetValue(value, true);
+    select->SetAutofillValue(value, autofill_state);
     if (!Focused())
       DispatchBlurEvent();
   }

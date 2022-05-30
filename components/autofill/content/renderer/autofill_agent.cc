@@ -631,10 +631,8 @@ void AutofillAgent::FillFieldWithValue(FieldRendererId field_id,
   }
 
   WebInputElement input_element = element_.DynamicTo<WebInputElement>();
-  if (!input_element.IsNull()) {
-    DoFillFieldWithValue(value, input_element);
-    input_element.SetAutofillState(WebAutofillState::kAutofilled);
-  }
+  if (!input_element.IsNull())
+    DoFillFieldWithValue(value, input_element, WebAutofillState::kAutofilled);
 }
 
 void AutofillAgent::PreviewFieldWithValue(FieldRendererId field_id,
@@ -723,7 +721,7 @@ void AutofillAgent::AcceptDataListSuggestion(
 
     new_value = base::JoinString(parts, u",");
   }
-  DoFillFieldWithValue(new_value, input_element);
+  DoFillFieldWithValue(new_value, input_element, WebAutofillState::kNotFilled);
 }
 
 void AutofillAgent::FillPasswordSuggestion(const std::u16string& username,
@@ -952,11 +950,12 @@ void AutofillAgent::QueryAutofillSuggestions(
 }
 
 void AutofillAgent::DoFillFieldWithValue(const std::u16string& value,
-                                         WebInputElement& node) {
+                                         WebInputElement& node,
+                                         WebAutofillState autofill_state) {
   DCHECK(IsOwnedByFrame(node, render_frame()));
 
   form_tracker_.set_ignore_control_changes(true);
-  node.SetAutofillValue(blink::WebString::FromUTF16(value));
+  node.SetAutofillValue(blink::WebString::FromUTF16(value), autofill_state);
   password_autofill_agent_->UpdateStateForTextChange(node);
   form_tracker_.set_ignore_control_changes(false);
 }
@@ -968,7 +967,6 @@ void AutofillAgent::DoPreviewFieldWithValue(const std::u16string& value,
   ClearPreviewedForm();
   query_node_autofill_state_ = element_.GetAutofillState();
   node.SetSuggestedValue(blink::WebString::FromUTF16(value));
-  node.SetAutofillState(WebAutofillState::kPreviewed);
   form_util::PreviewSuggestion(node.SuggestedValue().Utf16(),
                                node.Value().Utf16(), &node);
   previewed_elements_.push_back(node);

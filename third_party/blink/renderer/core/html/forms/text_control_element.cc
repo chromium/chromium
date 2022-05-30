@@ -1048,11 +1048,14 @@ String TextControlElement::DirectionForFormData() const {
   return "ltr";
 }
 
-void TextControlElement::SetAutofillValue(const String& value) {
+void TextControlElement::SetAutofillValue(const String& value,
+                                          WebAutofillState autofill_state) {
   // Set the value trimmed to the max length of the field and dispatch the input
   // and change events.
   SetValue(value.Substring(0, maxLength()),
-           TextFieldEventBehavior::kDispatchInputAndChangeEvent);
+           TextFieldEventBehavior::kDispatchInputAndChangeEvent,
+           TextControlSetValueSelection::kSetSelectionToEnd,
+           value.IsEmpty() ? WebAutofillState::kNotFilled : autofill_state);
 }
 
 // TODO(crbug.com/772433): Create and use a new suggested-value element instead.

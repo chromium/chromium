@@ -3999,7 +3999,7 @@ TEST_F(PasswordAutofillAgentTest, RestoresAfterJavaScriptModification) {
   CheckTextFieldsSuggestedState("", false, kAlicePassword, true);
 
   password_autofill_agent_->OnDynamicFormsSeen();
-  CheckTextFieldsSuggestedState(kAliceUsername, false, kAlicePassword, true);
+  CheckTextFieldsSuggestedState(kAliceUsername, true, kAlicePassword, true);
 
   EXPECT_FALSE(fake_driver_.called_password_forms_parsed());
   EXPECT_FALSE(fake_driver_.called_password_forms_rendered());

@@ -308,7 +308,6 @@ void PasswordGenerationAgent::GeneratedPasswordAccepted(
     // frame.
     if (!render_frame())
       return;
-    password_element.SetAutofillState(WebAutofillState::kAutofilled);
     password_agent_->TrackAutofilledElement(password_element);
     // Advance focus to the next input field. We assume password fields in
     // an account creation form are always adjacent.

@@ -1045,8 +1045,26 @@ bool HTMLInputElement::checked() const {
   return is_checked_;
 }
 
+void HTMLInputElement::setCheckedForBinding(bool now_checked) {
+  if (GetAutofillState() != WebAutofillState::kAutofilled) {
+    setChecked(now_checked);
+  } else {
+    bool old_value = this->checked();
+    setChecked(now_checked, TextFieldEventBehavior::kDispatchNoEvent,
+               old_value == now_checked ? WebAutofillState::kAutofilled
+                                        : WebAutofillState::kNotFilled);
+    if (Page* page = GetDocument().GetPage()) {
+      page->GetChromeClient().JavaScriptChangedAutofilledValue(
+          *this, old_value ? u"true" : u"false");
+    }
+  }
+}
+
 void HTMLInputElement::setChecked(bool now_checked,
-                                  TextFieldEventBehavior event_behavior) {
+                                  TextFieldEventBehavior event_behavior,
+                                  WebAutofillState autofill_state) {
+  SetAutofillState(autofill_state);
+
   dirty_checkedness_ = true;
   if (checked() == now_checked)
     return;
@@ -1078,6 +1096,13 @@ void HTMLInputElement::setChecked(bool now_checked,
       input_type_->ShouldSendChangeEventAfterCheckedChanged()) {
     DispatchInputEvent();
   }
+
+  // We set the Autofilled state again because setting the autofill value
+  // triggers JavaScript events and the site may override the autofilled value,
+  // which resets the autofill state. Even if the website modifies the from
+  // control element's content during the autofill operation, we want the state
+  // to show as as autofilled.
+  SetAutofillState(autofill_state);
 
   PseudoStateChanged(CSSSelector::kPseudoChecked);
 }
@@ -1155,11 +1180,15 @@ void HTMLInputElement::SetSuggestedValue(const String& value) {
   if (!input_type_->CanSetSuggestedValue()) {
     // Clear the suggested value because it may have been set when
     // `input_type_->CanSetSuggestedValue()` was true.
+    SetAutofillState(WebAutofillState::kNotFilled);
     TextControlElement::SetSuggestedValue(String());
     return;
   }
   needs_to_update_view_value_ = true;
-  TextControlElement::SetSuggestedValue(SanitizeValue(value));
+  String sanitized_value = SanitizeValue(value);
+  SetAutofillState(sanitized_value.IsEmpty() ? WebAutofillState::kNotFilled
+                                             : WebAutofillState::kPreviewed);
+  TextControlElement::SetSuggestedValue(sanitized_value);
   SetNeedsStyleRecalc(
       kSubtreeStyleChange,
       StyleChangeReasonForTracing::Create(style_change_reason::kControlValue));
@@ -1192,12 +1221,15 @@ void HTMLInputElement::setValueForBinding(const String& value,
                                       "to the empty string.");
     return;
   }
-
   if (GetAutofillState() != WebAutofillState::kAutofilled) {
     SetValue(value);
   } else {
     String old_value = this->Value();
-    SetValue(value);
+    SetValue(value, TextFieldEventBehavior::kDispatchNoEvent,
+             TextControlSetValueSelection::kSetSelectionToEnd,
+             old_value == value && !value.IsEmpty()
+                 ? WebAutofillState::kAutofilled
+                 : WebAutofillState::kNotFilled);
     if (Page* page = GetDocument().GetPage()) {
       page->GetChromeClient().JavaScriptChangedAutofilledValue(*this,
                                                                old_value);
@@ -1207,7 +1239,8 @@ void HTMLInputElement::setValueForBinding(const String& value,
 
 void HTMLInputElement::SetValue(const String& value,
                                 TextFieldEventBehavior event_behavior,
-                                TextControlSetValueSelection selection) {
+                                TextControlSetValueSelection selection,
+                                WebAutofillState autofill_state) {
   input_type_->WarnIfValueIsInvalidAndElementIsVisible(value);
   if (!input_type_->CanSetValue(value))
     return;
@@ -1216,28 +1249,37 @@ void HTMLInputElement::SetValue(const String& value,
   // update.
   TextControlElement::SetSuggestedValue(String());
 
-  // Set autofilled to false, as the value might have been set by the website.
-  // If the field was autofilled, it'll be set to true from that method.
-  SetAutofillState(WebAutofillState::kNotFilled);
+  SetAutofillState(autofill_state);
 
-  EventQueueScope scope;
-  String sanitized_value = SanitizeValue(value);
-  bool value_changed = sanitized_value != this->Value();
+  // Scope for EventQueueScope so that change events are dispatched and handled
+  // before the second SetAutofillState is executed.
+  {
+    EventQueueScope scope;
+    String sanitized_value = SanitizeValue(value);
+    bool value_changed = sanitized_value != this->Value();
 
-  SetLastChangeWasNotUserEdit();
-  needs_to_update_view_value_ = true;
+    SetLastChangeWasNotUserEdit();
+    needs_to_update_view_value_ = true;
 
-  input_type_->SetValue(sanitized_value, value_changed, event_behavior,
-                        selection);
-  input_type_view_->DidSetValue(sanitized_value, value_changed);
+    input_type_->SetValue(sanitized_value, value_changed, event_behavior,
+                          selection);
+    input_type_view_->DidSetValue(sanitized_value, value_changed);
 
-  if (value_changed) {
-    NotifyFormStateChanged();
-    if (sanitized_value.IsEmpty() && HasBeenPasswordField() &&
-        GetDocument().GetPage()) {
-      GetDocument().GetPage()->GetChromeClient().PasswordFieldReset(*this);
+    if (value_changed) {
+      NotifyFormStateChanged();
+      if (sanitized_value.IsEmpty() && HasBeenPasswordField() &&
+          GetDocument().GetPage()) {
+        GetDocument().GetPage()->GetChromeClient().PasswordFieldReset(*this);
+      }
     }
   }
+
+  // We set the Autofilled state again because setting the autofill value
+  // triggers JavaScript events and the site may override the autofilled value,
+  // which resets the autofill state. Even if the website modifies the from
+  // control element's content during the autofill operation, we want the state
+  // to show as as autofilled.
+  SetAutofillState(autofill_state);
 }
 
 void HTMLInputElement::SetNonAttributeValue(const String& sanitized_value) {

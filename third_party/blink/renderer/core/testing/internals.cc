@@ -1790,15 +1790,12 @@ void Internals::setAutofilledValue(Element* element,
   }
 
   if (auto* select = DynamicTo<HTMLSelectElement>(*element)) {
-    select->SetValue(value.IsEmpty()
-                         ? String()  // Null string resets the autofill state.
-                         : value,
-                     true /* send_events */);
+    select->SetAutofillValue(
+        value.IsEmpty() ? String()  // Null string resets the autofill state.
+                        : value,
+        value.IsEmpty() ? WebAutofillState::kNotFilled
+                        : WebAutofillState::kAutofilled);
   }
-
-  To<HTMLFormControlElement>(element)->SetAutofillState(
-      value.IsEmpty() ? WebAutofillState::kNotFilled
-                      : blink::WebAutofillState::kAutofilled);
 }
 
 void Internals::setEditingValue(Element* element,

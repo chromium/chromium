@@ -29,6 +29,10 @@
  */
 
 #include "third_party/blink/renderer/core/page/chrome_client_impl.h"
+
+#include <string>
+#include <vector>
+
 #include "base/run_loop.h"
 #include "cc/trees/layer_tree_host.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
@@ -51,8 +55,11 @@
 #include "third_party/blink/renderer/core/html/forms/date_time_chooser_client.h"
 #include "third_party/blink/renderer/core/html/forms/file_chooser.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
+#include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
 #include "third_party/blink/renderer/core/html/forms/mock_file_chooser.h"
+#include "third_party/blink/renderer/core/html/forms/text_control_element.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
@@ -65,19 +72,24 @@
 // To avoid conflicts with the CreateWindow macro from the Windows SDK...
 #undef CreateWindow
 
+using ::testing::ElementsAre;
+using ::testing::Eq;
+
 namespace blink {
 
 namespace {
 class FakeChromeClientForAutofill : public EmptyChromeClient {
  public:
-  void JavaScriptChangedAutofilledValue(HTMLFormControlElement&,
+  void JavaScriptChangedAutofilledValue(HTMLFormControlElement& element,
                                         const String& old_value) override {
-    last_old_value_ = old_value;
+    last_notification_ = {element.GetIdAttribute().Utf8(), old_value.Utf8()};
   }
-  const String& last_old_value() const { return last_old_value_; }
+  std::vector<std::string> GetAndResetLastEvent() {
+    return std::exchange(last_notification_, {});
+  }
 
  private:
-  String last_old_value_;
+  std::vector<std::string> last_notification_;
 };
 }  // namespace
 
@@ -403,48 +415,135 @@ class AutofillChromeClientTest : public PageTestBase {
   Persistent<FakeChromeClientForAutofill> chrome_client_;
 };
 
-TEST_F(AutofillChromeClientTest, NotificationsOfJavaScriptChanges) {
+// Validates the JavaScriptChangedAutofilledValue notification if JavaScript
+// overrides the autofilled content of form controls *after* the fill has been
+// concluded.
+TEST_F(AutofillChromeClientTest, NotificationsOfJavaScriptChangesAfterFill) {
   SetHtmlInnerHTML(R"HTML(
     <!DOCTYPE HTML>
     <form id='form' method='GET' action='https://internal.test/'
         target='_blank'>
-      <input id='text' value='old_text'>
-      <textarea id='textarea'>old_textarea</textarea>
+      <input id='text'>
+      <textarea id='textarea'></textarea>
       <select id='select'>
-        <option value='select_a'>a</option>
-        <option value='select_b' selected>b</option>
+        <option value='initial' selected>a</option>
+        <option value='autofilled_select'>b</option>
+        <option value='overridden'>c</option>
       </select>
-      <selectmenu id='selectmenu'>
-        <option value='selectmenu_a'>a</option>
-        <option value='selectmenu_b' selected>b</option>
-      </select>
-      <input id='not_autofilled_text' value='old_text'>
+      <input id='not_autofilled_text'>
     </form>
   )HTML");
 
-  for (const char* id : {"text", "textarea", "select", "selectmenu"}) {
-    To<HTMLFormControlElement>(GetElementById(id))
-        ->SetAutofillState(WebAutofillState::kAutofilled);
-  }
+  auto* text_element = To<HTMLInputElement>(GetElementById("text"));
+  auto* textarea_element = To<HTMLTextAreaElement>(GetElementById("textarea"));
+  auto* select_element = To<HTMLSelectElement>(GetElementById("select"));
+  // HTMLSelectMenu does not support autofill, yet.
+  auto* not_autofilled_text =
+      To<HTMLInputElement>(GetElementById("not_autofilled_text"));
 
+  text_element->SetAutofillValue("autofilled_text");
+  textarea_element->SetAutofillValue("autofilled_textarea");
+  select_element->SetAutofillValue("autofilled_select",
+                                   WebAutofillState::kAutofilled);
+
+  EXPECT_THAT(text_element->Value(), Eq("autofilled_text"));
+  EXPECT_THAT(text_element->GetAutofillState(),
+              Eq(WebAutofillState::kAutofilled));
   ExecuteScript("document.getElementById('text').value = 'new_text';");
-  EXPECT_EQ(String("old_text"), chrome_client_->last_old_value());
+  EXPECT_THAT(text_element->Value(), Eq("new_text"));
+  EXPECT_THAT(text_element->GetAutofillState(),
+              Eq(WebAutofillState::kNotFilled));
+  EXPECT_THAT(chrome_client_->GetAndResetLastEvent(),
+              ::testing::ElementsAre("text", "autofilled_text"));
 
+  EXPECT_THAT(textarea_element->Value(), Eq("autofilled_textarea"));
+  EXPECT_THAT(textarea_element->GetAutofillState(),
+              Eq(WebAutofillState::kAutofilled));
   ExecuteScript("document.getElementById('textarea').value = 'new_text';");
-  EXPECT_EQ(String("old_textarea"), chrome_client_->last_old_value());
+  EXPECT_THAT(textarea_element->Value(), Eq("new_text"));
+  EXPECT_THAT(textarea_element->GetAutofillState(),
+              Eq(WebAutofillState::kNotFilled));
+  EXPECT_THAT(chrome_client_->GetAndResetLastEvent(),
+              ::testing::ElementsAre("textarea", "autofilled_textarea"));
 
-  ExecuteScript("document.getElementById('select').value = 'select_a';");
-  EXPECT_EQ(String("select_b"), chrome_client_->last_old_value());
-
-  ExecuteScript(
-      "document.getElementById('selectmenu').value = 'selectmenu_a';");
-  EXPECT_EQ(String("selectmenu_b"), chrome_client_->last_old_value());
+  EXPECT_THAT(select_element->Value(), Eq("autofilled_select"));
+  EXPECT_THAT(select_element->GetAutofillState(),
+              Eq(WebAutofillState::kAutofilled));
+  ExecuteScript("document.getElementById('select').value = 'overridden';");
+  EXPECT_THAT(select_element->Value(), Eq("overridden"));
+  EXPECT_THAT(select_element->GetAutofillState(),
+              Eq(WebAutofillState::kNotFilled));
+  EXPECT_THAT(chrome_client_->GetAndResetLastEvent(),
+              ::testing::ElementsAre("select", "autofilled_select"));
 
   // Because this is not in state "autofilled", the chrome client is not
   // informed about the change.
+  EXPECT_THAT(not_autofilled_text->Value().IsNull(), ::testing::IsTrue());
   ExecuteScript(
       "document.getElementById('not_autofilled_text').value = 'new_text';");
-  EXPECT_EQ(String("selectmenu_b"), chrome_client_->last_old_value());
+  EXPECT_THAT(not_autofilled_text->Value(), Eq("new_text"));
+  EXPECT_THAT(chrome_client_->GetAndResetLastEvent(), ::testing::ElementsAre());
+}
+
+// Validates the JavaScriptChangedAutofilledValue notification if JavaScript
+// overrides the autofilled content of form controls during the fill operation.
+// This is the case because a JavaScript event handler on change signals is
+// is triggered during the autofill operation.
+TEST_F(AutofillChromeClientTest, NotificationsOfJavaScriptChangesDuringFill) {
+  SetHtmlInnerHTML(R"HTML(
+    <!DOCTYPE HTML>
+    <form id='form' method='GET' action='https://internal.test/'
+        target='_blank'>
+      <input id='text'>
+      <textarea id='textarea'></textarea>
+      <select id='select'>
+        <option value='initial' selected>a</option>
+        <option value='autofilled_select'>b</option>
+        <option value='overridden'>c</option>
+      </select>
+    </form>
+  )HTML");
+
+  ExecuteScript(R"JS(
+    for (const id of ['text', 'textarea', 'select']) {
+      document.getElementById(id).addEventListener('change', () => {
+        document.getElementById(id).value = 'overridden';
+      });
+    }
+  )JS");
+
+  auto* text_element = To<HTMLInputElement>(GetElementById("text"));
+  auto* textarea_element = To<HTMLTextAreaElement>(GetElementById("textarea"));
+  auto* select_element = To<HTMLSelectElement>(GetElementById("select"));
+  // HTMLSelectMenu does not support autofill, yet.
+  text_element->SetAutofillValue("autofilled_text");
+  EXPECT_THAT(text_element->Value(), Eq("overridden"));
+  // Note that we expect WebAutofillState::kAutofilled. This is a product
+  // decision: Even if the website messes with the content of the field after
+  // an autofill, we show is as autofilled. This applies only if the change
+  // via JavaScript happens instantaenously during the fill operation, not if
+  // JavaScript edits the value later. A common usecase is that we fill a
+  // credit card as a sequence of digits and the website inserts spaces to
+  // group the digits into blocks of four.
+  EXPECT_THAT(text_element->GetAutofillState(),
+              Eq(WebAutofillState::kAutofilled));
+  EXPECT_THAT(chrome_client_->GetAndResetLastEvent(),
+              ::testing::ElementsAre("text", "autofilled_text"));
+
+  textarea_element->SetAutofillValue("autofilled_textarea");
+  EXPECT_THAT(textarea_element->Value(), Eq("overridden"));
+  EXPECT_THAT(textarea_element->GetAutofillState(),
+              Eq(WebAutofillState::kAutofilled));
+  EXPECT_THAT(chrome_client_->GetAndResetLastEvent(),
+              ::testing::ElementsAre("textarea", "autofilled_textarea"));
+
+  select_element->SetAutofillValue("autofilled_select",
+                                   WebAutofillState::kAutofilled);
+  EXPECT_THAT(select_element->Value(), Eq("overridden"));
+  EXPECT_THAT(select_element->GetAutofillState(),
+              Eq(WebAutofillState::kAutofilled));
+  EXPECT_THAT(chrome_client_->GetAndResetLastEvent(),
+              ::testing::ElementsAre("select", "autofilled_select"));
 }
 
 }  // namespace blink
