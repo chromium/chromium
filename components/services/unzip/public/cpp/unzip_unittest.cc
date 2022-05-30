@@ -209,6 +209,20 @@ TEST_F(UnzipTest, UnzipWithFilter) {
   EXPECT_FALSE(some_files_empty);
 }
 
+// Checks that the Unzipper service does not overwrite an existing file.
+TEST_F(UnzipTest, DuplicatedNames) {
+  EXPECT_FALSE(DoUnzip(GetArchivePath("Duplicate Filenames.zip"), unzip_dir_));
+
+  // Check that the first file was correctly extracted.
+  std::string content;
+  EXPECT_TRUE(
+      base::ReadFileToString(unzip_dir_.AppendASCII("Simple.txt"), &content));
+  EXPECT_EQ("Simple 1\n", content);
+
+  // Check that no other file was extracted.
+  EXPECT_EQ(1, CountFiles(unzip_dir_));
+}
+
 TEST_F(UnzipTest, DetectEncodingAbsentArchive) {
   EXPECT_EQ(UNKNOWN_ENCODING,
             DoDetectEncoding(GetArchivePath("absent_archive.zip")));
