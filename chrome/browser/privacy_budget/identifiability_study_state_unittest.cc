@@ -723,6 +723,90 @@ TEST(IdentifiabilityStudyStateStandaloneTest, CheapSurfaces) {
   EXPECT_LE(selected_surfaces, kMaxSelectedSurfaces);
 }
 
+TEST(IdentifiabilityStudyStateStandaloneTest,
+     AlwaysSampleReservedInternalRandom) {
+  test::ScopedPrivacyBudgetConfig::Parameters parameters;
+  parameters.active_surface_budget = kTestingActiveSurfaceBudget;
+  parameters.expected_surface_count = 20;
+  parameters.allowed_random_types = {
+      blink::IdentifiableSurface::Type::kWebFeature};
+  test::ScopedPrivacyBudgetConfig config(parameters);
+
+  TestingPrefServiceSimple pref_service;
+  prefs::RegisterPrivacyBudgetPrefs(pref_service.registry());
+  test_utils::InspectableIdentifiabilityStudyState state(&pref_service);
+
+  EXPECT_TRUE(
+      state.ShouldRecordSurface(blink::IdentifiableSurface::FromTypeAndToken(
+          blink::IdentifiableSurface::Type::kReservedInternal,
+          blink::IdentifiableToken(
+              blink::IdentifiableSurface::ReservedSurfaceMetrics::
+                  kDocumentCreated_IsCrossOriginFrame))));
+  EXPECT_TRUE(
+      state.ShouldRecordSurface(blink::IdentifiableSurface::FromTypeAndToken(
+          blink::IdentifiableSurface::Type::kReservedInternal,
+          blink::IdentifiableToken(
+              blink::IdentifiableSurface::ReservedSurfaceMetrics::
+                  kDocumentCreated_IsCrossSiteFrame))));
+  EXPECT_TRUE(
+      state.ShouldRecordSurface(blink::IdentifiableSurface::FromTypeAndToken(
+          blink::IdentifiableSurface::Type::kReservedInternal,
+          blink::IdentifiableToken(
+              blink::IdentifiableSurface::ReservedSurfaceMetrics::
+                  kDocumentCreated_IsMainFrame))));
+  EXPECT_TRUE(
+      state.ShouldRecordSurface(blink::IdentifiableSurface::FromTypeAndToken(
+          blink::IdentifiableSurface::Type::kReservedInternal,
+          blink::IdentifiableToken(
+              blink::IdentifiableSurface::ReservedSurfaceMetrics::
+                  kDocumentCreated_NavigationSourceId))));
+}
+
+TEST(IdentifiabilityStudyStateStandaloneTest,
+     AlwaysSampleReservedInternalBlock) {
+  const int kTestGroupCount = 80;
+  const int kSurfacesInGroup = 40;
+
+  test::ScopedPrivacyBudgetConfig::Parameters parameters;
+  for (int group_index = 0; group_index < kTestGroupCount; ++group_index) {
+    parameters.blocks.emplace_back(
+        CreateSurfaceList(kSurfacesInGroup, kSurfacesInGroup * group_index));
+  }
+
+  parameters.block_weights.assign(kTestGroupCount, 1.0);
+  parameters.active_surface_budget = kSurfacesInGroup;
+  test::ScopedPrivacyBudgetConfig config(parameters);
+
+  TestingPrefServiceSimple pref_service;
+  prefs::RegisterPrivacyBudgetPrefs(pref_service.registry());
+  test_utils::InspectableIdentifiabilityStudyState state(&pref_service);
+
+  EXPECT_TRUE(
+      state.ShouldRecordSurface(blink::IdentifiableSurface::FromTypeAndToken(
+          blink::IdentifiableSurface::Type::kReservedInternal,
+          blink::IdentifiableToken(
+              blink::IdentifiableSurface::ReservedSurfaceMetrics::
+                  kDocumentCreated_IsCrossOriginFrame))));
+  EXPECT_TRUE(
+      state.ShouldRecordSurface(blink::IdentifiableSurface::FromTypeAndToken(
+          blink::IdentifiableSurface::Type::kReservedInternal,
+          blink::IdentifiableToken(
+              blink::IdentifiableSurface::ReservedSurfaceMetrics::
+                  kDocumentCreated_IsCrossSiteFrame))));
+  EXPECT_TRUE(
+      state.ShouldRecordSurface(blink::IdentifiableSurface::FromTypeAndToken(
+          blink::IdentifiableSurface::Type::kReservedInternal,
+          blink::IdentifiableToken(
+              blink::IdentifiableSurface::ReservedSurfaceMetrics::
+                  kDocumentCreated_IsMainFrame))));
+  EXPECT_TRUE(
+      state.ShouldRecordSurface(blink::IdentifiableSurface::FromTypeAndToken(
+          blink::IdentifiableSurface::Type::kReservedInternal,
+          blink::IdentifiableToken(
+              blink::IdentifiableSurface::ReservedSurfaceMetrics::
+                  kDocumentCreated_NavigationSourceId))));
+}
+
 TEST(IdentifiabilityStudyStateStandaloneTest, NoAllowedTypes) {
   constexpr auto kExpectedSurfaceCount = 20;
 
