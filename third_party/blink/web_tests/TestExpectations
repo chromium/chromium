@@ -876,11 +876,6 @@ crbug.com/1299442 [ Mac ] virtual/off-main-thread-css-paint/external/wpt/css/css
 crbug.com/1299442 [ Mac11 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/paint-arguments.https.html [ Failure ]
 crbug.com/1299442 [ Mac10.15 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/registered-property-value-011.https.html [ Failure ]
 
-# No explanation for this apart from different GPU back ends or the like.
-# The tests could be moved to WPT and use fuzzy matching.
-crbug.com/1329571 [ Mac11 ] paint/overflow/transformed-video-clipping.html [ Failure Pass ]
-crbug.com/1329571 [ Linux ] paint/overflow/transformed-video-clipping.html [ Failure Pass ]
-
 # ====== Paint team owned tests to here ======
 
 # WPT speculative-parsing tests failing
