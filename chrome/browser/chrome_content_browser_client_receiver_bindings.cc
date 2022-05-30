@@ -372,8 +372,7 @@ void ChromeContentBrowserClient::
           // ChildProcessSecurityPolicy::CanAccessDataForOrigin().
 
           mojo::MakeSelfOwnedReceiver(
-              std::make_unique<ash::WindowManagementImpl>(
-                  render_process_host->GetBrowserContext()),
+              std::make_unique<ash::WindowManagementImpl>(info.process_id),
               std::move(receiver));
         }));
   }

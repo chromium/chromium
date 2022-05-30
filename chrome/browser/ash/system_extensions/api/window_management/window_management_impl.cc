@@ -15,6 +15,8 @@
 #include "components/services/app_service/public/cpp/instance.h"
 #include "components/services/app_service/public/mojom/types.mojom-shared.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/browser/render_process_host.h"
 #include "third_party/blink/public/mojom/chromeos/system_extensions/window_management/cros_window_management.mojom.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/focus_client.h"
@@ -26,14 +28,20 @@
 
 namespace ash {
 
-WindowManagementImpl::WindowManagementImpl(
-    content::BrowserContext* browser_context)
-    : browser_context_(browser_context) {}
+WindowManagementImpl::WindowManagementImpl(int32_t render_process_host_id)
+    : render_process_host_id_(render_process_host_id) {}
 
 void WindowManagementImpl::GetAllWindows(GetAllWindowsCallback callback) {
-  apps::AppServiceProxy* proxy = apps::AppServiceProxyFactory::GetForProfile(
-      Profile::FromBrowserContext(browser_context_));
   std::vector<blink::mojom::CrosWindowInfoPtr> windows;
+
+  Profile* profile = GetProfile();
+  if (!profile) {
+    std::move(callback).Run(std::move(windows));
+    return;
+  }
+
+  apps::AppServiceProxy* proxy =
+      apps::AppServiceProxyFactory::GetForProfile(profile);
   proxy->InstanceRegistry().ForEachInstance(
       [&windows](const apps::InstanceUpdate& update) {
         auto window = blink::mojom::CrosWindowInfo::New();
@@ -225,11 +233,26 @@ void WindowManagementImpl::Close(const base::UnguessableToken& id,
   std::move(callback).Run(blink::mojom::CrosWindowManagementStatus::kSuccess);
 }
 
+Profile* WindowManagementImpl::GetProfile() {
+  content::RenderProcessHost* render_process_host =
+      content::RenderProcessHost::FromID(render_process_host_id_);
+  if (!render_process_host)
+    return nullptr;
+
+  return Profile::FromBrowserContext(render_process_host->GetBrowserContext());
+}
+
 aura::Window* WindowManagementImpl::GetWindow(
     const base::UnguessableToken& id) {
   aura::Window* target = nullptr;
-  apps::AppServiceProxy* proxy = apps::AppServiceProxyFactory::GetForProfile(
-      Profile::FromBrowserContext(browser_context_));
+
+  Profile* profile = GetProfile();
+  if (!profile) {
+    return nullptr;
+  }
+
+  apps::AppServiceProxy* proxy =
+      apps::AppServiceProxyFactory::GetForProfile(profile);
   proxy->InstanceRegistry().ForOneInstance(
       id, [&target](const apps::InstanceUpdate& update) {
         target = update.Window()->GetToplevelWindow();

@@ -625,6 +625,50 @@ async function cros_test() {
   RunTest(test_code);
 }
 
+IN_PROC_BROWSER_TEST_F(CrosWindowBrowserTest,
+                       CrosWindowPendingCallsToGetAllWindowsShouldNotCrash) {
+  const char test_code[] = R"(
+async function cros_test() {
+  let getWindowsPromise = chromeos.windowManagement.getWindows();
+  for (let i = 0; i < 100; i++)
+    chromeos.windowManagement.getWindows();
+  await getWindowsPromise;
+}
+  )";
+
+  RunTest(test_code);
+}
+
+IN_PROC_BROWSER_TEST_F(CrosWindowBrowserTest,
+                       CrosWindowPendingCallsToGetWindowShouldNotCrash) {
+  const char test_code[] = R"(
+async function cros_test() {
+  let [window] = await chromeos.windowManagement.getWindows();
+  let movePromise = window.moveTo(0, 0);
+  for (let i = 0; i < 100; i++)
+    window.moveTo(0, 0);
+  await movePromise;
+}
+  )";
+
+  RunTest(test_code);
+}
+
+IN_PROC_BROWSER_TEST_F(CrosWindowBrowserTest,
+                       CrosWindowPendingCallsToGetWidgetShouldNotCrash) {
+  const char test_code[] = R"(
+async function cros_test() {
+  let [window] = await chromeos.windowManagement.getWindows();
+  let fullscreenPromise = window.setFullscreen(true);
+  for (let i = 0; i < 100; i++)
+    window.setFullscreen(true);
+  await fullscreenPromise;
+}
+  )";
+
+  RunTest(test_code);
+}
+
 // Tests that the CrosWindowManagement object is an EventTarget.
 IN_PROC_BROWSER_TEST_F(CrosWindowBrowserTest, CrosWindowManagementEventTarget) {
   const char test_code[] = R"(
