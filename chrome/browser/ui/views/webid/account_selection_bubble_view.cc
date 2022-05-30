@@ -24,6 +24,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/image/image_skia_operations.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/image_view.h"
@@ -103,12 +104,20 @@ class LetterAvatarImageSkiaSource : public gfx::CanvasImageSource {
   const std::u16string letter_;
 };
 
-void SendAccessibilityEvent(views::Widget* widget) {
+void SendAccessibilityEvent(views::Widget* widget,
+                            std::u16string announcement) {
   if (!widget)
     return;
 
-  widget->GetRootView()->NotifyAccessibilityEvent(ax::mojom::Event::kAlert,
-                                                  true);
+  views::View* root_view = widget->GetRootView();
+#if BUILDFLAG(IS_MAC)
+  if (!announcement.empty())
+    root_view->GetViewAccessibility().OverrideName(announcement);
+  root_view->NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
+#else
+  if (!announcement.empty())
+    root_view->GetViewAccessibility().AnnounceText(announcement);
+#endif
 }
 
 }  // namespace
@@ -460,7 +469,7 @@ void AccountSelectionBubbleView::OnSingleAccountPicked(
   // awkward, so we only want to do so when screen reader is enabled.
   if (accessibility_state_utils::IsScreenReaderEnabled())
     continue_button_->RequestFocus();
-  SendAccessibilityEvent(GetWidget());
+  SendAccessibilityEvent(GetWidget(), std::u16string());
 }
 
 void AccountSelectionBubbleView::OnAccountSelected(
@@ -473,7 +482,8 @@ void AccountSelectionBubbleView::ShowVerifySheet(
     const content::IdentityRequestAccount& account) {
   verify_sheet_shown_ = true;
   RemoveNonHeaderChildViews();
-  title_label_->SetText(l10n_util::GetStringUTF16(IDS_VERIFY_SHEET_TITLE));
+  std::u16string title = l10n_util::GetStringUTF16(IDS_VERIFY_SHEET_TITLE);
+  title_label_->SetText(title);
   views::ProgressBar* progress_bar =
       AddChildView(std::make_unique<views::ProgressBar>(kProgressBarHeight));
   // Use an infinite animation: SetValue(-1).
@@ -488,7 +498,7 @@ void AccountSelectionBubbleView::ShowVerifySheet(
   SizeToContents();
   PreferredSizeChanged();
 
-  SendAccessibilityEvent(GetWidget());
+  SendAccessibilityEvent(GetWidget(), title);
 }
 
 void AccountSelectionBubbleView::RemoveNonHeaderChildViews() {
