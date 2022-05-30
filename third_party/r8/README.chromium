@@ -78,6 +78,7 @@ git checkout -b my_branch
 git am $CHROMIUM_SRC/third_party/r8/3pp/patches/*.patch
   * Fix patch conflicts.
   * Save new patches. Change number if expecting more or fewer patches:
+rm $CHROMIUM_SRC/third_party/r8/3pp/patches/*
 git format-patch origin/main..HEAD -o $CHROMIUM_SRC/third_party/r8/3pp/patches
   * Submit these fixed patches and the bot will automatically retry.
 

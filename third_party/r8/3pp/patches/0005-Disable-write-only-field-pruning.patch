@@ -1,0 +1,2901 @@
+From 208592c4e7021c5ddbfcc49d53aa5298b73cdd54 Mon Sep 17 00:00:00 2001
+From: Andrew Grieve <agrieve@chromium.org>
+Date: Wed, 25 May 2022 23:12:52 -0400
+Subject: [PATCH 5/5] Disable write-only field pruning.
+
+Bug: 1329389
+---
+ src/main/java/com/android/tools/r8/R8.java    |   9 +-
+ .../r8/graph/AbstractAccessContexts.java      |   6 +-
+ .../tools/r8/graph/FieldAccessInfo.java       |  16 +-
+ .../graph/FieldAccessInfoCollectionImpl.java  |   4 -
+ .../tools/r8/graph/FieldAccessInfoImpl.java   |  88 ++---
+ .../analysis/proto/EnumLiteProtoShrinker.java |  11 +-
+ .../GeneratedExtensionRegistryShrinker.java   |  17 +-
+ .../proto/schema/ProtoEnqueuerExtension.java  |  30 +-
+ .../BasicBlockInstructionListIterator.java    |  22 +-
+ .../android/tools/r8/ir/code/FieldGet.java    |   5 -
+ .../code/IRCodeInstructionListIterator.java   |   8 +-
+ .../r8/ir/code/InstructionListIterator.java   |   5 +-
+ .../LinearFlowInstructionListIterator.java    |   8 +-
+ .../tools/r8/ir/conversion/IRBuilder.java     |   2 +-
+ .../tools/r8/ir/conversion/IRConverter.java   |   6 +-
+ .../r8/ir/conversion/IRToDexFinalizer.java    |   5 +-
+ .../conversion/MethodConversionOptions.java   |  13 -
+ .../r8/ir/conversion/StringSwitchRemover.java |   4 +
+ .../tools/r8/ir/optimize/CodeRewriter.java    |  11 +-
+ .../tools/r8/ir/optimize/DeadCodeRemover.java |   4 -
+ .../assume/AssumeInfoLookup.java              |   7 +-
+ .../shaking/EmptyEnqueuerDeferredTracing.java |  41 ---
+ .../android/tools/r8/shaking/Enqueuer.java    | 211 +++---------
+ .../r8/shaking/EnqueuerDeferredTracing.java   |  55 +---
+ .../shaking/EnqueuerDeferredTracingImpl.java  | 282 ----------------
+ .../EnqueuerDeferredTracingRewriter.java      | 228 -------------
+ .../tools/r8/shaking/EnqueuerWorklist.java    | 310 +-----------------
+ .../android/tools/r8/shaking/KeepInfo.java    |   8 -
+ .../tools/r8/utils/InternalOptions.java       |   3 -
+ .../utils/collections/ProgramMemberMap.java   |   6 +-
+ .../internal/proto/Proto2ShrinkingTest.java   |   1 -
+ .../tools/r8/ir/LinearFlowIteratorTest.java   |  12 +-
+ .../staticizer/ClassStaticizerTest.java       |   3 +-
+ .../regalloc/RegisterMoveSchedulerTest.java   |   8 +-
+ ...lassReferencedFromFieldAnnotationTest.java |  22 +-
+ ...ationAssertionHandlerKotlinSimpleTest.java |  81 -----
+ .../tools/r8/shaking/InvalidTypesTest.java    |  54 +--
+ .../r8/shaking/KeepClassMembersFieldTest.java |  37 ++-
+ ...FieldsAllowShrinkingCompatibilityTest.java |   8 +-
+ .../MergedFieldTypeTest.java                  |   6 +-
+ .../KeptSingletonIsNotCyclicTest.java         |   4 +-
+ 41 files changed, 241 insertions(+), 1420 deletions(-)
+ delete mode 100644 src/main/java/com/android/tools/r8/shaking/EmptyEnqueuerDeferredTracing.java
+ delete mode 100644 src/main/java/com/android/tools/r8/shaking/EnqueuerDeferredTracingImpl.java
+ delete mode 100644 src/main/java/com/android/tools/r8/shaking/EnqueuerDeferredTracingRewriter.java
+ delete mode 100644 src/test/java/com/android/tools/r8/rewrite/assertions/kotlinassertionhandlersimple/AssertionConfigurationAssertionHandlerKotlinSimpleTest.java
+
+diff --git a/src/main/java/com/android/tools/r8/R8.java b/src/main/java/com/android/tools/r8/R8.java
+index 5d07a1ca0..a20f6300b 100644
+--- a/src/main/java/com/android/tools/r8/R8.java
++++ b/src/main/java/com/android/tools/r8/R8.java
+@@ -400,11 +400,6 @@ public class R8 {
+           GenericSignatureCorrectnessHelper.createForInitialCheck(appView, genericContextBuilder)
+               .run(appView.appInfo().classes());
+ 
+-          // TODO(b/226539525): Implement enum lite proto shrinking as deferred tracing.
+-          if (appView.options().protoShrinking().isEnumLiteProtoShrinkingEnabled()) {
+-            appView.protoShrinker().enumLiteProtoShrinker.clearDeadEnumLiteMaps();
+-          }
+-
+           TreePruner pruner = new TreePruner(appViewWithLiveness);
+           DirectMappedDexApplication prunedApp = pruner.run(executorService);
+ 
+@@ -421,6 +416,10 @@ public class R8 {
+                   appViewWithLiveness, appViewWithLiveness.appInfo().computeSubtypingInfo())
+               .run();
+ 
++          if (appView.options().protoShrinking().isEnumLiteProtoShrinkingEnabled()) {
++            appView.protoShrinker().enumLiteProtoShrinker.clearDeadEnumLiteMaps();
++          }
++
+           AnnotationRemover annotationRemover =
+               annotationRemoverBuilder
+                   .build(appViewWithLiveness, removedClasses);
+diff --git a/src/main/java/com/android/tools/r8/graph/AbstractAccessContexts.java b/src/main/java/com/android/tools/r8/graph/AbstractAccessContexts.java
+index 3e180dfc9..616fcf5c6 100644
+--- a/src/main/java/com/android/tools/r8/graph/AbstractAccessContexts.java
++++ b/src/main/java/com/android/tools/r8/graph/AbstractAccessContexts.java
+@@ -58,10 +58,6 @@ public abstract class AbstractAccessContexts {
+ 
+   abstract int getNumberOfAccessContexts();
+ 
+-  public final boolean hasAccesses() {
+-    return !isEmpty();
+-  }
+-
+   public boolean isBottom() {
+     return false;
+   }
+@@ -70,7 +66,7 @@ public abstract class AbstractAccessContexts {
+     return false;
+   }
+ 
+-  public abstract boolean isEmpty();
++  abstract boolean isEmpty();
+ 
+   public ConcreteAccessContexts asConcrete() {
+     return null;
+diff --git a/src/main/java/com/android/tools/r8/graph/FieldAccessInfo.java b/src/main/java/com/android/tools/r8/graph/FieldAccessInfo.java
+index 34b3f2b80..2cd2be0be 100644
+--- a/src/main/java/com/android/tools/r8/graph/FieldAccessInfo.java
++++ b/src/main/java/com/android/tools/r8/graph/FieldAccessInfo.java
+@@ -20,32 +20,20 @@ public interface FieldAccessInfo {
+ 
+   int getNumberOfWriteContexts();
+ 
+-  AbstractAccessContexts getReadsWithContexts();
+-
+-  AbstractAccessContexts getWritesWithContexts();
+-
+   ProgramMethod getUniqueReadContext();
+ 
+-  boolean hasKnownReadContexts();
+-
+   boolean hasKnownWriteContexts();
+ 
+   void forEachIndirectAccess(Consumer<DexField> consumer);
+ 
+   void forEachIndirectAccessWithContexts(BiConsumer<DexField, ProgramMethodSet> consumer);
+ 
+-  void forEachAccessContext(Consumer<ProgramMethod> consumer);
+-
+   void forEachReadContext(Consumer<ProgramMethod> consumer);
+ 
+   void forEachWriteContext(Consumer<ProgramMethod> consumer);
+ 
+   boolean hasReflectiveAccess();
+ 
+-  boolean hasReflectiveRead();
+-
+-  boolean hasReflectiveWrite();
+-
+   default boolean isAccessedFromMethodHandle() {
+     return isReadFromMethodHandle() || isWrittenFromMethodHandle();
+   }
+@@ -58,8 +46,6 @@ public interface FieldAccessInfo {
+ 
+   boolean isReadFromMethodHandle();
+ 
+-  boolean isReadOnlyInMethodSatisfying(Predicate<ProgramMethod> predicate);
+-
+   boolean isWritten();
+ 
+   boolean isWrittenFromMethodHandle();
+@@ -68,5 +54,7 @@ public interface FieldAccessInfo {
+ 
+   boolean isWrittenOnlyInMethodSatisfying(Predicate<ProgramMethod> predicate);
+ 
++  boolean isReadOnlyInMethodSatisfying(Predicate<ProgramMethod> predicate);
++
+   boolean isWrittenOutside(DexEncodedMethod method);
+ }
+diff --git a/src/main/java/com/android/tools/r8/graph/FieldAccessInfoCollectionImpl.java b/src/main/java/com/android/tools/r8/graph/FieldAccessInfoCollectionImpl.java
+index 8a8b9da47..439ef05ea 100644
+--- a/src/main/java/com/android/tools/r8/graph/FieldAccessInfoCollectionImpl.java
++++ b/src/main/java/com/android/tools/r8/graph/FieldAccessInfoCollectionImpl.java
+@@ -63,10 +63,6 @@ public class FieldAccessInfoCollectionImpl
+     infos.values().forEach(consumer);
+   }
+ 
+-  public void remove(DexField field) {
+-    infos.remove(field);
+-  }
+-
+   @Override
+   public void removeIf(BiPredicate<DexField, FieldAccessInfoImpl> predicate) {
+     infos.entrySet().removeIf(entry -> predicate.test(entry.getKey(), entry.getValue()));
+diff --git a/src/main/java/com/android/tools/r8/graph/FieldAccessInfoImpl.java b/src/main/java/com/android/tools/r8/graph/FieldAccessInfoImpl.java
+index 8779817a4..0a7d218da 100644
+--- a/src/main/java/com/android/tools/r8/graph/FieldAccessInfoImpl.java
++++ b/src/main/java/com/android/tools/r8/graph/FieldAccessInfoImpl.java
+@@ -27,9 +27,8 @@ public class FieldAccessInfoImpl implements FieldAccessInfo {
+   public static int FLAG_IS_READ_FROM_ANNOTATION = 1 << 0;
+   public static int FLAG_IS_READ_FROM_METHOD_HANDLE = 1 << 1;
+   public static int FLAG_IS_WRITTEN_FROM_METHOD_HANDLE = 1 << 2;
+-  public static int FLAG_HAS_REFLECTIVE_READ = 1 << 3;
+-  public static int FLAG_HAS_REFLECTIVE_WRITE = 1 << 4;
+-  public static int FLAG_IS_READ_FROM_RECORD_INVOKE_DYNAMIC = 1 << 5;
++  public static int FLAG_HAS_REFLECTIVE_ACCESS = 1 << 3;
++  public static int FLAG_IS_READ_FROM_RECORD_INVOKE_DYNAMIC = 1 << 4;
+ 
+   // A direct reference to the definition of the field.
+   private DexField field;
+@@ -73,7 +72,6 @@ public class FieldAccessInfoImpl implements FieldAccessInfo {
+     return field;
+   }
+ 
+-  @Override
+   public AbstractAccessContexts getReadsWithContexts() {
+     return readsWithContexts;
+   }
+@@ -82,11 +80,6 @@ public class FieldAccessInfoImpl implements FieldAccessInfo {
+     this.readsWithContexts = readsWithContexts;
+   }
+ 
+-  @Override
+-  public AbstractAccessContexts getWritesWithContexts() {
+-    return writesWithContexts;
+-  }
+-
+   public void setWritesWithContexts(AbstractAccessContexts writesWithContexts) {
+     this.writesWithContexts = writesWithContexts;
+   }
+@@ -108,11 +101,6 @@ public class FieldAccessInfoImpl implements FieldAccessInfo {
+         : null;
+   }
+ 
+-  @Override
+-  public boolean hasKnownReadContexts() {
+-    return !readsWithContexts.isTop();
+-  }
+-
+   @Override
+   public boolean hasKnownWriteContexts() {
+     return !writesWithContexts.isTop();
+@@ -180,12 +168,6 @@ public class FieldAccessInfoImpl implements FieldAccessInfo {
+         });
+   }
+ 
+-  @Override
+-  public void forEachAccessContext(Consumer<ProgramMethod> consumer) {
+-    forEachReadContext(consumer);
+-    forEachWriteContext(consumer);
+-  }
+-
+   @Override
+   public void forEachReadContext(Consumer<ProgramMethod> consumer) {
+     readsWithContexts.forEachAccessContext(consumer);
+@@ -198,39 +180,17 @@ public class FieldAccessInfoImpl implements FieldAccessInfo {
+ 
+   @Override
+   public boolean hasReflectiveAccess() {
+-    return hasReflectiveRead() || hasReflectiveWrite();
+-  }
+-
+-  @Override
+-  public boolean hasReflectiveRead() {
+-    return (flags & FLAG_HAS_REFLECTIVE_READ) != 0;
+-  }
+-
+-  public void setHasReflectiveRead() {
+-    flags |= FLAG_HAS_REFLECTIVE_READ;
+-  }
+-
+-  @Override
+-  public boolean hasReflectiveWrite() {
+-    return (flags & FLAG_HAS_REFLECTIVE_WRITE) != 0;
++    return (flags & FLAG_HAS_REFLECTIVE_ACCESS) != 0;
+   }
+ 
+-  public void setHasReflectiveWrite() {
+-    flags |= FLAG_HAS_REFLECTIVE_WRITE;
++  public void setHasReflectiveAccess() {
++    flags |= FLAG_HAS_REFLECTIVE_ACCESS;
+   }
+ 
+   /** Returns true if this field is read by the program. */
+   @Override
+   public boolean isRead() {
+-    return isReadDirectly() || isReadIndirectly();
+-  }
+-
+-  private boolean isReadDirectly() {
+-    return !readsWithContexts.isEmpty();
+-  }
+-
+-  private boolean isReadIndirectly() {
+-    return hasReflectiveRead()
++    return !readsWithContexts.isEmpty()
+         || isReadFromAnnotation()
+         || isReadFromMethodHandle()
+         || isReadFromRecordInvokeDynamic();
+@@ -250,15 +210,15 @@ public class FieldAccessInfoImpl implements FieldAccessInfo {
+     return (flags & FLAG_IS_READ_FROM_METHOD_HANDLE) != 0;
+   }
+ 
+-  public void setReadFromMethodHandle() {
+-    flags |= FLAG_IS_READ_FROM_METHOD_HANDLE;
+-  }
+-
+   @Override
+   public boolean isReadFromRecordInvokeDynamic() {
+     return (flags & FLAG_IS_READ_FROM_RECORD_INVOKE_DYNAMIC) != 0;
+   }
+ 
++  public void setReadFromMethodHandle() {
++    flags |= FLAG_IS_READ_FROM_METHOD_HANDLE;
++  }
++
+   public void setReadFromRecordInvokeDynamic() {
+     flags |= FLAG_IS_READ_FROM_RECORD_INVOKE_DYNAMIC;
+   }
+@@ -267,28 +227,12 @@ public class FieldAccessInfoImpl implements FieldAccessInfo {
+     flags &= ~FLAG_IS_READ_FROM_RECORD_INVOKE_DYNAMIC;
+   }
+ 
+-  /**
+-   * Returns true if this field is only read by methods for which {@param predicate} returns true.
+-   */
+-  @Override
+-  public boolean isReadOnlyInMethodSatisfying(Predicate<ProgramMethod> predicate) {
+-    return readsWithContexts.isAccessedOnlyInMethodSatisfying(predicate) && !isReadIndirectly();
+-  }
+-
+   /** Returns true if this field is written by the program. */
+   @Override
+   public boolean isWritten() {
+-    return isWrittenDirectly() || isWrittenIndirectly();
+-  }
+-
+-  private boolean isWrittenDirectly() {
+     return !writesWithContexts.isEmpty();
+   }
+ 
+-  private boolean isWrittenIndirectly() {
+-    return hasReflectiveWrite() || isWrittenFromMethodHandle();
+-  }
+-
+   @Override
+   public boolean isWrittenFromMethodHandle() {
+     return (flags & FLAG_IS_WRITTEN_FROM_METHOD_HANDLE) != 0;
+@@ -312,7 +256,15 @@ public class FieldAccessInfoImpl implements FieldAccessInfo {
+    */
+   @Override
+   public boolean isWrittenOnlyInMethodSatisfying(Predicate<ProgramMethod> predicate) {
+-    return writesWithContexts.isAccessedOnlyInMethodSatisfying(predicate) && !isWrittenIndirectly();
++    return writesWithContexts.isAccessedOnlyInMethodSatisfying(predicate);
++  }
++
++  /**
++   * Returns true if this field is only read by methods for which {@param predicate} returns true.
++   */
++  @Override
++  public boolean isReadOnlyInMethodSatisfying(Predicate<ProgramMethod> predicate) {
++    return readsWithContexts.isAccessedOnlyInMethodSatisfying(predicate);
+   }
+ 
+   /**
+@@ -320,7 +272,7 @@ public class FieldAccessInfoImpl implements FieldAccessInfo {
+    */
+   @Override
+   public boolean isWrittenOutside(DexEncodedMethod method) {
+-    return writesWithContexts.isAccessedOutside(method) || isWrittenIndirectly();
++    return writesWithContexts.isAccessedOutside(method);
+   }
+ 
+   public boolean recordRead(DexField access, ProgramMethod context) {
+diff --git a/src/main/java/com/android/tools/r8/ir/analysis/proto/EnumLiteProtoShrinker.java b/src/main/java/com/android/tools/r8/ir/analysis/proto/EnumLiteProtoShrinker.java
+index e5278324d..6accb73ab 100644
+--- a/src/main/java/com/android/tools/r8/ir/analysis/proto/EnumLiteProtoShrinker.java
++++ b/src/main/java/com/android/tools/r8/ir/analysis/proto/EnumLiteProtoShrinker.java
+@@ -86,14 +86,9 @@ public class EnumLiteProtoShrinker {
+       if (enumLite != null) {
+         DexEncodedField field =
+             enumLite.lookupField(createInternalValueMapField(enumLite.getType()));
+-        if (field == null) {
+-          return false;
+-        }
+-        if (appView.appInfo().isFieldRead(field)) {
+-          return false;
+-        }
+-        return !appView.appInfo().isFieldWritten(field)
+-            || appView.appInfo().isStaticFieldWrittenOnlyInEnclosingStaticInitializer(field);
++        return field != null
++            && appView.appInfo().isStaticFieldWrittenOnlyInEnclosingStaticInitializer(field)
++            && !appView.appInfo().isFieldRead(field);
+       }
+     }
+     return false;
+diff --git a/src/main/java/com/android/tools/r8/ir/analysis/proto/GeneratedExtensionRegistryShrinker.java b/src/main/java/com/android/tools/r8/ir/analysis/proto/GeneratedExtensionRegistryShrinker.java
+index 66d04da00..88d1c4752 100644
+--- a/src/main/java/com/android/tools/r8/ir/analysis/proto/GeneratedExtensionRegistryShrinker.java
++++ b/src/main/java/com/android/tools/r8/ir/analysis/proto/GeneratedExtensionRegistryShrinker.java
+@@ -14,7 +14,6 @@ import com.android.tools.r8.graph.DexProgramClass;
+ import com.android.tools.r8.graph.DexType;
+ import com.android.tools.r8.graph.FieldAccessInfo;
+ import com.android.tools.r8.graph.FieldAccessInfoCollection;
+-import com.android.tools.r8.graph.FieldResolutionResult;
+ import com.android.tools.r8.graph.ProgramField;
+ import com.android.tools.r8.graph.ProgramMethod;
+ import com.android.tools.r8.ir.code.IRCode;
+@@ -232,18 +231,10 @@ public class GeneratedExtensionRegistryShrinker {
+ 
+   public boolean isDeadProtoExtensionField(DexField fieldReference) {
+     AppInfoWithLiveness appInfo = appView.appInfo();
+-    return isDeadProtoExtensionField(
+-        appInfo.resolveField(fieldReference),
+-        appInfo.getFieldAccessInfoCollection(),
+-        appInfo.getKeepInfo());
+-  }
+-
+-  public boolean isDeadProtoExtensionField(
+-      FieldResolutionResult resolutionResult,
+-      FieldAccessInfoCollection<?> fieldAccessInfoCollection,
+-      KeepInfoCollection keepInfo) {
+-    ProgramField field = resolutionResult.getSingleProgramField();
+-    return field != null && isDeadProtoExtensionField(field, fieldAccessInfoCollection, keepInfo);
++    ProgramField field = appInfo.resolveField(fieldReference).getSingleProgramField();
++    return field != null
++        && isDeadProtoExtensionField(
++            field, appInfo.getFieldAccessInfoCollection(), appInfo.getKeepInfo());
+   }
+ 
+   public boolean isDeadProtoExtensionField(
+diff --git a/src/main/java/com/android/tools/r8/ir/analysis/proto/schema/ProtoEnqueuerExtension.java b/src/main/java/com/android/tools/r8/ir/analysis/proto/schema/ProtoEnqueuerExtension.java
+index e84fc5a69..b3976c758 100644
+--- a/src/main/java/com/android/tools/r8/ir/analysis/proto/schema/ProtoEnqueuerExtension.java
++++ b/src/main/java/com/android/tools/r8/ir/analysis/proto/schema/ProtoEnqueuerExtension.java
+@@ -384,7 +384,7 @@ public class ProtoEnqueuerExtension extends EnqueuerAnalysis {
+         }
+ 
+         boolean valueStorageIsLive;
+-        if (enqueuer.isFieldReferenced(valueStorage)) {
++        if (enqueuer.isFieldLive(valueStorage)) {
+           if (enqueuer.isFieldRead(valueStorage)
+               || enqueuer.isFieldWrittenOutsideDefaultConstructor(valueStorage)
+               || reachesMapOrRequiredField(protoFieldInfo)) {
+@@ -392,13 +392,15 @@ public class ProtoEnqueuerExtension extends EnqueuerAnalysis {
+             // (i) optimize field reads into loading the default value of the field or (ii) remove
+             // field writes to proto fields that could be read using reflection by the proto
+             // library.
+-            worklist.enqueueTraceReflectiveFieldAccessAction(valueStorage, dynamicMethod);
++            enqueuer.registerReflectiveFieldAccess(valueStorage.getReference(), dynamicMethod);
+           }
+           valueStorageIsLive = true;
+         } else if (reachesMapOrRequiredField(protoFieldInfo)) {
+           // Map/required fields cannot be removed. Therefore, we mark such fields as both read and
+           // written such that we cannot optimize any field reads or writes.
+-          worklist.enqueueTraceReflectiveFieldAccessAction(valueStorage, dynamicMethod);
++          enqueuer.registerReflectiveFieldAccess(valueStorage.getReference(), dynamicMethod);
++          worklist.enqueueMarkFieldAsReachableAction(
++              valueStorage, dynamicMethod, KeepReason.reflectiveUseIn(dynamicMethod));
+           valueStorageIsLive = true;
+         } else {
+           valueStorageIsLive = false;
+@@ -412,7 +414,7 @@ public class ProtoEnqueuerExtension extends EnqueuerAnalysis {
+             newlyLiveField = protoFieldInfo.getOneOfCaseField(appView, protoMessageInfo);
+           } else if (protoFieldInfo.hasHazzerBitField(protoMessageInfo)) {
+             newlyLiveField = protoFieldInfo.getHazzerBitField(appView, protoMessageInfo);
+-            worklist.enqueueTraceReflectiveFieldAccessAction(valueStorage, dynamicMethod);
++            enqueuer.registerReflectiveFieldAccess(valueStorage.getReference(), dynamicMethod);
+           }
+         } else {
+           // For one-of fields, mark the one-of field as live if the one-of-case field is live, and
+@@ -421,13 +423,13 @@ public class ProtoEnqueuerExtension extends EnqueuerAnalysis {
+           if (protoFieldInfo.getType().isOneOf()) {
+             ProgramField oneOfCaseField =
+                 protoFieldInfo.getOneOfCaseField(appView, protoMessageInfo);
+-            if (oneOfCaseField != null && enqueuer.isFieldReferenced(oneOfCaseField)) {
++            if (oneOfCaseField != null && enqueuer.isFieldLive(oneOfCaseField)) {
+               newlyLiveField = valueStorage;
+             }
+           } else if (protoFieldInfo.hasHazzerBitField(protoMessageInfo)) {
+             ProgramField hazzerBitField =
+                 protoFieldInfo.getHazzerBitField(appView, protoMessageInfo);
+-            if (hazzerBitField == null || !enqueuer.isFieldReferenced(hazzerBitField)) {
++            if (hazzerBitField == null || !enqueuer.isFieldLive(hazzerBitField)) {
+               continue;
+             }
+ 
+@@ -456,12 +458,15 @@ public class ProtoEnqueuerExtension extends EnqueuerAnalysis {
+                       && !writer.isStructurallyEqualTo(dynamicMethod);
+           if (enqueuer.isFieldWrittenInMethodSatisfying(
+               newlyLiveField, neitherDefaultConstructorNorDynamicMethod)) {
+-            worklist.enqueueTraceReflectiveFieldReadAction(newlyLiveField, dynamicMethod);
++            enqueuer.registerReflectiveFieldRead(newlyLiveField.getReference(), dynamicMethod);
+           }
+ 
+           // Unconditionally register the hazzer and one-of proto fields as written from
+           // dynamicMethod().
+-          worklist.enqueueTraceReflectiveFieldWriteAction(newlyLiveField, dynamicMethod);
++          if (enqueuer.registerReflectiveFieldWrite(newlyLiveField.getReference(), dynamicMethod)) {
++            worklist.enqueueMarkFieldAsReachableAction(
++                newlyLiveField, dynamicMethod, KeepReason.reflectiveUseIn(dynamicMethod));
++          }
+         }
+       }
+ 
+@@ -492,7 +497,7 @@ public class ProtoEnqueuerExtension extends EnqueuerAnalysis {
+         // schema, and therefore we do need to trace the const-class instructions that will be
+         // emitted for it.
+         ProgramField valueStorage = protoFieldInfo.getValueStorage(appView, protoMessageInfo);
+-        if (valueStorage != null && enqueuer.isFieldReferenced(valueStorage)) {
++        if (valueStorage != null && enqueuer.isFieldLive(valueStorage)) {
+           for (ProtoObject object : objects) {
+             if (object.isProtoObjectFromStaticGet()) {
+               worklist.enqueueTraceStaticFieldRead(
+@@ -549,7 +554,7 @@ public class ProtoEnqueuerExtension extends EnqueuerAnalysis {
+       return;
+     }
+ 
+-    if (!enqueuer.isFieldReferenced(oneOfCaseField)) {
++    if (!enqueuer.isFieldLive(oneOfCaseField)) {
+       return;
+     }
+ 
+@@ -573,7 +578,10 @@ public class ProtoEnqueuerExtension extends EnqueuerAnalysis {
+       return;
+     }
+ 
+-    worklist.enqueueTraceReflectiveFieldWriteAction(oneOfField, dynamicMethod);
++    if (enqueuer.registerReflectiveFieldWrite(oneOfField.getReference(), dynamicMethod)) {
++      worklist.enqueueMarkFieldAsReachableAction(
++          oneOfField, dynamicMethod, KeepReason.reflectiveUseIn(dynamicMethod));
++    }
+   }
+ 
+   /**
+diff --git a/src/main/java/com/android/tools/r8/ir/code/BasicBlockInstructionListIterator.java b/src/main/java/com/android/tools/r8/ir/code/BasicBlockInstructionListIterator.java
+index b9f07e33c..3525c5ff8 100644
+--- a/src/main/java/com/android/tools/r8/ir/code/BasicBlockInstructionListIterator.java
++++ b/src/main/java/com/android/tools/r8/ir/code/BasicBlockInstructionListIterator.java
+@@ -9,6 +9,7 @@ import static com.android.tools.r8.ir.analysis.type.Nullability.definitelyNotNul
+ import static com.android.tools.r8.ir.analysis.type.Nullability.maybeNull;
+ import static com.android.tools.r8.ir.code.DominatorTree.Assumption.MAY_HAVE_UNREACHABLE_BLOCKS;
+ 
++import com.android.tools.r8.graph.AppInfoWithClassHierarchy;
+ import com.android.tools.r8.graph.AppView;
+ import com.android.tools.r8.graph.DebugLocalInfo;
+ import com.android.tools.r8.graph.DexField;
+@@ -325,7 +326,8 @@ public class BasicBlockInstructionListIterator implements InstructionListIterato
+       removeOrReplaceByDebugLocalRead();
+       return true;
+     }
+-    replaceCurrentInstructionWithNullCheck(appView, receiver);
++    DexMethod getClassMethod = appView.dexItemFactory().objectMembers.getClass;
++    replaceCurrentInstruction(new InvokeVirtual(getClassMethod, null, ImmutableList.of(receiver)));
+     return true;
+   }
+ 
+@@ -405,20 +407,6 @@ public class BasicBlockInstructionListIterator implements InstructionListIterato
+     replaceCurrentInstruction(constString);
+   }
+ 
+-  @Override
+-  public void replaceCurrentInstructionWithNullCheck(AppView<?> appView, Value object) {
+-    if (current == null) {
+-      throw new IllegalStateException();
+-    }
+-
+-    assert current.hasUnusedOutValue();
+-    assert !block.hasCatchHandlers() || current.instructionTypeCanThrow();
+-
+-    DexMethod getClassMethod = appView.dexItemFactory().objectMembers.getClass;
+-    replaceCurrentInstruction(
+-        InvokeVirtual.builder().setMethod(getClassMethod).setSingleArgument(object).build());
+-  }
+-
+   @Override
+   public void replaceCurrentInstructionWithStaticGet(
+       AppView<?> appView, IRCode code, DexField field, Set<Value> affectedValues) {
+@@ -504,7 +492,7 @@ public class BasicBlockInstructionListIterator implements InstructionListIterato
+ 
+   @Override
+   public void replaceCurrentInstructionWithThrowNull(
+-      AppView<?> appView,
++      AppView<? extends AppInfoWithClassHierarchy> appView,
+       IRCode code,
+       ListIterator<BasicBlock> blockIterator,
+       Set<BasicBlock> blocksToRemove,
+@@ -586,7 +574,7 @@ public class BasicBlockInstructionListIterator implements InstructionListIterato
+                 // target.
+                 return;
+               }
+-              if (appView.isSubtype(appView.dexItemFactory().npeType, guard).isFalse()) {
++              if (!appView.appInfo().isSubtype(appView.dexItemFactory().npeType, guard)) {
+                 // TODO(christofferqa): Consider updating previous dominator tree instead of
+                 //   rebuilding it from scratch.
+                 DominatorTree dominatorTree = new DominatorTree(code, MAY_HAVE_UNREACHABLE_BLOCKS);
+diff --git a/src/main/java/com/android/tools/r8/ir/code/FieldGet.java b/src/main/java/com/android/tools/r8/ir/code/FieldGet.java
+index ec663fb16..aecb3eb82 100644
+--- a/src/main/java/com/android/tools/r8/ir/code/FieldGet.java
++++ b/src/main/java/com/android/tools/r8/ir/code/FieldGet.java
+@@ -5,15 +5,10 @@
+ package com.android.tools.r8.ir.code;
+ 
+ import com.android.tools.r8.graph.DexField;
+-import com.android.tools.r8.ir.analysis.type.TypeElement;
+ 
+ public interface FieldGet {
+ 
+   DexField getField();
+ 
+-  TypeElement getOutType();
+-
+-  boolean hasUsedOutValue();
+-
+   Value outValue();
+ }
+diff --git a/src/main/java/com/android/tools/r8/ir/code/IRCodeInstructionListIterator.java b/src/main/java/com/android/tools/r8/ir/code/IRCodeInstructionListIterator.java
+index 912586942..21b9df5e0 100644
+--- a/src/main/java/com/android/tools/r8/ir/code/IRCodeInstructionListIterator.java
++++ b/src/main/java/com/android/tools/r8/ir/code/IRCodeInstructionListIterator.java
+@@ -5,6 +5,7 @@
+ package com.android.tools.r8.ir.code;
+ 
+ import com.android.tools.r8.errors.Unimplemented;
++import com.android.tools.r8.graph.AppInfoWithClassHierarchy;
+ import com.android.tools.r8.graph.AppView;
+ import com.android.tools.r8.graph.DebugLocalInfo;
+ import com.android.tools.r8.graph.DexField;
+@@ -88,11 +89,6 @@ public class IRCodeInstructionListIterator implements InstructionListIterator {
+     instructionIterator.replaceCurrentInstructionWithConstString(appView, code, value);
+   }
+ 
+-  @Override
+-  public void replaceCurrentInstructionWithNullCheck(AppView<?> appView, Value object) {
+-    instructionIterator.replaceCurrentInstructionWithNullCheck(appView, object);
+-  }
+-
+   @Override
+   public void replaceCurrentInstructionWithStaticGet(
+       AppView<?> appView, IRCode code, DexField field, Set<Value> affectedValues) {
+@@ -118,7 +114,7 @@ public class IRCodeInstructionListIterator implements InstructionListIterator {
+ 
+   @Override
+   public void replaceCurrentInstructionWithThrowNull(
+-      AppView<?> appView,
++      AppView<? extends AppInfoWithClassHierarchy> appView,
+       IRCode code,
+       ListIterator<BasicBlock> blockIterator,
+       Set<BasicBlock> blocksToRemove,
+diff --git a/src/main/java/com/android/tools/r8/ir/code/InstructionListIterator.java b/src/main/java/com/android/tools/r8/ir/code/InstructionListIterator.java
+index 505507201..f1eab8920 100644
+--- a/src/main/java/com/android/tools/r8/ir/code/InstructionListIterator.java
++++ b/src/main/java/com/android/tools/r8/ir/code/InstructionListIterator.java
+@@ -5,6 +5,7 @@
+ package com.android.tools.r8.ir.code;
+ 
+ import com.android.tools.r8.errors.Unimplemented;
++import com.android.tools.r8.graph.AppInfoWithClassHierarchy;
+ import com.android.tools.r8.graph.AppView;
+ import com.android.tools.r8.graph.DebugLocalInfo;
+ import com.android.tools.r8.graph.DexField;
+@@ -143,8 +144,6 @@ public interface InstructionListIterator
+         appView, code, appView.dexItemFactory().createString(value));
+   }
+ 
+-  void replaceCurrentInstructionWithNullCheck(AppView<?> appView, Value object);
+-
+   void replaceCurrentInstructionWithStaticGet(
+       AppView<?> appView, IRCode code, DexField field, Set<Value> affectedValues);
+ 
+@@ -171,7 +170,7 @@ public interface InstructionListIterator
+    * @param affectedValues set passed where values depending on detached blocks will be added.
+    */
+   void replaceCurrentInstructionWithThrowNull(
+-      AppView<?> appView,
++      AppView<? extends AppInfoWithClassHierarchy> appView,
+       IRCode code,
+       ListIterator<BasicBlock> blockIterator,
+       Set<BasicBlock> blocksToRemove,
+diff --git a/src/main/java/com/android/tools/r8/ir/code/LinearFlowInstructionListIterator.java b/src/main/java/com/android/tools/r8/ir/code/LinearFlowInstructionListIterator.java
+index 093faf189..ffb5d2bf7 100644
+--- a/src/main/java/com/android/tools/r8/ir/code/LinearFlowInstructionListIterator.java
++++ b/src/main/java/com/android/tools/r8/ir/code/LinearFlowInstructionListIterator.java
+@@ -4,6 +4,7 @@
+ 
+ package com.android.tools.r8.ir.code;
+ 
++import com.android.tools.r8.graph.AppInfoWithClassHierarchy;
+ import com.android.tools.r8.graph.AppView;
+ import com.android.tools.r8.graph.DebugLocalInfo;
+ import com.android.tools.r8.graph.DexField;
+@@ -112,11 +113,6 @@ public class LinearFlowInstructionListIterator implements InstructionListIterato
+     currentBlockIterator.replaceCurrentInstructionWithConstString(appView, code, value);
+   }
+ 
+-  @Override
+-  public void replaceCurrentInstructionWithNullCheck(AppView<?> appView, Value object) {
+-    currentBlockIterator.replaceCurrentInstructionWithNullCheck(appView, object);
+-  }
+-
+   @Override
+   public void replaceCurrentInstructionWithStaticGet(
+       AppView<?> appView, IRCode code, DexField field, Set<Value> affectedValues) {
+@@ -138,7 +134,7 @@ public class LinearFlowInstructionListIterator implements InstructionListIterato
+ 
+   @Override
+   public void replaceCurrentInstructionWithThrowNull(
+-      AppView<?> appView,
++      AppView<? extends AppInfoWithClassHierarchy> appView,
+       IRCode code,
+       ListIterator<BasicBlock> blockIterator,
+       Set<BasicBlock> blocksToRemove,
+diff --git a/src/main/java/com/android/tools/r8/ir/conversion/IRBuilder.java b/src/main/java/com/android/tools/r8/ir/conversion/IRBuilder.java
+index 85ac399b3..142f70eea 100644
+--- a/src/main/java/com/android/tools/r8/ir/conversion/IRBuilder.java
++++ b/src/main/java/com/android/tools/r8/ir/conversion/IRBuilder.java
+@@ -736,7 +736,7 @@ public class IRBuilder {
+       new TypeAnalysis(appView).narrowing(ir);
+     }
+ 
+-    if (conversionOptions.isStringSwitchConversionEnabled()) {
++    if (appView.options().isStringSwitchConversionEnabled()) {
+       StringSwitchConverter.convertToStringSwitchInstructions(ir, appView.dexItemFactory());
+     }
+ 
+diff --git a/src/main/java/com/android/tools/r8/ir/conversion/IRConverter.java b/src/main/java/com/android/tools/r8/ir/conversion/IRConverter.java
+index 0c255dad7..929c89a44 100644
+--- a/src/main/java/com/android/tools/r8/ir/conversion/IRConverter.java
++++ b/src/main/java/com/android/tools/r8/ir/conversion/IRConverter.java
+@@ -906,7 +906,7 @@ public class IRConverter {
+     Timing timing = Timing.empty();
+     deadCodeRemover.run(code, timing);
+     method.setCode(
+-        new IRToDexFinalizer(appView, deadCodeRemover)
++        new IRToDexFinalizer(appView, codeRewriter, deadCodeRemover)
+             .finalizeCode(code, BytecodeMetadataProvider.empty(), timing),
+         appView);
+     if (Log.ENABLED) {
+@@ -1429,7 +1429,7 @@ public class IRConverter {
+ 
+     previous = printMethod(code, "IR after outline handler (SSA)", previous);
+ 
+-    if (code.getConversionOptions().isStringSwitchConversionEnabled()) {
++    if (stringSwitchRemover != null) {
+       // Remove string switches prior to canonicalization to ensure that the constants that are
+       // being introduced will be canonicalized if possible.
+       timing.begin("Remove string switch");
+@@ -1643,7 +1643,7 @@ public class IRConverter {
+     ProgramMethod method = code.context();
+     DexEncodedMethod definition = method.getDefinition();
+     method.setCode(
+-        new IRToDexFinalizer(appView, deadCodeRemover)
++        new IRToDexFinalizer(appView, codeRewriter, deadCodeRemover)
+             .finalizeCode(code, bytecodeMetadataProvider, timing),
+         appView);
+     markProcessed(code, feedback);
+diff --git a/src/main/java/com/android/tools/r8/ir/conversion/IRToDexFinalizer.java b/src/main/java/com/android/tools/r8/ir/conversion/IRToDexFinalizer.java
+index 4155003ec..70fd16a41 100644
+--- a/src/main/java/com/android/tools/r8/ir/conversion/IRToDexFinalizer.java
++++ b/src/main/java/com/android/tools/r8/ir/conversion/IRToDexFinalizer.java
+@@ -26,9 +26,10 @@ public class IRToDexFinalizer extends IRFinalizer<DexCode> {
+   private final CodeRewriter codeRewriter;
+   private final InternalOptions options;
+ 
+-  public IRToDexFinalizer(AppView<?> appView, DeadCodeRemover deadCodeRemover) {
++  public IRToDexFinalizer(
++      AppView<?> appView, CodeRewriter codeRewriter, DeadCodeRemover deadCodeRemover) {
+     super(appView, deadCodeRemover);
+-    this.codeRewriter = deadCodeRemover.getCodeRewriter();
++    this.codeRewriter = codeRewriter;
+     this.options = appView.options();
+   }
+ 
+diff --git a/src/main/java/com/android/tools/r8/ir/conversion/MethodConversionOptions.java b/src/main/java/com/android/tools/r8/ir/conversion/MethodConversionOptions.java
+index 038a2771c..472f83882 100644
+--- a/src/main/java/com/android/tools/r8/ir/conversion/MethodConversionOptions.java
++++ b/src/main/java/com/android/tools/r8/ir/conversion/MethodConversionOptions.java
+@@ -17,16 +17,12 @@ public abstract class MethodConversionOptions {
+ 
+   public abstract boolean isPeepholeOptimizationsEnabled();
+ 
+-  public abstract boolean isStringSwitchConversionEnabled();
+-
+   public static class MutableMethodConversionOptions extends MethodConversionOptions {
+ 
+     private boolean enablePeepholeOptimizations = true;
+-    private boolean enableStringSwitchConversion;
+     private boolean isGeneratingClassFiles;
+ 
+     public MutableMethodConversionOptions(InternalOptions options) {
+-      this.enableStringSwitchConversion = options.isStringSwitchConversionEnabled();
+       this.isGeneratingClassFiles = options.isGeneratingClassFiles();
+     }
+ 
+@@ -35,10 +31,6 @@ public abstract class MethodConversionOptions {
+       enablePeepholeOptimizations = false;
+     }
+ 
+-    public void disableStringSwitchConversion() {
+-      enableStringSwitchConversion = false;
+-    }
+-
+     public MutableMethodConversionOptions setIsGeneratingClassFiles(
+         boolean isGeneratingClassFiles) {
+       this.isGeneratingClassFiles = isGeneratingClassFiles;
+@@ -54,11 +46,6 @@ public abstract class MethodConversionOptions {
+     public boolean isPeepholeOptimizationsEnabled() {
+       return enablePeepholeOptimizations;
+     }
+-
+-    @Override
+-    public boolean isStringSwitchConversionEnabled() {
+-      return enableStringSwitchConversion;
+-    }
+   }
+ 
+   public static class ThrowingMethodConversionOptions extends MutableMethodConversionOptions {
+diff --git a/src/main/java/com/android/tools/r8/ir/conversion/StringSwitchRemover.java b/src/main/java/com/android/tools/r8/ir/conversion/StringSwitchRemover.java
+index ab6e97d8c..ecaeac24b 100644
+--- a/src/main/java/com/android/tools/r8/ir/conversion/StringSwitchRemover.java
++++ b/src/main/java/com/android/tools/r8/ir/conversion/StringSwitchRemover.java
+@@ -50,6 +50,10 @@ public class StringSwitchRemover {
+   private final IdentifierNameStringMarker identifierNameStringMarker;
+   private final ClassTypeElement stringType;
+ 
++  public StringSwitchRemover(AppView<?> appView) {
++    this(appView, null);
++  }
++
+   StringSwitchRemover(AppView<?> appView, IdentifierNameStringMarker identifierNameStringMarker) {
+     this.appView = appView;
+     this.identifierNameStringMarker = identifierNameStringMarker;
+diff --git a/src/main/java/com/android/tools/r8/ir/optimize/CodeRewriter.java b/src/main/java/com/android/tools/r8/ir/optimize/CodeRewriter.java
+index afeb060e4..9c6521dfc 100644
+--- a/src/main/java/com/android/tools/r8/ir/optimize/CodeRewriter.java
++++ b/src/main/java/com/android/tools/r8/ir/optimize/CodeRewriter.java
+@@ -14,6 +14,7 @@ import com.android.tools.r8.dex.Constants;
+ import com.android.tools.r8.errors.CompilationError;
+ import com.android.tools.r8.errors.Unreachable;
+ import com.android.tools.r8.graph.AccessControl;
++import com.android.tools.r8.graph.AppInfoWithClassHierarchy;
+ import com.android.tools.r8.graph.AppView;
+ import com.android.tools.r8.graph.DebugLocalInfo;
+ import com.android.tools.r8.graph.DexClass;
+@@ -3040,6 +3041,12 @@ public class CodeRewriter {
+   // it with a block throwing a null value (which should result in NPE). Note that this throw is not
+   // expected to be ever reached, but is intended to satisfy verifier.
+   public void optimizeAlwaysThrowingInstructions(IRCode code) {
++    if (!appView.appInfo().hasClassHierarchy()) {
++      return;
++    }
++
++    AppView<? extends AppInfoWithClassHierarchy> appViewWithClassHierarchy =
++        appView.withClassHierarchy();
+     Set<Value> affectedValues = Sets.newIdentityHashSet();
+     Set<BasicBlock> blocksToRemove = Sets.newIdentityHashSet();
+     ListIterator<BasicBlock> blockIterator = code.listIterator();
+@@ -3089,7 +3096,7 @@ public class CodeRewriter {
+               }
+             }
+             instructionIterator.replaceCurrentInstructionWithThrowNull(
+-                appView, code, blockIterator, blocksToRemove, affectedValues);
++                appViewWithClassHierarchy, code, blockIterator, blocksToRemove, affectedValues);
+             continue;
+           }
+         }
+@@ -3125,7 +3132,7 @@ public class CodeRewriter {
+           instructionIterator.setInsertionPosition(invoke.getPosition());
+           instructionIterator.next();
+           instructionIterator.replaceCurrentInstructionWithThrowNull(
+-              appView, code, blockIterator, blocksToRemove, affectedValues);
++              appViewWithClassHierarchy, code, blockIterator, blocksToRemove, affectedValues);
+           instructionIterator.unsetInsertionPosition();
+         }
+       }
+diff --git a/src/main/java/com/android/tools/r8/ir/optimize/DeadCodeRemover.java b/src/main/java/com/android/tools/r8/ir/optimize/DeadCodeRemover.java
+index 92e653d3e..caacb269f 100644
+--- a/src/main/java/com/android/tools/r8/ir/optimize/DeadCodeRemover.java
++++ b/src/main/java/com/android/tools/r8/ir/optimize/DeadCodeRemover.java
+@@ -40,10 +40,6 @@ public class DeadCodeRemover {
+     this.codeRewriter = codeRewriter;
+   }
+ 
+-  public CodeRewriter getCodeRewriter() {
+-    return codeRewriter;
+-  }
+-
+   public void run(IRCode code, Timing timing) {
+     timing.begin("Remove dead code");
+ 
+diff --git a/src/main/java/com/android/tools/r8/ir/optimize/membervaluepropagation/assume/AssumeInfoLookup.java b/src/main/java/com/android/tools/r8/ir/optimize/membervaluepropagation/assume/AssumeInfoLookup.java
+index d207ac784..381ea11a4 100644
+--- a/src/main/java/com/android/tools/r8/ir/optimize/membervaluepropagation/assume/AssumeInfoLookup.java
++++ b/src/main/java/com/android/tools/r8/ir/optimize/membervaluepropagation/assume/AssumeInfoLookup.java
+@@ -4,7 +4,6 @@
+ 
+ package com.android.tools.r8.ir.optimize.membervaluepropagation.assume;
+ 
+-import com.android.tools.r8.graph.AppInfoWithClassHierarchy;
+ import com.android.tools.r8.graph.AppView;
+ import com.android.tools.r8.graph.DexClassAndMember;
+ import com.android.tools.r8.graph.DexClassAndMethod;
+@@ -32,10 +31,10 @@ public class AssumeInfoLookup {
+   }
+ 
+   public static AssumeInfo lookupAssumeInfo(
+-      AppView<? extends AppInfoWithClassHierarchy> appView, DexClassAndMember<?, ?> member) {
++      AppView<AppInfoWithLiveness> appView, DexClassAndMember<?, ?> member) {
+     DexMember<?, ?> reference = member.getReference();
+-    ProguardMemberRule assumeNoSideEffectsRule = appView.rootSet().noSideEffects.get(reference);
+-    ProguardMemberRule assumeValuesRule = appView.rootSet().assumedValues.get(reference);
++    ProguardMemberRule assumeNoSideEffectsRule = appView.appInfo().noSideEffects.get(reference);
++    ProguardMemberRule assumeValuesRule = appView.appInfo().assumedValues.get(reference);
+     if (assumeNoSideEffectsRule == null && assumeValuesRule == null) {
+       return null;
+     }
+diff --git a/src/main/java/com/android/tools/r8/shaking/EmptyEnqueuerDeferredTracing.java b/src/main/java/com/android/tools/r8/shaking/EmptyEnqueuerDeferredTracing.java
+deleted file mode 100644
+index 2faf20b75..000000000
+--- a/src/main/java/com/android/tools/r8/shaking/EmptyEnqueuerDeferredTracing.java
++++ /dev/null
+@@ -1,41 +0,0 @@
+-// Copyright (c) 2022, the R8 project authors. Please see the AUTHORS file
+-// for details. All rights reserved. Use of this source code is governed by a
+-// BSD-style license that can be found in the LICENSE file.
+-
+-package com.android.tools.r8.shaking;
+-
+-import com.android.tools.r8.graph.DexField;
+-import com.android.tools.r8.graph.FieldResolutionResult;
+-import com.android.tools.r8.graph.ProgramField;
+-import com.android.tools.r8.graph.ProgramMethod;
+-import com.android.tools.r8.shaking.Enqueuer.FieldAccessKind;
+-import com.android.tools.r8.shaking.Enqueuer.FieldAccessMetadata;
+-import java.util.concurrent.ExecutorService;
+-
+-public class EmptyEnqueuerDeferredTracing extends EnqueuerDeferredTracing {
+-
+-  @Override
+-  public boolean deferTracingOfFieldAccess(
+-      DexField fieldReference,
+-      FieldResolutionResult resolutionResult,
+-      ProgramMethod context,
+-      FieldAccessKind accessKind,
+-      FieldAccessMetadata metadata) {
+-    return false;
+-  }
+-
+-  @Override
+-  public boolean enqueueWorklistActions(EnqueuerWorklist worklist) {
+-    return false;
+-  }
+-
+-  @Override
+-  public void rewriteApplication(ExecutorService executorService) {
+-    // Intentionally empty.
+-  }
+-
+-  @Override
+-  public void notifyReflectiveFieldAccess(ProgramField field, ProgramMethod context) {
+-    // Intentionally empty.
+-  }
+-}
+diff --git a/src/main/java/com/android/tools/r8/shaking/Enqueuer.java b/src/main/java/com/android/tools/r8/shaking/Enqueuer.java
+index f7d3e7422..10f971d76 100644
+--- a/src/main/java/com/android/tools/r8/shaking/Enqueuer.java
++++ b/src/main/java/com/android/tools/r8/shaking/Enqueuer.java
+@@ -10,7 +10,6 @@ import static com.android.tools.r8.ir.desugar.LambdaDescriptor.isLambdaMetafacto
+ import static com.android.tools.r8.ir.desugar.itf.InterfaceMethodRewriter.Flavor.ExcludeDexResources;
+ import static com.android.tools.r8.naming.IdentifierNameStringUtils.identifyIdentifier;
+ import static com.android.tools.r8.naming.IdentifierNameStringUtils.isReflectionMethod;
+-import static com.android.tools.r8.shaking.KeepInfo.Joiner.asFieldJoinerOrNull;
+ import static com.android.tools.r8.utils.FunctionUtils.ignoreArgument;
+ import static com.android.tools.r8.utils.MapUtils.ignoreKey;
+ import static java.util.Collections.emptySet;
+@@ -127,10 +126,6 @@ import com.android.tools.r8.shaking.EnqueuerEvent.InstantiatedClassEnqueuerEvent
+ import com.android.tools.r8.shaking.EnqueuerEvent.LiveClassEnqueuerEvent;
+ import com.android.tools.r8.shaking.EnqueuerEvent.UnconditionalKeepInfoEvent;
+ import com.android.tools.r8.shaking.EnqueuerWorklist.EnqueuerAction;
+-import com.android.tools.r8.shaking.EnqueuerWorklist.TraceInstanceFieldReadAction;
+-import com.android.tools.r8.shaking.EnqueuerWorklist.TraceInstanceFieldWriteAction;
+-import com.android.tools.r8.shaking.EnqueuerWorklist.TraceStaticFieldReadAction;
+-import com.android.tools.r8.shaking.EnqueuerWorklist.TraceStaticFieldWriteAction;
+ import com.android.tools.r8.shaking.GraphReporter.KeepReasonWitness;
+ import com.android.tools.r8.shaking.KeepInfoCollection.MutableKeepInfoCollection;
+ import com.android.tools.r8.shaking.RootSetUtils.ConsequentRootSet;
+@@ -469,7 +464,7 @@ public class Enqueuer {
+     InternalOptions options = appView.options();
+     this.appInfo = appView.appInfo();
+     this.appView = appView.withClassHierarchy();
+-    this.deferredTracing = EnqueuerDeferredTracing.create(appView, this, mode);
++    this.deferredTracing = new EnqueuerDeferredTracing();
+     this.executorService = executorService;
+     this.subtypingInfo = subtypingInfo;
+     this.forceProguardCompatibility = options.forceProguardCompatibility;
+@@ -705,10 +700,6 @@ public class Enqueuer {
+     return classResolutionResult;
+   }
+ 
+-  public FieldAccessInfoCollectionImpl getFieldAccessInfoCollection() {
+-    return fieldAccessInfoCollection;
+-  }
+-
+   public MutableKeepInfoCollection getKeepInfo() {
+     return keepInfo;
+   }
+@@ -717,28 +708,6 @@ public class Enqueuer {
+     return keepInfo.getClassInfo(clazz);
+   }
+ 
+-  public KeepFieldInfo getKeepInfo(ProgramField field) {
+-    return keepInfo.getFieldInfo(field);
+-  }
+-
+-  public boolean hasMinimumKeepInfoThatMatches(
+-      ProgramField field, Predicate<KeepFieldInfo.Joiner> predicate) {
+-    MinimumKeepInfoCollection minimumKeepInfoCollection =
+-        dependentMinimumKeepInfo.getUnconditionalMinimumKeepInfoOrDefault(
+-            MinimumKeepInfoCollection.empty());
+-    KeepFieldInfo.Joiner minimumKeepInfo =
+-        asFieldJoinerOrNull(minimumKeepInfoCollection.getOrDefault(field.getReference(), null));
+-    return minimumKeepInfo != null && predicate.test(minimumKeepInfo);
+-  }
+-
+-  public ObjectAllocationInfoCollectionImpl getObjectAllocationInfoCollection() {
+-    return objectAllocationInfoCollection;
+-  }
+-
+-  public EnqueuerWorklist getWorklist() {
+-    return workList;
+-  }
+-
+   private void addLiveNonProgramType(
+       ClasspathOrLibraryClass clazz,
+       // TODO(b/216576191): Remove when tracking live library members.
+@@ -1010,39 +979,22 @@ public class Enqueuer {
+     return registerFieldAccess(field, context, true, false);
+   }
+ 
+-  public boolean registerReflectiveFieldRead(ProgramField field, ProgramMethod context) {
+-    return registerFieldAccess(field.getReference(), context, true, true);
++  public boolean registerReflectiveFieldRead(DexField field, ProgramMethod context) {
++    return registerFieldAccess(field, context, true, true);
+   }
+ 
+   public boolean registerFieldWrite(DexField field, ProgramMethod context) {
+     return registerFieldAccess(field, context, false, false);
+   }
+ 
+-  public boolean registerReflectiveFieldWrite(ProgramField field, ProgramMethod context) {
+-    return registerFieldAccess(field.getReference(), context, false, true);
+-  }
+-
+-  public void traceReflectiveFieldAccess(ProgramField field, ProgramMethod context) {
+-    deferredTracing.notifyReflectiveFieldAccess(field, context);
+-    boolean changed = registerReflectiveFieldRead(field, context);
+-    changed |= registerReflectiveFieldWrite(field, context);
+-    if (changed) {
+-      markFieldAsReachable(field, context, KeepReason.reflectiveUseIn(context));
+-    }
+-  }
+-
+-  public void traceReflectiveFieldRead(ProgramField field, ProgramMethod context) {
+-    deferredTracing.notifyReflectiveFieldAccess(field, context);
+-    if (registerReflectiveFieldRead(field, context)) {
+-      markFieldAsReachable(field, context, KeepReason.reflectiveUseIn(context));
+-    }
++  public boolean registerReflectiveFieldWrite(DexField field, ProgramMethod context) {
++    return registerFieldAccess(field, context, false, true);
+   }
+ 
+-  public void traceReflectiveFieldWrite(ProgramField field, ProgramMethod context) {
+-    deferredTracing.notifyReflectiveFieldAccess(field, context);
+-    if (registerReflectiveFieldWrite(field, context)) {
+-      markFieldAsReachable(field, context, KeepReason.reflectiveUseIn(context));
+-    }
++  public boolean registerReflectiveFieldAccess(DexField field, ProgramMethod context) {
++    boolean changed = registerFieldAccess(field, context, true, true);
++    changed |= registerFieldAccess(field, context, false, true);
++    return changed;
+   }
+ 
+   private boolean registerFieldAccess(
+@@ -1076,18 +1028,7 @@ public class Enqueuer {
+       return false;
+     }
+     if (isReflective) {
+-      if (isRead) {
+-        if (!info.hasReflectiveRead()) {
+-          info.setHasReflectiveRead();
+-          return true;
+-        }
+-      } else {
+-        if (!info.hasReflectiveWrite()) {
+-          info.setHasReflectiveWrite();
+-          return true;
+-        }
+-      }
+-      return false;
++      info.setHasReflectiveAccess();
+     }
+     return isRead ? info.recordRead(field, context) : info.recordWrite(field, context);
+   }
+@@ -1275,7 +1216,7 @@ public class Enqueuer {
+       initClassReferences.put(
+           type, computeMinimumRequiredVisibilityForInitClassField(type, currentMethod.getHolder()));
+ 
+-      markTypeAsLive(clazz, currentMethod);
++      markTypeAsLive(type, currentMethod);
+       markDirectAndIndirectClassInitializersAsLive(clazz);
+       return;
+     }
+@@ -1574,29 +1515,12 @@ public class Enqueuer {
+     boolean isWrite() {
+       return !isRead();
+     }
+-
+-    EnqueuerAction toEnqueuerAction(
+-        DexField fieldReference, ProgramMethod context, FieldAccessMetadata metadata) {
+-      switch (this) {
+-        case INSTANCE_READ:
+-          return new TraceInstanceFieldReadAction(fieldReference, context, metadata);
+-        case INSTANCE_WRITE:
+-          return new TraceInstanceFieldWriteAction(fieldReference, context, metadata);
+-        case STATIC_READ:
+-          return new TraceStaticFieldReadAction(fieldReference, context, metadata);
+-        case STATIC_WRITE:
+-          return new TraceStaticFieldWriteAction(fieldReference, context, metadata);
+-        default:
+-          throw new Unreachable();
+-      }
+-    }
+   }
+ 
+   static class FieldAccessMetadata {
+ 
+-    private static int DEFERRED_MASK = 1;
+-    private static int FROM_METHOD_HANDLE_MASK = 2;
+-    private static int FROM_RECORD_METHOD_HANDLE_MASK = 4;
++    private static int FROM_METHOD_HANDLE_MASK = 1;
++    private static int FROM_RECORD_METHOD_HANDLE_MASK = 2;
+ 
+     static FieldAccessMetadata DEFAULT = new FieldAccessMetadata(0);
+     static FieldAccessMetadata FROM_METHOD_HANDLE =
+@@ -1604,16 +1528,10 @@ public class Enqueuer {
+     static FieldAccessMetadata FROM_RECORD_METHOD_HANDLE =
+         new FieldAccessMetadata(FROM_RECORD_METHOD_HANDLE_MASK);
+ 
+-    private final FieldAccessMetadata deferred;
+     private final int flags;
+ 
+-    private FieldAccessMetadata(int flags) {
++    FieldAccessMetadata(int flags) {
+       this.flags = flags;
+-      this.deferred = isDeferred() ? this : new FieldAccessMetadata(flags | DEFERRED_MASK);
+-    }
+-
+-    boolean isDeferred() {
+-      return (flags & DEFERRED_MASK) != 0;
+     }
+ 
+     boolean isFromMethodHandle() {
+@@ -1623,39 +1541,17 @@ public class Enqueuer {
+     boolean isFromRecordMethodHandle() {
+       return (flags & FROM_RECORD_METHOD_HANDLE_MASK) != 0;
+     }
+-
+-    public FieldAccessMetadata toDeferred() {
+-      return deferred;
+-    }
+-
+-    @Override
+-    public boolean equals(Object obj) {
+-      if (this == obj) {
+-        return true;
+-      }
+-      if (obj == null || getClass() != obj.getClass()) {
+-        return false;
+-      }
+-      FieldAccessMetadata metadata = (FieldAccessMetadata) obj;
+-      return flags == metadata.flags;
+-    }
+-
+-    @Override
+-    public int hashCode() {
+-      return flags;
+-    }
+   }
+ 
+-  void traceInstanceFieldRead(
++  private void traceInstanceFieldRead(
+       DexField fieldReference, ProgramMethod currentMethod, FieldAccessMetadata metadata) {
+-    if (!metadata.isDeferred() && !registerFieldRead(fieldReference, currentMethod)) {
++    if (!registerFieldRead(fieldReference, currentMethod)) {
+       return;
+     }
+ 
+     FieldResolutionResult resolutionResult = resolveField(fieldReference, currentMethod);
+     if (deferredTracing.deferTracingOfFieldAccess(
+         fieldReference, resolutionResult, currentMethod, FieldAccessKind.INSTANCE_READ, metadata)) {
+-      assert !metadata.isDeferred();
+       return;
+     }
+ 
+@@ -1711,9 +1607,9 @@ public class Enqueuer {
+     traceInstanceFieldWrite(field, currentMethod, FieldAccessMetadata.FROM_METHOD_HANDLE);
+   }
+ 
+-  void traceInstanceFieldWrite(
++  private void traceInstanceFieldWrite(
+       DexField fieldReference, ProgramMethod currentMethod, FieldAccessMetadata metadata) {
+-    if (!metadata.isDeferred() && !registerFieldWrite(fieldReference, currentMethod)) {
++    if (!registerFieldWrite(fieldReference, currentMethod)) {
+       return;
+     }
+ 
+@@ -1724,7 +1620,6 @@ public class Enqueuer {
+         currentMethod,
+         FieldAccessKind.INSTANCE_WRITE,
+         metadata)) {
+-      assert !metadata.isDeferred();
+       return;
+     }
+ 
+@@ -1778,31 +1673,15 @@ public class Enqueuer {
+     traceStaticFieldRead(field, currentMethod, FieldAccessMetadata.FROM_METHOD_HANDLE);
+   }
+ 
+-  void traceStaticFieldRead(
++  private void traceStaticFieldRead(
+       DexField fieldReference, ProgramMethod currentMethod, FieldAccessMetadata metadata) {
+-    if (!metadata.isDeferred() && !registerFieldRead(fieldReference, currentMethod)) {
++    if (!registerFieldRead(fieldReference, currentMethod)) {
+       return;
+     }
+ 
+     FieldResolutionResult resolutionResult = resolveField(fieldReference, currentMethod);
+-
+-    if (appView.options().protoShrinking().enableGeneratedExtensionRegistryShrinking) {
+-      // If it is a dead proto extension field, don't trace onwards.
+-      boolean skipTracing =
+-          appView.withGeneratedExtensionRegistryShrinker(
+-              shrinker ->
+-                  shrinker.isDeadProtoExtensionField(
+-                      resolutionResult, fieldAccessInfoCollection, keepInfo),
+-              false);
+-      if (skipTracing) {
+-        addDeadProtoTypeCandidate(resolutionResult.getSingleProgramField().getHolder());
+-        return;
+-      }
+-    }
+-
+     if (deferredTracing.deferTracingOfFieldAccess(
+         fieldReference, resolutionResult, currentMethod, FieldAccessKind.STATIC_READ, metadata)) {
+-      assert !metadata.isDeferred();
+       return;
+     }
+ 
+@@ -1833,6 +1712,18 @@ public class Enqueuer {
+             Log.verbose(getClass(), "Register Sget `%s`.", fieldReference);
+           }
+ 
++          // If it is a dead proto extension field, don't trace onwards.
++          boolean skipTracing =
++              appView.withGeneratedExtensionRegistryShrinker(
++                  shrinker ->
++                      shrinker.isDeadProtoExtensionField(
++                          field, fieldAccessInfoCollection, keepInfo),
++                  false);
++          if (skipTracing) {
++            addDeadProtoTypeCandidate(field.getHolder());
++            return;
++          }
++
+           if (field.getReference() != fieldReference) {
+             // Mark the initial resolution holder as live. Note that this should only be done if
+             // the field
+@@ -1862,31 +1753,15 @@ public class Enqueuer {
+     traceStaticFieldWrite(field, currentMethod, FieldAccessMetadata.FROM_METHOD_HANDLE);
+   }
+ 
+-  void traceStaticFieldWrite(
++  private void traceStaticFieldWrite(
+       DexField fieldReference, ProgramMethod currentMethod, FieldAccessMetadata metadata) {
+-    if (!metadata.isDeferred() && !registerFieldWrite(fieldReference, currentMethod)) {
++    if (!registerFieldWrite(fieldReference, currentMethod)) {
+       return;
+     }
+ 
+     FieldResolutionResult resolutionResult = resolveField(fieldReference, currentMethod);
+-
+-    if (appView.options().protoShrinking().enableGeneratedExtensionRegistryShrinking) {
+-      // If it is a dead proto extension field, don't trace onwards.
+-      boolean skipTracing =
+-          appView.withGeneratedExtensionRegistryShrinker(
+-              shrinker ->
+-                  shrinker.isDeadProtoExtensionField(
+-                      resolutionResult, fieldAccessInfoCollection, keepInfo),
+-              false);
+-      if (skipTracing) {
+-        addDeadProtoTypeCandidate(resolutionResult.getSingleProgramField().getHolder());
+-        return;
+-      }
+-    }
+-
+     if (deferredTracing.deferTracingOfFieldAccess(
+         fieldReference, resolutionResult, currentMethod, FieldAccessKind.STATIC_WRITE, metadata)) {
+-      assert !metadata.isDeferred();
+       return;
+     }
+ 
+@@ -1917,6 +1792,20 @@ public class Enqueuer {
+             Log.verbose(getClass(), "Register Sput `%s`.", fieldReference);
+           }
+ 
++          if (appView.options().protoShrinking().enableGeneratedExtensionRegistryShrinking) {
++            // If it is a dead proto extension field, don't trace onwards.
++            boolean skipTracing =
++                appView.withGeneratedExtensionRegistryShrinker(
++                    shrinker ->
++                        shrinker.isDeadProtoExtensionField(
++                            field, fieldAccessInfoCollection, keepInfo),
++                    false);
++            if (skipTracing) {
++              addDeadProtoTypeCandidate(field.getHolder());
++              return;
++            }
++          }
++
+           if (field.getReference() != fieldReference) {
+             // Mark the initial resolution holder as live. Note that this should only be done if
+             // the field
+@@ -2006,7 +1895,7 @@ public class Enqueuer {
+     markTypeAsLive(clazz, graphReporter.reportClassReferencedFrom(clazz, context));
+   }
+ 
+-  void markTypeAsLive(DexProgramClass clazz, KeepReason reason) {
++  private void markTypeAsLive(DexProgramClass clazz, KeepReason reason) {
+     assert clazz != null;
+     markTypeAsLive(
+         clazz,
+@@ -2377,7 +2266,7 @@ public class Enqueuer {
+             });
+   }
+ 
+-  void markDirectAndIndirectClassInitializersAsLive(DexProgramClass clazz) {
++  private void markDirectAndIndirectClassInitializersAsLive(DexProgramClass clazz) {
+     if (clazz.isInterface()) {
+       // Accessing a static field or method on an interface does not trigger the class initializer
+       // of any parent interfaces.
+diff --git a/src/main/java/com/android/tools/r8/shaking/EnqueuerDeferredTracing.java b/src/main/java/com/android/tools/r8/shaking/EnqueuerDeferredTracing.java
+index 78abb5014..a09a35814 100644
+--- a/src/main/java/com/android/tools/r8/shaking/EnqueuerDeferredTracing.java
++++ b/src/main/java/com/android/tools/r8/shaking/EnqueuerDeferredTracing.java
+@@ -4,66 +4,45 @@
+ 
+ package com.android.tools.r8.shaking;
+ 
+-import com.android.tools.r8.graph.AppInfoWithClassHierarchy;
+-import com.android.tools.r8.graph.AppView;
+ import com.android.tools.r8.graph.DexField;
+ import com.android.tools.r8.graph.FieldResolutionResult;
+-import com.android.tools.r8.graph.ProgramField;
+ import com.android.tools.r8.graph.ProgramMethod;
+ import com.android.tools.r8.shaking.Enqueuer.FieldAccessKind;
+ import com.android.tools.r8.shaking.Enqueuer.FieldAccessMetadata;
+-import com.android.tools.r8.shaking.Enqueuer.Mode;
+-import com.android.tools.r8.utils.InternalOptions;
+ import java.util.concurrent.ExecutionException;
+ import java.util.concurrent.ExecutorService;
+ 
+-public abstract class EnqueuerDeferredTracing {
+-
+-  public static EnqueuerDeferredTracing create(
+-      AppView<? extends AppInfoWithClassHierarchy> appView, Enqueuer enqueuer, Mode mode) {
+-    if (mode.isInitialTreeShaking()) {
+-      return empty();
+-    }
+-    InternalOptions options = appView.options();
+-    if (!options.isOptimizing()
+-        || !options.isShrinking()
+-        || !options.enableEnqueuerDeferredTracing) {
+-      return empty();
+-    }
+-    return new EnqueuerDeferredTracingImpl(appView, enqueuer, mode);
+-  }
+-
+-  public static EmptyEnqueuerDeferredTracing empty() {
+-    return new EmptyEnqueuerDeferredTracing();
+-  }
++public class EnqueuerDeferredTracing {
+ 
+   /**
+-   * @return true if the {@link Enqueuer} should not trace the given field reference.
+-   *     <p>If for some reason the field reference should be traced after all, a worklist item will
+-   *     be enqueued upon reaching a (preliminary) fixpoint in {@link
+-   *     #enqueueWorklistActions(EnqueuerWorklist)}, which will cause tracing to continue.
++   * Returns true if the {@link Enqueuer} should not trace the given field reference.
++   *
++   * <p>If for some reason the field reference should be traced after all, a worklist item can be
++   * enqueued upon reaching a (preliminary) fixpoint in {@link
++   * #enqueueWorklistActions(EnqueuerWorklist)}, which will cause tracing to continue.
+    */
+-  public abstract boolean deferTracingOfFieldAccess(
++  public boolean deferTracingOfFieldAccess(
+       DexField fieldReference,
+       FieldResolutionResult resolutionResult,
+       ProgramMethod context,
+-      FieldAccessKind accessKind,
+-      FieldAccessMetadata metadata);
++      FieldAccessKind kind,
++      FieldAccessMetadata metadata) {
++    return false;
++  }
+ 
+   /**
+    * Called when the {@link EnqueuerWorklist} is empty, to allow additional tracing before ending
+    * tree shaking.
+-   *
+-   * @return true if any worklist items were enqueued.
+    */
+-  public abstract boolean enqueueWorklistActions(EnqueuerWorklist worklist);
++  public boolean enqueueWorklistActions(EnqueuerWorklist worklist) {
++    return false;
++  }
+ 
+   /**
+    * Called when tree shaking has ended, to allow rewriting the application according to the tracing
+    * that has not been performed (e.g., rewriting of dead field instructions).
+    */
+-  public abstract void rewriteApplication(ExecutorService executorService)
+-      throws ExecutionException;
+-
+-  public abstract void notifyReflectiveFieldAccess(ProgramField field, ProgramMethod context);
++  public void rewriteApplication(ExecutorService executorService) throws ExecutionException {
++    // Intentionally empty.
++  }
+ }
+diff --git a/src/main/java/com/android/tools/r8/shaking/EnqueuerDeferredTracingImpl.java b/src/main/java/com/android/tools/r8/shaking/EnqueuerDeferredTracingImpl.java
+deleted file mode 100644
+index 85d14b91e..000000000
+--- a/src/main/java/com/android/tools/r8/shaking/EnqueuerDeferredTracingImpl.java
++++ /dev/null
+@@ -1,282 +0,0 @@
+-// Copyright (c) 2022, the R8 project authors. Please see the AUTHORS file
+-// for details. All rights reserved. Use of this source code is governed by a
+-// BSD-style license that can be found in the LICENSE file.
+-
+-package com.android.tools.r8.shaking;
+-
+-import static com.android.tools.r8.graph.DexProgramClass.asProgramClassOrNull;
+-import static com.android.tools.r8.shaking.ObjectAllocationInfoCollectionUtils.mayHaveFinalizeMethodDirectlyOrIndirectly;
+-import static com.android.tools.r8.utils.MapUtils.ignoreKey;
+-
+-import com.android.tools.r8.graph.AppInfoWithClassHierarchy;
+-import com.android.tools.r8.graph.AppView;
+-import com.android.tools.r8.graph.Code;
+-import com.android.tools.r8.graph.DexField;
+-import com.android.tools.r8.graph.DexProgramClass;
+-import com.android.tools.r8.graph.DexType;
+-import com.android.tools.r8.graph.FieldAccessInfo;
+-import com.android.tools.r8.graph.FieldAccessInfoCollectionImpl;
+-import com.android.tools.r8.graph.FieldResolutionResult;
+-import com.android.tools.r8.graph.ProgramField;
+-import com.android.tools.r8.graph.ProgramMethod;
+-import com.android.tools.r8.graph.bytecodemetadata.BytecodeMetadataProvider;
+-import com.android.tools.r8.ir.code.IRCode;
+-import com.android.tools.r8.ir.conversion.IRFinalizer;
+-import com.android.tools.r8.ir.conversion.IRToCfFinalizer;
+-import com.android.tools.r8.ir.conversion.IRToDexFinalizer;
+-import com.android.tools.r8.ir.conversion.MethodConversionOptions.MutableMethodConversionOptions;
+-import com.android.tools.r8.ir.optimize.membervaluepropagation.assume.AssumeInfo;
+-import com.android.tools.r8.ir.optimize.membervaluepropagation.assume.AssumeInfoLookup;
+-import com.android.tools.r8.shaking.Enqueuer.FieldAccessKind;
+-import com.android.tools.r8.shaking.Enqueuer.FieldAccessMetadata;
+-import com.android.tools.r8.shaking.Enqueuer.Mode;
+-import com.android.tools.r8.shaking.EnqueuerWorklist.EnqueuerAction;
+-import com.android.tools.r8.utils.InternalOptions;
+-import com.android.tools.r8.utils.ThreadUtils;
+-import com.android.tools.r8.utils.Timing;
+-import com.android.tools.r8.utils.collections.ProgramFieldMap;
+-import com.android.tools.r8.utils.collections.ProgramFieldSet;
+-import com.android.tools.r8.utils.collections.ProgramMethodSet;
+-import java.util.IdentityHashMap;
+-import java.util.LinkedHashSet;
+-import java.util.Map;
+-import java.util.Set;
+-import java.util.concurrent.ConcurrentHashMap;
+-import java.util.concurrent.ExecutionException;
+-import java.util.concurrent.ExecutorService;
+-
+-public class EnqueuerDeferredTracingImpl extends EnqueuerDeferredTracing {
+-
+-  private final AppView<? extends AppInfoWithClassHierarchy> appView;
+-  private final Enqueuer enqueuer;
+-  private final Mode mode;
+-  private final InternalOptions options;
+-
+-  // Helper for rewriting code instances at the end of tree shaking.
+-  private final EnqueuerDeferredTracingRewriter rewriter;
+-
+-  // Maps each field to the tracing actions that have been deferred for that field. This allows
+-  // enqueuing previously deferred tracing actions into the worklist if a given field cannot be
+-  // optimized after all.
+-  private final ProgramFieldMap<Set<EnqueuerAction>> deferredEnqueuerActions =
+-      ProgramFieldMap.create();
+-
+-  // A set of fields that are never eligible for pruning.
+-  private final ProgramFieldSet ineligibleForPruning = ProgramFieldSet.create();
+-
+-  EnqueuerDeferredTracingImpl(
+-      AppView<? extends AppInfoWithClassHierarchy> appView, Enqueuer enqueuer, Mode mode) {
+-    this.appView = appView;
+-    this.enqueuer = enqueuer;
+-    this.mode = mode;
+-    this.options = appView.options();
+-    this.rewriter = new EnqueuerDeferredTracingRewriter(appView);
+-  }
+-
+-  @Override
+-  public boolean deferTracingOfFieldAccess(
+-      DexField fieldReference,
+-      FieldResolutionResult resolutionResult,
+-      ProgramMethod context,
+-      FieldAccessKind accessKind,
+-      FieldAccessMetadata metadata) {
+-    ProgramField field = resolutionResult.getSingleProgramField();
+-    if (field == null) {
+-      return false;
+-    }
+-
+-    // Check if field access is consistent with the field access flags.
+-    if (field.getAccessFlags().isStatic() != accessKind.isStatic()) {
+-      return enqueueDeferredEnqueuerActions(field);
+-    }
+-
+-    // If the access is from a reachability sensitive method, then bail out.
+-    if (context.getHolder().getOrComputeReachabilitySensitive(appView)) {
+-      return enqueueDeferredEnqueuerActions(field);
+-    }
+-
+-    if (accessKind.isRead()) {
+-      // If the value of the field is not guaranteed to be the default value, even if it is never
+-      // assigned, then give up.
+-      // TODO(b/205810841): Allow this by handling this in the corresponding IR rewriter.
+-      AssumeInfo assumeInfo = AssumeInfoLookup.lookupAssumeInfo(appView, field);
+-      if (assumeInfo != null && assumeInfo.hasReturnInfo()) {
+-        return enqueueDeferredEnqueuerActions(field);
+-      }
+-      if (field.getAccessFlags().isStatic() && field.getDefinition().hasExplicitStaticValue()) {
+-        return enqueueDeferredEnqueuerActions(field);
+-      }
+-    }
+-
+-    if (!isEligibleForPruning(field)) {
+-      return enqueueDeferredEnqueuerActions(field);
+-    }
+-
+-    // Field can be removed unless some other field access that has not yet been seen prohibits it.
+-    // Record an EnqueuerAction that must be traced if that should happen.
+-    EnqueuerAction deferredEnqueuerAction =
+-        accessKind.toEnqueuerAction(fieldReference, context, metadata.toDeferred());
+-    deferredEnqueuerActions
+-        .computeIfAbsent(field, ignoreKey(LinkedHashSet::new))
+-        .add(deferredEnqueuerAction);
+-
+-    // If the field is static, then the field access will trigger the class initializer of the
+-    // field's holder. Therefore, we unconditionally trace the class initializer in this case.
+-    // The corresponding IR rewriter will rewrite the field access into an init-class instruction.
+-    if (accessKind.isStatic()) {
+-      KeepReason reason =
+-          enqueuer.getGraphReporter().reportClassReferencedFrom(field.getHolder(), context);
+-      enqueuer.getWorklist().enqueueTraceTypeReferenceAction(field.getHolder(), reason);
+-      enqueuer.getWorklist().enqueueTraceDirectAndIndirectClassInitializers(field.getHolder());
+-    }
+-
+-    return true;
+-  }
+-
+-  @Override
+-  public void notifyReflectiveFieldAccess(ProgramField field, ProgramMethod context) {
+-    enqueueDeferredEnqueuerActions(field);
+-  }
+-
+-  private boolean isEligibleForPruning(ProgramField field) {
+-    if (enqueuer.isFieldLive(field)) {
+-      return false;
+-    }
+-
+-    assert enqueuer.getKeepInfo(field).isBottom();
+-    assert !enqueuer.getKeepInfo(field).isPinned(options);
+-
+-    FieldAccessInfo info = enqueuer.getFieldAccessInfoCollection().get(field.getReference());
+-    if (info.hasReflectiveAccess()
+-        || info.isAccessedFromMethodHandle()
+-        || info.isReadFromAnnotation()
+-        || info.isReadFromRecordInvokeDynamic()
+-        || enqueuer.hasMinimumKeepInfoThatMatches(
+-            field,
+-            minimumKeepInfo ->
+-                !minimumKeepInfo.isOptimizationAllowed()
+-                    || !minimumKeepInfo.isShrinkingAllowed())) {
+-      return false;
+-    }
+-
+-    if (info.isWritten()) {
+-      // If the assigned value may have an override of Object#finalize() then give up.
+-      // Note that this check depends on the set of instantiated types, and must therefore be rerun
+-      // when the enqueuer's fixpoint is reached.
+-      if (field.getType().isReferenceType()) {
+-        DexType fieldBaseType = field.getType().toBaseType(appView.dexItemFactory());
+-        if (fieldBaseType.isClassType()
+-            && mayHaveFinalizeMethodDirectlyOrIndirectly(
+-                appView, fieldBaseType, enqueuer.getObjectAllocationInfoCollection())) {
+-          return false;
+-        }
+-      }
+-    }
+-
+-    // We always have precise knowledge of field accesses during tracing.
+-    assert info.hasKnownReadContexts();
+-    assert info.hasKnownWriteContexts();
+-
+-    DexType fieldType = field.getType();
+-
+-    // If the field is now both read and written, then we cannot optimize the field unless the field
+-    // type is an uninstantiated class type.
+-    if (info.getReadsWithContexts().hasAccesses() && info.getWritesWithContexts().hasAccesses()) {
+-      if (!fieldType.isClassType()) {
+-        return false;
+-      }
+-      DexProgramClass fieldTypeDefinition = asProgramClassOrNull(appView.definitionFor(fieldType));
+-      if (fieldTypeDefinition == null
+-          || enqueuer
+-              .getObjectAllocationInfoCollection()
+-              .isInstantiatedDirectlyOrHasInstantiatedSubtype(fieldTypeDefinition)) {
+-        return false;
+-      }
+-    }
+-
+-    return !ineligibleForPruning.contains(field);
+-  }
+-
+-  private boolean enqueueDeferredEnqueuerActions(ProgramField field) {
+-    Set<EnqueuerAction> actions = deferredEnqueuerActions.remove(field);
+-    if (actions != null) {
+-      enqueuer.getWorklist().enqueueAll(actions);
+-    }
+-    ineligibleForPruning.add(field);
+-    return false;
+-  }
+-
+-  @Override
+-  public boolean enqueueWorklistActions(EnqueuerWorklist worklist) {
+-    return deferredEnqueuerActions.removeIf(
+-        (field, worklistActions) -> {
+-          if (isEligibleForPruning(field)) {
+-            return false;
+-          }
+-          worklist.enqueueAll(worklistActions);
+-          return true;
+-        });
+-  }
+-
+-  @Override
+-  public void rewriteApplication(ExecutorService executorService) throws ExecutionException {
+-    FieldAccessInfoCollectionImpl fieldAccessInfoCollection =
+-        enqueuer.getFieldAccessInfoCollection();
+-    ProgramMethodSet methodsToProcess = ProgramMethodSet.create();
+-    Map<DexField, ProgramField> prunedFields = new IdentityHashMap<>();
+-    deferredEnqueuerActions.forEach(
+-        (field, ignore) -> {
+-          FieldAccessInfo accessInfo = fieldAccessInfoCollection.get(field.getReference());
+-          prunedFields.put(field.getReference(), field);
+-          accessInfo.forEachAccessContext(methodsToProcess::add);
+-          accessInfo.forEachIndirectAccess(reference -> prunedFields.put(reference, field));
+-        });
+-    deferredEnqueuerActions.clear();
+-
+-    // Rewrite application.
+-    Map<DexProgramClass, ProgramMethodSet> initializedClassesWithContexts =
+-        new ConcurrentHashMap<>();
+-    ThreadUtils.processItems(
+-        methodsToProcess,
+-        method -> rewriteMethod(method, initializedClassesWithContexts, prunedFields),
+-        executorService);
+-
+-    // Register new InitClass instructions.
+-    initializedClassesWithContexts.forEach(
+-        (clazz, contexts) ->
+-            contexts.forEach(context -> enqueuer.traceInitClass(clazz.getType(), context)));
+-    assert enqueuer.getWorklist().isEmpty();
+-
+-    // Prune field access info collection.
+-    prunedFields.values().forEach(field -> fieldAccessInfoCollection.remove(field.getReference()));
+-  }
+-
+-  private void rewriteMethod(
+-      ProgramMethod method,
+-      Map<DexProgramClass, ProgramMethodSet> initializedClassesWithContexts,
+-      Map<DexField, ProgramField> prunedFields) {
+-    // Build IR.
+-    MutableMethodConversionOptions conversionOptions =
+-        mode.isInitialTreeShaking()
+-            ? new MutableMethodConversionOptions(options).setIsGeneratingClassFiles(true)
+-            : new MutableMethodConversionOptions(options);
+-    conversionOptions.disableStringSwitchConversion();
+-
+-    IRCode ir = method.buildIR(appView, conversionOptions);
+-
+-    // Rewrite the IR according to the tracing that has been deferred.
+-    rewriter.rewriteCode(ir, initializedClassesWithContexts, prunedFields);
+-
+-    // Run dead code elimination.
+-    rewriter.getCodeRewriter().optimizeAlwaysThrowingInstructions(ir);
+-    rewriter.getDeadCodeRemover().run(ir, Timing.empty());
+-
+-    // Finalize to class files or dex.
+-    IRFinalizer<?> finalizer =
+-        conversionOptions.isGeneratingClassFiles()
+-            ? new IRToCfFinalizer(appView, rewriter.getDeadCodeRemover())
+-            : new IRToDexFinalizer(appView, rewriter.getDeadCodeRemover());
+-    Code newCode = finalizer.finalizeCode(ir, BytecodeMetadataProvider.empty(), Timing.empty());
+-    method.setCode(newCode, appView);
+-  }
+-}
+diff --git a/src/main/java/com/android/tools/r8/shaking/EnqueuerDeferredTracingRewriter.java b/src/main/java/com/android/tools/r8/shaking/EnqueuerDeferredTracingRewriter.java
+deleted file mode 100644
+index 79165d119..000000000
+--- a/src/main/java/com/android/tools/r8/shaking/EnqueuerDeferredTracingRewriter.java
++++ /dev/null
+@@ -1,228 +0,0 @@
+-// Copyright (c) 2022, the R8 project authors. Please see the AUTHORS file
+-// for details. All rights reserved. Use of this source code is governed by a
+-// BSD-style license that can be found in the LICENSE file.
+-
+-package com.android.tools.r8.shaking;
+-
+-import static com.android.tools.r8.ir.code.Opcodes.INSTANCE_GET;
+-import static com.android.tools.r8.ir.code.Opcodes.INSTANCE_PUT;
+-import static com.android.tools.r8.ir.code.Opcodes.STATIC_GET;
+-import static com.android.tools.r8.ir.code.Opcodes.STATIC_PUT;
+-import static com.android.tools.r8.utils.MapUtils.ignoreKey;
+-
+-import com.android.tools.r8.graph.AppInfoWithClassHierarchy;
+-import com.android.tools.r8.graph.AppView;
+-import com.android.tools.r8.graph.DexField;
+-import com.android.tools.r8.graph.DexProgramClass;
+-import com.android.tools.r8.graph.ProgramField;
+-import com.android.tools.r8.graph.ProgramMethod;
+-import com.android.tools.r8.ir.analysis.type.TypeAnalysis;
+-import com.android.tools.r8.ir.analysis.type.TypeElement;
+-import com.android.tools.r8.ir.code.BasicBlock;
+-import com.android.tools.r8.ir.code.BasicBlockIterator;
+-import com.android.tools.r8.ir.code.FieldGet;
+-import com.android.tools.r8.ir.code.IRCode;
+-import com.android.tools.r8.ir.code.InitClass;
+-import com.android.tools.r8.ir.code.InstanceFieldInstruction;
+-import com.android.tools.r8.ir.code.InstanceGet;
+-import com.android.tools.r8.ir.code.InstancePut;
+-import com.android.tools.r8.ir.code.Instruction;
+-import com.android.tools.r8.ir.code.InstructionListIterator;
+-import com.android.tools.r8.ir.code.StaticGet;
+-import com.android.tools.r8.ir.code.StaticPut;
+-import com.android.tools.r8.ir.code.Value;
+-import com.android.tools.r8.ir.optimize.CodeRewriter;
+-import com.android.tools.r8.ir.optimize.DeadCodeRemover;
+-import com.android.tools.r8.utils.collections.ProgramMethodSet;
+-import com.google.common.collect.Sets;
+-import java.util.Map;
+-import java.util.Set;
+-
+-public class EnqueuerDeferredTracingRewriter {
+-
+-  private final AppView<? extends AppInfoWithClassHierarchy> appView;
+-  private final CodeRewriter codeRewriter;
+-  private final DeadCodeRemover deadCodeRemover;
+-
+-  EnqueuerDeferredTracingRewriter(AppView<? extends AppInfoWithClassHierarchy> appView) {
+-    this.appView = appView;
+-    this.codeRewriter = new CodeRewriter(appView);
+-    this.deadCodeRemover = new DeadCodeRemover(appView, codeRewriter);
+-  }
+-
+-  public CodeRewriter getCodeRewriter() {
+-    return codeRewriter;
+-  }
+-
+-  public DeadCodeRemover getDeadCodeRemover() {
+-    return deadCodeRemover;
+-  }
+-
+-  public void rewriteCode(
+-      IRCode code,
+-      Map<DexProgramClass, ProgramMethodSet> initializedClassesWithContexts,
+-      Map<DexField, ProgramField> prunedFields) {
+-    // TODO(b/205810841): Consider inserting assume instructions to reduce number of null checks.
+-    // TODO(b/205810841): Consider running constant canonicalizer.
+-    ProgramMethod context = code.context();
+-
+-    // Rewrite field instructions that reference a pruned field.
+-    Set<Value> affectedValues = Sets.newIdentityHashSet();
+-    BasicBlockIterator blockIterator = code.listIterator();
+-    while (blockIterator.hasNext()) {
+-      BasicBlock block = blockIterator.next();
+-      InstructionListIterator instructionIterator = block.listIterator(code);
+-      while (instructionIterator.hasNext()) {
+-        Instruction instruction = instructionIterator.next();
+-        switch (instruction.opcode()) {
+-          case INSTANCE_GET:
+-            rewriteInstanceGet(
+-                code,
+-                instructionIterator,
+-                instruction.asInstanceGet(),
+-                affectedValues,
+-                prunedFields);
+-            break;
+-          case INSTANCE_PUT:
+-            rewriteInstancePut(instructionIterator, instruction.asInstancePut(), prunedFields);
+-            break;
+-          case STATIC_GET:
+-            rewriteStaticGet(
+-                code,
+-                instructionIterator,
+-                instruction.asStaticGet(),
+-                affectedValues,
+-                context,
+-                initializedClassesWithContexts,
+-                prunedFields);
+-            break;
+-          case STATIC_PUT:
+-            rewriteStaticPut(
+-                code,
+-                instructionIterator,
+-                instruction.asStaticPut(),
+-                context,
+-                initializedClassesWithContexts,
+-                prunedFields);
+-            break;
+-          default:
+-            break;
+-        }
+-      }
+-    }
+-    if (!affectedValues.isEmpty()) {
+-      new TypeAnalysis(appView).narrowing(affectedValues);
+-    }
+-  }
+-
+-  private void rewriteInstanceGet(
+-      IRCode code,
+-      InstructionListIterator instructionIterator,
+-      InstanceGet instanceGet,
+-      Set<Value> affectedValues,
+-      Map<DexField, ProgramField> prunedFields) {
+-    ProgramField prunedField = prunedFields.get(instanceGet.getField());
+-    if (prunedField == null) {
+-      return;
+-    }
+-
+-    insertDefaultValueForFieldGet(
+-        code, instructionIterator, instanceGet, affectedValues, prunedField);
+-    removeOrReplaceInstanceFieldInstructionWithNullCheck(instructionIterator, instanceGet);
+-  }
+-
+-  private void rewriteInstancePut(
+-      InstructionListIterator instructionIterator,
+-      InstancePut instancePut,
+-      Map<DexField, ProgramField> prunedFields) {
+-    ProgramField prunedField = prunedFields.get(instancePut.getField());
+-    if (prunedField == null) {
+-      return;
+-    }
+-
+-    removeOrReplaceInstanceFieldInstructionWithNullCheck(instructionIterator, instancePut);
+-  }
+-
+-  private void rewriteStaticGet(
+-      IRCode code,
+-      InstructionListIterator instructionIterator,
+-      StaticGet staticGet,
+-      Set<Value> affectedValues,
+-      ProgramMethod context,
+-      Map<DexProgramClass, ProgramMethodSet> initializedClassesWithContexts,
+-      Map<DexField, ProgramField> prunedFields) {
+-    ProgramField prunedField = prunedFields.get(staticGet.getField());
+-    if (prunedField == null) {
+-      return;
+-    }
+-
+-    insertDefaultValueForFieldGet(
+-        code, instructionIterator, staticGet, affectedValues, prunedField);
+-    removeOrReplaceStaticFieldInstructionByInitClass(
+-        code, instructionIterator, context, initializedClassesWithContexts, prunedField);
+-  }
+-
+-  private void rewriteStaticPut(
+-      IRCode code,
+-      InstructionListIterator instructionIterator,
+-      StaticPut staticPut,
+-      ProgramMethod context,
+-      Map<DexProgramClass, ProgramMethodSet> initializedClassesWithContexts,
+-      Map<DexField, ProgramField> prunedFields) {
+-    ProgramField prunedField = prunedFields.get(staticPut.getField());
+-    if (prunedField == null) {
+-      return;
+-    }
+-
+-    removeOrReplaceStaticFieldInstructionByInitClass(
+-        code, instructionIterator, context, initializedClassesWithContexts, prunedField);
+-  }
+-
+-  private void insertDefaultValueForFieldGet(
+-      IRCode code,
+-      InstructionListIterator instructionIterator,
+-      FieldGet fieldGet,
+-      Set<Value> affectedValues,
+-      ProgramField prunedField) {
+-    if (fieldGet.hasUsedOutValue()) {
+-      instructionIterator.previous();
+-      Value replacement =
+-          prunedField.getType().isReferenceType()
+-              ? instructionIterator.insertConstNullInstruction(code, appView.options())
+-              : instructionIterator.insertConstNumberInstruction(
+-                  code, appView.options(), 0, fieldGet.getOutType());
+-      fieldGet.outValue().replaceUsers(replacement, affectedValues);
+-      instructionIterator.next();
+-    }
+-  }
+-
+-  private void removeOrReplaceInstanceFieldInstructionWithNullCheck(
+-      InstructionListIterator instructionIterator, InstanceFieldInstruction fieldInstruction) {
+-    if (fieldInstruction.object().isMaybeNull()) {
+-      instructionIterator.replaceCurrentInstructionWithNullCheck(
+-          appView, fieldInstruction.object());
+-    } else {
+-      instructionIterator.removeOrReplaceByDebugLocalRead();
+-    }
+-  }
+-
+-  private void removeOrReplaceStaticFieldInstructionByInitClass(
+-      IRCode code,
+-      InstructionListIterator instructionIterator,
+-      ProgramMethod context,
+-      Map<DexProgramClass, ProgramMethodSet> initializedClassesWithContexts,
+-      ProgramField prunedField) {
+-    if (prunedField.getHolder().classInitializationMayHaveSideEffectsInContext(appView, context)) {
+-      instructionIterator.replaceCurrentInstruction(
+-          InitClass.builder()
+-              .setFreshOutValue(code, TypeElement.getInt())
+-              .setType(prunedField.getHolderType())
+-              .build());
+-      initializedClassesWithContexts
+-          .computeIfAbsent(prunedField.getHolder(), ignoreKey(ProgramMethodSet::createConcurrent))
+-          .add(context);
+-    } else {
+-      instructionIterator.removeOrReplaceByDebugLocalRead();
+-    }
+-  }
+-}
+diff --git a/src/main/java/com/android/tools/r8/shaking/EnqueuerWorklist.java b/src/main/java/com/android/tools/r8/shaking/EnqueuerWorklist.java
+index a09efe6ba..0efc4b58c 100644
+--- a/src/main/java/com/android/tools/r8/shaking/EnqueuerWorklist.java
++++ b/src/main/java/com/android/tools/r8/shaking/EnqueuerWorklist.java
+@@ -11,17 +11,12 @@ import com.android.tools.r8.graph.DexField;
+ import com.android.tools.r8.graph.DexMethod;
+ import com.android.tools.r8.graph.DexProgramClass;
+ import com.android.tools.r8.graph.DexType;
+-import com.android.tools.r8.graph.FieldAccessInfo;
+ import com.android.tools.r8.graph.ProgramDefinition;
+ import com.android.tools.r8.graph.ProgramField;
+ import com.android.tools.r8.graph.ProgramMethod;
+-import com.android.tools.r8.shaking.Enqueuer.FieldAccessKind;
+-import com.android.tools.r8.shaking.Enqueuer.FieldAccessMetadata;
+ import com.android.tools.r8.shaking.GraphReporter.KeepReasonWitness;
+ import com.android.tools.r8.utils.Action;
+ import com.android.tools.r8.utils.InternalOptions;
+-import java.util.Collection;
+-import java.util.Objects;
+ import java.util.Queue;
+ import java.util.concurrent.ConcurrentLinkedQueue;
+ 
+@@ -246,19 +241,6 @@ public abstract class EnqueuerWorklist {
+     }
+   }
+ 
+-  static class TraceDirectAndIndirectClassInitializers extends EnqueuerAction {
+-    private final DexProgramClass clazz;
+-
+-    TraceDirectAndIndirectClassInitializers(DexProgramClass clazz) {
+-      this.clazz = clazz;
+-    }
+-
+-    @Override
+-    public void run(Enqueuer enqueuer) {
+-      enqueuer.markDirectAndIndirectClassInitializersAsLive(clazz);
+-    }
+-  }
+-
+   static class TraceInvokeDirectAction extends EnqueuerAction {
+     private final DexMethod invokedMethod;
+     // TODO(b/175854431): Avoid pushing context on worklist.
+@@ -320,199 +302,19 @@ public abstract class EnqueuerWorklist {
+     }
+   }
+ 
+-  static class TraceReflectiveFieldAccessAction extends EnqueuerAction {
+-    private final ProgramField field;
++  static class TraceStaticFieldReadAction extends EnqueuerAction {
++    private final DexField field;
++    // TODO(b/175854431): Avoid pushing context on worklist.
+     private final ProgramMethod context;
+-    private final FieldAccessKind kind;
+ 
+-    TraceReflectiveFieldAccessAction(ProgramField field, ProgramMethod context) {
+-      this(field, context, null);
+-    }
+-
+-    TraceReflectiveFieldAccessAction(
+-        ProgramField field, ProgramMethod context, FieldAccessKind kind) {
++    TraceStaticFieldReadAction(DexField field, ProgramMethod context) {
+       this.field = field;
+       this.context = context;
+-      this.kind = kind;
+-    }
+-
+-    @Override
+-    public void run(Enqueuer enqueuer) {
+-      if (kind != null) {
+-        if (kind.isRead()) {
+-          enqueuer.traceReflectiveFieldRead(field, context);
+-        } else {
+-          enqueuer.traceReflectiveFieldWrite(field, context);
+-        }
+-      } else {
+-        enqueuer.traceReflectiveFieldAccess(field, context);
+-      }
+-    }
+-  }
+-
+-  static class TraceTypeReferenceAction extends EnqueuerAction {
+-    private final DexProgramClass clazz;
+-    private final KeepReason reason;
+-
+-    TraceTypeReferenceAction(DexProgramClass clazz, KeepReason reason) {
+-      this.clazz = clazz;
+-      this.reason = reason;
+     }
+ 
+     @Override
+     public void run(Enqueuer enqueuer) {
+-      enqueuer.markTypeAsLive(clazz, reason);
+-    }
+-  }
+-
+-  abstract static class TraceFieldAccessAction extends EnqueuerAction {
+-    protected final DexField field;
+-    // TODO(b/175854431): Avoid pushing context on worklist.
+-    protected final ProgramMethod context;
+-    protected final FieldAccessMetadata metadata;
+-
+-    TraceFieldAccessAction(DexField field, ProgramMethod context, FieldAccessMetadata metadata) {
+-      this.field = field;
+-      this.context = context;
+-      this.metadata = metadata;
+-    }
+-
+-    protected boolean baseEquals(TraceFieldAccessAction action) {
+-      return field == action.field
+-          && context.isStructurallyEqualTo(action.context)
+-          && metadata.equals(action.metadata);
+-    }
+-
+-    @Override
+-    public boolean equals(Object obj) {
+-      if (this == obj) {
+-        return true;
+-      }
+-      if (obj == null || getClass() != obj.getClass()) {
+-        return false;
+-      }
+-      TraceFieldAccessAction action = (TraceFieldAccessAction) obj;
+-      return baseEquals(action);
+-    }
+-
+-    @Override
+-    public int hashCode() {
+-      return Objects.hash(field, context.getReference(), metadata);
+-    }
+-  }
+-
+-  static class TraceInstanceFieldReadAction extends TraceFieldAccessAction {
+-
+-    TraceInstanceFieldReadAction(
+-        DexField field, ProgramMethod context, FieldAccessMetadata metadata) {
+-      super(field, context, metadata);
+-    }
+-
+-    @Override
+-    public void run(Enqueuer enqueuer) {
+-      enqueuer.traceInstanceFieldRead(field, context, metadata);
+-    }
+-
+-    @Override
+-    public boolean equals(Object obj) {
+-      if (this == obj) {
+-        return true;
+-      }
+-      if (obj == null || getClass() != obj.getClass()) {
+-        return false;
+-      }
+-      TraceInstanceFieldReadAction action = (TraceInstanceFieldReadAction) obj;
+-      return baseEquals(action);
+-    }
+-
+-    @Override
+-    public int hashCode() {
+-      return Objects.hash(field, context.getReference(), metadata);
+-    }
+-  }
+-
+-  static class TraceInstanceFieldWriteAction extends TraceFieldAccessAction {
+-
+-    TraceInstanceFieldWriteAction(
+-        DexField field, ProgramMethod context, FieldAccessMetadata metadata) {
+-      super(field, context, metadata);
+-    }
+-
+-    @Override
+-    public void run(Enqueuer enqueuer) {
+-      enqueuer.traceInstanceFieldWrite(field, context, metadata);
+-    }
+-
+-    @Override
+-    public boolean equals(Object obj) {
+-      if (this == obj) {
+-        return true;
+-      }
+-      if (obj == null || getClass() != obj.getClass()) {
+-        return false;
+-      }
+-      TraceInstanceFieldWriteAction action = (TraceInstanceFieldWriteAction) obj;
+-      return baseEquals(action);
+-    }
+-
+-    @Override
+-    public int hashCode() {
+-      return Objects.hash(field, context.getReference(), metadata);
+-    }
+-  }
+-
+-  static class TraceStaticFieldReadAction extends TraceFieldAccessAction {
+-
+-    TraceStaticFieldReadAction(
+-        DexField field, ProgramMethod context, FieldAccessMetadata metadata) {
+-      super(field, context, metadata);
+-    }
+-
+-    @Override
+-    public void run(Enqueuer enqueuer) {
+-      enqueuer.traceStaticFieldRead(field, context, metadata);
+-    }
+-
+-    @Override
+-    public boolean equals(Object obj) {
+-      if (this == obj) {
+-        return true;
+-      }
+-      if (obj == null || getClass() != obj.getClass()) {
+-        return false;
+-      }
+-      TraceStaticFieldReadAction action = (TraceStaticFieldReadAction) obj;
+-      return baseEquals(action);
+-    }
+-  }
+-
+-  static class TraceStaticFieldWriteAction extends TraceFieldAccessAction {
+-
+-    TraceStaticFieldWriteAction(
+-        DexField field, ProgramMethod context, FieldAccessMetadata metadata) {
+-      super(field, context, metadata);
+-    }
+-
+-    @Override
+-    public void run(Enqueuer enqueuer) {
+-      enqueuer.traceStaticFieldWrite(field, context, metadata);
+-    }
+-
+-    @Override
+-    public boolean equals(Object obj) {
+-      if (this == obj) {
+-        return true;
+-      }
+-      if (obj == null || getClass() != obj.getClass()) {
+-        return false;
+-      }
+-      TraceStaticFieldWriteAction action = (TraceStaticFieldWriteAction) obj;
+-      return baseEquals(action);
+-    }
+-
+-    @Override
+-    public int hashCode() {
+-      return Objects.hash(field, context.getReference(), metadata);
++      enqueuer.traceStaticFieldRead(field, context);
+     }
+   }
+ 
+@@ -538,12 +340,6 @@ public abstract class EnqueuerWorklist {
+ 
+   abstract EnqueuerWorklist nonPushable();
+ 
+-  final void enqueueAll(Collection<? extends EnqueuerAction> actions) {
+-    actions.forEach(this::enqueue);
+-  }
+-
+-  abstract void enqueue(EnqueuerAction action);
+-
+   abstract boolean enqueueAssertAction(Action assertion);
+ 
+   abstract void enqueueMarkReachableDirectAction(
+@@ -581,8 +377,6 @@ public abstract class EnqueuerWorklist {
+   public abstract void enqueueTraceConstClassAction(
+       DexType type, ProgramMethod context, boolean ignoreCompatRules);
+ 
+-  public abstract void enqueueTraceDirectAndIndirectClassInitializers(DexProgramClass clazz);
+-
+   public abstract void enqueueTraceInvokeDirectAction(
+       DexMethod invokedMethod, ProgramMethod context);
+ 
+@@ -591,19 +385,8 @@ public abstract class EnqueuerWorklist {
+ 
+   public abstract void enqueueTraceNewInstanceAction(DexType type, ProgramMethod context);
+ 
+-  public abstract void enqueueTraceReflectiveFieldAccessAction(
+-      ProgramField field, ProgramMethod context);
+-
+-  public abstract void enqueueTraceReflectiveFieldReadAction(
+-      ProgramField field, ProgramMethod context);
+-
+-  public abstract void enqueueTraceReflectiveFieldWriteAction(
+-      ProgramField field, ProgramMethod context);
+-
+   public abstract void enqueueTraceStaticFieldRead(DexField field, ProgramMethod context);
+ 
+-  public abstract void enqueueTraceTypeReferenceAction(DexProgramClass clazz, KeepReason reason);
+-
+   static class PushableEnqueuerWorkList extends EnqueuerWorklist {
+ 
+     PushableEnqueuerWorkList(Enqueuer enqueuer) {
+@@ -615,11 +398,6 @@ public abstract class EnqueuerWorklist {
+       return new NonPushableEnqueuerWorklist(this);
+     }
+ 
+-    @Override
+-    void enqueue(EnqueuerAction action) {
+-      queue.add(action);
+-    }
+-
+     @Override
+     boolean enqueueAssertAction(Action assertion) {
+       if (InternalOptions.assertionsEnabled()) {
+@@ -713,11 +491,6 @@ public abstract class EnqueuerWorklist {
+       queue.add(new TraceConstClassAction(type, context, ignoreCompatRules));
+     }
+ 
+-    @Override
+-    public void enqueueTraceDirectAndIndirectClassInitializers(DexProgramClass clazz) {
+-      queue.add(new TraceDirectAndIndirectClassInitializers(clazz));
+-    }
+-
+     @Override
+     public void enqueueTraceInvokeDirectAction(DexMethod invokedMethod, ProgramMethod context) {
+       queue.add(new TraceInvokeDirectAction(invokedMethod, context));
+@@ -733,50 +506,9 @@ public abstract class EnqueuerWorklist {
+       queue.add(new TraceNewInstanceAction(type, context));
+     }
+ 
+-    @Override
+-    public void enqueueTraceReflectiveFieldAccessAction(ProgramField field, ProgramMethod context) {
+-      FieldAccessInfo info = enqueuer.getFieldAccessInfoCollection().get(field.getReference());
+-      if (info == null || !info.hasReflectiveAccess()) {
+-        queue.add(new TraceReflectiveFieldAccessAction(field, context));
+-      }
+-    }
+-
+-    @Override
+-    public void enqueueTraceReflectiveFieldReadAction(ProgramField field, ProgramMethod context) {
+-      FieldAccessInfo info = enqueuer.getFieldAccessInfoCollection().get(field.getReference());
+-      if (info == null || !info.hasReflectiveRead()) {
+-        queue.add(
+-            new TraceReflectiveFieldAccessAction(
+-                field,
+-                context,
+-                field.getAccessFlags().isStatic()
+-                    ? FieldAccessKind.STATIC_READ
+-                    : FieldAccessKind.INSTANCE_READ));
+-      }
+-    }
+-
+-    @Override
+-    public void enqueueTraceReflectiveFieldWriteAction(ProgramField field, ProgramMethod context) {
+-      FieldAccessInfo info = enqueuer.getFieldAccessInfoCollection().get(field.getReference());
+-      if (info == null || !info.hasReflectiveWrite()) {
+-        queue.add(
+-            new TraceReflectiveFieldAccessAction(
+-                field,
+-                context,
+-                field.getAccessFlags().isStatic()
+-                    ? FieldAccessKind.STATIC_WRITE
+-                    : FieldAccessKind.INSTANCE_WRITE));
+-      }
+-    }
+-
+     @Override
+     public void enqueueTraceStaticFieldRead(DexField field, ProgramMethod context) {
+-      queue.add(new TraceStaticFieldReadAction(field, context, FieldAccessMetadata.DEFAULT));
+-    }
+-
+-    @Override
+-    public void enqueueTraceTypeReferenceAction(DexProgramClass clazz, KeepReason reason) {
+-      queue.add(new TraceTypeReferenceAction(clazz, reason));
++      queue.add(new TraceStaticFieldReadAction(field, context));
+     }
+   }
+ 
+@@ -791,11 +523,6 @@ public abstract class EnqueuerWorklist {
+       return this;
+     }
+ 
+-    @Override
+-    void enqueue(EnqueuerAction action) {
+-      throw attemptToEnqueue();
+-    }
+-
+     private Unreachable attemptToEnqueue() {
+       throw new Unreachable("Attempt to enqueue an action in a non pushable enqueuer work list.");
+     }
+@@ -886,11 +613,6 @@ public abstract class EnqueuerWorklist {
+       throw attemptToEnqueue();
+     }
+ 
+-    @Override
+-    public void enqueueTraceDirectAndIndirectClassInitializers(DexProgramClass clazz) {
+-      throw attemptToEnqueue();
+-    }
+-
+     @Override
+     public void enqueueTraceInvokeDirectAction(DexMethod invokedMethod, ProgramMethod context) {
+       throw attemptToEnqueue();
+@@ -906,29 +628,9 @@ public abstract class EnqueuerWorklist {
+       throw attemptToEnqueue();
+     }
+ 
+-    @Override
+-    public void enqueueTraceReflectiveFieldAccessAction(ProgramField field, ProgramMethod context) {
+-      throw attemptToEnqueue();
+-    }
+-
+-    @Override
+-    public void enqueueTraceReflectiveFieldReadAction(ProgramField field, ProgramMethod context) {
+-      throw attemptToEnqueue();
+-    }
+-
+-    @Override
+-    public void enqueueTraceReflectiveFieldWriteAction(ProgramField field, ProgramMethod context) {
+-      throw attemptToEnqueue();
+-    }
+-
+     @Override
+     public void enqueueTraceStaticFieldRead(DexField field, ProgramMethod context) {
+       throw attemptToEnqueue();
+     }
+-
+-    @Override
+-    public void enqueueTraceTypeReferenceAction(DexProgramClass clazz, KeepReason reason) {
+-      throw attemptToEnqueue();
+-    }
+   }
+ }
+diff --git a/src/main/java/com/android/tools/r8/shaking/KeepInfo.java b/src/main/java/com/android/tools/r8/shaking/KeepInfo.java
+index 9595b06a2..f48d65523 100644
+--- a/src/main/java/com/android/tools/r8/shaking/KeepInfo.java
++++ b/src/main/java/com/android/tools/r8/shaking/KeepInfo.java
+@@ -511,10 +511,6 @@ public abstract class KeepInfo<B extends Builder<B, K>, K extends KeepInfo<B, K>
+       return null;
+     }
+ 
+-    public static KeepFieldInfo.Joiner asFieldJoinerOrNull(Joiner<?, ?, ?> joiner) {
+-      return joiner != null ? joiner.asFieldJoiner() : null;
+-    }
+-
+     public KeepMethodInfo.Joiner asMethodJoiner() {
+       return null;
+     }
+@@ -535,10 +531,6 @@ public abstract class KeepInfo<B extends Builder<B, K>, K extends KeepInfo<B, K>
+       return builder.isCheckDiscardedEnabled();
+     }
+ 
+-    public boolean isOptimizationAllowed() {
+-      return builder.isOptimizationAllowed();
+-    }
+-
+     public boolean isShrinkingAllowed() {
+       return builder.isShrinkingAllowed();
+     }
+diff --git a/src/main/java/com/android/tools/r8/utils/InternalOptions.java b/src/main/java/com/android/tools/r8/utils/InternalOptions.java
+index 1d7f54c88..1e2a1ff9e 100644
+--- a/src/main/java/com/android/tools/r8/utils/InternalOptions.java
++++ b/src/main/java/com/android/tools/r8/utils/InternalOptions.java
+@@ -611,9 +611,6 @@ public class InternalOptions implements GlobalKeepInfoConfiguration {
+   // public boolean lookupLibraryBeforeProgram =
+   //     System.getProperty("com.android.tools.r8.lookupProgramBeforeLibrary") == null;
+ 
+-  public boolean enableEnqueuerDeferredTracing =
+-      System.getProperty("com.android.tools.r8.disableEnqueuerDeferredTracing") == null;
+-
+   public boolean loadAllClassDefinitions = false;
+ 
+   // Whether or not to check for valid multi-dex builds.
+diff --git a/src/main/java/com/android/tools/r8/utils/collections/ProgramMemberMap.java b/src/main/java/com/android/tools/r8/utils/collections/ProgramMemberMap.java
+index 8292f1432..b14dd8606 100644
+--- a/src/main/java/com/android/tools/r8/utils/collections/ProgramMemberMap.java
++++ b/src/main/java/com/android/tools/r8/utils/collections/ProgramMemberMap.java
+@@ -71,10 +71,8 @@ public abstract class ProgramMemberMap<K extends ProgramMember<?, ?>, V> {
+     return backing.remove(wrap(member));
+   }
+ 
+-  public boolean removeIf(BiPredicate<K, V> predicate) {
+-    return backing
+-        .entrySet()
+-        .removeIf(entry -> predicate.test(entry.getKey().get(), entry.getValue()));
++  public void removeIf(BiPredicate<K, V> predicate) {
++    backing.entrySet().removeIf(entry -> predicate.test(entry.getKey().get(), entry.getValue()));
+   }
+ 
+   abstract Wrapper<K> wrap(K member);
+diff --git a/src/test/java/com/android/tools/r8/internal/proto/Proto2ShrinkingTest.java b/src/test/java/com/android/tools/r8/internal/proto/Proto2ShrinkingTest.java
+index 51acd6592..63dae9c99 100644
+--- a/src/test/java/com/android/tools/r8/internal/proto/Proto2ShrinkingTest.java
++++ b/src/test/java/com/android/tools/r8/internal/proto/Proto2ShrinkingTest.java
+@@ -23,7 +23,6 @@ import com.google.common.collect.ImmutableList;
+ import com.google.common.collect.ImmutableSet;
+ import java.nio.file.Path;
+ import java.util.List;
+-import org.junit.Ignore;
+ import org.junit.Test;
+ import org.junit.runner.RunWith;
+ import org.junit.runners.Parameterized;
+diff --git a/src/test/java/com/android/tools/r8/ir/LinearFlowIteratorTest.java b/src/test/java/com/android/tools/r8/ir/LinearFlowIteratorTest.java
+index 9d4d133e3..f191b3ba4 100644
+--- a/src/test/java/com/android/tools/r8/ir/LinearFlowIteratorTest.java
++++ b/src/test/java/com/android/tools/r8/ir/LinearFlowIteratorTest.java
+@@ -111,9 +111,10 @@ public class LinearFlowIteratorTest extends TestBase {
+   public void nextWillContinueThroughGotoBlocks() throws Exception {
+     IRCode code = simpleCode();
+     InstructionListIterator it = new LinearFlowInstructionListIterator(code, code.entryBlock());
+-    assertTrue(it.next().isArgument());
+-    assertTrue(it.next().isConstNumber());
+-    assertTrue(it.next().isThrow());
++    it.next(); // Argument
++    it.next(); // ConstNumber 0/NULL
++    it.next(); // ArrayGet
++    assert it.next().isReturn(); // Return
+   }
+ 
+   @Test
+@@ -153,8 +154,9 @@ public class LinearFlowIteratorTest extends TestBase {
+     InstructionListIterator it = new LinearFlowInstructionListIterator(code, code.blocks.get(1));
+     Instruction current = it.previous();
+     assertTrue(current.isConstNumber() && current.getOutType().isReferenceType());
+-    assertTrue(it.next().isConstNumber());
+-    assertTrue(it.next().isThrow());
++    it.next();
++    current = it.next();
++    assertTrue(current.isArrayGet());
+   }
+ 
+   @Test
+diff --git a/src/test/java/com/android/tools/r8/ir/optimize/staticizer/ClassStaticizerTest.java b/src/test/java/com/android/tools/r8/ir/optimize/staticizer/ClassStaticizerTest.java
+index 9cd0f5ff4..cb8c9f51c 100644
+--- a/src/test/java/com/android/tools/r8/ir/optimize/staticizer/ClassStaticizerTest.java
++++ b/src/test/java/com/android/tools/r8/ir/optimize/staticizer/ClassStaticizerTest.java
+@@ -334,7 +334,8 @@ public class ClassStaticizerTest extends TestBase {
+             "DIRECT: void movetohost.HostConflictField.<init>()",
+             "STATIC: String movetohost.CandidateConflictField.bar(String)",
+             "STATIC: String movetohost.CandidateConflictField.foo()",
+-            "STATIC: String movetohost.MoveToHostTestClass.next()"),
++            "STATIC: String movetohost.MoveToHostTestClass.next()",
++            "String movetohost.CandidateConflictField.field"),
+         references(clazz, "testConflictField", "void"));
+ 
+     assertThat(inspector.clazz(CandidateConflictMethod.class), isPresent());
+diff --git a/src/test/java/com/android/tools/r8/ir/regalloc/RegisterMoveSchedulerTest.java b/src/test/java/com/android/tools/r8/ir/regalloc/RegisterMoveSchedulerTest.java
+index 2100549ea..712953929 100644
+--- a/src/test/java/com/android/tools/r8/ir/regalloc/RegisterMoveSchedulerTest.java
++++ b/src/test/java/com/android/tools/r8/ir/regalloc/RegisterMoveSchedulerTest.java
+@@ -7,6 +7,7 @@ import static org.junit.Assert.assertEquals;
+ 
+ import com.android.tools.r8.errors.Unimplemented;
+ import com.android.tools.r8.graph.AppInfo;
++import com.android.tools.r8.graph.AppInfoWithClassHierarchy;
+ import com.android.tools.r8.graph.AppView;
+ import com.android.tools.r8.graph.DebugLocalInfo;
+ import com.android.tools.r8.graph.DexApplication;
+@@ -111,11 +112,6 @@ public class RegisterMoveSchedulerTest {
+       throw new Unimplemented();
+     }
+ 
+-    @Override
+-    public void replaceCurrentInstructionWithNullCheck(AppView<?> appView, Value object) {
+-      throw new Unimplemented();
+-    }
+-
+     @Override
+     public void replaceCurrentInstructionWithStaticGet(
+         AppView<?> appView, IRCode code, DexField field, Set<Value> affectedValues) {
+@@ -135,7 +131,7 @@ public class RegisterMoveSchedulerTest {
+ 
+     @Override
+     public void replaceCurrentInstructionWithThrowNull(
+-        AppView<?> appView,
++        AppView<? extends AppInfoWithClassHierarchy> appView,
+         IRCode code,
+         ListIterator<BasicBlock> blockIterator,
+         Set<BasicBlock> blocksToRemove,
+diff --git a/src/test/java/com/android/tools/r8/missingclasses/MissingClassReferencedFromFieldAnnotationTest.java b/src/test/java/com/android/tools/r8/missingclasses/MissingClassReferencedFromFieldAnnotationTest.java
+index c0c9739b9..71e9638c5 100644
+--- a/src/test/java/com/android/tools/r8/missingclasses/MissingClassReferencedFromFieldAnnotationTest.java
++++ b/src/test/java/com/android/tools/r8/missingclasses/MissingClassReferencedFromFieldAnnotationTest.java
+@@ -31,20 +31,13 @@ public class MissingClassReferencedFromFieldAnnotationTest extends MissingClasse
+   @Test(expected = CompilationFailedException.class)
+   public void testNoRules() throws Exception {
+     compileWithExpectedDiagnostics(
+-        Main.class,
+-        diagnostics -> inspectDiagnosticsWithNoRules(diagnostics, referencedFrom),
+-        builder -> builder.addKeepClassAndMembersRules(Main.class));
++        Main.class, diagnostics -> inspectDiagnosticsWithNoRules(diagnostics, referencedFrom));
+   }
+ 
+   @Test
+   public void testDontWarnMainClass() throws Exception {
+     compileWithExpectedDiagnostics(
+-        Main.class,
+-        TestDiagnosticMessages::assertNoMessages,
+-        builder ->
+-            builder
+-                .addDontWarn(MissingRuntimeAnnotation.class)
+-                .addKeepClassAndMembersRules(Main.class));
++        Main.class, TestDiagnosticMessages::assertNoMessages, addDontWarn(Main.class));
+   }
+ 
+   @Test
+@@ -52,10 +45,7 @@ public class MissingClassReferencedFromFieldAnnotationTest extends MissingClasse
+     compileWithExpectedDiagnostics(
+         Main.class,
+         TestDiagnosticMessages::assertNoMessages,
+-        builder ->
+-            builder
+-                .addDontWarn(MissingRuntimeAnnotation.class)
+-                .addKeepClassAndMembersRules(Main.class));
++        addDontWarn(MissingRuntimeAnnotation.class));
+   }
+ 
+   @Test
+@@ -63,11 +53,7 @@ public class MissingClassReferencedFromFieldAnnotationTest extends MissingClasse
+     compileWithExpectedDiagnostics(
+         Main.class,
+         diagnostics -> inspectDiagnosticsWithIgnoreWarnings(diagnostics, referencedFrom),
+-        builder ->
+-            builder
+-                .addIgnoreWarnings()
+-                .addKeepClassAndMembersRules(Main.class)
+-                .allowDiagnosticWarningMessages());
++        addIgnoreWarnings());
+   }
+ 
+   @Override
+diff --git a/src/test/java/com/android/tools/r8/rewrite/assertions/kotlinassertionhandlersimple/AssertionConfigurationAssertionHandlerKotlinSimpleTest.java b/src/test/java/com/android/tools/r8/rewrite/assertions/kotlinassertionhandlersimple/AssertionConfigurationAssertionHandlerKotlinSimpleTest.java
+deleted file mode 100644
+index aad753e5a..000000000
+--- a/src/test/java/com/android/tools/r8/rewrite/assertions/kotlinassertionhandlersimple/AssertionConfigurationAssertionHandlerKotlinSimpleTest.java
++++ /dev/null
+@@ -1,81 +0,0 @@
+-// Copyright (c) 2022, the R8 project authors. Please see the AUTHORS file
+-// for details. All rights reserved. Use of this source code is governed by a
+-// BSD-style license that can be found in the LICENSE file.
+-
+-package com.android.tools.r8.rewrite.assertions.kotlinassertionhandlersimple;
+-
+-import static org.hamcrest.CoreMatchers.equalTo;
+-
+-import com.android.tools.r8.KotlinCompilerTool.KotlinCompilerVersion;
+-import com.android.tools.r8.KotlinTestParameters;
+-import com.android.tools.r8.R8FullTestBuilder;
+-import com.android.tools.r8.R8TestCompileResult;
+-import com.android.tools.r8.TestParameters;
+-import com.android.tools.r8.references.MethodReference;
+-import com.android.tools.r8.references.Reference;
+-import com.android.tools.r8.rewrite.assertions.AssertionConfigurationAssertionHandlerKotlinTestBase;
+-import com.android.tools.r8.rewrite.assertions.assertionhandler.AssertionHandlers;
+-import com.android.tools.r8.utils.StringUtils;
+-import java.io.IOException;
+-import java.nio.file.Path;
+-import java.util.List;
+-import org.junit.runner.RunWith;
+-import org.junit.runners.Parameterized;
+-
+-@RunWith(Parameterized.class)
+-public class AssertionConfigurationAssertionHandlerKotlinSimpleTest
+-    extends AssertionConfigurationAssertionHandlerKotlinTestBase {
+-
+-  public AssertionConfigurationAssertionHandlerKotlinSimpleTest(
+-      TestParameters parameters,
+-      KotlinTestParameters kotlinParameters,
+-      boolean kotlinStdlibAsClasspath,
+-      boolean useJvmAssertions)
+-      throws IOException {
+-    super(parameters, kotlinParameters, kotlinStdlibAsClasspath, useJvmAssertions);
+-  }
+-
+-  @Override
+-  protected String getExpectedOutput() {
+-    return StringUtils.lines(
+-        "assertionHandler: simpleAssertion",
+-        "assertionHandler: multipleAssertions 1",
+-        "assertionHandler: multipleAssertions 2");
+-  }
+-
+-  @Override
+-  protected MethodReference getAssertionHandler() throws Exception {
+-    return Reference.methodFromMethod(
+-        AssertionHandlers.class.getMethod("assertionHandler", Throwable.class));
+-  }
+-
+-  @Override
+-  protected List<Path> getKotlinFiles() throws IOException {
+-    return getKotlinFilesInTestPackage(getClass().getPackage());
+-  }
+-
+-  @Override
+-  protected String getTestClassName() {
+-    return getClass().getPackage().getName() + ".AssertionSimpleKt";
+-  }
+-
+-  @Override
+-  protected void configureR8(R8FullTestBuilder builder) {
+-    boolean referencesNotNull =
+-        !kotlinParameters.is(KotlinCompilerVersion.KOTLINC_1_3_72)
+-            && !kotlinStdlibAsLibrary
+-            && !useJvmAssertions;
+-    builder
+-        .applyIf(referencesNotNull, b -> b.addDontWarn("org.jetbrains.annotations.NotNull"))
+-        .allowDiagnosticWarningMessages(!kotlinStdlibAsLibrary);
+-  }
+-
+-  @Override
+-  protected void configureResultR8(R8TestCompileResult builder) {
+-    builder.applyIf(
+-        !kotlinStdlibAsLibrary,
+-        result ->
+-            result.assertAllWarningMessagesMatch(
+-                equalTo("Resource 'META-INF/MANIFEST.MF' already exists.")));
+-  }
+-}
+diff --git a/src/test/java/com/android/tools/r8/shaking/InvalidTypesTest.java b/src/test/java/com/android/tools/r8/shaking/InvalidTypesTest.java
+index bb63e6fc8..fda8843bd 100644
+--- a/src/test/java/com/android/tools/r8/shaking/InvalidTypesTest.java
++++ b/src/test/java/com/android/tools/r8/shaking/InvalidTypesTest.java
+@@ -8,6 +8,7 @@ import static org.hamcrest.CoreMatchers.allOf;
+ import static org.hamcrest.CoreMatchers.anyOf;
+ import static org.hamcrest.CoreMatchers.containsString;
+ import static org.hamcrest.CoreMatchers.equalTo;
++import static org.hamcrest.core.IsNot.not;
+ 
+ import com.android.tools.r8.D8TestRunResult;
+ import com.android.tools.r8.DXTestRunResult;
+@@ -70,6 +71,11 @@ public class InvalidTypesTest extends JasminTestBase {
+ 
+           case DX:
+           case D8:
++          case R8:
++            if (parameters.isCfRuntime()) {
++              assert compiler == Compiler.R8;
++              return StringUtils.joinLines("Hello!", "Goodbye!", "");
++            }
+             switch (parameters.getDexRuntimeVersion()) {
+               case V4_0_4:
+               case V4_4_4:
+@@ -98,14 +104,6 @@ public class InvalidTypesTest extends JasminTestBase {
+                 throw new Unreachable();
+             }
+ 
+-          case R8:
+-            return StringUtils.joinLines(
+-                "Hello!",
+-                "Unexpected outcome of getstatic",
+-                "Unexpected outcome of checkcast",
+-                "Goodbye!",
+-                "");
+-
+           case PROGUARD:
+             return StringUtils.joinLines(
+                 "Hello!", "Unexpected outcome of checkcast", "Goodbye!", "");
+@@ -125,6 +123,10 @@ public class InvalidTypesTest extends JasminTestBase {
+       @Override
+       public String getExpectedOutput(
+           Compiler compiler, TestParameters parameters, boolean useInterface) {
++        if (useInterface) {
++          return StringUtils.joinLines("Hello!", "In verifiable method!", "Goodbye!", "");
++        }
++
+         switch (compiler) {
+           case R8:
+           case PROGUARD:
+@@ -133,9 +135,6 @@ public class InvalidTypesTest extends JasminTestBase {
+             return StringUtils.joinLines("Hello!", "In verifiable method!", "Goodbye!", "");
+ 
+           default:
+-            if (useInterface) {
+-              return StringUtils.joinLines("Hello!", "In verifiable method!", "Goodbye!", "");
+-            }
+             // The code fails with a verification error because the verifiableMethod() is being
+             // called on UnverifiableClass, which does not verify due to unverifiableMethod().
+             return StringUtils.joinLines("Hello!", "");
+@@ -330,12 +329,17 @@ public class InvalidTypesTest extends JasminTestBase {
+         break;
+ 
+       case INVOKE_VERIFIABLE_METHOD_ON_UNVERIFIABLE_CLASS:
+-        if (useInterface || compiler == Compiler.R8 || compiler == Compiler.PROGUARD) {
++        if (useInterface) {
+           result.assertSuccessWithOutput(getExpectedOutput(compiler));
+         } else {
+-          result
+-              .assertFailureWithOutput(getExpectedOutput(compiler))
+-              .assertFailureWithErrorThatMatches(getMatcherForExpectedError(compiler));
++          if (compiler == Compiler.R8
++              || compiler == Compiler.PROGUARD) {
++            result.assertSuccessWithOutput(getExpectedOutput(compiler));
++          } else {
++            result
++                .assertFailureWithOutput(getExpectedOutput(compiler))
++                .assertFailureWithErrorThatMatches(getMatcherForExpectedError());
++          }
+         }
+         break;
+ 
+@@ -343,9 +347,18 @@ public class InvalidTypesTest extends JasminTestBase {
+         if (useInterface) {
+           result.assertSuccessWithOutput(getExpectedOutput(compiler));
+         } else {
+-          result
+-              .assertFailureWithOutput(getExpectedOutput(compiler))
+-              .assertFailureWithErrorThatMatches(getMatcherForExpectedError(compiler));
++          if (compiler == Compiler.R8) {
++            result
++                .assertFailureWithOutput(getExpectedOutput(compiler))
++                .assertFailureWithErrorThatMatches(
++                    allOf(
++                        containsString("java.lang.NullPointerException"),
++                        not(containsString("java.lang.VerifyError"))));
++          } else {
++            result
++                .assertFailureWithOutput(getExpectedOutput(compiler))
++                .assertFailureWithErrorThatMatches(getMatcherForExpectedError());
++          }
+         }
+         break;
+ 
+@@ -358,10 +371,7 @@ public class InvalidTypesTest extends JasminTestBase {
+     return mode.getExpectedOutput(compiler, parameters, useInterface);
+   }
+ 
+-  private Matcher<String> getMatcherForExpectedError(Compiler compiler) {
+-    if (compiler == Compiler.R8 && mode == Mode.INVOKE_UNVERIFIABLE_METHOD) {
+-      return containsString("java.lang.NullPointerException");
+-    }
++  private Matcher<String> getMatcherForExpectedError() {
+     if (parameters.isCfRuntime()) {
+       return allOf(
+           containsString("java.lang.VerifyError"),
+diff --git a/src/test/java/com/android/tools/r8/shaking/KeepClassMembersFieldTest.java b/src/test/java/com/android/tools/r8/shaking/KeepClassMembersFieldTest.java
+index 05cec263b..ff09c75a5 100644
+--- a/src/test/java/com/android/tools/r8/shaking/KeepClassMembersFieldTest.java
++++ b/src/test/java/com/android/tools/r8/shaking/KeepClassMembersFieldTest.java
+@@ -4,13 +4,14 @@
+ 
+ package com.android.tools.r8.shaking;
+ 
+-import static com.android.tools.r8.utils.codeinspector.Matchers.isPresent;
+-import static org.hamcrest.MatcherAssert.assertThat;
++import static org.junit.Assert.assertFalse;
+ 
+ import com.android.tools.r8.TestBase;
+ import com.android.tools.r8.TestParameters;
+ import com.android.tools.r8.TestParametersCollection;
+ import com.android.tools.r8.utils.StringUtils;
++import com.android.tools.r8.utils.codeinspector.FoundFieldSubject;
++import java.util.List;
+ import org.junit.Test;
+ import org.junit.runner.RunWith;
+ import org.junit.runners.Parameterized;
+@@ -20,10 +21,11 @@ import org.junit.runners.Parameterized.Parameters;
+ public class KeepClassMembersFieldTest extends TestBase {
+ 
+   private static final String KEEP_RULE =
+-      StringUtils.lines(
+-          "-keepclassmembers,allowshrinking class " + Foo.class.getTypeName() + " {",
+-          "  <fields>;",
+-          "}");
++      "-keepclassmembers,allowshrinking class"
++          + " com.android.tools.r8.shaking.KeepClassMembersFieldTest$Foo {"
++          + " <fields>; "
++          + "}";
++  private static final String EXPECTED_RESULT = StringUtils.lines("42");
+ 
+   private final TestParameters parameters;
+ 
+@@ -39,23 +41,32 @@ public class KeepClassMembersFieldTest extends TestBase {
+   @Test
+   public void testR8() throws Throwable {
+     testForR8(parameters.getBackend())
+-        .addInnerClasses(getClass())
++        .addProgramClasses(Foo.class, Bar.class)
+         .addKeepMainRule(Foo.class)
+         .addKeepRules(KEEP_RULE)
+         .setMinApi(parameters.getApiLevel())
+         .compile()
+-        .inspect(
+-            inspector ->
+-                assertThat(inspector.clazz(Foo.class).uniqueFieldWithName("value"), isPresent()))
+         .run(parameters.getRuntime(), Foo.class)
+-        .assertSuccessWithEmptyOutput();
++        .inspect(
++            inspector -> {
++              List<FoundFieldSubject> foundFieldSubjects = inspector.clazz(Foo.class).allFields();
++              // TODO(b/231555675): This should present
++              assertFalse(inspector.clazz(Foo.class).uniqueFieldWithName("value").isPresent());
++            })
++        .assertSuccess();
+   }
+ 
+-  static class Bar {}
++  static class Bar {
++    @Override
++    public String toString() {
++      return "42";
++    }
++  }
+ 
+   static class Foo {
++    public Bar value = new Bar();
+ 
+-    Bar value = new Bar();
++    Foo() {}
+ 
+     public static void main(String[] args) {
+       new Foo();
+diff --git a/src/test/java/com/android/tools/r8/shaking/allowshrinking/KeepClassFieldsAllowShrinkingCompatibilityTest.java b/src/test/java/com/android/tools/r8/shaking/allowshrinking/KeepClassFieldsAllowShrinkingCompatibilityTest.java
+index e0e151aa4..314ea33e9 100644
+--- a/src/test/java/com/android/tools/r8/shaking/allowshrinking/KeepClassFieldsAllowShrinkingCompatibilityTest.java
++++ b/src/test/java/com/android/tools/r8/shaking/allowshrinking/KeepClassFieldsAllowShrinkingCompatibilityTest.java
+@@ -103,9 +103,11 @@ public class KeepClassFieldsAllowShrinkingCompatibilityTest extends TestBase {
+                 assertThat(bBar, not(isPresent()));
+               } else {
+                 assertThat(aFoo, isPresentAndRenamed(allowObfuscation));
+-                assertThat(
+-                    aBar, /*shrinker.isR8() ? isAbsent() : */
+-                    isPresentAndRenamed(allowObfuscation));
++                // TODO(b/171459868) It is inconsistent that the unused field A.bar is retained.
++                //   This does not match the R8 behavior for an unused method, so there may be an
++                //   optimization opportunity here.
++                //   (See KeepClassMethodsAllowShrinkingCompatibilityTest regarding methods).
++                assertThat(aBar, isPresentAndRenamed(allowObfuscation));
+                 assertThat(inspector.clazz(TestClass.class).mainMethod(), accessesField(aFoo));
+                 if (shrinker.isR8()) {
+                   assertThat(bFoo, not(isPresent()));
+diff --git a/src/test/java/com/android/tools/r8/shaking/ifrule/verticalclassmerging/MergedFieldTypeTest.java b/src/test/java/com/android/tools/r8/shaking/ifrule/verticalclassmerging/MergedFieldTypeTest.java
+index 8e4f9f43c..12c064356 100644
+--- a/src/test/java/com/android/tools/r8/shaking/ifrule/verticalclassmerging/MergedFieldTypeTest.java
++++ b/src/test/java/com/android/tools/r8/shaking/ifrule/verticalclassmerging/MergedFieldTypeTest.java
+@@ -65,16 +65,12 @@ public class MergedFieldTypeTest extends MergedTypeBaseTest {
+ 
+       public static void main(String[] args) {
+         TestClass obj = new TestClass();
+-        if (alwaysFalse()) {
++        if (false) {
+           obj.field = new B();
+           System.out.println(obj.field);
+         }
+         System.out.print(obj.get().getClass().getName());
+       }
+-
+-      static boolean alwaysFalse() {
+-        return false;
+-      }
+     }
+ 
+     public MergedFieldTypeWithCollisionTest(
+diff --git a/src/test/java/com/android/tools/r8/shaking/keptgraph/KeptSingletonIsNotCyclicTest.java b/src/test/java/com/android/tools/r8/shaking/keptgraph/KeptSingletonIsNotCyclicTest.java
+index f6f59ddcc..e65f24001 100644
+--- a/src/test/java/com/android/tools/r8/shaking/keptgraph/KeptSingletonIsNotCyclicTest.java
++++ b/src/test/java/com/android/tools/r8/shaking/keptgraph/KeptSingletonIsNotCyclicTest.java
+@@ -100,13 +100,13 @@ public class KeptSingletonIsNotCyclicTest extends TestBase {
+     // TestClass.foo is kept by TestClass.<init>.
+     QueryNode testFooFieldNode =
+         inspector.field(testFooFieldRef).assertPresent().assertKeptBy(testInit);
+-    // The type Foo is kept by TestClass.<init> and TestClass.foo.
++    // The type Foo is not kept by TestClass.<init>, but TestClass.foo.
+     QueryNode fooClassNode =
+         inspector
+             .clazz(fooClassRef)
+             .assertRenamed()
+             .assertKeptBy(testFooFieldNode)
+-            .assertKeptBy(testInit);
++            .assertNotKeptBy(testInit);
+     // Foo.<clinit> is kept by Foo
+     QueryNode fooClInit = inspector.method(fooClInitRef).assertPresent().assertKeptBy(fooClassNode);
+     // The type Foo is also kept by Foo.<clinit>
+-- 
+2.36.1.255.ge46751e96f-goog
+
