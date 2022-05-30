@@ -270,7 +270,7 @@
     /* button-primary */
     button_background_color_primary: "$color_prominent",
     button_label_color_primary: {
-      light: "$google_grey_200",
+      light: "$white",
       dark: "$google_grey_900",
     },
     button_ripple_color_primary: { light: "$white", dark: "$black" },
