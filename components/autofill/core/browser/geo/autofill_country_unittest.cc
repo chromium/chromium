@@ -7,9 +7,12 @@
 
 #include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/geo/country_data.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_metadata.h"
 #if defined(ANDROID)
 #include "base/android/build_info.h"
 #endif
@@ -153,10 +156,37 @@ TEST(AutofillCountryTest, AliasMappingsForCountryData) {
       country_data_map->GetCountryCodeForAlias("does_not_exist");
   EXPECT_EQ(expected_country_code, actual_country_code);
 
-  // GB should map the UK.
+  // UK should map the GB.
   expected_country_code = "GB";
   actual_country_code = country_data_map->GetCountryCodeForAlias("UK");
   EXPECT_EQ(expected_country_code, actual_country_code);
+}
+
+// Verifies that all address format extensions correspond to types that are
+// not part of libaddressinputs expected types, but that they are placed
+// after a field that is present in libaddressinput.
+TEST(AutofillCountryTest, VerifyAddressFormatExtensions) {
+  base::test::ScopedFeatureList address_extension_feature;
+  address_extension_feature.InitAndEnableFeature(
+      features::kAutofillEnableExtendedAddressFormats);
+
+  CountryDataMap* country_data_map = CountryDataMap::GetInstance();
+  for (const std::string& country_code : country_data_map->country_codes()) {
+    AutofillCountry country(country_code);
+    for (const AutofillCountry::AddressFormatExtension& rule :
+         country.address_format_extensions()) {
+      // The separator should not be empty.
+      EXPECT_FALSE(rule.separator_before_label.empty());
+      // `rule.type` is not part of `country_code`'s address format, but
+      // `rule.placed_after` is.
+      EXPECT_FALSE(::i18n::addressinput::IsFieldUsed(rule.type, country_code));
+      EXPECT_TRUE(
+          ::i18n::addressinput::IsFieldUsed(rule.placed_after, country_code));
+      // `IsAddressFieldSettingAccessible` considers `rule.type`
+      // setting-accessible.
+      EXPECT_TRUE(country.IsAddressFieldSettingAccessible(rule.type));
+    }
+  }
 }
 
 }  // namespace autofill

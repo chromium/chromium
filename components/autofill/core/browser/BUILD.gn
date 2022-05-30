@@ -481,6 +481,7 @@ static_library("browser") {
     "//skia",
     "//third_party/abseil-cpp:absl",
     "//third_party/libaddressinput",
+    "//third_party/libaddressinput:strings_grit",
     "//ui/base",
     "//ui/gfx/geometry",
     "//ui/gfx/range",

@@ -7,7 +7,10 @@
 
 #include <string>
 
+#include "base/containers/span.h"
+#include "base/strings/string_piece.h"
 #include "components/autofill/core/browser/geo/country_data.h"
+#include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_field.h"
 
 namespace autofill {
 
@@ -18,13 +21,43 @@ class LogBuffer;
 class AutofillCountry {
  public:
   // Returns country data corresponding to the two-letter ISO code
-  // |country_code|.
-  AutofillCountry(const std::string& country_code, const std::string& locale);
+  // `country_code`.
+  // `locale` is used translate the `name()` appropriately and can be ignored
+  // if the name is not queried.
+  explicit AutofillCountry(const std::string& country_code,
+                           const std::string& locale = "en");
 
   AutofillCountry(const AutofillCountry&) = delete;
   AutofillCountry& operator=(const AutofillCountry&) = delete;
 
   ~AutofillCountry();
+
+  // Autofill relies on libaddressinput for its address format.
+  // AddressFormatExtensions are used to extend this format on a country-by-
+  // country basis. This is needed because while some field types are not
+  // strictly required for a valid address, we nonetheless see them in practise
+  // and want to offer filling support.
+  // This struct defines that a certain `type` is considered part of the address
+  // format in Autofill, specifies its `label` and placment after the existing
+  // type `placed_after` in the settings-UI.
+  // `large_sized` indicates if the field stretches the entire line (true) or
+  // half the line (false).
+  struct AddressFormatExtension {
+    ::i18n::addressinput::AddressField type;
+    int label_id;
+    ::i18n::addressinput::AddressField placed_after;
+    // Usually " " or "\n". Should not be empty.
+    base::StringPiece separator_before_label;
+    bool large_sized;
+  };
+
+  // Gets all the `AddressFormatExtension`s available for `country_code()`.
+  base::span<const AddressFormatExtension> address_format_extensions() const;
+
+  // Returns true if the given `address_field` is part of Autofill's address
+  // format for `country_code()`.
+  bool IsAddressFieldSettingAccessible(
+      ::i18n::addressinput::AddressField address_field) const;
 
   // Returns the likely country code for |locale|, or "US" as a fallback if no
   // mapping from the locale is available.
