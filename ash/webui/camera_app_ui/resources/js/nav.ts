@@ -13,12 +13,12 @@ import {windowController} from './window_controller.js';
 
 /**
  * All views stacked in ascending z-order (DOM order) for navigation, and only
- * the topmost visible view is active (clickable/focusable).
+ * the topmost shown view is active (clickable/focusable).
  */
 let allViews: View[] = [];
 
 /**
- * Index of the current topmost visible view in the stacked views.
+ * Index of the current topmost shown view in the stacked views.
  */
 let topmostIndex = -1;
 
@@ -59,7 +59,7 @@ function isShown(index: number): boolean {
 
 /**
  * Shows the view indexed in the stacked views and activates the view only if
- * it becomes the topmost visible view.
+ * it becomes the topmost shown view.
  *
  * @param index Index of the view.
  * @return View shown.
@@ -82,7 +82,7 @@ function show(index: number): View {
 }
 
 /**
- * Finds the next topmost visible view in the stacked views.
+ * Finds the next topmost shown view in the stacked views.
  *
  * @return Index of the view found; otherwise, -1.
  */
@@ -97,7 +97,7 @@ function findNextTopmostIndex(): number {
 
 /**
  * Hides the view indexed in the stacked views and deactivate the view if it was
- * the topmost visible view.
+ * the topmost shown view.
  *
  * @param index Index of the view.
  */
@@ -184,7 +184,7 @@ export function onKeyPressed(event: KeyboardEvent): void {
       toggleExpertMode();
       break;
     default:
-      // Make the topmost visible view handle the pressed key.
+      // Make the topmost shown view handle the pressed key.
       if (topmostIndex >= 0 && allViews[topmostIndex].onKeyPressed(key)) {
         event.preventDefault();
       }
@@ -192,11 +192,12 @@ export function onKeyPressed(event: KeyboardEvent): void {
 }
 
 /**
- * Handles when the window state or size changed.
+ * Relayout all shown views.
+ *
+ * All shown views need being relayout after window is resized or state
+ * changed.
  */
-export function onWindowStatusChanged(): void {
-  // All visible views need being relayout after window is resized or state
-  // changed.
+export function layoutShownViews(): void {
   for (let i = allViews.length - 1; i >= 0; i--) {
     if (isShown(i)) {
       allViews[i].layout();

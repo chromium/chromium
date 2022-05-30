@@ -112,7 +112,7 @@ export class WindowController {
   }
 
   /**
-   * Adds listener for the window state (including window size) changed events.
+   * Adds listener for the window state changed events.
    */
   addListener(listener: WindowStateChangedEventListener): void {
     this.listeners.add(listener);

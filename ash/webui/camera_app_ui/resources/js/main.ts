@@ -41,6 +41,7 @@ import {Dialog} from './views/dialog.js';
 import {View} from './views/view.js';
 import {Warning, WarningType} from './views/warning.js';
 import {WaitableEvent} from './waitable_event.js';
+import {windowController} from './window_controller.js';
 
 /**
  * The app window instance which is used for communication with Tast tests. For
@@ -105,6 +106,9 @@ export class App {
         event.preventDefault();
       }
     }, {passive: false, capture: true});
+
+    window.addEventListener('resize', () => nav.layoutShownViews());
+    windowController.addListener(() => nav.layoutShownViews());
 
     util.setupI18nElements(document.body);
     this.setupToggles();
