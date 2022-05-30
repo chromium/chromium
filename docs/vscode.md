@@ -88,6 +88,8 @@ every day:
     `editor.formatOnSave` setting).
 *   ***Python*** -
     Linting, intellisense, code formatting, refactoring, debugging, snippets.
+    * If you want type checking, add: `"python.analysis.typeCheckingMode": "basic",`
+      to your `settings.json` file (you can also find it in the settings UI).
 *   ***Toggle Header/Source*** -
     Toggles between .cc and .h with `F4`. The C/C++ extension supports this as
     well through `Alt+O` but sometimes chooses the wrong file when there are
