@@ -45,8 +45,7 @@
     [CallWith=ScriptState] long setInterval(ScriptString handler, optional long timeout = 0, any... arguments);
     void clearInterval(optional long handle = 0);
 
-    [RuntimeEnabled=CrossOriginIsolation]
-        readonly attribute boolean crossOriginIsolated;
+    readonly attribute boolean crossOriginIsolated;
     [RuntimeEnabled=CoepReflection]
         readonly attribute DOMString crossOriginEmbedderPolicy;
 

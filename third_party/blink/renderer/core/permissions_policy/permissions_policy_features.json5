@@ -201,7 +201,6 @@
     {
       name: "CrossOriginIsolated",
       permissions_policy_name: "cross-origin-isolated",
-      depends_on: ["CrossOriginIsolation"],
     },
     {
       name: "DirectSockets",
