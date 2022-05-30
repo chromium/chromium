@@ -25,6 +25,10 @@
 #include "base/win/windows_version.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/constants/chromeos_features.h"
+#endif
+
 namespace web_app {
 
 enum class PageFlagParam {
@@ -212,7 +216,11 @@ class WebAppOfflineDarkModeTest
   WebAppOfflineDarkModeTest() {
     feature_list_.InitWithFeatures({features::kDesktopPWAsDefaultOfflinePage,
                                     blink::features::kWebAppEnableDarkMode},
-                                   {});
+                                   {
+#if BUILDFLAG(IS_CHROMEOS)
+                                     chromeos::features::kDarkLightMode
+#endif
+                                   });
   }
 
   void SetUp() override {

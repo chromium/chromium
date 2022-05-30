@@ -9344,6 +9344,7 @@ if (!is_android) {
 
     if (is_chromeos) {
       deps += [
+        "//chromeos/constants",
         "//chromeos/ui/base",
         "//chromeos/ui/frame",
         "//chromeos/ui/frame:test_support",
