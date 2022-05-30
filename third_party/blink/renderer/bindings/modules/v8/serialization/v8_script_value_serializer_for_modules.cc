@@ -277,10 +277,6 @@ uint32_t AlgorithmIdForWireFormat(WebCryptoAlgorithmId id) {
       return kHkdfTag;
     case kWebCryptoAlgorithmIdPbkdf2:
       return kPbkdf2Tag;
-    // TODO(crbug.com/1032821): Handle them explicitly for Lint.
-    case kWebCryptoAlgorithmIdEd25519:
-    case kWebCryptoAlgorithmIdX25519:
-      return 0;
   }
   NOTREACHED() << "Unknown algorithm ID " << id;
   return 0;

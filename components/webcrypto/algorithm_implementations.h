@@ -27,8 +27,6 @@ std::unique_ptr<AlgorithmImplementation> CreateEcdsaImplementation();
 std::unique_ptr<AlgorithmImplementation> CreateEcdhImplementation();
 std::unique_ptr<AlgorithmImplementation> CreateHkdfImplementation();
 std::unique_ptr<AlgorithmImplementation> CreatePbkdf2Implementation();
-std::unique_ptr<AlgorithmImplementation> CreateEd25519Implementation();
-std::unique_ptr<AlgorithmImplementation> CreateX25519Implementation();
 
 }  // namespace webcrypto
 

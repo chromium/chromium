@@ -73,12 +73,10 @@ const AlgorithmNameMapping kAlgorithmNameMappings[] = {
     {"SHA-1", 5, kWebCryptoAlgorithmIdSha1},
     {"ECDSA", 5, kWebCryptoAlgorithmIdEcdsa},
     {"PBKDF2", 6, kWebCryptoAlgorithmIdPbkdf2},
-    {"X25519", 6, kWebCryptoAlgorithmIdX25519},
     {"AES-KW", 6, kWebCryptoAlgorithmIdAesKw},
     {"SHA-512", 7, kWebCryptoAlgorithmIdSha512},
     {"SHA-384", 7, kWebCryptoAlgorithmIdSha384},
     {"SHA-256", 7, kWebCryptoAlgorithmIdSha256},
-    {"ED25519", 7, kWebCryptoAlgorithmIdEd25519},
     {"AES-CBC", 7, kWebCryptoAlgorithmIdAesCbc},
     {"AES-GCM", 7, kWebCryptoAlgorithmIdAesGcm},
     {"AES-CTR", 7, kWebCryptoAlgorithmIdAesCtr},
@@ -203,14 +201,6 @@ bool LookupAlgorithmIdByName(const String& algorithm_name,
     return false;
 
   id = it->algorithm_id;
-  // TODO(crbug.com/1032821): X25519 and Ed25519 are currently introduced behind
-  // a flag.
-  if (!RuntimeEnabledFeatures::WebCryptoCurve25519Enabled() &&
-      (id == kWebCryptoAlgorithmIdEd25519 ||
-       id == kWebCryptoAlgorithmIdX25519)) {
-    return false;
-  }
-
   return true;
 }
 
@@ -989,48 +979,6 @@ bool ParseHkdfParams(v8::Isolate* isolate,
   return true;
 }
 
-// TODO(crbug.com/1032821): The implementation of Curve25519 algorithms is
-// experimental. See also the status on
-// https://chromestatus.com/feature/4913922408710144.
-//
-// Ed25519Params in the prototype assumes the same structure as EcdsaParams:
-//
-//     dictionary Ed25519Params : Algorithm {
-//       required HashAlgorithmIdentifier hash;
-//     };
-bool ParseEd25519Params(v8::Isolate* isolate,
-                        const Dictionary& raw,
-                        std::unique_ptr<WebCryptoAlgorithmParams>& params,
-                        const ErrorContext& context,
-                        ExceptionState& exception_state) {
-  WebCryptoAlgorithm hash;
-  if (!ParseHash(isolate, raw, hash, context, exception_state))
-    return false;
-
-  params = std::make_unique<WebCryptoEd25519Params>(hash);
-  return true;
-}
-
-// TODO(crbug.com/1032821): X25519KeyDeriveParams in the prototype assumes the
-// same structure as EcdhKeyDeriveParams:
-//
-//     dictionary X25519KeyDeriveParams : Algorithm {
-//       required CryptoKey public;
-//     };
-bool ParseX25519KeyDeriveParams(
-    const Dictionary& raw,
-    std::unique_ptr<WebCryptoAlgorithmParams>& params,
-    const ErrorContext& context,
-    ExceptionState& exception_state) {
-  WebCryptoKey peer_public_key;
-  if (!GetPeerPublicKey(raw, context, &peer_public_key, exception_state))
-    return false;
-
-  DCHECK(!peer_public_key.IsNull());
-  params = std::make_unique<WebCryptoX25519KeyDeriveParams>(peer_public_key);
-  return true;
-}
-
 bool ParseAlgorithmParams(v8::Isolate* isolate,
                           const Dictionary& raw,
                           WebCryptoAlgorithmParamsType type,
@@ -1095,12 +1043,6 @@ bool ParseAlgorithmParams(v8::Isolate* isolate,
     case kWebCryptoAlgorithmParamsTypePbkdf2Params:
       context.Add("Pbkdf2Params");
       return ParsePbkdf2Params(isolate, raw, params, context, exception_state);
-    case kWebCryptoAlgorithmParamsTypeEd25519Params:
-      context.Add("Ed25519Params");
-      return ParseEd25519Params(isolate, raw, params, context, exception_state);
-    case kWebCryptoAlgorithmParamsTypeX25519KeyDeriveParams:
-      context.Add("X25519KeyDeriveParams");
-      return ParseX25519KeyDeriveParams(raw, params, context, exception_state);
   }
   NOTREACHED();
   return false;

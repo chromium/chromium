@@ -72,10 +72,8 @@ enum WebCryptoAlgorithmId {
   kWebCryptoAlgorithmIdEcdh,
   kWebCryptoAlgorithmIdHkdf,
   kWebCryptoAlgorithmIdPbkdf2,
-  kWebCryptoAlgorithmIdEd25519,
-  kWebCryptoAlgorithmIdX25519,
 #if INSIDE_BLINK
-  kWebCryptoAlgorithmIdLast = kWebCryptoAlgorithmIdX25519,
+  kWebCryptoAlgorithmIdLast = kWebCryptoAlgorithmIdPbkdf2,
 #endif
 };
 
@@ -107,8 +105,6 @@ enum WebCryptoAlgorithmParamsType {
   kWebCryptoAlgorithmParamsTypeAesDerivedKeyParams,
   kWebCryptoAlgorithmParamsTypeHkdfParams,
   kWebCryptoAlgorithmParamsTypePbkdf2Params,
-  kWebCryptoAlgorithmParamsTypeEd25519Params,
-  kWebCryptoAlgorithmParamsTypeX25519KeyDeriveParams,
 };
 
 struct WebCryptoAlgorithmInfo {
@@ -142,8 +138,6 @@ class WebCryptoEcdhKeyDeriveParams;
 class WebCryptoAesDerivedKeyParams;
 class WebCryptoHkdfParams;
 class WebCryptoPbkdf2Params;
-class WebCryptoEd25519Params;
-class WebCryptoX25519KeyDeriveParams;
 
 class WebCryptoAlgorithmParams;
 class WebCryptoAlgorithmPrivate;
@@ -215,9 +209,6 @@ class WebCryptoAlgorithm {
   AesDerivedKeyParams() const;
   BLINK_PLATFORM_EXPORT const WebCryptoHkdfParams* HkdfParams() const;
   BLINK_PLATFORM_EXPORT const WebCryptoPbkdf2Params* Pbkdf2Params() const;
-  BLINK_PLATFORM_EXPORT const WebCryptoEd25519Params* Ed25519Params() const;
-  BLINK_PLATFORM_EXPORT const WebCryptoX25519KeyDeriveParams*
-  X25519KeyDeriveParams() const;
 
   // Returns true if the provided algorithm ID is for a hash (in other words,
   // SHA-*)

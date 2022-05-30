@@ -2643,10 +2643,6 @@
       origin_trial_feature_name: "WebCodecs"
     },
     {
-      name: "WebCryptoCurve25519",
-      status: "experimental",
-    },
-    {
       name: "WebGLColorManagement",
       status: "stable",
     },
