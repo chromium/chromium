@@ -225,7 +225,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientWithSyncSendInterestedDataTypesTest,
   // also enabled.
   EXPECT_TRUE(
       ServerDeviceInfoMatchChecker(
-          GetFakeServer(),
           ElementsAre(AllOf(InterestedDataTypesAre(interested_data_types),
                             Not(HasInstanceIdToken()))))
           .Wait());
@@ -300,7 +299,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
   // The local device should eventually be committed to the server.
   EXPECT_TRUE(
       ServerDeviceInfoMatchChecker(
-          GetFakeServer(),
           ElementsAre(AllOf(InterestedDataTypesAre(interested_data_types),
                             HasInstanceIdToken(fcm_token))))
           .Wait());
@@ -359,8 +357,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
   // Commit a new bookmark to check if the next commit message has FCM
   // registration tokens.
   AddFolder(0, GetBookmarkBarNode(0), 0, kTitle);
-  ASSERT_TRUE(ServerBookmarksEqualityChecker(GetSyncService(0), GetFakeServer(),
-                                             {{kTitle, GURL()}},
+  ASSERT_TRUE(ServerBookmarksEqualityChecker({{kTitle, GURL()}},
                                              /*cryptographer=*/nullptr)
                   .Wait());
 
@@ -440,7 +437,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
 
   // Wait until DeviceInfo is updated.
   ASSERT_TRUE(ServerDeviceInfoMatchChecker(
-                  GetFakeServer(),
                   ElementsAre(HasBeenUpdatedAfter(last_updated_timestamp)))
                   .Wait());
 
@@ -448,16 +444,14 @@ IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
   // more GetUpdates request if it was triggered.
   const std::string kTitle1 = "Title 1";
   AddFolder(0, GetBookmarkBarNode(0), 0, kTitle1);
-  ASSERT_TRUE(ServerBookmarksEqualityChecker(GetSyncService(0), GetFakeServer(),
-                                             {{kTitle1, GURL()}},
+  ASSERT_TRUE(ServerBookmarksEqualityChecker({{kTitle1, GURL()}},
                                              /*cryptographer=*/nullptr)
                   .Wait());
 
   const std::string kTitle2 = "Title 2";
   AddFolder(0, GetBookmarkBarNode(0), 0, kTitle2);
   ASSERT_TRUE(
-      ServerBookmarksEqualityChecker(GetSyncService(0), GetFakeServer(),
-                                     {{kTitle1, GURL()}, {kTitle2, GURL()}},
+      ServerBookmarksEqualityChecker({{kTitle1, GURL()}, {kTitle2, GURL()}},
                                      /*cryptographer=*/nullptr)
           .Wait());
 
@@ -527,7 +521,6 @@ IN_PROC_BROWSER_TEST_F(
   // The local device should eventually be committed to the server.
   EXPECT_TRUE(
       ServerDeviceInfoMatchChecker(
-          GetFakeServer(),
           ElementsAre(AllOf(InterestedDataTypesAre(interested_data_types),
                             HasInstanceIdToken(fcm_token))))
           .Wait());
@@ -574,7 +567,6 @@ IN_PROC_BROWSER_TEST_F(
   // The local device should eventually be committed to the server. BOOKMARKS
   // should be included in interested types, since it's enabled by default.
   EXPECT_TRUE(ServerDeviceInfoMatchChecker(
-                  GetFakeServer(),
                   ElementsAre(InterestedDataTypesContain(syncer::BOOKMARKS)))
                   .Wait());
 
@@ -585,7 +577,6 @@ IN_PROC_BROWSER_TEST_F(
   // should not be included in interested types, as it was disabled.
   EXPECT_TRUE(
       ServerDeviceInfoMatchChecker(
-          GetFakeServer(),
           ElementsAre(Not(InterestedDataTypesContain(syncer::BOOKMARKS))))
           .Wait());
 
@@ -597,7 +588,6 @@ IN_PROC_BROWSER_TEST_F(
   // The local device should eventually be committed to the server. BOOKMARKS
   // should now be included in interested types.
   EXPECT_TRUE(ServerDeviceInfoMatchChecker(
-                  GetFakeServer(),
                   ElementsAre(InterestedDataTypesContain(syncer::BOOKMARKS)))
                   .Wait());
   // The bookmark should get synced now.
@@ -628,9 +618,9 @@ IN_PROC_BROWSER_TEST_F(
   const std::string old_token =
       *SyncInvalidationsServiceFactory::GetForProfile(GetProfile(0))
            ->GetFCMRegistrationToken();
-  EXPECT_TRUE(ServerDeviceInfoMatchChecker(
-                  GetFakeServer(), ElementsAre(HasInstanceIdToken(old_token)))
-                  .Wait());
+  EXPECT_TRUE(
+      ServerDeviceInfoMatchChecker(ElementsAre(HasInstanceIdToken(old_token)))
+          .Wait());
 
   // Sign out. The FCM token should be cleared.
   GetClient(0)->SignOutPrimaryAccount();
@@ -651,11 +641,10 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(new_token.empty());
   // New device info should eventually be committed to the server (but the old
   // device info will remain on the server). The FCM token should be present.
-  EXPECT_TRUE(
-      ServerDeviceInfoMatchChecker(
-          GetFakeServer(), UnorderedElementsAre(HasInstanceIdToken(old_token),
-                                                HasInstanceIdToken(new_token)))
-          .Wait());
+  EXPECT_TRUE(ServerDeviceInfoMatchChecker(
+                  UnorderedElementsAre(HasInstanceIdToken(old_token),
+                                       HasInstanceIdToken(new_token)))
+                  .Wait());
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -684,7 +673,6 @@ IN_PROC_BROWSER_TEST_F(
     PRE_ShouldResendDeviceInfoWithInterestedDataTypes) {
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(ServerDeviceInfoMatchChecker(
-                  GetFakeServer(),
                   UnorderedElementsAre(HasCacheGuid(GetLocalCacheGuid())))
                   .Wait());
 }
@@ -697,7 +685,6 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
 
   EXPECT_TRUE(ServerDeviceInfoMatchChecker(
-                  GetFakeServer(),
                   ElementsAre(InterestedDataTypesContain(syncer::NIGORI)))
                   .Wait());
 }

@@ -1503,7 +1503,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
   ASSERT_TRUE(
       UpdatedProgressMarkerChecker(GetSyncService(kSingleProfileIndex)).Wait());
   ASSERT_TRUE(bookmarks_helper::ServerBookmarksEqualityChecker(
-                  GetSyncService(kSingleProfileIndex), GetFakeServer(),
                   {{title, GURL(kBookmarkPageUrl)}},
                   /*cryptographer=*/nullptr)
                   .Wait());
@@ -1546,7 +1545,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
   ASSERT_TRUE(GetClient(kSingleProfileIndex)->StartSyncService());
   ASSERT_TRUE(GetClient(kSingleProfileIndex)->AwaitEngineInitialization());
   ASSERT_TRUE(bookmarks_helper::ServerBookmarksEqualityChecker(
-                  GetSyncService(kSingleProfileIndex), GetFakeServer(),
                   {{new_title, url}},
                   /*cryptographer=*/nullptr)
                   .Wait());
@@ -1612,7 +1610,6 @@ IN_PROC_BROWSER_TEST_F(
 
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(bookmarks_helper::ServerBookmarksEqualityChecker(
-                  GetSyncService(kSingleProfileIndex), GetFakeServer(),
                   {{title, /*url=*/GURL()}},
                   /*cryptographer=*/nullptr)
                   .Wait());
@@ -1798,7 +1795,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
 
   // Wait until the local bookmark gets committed.
   ASSERT_TRUE(bookmarks_helper::ServerBookmarksEqualityChecker(
-                  GetSyncService(kSingleProfileIndex), GetFakeServer(),
                   {{kTitle, /*url=*/GURL()}},
                   /*cryptographer=*/nullptr)
                   .Wait());

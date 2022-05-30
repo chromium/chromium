@@ -9,8 +9,7 @@
 #include <string>
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/sync/test/integration/status_change_checker.h"
-#include "components/sync/test/fake_server/fake_server.h"
+#include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace sync_pb {
@@ -19,13 +18,12 @@ class SyncEntity;
 
 // A helper class that waits for a certain set of DeviceInfos on the FakeServer.
 // The desired state is passed in as a GTest matcher.
-class ServerDeviceInfoMatchChecker : public StatusChangeChecker,
-                                     fake_server::FakeServer::Observer {
+class ServerDeviceInfoMatchChecker
+    : public fake_server::FakeServerMatchStatusChecker {
  public:
   using Matcher = testing::Matcher<std::vector<sync_pb::SyncEntity>>;
 
-  ServerDeviceInfoMatchChecker(fake_server::FakeServer* fake_server,
-                               const Matcher& matcher);
+  explicit ServerDeviceInfoMatchChecker(const Matcher& matcher);
   ~ServerDeviceInfoMatchChecker() override;
   ServerDeviceInfoMatchChecker(const ServerDeviceInfoMatchChecker&) = delete;
   ServerDeviceInfoMatchChecker& operator=(const ServerDeviceInfoMatchChecker&) =
@@ -39,7 +37,6 @@ class ServerDeviceInfoMatchChecker : public StatusChangeChecker,
   bool IsExitConditionSatisfied(std::ostream* os) override;
 
  private:
-  const raw_ptr<fake_server::FakeServer> fake_server_;
   const Matcher matcher_;
 };
 

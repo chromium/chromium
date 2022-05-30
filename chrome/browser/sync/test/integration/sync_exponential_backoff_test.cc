@@ -47,8 +47,7 @@ IN_PROC_BROWSER_TEST_F(SyncExponentialBackoffTest, OfflineToOnline) {
   ASSERT_TRUE(AddFolder(0, 0, kFolderTitle1));
   std::vector<ServerBookmarksEqualityChecker::ExpectedBookmark>
       expected_bookmarks = {{kFolderTitle1, GURL()}};
-  ASSERT_TRUE(ServerBookmarksEqualityChecker(GetSyncService(0), GetFakeServer(),
-                                             expected_bookmarks,
+  ASSERT_TRUE(ServerBookmarksEqualityChecker(expected_bookmarks,
                                              /*cryptographer=*/nullptr)
                   .Wait());
 
@@ -77,8 +76,7 @@ IN_PROC_BROWSER_TEST_F(SyncExponentialBackoffTest, OfflineToOnline) {
 
   // Verify that sync was able to recover.
   expected_bookmarks.push_back({kFolderTitle2, GURL()});
-  EXPECT_TRUE(ServerBookmarksEqualityChecker(GetSyncService(0), GetFakeServer(),
-                                             expected_bookmarks,
+  EXPECT_TRUE(ServerBookmarksEqualityChecker(expected_bookmarks,
                                              /*cryptographer=*/nullptr)
                   .Wait());
 

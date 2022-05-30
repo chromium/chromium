@@ -204,10 +204,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest, CommitLocalDevice) {
   ASSERT_TRUE(SetupSync());
 
   // The local device should eventually be committed to the server.
-  EXPECT_TRUE(
-      ServerDeviceInfoMatchChecker(
-          GetFakeServer(), ElementsAre(HasCacheGuid(GetLocalCacheGuid())))
-          .Wait());
+  EXPECT_TRUE(ServerDeviceInfoMatchChecker(
+                  ElementsAre(HasCacheGuid(GetLocalCacheGuid())))
+                  .Wait());
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest, DownloadRemoteDevices) {
@@ -286,10 +285,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
   ASSERT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::DEVICE_INFO));
 
   // The local device should eventually be committed to the server.
-  EXPECT_TRUE(
-      ServerDeviceInfoMatchChecker(
-          GetFakeServer(), ElementsAre(HasCacheGuid(GetLocalCacheGuid())))
-          .Wait());
+  EXPECT_TRUE(ServerDeviceInfoMatchChecker(
+                  ElementsAre(HasCacheGuid(GetLocalCacheGuid())))
+                  .Wait());
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
@@ -323,10 +321,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
 IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
                        ShouldSetTheOnlyClientFlag) {
   ASSERT_TRUE(SetupSync());
-  ASSERT_TRUE(
-      ServerDeviceInfoMatchChecker(
-          GetFakeServer(), ElementsAre(HasCacheGuid(GetLocalCacheGuid())))
-          .Wait());
+  ASSERT_TRUE(ServerDeviceInfoMatchChecker(
+                  ElementsAre(HasCacheGuid(GetLocalCacheGuid())))
+                  .Wait());
 
   sync_pb::ClientToServerMessage message;
   GetFakeServer()->GetLastCommitMessage(&message);
@@ -364,7 +361,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
 
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(ServerDeviceInfoMatchChecker(
-                  GetFakeServer(),
                   UnorderedElementsAre(HasCacheGuid(GetLocalCacheGuid()),
                                        HasCacheGuid(CacheGuidForSuffix(1))))
                   .Wait());
@@ -397,7 +393,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
   GetClient(0)->StartSyncService();
 
   ASSERT_TRUE(ServerDeviceInfoMatchChecker(
-                  GetFakeServer(),
                   UnorderedElementsAre(HasCacheGuid(GetLocalCacheGuid()),
                                        HasCacheGuid(CacheGuidForSuffix(1))))
                   .Wait());
@@ -421,10 +416,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
           server_device_infos.front()));
 
   // On receiving the tombstone, the client should reupload its own device info.
-  EXPECT_TRUE(
-      ServerDeviceInfoMatchChecker(
-          GetFakeServer(), ElementsAre(HasCacheGuid(GetLocalCacheGuid())))
-          .Wait());
+  EXPECT_TRUE(ServerDeviceInfoMatchChecker(
+                  ElementsAre(HasCacheGuid(GetLocalCacheGuid())))
+                  .Wait());
 }
 
 // PRE_* tests aren't supported on Android browser tests.
@@ -432,10 +426,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
 IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
                        PRE_ShouldNotSendDeviceInfoAfterBrowserRestart) {
   ASSERT_TRUE(SetupSync());
-  EXPECT_TRUE(
-      ServerDeviceInfoMatchChecker(
-          GetFakeServer(), ElementsAre(HasCacheGuid(GetLocalCacheGuid())))
-          .Wait());
+  EXPECT_TRUE(ServerDeviceInfoMatchChecker(
+                  ElementsAre(HasCacheGuid(GetLocalCacheGuid())))
+                  .Wait());
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,

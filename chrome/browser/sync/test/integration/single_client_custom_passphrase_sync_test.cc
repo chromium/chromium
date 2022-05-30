@@ -106,8 +106,7 @@ class SingleClientCustomPassphraseSyncTest : public SyncTest {
       const std::string& passphrase) {
     std::unique_ptr<Cryptographer> cryptographer =
         CreateCryptographerFromServerNigori(passphrase);
-    return ServerBookmarksEqualityChecker(GetSyncService(), GetFakeServer(),
-                                          expected_bookmarks,
+    return ServerBookmarksEqualityChecker(expected_bookmarks,
                                           cryptographer.get())
         .Wait();
   }
@@ -115,16 +114,13 @@ class SingleClientCustomPassphraseSyncTest : public SyncTest {
   bool WaitForUnencryptedServerBookmarks(
       const std::vector<ServerBookmarksEqualityChecker::ExpectedBookmark>&
           expected_bookmarks) {
-    return ServerBookmarksEqualityChecker(GetSyncService(), GetFakeServer(),
-                                          expected_bookmarks,
+    return ServerBookmarksEqualityChecker(expected_bookmarks,
                                           /*cryptographer=*/nullptr)
         .Wait();
   }
 
   bool WaitForNigori(PassphraseType expected_passphrase_type) {
-    return ServerNigoriChecker(GetSyncService(), GetFakeServer(),
-                               expected_passphrase_type)
-        .Wait();
+    return ServerPassphraseTypeChecker(expected_passphrase_type).Wait();
   }
 
   bool WaitForPassphraseRequiredState(bool desired_state) {

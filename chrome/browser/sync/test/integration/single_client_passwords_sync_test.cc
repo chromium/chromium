@@ -175,9 +175,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsSyncTestWithVerifier,
 IN_PROC_BROWSER_TEST_F(SingleClientPasswordsSyncTestWithVerifier,
                        ReencryptsDataWhenPassphraseIsSet) {
   ASSERT_TRUE(SetupSync());
-  ASSERT_TRUE(ServerNigoriChecker(GetSyncService(0), fake_server_.get(),
-                                  syncer::PassphraseType::kKeystorePassphrase)
-                  .Wait());
+  ASSERT_TRUE(
+      ServerPassphraseTypeChecker(syncer::PassphraseType::kKeystorePassphrase)
+          .Wait());
 
   PasswordForm form = CreateTestPasswordForm(0);
   GetVerifierProfilePasswordStoreInterface()->AddLogin(form);
@@ -203,9 +203,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsSyncTestWithVerifier,
   ASSERT_FALSE(prior_encryption_key_name.empty());
 
   GetSyncService(0)->GetUserSettings()->SetEncryptionPassphrase("hunter2");
-  ASSERT_TRUE(ServerNigoriChecker(GetSyncService(0), fake_server_.get(),
-                                  syncer::PassphraseType::kCustomPassphrase)
-                  .Wait());
+  ASSERT_TRUE(
+      ServerPassphraseTypeChecker(syncer::PassphraseType::kCustomPassphrase)
+          .Wait());
   ASSERT_TRUE(UpdatedProgressMarkerChecker(GetSyncService(0)).Wait());
 
   const std::vector<sync_pb::SyncEntity> entities =

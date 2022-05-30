@@ -388,7 +388,6 @@ IN_PROC_BROWSER_TEST_F(SyncErrorTest, ShouldThrottleOneDatatypeButNotOthers) {
 
   // The bookmark should get committed successfully.
   EXPECT_TRUE(bookmarks_helper::ServerBookmarksEqualityChecker(
-                  GetSyncService(0), GetFakeServer(),
                   {{kBookmarkFolderTitle, GURL()}},
                   /*cryptographer=*/nullptr)
                   .Wait());

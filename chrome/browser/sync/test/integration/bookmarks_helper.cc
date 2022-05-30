@@ -32,6 +32,7 @@
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sync/test/integration/fake_server_match_status_checker.h"
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/undo/bookmark_undo_service_factory.h"
@@ -1148,13 +1149,9 @@ bool BookmarkFaviconLoadedChecker::IsExitConditionSatisfied(std::ostream* os) {
 }
 
 ServerBookmarksEqualityChecker::ServerBookmarksEqualityChecker(
-    syncer::SyncServiceImpl* service,
-    fake_server::FakeServer* fake_server,
     std::vector<ExpectedBookmark> expected_bookmarks,
     syncer::Cryptographer* cryptographer)
-    : SingleClientStatusChangeChecker(service),
-      fake_server_(fake_server),
-      cryptographer_(cryptographer),
+    : cryptographer_(cryptographer),
       expected_bookmarks_(std::move(expected_bookmarks)) {}
 
 bool ServerBookmarksEqualityChecker::IsExitConditionSatisfied(
@@ -1162,7 +1159,7 @@ bool ServerBookmarksEqualityChecker::IsExitConditionSatisfied(
   *os << "Waiting for server-side bookmarks to match expected.";
 
   std::vector<sync_pb::SyncEntity> entities =
-      fake_server_->GetSyncEntitiesByModelType(syncer::BOOKMARKS);
+      fake_server()->GetSyncEntitiesByModelType(syncer::BOOKMARKS);
   if (expected_bookmarks_.size() != entities.size()) {
     return false;
   }

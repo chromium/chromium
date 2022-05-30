@@ -326,9 +326,9 @@ IN_PROC_BROWSER_TEST_F(AshCustomPassphraseSharingSyncTest,
   // Mimic that user set custom passphrase using current client.
   const std::string kPassphrase = "hunter2";
   GetSyncService(0)->GetUserSettings()->SetEncryptionPassphrase(kPassphrase);
-  ASSERT_TRUE(ServerNigoriChecker(GetSyncService(0), GetFakeServer(),
-                                  syncer::PassphraseType::kCustomPassphrase)
-                  .Wait());
+  ASSERT_TRUE(
+      ServerPassphraseTypeChecker(syncer::PassphraseType::kCustomPassphrase)
+          .Wait());
 
   // Lacros should be eventually notified that passphrase is available and be
   // able to retrieve it.
