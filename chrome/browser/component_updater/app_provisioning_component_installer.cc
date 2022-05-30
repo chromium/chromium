@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/feature_list.h"
@@ -143,7 +144,8 @@ void AppProvisioningComponentInstallerPolicy::UpdateAppMetadataOnUI(
 }
 
 void RegisterAppProvisioningComponent(component_updater::ComponentUpdateService* cus) {
-  if (!base::FeatureList::IsEnabled(features::kAppProvisioningStatic)) {
+  if (!base::FeatureList::IsEnabled(features::kAppProvisioningStatic) ||
+      !ash::features::IsCloudGamingDevice()) {
     return;
   }
 
