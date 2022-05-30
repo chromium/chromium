@@ -65,6 +65,8 @@ GPU_EXPORT extern const base::Feature kEnableVkPipelineCache;
 
 GPU_EXPORT extern const base::Feature kReduceOpsTaskSplitting;
 
+GPU_EXPORT extern const base::Feature kNoDiscardableMemoryForGpuDecodePath;
+
 GPU_EXPORT extern const base::Feature kEnableDrDc;
 
 GPU_EXPORT extern const base::Feature kForceGpuMainThreadToNormalPriorityDrDc;

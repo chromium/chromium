@@ -254,7 +254,7 @@ const base::FeatureParam<std::string> kVulkanBlockListByAndroidBuildFP{
 // crbug.com/1294648
 const base::FeatureParam<std::string> kDrDcBlockListByDevice{
     &kEnableDrDc, "BlockListByDevice", "LF9810_2GB"};
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Enable SkiaRenderer Dawn graphics backend. On Windows this will use D3D12,
 // and on Linux this will use Vulkan.
@@ -271,6 +271,11 @@ const base::Feature kEnableVkPipelineCache{"EnableVkPipelineCache",
 // Enable Skia reduceOpsTaskSplitting to reduce render passes.
 const base::Feature kReduceOpsTaskSplitting{
     "ReduceOpsTaskSplitting", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enabling this will make the GPU decode path use a mock implementation of
+// discardable memory.
+const base::Feature kNoDiscardableMemoryForGpuDecodePath{
+    "NoDiscardableMemoryForGpuDecodePath", base::FEATURE_DISABLED_BY_DEFAULT};
 
 bool IsUsingVulkan() {
 #if BUILDFLAG(IS_ANDROID)
