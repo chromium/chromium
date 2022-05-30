@@ -3568,6 +3568,10 @@ enum WebFeature {
   kV8MathMLElement_Focusgroup_AttributeSetter = 4247,
   kV8SVGElement_Focusgroup_AttributeGetter = 4248,
   kV8SVGElement_Focusgroup_AttributeSetter = 4249,
+  kCSSLegacyPerspectiveOrigin = 4250,
+  kCSSLegacyTransformOrigin = 4251,
+  kCSSLegacyBorderImage = 4252,
+  kCSSLegacyBorderImageWidth = 4253,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

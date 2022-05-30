@@ -250,6 +250,8 @@ void StyleCascade::Apply(CascadeFilter filter) {
 
   if (resolver.Flags() & CSSProperty::kAnimation)
     state_.SetCanAffectAnimations();
+  if (resolver.RejectedFlags() & CSSProperty::kLegacyOverlapping)
+    state_.SetRejectedLegacyOverlapping();
 }
 
 std::unique_ptr<CSSBitset> StyleCascade::GetImportantSet() {
@@ -505,9 +507,6 @@ void StyleCascade::ApplyWideOverlapping(CascadeResolver& resolver) {
 // in a second phase so that we know which ones actually won the cascade
 // before we start applying, as some properties can affect others.
 void StyleCascade::ApplyMatchResult(CascadeResolver& resolver) {
-  // We only need to apply the resolver part of the filter here;
-  // the rest have been applied in the previous pass.
-  CascadeFilter filter = resolver.filter_;
   for (CSSPropertyID id : map_.NativeBitset()) {
     CascadePriority* p = map_.FindKnownToExist(id);
     const CascadePriority priority = *p;
@@ -522,7 +521,7 @@ void StyleCascade::ApplyMatchResult(CascadeResolver& resolver) {
     }
 
     const CSSProperty& property = CSSProperty::Get(id);
-    if (filter.Rejects(property)) {
+    if (resolver.Rejects(property)) {
       continue;
     }
     LookupAndApplyDeclaration(property, p, resolver);
@@ -539,7 +538,7 @@ void StyleCascade::ApplyMatchResult(CascadeResolver& resolver) {
     }
 
     CustomProperty property(name.ToAtomicString(), GetDocument());
-    if (filter.Rejects(property)) {
+    if (resolver.Rejects(property)) {
       continue;
     }
     LookupAndApplyDeclaration(property, p, resolver);
@@ -566,7 +565,7 @@ void StyleCascade::ApplyInterpolationMap(const ActiveInterpolationsMap& map,
     priority = CascadePriority(priority, resolver.generation_);
 
     CSSPropertyRef ref(name, GetDocument());
-    if (resolver.filter_.Rejects(ref.GetProperty()))
+    if (resolver.Rejects(ref.GetProperty()))
       continue;
 
     const CSSProperty& property = ResolveSurrogate(ref.GetProperty());
@@ -636,7 +635,7 @@ void StyleCascade::LookupAndApply(const CSSProperty& property,
   if (!priority)
     return;
 
-  if (resolver.filter_.Rejects(property))
+  if (resolver.Rejects(property))
     return;
 
   LookupAndApplyValue(property, priority, resolver);

@@ -273,6 +273,23 @@ PseudoId GetPseudoId(const Element& element, ElementRuleCollector* collector) {
   return collector ? collector->GetPseudoId() : kPseudoIdNone;
 }
 
+void UseCountLegacyOverlapping(Document& document,
+                               const ComputedStyle& a,
+                               const ComputedStyle& b) {
+  if (a.PerspectiveOrigin() != b.PerspectiveOrigin())
+    document.CountUse(WebFeature::kCSSLegacyPerspectiveOrigin);
+  if (a.GetTransformOrigin() != b.GetTransformOrigin())
+    document.CountUse(WebFeature::kCSSLegacyTransformOrigin);
+  if (a.BorderImage() != b.BorderImage())
+    document.CountUse(WebFeature::kCSSLegacyBorderImage);
+  if ((a.BorderTopWidth() != b.BorderTopWidth()) ||
+      (a.BorderRightWidth() != b.BorderRightWidth()) ||
+      (a.BorderBottomWidth() != b.BorderBottomWidth()) ||
+      (a.BorderLeftWidth() != b.BorderLeftWidth())) {
+    document.CountUse(WebFeature::kCSSLegacyBorderImageWidth);
+  }
+}
+
 }  // namespace
 
 static CSSPropertyValueSet* LeftToRightDeclaration() {
@@ -2002,12 +2019,30 @@ void StyleResolver::CascadeAndApplyMatchedProperties(StyleResolverState& state,
   if (cache_success.IsFullCacheHit())
     return;
 
-  if (cache_success.ShouldApplyInheritedOnly()) {
-    cascade.Apply(CascadeFilter(CSSProperty::kInherited, false));
-    if (!cache_success.IsUsableAfterApplyInheritedOnly(state.StyleRef()))
-      cascade.Apply(CascadeFilter(CSSProperty::kInherited, true));
-  } else {
-    cascade.Apply();
+  auto apply = [&state, &cascade, &cache_success](CascadeFilter filter) {
+    if (cache_success.ShouldApplyInheritedOnly()) {
+      cascade.Apply(filter.Add(CSSProperty::kInherited, false));
+      if (!cache_success.IsUsableAfterApplyInheritedOnly(state.StyleRef()))
+        cascade.Apply(filter.Add(CSSProperty::kInherited, true));
+    } else {
+      cascade.Apply(filter);
+    }
+  };
+
+  // In order to use-count whether or not legacy overlapping properties
+  // made a real difference to the ComputedStyle, we first apply the cascade
+  // while filtering out such properties. If the filter did reject
+  // any legacy overlapping properties, we apply all overlapping properties
+  // again to get the correct result.
+  apply(CascadeFilter(CSSProperty::kLegacyOverlapping, true));
+
+  if (state.RejectedLegacyOverlapping()) {
+    scoped_refptr<ComputedStyle> non_legacy_style =
+        ComputedStyle::Clone(state.StyleRef());
+    // Re-apply all overlapping properties (both legacy and non-legacy).
+    apply(CascadeFilter(CSSProperty::kOverlapping, false));
+    UseCountLegacyOverlapping(GetDocument(), *non_legacy_style,
+                              state.StyleRef());
   }
 
   MaybeAddToMatchedPropertiesCache(state, cache_success, result);

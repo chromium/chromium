@@ -185,6 +185,11 @@ class CORE_EXPORT StyleResolverState {
   }
   void SetAffectsCompositorSnapshots() { affects_compositor_snapshots_ = true; }
 
+  bool RejectedLegacyOverlapping() const {
+    return rejected_legacy_overlapping_;
+  }
+  void SetRejectedLegacyOverlapping() { rejected_legacy_overlapping_ = true; }
+
  private:
   void UpdateLengthConversionData();
   CSSToLengthConversionData UnzoomedLengthConversionData(
@@ -236,6 +241,10 @@ class CORE_EXPORT StyleResolverState {
 
   // True if snapshots of composited keyframes require re-validation.
   bool affects_compositor_snapshots_ = false;
+
+  // True if the cascade rejected any properties with the kLegacyOverlapping
+  // flag.
+  bool rejected_legacy_overlapping_ = false;
 };
 
 }  // namespace blink

@@ -40225,6 +40225,10 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4247" label="V8MathMLElement_Focusgroup_AttributeSetter"/>
   <int value="4248" label="V8SVGElement_Focusgroup_AttributeGetter"/>
   <int value="4249" label="V8SVGElement_Focusgroup_AttributeSetter"/>
+  <int value="4250" label="CSSLegacyPerspectiveOrigin"/>
+  <int value="4251" label="CSSLegacyTransformOrigin"/>
+  <int value="4252" label="CSSLegacyBorderImage"/>
+  <int value="4253" label="CSSLegacyBorderImageWidth"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

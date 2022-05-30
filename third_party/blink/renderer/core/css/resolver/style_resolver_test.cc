@@ -63,6 +63,10 @@ class StyleResolverTest : public PageTestBase {
     GetDocument().GetStyleEngine().GetStyleResolver().MatchAllRules(
         state, collector, false /* include_smil_properties */);
   }
+
+  bool IsUseCounted(mojom::WebFeature feature) {
+    return GetDocument().IsUseCounted(feature);
+  }
 };
 
 class StyleResolverTestCQ : public StyleResolverTest,
@@ -2174,6 +2178,345 @@ TEST_F(StyleResolverTestCQ, StyleRulesForElementContainerQuery) {
       << "The empty #target rule in the container query should be collected";
   EXPECT_TRUE(rule_list->at(0)->Properties().IsEmpty())
       << "Check that it is in fact the empty rule";
+}
+
+TEST_F(StyleResolverTest, LegacyOverlapPerspectiveOrigin_Single) {
+  SetBodyInnerHTML(R"HTML(
+      <style>
+        div {
+          perspective-origin: 1px 2px;
+        }
+      </style>
+      <div>target</div>
+    )HTML");
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSLegacyPerspectiveOrigin))
+      << "Not counted when only perspective-origin is used";
+}
+
+TEST_F(StyleResolverTest, LegacyOverlapPerspectiveOrigin_Order) {
+  SetBodyInnerHTML(R"HTML(
+      <style>
+        div {
+          -webkit-perspective-origin-x: 1px;
+          -webkit-perspective-origin-y: 2px;
+          perspective-origin: 3px 4px;
+        }
+      </style>
+      <div>target</div>
+    )HTML");
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSLegacyPerspectiveOrigin))
+      << "Not counted when perspective-origin is last";
+}
+
+TEST_F(StyleResolverTest, LegacyOverlapPerspectiveOrigin_Values) {
+  SetBodyInnerHTML(R"HTML(
+      <style>
+        div {
+          perspective-origin: 1px 2px;
+          -webkit-perspective-origin-x: 1px;
+          -webkit-perspective-origin-y: 2px;
+        }
+      </style>
+      <div>target</div>
+    )HTML");
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSLegacyPerspectiveOrigin))
+      << "Not counted when values are the same";
+}
+
+TEST_F(StyleResolverTest, LegacyOverlapPerspectiveOrigin_Last) {
+  SetBodyInnerHTML(R"HTML(
+      <style>
+        div {
+          perspective-origin: 1px 2px;
+          -webkit-perspective-origin-x: 3px;
+          -webkit-perspective-origin-y: 4px;
+        }
+      </style>
+      <div>target</div>
+    )HTML");
+  EXPECT_TRUE(IsUseCounted(WebFeature::kCSSLegacyPerspectiveOrigin))
+      << "Counted when -webkit-perspective-* is last with different values";
+}
+
+TEST_F(StyleResolverTest, LegacyOverlapTransformOrigin_Single) {
+  SetBodyInnerHTML(R"HTML(
+      <style>
+        div {
+          transform-origin: 1px 2px 3px;
+        }
+      </style>
+      <div>target</div>
+    )HTML");
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSLegacyTransformOrigin))
+      << "Not counted when only transform-origin is used";
+}
+
+TEST_F(StyleResolverTest, LegacyOverlapTransformOrigin_Order) {
+  SetBodyInnerHTML(R"HTML(
+      <style>
+        div {
+          -webkit-transform-origin-x: 1px;
+          -webkit-transform-origin-y: 2px;
+          -webkit-transform-origin-z: 3px;
+          transform-origin: 4px 5px 6px;
+        }
+      </style>
+      <div>target</div>
+    )HTML");
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSLegacyTransformOrigin))
+      << "Not counted when transform-origin is last";
+}
+
+TEST_F(StyleResolverTest, LegacyOverlapTransformOrigin_Values) {
+  SetBodyInnerHTML(R"HTML(
+      <style>
+        div {
+          transform-origin: 1px 2px 3px;
+          -webkit-transform-origin-x: 1px;
+          -webkit-transform-origin-y: 2px;
+          -webkit-transform-origin-z: 3px;
+        }
+      </style>
+      <div>target</div>
+    )HTML");
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSLegacyTransformOrigin))
+      << "Not counted when values are the same";
+}
+
+TEST_F(StyleResolverTest, LegacyOverlapTransformOrigin_Last) {
+  SetBodyInnerHTML(R"HTML(
+      <style>
+        div {
+          transform-origin: 1px 2px 3px;
+          -webkit-transform-origin-x: 4px;
+          -webkit-transform-origin-y: 5px;
+          -webkit-transform-origin-z: 6px;
+        }
+      </style>
+      <div>target</div>
+    )HTML");
+  EXPECT_TRUE(IsUseCounted(WebFeature::kCSSLegacyTransformOrigin))
+      << "Counted when -webkit-transform-origin-* is last with different "
+         "values";
+}
+
+TEST_F(StyleResolverTest, LegacyOverlapBorderImage_Single) {
+  SetBodyInnerHTML(R"HTML(
+      <style>
+        div {
+          border-image: url("#a") 1 fill / 2 / 3 round;
+        }
+      </style>
+      <div>target</div>
+    )HTML");
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSLegacyBorderImage))
+      << "Not counted when only border-image is used";
+}
+
+TEST_F(StyleResolverTest, LegacyOverlapBorderImage_Order) {
+  SetBodyInnerHTML(R"HTML(
+      <style>
+        div {
+          -webkit-border-image: url("#b") 2 fill / 3 / 4 round;
+          border-image: url("#a") 1 fill / 2 / 3 round;
+        }
+      </style>
+      <div>target</div>
+    )HTML");
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSLegacyBorderImage))
+      << "Not counted when border-image is last";
+}
+
+TEST_F(StyleResolverTest, LegacyOverlapBorderImage_Values) {
+  SetBodyInnerHTML(R"HTML(
+      <style>
+        div {
+          border-image: url("#a") 1 fill / 2 / 3 round;
+          -webkit-border-image: url("#a") 1 fill / 2 / 3 round;
+        }
+      </style>
+      <div>target</div>
+    )HTML");
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSLegacyBorderImage))
+      << "Not counted when values are the same";
+}
+
+TEST_F(StyleResolverTest, LegacyOverlapBorderImage_Last_Source) {
+  SetBodyInnerHTML(R"HTML(
+      <style>
+        div {
+          border-image: url("#a") 1 fill / 2 / 3 round;
+          -webkit-border-image: url("#b") 1 fill / 2 / 3 round;
+        }
+      </style>
+      <div>target</div>
+    )HTML");
+  EXPECT_TRUE(IsUseCounted(WebFeature::kCSSLegacyBorderImage))
+      << "Counted when border-image-source differs";
+}
+
+TEST_F(StyleResolverTest, LegacyOverlapBorderImage_Last_Slice) {
+  SetBodyInnerHTML(R"HTML(
+      <style>
+        div {
+          border-image: url("#a") 1 fill / 2 / 3 round;
+          -webkit-border-image: url("#a") 2 fill / 2 / 3 round;
+        }
+      </style>
+      <div>target</div>
+    )HTML");
+  EXPECT_TRUE(IsUseCounted(WebFeature::kCSSLegacyBorderImage))
+      << "Counted when border-image-slice differs";
+}
+
+TEST_F(StyleResolverTest, LegacyOverlapBorderImage_Last_SliceFill) {
+  SetBodyInnerHTML(R"HTML(
+      <style>
+        div {
+          border-image: url("#a") 1 / 2 / 3 round;
+          -webkit-border-image: url("#a") 1 fill / 2 / 3 round;
+        }
+      </style>
+      <div>target</div>
+    )HTML");
+  EXPECT_TRUE(IsUseCounted(WebFeature::kCSSLegacyBorderImage))
+      << "Counted when the fill keyword of border-image-slice differs";
+}
+
+TEST_F(StyleResolverTest, LegacyOverlapBorderImage_SliceFillImplicit) {
+  SetBodyInnerHTML(R"HTML(
+      <style>
+        div {
+          border-image: url("#a") 1 / 2 / 3 round;
+          -webkit-border-image: url("#a") 1 / 2 / 3 round;
+        }
+      </style>
+      <div>target</div>
+    )HTML");
+  // Note that -webkit-border-image implicitly adds "fill", but
+  // border-image does not.
+  EXPECT_TRUE(IsUseCounted(WebFeature::kCSSLegacyBorderImage))
+      << "Counted when fill-less values are the same";
+}
+
+TEST_F(StyleResolverTest, LegacyOverlapBorderImage_Last_Width) {
+  SetBodyInnerHTML(R"HTML(
+      <style>
+        div {
+          border-image: url("#a") 1 fill / 2 / 3 round;
+          -webkit-border-image: url("#a") 1 fill / 5 / 3 round;
+        }
+      </style>
+      <div>target</div>
+    )HTML");
+  EXPECT_TRUE(IsUseCounted(WebFeature::kCSSLegacyBorderImage))
+      << "Counted when border-image-slice differs";
+}
+
+TEST_F(StyleResolverTest, LegacyOverlapBorderImage_Last_Outset) {
+  SetBodyInnerHTML(R"HTML(
+      <style>
+        div {
+          border-image: url("#a") 1 fill / 2 / 3 round;
+          -webkit-border-image: url("#a") 1 fill / 2 / 5 round;
+        }
+      </style>
+      <div>target</div>
+    )HTML");
+  EXPECT_TRUE(IsUseCounted(WebFeature::kCSSLegacyBorderImage))
+      << "Counted when border-image-outset differs";
+}
+
+TEST_F(StyleResolverTest, LegacyOverlapBorderImage_Last_Repeat) {
+  SetBodyInnerHTML(R"HTML(
+      <style>
+        div {
+          border-image: url("#a") 1 fill / 2 / 3 round;
+          -webkit-border-image: url("#a") 1 fill / 2 / 3 space;
+        }
+      </style>
+      <div>target</div>
+    )HTML");
+  EXPECT_TRUE(IsUseCounted(WebFeature::kCSSLegacyBorderImage))
+      << "Counted when border-image-repeat differs";
+}
+
+TEST_F(StyleResolverTest, LegacyOverlapBorderImageWidth_Single) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      div {
+        border: 1px solid black;
+      }
+    </style>
+    <div>target</div>
+  )HTML");
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSLegacyBorderImageWidth))
+      << "Not counted when only border is used";
+}
+
+TEST_F(StyleResolverTest, LegacyOverlapBorderImageWidth_Order) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      div {
+        -webkit-border-image: url("#b") 2 fill / 3px / 4 round;
+        border: 1px solid black;
+      }
+    </style>
+    <div>target</div>
+  )HTML");
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSLegacyBorderImageWidth))
+      << "Not counted when border is last";
+}
+
+TEST_F(StyleResolverTest, LegacyOverlapBorderImageWidth_Values) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      div {
+        border: 1px solid black;
+        -webkit-border-image: url("#b") 2 fill / 1px / 4 round;
+      }
+    </style>
+    <div>target</div>
+  )HTML");
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSLegacyBorderImageWidth))
+      << "Not counted when values are the same";
+}
+
+TEST_F(StyleResolverTest, LegacyOverlapBorderImageWidth_Last_Border) {
+  SetBodyInnerHTML(R"HTML(
+      <style>
+        div {
+          border: 1px solid black;
+          -webkit-border-image: url("#a") 1 fill / 2px / 3 round;
+        }
+      </style>
+      <div>target</div>
+    )HTML");
+  // Since -webkit-border-image also sets border-width, we would normally
+  // expect TRUE here. However, StyleCascade always applies
+  // -webkit-border-image *first*, and does not do anything to prevent
+  // border-width properties from also being applied. Hence border-width
+  // always wins.
+  EXPECT_FALSE(IsUseCounted(WebFeature::kCSSLegacyBorderImageWidth))
+      << "Not even counted when -webkit-border-image is last";
+}
+
+TEST_F(StyleResolverTest, LegacyOverlapBorderImageWidth_Last_Style) {
+  // Note that border-style is relevant here because the used border-width
+  // is 0px if we don'y have any border-style. See e.g.
+  // ComputedStyle::BorderLeftWidth.
+  SetBodyInnerHTML(R"HTML(
+      <style>
+        div {
+          border-style: solid;
+          -webkit-border-image: url("#b") 1 fill / 2px / 3 round;
+        }
+      </style>
+      <div>target</div>
+    )HTML");
+  EXPECT_TRUE(IsUseCounted(WebFeature::kCSSLegacyBorderImageWidth))
+      << "Counted when -webkit-border-image is last and there's no "
+         "border-width";
 }
 
 }  // namespace blink
