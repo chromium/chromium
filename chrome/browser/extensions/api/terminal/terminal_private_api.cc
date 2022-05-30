@@ -683,6 +683,9 @@ TerminalPrivateGetOSInfoFunction::~TerminalPrivateGetOSInfoFunction() = default;
 
 ExtensionFunction::ResponseAction TerminalPrivateGetOSInfoFunction::Run() {
   base::DictionaryValue info;
+  info.SetBoolKey(
+      "multi_profile",
+      base::FeatureList::IsEnabled(chromeos::features::kTerminalMultiProfile));
   info.SetBoolKey("tmux_integration",
                   base::FeatureList::IsEnabled(
                       chromeos::features::kTerminalTmuxIntegration));

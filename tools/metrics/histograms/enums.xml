@@ -57792,6 +57792,7 @@ from previous Chrome versions.
   <int value="-32712825" label="CrOSEnforceSystemAec:disabled"/>
   <int value="-32385086" label="NtpRecipeTasksModule:disabled"/>
   <int value="-31444029" label="MediaInspectorLogging:disabled"/>
+  <int value="-31053177" label="TerminalMultiProfile:enabled"/>
   <int value="-30966385" label="enable-hardware-overlays"/>
   <int value="-30208692" label="webview-enable-modern-cookie-same-site"/>
   <int value="-29877377" label="TabHoverCardImages:disabled"/>
@@ -58810,6 +58811,7 @@ from previous Chrome versions.
   <int value="643725031" label="disable-touch-feedback"/>
   <int value="644084236" label="CloseButtonsInactiveTabs:enabled"/>
   <int value="644189071" label="PermissionsBlacklist:enabled"/>
+  <int value="644526367" label="TerminalMultiProfile:disabled"/>
   <int value="646252875" label="ReadItLaterInMenu:enabled"/>
   <int value="646269021" label="UnifiedSidePanel:disabled"/>
   <int value="646738320" label="disable-gesture-editing"/>

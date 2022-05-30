@@ -5436,6 +5436,11 @@ const char kTerminalDevDescription[] =
     "Enables Terminal System App to load from Downloads for developer testing. "
     "Only works in dev and canary channels.";
 
+const char kTerminalMultiProfileName[] = "Terminal multi-profiles for settings";
+const char kTerminalMultiProfileDescription[] =
+    "Enables Terminal System App to set multiple profiles in the settings page "
+    "and configure which profile to use for each Linux or SSH connection.";
+
 const char kTerminalTmuxIntegrationName[] = "Terminal tmux integration";
 const char kTerminalTmuxIntegrationDescription[] =
     "Enables integration with tmux control mode (tmux -CC) in the Terminal "

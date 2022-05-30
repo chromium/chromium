@@ -1435,6 +1435,10 @@ const base::Feature kTelemetryExtension{"TelemetryExtension",
 const base::Feature kTerminalDev{"TerminalDev",
                                  base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables multi-profile theme support for Terminal..
+const base::Feature kTerminalMultiProfile{"TerminalMultiProfile",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables tmux integration in the Terminal System App.
 const base::Feature kTerminalTmuxIntegration{"TerminalTmuxIntegration",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
