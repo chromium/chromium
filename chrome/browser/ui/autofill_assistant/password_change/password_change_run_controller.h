@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/autofill_assistant/password_change/proto/extensions.pb.h"
 
 class PasswordChangeRunDisplay;
@@ -15,6 +16,16 @@ class PasswordChangeRunDisplay;
 // Abstract interface for a controller of an `PasswordChangeRunDisplay`.
 class PasswordChangeRunController {
  public:
+  // Defines the current UI state to restore pre-interrupt UI.
+  // Interrupts are not triggered during prompts, therefore
+  // there is no need to keep their state.
+  struct Model {
+    std::u16string title;
+    autofill_assistant::password_change::TopIcon top_icon;
+    std::u16string progress_description;
+    autofill_assistant::password_change::ProgressStep progress_step;
+  };
+
   // Factory function to create the controller.
   static std::unique_ptr<PasswordChangeRunController> Create();
 
