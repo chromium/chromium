@@ -661,9 +661,8 @@ void ResourcePool::PoolResource::OnMemoryDump(
   dump->AddScalar(MemoryAllocatorDump::kNameSize,
                   MemoryAllocatorDump::kUnitsBytes, total_bytes);
 
-  if (is_free) {
-    dump->AddScalar("free_size", MemoryAllocatorDump::kUnitsBytes, total_bytes);
-  }
+  uint64_t free_size = is_free ? total_bytes : 0u;
+  dump->AddScalar("free_size", MemoryAllocatorDump::kUnitsBytes, free_size);
 }
 
 }  // namespace cc
