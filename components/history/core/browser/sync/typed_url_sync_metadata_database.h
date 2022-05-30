@@ -29,15 +29,18 @@ namespace history {
 // datatype.
 class TypedURLSyncMetadataDatabase : public syncer::SyncMetadataStore {
  public:
-  // Must call InitTypedURLMetadataTable() before using to make sure the
-  // database is initialized.
-  TypedURLSyncMetadataDatabase();
+  // Must call Init() before using to make sure the database is initialized.
+  TypedURLSyncMetadataDatabase(sql::Database* db, sql::MetaTable* meta_table);
 
   TypedURLSyncMetadataDatabase(const TypedURLSyncMetadataDatabase&) = delete;
   TypedURLSyncMetadataDatabase& operator=(const TypedURLSyncMetadataDatabase&) =
       delete;
 
   ~TypedURLSyncMetadataDatabase() override;
+
+  // Makes sure the tables and indices are properly set up. Must be called
+  // before anything else.
+  bool Init();
 
   // Read all the stored metadata for typed URL and fill `metadata_batch`
   // with it.
@@ -56,24 +59,11 @@ class TypedURLSyncMetadataDatabase : public syncer::SyncMetadataStore {
 
   static URLID StorageKeyToURLID(const std::string& storage_key);
 
- protected:
-  // Called by the derived classes on initialization to make sure the tables
-  // and indices are properly set up. Must be called before anything else.
-  bool InitTypedURLMetadataTable();
-
-  // Returns the database for the functions in this interface.
-  virtual sql::Database& GetDB() = 0;
-
-  // Returns MetaTable, so this sync can store ModelTypeState in MetaTable.
-  // Check if GetMetaTable().GetVersionNumber() is greater than 0 to make sure
-  // MetaTable is initialed.
-  virtual sql::MetaTable& GetMetaTable() = 0;
-
   // Cleans up orphaned metadata for typed URLs, i.e. deletes all metadata
   // entries for rowids not present in `sorted_valid_rowids` (which must be
   // sorted in ascending order). Returns true if the clean up finishes without
   // any DB error.
-  bool CleanTypedURLOrphanedMetadataForMigrationToVersion40(
+  bool CleanOrphanedMetadataForMigrationToVersion40(
       const std::vector<URLID>& sorted_valid_rowids);
 
  private:
@@ -83,6 +73,9 @@ class TypedURLSyncMetadataDatabase : public syncer::SyncMetadataStore {
 
   // Read sync_pb::ModelTypeState for typed URL and fill `state` with it.
   bool GetModelTypeState(sync_pb::ModelTypeState* state);
+
+  sql::Database* const db_;
+  sql::MetaTable* const meta_table_;
 };
 
 }  // namespace history

@@ -32,9 +32,24 @@ const char kTypedURLModelTypeStateKey[] = "typed_url_model_type_state";
 //   value            Serialize sync EntityMetadata, which is for tracking sync
 //                    state of each typed url.
 
-TypedURLSyncMetadataDatabase::TypedURLSyncMetadataDatabase() = default;
+TypedURLSyncMetadataDatabase::TypedURLSyncMetadataDatabase(
+    sql::Database* db,
+    sql::MetaTable* meta_table)
+    : db_(db), meta_table_(meta_table) {}
 
 TypedURLSyncMetadataDatabase::~TypedURLSyncMetadataDatabase() = default;
+
+bool TypedURLSyncMetadataDatabase::Init() {
+  if (!db_->DoesTableExist("typed_url_sync_metadata")) {
+    if (!db_->Execute("CREATE TABLE typed_url_sync_metadata ("
+                      "storage_key INTEGER PRIMARY KEY NOT NULL,"
+                      "value BLOB)")) {
+      NOTREACHED();
+      return false;
+    }
+  }
+  return true;
+}
 
 bool TypedURLSyncMetadataDatabase::GetAllSyncMetadata(
     syncer::MetadataBatch* metadata_batch) {
@@ -59,9 +74,9 @@ bool TypedURLSyncMetadataDatabase::UpdateSyncMetadata(
   DCHECK_EQ(model_type, syncer::TYPED_URLS)
       << "Only the TYPED_URLS model type is supported";
 
-  sql::Statement s(GetDB().GetUniqueStatement(
-      "INSERT OR REPLACE INTO typed_url_sync_metadata "
-      "(storage_key, value) VALUES(?, ?)"));
+  sql::Statement s(
+      db_->GetUniqueStatement("INSERT OR REPLACE INTO typed_url_sync_metadata "
+                              "(storage_key, value) VALUES(?, ?)"));
   s.BindInt64(0, StorageKeyToURLID(storage_key));
   s.BindString(1, metadata.SerializeAsString());
 
@@ -74,7 +89,7 @@ bool TypedURLSyncMetadataDatabase::ClearSyncMetadata(
   DCHECK_EQ(model_type, syncer::TYPED_URLS)
       << "Only the TYPED_URLS model type is supported";
 
-  sql::Statement s(GetDB().GetUniqueStatement(
+  sql::Statement s(db_->GetUniqueStatement(
       "DELETE FROM typed_url_sync_metadata WHERE storage_key=?"));
   s.BindInt64(0, StorageKeyToURLID(storage_key));
 
@@ -86,18 +101,18 @@ bool TypedURLSyncMetadataDatabase::UpdateModelTypeState(
     const sync_pb::ModelTypeState& model_type_state) {
   DCHECK_EQ(model_type, syncer::TYPED_URLS)
       << "Only the TYPED_URLS model type is supported";
-  DCHECK_GT(GetMetaTable().GetVersionNumber(), 0);
+  DCHECK_GT(meta_table_->GetVersionNumber(), 0);
 
   std::string serialized_state = model_type_state.SerializeAsString();
-  return GetMetaTable().SetValue(kTypedURLModelTypeStateKey, serialized_state);
+  return meta_table_->SetValue(kTypedURLModelTypeStateKey, serialized_state);
 }
 
 bool TypedURLSyncMetadataDatabase::ClearModelTypeState(
     syncer::ModelType model_type) {
   DCHECK_EQ(model_type, syncer::TYPED_URLS)
       << "Only the TYPED_URLS model type is supported";
-  DCHECK_GT(GetMetaTable().GetVersionNumber(), 0);
-  return GetMetaTable().DeleteKey(kTypedURLModelTypeStateKey);
+  DCHECK_GT(meta_table_->GetVersionNumber(), 0);
+  return meta_table_->DeleteKey(kTypedURLModelTypeStateKey);
 }
 
 // static
@@ -112,26 +127,13 @@ URLID TypedURLSyncMetadataDatabase::StorageKeyToURLID(
   return storage_key_int;
 }
 
-bool TypedURLSyncMetadataDatabase::InitTypedURLMetadataTable() {
-  if (!GetDB().DoesTableExist("typed_url_sync_metadata")) {
-    if (!GetDB().Execute("CREATE TABLE typed_url_sync_metadata ("
-                         "storage_key INTEGER PRIMARY KEY NOT NULL,"
-                         "value BLOB)")) {
-      NOTREACHED();
-      return false;
-    }
-  }
-  return true;
-}
-
-bool TypedURLSyncMetadataDatabase::
-    CleanTypedURLOrphanedMetadataForMigrationToVersion40(
-        const std::vector<URLID>& sorted_valid_rowids) {
+bool TypedURLSyncMetadataDatabase::CleanOrphanedMetadataForMigrationToVersion40(
+    const std::vector<URLID>& sorted_valid_rowids) {
   DCHECK(base::ranges::is_sorted(sorted_valid_rowids));
   std::vector<URLID> invalid_metadata_rowids;
   auto valid_rowids_iter = sorted_valid_rowids.begin();
 
-  sql::Statement sorted_metadata_rowids(GetDB().GetUniqueStatement(
+  sql::Statement sorted_metadata_rowids(db_->GetUniqueStatement(
       "SELECT storage_key FROM typed_url_sync_metadata ORDER BY storage_key"));
   while (sorted_metadata_rowids.Step()) {
     URLID metadata_rowid = sorted_metadata_rowids.ColumnInt64(0);
@@ -155,7 +157,7 @@ bool TypedURLSyncMetadataDatabase::
   }
 
   for (const URLID& rowid : invalid_metadata_rowids) {
-    sql::Statement del(GetDB().GetCachedStatement(
+    sql::Statement del(db_->GetCachedStatement(
         SQL_FROM_HERE,
         "DELETE FROM typed_url_sync_metadata WHERE storage_key=?"));
     del.BindInt64(0, rowid);
@@ -170,7 +172,7 @@ bool TypedURLSyncMetadataDatabase::
 bool TypedURLSyncMetadataDatabase::GetAllSyncEntityMetadata(
     syncer::MetadataBatch* metadata_batch) {
   DCHECK(metadata_batch);
-  sql::Statement s(GetDB().GetUniqueStatement(
+  sql::Statement s(db_->GetUniqueStatement(
       "SELECT storage_key, value FROM typed_url_sync_metadata"));
 
   while (s.Step()) {
@@ -191,9 +193,9 @@ bool TypedURLSyncMetadataDatabase::GetAllSyncEntityMetadata(
 
 bool TypedURLSyncMetadataDatabase::GetModelTypeState(
     sync_pb::ModelTypeState* state) {
-  DCHECK_GT(GetMetaTable().GetVersionNumber(), 0);
+  DCHECK_GT(meta_table_->GetVersionNumber(), 0);
   std::string serialized_state;
-  if (!GetMetaTable().GetValue(kTypedURLModelTypeStateKey, &serialized_state)) {
+  if (!meta_table_->GetValue(kTypedURLModelTypeStateKey, &serialized_state)) {
     return true;
   }
 

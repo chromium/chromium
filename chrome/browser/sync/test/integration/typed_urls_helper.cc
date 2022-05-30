@@ -176,7 +176,7 @@ class GetTypedUrlsMetadataTask : public history::HistoryDBTask {
   bool RunOnDBThread(history::HistoryBackend* backend,
                      history::HistoryDatabase* db) override {
     // Fetch the typed URLs.
-    db->GetAllSyncMetadata(metadata_batch_);
+    db->GetTypedURLMetadataDB()->GetAllSyncMetadata(metadata_batch_);
     wait_event_->Signal();
     return true;
   }
@@ -199,7 +199,8 @@ class WriteTypedUrlsMetadataTask : public history::HistoryDBTask {
   bool RunOnDBThread(history::HistoryBackend* backend,
                      history::HistoryDatabase* db) override {
     // Write the metadata to the DB.
-    db->UpdateSyncMetadata(syncer::TYPED_URLS, storage_key_, metadata_);
+    db->GetTypedURLMetadataDB()->UpdateSyncMetadata(syncer::TYPED_URLS,
+                                                    storage_key_, metadata_);
     wait_event_->Signal();
     return true;
   }

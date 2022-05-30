@@ -344,10 +344,10 @@ class TypedURLSyncBridgeTest : public testing::Test {
     ASSERT_TRUE(test_dir_.CreateUniqueTempDir());
     fake_history_backend_->Init(
         false, TestHistoryDatabaseParamsForPath(test_dir_.GetPath()));
-    std::unique_ptr<TypedURLSyncBridge> bridge =
-        std::make_unique<TypedURLSyncBridge>(
-            fake_history_backend_.get(), fake_history_backend_->db(),
-            mock_processor_.CreateForwardingProcessor());
+    auto bridge = std::make_unique<TypedURLSyncBridge>(
+        fake_history_backend_.get(),
+        fake_history_backend_->db()->GetTypedURLMetadataDB(),
+        mock_processor_.CreateForwardingProcessor());
     typed_url_sync_bridge_ = bridge.get();
     typed_url_sync_bridge_->Init();
     typed_url_sync_bridge_->history_backend_observation_.Reset();

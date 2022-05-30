@@ -17,6 +17,7 @@
 #include "components/history/core/browser/visit_annotations_database.h"
 #include "components/history/core/browser/visit_database.h"
 #include "components/history/core/browser/visitsegment_database.h"
+#include "components/sync/model/model_type_store_base.h"
 #include "sql/database.h"
 #include "sql/init_status.h"
 #include "sql/meta_table.h"
@@ -46,7 +47,6 @@ class HistoryDatabase : public DownloadDatabase,
                         public AndroidURLsDatabase,
                         public AndroidCacheDatabase,
 #endif
-                        public TypedURLSyncMetadataDatabase,
                         public URLDatabase,
                         public VisitDatabase,
                         public VisitAnnotationsDatabase,
@@ -156,6 +156,11 @@ class HistoryDatabase : public DownloadDatabase,
   virtual base::Time GetEarlyExpirationThreshold();
   virtual void UpdateEarlyExpirationThreshold(base::Time threshold);
 
+  // Sync metadata storage ----------------------------------------------------
+
+  // Returns the sub-database used for storing Sync metadata for Typed URLs.
+  TypedURLSyncMetadataDatabase* GetTypedURLMetadataDB();
+
  private:
 #if BUILDFLAG(IS_ANDROID)
   // AndroidProviderBackend uses the `db_`.
@@ -164,12 +169,9 @@ class HistoryDatabase : public DownloadDatabase,
 #endif
   friend class ::InMemoryURLIndexTest;
 
-  // Overridden from URLDatabase, DownloadDatabase, VisitDatabase,
-  // VisitSegmentDatabase and TypedURLSyncMetadataDatabase.
+  // Overridden from URLDatabase, DownloadDatabase, VisitDatabase, and
+  // VisitSegmentDatabase.
   sql::Database& GetDB() override;
-
-  // Overridden from TypedURLSyncMetadataDatabase.
-  sql::MetaTable& GetMetaTable() override;
 
   // Migration -----------------------------------------------------------------
 
@@ -191,6 +193,12 @@ class HistoryDatabase : public DownloadDatabase,
 
   sql::Database db_;
   sql::MetaTable meta_table_;
+
+  // Most of the sub-DBs (URLDatabase etc.) are integrated into HistoryDatabase
+  // via inheritance. However, that can lead to "diamond inheritance" issues
+  // when multiple of these base classes define the same methods. Therefore the
+  // Sync metadata DB is integrated via composition instead.
+  TypedURLSyncMetadataDatabase typed_url_metadata_db_;
 
   base::Time cached_early_expiration_threshold_;
 };

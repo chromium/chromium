@@ -314,7 +314,7 @@ void HistoryBackend::Init(
   delegate_->DBLoaded();
 
   typed_url_sync_bridge_ = std::make_unique<TypedURLSyncBridge>(
-      this, db_.get(),
+      this, db_ ? db_->GetTypedURLMetadataDB() : nullptr,
       std::make_unique<ClientTagBasedModelTypeProcessor>(
           syncer::TYPED_URLS, /*dump_stack=*/base::RepeatingClosure()));
   typed_url_sync_bridge_->Init();

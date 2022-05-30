@@ -92,7 +92,8 @@ HistoryDatabase::HistoryDatabase(
            // Set the cache size. The page size, plus a little extra, times this
            // value, tells us how much memory the cache will use maximum.
            // 1000 * 4kB = 4MB
-           .cache_size = 1000}) {}
+           .cache_size = 1000}),
+      typed_url_metadata_db_(&db_, &meta_table_) {}
 
 HistoryDatabase::~HistoryDatabase() = default;
 
@@ -122,7 +123,7 @@ sql::InitStatus HistoryDatabase::Init(const base::FilePath& history_name) {
     return LogInitFailure(InitStep::META_TABLE_INIT);
   if (!CreateURLTable(false) || !InitVisitTable() ||
       !InitKeywordSearchTermsTable() || !InitDownloadTable() ||
-      !InitSegmentTables() || !InitTypedURLMetadataTable() ||
+      !InitSegmentTables() || !typed_url_metadata_db_.Init() ||
       !InitVisitAnnotationsTables()) {
     return LogInitFailure(InitStep::CREATE_TABLES);
   }
@@ -374,12 +375,12 @@ void HistoryDatabase::UpdateEarlyExpirationThreshold(base::Time threshold) {
   cached_early_expiration_threshold_ = threshold;
 }
 
-sql::Database& HistoryDatabase::GetDB() {
-  return db_;
+TypedURLSyncMetadataDatabase* HistoryDatabase::GetTypedURLMetadataDB() {
+  return &typed_url_metadata_db_;
 }
 
-sql::MetaTable& HistoryDatabase::GetMetaTable() {
-  return meta_table_;
+sql::Database& HistoryDatabase::GetDB() {
+  return db_;
 }
 
 // Migration -------------------------------------------------------------------
@@ -593,7 +594,7 @@ sql::InitStatus HistoryDatabase::EnsureCurrentVersion() {
     std::vector<URLID> visited_url_rowids_sorted;
     if (!GetAllVisitedURLRowidsForMigrationToVersion40(
             &visited_url_rowids_sorted) ||
-        !CleanTypedURLOrphanedMetadataForMigrationToVersion40(
+        !typed_url_metadata_db_.CleanOrphanedMetadataForMigrationToVersion40(
             visited_url_rowids_sorted)) {
       return LogMigrationFailure(40);
     }
