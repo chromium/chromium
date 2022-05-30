@@ -145,11 +145,10 @@ export function open(
  *
  * @param name View name.
  * @param condition Optional condition for leaving the view.
- * @return Whether successfully leaving the view or not.
  */
-export function close(name: ViewName, condition?: unknown): boolean {
+export function close(name: ViewName, condition?: unknown): void {
   const index = findIndex(name);
-  return allViews[index].leave({kind: 'CLOSED', val: condition});
+  allViews[index].leave({kind: 'CLOSED', val: condition});
 }
 
 /**

@@ -311,14 +311,11 @@ export class View {
    *
    * @param condition Optional condition for leaving the view and also as
    *     the result for the ended session.
-   * @return Whether able to leaving the view or not.
    */
-  leave(condition: LeaveCondition = {kind: 'CLOSED'}): boolean {
+  leave(condition: LeaveCondition = {kind: 'CLOSED'}): void {
     if (this.session !== null && this.leaving(condition)) {
       this.session.signal(condition);
       this.session = null;
-      return true;
     }
-    return false;
   }
 }
