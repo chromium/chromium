@@ -18,8 +18,7 @@
         android:layout_marginBottom="12dp"
         android:importantForAccessibility="no"
         app:srcCompat="@drawable/sync_promo_illustration"
-        style="@style/SigninPromoIllustrationVisibility"
-        android:visibility="gone"/>
+        style="@style/SigninPromoIllustrationVisibility"/>
 
     <ImageView
         android:id="@+id/new_signin_promo_image"
