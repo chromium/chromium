@@ -4079,7 +4079,7 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "strategy": "exponential-wakeups"
+                        "strategy": "greedy-wakeups"
                     },
                     "enable_features": [
                         "WakeUpStrategyFeature"
