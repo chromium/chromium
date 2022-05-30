@@ -167,6 +167,7 @@ static_library("test_support") {
     "//chrome/gpu",
     "//chrome/renderer",
     "//chrome/utility",
+    "//components/about_ui",
     "//components/gwp_asan/buildflags",
     "//components/heap_profiling/in_process",
     "//components/nacl/common:buildflags",

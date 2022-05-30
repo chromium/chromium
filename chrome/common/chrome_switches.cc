@@ -133,6 +133,10 @@ const char kCrashOnHangThreads[]            = "crash-on-hang-threads";
 const char kCreateBrowserOnStartupForTests[] =
     "create-browser-on-startup-for-tests";
 
+// Prints licensing information (same content as found in about:credits) and
+// quits.
+const char kCredits[] = "credits";
+
 // Specifies the http:// endpoint which will be used to serve
 // devtools://devtools/custom/<path>
 // Or a file:// URL to specify a custom file path to load from for

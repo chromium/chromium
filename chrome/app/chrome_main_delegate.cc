@@ -15,6 +15,7 @@
 #include "base/cpu_reduction_experiment.h"
 #include "base/dcheck_is_on.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/i18n/rtl.h"
 #include "base/immediate_crash.h"
 #include "base/lazy_instance.h"
@@ -117,6 +118,7 @@
 #include <signal.h>
 
 #include "chrome/app/chrome_crash_reporter_client.h"
+#include "components/about_ui/credit_utils.h"
 #endif
 
 #if BUILDFLAG(ENABLE_NACL) && (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
@@ -332,6 +334,52 @@ bool SubprocessNeedsResourceBundle(const std::string& process_type) {
 }
 
 #if BUILDFLAG(IS_POSIX)
+bool HandleCreditsSwitch(const base::CommandLine& command_line) {
+  if (!command_line.HasSwitch(switches::kCredits))
+    return false;
+
+  // Load resources: about_credits.html is in component_resources.pak that is
+  // re-packed into resources.pak.
+  base::FilePath resource_dir;
+  bool result = base::PathService::Get(base::DIR_ASSETS, &resource_dir);
+  DCHECK(result);
+
+  const std::string locale =
+      command_line.GetSwitchValueASCII(::switches::kLang);
+  ui::ResourceBundle::InitSharedInstanceWithLocale(
+      locale, /**parameter_name=*/nullptr,
+      ui::ResourceBundle::DO_NOT_LOAD_COMMON_RESOURCES);
+  base::FilePath resources_pak =
+      resource_dir.Append(FILE_PATH_LITERAL("resources.pak"));
+
+#if BUILDFLAG(IS_MAC) && !defined(COMPONENT_BUILD)
+  // In non-component builds, check if a fallback in Resources/ folder is
+  // available.
+  if (!base::PathExists(resources_pak)) {
+    resources_pak =
+        resource_dir.Append(FILE_PATH_LITERAL("Resources/resources.pak"));
+  }
+#endif
+
+  ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
+      resources_pak, ui::kScaleFactorNone);
+
+  auto credits = about_ui::GetCredits(/**include_scripts=*/false);
+  // If resources failed to load, about_ui::GetCredits returns
+  // a malformed HTML doc containing `</body>\n</html>`.
+  // When the resources loaded successfully, we get a huge document
+  // (~8 MiB) instead.
+  // We use a threshold of 100 characters to see if the resources
+  // were loaded successfully.
+  size_t resource_loading_threshold = 100;
+  if (credits.size() < resource_loading_threshold)
+    printf("%s\n", "Failed to load credits.");
+  else
+    printf("%s\n", credits.c_str());
+
+  return true;
+}
+
 // Check for --version and --product-version; return true if we encountered
 // one of these switches and should exit now.
 bool HandleVersionSwitches(const base::CommandLine& command_line) {
@@ -811,6 +859,10 @@ bool ChromeMainDelegate::BasicStartupComplete(int* exit_code) {
   if (HandleVersionSwitches(command_line)) {
     *exit_code = 0;
     return true;  // Got a --version switch; exit with a success error code.
+  }
+  if (HandleCreditsSwitch(command_line)) {
+    *exit_code = 0;
+    return true;  // Got a --credits switch; exit with a success error code.
   }
   // TODO(crbug.com/1052397): Revisit the macro expression once build flag
   // switch of lacros-chrome is complete.

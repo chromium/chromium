@@ -20,6 +20,7 @@ include_rules = [
   "+components/component_updater",
   "+components/content_settings/core/common/content_settings_pattern.h",
   "+components/crash",
+  "+components/about_ui",
   "+components/externalauth",
   "+components/gwp_asan/buildflags/buildflags.h",
   "+components/gwp_asan/client/gwp_asan.h",
