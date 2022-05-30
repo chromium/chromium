@@ -156,6 +156,7 @@ class NET_EXPORT_PRIVATE BufferedSpdyFramer
   void OnError(http2::Http2DecoderAdapter::SpdyFramerError spdy_framer_error,
                std::string detailed_error) override;
   void OnHeaders(spdy::SpdyStreamId stream_id,
+                 size_t payload_length,
                  bool has_priority,
                  int weight,
                  spdy::SpdyStreamId parent_stream_id,
@@ -193,7 +194,9 @@ class NET_EXPORT_PRIVATE BufferedSpdyFramer
   void OnDataFrameHeader(spdy::SpdyStreamId stream_id,
                          size_t length,
                          bool fin) override;
-  void OnContinuation(spdy::SpdyStreamId stream_id, bool end) override;
+  void OnContinuation(spdy::SpdyStreamId stream_id,
+                      size_t payload_length,
+                      bool end) override;
   void OnPriority(spdy::SpdyStreamId stream_id,
                   spdy::SpdyStreamId parent_stream_id,
                   int weight,

@@ -56,6 +56,7 @@ void BufferedSpdyFramer::OnError(
 }
 
 void BufferedSpdyFramer::OnHeaders(spdy::SpdyStreamId stream_id,
+                                   size_t payload_length,
                                    bool has_priority,
                                    int weight,
                                    spdy::SpdyStreamId parent_stream_id,
@@ -217,6 +218,7 @@ void BufferedSpdyFramer::OnAltSvc(
 }
 
 void BufferedSpdyFramer::OnContinuation(spdy::SpdyStreamId stream_id,
+                                        size_t payload_length,
                                         bool end) {}
 
 bool BufferedSpdyFramer::OnUnknownFrame(spdy::SpdyStreamId stream_id,
