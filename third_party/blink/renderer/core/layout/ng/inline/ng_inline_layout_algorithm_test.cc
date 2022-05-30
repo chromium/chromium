@@ -150,7 +150,7 @@ TEST_F(NGInlineLayoutAlgorithmTest, BreakToken) {
 
   NGInlineChildLayoutContext context;
   NGBoxFragmentBuilder container_builder(
-      block_flow, block_flow->Style(),
+      block_flow, block_flow->Style(), constraint_space,
       block_flow->Style()->GetWritingDirection());
   NGFragmentItemsBuilder items_builder(inline_node,
                                        container_builder.GetWritingDirection());

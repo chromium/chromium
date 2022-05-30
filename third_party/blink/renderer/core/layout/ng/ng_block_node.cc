@@ -1811,7 +1811,7 @@ const NGLayoutResult* NGBlockNode::RunLegacyLayout(
                                  box_->PaddingBefore(), box_->PaddingAfter()};
 
     // TODO(kojii): Implement use_first_line_style.
-    NGBoxFragmentBuilder builder(*this, box_->Style(), &constraint_space,
+    NGBoxFragmentBuilder builder(*this, box_->Style(), constraint_space,
                                  {writing_mode, box_->StyleRef().Direction()});
     builder.SetIsNewFormattingContext(
         constraint_space.IsNewFormattingContext());

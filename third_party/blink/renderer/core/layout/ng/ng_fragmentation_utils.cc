@@ -1071,7 +1071,7 @@ NGBoxFragmentBuilder CreateContainerBuilderForMulticol(
     const NGConstraintSpace& space,
     const NGFragmentGeometry& fragment_geometry) {
   const ComputedStyle* style = &multicol.Style();
-  NGBoxFragmentBuilder multicol_container_builder(multicol, style, &space,
+  NGBoxFragmentBuilder multicol_container_builder(multicol, style, space,
                                                   style->GetWritingDirection());
   multicol_container_builder.SetIsNewFormattingContext(true);
   multicol_container_builder.SetInitialFragmentGeometry(fragment_geometry);

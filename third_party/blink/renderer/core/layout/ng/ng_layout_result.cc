@@ -31,10 +31,6 @@ struct SameSizeAsNGLayoutResult
   };
   LayoutUnit intrinsic_block_size;
   unsigned bitfields[1];
-
-#if DCHECK_IS_ON()
-  bool has_valid_space;
-#endif
 };
 
 ASSERT_SIZE(NGLayoutResult, SameSizeAsNGLayoutResult);
@@ -95,8 +91,7 @@ NGLayoutResult::NGLayoutResult(NGBoxFragmentBuilderPassKey passkey,
   }
   bitfields_.disable_simplified_layout = builder->disable_simplified_layout;
 
-  if (builder->ConstraintSpace() &&
-      builder->ConstraintSpace()->ShouldPropagateChildBreakValues()) {
+  if (builder->ConstraintSpace().ShouldPropagateChildBreakValues()) {
     bitfields_.initial_break_before = static_cast<unsigned>(
         builder->initial_break_before_.value_or(EBreakBetween::kAuto));
     bitfields_.final_break_after =
@@ -188,10 +183,6 @@ NGLayoutResult::NGLayoutResult(const NGLayoutResult& other,
 
   if (new_end_margin_strut != NGMarginStrut() || HasRareData())
     EnsureRareData()->end_margin_strut = new_end_margin_strut;
-
-#if DCHECK_IS_ON()
-  has_valid_space_ = other.has_valid_space_;
-#endif
 }
 
 NGLayoutResult::NGLayoutResult(const NGLayoutResult& other,
@@ -210,16 +201,11 @@ NGLayoutResult::NGLayoutResult(const NGLayoutResult& other,
   }
 
   DCHECK_EQ(physical_fragment_->Size(), other.physical_fragment_->Size());
-
-#if DCHECK_IS_ON()
-  has_valid_space_ = other.has_valid_space_;
-#endif
 }
 
 NGLayoutResult::NGLayoutResult(const NGPhysicalFragment* physical_fragment,
                                NGContainerFragmentBuilder* builder)
-    : space_(builder->space_ ? NGConstraintSpace(*builder->space_)
-                             : NGConstraintSpace()),
+    : space_(builder->space_),
       physical_fragment_(std::move(physical_fragment)),
       bitfields_(builder->is_self_collapsing_,
                  builder->is_pushed_by_floats_,
@@ -284,10 +270,6 @@ NGLayoutResult::NGLayoutResult(const NGPhysicalFragment* physical_fragment,
     bitfields_.is_bfc_block_offset_nullopt =
         !builder->bfc_block_offset_.has_value();
   }
-
-#if DCHECK_IS_ON()
-  has_valid_space_ = builder->space_;
-#endif
 }
 
 NGExclusionSpace NGLayoutResult::MergeExclusionSpaces(

@@ -330,8 +330,7 @@ NGPhysicalBoxFragment::NGPhysicalBoxFragment(
   is_fieldset_container_ = builder->is_fieldset_container_;
   is_table_ng_part_ = builder->is_table_ng_part_;
   is_legacy_layout_root_ = builder->is_legacy_layout_root_;
-  is_painted_atomically_ =
-      builder->space_ && builder->space_->IsPaintedAtomically();
+  is_painted_atomically_ = builder->space_.IsPaintedAtomically();
   PhysicalBoxSides sides_to_include(builder->sides_to_include_,
                                     builder->GetWritingMode());
   include_border_top_ = sides_to_include.top;

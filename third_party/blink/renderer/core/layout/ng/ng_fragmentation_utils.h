@@ -71,7 +71,7 @@ inline bool IsResumingLayout(const NGBlockBreakToken* token) {
 // currently performing block fragmentation; we also need to know if it has
 // already been fragmented (to resume layout correctly, but not break again).
 inline bool InvolvedInBlockFragmentation(const NGBoxFragmentBuilder& builder) {
-  return builder.ConstraintSpace()->HasBlockFragmentation() ||
+  return builder.ConstraintSpace().HasBlockFragmentation() ||
          IsResumingLayout(builder.PreviousBreakToken());
 }
 

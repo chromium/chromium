@@ -287,7 +287,7 @@ void LayoutNGMixin<Base>::UpdateOutOfFlowBlockLayout() {
   NGBlockNode container_node(container);
   NGBoxFragmentBuilder container_builder(
       container_node, scoped_refptr<const ComputedStyle>(container_style),
-      /* space */ nullptr, container_style->GetWritingDirection());
+      constraint_space, container_style->GetWritingDirection());
   container_builder.SetIsNewFormattingContext(
       container_node.CreatesNewFormattingContext());
 

@@ -38,7 +38,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
  public:
   NGBoxFragmentBuilder(NGLayoutInputNode node,
                        scoped_refptr<const ComputedStyle> style,
-                       const NGConstraintSpace* space,
+                       const NGConstraintSpace& space,
                        WritingDirectionMode writing_direction)
       : NGContainerFragmentBuilder(node,
                                    std::move(style),
@@ -51,10 +51,11 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   // has NGInlineItem but does not have corresponding NGLayoutInputNode.
   NGBoxFragmentBuilder(LayoutObject* layout_object,
                        scoped_refptr<const ComputedStyle> style,
+                       const NGConstraintSpace& space,
                        WritingDirectionMode writing_direction)
       : NGContainerFragmentBuilder(/* node */ nullptr,
                                    std::move(style),
-                                   /* space */ nullptr,
+                                   space,
                                    writing_direction),
         box_type_(NGPhysicalFragment::NGBoxType::kNormalBox),
         is_inline_formatting_context_(true) {
@@ -73,9 +74,9 @@ class CORE_EXPORT NGBoxFragmentBuilder final
         border_padding_ + initial_fragment_geometry.scrollbar;
     original_border_scrollbar_padding_block_start_ =
         border_scrollbar_padding_.block_start;
-    if (space_) {
+    if (node_) {
       child_available_size_ = CalculateChildAvailableSize(
-          *space_, To<NGBlockNode>(node_), size_, border_scrollbar_padding_);
+          space_, To<NGBlockNode>(node_), size_, border_scrollbar_padding_);
     }
   }
 
@@ -179,7 +180,6 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   // its non-anonymous parent (similar to percentages).
   const LogicalSize& ChildAvailableSize() const {
     DCHECK(initial_fragment_geometry_);
-    DCHECK(space_);
     return child_available_size_;
   }
   const NGBlockNode& Node() {
@@ -569,7 +569,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
 
   // Sets the last baseline for this fragment.
   void SetLastBaseline(LayoutUnit baseline) {
-    DCHECK_EQ(space_->BaselineAlgorithmType(),
+    DCHECK_EQ(space_.BaselineAlgorithmType(),
               NGBaselineAlgorithmType::kInlineBlock);
     last_baseline_ = baseline;
   }

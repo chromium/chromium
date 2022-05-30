@@ -55,10 +55,10 @@ void NGLineBoxFragmentBuilder::PropagateChildrenData(
       PropagateChildData(
           child.layout_result->PhysicalFragment(),
           child.Offset() -
-              ComputeRelativeOffsetForInline(*ConstraintSpace(),
+              ComputeRelativeOffsetForInline(ConstraintSpace(),
                                              child.PhysicalFragment()->Style()),
           ComputeRelativeOffsetForOOFInInline(
-              *ConstraintSpace(), child.PhysicalFragment()->Style()));
+              ConstraintSpace(), child.PhysicalFragment()->Style()));
 
       // Skip over any children, the information should have already been
       // propagated into this layout result.

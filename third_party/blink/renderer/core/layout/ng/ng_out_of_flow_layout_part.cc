@@ -1306,7 +1306,7 @@ NGOutOfFlowLayoutPart::NodeInfo NGOutOfFlowLayoutPart::SetupNodeInfo(
     // The |fragmentainer_offset_delta| will not make a difference in the
     // initial column balancing pass.
     SetupSpaceBuilderForFragmentation(
-        *container_builder_->ConstraintSpace(), node,
+        container_builder_->ConstraintSpace(), node,
         /* fragmentainer_offset_delta */ LayoutUnit(), &builder,
         /* is_new_fc */ true,
         /* requires_content_before_breaking */ false);
@@ -1361,9 +1361,8 @@ const NGLayoutResult* NGOutOfFlowLayoutPart::LayoutOOFNode(
     bool freeze_horizontal = false, freeze_vertical = false;
     // If we're in a measure pass, freeze both scrollbars right away, to avoid
     // quadratic time complexity for deeply nested flexboxes.
-    if (container_builder_->ConstraintSpace() &&
-        container_builder_->ConstraintSpace()->CacheSlot() ==
-            NGCacheSlot::kMeasure)
+    if (container_builder_->ConstraintSpace().CacheSlot() ==
+        NGCacheSlot::kMeasure)
       freeze_horizontal = freeze_vertical = true;
     do {
       // Freeze any scrollbars that appeared, and relayout. Repeat until both
@@ -1624,7 +1623,7 @@ const NGLayoutResult* NGOutOfFlowLayoutPart::GenerateFragment(
         /* is_new_fc */ true, requires_content_before_breaking);
   } else if (container_builder_->IsInitialColumnBalancingPass()) {
     SetupSpaceBuilderForFragmentation(
-        *container_builder_->ConstraintSpace(), node, block_offset, &builder,
+        container_builder_->ConstraintSpace(), node, block_offset, &builder,
         /* is_new_fc */ true,
         /* requires_content_before_breaking */ false);
   }
@@ -1945,7 +1944,7 @@ NGConstraintSpace NGOutOfFlowLayoutPart::GetFragmentainerConstraintSpace(
   // TODO(bebeaudr): Need to handle different fragmentation types. It won't
   // always be multi-column.
   return CreateConstraintSpaceForColumns(
-      *container_builder_->ConstraintSpace(), column_size,
+      container_builder_->ConstraintSpace(), column_size,
       percentage_resolution_size, allow_discard_start_margin,
       /* balance_columns */ false, min_break_appeal);
 }
