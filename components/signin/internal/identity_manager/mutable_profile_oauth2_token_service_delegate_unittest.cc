@@ -49,30 +49,6 @@
 static const char kLSOService[] = "lso";
 static const char kEmail[] = "user@gmail.com";
 
-namespace {
-
-// Create test account info.
-AccountInfo CreateTestAccountInfo(const std::string& name,
-                                  bool is_hosted_domain,
-                                  bool is_valid) {
-  AccountInfo account_info;
-  account_info.account_id = CoreAccountId(name);
-  account_info.gaia = name;
-  account_info.email = name + "@email.com";
-  account_info.full_name = "name";
-  account_info.given_name = "name";
-  if (is_valid) {
-    account_info.hosted_domain =
-        is_hosted_domain ? "example.com" : kNoHostedDomainFound;
-  }
-  account_info.locale = "en";
-  account_info.picture_url = "https://example.com";
-  EXPECT_EQ(is_valid, account_info.IsValid());
-  return account_info;
-}
-
-}  // namespace
-
 class MutableProfileOAuth2TokenServiceDelegateTest
     : public testing::Test,
       public OAuth2AccessTokenConsumer,
@@ -95,9 +71,6 @@ class MutableProfileOAuth2TokenServiceDelegateTest
 
   void SetUp() override {
     OSCryptMocker::SetUp();
-
-    MutableProfileOAuth2TokenServiceDelegate::RegisterProfilePrefs(
-        pref_service_.registry());
     AccountTrackerService::RegisterPrefs(pref_service_.registry());
     PrimaryAccountManager::RegisterProfilePrefs(pref_service_.registry());
     client_ = std::make_unique<TestSigninClient>(&pref_service_);
@@ -537,54 +510,6 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
   ResetObserverCounts();
 }
 
-// Checks that tokens are loaded and prefs::kTokenServiceDiceCompatible is set
-// to true if the tokens are loaded after the Dice migration.
-TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, LoadAfterDiceMigration) {
-  InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDice);
-  ASSERT_FALSE(pref_service_.GetBoolean(prefs::kTokenServiceDiceCompatible));
-
-  // Add account info to the account tracker.
-  AccountInfo primary_account = CreateTestAccountInfo(
-      "primary_account", false /* is_hosted_domain*/, true /* is_valid*/);
-  account_tracker_service_.SeedAccountInfo(primary_account);
-  AddAuthTokenManually("AccountId-" + primary_account.account_id.ToString(),
-                       "refresh_token");
-
-  oauth2_service_delegate_->LoadCredentials(CoreAccountId(),
-                                            /*is_syncing=*/false);
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_TRUE(oauth2_service_delegate_->RefreshTokenIsAvailable(
-      primary_account.account_id));
-  EXPECT_EQ(
-      signin::LoadCredentialsState::LOAD_CREDENTIALS_FINISHED_WITH_SUCCESS,
-      oauth2_service_delegate_->load_credentials_state());
-
-  ASSERT_TRUE(pref_service_.GetBoolean(prefs::kTokenServiceDiceCompatible));
-}
-
-// Checks that prefs::kTokenServiceDiceCompatible is set to true if the tokens
-// are loaded after the Dice migration, even if there was a database read error.
-TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
-       LoadAfterDiceMigrationWithError) {
-  InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDice);
-  ASSERT_FALSE(pref_service_.GetBoolean(prefs::kTokenServiceDiceCompatible));
-
-  // Shutdown the database to trigger a database read error.
-  token_web_data_->ShutdownDatabase();
-
-  oauth2_service_delegate_->LoadCredentials(CoreAccountId(),
-                                            /*is_syncing=*/false);
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_EQ(0u, oauth2_service_delegate_->GetAccounts().size());
-  EXPECT_EQ(signin::LoadCredentialsState::
-                LOAD_CREDENTIALS_FINISHED_WITH_DB_CANNOT_BE_OPENED,
-            oauth2_service_delegate_->load_credentials_state());
-
-  ASSERT_TRUE(pref_service_.GetBoolean(prefs::kTokenServiceDiceCompatible));
-}
-
 TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
        LoadCredentialsClearsTokenDBWhenNoPrimaryAccount_DiceDisabled) {
   // Populate DB with 2 valid tokens.
@@ -798,7 +723,6 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
 }
 
 TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, LoadInvalidToken) {
-  pref_service_.SetBoolean(prefs::kTokenServiceDiceCompatible, true);
   InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDice);
   std::map<std::string, std::string> tokens;
   const CoreAccountId account_id("account_id");

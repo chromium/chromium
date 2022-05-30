@@ -297,10 +297,6 @@ void ChromeSigninClient::VerifySyncToken() {
 #endif
 }
 
-bool ChromeSigninClient::IsNonEnterpriseUser(const std::string& username) {
-  return policy::BrowserPolicyConnector::IsNonEnterpriseUser(username);
-}
-
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 // Returns the account that must be auto-signed-in to the Main Profile in
 // Lacros.

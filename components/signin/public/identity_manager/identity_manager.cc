@@ -450,9 +450,6 @@ void IdentityManager::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   AccountFetcherService::RegisterPrefs(registry);
   AccountTrackerService::RegisterPrefs(registry);
   GaiaCookieManagerService::RegisterPrefs(registry);
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  MutableProfileOAuth2TokenServiceDelegate::RegisterProfilePrefs(registry);
-#endif
 }
 
 DiagnosticsProvider* IdentityManager::GetDiagnosticsProvider() {

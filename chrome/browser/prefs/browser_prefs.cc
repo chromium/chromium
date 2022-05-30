@@ -757,6 +757,11 @@ const char kNativeBridge64BitSupportExperimentEnabled[] =
     "arc.native_bridge_64bit_support_experiment";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+// Deprecated 06/2022.
+const char kTokenServiceDiceCompatible[] = "token_service.dice_compatible";
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -994,6 +999,10 @@ void RegisterProfilePrefsForMigration(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterBooleanPref(kColorModeThemed, true);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  registry->RegisterBooleanPref(kTokenServiceDiceCompatible, false);
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 }
 
 }  // namespace
@@ -1940,6 +1949,11 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   // Added 05/2022.
   profile_prefs->ClearPref(kColorModeThemed);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  // Added 06/2022.
+  profile_prefs->ClearPref(kTokenServiceDiceCompatible);
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

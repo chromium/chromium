@@ -23,7 +23,6 @@
 #include "net/base/backoff_entry.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 
-class PrefRegistrySimple;
 class SigninClient;
 class TokenWebData;
 
@@ -49,8 +48,6 @@ class MutableProfileOAuth2TokenServiceDelegate
       const MutableProfileOAuth2TokenServiceDelegate&) = delete;
 
   ~MutableProfileOAuth2TokenServiceDelegate() override;
-
-  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // Overridden from ProfileOAuth2TokenServiceDelegate.
   std::unique_ptr<OAuth2AccessTokenFetcher> CreateAccessTokenFetcher(
@@ -198,11 +195,6 @@ class MutableProfileOAuth2TokenServiceDelegate
   // revoked on the server.
   void RevokeCredentialsImpl(const CoreAccountId& account_id,
                              bool revoke_on_server);
-
-  // If the Dice migration happened before the tokens could be migrated, delete
-  // all the tokens. This is only called if the tokens could not be loaded
-  // successfully.
-  void MaybeDeletePreDiceTokens();
 
   // Maps the |account_id| of accounts known to ProfileOAuth2TokenService
   // to information about the account.

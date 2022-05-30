@@ -39,11 +39,15 @@ const size_t kAccountIdPrefixLength = 10;
 enum class LoadTokenFromDBStatus {
   // Token was loaded.
   TOKEN_LOADED = 0,
+
+  // DEPRECATED
   // Token was revoked as part of Dice migration.
-  TOKEN_REVOKED_DICE_MIGRATION = 1,
+  // TOKEN_REVOKED_DICE_MIGRATION = 1,
+
   // Token was revoked because it is a secondary account and account consistency
   // is disabled.
   TOKEN_REVOKED_SECONDARY_ACCOUNT = 2,
+
   // Token was revoked on load due to cookie settings.
   TOKEN_REVOKED_ON_LOAD = 3,
 
@@ -84,17 +88,6 @@ signin::LoadCredentialsState LoadCredentialsStateFromTokenResult(
   NOTREACHED();
   return signin::LoadCredentialsState::
       LOAD_CREDENTIALS_FINISHED_WITH_UNKNOWN_ERRORS;
-}
-
-// Returns whether the token service should be migrated to Dice.
-// Migration can happen if the following conditions are met:
-// - Token service Dice migration is not already done,
-// - Account consistency is DiceMigration or greater.
-// TODO(droger): Remove this code once Dice is fully enabled.
-bool ShouldMigrateToDice(signin::AccountConsistencyMethod account_consistency,
-                         PrefService* prefs) {
-  return account_consistency == signin::AccountConsistencyMethod::kDice &&
-         !prefs->GetBoolean(prefs::kTokenServiceDiceCompatible);
 }
 
 }  // namespace
@@ -238,12 +231,6 @@ MutableProfileOAuth2TokenServiceDelegate::
   VLOG(1) << "MutablePO2TS::~MutablePO2TS";
   DCHECK(server_revokes_.empty());
   network_connection_tracker_->RemoveNetworkConnectionObserver(this);
-}
-
-// static
-void MutableProfileOAuth2TokenServiceDelegate::RegisterProfilePrefs(
-    PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(prefs::kTokenServiceDiceCompatible, false);
 }
 
 std::unique_ptr<OAuth2AccessTokenFetcher>
@@ -391,7 +378,6 @@ void MutableProfileOAuth2TokenServiceDelegate::LoadCredentials(
     set_load_credentials_state(
         signin::LoadCredentialsState::
             LOAD_CREDENTIALS_FINISHED_WITH_UNKNOWN_ERRORS);
-    MaybeDeletePreDiceTokens();
     FinishLoadingCredentials();
     return;
   }
@@ -430,7 +416,6 @@ void MutableProfileOAuth2TokenServiceDelegate::OnWebDataServiceRequestDone(
     set_load_credentials_state(
         signin::LoadCredentialsState::
             LOAD_CREDENTIALS_FINISHED_WITH_DB_CANNOT_BE_OPENED);
-    MaybeDeletePreDiceTokens();
   }
 
   // Make sure that we have an entry for |loading_primary_account_id_| in the
@@ -465,9 +450,6 @@ void MutableProfileOAuth2TokenServiceDelegate::OnWebDataServiceRequestDone(
 
 void MutableProfileOAuth2TokenServiceDelegate::LoadAllCredentialsIntoMemory(
     const std::map<std::string, std::string>& db_tokens) {
-  bool migrate_to_dice =
-      ShouldMigrateToDice(account_consistency_, client_->GetPrefs());
-
   {
     ScopedBatchChange batch(this);
 
@@ -500,26 +482,6 @@ void MutableProfileOAuth2TokenServiceDelegate::LoadAllCredentialsIntoMemory(
                 ? LoadTokenFromDBStatus::TOKEN_LOADED
                 : LoadTokenFromDBStatus::TOKEN_REVOKED_SECONDARY_ACCOUNT;
 
-        if (migrate_to_dice) {
-          // Revoke old hosted domain accounts as part of Dice migration.
-          AccountInfo account_info =
-              account_tracker_service_->GetAccountInfo(account_id);
-          bool is_hosted_domain = false;
-          if (account_info.hosted_domain.empty()) {
-            // The AccountInfo is incomplete. Use a conservative approximation.
-            is_hosted_domain =
-                !client_->IsNonEnterpriseUser(account_info.email);
-          } else {
-            is_hosted_domain =
-                (account_info.hosted_domain != kNoHostedDomainFound);
-          }
-          if (is_hosted_domain) {
-            load_account = false;
-            load_token_status =
-                LoadTokenFromDBStatus::TOKEN_REVOKED_DICE_MIGRATION;
-          }
-        }
-
         if (load_account && revoke_all_tokens_on_load_) {
           if (account_id == loading_primary_account_id_) {
             RevokeCredentialsOnServer(refresh_token);
@@ -546,9 +508,6 @@ void MutableProfileOAuth2TokenServiceDelegate::LoadAllCredentialsIntoMemory(
       }
     }
   }
-
-  if (migrate_to_dice)
-    client_->GetPrefs()->SetBoolean(prefs::kTokenServiceDiceCompatible, true);
 }
 
 void MutableProfileOAuth2TokenServiceDelegate::UpdateCredentials(
@@ -739,8 +698,6 @@ void MutableProfileOAuth2TokenServiceDelegate::AddAccountStatus(
 }
 
 void MutableProfileOAuth2TokenServiceDelegate::FinishLoadingCredentials() {
-  if (account_consistency_ == signin::AccountConsistencyMethod::kDice)
-    DCHECK(client_->GetPrefs()->GetBoolean(prefs::kTokenServiceDiceCompatible));
   FireRefreshTokensLoaded();
 }
 
@@ -759,20 +716,5 @@ void MutableProfileOAuth2TokenServiceDelegate::RevokeCredentialsImpl(
     refresh_tokens_.erase(account_id);
     ClearPersistedCredentials(account_id);
     FireRefreshTokenRevoked(account_id);
-  }
-}
-
-void MutableProfileOAuth2TokenServiceDelegate::MaybeDeletePreDiceTokens() {
-  DCHECK(load_credentials_state() ==
-             signin::LoadCredentialsState::
-                 LOAD_CREDENTIALS_FINISHED_WITH_UNKNOWN_ERRORS ||
-         load_credentials_state() ==
-             signin::LoadCredentialsState::
-                 LOAD_CREDENTIALS_FINISHED_WITH_DB_CANNOT_BE_OPENED);
-
-  if (account_consistency_ == signin::AccountConsistencyMethod::kDice &&
-      !client_->GetPrefs()->GetBoolean(prefs::kTokenServiceDiceCompatible)) {
-    RevokeAllCredentials();
-    client_->GetPrefs()->SetBoolean(prefs::kTokenServiceDiceCompatible, true);
   }
 }
