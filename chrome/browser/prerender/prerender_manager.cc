@@ -21,6 +21,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/base_search_provider.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url.h"
@@ -30,7 +31,10 @@
 #include "content/public/browser/prerender_handle.h"
 #include "content/public/browser/replaced_navigation_entry_data.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_observer.h"
+#include "content/public/browser/web_contents_user_data.h"
 #include "net/base/url_util.h"
+#include "url/gurl.h"
 
 namespace internal {
 const char kHistogramPrerenderPredictionStatusDefaultSearchEngine[] =
