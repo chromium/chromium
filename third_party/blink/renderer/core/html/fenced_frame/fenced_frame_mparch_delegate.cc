@@ -27,7 +27,7 @@ FencedFrameMPArchDelegate::FencedFrameMPArchDelegate(
                 .value(),
             features::FencedFramesImplementationType::kMPArch);
 
-  DocumentFencedFrames::From(GetElement().GetDocument())
+  DocumentFencedFrames::GetOrCreate(GetElement().GetDocument())
       .RegisterFencedFrame(&GetElement());
   mojo::PendingAssociatedRemote<mojom::blink::FencedFrameOwnerHost> remote;
   mojo::PendingAssociatedReceiver<mojom::blink::FencedFrameOwnerHost> receiver =
@@ -49,8 +49,9 @@ void FencedFrameMPArchDelegate::Navigate(const KURL& url) {
 void FencedFrameMPArchDelegate::Dispose() {
   DCHECK(remote_);
   remote_.reset();
-  DocumentFencedFrames::From(GetElement().GetDocument())
-      .DeregisterFencedFrame(&GetElement());
+  auto* fenced_frames = DocumentFencedFrames::Get(GetElement().GetDocument());
+  DCHECK(fenced_frames);
+  fenced_frames->DeregisterFencedFrame(&GetElement());
 }
 
 void FencedFrameMPArchDelegate::AttachLayoutTree() {

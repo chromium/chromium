@@ -111,7 +111,8 @@ String HTMLPortalElement::PreActivateChecksCommon() {
   if (!portal_)
     return "The HTMLPortalElement is not associated with a portal context.";
 
-  if (DocumentPortals::From(GetDocument()).IsPortalInDocumentActivating())
+  if (DocumentPortals::GetOrCreate(GetDocument())
+          .IsPortalInDocumentActivating())
     return "Another portal in this document is activating.";
 
   if (GetDocument().GetPage()->InsidePortal())

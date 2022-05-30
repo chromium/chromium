@@ -356,15 +356,19 @@ void LocalFrameView::ForAllChildViewsAndPlugins(const Function& function) {
   }
 
   if (Document* document = frame_->GetDocument()) {
-    for (PortalContents* portal :
-         DocumentPortals::From(*document).GetPortals()) {
-      if (Frame* frame = portal->GetFrame())
-        function(*frame->View());
+    if (DocumentPortals* portals = DocumentPortals::Get(*document)) {
+      for (PortalContents* portal : portals->GetPortals()) {
+        if (Frame* frame = portal->GetFrame())
+          function(*frame->View());
+      }
     }
-    for (HTMLFencedFrameElement* fenced_frame :
-         DocumentFencedFrames::From(*document).GetFencedFrames()) {
-      if (Frame* frame = fenced_frame->ContentFrame())
-        function(*frame->View());
+    if (DocumentFencedFrames* fenced_frames =
+            DocumentFencedFrames::Get(*document)) {
+      for (HTMLFencedFrameElement* fenced_frame :
+           fenced_frames->GetFencedFrames()) {
+        if (Frame* frame = fenced_frame->ContentFrame())
+          function(*frame->View());
+      }
     }
   }
 }
@@ -433,18 +437,23 @@ void LocalFrameView::ForAllRemoteFrameViews(const Function& function) {
     }
   }
   if (Document* document = frame_->GetDocument()) {
-    for (PortalContents* portal :
-         DocumentPortals::From(*document).GetPortals()) {
-      if (RemoteFrame* frame = portal->GetFrame()) {
-        if (RemoteFrameView* view = frame->View())
-          function(*view);
+    if (DocumentPortals* portals = DocumentPortals::Get(*document)) {
+      for (PortalContents* portal : portals->GetPortals()) {
+        if (RemoteFrame* frame = portal->GetFrame()) {
+          if (RemoteFrameView* view = frame->View())
+            function(*view);
+        }
       }
     }
-    for (HTMLFencedFrameElement* fenced_frame :
-         DocumentFencedFrames::From(*document).GetFencedFrames()) {
-      if (RemoteFrame* frame = To<RemoteFrame>(fenced_frame->ContentFrame())) {
-        if (RemoteFrameView* view = frame->View())
-          function(*view);
+    if (DocumentFencedFrames* fenced_frames =
+            DocumentFencedFrames::Get(*document)) {
+      for (HTMLFencedFrameElement* fenced_frame :
+           fenced_frames->GetFencedFrames()) {
+        if (RemoteFrame* frame =
+                To<RemoteFrame>(fenced_frame->ContentFrame())) {
+          if (RemoteFrameView* view = frame->View())
+            function(*view);
+        }
       }
     }
   }
@@ -4288,21 +4297,25 @@ bool LocalFrameView::UpdateViewportIntersectionsForSubtree(
                                                              monotonic_time);
   }
 
-  for (PortalContents* portal :
-       DocumentPortals::From(*frame_->GetDocument()).GetPortals()) {
-    if (Frame* frame = portal->GetFrame()) {
-      needs_occlusion_tracking |=
-          frame->View()->UpdateViewportIntersectionsForSubtree(flags,
-                                                               monotonic_time);
+  if (DocumentPortals* portals = DocumentPortals::Get(*frame_->GetDocument())) {
+    for (PortalContents* portal : portals->GetPortals()) {
+      if (Frame* frame = portal->GetFrame()) {
+        needs_occlusion_tracking |=
+            frame->View()->UpdateViewportIntersectionsForSubtree(
+                flags, monotonic_time);
+      }
     }
   }
 
-  for (HTMLFencedFrameElement* fenced_frame :
-       DocumentFencedFrames::From(*frame_->GetDocument()).GetFencedFrames()) {
-    if (Frame* frame = fenced_frame->ContentFrame()) {
-      needs_occlusion_tracking |=
-          frame->View()->UpdateViewportIntersectionsForSubtree(flags,
-                                                               monotonic_time);
+  if (DocumentFencedFrames* fenced_frames =
+          DocumentFencedFrames::Get(*frame_->GetDocument())) {
+    for (HTMLFencedFrameElement* fenced_frame :
+         fenced_frames->GetFencedFrames()) {
+      if (Frame* frame = fenced_frame->ContentFrame()) {
+        needs_occlusion_tracking |=
+            frame->View()->UpdateViewportIntersectionsForSubtree(
+                flags, monotonic_time);
+      }
     }
   }
   return needs_occlusion_tracking;

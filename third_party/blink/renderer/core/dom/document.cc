@@ -3649,10 +3649,12 @@ static bool AllDescendantsAreComplete(Document* document) {
       return false;
   }
 
-  for (PortalContents* portal : DocumentPortals::From(*document).GetPortals()) {
-    auto* portal_frame = portal->GetFrame();
-    if (portal_frame && portal_frame->IsLoading())
-      return false;
+  if (auto* portals = DocumentPortals::Get(*document)) {
+    for (PortalContents* portal : portals->GetPortals()) {
+      auto* portal_frame = portal->GetFrame();
+      if (portal_frame && portal_frame->IsLoading())
+        return false;
+    }
   }
   return true;
 }

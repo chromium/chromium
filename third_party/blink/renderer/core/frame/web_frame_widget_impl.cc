@@ -195,15 +195,18 @@ void ForEachRemoteFrameChildrenControlledByWidget(
   if (auto* local_frame = DynamicTo<LocalFrame>(frame)) {
     if (Document* document = local_frame->GetDocument()) {
       // Iterate on any portals owned by a local frame.
-      for (PortalContents* portal :
-           DocumentPortals::From(*document).GetPortals()) {
-        if (RemoteFrame* remote_frame = portal->GetFrame())
-          callback.Run(remote_frame);
+      if (auto* portals = DocumentPortals::Get(*document)) {
+        for (PortalContents* portal : portals->GetPortals()) {
+          if (RemoteFrame* remote_frame = portal->GetFrame())
+            callback.Run(remote_frame);
+        }
       }
       // Iterate on any fenced frames owned by a local frame.
-      for (HTMLFencedFrameElement* fenced_frame :
-           DocumentFencedFrames::From(*document).GetFencedFrames()) {
-        callback.Run(To<RemoteFrame>(fenced_frame->ContentFrame()));
+      if (auto* fenced_frames = DocumentFencedFrames::Get(*document)) {
+        for (HTMLFencedFrameElement* fenced_frame :
+             fenced_frames->GetFencedFrames()) {
+          callback.Run(To<RemoteFrame>(fenced_frame->ContentFrame()));
+        }
       }
     }
   }

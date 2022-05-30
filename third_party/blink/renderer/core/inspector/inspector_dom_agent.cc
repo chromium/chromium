@@ -2556,26 +2556,28 @@ protocol::Response InspectorDOMAgent::getFrameOwner(
     }
 
     if (IsA<LocalFrame>(frame)) {
-      for (HTMLFencedFrameElement* ff :
-           DocumentFencedFrames::From(*(To<LocalFrame>(frame)->GetDocument()))
-               .GetFencedFrames()) {
-        Frame* ff_frame = ff->ContentFrame();
-        if (ff_frame && IdentifiersFactory::FrameId(ff_frame) == frame_id) {
-          found_frame = ff_frame;
-          break;
+      if (auto* fenced_frames = DocumentFencedFrames::Get(
+              *To<LocalFrame>(frame)->GetDocument())) {
+        for (HTMLFencedFrameElement* ff : fenced_frames->GetFencedFrames()) {
+          Frame* ff_frame = ff->ContentFrame();
+          if (ff_frame && IdentifiersFactory::FrameId(ff_frame) == frame_id) {
+            found_frame = ff_frame;
+            break;
+          }
         }
       }
     }
   }
 
   if (!found_frame) {
-    for (PortalContents* portal :
-         DocumentPortals::From(*inspected_frames_->Root()->GetDocument())
-             .GetPortals()) {
-      Frame* portal_frame = portal->GetFrame();
-      if (IdentifiersFactory::FrameId(portal_frame) == frame_id) {
-        found_frame = portal_frame;
-        break;
+    if (auto* portals =
+            DocumentPortals::Get(*inspected_frames_->Root()->GetDocument())) {
+      for (PortalContents* portal : portals->GetPortals()) {
+        Frame* portal_frame = portal->GetFrame();
+        if (IdentifiersFactory::FrameId(portal_frame) == frame_id) {
+          found_frame = portal_frame;
+          break;
+        }
       }
     }
   }

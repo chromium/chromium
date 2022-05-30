@@ -17,7 +17,12 @@ namespace blink {
 const char DocumentFencedFrames::kSupplementName[] = "DocumentFencedFrame";
 
 // static
-DocumentFencedFrames& DocumentFencedFrames::From(Document& document) {
+DocumentFencedFrames* DocumentFencedFrames::Get(Document& document) {
+  return Supplement<Document>::From<DocumentFencedFrames>(document);
+}
+
+// static
+DocumentFencedFrames& DocumentFencedFrames::GetOrCreate(Document& document) {
   DocumentFencedFrames* supplement =
       Supplement<Document>::From<DocumentFencedFrames>(document);
   if (!supplement) {

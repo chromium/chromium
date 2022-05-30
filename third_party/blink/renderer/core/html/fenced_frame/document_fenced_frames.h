@@ -19,7 +19,15 @@ class DocumentFencedFrames final
       public Supplement<Document> {
  public:
   static const char kSupplementName[];
-  static DocumentFencedFrames& From(Document&);
+
+  // Returns the supplement that stores the fenced frame elements
+  // that are associated with the document. Returns nullptr if
+  // `GetOrCreate` has yet been called yet.
+  static DocumentFencedFrames* Get(Document&);
+
+  // Like `Get` but if the supplement has not been created yet it
+  // will be created.
+  static DocumentFencedFrames& GetOrCreate(Document&);
 
   explicit DocumentFencedFrames(Document&);
 

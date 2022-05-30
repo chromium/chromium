@@ -609,8 +609,9 @@ void CheckFrameCountConsistency(int expected_frame_count, Frame* frame) {
   int actual_frame_count = 0;
 
   if (auto* local_frame = DynamicTo<LocalFrame>(frame)) {
-    actual_frame_count += static_cast<int>(
-        DocumentPortals::From(*local_frame->GetDocument()).GetPortals().size());
+    if (auto* portals = DocumentPortals::Get(*local_frame->GetDocument())) {
+      actual_frame_count += static_cast<int>(portals->GetPortals().size());
+    }
   }
 
   for (; frame; frame = frame->Tree().TraverseNext()) {
@@ -620,10 +621,11 @@ void CheckFrameCountConsistency(int expected_frame_count, Frame* frame) {
     // the ``frame`` to get an accurate count (i.e. if an iframe embeds
     // a fenced frame and creates a new ``DocumentFencedFrames`` object).
     if (auto* local_frame = DynamicTo<LocalFrame>(frame)) {
-      actual_frame_count += static_cast<int>(
-          DocumentFencedFrames::From(*local_frame->GetDocument())
-              .GetFencedFrames()
-              .size());
+      if (auto* fenced_frames =
+              DocumentFencedFrames::Get(*local_frame->GetDocument())) {
+        actual_frame_count +=
+            static_cast<int>(fenced_frames->GetFencedFrames().size());
+      }
     }
   }
 
