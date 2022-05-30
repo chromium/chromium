@@ -53,7 +53,9 @@ cp out/Debug/obj/third_party/r8/custom_d8_java.javac.jar third_party/r8/custom_d
     * Find the version tag at this url
       https://chrome-infra-packages.appspot.com/p/chromium/third_party/r8/+/<instance id>
     * Or, run `cipd describe chromium/third_party/r8 -version <instance id>` and look at the version tag.
-    * The commit hash that R8 was built at appears after the @ symbol in the version tag.
+    * The commit hash that R8 was built at appears after the "@" symbol in the version tag and
+      before the "-". Eg. version:2@33ae86d80351efc4d632452331d06cb97e42f2a7-72dd46fd5c gives the
+      commit hash of 33ae86d80351efc4d632452331d06cb97e42f2a7.
   * New instances are uploaded by the packager bot:
     https://ci.chromium.org/p/chromium/builders/ci/3pp-linux-amd64-packager
   * The bot autoruns every 6 hours. Ping a trooper or a clank build core dev to
