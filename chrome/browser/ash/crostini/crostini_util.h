@@ -189,6 +189,9 @@ void ShowCrostiniRecoveryView(Profile* profile,
 // Remove duplicate containers in the existing kCrostiniContainers pref.
 void RemoveDuplicateContainerEntries(PrefService* prefs);
 
+// Returns a list of all containers in prefs.
+std::vector<ContainerId> GetContainers(Profile* profile);
+
 // Add a newly created LXD container to the kCrostiniContainers pref
 void AddNewLxdContainerToPrefs(Profile* profile,
                                const ContainerId& container_id);

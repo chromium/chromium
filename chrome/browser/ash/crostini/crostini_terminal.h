@@ -162,9 +162,6 @@ std::string ShortcutIdFromContainerId(const crostini::ContainerId& id);
 std::vector<std::pair<std::string, std::string>> GetSSHConnections(
     Profile* profile);
 
-// Returns list of Linux containers.
-std::vector<ContainerId> GetLinuxContainers(Profile* profile);
-
 // Add terminal menu items (Settings, Shut down Linux).
 void AddTerminalMenuItems(Profile* profile,
                           apps::mojom::MenuItemsPtr* menu_items);

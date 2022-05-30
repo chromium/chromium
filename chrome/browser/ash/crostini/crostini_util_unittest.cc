@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/crostini/crostini_util.h"
 
 #include "base/bind.h"
+#include "base/json/json_reader.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
@@ -228,5 +229,18 @@ TEST_F(CrostiniUtilTest, ShouldNotStopVm) {
                                 std::move(containers));
 
   EXPECT_FALSE(ShouldStopVm(profile_.get(), containera));
+}
+
+TEST_F(CrostiniUtilTest, GetContainers) {
+  auto pref = base::JSONReader::Read(R"([
+    {"vm_name": "vm1", "container_name": "c1"},
+    {"vm_name": "vm2", "container_name": "c2"},
+    {"vm_name": "vm3"}
+  ])");
+  ASSERT_TRUE(pref.has_value());
+  profile_->GetPrefs()->Set(prefs::kCrostiniContainers, std::move(*pref));
+  std::vector<ContainerId> expected = {ContainerId("vm1", "c1"),
+                                       ContainerId("vm2", "c2")};
+  EXPECT_EQ(GetContainers(profile_.get()), expected);
 }
 }  // namespace crostini

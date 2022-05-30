@@ -442,6 +442,21 @@ void RemoveDuplicateContainerEntries(PrefService* prefs) {
   }
 }
 
+std::vector<ContainerId> GetContainers(Profile* profile) {
+  std::vector<ContainerId> result;
+  const base::Value::List& container_list =
+      profile->GetPrefs()
+          ->GetList(crostini::prefs::kCrostiniContainers)
+          ->GetList();
+  for (const auto& container : container_list) {
+    crostini::ContainerId id(container);
+    if (!id.vm_name.empty() && !id.container_name.empty()) {
+      result.push_back(std::move(id));
+    }
+  }
+  return result;
+}
+
 void AddNewLxdContainerToPrefs(Profile* profile,
                                const ContainerId& container_id) {
   ListPrefUpdate updater(profile->GetPrefs(),

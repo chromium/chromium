@@ -48,19 +48,4 @@ TEST_F(CrostiniTerminalTest, GetSSHConnections) {
   EXPECT_EQ(GetSSHConnections(&profile), expected);
 }
 
-TEST_F(CrostiniTerminalTest, GetLinuxContainers) {
-  content::BrowserTaskEnvironment task_environment;
-  TestingProfile profile;
-  auto pref = base::JSONReader::Read(R"([
-    {"vm_name": "vm1", "container_name": "c1"},
-    {"vm_name": "vm2", "container_name": "c2"},
-    {"vm_name": "vm3"}
-  ])");
-  ASSERT_TRUE(pref.has_value());
-  profile.GetPrefs()->Set(prefs::kCrostiniContainers, std::move(*pref));
-  std::vector<ContainerId> expected = {ContainerId("vm1", "c1"),
-                                       ContainerId("vm2", "c2")};
-  EXPECT_EQ(GetLinuxContainers(&profile), expected);
-}
-
 }  // namespace crostini

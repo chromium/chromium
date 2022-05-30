@@ -466,21 +466,6 @@ std::vector<std::pair<std::string, std::string>> GetSSHConnections(
   return result;
 }
 
-std::vector<ContainerId> GetLinuxContainers(Profile* profile) {
-  std::vector<ContainerId> result;
-  const base::Value::List& container_list =
-      profile->GetPrefs()
-          ->GetList(crostini::prefs::kCrostiniContainers)
-          ->GetList();
-  for (const auto& container : container_list) {
-    crostini::ContainerId id(container);
-    if (!id.vm_name.empty() && !id.container_name.empty()) {
-      result.push_back(std::move(id));
-    }
-  }
-  return result;
-}
-
 void AddTerminalMenuItems(Profile* profile,
                           apps::mojom::MenuItemsPtr* menu_items) {
   apps::AddCommandItem(ash::SETTINGS, IDS_INTERNAL_APP_SETTINGS, menu_items);
@@ -510,7 +495,7 @@ void AddTerminalMenuShortcuts(
       GetSSHConnections(profile);
   std::vector<ContainerId> containers;
   if (CrostiniFeatures::Get()->IsEnabled(profile)) {
-    containers = GetLinuxContainers(profile);
+    containers = GetContainers(profile);
   }
   if (connections.size() > 0 || containers.size() > 0) {
     apps::AddSeparator(ui::DOUBLE_SEPARATOR, &menu_items);
