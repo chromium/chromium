@@ -380,6 +380,11 @@ void NotificationHeaderView::SetAppIconVisible(bool visible) {
   app_icon_view_->SetVisible(visible);
 }
 
+void NotificationHeaderView::SetTimestampVisible(bool visible) {
+  timestamp_divider_->SetVisible(visible);
+  timestamp_view_->SetVisible(visible);
+}
+
 void NotificationHeaderView::SetIsInAshNotificationView(
     bool is_in_ash_notification) {
   is_in_ash_notification_ = is_in_ash_notification;

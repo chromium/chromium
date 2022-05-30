@@ -257,6 +257,10 @@ class AshNotificationViewTest : public AshTestBase, public views::ViewObserver {
   views::Label* GetTimestampInCollapsedView(AshNotificationView* view) {
     return view->title_row_->timestamp_in_collapsed_view_;
   }
+  const views::Label* GetTimestamp(AshNotificationView* view) {
+    return view->header_row()->timestamp_view_for_testing();
+  }
+
   views::Label* GetMessageLabel(AshNotificationView* view) {
     return view->message_label();
   }
@@ -481,13 +485,14 @@ TEST_F(AshNotificationViewTest, GroupedNotificationExpandState) {
   auto* child_view = GetFirstGroupedChildNotificationView(notification_view());
   EXPECT_TRUE(GetCollapsedSummaryView(child_view)->GetVisible());
   EXPECT_FALSE(GetMainView(child_view)->GetVisible());
-
-  // Expanding the parent notification should make the counter invisible and
-  // the child notifications should now have the main view visible instead of
-  // the summary.
+  EXPECT_TRUE(GetTimestamp(notification_view())->GetVisible());
+  // Expanding the parent notification should make the expand button counter and
+  // timestamp invisible and the child notifications should now have the main
+  // view visible instead of the summary.
   notification_view()->SetExpanded(true);
   EXPECT_FALSE(
       GetExpandButton(notification_view())->label_for_test()->GetVisible());
+  EXPECT_FALSE(GetTimestamp(notification_view())->GetVisible());
   EXPECT_FALSE(GetCollapsedSummaryView(child_view)->GetVisible());
   EXPECT_TRUE(GetMainView(child_view)->GetVisible());
 }
@@ -581,19 +586,6 @@ TEST_F(AshNotificationViewTest, ExpandButtonVisibility) {
   ToggleInlineSettings(notification_view());
   EXPECT_TRUE(content_row()->GetVisible());
   EXPECT_TRUE(GetExpandButton(notification_view())->GetVisible());
-}
-
-TEST_F(AshNotificationViewTest, LeftContentNotVisibleInGroupedNotifications) {
-  auto notification = CreateTestNotification();
-
-  EXPECT_TRUE(GetLeftContent(notification_view())->GetVisible());
-
-  auto group_child = CreateTestNotification();
-  notification_view()->AddGroupNotification(*group_child.get());
-  EXPECT_FALSE(GetLeftContent(notification_view())->GetVisible());
-
-  notification_view()->RemoveGroupNotification(group_child->id());
-  EXPECT_TRUE(GetLeftContent(notification_view())->GetVisible());
 }
 
 TEST_F(AshNotificationViewTest, WarningLevelInSummaryText) {

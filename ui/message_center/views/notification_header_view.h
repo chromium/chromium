@@ -74,6 +74,9 @@ class MESSAGE_CENTER_EXPORT NotificationHeaderView : public views::Button {
   // Shows or hides the app icon.
   void SetAppIconVisible(bool visible);
 
+  // Shows or hides the timestamp and timestamp divider
+  void SetTimestampVisible(bool visible);
+
   void SetIsInAshNotificationView(bool is_in_ash_notification);
 
   // views::View:

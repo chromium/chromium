@@ -361,7 +361,7 @@ ui::Layer* MessageView::GetSlideOutLayer() {
       (parent_message_view_ && !parent_message_view_->IsExpanded())
           ? parent_message_view_->layer()
           : layer();
-  bool is_nested = (parent_message_view_ && !IsExpanded())
+  bool is_nested = (parent_message_view_ && !parent_message_view_->IsExpanded())
                        ? parent_message_view_->is_nested()
                        : is_nested_;
   return is_nested ? nested_layer : GetWidget()->GetLayer();

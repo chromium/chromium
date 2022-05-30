@@ -735,6 +735,7 @@ base::TimeDelta AshNotificationView::GetBoundsAnimationDuration(
 
 void AshNotificationView::AddGroupNotification(
     const message_center::Notification& notification) {
+  DCHECK(is_grouped_parent_view_);
   // Do not add a grouped notification if a view for it already exists.
   if (FindGroupNotificationView(notification.id()))
     return;
@@ -746,6 +747,8 @@ void AshNotificationView::AddGroupNotification(
   notification_view->set_parent_message_view(this);
   notification_view->set_scroller(
       scroller() ? scroller() : grouped_notifications_scroll_view_);
+
+  header_row()->SetTimestamp(notification.timestamp());
 
   grouped_notifications_container_->AddChildViewAt(std::move(notification_view),
                                                    0);
@@ -759,6 +762,7 @@ void AshNotificationView::AddGroupNotification(
 
 void AshNotificationView::PopulateGroupNotifications(
     const std::vector<const message_center::Notification*>& notifications) {
+  DCHECK(is_grouped_parent_view_);
   // Clear all grouped notifications since we will add all grouped notifications
   // from scratch.
   total_grouped_notifications_ = 0;
@@ -768,6 +772,10 @@ void AshNotificationView::PopulateGroupNotifications(
     auto notification_view =
         std::make_unique<AshNotificationView>(*notification,
                                               /*shown_in_popup=*/false);
+
+    if (!total_grouped_notifications_)
+      header_row()->SetTimestamp(notification->timestamp());
+
     notification_view->SetVisible(
         total_grouped_notifications_ <
             message_center_style::kMaxGroupedNotificationsInCollapsedState ||
@@ -808,8 +816,6 @@ void AshNotificationView::RemoveGroupNotification(
         self->grouped_notifications_container_->RemoveChildViewT(to_be_deleted);
 
         self->total_grouped_notifications_--;
-        self->left_content_->SetVisible(self->total_grouped_notifications_ ==
-                                        0);
         self->expand_button_->UpdateGroupedNotificationsCount(
             self->total_grouped_notifications_);
 
@@ -845,6 +851,7 @@ void AshNotificationView::UpdateViewForExpandedState(bool expanded) {
       !is_grouped_child_view_ && !is_grouped_parent_view_ && expanded;
   header_row()->SetVisible(is_grouped_parent_view_ ||
                            (is_single_expanded_notification));
+  header_row()->SetTimestampVisible(!is_grouped_parent_view_ || !expanded);
 
   if (title_row_) {
     title_row_->UpdateVisibility(is_grouped_child_view_ ||
