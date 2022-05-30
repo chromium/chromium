@@ -6,6 +6,7 @@
 
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "components/device_signals/core/browser/user_context.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/signin/public/identity_manager/account_info.h"

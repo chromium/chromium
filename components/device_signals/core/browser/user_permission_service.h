@@ -5,18 +5,12 @@
 #ifndef COMPONENTS_DEVICE_SIGNALS_CORE_BROWSER_USER_PERMISSION_SERVICE_H_
 #define COMPONENTS_DEVICE_SIGNALS_CORE_BROWSER_USER_PERMISSION_SERVICE_H_
 
-#include <string>
-#include <vector>
-
 #include "base/callback_forward.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace device_signals {
 
-struct UserContext {
-  // GAIA ID of the user.
-  std::string user_id;
-};
+struct UserContext;
 
 enum class UserPermission {
   // Returned when the user is part of an organization that is not affiliated

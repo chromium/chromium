@@ -5,6 +5,7 @@
 #include "components/device_signals/core/common/signals_constants.h"
 
 namespace device_signals {
+
 namespace names {
 
 // Name of the signal for getting information of the AllowScreenLock
@@ -136,4 +137,20 @@ const char kTpmHash[] = "tpmHash";
 const char kWindowsDomain[] = "windowsDomain";
 
 }  // namespace names
+
+namespace errors {
+
+// Returned when the user has not given explicit consent for a specific signal
+// to be collected.
+const char kConsentRequired[] = "CONSENT_REQUIRED";
+
+// Returned when the user is not affiliated with the organization managing the
+// browser.
+const char kUnaffiliatedUser[] = "UNAFFILIATED_USER";
+
+// Returned when the specified signal is not supported.
+const char kUnsupported[] = "UNSUPPORTED";
+
+}  // namespace errors
+
 }  // namespace device_signals

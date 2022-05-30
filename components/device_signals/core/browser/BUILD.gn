@@ -7,12 +7,14 @@ static_library("browser") {
     "signals_aggregator.h",
     "signals_aggregator_impl.h",
     "signals_collector.h",
+    "user_context.h",
     "user_permission_service.h",
     "user_permission_service_impl.h",
   ]
 
   sources = [
     "signals_aggregator_impl.cc",
+    "user_context.cc",
     "user_permission_service_impl.cc",
   ]
 

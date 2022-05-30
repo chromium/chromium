@@ -5,6 +5,7 @@
 #include "components/device_signals/core/browser/user_permission_service_impl.h"
 
 #include "base/check.h"
+#include "components/device_signals/core/browser/user_context.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 

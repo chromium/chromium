@@ -14,10 +14,13 @@
 namespace device_signals {
 
 class SignalsCollector;
+class UserPermissionService;
+enum class UserPermission;
 
 class SignalsAggregatorImpl : public SignalsAggregator {
  public:
   explicit SignalsAggregatorImpl(
+      UserPermissionService* permission_service,
       std::vector<std::unique_ptr<SignalsCollector>> collectors);
 
   SignalsAggregatorImpl(const SignalsAggregatorImpl&) = delete;
@@ -26,14 +29,20 @@ class SignalsAggregatorImpl : public SignalsAggregator {
   ~SignalsAggregatorImpl() override;
 
   // SignalsAggregator:
-  void GetSignals(const base::Value::Dict& parameters,
+  void GetSignals(const UserContext& user_context,
+                  base::Value::Dict parameters,
                   GetSignalsCallback callback) override;
 
  private:
+  void OnUserPermissionChecked(base::Value::Dict parameters,
+                               GetSignalsCallback callback,
+                               const UserPermission user_permission);
+
   void OnSignalCollected(const std::string signal_name,
                          GetSignalsCallback callback,
                          base::Value value);
 
+  base::raw_ptr<UserPermissionService> permission_service_;
   std::vector<std::unique_ptr<SignalsCollector>> collectors_;
 
   base::WeakPtrFactory<SignalsAggregatorImpl> weak_factory_{this};

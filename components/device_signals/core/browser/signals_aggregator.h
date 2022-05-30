@@ -11,9 +11,11 @@
 
 namespace device_signals {
 
+struct UserContext;
+
 class SignalsAggregator : public KeyedService {
  public:
-  using GetSignalsCallback = base::OnceCallback<void(base::Value::Dict)>;
+  using GetSignalsCallback = base::OnceCallback<void(base::Value)>;
 
   ~SignalsAggregator() override = default;
 
@@ -21,10 +23,14 @@ class SignalsAggregator : public KeyedService {
   // dictionary, where keys represent the names of the signals to be collected
   // and values represent their collection parameters. Invokes `callback` with
   // the collected signals stored in a dictionary, where the keys are the
-  // signal names and values are the collected values.
+  // signal names and values are the collected values. If signal collection
+  // failed, the value returned in the callback may be solely an error string.
+  // Will use `user_context` to validate that the user has permissions to the
+  // device's signals.
   // Currently only supports the collection of one signal (only one entry in
   // `parameter`).
-  virtual void GetSignals(const base::Value::Dict& parameters,
+  virtual void GetSignals(const UserContext& user_context,
+                          base::Value::Dict parameters,
                           GetSignalsCallback callback) = 0;
 };
 
