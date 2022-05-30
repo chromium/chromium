@@ -10,7 +10,6 @@
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/search/ranking/types.h"
 #include "chrome/browser/ui/app_list/search/search_controller.h"
-#include "chrome/browser/ui/app_list/search/test/ranking_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -20,6 +19,15 @@ namespace {
 
 using testing::UnorderedElementsAre;
 using testing::UnorderedElementsAreArray;
+
+class TestResult : public ChromeSearchResult {
+ public:
+  explicit TestResult(const std::string& id) { set_id(id); }
+  ~TestResult() override {}
+
+  // ChromeSearchResult:
+  void Open(int event_flags) override {}
+};
 
 std::unique_ptr<TestResult> MakeResult(const std::string& id) {
   return std::make_unique<TestResult>(id);

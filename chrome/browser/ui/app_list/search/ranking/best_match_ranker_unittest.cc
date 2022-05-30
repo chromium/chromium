@@ -6,7 +6,6 @@
 
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/search/ranking/types.h"
-#include "chrome/browser/ui/app_list/search/test/ranking_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -16,11 +15,21 @@ namespace {
 
 using testing::ElementsAreArray;
 
+class TestResult : public ChromeSearchResult {
+ public:
+  explicit TestResult(const std::string& id, double relevance) {
+    set_id(id);
+    scoring().normalized_relevance = relevance;
+  }
+  ~TestResult() override {}
+
+  // ChromeSearchResult:
+  void Open(int event_flags) override {}
+};
+
 std::unique_ptr<TestResult> MakeResult(const std::string& id,
-                                       double normalized_relevance) {
-  // |relevance| must be set but is unused.
-  return std::make_unique<TestResult>(id, /*relevance=*/0.0,
-                                      normalized_relevance);
+                                       double relevance) {
+  return std::make_unique<TestResult>(id, relevance);
 }
 
 Results MakeAnswers(
@@ -152,13 +161,13 @@ TEST_F(BestMatchRankerTest, IgnoreProviders) {
   ranker_.UpdateResultRanks(results_map, ProviderType::kAssistantText);
 
   // kAssistantText is a low-intent provider and should be ignored from best
-  // match. The other results should be sorted by (normalized) relevance.
+  // match. The other results should be sorted by relevance.
   ExpectBestMatchOrderAndRanks({{"omni_2", 0}, {"omni_1", 1}});
 }
 
 // During the post-burn-in phase, the highest-ranked best match should remain
 // stabilized in this position, and any remaining best matches should be sorted
-// by (normalized) relevance score.
+// by relevance score.
 TEST_F(BestMatchRankerTest, PostBurnIn_HighestBestMatchIsStabilized) {
   ResultsMap results_map;
 
