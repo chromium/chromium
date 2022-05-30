@@ -15,14 +15,6 @@ const char kUnexpectedServiceResponse[] = "UnexpectedServiceResponse";
 
 // Service name for Gaia.  Used to convert to cookie auth.
 const char kGaiaService[] = "gaia";
-// Service name for Picasa API. API is used to get user's image.
-const char kPicasaService[] = "lh2";
-
-// Service/scope names for sync.
-const char kSyncService[] = "chromiumsync";
-
-// Service name for remoting.
-const char kRemotingService[] = "chromoting";
 
 // OAuth scopes.
 const char kOAuth1LoginScope[] = "https://www.google.com/accounts/OAuthLogin";
@@ -175,7 +167,6 @@ const char kGaiaLsid[] = "lsid";
 const char kGaiaOAuthToken[] = "oauthToken";
 const char kGaiaOAuthSecret[] = "oauthSecret";
 const char kGaiaOAuthDuration[] = "3600";
-const char kGaiaOAuth2LoginRefreshToken[] = "oauth2LoginRefreshToken";
 
 // Used to construct a channel ID for push messaging.
 const char kObfuscatedGaiaId[] = "obfuscatedGaiaId";

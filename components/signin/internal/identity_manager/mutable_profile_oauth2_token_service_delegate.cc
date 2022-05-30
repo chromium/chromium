@@ -31,7 +31,6 @@
 namespace {
 
 const char kAccountIdPrefix[] = "AccountId-";
-const size_t kAccountIdPrefixLength = 10;
 
 // Enum for the Signin.LoadTokenFromDB histogram.
 // Do not modify, or add or delete other than directly before
@@ -58,17 +57,15 @@ std::string ApplyAccountIdPrefix(const std::string& account_id) {
   return kAccountIdPrefix + account_id;
 }
 
-bool IsLegacyRefreshTokenId(const std::string& service_id) {
-  return service_id == GaiaConstants::kGaiaOAuth2LoginRefreshToken;
-}
-
-bool IsLegacyServiceId(const std::string& account_id) {
-  return account_id.compare(0u, kAccountIdPrefixLength, kAccountIdPrefix) != 0;
-}
-
+// Checks that |prefixed_account_id| starts with the expected prefix
+// (|prefixed_account_id|) and returns the non-prefixed account id or an empty
+// account id if |prefixed_account_id| is not correctly prefixed.
 CoreAccountId RemoveAccountIdPrefix(const std::string& prefixed_account_id) {
+  if (!base::StartsWith(prefixed_account_id, kAccountIdPrefix))
+    return CoreAccountId();
+
   return CoreAccountId::FromString(
-      prefixed_account_id.substr(kAccountIdPrefixLength));
+      prefixed_account_id.substr(/*pos=*/strlen(kAccountIdPrefix)));
 }
 
 signin::LoadCredentialsState LoadCredentialsStateFromTokenResult(
@@ -450,62 +447,58 @@ void MutableProfileOAuth2TokenServiceDelegate::OnWebDataServiceRequestDone(
 
 void MutableProfileOAuth2TokenServiceDelegate::LoadAllCredentialsIntoMemory(
     const std::map<std::string, std::string>& db_tokens) {
-  {
-    ScopedBatchChange batch(this);
+  VLOG(1) << "MutablePO2TS::LoadAllCredentialsIntoMemory; " << db_tokens.size()
+          << " redential(s).";
 
-    VLOG(1) << "MutablePO2TS::LoadAllCredentialsIntoMemory; "
-            << db_tokens.size() << " Credential(s).";
-    for (auto iter = db_tokens.begin(); iter != db_tokens.end(); ++iter) {
-      std::string prefixed_account_id = iter->first;
-      std::string refresh_token = iter->second;
+  ScopedBatchChange batch(this);
+  for (const auto& db_token : db_tokens) {
+    std::string prefixed_account_id = db_token.first;
+    std::string refresh_token = db_token.second;
 
-      if (IsLegacyRefreshTokenId(prefixed_account_id) ||
-          IsLegacyServiceId(prefixed_account_id)) {
-        if (token_web_data_) {
-          VLOG(1) << "MutablePO2TS remove legacy refresh token for account id "
-                  << prefixed_account_id;
-          token_web_data_->RemoveTokenForService(prefixed_account_id);
-        }
-      } else {
-        DCHECK(!refresh_token.empty());
-        CoreAccountId account_id = RemoveAccountIdPrefix(prefixed_account_id);
-        DCHECK(!account_id.IsEmail())
-            << "Expecting a Gaia ID as account id [ account_id = " << account_id
-            << "]";
-
-        // Only load secondary accounts when account consistency is enabled.
-        bool load_account =
-            account_id == loading_primary_account_id_ ||
-            account_consistency_ == signin::AccountConsistencyMethod::kDice;
-        LoadTokenFromDBStatus load_token_status =
-            load_account
-                ? LoadTokenFromDBStatus::TOKEN_LOADED
-                : LoadTokenFromDBStatus::TOKEN_REVOKED_SECONDARY_ACCOUNT;
-
-        if (load_account && revoke_all_tokens_on_load_) {
-          if (account_id == loading_primary_account_id_) {
-            RevokeCredentialsOnServer(refresh_token);
-            refresh_token = GaiaConstants::kInvalidRefreshToken;
-            PersistCredentials(account_id, refresh_token);
-          } else {
-            load_account = false;
-          }
-          load_token_status = LoadTokenFromDBStatus::TOKEN_REVOKED_ON_LOAD;
-        }
-
-        UMA_HISTOGRAM_ENUMERATION(
-            "Signin.LoadTokenFromDB", load_token_status,
-            LoadTokenFromDBStatus::NUM_LOAD_TOKEN_FROM_DB_STATUS);
-
-        if (load_account) {
-          UpdateCredentialsInMemory(account_id, refresh_token);
-          FireRefreshTokenAvailable(account_id);
-        } else {
-          RevokeCredentialsOnServer(refresh_token);
-          ClearPersistedCredentials(account_id);
-          FireRefreshTokenRevoked(account_id);
-        }
+    CoreAccountId account_id = RemoveAccountIdPrefix(prefixed_account_id);
+    if (account_id.empty()) {
+      if (token_web_data_) {
+        VLOG(1) << "MutablePO2TS remove refresh token for invalid account id ["
+                << prefixed_account_id << "]";
+        token_web_data_->RemoveTokenForService(prefixed_account_id);
       }
+      continue;
+    }
+
+    DCHECK(!account_id.IsEmail())
+        << "Acount id should be a Gaia id [account_id = " << account_id << "]";
+    DCHECK(!refresh_token.empty());
+
+    // Only load secondary accounts when account consistency is enabled.
+    bool load_account =
+        account_id == loading_primary_account_id_ ||
+        account_consistency_ == signin::AccountConsistencyMethod::kDice;
+    LoadTokenFromDBStatus load_token_status =
+        load_account ? LoadTokenFromDBStatus::TOKEN_LOADED
+                     : LoadTokenFromDBStatus::TOKEN_REVOKED_SECONDARY_ACCOUNT;
+
+    if (load_account && revoke_all_tokens_on_load_) {
+      if (account_id == loading_primary_account_id_) {
+        RevokeCredentialsOnServer(refresh_token);
+        refresh_token = GaiaConstants::kInvalidRefreshToken;
+        PersistCredentials(account_id, refresh_token);
+      } else {
+        load_account = false;
+      }
+      load_token_status = LoadTokenFromDBStatus::TOKEN_REVOKED_ON_LOAD;
+    }
+
+    UMA_HISTOGRAM_ENUMERATION(
+        "Signin.LoadTokenFromDB", load_token_status,
+        LoadTokenFromDBStatus::NUM_LOAD_TOKEN_FROM_DB_STATUS);
+
+    if (load_account) {
+      UpdateCredentialsInMemory(account_id, refresh_token);
+      FireRefreshTokenAvailable(account_id);
+    } else {
+      RevokeCredentialsOnServer(refresh_token);
+      ClearPersistedCredentials(account_id);
+      FireRefreshTokenRevoked(account_id);
     }
   }
 }

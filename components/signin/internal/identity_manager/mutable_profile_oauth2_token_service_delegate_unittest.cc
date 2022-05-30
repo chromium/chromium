@@ -46,7 +46,6 @@
 
 // Defining constant here to handle backward compatiblity tests, but this
 // constant is no longer used in current versions of chrome.
-static const char kLSOService[] = "lso";
 static const char kEmail[] = "user@gmail.com";
 
 class MutableProfileOAuth2TokenServiceDelegateTest
@@ -245,11 +244,10 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, PersistenceDBUpgrade) {
   InitializeOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDice);
   CoreAccountId primary_account_id("primaryAccount");
 
-  // Populate DB with legacy tokens (Expected to be discarded).
-  AddAuthTokenManually(GaiaConstants::kSyncService, "syncServiceToken");
-  AddAuthTokenManually(kLSOService, "lsoToken");
-  AddAuthTokenManually(GaiaConstants::kGaiaOAuth2LoginRefreshToken,
-                       "primaryLegacyRefreshToken");
+  // Populate DB with legacy service tokens (all expected to be discarded).
+  AddAuthTokenManually("chromiumsync", "syncServiceToken");
+  AddAuthTokenManually("lso", "lsoToken");
+  AddAuthTokenManually("kObfuscatedGaiaId", "primaryLegacyRefreshToken");
 
   // Force LoadCredentials.
   oauth2_service_delegate_->LoadCredentials(primary_account_id,
