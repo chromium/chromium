@@ -223,7 +223,6 @@ try_.builder(
 try_.builder(
     name = "linux-perfetto-rel",
     tryjob = try_.job(
-        experiment_percentage = 100,
         location_regexp = [
             ".+/[+]/base/trace_event/.+",
             ".+/[+]/base/tracing/.+",

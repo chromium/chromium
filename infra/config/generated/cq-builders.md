@@ -323,6 +323,15 @@ builder.
   * [`//chrome/browser/ui/webui/chromeos/chromebox_for_meetings/.+`](https://cs.chromium.org/chromium/src/chrome/browser/ui/webui/chromeos/chromebox_for_meetings/)
   * [`//chrome/test/data/webui/chromeos/chromebox_for_meetings/.+`](https://cs.chromium.org/chromium/src/chrome/test/data/webui/chromeos/chromebox_for_meetings/)
 
+* [linux-perfetto-rel](https://ci.chromium.org/p/chromium/builders/try/linux-perfetto-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-perfetto-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""linux-perfetto-rel""))
+
+  Path regular expressions:
+  * [`//base/trace_event/.+`](https://cs.chromium.org/chromium/src/base/trace_event/)
+  * [`//base/tracing/.+`](https://cs.chromium.org/chromium/src/base/tracing/)
+  * [`//components/tracing/.+`](https://cs.chromium.org/chromium/src/components/tracing/)
+  * [`//content/browser/tracing/.+`](https://cs.chromium.org/chromium/src/content/browser/tracing/)
+  * [`//services/tracing/.+`](https://cs.chromium.org/chromium/src/services/tracing/)
+
 * [linux_chromium_dbg_ng](https://ci.chromium.org/p/chromium/builders/try/linux_chromium_dbg_ng) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux_chromium_dbg_ng"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""linux_chromium_dbg_ng""))
 
   Path regular expressions:
@@ -485,16 +494,6 @@ as required builders.
 
 * [linux-lacros-rel-code-coverage](https://ci.chromium.org/p/chromium/builders/try/linux-lacros-rel-code-coverage) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-lacros-rel-code-coverage"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""linux-lacros-rel-code-coverage""))
   * Experiment percentage: 3.0
-
-* [linux-perfetto-rel](https://ci.chromium.org/p/chromium/builders/try/linux-perfetto-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-perfetto-rel"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""linux-perfetto-rel""))
-  * Experiment percentage: 100.0
-
-  Path regular expressions:
-  * [`//base/trace_event/.+`](https://cs.chromium.org/chromium/src/base/trace_event/)
-  * [`//base/tracing/.+`](https://cs.chromium.org/chromium/src/base/tracing/)
-  * [`//components/tracing/.+`](https://cs.chromium.org/chromium/src/components/tracing/)
-  * [`//content/browser/tracing/.+`](https://cs.chromium.org/chromium/src/content/browser/tracing/)
-  * [`//services/tracing/.+`](https://cs.chromium.org/chromium/src/services/tracing/)
 
 * [linux-rel-ml](https://ci.chromium.org/p/chromium/builders/try/linux-rel-ml) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-rel-ml"")) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+""linux-rel-ml""))
   * Experiment percentage: 5.0
