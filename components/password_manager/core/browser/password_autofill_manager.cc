@@ -666,10 +666,9 @@ std::vector<autofill::Suggestion> PasswordAutofillManager::BuildSuggestions(
   }
 
   // Add WebAuthn credentials suitable for an ongoing request if available.
-  if (show_webauthn_credentials) {
-    WebAuthnCredentialsDelegate* delegate =
-        password_client_->GetWebAuthnCredentialsDelegate();
-    DCHECK(delegate->IsWebAuthnAutofillEnabled());
+  WebAuthnCredentialsDelegate* delegate =
+      password_client_->GetWebAuthnCredentialsDelegate();
+  if (show_webauthn_credentials && delegate->IsWebAuthnAutofillEnabled()) {
     std::vector<autofill::Suggestion> webauthn_suggestions =
         delegate->GetWebAuthnSuggestions();
     suggestions.insert(suggestions.end(), webauthn_suggestions.begin(),
