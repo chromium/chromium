@@ -1822,6 +1822,7 @@ TEST_F(AccountReconcilorMirrorTest,
   ASSERT_TRUE(reconcilor->is_reconcile_started_);
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // This test is needed until chrome changes to use gaia obfuscated id.
 // The primary account manager and token service use the gaia "email" property,
 // which preserves dots in usernames and preserves case.
@@ -1831,10 +1832,9 @@ TEST_F(AccountReconcilorMirrorTest,
 // "Dot.S@hmail.com", as seen by the token service, will be considered the same
 // as "dots@gmail.com" as returned by gaia::ParseListAccountsData().
 TEST_F(AccountReconcilorMirrorTest, StartReconcileNoopWithDots) {
-  if (identity_test_env()->identity_manager()->GetAccountIdMigrationState() !=
-      signin::IdentityManager::AccountIdMigrationState::MIGRATION_NOT_STARTED) {
-    return;
-  }
+  ASSERT_EQ(
+      identity_test_env()->identity_manager()->GetAccountIdMigrationState(),
+      signin::IdentityManager::AccountIdMigrationState::MIGRATION_DONE);
 
   AccountInfo account_info = ConnectProfileToAccount("Dot.S@gmail.com");
   signin::SetListAccountsResponseOneAccount(
@@ -1846,6 +1846,7 @@ TEST_F(AccountReconcilorMirrorTest, StartReconcileNoopWithDots) {
   base::RunLoop().RunUntilIdle();
   ASSERT_FALSE(reconcilor->is_reconcile_started_);
 }
+#endif
 
 TEST_F(AccountReconcilorMirrorTest, StartReconcileNoopMultiple) {
   AccountInfo account_info = ConnectProfileToAccount("user@gmail.com");

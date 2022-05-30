@@ -576,21 +576,18 @@ class PersonalDataManagerTest : public PersonalDataManagerHelper,
   void TearDown() override { TearDownTest(); }
 };
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 class PersonalDataManagerMigrationTest : public PersonalDataManagerHelper,
                                          public testing::Test {
  public:
   PersonalDataManagerMigrationTest()
-      : PersonalDataManagerHelper(
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-            { ::switches::kAccountIdMigration }
-#endif
-        ) {
-  }
+      : PersonalDataManagerHelper({::switches::kAccountIdMigration}) {}
 
  protected:
   void SetUp() override { SetUpTest(); }
   void TearDown() override { TearDownTest(); }
 };
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 class PersonalDataManagerMockTest : public PersonalDataManagerTestBase,
                                     public testing::Test {
@@ -6687,9 +6684,7 @@ TEST_F(PersonalDataManagerTest, ClearUrlsFromBrowsingHistoryInTimeRange) {
   EXPECT_TRUE(personal_data_->IsNewProfileImportBlockedForDomain(second_url));
 }
 
-// On mobile, no dedicated opt-in is required for WalletSyncTransport - the
-// user is always considered opted-in and thus this test doesn't make sense.
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(PersonalDataManagerMigrationTest,
        MigrateUserOptedInWalletSyncTransportIfNeeded) {
   ASSERT_EQ(
@@ -6708,7 +6703,7 @@ TEST_F(PersonalDataManagerMigrationTest,
   EXPECT_TRUE(::autofill::prefs::IsUserOptedInWalletSyncTransport(
       prefs_.get(), sync_service_.GetAccountInfo().account_id));
 }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(PersonalDataManagerTest, ShouldShowCardsFromAccountOption) {

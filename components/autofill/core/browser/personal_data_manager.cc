@@ -388,7 +388,9 @@ void PersonalDataManager::OnSyncServiceInitialized(
         sync_service && !sync_service_->IsSyncFeatureEnabled());
   }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   MigrateUserOptedInWalletSyncTransportIfNeeded();
+#endif
 }
 
 void PersonalDataManager::OnURLsDeleted(
@@ -2261,6 +2263,7 @@ bool PersonalDataManager::HasPendingQueries() {
          pending_offer_data_query_ != 0;
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void PersonalDataManager::MigrateUserOptedInWalletSyncTransportIfNeeded() {
   if (!sync_service_)
     return;
@@ -2322,6 +2325,7 @@ void PersonalDataManager::MigrateUserOptedInWalletSyncTransportIfNeeded() {
   prefs::SetUserOptedInWalletSyncTransport(pref_service_, primary_account_id,
                                            /*opted_in=*/true);
 }
+#endif
 
 bool PersonalDataManager::IsSyncEnabledFor(syncer::ModelType model_type) {
   return sync_service_ != nullptr && sync_service_->CanSyncFeatureStart() &&

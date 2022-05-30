@@ -2405,10 +2405,12 @@ TEST_F(IdentityManagerTest, SetPrimaryAccountClearsExistingPrimaryAccount) {
 }
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(IdentityManagerTest, AccountIdMigration_DoneOnInitialization) {
   EXPECT_EQ(IdentityManager::AccountIdMigrationState::MIGRATION_DONE,
             identity_manager()->GetAccountIdMigrationState());
 }
+#endif
 
 // Checks that IdentityManager::Observer gets OnAccountUpdated when account info
 // is updated.
@@ -2455,6 +2457,7 @@ TEST_F(IdentityManagerTest, TestOnAccountRemovedWithInfoCallback) {
 TEST_F(IdentityManagerTest, TestPickAccountIdForAccount) {
   const CoreAccountId account_id =
       identity_manager()->PickAccountIdForAccount(kTestGaiaId, kTestEmail);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   const bool account_id_migration_done =
       identity_manager()->GetAccountIdMigrationState() ==
       IdentityManager::AccountIdMigrationState::MIGRATION_DONE;
@@ -2463,6 +2466,9 @@ TEST_F(IdentityManagerTest, TestPickAccountIdForAccount) {
   } else {
     EXPECT_TRUE(gaia::AreEmailsSame(kTestEmail, account_id.ToString()));
   }
+#else
+  EXPECT_TRUE(gaia::AreEmailsSame(kTestGaiaId, account_id.ToString()));
+#endif
 }
 
 #if BUILDFLAG(IS_ANDROID)

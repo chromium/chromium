@@ -781,9 +781,11 @@ class PersonalDataManager : public KeyedService,
   // Returns if there are any pending queries to the web database.
   bool HasPendingQueries();
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Migrates the user opted in to wallet sync transport. This is needed while
   // migrating from using email to Gaia ID as th account identifier.
   void MigrateUserOptedInWalletSyncTransportIfNeeded();
+#endif
 
   // Returns true if the sync is enabled for |model_type|.
   bool IsSyncEnabledFor(syncer::ModelType model_type);

@@ -397,6 +397,7 @@ class IdentityManager : public KeyedService,
   // initialized.
   void OnNetworkInitialized();
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Methods related to migration of account IDs from email to Gaia ID.
   // TODO(https://crbug.com/883272): Remove these once all platforms have
   // migrated to the new account_id based on gaia (currently, only ChromeOS
@@ -413,6 +414,7 @@ class IdentityManager : public KeyedService,
 
   // Returns the currently saved state of the migration of account IDs.
   AccountIdMigrationState GetAccountIdMigrationState() const;
+#endif
 
   // Picks the correct account_id for the specified account depending on the
   // migration state.

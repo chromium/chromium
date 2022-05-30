@@ -96,9 +96,6 @@ class AuthenticationServiceTest : public PlatformTest {
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         browser_state_.get(),
         std::make_unique<AuthenticationServiceDelegateFake>());
-    // Account ID migration is done on iOS.
-    DCHECK_EQ(signin::IdentityManager::MIGRATION_DONE,
-              identity_manager()->GetAccountIdMigrationState());
   }
 
   std::unique_ptr<sync_preferences::PrefServiceSyncable> CreatePrefService() {

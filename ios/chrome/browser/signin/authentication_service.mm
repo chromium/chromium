@@ -119,9 +119,6 @@ void AuthenticationService::Initialize(
   signin::Tribool device_restore_session = IsFirstSessionAfterDeviceRestore();
   initialized_ = true;
 
-  DCHECK_EQ(identity_manager_->GetAccountIdMigrationState(),
-            signin::IdentityManager::AccountIdMigrationState::MIGRATION_DONE);
-
   identity_manager_observation_.Observe(identity_manager_);
   HandleForgottenIdentity(nil, /*should_prompt=*/true,
                           device_restore_session == signin::Tribool::kTrue);
