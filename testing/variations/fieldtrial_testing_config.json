@@ -1623,6 +1623,28 @@
             ]
         }
     ],
+    "BackForwardCacheExtendTimeToLive": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "time_to_live_seconds": "600"
+                    },
+                    "enable_features": [
+                        "BackForwardCacheTimeToLiveControl"
+                    ]
+                }
+            ]
+        }
+    ],
     "BackForwardCacheMemoryControls": [
         {
             "platforms": [
