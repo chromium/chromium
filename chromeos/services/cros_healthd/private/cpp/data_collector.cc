@@ -11,6 +11,7 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/posix/eintr_wrapper.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -129,6 +130,7 @@ mojom::InputDevice::ConnectionType GetInputDeviceConnectionType(
 }
 
 void GetTouchscreenDevicesOnUIThread(
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
     DataCollectorImpl::GetTouchscreenDevicesCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -150,16 +152,16 @@ void GetTouchscreenDevicesOnUIThread(
     result->has_stylus_garage_switch = device.has_stylus_garage_switch;
     results.push_back(std::move(result));
   }
-  content::GetIOThreadTaskRunner({})->PostTask(
+  task_runner->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(results)));
 }
 
 void DataCollectorImpl::GetTouchscreenDevices(
     GetTouchscreenDevicesCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(&GetTouchscreenDevicesOnUIThread, std::move(callback)));
+      FROM_HERE, base::BindOnce(&GetTouchscreenDevicesOnUIThread,
+                                base::SequencedTaskRunnerHandle::Get(),
+                                std::move(callback)));
 }
 
 void DataCollectorImpl::GetTouchpadLibraryName(
