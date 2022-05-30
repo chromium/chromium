@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_NETWORK_PORTAL_DETECTOR_NETWORK_PORTAL_DETECTOR_H_
-#define CHROMEOS_NETWORK_PORTAL_DETECTOR_NETWORK_PORTAL_DETECTOR_H_
+#ifndef CHROMEOS_ASH_COMPONENTS_NETWORK_PORTAL_DETECTOR_NETWORK_PORTAL_DETECTOR_H_
+#define CHROMEOS_ASH_COMPONENTS_NETWORK_PORTAL_DETECTOR_NETWORK_PORTAL_DETECTOR_H_
 
 #include "base/component_export.h"
 #include "base/notreached.h"
+#include "chromeos/ash/components/network/portal_detector/network_portal_detector_strategy.h"
 // TODO(https://crbug.com/1164001): forward declare NetworkState when moved to
 // chrome/browser/ash/.
 #include "chromeos/network/network_state.h"
-#include "chromeos/network/portal_detector/network_portal_detector_strategy.h"
 
 namespace chromeos {
 
@@ -145,4 +145,4 @@ using ::chromeos::network_portal_detector::Shutdown;
 }  // namespace network_portal_detector
 }  // namespace ash
 
-#endif  // CHROMEOS_NETWORK_PORTAL_DETECTOR_NETWORK_PORTAL_DETECTOR_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_NETWORK_PORTAL_DETECTOR_NETWORK_PORTAL_DETECTOR_H_

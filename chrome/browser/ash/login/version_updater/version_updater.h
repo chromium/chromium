@@ -13,8 +13,8 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/login/screens/network_error.h"
 #include "chrome/browser/ash/login/version_updater/update_time_estimator.h"
+#include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
 #include "chromeos/dbus/update_engine/update_engine_client.h"
-#include "chromeos/network/portal_detector/network_portal_detector.h"
 // TODO(https://crbug.com/1164001): move to forward declaration when migrated.
 #include "chromeos/network/network_state.h"
 

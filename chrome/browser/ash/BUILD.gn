@@ -1067,6 +1067,7 @@ source_set("ash") {
     "//chrome/common/net",
     "//chromeos/ash/components/dbus/services",
     "//chromeos/ash/components/dbus/upstart",
+    "//chromeos/ash/components/network/portal_detector",
     "//chromeos/components/cdm_factory_daemon:cdm_factory_daemon_browser",
     "//chromeos/components/local_search_service/public/cpp",
     "//chromeos/components/onc",

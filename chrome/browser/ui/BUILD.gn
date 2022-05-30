@@ -3109,6 +3109,7 @@ static_library("ui") {
       "//chromeos/ash/components/dbus/system_clock",
       "//chromeos/ash/components/dbus/upstart",
       "//chromeos/ash/components/human_presence",
+      "//chromeos/ash/components/network/portal_detector",
       "//chromeos/ash/resources",
       "//chromeos/components/local_search_service/public/cpp",
       "//chromeos/components/local_search_service/public/mojom",

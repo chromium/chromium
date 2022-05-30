@@ -197,6 +197,7 @@
 #include "chrome/common/logging_chrome.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/services/cros_dbus_service.h"
+#include "chromeos/ash/components/network/portal_detector/network_portal_detector_stub.h"
 #include "chromeos/components/chromebox_for_meetings/buildflags/buildflags.h"  // PLATFORM_CFM
 #include "chromeos/components/local_search_service/public/cpp/local_search_service_proxy_factory.h"
 #include "chromeos/components/sensors/ash/sensor_hal_dispatcher.h"
@@ -213,7 +214,6 @@
 #include "chromeos/network/fast_transition_observer.h"
 #include "chromeos/network/network_cert_loader.h"
 #include "chromeos/network/network_handler.h"
-#include "chromeos/network/portal_detector/network_portal_detector_stub.h"
 #include "chromeos/network/system_token_cert_db_storage.h"
 #include "chromeos/services/cros_healthd/private/cpp/data_collector.h"
 #include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
