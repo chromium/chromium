@@ -141,12 +141,6 @@ void DigitalGoodsFactoryLacros::CreateDigitalGoods(
     return;
   }
 
-  pending_callbacks_.push_back(std::move(callback));
-  if (pending_callbacks_.size() > 1) {
-    // A crosapi call is already in flight, just wait for it to return.
-    return;
-  }
-
   auto id_and_scope = GetWebAppIdAndScopeForDocument(render_frame_host());
   if (!id_and_scope) {
     std::move(callback).Run(
@@ -162,6 +156,12 @@ void DigitalGoodsFactoryLacros::CreateDigitalGoods(
     std::move(callback).Run(
         payments::mojom::CreateDigitalGoodsResponseCode::kError,
         mojo::NullRemote());
+    return;
+  }
+
+  pending_callbacks_.push_back(std::move(callback));
+  if (pending_callbacks_.size() > 1) {
+    // A crosapi call is already in flight, just wait for it to return.
     return;
   }
 
