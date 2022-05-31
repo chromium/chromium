@@ -15,12 +15,13 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.BooleanSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.components.messages.MessageContainer.MessageContainerA11yDelegate;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /**
  * Coordinator to show / hide a banner message on given container and delegate events.
  */
-public class SingleActionMessage implements MessageStateHandler {
+public class SingleActionMessage implements MessageStateHandler, MessageContainerA11yDelegate {
     /**
      * The interface that consumers of SingleActionMessage should implement to receive notification
      * that the message was dismissed.
@@ -98,6 +99,7 @@ public class SingleActionMessage implements MessageStateHandler {
                     () -> { mDismissHandler.invoke(mModel, DismissReason.TIMER); });
         }
         mContainer.addMessage(mView);
+        mContainer.setA11yDelegate(this);
 
         // Wait until the message and the container are measured before showing the message. This
         // is required in case the animation set-up requires the height of the container, e.g.
@@ -150,6 +152,22 @@ public class SingleActionMessage implements MessageStateHandler {
         }
         return true;
     }
+
+    @Override
+    public void onA11yFocused() {
+        mMessageBanner.cancelTimer();
+    }
+
+    @Override
+    public void onA11yFocusCleared() {
+        mMessageBanner.startTimer();
+    }
+
+    @Override
+    public void onA11yDismiss() {
+        mDismissHandler.invoke(mModel, DismissReason.GESTURE);
+    }
+
     private void handlePrimaryAction(View v) {
         // Avoid running the primary action callback if the message has already been dismissed.
         if (mMessageDismissed) return;

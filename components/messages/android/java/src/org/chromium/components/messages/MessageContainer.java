@@ -8,10 +8,13 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.accessibility.AccessibilityEvent;
 import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat;
 
 import org.chromium.base.TraceEvent;
 import org.chromium.ui.base.ViewUtils;
@@ -20,10 +23,38 @@ import org.chromium.ui.base.ViewUtils;
  * Container holding messages.
  */
 public class MessageContainer extends FrameLayout {
+    interface MessageContainerA11yDelegate {
+        void onA11yFocused();
+        void onA11yFocusCleared();
+        void onA11yDismiss();
+    }
+
     private View mMessageBannerView;
+    private MessageContainerA11yDelegate mA11yDelegate;
 
     public MessageContainer(@NonNull Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
+        setAccessibilityDelegate(new AccessibilityDelegate() {
+            @Override
+            public void onInitializeAccessibilityEvent(
+                    @NonNull View host, @NonNull AccessibilityEvent event) {
+                if (event.getEventType() == AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED) {
+                    if (mA11yDelegate != null) mA11yDelegate.onA11yFocused();
+                } else if (event.getEventType()
+                        == AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUS_CLEARED) {
+                    if (mA11yDelegate != null) mA11yDelegate.onA11yFocusCleared();
+                }
+                super.onInitializeAccessibilityEvent(host, event);
+            }
+        });
+        ViewCompat.replaceAccessibilityAction(
+                this, AccessibilityActionCompat.ACTION_DISMISS, null, (v, c) -> {
+                    if (mA11yDelegate != null) {
+                        mA11yDelegate.onA11yDismiss();
+                        return true;
+                    }
+                    return false;
+                });
     }
 
     /**
@@ -54,6 +85,7 @@ public class MessageContainer extends FrameLayout {
         ViewUtils.setAncestorsShouldClipChildren(this, true);
         removeAllViews();
         mMessageBannerView = null;
+        mA11yDelegate = null;
     }
 
     public int getMessageBannerHeight() {
@@ -70,6 +102,10 @@ public class MessageContainer extends FrameLayout {
         try (TraceEvent e = TraceEvent.scoped("MessageContainer.setLayoutParams")) {
             super.setLayoutParams(params);
         }
+    }
+
+    void setA11yDelegate(MessageContainerA11yDelegate a11yDelegate) {
+        mA11yDelegate = a11yDelegate;
     }
 
     /**
