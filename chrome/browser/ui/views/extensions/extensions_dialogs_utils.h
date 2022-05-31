@@ -6,17 +6,26 @@
 #define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_DIALOGS_UTILS_H_
 
 #include "content/public/browser/web_contents.h"
+#include "extensions/common/extension_id.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 
 namespace content {
 class WebContents;
 }  // namespace content
 
+class Browser;
 class ToolbarActionViewController;
+class ExtensionsToolbarContainer;
 
 std::unique_ptr<views::BubbleDialogModelHost::CustomView> CreateExtensionItem(
     const std::u16string& name,
     const ui::ImageModel& icon);
+
+// Returns the extensions toolbar container in `browser` or `parent`, if
+// existent.
+ExtensionsToolbarContainer* GetExtensionsToolbarContainer(Browser* browser);
+ExtensionsToolbarContainer* GetExtensionsToolbarContainer(
+    gfx::NativeWindow parent);
 
 // Returns the icon corresponding to `action` for the given `web_contents`.
 ui::ImageModel GetIcon(ToolbarActionViewController* action,
@@ -25,5 +34,24 @@ ui::ImageModel GetIcon(ToolbarActionViewController* action,
 // Returns the host of the `web_content`. This method should only be called when
 // web contents are present.
 std::u16string GetCurrentHost(content::WebContents* web_contents);
+
+// Returns the action view corresponding to `extension_id` in `container`. If it
+// doesn't exist, it defaults to the extensions menu button.
+views::View* GetDialogAnchorView(ExtensionsToolbarContainer* container,
+                                 const extensions::ExtensionId& extension_id);
+
+// Shows the dialog constructed from `dialog_model` anchored to the view
+// corresponding to `extension_id` in the extensions container. If parent does
+// not have an extensions container, it will display a browser-modal dialog
+// instead.
+void ShowDialog(gfx::NativeWindow parent,
+                const extensions::ExtensionId& extension_id,
+                std::unique_ptr<ui::DialogModel> dialog_model);
+
+// Shows the dialog constructed from `dialog_model` anchored to the view
+// corresponding to `extension_id` in `container`.
+void ShowDialog(ExtensionsToolbarContainer* container,
+                const extensions::ExtensionId& extension_id,
+                std::unique_ptr<ui::DialogModel> dialog_model);
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_DIALOGS_UTILS_H_

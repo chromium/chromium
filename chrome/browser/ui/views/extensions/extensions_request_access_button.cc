@@ -8,12 +8,11 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/views/extensions/extensions_dialogs_utils.h"
 #include "chrome/browser/ui/views/extensions/extensions_request_access_button_hover_card.h"
 #include "chrome/browser/ui/views/extensions/extensions_request_access_dialog_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -57,14 +56,8 @@ std::u16string ExtensionsRequestAccessButton::GetTooltipText(
 }
 
 void ExtensionsRequestAccessButton::OnButtonPressed() {
-  // TODO(crbug.com/1322796): Multiple classes use this. We should pull getting
-  // an anchor view and showing a BubbleDialogDelegate into a common location.
-  BrowserView* const browser_view =
-      BrowserView::GetBrowserViewForBrowser(browser_);
   ExtensionsToolbarContainer* const container =
-      browser_view ? browser_view->toolbar_button_provider()
-                         ->GetExtensionsToolbarContainer()
-                   : nullptr;
+      GetExtensionsToolbarContainer(browser_);
   DCHECK(container);
   views::View* const anchor_view = container->GetExtensionsButton();
 

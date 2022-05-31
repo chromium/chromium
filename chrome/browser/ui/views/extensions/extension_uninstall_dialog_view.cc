@@ -13,11 +13,9 @@
 #include "chrome/browser/extensions/extension_uninstall_dialog.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
+#include "chrome/browser/ui/views/extensions/extensions_dialogs_utils.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/constrained_window/constrained_window_views.h"
 #include "components/strings/grit/components_strings.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
@@ -128,28 +126,7 @@ void ExtensionUninstallDialogViews::Show() {
   std::unique_ptr<ui::DialogModel> dialog_model = dialog_builder.Build();
   dialog_model_ = dialog_model.get();
 
-  // TODO(crbug.com/1322796): Multiple classes use this. We should pull getting
-  // an anchor view and showing a BubbleDialogDelegate into a common location.
-  BrowserView* const browser_view =
-      parent() ? BrowserView::GetBrowserViewForNativeWindow(parent()) : nullptr;
-  ExtensionsToolbarContainer* const container =
-      browser_view ? browser_view->toolbar_button_provider()
-                         ->GetExtensionsToolbarContainer()
-                   : nullptr;
-  ToolbarActionView* anchor_view =
-      container ? container->GetViewForId(extension()->id()) : nullptr;
-
-  if (anchor_view) {
-    DCHECK(container);
-    auto bubble = std::make_unique<views::BubbleDialogModelHost>(
-        std::move(dialog_model), anchor_view, views::BubbleBorder::TOP_RIGHT);
-
-    container->ShowWidgetForExtension(
-        views::BubbleDialogDelegate::CreateBubble(std::move(bubble)),
-        extension()->id());
-  } else {
-    constrained_window::ShowBrowserModal(std::move(dialog_model), parent());
-  }
+  ShowDialog(parent(), extension()->id(), std::move(dialog_model));
 }
 
 void ExtensionUninstallDialogViews::Close() {

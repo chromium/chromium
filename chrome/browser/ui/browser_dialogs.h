@@ -20,6 +20,7 @@
 #include "content/public/browser/bluetooth_delegate.h"
 #include "content/public/browser/login_delegate.h"
 #include "extensions/buildflags/buildflags.h"
+#include "extensions/common/extension_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -305,7 +306,7 @@ void ShowChromeCleanerRebootPrompt(
 // blocked due to policy. It also show additional information from administrator
 // if it exists.
 void ShowExtensionInstallBlockedDialog(
-    const std::string& extension_id,
+    const extensions::ExtensionId& extension_id,
     const std::string& extension_name,
     const std::u16string& custom_error_message,
     const gfx::ImageSkia& icon,

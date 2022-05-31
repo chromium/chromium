@@ -9,13 +9,12 @@
 #include <string>
 
 #include "base/callback_forward.h"
+#include "extensions/common/extension_id.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
-
-class ToolbarActionView;
 
 // The dialog's view, owned by the views framework.
 class PrintJobConfirmationDialogView : public views::BubbleDialogDelegateView {
@@ -23,14 +22,14 @@ class PrintJobConfirmationDialogView : public views::BubbleDialogDelegateView {
   METADATA_HEADER(PrintJobConfirmationDialogView);
 
   static void Show(gfx::NativeWindow parent,
-                   const std::string& extension_id,
+                   const extensions::ExtensionId& extension_id,
                    const std::u16string& extension_name,
                    const gfx::ImageSkia& extension_icon,
                    const std::u16string& print_job_title,
                    const std::u16string& printer_name,
                    base::OnceCallback<void(bool)> callback);
 
-  PrintJobConfirmationDialogView(ToolbarActionView* anchor_view,
+  PrintJobConfirmationDialogView(views::View* anchor_view,
                                  const std::u16string& extension_name,
                                  const gfx::ImageSkia& extension_icon,
                                  const std::u16string& print_job_title,

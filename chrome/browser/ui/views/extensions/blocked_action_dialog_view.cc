@@ -8,12 +8,11 @@
 #include "base/callback_forward.h"
 #include "base/feature_list.h"
 #include "chrome/browser/extensions/site_permissions_helper.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/extensions/extensions_dialogs_utils.h"
-#include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -46,16 +45,9 @@ void ShowBlockedActionDialogView(Browser* browser,
                                  const extensions::ExtensionId& extension_id,
                                  bool show_checkbox,
                                  base::OnceCallback<void(bool)> callback) {
-  // TODO(crbug.com/1322796): Multiple classes use this. We should pull getting
-  // an anchor view and showing a BubbleDialogDelegate into a common location.
-  BrowserView* const browser_view =
-      BrowserView::GetBrowserViewForBrowser(browser);
   ExtensionsToolbarContainer* const container =
-      browser_view ? browser_view->toolbar_button_provider()
-                         ->GetExtensionsToolbarContainer()
-                   : nullptr;
+      GetExtensionsToolbarContainer(browser);
   DCHECK(container);
-  auto* extension = container->GetActionForId(extension_id);
 
   auto on_ok_button_clicked = [](ui::DialogModel* dialog_model,
                                  bool did_show_checkbox,
@@ -67,6 +59,8 @@ void ShowBlockedActionDialogView(Browser* browser,
 
   ui::DialogModel::Builder dialog_builder;
   if (base::FeatureList::IsEnabled(features::kExtensionsMenuAccessControl)) {
+    ToolbarActionViewController* extension =
+        container->GetActionForId(extension_id);
     content::WebContents* web_contents =
         browser->tab_strip_model()->GetActiveWebContents();
     dialog_builder
@@ -96,13 +90,5 @@ void ShowBlockedActionDialogView(Browser* browser,
                          IDS_EXTENSION_BLOCKED_ACTION_BUBBLE_OK_BUTTON));
   }
 
-  views::View* const anchor_view = container->GetViewForId(extension_id);
-  auto bubble = std::make_unique<views::BubbleDialogModelHost>(
-      dialog_builder.Build(),
-      anchor_view ? anchor_view : container->GetExtensionsButton(),
-      views::BubbleBorder::TOP_RIGHT);
-
-  container->ShowWidgetForExtension(
-      views::BubbleDialogDelegate::CreateBubble(std::move(bubble)),
-      extension_id);
+  ShowDialog(container, extension_id, dialog_builder.Build());
 }

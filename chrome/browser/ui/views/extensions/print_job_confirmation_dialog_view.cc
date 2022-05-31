@@ -7,10 +7,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
+#include "chrome/browser/ui/views/extensions/extensions_dialogs_utils.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
-#include "chrome/browser/ui/views/toolbar/toolbar_action_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/strings/grit/components_strings.h"
@@ -29,44 +27,36 @@
 // static
 void PrintJobConfirmationDialogView::Show(
     gfx::NativeWindow parent,
-    const std::string& extension_id,
+    const extensions::ExtensionId& extension_id,
     const std::u16string& extension_name,
     const gfx::ImageSkia& extension_icon,
     const std::u16string& print_job_title,
     const std::u16string& printer_name,
     base::OnceCallback<void(bool)> callback) {
-  // TODO(crbug.com/1322796): Multiple classes use this. We should pull getting
-  // an anchor view and showing a BubbleDialogDelegate into a common location.
-
-  // We may want to show dialog even if there is no appropriate browser view,
-  // i.e. |parent| is null or kNullNativeWindow. In that case we use
-  // constrained_window::CreateBrowserModalDialogViews() (see below).
-  BrowserView* const browser_view =
-      parent ? BrowserView::GetBrowserViewForNativeWindow(parent) : nullptr;
-  ExtensionsToolbarContainer* const container =
-      browser_view ? browser_view->toolbar_button_provider()
-                         ->GetExtensionsToolbarContainer()
-                   : nullptr;
-  ToolbarActionView* anchor_view =
-      container ? container->GetViewForId(extension_id) : nullptr;
-
-  auto* print_job_confirmation_dialog_view = new PrintJobConfirmationDialogView(
+  // TODO(crbug.com/1330637): Migrate PrintJobConfirmationDialogView to use
+  // DialogModel. Then, we can use ShowDialog(container, extension_id,
+  // dialog_model) helper method.
+  ExtensionsToolbarContainer* container = GetExtensionsToolbarContainer(parent);
+  views::View* anchor_view =
+      container ? GetDialogAnchorView(container, extension_id) : nullptr;
+  auto* dialog_view = new PrintJobConfirmationDialogView(
       anchor_view, extension_name, extension_icon, print_job_title,
       printer_name, std::move(callback));
-  if (anchor_view) {
-    DCHECK(container);
-    views::Widget* const widget = views::BubbleDialogDelegateView::CreateBubble(
-        print_job_confirmation_dialog_view);
+
+  if (container) {
+    views::Widget* const widget =
+        views::BubbleDialogDelegateView::CreateBubble(dialog_view);
     container->ShowWidgetForExtension(widget, extension_id);
   } else {
-    constrained_window::CreateBrowserModalDialogViews(
-        print_job_confirmation_dialog_view, parent)
+    // We may want to show dialog even if there is no appropriate browser view
+    // or container, i.e. `parent` is null or kNullNativeWindow.
+    constrained_window::CreateBrowserModalDialogViews(dialog_view, parent)
         ->Show();
   }
 }
 
 PrintJobConfirmationDialogView::PrintJobConfirmationDialogView(
-    ToolbarActionView* anchor_view,
+    views::View* anchor_view,
     const std::u16string& extension_name,
     const gfx::ImageSkia& extension_icon,
     const std::u16string& print_job_title,
@@ -134,7 +124,7 @@ END_METADATA
 namespace chrome {
 
 void ShowPrintJobConfirmationDialog(gfx::NativeWindow parent,
-                                    const std::string& extension_id,
+                                    const extensions::ExtensionId& extension_id,
                                     const std::u16string& extension_name,
                                     const gfx::ImageSkia& extension_icon,
                                     const std::u16string& print_job_title,
