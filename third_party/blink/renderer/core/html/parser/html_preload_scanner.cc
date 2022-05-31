@@ -346,8 +346,7 @@ class TokenPreloadScanner::StartTagScanner {
   }
 
  private:
-  template <typename NameType>
-  void ProcessScriptAttribute(const NameType& attribute_name,
+  void ProcessScriptAttribute(const AtomicString& attribute_name,
                               const String& attribute_value) {
     // FIXME - Don't set crossorigin multiple times.
     if (Match(attribute_name, html_names::kSrcAttr)) {
@@ -387,8 +386,7 @@ class TokenPreloadScanner::StartTagScanner {
     }
   }
 
-  template <typename NameType>
-  void ProcessImgAttribute(const NameType& attribute_name,
+  void ProcessImgAttribute(const AtomicString& attribute_name,
                            const String& attribute_value) {
     if (Match(attribute_name, html_names::kSrcAttr) && img_src_url_.IsNull()) {
       img_src_url_ = attribute_value;
@@ -448,8 +446,7 @@ class TokenPreloadScanner::StartTagScanner {
                  kAllowURLReplacement);
   }
 
-  template <typename NameType>
-  void ProcessStyleAttribute(const NameType& attribute_name,
+  void ProcessStyleAttribute(const AtomicString& attribute_name,
                              const String& attribute_value) {
     if (Match(attribute_name, html_names::kMediaAttr)) {
       matched_ &= MediaAttributeMatches(*media_values_, attribute_value);
@@ -458,8 +455,7 @@ class TokenPreloadScanner::StartTagScanner {
     // are implicitly render-blocking as long as the media attribute matches.
   }
 
-  template <typename NameType>
-  void ProcessLinkAttribute(const NameType& attribute_name,
+  void ProcessLinkAttribute(const AtomicString& attribute_name,
                             const String& attribute_value) {
     // FIXME - Don't set rel/media/crossorigin multiple times.
     if (Match(attribute_name, html_names::kHrefAttr)) {
@@ -511,8 +507,7 @@ class TokenPreloadScanner::StartTagScanner {
     }
   }
 
-  template <typename NameType>
-  void ProcessInputAttribute(const NameType& attribute_name,
+  void ProcessInputAttribute(const AtomicString& attribute_name,
                              const String& attribute_value) {
     // FIXME - Don't set type multiple times.
     if (Match(attribute_name, html_names::kSrcAttr)) {
@@ -523,8 +518,7 @@ class TokenPreloadScanner::StartTagScanner {
     }
   }
 
-  template <typename NameType>
-  void ProcessSourceAttribute(const NameType& attribute_name,
+  void ProcessSourceAttribute(const AtomicString& attribute_name,
                               const String& attribute_value) {
     if (Match(attribute_name, html_names::kSrcsetAttr) &&
         srcset_image_candidate_.IsEmpty()) {
@@ -548,8 +542,7 @@ class TokenPreloadScanner::StartTagScanner {
     }
   }
 
-  template <typename NameType>
-  void ProcessVideoAttribute(const NameType& attribute_name,
+  void ProcessVideoAttribute(const AtomicString& attribute_name,
                              const String& attribute_value) {
     if (Match(attribute_name, html_names::kPosterAttr))
       SetUrlToLoad(attribute_value, kDisallowURLReplacement);
@@ -557,8 +550,7 @@ class TokenPreloadScanner::StartTagScanner {
       SetCrossOrigin(attribute_value);
   }
 
-  template <typename NameType>
-  void ProcessAttribute(const NameType& attribute_name,
+  void ProcessAttribute(const AtomicString& attribute_name,
                         const String& attribute_value) {
     if (Match(attribute_name, html_names::kCharsetAttr))
       charset_ = attribute_value;
@@ -581,9 +573,6 @@ class TokenPreloadScanner::StartTagScanner {
 
   bool IsLazyLoadImageDeferable(
       const CachedDocumentParameters& document_parameters) {
-    if (!document_parameters.lazy_load_image_observer)
-      return false;
-
     if (document_parameters.lazy_load_image_setting ==
         LocalFrame::LazyLoadImageSetting::kDisabled) {
       return false;
@@ -811,8 +800,8 @@ TokenPreloadScanner::TokenPreloadScanner(
       media_values_(
           MakeGarbageCollected<MediaValuesCached>(media_values_cached_data)),
       scanner_type_(scanner_type),
-      priority_hints_origin_trial_enabled_(priority_hints_origin_trial_enabled),
-      did_rewind_(false) {
+      priority_hints_origin_trial_enabled_(
+          priority_hints_origin_trial_enabled) {
   DCHECK(document_parameters_.get());
   DCHECK(media_values_.Get());
   DCHECK(document_url.IsValid());
@@ -820,32 +809,6 @@ TokenPreloadScanner::TokenPreloadScanner(
 }
 
 TokenPreloadScanner::~TokenPreloadScanner() = default;
-
-TokenPreloadScannerCheckpoint TokenPreloadScanner::CreateCheckpoint() {
-  TokenPreloadScannerCheckpoint checkpoint = checkpoints_.size();
-  checkpoints_.push_back(Checkpoint(predicted_base_element_url_, in_style_,
-                                    in_script_, in_script_web_bundle_,
-                                    template_count_, exclusion_info_));
-  return checkpoint;
-}
-
-void TokenPreloadScanner::RewindTo(
-    TokenPreloadScannerCheckpoint checkpoint_index) {
-  // If this ASSERT fires, checkpointIndex is invalid.
-  DCHECK_LT(checkpoint_index, checkpoints_.size());
-  const Checkpoint& checkpoint = checkpoints_[checkpoint_index];
-  predicted_base_element_url_ = checkpoint.predicted_base_element_url;
-  in_style_ = checkpoint.in_style;
-  template_count_ = checkpoint.template_count;
-  exclusion_info_ = checkpoint.exclusion_info;
-
-  did_rewind_ = true;
-  in_script_ = checkpoint.in_script;
-  in_script_web_bundle_ = checkpoint.in_script_web_bundle;
-
-  css_scanner_.Reset();
-  checkpoints_.clear();
-}
 
 void TokenPreloadScanner::Scan(const HTMLToken& token,
                                const SegmentedString& source,
@@ -890,17 +853,16 @@ static void HandleMetaReferrer(const String& attribute_value,
   css_scanner->SetReferrerPolicy(document_parameters->referrer_policy);
 }
 
-template <typename Token>
 void TokenPreloadScanner::HandleMetaNameAttribute(
-    const Token& token,
+    const HTMLToken& token,
     absl::optional<ViewportDescription>* viewport) {
-  const typename Token::Attribute* name_attribute =
+  const HTMLToken::Attribute* name_attribute =
       token.GetAttributeItem(html_names::kNameAttr);
   if (!name_attribute)
     return;
 
   String name_attribute_value(name_attribute->Value());
-  const typename Token::Attribute* content_attribute =
+  const HTMLToken::Attribute* content_attribute =
       token.GetAttributeItem(html_names::kContentAttr);
   if (!content_attribute)
     return;
@@ -927,9 +889,8 @@ void TokenPreloadScanner::HandleMetaNameAttribute(
   }
 }
 
-template <typename Token>
 void TokenPreloadScanner::ScanCommon(
-    const Token& token,
+    const HTMLToken& token,
     const SegmentedString& source,
     PreloadRequestStream& requests,
     absl::optional<ViewportDescription>* viewport,
@@ -993,7 +954,7 @@ void TokenPreloadScanner::ScanCommon(
       if (Match(tag_impl, html_names::kScriptTag)) {
         in_script_ = true;
 
-        const typename Token::Attribute* type_attribute =
+        const HTMLToken::Attribute* type_attribute =
             token.GetAttributeItem(html_names::kTypeAttr);
         if (type_attribute &&
             ScriptLoader::GetScriptTypeAtPrepare(
@@ -1011,7 +972,7 @@ void TokenPreloadScanner::ScanCommon(
         return;
       }
       if (Match(tag_impl, html_names::kMetaTag)) {
-        const typename Token::Attribute* equiv_attribute =
+        const HTMLToken::Attribute* equiv_attribute =
             token.GetAttributeItem(html_names::kHttpEquivAttr);
         if (equiv_attribute) {
           String equiv_attribute_value(equiv_attribute->Value());
@@ -1022,7 +983,7 @@ void TokenPreloadScanner::ScanCommon(
                                             http_names::kAcceptCH) &&
                      RuntimeEnabledFeatures::
                          ClientHintsMetaHTTPEquivAcceptCHEnabled()) {
-            const typename Token::Attribute* content_attribute =
+            const HTMLToken::Attribute* content_attribute =
                 token.GetAttributeItem(html_names::kContentAttr);
             if (content_attribute) {
               UpdateWindowPermissionsPolicyWithDelegationSupportForClientHints(
@@ -1081,10 +1042,9 @@ void TokenPreloadScanner::ScanCommon(
   }
 }
 
-template <typename Token>
-void TokenPreloadScanner::UpdatePredictedBaseURL(const Token& token) {
+void TokenPreloadScanner::UpdatePredictedBaseURL(const HTMLToken& token) {
   DCHECK(predicted_base_element_url_.IsEmpty());
-  if (const typename Token::Attribute* href_attribute =
+  if (const HTMLToken::Attribute* href_attribute =
           token.GetAttributeItem(html_names::kHrefAttr)) {
     KURL url(document_url_, StripLeadingAndTrailingHTMLSpaces(
                                 href_attribute->Value8BitIfNecessary()));
@@ -1172,7 +1132,6 @@ CachedDocumentParameters::CachedDocumentParameters(Document* document) {
   if (document->Loader() && document->Loader()->GetFrame()) {
     lazy_load_image_setting =
         document->Loader()->GetFrame()->GetLazyLoadImageSetting();
-    lazy_load_image_observer = document->EnsureLazyLoadImageObserver();
   } else {
     lazy_load_image_setting = LocalFrame::LazyLoadImageSetting::kDisabled;
   }
