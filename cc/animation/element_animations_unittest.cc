@@ -695,6 +695,66 @@ TEST_F(ElementAnimationsTest, AnimationsAreDeleted) {
   EXPECT_FALSE(animation_impl_->keyframe_effect()->has_any_keyframe_model());
 }
 
+// Test an animation that finishes on impl but is deleted on main before the
+// event is received. https://crbug.com/1325393.
+TEST_F(ElementAnimationsTest, AnimationFinishedOnImplDeletedOnMain) {
+  CreateTestLayer(true, false);
+  AttachTimelineAnimationLayer();
+  CreateImplTimelineAndAnimation();
+
+  auto events = CreateEventsForTesting();
+
+  AddOpacityTransitionToAnimation(animation_.get(), 1.0, 0.0f, 1.0f, false);
+  animation_->Tick(kInitialTickTime);
+  animation_->UpdateState(true, nullptr);
+  EXPECT_TRUE(animation_->keyframe_effect()->needs_push_properties());
+
+  PushProperties();
+  EXPECT_FALSE(animation_->keyframe_effect()->needs_push_properties());
+
+  animation_impl_->ActivateKeyframeModels();
+
+  animation_impl_->Tick(kInitialTickTime + base::Milliseconds(500));
+  animation_impl_->UpdateState(true, events.get());
+
+  // There should be a STARTED event for the animation.
+  EXPECT_EQ(1u, events->events_.size());
+  EXPECT_EQ(AnimationEvent::STARTED, events->events_[0].type);
+  animation_->DispatchAndDelegateAnimationEvent(events->events_[0]);
+
+  events = CreateEventsForTesting();
+  animation_impl_->Tick(kInitialTickTime + base::Milliseconds(2000));
+  animation_impl_->UpdateState(true, events.get());
+
+  EXPECT_TRUE(host_impl_->needs_push_properties());
+
+  // There should be a FINISHED event for the animation.
+  EXPECT_EQ(1u, events->events_.size());
+  EXPECT_EQ(AnimationEvent::FINISHED, events->events_[0].type);
+
+  // Before the FINISHED event is received, main aborts the keyframe
+  // and detaches the element.
+  animation_->AbortKeyframeModelsWithProperty(TargetProperty::OPACITY, false);
+  PushProperties();
+  animation_->DetachElement();
+  // Expect no keyframe model.
+  EXPECT_FALSE(animation_->keyframe_effect()->has_any_keyframe_model());
+
+  // Then we dispatch the FINISHED event.
+  animation_->DispatchAndDelegateAnimationEvent(events->events_[0]);
+
+  EXPECT_TRUE(host_->needs_push_properties());
+
+  PushProperties();
+
+  // Both animations should now have deleted the animation. The impl animations
+  // should have deleted the animation even though activation has not occurred,
+  // since the animation was already waiting for deletion when
+  // PushPropertiesTo was called.
+  EXPECT_FALSE(animation_->keyframe_effect()->has_any_keyframe_model());
+  EXPECT_FALSE(animation_impl_->keyframe_effect()->has_any_keyframe_model());
+}
+
 // Tests that transitioning opacity from 0 to 1 works as expected.
 
 static std::unique_ptr<KeyframeModel> CreateKeyframeModel(

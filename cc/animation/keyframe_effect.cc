@@ -67,10 +67,15 @@ KeyframeEffect::~KeyframeEffect() {
 void KeyframeEffect::SetNeedsPushProperties() {
   needs_push_properties_ = true;
 
+  // The keyframe effect may have been removed from the main thread while
+  // an event was in flight from the compositor. In this case, we may need
+  // to push the removal to the compositor but do not expect to have a bound
+  // element animations instance.
   // TODO(smcgruer): We only need the below calls when needs_push_properties_
   // goes from false to true - see http://crbug.com/764405
-  DCHECK(element_animations());
-  element_animations_->SetNeedsPushProperties();
+  if (element_animations()) {
+    element_animations_->SetNeedsPushProperties();
+  }
 
   animation_->SetNeedsPushProperties();
 }
