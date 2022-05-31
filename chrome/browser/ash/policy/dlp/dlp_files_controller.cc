@@ -9,6 +9,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
@@ -108,6 +109,18 @@ void DlpFilesController::GetDisallowedTransfers(
       base::BindOnce(&DlpFilesController::GetFilesSources,
                      weak_ptr_factory_.GetWeakPtr(), std::move(destination),
                      std::move(result_callback)));
+}
+
+void DlpFilesController::GetFilesRestrictedByAnyRule(
+    std::vector<storage::FileSystemURL> files,
+    GetFilesRestrictedByAnyRuleCallback result_callback) {
+  if (!chromeos::DlpClient::Get() || !chromeos::DlpClient::Get()->IsAlive()) {
+    std::move(result_callback).Run(std::vector<storage::FileSystemURL>());
+    return;
+  }
+  // TODO(aidazolic): Implement getting the restricted files by calling DLP
+  // daemon to check restrictions.
+  NOTIMPLEMENTED();
 }
 
 void DlpFilesController::GetFilesSources(

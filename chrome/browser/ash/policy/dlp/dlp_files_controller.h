@@ -22,13 +22,15 @@ namespace policy {
 
 class DlpRulesManager;
 
-// DlpFilesController is responsible for deciding whether file transfers are
-// allowed according to the files sources saved in the DLP daemon and the rules
-// of the Data leak prevention policy set by the admin.
+// DlpFilesController is responsible for deciding whether there are any
+// restrictions set on files (e.g. transfers) according to the files sources
+// saved in the DLP daemon and the rules of the Data leak prevention policy set
+// by the admin.
 class DlpFilesController {
  public:
   using GetDisallowedTransfersCallback =
       base::OnceCallback<void(std::vector<storage::FileSystemURL>)>;
+  using GetFilesRestrictedByAnyRuleCallback = GetDisallowedTransfersCallback;
 
   // `dlp_rules_manager` must outlive this class.
   explicit DlpFilesController(Profile* profile,
@@ -44,6 +46,11 @@ class DlpFilesController {
       std::vector<storage::FileSystemURL> transferred_files,
       storage::FileSystemURL destination,
       GetDisallowedTransfersCallback result_callback);
+
+  // Returns a list of files restricted by any DLP rule in |result_callback|.
+  void GetFilesRestrictedByAnyRule(
+      std::vector<storage::FileSystemURL> files,
+      GetFilesRestrictedByAnyRuleCallback result_callback);
 
  private:
   void GetFilesSources(storage::FileSystemURL destination,
