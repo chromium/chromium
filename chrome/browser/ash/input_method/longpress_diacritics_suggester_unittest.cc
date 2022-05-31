@@ -4,30 +4,71 @@
 
 #include "chrome/browser/ash/input_method/longpress_diacritics_suggester.h"
 
+#include <string>
+
+#include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/ash/input_method/fake_suggestion_handler.h"
 #include "chrome/test/base/testing_profile.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/events/base_event_utils.h"
+#include "ui/events/keycodes/dom/dom_code.h"
 
 namespace ash {
 namespace input_method {
 namespace {
 
+struct DiacriticsTestCase {
+  char longpress_char;
+  std::vector<std::u16string> candidates;
+};
+
+using LongpressDiacriticsSuggesterTest =
+    ::testing::TestWithParam<DiacriticsTestCase>;
+
+using AssistiveWindowButton = ui::ime::AssistiveWindowButton;
+
 const int kContextId = 24601;
 
-TEST(LongpressDiacriticsSuggesterTest, SuggestsOnTrySuggest) {
+ui::KeyEvent CreateKeyEventFromCode(const ui::DomCode& code) {
+  return ui::KeyEvent(ui::ET_KEY_PRESSED, ui::VKEY_UNKNOWN, code, ui::EF_NONE,
+                      ui::DomKey::NONE, ui::EventTimeForNow());
+}
+
+// Required since FakeSuggestionHandler joins the candidates.
+std::u16string Join(std::vector<std::u16string> candidates) {
+  return base::JoinString(candidates, u";");
+}
+
+AssistiveWindowButton CreateDiacriticsButtonFor(
+    size_t index,
+    std::u16string announce_string) {
+  AssistiveWindowButton button = {
+      .id = ui::ime::ButtonId::kSuggestion,
+      .window_type =
+          ui::ime::AssistiveWindowType::kLongpressDiacriticsSuggestion,
+      .index = index,
+      .announce_string = announce_string,
+  };
+  return button;
+}
+}  // namespace
+
+TEST_P(LongpressDiacriticsSuggesterTest, SuggestsOnTrySuggest) {
   FakeSuggestionHandler suggestion_handler;
   LongpressDiacriticsSuggester suggester =
       LongpressDiacriticsSuggester(&suggestion_handler);
   suggester.OnFocus(kContextId);
 
-  suggester.TrySuggestOnLongpress('a');
+  suggester.TrySuggestOnLongpress(GetParam().longpress_char);
 
   EXPECT_TRUE(suggestion_handler.GetShowingSuggestion());
-  EXPECT_EQ(suggestion_handler.GetSuggestionText(), u"à;á;â;ã;ã;ä;å;ā");
+  EXPECT_EQ(suggestion_handler.GetSuggestionText(),
+            Join(GetParam().candidates));
   EXPECT_EQ(suggestion_handler.GetContextId(), kContextId);
 }
 
-TEST(LongpressDiacriticsSuggesterTest, DoesNotSuggestForInvalidKeyChar) {
+TEST_P(LongpressDiacriticsSuggesterTest, DoesNotSuggestForInvalidKeyChar) {
   FakeSuggestionHandler suggestion_handler;
   LongpressDiacriticsSuggester suggester =
       LongpressDiacriticsSuggester(&suggestion_handler);
@@ -39,19 +80,296 @@ TEST(LongpressDiacriticsSuggesterTest, DoesNotSuggestForInvalidKeyChar) {
   EXPECT_EQ(suggestion_handler.GetSuggestionText(), u"");
 }
 
-TEST(LongpressDiacriticsSuggesterTest, DoesNotSuggestAfterBlur) {
+TEST_P(LongpressDiacriticsSuggesterTest, DoesNotSuggestAfterBlur) {
   FakeSuggestionHandler suggestion_handler;
   LongpressDiacriticsSuggester suggester =
       LongpressDiacriticsSuggester(&suggestion_handler);
   suggester.OnFocus(kContextId);
 
   suggester.OnBlur();
-  suggester.TrySuggestOnLongpress('a');
+  suggester.TrySuggestOnLongpress(GetParam().longpress_char);
 
   EXPECT_FALSE(suggestion_handler.GetShowingSuggestion());
   EXPECT_EQ(suggestion_handler.GetSuggestionText(), u"");
 }
 
-}  // namespace
+TEST_P(LongpressDiacriticsSuggesterTest, HighlightsFirstOnInitialNextKeyEvent) {
+  FakeSuggestionHandler suggestion_handler;
+  LongpressDiacriticsSuggester suggester =
+      LongpressDiacriticsSuggester(&suggestion_handler);
+  suggester.OnFocus(kContextId);
+
+  suggester.TrySuggestOnLongpress(GetParam().longpress_char);
+  suggester.HandleKeyEvent(CreateKeyEventFromCode(ui::DomCode::ARROW_RIGHT));
+
+  EXPECT_EQ(suggestion_handler.GetContextId(), kContextId);
+  EXPECT_TRUE(suggestion_handler.GetShowingSuggestion());
+  EXPECT_EQ(suggestion_handler.GetSuggestionText(),
+            Join(GetParam().candidates));
+  EXPECT_EQ(suggestion_handler.GetHighlightedButton(),
+            CreateDiacriticsButtonFor(0, GetParam().candidates[0]));
+}
+
+TEST_P(LongpressDiacriticsSuggesterTest,
+       HighlightsLastOnInitialPreviousKeyEvent) {
+  size_t expected_candidate_index = GetParam().candidates.size() - 1;
+  FakeSuggestionHandler suggestion_handler;
+  LongpressDiacriticsSuggester suggester =
+      LongpressDiacriticsSuggester(&suggestion_handler);
+  suggester.OnFocus(kContextId);
+
+  suggester.TrySuggestOnLongpress(GetParam().longpress_char);
+  suggester.HandleKeyEvent(CreateKeyEventFromCode(ui::DomCode::ARROW_LEFT));
+
+  EXPECT_EQ(suggestion_handler.GetContextId(), kContextId);
+  EXPECT_TRUE(suggestion_handler.GetShowingSuggestion());
+  EXPECT_EQ(suggestion_handler.GetSuggestionText(),
+            Join(GetParam().candidates));
+  EXPECT_EQ(suggestion_handler.GetHighlightedButton(),
+            CreateDiacriticsButtonFor(
+                expected_candidate_index,
+                GetParam().candidates[expected_candidate_index]));
+}
+
+TEST_P(LongpressDiacriticsSuggesterTest, HighlightIncrementsOnNextKeyEvent) {
+  size_t expected_candidate_index = 2 % GetParam().candidates.size();
+  FakeSuggestionHandler suggestion_handler;
+  LongpressDiacriticsSuggester suggester =
+      LongpressDiacriticsSuggester(&suggestion_handler);
+  suggester.OnFocus(kContextId);
+
+  suggester.TrySuggestOnLongpress(GetParam().longpress_char);
+  suggester.HandleKeyEvent(CreateKeyEventFromCode(ui::DomCode::ARROW_RIGHT));
+  suggester.HandleKeyEvent(CreateKeyEventFromCode(ui::DomCode::ARROW_RIGHT));
+  suggester.HandleKeyEvent(CreateKeyEventFromCode(ui::DomCode::ARROW_RIGHT));
+
+  EXPECT_EQ(suggestion_handler.GetContextId(), kContextId);
+  EXPECT_TRUE(suggestion_handler.GetShowingSuggestion());
+  EXPECT_EQ(suggestion_handler.GetSuggestionText(),
+            Join(GetParam().candidates));
+  EXPECT_EQ(suggestion_handler.GetHighlightedButton(),
+            CreateDiacriticsButtonFor(
+                expected_candidate_index,
+                GetParam().candidates[expected_candidate_index]));
+}
+
+TEST_P(LongpressDiacriticsSuggesterTest,
+       HighlightDecrementsOnPreviousKeyEvent) {
+  FakeSuggestionHandler suggestion_handler;
+  LongpressDiacriticsSuggester suggester =
+      LongpressDiacriticsSuggester(&suggestion_handler);
+  suggester.OnFocus(kContextId);
+
+  suggester.TrySuggestOnLongpress(GetParam().longpress_char);
+  suggester.HandleKeyEvent(CreateKeyEventFromCode(ui::DomCode::ARROW_RIGHT));
+  suggester.HandleKeyEvent(CreateKeyEventFromCode(ui::DomCode::ARROW_RIGHT));
+  suggester.HandleKeyEvent(CreateKeyEventFromCode(ui::DomCode::ARROW_LEFT));
+
+  EXPECT_EQ(suggestion_handler.GetContextId(), kContextId);
+  EXPECT_TRUE(suggestion_handler.GetShowingSuggestion());
+  EXPECT_EQ(suggestion_handler.GetSuggestionText(),
+            Join(GetParam().candidates));
+  EXPECT_EQ(suggestion_handler.GetHighlightedButton(),
+            CreateDiacriticsButtonFor(0, GetParam().candidates[0]));
+}
+
+TEST_P(LongpressDiacriticsSuggesterTest,
+       HighlightWrapsAroundAfterLastIndexOnNextKeyEvent) {
+  size_t expected_candidate_index = (9 % GetParam().candidates.size());
+  FakeSuggestionHandler suggestion_handler;
+  LongpressDiacriticsSuggester suggester =
+      LongpressDiacriticsSuggester(&suggestion_handler);
+  suggester.OnFocus(kContextId);
+
+  suggester.TrySuggestOnLongpress(GetParam().longpress_char);
+  for (int i = 0; i < 10; i++) {
+    suggester.HandleKeyEvent(CreateKeyEventFromCode(ui::DomCode::ARROW_RIGHT));
+  }
+
+  EXPECT_EQ(suggestion_handler.GetContextId(), kContextId);
+  EXPECT_TRUE(suggestion_handler.GetShowingSuggestion());
+  EXPECT_EQ(suggestion_handler.GetSuggestionText(),
+            Join(GetParam().candidates));
+  EXPECT_EQ(suggestion_handler.GetHighlightedButton(),
+            CreateDiacriticsButtonFor(
+                expected_candidate_index,
+                GetParam().candidates[expected_candidate_index]));
+}
+
+TEST_P(LongpressDiacriticsSuggesterTest,
+       HighlightWrapsAroundAfterFirstIndexOnPreviousKeyEvent) {
+  size_t expected_candidate_index = GetParam().candidates.size() - 1;
+  FakeSuggestionHandler suggestion_handler;
+  LongpressDiacriticsSuggester suggester =
+      LongpressDiacriticsSuggester(&suggestion_handler);
+  suggester.OnFocus(kContextId);
+
+  suggester.TrySuggestOnLongpress(GetParam().longpress_char);
+  suggester.HandleKeyEvent(CreateKeyEventFromCode(ui::DomCode::ARROW_RIGHT));
+  suggester.HandleKeyEvent(CreateKeyEventFromCode(ui::DomCode::ARROW_LEFT));
+
+  EXPECT_EQ(suggestion_handler.GetContextId(), kContextId);
+  EXPECT_TRUE(suggestion_handler.GetShowingSuggestion());
+  EXPECT_EQ(suggestion_handler.GetSuggestionText(),
+            Join(GetParam().candidates));
+  EXPECT_EQ(suggestion_handler.GetHighlightedButton(),
+            CreateDiacriticsButtonFor(
+                expected_candidate_index,
+                GetParam().candidates[expected_candidate_index]));
+}
+
+TEST_P(LongpressDiacriticsSuggesterTest,
+       ResetsHighlightsAfterBlurForNextKeyEvent) {
+  FakeSuggestionHandler suggestion_handler;
+  LongpressDiacriticsSuggester suggester =
+      LongpressDiacriticsSuggester(&suggestion_handler);
+  suggester.OnFocus(kContextId);
+  suggester.TrySuggestOnLongpress(GetParam().longpress_char);
+  suggester.HandleKeyEvent(CreateKeyEventFromCode(ui::DomCode::ARROW_RIGHT));
+  suggester.HandleKeyEvent(CreateKeyEventFromCode(ui::DomCode::ARROW_RIGHT));
+  suggester.HandleKeyEvent(CreateKeyEventFromCode(ui::DomCode::ARROW_RIGHT));
+  suggester.OnBlur();
+  suggester.OnFocus(kContextId);
+
+  suggester.TrySuggestOnLongpress(GetParam().longpress_char);
+  suggester.HandleKeyEvent(CreateKeyEventFromCode(ui::DomCode::ARROW_RIGHT));
+
+  EXPECT_EQ(suggestion_handler.GetContextId(), kContextId);
+  EXPECT_TRUE(suggestion_handler.GetShowingSuggestion());
+  EXPECT_EQ(suggestion_handler.GetSuggestionText(),
+            Join(GetParam().candidates));
+  EXPECT_EQ(suggestion_handler.GetHighlightedButton(),
+            CreateDiacriticsButtonFor(0, GetParam().candidates[0]));
+}
+
+TEST_P(LongpressDiacriticsSuggesterTest,
+       ResetsHighlightsAfterAcceptForNextKeyEvent) {
+  FakeSuggestionHandler suggestion_handler;
+  LongpressDiacriticsSuggester suggester =
+      LongpressDiacriticsSuggester(&suggestion_handler);
+  suggester.OnFocus(kContextId);
+  suggester.TrySuggestOnLongpress(GetParam().longpress_char);
+  suggester.HandleKeyEvent(CreateKeyEventFromCode(ui::DomCode::ARROW_RIGHT));
+  suggester.HandleKeyEvent(CreateKeyEventFromCode(ui::DomCode::ARROW_RIGHT));
+  suggester.HandleKeyEvent(CreateKeyEventFromCode(ui::DomCode::ARROW_RIGHT));
+  suggester.AcceptSuggestion(2);
+
+  suggester.TrySuggestOnLongpress(GetParam().longpress_char);
+  suggester.HandleKeyEvent(CreateKeyEventFromCode(ui::DomCode::ARROW_RIGHT));
+
+  EXPECT_EQ(suggestion_handler.GetContextId(), kContextId);
+  EXPECT_TRUE(suggestion_handler.GetShowingSuggestion());
+  EXPECT_EQ(suggestion_handler.GetSuggestionText(),
+            Join(GetParam().candidates));
+  EXPECT_EQ(suggestion_handler.GetHighlightedButton(),
+            CreateDiacriticsButtonFor(0, GetParam().candidates[0]));
+}
+
+TEST_P(LongpressDiacriticsSuggesterTest,
+       ResetsHighlightsAfterDismissForNextKeyEvent) {
+  FakeSuggestionHandler suggestion_handler;
+  LongpressDiacriticsSuggester suggester =
+      LongpressDiacriticsSuggester(&suggestion_handler);
+  suggester.OnFocus(kContextId);
+  suggester.TrySuggestOnLongpress(GetParam().longpress_char);
+  suggester.HandleKeyEvent(CreateKeyEventFromCode(ui::DomCode::ARROW_RIGHT));
+  suggester.HandleKeyEvent(CreateKeyEventFromCode(ui::DomCode::ARROW_RIGHT));
+  suggester.HandleKeyEvent(CreateKeyEventFromCode(ui::DomCode::ARROW_RIGHT));
+  suggester.DismissSuggestion();
+
+  suggester.TrySuggestOnLongpress(GetParam().longpress_char);
+  suggester.HandleKeyEvent(CreateKeyEventFromCode(ui::DomCode::ARROW_RIGHT));
+
+  EXPECT_EQ(suggestion_handler.GetContextId(), kContextId);
+  EXPECT_TRUE(suggestion_handler.GetShowingSuggestion());
+  EXPECT_EQ(suggestion_handler.GetSuggestionText(),
+            Join(GetParam().candidates));
+  EXPECT_EQ(suggestion_handler.GetHighlightedButton(),
+            CreateDiacriticsButtonFor(0, GetParam().candidates[0]));
+}
+
+TEST_P(LongpressDiacriticsSuggesterTest,
+       ResetsHighlightsAfterFocusChangeForNextKeyEvent) {
+  FakeSuggestionHandler suggestion_handler;
+  LongpressDiacriticsSuggester suggester =
+      LongpressDiacriticsSuggester(&suggestion_handler);
+  suggester.OnFocus(1);
+  suggester.TrySuggestOnLongpress(GetParam().longpress_char);
+  suggester.HandleKeyEvent(CreateKeyEventFromCode(ui::DomCode::ARROW_RIGHT));
+  suggester.HandleKeyEvent(CreateKeyEventFromCode(ui::DomCode::ARROW_RIGHT));
+  suggester.HandleKeyEvent(CreateKeyEventFromCode(ui::DomCode::ARROW_RIGHT));
+  suggester.OnFocus(2);
+
+  suggester.TrySuggestOnLongpress(GetParam().longpress_char);
+  suggester.HandleKeyEvent(CreateKeyEventFromCode(ui::DomCode::ARROW_RIGHT));
+
+  EXPECT_EQ(suggestion_handler.GetContextId(), 2);
+  EXPECT_TRUE(suggestion_handler.GetShowingSuggestion());
+  EXPECT_EQ(suggestion_handler.GetSuggestionText(),
+            Join(GetParam().candidates));
+  EXPECT_EQ(suggestion_handler.GetHighlightedButton(),
+            CreateDiacriticsButtonFor(0, GetParam().candidates[0]));
+}
+
+TEST_P(LongpressDiacriticsSuggesterTest, AcceptsOnEnterKeyPress) {
+  FakeSuggestionHandler suggestion_handler;
+  LongpressDiacriticsSuggester suggester =
+      LongpressDiacriticsSuggester(&suggestion_handler);
+  suggester.OnFocus(kContextId);
+
+  suggester.TrySuggestOnLongpress(GetParam().longpress_char);
+  suggester.HandleKeyEvent(CreateKeyEventFromCode(ui::DomCode::ARROW_RIGHT));
+  suggester.HandleKeyEvent(CreateKeyEventFromCode(ui::DomCode::ENTER));
+
+  EXPECT_EQ(suggestion_handler.GetContextId(), kContextId);
+  EXPECT_FALSE(suggestion_handler.GetShowingSuggestion());
+  EXPECT_EQ(suggestion_handler.GetAcceptedSuggestionText(),
+            GetParam().candidates[0]);
+}
+
+TEST_P(LongpressDiacriticsSuggesterTest,
+       NotHandledOnEnterKeyPressIfNoHighlight) {
+  FakeSuggestionHandler suggestion_handler;
+  LongpressDiacriticsSuggester suggester =
+      LongpressDiacriticsSuggester(&suggestion_handler);
+  suggester.OnFocus(kContextId);
+
+  suggester.TrySuggestOnLongpress(GetParam().longpress_char);
+  suggester.HandleKeyEvent(CreateKeyEventFromCode(ui::DomCode::ENTER));
+
+  EXPECT_EQ(suggestion_handler.GetContextId(), kContextId);
+  EXPECT_FALSE(suggestion_handler.GetAcceptedSuggestion());
+}
+
+TEST_P(LongpressDiacriticsSuggesterTest, DismissOnEscKeyPress) {
+  FakeSuggestionHandler suggestion_handler;
+  LongpressDiacriticsSuggester suggester =
+      LongpressDiacriticsSuggester(&suggestion_handler);
+  suggester.OnFocus(kContextId);
+
+  suggester.TrySuggestOnLongpress(GetParam().longpress_char);
+  suggester.HandleKeyEvent(CreateKeyEventFromCode(ui::DomCode::ARROW_RIGHT));
+  suggester.HandleKeyEvent(CreateKeyEventFromCode(ui::DomCode::ESCAPE));
+
+  EXPECT_EQ(suggestion_handler.GetContextId(), kContextId);
+  EXPECT_FALSE(suggestion_handler.GetShowingSuggestion());
+  EXPECT_FALSE(suggestion_handler.GetAcceptedSuggestion());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    LongpressDiacriticsSuggesterTest,
+    testing::ValuesIn<DiacriticsTestCase>(
+        {{'a', {u"à", u"á", u"â", u"ã", u"ã", u"ä", u"å", u"ā"}},
+         {'A', {u"À", u"Á", u"Â", u"Ã", u"Ä", u"Å", u"Æ", u"Ā"}},
+         {'c', {u"ç"}},
+         {'C', {u"Ç"}},
+         {'e', {u"è", u"é", u"ê", u"ë", u"ē"}},
+         {'E', {u"È", u"É", u"Ê", u"Ë", u"Ē"}}}),
+    [](const testing::TestParamInfo<
+        LongpressDiacriticsSuggesterTest::ParamType>& info) {
+      return std::string(1, info.param.longpress_char);
+    });
+
 }  // namespace input_method
 }  // namespace ash

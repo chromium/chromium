@@ -16,11 +16,16 @@
 #include "chrome/browser/ash/input_method/suggestion_handler_interface.h"
 #include "chrome/browser/ash/input_method/ui/assistive_delegate.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/events/keycodes/dom/dom_code.h"
 
 namespace ash {
 namespace input_method {
 
 constexpr base::StringPiece16 kDiacriticsSeperator = u";";
+constexpr ui::DomCode kNextDomCode = ui::DomCode::ARROW_RIGHT;
+constexpr ui::DomCode kPreviousDomCode = ui::DomCode::ARROW_LEFT;
+constexpr ui::DomCode kAcceptDomCode = ui::DomCode::ENTER;
+constexpr ui::DomCode kDismissDomCode = ui::DomCode::ESCAPE;
 
 // TODO(b/217560706): Replace diacritics with final set after research is
 // done (on a per input method engine basis).
@@ -67,9 +72,15 @@ class LongpressDiacriticsSuggester : public Suggester {
   std::vector<ime::TextSuggestion> GetSuggestions() override;
 
  private:
-  std::vector<std::u16string> GetDiacriticsFor(char key_character);
+  void SetButtonHighlighted(size_t index);
+  void Reset();
+  std::vector<std::u16string> GetCurrentShownDiacritics();
   SuggestionHandlerInterface* const suggestion_handler_;
   absl::optional<int> focused_context_id_;
+  // nullopt if no suggestion window shown.
+  absl::optional<char> displayed_window_base_character_;
+  // Highlighted index can be nullopt even if window displayed.
+  absl::optional<size_t> highlighted_index_;
 };
 
 }  // namespace input_method

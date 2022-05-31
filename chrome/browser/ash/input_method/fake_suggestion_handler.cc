@@ -37,6 +37,7 @@ bool FakeSuggestionHandler::AcceptSuggestion(int context_id,
                                              std::string* error) {
   showing_suggestion_ = false;
   accepted_suggestion_ = true;
+  accepted_suggestion_text_ = suggestion_text_;
   suggestion_text_ = u"";
   confirmed_length_ = 0;
   return true;
@@ -53,6 +54,7 @@ bool FakeSuggestionHandler::SetButtonHighlighted(
     bool highlighted,
     std::string* error) {
   highlighted_suggestion_ = highlighted;
+  highlighted_button_ = button;
   return false;
 }
 
@@ -65,17 +67,18 @@ bool FakeSuggestionHandler::AcceptSuggestionCandidate(
     int context_id,
     const std::u16string& candidate,
     std::string* error) {
-  return false;
+  showing_suggestion_ = false;
+  accepted_suggestion_ = true;
+  accepted_suggestion_text_ = candidate;
+  suggestion_text_ = u"";
+  confirmed_length_ = 0;
+  return true;
 }
 
 bool FakeSuggestionHandler::SetAssistiveWindowProperties(
     int context_id,
     const AssistiveWindowProperties& assistive_window,
     std::string* error) {
-  if (assistive_window.candidates.empty()) {
-    return true;
-  }
-
   if (assistive_window.visible) {
     context_id_ = context_id;
     showing_suggestion_ = true;

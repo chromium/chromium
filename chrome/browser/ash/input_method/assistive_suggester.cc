@@ -404,7 +404,7 @@ bool AssistiveSuggester::OnKeyEvent(const ui::KeyEvent& event) {
   HandleLongpressEnabledKeyEvent(event);
 
   return false;
-};  // namespace input_method
+}
 
 void AssistiveSuggester::HandleLongpressEnabledKeyEvent(
     const ui::KeyEvent& event) {
@@ -439,8 +439,10 @@ void AssistiveSuggester::OnLongpressDetected() {
   if (!current_longpress_char_.has_value()) {
     return;
   }
-  longpress_diacritics_suggester_.TrySuggestOnLongpress(
-      *current_longpress_char_);
+  if (longpress_diacritics_suggester_.TrySuggestOnLongpress(
+          *current_longpress_char_)) {
+    current_suggester_ = &longpress_diacritics_suggester_;
+  }
   current_longpress_char_ = absl::nullopt;
 }
 

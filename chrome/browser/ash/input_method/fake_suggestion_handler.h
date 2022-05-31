@@ -50,11 +50,17 @@ class FakeSuggestionHandler : public SuggestionHandlerInterface {
   // Test getters
   int GetContextId() { return context_id_; }
   std::u16string GetSuggestionText() { return suggestion_text_; }
+  std::u16string GetAcceptedSuggestionText() {
+    return accepted_suggestion_text_;
+  }
   size_t GetConfirmedLength() { return confirmed_length_; }
   bool GetShowingSuggestion() { return showing_suggestion_; }
   bool GetAcceptedSuggestion() { return accepted_suggestion_; }
   bool GetDismissedSuggestion() { return dismissed_suggestion_; }
   bool GetHighlightedSuggestion() { return highlighted_suggestion_; }
+  ui::ime::AssistiveWindowButton GetHighlightedButton() {
+    return highlighted_button_;
+  }
   std::vector<std::u16string> GetAnnouncements() { return announcements_; }
   std::vector<std::string> GetLastOnSuggestionChangedEventSuggestions() {
     return last_on_suggestion_changed_event_suggestions_;
@@ -62,16 +68,18 @@ class FakeSuggestionHandler : public SuggestionHandlerInterface {
   ui::ime::SuggestionDetails GetLastSuggestionDetails() {
     return last_suggestion_details_;
   }
-  ui::ime::ButtonId GetLastClickedButton() { return last_clicked_button_; };
+  ui::ime::ButtonId GetLastClickedButton() { return last_clicked_button_; }
 
  private:
   int context_id_ = 0;
   std::u16string suggestion_text_;
+  std::u16string accepted_suggestion_text_;
   size_t confirmed_length_ = 0;
   bool showing_suggestion_ = false;
   bool accepted_suggestion_ = false;
   bool dismissed_suggestion_ = false;
   bool highlighted_suggestion_ = false;
+  ui::ime::AssistiveWindowButton highlighted_button_;
   std::vector<std::u16string> announcements_;
   std::vector<std::string> last_on_suggestion_changed_event_suggestions_;
   ui::ime::SuggestionDetails last_suggestion_details_;
