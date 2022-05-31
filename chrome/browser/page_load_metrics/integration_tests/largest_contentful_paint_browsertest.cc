@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
+#include "components/paint_preview/buildflags/buildflags.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/test/browser_test.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -22,6 +23,12 @@
 #include "ui/aura/window.h"
 #endif
 #include "ui/events/test/event_generator.h"
+
+#if BUILDFLAG(ENABLE_PAINT_PREVIEW)
+// `gn check` doesn't recognize that this is included conditionally, with the
+// same condition as the dependencies.
+#include "components/paint_preview/browser/paint_preview_client.h"  // nogncheck
+#endif
 
 using trace_analyzer::Query;
 using trace_analyzer::TraceAnalyzer;
@@ -157,6 +164,57 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest,
 
   EXPECT_EQ(EvalJs(sub, "test_step_2()").value.GetString(), "green-16x16.png");
 }
+
+#if BUILDFLAG(ENABLE_PAINT_PREVIEW)
+IN_PROC_BROWSER_TEST_F(MetricIntegrationTest,
+                       LargestContentfulPaintPaintPreview) {
+  Start();
+  StartTracing({"loading"});
+  Load("/largest_contentful_paint_paint_preview.html");
+
+  content::EvalJsResult lcp_before_paint_preview =
+      EvalJs(web_contents(), "block_for_next_lcp()");
+  EXPECT_EQ("", lcp_before_paint_preview.error);
+
+  paint_preview::PaintPreviewClient::CreateForWebContents(
+      web_contents());  // Is a singleton.
+  auto* client =
+      paint_preview::PaintPreviewClient::FromWebContents(web_contents());
+
+  paint_preview::PaintPreviewClient::PaintPreviewParams params(
+      paint_preview::RecordingPersistence::kMemoryBuffer);
+  params.inner.clip_rect = gfx::Rect(0, 0, 1, 1);
+  params.inner.is_main_frame = true;
+  params.inner.capture_links = false;
+  params.inner.max_capture_size = 50 * 1024 * 1024;
+  params.inner.max_decoded_image_size_bytes = 50 * 1024 * 1024;
+  params.inner.skip_accelerated_content = true;
+
+  base::RunLoop run_loop;
+  client->CapturePaintPreview(
+      params, web_contents()->GetMainFrame(),
+      base::BindOnce(
+          [](base::OnceClosure callback, base::UnguessableToken,
+             paint_preview::mojom::PaintPreviewStatus,
+             std::unique_ptr<paint_preview::CaptureResult>) {
+            std::move(callback).Run();
+          },
+          run_loop.QuitClosure()));
+  run_loop.Run();
+
+  content::EvalJsResult lcp_after_paint_preview =
+      EvalJs(web_contents(), "trigger_repaint_and_block_for_next_lcp()");
+  EXPECT_EQ("", lcp_after_paint_preview.error);
+
+  // When PaintPreview creates new LCP candidates, we compare the short text and
+  // the long text here, which will fail. But in order to consistently get the
+  // new LCP candidate in that case, we always add a medium text in
+  // `trigger_repaint_and_block_for_next_lcp`. So use a soft comparison here
+  // that would permit the medium text, but not the long text.
+  EXPECT_LT(lcp_after_paint_preview.value.GetDouble(),
+            2 * lcp_before_paint_preview.value.GetDouble());
+}
+#endif
 
 class PageViewportInLCPTest : public MetricIntegrationTest {
  public:
