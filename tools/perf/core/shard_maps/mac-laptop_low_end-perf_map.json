@@ -61,9 +61,6 @@
             "blink_perf.webaudio": {
                 "abridged": false
             },
-            "dromaeo": {
-                "abridged": false
-            },
             "dummy_benchmark.noisy_benchmark_1": {
                 "abridged": false
             },

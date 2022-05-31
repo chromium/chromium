@@ -94,10 +94,6 @@
             "blink_perf.webgl_fast_call": {
                 "abridged": false
             },
-            "dromaeo": {
-                "end": 1,
-                "abridged": false
-            },
             "speedometer2": {
                 "abridged": false
             },
@@ -116,10 +112,6 @@
     },
     "4": {
         "benchmarks": {
-            "dromaeo": {
-                "begin": 1,
-                "abridged": false
-            },
             "dummy_benchmark.noisy_benchmark_1": {
                 "abridged": false
             },

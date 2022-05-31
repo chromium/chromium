@@ -145,10 +145,6 @@
                 "begin": 5,
                 "abridged": false
             },
-            "dromaeo": {
-                "end": 1,
-                "abridged": false
-            },
             "speedometer2": {
                 "abridged": false
             }
@@ -156,10 +152,6 @@
     },
     "7": {
         "benchmarks": {
-            "dromaeo": {
-                "begin": 1,
-                "abridged": false
-            },
             "dummy_benchmark.noisy_benchmark_1": {
                 "abridged": false
             },

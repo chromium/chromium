@@ -1332,22 +1332,6 @@
         "name": "blink_perf.webaudio/panner-node.html"
     },
     {
-        "duration": "38.0",
-        "name": "dromaeo/http://dromaeo.com?dom-attr"
-    },
-    {
-        "duration": "0.0",
-        "name": "dromaeo/http://dromaeo.com?dom-modify"
-    },
-    {
-        "duration": "49.0",
-        "name": "dromaeo/http://dromaeo.com?dom-query"
-    },
-    {
-        "duration": "31.0",
-        "name": "dromaeo/http://dromaeo.com?dom-traverse"
-    },
-    {
         "duration": "6.0",
         "name": "dummy_benchmark.noisy_benchmark_1/dummy_page.html"
     },

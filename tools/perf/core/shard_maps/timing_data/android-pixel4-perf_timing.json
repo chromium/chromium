@@ -1344,22 +1344,6 @@
         "name": "blink_perf.webgl_fast_call/binding-draw-arrays.html"
     },
     {
-        "duration": "37.0",
-        "name": "dromaeo/http://dromaeo.com?dom-attr"
-    },
-    {
-        "duration": "35.0",
-        "name": "dromaeo/http://dromaeo.com?dom-modify"
-    },
-    {
-        "duration": "50.0",
-        "name": "dromaeo/http://dromaeo.com?dom-query"
-    },
-    {
-        "duration": "30.0",
-        "name": "dromaeo/http://dromaeo.com?dom-traverse"
-    },
-    {
         "duration": "6.0",
         "name": "dummy_benchmark.noisy_benchmark_1/dummy_page.html"
     },

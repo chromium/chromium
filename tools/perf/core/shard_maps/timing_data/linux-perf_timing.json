@@ -1396,22 +1396,6 @@
         "name": "desktop_ui/tab_search:top50:loading:2020"
     },
     {
-        "duration": "34.0",
-        "name": "dromaeo/http://dromaeo.com?dom-attr"
-    },
-    {
-        "duration": "32.0",
-        "name": "dromaeo/http://dromaeo.com?dom-modify"
-    },
-    {
-        "duration": "48.0",
-        "name": "dromaeo/http://dromaeo.com?dom-query"
-    },
-    {
-        "duration": "26.0",
-        "name": "dromaeo/http://dromaeo.com?dom-traverse"
-    },
-    {
         "duration": "3.0",
         "name": "dummy_benchmark.noisy_benchmark_1/dummy_page.html"
     },

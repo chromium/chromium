@@ -57,19 +57,11 @@
             },
             "blink_perf.webaudio": {
                 "abridged": false
-            },
-            "dromaeo": {
-                "end": 3,
-                "abridged": false
             }
         }
     },
     "3": {
         "benchmarks": {
-            "dromaeo": {
-                "begin": 3,
-                "abridged": false
-            },
             "dummy_benchmark.noisy_benchmark_1": {
                 "abridged": false
             },

@@ -192,10 +192,6 @@
             "desktop_ui": {
                 "abridged": false
             },
-            "dromaeo": {
-                "end": 2,
-                "abridged": false
-            },
             "speedometer2": {
                 "abridged": false
             },
@@ -223,10 +219,6 @@
     },
     "5": {
         "benchmarks": {
-            "dromaeo": {
-                "begin": 2,
-                "abridged": false
-            },
             "dummy_benchmark.noisy_benchmark_1": {
                 "abridged": false
             },

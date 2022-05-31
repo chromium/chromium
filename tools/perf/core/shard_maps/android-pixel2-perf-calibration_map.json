@@ -152,9 +152,6 @@
             "blink_perf.webgl_fast_call": {
                 "abridged": false
             },
-            "dromaeo": {
-                "abridged": false
-            },
             "dummy_benchmark.noisy_benchmark_1": {
                 "abridged": false
             },
