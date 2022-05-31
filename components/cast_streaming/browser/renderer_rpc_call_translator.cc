@@ -11,10 +11,10 @@ namespace cast_streaming::remoting {
 
 RendererRpcCallTranslator::RendererRpcCallTranslator(
     RpcMessageProcessor processor,
-    mojo::Remote<media::mojom::Renderer> remote_renderer)
+    media::mojom::Renderer* renderer)
     : message_processor_(std::move(processor)),
       renderer_client_receiver_(this),
-      renderer_remote_(std::move(remote_renderer)),
+      renderer_(std::move(renderer)),
       weak_factory_(this) {}
 
 RendererRpcCallTranslator::~RendererRpcCallTranslator() = default;
@@ -22,7 +22,7 @@ RendererRpcCallTranslator::~RendererRpcCallTranslator() = default;
 void RendererRpcCallTranslator::OnRpcInitialize() {
   if (!has_been_initialized_) {
     has_been_initialized_ = true;
-    renderer_remote_->Initialize(
+    renderer_->Initialize(
         renderer_client_receiver_.BindNewEndpointAndPassRemote(),
         /* streams */ {}, /* media_url_params */ nullptr,
         base::BindOnce(&RendererRpcCallTranslator::OnInitializeCompleted,
@@ -34,21 +34,20 @@ void RendererRpcCallTranslator::OnRpcInitialize() {
 
 void RendererRpcCallTranslator::OnRpcFlush(uint32_t audio_count,
                                            uint32_t video_count) {
-  renderer_remote_->Flush(
-      base::BindOnce(&RendererRpcCallTranslator::OnFlushCompleted,
-                     weak_factory_.GetWeakPtr(), handle_));
+  renderer_->Flush(base::BindOnce(&RendererRpcCallTranslator::OnFlushCompleted,
+                                  weak_factory_.GetWeakPtr(), handle_));
 }
 
 void RendererRpcCallTranslator::OnRpcStartPlayingFrom(base::TimeDelta time) {
-  renderer_remote_->StartPlayingFrom(time);
+  renderer_->StartPlayingFrom(time);
 }
 
 void RendererRpcCallTranslator::OnRpcSetPlaybackRate(double playback_rate) {
-  renderer_remote_->SetPlaybackRate(playback_rate);
+  renderer_->SetPlaybackRate(playback_rate);
 }
 
 void RendererRpcCallTranslator::OnRpcSetVolume(double volume) {
-  renderer_remote_->SetVolume(volume);
+  renderer_->SetVolume(volume);
 }
 
 void RendererRpcCallTranslator::OnTimeUpdate(base::TimeDelta media_time,

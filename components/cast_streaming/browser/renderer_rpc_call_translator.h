@@ -31,13 +31,12 @@ class RendererRpcCallTranslator : public media::mojom::RendererClient,
       openscreen::cast::RpcMessenger::Handle handle,
       std::unique_ptr<openscreen::cast::RpcMessage>)>;
 
-  // |remote_renderer| is the remote media::mojom::Renderer to which commands
+  // |renderer| is the remote media::mojom::Renderer to which commands
   // translated from proto messages should be sent.
   // |processor| is responsible for handling any proto messages ready to be sent
   // out.
-  explicit RendererRpcCallTranslator(
-      RpcMessageProcessor processor,
-      mojo::Remote<media::mojom::Renderer> remote_renderer);
+  explicit RendererRpcCallTranslator(RpcMessageProcessor processor,
+                                     media::mojom::Renderer* renderer);
   ~RendererRpcCallTranslator() override;
 
   // Sets the |handle| to be used for future outgoing RPC calls.
@@ -87,7 +86,7 @@ class RendererRpcCallTranslator : public media::mojom::RendererClient,
 
   mojo::AssociatedReceiver<media::mojom::RendererClient>
       renderer_client_receiver_;
-  mojo::Remote<media::mojom::Renderer> renderer_remote_;
+  media::mojom::Renderer* renderer_;
 
   openscreen::cast::RpcMessenger::Handle handle_ =
       openscreen::cast::RpcMessenger::kInvalidHandle;
