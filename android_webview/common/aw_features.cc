@@ -36,8 +36,8 @@ const base::FeatureParam<base::TimeDelta>
 const base::Feature kWebViewBrotliSupport{"WebViewBrotliSupport",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Use the SafeBrowsingApiHandler which uses the connectionless GMS APIs. This
-// Feature is checked and used in downstream internal code.
+// Use the SafeBrowsingApiHandlerBridge which uses the connectionless GMS APIs.
+// This Feature is checked and used in downstream internal code.
 const base::Feature kWebViewConnectionlessSafeBrowsing{
     "WebViewConnectionlessSafeBrowsing", base::FEATURE_DISABLED_BY_DEFAULT};
 

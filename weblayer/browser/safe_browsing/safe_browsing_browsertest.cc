@@ -6,7 +6,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/prefs/pref_service.h"
-#include "components/safe_browsing/android/safe_browsing_api_handler.h"
+#include "components/safe_browsing/android/safe_browsing_api_handler_bridge.h"
 #include "components/safe_browsing/content/browser/base_blocking_page.h"
 #include "components/safe_browsing/content/browser/safe_browsing_blocking_page.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
@@ -117,10 +117,9 @@ class SafeBrowsingErrorNavigationObserver : public NavigationObserver {
   base::RunLoop run_loop_;
 };
 
-typedef safe_browsing::SafeBrowsingApiHandler::URLCheckCallbackMeta
-    CallbackWithThreatAndMeta;
+using SbBridge = safe_browsing::SafeBrowsingApiHandlerBridge;
 
-void RunCallbackOnIOThread(std::unique_ptr<CallbackWithThreatAndMeta> callback,
+void RunCallbackOnIOThread(std::unique_ptr<SbBridge::ResponseCallback> callback,
                            safe_browsing::SBThreatType threat_type,
                            const safe_browsing::ThreatMetadata& metadata) {
   content::GetIOThreadTaskRunner({})->PostTask(
@@ -138,7 +137,7 @@ class TestUrlCheckInterceptor : public safe_browsing::UrlCheckInterceptor {
   void Clear() { map_.clear(); }
 
   // safe_browsing::UrlCheckInterceptor
-  void Check(std::unique_ptr<CallbackWithThreatAndMeta> callback,
+  void Check(std::unique_ptr<SbBridge::ResponseCallback> callback,
              const GURL& url) const override {
     RunCallbackOnIOThread(std::move(callback), Find(url),
                           safe_browsing::ThreatMetadata());
@@ -179,14 +178,13 @@ class SafeBrowsingBrowserTest : public WebLayerBrowserTest {
 
   void TearDown() override {
     profile()->SetGoogleAccountAccessTokenFetchDelegate(nullptr);
-    safe_browsing::SafeBrowsingApiHandler::GetInstance()
-        ->SetInterceptorForTesting(nullptr);
+    SbBridge::GetInstance()->SetInterceptorForTesting(nullptr);
   }
 
   void InitializeOnMainThread() {
     NavigateAndWaitForCompletion(GURL("about:blank"), shell());
-    safe_browsing::SafeBrowsingApiHandler::GetInstance()
-        ->SetInterceptorForTesting(url_check_interceptor_.get());
+    SbBridge::GetInstance()->SetInterceptorForTesting(
+        url_check_interceptor_.get());
 
     // Some tests need to be able to navigate to URLs on domains that are not
     // explicitly localhost (e.g., so that realtime URL lookups occur on these

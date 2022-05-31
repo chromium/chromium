@@ -18,6 +18,7 @@
 #include "base/trace_event/trace_event.h"
 #include "components/safe_browsing/android/jni_headers/SafeBrowsingApiBridge_jni.h"
 #include "components/safe_browsing/android/safe_browsing_api_handler_util.h"
+#include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -36,7 +37,7 @@ namespace safe_browsing {
 namespace {
 
 void RunCallbackOnIOThread(
-    std::unique_ptr<SafeBrowsingApiHandler::URLCheckCallbackMeta> callback,
+    std::unique_ptr<SafeBrowsingApiHandlerBridge::ResponseCallback> callback,
     SBThreatType threat_type,
     const ThreatMetadata& metadata) {
   content::GetIOThreadTaskRunner({})->PostTask(
@@ -89,7 +90,7 @@ ScopedJavaLocalRef<jintArray> SBThreatTypeSetToJavaArray(
 // response.
 typedef std::unordered_map<
     jlong,
-    std::unique_ptr<SafeBrowsingApiHandler::URLCheckCallbackMeta>>
+    std::unique_ptr<SafeBrowsingApiHandlerBridge::ResponseCallback>>
     PendingCallbacksMap;
 
 static PendingCallbacksMap* GetPendingCallbacksMapOnIOThread() {
@@ -104,12 +105,21 @@ static PendingCallbacksMap* GetPendingCallbacksMapOnIOThread() {
 
 }  // namespace
 
+// static
+SafeBrowsingApiHandlerBridge* SafeBrowsingApiHandlerBridge::GetInstance() {
+#if BUILDFLAG(SAFE_BROWSING_DB_REMOTE)
+  static base::NoDestructor<SafeBrowsingApiHandlerBridge> instance;
+  return instance.get();
+#else
+  return nullptr;
+#endif
+}
 
 // Respond to the URL reputation request by looking up the callback information
 // stored in |pending_callbacks|.
-//   |callback_id| is an int form of pointer to a URLCheckCallbackMeta
+//   |callback_id| is an int form of pointer to a ::ResponseCallback
 //                 that will be called and then deleted here.
-//   |result_status| is one of those from SafeBrowsingApiHandler.java
+//   |result_status| is one of those from SafeBrowsingApiHandlerBridge.java
 //   |metadata| is a JSON string classifying the threat if there is one.
 void OnUrlCheckDoneOnIOThread(jlong callback_id,
                               jint result_status,
@@ -122,7 +132,7 @@ void OnUrlCheckDoneOnIOThread(jlong callback_id,
   if (!found)
     return;
 
-  std::unique_ptr<SafeBrowsingApiHandler::URLCheckCallbackMeta> callback =
+  std::unique_ptr<SafeBrowsingApiHandlerBridge::ResponseCallback> callback =
       std::move((*pending_callbacks)[callback_id]);
   pending_callbacks->erase(callback_id);
 
@@ -154,9 +164,9 @@ void OnUrlCheckDoneOnIOThread(jlong callback_id,
 
 // Java->Native call, invoked when a check is done.
 //   |callback_id| is a key into the |pending_callbacks_| map, whose value is a
-//                 URLCheckCallbackMeta that will be called and then deleted on
+//                 ::ResponseCallback that will be called and then deleted on
 //                 the IO thread.
-//   |result_status| is one of those from SafeBrowsingApiHandler.java
+//   |result_status| is a @SafeBrowsingResult from SafeBrowsingApiHandler.java
 //   |metadata| is a JSON string classifying the threat if there is one.
 //   |check_delta| is the number of microseconds it took to look up the URL
 //                 reputation from GmsCore.
@@ -216,7 +226,7 @@ bool SafeBrowsingApiHandlerBridge::StartAllowlistCheck(
 }
 
 void SafeBrowsingApiHandlerBridge::StartURLCheck(
-    std::unique_ptr<SafeBrowsingApiHandler::URLCheckCallbackMeta> callback,
+    std::unique_ptr<ResponseCallback> callback,
     const GURL& url,
     const SBThreatTypeSet& threat_types) {
   if (interceptor_for_testing_) {
