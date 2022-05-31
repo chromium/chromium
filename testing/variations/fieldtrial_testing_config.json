@@ -697,6 +697,21 @@
             ]
         }
     ],
+    "AsyncDnsWin": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AsyncDns"
+                    ]
+                }
+            ]
+        }
+    ],
     "AudioProcessHighPriorityWin": [
         {
             "platforms": [
