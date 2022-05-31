@@ -5,7 +5,11 @@
 #include <lib/sys/cpp/component_context.h>
 #include <lib/sys/inspect/cpp/component.h>
 
+#include <utility>
+
+#include "base/check.h"
 #include "base/command_line.h"
+#include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
 #include "base/fuchsia/process_lifecycle.h"
 #include "base/fuchsia/scoped_service_binding.h"
@@ -35,7 +39,7 @@ constexpr char kHeadlessConfigKey[] = "headless";
 constexpr char kFrameHostConfigKey[] = "enable-frame-host-component";
 
 // Config-data key to run the CFv1 runner as a shim to the CFv2 runner.
-constexpr char kRunCfv1ShimConfigKey[] = "run-cfv1-shim";
+constexpr char kRunCfv1ShimConfigKey[] = "enable-cfv1-shim";
 
 // Returns the value of |config_key| or false if it is not set.
 bool GetConfigBool(base::StringPiece config_key) {
@@ -43,6 +47,44 @@ bool GetConfigBool(base::StringPiece config_key) {
   if (config)
     return config->FindBoolPath(config_key).value_or(false);
   return false;
+}
+
+// Name of the service capability implemented by the CFv2-based Runner.
+constexpr char kCfv2RunnerService[] = "fuchsia.sys.Runner-cast";
+
+// Publish a fuchsia.sys.Runner protocol that simply delegates to a specially-
+// named protocol available in the incoming service directory.
+int Cfv1ToCfv2RunnerProxyMain() {
+  sys::OutgoingDirectory* const outgoing_directory =
+      base::ComponentContextForProcess()->outgoing().get();
+
+  const base::ScopedServicePublisher proxy_sys_runner(
+      outgoing_directory,
+      fidl::InterfaceRequestHandler<fuchsia::sys::Runner>(
+          [](fidl::InterfaceRequest<fuchsia::sys::Runner> request) {
+            zx_status_t status =
+                base::ComponentContextForProcess()->svc()->Connect(
+                    std::move(request), kCfv2RunnerService);
+            ZX_CHECK(status == ZX_OK, status) << "Connect(Runner-cast)";
+          }));
+
+  // If the CFv2-based Runner implementation fails then terminate the proxy
+  // so that the framework will observe this Runner-component failing.
+  auto cfv2_runner =
+      base::ComponentContextForProcess()->svc()->Connect<fuchsia::sys::Runner>(
+          kCfv2RunnerService);
+  CHECK(cfv2_runner) << "Connect(Runner-cast)";
+  cfv2_runner.set_error_handler(
+      base::LogFidlErrorAndExitProcess(FROM_HERE, kCfv2RunnerService));
+
+  // Start serving the outgoing service directory to clients.
+  outgoing_directory->ServeFromStartupInfo();
+
+  // ELF runner will kill the component when the framework requests it to.
+  base::RunLoop().Run();
+
+  NOTREACHED();
+  return 0;
 }
 
 }  // namespace
@@ -67,16 +109,16 @@ int main(int argc, char** argv) {
 
   cr_fuchsia::LogComponentStartWithVersion("cast_runner");
 
+  if (!enable_cfv2 && (base::CommandLine::ForCurrentProcess()->HasSwitch(
+                           kRunCfv1ShimConfigKey) ||
+                       GetConfigBool(kRunCfv1ShimConfigKey))) {
+    return Cfv1ToCfv2RunnerProxyMain();
+  }
+
   cr_fuchsia::RegisterFuchsiaDirScheme();
 
   sys::OutgoingDirectory* const outgoing_directory =
       base::ComponentContextForProcess()->outgoing().get();
-
-  if (!enable_cfv2 && GetConfigBool(kRunCfv1ShimConfigKey)) {
-    // TODO(crbug.com/1065707): Delegate the Runner protocol to the CFv2 runner.
-    NOTIMPLEMENTED();
-    return 1;
-  }
 
   // Publish the fuchsia.sys.Runner implementation for Cast applications.
   cr_fuchsia::WebInstanceHost web_instance_host;
@@ -108,8 +150,9 @@ int main(int argc, char** argv) {
   base::RunLoop run_loop;
   absl::optional<base::ProcessLifecycle> process_lifecycle;
 
-  if (enable_cfv2)
+  if (enable_cfv2) {
     process_lifecycle.emplace(run_loop.QuitClosure());
+  }
 
   run_loop.Run();
 
