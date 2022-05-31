@@ -86,6 +86,7 @@ void CheckThatAddressIsntWithinFirstPartitionPage(uintptr_t address) {
 
 #include <sanitizer/asan_interface.h>
 #include "base/logging.h"
+#include "base/memory/raw_ptr_asan_service.h"
 
 namespace base::internal {
 
@@ -113,19 +114,10 @@ void ForceRead(void const volatile* ptr) {
 }
 }  // namespace
 
-void AsanBackupRefPtrImpl::AsanCheckIfValidInstantiation(
-    void const volatile* ptr) {
-  if (IsFreedHeapPointer(ptr)) {
-    LOG(ERROR) << "BackupRefPtr: Constructing a raw_ptr from a pointer "
-                  "to an already freed allocation at "
-               << const_cast<void*>(ptr) << " leads to memory corruption.";
-    ForceRead(ptr);
-  }
-}
-
 void AsanBackupRefPtrImpl::AsanCheckIfValidDereference(
     void const volatile* ptr) {
-  if (IsFreedHeapPointer(ptr)) {
+  if (RawPtrAsanService::GetInstance().is_dereference_check_enabled() &&
+      IsFreedHeapPointer(ptr)) {
     LOG(ERROR)
         << "BackupRefPtr: Dereferencing a raw_ptr to an already "
            "freed allocation at "
@@ -137,7 +129,8 @@ void AsanBackupRefPtrImpl::AsanCheckIfValidDereference(
 
 void AsanBackupRefPtrImpl::AsanCheckIfValidExtraction(
     void const volatile* ptr) {
-  if (IsFreedHeapPointer(ptr)) {
+  if (RawPtrAsanService::GetInstance().is_extraction_check_enabled() &&
+      IsFreedHeapPointer(ptr)) {
     LOG(ERROR)
         << "BackupRefPtr: Extracting from a raw_ptr to an already "
            "freed allocation at "
@@ -147,6 +140,17 @@ void AsanBackupRefPtrImpl::AsanCheckIfValidExtraction(
            "requires a manual analysis to determine if that's the case.";
     // Don't trigger ASan manually to avoid false-positives when the extracted
     // pointer is never dereferenced.
+  }
+}
+
+void AsanBackupRefPtrImpl::AsanCheckIfValidInstantiation(
+    void const volatile* ptr) {
+  if (RawPtrAsanService::GetInstance().is_instantiation_check_enabled() &&
+      IsFreedHeapPointer(ptr)) {
+    LOG(ERROR) << "BackupRefPtr: Constructing a raw_ptr from a pointer "
+                  "to an already freed allocation at "
+               << const_cast<void*>(ptr) << " leads to memory corruption.";
+    ForceRead(ptr);
   }
 }
 

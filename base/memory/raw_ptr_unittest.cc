@@ -1357,6 +1357,16 @@ struct AsanStruct {
 };
 
 TEST(AsanBackupRefPtrImpl, Dereference) {
+  if (RawPtrAsanService::GetInstance().mode() !=
+      RawPtrAsanService::Mode::kEnabled) {
+    base::RawPtrAsanService::GetInstance().Configure(
+        base::EnableDereferenceCheck(true), base::EnableExtractionCheck(true),
+        base::EnableInstantiationCheck(true));
+  } else {
+    ASSERT_TRUE(
+        base::RawPtrAsanService::GetInstance().is_dereference_check_enabled());
+  }
+
   raw_ptr<AsanStruct> protected_ptr = new AsanStruct;
 
   // The four statements below should succeed.
@@ -1378,6 +1388,16 @@ TEST(AsanBackupRefPtrImpl, Dereference) {
 }
 
 TEST(AsanBackupRefPtrImpl, Extraction) {
+  if (RawPtrAsanService::GetInstance().mode() !=
+      RawPtrAsanService::Mode::kEnabled) {
+    base::RawPtrAsanService::GetInstance().Configure(
+        base::EnableDereferenceCheck(true), base::EnableExtractionCheck(true),
+        base::EnableInstantiationCheck(true));
+  } else {
+    ASSERT_TRUE(
+        base::RawPtrAsanService::GetInstance().is_extraction_check_enabled());
+  }
+
   raw_ptr<AsanStruct> protected_ptr = new AsanStruct;
 
   AsanStruct* ptr1 = protected_ptr;  // Shouldn't crash.
@@ -1394,6 +1414,16 @@ TEST(AsanBackupRefPtrImpl, Extraction) {
 }
 
 TEST(AsanBackupRefPtrImpl, Instantiation) {
+  if (RawPtrAsanService::GetInstance().mode() !=
+      RawPtrAsanService::Mode::kEnabled) {
+    base::RawPtrAsanService::GetInstance().Configure(
+        base::EnableDereferenceCheck(true), base::EnableExtractionCheck(true),
+        base::EnableInstantiationCheck(true));
+  } else {
+    ASSERT_TRUE(base::RawPtrAsanService::GetInstance()
+                    .is_instantiation_check_enabled());
+  }
+
   AsanStruct* ptr = new AsanStruct;
 
   raw_ptr<AsanStruct> protected_ptr1 = ptr;  // Shouldn't crash.
@@ -1416,7 +1446,9 @@ TEST(AsanBackupRefPtrImpl, EarlyAllocationDetection) {
 
   AsanStruct* ptr1 = new AsanStruct;
 
-  RawPtrAsanService::GetInstance().Configure(RawPtrAsanService::Mode::kEnabled);
+  base::RawPtrAsanService::GetInstance().Configure(
+      base::EnableDereferenceCheck(true), base::EnableExtractionCheck(true),
+      base::EnableInstantiationCheck(true));
 
   AsanStruct* ptr2 = new AsanStruct;
 

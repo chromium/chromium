@@ -27,6 +27,7 @@ extern const BASE_EXPORT Feature kPartitionAllocPCScanRendererOnly;
 extern const BASE_EXPORT Feature kPartitionAllocBackupRefPtrControl;
 extern const BASE_EXPORT Feature kPartitionAllocLargeThreadCacheSize;
 extern const BASE_EXPORT Feature kPartitionAllocLargeEmptySlotSpanRing;
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 enum class BackupRefPtrEnabledProcesses {
   // BRP enabled only in the browser process.
@@ -63,7 +64,12 @@ extern const BASE_EXPORT base::FeatureParam<BackupRefPtrEnabledProcesses>
     kBackupRefPtrEnabledProcessesParam;
 extern const BASE_EXPORT base::FeatureParam<BackupRefPtrMode>
     kBackupRefPtrModeParam;
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+extern const BASE_EXPORT base::FeatureParam<bool>
+    kBackupRefPtrAsanEnableDereferenceCheckParam;
+extern const BASE_EXPORT base::FeatureParam<bool>
+    kBackupRefPtrAsanEnableExtractionCheckParam;
+extern const BASE_EXPORT base::FeatureParam<bool>
+    kBackupRefPtrAsanEnableInstantiationCheckParam;
 
 extern const BASE_EXPORT Feature kPartitionAllocPCScanMUAwareScheduler;
 extern const BASE_EXPORT Feature kPartitionAllocPCScanStackScanning;

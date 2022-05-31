@@ -12,11 +12,18 @@
 #include <cstdint>
 
 #include "base/base_export.h"
+#include "base/types/strong_alias.h"
 
-namespace base::internal {
+namespace base {
 
-BASE_EXPORT
-class RawPtrAsanService {
+using EnableDereferenceCheck =
+    base::StrongAlias<class EnableDereferenceCheckTag, bool>;
+using EnableExtractionCheck =
+    base::StrongAlias<class EnableExtractionCheckTag, bool>;
+using EnableInstantiationCheck =
+    base::StrongAlias<class EnableInstantiationCheckTag, bool>;
+
+class BASE_EXPORT RawPtrAsanService {
  public:
   enum class Mode {
     kUninitialized,
@@ -24,10 +31,22 @@ class RawPtrAsanService {
     kEnabled,
   };
 
-  void Configure(Mode mode);
+  void Configure(EnableDereferenceCheck,
+                 EnableExtractionCheck,
+                 EnableInstantiationCheck);
   Mode mode() const { return mode_; }
 
   bool IsSupportedAllocation(void*) const;
+
+  bool is_dereference_check_enabled() const {
+    return is_dereference_check_enabled_;
+  }
+  bool is_extraction_check_enabled() const {
+    return is_extraction_check_enabled_;
+  }
+  bool is_instantiation_check_enabled() const {
+    return is_instantiation_check_enabled_;
+  }
 
   static RawPtrAsanService& GetInstance() { return instance_; }
 
@@ -38,13 +57,17 @@ class RawPtrAsanService {
   static void FreeHook(const volatile void*) {}
 
   Mode mode_ = Mode::kUninitialized;
+  bool is_dereference_check_enabled_ = false;
+  bool is_extraction_check_enabled_ = false;
+  bool is_instantiation_check_enabled_ = false;
+
   size_t shadow_offset_ = 0;
 
   static RawPtrAsanService instance_;  // Not a static local variable because
                                        // `GetInstance()` is used in hot paths.
 };
 
-}  // namespace base::internal
+}  // namespace base
 
 #endif  // BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
 #endif  // BASE_MEMORY_RAW_PTR_ASAN_SERVICE_H_

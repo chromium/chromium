@@ -11,7 +11,7 @@
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
 
-namespace base::internal {
+namespace base {
 
 RawPtrAsanService RawPtrAsanService::instance_;
 
@@ -46,10 +46,17 @@ bool RawPtrAsanService::IsSupportedAllocation(void* allocation_start) const {
 }
 
 NO_SANITIZE("address")
-void RawPtrAsanService::Configure(Mode mode) {
+void RawPtrAsanService::Configure(
+    EnableDereferenceCheck enable_dereference_check,
+    EnableExtractionCheck enable_extraction_check,
+    EnableInstantiationCheck enable_instantiation_check) {
   CHECK_EQ(mode_, Mode::kUninitialized);
 
-  if (mode == Mode::kEnabled) {
+  Mode new_mode = enable_dereference_check || enable_extraction_check ||
+                          enable_instantiation_check
+                      ? Mode::kEnabled
+                      : Mode::kDisabled;
+  if (new_mode == Mode::kEnabled) {
     // The constants we use aren't directly exposed by the API, so
     // validate them at runtime as carefully as possible.
     size_t shadow_scale;
@@ -65,9 +72,13 @@ void RawPtrAsanService::Configure(Mode mode) {
     delete dummy_alloc;
 
     __sanitizer_install_malloc_and_free_hooks(MallocHook, FreeHook);
+
+    is_dereference_check_enabled_ = !!enable_dereference_check;
+    is_extraction_check_enabled_ = !!enable_extraction_check;
+    is_instantiation_check_enabled_ = !!enable_instantiation_check;
   }
 
-  mode_ = mode;
+  mode_ = new_mode;
 }
 
 uint8_t* RawPtrAsanService::GetShadow(void* ptr) const {
@@ -75,5 +86,5 @@ uint8_t* RawPtrAsanService::GetShadow(void* ptr) const {
       (reinterpret_cast<uintptr_t>(ptr) >> kShadowScale) + shadow_offset_);
 }
 
-}  // namespace base::internal
+}  // namespace base
 #endif  // BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)

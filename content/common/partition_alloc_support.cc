@@ -21,6 +21,7 @@
 #include "base/feature_list.h"
 #include "base/location.h"
 #include "base/memory/nonscannable_memory.h"
+#include "base/memory/raw_ptr_asan_service.h"
 #include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -218,9 +219,11 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
   bool enable_brp = false;
   [[maybe_unused]] bool split_main_partition = false;
   [[maybe_unused]] bool use_dedicated_aligned_partition = false;
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-#if BUILDFLAG(USE_BACKUP_REF_PTR)
-  bool process_affected_by_brp_flag = false;
+  [[maybe_unused]] bool process_affected_by_brp_flag = false;
+
+#if (BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
+     BUILDFLAG(USE_BACKUP_REF_PTR)) ||           \
+    BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
   if (base::FeatureList::IsEnabled(
           base::features::kPartitionAllocBackupRefPtr)) {
     // No specified process type means this is the Browser process.
@@ -242,7 +245,26 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
         break;
     }
   }
+#endif
 
+#if BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
+  if (process_affected_by_brp_flag) {
+    base::RawPtrAsanService::GetInstance().Configure(
+        base::EnableDereferenceCheck(
+            base::features::kBackupRefPtrAsanEnableDereferenceCheckParam.Get()),
+        base::EnableExtractionCheck(
+            base::features::kBackupRefPtrAsanEnableExtractionCheckParam.Get()),
+        base::EnableInstantiationCheck(
+            base::features::kBackupRefPtrAsanEnableInstantiationCheckParam
+                .Get()));
+  } else {
+    base::RawPtrAsanService::GetInstance().Configure(
+        base::EnableDereferenceCheck(false), base::EnableExtractionCheck(false),
+        base::EnableInstantiationCheck(false));
+  }
+#endif  // BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
+
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && BUILDFLAG(USE_BACKUP_REF_PTR)
   if (process_affected_by_brp_flag) {
     switch (base::features::kBackupRefPtrModeParam.Get()) {
       case base::features::BackupRefPtrMode::kDisabled:
@@ -275,8 +297,8 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
         break;
     }
   }
-#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#endif  // BUILDFLAG(USE_BACKUP_REF_PTR) &&
+        // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   base::allocator::ConfigurePartitions(
