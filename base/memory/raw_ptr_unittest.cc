@@ -30,6 +30,10 @@
 #include "base/allocator/partition_allocator/partition_tag.h"
 #endif  // defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
 
+#if BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
+#include <sanitizer/asan_interface.h>
+#endif
+
 using testing::AllOf;
 using testing::HasSubstr;
 using testing::Test;
@@ -1431,6 +1435,50 @@ TEST(AsanBackupRefPtrImpl, Instantiation) {
 
   delete ptr;
 
+  EXPECT_DEATH_IF_SUPPORTED(
+      { [[maybe_unused]] raw_ptr<AsanStruct> protected_ptr2 = ptr; },
+      "BackupRefPtr: Constructing a raw_ptr");
+}
+
+TEST(AsanBackupRefPtrImpl, InstantiationInvalidPointer) {
+  if (RawPtrAsanService::GetInstance().mode() !=
+      RawPtrAsanService::Mode::kEnabled) {
+    base::RawPtrAsanService::GetInstance().Configure(
+        base::EnableDereferenceCheck(true), base::EnableExtractionCheck(true),
+        base::EnableInstantiationCheck(true));
+  } else {
+    ASSERT_TRUE(base::RawPtrAsanService::GetInstance()
+                    .is_instantiation_check_enabled());
+  }
+
+  void* ptr1 = reinterpret_cast<void*>(0xfefefefefefefefe);
+
+  [[maybe_unused]] raw_ptr<void> protected_ptr1 = ptr1;  // Shouldn't crash.
+
+  size_t shadow_scale, shadow_offset;
+  __asan_get_shadow_mapping(&shadow_scale, &shadow_offset);
+  [[maybe_unused]] raw_ptr<void> protected_ptr2 =
+      reinterpret_cast<void*>(shadow_offset);  // Shouldn't crash.
+}
+
+TEST(AsanBackupRefPtrImpl, UserPoisoned) {
+  if (RawPtrAsanService::GetInstance().mode() !=
+      RawPtrAsanService::Mode::kEnabled) {
+    base::RawPtrAsanService::GetInstance().Configure(
+        base::EnableDereferenceCheck(true), base::EnableExtractionCheck(true),
+        base::EnableInstantiationCheck(true));
+  } else {
+    ASSERT_TRUE(
+        base::RawPtrAsanService::GetInstance().is_dereference_check_enabled());
+  }
+
+  AsanStruct* ptr = new AsanStruct;
+  __asan_poison_memory_region(ptr, sizeof(AsanStruct));
+
+  [[maybe_unused]] raw_ptr<AsanStruct> protected_ptr1 =
+      ptr;  // Shouldn't crash.
+
+  delete ptr;  // Should crash now.
   EXPECT_DEATH_IF_SUPPORTED(
       { [[maybe_unused]] raw_ptr<AsanStruct> protected_ptr2 = ptr; },
       "BackupRefPtr: Constructing a raw_ptr");

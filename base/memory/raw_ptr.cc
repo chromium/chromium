@@ -92,7 +92,9 @@ namespace base::internal {
 
 namespace {
 bool IsFreedHeapPointer(void const volatile* ptr) {
-  if (!__asan_address_is_poisoned(ptr))
+  // Use `__asan_region_is_poisoned` instead of `__asan_address_is_poisoned`
+  // because the latter may crash on an invalid pointer.
+  if (!__asan_region_is_poisoned(const_cast<void*>(ptr), 1))
     return false;
 
   // Make sure the address is on the heap and is not in a redzone.
@@ -102,9 +104,20 @@ bool IsFreedHeapPointer(void const volatile* ptr) {
       const_cast<void*>(ptr), nullptr, 0, &region_ptr, &region_size);
 
   auto address = reinterpret_cast<uintptr_t>(ptr);
-  auto region_address = reinterpret_cast<uintptr_t>(region_ptr);
-  return strcmp(allocation_type, "heap") == 0 && region_address <= address &&
-         address < region_address + region_size;
+  auto region_base = reinterpret_cast<uintptr_t>(region_ptr);
+  if (strcmp(allocation_type, "heap") != 0 || address < region_base ||
+      address >=
+          region_base + region_size) {  // We exclude pointers one past the end
+                                        // of an allocations from the analysis
+                                        // for now because they're to fragile.
+    return false;
+  }
+
+  // Make sure the allocation has been actually freed rather than
+  // user-poisoned.
+  int free_thread_id = -1;
+  __asan_get_free_stack(region_ptr, nullptr, 0, &free_thread_id);
+  return free_thread_id != -1;
 }
 
 // Force a non-optimizable memory load operation to trigger an ASan crash.
