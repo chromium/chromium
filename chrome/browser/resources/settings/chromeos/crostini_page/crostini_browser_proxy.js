@@ -19,6 +19,11 @@ import {loadTimeData} from '../../i18n_setup.js';
  */
 export let ContainerId;
 
+/** @type {!ContainerId} */ export const DEFAULT_CONTAINER_ID = {
+  vm_name: DEFAULT_CROSTINI_VM,
+  container_name: DEFAULT_CROSTINI_CONTAINER,
+};
+
 /**
  * These values should remain consistent with their C++ counterpart
  * (chrome/browser/ash/crostini/crostini_port_forwarder.h).
