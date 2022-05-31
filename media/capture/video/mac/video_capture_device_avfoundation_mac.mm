@@ -415,16 +415,15 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
          selector:@selector(onVideoError:)
              name:AVCaptureSessionRuntimeErrorNotification
            object:_captureSession];
+  [_captureSession startRunning];
 
-  // The configuration lock must be held when calling startRunning to ensure
-  // `_bestCaptureFormat` is used. Calling setActiveFormat after startRunning
-  // will incur a double configuration cost.
-  if (_bestCaptureFormat && [_captureDevice lockForConfiguration:nil]) {
-    [_captureDevice setActiveFormat:_bestCaptureFormat];
-    [_captureSession startRunning];
-    [_captureDevice unlockForConfiguration];
-  } else {
-    [_captureSession startRunning];
+  // Update the active capture format once the capture session is running.
+  // Setting it before the capture session is running has no effect.
+  if (_bestCaptureFormat) {
+    if ([_captureDevice lockForConfiguration:nil]) {
+      [_captureDevice setActiveFormat:_bestCaptureFormat];
+      [_captureDevice unlockForConfiguration];
+    }
   }
 
   {
