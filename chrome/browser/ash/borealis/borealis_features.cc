@@ -114,6 +114,8 @@ class FullChecker : public TokenHardwareChecker {
         return AllowStatus::kAllowed;
       }
       return AllowStatus::kIncorrectToken;
+    } else if (IsBoard("draco")) {
+      return AllowStatus::kAllowed;
     }
     return AllowStatus::kIncorrectToken;
   }
