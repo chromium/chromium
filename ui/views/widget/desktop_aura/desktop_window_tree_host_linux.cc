@@ -33,11 +33,7 @@
 #include "ui/accessibility/platform/atk_util_auralinux.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "ui/views/widget/desktop_aura/window_event_filter_lacros.h"
-#else
 #include "ui/views/widget/desktop_aura/window_event_filter_linux.h"
-#endif
 
 namespace views {
 namespace {
@@ -167,7 +163,6 @@ Widget::MoveLoopResult DesktopWindowTreeHostLinux::RunMoveLoop(
   return result;
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 void DesktopWindowTreeHostLinux::DispatchEvent(ui::Event* event) {
   // In Windows, the native events sent to chrome are separated into client
   // and non-client versions of events, which we record on our LocatedEvent
@@ -220,7 +215,6 @@ void DesktopWindowTreeHostLinux::DispatchEvent(ui::Event* event) {
   if (!event->handled())
     WindowTreeHostPlatform::DispatchEvent(event);
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 void DesktopWindowTreeHostLinux::OnClosed() {
   DestroyNonClientEventFilter();

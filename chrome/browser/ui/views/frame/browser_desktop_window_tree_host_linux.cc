@@ -149,7 +149,6 @@ bool BrowserDesktopWindowTreeHostLinux::SupportsClientFrameShadow() const {
 }
 
 void BrowserDesktopWindowTreeHostLinux::UpdateFrameHints() {
-#if BUILDFLAG(IS_LINUX)
   auto* view = static_cast<BrowserFrameViewLinux*>(
       native_frame_->browser_frame()->GetFrameView());
   auto* layout = view->layout();
@@ -235,7 +234,6 @@ void BrowserDesktopWindowTreeHostLinux::UpdateFrameHints() {
   }
 
   SizeConstraintsChanged();
-#endif
 }
 
 ////////////////////////////////////////////////////////////////////////////////
