@@ -201,7 +201,8 @@ class BASE_EXPORT SubstringSetMatcher {
 
     void SetMatchID(MatcherStringPattern::ID id) {
       DCHECK(!IsEndOfPattern());
-      SetEdge(kMatchIDLabel, id);
+      DCHECK(id < kInvalidNodeID);  // This is enforced by Build().
+      SetEdge(kMatchIDLabel, static_cast<NodeID>(id));
       has_outputs_ = true;
     }
 

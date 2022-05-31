@@ -109,7 +109,7 @@ bool EventFilter::AddDictionaryAsConditionSet(
     const base::Value::Dict& url_filter,
     URLMatcherConditionSet::Vector* condition_sets) {
   std::string error;
-  URLMatcherConditionSet::ID condition_set_id = next_condition_set_id_++;
+  base::MatcherStringPattern::ID condition_set_id = next_condition_set_id_++;
   condition_sets->push_back(URLMatcherFactory::CreateFromURLFilterDictionary(
       url_matcher_.condition_factory(),
       url_filter,
@@ -147,7 +147,7 @@ std::set<EventFilter::MatcherID> EventFilter::MatchEvent(
   const EventMatcherMap& matcher_map = it->second;
   const GURL& url_to_match_against =
       event_info.url ? *event_info.url : GURL::EmptyGURL();
-  std::set<URLMatcherConditionSet::ID> matching_condition_set_ids =
+  std::set<base::MatcherStringPattern::ID> matching_condition_set_ids =
       url_matcher_.MatchURL(url_to_match_against);
   for (const auto& id_key : matching_condition_set_ids) {
     auto matcher_id = condition_set_id_to_event_matcher_id_.find(id_key);

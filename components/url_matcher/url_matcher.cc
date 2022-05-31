@@ -265,9 +265,9 @@ const char kEndOfURL[] = {static_cast<char>(-5), 0};
 const char kQuerySeparator = '&';
 }  // namespace
 
-URLMatcherConditionFactory::URLMatcherConditionFactory() : id_counter_(0) {}
+URLMatcherConditionFactory::URLMatcherConditionFactory() = default;
 
-URLMatcherConditionFactory::~URLMatcherConditionFactory() {}
+URLMatcherConditionFactory::~URLMatcherConditionFactory() = default;
 
 std::string URLMatcherConditionFactory::CanonicalizeURLForComponentSearches(
     const GURL& url) const {
@@ -560,7 +560,7 @@ std::string URLMatcherConditionFactory::CanonicalizeQuery(
   return query;
 }
 
-int URLMatcherConditionFactory::GetNextID() {
+base::MatcherStringPattern::ID URLMatcherConditionFactory::GetNextID() {
   id_counter_++;
 
   if (id_counter_ == MatcherStringPattern::kInvalidId)
@@ -736,12 +736,13 @@ URLMatcherPortFilter::Range URLMatcherPortFilter::CreateRange(int port) {
 
 URLMatcherConditionSet::~URLMatcherConditionSet() {}
 
-URLMatcherConditionSet::URLMatcherConditionSet(ID id,
-                                               const Conditions& conditions)
+URLMatcherConditionSet::URLMatcherConditionSet(
+    base::MatcherStringPattern::ID id,
+    const Conditions& conditions)
     : id_(id), conditions_(conditions) {}
 
 URLMatcherConditionSet::URLMatcherConditionSet(
-    ID id,
+    base::MatcherStringPattern::ID id,
     const Conditions& conditions,
     std::unique_ptr<URLMatcherSchemeFilter> scheme_filter,
     std::unique_ptr<URLMatcherPortFilter> port_filter)
@@ -751,7 +752,7 @@ URLMatcherConditionSet::URLMatcherConditionSet(
       port_filter_(std::move(port_filter)) {}
 
 URLMatcherConditionSet::URLMatcherConditionSet(
-    ID id,
+    base::MatcherStringPattern::ID id,
     const Conditions& conditions,
     const QueryConditions& query_conditions,
     std::unique_ptr<URLMatcherSchemeFilter> scheme_filter,
@@ -815,11 +816,11 @@ void URLMatcher::AddConditionSets(
 }
 
 void URLMatcher::RemoveConditionSets(
-    const std::vector<URLMatcherConditionSet::ID>& condition_set_ids) {
-  for (auto i = condition_set_ids.begin(); i != condition_set_ids.end(); ++i) {
-    DCHECK(url_matcher_condition_sets_.find(*i) !=
+    const std::vector<base::MatcherStringPattern::ID>& condition_set_ids) {
+  for (auto id : condition_set_ids) {
+    DCHECK(url_matcher_condition_sets_.find(id) !=
            url_matcher_condition_sets_.end());
-    url_matcher_condition_sets_.erase(*i);
+    url_matcher_condition_sets_.erase(id);
   }
   UpdateInternalDatastructures();
 }
@@ -828,7 +829,7 @@ void URLMatcher::ClearUnusedConditionSets() {
   UpdateConditionFactory();
 }
 
-std::set<URLMatcherConditionSet::ID> URLMatcher::MatchURL(
+std::set<base::MatcherStringPattern::ID> URLMatcher::MatchURL(
     const GURL& url) const {
   // Find all IDs of MatcherStringPatterns that match |url|.
   // See URLMatcherConditionFactory for the canonicalization of URLs and the
@@ -857,7 +858,7 @@ std::set<URLMatcherConditionSet::ID> URLMatcher::MatchURL(
 
   // Calculate all URLMatcherConditionSets for which all URLMatcherConditions
   // were fulfilled.
-  std::set<URLMatcherConditionSet::ID> result;
+  std::set<base::MatcherStringPattern::ID> result;
   for (auto i = matches.begin(); i != matches.end(); ++i) {
     // For each URLMatcherConditionSet there is exactly one condition
     // registered in substring_match_triggers_. This means that the following
@@ -866,7 +867,7 @@ std::set<URLMatcherConditionSet::ID> URLMatcher::MatchURL(
     auto triggered_condition_sets_iter = substring_match_triggers_.find(*i);
     if (triggered_condition_sets_iter == substring_match_triggers_.end())
       continue;  // Not all substring matches are triggers for a condition set.
-    const std::set<URLMatcherConditionSet::ID>& condition_sets =
+    const std::set<base::MatcherStringPattern::ID>& condition_sets =
         triggered_condition_sets_iter->second;
     for (auto j = condition_sets.begin(); j != condition_sets.end(); ++j) {
       auto condition_set_iter = url_matcher_condition_sets_.find(*j);

@@ -26,7 +26,7 @@ void TestOnePattern(const std::string& test_string,
   patterns.emplace_back(pattern, 1);
   SubstringSetMatcher matcher;
   ASSERT_TRUE(matcher.Build(patterns));
-  std::set<int> matches;
+  std::set<MatcherStringPattern::ID> matches;
   matcher.Match(test_string, &matches);
 
   size_t expected_matches = (is_match ? 1 : 0);
@@ -58,7 +58,7 @@ void TestTwoPatterns(const std::string& test_string,
     }
     SubstringSetMatcher matcher;
     ASSERT_TRUE(matcher.Build(patterns));
-    std::set<int> matches;
+    std::set<MatcherStringPattern::ID> matches;
     matcher.Match(test_string, &matches);
 
     size_t expected_matches = (is_match_1 ? 1 : 0) + (is_match_2 ? 1 : 0);
@@ -143,7 +143,7 @@ TEST(SubstringSetMatcherTest, TestMatcher2) {
   auto matcher = std::make_unique<SubstringSetMatcher>();
   ASSERT_TRUE(matcher->Build(patterns));
 
-  std::set<int> matches;
+  std::set<MatcherStringPattern::ID> matches;
   matcher->Match("abd", &matches);
   EXPECT_EQ(2u, matches.size());
   EXPECT_TRUE(matches.end() != matches.find(1));
@@ -179,7 +179,7 @@ TEST(SubstringSetMatcherTest, TestMatcher3) {
 
   SubstringSetMatcher matcher;
   matcher.Build(patterns);
-  std::set<int> matches;
+  std::set<MatcherStringPattern::ID> matches;
   matcher.Match(text, &matches);
   EXPECT_EQ(patterns.size(), matches.size());
   for (const MatcherStringPattern& pattern : patterns) {
@@ -192,7 +192,7 @@ TEST(SubstringSetMatcherTest, TestEmptyMatcher) {
   std::vector<MatcherStringPattern> patterns;
   SubstringSetMatcher matcher;
   matcher.Build(patterns);
-  std::set<int> matches;
+  std::set<MatcherStringPattern::ID> matches;
   matcher.Match("abd", &matches);
   EXPECT_TRUE(matches.empty());
   EXPECT_TRUE(matcher.IsEmpty());

@@ -109,7 +109,7 @@ scoped_refptr<URLMatcherConditionSet>
 URLMatcherFactory::CreateFromURLFilterDictionary(
     URLMatcherConditionFactory* url_matcher_condition_factory,
     const base::Value::Dict& url_filter_dict,
-    URLMatcherConditionSet::ID id,
+    base::MatcherStringPattern::ID id,
     std::string* error) {
   std::unique_ptr<URLMatcherSchemeFilter> url_matcher_schema_filter;
   std::unique_ptr<URLMatcherPortFilter> url_matcher_port_filter;

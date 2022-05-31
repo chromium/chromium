@@ -24,7 +24,7 @@ class DlpReportingManager;
 class DlpRulesManagerImpl : public DlpRulesManager {
  public:
   using RuleId = int;
-  using UrlConditionId = url_matcher::URLMatcherConditionSet::ID;
+  using UrlConditionId = base::MatcherStringPattern::ID;
 
   ~DlpRulesManagerImpl() override;
 

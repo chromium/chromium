@@ -89,7 +89,7 @@ class EventFilter {
    private:
     std::unique_ptr<EventMatcher> event_matcher_;
     // The id sets in |url_matcher_| that this EventMatcher owns.
-    std::vector<url_matcher::URLMatcherConditionSet::ID> condition_set_ids_;
+    std::vector<base::MatcherStringPattern::ID> condition_set_ids_;
     raw_ptr<url_matcher::URLMatcher> url_matcher_;
   };
 
@@ -116,12 +116,12 @@ class EventFilter {
   MatcherID next_id_;
 
   // The next id to assign to a condition set passed to URLMatcher.
-  url_matcher::URLMatcherConditionSet::ID next_condition_set_id_;
+  base::MatcherStringPattern::ID next_condition_set_id_;
 
   // Maps condition set ids, which URLMatcher operates in, to event matcher
   // ids, which the interface to this class operates in. As each EventFilter
   // can specify many condition sets this is a many to one relationship.
-  std::map<url_matcher::URLMatcherConditionSet::ID, MatcherID>
+  std::map<base::MatcherStringPattern::ID, MatcherID>
       condition_set_id_to_event_matcher_id_;
 
   // Maps from event matcher ids to the name of the event they match on.

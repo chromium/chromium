@@ -20,10 +20,10 @@ namespace base {
 // need to contain unique IDs.
 class BASE_EXPORT MatcherStringPattern {
  public:
-  typedef int ID;
+  using ID = size_t;
 
   // An invalid ID value. Clients must not use this as the id.
-  static constexpr ID kInvalidId = -1;
+  static constexpr ID kInvalidId = static_cast<ID>(-1);
 
   MatcherStringPattern(std::string pattern, ID id);
 

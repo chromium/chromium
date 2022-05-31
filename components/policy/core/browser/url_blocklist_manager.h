@@ -75,9 +75,8 @@ class POLICY_EXPORT URLBlocklist {
       const url_matcher::util::FilterComponents& lhs,
       const url_matcher::util::FilterComponents& rhs);
 
-  url_matcher::URLMatcherConditionSet::ID id_ = 0;
-  std::map<url_matcher::URLMatcherConditionSet::ID,
-           url_matcher::util::FilterComponents>
+  base::MatcherStringPattern::ID id_ = 0;
+  std::map<base::MatcherStringPattern::ID, url_matcher::util::FilterComponents>
       filters_;
   std::unique_ptr<url_matcher::URLMatcher> url_matcher_;
 };

@@ -62,7 +62,7 @@ class StarterHeuristic : public base::RefCountedThreadSafe<StarterHeuristic> {
   // Arbitrary mapping of matcher IDs to intent strings. This mapping is built
   // dynamically to allow the heuristic to work on intents that are otherwise
   // unknown to the client.
-  base::flat_map<url_matcher::URLMatcherConditionSet::ID, std::string>
+  base::flat_map<base::MatcherStringPattern::ID, std::string>
       matcher_id_to_intent_map_;
 };
 

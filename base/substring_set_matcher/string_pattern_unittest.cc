@@ -13,7 +13,7 @@ namespace base {
 TEST(MatcherStringPatternTest, MatcherStringPattern) {
   MatcherStringPattern r1("Test", 2);
   EXPECT_EQ("Test", r1.pattern());
-  EXPECT_EQ(2, r1.id());
+  EXPECT_EQ(2u, r1.id());
 
   EXPECT_FALSE(r1 < r1);
   MatcherStringPattern r2("Test", 3);

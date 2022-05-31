@@ -99,14 +99,14 @@ TEST(DeclarativeConditionTest, CreateConditionSet) {
 struct FulfillableCondition {
   struct MatchData {
     int value;
-    const std::set<URLMatcherConditionSet::ID>& url_matches;
+    const std::set<base::MatcherStringPattern::ID>& url_matches;
   };
 
   scoped_refptr<URLMatcherConditionSet> condition_set;
-  int condition_set_id;
+  base::MatcherStringPattern::ID condition_set_id;
   int max_value;
 
-  URLMatcherConditionSet::ID url_matcher_condition_set_id() const {
+  base::MatcherStringPattern::ID url_matcher_condition_set_id() const {
     return condition_set_id;
   }
 
@@ -121,7 +121,7 @@ struct FulfillableCondition {
   }
 
   bool IsFulfilled(const MatchData& match_data) const {
-    if (condition_set_id != -1 &&
+    if (condition_set_id != base::MatcherStringPattern::kInvalidId &&
         !base::Contains(match_data.url_matches, condition_set_id))
       return false;
     return match_data.value <= max_value;
@@ -138,13 +138,16 @@ struct FulfillableCondition {
       *error = "Expected dict";
       return result;
     }
-    result->condition_set_id = dict->FindIntKey("url_id").value_or(-1);
+    const auto id = dict->FindIntKey("url_id");
+    result->condition_set_id =
+        id.has_value() ? static_cast<base::MatcherStringPattern::ID>(id.value())
+                       : base::MatcherStringPattern::kInvalidId;
     if (absl::optional<int> max_value_int = dict->FindIntKey("max")) {
       result->max_value = *max_value_int;
     } else {
       *error = "Expected integer at ['max']";
     }
-    if (result->condition_set_id != -1) {
+    if (result->condition_set_id != base::MatcherStringPattern::kInvalidId) {
       result->condition_set = new URLMatcherConditionSet(
           result->condition_set_id,
           URLMatcherConditionSet::Conditions());
@@ -169,7 +172,7 @@ TEST(DeclarativeConditionTest, FulfillConditionSet) {
   ASSERT_TRUE(result);
   EXPECT_EQ(4u, result->conditions().size());
 
-  std::set<URLMatcherConditionSet::ID> url_matches;
+  std::set<base::MatcherStringPattern::ID> url_matches;
   FulfillableCondition::MatchData match_data = { 0, url_matches };
   EXPECT_FALSE(result->IsFulfilled(1, match_data))
       << "Testing an ID that's not in url_matches forwards to the Condition, "
@@ -198,9 +201,9 @@ TEST(DeclarativeConditionTest, FulfillConditionSet) {
   URLMatcherConditionSet::Vector condition_sets;
   result->GetURLMatcherConditionSets(&condition_sets);
   ASSERT_EQ(3U, condition_sets.size());
-  EXPECT_EQ(1, condition_sets[0]->id());
-  EXPECT_EQ(2, condition_sets[1]->id());
-  EXPECT_EQ(3, condition_sets[2]->id());
+  EXPECT_EQ(1U, condition_sets[0]->id());
+  EXPECT_EQ(2U, condition_sets[1]->id());
+  EXPECT_EQ(3U, condition_sets[2]->id());
 }
 
 // DeclarativeAction

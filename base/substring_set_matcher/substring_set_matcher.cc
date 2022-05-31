@@ -66,8 +66,7 @@ bool SubstringSetMatcher::Build(
 
   // Check that all the match labels fit into an edge.
   for (const MatcherStringPattern* pattern : patterns) {
-    if (pattern->id() < 0 ||
-        base::checked_cast<NodeID>(pattern->id()) >= kInvalidNodeID) {
+    if (pattern->id() >= kInvalidNodeID) {
       return false;
     }
   }

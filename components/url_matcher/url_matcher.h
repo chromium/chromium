@@ -207,12 +207,12 @@ class URL_MATCHER_EXPORT URLMatcherConditionFactory {
                                 bool append_end_of_query_component) const;
 
   // Return the next MatcherStringPattern id to use.
-  int GetNextID();
+  base::MatcherStringPattern::ID GetNextID();
 
   // Counter that ensures that all created MatcherStringPatterns have unique
   // IDs. Note that substring patterns and regex patterns will use different
   // IDs.
-  int id_counter_;
+  base::MatcherStringPattern::ID id_counter_ = 0;
 
   // This comparison considers only the pattern() value of the
   // MatcherStringPatterns.
@@ -326,19 +326,18 @@ class URL_MATCHER_EXPORT URLMatcherPortFilter {
 class URL_MATCHER_EXPORT URLMatcherConditionSet
     : public base::RefCounted<URLMatcherConditionSet> {
  public:
-  // Valid IDs will be >= 0.
-  typedef int ID;
   typedef std::set<URLMatcherCondition> Conditions;
   typedef std::set<URLQueryElementMatcherCondition> QueryConditions;
   typedef std::vector<scoped_refptr<URLMatcherConditionSet>> Vector;
 
   // Matches if all conditions in |conditions| are fulfilled.
-  URLMatcherConditionSet(ID id, const Conditions& conditions);
+  URLMatcherConditionSet(base::MatcherStringPattern::ID id,
+                         const Conditions& conditions);
 
   // Matches if all conditions in |conditions|, |scheme_filter| and
   // |port_filter| are fulfilled. |scheme_filter| and |port_filter| may be NULL,
   // in which case, no restrictions are imposed on the scheme/port of a URL.
-  URLMatcherConditionSet(ID id,
+  URLMatcherConditionSet(base::MatcherStringPattern::ID id,
                          const Conditions& conditions,
                          std::unique_ptr<URLMatcherSchemeFilter> scheme_filter,
                          std::unique_ptr<URLMatcherPortFilter> port_filter);
@@ -347,7 +346,7 @@ class URL_MATCHER_EXPORT URLMatcherConditionSet
   // |scheme_filter| and |port_filter| are fulfilled. |scheme_filter| and
   // |port_filter| may be NULL, in which case, no restrictions are imposed on
   // the scheme/port of a URL.
-  URLMatcherConditionSet(ID id,
+  URLMatcherConditionSet(base::MatcherStringPattern::ID id,
                          const Conditions& conditions,
                          const QueryConditions& query_conditions,
                          std::unique_ptr<URLMatcherSchemeFilter> scheme_filter,
@@ -356,7 +355,7 @@ class URL_MATCHER_EXPORT URLMatcherConditionSet
   URLMatcherConditionSet(const URLMatcherConditionSet&) = delete;
   URLMatcherConditionSet& operator=(const URLMatcherConditionSet&) = delete;
 
-  ID id() const { return id_; }
+  base::MatcherStringPattern::ID id() const { return id_; }
   const Conditions& conditions() const { return conditions_; }
   const QueryConditions& query_conditions() const { return query_conditions_; }
 
@@ -372,7 +371,7 @@ class URL_MATCHER_EXPORT URLMatcherConditionSet
  private:
   friend class base::RefCounted<URLMatcherConditionSet>;
   ~URLMatcherConditionSet();
-  ID id_;
+  base::MatcherStringPattern::ID id_ = 0;
   Conditions conditions_;
   QueryConditions query_conditions_;
   std::unique_ptr<URLMatcherSchemeFilter> scheme_filter_;
@@ -401,13 +400,13 @@ class URL_MATCHER_EXPORT URLMatcher {
   // currently registered. This function should be called with large batches
   // of |condition_set_ids| at a time to improve performance.
   void RemoveConditionSets(
-      const std::vector<URLMatcherConditionSet::ID>& condition_set_ids);
+      const std::vector<base::MatcherStringPattern::ID>& condition_set_ids);
 
   // Removes all unused condition sets from the ConditionFactory.
   void ClearUnusedConditionSets();
 
   // Returns the IDs of all URLMatcherConditionSet that match to this |url|.
-  std::set<URLMatcherConditionSet::ID> MatchURL(const GURL& url) const;
+  std::set<base::MatcherStringPattern::ID> MatchURL(const GURL& url) const;
 
   // Returns the URLMatcherConditionFactory that must be used to create
   // URLMatcherConditionSets for this URLMatcher.
@@ -429,7 +428,7 @@ class URL_MATCHER_EXPORT URLMatcher {
 
   // Maps the ID of a URLMatcherConditionSet to the respective
   // URLMatcherConditionSet.
-  typedef std::map<URLMatcherConditionSet::ID,
+  typedef std::map<base::MatcherStringPattern::ID,
                    scoped_refptr<URLMatcherConditionSet>>
       URLMatcherConditionSets;
   URLMatcherConditionSets url_matcher_condition_sets_;
@@ -437,7 +436,7 @@ class URL_MATCHER_EXPORT URLMatcher {
   // Maps a MatcherStringPattern ID to the URLMatcherConditions that need to
   // be triggered in case of a MatcherStringPattern match.
   typedef std::map<base::MatcherStringPattern::ID,
-                   std::set<URLMatcherConditionSet::ID>>
+                   std::set<base::MatcherStringPattern::ID>>
       MatcherStringPatternTriggers;
   MatcherStringPatternTriggers substring_match_triggers_;
 

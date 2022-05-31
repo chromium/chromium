@@ -34,7 +34,7 @@ AnalysisServiceSettings::AnalysisServiceSettings(
   // settings.*_pattern_settings. No enable patterns implies the settings are
   // invalid.
   matcher_ = std::make_unique<url_matcher::URLMatcher>();
-  url_matcher::URLMatcherConditionSet::ID id(0);
+  base::MatcherStringPattern::ID id(0);
   const base::Value* enable = settings_value.FindListKey(kKeyEnable);
   if (enable && enable->is_list() && !enable->GetListDeprecated().empty()) {
     for (const base::Value& value : enable->GetListDeprecated())
@@ -109,7 +109,7 @@ AnalysisServiceSettings::AnalysisServiceSettings(
 absl::optional<AnalysisServiceSettings::URLPatternSettings>
 AnalysisServiceSettings::GetPatternSettings(
     const PatternSettings& patterns,
-    url_matcher::URLMatcherConditionSet::ID match) {
+    base::MatcherStringPattern::ID match) {
   // If the pattern exists directly in the map, return its settings.
   if (patterns.count(match) == 1)
     return patterns.at(match);
@@ -195,7 +195,7 @@ absl::optional<bool> AnalysisServiceSettings::GetBypassJustificationRequired(
 void AnalysisServiceSettings::AddUrlPatternSettings(
     const base::Value& url_settings_value,
     bool enabled,
-    url_matcher::URLMatcherConditionSet::ID* id) {
+    base::MatcherStringPattern::ID* id) {
   DCHECK(id);
   DCHECK(service_provider_);
   if (enabled)
@@ -231,10 +231,10 @@ void AnalysisServiceSettings::AddUrlPatternSettings(
 }
 
 std::set<std::string> AnalysisServiceSettings::GetTags(
-    const std::set<url_matcher::URLMatcherConditionSet::ID>& matches) const {
+    const std::set<base::MatcherStringPattern::ID>& matches) const {
   std::set<std::string> enable_tags;
   std::set<std::string> disable_tags;
-  for (const url_matcher::URLMatcherConditionSet::ID match : matches) {
+  for (const base::MatcherStringPattern::ID match : matches) {
     // Enabled patterns need to be checked first, otherwise they always match
     // the first disabled pattern.
     bool enable = true;

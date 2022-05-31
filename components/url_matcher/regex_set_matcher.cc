@@ -68,7 +68,7 @@ bool RegexSetMatcher::IsEmpty() const {
 
 std::vector<RegexSetMatcher::RE2ID> RegexSetMatcher::FindSubstringMatches(
     const std::string& text) const {
-  std::set<int> atoms_set;
+  std::set<base::MatcherStringPattern::ID> atoms_set;
   substring_matcher_->Match(text, &atoms_set);
   return std::vector<RE2ID>(atoms_set.begin(), atoms_set.end());
 }

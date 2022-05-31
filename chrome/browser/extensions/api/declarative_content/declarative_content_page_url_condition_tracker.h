@@ -117,7 +117,7 @@ class DeclarativeContentPageUrlConditionTracker
 
     void UpdateMatchesForCurrentUrl(bool request_evaluation_if_unchanged);
 
-    const std::set<url_matcher::URLMatcherConditionSet::ID>& matches() {
+    const std::set<base::MatcherStringPattern::ID>& matches() {
       return matches_;
     }
 
@@ -129,7 +129,7 @@ class DeclarativeContentPageUrlConditionTracker
     const RequestEvaluationCallback request_evaluation_;
     WebContentsDestroyedCallback web_contents_destroyed_;
 
-    std::set<url_matcher::URLMatcherConditionSet::ID> matches_;
+    std::set<base::MatcherStringPattern::ID> matches_;
   };
 
   // Called by PerWebContentsTracker on web contents destruction.

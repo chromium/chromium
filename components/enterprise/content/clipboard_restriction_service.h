@@ -51,7 +51,7 @@ class ClipboardRestrictionService : KeyedService {
   PrefChangeRegistrar pref_change_registrar_;
   PrefService* pref_service_;
 
-  url_matcher::URLMatcherConditionSet::ID next_id_;
+  base::MatcherStringPattern::ID next_id_;
   std::unique_ptr<url_matcher::URLMatcher> enable_url_matcher_;
   std::unique_ptr<url_matcher::URLMatcher> disable_url_matcher_;
 

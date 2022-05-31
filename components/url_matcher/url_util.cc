@@ -260,7 +260,7 @@ bool FilterComponents::IsWildcard() const {
 
 scoped_refptr<URLMatcherConditionSet> CreateConditionSet(
     URLMatcher* url_matcher,
-    int id,
+    base::MatcherStringPattern::ID id,
     const std::string& scheme,
     const std::string& host,
     bool match_subdomains,
@@ -410,9 +410,9 @@ bool FilterToComponents(const std::string& filter,
 
 void AddFilters(URLMatcher* matcher,
                 bool allow,
-                URLMatcherConditionSet::ID* id,
+                base::MatcherStringPattern::ID* id,
                 const base::ListValue* patterns,
-                std::map<url_matcher::URLMatcherConditionSet::ID,
+                std::map<base::MatcherStringPattern::ID,
                          url_matcher::util::FilterComponents>* filters) {
   URLMatcherConditionSet::Vector all_conditions;
   base::Value::ConstListView patterns_list = patterns->GetListDeprecated();
@@ -449,9 +449,9 @@ void AddFilters(URLMatcher* matcher,
 
 void AddFilters(URLMatcher* matcher,
                 bool allow,
-                URLMatcherConditionSet::ID* id,
+                base::MatcherStringPattern::ID* id,
                 const std::vector<std::string>& patterns,
-                std::map<url_matcher::URLMatcherConditionSet::ID,
+                std::map<base::MatcherStringPattern::ID,
                          url_matcher::util::FilterComponents>* filters) {
   URLMatcherConditionSet::Vector all_conditions;
   size_t size = std::min(kMaxFiltersAllowed, patterns.size());
@@ -481,13 +481,13 @@ void AddFilters(URLMatcher* matcher,
 
 void AddAllowFilters(url_matcher::URLMatcher* matcher,
                      const base::ListValue* patterns) {
-  url_matcher::URLMatcherConditionSet::ID id(0);
+  base::MatcherStringPattern::ID id(0);
   AddFilters(matcher, true, &id, patterns);
 }
 
 void AddAllowFilters(url_matcher::URLMatcher* matcher,
                      const std::vector<std::string>& patterns) {
-  url_matcher::URLMatcherConditionSet::ID id(0);
+  base::MatcherStringPattern::ID id(0);
   AddFilters(matcher, true, &id, patterns);
 }
 
