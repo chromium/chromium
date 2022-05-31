@@ -18,6 +18,7 @@
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
+#include "base/time/clock.h"
 #include "components/services/storage/public/cpp/buckets/constants.h"
 #include "components/services/storage/public/cpp/quota_error_or.h"
 #include "sql/database.h"
@@ -69,6 +70,8 @@ const char kDeprecatedBucketsTableBootstrapped[] = "IsBucketsTableBootstrapped";
 const char kBucketsTableBootstrapped[] = "IsBucketsBootstrapped";
 
 const int kCommitIntervalMs = 30000;
+
+base::Clock* g_clock_for_testing = nullptr;
 
 void RecordDatabaseResetHistogram(const DatabaseResetReason reason) {
   base::UmaHistogramEnumeration("Quota.QuotaDatabaseReset", reason);
@@ -185,8 +188,7 @@ QuotaDatabase::BucketTableEntry::BucketTableEntry(
       last_modified(last_modified) {}
 
 // QuotaDatabase ------------------------------------------------------------
-QuotaDatabase::QuotaDatabase(const base::FilePath& profile_path,
-                             const base::Clock& clock)
+QuotaDatabase::QuotaDatabase(const base::FilePath& profile_path)
     : storage_directory_(
           profile_path.empty()
               ? nullptr
@@ -197,8 +199,7 @@ QuotaDatabase::QuotaDatabase(const base::FilePath& profile_path,
               : storage_directory_->path().AppendASCII(kDatabaseName)),
       legacy_db_file_path_(profile_path.empty()
                                ? base::FilePath()
-                               : profile_path.AppendASCII(kDatabaseName)),
-      clock_(clock) {
+                               : profile_path.AppendASCII(kDatabaseName)) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
@@ -272,7 +273,7 @@ QuotaErrorOr<BucketInfo> QuotaDatabase::UpdateOrCreateBucket(
 
   // Don't bother updating anything if the bucket is expired.
   if (!bucket_result->expiration.is_null() &&
-      (bucket_result->expiration <= clock_.Now())) {
+      (bucket_result->expiration <= GetNow())) {
     return bucket_result;
   }
 
@@ -865,6 +866,16 @@ void QuotaDatabase::SetDisabledForTesting(bool disable) {
   is_disabled_ = disable;
 }
 
+// static
+base::Time QuotaDatabase::GetNow() {
+  return g_clock_for_testing ? g_clock_for_testing->Now() : base::Time::Now();
+}
+
+// static
+void QuotaDatabase::SetClockForTesting(base::Clock* clock) {
+  g_clock_for_testing = clock;
+}
+
 void QuotaDatabase::Commit() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!db_)
@@ -1179,9 +1190,8 @@ QuotaErrorOr<BucketInfo> QuotaDatabase::CreateBucketInternal(
 
   sql::Statement statement(db_->GetCachedStatement(SQL_FROM_HERE, kSql));
   BindBucketInitParamsToInsertStatement(params, type, /*use_count=*/0,
-                                        /*last_accessed=*/clock_.Now(),
-                                        /*last_modified=*/clock_.Now(),
-                                        statement);
+                                        /*last_accessed=*/GetNow(),
+                                        /*last_modified=*/GetNow(), statement);
   QuotaErrorOr<BucketInfo> result = BucketInfoFromSqlStatement(statement);
   const bool done = !statement.Step();
   DCHECK(done);

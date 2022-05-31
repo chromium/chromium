@@ -41,7 +41,6 @@
 #include "base/thread_annotations.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/pass_key.h"
@@ -1041,8 +1040,7 @@ QuotaManagerImpl::QuotaManagerImpl(
       get_settings_function_(get_settings_function),
       quota_change_callback_(std::move(quota_change_callback)),
       special_storage_policy_(std::move(special_storage_policy)),
-      get_volume_info_fn_(&QuotaManagerImpl::GetVolumeInfo),
-      clock_(std::make_unique<base::DefaultClock>()) {
+      get_volume_info_fn_(&QuotaManagerImpl::GetVolumeInfo) {
   DCHECK_EQ(settings_.refresh_interval, base::TimeDelta::Max());
   if (!get_settings_function.is_null()) {
     // Reset the interval to ensure we use the get_settings_function
@@ -1072,7 +1070,7 @@ void QuotaManagerImpl::UpdateOrCreateBucket(
     return;
   }
   if (!bucket_params.expiration.is_null() &&
-      (bucket_params.expiration <= clock_->Now())) {
+      (bucket_params.expiration <= QuotaDatabase::GetNow())) {
     std::move(callback).Run(QuotaError::kIllegalOperation);
     return;
   }
@@ -1822,7 +1820,7 @@ QuotaManagerImpl::~QuotaManagerImpl() {
   proxy_->InvalidateQuotaManagerImpl(base::PassKey<QuotaManagerImpl>());
 
   if (database_)
-    db_runner_->DeleteSoon(FROM_HERE, database_.release());
+    db_runner_->DeleteSoon(FROM_HERE, database_.get());
 }
 
 QuotaManagerImpl::EvictionContext::EvictionContext() = default;
@@ -1837,8 +1835,8 @@ void QuotaManagerImpl::EnsureDatabaseOpened() {
   }
 
   // Use an empty path to open an in-memory only database for incognito.
-  database_ = std::make_unique<QuotaDatabase>(
-      is_incognito_ ? base::FilePath() : profile_path_, *clock_);
+  database_ =
+      new QuotaDatabase(is_incognito_ ? base::FilePath() : profile_path_);
 
   temporary_usage_tracker_ = std::make_unique<UsageTracker>(
       this, client_types_[StorageType::kTemporary], StorageType::kTemporary,
@@ -2216,7 +2214,7 @@ void QuotaManagerImpl::DidBucketDataEvicted(
     buckets_in_error_[eviction_context_.evicted_bucket.id]++;
 
   if (status == blink::mojom::QuotaStatusCode::kOk) {
-    base::Time now = clock_->Now();
+    base::Time now = QuotaDatabase::GetNow();
     base::UmaHistogramCounts1M(
         QuotaManagerImpl::kEvictedBucketAccessedCountHistogram,
         entry.use_count);
@@ -2478,7 +2476,7 @@ void QuotaManagerImpl::DidDumpBucketTableForHistogram(
 
   std::map<StorageKey, int64_t> usage_map =
       GetUsageTracker(StorageType::kTemporary)->GetCachedStorageKeysUsage();
-  base::Time now = clock_->Now();
+  base::Time now = QuotaDatabase::GetNow();
   for (const auto& info : entries) {
     if (info.type != StorageType::kTemporary)
       continue;
@@ -2857,7 +2855,7 @@ void QuotaManagerImpl::DidGetBucketCheckExpiration(
   DidDatabaseWork(result.ok() || result.error() != QuotaError::kDatabaseError);
 
   if (result.ok() && !result->expiration.is_null() &&
-      result->expiration <= clock_->Now()) {
+      result->expiration <= QuotaDatabase::GetNow()) {
     DeleteBucketDataInternal(
         result->ToBucketLocator(), AllQuotaClientTypes(),
         base::BindOnce(&QuotaManagerImpl::DidDeleteBucketForRecreation,

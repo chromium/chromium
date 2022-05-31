@@ -17,7 +17,6 @@
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
-#include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/types/id_type.h"
@@ -31,6 +30,10 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom-shared.h"
+
+namespace base {
+class Clock;
+}
 
 namespace sql {
 class Database;
@@ -93,7 +96,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   static constexpr char kDatabaseName[] = "QuotaManager";
 
   // If `profile_path` is empty, an in-memory database will be used.
-  QuotaDatabase(const base::FilePath& profile_path, const base::Clock& clock);
+  explicit QuotaDatabase(const base::FilePath& profile_path);
 
   QuotaDatabase(const QuotaDatabase&) = delete;
   QuotaDatabase& operator=(const QuotaDatabase&) = delete;
@@ -254,6 +257,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   // Manually disable database to test database error scenarios for testing.
   void SetDisabledForTesting(bool disable);
 
+  static base::Time GetNow();
+  static void SetClockForTesting(base::Clock* clock);
+
  private:
   struct COMPONENT_EXPORT(STORAGE_BROWSER) QuotaTableEntry {
     std::string host;
@@ -325,8 +331,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
       GUARDED_BY_CONTEXT(sequence_checker_);
   bool is_recreating_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
   bool is_disabled_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
-
-  const base::Clock& clock_;
 
   base::OneShotTimer timer_ GUARDED_BY_CONTEXT(sequence_checker_);
 

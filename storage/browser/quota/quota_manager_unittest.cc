@@ -809,18 +809,17 @@ TEST_F(QuotaManagerImplTest, UpdateOrCreateBucket) {
 
 TEST_F(QuotaManagerImplTest, UpdateOrCreateBucket_Expiration) {
   auto clock = std::make_unique<base::SimpleTestClock>();
-  base::SimpleTestClock* clock_ptr = clock.get();
-  quota_manager_impl_->clock_ = std::move(clock);
-  clock_ptr->SetNow(base::Time::Now());
+  QuotaDatabase::SetClockForTesting(clock.get());
+  clock->SetNow(base::Time::Now());
 
   BucketInitParams params(ToStorageKey("http://a.com/"), "bucket_a");
-  params.expiration = clock_ptr->Now() - base::Days(1);
+  params.expiration = clock->Now() - base::Days(1);
 
   auto bucket = UpdateOrCreateBucket(params);
   ASSERT_FALSE(bucket.ok());
 
   // Create a new bucket.
-  params.expiration = clock_ptr->Now() + base::Days(1);
+  params.expiration = clock->Now() + base::Days(1);
   params.quota = 1000;
   bucket = UpdateOrCreateBucket(params);
   ASSERT_TRUE(bucket.ok());
@@ -828,7 +827,7 @@ TEST_F(QuotaManagerImplTest, UpdateOrCreateBucket_Expiration) {
   EXPECT_EQ(bucket->quota, 1000);
 
   // Get/Update the same bucket. Verify expiration is updated, but quota is not.
-  params.expiration = clock_ptr->Now() + base::Days(5);
+  params.expiration = clock->Now() + base::Days(5);
   params.quota = 500;
   bucket = UpdateOrCreateBucket(params);
   ASSERT_TRUE(bucket.ok());
@@ -837,11 +836,13 @@ TEST_F(QuotaManagerImplTest, UpdateOrCreateBucket_Expiration) {
 
   // Verify that the bucket is clobbered due to being expired. In this case, the
   // new quota is respected.
-  clock_ptr->Advance(base::Days(20));
+  clock->Advance(base::Days(20));
   params.expiration = base::Time();
   bucket = UpdateOrCreateBucket(params);
   EXPECT_EQ(bucket->expiration, params.expiration);
   EXPECT_EQ(bucket->quota, 500);
+
+  QuotaDatabase::SetClockForTesting(nullptr);
 }
 
 TEST_F(QuotaManagerImplTest, GetOrCreateBucketSync) {

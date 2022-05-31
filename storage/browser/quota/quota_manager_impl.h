@@ -45,7 +45,6 @@
 #include "third_party/blink/public/mojom/quota/quota_types.mojom-shared.h"
 
 namespace base {
-class Clock;
 class SequencedTaskRunner;
 class SingleThreadTaskRunner;
 class TaskRunner;
@@ -772,7 +771,11 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
       storage_key_for_pending_storage_pressure_callback_;
   scoped_refptr<base::SingleThreadTaskRunner> io_thread_;
   scoped_refptr<base::SequencedTaskRunner> db_runner_;
-  mutable std::unique_ptr<QuotaDatabase> database_;
+
+  // QuotaManagerImpl creates `database_` and later schedules it for deletion on
+  // `db_runner_`. Thus, `database_` may outlive `this`.
+  raw_ptr<QuotaDatabase> database_ = nullptr;
+
   bool is_bootstrapping_database_ = false;
   // Queued callbacks to QuotaDatabase that will run after database bootstrap is
   // complete.
@@ -860,8 +863,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   std::map<BucketDataDeleter*, std::unique_ptr<BucketDataDeleter>>
       bucket_data_deleters_;
   std::unique_ptr<StorageKeyGathererTask> storage_key_gatherer_;
-
-  std::unique_ptr<base::Clock> clock_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
