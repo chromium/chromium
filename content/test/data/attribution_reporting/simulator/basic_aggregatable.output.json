@@ -2,8 +2,7 @@
   "aggregatable_reports": [
     {
       "report": {
-        "attribution_destination": "https://d.test",
-        "source_site": "https://s.test"
+        "attribution_destination": "https://d.test"
       },
       "report_time": "1643239174123",
       "report_url": "https://r.test/.well-known/attribution-reporting/report-aggregate-attribution",
