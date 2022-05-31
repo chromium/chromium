@@ -9,11 +9,15 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_attributes_entry.h"
+#include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
@@ -23,9 +27,39 @@
 #include "content/public/browser/storage_partition.h"
 #include "third_party/blink/public/common/features.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#endif
+
 namespace {
 
-bool ShouldEnablePageContentAnnotations() {
+bool IsEphemeralProfile(Profile* profile) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (ash::ProfileHelper::IsEphemeralUserProfile(profile))
+    return true;
+#endif
+
+  // Catch additional logic that may not be caught by the existing Ash check.
+  ProfileAttributesStorage& storage =
+      g_browser_process->profile_manager()->GetProfileAttributesStorage();
+  ProfileAttributesEntry* entry =
+      storage.GetProfileAttributesWithPath(profile->GetPath());
+  return entry && entry->IsEphemeral();
+}
+
+bool ShouldEnablePageContentAnnotations(Profile* profile) {
+  if (chrome::IsRunningInAppMode()) {
+    // The annotations we provide cannot provide any benefit to users in kiosk
+    // mode, so we can skip.
+    return false;
+  }
+
+  if (IsEphemeralProfile(profile)) {
+    // The annotations we provide won't have lasting effect if profile is
+    // ephemeral, so we can skip.
+    return false;
+  }
+
   // Allow for the validation experiment, remote page metadata, or the Topics
   // experiment to enable the PCAService without need to enable both features.
   return optimization_guide::features::IsPageContentAnnotationEnabled() ||
@@ -65,10 +99,10 @@ PageContentAnnotationsServiceFactory::~PageContentAnnotationsServiceFactory() =
 
 KeyedService* PageContentAnnotationsServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  if (!ShouldEnablePageContentAnnotations())
-    return nullptr;
-
   Profile* profile = Profile::FromBrowserContext(context);
+
+  if (!ShouldEnablePageContentAnnotations(profile))
+    return nullptr;
 
   auto* proto_db_provider = profile->GetOriginalProfile()
                                 ->GetDefaultStoragePartition()
@@ -95,7 +129,7 @@ KeyedService* PageContentAnnotationsServiceFactory::BuildServiceInstanceFor(
 
 bool PageContentAnnotationsServiceFactory::ServiceIsCreatedWithBrowserContext()
     const {
-  return ShouldEnablePageContentAnnotations();
+  return true;
 }
 
 bool PageContentAnnotationsServiceFactory::ServiceIsNULLWhileTesting() const {
