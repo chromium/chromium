@@ -355,6 +355,16 @@ constexpr CGFloat kFaviconBadgeSideLength = 24;
   [super updateViewConstraints];
 }
 
+- (void)updateStylingForSecondaryTitleLabel:(UILabel*)secondaryTitleLabel {
+  // The subclass needs to overwrite this method if it wants a different style
+  // than the default.
+}
+
+- (void)updateStylingForSubtitleLabel:(UILabel*)subtitleLabel {
+  // The subclass need to overwrite this method if it wants a different style
+  // than the default.
+}
+
 #pragma mark - UIToolbarDelegate
 
 - (UIBarPosition)positionForBar:(id<UIBarPositioning>)bar {
@@ -576,6 +586,7 @@ constexpr CGFloat kFaviconBadgeSideLength = 24;
   secondaryTitle.textColor = [UIColor colorNamed:kTextPrimaryColor];
   secondaryTitle.accessibilityIdentifier =
       kConfirmationAlertSecondaryTitleAccessibilityIdentifier;
+  [self updateStylingForSecondaryTitleLabel:secondaryTitle];
   return secondaryTitle;
 }
 
@@ -587,6 +598,7 @@ constexpr CGFloat kFaviconBadgeSideLength = 24;
   subtitle.textColor = [UIColor colorNamed:kTextSecondaryColor];
   subtitle.accessibilityIdentifier =
       kConfirmationAlertSubtitleAccessibilityIdentifier;
+  [self updateStylingForSubtitleLabel:subtitle];
   return subtitle;
 }
 
@@ -616,7 +628,7 @@ constexpr CGFloat kFaviconBadgeSideLength = 24;
   UIStackView* stackView =
       [[UIStackView alloc] initWithArrangedSubviews:subviews];
   [stackView setCustomSpacing:self.customSpacingAfterImage
-                    afterView:self.imageView];
+                    afterView:self.imageContainerView];
 
   if (self.imageHasFixedSize) {
     stackView.alignment = UIStackViewAlignmentCenter;
