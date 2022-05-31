@@ -137,6 +137,13 @@ class PermissionsData {
       const URLPatternSet& default_policy_blocked_hosts,
       const URLPatternSet& default_policy_allowed_hosts);
 
+  // Sets the sites that are explicitly allowed or blocked by the user.
+  // TODO(http://crbug.com/1268198): These are not currently taken into account
+  // in permissions calculations.
+  static void SetUserHostRestrictions(int context_id,
+                                      URLPatternSet user_blocked_hosts,
+                                      URLPatternSet user_allowed_hosts);
+
   // Updates the tab-specific permissions of |tab_id| to include those from
   // |permissions|.
   void UpdateTabSpecificPermissions(int tab_id,
@@ -287,6 +294,10 @@ class PermissionsData {
     return GetTabSpecificPermissions(tab_id);
   }
 #endif
+
+  // Testing-only helper methods to verify internal state.
+  static URLPatternSet GetUserAllowedHostsForTesting(int context_id);
+  static URLPatternSet GetUserBlockedHostsForTesting(int context_id);
 
  private:
   // Gets the tab-specific host permissions of |tab_id|, or NULL if there

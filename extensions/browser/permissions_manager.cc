@@ -18,6 +18,7 @@
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry_factory.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/browser/pref_types.h"
@@ -142,7 +143,8 @@ PermissionsManager::UserPermissionsSettings::~UserPermissionsSettings() =
 
 // Implementation of PermissionsManager.
 PermissionsManager::PermissionsManager(content::BrowserContext* browser_context)
-    : extension_prefs_(ExtensionPrefs::Get(browser_context)) {
+    : browser_context_(browser_context),
+      extension_prefs_(ExtensionPrefs::Get(browser_context)) {
   user_permissions_.restricted_sites =
       GetSitesFromPrefs(extension_prefs_, kRestrictedSites);
   user_permissions_.permitted_sites =
@@ -182,12 +184,12 @@ void PermissionsManager::AddUserRestrictedSite(const url::Origin& origin) {
 
   user_permissions_.restricted_sites.insert(origin);
   AddSiteToPrefs(extension_prefs_, kRestrictedSites, origin);
-  SignalUserPermissionsSettingsChanged();
+  OnUserPermissionsSettingsChanged();
 }
 
 void PermissionsManager::RemoveUserRestrictedSite(const url::Origin& origin) {
   if (RemoveRestrictedSiteAndUpdatePrefs(origin))
-    SignalUserPermissionsSettingsChanged();
+    OnUserPermissionsSettingsChanged();
 }
 
 void PermissionsManager::AddUserPermittedSite(const url::Origin& origin) {
@@ -199,12 +201,12 @@ void PermissionsManager::AddUserPermittedSite(const url::Origin& origin) {
 
   user_permissions_.permitted_sites.insert(origin);
   AddSiteToPrefs(extension_prefs_, kPermittedSites, origin);
-  SignalUserPermissionsSettingsChanged();
+  OnUserPermissionsSettingsChanged();
 }
 
 void PermissionsManager::RemoveUserPermittedSite(const url::Origin& origin) {
   if (RemovePermittedSiteAndUpdatePrefs(origin))
-    SignalUserPermissionsSettingsChanged();
+    OnUserPermissionsSettingsChanged();
 }
 
 const PermissionsManager::UserPermissionsSettings&
@@ -368,7 +370,22 @@ void PermissionsManager::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void PermissionsManager::SignalUserPermissionsSettingsChanged() const {
+void PermissionsManager::OnUserPermissionsSettingsChanged() const {
+  // TODO(http://crbug.com/1268198): AddOrigin() below can fail if the
+  // added URLPattern doesn't parse (such as if the schemes are invalid). We
+  // need to make sure that origins added to this list only contain schemes that
+  // are valid for extensions to act upon (and gracefully handle others).
+  URLPatternSet user_blocked_sites;
+  for (const auto& site : user_permissions_.restricted_sites)
+    user_blocked_sites.AddOrigin(Extension::kValidHostPermissionSchemes, site);
+  URLPatternSet user_allowed_sites;
+  for (const auto& site : user_permissions_.permitted_sites)
+    user_allowed_sites.AddOrigin(Extension::kValidHostPermissionSchemes, site);
+
+  PermissionsData::SetUserHostRestrictions(
+      util::GetBrowserContextId(browser_context_),
+      std::move(user_blocked_sites), std::move(user_allowed_sites));
+
   for (auto& observer : observers_)
     observer.UserPermissionsSettingsChanged(GetUserPermissionsSettings());
 }

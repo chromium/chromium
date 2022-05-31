@@ -31,33 +31,42 @@ namespace {
 
 PermissionsData::PolicyDelegate* g_policy_delegate = nullptr;
 
-struct DefaultPolicyRestrictions {
+struct URLPatternAccessSet {
   URLPatternSet blocked_hosts;
   URLPatternSet allowed_hosts;
+};
+
+struct ContextPermissions {
+  // The set of default policy restrictions to apply to extensions if a more
+  // specific rule isn't set.
+  // Extensions cannot interact with the blocked sites, even if the permission
+  // is otherwise granted. The allowlist takes precedent over the blocklist.
+  URLPatternAccessSet default_policy_restrictions;
+  // Restrictions set by the user dictating which sites extensions can / cannot
+  // run on. The allowlist takes precedent over the blocklist.
+  // TODO(http://crbug.com/1268198): Take these into account when determining
+  // extension access.
+  URLPatternAccessSet user_restrictions;
 };
 
 // A map between a profile (referenced by a unique id) and the default policies
 // for that profile. Since different profile have different defaults, we need to
 // have separate entries.
-using DefaultPolicyRestrictionsMap = std::map<int, DefaultPolicyRestrictions>;
+using ContextPermissionsMap = std::map<int, ContextPermissions>;
 
-// Lock to access the default policy restrictions. This should never be acquired
+// Lock to access the context permissions map. This should never be acquired
 // before PermissionsData instance level |runtime_lock_| to prevent deadlocks.
-base::Lock& GetDefaultPolicyRestrictionsLock() {
+base::Lock& GetContextPermissionsLock() {
   static base::NoDestructor<base::Lock> lock;
   return *lock;
 }
 
-// Returns the DefaultPolicyRestrictions for the given context_id.
-// i.e. the URLs an extension can't interact with. An extension can override
-// these settings by declaring its own list of blocked and allowed hosts
-// using policy_blocked_hosts and policy_allowed_hosts.
-// Must be called with the default policy restriction lock already acquired.
-DefaultPolicyRestrictions& GetDefaultPolicyRestrictions(int context_id) {
-  static base::NoDestructor<DefaultPolicyRestrictionsMap>
-      default_policy_restrictions_map;
-  GetDefaultPolicyRestrictionsLock().AssertAcquired();
-  return (*default_policy_restrictions_map)[context_id];
+// Returns the ContextPermissions for the given context_id.
+// Must be called with the context permissions lock already required.
+ContextPermissions& GetContextPermissions(int context_id) {
+  static base::NoDestructor<ContextPermissionsMap> context_permissions_map;
+  GetContextPermissionsLock().AssertAcquired();
+  return (*context_permissions_map)[context_id];
 }
 
 class AutoLockOnValidThread {
@@ -170,14 +179,16 @@ bool PermissionsData::UsesDefaultPolicyHostRestrictions() const {
 
 // static
 URLPatternSet PermissionsData::GetDefaultPolicyBlockedHosts(int context_id) {
-  base::AutoLock lock(GetDefaultPolicyRestrictionsLock());
-  return GetDefaultPolicyRestrictions(context_id).blocked_hosts.Clone();
+  base::AutoLock lock(GetContextPermissionsLock());
+  return GetContextPermissions(context_id)
+      .default_policy_restrictions.blocked_hosts.Clone();
 }
 
 // static
 URLPatternSet PermissionsData::GetDefaultPolicyAllowedHosts(int context_id) {
-  base::AutoLock lock(GetDefaultPolicyRestrictionsLock());
-  return GetDefaultPolicyRestrictions(context_id).allowed_hosts.Clone();
+  base::AutoLock lock(GetContextPermissionsLock());
+  return GetContextPermissions(context_id)
+      .default_policy_restrictions.allowed_hosts.Clone();
 }
 
 URLPatternSet PermissionsData::policy_blocked_hosts() const {
@@ -228,11 +239,39 @@ void PermissionsData::SetDefaultPolicyHostRestrictions(
     int context_id,
     const URLPatternSet& default_policy_blocked_hosts,
     const URLPatternSet& default_policy_allowed_hosts) {
-  base::AutoLock lock(GetDefaultPolicyRestrictionsLock());
-  GetDefaultPolicyRestrictions(context_id).blocked_hosts =
+  base::AutoLock lock(GetContextPermissionsLock());
+  ContextPermissions& context_permissions = GetContextPermissions(context_id);
+  context_permissions.default_policy_restrictions.blocked_hosts =
       default_policy_blocked_hosts.Clone();
-  GetDefaultPolicyRestrictions(context_id).allowed_hosts =
+  context_permissions.default_policy_restrictions.allowed_hosts =
       default_policy_allowed_hosts.Clone();
+}
+
+// static
+void PermissionsData::SetUserHostRestrictions(
+    int context_id,
+    URLPatternSet user_blocked_hosts,
+    URLPatternSet user_allowed_hosts) {
+  base::AutoLock lock(GetContextPermissionsLock());
+  ContextPermissions& context_permissions = GetContextPermissions(context_id);
+  context_permissions.user_restrictions.blocked_hosts =
+      std::move(user_blocked_hosts);
+  context_permissions.user_restrictions.allowed_hosts =
+      std::move(user_allowed_hosts);
+}
+
+// static
+URLPatternSet PermissionsData::GetUserAllowedHostsForTesting(int context_id) {
+  base::AutoLock lock(GetContextPermissionsLock());
+  return GetContextPermissions(context_id)
+      .user_restrictions.allowed_hosts.Clone();
+}
+
+// static
+URLPatternSet PermissionsData::GetUserBlockedHostsForTesting(int context_id) {
+  base::AutoLock lock(GetContextPermissionsLock());
+  return GetContextPermissions(context_id)
+      .user_restrictions.blocked_hosts.Clone();
 }
 
 void PermissionsData::UpdateTabSpecificPermissions(
@@ -513,6 +552,8 @@ bool PermissionsData::IsPolicyBlockedHostUnsafe(const GURL& url) const {
   // URLPatternSet.
   runtime_lock_.AssertAcquired();
   if (context_id_.has_value()) {
+    // TODO(devlin): Eek! Despite the comment above, this actually creates a
+    // copy. Anecdotally, these lists may be very, very large. Fix this.
     return GetDefaultPolicyBlockedHosts(context_id_.value()).MatchesURL(url) &&
            !GetDefaultPolicyAllowedHosts(context_id_.value()).MatchesURL(url);
   }
