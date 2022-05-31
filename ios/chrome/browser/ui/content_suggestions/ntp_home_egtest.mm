@@ -10,6 +10,8 @@
 #include "components/strings/grit/components_strings.h"
 #include "ios/chrome/browser/chrome_switches.h"
 #import "ios/chrome/browser/pref_names.h"
+#import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
+#import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_cells_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
@@ -29,6 +31,7 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
+#import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/testing/earl_grey/disabled_test_macros.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -1007,14 +1010,18 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
 
 // Tests that the scroll position is maintained when switching from the Discover
 // feed to the Following feed without fully scrolling into the feed.
-- (void)testScrollPositionMaintainedWhenSwitchingFeedAboveFeed {
+// TODO(crbug.com/1330667): Re-enable when fixed.
+- (void)DISABLED_testScrollPositionMaintainedWhenSwitchingFeedAboveFeed {
   if (![ChromeEarlGrey isWebChannelsEnabled]) {
     EARL_GREY_TEST_SKIPPED(@"Only applicable with Web Channels enabled.");
   }
 
+  // Sign in to enable Following.
+  [self signInThroughSettingsMenu];
+
   // Scrolls down a bit, not fully into the feed.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::NTPCollectionView()]
-      performAction:grey_scrollInDirection(kGREYDirectionDown, 150)];
+      performAction:grey_scrollInDirection(kGREYDirectionDown, 50)];
 
   // Saves the content offset and switches to the Following feed.
   UICollectionView* collectionView = [NewTabPageAppInterface collectionView];
@@ -1027,6 +1034,35 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
   collectionView = [NewTabPageAppInterface collectionView];
   GREYAssertEqual(yOffsetBeforeSwitchingFeed, collectionView.contentOffset.y,
                   @"Content offset is not the same after switching feeds.");
+}
+
+// Tests that the regular feed header is visible when signed out, and is swapped
+// for the Following feed header after signing in.
+// TODO(crbug.com/1330667): Re-enable when fixed.
+- (void)DISABLED_testFollowingFeedHeaderIsVisibleWhenSignedIn {
+  if (![ChromeEarlGrey isWebChannelsEnabled]) {
+    EARL_GREY_TEST_SKIPPED(@"Only applicable with Web Channels enabled.");
+  }
+
+  // Check that regular feed header is visible when signed out, and not
+  // Following header.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kNTPFeedHeaderSegmentedControlIdentifier)]
+      assertWithMatcher:grey_not(grey_sufficientlyVisible())];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::DiscoverHeaderLabel()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Sign in to enable Following feed.
+  [self signInThroughSettingsMenu];
+
+  // Check that Following header is now visible, and not regular feed header.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(
+                                   kNTPFeedHeaderSegmentedControlIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::DiscoverHeaderLabel()]
+      assertWithMatcher:grey_not(grey_sufficientlyVisible())];
 }
 
 #pragma mark - Helpers
@@ -1162,6 +1198,19 @@ id<GREYMatcher> OmniboxWidthBetween(CGFloat width, CGFloat margin) {
   feed_visible =
       [ChromeEarlGrey userBooleanPref:feed::prefs::kArticlesListVisible];
   GREYAssertFalse(feed_visible, @"Expect feed to be hidden!");
+}
+
+// Opens the settings menu, signs in using a fake identity, and closes the menu.
+- (void)signInThroughSettingsMenu {
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI
+      tapSettingsMenuButton:chrome_test_util::PrimarySignInButton()];
+  [SigninEarlGreyUI tapSigninConfirmationDialog];
+  [ChromeEarlGrey waitForMatcher:chrome_test_util::SettingsAccountButton()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsDoneButton()]
+      performAction:grey_tap()];
 }
 
 #pragma mark - Matchers

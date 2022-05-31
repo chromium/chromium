@@ -4746,6 +4746,21 @@
             ]
         }
     ],
+    "IOSWebChannels": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWebChannels",
+                    "enable_features": [
+                        "EnableWebChannels"
+                    ]
+                }
+            ]
+        }
+    ],
     "IdentifiabilityStudy": [
         {
             "platforms": [
