@@ -7,6 +7,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/segmentation_platform/internal/database/mock_signal_database.h"
 #include "components/segmentation_platform/internal/database/mock_signal_storage_config.h"
 #include "components/segmentation_platform/internal/database/test_segment_info_database.h"
@@ -17,7 +18,9 @@
 #include "components/segmentation_platform/internal/platform_options.h"
 #include "components/segmentation_platform/internal/scheduler/execution_service.h"
 #include "components/segmentation_platform/internal/signals/signal_handler.h"
+#include "components/segmentation_platform/public/local_state_helper.h"
 #include "components/segmentation_platform/public/model_provider.h"
+#include "components/segmentation_platform/public/segmentation_platform_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -92,6 +95,8 @@ class SegmentResultProviderTest : public testing::Test {
         segment_database_.get(), &signal_storage_config_,
         default_manager_.get(), execution_service_.get(), &clock_,
         /*force_refresh_results=*/false);
+    SegmentationPlatformService::RegisterLocalStatePrefs(prefs_.registry());
+    LocalStateHelper::GetInstance().Initialize(&prefs_);
   }
 
   void TearDown() override {
@@ -170,6 +175,7 @@ class SegmentResultProviderTest : public testing::Test {
   std::unique_ptr<test::TestSegmentInfoDatabase> segment_database_;
   MockSignalStorageConfig signal_storage_config_;
   std::unique_ptr<SegmentResultProvider> score_provider_;
+  TestingPrefServiceSimple prefs_;
 };
 
 TEST_F(SegmentResultProviderTest, GetScoreWithoutInfo) {
