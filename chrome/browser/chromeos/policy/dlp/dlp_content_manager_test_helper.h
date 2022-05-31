@@ -13,6 +13,10 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_restriction_set.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/policy/dlp/dlp_content_manager_ash.h"
+#endif
+
 namespace content {
 class WebContents;
 }  // namespace content
@@ -42,6 +46,14 @@ class DlpContentManagerTestHelper {
   void ResetWarnNotifierForTesting();
 
   int ActiveWarningDialogsCount() const;
+
+  const std::vector<std::unique_ptr<DlpContentManager::ScreenShareInfo>>&
+  GetRunningScreenShares() const;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  absl::optional<DlpContentManagerAsh::VideoCaptureInfo>
+  GetRunningVideoCaptureInfo() const;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   base::TimeDelta GetPrivacyScreenOffDelay() const;

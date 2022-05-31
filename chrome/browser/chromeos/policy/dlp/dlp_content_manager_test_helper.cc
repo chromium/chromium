@@ -81,6 +81,21 @@ int DlpContentManagerTestHelper::ActiveWarningDialogsCount() const {
   return manager_->warn_notifier_->ActiveWarningDialogsCountForTesting();
 }
 
+const std::vector<std::unique_ptr<DlpContentManager::ScreenShareInfo>>&
+DlpContentManagerTestHelper::GetRunningScreenShares() const {
+  DCHECK(manager_);
+  return manager_->running_screen_shares_;
+}
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+absl::optional<DlpContentManagerAsh::VideoCaptureInfo>
+DlpContentManagerTestHelper::GetRunningVideoCaptureInfo() const {
+  DCHECK(manager_);
+  return static_cast<DlpContentManagerAsh*>(manager_)
+      ->running_video_capture_info_;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 base::TimeDelta DlpContentManagerTestHelper::GetPrivacyScreenOffDelay() const {
   DCHECK(manager_);

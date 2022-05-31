@@ -51,6 +51,20 @@ class DlpWarnDialog : public views::DialogDelegateView {
     DlpWarnDialogOptions& operator=(const DlpWarnDialogOptions& other);
     ~DlpWarnDialogOptions();
 
+    // Returns whether all members are equal.
+    // Uses EqualWithTitles to compare confidential_contents, which ensures that
+    // not only URLs but also the titles are equal as well.
+    friend bool operator==(const DlpWarnDialogOptions& a,
+                           const DlpWarnDialogOptions& b) {
+      return a.restriction == b.restriction &&
+             a.application_title == b.application_title &&
+             EqualWithTitles(a.confidential_contents, b.confidential_contents);
+    }
+    friend bool operator!=(const DlpWarnDialogOptions& a,
+                           const DlpWarnDialogOptions& b) {
+      return !(a == b);
+    }
+
     Restriction restriction;
     DlpConfidentialContents confidential_contents;
     absl::optional<std::u16string> application_title;

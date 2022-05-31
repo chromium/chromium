@@ -17,6 +17,7 @@
 #include "base/test/mock_callback.h"
 #include "base/test/test_future.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_confidential_contents.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_manager_test_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_restriction_set.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
@@ -25,6 +26,7 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager_test_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_warn_dialog.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_warn_notifier.h"
 #include "chrome/browser/chromeos/policy/dlp/mock_dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/mock_dlp_warn_notifier.h"
@@ -121,6 +123,14 @@ class DlpContentManagerAshBrowserTest : public InProcessBrowserTest {
   MockDlpWarnNotifier* CreateAndSetMockDlpWarnNotifier(bool should_proceed) {
     std::unique_ptr<MockDlpWarnNotifier> mock_notifier =
         std::make_unique<MockDlpWarnNotifier>(should_proceed);
+    MockDlpWarnNotifier* mock_notifier_ptr = mock_notifier.get();
+    helper_->SetWarnNotifierForTesting(std::move(mock_notifier));
+    return mock_notifier_ptr;
+  }
+
+  MockDlpWarnNotifier* CreateAndSetMockDlpWarnNotifier() {
+    std::unique_ptr<MockDlpWarnNotifier> mock_notifier =
+        std::make_unique<MockDlpWarnNotifier>();
     MockDlpWarnNotifier* mock_notifier_ptr = mock_notifier.get();
     helper_->SetWarnNotifierForTesting(std::move(mock_notifier));
     return mock_notifier_ptr;
@@ -714,6 +724,60 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
       GetDlpHistogramPrefix() + dlp::kVideoCaptureInterruptedUMA, true, 0);
 }
 
+IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
+                       VideoCaptureWarningShowsLatestTitle) {
+  SetupReporting();
+  MockDlpWarnNotifier* mock_dlp_warn_notifier =
+      CreateAndSetMockDlpWarnNotifier();
+  aura::Window* root_window =
+      browser()->window()->GetNativeWindow()->GetRootWindow();
+
+  chrome::NewTab(browser());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl)));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Start capture of the whole screen.
+  base::RunLoop run_loop;
+  auto* capture_mode_delegate = ChromeCaptureModeDelegate::Get();
+  testing::StrictMock<base::MockOnceClosure> stop_cb_;
+  capture_mode_delegate->StartObservingRestrictedContent(
+      root_window, root_window->bounds(), stop_cb_.Get());
+
+  helper_->ChangeConfidentiality(web_contents, kScreenshotWarned);
+  // Check that the warning not shown yet, but the contents are already stored.
+  EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 0);
+  ASSERT_TRUE(helper_->GetRunningVideoCaptureInfo().has_value());
+  auto actual_contents = helper_->GetRunningVideoCaptureInfo()
+                             ->confidential_contents.GetContents();
+  EXPECT_EQ(actual_contents.size(), 1);
+  EXPECT_EQ(actual_contents.begin()->title, u"example.com");
+
+  // Change the title.
+  EXPECT_TRUE(content::ExecJs(web_contents,
+                              R"(
+            document.title = 'New Title';
+  )"));
+
+  DlpConfidentialContents expected_contents;
+  expected_contents.Add(web_contents);
+  EXPECT_CALL(*mock_dlp_warn_notifier,
+              ShowDlpWarningDialog(
+                  testing::_, DlpWarnDialog::DlpWarnDialogOptions(
+                                  DlpWarnDialog::Restriction::kVideoCapture,
+                                  expected_contents)))
+      .Times(1);
+
+  ASSERT_TRUE(helper_->GetRunningVideoCaptureInfo().has_value());
+  actual_contents = helper_->GetRunningVideoCaptureInfo()
+                        ->confidential_contents.GetContents();
+  EXPECT_EQ(actual_contents.size(), 1);
+  EXPECT_EQ(actual_contents.begin()->title, u"New Title");
+
+  run_loop.RunUntilIdle();
+  capture_mode_delegate->StopObservingRestrictedContent(base::DoNothing());
+}
+
 // TODO(crbug.com/1306311): Create browser tests for share-this-tab-instead
 // button.
 class DlpContentManagerAshScreenShareBrowserTest
@@ -1281,6 +1345,62 @@ IN_PROC_BROWSER_TEST_P(CheckRunningScreenShareTest, TabShare) {
                         /*warned_suffix=*/dlp::kScreenShareWarnedUMA);
 
   helper_->ChangeConfidentiality(web_contents, kEmptyRestrictionSet);
+}
+
+IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
+                       ContentsUpdatedOnWebContentsTitleChanged) {
+  SetupReporting();
+  MockDlpWarnNotifier* mock_dlp_warn_notifier =
+      CreateAndSetMockDlpWarnNotifier();
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl)));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_CALL(state_change_cb_, Run).Times(1);
+  MaybeStartFullScreenShare(web_contents);
+
+  DlpConfidentialContents expected_contents;
+  expected_contents.Add(web_contents);
+  testing::InSequence s;
+  EXPECT_CALL(*mock_dlp_warn_notifier,
+              ShowDlpWarningDialog(testing::_,
+                                   DlpWarnDialog::DlpWarnDialogOptions(
+                                       DlpWarnDialog::Restriction::kScreenShare,
+                                       expected_contents, kApplicationTitle)))
+      .Times(1);
+  expected_contents.GetContents().begin()->title = u"New Title";
+  EXPECT_CALL(*mock_dlp_warn_notifier,
+              ShowDlpWarningDialog(testing::_,
+                                   DlpWarnDialog::DlpWarnDialogOptions(
+                                       DlpWarnDialog::Restriction::kScreenShare,
+                                       expected_contents, kApplicationTitle)))
+      .Times(1);
+
+  helper_->ChangeConfidentiality(web_contents, kScreenShareWarned);
+
+  ASSERT_FALSE(helper_->GetRunningScreenShares().empty());
+  auto actual_contents = helper_->GetRunningScreenShares()
+                             .begin()
+                             ->get()
+                             ->GetConfidentialContents()
+                             .GetContents();
+  EXPECT_EQ(actual_contents.size(), 1);
+  EXPECT_EQ(actual_contents.begin()->title, u"example.com");
+
+  // Change the title.
+  EXPECT_TRUE(content::ExecJs(web_contents,
+                              R"(
+            document.title = 'New Title';
+  )"));
+
+  ASSERT_FALSE(helper_->GetRunningScreenShares().empty());
+  actual_contents = helper_->GetRunningScreenShares()
+                        .begin()
+                        ->get()
+                        ->GetConfidentialContents()
+                        .GetContents();
+  EXPECT_EQ(actual_contents.size(), 1);
+  EXPECT_EQ(actual_contents.begin()->title, u"New Title");
 }
 
 IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
