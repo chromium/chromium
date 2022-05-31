@@ -8,6 +8,7 @@ static_library("browser") {
     "signals_aggregator_impl.h",
     "signals_collector.h",
     "user_context.h",
+    "user_delegate.h",
     "user_permission_service.h",
     "user_permission_service_impl.h",
   ]
@@ -32,6 +33,8 @@ static_library("test_support") {
   sources = [
     "mock_signals_collector.cc",
     "mock_signals_collector.h",
+    "mock_user_delegate.cc",
+    "mock_user_delegate.h",
     "mock_user_permission_service.cc",
     "mock_user_permission_service.h",
   ]
@@ -39,6 +42,7 @@ static_library("test_support") {
   deps = [
     ":browser",
     "//base",
+    "//components/signin/public/identity_manager",
     "//testing/gmock",
   ]
 }
