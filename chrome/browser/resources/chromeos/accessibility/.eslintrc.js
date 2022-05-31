@@ -11,7 +11,6 @@ module.exports = {
     'no-console' : 'off',
     'no-throw-literal' : 'off',
     'object-shorthand' : ['error', 'always'],
-    'prefer-arrow-callback' : ['error', {'allowNamedFunctions' : true}],
     'prefer-const' : ['error', {'destructuring' : 'all'}],
   },
 };
