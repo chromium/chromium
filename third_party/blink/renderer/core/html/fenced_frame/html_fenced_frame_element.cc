@@ -64,8 +64,9 @@ String FencedFrameModeToString(mojom::blink::FencedFrameMode mode) {
 
 bool HasDifferentModeThanParent(HTMLFencedFrameElement& outer_element) {
   mojom::blink::FencedFrameMode current_mode = outer_element.GetMode();
+  Page* ancestor_page = outer_element.GetDocument().GetFrame()->GetPage();
 
-  if (features::kFencedFramesImplementationTypeParam.Get() ==
+  if (ancestor_page->FencedFramesImplementationType() ==
       features::FencedFramesImplementationType::kShadowDOM) {
     // ShadowDOM check.
     if (Frame* ancestor = outer_element.GetDocument().GetFrame()) {
@@ -101,7 +102,6 @@ bool HasDifferentModeThanParent(HTMLFencedFrameElement& outer_element) {
     return false;
   }
   // MPArch check.
-  Page* ancestor_page = outer_element.GetDocument().GetFrame()->GetPage();
   return ancestor_page->IsMainFrameFencedFrameRoot() &&
          ancestor_page->FencedFrameMode() != current_mode;
 }
@@ -256,9 +256,11 @@ HTMLFencedFrameElement::FencedFrameDelegate::Create(
   // of this function.
   DCHECK(outer_element->GetDocument().GetFrame());
 
+  Page* ancestor_page = outer_element->GetDocument().GetFrame()->GetPage();
+
   if (HasDifferentModeThanParent(*outer_element)) {
     mojom::blink::FencedFrameMode parent_mode =
-        features::kFencedFramesImplementationTypeParam.Get() ==
+        ancestor_page->FencedFramesImplementationType() ==
                 features::FencedFramesImplementationType::kShadowDOM
             ? outer_element->GetDocument()
                   .GetFrame()
@@ -278,7 +280,7 @@ HTMLFencedFrameElement::FencedFrameDelegate::Create(
     return nullptr;
   }
 
-  if (features::kFencedFramesImplementationTypeParam.Get() ==
+  if (ancestor_page->FencedFramesImplementationType() ==
       features::FencedFramesImplementationType::kShadowDOM) {
     return MakeGarbageCollected<FencedFrameShadowDOMDelegate>(outer_element);
   }
@@ -448,11 +450,8 @@ void HTMLFencedFrameElement::CreateDelegateAndNavigate() {
 
 void HTMLFencedFrameElement::AttachLayoutTree(AttachContext& context) {
   HTMLFrameOwnerElement::AttachLayoutTree(context);
-  if (features::IsFencedFramesMPArchBased()) {
-    if (GetLayoutEmbeddedContent() && ContentFrame()) {
-      SetEmbeddedContentView(ContentFrame()->View());
-    }
-  }
+  if (frame_delegate_)
+    frame_delegate_->AttachLayoutTree();
 }
 
 bool HTMLFencedFrameElement::LayoutObjectIsNeeded(
@@ -464,7 +463,10 @@ bool HTMLFencedFrameElement::LayoutObjectIsNeeded(
 LayoutObject* HTMLFencedFrameElement::CreateLayoutObject(
     const ComputedStyle& style,
     LegacyLayout legacy_layout) {
-  if (features::IsFencedFramesMPArchBased()) {
+  Page* page = GetDocument().GetFrame()->GetPage();
+
+  if (page->FencedFramesImplementationType() ==
+      features::FencedFramesImplementationType::kMPArch) {
     return MakeGarbageCollected<LayoutIFrame>(this);
   }
 
@@ -472,7 +474,7 @@ LayoutObject* HTMLFencedFrameElement::CreateLayoutObject(
 }
 
 bool HTMLFencedFrameElement::SupportsFocus() const {
-  return features::IsFencedFramesMPArchBased();
+  return frame_delegate_->SupportsFocus();
 }
 
 PhysicalSize HTMLFencedFrameElement::CoerceFrameSize(
@@ -624,22 +626,7 @@ void HTMLFencedFrameElement::FreezeFrameSize(const PhysicalSize& size) {
   // from here to during FLEDGE/SharedStorage.
   frozen_frame_size_ = CoerceFrameSize(size);
 
-  if (features::IsFencedFramesMPArchBased()) {
-    // With MPArch, mark the layout as stale. Do this unconditionally because
-    // we are rounding the size.
-    GetLayoutObject()->SetNeedsLayoutAndFullPaintInvalidation(
-        "Froze MPArch fenced frame");
-
-    // Stop the `ResizeObserver`. It is needed only to compute the
-    // frozen size in MPArch. ShadowDOM stays subscribed in order to
-    // update the CSS on the inner iframe element as the outer container's
-    // size changes.
-    StopResizeObserver();
-  } else {
-    // With Shadow DOM, update the CSS `transform` property whenever
-    // |content_rect_| or |frozen_frame_size_| change.
-    UpdateInnerStyleOnFrozenInternalFrame();
-  }
+  frame_delegate_->FreezeFrameSize();
 }
 
 void HTMLFencedFrameElement::StartResizeObserver() {
@@ -678,8 +665,12 @@ void HTMLFencedFrameElement::OnResize(const PhysicalRect& content_rect) {
     FreezeFrameSize(content_rect_->size);
     return;
   }
-  if (frozen_frame_size_ && !features::IsFencedFramesMPArchBased())
+  Page* page = GetDocument().GetFrame()->GetPage();
+  if (frozen_frame_size_ &&
+      page->FencedFramesImplementationType() ==
+          features::FencedFramesImplementationType::kShadowDOM) {
     UpdateInnerStyleOnFrozenInternalFrame();
+  }
 }
 
 void HTMLFencedFrameElement::UpdateInnerStyleOnFrozenInternalFrame() {

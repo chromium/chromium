@@ -26,6 +26,9 @@ class CORE_EXPORT FencedFrameMPArchDelegate
 
   void Navigate(const KURL&) override;
   void Dispose() override;
+  void AttachLayoutTree() override;
+  bool SupportsFocus() override;
+  void FreezeFrameSize() override;
 
  private:
   mojo::AssociatedRemote<mojom::blink::FencedFrameOwnerHost> remote_;

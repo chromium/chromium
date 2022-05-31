@@ -201,11 +201,9 @@ void ForEachRemoteFrameChildrenControlledByWidget(
           callback.Run(remote_frame);
       }
       // Iterate on any fenced frames owned by a local frame.
-      if (features::IsFencedFramesMPArchBased()) {
-        for (HTMLFencedFrameElement* fenced_frame :
-             DocumentFencedFrames::From(*document).GetFencedFrames()) {
-          callback.Run(To<RemoteFrame>(fenced_frame->ContentFrame()));
-        }
+      for (HTMLFencedFrameElement* fenced_frame :
+           DocumentFencedFrames::From(*document).GetFencedFrames()) {
+        callback.Run(To<RemoteFrame>(fenced_frame->ContentFrame()));
       }
     }
   }

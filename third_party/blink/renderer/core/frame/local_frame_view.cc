@@ -361,12 +361,10 @@ void LocalFrameView::ForAllChildViewsAndPlugins(const Function& function) {
       if (Frame* frame = portal->GetFrame())
         function(*frame->View());
     }
-    if (features::IsFencedFramesMPArchBased()) {
-      for (HTMLFencedFrameElement* fenced_frame :
-           DocumentFencedFrames::From(*document).GetFencedFrames()) {
-        if (Frame* frame = fenced_frame->ContentFrame())
-          function(*frame->View());
-      }
+    for (HTMLFencedFrameElement* fenced_frame :
+         DocumentFencedFrames::From(*document).GetFencedFrames()) {
+      if (Frame* frame = fenced_frame->ContentFrame())
+        function(*frame->View());
     }
   }
 }
@@ -442,14 +440,11 @@ void LocalFrameView::ForAllRemoteFrameViews(const Function& function) {
           function(*view);
       }
     }
-    if (features::IsFencedFramesMPArchBased()) {
-      for (HTMLFencedFrameElement* fenced_frame :
-           DocumentFencedFrames::From(*document).GetFencedFrames()) {
-        if (RemoteFrame* frame =
-                To<RemoteFrame>(fenced_frame->ContentFrame())) {
-          if (RemoteFrameView* view = frame->View())
-            function(*view);
-        }
+    for (HTMLFencedFrameElement* fenced_frame :
+         DocumentFencedFrames::From(*document).GetFencedFrames()) {
+      if (RemoteFrame* frame = To<RemoteFrame>(fenced_frame->ContentFrame())) {
+        if (RemoteFrameView* view = frame->View())
+          function(*view);
       }
     }
   }
@@ -4317,14 +4312,12 @@ bool LocalFrameView::UpdateViewportIntersectionsForSubtree(
     }
   }
 
-  if (features::IsFencedFramesMPArchBased()) {
-    for (HTMLFencedFrameElement* fenced_frame :
-         DocumentFencedFrames::From(*frame_->GetDocument()).GetFencedFrames()) {
-      if (Frame* frame = fenced_frame->ContentFrame()) {
-        needs_occlusion_tracking |=
-            frame->View()->UpdateViewportIntersectionsForSubtree(
-                flags, monotonic_time);
-      }
+  for (HTMLFencedFrameElement* fenced_frame :
+       DocumentFencedFrames::From(*frame_->GetDocument()).GetFencedFrames()) {
+    if (Frame* frame = fenced_frame->ContentFrame()) {
+      needs_occlusion_tracking |=
+          frame->View()->UpdateViewportIntersectionsForSubtree(flags,
+                                                               monotonic_time);
     }
   }
   return needs_occlusion_tracking;
