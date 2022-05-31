@@ -48,15 +48,20 @@ const NGLayoutResult* NGTableRowLayoutAlgorithm::Layout() {
                 ? cell_data.rowspan_block_size
                 : row_block_size;
 
-        NGConstraintSpaceBuilder builder =
-            NGTableAlgorithmUtils::CreateTableCellConstraintSpaceBuilder(
-                table_data.table_writing_direction, cell, cell_data.borders,
-                table_data.column_locations, cell_block_size,
-                container_builder_.InlineSize(), row_baseline,
-                cell_data.start_column,
-                cell_data.is_initial_block_size_indefinite,
-                table_data.is_table_block_size_specified,
-                table_data.has_collapsed_borders, NGCacheSlot::kLayout);
+        DCHECK_EQ(table_data.table_writing_direction.GetWritingMode(),
+                  ConstraintSpace().GetWritingMode());
+
+        NGConstraintSpaceBuilder builder(ConstraintSpace(),
+                                         cell.Style().GetWritingDirection(),
+                                         /* is_new_fc */ true);
+
+        NGTableAlgorithmUtils::SetupTableCellConstraintSpaceBuilder(
+            table_data.table_writing_direction, cell, cell_data.borders,
+            table_data.column_locations, cell_block_size,
+            container_builder_.InlineSize(), row_baseline,
+            cell_data.start_column, cell_data.is_initial_block_size_indefinite,
+            table_data.is_table_block_size_specified,
+            table_data.has_collapsed_borders, NGCacheSlot::kLayout, &builder);
 
         if (ConstraintSpace().HasBlockFragmentation()) {
           SetupSpaceBuilderForFragmentation(

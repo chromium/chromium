@@ -889,8 +889,7 @@ const NGLayoutResult* NGTableLayoutAlgorithm::GenerateFragment(
                                              LayoutUnit block_offset,
                                              wtf_size_t section_index) {
     NGConstraintSpaceBuilder section_space_builder(
-        table_writing_direction.GetWritingMode(), table_writing_direction,
-        /* is_new_fc */ true);
+        ConstraintSpace(), table_writing_direction, /* is_new_fc */ true);
 
     LogicalSize available_size = {section_available_inline_size,
                                   kIndefiniteSize};

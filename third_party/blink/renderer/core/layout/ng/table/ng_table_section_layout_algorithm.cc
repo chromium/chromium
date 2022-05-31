@@ -74,9 +74,11 @@ const NGLayoutResult* NGTableSectionLayoutAlgorithm::Layout() {
     if (!is_first_non_collapsed_row && !is_row_collapsed)
       offset.block_offset += table_data.table_border_spacing.block_size;
 
+    DCHECK_EQ(table_data.table_writing_direction.GetWritingMode(),
+              ConstraintSpace().GetWritingMode());
+
     NGConstraintSpaceBuilder row_space_builder(
-        table_data.table_writing_direction.GetWritingMode(),
-        table_data.table_writing_direction,
+        ConstraintSpace(), table_data.table_writing_direction,
         /* is_new_fc */ true);
     row_space_builder.SetAvailableSize(available_size);
     row_space_builder.SetPercentageResolutionSize(available_size);

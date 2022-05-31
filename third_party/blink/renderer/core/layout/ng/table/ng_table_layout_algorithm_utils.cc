@@ -195,17 +195,21 @@ NGTableTypes::Row ComputeMinimumRowBlockSize(
         cell, row_index, colspan_cell_tabulator->CurrentColumn(), section_index,
         table_writing_direction);
 
+    NGConstraintSpaceBuilder space_builder(
+        table_writing_direction.GetWritingMode(),
+        cell.Style().GetWritingDirection(), /* is_new_fc */ true);
+
     // We want these values to match the "layout" pass as close as possible.
-    const auto cell_space =
-        NGTableAlgorithmUtils::CreateTableCellConstraintSpaceBuilder(
-            table_writing_direction, cell, cell_borders, column_locations,
-            /* cell_block_size */ kIndefiniteSize, cell_percentage_inline_size,
-            /* alignment_baseline */ absl::nullopt,
-            colspan_cell_tabulator->CurrentColumn(),
-            /* is_initial_block_size_indefinite */ true,
-            is_table_block_size_specified, has_collapsed_borders,
-            NGCacheSlot::kMeasure)
-            .ToConstraintSpace();
+    NGTableAlgorithmUtils::SetupTableCellConstraintSpaceBuilder(
+        table_writing_direction, cell, cell_borders, column_locations,
+        /* cell_block_size */ kIndefiniteSize, cell_percentage_inline_size,
+        /* alignment_baseline */ absl::nullopt,
+        colspan_cell_tabulator->CurrentColumn(),
+        /* is_initial_block_size_indefinite */ true,
+        is_table_block_size_specified, has_collapsed_borders,
+        NGCacheSlot::kMeasure, &space_builder);
+
+    const auto cell_space = space_builder.ToConstraintSpace();
     const NGLayoutResult* layout_result = cell.Layout(cell_space);
 
     const NGBoxFragment fragment(
@@ -476,8 +480,7 @@ NGTableAlgorithmUtils::ComputeCellBlockSize(
 }
 
 // static
-NGConstraintSpaceBuilder
-NGTableAlgorithmUtils::CreateTableCellConstraintSpaceBuilder(
+void NGTableAlgorithmUtils::SetupTableCellConstraintSpaceBuilder(
     const WritingDirectionMode table_writing_direction,
     const NGBlockNode cell,
     const NGBoxStrut& cell_borders,
@@ -489,7 +492,8 @@ NGTableAlgorithmUtils::CreateTableCellConstraintSpaceBuilder(
     bool is_initial_block_size_indefinite,
     bool is_table_block_size_specified,
     bool has_collapsed_borders,
-    NGCacheSlot cache_slot) {
+    NGCacheSlot cache_slot,
+    NGConstraintSpaceBuilder* builder) {
   const auto& cell_style = cell.Style();
   const auto table_writing_mode = table_writing_direction.GetWritingMode();
   const wtf_size_t end_column = std::min(
@@ -507,41 +511,36 @@ NGTableAlgorithmUtils::CreateTableCellConstraintSpaceBuilder(
     return true;
   }();
 
-  NGConstraintSpaceBuilder builder(table_writing_mode,
-                                   cell_style.GetWritingDirection(),
-                                   /* is_new_fc */ true);
-  builder.SetIsTableCell(true);
+  builder->SetIsTableCell(true);
 
   if (!IsParallelWritingMode(table_writing_mode, cell_style.GetWritingMode())) {
     const PhysicalSize icb_size = cell.InitialContainingBlockSize();
-    builder.SetOrthogonalFallbackInlineSize(
+    builder->SetOrthogonalFallbackInlineSize(
         table_writing_direction.IsHorizontal() ? icb_size.height
                                                : icb_size.width);
   }
 
-  builder.SetAvailableSize({cell_inline_size, cell_block_size});
-  builder.SetIsFixedInlineSize(true);
+  builder->SetAvailableSize({cell_inline_size, cell_block_size});
+  builder->SetIsFixedInlineSize(true);
   if (cell_block_size != kIndefiniteSize)
-    builder.SetIsFixedBlockSize(true);
-  builder.SetIsInitialBlockSizeIndefinite(is_initial_block_size_indefinite);
+    builder->SetIsFixedBlockSize(true);
+  builder->SetIsInitialBlockSizeIndefinite(is_initial_block_size_indefinite);
 
   // https://www.w3.org/TR/css-tables-3/#computing-the-table-height
   // "the computed height (if definite, percentages being considered 0px)"
-  builder.SetPercentageResolutionSize(
+  builder->SetPercentageResolutionSize(
       {percentage_inline_size, kIndefiniteSize});
 
-  builder.SetTableCellBorders(cell_borders);
-  builder.SetTableCellAlignmentBaseline(alignment_baseline);
-  builder.SetTableCellColumnIndex(start_column);
-  builder.SetIsRestrictedBlockSizeTableCell(
+  builder->SetTableCellBorders(cell_borders);
+  builder->SetTableCellAlignmentBaseline(alignment_baseline);
+  builder->SetTableCellColumnIndex(start_column);
+  builder->SetIsRestrictedBlockSizeTableCell(
       is_table_block_size_specified || cell_style.LogicalHeight().IsFixed());
-  builder.SetIsTableCellHiddenForPaint(is_hidden_for_paint);
-  builder.SetIsTableCellWithCollapsedBorders(has_collapsed_borders);
-  builder.SetHideTableCellIfEmpty(
+  builder->SetIsTableCellHiddenForPaint(is_hidden_for_paint);
+  builder->SetIsTableCellWithCollapsedBorders(has_collapsed_borders);
+  builder->SetHideTableCellIfEmpty(
       !has_collapsed_borders && cell_style.EmptyCells() == EEmptyCells::kHide);
-  builder.SetCacheSlot(cache_slot);
-
-  return builder;
+  builder->SetCacheSlot(cache_slot);
 }
 
 // Computes maximum possible number of non-mergeable columns.

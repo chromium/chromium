@@ -84,7 +84,6 @@ NGOutOfFlowLayoutPart::NGOutOfFlowLayoutPart(
     : NGOutOfFlowLayoutPart(container_node.IsAbsoluteContainer(),
                             container_node.IsFixedContainer(),
                             container_node.IsGrid(),
-                            container_node.Style(),
                             container_space,
                             container_builder) {}
 
@@ -92,13 +91,10 @@ NGOutOfFlowLayoutPart::NGOutOfFlowLayoutPart(
     bool is_absolute_container,
     bool is_fixed_container,
     bool is_grid_container,
-    const ComputedStyle& container_style,
     const NGConstraintSpace& container_space,
     NGBoxFragmentBuilder* container_builder,
     absl::optional<LogicalSize> initial_containing_block_fixed_size)
     : container_builder_(container_builder),
-      writing_mode_(container_style.GetWritingMode()),
-      default_writing_direction_(container_style.GetWritingDirection()),
       is_absolute_container_(is_absolute_container),
       is_fixed_container_(is_fixed_container),
       has_block_fragmentation_(container_space.HasBlockFragmentation()) {
@@ -119,9 +115,9 @@ NGOutOfFlowLayoutPart::NGOutOfFlowLayoutPart(
   allow_first_tier_oof_cache_ = border_scrollbar.IsEmpty() &&
                                 !is_grid_container && !has_block_fragmentation_;
   default_containing_block_info_for_absolute_.writing_direction =
-      default_writing_direction_;
+      ConstraintSpace().GetWritingDirection();
   default_containing_block_info_for_fixed_.writing_direction =
-      default_writing_direction_;
+      ConstraintSpace().GetWritingDirection();
   if (container_builder_->HasBlockSize()) {
     default_containing_block_info_for_absolute_.rect.size =
         ShrinkLogicalSize(container_builder_->Size(), border_scrollbar);
@@ -518,8 +514,8 @@ void NGOutOfFlowLayoutPart::ComputeInlineContainingBlocks(
       &inline_container_fragments, container_builder_);
 
   LogicalSize container_builder_size = container_builder_->Size();
-  PhysicalSize container_builder_physical_size =
-      ToPhysicalSize(container_builder_size, writing_mode_);
+  PhysicalSize container_builder_physical_size = ToPhysicalSize(
+      container_builder_size, ConstraintSpace().GetWritingMode());
   AddInlineContainingBlockInfo(
       inline_container_fragments,
       default_containing_block_info_for_absolute_.writing_direction,
@@ -714,12 +710,12 @@ void NGOutOfFlowLayoutPart::AddInlineContainingBlockInfo(
       // current builder. Thus, we need to adjust the start offset to take the
       // writing mode of the builder into account.
       PhysicalSize physical_size =
-          ToPhysicalSize(inline_cb_size, writing_mode_);
+          ToPhysicalSize(inline_cb_size, ConstraintSpace().GetWritingMode());
       start_offset =
           start_offset
               .ConvertToPhysical(container_writing_direction,
                                  container_builder_size, physical_size)
-              .ConvertToLogical(default_writing_direction_,
+              .ConvertToLogical(ConstraintSpace().GetWritingDirection(),
                                 container_builder_size, physical_size);
     }
 
@@ -1269,7 +1265,7 @@ NGOutOfFlowLayoutPart::NodeInfo NGOutOfFlowLayoutPart::SetupNodeInfo(
 
   LogicalSize container_content_size = container_info.rect.size;
   PhysicalSize container_physical_content_size = ToPhysicalSize(
-      container_content_size, default_writing_direction_.GetWritingMode());
+      container_content_size, ConstraintSpace().GetWritingMode());
 
   bool requires_content_before_breaking = false;
 
@@ -1290,14 +1286,13 @@ NGOutOfFlowLayoutPart::NodeInfo NGOutOfFlowLayoutPart::SetupNodeInfo(
 
   NGLogicalStaticPosition oof_static_position =
       static_position
-          .ConvertToPhysical(
-              {default_writing_direction_, container_physical_content_size})
+          .ConvertToPhysical({ConstraintSpace().GetWritingDirection(),
+                              container_physical_content_size})
           .ConvertToLogical(
               {oof_writing_direction, container_physical_content_size});
 
   // Need a constraint space to resolve offsets.
-  NGConstraintSpaceBuilder builder(default_writing_direction_.GetWritingMode(),
-                                   oof_writing_direction,
+  NGConstraintSpaceBuilder builder(ConstraintSpace(), oof_writing_direction,
                                    /* is_new_fc */ true);
   builder.SetAvailableSize(container_content_size);
   builder.SetPercentageResolutionSize(container_content_size);
@@ -1306,7 +1301,7 @@ NGOutOfFlowLayoutPart::NodeInfo NGOutOfFlowLayoutPart::SetupNodeInfo(
     // The |fragmentainer_offset_delta| will not make a difference in the
     // initial column balancing pass.
     SetupSpaceBuilderForFragmentation(
-        container_builder_->ConstraintSpace(), node,
+        ConstraintSpace(), node,
         /* fragmentainer_offset_delta */ LayoutUnit(), &builder,
         /* is_new_fc */ true,
         /* requires_content_before_breaking */ false);
@@ -1323,7 +1318,7 @@ NGOutOfFlowLayoutPart::NodeInfo NGOutOfFlowLayoutPart::SetupNodeInfo(
 
   return NodeInfo(node, builder.ToConstraintSpace(), oof_static_position,
                   container_physical_content_size, container_info,
-                  default_writing_direction_,
+                  ConstraintSpace().GetWritingDirection(),
                   /* is_fragmentainer_descendant */ containing_block_fragment,
                   fixedpos_containing_block, fixedpos_inline_container,
                   oof_node.inline_container.container,
@@ -1361,8 +1356,7 @@ const NGLayoutResult* NGOutOfFlowLayoutPart::LayoutOOFNode(
     bool freeze_horizontal = false, freeze_vertical = false;
     // If we're in a measure pass, freeze both scrollbars right away, to avoid
     // quadratic time complexity for deeply nested flexboxes.
-    if (container_builder_->ConstraintSpace().CacheSlot() ==
-        NGCacheSlot::kMeasure)
+    if (ConstraintSpace().CacheSlot() == NGCacheSlot::kMeasure)
       freeze_horizontal = freeze_vertical = true;
     do {
       // Freeze any scrollbars that appeared, and relayout. Repeat until both
@@ -1603,12 +1597,16 @@ const NGLayoutResult* NGOutOfFlowLayoutPart::GenerateFragment(
   LayoutUnit inline_size = node_dimensions.size.inline_size;
   LayoutUnit block_size = block_estimate.value_or(
       container_content_size_in_candidate_writing_mode.block_size);
+  LogicalSize logical_size(inline_size, block_size);
+  // Convert from logical size in the writing mode of the child to the logical
+  // size in the writing mode of the container. That's what the constraint space
+  // builder expects.
+  PhysicalSize physical_size =
+      ToPhysicalSize(logical_size, style.GetWritingMode());
+  LogicalSize available_size =
+      physical_size.ConvertToLogical(ConstraintSpace().GetWritingMode());
 
-  LogicalSize available_size(inline_size, block_size);
-
-  // As the |block_estimate| is always in the node's writing mode, we build the
-  // constraint space in the node's writing mode.
-  NGConstraintSpaceBuilder builder(style.GetWritingMode(),
+  NGConstraintSpaceBuilder builder(ConstraintSpace(),
                                    style.GetWritingDirection(),
                                    /* is_new_fc */ true);
   builder.SetAvailableSize(available_size);
@@ -1623,8 +1621,7 @@ const NGLayoutResult* NGOutOfFlowLayoutPart::GenerateFragment(
         /* is_new_fc */ true, requires_content_before_breaking);
   } else if (container_builder_->IsInitialColumnBalancingPass()) {
     SetupSpaceBuilderForFragmentation(
-        container_builder_->ConstraintSpace(), node, block_offset, &builder,
-        /* is_new_fc */ true,
+        ConstraintSpace(), node, block_offset, &builder, /* is_new_fc */ true,
         /* requires_content_before_breaking */ false);
   }
   DeferredShapingMinimumTopScope minimum_top_scope(node, block_offset);
@@ -1944,9 +1941,9 @@ NGConstraintSpace NGOutOfFlowLayoutPart::GetFragmentainerConstraintSpace(
   // TODO(bebeaudr): Need to handle different fragmentation types. It won't
   // always be multi-column.
   return CreateConstraintSpaceForColumns(
-      container_builder_->ConstraintSpace(), column_size,
-      percentage_resolution_size, allow_discard_start_margin,
-      /* balance_columns */ false, min_break_appeal);
+      ConstraintSpace(), column_size, percentage_resolution_size,
+      allow_discard_start_margin, /* balance_columns */ false,
+      min_break_appeal);
 }
 
 // Compute in which fragmentainer the OOF element will start its layout and

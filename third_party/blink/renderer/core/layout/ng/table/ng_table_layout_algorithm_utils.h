@@ -42,11 +42,11 @@ class NGTableAlgorithmUtils {
       const LogicalSize& border_spacing,
       bool is_table_block_size_specified);
 
-  // Creates a constraint space builder for a table-cell.
+  // Sets up a constraint space builder for a table-cell.
   //
   // In order to make the cache as effective as possible, we try and keep
   // creating the constraint-space for table-cells as consistent as possible.
-  static NGConstraintSpaceBuilder CreateTableCellConstraintSpaceBuilder(
+  static void SetupTableCellConstraintSpaceBuilder(
       const WritingDirectionMode table_writing_direction,
       const NGBlockNode cell,
       const NGBoxStrut& cell_borders,
@@ -58,7 +58,8 @@ class NGTableAlgorithmUtils {
       bool is_initial_block_size_indefinite,
       bool is_restricted_block_size_table,
       bool has_collapsed_borders,
-      NGCacheSlot);
+      NGCacheSlot,
+      NGConstraintSpaceBuilder*);
 
   static wtf_size_t ComputeMaximumNonMergeableColumnCount(
       const HeapVector<NGBlockNode>& columns,
