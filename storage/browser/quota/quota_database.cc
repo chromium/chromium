@@ -686,7 +686,7 @@ QuotaError QuotaDatabase::DeleteBucketData(const BucketLocator& bucket) {
   return QuotaError::kNone;
 }
 
-QuotaErrorOr<BucketLocator> QuotaDatabase::GetLRUBucket(
+QuotaErrorOr<BucketLocator> QuotaDatabase::GetLruEvictableBucket(
     StorageType type,
     const std::set<BucketId>& bucket_exceptions,
     SpecialStoragePolicy* special_storage_policy) {
@@ -698,7 +698,7 @@ QuotaErrorOr<BucketLocator> QuotaDatabase::GetLRUBucket(
   // clang-format off
   static constexpr char kSql[] =
       "SELECT id, storage_key, name FROM buckets "
-        "WHERE type = ? "
+        "WHERE type = ? AND persistent = 0 "
         "ORDER BY last_accessed";
   // clang-format on
 
@@ -715,8 +715,6 @@ QuotaErrorOr<BucketLocator> QuotaDatabase::GetLRUBucket(
     if (base::Contains(bucket_exceptions, read_bucket_id))
       continue;
 
-    // TODO(crbug/1176774): Once BucketTable holds bucket durability info,
-    // add logic to allow durable buckets to also bypass eviction.
     GURL read_gurl = read_storage_key->origin().GetURL();
     if (special_storage_policy &&
         (special_storage_policy->IsStorageDurable(read_gurl) ||

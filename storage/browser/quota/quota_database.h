@@ -210,9 +210,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   QuotaError DeleteBucketData(const BucketLocator& bucket);
 
   // Returns the BucketLocator for the least recently used bucket. Will exclude
-  // buckets with ids in `bucket_exceptions` and origins that have the special
-  // unlimited storage policy. Returns a QuotaError if the operation has failed.
-  QuotaErrorOr<BucketLocator> GetLRUBucket(
+  // buckets with ids in `bucket_exceptions`, buckets marked persistent, and
+  // origins that have the special unlimited storage policy. Returns a
+  // QuotaError if the operation has failed.
+  QuotaErrorOr<BucketLocator> GetLruEvictableBucket(
       blink::mojom::StorageType type,
       const std::set<BucketId>& bucket_exceptions,
       SpecialStoragePolicy* special_storage_policy);

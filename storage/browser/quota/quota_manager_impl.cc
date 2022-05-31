@@ -1990,8 +1990,8 @@ void QuotaManagerImpl::NotifyStorageAccessed(const StorageKey& storage_key,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   EnsureDatabaseOpened();
   if (type == StorageType::kTemporary && is_getting_eviction_bucket_) {
-    // Record the accessed storage keys while GetLRUBucket task is running
-    // to filter out them from eviction.
+    // Record the accessed storage keys while GetLruEvictableBucket task is
+    // running to filter out them from eviction.
     access_notified_storage_keys_.insert(storage_key);
   }
 
@@ -2550,9 +2550,9 @@ void QuotaManagerImpl::GetEvictionBucket(StorageType type,
   DCHECK(!is_getting_eviction_bucket_);
   is_getting_eviction_bucket_ = true;
 
-  GetLRUBucket(type,
-               base::BindOnce(&QuotaManagerImpl::DidGetEvictionBucket,
-                              weak_factory_.GetWeakPtr(), std::move(callback)));
+  GetLruEvictableBucket(
+      type, base::BindOnce(&QuotaManagerImpl::DidGetEvictionBucket,
+                           weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void QuotaManagerImpl::EvictBucketData(const BucketLocator& bucket,
@@ -2613,8 +2613,8 @@ void QuotaManagerImpl::DidGetEvictionRoundInfo() {
   eviction_helper_.reset();
 }
 
-void QuotaManagerImpl::GetLRUBucket(StorageType type,
-                                    GetBucketCallback callback) {
+void QuotaManagerImpl::GetLruEvictableBucket(StorageType type,
+                                             GetBucketCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(callback);
   EnsureDatabaseOpened();
@@ -2632,11 +2632,12 @@ void QuotaManagerImpl::GetLRUBucket(StorageType type,
           [](StorageType type, const std::set<BucketId>& bucket_exceptions,
              SpecialStoragePolicy* policy, QuotaDatabase* database) {
             DCHECK(database);
-            return database->GetLRUBucket(type, bucket_exceptions, policy);
+            return database->GetLruEvictableBucket(type, bucket_exceptions,
+                                                   policy);
           },
           type, GetEvictionBucketExceptions(),
           base::RetainedRef(special_storage_policy_)),
-      base::BindOnce(&QuotaManagerImpl::DidGetLRUBucket,
+      base::BindOnce(&QuotaManagerImpl::DidGetLruEvictableBucket,
                      weak_factory_.GetWeakPtr()));
 }
 
@@ -2672,7 +2673,8 @@ void QuotaManagerImpl::DidSetPersistentHostQuota(const std::string& host,
                           /*new_quota=*/0);
 }
 
-void QuotaManagerImpl::DidGetLRUBucket(QuotaErrorOr<BucketLocator> result) {
+void QuotaManagerImpl::DidGetLruEvictableBucket(
+    QuotaErrorOr<BucketLocator> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DidDatabaseWork(result.ok() || result.error() != QuotaError::kDatabaseError);
 

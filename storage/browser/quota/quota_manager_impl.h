@@ -676,7 +676,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
 
   void DidGetEvictionRoundInfo();
 
-  void GetLRUBucket(blink::mojom::StorageType type, GetBucketCallback callback);
+  void GetLruEvictableBucket(blink::mojom::StorageType type,
+                             GetBucketCallback callback);
 
   void DidGetPersistentHostQuota(const std::string& host,
                                  QuotaErrorOr<int64_t> result);
@@ -684,7 +685,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
                                  QuotaCallback callback,
                                  const int64_t* new_quota,
                                  QuotaError error);
-  void DidGetLRUBucket(QuotaErrorOr<BucketLocator> result);
+  void DidGetLruEvictableBucket(QuotaErrorOr<BucketLocator> result);
   void GetQuotaSettings(QuotaSettingsCallback callback);
   void DidGetSettings(absl::optional<QuotaSettings> settings);
   void GetStorageCapacity(StorageCapacityCallback callback);

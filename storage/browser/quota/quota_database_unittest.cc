@@ -560,7 +560,7 @@ TEST_P(QuotaDatabaseTest, BucketLastAccessTimeLRU) {
 
   std::set<BucketId> bucket_exceptions;
   QuotaErrorOr<BucketLocator> result =
-      db->GetLRUBucket(kTemp, bucket_exceptions, nullptr);
+      db->GetLruEvictableBucket(kTemp, bucket_exceptions, nullptr);
   EXPECT_FALSE(result.ok());
   EXPECT_EQ(result.error(), QuotaError::kNotFound);
 
@@ -603,7 +603,7 @@ TEST_P(QuotaDatabaseTest, BucketLastAccessTimeLRU) {
       db->SetBucketLastAccessTime(BucketId(777), base::Time::FromJavaTime(40)),
       QuotaError::kNone);
 
-  result = db->GetLRUBucket(kTemp, bucket_exceptions, nullptr);
+  result = db->GetLruEvictableBucket(kTemp, bucket_exceptions, nullptr);
   EXPECT_TRUE(result.ok());
   EXPECT_EQ(bucket1.bucket_id, result.value().id);
 
@@ -612,29 +612,29 @@ TEST_P(QuotaDatabaseTest, BucketLastAccessTimeLRU) {
   auto policy = base::MakeRefCounted<MockSpecialStoragePolicy>();
   policy->AddUnlimited(bucket1.storage_key.origin().GetURL());
   policy->AddProtected(bucket2.storage_key.origin().GetURL());
-  result = db->GetLRUBucket(kTemp, bucket_exceptions, policy.get());
+  result = db->GetLruEvictableBucket(kTemp, bucket_exceptions, policy.get());
   EXPECT_TRUE(result.ok());
   EXPECT_EQ(bucket2.bucket_id, result.value().id);
 
   // Test that durable origins are excluded from eviction.
   policy->AddDurable(bucket2.storage_key.origin().GetURL());
-  result = db->GetLRUBucket(kTemp, bucket_exceptions, policy.get());
+  result = db->GetLruEvictableBucket(kTemp, bucket_exceptions, policy.get());
   EXPECT_TRUE(result.ok());
   EXPECT_EQ(bucket3.bucket_id, result.value().id);
 
   // Bucket exceptions exclude specified buckets.
   bucket_exceptions.insert(bucket1.bucket_id);
-  result = db->GetLRUBucket(kTemp, bucket_exceptions, nullptr);
+  result = db->GetLruEvictableBucket(kTemp, bucket_exceptions, nullptr);
   EXPECT_TRUE(result.ok());
   EXPECT_EQ(bucket2.bucket_id, result.value().id);
 
   bucket_exceptions.insert(bucket2.bucket_id);
-  result = db->GetLRUBucket(kTemp, bucket_exceptions, nullptr);
+  result = db->GetLruEvictableBucket(kTemp, bucket_exceptions, nullptr);
   EXPECT_TRUE(result.ok());
   EXPECT_EQ(bucket3.bucket_id, result.value().id);
 
   bucket_exceptions.insert(bucket3.bucket_id);
-  result = db->GetLRUBucket(kTemp, bucket_exceptions, nullptr);
+  result = db->GetLruEvictableBucket(kTemp, bucket_exceptions, nullptr);
   EXPECT_FALSE(result.ok());
   EXPECT_EQ(result.error(), QuotaError::kNotFound);
 
@@ -646,15 +646,54 @@ TEST_P(QuotaDatabaseTest, BucketLastAccessTimeLRU) {
 
   // Querying again to see if the deletion has worked.
   bucket_exceptions.clear();
-  result = db->GetLRUBucket(kTemp, bucket_exceptions, nullptr);
+  result = db->GetLruEvictableBucket(kTemp, bucket_exceptions, nullptr);
   EXPECT_TRUE(result.ok());
   EXPECT_EQ(bucket2.bucket_id, result.value().id);
 
   bucket_exceptions.insert(bucket1.bucket_id);
   bucket_exceptions.insert(bucket2.bucket_id);
-  result = db->GetLRUBucket(kTemp, bucket_exceptions, nullptr);
+  result = db->GetLruEvictableBucket(kTemp, bucket_exceptions, nullptr);
   EXPECT_FALSE(result.ok());
   EXPECT_EQ(result.error(), QuotaError::kNotFound);
+}
+
+TEST_P(QuotaDatabaseTest, BucketPersistence) {
+  auto db = CreateDatabase(use_in_memory_db());
+  EXPECT_TRUE(EnsureOpened(db.get()));
+
+  std::set<BucketId> bucket_exceptions;
+  QuotaErrorOr<BucketLocator> result =
+      db->GetLruEvictableBucket(kTemp, bucket_exceptions, nullptr);
+  EXPECT_FALSE(result.ok());
+  EXPECT_EQ(result.error(), QuotaError::kNotFound);
+
+  // Insert bucket entries into BucketTable.
+  base::Time now = base::Time::Now();
+  using Entry = QuotaDatabase::BucketTableEntry;
+  Entry bucket1 = Entry(
+      BucketId(1), StorageKey::CreateFromStringForTesting("http://example-a/"),
+      kTemp, kDefaultBucketName, 99, now, now);
+  Entry bucket2 = Entry(
+      BucketId(2), StorageKey::CreateFromStringForTesting("http://example-b/"),
+      kTemp, kDefaultBucketName, 0, now, now);
+  Entry kTableEntries[] = {bucket1, bucket2};
+  AssignBucketTable(db.get(), kTableEntries);
+
+  EXPECT_EQ(db->SetBucketLastAccessTime(bucket1.bucket_id,
+                                        base::Time::FromJavaTime(10)),
+            QuotaError::kNone);
+  EXPECT_EQ(db->SetBucketLastAccessTime(bucket2.bucket_id,
+                                        base::Time::FromJavaTime(20)),
+            QuotaError::kNone);
+
+  result = db->GetLruEvictableBucket(kTemp, bucket_exceptions, nullptr);
+  EXPECT_TRUE(result.ok());
+  EXPECT_EQ(bucket1.bucket_id, result.value().id);
+
+  ASSERT_TRUE(db->UpdateBucketPersistence(bucket1.bucket_id, true).ok());
+  result = db->GetLruEvictableBucket(kTemp, bucket_exceptions, nullptr);
+  EXPECT_TRUE(result.ok());
+  EXPECT_EQ(bucket2.bucket_id, result.value().id);
 }
 
 TEST_P(QuotaDatabaseTest, SetStorageKeyLastAccessTime) {

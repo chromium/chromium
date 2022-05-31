@@ -2971,7 +2971,7 @@ TEST_F(QuotaManagerImplTest, NotifyAndLRUBucket) {
             eviction_bucket()->storage_key.origin().GetURL().spec());
 }
 
-TEST_F(QuotaManagerImplTest, GetLRUBucket) {
+TEST_F(QuotaManagerImplTest, GetLruEvictableBucket) {
   StorageKey storage_key_a = ToStorageKey("http://a.com/");
   StorageKey storage_key_b = ToStorageKey("http://b.com/");
   StorageKey storage_key_c = ToStorageKey("http://c.com/");
