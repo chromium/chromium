@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_COLOR_CHROME_COLOR_ID_H_
 #define CHROME_BROWSER_UI_COLOR_CHROME_COLOR_ID_H_
 
+#include "chrome/browser/themes/theme_properties.h"
 #include "ui/color/color_id.h"
 
 // TODO(pkasting): Add the rest of the colors.
