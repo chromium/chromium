@@ -504,9 +504,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 // The NewTabPageCoordinator associated with a WebState.
 - (NewTabPageCoordinator*)ntpCoordinatorForWebState:(web::WebState*)webState;
 
-// Whether the keyboard observer helper is viewed
-@property(nonatomic, strong) KeyboardObserverHelper* observer;
-
 // The coordinator that shows the Send Tab To Self UI.
 @property(nonatomic, strong) SendTabToSelfCoordinator* sendTabToSelfCoordinator;
 
@@ -584,7 +581,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
     _footerFullscreenProgress = 1.0;
 
-    _observer = [[KeyboardObserverHelper alloc] init];
     if (browser)
       [self updateWithBrowser:browser];
   }
@@ -1258,7 +1254,8 @@ NSString* const kBrowserViewControllerSnackbarCategory =
                                  isKindOfClass:[UITextField class]] ||
                              [firstResponder
                                  isKindOfClass:[UITextView class]] ||
-                             [self.observer isKeyboardOnScreen]];
+                             [[KeyboardObserverHelper sharedKeyboardObserver]
+                                 isKeyboardOnScreen]];
 }
 
 #pragma mark - UIResponder helpers

@@ -13,8 +13,6 @@
 #error "This file requires ARC support."
 #endif
 
-// TODO(crbug.com/974226): look into making this a singleton with multiple
-// listeners.
 @interface KeyboardObserverHelper ()
 
 // Flag that indicates if the keyboard is on screen.
@@ -29,11 +27,41 @@
 // application lost focus in multiwindow mode.
 @property(nonatomic, weak) UIView* keyboardView;
 
+// Mutable array storing weak pointers to consumers.
+@property(nonatomic, strong) NSPointerArray* consumers;
+
 @end
 
 @implementation KeyboardObserverHelper
 
-#pragma mark - Public
+#pragma mark - Public class methods
+
++ (instancetype)sharedKeyboardObserver {
+  static KeyboardObserverHelper* sharedInstance;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    sharedInstance = [[KeyboardObserverHelper alloc] init];
+  });
+  return sharedInstance;
+}
+
+#pragma mark - Public instance methods
+
+- (void)addConsumer:(id<KeyboardObserverHelperConsumer>)consumer {
+  [self.consumers addPointer:(__bridge void*)consumer];
+  [self.consumers compact];
+}
+
+- (CGFloat)visibleKeyboardHeight {
+  if (self.keyboardState.isVisible && !self.keyboardState.isHardware &&
+      !self.keyboardState.isUndocked) {
+    return CGRectGetHeight(self.keyboardView.frame);
+  } else {
+    return 0;
+  }
+}
+
+#pragma mark - Private instance methods
 
 - (instancetype)init {
   self = [super init];
@@ -58,9 +86,13 @@
            selector:@selector(keyboardWillDidChangeFrame:)
                name:UIKeyboardDidChangeFrameNotification
              object:nil];
+    _consumers =
+        [[NSPointerArray alloc] initWithOptions:NSPointerFunctionsWeakMemory];
   }
   return self;
 }
+
+#pragma mark - Private class methods
 
 + (UIView*)keyboardView {
   NSArray* windows = [UIApplication sharedApplication].windows;
@@ -123,8 +155,11 @@
       keyboardView != self.keyboardView) {
     self.keyboardState = {isVisible, isUndocked, isHardware};
     self.keyboardView = keyboardView;
+    // Notify on the next cycle.
     dispatch_async(dispatch_get_main_queue(), ^{
-      [self.consumer keyboardWillChangeToState:self.keyboardState];
+      for (id<KeyboardObserverHelperConsumer> consumer in self.consumers) {
+        [consumer keyboardWillChangeToState:self.keyboardState];
+      }
     });
   }
 }

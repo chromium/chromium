@@ -78,9 +78,6 @@ const base::Feature kFormInputKeyboardReloadInputViews{
 @property(nonatomic, strong)
     FormInputAccessoryViewHandler* formNavigationHandler;
 
-// The observer to determine when the keyboard dissapears and when it stays.
-@property(nonatomic, strong) KeyboardObserverHelper* keyboardObserver;
-
 // The object that provides suggestions while filling forms.
 @property(nonatomic, weak) id<FormInputSuggestionsProvider> provider;
 
@@ -184,8 +181,7 @@ const base::Feature kFormInputKeyboardReloadInputViews{
                           name:UIApplicationDidEnterBackgroundNotification
                         object:nil];
 
-    _keyboardObserver = [[KeyboardObserverHelper alloc] init];
-    _keyboardObserver.consumer = self;
+    [[KeyboardObserverHelper sharedKeyboardObserver] addConsumer:self];
 
     // In BVC unit tests the password store doesn't exist. Skip creating the
     // fetcher.
