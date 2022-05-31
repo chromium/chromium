@@ -468,19 +468,19 @@ CARendererLayerTree::ContentLayer::ContentLayer(
   // without content (solid color layers), the top edge in the AA mask is the
   // top edge on-screen.
   // https://crbug.com/567946
-  if (edge_aa_mask & GL_CA_LAYER_EDGE_LEFT_CHROMIUM)
+  if (edge_aa_mask & CALayerEdge::kLayerEdgeLeft)
     ca_edge_aa_mask_ |= kCALayerLeftEdge;
-  if (edge_aa_mask & GL_CA_LAYER_EDGE_RIGHT_CHROMIUM)
+  if (edge_aa_mask & CALayerEdge::kLayerEdgeRight)
     ca_edge_aa_mask_ |= kCALayerRightEdge;
   if (io_surface || solid_color_contents_) {
-    if (edge_aa_mask & GL_CA_LAYER_EDGE_TOP_CHROMIUM)
+    if (edge_aa_mask & CALayerEdge::kLayerEdgeTop)
       ca_edge_aa_mask_ |= kCALayerBottomEdge;
-    if (edge_aa_mask & GL_CA_LAYER_EDGE_BOTTOM_CHROMIUM)
+    if (edge_aa_mask & CALayerEdge::kLayerEdgeBottom)
       ca_edge_aa_mask_ |= kCALayerTopEdge;
   } else {
-    if (edge_aa_mask & GL_CA_LAYER_EDGE_TOP_CHROMIUM)
+    if (edge_aa_mask & CALayerEdge::kLayerEdgeTop)
       ca_edge_aa_mask_ |= kCALayerTopEdge;
-    if (edge_aa_mask & GL_CA_LAYER_EDGE_BOTTOM_CHROMIUM)
+    if (edge_aa_mask & CALayerEdge::kLayerEdgeBottom)
       ca_edge_aa_mask_ |= kCALayerBottomEdge;
   }
 

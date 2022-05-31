@@ -310,13 +310,13 @@ class CALayerOverlayProcessorInternal {
     // Enable edge anti-aliasing only on layer boundaries.
     ca_layer_overlay->edge_aa_mask = 0;
     if (quad->IsLeftEdge())
-      ca_layer_overlay->edge_aa_mask |= GL_CA_LAYER_EDGE_LEFT_CHROMIUM;
+      ca_layer_overlay->edge_aa_mask |= ui::CALayerEdge::kLayerEdgeLeft;
     if (quad->IsRightEdge())
-      ca_layer_overlay->edge_aa_mask |= GL_CA_LAYER_EDGE_RIGHT_CHROMIUM;
+      ca_layer_overlay->edge_aa_mask |= ui::CALayerEdge::kLayerEdgeRight;
     if (quad->IsBottomEdge())
-      ca_layer_overlay->edge_aa_mask |= GL_CA_LAYER_EDGE_BOTTOM_CHROMIUM;
+      ca_layer_overlay->edge_aa_mask |= ui::CALayerEdge::kLayerEdgeBottom;
     if (quad->IsTopEdge())
-      ca_layer_overlay->edge_aa_mask |= GL_CA_LAYER_EDGE_TOP_CHROMIUM;
+      ca_layer_overlay->edge_aa_mask |= ui::CALayerEdge::kLayerEdgeTop;
 
     if (most_recent_shared_quad_state_ != quad->shared_quad_state) {
       most_recent_shared_quad_state_ = quad->shared_quad_state;
