@@ -44,7 +44,7 @@ class D3D11TextureWrapperUnittest : public ::testing::Test {
 
     task_runner_ = task_environment_.GetMainThreadTaskRunner();
 
-    gl::GLSurfaceTestSupport::InitializeOneOffImplementation(
+    display_ = gl::GLSurfaceTestSupport::InitializeOneOffImplementation(
         gl::GLImplementationParts(gl::ANGLEImplementation::kD3D11), false);
     surface_ = gl::init::CreateOffscreenGLSurface(gfx::Size());
     share_group_ = new gl::GLShareGroup();
@@ -66,7 +66,7 @@ class D3D11TextureWrapperUnittest : public ::testing::Test {
     context_ = nullptr;
     share_group_ = nullptr;
     surface_ = nullptr;
-    gl::init::ShutdownGL(false);
+    gl::GLSurfaceTestSupport::ShutdownGL(display_);
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -83,6 +83,8 @@ class D3D11TextureWrapperUnittest : public ::testing::Test {
   // a wrapper.
   scoped_refptr<FakeCommandBufferHelper> fake_command_buffer_helper_;
   GetCommandBufferHelperCB get_helper_cb_;
+
+  gl::GLDisplay* display_ = nullptr;
 };
 
 TEST_F(D3D11TextureWrapperUnittest, NV12InitSucceeds) {

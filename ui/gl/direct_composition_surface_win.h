@@ -60,7 +60,7 @@ class GL_EXPORT DirectCompositionSurfaceWin : public GLSurfaceEGL,
   DirectCompositionSurfaceWin& operator=(const DirectCompositionSurfaceWin&) =
       delete;
 
-  static void InitializeOneOff();
+  static void InitializeOneOff(GLDisplayEGL* display);
   static void ShutdownOneOff();
 
   static const Microsoft::WRL::ComPtr<IDCompositionDevice2>&

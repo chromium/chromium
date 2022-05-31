@@ -59,7 +59,7 @@ class GPUInfoCollectorTest
   void SetUp() override {
     testing::Test::SetUp();
     gl::SetGLGetProcAddressProc(gl::MockGLInterface::GetGLProcAddress);
-    gl::GLSurfaceTestSupport::InitializeOneOffWithMockBindings();
+    display_ = gl::GLSurfaceTestSupport::InitializeOneOffWithMockBindings();
     gl_ = std::make_unique<::testing::StrictMock<::gl::MockGLInterface>>();
     ::gl::MockGLInterface::SetGLInterface(gl_.get());
     switch (GetParam()) {
@@ -184,12 +184,12 @@ class GPUInfoCollectorTest
   void TearDown() override {
     ::gl::MockGLInterface::SetGLInterface(nullptr);
     gl_.reset();
-    gl::init::ShutdownGL(false);
+    gl::GLSurfaceTestSupport::ShutdownGL(display_);
 
     testing::Test::TearDown();
   }
 
- public:
+ protected:
   // Use StrictMock to make 100% sure we know how GL will be called.
   std::unique_ptr<::testing::StrictMock<::gl::MockGLInterface>> gl_;
   GPUInfo test_values_;
@@ -199,6 +199,8 @@ class GPUInfoCollectorTest
 
   // Persistent storage is needed for the split extension string.
   std::vector<std::string> split_extensions_;
+
+  gl::GLDisplay* display_ = nullptr;
 };
 
 INSTANTIATE_TEST_SUITE_P(GPUConfig,

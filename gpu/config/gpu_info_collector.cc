@@ -289,9 +289,10 @@ bool CollectBasicGraphicsInfo(const base::CommandLine* command_line,
   if (CollectGraphicsDeviceInfoFromCommandLine(command_line, gpu_info))
     return true;
 
+  // We can't check if passthrough is supported yet because GL may not be
+  // initialized.
   gpu_info->passthrough_cmd_decoder =
-      gl::UsePassthroughCommandDecoder(command_line) &&
-      gl::PassthroughCommandDecoderSupported();
+      gl::UsePassthroughCommandDecoder(command_line);
 
   bool fallback_to_software = false;
   absl::optional<gl::GLImplementationParts> implementation =
@@ -336,6 +337,11 @@ bool CollectBasicGraphicsInfo(const base::CommandLine* command_line,
 bool CollectGraphicsInfoGL(GPUInfo* gpu_info) {
   TRACE_EVENT0("startup", "gpu_info_collector::CollectGraphicsInfoGL");
   DCHECK_NE(gl::GetGLImplementation(), gl::kGLImplementationNone);
+
+  // Now that we can check GL extensions, update passthrough support info.
+  if (!gl::PassthroughCommandDecoderSupported()) {
+    gpu_info->passthrough_cmd_decoder = false;
+  }
 
   scoped_refptr<gl::GLSurface> surface(InitializeGLSurface());
   if (!surface.get()) {

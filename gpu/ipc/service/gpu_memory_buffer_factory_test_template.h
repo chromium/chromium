@@ -14,6 +14,7 @@
 #include "gpu/ipc/service/gpu_memory_buffer_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/buffer_format_util.h"
+#include "ui/gl/gl_display.h"
 
 #if BUILDFLAG(IS_WIN) || defined(USE_OZONE)
 #include "base/command_line.h"
@@ -35,9 +36,9 @@ class GpuMemoryBufferFactoryTest : public testing::Test {
     DCHECK(base::CommandLine::ForCurrentProcess()->HasSwitch(
         switches::kUseGpuInTests));
 #endif
-    gl::GLSurfaceTestSupport::InitializeOneOff();
+    display_ = gl::GLSurfaceTestSupport::InitializeOneOff();
   }
-  void TearDown() override { gl::init::ShutdownGL(false); }
+  void TearDown() override { gl::GLSurfaceTestSupport::ShutdownGL(display_); }
 #endif  // BUILDFLAG(IS_WIN) || defined(USE_OZONE)
 
  protected:
@@ -45,6 +46,7 @@ class GpuMemoryBufferFactoryTest : public testing::Test {
       base::test::TaskEnvironment::MainThreadType::UI};
 
   GpuMemoryBufferFactoryType factory_;
+  gl::GLDisplay* display_ = nullptr;
 };
 
 TYPED_TEST_SUITE_P(GpuMemoryBufferFactoryTest);

@@ -22,6 +22,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/mojom/buffer_types.mojom.h"
+#include "ui/gl/gl_display.h"
 
 #if BUILDFLAG(IS_WIN) || defined(USE_OZONE)
 #include "ui/gl/init/gl_factory.h"
@@ -52,8 +53,10 @@ class GpuMemoryBufferImplTest : public testing::Test {
 
 #if BUILDFLAG(IS_WIN) || defined(USE_OZONE)
   // Overridden from testing::Test:
-  void SetUp() override { gl::GLSurfaceTestSupport::InitializeOneOff(); }
-  void TearDown() override { gl::init::ShutdownGL(false); }
+  void SetUp() override {
+    display_ = gl::GLSurfaceTestSupport::InitializeOneOff();
+  }
+  void TearDown() override { gl::GLSurfaceTestSupport::ShutdownGL(display_); }
 #endif
 
  protected:
@@ -62,6 +65,7 @@ class GpuMemoryBufferImplTest : public testing::Test {
 
  private:
   GpuMemoryBufferSupport gpu_memory_buffer_support_;
+  gl::GLDisplay* display_ = nullptr;
 
   void FreeGpuMemoryBuffer(base::OnceClosure free_callback,
                            bool* destroyed,

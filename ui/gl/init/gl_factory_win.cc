@@ -115,12 +115,13 @@ void SetDisabledExtensionsPlatform(const std::string& disabled_extensions) {
   }
 }
 
-bool InitializeExtensionSettingsOneOffPlatform() {
+bool InitializeExtensionSettingsOneOffPlatform(GLDisplay* display) {
   GLImplementation implementation = GetGLImplementation();
   DCHECK_NE(kGLImplementationNone, implementation);
   switch (implementation) {
     case kGLImplementationEGLANGLE:
-      return InitializeExtensionSettingsOneOffEGL();
+      return InitializeExtensionSettingsOneOffEGL(
+          static_cast<GLDisplayEGL*>(display));
     case kGLImplementationMockGL:
     case kGLImplementationStubGL:
       return true;

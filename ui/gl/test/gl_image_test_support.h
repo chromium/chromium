@@ -9,6 +9,7 @@
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/buffer_types.h"
+#include "ui/gl/gl_display.h"
 #include "ui/gl/gl_implementation.h"
 
 namespace gl {
@@ -31,6 +32,9 @@ class GLImageTestSupport {
                                    gfx::BufferFormat format,
                                    const uint8_t color[4],
                                    uint8_t* data);
+
+ private:
+  static GLDisplay* display_;
 };
 
 }  // namespace gl
