@@ -195,9 +195,8 @@ void InputMenuView::Init() {
                           kCloseButtonSide)));
     close_button->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
     close_button->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
-    // TODO(djacobo): Pick a proper size close button.
     close_button->SetAccessibleName(
-        l10n_util::GetStringUTF16(IDS_NOTIFICATION_BUTTON_CLOSE));
+        l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_CLOSE_MENU));
     close_button_ = header_view->AddChildView(std::move(close_button));
     menu_title->SetBorder(views::CreateEmptyBorder(CalculateInsets(
         header_view.get(), /*left=*/20, /*right=*/8, /*other_spacing=*/16)));
