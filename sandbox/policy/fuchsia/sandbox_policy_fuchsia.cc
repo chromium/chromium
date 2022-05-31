@@ -12,7 +12,6 @@
 #include <fuchsia/buildinfo/cpp/fidl.h>
 #include <fuchsia/camera3/cpp/fidl.h>
 #include <fuchsia/fonts/cpp/fidl.h>
-#include <fuchsia/hwinfo/cpp/fidl.h>
 #include <fuchsia/intl/cpp/fidl.h>
 #include <fuchsia/logger/cpp/fidl.h>
 #include <fuchsia/media/cpp/fidl.h>
@@ -75,11 +74,8 @@ struct SandboxConfig {
 // clang-format off
 constexpr auto kMinimalServices = base::make_span((const char* const[]){
     // TODO(crbug.com/1286960): Remove this and/or intl below if an alternative
-    // solution does not require access to the service in all processes. For now
-    // these services are made available everywhere because they are required by
-    // base::SysInfo.
+    // solution does not require access to the service in all processes.
     fuchsia::buildinfo::Provider::Name_,
-    fuchsia::hwinfo::Product::Name_,
 
 // DebugData service is needed only for profiling.
 #if BUILDFLAG(CLANG_PROFILING)

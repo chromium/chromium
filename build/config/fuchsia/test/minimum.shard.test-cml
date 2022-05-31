@@ -64,7 +64,6 @@
     },
     {
       protocol: [
-        "fuchsia.hwinfo.Product",
         "fuchsia.media.ProfileProvider",
         "fuchsia.process.Launcher",
         "fuchsia.sys.Loader",

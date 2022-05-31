@@ -5,7 +5,6 @@
 #include "base/system/sys_info.h"
 
 #include <fuchsia/buildinfo/cpp/fidl.h>
-#include <fuchsia/hwinfo/cpp/fidl.h>
 #include <sys/statvfs.h>
 #include <zircon/syscalls.h>
 
@@ -205,16 +204,6 @@ std::string SysInfo::CPUModelName() {
 // static
 size_t SysInfo::VMAllocationGranularity() {
   return getpagesize();
-}
-
-SysInfo::HardwareInfo SysInfo::GetHardwareInfoSync() {
-  const auto& product_info = GetCachedProductInfo();
-
-  return {
-      .manufacturer =
-          product_info.has_manufacturer() ? product_info.manufacturer() : "",
-      .model = product_info.has_model() ? product_info.model() : "",
-  };
 }
 
 }  // namespace base
