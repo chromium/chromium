@@ -76,9 +76,11 @@ void ShowBlockedActionDialogView(Browser* browser,
         .SetIcon(GetIcon(extension, web_contents))
         .AddBodyText(ui::DialogModelLabel(l10n_util::GetStringUTF16(
             IDS_EXTENSION_BLOCKED_ACTION_BUBBLE_BODY_TEXT)))
-        .AddOkButton(base::BindOnce(on_ok_button_clicked,
-                                    dialog_builder.model(), show_checkbox,
-                                    std::move(callback)));
+        .AddOkButton(
+            base::BindOnce(on_ok_button_clicked, dialog_builder.model(),
+                           show_checkbox, std::move(callback)),
+            l10n_util::GetStringUTF16(
+                IDS_EXTENSION_BLOCKED_ACTION_BUBBLE_OK_BUTTON_LABEL));
     if (show_checkbox) {
       dialog_builder.AddCheckbox(
           kCheckboxId,
