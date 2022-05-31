@@ -19,7 +19,7 @@ class ServiceRequestSender {
   struct ResponseInfo {
     // The number of bytes transmitted over the network, before decoding. Can be
     // -1 in case of interrupted downloads.
-    size_t encoded_body_length = 0;
+    int64_t encoded_body_length = 0;
   };
 
   using ResponseCallback =
