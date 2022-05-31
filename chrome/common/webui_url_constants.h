@@ -248,6 +248,8 @@ extern const char kChromeUIWebUITestHost[];
 #if BUILDFLAG(IS_CHROMEOS)
 extern const char kChromeUIGpuURL[];
 extern const char kChromeUIHistogramsURL[];
+extern const char kChromeUINotifGeneratorURL[];
+extern const char kChromeUINotifGeneratorHost[];
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -307,6 +309,8 @@ extern const char kChromeUIMultiDeviceSetupHost[];
 extern const char kChromeUIMultiDeviceSetupUrl[];
 extern const char kChromeUINetworkHost[];
 extern const char kChromeUINetworkUrl[];
+extern const char kChromeUINotificationTesterURL[];
+extern const char kChromeUINotificationTesterHost[];
 extern const char kChromeUIOSCreditsHost[];
 extern const char kChromeUIOSCreditsURL[];
 extern const char kChromeUIOobeHost[];
