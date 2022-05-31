@@ -15,12 +15,14 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
+#include "components/viz/common/gpu/context_lost_observer.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/common/surfaces/video_capture_target.h"
 #include "components/viz/host/client_frame_sink_video_capturer.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"
 #include "media/base/video_frame.h"
+#include "media/base/video_types.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
 #include "media/capture/video/video_capture_device.h"
 #include "media/capture/video/video_frame_receiver.h"
@@ -31,6 +33,7 @@
 #include "services/device/public/mojom/wake_lock.mojom.h"
 #include "services/viz/public/cpp/compositing/video_capture_target_mojom_traits.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/compositor/compositor.h"
 
 namespace content {
 
@@ -52,7 +55,8 @@ class MouseCursorOverlayController;
 // capture, and to notify other components that capture is taking place.
 class CONTENT_EXPORT FrameSinkVideoCaptureDevice
     : public media::VideoCaptureDevice,
-      public viz::mojom::FrameSinkVideoConsumer {
+      public viz::mojom::FrameSinkVideoConsumer,
+      public viz::ContextLostObserver {
  public:
   FrameSinkVideoCaptureDevice();
 
@@ -126,6 +130,9 @@ class CONTENT_EXPORT FrameSinkVideoCaptureDevice
   virtual void CreateCapturer(
       mojo::PendingReceiver<viz::mojom::FrameSinkVideoCapturer> receiver);
 
+  // viz::ContextLostObserver implementation:
+  void OnContextLost() override;
+
   // Establishes connection to FrameSinkVideoCapturer using the global
   // viz::HostFrameSinkManager.
   static void CreateCapturerViaGlobalManager(
@@ -133,6 +140,31 @@ class CONTENT_EXPORT FrameSinkVideoCaptureDevice
 
  private:
   using BufferId = decltype(media::VideoCaptureDevice::Client::Buffer::id);
+
+  // Fetches |context_provider_| and starts observing it for context lost
+  // events. When a context provider is set, we will also set
+  // |gpu_capabilities_| and |gpu_capabilities_generation_| - they will be kept
+  // up to date for the lifetime of the device.
+  void ObserveContextProvider();
+
+  // Re-creates the |capturer_| if needed. The capturer will be recreated (and
+  // re-started if the current one was running) if it is configured to use a
+  // pixel format that is different than the pixel format that we are able to
+  // use given current device capabilities (e.g. when a capturer was configured
+  // to use NV12 format but conditions changed and now we can only capture
+  // I420 format).
+  void RestartCapturerIfNeeded();
+
+  // Helper, checks if the FrameSinkVideoCapturer should be able to support
+  // capture using NV12 pixel format - this depends on device capabilities.
+  bool CanSupportNV12Format() const;
+
+  // Helper, returns desired video pixel format based on the contents of
+  // |capture_parameters_|. If the capture parameters specify
+  // PIXEL_FORMAT_UNKNOWN, it means we need to decide between I420 and NV12.
+  media::VideoPixelFormat GetDesiredVideoPixelFormat() const;
+
+  void AllocateCapturer(media::VideoPixelFormat pixel_format);
 
   // If not consuming and all preconditions are met, set up and start consuming.
   void MaybeStartConsuming();
@@ -169,6 +201,12 @@ class CONTENT_EXPORT FrameSinkVideoCaptureDevice
   std::unique_ptr<media::VideoFrameReceiver> receiver_;
 
   std::unique_ptr<viz::ClientFrameSinkVideoCapturer> capturer_;
+
+  // Context provider that was used to query the GPU capabilities. May be null
+  // if the GPU capabilities were not needed to be known to start the capture.
+  scoped_refptr<viz::ContextProvider> context_provider_;
+  // Capabilities obtained from |context_provider_|.
+  absl::optional<gpu::Capabilities> gpu_capabilities_;
 
   // A vector that holds the "callbacks" mojo::Remote for each frame while the
   // frame is being processed by VideoFrameReceiver. The index corresponding to

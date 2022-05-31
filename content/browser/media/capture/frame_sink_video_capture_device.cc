@@ -9,6 +9,7 @@
 #include "base/check_op.h"
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
@@ -16,16 +17,26 @@
 #include "base/time/time.h"
 #include "base/token.h"
 #include "build/build_config.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/surfaces/subtree_capture_id.h"
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "content/browser/compositor/surface_utils.h"
+#include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/device_service.h"
+#include "media/base/video_types.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
+#include "media/capture/video_capture_types.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "content/browser/media/capture/mouse_cursor_overlay_controller.h"
+#endif
+
+#if BUILDFLAG(IS_MAC) || defined(USE_AURA)
+#include "components/viz/common/gpu/context_provider.h"
+#include "content/browser/compositor/image_transport_factory.h"
+#include "gpu/command_buffer/common/capabilities.h"
 #endif
 
 namespace content {
@@ -50,6 +61,22 @@ void BindWakeLockProvider(
   GetDeviceService().BindWakeLockProvider(std::move(receiver));
 }
 
+scoped_refptr<viz::ContextProvider> GetContextProvider() {
+#if BUILDFLAG(IS_MAC) || defined(USE_AURA)
+  auto* image_transport_factory = ImageTransportFactory::GetInstance();
+  DCHECK(image_transport_factory);
+
+  auto* ui_context_factory = image_transport_factory->GetContextFactory();
+  if (!ui_context_factory) {
+    return nullptr;
+  }
+
+  return ui_context_factory->SharedMainThreadContextProvider();
+#else
+  return nullptr;
+#endif
+}
+
 }  // namespace
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -65,6 +92,78 @@ FrameSinkVideoCaptureDevice::FrameSinkVideoCaptureDevice() = default;
 FrameSinkVideoCaptureDevice::~FrameSinkVideoCaptureDevice() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!receiver_) << "StopAndDeAllocate() was never called after start.";
+
+  if (context_provider_) {
+    context_provider_->RemoveObserver(this);
+  }
+}
+
+bool FrameSinkVideoCaptureDevice::CanSupportNV12Format() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  auto* gpu_data_manager = GpuDataManagerImpl::GetInstance();
+  if (!gpu_data_manager) {
+    return false;
+  }
+
+  // If GPU compositing is disabled, we cannot use NV12 (software renderer does
+  // not support returning results in textures, and FrameSinkVideoCapturerImpl
+  // does not support NV12 otherwise):
+  if (gpu_data_manager->IsGpuCompositingDisabled()) {
+    return false;
+  }
+
+  // We only support NV12 if SkiaRenderer is in use:
+  if (!features::IsUsingSkiaRenderer()) {
+    return false;
+  }
+
+  // We only support NV12 if GL_EXT_texture_rg extension is available. GPU
+  // capabilities need to be present in order to determine that.
+  if (!gpu_capabilities_) {
+    return false;
+  }
+
+  // If present, GPU capabilities should already be up to date (this is ensured
+  // by subscribing to context lost events on the |context_provider_|):
+  return gpu_capabilities_->texture_rg;
+}
+
+media::VideoPixelFormat
+FrameSinkVideoCaptureDevice::GetDesiredVideoPixelFormat() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (capture_params_.requested_format.pixel_format !=
+      media::VideoPixelFormat::PIXEL_FORMAT_UNKNOWN)
+    return capture_params_.requested_format.pixel_format;
+
+  return CanSupportNV12Format() ? media::VideoPixelFormat::PIXEL_FORMAT_NV12
+                                : media::VideoPixelFormat::PIXEL_FORMAT_I420;
+}
+
+void FrameSinkVideoCaptureDevice::ObserveContextProvider() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (context_provider_) {
+    DCHECK(gpu_capabilities_.has_value());
+    // If context provider is non-null, we already should have obtained the
+    // GPU capabilities from it, and they will be kept up to date.
+    return;
+  }
+
+  context_provider_ = GetContextProvider();
+  if (!context_provider_) {
+    // We couldn't get the context provider - either we're on a platform
+    // where the method we use to try to get it is not supported, or something
+    // else has failed. In any case, treat this as lack of GPU capabilities.
+    gpu_capabilities_ = absl::nullopt;
+    return;
+  }
+
+  // We have obtained an instance of context provider - start observing it for
+  // changes and refresh stored GPU capabilities:
+  context_provider_->AddObserver(this);
+  gpu_capabilities_ = context_provider_->ContextCapabilities();
 }
 
 void FrameSinkVideoCaptureDevice::AllocateAndStartWithReceiver(
@@ -83,6 +182,7 @@ void FrameSinkVideoCaptureDevice::AllocateAndStartWithReceiver(
   }
 
   capture_params_ = params;
+
   WillStart();
   DCHECK(!receiver_);
   receiver_ = std::move(receiver);
@@ -90,11 +190,40 @@ void FrameSinkVideoCaptureDevice::AllocateAndStartWithReceiver(
   // Shutdown the prior capturer, if any.
   MaybeStopConsuming();
 
+  media::VideoPixelFormat pixel_format =
+      capture_params_.requested_format.pixel_format;
+  if (pixel_format == media::PIXEL_FORMAT_UNKNOWN) {
+    // When there's a chance that we will use NV12 pixel format, we need to
+    // start observing for changes in the context capabilities.
+    ObserveContextProvider();
+
+    // The caller opted into smart pixel format selection, see if we can support
+    // NV12 & decide which format to use based on that.
+    pixel_format = GetDesiredVideoPixelFormat();
+  }
+
+  AllocateCapturer(pixel_format);
+
+  receiver_->OnStarted();
+
+  if (!suspend_requested_) {
+    MaybeStartConsuming();
+  }
+
+  DCHECK(!wake_lock_);
+  RequestWakeLock();
+}
+
+void FrameSinkVideoCaptureDevice::AllocateCapturer(
+    media::VideoPixelFormat pixel_format) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   capturer_ = std::make_unique<viz::ClientFrameSinkVideoCapturer>(
       base::BindRepeating(&FrameSinkVideoCaptureDevice::CreateCapturer,
                           base::Unretained(this)));
 
-  capturer_->SetFormat(capture_params_.requested_format.pixel_format);
+  capturer_->SetFormat(pixel_format);
+
   capturer_->SetMinCapturePeriod(
       base::Microseconds(base::saturated_cast<int64_t>(
           base::Time::kMicrosecondsPerSecond /
@@ -116,15 +245,6 @@ void FrameSinkVideoCaptureDevice::AllocateAndStartWithReceiver(
                      capturer_->CreateOverlay(kMouseCursorStackingIndex),
                      base::ThreadTaskRunnerHandle::Get()));
 #endif
-
-  receiver_->OnStarted();
-
-  if (!suspend_requested_) {
-    MaybeStartConsuming();
-  }
-
-  DCHECK(!wake_lock_);
-  RequestWakeLock();
 }
 
 void FrameSinkVideoCaptureDevice::AllocateAndStart(
@@ -134,6 +254,32 @@ void FrameSinkVideoCaptureDevice::AllocateAndStart(
   // VideoCaptureDevice::Client. Instead, it provides frames to a
   // VideoFrameReceiver directly.
   NOTREACHED();
+}
+
+void FrameSinkVideoCaptureDevice::OnContextLost() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(context_provider_);
+
+  context_provider_->RemoveObserver(this);
+  context_provider_ = nullptr;
+
+  ObserveContextProvider();
+  RestartCapturerIfNeeded();
+}
+
+void FrameSinkVideoCaptureDevice::RestartCapturerIfNeeded() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  media::VideoPixelFormat desired_format = GetDesiredVideoPixelFormat();
+
+  if (capturer_ && capturer_->GetFormat().has_value() &&
+      *capturer_->GetFormat() != desired_format) {
+    MaybeStopConsuming();
+    AllocateCapturer(desired_format);
+    if (!suspend_requested_) {
+      MaybeStartConsuming();
+    }
+  }
 }
 
 void FrameSinkVideoCaptureDevice::RequestRefreshFrame() {
@@ -292,13 +438,6 @@ void FrameSinkVideoCaptureDevice::OnStopped() {
 }
 
 void FrameSinkVideoCaptureDevice::OnLog(const std::string& message) {
-  if (!BrowserThread::CurrentlyOn(BrowserThread::IO)) {
-    GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(&FrameSinkVideoCaptureDevice::OnLog,
-                                  weak_factory_.GetWeakPtr(), message));
-    return;
-  }
-
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (receiver_) {
