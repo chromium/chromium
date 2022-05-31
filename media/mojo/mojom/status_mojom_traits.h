@@ -47,6 +47,11 @@ struct StructTraits<media::mojom::StatusDataDataView,
     return input.data;
   }
 
+  static media::UKMPackedType packed_root_cause(
+      const media::internal::StatusData& input) {
+    return input.packed_root_cause;
+  }
+
   static bool Read(media::mojom::StatusDataDataView data,
                    media::internal::StatusData* output);
 };
