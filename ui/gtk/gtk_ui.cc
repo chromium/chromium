@@ -404,42 +404,6 @@ base::TimeDelta GtkUi::GetCursorBlinkInterval() const {
              : base::TimeDelta();
 }
 
-ui::NativeTheme* GtkUi::GetNativeTheme(aura::Window* window) const {
-  return GetNativeTheme(use_system_theme_callback_.is_null() ||
-                        use_system_theme_callback_.Run(window));
-}
-
-ui::NativeTheme* GtkUi::GetNativeTheme(bool use_system_theme) const {
-  return use_system_theme ? native_theme_
-                          : ui::NativeTheme::GetInstanceForNativeUi();
-}
-
-void GtkUi::SetUseSystemThemeCallback(UseSystemThemeCallback callback) {
-  use_system_theme_callback_ = std::move(callback);
-}
-
-bool GtkUi::GetDefaultUsesSystemTheme() const {
-  std::unique_ptr<base::Environment> env(base::Environment::Create());
-
-  switch (base::nix::GetDesktopEnvironment(env.get())) {
-    case base::nix::DESKTOP_ENVIRONMENT_CINNAMON:
-    case base::nix::DESKTOP_ENVIRONMENT_GNOME:
-    case base::nix::DESKTOP_ENVIRONMENT_PANTHEON:
-    case base::nix::DESKTOP_ENVIRONMENT_UKUI:
-    case base::nix::DESKTOP_ENVIRONMENT_UNITY:
-    case base::nix::DESKTOP_ENVIRONMENT_XFCE:
-      return true;
-    case base::nix::DESKTOP_ENVIRONMENT_KDE3:
-    case base::nix::DESKTOP_ENVIRONMENT_KDE4:
-    case base::nix::DESKTOP_ENVIRONMENT_KDE5:
-    case base::nix::DESKTOP_ENVIRONMENT_OTHER:
-      return false;
-  }
-  // Unless GetDesktopEnvironment() badly misbehaves, this should never happen.
-  NOTREACHED();
-  return false;
-}
-
 gfx::Image GtkUi::GetIconForContentType(const std::string& content_type,
                                         int dip_size,
                                         float scale) const {
@@ -697,6 +661,10 @@ void GtkUi::SetSystemThemeByNameForTest(const std::string& theme_name) {
   g_value_set_string(&theme, theme_name.c_str());
   g_object_set_property(G_OBJECT(gtk_settings_get_default()), "gtk-theme-name",
                         &theme);
+}
+
+ui::NativeTheme* GtkUi::GetNativeTheme() const {
+  return native_theme_;
 }
 
 bool GtkUi::MatchEvent(const ui::Event& event,

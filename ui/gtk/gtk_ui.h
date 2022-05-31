@@ -80,10 +80,6 @@ class GtkUi : public views::LinuxUI {
   SkColor GetInactiveSelectionBgColor() const override;
   SkColor GetInactiveSelectionFgColor() const override;
   base::TimeDelta GetCursorBlinkInterval() const override;
-  ui::NativeTheme* GetNativeTheme(aura::Window* window) const override;
-  ui::NativeTheme* GetNativeTheme(bool use_system_theme) const override;
-  void SetUseSystemThemeCallback(UseSystemThemeCallback callback) override;
-  bool GetDefaultUsesSystemTheme() const override;
   gfx::Image GetIconForContentType(const std::string& content_type,
                                    int size,
                                    float scale) const override;
@@ -99,6 +95,7 @@ class GtkUi : public views::LinuxUI {
   int GetCursorThemeSize() override;
   std::vector<std::string> GetAvailableSystemThemeNamesForTest() const override;
   void SetSystemThemeByNameForTest(const std::string& theme_name) override;
+  ui::NativeTheme* GetNativeTheme() const override;
 
   // ui::TextEditKeybindingDelegate:
   bool MatchEvent(const ui::Event& event,
@@ -183,11 +180,6 @@ class GtkUi : public views::LinuxUI {
   // The action to take when middle, double, or right clicking the titlebar.
   base::flat_map<WindowFrameActionSource, WindowFrameAction>
       window_frame_actions_;
-
-  // Used to determine whether the system theme should be used for a window.  If
-  // no override is provided or the callback returns true, GtkUi will default
-  // to a NativeThemeGtk instance.
-  UseSystemThemeCallback use_system_theme_callback_;
 
   float device_scale_factor_ = 1.0f;
 

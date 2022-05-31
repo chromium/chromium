@@ -12,6 +12,9 @@
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/color/color_mixer.h"
+#include "ui/color/color_provider.h"
+#include "ui/color/color_recipe.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/font.h"
 #include "ui/gfx/font_render_params.h"
@@ -19,6 +22,7 @@
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/image/image_skia_source.h"
+#include "ui/native_theme/native_theme_base.h"
 #include "ui/qt/qt_interface.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 #include "ui/views/controls/button/label_button_border.h"
@@ -67,6 +71,17 @@ gfx::FontRenderParams::Hinting QtHintingToGfxHinting(
 }
 
 }  // namespace
+
+// We currently don't render any QT widgets, so this class is just a stub.
+class QtNativeTheme : public ui::NativeThemeBase {
+ public:
+  QtNativeTheme()
+      : ui::NativeThemeBase(/*should_only_use_dark_colors=*/false,
+                            /*is_custom_system_theme=*/true) {}
+  QtNativeTheme(const QtNativeTheme&) = delete;
+  QtNativeTheme& operator=(const QtNativeTheme&) = delete;
+  ~QtNativeTheme() override = default;
+};
 
 QtUi::QtUi() = default;
 
@@ -121,7 +136,9 @@ bool QtUi::Initialize() {
   cmd_line_ = CopyCmdLine(*base::CommandLine::ForCurrentProcess());
   shim_.reset((reinterpret_cast<decltype(&CreateQtInterface)>(
       create_qt_interface)(this, &cmd_line_.argc, cmd_line_.argv.data())));
-
+  native_theme_ = std::make_unique<QtNativeTheme>();
+  ui::ColorProviderManager::Get().AppendColorProviderInitializer(
+      base::BindRepeating(&QtUi::AddNativeColorMixer, base::Unretained(this)));
   FontChanged();
 
   return true;
@@ -170,25 +187,6 @@ SkColor QtUi::GetInactiveSelectionFgColor() const {
 base::TimeDelta QtUi::GetCursorBlinkInterval() const {
   NOTIMPLEMENTED_LOG_ONCE();
   return base::TimeDelta();
-}
-
-ui::NativeTheme* QtUi::GetNativeTheme(aura::Window* window) const {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return ui::NativeTheme::GetInstanceForNativeUi();
-}
-
-ui::NativeTheme* QtUi::GetNativeTheme(bool use_system_theme) const {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return ui::NativeTheme::GetInstanceForNativeUi();
-}
-
-void QtUi::SetUseSystemThemeCallback(UseSystemThemeCallback callback) {
-  NOTIMPLEMENTED_LOG_ONCE();
-}
-
-bool QtUi::GetDefaultUsesSystemTheme() const {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return false;
 }
 
 gfx::Image QtUi::GetIconForContentType(const std::string& content_type,
@@ -281,6 +279,10 @@ void QtUi::SetSystemThemeByNameForTest(const std::string& theme_name) {
   DCHECK(theme_name.empty());
 }
 
+ui::NativeTheme* QtUi::GetNativeTheme() const {
+  return native_theme_.get();
+}
+
 bool QtUi::MatchEvent(const ui::Event& event,
                       std::vector<ui::TextEditCommandAuraLinux>* commands) {
   // QT doesn't have "key themes" (eg. readline bindings) like GTK.
@@ -320,6 +322,18 @@ void QtUi::FontChanged() {
       // fontconfig for it.
       .subpixel_rendering = fc_params.subpixel_rendering,
   };
+}
+
+void QtUi::AddNativeColorMixer(ui::ColorProvider* provider,
+                               const ui::ColorProviderManager::Key& key) {
+  if (key.system_theme == ui::ColorProviderManager::SystemTheme::kDefault)
+    return;
+
+  ui::ColorMixer& mixer = provider->AddMixer();
+  mixer[ui::kColorNativeWindowBackground] = {
+      shim_->GetColor(ColorRole::kWindowBg)};
+  mixer[ui::kColorNativeLabelForeground] = {
+      shim_->GetColor(ColorRole::kWindowFg)};
 }
 
 std::unique_ptr<views::LinuxUI> CreateQtUi() {

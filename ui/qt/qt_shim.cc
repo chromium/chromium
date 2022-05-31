@@ -11,6 +11,7 @@
 #include <QIcon>
 #include <QMimeDatabase>
 #include <QMimeType>
+#include <QPalette>
 
 namespace qt {
 
@@ -40,6 +41,15 @@ FontHinting QtHintingToFontHinting(QFont::HintingPreference hinting) {
     case QFont::PreferFullHinting:
       return FontHinting::kFull;
   }
+}
+
+uint32_t QColorToArgb(const QColor& color) {
+  int r = 0;
+  int g = 0;
+  int b = 0;
+  int a = 0;
+  color.getRgb(&r, &g, &b, &a);
+  return (a << 24) | (r << 16) | (g << 8) | b;
 }
 
 }  // namespace
@@ -77,7 +87,8 @@ FontDescription QtShim::GetFontDescription() const {
   };
 }
 
-Image QtShim::GetIconForContentType(const String& content_type, int size) {
+Image QtShim::GetIconForContentType(const String& content_type,
+                                    int size) const {
   QMimeDatabase db;
   for (const char* mime : {content_type.c_str(), "application/octet-stream"}) {
     auto mt = db.mimeTypeForName(mime);
@@ -95,6 +106,18 @@ Image QtShim::GetIconForContentType(const String& content_type, int size) {
     }
   }
   return {};
+}
+
+uint32_t QtShim::GetColor(ColorRole role) const {
+  auto palette = app_.palette();
+  switch (role) {
+    case ColorRole::kWindowBg:
+      // TODO(https://crbug.com/1317782): QPalette::color doesn't handle
+      // gradients or bitmaps. Handle these cases.
+      return QColorToArgb(palette.color(QPalette::ColorRole::Window));
+    case ColorRole::kWindowFg:
+      return QColorToArgb(palette.color(QPalette::ColorRole::WindowText));
+  }
 }
 
 void QtShim::FontChanged(const QFont& font) {

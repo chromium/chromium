@@ -13,6 +13,8 @@
 
 namespace qt {
 
+class QtNativeTheme;
+
 // Interface to QT desktop features.
 class QtUi : public views::LinuxUI, QtInterface::Delegate {
  public:
@@ -53,10 +55,6 @@ class QtUi : public views::LinuxUI, QtInterface::Delegate {
   SkColor GetInactiveSelectionBgColor() const override;
   SkColor GetInactiveSelectionFgColor() const override;
   base::TimeDelta GetCursorBlinkInterval() const override;
-  ui::NativeTheme* GetNativeTheme(aura::Window* window) const override;
-  ui::NativeTheme* GetNativeTheme(bool use_system_theme) const override;
-  void SetUseSystemThemeCallback(UseSystemThemeCallback callback) override;
-  bool GetDefaultUsesSystemTheme() const override;
   gfx::Image GetIconForContentType(const std::string& content_type,
                                    int size,
                                    float scale) const override;
@@ -72,6 +70,7 @@ class QtUi : public views::LinuxUI, QtInterface::Delegate {
   int GetCursorThemeSize() override;
   std::vector<std::string> GetAvailableSystemThemeNamesForTest() const override;
   void SetSystemThemeByNameForTest(const std::string& theme_name) override;
+  ui::NativeTheme* GetNativeTheme() const override;
 
   // ui::TextEditKeybindingDelegate:
   bool MatchEvent(const ui::Event& event,
@@ -81,6 +80,9 @@ class QtUi : public views::LinuxUI, QtInterface::Delegate {
   void FontChanged() override;
 
  private:
+  void AddNativeColorMixer(ui::ColorProvider* provider,
+                           const ui::ColorProviderManager::Key& key);
+
   // QT modifies argc and argv, and they must be kept alive while
   // `shim_` is alive.
   CmdLineArgs cmd_line_;
@@ -94,6 +96,8 @@ class QtUi : public views::LinuxUI, QtInterface::Delegate {
   gfx::FontRenderParams font_params_;
 
   std::unique_ptr<QtInterface> shim_;
+
+  std::unique_ptr<QtNativeTheme> native_theme_;
 };
 
 // This should be the only symbol exported from this component.

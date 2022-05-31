@@ -27,7 +27,7 @@
 #include "ui/shell_dialogs/shell_dialog_linux.h"
 #endif
 
-// The main entrypoint into Linux toolkit specific code. GTK code should only
+// The main entrypoint into Linux toolkit specific code. GTK/QT code should only
 // be executed behind this interface.
 
 namespace aura {
@@ -112,6 +112,19 @@ class VIEWS_EXPORT LinuxUI : public ui::LinuxInputMethodContextFactory,
   // factor.
   void RemoveDeviceScaleFactorObserver(DeviceScaleFactorObserver* observer);
 
+  // Returns the NativeTheme that reflects the theme used by `window`.
+  ui::NativeTheme* GetNativeTheme(aura::Window* window) const;
+
+  // Returns the classic or system NativeTheme depending on `use_system_theme`.
+  ui::NativeTheme* GetNativeTheme(bool use_system_theme) const;
+
+  // Sets a callback that determines whether to use the system theme.
+  void SetUseSystemThemeCallback(UseSystemThemeCallback callback);
+
+  // Returns whether we should be using the native theme provided by this
+  // object by default.
+  bool GetDefaultUsesSystemTheme() const;
+
   // Returns true on success.  If false is returned, this instance shouldn't
   // be used and the behavior of all functions is undefined.
   [[nodiscard]] virtual bool Initialize() = 0;
@@ -128,19 +141,6 @@ class VIEWS_EXPORT LinuxUI : public ui::LinuxInputMethodContextFactory,
   virtual SkColor GetInactiveSelectionBgColor() const = 0;
   virtual SkColor GetInactiveSelectionFgColor() const = 0;
   virtual base::TimeDelta GetCursorBlinkInterval() const = 0;
-
-  // Returns the NativeTheme that reflects the theme used by `window`.
-  virtual ui::NativeTheme* GetNativeTheme(aura::Window* window) const = 0;
-
-  // Returns the classic or system NativeTheme depending on `use_system_theme`.
-  virtual ui::NativeTheme* GetNativeTheme(bool use_system_theme) const = 0;
-
-  // Sets a callback that determines whether to use the system theme.
-  virtual void SetUseSystemThemeCallback(UseSystemThemeCallback callback) = 0;
-
-  // Returns whether we should be using the native theme provided by this
-  // object by default.
-  virtual bool GetDefaultUsesSystemTheme() const = 0;
 
   // Returns the icon for a given content type from the icon theme.
   // TODO(davidben): Add an observer for the theme changing, so we can drop the
@@ -213,7 +213,14 @@ class VIEWS_EXPORT LinuxUI : public ui::LinuxInputMethodContextFactory,
     return device_scale_factor_observer_list_;
   }
 
+  virtual ui::NativeTheme* GetNativeTheme() const = 0;
+
  private:
+  // Used to determine whether the system theme should be used for a window.  If
+  // no override is provided or the callback returns true, LinuxUI will default
+  // to GetNativeTheme().
+  UseSystemThemeCallback use_system_theme_callback_;
+
   // Objects to notify when the window frame button order changes.
   base::ObserverList<views::WindowButtonOrderObserver>::Unchecked
       window_button_order_observer_list_;

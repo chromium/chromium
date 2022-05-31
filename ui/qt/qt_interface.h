@@ -57,6 +57,11 @@ enum class FontHinting {
   kFull,
 };
 
+enum class ColorRole {
+  kWindowBg,
+  kWindowFg,
+};
+
 struct FontRenderParams {
   bool antialiasing;
   bool use_bitmaps;
@@ -96,7 +101,10 @@ class QtInterface {
   virtual double GetScaleFactor() const = 0;
   virtual FontRenderParams GetFontRenderParams() const = 0;
   virtual FontDescription GetFontDescription() const = 0;
-  virtual Image GetIconForContentType(const String& content_type, int size) = 0;
+  virtual Image GetIconForContentType(const String& content_type,
+                                      int size) const = 0;
+  // The color value is ARGB32 (the same as SkColor).
+  virtual uint32_t GetColor(ColorRole role) const = 0;
 };
 
 }  // namespace qt

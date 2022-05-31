@@ -1,6 +1,8 @@
 include_rules = [
   "+third_party/skia",
+  "+ui/color",
   "+ui/gfx",
+  "+ui/native_theme",
   "+ui/shell_dialogs",
   "+ui/views",
 ]
