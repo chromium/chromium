@@ -135,6 +135,7 @@ const base::Feature kNaviShortcutVariationEnabled = {
 //   - The same for all experiments in study
 //   - Incremented with each new version
 //   - Not reused
+// TODO(crbug.com/1330298): Remove once study ends. Targeting M110.
 static std::string GetOnboardingGroup(Profile* profile) {
   if (!CanExperimentWithVariations(profile)) {
     // If we cannot run any variations, we bucket the users into a separate
@@ -145,8 +146,8 @@ static std::string GetOnboardingGroup(Profile* profile) {
   // We need to use |base::GetFieldTrialParamValue| instead of
   // |base::FeatureParam| because our control group needs a custom value for
   // this param.
-  // "NaviOnboarding" match study name in configs.
-  return base::GetFieldTrialParamValue("NaviOnboarding", "onboarding-group");
+  // "NaviOnboarding2" match study name in configs.
+  return base::GetFieldTrialParamValue("NaviOnboarding2", "onboarding-group");
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_WIN)
 
@@ -170,7 +171,8 @@ void JoinOnboardingGroup(Profile* profile) {
 
   // User will be tied to their original group, even after experiment ends.
   ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-      "NaviOnboardingSynthetic", group);
+      "NaviOnboarding2Synthetic", group,
+      variations::SyntheticTrialAnnotationMode::kCurrentLog);
 
   // Check for feature based on group.
   // TODO(hcarmona): find a solution that scales better.
