@@ -351,6 +351,9 @@ void VirtualCardEnrollmentManager::GetDetailsForEnroll() {
       state_.virtual_card_enrollment_fields.credit_card.instrument_id();
   request_details.source =
       state_.virtual_card_enrollment_fields.virtual_card_enrollment_source;
+
+  get_details_for_enrollment_request_sent_timestamp_ = AutofillClock::Now();
+
   payments_client_->GetVirtualCardEnrollmentDetails(
       request_details,
       base::BindOnce(
@@ -365,6 +368,15 @@ void VirtualCardEnrollmentManager::OnDidGetDetailsForEnrollResponse(
     const payments::PaymentsClient::GetDetailsForEnrollmentResponseDetails&
         response) {
   enroll_response_details_received_ = true;
+
+  if (get_details_for_enrollment_request_sent_timestamp_.has_value()) {
+    LogGetDetailsForEnrollmentRequestLatency(
+        state_.virtual_card_enrollment_fields.virtual_card_enrollment_source,
+        result,
+        AutofillClock::Now() -
+            get_details_for_enrollment_request_sent_timestamp_.value());
+    get_details_for_enrollment_request_sent_timestamp_.reset();
+  }
 
   LogGetDetailsForEnrollmentRequestResult(
       state_.virtual_card_enrollment_fields.virtual_card_enrollment_source,

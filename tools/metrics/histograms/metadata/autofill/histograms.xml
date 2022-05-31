@@ -3624,6 +3624,20 @@ chromium-metrics-reviews@google.com.
   <token key="Source" variants="Autofill.VirtualCard.RequestSource"/>
 </histogram>
 
+<histogram
+    name="Autofill.VirtualCard.GetDetailsForEnrollment.Latency.{Source}.{Result}"
+    units="ms" expires_after="2022-08-07">
+  <owner>siyua@chromium.org</owner>
+  <owner>payments-autofill-team@google.com</owner>
+  <summary>
+    Records the latency for the GetDetailsForEnrollment roundtrip call. The
+    timer starts when a GetDetailsForEnrollment request is sent. It is recorded
+    (the timer stops) when a GetDetailsForEnrollment response is received.
+  </summary>
+  <token key="Source" variants="Autofill.VirtualCard.RequestSource"/>
+  <token key="Result" variants="Autofill.PaymentsRpcResult"/>
+</histogram>
+
 <histogram name="Autofill.VirtualCard.GetDetailsForEnrollment.Result.{Source}"
     enum="BooleanSuccess" expires_after="2022-08-07">
   <owner>siyua@chromium.org</owner>

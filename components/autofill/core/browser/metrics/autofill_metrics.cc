@@ -1372,33 +1372,11 @@ void AutofillMetrics::LogCardUnmaskDurationAfterWebauthn(
     const base::TimeDelta& duration,
     AutofillClient::PaymentsRpcResult result,
     AutofillClient::PaymentsRpcCardType card_type) {
-  std::string result_suffix;
-
-  switch (result) {
-    case AutofillClient::PaymentsRpcResult::kSuccess:
-      result_suffix = "Success";
-      break;
-    case AutofillClient::PaymentsRpcResult::kTryAgainFailure:
-    case AutofillClient::PaymentsRpcResult::kPermanentFailure:
-      result_suffix = "Failure";
-      break;
-    case AutofillClient::PaymentsRpcResult::kNetworkError:
-      result_suffix = "NetworkError";
-      break;
-    case AutofillClient::PaymentsRpcResult::kVcnRetrievalTryAgainFailure:
-    case AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure:
-      result_suffix = "VcnRetrievalFailure";
-      break;
-    case AutofillClient::PaymentsRpcResult::kNone:
-      NOTREACHED();
-      return;
-  }
-
   base::UmaHistogramLongTimes("Autofill.BetterAuth.CardUnmaskDuration.Fido",
                               duration);
   base::UmaHistogramLongTimes("Autofill.BetterAuth.CardUnmaskDuration.Fido" +
-                                  GetCreditCardTypeSuffix(card_type) + "." +
-                                  result_suffix,
+                                  GetCreditCardTypeSuffix(card_type) +
+                                  PaymentsRpcResultToMetricsSuffix(result),
                               duration);
 }
 
@@ -3544,6 +3522,32 @@ void AutofillMetrics::
   base::UmaHistogramBoolean(
       "Autofill.IsValueNotAutofilledOverExistingValueSameAsSubmittedValue",
       is_same);
+}
+
+const std::string PaymentsRpcResultToMetricsSuffix(
+    AutofillClient::PaymentsRpcResult result) {
+  std::string result_suffix;
+
+  switch (result) {
+    case AutofillClient::PaymentsRpcResult::kSuccess:
+      result_suffix = ".Success";
+      break;
+    case AutofillClient::PaymentsRpcResult::kTryAgainFailure:
+    case AutofillClient::PaymentsRpcResult::kPermanentFailure:
+      result_suffix = ".Failure";
+      break;
+    case AutofillClient::PaymentsRpcResult::kNetworkError:
+      result_suffix = ".NetworkError";
+      break;
+    case AutofillClient::PaymentsRpcResult::kVcnRetrievalTryAgainFailure:
+    case AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure:
+      result_suffix = ".VcnRetrievalFailure";
+      break;
+    case AutofillClient::PaymentsRpcResult::kNone:
+      NOTREACHED();
+  }
+
+  return result_suffix;
 }
 
 }  // namespace autofill

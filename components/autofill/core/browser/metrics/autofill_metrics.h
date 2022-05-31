@@ -2110,5 +2110,8 @@ int GetFieldTypeUserEditStatusMetric(
     AutofillMetrics::AutofilledFieldUserEditingStatusMetric metric);
 #endif
 
+const std::string PaymentsRpcResultToMetricsSuffix(
+    AutofillClient::PaymentsRpcResult result);
+
 }  // namespace autofill
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_AUTOFILL_METRICS_H_
