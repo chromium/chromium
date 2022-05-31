@@ -306,4 +306,10 @@ uint64_t AttributionStorageDelegateImpl::SanitizeTriggerData(
   return trigger_data % cardinality;
 }
 
+uint64_t AttributionStorageDelegateImpl::SanitizeSourceEventId(
+    uint64_t source_event_id) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return source_event_id;
+}
+
 }  // namespace content

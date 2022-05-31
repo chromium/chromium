@@ -560,7 +560,8 @@ AttributionStorage::StoreSourceResult AttributionStorageSql::StoreSource(
       "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,0,?,?)";
   sql::Statement statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kInsertImpressionSql));
-  statement.BindInt64(0, SerializeUint64(common_info.source_event_id()));
+  statement.BindInt64(0, SerializeUint64(delegate_->SanitizeSourceEventId(
+                             common_info.source_event_id())));
   statement.BindString(1, serialized_impression_origin);
   statement.BindString(2, SerializePotentiallyTrustworthyOrigin(
                               common_info.conversion_origin()));

@@ -148,6 +148,9 @@ class AttributionStorageDelegate {
   virtual uint64_t SanitizeTriggerData(
       uint64_t trigger_data,
       AttributionSourceType source_type) const = 0;
+
+  // Sanitizes `source_event_id` according to the data limit.
+  virtual uint64_t SanitizeSourceEventId(uint64_t source_event_id) const = 0;
 };
 
 }  // namespace content

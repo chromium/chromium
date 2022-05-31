@@ -246,6 +246,15 @@ uint64_t ConfigurableStorageDelegate::SanitizeTriggerData(
   }
 }
 
+uint64_t ConfigurableStorageDelegate::SanitizeSourceEventId(
+    uint64_t source_event_id) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!source_event_id_cardinality_)
+    return source_event_id;
+
+  return source_event_id % *source_event_id_cardinality_;
+}
+
 void ConfigurableStorageDelegate::set_max_attributions_per_source(int max) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   max_attributions_per_source_ = max;
@@ -343,6 +352,14 @@ void ConfigurableStorageDelegate::set_trigger_data_cardinality(
 
   navigation_trigger_data_cardinality_ = navigation;
   event_trigger_data_cardinality_ = event;
+}
+
+void ConfigurableStorageDelegate::set_source_event_id_cardinality(
+    uint64_t cardinality) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_GT(cardinality, 0u);
+
+  source_event_id_cardinality_ = cardinality;
 }
 
 AttributionManager* TestManagerProvider::GetManager(

@@ -214,6 +214,7 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
   uint64_t SanitizeTriggerData(
       uint64_t trigger_data,
       AttributionSourceType source_type) const override;
+  uint64_t SanitizeSourceEventId(uint64_t source_event_id) const override;
 
   void set_max_attributions_per_source(int max);
 
@@ -249,6 +250,8 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
   void set_randomized_response(RandomizedResponse randomized_response);
 
   void set_trigger_data_cardinality(uint64_t navigation, uint64_t event);
+
+  void set_source_event_id_cardinality(uint64_t cardinality);
 
   // Detaches the delegate from its current sequence in preparation for being
   // moved to storage, which runs on its own sequence.
@@ -286,6 +289,7 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
 
   absl::optional<uint64_t> navigation_trigger_data_cardinality_;
   absl::optional<uint64_t> event_trigger_data_cardinality_;
+  absl::optional<uint64_t> source_event_id_cardinality_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

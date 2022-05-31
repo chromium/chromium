@@ -68,6 +68,7 @@ class CONTENT_EXPORT AttributionStorageDelegateImpl
   uint64_t SanitizeTriggerData(
       uint64_t trigger_data,
       AttributionSourceType source_type) const override;
+  uint64_t SanitizeSourceEventId(uint64_t source_event_id) const override;
 
   // Generates fake reports using a random "stars and bars" sequence index of a
   // possible output of the API.
