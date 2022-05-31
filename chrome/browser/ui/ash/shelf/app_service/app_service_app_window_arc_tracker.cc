@@ -460,7 +460,6 @@ void AppServiceAppWindowArcTracker::AttachControllerToWindow(
   window->SetProperty(ash::kShelfIDKey, shelf_id.Serialize());
   window->SetProperty(ash::kArcPackageNameKey, info->package_name());
   window->SetProperty(ash::kAppIDKey, shelf_id.app_id);
-  window->SetProperty(aura::client::kSkipImeProcessing, true);
 
   if (info->launch_intent().empty())
     return;
