@@ -252,7 +252,7 @@ StringT DoubleToStringT(double value) {
   char buffer[32];
   double_conversion::StringBuilder builder(buffer, sizeof(buffer));
   GetDoubleToStringConverter()->ToShortest(value, &builder);
-  return ToString<StringT>(buffer, builder.position());
+  return ToString<StringT>(buffer, static_cast<size_t>(builder.position()));
 }
 
 template <typename STRING, typename CHAR>
@@ -263,8 +263,8 @@ bool StringToDoubleImpl(STRING input, const CHAR* data, double& output) {
       0.0, 0, nullptr, nullptr);
 
   int processed_characters_count;
-  output =
-      converter.StringToDouble(data, input.size(), &processed_characters_count);
+  output = converter.StringToDouble(data, checked_cast<int>(input.size()),
+                                    &processed_characters_count);
 
   // Cases to return false:
   //  - If the input string is empty, there was nothing to parse.
@@ -278,7 +278,7 @@ bool StringToDoubleImpl(STRING input, const CHAR* data, double& output) {
          !IsUnicodeWhitespace(input[0]);
 }
 
-template <typename OutIter>
+template <typename Char, typename OutIter>
 static bool HexStringToByteContainer(StringPiece input, OutIter output) {
   size_t count = input.size();
   if (count == 0 || (count % 2) != 0)
@@ -291,7 +291,7 @@ static bool HexStringToByteContainer(StringPiece input, OutIter output) {
     if (!msb || !lsb) {
       return false;
     }
-    *(output++) = (*msb << 4) | *lsb;
+    *(output++) = static_cast<Char>((*msb << 4) | *lsb);
   }
   return true;
 }

@@ -1401,7 +1401,7 @@ Status ProcessInputActionSequence(
         if (valid) {
           // check if key is a single unicode code point
           int32_t char_index = 0;
-          uint32_t code_point;
+          base_icu::UChar32 code_point;
           valid =
               base::ReadUnicodeCharacter(key.c_str(), key.size(), &char_index,
                                          &code_point) &&

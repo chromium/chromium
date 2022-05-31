@@ -783,7 +783,7 @@ std::string ChineseScriptClassifier::Classify(const std::string& input) const {
   base::TruncateUTF8ToByteSize(input, 500, &input_subset);
 
   // Remove whitespace since transliterators may not preserve it.
-  base::EraseIf(input_subset, base::IsUnicodeWhitespace);
+  base::EraseIf(input_subset, base::IsUnicodeWhitespace<char>);
 
   // Convert the input to icu::UnicodeString so we can iterate over codepoints.
   icu::UnicodeString input_codepoints =

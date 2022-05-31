@@ -204,7 +204,7 @@ JSONParser::StringBuilder& JSONParser::StringBuilder::operator=(
     StringBuilder&& other) = default;
 
 void JSONParser::StringBuilder::Append(uint32_t point) {
-  DCHECK(IsValidCodepoint(point));
+  DCHECK(IsValidCodepoint(static_cast<base_icu::UChar32>(point)));
 
   if (point < kExtendedASCIIStart && !string_) {
     DCHECK_EQ(static_cast<char>(point), pos_[length_]);
@@ -538,7 +538,7 @@ bool JSONParser::ConsumeStringRaw(StringBuilder* out) {
   StringBuilder string(pos());
 
   while (PeekChar()) {
-    uint32_t next_char = 0;
+    base_icu::UChar32 next_char = 0;
     if (!ReadUnicodeCharacter(input_.data(),
                               static_cast<int32_t>(input_.length()), &index_,
                               &next_char) ||

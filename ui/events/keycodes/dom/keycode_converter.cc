@@ -316,7 +316,7 @@ DomKey KeycodeConverter::KeyStringToDomKey(const std::string& key) {
   // Otherwise, if the string contains a single Unicode character,
   // the key value is that character.
   int32_t char_index = 0;
-  uint32_t character;
+  base_icu::UChar32 character;
   if (base::ReadUnicodeCharacter(key.c_str(),
                                  static_cast<int32_t>(key.length()),
                                  &char_index, &character) &&

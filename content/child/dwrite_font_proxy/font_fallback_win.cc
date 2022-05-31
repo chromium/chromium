@@ -201,7 +201,7 @@ bool FontFallback::GetCachedFont(const std::u16string& text,
     uint32_t length = 0;  // How much of the text can actually be mapped.
     while (static_cast<uint32_t>(character_index) < text.length()) {
       BOOL exists = false;
-      uint32_t character = 0;
+      base_icu::UChar32 character = 0;
       if (!base::ReadUnicodeCharacter(text.c_str(), text.length(),
                                       &character_index, &character))
         break;

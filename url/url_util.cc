@@ -839,14 +839,14 @@ void DecodeURLEscapeSequences(const char* input,
       // next_ch will point to the last character of the decoded
       // character.
       int next_character = i;
-      unsigned code_point;
+      base_icu::UChar32 code_point;
       if (ReadUTFChar(unescaped_chars.data(), &next_character,
                       unescaped_chars.length(), &code_point)) {
         // Valid UTF-8 character, convert to UTF-16.
         AppendUTF16Value(code_point, output);
         i = next_character;
       } else if (mode == DecodeURLMode::kUTF8) {
-        DCHECK_EQ(code_point, 0xFFFDU);
+        DCHECK_EQ(code_point, 0xFFFD);
         AppendUTF16Value(code_point, output);
         i = next_character;
       } else {

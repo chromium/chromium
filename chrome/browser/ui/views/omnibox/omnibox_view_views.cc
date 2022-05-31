@@ -667,7 +667,8 @@ void OmniboxViewViews::OnOmniboxPaste() {
       // fakebox is hidden and there's only whitespace in the omnibox, it's
       // difficult for the user to see that the focus moved to the omnibox.
       (model()->focus_state() == OMNIBOX_FOCUS_INVISIBLE &&
-       std::all_of(text.begin(), text.end(), base::IsUnicodeWhitespace))) {
+       std::all_of(text.begin(), text.end(),
+                   base::IsUnicodeWhitespace<char16_t>))) {
     return;
   }
 

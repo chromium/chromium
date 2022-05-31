@@ -25,7 +25,7 @@ void DoAppendStringOfType(const CHAR* source, int length,
     if (static_cast<UCHAR>(source[i]) >= 0x80) {
       // ReadChar will fill the code point with kUnicodeReplacementCharacter
       // when the input is invalid, which is what we want.
-      unsigned code_point;
+      base_icu::UChar32 code_point;
       ReadUTFChar(source, &i, length, &code_point);
       AppendUTF8EscapedValue(code_point, output);
     } else {
@@ -233,7 +233,7 @@ const char kCharToHexLookup[8] = {
     0,         // 0xE0 - 0xFF
 };
 
-const char16_t kUnicodeReplacementCharacter = 0xfffd;
+const base_icu::UChar32 kUnicodeReplacementCharacter = 0xfffd;
 
 void AppendStringOfType(const char* source, int length,
                         SharedCharTypes type,
@@ -248,8 +248,10 @@ void AppendStringOfType(const char16_t* source,
   DoAppendStringOfType<char16_t, char16_t>(source, length, type, output);
 }
 
-bool ReadUTFChar(const char* str, int* begin, int length,
-                 unsigned* code_point_out) {
+bool ReadUTFChar(const char* str,
+                 int* begin,
+                 int length,
+                 base_icu::UChar32* code_point_out) {
   // This depends on ints and int32s being the same thing. If they're not, it
   // will fail to compile.
   // TODO(mmenke): This should probably be fixed.
@@ -264,7 +266,7 @@ bool ReadUTFChar(const char* str, int* begin, int length,
 bool ReadUTFChar(const char16_t* str,
                  int* begin,
                  int length,
-                 unsigned* code_point_out) {
+                 base_icu::UChar32* code_point_out) {
   // This depends on ints and int32s being the same thing. If they're not, it
   // will fail to compile.
   // TODO(mmenke): This should probably be fixed.
@@ -293,7 +295,7 @@ bool ConvertUTF16ToUTF8(const char16_t* input,
                         CanonOutput* output) {
   bool success = true;
   for (int i = 0; i < input_len; i++) {
-    unsigned code_point;
+    base_icu::UChar32 code_point;
     success &= ReadUTFChar(input, &i, input_len, &code_point);
     AppendUTF8Value(code_point, output);
   }
@@ -305,7 +307,7 @@ bool ConvertUTF8ToUTF16(const char* input,
                         CanonOutputT<char16_t>* output) {
   bool success = true;
   for (int i = 0; i < input_len; i++) {
-    unsigned code_point;
+    base_icu::UChar32 code_point;
     success &= ReadUTFChar(input, &i, input_len, &code_point);
     AppendUTF16Value(code_point, output);
   }

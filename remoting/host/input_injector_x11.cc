@@ -353,7 +353,7 @@ void InputInjectorX11::Core::InjectTextEvent(const TextEvent& event) {
 
   const std::string text = event.text();
   for (int32_t index = 0; index < static_cast<int32_t>(text.size()); ++index) {
-    uint32_t code_point;
+    base_icu::UChar32 code_point;
     if (!base::ReadUnicodeCharacter(text.c_str(), text.size(), &index,
                                     &code_point)) {
       continue;

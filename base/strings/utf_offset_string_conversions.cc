@@ -192,7 +192,7 @@ bool ConvertUnicode(const SrcChar* src,
   bool success = true;
   int32_t src_len32 = static_cast<int32_t>(src_len);
   for (int32_t i = 0; i < src_len32; i++) {
-    uint32_t code_point;
+    base_icu::UChar32 code_point;
     size_t original_i = i;
     size_t chars_written = 0;
     if (ReadUnicodeCharacter(src, src_len32, &i, &code_point)) {

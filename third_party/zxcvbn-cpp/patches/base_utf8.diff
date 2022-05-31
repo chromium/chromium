@@ -58,7 +58,7 @@ index 107bce0af064..349c2a5448ae 100644
 +  const char* src = &*it;
 +  int32_t src_len = std::distance(it, end);
 +  int32_t char_index = 0;
-+  uint32_t code_point_out;
++  base_icu::UChar32 code_point_out;
  
 -bool utf8_valid(std::string::const_iterator start,
 -                std::string::const_iterator end) {

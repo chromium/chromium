@@ -123,7 +123,7 @@ CharT ToLowerASCII(CharT c) {
 template <typename CharT,
           typename = std::enable_if_t<std::is_integral<CharT>::value>>
 CharT ToUpperASCII(CharT c) {
-  return (c >= 'a' && c <= 'z') ? (c + ('A' - 'a')) : c;
+  return (c >= 'a' && c <= 'z') ? static_cast<CharT>(c + 'A' - 'a') : c;
 }
 
 // Converts the given string to it's ASCII-lowercase equivalent.
@@ -417,11 +417,24 @@ inline bool IsHexDigit(Char c) {
 //    '4' -> 4
 //    'a' -> 10
 //    'B' -> 11
-// Assumes the input is a valid hex character. DCHECKs in debug builds if not.
-BASE_EXPORT char HexDigitToInt(wchar_t c);
+// Assumes the input is a valid hex character.
+BASE_EXPORT char HexDigitToInt(char c);
+inline char HexDigitToInt(char16_t c) {
+  DCHECK(IsHexDigit(c));
+  return HexDigitToInt(static_cast<char>(c));
+}
 
 // Returns true if it's a Unicode whitespace character.
-BASE_EXPORT bool IsUnicodeWhitespace(wchar_t c);
+template <typename Char>
+inline bool IsUnicodeWhitespace(Char c) {
+  // kWhitespaceWide is a NUL-terminated string
+  for (const auto* cur = kWhitespaceWide; *cur; ++cur) {
+    if (static_cast<typename std::make_unsigned_t<wchar_t>>(*cur) ==
+        static_cast<typename std::make_unsigned_t<Char>>(c))
+      return true;
+  }
+  return false;
+};
 
 // Return a byte string in human-readable format with a unit suffix. Not
 // appropriate for use in any UI; use of FormatBytes and friends in ui/base is

@@ -25,7 +25,7 @@ namespace {
 const char kU16EscapeFormat[] = "\\u%04X";
 
 // The code point to output for an invalid input code unit.
-const uint32_t kReplacementCodePoint = 0xFFFD;
+const base_icu::UChar32 kReplacementCodePoint = 0xFFFD;
 
 // Used below in EscapeSpecialCodePoint().
 static_assert('<' == 0x3C, "less than sign must be 0x3c");
@@ -91,9 +91,9 @@ bool EscapeJSONStringImpl(const S& str, bool put_in_quotes, std::string* dest) {
   const int32_t length = static_cast<int32_t>(str.length());
 
   for (int32_t i = 0; i < length; ++i) {
-    uint32_t code_point;
+    base_icu::UChar32 code_point;
     if (!ReadUnicodeCharacter(str.data(), length, &i, &code_point) ||
-        code_point == static_cast<decltype(code_point)>(CBU_SENTINEL)) {
+        code_point == CBU_SENTINEL) {
       code_point = kReplacementCodePoint;
       did_replacement = true;
     }

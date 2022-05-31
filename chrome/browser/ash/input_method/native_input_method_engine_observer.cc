@@ -405,7 +405,7 @@ mojom::PhysicalKeyEventPtr CreatePhysicalKeyEventFromKeyEvent(
 
 uint32_t Utf16ToCodepoint(const std::u16string& str) {
   int32_t index = 0;
-  uint32_t codepoint = 0;
+  base_icu::UChar32 codepoint = 0;
   base::ReadUnicodeCharacter(str.data(), str.length(), &index, &codepoint);
 
   // Should only contain a single codepoint.

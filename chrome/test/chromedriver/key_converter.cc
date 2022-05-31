@@ -623,13 +623,14 @@ Status ConvertKeyActionToKeyEvent(const base::DictionaryValue* action_object,
     return Status(kUnknownError, "missing 'value'");
 
   int32_t char_index = 0;
-  uint32_t code_point;
+  base_icu::UChar32 code_point;
   base::ReadUnicodeCharacter(raw_key.c_str(), raw_key.size(), &char_index,
                              &code_point);
 
   std::string key;
   if (code_point >= kNormalisedKeyValueBase &&
-      code_point < kNormalisedKeyValueBase + std::size(kNormalisedKeyValue)) {
+      code_point < base_icu::UChar32{kNormalisedKeyValueBase +
+                                     std::size(kNormalisedKeyValue)}) {
     key = kNormalisedKeyValue[code_point - kNormalisedKeyValueBase];
   }
   if (key.size() == 0)

@@ -37,7 +37,7 @@ std::string ToJSONString(base::StringPiece in) {
   while (offset < length) {
     const int32_t prior_offset = offset;
     // Input strings must be valid UTF-8.
-    uint32_t codepoint;
+    base_icu::UChar32 codepoint;
     CHECK(base::ReadUnicodeCharacter(in_bytes, length, &offset, &codepoint));
     // offset is updated by |ReadUnicodeCharacter| to index the last byte of the
     // codepoint. Increment it to index the first byte of the next codepoint for

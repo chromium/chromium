@@ -212,7 +212,7 @@ bool UnescapeUnsignedByteAtIndex(StringPiece escaped_text,
 // |escaped_text| that corresponds to the unescaped character.
 bool UnescapeUTF8CharacterAtIndex(StringPiece escaped_text,
                                   size_t index,
-                                  uint32_t* code_point_out,
+                                  base_icu::UChar32* code_point_out,
                                   std::string* unescaped_out) {
   DCHECK(unescaped_out->empty());
 
@@ -406,7 +406,7 @@ std::string UnescapeURLWithAdjustmentsImpl(
   // Locations of adjusted text.
   for (size_t i = 0, max = escaped_text.size(); i < max;) {
     // Try to unescape the character.
-    uint32_t code_point;
+    base_icu::UChar32 code_point;
     std::string unescaped;
     if (!UnescapeUTF8CharacterAtIndex(escaped_text, i, &code_point,
                                       &unescaped)) {

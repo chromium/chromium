@@ -175,7 +175,7 @@ struct Arg {
     integer.width = sizeof(long long);
   }
   Arg(unsigned long long j) : type(UINT) {
-    integer.i = j;
+    integer.i = static_cast<int64_t>(j);
     integer.width = sizeof(long long);
   }
 

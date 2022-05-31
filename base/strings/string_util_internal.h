@@ -26,7 +26,7 @@ struct ReplacementOffset {
       : parameter(parameter), offset(offset) {}
 
   // Index of the parameter.
-  uintptr_t parameter;
+  size_t parameter;
 
   // Starting position in the string.
   size_t offset;
@@ -147,7 +147,7 @@ std::basic_string<CharT> CollapseWhitespaceT(
   bool in_whitespace = true;
   bool already_trimmed = true;
 
-  int chars_written = 0;
+  size_t chars_written = 0;
   for (auto c : text) {
     if (IsUnicodeWhitespace(c)) {
       if (!in_whitespace) {
@@ -196,7 +196,7 @@ bool DoIsStringASCII(const Char* characters, size_t length) {
 
   // Prologue: align the input.
   while (!IsMachineWordAligned(characters) && characters < end)
-    all_char_bits |= *characters++;
+    all_char_bits |= static_cast<MachineWord>(*characters++);
   if (all_char_bits & non_ascii_bit_mask)
     return false;
 
@@ -222,19 +222,19 @@ bool DoIsStringASCII(const Char* characters, size_t length) {
 
   // Process the remaining bytes.
   while (characters < end)
-    all_char_bits |= *characters++;
+    all_char_bits |= static_cast<MachineWord>(*characters++);
 
   return !(all_char_bits & non_ascii_bit_mask);
 }
 
-template <bool (*Validator)(uint32_t)>
+template <bool (*Validator)(base_icu::UChar32)>
 inline bool DoIsStringUTF8(StringPiece str) {
-  const char* src = str.data();
-  int32_t src_len = static_cast<int32_t>(str.length());
-  int32_t char_index = 0;
+  const uint8_t* src = reinterpret_cast<const uint8_t*>(str.data());
+  size_t src_len = str.length();
+  size_t char_index = 0;
 
   while (char_index < src_len) {
-    int32_t code_point;
+    base_icu::UChar32 code_point;
     CBU8_NEXT(src, char_index, src_len, code_point);
     if (!Validator(code_point))
       return false;
@@ -583,10 +583,9 @@ std::basic_string<CharT> DoReplaceStringPlaceholders(
             DLOG(ERROR) << "Invalid placeholder: $" << *i;
             continue;
           }
-          uintptr_t index = *i - '1';
+          size_t index = static_cast<size_t>(*i - '1');
           if (offsets) {
-            ReplacementOffset r_offset(index,
-                                       static_cast<int>(formatted.size()));
+            ReplacementOffset r_offset(index, formatted.size());
             r_offsets.insert(
                 ranges::upper_bound(r_offsets, r_offset, &CompareParameter),
                 r_offset);

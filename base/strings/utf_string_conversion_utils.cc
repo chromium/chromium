@@ -14,13 +14,10 @@ namespace base {
 bool ReadUnicodeCharacter(const char* src,
                           int32_t src_len,
                           int32_t* char_index,
-                          uint32_t* code_point_out) {
-  // U8_NEXT expects to be able to use -1 to signal an error, so we must
-  // use a signed type for code_point.  But this function returns false
-  // on error anyway, so code_point_out is unsigned.
-  int32_t code_point;
+                          base_icu::UChar32* code_point_out) {
+  base_icu::UChar32 code_point;
   CBU8_NEXT(src, *char_index, src_len, code_point);
-  *code_point_out = static_cast<uint32_t>(code_point);
+  *code_point_out = code_point;
 
   // The ICU macro above moves to the next char, we want to point to the last
   // char consumed.
@@ -33,7 +30,7 @@ bool ReadUnicodeCharacter(const char* src,
 bool ReadUnicodeCharacter(const char16_t* src,
                           int32_t src_len,
                           int32_t* char_index,
-                          uint32_t* code_point) {
+                          base_icu::UChar32* code_point) {
   if (CBU16_IS_SURROGATE(src[*char_index])) {
     if (!CBU16_IS_SURROGATE_LEAD(src[*char_index]) ||
         *char_index + 1 >= src_len ||
@@ -58,7 +55,7 @@ bool ReadUnicodeCharacter(const char16_t* src,
 bool ReadUnicodeCharacter(const wchar_t* src,
                           int32_t src_len,
                           int32_t* char_index,
-                          uint32_t* code_point) {
+                          base_icu::UChar32* code_point) {
   // Conversion is easy since the source is 32-bit.
   *code_point = src[*char_index];
 

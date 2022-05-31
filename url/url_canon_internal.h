@@ -15,6 +15,7 @@
 
 #include "base/component_export.h"
 #include "base/notreached.h"
+#include "base/third_party/icu/icu_utf.h"
 #include "url/url_canon.h"
 
 namespace url {
@@ -139,7 +140,7 @@ inline void AppendEscapedChar(UINCHAR ch,
 }
 
 // The character we'll substitute for undecodable or invalid characters.
-extern const char16_t kUnicodeReplacementCharacter;
+extern const base_icu::UChar32 kUnicodeReplacementCharacter;
 
 // UTF-8 functions ------------------------------------------------------------
 
@@ -155,7 +156,7 @@ COMPONENT_EXPORT(URL)
 bool ReadUTFChar(const char* str,
                  int* begin,
                  int length,
-                 unsigned* code_point_out);
+                 base_icu::UChar32* code_point_out);
 
 // Generic To-UTF-8 converter. This will call the given append method for each
 // character that should be appended, with the given output method. Wrappers
@@ -163,8 +164,10 @@ bool ReadUTFChar(const char* str,
 //
 // The char_value must have already been checked that it's a valid Unicode
 // character.
-template<class Output, void Appender(unsigned char, Output*)>
-inline void DoAppendUTF8(unsigned char_value, Output* output) {
+template <class Output, void Appender(unsigned char, Output*)>
+inline void DoAppendUTF8(base_icu::UChar32 char_value, Output* output) {
+  DCHECK(char_value >= 0);
+  DCHECK(char_value <= 0x10FFFF);
   if (char_value <= 0x7f) {
     Appender(static_cast<unsigned char>(char_value), output);
   } else if (char_value <= 0x7ff) {
@@ -181,7 +184,7 @@ inline void DoAppendUTF8(unsigned char_value, Output* output) {
              output);
     Appender(static_cast<unsigned char>(0x80 | (char_value & 0x3f)),
              output);
-  } else if (char_value <= 0x10FFFF) {  // Max Unicode code point.
+  } else {
     // 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
     Appender(static_cast<unsigned char>(0xf0 | (char_value >> 18)),
              output);
@@ -189,11 +192,7 @@ inline void DoAppendUTF8(unsigned char_value, Output* output) {
              output);
     Appender(static_cast<unsigned char>(0x80 | ((char_value >> 6) & 0x3f)),
              output);
-    Appender(static_cast<unsigned char>(0x80 | (char_value & 0x3f)),
-             output);
-  } else {
-    // Invalid UTF-8 character (>20 bits).
-    NOTREACHED();
+    Appender(static_cast<unsigned char>(0x80 | (char_value & 0x3f)), output);
   }
 }
 
@@ -207,7 +206,7 @@ inline void AppendCharToOutput(unsigned char ch, CanonOutput* output) {
 // Writes the given character to the output as UTF-8. This does NO checking
 // of the validity of the Unicode characters; the caller should ensure that
 // the value it is appending is valid to append.
-inline void AppendUTF8Value(unsigned char_value, CanonOutput* output) {
+inline void AppendUTF8Value(base_icu::UChar32 char_value, CanonOutput* output) {
   DoAppendUTF8<CanonOutput, AppendCharToOutput>(char_value, output);
 }
 
@@ -215,7 +214,8 @@ inline void AppendUTF8Value(unsigned char_value, CanonOutput* output) {
 // characters (even when they are ASCII). This does NO checking of the
 // validity of the Unicode characters; the caller should ensure that the value
 // it is appending is valid to append.
-inline void AppendUTF8EscapedValue(unsigned char_value, CanonOutput* output) {
+inline void AppendUTF8EscapedValue(base_icu::UChar32 char_value,
+                                   CanonOutput* output) {
   DoAppendUTF8<CanonOutput, AppendEscapedChar>(char_value, output);
 }
 
@@ -233,10 +233,10 @@ COMPONENT_EXPORT(URL)
 bool ReadUTFChar(const char16_t* str,
                  int* begin,
                  int length,
-                 unsigned* code_point_out);
+                 base_icu::UChar32* code_point_out);
 
 // Equivalent to U16_APPEND_UNSAFE in ICU but uses our output method.
-inline void AppendUTF16Value(unsigned code_point,
+inline void AppendUTF16Value(base_icu::UChar32 code_point,
                              CanonOutputT<char16_t>* output) {
   if (code_point > 0xffff) {
     output->push_back(static_cast<char16_t>((code_point >> 10) + 0xd7c0));
@@ -274,7 +274,7 @@ inline bool AppendUTF8EscapedChar(const char16_t* str,
   // UTF-16 input. ReadUTFChar will handle invalid characters for us and give
   // us the kUnicodeReplacementCharacter, so we don't have to do special
   // checking after failure, just pass through the failure to the caller.
-  unsigned char_value;
+  base_icu::UChar32 char_value;
   bool success = ReadUTFChar(str, begin, length, &char_value);
   AppendUTF8EscapedValue(char_value, output);
   return success;
@@ -286,7 +286,7 @@ inline bool AppendUTF8EscapedChar(const char* str, int* begin, int length,
   // ReadUTF8Char will handle invalid characters for us and give us the
   // kUnicodeReplacementCharacter, so we don't have to do special checking
   // after failure, just pass through the failure to the caller.
-  unsigned ch;
+  base_icu::UChar32 ch;
   bool success = ReadUTFChar(str, begin, length, &ch);
   AppendUTF8EscapedValue(ch, output);
   return success;
