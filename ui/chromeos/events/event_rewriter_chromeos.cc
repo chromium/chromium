@@ -493,8 +493,8 @@ EventRewriterChromeOS::DeviceType IdentifyKeyboardType(
     return EventRewriterChromeOS::kDeviceHotrodRemote;
   }
 
-  if (base::LowerCaseEqualsASCII(keyboard_device.name,
-                                 "virtual core keyboard")) {
+  if (base::EqualsCaseInsensitiveASCII(keyboard_device.name,
+                                       "virtual core keyboard")) {
     VLOG(1) << "Xorg virtual '" << keyboard_device.name
             << "' connected: id=" << keyboard_device.id;
     return EventRewriterChromeOS::kDeviceVirtualCoreKeyboard;
@@ -523,9 +523,10 @@ EventRewriterChromeOS::DeviceType IdentifyKeyboardType(
   bool found_apple = false;
   bool found_keyboard = false;
   for (size_t i = 0; i < tokens.size(); ++i) {
-    if (!found_apple && base::LowerCaseEqualsASCII(tokens[i], "apple"))
+    if (!found_apple && base::EqualsCaseInsensitiveASCII(tokens[i], "apple"))
       found_apple = true;
-    if (!found_keyboard && base::LowerCaseEqualsASCII(tokens[i], "keyboard"))
+    if (!found_keyboard &&
+        base::EqualsCaseInsensitiveASCII(tokens[i], "keyboard"))
       found_keyboard = true;
   }
   if (found_apple) {
