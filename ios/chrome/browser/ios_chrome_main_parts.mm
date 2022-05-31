@@ -302,7 +302,8 @@ void IOSChromeMainParts::PreMainMessageLoopRun() {
   // immediately after starting metrics recording.
   IOSChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
       "CrashpadIOS",
-      crash_reporter::IsCrashpadRunning() ? "Enabled" : "Disabled");
+      crash_reporter::IsCrashpadRunning() ? "Enabled" : "Disabled",
+      variations::SyntheticTrialAnnotationMode::kCurrentLog);
 
   // Because the CleanExitBeacon flag takes 2 restarts to take effect, register
   // a synthetic field trial when the user defaults beacon is set. Called
@@ -310,7 +311,8 @@ void IOSChromeMainParts::PreMainMessageLoopRun() {
   IOSChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
       "UseUserDefaultsForExitedCleanlyBeacon",
       metrics::CleanExitBeacon::ShouldUseUserDefaultsBeacon() ? "Enabled"
-                                                              : "Disabled");
+                                                              : "Disabled",
+      variations::SyntheticTrialAnnotationMode::kCurrentLog);
 
 #if BUILDFLAG(ENABLE_RLZ)
   // Init the RLZ library. This just schedules a task on the file thread to be
