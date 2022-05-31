@@ -138,6 +138,7 @@ class MEDIA_GPU_EXPORT VaapiWrapper
     kEncodeConstantBitrate,  // Encode with Constant Bitrate algorithm.
     kEncodeConstantQuantizationParameter,  // Encode with Constant Quantization
                                            // Parameter algorithm.
+    kEncodeVariableBitrate,  // Encode with variable bitrate algorithm.
     kVideoProcess,
     kCodecModeMax,
   };

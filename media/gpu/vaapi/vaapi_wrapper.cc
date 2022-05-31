@@ -497,7 +497,9 @@ bool IsModeDecoding(VaapiWrapper::CodecMode mode) {
 
 bool IsModeEncoding(VaapiWrapper::CodecMode mode) {
   return mode == VaapiWrapper::CodecMode::kEncodeConstantBitrate ||
-         mode == VaapiWrapper::CodecMode::kEncodeConstantQuantizationParameter;
+         mode ==
+             VaapiWrapper::CodecMode::kEncodeConstantQuantizationParameter ||
+         mode == VaapiWrapper::CodecMode::kEncodeVariableBitrate;
 }
 
 bool GetNV12VisibleWidthBytes(int visible_width,
@@ -956,7 +958,8 @@ std::vector<VAEntrypoint> GetEntryPointsForProfile(const base::Lock* va_lock,
      VAEntrypointEncSliceLP},  // kEncodeConstantBitrate.
     {VAEntrypointEncSlice,
      VAEntrypointEncSliceLP},  // kEncodeConstantQuantizationParameter.
-    {VAEntrypointVideoProc}    // kVideoProcess.
+    {VAEntrypointEncSlice, VAEntrypointEncSliceLP},  // kEncodeVariableBitrate.
+    {VAEntrypointVideoProc}                          // kVideoProcess.
   };
   static_assert(std::size(kAllowedEntryPoints) == VaapiWrapper::kCodecModeMax,
                 "");
@@ -1018,6 +1021,8 @@ bool GetRequiredAttribs(const base::Lock* va_lock,
     required_attribs->push_back({VAConfigAttribRateControl, VA_RC_CBR});
   if (mode == VaapiWrapper::kEncodeConstantQuantizationParameter)
     required_attribs->push_back({VAConfigAttribRateControl, VA_RC_CQP});
+  if (mode == VaapiWrapper::kEncodeConstantQuantizationParameter)
+    required_attribs->push_back({VAConfigAttribRateControl, VA_RC_VBR});
 
   constexpr VAProfile kSupportedH264VaProfilesForEncoding[] = {
       VAProfileH264ConstrainedBaseline, VAProfileH264Main, VAProfileH264High};
@@ -1191,6 +1196,7 @@ void VASupportedProfiles::FillSupportedProfileInfos(base::Lock* va_lock,
 #endif
     VaapiWrapper::kEncodeConstantBitrate,
     VaapiWrapper::kEncodeConstantQuantizationParameter,
+    VaapiWrapper::kEncodeVariableBitrate,
     VaapiWrapper::kVideoProcess
   };
   static_assert(std::size(kWrapperModes) == VaapiWrapper::kCodecModeMax, "");
@@ -1949,6 +1955,7 @@ VAEntrypoint VaapiWrapper::GetDefaultVaEntryPoint(CodecMode mode,
 #endif
     case VaapiWrapper::kEncodeConstantBitrate:
     case VaapiWrapper::kEncodeConstantQuantizationParameter:
+    case VaapiWrapper::kEncodeVariableBitrate:
       if (profile == VAProfileJPEGBaseline)
         return VAEntrypointEncPicture;
       DCHECK(IsModeEncoding(mode));
@@ -3137,6 +3144,10 @@ bool VaapiWrapper::Initialize(VAProfile va_profile,
   if (mode_ == kEncodeConstantQuantizationParameter) {
     DCHECK_NE(va_profile, VAProfileJPEGBaseline)
         << "JPEG Encoding doesn't support CQP bitrate control";
+  }
+  if (mode_ == kEncodeVariableBitrate) {
+    DCHECK_NE(va_profile, VAProfileJPEGBaseline)
+        << "JPEG Encoding doesn't support VBR bitrate control";
   }
 #endif  // DCHECK_IS_ON()
 
