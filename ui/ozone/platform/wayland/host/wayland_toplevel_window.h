@@ -139,8 +139,6 @@ class WaylandToplevelWindow : public WaylandWindow,
   // Calls UpdateWindowShape, set_input_region and set_opaque_region for this
   // toplevel window.
   void UpdateWindowMask() override;
-  // Update the window shape using the window mask of PlatformWindowDelegate.
-  void UpdateWindowShape();
 
   // WmMoveLoopHandler:
   bool RunMoveLoop(const gfx::Vector2d& drag_offset) override;

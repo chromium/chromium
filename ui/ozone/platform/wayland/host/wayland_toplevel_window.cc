@@ -940,29 +940,12 @@ void WaylandToplevelWindow::SetInitialWorkspace() {
 }
 
 void WaylandToplevelWindow::UpdateWindowMask() {
-  // TODO(crbug.com/1299315): Deprecate this and migrate to the rounded corner
-  // API.
-  UpdateWindowShape();
   std::vector<gfx::Rect> region{gfx::Rect({}, visual_size_px())};
   root_surface()->SetOpaqueRegion(opaque_region_px_.has_value()
                                       ? &*opaque_region_px_
                                       : (IsOpaqueWindow() ? &region : nullptr));
   root_surface()->SetInputRegion(input_region_px_ ? &*input_region_px_
                                                   : &*region.begin());
-}
-
-void WaylandToplevelWindow::UpdateWindowShape() {
-  // Create |window_shape_in_dips_| using the window mask of
-  // PlatformWindowDelegate otherwise resets it.
-  SkPath window_mask_in_pixels =
-      delegate()->GetWindowMaskForWindowShapeInPixels();
-  if (window_mask_in_pixels.isEmpty()) {
-    window_shape_in_dips_.reset();
-    return;
-  }
-  SkPath window_mask_in_dips =
-      wl::ConvertPathToDIP(window_mask_in_pixels, window_scale());
-  window_shape_in_dips_ = wl::CreateRectsFromSkPath(window_mask_in_dips);
 }
 
 bool WaylandToplevelWindow::GetTabletMode() {
