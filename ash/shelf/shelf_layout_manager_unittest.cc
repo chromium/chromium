@@ -211,6 +211,38 @@ class WallpaperShownWaiter : public WallpaperControllerObserver {
   base::RunLoop run_loop_;
 };
 
+// This class detects the auto hide state change in shelf layout manager within
+// its lifetime.
+class AutoHideStateDetector : public ShelfLayoutManagerObserver {
+ public:
+  AutoHideStateDetector() {
+    Shell::GetPrimaryRootWindowController()
+        ->shelf()
+        ->shelf_layout_manager()
+        ->AddObserver(this);
+  }
+
+  AutoHideStateDetector(const AutoHideStateDetector&) = delete;
+  AutoHideStateDetector& operator=(const AutoHideStateDetector&) = delete;
+
+  ~AutoHideStateDetector() override {
+    Shell::GetPrimaryRootWindowController()
+        ->shelf()
+        ->shelf_layout_manager()
+        ->RemoveObserver(this);
+  }
+
+  void OnAutoHideStateChanged(ShelfAutoHideState new_state) override {
+    if (new_state == SHELF_AUTO_HIDE_HIDDEN)
+      was_shelf_auto_hidden = true;
+  }
+
+  bool WasShelfAutoHidden() const { return was_shelf_auto_hidden; }
+
+ private:
+  bool was_shelf_auto_hidden = false;
+};
+
 }  // namespace
 
 class ShelfLayoutManagerTest : public ShelfLayoutManagerTestBase {
@@ -3307,6 +3339,51 @@ TEST_F(AppListBubbleShelfLayoutManagerTest, SwipeUpOnShelfDoesNotShowAppList) {
 
   // Launcher did not show.
   EXPECT_FALSE(Shell::Get()->app_list_controller()->IsVisible());
+}
+
+// Tests that tapping the home button is successful on the autohidden shelf.
+TEST_F(AppListBubbleShelfLayoutManagerTest,
+       NoTemporaryAutoHideStateWhileOpeningLauncher) {
+  // Enable animations and simulate the zero state search called when showing
+  // the launcher.
+  ui::ScopedAnimationDurationScaleMode duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  GetTestAppListClient()->set_run_zero_state_callback_immediately(false);
+
+  Shelf* shelf = GetPrimaryShelf();
+  shelf->SetAutoHideBehavior(ShelfAutoHideBehavior::kAlways);
+  const display::Display display =
+      display::Screen::GetScreen()->GetPrimaryDisplay();
+
+  // Create a window to hide the shelf in auto-hide mode.
+  std::unique_ptr<aura::Window> window =
+      AshTestBase::CreateTestWindow(gfx::Rect(0, 0, 400, 400));
+  wm::ActivateWindow(window.get());
+
+  EXPECT_EQ(SHELF_AUTO_HIDE, shelf->GetVisibilityState());
+  EXPECT_EQ(SHELF_AUTO_HIDE_HIDDEN, shelf->GetAutoHideState());
+  GetAppListTestHelper()->CheckVisibility(false);
+
+  SwipeUpOnShelf();
+  EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
+  GetAppListTestHelper()->CheckVisibility(false);
+
+  {
+    AutoHideStateDetector detector;
+
+    // Open the launcher by tapping the home button.
+    GestureTapOn(GetPrimaryShelf()->navigation_widget()->GetHomeButton());
+
+    // Wait until the zero state callback is called.
+    base::RunLoop().RunUntilIdle();
+    EXPECT_EQ(1, GetTestAppListClient()->zero_state_search_done_count());
+
+    // No `SHELF_AUTO_HIDE_HIDDEN` should be set when launcher is showing.
+    EXPECT_FALSE(detector.WasShelfAutoHidden());
+  }
+
+  // The app list should now be visible.
+  GetAppListTestHelper()->CheckVisibility(true);
 }
 
 class ShelfLayoutManagerWindowDraggingTest : public ShelfLayoutManagerTestBase {

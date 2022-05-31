@@ -7,6 +7,7 @@
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/shelf/drag_handle.h"
+#include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
@@ -153,6 +154,11 @@ void HotseatTransitionAnimator::DoAnimation(HotseatState old_state,
 bool HotseatTransitionAnimator::ShouldDoAnimation(HotseatState old_state,
                                                   HotseatState new_state) {
   if (!animations_enabled_for_current_session_state_)
+    return false;
+
+  // The shelf should be directly hidden without animation if the auto hide
+  // state is auto hidden.
+  if (shelf_widget_->shelf_layout_manager()->is_shelf_auto_hidden())
     return false;
 
   return (new_state == HotseatState::kShownHomeLauncher ||
