@@ -400,6 +400,8 @@ mixed_component("base") {
     "memory/ptr_util.h",
     "memory/raw_ptr.cc",
     "memory/raw_ptr.h",
+    "memory/raw_ptr_asan_service.cc",
+    "memory/raw_ptr_asan_service.h",
     "memory/raw_ptr_exclusion.h",
     "memory/raw_scoped_refptr_mismatch_checker.h",
     "memory/read_only_shared_memory_region.cc",

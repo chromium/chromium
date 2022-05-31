@@ -16,6 +16,7 @@
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr_asan_service.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -1401,13 +1402,35 @@ TEST(AsanBackupRefPtrImpl, Instantiation) {
   delete ptr;
 
   EXPECT_DEATH_IF_SUPPORTED(
-      {
-        raw_ptr<AsanStruct> protected_ptr2 = ptr;
-        ALLOW_UNUSED_LOCAL(protected_ptr2);
-      },
+      { [[maybe_unused]] raw_ptr<AsanStruct> protected_ptr2 = ptr; },
       "BackupRefPtr: Constructing a raw_ptr");
 }
-#endif
+
+TEST(AsanBackupRefPtrImpl, EarlyAllocationDetection) {
+  if (RawPtrAsanService::GetInstance().mode() ==
+      RawPtrAsanService::Mode::kEnabled) {
+    // There's no way to reset sanitizer allocator hooks and, consequently, to
+    // reset BRP-ASan to the pre-startup state. Hence, exit early.
+    return;
+  }
+
+  AsanStruct* ptr1 = new AsanStruct;
+
+  RawPtrAsanService::GetInstance().Configure(RawPtrAsanService::Mode::kEnabled);
+
+  AsanStruct* ptr2 = new AsanStruct;
+
+  EXPECT_FALSE(RawPtrAsanService::GetInstance().IsSupportedAllocation(ptr1));
+  EXPECT_TRUE(RawPtrAsanService::GetInstance().IsSupportedAllocation(ptr2));
+
+  delete ptr1;
+  delete ptr2;
+
+  EXPECT_FALSE(RawPtrAsanService::GetInstance().IsSupportedAllocation(ptr1));
+  EXPECT_TRUE(RawPtrAsanService::GetInstance().IsSupportedAllocation(ptr2));
+}
+
+#endif  // BUILDFLAG(USE_ASAN_BACKUP_REF_PTR)
 
 #if defined(PA_USE_MTE_CHECKED_PTR_WITH_64_BITS_POINTERS)
 
