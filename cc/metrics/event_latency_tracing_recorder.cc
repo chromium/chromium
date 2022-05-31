@@ -227,34 +227,31 @@ void EventLatencyTracingRecorder::RecordEventLatencyTraceEvent(
   }
   if (stage_history) {
     DCHECK(viz_breakdown);
-    // Find the first compositor stage that happens after the final dispatch
-    // stage.
+    // Find the first compositor stage that starts at the same time or after the
+    // end of the final event dispatch stage. At least,
+    // SubmitCompositorFrameToPresentationCompositorFrame stage should match
+    // this criteria.
     auto stage_it = std::find_if(
         stage_history->begin(), stage_history->end(),
         [dispatch_timestamp](const CompositorFrameReporter::StageData& stage) {
-          return stage.start_time > dispatch_timestamp;
+          return stage.start_time >= dispatch_timestamp;
         });
-    // TODO(crbug.com/1079116): Ideally, at least the start time of
-    // SubmitCompositorFrameToPresentationCompositorFrame stage should be
-    // greater than the final event dispatch timestamp, but apparently, this is
-    // not always the case (see crbug.com/1093698). For now, skip to the next
-    // event in such cases. Hopefully, the work to reduce discrepancies between
-    // the new EventLatency and the old Event.Latency metrics would fix this
-    // issue. If not, we need to reconsider investigating this issue.
-    if (stage_it == stage_history->end())
-      return;
+    DCHECK(stage_it != stage_history->end());
 
     DCHECK(dispatch_stage ==
                EventMetrics::DispatchStage::kRendererCompositorFinished ||
            dispatch_stage ==
                EventMetrics::DispatchStage::kRendererMainFinished);
 
-    const char* d2c_breakdown_name = GetDispatchToCompositorBreakdownName(
-        dispatch_stage, stage_it->stage_type);
-    TRACE_EVENT_BEGIN(kTracingCategory,
-                      perfetto::StaticString{d2c_breakdown_name}, trace_track,
-                      dispatch_timestamp);
-    TRACE_EVENT_END(kTracingCategory, trace_track, stage_it->start_time);
+    // Record dispatch-to-compositor stage only if it has non-zero duration.
+    if (dispatch_timestamp < stage_it->start_time) {
+      const char* d2c_breakdown_name = GetDispatchToCompositorBreakdownName(
+          dispatch_stage, stage_it->stage_type);
+      TRACE_EVENT_BEGIN(kTracingCategory,
+                        perfetto::StaticString{d2c_breakdown_name}, trace_track,
+                        dispatch_timestamp);
+      TRACE_EVENT_END(kTracingCategory, trace_track, stage_it->start_time);
+    }
 
     // Compositor stages.
     for (; stage_it != stage_history->end(); ++stage_it) {
