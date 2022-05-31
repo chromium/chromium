@@ -95,13 +95,12 @@ export class WrapupFinalizePage extends WrapupFinalizePageBase {
   onFinalizationUpdated(status, progress, error) {
     const isErrorStatus = status === FinalizationStatus.kFailedBlocking ||
         status === FinalizationStatus.kFailedNonBlocking;
-    const isWpError = isErrorStatus &&
-        (error === FinalizationError.kCannotEnableHardwareWp ||
-         error === FinalizationError.kCannotEnableSoftwareWp);
+    const isHardwareWpError =
+        isErrorStatus && error === FinalizationError.kCannotEnableHardwareWp;
 
     this.finalizationMessage_ = this.i18n(
-        isWpError ? 'finalizePageProgressText' :
-                    finalizationStatusTextKeys[status]);
+        isHardwareWpError ? 'finalizePageProgressText' :
+                            finalizationStatusTextKeys[status]);
 
     if (status === FinalizationStatus.kComplete) {
       executeThenTransitionState(
@@ -110,11 +109,11 @@ export class WrapupFinalizePage extends WrapupFinalizePageBase {
     }
 
     this.shouldShowSpinner_ =
-        isWpError || status === FinalizationStatus.kInProgress;
+        isHardwareWpError || status === FinalizationStatus.kInProgress;
 
-    if (isWpError) {
+    if (isHardwareWpError) {
       const dialog = /** @type {!CrDialogElement} */ (
-          this.shadowRoot.querySelector('#wpDisabledDialog'));
+          this.shadowRoot.querySelector('#hardwareWpDisabledDialog'));
       dialog.showModal();
     } else {
       // For other errors, continue using retry button to handle for now.
@@ -134,12 +133,12 @@ export class WrapupFinalizePage extends WrapupFinalizePageBase {
   }
 
   /**
-   * Handles the try again button on wpDisabledDialog is clicked.
+   * Handles the try again button on hardwareWpDisabledDialog is clicked.
    * @protected
    */
   onTryAgainButtonClick_() {
     const dialog = /** @type {!CrDialogElement} */ (
-        this.shadowRoot.querySelector('#wpDisabledDialog'));
+        this.shadowRoot.querySelector('#hardwareWpDisabledDialog'));
     dialog.close();
 
     executeThenTransitionState(

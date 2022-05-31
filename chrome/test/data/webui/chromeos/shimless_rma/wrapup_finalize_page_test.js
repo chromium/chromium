@@ -103,10 +103,10 @@ export function wrapupFinalizePageTest() {
         0);
     await flushTasks();
 
-    const wpDisabledDialog =
-        component.shadowRoot.querySelector('#wpDisabledDialog');
-    assertTrue(!!wpDisabledDialog);
-    assertFalse(wpDisabledDialog.open);
+    const hardwareWpDisabledDialog =
+        component.shadowRoot.querySelector('#hardwareWpDisabledDialog');
+    assertTrue(!!hardwareWpDisabledDialog);
+    assertFalse(hardwareWpDisabledDialog.open);
 
     assertFalse(retryButton.hidden);
     retryButton.click();
@@ -133,10 +133,10 @@ export function wrapupFinalizePageTest() {
         0);
     await flushTasks();
 
-    const wpDisabledDialog =
-        component.shadowRoot.querySelector('#wpDisabledDialog');
-    assertTrue(!!wpDisabledDialog);
-    assertFalse(wpDisabledDialog.open);
+    const hardwareWpDisabledDialog =
+        component.shadowRoot.querySelector('#hardwareWpDisabledDialog');
+    assertTrue(!!hardwareWpDisabledDialog);
+    assertFalse(hardwareWpDisabledDialog.open);
 
     assertFalse(retryButton.hidden);
     retryButton.click();
@@ -159,10 +159,10 @@ export function wrapupFinalizePageTest() {
     const resolver = new PromiseResolver();
     await initializeFinalizePage();
 
-    const wpDisabledDialog =
-        component.shadowRoot.querySelector('#wpDisabledDialog');
-    assertTrue(!!wpDisabledDialog);
-    assertFalse(wpDisabledDialog.open);
+    const hardwareWpDisabledDialog =
+        component.shadowRoot.querySelector('#hardwareWpDisabledDialog');
+    assertTrue(!!hardwareWpDisabledDialog);
+    assertFalse(hardwareWpDisabledDialog.open);
 
     let callCount = 0;
     service.retryFinalization = () => {
@@ -175,13 +175,13 @@ export function wrapupFinalizePageTest() {
         FinalizationError.kCannotEnableHardwareWp, 0);
     await flushTasks();
 
-    assertTrue(wpDisabledDialog.open);
+    assertTrue(hardwareWpDisabledDialog.open);
 
     const tryAgainButton =
         component.shadowRoot.querySelector('#tryAgainButton');
     tryAgainButton.click();
 
-    assertFalse(wpDisabledDialog.open);
+    assertFalse(hardwareWpDisabledDialog.open);
     assertEquals(1, callCount);
   });
 
@@ -189,10 +189,10 @@ export function wrapupFinalizePageTest() {
     const resolver = new PromiseResolver();
     await initializeFinalizePage();
 
-    const wpDisabledDialog =
-        component.shadowRoot.querySelector('#wpDisabledDialog');
-    assertTrue(!!wpDisabledDialog);
-    assertFalse(wpDisabledDialog.open);
+    const hardwareWpDisabledDialog =
+        component.shadowRoot.querySelector('#hardwareWpDisabledDialog');
+    assertTrue(!!hardwareWpDisabledDialog);
+    assertFalse(hardwareWpDisabledDialog.open);
 
     let callCount = 0;
     service.retryFinalization = () => {
@@ -205,13 +205,6 @@ export function wrapupFinalizePageTest() {
         FinalizationError.kCannotEnableSoftwareWp, 0);
     await flushTasks();
 
-    assertTrue(wpDisabledDialog.open);
-
-    const tryAgainButton =
-        component.shadowRoot.querySelector('#tryAgainButton');
-    tryAgainButton.click();
-
-    assertFalse(wpDisabledDialog.open);
-    assertEquals(1, callCount);
+    assertFalse(hardwareWpDisabledDialog.open);
   });
 }
