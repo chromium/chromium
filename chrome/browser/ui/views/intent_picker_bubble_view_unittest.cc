@@ -11,6 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/intent_helper/apps_navigation_types.h"
 #include "chrome/browser/apps/intent_helper/intent_picker_helpers.h"
@@ -410,7 +411,12 @@ TEST_F(IntentPickerBubbleViewTest, CloseDialog) {
             apps::IntentPickerCloseReason::DIALOG_DEACTIVATED);
 }
 
-TEST_F(IntentPickerBubbleViewTest, KeyboardNavigation) {
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_KeyboardNavigation DISABLED_KeyboardNavigation
+#else
+#define MAYBE_KeyboardNavigation KeyboardNavigation
+#endif
+TEST_F(IntentPickerBubbleViewTest, MAYBE_KeyboardNavigation) {
   CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/false,
                    BubbleType::kLinkCapturing,
                    /*initiating_origin=*/absl::nullopt);
