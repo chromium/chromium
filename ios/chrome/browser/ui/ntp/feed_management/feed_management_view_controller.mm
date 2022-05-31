@@ -112,20 +112,35 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
   NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
-
+  __weak FeedManagementViewController* weakSelf = self;
   switch (itemType) {
     case FollowingItemType:
       [self.followDelegate handleFollowingTapped];
       break;
-    case InterestsItemType:
-      [self.navigationDelegate handleNavigateToInterests];
+    case InterestsItemType: {
+      [self dismissViewControllerAnimated:YES
+                               completion:^{
+                                 [weakSelf.navigationDelegate
+                                         handleNavigateToInterests];
+                               }];
       break;
-    case HiddenItemType:
-      [self.navigationDelegate handleNavigateToHidden];
+    }
+    case HiddenItemType: {
+      [self dismissViewControllerAnimated:YES
+                               completion:^{
+                                 [weakSelf.navigationDelegate
+                                         handleNavigateToHidden];
+                               }];
       break;
-    case ActivityItemType:
-      [self.navigationDelegate handleNavigateToActivity];
+    }
+    case ActivityItemType: {
+      [self dismissViewControllerAnimated:YES
+                               completion:^{
+                                 [weakSelf.navigationDelegate
+                                         handleNavigateToActivity];
+                               }];
       break;
+    }
   }
 }
 
