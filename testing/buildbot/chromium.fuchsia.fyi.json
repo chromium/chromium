@@ -2039,7 +2039,7 @@
       },
       {
         "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.lsan.perfetto_unittests.filter"
+          "--gtest_filter=-PagedMemoryTest.AccessUncommittedMemoryTriggersASAN"
         ],
         "merge": {
           "args": [],

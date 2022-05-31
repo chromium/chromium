@@ -253,10 +253,6 @@ source_set("skia_unittests_filters") {
   data = []
 }
 
-source_set("perfetto_unittests_filters") {
-  data = [ "//testing/buildbot/filters/fuchsia.lsan.perfetto_unittests.filter" ]
-}
-
 source_set("gl_tests_filters") {
   testonly = true
 

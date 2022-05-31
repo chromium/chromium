@@ -2504,7 +2504,8 @@
       },
       'fuchsia-fyi-x64-asan': {
         'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.lsan.perfetto_unittests.filter',
+          # TODO(crbug.com/1199334): Error messages only show up in klog.
+          '--gtest_filter=-PagedMemoryTest.AccessUncommittedMemoryTriggersASAN'
         ],
       },
     },
