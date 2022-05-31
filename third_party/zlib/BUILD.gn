@@ -41,6 +41,8 @@ config("zlib_internal_config") {
 }
 
 source_set("zlib_common_headers") {
+  visibility = [ ":*" ]
+
   sources = [
     "chromeconf.h",
     "deflate.h",
