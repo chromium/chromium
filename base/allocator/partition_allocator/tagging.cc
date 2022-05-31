@@ -48,8 +48,7 @@ namespace partition_alloc {
 #if defined(PA_HAS_MEMORY_TAGGING)
 namespace {
 void ChangeMemoryTaggingModeInternal(unsigned prctl_mask) {
-  internal::base::CPU cpu;
-  if (cpu.has_mte()) {
+  if (internal::base::CPU::GetInstanceNoAllocation().has_mte()) {
     int status = prctl(PR_SET_TAGGED_ADDR_CTRL, prctl_mask, 0, 0, 0);
     PA_CHECK(status == 0);
   }
