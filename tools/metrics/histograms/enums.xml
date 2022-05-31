@@ -89701,6 +89701,14 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="20" label="OTHER"/>
 </enum>
 
+<enum name="StandbyBucket">
+  <int value="0" label="Active"/>
+  <int value="1" label="WorkingSet"/>
+  <int value="2" label="Frequent"/>
+  <int value="3" label="Rare"/>
+  <int value="4" label="Restricted"/>
+</enum>
+
 <enum name="StarEntryPointAction">
   <int value="0" label="Add bookmark"/>
   <int value="1" label="Edit bookmark"/>

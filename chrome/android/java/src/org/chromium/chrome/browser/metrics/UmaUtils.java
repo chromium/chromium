@@ -4,15 +4,22 @@
 
 package org.chromium.chrome.browser.metrics;
 
+import android.app.ActivityManager;
+import android.app.usage.UsageStatsManager;
+import android.content.Context;
 import android.os.Build;
 import android.os.SystemClock;
 
+import androidx.annotation.IntDef;
+
+import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.compat.ApiHelperForN;
+import org.chromium.base.metrics.RecordHistogram;
 
 /**
  * Utilities to support startup metrics - Android version.
@@ -53,6 +60,24 @@ public class UmaUtils {
     // Will short-circuit out of the next recordForegroundStartTime() call.
     public static void skipRecordingNextForegroundStartTimeForTesting() {
         sSkipRecordingNextForegroundStartTimeForTesting = true;
+    }
+
+    /**
+     * App standby bucket status, used for UMA reporting. Enum values correspond to the return
+     * values of {@link UsageStatsManager#getAppStandbyBucket}.
+     * These values are persisted to logs. Entries should not be renumbered and
+     * numeric values should never be reused.
+     */
+    @IntDef({StandbyBucketStatus.ACTIVE, StandbyBucketStatus.WORKING_SET,
+            StandbyBucketStatus.FREQUENT, StandbyBucketStatus.RARE, StandbyBucketStatus.RESTRICTED,
+            StandbyBucketStatus.COUNT})
+    private @interface StandbyBucketStatus {
+        int ACTIVE = 0;
+        int WORKING_SET = 1;
+        int FREQUENT = 2;
+        int RARE = 3;
+        int RESTRICTED = 4;
+        int COUNT = 5;
     }
 
     /**
@@ -117,6 +142,46 @@ public class UmaUtils {
      */
     public static boolean isClientInMetricsReportingSample() {
         return UmaUtilsJni.get().isClientInMetricsReportingSample();
+    }
+
+    /**
+     * Records various levels of background restrictions imposed by android on chrome.
+     */
+    public static void recordBackgroundRestrictions() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) return;
+        Context context = ContextUtils.getApplicationContext();
+        ActivityManager activityManager =
+                (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        boolean isBackgroundRestricted = activityManager.isBackgroundRestricted();
+        RecordHistogram.recordBooleanHistogram(
+                "Android.BackgroundRestrictions.IsBackgroundRestricted", isBackgroundRestricted);
+
+        UsageStatsManager usageStatsManager =
+                (UsageStatsManager) context.getSystemService(Context.USAGE_STATS_SERVICE);
+        int standbyBucket = usageStatsManager.getAppStandbyBucket();
+        int standbyBucketUma = -1;
+        switch (standbyBucket) {
+            case UsageStatsManager.STANDBY_BUCKET_ACTIVE:
+                standbyBucketUma = StandbyBucketStatus.ACTIVE;
+                break;
+            case UsageStatsManager.STANDBY_BUCKET_WORKING_SET:
+                standbyBucketUma = StandbyBucketStatus.WORKING_SET;
+                break;
+            case UsageStatsManager.STANDBY_BUCKET_FREQUENT:
+                standbyBucketUma = StandbyBucketStatus.FREQUENT;
+                break;
+            case UsageStatsManager.STANDBY_BUCKET_RARE:
+                standbyBucketUma = StandbyBucketStatus.RARE;
+                break;
+            case UsageStatsManager.STANDBY_BUCKET_RESTRICTED:
+                standbyBucketUma = StandbyBucketStatus.RESTRICTED;
+                break;
+            default:
+                assert false : "Unexpected standby bucket " + standbyBucket;
+        }
+
+        RecordHistogram.recordEnumeratedHistogram("Android.BackgroundRestrictions.StandbyBucket",
+                standbyBucketUma, StandbyBucketStatus.COUNT);
     }
 
     /**
