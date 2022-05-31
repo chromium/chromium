@@ -218,7 +218,7 @@ export class PrimarySettings extends BaseSettings {
   private async openSubSettings(name: ViewName): Promise<void> {
     // Dismiss primary-settings if sub-settings was dismissed by background
     // click.
-    const cond = await nav.open(name);
+    const cond = await nav.open(name).closed;
     if (cond.kind === 'BACKGROUND_CLICKED') {
       this.leave(cond);
     }

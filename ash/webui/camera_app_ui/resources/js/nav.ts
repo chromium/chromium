@@ -133,11 +133,14 @@ function findIndex(name: ViewName): number {
  * @return Promise for the operation or result.
  */
 export function open(
-    name: ViewName, options?: EnterOptions): Promise<LeaveCondition> {
+    name: ViewName, options?: EnterOptions): {closed: Promise<LeaveCondition>} {
   const index = findIndex(name);
-  return show(index).enter(options).finally(() => {
-    hide(index);
-  });
+  const view = show(index);
+  return {
+    closed: view.enter(options).finally(() => {
+      hide(index);
+    }),
+  };
 }
 
 /**

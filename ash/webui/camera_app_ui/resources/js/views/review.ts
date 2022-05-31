@@ -194,7 +194,7 @@ export class Review<T> extends View {
       }
       setupI18nElements(btnGroup.el);
     }
-    nav.open(this.viewName).then(() => {
+    nav.open(this.viewName).closed.then(() => {
       onSelected.signal(null);
     });
     const result = await onSelected.wait();
