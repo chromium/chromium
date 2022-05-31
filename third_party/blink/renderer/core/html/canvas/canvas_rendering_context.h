@@ -26,18 +26,42 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_CANVAS_CANVAS_RENDERING_CONTEXT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_CANVAS_CANVAS_RENDERING_CONTEXT_H_
 
+#include "base/callback_forward.h"
+#include "base/containers/span.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
+#include "cc/paint/paint_flags.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_context_creation_attributes_core.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_performance_monitor.h"
-#include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
+#include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context_host.h"
+#include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_color_params.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_types_3d.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
+#include "third_party/skia/include/core/SkRect.h"
+#include "third_party/skia/include/core/SkRefCnt.h"
+#include "ui/gfx/geometry/size.h"
+
+namespace base {
+struct PendingTask;
+}  // namespace base
+
+namespace cc {
+class Layer;
+class PaintCanvas;
+}  // namespace cc
+
+namespace gfx {
+class ColorSpace;
+}  // namespace gfx
 
 namespace media {
 class VideoFrame;
@@ -46,9 +70,15 @@ class VideoFrame;
 namespace blink {
 
 class CanvasImageSource;
-class HTMLCanvasElement;
+class CanvasResourceProvider;
+class ComputedStyle;
+class Document;
+class Element;
+class ExecutionContext;
 class ImageBitmap;
 class NoAllocDirectCallHost;
+class ScriptState;
+class StaticBitmapImage;
 class
     V8UnionCanvasRenderingContext2DOrGPUCanvasContextOrImageBitmapRenderingContextOrWebGL2RenderingContextOrWebGLRenderingContext;
 class
