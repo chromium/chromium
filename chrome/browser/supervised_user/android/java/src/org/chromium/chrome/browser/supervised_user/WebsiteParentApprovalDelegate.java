@@ -4,6 +4,10 @@
 
 package org.chromium.chrome.browser.supervised_user;
 
+import org.chromium.base.Callback;
+import org.chromium.ui.base.WindowAndroid;
+import org.chromium.url.GURL;
+
 /**
  * The correct version of {@link WebsiteParentApprovalDelegateImpl} will be determined at compile
  * time via build rules.
@@ -13,5 +17,6 @@ public interface WebsiteParentApprovalDelegate {
     boolean isLocalApprovalSupported();
 
     /** @see {@link WebsiteParentApproval#requestLocalApproval()} */
-    void requestLocalApproval();
+    void requestLocalApproval(
+            WindowAndroid windowAndroid, GURL url, Callback<Boolean> onCompletionCallback);
 }

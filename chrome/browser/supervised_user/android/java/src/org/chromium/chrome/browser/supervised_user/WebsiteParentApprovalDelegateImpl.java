@@ -4,23 +4,23 @@
 
 package org.chromium.chrome.browser.supervised_user;
 
-import org.chromium.base.Log;
+import org.chromium.base.Callback;
+import org.chromium.ui.base.WindowAndroid;
+import org.chromium.url.GURL;
 
 /**
  * Upstream implementation of {@link WebsiteParentApprovalDelegate}.
  * Downstream targets may provide a different implementation.
  */
 public class WebsiteParentApprovalDelegateImpl implements WebsiteParentApprovalDelegate {
-    private static final String TAG = "WebParentApplDlgt";
-
     @Override
     public boolean isLocalApprovalSupported() {
         return false;
     }
 
     @Override
-    public void requestLocalApproval() {
-        Log.e(TAG, "Unexpected requestLocalApproval() call.");
-        // assert isLocalApprovalSupported();
+    public void requestLocalApproval(
+            WindowAndroid windowAndroid, GURL url, Callback<Boolean> onCompletionCallback) {
+        throw new UnsupportedOperationException("Local approval not supported");
     }
 }

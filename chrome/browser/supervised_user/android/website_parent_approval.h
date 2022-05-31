@@ -5,6 +5,14 @@
 #ifndef CHROME_BROWSER_SUPERVISED_USER_ANDROID_WEBSITE_PARENT_APPROVAL_H_
 #define CHROME_BROWSER_SUPERVISED_USER_ANDROID_WEBSITE_PARENT_APPROVAL_H_
 
+#include "base/callback_forward.h"
+
+class GURL;
+
+namespace content {
+class WebContents;
+}  // namespace content
+
 // The glue for Java-side implementation of WebsiteParentApproval.
 class WebsiteParentApproval {
  public:
@@ -13,8 +21,15 @@ class WebsiteParentApproval {
 
   // Request local approval from the parent.
   //
-  // TODO(crbug.com/1272462): pass URL, favicon, callback.
-  static void RequestLocalApproval();
+  // The provided callback will be called when the local approval flow is no
+  // longer active (whether that's because the parent explicitly completed the
+  // flow and approved or denied, or for example because the parent exited
+  // before completing the auth flow).
+  //
+  // TODO(crbug.com/1272462): favicon.
+  static void RequestLocalApproval(content::WebContents* web_contents,
+                                   const GURL& url,
+                                   base::OnceCallback<void(bool)> callback);
 
   WebsiteParentApproval() = delete;
 };

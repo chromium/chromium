@@ -248,7 +248,7 @@ void SupervisedUserInterstitial::RequestUrlAccessLocal(
   SupervisedUserService* supervised_user_service =
       SupervisedUserServiceFactory::GetForProfile(profile_);
   supervised_user_service->web_approvals_manager().RequestLocalApproval(
-      url_, std::move(callback));
+      web_contents(), url_, std::move(callback));
 }
 
 void SupervisedUserInterstitial::ShowFeedback() {
