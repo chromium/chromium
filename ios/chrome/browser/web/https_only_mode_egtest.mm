@@ -18,6 +18,7 @@
 #include "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/web/https_only_mode_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
+#import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
@@ -535,6 +536,31 @@ std::unique_ptr<net::test_server::HttpResponse> FakeHungHTTPSResponse(
   [ChromeEarlGrey reload];
   [ChromeEarlGrey waitForWebStateContainingText:kInterstitialText];
   [self assertFailedUpgrade:3];
+}
+
+// Click on the "Learn more" link in the interstitial. This should open a
+// new tab.
+- (void)testUpgrade_LearnMore_ShouldOpenNewTab {
+  [HttpsOnlyModeAppInterface setHTTPPortForTesting:self.testServer->port()];
+  [HttpsOnlyModeAppInterface
+      setHTTPSPortForTesting:self.badHTTPSServer->port()];
+  [HttpsOnlyModeAppInterface useFakeHTTPSForTesting:false];
+
+  GURL testURL = self.testServer->GetURL("/");
+  [ChromeEarlGrey loadURL:testURL];
+  [ChromeEarlGrey waitForWebStateContainingText:kInterstitialText];
+  [self assertFailedUpgrade:1];
+
+  // Check tab count prior to tapping the link.
+  NSUInteger oldRegularTabCount = [ChromeEarlGreyAppInterface mainTabCount];
+  NSUInteger oldIncognitoTabCount =
+      [ChromeEarlGreyAppInterface incognitoTabCount];
+
+  [ChromeEarlGrey tapWebStateElementWithID:@"learn-more-link"];
+
+  // A new tab should open after tapping the link.
+  [ChromeEarlGrey waitForMainTabCount:oldRegularTabCount + 1];
+  [ChromeEarlGrey waitForIncognitoTabCount:oldIncognitoTabCount];
 }
 
 // Navigate to an HTTP URL directly. The upgraded HTTPS version serves bad SSL.

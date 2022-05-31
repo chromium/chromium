@@ -48,6 +48,9 @@ class IOSBlockingPageControllerClient
 
   const std::string& GetApplicationLocale() const override;
 
+  // security_interstitials::ControllerClient implementation.
+  void OpenUrlInNewForegroundTab(const GURL& url) override;
+
  protected:
   // The WebState passed on initialization.
   web::WebState* web_state() const { return web_state_; }
@@ -59,7 +62,6 @@ class IOSBlockingPageControllerClient
   void GoBackAfterNavigationCommitted() override;
   void Reload() override;
   void OpenUrlInCurrentTab(const GURL& url) override;
-  void OpenUrlInNewForegroundTab(const GURL& url) override;
   PrefService* GetPrefService() override;
   const std::string GetExtendedReportingPrefName() const override;
 
