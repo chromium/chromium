@@ -13,8 +13,5 @@ js_library("certificate_viewer") {
   deps = [
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:util.m",
-    "//ui/webui/resources/js/cr:ui.m",
-    "//ui/webui/resources/js/cr/ui:tabs",
-    "//ui/webui/resources/js/cr/ui:tree",
   ]
 }

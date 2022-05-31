@@ -3,13 +3,34 @@
 // found in the LICENSE file.
 
 import './strings.m.js';
+import 'chrome://resources/cr_elements/cr_tab_box/cr_tab_box.js';
+import 'chrome://resources/cr_elements/cr_tree/cr_tree.js';
+import 'chrome://resources/cr_elements/cr_tree/cr_tree_item.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
-import {decorate} from 'chrome://resources/js/cr/ui.m.js';
-import {TabBox} from 'chrome://resources/js/cr/ui/tabs.js';
-import {Tree, TreeItem} from 'chrome://resources/js/cr/ui/tree.js';
-import {$} from 'chrome://resources/js/util.m.js';
+
+// TODO (rbpotter): Remove these temporary definitions after migrating to TS.
+/**
+ * @typedef {{
+ *   detail: { children: Object, payload: (Object|undefined) },
+ *   expanded: boolean,
+ *   add: function(CrTreeItemElement): void,
+ * }}
+ */
+let CrTreeItemElement;
+
+/**
+ * @typedef {{
+ *   detail: { children: Object, payload: Object },
+ *   add: function(CrTreeItemElement): void,
+ *   removeTreeItem: function(CrTreeItemElement): void,
+ *   expanded: boolean,
+ *   items: Array<CrTreeItemElement>,
+ *   selectedItem: CrTreeItemElement,
+ * }}
+ */
+let CrTreeElement;
 
 /**
  * @typedef {{
@@ -24,7 +45,8 @@ let CertificateInfo;
  * substituting in translated strings and requesting certificate details.
  */
 function initialize() {
-  decorate('tabbox', TabBox);
+  const tabBox = document.querySelector('cr-tab-box');
+  tabBox.hidden = false;
 
   const args = JSON.parse(chrome.getVariableValue('dialogArguments'));
   getCertificateInfo(/** @type {!CertificateInfo} */ (args));
@@ -37,8 +59,14 @@ function initialize() {
    * fires.
    */
   const initializeDetailTab = oneShot(function() {
-    initializeTree(assert($('hierarchy')), showCertificateFields);
-    initializeTree(assert($('cert-fields')), showCertificateFieldValue);
+    const hierarchy =
+        /** @type {CrTreeElement} */ (document.querySelector('#hierarchy'));
+    assert(hierarchy);
+    initializeTree(hierarchy, showCertificateFields);
+    const certFields =
+        /** @type {CrTreeElement} */ (document.querySelector('#cert-fields'));
+    assert(certFields);
+    initializeTree(certFields, showCertificateFieldValue);
     createCertificateHierarchy(args.hierarchy);
   });
 
@@ -50,14 +78,14 @@ function initialize() {
   // even the slowest machine.
   setTimeout(initializeDetailTab, 200);
 
-  $('tabbox').addEventListener('selectedChange', function f(e) {
-    $('tabbox').removeEventListener('selectedChange', f);
+  tabBox.addEventListener('selected-index-change', function f() {
+    tabBox.removeEventListener('selected-index-change', f);
     initializeDetailTab();
   }, true);
 
   stripGtkAccessorKeys();
 
-  $('export').onclick = exportCertificate;
+  document.querySelector('#export').onclick = exportCertificate;
 }
 
 /**
@@ -77,13 +105,12 @@ function oneShot(fn) {
 /**
  * Initialize a Tree object from a given element using the specified
  * change handler.
- * @param {!HTMLElement} tree The HTMLElement to style as a tree.
+ * @param {!CrTreeElement} tree The HTMLElement to style as a tree.
  * @param {function()} handler Function to call when a node is selected.
  */
 function initializeTree(tree, handler) {
-  decorate(tree, Tree);
-  tree['detail'] = {payload: {}, children: {}};
-  tree.addEventListener('change', handler);
+  tree.detail = {payload: {}, children: {}};
+  /** @type {HTMLElement} */ (tree).addEventListener('cr-tree-change', handler);
 }
 
 /**
@@ -94,8 +121,10 @@ function initializeTree(tree, handler) {
  */
 function stripGtkAccessorKeys() {
   // Copy all the tab labels into an array.
-  const nodes = Array.prototype.slice.call($('tabs').childNodes, 0);
-  nodes.push($('export'));
+  const tabs = document.querySelectorAll('div[slot=\'tab\']');
+  const nodes = Array.prototype.slice.call(tabs, 0);
+  const exportButton = document.querySelector('#export');
+  nodes.push(exportButton);
   for (let i = 0; i < nodes.length; i++) {
     nodes[i].textContent = nodes[i].textContent.replace('&', '');
   }
@@ -103,12 +132,13 @@ function stripGtkAccessorKeys() {
 
 /**
  * Expand all nodes of the given tree object.
- * @param {!Tree} tree The tree object to expand all nodes on.
+ * @param {!CrTreeElement|CrTreeItemElement} tree The tree object to expand all
+ *     nodes on.
  */
 function revealTree(tree) {
   tree.expanded = true;
-  for (const key in tree['detail'].children) {
-    revealTree(tree['detail'].children[key]);
+  for (const key in tree.detail.children) {
+    revealTree(tree.detail.children[key]);
   }
 }
 
@@ -119,7 +149,7 @@ function revealTree(tree) {
  */
 function getCertificateInfo(certInfo) {
   for (const key in certInfo.general) {
-    $(key).textContent = certInfo.general[key];
+    document.querySelector(`#${key}`).textContent = certInfo.general[key];
   }
 }
 
@@ -128,35 +158,37 @@ function getCertificateInfo(certInfo) {
  * @param {Object} hierarchy A dictionary containing the hierarchy.
  */
 function createCertificateHierarchy(hierarchy) {
-  const treeItem = /** @type {!Tree} */ ($('hierarchy'));
+  const tree =
+      /** @type {CrTreeElement} */ (document.querySelector('#hierarchy'));
   const root = constructTree(hierarchy[0]);
-  treeItem['detail'].children['root'] = root;
-  treeItem.add(root);
+  tree.detail['children']['root'] = root;
+  tree.add(root);
 
   // Select the last item in the hierarchy (really we have a list here - each
   // node has at most one child).  This will reveal the parent nodes and
   // populate the fields view.
   let last = root;
-  while (last.detail.children && last.detail.children[0]) {
-    last = last.detail.children[0];
+  while (last.detail['children'] && last.detail['children'][0]) {
+    last = last.detail['children'][0];
   }
-  last.selected = true;
+  tree.selectedItem = last;
 }
 
 /**
  * Constructs a TreeItem corresponding to the passed in tree
  * @param {Object} tree Dictionary describing the tree structure.
- * @return {!TreeItem} Tree node corresponding to the input dictionary.
+ * @return {!CrTreeItemElement} Tree node corresponding to the input dictionary.
  */
 function constructTree(tree) {
-  const treeItem = new TreeItem({
-    label: tree.label,
-    detail: {payload: tree.payload ? tree.payload : {}, children: {}}
-  });
+  const treeItem =
+      /** @type {CrTreeItemElement} */ (document.createElement('cr-tree-item'));
+  treeItem.label = tree.label;
+  treeItem.detail = {payload: tree.payload ? tree.payload : {}, children: {}};
   if (tree.children) {
     for (let i = 0; i < tree.children.length; i++) {
-      treeItem.add(
-          treeItem['detail'].children[i] = constructTree(tree.children[i]));
+      const child = constructTree(tree.children[i]);
+      treeItem.add(child);
+      treeItem.detail.children[i] = child;
     }
   }
   return treeItem;
@@ -166,10 +198,11 @@ function constructTree(tree) {
  * Clear any previous certificate fields in the tree.
  */
 function clearCertificateFields() {
-  const treeItem = /** @type {!Tree} */ ($('cert-fields'));
-  for (const key in treeItem['detail'].children) {
-    treeItem.remove(treeItem['detail'].children[key]);
-    delete treeItem['detail'].children[key];
+  const treeItem =
+      /** @type {!CrTreeElement} */ (document.querySelector('#cert-fields'));
+  for (const key in treeItem.detail.children) {
+    treeItem.removeTreeItem(treeItem.detail.children[key]);
+    delete treeItem.detail.children[key];
   }
 }
 
@@ -178,7 +211,9 @@ function clearCertificateFields() {
  */
 function showCertificateFields() {
   clearCertificateFields();
-  const item = $('hierarchy').selectedItem;
+  const hierarchy =
+      /** @type {!CrTreeElement} */ (document.querySelector('#hierarchy'));
+  const item = hierarchy.selectedItem;
   if (item && item.detail.payload.index !== undefined) {
     sendWithPromise('requestCertificateFields', item.detail.payload.index)
         .then(onCertificateFields);
@@ -192,12 +227,14 @@ function showCertificateFields() {
  */
 function onCertificateFields(certFields) {
   clearCertificateFields();
-  const treeItem = /** @type {!Tree} */ ($('cert-fields'));
-  treeItem.add(
-      treeItem['detail'].children['root'] = constructTree(certFields[0]));
-  revealTree(treeItem);
+  const tree =
+      /** @type {!CrTreeElement} */ (document.querySelector('#cert-fields'));
+  const root = constructTree(certFields[0]);
+  tree.detail.children['root'] = root;
+  tree.add(root);
+  revealTree(tree);
   // Ensure the list is scrolled to the top by selecting the first item.
-  treeItem.children[0].selected = true;
+  tree.selectedItem = tree.items[0];
   document.body.dispatchEvent(
       new CustomEvent('certificate-fields-updated-for-testing'));
 }
@@ -206,11 +243,14 @@ function onCertificateFields(certFields) {
  * Show certificate field value for a selected certificate field.
  */
 function showCertificateFieldValue() {
-  const item = $('cert-fields').selectedItem;
+  const certFields =
+      /** @type {CrTreeElement} */ (document.querySelector('#cert-fields'));
+  const item = certFields.selectedItem;
+  const fieldValue = document.querySelector('#cert-field-value');
   if (item && item.detail.payload.val) {
-    $('cert-field-value').textContent = item.detail.payload.val;
+    fieldValue.textContent = item.detail.payload.val;
   } else {
-    $('cert-field-value').textContent = '';
+    fieldValue.textContent = '';
   }
 }
 
@@ -218,7 +258,9 @@ function showCertificateFieldValue() {
  * Export the selected certificate.
  */
 function exportCertificate() {
-  const item = $('hierarchy').selectedItem;
+  const hierarchy =
+      /** @type {CrTreeElement} */ (document.querySelector('#hierarchy'));
+  const item = hierarchy.selectedItem;
   if (item && item.detail.payload.index !== undefined) {
     chrome.send('exportCertificate', [item.detail.payload.index]);
   }

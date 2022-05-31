@@ -22,11 +22,8 @@ h3 {
 
 #tabbox {
   height: 100%;
-  width: 100%;
-}
-
-#tabpanels {
   overflow: auto;
+  width: 100%;
 }
 
 #cert-field-value {
@@ -64,7 +61,8 @@ h3 {
 }
 
 /* Used so that 100% width within tabpanel will correspond to usable space. */
-tabpanel {
+div[slot='panel'] {
+  height: 100%;
   position: relative;
 }
 
@@ -104,15 +102,12 @@ tabpanel {
   overflow: auto;
 }
 
-.tree-row[selected] {
-  background-color: #f0f0f0;
-  background-image: none;
-}
-
-.tree-item > .tree-row {
-  border: 0;
-  border-radius: 0;
-  line-height: 29px;
+html {
+  --cr-tree-row-selected-color: #f0f0f0;
+  --cr-tree-row-selected-image: none;
+  --cr-tree-row-border: 0;
+  --cr-tree-row-border-radius: 0;
+  --cr-tree-row-line-height: 29px;
 }
 
 #export {
