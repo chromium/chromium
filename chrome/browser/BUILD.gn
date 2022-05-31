@@ -7627,6 +7627,10 @@ grit("resources") {
     }
   }
 
+  if (is_win) {
+    deps += [ "//chrome/browser/resources/conflicts:build_ts" ]
+  }
+
   if (is_win || is_mac || is_linux || is_chromeos || is_fuchsia) {
     deps += [
       "//chrome/browser/resources/gaia_auth_host:modulize",

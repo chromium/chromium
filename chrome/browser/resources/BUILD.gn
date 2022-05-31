@@ -155,13 +155,6 @@ if (enable_js_type_check) {
       ]
     }
 
-    # Note: The following targets should only be type-checked on Windows builds,
-    # but because Window bots don't depend on Java, |closure_compile| is off on
-    # Windows. Adding |is_linux| so that these targets are type-checked on at
-    # least one platform.
-    if (is_win || is_linux || is_chromeos) {
-      deps += [ "conflicts:closure_compile" ]
-    }
     if (is_linux || is_chromeos) {
       deps += [ "certificate_viewer:closure_compile" ]
     }

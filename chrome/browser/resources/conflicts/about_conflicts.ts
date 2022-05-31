@@ -4,47 +4,43 @@
 
 import 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 import {$} from 'chrome://resources/js/util.m.js';
 
-/**
- * This variable structure is here to document the structure that the template
- * expects to correctly populate the page.
- */
-const moduleListDataFormat = {
-  'moduleList': [{
-    'type_description':
-        'The type of module (string), defaults to blank for regular modules',
-    'location': 'The module path, not including filename',
-    'name': 'The name of the module',
-    'product_name': 'The name of the product the module belongs to',
-    'description': 'The module description',
-    'version': 'The module version',
-    'digital_signer': 'The signer of the digital certificate for the module',
-    'code_id': 'The code id of the module',
-    'third_party_module_status': 'The module status'
-  }]
+type ModuleData = {
+  code_id: string,
+  description: string,
+  digital_signer: string,
+  location: string,
+  name: string,
+  process_types: string,
+  type_description: string,
+  version: string,
+  third_party_module_status: string,
 };
+
+type ModuleListData = {
+  moduleCount: number,
+  moduleList: ModuleData[],
+  thirdPartyFeatureStatus: string,
+  thirdPartyFeatureEnabled: boolean,
+  hasModules: boolean,
+};
+
+type DomBindElement = HTMLElement&{data: ModuleListData};
 
 /**
  * Takes the |moduleListData| input argument which represents data about
  * the currently available modules and populates the HTML template
  * with that data. It expects an object structure like the above.
- * @param {Object} moduleListData Information about available modules.
  */
-function renderTemplate(moduleListData) {
-  const bind = document.body.querySelector('dom-bind');
+function renderTemplate(moduleListData: ModuleListData) {
+  const bind = document.body.querySelector<DomBindElement>('dom-bind');
+  assert(bind);
 
   moduleListData.hasModules = moduleListData.moduleList.length > 0;
   bind.data = moduleListData;
-}
-
-/**
- * Asks the C++ ConflictsHandler to get details about the available modules
- * and return detailed data about the configuration.
- */
-function requestModuleListData() {
-  sendWithPromise('requestModuleList').then(returnModuleList);
 }
 
 /**
@@ -54,21 +50,20 @@ function requestModuleListData() {
  */
 function filterModuleListData() {
   const filter = window.location.hash.substr(1).toLowerCase();
-  const modules = document.getElementsByClassName('module');
+  const modules = document.body.querySelectorAll<HTMLElement>('.module');
 
   // Loop through all modules, and hide all that don't match the filter.
   for (const module of modules) {
     module.style.display =
-        module.dataset['process'].toLowerCase().includes(filter) ? '' : 'none';
+        module.dataset['process']!.toLowerCase().includes(filter) ? '' : 'none';
   }
 }
 
 /**
  * Called by the WebUI to re-populate the page with data representing the
  * current state of installed modules.
- * @param {Object} moduleListData Information about available modules.
  */
-function returnModuleList(moduleListData) {
+function returnModuleList(moduleListData: ModuleListData) {
   renderTemplate(moduleListData);
   if (window.location.hash.length > 1) {
     filterModuleListData();
@@ -78,5 +73,9 @@ function returnModuleList(moduleListData) {
 }
 
 // Get data and have it displayed upon loading.
-document.addEventListener('DOMContentLoaded', requestModuleListData);
-window.addEventListener('hashchange', filterModuleListData, false);
+document.addEventListener('DOMContentLoaded', () => {
+  // Ask the C++ ConflictsHandler to get details about the available modules
+  // and return detailed data about the configuration.
+  sendWithPromise('requestModuleList').then(returnModuleList);
+  window.addEventListener('hashchange', filterModuleListData, false);
+});
