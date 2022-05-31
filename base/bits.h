@@ -86,10 +86,10 @@ inline T* AlignUp(T* ptr, size_t alignment) {
 // similar.
 #if defined(COMPILER_MSVC) && !defined(__clang__)
 
-template <typename T, unsigned bits = sizeof(T) * 8>
+template <typename T, int bits = sizeof(T) * 8>
 ALWAYS_INLINE
     typename std::enable_if<std::is_unsigned<T>::value && sizeof(T) <= 4,
-                            unsigned>::type
+                            int>::type
     CountLeadingZeroBits(T x) {
   static_assert(bits > 0, "invalid instantiation");
   unsigned long index;
@@ -98,10 +98,10 @@ ALWAYS_INLINE
              : bits;
 }
 
-template <typename T, unsigned bits = sizeof(T) * 8>
+template <typename T, int bits = sizeof(T) * 8>
 ALWAYS_INLINE
     typename std::enable_if<std::is_unsigned<T>::value && sizeof(T) == 8,
-                            unsigned>::type
+                            int>::type
     CountLeadingZeroBits(T x) {
   static_assert(bits > 0, "invalid instantiation");
   unsigned long index;
@@ -123,10 +123,10 @@ ALWAYS_INLINE
 #endif
 }
 
-template <typename T, unsigned bits = sizeof(T) * 8>
+template <typename T, int bits = sizeof(T) * 8>
 ALWAYS_INLINE
     typename std::enable_if<std::is_unsigned<T>::value && sizeof(T) <= 4,
-                            unsigned>::type
+                            int>::type
     CountTrailingZeroBits(T x) {
   static_assert(bits > 0, "invalid instantiation");
   unsigned long index;
@@ -134,10 +134,10 @@ ALWAYS_INLINE
                                                                    : bits;
 }
 
-template <typename T, unsigned bits = sizeof(T) * 8>
+template <typename T, int bits = sizeof(T) * 8>
 ALWAYS_INLINE
     typename std::enable_if<std::is_unsigned<T>::value && sizeof(T) == 8,
-                            unsigned>::type
+                            int>::type
     CountTrailingZeroBits(T x) {
   static_assert(bits > 0, "invalid instantiation");
   unsigned long index;
@@ -158,20 +158,16 @@ ALWAYS_INLINE
 #endif
 }
 
-// Used in place of "constexpr" below for things which are conditionally
-// constexpr depending on whether the functions above are constexpr.
-#define BASE_BITOPS_CONSTEXPR
-
 #elif defined(COMPILER_GCC) || defined(__clang__)
 
 // __builtin_clz has undefined behaviour for an input of 0, even though there's
 // clearly a return value that makes sense, and even though some processor clz
 // instructions have defined behaviour for 0. We could drop to raw __asm__ to
 // do better, but we'll avoid doing that unless we see proof that we need to.
-template <typename T, unsigned bits = sizeof(T) * 8>
+template <typename T, int bits = sizeof(T) * 8>
 ALWAYS_INLINE constexpr
     typename std::enable_if<std::is_unsigned<T>::value && sizeof(T) <= 8,
-                            unsigned>::type
+                            int>::type
     CountLeadingZeroBits(T value) {
   static_assert(bits > 0, "invalid instantiation");
   return LIKELY(value)
@@ -181,10 +177,10 @@ ALWAYS_INLINE constexpr
              : bits;
 }
 
-template <typename T, unsigned bits = sizeof(T) * 8>
+template <typename T, int bits = sizeof(T) * 8>
 ALWAYS_INLINE constexpr
     typename std::enable_if<std::is_unsigned<T>::value && sizeof(T) <= 8,
-                            unsigned>::type
+                            int>::type
     CountTrailingZeroBits(T value) {
   return LIKELY(value) ? bits == 64
                              ? __builtin_ctzll(static_cast<uint64_t>(value))
@@ -192,30 +188,7 @@ ALWAYS_INLINE constexpr
                        : bits;
 }
 
-#define BASE_BITOPS_CONSTEXPR constexpr
-
 #endif
-
-ALWAYS_INLINE BASE_BITOPS_CONSTEXPR uint32_t
-CountLeadingZeroBits32(uint32_t x) {
-  return CountLeadingZeroBits(x);
-}
-
-ALWAYS_INLINE BASE_BITOPS_CONSTEXPR uint64_t
-CountLeadingZeroBits64(uint64_t x) {
-  return CountLeadingZeroBits(x);
-}
-
-ALWAYS_INLINE BASE_BITOPS_CONSTEXPR size_t CountLeadingZeroBitsSizeT(size_t x) {
-  return CountLeadingZeroBits(x);
-}
-
-ALWAYS_INLINE BASE_BITOPS_CONSTEXPR size_t
-CountTrailingZeroBitsSizeT(size_t x) {
-  return CountTrailingZeroBits(x);
-}
-
-#undef BASE_BITOPS_CONSTEXPR
 
 // Returns the integer i such as 2^i <= n < 2^(i+1).
 //

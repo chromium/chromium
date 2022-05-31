@@ -80,10 +80,10 @@ inline T* AlignUp(T* ptr, size_t alignment) {
 // constexpr.
 #if defined(COMPILER_MSVC) && !defined(__clang__)
 
-template <typename T, unsigned bits = sizeof(T) * 8>
+template <typename T, int bits = sizeof(T) * 8>
 PA_ALWAYS_INLINE
     typename std::enable_if<std::is_unsigned<T>::value && sizeof(T) <= 4,
-                            unsigned>::type
+                            int>::type
     CountLeadingZeroBits(T x) {
   static_assert(bits > 0, "invalid instantiation");
   unsigned long index;
@@ -92,10 +92,10 @@ PA_ALWAYS_INLINE
              : bits;
 }
 
-template <typename T, unsigned bits = sizeof(T) * 8>
+template <typename T, int bits = sizeof(T) * 8>
 PA_ALWAYS_INLINE
     typename std::enable_if<std::is_unsigned<T>::value && sizeof(T) == 8,
-                            unsigned>::type
+                            int>::type
     CountLeadingZeroBits(T x) {
   static_assert(bits > 0, "invalid instantiation");
   unsigned long index;
@@ -117,10 +117,10 @@ PA_ALWAYS_INLINE
 #endif
 }
 
-template <typename T, unsigned bits = sizeof(T) * 8>
+template <typename T, int bits = sizeof(T) * 8>
 PA_ALWAYS_INLINE
     typename std::enable_if<std::is_unsigned<T>::value && sizeof(T) <= 4,
-                            unsigned>::type
+                            int>::type
     CountTrailingZeroBits(T x) {
   static_assert(bits > 0, "invalid instantiation");
   unsigned long index;
@@ -128,10 +128,10 @@ PA_ALWAYS_INLINE
                                                                       : bits;
 }
 
-template <typename T, unsigned bits = sizeof(T) * 8>
+template <typename T, int bits = sizeof(T) * 8>
 PA_ALWAYS_INLINE
     typename std::enable_if<std::is_unsigned<T>::value && sizeof(T) == 8,
-                            unsigned>::type
+                            int>::type
     CountTrailingZeroBits(T x) {
   static_assert(bits > 0, "invalid instantiation");
   unsigned long index;
@@ -152,24 +152,16 @@ PA_ALWAYS_INLINE
 #endif
 }
 
-PA_ALWAYS_INLINE uint32_t CountLeadingZeroBits32(uint32_t x) {
-  return CountLeadingZeroBits(x);
-}
-
-PA_ALWAYS_INLINE uint64_t CountLeadingZeroBits64(uint64_t x) {
-  return CountLeadingZeroBits(x);
-}
-
 #elif defined(COMPILER_GCC) || defined(__clang__)
 
 // __builtin_clz has undefined behaviour for an input of 0, even though there's
 // clearly a return value that makes sense, and even though some processor clz
 // instructions have defined behaviour for 0. We could drop to raw __asm__ to
 // do better, but we'll avoid doing that unless we see proof that we need to.
-template <typename T, unsigned bits = sizeof(T) * 8>
+template <typename T, int bits = sizeof(T) * 8>
 PA_ALWAYS_INLINE constexpr
     typename std::enable_if<std::is_unsigned<T>::value && sizeof(T) <= 8,
-                            unsigned>::type
+                            int>::type
     CountLeadingZeroBits(T value) {
   static_assert(bits > 0, "invalid instantiation");
   return PA_LIKELY(value)
@@ -179,10 +171,10 @@ PA_ALWAYS_INLINE constexpr
              : bits;
 }
 
-template <typename T, unsigned bits = sizeof(T) * 8>
+template <typename T, int bits = sizeof(T) * 8>
 PA_ALWAYS_INLINE constexpr
     typename std::enable_if<std::is_unsigned<T>::value && sizeof(T) <= 8,
-                            unsigned>::type
+                            int>::type
     CountTrailingZeroBits(T value) {
   return PA_LIKELY(value) ? bits == 64
                                 ? __builtin_ctzll(static_cast<uint64_t>(value))
@@ -190,23 +182,7 @@ PA_ALWAYS_INLINE constexpr
                           : bits;
 }
 
-PA_ALWAYS_INLINE constexpr uint32_t CountLeadingZeroBits32(uint32_t x) {
-  return CountLeadingZeroBits(x);
-}
-
-PA_ALWAYS_INLINE constexpr uint64_t CountLeadingZeroBits64(uint64_t x) {
-  return CountLeadingZeroBits(x);
-}
-
 #endif
-
-PA_ALWAYS_INLINE constexpr size_t CountLeadingZeroBitsSizeT(size_t x) {
-  return CountLeadingZeroBits(x);
-}
-
-PA_ALWAYS_INLINE constexpr size_t CountTrailingZeroBitsSizeT(size_t x) {
-  return CountTrailingZeroBits(x);
-}
 
 // Returns the integer i such as 2^i <= n < 2^(i+1).
 //

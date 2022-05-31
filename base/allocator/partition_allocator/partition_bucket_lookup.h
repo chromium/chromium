@@ -253,8 +253,9 @@ PA_ALWAYS_INLINE constexpr size_t BucketIndexLookup::GetIndexForDenserBuckets(
   // This forces the bucket table to be constant-initialized and immediately
   // materialized in the binary.
   constexpr BucketIndexLookup lookup{};
-  const uint8_t order =
-      kBitsPerSizeT - base::bits::CountLeadingZeroBitsSizeT(size);
+  const size_t order =
+      kBitsPerSizeT -
+      static_cast<size_t>(base::bits::CountLeadingZeroBits(size));
   // The order index is simply the next few bits after the most significant
   // bit.
   const size_t order_index =
