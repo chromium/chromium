@@ -266,7 +266,8 @@
     "prefix": "layout_ng_table_frag",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/css/css-break/table",
-              "external/wpt/css/css-multicol/table"],
+              "external/wpt/css/css-multicol/table",
+              "fragmentation"],
     "args": ["--enable-blink-features=LayoutNGTableFragmentation"]
   },
   {
