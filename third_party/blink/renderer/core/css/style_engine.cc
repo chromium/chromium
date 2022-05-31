@@ -1941,8 +1941,6 @@ void StyleEngine::InvalidateForRuleSetChanges(
     return;
   }
 
-  if (changed_rule_sets.IsEmpty())
-    return;
   ScheduleInvalidationsForRuleSets(tree_scope, changed_rule_sets,
                                    invalidation_scope);
 }
