@@ -294,8 +294,10 @@ public class ChromeTabCreator extends TabCreator {
                           .setInitiallyHidden(!openInForeground)
                           .build();
         @TabCreationState
-        int creationState = openInForeground ? TabCreationState.LIVE_IN_FOREGROUND
-                                             : TabCreationState.LIVE_IN_BACKGROUND;
+        int creationState = openInForeground
+                ? TabCreationState.LIVE_IN_FOREGROUND
+                : ((type == TabLaunchType.FROM_RECENT_TABS) ? TabCreationState.FROZEN_FOR_LAZY_LOAD
+                                                            : TabCreationState.LIVE_IN_BACKGROUND);
         mTabModel.addTab(tab, position, type, creationState);
         return true;
     }
