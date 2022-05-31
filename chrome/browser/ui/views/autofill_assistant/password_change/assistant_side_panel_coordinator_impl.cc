@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
+#include "ui/views/layout/box_layout.h"
 
 namespace {
 constexpr int kAssistantIconSize = 16;
@@ -109,6 +110,8 @@ std::unique_ptr<views::View>
 AssistantSidePanelCoordinatorImpl::CreateSidePanelView() {
   std::unique_ptr<views::View> side_panel_view;
   side_panel_view = std::make_unique<views::View>();
+  side_panel_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical));
   if (side_panel_view_child_) {
     side_panel_view->AddChildView(std::move(side_panel_view_child_));
   }
