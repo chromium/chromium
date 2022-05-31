@@ -20,6 +20,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/browser/ping_manager.h"
+#include "components/safe_browsing/core/browser/test_safe_browsing_token_fetcher.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -35,8 +36,6 @@
 using network::GetUploadData;
 
 namespace safe_browsing {
-
-class TestSafeBrowsingTokenFetcher;
 
 class ChromePingManagerTest : public testing::Test {
  protected:
@@ -61,28 +60,6 @@ class ChromePingManagerTest : public testing::Test {
 
   scoped_refptr<safe_browsing::SafeBrowsingService> sb_service_;
   base::test::ScopedFeatureList feature_list_;
-};
-
-class TestSafeBrowsingTokenFetcher : public SafeBrowsingTokenFetcher {
- public:
-  TestSafeBrowsingTokenFetcher() = default;
-  ~TestSafeBrowsingTokenFetcher() override { RunAccessTokenCallback(""); }
-
-  void Start(Callback callback) override {
-    callback_ = std::move(callback);
-    was_start_called_ = true;
-  }
-  void RunAccessTokenCallback(std::string token) {
-    if (callback_) {
-      std::move(callback_).Run(token);
-    }
-  }
-  bool WasStartCalled() { return was_start_called_; }
-  MOCK_METHOD1(OnInvalidAccessToken, void(const std::string&));
-
- private:
-  Callback callback_;
-  bool was_start_called_ = false;
 };
 
 void ChromePingManagerTest::SetUp() {

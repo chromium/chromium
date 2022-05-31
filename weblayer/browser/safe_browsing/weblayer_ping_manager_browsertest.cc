@@ -9,6 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
+#include "components/safe_browsing/core/browser/test_safe_browsing_token_fetcher.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -27,8 +28,6 @@ using ReportThreatDetailsResult =
     safe_browsing::PingManager::ReportThreatDetailsResult;
 
 namespace weblayer {
-
-class TestSafeBrowsingTokenFetcher;
 
 class WeblayerPingManagerTest : public WebLayerBrowserTest {
  public:
@@ -50,7 +49,7 @@ class WeblayerPingManagerTest : public WebLayerBrowserTest {
   bool is_remove_cookies_feature_enabled_ = true;
 
  private:
-  TestSafeBrowsingTokenFetcher* SetUpTokenFetcher(
+  safe_browsing::TestSafeBrowsingTokenFetcher* SetUpTokenFetcher(
       safe_browsing::PingManager* ping_manager);
 };
 class RemoveCookiesFeatureDisabledWeblayerPingManagerTest
@@ -80,32 +79,11 @@ class IncognitoModeWeblayerPingManagerTest : public WeblayerPingManagerTest {
   IncognitoModeWeblayerPingManagerTest() { SetShellStartsInIncognitoMode(); }
 };
 
-class TestSafeBrowsingTokenFetcher
-    : public safe_browsing::SafeBrowsingTokenFetcher {
- public:
-  TestSafeBrowsingTokenFetcher() = default;
-  ~TestSafeBrowsingTokenFetcher() override { RunAccessTokenCallback(""); }
-
-  void Start(Callback callback) override {
-    callback_ = std::move(callback);
-    was_start_called_ = true;
-  }
-  void RunAccessTokenCallback(std::string token) {
-    if (callback_) {
-      std::move(callback_).Run(token);
-    }
-  }
-  bool WasStartCalled() { return was_start_called_; }
-  MOCK_METHOD1(OnInvalidAccessToken, void(const std::string&));
-
- private:
-  Callback callback_;
-  bool was_start_called_ = false;
-};
-
-TestSafeBrowsingTokenFetcher* WeblayerPingManagerTest::SetUpTokenFetcher(
+safe_browsing::TestSafeBrowsingTokenFetcher*
+WeblayerPingManagerTest::SetUpTokenFetcher(
     safe_browsing::PingManager* ping_manager) {
-  auto token_fetcher = std::make_unique<TestSafeBrowsingTokenFetcher>();
+  auto token_fetcher =
+      std::make_unique<safe_browsing::TestSafeBrowsingTokenFetcher>();
   auto* raw_token_fetcher = token_fetcher.get();
   ping_manager->SetTokenFetcherForTesting(std::move(token_fetcher));
   return raw_token_fetcher;

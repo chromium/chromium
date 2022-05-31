@@ -87,6 +87,7 @@ source_set("unit_tests") {
     "//components/safe_browsing:buildflags",
     "//components/safe_browsing/core/browser:referrer_chain_provider",
     "//components/safe_browsing/core/browser:token_fetcher",
+    "//components/safe_browsing/core/browser:token_fetcher_testing_helper",
     "//components/safe_browsing/core/browser:verdict_cache_manager",
     "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",

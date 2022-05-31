@@ -153,6 +153,20 @@ source_set("token_fetcher_unit_tests") {
   ]
 }
 
+source_set("token_fetcher_testing_helper") {
+  testonly = true
+  sources = [
+    "test_safe_browsing_token_fetcher.cc",
+    "test_safe_browsing_token_fetcher.h",
+  ]
+
+  deps = [
+    ":token_fetcher",
+    "//base",
+    "//testing/gmock",
+  ]
+}
+
 source_set("download_check_result") {
   sources = [ "download_check_result.h" ]
 }
