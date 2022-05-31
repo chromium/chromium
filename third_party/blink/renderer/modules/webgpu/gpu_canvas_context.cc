@@ -6,7 +6,7 @@
 
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_htmlcanvaselement_offscreencanvas.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_canvas_compositing_alpha_mode.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_canvas_alpha_mode.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_canvas_configuration.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_canvasrenderingcontext2d_gpucanvascontext_imagebitmaprenderingcontext_webgl2renderingcontext_webglrenderingcontext.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_gpucanvascontext_imagebitmaprenderingcontext_offscreencanvasrenderingcontext2d_webgl2renderingcontext_webglrenderingcontext.h"
@@ -206,15 +206,20 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
       return;
   }
 
-  alpha_mode_ = V8GPUCanvasCompositingAlphaMode::Enum::kPremultiplied;
+  alpha_mode_ = V8GPUCanvasAlphaMode::Enum::kPremultiplied;
   if (descriptor->hasCompositingAlphaMode()) {
     alpha_mode_ = descriptor->compositingAlphaMode().AsEnum();
+    configured_device_->AddConsoleWarning(
+        "compositingAlphaMode is deprecated and will soon be removed. Please "
+        "set alphaMode instead.");
+  } else if (descriptor->hasAlphaMode()) {
+    alpha_mode_ = descriptor->alphaMode().AsEnum();
   } else {
     configured_device_->AddConsoleWarning(
-        "The default GPUCanvasCompositingAlphaMode will change from "
+        "The default GPUCanvasAlphaMode will change from "
         "\"premultiplied\" to \"opaque\". "
-        "Please explicitly pass \"premultiplied\" if you would like to "
-        "continue using that compositing mode.");
+        "Please explicitly set alphaMode to \"premultiplied\" if you would "
+        "like to continue using that compositing mode.");
   }
 
   // TODO(crbug.com/1326473): Implement support for context viewFormats.

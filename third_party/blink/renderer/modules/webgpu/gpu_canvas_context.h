@@ -100,7 +100,7 @@ class GPUCanvasContext : public CanvasRenderingContext {
   Member<GPUDevice> configured_device_;
   WGPUTextureUsage usage_;
   WGPUTextureFormat format_;
-  V8GPUCanvasCompositingAlphaMode::Enum alpha_mode_;
+  V8GPUCanvasAlphaMode::Enum alpha_mode_;
 
   bool stopped_ = false;
 
