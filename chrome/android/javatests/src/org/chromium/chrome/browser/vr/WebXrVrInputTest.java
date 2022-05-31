@@ -493,7 +493,8 @@ public class WebXrVrInputTest {
         }
 
         WebXrVrTestFramework.waitOnJavaScriptStep(mTestRule.getWebContents());
-        mWebXrVrTestFramework.enterSessionWithUserGestureOrFail(mTestRule.getWebContents());
+        mWebXrVrTestFramework.enterSessionWithUserGestureOrFail(
+                mTestRule.getWebContents(), /*needsCameraPermission=*/false);
         // The permission toasts automatically show for ~5 seconds when entering an immersive
         // session, so wait for that to disappear
         NativeUiUtils.performActionAndWaitForVisibilityStatus(

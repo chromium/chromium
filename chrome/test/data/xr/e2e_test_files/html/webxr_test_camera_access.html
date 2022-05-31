@@ -114,6 +114,7 @@ Tests that AR camera access returns non-empty GLTexture.
 
             for (let view of pose.views) {
               if (view.camera) {
+                ranAtLeastOnce = true;
                 cameraImageTexture = glBinding.getCameraImage(view.camera);
                 assert_not_equals(cameraImageTexture, null, "XRWebGLBinding.getCameraImage(...) returned null texture.");
               }
@@ -122,6 +123,7 @@ Tests that AR camera access returns non-empty GLTexture.
 
           if (numPosesFound > MAX_NUM_FRAMES_WITH_POSES) {
             onARFrameCallback = null;
+            assert_true(ranAtLeastOnce);
             done();
           }
         };
@@ -137,7 +139,6 @@ Tests that AR camera access returns non-empty GLTexture.
         return count;
       }
 
-      // TODO(https://www.crbug.com/1115167): Enable test once pixel reads are working as intended.
       function stepCheckCameraTextureLifetimeLimitedToOneFrame() {
         const webglCanvas = document.getElementById('webgl-canvas');
         const gl = webglCanvas.getContext('webgl', {

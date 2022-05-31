@@ -22,6 +22,7 @@
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom-shared.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -95,8 +96,6 @@ void MediaStreamDevicesController::RequestPermissions(
   permissions::PermissionManager* permission_manager =
       permissions::PermissionsClient::Get()->GetPermissionManager(
           web_contents->GetBrowserContext());
-  bool will_prompt_for_audio = false;
-  bool will_prompt_for_video = false;
 
   if (controller->ShouldRequestAudio()) {
     permissions::PermissionResult permission_status =
@@ -112,8 +111,6 @@ void MediaStreamDevicesController::RequestPermissions(
     }
 
     permission_types.push_back(blink::PermissionType::AUDIO_CAPTURE);
-    will_prompt_for_audio =
-        permission_status.content_setting == CONTENT_SETTING_ASK;
   }
   if (controller->ShouldRequestVideo()) {
     permissions::PermissionResult permission_status =
@@ -129,8 +126,6 @@ void MediaStreamDevicesController::RequestPermissions(
     }
 
     permission_types.push_back(blink::PermissionType::VIDEO_CAPTURE);
-    will_prompt_for_video =
-        permission_status.content_setting == CONTENT_SETTING_ASK;
 
     bool has_pan_tilt_zoom_camera = controller->HasAvailableDevices(
         ContentSettingsType::CAMERA_PAN_TILT_ZOOM,
@@ -164,9 +159,8 @@ void MediaStreamDevicesController::RequestPermissions(
       ->RequestPermissionsFromCurrentDocument(
           permission_types, rfh, request.user_gesture,
           base::BindOnce(
-              &MediaStreamDevicesController::RequestAndroidPermissionsIfNeeded,
-              web_contents, std::move(controller), will_prompt_for_audio,
-              will_prompt_for_video));
+              &MediaStreamDevicesController::PromptAnsweredGroupedRequest,
+              std::move(controller)));
 }
 
 MediaStreamDevicesController::~MediaStreamDevicesController() {
@@ -199,98 +193,6 @@ MediaStreamDevicesController::MediaStreamDevicesController(
   video_setting_ = GetContentSetting(ContentSettingsType::MEDIASTREAM_CAMERA,
                                      request, &denial_reason_);
 }
-
-void MediaStreamDevicesController::RequestAndroidPermissionsIfNeeded(
-    content::WebContents* web_contents,
-    std::unique_ptr<MediaStreamDevicesController> controller,
-    bool did_prompt_for_audio,
-    bool did_prompt_for_video,
-    const std::vector<blink::mojom::PermissionStatus>& permissions_status) {
-  std::vector<ContentSetting> responses;
-  std::transform(permissions_status.begin(), permissions_status.end(),
-                 back_inserter(responses),
-                 permissions::PermissionUtil::PermissionStatusToContentSetting);
-
-#if BUILDFLAG(IS_ANDROID)
-  // If either audio or video was previously allowed and Chrome no longer has
-  // the necessary permissions, show a infobar to attempt to address this
-  // mismatch.
-  std::vector<ContentSettingsType> content_settings_types;
-  // The audio setting will always be the first one in the vector, if it was
-  // requested.
-  // If the user was already prompted for mic (|did_prompt_for_audio| flag), we
-  // would have requested Android permission at that point.
-  if (!did_prompt_for_audio && controller->ShouldRequestAudio() &&
-      responses.front() == CONTENT_SETTING_ALLOW) {
-    content_settings_types.push_back(ContentSettingsType::MEDIASTREAM_MIC);
-  }
-
-  // If the user was already prompted for camera (|did_prompt_for_video| flag),
-  // we would have requested Android permission at that point.
-  if (!did_prompt_for_video && controller->ShouldRequestVideo() &&
-      responses.back() == CONTENT_SETTING_ALLOW) {
-    content_settings_types.push_back(ContentSettingsType::MEDIASTREAM_CAMERA);
-  }
-
-  // If the user was already prompted for camera (|did_prompt_for_video| flag),
-  // we would have requested Android permission at that point.
-  if (!did_prompt_for_video && controller->ShouldRequestVideo() &&
-      responses.back() == CONTENT_SETTING_ALLOW) {
-    content_settings_types.push_back(ContentSettingsType::MEDIASTREAM_CAMERA);
-  }
-  if (content_settings_types.empty()) {
-    controller->PromptAnsweredGroupedRequest(responses);
-    return;
-  }
-
-  permissions::PermissionRepromptState reprompt_state =
-      permissions::ShouldRepromptUserForPermissions(web_contents,
-                                                    content_settings_types);
-  switch (reprompt_state) {
-    case permissions::PermissionRepromptState::kNoNeed:
-      controller->PromptAnsweredGroupedRequest(responses);
-      return;
-
-    case permissions::PermissionRepromptState::kShow:
-      permissions::PermissionsClient::Get()->RepromptForAndroidPermissions(
-          web_contents, content_settings_types,
-          base::BindOnce(&MediaStreamDevicesController::AndroidOSPromptAnswered,
-                         std::move(controller), responses));
-      return;
-
-    case permissions::PermissionRepromptState::kCannotShow: {
-      std::vector<ContentSetting> blocked_responses(responses.size(),
-                                                    CONTENT_SETTING_BLOCK);
-      controller->PromptAnsweredGroupedRequest(blocked_responses);
-      return;
-    }
-  }
-
-  NOTREACHED() << "Unknown show permission infobar state.";
-#else
-  controller->PromptAnsweredGroupedRequest(responses);
-#endif
-}
-
-#if BUILDFLAG(IS_ANDROID)
-// static
-void MediaStreamDevicesController::AndroidOSPromptAnswered(
-    std::unique_ptr<MediaStreamDevicesController> controller,
-    std::vector<ContentSetting> responses,
-    bool android_prompt_granted) {
-  if (!android_prompt_granted) {
-    // Only permissions that were previously ALLOW for a site will have had
-    // their android permissions requested. It's only in that case that we need
-    // to change the setting to BLOCK to reflect that it wasn't allowed.
-    for (size_t i = 0; i < responses.size(); ++i) {
-      if (responses[i] == CONTENT_SETTING_ALLOW)
-        responses[i] = CONTENT_SETTING_BLOCK;
-    }
-  }
-
-  controller->PromptAnsweredGroupedRequest(responses);
-}
-#endif  // BUILDFLAG(IS_ANDROID)
 
 bool MediaStreamDevicesController::ShouldRequestAudio() const {
   return audio_setting_ == CONTENT_SETTING_ASK;
@@ -522,13 +424,18 @@ bool MediaStreamDevicesController::PermissionIsBlockedForReason(
 }
 
 void MediaStreamDevicesController::PromptAnsweredGroupedRequest(
-    const std::vector<ContentSetting>& responses) {
+    const std::vector<blink::mojom::PermissionStatus>& permissions_status) {
   if (content::RenderFrameHost::FromID(request_.render_process_id,
                                        request_.render_frame_id) == nullptr) {
     // The frame requesting media devices was removed while we were waiting for
     // a user response on permissions. Nothing more to do.
     return;
   }
+
+  std::vector<ContentSetting> responses;
+  std::transform(permissions_status.begin(), permissions_status.end(),
+                 back_inserter(responses),
+                 permissions::PermissionUtil::PermissionStatusToContentSetting);
 
   bool need_audio = ShouldRequestAudio();
   bool need_video = ShouldRequestVideo();

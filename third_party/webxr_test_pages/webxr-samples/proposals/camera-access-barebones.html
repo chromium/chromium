@@ -43,8 +43,11 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
     <header>
       <details open>
         <summary>Camera Access Barebones</summary>
+        This sample demonstrates extremely simple use of WebXR's camera access by creating a rotating cube and applying the camera's image as a texture to it.
         <p>
-          This sample demonstrates extremely simple use of WebXR's camera access by creating a rotating cube and applying the camera's image as a texture to it.
+          <input id="cameraOptional" type="checkbox">
+          <label for="cameraOptional">Should "camera-access" feature be requested optionally?</label><br/>
+
           <a class="back" href="./index.html">Back</a>
         </p>
         <div id="warning-zone"></div>
@@ -60,6 +63,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
     <script type="module">
         import * as mat4 from "../js/third-party/gl-matrix/mat4.js"
         import {QueryArgs} from '../js/cottontail/src/util/query-args.js';
+
+        const cameraOptionalElement = document.getElementById('cameraOptional');
 
         // XR globals.
         let xrButton = document.getElementById('xr-button');
@@ -150,8 +155,15 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         function onButtonClicked() {
             if (!xrSession) {
                 const sessionOptions = {
-                    requiredFeatures: ['camera-access']
+                  requiredFeatures: [],
+                  optionalFeatures: [],
                 };
+
+                if(cameraOptionalElement.checked) {
+                  sessionOptions.optionalFeatures.push('camera-access');
+                } else {
+                  sessionOptions.requiredFeatures.push('camera-access');
+                }
 
                 if (use_dom_overlay) {
                   sessionOptions.requiredFeatures.push('dom-overlay');

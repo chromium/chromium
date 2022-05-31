@@ -152,14 +152,25 @@ public abstract class WebXrTestFramework extends XrTestFramework {
      * Attempts to enter a WebXR or WebVR session of some kind, failing if it is unable to.
      *
      * @param webContents The WebContents for the tab to enter the session in.
+     * @param needsCameraPermission True if the session requires Camera permission.
      */
-    public abstract void enterSessionWithUserGestureOrFail(WebContents webContents);
+    public abstract void enterSessionWithUserGestureOrFail(
+            WebContents webContents, boolean needsCameraPermission);
 
     /**
      * Helper function to run enterSessionWithUserGestureOrFail with the current tab's WebContents.
+     * Session will be treated as not requiring Camera permission.
      */
     public void enterSessionWithUserGestureOrFail() {
-        enterSessionWithUserGestureOrFail(getCurrentWebContents());
+        enterSessionWithUserGestureOrFail(false);
+    }
+
+    /**
+     * Helper function to run enterSessionWithUserGestureOrFail with the current tab's WebContents.
+     * @param needsCameraPermission True if the session requires Camera permission.
+     */
+    public void enterSessionWithUserGestureOrFail(boolean needsCameraPermission) {
+        enterSessionWithUserGestureOrFail(getCurrentWebContents(), needsCameraPermission);
     }
 
     /**

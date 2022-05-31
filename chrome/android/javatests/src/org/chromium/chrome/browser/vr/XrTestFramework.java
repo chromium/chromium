@@ -128,7 +128,8 @@ public abstract class XrTestFramework {
     /**
      * Checks whether a request for the given permission would trigger a permission prompt.
      *
-     * @param permission The name of the permission to check.
+     * @param permission The name of the permission to check. Must come from PermissionName enum
+     *         (see third_party/blink/renderer/modules/permissions/permission_descriptor.idl).
      * @param webContents The WebContents to run the JavaScript in.
      * @return True if the permission request would trigger a prompt, false otherwise.
      */
@@ -498,7 +499,8 @@ public abstract class XrTestFramework {
     /**
      * Helper method to run permissionRequestWouldTriggerPrompt with the current tab's WebContents.
      *
-     * @param permission The name of the permission to check.
+     * @param permission The name of the permission to check. Must come from PermissionName enum
+     *         (see third_party/blink/renderer/modules/permissions/permission_descriptor.idl).
      * @return True if the permission request would trigger a prompt, false otherwise.
      */
     public boolean permissionRequestWouldTriggerPrompt(String permission) {

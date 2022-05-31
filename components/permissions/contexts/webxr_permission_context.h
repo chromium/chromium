@@ -40,6 +40,10 @@ class WebXrPermissionContext : public PermissionContextBase {
                            ContentSetting content_setting,
                            bool is_one_time) override;
 
+  void UpdateTabContext(const permissions::PermissionRequestID& id,
+                        const GURL& requesting_origin,
+                        bool allowed) override;
+
   void OnAndroidPermissionDecided(const PermissionRequestID& id,
                                   const GURL& requesting_origin,
                                   const GURL& embedding_origin,

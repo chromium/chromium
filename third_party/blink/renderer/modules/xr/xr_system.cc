@@ -327,7 +327,6 @@ bool HasRequiredPermissionsPolicy(ExecutionContext* context,
     case device::mojom::XRSessionFeature::HIT_TEST:
     case device::mojom::XRSessionFeature::LIGHT_ESTIMATION:
     case device::mojom::XRSessionFeature::ANCHORS:
-    case device::mojom::XRSessionFeature::CAMERA_ACCESS:
     case device::mojom::XRSessionFeature::PLANE_DETECTION:
     case device::mojom::XRSessionFeature::DEPTH:
     case device::mojom::XRSessionFeature::IMAGE_TRACKING:
@@ -336,6 +335,13 @@ bool HasRequiredPermissionsPolicy(ExecutionContext* context,
       return context->IsFeatureEnabled(
           mojom::blink::PermissionsPolicyFeature::kWebXr,
           ReportOptions::kReportOnFailure);
+    case device::mojom::XRSessionFeature::CAMERA_ACCESS:
+      return context->IsFeatureEnabled(
+                 mojom::blink::PermissionsPolicyFeature::kWebXr,
+                 ReportOptions::kReportOnFailure) &&
+             context->IsFeatureEnabled(
+                 mojom::blink::PermissionsPolicyFeature::kCamera,
+                 ReportOptions::kReportOnFailure);
   }
 }
 

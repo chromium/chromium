@@ -112,22 +112,12 @@ bool IsMediaRequest(RequestType type) {
   return type == RequestType::kMicStream || type == RequestType::kCameraStream;
 }
 
-bool IsArOrCameraRequest(RequestType type) {
-  return type == RequestType::kArSession || type == RequestType::kCameraStream;
-}
-
 bool ShouldGroupRequests(PermissionRequest* a, PermissionRequest* b) {
   if (a->requesting_origin() != b->requesting_origin())
     return false;
 
   // Group if both requests are media requests.
   if (IsMediaRequest(a->request_type()) && IsMediaRequest(b->request_type())) {
-    return true;
-  }
-
-  // Group if the requests are an AR and a Camera Access request.
-  if (IsArOrCameraRequest(a->request_type()) &&
-      IsArOrCameraRequest(b->request_type())) {
     return true;
   }
 

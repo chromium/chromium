@@ -66,14 +66,6 @@ class MediaStreamDevicesController {
       bool did_prompt_for_video,
       const std::vector<blink::mojom::PermissionStatus>& responses);
 
-#if BUILDFLAG(IS_ANDROID)
-  // Called when the Android OS-level prompt is answered.
-  static void AndroidOSPromptAnswered(
-      std::unique_ptr<MediaStreamDevicesController> controller,
-      std::vector<ContentSetting> responses,
-      bool android_prompt_granted);
-#endif  // BUILDFLAG(IS_ANDROID)
-
   // Returns true if audio/video should be requested through the
   // PermissionManager. We won't try to request permission if the request is
   // already blocked for some other reason, e.g. there are no devices available.
@@ -104,7 +96,7 @@ class MediaStreamDevicesController {
 
   // Called when a permission prompt is answered through the PermissionManager.
   void PromptAnsweredGroupedRequest(
-      const std::vector<ContentSetting>& responses);
+      const std::vector<blink::mojom::PermissionStatus>& permissions_status);
 
   bool HasAvailableDevices(ContentSettingsType content_type,
                            const std::string& device_id) const;

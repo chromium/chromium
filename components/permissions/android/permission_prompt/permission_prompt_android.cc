@@ -82,23 +82,11 @@ static bool IsValidMediaRequestGroup(
            requests[1]->request_type() == RequestType::kMicStream));
 }
 
-static bool IsValidARCameraAccessRequestGroup(
-    const std::vector<PermissionRequest*>& requests) {
-  if (requests.size() < 2)
-    return false;
-  return ((requests[0]->request_type() == RequestType::kArSession &&
-           requests[1]->request_type() == RequestType::kCameraStream) ||
-          (requests[0]->request_type() == RequestType::kCameraStream &&
-           requests[1]->request_type() == RequestType::kArSession));
-}
-
-// Grouped permission requests can only be Mic+Camera, Camera+Mic,
-// AR + Camera, or Camera + AR.
+// Grouped permission requests can only be Mic+Camera, Camera+Mic.
 static void CheckValidRequestGroup(
     const std::vector<PermissionRequest*>& requests) {
   DCHECK_EQ(static_cast<size_t>(2u), requests.size());
-  DCHECK((IsValidMediaRequestGroup(requests)) ||
-         (IsValidARCameraAccessRequestGroup(requests)));
+  DCHECK((IsValidMediaRequestGroup(requests)));
 }
 
 int PermissionPromptAndroid::GetIconId() const {
@@ -126,19 +114,11 @@ std::u16string PermissionPromptAndroid::GetMessageText() const {
     }
   }
   CheckValidRequestGroup(requests);
-  if (IsValidARCameraAccessRequestGroup(requests)) {
-    return l10n_util::GetStringFUTF16(
-        IDS_AR_AND_MEDIA_CAPTURE_VIDEO_INFOBAR_TEXT,
-        url_formatter::FormatUrlForSecurityDisplay(
-            delegate_->GetRequestingOrigin(),
-            url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
-  } else {
-    return l10n_util::GetStringFUTF16(
-        IDS_MEDIA_CAPTURE_AUDIO_AND_VIDEO_INFOBAR_TEXT,
-        url_formatter::FormatUrlForSecurityDisplay(
-            delegate_->GetRequestingOrigin(),
-            url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
-  }
+  return l10n_util::GetStringFUTF16(
+      IDS_MEDIA_CAPTURE_AUDIO_AND_VIDEO_INFOBAR_TEXT,
+      url_formatter::FormatUrlForSecurityDisplay(
+          delegate_->GetRequestingOrigin(),
+          url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
 }
 
 }  // namespace permissions
