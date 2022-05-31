@@ -9,14 +9,17 @@
 #include "chrome/browser/cart/cart_db_content.pb.h"
 #include "chrome/browser/cart/cart_service.h"
 #include "chrome/browser/cart/cart_service_factory.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/search/ntp_features.h"
 
 CartHandler::CartHandler(
     mojo::PendingReceiver<chrome_cart::mojom::CartHandler> handler,
-    Profile* profile)
+    Profile* profile,
+    content::WebContents* web_contents)
     : handler_(this, std::move(handler)),
-      cart_service_(CartServiceFactory::GetForProfile(profile)) {}
+      cart_service_(CartServiceFactory::GetForProfile(profile)),
+      web_contents_(web_contents) {}
 
 CartHandler::~CartHandler() = default;
 
@@ -128,7 +131,8 @@ void CartHandler::OnDiscountConsentContinued() {
 void CartHandler::ShowNativeConsentDialog(
     ShowNativeConsentDialogCallback callback) {
   cart_service_->InterestedInDiscountConsent();
-  cart_service_->ShowNativeConsentDialog(std::move(callback));
+  cart_service_->ShowNativeConsentDialog(
+      chrome::FindBrowserWithWebContents(web_contents_), std::move(callback));
 }
 
 void CartHandler::GetDiscountEnabled(GetDiscountEnabledCallback callback) {

@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/commerce/ntp_discount_consent_dialog_view.h"
-
+#include "chrome/browser/ui/commerce/commerce_prompt.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "content/public/test/browser_test.h"
 
@@ -19,7 +18,7 @@ class NtpDiscountConsentDialogViewBrowserTest : public DialogBrowserTest {
 
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
-    NtpDiscountConsentDialogView::Show(
+    commerce::ShowDiscountConsentPrompt(
         browser(),
         base::BindOnce([](chrome_cart::mojom::ConsentStatus status) {}));
   }
