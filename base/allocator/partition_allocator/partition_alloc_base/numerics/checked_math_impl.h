@@ -158,15 +158,14 @@ constexpr bool CheckedMulImpl(T x, T y, T* result) {
   const UnsignedDst uy = SafeUnsignedAbs(y);
   const UnsignedDst uresult = static_cast<UnsignedDst>(ux * uy);
   const bool is_negative =
-      std::is_signed<T>::value && x && y && static_cast<SignedDst>(x ^ y) < 0;
+      std::is_signed<T>::value && static_cast<SignedDst>(x ^ y) < 0;
   // We have a fast out for unsigned identity or zero on the second operand.
   // After that it's an unsigned overflow check on the absolute value, with
   // a +1 bound for a negative result.
   if (uy > UnsignedDst(!std::is_signed<T>::value || is_negative) &&
       ux > (std::numeric_limits<T>::max() + UnsignedDst(is_negative)) / uy)
     return false;
-  *result = is_negative ? static_cast<T>(-1) - static_cast<T>(uresult - 1)
-                        : static_cast<T>(uresult);
+  *result = static_cast<T>(is_negative ? 0 - uresult : uresult);
   return true;
 }
 
