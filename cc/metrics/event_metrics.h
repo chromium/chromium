@@ -126,16 +126,21 @@ class CC_EXPORT EventMetrics {
 
   virtual std::unique_ptr<EventMetrics> Clone() const;
 
-  bool is_tracing_recorded() const { return is_tracing_recorded_; }
-  void set_tracing_recorded() {
-    DCHECK(!is_tracing_recorded_);
-    is_tracing_recorded_ = true;
+  bool should_record_tracing() const { return should_record_tracing_; }
+  void tracing_recorded() {
+    DCHECK(should_record_tracing_);
+    should_record_tracing_ = false;
   }
 
  protected:
   EventMetrics(EventType type,
                base::TimeTicks timestamp,
                const base::TickClock* tick_clock);
+
+  // Creates a clone of `other` that might be used in creating `EventMetrics`
+  // objects for some injected events. Since this object itself does not
+  // directly correspond to an event, it won't be used in recording trace
+  // events.
   EventMetrics(const EventMetrics& other);
 
   // Copy timestamps of dispatch stages (up to and including
@@ -163,7 +168,11 @@ class CC_EXPORT EventMetrics {
       dispatch_stage_timestamps_[static_cast<int>(DispatchStage::kMaxValue) +
                                  1];
 
-  bool is_tracing_recorded_ = false;
+  // Determines whether a tracing event should be recorded for this object or
+  // not. This is `true` by default and set to `false` after a tracing event is
+  // recorded to avoid multiple recordings. Also, it is `false` for cloned
+  // objects as they are not meant to be recorded in tracings.
+  bool should_record_tracing_ = true;
 };
 
 class CC_EXPORT ScrollEventMetrics : public EventMetrics {

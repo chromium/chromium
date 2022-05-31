@@ -176,8 +176,7 @@ void EventLatencyTracingRecorder::RecordEventLatencyTraceEvent(
     const std::vector<CompositorFrameReporter::StageData>* stage_history,
     const CompositorFrameReporter::ProcessedVizBreakdown* viz_breakdown) {
   DCHECK(event_metrics);
-  DCHECK(!event_metrics->is_tracing_recorded());
-  event_metrics->set_tracing_recorded();
+  DCHECK(event_metrics->should_record_tracing());
 
   const base::TimeTicks generated_timestamp =
       event_metrics->GetDispatchStageTimestamp(
@@ -297,6 +296,8 @@ void EventLatencyTracingRecorder::RecordEventLatencyTraceEvent(
     TRACE_EVENT_END(kTracingCategory, trace_track, termination_time);
   }
   TRACE_EVENT_END(kTracingCategory, trace_track, termination_time);
+
+  event_metrics->tracing_recorded();
 }
 
 }  // namespace cc
