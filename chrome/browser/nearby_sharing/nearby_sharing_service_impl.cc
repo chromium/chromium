@@ -326,7 +326,8 @@ NearbySharingServiceImpl::NearbySharingServiceImpl(
           kProcessNetworkChangeTimerDelay,
           base::BindRepeating(&NearbySharingServiceImpl::
                                   StopAdvertisingAndInvalidateSurfaceState,
-                              base::Unretained(this))) {
+                              base::Unretained(this))),
+      visibility_reminder_timer_delay_(kNearbyVisibilityReminderTimerDelay) {
   DCHECK(profile_);
   DCHECK(nearby_connections_manager_);
   DCHECK(power_client_);
@@ -4373,7 +4374,7 @@ void NearbySharingServiceImpl::UpdateVisibilityReminderTimer(
       prefs_->GetTime(prefs::kNearbySharingNextVisibilityReminderTimePrefName)
           .is_null()) {
     prefs_->SetTime(prefs::kNearbySharingNextVisibilityReminderTimePrefName,
-                    base::Time::Now() + kNearbyVisibilityReminderTimerDelay);
+                    base::Time::Now() + visibility_reminder_timer_delay_);
   }
 
   visibility_reminder_timer_.Start(
