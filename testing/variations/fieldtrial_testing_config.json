@@ -4603,16 +4603,18 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "EnabledWithRichContentWithDismissalAndSnooze",
                     "params": {
+                        "BubbleVariant": "RichContentWithDismissalAndSnooze",
                         "availability": "any",
                         "event_trigger": "name:password_suggestions_iph_triggered;comparator:==0;window:1825;storage:1825",
                         "event_used": "name:password_suggestions_shown;comparator:==0;window:90;storage:360",
                         "session_rate": "any",
                         "session_rate_impact": "none",
-                        "snooze_params": "max_limit:1,snooze_interval:14"
+                        "snooze_params": "max_limit:2,snooze_interval:4"
                     },
                     "enable_features": [
+                        "BubbleRichIPH",
                         "IPH_PasswordSuggestions"
                     ]
                 }
