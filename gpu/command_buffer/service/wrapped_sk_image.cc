@@ -277,10 +277,14 @@ class WrappedSkImage : public ClearTrackingSharedImageBacking {
     DCHECK_NE(format(), viz::ResourceFormat::ETC1);
     auto mipmap = usage() & SHARED_IMAGE_USAGE_MIPMAP ? GrMipMapped::kYes
                                                       : GrMipMapped::kNo;
-#if DCHECK_IS_ON()
+#if DCHECK_IS_ON() && !BUILDFLAG(IS_LINUX)
     // Initializing to bright green makes it obvious if the pixels are not
     // properly set before they are displayed (e.g. https://crbug.com/956555).
     // We don't do this on release builds because there is a slight overhead.
+    // Filling blue causes slight pixel difference, so linux-ref and
+    // linux-blink-ref bots cannot share the same baseline for webtest.
+    // So remove this color for this call for dcheck on build for now.
+    // TODO(crbug.com/1330278): add it back.
     backend_texture_ = context_state_->gr_context()->createBackendTexture(
         size().width(), size().height(), GetSkColorType(), SkColors::kBlue,
         mipmap, GrRenderable::kYes, GrProtected::kNo);
