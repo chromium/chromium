@@ -22,7 +22,7 @@ class PasswordChangeRunController {
   struct Model {
     std::u16string title;
     autofill_assistant::password_change::TopIcon top_icon;
-    std::u16string progress_description;
+    std::u16string description;
     autofill_assistant::password_change::ProgressStep progress_step;
   };
 
@@ -41,7 +41,7 @@ class PasswordChangeRunController {
   virtual void SetTopIcon(
       autofill_assistant::password_change::TopIcon top_icon) = 0;
   virtual void SetTitle(std::u16string title) = 0;
-  virtual void SetDescription(std::u16string progress_description) = 0;
+  virtual void SetDescription(std::u16string description) = 0;
   virtual void SetProgressBarStep(
       autofill_assistant::password_change::ProgressStep progress_step) = 0;
 

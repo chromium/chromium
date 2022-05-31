@@ -14,6 +14,7 @@ namespace autofill_assistant {
 // script.
 class ExternalActionDelegate {
  public:
+  virtual ~ExternalActionDelegate() = default;
   // Called when the script reaches an external action.
   // The |start_dom_checks_callback| can optionally be called to start the DOM
   // checks. This will allow interrupts to trigger (if the action itself allows

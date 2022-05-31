@@ -3,10 +3,17 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/autofill_assistant/password_change/apc_external_action_delegate.h"
+#include "chrome/browser/ui/autofill_assistant/password_change/password_change_run_display.h"
 
-// TODO(crbug.comgit /1324089): Implement once the side panel and
+// TODO(crbug.com/1324089): Implement once the side panel and
 // UpdateDesktopSideAction are available.
-ApcExternalActionDelegate::ApcExternalActionDelegate() = default;
+ApcExternalActionDelegate::ApcExternalActionDelegate(
+    AssistantDisplayDelegate* display_delegate)
+    : display_delegate_(display_delegate) {
+  DCHECK(display_delegate_);
+}
+
+ApcExternalActionDelegate::~ApcExternalActionDelegate() = default;
 
 void ApcExternalActionDelegate::OnActionRequested(
     const autofill_assistant::external::Action& action_info,
@@ -18,6 +25,47 @@ void ApcExternalActionDelegate::OnActionRequested(
   std::move(end_action_callback).Run(result);
 }
 
-void ApcExternalActionDelegate::OnInterruptStarted() {}
+void ApcExternalActionDelegate::SetupDisplay() {
+  Show(PasswordChangeRunDisplay::Create(GetWeakPtr(), display_delegate_));
+}
 
+void ApcExternalActionDelegate::OnInterruptStarted() {}
 void ApcExternalActionDelegate::OnInterruptFinished() {}
+
+// PasswordChangeRunController
+void ApcExternalActionDelegate::Show(
+    base::WeakPtr<PasswordChangeRunDisplay> password_change_run_display) {
+  password_change_run_display_ = password_change_run_display;
+  password_change_run_display_->Show();
+}
+
+void ApcExternalActionDelegate::SetTopIcon(
+    autofill_assistant::password_change::TopIcon top_icon) {
+  DCHECK(password_change_run_display_);
+  model_.top_icon = top_icon;
+  password_change_run_display_->SetTopIcon(top_icon);
+}
+
+void ApcExternalActionDelegate::SetTitle(std::u16string title) {
+  DCHECK(password_change_run_display_);
+  model_.title = title;
+  password_change_run_display_->SetTitle(title);
+}
+
+void ApcExternalActionDelegate::SetDescription(std::u16string description) {
+  DCHECK(password_change_run_display_);
+  model_.description = description;
+  password_change_run_display_->SetDescription(description);
+}
+
+void ApcExternalActionDelegate::SetProgressBarStep(
+    autofill_assistant::password_change::ProgressStep progress_step) {
+  DCHECK(password_change_run_display_);
+  model_.progress_step = progress_step;
+  password_change_run_display_->SetProgressBarStep(progress_step);
+}
+
+base::WeakPtr<PasswordChangeRunController>
+ApcExternalActionDelegate::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}

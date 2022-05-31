@@ -9,6 +9,8 @@
 #include "chrome/browser/ui/autofill_assistant/password_change/password_change_run_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
+class PasswordChangeRunDisplay;
+
 // Mocked PasswordChangeRunController used in unit tests.
 class MockPasswordChangeRunController : public PasswordChangeRunController {
  public:
