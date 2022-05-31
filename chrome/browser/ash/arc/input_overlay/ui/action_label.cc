@@ -42,9 +42,9 @@ constexpr SkColor kFocusRingRedColor = gfx::kGoogleRed300;
 
 // About focus ring.
 // Gap between focus ring outer edge to label.
-constexpr float kHaloInset = -3;
+constexpr float kHaloInset = -6;
 // Thickness of focus ring.
-constexpr float kHaloThickness = 2;
+constexpr float kHaloThickness = 4;
 
 // UI strings.
 // TODO(cuicuiruan): move the strings to chrome/app/generated_resources.grd
