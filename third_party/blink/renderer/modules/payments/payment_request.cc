@@ -448,7 +448,7 @@ void StringifyAndParseMethodSpecificData(ExecutionContext& execution_context,
                       WebFeature::kSecurePaymentConfirmation);
     output->secure_payment_confirmation =
         SecurePaymentConfirmationHelper::ParseSecurePaymentConfirmationData(
-            input, exception_state);
+            input, execution_context, exception_state);
   }
 }
 
