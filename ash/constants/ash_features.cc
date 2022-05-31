@@ -695,12 +695,6 @@ const base::Feature kFastPairSavedDevices{"FastPairSavedDevices",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables mounting various archive formats (in two tiers) in Files App. This
-// flag controls the first tier, whose support is very good.
-// https://crbug.com/1216245
-const base::Feature kFilesArchivemount{"FilesArchivemount",
-                                       base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Enables mounting various archive formats (in two tiers) in Files App. This
 // flag controls the second tier, whose support is more experimental.
 // https://crbug.com/1216245
 const base::Feature kFilesArchivemount2{"FilesArchivemount2",

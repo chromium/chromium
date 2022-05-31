@@ -522,35 +522,11 @@ void PostProcessFoundTasks(
 
   std::set<std::string> disabled_actions;
 
-  // kFilesArchivemount and kFilesArchivemount2 controls what subset of
-  // filename extensions listed in ui/file_manager/file_manager/manifest.json
-  // allows the "mount-archive" action.
-  //
-  // If kFilesArchivemount is disabled then only ".rar" and ".zip" are allowed.
-  // This corresponds to the status quo as of milestone M92.
-  //
-  // If kFilesArchivemount is enabled but kFilesArchivemount2 is disabled then
-  // more extensions are allowed, including ".7z" and uncompressed tar (".tar")
-  // but not compressed tar (".tar.bz", ".tar.bz2", ".tar.gz", ".tar.lzma",
-  // ".tar.xz", ".tbz", ".tbz2", ".tgz", ".tlzma", and ".txz") or compressed
-  // general files (".bz2", ".gz", ".lzma", and ".xz").
-  //
-  // If both are enabled then everything listed in manifest.json is allowed.
-  //
-  // TODO(crbug.com/1295892): some time after M98, remove these feature flags
-  // (scheduled to expire in M112) by hard-coding them to true, so that these
-  // if-blocks are never taken and can be deleted.
-  if (!base::FeatureList::IsEnabled(ash::features::kFilesArchivemount)) {
-    for (const auto& entry : entries) {
-      // Allow-list: .rar and .zip.
-      if (!entry.path.MatchesExtension(".rar") &&
-          !entry.path.MatchesExtension(".zip")) {
-        disabled_actions.emplace("mount-archive");
-        break;
-      }
-    }
-  } else if (!base::FeatureList::IsEnabled(
-                 ash::features::kFilesArchivemount2)) {
+  // kFilesArchivemount2 controls what subset of filename extensions listed in
+  // ui/file_manager/file_manager/manifest.json allows the "mount-archive"
+  // action. If kFilesArchivemount2 is enabled, everything listed in
+  // manifest.json is allowed.
+  if (!base::FeatureList::IsEnabled(ash::features::kFilesArchivemount2)) {
     for (const auto& entry : entries) {
       // Deny-list: various compressed formats.
       if (entry.path.MatchesFinalExtension(".bz") ||
