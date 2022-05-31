@@ -160,7 +160,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Nearby.Connections.InstantMessaging.{Direction}Express.OAuthTokenFetchResult"
     enum="BooleanSuccess" expires_after="2023-02-01">
-  <owner>nohle@chromium.org</owner>
+  <owner>hansenmichael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records whether or not the user was able to fetch the OAuth token necessary
@@ -176,7 +176,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Nearby.Connections.InstantMessaging.{Direction}Express.Result"
     enum="BooleanSuccess" expires_after="2023-02-01">
-  <owner>nohle@chromium.org</owner>
+  <owner>hansenmichael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records whether an HTTPS call to {Direction} the Instant Messaging API
@@ -191,7 +191,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Nearby.Connections.InstantMessaging.{Direction}Express.Result.FailureReason"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="2023-02-01">
-  <owner>nohle@chromium.org</owner>
+  <owner>hansenmichael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records the network error code or HTTPS response code from a failed HTTPS
@@ -233,7 +233,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Nearby.Connections.WifiLan.ConnectResult"
     enum="NearbyConnectionsWifiLanConnectResult" expires_after="2023-02-01">
-  <owner>nohle@chromium.org</owner>
+  <owner>hansenmichael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records the result of trying to connect to another device's TCP server
@@ -246,7 +246,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Nearby.Connections.WifiLan.ListenResult"
     enum="NearbyConnectionsWifiLanListenResult" expires_after="2023-02-01">
-  <owner>nohle@chromium.org</owner>
+  <owner>hansenmichael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records the result of listening for and accepting incoming TCP socket
@@ -259,7 +259,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Nearby.Connections.WifiLan.Socket.AcceptResult"
     enum="NetErrorCodes" expires_after="2023-02-01">
-  <owner>nohle@chromium.org</owner>
+  <owner>hansenmichael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records the result of a TCP server socket accepting incoming connections.
@@ -273,7 +273,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Nearby.Connections.WifiLan.TimeToConnect" units="ms"
     expires_after="2023-02-01">
-  <owner>nohle@chromium.org</owner>
+  <owner>hansenmichael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records the time it takes to successfully connect to another device's TCP
@@ -394,7 +394,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Nearby.Share.Certificates.Manager.BluetoothMacAddressPresentForPrivateCertificateCreation"
     enum="BooleanPresent" expires_after="2023-02-01">
-  <owner>nohle@chromium.org</owner>
+  <owner>pushi@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records whether or not a Bluetooth MAC address was able to be fetched during
@@ -501,7 +501,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Nearby.Share.Certificates.Storage.InitializeSuccessDuration"
     units="ms" expires_after="2023-02-01">
-  <owner>nohle@chromium.org</owner>
+  <owner>crisrael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records the time necessary to successfully initialize the Nearby Share
@@ -532,7 +532,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Nearby.Share.Connection.EstablishOutgoingConnection.Success"
     enum="BooleanSuccess" expires_after="2023-02-01">
-  <owner>nohle@chromium.org</owner>
+  <owner>pushi@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records whether an attempt to establish a connection to a receiving device
@@ -546,7 +546,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Nearby.Share.Connection.EstablishOutgoingConnectionStatus"
     enum="NearbyShareFinalStatus" expires_after="2023-02-01">
-  <owner>nohle@chromium.org</owner>
+  <owner>crisrael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records whether an attempt to establish a connection to a receiving device
@@ -559,7 +559,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Nearby.Share.Connection.TimeToEstablishOutgoingConnection"
     units="ms" expires_after="2023-02-01">
-  <owner>nohle@chromium.org</owner>
+  <owner>pushi@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records the time necessary to successfully establish a connection to a
@@ -573,7 +573,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Nearby.Share.Contacts.CanGetProfileUserName"
     enum="BooleanSuccess" expires_after="2023-02-01">
-  <owner>nohle@chromium.org</owner>
+  <owner>crisrael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records whether or not we able to retrieve the profile user name--think
@@ -588,7 +588,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Nearby.Share.Contacts.DownloadPageCount.{Result}"
     units="pages" expires_after="2023-02-01">
-  <owner>nohle@chromium.org</owner>
+  <owner>pushi@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Contacts are downloaded in pages, i.e., multiple ListContactPeople RPC
@@ -608,7 +608,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Nearby.Share.Contacts.DownloadResult" enum="BooleanSuccess"
     expires_after="2023-02-01">
-  <owner>nohle@chromium.org</owner>
+  <owner>crisrael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records whether or not the full, possibly paginated contact download from
@@ -622,7 +622,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Nearby.Share.Contacts.HttpResult" enum="NearbyShareHttpResult"
     expires_after="2023-02-01">
-  <owner>nohle@chromium.org</owner>
+  <owner>pushi@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records the result of each ListContactPeople RPC call to the Nearby Share
@@ -636,7 +636,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Nearby.Share.Contacts.NumContacts.{Type}" units="contacts"
     expires_after="2023-02-01">
-  <owner>nohle@chromium.org</owner>
+  <owner>crisrael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records the number of {Type} contacts downloaded from the Nearby server.
@@ -659,7 +659,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Nearby.Share.Contacts.Percent{Type}" units="%"
     expires_after="2023-02-01">
-  <owner>nohle@chromium.org</owner>
+  <owner>pushi@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records the percentage of {Type} Emitted every time contacts are downloaded
@@ -682,7 +682,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Nearby.Share.Contacts.TimeToDownload.{Result}" units="ms"
     expires_after="2023-02-01">
-  <owner>nohle@chromium.org</owner>
+  <owner>crisrael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records the time spent {Result}. Emitted every time contacts are downloaded
@@ -700,7 +700,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Nearby.Share.DeviceType{Direction}"
     enum="NearbyShareDeviceType" expires_after="2023-02-01">
-  <owner>nohle@chromium.org</owner>
+  <owner>pushi@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records the device type that the user {Direction}. Emitted when a transfer
@@ -716,7 +716,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Nearby.Share.Discovery.Delay.FromStartDiscoveryTo{EndState}"
     units="ms" expires_after="2023-02-01">
-  <owner>nohle@chromium.org</owner>
+  <owner>crisrael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records the delay between the start of the discovery session and {EndState}.
@@ -731,7 +731,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Nearby.Share.Discovery.FurthestDiscoveryProgress"
     enum="NearbyShareDiscoveryProgress" expires_after="2023-02-01">
-  <owner>nohle@chromium.org</owner>
+  <owner>pushi@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records the furthest state reached in a single Nearby Share discovery
@@ -741,7 +741,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Nearby.Share.Discovery.LookUpSelectedShareTarget"
     enum="BooleanFound" expires_after="2023-02-01">
-  <owner>nohle@chromium.org</owner>
+  <owner>crisrael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records whether or not the selected share target on the Nearby Share
@@ -753,7 +753,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Nearby.Share.Discovery.NumShareTargets.{Variation}"
     units="share targets" expires_after="2023-02-01">
-  <owner>nohle@chromium.org</owner>
+  <owner>pushi@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records the number of share targets {Variation} in a single discovery
@@ -768,7 +768,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Nearby.Share.Discovery.{Operation}"
     enum="NearbyShareServiceStatusCode" expires_after="2023-02-01">
-  <owner>nohle@chromium.org</owner>
+  <owner>crisrael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records the result of {Operation}. Emitted immediately after the operation
@@ -787,7 +787,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Nearby.Share.Enabled" enum="NearbyShareEnabledState"
     expires_after="2023-02-01">
-  <owner>nohle@chromium.org</owner>
+  <owner>pushi@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records if the user has the Nearby Share feature enabled, and if not,
@@ -800,7 +800,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Nearby.Share.EnabledStateChanged" enum="BooleanEnabled"
     expires_after="2023-02-01">
-  <owner>nohle@chromium.org</owner>
+  <owner>crisrael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records the enabled/disabled state of Nearby Share. Emitted when the feature
@@ -812,7 +812,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Nearby.Share.IsKnownContact" enum="BooleanKnown"
     expires_after="2023-02-01">
-  <owner>nohle@chromium.org</owner>
+  <owner>pushi@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records whether or not the device shared with is a known contact, i.e.,
@@ -834,7 +834,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Nearby.Share.Medium.ChangedToMedium"
     enum="NearbyConnectionsMedium" expires_after="2023-02-01">
-  <owner>nohle@chromium.org</owner>
+  <owner>crisrael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records the data-transfer medium that the Nearby Connections library
@@ -845,7 +845,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Nearby.Share.Medium.InitiateBandwidthUpgradeResult"
     enum="BooleanSuccess" expires_after="2023-02-01">
-  <owner>nohle@chromium.org</owner>
+  <owner>pushi@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records the result of Nearby Share starting a bandwidth upgrade via the
@@ -859,7 +859,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Nearby.Share.Medium.RequestedBandwidthUpgradeResult"
     enum="BooleanUpgraded" expires_after="2023-02-01">
-  <owner>nohle@chromium.org</owner>
+  <owner>crisrael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records if the transfer medium was successfully upgraded after an explicit
@@ -915,7 +915,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Nearby.Share.Payload.AttachmentType{Variation}"
     enum="NearbyShareAttachmentType" expires_after="2023-02-01">
-  <owner>nohle@chromium.org</owner>
+  <owner>pushi@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records the attachment types from {Variation}. Emitted after all attachment
@@ -935,7 +935,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Nearby.Share.Payload.FinalStatus{UpgradedMedium}"
     enum="NearbyShareFinalStatus" expires_after="2023-02-01">
-  <owner>nohle@chromium.org</owner>
+  <owner>crisrael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records whether a payload transfer succeeded, failed, or was cancelled when
@@ -954,7 +954,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Nearby.Share.Payload.Medium" enum="NearbyShareUpgradedMedium"
     expires_after="2023-02-01">
-  <owner>nohle@chromium.org</owner>
+  <owner>pushi@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records if a payload transfer used an upgraded bandwidth medium, and if so,
@@ -966,7 +966,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Nearby.Share.Payload.Medium.Over5MbTransferred{ShareTargetType}"
     enum="NearbyShareUpgradedMedium" expires_after="2023-02-01">
-  <owner>nohle@chromium.org</owner>
+  <owner>crisrael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records if a payload transfer with {ShareTargetType} used an upgraded
@@ -985,7 +985,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Nearby.Share.Payload.NumAttachments{Type}" units="attachments"
     expires_after="2023-02-01">
-  <owner>nohle@chromium.org</owner>
+  <owner>pushi@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records the number of {Type} attachments intended to be sent in a Nearby
@@ -1001,7 +1001,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Nearby.Share.Payload.TotalSize{Variation}" units="KB"
     expires_after="2023-02-01">
-  <owner>nohle@chromium.org</owner>
+  <owner>crisrael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records the total payload size of a Nearby Share transfer {Variation}.
@@ -1034,7 +1034,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Nearby.Share.Payload.TransferRate{Variation}" units="KB/s"
     expires_after="2023-02-01">
-  <owner>nohle@chromium.org</owner>
+  <owner>pushi@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records the payload transfer rate of a Nearby Share transfer {Variation}.
@@ -1067,7 +1067,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Nearby.Share.StartAdvertising.Result.FailureReason{Mode}"
     enum="NearbyShareStartAdvertisingFailureReason" expires_after="2023-02-01">
-  <owner>nohle@chromium.org</owner>
+  <owner>crisrael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records the reason Nearby Share advertising failed to start in {Mode} mode.
@@ -1081,7 +1081,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Nearby.Share.StartAdvertising.Result{Mode}"
     enum="BooleanSuccess" expires_after="2023-02-01">
-  <owner>nohle@chromium.org</owner>
+  <owner>pushi@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records the result of starting Nearby Share advertising in {Mode} mode.
@@ -1095,7 +1095,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Nearby.Share.TimeFromInitiateSendToRemoteDeviceNotification"
     units="ms" expires_after="2023-02-01">
-  <owner>nohle@chromium.org</owner>
+  <owner>crisrael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records the time from initiating a send on a share target to sending the
@@ -1110,7 +1110,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Nearby.Share.TimeFromLocalAcceptToTransferStart" units="ms"
     expires_after="2023-02-01">
-  <owner>nohle@chromium.org</owner>
+  <owner>pushi@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records the time from accepting a share on the receiving device until the
@@ -1122,7 +1122,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Nearby.Share.Transfer.FinalStatus{Variation}"
     enum="NearbyShareTransferFinalStatus" expires_after="2023-02-01">
-  <owner>nohle@chromium.org</owner>
+  <owner>crisrael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records the final status of a Nearby Share transfer {Variation}. Emitted
@@ -1147,7 +1147,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Nearby.Share.Transfer.Success" enum="BooleanSuccess"
     expires_after="2023-02-01">
-  <owner>nohle@chromium.org</owner>
+  <owner>pushi@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records the success/failure of a Nearby Share transfer. Emitted when a
@@ -1159,7 +1159,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Nearby.Share.Transfer.Success.{Direction}.{ShareTargetType}.{ContactStatus}"
     enum="BooleanSuccess" expires_after="2023-02-01">
-  <owner>nohle@chromium.org</owner>
+  <owner>crisrael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records the success/failure of a Nearby Share {Direction} transfer with
@@ -1185,7 +1185,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Nearby.Share.VisibilityChoice" enum="NearbyShareVisibility"
     expires_after="2023-02-01">
-  <owner>nohle@chromium.org</owner>
+  <owner>pushi@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records the user's chosen degree of visibility to their contacts, selected

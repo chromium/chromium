@@ -1188,7 +1188,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="Bluetooth.Linux.ConnectToServiceInsecurelyResult"
     enum="BluetoothAdapterConnectToServiceInsecurelyResult"
     expires_after="2023-02-23">
-  <owner>nohle@chromium.org</owner>
+  <owner>hansenmichael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Result of attempting a call to mojom::Adapter::ConnectToServiceInsecurely().
