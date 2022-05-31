@@ -23,12 +23,17 @@ MediaPageLoadMetricsObserver::MediaPageLoadMetricsObserver()
 
 MediaPageLoadMetricsObserver::~MediaPageLoadMetricsObserver() = default;
 
-// TODO(https://crbug.com/1317494): Audit and use appropriate policy.
+const char* MediaPageLoadMetricsObserver::GetObserverName() const {
+  static const char kName[] = "MediaPageLoadMetricsObserver";
+  return kName;
+}
+
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 MediaPageLoadMetricsObserver::OnFencedFramesStart(
     content::NavigationHandle* navigation_handle,
     const GURL& currently_committed_url) {
-  return STOP_OBSERVING;
+  // This class needs forwarding for the events MediaStartedPlaying.
+  return FORWARD_OBSERVING;
 }
 
 void MediaPageLoadMetricsObserver::OnResourceDataUseObserved(

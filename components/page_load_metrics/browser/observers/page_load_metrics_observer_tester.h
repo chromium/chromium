@@ -139,6 +139,7 @@ class PageLoadMetricsObserverTester : public test::WeakMockTimerProvider {
 
   // Simulate playing a media element.
   void SimulateMediaPlayed();
+  void SimulateMediaPlayed(content::RenderFrameHost* rfh);
 
   // Simulate accessingcookies.
   void SimulateCookieAccess(const content::CookieAccessDetails& details);

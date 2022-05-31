@@ -313,11 +313,15 @@ void PageLoadMetricsObserverTester::SimulateAppEnterBackground() {
 }
 
 void PageLoadMetricsObserverTester::SimulateMediaPlayed() {
+  SimulateMediaPlayed(web_contents()->GetMainFrame());
+}
+
+void PageLoadMetricsObserverTester::SimulateMediaPlayed(
+    content::RenderFrameHost* rfh) {
   content::WebContentsObserver::MediaPlayerInfo video_type(
       true /* has_video*/, true /* has_audio */);
-  content::RenderFrameHost* render_frame_host = web_contents()->GetMainFrame();
   metrics_web_contents_observer_->MediaStartedPlaying(
-      video_type, content::MediaPlayerId(render_frame_host->GetGlobalId(), 0));
+      video_type, content::MediaPlayerId(rfh->GetGlobalId(), 0));
 }
 
 void PageLoadMetricsObserverTester::SimulateCookieAccess(
