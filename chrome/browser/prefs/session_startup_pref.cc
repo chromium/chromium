@@ -66,7 +66,7 @@ void SessionStartupPref::RegisterProfilePrefs(
 
 // static
 SessionStartupPref::Type SessionStartupPref::GetDefaultStartupType() {
-#if BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   return SessionStartupPref::LAST;
 #else
   return SessionStartupPref::DEFAULT;

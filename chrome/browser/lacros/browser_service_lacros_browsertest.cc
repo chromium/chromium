@@ -208,7 +208,7 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosBrowserTest,
   run_loop.Run();
   // Open a browser window to make it the last used profile.
   chrome::NewEmptyWindow(profile2);
-  ui_test_utils::WaitForBrowserToOpen();
+  EXPECT_TRUE(chrome::FindBrowserWithProfile(profile2));
 
   // Profile picker does _not_ open for incognito windows. Instead, the
   // incognito window for the last used profile is directly opened.
@@ -438,6 +438,7 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosWindowlessBrowserTest,
 
   // Set the startup pref to restore the last session.
   SessionStartupPref pref(SessionStartupPref::LAST);
+  SessionStartupPref::SetStartupPref(profile, pref);
 
   // Open a browser window with some URLs.
   auto* browser = Browser::Create(

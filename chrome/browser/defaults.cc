@@ -26,11 +26,15 @@ const bool kShowExitMenuItem = true;
 const bool kShowUpgradeMenuItem = false;
 const bool kShowImportOnBookmarkBar = false;
 const bool kAlwaysOpenIncognitoWindow = true;
-const bool kAlwaysCreateTabbedBrowserOnSessionRestore = false;
 #else
 const bool kShowUpgradeMenuItem = true;
 const bool kShowImportOnBookmarkBar = true;
 const bool kAlwaysOpenIncognitoWindow = false;
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS)
+const bool kAlwaysCreateTabbedBrowserOnSessionRestore = false;
+#else
 const bool kAlwaysCreateTabbedBrowserOnSessionRestore = true;
 #endif
 
