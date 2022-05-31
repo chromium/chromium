@@ -22,6 +22,13 @@ const base::Feature kConfirmSuggestionRemovals{
 const base::Feature kCacheOneGoogleBar{"CacheOneGoogleBar",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables the removal of the NTP background scrim and forced dark foreground
+// colors for a specific subset of Chrome Web Store themes (see
+// crbug.com/1329552). This is enabled by default to allow finch to disable this
+// NTP treatment in the case of unexpected regressions.
+const base::Feature kCwsScrimRemoval{"CwsScrimRemoval",
+                                     base::FEATURE_ENABLED_BY_DEFAULT};
+
 // If enabled, "middle slot" promos on the bottom of the NTP will show a dismiss
 // UI that allows users to close them and not see them again.
 const base::Feature kDismissPromos{"DismissNtpPromos",
