@@ -133,7 +133,10 @@ bool AreLocalAndRemotePasswordsEqualExcludingIssues(
               password_specifics.display_name() &&
           password_form.icon_url.spec() == password_specifics.avatar_url() &&
           url::Origin::Create(GURL(password_specifics.federation_url()))
-                  .Serialize() == password_form.federation_origin.Serialize());
+                  .Serialize() ==
+              password_form.federation_origin.Serialize()) &&
+         password_form.notes ==
+             PasswordNotesFromProto(password_specifics.notes());
 }
 
 // Returns true iff |password_specifics| and |password_form| are equal

@@ -12,6 +12,7 @@
 #include "base/rand_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/sync/test/integration/passwords_helper.h"
 #include "chrome/browser/sync/test/integration/sync_integration_test_util.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/sync/engine/cycle/entity_change_metric_recording.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
 #include "content/public/test/browser_test.h"
@@ -490,6 +492,54 @@ IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTest,
 
   // Update is_muted field on Client 0.
   form.password_issues.at(InsecureType::kLeaked).is_muted = IsMuted(true);
+  GetProfilePasswordStoreInterface(0)->UpdateLogin(form);
+
+  // Wait until Client 1 picks up changes.
+  ASSERT_TRUE(SamePasswordFormsChecker().Wait());
+  EXPECT_THAT(GetAllLogins(GetProfilePasswordStoreInterface(1)),
+              ElementsAre(Pointee(form)));
+}
+
+class TwoClientPasswordsSyncTestWithNotes : public SyncTest {
+ public:
+  TwoClientPasswordsSyncTestWithNotes() : SyncTest(TWO_CLIENT) {
+    feature_list_.InitAndEnableFeature(
+        password_manager::features::kPasswordNotes);
+  }
+  ~TwoClientPasswordsSyncTestWithNotes() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(TwoClientPasswordsSyncTestWithNotes,
+                       SyncPasswordNotesBetweenDevices) {
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(AllProfilesContainSamePasswordForms());
+
+  // Add a password with note to Client 0.
+  PasswordForm form = CreateTestPasswordForm(0);
+  form.notes.emplace_back(
+      /*unique_display_name=*/u"My Phone Pin", /*value=*/u"123456",
+      /*date_created=*/base::Time::Now(), /*hide_by_default=*/true);
+  GetProfilePasswordStoreInterface(0)->AddLogin(form);
+
+  // Wait until Client 1 picks up changes.
+  ASSERT_TRUE(SamePasswordFormsChecker().Wait());
+  EXPECT_THAT(GetAllLogins(GetProfilePasswordStoreInterface(1)),
+              ElementsAre(Pointee(form)));
+
+  // Update the note in Client 1.
+  form.notes[0].value = u"78910";
+  GetProfilePasswordStoreInterface(1)->UpdateLogin(form);
+
+  // Wait until Client 0 picks up changes.
+  ASSERT_TRUE(SamePasswordFormsChecker().Wait());
+  EXPECT_THAT(GetAllLogins(GetProfilePasswordStoreInterface(0)),
+              ElementsAre(Pointee(form)));
+
+  // Remove all notes on Client 0.
+  form.notes.clear();
   GetProfilePasswordStoreInterface(0)->UpdateLogin(form);
 
   // Wait until Client 1 picks up changes.

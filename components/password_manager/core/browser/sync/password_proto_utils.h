@@ -14,6 +14,7 @@ namespace sync_pb {
 class PasswordSpecifics;
 class PasswordSpecificsData;
 class PasswordSpecificsData_PasswordIssues;
+class PasswordSpecificsData_Notes;
 class PasswordWithLocalData;
 class ListPasswordsResult;
 }  // namespace sync_pb
@@ -30,6 +31,19 @@ sync_pb::PasswordSpecificsData_PasswordIssues PasswordIssuesMapToProto(
 // for storing issues in a `PasswordForm`.
 base::flat_map<InsecureType, InsecurityMetadata> PasswordIssuesMapFromProto(
     const sync_pb::PasswordSpecificsData& password_data);
+
+// Converts a sync_pb::PasswordSpecificsData_Notes to a
+// std::vector<PasswordNote>.
+std::vector<PasswordNote> PasswordNotesFromProto(
+    const sync_pb::PasswordSpecificsData_Notes& notes_proto);
+
+// Converts a std::vector<PasswordNote> to a
+// sync_pb::PasswordSpecificsData_Notes. `base_notes` is intended for carrying
+// over unknown and unsupported note fields when there is a local modification
+// to an existing sync entity.
+sync_pb::PasswordSpecificsData_Notes PasswordNotesToProto(
+    const std::vector<PasswordNote>& notes,
+    const sync_pb::PasswordSpecificsData_Notes& base_notes);
 
 // Returns sync_pb::PasswordSpecifics based on given `password_form`.
 // `base_password_data` is intended for carrying over unknown and unsupported
