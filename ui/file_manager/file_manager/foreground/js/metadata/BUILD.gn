@@ -22,6 +22,7 @@ group("js_modules") {
   deps = [
     ":byte_reader",
     ":content_metadata_provider",
+    ":dlp_metadata_provider",
     ":exif_constants",
     ":exif_parser",
     ":external_metadata_provider",
@@ -57,6 +58,7 @@ js_type_check("closure_compile_jsmodules") {
   deps = [
     ":byte_reader",
     ":content_metadata_provider",
+    ":dlp_metadata_provider",
     ":exif_constants",
     ":exif_parser",
     ":external_metadata_provider",
@@ -103,6 +105,13 @@ js_unittest("content_metadata_provider_unittest.m") {
     ":metadata_request",
     "//chrome/test/data/webui:chai_assert",
     "//ui/file_manager/file_manager/common/js:test_error_reporting",
+  ]
+}
+
+js_library("dlp_metadata_provider") {
+  deps = [
+    ":metadata_item",
+    ":metadata_provider",
   ]
 }
 
