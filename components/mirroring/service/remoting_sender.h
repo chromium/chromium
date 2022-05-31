@@ -33,7 +33,7 @@ namespace mirroring {
 // a CastTransport.
 class COMPONENT_EXPORT(MIRRORING_SERVICE) RemotingSender final
     : public media::mojom::RemotingDataStreamSender,
-      public media::cast::FrameSender {
+      public media::cast::FrameSender::Client {
  public:
   // |transport| is expected to outlive this class.
   RemotingSender(scoped_refptr<media::cast::CastEnvironment> cast_environment,
@@ -62,10 +62,10 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) RemotingSender final
   void SendFrame(uint32_t frame_size) override;
   void CancelInFlightData() override;
 
-  // FrameSender override.
+  // FrameSender::Client overrides.
   int GetNumberOfFramesInEncoder() const override;
-  base::TimeDelta GetInFlightMediaDuration() const override;
-  void OnCancelSendingFrames() override;
+  base::TimeDelta GetEncoderBacklogDuration() const override;
+  void OnFrameCanceled(media::cast::FrameId frame_id) override;
 
   // Attempt to run next pending input task, popping the head of the input queue
   // as each task succeeds.
@@ -89,6 +89,9 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) RemotingSender final
   bool HadError() const;
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  // The backing frame sender implementation.
+  std::unique_ptr<media::cast::FrameSender> frame_sender_;
 
   raw_ptr<const base::TickClock> clock_;
 
@@ -119,6 +122,10 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) RemotingSender final
   // CancelInFlightData() operation just completed. This causes TrySendFrame()
   // to mark the next frame as the start of a new sequence.
   bool flow_restart_pending_;
+
+  // The next frame's ID. Before any frames are sent, this will be the ID of
+  // the first frame.
+  media::cast::FrameId next_frame_id_ = media::cast::FrameId::first();
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<RemotingSender> weak_factory_{this};

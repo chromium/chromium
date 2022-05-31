@@ -399,6 +399,11 @@ const base::Feature kMultiPlaneVideoCaptureSharedImages {
 #endif
 };
 
+// Controls whether the Open Screen libcast SenderSession is used for
+// initializing and managing streaming sessions, or the legacy implementation.
+const base::Feature kOpenscreenCastStreamingSession{
+    "OpenscreenCastStreamingSession", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Approach original pre-REC MSE object URL autorevoking behavior, though await
 // actual attempt to use the object URL for attachment to perform revocation.
 // This will hopefully reduce runtime memory bloat for pages that do not
