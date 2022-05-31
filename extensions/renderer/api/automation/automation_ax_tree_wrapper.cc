@@ -586,7 +586,9 @@ ui::AXNode* AutomationAXTreeWrapper::GetRootAsAXNode() const {
 ui::AXNode* AutomationAXTreeWrapper::GetParentNodeFromParentTreeAsAXNode()
     const {
   AutomationAXTreeWrapper* wrapper = const_cast<AutomationAXTreeWrapper*>(this);
-  return owner_->GetParent(tree_.root(), &wrapper);
+  return owner_->GetParent(tree_.root(), &wrapper,
+                           /* should_use_app_id = */ true,
+                           /* requires_unignored = */ false);
 }
 
 }  // namespace extensions

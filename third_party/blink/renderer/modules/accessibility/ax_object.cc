@@ -1230,6 +1230,9 @@ void AXObject::Serialize(ui::AXNodeData* node_data,
     SerializeLangAttribute(node_data);  // Propagates using all nodes' values.
   }
 
+  // Always try to serialize child tree ids.
+  SerializeChildTreeID(node_data);
+
   // Return early. The following attributes are unnecessary for ignored nodes.
   // Exception: focusable ignored nodes are fully serialized, so that reasonable
   // verbalizations can be made if they actually receive focus.
@@ -1272,6 +1275,23 @@ void AXObject::SerializeActionAttributes(ui::AXNodeData* node_data) {
   if (IsSlider()) {
     node_data->AddAction(ax::mojom::blink::Action::kDecrement);
     node_data->AddAction(ax::mojom::blink::Action::kIncrement);
+  }
+}
+
+void AXObject::SerializeChildTreeID(ui::AXNodeData* node_data) {
+  // If this is an HTMLFrameOwnerElement (such as an iframe), we may need
+  // to embed the ID of the child frame.
+  if (auto* html_frame_owner_element =
+          DynamicTo<HTMLFrameOwnerElement>(GetElement())) {
+    if (Frame* child_frame = html_frame_owner_element->ContentFrame()) {
+      absl::optional<base::UnguessableToken> child_token =
+          child_frame->GetEmbeddingToken();
+      if (child_token && !(IsDetached() || ChildCountIncludingIgnored())) {
+        ui::AXTreeID child_tree_id =
+            ui::AXTreeID::FromToken(child_token.value());
+        node_data->AddChildTreeId(child_tree_id);
+      }
+    }
   }
 }
 
@@ -1900,21 +1920,6 @@ void AXObject::SerializeUnignoredAttributes(ui::AXNodeData* node_data,
   if (GetTextIndent() != 0.0f) {
     node_data->AddFloatAttribute(ax::mojom::blink::FloatAttribute::kTextIndent,
                                  GetTextIndent());
-  }
-
-  // If this is an HTMLFrameOwnerElement (such as an iframe), we may need
-  // to embed the ID of the child frame.
-  if (auto* html_frame_owner_element =
-          DynamicTo<HTMLFrameOwnerElement>(GetElement())) {
-    if (Frame* child_frame = html_frame_owner_element->ContentFrame()) {
-      absl::optional<base::UnguessableToken> child_token =
-          child_frame->GetEmbeddingToken();
-      if (child_token && !(IsDetached() || ChildCountIncludingIgnored())) {
-        ui::AXTreeID child_tree_id =
-            ui::AXTreeID::FromToken(child_token.value());
-        node_data->AddChildTreeId(child_tree_id);
-      }
-    }
   }
 
   if (accessibility_mode.has_mode(ui::AXMode::kScreenReader) ||

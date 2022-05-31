@@ -64,9 +64,15 @@ class AutomationInternalCustomBindings : public ObjectBackedNativeHandler {
   // If |node| is the root of its tree, the return value will be the host
   // node of the parent tree and |in_out_tree_wrapper| will be updated to
   // point to that parent tree.
+  //
+  // Optionally, |should_use_app_id|, if true, considers
+  // ax::mojom::IntAttribute::kChildTreeNodeAppId when moving to ancestors.
+  // |requires_unignored|, if true, keeps moving to ancestors until an unignored
+  // ancestor parent is found.
   ui::AXNode* GetParent(ui::AXNode* node,
                         AutomationAXTreeWrapper** in_out_tree_wrapper,
-                        bool should_use_app_id = true) const;
+                        bool should_use_app_id = true,
+                        bool requires_unignored = true) const;
 
   // Gets the hosting node in a parent tree.
   ui::AXNode* GetHostInParentTree(

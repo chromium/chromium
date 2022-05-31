@@ -1394,6 +1394,7 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
 
   // Helpers for serialization.
   void SerializeActionAttributes(ui::AXNodeData* node_data);
+  void SerializeChildTreeID(ui::AXNodeData* node_data);
   void SerializeChooserPopupAttributes(ui::AXNodeData* node_data);
   void SerializeColorAttributes(ui::AXNodeData* node_data);
   void SerializeElementAttributes(ui::AXNodeData* node_data);

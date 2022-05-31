@@ -2166,7 +2166,8 @@ void AutomationInternalCustomBindings::UpdateOverallTreeChangeObserverFilter() {
 ui::AXNode* AutomationInternalCustomBindings::GetParent(
     ui::AXNode* node,
     AutomationAXTreeWrapper** in_out_tree_wrapper,
-    bool should_use_app_id) const {
+    bool should_use_app_id,
+    bool requires_unignored) const {
   if (should_use_app_id &&
       node->HasStringAttribute(ax::mojom::StringAttribute::kAppId)) {
     ui::AXNode* parent_app_node =
@@ -2179,7 +2180,15 @@ ui::AXNode* AutomationInternalCustomBindings::GetParent(
     }
   }
 
-  ui::AXNode* parent = node->GetUnignoredParent();
+  ui::AXNode* parent = nullptr;
+  if (!requires_unignored) {
+    parent = node->GetParent();
+    if (parent)
+      return parent;
+    return GetHostInParentTree(in_out_tree_wrapper);
+  }
+
+  parent = node->GetUnignoredParent();
   if (!parent) {
     // Search up ancestor trees until we find one with a host that is unignored.
     while ((parent = GetHostInParentTree(in_out_tree_wrapper))) {
