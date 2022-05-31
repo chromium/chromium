@@ -151,8 +151,6 @@ source_set("test_support") {
     "account_capabilities_test_mutator.h",
     "identity_test_environment.cc",
     "identity_test_environment.h",
-    "identity_test_utils.cc",
-    "identity_test_utils.h",
     "test_identity_manager_observer.cc",
     "test_identity_manager_observer.h",
   ]
@@ -182,7 +180,4 @@ source_set("test_support") {
     deps += [ "//components/account_manager_core" ]
   }
 
-  if (is_android) {
-    deps += [ "//components/signin/public/android:test_support_jni_headers" ]
-  }
 }

@@ -8,8 +8,6 @@ import com.google.android.gms.common.api.ApiException;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.chrome.browser.sync.SyncService;
-import org.chromium.components.signin.base.CoreAccountInfo;
 
 /**
  * Java-counterpart of the native PasswordSyncControllerDelegateBridgeImpl. It's part of
@@ -41,7 +39,7 @@ class PasswordSyncControllerDelegateBridgeImpl {
     @CalledByNative
     void notifyCredentialManagerWhenSyncing() {
         mPasswordSyncControllerDelegate.notifyCredentialManagerWhenSyncing(
-                CoreAccountInfo.getEmailFrom(SyncService.get().getAccountInfo()), () -> {
+                null, () -> {
                     if (mNativeDelegateBridgeImpl == 0) return;
                     PasswordSyncControllerDelegateBridgeImplJni.get().onCredentialManagerNotified(
                             mNativeDelegateBridgeImpl);

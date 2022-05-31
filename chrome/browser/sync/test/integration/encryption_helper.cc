@@ -88,12 +88,9 @@ bool TrustedVaultKeyRequiredStateChecker::IsExitConditionSatisfied(
 TrustedVaultKeysChangedStateChecker::TrustedVaultKeysChangedStateChecker(
     syncer::SyncServiceImpl* service)
     : service_(service), keys_changed_(false) {
-  service->GetSyncClientForTest()->GetTrustedVaultClient()->AddObserver(this);
 }
 
 TrustedVaultKeysChangedStateChecker::~TrustedVaultKeysChangedStateChecker() {
-  service_->GetSyncClientForTest()->GetTrustedVaultClient()->RemoveObserver(
-      this);
 }
 
 bool TrustedVaultKeysChangedStateChecker::IsExitConditionSatisfied(

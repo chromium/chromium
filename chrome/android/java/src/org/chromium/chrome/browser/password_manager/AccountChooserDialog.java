@@ -126,10 +126,6 @@ public class AccountChooserDialog
 
                 ImageView avatarView = (ImageView) convertView.findViewById(R.id.profile_image);
                 Drawable avatar = credential.getAvatar();
-                if (avatar == null) {
-                    avatar = AppCompatResources.getDrawable(
-                            getContext(), R.drawable.logo_avatar_anonymous);
-                }
                 avatarView.setImageDrawable(avatar);
 
                 TextView mainNameView = (TextView) convertView.findViewById(R.id.main_name);

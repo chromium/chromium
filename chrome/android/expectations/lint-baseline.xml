@@ -7417,17 +7417,6 @@
 
     <issue
         id="WrongConstant"
-        message="Must be one of: State.NONE, State.INVALID_GAIA_CREDENTIALS, State.USER_NOT_SIGNED_UP, State.CONNECTION_FAILED, State.SERVICE_UNAVAILABLE, State.REQUEST_CANCELED, State.UNEXPECTED_SERVICE_RESPONSE, State.SERVICE_ERROR"
-        errorLine1="        if (authErrorCode &lt; 0 || authErrorCode >= GoogleServiceAuthError.State.NUM_ENTRIES) {"
-        errorLine2="                                                                               ~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/sync/android/java/src/org/chromium/chrome/browser/sync/SyncServiceImpl.java"
-            line="97"
-            column="80"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
         message="Must be one of: ThumbnailFetchingResult.GOT_JPEG, ThumbnailFetchingResult.GOT_ETC1, ThumbnailFetchingResult.GOT_NOTHING, ThumbnailFetchingResult.GOT_DIFFERENT_ASPECT_RATIO_JPEG"
         errorLine1="                UMA_THUMBNAIL_FETCHING_RESULT, result, ThumbnailFetchingResult.NUM_ENTRIES);"
         errorLine2="                                                                               ~~~~~~~~~~~">

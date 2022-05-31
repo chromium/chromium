@@ -25,7 +25,6 @@ import org.chromium.chrome.browser.notifications.chime.ChimeDelegate;
 import org.chromium.chrome.browser.omaha.RequestGenerator;
 import org.chromium.chrome.browser.policy.PolicyAuditor;
 import org.chromium.chrome.browser.rlz.RevenueStats;
-import org.chromium.chrome.browser.sync.TrustedVaultClient;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.usage_stats.DigitalWellbeingClient;
 import org.chromium.chrome.browser.webapps.GooglePlayWebApkInstallDelegate;
@@ -206,13 +205,6 @@ public abstract class AppHooks {
             return ConnectionResult.SERVICE_MISSING;
         }
         return ConnectionResult.SERVICE_VERSION_UPDATE_REQUIRED;
-    }
-
-    /**
-     * Returns a new {@link TrustedVaultClient.Backend} instance.
-     */
-    public TrustedVaultClient.Backend createSyncTrustedVaultClientBackend() {
-        return new TrustedVaultClient.EmptyBackend();
     }
 
     /**

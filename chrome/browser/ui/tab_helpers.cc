@@ -20,7 +20,6 @@
 #include "chrome/browser/buildflags.h"
 #include "chrome/browser/captive_portal/captive_portal_service_factory.h"
 #include "chrome/browser/chrome_content_browser_client.h"
-#include "chrome/browser/commerce/shopping_list/shopping_data_provider.h"
 #include "chrome/browser/complex_tasks/task_tab_helper.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/content_settings/mixed_content_settings_tab_helper.h"
@@ -408,11 +407,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   ReputationWebContentsObserver::CreateForWebContents(web_contents);
   SearchEngineTabHelper::CreateForWebContents(web_contents);
   SecurityStateTabHelper::CreateForWebContents(web_contents);
-  if (base::FeatureList::IsEnabled(commerce::kShoppingList)) {
-    shopping_list::ShoppingDataProvider::CreateForWebContents(
-        web_contents,
-        OptimizationGuideKeyedServiceFactory::GetForProfile(profile));
-  }
 #if BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(commerce::kShoppingPDPMetrics)) {
     commerce::metrics::CommerceMetricsTabHelper::CreateForWebContents(

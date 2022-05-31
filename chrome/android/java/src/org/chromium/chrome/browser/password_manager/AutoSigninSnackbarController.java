@@ -47,7 +47,7 @@ public class AutoSigninSnackbarController implements SnackbarManager.SnackbarCon
         Snackbar snackbar = Snackbar.make(
                 text, snackbarController, Snackbar.TYPE_NOTIFICATION, Snackbar.UMA_AUTO_LOGIN);
         int backgroundColor = SemanticColorUtils.getDefaultControlColorActive(activity);
-        Drawable icon = AppCompatResources.getDrawable(activity, R.drawable.logo_avatar_anonymous);
+        Drawable icon = null;
         snackbar.setSingleLine(false)
                 .setBackgroundColor(backgroundColor)
                 .setProfileImage(icon)

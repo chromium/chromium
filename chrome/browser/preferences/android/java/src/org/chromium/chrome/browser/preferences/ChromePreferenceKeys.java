@@ -4,14 +4,14 @@
 
 package org.chromium.chrome.browser.preferences;
 
-import static org.chromium.components.browser_ui.share.ClipboardConstants.CLIPBOARD_SHARED_URI;
-import static org.chromium.components.browser_ui.share.ClipboardConstants.CLIPBOARD_SHARED_URI_TIMESTAMP;
-
 import org.chromium.base.annotations.CheckDiscard;
 import org.chromium.components.browser_ui.accessibility.AccessibilityConstants;
 
 import java.util.Arrays;
 import java.util.List;
+
+import static org.chromium.components.browser_ui.share.ClipboardConstants.CLIPBOARD_SHARED_URI;
+import static org.chromium.components.browser_ui.share.ClipboardConstants.CLIPBOARD_SHARED_URI_TIMESTAMP;
 
 /**
  * Contains String and {@link KeyPrefix} constants with the SharedPreferences keys used by Chrome.
@@ -322,11 +322,6 @@ public final class ChromePreferenceKeys {
     public static final String EXPLORE_OFFLINE_CONTENT_AVAILABILITY_STATUS =
             "Chrome.NTPExploreOfflineCard.HasExploreOfflineContent";
 
-    /**
-     * Indicates whether First run field trial was enabled during FRE. This experiment is configured
-     * by client side code in {@link
-     * org.chromium.chrome.browser.signin.services.FREMobileIdentityConsistencyFieldTrial}.
-     */
     public static final String FIRST_RUN_FIELD_TRIAL_GROUP = "Chrome.FirstRun.FieldTrialEnabled";
 
     public static final String FIRST_RUN_VARIATIONS_FIELD_TRIAL_GROUP =

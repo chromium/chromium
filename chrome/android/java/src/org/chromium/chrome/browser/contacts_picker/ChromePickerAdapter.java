@@ -4,35 +4,22 @@
 
 package org.chromium.chrome.browser.contacts_picker;
 
-import android.accounts.Account;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.text.TextUtils;
 
-import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.chromium.chrome.R;
-import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
-import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.components.browser_ui.contacts_picker.ContactDetails;
 import org.chromium.components.browser_ui.contacts_picker.PickerAdapter;
-import org.chromium.components.signin.AccountManagerFacadeProvider;
-import org.chromium.components.signin.AccountUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
 /**
  * A {@link PickerAdapter} with special behavior tailored for Chrome.
- *
- * Owner email is looked up in the {@link ProfileDataCache}, or, failing that, via the {@link
- * AccountManagerFacade}.
  */
-public class ChromePickerAdapter extends PickerAdapter implements ProfileDataCache.Observer {
-    // The profile data cache to consult when figuring out the signed in user.
-    private ProfileDataCache mProfileDataCache;
+public class ChromePickerAdapter extends PickerAdapter {
 
     // Whether an observer for ProfileDataCache has been registered.
     private boolean mObserving;
@@ -40,9 +27,10 @@ public class ChromePickerAdapter extends PickerAdapter implements ProfileDataCac
     // Whether owner info is being fetched asynchronously.
     private boolean mWaitingOnOwnerInfo;
 
+    private Drawable mIcon;
+
     public ChromePickerAdapter(Context context) {
-        mProfileDataCache =
-                ProfileDataCache.createWithoutBadge(context, R.dimen.contact_picker_icon_size);
+        mIcon = null;
     }
 
     // Adapter:
@@ -59,38 +47,15 @@ public class ChromePickerAdapter extends PickerAdapter implements ProfileDataCac
         removeProfileDataObserver();
     }
 
-    // ProfileDataCache.Observer:
-
-    @Override
-    public void onProfileDataUpdated(String accountEmail) {
-        if (!mWaitingOnOwnerInfo || !TextUtils.equals(accountEmail, getOwnerEmail())) {
-            return;
-        }
-
-        // Now that we've received an update for the right accountId, we can stop listening and
-        // update our records.
-        mWaitingOnOwnerInfo = false;
-        removeProfileDataObserver();
-        // TODO(finnur): crbug.com/1021477 - Maintain an member instance of this.
-        DisplayableProfileData profileData =
-                mProfileDataCache.getProfileDataOrDefault(getOwnerEmail());
-        ContactDetails contact = getAllContacts().get(0);
-        Drawable icon = profileData.getImage();
-        contact.setSelfIcon(icon);
-        update();
-    }
-
     private void addProfileDataObserver() {
         if (!mObserving) {
             mObserving = true;
-            mProfileDataCache.addObserver(this);
         }
     }
 
     private void removeProfileDataObserver() {
         if (mObserving) {
             mObserving = false;
-            mProfileDataCache.removeObserver(this);
         }
     }
 
@@ -102,9 +67,7 @@ public class ChromePickerAdapter extends PickerAdapter implements ProfileDataCac
      */
     @Override
     protected String findOwnerEmail() {
-        final @Nullable Account defaultAccount = AccountUtils.getDefaultAccountIfFulfilled(
-                AccountManagerFacadeProvider.getInstance().getAccounts());
-        return defaultAccount != null ? defaultAccount.name : null;
+        return null;
     }
 
     @Override
@@ -116,21 +79,13 @@ public class ChromePickerAdapter extends PickerAdapter implements ProfileDataCac
         contacts.add(0, constructOwnerInfo(getOwnerEmail()));
     }
 
-    /**
-     * Constructs a {@link ContactDetails} record for the currently signed in user. Name is obtained
-     * via the {@link DisplayableProfileData}, if available, or (alternatively) using the signed in
-     * information.
-     * @param ownerEmail The email for the currently signed in user.
-     * @return The contact info for the currently signed in user.
-     */
     @SuppressLint("HardwareIds")
     private ContactDetails constructOwnerInfo(String ownerEmail) {
-        DisplayableProfileData profileData = mProfileDataCache.getProfileDataOrDefault(ownerEmail);
-        String name = profileData.getFullNameOrEmail();
+        String name = ownerEmail;
 
         ContactDetails contact = new ContactDetails(ContactDetails.SELF_CONTACT_ID, name,
                 Collections.singletonList(ownerEmail), /*phoneNumbers=*/null, /*addresses=*/null);
-        Drawable icon = profileData.getImage();
+        Drawable icon = mIcon;
         contact.setIsSelf(true);
         contact.setSelfIcon(icon);
         return contact;

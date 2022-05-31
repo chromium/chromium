@@ -126,10 +126,7 @@ public class AssistantStaticDependenciesChrome implements AssistantStaticDepende
     @Nullable
     public AssistantProfileImageUtil createProfileImageUtilOrNull(
             Context context, @DimenRes int imageSizeRedId) {
-        String signedInAccountEmail = getSignedInAccountEmailOrNull();
-        if (signedInAccountEmail == null) return null;
-
-        return new AssistantProfileImageUtilChrome(context, signedInAccountEmail, imageSizeRedId);
+        return null;
     }
 
     @Override

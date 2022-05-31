@@ -4,26 +4,15 @@
 
 package org.chromium.chrome.browser.password_manager;
 
-import static org.chromium.chrome.browser.flags.ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID;
-
 import android.app.PendingIntent;
 import android.app.PendingIntent.CanceledException;
-import android.content.Context;
-import android.os.Bundle;
 import android.os.SystemClock;
 
-import com.google.common.base.Optional;
-
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.loading_modal.LoadingModalDialogCoordinator;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerError;
-import org.chromium.chrome.browser.sync.SyncService;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
-import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.sync.ModelType;
-import org.chromium.ui.modaldialog.ModalDialogManager;
+
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID;
 
 /** A helper class for showing PasswordSettings. */
 public class PasswordManagerHelper {
@@ -65,96 +54,6 @@ public class PasswordManagerHelper {
     private static final String PASSWORD_CHECKUP_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM =
             "PasswordManager.PasswordCheckup.Launch.Success";
 
-    /**
-     * Launches the password settings or, if available, the credential manager from Google Play
-     * Services.
-     *
-     * @param context used to show the UI to manage passwords.
-     */
-    public static void showPasswordSettings(Context context, @ManagePasswordsReferrer int referrer,
-            SettingsLauncher settingsLauncher, CredentialManagerLauncher credentialManagerLauncher,
-            SyncService syncService,
-            ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier) {
-        RecordHistogram.recordEnumeratedHistogram("PasswordManager.ManagePasswordsReferrer",
-                referrer, ManagePasswordsReferrer.MAX_VALUE + 1);
-
-        if (credentialManagerLauncher != null && hasChosenToSyncPasswords(syncService)) {
-            LoadingModalDialogCoordinator loadingModalDialogCoordinator =
-                    LoadingModalDialogCoordinator.create(modalDialogManagerSupplier, context);
-            launchTheCredentialManager(referrer, credentialManagerLauncher, syncService);
-            return;
-        }
-
-        Bundle fragmentArgs = new Bundle();
-        fragmentArgs.putInt(MANAGE_PASSWORDS_REFERRER, referrer);
-        context.startActivity(settingsLauncher.createSettingsActivityIntent(
-                context, PASSWORD_SETTINGS_CLASS, fragmentArgs));
-    }
-
-    public static void showPasswordCheckup(@PasswordCheckReferrer int referrer,
-            PasswordCheckupClientHelper checkupClient, SyncService syncService) {
-        assert checkupClient != null;
-        if (!usesUnifiedPasswordManagerUI()) return;
-
-        Optional<String> account = hasChosenToSyncPasswords(syncService)
-                ? Optional.of(CoreAccountInfo.getEmailFrom(syncService.getAccountInfo()))
-                : Optional.absent();
-        long startTimeMs = SystemClock.elapsedRealtime();
-        checkupClient.getPasswordCheckupPendingIntent(referrer, account,
-                (intent)
-                        -> PasswordManagerHelper.launchPasswordCheckup(intent, startTimeMs),
-                (error) -> {
-                    RecordHistogram.recordBooleanHistogram(
-                            PASSWORD_CHECKUP_GET_INTENT_SUCCESS_HISTOGRAM, false);
-                    RecordHistogram.recordEnumeratedHistogram(
-                            PASSWORD_CHECKUP_GET_INTENT_ERROR_HISTOGRAM, error,
-                            CredentialManagerError.COUNT);
-                });
-    }
-
-    /**
-     *  Checks whether the sync feature is enabled and the user has chosen to sync passwords.
-     *  Note that this doesn't mean that passwords are actively syncing.
-     *
-     * @param syncService the service to query about the sync status.
-     * @return true if syncing passwords is enabled
-     */
-    public static boolean hasChosenToSyncPasswords(SyncService syncService) {
-        return syncService != null && syncService.isSyncFeatureEnabled()
-                && syncService.getChosenDataTypes().contains(ModelType.PASSWORDS);
-    }
-
-    /**
-     *  Checks whether the sync feature is enabled, the user has chosen to sync passwords and
-     *  they haven't set up a custom passphrase.
-     *  The caller should make sure that the sync engine is initialized before calling this method.
-     *
-     *  Note that this doesn't mean that passwords are actively syncing.
-     *
-     * @param syncService the service to query about the sync status.
-     * @return true if syncing passwords is enabled without custom passphrase.
-     */
-    public static boolean hasChosenToSyncPasswordsWithNoCustomPassphrase(SyncService syncService) {
-        assert syncService.isEngineInitialized();
-        return PasswordManagerHelper.hasChosenToSyncPasswords(syncService)
-                && !syncService.isUsingExplicitPassphrase();
-    }
-
-    /**
-     * Checks whether the user is actively syncing passwords without a custom passphrase.
-     * The caller should make sure that the sync engine is initialized before calling this method.
-     *
-     * @param syncService the service to query about the sync status.
-     * @return true if actively syncing passwords and no custom passphrase was set.
-     */
-    public static boolean isSyncingPasswordsWithNoCustomPassphrase(SyncService syncService) {
-        assert syncService.isEngineInitialized();
-        if (syncService == null || !syncService.hasSyncConsent()) return false;
-        if (!syncService.getActiveDataTypes().contains(ModelType.PASSWORDS)) return false;
-        if (syncService.isUsingExplicitPassphrase()) return false;
-        return true;
-    }
-
     public static boolean usesUnifiedPasswordManagerUI() {
         if (!ChromeFeatureList.isEnabled(UNIFIED_PASSWORD_MANAGER_ANDROID)) return false;
         @UpmExperimentVariation
@@ -171,19 +70,6 @@ public class PasswordManagerHelper {
         }
         assert false : "Whether to use UI is undefined for variation: " + variation;
         return false;
-    }
-
-    private static void launchTheCredentialManager(@ManagePasswordsReferrer int referrer,
-            CredentialManagerLauncher credentialManagerLauncher, SyncService syncService) {
-        if (!hasChosenToSyncPasswords(syncService)) return;
-        long startTimeMs = SystemClock.elapsedRealtime();
-        credentialManagerLauncher.getCredentialManagerIntentForAccount(referrer,
-
-                CoreAccountInfo.getEmailFrom(syncService.getAccountInfo()),
-                (intent)
-                        -> PasswordManagerHelper.launchCredentialManagerIntent(
-                                intent, startTimeMs, true),
-                (error) -> PasswordManagerHelper.recordFailureMetrics(error, true));
     }
 
     private static void recordFailureMetrics(

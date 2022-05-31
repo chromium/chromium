@@ -12,7 +12,6 @@
 #include "base/i18n/string_search.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "chrome/browser/commerce/shopping_list/shopping_data_provider.h"
 #include "chrome/browser/power_bookmarks/proto/power_bookmark_meta.pb.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
@@ -40,26 +39,6 @@ const bookmarks::BookmarkNode* AddURL(
     absl::optional<base::GUID> guid) {
   CHECK(web_contents);
   CHECK(model);
-
-  // Add meta info if available.
-  // TODO(1247352): Long-term, power bookmarks should not know about individual
-  //                features. Rather features should register themselves as
-  //                providers of this information.
-  shopping_list::ShoppingDataProvider* data_provider =
-      shopping_list::ShoppingDataProvider::FromWebContents(web_contents);
-  bookmarks::BookmarkNode::MetaInfoMap local_meta_info;
-  if (data_provider) {
-    std::unique_ptr<PowerBookmarkMeta> meta =
-        data_provider->GetCurrentMetadata();
-    if (meta) {
-      if (!meta_info)
-        meta_info = &local_meta_info;
-
-      std::string data;
-      EncodeMetaForStorage(*meta.get(), &data);
-      (*meta_info)[kPowerBookmarkMetaKey] = data;
-    }
-  }
 
   const bookmarks::BookmarkNode* node =
       model->AddURL(parent, index, title, url, meta_info, creation_time, guid);

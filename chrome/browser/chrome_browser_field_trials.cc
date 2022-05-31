@@ -30,7 +30,6 @@
 #include "base/android/build_info.h"
 #include "base/android/bundle_utils.h"
 #include "base/task/thread_pool/environment_config.h"
-#include "chrome/browser/android/signin/fre_mobile_identity_consistency_field_trial.h"
 #include "chrome/browser/chrome_browser_field_trials_mobile.h"
 #include "chrome/browser/flags/android/cached_feature_flags.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
@@ -145,31 +144,6 @@ void ChromeBrowserFieldTrials::RegisterSyntheticTrials() {
         "BackgroundThreadPoolSynthetic";
     ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
         kBackgroundThreadPoolTrial, group_name);
-  }
-
-  {
-    // MobileIdentityConsistencyFRESynthetic field trial.
-    static constexpr char kFREMobileIdentityConsistencyTrial[] =
-        "FREMobileIdentityConsistencySynthetic";
-    const std::string group =
-        fre_mobile_identity_consistency_field_trial::GetFREFieldTrialGroup();
-    ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-        kFREMobileIdentityConsistencyTrial, group);
-
-    if (fre_mobile_identity_consistency_field_trial::IsFREFieldTrialEnabled()) {
-      // MobileIdentityConsistencyFREVariationsSynthetic field trial.
-      // This trial experiments with different title and subtitle variation in
-      // the FRE UI. This is a follow up experiment to
-      // MobileIdentityConsistencyFRESynthetic and thus is only used for the
-      // enabled population of MobileIdentityConsistencyFRESynthetic.
-      static constexpr char kFREMobileIdentityConsistencyVariationsTrial[] =
-          "FREMobileIdentityConsistencyVariationsSynthetic";
-      const std::string variation_group =
-          fre_mobile_identity_consistency_field_trial::
-              GetFREVariationsFieldTrialGroup();
-      ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-          kFREMobileIdentityConsistencyVariationsTrial, variation_group);
-    }
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 }

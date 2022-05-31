@@ -7,41 +7,13 @@ package org.chromium.chrome.browser.share.send_tab_to_self;
 import android.content.Context;
 import android.widget.Toast;
 
-import org.chromium.base.Promise;
-import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.sync.ModelType;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
  * Coordinator for displaying the send tab to self feature.
  */
 public class SendTabToSelfCoordinator {
-    /** Waits for Sync to download the list of target devices after sign-in. */
-    private static class TargetDeviceListWaiter implements SyncService.SyncStateChangedListener {
-        private final Promise<Void> mPromise = new Promise<Void>();
-
-        public TargetDeviceListWaiter() {
-            SyncService.get().addSyncStateChangedListener(this);
-            fullfillIfReady();
-        }
-
-        public Promise<Void> waitUntilReady() {
-            return mPromise;
-        }
-
-        @Override
-        public void syncStateChanged() {
-            fullfillIfReady();
-        }
-
-        private void fullfillIfReady() {
-            if (SyncService.get().getActiveDataTypes().contains(ModelType.DEVICE_INFO)) {
-                SyncService.get().removeSyncStateChangedListener(this);
-                mPromise.fulfill(null);
-            }
-        }
-    }
 
     private final Context mContext;
     private final WindowAndroid mWindowAndroid;

@@ -13,8 +13,6 @@ import androidx.annotation.Nullable;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.IntentHandler.ExternalAppId;
 import org.chromium.chrome.browser.flags.ActivityType;
-import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.autofill_assistant.AssistantFeatures;
@@ -88,8 +86,7 @@ public class AssistantDependencyUtilsChrome {
     }
 
     public static boolean isMakeSearchesAndBrowsingBetterSettingEnabled() {
-        return UnifiedConsentServiceBridge.isUrlKeyedAnonymizedDataCollectionEnabled(
-                Profile.getLastUsedRegularProfile());
+        return false;
     }
 
     private AssistantDependencyUtilsChrome() {}

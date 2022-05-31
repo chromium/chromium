@@ -19,7 +19,6 @@ static_library("power_bookmarks") {
   deps = [
     "//base",
     "//base:i18n",
-    "//chrome/browser/commerce/shopping_list",
     "//components/bookmarks/browser",
     "//components/commerce/core:proto",
     "//content/public/browser",

@@ -115,7 +115,7 @@
 #endif  // BUILDFLAG(ENABLE_SPELLCHECK)
 
 #if BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/sync/trusted_vault_client_android.h"
+#include "components/sync/driver/trusted_vault_client.h"
 #else
 #include "components/sync/trusted_vault/standalone_trusted_vault_client.h"  // nogncheck
 #endif  // BUILDFLAG(IS_ANDROID)
@@ -151,6 +151,58 @@ using browser_sync::ExtensionModelTypeController;
 namespace browser_sync {
 
 namespace {
+
+#if BUILDFLAG(IS_ANDROID)
+
+// Used for the case where a null client is passed to SyncServiceCrypto.
+class EmptyTrustedVaultClient : public syncer::TrustedVaultClient {
+ public:
+  EmptyTrustedVaultClient() = default;
+  ~EmptyTrustedVaultClient() override = default;
+
+  // TrustedVaultClient implementation.
+  void AddObserver(Observer* observer) override {}
+
+  void RemoveObserver(Observer* observer) override {}
+
+  void FetchKeys(
+      const CoreAccountInfo& account_info,
+      base::OnceCallback<void(const std::vector<std::vector<uint8_t>>&)> cb)
+      override {
+    std::move(cb).Run({});
+  }
+
+  void StoreKeys(const std::string& gaia_id,
+                 const std::vector<std::vector<uint8_t>>& keys,
+                 int last_key_version) override {
+    // Never invoked by SyncServiceCrypto.
+    NOTREACHED();
+  }
+
+  void MarkLocalKeysAsStale(const CoreAccountInfo& account_info,
+                            base::OnceCallback<void(bool)> cb) override {
+    std::move(cb).Run(false);
+  }
+
+  void GetIsRecoverabilityDegraded(const CoreAccountInfo& account_info,
+                                   base::OnceCallback<void(bool)> cb) override {
+    std::move(cb).Run(false);
+  }
+
+  void AddTrustedRecoveryMethod(const std::string& gaia_id,
+                                const std::vector<uint8_t>& public_key,
+                                int method_type_hint,
+                                base::OnceClosure cb) override {
+    // Never invoked by SyncServiceCrypto.
+    NOTREACHED();
+  }
+
+  void ClearDataForAccount(const CoreAccountInfo& account_info) override {
+    // Never invoked by SyncServiceCrypto.
+    NOTREACHED();
+  }
+};
+#endif
 
 #if !BUILDFLAG(IS_ANDROID)
 const base::FilePath::CharType kTrustedVaultFilename[] =
@@ -249,7 +301,7 @@ ChromeSyncClient::ChromeSyncClient(Profile* profile)
       BookmarkSyncServiceFactory::GetForProfile(profile_));
 
 #if BUILDFLAG(IS_ANDROID)
-  trusted_vault_client_ = std::make_unique<TrustedVaultClientAndroid>();
+  trusted_vault_client_ = std::make_unique<EmptyTrustedVaultClient>();
 #else
   // TODO(crbug.com/1113597): consider destroying/notifying
   // |trusted_vault_client_| upon IdentityManager shutdown, to avoid its usages

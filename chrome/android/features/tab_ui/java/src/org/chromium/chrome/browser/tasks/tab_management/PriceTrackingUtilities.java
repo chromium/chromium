@@ -11,12 +11,8 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
-import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscriptionsServiceConfig;
-import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.components.sync.ModelType;
 
 import java.util.concurrent.TimeUnit;
 
@@ -214,14 +210,11 @@ public class PriceTrackingUtilities {
     }
 
     private static boolean isOpenTabsSyncEnabled() {
-        SyncService syncService = SyncService.get();
-        return syncService != null && syncService.isSyncRequested()
-                && syncService.getActiveDataTypes().contains(ModelType.SESSIONS);
+        return false;
     }
 
     private static boolean isAnonymizedUrlDataCollectionEnabled() {
-        return UnifiedConsentServiceBridge.isUrlKeyedAnonymizedDataCollectionEnabled(
-                Profile.getLastUsedRegularProfile());
+        return false;
     }
 
     @VisibleForTesting
