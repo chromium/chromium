@@ -2867,6 +2867,9 @@ void CrostiniManager::OnCreateLxdContainer(
                                               std::move(callback));
       break;
     case vm_tools::cicerone::CreateLxdContainerResponse::EXISTS:
+      // Containers are registered in OnContainerCreated() when created via the
+      // UI. But for any created manually also register now (crbug.com/1330168).
+      AddNewLxdContainerToPrefs(profile_, container_id);
       std::move(callback).Run(CrostiniResult::SUCCESS);
       break;
     default:

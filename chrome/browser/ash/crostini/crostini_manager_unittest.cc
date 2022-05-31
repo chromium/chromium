@@ -689,6 +689,35 @@ TEST_F(CrostiniManagerTest, UninstallPackageOwningFileSignalOperationBlocked) {
   run_loop()->Run();
 }
 
+TEST_F(CrostiniManagerTest, RegisterContainerPrefWhenContainerCreated) {
+  const base::Value* pref =
+      profile_->GetPrefs()->GetList(crostini::prefs::kCrostiniContainers);
+  EXPECT_EQ(pref->GetList().size(), 0);
+  crostini_manager()->CreateLxdContainer(
+      container_id(), absl::nullopt, absl::nullopt,
+      base::BindOnce(&ExpectCrostiniResult, run_loop()->QuitClosure(),
+                     CrostiniResult::SUCCESS));
+  run_loop()->Run();
+  pref = profile_->GetPrefs()->GetList(crostini::prefs::kCrostiniContainers);
+  EXPECT_EQ(pref->GetList().size(), 1);
+}
+
+TEST_F(CrostiniManagerTest, RegisterContainerPrefWhenContainerExists) {
+  const base::Value* pref =
+      profile_->GetPrefs()->GetList(crostini::prefs::kCrostiniContainers);
+  EXPECT_EQ(pref->GetList().size(), 0);
+  vm_tools::cicerone::CreateLxdContainerResponse response;
+  response.set_status(vm_tools::cicerone::CreateLxdContainerResponse::EXISTS);
+  fake_cicerone_client_->set_create_lxd_container_response(response);
+  crostini_manager()->CreateLxdContainer(
+      container_id(), absl::nullopt, absl::nullopt,
+      base::BindOnce(&ExpectCrostiniResult, run_loop()->QuitClosure(),
+                     CrostiniResult::SUCCESS));
+  run_loop()->Run();
+  pref = profile_->GetPrefs()->GetList(crostini::prefs::kCrostiniContainers);
+  EXPECT_EQ(pref->GetList().size(), 1);
+}
+
 class CrostiniManagerRestartTest : public CrostiniManagerTest,
                                    public CrostiniManager::RestartObserver {
  public:
