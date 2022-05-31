@@ -50,6 +50,10 @@
 #include "chromeos/network/network_state_handler.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/lacros/app_mode/kiosk_session_service_lacros.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 using extensions::AppWindow;
 using extensions::AppWindowRegistry;
 
@@ -83,12 +87,12 @@ bool IsPepperPlugin(const base::FilePath& plugin_path) {
 }
 
 void RebootDevice() {
-  // TODO (anqing): a new crosapi needs to be built to notify the reboot from
-  // lacros to ash.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   chromeos::PowerManagerClient::Get()->RequestRestart(
       power_manager::REQUEST_RESTART_OTHER, "kiosk app session");
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  KioskSessionServiceLacros::Get()->RestartDevice("kiosk app session");
+#endif
 }
 
 // Sends a SIGFPE signal to plugin subprocesses that matches |child_ids|
