@@ -365,7 +365,6 @@ void GPUExternalTexture::Destroy() {
   if (!mailbox_texture_)
     return;
 
-  GetProcs().textureDestroy(mailbox_texture_->GetTexture());
   mailbox_texture_.reset();
 }
 
