@@ -7002,7 +7002,6 @@ domain Page
       ch-device-memory
       ch-downlink
       ch-ect
-      ch-partitioned-cookies
       ch-prefers-color-scheme
       ch-rtt
       ch-save-data

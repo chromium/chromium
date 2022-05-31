@@ -239,4 +239,8 @@ struct URLResponseHead {
   // algorithm.
   // See: https://fetch.spec.whatwg.org/#concept-http-network-fetch
   bool request_include_credentials = true;
+
+  // This boolean is set to true if the response has a Set-Cookie header with the Partitioned attribute.
+  // TODO(https://crbug.com/1296161): Delete this field.
+  bool has_partitioned_cookie = false;
 };

@@ -29,6 +29,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
+#include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_conversion_helper.h"
 #include "build/build_config.h"
@@ -109,12 +110,14 @@
 #include "content/public/common/url_constants.h"
 #include "content/public/common/url_utils.h"
 #include "mojo/public/cpp/system/data_pipe.h"
+#include "net/base/features.h"
 #include "net/base/filename_util.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/url_util.h"
+#include "net/cookies/parsed_cookie.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/url_request/redirect_info.h"
@@ -147,6 +150,9 @@
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "third_party/blink/public/common/navigation/navigation_params_mojom_traits.h"
 #include "third_party/blink/public/common/navigation/navigation_policy.h"
+#include "third_party/blink/public/common/origin_trials/trial_token.h"
+#include "third_party/blink/public/common/origin_trials/trial_token_result.h"
+#include "third_party/blink/public/common/origin_trials/trial_token_validator.h"
 #include "third_party/blink/public/common/permissions_policy/document_policy.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/common/security/address_space_feature.h"
@@ -934,11 +940,10 @@ bool IsOptedInFencedFrame(const net::HttpResponseHeaders& http_headers) {
 }
 
 // If the response does not contain an Accept-CH header, then remove the
-// Sec-CH-UA-Reduced, Sec-CH-UA-Full, or Sec-CH-Partitioned-Cookies, client
-// hint from the Accept-CH cache, if it exists, for the response origin.  The
-// `client_hints` vector also has kUaReduced or kFullUserAgent removed from it
-// if the Accept-CH response header doesn't exist, and cookies are
-// un-partitioned if that feature is enabled.
+// Sec-CH-UA-Reduced or Sec-CH-UA-Full client hint from the Accept-CH cache, if
+// it exists, for the response origin.  The `client_hints` vector also has
+// kUaReduced or kFullUserAgent removed from it if the Accept-CH response header
+// doesn't exist, and cookies are un-partitioned if that feature is enabled.
 void RemoveOriginTrialHintsFromAcceptCH(
     const GURL& url,
     ClientHintsControllerDelegate* delegate,
@@ -950,18 +955,16 @@ void RemoveOriginTrialHintsFromAcceptCH(
   if (!response || response->parsed_headers->accept_ch)
     return;
 
-  // For Chrome to continue to send Sec-CH-UA-Reduced, Sec-CH-UA-Full, or
-  // Sec-CH-Partitioned-Cookies, the server must continue replying with:
+  // For Chrome to continue to send Sec-CH-UA-Reduced or Sec-CH-UA-Full, the
+  // server must continue replying with:
   //  - a valid Origin Trial token.
-  //  - Accept-CH header with Sec-CH-UA-Reduced, Sec-CH-UA-Full, or
-  //  Sec-CH-Partitioned-Cookies as a value.
+  //  - Accept-CH header with Sec-CH-UA-Reduced or Sec-CH-UA-Full as a value.
   //
   // Here, it did not. So it gets removed from the persisted client hints
   // for the next request.
   std::vector<network::mojom::WebClientHintsType> hints_to_remove = {
       network::mojom::WebClientHintsType::kUAReduced,
-      network::mojom::WebClientHintsType::kFullUserAgent,
-      network::mojom::WebClientHintsType::kPartitionedCookies};
+      network::mojom::WebClientHintsType::kFullUserAgent};
   bool need_update_storage = false;
   for (const auto& hint : hints_to_remove) {
     if (base::Contains(client_hints, hint)) {
@@ -974,10 +977,46 @@ void RemoveOriginTrialHintsFromAcceptCH(
                     frame_tree_node->GetParentOrOuterDocument(), delegate,
                     client_hints);
   }
+}
 
-  if (auto* cookie_manager = frame_tree_node->current_frame_host()
-                                 ->GetStoragePartition()
-                                 ->GetCookieManagerForBrowserProcess()) {
+bool IsValidPartitionedCookiesOriginTrial(
+    const GURL& url,
+    const net::HttpResponseHeaders* response_headers) {
+  blink::TrialTokenValidator validator;
+  if (!validator.IsTrialPossibleOnOrigin(url))
+    return false;
+  // Since third-party requests can participate in the CHIPS origin trial and
+  // typically the Origin-Trial header is reserved for requests from the
+  // top-level site, we cannot use validator.RequestEnablesFeature here.
+  url::Origin origin = url::Origin::Create(url);
+  url::Origin third_party_origins[] = {url::Origin::Create(url)};
+  size_t iter = 0;
+  std::string token;
+  base::Time now(base::Time::Now());
+  while (response_headers->EnumerateHeader(&iter, "Origin-Trial", &token)) {
+    blink::TrialTokenResult result =
+        validator.ValidateToken(token, origin, third_party_origins, now);
+    if (result.Status() == blink::OriginTrialTokenStatus::kSuccess) {
+      if (result.ParsedToken()->feature_name() == "PartitionedCookies") {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+// For the partitioned cookies OT, we check if the response has a Set-Cookie
+// header with a partitioned cookie. If it does, we validate the OT token
+// otherwise we convert the URL's partitioned cookies to unpartitioned.
+void CheckPartitionedCookiesOriginTrial(
+    const network::mojom::URLResponseHead* response,
+    const GURL& url,
+    network::mojom::CookieManager* cookie_manager) {
+  if (!base::FeatureList::IsEnabled(net::features::kPartitionedCookies) ||
+      !response || !cookie_manager || !response->has_partitioned_cookie) {
+    return;
+  }
+  if (!IsValidPartitionedCookiesOriginTrial(url, response->headers.get())) {
     cookie_manager->ConvertPartitionedCookiesToUnpartitioned(url);
   }
 }
@@ -4697,6 +4736,11 @@ void NavigationRequest::CommitNavigation() {
         common_params_->url, client_hints_delegate, response(),
         commit_params_->enabled_client_hints, frame_tree_node_);
   }
+
+  CheckPartitionedCookiesOriginTrial(response(), common_params_->url,
+                                     frame_tree_node_->current_frame_host()
+                                         ->GetStoragePartition()
+                                         ->GetCookieManagerForBrowserProcess());
 
   // Generate a UKM source and track it on NavigationRequest. This will be
   // passed down to the blink::Document to be created, if any, and used for UKM

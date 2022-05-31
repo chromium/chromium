@@ -54,6 +54,7 @@
 #include "net/cookies/cookie_store.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/first_party_set_metadata.h"
+#include "net/cookies/parsed_cookie.h"
 #include "net/cookies/same_party_context.h"
 #include "net/filter/brotli_source_stream.h"
 #include "net/filter/filter_source_stream.h"
@@ -928,6 +929,12 @@ void URLRequestHttpJob::SaveCookiesAndNotifyHeadersComplete(int result) {
     CookieInclusionStatus returned_status;
 
     num_cookie_lines_left_++;
+
+    // `cookie_partition_key_` is only non-null when partitioned cookie are
+    // enabled.
+    if (cookie_partition_key_ && ParsedCookie(cookie_string).IsPartitioned()) {
+      request_->SetHasPartitionedCookie();
+    }
 
     std::unique_ptr<CanonicalCookie> cookie = net::CanonicalCookie::Create(
         request_->url(), cookie_string, base::Time::Now(), server_time,

@@ -55,8 +55,6 @@ ClientHintToNameMap MakeClientHintToNameMap() {
        "sec-ch-ua-full-version-list"},
       {network::mojom::WebClientHintsType::kFullUserAgent, "sec-ch-ua-full"},
       {network::mojom::WebClientHintsType::kUAWoW64, "sec-ch-ua-wow64"},
-      {network::mojom::WebClientHintsType::kPartitionedCookies,
-       "sec-ch-partitioned-cookies"},
       {network::mojom::WebClientHintsType::kSaveData, "save-data"},
   };
 }

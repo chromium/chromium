@@ -51,9 +51,7 @@ enum WebClientHintsType {
   // header contains the full user agent string.
   kFullUserAgent = 24,
   kUAWoW64 = 25,
-  // A client hint which, if set, signifies to the origin that the client
-  // supports the Partitioned cookie attribute.
-  kPartitionedCookies = 26,
+  // kPartitionedCookies = 26, Removed in M103.
   // Indicates the client wants to minimize data transfer if set to 'on'.
   kSaveData = 27,
 

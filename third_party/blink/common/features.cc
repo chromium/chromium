@@ -1354,9 +1354,6 @@ const base::Feature kNoForcedFrameUpdatesForWebTests{
 const base::Feature kElementSuperRareData{"ElementSuperRareData",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kClientHintsPartitionedCookies{
-    "ClientHintsPartitionedCookies", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // If enabled, the memory limit used for tiles is scaled by
 // `kScaleTileMemoryLimitFactor`.
 const base::Feature kScaleTileMemoryLimit{"ScaleTileMemoryLimit",

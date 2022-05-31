@@ -104,11 +104,6 @@
       permissions_policy_name: "ch-ect",
     },
     {
-      name: "ClientHintPartitionedCookies",
-      permissions_policy_name: "ch-partitioned-cookies",
-      depends_on: ["PartitionedCookies"],
-    },
-    {
       name: "ClientHintPrefersColorScheme",
       permissions_policy_name: "ch-prefers-color-scheme",
     },

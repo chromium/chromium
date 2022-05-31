@@ -30,6 +30,7 @@
 #include "content/public/test/mock_render_process_host.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "net/cookies/parsed_cookie.h"
 #include "net/http/http_util.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "services/network/public/cpp/features.h"
@@ -590,6 +591,16 @@ void URLLoaderInterceptor::WriteResponse(
         network::PopulateParsedHeaders(response->headers.get(), *url);
   }
   response->ssl_info = std::move(ssl_info);
+
+  size_t iter = 0;
+  std::string cookie_line;
+  while (info.headers->EnumerateHeader(&iter, "Set-Cookie", &cookie_line)) {
+    if (net::ParsedCookie(cookie_line).IsPartitioned()) {
+      response->has_partitioned_cookie = true;
+      break;
+    }
+  }
+
   client->OnReceiveResponse(std::move(response),
                             mojo::ScopedDataPipeConsumerHandle());
 

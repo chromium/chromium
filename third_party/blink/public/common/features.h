@@ -655,8 +655,6 @@ BLINK_COMMON_EXPORT extern const base::Feature kNoForcedFrameUpdatesForWebTests;
 
 BLINK_COMMON_EXPORT extern const base::Feature kElementSuperRareData;
 
-BLINK_COMMON_EXPORT extern const base::Feature kClientHintsPartitionedCookies;
-
 BLINK_COMMON_EXPORT extern const base::Feature kScaleTileMemoryLimit;
 BLINK_COMMON_EXPORT
 extern const base::FeatureParam<double> kScaleTileMemoryLimitFactor;
