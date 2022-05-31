@@ -8,6 +8,7 @@ import android.app.Dialog;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -22,13 +23,15 @@ import java.lang.ref.WeakReference;
 public class PrivacySandboxDialogController {
     private static WeakReference<Dialog> sDialog;
     private static Boolean sShowNew;
+    private static Boolean sDisableAnimations;
 
     /**
      * Launches an appropriate dialog if necessary and returns whether that happened.
      */
-    public static boolean maybeLaunchPrivacySandboxDialog(Context context,
+    public static boolean maybeLaunchPrivacySandboxDialog(
+            @PrivacySandboxDialogLaunchContext int launchContext, Context context,
             @NonNull SettingsLauncher settingsLauncher, boolean isIncognito,
-            BottomSheetController bottomSheetController) {
+            @Nullable BottomSheetController bottomSheetController) {
         if (isIncognito) {
             return false;
         }
@@ -39,15 +42,22 @@ public class PrivacySandboxDialogController {
             case PromptType.NONE:
                 return false;
             case PromptType.NOTICE:
-                if (showNewNotice()) {
+                boolean newNotice = showNewNotice();
+                if (launchContext == PrivacySandboxDialogLaunchContext.NEW_TAB_PAGE && newNotice) {
+                    // Invoked in the NTP context and the new notice should be shown; show it.
                     if (bottomSheetController == null) return false;
                     new PrivacySandboxBottomSheetNotice(
                             context, bottomSheetController, settingsLauncher)
-                            .showNotice();
-                } else {
+                            .showNotice(/*animate = */ sDisableAnimations == null);
+                } else if (launchContext == PrivacySandboxDialogLaunchContext.BROWSER_START
+                        && !newNotice) {
+                    // Invoked at browser start without the new notice; show it.
                     dialog = new PrivacySandboxDialogNotice(context, settingsLauncher);
                     dialog.show();
                     sDialog = new WeakReference<>(dialog);
+                } else {
+                    // The launch context doesn't match the notice type; do not show anything.
+                    return false;
                 }
                 return true;
             case PromptType.CONSENT:
@@ -87,5 +97,10 @@ public class PrivacySandboxDialogController {
     @VisibleForTesting
     static void setShowNewNoticeForTesting(boolean showNew) {
         sShowNew = showNew;
+    }
+
+    @VisibleForTesting
+    static void disableAnimationsForTesting() {
+        sDisableAnimations = true;
     }
 }

@@ -163,7 +163,7 @@ public class NativePageFactory {
                     DeviceFormFactor.isWindowOnTablet(mWindowAndroid), mUma.get(),
                     ColorUtils.inNightMode(mActivity), nativePageHost, tab, url,
                     mBottomSheetController, mShareDelegateSupplier, mWindowAndroid, mJankTracker,
-                    mToolbarSupplier);
+                    mToolbarSupplier, new SettingsLauncherImpl());
         }
 
         protected NativePage buildBookmarksPage(Tab tab) {

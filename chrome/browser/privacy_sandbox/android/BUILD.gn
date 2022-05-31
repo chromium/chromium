@@ -19,6 +19,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxBridge.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxDialogConsent.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxDialogController.java",
+    "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxDialogLaunchContext.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxDialogNotice.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxHelpers.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxReferrer.java",

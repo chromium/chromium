@@ -87,10 +87,10 @@ public class PrivacySandboxBottomSheetNotice implements BottomSheetContent {
         });
     }
 
-    public void showNotice() {
+    public void showNotice(boolean animate) {
         // Reset whether the user opened settings.
         mOpenedSettings = false;
-        if (!mBottomSheetController.requestShowContent(this, /* animate= */ true)) {
+        if (!mBottomSheetController.requestShowContent(this, animate)) {
             mBottomSheetController.hideContent(
                     this, /* animate= */ false, BottomSheetController.StateChangeReason.NONE);
             destroy();
