@@ -138,8 +138,6 @@ initWithCollectionController:
   CGFloat pinnedOffsetY = [self.headerController pinnedOffsetY];
   self.collectionShiftingOffset =
       MAX(-self.additionalOffset, pinnedOffsetY - [self adjustedOffset].y);
-
-  self.collectionController.scrolledToMinimumHeight = YES;
   self.shouldAnimateHeader = YES;
 
   __weak __typeof(self) weakSelf = self;
@@ -148,8 +146,9 @@ initWithCollectionController:
       initWithDuration:kShiftTilesUpAnimationDuration
                  curve:UIViewAnimationCurveEaseInOut
             animations:^{
-              if (!weakSelf)
+              if (!weakSelf) {
                 return;
+              }
 
               __typeof(weakSelf) strongSelf = weakSelf;
               if (strongSelf.collectionView.contentOffset.y <
@@ -168,14 +167,19 @@ initWithCollectionController:
             }];
 
   [self.animator addCompletion:^(UIViewAnimatingPosition finalPosition) {
-    if (!weakSelf)
+    ContentSuggestionsHeaderSynchronizer* strongSelf = weakSelf;
+    if (!strongSelf) {
       return;
+    }
 
-    if (finalPosition == UIViewAnimatingPositionEnd)
-      weakSelf.shouldAnimateHeader = NO;
+    if (finalPosition == UIViewAnimatingPositionEnd) {
+      strongSelf.shouldAnimateHeader = NO;
+    }
 
-    if (completion)
+    strongSelf.collectionController.scrolledToMinimumHeight = YES;
+    if (completion) {
       completion(finalPosition);
+    }
   }];
 
   self.animator.interruptible = YES;

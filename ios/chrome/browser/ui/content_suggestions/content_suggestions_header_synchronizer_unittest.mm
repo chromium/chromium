@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "base/run_loop.h"
+#include "base/test/task_environment.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_controlling.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_controlling.h"
 #import "ios/testing/scoped_block_swizzler.h"
@@ -45,6 +47,7 @@ class ContentSuggestionsHeaderSynchronizerTest : public PlatformTest {
   }
 
  private:
+  base::test::TaskEnvironment task_environment_;
   ContentSuggestionsHeaderSynchronizer* synchronizer_;
   id header_controller_;
   id collection_controller_;
@@ -59,6 +62,7 @@ TEST_F(ContentSuggestionsHeaderSynchronizerTest, shiftUp) {
 
   // Action.
   [Synchronizer() shiftTilesUpWithAnimations:nil completion:nil];
+  base::RunLoop().RunUntilIdle();
 
   // Tests.
   EXPECT_OCMOCK_VERIFY(collectionController);
