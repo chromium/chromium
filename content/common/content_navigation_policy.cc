@@ -13,6 +13,11 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 
+namespace features {
+const base::Feature kBackForwardCache_NoMemoryLimit_Trial{
+    "BackForwardCache_NoMemoryLimit_Trial", base::FEATURE_ENABLED_BY_DEFAULT};
+}
+
 namespace content {
 
 bool DeviceHasEnoughMemoryForBackForwardCache() {
@@ -55,16 +60,42 @@ bool IsBackForwardCacheDisabledByCommandLine() {
 }
 
 bool IsBackForwardCacheEnabled() {
-  if (!DeviceHasEnoughMemoryForBackForwardCache())
+  bool has_enough_memory = DeviceHasEnoughMemoryForBackForwardCache();
+  if (!has_enough_memory) {
+    // When the device does not have enough memory for BackForwardCache, return
+    // false so we won't try to put things in the back/forward cache.
+    // Also, trigger the activation of the BackForwardCache_NoMemoryLimit_Trial
+    // field trial by querying the feature flag. With this, we guarantee that
+    // all devices that do not have enough memory for BackForwardCache will be
+    // included in that field trial. See case #1 in the comment for the
+    // BackForwardCache_NoMemoryLimit_Trial in the header file for more details.
+    base::FeatureList::IsEnabled(
+        features::kBackForwardCache_NoMemoryLimit_Trial);
     return false;
+  }
 
   if (IsBackForwardCacheDisabledByCommandLine())
     return false;
 
   // The feature needs to be checked last, because checking the feature
   // activates the field trial and assigns the client either to a control or an
-  // experiment group - such assignment should be final.
-  return base::FeatureList::IsEnabled(features::kBackForwardCache);
+  // experiment group - such assignment should be final. This allows us to keep
+  // the BackForwardCache field trial to include only devices that have enough
+  // memory for BackForwardCache, and those devices only.
+  if (base::FeatureList::IsEnabled(features::kBackForwardCache)) {
+    // When the device does have enough memory for BackForwardCache, return
+    // true so we won't try to put things in the back/forward cache. Also,
+    // trigger the activation of the BackForwardCache_NoMemoryLimit_Trial field
+    // trial by querying the feature flag. With this, we guarantee that all
+    // devices that do have enough memory for BackForwardCache and have the
+    // BackForwardCache feature flag enabled will be included in that field
+    // trial. See case #2 in the comment for the
+    // BackForwardCache_NoMemoryLimit_Trial in the header file for more details.
+    base::FeatureList::IsEnabled(
+        features::kBackForwardCache_NoMemoryLimit_Trial);
+    return true;
+  }
+  return false;
 }
 
 bool IsSameSiteBackForwardCacheEnabled() {
