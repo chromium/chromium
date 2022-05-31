@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/paint/paint_timing.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_inline_headers.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
@@ -156,6 +157,46 @@ TEST_F(DeferredShapingTest, DynamicPropertyChange) {
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(IsDefer("target"));
   EXPECT_TRUE(IsLocked("target"));
+}
+
+TEST_F(DeferredShapingTest, NoAutoLock) {
+  SetBodyInnerHTML(R"HTML(
+<div style="height:1800px"></div>
+<div id="target">IFC</div>
+)HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(IsDefer("target"));
+  EXPECT_TRUE(IsLocked("target"));
+
+  auto* context = GetElementById("target")->GetDisplayLockContext();
+  context->NotifySubtreeGainedSelection();
+  EXPECT_FALSE(IsLocked("target"));
+
+  context->NotifySubtreeLostSelection();
+  EXPECT_FALSE(IsLocked("target"));
+}
+
+// crbug.com/1330060
+TEST_F(DeferredShapingTest, NoAutoLockWithoutElement) {
+  SetBodyInnerHTML(R"HTML(
+<div style="height:1800px"></div>
+<div id="target">IFC</div>
+)HTML");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(IsDefer("target"));
+  EXPECT_TRUE(IsLocked("target"));
+
+  Persistent<DisplayLockContext> context =
+      GetElementById("target")->GetDisplayLockContext();
+  context->NotifySubtreeGainedSelection();
+  EXPECT_FALSE(IsLocked("target"));
+
+  GetElementById("target")->remove();
+  UpdateAllLifecyclePhasesForTest();
+  // Clear a WeakMember of DisplayLockContext.
+  ThreadState::Current()->CollectAllGarbageForTesting();
+  context->NotifySubtreeLostSelection();
+  // Pass if no crashes.
 }
 
 TEST_F(DeferredShapingTest, ListMarkerCrash) {
