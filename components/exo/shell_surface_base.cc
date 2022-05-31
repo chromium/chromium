@@ -635,10 +635,19 @@ void ShellSurfaceBase::SetWindowBounds(const gfx::Rect& bounds) {
 
 void ShellSurfaceBase::SetRestoreInfo(int32_t restore_session_id,
                                       int32_t restore_window_id) {
+  // TODO(crbug.com/1327490): Rename restore info variables.
   // Restore information must be set before widget is created.
   DCHECK(!widget_);
   restore_session_id_.emplace(restore_session_id);
   restore_window_id_.emplace(restore_window_id);
+}
+
+void ShellSurfaceBase::SetRestoreInfoWithWindowIdSource(
+    int32_t restore_session_id,
+    const std::string& restore_window_id_source) {
+  restore_session_id_.emplace(restore_session_id);
+  if (!restore_window_id_source.empty())
+    restore_window_id_source_.emplace(restore_window_id_source);
 }
 
 void ShellSurfaceBase::SetDisplay(int64_t display_id) {
@@ -1291,6 +1300,13 @@ void ShellSurfaceBase::CreateShellSurfaceWidget(
   if (restore_window_id_) {
     params.init_properties_container.SetProperty(
         app_restore::kRestoreWindowIdKey, *restore_window_id_);
+  }
+  if (restore_window_id_source_) {
+    params.init_properties_container.SetProperty(
+        app_restore::kRestoreWindowIdKey,
+        app_restore::FetchRestoreWindowId(*restore_window_id_source_));
+    params.init_properties_container.SetProperty(
+        app_restore::kAppIdKey, restore_window_id_source_.value());
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

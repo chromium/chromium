@@ -46,6 +46,7 @@ class XDGToplevelWrapperImpl : public ShellToplevelWrapper {
   void Unlock() override;
   void RequestWindowBounds(const gfx::Rect& bounds) override;
   void SetRestoreInfo(int32_t, int32_t) override;
+  void SetRestoreInfoWithWindowIdSource(int32_t, const std::string&) override;
   void SetSystemModal(bool modal) override;
   bool SupportsScreenCoordinates() const override;
 

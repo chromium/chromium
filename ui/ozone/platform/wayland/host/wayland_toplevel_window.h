@@ -286,8 +286,11 @@ class WaylandToplevelWindow : public WaylandWindow,
   // See https://crbug.com/1223005
   bool set_geometry_on_next_frame_ = false;
 
+  // Information used by the compositor to restore the window state upon
+  // creation.
   int32_t restore_session_id_ = 0;
-  int32_t restore_window_id_ = 0;
+  absl::optional<int32_t> restore_window_id_ = 0;
+  absl::optional<std::string> restore_window_id_source_;
 
   // Current modal status.
   bool system_modal_ = false;

@@ -162,6 +162,12 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   // session id and restore id, respectively.
   void SetRestoreInfo(int32_t restore_id, int32_t restore_window_id);
 
+  // Set `restore_window_id_source` to be the app id for Restore to fetch window
+  // id for.
+  void SetRestoreInfoWithWindowIdSource(
+      int32_t restore_id,
+      const std::string& restore_window_id_source);
+
   // Returns a trace value representing the state of the surface.
   std::unique_ptr<base::trace_event::TracedValue> AsTracedValue() const;
 
@@ -447,8 +453,13 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   bool pending_pip_ = false;
   bool in_extended_drag_ = false;
   absl::optional<std::string> initial_workspace_;
+
+  // Restore members. These pass window restore related ids from exo clients,
+  // e.g. Lacros, so that the window can be created with the correct restore
+  // info looked up using the ids.
   absl::optional<int32_t> restore_session_id_;
   absl::optional<int32_t> restore_window_id_;
+  absl::optional<std::string> restore_window_id_source_;
 
   // Overlay members.
   std::unique_ptr<views::Widget> overlay_widget_;

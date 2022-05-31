@@ -132,9 +132,12 @@ struct COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowInitProperties {
   // manager to match the desktop entry and group windows.
   std::string wayland_app_id;
 
-  // Specifies the unique browser session id and the restore window id.
+  // Specifies the unique session id and the restore window id.
   int32_t restore_session_id;
-  int32_t restore_window_id;
+  absl::optional<int32_t> restore_window_id;
+
+  // Specifies the source to get `restore_window_id` from.
+  absl::optional<std::string> restore_window_id_source;
 #endif
 
 #if defined(USE_OZONE)

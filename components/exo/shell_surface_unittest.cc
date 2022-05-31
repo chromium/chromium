@@ -2263,6 +2263,7 @@ TEST_F(ShellSurfaceTest, InitialCenteredBoundsWithConfigure) {
   expected.ClampToCenteredSize(size);
   EXPECT_EQ(expected, shell_surface->GetWidget()->GetWindowBoundsInScreen());
 }
+
 // Test that restore info is set correctly.
 TEST_F(ShellSurfaceTest, SetRestoreInfo) {
   int32_t restore_session_id = 200;
@@ -2283,6 +2284,29 @@ TEST_F(ShellSurfaceTest, SetRestoreInfo) {
   EXPECT_EQ(restore_window_id,
             shell_surface->GetWidget()->GetNativeWindow()->GetProperty(
                 app_restore::kRestoreWindowIdKey));
+}
+
+// Test that restore id is set correctly.
+TEST_F(ShellSurfaceTest, SetRestoreInfoWithWindowIdSource) {
+  int32_t restore_session_id = 200;
+  const std::string app_id = "app_id";
+
+  gfx::Size size(20, 30);
+  auto shell_surface =
+      test::ShellSurfaceBuilder(size).SetNoCommit().BuildShellSurface();
+
+  shell_surface->SetRestoreInfoWithWindowIdSource(restore_session_id, app_id);
+  shell_surface->Restore();
+  shell_surface->root_surface()->Commit();
+
+  EXPECT_TRUE(shell_surface->GetWidget()->IsVisible());
+
+  // FetchRestoreWindowId will return 0, because no app with id "app_id" is
+  // installed.
+  EXPECT_EQ(0, shell_surface->GetWidget()->GetNativeWindow()->GetProperty(
+                   app_restore::kRestoreWindowIdKey));
+  EXPECT_EQ(app_id, *shell_surface->GetWidget()->GetNativeWindow()->GetProperty(
+                        app_restore::kAppIdKey));
 }
 
 // Surfaces without non-client view should not crash.

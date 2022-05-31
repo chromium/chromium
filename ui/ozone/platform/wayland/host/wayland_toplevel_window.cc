@@ -497,6 +497,7 @@ bool WaylandToplevelWindow::OnInitialize(
   }
   restore_session_id_ = properties.restore_session_id;
   restore_window_id_ = properties.restore_window_id;
+  restore_window_id_source_ = properties.restore_window_id_source;
 
   SetPinnedModeExtension(this, static_cast<PinnedModeExtension*>(this));
   SetSystemModalExtension(this, static_cast<SystemModalExtension*>(this));
@@ -881,8 +882,14 @@ void WaylandToplevelWindow::SetUpShellIntegration() {
     zaura_surface_set_occlusion_tracking(aura_surface_.get());
     SetImmersiveFullscreenStatus(false);
     SetInitialWorkspace();
-    if (restore_session_id_)
-      shell_toplevel_->SetRestoreInfo(restore_session_id_, restore_window_id_);
+    if (restore_window_id_) {
+      DCHECK(!restore_window_id_source_);
+      shell_toplevel_->SetRestoreInfo(restore_session_id_,
+                                      restore_window_id_.value());
+    } else if (restore_window_id_source_) {
+      shell_toplevel_->SetRestoreInfoWithWindowIdSource(
+          restore_session_id_, restore_window_id_source_.value());
+    }
     UpdateSystemModal();
   }
 

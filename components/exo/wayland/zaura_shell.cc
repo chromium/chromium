@@ -709,6 +709,13 @@ void AuraToplevel::SetRestoreInfo(int32_t restore_session_id,
   shell_surface_->SetRestoreInfo(restore_session_id, restore_window_id);
 }
 
+void AuraToplevel::SetRestoreInfoWithWindowIdSource(
+    int32_t restore_session_id,
+    const std::string& restore_window_id_source) {
+  shell_surface_->SetRestoreInfoWithWindowIdSource(restore_session_id,
+                                                   restore_window_id_source);
+}
+
 void AuraToplevel::OnOriginChange(const gfx::Point& origin) {
   zaura_toplevel_send_origin_change(aura_toplevel_resource_, origin.x(),
                                     origin.y());
@@ -1080,6 +1087,15 @@ void aura_toplevel_unset_system_modal(wl_client* client,
   GetUserDataAs<AuraToplevel>(resource)->SetSystemModal(false);
 }
 
+void aura_toplevel_set_restore_info_with_window_id_source(
+    wl_client* client,
+    wl_resource* resource,
+    int32_t restore_session_id,
+    const char* restore_window_id_source) {
+  GetUserDataAs<AuraToplevel>(resource)->SetRestoreInfoWithWindowIdSource(
+      restore_session_id, restore_window_id_source);
+}
+
 const struct zaura_toplevel_interface aura_toplevel_implementation = {
     aura_toplevel_set_orientation_lock,
     aura_toplevel_surface_submission_in_pixel_coordinates,
@@ -1088,6 +1104,7 @@ const struct zaura_toplevel_interface aura_toplevel_implementation = {
     aura_toplevel_set_restore_info,
     aura_toplevel_set_system_modal,
     aura_toplevel_unset_system_modal,
+    aura_toplevel_set_restore_info_with_window_id_source,
 };
 
 void aura_popup_surface_submission_in_pixel_coordinates(wl_client* client,

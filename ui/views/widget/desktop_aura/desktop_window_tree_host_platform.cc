@@ -158,8 +158,11 @@ ui::PlatformWindowInitProperties ConvertWidgetInitParamsToInitProperties(
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
+  // Set restore members for windows to know ids upon creation. See the
+  // corresponding comment in Widget::InitParams.
   properties.restore_session_id = params.restore_session_id;
   properties.restore_window_id = params.restore_window_id;
+  properties.restore_window_id_source = params.restore_window_id_source;
 #endif
 
 #if BUILDFLAG(IS_FUCHSIA)
