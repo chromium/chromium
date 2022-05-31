@@ -13,6 +13,7 @@ USE_PYTHON3 = True
 def CommonChecks(input_api, output_api):
   return input_api.canned_checks.RunUnitTestsInDirectory(
       input_api, output_api, '.', [ r'^.+_test\.py$'],
+      run_on_python2=False,
       skip_shebang_check = True)
 
 def CheckChangeOnUpload(input_api, output_api):
