@@ -76,7 +76,6 @@ class COMPONENT_EXPORT(EVDEV) NeuralStylusPalmDetectionFilter
       std::vector<std::pair<float, int>>* biggest_strokes) const;
 
   bool DetectSpuriousStroke(const std::vector<float>& features,
-                            int tracking_id,
                             float threshold) const;
   // Extracts the feature vector for the specified stroke.
   std::vector<float> ExtractFeatures(int tracking_id) const;
