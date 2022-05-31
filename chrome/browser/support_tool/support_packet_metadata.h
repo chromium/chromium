@@ -64,9 +64,9 @@ class SupportPacketMetadata {
   // be called multiple times to append more errors to metadata file.
   void InsertErrors(const std::set<SupportToolError>& errors);
 
-  // Creates "metadata" file in `target_path` and writes the metadata. Removes
-  // all PII sensitive data from metadata except the PII types in `pii_to_keep`.
-  // Runs `on_matadata_file_written` when file is written.
+  // Creates "metadata.txt" file in `target_path` and writes the metadata.
+  // Removes all PII sensitive data from metadata except the PII types in
+  // `pii_to_keep`. Runs `on_metadata_file_written` when file is written.
   void WriteMetadataFile(base::FilePath target_path,
                          std::set<feedback::PIIType> pii_to_keep,
                          base::OnceClosure on_matadata_file_written);

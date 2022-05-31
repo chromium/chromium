@@ -77,7 +77,8 @@ bool WriteOutputFiles(
   DCHECK(system_logs_response);
   bool success = true;
   for (auto& entry : *system_logs_response) {
-    if (!base::WriteFile(target_directory.AppendASCII(entry.first),
+    if (!base::WriteFile(target_directory.AppendASCII(entry.first)
+                             .AddExtension(FILE_PATH_LITERAL(".log")),
                          entry.second))
       success = false;
   }

@@ -244,7 +244,7 @@ TEST_F(SupportToolHandlerTest, ExportSupportDataTest) {
       IsSupersetOf({Pair("test_data_collector_1", kTestDataToWriteOnFile),
                     Pair("test_data_collector_2", kTestDataToWriteOnFile)}));
   // Check metadata file.
-  auto metadata_file_contents = zip_contents.find("metadata");
+  auto metadata_file_contents = zip_contents.find("metadata.txt");
   EXPECT_TRUE(metadata_file_contents != zip_contents.end());
   // Metadata file should not be empty.
   EXPECT_FALSE(metadata_file_contents->second.empty());
@@ -330,7 +330,7 @@ TEST_F(SupportToolHandlerTest, ErrorMessageOnExportSupportData) {
       IsSupersetOf({Pair("test_data_collector_1", kTestDataToWriteOnFile),
                     Pair("test_data_collector_2", kTestDataToWriteOnFile)}));
   // Check metadata file.
-  auto metadata_file_contents = zip_contents.find("metadata");
+  auto metadata_file_contents = zip_contents.find("metadata.txt");
   EXPECT_TRUE(metadata_file_contents != zip_contents.end());
   // Metadata file should not be empty.
   EXPECT_FALSE(metadata_file_contents->second.empty());

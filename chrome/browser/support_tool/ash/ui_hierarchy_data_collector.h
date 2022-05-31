@@ -63,7 +63,7 @@ class UiHierarchyDataCollector : public DataCollector {
       DataCollectorDoneCallback on_exported_callback) override;
 
  private:
-  // Creates a "ui_hierarchy" file under `target_directory` and writes
+  // Creates a "ui_hierarchy.txt" file under `target_directory` and writes
   // `ui_hierarchy_data` into this file. Tries to scrub PII sensitive data in
   // `ui_hierarchy_data` when writing to it except the data under PII categories
   // in `pii_types_to_keep`.

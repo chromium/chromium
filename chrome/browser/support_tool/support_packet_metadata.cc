@@ -202,7 +202,7 @@ void SupportPacketMetadata::WriteMetadataFile(
     base::OnceClosure on_metadata_file_written) {
   AddErrorMessagesToMetadata();
   base::FilePath metadata_file =
-      target_path.Append(FILE_PATH_LITERAL("metadata"));
+      target_path.Append(FILE_PATH_LITERAL("metadata.txt"));
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(&WriteContentsOnFile, metadata_file, pii_to_keep,
