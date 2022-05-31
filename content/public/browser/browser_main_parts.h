@@ -17,30 +17,33 @@ class RunLoop;
 
 namespace content {
 
-// This class contains different "stages" to be executed by |BrowserMain()|,
-// Each stage is represented by a single BrowserMainParts method, called from
-// the corresponding method in |BrowserMainLoop| (e.g., EarlyInitialization())
-// which does the following:
-//  - calls a method (e.g., "PreEarlyInitialization()") which implements
-//    platform / tookit specific code for that stage.
-//  - calls various methods for things common to all platforms (for that stage).
-//  - calls a method (e.g., "PostEarlyInitialization()") for platform-specific
-//    code to be called after the common code.
+// This class contains different "stages" to be executed by |BrowserMain()|.
 //
 // Stages:
 //
-//  - EarlyInitialization: things which should be done as soon as possible on
-//    program start (such as setting up signal handlers)
+//  ** Cross-platform startup stages.
+//  ** Invoked during BrowserMainRunnerImpl::Initialize(), after
+//     ContentMainRunner's full initialization.
 //
-//  - ToolkitInitialized: similar to EarlyInitialization but for the UI toolkit.
-//    Allows an embedder to do any extra toolkit initialization.
+//  - PreEarlyInitialization: things to be be done as soon as possible on
+//    program start (such as setting up signal handlers; checking auto-restarts
+//    on update; etc.). Core APIs like base::FeatureList,
+//    base::ThreadTaskRunnerHandle, and base::ThreadPool are already functional
+//    at this point (ThreadPool will accept but not run tasks until
+//    PostCreateThreads).
+//
+//  - PostEarlyInitialization: things to be be as soon as possible but can/must
+//    wait after the few things in BrowserMainLoop's own EarlyInitialization.
+//
+//  - ToolkitInitialized: similar to PostEarlyInitialization but for the UI
+//    toolkit. Allows an embedder to do any extra toolkit initialization.
 //
 //  - PreCreateMainMessageLoop: things to be done at some generic time before
 //    the creation of the main message loop.
 //
-//  - PostCreateMainMessageLoop: things that should be done as early as possible
-//    but need the main message loop to be around (i.e. APIs like
-//    ThreadTaskRunnerHandle, BrowserThread::UI are up).
+//  - PostCreateMainMessageLoop: things to be done as early as possible but
+//    which need the main message loop to be around (i.e. BrowserThread::UI is
+//    up).
 //
 //  - PreCreateThreads: things that don't need to happen super early but still
 //    need to happen during single-threaded initialization (e.g. immutable
@@ -53,11 +56,10 @@ namespace content {
 //    https://chromium.googlesource.com/chromium/src/+/main/docs/threading_and_tasks.md#threading-lexicon
 //
 //  - PostCreateThreads: things that should be done as early as possible but
-//    need browser process threads to be alive (i.e. APIs like base::ThreadPool
-//    and BrowserThread::IO are up). In other words, core things that must be
-//    initialized before PreMainMessageLoopRun.
+//    need browser process threads to be alive (i.e. BrowserThread::IO is up and
+//    base::ThreadPool is running tasks).
 //
-//  - PreMainMessageLoopRun: in doubt, put things here. At this stage all core
+//  - PreMainMessageLoopRun: IN DOUBT, PUT THINGS HERE. At this stage all core
 //    APIs have been initialized. Services that must be initialized before the
 //    browser is considered functional can be initialized from here. Ideally
 //    only the frontend is initialized here while the backend takes advantage of
@@ -65,10 +67,10 @@ namespace content {
 //    happen on the main thread eventually but don't need to block startup
 //    should post a BEST_EFFORT task from this stage.
 //
-//  ** End of cross-platform startup stages **
-//    Stages above are run as part of startup stages in
-//    BrowserMainLoop::CreateStartupTasks() and can even be run eagerly (e.g.
-//    Android app warmup attempts to run these async.
+//  ** End of cross-platform startup stages.
+//  ** Stages above are run as part of startup stages in
+//  ** BrowserMainLoop::CreateStartupTasks() and can even be run eagerly (e.g.
+//  ** Android app warmup attempts to run these async.
 //
 //  - WillRunMainMessageLoop: The main thread's RunLoop will be run
 //    *immediately* upon returning from this method. While PreMainMessageLoopRun
@@ -146,8 +148,8 @@ class CONTENT_EXPORT BrowserMainParts {
   // This gives BrowserMainParts one last opportunity to tweak the upcoming main
   // message loop run. The embedder may replace |run_loop| to alter the default
   // RunLoop about to be run (must not be nullified, override
-  // CanRunMainMessageLoop to cancel the run). Note: This point is never
-  // reached on Android as it never invokes MainMessageLoopRun(),
+  // ShouldInterceptMainMessageLoopRun to cancel the run). Note: This point is
+  // never reached on Android as it never invokes MainMessageLoopRun(),
   // InterceptMainMessageLoopRun() is Android's last chance at altering the
   // default native loop run.
   virtual void WillRunMainMessageLoop(
