@@ -116,9 +116,6 @@
   E(kColorInfoBarContentAreaSeparator, \
     ThemeProperties::COLOR_INFOBAR_CONTENT_AREA_SEPARATOR) \
   E_CPONLY(kColorInfoBarForeground) \
-  /* Intent Picker colors. */ \
-  E_CPONLY(kColorIntentPickerItemBackgroundHovered) \
-  E_CPONLY(kColorIntentPickerItemBackgroundSelected) \
   /* Location bar colors. */ \
   E(kColorLocationBarBorder, ThemeProperties::COLOR_LOCATION_BAR_BORDER) \
   E(kColorLocationBarBorderOpaque, \

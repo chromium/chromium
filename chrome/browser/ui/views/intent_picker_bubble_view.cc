@@ -19,7 +19,6 @@
 #include "chrome/browser/apps/intent_helper/intent_picker_helpers.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_ui_controller.h"
-#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/hover_button.h"
@@ -36,25 +35,17 @@
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/geometry/insets.h"
-#include "ui/gfx/text_constants.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_host_view.h"
-#include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/button/image_button.h"
-#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/layout/layout_types.h"
-#include "ui/views/layout/table_layout.h"
-#include "ui/views/layout/table_layout_view.h"
-#include "ui/views/style/typography.h"
-#include "ui/views/view_class_properties.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ui/chromeos/devicetype_utils.h"
@@ -64,199 +55,12 @@ namespace {
 
 constexpr char kInvalidLaunchName[] = "";
 
-constexpr int kGridItemPreferredSize = 96;
-constexpr int kGridItemsPerRow = 3;
-constexpr int kGridInteriorColumnPadding = 8;
-constexpr int kGridInteriorRowPadding = 8;
-constexpr int kGridExteriorColumnPadding = 8;
-
-constexpr int kGridItemTopInset = 12;
-constexpr int kGridItemInset = 2;
-constexpr int kGridItemInteriorPadding = 8;
-constexpr int kGridItemBorderRadius = 4;
-
 bool IsKeyboardCodeArrow(ui::KeyboardCode key_code) {
   return key_code == ui::VKEY_UP || key_code == ui::VKEY_DOWN ||
          key_code == ui::VKEY_RIGHT || key_code == ui::VKEY_LEFT;
 }
 
-bool IsDoubleClick(const ui::Event& event) {
-  return (event.IsMouseEvent() && event.AsMouseEvent()->GetClickCount() == 2) ||
-         (event.IsGestureEvent() &&
-          event.AsGestureEvent()->details().tap_count() == 2);
-}
-
-// Callback for when an app is selected in the app list. First parameter is the
-// index, second parameter is true if the dialog should be immediately accepted.
-using AppSelectedCallback = base::RepeatingCallback<void(size_t, bool)>;
-
-// Grid view:
-
-// A Button which displays an app icon and name, as part of a grid layout of
-// apps.
-class IntentPickerAppGridButton : public views::Button {
- public:
-  METADATA_HEADER(IntentPickerAppGridButton);
-
-  IntentPickerAppGridButton(PressedCallback callback,
-                            const ui::ImageModel& icon_model,
-                            const std::string& display_name)
-      : views::Button(std::move(callback)) {
-    auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
-        views::BoxLayout::Orientation::kVertical,
-        gfx::Insets::TLBR(kGridItemTopInset, kGridItemInset, kGridItemInset,
-                          kGridItemInset),
-        kGridItemInteriorPadding, true));
-    layout->set_main_axis_alignment(
-        views::BoxLayout::MainAxisAlignment::kStart);
-    layout->set_cross_axis_alignment(
-        views::BoxLayout::CrossAxisAlignment::kCenter);
-
-    auto* icon_view =
-        AddChildView(std::make_unique<views::ImageView>(icon_model));
-    icon_view->SetCanProcessEventsWithinSubtree(false);
-
-    auto* name_label = AddChildView(std::make_unique<views::Label>(
-        base::UTF8ToUTF16(display_name), views::style::CONTEXT_BUTTON));
-    name_label->SetMultiLine(true);
-    name_label->SetMaxLines(2);
-    name_label->SetMaximumWidth(kGridItemPreferredSize);
-    name_label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
-    name_label->SetVerticalAlignment(gfx::VerticalAlignment::ALIGN_TOP);
-
-    SetFocusBehavior(FocusBehavior::ALWAYS);
-    SetAccessibleName(name_label->GetText());
-    SetPreferredSize(gfx::Size(kGridItemPreferredSize, kGridItemPreferredSize));
-  }
-  IntentPickerAppGridButton(const IntentPickerAppGridButton&) = delete;
-  IntentPickerAppGridButton& operator=(const IntentPickerAppGridButton&) =
-      delete;
-  ~IntentPickerAppGridButton() override = default;
-
-  void SetSelected(bool selected) {
-    selected_ = selected;
-    UpdateBackground();
-  }
-
-  // views::Button:
-  void StateChanged(ButtonState old_state) override { UpdateBackground(); }
-
- private:
-  void UpdateBackground() {
-    ui::ColorId color;
-    if (selected_ || GetState() == ButtonState::STATE_PRESSED) {
-      color = kColorIntentPickerItemBackgroundSelected;
-    } else if (GetState() == ButtonState::STATE_HOVERED) {
-      color = kColorIntentPickerItemBackgroundHovered;
-    } else {
-      SetBackground(nullptr);
-      return;
-    }
-
-    SetBackground(
-        views::CreateThemedRoundedRectBackground(color, kGridItemBorderRadius));
-  }
-
-  bool selected_ = false;
-};
-
-BEGIN_METADATA(IntentPickerAppGridButton, views::Button)
-END_METADATA
-
-// Displays a list of apps as a grid of buttons.
-class IntentPickerAppGridView
-    : public IntentPickerBubbleView::IntentPickerAppsView {
- public:
-  METADATA_HEADER(IntentPickerAppGridView);
-
-  IntentPickerAppGridView(
-      const std::vector<IntentPickerBubbleView::AppInfo>& apps,
-      AppSelectedCallback selected_callback)
-      : selected_callback_(selected_callback) {
-    auto table_view = std::make_unique<views::TableLayoutView>();
-    table_view->SetID(IntentPickerBubbleView::ViewId::kItemContainer);
-
-    table_view->AddPaddingColumn(views::TableLayout::kFixedSize,
-                                 kGridExteriorColumnPadding);
-    for (int i = 0; i < kGridItemsPerRow; i++) {
-      table_view->AddColumn(views::LayoutAlignment::kCenter,
-                            views::LayoutAlignment::kStart,
-                            views::TableLayout::kFixedSize,
-                            views::TableLayout::ColumnSize::kUsePreferred,
-                            /*fixed_width=*/0, /*min_width=*/0);
-      if (i < kGridItemsPerRow - 1) {
-        table_view->AddPaddingColumn(views::TableLayout::kFixedSize,
-                                     kGridInteriorColumnPadding);
-      }
-    }
-    table_view->AddPaddingColumn(views::TableLayout::kFixedSize,
-                                 kGridExteriorColumnPadding);
-
-    // Add padding to the exterior of the grid so that the focus ring on app
-    // items is not clipped.
-    constexpr int kFocusRingPadding = views::FocusRing::kDefaultHaloInset +
-                                      views::FocusRing::kDefaultHaloThickness;
-
-    int row_count = (apps.size() - 1) / kGridItemsPerRow + 1;
-    table_view->AddPaddingRow(views::TableLayout::kFixedSize,
-                              kFocusRingPadding);
-    for (int i = 0; i < row_count; i++) {
-      table_view->AddRows(1, views::TableLayout::kFixedSize);
-      if (i < row_count - 1) {
-        table_view->AddPaddingRow(views::TableLayout::kFixedSize,
-                                  kGridInteriorRowPadding);
-      }
-    }
-    table_view->AddPaddingRow(views::TableLayout::kFixedSize,
-                              kFocusRingPadding);
-
-    for (size_t i = 0; i < apps.size(); i++) {
-      auto app_button = std::make_unique<IntentPickerAppGridButton>(
-          base::BindRepeating(&IntentPickerAppGridView::OnAppPressed,
-                              base::Unretained(this), i),
-          apps[i].icon_model, apps[i].display_name);
-      table_view->AddChildView(std::move(app_button));
-    }
-
-    SetContents(std::move(table_view));
-    // Clip height so that at most two rows are visible, with a peek of the
-    // third if it exists.
-    ClipHeightTo(kGridItemPreferredSize, kGridItemPreferredSize * 2.5f);
-  }
-
-  void SetSelectedIndex(size_t index) override {
-    SetSelectedIndexInternal(index, false);
-  }
-
-  size_t GetSelectedIndex() const override { return selected_app_index_; }
-
- private:
-  void OnAppPressed(size_t index, const ui::Event& event) {
-    SetSelectedIndexInternal(index, IsDoubleClick(event));
-  }
-
-  void SetSelectedIndexInternal(size_t index, bool accepted) {
-    GetButtonAtIndex(selected_app_index_)->SetSelected(false);
-    selected_app_index_ = index;
-    GetButtonAtIndex(selected_app_index_)->SetSelected(true);
-    selected_callback_.Run(index, accepted);
-  }
-
-  IntentPickerAppGridButton* GetButtonAtIndex(size_t index) {
-    const auto& children = contents()->children();
-    return static_cast<IntentPickerAppGridButton*>(children[index]);
-  }
-
-  AppSelectedCallback selected_callback_;
-
-  size_t selected_app_index_ = 0;
-};
-
-BEGIN_METADATA(IntentPickerAppGridView, views::ScrollView)
-ADD_PROPERTY_METADATA(size_t, SelectedIndex)
-END_METADATA
-
-// List view:
+// IntentPickerLabelButton
 
 // A button that represents a candidate intent handler.
 class IntentPickerLabelButton : public views::LabelButton {
@@ -304,7 +108,7 @@ class IntentPickerAppListView
 
   IntentPickerAppListView(
       const std::vector<IntentPickerBubbleView::AppInfo>& apps,
-      AppSelectedCallback selected_callback)
+      base::RepeatingCallback<void(size_t, bool)> selected_callback)
       : selected_callback_(selected_callback) {
     auto scrollable_view = std::make_unique<views::View>();
     scrollable_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -381,7 +185,10 @@ class IntentPickerAppListView
     GetIntentPickerLabelButtonAt(selected_app_index_)->MarkAsSelected(event);
 
     bool accepted = false;
-    if (event && IsDoubleClick(*event)) {
+    if (event && ((event->IsMouseEvent() &&
+                   event->AsMouseEvent()->GetClickCount() == 2) ||
+                  (event->IsGestureEvent() &&
+                   event->AsGestureEvent()->details().tap_count() == 2))) {
       accepted = true;
     }
 
@@ -408,7 +215,7 @@ class IntentPickerAppListView
     return static_cast<IntentPickerLabelButton*>(children[index]);
   }
 
-  AppSelectedCallback selected_callback_;
+  base::RepeatingCallback<void(size_t, bool)> selected_callback_;
 
   size_t selected_app_index_ = 0;
 };
@@ -599,7 +406,6 @@ void IntentPickerBubbleView::Initialize() {
   const auto* provider = ChromeLayoutProvider::Get();
   auto insets = provider->GetDialogInsetsForContentType(leading_content_type,
                                                         trailing_content_type);
-
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
       gfx::Insets::TLBR(insets.top(), 0, insets.bottom(), 0),
@@ -628,15 +434,10 @@ void IntentPickerBubbleView::Initialize() {
   }
 
   // Create a container for all of the individual app views.
-  if (use_grid_view_) {
-    apps_view_ = AddChildView(std::make_unique<IntentPickerAppGridView>(
-        app_info_, base::BindRepeating(&IntentPickerBubbleView::OnAppSelected,
-                                       base::Unretained(this))));
-  } else {
-    apps_view_ = AddChildView(std::make_unique<IntentPickerAppListView>(
-        app_info_, base::BindRepeating(&IntentPickerBubbleView::OnAppSelected,
-                                       base::Unretained(this))));
-  }
+  auto list_view = std::make_unique<IntentPickerAppListView>(
+      app_info_, base::BindRepeating(&IntentPickerBubbleView::OnAppSelected,
+                                     base::Unretained(this)));
+  apps_view_ = AddChildView(std::move(list_view));
 
   if (show_origin) {
     std::u16string origin_text = l10n_util::GetStringFUTF16(
