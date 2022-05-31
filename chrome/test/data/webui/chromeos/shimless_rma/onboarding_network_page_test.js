@@ -142,6 +142,48 @@ export function onboardingNetworkPageTest() {
     assertFalse(dialog.open);
   });
 
+  test('DialogReopensAfterHittingConnect', async () => {
+    networkConfigService.addNetworksForTest(fakeNetworks);
+    await initializeOnboardingNetworkPage();
+    const networkList = component.shadowRoot.querySelector('#networkList');
+
+    // Add fake unconnected wifi.
+    const fakeWiFi = OncMojo.getDefaultNetworkState(
+        chromeos.networkConfig.mojom.NetworkType.kWiFi, 'wifi');
+    fakeWiFi.connectionState =
+        chromeos.networkConfig.mojom.ConnectionStateType.kNotConnected;
+    networkConfigService.addNetworksForTest(fakeWiFi);
+    component.refreshNetworks();
+    await flushTasks();
+
+    // Open network dialog.
+    const network = networkList.networks[networkList.networks.length - 1];
+
+    const dialog = /** @type {!CrDialogElement} */ (
+        component.shadowRoot.querySelector('#dialog'));
+    assertFalse(dialog.open);
+    component.showConfig_(network.type, network.guid, network.name);
+    assertTrue(dialog.open);
+    await flushTasks();
+
+    // Click connect button and dialog will be closed.
+    component.onNetworkSelected_({detail: network});
+    const connectButton = /** @type {!CrDialogElement} */ (
+        component.shadowRoot.querySelector('#connectButton'));
+    assertFalse(connectButton.hidden);
+    connectButton.click();
+    component.refreshNetworks();
+    await flushTasks();
+    assertFalse(dialog.open);
+
+    // Reopen the same dialog.
+    const dialog2 = /** @type {!CrDialogElement} */ (
+        component.shadowRoot.querySelector('#dialog'));
+    assertFalse(dialog2.open);
+    component.showConfig_(network.type, network.guid, network.name);
+    assertTrue(dialog2.open);
+  });
+
   test('DisconnectNetwork', async () => {
     networkConfigService.addNetworksForTest(fakeNetworks);
     await initializeOnboardingNetworkPage();

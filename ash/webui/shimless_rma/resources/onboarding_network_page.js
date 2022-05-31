@@ -266,6 +266,11 @@ export class OnboardingNetworkPage extends OnboardingNetworkPageBase {
     if (dialog.open) {
       dialog.close();
     }
+
+    // Reset the network state properties.
+    this.networkType_ = '';
+    this.networkName_ = '';
+    this.guid_ = '';
   }
 
   /** @protected */
