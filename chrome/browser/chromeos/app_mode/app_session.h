@@ -54,7 +54,8 @@ enum class KioskSessionState {
   kStopped = 3,
   kPluginCrashed = 4,
   kPluginHung = 5,
-  kWebWithLacrosStarted = 6,
+  // No longer used, use kWebStarted for lacros platform.
+  // kWebWithLacrosStarted = 6, 
   kRestored = 7,
   kMaxValue = kRestored,
 };
