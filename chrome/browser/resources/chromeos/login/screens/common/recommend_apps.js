@@ -33,10 +33,11 @@ const RecommendAppsElementBase = Polymer.mixinBehaviors(
  * @typedef {{
  *   appsDialog:  OobeAdaptiveDialogElement,
  *   appView:  WebView,
+ *   appsList: OobeAppsList,
  *   installButton:  OobeTextButton,
  * }}
  */
- RecommendAppsElementBase.$;
+RecommendAppsElementBase.$;
 
 /**
  * @polymer
@@ -59,6 +60,11 @@ class RecommendAppsElement extends RecommendAppsElementBase {
       appsSelected_: {
         type: Number,
         value: 0,
+      },
+
+      appList_: {
+        type: Array,
+        value: [],
       },
 
       /**
@@ -125,7 +131,9 @@ class RecommendAppsElement extends RecommendAppsElementBase {
 
   setWebview(contents) {
     cr.ui.login.invokePolymerMethod(this.$.appsDialog, 'onBeforeShow');
-    this.$.appView.src =
+    // Can't use this.$.appView here as the element is in a <dom-if>.
+    const appListView = this.shadowRoot.querySelector('#appView');
+    appListView.src =
         'data:text/html;charset=utf-8,' + encodeURIComponent(contents);
   }
 
@@ -135,13 +143,40 @@ class RecommendAppsElement extends RecommendAppsElementBase {
    */
   loadAppList(appList) {
     if (this.isOobeNewRecommendAppsEnabled_) {
-      // TODO(dkuzmin): finish UI changes of a new layout.
-      this.setUIStep(RecommendAppsUiState.LIST);
+      const recommendAppsContainsAdsStr = this.i18n('recommendAppsContainsAds');
+      const recommendAppsInAppPurchasesStr =
+          this.i18n('recommendAppsInAppPurchases');
+      const recommendAppsWasInstalledStr =
+          this.i18n('recommendAppsWasInstalled');
+      this.appList_ = appList.map(app => {
+        const tagList = [app.category];
+        if (app.contains_ads) {
+          tagList.push(recommendAppsContainsAdsStr);
+        }
+        if (app.in_app_purchases) {
+          tagList.push(recommendAppsInAppPurchasesStr);
+        }
+        if (app.was_installed) {
+          tagList.push(recommendAppsWasInstalledStr);
+        }
+        if (app.content_rating) {
+          tagList.push(app.content_rating);
+        }
+        return {
+          title: app.title,
+          icon_url: app.icon_url,
+          tags: tagList,
+          description: app.description,
+          package_name: app.package_name,
+          checked: false,
+        };
+      });
       return;
     }
     this.appCount_ = appList.length;
 
-    const appListView = this.$.appView;
+    // Can't use this.$.appView here as the element is in a <dom-if>.
+    const appListView = this.shadowRoot.querySelector('#appView');
     appListView.addEventListener('contentload', () => {
       appListView.executeScript(
           {file: 'recommend_app_old_list_view.js'}, () => {
@@ -169,7 +204,12 @@ class RecommendAppsElement extends RecommendAppsElementBase {
    * Handles event when contents in the webview is generated.
    */
   onFullyLoaded_() {
-    const appListView = this.$.appView;
+    if (this.isOobeNewRecommendAppsEnabled_) {
+      this.setUIStep(RecommendAppsUiState.LIST);
+      return;
+    }
+    // Can't use this.$.appView here as the element is in a <dom-if>.
+    const appListView = this.shadowRoot.querySelector('#appView');
     appListView.executeScript({code: 'getHeight();'}, function(result) {
       appListView.setAttribute('style', 'height: ' + result + 'px');
     });
@@ -190,7 +230,15 @@ class RecommendAppsElement extends RecommendAppsElementBase {
   onInstall_() {
     // Only start installation if there are apps to install.
     if (this.appsSelected_ > 0) {
-      const appListView = this.$.appView;
+      if (this.isOobeNewRecommendAppsEnabled_) {
+        // Can't use this.$.appsList here as the element is in a <dom-if>.
+        const appsList = this.shadowRoot.querySelector('#appsList');
+        const packageNames = appsList.getSelectedApps();
+        chrome.send('recommendAppsInstall', [packageNames]);
+        return;
+      }
+      // Can't use this.$.appView here as the element is in a <dom-if>.
+      const appListView = this.shadowRoot.querySelector('#appView');
       appListView.executeScript(
           {code: 'getSelectedPackages();'}, function(result) {
             chrome.send('recommendAppsInstall', [result[0]]);
@@ -214,7 +262,8 @@ class RecommendAppsElement extends RecommendAppsElementBase {
    * Handles Select all button click.
    */
   onSelectAll_() {
-    const appListView = this.$.appView;
+    // Can't use this.$.appView here as the element is in a <dom-if>.
+    const appListView = this.shadowRoot.querySelector('#appView');
     if (!this.isOobeNewRecommendAppsEnabled_) {
       appListView.executeScript({code: 'selectAll();'});
       return;

@@ -16,6 +16,7 @@
 <link rel="import" href="../../components/buttons/oobe_text_button.html">
 <link rel="import" href="../../components/common_styles/oobe_dialog_host_styles.html">
 <link rel="import" href="../../components/dialogs/oobe_adaptive_dialog.html">
+<link rel="import" href="../../components/oobe_apps_list.html">
 <link rel="import" href="../../components/oobe_types.html">
 
 <dom-module id="recommend-apps-element">
@@ -36,6 +37,10 @@
         justify-content: flex-end;
         margin-bottom: 16px;
       }
+
+      #app-list-view-container-new {
+        overflow-y: auto;
+      }
     </style>
     <oobe-loading-dialog id="loadingDialog" for-step="loading"
         title-key="recommendAppsLoading">
@@ -52,16 +57,28 @@
       <div slot="subtitle">
         [[i18nDynamic(locale, 'recommendAppsScreenDescription')]]
       </div>
-      <div id="app-list-view-container" slot="content"
-          hidden="[[isOobeNewRecommendAppsEnabled_]]">
-        <div id="selectAllButton">
-          <a class="oobe-local-link focus-on-show" is="action-link"
-              on-click="onSelectAll_">
-            [[i18nDynamic(locale, 'recommendAppsSelectAll')]]
-          </a>
+      <template is="dom-if" if="[[!isOobeNewRecommendAppsEnabled_]]">
+        <div id="app-list-view-container" slot="content">
+          <div id="selectAllButton">
+            <a class="oobe-local-link focus-on-show" is="action-link"
+                on-click="onSelectAll_">
+              [[i18nDynamic(locale, 'recommendAppsSelectAll')]]
+            </a>
+          </div>
+          <webview id="appView" on-message="onMessage_"></webview>
         </div>
-        <webview id="appView" on-message="onMessage_"></webview>
-      </div>
+      </template>
+      <template is="dom-if" if="[[isOobeNewRecommendAppsEnabled_]]">
+        <div id="app-list-view-container-new" slot="content">
+          <oobe-apps-list id="appsList" app-list="[[appList_]]"
+              apps-selected="{{appsSelected_}}"
+              on-apps-list-loaded="onFullyLoaded_">
+            <div slot="selectAllTitle">
+              [[i18nDynamic(locale, 'recommendAppsSelectAll')]]
+            </div>
+          </oobe-apps-list>
+        </div>
+      </template>
       <div slot="bottom-buttons">
         <oobe-text-button id="skipButton"
             text-key="recommendAppsSkip" on-click="onSkip_" border>

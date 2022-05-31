@@ -16,6 +16,11 @@
 #include "components/user_manager/user_manager.h"
 
 namespace ash {
+namespace {
+// Maximum number of recommended apps that we going to show.
+const int kMaxNumberOfRecommendedApps = 20;
+
+}  // namespace
 
 // static
 std::string RecommendAppsScreen::GetResultString(Result result) {
@@ -150,6 +155,8 @@ void RecommendAppsScreen::UnpackResultAndShow(
     app_info.Set("optimized_for_chrome",
                  base::Value(play_extras->GetOptimizedForChrome()));
     app_list.Append(std::move(app_info));
+    if (app_list.size() == kMaxNumberOfRecommendedApps)
+      break;
   }
   view_->OnLoadSuccess(base::Value(std::move(app_list)));
 }

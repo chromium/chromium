@@ -13,6 +13,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/app_list/arc/arc_fast_app_reinstall_starter.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/grit/component_extension_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
@@ -165,15 +166,16 @@ void RecommendAppsScreenHandler::InitializeDeprecated() {
 
 void RecommendAppsScreenHandler::LoadAppListInUI(base::Value app_list) {
   RecordUmaScreenState(RecommendAppsScreenState::SHOW);
-  const ui::ResourceBundle& resource_bundle =
-      ui::ResourceBundle::GetSharedInstance();
   // TODO(crbug.com/1261902): Clean-up old implementation once feature is
   // launched.
-  std::string app_list_webview = resource_bundle.LoadDataResourceString(
-      features::IsOobeNewRecommendAppsEnabled()
-          ? IDR_ARC_SUPPORT_RECOMMEND_APP_LIST_VIEW_HTML
-          : IDR_ARC_SUPPORT_RECOMMEND_APP_OLD_LIST_VIEW_HTML);
-  CallJS("login.RecommendAppsScreen.setWebview", app_list_webview);
+  if (!features::IsOobeNewRecommendAppsEnabled() ||
+      !base::FeatureList::IsEnabled(::features::kAppDiscoveryForOobe)) {
+    const ui::ResourceBundle& resource_bundle =
+        ui::ResourceBundle::GetSharedInstance();
+    std::string app_list_webview = resource_bundle.LoadDataResourceString(
+        IDR_ARC_SUPPORT_RECOMMEND_APP_OLD_LIST_VIEW_HTML);
+    CallJS("login.RecommendAppsScreen.setWebview", app_list_webview);
+  }
   CallJS("login.RecommendAppsScreen.loadAppList", std::move(app_list));
 }
 
