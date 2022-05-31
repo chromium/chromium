@@ -32,6 +32,7 @@ class PermissionRequestChip : public PermissionChip {
  private:
   // PermissionChip:
   views::View* CreateBubble() override;
+  void OnWidgetDestroying(views::Widget* widget) override;
   void ShowBubble() override;
 
   void RecordChipButtonPressed();

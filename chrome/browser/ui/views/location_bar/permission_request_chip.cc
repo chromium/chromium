@@ -113,9 +113,6 @@ PermissionRequestChip::~PermissionRequestChip() = default;
 views::View* PermissionRequestChip::CreateBubble() {
   prompt_bubble_ = new PermissionPromptBubbleView(
       browser_, delegate(), chip_shown_time_, PermissionPromptStyle::kChip);
-  prompt_bubble_->SetOnBubbleDismissedByUserCallback(base::BindOnce(
-      &PermissionRequestChip::OnPromptBubbleDismissed, base::Unretained(this)));
-
   RecordChipButtonPressed();
 
   return prompt_bubble_;
@@ -126,6 +123,17 @@ void PermissionRequestChip::ShowBubble() {
     prompt_bubble_->Show();
     prompt_bubble_->GetWidget()->AddObserver(this);
   }
+}
+
+void PermissionRequestChip::OnWidgetDestroying(views::Widget* widget) {
+  DCHECK_EQ(prompt_bubble_->GetWidget(), widget);
+  prompt_bubble_ = nullptr;
+  if (widget->closed_reason() == views::Widget::ClosedReason::kEscKeyPressed ||
+      widget->closed_reason() ==
+          views::Widget::ClosedReason::kCloseButtonClicked) {
+    OnPromptBubbleDismissed();
+  }
+  PermissionChip::OnWidgetDestroying(widget);
 }
 
 void PermissionRequestChip::RecordChipButtonPressed() {
