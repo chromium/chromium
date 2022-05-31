@@ -238,9 +238,48 @@ NGPhysicalBoxFragment::CloneWithPostLayoutFragments(
       other.has_borders_, other.has_padding_, other.has_inflow_bounds_,
       other.const_has_rare_data_);
 
-  return MakeGarbageCollected<NGPhysicalBoxFragment>(
+  const auto* cloned_fragment = MakeGarbageCollected<NGPhysicalBoxFragment>(
       AdditionalBytes(byte_size), PassKey(), other, has_layout_overflow,
       layout_overflow);
+
+  // To ensure the fragment tree is consistent, use the post-layout fragment.
+#if DCHECK_IS_ON()
+  AllowPostLayoutScope allow_post_layout_scope;
+#endif
+
+  for (NGLink& child : cloned_fragment->GetMutableForCloning().Children()) {
+    child.fragment = child->PostLayout();
+    DCHECK(child.fragment);
+
+    if (!child->IsFragmentainerBox())
+      continue;
+
+    // Fragmentainers don't have the concept of post-layout fragments, so if
+    // this is a fragmentation context root (such as a multicol container), we
+    // need to not only update its children, but also the children of the
+    // children that are fragmentainers.
+    auto& fragmentainer = *To<NGPhysicalBoxFragment>(child.fragment.Get());
+    for (NGLink& fragmentainer_child :
+         fragmentainer.GetMutableForCloning().Children()) {
+      auto& old_child =
+          *To<NGPhysicalBoxFragment>(fragmentainer_child.fragment.Get());
+      fragmentainer_child.fragment = old_child.PostLayout();
+    }
+  }
+
+  if (cloned_fragment->HasItems()) {
+    // Replace box fragment items with post layout fragments.
+    for (const auto& cloned_item : cloned_fragment->Items()->Items()) {
+      const NGPhysicalBoxFragment* box = cloned_item.BoxFragment();
+      if (!box)
+        continue;
+      box = box->PostLayout();
+      DCHECK(box);
+      cloned_item.GetMutableForCloning().ReplaceBoxFragment(*box);
+    }
+  }
+
+  return cloned_fragment;
 }
 
 // static
@@ -390,32 +429,9 @@ NGPhysicalBoxFragment::NGPhysicalBoxFragment(
       baseline_(other.baseline_),
       last_baseline_(other.last_baseline_),
       ink_overflow_(other.InkOverflowType(), other.ink_overflow_) {
-  // To ensure the fragment tree is consistent, use the post-layout fragment.
-#if DCHECK_IS_ON()
-  AllowPostLayoutScope allow_post_layout_scope;
-#endif
-  for (wtf_size_t i = 0; i < const_num_children_; ++i) {
-    children_[i].offset = other.children_[i].offset;
-    const NGPhysicalFragment& other_child_fragment = *other.children_[i];
-    const NGPhysicalFragment* post_layout = other_child_fragment.PostLayout();
-    DCHECK(post_layout);
-    new (&children_[i].fragment) Member<const NGPhysicalFragment>(post_layout);
-
-    if (!children_[i]->IsFragmentainerBox())
-      continue;
-
-    // Fragmentainers don't have the concept of post-layout fragments, so if
-    // this is a fragmentation context root (such as a multicol container), we
-    // need to not only update its children, but also the children of the
-    // children that are fragmentainers.
-    auto* fragmentainer = const_cast<NGPhysicalBoxFragment*>(
-        To<NGPhysicalBoxFragment>(children_[i].fragment.Get()));
-    for (wtf_size_t j = 0; j < fragmentainer->const_num_children_; ++j) {
-      NGLink& link = fragmentainer->children_[j];
-      auto& old_child = *To<NGPhysicalBoxFragment>(link.fragment.Get());
-      link.fragment = old_child.PostLayout();
-    }
-  }
+  // Shallow-clone the children.
+  for (wtf_size_t i = 0; i < const_num_children_; ++i)
+    children_[i] = other.children_[i];
 
   ink_overflow_type_ = other.ink_overflow_type_;
   if (const_has_fragment_items_) {

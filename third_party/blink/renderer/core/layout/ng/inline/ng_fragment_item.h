@@ -82,8 +82,6 @@ class CORE_EXPORT NGFragmentItem final {
   // (e.g., <span>text</span>) and atomic inlines.
   struct BoxItem {
     DISALLOW_NEW();
-    // This copy constructor looks up the "post-layout" fragment.
-    BoxItem(const BoxItem&);
     BoxItem(const NGPhysicalBoxFragment*, wtf_size_t descendants_count);
 
     // If this item is an inline box, its children are stored as following
@@ -333,9 +331,7 @@ class CORE_EXPORT NGFragmentItem final {
     return MutableForPainting(*this);
   }
 
-  // Out-of-flow in nested block fragmentation may require us to replace a
-  // fragment on a line.
-  class MutableForOOFFragmentation {
+  class MutableForCloning {
     STACK_ALLOCATED();
 
    public:
@@ -346,14 +342,14 @@ class CORE_EXPORT NGFragmentItem final {
 
    private:
     friend class NGFragmentItem;
-    explicit MutableForOOFFragmentation(const NGFragmentItem& item)
+    explicit MutableForCloning(const NGFragmentItem& item)
         : item_(const_cast<NGFragmentItem&>(item)) {}
 
     NGFragmentItem& item_;
   };
 
-  MutableForOOFFragmentation GetMutableForOOFFragmentation() const {
-    return MutableForOOFFragmentation(*this);
+  MutableForCloning GetMutableForCloning() const {
+    return MutableForCloning(*this);
   }
 
   bool IsHorizontal() const {

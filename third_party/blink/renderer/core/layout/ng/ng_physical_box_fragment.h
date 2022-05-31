@@ -52,6 +52,10 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
                         bool has_rare_data,
                         WritingMode block_or_line_writing_mode);
 
+  // Make a shallow copy. The child fragment pointers are just shallowly
+  // copied. Fragment *items* are cloned (but not box fragments associated with
+  // items), though. Additionally, the copy will set new overflow information,
+  // based on the parameters, rather than copying it from the original fragment.
   NGPhysicalBoxFragment(PassKey,
                         const NGPhysicalBoxFragment& other,
                         bool has_layout_overflow,
@@ -401,6 +405,28 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
   };
   MutableForPainting GetMutableForPainting() const {
     return MutableForPainting(*this);
+  }
+
+  class MutableForCloning {
+    STACK_ALLOCATED();
+    friend class NGPhysicalBoxFragment;
+
+   public:
+    base::span<NGLink> Children() const {
+      DCHECK(fragment_.children_valid_);
+      return base::make_span(fragment_.children_,
+                             fragment_.const_num_children_);
+    }
+
+   private:
+    explicit MutableForCloning(const NGPhysicalBoxFragment& fragment)
+        : fragment_(const_cast<NGPhysicalBoxFragment&>(fragment)) {}
+
+    NGPhysicalBoxFragment& fragment_;
+  };
+  friend class MutableForCloning;
+  MutableForCloning GetMutableForCloning() const {
+    return MutableForCloning(*this);
   }
 
   // Returns if this fragment can compute ink overflow.

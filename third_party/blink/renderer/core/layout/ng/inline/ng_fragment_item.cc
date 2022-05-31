@@ -453,10 +453,6 @@ bool NGFragmentItem::HasSelfPaintingLayer() const {
   return false;
 }
 
-NGFragmentItem::BoxItem::BoxItem(const BoxItem& other)
-    : box_fragment(other.box_fragment->PostLayout()),
-      descendants_count(other.descendants_count) {}
-
 NGFragmentItem::BoxItem::BoxItem(const NGPhysicalBoxFragment* box_fragment,
                                  wtf_size_t descendants_count)
     : box_fragment(box_fragment), descendants_count(descendants_count) {}

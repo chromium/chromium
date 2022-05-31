@@ -471,7 +471,7 @@ bool NGFragmentItems::ReplaceBoxFragment(
     const NGFragmentItem* item = cursor.Current().Item();
     if (item->BoxFragment() != &old_fragment)
       continue;
-    item->GetMutableForOOFFragmentation().ReplaceBoxFragment(new_fragment);
+    item->GetMutableForCloning().ReplaceBoxFragment(new_fragment);
     return true;
   }
   return false;
