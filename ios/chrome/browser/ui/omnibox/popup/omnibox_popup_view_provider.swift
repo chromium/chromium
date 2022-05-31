@@ -72,8 +72,15 @@ where Content: View {
     // gets accurate spacing.
     let omniboxFrameInView = omniboxGuide.constrainedView.convert(
       omniboxGuide.constrainedView.bounds, to: view)
-    uiConfiguration.omniboxLeadingSpace = omniboxFrameInView.minX
-    uiConfiguration.omniboxTrailingSpace = view.bounds.width - omniboxFrameInView.maxX
+
+    let isLTR =
+      UIApplication.shared.userInterfaceLayoutDirection
+      == UIUserInterfaceLayoutDirection.leftToRight
+
+    uiConfiguration.omniboxLeadingSpace =
+      isLTR ? omniboxFrameInView.minX : view.frame.size.width - omniboxFrameInView.maxX
+    uiConfiguration.omniboxTrailingSpace =
+      isLTR ? view.bounds.width - omniboxFrameInView.maxX : omniboxFrameInView.minX
 
     let safeAreaFrame = safeAreaGuide.layoutFrame
     uiConfiguration.safeAreaTrailingSpace = view.bounds.width - safeAreaFrame.maxX
@@ -81,12 +88,16 @@ where Content: View {
     let omniboxLeadingImageFrameInView = omniboxLeadingImageGuide.constrainedView.convert(
       omniboxLeadingImageGuide.constrainedView.bounds, to: view)
     uiConfiguration.omniboxLeadingImageLeadingSpace =
-      omniboxLeadingImageFrameInView.midX - omniboxFrameInView.minX
+      isLTR
+      ? omniboxLeadingImageFrameInView.minX - omniboxFrameInView.minX
+      : omniboxFrameInView.maxX - omniboxLeadingImageFrameInView.maxX
 
     let omniboxTextFieldFrameInView = omniboxTextFieldGuide.constrainedView.convert(
       omniboxTextFieldGuide.constrainedView.bounds, to: view)
     uiConfiguration.omniboxTextFieldLeadingSpace =
-      omniboxTextFieldFrameInView.minX - omniboxFrameInView.minX
+      isLTR
+      ? omniboxTextFieldFrameInView.minX - omniboxFrameInView.minX
+      : omniboxFrameInView.maxX - omniboxTextFieldFrameInView.maxX
   }
 
   var hasContent: Bool {

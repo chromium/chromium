@@ -160,7 +160,15 @@ struct PopupView: View {
   }
 
   func listContent(geometry: GeometryProxy) -> some View {
-    ForEach(Array(zip(model.sections.indices, model.sections)), id: \.0) {
+    let layoutDirection =
+      (model.rtlContentAttribute == .unspecified)
+      ? (UIApplication.shared.userInterfaceLayoutDirection
+        == UIUserInterfaceLayoutDirection.leftToRight
+        ? LayoutDirection.leftToRight : LayoutDirection.rightToLeft)
+      : ((model.rtlContentAttribute == .forceLeftToRight)
+        ? LayoutDirection.leftToRight : LayoutDirection.rightToLeft)
+    
+    return ForEach(Array(zip(model.sections.indices, model.sections)), id: \.0) {
       sectionIndex, section in
 
       let sectionContents =
@@ -287,7 +295,6 @@ struct PopupView: View {
   var body: some View {
     listView
       .onAppear(perform: onAppear)
-      .environment(\.layoutDirection, .leftToRight)
   }
 
   @ViewBuilder
@@ -437,6 +444,12 @@ struct PopupView_Previews: PreviewProvider {
         uiConfiguration: PopupUIConfiguration(
           toolbarConfiguration: ToolbarConfiguration(style: .NORMAL))
       )
+
+    sample.environment(\.popupUIVariation, .one)
+      .environment(\.locale, .init(identifier: "ar"))
+
+    sample.environment(\.popupUIVariation, .two)
+      .environment(\.locale, .init(identifier: "ar"))
 
     sample.environment(\.popupUIVariation, .one)
     sample.environment(\.popupUIVariation, .two)
