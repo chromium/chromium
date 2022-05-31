@@ -443,7 +443,7 @@ export class Camera extends View implements CameraViewUI {
         // Record and keep the rotation only at the instance the user starts the
         // capture. Users may change the device orientation while taking video.
         const cameraFrameRotation = await (async () => {
-          const deviceOperator = await DeviceOperator.getInstance();
+          const deviceOperator = DeviceOperator.getInstance();
           if (deviceOperator === null) {
             return 0;
           }

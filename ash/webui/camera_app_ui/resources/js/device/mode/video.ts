@@ -250,7 +250,7 @@ export class Video extends ModeBase {
    * @return Returns whether taking video sanpshot via Blob stream is enabled.
    */
   async isBlobVideoSnapshotEnabled(): Promise<boolean> {
-    const deviceOperator = await DeviceOperator.getInstance();
+    const deviceOperator = DeviceOperator.getInstance();
     const {deviceId} = this.video.getVideoSettings();
     return deviceOperator !== null &&
         (await deviceOperator.isBlobVideoSnapshotEnabled(deviceId));

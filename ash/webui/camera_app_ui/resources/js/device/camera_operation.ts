@@ -135,7 +135,7 @@ class Reconfigurer {
   private async *
       getConfigurationCandidates(cameraInfo: CameraInfo):
           AsyncIterable<ConfigureCandidate> {
-    const deviceOperator = await DeviceOperator.getInstance();
+    const deviceOperator = DeviceOperator.getInstance();
 
     for (const deviceId of this.getDeviceIdCandidates(cameraInfo)) {
       for (const mode of await this.getModeCandidates(deviceId)) {
@@ -210,7 +210,7 @@ class Reconfigurer {
       return false;
     }
 
-    const deviceOperator = await DeviceOperator.getInstance();
+    const deviceOperator = DeviceOperator.getInstance();
     state.set(state.State.USE_FAKE_CAMERA, deviceOperator === null);
 
     for await (const c of this.getConfigurationCandidates(cameraInfo)) {
@@ -363,7 +363,7 @@ export class OperationScheduler {
         defaultFacing,
     );
     this.capturer = new Capturer(this.modes);
-    this.infoUpdater.addDeviceChangeListener(async (updater) => {
+    this.infoUpdater.addDeviceChangeListener((updater) => {
       const info = new CameraInfo(updater);
       if (this.ongoingOperationType !== null) {
         this.pendingUpdateInfo = info;

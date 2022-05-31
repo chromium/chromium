@@ -18,6 +18,7 @@ import * as filesystem from './models/file_system.js';
 import * as loadTimeData from './models/load_time_data.js';
 import * as localStorage from './models/local_storage.js';
 import {ChromeHelper} from './mojo/chrome_helper.js';
+import {DeviceOperator} from './mojo/device_operator.js';
 import * as nav from './nav.js';
 import {PerfLogger} from './perf.js';
 import {preloadImagesList} from './preload_images.js';
@@ -215,6 +216,7 @@ export class App {
    * Starts the app by loading the model and opening the camera-view.
    */
   async start(launchType: metrics.LaunchType): Promise<void> {
+    await DeviceOperator.initializeInstance();
     document.documentElement.dir = loadTimeData.getTextDirection();
     try {
       await filesystem.initialize();

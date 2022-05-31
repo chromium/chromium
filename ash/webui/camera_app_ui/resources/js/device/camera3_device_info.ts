@@ -127,7 +127,7 @@ export class Camera3DeviceInfo {
       Promise<Camera3DeviceInfo> {
     const deviceId = deviceInfo.deviceId;
 
-    const deviceOperator = await DeviceOperator.getInstance();
+    const deviceOperator = DeviceOperator.getInstance();
     if (!deviceOperator) {
       throw new Error('Device operation is not supported');
     }

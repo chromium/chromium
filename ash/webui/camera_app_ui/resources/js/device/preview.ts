@@ -165,7 +165,7 @@ export class Preview {
   }
 
   private async updatePTZ() {
-    const deviceOperator = await DeviceOperator.getInstance();
+    const deviceOperator = DeviceOperator.getInstance();
     const {pan, tilt, zoom} = this.getVideoTrack().getCapabilities();
 
     this.isSupportPTZInternal = await (async () => {
@@ -320,7 +320,7 @@ export class Preview {
       this.updateShowMetadata();
       await this.updatePTZ();
 
-      const deviceOperator = await DeviceOperator.getInstance();
+      const deviceOperator = DeviceOperator.getInstance();
       if (deviceOperator !== null) {
         const {deviceId} = getVideoTrackSettings(this.getVideoTrack());
         const isSuccess =
@@ -358,7 +358,7 @@ export class Preview {
       const track = this.getVideoTrack();
       const {deviceId} = getVideoTrackSettings(track);
       track.stop();
-      const deviceOperator = await DeviceOperator.getInstance();
+      const deviceOperator = DeviceOperator.getInstance();
       if (deviceOperator !== null) {
         deviceOperator.dropConnection(deviceId);
       }
@@ -550,7 +550,7 @@ export class Preview {
       };
     })();
 
-    const deviceOperator = await DeviceOperator.getInstance();
+    const deviceOperator = DeviceOperator.getInstance();
     if (!deviceOperator) {
       return;
     }
@@ -640,11 +640,6 @@ export class Preview {
    */
   private async disableShowMetadata(): Promise<void> {
     if (!this.streamInternal || this.metadataObserver === null) {
-      return;
-    }
-
-    const deviceOperator = await DeviceOperator.getInstance();
-    if (!deviceOperator) {
       return;
     }
 

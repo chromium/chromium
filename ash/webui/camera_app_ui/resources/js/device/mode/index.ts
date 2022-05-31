@@ -130,7 +130,7 @@ export class Modes {
     async function prepareDeviceForPhoto(
         constraints: StreamConstraints, resolution: Resolution,
         captureIntent: CaptureIntent): Promise<void> {
-      const deviceOperator = await DeviceOperator.getInstance();
+      const deviceOperator = DeviceOperator.getInstance();
       if (deviceOperator === null) {
         return;
       }
@@ -150,7 +150,7 @@ export class Modes {
         isSupported: async () => true,
         isSupportPTZ: () => true,
         prepareDevice: async (constraints) => {
-          const deviceOperator = await DeviceOperator.getInstance();
+          const deviceOperator = DeviceOperator.getInstance();
           if (deviceOperator === null) {
             return;
           }
@@ -213,7 +213,7 @@ export class Modes {
           if (deviceId === null) {
             return false;
           }
-          const deviceOperator = await DeviceOperator.getInstance();
+          const deviceOperator = DeviceOperator.getInstance();
           if (deviceOperator === null) {
             return false;
           }
