@@ -241,7 +241,7 @@ GREYLayoutConstraint* BelowConstraint() {
 #pragma mark - Welcome Screen Tests
 
 // Checks that the Welcome screen is displayed correctly.
-- (void)DISABLED_testWelcomeScreenUI {
+- (void)testWelcomeScreenUI {
   [self verifyWelcomeScreenIsDisplayed];
 
   // Validate the Title text.
@@ -269,7 +269,7 @@ GREYLayoutConstraint* BelowConstraint() {
 
 // Checks that the Welcome screen is displayed correctly when enterprise is
 // enabled.
-- (void)DISABLED_testWelcomeScreenUIForEnterprise {
+- (void)testWelcomeScreenUIForEnterprise {
   AppLaunchConfiguration config = self.appConfigurationForTestCase;
 
   // Configure the policy to force sign-in.
@@ -388,8 +388,7 @@ GREYLayoutConstraint* BelowConstraint() {
 // Tests that the forced sign-in screen is shown when the policy is enabled.
 // If the user says no during the FRE, then they should be re-prompted at the
 // end of the FRE.
-// TODO(crbug.com/1282047): Re-enable when fixed.
-- (void)DISABLED_testSignInScreenUIWhenForcedByPolicy {
+- (void)testSignInScreenUIWhenForcedByPolicy {
   AppLaunchConfiguration configToSetPolicy = self.appConfigurationForTestCase;
 
   // Configure the policy to force sign-in.
@@ -553,7 +552,7 @@ GREYLayoutConstraint* BelowConstraint() {
 
 // Tests that the FRE sign in screen is not displayed when sign in is disabled
 // by policy.
-- (void)DISABLED_testSignInDisabled {
+- (void)testSignInDisabled {
   AppLaunchConfiguration config = self.appConfigurationForTestCase;
 
   // Configure the policy to disable SignIn.
@@ -650,7 +649,7 @@ GREYLayoutConstraint* BelowConstraint() {
 
 // Checks that the user is signed in and that sync is turned on after the user
 // chooses to turn on sync.
-- (void)DISABLED_testSignInAndTurnOnSync {
+- (void)testSignInAndTurnOnSync {
   FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
@@ -676,7 +675,7 @@ GREYLayoutConstraint* BelowConstraint() {
 
 // Checks that pressing "No thanks" on sign-in & sync screen doesn't sign in the
 // user and doesn't sync.
-- (void)DISABLED_testNoSignInNoSync {
+- (void)testNoSignInNoSync {
   FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
@@ -704,7 +703,7 @@ GREYLayoutConstraint* BelowConstraint() {
 // The browser should only be signed in temporarily while the advanced settings
 // prompt is opened and then signed out when the user selects "No thanks".
 // Sync is also turned off.
-- (void)DISABLED_testAdvancedSettingsSignoutSyncOff {
+- (void)testAdvancedSettingsSignoutSyncOff {
   FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
@@ -747,7 +746,7 @@ GREYLayoutConstraint* BelowConstraint() {
 // If browser is already signed in and the user opens the advanced settings then
 // selects "No thanks", the user should stay signed in, but sync should be
 // turned off.
-- (void)DISABLED_testAdvancedSettingsSignedInSyncOff {
+- (void)testAdvancedSettingsSignedInSyncOff {
   // Sign-in browser.
   FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:NO];
@@ -806,7 +805,7 @@ GREYLayoutConstraint* BelowConstraint() {
 
 // Checks that sync is turned on after the user chose to turn on sync in the
 // advanced sync settings screen and that the correct sync options are selected.
-- (void)DISABLED_testCustomSyncOn {
+- (void)testCustomSyncOn {
   FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
@@ -868,7 +867,7 @@ GREYLayoutConstraint* BelowConstraint() {
 }
 
 // Checks that the user is signed in, but no sync options is selected.
-- (void)DISABLED_testCustomSyncOff {
+- (void)testCustomSyncOff {
   FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
@@ -941,7 +940,7 @@ GREYLayoutConstraint* BelowConstraint() {
 // Checks that the user is not signed in and that sync is turned off after the
 // user chose to not sign-in even though they selected some sync options in the
 // advanced sync settings screen.
-- (void)DISABLED_testCustomSyncSignout {
+- (void)testCustomSyncSignout {
   FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
 
@@ -998,7 +997,7 @@ GREYLayoutConstraint* BelowConstraint() {
 
 // Tests that metrics collection is enabled when the checkmark is checked on
 // the Welcome screen.
-- (void)DISABLED_testMetricsEnabled {
+- (void)testMetricsEnabled {
   // Verify the metrics collection pref is disabled prior to going through the
   // Welcome screen.
   GREYAssertFalse(
@@ -1030,7 +1029,7 @@ GREYLayoutConstraint* BelowConstraint() {
 
 // Tests that metrics collection is disabled when the checkmark is unchecked on
 // the Welcome screen.
-- (void)DISABLED_testMetricsDisabled {
+- (void)testMetricsDisabled {
   // Verify the metrics collection pref is disabled prior to going through the
   // Welcome screen.
   GREYAssertFalse(
@@ -1060,7 +1059,7 @@ GREYLayoutConstraint* BelowConstraint() {
 
 // Checks that the sync screen doesn't appear when the SyncDisabled policy is
 // enabled.
-- (void)DISABLED_testSyncDisabled {
+- (void)testSyncDisabled {
   policy_test_utils::SetPolicy(true, policy::key::kSyncDisabled);
 
   // Go to the sign-in screen.
