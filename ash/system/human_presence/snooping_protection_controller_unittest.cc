@@ -13,6 +13,7 @@
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -31,6 +32,15 @@ namespace {
 // the positive window length.
 constexpr base::TimeDelta kShortTime = base::Milliseconds(30);
 constexpr base::TimeDelta kLongTime = base::Seconds(30);
+
+// UMA metric names.
+// TODO(b/233679833): Move these metrics names into a common file.
+constexpr char kSnoopingProtectionEnabledName[] =
+    "ChromeOS.HPS.SnoopingProtection.Enabled";
+constexpr char kSnoopingProtectionNegativeName[] =
+    "ChromeOS.HPS.SnoopingProtection.Negative.Duration";
+constexpr char kSnoopingProtectionPositiveName[] =
+    "ChromeOS.HPS.SnoopingProtection.Positive.Duration";
 
 // A fixture that provides access to a fake daemon and an instance of the
 // controller hooked up to the test environment.
@@ -487,6 +497,106 @@ TEST_F(SnoopingProtectionControllerTestBadParams, BadParams) {
   EXPECT_EQ(dbus_client_->enable_hps_notify_count(), 0);
   EXPECT_EQ(dbus_client_->disable_hps_notify_count(), 1);
   EXPECT_EQ(dbus_client_->hps_notify_count(), 0);
+}
+
+// Use the same texture as TestAbsent for UMA metrics.
+class SnoopingProtectionControllerTestMetrics
+    : public SnoopingProtectionControllerTestAbsent {};
+
+TEST_F(SnoopingProtectionControllerTestMetrics, EnableDisablePref) {
+  base::HistogramTester tester;
+
+  SimulateLogin();
+  tester.ExpectTotalCount(kSnoopingProtectionEnabledName, 0);
+
+  SetEnabledPref(true);
+  tester.ExpectBucketCount(kSnoopingProtectionEnabledName, 1, 1);
+  tester.ExpectTotalCount(kSnoopingProtectionEnabledName, 1);
+
+  SetEnabledPref(false);
+  tester.ExpectBucketCount(kSnoopingProtectionEnabledName, 0, 1);
+  tester.ExpectTotalCount(kSnoopingProtectionEnabledName, 2);
+}
+
+TEST_F(SnoopingProtectionControllerTestMetrics, Duration) {
+  base::HistogramTester tester;
+
+  SimulateLogin();
+  SetEnabledPref(true);
+  hps::HpsResultProto state;
+
+  // The first HpsNotifyChanged will not log anything.
+  state.set_value(hps::HpsResult::POSITIVE);
+  controller_->OnHpsNotifyChanged(state);
+  tester.ExpectTotalCount(kSnoopingProtectionPositiveName, 0);
+  tester.ExpectTotalCount(kSnoopingProtectionNegativeName, 0);
+
+  task_environment()->FastForwardBy(kLongTime);
+
+  // Send POSITIVE a second time will not log anything.
+  state.set_value(hps::HpsResult::POSITIVE);
+  controller_->OnHpsNotifyChanged(state);
+  tester.ExpectTotalCount(kSnoopingProtectionPositiveName, 0);
+  tester.ExpectTotalCount(kSnoopingProtectionNegativeName, 0);
+
+  // Send UNKNOWN will log a kSnoopingProtectionPositiveName event.
+  state.set_value(hps::HpsResult::UNKNOWN);
+  controller_->OnHpsNotifyChanged(state);
+  tester.ExpectTimeBucketCount(kSnoopingProtectionPositiveName, kLongTime, 1);
+  tester.ExpectTotalCount(kSnoopingProtectionPositiveName, 1);
+  tester.ExpectTotalCount(kSnoopingProtectionNegativeName, 0);
+
+  task_environment()->FastForwardBy(kLongTime);
+
+  // Send NEGATIVE a second time will not log anything.
+  state.set_value(hps::HpsResult::NEGATIVE);
+  controller_->OnHpsNotifyChanged(state);
+  tester.ExpectTotalCount(kSnoopingProtectionPositiveName, 1);
+  tester.ExpectTotalCount(kSnoopingProtectionNegativeName, 0);
+
+  // Send POSITIVE will log a kSnoopingProtectionNegativeName event.
+  state.set_value(hps::HpsResult::POSITIVE);
+  controller_->OnHpsNotifyChanged(state);
+  tester.ExpectTimeBucketCount(kSnoopingProtectionNegativeName, kLongTime, 1);
+  tester.ExpectTotalCount(kSnoopingProtectionPositiveName, 1);
+  tester.ExpectTotalCount(kSnoopingProtectionNegativeName, 1);
+}
+
+TEST_F(SnoopingProtectionControllerTestMetrics, ShutDownTest) {
+  base::HistogramTester tester;
+
+  SimulateLogin();
+  SetEnabledPref(true);
+  hps::HpsResultProto state;
+
+  // The first HpsNotifyChanged will not log anything.
+  state.set_value(hps::HpsResult::POSITIVE);
+  controller_->OnHpsNotifyChanged(state);
+  tester.ExpectTotalCount(kSnoopingProtectionPositiveName, 0);
+  tester.ExpectTotalCount(kSnoopingProtectionNegativeName, 0);
+
+  task_environment()->FastForwardBy(kLongTime);
+
+  dbus_client_->Shutdown();
+  tester.ExpectTimeBucketCount(kSnoopingProtectionPositiveName, kLongTime, 1);
+  tester.ExpectTotalCount(kSnoopingProtectionPositiveName, 1);
+  tester.ExpectTotalCount(kSnoopingProtectionNegativeName, 0);
+  dbus_client_->Restart();
+
+  // Send NEGATIVE will not log anything because of the shutdown.
+  state.set_value(hps::HpsResult::NEGATIVE);
+  controller_->OnHpsNotifyChanged(state);
+  tester.ExpectTotalCount(kSnoopingProtectionPositiveName, 1);
+  tester.ExpectTotalCount(kSnoopingProtectionNegativeName, 0);
+
+  task_environment()->FastForwardBy(kLongTime);
+
+  // Send POSITIVE will log a kSnoopingProtectionNegativeName event.
+  state.set_value(hps::HpsResult::POSITIVE);
+  controller_->OnHpsNotifyChanged(state);
+  tester.ExpectTimeBucketCount(kSnoopingProtectionNegativeName, kLongTime, 1);
+  tester.ExpectTotalCount(kSnoopingProtectionPositiveName, 1);
+  tester.ExpectTotalCount(kSnoopingProtectionNegativeName, 1);
 }
 
 }  // namespace

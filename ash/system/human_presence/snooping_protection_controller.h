@@ -125,6 +125,13 @@ class ASH_EXPORT SnoopingProtectionController
   // minimum allowed time. Sends out any delayed updates to observers.
   void OnMinWindowExpired();
 
+  // Logs the amount of time a snooper was present / absent.
+  // An initial call just caches the current time (and doesn't log anything).
+  // Subsequent calls update the cache and log time elapsed if snooping status
+  // has changed.
+  // The cache can be cleared by resetting `last_presence_report_time_`.
+  void LogPresenceWindow(bool is_present);
+
   // The state of all signals relevant to snooping status.
   State state_;
 
@@ -154,6 +161,9 @@ class ASH_EXPORT SnoopingProtectionController
   // The minimum amount of time between emitting an initial positive signal and
   // then a subsequent negative one.
   const base::TimeDelta pos_window_;
+
+  // Last time the snooper became present or absent.
+  base::TimeTicks last_presence_report_time_;
 
   // Must be last.
   base::WeakPtrFactory<SnoopingProtectionController> weak_ptr_factory_{this};
