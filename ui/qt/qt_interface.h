@@ -10,6 +10,8 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+using SkColor = uint32_t;
+
 namespace qt {
 
 // std::string cannot be passed over the library boundary, so this class acts
@@ -103,8 +105,7 @@ class QtInterface {
   virtual FontDescription GetFontDescription() const = 0;
   virtual Image GetIconForContentType(const String& content_type,
                                       int size) const = 0;
-  // The color value is ARGB32 (the same as SkColor).
-  virtual uint32_t GetColor(ColorRole role) const = 0;
+  virtual SkColor GetColor(ColorRole role) const = 0;
 };
 
 }  // namespace qt

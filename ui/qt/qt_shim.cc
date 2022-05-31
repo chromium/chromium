@@ -43,13 +43,107 @@ FontHinting QtHintingToFontHinting(QFont::HintingPreference hinting) {
   }
 }
 
-uint32_t QColorToArgb(const QColor& color) {
-  int r = 0;
-  int g = 0;
-  int b = 0;
-  int a = 0;
-  color.getRgb(&r, &g, &b, &a);
-  return (a << 24) | (r << 16) | (g << 8) | b;
+// Obtain the average color of a gradient.
+SkColor GradientColor(const QGradient& gradient) {
+  QGradientStops stops = gradient.stops();
+  if (stops.empty())
+    return QColorConstants::Transparent.rgba();
+
+  float a = 0;
+  float r = 0;
+  float g = 0;
+  float b = 0;
+  for (int i = 0; i < stops.size(); i++) {
+    // Determine the extents of this stop.  The whole gradient interval is [0,
+    // 1], so extend to the endpoint if this is the first or last stop.
+    float left_interval =
+        i == 0 ? stops[i].first : (stops[i].first - stops[i - 1].first) / 2;
+    float right_interval = i == stops.size() - 1
+                               ? 1 - stops[i].first
+                               : (stops[i + 1].first - stops[i].first) / 2;
+    float length = left_interval + right_interval;
+
+    // alpha() returns a value in [0, 255] and alphaF() returns a value in
+    // [0, 1]. The color values are not premultiplied so the RGB channels need
+    // to be multiplied by the alpha (in range [0, 1]) before summing.  The
+    // alpha doesn't need to be multiplied, so we just sum color.alpha() in
+    // range [0, 255] directly.
+    const QColor& color = stops[i].second;
+    a += color.alpha() * length;
+    r += color.alphaF() * color.red() * length;
+    g += color.alphaF() * color.green() * length;
+    b += color.alphaF() * color.blue() * length;
+  }
+  return qRgba(r, g, b, a);
+}
+
+// Obtain the average color of a texture.
+SkColor TextureColor(QImage image) {
+  size_t size = image.width() * image.height();
+  if (!size)
+    return QColorConstants::Transparent.rgba();
+
+  if (image.format() != QImage::Format_ARGB32_Premultiplied)
+    image = image.convertToFormat(QImage::Format_ARGB32_Premultiplied);
+
+  size_t a = 0;
+  size_t r = 0;
+  size_t g = 0;
+  size_t b = 0;
+  const auto* pixels = image.bits();
+  for (size_t i = 0; i < size; i++) {
+    a += pixels[4 * i + 0];
+    r += pixels[4 * i + 1];
+    g += pixels[4 * i + 2];
+    b += pixels[4 * i + 3];
+  }
+  return qRgba(r / size, g / size, b / size, a / size);
+}
+
+SkColor BrushColor(const QBrush& brush) {
+  QColor color = brush.color();
+  auto alpha_blend = [&](uint8_t alpha) {
+    QColor blended = color;
+    blended.setAlpha(blended.alpha() * alpha / 255);
+    return blended.rgba();
+  };
+
+  switch (brush.style()) {
+    case Qt::SolidPattern:
+      return alpha_blend(0xFF);
+    case Qt::Dense1Pattern:
+      return alpha_blend(0xE0);
+    case Qt::Dense2Pattern:
+      return alpha_blend(0xC0);
+    case Qt::Dense3Pattern:
+      return alpha_blend(0xA0);
+    case Qt::Dense4Pattern:
+      return alpha_blend(0x80);
+    case Qt::Dense5Pattern:
+      return alpha_blend(0x60);
+    case Qt::Dense6Pattern:
+      return alpha_blend(0x40);
+    case Qt::Dense7Pattern:
+      return alpha_blend(0x20);
+    case Qt::NoBrush:
+      return alpha_blend(0x00);
+    case Qt::HorPattern:
+    case Qt::VerPattern:
+      return alpha_blend(0x20);
+    case Qt::CrossPattern:
+      return alpha_blend(0x40);
+    case Qt::BDiagPattern:
+    case Qt::FDiagPattern:
+      return alpha_blend(0x20);
+    case Qt::DiagCrossPattern:
+      return alpha_blend(0x40);
+    case Qt::LinearGradientPattern:
+    case Qt::RadialGradientPattern:
+    case Qt::ConicalGradientPattern:
+      return GradientColor(*brush.gradient());
+    case Qt::TexturePattern:
+      return TextureColor(brush.textureImage());
+  }
 }
 
 }  // namespace
@@ -108,15 +202,13 @@ Image QtShim::GetIconForContentType(const String& content_type,
   return {};
 }
 
-uint32_t QtShim::GetColor(ColorRole role) const {
+SkColor QtShim::GetColor(ColorRole role) const {
   auto palette = app_.palette();
   switch (role) {
     case ColorRole::kWindowBg:
-      // TODO(https://crbug.com/1317782): QPalette::color doesn't handle
-      // gradients or bitmaps. Handle these cases.
-      return QColorToArgb(palette.color(QPalette::ColorRole::Window));
+      return BrushColor(palette.brush(QPalette::ColorRole::Window));
     case ColorRole::kWindowFg:
-      return QColorToArgb(palette.color(QPalette::ColorRole::WindowText));
+      return BrushColor(palette.brush(QPalette::ColorRole::WindowText));
   }
 }
 
