@@ -650,13 +650,15 @@ public class ExternalNavigationHandler {
      * the link is not an incoming intent from another application, unless it's a redirect.
      */
     private boolean preferToShowIntentPicker(ExternalNavigationParams params,
-            int pageTransitionCore, boolean isExternalProtocol, boolean isFormSubmit,
-            boolean incomingIntentRedirect, boolean isFromIntent,
+            boolean isExternalProtocol, boolean incomingIntentRedirect,
             QueryIntentActivitiesSupplier resolveInfos) {
+        int pageTransitionCore = params.getPageTransition() & PageTransition.CORE_MASK;
+        boolean isFormSubmit = pageTransitionCore == PageTransition.FORM_SUBMIT;
+
         // https://crbug.com/1232514: On Android S, since WebAPKs aren't verified apps they are
         // never launched as the result of a suitable Intent, the user's default browser will be
         // opened instead. As a temporary solution, have Chrome launch the WebAPK.
-        if (isFromIntent && mDelegate.shouldLaunchWebApksOnInitialIntent()) {
+        if (params.isFromIntent() && mDelegate.shouldLaunchWebApksOnInitialIntent()) {
             boolean suitableWebApk = pickWebApkIfSoleIntentHandler(resolveInfos.get()) != null;
             if (suitableWebApk) return true;
         }
@@ -977,13 +979,13 @@ public class ExternalNavigationHandler {
      * within the same host, keep the navigation inside the browser unless the set of
      * available apps to handle the new navigation is different. http://crbug.com/463138
      */
-    private boolean shouldStayWithinHost(ExternalNavigationParams params, boolean isLink,
-            boolean isFormSubmit, List<ResolveInfo> resolvingInfos, boolean isExternalProtocol) {
-        if (isExternalProtocol) return false;
+    private boolean shouldStayWithinHost(ExternalNavigationParams params,
+            List<ResolveInfo> resolvingInfos, boolean isExternalProtocol) {
+        if (isExternalProtocol || !params.isRendererInitiated()) return false;
 
         GURL previousUrl = getLastCommittedUrl();
         if (previousUrl == null) previousUrl = params.getReferrerUrl();
-        if (previousUrl.isEmpty() || (!isLink && !isFormSubmit)) return false;
+        if (previousUrl.isEmpty()) return false;
 
         GURL currentUrl = params.getUrl();
 
@@ -1361,11 +1363,6 @@ public class ExternalNavigationHandler {
 
         if (isUnhandledWtaiProtocol(params)) return OverrideUrlLoadingResult.forNoOverride();
 
-        int pageTransitionCore = params.getPageTransition() & PageTransition.CORE_MASK;
-        boolean isLink = params.isLinkTransition();
-        boolean isFromIntent = params.isFromIntent();
-        boolean isFormSubmit = pageTransitionCore == PageTransition.FORM_SUBMIT;
-
         if (redirectShouldStayInApp(params, isExternalProtocol, targetIntent)) {
             return OverrideUrlLoadingResult.forNoOverride();
         }
@@ -1373,8 +1370,8 @@ public class ExternalNavigationHandler {
         Intent debugIntent = new Intent(targetIntent);
         QueryIntentActivitiesSupplier resolvingInfos =
                 new QueryIntentActivitiesSupplier(targetIntent);
-        if (!preferToShowIntentPicker(params, pageTransitionCore, isExternalProtocol, isFormSubmit,
-                    incomingIntentRedirect, isFromIntent, resolvingInfos)) {
+        if (!preferToShowIntentPicker(
+                    params, isExternalProtocol, incomingIntentRedirect, resolvingInfos)) {
             return OverrideUrlLoadingResult.forNoOverride();
         }
 
@@ -1403,8 +1400,7 @@ public class ExternalNavigationHandler {
         // From this point on we should only have URLs from intent URIs, or URLs for
         // apps with specialized handlers (including custom schemes).
 
-        if (shouldStayWithinHost(
-                    params, isLink, isFormSubmit, resolvingInfos.get(), isExternalProtocol)) {
+        if (shouldStayWithinHost(params, resolvingInfos.get(), isExternalProtocol)) {
             return OverrideUrlLoadingResult.forNoOverride();
         }
 
