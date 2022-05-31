@@ -283,8 +283,6 @@ public class FeedStream implements Stream {
         @Override
         public void processThereAndBackAgainData(byte[] data, LoggingParameters loggingParameters) {
             assert ThreadUtils.runningOnUiThread();
-            // TODO(crbug.com/1268575): Forward loggingParameters to FeedApi, and check that they
-            // match the current state.
             FeedStreamJni.get().processThereAndBackAgain(mNativeFeedStream, FeedStream.this, data,
                     FeedLoggingParameters.convertToProto(loggingParameters).toByteArray());
         }
