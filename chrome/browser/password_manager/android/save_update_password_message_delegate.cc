@@ -171,7 +171,7 @@ void SaveUpdatePasswordMessageDelegate::CreateMessage(bool update_password) {
         password_manager::features::UsesUnifiedPasswordManagerUi()
             ? IDS_PASSWORD_MESSAGE_NEVER_SAVE_MENU_ITEM
             : IDS_PASSWORD_MANAGER_BLOCKLIST_BUTTON));
-    message_->SetSecondaryActionCallback(base::BindOnce(
+    message_->SetSecondaryActionCallback(base::BindRepeating(
         &SaveUpdatePasswordMessageDelegate::HandleNeverSaveClicked,
         base::Unretained(this)));
   }

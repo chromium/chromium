@@ -63,9 +63,9 @@ void AdsBlockedMessageDelegate::ShowMessage() {
 
   message->SetSecondaryIconResourceId(
       message_dispatcher_bridge->MapToJavaDrawableId(IDR_ANDROID_SETTINGS));
-  message->SetSecondaryActionCallback(
-      base::BindOnce(&AdsBlockedMessageDelegate::HandleMessageManageClicked,
-                     base::Unretained(this)));
+  message->SetSecondaryActionCallback(base::BindRepeating(
+      &AdsBlockedMessageDelegate::HandleMessageManageClicked,
+      base::Unretained(this)));
 
   // TODO(crbug.com/1223078): On rare occasions, such as the moment when
   // activity is being recreated or destroyed, ads blocked message will not be

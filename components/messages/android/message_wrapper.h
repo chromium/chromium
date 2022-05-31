@@ -79,7 +79,7 @@ class MessageWrapper {
   int GetSecondaryIconResourceId();
   void SetSecondaryIconResourceId(int resource_id);
 
-  void SetSecondaryActionCallback(base::OnceClosure callback);
+  void SetSecondaryActionCallback(base::RepeatingClosure callback);
   void SetSecondaryMenuItemSelectedCallback(
       base::RepeatingCallback<void(int)> callback);
 
@@ -117,7 +117,7 @@ class MessageWrapper {
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_message_wrapper_;
   base::OnceClosure action_callback_;
-  base::OnceClosure secondary_action_callback_;
+  base::RepeatingClosure secondary_action_callback_;
   SecondaryMenuItemSelectedCallback secondary_menu_item_selected_callback_;
   DismissCallback dismiss_callback_;
   // True if message is in queue.

@@ -107,7 +107,7 @@ void SaveCardMessageControllerAndroid::Show(
       ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_MESSAGE_SETTINGS));
   message_->SetSecondaryButtonMenuText(
       l10n_util::GetStringUTF16(IDS_NO_THANKS));
-  message_->SetSecondaryActionCallback(base::BindOnce(
+  message_->SetSecondaryActionCallback(base::BindRepeating(
       &SaveCardMessageControllerAndroid::HandleMessageSecondaryButtonClicked,
       base::Unretained(this)));
 

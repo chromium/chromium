@@ -45,9 +45,9 @@ NotificationBlockedMessageDelegate::NotificationBlockedMessageDelegate(
   message_->SetSecondaryIconResourceId(
       ResourceMapper::MapToJavaDrawableId(IDR_ANDROID_MESSAGE_SETTINGS));
 
-  message_->SetSecondaryActionCallback(
-      base::BindOnce(&NotificationBlockedMessageDelegate::HandleManageClick,
-                     base::Unretained(this)));
+  message_->SetSecondaryActionCallback(base::BindRepeating(
+      &NotificationBlockedMessageDelegate::HandleManageClick,
+      base::Unretained(this)));
   messages::MessageDispatcherBridge::Get()->EnqueueMessage(
       message_.get(), web_contents_, messages::MessageScopeType::NAVIGATION,
       messages::MessagePriority::kNormal);

@@ -50,7 +50,7 @@ void SafetyTipMessageDelegate::DisplaySafetyTipPrompt(
   message_->SetSecondaryButtonMenuText(
       l10n_util::GetStringUTF16(IDS_PAGE_INFO_SAFETY_TIP_MORE_INFO_LINK));
 
-  message_->SetSecondaryActionCallback(base::BindOnce(
+  message_->SetSecondaryActionCallback(base::BindRepeating(
       &SafetyTipMessageDelegate::HandleLearnMoreClick, base::Unretained(this)));
 
   // 60s
