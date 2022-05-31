@@ -78,6 +78,12 @@ void AdaptiveChargingNotificationController::ShowAdaptiveChargingNotification(
       std::move(notification));
 }
 
+void AdaptiveChargingNotificationController::CloseAdaptiveChargingNotification(
+    bool by_user) {
+  message_center::MessageCenter::Get()->RemoveNotification(kInfoNotificationId,
+                                                           by_user);
+}
+
 bool AdaptiveChargingNotificationController::ShouldShowNotification() {
   PrefService* pref_service =
       Shell::Get()->session_controller()->GetActivePrefService();
@@ -93,6 +99,7 @@ void AdaptiveChargingNotificationController::Click(
     return;
   if (button_index.value() == 0) {
     PowerManagerClient::Get()->ChargeNowForAdaptiveCharging();
+    CloseAdaptiveChargingNotification(/*by_user=*/true);
   } else {
     NOTREACHED() << "Unknown button index value";
   }

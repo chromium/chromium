@@ -60,6 +60,13 @@ class AdaptiveChargingNotificationControllerTest : public AshTestBase {
     return controller_.get();
   }
 
+  void SimulateClick(int button_index) {
+    message_center::Notification* notification =
+        message_center::MessageCenter::Get()->FindVisibleNotificationById(
+            /*id=*/"adaptive-charging-notify-info");
+    notification->delegate()->Click(button_index, absl::nullopt);
+  }
+
  private:
   std::unique_ptr<AdaptiveChargingNotificationController> controller_;
 };
@@ -115,6 +122,17 @@ TEST_F(AdaptiveChargingNotificationControllerTest, HaveTimeInNotification) {
 
   // Current local time is 12:42 pm, so 5 hours after should be 5:42 pm.
   EXPECT_NE(notification->message().find(u"5:42 pm"), std::u16string::npos);
+}
+
+TEST_F(AdaptiveChargingNotificationControllerTest,
+       ClickButtonMakesNotificationDisappear) {
+  SetAdaptiveChargingPref(true);
+  GetController()->ShowAdaptiveChargingNotification(5);
+  EXPECT_EQ(VisibleNotificationCount(), 1u);
+
+  // Notification should disappear after click.
+  SimulateClick(/*button_index=*/0);
+  EXPECT_EQ(VisibleNotificationCount(), 0u);
 }
 
 }  // namespace ash

@@ -71,6 +71,7 @@ void AdaptiveChargingController::PowerChanged(
   if (!proto.has_adaptive_charging_heuristic_enabled() ||
       !proto.adaptive_charging_heuristic_enabled() ||
       !is_adaptive_delaying_charge_) {
+    notification_controller_->CloseAdaptiveChargingNotification();
     return;
   }
 
