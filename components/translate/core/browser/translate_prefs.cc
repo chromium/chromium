@@ -640,7 +640,10 @@ std::vector<std::string> TranslatePrefs::GetNeverPromptSitesBetween(
   for (auto entry : dict->DictItems()) {
     absl::optional<base::Time> time = base::ValueToTime(entry.second);
     if (!time) {
-      NOTREACHED();
+      // Badly formatted preferences may be synced from the server, see
+      // https://crbug.com/1295549
+      LOG(ERROR) << "Preference " << kPrefNeverPromptSitesWithTime
+                 << " has invalid format. Ignoring.";
       continue;
     }
     if (begin <= *time && *time < end)

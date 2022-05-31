@@ -961,6 +961,23 @@ TEST_F(TranslatePrefsTest, MigrateNeverPromptSites) {
             0u);
 }
 
+// Regression test for https://crbug.com/1295549
+TEST_F(TranslatePrefsTest, InvalidNeverPromptSites) {
+  // Add sites with invalid times.
+  DictionaryPrefUpdate never_prompt_list_update(
+      &prefs_, TranslatePrefs::kPrefNeverPromptSitesWithTime);
+  base::Value* never_prompt_list = never_prompt_list_update.Get();
+  never_prompt_list->SetKey("not-a-string.com", base::Value(0));
+  never_prompt_list->SetKey("not-a-valid-time.com", base::Value("foo"));
+  // Add the null time (valid time).
+  never_prompt_list->SetKey("null-time.com", base::Value("0"));
+
+  // This should not crash, and filter invalid times.
+  EXPECT_THAT(translate_prefs_->GetNeverPromptSitesBetween(base::Time::Min(),
+                                                           base::Time::Max()),
+              ElementsAre("null-time.com"));
+}
+
 TEST_F(TranslatePrefsTest, MigrateInvalidNeverPromptSites) {
   ListPrefUpdate update(&prefs_,
                         TranslatePrefs::kPrefNeverPromptSitesDeprecated);
