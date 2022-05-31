@@ -1211,7 +1211,6 @@ crbug.com/1050754 external/wpt/css/css-scroll-snap/nested-scrollIntoView-snaps.h
 crbug.com/1050754 external/wpt/css/css-scroll-snap/no-snap-position.html [ Failure ]
 crbug.com/1050754 external/wpt/css/css-scroll-snap/overflowing-snap-areas.html [ Failure Pass ]
 crbug.com/1050754 external/wpt/css/css-scroll-snap/scroll-margin.html [ Failure ]
-crbug.com/1050754 external/wpt/css/css-scroll-snap/scroll-snap-stop-change.html [ Failure ]
 crbug.com/1050754 external/wpt/css/css-scroll-snap/scroll-snap-stop.html [ Failure ]
 crbug.com/1050754 external/wpt/css/css-scroll-snap/scroll-snap-type-change.html [ Failure ]
 crbug.com/1050754 external/wpt/css/css-scroll-snap/scroll-snap-type-on-root-element.html [ Failure ]
