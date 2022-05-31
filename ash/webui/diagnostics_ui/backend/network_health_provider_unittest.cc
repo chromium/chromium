@@ -304,7 +304,7 @@ class NetworkHealthProviderTest : public testing::Test {
   }
 
   void SetWifiPortal() {
-    SetNetworkState(kWlan0DevicePath, shill::kStatePortal);
+    SetNetworkState(kWlan0DevicePath, shill::kStateRedirectFound);
   }
 
   void SetCellularConnected() {

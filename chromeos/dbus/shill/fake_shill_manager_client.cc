@@ -89,7 +89,7 @@ bool AppendIfNotPresent(base::ListValue* list, base::Value value) {
 }
 
 bool IsPortalledState(const std::string& state) {
-  return state == shill::kStatePortal || state == shill::kStateNoConnectivity ||
+  return state == shill::kStateNoConnectivity ||
          state == shill::kStateRedirectFound ||
          state == shill::kStatePortalSuspected;
 }

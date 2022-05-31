@@ -197,7 +197,7 @@ bool IsActiveNetworkState(const chromeos::NetworkState* network) {
   const std::string& state = network->connection_state();
   return state == shill::kStateReady || state == shill::kStateOnline ||
          state == shill::kStateAssociation ||
-         state == shill::kStateConfiguration || state == shill::kStatePortal ||
+         state == shill::kStateConfiguration ||
          state == shill::kStateNoConnectivity ||
          state == shill::kStateRedirectFound ||
          state == shill::kStatePortalSuspected;

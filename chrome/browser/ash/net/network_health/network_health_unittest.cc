@@ -251,12 +251,12 @@ TEST_F(NetworkHealthTest, NetworkStateConnecting) {
                        network_health::mojom::NetworkState::kConnecting);
 }
 
-TEST_F(NetworkHealthTest, NetworkStatePortal) {
+TEST_F(NetworkHealthTest, NetworkStateRedirectFound) {
   CreateDefaultWifiDevice();
   cros_network_config_test_helper_.network_state_helper()
       .service_test()
       ->AddService(kWifiDevicePath, kWifiGuid, kWifiServiceName,
-                   shill::kTypeWifi, shill::kStatePortal, true);
+                   shill::kTypeWifi, shill::kStateRedirectFound, true);
 
   ValidateNetworkState(network_config::mojom::NetworkType::kWiFi,
                        network_health::mojom::NetworkState::kPortal);

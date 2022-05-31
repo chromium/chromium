@@ -2370,7 +2370,6 @@ bool DeviceStatusCollector::GetNetworkStatus(
       {shill::kStateAssociation, em::NetworkState::ASSOCIATION},
       {shill::kStateConfiguration, em::NetworkState::CONFIGURATION},
       {shill::kStateReady, em::NetworkState::READY},
-      {shill::kStatePortal, em::NetworkState::PORTAL},
       {shill::kStateNoConnectivity, em::NetworkState::PORTAL},
       {shill::kStateRedirectFound, em::NetworkState::PORTAL},
       {shill::kStatePortalSuspected, em::NetworkState::PORTAL},

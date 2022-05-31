@@ -292,7 +292,7 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, CaptivePortal) {
   // Change network to be behind a captive portal.
   network_state_test_helper_->service_test()->SetServiceProperty(
       kWifiServicePath, shill::kStateProperty,
-      base::Value(shill::kStatePortal));
+      base::Value(shill::kStateRedirectFound));
 
   reauth_dialog_helper->WaitForCaptivePortalDialogToLoad();
   reauth_dialog_helper->WaitForCaptivePortalDialogToShow();
@@ -345,7 +345,7 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, TriggerAndHideCaptivePortalDialog) {
     // Change network to be behind a captive portal.
     network_test_helper.service_test()->SetServiceProperty(
         kWifiServicePath, shill::kStateProperty,
-        base::Value(shill::kStatePortal));
+        base::Value(shill::kStateRedirectFound));
 
     reauth_dialog_helper->WaitForCaptivePortalDialogToLoad();
     reauth_dialog_helper->WaitForCaptivePortalDialogToShow();
