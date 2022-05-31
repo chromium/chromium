@@ -45,6 +45,23 @@ MediaValuesDynamic::MediaValuesDynamic(LocalFrame* frame,
   DCHECK(frame_);
 }
 
+float MediaValuesDynamic::EmFontSize() const {
+  return CalculateEmSize(frame_);
+}
+
+float MediaValuesDynamic::RemFontSize() const {
+  // For media queries rem and em units are both based on the initial font.
+  return CalculateEmSize(frame_);
+}
+
+float MediaValuesDynamic::ExFontSize() const {
+  return CalculateExSize(frame_);
+}
+
+float MediaValuesDynamic::ChFontSize() const {
+  return CalculateChSize(frame_);
+}
+
 double MediaValuesDynamic::ViewportWidth() const {
   if (viewport_dimensions_overridden_)
     return viewport_width_override_;
@@ -81,21 +98,12 @@ double MediaValuesDynamic::DynamicViewportHeight() const {
   return CalculateDynamicViewportHeight(frame_);
 }
 
-float MediaValuesDynamic::EmSize() const {
-  return CalculateEmSize(frame_);
+double MediaValuesDynamic::ContainerWidth() const {
+  return SmallViewportWidth();
 }
 
-float MediaValuesDynamic::RemSize() const {
-  // For media queries rem and em units are both based on the initial font.
-  return CalculateEmSize(frame_);
-}
-
-float MediaValuesDynamic::ExSize() const {
-  return CalculateExSize(frame_);
-}
-
-float MediaValuesDynamic::ChSize() const {
-  return CalculateChSize(frame_);
+double MediaValuesDynamic::ContainerHeight() const {
+  return SmallViewportHeight();
 }
 
 int MediaValuesDynamic::DeviceWidth() const {

@@ -24,10 +24,10 @@ class CSSContainerValues : public MediaValuesDynamic {
   absl::optional<double> Height() const override { return height_; }
 
  protected:
-  float EmSize() const override;
-  float RemSize() const override;
-  float ExSize() const override;
-  float ChSize() const override;
+  float EmFontSize() const override;
+  float RemFontSize() const override;
+  float ExFontSize() const override;
+  float ChFontSize() const override;
   WritingMode GetWritingMode() const override { return writing_mode_; }
 
  private:

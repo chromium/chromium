@@ -145,10 +145,6 @@ double CSSLengthResolver::ContainerMaxPercent() const {
 double CSSLengthResolver::ZoomedComputedPixels(
     double value,
     CSSPrimitiveValue::UnitType type) const {
-  // The logic in this function is duplicated in MediaValues::ComputeLength()
-  // because MediaValues::ComputeLength() needs nearly identical logic, but we
-  // haven't found a way to make ZoomedComputedPixels() more generic (to solve
-  // both cases) without hurting performance.
   switch (type) {
     case CSSPrimitiveValue::UnitType::kPixels:
     case CSSPrimitiveValue::UnitType::kUserUnits:

@@ -148,6 +148,11 @@ class CORE_EXPORT MediaValuesCached final : public MediaValues {
   void OverrideViewportDimensions(double width, double height);
 
  protected:
+  // CSSLengthResolver
+  float EmFontSize() const override;
+  float RemFontSize() const override;
+  float ExFontSize() const override;
+  float ChFontSize() const override;
   double ViewportWidth() const override;
   double ViewportHeight() const override;
   double SmallViewportWidth() const override;
@@ -156,10 +161,8 @@ class CORE_EXPORT MediaValuesCached final : public MediaValues {
   double LargeViewportHeight() const override;
   double DynamicViewportWidth() const override;
   double DynamicViewportHeight() const override;
-  float EmSize() const override;
-  float RemSize() const override;
-  float ExSize() const override;
-  float ChSize() const override;
+  double ContainerWidth() const override;
+  double ContainerHeight() const override;
   WritingMode GetWritingMode() const override {
     return WritingMode::kHorizontalTb;
   }

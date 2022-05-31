@@ -71,13 +71,13 @@ mojom::blink::PreferredContrast CSSValueIDToPreferredContrast(CSSValueID id) {
 }
 
 absl::optional<double> MediaValues::InlineSize() const {
-  if (IsHorizontalWritingMode(GetWritingMode()))
+  if (blink::IsHorizontalWritingMode(GetWritingMode()))
     return Width();
   return Height();
 }
 
 absl::optional<double> MediaValues::BlockSize() const {
-  if (IsHorizontalWritingMode(GetWritingMode()))
+  if (blink::IsHorizontalWritingMode(GetWritingMode()))
     return Height();
   return Width();
 }
@@ -86,46 +86,6 @@ MediaValues* MediaValues::CreateDynamicIfFrameExists(LocalFrame* frame) {
   if (frame)
     return MediaValuesDynamic::Create(frame);
   return MakeGarbageCollected<MediaValuesCached>();
-}
-
-double MediaValues::ViewportInlineSize() const {
-  return IsHorizontalWritingMode(GetWritingMode()) ? ViewportWidth()
-                                                   : ViewportHeight();
-}
-
-double MediaValues::ViewportBlockSize() const {
-  return IsHorizontalWritingMode(GetWritingMode()) ? ViewportHeight()
-                                                   : ViewportWidth();
-}
-
-double MediaValues::SmallViewportInlineSize() const {
-  return IsHorizontalWritingMode(GetWritingMode()) ? SmallViewportWidth()
-                                                   : SmallViewportHeight();
-}
-
-double MediaValues::SmallViewportBlockSize() const {
-  return IsHorizontalWritingMode(GetWritingMode()) ? SmallViewportHeight()
-                                                   : SmallViewportWidth();
-}
-
-double MediaValues::LargeViewportInlineSize() const {
-  return IsHorizontalWritingMode(GetWritingMode()) ? LargeViewportWidth()
-                                                   : LargeViewportHeight();
-}
-
-double MediaValues::LargeViewportBlockSize() const {
-  return IsHorizontalWritingMode(GetWritingMode()) ? LargeViewportHeight()
-                                                   : LargeViewportWidth();
-}
-
-double MediaValues::DynamicViewportInlineSize() const {
-  return IsHorizontalWritingMode(GetWritingMode()) ? DynamicViewportWidth()
-                                                   : DynamicViewportHeight();
-}
-
-double MediaValues::DynamicViewportBlockSize() const {
-  return IsHorizontalWritingMode(GetWritingMode()) ? DynamicViewportHeight()
-                                                   : DynamicViewportWidth();
 }
 
 double MediaValues::CalculateViewportWidth(LocalFrame* frame) {
@@ -459,137 +419,10 @@ device::mojom::blink::DevicePostureType MediaValues::CalculateDevicePosture(
 bool MediaValues::ComputeLengthImpl(double value,
                                     CSSPrimitiveValue::UnitType type,
                                     double& result) const {
-  // The logic in this function is duplicated from
-  // CSSToLengthConversionData::ZoomedComputedPixels() because
-  // MediaValues::ComputeLength() needs nearly identical logic, but we haven't
-  // found a way to make CSSToLengthConversionData::ZoomedComputedPixels() more
-  // generic (to solve both cases) without hurting performance.
-  // TODO: Unite the logic here with CSSToLengthConversionData in a performant
-  // way.
-  switch (type) {
-    case CSSPrimitiveValue::UnitType::kEms:
-      result = value * EmSize();
-      return true;
-    case CSSPrimitiveValue::UnitType::kRems:
-      result = value * RemSize();
-      return true;
-    case CSSPrimitiveValue::UnitType::kPixels:
-    case CSSPrimitiveValue::UnitType::kUserUnits:
-      result = value;
-      return true;
-    case CSSPrimitiveValue::UnitType::kExs:
-      result = value * ExSize();
-      return true;
-    case CSSPrimitiveValue::UnitType::kChs:
-      result = value * ChSize();
-      return true;
-    case CSSPrimitiveValue::UnitType::kViewportWidth:
-      result = (value * ViewportWidth()) / 100.0;
-      return true;
-    case CSSPrimitiveValue::UnitType::kViewportHeight:
-      result = (value * ViewportHeight()) / 100.0;
-      return true;
-    case CSSPrimitiveValue::UnitType::kViewportInlineSize:
-      result = (value * ViewportInlineSize()) / 100.0;
-      return true;
-    case CSSPrimitiveValue::UnitType::kViewportBlockSize:
-      result = (value * ViewportBlockSize()) / 100.0;
-      return true;
-    case CSSPrimitiveValue::UnitType::kViewportMin:
-      result = (value * std::min(ViewportWidth(), ViewportHeight())) / 100.0;
-      return true;
-    case CSSPrimitiveValue::UnitType::kViewportMax:
-      result = (value * std::max(ViewportWidth(), ViewportHeight())) / 100.0;
-      return true;
-    case CSSPrimitiveValue::UnitType::kSmallViewportWidth:
-    case CSSPrimitiveValue::UnitType::kContainerWidth:
-      result = (value * SmallViewportWidth()) / 100.0;
-      return true;
-    case CSSPrimitiveValue::UnitType::kSmallViewportHeight:
-    case CSSPrimitiveValue::UnitType::kContainerHeight:
-      result = (value * SmallViewportHeight()) / 100.0;
-      return true;
-    case CSSPrimitiveValue::UnitType::kSmallViewportInlineSize:
-    case CSSPrimitiveValue::UnitType::kContainerInlineSize:
-      result = (value * SmallViewportInlineSize()) / 100.0;
-      return true;
-    case CSSPrimitiveValue::UnitType::kSmallViewportBlockSize:
-    case CSSPrimitiveValue::UnitType::kContainerBlockSize:
-      result = (value * SmallViewportBlockSize()) / 100.0;
-      return true;
-    case CSSPrimitiveValue::UnitType::kSmallViewportMin:
-    case CSSPrimitiveValue::UnitType::kContainerMin:
-      result = (value * std::min(SmallViewportWidth(), SmallViewportHeight())) /
-               100.0;
-      return true;
-    case CSSPrimitiveValue::UnitType::kSmallViewportMax:
-    case CSSPrimitiveValue::UnitType::kContainerMax:
-      result = (value * std::max(SmallViewportWidth(), SmallViewportHeight())) /
-               100.0;
-      return true;
-    case CSSPrimitiveValue::UnitType::kLargeViewportWidth:
-      result = (value * LargeViewportWidth()) / 100.0;
-      return true;
-    case CSSPrimitiveValue::UnitType::kLargeViewportHeight:
-      result = (value * LargeViewportHeight()) / 100.0;
-      return true;
-    case CSSPrimitiveValue::UnitType::kLargeViewportInlineSize:
-      result = (value * LargeViewportInlineSize()) / 100.0;
-      return true;
-    case CSSPrimitiveValue::UnitType::kLargeViewportBlockSize:
-      result = (value * LargeViewportBlockSize()) / 100.0;
-      return true;
-    case CSSPrimitiveValue::UnitType::kLargeViewportMin:
-      result = (value * std::min(LargeViewportWidth(), LargeViewportHeight())) /
-               100.0;
-      return true;
-    case CSSPrimitiveValue::UnitType::kLargeViewportMax:
-      result = (value * std::max(LargeViewportWidth(), LargeViewportHeight())) /
-               100.0;
-      return true;
-    case CSSPrimitiveValue::UnitType::kDynamicViewportWidth:
-      result = (value * DynamicViewportWidth()) / 100.0;
-      return true;
-    case CSSPrimitiveValue::UnitType::kDynamicViewportHeight:
-      result = (value * DynamicViewportHeight()) / 100.0;
-      return true;
-    case CSSPrimitiveValue::UnitType::kDynamicViewportInlineSize:
-      result = (value * DynamicViewportInlineSize()) / 100.0;
-      return true;
-    case CSSPrimitiveValue::UnitType::kDynamicViewportBlockSize:
-      result = (value * DynamicViewportBlockSize()) / 100.0;
-      return true;
-    case CSSPrimitiveValue::UnitType::kDynamicViewportMin:
-      result =
-          (value * std::min(DynamicViewportWidth(), DynamicViewportHeight())) /
-          100.0;
-      return true;
-    case CSSPrimitiveValue::UnitType::kDynamicViewportMax:
-      result =
-          (value * std::max(DynamicViewportWidth(), DynamicViewportHeight())) /
-          100.0;
-      return true;
-    case CSSPrimitiveValue::UnitType::kCentimeters:
-      result = value * kCssPixelsPerCentimeter;
-      return true;
-    case CSSPrimitiveValue::UnitType::kMillimeters:
-      result = value * kCssPixelsPerMillimeter;
-      return true;
-    case CSSPrimitiveValue::UnitType::kQuarterMillimeters:
-      result = value * kCssPixelsPerQuarterMillimeter;
-      return true;
-    case CSSPrimitiveValue::UnitType::kInches:
-      result = value * kCssPixelsPerInch;
-      return true;
-    case CSSPrimitiveValue::UnitType::kPoints:
-      result = value * kCssPixelsPerPoint;
-      return true;
-    case CSSPrimitiveValue::UnitType::kPicas:
-      result = value * kCssPixelsPerPica;
-      return true;
-    default:
-      return false;
-  }
+  if (!CSSPrimitiveValue::IsLength(type))
+    return false;
+  result = ZoomedComputedPixels(value, type);
+  return true;
 }
 
 }  // namespace blink

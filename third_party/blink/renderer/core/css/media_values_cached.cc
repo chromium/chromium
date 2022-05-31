@@ -90,6 +90,23 @@ MediaValues* MediaValuesCached::Copy() const {
   return MakeGarbageCollected<MediaValuesCached>(data_);
 }
 
+float MediaValuesCached::EmFontSize() const {
+  return data_.em_size;
+}
+
+float MediaValuesCached::RemFontSize() const {
+  // For media queries rem and em units are both based on the initial font.
+  return data_.em_size;
+}
+
+float MediaValuesCached::ExFontSize() const {
+  return data_.ex_size;
+}
+
+float MediaValuesCached::ChFontSize() const {
+  return data_.ch_size;
+}
+
 double MediaValuesCached::ViewportWidth() const {
   return data_.viewport_width;
 }
@@ -122,21 +139,12 @@ double MediaValuesCached::DynamicViewportHeight() const {
   return data_.dynamic_viewport_height;
 }
 
-float MediaValuesCached::EmSize() const {
-  return data_.em_size;
+double MediaValuesCached::ContainerWidth() const {
+  return SmallViewportWidth();
 }
 
-float MediaValuesCached::RemSize() const {
-  // For media queries rem and em units are both based on the initial font.
-  return data_.em_size;
-}
-
-float MediaValuesCached::ExSize() const {
-  return data_.ex_size;
-}
-
-float MediaValuesCached::ChSize() const {
-  return data_.ch_size;
+double MediaValuesCached::ContainerHeight() const {
+  return SmallViewportHeight();
 }
 
 int MediaValuesCached::DeviceWidth() const {

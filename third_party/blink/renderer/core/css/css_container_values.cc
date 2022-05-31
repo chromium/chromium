@@ -23,19 +23,19 @@ CSSContainerValues::CSSContainerValues(Document& document,
                       document.documentElement()->GetComputedStyle())
                       .Unzoomed()) {}
 
-float CSSContainerValues::EmSize() const {
+float CSSContainerValues::EmFontSize() const {
   return font_sizes_.Em();
 }
 
-float CSSContainerValues::RemSize() const {
+float CSSContainerValues::RemFontSize() const {
   return font_sizes_.Rem();
 }
 
-float CSSContainerValues::ExSize() const {
+float CSSContainerValues::ExFontSize() const {
   return font_sizes_.Ex();
 }
 
-float CSSContainerValues::ChSize() const {
+float CSSContainerValues::ChFontSize() const {
   return font_sizes_.Ch();
 }
 
