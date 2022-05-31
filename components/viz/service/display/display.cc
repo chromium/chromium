@@ -108,9 +108,6 @@ int64_t GetStartingTraceId() {
 gfx::PresentationFeedback SanitizePresentationFeedback(
     const gfx::PresentationFeedback& feedback,
     base::TimeTicks draw_time) {
-  // Temporary to investigate large presentation times.
-  // https://crbug.com/894440
-  DCHECK(!draw_time.is_null());
   if (feedback.timestamp.is_null())
     return feedback;
 
@@ -130,25 +127,9 @@ gfx::PresentationFeedback SanitizePresentationFeedback(
                           gfx::PresentationFeedback::kVSync)) != 0)
           ? kAllowedDeltaFromFuture
           : base::TimeDelta();
-  if (feedback.timestamp > now + allowed_delta_from_future) {
-    const auto diff = feedback.timestamp - now;
-    UMA_HISTOGRAM_MEDIUM_TIMES(
-        "Graphics.PresentationTimestamp.InvalidFromFuture", diff);
+  if ((feedback.timestamp > now + allowed_delta_from_future) ||
+      (feedback.timestamp < draw_time)) {
     return gfx::PresentationFeedback::Failure();
-  }
-
-  if (feedback.timestamp < draw_time) {
-    const auto diff = draw_time - feedback.timestamp;
-    UMA_HISTOGRAM_MEDIUM_TIMES(
-        "Graphics.PresentationTimestamp.InvalidBeforeSwap", diff);
-    return gfx::PresentationFeedback::Failure();
-  }
-
-  const auto difference = feedback.timestamp - draw_time;
-  if (difference.InMinutes() > 3) {
-    UMA_HISTOGRAM_CUSTOM_TIMES(
-        "Graphics.PresentationTimestamp.LargePresentationDelta", difference,
-        base::Minutes(3), base::Hours(1), 50);
   }
   return feedback;
 }

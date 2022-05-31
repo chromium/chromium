@@ -882,44 +882,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Graphics.PresentationTimestamp.InvalidBeforeSwap" units="ms"
-    expires_after="2022-05-01">
-  <owner>sadrul@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
-  <summary>
-    Presentation timestamp comes from the driver when showing a display frame on
-    screen. These timestamps could be invalid, and be earlier than the swap
-    time. This metric records how much time before the swap-time such invalid
-    timestamps are. If the presentation timestamp is after the swap-time, then
-    this metric is not recorded.
-  </summary>
-</histogram>
-
-<histogram name="Graphics.PresentationTimestamp.InvalidFromFuture" units="ms"
-    expires_after="2022-01-02">
-  <owner>sadrul@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
-  <summary>
-    Presentation timestamp comes from the driver when showing a display frame on
-    screen. These timestamps can sometimes be in the future. This metric records
-    how far in the future these timestamps can be. If the timestamp is not in
-    the future, then this metric is not recorded.
-  </summary>
-</histogram>
-
-<histogram name="Graphics.PresentationTimestamp.LargePresentationDelta"
-    units="ms" expires_after="2022-01-02">
-  <owner>sadrul@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
-  <summary>
-    Measures very large (more than 3 minutes) delay in presenting display
-    frames. Presentation timestamp comes from the driver when showing a display
-    frame on screen. There are times when the presentation can be delayed a long
-    time. This metric reports how often this can happen. This is reported only
-    if the presentation takes 3 minutes or more.
-  </summary>
-</histogram>
-
 <histogram name="Graphics.Smoothness.95pctPercentDroppedFrames_1sWindow"
     units="%" expires_after="2022-10-23">
   <owner>behdadb@chromium.org</owner>
