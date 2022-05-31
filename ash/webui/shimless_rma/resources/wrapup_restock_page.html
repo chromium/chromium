@@ -31,21 +31,3 @@
     </div>
   </div>
 </base-page>
-
-<cr-dialog id="powerwashDialog" close-text="close">
-  <div slot="title">
-    [[i18n('powerwashDialogTitle')]]
-  </div>
-  <div slot="body">
-    [[i18n('powerwashDialogShutdownDescription')]]
-  </div>
-  <div class="dialog-footer" slot="button-container">
-    <cr-button id="closePowerwashDialogButton" on-click="onCancelClick_">
-      [[i18n('cancelButtonLabel')]]
-    </cr-button>
-    <cr-button id="powerwashButton" class="text-button action-button"
-        on-click="onPowerwashButtonClick_">
-      [[i18n('powerwashDialogPowerwashButton')]]
-    </cr-button>
-  </div>
-</cr-dialog>

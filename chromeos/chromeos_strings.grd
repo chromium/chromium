@@ -3048,7 +3048,7 @@ Try tapping the mic to ask me anything.
         You can continue with the full repair or powerwash (factory reset) the device to restock the mainboard.
       </message>
       <message name="IDS_SHIMLESS_RMA_RESTOCK_SHUTDOWN_BUTTON" desc="Label for the button that triggers device shutdown on the restock page.">
-        Powerwash &amp; Shut down
+        Shut down
       </message>
       <message name="IDS_SHIMLESS_RMA_RESTOCK_CONTINUE_BUTTON" desc="Label for the continue button on the restock page.">
         Continue
