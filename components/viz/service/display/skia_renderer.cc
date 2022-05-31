@@ -972,9 +972,13 @@ void SkiaRenderer::ClearFramebuffer() {
   if (current_frame()->current_render_pass->has_transparent_background) {
     ClearCanvas(SkColorSetARGB(0, 0, 0, 0));
   } else {
-#if DCHECK_IS_ON()
+#if DCHECK_IS_ON() && !BUILDFLAG(IS_LINUX)
     // On DEBUG builds, opaque render passes are cleared to blue
     // to easily see regions that were not drawn on the screen.
+    // ClearCavas() call causes slight pixel difference, so linux-ref and
+    // linux-blink-ref bots cannot share the same baseline for webtest.
+    // So remove this ClearCanvas() call for dcheck on build for now.
+    // TODO(crbug.com/1330278): add it back.
     ClearCanvas(SkColorSetARGB(255, 0, 0, 255));
 #endif
   }
