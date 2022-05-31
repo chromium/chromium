@@ -164,11 +164,29 @@ void SaveCardBubbleControllerImpl::ReshowBubble() {
 }
 
 std::u16string SaveCardBubbleControllerImpl::GetWindowTitle() const {
+  int save_card_ui_experiment_selected =
+      features::kAutofillSaveCardUiExperimentSelectorInNumber.Get();
+  // Check if the save card offer ui experiment is enabled.
+  bool save_card_ui_experiment_enabled =
+      (base::FeatureList::IsEnabled(features::kAutofillSaveCardUiExperiment) &&
+       save_card_ui_experiment_selected);
+
   switch (current_bubble_type_) {
     case BubbleType::LOCAL_SAVE:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_LOCAL);
     case BubbleType::UPLOAD_SAVE:
+      if (save_card_ui_experiment_enabled) {
+        switch (save_card_ui_experiment_selected) {
+          case SaveCardUiExperiment::FASTER_AND_PROTECTED:
+            return l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_EXPERIMENT_FASTER_AND_PROTECTED);
+          case SaveCardUiExperiment::ENCRYPTED_AND_SECURE:
+            return l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_EXPERIMENT_ENCRYPTED_AND_SECURE);
+        }
+      }
+
       return features::ShouldShowImprovedUserConsentForCreditCardSave()
                  ? l10n_util::GetStringUTF16(
                        IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_V4)
@@ -195,6 +213,23 @@ std::u16string SaveCardBubbleControllerImpl::GetExplanatoryMessage() const {
   if (options_.should_request_name_from_user) {
     return l10n_util::GetStringUTF16(
         IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_V3_WITH_NAME);
+  }
+
+  int save_card_ui_experiment_selected =
+      features::kAutofillSaveCardUiExperimentSelectorInNumber.Get();
+  // Check if the save card offer ui experiment is enabled.
+  bool save_card_ui_experiment_enabled =
+      (base::FeatureList::IsEnabled(features::kAutofillSaveCardUiExperiment) &&
+       save_card_ui_experiment_selected);
+  if (save_card_ui_experiment_enabled) {
+    switch (save_card_ui_experiment_selected) {
+      case SaveCardUiExperiment::FASTER_AND_PROTECTED:
+        return l10n_util::GetStringUTF16(
+            IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_EXPERIMENT_FASTER_AND_PROTECTED);
+      case SaveCardUiExperiment::ENCRYPTED_AND_SECURE:
+        return l10n_util::GetStringUTF16(
+            IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_EXPERIMENT_ENCRYPTED_AND_SECURE);
+    }
   }
 
   return l10n_util::GetStringUTF16(
