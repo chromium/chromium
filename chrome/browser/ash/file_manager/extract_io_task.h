@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
+#include "chrome/browser/ash/file_manager/speedometer.h"
 #include "components/services/unzip/public/cpp/unzip.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -60,6 +61,8 @@ class ExtractIOTask : public IOTask {
 
   void ZipExtractCallback(base::FilePath destination_directory, bool success);
 
+  void ZipListenerCallback(uint64_t bytes);
+
   void ExtractIntoNewDirectory(base::FilePath destination_directory,
                                base::FilePath source_file,
                                bool created_ok);
@@ -87,6 +90,9 @@ class ExtractIOTask : public IOTask {
   // Raw pointer not owned by this.
   Profile* profile_;
   const scoped_refptr<storage::FileSystemContext> file_system_context_;
+
+  // Speedometer used to calculate the remaining time to finish the operation.
+  Speedometer speedometer_;
 
   ProgressCallback progress_callback_;
   CompleteCallback complete_callback_;

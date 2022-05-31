@@ -151,6 +151,31 @@ class UnzipTest : public testing::Test {
     return result;
   }
 
+  uint64_t DoGetProgressSize(const base::FilePath& zip_file,
+                             const base::FilePath& output_dir) {
+    mojo::PendingRemote<mojom::Unzipper> unzipper;
+    receivers_.Add(&unzipper_, unzipper.InitWithNewPipeAndPassReceiver());
+
+    base::RunLoop run_loop;
+    uint64_t bytes = 0;
+    mojom::UnzipOptionsPtr options = unzip::mojom::UnzipOptions::New("auto");
+
+    UnzipListenerCallback progress_callback =
+        base::BindLambdaForTesting([&](uint64_t written_bytes) {
+          bytes = written_bytes;
+          run_loop.QuitClosure().Run();
+        });
+
+    UnzipCallback result_callback = base::BindLambdaForTesting(
+        [&](const bool success) { run_loop.QuitClosure().Run(); });
+
+    Unzip(std::move(unzipper), zip_file, output_dir, std::move(options),
+          std::move(progress_callback), std::move(result_callback));
+
+    run_loop.Run();
+    return bytes;
+  }
+
  protected:
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
@@ -295,6 +320,13 @@ TEST_F(UnzipTest, UnzipWithOptions) {
   // 8 files should have been extracted.
   bool some_files_empty = false;
   EXPECT_EQ(8, CountFiles(unzip_dir_, &some_files_empty));
+}
+
+TEST_F(UnzipTest, GetExtractedProgressSize) {
+  uint64_t result =
+      DoGetProgressSize(GetArchivePath("good_archive.zip"), unzip_dir_);
+  // Check: first file extracted is 23 bytes long.
+  EXPECT_EQ(23ul, result);
 }
 
 }  // namespace

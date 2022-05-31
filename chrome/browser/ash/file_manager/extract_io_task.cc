@@ -55,6 +55,19 @@ ExtractIOTask::ExtractIOTask(
 
 ExtractIOTask::~ExtractIOTask() {}
 
+void ExtractIOTask::ZipListenerCallback(uint64_t bytes) {
+  progress_.bytes_transferred += bytes;
+  speedometer_.Update(progress_.bytes_transferred);
+  const double remaining_seconds = speedometer_.GetRemainingSeconds();
+
+  // Speedometer can produce infinite result which can't be serialized to JSON
+  // when sending the status via private API.
+  if (std::isfinite(remaining_seconds)) {
+    progress_.remaining_seconds = remaining_seconds;
+  }
+  progress_callback_.Run(progress_);
+}
+
 void ExtractIOTask::FinishedExtraction(bool success) {
   progress_.state = success ? State::kSuccess : State::kError;
   DCHECK_GT(extractCount_, 0);
@@ -102,6 +115,8 @@ void ExtractIOTask::ExtractIntoNewDirectory(
     unzip::Unzip(
         unzip::LaunchUnzipper(), source_file, destination_directory,
         std::move(options),
+        base::BindRepeating(&ExtractIOTask::ZipListenerCallback,
+                            weak_ptr_factory_.GetWeakPtr()),
         base::BindOnce(&ExtractIOTask::ZipExtractCallback,
                        weak_ptr_factory_.GetWeakPtr(), destination_directory));
   } else {
@@ -174,6 +189,7 @@ void ExtractIOTask::GotFreeDiskSpace(int64_t free_space) {
     return;
   }
 
+  speedometer_.SetTotalBytes(progress_.total_bytes);
   ExtractAllSources();
 }
 
