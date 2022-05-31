@@ -119,18 +119,15 @@ void WebAppMetrics::OnEngagementEvent(
 
   // A presence of WebAppTabHelper with valid app_id indicates an installed
   // web app.
-  WebAppTabHelper* tab_helper = WebAppTabHelper::FromWebContents(web_contents);
-  if (!tab_helper)
-    return;
-  AppId app_id = tab_helper->GetAppId();
-  if (app_id.empty())
+  const AppId* app_id = WebAppTabHelper::GetAppId(web_contents);
+  if (!app_id)
     return;
 
   // No HostedAppBrowserController if app is running as a tab in common browser.
   const bool in_window = !!browser->app_controller();
   const bool user_installed = WebAppProvider::GetForLocalAppsUnchecked(profile_)
                                   ->registrar()
-                                  .WasInstalledByUser(app_id);
+                                  .WasInstalledByUser(*app_id);
 
   // Record all web apps:
   RecordTabOrWindowHistogram("WebApp.Engagement", in_window, engagement_type);
@@ -208,9 +205,9 @@ void WebAppMetrics::OnTabStripModelChanged(
          change.GetRemove()->contents) {
       if (contents.remove_reason ==
           TabStripModelChange::RemoveReason::kDeleted) {
-        auto* tab_helper = WebAppTabHelper::FromWebContents(contents.contents);
-        if (tab_helper && !tab_helper->GetAppId().empty())
-          app_last_interacted_time_.erase(tab_helper->GetAppId());
+        const AppId* app_id = WebAppTabHelper::GetAppId(contents.contents);
+        if (app_id)
+          app_last_interacted_time_.erase(*app_id);
         // Newly-selected foreground contents should not be going away.
         if (contents.contents == foreground_web_contents_) {
           base::debug::DumpWithoutCrashing();
@@ -226,12 +223,10 @@ void WebAppMetrics::OnTabStripModelChanged(
 void WebAppMetrics::OnSuspend() {
   // Update current tab as foreground time.
   if (foreground_web_contents_) {
-    auto* tab_helper =
-        WebAppTabHelper::FromWebContents(foreground_web_contents_);
-    if (tab_helper && !tab_helper->GetAppId().empty() &&
-        app_last_interacted_time_.contains(tab_helper->GetAppId())) {
+    const AppId* app_id = WebAppTabHelper::GetAppId(foreground_web_contents_);
+    if (app_id && app_last_interacted_time_.contains(*app_id)) {
       UpdateUkmData(foreground_web_contents_, TabSwitching::kFrom);
-      app_last_interacted_time_.erase(tab_helper->GetAppId());
+      app_last_interacted_time_.erase(*app_id);
     }
   }
   // Update all other tabs as background time.
@@ -241,9 +236,8 @@ void WebAppMetrics::OnSuspend() {
     for (int i = 0; i < tab_count; i++) {
       WebContents* contents = browser->tab_strip_model()->GetWebContentsAt(i);
       DCHECK(contents);
-      auto* tab_helper = WebAppTabHelper::FromWebContents(contents);
-      if (tab_helper && !tab_helper->GetAppId().empty() &&
-          app_last_interacted_time_.contains(tab_helper->GetAppId())) {
+      const AppId* app_id = WebAppTabHelper::GetAppId(contents);
+      if (app_id && app_last_interacted_time_.contains(*app_id)) {
         UpdateUkmData(contents, TabSwitching::kBackgroundClosing);
       }
     }
@@ -251,13 +245,15 @@ void WebAppMetrics::OnSuspend() {
   app_last_interacted_time_.clear();
 }
 
-void WebAppMetrics::NotifyOnAssociatedAppChanged(WebContents* web_contents,
-                                                 const AppId& previous_app_id,
-                                                 const AppId& new_app_id) {
+void WebAppMetrics::NotifyOnAssociatedAppChanged(
+    content::WebContents* web_contents,
+    const absl::optional<AppId>& previous_app_id,
+    const absl::optional<AppId>& new_app_id) {
   // Ensure we aren't counting closed app as still open.
   // TODO (crbug.com/1081187): If there were multiple app instances open, this
   // will prevent background time being counted until the app is next active.
-  app_last_interacted_time_.erase(previous_app_id);
+  if (previous_app_id.has_value())
+    app_last_interacted_time_.erase(previous_app_id.value());
   // Don't record any UKM data here. It will be recorded in
   // |NotifyInstallableWebAppStatusUpdated| once fully fetched.
 }
@@ -326,19 +322,17 @@ void WebAppMetrics::UpdateUkmData(WebContents* web_contents,
     return;
   DailyInteraction features;
 
-  auto* tab_helper = WebAppTabHelper::FromWebContents(web_contents);
-  if (tab_helper &&
-      provider->registrar().IsLocallyInstalled(tab_helper->GetAppId())) {
+  const AppId* app_id = WebAppTabHelper::GetAppId(web_contents);
+  if (app_id && provider->registrar().IsLocallyInstalled(*app_id)) {
     // App is installed
-    const AppId& app_id = tab_helper->GetAppId();
-    features.start_url = provider->registrar().GetAppStartUrl(app_id);
+    features.start_url = provider->registrar().GetAppStartUrl(*app_id);
     features.installed = true;
     auto install_source =
-        provider->registrar().GetAppInstallSourceForMetrics(app_id);
+        provider->registrar().GetAppInstallSourceForMetrics(*app_id);
     if (install_source)
       features.install_source = static_cast<int>(*install_source);
     DisplayMode display_mode =
-        provider->registrar().GetAppEffectiveDisplayMode(app_id);
+        provider->registrar().GetAppEffectiveDisplayMode(*app_id);
     features.effective_display_mode = static_cast<int>(display_mode);
     // AppBannerManager treats already-installed web-apps as non-promotable, so
     // include already-installed findings as promotable.
@@ -349,8 +343,8 @@ void WebAppMetrics::UpdateUkmData(WebContents* web_contents,
     if (provider->ui_manager().IsInAppWindow(web_contents) ||
         mode == TabSwitching::kForegroundClosing) {
       base::Time now = base::Time::Now();
-      if (app_last_interacted_time_.contains(app_id)) {
-        base::TimeDelta delta = now - app_last_interacted_time_[app_id];
+      if (app_last_interacted_time_.contains(*app_id)) {
+        base::TimeDelta delta = now - app_last_interacted_time_[*app_id];
         if (delta < max_valid_session_delta_) {
           switch (mode) {
             case TabSwitching::kFrom:
@@ -364,7 +358,7 @@ void WebAppMetrics::UpdateUkmData(WebContents* web_contents,
           }
         }
       }
-      app_last_interacted_time_[app_id] = now;
+      app_last_interacted_time_[*app_id] = now;
 
       // Note: real web app launch counts 2 sessions immediately, as app window
       // is actually activated twice in the launch process.

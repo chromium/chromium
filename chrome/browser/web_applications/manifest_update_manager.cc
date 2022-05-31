@@ -59,43 +59,43 @@ void ManifestUpdateManager::Shutdown() {
 }
 
 void ManifestUpdateManager::MaybeUpdate(const GURL& url,
-                                        const AppId& app_id,
+                                        const absl::optional<AppId>& app_id,
                                         content::WebContents* web_contents) {
   if (!started_) {
     return;
   }
 
-  if (app_id.empty() || !registrar_->IsLocallyInstalled(app_id)) {
+  if (!app_id.has_value() || !registrar_->IsLocallyInstalled(*app_id)) {
     NotifyResult(url, app_id, ManifestUpdateResult::kNoAppInScope);
     return;
   }
 
-  if (IsSystemWebApp(*registrar_, *system_web_apps_delegate_map_, app_id)) {
-    NotifyResult(url, app_id, ManifestUpdateResult::kAppIsSystemWebApp);
+  if (IsSystemWebApp(*registrar_, *system_web_apps_delegate_map_, *app_id)) {
+    NotifyResult(url, *app_id, ManifestUpdateResult::kAppIsSystemWebApp);
     return;
   }
 
-  if (registrar_->IsPlaceholderApp(app_id, WebAppManagement::kPolicy)) {
-    NotifyResult(url, app_id, ManifestUpdateResult::kAppIsPlaceholder);
+  if (registrar_->IsPlaceholderApp(*app_id, WebAppManagement::kPolicy)) {
+    NotifyResult(url, *app_id, ManifestUpdateResult::kAppIsPlaceholder);
     return;
   }
 
-  if (base::Contains(tasks_, app_id))
+  if (base::Contains(tasks_, *app_id))
     return;
 
-  if (!MaybeConsumeUpdateCheck(url.DeprecatedGetOriginAsURL(), app_id)) {
-    NotifyResult(url, app_id, ManifestUpdateResult::kThrottled);
+  if (!MaybeConsumeUpdateCheck(url.DeprecatedGetOriginAsURL(), *app_id)) {
+    NotifyResult(url, *app_id, ManifestUpdateResult::kThrottled);
     return;
   }
 
   tasks_.insert_or_assign(
-      app_id, std::make_unique<ManifestUpdateTask>(
-                  url, app_id, web_contents,
-                  base::BindOnce(&ManifestUpdateManager::OnUpdateStopped,
-                                 base::Unretained(this)),
-                  hang_update_checks_for_testing_, *registrar_, *icon_manager_,
-                  ui_manager_, install_finalizer_, *os_integration_manager_,
-                  sync_bridge_));
+      *app_id, std::make_unique<ManifestUpdateTask>(
+                   url, *app_id, web_contents,
+                   base::BindOnce(&ManifestUpdateManager::OnUpdateStopped,
+                                  base::Unretained(this)),
+                   hang_update_checks_for_testing_, *registrar_, *icon_manager_,
+                   ui_manager_, install_finalizer_, *os_integration_manager_,
+                   sync_bridge_));
 }
 
 bool ManifestUpdateManager::IsUpdateConsumed(const AppId& app_id) {
@@ -167,14 +167,15 @@ void ManifestUpdateManager::SetResultCallbackForTesting(
 }
 
 void ManifestUpdateManager::NotifyResult(const GURL& url,
-                                         const AppId& app_id,
+                                         const absl::optional<AppId>& app_id,
                                          ManifestUpdateResult result) {
   // Don't log kNoAppInScope because it will be far too noisy (most page loads
   // will hit it).
   if (result != ManifestUpdateResult::kNoAppInScope) {
     base::UmaHistogramEnumeration("Webapp.Update.ManifestUpdateResult", result);
-    if (registrar_->HasExternalAppWithInstallSource(
-            app_id, ExternalInstallSource::kExternalDefault)) {
+    if (app_id.has_value() &&
+        registrar_->HasExternalAppWithInstallSource(
+            app_id.value(), ExternalInstallSource::kExternalDefault)) {
       base::UmaHistogramEnumeration(
           "Webapp.Update.ManifestUpdateResult.DefaultApp", result);
     }

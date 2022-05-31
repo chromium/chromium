@@ -61,7 +61,7 @@ class ManifestUpdateManager final : public WebAppInstallManagerObserver {
   void Shutdown();
 
   void MaybeUpdate(const GURL& url,
-                   const AppId& app_id,
+                   const absl::optional<AppId>& app_id,
                    content::WebContents* web_contents);
   bool IsUpdateConsumed(const AppId& app_id);
 
@@ -92,7 +92,7 @@ class ManifestUpdateManager final : public WebAppInstallManagerObserver {
   void OnUpdateStopped(const ManifestUpdateTask& task,
                        ManifestUpdateResult result);
   void NotifyResult(const GURL& url,
-                    const AppId& app_id,
+                    const absl::optional<AppId>& app_id,
                     ManifestUpdateResult result);
 
   raw_ptr<WebAppRegistrar> registrar_ = nullptr;

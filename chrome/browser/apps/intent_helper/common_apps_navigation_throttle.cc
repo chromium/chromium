@@ -10,6 +10,7 @@
 
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "base/containers/contains.h"
+#include "base/memory/values_equivalent.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -227,10 +228,10 @@ bool CommonAppsNavigationThrottle::ShouldCancelNavigation(
   }
 
   // Don't capture if already inside the target app scope.
-  if (app_type == AppType::kWeb) {
-    auto* tab_helper = web_app::WebAppTabHelper::FromWebContents(web_contents);
-    if (tab_helper && tab_helper->GetAppId() == preferred_app_id.value())
-      return false;
+  if (app_type == AppType::kWeb &&
+      base::ValuesEquivalent(web_app::WebAppTabHelper::GetAppId(web_contents),
+                             &preferred_app_id.value())) {
+    return false;
   }
 
   // If this is a prerender navigation that would otherwise launch an app, we

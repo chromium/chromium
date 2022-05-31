@@ -223,9 +223,7 @@ Browser* LaunchBrowserForWebAppInTab(Profile* profile, const AppId& app_id) {
               apps::mojom::LaunchSource::kFromTest));
   DCHECK(web_contents);
 
-  WebAppTabHelper* tab_helper = WebAppTabHelper::FromWebContents(web_contents);
-  DCHECK(tab_helper);
-  EXPECT_EQ(app_id, tab_helper->GetAppId());
+  EXPECT_EQ(app_id, *WebAppTabHelper::GetAppId(web_contents));
 
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
   EXPECT_EQ(browser, chrome::FindLastActive());

@@ -806,9 +806,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLaunchOmniboxNavigateBrowsertest,
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
 
   // Verifies the tab has an associated tab helper for System App's AppId.
-  auto* tab_helper = web_app::WebAppTabHelper::FromWebContents(web_contents);
-  EXPECT_TRUE(tab_helper);
-  EXPECT_EQ(tab_helper->GetAppId(),
+  EXPECT_EQ(*web_app::WebAppTabHelper::GetAppId(web_contents),
             *web_app::GetAppIdForSystemWebApp(browser()->profile(),
                                               GetMockAppType()));
 }

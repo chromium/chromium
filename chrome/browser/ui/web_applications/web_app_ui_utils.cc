@@ -53,17 +53,21 @@ absl::optional<AppId> GetAppIdForManagementLinkInWebContents(
     return absl::nullopt;
   }
 
-  WebAppTabHelper* helper = WebAppTabHelper::FromWebContents(web_contents);
-  if (!helper || helper->GetAppId().empty() || !helper->acting_as_app())
+  const web_app::AppId* app_id =
+      web_app::WebAppTabHelper::GetAppId(web_contents);
+  if (!app_id)
+    return absl::nullopt;
+
+  if (!web_app::WebAppTabHelper::FromWebContents(web_contents)->acting_as_app())
     return absl::nullopt;
 
   if (!WebAppProvider::GetForWebApps(browser->profile())
            ->registrar()
-           .IsInstalled(helper->GetAppId())) {
+           .IsInstalled(*app_id)) {
     return absl::nullopt;
   }
 
-  return helper->GetAppId();
+  return *app_id;
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

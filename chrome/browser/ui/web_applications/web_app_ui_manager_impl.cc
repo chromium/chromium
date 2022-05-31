@@ -389,8 +389,8 @@ bool WebAppUiManagerImpl::IsInAppWindow(content::WebContents* web_contents,
 
 void WebAppUiManagerImpl::NotifyOnAssociatedAppChanged(
     content::WebContents* web_contents,
-    const AppId& previous_app_id,
-    const AppId& new_app_id) const {
+    const absl::optional<AppId>& previous_app_id,
+    const absl::optional<AppId>& new_app_id) const {
   WebAppMetrics* web_app_metrics = WebAppMetrics::Get(profile_);
   // Unavailable in guest sessions.
   if (!web_app_metrics)

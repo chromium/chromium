@@ -1267,7 +1267,8 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerOriginTrialsBrowserTest,
   WaitForTestSystemAppInstall();
 
   std::unique_ptr<content::WebContents> web_contents = CreateTestWebContents();
-  WebAppTabHelper tab_helper(web_contents.get());
+  WebAppTabHelper::CreateForWebContents(web_contents.get());
+  auto& tab_helper = *WebAppTabHelper::FromWebContents(web_contents.get());
 
   // Simulate when first navigating into app's launch url.
   {
@@ -1276,7 +1277,8 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerOriginTrialsBrowserTest,
     mock_nav_handle.set_is_same_document(false);
     EXPECT_CALL(mock_nav_handle, ForceEnableOriginTrials(main_url_trials_));
     tab_helper.ReadyToCommitNavigation(&mock_nav_handle);
-    ASSERT_EQ(maybe_installation_->GetAppId(), tab_helper.GetAppId());
+    ASSERT_EQ(maybe_installation_->GetAppId(),
+              *WebAppTabHelper::GetAppId(web_contents.get()));
   }
 
   // Simulate loading app's embedded child-frame that has origin trials.
@@ -1303,7 +1305,8 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerOriginTrialsBrowserTest,
   WaitForTestSystemAppInstall();
 
   std::unique_ptr<content::WebContents> web_contents = CreateTestWebContents();
-  WebAppTabHelper tab_helper(web_contents.get());
+  WebAppTabHelper::CreateForWebContents(web_contents.get());
+  auto& tab_helper = *WebAppTabHelper::FromWebContents(web_contents.get());
 
   // Simulate when first navigating into app's launch url.
   {
@@ -1312,7 +1315,8 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerOriginTrialsBrowserTest,
     mock_nav_handle.set_is_same_document(false);
     EXPECT_CALL(mock_nav_handle, ForceEnableOriginTrials(main_url_trials_));
     tab_helper.ReadyToCommitNavigation(&mock_nav_handle);
-    ASSERT_EQ(maybe_installation_->GetAppId(), tab_helper.GetAppId());
+    ASSERT_EQ(maybe_installation_->GetAppId(),
+              *WebAppTabHelper::GetAppId(web_contents.get()));
   }
 
   // Simulate same-document navigation.
@@ -1336,7 +1340,8 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerOriginTrialsBrowserTest,
   WaitForTestSystemAppInstall();
 
   std::unique_ptr<content::WebContents> web_contents = CreateTestWebContents();
-  WebAppTabHelper tab_helper(web_contents.get());
+  WebAppTabHelper::CreateForWebContents(web_contents.get());
+  auto& tab_helper = *WebAppTabHelper::FromWebContents(web_contents.get());
 
   // Simulate when first navigating into app's launch url.
   {
@@ -1345,7 +1350,8 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerOriginTrialsBrowserTest,
     mock_nav_handle.set_is_same_document(false);
     EXPECT_CALL(mock_nav_handle, ForceEnableOriginTrials(main_url_trials_));
     tab_helper.ReadyToCommitNavigation(&mock_nav_handle);
-    ASSERT_EQ(maybe_installation_->GetAppId(), tab_helper.GetAppId());
+    ASSERT_EQ(maybe_installation_->GetAppId(),
+              *WebAppTabHelper::GetAppId(web_contents.get()));
   }
 
   // Simulate navigating to a different site without origin trials.
@@ -1355,17 +1361,18 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerOriginTrialsBrowserTest,
     mock_nav_handle.set_is_same_document(false);
     EXPECT_CALL(mock_nav_handle, ForceEnableOriginTrials).Times(0);
     tab_helper.ReadyToCommitNavigation(&mock_nav_handle);
-    ASSERT_EQ("", tab_helper.GetAppId());
+    ASSERT_EQ(nullptr, WebAppTabHelper::GetAppId(web_contents.get()));
   }
 
-  // Simulatenavigating back to a SWA with origin trials.
+  // Simulate navigating back to a SWA with origin trials.
   {
     content::MockNavigationHandle mock_nav_handle(main_url_, nullptr);
     mock_nav_handle.set_is_in_primary_main_frame(true);
     mock_nav_handle.set_is_same_document(false);
     EXPECT_CALL(mock_nav_handle, ForceEnableOriginTrials(main_url_trials_));
     tab_helper.ReadyToCommitNavigation(&mock_nav_handle);
-    ASSERT_EQ(maybe_installation_->GetAppId(), tab_helper.GetAppId());
+    ASSERT_EQ(maybe_installation_->GetAppId(),
+              *WebAppTabHelper::GetAppId(web_contents.get()));
   }
 
   // Simulate navigating the main frame to a url embedded by SWA. This url has
@@ -1377,7 +1384,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerOriginTrialsBrowserTest,
     mock_nav_handle.set_is_same_document(false);
     EXPECT_CALL(mock_nav_handle, ForceEnableOriginTrials).Times(0);
     tab_helper.ReadyToCommitNavigation(&mock_nav_handle);
-    ASSERT_EQ("", tab_helper.GetAppId());
+    ASSERT_EQ(nullptr, WebAppTabHelper::GetAppId(web_contents.get()));
   }
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
