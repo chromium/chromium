@@ -1198,7 +1198,7 @@
           "--browser=cros-chrome",
           "--passthrough",
           "-v",
-          "--extra-browser-args=--log-level=0 --js-flags=--expose-gc --force_high_performance_gpu",
+          "--extra-browser-args=--log-level=0 --js-flags=--expose-gc --force_high_performance_gpu --disable-features=BackgroundVideoPauseOptimization",
           "--read-abbreviated-json-results-from=../../content/test/data/gpu/webgl_conformance_tests_output.json",
           "--remote=127.0.0.1",
           "--remote-ssh-port=9222"
