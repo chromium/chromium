@@ -386,7 +386,8 @@ MediaAppUIBrowserTest.MultipleSelectionLaunch = async () => {
   assertFilenamesToBe('1.png,3.png');
 };
 
-MediaAppUIBrowserTest.NotifyCurrentFile = async () => {
+// Test that each file type has an icon in light mode.
+MediaAppUIBrowserTest.NotifyCurrentFileLight = async () => {
   const imageFile = new File([], 'image.png', {type: 'image/png'});
   const audioFile = new File([], 'audio.wav', {type: 'audio/wav'});
   const videoFile = new File([], 'video.mp4', {type: 'video/mp4'});

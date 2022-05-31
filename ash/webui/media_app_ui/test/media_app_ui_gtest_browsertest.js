@@ -208,9 +208,11 @@ TEST_F('MediaAppUIGtestBrowserTest', 'MultipleSelectionLaunch', () => {
   runMediaAppTest('MultipleSelectionLaunch');
 });
 
-TEST_F('MediaAppUIGtestBrowserTest', 'NotifyCurrentFile', () => {
-  runMediaAppTest('NotifyCurrentFile');
-});
+TEST_F(
+    'MediaAppUIWithDarkLightModeGtestBrowserTest', 'NotifyCurrentFileLight',
+    () => {
+      runMediaAppTest('NotifyCurrentFileLight');
+    });
 
 TEST_F(
     'MediaAppUIWithDarkLightModeDarkGtestBrowserTest', 'NotifyCurrentFileDark',
