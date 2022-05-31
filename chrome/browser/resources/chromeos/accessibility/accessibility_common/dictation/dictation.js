@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {FocusHandler} from '/accessibility_common/dictation/focus_handler.js';
 import {InputController} from '/accessibility_common/dictation/input_controller.js';
 import {Macro} from '/accessibility_common/dictation/macros/macro.js';
 import {MacroName} from '/accessibility_common/dictation/macros/macro_names.js';
@@ -65,6 +66,9 @@ export class Dictation {
     /** @private {boolean} */
     this.isPumpkinEnabled_ = false;
 
+    /** @private {?FocusHandler} */
+    this.focusHandler_ = null;
+
     this.initialize_();
   }
 
@@ -73,8 +77,9 @@ export class Dictation {
    * @private
    */
   initialize_() {
-    this.inputController_ =
-        new InputController(() => this.stopDictation_(/*notify=*/ true));
+    this.focusHandler_ = new FocusHandler();
+    this.inputController_ = new InputController(
+        () => this.stopDictation_(/*notify=*/ true), this.focusHandler_);
     this.uiController_ = new UIController();
     this.speechParser_ = new SpeechParser(this.inputController_);
     if (this.localePref_) {
@@ -213,6 +218,7 @@ export class Dictation {
   /**
    * Called when the Speech Recognition engine receives a recognition event.
    * @param {ResultEvent} event
+   * @return {!Promise}
    * @private
    */
   async onSpeechRecognitionResult_(event) {
@@ -233,6 +239,7 @@ export class Dictation {
    * @param {string} transcript
    * @param {boolean} isFinal Whether this is a finalized transcript or an
    *     interim result.
+   * @return {!Promise}
    * @private
    */
   async processSpeechRecognitionResult_(transcript, isFinal) {
@@ -295,6 +302,7 @@ export class Dictation {
 
     this.uiController_.setState(
         UIState.STANDBY, {context: HintContext.STANDBY});
+    this.focusHandler_.refresh();
   }
 
   /**
