@@ -127,6 +127,7 @@ import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.browser.read_later.ReadingListBackPressHandler;
 import org.chromium.chrome.browser.read_later.ReadingListUtils;
 import org.chromium.chrome.browser.reengagement.ReengagementNotificationController;
 import org.chromium.chrome.browser.search_engines.SearchEngineChoiceNotification;
@@ -373,6 +374,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     private NotificationPermissionController mNotificationPermissionController;
 
     private ReturnToChromeBackPressHandler mReturnToChromeBackPressHandler;
+    private ReadingListBackPressHandler mReadingListBackPressHandler;
     private TabSwitcherBackPressHandler mTabSwitcherBackPressHandler;
 
     // ID assigned to each ChromeTabbedActivity instance in Android S+ where multi-instance feature
@@ -2224,9 +2226,11 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
         final @TabLaunchType int type = currentTab.getLaunchType();
 
-        if (type == TabLaunchType.FROM_READING_LIST) {
+        if (!BackPressManager.isEnabled() && type == TabLaunchType.FROM_READING_LIST) {
             assert !isTablet() : "Not expecting to see FROM_READING_LIST on tablets";
             ReadingListUtils.showReadingList(currentTab.isIncognito());
+            if (webContents != null) webContents.dispatchBeforeUnload(false);
+            return true;
         }
 
         // At this point we know either the tab will close or the app will minimize.
@@ -2274,6 +2278,12 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                             getTabModelSelectorSupplier(), this::returnToOverviewModeOnBackPressed);
             mBackPressManager.addHandler(mReturnToChromeBackPressHandler,
                     BackPressHandler.Type.TAB_RETURN_TO_CHROME_START_SURFACE);
+        }
+        if (mReadingListBackPressHandler == null && !isTablet()) {
+            mReadingListBackPressHandler =
+                    new ReadingListBackPressHandler(getTabModelSelectorSupplier());
+            mBackPressManager.addHandler(
+                    mReadingListBackPressHandler, BackPressHandler.Type.SHOW_READING_LIST);
         }
         if (mTabSwitcherBackPressHandler == null && !isTablet()) {
             mTabSwitcherBackPressHandler = new TabSwitcherBackPressHandler(
@@ -2524,6 +2534,10 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     @Override
     public void onDestroyInternal() {
+        if (mReadingListBackPressHandler != null) {
+            mReadingListBackPressHandler.destroy();
+            mReadingListBackPressHandler = null;
+        }
         if (mTabSwitcherBackPressHandler != null) {
             mTabSwitcherBackPressHandler.destroy();
             mTabSwitcherBackPressHandler = null;

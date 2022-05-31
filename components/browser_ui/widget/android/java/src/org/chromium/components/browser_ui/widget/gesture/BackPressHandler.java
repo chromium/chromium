@@ -24,7 +24,7 @@ public interface BackPressHandler {
             Type.START_SURFACE_MEDIATOR, Type.SELECTION_POPUP, Type.MANUAL_FILLING,
             Type.TAB_MODAL_HANDLER, Type.FULLSCREEN, Type.TAB_SWITCHER_TO_BROWSING,
             Type.TOOLBAR_TAB_CONTROLLER, Type.TAB_RETURN_TO_CHROME_START_SURFACE,
-            Type.BOTTOM_SHEET})
+            Type.SHOW_READING_LIST, Type.BOTTOM_SHEET})
     @Retention(RetentionPolicy.SOURCE)
     @interface Type {
         int TEXT_BUBBLE = 0;
@@ -40,7 +40,8 @@ public interface BackPressHandler {
         int TAB_SWITCHER_TO_BROWSING = 10;
         int TOOLBAR_TAB_CONTROLLER = 11;
         int TAB_RETURN_TO_CHROME_START_SURFACE = 12;
-        int NUM_TYPES = TAB_RETURN_TO_CHROME_START_SURFACE + 1;
+        int SHOW_READING_LIST = 13;
+        int NUM_TYPES = SHOW_READING_LIST + 1;
     }
 
     default void handleBackPress() {}
