@@ -396,12 +396,11 @@ void NGBoxFragmentBuilder::PropagateBreakInfo(
   if (!child_box_fragment)
     return;
 
-  if (const auto* token = child_box_fragment->BreakToken()) {
+  if (const NGBlockBreakToken* token = child_box_fragment->BreakToken()) {
     // Figure out if this child break is in the same flow as this parent. If
     // it's an out-of-flow positioned box, it's not. If it's in a parallel flow,
     // it's also not.
-    if (!token->IsBlockType() ||
-        !To<NGBlockBreakToken>(token)->IsAtBlockEnd()) {
+    if (!token->IsAtBlockEnd()) {
       if (child_box_fragment->IsFloating())
         has_float_break_inside_ = true;
       else if (!child_box_fragment->IsOutOfFlowPositioned())

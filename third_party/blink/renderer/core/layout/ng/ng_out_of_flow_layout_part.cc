@@ -916,8 +916,7 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(
     // (representing the last column laid out in that fragment). Thus, search
     // for |current_column_break_token| in |multicol_box_fragment|'s list of
     // child break tokens and update the stored MulticolChildInfo if found.
-    const NGBlockBreakToken* break_token =
-        To<NGBlockBreakToken>(multicol_box_fragment->BreakToken());
+    const NGBlockBreakToken* break_token = multicol_box_fragment->BreakToken();
     if (current_column_index != kNotFound && break_token &&
         break_token->ChildBreakTokens().size()) {
       // If there is a column break token, it will be the last item in its
@@ -1816,8 +1815,7 @@ void NGOutOfFlowLayoutPart::AddOOFToFragmentainer(
         *container, /* previous_container_break_token */ nullptr);
   }
 
-  const NGBlockBreakToken* break_token =
-      To<NGBlockBreakToken>(physical_fragment.BreakToken());
+  const NGBlockBreakToken* break_token = physical_fragment.BreakToken();
   if (break_token) {
     // We must continue layout in the next fragmentainer. Update any information
     // in NodeToLayout, and add the node to |fragmented_descendants|.

@@ -3287,8 +3287,7 @@ void LayoutBox::AddLayoutResult(const NGLayoutResult* result,
       // TODO(layout-dev): Other solutions to handling interactions between OOFs
       // and spanner breaks may need to be considered.
       if (!box_fragment.BreakToken() ||
-          To<NGBlockBreakToken>(box_fragment.BreakToken())
-              ->IsCausedByColumnSpanner() ||
+          box_fragment.BreakToken()->IsCausedByColumnSpanner() ||
           box_fragment.IsFragmentationContextRoot()) {
         // Before forgetting any old fragments and their items, we need to clear
         // associations.
@@ -6899,8 +6898,7 @@ void LayoutBox::SetLayoutOverflowFromLayoutResults() {
       layout_overflow->UniteEvenIfEmpty(fragment_layout_overflow);
 
     if (const auto* break_token = fragment.BreakToken()) {
-      consumed_block_size =
-          To<NGBlockBreakToken>(break_token)->ConsumedBlockSize();
+      consumed_block_size = break_token->ConsumedBlockSize();
     }
   }
 
@@ -7151,8 +7149,7 @@ void LayoutBox::CopyVisualOverflowFromFragmentsWithoutInvalidations() {
     // writing mode, or to the right in vertical. Flipped blocks is handled
     // later, after the loop.
     if (last_fragment) {
-      const auto* break_token =
-          To<NGBlockBreakToken>(last_fragment->BreakToken());
+      const NGBlockBreakToken* break_token = last_fragment->BreakToken();
       DCHECK(break_token);
       const LayoutUnit block_offset = break_token->ConsumedBlockSize();
       if (blink::IsHorizontalWritingMode(writing_mode)) {

@@ -1636,7 +1636,7 @@ NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
                            physical_fragment);
 
     if (physical_fragment.BreakToken() &&
-        !To<NGBlockBreakToken>(physical_fragment.BreakToken())->IsAtBlockEnd())
+        !physical_fragment.BreakToken()->IsAtBlockEnd())
       has_inflow_child_break_inside_line[flex_line_idx] = true;
 
     // This item may have expanded due to fragmentation. Record how large the
@@ -1660,8 +1660,7 @@ NGFlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
           previously_consumed_block_size != LayoutUnit::Max()) {
         LayoutUnit item_expansion;
         if (physical_fragment.BreakToken() &&
-            !To<NGBlockBreakToken>(physical_fragment.BreakToken())
-                 ->IsAtBlockEnd()) {
+            !physical_fragment.BreakToken()->IsAtBlockEnd()) {
           // We can't use the size of the fragment, as we don't
           // know how large the subsequent fragments will be (and how much
           // they'll expand the row).

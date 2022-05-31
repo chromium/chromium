@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_box_strut.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_items.h"
 #include "third_party/blink/renderer/core/layout/ng/mathml/ng_mathml_paint_info.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/table/ng_table_borders.h"
 #include "third_party/blink/renderer/core/layout/ng/table/ng_table_fragment_data.h"
@@ -22,7 +23,6 @@
 
 namespace blink {
 
-class NGBlockBreakToken;
 class NGBoxFragmentBuilder;
 enum class NGOutlineType;
 
@@ -347,6 +347,10 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
   PhysicalBoxSides SidesToInclude() const {
     return PhysicalBoxSides(include_border_top_, include_border_right_,
                             include_border_bottom_, include_border_left_);
+  }
+
+  const NGBlockBreakToken* BreakToken() const {
+    return To<NGBlockBreakToken>(NGPhysicalFragment::BreakToken());
   }
 
   // Return true if this is the first fragment generated from a node.

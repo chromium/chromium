@@ -2242,8 +2242,7 @@ NGPreviousInflowPosition NGBlockLayoutAlgorithm::ComputeInflowPosition(
     // initial column balancing pass.
     if (const auto* physical_fragment = DynamicTo<NGPhysicalBoxFragment>(
             &layout_result.PhysicalFragment())) {
-      if (const auto* token =
-              To<NGBlockBreakToken>(physical_fragment->BreakToken())) {
+      if (const NGBlockBreakToken* token = physical_fragment->BreakToken()) {
         // TODO(mstensho): Don't apply the margin to all overflowing fragments
         // (if any). It should only be applied after the fragment where we
         // reached the block-end of the node.

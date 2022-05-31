@@ -759,7 +759,7 @@ const NGLayoutResult* NGColumnLayoutAlgorithm::LayoutRow(
       if (result->HasForcedBreak())
         forced_break_count++;
 
-      column_break_token = To<NGBlockBreakToken>(column.BreakToken());
+      column_break_token = column.BreakToken();
 
       // If we're participating in an outer fragmentation context, we'll only
       // allow as many columns as the used value of column-count, so that we
@@ -1238,7 +1238,7 @@ LayoutUnit NGColumnLayoutAlgorithm::CalculateBalancedColumnBlockSizeInternal(
     if (result->HasForcedBreak())
       forced_break_count++;
 
-    break_token = To<NGBlockBreakToken>(fragment.BreakToken());
+    break_token = fragment.BreakToken();
   } while (break_token);
 
   if (ConstraintSpace().IsInitialColumnBalancingPass()) {

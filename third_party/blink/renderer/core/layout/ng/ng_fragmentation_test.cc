@@ -206,33 +206,32 @@ TEST_F(NGFragmentationTest, HasSeenAllChildrenIfc) {
   const LayoutBox* ifc = GetLayoutBoxByElementId("ifc");
   ASSERT_EQ(ifc->PhysicalFragmentCount(), 6u);
   const NGPhysicalBoxFragment* fragment = ifc->GetPhysicalFragment(0);
-  const NGBlockBreakToken* break_token =
-      DynamicTo<NGBlockBreakToken>(fragment->BreakToken());
+  const NGBlockBreakToken* break_token = fragment->BreakToken();
   ASSERT_TRUE(break_token);
   EXPECT_FALSE(break_token->HasSeenAllChildren());
 
   fragment = ifc->GetPhysicalFragment(1);
-  break_token = DynamicTo<NGBlockBreakToken>(fragment->BreakToken());
+  break_token = fragment->BreakToken();
   ASSERT_TRUE(break_token);
   EXPECT_FALSE(break_token->HasSeenAllChildren());
 
   fragment = ifc->GetPhysicalFragment(2);
-  break_token = DynamicTo<NGBlockBreakToken>(fragment->BreakToken());
+  break_token = fragment->BreakToken();
   ASSERT_TRUE(break_token);
   EXPECT_FALSE(break_token->HasSeenAllChildren());
 
   fragment = ifc->GetPhysicalFragment(3);
-  break_token = DynamicTo<NGBlockBreakToken>(fragment->BreakToken());
+  break_token = fragment->BreakToken();
   ASSERT_TRUE(break_token);
   EXPECT_TRUE(break_token->HasSeenAllChildren());
 
   fragment = ifc->GetPhysicalFragment(4);
-  break_token = DynamicTo<NGBlockBreakToken>(fragment->BreakToken());
+  break_token = fragment->BreakToken();
   ASSERT_TRUE(break_token);
   EXPECT_TRUE(break_token->HasSeenAllChildren());
 
   fragment = ifc->GetPhysicalFragment(5);
-  break_token = DynamicTo<NGBlockBreakToken>(fragment->BreakToken());
+  break_token = fragment->BreakToken();
   EXPECT_FALSE(break_token);
 }
 

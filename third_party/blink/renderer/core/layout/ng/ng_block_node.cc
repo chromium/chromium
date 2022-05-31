@@ -1226,8 +1226,7 @@ void NGBlockNode::CopyFragmentDataToLayoutBox(
              box_->PhysicalFragments()) {
           PlaceChildrenInFlowThread(flow_thread, constraint_space,
                                     multicol_fragment, incoming_break_token);
-          incoming_break_token =
-              To<NGBlockBreakToken>(multicol_fragment.BreakToken());
+          incoming_break_token = multicol_fragment.BreakToken();
         }
       }
     } else {
@@ -1515,8 +1514,7 @@ void NGBlockNode::PlaceChildrenInFlowThread(
     }
 
     flow_thread_offset += logical_size.block_size;
-    previous_column_break_token =
-        To<NGBlockBreakToken>(child_fragment.BreakToken());
+    previous_column_break_token = child_fragment.BreakToken();
   }
 
   if (!physical_fragment.BreakToken())

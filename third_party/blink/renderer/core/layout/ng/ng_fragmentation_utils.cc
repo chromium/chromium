@@ -1127,7 +1127,7 @@ const NGBlockBreakToken* FindPreviousBreakToken(
   DCHECK_GT(box->PhysicalFragmentCount(), 1u);
 
   const NGPhysicalBoxFragment* previous_fragment;
-  if (const auto* break_token = To<NGBlockBreakToken>(fragment.BreakToken())) {
+  if (const NGBlockBreakToken* break_token = fragment.BreakToken()) {
     // The sequence number of the outgoing break token is the same as the index
     // of this fragment.
     DCHECK_GE(break_token->SequenceNumber(), 1u);
@@ -1139,7 +1139,7 @@ const NGBlockBreakToken* FindPreviousBreakToken(
     previous_fragment =
         box->GetPhysicalFragment(box->PhysicalFragmentCount() - 2);
   }
-  return To<NGBlockBreakToken>(previous_fragment->BreakToken());
+  return previous_fragment->BreakToken();
 }
 
 wtf_size_t PreviousInnerFragmentainerIndex(
@@ -1160,7 +1160,7 @@ wtf_size_t PreviousInnerFragmentainerIndex(
   for (const NGPhysicalBoxFragment& walker : box->PhysicalFragments()) {
     if (&walker == &fragment)
       return idx;
-    const auto* break_token = To<NGBlockBreakToken>(walker.BreakToken());
+    const NGBlockBreakToken* break_token = walker.BreakToken();
 
     // Find the last fragmentainer inside this fragment.
     const auto children = break_token->ChildBreakTokens();

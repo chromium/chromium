@@ -1657,8 +1657,7 @@ void NGInlineCursor::DecrementFragmentIndex() {
   // Note: |LayoutBox::GetPhysicalFragment(wtf_size_t)| is O(1).
   const auto& root_box_fragment =
       *root_block_flow_->GetPhysicalFragment(fragment_index_ - 1);
-  if (const auto* break_token =
-          To<NGBlockBreakToken>(root_box_fragment.BreakToken()))
+  if (const NGBlockBreakToken* break_token = root_box_fragment.BreakToken())
     previously_consumed_block_size_ = break_token->ConsumedBlockSize();
 }
 
@@ -1667,8 +1666,7 @@ void NGInlineCursor::IncrementFragmentIndex() {
   fragment_index_++;
   if (!root_box_fragment_)
     return;
-  if (const auto* break_token =
-          To<NGBlockBreakToken>(root_box_fragment_->BreakToken()))
+  if (const NGBlockBreakToken* break_token = root_box_fragment_->BreakToken())
     previously_consumed_block_size_ = break_token->ConsumedBlockSize();
 }
 

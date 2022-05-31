@@ -323,6 +323,7 @@ NGPhysicalBoxFragment::NGPhysicalBoxFragment(
       const_num_children_(builder->children_.size()) {
   DCHECK(layout_object_);
   DCHECK(layout_object_->IsBoxModelObject());
+  DCHECK(!builder->break_token_ || builder->break_token_->IsBlockType());
 
   PhysicalSize size = Size();
   const WritingModeConverter converter(
@@ -687,15 +688,13 @@ const NGPhysicalBoxFragment* NGPhysicalBoxFragment::PostLayout() const {
   if (fragment_count == 1) {
     post_layout = box->GetPhysicalFragment(0);
     DCHECK(post_layout);
-  } else if (const auto* break_token = To<NGBlockBreakToken>(BreakToken())) {
+  } else if (const auto* break_token = BreakToken()) {
     const unsigned index = break_token->SequenceNumber();
     if (index < fragment_count) {
       post_layout = box->GetPhysicalFragment(index);
       DCHECK(post_layout);
-      DCHECK(
-          !post_layout->BreakToken() ||
-          To<NGBlockBreakToken>(post_layout->BreakToken())->SequenceNumber() ==
-              index);
+      DCHECK(!post_layout->BreakToken() ||
+             post_layout->BreakToken()->SequenceNumber() == index);
     }
   } else {
     post_layout = &box->PhysicalFragments().back();
