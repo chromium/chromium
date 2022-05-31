@@ -6,9 +6,39 @@
 
 #include "base/memory/singleton.h"
 #include "chrome/browser/chromeos/extensions/vpn_provider/vpn_service.h"
-#include "chromeos/login/login_state/login_state.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "content/public/browser/browser_context.h"
 #include "extensions/browser/extensions_browser_client.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chromeos/login/login_state/login_state.h"
+#endif
+
+namespace {
+
+// Only main profile should be allowed to access the API.
+bool IsContextForMainProfile(content::BrowserContext* context) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (!Profile::FromBrowserContext(context)->IsMainProfile()) {
+    return false;
+  }
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  std::string user_hash =
+      extensions::ExtensionsBrowserClient::Get()->GetUserIdHashFromContext(
+          context);
+  if (!chromeos::LoginState::IsInitialized() ||
+      user_hash != chromeos::LoginState::Get()->primary_user_hash()) {
+    return false;
+  }
+#endif
+
+  return true;
+}
+
+}  // namespace
 
 namespace chromeos {
 
@@ -41,19 +71,9 @@ bool VpnServiceFactory::ServiceIsNULLWhileTesting() const {
 
 KeyedService* VpnServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
-  if (!VpnService::GetVpnService()) {
+  if (!VpnService::GetVpnService() || !IsContextForMainProfile(context)) {
     return nullptr;
   }
-
-  std::string context_user_hash =
-      extensions::ExtensionsBrowserClient::Get()->GetUserIdHashFromContext(
-          context);
-
-  if (!LoginState::IsInitialized() ||
-      context_user_hash != LoginState::Get()->primary_user_hash()) {
-    return nullptr;
-  }
-
   return new VpnService(context);
 }
 

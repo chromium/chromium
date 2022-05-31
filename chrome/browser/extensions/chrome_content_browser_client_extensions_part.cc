@@ -74,9 +74,9 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "url/origin.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/chromeos/extensions/vpn_provider/vpn_service_factory.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 using blink::web_pref::WebPreferences;
 using content::BrowserContext;
@@ -570,7 +570,7 @@ std::vector<url::Origin> ChromeContentBrowserClientExtensionsPart::
 std::unique_ptr<content::VpnServiceProxy>
 ChromeContentBrowserClientExtensionsPart::GetVpnServiceProxy(
     content::BrowserContext* browser_context) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   chromeos::VpnServiceInterface* vpn_service =
       chromeos::VpnServiceFactory::GetForBrowserContext(browser_context);
   if (!vpn_service)

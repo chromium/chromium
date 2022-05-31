@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_ASH_CROSAPI_TEST_CONTROLLER_ASH_H_
 
 #include <memory>
+#include <string>
+#include <vector>
 
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chromeos/crosapi/mojom/test_controller.mojom.h"
@@ -77,6 +79,10 @@ class TestControllerAsh : public mojom::TestController,
       SetSelectedSharesheetAppCallback callback) override;
   void GetAshVersion(GetAshVersionCallback callback) override;
 
+  void BindTestShillController(
+      mojo::PendingReceiver<crosapi::mojom::TestShillController> receiver,
+      BindTestShillControllerCallback callback) override;
+
   mojo::Remote<mojom::StandaloneBrowserTestController>&
   GetStandaloneBrowserTestController() {
     DCHECK(standalone_browser_test_controller_.is_bound());
@@ -117,6 +123,20 @@ class TestControllerAsh : public mojom::TestController,
   // Controller to send commands to the connected lacros crosapi client.
   mojo::Remote<mojom::StandaloneBrowserTestController>
       standalone_browser_test_controller_;
+};
+
+class TestShillControllerAsh : public crosapi::mojom::TestShillController {
+ public:
+  TestShillControllerAsh();
+  ~TestShillControllerAsh() override;
+
+  // crosapi::mojom::TestShillController:
+  void OnPacketReceived(const std::string& extension_id,
+                        const std::string& configuration_name,
+                        const std::vector<uint8_t>& data) override;
+  void OnPlatformMessage(const std::string& extension_id,
+                         const std::string& configuration_name,
+                         uint32_t message) override;
 };
 
 }  // namespace crosapi

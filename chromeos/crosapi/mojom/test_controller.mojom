@@ -46,6 +46,24 @@ interface StandaloneBrowserTestController {
   LoadVpnExtension@1(string extension_name) => (string extension_id);
 };
 
+// Allows callers running in lacros to trigger test events that are passed to
+// the active Vpn configuration.
+// See chrome/browser/lacros/vpn_provider_lacros_apitest.cc for details.
+// Next version: 1
+// Next method id: 2
+[Stable, Uuid="e2bca22e-32e9-40b3-a0bc-035b41534496"]
+interface TestShillController {
+  // Simulate |data| being received by the configuration determined by
+  // |extension_id| and |configuration_name|.
+  OnPacketReceived@0(string extension_id, string configuration_name,
+      array<uint8> data);
+
+  // Simulate |message| being received by the configuration determined by
+  // |extension_id| and |configuration_name|.
+  OnPlatformMessage@1(string extension_id, string configuration_name,
+      uint32 message);
+};
+
 // This interface is implemented by Ash-Chrome.
 // This interface provides tests a mechanism to mutate or query ash.
 // In the future, this interface may merge with an automation or a11y interface.
@@ -181,4 +199,10 @@ interface TestController {
   // Introduced in M-103.
   [MinVersion=13]
   GetAshVersion@22() => (string ash_version);
+
+  // Binds |test_shill_controller| that can be used to simulate packet/message
+  // events.
+  [MinVersion=14]
+  BindTestShillController@23(
+      pending_receiver<TestShillController> test_shill_controller) => ();
 };

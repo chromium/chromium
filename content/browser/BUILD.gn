@@ -2738,7 +2738,7 @@ source_set("browser") {
     assert(enable_basic_printing)
     deps += [ "//printing" ]
 
-    if (is_chromeos_ash) {
+    if (is_chromeos) {
       sources += [
         "renderer_host/pepper/pepper_vpn_provider_message_filter_chromeos.cc",
         "renderer_host/pepper/pepper_vpn_provider_message_filter_chromeos.h",

@@ -4584,6 +4584,7 @@ if (is_chromeos_lacros) {
       "../browser/chromeos/extensions/login_screen/login_screen_storage/login_screen_storage_apitest.cc",
       "../browser/chromeos/tablet_mode/tablet_mode_page_behavior_browsertest.cc",
       "../browser/extensions/api/preference/preference_api_lacros_browsertest.cc",
+      "../browser/extensions/api/vpn_provider/vpn_provider_apitest.cc",
       "../browser/lacros/browser_service_lacros_browsertest.cc",
       "../browser/lacros/browser_test_util.cc",
       "../browser/lacros/browser_test_util.h",
@@ -4626,6 +4627,7 @@ if (is_chromeos_lacros) {
       ":test_support",
       ":test_support_ui",
       "//chrome/app:command_ids",
+      "//chrome/browser/chromeos/extensions/vpn_provider",
       "//chrome/browser/metrics/structured",
       "//chrome/browser/web_applications:web_applications_test_support",
       "//chromeos/crosapi/cpp:cpp",
@@ -4653,6 +4655,7 @@ if (is_chromeos_lacros) {
 
     data = [
       "data/extensions/api_test/login_screen_apis/",
+      "data/extensions/api_test/vpn_provider/",
       "data/extensions/api_test/preference/",
       "data/extensions/platform_apps/minimal/",
       "data/media/",

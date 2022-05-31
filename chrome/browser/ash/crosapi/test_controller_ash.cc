@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/crosapi/test_controller_ash.h"
 
+#include <utility>
+
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/tablet_mode.h"
@@ -13,17 +15,25 @@
 #include "ash/wm/overview/overview_observer.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/callback_helpers.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/version.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
+#include "chrome/browser/ash/crosapi/vpn_service_ash.h"
 #include "chrome/browser/ash/crosapi/window_util.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/sharesheet/sharesheet_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/tabs/tab_scrubber_chromeos.h"
+#include "chromeos/dbus/shill/shill_profile_client.h"
+#include "chromeos/dbus/shill/shill_third_party_vpn_driver_client.h"
 #include "components/version_info/version_info.h"
+#include "crypto/sha2.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
@@ -429,6 +439,14 @@ void TestControllerAsh::GetAshVersion(GetAshVersionCallback callback) {
   std::move(callback).Run(version_info::GetVersion().GetString());
 }
 
+void TestControllerAsh::BindTestShillController(
+    mojo::PendingReceiver<crosapi::mojom::TestShillController> receiver,
+    BindTestShillControllerCallback callback) {
+  mojo::MakeSelfOwnedReceiver<crosapi::mojom::TestShillController>(
+      std::make_unique<crosapi::TestShillControllerAsh>(), std::move(receiver));
+  std::move(callback).Run();
+}
+
 // This class waits for overview mode to either enter or exit and fires a
 // callback. This class will fire the callback at most once.
 class TestControllerAsh::OverviewWaiter : public ash::OverviewObserver {
@@ -480,5 +498,44 @@ class TestControllerAsh::OverviewWaiter : public ash::OverviewObserver {
   // The test controller owns this object so is never invalid.
   TestControllerAsh* test_controller_;
 };
+
+TestShillControllerAsh::TestShillControllerAsh() {
+  chromeos::ShillProfileClient::Get()->GetTestInterface()->AddProfile(
+      "/network/test", ash::ProfileHelper::GetUserIdHashFromProfile(
+                           ProfileManager::GetPrimaryUserProfile()));
+}
+
+TestShillControllerAsh::~TestShillControllerAsh() = default;
+
+void TestShillControllerAsh::OnPacketReceived(
+    const std::string& extension_id,
+    const std::string& configuration_name,
+    const std::vector<uint8_t>& data) {
+  const std::string key = crosapi::VpnServiceForExtensionAsh::GetKey(
+      extension_id, configuration_name);
+  const std::string shill_key = shill::kObjectPathBase + key;
+  // On linux ShillThirdPartyVpnDriverClient is initialized as Fake and
+  // therefore exposes a testing interface.
+  auto* client =
+      chromeos::ShillThirdPartyVpnDriverClient::Get()->GetTestInterface();
+  CHECK(client);
+  client->OnPacketReceived(shill_key,
+                           std::vector<char>(data.begin(), data.end()));
+}
+
+void TestShillControllerAsh::OnPlatformMessage(
+    const std::string& extension_id,
+    const std::string& configuration_name,
+    uint32_t message) {
+  const std::string key = crosapi::VpnServiceForExtensionAsh::GetKey(
+      extension_id, configuration_name);
+  const std::string shill_key = shill::kObjectPathBase + key;
+  // On linux ShillThirdPartyVpnDriverClient is initialized as Fake and
+  // therefore exposes a testing interface.
+  auto* client =
+      chromeos::ShillThirdPartyVpnDriverClient::Get()->GetTestInterface();
+  CHECK(client);
+  client->OnPlatformMessage(shill_key, message);
+}
 
 }  // namespace crosapi

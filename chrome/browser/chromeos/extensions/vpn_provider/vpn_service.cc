@@ -19,9 +19,15 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/vpn_service_ash.h"
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/lacros/lacros_service.h"
+#endif
 
 namespace chromeos {
 
@@ -286,8 +292,17 @@ void VpnService::OnExtensionUnloaded(
 
 // static
 crosapi::mojom::VpnService* VpnService::GetVpnService() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   DCHECK(crosapi::CrosapiManager::IsInitialized());
   return crosapi::CrosapiManager::Get()->crosapi_ash()->vpn_service_ash();
+#else
+  auto* service = chromeos::LacrosService::Get();
+  if (!service->IsAvailable<crosapi::mojom::VpnService>()) {
+    LOG(ERROR) << "chrome.vpnProvider is not available in Lacros";
+    return nullptr;
+  }
+  return service->GetRemote<crosapi::mojom::VpnService>().get();
+#endif
 }
 
 mojo::Remote<crosapi::mojom::VpnServiceForExtension>&
@@ -309,12 +324,12 @@ void VpnService::BindPepperVpnProxy(
     FailureCallback failure,
     std::unique_ptr<content::PepperVpnProviderResourceHostProxy>
         pepper_vpn_provider_proxy) {
-  // Here we create a PepperVpnProxyAdapter that will forward everything to the
-  // underlying PepperVpnProviderResourceHostProxy and bind it via crosapi. Note
-  // that the crosapi call might be unsuccessful if the active vpn configuration
-  // is not owned by the given extension; therefore we don't create the
-  // SelfOwnedReceiver right away, but instead do it in the callback on success
-  // or reset the entangled pipe on failure.
+  // Here we create a PepperVpnProxyAdapter that will forward everything to
+  // the underlying PepperVpnProviderResourceHostProxy and bind it via
+  // crosapi. Note that the crosapi call might be unsuccessful if the active
+  // vpn configuration is not owned by the given extension; therefore we don't
+  // create the SelfOwnedReceiver right away, but instead do it in the
+  // callback on success or reset the entangled pipe on failure.
   auto pepper_adapter = std::make_unique<PepperVpnProxyAdapter>(
       std::move(pepper_vpn_provider_proxy));
   mojo::PendingRemote<crosapi::mojom::PepperVpnProxyObserver> pepper_client;
