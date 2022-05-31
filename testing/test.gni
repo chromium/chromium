@@ -584,7 +584,9 @@ template("test") {
       if (!defined(excluded_dirs)) {
         excluded_dirs = []
       }
-      excluded_dirs += [ devtools_root_location ]
+      if (devtools_root_location != "") {
+        excluded_dirs += [ devtools_root_location ]
+      }
     }
 
     # |target_name| refers to the package-runner rule, so that building
