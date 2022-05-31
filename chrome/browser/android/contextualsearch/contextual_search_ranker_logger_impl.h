@@ -57,12 +57,6 @@ class ContextualSearchRankerLoggerImpl {
       jobject obj,
       const base::android::JavaParamRef<jobject>& java_web_contents);
 
-  // Logs an int32 value with the given feature name.
-  void LogInt32(JNIEnv* env,
-                jobject obj,
-                const base::android::JavaParamRef<jstring>& j_feature,
-                jint j_int);
-
   // Runs the model and returns the inference result as an
   // AssistRankerPrediction enum.
   AssistRankerPrediction RunInference(JNIEnv* env, jobject obj);
@@ -77,9 +71,6 @@ class ContextualSearchRankerLoggerImpl {
  private:
   // Returns whether or not AssistRanker query is enabled.
   bool IsQueryEnabledInternal();
-
-  // Adds feature to the RankerExample.
-  void LogFeature(const std::string& feature_name, int value);
 
   // Sets up the Ranker Predictor for the given |web_contents|.
   void SetupRankerPredictor(content::WebContents& web_contents);

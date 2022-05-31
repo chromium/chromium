@@ -25,12 +25,8 @@ class BrowserContext;
 
 namespace {
 
-const char kContextualSearchRankerDidPredict[] = "OutcomeRankerDidPredict";
-const char kContextualSearchRankerPrediction[] = "OutcomeRankerPrediction";
 const char kContextualSearchImportantFeature[] = "DidOptIn";
 const char kContextualSearchImportantOutcome[] = "OutcomeWasPanelOpened";
-const char kContextualSearchRankerPredictionScore[] =
-    "OutcomeRankerPredictionScore";
 
 }  // namespace
 
@@ -73,22 +69,6 @@ void ContextualSearchRankerLoggerImpl::SetupRankerPredictor(
   }
 }
 
-void ContextualSearchRankerLoggerImpl::LogFeature(
-    const std::string& feature_name,
-    int value) {
-  auto& features = *ranker_example_->mutable_features();
-  features[feature_name].set_int32_value(value);
-}
-
-void ContextualSearchRankerLoggerImpl::LogInt32(
-    JNIEnv* env,
-    jobject obj,
-    const base::android::JavaParamRef<jstring>& j_feature,
-    jint j_int) {
-  std::string feature = base::android::ConvertJavaStringToUTF8(env, j_feature);
-  LogFeature(feature, j_int);
-}
-
 AssistRankerPrediction ContextualSearchRankerLoggerImpl::RunInference(
     JNIEnv* env,
     jobject obj) {
@@ -100,20 +80,6 @@ AssistRankerPrediction ContextualSearchRankerLoggerImpl::RunInference(
     // Log to UMA whether we were able to predict or not.
     base::UmaHistogramBoolean("Search.ContextualSearch.Ranker.WasAbleToPredict",
                               was_able_to_predict);
-    // TODO(chrome-ranker-team): this should be logged internally by Ranker.
-    LogFeature(kContextualSearchRankerDidPredict,
-               static_cast<int>(was_able_to_predict));
-    if (was_able_to_predict) {
-      LogFeature(kContextualSearchRankerPrediction,
-                 static_cast<int>(prediction));
-      // For offline validation also log the prediction score.
-      // TODO(donnd): remove when https://crbug.com/914179 is resolved.
-      float score;
-      bool was_able_to_predict_score =
-          predictor_->PredictScore(*ranker_example_, &score);
-      if (was_able_to_predict_score)
-        LogFeature(kContextualSearchRankerPredictionScore, score);
-    }
   }
   AssistRankerPrediction prediction_enum;
   if (was_able_to_predict) {

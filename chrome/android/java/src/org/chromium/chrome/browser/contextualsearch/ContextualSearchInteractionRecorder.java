@@ -86,13 +86,6 @@ public interface ContextualSearchInteractionRecorder {
     void setupLoggingForPage(@Nullable WebContents basePageWebContents);
 
     /**
-     * Logs a particular feature at inference time as a key/value pair.
-     * @param feature The feature to log.
-     * @param value The value to log, which is associated with the given key.
-     */
-    void logFeature(@Feature int feature, Object value);
-
-    /**
      * Returns whether or not AssistRanker query is enabled.
      */
     boolean isQueryEnabled();

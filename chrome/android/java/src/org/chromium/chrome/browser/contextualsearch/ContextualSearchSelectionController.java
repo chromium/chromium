@@ -480,7 +480,6 @@ public class ContextualSearchSelectionController {
         int tapPrediction = AssistRankerPrediction.UNDETERMINED;
         if (!shouldSuppressTapBasedOnHeuristics) {
             tapHeuristics.logRankerTapSuppression(interactionRecorder);
-            mHandler.logNonHeuristicFeatures(interactionRecorder);
             tapPrediction = interactionRecorder.runPredictionForTapSuppression();
             ContextualSearchUma.logRankerPrediction(tapPrediction);
         }

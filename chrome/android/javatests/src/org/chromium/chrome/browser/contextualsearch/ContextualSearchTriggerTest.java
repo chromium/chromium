@@ -230,7 +230,6 @@ public class ContextualSearchTriggerTest extends ContextualSearchInstrumentation
         clickWordNode("states");
         Assert.assertEquals("States", getSelectedText());
         waitForPanelToPeek();
-        assertLoggedAllExpectedFeaturesToRanker();
         // Avoid issues with double-tap detection by ensuring sequential taps
         // aren't treated as such. Double-tapping can also select words much as
         // longpress, in turn showing the pins and preventing contextual tap
@@ -243,7 +242,6 @@ public class ContextualSearchTriggerTest extends ContextualSearchInstrumentation
         clickNode("states-near");
         waitForSelectionToBe("StatesNear");
         assertLoggedAllExpectedOutcomesToRanker();
-        assertLoggedAllExpectedFeaturesToRanker();
         Thread.sleep(ViewConfiguration.getDoubleTapTimeout());
         clickNode("states");
         waitForSelectionToBe("States");

@@ -575,28 +575,6 @@ public class ContextualSearchInstrumentationBase {
         }
     }
 
-    /**
-     * Gets the name of the given feature when it's expected to be logged.
-     *
-     * @param feature An outcome that might have been expected to be logged.
-     * @return The name of the outcome if it's expected to be logged, or {@code null} if it's not
-     * expected to be logged.
-     */
-    private static final String expectedFeatureName(
-            @ContextualSearchInteractionRecorder.Feature int feature) {
-        switch (feature) {
-            // We don't log previous user impressions and CTR if not available for the
-            // current user.
-            case ContextualSearchInteractionRecorder.Feature.PREVIOUS_WEEK_CTR_PERCENT:
-            case ContextualSearchInteractionRecorder.Feature.PREVIOUS_WEEK_IMPRESSIONS_COUNT:
-            case ContextualSearchInteractionRecorder.Feature.PREVIOUS_28DAY_CTR_PERCENT:
-            case ContextualSearchInteractionRecorder.Feature.PREVIOUS_28DAY_IMPRESSIONS_COUNT:
-                return null;
-            default:
-                return ContextualSearchRankerLoggerImpl.featureName(feature);
-        }
-    }
-
     protected interface ThrowingRunnable {
         void run() throws TimeoutException;
     }
@@ -1522,21 +1500,6 @@ public class ContextualSearchInstrumentationBase {
                 (ContextualSearchRankerLoggerImpl) mManager.getRankerLogger();
         Assert.assertNotNull(rankerLogger);
         return rankerLogger;
-    }
-
-    /**
-     * @return The value of the given logged feature, or {@code null} if not logged.
-     */
-    protected Object loggedToRanker(@ContextualSearchInteractionRecorder.Feature int feature) {
-        return getRankerLogger().getFeaturesLogged().get(feature);
-    }
-
-    /** Asserts that all the expected features have been logged to Ranker. **/
-    protected void assertLoggedAllExpectedFeaturesToRanker() {
-        for (int feature = 0; feature < ContextualSearchInteractionRecorder.Feature.NUM_ENTRIES;
-                feature++) {
-            if (expectedFeatureName(feature) != null) Assert.assertNotNull(loggedToRanker(feature));
-        }
     }
 
     /** Asserts that all the expected outcomes have been logged to Ranker. **/

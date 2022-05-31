@@ -39,7 +39,6 @@ public class ContextualSearchRankerLoggerImpl implements ContextualSearchInterac
     private Map<Integer /* @Feature */, Object> mFeaturesToLog;
 
     // A for-testing copy of all the features to log setup so that it will survive a {@link #reset}.
-    private Map<Integer /* @Feature */, Object> mFeaturesLoggedForTesting;
     private Map<Integer /* @Feature */, Object> mOutcomesLoggedForTesting;
 
     private ContextualSearchInteractionPersister mInteractionPersister;
@@ -92,79 +91,6 @@ public class ContextualSearchRankerLoggerImpl implements ContextualSearchInterac
     }
 
     /**
-     * Gets the name of the given feature.
-     * @param feature An outcome that might have been expected to be logged.
-     * @return The name of the outcome if it's expected to be logged, or {@code null} if it's not
-     *         expected to be logged.
-     */
-    @VisibleForTesting
-    protected static final String featureName(@Feature int feature) {
-        // NOTE: this list needs to be kept in sync with the white list in
-        // predictor_config_definitions.cc and with ukm.xml!
-        switch (feature) {
-            case Feature.DURATION_AFTER_SCROLL_MS:
-                return "DurationAfterScrollMs";
-            case Feature.SCREEN_TOP_DPS:
-                return "ScreenTopDps";
-            case Feature.WAS_SCREEN_BOTTOM:
-                return "WasScreenBottom";
-            case Feature.PREVIOUS_WEEK_IMPRESSIONS_COUNT:
-                return "PreviousWeekImpressionsCount";
-            case Feature.PREVIOUS_WEEK_CTR_PERCENT:
-                return "PreviousWeekCtrPercent";
-            case Feature.PREVIOUS_28DAY_IMPRESSIONS_COUNT:
-                return "Previous28DayImpressionsCount";
-            case Feature.PREVIOUS_28DAY_CTR_PERCENT:
-                return "Previous28DayCtrPercent";
-            // UKM CS v2 features.
-            case Feature.DID_OPT_IN:
-                return "DidOptIn";
-            case Feature.IS_SHORT_WORD:
-                return "IsShortWord";
-            case Feature.IS_LONG_WORD:
-                return "IsLongWord";
-            case Feature.IS_WORD_EDGE:
-                return "IsWordEdge";
-            case Feature.IS_ENTITY:
-                return "IsEntity";
-            case Feature.TAP_DURATION_MS:
-                return "TapDurationMs";
-            // UKM CS v3 features.
-            case Feature.FONT_SIZE:
-                return "FontSize";
-            case Feature.IS_HTTP:
-                return "IsHttp";
-            case Feature.IS_SECOND_TAP_OVERRIDE:
-                return "IsSecondTapOverride";
-            case Feature.IS_ENTITY_ELIGIBLE:
-                return "IsEntityEligible";
-            case Feature.IS_LANGUAGE_MISMATCH:
-                return "IsLanguageMismatch";
-            case Feature.PORTION_OF_ELEMENT:
-                return "PortionOfElement";
-            // UKM CS v4 features.
-            case Feature.TAP_COUNT:
-                return "TapCount";
-            case Feature.OPEN_COUNT:
-                return "OpenCount";
-            case Feature.QUICK_ANSWER_COUNT:
-                return "QuickAnswerCount";
-            case Feature.ENTITY_IMPRESSIONS_COUNT:
-                return "EntityImpressionsCount";
-            case Feature.ENTITY_OPENS_COUNT:
-                return "EntityOpensCount";
-            case Feature.QUICK_ACTION_IMPRESSIONS_COUNT:
-                return "QuickActionImpressionsCount";
-            case Feature.QUICK_ACTIONS_TAKEN_COUNT:
-                return "QuickActionsTaken";
-            case Feature.QUICK_ACTIONS_IGNORED_COUNT:
-                return "QuickActionsIgnored";
-            default:
-                return null;
-        }
-    }
-
-    /**
      * This method should be called to clean up storage when an instance of this class is
      * no longer in use.  The ContextualSearchRankerLoggerImplJni.get().destroy will call the
      * destructor on the native instance.
@@ -197,15 +123,6 @@ public class ContextualSearchRankerLoggerImpl implements ContextualSearchInterac
     }
 
     @Override
-    public void logFeature(@Feature int feature, Object value) {
-        assert mIsLoggingReadyForPage : "mIsLoggingReadyForPage false.";
-        assert !mHasInferenceOccurred;
-        if (!isEnabled()) return;
-
-        logInternal(feature, value);
-    }
-
-    @Override
     public void logOutcome(@Feature int feature, Object value) {
         assert mIsLoggingReadyForPage;
         assert mHasInferenceOccurred;
@@ -219,13 +136,7 @@ public class ContextualSearchRankerLoggerImpl implements ContextualSearchInterac
         assert mIsLoggingReadyForPage;
         assert !mHasInferenceOccurred;
         mHasInferenceOccurred = true;
-        if (isEnabled() && mBasePageWebContents != null && mFeaturesToLog != null
-                && !mFeaturesToLog.isEmpty()) {
-            for (Map.Entry<Integer, Object> entry : mFeaturesToLog.entrySet()) {
-                logObject(entry.getKey(), entry.getValue());
-            }
-            mFeaturesLoggedForTesting = mFeaturesToLog;
-            mFeaturesToLog = new HashMap<Integer, Object>();
+        if (isEnabled() && mBasePageWebContents != null) {
             mAssistRankerPrediction = ContextualSearchRankerLoggerImplJni.get().runInference(
                     mNativePointer, ContextualSearchRankerLoggerImpl.this);
             ContextualSearchUma.logRecordedFeaturesToRanker();
@@ -254,11 +165,7 @@ public class ContextualSearchRankerLoggerImpl implements ContextualSearchInterac
                     && !mFeaturesToLog.isEmpty()) {
                 assert mIsLoggingReadyForPage;
                 assert mHasInferenceOccurred;
-                // Only the outcomes will be present, since we logged inference features at
-                // inference time.
-                for (Map.Entry<Integer, Object> entry : mFeaturesToLog.entrySet()) {
-                    logObject(entry.getKey(), entry.getValue());
-                }
+
                 mOutcomesLoggedForTesting = mFeaturesToLog;
                 ContextualSearchUma.logRecordedOutcomesToRanker();
                 // Also persist the outcomes if we are persisting this interaction.
@@ -301,50 +208,6 @@ public class ContextualSearchRankerLoggerImpl implements ContextualSearchInterac
     }
 
     /**
-     * Logs the given {@link ContextualSearchInteractionRecorder.Feature} with the given value
-     * {@link Object}.
-     * @param feature The feature to log.
-     * @param value An {@link Object} value to log (must be convertible to a {@code long}).
-     */
-    private void logObject(@Feature int feature, Object value) {
-        if (value instanceof Boolean) {
-            logToNative(feature, ((boolean) value ? 1 : 0));
-        } else if (value instanceof Integer) {
-            logToNative(feature, (int) value);
-        } else if (value instanceof Character) {
-            logToNative(feature, Character.getNumericValue((char) value));
-        } else {
-            assert false : "Could not log feature to Ranker: " + String.valueOf(feature)
-                           + " of class "
-                           + value.getClass();
-        }
-    }
-
-    /**
-     * Logs to the native instance.  All native logging must go through this bottleneck.
-     * @param feature The feature to log.
-     * @param value The value to log.
-     */
-    private void logToNative(@Feature int feature, int value) {
-        String featureName =
-                outcomeName(feature) == null ? featureName(feature) : outcomeName(feature);
-        assert featureName != null : "No Name for feature " + feature;
-        ContextualSearchRankerLoggerImplJni.get().logInt32(
-                mNativePointer, ContextualSearchRankerLoggerImpl.this, featureName, value);
-    }
-
-    /**
-     * Gets the current set of features that have been logged.  Should only be used for testing
-     * purposes!
-     * @return The current set of features that have been logged, or {@code null}.
-     */
-    @VisibleForTesting
-    @Nullable
-    Map<Integer, Object> getFeaturesLogged() {
-        return mFeaturesLoggedForTesting;
-    }
-
-    /**
      * Gets the current set of outcomes that have been logged.  Should only be used for
      * testing purposes!
      * @return The current set of outcomes that have been logged, or {@code null}.
@@ -365,8 +228,6 @@ public class ContextualSearchRankerLoggerImpl implements ContextualSearchInterac
 
         void destroy(long nativeContextualSearchRankerLoggerImpl,
                 ContextualSearchRankerLoggerImpl caller);
-        void logInt32(long nativeContextualSearchRankerLoggerImpl,
-                ContextualSearchRankerLoggerImpl caller, String featureString, int value);
         void setupLoggingAndRanker(long nativeContextualSearchRankerLoggerImpl,
                 ContextualSearchRankerLoggerImpl caller, WebContents basePageWebContents);
         // Returns an AssistRankerPrediction integer value.

@@ -1651,18 +1651,6 @@ public class ContextualSearchManager
         mInternalStateController.enter(InternalState.SELECTION_CLEARED_RECOGNIZED);
     }
 
-    @Override
-    public void logNonHeuristicFeatures(ContextualSearchInteractionRecorder rankerLogger) {
-        boolean didOptIn = mPolicy.isContextualSearchFullyEnabled();
-        rankerLogger.logFeature(ContextualSearchInteractionRecorder.Feature.DID_OPT_IN, didOptIn);
-        boolean isHttp = mPolicy.isBasePageHTTP(getBasePageURL());
-        rankerLogger.logFeature(ContextualSearchInteractionRecorder.Feature.IS_HTTP, isHttp);
-        String contentLanguage = mContext.getDetectedLanguage();
-        boolean isLanguageMismatch = mTranslateController.needsTranslation(contentLanguage);
-        rankerLogger.logFeature(ContextualSearchInteractionRecorder.Feature.IS_LANGUAGE_MISMATCH,
-                isLanguageMismatch);
-    }
-
     /** Shows the given selection as the Search Term in the Bar. */
     private void showSelectionAsSearchInBar(String selection) {
         if (isSearchPanelShowing()) {
