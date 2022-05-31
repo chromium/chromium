@@ -114,7 +114,7 @@ template("trichrome_library_apk_tmpl") {
       product_version_resources_dep =
           "//chrome/android:product_version_resources"
     } else {
-      generate_buildconfig_java = false
+      omit_dex = true
     }
 
     # TODO(torne): using icon_resources just to get a temporary icon
@@ -194,37 +194,6 @@ template("trichrome_library_apk_tmpl") {
         }
       }
     }
-
-    # http://crbug.com/1042107.
-    if (is_component_build) {
-      if (android_64bit_target_cpu && invoker.is_64_bit_browser) {
-        main_component_library = "libmonochrome_64.cr.so"
-      } else {
-        main_component_library = "libmonochrome.cr.so"
-      }
-    }
-
-    if (!is_java_debug) {
-      proguard_enabled = true
-      proguard_configs = [
-        "//base/android/proguard/chromium_apk.flags",
-        "//base/android/proguard/chromium_code.flags",
-        "//chrome/android/proguard/trichrome.flags",
-      ]
-      if (trichrome_synchronized_proguard) {
-        proguard_configs += [
-          "//chrome/android/proguard/static_library_dex_reference_workarounds.flags",
-          "//base/android/proguard/enable_obfuscation.flags",
-        ]
-      } else {
-        # Disabling all obfuscation for the Trichrome library as a temporary
-        # workaround for crbug.com/1012842. There were naming conflicts between
-        # Library and Chrome, since each Proguard run doesn't know about the
-        # other, and thus handed out the first names (a, b, c) to both.
-        proguard_enable_obfuscation = false
-      }
-    }
-    deps += [ "//chrome/android:trichrome_dummy_resources" ]
   }
 }
 
