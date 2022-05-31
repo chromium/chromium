@@ -224,6 +224,7 @@ class CORE_EXPORT NGFragmentItem final {
   const PhysicalOffset& OffsetInContainerFragment() const {
     return rect_.offset;
   }
+  const PhysicalOffset ContentOffsetInContainerFragment() const;
   const PhysicalSize& Size() const { return rect_.size; }
   PhysicalRect LocalRect() const { return {PhysicalOffset(), Size()}; }
   void SetOffset(const PhysicalOffset& offset) { rect_.offset = offset; }

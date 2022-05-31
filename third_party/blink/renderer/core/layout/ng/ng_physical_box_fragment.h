@@ -203,6 +203,17 @@ class CORE_EXPORT NGPhysicalBoxFragment final : public NGPhysicalFragment {
     return *ComputePaddingAddress();
   }
 
+  const PhysicalOffset ContentOffset() const {
+    if (!has_borders_ && !has_padding_)
+      return PhysicalOffset();
+    PhysicalOffset offset;
+    if (has_borders_)
+      offset += Borders().Offset();
+    if (has_padding_)
+      offset += Padding().Offset();
+    return offset;
+  }
+
   // Returns the bounds of any inflow children for this fragment (specifically
   // no out-of-flow positioned objects). This will return |absl::nullopt| if:
   //  - The fragment is *not* a scroll container.

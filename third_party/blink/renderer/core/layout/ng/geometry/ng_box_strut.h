@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/box_sides.h"
 #include "third_party/blink/renderer/core/layout/geometry/logical_offset.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect_outsets.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
@@ -150,6 +151,8 @@ struct CORE_EXPORT NGPhysicalBoxStrut {
                      LayoutUnit bottom,
                      LayoutUnit left)
       : top(top), right(right), bottom(bottom), left(left) {}
+
+  PhysicalOffset Offset() const { return {left, top}; }
 
   void TruncateSides(const PhysicalBoxSides& sides_to_include) {
     top = sides_to_include.top ? top : LayoutUnit();

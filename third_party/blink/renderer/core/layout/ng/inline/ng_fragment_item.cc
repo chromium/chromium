@@ -482,6 +482,13 @@ void NGFragmentItem::LayoutObjectWillBeMoved() const {
   const_cast<NGFragmentItem*>(this)->layout_object_ = nullptr;
 }
 
+const PhysicalOffset NGFragmentItem::ContentOffsetInContainerFragment() const {
+  PhysicalOffset offset = OffsetInContainerFragment();
+  if (const NGPhysicalBoxFragment* box = BoxFragment())
+    offset += box->ContentOffset();
+  return offset;
+}
+
 inline const LayoutBox* NGFragmentItem::InkOverflowOwnerBox() const {
   if (Type() == kBox)
     return DynamicTo<LayoutBox>(GetLayoutObject());
