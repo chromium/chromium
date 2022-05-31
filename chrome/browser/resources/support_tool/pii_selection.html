@@ -7,22 +7,28 @@
     width: 520px;
   }
 
-  #detected-pii-container {
-    height: 256px;
-    margin-top: 20px;
+  #radio-group {
     width: 520px;
   }
 
-  #pii-items-container {
+  cr-radio-button {
+    /* Override the padding to align the buttons to the text start.*/
+    padding-inline-start: 0;
+  }
+
+  #detected-pii-container {
     margin-inline-start: 36px;
-    margin-top: 8px;
+    margin-top: 20px;
+    max-height: 256px;
+    width: 520px;
   }
 
   cr-expand-button {
     height: var(--cr-expand-button-icon-size, 20px);
   }
 
-  iron-collapse {
+  .pii-item-collapse {
+    color: var(--cr-title-text-color);
     margin-bottom: 4px;
     margin-inline-start: 36px;
     margin-top: 4px;
@@ -47,23 +53,34 @@
   information was detected. Select which information you wish to include in
   exported data.
 </div>
-<div id="detected-pii-container">
-  <cr-checkbox checked="{{selectAll_}}">
-    Keep all personally identifiable information in diagnostic files
-  </cr-checkbox>
-  <div id="pii-items-container">
+<div id="radio-group">
+  <cr-radio-group selected="[[selectedRadioButton_]]"
+      on-selected-changed="onSelectedRadioButtonChanged_">
+    <cr-radio-button name="[[piiRadioButtonsEnum_.INCLUDE_ALL]]">
+      Include all personally identifiable information
+    </cr-radio-button>
+    <cr-radio-button name="[[piiRadioButtonsEnum_.INCLUDE_NONE]]">
+      Include no identifiable information
+    </cr-radio-button>
+    <cr-radio-button name="[[piiRadioButtonsEnum_.INCLUDE_SOME]]">
+      Include only some identifiable information
+    </cr-radio-button>
+  </cr-radio-group>
+</div>
+<iron-collapse id="detected-pii-container" opened="[[showPIISelection_]]">
+  <div>
     <template is="dom-repeat" items="[[detectedPIIItems_]]">
       <cr-expand-button expanded="{{item.expandDetails}}">
         <cr-checkbox checked="{{item.keep}}">
           [[item.piiTypeDescription]]: [[item.count]]
         </cr-checkbox>
       </cr-expand-button>
-      <iron-collapse opened="[[item.expandDetails]]">
+      <iron-collapse class="pii-item-collapse" opened="[[item.expandDetails]]">
         <div class="pii-details">[[item.detectedData]]</div>
       </iron-collapse>
     </template>
   </div>
-</div>
+</iron-collapse>
 <div class="navigation-buttons">
   <cr-button id="cancelButton" on-click="onCancelClick_">Cancel</cr-button>
   <cr-button id="exportButton" class="action-button"
