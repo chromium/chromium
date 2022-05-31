@@ -2327,8 +2327,15 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   void SetPseudoElementStyle(scoped_refptr<const ComputedStyle>,
                              bool match_parent_size = false);
 
-  void SetTextAutoSizedStyle(scoped_refptr<const ComputedStyle>,
-                             ApplyStyleChanges);
+  // In some cases we modify the ComputedStyle after the style recalc, either
+  // for updating anonymous style or doing layout hacks for special elements
+  // where we update the ComputedStyle during layout.
+  // If the LayoutObject has an associated node, we will SetComputedStyle on
+  // that node with the new ComputedStyle. Modifying the ComputedStyle of a node
+  // outside of style recalc can break invariants in the style engine, so this
+  // function must not gain any new call sites.
+  void SetModifiedStyleOutsideStyleRecalc(scoped_refptr<const ComputedStyle>,
+                                          ApplyStyleChanges);
 
   // This function returns an enclosing non-anonymous LayoutBlock for this
   // element. This function is not always returning the containing block as
