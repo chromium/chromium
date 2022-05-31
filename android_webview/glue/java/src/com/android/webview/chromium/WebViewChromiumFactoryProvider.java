@@ -318,11 +318,14 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                          "WebViewChromiumFactoryProvider.checkStorage")) {
                 checkStorageIsNotDeviceProtected(webViewDelegate.getApplication());
             } catch (IllegalArgumentException e) {
-                assert Build.VERSION.SDK_INT >= Build.VERSION_CODES.N;
-                if (!GlueApiHelperForN.isUserUnlocked(ctx)) {
-                    throw e;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    if (!GlueApiHelperForN.isUserUnlocked(ctx)) {
+                        throw e;
+                    }
+                    ctx = GlueApiHelperForN.createCredentialProtectedStorageContext(ctx);
+                } else {
+                    assert false;
                 }
-                ctx = GlueApiHelperForN.createCredentialProtectedStorageContext(ctx);
             }
 
             // WebView needs to make sure to always use the wrapped application context.
@@ -734,6 +737,7 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
         return mAwInit.getCookieManager();
     }
 
+    @RequiresApi(Build.VERSION_CODES.N)
     @Override
     public ServiceWorkerController getServiceWorkerController() {
         synchronized (mAwInit.getLock()) {
@@ -797,6 +801,7 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
         return mAwInit;
     }
 
+    @RequiresApi(Build.VERSION_CODES.P)
     @Override
     public TracingController getTracingController() {
         synchronized (mAwInit.getLock()) {
@@ -861,11 +866,13 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
         });
     }
 
+    @RequiresApi(Build.VERSION_CODES.R)
     @Override
     public PacProcessor getPacProcessor() {
         return GlueApiHelperForR.getPacProcessor();
     }
 
+    @RequiresApi(Build.VERSION_CODES.R)
     @Override
     public PacProcessor createPacProcessor() {
         return GlueApiHelperForR.createPacProcessor();

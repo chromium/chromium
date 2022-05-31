@@ -1671,9 +1671,11 @@ public class AwContents implements SmartClipProvider {
             mOnscreenContentProvider = null;
         }
 
-        if (mAutofillProvider != null) {
-            mAutofillProvider.destroy();
-            mAutofillProvider = null;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            if (mAutofillProvider != null) {
+                mAutofillProvider.destroy();
+                mAutofillProvider = null;
+            }
         }
 
         if (mAwDarkMode != null) {
@@ -3089,6 +3091,7 @@ public class AwContents implements SmartClipProvider {
 
     public void onProvideAutoFillVirtualStructure(ViewStructure structure, int flags) {
         if (TRACE) Log.i(TAG, "%s onProvideAutoFillVirtualStructure", this);
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return;
         if (mAutofillProvider != null) {
             mAutofillProvider.onProvideAutoFillVirtualStructure(structure, flags);
         }
@@ -3096,6 +3099,7 @@ public class AwContents implements SmartClipProvider {
 
     public void autofill(final SparseArray<AutofillValue> values) {
         if (TRACE) Log.i(TAG, "%s autofill", this);
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return;
         if (mAutofillProvider != null) {
             mAutofillProvider.autofill(values);
         }
@@ -3194,7 +3198,9 @@ public class AwContents implements SmartClipProvider {
             tracker.trackContents(this);
         }
 
-        if (mDisplayCutoutController != null) mDisplayCutoutController.onAttachedToWindow();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            if (mDisplayCutoutController != null) mDisplayCutoutController.onAttachedToWindow();
+        }
     }
 
     private void detachWindowCoverageTracker() {
@@ -3249,7 +3255,9 @@ public class AwContents implements SmartClipProvider {
      */
     public void onSizeChanged(int w, int h, int ow, int oh) {
         mAwViewMethods.onSizeChanged(w, h, ow, oh);
-        if (mDisplayCutoutController != null) mDisplayCutoutController.onSizeChanged();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            if (mDisplayCutoutController != null) mDisplayCutoutController.onSizeChanged();
+        }
     }
 
     /**
@@ -3435,8 +3443,10 @@ public class AwContents implements SmartClipProvider {
         if (mAwAutofillClient != null) {
             mAwAutofillClient.hideAutofillPopup();
         }
-        if (mAutofillProvider != null) {
-            mAutofillProvider.hidePopup();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            if (mAutofillProvider != null) {
+                mAutofillProvider.hidePopup();
+            }
         }
     }
 

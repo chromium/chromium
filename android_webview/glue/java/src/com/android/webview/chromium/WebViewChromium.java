@@ -55,6 +55,7 @@ import android.webkit.WebViewRenderProcessClient;
 import android.widget.TextView;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.RequiresApi;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContentsStatics;
@@ -1480,11 +1481,13 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
         return mSharedWebViewChromium.getWebViewClient();
     }
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     @Override
     public WebViewRenderProcess getWebViewRenderProcess() {
         return GlueApiHelperForQ.getWebViewRenderProcess(mSharedWebViewChromium.getRenderProcess());
     }
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     @Override
     public void setWebViewRenderProcessClient(
             Executor executor, WebViewRenderProcessClient webViewRenderProcessClient) {
@@ -1499,6 +1502,7 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     @Override
     public WebViewRenderProcessClient getWebViewRenderProcessClient() {
         SharedWebViewRendererClientAdapter adapter =

@@ -204,7 +204,6 @@ public final class DeveloperUiService extends Service {
         return mBinder;
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private Notification.Builder createNotificationBuilder() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             return new Notification.Builder(this, CHANNEL_ID);

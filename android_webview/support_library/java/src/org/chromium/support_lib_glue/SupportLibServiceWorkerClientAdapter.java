@@ -6,7 +6,6 @@ package org.chromium.support_lib_glue;
 
 import android.webkit.WebResourceResponse;
 
-import com.android.webview.chromium.ServiceWorkerClientAdapter;
 import com.android.webview.chromium.WebResourceRequestAdapter;
 
 import org.chromium.android_webview.AwContentsClient.AwWebResourceRequest;
@@ -35,6 +34,11 @@ class SupportLibServiceWorkerClientAdapter extends AwServiceWorkerClient {
         }
         WebResourceResponse response =
                 mImpl.shouldInterceptRequest(new WebResourceRequestAdapter(request));
-        return ServiceWorkerClientAdapter.fromWebResourceResponse(response);
+        if (response == null) {
+            return null;
+        }
+        return new WebResourceResponseInfo(response.getMimeType(), response.getEncoding(),
+                response.getData(), response.getStatusCode(), response.getReasonPhrase(),
+                response.getResponseHeaders());
     }
 }
