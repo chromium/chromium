@@ -24,6 +24,14 @@ install_rpm_key() {
     NEED_KEYS=1
   fi
 
+  # 2021 signing subkey
+  rpm -q ${KEY_PACKAGE} --qf '%{Pubkeys:armor}\n' | \
+    gpg --with-colons - 2>/dev/null | \
+    grep -q 4EB27DB2A3B88B8B
+  if [ "$?" -ne "0" ]; then
+    NEED_KEYS=1
+  fi
+
   if [ $NEED_KEYS -ne 1 ]; then
     return
   fi
