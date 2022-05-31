@@ -262,10 +262,6 @@ namespace core {
 class ScopedIPCSupport;
 }
 }  // namespace mojo
-namespace optimization_guide {
-template <class OutputType, class... InputTypes>
-class TFLiteModelExecutor;
-}
 namespace printing {
 class LocalPrinterHandlerDefault;
 #if BUILDFLAG(IS_MAC)
@@ -590,8 +586,6 @@ class BASE_EXPORT ScopedAllowBaseSyncPrimitives {
   friend class media::BlockingUrlProtocol;
   friend class mojo::core::ScopedIPCSupport;
   friend class net::MultiThreadedCertVerifierScopedAllowBaseSyncPrimitives;
-  template <class OutputType, class... InputTypes>
-  friend class optimization_guide::TFLiteModelExecutor;
   friend class rlz_lib::FinancialPing;
   friend class shell_integration_linux::
       LaunchXdgUtilityScopedAllowBaseSyncPrimitives;

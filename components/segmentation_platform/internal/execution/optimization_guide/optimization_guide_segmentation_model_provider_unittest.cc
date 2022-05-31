@@ -4,8 +4,8 @@
 
 #include "components/segmentation_platform/internal/execution/optimization_guide/optimization_guide_segmentation_model_provider.h"
 
+#include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
-#include "base/test/test_simple_task_runner.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
 #include "components/segmentation_platform/internal/proto/model_metadata.pb.h"
@@ -56,25 +56,26 @@ class OptimizationGuideSegmentationModelProviderTest : public testing::Test {
   ~OptimizationGuideSegmentationModelProviderTest() override = default;
 
   void SetUp() override {
-    task_runner_ = base::MakeRefCounted<base::TestSimpleTaskRunner>();
     model_observer_tracker_ = std::make_unique<ModelObserverTracker>();
   }
 
   void TearDown() override {
     model_observer_tracker_.reset();
-    task_runner_->RunPendingTasks();
+    RunUntilIdle();
   }
+
+  void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
   std::unique_ptr<OptimizationGuideSegmentationModelProvider>
   CreateModelProvider(proto::SegmentId target) {
     return std::make_unique<OptimizationGuideSegmentationModelProvider>(
-        model_observer_tracker_.get(), task_runner_, target);
+        model_observer_tracker_.get(),
+        base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}),
+        target);
   }
 
  protected:
   base::test::TaskEnvironment task_environment_;
-  scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
-
   std::unique_ptr<ModelObserverTracker> model_observer_tracker_;
 };
 
@@ -127,6 +128,7 @@ TEST_F(OptimizationGuideSegmentationModelProviderTest,
           },
           &run_loop));
   run_loop.Run();
+  RunUntilIdle();
 }
 
 TEST_F(OptimizationGuideSegmentationModelProviderTest, ExecuteModelWithFetch) {
@@ -150,8 +152,8 @@ TEST_F(OptimizationGuideSegmentationModelProviderTest, ExecuteModelWithFetch) {
             run_loop->Quit();
           },
           &run_loop));
-  task_runner_->RunPendingTasks();
   run_loop.Run();
+  RunUntilIdle();
 }
 
 }  // namespace segmentation_platform

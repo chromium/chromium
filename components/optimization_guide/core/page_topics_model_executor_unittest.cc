@@ -8,6 +8,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
+#include "base/task/thread_pool.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -85,7 +86,7 @@ class PageTopicsModelExecutorTest : public testing::Test {
     model_observer_tracker_ = std::make_unique<ModelObserverTracker>();
     model_executor_ = std::make_unique<TestPageTopicsModelExecutor>(
         model_observer_tracker_.get(),
-        task_environment_.GetMainThreadTaskRunner(),
+        base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}),
         /*model_metadata=*/absl::nullopt);
   }
 

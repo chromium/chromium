@@ -6,6 +6,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/path_service.h"
+#include "base/task/thread_pool.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -56,7 +57,7 @@ class PageVisibilityModelExecutorTest : public testing::Test {
     model_observer_tracker_ = std::make_unique<ModelObserverTracker>();
     model_executor_ = std::make_unique<PageVisibilityModelExecutor>(
         model_observer_tracker_.get(),
-        task_environment_.GetMainThreadTaskRunner(),
+        base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}),
         /*model_metadata=*/absl::nullopt);
   }
 

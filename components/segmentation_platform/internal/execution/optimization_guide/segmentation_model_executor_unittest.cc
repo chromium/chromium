@@ -13,6 +13,7 @@
 #include "base/check.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/task/thread_pool.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "components/optimization_guide/core/optimization_guide_model_provider.h"
@@ -76,7 +77,8 @@ class SegmentationModelExecutorTest : public testing::Test {
     opt_guide_model_provider_ =
         std::make_unique<OptimizationGuideSegmentationModelProvider>(
             optimization_guide_segmentation_model_provider_.get(),
-            task_environment_.GetMainThreadTaskRunner(), kSegmentId);
+            base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()}),
+            kSegmentId);
     opt_guide_model_provider_->InitAndFetchModel(callback);
   }
 
