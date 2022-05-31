@@ -28,7 +28,6 @@
 #include "content/public/browser/navigation_handle.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/image_model.h"
-#include "ui/gfx/favicon_size.h"
 #include "ui/gfx/image/image.h"
 #include "url/origin.h"
 
@@ -212,7 +211,8 @@ void IntentPickerTabHelper::LoadAppIcon(
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
 
-  LoadSingleAppIcon(profile, app_type, app_id, gfx::kFaviconSize,
+  LoadSingleAppIcon(profile, app_type, app_id,
+                    apps::GetIntentPickerBubbleIconSize(),
                     base::BindOnce(&IntentPickerTabHelper::OnAppIconLoaded,
                                    weak_factory_.GetWeakPtr(), std::move(apps),
                                    std::move(callback), index));

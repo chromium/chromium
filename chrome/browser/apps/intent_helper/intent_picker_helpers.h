@@ -29,6 +29,9 @@ void ShowIntentPickerBubble(content::WebContents* web_contents,
 // Returns true if persistence for PWA entries in the Intent Picker is enabled.
 bool IntentPickerPwaPersistenceEnabled();
 
+// Returns the size, in dp, of app icons shown in the intent picker bubble.
+int GetIntentPickerBubbleIconSize();
+
 }  // namespace apps
 
 #endif  // CHROME_BROWSER_APPS_INTENT_HELPER_INTENT_PICKER_HELPERS_H_
