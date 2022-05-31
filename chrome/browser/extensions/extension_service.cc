@@ -61,6 +61,7 @@
 #include "chrome/browser/extensions/updater/chrome_extension_downloader_factory.h"
 #include "chrome/browser/extensions/updater/extension_updater.h"
 #include "chrome/browser/google/google_brand.h"
+#include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/extensions/extension_icon_source.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
@@ -398,8 +399,9 @@ ExtensionService::ExtensionService(Profile* profile,
                                                             profile))
     extensions_enabled_ = false;
 
-  registrar_.Add(this, chrome::NOTIFICATION_APP_TERMINATING,
-                 content::NotificationService::AllBrowserContextsAndSources());
+  on_app_terminating_subscription_ =
+      browser_shutdown::AddAppTerminatingCallback(base::BindOnce(
+          &ExtensionService::OnAppTerminating, base::Unretained(this)));
   registrar_.Add(this, content::NOTIFICATION_RENDERER_PROCESS_TERMINATED,
                  content::NotificationService::AllBrowserContextsAndSources());
 
@@ -1990,69 +1992,60 @@ void ExtensionService::OnExtensionHostRenderProcessGone(
                                 AsWeakPtr(), extension_host->extension_id()));
 }
 
+void ExtensionService::OnAppTerminating() {
+  // Shutdown has started. Don't start any more extension installs.
+  // (We cannot use ExtensionService::Shutdown() for this because it
+  // happens too late in browser teardown.)
+  browser_terminating_ = true;
+}
+
 void ExtensionService::Observe(int type,
                                const content::NotificationSource& source,
                                const content::NotificationDetails& details) {
-  switch (type) {
-    case chrome::NOTIFICATION_APP_TERMINATING:
-      // Shutdown has started. Don't start any more extension installs.
-      // (We cannot use ExtensionService::Shutdown() for this because it
-      // happens too late in browser teardown.)
-      browser_terminating_ = true;
-      break;
-    case content::NOTIFICATION_RENDERER_PROCESS_TERMINATED: {
-      content::RenderProcessHost* process =
-          content::Source<content::RenderProcessHost>(source).ptr();
-      Profile* host_profile =
-          Profile::FromBrowserContext(process->GetBrowserContext());
-      if (!profile_->IsSameOrParent(host_profile->GetOriginalProfile()))
-        break;
+  DCHECK(type == content::NOTIFICATION_RENDERER_PROCESS_TERMINATED);
+  content::RenderProcessHost* process =
+      content::Source<content::RenderProcessHost>(source).ptr();
+  Profile* host_profile =
+      Profile::FromBrowserContext(process->GetBrowserContext());
+  if (!profile_->IsSameOrParent(host_profile->GetOriginalProfile()))
+    return;
 
-      ProcessMap* process_map = ProcessMap::Get(profile_);
-      if (process_map->Contains(process->GetID())) {
-        // An extension process was terminated, this might have resulted in an
-        // app or extension becoming idle.
-        std::set<std::string> extension_ids =
-            process_map->GetExtensionsInProcess(process->GetID());
-        // In addition to the extensions listed in the process map, one of those
-        // extensions could be referencing a shared module which is waiting for
-        // idle to update.  Check all imports of these extensions, too.
-        std::set<std::string> import_ids;
-        for (auto it = extension_ids.begin(); it != extension_ids.end(); ++it) {
-          const Extension* extension =
-              registry_->GetExtensionById(*it, ExtensionRegistry::EVERYTHING);
-          if (!extension)
-            continue;
-          const std::vector<SharedModuleInfo::ImportInfo>& imports =
-              SharedModuleInfo::GetImports(extension);
-          std::vector<SharedModuleInfo::ImportInfo>::const_iterator import_it;
-          for (import_it = imports.begin(); import_it != imports.end();
-               import_it++) {
-            import_ids.insert((*import_it).extension_id);
-          }
-        }
-        extension_ids.insert(import_ids.begin(), import_ids.end());
-
-        for (auto it = extension_ids.begin(); it != extension_ids.end(); ++it) {
-          if (delayed_installs_.Contains(*it)) {
-            base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-                FROM_HERE,
-                base::BindOnce(
-                    base::IgnoreResult(
-                        &ExtensionService::FinishDelayedInstallationIfReady),
-                    AsWeakPtr(), *it, false /*install_immediately*/),
-                kUpdateIdleDelay);
-          }
-        }
+  ProcessMap* process_map = ProcessMap::Get(profile_);
+  if (process_map->Contains(process->GetID())) {
+    // An extension process was terminated, this might have resulted in an
+    // app or extension becoming idle.
+    std::set<std::string> extension_ids =
+        process_map->GetExtensionsInProcess(process->GetID());
+    // In addition to the extensions listed in the process map, one of those
+    // extensions could be referencing a shared module which is waiting for
+    // idle to update. Check all imports of these extensions, too.
+    std::set<std::string> import_ids;
+    for (auto& extension_id : extension_ids) {
+      const Extension* extension = registry_->GetExtensionById(
+          extension_id, ExtensionRegistry::EVERYTHING);
+      if (!extension)
+        continue;
+      const std::vector<SharedModuleInfo::ImportInfo>& imports =
+          SharedModuleInfo::GetImports(extension);
+      for (const auto& import_info : imports) {
+        import_ids.insert(import_info.extension_id);
       }
-
-      process_map->RemoveAllFromProcess(process->GetID());
-      break;
     }
+    extension_ids.insert(import_ids.begin(), import_ids.end());
 
-    default:
-      NOTREACHED() << "Unexpected notification type.";
+    for (auto& extension_id : extension_ids) {
+      if (delayed_installs_.Contains(extension_id)) {
+        base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+            FROM_HERE,
+            base::BindOnce(
+                base::IgnoreResult(
+                    &ExtensionService::FinishDelayedInstallationIfReady),
+                AsWeakPtr(), extension_id, false /*install_immediately*/),
+            kUpdateIdleDelay);
+      }
+    }
   }
+  process_map->RemoveAllFromProcess(process->GetID());
 }
 
 int ExtensionService::GetDisableReasonsOnInstalled(const Extension* extension) {

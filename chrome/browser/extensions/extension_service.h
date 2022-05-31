@@ -502,6 +502,8 @@ class ExtensionService : public ExtensionServiceInterface,
       content::BrowserContext* browser_context,
       ExtensionHost* extension_host) override;
 
+  void OnAppTerminating();
+
   // content::NotificationObserver implementation:
   void Observe(int type,
                const content::NotificationSource& source,
@@ -678,6 +680,7 @@ class ExtensionService : public ExtensionServiceInterface,
   // Our extension updater, if updates are turned on.
   std::unique_ptr<ExtensionUpdater> updater_;
 
+  base::CallbackListSubscription on_app_terminating_subscription_;
   content::NotificationRegistrar registrar_;
 
   // Keeps track of loading and unloading component extensions.
