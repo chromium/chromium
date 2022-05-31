@@ -257,10 +257,6 @@
           'shards': 30,
         },
       },
-      # TODO (crbug.com/1294574) Re-enable once fixed
-      'Mac Builder Next': {
-        'experiment_percentage': 0,
-      },
       'Mac10.13 Tests': {
         'swarming': {
           'dimension_sets': [
@@ -468,10 +464,6 @@
         'swarming': {
           'shards': 20,
         },
-      },
-      # TODO (crbug.com/1254971) Re-enable once fixed
-      'mac-osxbeta-rel': {
-        'experiment_percentage': 0,
       },
       'mac10.13-blink-rel-dummy': {
         'swarming': {
