@@ -23,12 +23,12 @@ namespace trace_event {
 struct BASE_EXPORT TraceSourceLocation {
   const char* function_name = nullptr;
   const char* file_name = nullptr;
-  size_t line_number = 0;
+  int line_number = 0;
 
   TraceSourceLocation() = default;
   TraceSourceLocation(const char* function_name,
                       const char* file_name,
-                      size_t line_number)
+                      int line_number)
       : function_name(function_name),
         file_name(file_name),
         line_number(line_number) {}

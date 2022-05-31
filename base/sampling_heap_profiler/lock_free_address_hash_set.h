@@ -84,7 +84,7 @@ class BASE_EXPORT LockFreeAddressHashSet {
   ALWAYS_INLINE Node* FindNode(void* key) const;
 
   std::vector<std::atomic<Node*>> buckets_;
-  int size_ = 0;
+  size_t size_ = 0;
   const size_t bucket_mask_;
 };
 
