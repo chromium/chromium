@@ -16,8 +16,14 @@ export const CATEGORY_METADATA = [
   },
 ];
 
+/**
+ * The name attributes below are used to label the group buttons.
+ * The ordering group names are used for the group headings in the emoji
+ * picker.
+*/
 // TODO(b/216190190): Change groupId to number type.
-export const V2_SUBCATEGORY_TABS = [
+// TODO(b/233271528): Remove the list and load it from the input data.
+export const EMOJI_GROUP_TABS = [
   {
     name: 'Recently Used',
     icon: 'emoji_picker:schedule',
@@ -99,6 +105,11 @@ export const V2_SUBCATEGORY_TABS = [
     active: false,
     disabled: false
   },
+];
+
+// TODO(b/216190190): Change groupId to number type.
+// TODO(b/233271528): Remove the list and load it from the input data.
+export const EMOTICON_GROUP_TABS = [
   {
     name: 'Recently Used',
     icon: 'emoji_picker:schedule',
@@ -229,3 +240,7 @@ export const V2_SUBCATEGORY_TABS = [
     pagination: 4
   },
 ];
+
+// TODO(b/233271528): The concat order must be based on CATEGORY_METADATA.
+export const V2_SUBCATEGORY_TABS =
+    EMOJI_GROUP_TABS.concat(EMOTICON_GROUP_TABS);
