@@ -969,21 +969,4 @@ public class PostMessageTest {
         Assert.assertEquals(WEBVIEW_MESSAGE, data.mMessage);
         Assert.assertEquals(SOURCE_ORIGIN, data.mOrigin);
     }
-
-    // WebContents#postMessageToMainFrame(String, ...)} used in downstream, please keep it and test
-    // until downstream updated.
-    @Test
-    @SmallTest
-    @Feature({"AndroidWebView", "Android-PostMessage"})
-    public void testPostStringMessageToMainFrameAvailable() throws Throwable {
-        final String baseUrl = mWebServer.getBaseUrl();
-        loadPage(TEST_PAGE);
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(
-                ()
-                        -> mAwContents.getWebContents().postMessageToMainFrame(
-                                WEBVIEW_MESSAGE, null, baseUrl, null));
-        MessageObject.Data data = mMessageObject.waitForMessage();
-        Assert.assertEquals(WEBVIEW_MESSAGE, data.mMessage);
-        Assert.assertEquals(SOURCE_ORIGIN, data.mOrigin);
-    }
 }

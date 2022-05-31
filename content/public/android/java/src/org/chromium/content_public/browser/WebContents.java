@@ -378,14 +378,6 @@ public interface WebContents extends Parcelable {
             String targetOrigin, @Nullable MessagePort[] ports);
 
     /**
-     * Deprecated, use {@link #postMessageToMainFrame(MessagePayload, String, String,
-     * MessagePort[])} This is used in downstream that not support MessagePayload.
-     */
-    @Deprecated
-    void postMessageToMainFrame(String message, String sourceOrigin, String targetOrigin,
-            @Nullable MessagePort[] ports);
-
-    /**
      * Creates a message channel for sending postMessage requests and returns the ports for
      * each end of the channel.
      * @return The ports that forms the ends of the message channel created.
