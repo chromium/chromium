@@ -237,6 +237,16 @@ bool SharedImageBackingFactoryOzone::IsSupported(
       !gl::GLSurfaceEGL::GetGLDisplayEGL()->HasEGLExtension("EGL_KHR_image")) {
     return false;
   }
+#else
+  // TODO(hitawala): Until SharedImageBackingOzone supports all use cases prefer
+  // using SharedImageBackingGLImage instead
+  bool needs_interop_factory = (gr_context_type == GrContextType::kVulkan &&
+                                (usage & SHARED_IMAGE_USAGE_DISPLAY)) ||
+                               (usage & SHARED_IMAGE_USAGE_WEBGPU) ||
+                               (usage & SHARED_IMAGE_USAGE_VIDEO_DECODE);
+  if (!needs_interop_factory) {
+    return false;
+  }
 #endif
 
   *allow_legacy_mailbox = false;
