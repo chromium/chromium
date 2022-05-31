@@ -2872,6 +2872,7 @@ test("ash_unittests") {
     "utility/rounded_window_targeter_unittest.cc",
     "wallpaper/online_wallpaper_variant_info_fetcher_unittest.cc",
     "wallpaper/wallpaper_controller_unittest.cc",
+    "wallpaper/wallpaper_pref_manager_unittest.cc",
     "wallpaper/wallpaper_utils/wallpaper_color_calculator_unittest.cc",
     "wallpaper/wallpaper_utils/wallpaper_resizer_unittest.cc",
     "wallpaper/wallpaper_window_state_manager_unittest.cc",

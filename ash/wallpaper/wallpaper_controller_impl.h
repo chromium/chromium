@@ -768,10 +768,6 @@ class ASH_EXPORT WallpaperControllerImpl
   // Caches the color profiles that need to do wallpaper color extracting.
   const std::vector<color_utils::ColorProfile> color_profiles_;
 
-  // The wallpaper info for ephemeral users, which is not stored to local state.
-  // See |UserInfo::is_ephemeral| for details.
-  std::map<AccountId, WallpaperInfo> ephemeral_users_wallpaper_info_;
-
   // Account id of the current user.
   AccountId current_user_;
 

@@ -19,6 +19,7 @@
 #include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
@@ -32,6 +33,24 @@
 namespace ash {
 
 namespace {
+
+constexpr bool IsWallpaperTypeSyncable(WallpaperType type) {
+  switch (type) {
+    case WallpaperType::kDaily:
+    case WallpaperType::kCustomized:
+    case WallpaperType::kOnline:
+    case WallpaperType::kOnceGooglePhotos:
+    case WallpaperType::kDailyGooglePhotos:
+      return true;
+    case WallpaperType::kDefault:
+    case WallpaperType::kPolicy:
+    case WallpaperType::kThirdParty:
+    case WallpaperType::kDevice:
+    case WallpaperType::kOneShot:
+    case WallpaperType::kCount:
+      return false;
+  }
+}
 
 // Populates online wallpaper related info in |info|.
 void PopulateOnlineWallpaperInfo(WallpaperInfo* info,
@@ -210,9 +229,9 @@ void RemoveWallpaperInfo(const AccountId& account_id,
   prefs_wallpapers_info_update->RemoveKey(account_id.GetUserEmail());
 }
 
-// Wrappers around SessionControllerImpl and UserManager to make this easier to
-// test. Also, the objects can't be provided at construction because they're
-// created after WallpaperControllerImpl.
+// Wrapper around SessionControllerImpl and WallpaperControllerClient to make
+// this easier to test. Also, the objects can't be provided at construction
+// because they're created after WallpaperControllerImpl.
 class WallpaperProfileHelperImpl : public WallpaperProfileHelper {
  public:
   WallpaperProfileHelperImpl() = default;
@@ -220,15 +239,6 @@ class WallpaperProfileHelperImpl : public WallpaperProfileHelper {
 
   void SetClient(WallpaperControllerClient* client) override {
     wallpaper_controller_client_ = client;
-  }
-
-  bool IsEphemeralUser(const AccountId& id) const override {
-    const UserSession* user_session =
-        Shell::Get()->session_controller()->GetUserSessionByAccountId(id);
-    if (!user_session)
-      return true;
-
-    return user_session->user_info.is_ephemeral;
   }
 
   PrefService* GetUserPrefServiceSyncable(const AccountId& id) override {
@@ -258,7 +268,8 @@ class WallpaperProfileHelperImpl : public WallpaperProfileHelper {
   }
 
  private:
-  WallpaperControllerClient* wallpaper_controller_client_ = nullptr;
+  base::raw_ptr<WallpaperControllerClient> wallpaper_controller_client_ =
+      nullptr;  // not owned
 };
 
 class WallpaperPrefManagerImpl : public WallpaperPrefManager {
@@ -275,6 +286,45 @@ class WallpaperPrefManagerImpl : public WallpaperPrefManager {
 
   void SetClient(WallpaperControllerClient* client) override {
     profile_helper_->SetClient(client);
+  }
+
+  bool GetUserWallpaperInfo(const AccountId& account_id,
+                            bool ephemeral,
+                            WallpaperInfo* info) const override {
+    if (ephemeral) {
+      // Ephemeral users do not save anything to local state. Return true if the
+      // info can be found in the map, otherwise return false.
+      auto it = ephemeral_users_wallpaper_info_.find(account_id);
+      if (it == ephemeral_users_wallpaper_info_.end())
+        return false;
+
+      *info = it->second;
+      return true;
+    }
+
+    return GetLocalWallpaperInfo(account_id, info);
+  }
+
+  bool SetUserWallpaperInfo(const AccountId& account_id,
+                            bool ephemeral,
+                            const WallpaperInfo& info) override {
+    if (ephemeral) {
+      ephemeral_users_wallpaper_info_.insert_or_assign(account_id, info);
+      return true;
+    }
+
+    RemoveProminentColors(account_id);
+
+    bool success = SetLocalWallpaperInfo(account_id, info);
+    // Although `WallpaperType::kCustomized` typed wallpapers are syncable, we
+    // don't set synced info until the image is stored in drivefs, so we know
+    // when to retry saving it on failure.
+    if (IsWallpaperTypeSyncable(info.type) &&
+        info.type != WallpaperType::kCustomized) {
+      SetSyncedWallpaperInfo(account_id, info);
+    }
+
+    return success;
   }
 
   void RemoveUserWallpaperInfo(const AccountId& account_id) override {
@@ -430,6 +480,9 @@ class WallpaperPrefManagerImpl : public WallpaperPrefManager {
  private:
   PrefService* local_state_ = nullptr;
   std::unique_ptr<WallpaperProfileHelper> profile_helper_;
+
+  // Cache of wallpapers for ephemeral users.
+  base::flat_map<AccountId, WallpaperInfo> ephemeral_users_wallpaper_info_;
 };
 
 }  // namespace
@@ -455,6 +508,14 @@ std::unique_ptr<WallpaperPrefManager> WallpaperPrefManager::Create(
   std::unique_ptr<WallpaperProfileHelper> profile_helper =
       std::make_unique<WallpaperProfileHelperImpl>();
   return std::make_unique<WallpaperPrefManagerImpl>(local_state,
+                                                    std::move(profile_helper));
+}
+
+// static
+std::unique_ptr<WallpaperPrefManager> WallpaperPrefManager::CreateForTesting(
+    PrefService* local_service,
+    std::unique_ptr<WallpaperProfileHelper> profile_helper) {
+  return std::make_unique<WallpaperPrefManagerImpl>(local_service,
                                                     std::move(profile_helper));
 }
 

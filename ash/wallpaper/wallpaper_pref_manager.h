@@ -36,9 +36,6 @@ class WallpaperProfileHelper {
 
   virtual void SetClient(WallpaperControllerClient* client) = 0;
 
-  // Returns true if the user's wallpaper is to be treated as ephemeral.
-  virtual bool IsEphemeralUser(const AccountId& id) const = 0;
-
   // Returns the syncable pref service for the user with |id| if it's available.
   // Otherwise, returns null.
   virtual PrefService* GetUserPrefServiceSyncable(const AccountId& id) = 0;
@@ -90,6 +87,24 @@ class ASH_EXPORT WallpaperPrefManager
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   virtual void SetClient(WallpaperControllerClient* client) = 0;
+
+  // Retrieve the wallpaper preference value for |account_id| and use it to
+  // populate |info|. If |ephemeral| is true, data is stored in an in memory
+  // map. If |ephemeral| is false, |info| is persisted to user prefs. Returns
+  // true if |info| was populated successfully.
+  //
+  // NOTE: WallpaperPrefManager does not enforce any checks for policy
+  // enforcement. Callers must check that the user is allowed to commit the pref
+  // change.
+  //
+  // TODO(crbug.com/1329567): Remove the |ephemeral| parameter when we've safely
+  // moved to SessionController for user type.
+  virtual bool GetUserWallpaperInfo(const AccountId& account_id,
+                                    bool ephemeral,
+                                    WallpaperInfo* info) const = 0;
+  virtual bool SetUserWallpaperInfo(const AccountId& account_id,
+                                    bool ephemeral,
+                                    const WallpaperInfo& info) = 0;
 
   // Remove the wallpaper entry for |account_id|.
   virtual void RemoveUserWallpaperInfo(const AccountId& account_id) = 0;

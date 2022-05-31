@@ -911,38 +911,14 @@ bool WallpaperControllerImpl::SetUserWallpaperInfo(const AccountId& account_id,
         FROM_HERE, base::BindOnce(&DeleteGooglePhotosCache, account_id));
   }
 
-  if (IsEphemeralUser(account_id)) {
-    ephemeral_users_wallpaper_info_[account_id] = info;
-    return true;
-  }
-
-  pref_manager_->RemoveProminentColors(account_id);
-  bool success = pref_manager_->SetLocalWallpaperInfo(account_id, info);
-  // Although `WallpaperType::kCustomized` typed wallpapers are syncable, we
-  // don't set synced info until the image is stored in drivefs, so we know when
-  // to retry saving it on failure.
-  if (IsWallpaperTypeSyncable(info.type) &&
-      info.type != WallpaperType::kCustomized) {
-    pref_manager_->SetSyncedWallpaperInfo(account_id, info);
-  }
-
-  return success;
+  return pref_manager_->SetUserWallpaperInfo(account_id,
+                                             IsEphemeralUser(account_id), info);
 }
 
 bool WallpaperControllerImpl::GetUserWallpaperInfo(const AccountId& account_id,
                                                    WallpaperInfo* info) const {
-  if (IsEphemeralUser(account_id)) {
-    // Ephemeral users do not save anything to local state. Return true if the
-    // info can be found in the map, otherwise return false.
-    auto it = ephemeral_users_wallpaper_info_.find(account_id);
-    if (it == ephemeral_users_wallpaper_info_.end())
-      return false;
-
-    *info = it->second;
-    return true;
-  }
-
-  return pref_manager_->GetLocalWallpaperInfo(account_id, info);
+  return pref_manager_->GetUserWallpaperInfo(account_id,
+                                             IsEphemeralUser(account_id), info);
 }
 
 bool WallpaperControllerImpl::GetWallpaperFromCache(const AccountId& account_id,
