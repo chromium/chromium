@@ -59,6 +59,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Settings.DefaultBrowserFromSource"
+    enum="IOSDefaultBrowserPromoSource" expires_after="2023-05-23">
+  <owner>djean@google.com</owner>
+  <owner>olivierrobin@google.com</owner>
+  <summary>
+    The source surface that requested displaying the default browser system
+    settings. Logged when the user actually opens the iOS system settings (IOS
+    only).
+  </summary>
+</histogram>
+
 <histogram name="Settings.FilterOnLoadTime" units="ms"
     expires_after="2018-08-30">
   <owner>gab@chromium.org</owner>

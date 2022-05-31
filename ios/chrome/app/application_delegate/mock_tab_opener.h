@@ -30,7 +30,7 @@ struct UrlLoadParams;
 - (void)resetURL;
 
 - (ProceduralBlock)completionBlockForTriggeringAction:
-    (NTPTabOpeningPostOpeningAction)action;
+    (TabOpeningPostOpeningAction)action;
 @end
 
 #endif  // IOS_CHROME_APP_APPLICATION_DELEGATE_MOCK_TAB_OPENER_H_

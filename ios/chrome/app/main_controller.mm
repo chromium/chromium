@@ -971,8 +971,23 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
                   }];
 }
 
+// Some experiments value may be useful for first-party applications, so save
+// the value in the shared application group.
+- (void)saveFieldTrialValuesForGroupApp {
+  NSUserDefaults* sharedDefaults = app_group::GetCommonGroupUserDefaults();
+  NSNumber* supportsShowDefaultBrowserPromo =
+      @(base::FeatureList::IsEnabled(kDefaultBrowserIntentsShowSettings));
+
+  NSDictionary* capabilities = @{
+    app_group::
+    kChromeShowDefaultBrowserPromoCapability : supportsShowDefaultBrowserPromo
+  };
+  [sharedDefaults setObject:capabilities
+                     forKey:app_group::kChromeCapabilitiesPreference];
+}
+
 // Some extensions need the value of field trials but can't get them because the
-// field trial infrastruction isn't in extensions. Save the necessary values to
+// field trial infrastructure isn't in extensions. Save the necessary values to
 // NSUserDefaults here.
 - (void)saveFieldTrialValuesForExtensions {
   using password_manager::features::kIOSEnablePasswordManagerBrandingUpdate;

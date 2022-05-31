@@ -135,6 +135,11 @@ extern const char kDcheckIsFatalDescription[];
 extern const char kDefaultBrowserFullscreenPromoExperimentName[];
 extern const char kDefaultBrowserFullscreenPromoExperimentDescription[];
 
+// Title and description for the flag to show the default browser tutorial from
+// an external app.
+extern const char kDefaultBrowserIntentsShowSettingsName[];
+extern const char kDefaultBrowserIntentsShowSettingsDescription[];
+
 // Title and description for the flag that is used to let the user choose the
 // default mode (Mobile/Desktop) they would like to use when requesting a page.
 extern const char kAddSettingForDefaultPageModeName[];

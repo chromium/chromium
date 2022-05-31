@@ -27,6 +27,9 @@ namespace {
 // Key of the UMA Startup.MobileSessionStartFromApps histogram.
 const char* const kUMAMobileSessionStartFromAppsHistogram =
     "Startup.MobileSessionStartFromApps";
+// Key of the UMA Startup.ShowDefaultPromoFromApps histogram.
+const char* const kUMAShowDefaultPromoFromAppsHistogram =
+    "Startup.ShowDefaultPromoFromApps";
 }  // namespace
 
 @implementation URLOpener
@@ -57,6 +60,11 @@ const char* const kUMAMobileSessionStartFromAppsHistogram =
 
   UMA_HISTOGRAM_ENUMERATION(kUMAMobileSessionStartFromAppsHistogram, callerApp,
                             MOBILE_SESSION_CALLER_APP_COUNT);
+
+  if (params.postOpeningAction == SHOW_DEFAULT_BROWSER_SETTINGS) {
+    UMA_HISTOGRAM_ENUMERATION(kUMAShowDefaultPromoFromAppsHistogram, callerApp,
+                              MOBILE_SESSION_CALLER_APP_COUNT);
+  }
 
   if (initStage == InitStageFirstRun) {
     UMA_HISTOGRAM_ENUMERATION("FirstRun.LaunchSource", [params launchSource],

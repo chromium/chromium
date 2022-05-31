@@ -54,7 +54,7 @@ struct UrlLoadParams;
 // `dismissModalsAndOpenSelectedTabInMode:withURL:transition:completion:`.
 // This block must only be executed if new tab opened on NTP.
 - (ProceduralBlock)completionBlockForTriggeringAction:
-    (NTPTabOpeningPostOpeningAction)action;
+    (TabOpeningPostOpeningAction)action;
 
 // Whether the `URL` is already opened, in regular mode.
 - (BOOL)URLIsOpenedInRegularMode:(const GURL&)URL;

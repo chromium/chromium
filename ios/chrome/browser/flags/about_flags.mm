@@ -951,6 +951,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"3p-intents-in-incognito", flag_descriptions::kIOS3PIntentsInIncognitoName,
      flag_descriptions::kIOS3PIntentsInIncognitoDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kIOS3PIntentsInIncognito)},
+    {"default-browser-intents-show-settings",
+     flag_descriptions::kDefaultBrowserIntentsShowSettingsName,
+     flag_descriptions::kDefaultBrowserIntentsShowSettingsDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kDefaultBrowserIntentsShowSettings)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

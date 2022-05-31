@@ -43,6 +43,9 @@ extern const base::Feature kIOS3PIntentsInIncognito;
 // Feature flag that experiments with the default browser fullscreen promo UI.
 extern const base::Feature kDefaultBrowserFullscreenPromoExperiment;
 
+// Feature flag that allows external apps to show default browser settings.
+extern const base::Feature kDefaultBrowserIntentsShowSettings;
+
 // Feature flag that shows iOS 15 context menu, instead of tooltip popover,
 // during a location bar long press gesture.
 extern const base::Feature kIOSLocationBarUseNativeContextMenu;

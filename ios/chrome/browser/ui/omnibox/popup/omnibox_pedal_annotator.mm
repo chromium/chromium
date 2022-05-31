@@ -10,6 +10,7 @@
 #include "components/omnibox/browser/actions/omnibox_pedal_concepts.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
+#include "ios/chrome/browser/default_browser/promo_source.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/omnibox_commands.h"
 #import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
@@ -82,6 +83,14 @@ const char kChromeUIScheme[] = "chrome";
                      }];
     }
     case OmniboxPedalId::SET_CHROME_AS_DEFAULT_BROWSER: {
+      ProceduralBlock action = ^{
+        [omniboxCommandHandler cancelOmniboxEdit];
+        [pedalsEndpoint
+            showDefaultBrowserSettingsFromViewController:nil
+                                            sourceForUMA:
+                                                DefaultBrowserPromoSource::
+                                                    kOmnibox];
+      };
       return [[OmniboxPedalData alloc]
               initWithTitle:hint
                    subtitle:l10n_util::GetNSString(
@@ -90,11 +99,7 @@ const char kChromeUIScheme[] = "chrome";
                   imageName:@"pedal_default_browser"
                        type:pedalType
                   incognito:incognito
-                     action:^{
-                       [omniboxCommandHandler cancelOmniboxEdit];
-                       [pedalsEndpoint
-                           showDefaultBrowserSettingsFromViewController:nil];
-                     }];
+                     action:action];
     }
     case OmniboxPedalId::MANAGE_PASSWORDS: {
       return [[OmniboxPedalData alloc]

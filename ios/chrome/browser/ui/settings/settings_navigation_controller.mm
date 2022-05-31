@@ -798,10 +798,13 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 }
 
 - (void)showDefaultBrowserSettingsFromViewController:
-    (UIViewController*)baseViewController {
+            (UIViewController*)baseViewController
+                                        sourceForUMA:
+                                            (DefaultBrowserPromoSource)source {
   DefaultBrowserSettingsTableViewController* controller =
       [[DefaultBrowserSettingsTableViewController alloc] init];
   controller.dispatcher = [self.settingsNavigationDelegate handlerForSettings];
+  controller.source = source;
   [self pushViewController:controller animated:YES];
 }
 

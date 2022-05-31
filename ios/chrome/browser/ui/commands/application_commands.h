@@ -15,6 +15,7 @@ class GURL;
 @class ShowSigninCommand;
 @class StartVoiceSearchCommand;
 @class UIViewController;
+enum class DefaultBrowserPromoSource;
 namespace syncer {
 enum class TrustedVaultUserActionTriggerForUMA;
 }  // namespace syncer
@@ -67,7 +68,9 @@ enum class TrustedVaultUserActionTriggerForUMA;
 // Shows the settings page informing the user how to set Chrome as the default
 // browser.
 - (void)showDefaultBrowserSettingsFromViewController:
-    (UIViewController*)baseViewController;
+            (UIViewController*)baseViewController
+                                        sourceForUMA:
+                                            (DefaultBrowserPromoSource)source;
 
 // Shows the settings page allowing the user to clear their browsing data.
 - (void)showClearBrowsingDataSettings;

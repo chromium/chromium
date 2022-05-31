@@ -77,6 +77,7 @@ source_set("popup") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/default_browser",
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/search_engines",

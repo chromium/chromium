@@ -159,6 +159,12 @@ const char kDefaultBrowserFullscreenPromoExperimentDescription[] =
     "When enabled, will show a modified default browser fullscreen modal promo "
     "UI.";
 
+const char kDefaultBrowserIntentsShowSettingsName[] =
+    "Default Browser Intents show settings";
+const char kDefaultBrowserIntentsShowSettingsDescription[] =
+    "When enabled, external apps can trigger the settings screen showing "
+    "default browser tutorial.";
+
 const char kAddSettingForDefaultPageModeName[] = "Let user choose default mode";
 const char kAddSettingForDefaultPageModeDescription[] =
     "When enabled, the user can choose if they want the page in Desktop or "
