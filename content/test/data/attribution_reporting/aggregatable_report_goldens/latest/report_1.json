@@ -2,10 +2,10 @@
   "aggregation_service_payloads": [ {
      "debug_cleartext_payload": "omRkYXRhgaJldmFsdWVEAAAAAmZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAWlvcGVyYXRpb25paGlzdG9ncmFt",
      "key_id": "example_id",
-     "payload": "cVrsURY6QvrT1fsdPxWOXb3bjlzB6ih3APjLpydjyRoAJ6FTyZf9AUj1l5VlDweb3fssxCaMkz5jr5oHPlehnBVjrKLiSvtX3mTJ3CJD9DEp3uiiKV5Fsjv4G4RJcdwZERnJN/8s1OWJ6syEqKnJ"
+     "payload": "P6qDfnLgaTL2jLv6tRHXauNGi1DpBn7KFxX2/HyEzVCP+LwzwsRntTyrnalnZuVTux8bdILblwBa6ehWDfyf1tZ/jLr0uFr+DC6oisTb6sDkFpkCELK/62IoDqsNYzl/DyAmFd9NKaepMoS6+GYH"
   } ],
   "attribution_destination": "https://conversion.test",
-  "shared_info": "{\"debug_mode\":\"enabled\",\"privacy_budget_key\":\"aOEbtVxG8dYzAR2K/xuW/OppNaQikp5RdjAXshOQ9w8=\",\"report_id\":\"21abd97f-73e8-4b88-9389-a9fee6abda5e\",\"reporting_origin\":\"https://report.test\",\"scheduled_report_time\":\"1234486400\",\"version\":\"\"}",
+  "shared_info": "{\"debug_mode\":\"enabled\",\"privacy_budget_key\":\"hTxwDPlUIel3dB39m09GOkeAkMLcYVdE6H0eK2t1RYc=\",\"report_id\":\"21abd97f-73e8-4b88-9389-a9fee6abda5e\",\"reporting_origin\":\"https://report.test\",\"scheduled_report_time\":\"1234486400\",\"version\":\"\"}",
   "source_debug_key": "123",
   "source_registration_time": "1234483200",
   "source_site": "https://impression.test",

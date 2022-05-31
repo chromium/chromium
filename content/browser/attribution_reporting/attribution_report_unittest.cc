@@ -80,14 +80,8 @@ TEST(AttributionReportTest, AggregatableReportBody_SourceRegistrationTime) {
 }
 
 TEST(AttributionReportTest, PrivacyBudgetKey) {
-  // Pre-hashed CBOR bytes, base64-encoded for brevity:
-  // "pWd2ZXJzaW9uYGtkZXN0aW5hdGlvbndodHRwczovL2NvbnZlcnNpb24udGVzdGtzb3VyY2Vf"
-  // "c2l0ZXdodHRwczovL2ltcHJlc3Npb24udGVzdHByZXBvcnRpbmdfb3JpZ2luc2h0dHBzOi8v"
-  // "cmVwb3J0LnRlc3R4GHNvdXJjZV9yZWdpc3RyYXRpb25fdGltZRpJlLgA"
-
-  // base64-encoded SHA256 hash string of the bytes above.
   const std::string kExpectedPrivacyBudgetKey(
-      "aOEbtVxG8dYzAR2K/xuW/OppNaQikp5RdjAXshOQ9w8=");
+      "hTxwDPlUIel3dB39m09GOkeAkMLcYVdE6H0eK2t1RYc=");
 
   AttributionReport report =
       ReportBuilder(AttributionInfoBuilder(

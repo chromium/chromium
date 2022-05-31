@@ -239,7 +239,6 @@ std::string AttributionReport::PrivacyBudgetKey() const {
   cbor::Value::MapValue value;
   value.emplace("reporting_origin",
                 common_source_info.reporting_origin().Serialize());
-  value.emplace("source_site", common_source_info.ImpressionSite().Serialize());
   value.emplace("destination",
                 common_source_info.ConversionDestination().Serialize());
 
