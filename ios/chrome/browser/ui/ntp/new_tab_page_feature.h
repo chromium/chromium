@@ -69,4 +69,8 @@ bool IsDiscoverFeedTopSyncPromoEnabled();
 // Whether the Discover feed ablation experiment is enabled.
 bool IsFeedAblationEnabled();
 
+// Whether the ghost cards should be shown when refreshing Discover feed
+// content.
+bool IsDiscoverFeedGhostCardsEnabled();
+
 #endif  // IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_FEATURE_H_

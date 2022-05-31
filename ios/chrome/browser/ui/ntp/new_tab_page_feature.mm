@@ -44,6 +44,9 @@ const char kDiscoverFeedTopSyncPromoStyleCompact[] = "compact";
 const base::Feature kEnableFeedAblation{"FeedAblationEnabled",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kDiscoverFeedGhostCardsEnabled{
+    "DiscoverFeedGhostCardsEnabled", base::FEATURE_DISABLED_BY_DEFAULT};
+
 bool IsDiscoverFeedPreviewEnabled() {
   return base::FeatureList::IsEnabled(kEnableDiscoverFeedPreview);
 }
@@ -66,4 +69,8 @@ bool IsDiscoverFeedTopSyncPromoEnabled() {
 
 bool IsFeedAblationEnabled() {
   return base::FeatureList::IsEnabled(kEnableFeedAblation);
+}
+
+bool IsDiscoverFeedGhostCardsEnabled() {
+  return base::FeatureList::IsEnabled(kDiscoverFeedGhostCardsEnabled);
 }
