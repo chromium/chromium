@@ -631,25 +631,6 @@ public class ExternalNavigationHandler {
         return isTyped && params.isRedirect() && isExternalProtocol;
     }
 
-    /**
-     * http://crbug.com/659301: Don't stay in Chrome for Custom Tabs redirecting to Instant Apps.
-     */
-    private boolean handleCCTRedirectsToInstantApps(ExternalNavigationParams params,
-            boolean isExternalProtocol, boolean incomingIntentRedirect) {
-        RedirectHandler handler = params.getRedirectHandler();
-        if (handler == null) return false;
-        if (handler.isFromCustomTabIntent() && !isExternalProtocol && incomingIntentRedirect
-                && !handler.shouldNavigationTypeStayInApp()
-                && mDelegate.maybeLaunchInstantApp(
-                        params.getUrl(), params.getReferrerUrl(), true, isSerpReferrer())) {
-            if (DEBUG) {
-                Log.i(TAG, "Launching redirect to an instant app");
-            }
-            return true;
-        }
-        return false;
-    }
-
     private boolean redirectShouldStayInApp(
             ExternalNavigationParams params, boolean isExternalProtocol, Intent targetIntent) {
         RedirectHandler handler = params.getRedirectHandler();
@@ -907,17 +888,12 @@ public class ExternalNavigationHandler {
         return false;
     }
 
-    private boolean fallBackToHandlingWithInstantApp(ExternalNavigationParams params,
-            boolean incomingIntentRedirect, boolean linkNotFromIntent) {
-        if (incomingIntentRedirect
-                && mDelegate.maybeLaunchInstantApp(
-                        params.getUrl(), params.getReferrerUrl(), true, isSerpReferrer())) {
-            if (DEBUG) Log.i(TAG, "Launching instant Apps redirect");
-            return true;
-        } else if (linkNotFromIntent && !params.isIncognito()
-                && mDelegate.maybeLaunchInstantApp(
-                        params.getUrl(), params.getReferrerUrl(), false, isSerpReferrer())) {
-            if (DEBUG) Log.i(TAG, "Launching instant Apps link");
+    private boolean fallBackToHandlingWithInstantApp(
+            ExternalNavigationParams params, boolean incomingIntentRedirect) {
+        if (params.isIncognito()) return false;
+        if (mDelegate.maybeLaunchInstantApp(params.getUrl(), params.getReferrerUrl(),
+                    incomingIntentRedirect, isSerpReferrer())) {
+            if (DEBUG) Log.i(TAG, "Launching instant App.");
             return true;
         }
         return false;
@@ -1389,11 +1365,6 @@ public class ExternalNavigationHandler {
         boolean isLink = params.isLinkTransition();
         boolean isFromIntent = params.isFromIntent();
         boolean isFormSubmit = pageTransitionCore == PageTransition.FORM_SUBMIT;
-        boolean linkNotFromIntent = isLink && !isFromIntent;
-
-        if (handleCCTRedirectsToInstantApps(params, isExternalProtocol, incomingIntentRedirect)) {
-            return OverrideUrlLoadingResult.forExternalIntent();
-        }
 
         if (redirectShouldStayInApp(params, isExternalProtocol, targetIntent)) {
             return OverrideUrlLoadingResult.forNoOverride();
@@ -1423,8 +1394,7 @@ public class ExternalNavigationHandler {
 
         boolean hasSpecializedHandler = countSpecializedHandlers(resolvingInfos.get()) > 0;
         if (!isExternalProtocol && !hasSpecializedHandler) {
-            if (fallBackToHandlingWithInstantApp(
-                        params, incomingIntentRedirect, linkNotFromIntent)) {
+            if (fallBackToHandlingWithInstantApp(params, incomingIntentRedirect)) {
                 return OverrideUrlLoadingResult.forExternalIntent();
             }
             return fallBackToHandlingInApp();

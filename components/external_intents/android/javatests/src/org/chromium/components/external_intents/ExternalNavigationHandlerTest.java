@@ -797,7 +797,7 @@ public class ExternalNavigationHandlerTest {
         fooIntent.putExtra(CustomTabsIntent.EXTRA_ENABLE_INSTANT_APPS, true);
         fooIntent.setPackage(mContext.getPackageName());
         redirectHandler.updateIntent(
-                fooIntent, IS_CUSTOM_TAB_INTENT, !SEND_TO_EXTERNAL_APPS, !INTENT_STARTED_TASK);
+                fooIntent, IS_CUSTOM_TAB_INTENT, SEND_TO_EXTERNAL_APPS, !INTENT_STARTED_TASK);
         redirectHandler.updateNewUrlLoading(transTypeLinkFromIntent, false, false, 0, 0, false);
         redirectHandler.updateNewUrlLoading(transTypeLinkFromIntent, true, false, 0, 0, false);
 
