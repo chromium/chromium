@@ -2218,8 +2218,8 @@ Try tapping the mic to ask me anything.
         Close the camera
       </message>
 
-      <message name="IDS_PERSONALIZATION_APP_SCREENSAVER_LABEL" desc="Label for the Screensaver page in Personalization app.">
-        Screensaver
+      <message name="IDS_PERSONALIZATION_APP_SCREENSAVER_LABEL" desc="Label for the Screen saver page in Personalization app.">
+        Screen saver
       </message>
       <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_PAGE_DESCRIPTION" desc="Description for the ambient mode settings page.">
         When your screen is idle, show photos, time, weather, and media info.
@@ -2291,7 +2291,7 @@ Try tapping the mic to ask me anything.
         Got it
       </message>
       <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_ANIMATION_TITLE" desc="Label for the ambient mode animation section.">
-        Screensaver animation
+        Screen saver animation
       </message>
       <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_ANIMATION_SLIDESHOW_LABEL" desc="Label for the ambient mode slideshow animation.">
         Slide show
@@ -2303,13 +2303,13 @@ Try tapping the mic to ask me anything.
         Float on by
       </message>
       <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_ZERO_STATE_MESSAGE" desc="Message shown in the Ambient subpage in the personalization hub when ambient mode is disabled.">
-        Turn on the toggle to select the screensaver options
+        Turn on the toggle to select the screen saver options
       </message>
       <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_MULTIPLE_ALBUMS_DESC" desc="Album description shown in the Ambient preview when more than 3 albums are selected">
         <ph name="TITLE">$1<ex>Sweden 2020</ex></ph>, +<ph name="NUMBER">$2<ex>2</ex></ph> more albums
       </message>
       <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_MAIN_PAGE_ZERO_STATE_MESSAGE" desc="Message shown in the Ambient subpage on the main page of personalization hub when ambient mode is disabled.">
-        Turn the feature on to select screensaver options
+        Turn the feature on to select screen saver options
       </message>
       <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_TURN_ON_LABEL" desc="Label of button to turn on ambient mode.">
         Turn on
