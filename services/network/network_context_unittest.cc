@@ -4860,10 +4860,9 @@ TEST_F(NetworkContextTest, ExpectCT) {
     run_loop.Run();
     EXPECT_TRUE(state.is_dict());
 
-    const base::Value* result =
-        state.FindKeyOfType("result", base::Value::Type::BOOLEAN);
-    ASSERT_TRUE(result != nullptr);
-    EXPECT_FALSE(result->GetBool());
+    absl::optional<bool> result = state.GetDict().FindBool("result");
+    EXPECT_TRUE(result.has_value());
+    EXPECT_EQ(false, *result);
   }
 
   // Add the host data.
@@ -4887,25 +4886,24 @@ TEST_F(NetworkContextTest, ExpectCT) {
     run_loop.Run();
     EXPECT_TRUE(state.is_dict());
 
-    const base::Value* value = state.FindKeyOfType("dynamic_expect_ct_domain",
-                                                   base::Value::Type::STRING);
-    ASSERT_TRUE(value != nullptr);
-    EXPECT_EQ(kTestDomain, value->GetString());
+    const base::Value::Dict& dict = state.GetDict();
+    const std::string* dynamic_expect_ct_domain =
+        dict.FindString("dynamic_expect_ct_domain");
+    ASSERT_TRUE(dynamic_expect_ct_domain);
+    EXPECT_EQ(kTestDomain, *dynamic_expect_ct_domain);
 
-    value = state.FindKeyOfType("dynamic_expect_ct_expiry",
-                                base::Value::Type::DOUBLE);
-    ASSERT_TRUE(value != nullptr);
-    EXPECT_EQ(expiry.ToDoubleT(), value->GetDouble());
+    absl::optional<double> dynamic_expect_ct_expiry =
+        dict.FindDouble("dynamic_expect_ct_expiry");
+    EXPECT_EQ(expiry.ToDoubleT(), dynamic_expect_ct_expiry);
 
-    value = state.FindKeyOfType("dynamic_expect_ct_enforce",
-                                base::Value::Type::BOOLEAN);
-    ASSERT_TRUE(value != nullptr);
-    EXPECT_EQ(enforce, value->GetBool());
+    absl::optional<bool> dynamic_expect_ct_enforce =
+        dict.FindBool("dynamic_expect_ct_enforce");
+    EXPECT_EQ(enforce, *dynamic_expect_ct_enforce);
 
-    value = state.FindKeyOfType("dynamic_expect_ct_report_uri",
-                                base::Value::Type::STRING);
-    ASSERT_TRUE(value != nullptr);
-    EXPECT_EQ(report_uri, value->GetString());
+    const std::string* dynamic_expect_ct_report_uri =
+        dict.FindString("dynamic_expect_ct_report_uri");
+    ASSERT_TRUE(dynamic_expect_ct_report_uri);
+    EXPECT_EQ(report_uri, *dynamic_expect_ct_report_uri);
   }
 
   // Using a different NetworkIsolationKey should return no result.
@@ -4918,10 +4916,9 @@ TEST_F(NetworkContextTest, ExpectCT) {
     run_loop.Run();
     EXPECT_TRUE(state.is_dict());
 
-    const base::Value* result =
-        state.FindKeyOfType("result", base::Value::Type::BOOLEAN);
-    ASSERT_TRUE(result != nullptr);
-    EXPECT_FALSE(result->GetBool());
+    absl::optional<bool> result = state.GetDict().FindBool("result");
+    EXPECT_TRUE(result.has_value());
+    EXPECT_EQ(false, *result);
   }
 
   // Delete host data.
@@ -4945,10 +4942,9 @@ TEST_F(NetworkContextTest, ExpectCT) {
     run_loop.Run();
     EXPECT_TRUE(state.is_dict());
 
-    const base::Value* result =
-        state.FindKeyOfType("result", base::Value::Type::BOOLEAN);
-    ASSERT_TRUE(result != nullptr);
-    EXPECT_FALSE(result->GetBool());
+    absl::optional<bool> result = state.GetDict().FindBool("result");
+    EXPECT_TRUE(result.has_value());
+    EXPECT_EQ(false, *result);
   }
 }
 

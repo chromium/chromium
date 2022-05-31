@@ -1506,7 +1506,7 @@ void NetworkContext::GetExpectCTState(
     const std::string& domain,
     const net::NetworkIsolationKey& network_isolation_key,
     GetExpectCTStateCallback callback) {
-  base::Value result(base::Value::Type::DICTIONARY);
+  base::Value::Dict result;
   if (base::IsStringASCII(domain)) {
     net::TransportSecurityState* transport_security_state =
         url_request_context()->transport_security_state();
@@ -1517,26 +1517,26 @@ void NetworkContext::GetExpectCTState(
 
       // TODO(estark): query static Expect-CT state as well.
       if (found) {
-        result.SetStringKey("dynamic_expect_ct_domain", domain);
-        result.SetDoubleKey("dynamic_expect_ct_observed",
-                            dynamic_expect_ct_state.last_observed.ToDoubleT());
-        result.SetDoubleKey("dynamic_expect_ct_expiry",
-                            dynamic_expect_ct_state.expiry.ToDoubleT());
-        result.SetBoolKey("dynamic_expect_ct_enforce",
-                          dynamic_expect_ct_state.enforce);
-        result.SetStringKey("dynamic_expect_ct_report_uri",
-                            dynamic_expect_ct_state.report_uri.spec());
+        result.Set("dynamic_expect_ct_domain", domain);
+        result.Set("dynamic_expect_ct_observed",
+                   dynamic_expect_ct_state.last_observed.ToDoubleT());
+        result.Set("dynamic_expect_ct_expiry",
+                   dynamic_expect_ct_state.expiry.ToDoubleT());
+        result.Set("dynamic_expect_ct_enforce",
+                   dynamic_expect_ct_state.enforce);
+        result.Set("dynamic_expect_ct_report_uri",
+                   dynamic_expect_ct_state.report_uri.spec());
       }
 
-      result.SetBoolKey("result", found);
+      result.Set("result", found);
     } else {
-      result.SetStringKey("error", "no Expect-CT state active");
+      result.Set("error", "no Expect-CT state active");
     }
   } else {
-    result.SetStringKey("error", "non-ASCII domain name");
+    result.Set("error", "non-ASCII domain name");
   }
 
-  std::move(callback).Run(std::move(result));
+  std::move(callback).Run(base::Value(std::move(result)));
 }
 
 void NetworkContext::MaybeEnqueueSCTReport(

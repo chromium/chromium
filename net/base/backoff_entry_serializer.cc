@@ -36,10 +36,10 @@ namespace net {
 
 base::Value BackoffEntrySerializer::SerializeToValue(const BackoffEntry& entry,
                                                      base::Time time_now) {
-  std::vector<base::Value> serialized;
-  serialized.emplace_back(SerializationFormatVersion::kVersion2);
+  base::Value::List serialized;
+  serialized.Append(SerializationFormatVersion::kVersion2);
 
-  serialized.emplace_back(entry.failure_count());
+  serialized.Append(entry.failure_count());
 
   // Convert both |base::TimeTicks| values into |base::TimeDelta| values by
   // subtracting |kZeroTicks. This way, the top-level subtraction uses
@@ -64,9 +64,8 @@ base::Value BackoffEntrySerializer::SerializeToValue(const BackoffEntry& entry,
 
   // Redundantly stores both the remaining time delta and the absolute time.
   // The delta is used to work around some cases where wall clock time changes.
-  serialized.emplace_back(
-      base::NumberToString(backoff_duration.InMicroseconds()));
-  serialized.emplace_back(
+  serialized.Append(base::NumberToString(backoff_duration.InMicroseconds()));
+  serialized.Append(
       base::NumberToString(absolute_release_time.ToInternalValue()));
 
   return base::Value(std::move(serialized));
@@ -79,20 +78,20 @@ std::unique_ptr<BackoffEntry> BackoffEntrySerializer::DeserializeFromValue(
     base::Time time_now) {
   if (!serialized.is_list())
     return nullptr;
-  const base::Value::ConstListView& list_view = serialized.GetListDeprecated();
+  const base::Value::List& list = serialized.GetList();
 
-  if (list_view.size() != 4)
+  if (list.size() != 4)
     return nullptr;
 
-  if (!list_view[0].is_int())
+  if (!list[0].is_int())
     return nullptr;
-  int version_number = list_view[0].GetInt();
+  int version_number = list[0].GetInt();
   if (version_number != kVersion1 && version_number != kVersion2)
     return nullptr;
 
-  if (!list_view[1].is_int())
+  if (!list[1].is_int())
     return nullptr;
-  int failure_count = list_view[1].GetInt();
+  int failure_count = list[1].GetInt();
   if (failure_count < 0) {
     return nullptr;
   }
@@ -101,17 +100,17 @@ std::unique_ptr<BackoffEntry> BackoffEntrySerializer::DeserializeFromValue(
   base::TimeDelta original_backoff_duration;
   switch (version_number) {
     case kVersion1: {
-      if (!list_view[2].is_double())
+      if (!list[2].is_double())
         return nullptr;
-      double original_backoff_duration_double = list_view[2].GetDouble();
+      double original_backoff_duration_double = list[2].GetDouble();
       original_backoff_duration =
           base::Seconds(original_backoff_duration_double);
       break;
     }
     case kVersion2: {
-      if (!list_view[2].is_string())
+      if (!list[2].is_string())
         return nullptr;
-      std::string original_backoff_duration_string = list_view[2].GetString();
+      std::string original_backoff_duration_string = list[2].GetString();
       int64_t original_backoff_duration_us;
       if (!base::StringToInt64(original_backoff_duration_string,
                                &original_backoff_duration_us)) {
@@ -125,9 +124,9 @@ std::unique_ptr<BackoffEntry> BackoffEntrySerializer::DeserializeFromValue(
       NOTREACHED() << "Unexpected version_number: " << version_number;
   }
 
-  if (!list_view[3].is_string())
+  if (!list[3].is_string())
     return nullptr;
-  std::string absolute_release_time_string = list_view[3].GetString();
+  std::string absolute_release_time_string = list[3].GetString();
 
   int64_t absolute_release_time_us;
   if (!base::StringToInt64(absolute_release_time_string,

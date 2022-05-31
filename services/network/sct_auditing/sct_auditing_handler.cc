@@ -174,29 +174,29 @@ void SCTAuditingHandler::MaybeEnqueueReport(
 bool SCTAuditingHandler::SerializeData(std::string* output) {
   DCHECK(foreground_runner_->RunsTasksInCurrentSequence());
 
-  base::Value reports(base::Value::Type::LIST);
+  base::Value::List reports;
   for (const auto& kv : pending_reporters_) {
     auto reporter_key = kv.first;
     auto* reporter = kv.second.get();
 
-    base::Value report_entry(base::Value::Type::DICTIONARY);
+    base::Value::Dict report_entry;
 
-    report_entry.SetStringKey(kReporterKeyKey, reporter_key.ToString());
+    report_entry.Set(kReporterKeyKey, reporter_key.ToString());
 
     if (reporter->sct_hashdance_metadata()) {
-      report_entry.SetKey(kSCTHashdanceMetadataKey,
-                          reporter->sct_hashdance_metadata()->ToValue());
+      report_entry.Set(kSCTHashdanceMetadataKey,
+                       reporter->sct_hashdance_metadata()->ToValue());
     }
 
     base::Value backoff_entry_value =
         net::BackoffEntrySerializer::SerializeToValue(
             *reporter->backoff_entry(), base::Time::Now());
-    report_entry.SetKey(kBackoffEntryKey, std::move(backoff_entry_value));
+    report_entry.Set(kBackoffEntryKey, std::move(backoff_entry_value));
 
     std::string serialized_report;
     reporter->report()->SerializeToString(&serialized_report);
     base::Base64Encode(serialized_report, &serialized_report);
-    report_entry.SetStringKey(kReportKey, serialized_report);
+    report_entry.Set(kReportKey, serialized_report);
 
     reports.Append(std::move(report_entry));
   }
@@ -212,18 +212,17 @@ void SCTAuditingHandler::DeserializeData(const std::string& serialized) {
     return;
   }
 
-  for (base::Value& sct_entry : value->GetListDeprecated()) {
+  for (base::Value& sct_entry : value->GetList()) {
+    base::Value::Dict* entry_dict = sct_entry.GetIfDict();
     if (!sct_entry.is_dict()) {
       continue;
     }
 
-    const std::string* reporter_key_string =
-        sct_entry.FindStringKey(kReporterKeyKey);
-    const std::string* report_string = sct_entry.FindStringKey(kReportKey);
+    std::string* reporter_key_string = entry_dict->FindString(kReporterKeyKey);
+    std::string* report_string = entry_dict->FindString(kReportKey);
     const absl::optional<base::Value> sct_metadata_value =
-        sct_entry.ExtractKey(kSCTHashdanceMetadataKey);
-    const base::Value* backoff_entry_value =
-        sct_entry.FindKey(kBackoffEntryKey);
+        entry_dict->Extract(kSCTHashdanceMetadataKey);
+    const base::Value* backoff_entry_value = entry_dict->Find(kBackoffEntryKey);
 
     if (!reporter_key_string || !report_string || !backoff_entry_value) {
       continue;
