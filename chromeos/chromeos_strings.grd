@@ -2324,7 +2324,7 @@ Try tapping the mic to ask me anything.
         Change wallpaper
       </message>
       <message name="IDS_PERSONALIZATION_APP_ARIA_LABEL_CHANGE_SCREENSAVER" desc="Aria label for the button to enter ambient subpage.">
-        Change screensaver
+        Change screen saver
       </message>
       <message name="IDS_PERSONALIZATION_APP_ARIA_LABEL_ENABLE_DARK_COLOR_MODE" desc="Aria label for the button to enable dark color mode.">
         Enable dark color mode
