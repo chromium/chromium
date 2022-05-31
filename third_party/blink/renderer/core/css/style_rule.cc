@@ -34,11 +34,13 @@
 #include "third_party/blink/renderer/core/css/css_media_rule.h"
 #include "third_party/blink/renderer/core/css/css_namespace_rule.h"
 #include "third_party/blink/renderer/core/css/css_page_rule.h"
+#include "third_party/blink/renderer/core/css/css_position_fallback_rule.h"
 #include "third_party/blink/renderer/core/css/css_property_rule.h"
 #include "third_party/blink/renderer/core/css/css_scope_rule.h"
 #include "third_party/blink/renderer/core/css/css_scroll_timeline_rule.h"
 #include "third_party/blink/renderer/core/css/css_style_rule.h"
 #include "third_party/blink/renderer/core/css/css_supports_rule.h"
+#include "third_party/blink/renderer/core/css/css_try_rule.h"
 #include "third_party/blink/renderer/core/css/parser/container_query_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_impl.h"
@@ -128,6 +130,12 @@ void StyleRuleBase::Trace(Visitor* visitor) const {
     case kCounterStyle:
       To<StyleRuleCounterStyle>(this)->TraceAfterDispatch(visitor);
       return;
+    case kPositionFallback:
+      To<StyleRulePositionFallback>(this)->TraceAfterDispatch(visitor);
+      return;
+    case kTry:
+      To<StyleRuleTry>(this)->TraceAfterDispatch(visitor);
+      return;
   }
   NOTREACHED();
 }
@@ -191,6 +199,12 @@ void StyleRuleBase::FinalizeGarbageCollectedObject() {
     case kCounterStyle:
       To<StyleRuleCounterStyle>(this)->~StyleRuleCounterStyle();
       return;
+    case kPositionFallback:
+      To<StyleRulePositionFallback>(this)->~StyleRulePositionFallback();
+      return;
+    case kTry:
+      To<StyleRuleTry>(this)->~StyleRuleTry();
+      return;
   }
   NOTREACHED();
 }
@@ -237,6 +251,11 @@ StyleRuleBase* StyleRuleBase::Copy() const {
       return To<StyleRuleContainer>(this)->Copy();
     case kCounterStyle:
       return To<StyleRuleCounterStyle>(this)->Copy();
+    case kPositionFallback:
+      return To<StyleRulePositionFallback>(this)->Copy();
+    case kTry:
+      NOTREACHED();
+      return nullptr;
   }
   NOTREACHED();
   return nullptr;
@@ -311,6 +330,11 @@ CSSRule* StyleRuleBase::CreateCSSOMWrapper(CSSStyleSheet* parent_sheet,
       rule = MakeGarbageCollected<CSSCounterStyleRule>(
           To<StyleRuleCounterStyle>(self), parent_sheet);
       break;
+    case kPositionFallback:
+      rule = MakeGarbageCollected<CSSPositionFallbackRule>(
+          To<StyleRulePositionFallback>(self), parent_sheet);
+      break;
+    case kTry:
     case kKeyframe:
     case kCharset:
     case kViewport:

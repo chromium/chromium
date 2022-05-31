@@ -826,6 +826,11 @@ interface CSSPerspective : CSSTransformComponent
     getter length
     method constructor
     setter length
+interface CSSPositionFallbackRule : CSSRule
+    attribute @@toStringTag
+    getter cssRules
+    getter name
+    method constructor
 interface CSSPositionValue : CSSStyleValue
     attribute @@toStringTag
     getter x
@@ -999,6 +1004,9 @@ interface CSSTranslate : CSSTransformComponent
     setter x
     setter y
     setter z
+interface CSSTryRule : CSSRule
+    attribute @@toStringTag
+    method constructor
 interface CSSUnitValue : CSSNumericValue
     attribute @@toStringTag
     getter unit

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<title>Tests which properties are allowed in @fallback-position</title>
+<link rel="help" href="https://tabatkins.github.io/specs/css-anchor-position/#fallback-rule">
+<link rel="author" href="mailto:xiaochengh@chromium.org">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style id="style"></style>
+<script>
+function cleanup() {
+  while (style.sheet.cssRules.length)
+    style.sheet.deleteRule(0);
+}
+
+function test_allowed_property(property) {
+  test(t => {
+    t.add_cleanup(cleanup);
+    const value = '1px';
+    const serialization = `${property}: ${value}`;
+    const rule = `@position-fallback --foo { @try { ${property}: ${value}; } }`;
+    const index = style.sheet.insertRule(rule);
+    const parsed = style.sheet.cssRules[index].cssRules[0];
+    assert_equals(parsed.cssText, `@try { ${serialization}; }`);
+  }, `${property} is allowed in @fallback-position`);
+}
+
+function test_disallowed_property(property) {
+  test(t => {
+    t.add_cleanup(cleanup);
+    const value = '1px';
+    const rule = `@position-fallback --foo { @try { ${property}: ${value}; } }`;
+    const index = style.sheet.insertRule(rule);
+    const parsed = style.sheet.cssRules[index].cssRules[0];
+    assert_equals(parsed.cssText, `@try { }`);
+  }, `${property} is disallowed in @fallback-position`);
+}
+
+// Inset properties are allowed
+test_allowed_property('top');
+test_allowed_property('bottom');
+test_allowed_property('left');
+test_allowed_property('right');
+test_allowed_property('inset-block-start');
+test_allowed_property('inset-block-end');
+test_allowed_property('inset-inline-start');
+test_allowed_property('inset-inline-end');
+test_allowed_property('inset-block');
+test_allowed_property('inset-inline');
+test_allowed_property('inset');
+
+// Sizing properties are allowed
+test_allowed_property('width');
+test_allowed_property('height');
+test_allowed_property('block-size');
+test_allowed_property('inline-size');
+test_allowed_property('min-width');
+test_allowed_property('min-height');
+test_allowed_property('min-block-size');
+test_allowed_property('min-inline-size');
+test_allowed_property('max-width');
+test_allowed_property('max-height');
+test_allowed_property('max-block-size');
+test_allowed_property('max-inline-size');
+
+// Custom properties are allowed
+test_allowed_property('--custom');
+
+// Margin properties are disallowed
+test_disallowed_property('margin-left');
+test_disallowed_property('margin-right');
+test_disallowed_property('margin-top');
+test_disallowed_property('margin-bottom');
+test_disallowed_property('margin');
+
+// Test some other disallowed properties
+test_disallowed_property('font-size');
+test_disallowed_property('border-width');
+test_disallowed_property('padding');
+test_disallowed_property('display');
+test_disallowed_property('position');
+test_disallowed_property('float');
+
+test(t => {
+  t.add_cleanup(cleanup);
+  const rule = `@position-fallback --foo { @try { top: 1px !important; } }`;
+  const index = style.sheet.insertRule(rule);
+  const parsed = style.sheet.cssRules[index].cssRules[0];
+  assert_equals(parsed.cssText, `@try { }`);
+}, `!important declarations are disallowed in @fallback-position`);
+</script>

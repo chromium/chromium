@@ -638,6 +638,15 @@
       default: true,
       valid_type: "bool",
     },
+
+    // - valid_for_position_fallback: true
+    //
+    // Whether the property can be used in a @try rule of @position-fallback
+    // https://tabatkins.github.io/specs/css-anchor-position/#fallback-rule
+    valid_for_position_fallback: {
+      default: false,
+      valid_type: "bool",
+    },
   },
 
   // Members in the data objects should appear in the same order as in the
@@ -2063,6 +2072,7 @@
         resolver: "bottom",
       },
       supports_incremental_style: true,
+      valid_for_position_fallback: true,
     },
     {
       name: "box-shadow",
@@ -2774,6 +2784,7 @@
       },
       supports_incremental_style: true,
       valid_for_canvas_formatted_text: true,
+      valid_for_position_fallback: true,
     },
     {
       name: "hyphens",
@@ -2866,6 +2877,7 @@
         resolver: "left",
       },
       supports_incremental_style: true,
+      valid_for_position_fallback: true,
     },
     {
       name: "letter-spacing",
@@ -3147,6 +3159,7 @@
         resolver: "vertical",
       },
       supports_incremental_style: true,
+      valid_for_position_fallback: true,
     },
     {
       name: "max-width",
@@ -3164,6 +3177,7 @@
         resolver: "horizontal",
       },
       supports_incremental_style: true,
+      valid_for_position_fallback: true,
     },
     {
       name: "min-height",
@@ -3180,6 +3194,7 @@
         resolver: "vertical",
       },
       supports_incremental_style: true,
+      valid_for_position_fallback: true,
     },
     {
       name: "min-width",
@@ -3196,6 +3211,7 @@
         resolver: "horizontal",
       },
       supports_incremental_style: true,
+      valid_for_position_fallback: true,
     },
     {
       name: "mix-blend-mode",
@@ -3807,6 +3823,7 @@
         resolver: "right",
       },
       supports_incremental_style: true,
+      valid_for_position_fallback: true,
     },
     {
       name: "r",
@@ -4700,6 +4717,7 @@
         resolver: "top",
       },
       supports_incremental_style: true,
+      valid_for_position_fallback: true,
     },
     {
       name: "touch-action",
@@ -5566,6 +5584,7 @@
       },
       supports_incremental_style: true,
       valid_for_canvas_formatted_text: true,
+      valid_for_position_fallback: true,
     },
     {
       name: "will-change",
@@ -5624,6 +5643,7 @@
       },
       keywords: ["auto"],
       typedom_types: ["Keyword", "Length", "Percentage"],
+      valid_for_position_fallback: true,
     },
     {
       name: "block-size",
@@ -5635,6 +5655,7 @@
       },
       keywords: ["auto"],
       typedom_types: ["Keyword", "Length", "Percentage"],
+      valid_for_position_fallback: true,
     },
     {
       name: "min-inline-size",
@@ -5644,6 +5665,7 @@
         resolver: "inline",
       },
       typedom_types: ["Length", "Percentage"],
+      valid_for_position_fallback: true,
     },
     {
       name: "min-block-size",
@@ -5653,6 +5675,7 @@
         resolver: "block",
       },
       typedom_types: ["Length", "Percentage"],
+      valid_for_position_fallback: true,
     },
     {
       name: "max-inline-size",
@@ -5663,6 +5686,7 @@
       },
       keywords: ["none"],
       typedom_types: ["Keyword", "Length", "Percentage"],
+      valid_for_position_fallback: true,
     },
     {
       name: "max-block-size",
@@ -5673,6 +5697,7 @@
       },
       keywords: ["none"],
       typedom_types: ["Keyword", "Length", "Percentage"],
+      valid_for_position_fallback: true,
     },
     {
       name: "margin-inline-start",
@@ -5874,6 +5899,7 @@
         resolver: "inline-start",
       },
       typedom_types: ["Length", "Percentage"],
+      valid_for_position_fallback: true,
     },
     {
       name: "inset-inline-end",
@@ -5883,6 +5909,7 @@
         resolver: "inline-end",
       },
       typedom_types: ["Length", "Percentage"],
+      valid_for_position_fallback: true,
     },
     {
       name: "inset-block-start",
@@ -5892,6 +5919,7 @@
         resolver: "block-start",
       },
       typedom_types: ["Length", "Percentage"],
+      valid_for_position_fallback: true,
     },
     {
       name: "inset-block-end",
@@ -5901,6 +5929,7 @@
         resolver: "block-end",
       },
       typedom_types: ["Length", "Percentage"],
+      valid_for_position_fallback: true,
     },
     {
       name: "border-start-start-radius",
@@ -6608,16 +6637,19 @@
       name: "inset",
       longhands: ["top", "right", "bottom", "left"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      valid_for_position_fallback: true,
     },
     {
       name: "inset-block",
       longhands: ["inset-block-start", "inset-block-end"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      valid_for_position_fallback: true,
     },
     {
       name: "inset-inline",
       longhands: ["inset-inline-start", "inset-inline-end"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      valid_for_position_fallback: true,
     },
     {
       name: "list-style",

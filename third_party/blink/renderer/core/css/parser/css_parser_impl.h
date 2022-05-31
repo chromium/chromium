@@ -36,8 +36,10 @@ class StyleRuleKeyframes;
 class StyleRuleMedia;
 class StyleRuleNamespace;
 class StyleRulePage;
+class StyleRulePositionFallback;
 class StyleRuleProperty;
 class StyleRuleSupports;
+class StyleRuleTry;
 class StyleRuleViewport;
 class StyleSheetContents;
 class Element;
@@ -68,6 +70,7 @@ class CORE_EXPORT CSSParserImpl {
     kRegularRules,
     kKeyframeRules,
     kFontFeatureRules,
+    kTryRules,
     kNoRules,  // For parsing at-rules inside declaration lists
   };
 
@@ -150,6 +153,7 @@ class CORE_EXPORT CSSParserImpl {
     kRegularRuleList,
     kKeyframesRuleList,
     kFontFeatureRuleList,
+    kPositionFallbackRuleList,
   };
 
   // Returns whether the first encountered rule was valid
@@ -179,6 +183,8 @@ class CORE_EXPORT CSSParserImpl {
   StyleRuleBase* ConsumeScopeRule(CSSParserTokenStream&);
   StyleRuleContainer* ConsumeContainerRule(CSSParserTokenStream&);
   StyleRuleBase* ConsumeLayerRule(CSSParserTokenStream&);
+  StyleRulePositionFallback* ConsumePositionFallbackRule(CSSParserTokenStream&);
+  StyleRuleTry* ConsumeTryRule(CSSParserTokenStream&);
 
   StyleRuleKeyframe* ConsumeKeyframeStyleRule(CSSParserTokenRange prelude,
                                               const RangeOffset& prelude_offset,

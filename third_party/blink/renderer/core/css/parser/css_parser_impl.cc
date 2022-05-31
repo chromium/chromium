@@ -11,7 +11,9 @@
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
 #include "third_party/blink/renderer/core/css/css_custom_property_declaration.h"
 #include "third_party/blink/renderer/core/css/css_keyframes_rule.h"
+#include "third_party/blink/renderer/core/css/css_position_fallback_rule.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
+#include "third_party/blink/renderer/core/css/css_try_rule.h"
 #include "third_party/blink/renderer/core/css/parser/at_rule_descriptor_parser.h"
 #include "third_party/blink/renderer/core/css/parser/container_query_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_at_rule_id.h"
@@ -447,6 +449,7 @@ static CSSParserImpl::AllowedRulesType ComputeNewAllowedRules(
     StyleRuleBase* rule) {
   if (!rule || allowed_rules == CSSParserImpl::kKeyframeRules ||
       allowed_rules == CSSParserImpl::kFontFeatureRules ||
+      allowed_rules == CSSParserImpl::kTryRules ||
       allowed_rules == CSSParserImpl::kNoRules)
     return allowed_rules;
   DCHECK_LE(allowed_rules, CSSParserImpl::kRegularRules);
@@ -482,6 +485,9 @@ bool CSSParserImpl::ConsumeRuleList(CSSParserTokenStream& stream,
       break;
     case kFontFeatureRuleList:
       allowed_rules = kFontFeatureRules;
+      break;
+    case kPositionFallbackRuleList:
+      allowed_rules = kTryRules;
       break;
     default:
       NOTREACHED();
@@ -590,6 +596,11 @@ StyleRuleBase* CSSParserImpl::ConsumeAtRule(CSSParserTokenStream& stream,
   } else if (allowed_rules <= kAllowNamespaceRules &&
              id == kCSSAtRuleNamespace) {
     return ConsumeNamespaceRule(stream);
+  } else if (allowed_rules == kTryRules) {
+    if (id == kCSSAtRuleTry)
+      return ConsumeTryRule(stream);
+    ConsumeErroneousAtRule(stream);
+    return nullptr;
   } else {
     DCHECK_LE(allowed_rules, kRegularRules);
 
@@ -622,6 +633,8 @@ StyleRuleBase* CSSParserImpl::ConsumeAtRule(CSSParserTokenStream& stream,
         return ConsumeScopeRule(stream);
       case kCSSAtRuleCounterStyle:
         return ConsumeCounterStyleRule(stream);
+      case kCSSAtRulePositionFallback:
+        return ConsumePositionFallbackRule(stream);
       default:
         ConsumeErroneousAtRule(stream);
         return nullptr;  // Parse error, unrecognised or not-allowed at-rule
@@ -675,6 +688,16 @@ StyleRuleBase* CSSParserImpl::ConsumeQualifiedRule(
     ConsumeDeclarationList(stream, StyleRule::kFontFace);
     return MakeGarbageCollected<StyleRuleFontFace>(
         CreateCSSPropertyValueSet(parsed_properties_, kCSSFontFaceRuleMode));
+  }
+  if (allowed_rules == kTryRules) {
+    // We reach here only when there's a parse error. Treat everything before
+    // the first block we reach as a bad prelude, then skip this block.
+    stream.EnsureLookAhead();
+    stream.ConsumeUntilPeekedTypeIs<kLeftBraceToken>();
+    if (!stream.AtEnd()) {
+      CSSParserTokenStream::BlockGuard guard(stream);
+    }
+    return nullptr;
   }
 
   NOTREACHED();
@@ -1265,6 +1288,71 @@ StyleRuleBase* CSSParserImpl::ConsumeLayerRule(CSSParserTokenStream& stream) {
   return MakeGarbageCollected<StyleRuleLayerBlock>(std::move(name), rules);
 }
 
+StyleRulePositionFallback* CSSParserImpl::ConsumePositionFallbackRule(
+    CSSParserTokenStream& stream) {
+  wtf_size_t prelude_offset_start = stream.LookAheadOffset();
+  CSSParserTokenRange prelude = ConsumeAtRulePrelude(stream);
+  wtf_size_t prelude_offset_end = stream.LookAheadOffset();
+  if (!ConsumeEndOfPreludeForAtRuleWithBlock(stream))
+    return nullptr;
+  CSSParserTokenStream::BlockGuard guard(stream);
+
+  const CSSParserToken& name_token = prelude.ConsumeIncludingWhitespace();
+  if (!prelude.AtEnd())
+    return nullptr;
+
+  String name;  // <dashed-ident>
+  if (name_token.GetType() == kIdentToken) {
+    name = name_token.Value().ToString();
+    if (!name.StartsWith("--"))
+      return nullptr;
+  } else {
+    return nullptr;
+  }
+
+  if (observer_) {
+    observer_->StartRuleHeader(StyleRule::kPositionFallback,
+                               prelude_offset_start);
+    observer_->EndRuleHeader(prelude_offset_end);
+    observer_->StartRuleBody(stream.Offset());
+  }
+
+  auto* position_fallback_rule =
+      MakeGarbageCollected<StyleRulePositionFallback>(AtomicString(name));
+  ConsumeRuleList(
+      stream, kPositionFallbackRuleList,
+      [position_fallback_rule](StyleRuleBase* try_rule) {
+        position_fallback_rule->ParserAppendTryRule(To<StyleRuleTry>(try_rule));
+      });
+
+  if (observer_)
+    observer_->EndRuleBody(stream.Offset());
+
+  return position_fallback_rule;
+}
+
+StyleRuleTry* CSSParserImpl::ConsumeTryRule(CSSParserTokenStream& stream) {
+  wtf_size_t prelude_offset_start = stream.LookAheadOffset();
+  CSSParserTokenRange prelude = ConsumeAtRulePrelude(stream);
+  wtf_size_t prelude_offset_end = stream.LookAheadOffset();
+  if (!ConsumeEndOfPreludeForAtRuleWithBlock(stream))
+    return nullptr;
+  CSSParserTokenStream::BlockGuard guard(stream);
+
+  prelude.ConsumeWhitespace();
+  if (!prelude.AtEnd())
+    return nullptr;
+
+  if (observer_) {
+    observer_->StartRuleHeader(StyleRule::kTry, prelude_offset_start);
+    observer_->EndRuleHeader(prelude_offset_end);
+  }
+
+  ConsumeDeclarationList(stream, StyleRule::kTry);
+  return MakeGarbageCollected<StyleRuleTry>(
+      CreateCSSPropertyValueSet(parsed_properties_, context_->Mode()));
+}
+
 StyleRuleKeyframe* CSSParserImpl::ConsumeKeyframeStyleRule(
     const CSSParserTokenRange prelude,
     const RangeOffset& prelude_offset,
@@ -1338,7 +1426,8 @@ void CSSParserImpl::ConsumeDeclarationList(CSSParserTokenStream& stream,
       rule_type == StyleRule::kCounterStyle ||
       rule_type == StyleRule::kFontPaletteValues ||
       rule_type == StyleRule::kScrollTimeline ||
-      rule_type == StyleRule::kKeyframe || rule_type == StyleRule::kScope;
+      rule_type == StyleRule::kKeyframe || rule_type == StyleRule::kScope ||
+      rule_type == StyleRule::kTry;
   bool use_observer = observer_ && is_observer_rule_type;
   if (use_observer) {
     observer_->StartRuleBody(stream.Offset());
@@ -1431,12 +1520,16 @@ void CSSParserImpl::ConsumeDeclaration(CSSParserTokenStream& stream,
   }
 
   // @rules other than FontFace still handled with legacy code.
-  if (important && rule_type == StyleRule::kKeyframe)
+  if (important &&
+      (rule_type == StyleRule::kKeyframe || rule_type == StyleRule::kTry)) {
     return;
+  }
 
   if (unresolved_property == CSSPropertyID::kVariable) {
-    if (rule_type != StyleRule::kStyle && rule_type != StyleRule::kKeyframe)
+    if (rule_type != StyleRule::kStyle && rule_type != StyleRule::kKeyframe &&
+        rule_type != StyleRule::kTry) {
       return;
+    }
     AtomicString variable_name = lhs.Value().ToAtomicString();
     bool is_animation_tainted = rule_type == StyleRule::kKeyframe;
     ConsumeVariableValue(tokenized_value, variable_name, important,

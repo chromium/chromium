@@ -61,6 +61,8 @@ class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
     kScrollTimeline,
     kSupports,
     kViewport,
+    kPositionFallback,
+    kTry,
   };
 
   // Name of a cascade layer as given by an @layer rule, split at '.' into a
@@ -92,6 +94,8 @@ class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
   bool IsSupportsRule() const { return GetType() == kSupports; }
   bool IsViewportRule() const { return GetType() == kViewport; }
   bool IsImportRule() const { return GetType() == kImport; }
+  bool IsPositionFallbackRule() const { return GetType() == kPositionFallback; }
+  bool IsTryRule() const { return GetType() == kTry; }
 
   StyleRuleBase* Copy() const;
 
