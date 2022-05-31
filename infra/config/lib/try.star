@@ -274,6 +274,20 @@ def _orchestrator_builder(
     if use_orchestrator_pool:
         kwargs.setdefault("pool", "luci.chromium.try.orchestrator")
         kwargs.setdefault("builderless", None)
+
+        # Orchestrator builders that don't use a src checkout don't need a
+        # builder cache. Setting a cache with a "builder" path prevents
+        # buildbucket from automatically creating a regular builder cache
+        # with a 4 minute wait_for_warm_cache.
+        # `wait_for_warm_cache = None` ensures that swarming will not look
+        # for a bot with a builder cache.
+        kwargs.setdefault("caches", [
+            swarming.cache(
+                name = "unused_builder_cache",
+                path = "builder",
+                wait_for_warm_cache = None,
+            ),
+        ])
     else:
         kwargs.setdefault("builderless", not settings.is_main)
 
