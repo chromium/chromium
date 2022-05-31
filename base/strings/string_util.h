@@ -154,7 +154,7 @@ template<typename Char> struct CaseInsensitiveCompareASCII {
 //    0  (a == b)
 //    1  (a > b)
 // (unlike strcasecmp which can return values greater or less than 1/-1). For
-// full Unicode support, use base::i18n::ToLower or base::i18h::FoldCase
+// full Unicode support, use base::i18n::ToLower or base::i18n::FoldCase
 // and then just call the normal string operators on the result.
 BASE_EXPORT int CompareCaseInsensitiveASCII(StringPiece a, StringPiece b);
 BASE_EXPORT int CompareCaseInsensitiveASCII(StringPiece16 a, StringPiece16 b);
@@ -171,7 +171,7 @@ inline bool EqualsCaseInsensitiveASCIIT(BasicStringPiece<CharT> a,
 }  // namespace internal
 
 // Equality for ASCII case-insensitive comparisons. For full Unicode support,
-// use base::i18n::ToLower or base::i18h::FoldCase and then compare with either
+// use base::i18n::ToLower or base::i18n::FoldCase and then compare with either
 // == or !=.
 inline bool EqualsCaseInsensitiveASCII(StringPiece a, StringPiece b) {
   return internal::EqualsCaseInsensitiveASCIIT(a, b);
