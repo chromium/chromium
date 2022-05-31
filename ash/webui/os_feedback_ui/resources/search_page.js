@@ -259,6 +259,13 @@ export class SearchPageElement extends SearchPageElementBase {
       }));
     }
   }
+
+  /**
+   * @param {string} text
+   */
+  setDescription(text) {
+    this.getInputElement_().value = text;
+  }
 }
 
 customElements.define(SearchPageElement.is, SearchPageElement);

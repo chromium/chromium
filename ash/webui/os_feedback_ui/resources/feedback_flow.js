@@ -142,6 +142,17 @@ export class FeedbackFlowElement extends PolymerElement {
       case FeedbackFlowState.SHARE_DATA:
         this.currentState_ = FeedbackFlowState.SEARCH;
         break;
+      case FeedbackFlowState.CONFIRMATION:
+        // Remove the text from previous search.
+        const searchPage = this.shadowRoot.querySelector('search-page');
+        searchPage.setDescription(/*text=*/ '');
+
+        // Re-enable the send button in share data page.
+        const shareDataPage = this.shadowRoot.querySelector('share-data-page');
+        shareDataPage.reEnableSendReportButton();
+
+        this.currentState_ = FeedbackFlowState.SEARCH;
+        break;
       default:
         console.warn('unexpected state: ', event.detail.currentState);
     }

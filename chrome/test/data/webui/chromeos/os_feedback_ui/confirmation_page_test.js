@@ -3,10 +3,11 @@
 // found in the LICENSE file.
 
 import {ConfirmationPageElement} from 'chrome://os-feedback/confirmation_page.js';
+import {FeedbackFlowState} from 'chrome://os-feedback/feedback_flow.js';
 import {SendReportStatus} from 'chrome://os-feedback/feedback_types.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
-import {flushTasks, isVisible} from '../../test_util.js';
+import {eventToPromise, flushTasks, isVisible} from '../../test_util.js';
 
 /** @type {string} */
 const ONLINE_TITLE = 'Thanks for your feedback';
@@ -160,5 +161,28 @@ export function confirmationPageTest() {
 
     page.sendReportStatus = SendReportStatus.kDelayed;
     verifyElementsByStatus(/**isOnline=*/ false);
+  });
+
+  /**
+   * Test that when send-new-report button is clicked, an on-go-back-click
+   * is fired.
+   */
+  test('SendNewReport', async () => {
+    await initializePage();
+
+    const clickPromise =
+        eventToPromise('go-back-click', /**@type {!Element} */ (page));
+    let actualCurrentState;
+
+    page.addEventListener('go-back-click', (event) => {
+      actualCurrentState = event.detail.currentState;
+    });
+
+    const buttonNewReport = getElement(page, '#buttonNewReport');
+    buttonNewReport.click();
+
+    await clickPromise;
+    assertTrue(!!actualCurrentState);
+    assertEquals(FeedbackFlowState.CONFIRMATION, actualCurrentState);
   });
 }

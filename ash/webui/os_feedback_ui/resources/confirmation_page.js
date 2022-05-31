@@ -10,6 +10,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {FeedbackFlowState} from './feedback_flow.js';
 import {SendReportStatus} from './feedback_types.js';
 
 /**
@@ -76,6 +77,20 @@ export class ConfirmationPageElement extends PolymerElement {
     return 'Your feedback helps improve ChromeOS and will be reviewed by ' +
         'our team. Because of the large number of reports, we won\’t be able ' +
         ' to send a reply.';
+  }
+
+  /**
+   * @param {!Event} e
+   * @protected
+   */
+  handleBackButtonClicked_(e) {
+    e.stopPropagation();
+
+    this.dispatchEvent(new CustomEvent('go-back-click', {
+      composed: true,
+      bubbles: true,
+      detail: {currentState: FeedbackFlowState.CONFIRMATION}
+    }));
   }
 }
 

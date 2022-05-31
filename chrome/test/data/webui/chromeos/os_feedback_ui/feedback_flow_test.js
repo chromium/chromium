@@ -231,6 +231,91 @@ export function FeedbackFlowTestSuite() {
     assertEquals(SendReportStatus.kSuccess, activePage.sendReportStatus);
   });
 
+  // Test the navigation from confirmation page to search page after the
+  // send new report button is clicked.
+  test('NavigateFromConfirmationPageToSearchPage', async () => {
+    await initializePage();
+    page.setCurrentStateForTesting(FeedbackFlowState.CONFIRMATION);
+    // Set text input in search page for testing.
+    const searchPage = page.shadowRoot.querySelector('#searchPage');
+    searchPage.setDescription(/*text=*/ 'abc123');
+
+    let activePage = page.shadowRoot.querySelector('.iron-selected');
+    assertEquals('confirmationPage', activePage.id);
+
+    const clickPromise = eventToPromise('go-back-click', page);
+
+    let eventDetail;
+    page.addEventListener('go-back-click', (event) => {
+      eventDetail = event.detail;
+    });
+
+    activePage.shadowRoot.querySelector('#buttonNewReport').click();
+    await clickPromise;
+
+    assertEquals(FeedbackFlowState.CONFIRMATION, eventDetail.currentState);
+
+    // Should navigate to search page.
+    activePage = page.shadowRoot.querySelector('.iron-selected');
+    assertTrue(!!activePage);
+    assertEquals('searchPage', activePage.id);
+
+    // Search text should be empty.
+    const inputElement =
+        searchPage.shadowRoot.querySelector('#descriptionText');
+    assertEquals(inputElement.value, '');
+  });
+
+  // When starting a new report, the send button in share data page
+  // should be re-enabled.
+  test('SendNewReportShouldEnableSendButton', async () => {
+    await initializePage();
+    page.setCurrentStateForTesting(FeedbackFlowState.SHARE_DATA);
+    // In normal flow, the description should have been set when arriving to the
+    // share data page.
+    page.setDescriptionForTesting('abc123');
+
+    const continueClickPromise = eventToPromise('continue-click', page);
+    const goBackClickPromise = eventToPromise('go-back-click', page);
+
+    let activePage = page.shadowRoot.querySelector('.iron-selected');
+    const shareDataPageSendButton =
+        activePage.shadowRoot.querySelector('#buttonSend');
+    activePage.shadowRoot.querySelector('#buttonSend').click();
+    await continueClickPromise;
+
+    // Should navigate to confirmation page.
+    activePage = page.shadowRoot.querySelector('.iron-selected');
+    assertTrue(!!activePage);
+    assertEquals('confirmationPage', activePage.id);
+
+    // The send button in the share data page should be disabled after
+    // sending the report and before send new report button is clicked
+    assertTrue(shareDataPageSendButton.disabled);
+
+    // Click send new report button.
+    activePage.shadowRoot.querySelector('#buttonNewReport').click();
+    await goBackClickPromise;
+
+    // Should navigate to search page.
+    activePage = page.shadowRoot.querySelector('.iron-selected');
+    assertTrue(!!activePage);
+    assertEquals('searchPage', activePage.id);
+
+    // Add some text and clicks continue button.
+    activePage.setDescription(/*text=*/ 'abc123');
+    activePage.shadowRoot.querySelector('#buttonContinue').click();
+    await continueClickPromise;
+
+    // Should navigate to share data page.
+    activePage = page.shadowRoot.querySelector('.iron-selected');
+    assertTrue(!!activePage);
+    assertEquals('shareDataPage', activePage.id);
+
+    // The send button in the share data page should be re-enabled.
+    assertFalse(shareDataPageSendButton.disabled);
+  });
+
   // Test that the getUserEmail is called after initialization.
   test('GetUserEmailIsCalled', async () => {
     assertEquals(0, feedbackServiceProvider.getFeedbackContextCallCount());

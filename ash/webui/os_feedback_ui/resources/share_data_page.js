@@ -133,6 +133,14 @@ export class ShareDataPageElement extends PolymerElement {
     }
     return report;
   }
+
+  /**
+   * When starting a new report, the send report button should be
+   * re-enabled.
+   */
+  reEnableSendReportButton() {
+    this.getElement_('#buttonSend').disabled = false;
+  }
 }
 
 customElements.define(ShareDataPageElement.is, ShareDataPageElement);
