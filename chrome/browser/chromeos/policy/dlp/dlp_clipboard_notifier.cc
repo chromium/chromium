@@ -85,7 +85,7 @@ bool HasEndpoint(const std::vector<ui::DataTransferEndpoint>& saved_endpoints,
     if (ept.type() == endpoint_type) {
       if (endpoint_type != ui::EndpointType::kUrl)
         return true;
-      else if (ept == *endpoint)
+      else if (ept.IsSameURLWith(*endpoint))
         return true;
     }
   }

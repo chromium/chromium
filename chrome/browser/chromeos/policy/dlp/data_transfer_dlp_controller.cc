@@ -257,22 +257,22 @@ bool DataTransferDlpController::IsClipboardReadAllowed(
       is_read_allowed = false;
       break;
     case DlpRulesManager::Level::kWarn:
-      if (notify_on_paste) {
-        if (data_dst && IsVM(data_dst->type())) {
+      if (data_dst && IsVM(data_dst->type())) {
+        if (notify_on_paste) {
           ReportEvent(data_src, data_dst, src_pattern, dst_pattern,
                       DlpRulesManager::Level::kWarn,
                       /*is_clipboard_event=*/true);
           WarnOnPaste(data_src, data_dst);
-        } else if (ShouldCancelOnWarn(data_dst)) {
-          is_read_allowed = false;
-        } else if (!(data_dst && data_dst->IsUrlType()) &&
-                   !ShouldPasteOnWarn(data_dst)) {
-          ReportEvent(data_src, data_dst, src_pattern, dst_pattern,
-                      DlpRulesManager::Level::kWarn,
-                      /*is_clipboard_event=*/true);
-          WarnOnPaste(data_src, data_dst);
-          is_read_allowed = false;
         }
+      } else if (ShouldCancelOnWarn(data_dst)) {
+        is_read_allowed = false;
+      } else if (notify_on_paste && !(data_dst && data_dst->IsUrlType()) &&
+                 !ShouldPasteOnWarn(data_dst)) {
+        ReportEvent(data_src, data_dst, src_pattern, dst_pattern,
+                    DlpRulesManager::Level::kWarn,
+                    /*is_clipboard_event=*/true);
+        WarnOnPaste(data_src, data_dst);
+        is_read_allowed = false;
       }
       break;
     default:
@@ -316,14 +316,16 @@ void DataTransferDlpController::PasteIfAllowed(
 
   DCHECK_EQ(level, DlpRulesManager::Level::kWarn);
 
-  if (ShouldNotifyOnPaste(data_dst)) {
-    if (ShouldPasteOnWarn(data_dst)) {
+  if (ShouldPasteOnWarn(data_dst)) {
+    if (ShouldNotifyOnPaste(data_dst)) {
       ReportWarningProceededEvent(data_src, data_dst, src_pattern, dst_pattern,
                                   dlp_rules_manager_.GetReportingManager());
-      std::move(callback).Run(true);
-    } else if (ShouldCancelOnWarn(data_dst)) {
-      std::move(callback).Run(false);
-    } else {
+    }
+    std::move(callback).Run(true);
+  } else if (ShouldCancelOnWarn(data_dst)) {
+    std::move(callback).Run(false);
+  } else {
+    if (ShouldNotifyOnPaste(data_dst)) {
       auto reporting_callback = base::BindOnce(
           &MaybeReportWarningProceededEvent, *data_src, *data_dst, src_pattern,
           dst_pattern, dlp_rules_manager_.GetReportingManager());
@@ -331,9 +333,9 @@ void DataTransferDlpController::PasteIfAllowed(
                   DlpRulesManager::Level::kWarn, /*is_clipboard_event=*/true);
       WarnOnBlinkPaste(data_src, data_dst, web_contents,
                        std::move(reporting_callback).Then(std::move(callback)));
+    } else {
+      std::move(callback).Run(true);
     }
-  } else {
-    std::move(callback).Run(true);
   }
 }
 

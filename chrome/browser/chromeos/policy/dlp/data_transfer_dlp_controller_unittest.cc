@@ -478,9 +478,8 @@ TEST_P(DlpControllerTest, Warn_ShouldCancelOnWarn) {
   EXPECT_CALL(dlp_controller_, ShouldCancelOnWarn)
       .WillRepeatedly(testing::Return(true));
 
-  bool expected_is_read = data_dst_.has_value() ? !do_notify_ : false;
-  EXPECT_EQ(expected_is_read, dlp_controller_.IsClipboardReadAllowed(
-                                  &data_src_, dst_ptr_, absl::nullopt));
+  EXPECT_EQ(false, dlp_controller_.IsClipboardReadAllowed(&data_src_, dst_ptr_,
+                                                          absl::nullopt));
   testing::Mock::VerifyAndClearExpectations(&dlp_controller_);
 }
 
