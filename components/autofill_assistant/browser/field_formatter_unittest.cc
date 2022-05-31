@@ -595,8 +595,15 @@ TEST(FieldFormatterTest, DifferentLocales) {
               Contains(Pair(Key(36), "Vereinigte Staaten")));
 
   // Invalid locales default to "en-US".
+  // Android and Desktop use a different default.
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_THAT(CreateAutofillMappings(profile, ""),
               Contains(Pair(Key(36), "United States")));
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
+  EXPECT_THAT(CreateAutofillMappings(profile, ""),
+              Contains(Pair(Key(36), "US")));
+#endif
   EXPECT_THAT(CreateAutofillMappings(profile, "invalid"),
               Contains(Pair(Key(36), "United States")));
 }

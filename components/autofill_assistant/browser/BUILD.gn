@@ -579,8 +579,12 @@ source_set("unit_tests") {
     "web/element_action_util_unittest.cc",
     "web/element_store_unittest.cc",
     "web/send_keyboard_input_worker_unittest.cc",
-    "website_login_manager_impl_unittest.cc",
   ]
+
+  # TODO(crbug.com/1329148): enable these tests on desktop.
+  if (is_android) {
+    sources += [ "website_login_manager_impl_unittest.cc" ]
+  }
 
   deps = [
     ":browser",

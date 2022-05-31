@@ -311,6 +311,7 @@ test("components_unittests") {
       "//components/autofill/content/browser:unit_tests",
       "//components/autofill/content/renderer:unit_tests",
       "//components/autofill/core/common/mojom:unit_tests",
+      "//components/autofill_assistant/browser:unit_tests",
       "//components/background_sync:unit_tests",
       "//components/blocked_content:unit_tests",
       "//components/browsing_data/content:unit_tests",
@@ -447,7 +448,6 @@ test("components_unittests") {
     deps += [
       "//base:base_java_unittest_support",
       "//components/android_autofill/browser:unit_tests",
-      "//components/autofill_assistant/browser:unit_tests",
       "//components/autofill_assistant/content/browser:unit_tests",
       "//components/autofill_assistant/content/renderer:unit_tests",
       "//components/browser_ui/sms/android:unit_tests",

@@ -102,6 +102,7 @@ class Action {
   base::WeakPtrFactory<Action> weak_ptr_factory_{this};
 
  private:
+  friend class CollectUserDataActionTest;
   friend class JsFlowActionTest;
 };
 

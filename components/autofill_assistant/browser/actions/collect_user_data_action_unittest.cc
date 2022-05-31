@@ -143,6 +143,8 @@ using ::testing::SizeIs;
 using ::testing::StrEq;
 using ::testing::UnorderedElementsAre;
 
+}  // namespace
+
 class CollectUserDataActionTest : public testing::Test {
  public:
   void SetUp() override {
@@ -212,6 +214,10 @@ class CollectUserDataActionTest : public testing::Test {
     EXPECT_THAT(user_data_.selected_card(), Pointee(MatchesCard(*card)));
     EXPECT_THAT(user_model_.GetSelectedCreditCard(),
                 Pointee(MatchesCard(*card)));
+  }
+
+  void AddWaitTime(CollectUserDataAction* action, base::TimeDelta delta) {
+    action->action_stopwatch_.TransferToWaitTime(delta);
   }
 
  protected:
@@ -3653,8 +3659,6 @@ TEST_F(CollectUserDataActionTest, LogsUkmMoreThanFiveProfilesCount) {
 }
 
 TEST_F(CollectUserDataActionTest, LogUkmSuccess) {
-  base::subtle::ScopedTimeClockOverrides overrides(
-      nullptr, &TimeTicksOverride::Now, nullptr);
   ActionProto action_proto;
   auto* collect_user_data_proto = action_proto.mutable_collect_user_data();
   collect_user_data_proto->set_privacy_notice_text("privacy");
@@ -3677,11 +3681,10 @@ TEST_F(CollectUserDataActionTest, LogUkmSuccess) {
       callback_,
       Run(Pointee(Property(&ProcessedActionProto::status, ACTION_APPLIED))));
   CollectUserDataAction action(&mock_action_delegate_, action_proto);
+
+  AddWaitTime(&action, base::Milliseconds(4000));
   action.ProcessAction(callback_.Get());
 
-  // We start counting the "wait time" after CollecUserData is called, so we
-  // need to increase the timer and call the callback at this point.
-  TimeTicksOverride::now_ticks_ += base::Seconds(4);
   ASSERT_TRUE(confirm_callback);
   std::move(confirm_callback).Run(&user_data_, &user_model_);
 
@@ -3732,8 +3735,6 @@ TEST_F(CollectUserDataActionTest, LogUkmAdditionalActionSelected) {
 }
 
 TEST_F(CollectUserDataActionTest, LogUkmFailure) {
-  base::subtle::ScopedTimeClockOverrides overrides(
-      nullptr, &TimeTicksOverride::Now, nullptr);
   ActionProto action_proto;
   auto* collect_user_data_proto = action_proto.mutable_collect_user_data();
   collect_user_data_proto->set_privacy_notice_text("privacy");
@@ -3749,10 +3750,8 @@ TEST_F(CollectUserDataActionTest, LogUkmFailure) {
         .WillByDefault([&](CollectUserDataOptions* collect_user_data_options) {
           // The continue button is never pressed.
         });
+    AddWaitTime(&action, base::Milliseconds(3000));
     action.ProcessAction(callback_.Get());
-    // We start counting the "wait time" after CollecUserData is called, so we
-    // need to increase the timer at this point.
-    TimeTicksOverride::now_ticks_ += base::Seconds(3);
 
     // The CollectUserDataAction destructor is called, this simulates the user
     // closing the bottom sheet or the tab.
@@ -4069,5 +4068,4 @@ TEST_F(CollectUserDataActionTest, MergesTransientDataWithUserDataFromBackend) {
   action.ProcessAction(callback_.Get());
 }
 
-}  // namespace
 }  // namespace autofill_assistant

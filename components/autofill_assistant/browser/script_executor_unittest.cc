@@ -1731,8 +1731,8 @@ TEST_F(ScriptExecutorTest, KeepStatusMessageWhenNotInterrupted) {
   EXPECT_EQ("pre-interrupt status", ui_delegate_.GetStatusMessage());
 }
 
-#if BUILDFLAG(IS_ANDROID) && defined(ADDRESS_SANITIZER)
-// This test fails on Android ASAN: https://crbug.com/1315701
+#if defined(ADDRESS_SANITIZER)
+// This test fails on ASAN: https://crbug.com/1315701
 #define MAYBE_PauseWaitForDomWhileNavigating \
   DISABLED_PauseWaitForDomWhileNavigating
 #else
@@ -1918,8 +1918,8 @@ TEST_F(ScriptExecutorTest, ReportNavigationEnd) {
   EXPECT_TRUE(processed_actions_capture[0].navigation_info().ended());
 }
 
-#if BUILDFLAG(IS_ANDROID) && defined(ADDRESS_SANITIZER)
-// This test fails on Android ASAN: https://crbug.com/1315701
+#if defined(ADDRESS_SANITIZER)
+// This test fails on ASAN: https://crbug.com/1315701
 #define MAYBE_ReportUnexpectedNavigationStart \
   DISABLED_ReportUnexpectedNavigationStart
 #else
@@ -1964,8 +1964,8 @@ TEST_F(ScriptExecutorTest, MAYBE_ReportUnexpectedNavigationStart) {
   EXPECT_TRUE(processed_actions_capture[0].navigation_info().unexpected());
 }
 
-#if BUILDFLAG(IS_ANDROID) && defined(ADDRESS_SANITIZER)
-// This test fails on Android ASAN: https://crbug.com/1315701
+#if defined(ADDRESS_SANITIZER)
+// This test fails on ASAN: https://crbug.com/1315701
 #define MAYBE_ReportExpectedNavigationStart \
   DISABLED_ReportExpectedNavigationStart
 #else

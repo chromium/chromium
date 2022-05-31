@@ -136,14 +136,20 @@ bool ValueToString(UserModel* user_model,
           return false;
         }
         auto date = value->dates().values(i);
+
+        // Technically we are setting the wrong |day_of_week|, but it's ignored
+        // in practice and the formatted string will have the correct day for
+        // the date. Setting an invalid value here (e.g. -1) causes issues on
+        // Windows.
         base::Time::Exploded exploded_time = {static_cast<int>(date.year()),
                                               date.month(),
-                                              /* day_of_week = */ -1,
+                                              /* day_of_week = */ 0,
                                               date.day(),
                                               /* hour = */ 0,
                                               /* minute = */ 0,
                                               /* second = */ 0,
                                               /* millisecond = */ 0};
+
         base::Time time;
         if (!base::Time::FromLocalExploded(exploded_time, &time)) {
           DVLOG(2) << "Error evaluating " << __func__ << ": invalid date "
