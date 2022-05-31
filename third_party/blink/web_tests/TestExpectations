@@ -6989,3 +6989,6 @@ crbug.com/1330238 [ Mac ] http/tests/devtools/elements/styles-3/styles-computed-
 
 # Sheriff 2022-05-31
 crbug.com/1330300 fast/css-grid-layout/grid-auto-repeat-huge-grid-006.html [ Pass Timeout ]
+
+# Sheriff 2022-05-31
+crbug.com/1330555 [ Mac11 ] external/wpt/service-workers/service-worker/resource-timing-fetch-variants.https.html [ Pass Failure ]
