@@ -493,6 +493,7 @@
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} ശ്രമം ശേഷിക്കുന്നു}other{{0} ശ്രമങ്ങൾ ശേഷിക്കുന്നു}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">സ്‌കാൻ പൂർത്തിയാക്കാനായില്ല</translation>
+<translation id="5499762266711462226">കീബോർഡിന്റെ നിറം വാൾപേപ്പറിനെ അടിസ്ഥാനമാക്കിയുള്ളതാണ്</translation>
 <translation id="5502931783115429516">Android റൺ ചെയ്യുന്നില്ല</translation>
 <translation id="5507300744274596613">Chrome OS അപ് ടു ഡേറ്റാണെന്ന് ഉറപ്പാക്കുക</translation>
 <translation id="5519195206574732858">LTE</translation>

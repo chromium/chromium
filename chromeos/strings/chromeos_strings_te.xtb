@@ -236,6 +236,7 @@
 <translation id="315738237743207937">క్యాప్టివ్ పోర్టల్ గుర్తించబడింది</translation>
 <translation id="3170673040743561620">మీ డాక్యుమెంట్‌ను స్కానర్ మీద పెట్టండి</translation>
 <translation id="3188257591659621405">నా ఫైళ్లు</translation>
+<translation id="319101249942218879">అవతార్ ఇమేజ్ మారింది</translation>
 <translation id="3192947282887913208">ఆడియో  ఫైళ్ళు</translation>
 <translation id="3199982728237701504">డాక్యుమెంట్ ఫీడర్ (రెండు వైపులా)</translation>
 <translation id="320091191259649613">అప్‌డేట్ చేసిన తర్వాత కూడా మీకు సమస్య కనిపిస్తే, కాంపోనెంట్ కొత్తగా అర్హత పొంది ఉండవచ్చు, అలాగే అది డేటాబేస్‌లో ఇంకా జోడించబడకపోవచ్చు.</translation>
@@ -492,6 +493,7 @@
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} ప్రయత్నం మిగిలి ఉంది}other{{0} ప్రయత్నాలు మిగిలి ఉన్నాయి}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">స్కాన్‌ను పూర్తి చేయడం సాధ్యపడలేదు</translation>
+<translation id="5499762266711462226">కీబోర్డ్ రంగు, వాల్‌పేపర్‌పై ఆధారపడి ఉంటుంది</translation>
 <translation id="5502931783115429516">Android రన్ అవ్వడం లేదు</translation>
 <translation id="5507300744274596613">Chrome OS అప్‌డేట్ అయ్యి ఉందని నిర్ధారించుకోండి</translation>
 <translation id="5519195206574732858">LTE</translation>

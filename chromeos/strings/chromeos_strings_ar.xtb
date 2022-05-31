@@ -86,6 +86,7 @@
 <translation id="1645954272419197032">مطلوب تأكيد معلومات الجهاز</translation>
 <translation id="1662989795263954667">توقّفت الطابعة - نفد الحبر</translation>
 <translation id="1668469839109562275">الشبكة الافتراضية الخاصة المُدمجة</translation>
+<translation id="1672499492233627739">خلاصة فيديو كاميرا الويب</translation>
 <translation id="1676557873873341166">تسجيل فيديو</translation>
 <translation id="1703835215927279855">خطاب</translation>
 <translation id="1706391837335750954">توفُّر برنامج تعيين نظام أسماء النطاقات</translation>
@@ -216,6 +217,7 @@
 <translation id="3008341117444806826">إعادة التحميل</translation>
 <translation id="3009958530611748826">اختيار مجلّد لحفظ عمليات المسح الضوئي فيه</translation>
 <translation id="3017079585324758401">الخلفية</translation>
+<translation id="3027578600144895987">إغلاق الكاميرا</translation>
 <translation id="3031560714565892478">الجهاز هو كاميرا فيديو.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> ميلي أمبير</translation>
 <translation id="3056720590588772262">نقطة النهاية</translation>
@@ -234,6 +236,7 @@
 <translation id="315738237743207937">تم رصد مدخل مشروط الوصول إليه.</translation>
 <translation id="3170673040743561620">يُرجى وضع المستند على الماسح الضوئي.</translation>
 <translation id="3188257591659621405">ملفاتي</translation>
+<translation id="319101249942218879">تم تغيير الصورة الرمزية.</translation>
 <translation id="3192947282887913208">ملفات صوتية</translation>
 <translation id="3199982728237701504">وحدة تغذية المستندات (وجهان)</translation>
 <translation id="320091191259649613">في حال استمرار المشكلة بعد التحديث، قد يكون السبب أنّ المكوّن قد تم اعتماده حديثًا ولم يصل بعد إلى قاعدة البيانات.</translation>

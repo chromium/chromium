@@ -59,6 +59,7 @@
 <translation id="2583187216237139145">ผู้ดูแลโปรไฟล์งานนำข้อมูล Chromium ที่สร้างขึ้นในช่วงที่มีการใช้โปรไฟล์นี้ออกได้ (เช่น การสร้างบุ๊กมาร์ก ประวัติการเข้าชม รหัสผ่าน และการตั้งค่าอื่นๆ) <ph name="LEARN_MORE" /></translation>
 <translation id="2648074677641340862">เกิดข้อผิดพลาดของระบบปฏิบัติในระหว่างการติดตั้ง โปรดดาวน์โหลด Chromium อีกครั้ง</translation>
 <translation id="2661879430930417727">เพื่อนและครอบครัวสามารถท่องเว็บแยกกันและตั้งค่า Chromium ตามที่ตนต้องการในกรณีที่ใช้อุปกรณ์ร่วมกัน</translation>
+<translation id="268602741124540128">ยินดีต้อนรับสู่ Chromium <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="2711502716910134313">แท็บ Chromium</translation>
 <translation id="2718390899429598676">เพื่อเพิ่มความปลอดภัยให้มากยิ่งขึ้น Chromium จะเข้ารหัสข้อมูลของคุณ</translation>
 <translation id="2770231113462710648">เปลี่ยนเบราว์เซอร์ที่เป็นค่าเริ่มต้นเป็น:</translation>
@@ -117,9 +118,11 @@
 <translation id="3830894615770080216">ระบบ Chromium OS</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
 <translation id="386822487697155367">รับความช่วยเหลือเกี่ยวกับ Chromium OS</translation>
+<translation id="3871664619793219264">ดึงข้อมูลของคุณในเบราว์เซอร์ Chromium จาก <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="388648406173476553">ปรับแต่งและควบคุม Chromium มีสิ่งที่คุณจำเป็นต้องทราบ โปรดคลิกเพื่อดูรายละเอียด</translation>
 <translation id="3889543394854987837">คลิกชื่อของคุณเพื่อเปิด Chromium และเริ่มท่องเว็บ</translation>
 <translation id="390528597099634151"><ph name="EXISTING_USER" /> ลงชื่อเข้าใช้โปรไฟล์ Chromium นี้แล้ว หากต้องการแยกการท่องเว็บของคุณไว้ต่างหาก Chromium สร้างโปรไฟล์ให้คุณโดยเฉพาะได้</translation>
+<translation id="391789666908693569">บัญชีของคุณจัดการโดย <ph name="MANAGER_NAME" /> ผู้ดูแลระบบสามารถดูและแก้ไขโปรไฟล์เบราว์เซอร์ Chromium นี้ รวมถึงข้อมูลในโปรไฟล์อย่างเช่นบุ๊กมาร์ก ประวัติการเข้าชม และรหัสผ่านได้</translation>
 <translation id="3945058413678539331">Chromium กำลังพยายามคัดลอกรหัสผ่าน โปรดพิมพ์รหัสผ่าน Windows ของคุณเพื่ออนุญาต</translation>
 <translation id="3962623956404948996">Chromium แนะนำให้สแกนไฟล์นี้เนื่องจากอาจเป็นอันตราย</translation>
 <translation id="3997429360543082038">เกี่ยวกับ Chromium OS</translation>

@@ -86,6 +86,7 @@
 <translation id="1645954272419197032">እባክዎ የመሣሪያ መረጃን ያረጋግጡ</translation>
 <translation id="1662989795263954667">ቆሟል - ቀለም አልቋል</translation>
 <translation id="1668469839109562275">አብሮገነብ VPN</translation>
+<translation id="1672499492233627739">የድር ካሜራ ቪዲዮ ምግብ</translation>
 <translation id="1676557873873341166">ቪዲዮን በመቅረጽ ላይ</translation>
 <translation id="1703835215927279855">ደብዳቤ</translation>
 <translation id="1706391837335750954">የዲኤንኤስ መፍትሔ ሰጪ አለ</translation>
@@ -216,6 +217,7 @@
 <translation id="3008341117444806826">አድስ</translation>
 <translation id="3009958530611748826">የሚያስቀምጡበትን አቃፊ ይምረጡ</translation>
 <translation id="3017079585324758401">ጀርባ</translation>
+<translation id="3027578600144895987">ካሜራን ዝጋ</translation>
 <translation id="3031560714565892478">መሣሪያ የቪዲዮ ካሜራ ነው።</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> ሚአ</translation>
 <translation id="3056720590588772262">የማለቂያ ነጥብ</translation>
@@ -492,6 +494,7 @@
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} ሙከራ ቀርቷል}one{{0} ሙከራዎች ቀርተዋል}other{{0} ሙከራዎች ቀርተዋል}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />፦ <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">ቅኝቱን ማጠናቀቅ አልተቻለም</translation>
+<translation id="5499762266711462226">የቁልፍ ሰሌዳ ቀለም በልጣፍ ላይ የተመሠረተ ነው</translation>
 <translation id="5502931783115429516">Android እያሄደ አይደለም</translation>
 <translation id="5507300744274596613">Chrome OS ወቅታዊ መሆኑን ያረጋግጡ</translation>
 <translation id="5519195206574732858">LTE</translation>

@@ -234,6 +234,7 @@
 <translation id="315738237743207937">Avtorizasiya portalı aşkarlanıb</translation>
 <translation id="3170673040743561620">Sənədinizi skanerə yerləşdirin</translation>
 <translation id="3188257591659621405">Fayllarım</translation>
+<translation id="319101249942218879">Avatar şəkli dəyişib</translation>
 <translation id="3192947282887913208">Audio Fayllar</translation>
 <translation id="3199982728237701504">Sənəd Bəsləyici (İki tərəfli)</translation>
 <translation id="320091191259649613">Güncəlləmədən sonra problemi hələ də görürsünüzsə, ola bilsin ki, komponent yeni uyğunlaşdırılıb və hələ data bazasına daxil edilməyib.</translation>
@@ -490,6 +491,7 @@
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} cəhd qalıb}other{{0} cəhd qalıb}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Skanı tamamlamaq olmadı</translation>
+<translation id="5499762266711462226">Klaviatura rəngi divar kağızına əsaslanır</translation>
 <translation id="5502931783115429516">Android işləmir</translation>
 <translation id="5507300744274596613">Chrome OS-in güncəl olduğuna əmin olun</translation>
 <translation id="5519195206574732858">LTE</translation>

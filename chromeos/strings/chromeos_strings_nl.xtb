@@ -492,6 +492,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Nog {0} poging}other{Nog {0} pogingen}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Kan scan niet voltooien</translation>
+<translation id="5499762266711462226">Toetsenbordkleur is gebaseerd op achtergrond</translation>
 <translation id="5502931783115429516">Android wordt niet uitgevoerd</translation>
 <translation id="5507300744274596613">Zorg dat Chrome OS up-to-date is</translation>
 <translation id="5519195206574732858">LTE</translation>

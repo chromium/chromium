@@ -494,6 +494,7 @@
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{あと {0} 回試行できます}other{あと {0} 回試行できます}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">スキャンを完了できませんでした</translation>
+<translation id="5499762266711462226">キーボードのバックライトの色は壁紙に基づいています</translation>
 <translation id="5502931783115429516">Android は実行されていません</translation>
 <translation id="5507300744274596613">Chrome OS が最新バージョンかどうかご確認ください</translation>
 <translation id="5519195206574732858">LTE</translation>

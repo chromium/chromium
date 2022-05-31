@@ -205,7 +205,6 @@
 <translation id="2132302418721800944">錄製全螢幕畫面</translation>
 <translation id="2135456203358955318">停駐放大鏡</translation>
 <translation id="2148716181193084225">今天</translation>
-<translation id="2159930836979502091">前往這個分頁</translation>
 <translation id="2170530631236737939">以三指向下滑動即可結束「總覽」</translation>
 <translation id="219905428774326614">啟動器，所有應用程式</translation>
 <translation id="2201071101391734388">第 <ph name="INDEX" /> 張近期相片，共 <ph name="TOTAL_COUNT" /> 張。</translation>
@@ -249,6 +248,7 @@
 <translation id="243878895369688216">昨天開啟過</translation>
 <translation id="2441427462554639370">儲存空間嚴重不足，因此已停止錄製</translation>
 <translation id="24452542372838207">展開通知</translation>
+<translation id="2449089818483227734">電量不足</translation>
 <translation id="2450205753526923158">螢幕截圖模式</translation>
 <translation id="2456008742792828469">日曆，<ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2473177541599297363">確認解析度</translation>
@@ -409,11 +409,13 @@
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> 分鐘</translation>
 <translation id="3445925074670675829">USB-C 裝置</translation>
+<translation id="3455468639467374593">範本，「<ph name="TEMPLATE_NAME" />」</translation>
 <translation id="3465223694362104965">這個裝置自你上次登入後接上了另外一組鍵盤。使用前請確認你信任該組鍵盤。</translation>
 <translation id="3465356146291925647">由系統管理員管理</translation>
 <translation id="3477079411857374384">Ctrl + Shift + 空格鍵</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />，<ph name="CONNECTION_STATUS" />，訊號強度 <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">自動隱藏檔案櫃</translation>
+<translation id="3505066820268455558">正在充電</translation>
 <translation id="3509391053705095206">找不到你的手機。請確認手機的藍牙功能已開啟。</translation>
 <translation id="3510164367642747937">醒目顯示滑鼠游標</translation>
 <translation id="3513798432020909783">這個帳戶是由 <ph name="MANAGER_EMAIL" /> 管理</translation>
@@ -454,6 +456,8 @@
 <translation id="3633097874324966332">請開啟藍牙設定以配對裝置</translation>
 <translation id="3638400994746983214">切換隱私保護畫面。<ph name="STATE_TEXT" />。</translation>
 <translation id="3649505501900178324">更新已逾期</translation>
+<translation id="3659814201068740063">大約還可使用 <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" />%)。
+請將裝置接上電源。</translation>
 <translation id="366222428570480733">受管理的使用者：<ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="36813544980941320">你的手機和「<ph name="DEVICE_NAME" />」將共用 Wi-Fi 網路</translation>
 <translation id="3694122362646626770">網站</translation>
@@ -508,6 +512,7 @@
 <translation id="3962859241508114581">上一首曲目</translation>
 <translation id="3969043077941541451">關閉</translation>
 <translation id="397105322502079400">計算中…</translation>
+<translation id="397726367135689299">電池充電過程可能不穩定。</translation>
 <translation id="3977512764614765090">電池電量：<ph name="PERCENTAGE" />% (充電中)。</translation>
 <translation id="3986082989454912832">接聽</translation>
 <translation id="3995138139523574647">USB-C 裝置 (右後方連接埠)</translation>
@@ -1034,6 +1039,7 @@
 <translation id="7130207228079676353">最有可能選擇的應用程式</translation>
 <translation id="7131634465328662194">系統會自動將你登出。</translation>
 <translation id="7143207342074048698">連線中</translation>
+<translation id="7144942256906679589">電池狀態</translation>
 <translation id="7165278925115064263">Alt + Shift + K 鍵</translation>
 <translation id="7168224885072002358">系統將在 <ph name="TIMEOUT_SECONDS" /> 秒後還原成原來的解析度</translation>
 <translation id="7180611975245234373">重新整理</translation>
@@ -1056,6 +1062,7 @@
 <translation id="7348093485538360975">螢幕小鍵盤</translation>
 <translation id="735745346212279324">已中斷 VPN 連線</translation>
 <translation id="7360036564632145207">變更周邊裝置的資料存取權防護設定可以改善效能</translation>
+<translation id="736045644501761622">設定桌布和樣式</translation>
 <translation id="7371404428569700291">錄製視窗畫面</translation>
 <translation id="7377169924702866686">大寫鍵已啟用。</translation>
 <translation id="7377481913241237033">使用代碼進行連結</translation>
@@ -1099,6 +1106,7 @@
 <translation id="7593891976182323525">搜尋鍵或 Shift 鍵</translation>
 <translation id="7600875258240007829">查看所有通知</translation>
 <translation id="7607002721634913082">已暫停</translation>
+<translation id="7609951632080598826">日曆檢視畫面，<ph name="DATE" /> <ph name="TIME" /></translation>
 <translation id="7611213136657090146">已重新連接攝影機。</translation>
 <translation id="7624117708979618027">華氏 <ph name="TEMPERATURE_F" />°</translation>
 <translation id="7633755430369750696">顯示鄰近分享設定。</translation>
@@ -1223,6 +1231,7 @@
 <translation id="8345019317483336363">已選取「<ph name="WINDOW_TITLE" />」視窗</translation>
 <translation id="8351131234907093545">寫筆記</translation>
 <translation id="8364673525741149932">切換 Shelf Party。<ph name="STATE_TEXT" /></translation>
+<translation id="8369166482916924789">已儲存的桌面，「<ph name="SAVE_AND_RECALL_DESK_NAME" />」</translation>
 <translation id="8371779926711439835">移至下一個字母</translation>
 <translation id="8371991222807690464">在訪客模式下，周邊裝置效能可能受到限制</translation>
 <translation id="8374601332003098278">按下 Enter 鍵以錄製部分螢幕畫面</translation>
@@ -1289,6 +1298,7 @@
 <translation id="8721053961083920564">切換音量設定。<ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">全螢幕畫面擷取</translation>
 <translation id="8734991477317290293">你的按鍵行為可能會遭到側錄</translation>
+<translation id="8735678380411481005">鍵盤背光顏色</translation>
 <translation id="8735953464173050365">顯示鍵盤設定。已選取<ph name="KEYBOARD_NAME" /></translation>
 <translation id="8755498163081687682">驗證身分：<ph name="ORIGIN_NAME" /> 要求確認你的身分</translation>
 <translation id="875593634123171288">顯示 VPN 設定</translation>
@@ -1334,6 +1344,7 @@
 <translation id="9000771174482730261">管理儲存空間</translation>
 <translation id="9017320285115481645">請輸入 Family Link 家長存取碼。</translation>
 <translation id="9024331582947483881">全螢幕</translation>
+<translation id="9029736946581028033">裝置即將關機</translation>
 <translation id="9030319654231318877">關閉，直到日落</translation>
 <translation id="9034924485347205037">Linux 檔案</translation>
 <translation id="9047624247355796468">開啟「<ph name="NETWORK_NAME" />」設定</translation>
@@ -1363,6 +1374,7 @@
 <translation id="9168436347345867845">稍後再說</translation>
 <translation id="9178475906033259337">目前正顯示 1 項與「<ph name="QUERY" />」相符的搜尋結果</translation>
 <translation id="9179259655489829027">這項功能可讓你快速存取任何已登入的使用者帳戶，不需提供密碼。使用這項功能時，請務必只存取你信任的帳戶。</translation>
+<translation id="9180906851711123156">按下 Ctrl + W 鍵即可關閉</translation>
 <translation id="9183456764293710005">全螢幕放大鏡</translation>
 <translation id="9193626018745640770">正在透過不明接收器投放</translation>
 <translation id="9194617393863864469">登入其他使用者帳戶...</translation>

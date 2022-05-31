@@ -86,6 +86,7 @@
 <translation id="1645954272419197032">请确认设备信息</translation>
 <translation id="1662989795263954667">已停止 - 墨水已用完</translation>
 <translation id="1668469839109562275">内置 VPN</translation>
+<translation id="1672499492233627739">摄像头视频画面</translation>
 <translation id="1676557873873341166">正在录制视频</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">存在 DNS 解析器</translation>
@@ -216,6 +217,7 @@
 <translation id="3008341117444806826">刷新</translation>
 <translation id="3009958530611748826">选择要保存到的文件夹</translation>
 <translation id="3017079585324758401">背景</translation>
+<translation id="3027578600144895987">关闭摄像头</translation>
 <translation id="3031560714565892478">设备类型是摄像机。</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">端点</translation>
@@ -234,6 +236,7 @@
 <translation id="315738237743207937">检测到强制门户</translation>
 <translation id="3170673040743561620">将您的文件放置在扫描仪上</translation>
 <translation id="3188257591659621405">我的文件</translation>
+<translation id="319101249942218879">头像图片变了</translation>
 <translation id="3192947282887913208">音频文件</translation>
 <translation id="3199982728237701504">文件馈送器（双面）</translation>
 <translation id="320091191259649613">如果您在更新后仍会遇到此问题，则可能是因为该组件是最近才受支持，尚未纳入数据库。</translation>

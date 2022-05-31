@@ -250,6 +250,7 @@
 如要瞭解如何刪除搜尋記錄，請查看搜尋引擎的操作說明 (如果有的話)。</translation>
 <translation id="3080525922482950719">你可以儲存頁面以便稍後閱讀或離線閱讀</translation>
 <translation id="3081338492074632642">請確認要儲存的密碼與 <ph name="WEBSITE" /> 上的密碼相符</translation>
+<translation id="3103603146121354983">自動填入密碼</translation>
 <translation id="3112556859945124369">標示…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />查看你可以同步處理的內容<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">全部封鎖</translation>
@@ -661,6 +662,7 @@
 
 建議你為每個網站設定專屬的密碼。</translation>
 <translation id="650279896687777322">瞭解詳情...</translation>
+<translation id="6510072653668207258">稍後提醒我</translation>
 <translation id="651505212789431520">確定要取消同步處理嗎？你隨時可以在「設定」中開啟同步功能。</translation>
 <translation id="6524918542306337007">無法使用無痕模式</translation>
 <translation id="6530992499366869131">當密碼因資料侵害事件遭到外洩時發出警告</translation>

@@ -250,6 +250,7 @@
 请查看您所用搜索引擎的相关说明，了解如何删除您的搜索记录（若适用）。</translation>
 <translation id="3080525922482950719">您可保存网页以供日后阅读或离线阅读</translation>
 <translation id="3081338492074632642">请确保您要保存的密码与您用来登录 <ph name="WEBSITE" /> 的密码相符</translation>
+<translation id="3103603146121354983">自动填充密码</translation>
 <translation id="3112556859945124369">标为…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />查看您可同步的内容<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">阻止所有 Cookie</translation>
@@ -661,6 +662,7 @@
 
 请尽量为每个网站使用独一无二的密码。</translation>
 <translation id="650279896687777322">了解详情…</translation>
+<translation id="6510072653668207258">以后再提醒我</translation>
 <translation id="651505212789431520">取消同步？您随时可在“设置”中开启同步功能。</translation>
 <translation id="6524918542306337007">无痕模式不可用</translation>
 <translation id="6530992499366869131">密码遭遇数据泄露时向您发出警告</translation>

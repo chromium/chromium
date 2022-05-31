@@ -494,6 +494,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Pozostała {0} próba}few{Pozostały {0} próby}many{Pozostało {0} prób}other{Pozostało {0} próby}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Nie udało się zeskanować</translation>
+<translation id="5499762266711462226">Kolor klawiatury zależy od tapety</translation>
 <translation id="5502931783115429516">Android nie działa</translation>
 <translation id="5507300744274596613">Upewnij się, że system Chrome OS jest aktualny</translation>
 <translation id="5519195206574732858">LTE</translation>

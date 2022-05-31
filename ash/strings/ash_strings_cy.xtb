@@ -208,7 +208,6 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="2132302418721800944">Recordio'r sgrîn lawn</translation>
 <translation id="2135456203358955318">Chwyddwr sydd wedi'i docio</translation>
 <translation id="2148716181193084225">Heddiw</translation>
-<translation id="2159930836979502091">Ewch i'r tab hwn</translation>
 <translation id="2170530631236737939">Sweipiwch i lawr gyda thri bys i adael Trosolwg</translation>
 <translation id="219905428774326614">Lansiwr, pob ap</translation>
 <translation id="2201071101391734388">Llun diweddar <ph name="INDEX" /> o <ph name="TOTAL_COUNT" />.</translation>
@@ -252,6 +251,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="243878895369688216">Agorwyd ddoe</translation>
 <translation id="2441427462554639370">Daeth y recordiad i ben oherwydd lle storio hynod o isel</translation>
 <translation id="24452542372838207">Ehangu'r hysbysiad</translation>
+<translation id="2449089818483227734">Lefel batri isel</translation>
 <translation id="2450205753526923158">Modd tynnu sgrinlun</translation>
 <translation id="2456008742792828469">Calendar, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2473177541599297363">Cadarnhewch y Cydraniad</translation>
@@ -412,11 +412,13 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> munud</translation>
 <translation id="3445925074670675829">Dyfais USB-C</translation>
+<translation id="3455468639467374593">Templed, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3465223694362104965">Mae bysellfwrdd arall wedi cysylltu â'r ddyfais hon ers i chi fewngofnodi ddiwethaf. Sicrhewch eich bod yn ymddiried yn y bysellfwrdd hwn cyn i chi ei ddefnyddio.</translation>
 <translation id="3465356146291925647">Rheolir gan eich Gweinyddwr</translation>
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Cryfder y Signal <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Mae'r silff wedi'i awtoguddio</translation>
+<translation id="3505066820268455558">Mae'r Batri yn Gwefru</translation>
 <translation id="3509391053705095206">Methu â dod o hyd i'ch ffôn. Gwnewch yn siŵr bod Bluetooth eich ffôn wedi'i droi ymlaen.</translation>
 <translation id="3510164367642747937">Amlygu'r cyrchwr llygoden</translation>
 <translation id="3513798432020909783">Rheolir y cyfrif gan <ph name="MANAGER_EMAIL" /></translation>
@@ -457,6 +459,8 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="3633097874324966332">Agorwch y gosodiadau Bluetooth i baru'ch dyfais</translation>
 <translation id="3638400994746983214">Toglo'r sgrîn preifatrwydd. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Mae Diweddariad yn hwyr</translation>
+<translation id="3659814201068740063">Tua <ph name="TIME_LEFT" /> ar ôl (<ph name="PERCENTAGE" />%).
+Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Defnyddiwr a Reolir</translation>
 <translation id="36813544980941320">Bydd rhwydweithiau yn cael eu rhannu rhwng eich ffôn a <ph name="DEVICE_NAME" /></translation>
 <translation id="3694122362646626770">Gwefannau</translation>
@@ -511,6 +515,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="3962859241508114581">Y Trac Blaenorol</translation>
 <translation id="3969043077941541451">Diffodd</translation>
 <translation id="397105322502079400">Wrthi'n cyfrifo…</translation>
+<translation id="397726367135689299">Gall gwefru batri fod yn annibynadwy.</translation>
 <translation id="3977512764614765090">Mae'r batri ar <ph name="PERCENTAGE" />% ac yn gwefru.</translation>
 <translation id="3986082989454912832">Ateb</translation>
 <translation id="3995138139523574647">Dyfais USB-C (porth de ar y cefn)</translation>
@@ -1038,6 +1043,7 @@ Gosodiad newydd</translation>
 <translation id="7130207228079676353">MWYAF TEBYGOL</translation>
 <translation id="7131634465328662194">Byddwch yn cael eich allgofnodi'n awtomatig.</translation>
 <translation id="7143207342074048698">Wrthi'n cysylltu</translation>
+<translation id="7144942256906679589">Statws y batri</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358">Wrthi'n dychwelyd i'r hen gyfraniad yn <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Ail-lwytho</translation>
@@ -1060,6 +1066,7 @@ Gosodiad newydd</translation>
 <translation id="7348093485538360975">Bysellfwrdd ar y sgrîn</translation>
 <translation id="735745346212279324">Mae'r VPN wedi'i ddatgysylltu</translation>
 <translation id="7360036564632145207">Mae'n bosib y bydd newid eich diogelwch mynediad data ar gyfer gosodiadau perifferolion un optimeiddio perfformiad</translation>
+<translation id="736045644501761622">Gosod papur wal ac arddull</translation>
 <translation id="7371404428569700291">Recordio'r ffenestr</translation>
 <translation id="7377169924702866686">Mae Caps Lock wedi'i droi ymlaen.</translation>
 <translation id="7377481913241237033">Cysylltu gyda chod</translation>
@@ -1103,6 +1110,7 @@ Gosodiad newydd</translation>
 <translation id="7593891976182323525">Search neu Shift</translation>
 <translation id="7600875258240007829">Gweld pob hysbysiad</translation>
 <translation id="7607002721634913082">Wedi seibio</translation>
+<translation id="7609951632080598826">Gwedd calendr, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Mae'r camera wedi'i ailgysylltu.</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7633755430369750696">Dangos gosodiadau Rhannu Gerllaw.</translation>
@@ -1228,6 +1236,7 @@ Gosodiad newydd</translation>
 <translation id="8345019317483336363">Mae'r ffenestr <ph name="WINDOW_TITLE" /> wedi'i dewis</translation>
 <translation id="8351131234907093545">Creu nodyn</translation>
 <translation id="8364673525741149932">Toglo'r modd Parti Silff. <ph name="STATE_TEXT" /></translation>
+<translation id="8369166482916924789">Desg a gadwyd, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">Ymlaen wrth y llythyren</translation>
 <translation id="8371991222807690464">Mae'n bosib y bydd perfformiad y perifferol yn gyfyngedig yn y modd Gwestai</translation>
 <translation id="8374601332003098278">Pwyswch Enter i recordio'r sgrîn yn rhannol</translation>
@@ -1294,6 +1303,7 @@ Gosodiad newydd</translation>
 <translation id="8721053961083920564">Toglo Lefel y Sain. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">Tynnu sgrinlun sgrîn lawn</translation>
 <translation id="8734991477317290293">Mae'n bosib ei fod yn ceisio dwyn eich trawiadau</translation>
+<translation id="8735678380411481005">Lliw ôl-olau bysellfwrdd</translation>
 <translation id="8735953464173050365">Dangos y gosodiadau bysellfwrdd. Mae <ph name="KEYBOARD_NAME" /> wedi'i ddewis</translation>
 <translation id="8755498163081687682">Cadarnhewch eich hunaniaeth: Hoffai <ph name="ORIGIN_NAME" /> gadarnhau mai chi sydd yno</translation>
 <translation id="875593634123171288">Dangos gosodiadau VPN</translation>
@@ -1339,6 +1349,7 @@ Gosodiad newydd</translation>
 <translation id="9000771174482730261">RHEOLI'R STORFA</translation>
 <translation id="9017320285115481645">Rhowch god mynediad rhiant Family Link.</translation>
 <translation id="9024331582947483881">sgrîn lawn</translation>
+<translation id="9029736946581028033">Bydd y ddyfais yn diffodd cyn bo hir</translation>
 <translation id="9030319654231318877">Diffodd tan fachlud haul</translation>
 <translation id="9034924485347205037">Ffeiliau Linux</translation>
 <translation id="9047624247355796468">Agor gosodiadau ar gyfer <ph name="NETWORK_NAME" /></translation>
@@ -1368,6 +1379,7 @@ Gosodiad newydd</translation>
 <translation id="9168436347345867845">Gwneud e'n nes ymlaen</translation>
 <translation id="9178475906033259337">Wrthi'n dangos 1 canlyniad am <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Mae'r nodwedd hon yn caniatáu i chi gyrchu unrhyw ddefnyddiwr sydd wedi mewngofnodi yn gyflym heb fod angen cyfrinair. Defnyddiwch y nodwedd hon gyda'r cyfrifon rydych yn ymddiried ynddynt yn unig.</translation>
+<translation id="9180906851711123156">Pwyswch Ctrl+W i gau</translation>
 <translation id="9183456764293710005">Chwyddwr sgrîn lawn</translation>
 <translation id="9193626018745640770">Wrthi'n castio i dderbynnydd anhysbys</translation>
 <translation id="9194617393863864469">Mewngofnodi defnyddiwr arall...</translation>

@@ -59,6 +59,7 @@
 <translation id="2583187216237139145">Будь-які дані Chromium, створені під час використання цього робочого профілю (наприклад, закладки, історію, паролі й інші налаштування), може видалити його адміністратор. <ph name="LEARN_MORE" /></translation>
 <translation id="2648074677641340862">Під час встановлення сталася помилка операційної системи. Завантажте Chromium ще раз.</translation>
 <translation id="2661879430930417727">Якщо ви користуєтеся пристроєм спільно з друзями та рідними, вони зможуть переглядати веб-сторінки окремо та налаштовувати Chromium на свій смак</translation>
+<translation id="268602741124540128">Вітаємо в Chromium, <ph name="ACCOUNT_FIRST_NAME" /></translation>
 <translation id="2711502716910134313">Вкладка Chromium</translation>
 <translation id="2718390899429598676">Задля підвищення безпеки Chromium шифруватиме ваші дані.</translation>
 <translation id="2770231113462710648">Змінити веб-переглядач за умовчанням на:</translation>
@@ -117,9 +118,11 @@
 <translation id="3830894615770080216">Система Chromium OS</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> – Chromium</translation>
 <translation id="386822487697155367">Отримати довідку щодо Chromium OS</translation>
+<translation id="3871664619793219264">Отримуйте доступ до своїх даних у веб-переглядачі Chromium через обліковий запис <ph name="ACCOUNT_EMAIL" /></translation>
 <translation id="388648406173476553">Налаштуйте й керуйте Chromium. Якщо з’явиться сповіщення, натисніть його, щоб дізнатися більше.</translation>
 <translation id="3889543394854987837">Натисніть своє ім’я, щоб відкрити Chromium і розпочати перегляд сайтів.</translation>
 <translation id="390528597099634151">Цей профіль Chromium уже використовує <ph name="EXISTING_USER" />. Щоб переглядати веб-сторінки окремо, ви можете створити власний профіль Chromium.</translation>
+<translation id="391789666908693569">Вашим обліковим записом керує <ph name="MANAGER_NAME" />. Адміністратор вашої організації може бачити й редагувати цей профіль у веб-переглядачі Chromium і його дані, зокрема закладки, історію та паролі.</translation>
 <translation id="3945058413678539331">Chromium намагається скопіювати паролі. Щоб дозволити, введіть свій пароль Windows.</translation>
 <translation id="3962623956404948996">Chromium радить просканувати цей файл, оскільки він може бути небезпечним</translation>
 <translation id="3997429360543082038">Про Chromium OS</translation>

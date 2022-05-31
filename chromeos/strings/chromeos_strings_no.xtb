@@ -86,6 +86,7 @@
 <translation id="1645954272419197032">Bekreft enhetsinformasjonen</translation>
 <translation id="1662989795263954667">Stoppet – tom for blekk</translation>
 <translation id="1668469839109562275">Innebygd VPN</translation>
+<translation id="1672499492233627739">Videofeed fra nettkameraet</translation>
 <translation id="1676557873873341166">Tar opp video</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS-resolveren er til stede</translation>
@@ -216,6 +217,7 @@
 <translation id="3008341117444806826">OPPDATER</translation>
 <translation id="3009958530611748826">Velg mappen du vil lagre i</translation>
 <translation id="3017079585324758401">Bakgrunn</translation>
+<translation id="3027578600144895987">Lukk kameraet</translation>
 <translation id="3031560714565892478">Enheten er et videokamera.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Sluttpunkt</translation>
@@ -492,6 +494,7 @@ Prøv å trykke på mikrofonen for å spørre meg om noe.</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} forsøk igjen}other{{0} forsøk igjen}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Kunne ikke fullføre skanningen</translation>
+<translation id="5499762266711462226">Tastaturfargen er basert på bakgrunnen</translation>
 <translation id="5502931783115429516">Android kjører ikke</translation>
 <translation id="5507300744274596613">Sørg for at Chrome OS er oppdatert</translation>
 <translation id="5519195206574732858">LTE</translation>

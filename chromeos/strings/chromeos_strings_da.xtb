@@ -86,6 +86,7 @@
 <translation id="1645954272419197032">Bekræft enhedsoplysninger</translation>
 <translation id="1662989795263954667">Stoppet – Mangler blæk</translation>
 <translation id="1668469839109562275">Indbygget VPN</translation>
+<translation id="1672499492233627739">Videofeed fra webcam</translation>
 <translation id="1676557873873341166">Optager video</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS-resolver er til stede</translation>
@@ -216,6 +217,7 @@
 <translation id="3008341117444806826">OPDATER</translation>
 <translation id="3009958530611748826">Vælg en mappe, du vil gemme i</translation>
 <translation id="3017079585324758401">Baggrund</translation>
+<translation id="3027578600144895987">Luk kamera</translation>
 <translation id="3031560714565892478">Enheden er et videokamera.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Slutpunkt</translation>
@@ -234,6 +236,7 @@
 <translation id="315738237743207937">Der blev registreret en loginportal</translation>
 <translation id="3170673040743561620">Placer dit dokument i scanneren</translation>
 <translation id="3188257591659621405">Mine filer</translation>
+<translation id="319101249942218879">Avatarbilledet er ændret</translation>
 <translation id="3192947282887913208">Lydfiler</translation>
 <translation id="3199982728237701504">Dokumentindføring (to sider)</translation>
 <translation id="320091191259649613">Hvis du stadig ser denne fejl efter opdateringen, er det muligt, at komponenten først for nylig er kvalificeret og ikke er en del af databasen endnu.</translation>

@@ -205,7 +205,6 @@
 <translation id="2132302418721800944">录制整个屏幕</translation>
 <translation id="2135456203358955318">停靠的放大镜</translation>
 <translation id="2148716181193084225">今天</translation>
-<translation id="2159930836979502091">前往此标签页</translation>
 <translation id="2170530631236737939">若要退出“概览”模式，请用三根手指向下滑动</translation>
 <translation id="219905428774326614">启动器，所有应用</translation>
 <translation id="2201071101391734388">近期照片中的第 <ph name="INDEX" /> 张，共 <ph name="TOTAL_COUNT" /> 张。</translation>
@@ -249,6 +248,7 @@
 <translation id="243878895369688216">昨天打开过</translation>
 <translation id="2441427462554639370">已停止录制，因为存储空间严重不足</translation>
 <translation id="24452542372838207">展开通知</translation>
+<translation id="2449089818483227734">电池电量低</translation>
 <translation id="2450205753526923158">截屏模式</translation>
 <translation id="2456008742792828469">日历，<ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2473177541599297363">确认分辨率</translation>
@@ -409,11 +409,13 @@
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" />分钟</translation>
 <translation id="3445925074670675829">USB-C 设备</translation>
+<translation id="3455468639467374593">模板“<ph name="TEMPLATE_NAME" />”</translation>
 <translation id="3465223694362104965">这部设备当前连接的键盘已不同于您上次登录时所用的键盘。请确保您信任此键盘，然后再使用它。</translation>
 <translation id="3465356146291925647">由您的管理员管理</translation>
 <translation id="3477079411857374384">Ctrl+Shift+空格键</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />，<ph name="CONNECTION_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">任务栏已自动隐藏</translation>
+<translation id="3505066820268455558">电池正在充电</translation>
 <translation id="3509391053705095206">找不到您的手机。请确保手机已开启蓝牙功能。</translation>
 <translation id="3510164367642747937">突出显示鼠标光标</translation>
 <translation id="3513798432020909783">该帐号由 <ph name="MANAGER_EMAIL" /> 管理</translation>
@@ -454,6 +456,8 @@
 <translation id="3633097874324966332">请打开蓝牙设置为您的设备配对</translation>
 <translation id="3638400994746983214">开启/关闭隐私保护屏。<ph name="STATE_TEXT" />。</translation>
 <translation id="3649505501900178324">更新逾期</translation>
+<translation id="3659814201068740063">电量还剩大约 <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" />%)。
+请为设备接通电源。</translation>
 <translation id="366222428570480733">受管用户：<ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="36813544980941320">您的手机和 <ph name="DEVICE_NAME" />将会共用 Wi-Fi 网络</translation>
 <translation id="3694122362646626770">网站</translation>
@@ -508,6 +512,7 @@
 <translation id="3962859241508114581">上一首</translation>
 <translation id="3969043077941541451">已关闭</translation>
 <translation id="397105322502079400">正在计算...</translation>
+<translation id="397726367135689299">正在充电的电池可能会变得不稳定。</translation>
 <translation id="3977512764614765090">当前的电池电量为 <ph name="PERCENTAGE" />%，正在充电。</translation>
 <translation id="3986082989454912832">接听</translation>
 <translation id="3995138139523574647">USB-C 设备（右侧后端端口）</translation>
@@ -1035,6 +1040,7 @@
 <translation id="7130207228079676353">很可能会点击的应用</translation>
 <translation id="7131634465328662194">您将会自动退出会话。</translation>
 <translation id="7143207342074048698">正在连接</translation>
+<translation id="7144942256906679589">电池状态</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" />秒后恢复到原分辨率</translation>
 <translation id="7180611975245234373">刷新</translation>
@@ -1057,6 +1063,7 @@
 <translation id="7348093485538360975">屏幕键盘</translation>
 <translation id="735745346212279324">VPN 连接已断开</translation>
 <translation id="7360036564632145207">更改您的“外围设备数据访问保护”设置可优化外围设备的性能</translation>
+<translation id="736045644501761622">设置壁纸与样式</translation>
 <translation id="7371404428569700291">录制窗口</translation>
 <translation id="7377169924702866686">大写锁定已打开。</translation>
 <translation id="7377481913241237033">利用代码连接</translation>
@@ -1100,6 +1107,7 @@
 <translation id="7593891976182323525">搜索键或 Shift</translation>
 <translation id="7600875258240007829">查看所有通知</translation>
 <translation id="7607002721634913082">已暂停</translation>
+<translation id="7609951632080598826">日历视图，<ph name="DATE" /> <ph name="TIME" /></translation>
 <translation id="7611213136657090146">已重新连接相机。</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> 华氏度</translation>
 <translation id="7633755430369750696">显示“附近分享”设置。</translation>
@@ -1224,6 +1232,7 @@
 <translation id="8345019317483336363">已选择‘<ph name="WINDOW_TITLE" />’窗口</translation>
 <translation id="8351131234907093545">创建记事</translation>
 <translation id="8364673525741149932">开启/关闭 Shelf Party 模式。<ph name="STATE_TEXT" /></translation>
+<translation id="8369166482916924789">已保存的桌面“<ph name="SAVE_AND_RECALL_DESK_NAME" />”</translation>
 <translation id="8371779926711439835">前进一个字母</translation>
 <translation id="8371991222807690464">在访客模式下，外围设备的性能可能会受到限制</translation>
 <translation id="8374601332003098278">按 Enter 键即可录制局部屏幕</translation>
@@ -1290,6 +1299,7 @@
 <translation id="8721053961083920564">开启/关闭声音。<ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">截取整个屏幕</translation>
 <translation id="8734991477317290293">当前连接的键盘可能会试图窃取您的击键操作</translation>
+<translation id="8735678380411481005">键盘背光颜色</translation>
 <translation id="8735953464173050365">显示键盘设置。已选择<ph name="KEYBOARD_NAME" /></translation>
 <translation id="8755498163081687682">验证您的身份：<ph name="ORIGIN_NAME" /> 想确认您的身份</translation>
 <translation id="875593634123171288">显示 VPN 设置</translation>
@@ -1335,6 +1345,7 @@
 <translation id="9000771174482730261">管理存储空间</translation>
 <translation id="9017320285115481645">输入 Family Link 家长访问码。</translation>
 <translation id="9024331582947483881">全屏</translation>
+<translation id="9029736946581028033">设备很快就会关机</translation>
 <translation id="9030319654231318877">已关闭，直到日落</translation>
 <translation id="9034924485347205037">Linux 文件</translation>
 <translation id="9047624247355796468">打开“<ph name="NETWORK_NAME" />”的设置。</translation>
@@ -1364,6 +1375,7 @@
 <translation id="9168436347345867845">以后再说</translation>
 <translation id="9178475906033259337">显示了 1 条与“<ph name="QUERY" />”相符的结果</translation>
 <translation id="9179259655489829027">借助此功能，您无需使用密码即可快速访问任何已登录的用户。请仅对您信任的帐号使用此功能。</translation>
+<translation id="9180906851711123156">按 Ctrl+W 即可关闭</translation>
 <translation id="9183456764293710005">全屏放大镜</translation>
 <translation id="9193626018745640770">正在投射至不明接收器</translation>
 <translation id="9194617393863864469">登录其他用户帐号…</translation>

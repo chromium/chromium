@@ -86,6 +86,7 @@
 <translation id="1645954272419197032">請確認裝置資訊</translation>
 <translation id="1662989795263954667">已停止 - 墨水已用盡</translation>
 <translation id="1668469839109562275">內建 VPN</translation>
+<translation id="1672499492233627739">網路攝影機視訊畫面</translation>
 <translation id="1676557873873341166">正在錄影</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS 解析器存在</translation>
@@ -216,6 +217,7 @@
 <translation id="3008341117444806826">更新</translation>
 <translation id="3009958530611748826">選取要儲存掃描檔的資料夾</translation>
 <translation id="3017079585324758401">背景</translation>
+<translation id="3027578600144895987">關閉攝影機</translation>
 <translation id="3031560714565892478">裝置類型為攝影機。</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">端點</translation>
@@ -234,6 +236,7 @@
 <translation id="315738237743207937">已偵測到網頁認證入口</translation>
 <translation id="3170673040743561620">將文件放入掃描機</translation>
 <translation id="3188257591659621405">我的檔案</translation>
+<translation id="319101249942218879">顯示圖片已變更</translation>
 <translation id="3192947282887913208">音訊檔</translation>
 <translation id="3199982728237701504">文件送紙器 (雙面)</translation>
 <translation id="320091191259649613">如果更新後仍發生問題，有可能是系統剛認定元件合格，但尚未新增至資料庫中。</translation>
@@ -491,6 +494,7 @@
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{剩餘嘗試次數：{0} 次}other{剩餘嘗試次數：{0} 次}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />：<ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">無法完成掃描</translation>
+<translation id="5499762266711462226">鍵盤色彩是根據桌布而定</translation>
 <translation id="5502931783115429516">Android 未執行</translation>
 <translation id="5507300744274596613">確認 Chrome OS 是最新版本</translation>
 <translation id="5519195206574732858">LTE</translation>

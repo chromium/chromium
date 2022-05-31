@@ -494,6 +494,7 @@
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Преостаје {0} покушај}one{Преостаје {0} покушај}few{Преостају {0} покушаја}other{Преостаје {0} покушаја}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Нисмо успели да довршимо скенирање</translation>
+<translation id="5499762266711462226">Боја тастатуре је заснована на позадини</translation>
 <translation id="5502931783115429516">Android није покренут</translation>
 <translation id="5507300744274596613">Уверите се да је Chrome ОС ажуриран</translation>
 <translation id="5519195206574732858">LTE</translation>

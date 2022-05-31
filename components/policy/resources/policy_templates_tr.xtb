@@ -4484,11 +4484,6 @@ Bu ayarı etkinleştirirseniz veya yapılandırmazsanız kullanıcılar şifrele
       Bu politikayı ayarlarsanız kullanıcılar değiştiremez. Politika ayarlanmadan bırakılırsa üst bilgilerin ve alt bilgilerin gösterilip gösterilmeyeceğine kullanıcılar karar verir.</translation>
 <translation id="5951418260805607969">Disk alanı azaldığında bildirim göster</translation>
 <translation id="5958746038080720143">Otomatik Web Proxy Keşfi (WPAD) optimizasyonunu etkinleştir</translation>
-<translation id="5959428851851090097">Politika Etkin değerine ayarlandığında platform politikasıyla çakışıyorsa bulut politikası tercih edilir.
-
-      Politika Devre Dışı değerine ayarlandığında veya ayarlanmadan bırakıldığında bulut politikasıyla çakışıyorsa platform politikası tercih edilir.
-
-      Bu zorunlu politika, makine genelinde geçerli olan bulut politikalarını etkiler.</translation>
 <translation id="5961137303188584693">Cihazın dahili NIC MAC adresi</translation>
 <translation id="5963752574792883406">bağlantı noktası 990 (01.02.2022'ye kadar engellemesi kaldırılabilir)</translation>
 <translation id="5966615072639944554">Uzaktan doğrulama API'sını kullanmasına izin verilen uzantılar</translation>

@@ -234,6 +234,7 @@
 <translation id="315738237743207937">Đã phát hiện thấy trang xác thực</translation>
 <translation id="3170673040743561620">Đặt tài liệu của bạn lên máy quét</translation>
 <translation id="3188257591659621405">Tệp của tôi</translation>
+<translation id="319101249942218879">Đã thay ảnh đại diện</translation>
 <translation id="3192947282887913208">Tệp âm thanh</translation>
 <translation id="3199982728237701504">Khay nạp tài liệu (2 mặt)</translation>
 <translation id="320091191259649613">Nếu bạn vẫn gặp vấn đề sau khi cập nhật, thì có thể thành phần này vừa mới hợp lệ và chưa được đưa vào cơ sở dữ liệu.</translation>
@@ -491,6 +492,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Bạn còn {0} lần thử}other{Bạn còn {0} lần thử}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Không thể hoàn tất quá trình quét</translation>
+<translation id="5499762266711462226">Màu bàn phím dựa trên hình nền</translation>
 <translation id="5502931783115429516">Android hiện không chạy</translation>
 <translation id="5507300744274596613">Đảm bảo rằng Chrome OS đã được cập nhật</translation>
 <translation id="5519195206574732858">LTE</translation>

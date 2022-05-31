@@ -4538,11 +4538,6 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
       Si se le asigna un valor a esta política, los usuarios no podrán cambiarlo. Si no se establece, los usuarios deciden si se muestran o no los encabezados y pies de página.</translation>
 <translation id="5951418260805607969">Mostrar notificación de poco espacio en disco</translation>
 <translation id="5958746038080720143">Habilitar optimizaciones de detección automática de proxy web (WPAD)</translation>
-<translation id="5959428851851090097">Si se habilita esta política, la política de la nube prevalecerá si entra en conflicto con la política de la plataforma.
-
-      Si se inhabilita esta política o no se le asigna ningún valor, la política de la plataforma prevalecerá si entra en conflicto con la política de la nube.
-
-      Esta política obligatoria afecta a las políticas de permisos de nube.</translation>
 <translation id="5961137303188584693">Dirección NIC MAC integrada en el dispositivo</translation>
 <translation id="5963752574792883406">puerto 990 (puede desbloquearse hasta el 01/02/2022)</translation>
 <translation id="5966615072639944554">Extensiones con permiso para utilizar la API de confirmación remota</translation>

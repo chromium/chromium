@@ -236,6 +236,7 @@
 <translation id="315738237743207937">Откриен е портал за проверка</translation>
 <translation id="3170673040743561620">Ставете го документот на скенерот</translation>
 <translation id="3188257591659621405">Мои датотеки</translation>
+<translation id="319101249942218879">Сликата на аватарот е променета</translation>
 <translation id="3192947282887913208">Аудиодатотеки</translation>
 <translation id="3199982728237701504">Внесувач на документи (двостран)</translation>
 <translation id="320091191259649613">Ако сè уште е присутен проблемот по ажурирањето, можно е компонентата да е новоквалификувана и уште не влегла во базата со податоци.</translation>
@@ -493,6 +494,7 @@
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Уште {0} обид}one{Уште {0} обид}other{Уште {0} обиди}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Скенирањето не можеше да се заврши</translation>
+<translation id="5499762266711462226">Бојата на тастатурата се базира на тапетот</translation>
 <translation id="5502931783115429516">Android не функционира</translation>
 <translation id="5507300744274596613">Проверете дали Chrome OS е ажуриран</translation>
 <translation id="5519195206574732858">LTE</translation>

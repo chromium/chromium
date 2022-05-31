@@ -493,6 +493,7 @@
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{আর {0} বার চেষ্টা করতে পারবেন}one{আর {0} বার চেষ্টা করতে পারবেন}other{আর {0} বার চেষ্টা করতে পারবেন}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">স্ক্যান সম্পূর্ণ করা যায়নি</translation>
+<translation id="5499762266711462226">ওয়ালপেপারের উপর নির্ভর করে কীবোর্ডের রঙ দেখানো হয়</translation>
 <translation id="5502931783115429516">Android কাজ করছে না</translation>
 <translation id="5507300744274596613">Chrome OS আপ-টু-ডেট আছে কিনা কনফার্ম করুন</translation>
 <translation id="5519195206574732858">LTE</translation>

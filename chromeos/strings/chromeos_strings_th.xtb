@@ -86,6 +86,7 @@
 <translation id="1645954272419197032">โปรดยืนยันข้อมูลอุปกรณ์</translation>
 <translation id="1662989795263954667">หยุดพิมพ์ - หมึกหมด</translation>
 <translation id="1668469839109562275">VPN ในตัว</translation>
+<translation id="1672499492233627739">ฟีดวิดีโอเว็บแคม</translation>
 <translation id="1676557873873341166">กำลังถ่ายวิดีโอ</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">มีรีโซลเวอร์ DNS</translation>
@@ -216,6 +217,7 @@
 <translation id="3008341117444806826">รีเฟรช</translation>
 <translation id="3009958530611748826">เลือกโฟลเดอร์ที่จะใช้บันทึก</translation>
 <translation id="3017079585324758401">พื้นหลัง</translation>
+<translation id="3027578600144895987">ปิดกล้อง</translation>
 <translation id="3031560714565892478">อุปกรณ์เป็นกล้องวิดีโอ</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">ปลายทาง</translation>
@@ -234,6 +236,7 @@
 <translation id="315738237743207937">ตรวจพบแคพทีฟพอร์ทัล</translation>
 <translation id="3170673040743561620">วางเอกสารบนเครื่องสแกน</translation>
 <translation id="3188257591659621405">ไฟล์ของฉัน</translation>
+<translation id="319101249942218879">เปลี่ยนรูปโปรไฟล์แล้ว</translation>
 <translation id="3192947282887913208">ไฟล์เสียง</translation>
 <translation id="3199982728237701504">ตัวป้อนเอกสาร (สองด้าน)</translation>
 <translation id="320091191259649613">หากคุณยังคงพบปัญหาดังกล่าวหลังการอัปเดต ก็เป็นไปได้ว่าคอมโพเนนต์นั้นเพิ่งมีคุณสมบัติตรงตามข้อกำหนดและยังไม่ได้รับการบันทึกลงในฐานข้อมูล</translation>
@@ -491,6 +494,7 @@
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{ลองได้อีก {0} ครั้ง}other{ลองได้อีก {0} ครั้ง}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">สแกนไม่สำเร็จ</translation>
+<translation id="5499762266711462226">สีของแป้นพิมพ์จะขึ้นอยู่กับวอลเปเปอร์</translation>
 <translation id="5502931783115429516">Android ไม่ทำงาน</translation>
 <translation id="5507300744274596613">ตรวจสอบว่า Chrome OS เป็นเวอร์ชันล่าสุด</translation>
 <translation id="5519195206574732858">LTE</translation>

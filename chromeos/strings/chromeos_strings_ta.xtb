@@ -86,6 +86,7 @@
 <translation id="1645954272419197032">சாதனத் தகவலை உறுதிப்படுத்துதல்</translation>
 <translation id="1662989795263954667">பிரிண்டரில் மை தீர்ந்துவிட்டதால் அச்சிட முடியவில்லை</translation>
 <translation id="1668469839109562275">உள்ளமைந்த VPN</translation>
+<translation id="1672499492233627739">வெப்கேம் வீடியோ ஊட்டம்</translation>
 <translation id="1676557873873341166">வீடியோவை எடுக்கிறது</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS ரிசால்வர் இருப்பது</translation>
@@ -216,6 +217,7 @@
 <translation id="3008341117444806826">புதுப்பி</translation>
 <translation id="3009958530611748826">சேமிப்பதற்கான ஃபோல்டரைத் தேர்ந்தெடுக்கவும்</translation>
 <translation id="3017079585324758401">பின்புலம்</translation>
+<translation id="3027578600144895987">கேமராவை மூடும்</translation>
 <translation id="3031560714565892478">சாதனம் ஒரு வீடியோ கேமரா.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" />mA</translation>
 <translation id="3056720590588772262">எண்ட்பாயிண்ட்</translation>
@@ -234,6 +236,7 @@
 <translation id="315738237743207937">கேப்டிவ் போர்டல் கண்டறியப்பட்டது</translation>
 <translation id="3170673040743561620">ஆவணத்தை ஸ்கேனர் மீது வைக்கவும்</translation>
 <translation id="3188257591659621405">எனது ஃபைல்கள் </translation>
+<translation id="319101249942218879">தோற்றப் படம் மாற்றப்பட்டது</translation>
 <translation id="3192947282887913208">ஆடியோ ஃபைல்கள் </translation>
 <translation id="3199982728237701504">டாக்குமெண்ட் ஃபீடர் (இரண்டு பக்கமும்)</translation>
 <translation id="320091191259649613">புதுப்பிக்கப்பட்ட பிறகும் சிக்கல் இருந்தால், காம்பனென்ட் புதிதாகத் தகுதிபெற்றிருந்து தரவுத்தளத்தில் இன்னமும் அது சேர்க்கப்படாமல் இருக்கலாம்.</translation>
@@ -491,6 +494,7 @@
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{{0} முயற்சி மீதமுள்ளது}other{{0} முயற்சிகள் மீதமுள்ளன}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">ஸ்கேனிங்கை நிறைவுசெய்ய முடியவில்லை</translation>
+<translation id="5499762266711462226">வால்பேப்பரின் வண்ணத்தைப் பொறுத்து கீபோர்டின் வண்ணம் அமையும்</translation>
 <translation id="5502931783115429516">Android இயங்கவில்லை</translation>
 <translation id="5507300744274596613">Chrome OS பதிப்பு சமீபத்தியதாக இருப்பதை உறுதிசெய்துகொள்ளுங்கள்</translation>
 <translation id="5519195206574732858">LTE</translation>

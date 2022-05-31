@@ -4530,11 +4530,6 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
       Si estableces la política, los usuarios no podrán cambiarla. Si no la estableces, los usuarios podrán elegir si se muestran los encabezados y pies de página.</translation>
 <translation id="5951418260805607969">Muestra una notificación cuando hay poco espacio en el disco</translation>
 <translation id="5958746038080720143">Habilitar las optimizaciones de detección automática de proxy web (WPAD)</translation>
-<translation id="5959428851851090097">Si habilitas la política y hay conflicto con la política de la plataforma, tendrá prioridad la política de la nube.
-
-      Si inhabilitas la política o no la estableces y hay conflicto con la política de la nube, tendrá prioridad la política de la plataforma.
-
-      Esta política obligatoria afecta las políticas de la nube para esta máquina.</translation>
 <translation id="5961137303188584693">Dirección MAC para el NIC integrado del dispositivo</translation>
 <translation id="5963752574792883406">puerto 990 (puede desbloquearse hasta el 01/02/2022)</translation>
 <translation id="5966615072639944554">Extensiones que tienen permitido utilizar la API de atestación remota</translation>

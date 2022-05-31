@@ -645,6 +645,7 @@
 <translation id="6423031066725912715">टीसीवीएन कीबोर्ड के साथ वियतनामीज़</translation>
 <translation id="6485131920355264772">स्थान जानकारी पाने में विफल रहा</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_COUNT" /> में से <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" />%, आपका एडमिन प्रबंधित करता है, जानकारी</translation>
+<translation id="649877868557234318"><ph name="FILE_NAME" /> को <ph name="FOLDER_NAME" /> में एक्सट्रैक्ट किया जा रहा है</translation>
 <translation id="6499681088828539489">शेयर किए गए नेटवर्क के लिए प्रॉक्‍सी की अनुमति नहीं है</translation>
 <translation id="6509122719576673235">नॉर्वेजियाई</translation>
 <translation id="6528513914570774834">इस डिवाइस के दूसरे उपयोगकर्ताओं को इस नेटवर्क का उपयोग करने दें</translation>

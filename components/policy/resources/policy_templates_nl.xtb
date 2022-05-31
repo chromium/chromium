@@ -4446,11 +4446,6 @@ Gebruikers kunnen deze instelling niet wijzigen.</translation>
       Als je het beleid instelt, kunnen gebruikers het niet wijzigen. Als je het beleid niet instelt, bepalen gebruikers of kop- en voetteksten zichtbaar zijn.</translation>
 <translation id="5951418260805607969">Melding tonen bij weinig schrijfruimte</translation>
 <translation id="5958746038080720143">WPAD-optimalisaties (Web Proxy Auto-Discovery) aanzetten</translation>
-<translation id="5959428851851090097">Als je het beleid toepast, krijgt het cloudbeleid voorrang bij een conflict met het platformbeleid.
-
-      Als je het beleid niet toepast of niet instelt, krijgt het platformbeleid voorrang bij een conflict met het cloudbeleid.
-
-      Dit verplichte beleid heeft gevolgen voor cloudbeleid op machineniveau.</translation>
 <translation id="5961137303188584693">MAC-adres van ingebouwde NIC van apparaat</translation>
 <translation id="5963752574792883406">poort 990 (blokkering kan worden opgeheven tot 01-02-2022)</translation>
 <translation id="5966615072639944554">Extensies die toestemming hebben de API voor externe bevestiging te gebruiken</translation>

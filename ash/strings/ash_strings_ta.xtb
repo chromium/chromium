@@ -208,7 +208,6 @@
 <translation id="2132302418721800944">முழுத்திரையையும் ரெக்கார்டு செய்யும்</translation>
 <translation id="2135456203358955318">டாக் செய்யப்பட்ட பெரிதாக்கி</translation>
 <translation id="2148716181193084225">இன்று</translation>
-<translation id="2159930836979502091">இந்த உலாவிப் பக்கத்திற்குச் செல்</translation>
 <translation id="2170530631236737939">மேலோட்டப் பயன்முறையில் இருந்து வெளியேற, கீழ்நோக்கி மூன்று விரல்களால் ஸ்வைப் செய்யவும்</translation>
 <translation id="219905428774326614">துவக்கி, எல்லாப் பயன்பாடுகளும்</translation>
 <translation id="2201071101391734388">சமீபத்திய படம்: <ph name="TOTAL_COUNT" /> இல் <ph name="INDEX" />வது.</translation>
@@ -252,6 +251,7 @@
 <translation id="243878895369688216">நேற்று திறக்கப்பட்டது</translation>
 <translation id="2441427462554639370">சேமிப்பிடம் மிகக் குறைவாக இருப்பதால் ரெக்கார்டிங் முடிந்தது</translation>
 <translation id="24452542372838207">அறிவிப்பை விரிவாக்கு</translation>
+<translation id="2449089818483227734">பேட்டரி குறைவாக உள்ளது</translation>
 <translation id="2450205753526923158">ஸ்கிரீன்ஷாட் பயன்முறை</translation>
 <translation id="2456008742792828469">கேலெண்டர், <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2473177541599297363">தெளிவுத்திறனை உறுதிப்படுத்துங்கள்</translation>
@@ -412,11 +412,13 @@
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> நி.</translation>
 <translation id="3445925074670675829">USB-C சாதனம்</translation>
+<translation id="3455468639467374593">டெம்பிளேட், <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3465223694362104965">நீங்கள் கடந்த முறை உள்நுழைந்த பின்னர் இந்தச் சாதனத்துடன் மற்றொரு கீபோர்டு இணைக்கப்பட்டுள்ளது. இதைப் பயன்படுத்தும் முன்பு, நீங்கள் இந்தக் கீபோர்டை நம்புகிறீர்களா என்பதை உறுதிப்படுத்தவும்.</translation>
 <translation id="3465356146291925647">உங்கள் நிர்வாகி நிர்வகிக்கிறார்</translation>
 <translation id="3477079411857374384">கன்ட்ரோல்-ஷிஃப்ட்-ஸ்பேஸ்</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, சிக்னல் வலிமை: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">ஷெல்ஃப் தானாகவே மறைக்கப்படும்</translation>
+<translation id="3505066820268455558">பேட்டரி சார்ஜ் ஆகிறது</translation>
 <translation id="3509391053705095206">உங்கள் மொபைலைக் கண்டறிய முடியவில்லை. அதில் புளூடூத் இயக்கப்பட்டிருப்பதை உறுதிசெய்துகொள்ளவும்.</translation>
 <translation id="3510164367642747937">மவுஸ் கர்சரைத் தனிப்படுத்து</translation>
 <translation id="3513798432020909783">கணக்கை நிர்வகிப்பது: <ph name="MANAGER_EMAIL" /></translation>
@@ -457,6 +459,8 @@
 <translation id="3633097874324966332">உங்கள் சாதனத்தை இணைக்க, புளூடூத் அமைப்புகளைத் திறக்கவும்</translation>
 <translation id="3638400994746983214">தனிப்பட்ட திரையை நிலைமாற்றும். <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">புதுப்பிப்பு நிலுவையில் உள்ளது</translation>
+<translation id="3659814201068740063">சுமார் <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" />%) சாதனத்தைப் பயன்படுத்தலாம்.
+சாதனத்தை சார்ஜ் செய்யவும்.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> நிர்வகிக்கப்பட்ட பயனர்</translation>
 <translation id="36813544980941320">உங்கள் மொபைல், <ph name="DEVICE_NAME" /> சாதனம் ஆகியவற்றுக்கு இடையே வைஃபை நெட்வொர்க்குகள் பகிரப்படும்</translation>
 <translation id="3694122362646626770">இணையதளங்கள்</translation>
@@ -511,6 +515,7 @@
 <translation id="3962859241508114581">முந்தைய டிராக்</translation>
 <translation id="3969043077941541451">முடக்கப்பட்டுள்ளது</translation>
 <translation id="397105322502079400">கணக்கிடுகிறது...</translation>
+<translation id="397726367135689299">பேட்டரி சார்ஜிங் நம்பகமற்றதாக இருக்கலாம்.</translation>
 <translation id="3977512764614765090">பேட்டரி <ph name="PERCENTAGE" />% நிரம்பியுள்ளது, தொடர்ந்து சார்ஜ் ஆகிறது.</translation>
 <translation id="3986082989454912832">பதிலளி</translation>
 <translation id="3995138139523574647">USB-C சாதனம் (வலது பக்கம் பின்னே இருக்கும் போர்ட்)</translation>
@@ -1038,6 +1043,7 @@
 <translation id="7130207228079676353">அதிகச் சாத்தியமுள்ளவை</translation>
 <translation id="7131634465328662194">நீங்கள் தானாக வெளியேற்றப்படுவீர்கள்.</translation>
 <translation id="7143207342074048698">இணைத்தல்</translation>
+<translation id="7144942256906679589">பேட்டரி நிலை</translation>
 <translation id="7165278925115064263">ஆல்ட்+ஷிஃப்ட்+K</translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" /> வினாடிகளில் பழைய தெளிவுதிறனுக்கு மாற்றியமைக்கப்படும்</translation>
 <translation id="7180611975245234373">புதுப்பி</translation>
@@ -1060,6 +1066,7 @@
 <translation id="7348093485538360975">ஸ்கிரீன் கீபோர்டு</translation>
 <translation id="735745346212279324">VPN துண்டிக்கப்பட்டது</translation>
 <translation id="7360036564632145207">சாதனங்களில் தரவு அணுகல் பாதுகாப்பு அமைப்பை மாற்றினால் செயல்திறன் மேம்படலாம்</translation>
+<translation id="736045644501761622">வால்பேப்பரையும் ஸ்டைலையும் அமை</translation>
 <translation id="7371404428569700291">சாளரத்தை ரெக்கார்டு செய்யும்</translation>
 <translation id="7377169924702866686">Caps Lock இயக்கத்தில் உள்ளது.</translation>
 <translation id="7377481913241237033">குறியீடு மூலம் இணை</translation>
@@ -1103,6 +1110,7 @@
 <translation id="7593891976182323525">தேடல் அல்லது Shift</translation>
 <translation id="7600875258240007829">எல்லா அறிவிப்புகளையும் காட்டு</translation>
 <translation id="7607002721634913082">இடைநிறுத்தப்பட்டது</translation>
+<translation id="7609951632080598826">Calendar காட்சி, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">கேமரா மீண்டும் இணைக்கப்பட்டது.</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7633755430369750696">அருகிலுள்ளவற்றுடன் பகிர்தல் அமைப்புகளைக் காட்டும்.</translation>
@@ -1228,6 +1236,7 @@
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> சாளரம் தேர்ந்தெடுக்கப்பட்டது</translation>
 <translation id="8351131234907093545">குறிப்பை உருவாக்கு</translation>
 <translation id="8364673525741149932">'ஷெல்ஃப் பார்ட்டி' பயன்முறையை இயக்கும்/முடக்கும். <ph name="STATE_TEXT" /></translation>
+<translation id="8369166482916924789">சேமிக்கப்பட்ட டெஸ்க், <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">எழுத்து வாரியாக முன்செல்</translation>
 <translation id="8371991222807690464">கெஸ்ட் பயன்முறையில் சாதனத்தின் செயல்திறன் குறைக்கப்பட்டிருக்கலாம்</translation>
 <translation id="8374601332003098278">பகுதியளவு திரையை ரெக்கார்டு செய்ய Enter பட்டனை அழுத்தவும்</translation>
@@ -1294,6 +1303,7 @@
 <translation id="8721053961083920564">ஒலியை இயக்கும். <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">முழுத்திரையைப் படமெடுக்கும்</translation>
 <translation id="8734991477317290293">அது உங்கள் விசை அழுத்தங்களைத் திருட முயற்சித்துக் கொண்டிருக்கக்கூடும்</translation>
+<translation id="8735678380411481005">கீபோர்டு பேக்லைட் வண்ணம்</translation>
 <translation id="8735953464173050365">கீபோர்டு அமைப்புகளைக் காண்பிக்கும். <ph name="KEYBOARD_NAME" /> தேர்ந்தெடுக்கப்பட்டுள்ளது</translation>
 <translation id="8755498163081687682">உங்கள் அடையாளத்தைச் சரிபாருங்கள்: இது நீங்கள்தான் என்பதை <ph name="ORIGIN_NAME" /> உறுதிப்படுத்த விரும்புகிறது</translation>
 <translation id="875593634123171288">VPN அமைப்புகளைக் காண்பிக்கும்</translation>
@@ -1339,6 +1349,7 @@
 <translation id="9000771174482730261">சேமிப்பிடத்தை நிர்வகியுங்கள்</translation>
 <translation id="9017320285115481645">Family Link பெற்றோர் அணுகல் குறியீட்டை உள்ளிடவும்.</translation>
 <translation id="9024331582947483881">முழுத்திரை</translation>
+<translation id="9029736946581028033">சாதனம் விரைவில் ஸ்விட்ச் ஆஃப் ஆகும்</translation>
 <translation id="9030319654231318877">சூரிய அஸ்தமனம் வரை இயங்காது</translation>
 <translation id="9034924485347205037">Linux ஃபைல்கள் </translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" />க்கான அமைப்புகளைத் திறக்கும்</translation>
@@ -1368,6 +1379,7 @@
 <translation id="9168436347345867845">பின்னர் செய்யலாம்</translation>
 <translation id="9178475906033259337"><ph name="QUERY" />க்கான ஒரு முடிவைக் காட்டுகிறது</translation>
 <translation id="9179259655489829027">கடவுச்சொல்லைக் கேட்காமல், உள்நுழைந்த பயனர் எவரையும் உடனடியாக அணுக இந்த அம்சம் உங்களை அனுமதிக்கிறது. நீங்கள் நம்பும் கணக்குகளுடன் மட்டும் இந்த அம்சத்தைப் பயன்படுத்தவும்.</translation>
+<translation id="9180906851711123156">மூட Ctrl+W அழுத்தவும்</translation>
 <translation id="9183456764293710005">முழுத்திரைப் பெரிதாக்கி</translation>
 <translation id="9193626018745640770">தெரியாத ரிசீவருக்கு அனுப்புகிறது</translation>
 <translation id="9194617393863864469">வேறொருவராக உள்நுழை...</translation>

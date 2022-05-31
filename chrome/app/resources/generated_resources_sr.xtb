@@ -2465,6 +2465,7 @@
 <translation id="3348038390189153836">Откривен је преносиви уређај</translation>
 <translation id="3348131053948466246">Емоџи је предложен. Притисните нагоре или надоле да бисте се кретали и Enter за унос.</translation>
 <translation id="3349933790966648062">Меморијски простор у употреби</translation>
+<translation id="3353786022389205125">Укључите „Прикажи закључани екран при покретању из режима спавања“ и пробајте поново</translation>
 <translation id="3354972872297836698">Упаривање са уређајем <ph name="DEVICE_NAME" /> није успело; изаберите уређај да бисте пробали поново</translation>
 <translation id="3355936511340229503">Грешка при повезивању</translation>
 <translation id="3356469410714175391">(Виртуелна картица је омогућена)</translation>
@@ -3984,7 +3985,7 @@
 <translation id="4846628405149428620">Изаберите где овај сајт може да чува измене</translation>
 <translation id="4846680374085650406">Поштујете препоруку администратора за ово подешавање.</translation>
 <translation id="4847902821209177679">Изабрали сте услугу <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" />, притисните Enter да бисте изабрали албуме услуге <ph name="TOPIC_SOURCE" /></translation>
-<translation id="4848191975108266266">Команда „Ок Google“ за Google помоћник</translation>
+<translation id="4848191975108266266">Команда „Хеј Google“ за Google помоћник</translation>
 <translation id="4849286518551984791">Координисано универзално време (UTC/GMT)</translation>
 <translation id="4849517651082200438">Не инсталирај</translation>
 <translation id="485053257961878904">Подешавање синхронизовања обавештења није успело</translation>
@@ -4944,6 +4945,7 @@
 <translation id="5827733057563115968">Предвиђање следеће речи</translation>
 <translation id="5828545842856466741">Додај профил…</translation>
 <translation id="5828633471261496623">Штампање...</translation>
+<translation id="5830205393314753525"><ph name="APP_NAME" />: отварање није успело</translation>
 <translation id="5830720307094128296">Сачувај страницу &amp;као...</translation>
 <translation id="5832813618714645810">Профили</translation>
 <translation id="583281660410589416">Непознато</translation>
@@ -6173,7 +6175,7 @@
 <translation id="7011797924920577670">процењује ваша интересовања</translation>
 <translation id="7014174261166285193">Инсталација није успела.</translation>
 <translation id="7014480873681694324">Уклони истицање</translation>
-<translation id="7017004637493394352">Кажите поново „Ок Google“</translation>
+<translation id="7017004637493394352">Кажите поново „Хеј Google“</translation>
 <translation id="7017219178341817193">Додајте нову страницу</translation>
 <translation id="7017354871202642555">Није могуће подесити режим након подешавања прозора.</translation>
 <translation id="7018275672629230621">Читање историје прегледања и мењање те историје</translation>
@@ -6643,7 +6645,7 @@
 <translation id="7515998400212163428">Android</translation>
 <translation id="7516981202574715431">Апликација <ph name="APP_NAME" /> је паузирана</translation>
 <translation id="7520766081042531487">Портал у режиму без архивирања: <ph name="SUBFRAME_SITE" /></translation>
-<translation id="7522255036471229694">Реците „Ок Google“</translation>
+<translation id="7522255036471229694">Реците „Хеј Google“</translation>
 <translation id="7523585675576642403">Промените назив профила</translation>
 <translation id="7525067979554623046">Направи</translation>
 <translation id="7525625923260515951">Слушајте изабрани текст</translation>

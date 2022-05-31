@@ -86,6 +86,7 @@
 <translation id="1645954272419197032">Potvrďte informace o zařízení</translation>
 <translation id="1662989795263954667">Zastaveno – došel inkoust</translation>
 <translation id="1668469839109562275">Vestavěná VPN</translation>
+<translation id="1672499492233627739">Zdroj videa z webkamery</translation>
 <translation id="1676557873873341166">Pořizování videa</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">Přítomnost resolveru DNS</translation>
@@ -216,6 +217,7 @@
 <translation id="3008341117444806826">OBNOVIT</translation>
 <translation id="3009958530611748826">Vyberte cílovou složku</translation>
 <translation id="3017079585324758401">Pozadí</translation>
+<translation id="3027578600144895987">Zavřete fotoaparát</translation>
 <translation id="3031560714565892478">Zařízení je videokamera.</translation>
 <translation id="3054177598518735801"><ph name="CURRENT_VALUE" /> mA</translation>
 <translation id="3056720590588772262">Koncový bod</translation>
@@ -234,6 +236,7 @@
 <translation id="315738237743207937">Byl nalezen captive portál</translation>
 <translation id="3170673040743561620">Položte dokument na skener</translation>
 <translation id="3188257591659621405">Moje soubory</translation>
+<translation id="319101249942218879">Obrázek avatara se změnil</translation>
 <translation id="3192947282887913208">Zvukové soubory</translation>
 <translation id="3199982728237701504">Podavač dokumentů (oboustranných)</translation>
 <translation id="320091191259649613">Pokud se problém objevuje i po aktualizaci, je možné, že je komponenta kvalifikovaná nově a ještě se nedostala do databáze.</translation>
@@ -491,6 +494,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Zbývá {0} pokus}few{Zbývají {0} pokusy}many{Zbývá {0} pokusu}other{Zbývá {0} pokusů}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Skenování se nepodařilo dokončit</translation>
+<translation id="5499762266711462226">Barva klávesnice vychází z tapety</translation>
 <translation id="5502931783115429516">Android neběží</translation>
 <translation id="5507300744274596613">Ujistěte se, zda je systém Chrome OS aktuální</translation>
 <translation id="5519195206574732858">LTE</translation>

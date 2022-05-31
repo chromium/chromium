@@ -833,6 +833,7 @@
 <translation id="1794051631868188691">永不显示<ph name="MERCHANT" /></translation>
 <translation id="1794791083288629568">发送反馈，以协助我们解决此问题。</translation>
 <translation id="1795214765651529549">使用经典主题背景</translation>
+<translation id="1796105431091975902">选择要添加的 Ansible Playbook</translation>
 <translation id="1796588414813960292">所有需要使用声音的功能都将无法正常运行</translation>
 <translation id="1800502858278951817">没有任何扩展程序曾请求读取和更改 <ph name="SITE_NAME" /> 数据</translation>
 <translation id="1802624026913571222">合盖后休眠</translation>
@@ -999,6 +1000,7 @@
 <translation id="1944921356641260203">发现更新</translation>
 <translation id="1947136734041527201">允许您使用您在身份服务中注册的帐号登录网站</translation>
 <translation id="1949584741547056205">快速解答</translation>
+<translation id="1949849604471335579">对壁纸、屏保、强调色等等进行个性化设置</translation>
 <translation id="1951012854035635156">智能助理</translation>
 <translation id="1954597385941141174">网站可以请求连接到 USB 设备</translation>
 <translation id="1954813140452229842">装载共享资源时出错。请检查您的凭据，然后重试。</translation>
@@ -1030,6 +1032,7 @@
 <translation id="1981434377190976112">读取您在所有网站上的数据</translation>
 <translation id="1984417487208496350">不保护（不建议）</translation>
 <translation id="1987317783729300807">帐号</translation>
+<translation id="1987574314042117472">选择并安装热门应用</translation>
 <translation id="1988259784461813694">要求</translation>
 <translation id="1989112275319619282">浏览</translation>
 <translation id="1989903373608997757">始终使用</translation>
@@ -1095,6 +1098,7 @@
 <translation id="2048554637254265991">启动容器管理器时出错。请重试。</translation>
 <translation id="2048653237708779538">无法执行操作</translation>
 <translation id="2050339315714019657">纵向</translation>
+<translation id="2052572566310583903">已安装在您的其他设备上</translation>
 <translation id="2053312383184521053">闲置状态数据</translation>
 <translation id="2054240652864153171">清除 <ph name="PARTITION_SITE_NAME" /> 上已分区的 <ph name="SITE_NAME" /> 网站数据？</translation>
 <translation id="2055585478631012616">您将会自动退出这些网站（包括打开的标签页）</translation>
@@ -1257,6 +1261,7 @@
 <translation id="2191754378957563929">已开启</translation>
 <translation id="2192505247865591433">来源：</translation>
 <translation id="2193365732679659387">信任设置</translation>
+<translation id="2194554416429452547">在试用版阶段，Chrome 会探索各种方式来限制网络垃圾、欺诈行为以及网站间共享。Chrome 还会<ph name="ESTIMATE_INTERESTS_LINK" />以供网站用于向您展示广告。您可在设置中管理自己的兴趣。</translation>
 <translation id="2194856509914051091">注意事项</translation>
 <translation id="2195331105963583686">在此之后，您仍能使用此 <ph name="DEVICE_TYPE" />，但它将无法继续自动完成软件更新和安全更新</translation>
 <translation id="2195729137168608510">电子邮件保护</translation>
@@ -1859,6 +1864,7 @@
 <translation id="2749836841884031656">SIM 卡</translation>
 <translation id="2749881179542288782">检查拼写和语法</translation>
 <translation id="2753677631968972007">手动控制网站权限。</translation>
+<translation id="2754825024506485820">查找您所需的应用 - 从办公类应用到娱乐类应用，Google Play 商店应有尽有。您随时可安装应用。</translation>
 <translation id="2755349111255270002">重置此 <ph name="DEVICE_TYPE" /></translation>
 <translation id="2755367719610958252">管理无障碍功能</translation>
 <translation id="275662540872599901">已关闭屏幕</translation>
@@ -1935,6 +1941,7 @@
 <translation id="2815693974042551705">“书签”文件夹</translation>
 <translation id="2816319641769218778">若想将密码保存到您的 Google 帐号中，请开启同步功能。</translation>
 <translation id="2816628817680324566">允许此网站识别您的安全密钥？</translation>
+<translation id="2817435998497102771">设置您的壁纸与样式</translation>
 <translation id="2818476747334107629">打印机详细信息</translation>
 <translation id="2819167288942847344">使用手机、平板电脑或可调整大小的窗口的预设大小，以防止应用出现失常行为</translation>
 <translation id="2820957248982571256">正在扫描…</translation>
@@ -2828,6 +2835,7 @@
 <translation id="3727144509609414201">可用的 Wi-Fi 网络</translation>
 <translation id="3727187387656390258">审查弹出内容</translation>
 <translation id="372722114124766626">仅一次</translation>
+<translation id="3727332897090187514">未添加任何备注</translation>
 <translation id="3727473233247516571">往返缓存版子框架：<ph name="BACK_FORWARD_CACHE_PAGE_URL" /></translation>
 <translation id="3728188878314831180">通过镜像方式显示您手机上收到的通知</translation>
 <translation id="3728681439294129328">配置网络地址</translation>
@@ -3023,6 +3031,7 @@
 <translation id="389901847090970821">选择键盘</translation>
 <translation id="3900966090527141178">导出密码</translation>
 <translation id="3903187154317825986">内置键盘</translation>
+<translation id="3903191712482985591">添加 Playbook</translation>
 <translation id="3904326018476041253">位置信息服务</translation>
 <translation id="3904849010307028014">网站可以根据您与其进行的互动（例如定期登录帐号）向您的浏览器颁发信任令牌。之后，如果您访问的其他网站检查并找到有效的信任令牌，就更有可能将您视为真人而非机器人。</translation>
 <translation id="3905761538810670789">修复应用</translation>
@@ -3162,6 +3171,7 @@
 <translation id="4031527940632463547">已禁止使用传感器</translation>
 <translation id="4033415645631238123">您无法再使用 Smart Lock 登录，但仍然可以通过 Smart Lock 解锁。</translation>
 <translation id="4033471457476425443">添加新文件夹</translation>
+<translation id="4033711848170683365">此操作会将相关浏览数据从该设备上永久删除。这份个人资料名下的 Google 帐号可能会被您 <ph name="DEVICE_TYPE" /> 上的其他应用使用。若要移除这些帐号，请前往<ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" />。</translation>
 <translation id="4033963223187371752">安全网站可能会内嵌不安全的内容，例如图片或 Web 框架</translation>
 <translation id="4034824040120875894">打印机</translation>
 <translation id="4035758313003622889">任务管理器(&amp;T)</translation>
@@ -3440,6 +3450,7 @@
 <translation id="4314815835985389558">管理同步数据</translation>
 <translation id="4315933848520197627">解除帐号关联</translation>
 <translation id="4316850752623536204">开发者网站</translation>
+<translation id="4317733381297736564">应用内购买</translation>
 <translation id="4317820549299924617">验证失败</translation>
 <translation id="4320177379694898372">未连接到互联网</translation>
 <translation id="4322394346347055525">关闭其他标签页</translation>
@@ -3628,6 +3639,7 @@
 <translation id="4510479820467554003">家长帐号列表</translation>
 <translation id="451102079304155829">购物车</translation>
 <translation id="4513872120116766993">预测性撰写</translation>
+<translation id="4513909579793564731">应用 Playbook</translation>
 <translation id="4513946894732546136">反馈</translation>
 <translation id="451407183922382411">由 <ph name="COMPANY_NAME" /> 提供技术支持</translation>
 <translation id="4514610446763173167">在播放视频和暂停视频之间切换</translation>
@@ -4020,6 +4032,7 @@
 <translation id="4893522937062257019">屏幕锁定时</translation>
 <translation id="4897496410259333978">如需了解详情，请与您的管理员联系。</translation>
 <translation id="4898011734382862273">证书“<ph name="CERTIFICATE_NAME" />”代表一个证书授权中心</translation>
+<translation id="4899696330053002588">包含广告</translation>
 <translation id="489985760463306091">要完成有害软件的移除，请重新启动计算机</translation>
 <translation id="4900392736118574277">您的启动页已改为 <ph name="URL" />。</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> 赫兹 - 隔行扫描</translation>
@@ -4393,6 +4406,7 @@
 <translation id="52912272896845572">私有密钥文件无效。</translation>
 <translation id="5291739252352359682">在 Chrome 浏览器中自动为媒体创建字幕（目前仅提供英文版）。音频和字幕的处理工作都会在设备上完成，相关数据绝不会外泄。</translation>
 <translation id="529175790091471945">将此设备格式化</translation>
+<translation id="5292862864186939732">始终允许“<ph name="EXTENSION_NAME" />”在 <ph name="ORIGIN" /> 上运行？</translation>
 <translation id="529296195492126134">暂存模式不受支持。请与您的管理员联系</translation>
 <translation id="5293170712604732402">将设置还原为原始默认设置</translation>
 <translation id="5294097441441645251">必须以小写字符或下划线开头</translation>
@@ -5147,6 +5161,7 @@
 <translation id="6054961935262556546">更改公开范围</translation>
 <translation id="6055171183283175969">您输入的密码不正确。</translation>
 <translation id="6055392876709372977">PKCS #1，带有 RSA 加密的 SHA-256</translation>
+<translation id="6055544610007596637">从 Google Play 商店为您的 <ph name="DEVICE_TYPE" /> 安装应用</translation>
 <translation id="6056710589053485679">正常重新加载</translation>
 <translation id="6057312498756061228">这个文件太大，无法进行安全检查。您只能打开不超过 50 MB 的文件。</translation>
 <translation id="6057381398996433816">此网站已被禁止使用动态传感器和光传感器。</translation>
@@ -5455,6 +5470,7 @@
 <translation id="635609604405270300">请勿关闭设备</translation>
 <translation id="63566973648609420">只有知道您密码的人才能读取您的已加密数据。系统不会将该密码发送给 Google，Google 也不会存储该密码。如果您忘记了密码或想更改此设置，则需<ph name="BEGIN_LINK" />重置同步<ph name="END_LINK" />。</translation>
 <translation id="6357305427698525450">部分受支持的链接仍会在“<ph name="APP_NAME" />”或“<ph name="APP_NAME_2" />”中打开。</translation>
+<translation id="6357794994761110294">不允许任何扩展程序读取和更改 <ph name="SITE_NAME" /> 数据</translation>
 <translation id="6358884629796491903">龙</translation>
 <translation id="6361850914223837199">错误详情：</translation>
 <translation id="6362853299801475928">报告问题(&amp;R)...</translation>
@@ -6119,6 +6135,7 @@
 <translation id="7002055706763150362">要设置 Smart Lock（Chromebook 版），您需要先输入密码，因为 Google 需要确认是您本人在操作。</translation>
 <translation id="7003339318920871147">网络数据库</translation>
 <translation id="7003454175711353260">{COUNT,plural, =1{{COUNT} 个文件}other{{COUNT} 个文件}}</translation>
+<translation id="7003705861991657723">Alpha 版</translation>
 <translation id="7003723821785740825">为您的设备设置更快速的解锁方式</translation>
 <translation id="7003844668372540529">来自<ph name="VENDOR_NAME" />的未知产品 <ph name="PRODUCT_ID" /></translation>
 <translation id="7004402701596653846">此网站可能会使用 MIDI</translation>
@@ -6135,6 +6152,7 @@
 <translation id="7008815993384338777">目前未使用漫游服务</translation>
 <translation id="7009709314043432820"><ph name="APP_NAME" /> 正在使用您的摄像头</translation>
 <translation id="701080569351381435">显示源代码</translation>
+<translation id="7011797924920577670">推测您的兴趣</translation>
 <translation id="7014174261166285193">安装失败。</translation>
 <translation id="7014480873681694324">撤消突出显示</translation>
 <translation id="7017004637493394352">再说一遍“Ok Google”</translation>
@@ -6202,6 +6220,7 @@
 <translation id="7082568314107259011">“<ph name="NETWORK_NAME" />”由您的管理员管理</translation>
 <translation id="7085389578340536476">允许 Chrome 录制音频？</translation>
 <translation id="708550780726587276">（未配置）</translation>
+<translation id="7086531709814430567">始终允许这些扩展程序在 <ph name="ORIGIN" /> 上运行？</translation>
 <translation id="7086672505018440886">将 Chrome 日志文件添加到归档中。</translation>
 <translation id="7088434364990739311">无法启动更新检查（错误代码为 <ph name="ERROR" />）。</translation>
 <translation id="7088674813905715446">管理员已将该设备设置为已取消配置的状态。要让该设备能够注册，请让管理员将其设置为待处理状态。</translation>
@@ -8334,6 +8353,7 @@
 <translation id="9215742531438648683">卸载 Google Play 商店</translation>
 <translation id="9218430445555521422">设为默认浏览器</translation>
 <translation id="9218842937876577955"><ph name="APP_NAME" />（不支持此应用）</translation>
+<translation id="9219582468404818260">帮助我们打造更好的网络环境</translation>
 <translation id="9220525904950070496">移除帐号</translation>
 <translation id="9220820413868316583">请抬起手指，然后重试。</translation>
 <translation id="923467487918828349">显示全部</translation>

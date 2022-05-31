@@ -494,6 +494,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="5478289488939624992">{ATTEMPTS_LEFT,plural, =1{Preostao je još {0} pokušaj}one{Preostao je još {0} pokušaj}few{Preostala su još {0} pokušaja}other{Preostalo je još {0} pokušaja}}</translation>
 <translation id="5493614766091057239"><ph name="VERDICT" />: <ph name="PROBLEMS" /></translation>
 <translation id="5499114900554609492">Dovršavanje skeniranja nije uspjelo</translation>
+<translation id="5499762266711462226">Boja tastature je bazirana prema pozadinskoj slici</translation>
 <translation id="5502931783115429516">Android nije pokrenut</translation>
 <translation id="5507300744274596613">Vodite računa da je Chrome OS ažuriran</translation>
 <translation id="5519195206574732858">LTE</translation>
