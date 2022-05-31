@@ -4,12 +4,14 @@
 
 #include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate.h"
 
+#include "base/base64.h"
 #include "base/callback.h"
 #include "base/feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "content/public/common/content_features.h"
 #include "device/fido/discoverable_credential_metadata.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/webauthn/authenticator_request_scheduler.h"
@@ -41,8 +43,10 @@ void ChromeWebAuthnCredentialsDelegate::SelectWebAuthnCredential(
     std::move(retrieve_suggestions_callback_).Run();
     return;
   }
-  credentials_delegate->OnWebAuthnAccountSelected(
-      std::vector<uint8_t>(backend_id.begin(), backend_id.end()));
+  absl::optional<std::vector<uint8_t>> selected_credential =
+      base::Base64Decode(backend_id);
+  DCHECK(selected_credential);
+  credentials_delegate->OnWebAuthnAccountSelected(*selected_credential);
 #else
   ChromeAuthenticatorRequestDelegate* authenticator_delegate =
       AuthenticatorRequestScheduler::GetRequestDelegate(
@@ -108,8 +112,15 @@ void ChromeWebAuthnCredentialsDelegate::OnCredentialsReceived(
     }
     suggestion.icon = "fingerprint";
     suggestion.frontend_id = autofill::POPUP_ITEM_ID_WEBAUTHN_CREDENTIAL;
+#if BUILDFLAG(IS_ANDROID)
+    // Android passes the credential ID instead of the user ID, because it
+    // needs the credential ID to directly populate the allowCredentials
+    // list when one is selected.
+    suggestion.backend_id = base::Base64Encode(credential.cred_id);
+#else
     suggestion.backend_id =
         std::string(credential.user.id.begin(), credential.user.id.end());
+#endif
     suggestions.push_back(std::move(suggestion));
   }
   suggestions_ = std::move(suggestions);
