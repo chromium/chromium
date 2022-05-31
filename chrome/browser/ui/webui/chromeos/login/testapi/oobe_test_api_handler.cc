@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/ash_interfaces.h"
+#include "ash/public/cpp/tablet_mode.h"
 #include "ash/public/mojom/cros_display_config.mojom.h"
 #include "base/bind.h"
 #include "base/check.h"
@@ -91,6 +92,10 @@ void OobeTestAPIHandler::GetAdditionalParameters(base::Value::Dict* dict) {
             false
 #endif
   );
+
+  dict->Set("testapi_isOobeInTabletMode",
+            ash::TabletMode::Get()->InTabletMode() ||
+                ash::switches::ShouldOobeUseTabletModeFirstRun());
 }
 
 void OobeTestAPIHandler::LoginWithPin(const std::string& username,

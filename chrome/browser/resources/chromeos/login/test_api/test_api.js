@@ -372,6 +372,18 @@ class PinSetupScreenTester extends ScreenElementApi {
   pressPinDigit(digit) {
     this.pinButtons[digit].click();
   }
+
+  /**
+   * @return {string}
+   */
+  getSkipButtonName() {
+    return loadTimeData.getString('discoverPinSetupSkip');
+  }
+
+  /** @return {boolean} */
+  isInTabletMode() {
+    return loadTimeData.getBoolean('testapi_isOobeInTabletMode');
+  }
 }
 
 class EnrollmentSignInStep extends PolymerElementApi {
