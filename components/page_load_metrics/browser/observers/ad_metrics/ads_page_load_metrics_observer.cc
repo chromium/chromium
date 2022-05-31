@@ -634,6 +634,12 @@ void AdsPageLoadMetricsObserver::OnMainFrameIntersectionRectChanged(
   CheckForAdDensityViolation();
 }
 
+void AdsPageLoadMetricsObserver::OnMainFrameViewportRectChanged(
+    const gfx::Rect& main_frame_viewport_rect) {
+  page_ad_density_tracker_.UpdateMainFrameViewportRect(
+      main_frame_viewport_rect);
+}
+
 // TODO(https://crbug.com/1142669): Evaluate imposing width requirements
 // for ad density violations.
 void AdsPageLoadMetricsObserver::CheckForAdDensityViolation() {
@@ -870,6 +876,12 @@ void AdsPageLoadMetricsObserver::RecordPageResourceTotalHistograms(
   builder.SetAdCpuTime(
       aggregate_frame_data_->total_ad_cpu_usage().InMilliseconds());
   builder.Record(ukm_recorder->Get());
+
+  // Record custom sampling metrics
+  ukm::builders::AdPageLoadCustomSampling custom_sampling_builder(source_id);
+  custom_sampling_builder.SetAverageViewportAdDensity(
+      page_ad_density_tracker_.AverageViewportAdDensityByArea());
+  custom_sampling_builder.Record(ukm_recorder->Get());
 }
 
 void AdsPageLoadMetricsObserver::RecordHistograms(ukm::SourceId source_id) {

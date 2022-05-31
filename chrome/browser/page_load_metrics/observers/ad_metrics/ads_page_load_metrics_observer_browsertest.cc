@@ -39,6 +39,7 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
@@ -248,6 +249,80 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
       static_cast<int>(page_load_metrics::OriginStatus::kCross));
 }
 
+// TODO(crbug.com/1326576): Re-enable this test
+IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
+                       DISABLED_AverageViewportAdDensity) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  auto waiter = CreatePageLoadMetricsTestWaiter();
+
+  GURL url = embedded_test_server()->GetURL(
+      "a.com", "/ads_observer/large_scrollable_page_with_adiframe_writer.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  int scrollbar_width =
+      EvalJs(web_contents,
+             "window.innerWidth - document.documentElement.clientWidth")
+          .ExtractInt();
+
+  content::RenderWidgetHostView* guest_host_view =
+      web_contents->GetRenderWidgetHostView();
+  gfx::Size viewport_size = guest_host_view->GetVisibleViewportSize();
+  viewport_size -= gfx::Size(scrollbar_width, 0);
+
+  // Configure the waiter to wait for the viewport rect after scrolling, and for
+  // the subframe rect.
+  waiter->AddMainFrameViewportRectExpectation(
+      gfx::Rect(0, 5000, viewport_size.width(), viewport_size.height()));
+  gfx::Rect expected_rect =
+      gfx::Rect(/*x=*/0, /*y=*/4950, /*width=*/500, /*height=*/500);
+  waiter->AddMainFrameIntersectionExpectation(expected_rect);
+
+  ASSERT_TRUE(ExecJs(web_contents, "window.scrollTo(0, 5000)"));
+
+  GURL subframe_url =
+      embedded_test_server()->GetURL("b.com", "/ads_observer/pixel.png");
+
+  EXPECT_TRUE(ExecJs(
+      web_contents,
+      content::JsReplace("let frame = createAdIframeAtRect(0, 4950, 500, 500); "
+                         "frame.style.position = 'absolute'; frame.src = $1;",
+                         subframe_url.spec())));
+
+  waiter->Wait();
+
+  gfx::Rect viewport_rect =
+      gfx::Rect(0, 0, viewport_size.width(), viewport_size.height());
+  gfx::Rect intersect_rect = gfx::Rect(0, 0, 500, 450);
+  intersect_rect.Intersect(viewport_rect);
+
+  int expected_final_viewport_density =
+      intersect_rect.size().GetArea() * 100 / viewport_size.GetArea();
+
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
+
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::AdPageLoadCustomSampling::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+
+  const int64_t* reported_average_viewport_density =
+      ukm_recorder.GetEntryMetric(entries.front(),
+                                  ukm::builders::AdPageLoadCustomSampling::
+                                      kAverageViewportAdDensityName);
+
+  EXPECT_TRUE(reported_average_viewport_density);
+
+  // `reported_average_viewport_density` is a time averaged value and it can
+  // theoretically be any value within [0, `expected_final_viewport_density`].
+  EXPECT_GE(*reported_average_viewport_density, 0);
+  EXPECT_LE(*reported_average_viewport_density,
+            expected_final_viewport_density);
+}
+
 // Verifies that the page ad density records the maximum value during
 // a page's lifecycling by creating a large ad frame, destroying it, and
 // creating a smaller iframe. The ad density recorded is the density with
@@ -280,7 +355,8 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
   web_contents = browser()->tab_strip_model()->GetActiveWebContents();
 
   // Create a frame at 100,100 of size 200,200.
-  waiter->AddMainFrameIntersectionExpectation(gfx::Rect(100, 100, 200, 200));
+  gfx::Rect large_rect = gfx::Rect(100, 100, 200, 200);
+  waiter->AddMainFrameIntersectionExpectation(large_rect);
 
   // Create the frame with b.com as origin to not get caught by
   // restricted ad tagging.
@@ -317,10 +393,16 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
   document_width =
       EvalJs(web_contents, "document.body.scrollWidth").ExtractInt();
 
-  int page_area = document_width * document_height;
-  int ad_area = 200 * 200;  // The area of the first larger ad iframe.
-  int expected_page_density_area = ad_area * 100 / page_area;
-  int expected_page_density_height = 200 * 100 / document_height;
+  gfx::Rect document_rect = gfx::Rect(0, 0, document_width, document_height);
+  large_rect.Intersect(document_rect);
+  int ad_area_within_page =
+      large_rect.size().GetArea();  // The area of the first larger ad iframe.
+  int ad_height_within_page = large_rect.size().height();
+
+  int page_area = document_rect.size().GetArea();
+  int expected_page_density_area = ad_area_within_page * 100 / page_area;
+  int expected_page_density_height =
+      ad_height_within_page * 100 / document_height;
 
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
@@ -369,8 +451,9 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
   waiter->Wait();
   web_contents = browser()->tab_strip_model()->GetActiveWebContents();
 
-  // Create a frame of size 400,400 at 100,100.
-  waiter->AddMainFrameIntersectionExpectation(gfx::Rect(400, 400, 100, 100));
+  // Create a frame of size 100,100 at 400,400.
+  gfx::Rect rect1 = gfx::Rect(400, 400, 100, 100);
+  waiter->AddMainFrameIntersectionExpectation(rect1);
 
   // Create the frame with b.com as origin to not get caught by
   // restricted ad tagging.
@@ -385,7 +468,8 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
   waiter->Wait();
 
   // Create a frame at of size 200,200 at 450,450.
-  waiter->AddMainFrameIntersectionExpectation(gfx::Rect(450, 450, 200, 200));
+  gfx::Rect rect2 = gfx::Rect(450, 450, 200, 200);
+  waiter->AddMainFrameIntersectionExpectation(rect2);
   EXPECT_TRUE(ExecJs(
       web_contents, content::JsReplace(
                         "let frame = createAdIframeAtRect(450, 450, 200, 200); "
@@ -402,14 +486,27 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
   document_width =
       EvalJs(web_contents, "document.body.scrollWidth").ExtractInt();
 
+  // Calculate the ad area and height within the page.
+  gfx::Rect document_rect = gfx::Rect(0, 0, document_width, document_height);
+  rect1.Intersect(document_rect);
+  rect2.Intersect(document_rect);
+  gfx::Rect intersect12 = rect1;
+  intersect12.Intersect(rect2);
+
+  gfx::Rect union12 = rect1;
+  union12.Union(rect2);
+
+  int ad_area_within_page = rect1.size().GetArea() + rect2.size().GetArea() -
+                            intersect12.size().GetArea();
+  int ad_height_within_page = union12.size().height();
+
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
 
-  int page_area = document_width * document_height;
-  // The area of the two iframes minus the area of the overlapping section.
-  int ad_area = 100 * 100 + 200 * 200 - 50 * 50;
-  int expected_page_density_area = ad_area * 100 / page_area;
-  int expected_page_density_height = 250 * 100 / document_height;
+  int page_area = document_rect.size().GetArea();
+  int expected_page_density_area = ad_area_within_page * 100 / page_area;
+  int expected_page_density_height =
+      ad_height_within_page * 100 / document_height;
 
   histogram_tester.ExpectUniqueSample(kMaxAdDensityByAreaHistogramId,
                                       expected_page_density_area, 1);
