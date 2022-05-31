@@ -83,6 +83,7 @@
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_box_strut.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_fieldset.h"
+#include "third_party/blink/renderer/core/layout/ng/legacy_layout_tree_walking.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
@@ -4540,7 +4541,9 @@ void LayoutBox::ComputeLogicalHeight(
     return;
 
   Length h;
-  if (IsOutOfFlowPositioned()) {
+  if (IsManagedByLayoutNG(*this) && HasOverrideLogicalHeight()) {
+    computed_values.extent_ = OverrideLogicalHeight();
+  } else if (IsOutOfFlowPositioned()) {
     ComputePositionedLogicalHeight(computed_values);
     if (HasOverrideLogicalHeight())
       computed_values.extent_ = OverrideLogicalHeight();
