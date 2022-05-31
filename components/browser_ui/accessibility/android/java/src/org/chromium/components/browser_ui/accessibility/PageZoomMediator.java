@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.page_zoom;
+package org.chromium.components.browser_ui.accessibility;
+
+import static org.chromium.components.browser_ui.accessibility.PageZoomUtils.PAGE_ZOOM_DEFAULT_ZOOM_VALUE;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.MathUtils;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.HostZoomMap;
 import org.chromium.content_public.browser.WebContents;
@@ -66,36 +66,33 @@ public class PageZoomMediator {
      *
      * @return boolean
      */
-    public static boolean shouldShowMenuItem() {
+    protected static boolean shouldShowMenuItem() {
         // Never show the menu item if the content feature is disabled.
         if (!ContentFeatureList.isEnabled(ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM)) {
             return false;
         }
 
         // Always show the menu item if the user has set this in Accessibility Settings.
-        if (SharedPreferencesManager.getInstance().readBoolean(
-                    ChromePreferenceKeys.PAGE_ZOOM_ALWAYS_SHOW_MENU_ITEM, false)) {
+        if (PageZoomUtils.getShouldAlwaysShowZoomValue()) {
             return true;
         }
 
         // The default (float) |fontScale| is 1, the default page zoom is 1.
-        boolean nonDefaultSystemFontSize = MathUtils.areFloatsEqual(
+        boolean defaultSystemFontSize = MathUtils.areFloatsEqual(
                 ContextUtils.getApplicationContext().getResources().getConfiguration().fontScale,
                 1f);
 
-        boolean nonDefaultDefaultPageZoom = MathUtils.areFloatsEqual(
-                SharedPreferencesManager.getInstance().readFloat(
-                        ChromePreferenceKeys.PAGE_ZOOM_DEFAULT_ZOOM_SETTING, 1.0f),
-                1f);
+        boolean defaultDefaultPageZoom =
+                PageZoomUtils.getDefaultZoomValue() == PAGE_ZOOM_DEFAULT_ZOOM_VALUE;
 
-        return nonDefaultSystemFontSize || nonDefaultDefaultPageZoom;
+        return !defaultSystemFontSize || !defaultDefaultPageZoom;
     }
 
     /**
      * Set the web contents that should be controlled by this instance.
      * @param webContents   The WebContents this instance should control.
      */
-    public void setWebContents(WebContents webContents) {
+    protected void setWebContents(WebContents webContents) {
         mWebContents = webContents;
         mZoomIndex = Arrays.binarySearch(AVAILABLE_ZOOM_FACTORS, getZoomLevel(mWebContents));
         updateState();

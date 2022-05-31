@@ -12,6 +12,7 @@ import android.os.CancellationSignal;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewStub;
 
 import androidx.annotation.CallSuper;
 import androidx.annotation.NonNull;
@@ -86,7 +87,6 @@ import org.chromium.chrome.browser.omnibox.geo.GeolocationHeader;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxPedalDelegate;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.VoiceInteractionSource;
-import org.chromium.chrome.browser.page_zoom.PageZoomCoordinator;
 import org.chromium.chrome.browser.paint_preview.DemoPaintPreview;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -127,6 +127,7 @@ import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController.StatusBarColorProvider;
 import org.chromium.chrome.browser.vr.VrModuleProvider;
 import org.chromium.chrome.features.start_surface.StartSurface;
+import org.chromium.components.browser_ui.accessibility.PageZoomCoordinator;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFactory;
@@ -459,7 +460,10 @@ public class RootUiCoordinator
                 mActivityLifecycleDispatcher, mActivityTabProvider, mTopUiThemeColorProvider);
         mEphemeralTabCoordinatorSupplier = ephemeralTabCoordinatorSupplier;
 
-        mPageZoomCoordinator = new PageZoomCoordinator(mActivity);
+        mPageZoomCoordinator = new PageZoomCoordinator(() -> {
+            ViewStub viewStub = (ViewStub) mActivity.findViewById(R.id.page_zoom_container);
+            return viewStub.inflate();
+        });
     }
 
     // TODO(pnoland, crbug.com/865801): remove this in favor of wiring it directly.

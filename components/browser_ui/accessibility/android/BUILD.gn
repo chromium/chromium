@@ -32,6 +32,12 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/accessibility/AccessibilitySettings.java",
     "java/src/org/chromium/components/browser_ui/accessibility/AccessibilitySettingsDelegate.java",
     "java/src/org/chromium/components/browser_ui/accessibility/FontSizePrefs.java",
+    "java/src/org/chromium/components/browser_ui/accessibility/PageZoomCoordinator.java",
+    "java/src/org/chromium/components/browser_ui/accessibility/PageZoomMediator.java",
+    "java/src/org/chromium/components/browser_ui/accessibility/PageZoomPreference.java",
+    "java/src/org/chromium/components/browser_ui/accessibility/PageZoomProperties.java",
+    "java/src/org/chromium/components/browser_ui/accessibility/PageZoomUtils.java",
+    "java/src/org/chromium/components/browser_ui/accessibility/PageZoomViewBinder.java",
     "java/src/org/chromium/components/browser_ui/accessibility/TextScalePreference.java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
@@ -45,20 +51,48 @@ android_library("java") {
     "//content/public/android:content_full_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_preference_preference_java",
+    "//ui/android:ui_no_recycler_view_java",
   ]
   resources_package = "org.chromium.components.browser_ui.accessibility"
 }
 
 android_resources("java_resources") {
+  sources = [
+    "java/res/drawable/ic_zoom.xml",
+    "java/res/drawable/page_zoom_background.xml",
+    "java/res/drawable/page_zoom_seekbar_progress.xml",
+    "java/res/drawable/page_zoom_seekbar_thumb.xml",
+    "java/res/drawable/page_zoom_seekbar_track.xml",
+    "java/res/layout/custom_preference.xml",
+    "java/res/layout/page_zoom_preference.xml",
+    "java/res/layout/page_zoom_view.xml",
+    "java/res/layout/preference_text_scale.xml",
+    "java/res/values/styles.xml",
+    "java/res/xml/accessibility_preferences.xml",
+  ]
+
   deps = [
     "//components/browser_ui/strings/android:browser_ui_strings_grd",
     "//components/browser_ui/styles/android:java_resources",
     "//third_party/androidx:androidx_preference_preference_java",
   ]
-  sources = [
-    "java/res/layout/custom_preference.xml",
-    "java/res/layout/preference_text_scale.xml",
-    "java/res/values/styles.xml",
-    "java/res/xml/accessibility_preferences.xml",
+}
+
+java_library("junit") {
+  bypass_platform_checks = true
+  testonly = true
+  sources = [ "java/src/org/chromium/components/browser_ui/accessibility/PageZoomMediatorUnitTest.java" ]
+
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//content/public/android:content_full_java",
+    "//third_party/android_deps:robolectric_all_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_no_recycler_view_java",
   ]
 }
