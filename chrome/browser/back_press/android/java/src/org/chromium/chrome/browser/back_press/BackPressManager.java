@@ -33,7 +33,9 @@ public class BackPressManager {
 
     private final BackPressHandler[] mHandlers = new BackPressHandler[Type.NUM_TYPES];
 
-    private final Callback<Boolean> mObserverCallback = (t) -> backPressStateChanged();
+    private final Callback<Boolean>[] mObserverCallbacks = new Callback[Type.NUM_TYPES];
+    private final boolean[] mStates = new boolean[Type.NUM_TYPES];
+    private int mEnabledCount;
 
     /**
      * @return True if the back gesture refactor is enabled.
@@ -50,7 +52,8 @@ public class BackPressManager {
     public void addHandler(BackPressHandler handler, @Type int type) {
         assert mHandlers[type] == null : "Each type can have at most one handler";
         mHandlers[type] = handler;
-        handler.getHandleBackPressChangedSupplier().addObserver(mObserverCallback);
+        mObserverCallbacks[type] = (t) -> backPressStateChanged(type);
+        handler.getHandleBackPressChangedSupplier().addObserver(mObserverCallbacks[type]);
     }
 
     /**
@@ -60,8 +63,8 @@ public class BackPressManager {
     public void removeHandler(@NonNull BackPressHandler handler) {
         for (int i = 0; i < mHandlers.length; i++) {
             if (mHandlers[i] == handler) {
-                handler.getHandleBackPressChangedSupplier().removeObserver(mObserverCallback);
-                mHandlers[i] = null;
+                removeHandler(i);
+                return;
             }
         }
     }
@@ -71,6 +74,15 @@ public class BackPressManager {
      * @param type {@link Type} to be removed.
      */
     public void removeHandler(@Type int type) {
+        BackPressHandler handler = mHandlers[type];
+        Boolean enabled = mHandlers[type].getHandleBackPressChangedSupplier().get();
+        if (enabled != null && enabled) {
+            mEnabledCount--;
+            mStates[type] = false;
+            mCallback.setEnabled(mEnabledCount != 0);
+        }
+        handler.getHandleBackPressChangedSupplier().removeObserver(mObserverCallbacks[type]);
+        mObserverCallbacks[type] = null;
         mHandlers[type] = null;
     }
 
@@ -90,17 +102,16 @@ public class BackPressManager {
         return mCallback;
     }
 
-    private void backPressStateChanged() {
-        boolean isEnabled = false;
-        for (BackPressHandler handler : mHandlers) {
-            if (handler == null) continue;
-            Boolean enabled = handler.getHandleBackPressChangedSupplier().get();
-            if (enabled != null && enabled) {
-                isEnabled = true;
-                break;
-            }
+    private void backPressStateChanged(@Type int type) {
+        Boolean enabled = mHandlers[type].getHandleBackPressChangedSupplier().get();
+        if (enabled == null || enabled == mStates[type]) return;
+        if (enabled) {
+            mEnabledCount++;
+        } else {
+            mEnabledCount--;
         }
-        mCallback.setEnabled(isEnabled);
+        mStates[type] = enabled;
+        mCallback.setEnabled(mEnabledCount != 0);
     }
 
     private void handleBackPress() {

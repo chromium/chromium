@@ -142,6 +142,31 @@ public class BackPressManagerUnitTest {
     }
 
     @Test
+    public void testRemoveEnabledHandler() {
+        BackPressManager manager = new BackPressManager();
+        EmptyBackPressHandler h1 = new EmptyBackPressHandler();
+        EmptyBackPressHandler h2 = new EmptyBackPressHandler();
+        manager.addHandler(h1, 0);
+        manager.addHandler(h2, 1);
+        Assert.assertEquals("Two handlers should be registered", 2, getHandlerCount(manager));
+        Assert.assertFalse("Callback should be disabled if no handler is enabled.", manager.getCallback().isEnabled());
+
+        h1.getHandleBackPressChangedSupplier().set(true);
+        h2.getHandleBackPressChangedSupplier().set(true);
+        Assert.assertTrue("Callback should be enabled if any handler is enabled.", manager.getCallback().isEnabled());
+
+        manager.removeHandler(h2);
+        Assert.assertEquals("One handler should be removed", 1, getHandlerCount(manager));
+        Assert.assertFalse("One handler should be removed", manager.has(2));
+        Assert.assertTrue("Callback should be enabled if any handler is enabled.", manager.getCallback().isEnabled());
+
+        manager.removeHandler(h1);
+        Assert.assertEquals("All handlers should have been removed", 0, getHandlerCount(manager));
+        Assert.assertFalse("All handlers should have been removed", manager.has(1));
+        Assert.assertFalse("Callback should be disabled if no handler is registered.", manager.getCallback().isEnabled());
+    }
+
+    @Test
     public void testNoHandlerRegistered() {
         BackPressManager manager = new BackPressManager();
         Assert.assertFalse("Callback should be disabled if no handler is registered",
