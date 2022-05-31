@@ -232,6 +232,7 @@ def _orchestrator_builder(
         *,
         name,
         compilator,
+        use_orchestrator_pool = False,
         **kwargs):
     """Define an orchestrator builder.
 
@@ -252,6 +253,9 @@ def _orchestrator_builder(
       name: The name of the orchestrator.
       compilator: A string identifying the associated compilator. Compilators
         can be defined using try_.compilator_builder.
+      use_orchestrator_pool: Whether to use the bots in
+        luci.chromium.try.orchestrator pool. This kwarg should be taken out
+        once all CQ builders are migrated to be srcless (crbug/1287228)
       **kwargs: Additional kwargs to be forwarded to try_.builder.
         The following kwargs will have defaults applied if not set:
         * builderless: True on branches, False on main
@@ -265,7 +269,14 @@ def _orchestrator_builder(
     if not builder_group:
         fail("builder_group must be specified")
 
-    kwargs.setdefault("builderless", not settings.is_main)
+    # TODO(crbug/1287228): Make this the default once all CQ builders are
+    # migrated to be srcless
+    if use_orchestrator_pool:
+        kwargs.setdefault("pool", "luci.chromium.try.orchestrator")
+        kwargs.setdefault("builderless", None)
+    else:
+        kwargs.setdefault("builderless", not settings.is_main)
+
     kwargs.setdefault("cores", defaults.orchestrator_cores.get())
     kwargs.setdefault("executable", "recipe:chromium/orchestrator")
 
