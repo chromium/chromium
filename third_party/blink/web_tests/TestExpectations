@@ -7053,3 +7053,9 @@ crbug.com/1330300 fast/css-grid-layout/grid-auto-repeat-huge-grid-006.html [ Pas
 
 # Sheriff 2022-05-31
 crbug.com/1330555 [ Mac11 ] external/wpt/service-workers/service-worker/resource-timing-fetch-variants.https.html [ Pass Failure ]
+
+# fast/canvas/OffscreenCanvas-2d-drawImage.html
+crbug.com/1273409 [ Mac11 ] fast/canvas/OffscreenCanvas-2d-drawImage.html [ Pass Failure ]
+crbug.com/1273409 [ Mac11-arm64 ] fast/canvas/OffscreenCanvas-2d-drawImage.html [ Pass Failure ]
+crbug.com/1273409 [ Linux ] fast/canvas/OffscreenCanvas-2d-drawImage.html [ Pass Failure ]
+crbug.com/1273409 [ Win10.20h2 ] fast/canvas/OffscreenCanvas-2d-drawImage.html [ Pass Failure ]
