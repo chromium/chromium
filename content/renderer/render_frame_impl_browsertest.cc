@@ -219,13 +219,19 @@ class RenderFrameTestObserver : public RenderFrameObserver {
       const gfx::Rect& intersection_rect) override {
     last_intersection_rect_ = intersection_rect;
   }
+  void OnMainFrameViewportRectangleChanged(
+      const gfx::Rect& viewport_rect) override {
+    last_viewport_rect_ = viewport_rect;
+  }
 
-  bool visible() { return visible_; }
-  gfx::Rect last_intersection_rect() { return last_intersection_rect_; }
+  bool visible() const { return visible_; }
+  gfx::Rect last_intersection_rect() const { return last_intersection_rect_; }
+  gfx::Rect last_viewport_rect() const { return last_viewport_rect_; }
 
  private:
   bool visible_;
   gfx::Rect last_intersection_rect_;
+  gfx::Rect last_viewport_rect_;
 };
 
 // Verify that a frame with a RenderFrameProxy as a parent has its own
@@ -458,6 +464,20 @@ TEST_F(RenderFrameImplTest, MainFrameIntersectionRecorded) {
   // Setting a new frame intersection in a local frame triggers the render frame
   // observer call.
   EXPECT_EQ(observer.last_intersection_rect(), mainframe_intersection);
+}
+
+TEST_F(RenderFrameImplTest, MainFrameViewportRectRecorded) {
+  RenderFrameTestObserver observer(GetMainRenderFrame());
+  gfx::Rect mainframe_viewport(0, 0, 200, 140);
+  GetMainRenderFrame()->OnMainFrameViewportRectangleChanged(mainframe_viewport);
+  EXPECT_EQ(observer.last_viewport_rect(), mainframe_viewport);
+
+  // After a navigation, the notification of `mainframe_viewport` should be
+  // propagated to `RenderFrameTestObserver` again for the new document.
+  LoadHTML(kParentFrameHTML);
+  RenderFrameTestObserver observer2(GetMainRenderFrame());
+  GetMainRenderFrame()->OnMainFrameViewportRectangleChanged(mainframe_viewport);
+  EXPECT_EQ(observer2.last_viewport_rect(), mainframe_viewport);
 }
 
 // Used to annotate the source of an interface request.
