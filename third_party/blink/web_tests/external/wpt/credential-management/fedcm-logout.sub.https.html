@@ -4,7 +4,9 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <body>
-<script>
+<script type="module">
+  import {set_fedcm_cookie} from './support/fedcm-helper.js';
+
   const url_prefix = 'https://{{host}}:{{ports[https][0]}}/credential-management/support/';
   const test_options = {
     federated: {
@@ -28,18 +30,8 @@
     nonce: '2',
   };
 
-   async function set_cookie() {
-     // Wait for the identity provider's cookie to be installed.
-     await new Promise(resolve => {
-       const img = document.createElement('img');
-       img.addEventListener('error', resolve);
-       img.src = url_prefix + 'set_cookie';
-       document.body.appendChild(img);
-     });
-   }
-
   promise_test(async t => {
-    await set_cookie();
+    await set_fedcm_cookie();
     const cred = await navigator.credentials.get(test_options);
     const token = await cred.login(login_options);
     assert_equals(token.idToken, "token");
@@ -54,7 +46,7 @@
   }, "logout should throw an exception when not logged in.");
 
   promise_test(async t => {
-    await set_cookie();
+    await set_fedcm_cookie();
     const cred = await navigator.credentials.get(test_options_no_hint);
     const token = await cred.login(login_options);
     assert_equals(token.idToken, "token");

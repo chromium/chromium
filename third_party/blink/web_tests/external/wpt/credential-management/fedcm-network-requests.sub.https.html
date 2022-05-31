@@ -6,16 +6,12 @@
 
 <body>
 
-<script>
+<script type="module">
+import {set_fedcm_cookie} from './support/fedcm-helper.js';
+
 const url_prefix = 'https://{{host}}:{{ports[https][0]}}/credential-management/support/';
 promise_test(async t => {
-  // Install and wait for the identity provider's cookie to be installed.
-  await new Promise(resolve => {
-    const img = document.createElement('img');
-    img.src = url_prefix + 'set_cookie';
-    img.addEventListener('error', resolve);
-    document.body.appendChild(img);
-  });
+  await set_fedcm_cookie();
   const result = await navigator.credentials.get({
     federated: {
       providers: [{
