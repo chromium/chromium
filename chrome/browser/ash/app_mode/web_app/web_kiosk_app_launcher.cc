@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/syslog_logging.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_data.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -59,6 +60,7 @@ void WebKioskAppLauncher::Initialize() {
   const WebKioskAppData* app =
       WebKioskAppManager::Get()->GetAppByAccountId(account_id_);
   DCHECK(app);
+  SYSLOG(INFO) << "Launching web kiosk for url: " << app->install_url();
   if (app->status() == WebKioskAppData::Status::kInstalled ||
       delegate_->ShouldSkipAppInstallation()) {
     delegate_->OnAppPrepared();

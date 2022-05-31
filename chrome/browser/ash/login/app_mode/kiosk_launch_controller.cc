@@ -212,8 +212,7 @@ KioskLaunchController::~KioskLaunchController() {
 
 void KioskLaunchController::Start(const KioskAppId& kiosk_app_id,
                                   bool auto_launch) {
-  SYSLOG(INFO) << "Starting kiosk mode of type "
-               << static_cast<int>(kiosk_app_id.type) << "...";
+  SYSLOG(INFO) << "Starting kiosk mode for app " << kiosk_app_id;
   kiosk_app_id_ = kiosk_app_id;
   auto_launch_ = auto_launch;
   launcher_start_time_ = base::Time::Now();
