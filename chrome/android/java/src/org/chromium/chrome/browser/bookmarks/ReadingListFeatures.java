@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
  * discards the "last bookmark location". Default: {@link #DEFAULT_SESSION_LENGTH_SECONDS}</li>
  * <li>{@code use_cct}: boolean; open Reading list items in CCT. Default: {@code true}</li>
  * <li>{@code use_root_bookmark_as_default}: boolean; use the root folder rather than "Mobile
- * bookmarks" as the default bookmark folder. Default: {@code false}</li>
+ * bookmarks" as the default bookmark folder. Default: {@code true}</li>
  * <li>{@code read_later_min_version}: boolean; see {@link BookmarkFeatures#VERSION}.</li>
  * <li>{@code allow_bookmark_type_swapping}: boolean; Allow type swapping between bookmarks and
  * reading list types. Default: {@code false}</li>
@@ -53,7 +53,7 @@ public class ReadingListFeatures {
     public static boolean shouldUseRootFolderAsDefaultForReadLater() {
         return isReadingListEnabled()
                 && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                        ChromeFeatureList.READ_LATER, "use_root_bookmark_as_default", false);
+                        ChromeFeatureList.READ_LATER, "use_root_bookmark_as_default", true);
     }
 
     /**

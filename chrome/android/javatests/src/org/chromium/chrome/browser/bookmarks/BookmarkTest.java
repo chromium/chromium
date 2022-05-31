@@ -118,8 +118,7 @@ import java.util.concurrent.ExecutionException;
 // clang-format off
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "force-fieldtrials=Study/Group",
-            "force-fieldtrial-params=Study.Group:use_root_bookmark_as_default/false"})
+@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class BookmarkTest {
     // clang-format on
     @Rule
@@ -380,6 +379,7 @@ public class BookmarkTest {
 
     @Test
     @SmallTest
+    @Features.EnableFeatures({ChromeFeatureList.READ_LATER + ":use_root_bookmark_as_default/false"})
     public void testOpenBookmark() throws InterruptedException, ExecutionException {
         addBookmark(TEST_PAGE_TITLE_GOOGLE, mTestPage);
         openBookmarkManager();
@@ -415,6 +415,7 @@ public class BookmarkTest {
 
     @Test
     @SmallTest
+    @Features.EnableFeatures({ChromeFeatureList.READ_LATER + ":use_root_bookmark_as_default/false"})
     public void testOpenBookmarkManager() throws InterruptedException {
         openBookmarkManager();
         BookmarkTestUtil.waitForBookmarkModelLoaded();
@@ -427,12 +428,9 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({ChromeFeatureList.READ_LATER + "<Study"})
-    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
-            "force-fieldtrial-params=Study.Group:use_root_bookmark_as_default/true"})
+    @Features.EnableFeatures({ChromeFeatureList.READ_LATER})
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
-    public void
-    testOpenBookmarkManagerWhenDefaultToRootEnabled()
+    public void testOpenBookmarkManagerWhenDefaultToRootEnabled()
             throws InterruptedException, ExecutionException {
         openBookmarkManager();
         BookmarkTestUtil.waitForBookmarkModelLoaded();
@@ -643,6 +641,7 @@ public class BookmarkTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @Features.EnableFeatures({ChromeFeatureList.READ_LATER + ":use_root_bookmark_as_default/false"})
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testBookmarkFolderIcon(boolean nightModeEnabled) throws Exception {
         BookmarkPromoHeader.forcePromoStateForTests(SyncPromoState.NO_PROMO);
@@ -702,6 +701,7 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
+    @Features.EnableFeatures({ChromeFeatureList.READ_LATER + ":use_root_bookmark_as_default/false"})
     public void testEndIconVisibilityInSelectionMode() throws Exception {
         BookmarkId testId = addFolder(TEST_FOLDER_TITLE);
         addBookmark(TEST_TITLE_A, mTestUrlA);
@@ -800,6 +800,7 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
+    @Features.EnableFeatures({ChromeFeatureList.READ_LATER + ":use_root_bookmark_as_default/false"})
     public void testSmallDrag_Up_BookmarksOnly() throws Exception {
         List<BookmarkId> initial = new ArrayList<>();
         List<BookmarkId> expected = new ArrayList<>();
@@ -863,6 +864,7 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
+    @Features.EnableFeatures({ChromeFeatureList.READ_LATER + ":use_root_bookmark_as_default/false"})
     public void testSmallDrag_Down_FoldersOnly() throws Exception {
         List<BookmarkId> initial = new ArrayList<>();
         List<BookmarkId> expected = new ArrayList<>();
@@ -928,6 +930,7 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
+    @Features.EnableFeatures({ChromeFeatureList.READ_LATER + ":use_root_bookmark_as_default/false"})
     public void testSmallDrag_Down_MixedFoldersAndBookmarks() throws Exception {
         List<BookmarkId> initial = new ArrayList<>();
         List<BookmarkId> expected = new ArrayList<>();
@@ -989,6 +992,7 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
+    @Features.EnableFeatures({ChromeFeatureList.READ_LATER + ":use_root_bookmark_as_default/false"})
     public void testPromoDraggability() throws Exception {
         BookmarkId testId = addFolder(TEST_FOLDER_TITLE);
 
@@ -1009,6 +1013,7 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
+    @Features.EnableFeatures({ChromeFeatureList.READ_LATER + ":use_root_bookmark_as_default/false"})
     public void testPartnerFolderDraggability() throws Exception {
         BookmarkId testId = addFolderWithPartner(TEST_FOLDER_TITLE);
         BookmarkPromoHeader.forcePromoStateForTests(SyncPromoState.PROMO_FOR_SYNC_TURNED_OFF_STATE);
@@ -1028,6 +1033,7 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
+    @Features.EnableFeatures({ChromeFeatureList.READ_LATER + ":use_root_bookmark_as_default/false"})
     public void testUnselectedItemDraggability() throws Exception {
         BookmarkId aId = addBookmark("a", mTestUrlA);
         addFolder(TEST_FOLDER_TITLE);
@@ -1257,9 +1263,7 @@ public class BookmarkTest {
 
     @Test
     @SmallTest
-    @Features.EnableFeatures({ChromeFeatureList.READ_LATER + "<Study"})
-    @CommandLineFlags.
-    Add({"force-fieldtrials=Study/Group", "force-fieldtrial-params=Study.Group:use_cct/false"})
+    @Features.EnableFeatures({ChromeFeatureList.READ_LATER + ":use_cct/false"})
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
     public void testReadingListOpenInRegularTab() throws Exception {
         addReadingListBookmark(TEST_PAGE_TITLE_GOOGLE, mTestUrlA);
@@ -1291,9 +1295,7 @@ public class BookmarkTest {
 
     @Test
     @SmallTest
-    @Features.EnableFeatures({ChromeFeatureList.READ_LATER + "<Study"})
-    @CommandLineFlags.
-    Add({"force-fieldtrials=Study/Group", "force-fieldtrial-params=Study.Group:use_cct/false"})
+    @Features.EnableFeatures({ChromeFeatureList.READ_LATER + ":use_cct/false"})
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
     public void testReadingListOpenInIncognitoTab() throws Exception {
         addReadingListBookmark(TEST_PAGE_TITLE_GOOGLE, mTestUrlA);
@@ -1326,6 +1328,7 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
+    @Features.EnableFeatures({ChromeFeatureList.READ_LATER + ":use_root_bookmark_as_default/false"})
     public void testMoveUpMenuItem() throws Exception {
         addBookmark(TEST_PAGE_TITLE_GOOGLE, mTestUrlA);
         addFolder(TEST_FOLDER_TITLE);
@@ -1352,6 +1355,7 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
+    @Features.EnableFeatures({ChromeFeatureList.READ_LATER + ":use_root_bookmark_as_default/false"})
     public void testMoveDownMenuItem() throws Exception {
         addBookmark(TEST_PAGE_TITLE_GOOGLE, mTestUrlA);
         addFolder(TEST_FOLDER_TITLE);
@@ -1378,6 +1382,7 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
+    @Features.EnableFeatures({ChromeFeatureList.READ_LATER + ":use_root_bookmark_as_default/false"})
     public void testMoveDownGoneForBottomElement() throws Exception {
         addBookmarkWithPartner(TEST_PAGE_TITLE_GOOGLE, mTestUrlA);
         addFolderWithPartner(TEST_FOLDER_TITLE);
@@ -1394,6 +1399,7 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
+    @Features.EnableFeatures({ChromeFeatureList.READ_LATER + ":use_root_bookmark_as_default/false"})
     public void testMoveUpGoneForTopElement() throws Exception {
         addBookmark(TEST_PAGE_TITLE_GOOGLE, mTestUrlA);
         addFolder(TEST_FOLDER_TITLE);
@@ -1434,6 +1440,7 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
+    @Features.EnableFeatures({ChromeFeatureList.READ_LATER + ":use_root_bookmark_as_default/false"})
     public void testMoveButtonsGoneWithOneBookmark() throws Exception {
         addFolder(TEST_FOLDER_TITLE);
         BookmarkPromoHeader.forcePromoStateForTests(SyncPromoState.PROMO_FOR_SYNC_TURNED_OFF_STATE);
@@ -1533,6 +1540,7 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
+    @Features.EnableFeatures({ChromeFeatureList.READ_LATER + ":use_root_bookmark_as_default/false"})
     public void testShowInFolder_NoScroll() throws Exception {
         addFolder(TEST_FOLDER_TITLE);
         BookmarkPromoHeader.forcePromoStateForTests(SyncPromoState.PROMO_FOR_SYNC_TURNED_OFF_STATE);
@@ -1885,11 +1893,9 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({ChromeFeatureList.READ_LATER + "<Study"})
-    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
-            "force-fieldtrial-params=Study.Group:add_to_reading_list_in_app_menu/true"})
-    public void
-    testAddToReadingListFromAppMenu() throws Exception {
+    @Features.
+    EnableFeatures({ChromeFeatureList.READ_LATER + ":add_to_reading_list_in_app_menu/true"})
+    public void testAddToReadingListFromAppMenu() throws Exception {
         mActivityTestRule.loadUrl(mTestPage);
 
         // Click "Add to Reading List" to add the current tab.
@@ -1912,6 +1918,7 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
+    @Features.EnableFeatures({ChromeFeatureList.READ_LATER + ":use_root_bookmark_as_default/false"})
     public void testBookmarksDoesNotRecordLaunchMetrics() throws Throwable {
         Assert.assertEquals(1,
                 RecordHistogram.getHistogramTotalCountForTesting(
@@ -1999,9 +2006,9 @@ public class BookmarkTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @Features.EnableFeatures({ChromeFeatureList.BOOKMARKS_REFRESH + "<Study"})
-    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
-            "force-fieldtrial-params=Study.Group:bookmark_visuals_enabled/true"})
+    @Features.
+    EnableFeatures({ChromeFeatureList.BOOKMARKS_REFRESH + ":bookmark_visuals_enabled/true",
+            ChromeFeatureList.READ_LATER + ":use_root_bookmark_as_default/false"})
     public void
     testBookmarksVisualRefreshFolders() throws Exception {
         BookmarkPromoHeader.forcePromoStateForTests(SyncPromoState.NO_PROMO);
@@ -2029,11 +2036,9 @@ public class BookmarkTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @Features.EnableFeatures({ChromeFeatureList.BOOKMARKS_REFRESH + "<Study"})
-    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
-            "force-fieldtrial-params="
-                    + "Study.Group:bookmark_visuals_enabled/true"
-                    + "/bookmark_compact_visuals_enabled/false"})
+    @Features.EnableFeatures({ChromeFeatureList.BOOKMARKS_REFRESH + ":bookmark_visuals_enabled/true"
+                    + "/bookmark_compact_visuals_enabled/false",
+            ChromeFeatureList.READ_LATER + ":use_root_bookmark_as_default/false"})
     public void
     testBookmarksVisualRefreshBookmarks() throws Exception {
         BookmarkPromoHeader.forcePromoStateForTests(SyncPromoState.NO_PROMO);
@@ -2061,11 +2066,9 @@ public class BookmarkTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @Features.EnableFeatures({ChromeFeatureList.BOOKMARKS_REFRESH + "<Study"})
-    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
-            "force-fieldtrial-params="
-                    + "Study.Group:bookmark_visuals_enabled/true"
-                    + "/bookmark_compact_visuals_enabled/true"})
+    @Features.EnableFeatures({ChromeFeatureList.BOOKMARKS_REFRESH + ":bookmark_visuals_enabled/true"
+                    + "/bookmark_compact_visuals_enabled/true",
+            ChromeFeatureList.READ_LATER + ":use_root_bookmark_as_default/false"})
     public void
     testBookmarksCompactVisualRefreshBookmarks() throws Exception {
         BookmarkPromoHeader.forcePromoStateForTests(SyncPromoState.NO_PROMO);
@@ -2094,11 +2097,9 @@ public class BookmarkTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @Features.EnableFeatures({ChromeFeatureList.BOOKMARKS_REFRESH + "<Study"})
-    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
-            "force-fieldtrial-params="
-                    + "Study.Group:bookmark_visuals_enabled/true"
-                    + "/bookmark_compact_visuals_enabled/false"})
+    @Features.EnableFeatures({ChromeFeatureList.BOOKMARKS_REFRESH + ":bookmark_visuals_enabled/true"
+                    + "/bookmark_compact_visuals_enabled/false",
+            ChromeFeatureList.READ_LATER + ":use_root_bookmark_as_default/false"})
     public void
     testBookmarksVisualRefreshBookmarksAndFolder() throws Exception {
         BookmarkPromoHeader.forcePromoStateForTests(SyncPromoState.NO_PROMO);
@@ -2135,11 +2136,9 @@ public class BookmarkTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @Features.EnableFeatures({ChromeFeatureList.BOOKMARKS_REFRESH + "<Study"})
-    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
-            "force-fieldtrial-params="
-                    + "Study.Group:bookmark_visuals_enabled/true"
-                    + "/bookmark_compact_visuals_enabled/true"})
+    @Features.EnableFeatures({ChromeFeatureList.BOOKMARKS_REFRESH + ":bookmark_visuals_enabled/true"
+                    + "/bookmark_compact_visuals_enabled/true",
+            ChromeFeatureList.READ_LATER + ":use_root_bookmark_as_default/false"})
     public void
     testBookmarksCompactVisualRefreshBookmarksAndFolder() throws Exception {
         BookmarkPromoHeader.forcePromoStateForTests(SyncPromoState.NO_PROMO);
