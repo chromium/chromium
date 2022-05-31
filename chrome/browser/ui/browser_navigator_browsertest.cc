@@ -758,6 +758,9 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, SaveAfterFocusTabSwitchTest) {
 #if BUILDFLAG(IS_LINUX)
 // Flaky on Linux Ozone. See https://crbug.com/1230723.
 #define MAYBE_SwitchToTabCorrectWindow DISABLED_SwitchToTabCorrectWindow
+#elif BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_WIN)
+// Flaky on Lacros and Win. See https://crbug.com/674497.
+#define MAYBE_SwitchToTabCorrectWindow DISABLED_SwitchToTabCorrectWindow
 #else
 #define MAYBE_SwitchToTabCorrectWindow SwitchToTabCorrectWindow
 #endif
