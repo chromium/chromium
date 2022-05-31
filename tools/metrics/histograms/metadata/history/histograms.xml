@@ -831,7 +831,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.Backend.QueryAnnotatedVisits.ThreadTime"
-    units="ms" expires_after="2022-09-25">
+    units="ms" expires_after="2022-11-27">
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;History</component>
@@ -894,7 +894,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.KeywordCache.ThreadTime" units="ms"
-    expires_after="2022-09-25">
+    expires_after="2022-11-27">
   <owner>tommycli@chromium.org</owner>
   <owner>chrome-journeys@google.com</owner>
   <component>UI&gt;Browser&gt;History</component>
@@ -907,7 +907,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.ProcessClustersDuration" units="ms"
-    expires_after="2022-09-25">
+    expires_after="2022-11-27">
   <owner>olivierli@chromium.org</owner>
   <owner>tommycli@chromium.org</owner>
   <component>UI&gt;Browser&gt;History</component>

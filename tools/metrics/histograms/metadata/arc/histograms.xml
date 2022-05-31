@@ -314,7 +314,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Arc.AppCount" units="units" expires_after="2022-04-24">
+<histogram name="Arc.AppCount" units="units" expires_after="2022-11-27">
   <owner>elijahtaylor@google.com</owner>
   <owner>fahdi@google.com</owner>
   <summary>
@@ -325,7 +325,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.AppCount.HasInstalledOrUnknownApp" enum="Boolean"
-    expires_after="2022-09-23">
+    expires_after="2022-11-27">
   <owner>yusukes@google.com</owner>
   <owner>arcvm-eng@google.com</owner>
   <summary>

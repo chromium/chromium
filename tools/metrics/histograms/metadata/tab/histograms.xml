@@ -489,7 +489,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tab.Preview.MemoryUsage.CompressedData.PerThumbnailKiB"
-    units="KB" expires_after="2022-09-18">
+    units="KB" expires_after="2022-11-27">
   <owner>dfried@chromium.org</owner>
   <owner>collinbaker@chromium.org</owner>
   <summary>
@@ -853,7 +853,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TabGroups.UserGroupCountPerLoad" units="groups"
-    expires_after="2022-09-25">
+    expires_after="2022-11-27">
   <owner>connily@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
@@ -2241,7 +2241,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tabs.TabCountInGroupPerLoad" units="tabs"
-    expires_after="2022-09-25">
+    expires_after="2022-11-27">
   <owner>connily@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
@@ -3176,7 +3176,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="TabStrip.TimeToSwitch" units="ms" expires_after="2022-09-25">
+<histogram name="TabStrip.TimeToSwitch" units="ms" expires_after="2022-11-27">
   <owner>connily@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>

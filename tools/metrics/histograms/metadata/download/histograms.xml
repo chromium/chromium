@@ -191,7 +191,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Download.Counts" enum="DownloadCountType"
-    expires_after="2022-09-25">
+    expires_after="2022-11-27">
 <!-- Name completed by histogram_suffixes name="DownloadSource" -->
 
   <owner>shaktisahu@chromium.org</owner>

@@ -114,7 +114,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Clipboard.TimeIntervalBetweenCommitAndRead" units="ms"
-    expires_after="2022-09-25">
+    expires_after="2022-11-27">
   <owner>dcheng@chromium.org</owner>
   <owner>src/ui/base/clipboard/OWNERS</owner>
   <summary>

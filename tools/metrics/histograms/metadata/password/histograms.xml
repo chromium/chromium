@@ -3392,7 +3392,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordProtection.PageInfoAction"
-    enum="PasswordProtectionWarningAction" expires_after="2022-08-15">
+    enum="PasswordProtectionWarningAction" expires_after="2022-11-27">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>

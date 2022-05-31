@@ -771,7 +771,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 </histogram>
 
 <histogram name="Navigation.MainFrame.ThirdPartyCookieBlockingEnabled"
-    enum="ThirdPartyCookieBlockState" expires_after="2022-09-25">
+    enum="ThirdPartyCookieBlockState" expires_after="2022-11-27">
   <owner>dullweber@chromium.org</owner>
   <owner>feuunk@chromium.org</owner>
   <summary>
@@ -1519,7 +1519,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 
 <histogram
     name="Prerender.Experimental.Search.FirstCorrectPrerenderHintReceivedToRealSearchNavigationStartedDuration"
-    units="ms" expires_after="2022-09-01">
+    units="ms" expires_after="2022-11-27">
   <owner>lingqi@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
   <summary>

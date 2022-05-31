@@ -275,7 +275,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.PrivacySandbox.PrivacySandboxReferrer"
-    enum="PrivacySandboxReferrer" expires_after="2022-09-25">
+    enum="PrivacySandboxReferrer" expires_after="2022-11-27">
   <owner>andzaytsev@google.com</owner>
   <owner>harrisonsean@chromium.org</owner>
   <owner>msramek@chromium.org</owner>
@@ -290,7 +290,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Settings.PrivacySandbox.StartupState"
-    enum="SettingsPrivacySandboxStartupStates" expires_after="2022-09-25">
+    enum="SettingsPrivacySandboxStartupStates" expires_after="2022-11-27">
   <owner>sauski@google.com</owner>
   <owner>harrisonsean@chromium.org</owner>
   <owner>msramek@chromium.org</owner>

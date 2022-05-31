@@ -1408,7 +1408,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.Duration.Network" units="microseconds"
-    expires_after="2022-09-25">
+    expires_after="2022-11-27">
   <owner>handellm@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
@@ -1424,7 +1424,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.Duration.Signaling" units="microseconds"
-    expires_after="2022-09-25">
+    expires_after="2022-11-27">
   <owner>handellm@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
@@ -1440,7 +1440,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.Duration.Worker" units="microseconds"
-    expires_after="2022-09-25">
+    expires_after="2022-11-27">
   <owner>handellm@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
@@ -1589,7 +1589,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.PeerConnection.Latency.Worker" units="microseconds"
-    expires_after="2022-09-25">
+    expires_after="2022-11-27">
   <owner>handellm@chromium.org</owner>
   <owner>webrtc-dev@chromium.org</owner>
   <summary>
@@ -1939,7 +1939,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.ReceivedAudioTrackDuration" units="ms"
-    expires_after="2022-08-07">
+    expires_after="2022-11-27">
   <owner>perkj@chromium.org</owner>
   <summary>
     Durations of audio tracks received over a PeerConnection. The stopwatch
@@ -1949,7 +1949,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebRTC.ReceivedVideoTrackDuration" units="ms"
-    expires_after="2022-08-07">
+    expires_after="2022-11-27">
   <owner>perkj@chromium.org</owner>
   <summary>
     Durations of video tracks received over a PeerConnection. The stopwatch

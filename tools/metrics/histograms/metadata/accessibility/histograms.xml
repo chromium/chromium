@@ -190,7 +190,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.Android.OnDemand.OneHundredPercentEventsDropped"
-    units="count" expires_after="2022-11-06">
+    units="count" expires_after="2022-11-27">
   <owner>mschillaci@google.com</owner>
   <owner>abigailbklein@google.com</owner>
   <summary>
@@ -221,7 +221,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.Android.OnDemand.PercentageDropped" units="%"
-    expires_after="2022-11-06">
+    expires_after="2022-11-27">
   <owner>mschillaci@google.com</owner>
   <owner>abigailbklein@google.com</owner>
   <summary>
@@ -1109,7 +1109,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.LiveCaption" enum="BooleanEnabled"
-    expires_after="2022-09-25">
+    expires_after="2022-11-27">
   <owner>katie@chromium.org</owner>
   <owner>abigailbklein@google.com</owner>
   <owner>evliu@google.com</owner>
@@ -1180,7 +1180,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.LiveCaption.FeatureEnabled"
-    enum="BooleanEnabled" expires_after="2022-09-25">
+    enum="BooleanEnabled" expires_after="2022-11-27">
   <owner>katie@chromium.org</owner>
   <owner>abigailbklein@google.com</owner>
   <owner>evliu@google.com</owner>
@@ -1220,7 +1220,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.LiveCaption.LoadSodaResult"
-    enum="LoadSodaResult" expires_after="2022-09-25">
+    enum="LoadSodaResult" expires_after="2022-11-27">
   <owner>abigailbklein@google.com</owner>
   <owner>evliu@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -1231,7 +1231,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Accessibility.LiveCaption.Session"
-    enum="LiveCaptionSessionEvent" expires_after="2022-09-25">
+    enum="LiveCaptionSessionEvent" expires_after="2022-11-27">
   <owner>katie@chromium.org</owner>
   <owner>abigailbklein@google.com</owner>
   <owner>evliu@google.com</owner>
@@ -1743,7 +1743,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DomDistiller.ReaderMode.EntryPoint"
-    enum="ReaderModeEntryPoint" expires_after="2022-09-25">
+    enum="ReaderModeEntryPoint" expires_after="2022-11-27">
   <owner>katie@chromium.org</owner>
   <owner>gilmanmh@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>

@@ -521,7 +521,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.SharingHubAndroid.ThirdPartyAppUsage"
-    enum="SharingHubBottomRowIndex" expires_after="2022-08-21">
+    enum="SharingHubBottomRowIndex" expires_after="2022-11-27">
   <owner>sophey@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
