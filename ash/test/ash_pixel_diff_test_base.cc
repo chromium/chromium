@@ -7,6 +7,7 @@
 #include "ash/shell.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "base/command_line.h"
+#include "base/time/time_override.h"
 #include "ui/compositor/compositor_switches.h"
 #include "ui/display/display.h"
 
@@ -23,6 +24,12 @@ constexpr char kWallpaperFileName[] = "test-file";
 
 constexpr SkColor kWallPaperColor = SK_ColorMAGENTA;
 
+constexpr char kLocale[] = "en_US";
+constexpr char kTimeZone[] = "America/Chicago";
+
+// The string that represents the current time.
+constexpr char kFakeNowTimeString[] = "Sun, 6 May 2018 14:30:00 CDT";
+
 // Creates a pure color image of the specified size.
 gfx::ImageSkia CreateImage(int width, int height, SkColor color) {
   SkBitmap bitmap;
@@ -32,12 +39,25 @@ gfx::ImageSkia CreateImage(int width, int height, SkColor color) {
   return image;
 }
 
+// TimeOverrideHelper ----------------------------------------------------------
+
+struct TimeOverrideHelper {
+  static base::Time TimeNow() { return current_time; }
+
+  // Used as the current time in ash pixel diff tests.
+  static base::Time current_time;
+};
+
+base::Time TimeOverrideHelper::current_time;
+
 }  // namespace
 
 AshPixelDiffTestBase::AshPixelDiffTestBase(
     std::unique_ptr<base::test::TaskEnvironment> task_environment)
     : AshTestBase(std::move(task_environment)),
-      kAccountId_(AccountId::FromUserEmailGaiaId(kUser, "test-hash")) {}
+      kAccountId_(AccountId::FromUserEmailGaiaId(kUser, "test-hash")),
+      scoped_locale_(kLocale),
+      time_zone_(kTimeZone) {}
 
 AshPixelDiffTestBase::~AshPixelDiffTestBase() = default;
 
@@ -46,6 +66,10 @@ void AshPixelDiffTestBase::SetUp() {
   // benchmark images. Therefore, enable pixel output in tests.
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kEnablePixelOutputInTests);
+
+  // Override the current time before setting up `AshTestBase` so that the views
+  // relying on the current time, like the tray time view, show as expected.
+  OverrideTime();
 
   // Do not start the user session in `AshTestBase::SetUp()`. Instead, perform
   // user login with `kAccountId_`.
@@ -78,6 +102,14 @@ void AshPixelDiffTestBase::SetWallPaper() {
   controller->SetCustomWallpaper(kAccountId_, kWallpaperFileName,
                                  WALLPAPER_LAYOUT_STRETCH, wallpaper_image,
                                  /*preview_mode=*/false);
+}
+
+void AshPixelDiffTestBase::OverrideTime() {
+  ASSERT_TRUE(base::Time::FromString(kFakeNowTimeString,
+                                     &TimeOverrideHelper::current_time));
+  time_override_ = std::make_unique<base::subtle::ScopedTimeClockOverrides>(
+      &TimeOverrideHelper::TimeNow, /*time_ticks_override=*/nullptr,
+      /*thread_ticks_override=*/nullptr);
 }
 
 }  // namespace ash

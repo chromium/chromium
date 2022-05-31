@@ -8,6 +8,7 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/wallpaper/test_wallpaper_controller_client.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/test/icu_test_util.h"
 
 namespace ash {
 
@@ -41,7 +42,14 @@ class AshPixelDiffTestBase : public AshTestBase {
   // Sets a pure color wallpaper.
   void SetWallPaper();
 
+  // Overrides the current time.
+  void OverrideTime();
+
   const AccountId kAccountId_;
+
+  // Used for setting the locale and the time zone.
+  const base::test::ScopedRestoreICUDefaultLocale scoped_locale_;
+  const base::test::ScopedRestoreDefaultTimezone time_zone_;
 
   // The temporary data directories for wallpaper setting.
   base::ScopedTempDir user_data_dir_;
@@ -49,6 +57,9 @@ class AshPixelDiffTestBase : public AshTestBase {
   base::ScopedTempDir custom_wallpaper_dir_;
 
   TestWallpaperControllerClient client_;
+
+  // Overrides the current time.
+  std::unique_ptr<base::subtle::ScopedTimeClockOverrides> time_override_;
 };
 
 }  // namespace ash
