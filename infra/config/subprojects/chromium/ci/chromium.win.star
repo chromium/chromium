@@ -346,6 +346,8 @@ ci.thin_tester(
         short_name = "w11",
     ),
     triggered_by = ["ci/Win x64 Builder"],
+    # TODO(kuanhuang): Add back to sheriff rotation after verified green.
+    sheriff_rotations = args.ignore_default(None),
     tree_closing = False,
 )
 

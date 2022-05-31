@@ -2961,17 +2961,6 @@
           'scripts': 'chromium_win_scripts',
         },
       },
-      'Win11 Tests x64': {
-        'mixins': [
-          'x86-64',
-          'win11',
-          'isolate_profile_data',
-        ],
-        'test_suites': {
-          'gtest_tests': 'chromium_win10_gtests',
-          'isolated_scripts': 'chromium_win_rel_isolated_scripts',
-        },
-      },
       'android-backuprefptr-arm-fyi-rel': {
         'test_suites': {
           'gtest_tests': 'backuprefptr_gtests',
@@ -5995,6 +5984,17 @@
         'test_suites': {
           'gtest_tests': 'chromium_win_gtests',
           'isolated_scripts': 'chromium_win_dbg_isolated_scripts',
+        },
+      },
+      'Win11 Tests x64': {
+        'mixins': [
+          'x86-64',
+          'win11',
+          'isolate_profile_data',
+        ],
+        'test_suites': {
+          'gtest_tests': 'chromium_win10_gtests',
+          'isolated_scripts': 'chromium_win_rel_isolated_scripts',
         },
       },
       'Win7 (32) Tests': {
