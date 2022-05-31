@@ -14,6 +14,7 @@
 #include "base/check.h"
 #include "base/hash/md5.h"
 #include "base/location.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -99,6 +100,14 @@ constexpr base::TimeDelta kDelayForUpdates = base::Minutes(60);
 // tiles.
 // TODO(sky): rename actual value to 'most_visited_blocked_urls.'
 const char kBlockedUrlsPrefsKey[] = "ntp.most_visited_blacklist";
+
+void RecordDBMetrics(const base::TimeTicks db_query_time,
+                     const size_t result_size) {
+  base::UmaHistogramTimes("History.TopSites.SearchTermsExtractionTime",
+                          base::TimeTicks::Now() - db_query_time);
+  base::UmaHistogramCounts10000("History.TopSites.SearchTermsExtractedCount",
+                                result_size);
+}
 
 }  // namespace
 
@@ -344,7 +353,9 @@ MostVisitedURLList TopSitesImpl::AddMostRepeatedQueries(
   // TODO(crbug.com/1317829): Investigate moving this to a background thread.
   MostVisitedURLList repeatable_query_sites;
   std::vector<std::unique_ptr<KeywordSearchTermVisit>> search_terms;
+  const base::TimeTicks db_query_time = base::TimeTicks::Now();
   history::GetMostRepeatedSearchTermsFromEnumerator(*enumerator, &search_terms);
+  RecordDBMetrics(db_query_time, search_terms.size());
   for (const auto& search_term : search_terms) {
     GURL url;
     if (!GetSearchResultsPageForDefaultSearchProvider(

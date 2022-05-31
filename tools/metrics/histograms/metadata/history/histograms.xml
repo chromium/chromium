@@ -1572,6 +1572,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="History.TopSites.SearchTermsExtractedCount" units="counts"
+    expires_after="2022-10-16">
+  <owner>mahmadi@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <summary>
+    The number of search terms extracted from the in-memory URLDatabase to
+    produce the most repeated search suggestions. Emitted on NTP load and on
+    omnibox popup shown on Android NTP when repeatable queries are requested to
+    be shown in the Most Visited tiles.
+  </summary>
+</histogram>
+
+<histogram name="History.TopSites.SearchTermsExtractionTime" units="ms"
+    expires_after="2022-10-16">
+  <owner>mahmadi@chromium.org</owner>
+  <owner>chrome-omnibox-team@google.com</owner>
+  <summary>
+    The length of time it takes to extract the most repeated search terms from
+    the in-memory URLDatabase and sort by frecency scores. Emitted on NTP load
+    and on omnibox popup shown on Android NTP when repeatable queries are
+    requested to be shown in the Most Visited tiles.
+  </summary>
+</histogram>
+
 <histogram name="History.TopSitesRecoveredPercentage" units="%"
     expires_after="M85">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>

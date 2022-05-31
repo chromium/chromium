@@ -15,6 +15,7 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -424,6 +425,7 @@ TEST_F(TopSitesImplTest, GetMostVisitedURLsAndQueries) {
   {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndDisableFeature(kOrganicRepeatableQueries);
+    base::HistogramTester histogram_tester;
 
     StartQueryForMostVisited();
     WaitForHistory();
@@ -440,10 +442,16 @@ TEST_F(TopSitesImplTest, GetMostVisitedURLsAndQueries) {
     ASSERT_NO_FATAL_FAILURE(ContainsPrepopulatePages(querier, 2));
     EXPECT_EQ(srp_2, querier.urls()[0].url);
     EXPECT_EQ(news, querier.urls()[1].url);
+
+    histogram_tester.ExpectTotalCount(
+        "History.TopSites.SearchTermsExtractionTime", 0);
+    histogram_tester.ExpectTotalCount(
+        "History.TopSites.SearchTermsExtractedCount", 0);
   }
   {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndEnableFeature(kOrganicRepeatableQueries);
+    base::HistogramTester histogram_tester;
 
     RefreshTopSitesAndRecreate();
 
@@ -459,12 +467,20 @@ TEST_F(TopSitesImplTest, GetMostVisitedURLsAndQueries) {
     EXPECT_EQ(news, querier.urls()[0].url);
     EXPECT_EQ(srp_1, querier.urls()[1].url);
     EXPECT_EQ(srp_2, querier.urls()[2].url);
+
+    histogram_tester.ExpectTotalCount(
+        "History.TopSites.SearchTermsExtractionTime", 1);
+    histogram_tester.ExpectTotalCount(
+        "History.TopSites.SearchTermsExtractedCount", 1);
+    histogram_tester.ExpectUniqueSample(
+        "History.TopSites.SearchTermsExtractedCount", 2, 1);
   }
   {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndEnableFeatureWithParameters(
         kOrganicRepeatableQueries,
         {{kPrivilegeRepeatableQueries.name, "true"}});
+    base::HistogramTester histogram_tester;
 
     RefreshTopSitesAndRecreate();
 
@@ -479,12 +495,20 @@ TEST_F(TopSitesImplTest, GetMostVisitedURLsAndQueries) {
     EXPECT_EQ(srp_1, querier.urls()[0].url);
     EXPECT_EQ(srp_2, querier.urls()[1].url);
     EXPECT_EQ(news, querier.urls()[2].url);
+
+    histogram_tester.ExpectTotalCount(
+        "History.TopSites.SearchTermsExtractionTime", 1);
+    histogram_tester.ExpectTotalCount(
+        "History.TopSites.SearchTermsExtractedCount", 1);
+    histogram_tester.ExpectUniqueSample(
+        "History.TopSites.SearchTermsExtractedCount", 2, 1);
   }
   {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitAndEnableFeatureWithParameters(
         kOrganicRepeatableQueries, {{kPrivilegeRepeatableQueries.name, "true"},
                                     {kMaxNumRepeatableQueries.name, "1"}});
+    base::HistogramTester histogram_tester;
 
     RefreshTopSitesAndRecreate();
 
@@ -498,6 +522,13 @@ TEST_F(TopSitesImplTest, GetMostVisitedURLsAndQueries) {
     ASSERT_NO_FATAL_FAILURE(ContainsPrepopulatePages(querier, 2));
     EXPECT_EQ(srp_1, querier.urls()[0].url);
     EXPECT_EQ(news, querier.urls()[1].url);
+
+    histogram_tester.ExpectTotalCount(
+        "History.TopSites.SearchTermsExtractionTime", 1);
+    histogram_tester.ExpectTotalCount(
+        "History.TopSites.SearchTermsExtractedCount", 1);
+    histogram_tester.ExpectUniqueSample(
+        "History.TopSites.SearchTermsExtractedCount", 2, 1);
   }
 }
 
