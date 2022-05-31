@@ -304,7 +304,7 @@ public class FilePersistedTabDataStorage implements PersistedTabDataStorage {
 
                 @Override
                 protected void onPostExecute(Void result) {
-                    PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
+                    PostTask.postTask(UiThreadTaskTraits.DEFAULT,
                             () -> { mCallback.onResult(DECREMENT_SEMAPHORE_VAL); });
                     processNextItemOnQueue();
                 }
@@ -367,7 +367,7 @@ public class FilePersistedTabDataStorage implements PersistedTabDataStorage {
 
                 @Override
                 protected void onPostExecute(Void result) {
-                    PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
+                    PostTask.postTask(UiThreadTaskTraits.DEFAULT,
                             () -> { mCallback.onResult(DECREMENT_SEMAPHORE_VAL); });
                     processNextItemOnQueue();
                 }
@@ -514,7 +514,7 @@ public class FilePersistedTabDataStorage implements PersistedTabDataStorage {
 
                 @Override
                 protected void onPostExecute(U res) {
-                    PostTask.runOrPostTask(
+                    PostTask.postTask(
                             UiThreadTaskTraits.DEFAULT, () -> { mCallback.onResult(res); });
                     processNextItemOnQueue();
                 }
