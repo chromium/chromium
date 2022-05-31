@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_script_wrappable_task_id.h"
 #include "third_party/blink/renderer/modules/scheduler/script_wrappable_task_id.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/bindings/to_v8.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
@@ -209,6 +210,7 @@ void TaskAttributionTrackerImpl::V8Adapter::SetValue(
   if (!script_state->ContextIsValid()) {
     return;
   }
+  CHECK(!ScriptForbiddenScope::IsScriptForbidden());
   ScriptState::Scope scope(script_state);
   v8::Isolate* isolate = script_state->GetIsolate();
   DCHECK(isolate);
