@@ -576,7 +576,7 @@ int MockNetworkTransaction::ResumeNetworkStart() {
 }
 
 ConnectionAttempts MockNetworkTransaction::GetConnectionAttempts() const {
-  NOTIMPLEMENTED();
+  // TODO(ricea): Replace this with a proper implementation if needed.
   return {};
 }
 

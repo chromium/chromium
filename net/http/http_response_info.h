@@ -187,6 +187,10 @@ class NET_EXPORT HttpResponseInfo {
   // response is retrieved from the cache.
   bool async_revalidation_requested;
 
+  // True if this entry in the single-keyed cache is unusable due to a checksum
+  // mismatch.
+  bool single_keyed_cache_entry_unusable;
+
   // stale-while-revalidate, if any, will be honored until time given by
   // |stale_revalidate_timeout|. This value is latched the first time
   // stale-while-revalidate is used until the resource is revalidated.

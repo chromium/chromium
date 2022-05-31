@@ -19,6 +19,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/cxx17_backports.h"
 #include "base/format_macros.h"
 #include "base/location.h"
@@ -34,6 +35,8 @@
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
+#include "crypto/secure_hash.h"
+#include "crypto/sha2.h"
 #include "net/base/auth.h"
 #include "net/base/cache_metrics.h"
 #include "net/base/features.h"
@@ -86,6 +89,12 @@ enum ExternallyConditionalizedType {
   EXTERNALLY_CONDITIONALIZED_MISMATCHED_VALIDATORS,
   EXTERNALLY_CONDITIONALIZED_MAX
 };
+
+void RecordPervasivePayloadIndex(const char* histogram_name, int index) {
+  if (index != -1) {
+    base::UmaHistogramExactLinear(histogram_name, index, 101);
+  }
+}
 
 }  // namespace
 
@@ -656,6 +665,25 @@ void HttpCache::Transaction::WriteModeTransactionAboutToBecomeReader() {
   }
 }
 
+bool HttpCache::Transaction::ResponseChecksumMatches(
+    std::unique_ptr<crypto::SecureHash> checksum) const {
+  DCHECK(checksum);
+  uint8_t result[crypto::kSHA256Length];
+  checksum->Finish(result, crypto::kSHA256Length);
+  const std::string hex_result = base::HexEncode(result);
+  if (hex_result != request_->checksum) {
+    DVLOG(2) << "Pervasive payload checksum mismatch for \"" << request_->url
+             << "\": got " << hex_result << ", expected " << request_->checksum;
+    RecordPervasivePayloadIndex("Network.CacheTransparency.MismatchedChecksums",
+                                request_->pervasive_payloads_index_for_logging);
+    return false;
+  }
+  RecordPervasivePayloadIndex(
+      "Network.CacheTransparency.SingleKeyedCacheIsUsed",
+      request_->pervasive_payloads_index_for_logging);
+  return true;
+}
+
 //-----------------------------------------------------------------------------
 
 // A few common patterns: (Foo* means Foo -> FooComplete)
@@ -970,6 +998,13 @@ int HttpCache::Transaction::DoLoop(int result) {
       case STATE_NETWORK_READ_COMPLETE:
         rv = DoNetworkReadComplete(rv);
         break;
+      case STATE_MARK_SINGLE_KEYED_CACHE_ENTRY_UNUSABLE:
+        DCHECK_EQ(0, rv);  // Here "rv" is a count of bytes.
+        rv = DoMarkSingleKeyedCacheEntryUnusable();
+        break;
+      case STATE_MARK_SINGLE_KEYED_CACHE_ENTRY_UNUSABLE_COMPLETE:
+        rv = DoMarkSingleKeyedCacheEntryUnusableComplete(rv);
+        break;
       default:
         NOTREACHED() << "bad state " << state;
         rv = ERR_FAILED;
@@ -1010,7 +1045,12 @@ int HttpCache::Transaction::DoGetBackendComplete(int result) {
   mode_ = NONE;
 
   if (!ShouldPassThrough()) {
-    cache_key_ = cache_->GenerateCacheKey(request_);
+    // The flag LOAD_USE_SINGLE_KEYED_CACHE will have been changed to false if
+    // the entry was marked unusable and the transaction was restarted in
+    //  DoCacheReadResponseComplete(), so it will no longer match the value in
+    //  `request_`. So we pass it through explicitly.
+    cache_key_ = cache_->GenerateCacheKey(
+        request_, effective_load_flags_ & LOAD_USE_SINGLE_KEYED_CACHE);
 
     // Requested cache access mode.
     if (effective_load_flags_ & LOAD_ONLY_FROM_CACHE) {
@@ -1498,6 +1538,25 @@ int HttpCache::Transaction::DoCacheReadResponseComplete(int result) {
     return OnCacheReadError(result, true);
   }
 
+  if (response_.single_keyed_cache_entry_unusable) {
+    RecordPervasivePayloadIndex("Network.CacheTransparency.MarkedUnusable",
+                                request_->pervasive_payloads_index_for_logging);
+
+    // We've read the single keyed entry and it turned out to be unusable. Let's
+    // retry reading from the split cache.
+    if (effective_load_flags_ & LOAD_USE_SINGLE_KEYED_CACHE) {
+      DCHECK(!network_trans_);
+      effective_load_flags_ &= ~LOAD_USE_SINGLE_KEYED_CACHE;
+      DoneWithEntryForRestartWithCache();
+      TransitionToState(STATE_GET_BACKEND);
+      return OK;
+    } else {
+      LOG(WARNING) << "Unusable flag set on non-single-keyed cache entry; "
+                   << "possible disk corruption? (cache key: " << cache_key_
+                   << ")";
+    }
+  }
+
   // TODO(crbug.com/713354) Only get data size if there is no other transaction
   // currently writing the response body due to the data race mentioned in the
   // associated bug.
@@ -1830,6 +1889,17 @@ int HttpCache::Transaction::DoSuccessfulSendRequest() {
     return ERR_CACHE_AUTH_FAILURE_AFTER_READ;
   }
 
+  // The single-keyed cache only accepts responses with code 200 or 304.
+  // Anything else is considered unusable.
+  if ((effective_load_flags_ & LOAD_USE_SINGLE_KEYED_CACHE) &&
+      !(new_response->headers->response_code() == 200 ||
+        new_response->headers->response_code() == 304)) {
+    // Either the new response will be written back to the cache, in which case
+    // it will not be reused due to the flag, or it will not be, in which case
+    // it will not be reused anyway.
+    mark_single_keyed_cache_entry_unusable_ = true;
+  }
+
   new_response_ = new_response;
   if (!ValidatePartialResponse() && !auth_response_.headers.get()) {
     // Something went wrong with this request and we have to restart it.
@@ -1920,6 +1990,12 @@ int HttpCache::Transaction::DoUpdateCachedResponse() {
   response_.restricted_prefetch = new_response_->restricted_prefetch;
   response_.ssl_info = new_response_->ssl_info;
   response_.dns_aliases = new_response_->dns_aliases;
+
+  // Be careful never to set single_keyed_cache_entry_unusable back to false
+  // from true.
+  if (mark_single_keyed_cache_entry_unusable_) {
+    response_.single_keyed_cache_entry_unusable = true;
+  }
   if (new_response_->vary_data.is_valid()) {
     response_.vary_data = new_response_->vary_data;
   } else if (response_.vary_data.is_valid()) {
@@ -1937,6 +2013,11 @@ int HttpCache::Transaction::DoUpdateCachedResponse() {
     }
     TransitionToState(STATE_UPDATE_CACHED_RESPONSE_COMPLETE);
   } else {
+    if (effective_load_flags_ & LOAD_USE_SINGLE_KEYED_CACHE) {
+      DCHECK_EQ(method_, "GET");
+      ChecksumHeaders();
+    }
+
     // If we are already reading, we already updated the headers for this
     // request; doing it again will change Content-Length.
     if (!reading_) {
@@ -2023,6 +2104,11 @@ int HttpCache::Transaction::DoOverwriteCachedResponse() {
 
   SetResponse(*new_response_);
 
+  if (effective_load_flags_ & LOAD_USE_SINGLE_KEYED_CACHE) {
+    DCHECK_EQ(method_, "GET");
+    ChecksumHeaders();
+  }
+
   if (method_ == "HEAD") {
     // This response is replacing the cached one.
     DoneWithEntry(false);
@@ -2068,6 +2154,12 @@ int HttpCache::Transaction::DoCacheWriteResponse() {
     cache_->DoomEntryValidationNoMatch(entry_);
     entry_ = nullptr;
     return OK;
+  }
+
+  // Be careful never to set single_keyed_cache_entry_unusable back to false
+  // from true.
+  if (mark_single_keyed_cache_entry_unusable_) {
+    response_.single_keyed_cache_entry_unusable = true;
   }
 
   TransitionToState(STATE_CACHE_WRITE_RESPONSE_COMPLETE);
@@ -2187,7 +2279,8 @@ int HttpCache::Transaction::DoFinishHeadersComplete(int rv) {
   }
 
   if (network_trans_ && InWriters()) {
-    entry_->writers->SetNetworkTransaction(this, std::move(network_trans_));
+    entry_->writers->SetNetworkTransaction(this, std::move(network_trans_),
+                                           std::move(checksum_));
     moved_network_transaction_to_writers_ = true;
   }
 
@@ -2243,6 +2336,8 @@ int HttpCache::Transaction::DoNetworkReadCacheWriteComplete(int result) {
     DCHECK(!entry_);
   } else {
     read_offset_ += result;
+    if (checksum_)
+      checksum_->Update(read_buf_->data(), result);
   }
   TransitionToState(STATE_NONE);
   return result;
@@ -2352,7 +2447,14 @@ int HttpCache::Transaction::DoCacheReadDataComplete(int result) {
 
   if (result > 0) {
     read_offset_ += result;
+    if (checksum_)
+      checksum_->Update(read_buf_->data(), result);
   } else if (result == 0) {  // End of file.
+    if (!FinishAndCheckChecksum()) {
+      TransitionToState(STATE_MARK_SINGLE_KEYED_CACHE_ENTRY_UNUSABLE);
+      return result;
+    }
+
     DoneWithEntry(true);
   } else {
     return OnCacheReadError(result, false);
@@ -2360,6 +2462,25 @@ int HttpCache::Transaction::DoCacheReadDataComplete(int result) {
 
   TransitionToState(STATE_NONE);
   return result;
+}
+
+int HttpCache::Transaction::DoMarkSingleKeyedCacheEntryUnusable() {
+  DCHECK(effective_load_flags_ & LOAD_USE_SINGLE_KEYED_CACHE);
+  response_.single_keyed_cache_entry_unusable = true;
+  TransitionToState(STATE_MARK_SINGLE_KEYED_CACHE_ENTRY_UNUSABLE_COMPLETE);
+  return WriteResponseInfoToEntry(response_, /*truncated=*/false);
+}
+
+int HttpCache::Transaction::DoMarkSingleKeyedCacheEntryUnusableComplete(
+    int result) {
+  DCHECK_NE(result, ERR_IO_PENDING);
+  TransitionToState(STATE_NONE);
+  DoneWithEntry(/*entry_is_complete=*/true);
+  if (result < 0)
+    return result;
+
+  // Return 0 to indicate that we've finished reading the body.
+  return 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -3305,6 +3426,16 @@ void HttpCache::Transaction::DoneWithEntry(bool entry_is_complete) {
   mode_ = NONE;  // switch to 'pass through' mode
 }
 
+void HttpCache::Transaction::DoneWithEntryForRestartWithCache() {
+  if (!entry_)
+    return;
+
+  cache_->DoneWithEntry(entry_, this, /*entry_is_complete=*/true,
+                        partial_ != nullptr);
+  entry_ = nullptr;
+  new_entry_ = nullptr;
+}
+
 int HttpCache::Transaction::OnCacheReadError(int result, bool restart) {
   DLOG(ERROR) << "ReadData failed: " << result;
   const int result_for_histogram = std::max(0, -result);
@@ -3756,6 +3887,71 @@ void HttpCache::Transaction::UpdateSecurityHeadersBeforeForwarding() {
                                       stored_corp_header);
   }
   return;
+}
+
+void HttpCache::Transaction::ChecksumHeaders() {
+  DCHECK(effective_load_flags_ & LOAD_USE_SINGLE_KEYED_CACHE);
+  DCHECK(!checksum_);
+  checksum_ = crypto::SecureHash::Create(crypto::SecureHash::SHA256);
+  // For efficiency and concision, we list known headers matching a wildcard
+  // explicitly rather than doing prefix matching.
+  constexpr auto kHeadersToInclude = base::MakeFixedFlatSet<base::StringPiece>({
+      "access-control-allow-credentials",
+      "access-control-allow-headers",
+      "access-control-allow-methods",
+      "access-control-allow-origin",
+      "access-control-expose-headers",
+      "access-control-max-age",
+      "access-control-request-headers",
+      "access-control-request-method",
+      "clear-site-data",
+      "content-encoding",
+      "content-security-policy",
+      "content-type",
+      "cross-origin-embedder-policy",
+      "cross-origin-opener-policy",
+      "cross-origin-resource-policy",
+      "location"
+      "sec-websocket-accept",
+      "sec-websocket-extensions",
+      "sec-websocket-key",
+      "sec-websocket-protocol",
+      "sec-websocket-version",
+      "upgrade",
+      "vary",
+  });
+  // Iterate the response headers looking for matches.
+  size_t iter = 0;
+  std::string name;
+  std::string value;
+  // Pairs of (lower_case_header_name, header_value).
+  std::vector<std::pair<std::string, std::string>> filtered_headers;
+  // It's good to set the initial allocation size of the vector to the
+  // expected size to avoid a lot of reallocations. This value was chosen as
+  // it is a nice round number.
+  filtered_headers.reserve(16);
+  while (response_.headers->EnumerateHeaderLines(&iter, &name, &value)) {
+    std::string lowered_name = base::ToLowerASCII(name);
+    if (kHeadersToInclude.contains(lowered_name)) {
+      filtered_headers.emplace_back(lowered_name, value);
+    }
+  }
+  std::sort(filtered_headers.begin(), filtered_headers.end());
+  for (const auto& [name, value] : filtered_headers) {
+    checksum_->Update(name.data(), name.size());
+    checksum_->Update(": ", 2);
+    checksum_->Update(value.data(), value.size());
+    checksum_->Update("\n", 1);
+  }
+  checksum_->Update("\n", 1);
+}
+
+bool HttpCache::Transaction::FinishAndCheckChecksum() {
+  if (!checksum_)
+    return true;
+
+  DCHECK(effective_load_flags_ & LOAD_USE_SINGLE_KEYED_CACHE);
+  return ResponseChecksumMatches(std::move(checksum_));
 }
 
 }  // namespace net

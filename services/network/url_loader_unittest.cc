@@ -818,7 +818,8 @@ class URLLoaderTest : public testing::Test {
             : mojo::NullRemote() /* url_loader_network_observer */,
         devtools_observer_ ? devtools_observer_->Bind() : mojo::NullRemote(),
         accept_ch_frame_observer_ ? accept_ch_frame_observer_->Bind()
-                                  : mojo::NullRemote());
+                                  : mojo::NullRemote(),
+        /*third_party_cookies_enabled=*/true);
 
     ran_ = true;
     devtools_observer_ = nullptr;
@@ -2437,7 +2438,8 @@ TEST_F(URLLoaderTest, DestroyOnURLLoaderPipeClosed) {
       mojo::NullRemote() /* cookie_observer */,
       mojo::NullRemote() /* url_loader_network_observer */,
       /*devtools_observer=*/mojo::NullRemote(),
-      /*accept_ch_frame_observer=*/mojo::NullRemote());
+      /*accept_ch_frame_observer=*/mojo::NullRemote(),
+      /*third_party_cookies_enabled=*/true);
 
   // Run until the response body pipe arrives, to make sure that a live body
   // pipe does not result in keeping the loader alive when the URLLoader pipe is
@@ -2491,7 +2493,8 @@ TEST_F(URLLoaderTest, CloseResponseBodyConsumerBeforeProducer) {
       mojo::NullRemote() /* cookie_observer */,
       mojo::NullRemote() /* url_loader_network_observer */,
       /*devtools_observer=*/mojo::NullRemote(),
-      /*accept_ch_frame_observer=*/mojo::NullRemote());
+      /*accept_ch_frame_observer=*/mojo::NullRemote(),
+      /*third_party_cookies_enabled=*/true);
 
   client()->RunUntilResponseBodyArrived();
   EXPECT_TRUE(client()->has_received_response());
@@ -2546,7 +2549,8 @@ TEST_F(URLLoaderTest, PauseReadingBodyFromNetBeforeResponseHeaders) {
       mojo::NullRemote() /* cookie_observer */,
       mojo::NullRemote() /* url_loader_network_observer */,
       /*devtools_observer=*/mojo::NullRemote(),
-      /*accept_ch_frame_observer=*/mojo::NullRemote());
+      /*accept_ch_frame_observer=*/mojo::NullRemote(),
+      /*third_party_cookies_enabled=*/true);
 
   // Pausing reading response body from network stops future reads from the
   // underlying URLRequest. So no data should be sent using the response body
@@ -2622,7 +2626,8 @@ TEST_F(URLLoaderTest, PauseReadingBodyFromNetWhenReadIsPending) {
       mojo::NullRemote() /* cookie_observer */,
       mojo::NullRemote() /* url_loader_network_observer */,
       /*devtools_observer=*/mojo::NullRemote(),
-      /*accept_ch_frame_observer=*/mojo::NullRemote());
+      /*accept_ch_frame_observer=*/mojo::NullRemote(),
+      /*third_party_cookies_enabled=*/true);
 
   response_controller.WaitForRequest();
   response_controller.Send(
@@ -2688,7 +2693,8 @@ TEST_F(URLLoaderTest, ResumeReadingBodyFromNetAfterClosingConsumer) {
       mojo::NullRemote() /* cookie_observer */,
       mojo::NullRemote() /* url_loader_network_observer */,
       /*devtools_observer=*/mojo::NullRemote(),
-      /*accept_ch_frame_observer=*/mojo::NullRemote());
+      /*accept_ch_frame_observer=*/mojo::NullRemote(),
+      /*third_party_cookies_enabled=*/true);
 
   loader->PauseReadingBodyFromNet();
   loader.FlushForTesting();
@@ -2749,7 +2755,8 @@ TEST_F(URLLoaderTest, MultiplePauseResumeReadingBodyFromNet) {
       mojo::NullRemote() /* cookie_observer */,
       mojo::NullRemote() /* url_loader_network_observer */,
       /*devtools_observer=*/mojo::NullRemote(),
-      /*accept_ch_frame_observer=*/mojo::NullRemote());
+      /*accept_ch_frame_observer=*/mojo::NullRemote(),
+      /*third_party_cookies_enabled=*/true);
 
   // It is okay to call ResumeReadingBodyFromNet() even if there is no prior
   // PauseReadingBodyFromNet().
@@ -3002,7 +3009,8 @@ TEST_F(URLLoaderTest, UploadFileCanceled) {
       mojo::NullRemote() /* cookie_observer */,
       mojo::NullRemote() /* url_loader_network_observer */,
       /*devtools_observer=*/mojo::NullRemote(),
-      /*accept_ch_frame_observer=*/mojo::NullRemote());
+      /*accept_ch_frame_observer=*/mojo::NullRemote(),
+      /*third_party_cookies_enabled=*/true);
 
   mojom::NetworkContextClient::OnFileUploadRequestedCallback callback;
   network_context_client->RunUntilUploadRequested(&callback);
@@ -3132,7 +3140,8 @@ TEST_F(URLLoaderTest, UploadChunkedDataPipe) {
       mojo::NullRemote() /* cookie_observer */,
       mojo::NullRemote() /* url_loader_network_observer */,
       /*devtools_observer=*/mojo::NullRemote(),
-      /*accept_ch_frame_observer=*/mojo::NullRemote());
+      /*accept_ch_frame_observer=*/mojo::NullRemote(),
+      /*third_party_cookies_enabled=*/true);
 
   mojom::ChunkedDataPipeGetter::GetSizeCallback get_size_callback =
       data_pipe_getter.WaitForGetSize();
@@ -3181,7 +3190,8 @@ TEST_F(URLLoaderTest, UploadReadOnceStream) {
       mojo::NullRemote() /* cookie_observer */,
       mojo::NullRemote() /* url_loader_network_observer */,
       /*devtools_observer=*/mojo::NullRemote(),
-      /*accept_ch_frame_observer=*/mojo::NullRemote());
+      /*accept_ch_frame_observer=*/mojo::NullRemote(),
+      /*third_party_cookies_enabled=*/true);
 
   mojom::ChunkedDataPipeGetter::GetSizeCallback get_size_callback =
       data_pipe_getter.WaitForGetSize();
@@ -3290,7 +3300,8 @@ TEST_F(URLLoaderTest, SSLInfoOnRedirectWithCertificateError) {
       mojo::NullRemote() /* cookie_observer */,
       url_loader_network_observer.Bind() /* url_loader_network_observer */,
       /*devtools_observer=*/mojo::NullRemote(),
-      /*accept_ch_frame_observer=*/mojo::NullRemote());
+      /*accept_ch_frame_observer=*/mojo::NullRemote(),
+      /*third_party_cookies_enabled=*/true);
 
   client.RunUntilRedirectReceived();
   ASSERT_TRUE(client.response_head()->ssl_info.has_value());
@@ -3320,7 +3331,8 @@ TEST_F(URLLoaderTest, RedirectModifiedHeaders) {
       mojo::NullRemote() /* cookie_observer */,
       mojo::NullRemote() /* url_loader_network_observer */,
       /*devtools_observer=*/mojo::NullRemote(),
-      /*accept_ch_frame_observer=*/mojo::NullRemote());
+      /*accept_ch_frame_observer=*/mojo::NullRemote(),
+      /*third_party_cookies_enabled=*/true);
 
   client()->RunUntilRedirectReceived();
 
@@ -3375,7 +3387,8 @@ TEST_F(URLLoaderTest, RedirectFailsOnModifyUnsafeHeader) {
         mojo::NullRemote() /* cookie_observer */,
         mojo::NullRemote() /* url_loader_network_observer */,
         /*devtools_observer=*/mojo::NullRemote(),
-        /*accept_ch_frame_observer=*/mojo::NullRemote());
+        /*accept_ch_frame_observer=*/mojo::NullRemote(),
+        /*third_party_cookies_enabled=*/true);
 
     client.RunUntilRedirectReceived();
 
@@ -3414,7 +3427,8 @@ TEST_F(URLLoaderTest, RedirectLogsModifiedConcerningHeader) {
       mojo::NullRemote() /* cookie_observer */,
       mojo::NullRemote() /* url_loader_network_observer */,
       /*devtools_observer=*/mojo::NullRemote(),
-      /*accept_ch_frame_observer=*/mojo::NullRemote());
+      /*accept_ch_frame_observer=*/mojo::NullRemote(),
+      /*third_party_cookies_enabled=*/true);
 
   client.RunUntilRedirectReceived();
 
@@ -3467,7 +3481,8 @@ TEST_F(URLLoaderTest, RedirectRemoveHeader) {
       mojo::NullRemote() /* cookie_observer */,
       mojo::NullRemote() /* url_loader_network_observer */,
       /*devtools_observer=*/mojo::NullRemote(),
-      /*accept_ch_frame_observer=*/mojo::NullRemote());
+      /*accept_ch_frame_observer=*/mojo::NullRemote(),
+      /*third_party_cookies_enabled=*/true);
 
   client()->RunUntilRedirectReceived();
 
@@ -3510,7 +3525,8 @@ TEST_F(URLLoaderTest, RedirectRemoveHeaderAndAddItBack) {
       mojo::NullRemote() /* cookie_observer */,
       mojo::NullRemote() /* url_loader_network_observer */,
       /*devtools_observer=*/mojo::NullRemote(),
-      /*accept_ch_frame_observer=*/mojo::NullRemote());
+      /*accept_ch_frame_observer=*/mojo::NullRemote(),
+      /*third_party_cookies_enabled=*/true);
 
   client()->RunUntilRedirectReceived();
 
@@ -3557,7 +3573,8 @@ TEST_F(URLLoaderTest, UpgradeAddsSecHeaders) {
       mojo::NullRemote() /* cookie_observer */,
       mojo::NullRemote() /* url_loader_network_observer */,
       /*devtools_observer=*/mojo::NullRemote(),
-      /*accept_ch_frame_observer=*/mojo::NullRemote());
+      /*accept_ch_frame_observer=*/mojo::NullRemote(),
+      /*third_party_cookies_enabled=*/true);
 
   client()->RunUntilRedirectReceived();
 
@@ -3608,7 +3625,8 @@ TEST_F(URLLoaderTest, DowngradeRemovesSecHeaders) {
       mojo::NullRemote() /* cookie_observer */,
       mojo::NullRemote() /* url_loader_network_observer */,
       /*devtools_observer=*/mojo::NullRemote(),
-      /*accept_ch_frame_observer=*/mojo::NullRemote());
+      /*accept_ch_frame_observer=*/mojo::NullRemote(),
+      /*third_party_cookies_enabled=*/true);
 
   client()->RunUntilRedirectReceived();
 
@@ -3668,7 +3686,8 @@ TEST_F(URLLoaderTest, RedirectChainRemovesAndAddsSecHeaders) {
       mojo::NullRemote() /* cookie_observer */,
       mojo::NullRemote() /* url_loader_network_observer */,
       /*devtools_observer=*/mojo::NullRemote(),
-      /*accept_ch_frame_observer=*/mojo::NullRemote());
+      /*accept_ch_frame_observer=*/mojo::NullRemote(),
+      /*third_party_cookies_enabled=*/true);
 
   client()->RunUntilRedirectReceived();
 
@@ -3734,7 +3753,8 @@ TEST_F(URLLoaderTest, RedirectSecHeadersUser) {
       mojo::NullRemote() /* cookie_observer */,
       mojo::NullRemote() /* url_loader_network_observer */,
       /*devtools_observer=*/mojo::NullRemote(),
-      /*accept_ch_frame_observer=*/mojo::NullRemote());
+      /*accept_ch_frame_observer=*/mojo::NullRemote(),
+      /*third_party_cookies_enabled=*/true);
 
   client()->RunUntilRedirectReceived();
 
@@ -3766,7 +3786,8 @@ TEST_F(URLLoaderTest, RedirectDirectlyModifiedSecHeadersUser) {
       mojo::NullRemote() /* cookie_observer */,
       mojo::NullRemote() /* url_loader_network_observer */,
       /*devtools_observer=*/mojo::NullRemote(),
-      /*accept_ch_frame_observer=*/mojo::NullRemote());
+      /*accept_ch_frame_observer=*/mojo::NullRemote(),
+      /*third_party_cookies_enabled=*/true);
 
   client()->RunUntilRedirectReceived();
 
@@ -3869,7 +3890,8 @@ TEST_F(URLLoaderTest, ResourceSchedulerIntegration) {
         mojo::NullRemote() /* cookie_observer */,
         mojo::NullRemote() /* url_loader_network_observer */,
         /*devtools_observer=*/mojo::NullRemote(),
-        /*accept_ch_frame_observer=*/mojo::NullRemote());
+        /*accept_ch_frame_observer=*/mojo::NullRemote(),
+        /*third_party_cookies_enabled=*/true);
 
     loaders.emplace_back(
         std::make_pair(std::move(url_loader), std::move(loader_remote)));
@@ -3892,7 +3914,8 @@ TEST_F(URLLoaderTest, ResourceSchedulerIntegration) {
       mojo::NullRemote() /* cookie_observer */,
       mojo::NullRemote() /* url_loader_network_observer */,
       /*devtools_observer=*/mojo::NullRemote(),
-      /*accept_ch_frame_observer=*/mojo::NullRemote());
+      /*accept_ch_frame_observer=*/mojo::NullRemote(),
+      /*third_party_cookies_enabled=*/true);
   base::RunLoop().RunUntilIdle();
 
   // Make sure that the ResourceScheduler throttles this request.
@@ -3928,7 +3951,8 @@ TEST_F(URLLoaderTest, ReadPipeClosedWhileReadTaskPosted) {
       mojo::NullRemote() /* cookie_observer */,
       mojo::NullRemote() /* url_loader_network_observer */,
       /*devtools_observer=*/mojo::NullRemote(),
-      /*accept_ch_frame_observer=*/mojo::NullRemote());
+      /*accept_ch_frame_observer=*/mojo::NullRemote(),
+      /*third_party_cookies_enabled=*/true);
 
   client()->RunUntilResponseBodyArrived();
   client()->response_body_release();
@@ -4207,7 +4231,8 @@ TEST_F(URLLoaderTest, SetAuth) {
       mojo::NullRemote() /* cookie_observer */,
       client_auth_observer.Bind() /* url_loader_network_observer */,
       /*devtools_observer=*/mojo::NullRemote(),
-      /*accept_ch_frame_observer=*/mojo::NullRemote());
+      /*accept_ch_frame_observer=*/mojo::NullRemote(),
+      /*third_party_cookies_enabled=*/true);
   base::RunLoop().RunUntilIdle();
 
   ASSERT_TRUE(url_loader);
@@ -4251,7 +4276,8 @@ TEST_F(URLLoaderTest, CancelAuth) {
       mojo::NullRemote() /* cookie_observer */,
       client_auth_observer.Bind() /* url_loader_network_observer */,
       /*devtools_observer=*/mojo::NullRemote(),
-      /*accept_ch_frame_observer=*/mojo::NullRemote());
+      /*accept_ch_frame_observer=*/mojo::NullRemote(),
+      /*third_party_cookies_enabled=*/true);
   base::RunLoop().RunUntilIdle();
 
   ASSERT_TRUE(url_loader);
@@ -4295,7 +4321,8 @@ TEST_F(URLLoaderTest, TwoChallenges) {
       mojo::NullRemote() /* cookie_observer */,
       client_auth_observer.Bind() /* url_loader_network_observer */,
       /*devtools_observer=*/mojo::NullRemote(),
-      /*accept_ch_frame_observer=*/mojo::NullRemote());
+      /*accept_ch_frame_observer=*/mojo::NullRemote(),
+      /*third_party_cookies_enabled=*/true);
   base::RunLoop().RunUntilIdle();
 
   ASSERT_TRUE(url_loader);
@@ -4340,7 +4367,8 @@ TEST_F(URLLoaderTest, NoAuthRequiredForFavicon) {
       mojo::NullRemote() /* cookie_observer */,
       client_auth_observer.Bind() /* url_loader_network_observer */,
       /*devtools_observer=*/mojo::NullRemote(),
-      /*accept_ch_frame_observer=*/mojo::NullRemote());
+      /*accept_ch_frame_observer=*/mojo::NullRemote(),
+      /*third_party_cookies_enabled=*/true);
   base::RunLoop().RunUntilIdle();
 
   ASSERT_TRUE(url_loader);
@@ -4384,7 +4412,8 @@ TEST_F(URLLoaderTest, HttpAuthResponseHeadersAvailable) {
       mojo::NullRemote() /* cookie_observer */,
       client_auth_observer.Bind() /* url_loader_network_observer */,
       /*devtools_observer=*/mojo::NullRemote(),
-      /*accept_ch_frame_observer=*/mojo::NullRemote());
+      /*accept_ch_frame_observer=*/mojo::NullRemote(),
+      /*third_party_cookies_enabled=*/true);
   base::RunLoop().RunUntilIdle();
 
   ASSERT_TRUE(url_loader);
@@ -4425,7 +4454,8 @@ TEST_F(URLLoaderTest, FollowRedirectTwice) {
       mojo::NullRemote() /* cookie_observer */,
       mojo::NullRemote() /* url_loader_network_observer */,
       /*devtools_observer=*/mojo::NullRemote(),
-      /*accept_ch_frame_observer=*/mojo::NullRemote());
+      /*accept_ch_frame_observer=*/mojo::NullRemote(),
+      /*third_party_cookies_enabled=*/true);
 
   client()->RunUntilRedirectReceived();
 
@@ -4527,7 +4557,8 @@ TEST_F(URLLoaderTest, ClientAuthRespondTwice) {
       mojo::NullRemote() /* cookie_observer */,
       client_cert_observer.Bind() /* url_loader_network_observer */,
       /*devtools_observer=*/mojo::NullRemote(),
-      /*accept_ch_frame_observer=*/mojo::NullRemote());
+      /*accept_ch_frame_observer=*/mojo::NullRemote(),
+      /*third_party_cookies_enabled=*/true);
 
   EXPECT_EQ(0, client_cert_observer.on_certificate_requested_counter());
   EXPECT_EQ(0, private_key->sign_count());
@@ -4578,7 +4609,8 @@ TEST_F(URLLoaderTest, ClientAuthDestroyResponder) {
       mojo::NullRemote() /* cookie_observer */,
       client_cert_observer.Bind() /* url_loader_network_observer */,
       /*devtools_observer=*/mojo::NullRemote(),
-      /*accept_ch_frame_observer=*/mojo::NullRemote());
+      /*accept_ch_frame_observer=*/mojo::NullRemote(),
+      /*third_party_cookies_enabled=*/true);
   client_cert_observer.set_url_loader_remote(&loader);
 
   RunUntilIdle();
@@ -4620,7 +4652,8 @@ TEST_F(URLLoaderTest, ClientAuthCancelConnection) {
       mojo::NullRemote() /* cookie_observer */,
       client_cert_observer.Bind() /* url_loader_network_observer */,
       /*devtools_observer=*/mojo::NullRemote(),
-      /*accept_ch_frame_observer=*/mojo::NullRemote());
+      /*accept_ch_frame_observer=*/mojo::NullRemote(),
+      /*third_party_cookies_enabled=*/true);
   client_cert_observer.set_url_loader_remote(&loader);
 
   RunUntilIdle();
@@ -4661,7 +4694,8 @@ TEST_F(URLLoaderTest, ClientAuthCancelCertificateSelection) {
       mojo::NullRemote() /* cookie_observer */,
       client_cert_observer.Bind() /* url_loader_network_observer */,
       /*devtools_observer=*/mojo::NullRemote(),
-      /*accept_ch_frame_observer=*/mojo::NullRemote());
+      /*accept_ch_frame_observer=*/mojo::NullRemote(),
+      /*third_party_cookies_enabled=*/true);
 
   RunUntilIdle();
   ASSERT_TRUE(url_loader);
@@ -4711,7 +4745,8 @@ TEST_F(URLLoaderTest, ClientAuthNoCertificate) {
       mojo::NullRemote() /* cookie_observer */,
       client_cert_observer.Bind() /* url_loader_network_observer */,
       /*devtools_observer=*/mojo::NullRemote(),
-      /*accept_ch_frame_observer=*/mojo::NullRemote());
+      /*accept_ch_frame_observer=*/mojo::NullRemote(),
+      /*third_party_cookies_enabled=*/true);
 
   RunUntilIdle();
   ASSERT_TRUE(url_loader);
@@ -4765,7 +4800,8 @@ TEST_F(URLLoaderTest, ClientAuthCertificateWithValidSignature) {
       mojo::NullRemote() /* cookie_observer */,
       client_cert_observer.Bind() /* url_loader_network_observer */,
       /*devtools_observer=*/mojo::NullRemote(),
-      /*accept_ch_frame_observer=*/mojo::NullRemote());
+      /*accept_ch_frame_observer=*/mojo::NullRemote(),
+      /*third_party_cookies_enabled=*/true);
 
   RunUntilIdle();
   ASSERT_TRUE(url_loader);
@@ -4821,7 +4857,8 @@ TEST_F(URLLoaderTest, ClientAuthCertificateWithInvalidSignature) {
       mojo::NullRemote() /* cookie_observer */,
       client_cert_observer.Bind() /* url_loader_network_observer */,
       /*devtools_observer=*/mojo::NullRemote(),
-      /*accept_ch_frame_observer=*/mojo::NullRemote());
+      /*accept_ch_frame_observer=*/mojo::NullRemote(),
+      /*third_party_cookies_enabled=*/true);
 
   RunUntilIdle();
   ASSERT_TRUE(url_loader);
@@ -4859,7 +4896,8 @@ TEST_F(URLLoaderTest, BlockAllCookies) {
       mojo::NullRemote() /* cookie_observer */,
       mojo::NullRemote() /* url_loader_network_observer */,
       /*devtools_observer=*/mojo::NullRemote(),
-      /*accept_ch_frame_observer=*/mojo::NullRemote());
+      /*accept_ch_frame_observer=*/mojo::NullRemote(),
+      /*third_party_cookies_enabled=*/true);
 
   EXPECT_FALSE(url_loader->AllowCookies(first_party_url, site_for_cookies));
   EXPECT_FALSE(url_loader->AllowCookies(third_party_url, site_for_cookies));
@@ -4886,7 +4924,8 @@ TEST_F(URLLoaderTest, BlockOnlyThirdPartyCookies) {
       mojo::NullRemote() /* cookie_observer */,
       mojo::NullRemote() /* url_loader_network_observer */,
       /*devtools_observer=*/mojo::NullRemote(),
-      /*accept_ch_frame_observer=*/mojo::NullRemote());
+      /*accept_ch_frame_observer=*/mojo::NullRemote(),
+      /*third_party_cookies_enabled=*/true);
 
   EXPECT_TRUE(url_loader->AllowCookies(first_party_url, site_for_cookies));
   EXPECT_FALSE(url_loader->AllowCookies(third_party_url, site_for_cookies));
@@ -4912,7 +4951,8 @@ TEST_F(URLLoaderTest, AllowAllCookies) {
       mojo::NullRemote() /* cookie_observer */,
       mojo::NullRemote() /* url_loader_network_observer */,
       /*devtools_observer=*/mojo::NullRemote(),
-      /*accept_ch_frame_observer=*/mojo::NullRemote());
+      /*accept_ch_frame_observer=*/mojo::NullRemote(),
+      /*third_party_cookies_enabled=*/true);
 
   EXPECT_TRUE(url_loader->AllowCookies(first_party_url, site_for_cookies));
   EXPECT_TRUE(url_loader->AllowCookies(third_party_url, site_for_cookies));
@@ -5005,7 +5045,8 @@ TEST_P(URLLoaderParameterTest, CredentialsModeOmitRequireClientCert) {
       mojo::NullRemote() /* cookie_observer */,
       client_cert_observer.Bind() /* url_loader_network_observer */,
       /*devtools_observer=*/mojo::NullRemote(),
-      /*accept_ch_frame_observer=*/mojo::NullRemote());
+      /*accept_ch_frame_observer=*/mojo::NullRemote(),
+      /*third_party_cookies_enabled=*/true);
 
   client()->RunUntilComplete();
   delete_run_loop.Run();
@@ -5070,7 +5111,8 @@ TEST_P(URLLoaderParameterTest, CredentialsModeOmitOptionalClientCert) {
       mojo::NullRemote() /* cookie_observer */,
       client_cert_observer.Bind() /* url_loader_network_observer */,
       /*devtools_observer=*/mojo::NullRemote(),
-      /*accept_ch_frame_observer=*/mojo::NullRemote());
+      /*accept_ch_frame_observer=*/mojo::NullRemote(),
+      /*third_party_cookies_enabled=*/true);
 
   client()->RunUntilComplete();
   delete_run_loop.Run();
@@ -5107,7 +5149,8 @@ TEST_F(URLLoaderTest, CookieReporting) {
         nullptr /* trust_token_helper */, cookie_observer.GetRemote(),
         mojo::NullRemote() /* url_loader_network_observer */,
         /*devtools_observer=*/mojo::NullRemote(),
-        /*accept_ch_frame_observer=*/mojo::NullRemote());
+        /*accept_ch_frame_observer=*/mojo::NullRemote(),
+        /*third_party_cookies_enabled=*/true);
 
     delete_run_loop.Run();
     loader_client.RunUntilComplete();
@@ -5140,7 +5183,8 @@ TEST_F(URLLoaderTest, CookieReporting) {
         nullptr /* trust_token_helper */, cookie_observer.GetRemote(),
         mojo::NullRemote() /* url_loader_network_observer */,
         /*devtools_observer=*/mojo::NullRemote(),
-        /*accept_ch_frame_observer=*/mojo::NullRemote());
+        /*accept_ch_frame_observer=*/mojo::NullRemote(),
+        /*third_party_cookies_enabled=*/true);
 
     delete_run_loop.Run();
     loader_client.RunUntilComplete();
@@ -5173,7 +5217,8 @@ TEST_F(URLLoaderTest, CookieReporting) {
         nullptr /* trust_token_helper */, cookie_observer.GetRemote(),
         mojo::NullRemote() /* url_loader_network_observer */,
         /*devtools_observer=*/mojo::NullRemote(),
-        /*accept_ch_frame_observer=*/mojo::NullRemote());
+        /*accept_ch_frame_observer=*/mojo::NullRemote(),
+        /*third_party_cookies_enabled=*/true);
 
     delete_run_loop.Run();
     loader_client.RunUntilComplete();
@@ -5217,7 +5262,8 @@ TEST_F(URLLoaderTest, CookieReportingRedirect) {
       cookie_observer.GetRemote(),
       mojo::NullRemote() /* url_loader_network_observer */,
       /*devtools_observer=*/mojo::NullRemote(),
-      /*accept_ch_frame_observer=*/mojo::NullRemote());
+      /*accept_ch_frame_observer=*/mojo::NullRemote(),
+      /*third_party_cookies_enabled=*/true);
 
   loader_client.RunUntilRedirectReceived();
   loader->FollowRedirect({}, {}, {}, absl::nullopt);
@@ -5262,7 +5308,8 @@ TEST_F(URLLoaderTest, CookieReportingAuth) {
         nullptr /* trust_token_helper */, cookie_observer.GetRemote(),
         client_auth_observer.Bind() /* url_loader_network_observer */,
         /*devtools_observer=*/mojo::NullRemote(),
-        /*accept_ch_frame_observer=*/mojo::NullRemote());
+        /*accept_ch_frame_observer=*/mojo::NullRemote(),
+        /*third_party_cookies_enabled=*/true);
 
     loader_client.RunUntilComplete();
     delete_run_loop.Run();
@@ -5309,7 +5356,8 @@ TEST_F(URLLoaderTest, RawRequestCookies) {
         mojo::NullRemote() /* cookie_observer */,
         mojo::NullRemote() /* url_loader_network_observer */,
         devtools_observer.Bind(),
-        /*accept_ch_frame_observer=*/mojo::NullRemote());
+        /*accept_ch_frame_observer=*/mojo::NullRemote(),
+        /*third_party_cookies_enabled=*/true);
 
     delete_run_loop.Run();
     loader_client.RunUntilComplete();
@@ -5359,7 +5407,8 @@ TEST_F(URLLoaderTest, RawRequestCookiesFlagged) {
         mojo::NullRemote() /* cookie_observer */,
         mojo::NullRemote() /* url_loader_network_observer */,
         devtools_observer.Bind(),
-        /*accept_ch_frame_observer=*/mojo::NullRemote());
+        /*accept_ch_frame_observer=*/mojo::NullRemote(),
+        /*third_party_cookies_enabled=*/true);
 
     delete_run_loop.Run();
     loader_client.RunUntilComplete();
@@ -5400,7 +5449,8 @@ TEST_F(URLLoaderTest, RawResponseCookies) {
         mojo::NullRemote() /* cookie_observer */,
         mojo::NullRemote() /* url_loader_network_observer */,
         devtools_observer.Bind(),
-        /*accept_ch_frame_observer=*/mojo::NullRemote());
+        /*accept_ch_frame_observer=*/mojo::NullRemote(),
+        /*third_party_cookies_enabled=*/true);
 
     delete_run_loop.Run();
     loader_client.RunUntilComplete();
@@ -5444,7 +5494,8 @@ TEST_F(URLLoaderTest, RawResponseCookiesInvalid) {
         mojo::NullRemote() /* cookie_observer */,
         mojo::NullRemote() /* url_loader_network_observer */,
         devtools_observer.Bind(),
-        /*accept_ch_frame_observer=*/mojo::NullRemote());
+        /*accept_ch_frame_observer=*/mojo::NullRemote(),
+        /*third_party_cookies_enabled=*/true);
 
     delete_run_loop.Run();
     loader_client.RunUntilComplete();
@@ -5490,7 +5541,8 @@ TEST_F(URLLoaderTest, RawResponseCookiesRedirect) {
         mojo::NullRemote() /* cookie_observer */,
         mojo::NullRemote() /* url_loader_network_observer */,
         devtools_observer.Bind(),
-        /*accept_ch_frame_observer=*/mojo::NullRemote());
+        /*accept_ch_frame_observer=*/mojo::NullRemote(),
+        /*third_party_cookies_enabled=*/true);
 
     loader_client.RunUntilRedirectReceived();
 
@@ -5542,7 +5594,8 @@ TEST_F(URLLoaderTest, RawResponseCookiesRedirect) {
         mojo::NullRemote() /* cookie_observer */,
         mojo::NullRemote() /* url_loader_network_observer */,
         devtools_observer.Bind(),
-        /*accept_ch_frame_observer=*/mojo::NullRemote());
+        /*accept_ch_frame_observer=*/mojo::NullRemote(),
+        /*third_party_cookies_enabled=*/true);
 
     loader_client.RunUntilRedirectReceived();
     loader->FollowRedirect({}, {}, {}, absl::nullopt);
@@ -5589,7 +5642,8 @@ TEST_F(URLLoaderTest, RawResponseCookiesAuth) {
         mojo::NullRemote() /* cookie_observer */,
         mojo::NullRemote() /* url_loader_network_observer */,
         devtools_observer.Bind(),
-        /*accept_ch_frame_observer=*/mojo::NullRemote());
+        /*accept_ch_frame_observer=*/mojo::NullRemote(),
+        /*third_party_cookies_enabled=*/true);
 
     loader_client.RunUntilComplete();
     delete_run_loop.Run();
@@ -5635,7 +5689,8 @@ TEST_F(URLLoaderTest, RawResponseCookiesAuth) {
         mojo::NullRemote() /* cookie_observer */,
         mojo::NullRemote() /* url_loader_network_observer */,
         devtools_observer.Bind(),
-        /*accept_ch_frame_observer=*/mojo::NullRemote());
+        /*accept_ch_frame_observer=*/mojo::NullRemote(),
+        /*third_party_cookies_enabled=*/true);
 
     loader_client.RunUntilComplete();
     delete_run_loop.Run();
@@ -5676,7 +5731,8 @@ TEST_F(URLLoaderTest, RawResponseQUIC) {
         mojo::NullRemote() /* cookie_observer */,
         mojo::NullRemote() /* url_loader_network_observer */,
         devtools_observer.Bind(),
-        /*accept_ch_frame_observer=*/mojo::NullRemote());
+        /*accept_ch_frame_observer=*/mojo::NullRemote(),
+        /*third_party_cookies_enabled=*/true);
 
     delete_run_loop.Run();
     loader_client.RunUntilComplete();
@@ -5728,7 +5784,8 @@ TEST_F(URLLoaderTest, EarlyHints) {
       /*cookie_observer=*/mojo::NullRemote(),
       /*url_loader_network_observer=*/mojo::NullRemote(),
       /*devtools_observer=*/mojo::NullRemote(),
-      /*accept_ch_frame_observer=*/mojo::NullRemote());
+      /*accept_ch_frame_observer=*/mojo::NullRemote(),
+      /*third_party_cookies_enabled=*/true);
 
   delete_run_loop.Run();
   loader_client.RunUntilComplete();
@@ -5778,7 +5835,8 @@ TEST_F(URLLoaderTest, CookieReportingCategories) {
         nullptr /* trust_token_helper */, cookie_observer.GetRemote(),
         mojo::NullRemote() /* url_loader_network_observer */,
         /*devtools_observer=*/mojo::NullRemote(),
-        /*accept_ch_frame_observer=*/mojo::NullRemote());
+        /*accept_ch_frame_observer=*/mojo::NullRemote(),
+        /*third_party_cookies_enabled=*/true);
 
     delete_run_loop.Run();
     loader_client.RunUntilComplete();
@@ -5828,7 +5886,8 @@ TEST_F(URLLoaderTest, CookieReportingCategories) {
         nullptr /* trust_token_helper */, cookie_observer.GetRemote(),
         mojo::NullRemote() /* url_loader_network_observer */,
         /*devtools_observer=*/mojo::NullRemote(),
-        /*accept_ch_frame_observer=*/mojo::NullRemote());
+        /*accept_ch_frame_observer=*/mojo::NullRemote(),
+        /*third_party_cookies_enabled=*/true);
 
     delete_run_loop.Run();
     loader_client.RunUntilComplete();
@@ -5870,7 +5929,8 @@ TEST_F(URLLoaderTest, CookieReportingCategories) {
         nullptr /* trust_token_helper */, cookie_observer.GetRemote(),
         mojo::NullRemote() /* url_loader_network_observer */,
         /*devtools_observer=*/mojo::NullRemote(),
-        /*accept_ch_frame_observer=*/mojo::NullRemote());
+        /*accept_ch_frame_observer=*/mojo::NullRemote(),
+        /*third_party_cookies_enabled=*/true);
 
     delete_run_loop.Run();
     loader_client.RunUntilComplete();
@@ -5964,7 +6024,8 @@ TEST_F(URLLoaderTest, OriginPolicyManagerCalled) {
         mojo::NullRemote() /* cookie_observer */,
         mojo::NullRemote() /* url_loader_network_observer */,
         /*devtools_observer=*/mojo::NullRemote(),
-        /*accept_ch_frame_observer=*/mojo::NullRemote());
+        /*accept_ch_frame_observer=*/mojo::NullRemote(),
+        /*third_party_cookies_enabled=*/true);
 
     loader_client.RunUntilComplete();
     delete_run_loop.Run();
@@ -6016,7 +6077,8 @@ TEST_F(URLLoaderTest, OriginPolicyManagerCalled) {
         mojo::NullRemote() /* cookie_observer */,
         mojo::NullRemote() /* url_loader_network_observer */,
         /*devtools_observer=*/mojo::NullRemote(),
-        /*accept_ch_frame_observer=*/mojo::NullRemote());
+        /*accept_ch_frame_observer=*/mojo::NullRemote(),
+        /*third_party_cookies_enabled=*/true);
 
     loader_client.RunUntilComplete();
     delete_run_loop.Run();
@@ -6055,7 +6117,8 @@ TEST_F(URLLoaderTest, OriginPolicyManagerCalled) {
         mojo::NullRemote() /* cookie_observer */,
         mojo::NullRemote() /* url_loader_network_observer */,
         /*devtools_observer=*/mojo::NullRemote(),
-        /*accept_ch_frame_observer=*/mojo::NullRemote());
+        /*accept_ch_frame_observer=*/mojo::NullRemote(),
+        /*third_party_cookies_enabled=*/true);
 
     loader_client.RunUntilResponseBodyArrived();
     delete_run_loop.Run();
@@ -6100,7 +6163,8 @@ TEST_F(URLLoaderTest, OriginPolicyManagerCalled) {
         mojo::NullRemote() /* cookie_observer */,
         mojo::NullRemote() /* url_loader_network_observer */,
         /*devtools_observer=*/mojo::NullRemote(),
-        /*accept_ch_frame_observer=*/mojo::NullRemote());
+        /*accept_ch_frame_observer=*/mojo::NullRemote(),
+        /*third_party_cookies_enabled=*/true);
 
     loader_client.RunUntilComplete();
     delete_run_loop.Run();
@@ -6394,7 +6458,8 @@ TEST_P(URLLoaderSyncOrAsyncTrustTokenOperationTest,
       mojo::NullRemote() /* cookie_observer */,
       mojo::NullRemote() /* url_loader_network_observer */,
       devtools_observer.Bind(),
-      /*accept_ch_frame_observer=*/mojo::NullRemote());
+      /*accept_ch_frame_observer=*/mojo::NullRemote(),
+      /*third_party_cookies_enabled=*/true);
 
   client()->RunUntilComplete();
   delete_run_loop.Run();
@@ -6448,7 +6513,8 @@ TEST_P(URLLoaderSyncOrAsyncTrustTokenOperationTest,
       mojo::NullRemote() /* cookie_observer */,
       mojo::NullRemote() /* url_loader_network_observer */,
       devtools_observer.Bind(),
-      /*accept_ch_frame_observer=*/mojo::NullRemote());
+      /*accept_ch_frame_observer=*/mojo::NullRemote(),
+      /*third_party_cookies_enabled=*/true);
 
   client()->RunUntilComplete();
   delete_run_loop.Run();
@@ -6490,7 +6556,8 @@ TEST_P(URLLoaderSyncOrAsyncTrustTokenOperationTest,
       mojo::NullRemote() /* cookie_observer */,
       mojo::NullRemote() /* url_loader_network_observer */,
       devtools_observer.Bind(),
-      /*accept_ch_frame_observer=*/mojo::NullRemote());
+      /*accept_ch_frame_observer=*/mojo::NullRemote(),
+      /*third_party_cookies_enabled=*/true);
 
   client()->RunUntilComplete();
   delete_run_loop.Run();
@@ -6532,7 +6599,8 @@ TEST_P(URLLoaderSyncOrAsyncTrustTokenOperationTest,
       mojo::NullRemote() /* cookie_observer */,
       mojo::NullRemote() /* url_loader_network_observer */,
       devtools_observer.Bind(),
-      /*accept_ch_frame_observer=*/mojo::NullRemote());
+      /*accept_ch_frame_observer=*/mojo::NullRemote(),
+      /*third_party_cookies_enabled=*/true);
 
   client()->RunUntilComplete();
   delete_run_loop.Run();
@@ -6574,7 +6642,8 @@ TEST_P(URLLoaderSyncOrAsyncTrustTokenOperationTest,
       mojo::NullRemote() /* cookie_observer */,
       mojo::NullRemote() /* url_loader_network_observer */,
       devtools_observer.Bind(),
-      /*accept_ch_frame_observer=*/mojo::NullRemote());
+      /*accept_ch_frame_observer=*/mojo::NullRemote(),
+      /*third_party_cookies_enabled=*/true);
 
   client()->RunUntilComplete();
   delete_run_loop.Run();
@@ -6615,7 +6684,8 @@ TEST_F(URLLoaderTest, OnRawRequestClientSecurityStateFactory) {
       mojo::NullRemote() /* cookie_observer */,
       mojo::NullRemote() /* url_loader_network_observer */,
       devtools_observer.Bind(),
-      /*accept_ch_frame_observer=*/mojo::NullRemote());
+      /*accept_ch_frame_observer=*/mojo::NullRemote(),
+      /*third_party_cookies_enabled=*/true);
 
   delete_run_loop.Run();
   client()->RunUntilComplete();
@@ -6659,7 +6729,8 @@ TEST_F(URLLoaderTest, OnRawRequestClientSecurityStateRequest) {
       mojo::NullRemote() /* cookie_observer */,
       mojo::NullRemote() /* url_loader_network_observer */,
       devtools_observer.Bind(),
-      /*accept_ch_frame_observer=*/mojo::NullRemote());
+      /*accept_ch_frame_observer=*/mojo::NullRemote(),
+      /*third_party_cookies_enabled=*/true);
   delete_run_loop.Run();
   client()->RunUntilComplete();
   EXPECT_EQ(net::OK, client()->completion_status().error_code);
@@ -6695,7 +6766,8 @@ TEST_F(URLLoaderTest, OnRawRequestClientSecurityStateNotPresent) {
       mojo::NullRemote() /* cookie_observer */,
       mojo::NullRemote() /* url_loader_network_observer */,
       devtools_observer.Bind(),
-      /*accept_ch_frame_observer=*/mojo::NullRemote());
+      /*accept_ch_frame_observer=*/mojo::NullRemote(),
+      /*third_party_cookies_enabled=*/true);
   delete_run_loop.Run();
   client()->RunUntilComplete();
   EXPECT_EQ(net::OK, client()->completion_status().error_code);
@@ -6724,7 +6796,8 @@ TEST_F(URLLoaderTest, OnRawResponseIPAddressSpace) {
       mojo::NullRemote() /* cookie_observer */,
       mojo::NullRemote() /* url_loader_network_observer */,
       devtools_observer.Bind(),
-      /*accept_ch_frame_observer=*/mojo::NullRemote());
+      /*accept_ch_frame_observer=*/mojo::NullRemote(),
+      /*third_party_cookies_enabled=*/true);
   delete_run_loop.Run();
   client()->RunUntilComplete();
   EXPECT_EQ(net::OK, client()->completion_status().error_code);
@@ -7229,5 +7302,150 @@ TEST_F(URLLoaderTest, RecordRadioWakeupTrigger_IntervalTooShort) {
 }
 
 #endif  // BUILDFLAG(IS_ANDROID)
+
+class URLLoaderCacheTransparencyTest : public URLLoaderTest {
+ public:
+  void SetUp() override {
+    // Needed to start test_server().
+    URLLoaderTest::SetUp();
+
+    pervasive_payload_url_ = test_server()->GetURL(kPervasivePayload);
+    base::FieldTrialParams params;
+    params["pervasive-payloads"] = base::StrCat(
+        {"1,", pervasive_payload_url_.spec(),
+         ",87F6EE26BD9CFC440B4C805AAE79E0A5671F61C00B5E0AF54B8199EAF64AAAC3"});
+    pervasive_payloads_feature_.InitAndEnableFeatureWithParameters(
+        features::kPervasivePayloadsList, params);
+    cache_transparency_feature_.InitAndEnableFeature(
+        features::kCacheTransparency);
+    split_cache_feature_.InitAndEnableFeature(
+        net::features::kSplitCacheByNetworkIsolationKey);
+
+    // The URL changes for every test, so we have to force the list to be
+    // re-read from the feature parameter.
+    URLLoader::ResetPervasivePayloadsListForTesting();
+  }
+
+  void TearDown() override {
+    URLLoaderTest::TearDown();
+
+    URLLoader::ResetPervasivePayloadsListForTesting();
+  }
+
+  void OnServerReceivedRequest(
+      const net::test_server::HttpRequest& request) override {
+    ++network_request_count_;
+  }
+
+  // The main difference from Load() is that this can be called multiple times.
+  std::unique_ptr<TestURLLoaderClient> SendRequest(
+      base::StringPiece path = kPervasivePayload) {
+    auto client = std::make_unique<TestURLLoaderClient>();
+    ResourceRequest request =
+        CreateResourceRequest(method_.c_str(), test_server()->GetURL(path));
+    request.load_flags = load_flags_;
+    request.headers.AddHeadersFromString(headers_);
+
+    base::RunLoop delete_run_loop;
+    mojo::Remote<mojom::URLLoader> loader;
+    std::unique_ptr<URLLoader> url_loader;
+    context().mutable_factory_params().process_id = mojom::kBrowserProcessId;
+    context().mutable_factory_params().is_corb_enabled = false;
+    url_loader = std::make_unique<URLLoader>(
+        context(), DeleteLoaderCallback(&delete_run_loop, &url_loader),
+        loader.BindNewPipeAndPassReceiver(), mojom::kURLLoadOptionNone, request,
+        client->CreateRemote(), nullptr /* sync_url_loader_client */,
+        TRAFFIC_ANNOTATION_FOR_TESTS, 0 /* request_id */,
+        0 /* keepalive_request_size */, nullptr,
+        nullptr /* trust_token_helper */,
+        mojo::NullRemote() /* cookie_observer */,
+        mojo::NullRemote() /* url_loader_network_observer */,
+        /*devtools_observer=*/mojo::NullRemote(),
+        /*accept_ch_frame_observer=*/mojo::NullRemote(),
+        third_party_cookies_enabled_);
+
+    client->RunUntilComplete();
+    delete_run_loop.Run();
+
+    return client;
+  }
+
+  void SetOrigin(base::StringPiece url) {
+    context().mutable_factory_params().isolation_info =
+        net::IsolationInfo::CreateForInternalRequest(
+            url::Origin::Create(GURL(url)));
+  }
+
+  void SendTwoRequestsWithDifferentOrigins(
+      base::StringPiece path = kPervasivePayload) {
+    SetOrigin("https://a.com/");
+    SendRequest(path);
+    SetOrigin("https://b.com/");
+    SendRequest(path);
+  }
+
+  int network_request_count() { return network_request_count_; }
+
+  void set_third_party_cookies_enabled(bool value) {
+    third_party_cookies_enabled_ = value;
+  }
+
+  void set_method(std::string method) { method_ = std::move(method); }
+
+  void set_load_flags(int flags) { load_flags_ = flags; }
+
+  // Headers are in the format accepted by
+  // HttpRequestHeaders::AddHeadersFromString(), ie. "\r\n" delimited.
+  void set_headers(std::string headers) { headers_ = std::move(headers); }
+
+ private:
+  static constexpr char kPervasivePayload[] = "/pervasive.js";
+
+  base::test::ScopedFeatureList pervasive_payloads_feature_;
+  base::test::ScopedFeatureList cache_transparency_feature_;
+  base::test::ScopedFeatureList split_cache_feature_;
+  GURL pervasive_payload_url_;
+  int network_request_count_ = 0;
+  bool third_party_cookies_enabled_ = true;
+  std::string method_ = "GET";
+  int load_flags_ = net::LOAD_NORMAL;
+  std::string headers_;
+};
+
+// This test is critical. If it doesn't pass, then the results of the other
+// URLLoaderCacheTransparencyTests are meaningless.
+TEST_F(URLLoaderCacheTransparencyTest, SuccessfulPervasivePayload) {
+  SendTwoRequestsWithDifferentOrigins();
+  EXPECT_EQ(1, network_request_count());
+}
+
+TEST_F(URLLoaderCacheTransparencyTest, ThirdPartyCookiesDisabled) {
+  set_third_party_cookies_enabled(false);
+  SendTwoRequestsWithDifferentOrigins();
+  EXPECT_EQ(2, network_request_count());
+}
+
+TEST_F(URLLoaderCacheTransparencyTest, NotAPervasivePayload) {
+  SendTwoRequestsWithDifferentOrigins("/cacheable.js");
+  EXPECT_EQ(2, network_request_count());
+}
+
+TEST_F(URLLoaderCacheTransparencyTest, NotAGETRequest) {
+  set_method("POST");
+  SendTwoRequestsWithDifferentOrigins();
+  EXPECT_EQ(2, network_request_count());
+}
+
+TEST_F(URLLoaderCacheTransparencyTest, IncompatibleLoadFlags) {
+  set_load_flags(net::LOAD_SKIP_VARY_CHECK);
+  SendTwoRequestsWithDifferentOrigins();
+  EXPECT_EQ(2, network_request_count());
+}
+
+TEST_F(URLLoaderCacheTransparencyTest, IncompatibleHeaders) {
+  set_headers("Range: bytes=0-5\r\n");
+  SendTwoRequestsWithDifferentOrigins();
+  EXPECT_EQ(2, network_request_count());
+}
 
 }  // namespace network

@@ -132,6 +132,75 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Network.CacheTransparency.CacheNotUsed"
+    enum="CacheTransparencyCacheNotUsedReason" expires_after="2022-11-01">
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>ricea@chromium.org</owner>
+  <summary>
+    Records why a URL does not use the single-keyed cache due to a reason in
+    //services/network, when a URL request is made. Reasons include different
+    request type (i.e. not GET), incompatible request load flags, incompatible
+    request headers, etc.
+  </summary>
+</histogram>
+
+<histogram name="Network.CacheTransparency.ListVersion" units="version"
+    expires_after="2022-11-01">
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>ricea@chromium.org</owner>
+  <summary>
+    Records the version number of the pervasive payloads list, when the list is
+    parsed the first time a URL request is made.
+  </summary>
+</histogram>
+
+<histogram name="Network.CacheTransparency.MarkedUnusable" units="list index"
+    expires_after="2022-11-01">
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>ricea@chromium.org</owner>
+  <summary>
+    Records whether a URL in the pervasive payloads list is marked as
+    &quot;unusable&quot; when the cached response is read. The list index is the
+    index of the URL in the pervasive payloads list.
+  </summary>
+</histogram>
+
+<histogram name="Network.CacheTransparency.MismatchedChecksums"
+    units="list index" expires_after="2022-11-01">
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>ricea@chromium.org</owner>
+  <summary>
+    Records whether a URL in the pervasive payloads list has a different
+    checksum than what is expected when the response checksums are compared in
+    HttpCache::Transaction. The list index is the index of the URL in the
+    pervasive payloads list.
+  </summary>
+</histogram>
+
+<histogram name="Network.CacheTransparency.SingleKeyedCacheIsUsed"
+    units="list index" expires_after="2022-11-01">
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>ricea@chromium.org</owner>
+  <summary>
+    Records whether the single-keyed cache is used for a URL in the pervasive
+    payloads list (not just when a cache entry is hit because there could be an
+    &quot;unusable&quot; flag set). This is recorded when the response checksum
+    matches the expected checksum in HttpCache::Transaction. The list index is
+    the index of the URL in the pervasive payloads list.
+  </summary>
+</histogram>
+
+<histogram name="Network.CacheTransparency.URLMatched" units="list index"
+    expires_after="2022-11-01">
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>ricea@chromium.org</owner>
+  <summary>
+    Records whether a requested resource's URL matched with any of the URLs in
+    the pervasive payloads list when a URL request is made. The list index is
+    the index of the URL in the pervasive payloads list.
+  </summary>
+</histogram>
+
 <histogram name="Network.Cellular.Apn.UseAttachApnOnSave" enum="Boolean"
     expires_after="2022-05-18">
   <owner>hsuregan@chromium.org</owner>

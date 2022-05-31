@@ -420,7 +420,8 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
   int GetBackendForTransaction(Transaction* transaction);
 
   // Generates the cache key for this request.
-  static std::string GenerateCacheKey(const HttpRequestInfo*);
+  static std::string GenerateCacheKey(const HttpRequestInfo*,
+                                      bool use_single_keyed_cache);
 
   // Dooms the entry selected by |key|, if it is currently in the list of active
   // entries.
@@ -644,6 +645,10 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
   static const char kDoubleKeyPrefix[];
   static const char kDoubleKeySeparator[];
   static const char kSubframeDocumentResourcePrefix[];
+
+  // Used for single-keyed entries if the cache is split.
+  static const char kSingleKeyPrefix[];
+  static const char kSingleKeySeparator[];
 
   // Variables ----------------------------------------------------------------
 

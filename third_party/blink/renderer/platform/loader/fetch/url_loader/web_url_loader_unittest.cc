@@ -244,11 +244,13 @@ class TestWebURLLoaderClient : public WebURLLoaderClient {
     NOTREACHED();
   }
 
-  void DidFinishLoading(base::TimeTicks finishTime,
-                        int64_t totalEncodedDataLength,
-                        int64_t totalEncodedBodyLength,
-                        int64_t totalDecodedBodyLength,
-                        bool should_report_corb_blocking) override {
+  void DidFinishLoading(
+      base::TimeTicks finishTime,
+      int64_t totalEncodedDataLength,
+      int64_t totalEncodedBodyLength,
+      int64_t totalDecodedBodyLength,
+      bool should_report_corb_blocking,
+      absl::optional<bool> pervasive_payload_requested) override {
     EXPECT_TRUE(loader_);
     EXPECT_TRUE(did_receive_response_);
     EXPECT_FALSE(did_finish_);

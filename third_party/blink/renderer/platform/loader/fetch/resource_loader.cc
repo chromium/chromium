@@ -37,6 +37,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/mojo_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
@@ -1233,14 +1234,27 @@ void ResourceLoader::DidFinishLoadingFirstPartInMultipart() {
                                0, false);
 }
 
-void ResourceLoader::DidFinishLoading(base::TimeTicks response_end_time,
-                                      int64_t encoded_data_length,
-                                      int64_t encoded_body_length,
-                                      int64_t decoded_body_length,
-                                      bool should_report_corb_blocking) {
+void ResourceLoader::DidFinishLoading(
+    base::TimeTicks response_end_time,
+    int64_t encoded_data_length,
+    int64_t encoded_body_length,
+    int64_t decoded_body_length,
+    bool should_report_corb_blocking,
+    absl::optional<bool> pervasive_payload_requested) {
   resource_->SetEncodedDataLength(encoded_data_length);
   resource_->SetEncodedBodyLength(encoded_body_length);
   resource_->SetDecodedBodyLength(decoded_body_length);
+
+  if (pervasive_payload_requested.has_value()) {
+    auto* ukm_recorder = ukm::UkmRecorder::Get();
+    ukm::SourceId ukm_source_id =
+        resource_->GetResourceRequest().GetUkmSourceId();
+    ukm::builders::Network_CacheTransparency builder(ukm_source_id);
+    builder.SetFoundPervasivePayload(pervasive_payload_requested.value());
+    builder.SetTotalBytesFetched(
+        ukm::GetExponentialBucketMinForBytes(encoded_data_length));
+    builder.Record(ukm_recorder->Get());
+  }
 
   response_end_time_for_error_cases_ = response_end_time;
 

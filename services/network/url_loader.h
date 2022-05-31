@@ -148,6 +148,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // Pointers from the |url_loader_context| will be used if
   // |dev_tools_observer|, |cookie_access_observer| or
   // |url_loader_network_observer| are not provided.
+  //
+  // |third_party_cookies_enabled| is also false if all cookies are disabled.
+  // The mojom::kURLLoadOptionBlockThirdPartyCookies can be set or unset
+  // independently of this option.
   URLLoader(
       URLLoaderContext& context,
       DeleteCallback delete_callback,
@@ -167,7 +171,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
           url_loader_network_observer,
       mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer,
       mojo::PendingRemote<mojom::AcceptCHFrameObserver>
-          accept_ch_frame_observer);
+          accept_ch_frame_observer,
+      bool third_party_cookies_enabled);
 
   URLLoader(const URLLoader&) = delete;
   URLLoader& operator=(const URLLoader&) = delete;
@@ -275,6 +280,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
       bool added_during_redirect);
 
   static bool HasFetchStreamingUploadBody(const ResourceRequest*);
+
+  static void ResetPervasivePayloadsListForTesting();
 
  private:
   // This class is used to set the URLLoader as user data on a URLRequest. This
@@ -440,6 +447,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // send or store credentials for no-cors cross-origin request.
   bool CoepAllowCredentials(const GURL& url);
 
+  bool ThirdPartyCookiesEnabled() const;
+
   raw_ptr<net::URLRequestContext> url_request_context_;
 
   raw_ptr<mojom::NetworkContextClient> network_context_client_;
@@ -482,6 +491,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
 
   // Stores any CORS error encountered while processing |url_request_|.
   absl::optional<CorsErrorStatus> cors_error_status_;
+
+  // True if a pervasive payload is found, for logging purposes.
+  bool pervasive_payload_requested_ = false;
 
   // Used when deferring sending the data to the client until mime sniffing is
   // finished.
@@ -614,6 +626,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
 
   bool emitted_devtools_raw_request_ = false;
   bool emitted_devtools_raw_response_ = false;
+
+  const bool third_party_cookies_enabled_;
 
   mojo::Remote<mojom::AcceptCHFrameObserver> accept_ch_frame_observer_;
 

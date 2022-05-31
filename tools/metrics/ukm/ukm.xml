@@ -12452,6 +12452,34 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Network.CacheTransparency">
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>ricea@chromium.org</owner>
+  <summary>
+    Metrics for Cache Transparency which aims to allow a list of pervasive
+    payloads to be specified and cached in a single-keyed cache to improve
+    loading performance. Recorded for each navigation and subresource load.
+  </summary>
+  <metric name="FoundPervasivePayload" enum="Boolean">
+    <summary>
+      Records whether a requested resource's URL matched with any of the URLs in
+      the Cache Transparency Pervasive Payloads List.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="TotalBytesFetched">
+    <summary>
+      Records the total bytes fetched by the network.
+    </summary>
+  </metric>
+</event>
+
 <event name="NoStatePrefetch" singular="True">
   <owner>tbansal@chromium.org</owner>
   <summary>

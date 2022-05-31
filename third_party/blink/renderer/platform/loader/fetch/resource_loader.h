@@ -149,7 +149,9 @@ class PLATFORM_EXPORT ResourceLoader final
                         int64_t encoded_data_length,
                         int64_t encoded_body_length,
                         int64_t decoded_body_length,
-                        bool should_report_corb_blocking) override;
+                        bool should_report_corb_blocking,
+                        absl::optional<bool> pervasive_payload_requested =
+                            absl::nullopt) override;
   void DidFail(const WebURLError&,
                base::TimeTicks response_end_time,
                int64_t encoded_data_length,
