@@ -385,6 +385,11 @@ class WebController {
       const ElementFinderResult& element,
       base::OnceCallback<void(const ClientStatus&)> callback);
 
+  virtual void SetNativeValue(
+      const std::string& value,
+      const ElementFinderResult& element,
+      base::OnceCallback<void(const ClientStatus&)> callback);
+
   virtual base::WeakPtr<WebController> GetWeakPtr() const;
 
  private:
@@ -525,6 +530,8 @@ class WebController {
   void OnDispatchJsEvent(base::OnceCallback<void(const ClientStatus&)> callback,
                          const DevtoolsClient::ReplyStatus& reply_status,
                          std::unique_ptr<runtime::EvaluateResult> result) const;
+  void OnSetElementValue(base::OnceCallback<void(const ClientStatus&)> callback,
+                         bool success) const;
 
   // Weak pointer is fine here since it must outlive this web controller, which
   // is guaranteed by the owner of this object.

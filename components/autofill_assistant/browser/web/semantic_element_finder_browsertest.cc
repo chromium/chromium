@@ -35,7 +35,7 @@
 #include "components/autofill_assistant/browser/web/element_finder_result.h"
 #include "components/autofill_assistant/browser/web/element_finder_result_type.h"
 #include "components/autofill_assistant/browser/web/element_store.h"
-#include "components/autofill_assistant/content/common/autofill_assistant_agent.mojom.h"
+#include "components/autofill_assistant/browser/web/mock_autofill_assistant_agent.h"
 #include "components/autofill_assistant/content/common/autofill_assistant_types.mojom.h"
 #include "components/autofill_assistant/content/common/node_data.h"
 #include "content/public/browser/render_frame_host.h"
@@ -48,7 +48,6 @@
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "url/gurl.h"
 
 namespace autofill_assistant {
@@ -59,31 +58,6 @@ using ::testing::_;
 using ::testing::IsEmpty;
 using ::testing::Return;
 using ::testing::WithArgs;
-
-class MockAutofillAssistantAgent : public mojom::AutofillAssistantAgent {
- public:
-  MockAutofillAssistantAgent() = default;
-  ~MockAutofillAssistantAgent() override = default;
-
-  void BindPendingReceiver(mojo::ScopedInterfaceEndpointHandle handle) {
-    receivers_.Add(
-        this, mojo::PendingAssociatedReceiver<mojom::AutofillAssistantAgent>(
-                  std::move(handle)));
-  }
-
-  MOCK_METHOD(void,
-              GetSemanticNodes,
-              (int32_t role,
-               int32_t objective,
-               bool ignore_objective,
-               base::TimeDelta model_timeout,
-               base::OnceCallback<void(mojom::NodeDataStatus,
-                                       const std::vector<NodeData>&)> callback),
-              (override));
-
- private:
-  mojo::AssociatedReceiverSet<mojom::AutofillAssistantAgent> receivers_;
-};
 
 }  // namespace
 
@@ -103,16 +77,8 @@ class SemanticElementFinderBrowserTest
   void SetUpOnMainThread() override {
     BaseBrowserTest::SetUpOnMainThread();
 
-    // Register the same agent on all frames, such that the callback can be
-    // mocked.
-    shell()->web_contents()->GetMainFrame()->ForEachRenderFrameHost(
-        base::BindLambdaForTesting([this](content::RenderFrameHost* host) {
-          host->GetRemoteAssociatedInterfaces()->OverrideBinderForTesting(
-              mojom::AutofillAssistantAgent::Name_,
-              base::BindRepeating(
-                  &MockAutofillAssistantAgent::BindPendingReceiver,
-                  base::Unretained(&autofill_assistant_agent_)));
-        }));
+    MockAutofillAssistantAgent::RegisterForAllFrames(
+        shell()->web_contents(), &autofill_assistant_agent_);
 
     annotate_dom_model_service_ = std::make_unique<AnnotateDomModelService>(
         /* opt_guide= */ nullptr, /* background_task_runner= */ nullptr);

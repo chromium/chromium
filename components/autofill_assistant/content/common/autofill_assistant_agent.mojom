@@ -5,6 +5,7 @@
 module autofill_assistant.mojom;
 
 import "components/autofill_assistant/content/common/autofill_assistant_types.mojom";
+import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/time.mojom";
 
 // There is one instance of this interface per render frame in the renderer
@@ -16,4 +17,12 @@ interface AutofillAssistantAgent {
                    mojo_base.mojom.TimeDelta timeout)
       => (NodeDataStatus status,
           array<autofill_assistant.mojom.NodeData> nodes);
+
+  // Set the value of a web element. The target needs to be a form control
+  // element, otherwise the call fails. This works for input, textarea and
+  // select. For a select element it finds the option with a value matching
+  // the given parameter (exactly) and makes that option the current selection.
+  SetElementValue(int32 backend_node_id, mojo_base.mojom.String16 value,
+                  bool send_events)
+      => (bool success);
 };

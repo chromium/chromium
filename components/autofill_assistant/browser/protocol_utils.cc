@@ -460,6 +460,14 @@ std::unique_ptr<Action> ProtocolUtils::CreateAction(ActionDelegate* delegate,
     case ActionProto::ActionInfoCase::kRegisterPasswordResetRequest:
       return std::make_unique<RegisterPasswordResetRequestAction>(delegate,
                                                                   action);
+    case ActionProto::ActionInfoCase::kSetNativeValue:
+      return PerformOnSingleElementAction::WithClientId(
+          delegate, action, action.set_native_value().client_id(),
+          base::BindOnce(
+              &action_delegate_util::PerformWithTextValue, delegate,
+              action.set_native_value().value(),
+              base::BindOnce(&WebController::SetNativeValue,
+                             delegate->GetWebController()->GetWeakPtr())));
     case ActionProto::ActionInfoCase::ACTION_INFO_NOT_SET: {
       VLOG(1) << "Encountered action with ACTION_INFO_NOT_SET";
       return std::make_unique<UnsupportedAction>(delegate, action);
@@ -727,6 +735,10 @@ absl::optional<ActionProto> ProtocolUtils::ParseFromString(
     case ActionProto::ActionInfoCase::kExternalAction:
       success = ParseActionFromString(action_id, bytes, error_message,
                                       proto.mutable_external_action());
+      break;
+    case ActionProto::ActionInfoCase::kSetNativeValue:
+      success = ParseActionFromString(action_id, bytes, error_message,
+                                      proto.mutable_set_native_value());
       break;
     case ActionProto::ActionInfoCase::kRegisterPasswordResetRequest:
       success = ParseActionFromString(

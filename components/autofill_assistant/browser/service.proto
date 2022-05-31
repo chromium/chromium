@@ -1053,6 +1053,7 @@ message ActionProto {
     ExecuteJsProto execute_js = 93;
     RegisterPasswordResetRequestProto register_password_reset_request = 94;
     ExternalActionProto external_action = 95;
+    SetNativeValueProto set_native_value = 96;
   }
 
   // Set to true to make the client remove any contextual information if the

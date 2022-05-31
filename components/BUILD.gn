@@ -876,6 +876,8 @@ if (!is_ios) {
         "autofill_assistant/browser/service/mock_service.cc",
         "autofill_assistant/browser/service/mock_service.h",
         "autofill_assistant/browser/web/batch_element_checker_browsertest.cc",
+        "autofill_assistant/browser/web/mock_autofill_assistant_agent.cc",
+        "autofill_assistant/browser/web/mock_autofill_assistant_agent.h",
         "autofill_assistant/browser/web/mock_web_controller.cc",
         "autofill_assistant/browser/web/mock_web_controller.h",
         "autofill_assistant/browser/web/semantic_element_finder_browsertest.cc",
