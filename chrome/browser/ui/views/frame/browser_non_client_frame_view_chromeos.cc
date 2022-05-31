@@ -341,14 +341,15 @@ gfx::Rect BrowserNonClientFrameViewChromeOS::GetBoundsForClientView() const {
   // window header by redirecting paints from its background to
   // BrowserNonClientFrameViewChromeOS.
   gfx::Rect client_bounds(bounds());
-  if (browser_view()->IsFullscreen())
+  if (chromeos::TabletState::Get()->InTabletMode() ||
+      browser_view()->IsFullscreen() || browser_view()->IsMaximized()) {
     return client_bounds;
+  }
 
   // If there is a border, inset the client bounds to show the border when the
-  // browser window is not in fullscreen.
-  if (auto* border = GetBorder()) {
+  // browser window is not fullscreened, maximized or in tablet mode.
+  if (auto* border = GetBorder())
     client_bounds.Inset(border->GetInsets());
-  }
   return client_bounds;
 }
 

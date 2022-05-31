@@ -246,7 +246,11 @@ export function testCardtooltipRTL(callback) {
             assertEquals('card-tooltip', tooltip.className);
             assertEquals('card-label', label.className);
 
-            assertEquals('962px', tooltip.style.left);
+            // A border with 2px insets (top=bottom=left=right=2px) will be
+            // applied to the window when drak/light feature is enabled. See
+            // more details at crrev.com/c/3656414.
+            assertTrue(
+                `962px` == tooltip.style.left || `958px` == tooltip.style.left);
             assertEquals('162px', tooltip.style.top);
 
             cheeseButton.dispatchEvent(new MouseEvent('mouseout'));

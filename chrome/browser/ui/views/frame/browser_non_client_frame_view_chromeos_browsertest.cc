@@ -396,7 +396,9 @@ IN_PROC_BROWSER_TEST_F(
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   BrowserNonClientFrameViewChromeOS* frame_view =
       GetFrameViewChromeOS(browser_view);
-  EXPECT_EQ(0, frame_view->GetBoundsForClientView().y());
+  const int expect_y =
+      frame_view->GetBorder() ? frame_view->GetBorder()->GetInsets().top() : 0;
+  EXPECT_EQ(expect_y, frame_view->GetBoundsForClientView().y());
 
   Widget* widget = browser_view->GetWidget();
   ASSERT_NO_FATAL_FAILURE(
@@ -415,7 +417,9 @@ IN_PROC_BROWSER_TEST_F(
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   BrowserNonClientFrameViewChromeOS* frame_view =
       GetFrameViewChromeOS(browser_view);
-  EXPECT_EQ(0, frame_view->GetBoundsForClientView().y());
+  const int expect_y =
+      frame_view->GetBorder() ? frame_view->GetBorder()->GetInsets().top() : 0;
+  EXPECT_EQ(expect_y, frame_view->GetBoundsForClientView().y());
 
   Widget* widget = browser_view->GetWidget();
   ASSERT_NO_FATAL_FAILURE(
