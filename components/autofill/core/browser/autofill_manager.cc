@@ -340,7 +340,6 @@ bool AutofillManager::GetCachedFormAndField(const FormData& form,
   // Maybe find an existing FormStructure that corresponds to |form|.
   FormStructure* cached_form = FindCachedFormByRendererId(form.global_id());
   if (cached_form) {
-    DCHECK(cached_form);
     if (!CachedFormNeedsUpdate(form, *cached_form)) {
       // There is no data to return if there are no auto-fillable fields.
       if (!cached_form->autofill_count())
