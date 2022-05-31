@@ -152,6 +152,7 @@
 #include "content/public/browser/render_widget_host_iterator.h"
 #include "content/public/browser/resource_coordinator_service.h"
 #include "content/public/browser/site_isolation_policy.h"
+#include "content/public/browser/weak_document_ptr.h"
 #include "content/public/browser/webrtc_log.h"
 #include "content/public/common/child_process_host.h"
 #include "content/public/common/content_client.h"
@@ -2054,12 +2055,20 @@ void RenderProcessHostImpl::CreateNotificationService(
     mojo::PendingReceiver<blink::mojom::NotificationService> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  GURL document_url;
-  if (RenderFrameHost* rfh = RenderFrameHost::FromID(GetID(), render_frame_id))
-    document_url = rfh->GetLastCommittedURL();
+  // For workers:
+  if (render_frame_id == MSG_ROUTING_NONE) {
+    storage_partition_impl_->GetPlatformNotificationContext()->CreateService(
+        this, origin, /*document_url=*/GURL(),
+        /*weak_document_ptr=*/WeakDocumentPtr(), std::move(receiver));
+    return;
+  }
 
+  // For document:
+  RenderFrameHost* rfh = RenderFrameHost::FromID(GetID(), render_frame_id);
+  CHECK(rfh);
   storage_partition_impl_->GetPlatformNotificationContext()->CreateService(
-      this, origin, document_url, std::move(receiver));
+      this, origin, rfh->GetLastCommittedURL(), rfh->GetWeakDocumentPtr(),
+      std::move(receiver));
 }
 
 void RenderProcessHostImpl::CreateWebSocketConnector(

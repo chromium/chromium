@@ -131,6 +131,7 @@ class BlinkNotificationServiceImplTest : public ::testing::Test {
         embedded_worker_helper_->context_wrapper(), &render_process_host_,
         url::Origin::Create(GURL(kTestOrigin)),
         /*document_url=*/GURL(),
+        /*weak_document_ptr=*/WeakDocumentPtr(),
         notification_service_remote_.BindNewPipeAndPassReceiver());
 
     // Provide a mock permission manager to the |browser_context_|.
@@ -405,7 +406,8 @@ class BlinkNotificationServiceImplTest : public ::testing::Test {
             browser_context_.GetPermissionControllerDelegate());
 
     ON_CALL(*mock_permission_manager,
-            GetPermissionStatus(blink::PermissionType::NOTIFICATIONS, _, _))
+            GetPermissionStatusForCurrentDocument(
+                blink::PermissionType::NOTIFICATIONS, _))
         .WillByDefault(Return(permission_status));
     ON_CALL(*mock_permission_manager,
             GetPermissionStatusForWorker(blink::PermissionType::NOTIFICATIONS,

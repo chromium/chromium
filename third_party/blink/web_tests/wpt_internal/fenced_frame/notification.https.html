@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<title>Test Notification</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/common/utils.js"></script>
+<script src="/common/dispatcher/dispatcher.js"></script>
+<script src="resources/utils.js"></script>
+
+<body>
+<script>
+promise_test(async () => {
+  // Notification permission must be allowed or we cannot confirm that
+  // "new Notification" failed in a fenced frame.
+  await test_driver.set_permission({name: 'notifications'}, 'granted', true);
+  assert_equals(Notification.permission, 'granted');
+
+  const frame = attachFencedFrameContext();
+  try {
+    await frame.execute(() => {
+      const notification = new Notification('Test notification');
+      return new Promise((resolve, reject) => {
+        // "new Notification" inside the fenced frame should fail even if it is
+        // allowed in the primary main frame.
+        notification.addEventListener('error', resolve);
+        notification.addEventListener('show', reject);
+      });
+    });
+  } catch(e) {
+    assert_unreached('Notification was shown; want not to be shown.' + e);
+  }
+}, 'new Notification should fail inside a fenced frame');
+</script>
+</body>

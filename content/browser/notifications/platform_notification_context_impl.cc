@@ -284,11 +284,12 @@ void PlatformNotificationContextImpl::CreateService(
     RenderProcessHost* render_process_host,
     const url::Origin& origin,
     const GURL& document_url,
+    const WeakDocumentPtr& weak_document_ptr,
     mojo::PendingReceiver<blink::mojom::NotificationService> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   services_.push_back(std::make_unique<BlinkNotificationServiceImpl>(
       this, browser_context_, service_worker_context_, render_process_host,
-      origin, document_url, std::move(receiver)));
+      origin, document_url, weak_document_ptr, std::move(receiver)));
 }
 
 void PlatformNotificationContextImpl::RemoveService(
