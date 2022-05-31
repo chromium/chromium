@@ -1744,6 +1744,8 @@ source_set("chromeos") {
     "../ash/policy/core/device_local_account.h",
     "../ash/policy/core/device_local_account_extension_tracker.cc",
     "../ash/policy/core/device_local_account_extension_tracker.h",
+    "../ash/policy/core/device_local_account_policy_broker.cc",
+    "../ash/policy/core/device_local_account_policy_broker.h",
     "../ash/policy/core/device_local_account_policy_provider.cc",
     "../ash/policy/core/device_local_account_policy_provider.h",
     "../ash/policy/core/device_local_account_policy_service.cc",
