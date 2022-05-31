@@ -207,6 +207,7 @@ source_set("common") {
     "//third_party/libyuv",
     "//ui/base:features",
     "//ui/gfx:memory_buffer",
+    "//ui/gfx/linux:drm",
     "//ui/gl",
   ]
   if (use_ozone) {
