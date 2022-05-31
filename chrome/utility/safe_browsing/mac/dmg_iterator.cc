@@ -43,7 +43,7 @@ bool DMGIterator::Open() {
   }
   base::UmaHistogramBoolean("SBClientDownload.DmgHasAPFS", has_apfs);
 
-  return partitions_.size() > 0;
+  return true;
 }
 
 const std::vector<uint8_t>& DMGIterator::GetCodeSignature() {
@@ -93,6 +93,10 @@ std::u16string DMGIterator::GetPath() {
 
 std::unique_ptr<ReadStream> DMGIterator::GetReadStream() {
   return hfs_->GetReadStream();
+}
+
+bool DMGIterator::IsEmpty() {
+  return partitions_.empty();
 }
 
 }  // namespace dmg

@@ -34,7 +34,9 @@ enum class ArchiveAnalysisResult {
   kTimeout = 4,
   kFailedToOpen = 5,
   kFailedToOpenTempFile = 6,
-  kMaxValue = kFailedToOpenTempFile
+  kDmgNoPartitions = 7,
+  kFailedDuringIteration = 8,
+  kMaxValue = kFailedDuringIteration,
 };
 
 struct ArchiveAnalyzerResults {

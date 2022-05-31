@@ -4135,6 +4135,8 @@ Unknown properties are collapsed to zero. -->
   <int value="4" label="Timeout"/>
   <int value="5" label="Failed to open archive"/>
   <int value="6" label="Failed to open temporary file"/>
+  <int value="7" label="DMG parser found no partitions of interest"/>
+  <int value="8" label="Failed while iterating through the archive"/>
 </enum>
 
 <enum name="ArchivemountError">

@@ -54,6 +54,9 @@ class DMGIterator {
   // Returns a ReadStream for the current file item.
   virtual std::unique_ptr<ReadStream> GetReadStream();
 
+  // Returns true when the DMG file has no HFS+ or HFSX partitions.
+  virtual bool IsEmpty();
+
  private:
   UDIFParser udif_;  // The UDIF parser that accesses the partitions.
   // Streams for all the HFS partitions.
