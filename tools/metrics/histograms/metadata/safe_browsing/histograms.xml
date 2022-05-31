@@ -2621,7 +2621,7 @@ failing to fetch the updates which puts users' security at risk. -->
 </histogram>
 
 <histogram name="SafeBrowsingBinaryUploadService.ActiveRequestsAtShutdown"
-    units="requests" expires_after="2022-07-11">
+    units="requests" expires_after="2023-02-01">
   <owner>domfc@chromium.org</owner>
   <owner>jgingras@chromium.org</owner>
   <owner>webprotect-eng@google.com</owner>
