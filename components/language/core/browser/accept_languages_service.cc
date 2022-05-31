@@ -35,9 +35,8 @@ AcceptLanguagesService::AcceptLanguagesService(
 AcceptLanguagesService::~AcceptLanguagesService() = default;
 
 // static
-bool AcceptLanguagesService::CanBeAcceptLanguage(base::StringPiece language) {
-  SCOPED_UMA_HISTOGRAM_TIMER("Translate.AcceptLanguages.CanBeAcceptDuration");
-
+bool AcceptLanguagesService::CanBeAcceptLanguage(
+    const base::StringPiece& language) {
   std::string accept_language(language);
   language::ToChromeLanguageSynonym(&accept_language);
 
@@ -47,7 +46,7 @@ bool AcceptLanguagesService::CanBeAcceptLanguage(base::StringPiece language) {
 }
 
 bool AcceptLanguagesService::IsAcceptLanguage(
-    base::StringPiece language) const {
+    const base::StringPiece& language) const {
   std::string accept_language(language);
   language::ToChromeLanguageSynonym(&accept_language);
   return accept_languages_.find(accept_language) != accept_languages_.end();

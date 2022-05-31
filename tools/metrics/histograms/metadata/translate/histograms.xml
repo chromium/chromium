@@ -22,16 +22,6 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<histogram name="Translate.AcceptLanguages.CanBeAcceptDuration" units="ms"
-    expires_after="M77">
-  <owner>megjablon@chromium.org</owner>
-  <owner>chrome-language@google.com</owner>
-  <summary>
-    Time taken for the TranslateAcceptLanguages to decide if a given language is
-    available as Accept-Languages.
-  </summary>
-</histogram>
-
 <histogram name="Translate.AlwaysTranslateLang" units="units"
     expires_after="2022-11-13">
   <owner>megjablon@google.com</owner>
