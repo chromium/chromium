@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
-// clang-format on
-
 /** @interface */
 export class OsA11yPageBrowserProxy {
   /**
@@ -20,10 +16,23 @@ export class OsA11yPageBrowserProxy {
   confirmA11yImageLabels() {}
 }
 
+/** @type {?OsA11yPageBrowserProxy} */
+let instance = null;
+
 /**
  * @implements {OsA11yPageBrowserProxy}
  */
 export class OsA11yPageBrowserProxyImpl {
+  /** @return {!OsA11yPageBrowserProxy} */
+  static getInstance() {
+    return instance || (instance = new OsA11yPageBrowserProxyImpl());
+  }
+
+  /** @param {!OsA11yPageBrowserProxy} obj */
+  static setInstance(obj) {
+    instance = obj;
+  }
+
   /** @override */
   a11yPageReady() {
     chrome.send('a11yPageReady');
@@ -34,7 +43,3 @@ export class OsA11yPageBrowserProxyImpl {
     chrome.send('confirmA11yImageLabels');
   }
 }
-
-// The singleton instance_ is replaced with a test version of this wrapper
-// during testing.
-addSingletonGetter(OsA11yPageBrowserProxyImpl);

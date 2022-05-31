@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// clang-format off
-import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
-// clang-format on
-
 /** @interface */
 export class TtsSubpageBrowserProxy {
   /**
@@ -40,10 +36,23 @@ export class TtsSubpageBrowserProxy {
   refreshTtsVoices() {}
 }
 
+/** @type {?TtsSubpageBrowserProxy} */
+let instance = null;
+
 /**
  * @implements {TtsSubpageBrowserProxy}
  */
 export class TtsSubpageBrowserProxyImpl {
+  /** @return {!TtsSubpageBrowserProxy} */
+  static getInstance() {
+    return instance || (instance = new TtsSubpageBrowserProxyImpl());
+  }
+
+  /** @param {!TtsSubpageBrowserProxy} obj */
+  static setInstance(obj) {
+    instance = obj;
+  }
+
   /** @override */
   getAllTtsVoiceData() {
     chrome.send('getAllTtsVoiceData');
@@ -69,7 +78,3 @@ export class TtsSubpageBrowserProxyImpl {
     chrome.send('refreshTtsVoices');
   }
 }
-
-// The singleton instance_ is replaced with a test version of this wrapper
-// during testing.
-addSingletonGetter(TtsSubpageBrowserProxyImpl);

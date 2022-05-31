@@ -99,7 +99,7 @@ suite('ManageAccessibilityPageTests', function() {
 
   test('Pointers row only visible if mouse/touchpad present', function() {
     initPage();
-    const row = page.$$('#pointerSubpageButton');
+    const row = page.shadowRoot.querySelector('#pointerSubpageButton');
     assertFalse(row.hidden);
 
     // Has touchpad, doesn't have mouse ==> not hidden.
@@ -127,7 +127,8 @@ suite('ManageAccessibilityPageTests', function() {
     initPage();
     flush();
 
-    assertTrue(isVisible(page.$$('#shelfNavigationButtonsEnabledControl')));
+    assertTrue(isVisible(page.shadowRoot.querySelector(
+        '#shelfNavigationButtonsEnabledControl')));
   });
 
   test('toggle tablet mode buttons', function() {
@@ -138,7 +139,8 @@ suite('ManageAccessibilityPageTests', function() {
     initPage();
     flush();
 
-    const navButtonsToggle = page.$$('#shelfNavigationButtonsEnabledControl');
+    const navButtonsToggle =
+        page.shadowRoot.querySelector('#shelfNavigationButtonsEnabledControl');
     assertTrue(isVisible(navButtonsToggle));
     // The default pref value is false.
     assertFalse(navButtonsToggle.checked);
@@ -175,7 +177,8 @@ suite('ManageAccessibilityPageTests', function() {
     initPage(prefs);
     flush();
 
-    const navButtonsToggle = page.$$('#shelfNavigationButtonsEnabledControl');
+    const navButtonsToggle =
+        page.shadowRoot.querySelector('#shelfNavigationButtonsEnabledControl');
     assertTrue(isVisible(navButtonsToggle));
 
     // If spoken feedback is enabled, the shelf nav buttons toggle should be
@@ -223,11 +226,13 @@ suite('ManageAccessibilityPageTests', function() {
     flush();
 
     // Accessibility learn more link should be hidden.
-    assertFalse(isVisible(page.$$('setings-localized-link')));
+    assertFalse(
+        isVisible(page.shadowRoot.querySelector('setings-localized-link')));
 
     // Shelf navigation buttons are not shown in kiosk mode, even if
     // showTabletModeShelfNavigationButtonsSettings is true.
-    assertFalse(isVisible(page.$$('#shelfNavigationButtonsEnabledControl')));
+    assertFalse(isVisible(page.shadowRoot.querySelector(
+        '#shelfNavigationButtonsEnabledControl')));
 
     const allowed_subpages = [
       'chromeVoxSubpageButton', 'selectToSpeakSubpageButton', 'ttsSubpageButton'
@@ -257,8 +262,8 @@ suite('ManageAccessibilityPageTests', function() {
 
     flush();
 
-    const deepLinkElement =
-        page.$$('#enableSwitchAccess').shadowRoot.querySelector('cr-toggle');
+    const deepLinkElement = page.shadowRoot.querySelector('#enableSwitchAccess')
+                                .shadowRoot.querySelector('cr-toggle');
     await waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
@@ -281,7 +286,7 @@ suite('ManageAccessibilityPageTests', function() {
     flush();
 
     // Dictation toggle.
-    const dictationSetting = page.$$('#enableDictation');
+    const dictationSetting = page.shadowRoot.querySelector('#enableDictation');
     assertTrue(!!dictationSetting);
     assertTrue(dictationSetting.checked);
     assertEquals('Enable dictation (speak to type)', dictationSetting.label);
@@ -290,8 +295,10 @@ suite('ManageAccessibilityPageTests', function() {
         dictationSetting.subLabel);
 
     // Dictation locale menu.
-    const dictationLocaleMenuLabel = page.$$('#dictationLocaleMenuLabel');
-    const dictationLocaleMenuSubtitle = page.$$('#dictationLocaleMenuSubtitle');
+    const dictationLocaleMenuLabel =
+        page.shadowRoot.querySelector('#dictationLocaleMenuLabel');
+    const dictationLocaleMenuSubtitle =
+        page.shadowRoot.querySelector('#dictationLocaleMenuSubtitle');
     assertTrue(!!dictationLocaleMenuLabel);
     assertTrue(!!dictationLocaleMenuSubtitle);
     assertEquals('Language', dictationLocaleMenuLabel.innerText);
@@ -400,7 +407,7 @@ suite('ManageAccessibilityPageTests', function() {
           flush();
           const router = Router.getInstance();
 
-          const subpageButton = page.$$(selector);
+          const subpageButton = page.shadowRoot.querySelector(selector);
           assertTrue(!!subpageButton);
 
           subpageButton.click();

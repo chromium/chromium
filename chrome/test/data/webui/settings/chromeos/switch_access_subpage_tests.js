@@ -99,7 +99,7 @@ suite('ManageAccessibilityPageTests', function() {
 
   setup(function() {
     browserProxy = new TestSwitchAccessSubpageBrowserProxy();
-    SwitchAccessSubpageBrowserProxyImpl.instance_ = browserProxy;
+    SwitchAccessSubpageBrowserProxyImpl.setInstance(browserProxy);
 
     PolymerTest.clearBody();
   });
@@ -122,7 +122,7 @@ suite('ManageAccessibilityPageTests', function() {
       previous: []
     });
 
-    return page.$$('#selectLinkRow')
+    return page.shadowRoot.querySelector('#selectLinkRow')
         .shadowRoot.querySelector('#subLabel')
         .textContent.trim();
   }
@@ -222,14 +222,16 @@ suite('ManageAccessibilityPageTests', function() {
         'switch-access-got-key-press-for-assignment',
         {key: 'b', keyCode: 66, device: 'usb'});
 
-    const element = page.$$('#switchAccessActionAssignmentDialog');
+    const element =
+        page.shadowRoot.querySelector('#switchAccessActionAssignmentDialog');
     await waitAfterNextRender(element);
 
     // This should update the error field at the bottom of the dialog.
-    const errorText = page.$$('#switchAccessActionAssignmentDialog')
-                          .$$('#switchAccessActionAssignmentPane')
-                          .$$('#error')
-                          .textContent.trim();
+    const errorText =
+        page.shadowRoot.querySelector('#switchAccessActionAssignmentDialog')
+            .shadowRoot.querySelector('#switchAccessActionAssignmentPane')
+            .shadowRoot.querySelector('#error')
+            .textContent.trim();
     assertEquals('Keys don’t match. Press any key to exit.', errorText);
   });
 
@@ -248,8 +250,9 @@ suite('ManageAccessibilityPageTests', function() {
     Router.getInstance().navigateTo(
         routes.MANAGE_SWITCH_ACCESS_SETTINGS, params);
 
-    const deepLinkElement = page.$$('#keyboardScanSpeedSlider')
-                                .shadowRoot.querySelector('cr-slider');
+    const deepLinkElement =
+        page.shadowRoot.querySelector('#keyboardScanSpeedSlider')
+            .shadowRoot.querySelector('cr-slider');
     await waitAfterNextRender(deepLinkElement);
 
     assertEquals(
@@ -278,8 +281,8 @@ suite('ManageAccessibilityPageTests', function() {
     flush();
 
     // Check that the dialog is open.
-    let warningDialog =
-        page.$$('settings-switch-access-setup-guide-warning-dialog');
+    let warningDialog = page.shadowRoot.querySelector(
+        'settings-switch-access-setup-guide-warning-dialog');
     assertTrue(!!warningDialog);
 
     // Press "cancel" to exit the dialog.
@@ -289,18 +292,19 @@ suite('ManageAccessibilityPageTests', function() {
     flush();
 
     // Check that the dialog is closed, and the setup guide is not open.
-    warningDialog =
-        page.$$('settings-switch-access-setup-guide-warning-dialog');
+    warningDialog = page.shadowRoot.querySelector(
+        'settings-switch-access-setup-guide-warning-dialog');
     assertFalse(!!warningDialog);
-    let setupDialog = page.$$('settings-switch-access-setup-guide-dialog');
+    let setupDialog = page.shadowRoot.querySelector(
+        'settings-switch-access-setup-guide-dialog');
 
     assertFalse(!!setupDialog);
 
     // Re-open the warning dialog.
     page.$.setupGuideLink.click();
     flush();
-    warningDialog =
-        page.$$('settings-switch-access-setup-guide-warning-dialog');
+    warningDialog = page.shadowRoot.querySelector(
+        'settings-switch-access-setup-guide-warning-dialog');
     assertTrue(!!warningDialog);
 
     // Press "continue" to open the setup guide.
@@ -311,7 +315,8 @@ suite('ManageAccessibilityPageTests', function() {
     await browserProxy.whenCalled('notifySwitchAccessSetupGuideAttached');
 
     // Check that the setup guide has opened.
-    setupDialog = page.$$('settings-switch-access-setup-guide-dialog');
+    setupDialog = page.shadowRoot.querySelector(
+        'settings-switch-access-setup-guide-dialog');
     assertTrue(!!setupDialog);
 
     // Check that the switch assignments have been cleared.
@@ -346,8 +351,8 @@ suite('ManageAccessibilityPageTests', function() {
         flush();
         await browserProxy.whenCalled('notifySwitchAccessSetupGuideAttached');
 
-        const setupDialog =
-            page.$$('settings-switch-access-setup-guide-dialog');
+        const setupDialog = page.shadowRoot.querySelector(
+            'settings-switch-access-setup-guide-dialog');
         assertTrue(!!setupDialog);
       });
 });

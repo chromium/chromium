@@ -2,397 +2,427 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/** @const {number} */
-const DEFAULT_BLACK_CURSOR_COLOR = 0;
-
 /**
  * @fileoverview
  * 'settings-manage-a11y-page' is the subpage with the accessibility
  * settings.
  */
-import {Polymer, html, flush, Templatizer, TemplateInstanceBase} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
-import '//resources/cr_elements/cr_link_row/cr_link_row.js';
-import '//resources/cr_elements/icons.m.js';
-import '//resources/cr_elements/shared_vars_css.m.js';
-import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
-import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
-import {loadTimeData} from '//resources/js/load_time_data.m.js';
+import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
+import 'chrome://resources/cr_elements/icons.m.js';
+import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import '../../controls/settings_slider.js';
 import '../../controls/settings_toggle_button.js';
-import {DeepLinkingBehavior} from '../deep_linking_behavior.js';
-import {routes} from '../os_route.js';
-import {Router, Route} from '../../router.js';
 import '../../settings_shared_css.js';
-import {BatteryStatus, DevicePageBrowserProxy, DevicePageBrowserProxyImpl, ExternalStorage, IdleBehavior, LidClosedBehavior, NoteAppInfo, NoteAppLockScreenSupport, PowerManagementSettings, PowerSource, getDisplayApi, StorageSpaceState} from '../device_page/device_page_browser_proxy.js';
-import '//resources/cr_components/localized_link/localized_link.js';
-import {RouteObserverBehavior} from '../route_observer_behavior.js';
-import {RouteOriginBehaviorImpl, RouteOriginBehavior} from '../route_origin_behavior.js';
-import {ManageA11yPageBrowserProxyImpl, ManageA11yPageBrowserProxy} from './manage_a11y_page_browser_proxy.js';
+import 'chrome://resources/cr_components/localized_link/localized_link.js';
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'settings-manage-a11y-page',
+import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-  behaviors: [
-    DeepLinkingBehavior,
-    I18nBehavior,
-    RouteObserverBehavior,
-    RouteOriginBehavior,
-    WebUIListenerBehavior,
-  ],
+import {Route, Router} from '../../router.js';
+import {DeepLinkingBehavior, DeepLinkingBehaviorInterface} from '../deep_linking_behavior.js';
+import {BatteryStatus, DevicePageBrowserProxy, DevicePageBrowserProxyImpl, ExternalStorage, getDisplayApi, IdleBehavior, LidClosedBehavior, NoteAppInfo, NoteAppLockScreenSupport, PowerManagementSettings, PowerSource, StorageSpaceState} from '../device_page/device_page_browser_proxy.js';
+import {routes} from '../os_route.js';
+import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
+import {RouteOriginBehavior, RouteOriginBehaviorImpl, RouteOriginBehaviorInterface} from '../route_origin_behavior.js';
 
-  properties: {
-    /**
-     * Preferences state.
-     */
-    prefs: {
-      type: Object,
-      notify: true,
-    },
+import {ManageA11yPageBrowserProxy, ManageA11yPageBrowserProxyImpl} from './manage_a11y_page_browser_proxy.js';
 
-    /**
-     * Enum values for the 'settings.a11y.screen_magnifier_mouse_following_mode'
-     * preference. These values map to
-     * AccessibilityController::MagnifierMouseFollowingMode, and are written to
-     * prefs and metrics, so order should not be changed.
-     * @private {!Object<string, number>}
-     */
-    screenMagnifierMouseFollowingModePrefValues_: {
-      readOnly: true,
-      type: Object,
-      value: {
-        CONTINUOUS: 0,
-        CENTERED: 1,
-        EDGE: 2,
+/** @const {number} */
+const DEFAULT_BLACK_CURSOR_COLOR = 0;
+
+
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {DeepLinkingBehaviorInterface}
+ * @implements {I18nBehaviorInterface}
+ * @implements {RouteObserverBehaviorInterface}
+ * @implements {RouteOriginBehaviorInterface}
+ * @implements {WebUIListenerBehaviorInterface}
+ */
+const SettingsManageA11YPageElementBase = mixinBehaviors(
+    [
+      DeepLinkingBehavior, I18nBehavior, RouteObserverBehavior,
+      RouteOriginBehavior, WebUIListenerBehavior
+    ],
+    PolymerElement);
+
+/** @polymer */
+class SettingsManageA11YPageElement extends SettingsManageA11YPageElementBase {
+  static get is() {
+    return 'settings-manage-a11y-page';
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
+  }
+
+  static get properties() {
+    return {
+      /**
+       * Preferences state.
+       */
+      prefs: {
+        type: Object,
+        notify: true,
       },
-    },
 
-    screenMagnifierZoomOptions_: {
-      readOnly: true,
-      type: Array,
-      value() {
-        // These values correspond to the i18n values in settings_strings.grdp.
-        // If these values get changed then those strings need to be changed as
-        // well.
-        return [
-          {value: 2, name: loadTimeData.getString('screenMagnifierZoom2x')},
-          {value: 4, name: loadTimeData.getString('screenMagnifierZoom4x')},
-          {value: 6, name: loadTimeData.getString('screenMagnifierZoom6x')},
-          {value: 8, name: loadTimeData.getString('screenMagnifierZoom8x')},
-          {value: 10, name: loadTimeData.getString('screenMagnifierZoom10x')},
-          {value: 12, name: loadTimeData.getString('screenMagnifierZoom12x')},
-          {value: 14, name: loadTimeData.getString('screenMagnifierZoom14x')},
-          {value: 16, name: loadTimeData.getString('screenMagnifierZoom16x')},
-          {value: 18, name: loadTimeData.getString('screenMagnifierZoom18x')},
-          {value: 20, name: loadTimeData.getString('screenMagnifierZoom20x')},
-        ];
+      /**
+       * Enum values for the
+       * 'settings.a11y.screen_magnifier_mouse_following_mode' preference. These
+       * values map to AccessibilityController::MagnifierMouseFollowingMode, and
+       * are written to prefs and metrics, so order should not be changed.
+       * @private {!Object<string, number>}
+       */
+      screenMagnifierMouseFollowingModePrefValues_: {
+        readOnly: true,
+        type: Object,
+        value: {
+          CONTINUOUS: 0,
+          CENTERED: 1,
+          EDGE: 2,
+        },
       },
-    },
 
-    autoClickDelayOptions_: {
-      readOnly: true,
-      type: Array,
-      value() {
-        // These values correspond to the i18n values in settings_strings.grdp.
-        // If these values get changed then those strings need to be changed as
-        // well.
-        return [
-          {
-            value: 600,
-            name: loadTimeData.getString('delayBeforeClickExtremelyShort')
-          },
-          {
-            value: 800,
-            name: loadTimeData.getString('delayBeforeClickVeryShort')
-          },
-          {value: 1000, name: loadTimeData.getString('delayBeforeClickShort')},
-          {value: 2000, name: loadTimeData.getString('delayBeforeClickLong')},
-          {
-            value: 4000,
-            name: loadTimeData.getString('delayBeforeClickVeryLong')
-          },
-        ];
+      screenMagnifierZoomOptions_: {
+        readOnly: true,
+        type: Array,
+        value() {
+          // These values correspond to the i18n values in
+          // settings_strings.grdp. If these values get changed then those
+          // strings need to be changed as well.
+          return [
+            {value: 2, name: loadTimeData.getString('screenMagnifierZoom2x')},
+            {value: 4, name: loadTimeData.getString('screenMagnifierZoom4x')},
+            {value: 6, name: loadTimeData.getString('screenMagnifierZoom6x')},
+            {value: 8, name: loadTimeData.getString('screenMagnifierZoom8x')},
+            {value: 10, name: loadTimeData.getString('screenMagnifierZoom10x')},
+            {value: 12, name: loadTimeData.getString('screenMagnifierZoom12x')},
+            {value: 14, name: loadTimeData.getString('screenMagnifierZoom14x')},
+            {value: 16, name: loadTimeData.getString('screenMagnifierZoom16x')},
+            {value: 18, name: loadTimeData.getString('screenMagnifierZoom18x')},
+            {value: 20, name: loadTimeData.getString('screenMagnifierZoom20x')},
+          ];
+        },
       },
-    },
 
-    autoClickMovementThresholdOptions_: {
-      readOnly: true,
-      type: Array,
-      value() {
-        return [
-          {
-            value: 5,
-            name: loadTimeData.getString('autoclickMovementThresholdExtraSmall')
-          },
-          {
-            value: 10,
-            name: loadTimeData.getString('autoclickMovementThresholdSmall')
-          },
-          {
-            value: 20,
-            name: loadTimeData.getString('autoclickMovementThresholdDefault')
-          },
-          {
-            value: 30,
-            name: loadTimeData.getString('autoclickMovementThresholdLarge')
-          },
-          {
-            value: 40,
-            name: loadTimeData.getString('autoclickMovementThresholdExtraLarge')
-          },
-        ];
+      autoClickDelayOptions_: {
+        readOnly: true,
+        type: Array,
+        value() {
+          // These values correspond to the i18n values in
+          // settings_strings.grdp. If these values get changed then those
+          // strings need to be changed as well.
+          return [
+            {
+              value: 600,
+              name: loadTimeData.getString('delayBeforeClickExtremelyShort')
+            },
+            {
+              value: 800,
+              name: loadTimeData.getString('delayBeforeClickVeryShort')
+            },
+            {
+              value: 1000,
+              name: loadTimeData.getString('delayBeforeClickShort')
+            },
+            {value: 2000, name: loadTimeData.getString('delayBeforeClickLong')},
+            {
+              value: 4000,
+              name: loadTimeData.getString('delayBeforeClickVeryLong')
+            },
+          ];
+        },
       },
-    },
 
-    /** @private {!Array<{name: string, value: number}>} */
-    cursorColorOptions_: {
-      readOnly: true,
-      type: Array,
-      value() {
-        return [
-          {
-            value: DEFAULT_BLACK_CURSOR_COLOR,
-            name: loadTimeData.getString('cursorColorBlack'),
-          },
-          {
-            value: 0xd93025,  // Red 600
-            name: loadTimeData.getString('cursorColorRed'),
-          },
-          {
-            value: 0xf29900,  //  Yellow 700
-            name: loadTimeData.getString('cursorColorYellow'),
-          },
-          {
-            value: 0x1e8e3e,  // Green 600
-            name: loadTimeData.getString('cursorColorGreen'),
-          },
-          {
-            value: 0x03b6be,  // Cyan 600
-            name: loadTimeData.getString('cursorColorCyan'),
-          },
-          {
-            value: 0x1a73e8,  // Blue 600
-            name: loadTimeData.getString('cursorColorBlue'),
-          },
-          {
-            value: 0xc61ad9,  // Magenta 600
-            name: loadTimeData.getString('cursorColorMagenta'),
-          },
-          {
-            value: 0xf50057,  // Pink A400
-            name: loadTimeData.getString('cursorColorPink'),
-          },
-
-        ];
+      autoClickMovementThresholdOptions_: {
+        readOnly: true,
+        type: Array,
+        value() {
+          return [
+            {
+              value: 5,
+              name:
+                  loadTimeData.getString('autoclickMovementThresholdExtraSmall')
+            },
+            {
+              value: 10,
+              name: loadTimeData.getString('autoclickMovementThresholdSmall')
+            },
+            {
+              value: 20,
+              name: loadTimeData.getString('autoclickMovementThresholdDefault')
+            },
+            {
+              value: 30,
+              name: loadTimeData.getString('autoclickMovementThresholdLarge')
+            },
+            {
+              value: 40,
+              name:
+                  loadTimeData.getString('autoclickMovementThresholdExtraLarge')
+            },
+          ];
+        },
       },
-    },
 
-    /** @private */
-    isMagnifierContinuousMouseFollowingModeSettingEnabled_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean(
-            'isMagnifierContinuousMouseFollowingModeSettingEnabled');
+      /** @private {!Array<{name: string, value: number}>} */
+      cursorColorOptions_: {
+        readOnly: true,
+        type: Array,
+        value() {
+          return [
+            {
+              value: DEFAULT_BLACK_CURSOR_COLOR,
+              name: loadTimeData.getString('cursorColorBlack'),
+            },
+            {
+              value: 0xd93025,  // Red 600
+              name: loadTimeData.getString('cursorColorRed'),
+            },
+            {
+              value: 0xf29900,  //  Yellow 700
+              name: loadTimeData.getString('cursorColorYellow'),
+            },
+            {
+              value: 0x1e8e3e,  // Green 600
+              name: loadTimeData.getString('cursorColorGreen'),
+            },
+            {
+              value: 0x03b6be,  // Cyan 600
+              name: loadTimeData.getString('cursorColorCyan'),
+            },
+            {
+              value: 0x1a73e8,  // Blue 600
+              name: loadTimeData.getString('cursorColorBlue'),
+            },
+            {
+              value: 0xc61ad9,  // Magenta 600
+              name: loadTimeData.getString('cursorColorMagenta'),
+            },
+            {
+              value: 0xf50057,  // Pink A400
+              name: loadTimeData.getString('cursorColorPink'),
+            },
+
+          ];
+        },
       },
-    },
 
-    /**
-     * Whether the user is in kiosk mode.
-     * @private
-     */
-    isKioskModeActive_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('isKioskModeActive');
-      }
-    },
+      /** @private */
+      isMagnifierContinuousMouseFollowingModeSettingEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean(
+              'isMagnifierContinuousMouseFollowingModeSettingEnabled');
+        },
+      },
 
-    /**
-     * Whether a setting for enabling shelf navigation buttons in tablet mode
-     * should be displayed in the accessibility settings.
-     * @private
-     */
-    showShelfNavigationButtonsSettings_: {
-      type: Boolean,
-      computed:
-          'computeShowShelfNavigationButtonsSettings_(isKioskModeActive_)',
-    },
+      /**
+       * Whether the user is in kiosk mode.
+       * @private
+       */
+      isKioskModeActive_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('isKioskModeActive');
+        }
+      },
 
-    /** @private */
-    isGuest_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean('isGuest');
-      }
-    },
+      /**
+       * Whether a setting for enabling shelf navigation buttons in tablet mode
+       * should be displayed in the accessibility settings.
+       * @private
+       */
+      showShelfNavigationButtonsSettings_: {
+        type: Boolean,
+        computed:
+            'computeShowShelfNavigationButtonsSettings_(isKioskModeActive_)',
+      },
 
-    /** @private */
-    screenMagnifierHintLabel_: {
-      type: String,
-      value() {
-        return this.i18n(
-            'screenMagnifierHintLabel',
-            this.i18n('screenMagnifierHintSearchKey'));
-      }
-    },
+      /** @private */
+      isGuest_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('isGuest');
+        }
+      },
 
-    /** @private */
-    dictationSubtitle_: {
-      type: String,
-      value() {
-        return loadTimeData.getString('dictationDescription');
-      }
-    },
+      /** @private */
+      screenMagnifierHintLabel_: {
+        type: String,
+        value() {
+          return this.i18n(
+              'screenMagnifierHintLabel',
+              this.i18n('screenMagnifierHintSearchKey'));
+        }
+      },
 
-    /** @private */
-    dictationLocaleSubtitleOverride_: {
-      type: String,
-      value: '',
-    },
+      /** @private */
+      dictationSubtitle_: {
+        type: String,
+        value() {
+          return loadTimeData.getString('dictationDescription');
+        }
+      },
 
-    /** @private */
-    useDictationLocaleSubtitleOverride_: {
-      type: Boolean,
-      value: false,
-    },
+      /** @private */
+      dictationLocaleSubtitleOverride_: {
+        type: String,
+        value: '',
+      },
 
-    /** @private */
-    dictationLocaleMenuSubtitle_: {
-      type: String,
-      computed: 'computeDictationLocaleSubtitle_(' +
-          'dictationLocaleOptions_, ' +
-          'prefs.settings.a11y.dictation_locale.value, ' +
-          'dictationLocaleSubtitleOverride_)',
-    },
+      /** @private */
+      useDictationLocaleSubtitleOverride_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /** @private */
-    dictationLocaleOptions_: {
-      type: Array,
-      value() {
-        return [];
-      }
-    },
+      /** @private */
+      dictationLocaleMenuSubtitle_: {
+        type: String,
+        computed: 'computeDictationLocaleSubtitle_(' +
+            'dictationLocaleOptions_, ' +
+            'prefs.settings.a11y.dictation_locale.value, ' +
+            'dictationLocaleSubtitleOverride_)',
+      },
 
-    /** @private */
-    dictationLocalesList_: {
-      type: Array,
-      value() {
-        return [];
-      }
-    },
+      /** @private */
+      dictationLocaleOptions_: {
+        type: Array,
+        value() {
+          return [];
+        }
+      },
 
-    /** @private */
-    showDictationLocaleMenu_: {
-      type: Boolean,
-      value: false,
-    },
+      /** @private */
+      dictationLocalesList_: {
+        type: Array,
+        value() {
+          return [];
+        }
+      },
 
-    /** @private */
-    dictationLearnMoreUrl_: {
-      type: String,
-      value: 'https://support.google.com/chromebook?p=text_dictation_m100',
-    },
+      /** @private */
+      showDictationLocaleMenu_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /**
-     * |hasKeyboard_|, |hasMouse_|, |hasPointingStick_|, and |hasTouchpad_|
-     * start undefined so observers don't trigger until they have been
-     * populated.
-     * @private
-     */
-    hasKeyboard_: Boolean,
+      /** @private */
+      dictationLearnMoreUrl_: {
+        type: String,
+        value: 'https://support.google.com/chromebook?p=text_dictation_m100',
+      },
 
-    /** @private */
-    hasMouse_: Boolean,
+      /**
+       * |hasKeyboard_|, |hasMouse_|, |hasPointingStick_|, and |hasTouchpad_|
+       * start undefined so observers don't trigger until they have been
+       * populated.
+       * @private
+       */
+      hasKeyboard_: Boolean,
 
-    /** @private */
-    hasPointingStick_: Boolean,
+      /** @private */
+      hasMouse_: Boolean,
 
-    /** @private */
-    hasTouchpad_: Boolean,
+      /** @private */
+      hasPointingStick_: Boolean,
 
-    /**
-     * Boolean indicating whether shelf navigation buttons should implicitly be
-     * enabled in tablet mode - the navigation buttons are implicitly enabled
-     * when spoken feedback, automatic clicks, or switch access are enabled.
-     * The buttons can also be explicitly enabled by a designated a11y setting.
-     * @private
-     */
-    shelfNavigationButtonsImplicitlyEnabled_: {
-      type: Boolean,
-      computed: 'computeShelfNavigationButtonsImplicitlyEnabled_(' +
-          'prefs.settings.accessibility.value,' +
-          'prefs.settings.a11y.autoclick.value,' +
-          'prefs.settings.a11y.switch_access.enabled.value)',
-    },
+      /** @private */
+      hasTouchpad_: Boolean,
 
-    /**
-     * The effective pref value that indicates whether shelf navigation buttons
-     * are enabled in tablet mode.
-     * @type {chrome.settingsPrivate.PrefObject}
-     * @private
-     */
-    shelfNavigationButtonsPref_: {
-      type: Object,
-      computed: 'getShelfNavigationButtonsEnabledPref_(' +
-          'shelfNavigationButtonsImplicitlyEnabled_,' +
-          'prefs.settings.a11y.tablet_mode_shelf_nav_buttons_enabled)',
-    },
+      /**
+       * Boolean indicating whether shelf navigation buttons should implicitly
+       * be enabled in tablet mode - the navigation buttons are implicitly
+       * enabled when spoken feedback, automatic clicks, or switch access are
+       * enabled. The buttons can also be explicitly enabled by a designated
+       * a11y setting.
+       * @private
+       */
+      shelfNavigationButtonsImplicitlyEnabled_: {
+        type: Boolean,
+        computed: 'computeShelfNavigationButtonsImplicitlyEnabled_(' +
+            'prefs.settings.accessibility.value,' +
+            'prefs.settings.a11y.autoclick.value,' +
+            'prefs.settings.a11y.switch_access.enabled.value)',
+      },
 
-    /**
-     * Used by DeepLinkingBehavior to focus this page's deep links.
-     * @type {!Set<!chromeos.settings.mojom.Setting>}
-     */
-    supportedSettingIds: {
-      type: Object,
-      value: () => new Set([
-        chromeos.settings.mojom.Setting.kChromeVox,
-        chromeos.settings.mojom.Setting.kSelectToSpeak,
-        chromeos.settings.mojom.Setting.kHighContrastMode,
-        chromeos.settings.mojom.Setting.kFullscreenMagnifier,
-        chromeos.settings.mojom.Setting.kFullscreenMagnifierMouseFollowingMode,
-        chromeos.settings.mojom.Setting.kFullscreenMagnifierFocusFollowing,
-        chromeos.settings.mojom.Setting.kDockedMagnifier,
-        chromeos.settings.mojom.Setting.kStickyKeys,
-        chromeos.settings.mojom.Setting.kOnScreenKeyboard,
-        chromeos.settings.mojom.Setting.kDictation,
-        chromeos.settings.mojom.Setting.kHighlightKeyboardFocus,
-        chromeos.settings.mojom.Setting.kHighlightTextCaret,
-        chromeos.settings.mojom.Setting.kAutoClickWhenCursorStops,
-        chromeos.settings.mojom.Setting.kLargeCursor,
-        chromeos.settings.mojom.Setting.kHighlightCursorWhileMoving,
-        chromeos.settings.mojom.Setting.kTabletNavigationButtons,
-        chromeos.settings.mojom.Setting.kMonoAudio,
-        chromeos.settings.mojom.Setting.kStartupSound,
-        chromeos.settings.mojom.Setting.kEnableSwitchAccess,
-        chromeos.settings.mojom.Setting.kEnableCursorColor,
-      ]),
-    },
-  },
+      /**
+       * The effective pref value that indicates whether shelf navigation
+       * buttons are enabled in tablet mode.
+       * @type {chrome.settingsPrivate.PrefObject}
+       * @private
+       */
+      shelfNavigationButtonsPref_: {
+        type: Object,
+        computed: 'getShelfNavigationButtonsEnabledPref_(' +
+            'shelfNavigationButtonsImplicitlyEnabled_,' +
+            'prefs.settings.a11y.tablet_mode_shelf_nav_buttons_enabled)',
+      },
 
-  observers: [
-    'pointersChanged_(hasMouse_, hasPointingStick_, hasTouchpad_, ' +
-        'isKioskModeActive_)',
-  ],
+      /**
+       * Used by DeepLinkingBehavior to focus this page's deep links.
+       * @type {!Set<!chromeos.settings.mojom.Setting>}
+       */
+      supportedSettingIds: {
+        type: Object,
+        value: () => new Set([
+          chromeos.settings.mojom.Setting.kChromeVox,
+          chromeos.settings.mojom.Setting.kSelectToSpeak,
+          chromeos.settings.mojom.Setting.kHighContrastMode,
+          chromeos.settings.mojom.Setting.kFullscreenMagnifier,
+          chromeos.settings.mojom.Setting
+              .kFullscreenMagnifierMouseFollowingMode,
+          chromeos.settings.mojom.Setting.kFullscreenMagnifierFocusFollowing,
+          chromeos.settings.mojom.Setting.kDockedMagnifier,
+          chromeos.settings.mojom.Setting.kStickyKeys,
+          chromeos.settings.mojom.Setting.kOnScreenKeyboard,
+          chromeos.settings.mojom.Setting.kDictation,
+          chromeos.settings.mojom.Setting.kHighlightKeyboardFocus,
+          chromeos.settings.mojom.Setting.kHighlightTextCaret,
+          chromeos.settings.mojom.Setting.kAutoClickWhenCursorStops,
+          chromeos.settings.mojom.Setting.kLargeCursor,
+          chromeos.settings.mojom.Setting.kHighlightCursorWhileMoving,
+          chromeos.settings.mojom.Setting.kTabletNavigationButtons,
+          chromeos.settings.mojom.Setting.kMonoAudio,
+          chromeos.settings.mojom.Setting.kStartupSound,
+          chromeos.settings.mojom.Setting.kEnableSwitchAccess,
+          chromeos.settings.mojom.Setting.kEnableCursorColor,
+        ]),
+      },
+    };
+  }
 
-  /** RouteOriginBehavior override */
-  route_: routes.MANAGE_ACCESSIBILITY,
-
-  /** @private {?ManageA11yPageBrowserProxy} */
-  manageBrowserProxy_: null,
-
-  /** @private {?DevicePageBrowserProxy} */
-  deviceBrowserProxy_: null,
+  static get observers() {
+    return [
+      'pointersChanged_(hasMouse_, hasPointingStick_, hasTouchpad_, ' +
+          'isKioskModeActive_)',
+    ];
+  }
 
   /** @override */
-  created() {
+  constructor() {
+    super();
+
+    /** RouteOriginBehavior override */
+    this.route_ = routes.MANAGE_ACCESSIBILITY;
+
+    /** @private {!ManageA11yPageBrowserProxy} */
     this.manageBrowserProxy_ = ManageA11yPageBrowserProxyImpl.getInstance();
+
+    /** @private {!DevicePageBrowserProxy} */
     this.deviceBrowserProxy_ = DevicePageBrowserProxyImpl.getInstance();
-  },
+  }
 
   /** @override */
-  attached() {
+  connectedCallback() {
+    super.connectedCallback();
+
     this.addWebUIListener(
         'has-mouse-changed', (exists) => this.set('hasMouse_', exists));
     this.addWebUIListener(
@@ -405,10 +435,12 @@ Polymer({
         'has-hardware-keyboard',
         (hasKeyboard) => this.set('hasKeyboard_', hasKeyboard));
     this.deviceBrowserProxy_.initializeKeyboardWatcher();
-  },
+  }
 
   /** @override */
   ready() {
+    super.ready();
+
     this.addWebUIListener(
         'initial-data-ready',
         (startup_sound_enabled) =>
@@ -429,7 +461,7 @@ Polymer({
     this.addFocusConfig(r.DISPLAY, '#displaySubpageButton');
     this.addFocusConfig(r.KEYBOARD, '#keyboardSubpageButton');
     this.addFocusConfig(r.POINTERS, '#pointerSubpageButton');
-  },
+  }
 
   /**
    * Note: Overrides RouteOriginBehavior implementation
@@ -446,7 +478,7 @@ Polymer({
     }
 
     this.attemptDeepLink();
-  },
+  }
 
   /**
    * @param {boolean} hasMouse
@@ -457,7 +489,7 @@ Polymer({
   pointersChanged_(hasMouse, hasTouchpad, hasPointingStick, isKioskModeActive) {
     this.$.pointerSubpageButton.hidden =
         (!hasMouse && !hasPointingStick && !hasTouchpad) || isKioskModeActive;
-  },
+  }
 
   /**
    * Updates the Select-to-Speak description text based on:
@@ -476,7 +508,7 @@ Polymer({
       enabled, hasKeyboard, disabledString, keyboardString, noKeyboardString) {
     return !enabled ? disabledString :
                       hasKeyboard ? keyboardString : noKeyboardString;
-  },
+  }
 
   /**
    * @param {!CustomEvent<boolean>} e
@@ -484,57 +516,57 @@ Polymer({
    */
   toggleStartupSoundEnabled_(e) {
     this.manageBrowserProxy_.setStartupSoundEnabled(e.detail);
-  },
+  }
 
   /** @private */
   onManageTtsSettingsTap_() {
     Router.getInstance().navigateTo(routes.MANAGE_TTS_SETTINGS);
-  },
+  }
 
   /** @private */
   onChromeVoxSettingsTap_() {
     this.manageBrowserProxy_.showChromeVoxSettings();
-  },
+  }
 
   /** @private */
   onChromeVoxTutorialTap_() {
     this.manageBrowserProxy_.showChromeVoxTutorial();
-  },
+  }
 
   /** @private */
   onCaptionsClick_() {
     Router.getInstance().navigateTo(routes.MANAGE_CAPTION_SETTINGS);
-  },
+  }
 
   /** @private */
   onSelectToSpeakSettingsTap_() {
     this.manageBrowserProxy_.showSelectToSpeakSettings();
-  },
+  }
 
   /** @private */
   onSwitchAccessSettingsTap_() {
     Router.getInstance().navigateTo(routes.MANAGE_SWITCH_ACCESS_SETTINGS);
-  },
+  }
 
   /** @private */
   onDisplayTap_() {
     Router.getInstance().navigateTo(
         routes.DISPLAY,
         /* dynamicParams */ null, /* removeSearch */ true);
-  },
+  }
 
   /** @private */
   onAppearanceTap_() {
     // Open browser appearance section in a new browser tab.
     window.open('chrome://settings/appearance');
-  },
+  }
 
   /** @private */
   onKeyboardTap_() {
     Router.getInstance().navigateTo(
         routes.KEYBOARD,
         /* dynamicParams */ null, /* removeSearch */ true);
-  },
+  }
 
   /**
    * @param {!Event} event
@@ -548,7 +580,7 @@ Polymer({
       chrome.metricsPrivate.recordUserAction(
           'Accessibility.CaretBrowsing.DisableWithSettings');
     }
-  },
+  }
 
   /**
    * @return {boolean}
@@ -557,7 +589,7 @@ Polymer({
   computeShowShelfNavigationButtonsSettings_() {
     return !this.isKioskModeActive_ &&
         loadTimeData.getBoolean('showTabletModeShelfNavigationButtonsSettings');
-  },
+  }
 
   /**
    * @return {boolean} Whether shelf navigation buttons should implicitly be
@@ -580,7 +612,7 @@ Polymer({
     return getBoolPrefValue('settings.accessibility') ||
         getBoolPrefValue('settings.a11y.autoclick') ||
         getBoolPrefValue('settings.a11y.switch_access.enabled');
-  },
+  }
 
   /**
    * Calculates the effective value for "shelf navigation buttons enabled in
@@ -600,13 +632,13 @@ Polymer({
 
     return /** @type {chrome.settingsPrivate.PrefObject} */ (this.get(
         'settings.a11y.tablet_mode_shelf_nav_buttons_enabled', this.prefs));
-  },
+  }
 
   /** @private */
   onShelfNavigationButtonsLearnMoreClicked_() {
     chrome.metricsPrivate.recordUserAction(
         'Settings_A11y_ShelfNavigationButtonsLearnMoreClicked');
-  },
+  }
 
   /**
    * Handles the <code>tablet_mode_shelf_nav_buttons_enabled</code> setting's
@@ -619,13 +651,15 @@ Polymer({
       return;
     }
 
-    const enabled = this.$$('#shelfNavigationButtonsEnabledControl').checked;
+    const enabled =
+        this.shadowRoot.querySelector('#shelfNavigationButtonsEnabledControl')
+            .checked;
     this.set(
         'prefs.settings.a11y.tablet_mode_shelf_nav_buttons_enabled.value',
         enabled);
     this.manageBrowserProxy_.recordSelectedShowShelfNavigationButtonValue(
         enabled);
-  },
+  }
 
   /** @private */
   onA11yCursorColorChange_() {
@@ -635,7 +669,7 @@ Polymer({
         DEFAULT_BLACK_CURSOR_COLOR;
     this.set(
         'prefs.settings.a11y.cursor_color_enabled.value', a11yCursorColorOn);
-  },
+  }
 
 
   /** @private */
@@ -643,7 +677,7 @@ Polymer({
     Router.getInstance().navigateTo(
         routes.POINTERS,
         /* dynamicParams */ null, /* removeSearch */ true);
-  },
+  }
 
   /**
    * Handles updating the visibility of the shelf navigation buttons setting
@@ -653,7 +687,7 @@ Polymer({
    */
   onManageAllyPageReady_(startup_sound_enabled) {
     this.$.startupSoundEnabled.checked = startup_sound_enabled;
-  },
+  }
 
   /**
    * Whether additional features link should be shown.
@@ -664,7 +698,7 @@ Polymer({
    */
   shouldShowAdditionalFeaturesLink_(isKiosk, isGuest) {
     return !isKiosk && !isGuest;
-  },
+  }
 
   /**
    * @param {string} subtitle
@@ -673,7 +707,7 @@ Polymer({
   onDictationLocaleMenuSubtitleChanged_(subtitle) {
     this.useDictationLocaleSubtitleOverride_ = true;
     this.dictationLocaleSubtitleOverride_ = subtitle;
-  },
+  }
 
 
   /**
@@ -684,7 +718,7 @@ Polymer({
   onDictationLocalesSet_(locales) {
     this.dictationLocalesList_ = locales;
     this.onDictationLocalesChanged_();
-  },
+  }
 
   /**
    * Converts an array of locales and their human-readable equivalents to
@@ -707,7 +741,7 @@ Polymer({
                 localeInfo.recommended || localeInfo.value === currentLocale,
           };
         });
-  },
+  }
 
   /**
    * Calculates the Dictation locale subtitle based on the current
@@ -745,15 +779,18 @@ Polymer({
 
     // If we get here, we know a locale is both supported offline and installed.
     return this.i18n('dictationLocaleSubLabelOffline', locale.name);
-  },
+  }
 
   /** @private */
   onChangeDictationLocaleButtonClicked_() {
     this.showDictationLocaleMenu_ = true;
-  },
+  }
 
   /** @private */
   onChangeDictationLocalesDialogClosed_() {
     this.showDictationLocaleMenu_ = false;
-  },
-});
+  }
+}
+
+customElements.define(
+    SettingsManageA11YPageElement.is, SettingsManageA11YPageElement);

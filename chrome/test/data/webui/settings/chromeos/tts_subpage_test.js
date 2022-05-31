@@ -45,7 +45,7 @@ suite('TtsSubpage', function() {
     assertEquals(3, previewVoice.length);
 
     // Check one of the language option details.
-    const secondVoice = ttsSubpage.$$('option[value=B]');
+    const secondVoice = ttsSubpage.shadowRoot.querySelector('option[value=B]');
     assertTrue(!!secondVoice);
     assertEquals(
         'Goa\'uld - Star Gate', String(secondVoice.textContent).trim());
