@@ -11,6 +11,8 @@
 #include "components/content_settings/core/common/features.h"
 #include "components/handoff/pref_names_ios.h"
 #include "components/prefs/pref_service.h"
+#import "components/safe_browsing/core/common/features.h"
+#import "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/strings/grit/components_strings.h"
 #import "components/sync/driver/mock_sync_service.h"
 #include "components/sync_preferences/pref_service_mock_factory.h"
@@ -94,6 +96,21 @@ class PrivacyTableViewControllerTest : public ChromeTableViewControllerTest {
         SyncServiceFactory::GetForBrowserState(chrome_browser_state_.get()));
   }
 
+  // Returns the proper detail text for the safe browsing item depending on the
+  // safe browsing and enhanced protection preference values.
+  NSString* SafeBrowsingDetailText() {
+    PrefService* prefService = chrome_browser_state_->GetPrefs();
+    if (safe_browsing::IsEnhancedProtectionEnabled(*prefService)) {
+      return l10n_util::GetNSString(
+          IDS_IOS_SAFE_BROWSING_ENHANCED_PROTECTION_TITLE);
+    } else if (safe_browsing::IsSafeBrowsingEnabled(*prefService)) {
+      return l10n_util::GetNSString(
+          IDS_IOS_PRIVACY_SAFE_BROWSING_STANDARD_PROTECTION_TITLE);
+    }
+    return l10n_util::GetNSString(
+        IDS_IOS_PRIVACY_SAFE_BROWSING_NO_PROTECTION_DETAIL_TITLE);
+  }
+
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState local_state_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
@@ -106,31 +123,69 @@ class PrivacyTableViewControllerTest : public ChromeTableViewControllerTest {
 TEST_F(PrivacyTableViewControllerTest, TestModel) {
   CreateController();
   CheckController();
-  EXPECT_EQ(3, NumberOfSections());
+  if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedProtection)) {
+    EXPECT_EQ(4, NumberOfSections());
 
-  // Sections[0].
-  EXPECT_EQ(1, NumberOfItemsInSection(0));
-  CheckTextCellTextAndDetailText(
-      l10n_util::GetNSString(IDS_IOS_CLEAR_BROWSING_DATA_TITLE), nil, 0, 0);
+    // Sections[0].
+    EXPECT_EQ(1, NumberOfItemsInSection(0));
+    CheckTextCellTextAndDetailText(
+        l10n_util::GetNSString(IDS_IOS_CLEAR_BROWSING_DATA_TITLE), nil, 0, 0);
 
-  // Sections[1].
-  EXPECT_EQ(1, NumberOfItemsInSection(1));
-  NSString* handoffSubtitle = chrome_browser_state_->GetPrefs()->GetBoolean(
-                                  prefs::kIosHandoffToOtherDevices)
-                                  ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
-                                  : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
-  CheckTextCellTextAndDetailText(
-      l10n_util::GetNSString(IDS_IOS_OPTIONS_ENABLE_HANDOFF_TO_OTHER_DEVICES),
-      handoffSubtitle, 1, 0);
+    // Sections[1].
+    EXPECT_EQ(1, NumberOfItemsInSection(1));
+    CheckTextCellTextAndDetailText(
+        l10n_util::GetNSString(IDS_IOS_PRIVACY_SAFE_BROWSING_TITLE),
+        SafeBrowsingDetailText(), 1, 0);
 
-  // Sections[2].
-  EXPECT_EQ(1, NumberOfItemsInSection(2));
-  CheckSwitchCellStateAndText(
-      NO, l10n_util::GetNSString(IDS_IOS_INCOGNITO_REAUTH_SETTING_NAME), 2, 0);
+    // Sections[2].
+    EXPECT_EQ(1, NumberOfItemsInSection(2));
+    NSString* handoffSubtitle =
+        chrome_browser_state_->GetPrefs()->GetBoolean(
+            prefs::kIosHandoffToOtherDevices)
+            ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
+            : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
+    CheckTextCellTextAndDetailText(
+        l10n_util::GetNSString(IDS_IOS_OPTIONS_ENABLE_HANDOFF_TO_OTHER_DEVICES),
+        handoffSubtitle, 2, 0);
 
-  CheckSectionFooter(
-      l10n_util::GetNSString(IDS_IOS_PRIVACY_GOOGLE_SERVICES_FOOTER),
-      /* section= */ 0);
+    // Sections[3].
+    EXPECT_EQ(1, NumberOfItemsInSection(3));
+    CheckSwitchCellStateAndText(
+        NO, l10n_util::GetNSString(IDS_IOS_INCOGNITO_REAUTH_SETTING_NAME), 3,
+        0);
+
+    CheckSectionFooter(
+        l10n_util::GetNSString(IDS_IOS_PRIVACY_GOOGLE_SERVICES_FOOTER),
+        /* section= */ 3);
+  } else {
+    EXPECT_EQ(3, NumberOfSections());
+
+    // Sections[0].
+    EXPECT_EQ(1, NumberOfItemsInSection(0));
+    CheckTextCellTextAndDetailText(
+        l10n_util::GetNSString(IDS_IOS_CLEAR_BROWSING_DATA_TITLE), nil, 0, 0);
+
+    // Sections[1].
+    EXPECT_EQ(1, NumberOfItemsInSection(1));
+    NSString* handoffSubtitle =
+        chrome_browser_state_->GetPrefs()->GetBoolean(
+            prefs::kIosHandoffToOtherDevices)
+            ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
+            : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
+    CheckTextCellTextAndDetailText(
+        l10n_util::GetNSString(IDS_IOS_OPTIONS_ENABLE_HANDOFF_TO_OTHER_DEVICES),
+        handoffSubtitle, 1, 0);
+
+    // Sections[2].
+    EXPECT_EQ(1, NumberOfItemsInSection(2));
+    CheckSwitchCellStateAndText(
+        NO, l10n_util::GetNSString(IDS_IOS_INCOGNITO_REAUTH_SETTING_NAME), 2,
+        0);
+
+    CheckSectionFooter(
+        l10n_util::GetNSString(IDS_IOS_PRIVACY_GOOGLE_SERVICES_FOOTER),
+        /* section= */ 0);
+  }
 }
 
 // Tests PrivacyTableViewController sets the correct privacy footer for a
@@ -141,11 +196,20 @@ TEST_F(PrivacyTableViewControllerTest, TestModelFooterWithSyncDisabled) {
 
   CreateController();
   CheckController();
-  EXPECT_EQ(3, NumberOfSections());
 
-  CheckSectionFooter(
-      l10n_util::GetNSString(IDS_IOS_PRIVACY_GOOGLE_SERVICES_FOOTER),
-      /* section= */ 0);
+  if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedProtection)) {
+    EXPECT_EQ(4, NumberOfSections());
+
+    CheckSectionFooter(
+        l10n_util::GetNSString(IDS_IOS_PRIVACY_GOOGLE_SERVICES_FOOTER),
+        /* section= */ 3);
+  } else {
+    EXPECT_EQ(3, NumberOfSections());
+
+    CheckSectionFooter(
+        l10n_util::GetNSString(IDS_IOS_PRIVACY_GOOGLE_SERVICES_FOOTER),
+        /* section= */ 0);
+  }
 }
 
 // Tests PrivacyTableViewController sets the correct privacy footer for a
@@ -157,11 +221,19 @@ TEST_F(PrivacyTableViewControllerTest, TestModelFooterWithSyncEnabled) {
 
   CreateController();
   CheckController();
-  EXPECT_EQ(3, NumberOfSections());
+  if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedProtection)) {
+    EXPECT_EQ(4, NumberOfSections());
 
-  CheckSectionFooter(
-      l10n_util::GetNSString(IDS_IOS_PRIVACY_SYNC_AND_GOOGLE_SERVICES_FOOTER),
-      /* section= */ 0);
+    CheckSectionFooter(
+        l10n_util::GetNSString(IDS_IOS_PRIVACY_SYNC_AND_GOOGLE_SERVICES_FOOTER),
+        /* section= */ 3);
+  } else {
+    EXPECT_EQ(3, NumberOfSections());
+
+    CheckSectionFooter(
+        l10n_util::GetNSString(IDS_IOS_PRIVACY_SYNC_AND_GOOGLE_SERVICES_FOOTER),
+        /* section= */ 0);
+  }
 }
 
 }  // namespace

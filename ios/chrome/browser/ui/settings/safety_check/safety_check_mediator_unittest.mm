@@ -318,9 +318,24 @@ TEST_F(SafetyCheckMediatorTest, SafeBrowsingEnabledReturnsSafeState) {
 TEST_F(SafetyCheckMediatorTest, SafeBrowsingSafeUI) {
   mediator_.safeBrowsingCheckRowState = SafeBrowsingCheckRowStateSafe;
   [mediator_ reconfigureSafeBrowsingCheckItem];
-  EXPECT_NSEQ(
-      mediator_.safeBrowsingCheckItem.detailText,
-      GetNSString(IDS_IOS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_ENABLED_DESC));
+  if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedProtection)) {
+    EXPECT_NSEQ(
+        mediator_.safeBrowsingCheckItem.detailText,
+        GetNSString(
+            IDS_IOS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_ENHANCED_PROTECTION_ENABLED_DESC));
+
+    // Change from Enhanced Protection to Standard Protection.
+    mediator_.enhancedSafeBrowsingPreference.value = false;
+    [mediator_ reconfigureSafeBrowsingCheckItem];
+    EXPECT_NSEQ(
+        mediator_.safeBrowsingCheckItem.detailText,
+        GetNSString(
+            IDS_IOS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_STANDARD_PROTECTION_ENABLED_DESC));
+  } else {
+    EXPECT_NSEQ(
+        mediator_.safeBrowsingCheckItem.detailText,
+        GetNSString(IDS_IOS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_ENABLED_DESC));
+  }
   EXPECT_EQ(mediator_.safeBrowsingCheckItem.trailingImage,
             [[UIImage imageNamed:@"settings_safe_state"]
                 imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]);

@@ -116,6 +116,8 @@ source_set("unit_tests") {
     "//components/handoff",
     "//components/prefs",
     "//components/prefs/ios",
+    "//components/safe_browsing/core/common",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/strings",
     "//components/sync/driver:test_support",
     "//components/sync_preferences",
