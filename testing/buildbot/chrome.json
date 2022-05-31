@@ -1958,6 +1958,22 @@
       },
       {
         "args": [],
+        "cros_board": "atlas",
+        "cros_img": "atlas-release/R102-14695.85.0",
+        "name": "lacros_all_tast_tests ATLAS_RELEASE_STABLE",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {},
+        "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
+        "test": "lacros_all_tast_tests",
+        "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
+        "timeout_sec": 10800,
+        "variant_id": "ATLAS_RELEASE_STABLE"
+      },
+      {
+        "args": [],
         "cros_board": "eve",
         "cros_img": "eve-release/R104-14844.0.0",
         "name": "lacros_all_tast_tests EVE_RELEASE_LKGM",
@@ -2003,6 +2019,22 @@
         "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
         "timeout_sec": 10800,
         "variant_id": "EVE_RELEASE_BETA"
+      },
+      {
+        "args": [],
+        "cros_board": "eve",
+        "cros_img": "eve-release/R102-14695.85.0",
+        "name": "lacros_all_tast_tests EVE_RELEASE_STABLE",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {},
+        "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
+        "test": "lacros_all_tast_tests",
+        "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
+        "timeout_sec": 10800,
+        "variant_id": "EVE_RELEASE_STABLE"
       }
     ]
   },
@@ -2096,6 +2128,22 @@
         "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
         "timeout_sec": 10800,
         "variant_id": "HANA_RELEASE_BETA"
+      },
+      {
+        "args": [],
+        "cros_board": "hana",
+        "cros_img": "hana-release/R102-14695.85.0",
+        "name": "lacros_all_tast_tests HANA_RELEASE_STABLE",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {},
+        "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
+        "test": "lacros_all_tast_tests",
+        "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
+        "timeout_sec": 10800,
+        "variant_id": "HANA_RELEASE_STABLE"
       },
       {
         "args": [],
@@ -2200,6 +2248,23 @@
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/lacros-arm.ozone_unittests.filter"
         ],
+        "cros_board": "hana",
+        "cros_img": "hana-release/R102-14695.85.0",
+        "name": "ozone_unittests HANA_RELEASE_STABLE",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {},
+        "test": "ozone_unittests",
+        "test_id_prefix": "ninja://ui/ozone:ozone_unittests/",
+        "timeout_sec": 3600,
+        "variant_id": "HANA_RELEASE_STABLE"
+      },
+      {
+        "args": [
+          "--test-launcher-filter-file=../../testing/buildbot/filters/lacros-arm.ozone_unittests.filter"
+        ],
         "cros_board": "jacuzzi",
         "cros_img": "jacuzzi-release/R104-14844.0.0",
         "name": "ozone_unittests JACUZZI_RELEASE_LKGM",
@@ -2297,6 +2362,23 @@
         "test_id_prefix": "ninja://components/viz:viz_unittests/",
         "timeout_sec": 3600,
         "variant_id": "HANA_RELEASE_BETA"
+      },
+      {
+        "args": [
+          "--test-launcher-filter-file=../../testing/buildbot/filters/lacros-arm.viz_unittests.filter"
+        ],
+        "cros_board": "hana",
+        "cros_img": "hana-release/R102-14695.85.0",
+        "name": "viz_unittests HANA_RELEASE_STABLE",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {},
+        "test": "viz_unittests",
+        "test_id_prefix": "ninja://components/viz:viz_unittests/",
+        "timeout_sec": 3600,
+        "variant_id": "HANA_RELEASE_STABLE"
       },
       {
         "args": [
