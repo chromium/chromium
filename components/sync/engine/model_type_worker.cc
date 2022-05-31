@@ -166,6 +166,33 @@ bool DecryptPasswordSpecifics(const Cryptographer& cryptographer,
     DLOG(ERROR) << "Failed to decrypt a decryptable password";
     return false;
   }
+  // The `notes` field in the PasswordSpecificsData is the authoritative value.
+  // When set, it disregards whatever `encrypted_notes_backup` contains.
+  if (out->password().client_only_encrypted_data().has_notes()) {
+    return true;
+  }
+  if (!in.password().has_encrypted_notes_backup()) {
+    return true;
+  }
+  if (!base::FeatureList::IsEnabled(
+          syncer::kReadWritePasswordNotesBackupField)) {
+    return true;
+  }
+  // It is guaranteed that if `encrypted()` is decryptable, then
+  // `encrypted_notes_backup()` must be decryptable too. Failure to decrypt
+  // `encrypted_notes_backup()` indicates a data corruption.
+  if (!cryptographer.Decrypt(in.password().encrypted_notes_backup(),
+                             out->mutable_password()
+                                 ->mutable_client_only_encrypted_data()
+                                 ->mutable_notes())) {
+    // TODO(crbug.com/1326554): Log UMA metrics for cases when notes backup
+    // encrypted blob is corrupted.
+    return false;
+  }
+  // TODO(crbug.com/1326554): Properly handle the case when both blobs are
+  // decryptable but with different keys. Ideally the password should be
+  // re-uploaded potentially by setting needs_reupload boolean in
+  // UpdateResponseData or EntityData.
   return true;
 }
 

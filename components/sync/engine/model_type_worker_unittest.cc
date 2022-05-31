@@ -2387,4 +2387,104 @@ TEST_F(ModelTypeWorkerTest, ShouldHaveLocalChangesWhenContributedMaxEntities) {
   EXPECT_FALSE(worker()->HasLocalChangesForTest());
 }
 
+class ModelTypeWorkerPasswordsTestWithNotes
+    : public ModelTypeWorkerPasswordsTest {
+ public:
+  ModelTypeWorkerPasswordsTestWithNotes() {
+    feature_list_.InitAndEnableFeature(
+        syncer::kReadWritePasswordNotesBackupField);
+  }
+  ~ModelTypeWorkerPasswordsTestWithNotes() override = default;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_F(ModelTypeWorkerPasswordsTestWithNotes,
+       ShouldIgnoreTheEncryptedNotesBackupWhenNotesInPasswordSpecificsData) {
+  const std::string kPasswordInSpecificsNote = "Note Value";
+  const std::string kPasswordNoteBackup = "Note Backup";
+  NormalInitialize();
+
+  // Create a new Nigori and allow the cryptographer to decrypt it.
+  AddPendingKey();
+  DecryptPendingKey();
+
+  // Set a value for the note in the PasswordSpecificsData.
+  sync_pb::PasswordSpecificsData unencrypted_password;
+  unencrypted_password.set_password_value(kPassword);
+  unencrypted_password.mutable_notes()->add_note()->set_value(
+      kPasswordInSpecificsNote);
+  sync_pb::EntitySpecifics encrypted_specifics =
+      EncryptPasswordSpecificsWithNthKey(1, unencrypted_password);
+
+  sync_pb::PasswordSpecificsData_Notes notes_backup;
+  notes_backup.add_note()->set_value(kPasswordNoteBackup);
+
+  FakeCryptographer::FromSingleDefaultKey(GetNthKeyName(1))
+      ->EncryptString(notes_backup.SerializeAsString(),
+                      encrypted_specifics.mutable_password()
+                          ->mutable_encrypted_notes_backup());
+
+  // Receive an encrypted password, encrypted with a key that is already known.
+  SyncEntity entity = server()->UpdateFromServer(
+      /*version_offset=*/10, kHash1, encrypted_specifics);
+  worker()->ProcessGetUpdatesResponse(server()->GetProgress(),
+                                      server()->GetContext(), {&entity},
+                                      status_controller());
+  worker()->ApplyUpdates(status_controller());
+
+  ASSERT_TRUE(processor()->HasUpdateResponse(kHash1));
+  const UpdateResponseData& update = processor()->GetUpdateResponse(kHash1);
+  ASSERT_TRUE(
+      update.entity.specifics.password().has_client_only_encrypted_data());
+  EXPECT_EQ(kPasswordInSpecificsNote, update.entity.specifics.password()
+                                          .client_only_encrypted_data()
+                                          .notes()
+                                          .note(0)
+                                          .value());
+}
+
+TEST_F(ModelTypeWorkerPasswordsTestWithNotes,
+       ShouldUseTheEncryptedNotesBackupWhenMissingInPasswordSpecificsData) {
+  const std::string kPasswordNoteBackup = "Note Backup";
+  NormalInitialize();
+
+  // Create a new Nigori and allow the cryptographer to decrypt it.
+  AddPendingKey();
+  DecryptPendingKey();
+
+  // Set a value for the note in the PasswordSpecificsData.
+  sync_pb::PasswordSpecificsData unencrypted_password;
+  unencrypted_password.set_password_value(kPassword);
+  sync_pb::EntitySpecifics encrypted_specifics =
+      EncryptPasswordSpecificsWithNthKey(1, unencrypted_password);
+
+  sync_pb::PasswordSpecificsData_Notes notes_backup;
+  notes_backup.add_note()->set_value(kPasswordNoteBackup);
+
+  FakeCryptographer::FromSingleDefaultKey(GetNthKeyName(1))
+      ->EncryptString(notes_backup.SerializeAsString(),
+                      encrypted_specifics.mutable_password()
+                          ->mutable_encrypted_notes_backup());
+
+  // Receive an encrypted password, encrypted with a key that is already known.
+  SyncEntity entity = server()->UpdateFromServer(
+      /*version_offset=*/10, kHash1, encrypted_specifics);
+  worker()->ProcessGetUpdatesResponse(server()->GetProgress(),
+                                      server()->GetContext(), {&entity},
+                                      status_controller());
+  worker()->ApplyUpdates(status_controller());
+
+  ASSERT_TRUE(processor()->HasUpdateResponse(kHash1));
+  const UpdateResponseData& update = processor()->GetUpdateResponse(kHash1);
+  ASSERT_TRUE(
+      update.entity.specifics.password().has_client_only_encrypted_data());
+  EXPECT_EQ(kPasswordNoteBackup, update.entity.specifics.password()
+                                     .client_only_encrypted_data()
+                                     .notes()
+                                     .note(0)
+                                     .value());
+}
+
 }  // namespace syncer

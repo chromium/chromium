@@ -36,6 +36,13 @@ inline constexpr base::Feature kIgnoreSyncEncryptionKeysLongMissing{
 inline constexpr base::FeatureParam<int> kMinGuResponsesToIgnoreKey{
     &kIgnoreSyncEncryptionKeysLongMissing, "MinGuResponsesToIgnoreKey", 50};
 
+// When enabled, Sync machinery will read and writes password notes to the
+// `encrypted_notes_backup` field inside the PasswordSpecifics proto. Together
+// with the logic on the server. this protects against notes being overwritten
+// by legacy clients not supporting password notes.
+inline constexpr base::Feature kReadWritePasswordNotesBackupField{
+    "ReadWritePasswordNotesBackupField", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Allows custom passphrase users to receive Wallet data for secondary accounts
 // while in transport-only mode.
 inline constexpr base::Feature
