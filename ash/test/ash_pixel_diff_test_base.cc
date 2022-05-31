@@ -5,9 +5,12 @@
 #include "ash/test/ash_pixel_diff_test_base.h"
 
 #include "ash/shell.h"
+#include "ash/system/power/power_status.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "base/command_line.h"
 #include "base/time/time_override.h"
+#include "chromeos/dbus/power/fake_power_manager_client.h"
+#include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
 #include "ui/compositor/compositor_switches.h"
 #include "ui/display/display.h"
 
@@ -81,6 +84,7 @@ void AshPixelDiffTestBase::SetUp() {
 
   // Set variable UI components in explicit ways to stabilize screenshots.
   SetWallPaper();
+  SetBatteryState();
 }
 
 void AshPixelDiffTestBase::SetWallPaper() {
@@ -110,6 +114,16 @@ void AshPixelDiffTestBase::OverrideTime() {
   time_override_ = std::make_unique<base::subtle::ScopedTimeClockOverrides>(
       &TimeOverrideHelper::TimeNow, /*time_ticks_override=*/nullptr,
       /*thread_ticks_override=*/nullptr);
+}
+
+void AshPixelDiffTestBase::SetBatteryState() {
+  power_manager::PowerSupplyProperties proto;
+  proto.set_external_power(
+      power_manager::PowerSupplyProperties_ExternalPower_DISCONNECTED);
+  proto.set_battery_state(
+      power_manager::PowerSupplyProperties_BatteryState_DISCHARGING);
+  proto.set_battery_percent(50.0);
+  chromeos::FakePowerManagerClient::Get()->UpdatePowerProperties(proto);
 }
 
 }  // namespace ash

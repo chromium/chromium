@@ -3167,6 +3167,8 @@ test("ash_pixeltests") {
     ":test_support",
     "//ash/public/cpp",
     "//base/test:test_support",
+    "//chromeos/dbus/power:power",
+    "//chromeos/dbus/power:power_manager_proto",
     "//components/viz/test:test_support",
     "//mojo/core/embedder:embedder",
   ]

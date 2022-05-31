@@ -45,6 +45,10 @@ class AshPixelDiffTestBase : public AshTestBase {
   // Overrides the current time.
   void OverrideTime();
 
+  // Sets the battery state. It ensures that the tray battery icon does not
+  // change during pixel tests.
+  void SetBatteryState();
+
   const AccountId kAccountId_;
 
   // Used for setting the locale and the time zone.
