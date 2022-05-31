@@ -295018,14 +295018,6 @@
       []
      ]
     },
-    "tools": {
-     "_virtualenv": {
-      ".gitignore": [
-       "ede80b85f0f30f7d19ce1a46d6b421fac3c1f82f",
-       []
-      ]
-     }
-    },
     "vendor-imports": {
      "mozilla": {
       "mozilla-central-reftests": {
@@ -331861,7 +331853,7 @@
        []
       ],
       "fixtures_bidi.py": [
-       "4e900bb55b9b40418e69d97e22d16c0476c3cfd8",
+       "3bcebb95f4b5be91054219dd669274d3c8a3ff2a",
        []
       ],
       "fixtures_http.py": [
