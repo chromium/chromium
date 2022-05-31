@@ -8,7 +8,7 @@
 
 #include "base/callback.h"
 #include "base/feature_list.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_features.h"
@@ -46,7 +46,7 @@ class ForcedEnterpriseSigninInterceptionHandle
       const DiceWebSigninInterceptor::Delegate::BubbleParameters&
           bubble_parameters,
       base::OnceCallback<void(SigninInterceptionResult)> callback)
-      : browser_(browser),
+      : browser_(browser->AsWeakPtr()),
         profile_creation_required_by_policy_(
             bubble_parameters.interception_type ==
             DiceWebSigninInterceptor::SigninInterceptionType::
@@ -55,28 +55,23 @@ class ForcedEnterpriseSigninInterceptionHandle
         callback_(std::move(callback)) {
     DCHECK(browser_);
     DCHECK(callback_);
-    ShowEnterpriseProfileInterceptionDialog(
-        bubble_parameters.intercepted_account,
-        bubble_parameters.profile_highlight_color);
-  }
-
-  ~ForcedEnterpriseSigninInterceptionHandle() override {
-    browser_->signin_view_controller()->CloseModalSignin();
-    if (callback_)
-      std::move(callback_).Run(SigninInterceptionResult::kDeclined);
-  }
-
- private:
-  void ShowEnterpriseProfileInterceptionDialog(const AccountInfo& account_info,
-                                               SkColor profile_color) {
     browser_->signin_view_controller()->ShowModalEnterpriseConfirmationDialog(
-        account_info, profile_creation_required_by_policy_,
-        show_link_data_option_, profile_color,
+        bubble_parameters.intercepted_account,
+        profile_creation_required_by_policy_, show_link_data_option_,
+        bubble_parameters.profile_highlight_color,
         base::BindOnce(&ForcedEnterpriseSigninInterceptionHandle::
                            OnEnterpriseInterceptionDialogClosed,
                        base::Unretained(this)));
   }
 
+  ~ForcedEnterpriseSigninInterceptionHandle() override {
+    if (browser_)
+      browser_->signin_view_controller()->CloseModalSignin();
+    if (callback_)
+      std::move(callback_).Run(SigninInterceptionResult::kDeclined);
+  }
+
+ private:
   void OnEnterpriseInterceptionDialogClosed(signin::SigninChoice result) {
     switch (result) {
       case signin::SIGNIN_CHOICE_NEW_PROFILE:
@@ -97,7 +92,7 @@ class ForcedEnterpriseSigninInterceptionHandle
     }
   }
 
-  raw_ptr<Browser> browser_;
+  base::WeakPtr<Browser> browser_;
   const bool profile_creation_required_by_policy_;
   const bool show_link_data_option_;
   base::OnceCallback<void(SigninInterceptionResult)> callback_;
