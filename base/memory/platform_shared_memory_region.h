@@ -124,7 +124,7 @@ class BASE_EXPORT PlatformSharedMemoryRegion {
       Mode mode,
       size_t size,
       const UnguessableToken& guid);
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_APPLE)
   // Specialized version of Take() for POSIX that takes only one file descriptor
   // instead of pair. Cannot be used with kWritable |mode|.
   static PlatformSharedMemoryRegion Take(ScopedFD handle,
@@ -173,13 +173,13 @@ class BASE_EXPORT PlatformSharedMemoryRegion {
   // kWritable mode, all other modes will CHECK-fail. The object will have
   // kReadOnly mode after this call on success.
   bool ConvertToReadOnly();
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   // Same as above, but |mapped_addr| is used as a hint to avoid additional
   // mapping of the memory object.
   // |mapped_addr| must be mapped location of |memory_object_|. If the location
   // is unknown, |mapped_addr| should be |nullptr|.
   bool ConvertToReadOnly(void* mapped_addr);
-#endif  // BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_APPLE)
 
   // Converts the region to unsafe. Returns whether the operation succeeded.
   // Makes the current instance invalid on failure. Can be called only in

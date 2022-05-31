@@ -846,7 +846,7 @@ void FieldTrialList::PopulateLaunchOptionsWithFieldTrialState(
 }
 #endif  // !BUILDFLAG(IS_IOS)
 
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_NACL)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_NACL)
 // static
 int FieldTrialList::GetFieldTrialDescriptor() {
   InstantiateFieldTrialAllocatorIfNeeded();
@@ -859,7 +859,7 @@ int FieldTrialList::GetFieldTrialDescriptor() {
   return global_->readonly_allocator_region_.GetPlatformHandle().fd;
 #endif
 }
-#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_NACL)
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_NACL)
 
 // static
 ReadOnlySharedMemoryRegion

@@ -24,7 +24,7 @@
 #include "ipc/ipc_message_attachment_set.h"
 #include "ipc/ipc_mojo_param_traits.h"
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
 #include "ipc/mach_port_mac.h"
 #endif
 
@@ -963,7 +963,7 @@ void ParamTraits<base::subtle::PlatformSharedMemoryRegion>::Write(
 #elif BUILDFLAG(IS_FUCHSIA)
   zx::vmo vmo = const_cast<param_type&>(p).PassPlatformHandle();
   WriteParam(m, vmo);
-#elif BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_APPLE)
   base::mac::ScopedMachSendRight h =
       const_cast<param_type&>(p).PassPlatformHandle();
   MachPortMac mach_port_mac(h.get());
@@ -1017,7 +1017,7 @@ bool ParamTraits<base::subtle::PlatformSharedMemoryRegion>::Read(
     return false;
   *r = base::subtle::PlatformSharedMemoryRegion::Take(std::move(vmo), mode,
                                                       size, guid);
-#elif BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_APPLE)
   MachPortMac mach_port_mac;
   if (!ReadParam(m, iter, &mach_port_mac))
     return false;
@@ -1077,7 +1077,7 @@ void ParamTraits<base::subtle::PlatformSharedMemoryRegion>::Log(
 #elif BUILDFLAG(IS_WIN)
   l->append("Handle: ");
   LogParam(p.GetPlatformHandle(), l);
-#elif BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_APPLE)
   l->append("Mach port: ");
   LogParam(p.GetPlatformHandle(), l);
 #elif BUILDFLAG(IS_ANDROID)

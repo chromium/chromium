@@ -572,13 +572,13 @@ class BASE_EXPORT FieldTrialList {
       LaunchOptions* launch_options);
 #endif  // !BUILDFLAG(IS_IOS)
 
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_NACL)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_NACL)
   // On POSIX, we also need to explicitly pass down this file descriptor that
   // should be shared with the child process. Returns -1 if it was not
   // initialized properly. The current process remains the onwer of the passed
   // descriptor.
   static int GetFieldTrialDescriptor();
-#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_NACL)
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_NACL)
 
   static ReadOnlySharedMemoryRegion DuplicateFieldTrialSharedMemoryForTesting();
 

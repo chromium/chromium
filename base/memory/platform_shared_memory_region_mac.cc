@@ -4,17 +4,13 @@
 
 #include "base/memory/platform_shared_memory_region.h"
 
-#include <mach/mach_vm.h>
+#include <mach/vm_map.h>
 
 #include "base/mac/mach_logging.h"
 #include "base/mac/scoped_mach_vm.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
-
-#if BUILDFLAG(IS_IOS)
-#error "MacOS only - iOS uses platform_shared_memory_region_posix.cc"
-#endif
 
 namespace base {
 namespace subtle {
@@ -88,12 +84,12 @@ bool PlatformSharedMemoryRegion::ConvertToReadOnly(void* mapped_addr) {
   mac::ScopedMachVM scoped_memory;
   if (!temp_addr) {
     // Intentionally lower current prot and max prot to |VM_PROT_READ|.
-    kern_return_t kr = mach_vm_map(
-        mach_task_self(), reinterpret_cast<mach_vm_address_t*>(&temp_addr),
-        size_, 0, VM_FLAGS_ANYWHERE, handle_copy.get(), 0, FALSE, VM_PROT_READ,
-        VM_PROT_READ, VM_INHERIT_NONE);
+    kern_return_t kr =
+        vm_map(mach_task_self(), reinterpret_cast<vm_address_t*>(&temp_addr),
+               size_, 0, VM_FLAGS_ANYWHERE, handle_copy.get(), 0, FALSE,
+               VM_PROT_READ, VM_PROT_READ, VM_INHERIT_NONE);
     if (kr != KERN_SUCCESS) {
-      MACH_DLOG(ERROR, kr) << "mach_vm_map";
+      MACH_DLOG(ERROR, kr) << "vm_map";
       return false;
     }
     scoped_memory.reset(reinterpret_cast<vm_address_t>(temp_addr),
@@ -143,7 +139,7 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Create(Mode mode,
   CHECK_NE(mode, Mode::kReadOnly) << "Creating a region in read-only mode will "
                                      "lead to this region being non-modifiable";
 
-  mach_vm_size_t vm_size = size;
+  memory_object_size_t vm_size = size;
   mac::ScopedMachSendRight named_right;
   kern_return_t kr = mach_make_memory_entry_64(
       mach_task_self(), &vm_size,
@@ -165,19 +161,19 @@ bool PlatformSharedMemoryRegion::CheckPlatformHandlePermissionsCorrespondToMode(
     PlatformSharedMemoryHandle handle,
     Mode mode,
     size_t size) {
-  mach_vm_address_t temp_addr = 0;
+  vm_address_t temp_addr = 0;
   kern_return_t kr =
-      mach_vm_map(mach_task_self(), &temp_addr, size, 0, VM_FLAGS_ANYWHERE,
-                  handle, 0, FALSE, VM_PROT_READ | VM_PROT_WRITE,
-                  VM_PROT_READ | VM_PROT_WRITE, VM_INHERIT_NONE);
+      vm_map(mach_task_self(), &temp_addr, size, 0, VM_FLAGS_ANYWHERE, handle,
+             0, FALSE, VM_PROT_READ | VM_PROT_WRITE,
+             VM_PROT_READ | VM_PROT_WRITE, VM_INHERIT_NONE);
   if (kr == KERN_SUCCESS) {
     kern_return_t kr_deallocate =
-        mach_vm_deallocate(mach_task_self(), temp_addr, size);
+        vm_deallocate(mach_task_self(), temp_addr, size);
     // TODO(crbug.com/838365): convert to DLOG when bug fixed.
     MACH_LOG_IF(ERROR, kr_deallocate != KERN_SUCCESS, kr_deallocate)
-        << "mach_vm_deallocate";
+        << "vm_deallocate";
   } else if (kr != KERN_INVALID_RIGHT) {
-    MACH_LOG(ERROR, kr) << "mach_vm_map";
+    MACH_LOG(ERROR, kr) << "vm_map";
     return false;
   }
 

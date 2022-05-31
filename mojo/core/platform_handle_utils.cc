@@ -17,7 +17,7 @@
 #include "base/win/scoped_handle.h"
 #endif
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
 #include "base/mac/scoped_mach_port.h"
 #endif
 
@@ -32,7 +32,7 @@ void ExtractPlatformHandlesFromSharedMemoryRegionHandle(
   *extracted_handle = PlatformHandle(base::win::ScopedHandle(handle.Take()));
 #elif BUILDFLAG(IS_FUCHSIA)
   *extracted_handle = PlatformHandle(std::move(handle));
-#elif BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_APPLE)
   // This is a Mach port. Same code as above and below, but separated for
   // clarity.
   *extracted_handle = PlatformHandle(std::move(handle));
@@ -55,7 +55,7 @@ CreateSharedMemoryRegionHandleFromPlatformHandles(
 #elif BUILDFLAG(IS_FUCHSIA)
   DCHECK(!readonly_handle.is_valid());
   return zx::vmo(handle.TakeHandle());
-#elif BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_APPLE)
   DCHECK(!readonly_handle.is_valid());
   return handle.TakeMachSendRight();
 #elif BUILDFLAG(IS_ANDROID)

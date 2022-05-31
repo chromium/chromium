@@ -6,7 +6,7 @@
 
 namespace base::subtle {
 
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_ANDROID)
 ScopedFDPair::ScopedFDPair() = default;
 
 ScopedFDPair::ScopedFDPair(ScopedFDPair&&) = default;

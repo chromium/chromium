@@ -15,7 +15,7 @@
 #include "base/win/scoped_handle.h"
 #elif BUILDFLAG(IS_FUCHSIA)
 #include <lib/zx/handle.h>
-#elif BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_APPLE)
 #include "base/mac/scoped_mach_port.h"
 #endif
 
@@ -45,7 +45,7 @@ class COMPONENT_EXPORT(MOJO_CPP_PLATFORM) PlatformHandle {
     kNone,
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
     kHandle,
-#elif BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_APPLE)
     kMachSend,
     kMachReceive,
 #endif
@@ -61,7 +61,7 @@ class COMPONENT_EXPORT(MOJO_CPP_PLATFORM) PlatformHandle {
   explicit PlatformHandle(base::win::ScopedHandle handle);
 #elif BUILDFLAG(IS_FUCHSIA)
   explicit PlatformHandle(zx::handle handle);
-#elif BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_APPLE)
   explicit PlatformHandle(base::mac::ScopedMachSendRight mach_port);
   explicit PlatformHandle(base::mac::ScopedMachReceiveRight mach_port);
 #endif
@@ -132,7 +132,7 @@ class COMPONENT_EXPORT(MOJO_CPP_PLATFORM) PlatformHandle {
       type_ = Type::kNone;
     return handle_.release();
   }
-#elif BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_APPLE)
   bool is_valid() const { return is_valid_fd() || is_valid_mach_port(); }
   bool is_valid_mach_port() const {
     return is_valid_mach_send() || is_valid_mach_receive();
@@ -222,7 +222,7 @@ class COMPONENT_EXPORT(MOJO_CPP_PLATFORM) PlatformHandle {
   base::win::ScopedHandle handle_;
 #elif BUILDFLAG(IS_FUCHSIA)
   zx::handle handle_;
-#elif BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_APPLE)
   base::mac::ScopedMachSendRight mach_send_;
   base::mac::ScopedMachReceiveRight mach_receive_;
 #endif

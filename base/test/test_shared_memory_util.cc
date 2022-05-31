@@ -24,8 +24,8 @@
 #include <zircon/rights.h>
 #endif
 
-#if BUILDFLAG(IS_MAC)
-#include <mach/mach_vm.h>
+#if BUILDFLAG(IS_APPLE)
+#include <mach/vm_map.h>
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -41,7 +41,7 @@ static const size_t kDataSize = 1024;
 // Common routine used with Posix file descriptors. Check that shared memory
 // file descriptor |fd| does not allow writable mappings. Return true on
 // success, false otherwise.
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
 static bool CheckReadOnlySharedMemoryFdPosix(int fd) {
 // Note that the error on Android is EPERM, unlike other platforms where
 // it will be EACCES.
@@ -66,7 +66,7 @@ static bool CheckReadOnlySharedMemoryFdPosix(int fd) {
   }
   return true;
 }
-#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
 
 #if BUILDFLAG(IS_FUCHSIA)
 // Fuchsia specific implementation.
@@ -88,16 +88,16 @@ bool CheckReadOnlySharedMemoryFuchsiaHandle(zx::unowned_vmo handle) {
   return true;
 }
 
-#elif BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_APPLE)
 bool CheckReadOnlySharedMemoryMachPort(mach_port_t memory_object) {
-  mach_vm_address_t memory;
-  const kern_return_t kr = mach_vm_map(
-      mach_task_self(), &memory, kDataSize, 0, VM_FLAGS_ANYWHERE, memory_object,
-      0, FALSE, VM_PROT_READ | VM_PROT_WRITE,
-      VM_PROT_READ | VM_PROT_WRITE | VM_PROT_IS_MASK, VM_INHERIT_NONE);
+  vm_address_t memory;
+  const kern_return_t kr =
+      vm_map(mach_task_self(), &memory, kDataSize, 0, VM_FLAGS_ANYWHERE,
+             memory_object, 0, FALSE, VM_PROT_READ | VM_PROT_WRITE,
+             VM_PROT_READ | VM_PROT_WRITE | VM_PROT_IS_MASK, VM_INHERIT_NONE);
   if (kr == KERN_SUCCESS) {
-    LOG(ERROR) << "mach_vm_map() should have failed!";
-    mach_vm_deallocate(mach_task_self(), memory, kDataSize);  // Cleanup.
+    LOG(ERROR) << "vm_map() should have failed!";
+    vm_deallocate(mach_task_self(), memory, kDataSize);  // Cleanup.
     return false;
   }
   return true;
@@ -126,7 +126,7 @@ bool CheckReadOnlyPlatformSharedMemoryRegionForTesting(
     return false;
   }
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
   return CheckReadOnlySharedMemoryMachPort(region.GetPlatformHandle());
 #elif BUILDFLAG(IS_FUCHSIA)
   return CheckReadOnlySharedMemoryFuchsiaHandle(region.GetPlatformHandle());

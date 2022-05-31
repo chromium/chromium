@@ -2213,6 +2213,8 @@ mixed_component("base") {
       "mac/scoped_objc_class_swizzler.h",
       "mac/scoped_objc_class_swizzler.mm",
       "mac/scoped_typeref.h",
+      "memory/platform_shared_memory_mapper_mac.cc",
+      "memory/platform_shared_memory_region_mac.cc",
       "message_loop/message_pump_mac.h",
       "message_loop/message_pump_mac.mm",
       "power_monitor/power_monitor_device_source_ios.mm",
@@ -2266,7 +2268,7 @@ mixed_component("base") {
 
   # Android and MacOS have their own custom shared memory handle
   # implementations. e.g. due to supporting both POSIX and native handles.
-  if (is_posix && !is_android && !is_mac) {
+  if (is_posix && !is_android && !is_apple) {
     sources += [
       "memory/platform_shared_memory_mapper_posix.cc",
       "memory/platform_shared_memory_region_posix.cc",

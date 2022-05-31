@@ -7,7 +7,7 @@
 
 #include "build/build_config.h"
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
 #include <mach/mach.h>
 #include "base/mac/scoped_mach_port.h"
 #elif BUILDFLAG(IS_FUCHSIA)
@@ -22,7 +22,7 @@
 
 namespace base::subtle {
 
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_ANDROID)
 // Helper structs to keep two descriptors on POSIX. It's needed to support
 // ConvertToReadOnly().
 struct BASE_EXPORT FDPair {
@@ -49,7 +49,7 @@ struct BASE_EXPORT ScopedFDPair {
 #endif
 
 // Platform-specific shared memory type used by the shared memory system.
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_APPLE)
 using PlatformSharedMemoryHandle = mach_port_t;
 using ScopedPlatformSharedMemoryHandle = mac::ScopedMachSendRight;
 #elif BUILDFLAG(IS_FUCHSIA)

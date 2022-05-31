@@ -140,7 +140,7 @@ component("message_support") {
     ]
   }
 
-  if (is_mac) {
+  if (is_apple) {
     sources += [
       "mach_port_attachment_mac.cc",
       "mach_port_attachment_mac.h",
