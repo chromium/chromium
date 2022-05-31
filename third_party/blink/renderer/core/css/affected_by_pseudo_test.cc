@@ -3537,8 +3537,15 @@ TEST_F(AffectedByPseudoTest, AffectedByHasAfterInsertion4) {
   GetDocument().getElementById("div1")->InsertBefore(
       element, GetDocument().getElementById("div16"));
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_EQ(1U, GetStyleEngine().StyleForElementCount() - start_count);
+  EXPECT_EQ(2U, GetStyleEngine().StyleForElementCount() - start_count);
 
+  CheckAffectedByFlagsForHas(
+      "div12",
+      {{kAffectedBySubjectHas, true},
+       {kAffectedByNonSubjectHas, false},
+       {kAncestorsOrAncestorSiblingsAffectedByHas, false},
+       {kSiblingsAffectedByHasForSiblingRelationship, true},
+       {kSiblingsAffectedByHasForSiblingDescendantRelationship, false}});
   CheckAffectedByFlagsForHas(
       "div15",
       {{kAffectedBySubjectHas, true},
@@ -3566,6 +3573,36 @@ TEST_F(AffectedByPseudoTest, AffectedByHasAfterInsertion4) {
        {kAffectedByNonSubjectHas, false},
        {kAncestorsOrAncestorSiblingsAffectedByHas, false},
        {kSiblingsAffectedByHasForSiblingRelationship, false},
+       {kSiblingsAffectedByHasForSiblingDescendantRelationship, false}});
+
+  start_count = GetStyleEngine().StyleForElementCount();
+  element = MakeGarbageCollected<HTMLDivElement>(GetDocument());
+  element->setAttribute(html_names::kIdAttr, "div15.5");
+  GetDocument().getElementById("div1")->InsertBefore(
+      element, GetDocument().getElementById("div16"));
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(3U, GetStyleEngine().StyleForElementCount() - start_count);
+
+  CheckAffectedByFlagsForHas(
+      "div12",
+      {{kAffectedBySubjectHas, true},
+       {kAffectedByNonSubjectHas, false},
+       {kAncestorsOrAncestorSiblingsAffectedByHas, false},
+       {kSiblingsAffectedByHasForSiblingRelationship, true},
+       {kSiblingsAffectedByHasForSiblingDescendantRelationship, false}});
+  CheckAffectedByFlagsForHas(
+      "div15",
+      {{kAffectedBySubjectHas, true},
+       {kAffectedByNonSubjectHas, false},
+       {kAncestorsOrAncestorSiblingsAffectedByHas, false},
+       {kSiblingsAffectedByHasForSiblingRelationship, true},
+       {kSiblingsAffectedByHasForSiblingDescendantRelationship, false}});
+  CheckAffectedByFlagsForHas(
+      "div15.5",
+      {{kAffectedBySubjectHas, false},
+       {kAffectedByNonSubjectHas, false},
+       {kAncestorsOrAncestorSiblingsAffectedByHas, false},
+       {kSiblingsAffectedByHasForSiblingRelationship, true},
        {kSiblingsAffectedByHasForSiblingDescendantRelationship, false}});
 
   start_count = GetStyleEngine().StyleForElementCount();

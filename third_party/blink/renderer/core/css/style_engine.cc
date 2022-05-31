@@ -1566,11 +1566,20 @@ void StyleEngine::ScheduleInvalidationsForHasPseudoAffectedByInsertion(
   if (!possibly_affecting_has_state)
     return;  // Inserted subtree will not affect :has() state
 
-  if (descendants_possibly_affecting_has_state) {
-    bool needs_has_invalidation_for_inserted_subtree =
-        features.NeedsHasInvalidationForInsertedOrRemovedElement(
-            inserted_element);
+  // Always schedule :has() invalidation if the inserted element may affect
+  // a match result of a compound after direct adjacent combinator by changing
+  // sibling order. (e.g. When we have a style rule '.a:has(+ .b) {}', we always
+  // need :has() invalidation if any element is inserted before '.b')
+  bool needs_has_invalidation_for_inserted_subtree =
+      parent->ChildrenAffectedByDirectAdjacentRules();
 
+  if (!needs_has_invalidation_for_inserted_subtree &&
+      features.NeedsHasInvalidationForInsertedOrRemovedElement(
+          inserted_element)) {
+    needs_has_invalidation_for_inserted_subtree = true;
+  }
+
+  if (descendants_possibly_affecting_has_state) {
     // Do not stop subtree traversal early so that all the descendants have the
     // AncestorsOrAncestorSiblingsAffectedByHas flag set.
     for (Element& element : ElementTraversal::DescendantsOf(inserted_element)) {
@@ -1580,17 +1589,11 @@ void StyleEngine::ScheduleInvalidationsForHasPseudoAffectedByInsertion(
         needs_has_invalidation_for_inserted_subtree = true;
       }
     }
+  }
 
-    if (needs_has_invalidation_for_inserted_subtree) {
-      InvalidateAncestorsOrSiblingsAffectedByHas(parent, previous_sibling);
-      return;
-    }
-  } else {
-    if (features.NeedsHasInvalidationForInsertedOrRemovedElement(
-            inserted_element)) {
-      InvalidateAncestorsOrSiblingsAffectedByHas(parent, previous_sibling);
-      return;
-    }
+  if (needs_has_invalidation_for_inserted_subtree) {
+    InvalidateAncestorsOrSiblingsAffectedByHas(parent, previous_sibling);
+    return;
   }
 
   if (features.NeedsHasInvalidationForPseudoStateChange()) {
@@ -1620,6 +1623,15 @@ void StyleEngine::ScheduleInvalidationsForHasPseudoAffectedByRemoval(
       !InsertionOrRemovalPossiblyAffectHasStateOfPreviousSiblings(
           previous_sibling)) {
     // Removed element will not affect :has() state
+    return;
+  }
+
+  // Always schedule :has() invalidation if the removed element may affect
+  // a match result of a compound after direct adjacent combinator by changing
+  // sibling order. (e.g. When we have a style rule '.a:has(+ .b) {}', we always
+  // need :has() invalidation if the preceding element of '.b' is removed)
+  if (parent->ChildrenAffectedByDirectAdjacentRules()) {
+    InvalidateAncestorsOrSiblingsAffectedByHas(parent, previous_sibling);
     return;
   }
 
