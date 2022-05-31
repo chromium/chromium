@@ -1513,8 +1513,15 @@ IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
   SetTitle(kSingleProfileIndex, bookmark, new_title);
 }
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+// Flaky on most desktop platforms. See https://crbug.com/1330378.
+#define MAYBE_ShouldUploadUnsyncedEntityAfterRestart DISABLED_ShouldUploadUnsyncedEntityAfterRestart
+#else
+#define MAYBE_ShouldUploadUnsyncedEntityAfterRestart ShouldUploadUnsyncedEntityAfterRestart
+#endif
+
 IN_PROC_BROWSER_TEST_F(SingleClientBookmarksSyncTest,
-                       ShouldUploadUnsyncedEntityAfterRestart) {
+                       MAYBE_ShouldUploadUnsyncedEntityAfterRestart) {
   ASSERT_TRUE(SetupClients());
 
   const std::string title = "Title";
