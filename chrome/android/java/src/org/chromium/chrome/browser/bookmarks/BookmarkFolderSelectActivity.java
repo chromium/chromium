@@ -126,8 +126,10 @@ public class BookmarkFolderSelectActivity extends SynchronousInitializationActiv
      */
     public static void startNewFolderSelectActivity(
             BookmarkAddEditFolderActivity activity, List<BookmarkId> bookmarks) {
+        BookmarkId[] bookmarksArray = new BookmarkId[bookmarks.size()];
+        bookmarks.toArray(bookmarksArray);
         Intent intent = BookmarkFolderSelectActivity.createIntent(
-                activity, /*createFolder=*/true, (BookmarkId[]) bookmarks.toArray());
+                activity, /*createFolder=*/true, bookmarksArray);
         activity.startActivityForResult(intent,
                 BookmarkAddEditFolderActivity.PARENT_FOLDER_REQUEST_CODE);
     }
