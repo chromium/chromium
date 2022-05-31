@@ -361,6 +361,12 @@ TEST_F(FileImplTest, OpenInTruncateMode) {
 
 // Note: Ignore nanoseconds, since it may not always be supported. We expect at
 // least second-resolution support though.
+// TODO(https://crbug.com/702990): Remove this test once last_access_time has
+// been removed after PPAPI has been deprecated. Fuchsia does not support touch,
+// which breaks this test that relies on it. Since PPAPI is being deprecated,
+// this test is excluded from the Fuchsia build.
+// See https://crbug.com/1077456 for details.
+#if !BUILDFLAG(IS_FUCHSIA)
 TEST_F(FileImplTest, StatTouch) {
   mojo::Remote<mojom::Directory> directory = CreateTempDir();
   base::File::Error error;
@@ -430,6 +436,7 @@ TEST_F(FileImplTest, StatTouch) {
   // TODO(vtl): Also test Touch() "now" options.
   // TODO(vtl): Also test touching both atime and mtime.
 }
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 
 TEST_F(FileImplTest, TellSeek) {
   mojo::Remote<mojom::Directory> directory = CreateTempDir();

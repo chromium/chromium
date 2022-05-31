@@ -727,15 +727,19 @@ group("gn_all") {
     deps += [ "//third_party/sqlite:sqlite_shell" ]
   }
 
+  if ((is_linux && !is_chromecast) || is_chromeos_lacros || is_fuchsia) {
+    # TODO(https://crbug.com/1329673): Figure out if this should be in gn_all and how cross-platform this is.
+    deps += [ "//components/services/filesystem:filesystem_service_unittests" ]
+  }
+
   if ((is_linux && !is_chromecast) || is_chromeos_lacros) {
-    # TODO(GYP): Figure out if any of these should be in gn_all
+    # TODO(https://crbug.com/1329673): Figure out if any of these should be in gn_all
     # and figure out how cross-platform they are
     deps += [
       "//chrome/installer/util:strings",
       "//chrome/tools/convert_dict",
       "//components/constrained_window:unit_tests",
       "//components/metrics:serialization",
-      "//components/services/filesystem:filesystem_service_unittests",
       "//components/sessions:unit_tests",
       "//media/cast:udp_proxy",
       "//storage/browser:dump_file_system",
