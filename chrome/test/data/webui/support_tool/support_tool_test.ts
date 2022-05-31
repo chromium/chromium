@@ -284,20 +284,29 @@ suite('UrlGeneratorTest', function() {
         urlGenerator.shadowRoot!.querySelector('iron-list')!.items!;
     // Select the first one of data collectors.
     dataCollectors[0]!.selected = true;
-    const expectedLink = 'chrome://support-tool/?case_id=test123&module=jekhh';
     // Set the expected result of URL generation to successful.
     const expectedResult: UrlGenerationResult = {
       success: true,
-      url: expectedLink,
+      url: 'chrome://support-tool/?case_id=test123&module=jekhh',
       errorMessage: ''
     };
     browserProxy.setUrlGenerationResult(expectedResult);
-    // Click the button to generate URL and copy to clipboard.
-    urlGenerator.shadowRoot!.getElementById('copyURLButton')!.click();
+    // Click the button to generate URL.
+    urlGenerator.shadowRoot!.getElementById('generateButton')!.click();
     await browserProxy.whenCalled('generateCustomizedURL');
-    // Check the URL value copied to clipboard if it's as expected.
-    const copiedLink = await navigator.clipboard.readText();
-    assertEquals(copiedLink, expectedLink);
+    // Check the URL value shown to user if it's as expected.
+    const generatedURL = urlGenerator.shadowRoot!.getElementById(
+                             'generatedURL')! as CrInputElement;
+    assertEquals(generatedURL.value, expectedResult.url);
+    // The input fields should be disabled when there's a generated URL shown to
+    // user.
+    assertTrue(caseIdInput.disabled);
+    // Click the button to go back to URL generation.
+    urlGenerator.shadowRoot!.getElementById('backButton')!.click();
+    // The input fields should be enabled again when user clicked back button.
+    assertFalse(caseIdInput.disabled);
+    // Check the URL value shown to user is empty after going back.
+    assertEquals(generatedURL.value, '');
   });
 
   test('url generation fail', async () => {
@@ -309,7 +318,7 @@ suite('UrlGeneratorTest', function() {
     };
     browserProxy.setUrlGenerationResult(expectedResult);
     // Click the button to generate URL.
-    urlGenerator.shadowRoot!.getElementById('copyURLButton')!.click();
+    urlGenerator.shadowRoot!.getElementById('generateButton')!.click();
     await browserProxy.whenCalled('generateCustomizedURL');
     // Check that there's an error message shown to user.
     assertTrue(urlGenerator.$.errorMessageToast.open);

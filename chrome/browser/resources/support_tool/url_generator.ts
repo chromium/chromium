@@ -49,6 +49,10 @@ export class UrlGeneratorElement extends PolymerElement {
         type: String,
         value: '',
       },
+      urlGenerated_: {
+        type: Boolean,
+        value: false,
+      },
       errorMessage_: {
         type: String,
         value: '',
@@ -58,6 +62,7 @@ export class UrlGeneratorElement extends PolymerElement {
 
   private caseId_: string;
   private generatedURL_: string;
+  private urlGenerated_: boolean;
   private errorMessage_: string;
   private dataCollectors_: DataCollectorItem[];
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
@@ -76,19 +81,28 @@ export class UrlGeneratorElement extends PolymerElement {
     this.$.errorMessageToast.show();
   }
 
-  private onUrlGenerationResult_(result: UrlGenerationResult) {
+  private showUrlGenerationResult_(result: UrlGenerationResult) {
     if (result.success) {
       this.generatedURL_ = result.url;
-      navigator.clipboard.writeText(this.generatedURL_.toString());
-      this.$.copyToast.show();
+      this.urlGenerated_ = true;
     } else {
       this.showErrorMessageToast_(result.errorMessage);
     }
   }
 
-  private onCopyURLClick_() {
+  private onGenerateClick_() {
     this.browserProxy_.generateCustomizedURL(this.caseId_, this.dataCollectors_)
-        .then(this.onUrlGenerationResult_.bind(this));
+        .then(this.showUrlGenerationResult_.bind(this));
+  }
+
+  private onBackClick_() {
+    this.generatedURL_ = '';
+    this.urlGenerated_ = false;
+  }
+
+  private onCopyURLClick_() {
+    navigator.clipboard.writeText(this.generatedURL_.toString());
+    this.$.copyToast.show();
   }
 
   private onErrorMessageToastCloseClicked_() {
