@@ -215,6 +215,83 @@ IN_PROC_BROWSER_TEST_F(...) {
 chrome.action.onClicked.addListener(() => { chrome.test.notifyPass(); });
 ```
 
+#### ScriptResultQueue
+A `ScriptResultQueue` is queue of results passed from
+`chrome.test.sendScriptResult()`. Conceptually, it's somewhat similar to an
+`ExtensionTestMessageListener` (they each allow getting data from running
+JS), with a few key differences:
+- It's one-directional (it does not allow communicating back with the JS),
+- It takes any serializable argument, so can be used to pass objects, ints,
+  etc, and
+- It queues up multiple results.
+
+**Example Usage**
+
+```c++
+// test.cc
+IN_PROC_BROWSER_TEST_F(...) {
+  LoadExtension(...);
+  ScriptResultQueue result_queue;
+  ClickAction();
+  base::Value first_result = result_queue.GetNextResult();
+  ClickAction();
+  base::Value second_result = result_queue.GetNextResult();
+}
+```
+
+```js
+// extension_script.js
+chrome.action.onClicked.addListener((tab) => {
+  chrome.test.sendScriptResult(tab);
+});
+```
+
+#### BackgroundScriptExecutor
+A `BackgroundScriptExecutor` is used to execute Javascript in the context of a
+test extension's background context. This class works with both service
+worker-based and background page-based extensions. It can internally leverage
+`ScriptResultQueue` to capture asynchronous results.
+
+**Example Usage**
+
+```c++
+// test.cc
+IN_PROC_BROWSER_TEST_F(...) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "test ext",
+           "manifest_version": 2,
+           "version": "0.1",
+           "background": {"service_worker": "background.js"},
+           "permissions": ["scripting"],
+           "host_permissions": ["<all_urls>"]
+         })";
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), "// Empty"));
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  SetUpTestPage();
+  static constexpr char kScript[] =
+      R"((async () => {
+           let injectionResults =
+               await chrome.scripting.executeScript(
+                   {
+                     target: {tabId: %d},
+                     func: () => { return document.title; }
+                   });
+           let title = injectionResults[0].result;
+           chrome.test.sendScriptResult(title);
+         })())";
+  base::Value script_result =
+      BackgroundScriptExecutor::ExecuteScript(
+          extension->id(),
+          base::StringPrintf(kScript, GetActiveTabId()),
+          BackgroundScriptExecutor::ResultCapture::kSendScriptResult);
+  EXPECT_THAT(script_result,
+              base::test::IsJson(R"("My Page Title")"));
+}
+```
+
 ### Test Suites
 #### ExtensionServiceTestBase
 A somewhat poorly-named common unit test suite class that sets up an extension
