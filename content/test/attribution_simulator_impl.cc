@@ -527,8 +527,9 @@ base::Value RunAttributionSimulation(
                    /*expiry_time=*/base::Time::Max()));
 
   for (auto& event : *events) {
-    task_environment.FastForwardBy(GetEventTime(event) - base::Time::Now());
+    task_environment.AdvanceClock(GetEventTime(event) - base::Time::Now());
     handler.Handle(std::move(event));
+    task_environment.RunUntilIdle();
   }
 
   std::vector<AttributionReport> pending_reports =
