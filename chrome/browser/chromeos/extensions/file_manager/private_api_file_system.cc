@@ -996,6 +996,89 @@ void FileManagerPrivateInternalGetDisallowedTransfersFunction::
           *entry_definition_list))));
 }
 
+FileManagerPrivateInternalGetFilesRestrictedByDlpFunction::
+    FileManagerPrivateInternalGetFilesRestrictedByDlpFunction() = default;
+
+FileManagerPrivateInternalGetFilesRestrictedByDlpFunction::
+    ~FileManagerPrivateInternalGetFilesRestrictedByDlpFunction() = default;
+
+ExtensionFunction::ResponseAction
+FileManagerPrivateInternalGetFilesRestrictedByDlpFunction::Run() {
+  if (!base::FeatureList::IsEnabled(
+          features::kDataLeakPreventionFilesRestriction)) {
+    return RespondNow(OneArgument(base::Value(base::Value::Type::LIST)));
+  }
+
+  policy::DlpRulesManager* rules_manager =
+      policy::DlpRulesManagerFactory::GetForPrimaryProfile();
+  if (!rules_manager) {
+    return RespondNow(OneArgument(base::Value(base::Value::Type::LIST)));
+  }
+
+  using extensions::api::file_manager_private_internal::
+      GetFilesRestrictedByDlp::Params;
+  const std::unique_ptr<Params> params(Params::Create(args()));
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  scoped_refptr<storage::FileSystemContext> file_system_context =
+      file_manager::util::GetFileSystemContextForRenderFrameHost(
+          Profile::FromBrowserContext(browser_context()), render_frame_host());
+
+  for (const std::string& url : params->entries) {
+    FileSystemURL file_system_url(
+        file_system_context->CrackURLInFirstPartyContext(GURL(url)));
+    if (!file_system_url.is_valid()) {
+      return RespondNow(Error("File URL was invalid"));
+    }
+    source_urls_.push_back(file_system_url);
+  }
+
+  files_controller_ = std::make_unique<policy::DlpFilesController>(
+      Profile::FromBrowserContext(browser_context()), rules_manager);
+  files_controller_->GetFilesRestrictedByAnyRule(
+      source_urls_,
+      base::BindOnce(
+          &FileManagerPrivateInternalGetFilesRestrictedByDlpFunction::
+              OnGetFilesRestrictedByDlp,
+          this));
+
+  return RespondLater();
+}
+
+void FileManagerPrivateInternalGetFilesRestrictedByDlpFunction::
+    OnGetFilesRestrictedByDlp(
+        std::vector<storage::FileSystemURL> restricted_files) {
+  file_manager::util::FileDefinitionList file_definition_list;
+  for (const auto& file : restricted_files) {
+    file_manager::util::FileDefinition file_definition;
+    file_definition.is_directory = false;
+    file_definition.virtual_path = file.virtual_path();
+    file_definition.absolute_path = file.path();
+    file_definition_list.emplace_back(std::move(file_definition));
+  }
+
+  file_manager::util::ConvertFileDefinitionListToEntryDefinitionList(
+      file_manager::util::GetFileSystemContextForSourceURL(
+          Profile::FromBrowserContext(browser_context()), source_url()),
+      url::Origin::Create(source_url().DeprecatedGetOriginAsURL()),
+      file_definition_list,  // Safe, since copied internally.
+      base::BindOnce(
+          &FileManagerPrivateInternalGetFilesRestrictedByDlpFunction::
+              OnConvertFileDefinitionListToEntryDefinitionList,
+          this));
+}
+
+void FileManagerPrivateInternalGetFilesRestrictedByDlpFunction::
+    OnConvertFileDefinitionListToEntryDefinitionList(
+        std::unique_ptr<file_manager::util::EntryDefinitionList>
+            entry_definition_list) {
+  DCHECK(entry_definition_list);
+
+  Respond(OneArgument(base::Value::FromUniquePtrValue(
+      file_manager::util::ConvertEntryDefinitionListToListValue(
+          *entry_definition_list))));
+}
+
 FileManagerPrivateInternalStartCopyFunction::
     FileManagerPrivateInternalStartCopyFunction() = default;
 

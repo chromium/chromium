@@ -1039,6 +1039,10 @@ callback GetVolumeMetadataListCallback =
 callback GetDisallowedTransfersCallback =
     void([instanceOf=Entry] object[] disallowedEntries);
 
+// |restrictedFiles| A list of files with any Data Leak Prevention restriction.
+callback GetFilesRestrictedByDlpCallback =
+    void([instanceOf=Entry] object[] restrictedFiles);
+
 // |copyId| ID of the copy task. Can be used to identify the progress, and to
 // cancel the task.
 callback StartCopyCallback = void(long copyId);
@@ -1319,6 +1323,14 @@ interface Functions {
       [instanceOf=Entry] object[] entries,
       [instanceOf=DirectoryEntry] object destinationEntry,
       GetDisallowedTransfersCallback callback);
+
+  // Returns the list of files that have any Data Leak Prevention restriction rule set.
+  // |entries| List of the source entries to be checked.
+  // |callback| Result callback.
+  [nocompile]
+  static void getFilesRestrictedByDlp(
+      [instanceOf=Entry] object[] entries,
+      GetFilesRestrictedByDlpCallback callback);
 
   // Starts to copy an entry. If the source is a directory, the copy is done
   // recursively.

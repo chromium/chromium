@@ -920,6 +920,15 @@ chrome.fileManagerPrivate.getDisallowedTransfers = function(
     entries, destinationEntry, callback) {};
 
 /**
+ * Returns a list of files that are restricted by any Data Leak Prevention
+ * (DLP) rule. |entries| list of source entries to be checked.
+ * @param {!Array<!Entry>} entries
+ * @param {!Array<!Entry>} callback Entries of files that are restricted
+ * by at least one DLP rule.
+ */
+chrome.fileManagerPrivate.getFilesRestrictedByDlp = function(entries, callback) {};
+
+/**
  * Starts to copy an entry. If the source is a directory, the copy is done
  * recursively. |entry| Entry of the source entry to be copied. |parent| Entry
  * of the destination directory. |newName| Name of the new entry. It must not

@@ -224,6 +224,13 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
             sourceUrls, destinationUrl, callback);
       });
 
+  apiFunctions.setHandleRequest(
+      'getFilesRestrictedByDlp', function(entries, callback) {
+        var sourceUrls = entries.map(getEntryURL);
+        fileManagerPrivateInternal.getFilesRestrictedByDlp(
+            sourceUrls, callback);
+      });
+
   apiFunctions.setHandleRequest('startCopy', function(
         entry, parentEntry, newName, callback) {
     var url = getEntryURL(entry);

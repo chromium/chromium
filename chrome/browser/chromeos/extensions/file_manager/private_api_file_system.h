@@ -299,6 +299,33 @@ class FileManagerPrivateInternalGetDisallowedTransfersFunction
   storage::FileSystemURL destination_url_;
 };
 
+// Implements the chrome.fileManagerPrivate.getFilesRestrictedByDlp method.
+class FileManagerPrivateInternalGetFilesRestrictedByDlpFunction
+    : public LoggedExtensionFunction {
+ public:
+  FileManagerPrivateInternalGetFilesRestrictedByDlpFunction();
+
+  DECLARE_EXTENSION_FUNCTION(
+      "fileManagerPrivateInternal.getFilesRestrictedByDlp",
+      FILEMANAGERPRIVATEINTERNAL_GETFILESRESTRICTEDBYDLP)
+
+ protected:
+  ~FileManagerPrivateInternalGetFilesRestrictedByDlpFunction() override;
+
+  // ExtensionFunction overrides.
+  ResponseAction Run() override;
+
+ private:
+  void OnGetFilesRestrictedByDlp(
+      std::vector<storage::FileSystemURL> restricted_files);
+  void OnConvertFileDefinitionListToEntryDefinitionList(
+      std::unique_ptr<file_manager::util::EntryDefinitionList>
+          entry_definition_list);
+
+  std::unique_ptr<policy::DlpFilesController> files_controller_;
+  std::vector<storage::FileSystemURL> source_urls_;
+};
+
 // Implements the chrome.fileManagerPrivate.startCopy method.
 class FileManagerPrivateInternalStartCopyFunction
     : public LoggedExtensionFunction {

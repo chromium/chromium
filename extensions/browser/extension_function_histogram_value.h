@@ -1723,6 +1723,7 @@ enum HistogramValue {
   SHAREDSTORAGEPRIVATE_GET = 1660,
   SHAREDSTORAGEPRIVATE_SET = 1661,
   SHAREDSTORAGEPRIVATE_REMOVE = 1662,
+  FILEMANAGERPRIVATEINTERNAL_GETFILESRESTRICTEDBYDLP = 1663,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY
