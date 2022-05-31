@@ -4,6 +4,10 @@
 
 import("//chromecast/chromecast.gni")
 
+cast_source_set("cast_core_switches") {
+  sources = [ "cast_core_switches.h" ]
+}
+
 # When built for use with Cast Core, enble_cast_media_runtime must be true.
 cast_source_set("core_runtime_lib_simple") {
   data_deps = [ "//chromecast:cast_shell_pak" ]

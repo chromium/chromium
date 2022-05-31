@@ -239,6 +239,7 @@ cast_source_set("cast_runtime_service") {
     ":runtime_application_dispatcher",
     "//base",
     "//chromecast/browser:browser_base",
+    "//chromecast/cast_core:cast_core_switches",
     "//chromecast/media/cma/backend/proxy:headers",
     "//chromecast/metrics:cast_event_builder_simple",
     "//chromecast/service",
