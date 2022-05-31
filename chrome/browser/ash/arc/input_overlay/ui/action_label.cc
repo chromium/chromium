@@ -56,7 +56,26 @@ constexpr char kLeftArrow[] = "←";
 constexpr char kUpArrow[] = "↑";
 constexpr char kRightArrow[] = "→";
 constexpr char kDownArrow[] = "↓";
+constexpr char kBackQuote[] = "`";
+constexpr char kMinus[] = "-";
+constexpr char kEqual[] = "=";
+constexpr char kBracketLeft[] = "[";
+constexpr char kBracketRight[] = "]";
+constexpr char kBackSlash[] = "\\";
+constexpr char kSemicolon[] = ";";
+constexpr char kQuote[] = "'";
+constexpr char kComma[] = ",";
+constexpr char kPeriod[] = ".";
+constexpr char kSlash[] = "/";
+constexpr char kBackSpace[] = "back";
+constexpr char kEnter[] = "enter";
+constexpr char kEscape[] = "esc";
 
+// Modifier keys.
+constexpr char kAlt[] = "alt";
+constexpr char kCtrl[] = "ctrl";
+constexpr char kShift[] = "shift";
+constexpr char kCap[] = "cap";
 }  // namespace
 
 std::string GetDisplayText(const ui::DomCode code) {
@@ -71,6 +90,46 @@ std::string GetDisplayText(const ui::DomCode code) {
       return kUpArrow;
     case ui::DomCode::ARROW_DOWN:
       return kDownArrow;
+    case ui::DomCode::BACKQUOTE:
+      return kBackQuote;
+    case ui::DomCode::MINUS:
+      return kMinus;
+    case ui::DomCode::EQUAL:
+      return kEqual;
+    case ui::DomCode::BRACKET_LEFT:
+      return kBracketLeft;
+    case ui::DomCode::BRACKET_RIGHT:
+      return kBracketRight;
+    case ui::DomCode::BACKSLASH:
+      return kBackSlash;
+    case ui::DomCode::SEMICOLON:
+      return kSemicolon;
+    case ui::DomCode::QUOTE:
+      return kQuote;
+    case ui::DomCode::COMMA:
+      return kComma;
+    case ui::DomCode::PERIOD:
+      return kPeriod;
+    case ui::DomCode::SLASH:
+      return kSlash;
+    case ui::DomCode::BACKSPACE:
+      return kBackSpace;
+    case ui::DomCode::ENTER:
+      return kEnter;
+    case ui::DomCode::ESCAPE:
+      return kEscape;
+    // Modifier keys.
+    case ui::DomCode::ALT_LEFT:
+    case ui::DomCode::ALT_RIGHT:
+      return kAlt;
+    case ui::DomCode::CONTROL_LEFT:
+    case ui::DomCode::CONTROL_RIGHT:
+      return kCtrl;
+    case ui::DomCode::SHIFT_LEFT:
+    case ui::DomCode::SHIFT_RIGHT:
+      return kShift;
+    case ui::DomCode::CAPS_LOCK:
+      return kCap;
     default:
       std::string dom_code_string =
           ui::KeycodeConverter::DomCodeToCodeString(code);
@@ -80,17 +139,10 @@ std::string GetDisplayText(const ui::DomCode code) {
       if (base::StartsWith(dom_code_string, "Digit",
                            base::CompareCase::SENSITIVE))
         return dom_code_string.substr(5);
+      // TODO(cuicuiruan): better display for number pad. Current it shows in
+      // the format of "numpad1" since the number keys on number pad are not
+      // considered the same as numbers on the main keyboard.
       auto lower = base::ToLowerASCII(dom_code_string);
-      if (lower == "escape")
-        return "esc";
-      if (lower == "shiftleft" || lower == "shiftright")
-        return "shift";
-      if (lower == "controlleft" || lower == "controlright")
-        return "ctrl";
-      if (lower == "altleft" || lower == "altright")
-        return "alt";
-      // TODO(cuicuiruan): adjust more display text according to UX design
-      // requirement.
       return lower;
   }
 }

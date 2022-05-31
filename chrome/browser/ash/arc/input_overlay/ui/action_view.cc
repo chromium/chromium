@@ -24,8 +24,14 @@ bool IsReservedDomCode(ui::DomCode code) {
   switch (code) {
     // Audio, brightness key events won't be caught by display overlay so no
     // need to add them.
-    case ui::DomCode::ESCAPE:  // Used for mouse lock.
-      // TODO(cuicuiruan): Add more reserved keys as needed.
+    // Used for mouse lock.
+    case ui::DomCode::ESCAPE:
+    // Used for traversing the views, which is also required by Accessibility.
+    case ui::DomCode::TAB:
+    // Don't support according to UX requirement.
+    case ui::DomCode::BROWSER_BACK:
+    case ui::DomCode::BROWSER_FORWARD:
+    case ui::DomCode::BROWSER_REFRESH:
       return true;
     default:
       return false;
