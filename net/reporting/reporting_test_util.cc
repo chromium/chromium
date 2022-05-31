@@ -28,6 +28,7 @@
 #include "net/reporting/reporting_policy.h"
 #include "net/reporting/reporting_uploader.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -56,8 +57,8 @@ class PendingUploadImpl : public TestReportingUploader::PendingUpload {
   const url::Origin& report_origin() const override { return report_origin_; }
   const GURL& url() const override { return url_; }
   const std::string& json() const override { return json_; }
-  std::unique_ptr<base::Value> GetValue() const override {
-    return base::JSONReader::ReadDeprecated(json_);
+  absl::optional<base::Value> GetValue() const override {
+    return base::JSONReader::Read(json_);
   }
 
   void Complete(ReportingUploader::Outcome outcome) override {

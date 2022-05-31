@@ -66,7 +66,7 @@ class TestReportingUploader : public ReportingUploader {
     virtual const url::Origin& report_origin() const = 0;
     virtual const GURL& url() const = 0;
     virtual const std::string& json() const = 0;
-    virtual std::unique_ptr<base::Value> GetValue() const = 0;
+    virtual absl::optional<base::Value> GetValue() const = 0;
 
     virtual void Complete(Outcome outcome) = 0;
 
