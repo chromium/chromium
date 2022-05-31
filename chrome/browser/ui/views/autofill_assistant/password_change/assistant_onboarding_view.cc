@@ -36,11 +36,9 @@ namespace {
 // Ratios of element width and dialog width.
 constexpr double kAssistantLogoScaleFactor = 0.2;
 constexpr double kTitleScaleFactor = 0.8;
-constexpr double kDescriptionScaleFactor = 0.7;
+constexpr double kDescriptionScaleFactor = 0.8;
+constexpr double kSeparatorScaleFactor = 0.8;
 constexpr double kConsentTestScaleFactor = 1.0;
-
-// Spacing between children.
-constexpr int kChildSpacing = 10;
 
 }  // namespace
 
@@ -108,7 +106,7 @@ void AssistantOnboardingView::InitDialog() {
   layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kCenter);
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
-  layout->set_between_child_spacing(kChildSpacing);
+  layout->set_between_child_spacing(0);
 
   const int dialog_width = views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH);
@@ -137,7 +135,8 @@ void AssistantOnboardingView::InitDialog() {
           .SetProperty(
               views::kMarginsKey,
               gfx::Insets::TLBR(
-                  /*top=*/0,
+                  /*top=*/views::LayoutProvider::Get()->GetDistanceMetric(
+                      views::DISTANCE_UNRELATED_CONTROL_VERTICAL),
                   /*left=*/ConvertScaleFactorToMargin(kTitleScaleFactor),
                   /*bottom=*/0,
                   /*right=*/ConvertScaleFactorToMargin(kTitleScaleFactor)))
@@ -149,20 +148,31 @@ void AssistantOnboardingView::InitDialog() {
       views::Builder<views::Label>()
           .SetText(controller_->GetOnboardingInformation().description)
           .SetTextContext(views::style::TextContext::CONTEXT_DIALOG_BODY_TEXT)
-          .SetTextStyle(views::style::TextStyle::STYLE_PRIMARY)
+          .SetTextStyle(views::style::TextStyle::STYLE_SECONDARY)
           .SetMultiLine(true)
           .SetProperty(
               views::kMarginsKey,
               gfx::Insets::TLBR(
-                  0, ConvertScaleFactorToMargin(kDescriptionScaleFactor), 0,
+                  views::LayoutProvider::Get()->GetDistanceMetric(
+                      views::DISTANCE_RELATED_CONTROL_VERTICAL),
+                  ConvertScaleFactorToMargin(kDescriptionScaleFactor), 0,
                   ConvertScaleFactorToMargin(kDescriptionScaleFactor)))
           .SetID(static_cast<int>(DialogViewID::DESCRIPTION))
           .Build());
 
-  AddChildView(views::Builder<views::Separator>()
-                   .SetPreferredLength(dialog_width)
-                   .SetOrientation(views::Separator::Orientation::kHorizontal)
-                   .Build());
+  AddChildView(
+      views::Builder<views::Separator>()
+          .SetPreferredLength(dialog_width)
+          .SetOrientation(views::Separator::Orientation::kHorizontal)
+          .SetProperty(views::kMarginsKey,
+                       gfx::Insets::TLBR(
+                           views::LayoutProvider::Get()->GetDistanceMetric(
+                               views::DISTANCE_UNRELATED_CONTROL_VERTICAL),
+                           ConvertScaleFactorToMargin(kSeparatorScaleFactor),
+                           views::LayoutProvider::Get()->GetDistanceMetric(
+                               views::DISTANCE_UNRELATED_CONTROL_VERTICAL),
+                           ConvertScaleFactorToMargin(kSeparatorScaleFactor)))
+          .Build());
 
   // Get the offset of the "Learn more" text to create a link style.
   size_t offset = 0;
