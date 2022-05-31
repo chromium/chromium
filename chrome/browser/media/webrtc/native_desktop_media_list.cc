@@ -481,8 +481,10 @@ NativeDesktopMediaList::NativeDesktopMediaList(
   DCHECK(type_ == DesktopMediaList::Type::kWindow ||
          !add_current_process_windows_);
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  // On Windows/OSX the thread must be a UI thread.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_FUCHSIA)
+  // webrtc::DesktopCapturer implementations on Windows, MacOS and Fuchsia
+  // expect to run on a thread with a UI message pump. Under Fuchsia the
+  // capturer needs an async loop to support FIDL I/O.
   base::MessagePumpType thread_type = base::MessagePumpType::UI;
 #else
   base::MessagePumpType thread_type = base::MessagePumpType::DEFAULT;
