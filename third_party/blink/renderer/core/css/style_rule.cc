@@ -379,8 +379,6 @@ StyleRule::StyleRule(const StyleRule& o)
       selector_list_(o.selector_list_.Copy()),
       properties_(o.Properties().MutableCopy()) {}
 
-StyleRule::~StyleRule() = default;
-
 MutableCSSPropertyValueSet& StyleRule::MutableProperties() {
   // Ensure properties_ is initialized.
   if (!Properties().IsMutable())
@@ -423,8 +421,6 @@ StyleRulePage::StyleRulePage(const StyleRulePage& page_rule)
       properties_(page_rule.properties_->MutableCopy()),
       selector_list_(page_rule.selector_list_.Copy()) {}
 
-StyleRulePage::~StyleRulePage() = default;
-
 MutableCSSPropertyValueSet& StyleRulePage::MutableProperties() {
   if (!properties_->IsMutable())
     properties_ = properties_->MutableCopy();
@@ -445,8 +441,6 @@ StyleRuleProperty::StyleRuleProperty(const StyleRuleProperty& property_rule)
     : StyleRuleBase(property_rule),
       name_(property_rule.name_),
       properties_(property_rule.properties_->MutableCopy()) {}
-
-StyleRuleProperty::~StyleRuleProperty() = default;
 
 MutableCSSPropertyValueSet& StyleRuleProperty::MutableProperties() {
   if (!properties_->IsMutable())
@@ -502,8 +496,6 @@ StyleRuleScrollTimeline::StyleRuleScrollTimeline(
       start_(properties->GetPropertyCSSValue(CSSPropertyID::kStart)),
       end_(properties->GetPropertyCSSValue(CSSPropertyID::kEnd)) {}
 
-StyleRuleScrollTimeline::~StyleRuleScrollTimeline() = default;
-
 void StyleRuleScrollTimeline::TraceAfterDispatch(
     blink::Visitor* visitor) const {
   visitor->Trace(source_);
@@ -522,8 +514,6 @@ StyleRuleScope::StyleRuleScope(const StyleScope& style_scope,
 StyleRuleScope::StyleRuleScope(const StyleRuleScope& other)
     : StyleRuleGroup(other),
       style_scope_(MakeGarbageCollected<StyleScope>(*other.style_scope_)) {}
-
-StyleRuleScope::~StyleRuleScope() = default;
 
 void StyleRuleScope::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(style_scope_);
@@ -575,8 +565,6 @@ StyleRuleLayerBlock::StyleRuleLayerBlock(
 StyleRuleLayerBlock::StyleRuleLayerBlock(const StyleRuleLayerBlock& other) =
     default;
 
-StyleRuleLayerBlock::~StyleRuleLayerBlock() = default;
-
 void StyleRuleLayerBlock::TraceAfterDispatch(blink::Visitor* visitor) const {
   StyleRuleGroup::TraceAfterDispatch(visitor);
 }
@@ -590,8 +578,6 @@ StyleRuleLayerStatement::StyleRuleLayerStatement(Vector<LayerName>&& names)
 
 StyleRuleLayerStatement::StyleRuleLayerStatement(
     const StyleRuleLayerStatement& other) = default;
-
-StyleRuleLayerStatement::~StyleRuleLayerStatement() = default;
 
 void StyleRuleLayerStatement::TraceAfterDispatch(
     blink::Visitor* visitor) const {
