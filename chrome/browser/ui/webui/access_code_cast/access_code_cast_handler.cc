@@ -12,6 +12,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/task_runner_util.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_sink_service_factory.h"
+#include "chrome/browser/media/router/discovery/access_code/access_code_media_sink_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/access_code_cast/common/access_code_cast_metrics.h"
 #include "components/media_router/browser/media_router.h"
@@ -61,43 +62,6 @@ const char* AddSinkResultCodeToStringHelper(AddSinkResultCode value) {
       return "PROFILE_SYNC_ERROR";
     default:
       return nullptr;
-  }
-}
-
-AccessCodeCastAddSinkResult AddSinkResultMetricsHelper(
-    AddSinkResultCode value) {
-  switch (value) {
-    case AddSinkResultCode::UNKNOWN_ERROR:
-      return AccessCodeCastAddSinkResult::kUnknownError;
-    case AddSinkResultCode::OK:
-      return AccessCodeCastAddSinkResult::kOk;
-    case AddSinkResultCode::AUTH_ERROR:
-      return AccessCodeCastAddSinkResult::kAuthError;
-    case AddSinkResultCode::HTTP_RESPONSE_CODE_ERROR:
-      return AccessCodeCastAddSinkResult::kHttpResponseCodeError;
-    case AddSinkResultCode::RESPONSE_MALFORMED:
-      return AccessCodeCastAddSinkResult::kResponseMalformed;
-    case AddSinkResultCode::EMPTY_RESPONSE:
-      return AccessCodeCastAddSinkResult::kEmptyResponse;
-    case AddSinkResultCode::INVALID_ACCESS_CODE:
-      return AccessCodeCastAddSinkResult::kInvalidAccessCode;
-    case AddSinkResultCode::ACCESS_CODE_NOT_FOUND:
-      return AccessCodeCastAddSinkResult::kAccessCodeNotFound;
-    case AddSinkResultCode::TOO_MANY_REQUESTS:
-      return AccessCodeCastAddSinkResult::kTooManyRequests;
-    case AddSinkResultCode::SERVICE_NOT_PRESENT:
-      return AccessCodeCastAddSinkResult::kServiceNotPresent;
-    case AddSinkResultCode::SERVER_ERROR:
-      return AccessCodeCastAddSinkResult::kServerError;
-    case AddSinkResultCode::SINK_CREATION_ERROR:
-      return AccessCodeCastAddSinkResult::kSinkCreationError;
-    case AddSinkResultCode::CHANNEL_OPEN_ERROR:
-      return AccessCodeCastAddSinkResult::kChannelOpenError;
-    case AddSinkResultCode::PROFILE_SYNC_ERROR:
-      return AccessCodeCastAddSinkResult::kProfileSyncError;
-    default:
-      NOTREACHED();
-      return AccessCodeCastAddSinkResult::kUnknownError;
   }
 }
 
@@ -157,9 +121,8 @@ AccessCodeCastHandler::AccessCodeCastHandler(
       media_route_starter_(std::move(media_route_starter)) {
   if (media_route_starter_) {
     // Ensure we don't use an off-the-record profile.
-    access_code_sink_service_ =
-        AccessCodeCastSinkServiceFactory::GetForProfile(
-            media_route_starter_->GetProfile()->GetOriginalProfile());
+    access_code_sink_service_ = AccessCodeCastSinkServiceFactory::GetForProfile(
+        media_route_starter_->GetProfile()->GetOriginalProfile());
     Init();
   }
 }

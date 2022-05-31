@@ -60,6 +60,15 @@ bool IsAccessCodeCastEnabled() {
   return GetAccessCodeCastEnabledPref(profile->GetPrefs());
 }
 
+// Callback for adding a remembered sink to the cast list. The second parameter
+// is intentionally unused, but it is necessary to match the AddSinkCallback
+// type.
+void AddRememberedSinkMetricsCallback(AddSinkResultCode result,
+                                      absl::optional<std::string> unused) {
+  AccessCodeCastMetrics::RecordAddSinkResult(
+      true, AddSinkResultMetricsHelper(result));
+}
+
 AccessCodeCastSinkService::AccessCodeMediaRoutesObserver::
     AccessCodeMediaRoutesObserver(
         MediaRouter* media_router,
@@ -638,7 +647,9 @@ void AccessCodeCastSinkService::AddStoredDevicesToMediaRouter(
     const std::vector<MediaSinkInternal> cast_sinks) {
   std::vector<MediaSinkInternal> cast_sinks_to_add;
   for (auto cast_sink : cast_sinks) {
-    AddSinkToMediaRouter(cast_sink, base::DoNothing());
+    AddSinkResultCallback callback =
+        base::BindOnce(AddRememberedSinkMetricsCallback);
+    AddSinkToMediaRouter(cast_sink, std::move(callback));
   }
 }
 

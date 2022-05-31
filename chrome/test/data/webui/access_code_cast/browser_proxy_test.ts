@@ -216,6 +216,11 @@ suite('BrowserProxyTest', () => {
     assertEquals(receivedParams![0], 'AccessCodeCast.Ui.AccessCodeInputTime');
     assertEquals(receivedParams![1], 1000);
 
+    BrowserProxy.recordCastAttemptLength(500);
+    assertEquals(receivedMessage!, 'metricsHandler:recordMediumTime');
+    assertEquals(receivedParams![0], 'AccessCodeCast.Ui.CastAttemptLength');
+    assertEquals(receivedParams![1], 500);
+
     BrowserProxy.recordDialogCloseReason(DialogCloseReason.CANCEL_BUTTON);
     assertEquals(receivedMessage!, 'metricsHandler:recordInHistogram');
     assertEquals(receivedParams![0], 'AccessCodeCast.Ui.DialogCloseReason');

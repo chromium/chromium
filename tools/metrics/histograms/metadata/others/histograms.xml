@@ -213,6 +213,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="AccessCodeCast.Ui.CastAttemptLength" units="ms"
+    expires_after="2023-01-01">
+  <owner>bzielinski@google.com</owner>
+  <owner>cros-edu-eng@google.com</owner>
+  <summary>
+    The amount of time in milliseconds that the dialog is loading while
+    attempting to cast to a new device via access code. Recorded after a cast
+    attempt completes, and does not depend on whether the attempt was successful
+    or ended in error. Logged only on desktop platforms.
+  </summary>
+</histogram>
+
 <histogram name="AccessCodeCast.Ui.DialogCloseReason"
     enum="AccessCodeCastDialogCloseReason" expires_after="2023-01-01">
   <owner>bzielinski@google.com</owner>

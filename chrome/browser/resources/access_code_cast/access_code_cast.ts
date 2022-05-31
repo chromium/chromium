@@ -160,6 +160,7 @@ export class AccessCodeCastElement extends AccessCodeCastElementBase {
 
     this.set('canCast', false);
     this.$.errorMessage.setNoError();
+    const castAttemptStartTime = Date.now();
 
     const method = this.state === PageState.CODE_INPUT ?
         CastDiscoveryMethod.INPUT_ACCESS_CODE :
@@ -171,7 +172,7 @@ export class AccessCodeCastElement extends AccessCodeCastElementBase {
 
     if (addResult !== AddSinkResultCode.OK) {
       this.$.errorMessage.setAddSinkError(addResult);
-      this.afterFailedAddAndCast();
+      this.afterFailedAddAndCast(castAttemptStartTime);
       return;
     }
 
@@ -181,11 +182,12 @@ export class AccessCodeCastElement extends AccessCodeCastElementBase {
 
     if (castResult !== RouteRequestResultCode.OK) {
       this.$.errorMessage.setCastError(castResult);
-      this.afterFailedAddAndCast();
+      this.afterFailedAddAndCast(castAttemptStartTime);
       return;
     }
 
     BrowserProxy.recordDialogCloseReason(DialogCloseReason.CAST_SUCCESS);
+    BrowserProxy.recordCastAttemptLength(Date.now() - castAttemptStartTime);
     BrowserProxy.getInstance().closeDialog();
   }
 
@@ -240,10 +242,11 @@ export class AccessCodeCastElement extends AccessCodeCastElementBase {
     return this.managedFootnote;
   }
 
-  private afterFailedAddAndCast() {
+  private afterFailedAddAndCast(attemptStartDate: number) {
     this.set('canCast', true);
     this.$.codeInput.focusInput();
     this.inputEnabledStartTime = Date.now();
+    BrowserProxy.recordCastAttemptLength(Date.now() - attemptStartDate);
   }
 
   private castStateChange() {

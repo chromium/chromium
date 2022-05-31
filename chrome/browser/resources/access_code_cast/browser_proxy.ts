@@ -15,6 +15,7 @@ declare const chrome: {
 
 const HISTOGRAM_ACCESS_CODE_INPUT_TIME =
     'AccessCodeCast.Ui.AccessCodeInputTime';
+const HISTOGRAM_CAST_ATTEMPT_LENGTH = 'AccessCodeCast.Ui.CastAttemptLength';
 const HISTOGRAM_DIALOG_CLOSE_REASON = 'AccessCodeCast.Ui.DialogCloseReason';
 
 /**
@@ -83,8 +84,22 @@ export class BrowserProxy {
   }
 
   static recordAccessCodeEntryTime(time: number) {
+    if (time < 0) {
+      return;
+    }
+
     chrome.send('metricsHandler:recordMediumTime', [
       HISTOGRAM_ACCESS_CODE_INPUT_TIME, time
+    ]);
+  }
+
+  static recordCastAttemptLength(time: number) {
+    if (time < 0) {
+      return;
+    }
+
+    chrome.send('metricsHandler:recordMediumTime', [
+      HISTOGRAM_CAST_ATTEMPT_LENGTH, time
     ]);
   }
 
