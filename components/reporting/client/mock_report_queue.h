@@ -18,17 +18,17 @@
 namespace reporting {
 
 // A mock of ReportQueue for use in testing.
-class MockReportQueue : public ReportQueue {
+class MockReportQueueStrict : public ReportQueue {
  public:
-  MockReportQueue();
-  ~MockReportQueue() override;
+  MockReportQueueStrict();
+  ~MockReportQueueStrict() override;
 
   MOCK_METHOD(void,
               AddRecord,
-              (base::StringPiece, Priority, ReportQueue::EnqueueCallback),
-              (const override));
+              (base::StringPiece, Priority, EnqueueCallback),
+              (const));
 
-  MOCK_METHOD(void, Flush, (Priority, ReportQueue::FlushCallback), (override));
+  MOCK_METHOD(void, Flush, (Priority, FlushCallback), (override));
 
   MOCK_METHOD(
       (base::OnceCallback<void(StatusOr<std::unique_ptr<ReportQueue>>)>),
@@ -36,6 +36,9 @@ class MockReportQueue : public ReportQueue {
       (),
       (const override));
 };
+
+// Most of the time no need to log uninterested calls.
+typedef ::testing::NiceMock<MockReportQueueStrict> MockReportQueue;
 
 }  // namespace reporting
 

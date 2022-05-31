@@ -23,9 +23,10 @@ TEST(UserEventReporterHelperTest, TestReportEvent) {
   UserEventReporterTestingRecord input_record;
   input_record.set_field1(100);
 
-  auto mock_queue = std::unique_ptr<MockReportQueue, base::OnTaskRunnerDeleter>(
-      new testing::StrictMock<MockReportQueue>(),
-      base::OnTaskRunnerDeleter(base::SequencedTaskRunnerHandle::Get()));
+  auto mock_queue =
+      std::unique_ptr<MockReportQueueStrict, base::OnTaskRunnerDeleter>(
+          new MockReportQueueStrict(),
+          base::OnTaskRunnerDeleter(base::SequencedTaskRunnerHandle::Get()));
 
   UserEventReporterTestingRecord enqueued_record;
   ::reporting::Priority priority;
@@ -53,9 +54,10 @@ TEST(UserEventReporterHelperTest, TestReportEventWithCallback) {
   UserEventReporterTestingRecord input_record;
   input_record.set_field1(100);
 
-  auto mock_queue = std::unique_ptr<MockReportQueue, base::OnTaskRunnerDeleter>(
-      new testing::StrictMock<MockReportQueue>(),
-      base::OnTaskRunnerDeleter(base::SequencedTaskRunnerHandle::Get()));
+  auto mock_queue =
+      std::unique_ptr<MockReportQueueStrict, base::OnTaskRunnerDeleter>(
+          new MockReportQueueStrict(),
+          base::OnTaskRunnerDeleter(base::SequencedTaskRunnerHandle::Get()));
 
   UserEventReporterTestingRecord enqueued_record;
   ::reporting::Priority priority;

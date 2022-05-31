@@ -47,10 +47,11 @@ class MetricReportQueueTest : public ::testing::Test {
 };
 
 TEST_F(MetricReportQueueTest, ManualUpload) {
-  auto mock_queue = std::unique_ptr<MockReportQueue, base::OnTaskRunnerDeleter>(
-      new testing::StrictMock<MockReportQueue>(),
-      base::OnTaskRunnerDeleter(
-          base::ThreadPool::CreateSequencedTaskRunner({})));
+  auto mock_queue =
+      std::unique_ptr<MockReportQueueStrict, base::OnTaskRunnerDeleter>(
+          new MockReportQueueStrict(),
+          base::OnTaskRunnerDeleter(
+              base::ThreadPool::CreateSequencedTaskRunner({})));
   auto* mock_queue_ptr = mock_queue.get();
   MetricData record;
   record.set_timestamp_ms(123456);
@@ -84,7 +85,7 @@ TEST_F(MetricReportQueueTest, ManualUploadWithTimer) {
 
   int upload_count = 0;
   auto mock_queue = std::unique_ptr<MockReportQueue, base::OnTaskRunnerDeleter>(
-      new testing::NiceMock<MockReportQueue>(),
+      new MockReportQueue(),
       base::OnTaskRunnerDeleter(
           base::ThreadPool::CreateSequencedTaskRunner({})));
   auto* mock_queue_ptr = mock_queue.get();
@@ -132,10 +133,11 @@ TEST_F(MetricReportQueueTest, ManualUploadWithTimer) {
 
 TEST_F(MetricReportQueueTest, RateControlledFlush_TimeNotElapsed) {
   settings_->SetInteger(kRateSettingPath, kRateMs);
-  auto mock_queue = std::unique_ptr<MockReportQueue, base::OnTaskRunnerDeleter>(
-      new testing::StrictMock<MockReportQueue>(),
-      base::OnTaskRunnerDeleter(
-          base::ThreadPool::CreateSequencedTaskRunner({})));
+  auto mock_queue =
+      std::unique_ptr<MockReportQueueStrict, base::OnTaskRunnerDeleter>(
+          new MockReportQueueStrict(),
+          base::OnTaskRunnerDeleter(
+              base::ThreadPool::CreateSequencedTaskRunner({})));
   auto* mock_queue_ptr = mock_queue.get();
   MetricData record;
   record.set_timestamp_ms(123456);
@@ -168,10 +170,11 @@ TEST_F(MetricReportQueueTest, RateControlledFlush_TimeNotElapsed) {
 
 TEST_F(MetricReportQueueTest, RateControlledFlush_TimeElapsed) {
   settings_->SetInteger(kRateSettingPath, kRateMs);
-  auto mock_queue = std::unique_ptr<MockReportQueue, base::OnTaskRunnerDeleter>(
-      new testing::StrictMock<MockReportQueue>(),
-      base::OnTaskRunnerDeleter(
-          base::ThreadPool::CreateSequencedTaskRunner({})));
+  auto mock_queue =
+      std::unique_ptr<MockReportQueueStrict, base::OnTaskRunnerDeleter>(
+          new MockReportQueueStrict(),
+          base::OnTaskRunnerDeleter(
+              base::ThreadPool::CreateSequencedTaskRunner({})));
   auto* mock_queue_ptr = mock_queue.get();
   MetricData record;
   record.set_timestamp_ms(123456);

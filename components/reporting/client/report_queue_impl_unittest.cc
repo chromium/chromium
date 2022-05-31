@@ -270,7 +270,7 @@ TEST_F(ReportQueueImplTest, OverlappingStringRecords) {
 
   base::queue<ReportQueue::EnqueueCallback> enqueue_cb_queue;
   int enqueue_count = 0;
-  auto mock_queue = std::make_unique<testing::NiceMock<MockReportQueue>>();
+  auto mock_queue = std::make_unique<MockReportQueue>();
   EXPECT_CALL(*mock_queue, AddRecord)
       .Times(3)
       .WillRepeatedly(

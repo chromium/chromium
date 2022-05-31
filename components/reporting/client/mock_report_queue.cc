@@ -6,8 +6,8 @@
 
 namespace reporting {
 
-MockReportQueue::MockReportQueue() = default;
+MockReportQueueStrict::MockReportQueueStrict() = default;
 
-MockReportQueue::~MockReportQueue() = default;
+MockReportQueueStrict::~MockReportQueueStrict() = default;
 
 }  // namespace reporting

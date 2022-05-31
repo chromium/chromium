@@ -32,8 +32,7 @@ class TestHelper : public UserEventReporterHelper {
  public:
   TestHelper(std::unique_ptr<::reporting::ReportQueue,
                              base::OnTaskRunnerDeleter> report_queue,
-             base::WeakPtr<testing::StrictMock<::reporting::MockReportQueue>>
-                 mock_queue,
+             base::WeakPtr<::reporting::MockReportQueueStrict> mock_queue,
              bool should_report_event,
              bool should_report_user,
              bool is_user_new)
@@ -61,7 +60,7 @@ class TestHelper : public UserEventReporterHelper {
     mock_queue_->Enqueue(record, priority, std::move(enqueue_cb));
   }
 
-  base::WeakPtr<testing::StrictMock<::reporting::MockReportQueue>> mock_queue_;
+  base::WeakPtr<::reporting::MockReportQueueStrict> mock_queue_;
 
   bool should_report_event_;
 
@@ -82,9 +81,9 @@ class UserAddedRemovedReporterTest : public ::testing::Test {
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
         std::move(user_manager));
 
-    mock_queue_ = new testing::StrictMock<::reporting::MockReportQueue>();
-    weak_mock_queue_factory_ = std::make_unique<base::WeakPtrFactory<
-        testing::StrictMock<::reporting::MockReportQueue>>>(mock_queue_);
+    mock_queue_ = new ::reporting::MockReportQueueStrict();
+    weak_mock_queue_factory_ = std::make_unique<
+        base::WeakPtrFactory<::reporting::MockReportQueueStrict>>(mock_queue_);
   }
 
   void TearDown() override {
@@ -135,10 +134,9 @@ class UserAddedRemovedReporterTest : public ::testing::Test {
     return profile;
   }
 
-  testing::StrictMock<::reporting::MockReportQueue>* mock_queue_;
+  ::reporting::MockReportQueueStrict* mock_queue_;
 
-  std::unique_ptr<
-      base::WeakPtrFactory<testing::StrictMock<::reporting::MockReportQueue>>>
+  std::unique_ptr<base::WeakPtrFactory<::reporting::MockReportQueueStrict>>
       weak_mock_queue_factory_;
 
  private:

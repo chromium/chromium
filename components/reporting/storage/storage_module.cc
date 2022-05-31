@@ -31,7 +31,7 @@ StorageModule::~StorageModule() = default;
 
 void StorageModule::AddRecord(Priority priority,
                               Record record,
-                              base::OnceCallback<void(Status)> callback) {
+                              EnqueueCallback callback) {
   storage_->Write(priority, std::move(record), std::move(callback));
 }
 
@@ -46,8 +46,7 @@ void StorageModule::ReportSuccess(SequenceInformation sequence_information,
       }));
 }
 
-void StorageModule::Flush(Priority priority,
-                          base::OnceCallback<void(Status)> callback) {
+void StorageModule::Flush(Priority priority, FlushCallback callback) {
   std::move(callback).Run(storage_->Flush(priority));
 }
 

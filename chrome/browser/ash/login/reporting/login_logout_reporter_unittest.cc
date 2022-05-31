@@ -143,7 +143,7 @@ class LoginLogoutTestHelper {
     report_count_ = 0;
     auto mock_queue = std::unique_ptr<::reporting::MockReportQueue,
                                       base::OnTaskRunnerDeleter>(
-        new testing::NiceMock<::reporting::MockReportQueue>(),
+        new ::reporting::MockReportQueue(),
         base::OnTaskRunnerDeleter(base::SequencedTaskRunnerHandle::Get()));
 
     ON_CALL(*mock_queue, AddRecord(_, ::reporting::Priority::SECURITY, _))
