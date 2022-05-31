@@ -108,8 +108,19 @@ PasswordBubbleViewBase* PasswordBubbleViewBase::CreateBubble(
 
 // static
 void PasswordBubbleViewBase::CloseCurrentBubble() {
-  if (g_manage_passwords_bubble_)
+  if (g_manage_passwords_bubble_) {
+    // It can be the case that a password bubble is being closed while another
+    // password bubble is being opened. The metrics recorder can be shared
+    // between them and it doesn't understand the sequence [open1, open2,
+    // close1, close2]. Therefore, we reset the model early (before the bubble
+    // destructor) to get the following sequence of events [open1, close1,
+    // open2, close2].
+    PasswordBubbleControllerBase* controller =
+        g_manage_passwords_bubble_->GetController();
+    DCHECK(controller);
+    controller->OnBubbleClosing();
     g_manage_passwords_bubble_->GetWidget()->Close();
+  }
 }
 
 // static
@@ -199,19 +210,4 @@ void PasswordBubbleViewBase::Init() {
   DCHECK(controller);
   SetTitle(controller->GetTitle());
   SetShowTitle(!controller->GetTitle().empty());
-}
-
-void PasswordBubbleViewBase::OnWidgetClosing(views::Widget* widget) {
-  LocationBarBubbleDelegateView::OnWidgetClosing(widget);
-  if (widget != GetWidget())
-    return;
-  // It can be the case that a password bubble is being closed while another
-  // password bubble is being opened. The metrics recorder can be shared
-  // between them and it doesn't understand the sequence [open1, open2,
-  // close1, close2]. Therefore, we reset the model early (before the bubble
-  // destructor) to get the following sequence of events [open1, close1,
-  // open2, close2].
-  PasswordBubbleControllerBase* controller = GetController();
-  DCHECK(controller);
-  controller->OnBubbleClosing();
 }
