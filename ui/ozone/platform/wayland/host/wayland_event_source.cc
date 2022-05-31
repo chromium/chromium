@@ -330,11 +330,9 @@ void WaylandEventSource::OnPointerAxisStopEvent(uint32_t axis) {
 }
 
 void WaylandEventSource::OnTouchPressEvent(WaylandWindow* window,
-                                           const gfx::PointF& orig_location,
+                                           const gfx::PointF& location,
                                            base::TimeTicks timestamp,
                                            PointerId id) {
-  auto location = connection_->MaybeConvertLocation(orig_location, window);
-
   DCHECK(window);
   HandleTouchFocusChange(window, true);
 
