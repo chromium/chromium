@@ -65,6 +65,30 @@ const char kTestStunServer[] = "test_relay_server.com";
 
 }  // namespace
 
+// This is invoked automatically by the gtest framework, and improves the error
+// messages when a test fails (by properly formatting the host state instead
+// of printing their byte value).
+void PrintTo(It2MeHostState state, std::ostream* os) {
+#define CASE(_state)           \
+  case It2MeHostState::_state: \
+    *os << #_state;            \
+    return;
+
+  switch (state) {
+    CASE(kDisconnected);
+    CASE(kStarting);
+    CASE(kRequestedAccessCode);
+    CASE(kReceivedAccessCode);
+    CASE(kConnecting);
+    CASE(kConnected);
+    CASE(kError);
+    CASE(kInvalidDomainError);
+  }
+  NOTREACHED();
+  *os << "Unknown state " << static_cast<int>(state);
+  return;
+}
+
 class FakeIt2MeConfirmationDialog : public It2MeConfirmationDialog {
  public:
   FakeIt2MeConfirmationDialog(const std::string& remote_user_email,
@@ -803,6 +827,19 @@ TEST_F(It2MeHostTest,
        EnterpriseSessionsSucceedWhenRemoteSupportConnectionsPolicyDisabled) {
   SetPolicies({{policy::key::kRemoteAccessHostAllowRemoteSupportConnections,
                 base::Value(false)}});
+
+  is_enterprise_session_ = true;
+  StartHost();
+  ASSERT_EQ(It2MeHostState::kReceivedAccessCode, last_host_state_);
+
+  ShutdownHost();
+  ASSERT_EQ(It2MeHostState::kDisconnected, last_host_state_);
+  ASSERT_EQ(ErrorCode::OK, last_error_code_);
+}
+
+TEST_F(It2MeHostTest, EnterpriseSessionsShouldNotCheckHostDomain) {
+  SetPolicies({{policy::key::kRemoteAccessHostDomainList,
+                MakeList({"other-domain.com"})}});
 
   is_enterprise_session_ = true;
   StartHost();
