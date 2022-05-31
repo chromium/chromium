@@ -1160,23 +1160,15 @@ wtf_size_t PreviousInnerFragmentainerIndex(
   for (const NGPhysicalBoxFragment& walker : box->PhysicalFragments()) {
     if (&walker == &fragment)
       return idx;
-    const NGBlockBreakToken* break_token = walker.BreakToken();
-
     // Find the last fragmentainer inside this fragment.
-    const auto children = break_token->ChildBreakTokens();
-    for (auto& child_token : base::Reversed(children)) {
-      DCHECK(child_token->IsBlockType());
-      if (child_token->InputNode() != break_token->InputNode()) {
-        // Not a fragmentainer (probably a spanner)
+    auto children = walker.Children();
+    for (auto& child : base::Reversed(children)) {
+      if (!child->IsFragmentainerBox()) {
+        // Not a fragmentainer (could be a spanner, OOF, etc.)
         continue;
       }
-      const auto& block_child_token = To<NGBlockBreakToken>(*child_token);
-      // There may be a break before the first column, if we had to break
-      // between the block-start border/padding of the multicol container and
-      // its contents due to space shortage.
-      if (block_child_token.IsBreakBefore())
-        continue;
-      idx = block_child_token.SequenceNumber() + 1;
+      const auto* token = To<NGBlockBreakToken>(child->BreakToken());
+      idx = token->SequenceNumber() + 1;
       break;
     }
   }
