@@ -53,6 +53,7 @@ class GPUTexture;
 class GPUTextureDescriptor;
 class ScriptPromiseResolver;
 class ScriptState;
+class V8GPUErrorFilter;
 
 class GPUDevice final : public EventTargetWithInlineData,
                         public ExecutionContextClient,
@@ -125,7 +126,7 @@ class GPUDevice final : public EventTargetWithInlineData,
 
   GPUQuerySet* createQuerySet(const GPUQuerySetDescriptor* descriptor);
 
-  void pushErrorScope(const WTF::String& filter);
+  void pushErrorScope(const V8GPUErrorFilter& filter);
   ScriptPromise popErrorScope(ScriptState* script_state);
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(uncapturederror, kUncapturederror)

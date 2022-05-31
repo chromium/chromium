@@ -25,11 +25,10 @@ WGPUBindGroupLayoutEntry AsDawnType(
 
   dawn_binding.binding = webgpu_binding->binding();
   dawn_binding.visibility =
-      AsDawnEnum<WGPUShaderStage>(webgpu_binding->visibility());
+      AsDawnFlags<WGPUShaderStageFlags>(webgpu_binding->visibility());
 
   if (webgpu_binding->hasBuffer()) {
-    dawn_binding.buffer.type =
-        AsDawnEnum<WGPUBufferBindingType>(webgpu_binding->buffer()->type());
+    dawn_binding.buffer.type = AsDawnEnum(webgpu_binding->buffer()->type());
     dawn_binding.buffer.hasDynamicOffset =
         webgpu_binding->buffer()->hasDynamicOffset();
     dawn_binding.buffer.minBindingSize =
@@ -37,27 +36,25 @@ WGPUBindGroupLayoutEntry AsDawnType(
   }
 
   if (webgpu_binding->hasSampler()) {
-    dawn_binding.sampler.type =
-        AsDawnEnum<WGPUSamplerBindingType>(webgpu_binding->sampler()->type());
+    dawn_binding.sampler.type = AsDawnEnum(webgpu_binding->sampler()->type());
   }
 
   if (webgpu_binding->hasTexture()) {
-    dawn_binding.texture.sampleType = AsDawnEnum<WGPUTextureSampleType>(
-        webgpu_binding->texture()->sampleType());
-    dawn_binding.texture.viewDimension = AsDawnEnum<WGPUTextureViewDimension>(
-        webgpu_binding->texture()->viewDimension());
+    dawn_binding.texture.sampleType =
+        AsDawnEnum(webgpu_binding->texture()->sampleType());
+    dawn_binding.texture.viewDimension =
+        AsDawnEnum(webgpu_binding->texture()->viewDimension());
     dawn_binding.texture.multisampled =
         webgpu_binding->texture()->multisampled();
   }
 
   if (webgpu_binding->hasStorageTexture()) {
-    dawn_binding.storageTexture.access = AsDawnEnum<WGPUStorageTextureAccess>(
-        webgpu_binding->storageTexture()->access());
-    dawn_binding.storageTexture.format = AsDawnEnum<WGPUTextureFormat>(
-        webgpu_binding->storageTexture()->format());
+    dawn_binding.storageTexture.access =
+        AsDawnEnum(webgpu_binding->storageTexture()->access());
+    dawn_binding.storageTexture.format =
+        AsDawnEnum(webgpu_binding->storageTexture()->format());
     dawn_binding.storageTexture.viewDimension =
-        AsDawnEnum<WGPUTextureViewDimension>(
-            webgpu_binding->storageTexture()->viewDimension());
+        AsDawnEnum(webgpu_binding->storageTexture()->viewDimension());
   }
 
   if (webgpu_binding->hasExternalTexture()) {

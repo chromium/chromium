@@ -19,7 +19,7 @@ GPUQuerySet* GPUQuerySet::Create(GPUDevice* device,
 
   WGPUQuerySetDescriptor dawn_desc = {};
   dawn_desc.nextInChain = nullptr;
-  dawn_desc.type = AsDawnEnum<WGPUQueryType>(webgpu_desc->type());
+  dawn_desc.type = AsDawnEnum(webgpu_desc->type());
   dawn_desc.count = webgpu_desc->count();
 
   std::unique_ptr<WGPUPipelineStatisticName[]> pipeline_statistics;

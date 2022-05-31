@@ -36,10 +36,9 @@ WGPUTextureDescriptor AsDawnType(
   WGPUTextureDescriptor dawn_desc = {};
   dawn_desc.nextInChain = nullptr;
   dawn_desc.usage = static_cast<WGPUTextureUsage>(webgpu_desc->usage());
-  dawn_desc.dimension =
-      AsDawnEnum<WGPUTextureDimension>(webgpu_desc->dimension());
+  dawn_desc.dimension = AsDawnEnum(webgpu_desc->dimension());
   dawn_desc.size = AsDawnType(webgpu_desc->size());
-  dawn_desc.format = AsDawnEnum<WGPUTextureFormat>(webgpu_desc->format());
+  dawn_desc.format = AsDawnEnum(webgpu_desc->format());
   dawn_desc.mipLevelCount = webgpu_desc->mipLevelCount();
   dawn_desc.sampleCount = webgpu_desc->sampleCount();
 
@@ -64,11 +63,10 @@ WGPUTextureViewDescriptor AsDawnType(
   WGPUTextureViewDescriptor dawn_desc = {};
   dawn_desc.nextInChain = nullptr;
   if (webgpu_desc->hasFormat()) {
-    dawn_desc.format = AsDawnEnum<WGPUTextureFormat>(webgpu_desc->format());
+    dawn_desc.format = AsDawnEnum(webgpu_desc->format());
   }
   if (webgpu_desc->hasDimension()) {
-    dawn_desc.dimension =
-        AsDawnEnum<WGPUTextureViewDimension>(webgpu_desc->dimension());
+    dawn_desc.dimension = AsDawnEnum(webgpu_desc->dimension());
   }
   dawn_desc.baseMipLevel = webgpu_desc->baseMipLevel();
   dawn_desc.mipLevelCount = WGPU_MIP_LEVEL_COUNT_UNDEFINED;
@@ -82,7 +80,7 @@ WGPUTextureViewDescriptor AsDawnType(
     dawn_desc.arrayLayerCount = std::min(webgpu_desc->arrayLayerCount(),
                                          dawn_desc.arrayLayerCount - 1u);
   }
-  dawn_desc.aspect = AsDawnEnum<WGPUTextureAspect>(webgpu_desc->aspect());
+  dawn_desc.aspect = AsDawnEnum(webgpu_desc->aspect());
   if (webgpu_desc->hasLabel()) {
     *label = webgpu_desc->label().Utf8();
     dawn_desc.label = label->c_str();

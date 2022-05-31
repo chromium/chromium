@@ -28,8 +28,7 @@ GPURenderBundleEncoder* GPURenderBundleEncoder::Create(
 
   WGPUTextureFormat depth_stencil_format = WGPUTextureFormat_Undefined;
   if (webgpu_desc->hasDepthStencilFormat()) {
-    depth_stencil_format =
-        AsDawnEnum<WGPUTextureFormat>(webgpu_desc->depthStencilFormat());
+    depth_stencil_format = AsDawnEnum(webgpu_desc->depthStencilFormat());
   }
 
   std::string label;

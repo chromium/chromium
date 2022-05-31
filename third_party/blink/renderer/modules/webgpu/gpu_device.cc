@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_compute_pipeline_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_device_descriptor.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_error_filter.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_external_texture_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_feature_name.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_queue_descriptor.h"
@@ -425,9 +426,8 @@ GPUQuerySet* GPUDevice::createQuerySet(
   return GPUQuerySet::Create(this, descriptor);
 }
 
-void GPUDevice::pushErrorScope(const WTF::String& filter) {
-  GetProcs().devicePushErrorScope(GetHandle(),
-                                  AsDawnEnum<WGPUErrorFilter>(filter));
+void GPUDevice::pushErrorScope(const V8GPUErrorFilter& filter) {
+  GetProcs().devicePushErrorScope(GetHandle(), AsDawnEnum(filter));
 }
 
 ScriptPromise GPUDevice::popErrorScope(ScriptState* script_state) {

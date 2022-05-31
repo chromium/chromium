@@ -46,13 +46,13 @@ WGPURenderPassColorAttachment AsDawnType(
   }
 
   if (webgpu_desc->hasLoadOp()) {
-    dawn_desc.loadOp = AsDawnEnum<WGPULoadOp>(webgpu_desc->loadOp());
+    dawn_desc.loadOp = AsDawnEnum(webgpu_desc->loadOp());
   } else if (webgpu_desc->hasLoadValue()) {
     // TODO(dawn:1269): Remove this branch after the deprecation period.
     switch (webgpu_desc->loadValue()->GetContentType()) {
       case V8UnionGPUColorOrGPULoadOp::ContentType::kGPULoadOp:
         dawn_desc.loadOp =
-            AsDawnEnum<WGPULoadOp>(webgpu_desc->loadValue()->GetAsGPULoadOp());
+            AsDawnEnum(webgpu_desc->loadValue()->GetAsGPULoadOp());
         break;
       case V8UnionGPUColorOrGPULoadOp::ContentType::kGPUColorDict:
         dawn_desc.loadOp = WGPULoadOp_Clear;
@@ -68,7 +68,7 @@ WGPURenderPassColorAttachment AsDawnType(
   }
 
   if (webgpu_desc->hasStoreOp()) {
-    dawn_desc.storeOp = AsDawnEnum<WGPUStoreOp>(webgpu_desc->storeOp());
+    dawn_desc.storeOp = AsDawnEnum(webgpu_desc->storeOp());
   } else {
     // TODO(dawn:1269): Remove when deprecation period is complete.
     dawn_desc.storeOp = WGPUStoreOp_Store;
@@ -88,8 +88,7 @@ WGPURenderPassDepthStencilAttachment AsDawnType(
     dawn_desc.view = webgpu_desc->view()->GetHandle();
 
     if (webgpu_desc->hasDepthLoadOp()) {
-      dawn_desc.depthLoadOp =
-          AsDawnEnum<WGPULoadOp>(webgpu_desc->depthLoadOp());
+      dawn_desc.depthLoadOp = AsDawnEnum(webgpu_desc->depthLoadOp());
       dawn_desc.clearDepth = webgpu_desc->depthClearValue();
     } else if (webgpu_desc->hasDepthLoadValue()) {
       // TODO(dawn:1269): Remove this branch after the deprecation period.
@@ -99,8 +98,8 @@ WGPURenderPassDepthStencilAttachment AsDawnType(
 
       switch (webgpu_desc->depthLoadValue()->GetContentType()) {
         case V8UnionFloatOrGPULoadOp::ContentType::kGPULoadOp:
-          dawn_desc.depthLoadOp = AsDawnEnum<WGPULoadOp>(
-              webgpu_desc->depthLoadValue()->GetAsGPULoadOp());
+          dawn_desc.depthLoadOp =
+              AsDawnEnum(webgpu_desc->depthLoadValue()->GetAsGPULoadOp());
           dawn_desc.clearDepth = 1.0f;
           break;
         case V8UnionFloatOrGPULoadOp::ContentType::kFloat:
@@ -111,15 +110,13 @@ WGPURenderPassDepthStencilAttachment AsDawnType(
     }
 
     if (webgpu_desc->hasDepthStoreOp()) {
-      dawn_desc.depthStoreOp =
-          AsDawnEnum<WGPUStoreOp>(webgpu_desc->depthStoreOp());
+      dawn_desc.depthStoreOp = AsDawnEnum(webgpu_desc->depthStoreOp());
     }
 
     dawn_desc.depthReadOnly = webgpu_desc->depthReadOnly();
 
     if (webgpu_desc->hasStencilLoadOp()) {
-      dawn_desc.stencilLoadOp =
-          AsDawnEnum<WGPULoadOp>(webgpu_desc->stencilLoadOp());
+      dawn_desc.stencilLoadOp = AsDawnEnum(webgpu_desc->stencilLoadOp());
       dawn_desc.clearStencil = webgpu_desc->stencilClearValue();
     } else if (webgpu_desc->hasStencilLoadValue()) {
       // TODO(dawn:1269): Remove this branch after the deprecation period.
@@ -129,8 +126,8 @@ WGPURenderPassDepthStencilAttachment AsDawnType(
 
       switch (webgpu_desc->stencilLoadValue()->GetContentType()) {
         case V8UnionGPULoadOpOrGPUStencilValue::ContentType::kGPULoadOp:
-          dawn_desc.stencilLoadOp = AsDawnEnum<WGPULoadOp>(
-              webgpu_desc->stencilLoadValue()->GetAsGPULoadOp());
+          dawn_desc.stencilLoadOp =
+              AsDawnEnum(webgpu_desc->stencilLoadValue()->GetAsGPULoadOp());
           dawn_desc.clearStencil = 0;
           break;
         case V8UnionGPULoadOpOrGPUStencilValue::ContentType::kV8GPUStencilValue:
@@ -142,8 +139,7 @@ WGPURenderPassDepthStencilAttachment AsDawnType(
     }
 
     if (webgpu_desc->hasStencilStoreOp()) {
-      dawn_desc.stencilStoreOp =
-          AsDawnEnum<WGPUStoreOp>(webgpu_desc->stencilStoreOp());
+      dawn_desc.stencilStoreOp = AsDawnEnum(webgpu_desc->stencilStoreOp());
     }
 
   dawn_desc.stencilReadOnly = webgpu_desc->stencilReadOnly();

@@ -47,7 +47,6 @@
 GPUDevice includes GPUObjectBase;
 
 enum GPUErrorFilter {
-    "none",
     "out-of-memory",
     "validation"
 };

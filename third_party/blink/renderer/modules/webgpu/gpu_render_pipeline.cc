@@ -35,10 +35,9 @@ WGPUBlendComponent AsDawnType(const GPUBlendComponent* webgpu_desc) {
   DCHECK(webgpu_desc);
 
   WGPUBlendComponent dawn_desc = {};
-  dawn_desc.dstFactor = AsDawnEnum<WGPUBlendFactor>(webgpu_desc->dstFactor());
-  dawn_desc.srcFactor = AsDawnEnum<WGPUBlendFactor>(webgpu_desc->srcFactor());
-  dawn_desc.operation =
-      AsDawnEnum<WGPUBlendOperation>(webgpu_desc->operation());
+  dawn_desc.dstFactor = AsDawnEnum(webgpu_desc->dstFactor());
+  dawn_desc.srcFactor = AsDawnEnum(webgpu_desc->srcFactor());
+  dawn_desc.operation = AsDawnEnum(webgpu_desc->operation());
 
   return dawn_desc;
 }
@@ -63,8 +62,8 @@ WGPUColorTargetState AsDawnType(const GPUColorTargetState* webgpu_desc) {
   // Blend is handled in ConvertToDawnType
   dawn_desc.blend = nullptr;
   dawn_desc.writeMask =
-      AsDawnEnum<WGPUColorWriteMask>(webgpu_desc->writeMask());
-  dawn_desc.format = AsDawnEnum<WGPUTextureFormat>(webgpu_desc->format());
+      AsDawnFlags<WGPUColorWriteMask>(webgpu_desc->writeMask());
+  dawn_desc.format = AsDawnEnum(webgpu_desc->format());
 
   return dawn_desc;
 }
@@ -74,7 +73,7 @@ WGPUVertexBufferLayout AsDawnType(const GPUVertexBufferLayout* webgpu_desc) {
 
   WGPUVertexBufferLayout dawn_desc = {};
   dawn_desc.arrayStride = webgpu_desc->arrayStride();
-  dawn_desc.stepMode = AsDawnEnum<WGPUVertexStepMode>(webgpu_desc->stepMode());
+  dawn_desc.stepMode = AsDawnEnum(webgpu_desc->stepMode());
   dawn_desc.attributeCount = webgpu_desc->attributes().size();
 
   // dawn_desc.attributes is handled outside separately
@@ -88,7 +87,7 @@ WGPUVertexAttribute AsDawnType(const GPUVertexAttribute* webgpu_desc) {
   WGPUVertexAttribute dawn_desc = {};
   dawn_desc.shaderLocation = webgpu_desc->shaderLocation();
   dawn_desc.offset = webgpu_desc->offset();
-  dawn_desc.format = AsDawnEnum<WGPUVertexFormat>(webgpu_desc->format());
+  dawn_desc.format = AsDawnEnum(webgpu_desc->format());
 
   return dawn_desc;
 }
@@ -99,11 +98,10 @@ WGPUStencilFaceState AsDawnType(const GPUStencilFaceState* webgpu_desc) {
   DCHECK(webgpu_desc);
 
   WGPUStencilFaceState dawn_desc = {};
-  dawn_desc.compare = AsDawnEnum<WGPUCompareFunction>(webgpu_desc->compare());
-  dawn_desc.depthFailOp =
-      AsDawnEnum<WGPUStencilOperation>(webgpu_desc->depthFailOp());
-  dawn_desc.failOp = AsDawnEnum<WGPUStencilOperation>(webgpu_desc->failOp());
-  dawn_desc.passOp = AsDawnEnum<WGPUStencilOperation>(webgpu_desc->passOp());
+  dawn_desc.compare = AsDawnEnum(webgpu_desc->compare());
+  dawn_desc.depthFailOp = AsDawnEnum(webgpu_desc->depthFailOp());
+  dawn_desc.failOp = AsDawnEnum(webgpu_desc->failOp());
+  dawn_desc.passOp = AsDawnEnum(webgpu_desc->passOp());
 
   return dawn_desc;
 }
@@ -114,16 +112,13 @@ void GPUPrimitiveStateAsWGPUPrimitiveState(
   DCHECK(dawn_state);
 
   dawn_state->dawn_desc.nextInChain = nullptr;
-  dawn_state->dawn_desc.topology =
-      AsDawnEnum<WGPUPrimitiveTopology>(webgpu_desc->topology());
+  dawn_state->dawn_desc.topology = AsDawnEnum(webgpu_desc->topology());
   if (webgpu_desc->hasStripIndexFormat()) {
     dawn_state->dawn_desc.stripIndexFormat =
-        AsDawnEnum<WGPUIndexFormat>(webgpu_desc->stripIndexFormat());
+        AsDawnEnum(webgpu_desc->stripIndexFormat());
   }
-  dawn_state->dawn_desc.frontFace =
-      AsDawnEnum<WGPUFrontFace>(webgpu_desc->frontFace());
-  dawn_state->dawn_desc.cullMode =
-      AsDawnEnum<WGPUCullMode>(webgpu_desc->cullMode());
+  dawn_state->dawn_desc.frontFace = AsDawnEnum(webgpu_desc->frontFace());
+  dawn_state->dawn_desc.cullMode = AsDawnEnum(webgpu_desc->cullMode());
 
   if (webgpu_desc->hasClampDepth()) {
     auto* clamp_state = &dawn_state->depth_clamping_state;
@@ -140,10 +135,9 @@ WGPUDepthStencilState AsDawnType(const GPUDepthStencilState* webgpu_desc) {
 
   WGPUDepthStencilState dawn_desc = {};
   dawn_desc.nextInChain = nullptr;
-  dawn_desc.format = AsDawnEnum<WGPUTextureFormat>(webgpu_desc->format());
+  dawn_desc.format = AsDawnEnum(webgpu_desc->format());
   dawn_desc.depthWriteEnabled = webgpu_desc->depthWriteEnabled();
-  dawn_desc.depthCompare =
-      AsDawnEnum<WGPUCompareFunction>(webgpu_desc->depthCompare());
+  dawn_desc.depthCompare = AsDawnEnum(webgpu_desc->depthCompare());
   dawn_desc.stencilFront = AsDawnType(webgpu_desc->stencilFront());
   dawn_desc.stencilBack = AsDawnType(webgpu_desc->stencilBack());
   dawn_desc.stencilReadMask = webgpu_desc->stencilReadMask();

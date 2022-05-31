@@ -187,8 +187,8 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
   // that errors can be generated in the appropriate error scope.
   configured_device_ = descriptor->device();
 
-  usage_ = AsDawnEnum<WGPUTextureUsage>(descriptor->usage());
-  format_ = AsDawnEnum<WGPUTextureFormat>(descriptor->format());
+  usage_ = AsDawnFlags<WGPUTextureUsage>(descriptor->usage());
+  format_ = AsDawnEnum(descriptor->format());
   switch (format_) {
     case WGPUTextureFormat_BGRA8Unorm:
       // TODO(crbug.com/1298618): support RGBA8Unorm on MAC.
