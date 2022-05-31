@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/ui/settings/privacy/safe_browsing/safe_browsing_standard_protection_coordinator.h"
 
 #include "base/mac/foundation_util.h"
-#include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #include "ios/chrome/browser/signin/authentication_service.h"
@@ -51,7 +50,6 @@
   self.viewController.presentationDelegate = self;
   self.mediator = [[SafeBrowsingStandardProtectionMediator alloc]
       initWithUserPrefService:self.browser->GetBrowserState()->GetPrefs()
-             localPrefService:GetApplicationContext()->GetLocalState()
                   authService:AuthenticationServiceFactory::GetForBrowserState(
                                   self.browser->GetBrowserState())
               identityManager:IdentityManagerFactory::GetForBrowserState(

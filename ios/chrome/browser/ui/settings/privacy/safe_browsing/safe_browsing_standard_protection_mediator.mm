@@ -54,10 +54,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // policies.
 @property(nonatomic, assign, readonly) PrefService* userPrefService;
 
-// Local pref service used to check if a specific pref is managed by enterprise
-// policies.
-@property(nonatomic, assign, readonly) PrefService* localPrefService;
-
 // Authentication service.
 @property(nonatomic, assign, readonly) AuthenticationService* authService;
 
@@ -105,16 +101,13 @@ typedef NS_ENUM(NSInteger, ItemType) {
     _safeBrowsingStandardProtectionItems;
 
 - (instancetype)initWithUserPrefService:(PrefService*)userPrefService
-                       localPrefService:(PrefService*)localPrefService
                             authService:(AuthenticationService*)authService
                         identityManager:
                             (signin::IdentityManager*)identityManager {
   self = [super init];
   if (self) {
     DCHECK(userPrefService);
-    DCHECK(localPrefService);
     _userPrefService = userPrefService;
-    _localPrefService = localPrefService;
     _authService = authService;
     _identityManagerObserver =
         std::make_unique<signin::IdentityManagerObserverBridge>(identityManager,

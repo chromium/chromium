@@ -68,10 +68,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // policies.
 @property(nonatomic, assign, readonly) PrefService* userPrefService;
 
-// Local pref service used to check if a specific pref is managed by enterprise
-// policies.
-@property(nonatomic, assign, readonly) PrefService* localPrefService;
-
 // Boolean to check if safe browsing is controlled by enterprise.
 @property(nonatomic, readonly) BOOL enterpriseEnabled;
 
@@ -81,14 +77,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 @synthesize safeBrowsingItems = _safeBrowsingItems;
 
-- (instancetype)initWithUserPrefService:(PrefService*)userPrefService
-                       localPrefService:(PrefService*)localPrefService {
+- (instancetype)initWithUserPrefService:(PrefService*)userPrefService {
   self = [super init];
   if (self) {
     DCHECK(userPrefService);
-    DCHECK(localPrefService);
     _userPrefService = userPrefService;
-    _localPrefService = localPrefService;
     _safeBrowsingEnhancedProtectionPreference = [[PrefBackedBoolean alloc]
         initWithPrefService:userPrefService
                    prefName:prefs::kSafeBrowsingEnhanced];

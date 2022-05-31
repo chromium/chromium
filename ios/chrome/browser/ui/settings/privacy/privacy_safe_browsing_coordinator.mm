@@ -6,7 +6,6 @@
 
 #include "base/mac/foundation_util.h"
 #import "components/strings/grit/components_strings.h"
-#include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/main/browser.h"
@@ -74,8 +73,7 @@
       [UIColor colorNamed:kTextfieldHighlightBackgroundColor];
   self.viewController.presentationDelegate = self;
   self.mediator = [[PrivacySafeBrowsingMediator alloc]
-      initWithUserPrefService:self.browser->GetBrowserState()->GetPrefs()
-             localPrefService:GetApplicationContext()->GetLocalState()];
+      initWithUserPrefService:self.browser->GetBrowserState()->GetPrefs()];
   self.mediator.consumer = self.viewController;
   self.mediator.handler = self;
   self.viewController.modelDelegate = self.mediator;
