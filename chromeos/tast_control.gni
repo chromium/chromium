@@ -239,6 +239,10 @@ tast_disabled_tests_from_chrome_all = [
   # b/233264555
   "inputs.PhysicalKeyboardEmojiSuggestion",
 
+  # crbug.com/1330605
+  "arc.StandardizedKeyboardTyping",
+  "arc.StandardizedKeyboardTyping.tablet_mode",
+
   # https://crbug.com/1330519
   "arc.PhysicalKeyboard",
 ]
