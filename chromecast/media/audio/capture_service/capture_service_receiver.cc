@@ -191,8 +191,6 @@ CaptureServiceReceiver::CaptureServiceReceiver(
   DCHECK(delegate_);
   base::Thread::Options options;
   options.message_pump_type = base::MessagePumpType::IO;
-  // TODO(b/137106361): Tweak the thread priority once the thread priority for
-  // speech processing gets fixed.
   options.priority = base::ThreadPriority::DISPLAY;
   CHECK(io_thread_.StartWithOptions(std::move(options)));
   task_runner_ = io_thread_.task_runner();
