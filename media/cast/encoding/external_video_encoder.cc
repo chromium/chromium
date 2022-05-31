@@ -508,7 +508,7 @@ class ExternalVideoEncoder::VEAClientImpl final
               codec_profile_ == media::VP8PROFILE_ANY
                   ? static_cast<int>(QuantizerEstimator::MAX_VP8_QUANTIZER)
                   : static_cast<int>(kMaxH264Quantizer);
-          encoded_frame->lossy_utilization =
+          encoded_frame->lossiness =
               bitrate_utilization * (quantizer / max_quantizer);
         }
       } else {

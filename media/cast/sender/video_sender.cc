@@ -101,16 +101,11 @@ VideoSender::VideoSender(
                                         transport_sender,
                                         this)),
       cast_environment_(cast_environment),
-      frames_in_encoder_(0),
-      last_bitrate_(0),
       min_playout_delay_(video_config.min_playout_delay),
       max_playout_delay_(video_config.max_playout_delay),
       animated_playout_delay_(video_config.animated_playout_delay),
       playout_delay_change_cb_(std::move(playout_delay_change_cb)),
-      feedback_cb_(feedback_callback),
-      low_latency_mode_(false),
-      last_reported_encoder_utilization_(-1.0),
-      last_reported_lossy_utilization_(-1.0) {
+      feedback_cb_(feedback_callback) {
   video_encoder_ = VideoEncoder::Create(cast_environment_, video_config,
                                         status_change_cb, create_vea_cb);
   if (!video_encoder_) {
@@ -249,7 +244,7 @@ void VideoSender::InsertRawVideoFrame(
       MaybeRenderPerformanceMetricsOverlay(
           frame_sender_->GetTargetPlayoutDelay(), low_latency_mode_, bitrate,
           frames_in_encoder_ + 1, last_reported_encoder_utilization_,
-          last_reported_lossy_utilization_, std::move(video_frame));
+          last_reported_lossiness_, std::move(video_frame));
   if (video_encoder_->EncodeVideoFrame(
           frame_to_encode, reference_time,
           base::BindOnce(&VideoSender::OnEncodedVideoFrame, AsWeakPtr(),
@@ -310,19 +305,18 @@ void VideoSender::OnEncodedVideoFrame(
       last_enqueued_frame_reference_time_ - encoded_frame->reference_time;
 
   last_reported_encoder_utilization_ = encoded_frame->encoder_utilization;
-  last_reported_lossy_utilization_ = encoded_frame->lossy_utilization;
+  last_reported_lossiness_ = encoded_frame->lossiness;
 
   TRACE_EVENT_NESTABLE_ASYNC_END2(
       "cast.stream", "Video Encode", TRACE_ID_LOCAL(video_frame.get()),
-      "encoder_utilization", last_reported_encoder_utilization_,
-      "lossy_utilization", last_reported_lossy_utilization_);
+      "encoder_utilization", last_reported_encoder_utilization_, "lossiness",
+      last_reported_lossiness_);
 
   // Report the resource utilization for processing this frame.  Take the
   // greater of the two utilization values and attenuate them such that the
   // target utilization is reported as the maximum sustainable amount.
   const double attenuated_utilization =
-      std::max(last_reported_encoder_utilization_,
-               last_reported_lossy_utilization_) /
+      std::max(last_reported_encoder_utilization_, last_reported_lossiness_) /
       (kTargetUtilizationPercentage / 100.0);
   if (attenuated_utilization >= 0.0) {
     // Key frames are artificially capped to 1.0 because their actual

@@ -71,7 +71,7 @@ scoped_refptr<VideoFrame> MaybeRenderPerformanceMetricsOverlay(
     int target_bitrate,
     int frames_ago,
     double encoder_utilization,
-    double lossy_utilization,
+    double lossiness,
     scoped_refptr<VideoFrame> source);
 
 }  // namespace cast

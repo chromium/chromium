@@ -363,8 +363,7 @@ void FrameSenderImpl::EnqueueFrame(
   encode_event->key_frame = encoded_frame->dependency == EncodedFrame::KEY;
   encode_event->target_bitrate = encoded_frame->encoder_bitrate;
   encode_event->encoder_cpu_utilization = encoded_frame->encoder_utilization;
-  encode_event->idealized_bitrate_utilization =
-      encoded_frame->lossy_utilization;
+  encode_event->idealized_bitrate_utilization = encoded_frame->lossiness;
   cast_environment_->logger()->DispatchFrameEvent(std::move(encode_event));
 
   RecordLatestFrameTimestamps(frame_id, encoded_frame->reference_time,

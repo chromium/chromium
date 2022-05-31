@@ -314,8 +314,8 @@ TEST_P(VideoEncoderTest, EncodesVariedFrameSizes) {
       ASSERT_TRUE(std::isfinite(encoded_frame->encoder_utilization));
       EXPECT_LE(0.0, encoded_frame->encoder_utilization);
       EXPECT_LE(0, encoded_frame->encoder_bitrate);
-      ASSERT_TRUE(std::isfinite(encoded_frame->lossy_utilization));
-      EXPECT_LE(0.0, encoded_frame->lossy_utilization);
+      ASSERT_TRUE(std::isfinite(encoded_frame->lossiness));
+      EXPECT_LE(0.0, encoded_frame->lossiness);
     }
   }
 }

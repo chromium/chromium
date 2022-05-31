@@ -91,7 +91,7 @@ class VideoSender : public FrameSender::Client {
   scoped_refptr<CastEnvironment> cast_environment_;
 
   // The number of frames queued for encoding, but not yet sent.
-  int frames_in_encoder_;
+  int frames_in_encoder_ = 0;
 
   // The duration of video queued for encoding, but not yet sent.
   base::TimeDelta duration_in_encoder_;
@@ -102,7 +102,7 @@ class VideoSender : public FrameSender::Client {
 
   // Remember what we set the bitrate to before, no need to set it again if
   // we get the same value.
-  int last_bitrate_;
+  int last_bitrate_ = 0;
 
   // The total amount of time between a frame's capture/recording on the sender
   // and its playback on the receiver (i.e., shown to a user).
@@ -119,13 +119,13 @@ class VideoSender : public FrameSender::Client {
   // Indicates we are operating in a mode where the target playout latency is
   // low for best user experience. When operating in low latency mode, we
   // prefer dropping frames over increasing target playout time.
-  bool low_latency_mode_;
+  bool low_latency_mode_ = false;
 
   // The video encoder's performance metrics as of the last call to
   // OnEncodedVideoFrame().  See header file comments for SenderEncodedFrame for
   // an explanation of these values.
-  double last_reported_encoder_utilization_;
-  double last_reported_lossy_utilization_;
+  double last_reported_encoder_utilization_ = -1.0;
+  double last_reported_lossiness_ = -1.0;
 
   // This tracks the time when the request was sent to encoder to encode a key
   // frame on receiving a Pli message. It is used to limit the sender not
