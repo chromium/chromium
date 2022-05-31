@@ -152,7 +152,7 @@ class TrashIOTaskTest : public testing::Test {
       const base::FilePath& file_path) {
     std::string relative_restore_path = file_path.value();
     EXPECT_TRUE(file_manager::util::ReplacePrefix(&relative_restore_path,
-                                                  downloads_dir_.value(), ""));
+                                                  my_files_dir_.value(), ""));
     return base::StrCat({"[Trash Info]\nPath=", relative_restore_path,
                          "\nDeletionDate=", base::TimeToISO8601(base::Time())});
   }

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_FILE_MANAGER_TRASH_IO_TASK_H_
 #define CHROME_BROWSER_ASH_FILE_MANAGER_TRASH_IO_TASK_H_
 
+#include <functional>
 #include <memory>
 #include <vector>
 
@@ -50,14 +51,17 @@ struct TrashEntry {
   int64_t source_file_size;
 };
 
-struct DirectoryInfo {
-  DirectoryInfo(storage::FileSystemURL supplied_trash_files,
-                storage::FileSystemURL supplied_trash_info,
-                int64_t supplied_free_space);
-  ~DirectoryInfo();
+struct TrashLocation {
+  TrashLocation(const char* supplied_folder_name,
+                const base::FilePath parent_path,
+                const base::FilePath prefix_path);
+  // Constructor used when no prefix path is required.
+  TrashLocation(const char* supplied_folder_name,
+                const base::FilePath parent_path);
+  ~TrashLocation();
 
-  DirectoryInfo(DirectoryInfo&& other);
-  DirectoryInfo& operator=(DirectoryInfo&& other);
+  TrashLocation(TrashLocation&& other);
+  TrashLocation& operator=(TrashLocation&& other);
 
   // The location of the .Trash/files folder.
   storage::FileSystemURL trash_files;
@@ -65,8 +69,23 @@ struct DirectoryInfo {
   // The location of the .Trash/info folder.
   storage::FileSystemURL trash_info;
 
+  // The folder name for trash, this can be .Trash or .Trash-1000.
+  std::string folder_name;
+
+  // The parent folder path of this trash entry.
+  base::FilePath trash_parent_path;
+
+  // For some trash directories, the restore path requires a prefix to ensure
+  // restoration is done correctly.
+  base::FilePath prefix_restore_path;
+
   // The free space on the underlying filesystem that .Trash is located on.
   int64_t free_space;
+
+  // Whether this directory require setting up. This is enabled once free space
+  // has been retrieved for the underlying file system. If false directory setup
+  // is skipped.
+  bool require_setup = false;
 };
 
 }  // namespace
@@ -126,27 +145,25 @@ class TrashIOTask : public IOTask {
       const base::FilePath& path);
   void SetCurrentOperationID(
       storage::FileSystemOperationRunner::OperationID id);
-  using FreeSpaceMap = std::map<base::FilePath, DirectoryInfo>;
+  using TrashPathsMap = std::map<const base::FilePath, TrashLocation>;
   void ValidateAndDecrementFreeSpace(size_t source_idx,
-                                     FreeSpaceMap::iterator& it);
+                                     const TrashPathsMap::reverse_iterator& it);
   // Get the free disk space for `trash_parent_path` to know whether the
   // metadata can be written. The `folder_name` is used to differentiate between
   // .Trash and .Trash-1000 folder names on various file systems (both are valid
   // in the XDG spec).
   void GetFreeDiskSpace(size_t source_idx,
-                        const base::FilePath& trash_parent_path,
-                        const std::string& folder_name);
+                        const TrashPathsMap::reverse_iterator& it);
   void GotFreeDiskSpace(size_t source_idx,
-                        const base::FilePath& trash_parent_path,
-                        const std::string& folder_name,
+                        const TrashPathsMap::reverse_iterator& it,
                         int64_t free_space);
 
   // Sets up the .Trash/files and .Trash/info subdirectories specified by the
   // `trash_subdirectory` parameter. Will create the parent directories as well
   // in the instance .Trash folder does not exist.
-  void SetupSubDirectory(FreeSpaceMap::const_iterator& it,
+  void SetupSubDirectory(TrashPathsMap::const_iterator& it,
                          const storage::FileSystemURL trash_subdirectory);
-  void OnSetupSubDirectory(FreeSpaceMap::const_iterator& it,
+  void OnSetupSubDirectory(TrashPathsMap::const_iterator& it,
                            const storage::FileSystemURL trash_subdirectory,
                            base::File::Error error);
   base::FilePath MakeRelativeFromBasePath(const base::FilePath& absolute_path);
@@ -193,7 +210,7 @@ class TrashIOTask : public IOTask {
 
   // Maintains the free space required to write all the metadata files along
   // with the underlying locations of the .Trash/{files,info} directories.
-  FreeSpaceMap free_space_map_;
+  TrashPathsMap free_space_map_;
 
   // Stores the size reported by the last progress update so we can compute the
   // delta on the next progress update.
@@ -206,9 +223,6 @@ class TrashIOTask : public IOTask {
   // Speedometer for this operation, used to calculate the remaining time to
   // finish the operation.
   Speedometer speedometer_;
-
-  // Any paths which are descendants from this list are enabled for trash.
-  std::map<const base::FilePath, const std::string> enabled_trash_paths_;
 
   // Stores the id of the operations currently behind undertaken by Trash,
   // including directory creation. Enables cancelling an inflight operation.

@@ -34,6 +34,7 @@ namespace {
 // restore to) and the deletion date.
 bool UpdateTrashInfoContents(const base::FilePath& original_path,
                              const base::FilePath& trash_parent_path,
+                             const base::FilePath& prefix_restore_path,
                              TrashEntry& entry) {
   std::string relative_restore_path = original_path.value();
   if (!file_manager::util::ReplacePrefix(&relative_restore_path,
@@ -42,7 +43,8 @@ bool UpdateTrashInfoContents(const base::FilePath& original_path,
   }
 
   entry.trash_info_contents = base::StrCat(
-      {"[Trash Info]\nPath=", relative_restore_path,
+      {"[Trash Info]\nPath=/", prefix_restore_path.value(),
+       relative_restore_path,
        "\nDeletionDate=", base::TimeToISO8601(entry.deletion_time)});
   return true;
 }
@@ -85,16 +87,19 @@ TrashEntry::~TrashEntry() = default;
 TrashEntry::TrashEntry(TrashEntry&& other) = default;
 TrashEntry& TrashEntry::operator=(TrashEntry&& other) = default;
 
-DirectoryInfo::DirectoryInfo(storage::FileSystemURL supplied_trash_files,
-                             storage::FileSystemURL supplied_trash_info,
-                             int64_t supplied_free_space)
-    : trash_files(supplied_trash_files),
-      trash_info(supplied_trash_info),
-      free_space(supplied_free_space) {}
-DirectoryInfo::~DirectoryInfo() = default;
+TrashLocation::TrashLocation(const char* supplied_folder_name,
+                             const base::FilePath parent_path,
+                             const base::FilePath prefix_path)
+    : folder_name(supplied_folder_name),
+      trash_parent_path(parent_path),
+      prefix_restore_path(prefix_path) {}
+TrashLocation::TrashLocation(const char* supplied_folder_name,
+                             const base::FilePath parent_path)
+    : folder_name(supplied_folder_name), trash_parent_path(parent_path) {}
+TrashLocation::~TrashLocation() = default;
 
-DirectoryInfo::DirectoryInfo(DirectoryInfo&& other) = default;
-DirectoryInfo& DirectoryInfo::operator=(DirectoryInfo&& other) = default;
+TrashLocation::TrashLocation(TrashLocation&& other) = default;
+TrashLocation& TrashLocation::operator=(TrashLocation&& other) = default;
 
 }  // namespace
 
@@ -149,18 +154,23 @@ void TrashIOTask::Execute(IOTask::ProgressCallback progress_callback,
 
   // Build the list of known paths that are enabled, for now Downloads is a bind
   // mount at MyFiles/Downloads so treat them as separate volumes.
-  // TODO(b/233976434): Consider storing this data in the `DirectoryInfo` struct
-  // instead of separately.
-  enabled_trash_paths_.insert(
-      std::pair{util::GetMyFilesFolderForProfile(profile_), kTrashFolderName});
-  enabled_trash_paths_.insert(std::pair{
-      util::GetDownloadsFolderForProfile(profile_), kTrashFolderName});
+  free_space_map_.try_emplace(
+      util::GetMyFilesFolderForProfile(profile_),
+      TrashLocation(kTrashFolderName,
+                    util::GetMyFilesFolderForProfile(profile_)));
+  free_space_map_.try_emplace(
+      util::GetDownloadsFolderForProfile(profile_),
+      TrashLocation(kTrashFolderName,
+                    util::GetDownloadsFolderForProfile(profile_),
+                    util::GetDownloadsFolderForProfile(profile_).BaseName()));
 
   auto* integration_service =
       drive::DriveIntegrationServiceFactory::FindForProfile(profile_);
   if (integration_service) {
-    enabled_trash_paths_.insert(std::pair{
-        integration_service->GetMountPointPath(), kTrashUIDFolderName});
+    free_space_map_.try_emplace(
+        integration_service->GetMountPointPath(),
+        TrashLocation(kTrashUIDFolderName,
+                      integration_service->GetMountPointPath()));
   }
 
   // TODO(b/231830443): Add in support for crostini.
@@ -186,30 +196,32 @@ void TrashIOTask::UpdateTrashEntry(size_t source_idx) {
     source_path = base_path_.Append(source_path);
   }
 
-  const auto& trash_parent_path_it =
-      std::find_if(enabled_trash_paths_.rbegin(), enabled_trash_paths_.rend(),
+  // Use a std::map::reverse_iterator because insertions into a std::map are
+  // sorted by key. base::FilePath keys will insert in lexicographical order
+  // however in the case of nested directories, reverse lexicographical order is
+  // preferred to ensure the closer parent path by depth is chosen.
+  const TrashPathsMap::reverse_iterator& trash_parent_path_it =
+      std::find_if(free_space_map_.rbegin(), free_space_map_.rend(),
                    [&source_path](const auto& it) -> bool {
                      return it.first.IsParent(source_path);
                    });
 
-  if (trash_parent_path_it == enabled_trash_paths_.rend()) {
+  if (trash_parent_path_it == free_space_map_.rend()) {
     // The `source_path` is not parented at a supported Trash location, bail
     // out completely.
-    // TODO(b/231830211): This may be better handled more gracefully by
-    // continuing with the remaining files to see if others can be trashed.
     progress_.sources[source_idx].error =
         base::File::FILE_ERROR_INVALID_OPERATION;
     Complete(State::kError);
     return;
   }
 
+  TrashLocation& trash_location = trash_parent_path_it->second;
   const base::FilePath trash_parent_path = trash_parent_path_it->first;
-  const std::string folder_name = trash_parent_path_it->second;
-
   TrashEntry& entry = trash_entries_[source_idx];
-  entry.trash_path = trash_parent_path.Append(folder_name);
+  entry.trash_path = trash_parent_path.Append(trash_location.folder_name);
 
-  if (!UpdateTrashInfoContents(source_path, trash_parent_path, entry)) {
+  if (!UpdateTrashInfoContents(source_path, trash_parent_path,
+                               trash_location.prefix_restore_path, entry)) {
     // If we can't update the trash entry, update the source error and finish
     // with an error.
     progress_.sources[source_idx].error =
@@ -218,17 +230,17 @@ void TrashIOTask::UpdateTrashEntry(size_t source_idx) {
     return;
   }
 
-  auto it = free_space_map_.find(trash_parent_path);
-  if (it == free_space_map_.end()) {
-    GetFreeDiskSpace(source_idx, trash_parent_path, folder_name);
+  if (!trash_location.require_setup) {
+    GetFreeDiskSpace(source_idx, trash_parent_path_it);
     return;
   }
 
-  ValidateAndDecrementFreeSpace(source_idx, it);
+  ValidateAndDecrementFreeSpace(source_idx, trash_parent_path_it);
 }
 
-void TrashIOTask::ValidateAndDecrementFreeSpace(size_t source_idx,
-                                                FreeSpaceMap::iterator& it) {
+void TrashIOTask::ValidateAndDecrementFreeSpace(
+    size_t source_idx,
+    const TrashPathsMap::reverse_iterator& it) {
   size_t trash_contents_size =
       trash_entries_[source_idx].trash_info_contents.size();
   progress_.total_bytes += trash_contents_size;
@@ -288,14 +300,14 @@ void TrashIOTask::GotFileSize(size_t source_idx,
 }
 
 void TrashIOTask::GetFreeDiskSpace(size_t source_idx,
-                                   const base::FilePath& trash_parent_path,
-                                   const std::string& folder_name) {
+                                   const TrashPathsMap::reverse_iterator& it) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&base::SysInfo::AmountOfFreeDiskSpace, trash_parent_path),
+      base::BindOnce(&base::SysInfo::AmountOfFreeDiskSpace,
+                     it->second.trash_parent_path),
       base::BindOnce(&TrashIOTask::GotFreeDiskSpace,
                      weak_ptr_factory_.GetWeakPtr(), source_idx,
-                     trash_parent_path, folder_name));
+                     base::OwnedRef(it)));
 }
 
 base::FilePath TrashIOTask::MakeRelativeFromBasePath(
@@ -313,24 +325,36 @@ base::FilePath TrashIOTask::MakeRelativeFromBasePath(
 }
 
 void TrashIOTask::GotFreeDiskSpace(size_t source_idx,
-                                   const base::FilePath& trash_parent_path,
-                                   const std::string& folder_name,
+                                   const TrashPathsMap::reverse_iterator& it,
                                    int64_t free_space) {
-  base::FilePath trash_path =
-      MakeRelativeFromBasePath(trash_parent_path.Append(folder_name));
-  const storage::FileSystemURL files_url = CreateFileSystemURL(
+  auto& trash_location = it->second;
+  base::FilePath trash_path = MakeRelativeFromBasePath(
+      trash_location.trash_parent_path.Append(trash_location.folder_name));
+  trash_location.trash_files = CreateFileSystemURL(
       progress_.sources[source_idx].url, trash_path.Append(kFilesFolderName));
-  const storage::FileSystemURL info_url = CreateFileSystemURL(
+  trash_location.trash_info = CreateFileSystemURL(
       progress_.sources[source_idx].url, trash_path.Append(kInfoFolderName));
+  trash_location.free_space = free_space;
+  trash_location.require_setup = true;
 
-  auto it = free_space_map_.try_emplace(
-      trash_parent_path, DirectoryInfo(files_url, info_url, free_space));
-  ValidateAndDecrementFreeSpace(source_idx, it.first);
+  ValidateAndDecrementFreeSpace(source_idx, it);
 }
 
 void TrashIOTask::SetupSubDirectory(
-    FreeSpaceMap::const_iterator& it,
+    TrashPathsMap::const_iterator& it,
     const storage::FileSystemURL trash_subdirectory) {
+  // All enabled trash directories exist in the `free_space_map_` however some
+  // may not be used for this IO task. Skip the ones that don't require setup.
+  if (!it->second.require_setup) {
+    it++;
+    if (it == free_space_map_.end()) {
+      GenerateDestinationURL(/*source_idx=*/0, /*output_idx=*/0);
+      return;
+    }
+    SetupSubDirectory(it, it->second.trash_files);
+    return;
+  }
+
   content::GetIOThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&StartCreateDirectoryOnIOThread, file_system_context_,
@@ -346,7 +370,7 @@ void TrashIOTask::SetupSubDirectory(
 }
 
 void TrashIOTask::OnSetupSubDirectory(
-    FreeSpaceMap::const_iterator& it,
+    TrashPathsMap::const_iterator& it,
     const storage::FileSystemURL trash_subdirectory,
     base::File::Error error) {
   if (error != base::File::FILE_OK) {
@@ -365,6 +389,7 @@ void TrashIOTask::OnSetupSubDirectory(
   }
 
   it++;
+  // If we've have no more trash directory to setup, start trashing files.
   if (it == free_space_map_.end()) {
     GenerateDestinationURL(/*source_idx=*/0, /*output_idx=*/0);
     return;
