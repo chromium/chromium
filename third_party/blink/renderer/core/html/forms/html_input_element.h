@@ -114,12 +114,10 @@ class CORE_EXPORT HTMLInputElement
   bool HasBeenPasswordField() const;
 
   bool IsCheckable() const;
-  bool checkedForBinding() const { return checked(); }
+  bool checkedForBinding() const { return Checked(); }
   void setCheckedForBinding(bool);
-  // TODO(crbug.com/1314360) Capitalize checked() and setChecked() because they
-  // are not called by v8 anymore.
-  bool checked() const;
-  void setChecked(
+  bool Checked() const;
+  void SetChecked(
       bool,
       TextFieldEventBehavior = TextFieldEventBehavior::kDispatchNoEvent,
       WebAutofillState = WebAutofillState::kNotFilled);

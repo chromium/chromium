@@ -256,7 +256,7 @@ int LegacyDOMSnapshotAgent::VisitNode(Node* node,
       value->setInputValue(input_element->Value());
       if ((input_element->type() == input_type_names::kRadio) ||
           (input_element->type() == input_type_names::kCheckbox)) {
-        value->setInputChecked(input_element->checked());
+        value->setInputChecked(input_element->Checked());
       }
     }
 

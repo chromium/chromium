@@ -111,7 +111,7 @@ bool WebInputElement::IsValidValue(const WebString& value) const {
 void WebInputElement::SetChecked(bool now_checked,
                                  bool send_events,
                                  WebAutofillState autofill_state) {
-  Unwrap<HTMLInputElement>()->setChecked(
+  Unwrap<HTMLInputElement>()->SetChecked(
       now_checked,
       send_events ? TextFieldEventBehavior::kDispatchInputAndChangeEvent
                   : TextFieldEventBehavior::kDispatchNoEvent,
@@ -119,7 +119,7 @@ void WebInputElement::SetChecked(bool now_checked,
 }
 
 bool WebInputElement::IsChecked() const {
-  return ConstUnwrap<HTMLInputElement>()->checked();
+  return ConstUnwrap<HTMLInputElement>()->Checked();
 }
 
 bool WebInputElement::IsMultiple() const {

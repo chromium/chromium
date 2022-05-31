@@ -68,7 +68,7 @@ String RadioNodeList::value() const {
   unsigned length = this->length();
   for (unsigned i = 0; i < length; ++i) {
     const HTMLInputElement* input_element = ToRadioButtonInputElement(*item(i));
-    if (!input_element || !input_element->checked())
+    if (!input_element || !input_element->Checked())
       continue;
     return input_element->Value();
   }
@@ -83,7 +83,7 @@ void RadioNodeList::setValue(const String& value) {
     HTMLInputElement* input_element = ToRadioButtonInputElement(*item(i));
     if (!input_element || input_element->Value() != value)
       continue;
-    input_element->setChecked(true);
+    input_element->SetChecked(true);
     return;
   }
 }

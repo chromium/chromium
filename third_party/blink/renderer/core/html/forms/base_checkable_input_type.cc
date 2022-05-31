@@ -53,16 +53,16 @@ InputTypeView* BaseCheckableInputType::CreateView() {
 }
 
 FormControlState BaseCheckableInputType::SaveFormControlState() const {
-  return FormControlState(GetElement().checked() ? "on" : "off");
+  return FormControlState(GetElement().Checked() ? "on" : "off");
 }
 
 void BaseCheckableInputType::RestoreFormControlState(
     const FormControlState& state) {
-  GetElement().setChecked(state[0] == "on");
+  GetElement().SetChecked(state[0] == "on");
 }
 
 void BaseCheckableInputType::AppendToFormData(FormData& form_data) const {
-  if (GetElement().checked())
+  if (GetElement().Checked())
     form_data.AppendFromElement(GetElement().GetName(), GetElement().Value());
 }
 

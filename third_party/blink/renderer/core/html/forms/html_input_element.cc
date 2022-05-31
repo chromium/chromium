@@ -839,13 +839,13 @@ void HTMLInputElement::ParseAttribute(
     input_type_view_->ValueAttributeChanged();
   } else if (name == html_names::kCheckedAttr) {
     // Another radio button in the same group might be checked by state
-    // restore. We shouldn't call setChecked() even if this has the checked
-    // attribute. So, delay the setChecked() call until
+    // restore. We shouldn't call SetChecked() even if this has the checked
+    // attribute. So, delay the SetChecked() call until
     // finishParsingChildren() is called if parsing is in progress.
     if ((!parsing_in_progress_ ||
          !GetDocument().GetFormController().HasControlStates()) &&
         !dirty_checkedness_) {
-      setChecked(!value.IsNull());
+      SetChecked(!value.IsNull());
       dirty_checkedness_ = false;
     }
     PseudoStateChanged(CSSSelector::kPseudoDefault);
@@ -937,7 +937,7 @@ void HTMLInputElement::FinishParsingChildren() {
   if (!state_restored_) {
     bool checked = FastHasAttribute(html_names::kCheckedAttr);
     if (checked)
-      setChecked(checked);
+      SetChecked(checked);
     dirty_checkedness_ = false;
   }
 }
@@ -1010,7 +1010,7 @@ void HTMLInputElement::ResetImpl() {
     SetNeedsValidityCheck();
   }
 
-  setChecked(FastHasAttribute(html_names::kCheckedAttr));
+  SetChecked(FastHasAttribute(html_names::kCheckedAttr));
   dirty_checkedness_ = false;
   HTMLFormControlElementWithState::ResetImpl();
 }
@@ -1040,17 +1040,17 @@ bool HTMLInputElement::IsCheckable() const {
   return input_type_->IsCheckable();
 }
 
-bool HTMLInputElement::checked() const {
+bool HTMLInputElement::Checked() const {
   input_type_->ReadingChecked();
   return is_checked_;
 }
 
 void HTMLInputElement::setCheckedForBinding(bool now_checked) {
   if (GetAutofillState() != WebAutofillState::kAutofilled) {
-    setChecked(now_checked);
+    SetChecked(now_checked);
   } else {
-    bool old_value = this->checked();
-    setChecked(now_checked, TextFieldEventBehavior::kDispatchNoEvent,
+    bool old_value = this->Checked();
+    SetChecked(now_checked, TextFieldEventBehavior::kDispatchNoEvent,
                old_value == now_checked ? WebAutofillState::kAutofilled
                                         : WebAutofillState::kNotFilled);
     if (Page* page = GetDocument().GetPage()) {
@@ -1060,13 +1060,13 @@ void HTMLInputElement::setCheckedForBinding(bool now_checked) {
   }
 }
 
-void HTMLInputElement::setChecked(bool now_checked,
+void HTMLInputElement::SetChecked(bool now_checked,
                                   TextFieldEventBehavior event_behavior,
                                   WebAutofillState autofill_state) {
   SetAutofillState(autofill_state);
 
   dirty_checkedness_ = true;
-  if (checked() == now_checked)
+  if (Checked() == now_checked)
     return;
 
   input_type_->WillUpdateCheckedness(now_checked);
@@ -1136,7 +1136,7 @@ void HTMLInputElement::CloneNonAttributePropertiesFrom(const Element& source,
 
   non_attribute_value_ = source_element.non_attribute_value_;
   has_dirty_value_ = source_element.has_dirty_value_;
-  setChecked(source_element.is_checked_);
+  SetChecked(source_element.is_checked_);
   dirty_checkedness_ = source_element.dirty_checkedness_;
   is_indeterminate_ = source_element.is_indeterminate_;
   input_type_->CopyNonAttributeProperties(source_element);
@@ -1952,7 +1952,7 @@ int HTMLInputElement::scrollHeight() {
 }
 
 bool HTMLInputElement::ShouldAppearChecked() const {
-  return checked() && IsCheckable();
+  return Checked() && IsCheckable();
 }
 
 void HTMLInputElement::SetPlaceholderVisibility(bool visible) {

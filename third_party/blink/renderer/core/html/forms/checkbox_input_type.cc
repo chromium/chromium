@@ -51,7 +51,7 @@ const AtomicString& CheckboxInputType::FormControlType() const {
 }
 
 bool CheckboxInputType::ValueMissing(const String&) const {
-  return GetElement().IsRequired() && !GetElement().checked();
+  return GetElement().IsRequired() && !GetElement().Checked();
 }
 
 String CheckboxInputType::ValueMissingText() const {
@@ -75,13 +75,13 @@ ClickHandlingState* CheckboxInputType::WillDispatchClick() {
 
   ClickHandlingState* state = MakeGarbageCollected<ClickHandlingState>();
 
-  state->checked = GetElement().checked();
+  state->checked = GetElement().Checked();
   state->indeterminate = GetElement().indeterminate();
 
   if (state->indeterminate)
     GetElement().setIndeterminate(false);
 
-  GetElement().setChecked(!state->checked,
+  GetElement().SetChecked(!state->checked,
                           TextFieldEventBehavior::kDispatchChangeEvent);
   is_in_click_handler_ = true;
   return state;
@@ -91,7 +91,7 @@ void CheckboxInputType::DidDispatchClick(Event& event,
                                          const ClickHandlingState& state) {
   if (event.defaultPrevented() || event.DefaultHandled()) {
     GetElement().setIndeterminate(state.indeterminate);
-    GetElement().setChecked(state.checked);
+    GetElement().SetChecked(state.checked);
   } else {
     GetElement().DispatchInputAndChangeEventIfNeeded();
   }

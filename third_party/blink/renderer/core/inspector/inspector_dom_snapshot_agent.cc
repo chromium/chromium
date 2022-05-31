@@ -549,7 +549,7 @@ void InspectorDOMSnapshotAgent::VisitNode(Node* node,
       SetRare(nodes->getInputValue(nullptr), index, input_element->Value());
       if ((input_element->type() == input_type_names::kRadio) ||
           (input_element->type() == input_type_names::kCheckbox)) {
-        if (input_element->checked()) {
+        if (input_element->Checked()) {
           SetRare(nodes->getInputChecked(nullptr), index);
         }
       }
