@@ -128,7 +128,7 @@ Polymer({
   /** @private */
   handleItemClick_(event) {
     // We do not navigate away if the click was on a link.
-    if (event.path[0].tagName === 'A') {
+    if (event.composedPath()[0].tagName === 'A') {
       event.stopPropagation();
       return;
     }

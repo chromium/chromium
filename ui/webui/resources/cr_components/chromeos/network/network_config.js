@@ -597,8 +597,8 @@ Polymer({
    * @private
    */
   onEnterEvent_(event) {
-    if (event.path[0].localName === 'network-config-input' ||
-        event.path[0].localName === 'network-password-input') {
+    if (event.composedPath()[0].localName === 'network-config-input' ||
+        event.composedPath()[0].localName === 'network-password-input') {
       this.onEnterPressedInInput_();
       event.stopPropagation();
     }

@@ -657,7 +657,8 @@ Polymer({
    */
   handleKnobEvent_(event, overrideElement) {
     const knob = overrideElement ||
-        event.path.find(el => el.classList && el.classList.contains('knob'));
+        event.composedPath().find(
+            el => el.classList && el.classList.contains('knob'));
     if (!knob) {
       event.preventDefault();
       return;

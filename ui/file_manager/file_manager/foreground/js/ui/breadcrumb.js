@@ -215,7 +215,7 @@ export class BreadCrumb extends HTMLElement {
       return;
     }
 
-    const element = event.path[0];
+    const element = event.composedPath()[0];
     if (element.hasAttribute('elider')) {
       this.toggleMenu_();
       return;

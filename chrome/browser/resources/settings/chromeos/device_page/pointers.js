@@ -230,11 +230,12 @@ class SettingsPointersElement extends SettingsPointersElementBase {
    * @private
    */
   onLearnMoreLinkClicked_(event) {
-    if (!Array.isArray(event.path) || !event.path.length) {
+    const path = event.composedPath();
+    if (!Array.isArray(path) || !path.length) {
       return;
     }
 
-    if (event.path[0].tagName === 'A') {
+    if (path[0].tagName === 'A') {
       // Do not toggle reverse scrolling if the contained link is clicked.
       event.stopPropagation();
     }

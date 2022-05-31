@@ -325,7 +325,7 @@ Polymer({
   /** @private */
   handleItemClick_(event) {
     // We do not open the subpage if the click was on a link.
-    if (event.path[0].tagName === 'A') {
+    if (event.composedPath()[0].tagName === 'A') {
       event.stopPropagation();
       return;
     }
@@ -360,7 +360,7 @@ Polymer({
 
   onDialogClose_(event) {
     event.stopPropagation();
-    if (event.path.some(
+    if (event.composedPath().some(
             element => element.id === 'multidevicePasswordPrompt')) {
       this.onPasswordPromptDialogClose_();
     }
