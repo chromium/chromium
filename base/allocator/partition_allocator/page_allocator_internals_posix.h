@@ -20,9 +20,9 @@
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_APPLE)
+#include "base/allocator/partition_allocator/partition_alloc_base/mac/scoped_cftyperef.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
-#include "base/mac/scoped_cftyperef.h"
 
 #include <Availability.h>
 #include <Security/Security.h>

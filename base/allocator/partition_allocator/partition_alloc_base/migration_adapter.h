@@ -33,16 +33,6 @@ using StringPiece = BasicStringPiece<char, std::char_traits<char>>;
 
 #if BUILDFLAG(IS_MAC)
 
-namespace internal {
-
-template <typename CFT>
-struct ScopedCFTypeRefTraits;
-
-}  // namespace internal
-
-template <typename T, typename Traits>
-class ScopedTypeRef;
-
 namespace mac {
 
 template <typename T>
@@ -65,12 +55,6 @@ namespace partition_alloc::internal::base {
 using ::base::LapTimer;
 using ::base::LazyInstance;
 using ::base::LazyInstanceTraitsBase;
-
-#if BUILDFLAG(IS_MAC)
-template <typename CFT>
-using ScopedCFTypeRef =
-    ::base::ScopedTypeRef<CFT, ::base::internal::ScopedCFTypeRefTraits<CFT>>;
-#endif
 
 #if BUILDFLAG(IS_MAC)
 namespace mac {
