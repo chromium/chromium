@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_base_layout_algorithm_test.h"
 
 #include <sstream>
+#include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/renderer/core/dom/tag_collection.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_box_state.h"
@@ -263,6 +264,52 @@ TEST_F(NGInlineLayoutAlgorithmTest, BoxForEndMargin) {
 
   line_box.MoveToNextLine();
   ASSERT_FALSE(line_box) << "block_flow has two lines.";
+}
+
+TEST_F(NGInlineLayoutAlgorithmTest, InlineBoxBorderPadding) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    span {
+      border-left: 1px solid blue;
+      border-top: 2px solid blue;
+      border-right: 3px solid blue;
+      border-bottom: 4px solid blue;
+      padding-left: 5px;
+      padding-top: 6px;
+      padding-right: 7px;
+      padding-bottom: 8px;
+    }
+    </style>
+    <div id="container">
+      <span id="span">test<br>test</span>
+    </div>
+  )HTML");
+  auto* block_flow =
+      To<LayoutBlockFlow>(GetLayoutObjectByElementId("container"));
+  NGInlineCursor cursor(*block_flow);
+  const LayoutObject* span = GetLayoutObjectByElementId("span");
+  cursor.MoveTo(*span);
+  const NGPhysicalBoxFragment* box1 = cursor.Current().BoxFragment();
+  ASSERT_TRUE(box1);
+  const NGPhysicalBoxStrut borders1 = box1->Borders();
+  const NGPhysicalBoxStrut padding1 = box1->Padding();
+  int borders_and_padding1[] = {
+      borders1.left.ToInt(),   borders1.top.ToInt(),   borders1.right.ToInt(),
+      borders1.bottom.ToInt(), padding1.left.ToInt(),  padding1.top.ToInt(),
+      padding1.right.ToInt(),  padding1.bottom.ToInt()};
+  EXPECT_THAT(borders_and_padding1,
+              testing::ElementsAre(1, 2, 0, 4, 5, 6, 0, 8));
+  cursor.MoveToNextForSameLayoutObject();
+  const NGPhysicalBoxFragment* box2 = cursor.Current().BoxFragment();
+  ASSERT_TRUE(box2);
+  const NGPhysicalBoxStrut borders2 = box2->Borders();
+  const NGPhysicalBoxStrut padding2 = box2->Padding();
+  int borders_and_padding2[] = {
+      borders2.left.ToInt(),   borders2.top.ToInt(),   borders2.right.ToInt(),
+      borders2.bottom.ToInt(), padding2.left.ToInt(),  padding2.top.ToInt(),
+      padding2.right.ToInt(),  padding2.bottom.ToInt()};
+  EXPECT_THAT(borders_and_padding2,
+              testing::ElementsAre(0, 2, 3, 4, 0, 6, 7, 8));
 }
 
 // A block with inline children generates fragment tree as follows:
