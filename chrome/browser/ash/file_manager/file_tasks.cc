@@ -553,14 +553,10 @@ void PostProcessFoundTasks(
                  ash::features::kFilesArchivemount2)) {
     for (const auto& entry : entries) {
       // Deny-list: various compressed formats.
-      if (entry.path.MatchesFinalExtension(".7z") ||
-          entry.path.MatchesFinalExtension(".bz") ||
+      if (entry.path.MatchesFinalExtension(".bz") ||
           entry.path.MatchesFinalExtension(".bz2") ||
-          entry.path.MatchesFinalExtension(".crx") ||
           entry.path.MatchesFinalExtension(".gz") ||
-          entry.path.MatchesFinalExtension(".iso") ||
           entry.path.MatchesFinalExtension(".lzma") ||
-          entry.path.MatchesFinalExtension(".tar") ||
           entry.path.MatchesFinalExtension(".taz") ||
           entry.path.MatchesFinalExtension(".tb2") ||
           entry.path.MatchesFinalExtension(".tbz") ||
