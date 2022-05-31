@@ -291,7 +291,8 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
   DialogModelHost* host() { return host_; }
 
   // Adds body text at the end of the dialog model.
-  void AddBodyText(const DialogModelLabel& label, ElementIdentifier id);
+  void AddBodyText(const DialogModelLabel& label,
+                   ElementIdentifier id = ElementIdentifier());
 
   // Adds a checkbox ([checkbox] label) at the end of the dialog model.
   void AddCheckbox(ElementIdentifier id,
