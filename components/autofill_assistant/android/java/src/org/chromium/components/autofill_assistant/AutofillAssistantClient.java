@@ -194,6 +194,16 @@ public class AutofillAssistantClient {
                 mNativeClientAndroid, AutofillAssistantClient.this);
     }
 
+    /**
+     * Check whether the user is supervised.
+     * @return supervised state
+     */
+    public boolean isSupervisedUser() {
+        if (mNativeClientAndroid == 0) return false;
+        return AutofillAssistantClientJni.get().isSupervisedUser(
+                mNativeClientAndroid, AutofillAssistantClient.this);
+    }
+
     @CalledByNative
     private void chooseAccountAsyncIfNecessary(@Nullable String userName) {
         if (mAccountInitializationStarted) return;
@@ -400,6 +410,7 @@ public class AutofillAssistantClient {
                 String actionId, String experimentId, String[] argumentNames,
                 String[] argumentValues, @Nullable AssistantOverlayCoordinator overlayCoordinator);
         void showFatalError(long nativeClientAndroid, AutofillAssistantClient caller);
+        boolean isSupervisedUser(long nativeClientAndroid, AutofillAssistantClient caller);
         void onSpokenFeedbackAccessibilityServiceChanged(
                 long nativeClientAndroid, AutofillAssistantClient caller, boolean enabled);
         AssistantDependencies getDependencies(

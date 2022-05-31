@@ -369,6 +369,13 @@ void ClientAndroid::ShowFatalError(
       Metrics::DropOutReason::NO_SCRIPTS);
 }
 
+bool ClientAndroid::IsSupervisedUser(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& jcaller) {
+  return dependencies_->GetCommonDependencies()->IsSupervisedUser(
+      GetWebContents()->GetBrowserContext());
+}
+
 void ClientAndroid::OnSpokenFeedbackAccessibilityServiceChanged(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller,

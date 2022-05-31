@@ -106,6 +106,9 @@ class ClientAndroid : public Client,
   void ShowFatalError(JNIEnv* env,
                       const base::android::JavaParamRef<jobject>& jcaller);
 
+  bool IsSupervisedUser(JNIEnv* env,
+                        const base::android::JavaParamRef<jobject>& jcaller);
+
   void OnSpokenFeedbackAccessibilityServiceChanged(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jcaller,
