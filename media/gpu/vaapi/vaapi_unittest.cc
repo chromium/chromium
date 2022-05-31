@@ -339,11 +339,19 @@ TEST_F(VaapiTest, GetSupportedEncodeProfiles) {
 // Verifies that VAProfileProtected is indeed supported by the command line
 // vainfo utility.
 TEST_F(VaapiTest, VaapiProfileProtected) {
-  const auto va_info = RetrieveVAInfoOutput();
+  VAImplementation impl = VaapiWrapper::GetImplementationType();
+  // VAProfileProtected is only used in the Intel iHD implementation. AMD does
+  // not need to support that profile (but should be the only other protected
+  // content VAAPI implementation).
+  if (impl == VAImplementation::kIntelIHD) {
+    const auto va_info = RetrieveVAInfoOutput();
 
-  EXPECT_TRUE(base::Contains(va_info.at(VAProfileProtected),
-                             VAEntrypointProtectedContent))
-      << ", va profile: " << vaProfileStr(VAProfileProtected);
+    EXPECT_TRUE(base::Contains(va_info.at(VAProfileProtected),
+                               VAEntrypointProtectedContent))
+        << ", va profile: " << vaProfileStr(VAProfileProtected);
+  } else {
+    EXPECT_EQ(impl, VAImplementation::kMesaGallium);
+  }
 }
 #endif  // BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
 
