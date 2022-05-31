@@ -272,6 +272,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Network.Cellular.ESim.InstallViaQrCode.OperationResult"
     enum="NetworkCellularESimInstallResult" expires_after="2022-11-06">
+  <obsolete>
+    Split into Network.Cellular.ESim.UserInstall.OperationResult.{Type}
+  </obsolete>
   <owner>azeemarshad@chromium.org</owner>
   <owner>khorimoto@chromium.org</owner>
   <owner>cros-connectivity@google.com</owner>
@@ -584,6 +587,26 @@ chromium-metrics-reviews@google.com.
     Tracks the number of times a ESim cellular network is connected as the only
     network, or with other network or not connected at all.
   </summary>
+</histogram>
+
+<histogram
+    name="Network.Cellular.ESim.UserInstall.OperationResult.{InstallType}"
+    enum="NetworkCellularESimInstallResult" expires_after="2022-11-27">
+  <owner>azeemarshad@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Tracks the result of an attempt to install an eSIM profile by the user
+    either via QR code or by manually entering the activation code. This process
+    includes both an attempt to inhibit modem scans as well as a request to
+    install the profile. The metric tracks failures at each step of the process.
+
+    Emitted once the operation completes.
+  </summary>
+  <token key="InstallType">
+    <variant name="All"/>
+    <variant name="ViaCodeInput"/>
+    <variant name="ViaQrCode"/>
+  </token>
 </histogram>
 
 <histogram name="Network.Cellular.InhibitResult"

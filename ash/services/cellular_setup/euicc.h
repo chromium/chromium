@@ -38,6 +38,7 @@ class Euicc : public mojom::Euicc {
   void InstallProfileFromActivationCode(
       const std::string& activation_code,
       const std::string& confirmation_code,
+      bool is_install_via_qr_code,
       InstallProfileFromActivationCodeCallback callback) override;
   void RequestPendingProfiles(RequestPendingProfilesCallback callback) override;
   void GetEidQRCode(GetEidQRCodeCallback callback) override;

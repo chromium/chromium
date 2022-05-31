@@ -92,6 +92,7 @@ void Euicc::GetProfileList(GetProfileListCallback callback) {
 void Euicc::InstallProfileFromActivationCode(
     const std::string& activation_code,
     const std::string& confirmation_code,
+    bool is_install_via_qr_code,
     InstallProfileFromActivationCodeCallback callback) {
   ESimProfile* profile_info = nullptr;
   mojom::ProfileInstallResult status =
@@ -123,7 +124,8 @@ void Euicc::InstallProfileFromActivationCode(
       activation_code, confirmation_code, path_,
       /*new_shill_properties=*/base::DictionaryValue(),
       base::BindOnce(&Euicc::OnESimInstallProfileResult,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
+      /*is_initial_install=*/true, is_install_via_qr_code);
 }
 
 void Euicc::OnESimInstallProfileResult(

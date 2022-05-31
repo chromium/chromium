@@ -235,10 +235,12 @@ class FakeEuicc {
    * @override
    * @param {string} activationCode
    * @param {string} confirmationCode
+   * @param {boolean} isInstallViaQrCode
    * @return {!Promise<{result:
    *     ash.cellularSetup.mojom.ProfileInstallResult},}>}
    */
-  installProfileFromActivationCode(activationCode, confirmationCode) {
+  installProfileFromActivationCode(
+      activationCode, confirmationCode, isInstallViaQrCode) {
     this.notifyProfileListChangedForTest();
     return Promise.resolve({
       result: this.profileInstallResult_ ?

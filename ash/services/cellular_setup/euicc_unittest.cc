@@ -75,7 +75,7 @@ class EuiccTest : public ESimTestBase {
 
     base::RunLoop run_loop;
     euicc->InstallProfileFromActivationCode(
-        activation_code, confirmation_code,
+        activation_code, confirmation_code, /*is_install_via_qr_code=*/true,
         base::BindLambdaForTesting(
             [&](mojom::ProfileInstallResult install_result,
                 mojo::PendingRemote<mojom::ESimProfile> esim_profile) {

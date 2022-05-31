@@ -83,10 +83,13 @@ bool IsManagedNetwork(const base::Value& new_shill_properties) {
 void CellularESimInstaller::RecordInstallESimProfileResult(
     InstallESimProfileResult result,
     bool is_managed,
-    bool is_initial_install) {
+    bool is_initial_install,
+    bool is_install_via_qr_code) {
+  // Log all installation results.
   base::UmaHistogramEnumeration("Network.Cellular.ESim.InstallationResult",
                                 result);
 
+  // Log eSIM installation via policy.
   if (is_managed) {
     base::UmaHistogramEnumeration(
         "Network.Cellular.ESim.Policy.ESimInstall.OperationResult", result);
@@ -102,8 +105,18 @@ void CellularESimInstaller::RecordInstallESimProfileResult(
         result);
     return;
   }
+
+  // Log eSIM installation by user.
   base::UmaHistogramEnumeration(
-      "Network.Cellular.ESim.InstallViaQrCode.OperationResult", result);
+      "Network.Cellular.ESim.UserInstall.OperationResult.All", result);
+  if (is_install_via_qr_code) {
+    base::UmaHistogramEnumeration(
+        "Network.Cellular.ESim.UserInstall.OperationResult.ViaQrCode", result);
+  } else {
+    base::UmaHistogramEnumeration(
+        "Network.Cellular.ESim.UserInstall.OperationResult.ViaCodeInput",
+        result);
+  }
 }
 
 CellularESimInstaller::CellularESimInstaller() = default;
@@ -129,7 +142,8 @@ void CellularESimInstaller::InstallProfileFromActivationCode(
     const dbus::ObjectPath& euicc_path,
     base::Value new_shill_properties,
     InstallProfileFromActivationCodeCallback callback,
-    bool is_initial_install) {
+    bool is_initial_install,
+    bool is_install_via_qr_code) {
   // Try installing directly with activation code.
   // TODO(crbug.com/1186682) Add a check for activation codes that are
   // currently being installed to prevent multiple attempts for the same
@@ -141,6 +155,7 @@ void CellularESimInstaller::InstallProfileFromActivationCode(
           &CellularESimInstaller::PerformInstallProfileFromActivationCode,
           weak_ptr_factory_.GetWeakPtr(), activation_code, confirmation_code,
           euicc_path, std::move(new_shill_properties), is_initial_install,
+          is_install_via_qr_code,
           CreateTimedInstallProfileCallback(std::move(callback))));
 }
 
@@ -150,13 +165,14 @@ void CellularESimInstaller::PerformInstallProfileFromActivationCode(
     const dbus::ObjectPath& euicc_path,
     base::Value new_shill_properties,
     bool is_initial_install,
+    bool is_install_via_qr_code,
     InstallProfileFromActivationCodeCallback callback,
     std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock) {
   if (!inhibit_lock) {
     NET_LOG(ERROR) << "Error inhibiting cellular device";
     RecordInstallESimProfileResult(InstallESimProfileResult::kInhibitFailed,
                                    IsManagedNetwork(new_shill_properties),
-                                   is_initial_install);
+                                   is_initial_install, is_install_via_qr_code);
     std::move(callback).Run(HermesResponseStatus::kErrorWrongState,
                             /*profile_path=*/absl::nullopt,
                             /*service_path=*/absl::nullopt);
@@ -168,7 +184,8 @@ void CellularESimInstaller::PerformInstallProfileFromActivationCode(
       base::BindOnce(&CellularESimInstaller::OnProfileInstallResult,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                      std::move(inhibit_lock), euicc_path,
-                     std::move(new_shill_properties), is_initial_install));
+                     std::move(new_shill_properties), is_initial_install,
+                     is_install_via_qr_code));
 }
 
 void CellularESimInstaller::OnProfileInstallResult(
@@ -177,6 +194,7 @@ void CellularESimInstaller::OnProfileInstallResult(
     const dbus::ObjectPath& euicc_path,
     const base::Value& new_shill_properties,
     bool is_initial_install,
+    bool is_install_via_qr_code,
     HermesResponseStatus status,
     const dbus::ObjectPath* profile_path) {
   hermes_metrics::LogInstallViaQrCodeResult(status);
@@ -187,14 +205,14 @@ void CellularESimInstaller::OnProfileInstallResult(
                    << static_cast<int>(status);
     RecordInstallESimProfileResult(
         InstallESimProfileResult::kHermesInstallFailed, is_managed,
-        is_initial_install);
+        is_initial_install, is_install_via_qr_code);
     std::move(callback).Run(status, /*profile_path=*/absl::nullopt,
                             /*service_path=*/absl::nullopt);
     return;
   }
 
   RecordInstallESimProfileResult(InstallESimProfileResult::kSuccess, is_managed,
-                                 is_initial_install);
+                                 is_initial_install, is_install_via_qr_code);
   pending_inhibit_locks_.emplace(*profile_path, std::move(inhibit_lock));
   ConfigureESimService(
       new_shill_properties, euicc_path, *profile_path,

@@ -451,6 +451,7 @@ suite('CrComponentsActivationCodePageTest', function() {
           eventToPromise('activation-code-updated', activationCodePage);
       input.value = activationCode;
       const activationCodeUpdatedEvent = await activationCodeUpdatedPromise;
+      assertFalse(activationCodePage.isFromQrCode);
       assertEquals(
           activationCodeUpdatedEvent.detail.activationCode,
           shouldEventContainCode ? activationCode : null);
@@ -572,6 +573,7 @@ suite('CrComponentsActivationCodePageTest', function() {
     await flushAsync();
 
     // The code detected UI should be showing.
+    assertTrue(activationCodePage.isFromQrCode);
     assertTrue(startScanningContainer.hidden);
     assertFalse(scanFinishContainer.hidden);
     assertFalse(scanSucessHeader.hidden);
