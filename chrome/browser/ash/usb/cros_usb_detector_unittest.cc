@@ -380,27 +380,25 @@ TEST_F(CrosUsbDetectorTest, NotificationShown) {
   device_manager_.RemoveDevice(device);
   base::RunLoop().RunUntilIdle();
 
-  // Should have 2 buttions when ARCVM is enabled and user enables ARC but the
+  // Should have 3 buttions when ARCVM is enabled and user enables ARC but the
   // feature is disabled.
-  // Update this test when the kUsbDeviceDefaultAttachToArcVm is enabled
-  // by default or removed.
   ASSERT_TRUE(arc::SetArcPlayStoreEnabledForProfile(profile(), true));
   device_manager_.AddDevice(device);
   base::RunLoop().RunUntilIdle();
   notification = display_service_->GetNotification(notification_id);
   ASSERT_TRUE(notification);
-  EXPECT_EQ(notification->buttons().size(), 2u);
+  EXPECT_EQ(notification->buttons().size(), 3u);
   device_manager_.RemoveDevice(device);
   base::RunLoop().RunUntilIdle();
 
-  // Now should have 3 buttons when Bruschetta is enabled.
+  // Now should have 4 buttons when Bruschetta is enabled.
   bruschetta::FakeBruschettaFeatures bruschetta_features;
   bruschetta_features.set_enabled(true);
   device_manager_.AddDevice(device);
   base::RunLoop().RunUntilIdle();
   notification = display_service_->GetNotification(notification_id);
   ASSERT_TRUE(notification);
-  EXPECT_EQ(notification->buttons().size(), 3u);
+  EXPECT_EQ(notification->buttons().size(), 4u);
   device_manager_.RemoveDevice(device);
   base::RunLoop().RunUntilIdle();
 }

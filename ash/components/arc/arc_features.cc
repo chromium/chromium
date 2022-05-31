@@ -140,7 +140,7 @@ const base::Feature kSaveRawFilesOnTracing{"ArcSaveRawFilesOnTracing",
 
 // When enabled, unclaimed USB device will be attached to ARCVM by default.
 const base::Feature kUsbDeviceDefaultAttachToArcVm{
-    "UsbDeviceDefaultAttachToArcVm", base::FEATURE_DISABLED_BY_DEFAULT};
+    "UsbDeviceDefaultAttachToArcVm", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls ARC USB Storage UI feature.
 // When enabled, chrome://settings and Files.app will ask if the user wants
