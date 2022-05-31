@@ -1871,6 +1871,10 @@ bool LayerTreeImpl::IsSyncTree() const {
   return host_impl_->sync_tree() == this;
 }
 
+bool LayerTreeImpl::HasPendingTree() const {
+  return host_impl_->pending_tree() != nullptr;
+}
+
 LayerImpl* LayerTreeImpl::FindActiveTreeLayerById(int id) {
   LayerTreeImpl* tree = host_impl_->active_tree();
   if (!tree)
@@ -2932,6 +2936,10 @@ void LayerTreeImpl::SetVisualUpdateDurations(
   previous_surfaces_visual_update_duration_ =
       previous_surfaces_visual_update_duration;
   visual_update_duration_ = visual_update_duration;
+}
+
+void LayerTreeImpl::RequestImplSideInvalidationForRerasterTiling() {
+  host_impl_->RequestImplSideInvalidationForRerasterTiling();
 }
 
 }  // namespace cc

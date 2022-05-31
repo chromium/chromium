@@ -139,6 +139,7 @@ class CC_EXPORT LayerTreeImpl {
   bool IsPendingTree() const;
   bool IsRecycleTree() const;
   bool IsSyncTree() const;
+  bool HasPendingTree() const;
   LayerImpl* FindActiveTreeLayerById(int id);
   LayerImpl* FindPendingTreeLayerById(int id);
   // TODO(bokan): PinchGestureActive is a layering violation, it's not related
@@ -166,6 +167,7 @@ class CC_EXPORT LayerTreeImpl {
   TargetColorParams GetTargetColorParams(
       gfx::ContentColorUsage content_color_usage) const;
   bool IsReadyToActivate() const;
+  void RequestImplSideInvalidationForRerasterTiling();
 
   // Tree specific methods exposed to layer-impl tree.
   // ---------------------------------------------------------------------------

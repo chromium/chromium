@@ -5112,6 +5112,11 @@ bool LayerTreeHostImpl::IsReadyToActivate() const {
   return client_->IsReadyToActivate();
 }
 
+void LayerTreeHostImpl::RequestImplSideInvalidationForRerasterTiling() {
+  bool needs_first_draw_on_activation = true;
+  client_->NeedsImplSideInvalidation(needs_first_draw_on_activation);
+}
+
 base::WeakPtr<LayerTreeHostImpl> LayerTreeHostImpl::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }

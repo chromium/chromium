@@ -896,6 +896,8 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
 
   bool IsReadyToActivate() const;
 
+  void RequestImplSideInvalidationForRerasterTiling();
+
  protected:
   LayerTreeHostImpl(
       const LayerTreeSettings& settings,

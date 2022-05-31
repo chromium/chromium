@@ -1225,9 +1225,6 @@ void PictureLayerImpl::RemoveAllTilings() {
 
 bool PictureLayerImpl::CanRecreateHighResTilingForLCDTextAndRasterTransform(
     const PictureLayerTiling& high_res) const {
-  // This is for the sync tree only to avoid flickering.
-  if (!layer_tree_impl()->IsSyncTree())
-    return false;
   // We can recreate the tiling if we would invalidate all of its tiles.
   if (high_res.may_contain_low_resolution_tiles())
     return true;
@@ -1247,7 +1244,7 @@ bool PictureLayerImpl::CanRecreateHighResTilingForLCDTextAndRasterTransform(
   // If ReadyToActivate() is already scheduled, recreating tiling should be
   // delayed until the activation is executed. Otherwise the tiles in viewport
   // will be deleted.
-  if (layer_tree_impl()->IsReadyToActivate())
+  if (layer_tree_impl()->IsSyncTree() && layer_tree_impl()->IsReadyToActivate())
     return false;
   return true;
 }
@@ -1267,12 +1264,28 @@ void PictureLayerImpl::UpdateTilingsForRasterScaleAndTranslation(
         high_res->raster_transform().translation() != raster_translation;
     bool can_use_lcd_text_changed =
         high_res->can_use_lcd_text() != can_use_lcd_text();
+    bool can_recreate_highres_tiling =
+        CanRecreateHighResTilingForLCDTextAndRasterTransform(*high_res);
+    // Only for the sync tree to avoid flickering.
     bool should_recreate_high_res =
         (raster_transform_is_not_ideal || can_use_lcd_text_changed) &&
-        CanRecreateHighResTilingForLCDTextAndRasterTransform(*high_res);
+        layer_tree_impl()->IsSyncTree() && can_recreate_highres_tiling;
+    // Only request an invalidation if we don't already have a pending tree.
+    bool can_request_invalidation_for_high_res =
+        (raster_transform_is_not_ideal || can_use_lcd_text_changed) &&
+        !layer_tree_impl()->settings().commit_to_active_tree &&
+        layer_tree_impl()->IsActiveTree() && can_recreate_highres_tiling &&
+        !layer_tree_impl()->HasPendingTree();
+
     if (should_recreate_high_res) {
       tilings_->Remove(high_res);
       high_res = nullptr;
+    } else if (can_request_invalidation_for_high_res) {
+      // Anytime a condition which flips whether we can recreate the tiling
+      // changes, we'll get a call to UpdateDrawProperties. We check whether we
+      // could recreate the tiling when this runs on the active tree to trigger
+      // an impl-side invalidation (if needed).
+      layer_tree_impl()->RequestImplSideInvalidationForRerasterTiling();
     } else if (!has_adjusted_raster_scale) {
       // Nothing changed, no need to update tilings.
       DCHECK_EQ(HIGH_RESOLUTION, high_res->resolution());
