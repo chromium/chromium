@@ -21,6 +21,7 @@
 #include "ash/system/tray/tri_view.h"
 #include "base/bind.h"
 #include "base/check.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "components/vector_icons/vector_icons.h"
@@ -28,6 +29,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/animation_throughput_reporter.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_animator.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/geometry/point.h"
@@ -440,8 +442,16 @@ CalendarView::~CalendarView() {
   // dependency from `CalendarViewController`, since these views are destructed
   // after the controller.
   if (event_list_view_) {
-    RemoveChildViewT(event_list_view_);
-    event_list_view_ = nullptr;
+    // If the `event_list_view_` close animation is running, stop the animation
+    // and let the callback handle the removal.
+    ui::LayerAnimator* event_list_view_animator =
+        event_list_view_->layer()->GetAnimator();
+    if (event_list_view_animator->is_animating()) {
+      event_list_view_animator->StopAnimating();
+    } else {
+      RemoveChildViewT(event_list_view_);
+      event_list_view_ = nullptr;
+    }
   }
   content_view_->RemoveAllChildViews();
 }
@@ -1499,7 +1509,10 @@ void CalendarView::OnOpenEventListAnimationComplete() {
 }
 
 void CalendarView::OnCloseEventListAnimationComplete() {
-  auto* focused_view = GetFocusManager()->GetFocusedView();
+  // GetFocusManager() can be nullptr if `CalendarView` is destroyed when the
+  // closing animation hasn't finished.
+  auto* focused_view =
+      GetFocusManager() ? GetFocusManager()->GetFocusedView() : nullptr;
   const bool was_focused = focused_view && Contains(focused_view);
 
   RemoveChildViewT(event_list_view_);
