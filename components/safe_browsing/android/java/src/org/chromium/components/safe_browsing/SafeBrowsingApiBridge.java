@@ -19,7 +19,7 @@ public final class SafeBrowsingApiBridge {
     private static final String TAG = "SBApiBridge";
     private static final boolean DEBUG = false;
 
-    private static Class<? extends SafeBrowsingApiHandler> sHandler;
+    private static Class<? extends SafeBrowsingApiHandler> sHandlerClass;
     private static UrlCheckTimeObserver sUrlCheckTimeObserver;
 
     private SafeBrowsingApiBridge() {
@@ -30,8 +30,30 @@ public final class SafeBrowsingApiBridge {
      * Set the class-file for the implementation of SafeBrowsingApiHandler to use when the safe
      * browsing api is invoked.
      */
-    public static void setSafeBrowsingHandlerType(Class<? extends SafeBrowsingApiHandler> handler) {
-        sHandler = handler;
+    public static void setSafeBrowsingHandlerType(
+            Class<? extends SafeBrowsingApiHandler> handlerClass) {
+        if (DEBUG) {
+            Log.i(TAG, "setSafeBrowsingHandlerType: " + String.valueOf(handlerClass != null));
+        }
+        sHandlerClass = handlerClass;
+    }
+
+    /**
+     * Creates the singleton SafeBrowsingApiHandler instance on the first call. On subsequent calls
+     * does nothing, returns the same value as returned on the first call.
+     *
+     * The caller must {@link #setSafeBrowsingHandlerType(Class)} first.
+     *
+     * @return true iff the creation succeeded.
+     */
+    @CalledByNative
+    public static boolean ensureCreated() {
+        return getHandler() != null;
+    }
+
+    // Lazily creates the singleton. Can be invoked from any thread.
+    private static SafeBrowsingApiHandler getHandler() {
+        return LazyHolder.INSTANCE;
     }
 
     /**
@@ -58,47 +80,50 @@ public final class SafeBrowsingApiBridge {
         sUrlCheckTimeObserver = observer;
     }
 
+    private static class LazyHolder {
+        static final SafeBrowsingApiHandler INSTANCE = create();
+    }
+
     /**
-     * Create a SafeBrowsingApiHandler obj and initialize its client, if supported.
+     * Creates a SafeBrowsingApiHandler and initialize its client, if supported.
+     *
+     * The caller must {@link #setSafeBrowsingHandlerType(Class)} first.
      *
      * @return the handler if it's usable, or null if the API is not supported.
      */
-    @CalledByNative
     private static SafeBrowsingApiHandler create() {
+        if (DEBUG) {
+            Log.i(TAG, "create");
+        }
         SafeBrowsingApiHandler handler;
         try {
-            handler = sHandler.getDeclaredConstructor().newInstance();
+            handler = sHandlerClass.getDeclaredConstructor().newInstance();
         } catch (NullPointerException | InstantiationException | IllegalAccessException
                 | NoSuchMethodException | InvocationTargetException e) {
             Log.e(TAG, "Failed to init handler: " + e.getMessage());
             return null;
         }
-        boolean initSuccessful =
-                handler.init(new SafeBrowsingApiHandler.Observer() {
-                    @Override
-                    public void onUrlCheckDone(
-                            long callbackId, int resultStatus, String metadata, long checkDelta) {
-                        if (sUrlCheckTimeObserver != null) {
-                            sUrlCheckTimeObserver.onUrlCheckTime(checkDelta);
-                            sUrlCheckTimeObserver = null;
-                        }
-                        SafeBrowsingApiBridgeJni.get().onUrlCheckDone(
-                                callbackId, resultStatus, metadata, checkDelta);
-                    }
-                });
+        boolean initSuccessful = handler.init((callbackId, resultStatus, metadata, checkDelta) -> {
+            if (sUrlCheckTimeObserver != null) {
+                sUrlCheckTimeObserver.onUrlCheckTime(checkDelta);
+                sUrlCheckTimeObserver = null;
+            }
+            SafeBrowsingApiBridgeJni.get().onUrlCheckDone(
+                    callbackId, resultStatus, metadata, checkDelta);
+        });
         return initSuccessful ? handler : null;
     }
 
     /**
-     * Starts a Safe Browsing check. Must be called on the same sequence as |create|.
+     * Starts a Safe Browsing check.
      */
     @CalledByNative
-    private static void startUriLookup(
-            SafeBrowsingApiHandler handler, long callbackId, String uri, int[] threatsOfInterest) {
+    private static void startUriLookup(long callbackId, String uri, int[] threatsOfInterest) {
+        assert getHandler() != null;
         if (DEBUG) {
             Log.i(TAG, "Starting request: %s", uri);
         }
-        handler.startUriLookup(callbackId, uri, threatsOfInterest);
+        getHandler().startUriLookup(callbackId, uri, threatsOfInterest);
         if (DEBUG) {
             Log.i(TAG, "Done starting request: %s", uri);
         }
@@ -108,12 +133,12 @@ public final class SafeBrowsingApiBridge {
      * TODO(crbug.com/995926): Make this call async
      * Starts a Safe Browsing Allowlist check.
      *
-     * If the uri is in the allowlist, return true. Otherwise, return false.
+     * @return true iff the uri is in the allowlist.
      */
     @CalledByNative
-    private static boolean startAllowlistLookup(
-            SafeBrowsingApiHandler handler, String uri, int threatType) {
-        return handler.startAllowlistLookup(uri, threatType);
+    private static boolean startAllowlistLookup(String uri, int threatType) {
+        assert getHandler() != null;
+        return getHandler().startAllowlistLookup(uri, threatType);
     }
 
     @NativeMethods

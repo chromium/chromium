@@ -103,6 +103,19 @@ static PendingCallbacksMap* GetPendingCallbacksMapOnIOThread() {
   return &pending_callbacks;
 }
 
+bool StartAllowlistCheck(const GURL& url, const SBThreatType& sb_threat_type) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  JNIEnv* env = AttachCurrentThread();
+  if (!Java_SafeBrowsingApiBridge_ensureCreated(env)) {
+    return false;
+  }
+
+  ScopedJavaLocalRef<jstring> j_url = ConvertUTF8ToJavaString(env, url.spec());
+  int j_threat_type = SBThreatTypeToJavaThreatType(sb_threat_type);
+  return Java_SafeBrowsingApiBridge_startAllowlistLookup(env, j_url,
+                                                         j_threat_type);
+}
+
 }  // namespace
 
 // static
@@ -195,35 +208,7 @@ void JNI_SafeBrowsingApiBridge_OnUrlCheckDone(
 //
 // SafeBrowsingApiHandlerBridge
 //
-SafeBrowsingApiHandlerBridge::SafeBrowsingApiHandlerBridge()
-    : checked_api_support_(false) {}
-
 SafeBrowsingApiHandlerBridge::~SafeBrowsingApiHandlerBridge() {}
-
-bool SafeBrowsingApiHandlerBridge::CheckApiIsSupported() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  if (!checked_api_support_) {
-    j_api_handler_ = base::android::ScopedJavaGlobalRef<jobject>(
-        Java_SafeBrowsingApiBridge_create(AttachCurrentThread()));
-    checked_api_support_ = true;
-  }
-  return j_api_handler_.obj() != nullptr;
-}
-
-bool SafeBrowsingApiHandlerBridge::StartAllowlistCheck(
-    const GURL& url,
-    const SBThreatType& sb_threat_type) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  if (!CheckApiIsSupported()) {
-    return false;
-  }
-
-  JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> j_url = ConvertUTF8ToJavaString(env, url.spec());
-  int j_threat_type = SBThreatTypeToJavaThreatType(sb_threat_type);
-  return Java_SafeBrowsingApiBridge_startAllowlistLookup(env, j_api_handler_,
-                                                         j_url, j_threat_type);
-}
 
 void SafeBrowsingApiHandlerBridge::StartURLCheck(
     std::unique_ptr<ResponseCallback> callback,
@@ -235,7 +220,8 @@ void SafeBrowsingApiHandlerBridge::StartURLCheck(
     return;
   }
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  if (!CheckApiIsSupported()) {
+  JNIEnv* env = AttachCurrentThread();
+  if (!Java_SafeBrowsingApiBridge_ensureCreated(env)) {
     // Mark all requests as safe. Only users who have an old, broken GMSCore or
     // have sideloaded Chrome w/o PlayStore should land here.
     RunCallbackOnIOThread(std::move(callback), SB_THREAT_TYPE_SAFE,
@@ -250,13 +236,12 @@ void SafeBrowsingApiHandlerBridge::StartURLCheck(
 
   DCHECK(!threat_types.empty());
 
-  JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jstring> j_url = ConvertUTF8ToJavaString(env, url.spec());
   ScopedJavaLocalRef<jintArray> j_threat_types =
       SBThreatTypeSetToJavaArray(env, threat_types);
 
-  Java_SafeBrowsingApiBridge_startUriLookup(env, j_api_handler_, callback_id,
-                                            j_url, j_threat_types);
+  Java_SafeBrowsingApiBridge_startUriLookup(env, callback_id, j_url,
+                                            j_threat_types);
 }
 
 bool SafeBrowsingApiHandlerBridge::StartCSDAllowlistCheck(const GURL& url) {

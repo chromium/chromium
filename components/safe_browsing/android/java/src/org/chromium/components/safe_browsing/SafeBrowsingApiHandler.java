@@ -39,7 +39,7 @@ public interface SafeBrowsingApiHandler {
      * Verifies that SafeBrowsingApiHandler can operate and initializes if feasible.
      * Should be called on the same sequence as |startUriLookup|.
      *
-     * @param observer The object on which to call the callback functions when URL checking
+     * @param result The object on which to call the callback functions when URL checking
      * is complete.
      *
      * @return whether Safe Browsing is supported for this installation.

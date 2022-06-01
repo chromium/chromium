@@ -25,7 +25,7 @@ class SafeBrowsingApiHandlerBridge {
   using ResponseCallback =
       base::OnceCallback<void(SBThreatType, const ThreatMetadata&)>;
 
-  SafeBrowsingApiHandlerBridge();
+  SafeBrowsingApiHandlerBridge() = default;
 
   ~SafeBrowsingApiHandlerBridge();
 
@@ -50,19 +50,6 @@ class SafeBrowsingApiHandlerBridge {
   }
 
  private:
-  // Creates the |j_api_handler_| if it hasn't been already.  If the API is not
-  // supported, this will return false and j_api_handler_ will remain nullptr.
-  bool CheckApiIsSupported();
-
-  bool StartAllowlistCheck(const GURL& url, const SBThreatType& sb_threat_type);
-
-  // The Java-side SafeBrowsingApiHandlerBridge. Must call CheckApiIsSupported()
-  // first.
-  base::android::ScopedJavaGlobalRef<jobject> j_api_handler_;
-
-  // True if we've once tried to create the above object.
-  bool checked_api_support_;
-
   // Used as a key to identify unique requests sent to Java to get Safe Browsing
   // reputation from GmsCore.
   jlong next_callback_id_ = 0;
