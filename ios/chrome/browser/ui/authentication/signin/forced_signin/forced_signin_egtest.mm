@@ -472,8 +472,7 @@ std::unique_ptr<net::test_server::HttpResponse> PageHttpResponse(
 
 // Tests turning on sync for an account different from the one that is
 // currently signed in.
-// TODO(crbug.com/1328822): flaky.
-- (void)DISABLED_testSignInWithOneAccountStartSyncWithAnotherAccount {
+- (void)testSignInWithOneAccountStartSyncWithAnotherAccount {
   FakeChromeIdentity* fakeIdentity1 = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity1];
   FakeChromeIdentity* fakeIdentity2 = [FakeChromeIdentity fakeIdentity2];
@@ -569,7 +568,7 @@ std::unique_ptr<net::test_server::HttpResponse> PageHttpResponse(
 
 // Tests that the forced sign-in prompt can be shown on dynamic policy update
 // when a browser modal is displayed on top of the browser view.
-- (void)DISABLED_testSignInScreenOnModal {
+- (void)testSignInScreenOnModal {
   // Restart the app to reset the policies.
   AppLaunchConfiguration config;
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
@@ -595,7 +594,7 @@ std::unique_ptr<net::test_server::HttpResponse> PageHttpResponse(
 
 // Tests that the forced sign-in prompt can be shown on dynamic policy update
 // when on the tab switcher.
-- (void)DISABLED_testSignInScreenOnTabSwitcher {
+- (void)testSignInScreenOnTabSwitcher {
   // Restart the app to reset the policies.
   AppLaunchConfiguration config;
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
@@ -621,7 +620,7 @@ std::unique_ptr<net::test_server::HttpResponse> PageHttpResponse(
 
 // Tests that the forced sign-in prompt can be shown on dynamic policy update
 // when on an incognito browser tab.
-- (void)DISABLED_testSignInScreenOnIncognito {
+- (void)testSignInScreenOnIncognito {
   // Restart the app to reset the policies.
   AppLaunchConfiguration config;
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
@@ -647,7 +646,7 @@ std::unique_ptr<net::test_server::HttpResponse> PageHttpResponse(
 
 // Tests that the forced sign-in prompt is shown after the sign-in prompt when
 // sign-in is skipped.
-- (void)DISABLED_testSignInScreenDuringRegularSigninPrompt {
+- (void)testSignInScreenDuringRegularSigninPrompt {
   // Restart the app to reset the policies.
   AppLaunchConfiguration config;
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
@@ -754,8 +753,7 @@ std::unique_ptr<net::test_server::HttpResponse> PageHttpResponse(
 // Tests that intents are only handled when sign-in is done regardless of the
 // type of sign-in prompt (regular or forced). This test chains the regular
 // sign-in prompt and the forced sign-in prompt.
-// TODO(crbug.com/1328822): flaky.
-- (void)DISABLED_testHandlingIntentWhenSigninAfterSkippingRegularPrompt {
+- (void)testHandlingIntentWhenSigninAfterSkippingRegularPrompt {
   // Serve the test page locally using the internal embedded server.
   self.testServer->RegisterRequestHandler(
       base::BindRepeating(&PageHttpResponse));
