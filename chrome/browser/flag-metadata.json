@@ -5770,7 +5770,7 @@
   {
     "name": "tab-hover-card-images",
     "owners": [ "dfried", "corising", "//chrome/browser/ui/views/tabs/OWNERS" ],
-    "expiry_milestone": 105
+    "expiry_milestone": 110
   },
   {
     "name": "tab-outlines-in-low-contrast-themes",
