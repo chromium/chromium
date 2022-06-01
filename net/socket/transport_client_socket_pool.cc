@@ -43,10 +43,10 @@ bool g_connect_backup_jobs_enabled = true;
 base::Value NetLogCreateConnectJobParams(
     bool backup_job,
     const ClientSocketPool::GroupId* group_id) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetBoolKey("backup_job", backup_job);
-  dict.SetStringKey("group_id", group_id->ToString());
-  return dict;
+  base::Value::Dict dict;
+  dict.Set("backup_job", backup_job);
+  dict.Set("group_id", group_id->ToString());
+  return base::Value(std::move(dict));
 }
 
 }  // namespace
@@ -689,57 +689,55 @@ base::Value TransportClientSocketPool::GetInfoAsValue(
     const std::string& name,
     const std::string& type) const {
   // TODO(mmenke): This currently doesn't return bound Requests or ConnectJobs.
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetStringKey("name", name);
-  dict.SetStringKey("type", type);
-  dict.SetIntKey("handed_out_socket_count", handed_out_socket_count_);
-  dict.SetIntKey("connecting_socket_count", connecting_socket_count_);
-  dict.SetIntKey("idle_socket_count", idle_socket_count_);
-  dict.SetIntKey("max_socket_count", max_sockets_);
-  dict.SetIntKey("max_sockets_per_group", max_sockets_per_group_);
+  base::Value::Dict dict;
+  dict.Set("name", name);
+  dict.Set("type", type);
+  dict.Set("handed_out_socket_count", handed_out_socket_count_);
+  dict.Set("connecting_socket_count", connecting_socket_count_);
+  dict.Set("idle_socket_count", idle_socket_count_);
+  dict.Set("max_socket_count", max_sockets_);
+  dict.Set("max_sockets_per_group", max_sockets_per_group_);
 
   if (group_map_.empty())
-    return dict;
+    return base::Value(std::move(dict));
 
-  base::Value all_groups_dict(base::Value::Type::DICTIONARY);
+  base::Value::Dict all_groups_dict;
   for (const auto& entry : group_map_) {
     const Group* group = entry.second;
-    base::Value group_dict(base::Value::Type::DICTIONARY);
+    base::Value::Dict group_dict;
 
-    group_dict.SetIntKey("pending_request_count",
-                         group->unbound_request_count());
+    group_dict.Set("pending_request_count",
+                   static_cast<int>(group->unbound_request_count()));
     if (group->has_unbound_requests()) {
-      group_dict.SetStringKey(
-          "top_pending_priority",
-          RequestPriorityToString(group->TopPendingPriority()));
+      group_dict.Set("top_pending_priority",
+                     RequestPriorityToString(group->TopPendingPriority()));
     }
 
-    group_dict.SetIntKey("active_socket_count", group->active_socket_count());
+    group_dict.Set("active_socket_count", group->active_socket_count());
 
-    std::vector<base::Value> idle_socket_list;
+    base::Value::List idle_socket_list;
     for (const auto& idle_socket : group->idle_sockets()) {
       int source_id = idle_socket.socket->NetLog().source().id;
-      idle_socket_list.push_back(base::Value(source_id));
+      idle_socket_list.Append(source_id);
     }
-    group_dict.SetKey("idle_sockets", base::Value(std::move(idle_socket_list)));
+    group_dict.Set("idle_sockets", std::move(idle_socket_list));
 
-    std::vector<base::Value> connect_jobs_list;
+    base::Value::List connect_jobs_list;
     for (const auto& job : group->jobs()) {
       int source_id = job->net_log().source().id;
-      connect_jobs_list.push_back(base::Value(source_id));
+      connect_jobs_list.Append(source_id);
     }
-    group_dict.SetKey("connect_jobs",
-                      base::Value(std::move(connect_jobs_list)));
+    group_dict.Set("connect_jobs", std::move(connect_jobs_list));
 
-    group_dict.SetBoolKey("is_stalled", group->CanUseAdditionalSocketSlot(
-                                            max_sockets_per_group_));
-    group_dict.SetBoolKey("backup_job_timer_is_running",
-                          group->BackupJobTimerIsRunning());
+    group_dict.Set("is_stalled",
+                   group->CanUseAdditionalSocketSlot(max_sockets_per_group_));
+    group_dict.Set("backup_job_timer_is_running",
+                   group->BackupJobTimerIsRunning());
 
-    all_groups_dict.SetKey(entry.first.ToString(), std::move(group_dict));
+    all_groups_dict.Set(entry.first.ToString(), std::move(group_dict));
   }
-  dict.SetKey("groups", std::move(all_groups_dict));
-  return dict;
+  dict.Set("groups", std::move(all_groups_dict));
+  return base::Value(std::move(dict));
 }
 
 bool TransportClientSocketPool::IdleSocket::IsUsable(

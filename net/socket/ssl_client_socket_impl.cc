@@ -86,11 +86,11 @@ const int kDefaultOpenSSLBufferSize = 17 * 1024;
 
 base::Value NetLogPrivateKeyOperationParams(uint16_t algorithm,
                                             SSLPrivateKey* key) {
-  base::Value value(base::Value::Type::DICTIONARY);
-  value.SetStringKey("algorithm", SSL_get_signature_algorithm_name(
-                                      algorithm, 0 /* exclude curve */));
-  value.SetStringKey("provider", key->GetProviderName());
-  return value;
+  base::Value::Dict dict;
+  dict.Set("algorithm",
+           SSL_get_signature_algorithm_name(algorithm, 0 /* exclude curve */));
+  dict.Set("provider", key->GetProviderName());
+  return base::Value(std::move(dict));
 }
 
 base::Value NetLogSSLInfoParams(SSLClientSocketImpl* socket) {
@@ -98,45 +98,43 @@ base::Value NetLogSSLInfoParams(SSLClientSocketImpl* socket) {
   if (!socket->GetSSLInfo(&ssl_info))
     return base::Value();
 
-  base::Value dict(base::Value::Type::DICTIONARY);
+  base::Value::Dict dict;
   const char* version_str;
   SSLVersionToString(&version_str,
                      SSLConnectionStatusToVersion(ssl_info.connection_status));
-  dict.SetStringKey("version", version_str);
-  dict.SetBoolKey("is_resumed",
-                  ssl_info.handshake_type == SSLInfo::HANDSHAKE_RESUME);
-  dict.SetIntKey("cipher_suite",
-                 SSLConnectionStatusToCipherSuite(ssl_info.connection_status));
-  dict.SetIntKey("key_exchange_group", ssl_info.key_exchange_group);
-  dict.SetIntKey("peer_signature_algorithm", ssl_info.peer_signature_algorithm);
-  dict.SetBoolKey("encrypted_client_hello", ssl_info.encrypted_client_hello);
+  dict.Set("version", version_str);
+  dict.Set("is_resumed", ssl_info.handshake_type == SSLInfo::HANDSHAKE_RESUME);
+  dict.Set("cipher_suite",
+           SSLConnectionStatusToCipherSuite(ssl_info.connection_status));
+  dict.Set("key_exchange_group", ssl_info.key_exchange_group);
+  dict.Set("peer_signature_algorithm", ssl_info.peer_signature_algorithm);
+  dict.Set("encrypted_client_hello", ssl_info.encrypted_client_hello);
 
-  dict.SetStringKey("next_proto",
-                    NextProtoToString(socket->GetNegotiatedProtocol()));
+  dict.Set("next_proto", NextProtoToString(socket->GetNegotiatedProtocol()));
 
-  return dict;
+  return base::Value(std::move(dict));
 }
 
 base::Value NetLogSSLAlertParams(const void* bytes, size_t len) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetKey("bytes", NetLogBinaryValue(bytes, len));
-  return dict;
+  base::Value::Dict dict;
+  dict.Set("bytes", NetLogBinaryValue(bytes, len));
+  return base::Value(std::move(dict));
 }
 
 base::Value NetLogSSLMessageParams(bool is_write,
                                    const void* bytes,
                                    size_t len,
                                    NetLogCaptureMode capture_mode) {
-  base::Value dict(base::Value::Type::DICTIONARY);
   if (len == 0) {
     NOTREACHED();
-    return dict;
+    return base::Value();
   }
 
+  base::Value::Dict dict;
   // The handshake message type is the first byte. Include it so elided messages
   // still report their type.
   uint8_t type = reinterpret_cast<const uint8_t*>(bytes)[0];
-  dict.SetIntKey("type", type);
+  dict.Set("type", type);
 
   // Elide client certificate messages unless logging socket bytes. The client
   // certificate does not contain information needed to impersonate the user
@@ -144,10 +142,10 @@ base::Value NetLogSSLMessageParams(bool is_write,
   // information on the user's identity.
   if (!is_write || type != SSL3_MT_CERTIFICATE ||
       NetLogCaptureIncludesSocketBytes(capture_mode)) {
-    dict.SetKey("bytes", NetLogBinaryValue(bytes, len));
+    dict.Set("bytes", NetLogBinaryValue(bytes, len));
   }
 
-  return dict;
+  return base::Value(std::move(dict));
 }
 
 // This enum is used in histograms, so values may not be reused.
@@ -926,9 +924,9 @@ int SSLClientSocketImpl::Init() {
   if (!ssl_config_.ech_config_list.empty()) {
     DCHECK(base::FeatureList::IsEnabled(features::kEncryptedClientHello));
     net_log_.AddEvent(NetLogEventType::SSL_ECH_CONFIG_LIST, [&] {
-      base::Value dict(base::Value::Type::DICTIONARY);
-      dict.SetKey("bytes", NetLogBinaryValue(ssl_config_.ech_config_list));
-      return dict;
+      base::Value::Dict dict;
+      dict.Set("bytes", NetLogBinaryValue(ssl_config_.ech_config_list));
+      return base::Value(std::move(dict));
     });
     if (!SSL_set1_ech_config_list(ssl_.get(),
                                   ssl_config_.ech_config_list.data(),
@@ -1158,9 +1156,9 @@ ssl_verify_result_t SSLClientSocketImpl::VerifyCert() {
   }
 
   net_log_.AddEvent(NetLogEventType::SSL_CERTIFICATES_RECEIVED, [&] {
-    base::Value dict(base::Value::Type::DICTIONARY);
-    dict.SetKey("certificates", NetLogX509CertificateList(server_cert_.get()));
-    return dict;
+    base::Value::Dict dict;
+    dict.Set("certificates", NetLogX509CertificateList(server_cert_.get()));
+    return base::Value(std::move(dict));
   });
 
   // If the certificate is bad and has been previously accepted, use

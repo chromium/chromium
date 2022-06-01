@@ -274,7 +274,7 @@ ClientSocketPool* HttpNetworkSession::GetSocketPool(
   return GetSocketPoolManager(pool_type)->GetSocketPool(proxy_server);
 }
 
-std::unique_ptr<base::Value> HttpNetworkSession::SocketPoolInfoToValue() const {
+base::Value HttpNetworkSession::SocketPoolInfoToValue() const {
   // TODO(yutak): Should merge values from normal pools and WebSocket pools.
   return normal_socket_pool_manager_->SocketPoolInfoToValue();
 }

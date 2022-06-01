@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/load_states.h"
 #include "net/base/net_export.h"
@@ -25,10 +26,6 @@
 #include "net/socket/socket_tag.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/scheme_host_port.h"
-
-namespace base {
-class Value;
-}  // namespace base
 
 namespace net {
 

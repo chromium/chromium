@@ -22,6 +22,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
+#include "base/values.h"
 #include "build/buildflag.h"
 #include "net/base/host_mapping_rules.h"
 #include "net/base/host_port_pair.h"
@@ -261,7 +262,7 @@ class NET_EXPORT HttpNetworkSession {
 #endif
 
   // Creates a Value summary of the state of the socket pools.
-  std::unique_ptr<base::Value> SocketPoolInfoToValue() const;
+  base::Value SocketPoolInfoToValue() const;
 
   // Creates a Value summary of the state of the SPDY sessions.
   std::unique_ptr<base::Value> SpdySessionPoolInfoToValue() const;

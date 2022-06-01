@@ -400,8 +400,7 @@ NET_EXPORT base::Value GetNetInfo(URLRequestContext* context) {
   // Log Socket Pool info.
   {
     net_info_dict.Set(kNetInfoSocketPool,
-                      base::Value::FromUniquePtrValue(
-                          http_network_session->SocketPoolInfoToValue()));
+                      http_network_session->SocketPoolInfoToValue());
   }
 
   // Log SPDY Sessions.

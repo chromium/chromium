@@ -687,7 +687,8 @@ class ClientSocketPoolBaseTest : public TestWithTaskEnvironment {
     ASSERT_EQ(1u, entries.size());
     ASSERT_TRUE(entries[0].HasParams());
     ASSERT_TRUE(entries[0].params.is_dict());
-    const std::string* reason = entries[0].params.FindStringKey("reason");
+    const std::string* reason =
+        entries[0].params.GetDict().FindString("reason");
     ASSERT_TRUE(reason);
     EXPECT_EQ(expected_reason, *reason);
   }

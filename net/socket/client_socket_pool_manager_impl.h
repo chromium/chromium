@@ -13,6 +13,7 @@
 #include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
+#include "base/values.h"
 #include "net/base/net_export.h"
 #include "net/http/http_network_session.h"
 #include "net/socket/client_socket_pool_manager.h"
@@ -48,7 +49,7 @@ class NET_EXPORT_PRIVATE ClientSocketPoolManagerImpl
   ClientSocketPool* GetSocketPool(const ProxyServer& proxy_server) override;
 
   // Creates a Value summary of the state of the socket pools.
-  std::unique_ptr<base::Value> SocketPoolInfoToValue() const override;
+  base::Value SocketPoolInfoToValue() const override;
 
  private:
   using SocketPoolMap =
