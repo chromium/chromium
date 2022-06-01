@@ -339,12 +339,7 @@ PA_ALWAYS_INLINE PartitionRefCount* PartitionRefCountPointer(
 #if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
     PA_CHECK(refcount_address % alignof(PartitionRefCount) == 0);
 #endif
-    // Have to remask because the previous pointer's tag is unpredictable. There
-    // could be a race condition though if the previous slot is freed/retagged
-    // concurrently, so ideally the ref count should occupy its own MTE granule.
-    // TODO(richard.townsend@arm.com): improve this.
-    return ::partition_alloc::internal::RemaskPtr(
-        reinterpret_cast<PartitionRefCount*>(refcount_address));
+    return reinterpret_cast<PartitionRefCount*>(refcount_address);
   } else {
     PartitionRefCount* bitmap_base = reinterpret_cast<PartitionRefCount*>(
         (slot_start & kSuperPageBaseMask) + SystemPageSize() * 2);

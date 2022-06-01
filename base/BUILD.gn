@@ -3674,14 +3674,6 @@ test("base_unittests") {
         "allocator/partition_allocator/partition_alloc_base/files/file_path_pa_unittest.cc",
         "allocator/partition_allocator/partition_alloc_base/native_library_pa_unittest.cc",
       ]
-      if (target_cpu == "arm64") {
-        cflags = [
-          "-Xclang",
-          "-target-feature",
-          "-Xclang",
-          "+mte",
-        ]
-      }
     } else if (is_fuchsia) {
       sources += [ "allocator/partition_allocator/partition_alloc_base/fuchsia/fuchsia_logging_pa_unittest.cc" ]
     }
