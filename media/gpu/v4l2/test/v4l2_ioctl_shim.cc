@@ -114,8 +114,8 @@ MmapedBuffer::MmapedBuffer(const base::PlatformFile ioctl_fd,
 }
 
 MmapedBuffer::~MmapedBuffer() {
-  for (const auto& plane : mmaped_planes_)
-    munmap(plane.start_addr, plane.length);
+  for (const auto& [start_addr, length] : mmaped_planes_)
+    munmap(start_addr, length);
 }
 
 V4L2Queue::V4L2Queue(enum v4l2_buf_type type,

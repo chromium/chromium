@@ -1412,8 +1412,8 @@ bool V4L2VideoEncodeAccelerator::StopDevicePoll() {
   // Reset all our accounting info.
   while (!encoder_input_queue_.empty())
     encoder_input_queue_.pop();
-  for (auto& input_record : input_buffer_map_) {
-    input_record.frame = nullptr;
+  for (auto& [frame, ip_output_buffer_index] : input_buffer_map_) {
+    frame = nullptr;
   }
 
   bitstream_buffer_pool_.clear();

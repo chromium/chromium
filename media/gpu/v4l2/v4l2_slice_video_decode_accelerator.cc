@@ -1219,8 +1219,9 @@ bool V4L2SliceVideoDecodeAccelerator::DestroyOutputs(bool dismiss) {
   if (output_buffer_map_.empty())
     return true;
 
-  for (auto& output_record : output_buffer_map_) {
-    picture_buffers_to_dismiss.push_back(output_record.picture_id);
+  for (const auto& [output_frame, picture_id, client_texture_id, texture_id,
+                    cleared, num_times_sent_to_client] : output_buffer_map_) {
+    picture_buffers_to_dismiss.push_back(picture_id);
   }
 
   if (dismiss) {

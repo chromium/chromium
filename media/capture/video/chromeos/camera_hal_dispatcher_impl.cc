@@ -308,9 +308,7 @@ bool CameraHalDispatcherImpl::IsStarted() {
 void CameraHalDispatcherImpl::AddActiveClientObserver(
     CameraActiveClientObserver* observer) {
   base::AutoLock lock(opened_camera_id_map_lock_);
-  for (auto& opened_camera_id_pair : opened_camera_id_map_) {
-    const auto& camera_client_type = opened_camera_id_pair.first;
-    const auto& camera_id_set = opened_camera_id_pair.second;
+  for (auto& [camera_client_type, camera_id_set] : opened_camera_id_map_) {
     if (!camera_id_set.empty()) {
       observer->OnActiveClientChange(camera_client_type, /*is_active=*/true);
     }
@@ -707,9 +705,7 @@ void CameraHalDispatcherImpl::OnCameraHalServerConnectionError() {
   CAMERA_LOG(EVENT) << "Camera HAL server connection lost";
   camera_hal_server_.reset();
   camera_hal_server_callbacks_.reset();
-  for (auto& opened_camera_id_pair : opened_camera_id_map_) {
-    auto camera_client_type = opened_camera_id_pair.first;
-    const auto& camera_id_set = opened_camera_id_pair.second;
+  for (auto& [camera_client_type, camera_id_set] : opened_camera_id_map_) {
     if (!camera_id_set.empty()) {
       active_client_observers_->Notify(
           FROM_HERE, &CameraActiveClientObserver::OnActiveClientChange,

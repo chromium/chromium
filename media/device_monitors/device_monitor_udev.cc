@@ -74,8 +74,8 @@ DeviceMonitorLinux::BlockingTaskRunnerHelper::BlockingTaskRunnerHelper() {
 void DeviceMonitorLinux::BlockingTaskRunnerHelper::Initialize() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<device::UdevWatcher::Filter> filters;
-  for (const SubsystemMap& entry : kSubsystemMap) {
-    filters.emplace_back(entry.subsystem, entry.devtype);
+  for (const auto& [device_type, subsys, devtype] : kSubsystemMap) {
+    filters.emplace_back(subsys, devtype);
   }
   udev_watcher_ = device::UdevWatcher::StartWatching(this, filters);
 }
@@ -99,20 +99,19 @@ void DeviceMonitorLinux::BlockingTaskRunnerHelper::OnDevicesChanged(
     device::ScopedUdevDevicePtr device) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  base::SystemMonitor::DeviceType device_type =
-      base::SystemMonitor::DEVTYPE_UNKNOWN;
+  base::SystemMonitor::DeviceType type = base::SystemMonitor::DEVTYPE_UNKNOWN;
   const std::string subsystem(device::udev_device_get_subsystem(device.get()));
-  for (const SubsystemMap& entry : kSubsystemMap) {
-    if (subsystem == entry.subsystem) {
-      device_type = entry.device_type;
+  for (const auto& [device_type, subsys, devtype] : kSubsystemMap) {
+    if (subsystem == subsys) {
+      type = device_type;
       break;
     }
   }
-  DCHECK_NE(device_type, base::SystemMonitor::DEVTYPE_UNKNOWN);
+  DCHECK_NE(type, base::SystemMonitor::DEVTYPE_UNKNOWN);
 
   // base::SystemMonitor takes care of notifying each observer in their own task
   // runner via base::ObserverListThreadSafe.
-  base::SystemMonitor::Get()->ProcessDevicesChanged(device_type);
+  base::SystemMonitor::Get()->ProcessDevicesChanged(type);
 }
 
 DeviceMonitorLinux::DeviceMonitorLinux()

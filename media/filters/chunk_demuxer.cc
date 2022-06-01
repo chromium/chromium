@@ -885,9 +885,9 @@ void ChunkDemuxer::OnMemoryPressure(
     return;
   }
   base::AutoLock auto_lock(lock_);
-  for (const auto& itr : source_state_map_) {
-    itr.second->OnMemoryPressure(currentMediaTime, memory_pressure_level,
-                                 force_instant_gc);
+  for (const auto& [source, state] : source_state_map_) {
+    state->OnMemoryPressure(currentMediaTime, memory_pressure_level,
+                            force_instant_gc);
   }
 }
 

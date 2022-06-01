@@ -713,9 +713,9 @@ void V4L2MjpegDecodeAccelerator::DestroyInputBuffers() {
     input_streamon_ = false;
   }
 
-  for (const auto& input_record : input_buffer_map_) {
+  for (const auto& [address, length, at_device] : input_buffer_map_) {
     for (size_t i = 0; i < kMaxInputPlanes; ++i) {
-      device_->Munmap(input_record.address[i], input_record.length[i]);
+      device_->Munmap(address[i], length[i]);
     }
   }
 
@@ -743,9 +743,9 @@ void V4L2MjpegDecodeAccelerator::DestroyOutputBuffers() {
     output_streamon_ = false;
   }
 
-  for (const auto& output_record : output_buffer_map_) {
+  for (const auto& [address, length, at_device] : output_buffer_map_) {
     for (size_t i = 0; i < output_buffer_num_planes_; ++i) {
-      device_->Munmap(output_record.address[i], output_record.length[i]);
+      device_->Munmap(address[i], length[i]);
     }
   }
 

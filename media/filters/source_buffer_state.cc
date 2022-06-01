@@ -947,10 +947,9 @@ bool SourceBufferState::OnNewBuffers(
   DCHECK(timestamp_offset_during_append_);
   DCHECK(parsing_media_segment_);
 
-  for (const auto& it : buffer_queue_map) {
-    const StreamParser::BufferQueue& bufq = it.second;
-    DCHECK(!bufq.empty());
-    media_segment_has_data_for_track_[it.first] = true;
+  for (const auto& [track_id, buffer_queue] : buffer_queue_map) {
+    DCHECK(!buffer_queue.empty());
+    media_segment_has_data_for_track_[track_id] = true;
   }
 
   const base::TimeDelta timestamp_offset_before_processing =
@@ -963,12 +962,11 @@ bool SourceBufferState::OnNewBuffers(
       timestamp_offset_before_processing;
   if (generate_timestamps_flag()) {
     base::TimeDelta min_end_timestamp = kNoTimestamp;
-    for (const auto& it : buffer_queue_map) {
-      const StreamParser::BufferQueue& bufq = it.second;
-      DCHECK(!bufq.empty());
+    for (const auto& [track_id, buffer_queue] : buffer_queue_map) {
+      DCHECK(!buffer_queue.empty());
       if (min_end_timestamp == kNoTimestamp ||
-          EndTimestamp(bufq) < min_end_timestamp) {
-        min_end_timestamp = EndTimestamp(bufq);
+          EndTimestamp(buffer_queue) < min_end_timestamp) {
+        min_end_timestamp = EndTimestamp(buffer_queue);
         DCHECK_NE(kNoTimestamp, min_end_timestamp);
       }
     }

@@ -564,9 +564,9 @@ void V4L2JpegEncodeAccelerator::EncodedInstance::DestroyInputBuffers() {
     input_streamon_ = false;
   }
 
-  for (const auto& input_record : input_buffer_map_) {
+  for (const auto& [address, length, at_device] : input_buffer_map_) {
     for (size_t i = 0; i < input_buffer_num_planes_; ++i) {
-      device_->Munmap(input_record.address[i], input_record.length[i]);
+      device_->Munmap(address[i], length[i]);
     }
   }
 
