@@ -192,7 +192,7 @@ HRESULT MediaFoundationSourceWrapper::Start(
     }
 
     ComPtr<MediaFoundationStreamWrapper> stream = media_streams_[stream_id];
-    stream->SetFlushing(false);
+    stream->SetFlushed(false);
     if (selected) {
       MediaEventType event_type = MENewStream;
       if (stream->IsSelected()) {
@@ -556,7 +556,7 @@ void MediaFoundationSourceWrapper::FlushStreams() {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
   for (auto stream : media_streams_) {
-    stream->SetFlushing(true);
+    stream->SetFlushed(true);
   }
 }
 

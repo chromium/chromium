@@ -70,7 +70,7 @@ class MediaFoundationStreamWrapper
   bool IsSelected();
   bool IsEnabled();
   void SetEnabled(bool enabled);
-  void SetFlushing(bool flushing);
+  void SetFlushed(bool flushed);
 
   // TODO: revisting inheritance and potentially replacing it with composition.
 
@@ -116,7 +116,8 @@ class MediaFoundationStreamWrapper
   HRESULT GenerateStreamDescriptor();
   HRESULT GenerateSampleFromDecoderBuffer(DecoderBuffer* buffer,
                                           IMFSample** sample_out);
-  HRESULT ServiceSampleRequest() EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  HRESULT ServiceSampleRequest(IUnknown* token, DecoderBuffer* buffer)
+      EXCLUSIVE_LOCKS_REQUIRED(lock_);
   // Returns true when a sample request has been serviced.
   bool ServicePostFlushSampleRequest();
   virtual HRESULT GetMediaType(IMFMediaType** media_type_out) = 0;
@@ -147,13 +148,9 @@ class MediaFoundationStreamWrapper
 
   // Indicates whether the Chromium pipeline has flushed the renderer
   // (prior to a seek).
-  // Since SetFlushing() can be invoked by media stack thread or MF threadpool
-  // thread, |flushing_| and |queued_buffers_| are protected by lock.
-  bool flushing_ GUARDED_BY(lock_) = false;
-
-  // Indicates whether the stream has just performed a seek and is
-  // awaiting a KeyFrame before rendering further.
-  bool seek_awaiting_key_frame_ GUARDED_BY(lock_) = false;
+  // Since SetFlushed() can be invoked by media stack thread or MF threadpool
+  // thread, |flushed_| and |post_flush_buffers_| are protected by lock.
+  bool flushed_ GUARDED_BY(lock_) = false;
 
   int stream_id_;
 
@@ -174,8 +171,10 @@ class MediaFoundationStreamWrapper
   bool stream_ended_ = false;
   GUID last_key_id_ = GUID_NULL;
 
-  // Save media::DecoderBuffer from OnDemuxerStreamRead call.
-  std::queue<scoped_refptr<DecoderBuffer>> queued_buffers_ GUARDED_BY(lock_);
+  // Save media::DecoderBuffer from OnDemuxerStreamRead call when we are in
+  // progress of a flush operation.
+  std::queue<scoped_refptr<DecoderBuffer>> post_flush_buffers_
+      GUARDED_BY(lock_);
 
   bool encryption_type_reported_ = false;
 
