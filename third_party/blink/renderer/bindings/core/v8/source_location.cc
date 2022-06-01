@@ -201,9 +201,8 @@ void SourceLocation::WriteIntoTrace(perfetto::TracedValue context) const {
 
 std::unique_ptr<SourceLocation> SourceLocation::Clone() const {
   return base::WrapUnique(new SourceLocation(
-      url_.IsolatedCopy(), function_.IsolatedCopy(), line_number_,
-      column_number_, stack_trace_ ? stack_trace_->clone() : nullptr,
-      script_id_));
+      url_, function_, line_number_, column_number_,
+      stack_trace_ ? stack_trace_->clone() : nullptr, script_id_));
 }
 
 std::unique_ptr<v8_inspector::protocol::Runtime::API::StackTrace>

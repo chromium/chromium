@@ -75,9 +75,9 @@ class WasmStreamingClient : public v8::WasmStreaming::Client {
                       const String& cache_storage_cache_name,
                       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
                       ExecutionContext* execution_context)
-      : response_url_(response_url.IsolatedCopy()),
+      : response_url_(response_url),
         response_time_(response_time),
-        cache_storage_cache_name_(cache_storage_cache_name.IsolatedCopy()),
+        cache_storage_cache_name_(cache_storage_cache_name),
         main_thread_task_runner_(std::move(task_runner)),
         execution_context_(execution_context) {}
 
@@ -144,9 +144,9 @@ class WasmStreamingClient : public v8::WasmStreaming::Client {
     DCHECK(main_thread_task_runner_.get());
     main_thread_task_runner_->PostTask(
         FROM_HERE, ConvertToBaseOnceCallback(WTF::CrossThreadBindOnce(
-                       &SendCachedData, response_url_.IsolatedCopy(),
-                       response_time_, cache_storage_cache_name_.IsolatedCopy(),
-                       execution_context_, std::move(serialized_data))));
+                       &SendCachedData, response_url_, response_time_,
+                       cache_storage_cache_name_, execution_context_,
+                       std::move(serialized_data))));
   }
 
   void SetBuffer(scoped_refptr<CachedMetadata> cached_module) {
