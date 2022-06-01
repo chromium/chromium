@@ -6692,6 +6692,25 @@
             ]
         }
     ],
+    "PrivacyGuide2": [
+        {
+            "platforms": [
+                "linux",
+                "windows",
+                "chromeos",
+                "chromeos_lacros",
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PrivacyGuide2"
+                    ]
+                }
+            ]
+        }
+    ],
     "PrivacyPreservingPrefetchProxy": [
         {
             "platforms": [
