@@ -11,9 +11,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_settings.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
-#include "third_party/blink/renderer/core/frame/local_dom_window.h"
-#include "third_party/blink/renderer/core/frame/local_frame.h"
-#include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_track.h"
 
 namespace blink {
@@ -24,10 +21,9 @@ using testing::_;
 
 class TransferredMediaStreamTrackTest : public testing::Test {
  public:
-  void SetUp() override {
-    page_holder_ = std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
+  void CustomSetUp(V8TestingScope& scope) {
     transferred_track_ = MakeGarbageCollected<TransferredMediaStreamTrack>(
-        GetWindow(),
+        scope.GetExecutionContext(),
         TransferredValues{
             .kind = "video",
             .id = "",
@@ -38,13 +34,8 @@ class TransferredMediaStreamTrackTest : public testing::Test {
             .ready_state = MediaStreamSource::kReadyStateLive});
   }
 
-  LocalDOMWindow* GetWindow() const {
-    return page_holder_->GetFrame().DomWindow();
-  }
-
   void TearDown() override { WebHeap::CollectAllGarbageForTesting(); }
 
-  std::unique_ptr<DummyPageHolder> page_holder_;
   Persistent<TransferredMediaStreamTrack> transferred_track_;
 };
 
@@ -54,6 +45,8 @@ class MockEventListener final : public NativeEventListener {
 };
 
 TEST_F(TransferredMediaStreamTrackTest, InitialProperties) {
+  V8TestingScope scope;
+  CustomSetUp(scope);
   EXPECT_EQ(transferred_track_->kind(), "video");
   EXPECT_EQ(transferred_track_->id(), "");
   EXPECT_EQ(transferred_track_->label(), "dummy");
@@ -68,6 +61,8 @@ TEST_F(TransferredMediaStreamTrackTest, InitialProperties) {
 }
 
 TEST_F(TransferredMediaStreamTrackTest, PropertiesInheritFromImplementation) {
+  V8TestingScope scope;
+  CustomSetUp(scope);
   const String kKind = "audio";
   const String kId = "id";
   const String kLabel = "label";
@@ -105,7 +100,7 @@ TEST_F(TransferredMediaStreamTrackTest, PropertiesInheritFromImplementation) {
   mock_impl->SetComponent(nullptr);
   mock_impl->SetEnded(kEnded);
   mock_impl->SetSerializableSessionId(kSerializableSessionId);
-  mock_impl->SetExecutionContext(GetWindow());
+  mock_impl->SetExecutionContext(scope.GetExecutionContext());
 
   EXPECT_CALL(*mock_impl, AddedEventListener(_, _)).Times(4);
   transferred_track_->SetImplementation(mock_impl);
@@ -124,13 +119,15 @@ TEST_F(TransferredMediaStreamTrackTest, PropertiesInheritFromImplementation) {
 }
 
 TEST_F(TransferredMediaStreamTrackTest, EventsArePropagated) {
+  V8TestingScope scope;
+  CustomSetUp(scope);
   auto* mock_event_handler = MakeGarbageCollected<MockEventListener>();
   transferred_track_->addEventListener(event_type_names::kEnded,
                                        mock_event_handler);
 
   MockMediaStreamTrack* mock_impl =
       MakeGarbageCollected<MockMediaStreamTrack>();
-  mock_impl->SetExecutionContext(GetWindow());
+  mock_impl->SetExecutionContext(scope.GetExecutionContext());
   EXPECT_CALL(*mock_impl, AddedEventListener(_, _)).Times(4);
   transferred_track_->SetImplementation(mock_impl);
 
@@ -142,4 +139,37 @@ TEST_F(TransferredMediaStreamTrackTest, EventsArePropagated) {
             DispatchEventResult::kNotCanceled);
 }
 
+TEST_F(TransferredMediaStreamTrackTest,
+       ConstraintsAppliedBeforeImplementation) {
+  V8TestingScope scope;
+  CustomSetUp(scope);
+
+  MockMediaStreamTrack* mock_impl =
+      MakeGarbageCollected<MockMediaStreamTrack>();
+  mock_impl->SetExecutionContext(scope.GetExecutionContext());
+  transferred_track_->applyConstraints(scope.GetScriptState(),
+                                       MediaTrackConstraints::Create());
+  EXPECT_CALL(*mock_impl, AddedEventListener(_, _)).Times(4);
+
+  EXPECT_CALL(*mock_impl, applyConstraintsScriptState(_, _)).Times(0);
+  EXPECT_CALL(*mock_impl, applyConstraintsResolver(_, _)).Times(1);
+  transferred_track_->SetImplementation(mock_impl);
+}
+
+TEST_F(TransferredMediaStreamTrackTest, ConstraintsAppliedAfterImplementation) {
+  V8TestingScope scope;
+  CustomSetUp(scope);
+
+  MockMediaStreamTrack* mock_impl =
+      MakeGarbageCollected<MockMediaStreamTrack>();
+  mock_impl->SetExecutionContext(scope.GetExecutionContext());
+  EXPECT_CALL(*mock_impl, AddedEventListener(_, _)).Times(4);
+
+  EXPECT_CALL(*mock_impl, applyConstraintsScriptState(_, _)).Times(1);
+  EXPECT_CALL(*mock_impl, applyConstraintsResolver(_, _)).Times(0);
+  transferred_track_->SetImplementation(mock_impl);
+
+  transferred_track_->applyConstraints(scope.GetScriptState(),
+                                       MediaTrackConstraints::Create());
+}
 }  // namespace blink

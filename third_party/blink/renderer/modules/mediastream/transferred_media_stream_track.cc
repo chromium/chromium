@@ -172,19 +172,30 @@ CaptureHandle* TransferredMediaStreamTrack::getCaptureHandle() const {
 
 ScriptPromise TransferredMediaStreamTrack::applyConstraints(
     ScriptState* script_state,
-    const MediaTrackConstraints* constrints) {
+    const MediaTrackConstraints* constraints) {
   if (track_) {
-    return track_->applyConstraints(script_state, constrints);
+    return track_->applyConstraints(script_state, constraints);
   }
-  // TODO(https://crbug.com/1288839): return a promise which resolves once
-  // track_ is set.
-  return ScriptPromise();
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromise promise = resolver->Promise();
+  applyConstraints(resolver, constraints);
+  return promise;
+}
+
+void TransferredMediaStreamTrack::applyConstraints(
+    ScriptPromiseResolver* resolver,
+    const MediaTrackConstraints* constraints) {
+  constraints_list_.push_back(std::make_pair(resolver, constraints));
 }
 
 void TransferredMediaStreamTrack::SetImplementation(MediaStreamTrack* track) {
   track_ = track;
-  // TODO(https://crbug.com/1288839): Replay mutations which have happened
-  // before this point.
+
+  // Replaying mutations which happened before this point.
+  for (auto it : constraints_list_) {
+    track->applyConstraints(it.first, it.second);
+  }
+  constraints_list_.clear();
 
   // Set up an EventPropagator helper to forward any events fired on track so
   // that they're re-dispatched to anything that's listening on this.

@@ -103,6 +103,9 @@ class MODULES_EXPORT TransferredMediaStreamTrack : public MediaStreamTrack {
   void Trace(Visitor*) const override;
 
  private:
+  void applyConstraints(ScriptPromiseResolver*,
+                        const MediaTrackConstraints*) override;
+
   // Helper class to register as an event listener on the underlying
   // MediaStreamTrack and re-dispatch any fired events on the wrapping
   // TransferredMediaStreamTrack.
@@ -118,6 +121,9 @@ class MODULES_EXPORT TransferredMediaStreamTrack : public MediaStreamTrack {
   };
 
   Member<MediaStreamTrack> track_;
+  using ConstraintsPair =
+      std::pair<ScriptPromiseResolver*, const MediaTrackConstraints*>;
+  Vector<ConstraintsPair> constraints_list_;
   WeakMember<ExecutionContext> execution_context_;
   TransferredValues data_;
   Member<EventPropagator> event_propagator_;

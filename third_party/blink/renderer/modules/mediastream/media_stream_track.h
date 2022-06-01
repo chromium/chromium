@@ -10,6 +10,7 @@
 #include "build/build_config.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_capture_handle.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -91,6 +92,8 @@ class MODULES_EXPORT MediaStreamTrack
   virtual ScriptPromise applyConstraints(ScriptState*,
                                          const MediaTrackConstraints*) = 0;
 
+  virtual void applyConstraints(ScriptPromiseResolver*,
+                                const MediaTrackConstraints*) = 0;
   virtual void SetConstraints(const MediaConstraints&) = 0;
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(mute, kMute)
