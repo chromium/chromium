@@ -30,7 +30,7 @@ const float kScreenAIMinConfidenceThreshold = 0.1;
 // accessibility tree.
 ui::AXNodeID GetNextNodeID() {
   static int next_node_id = 1;
-  return next_node_id++;
+  return static_cast<ui::AXNodeID>(next_node_id++);
 }
 
 void SerializePredictedType(
@@ -94,7 +94,7 @@ absl::optional<ui::AXNodeData> SerializeUIComponent(
 // The comment at the beginning of |Screen2xSnapshotToViewHierarchy| explains
 // more.
 void AddSubTree(const std::vector<ui::AXNodeData>& nodes,
-                std::map<int, int>& id_to_position,
+                std::map<ui::AXNodeID, int>& id_to_position,
                 std::vector<int>& nodes_order,
                 const int node_index_to_add) {
   nodes_order.push_back(node_index_to_add);
@@ -144,13 +144,13 @@ std::string Screen2xSnapshotToViewHierarchy(const ui::AXTreeUpdate& snapshot) {
   std::vector<int> nodes_order;
 
   // A map for fast access from AXNode.id to position in |snapshot.nodex|.
-  std::map<int, int> id_to_position;
+  std::map<ui::AXNodeID, int> id_to_position;
 
   // A map for fast access from AXNode.id of a child node to its parent node.
-  std::map<int, int> child_id_to_parent_id;
+  std::map<ui::AXNodeID, ui::AXNodeID> child_id_to_parent_id;
 
   // The new id for each node id in |snapshot.nodes|.
-  std::map<int, int> new_id;
+  std::map<ui::AXNodeID, int> new_id;
 
   int snapshot_width = -1;
   int snapshot_height = -1;
@@ -159,9 +159,9 @@ std::string Screen2xSnapshotToViewHierarchy(const ui::AXTreeUpdate& snapshot) {
   for (size_t i = 0; i < snapshot.nodes.size(); i++) {
     const ui::AXNodeData& node = snapshot.nodes[i];
 
-    id_to_position[static_cast<int>(node.id)] = static_cast<int>(i);
+    id_to_position[node.id] = static_cast<int>(i);
     for (const ui::AXNodeID& child_id : node.child_ids)
-      child_id_to_parent_id[child_id] = static_cast<int>(node.id);
+      child_id_to_parent_id[child_id] = node.id;
 
     // Set root as the first node and take its size as snapshot size.
     if (node.id == snapshot.root_id) {
@@ -175,11 +175,11 @@ std::string Screen2xSnapshotToViewHierarchy(const ui::AXTreeUpdate& snapshot) {
   AddSubTree(snapshot.nodes, id_to_position, nodes_order, root_index);
 
   for (int i = 0; i < static_cast<int>(nodes_order.size()); i++)
-    new_id[snapshot.nodes[nodes_order[i]].id] = i;
+    new_id[snapshot.nodes[nodes_order[i]].id] = static_cast<ui::AXNodeID>(i);
 
   for (int node_index : nodes_order) {
     const ui::AXNodeData& node = snapshot.nodes[node_index];
-    int ax_node_id = static_cast<int>(node.id);
+    const ui::AXNodeID& ax_node_id = node.id;
 
     screenai::UiElement* uie = view_hierarchy.add_ui_elements();
     screenai::UiElementAttribute* attrib = nullptr;
@@ -207,13 +207,13 @@ std::string Screen2xSnapshotToViewHierarchy(const ui::AXTreeUpdate& snapshot) {
     // AXNode ID.
     attrib = uie->add_attributes();
     attrib->set_name("/axnode/node_id");
-    attrib->set_int_value(ax_node_id);
+    attrib->set_int_value(static_cast<int>(ax_node_id));
 
     // Child IDs.
     for (const ui::AXNodeID& id : node.child_ids) {
       attrib = uie->add_attributes();
       attrib->set_name("/axnode/child_ids");
-      attrib->set_int_value(id);
+      attrib->set_int_value(static_cast<int>(id));
       uie->add_child_ids(new_id[id]);
     }
 
