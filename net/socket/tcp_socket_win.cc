@@ -759,6 +759,29 @@ void TCPSocketWin::EndLoggingMultipleConnectAttempts(int net_error) {
   }
 }
 
+int TCPSocketWin::OpenAndReleaseSocketDescriptor(AddressFamily family,
+                                                 SocketDescriptor* out) {
+  THREAD_CHECKER(thread_checker);
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker);
+
+  SOCKET new_socket = CreatePlatformSocket(ConvertAddressFamily(family),
+                                           SOCK_STREAM, IPPROTO_TCP);
+  int os_error = WSAGetLastError();
+  int result = OK;
+  if (new_socket == INVALID_SOCKET) {
+    PLOG(ERROR) << "CreatePlatformSocket() returned an error";
+    result = MapSystemError(os_error);
+  }
+
+  if (!SetNonBlockingAndGetError(new_socket, &os_error)) {
+    result = MapSystemError(os_error);
+  }
+
+  *out = new_socket;
+  new_socket = INVALID_SOCKET;
+  return result;
+}
+
 SocketDescriptor TCPSocketWin::ReleaseSocketDescriptorForTesting() {
   SocketDescriptor socket_descriptor = socket_;
   socket_ = INVALID_SOCKET;

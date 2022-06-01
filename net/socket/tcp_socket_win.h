@@ -123,6 +123,11 @@ class NET_EXPORT TCPSocketWin : public base::win::ObjectWatcher::Delegate {
 
   const NetLogWithSource& net_log() const { return net_log_; }
 
+  // Opens the socket and returns the underlying SocketDescriptor as well as the
+  // result of Open(). This method is used by the socket broker.
+  static int OpenAndReleaseSocketDescriptor(AddressFamily family,
+                                            SocketDescriptor* out);
+
   // Return the underlying SocketDescriptor and clean up this object, which may
   // no longer be used. This method should be used only for testing. No read,
   // write, or accept operations should be pending.
