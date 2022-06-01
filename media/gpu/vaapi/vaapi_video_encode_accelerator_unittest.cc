@@ -538,16 +538,10 @@ class VaapiVideoEncodeAcceleratorTest
 
       // For reconstructed surface.
       if (va_encode_surface_ids_[i].empty()) {
-        // TODO(https://github.com/intel/media-driver/issues/1232): Remove this
-        // workaround of aligning |encode_size|.
-        gfx::Size aligned_size(
-            base::bits::AlignUp(svc_resolutions[i].width(), 16),
-            base::bits::AlignUp(svc_resolutions[i].height(), 16));
-
         EXPECT_CALL(
             *mock_vaapi_wrapper_,
             CreateScopedVASurfaces(
-                VA_RT_FORMAT_YUV420, aligned_size,
+                VA_RT_FORMAT_YUV420, svc_resolutions[i],
                 std::vector<VaapiWrapper::SurfaceUsageHint>{
                     VaapiWrapper::SurfaceUsageHint::kVideoEncoder},
                 _, absl::optional<gfx::Size>(), absl::optional<uint32_t>()))
