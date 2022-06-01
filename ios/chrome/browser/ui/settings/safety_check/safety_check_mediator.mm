@@ -426,11 +426,13 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
       switch (self.safeBrowsingCheckRowState) {
         case SafeBrowsingCheckRowStateDefault:  // No tap action.
         case SafeBrowsingCheckRowStateRunning:  // No tap action.
-        case SafeBrowsingCheckRowStateSafe:     // No tap action.
         case SafeBrowsingCheckRowStateManaged:  // i tap: Managed state popover.
-        case SafeBrowsingCheckRowStateUnsafe:  // i tap: Show error popover with
-                                               // link to Safe Browsing toggle
-                                               // page.
+          break;
+        case SafeBrowsingCheckRowStateSafe:
+        case SafeBrowsingCheckRowStateUnsafe:  // Show Safe Browsing settings.
+          if (base::FeatureList::IsEnabled(
+                  safe_browsing::kEnhancedProtectionPhase2IOS))
+            [self.handler showSafeBrowsingPreferencePage];
           break;
       }
       break;
@@ -455,6 +457,15 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
     case CheckStartItemType:
       return YES;
     case SafeBrowsingItemType:
+      if (base::FeatureList::IsEnabled(
+              safe_browsing::kEnhancedProtectionPhase2IOS)) {
+        return safe_browsing::GetSafeBrowsingState(*self.userPrefService) ==
+                   safe_browsing::SafeBrowsingState::STANDARD_PROTECTION ||
+               self.safeBrowsingCheckRowState ==
+                   SafeBrowsingCheckRowStateUnsafe;
+      } else {
+        return NO;
+      }
     case HeaderItem:
     case TimestampFooterItem:
       return NO;
@@ -1200,6 +1211,14 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
       if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedProtection)) {
         self.safeBrowsingCheckItem.detailText =
             [self safeBrowsingCheckItemDetailText];
+        if (base::FeatureList::IsEnabled(
+                safe_browsing::kEnhancedProtectionPhase2IOS)) {
+          if (safe_browsing::GetSafeBrowsingState(*self.userPrefService) ==
+              safe_browsing::SafeBrowsingState::STANDARD_PROTECTION) {
+            self.safeBrowsingCheckItem.accessoryType =
+                UITableViewCellAccessoryDisclosureIndicator;
+          }
+        }
       } else {
         self.safeBrowsingCheckItem.detailText = GetNSString(
             IDS_IOS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_ENABLED_DESC);
@@ -1207,7 +1226,19 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
       break;
     }
     case SafeBrowsingCheckRowStateUnsafe: {
-      self.safeBrowsingCheckItem.infoButtonHidden = NO;
+      if (base::FeatureList::IsEnabled(
+              safe_browsing::kEnhancedProtectionPhase2IOS)) {
+        UIImage* unSafeIconImage =
+            [[UIImage imageNamed:@"settings_unsafe_state"]
+                imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+        self.safeBrowsingCheckItem.trailingImage = unSafeIconImage;
+        self.safeBrowsingCheckItem.trailingImageTintColor =
+            [UIColor colorNamed:kRedColor];
+        self.safeBrowsingCheckItem.accessoryType =
+            UITableViewCellAccessoryDisclosureIndicator;
+      } else {
+        self.safeBrowsingCheckItem.infoButtonHidden = NO;
+      }
       self.safeBrowsingCheckItem.detailText = GetNSString(
           IDS_IOS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_DISABLED_DESC);
       break;
@@ -1224,6 +1255,11 @@ constexpr double kSafeBrowsingRowMinDelay = 1.75;
       safe_browsing::GetSafeBrowsingState(*self.userPrefService);
   switch (safeBrowsingState) {
     case safe_browsing::SafeBrowsingState::STANDARD_PROTECTION:
+      if (base::FeatureList::IsEnabled(
+              safe_browsing::kEnhancedProtectionPhase2IOS)) {
+        return GetNSString(
+            IDS_IOS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_STANDARD_PROTECTION_ENABLED_DESC_WITH_ENHANCED_PROTECTION);
+      }
       return GetNSString(
           IDS_IOS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_STANDARD_PROTECTION_ENABLED_DESC);
     case safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION:
