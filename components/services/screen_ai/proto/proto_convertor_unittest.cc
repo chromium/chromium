@@ -14,12 +14,12 @@ const int kMaxChildInTemplate = 3;
 
 // A dummy tree node definition.
 typedef struct {
-  ui::AXNodeID node_id;
+  int node_id;
   int child_count;
-  ui::AXNodeID child_ids[kMaxChildInTemplate];
+  int child_ids[kMaxChildInTemplate];
 } NodeTemplate;
 
-ui::AXTreeUpdate CreateAXTreeUpdateFromTemplate(const ui::AXNodeID& root_id,
+ui::AXTreeUpdate CreateAXTreeUpdateFromTemplate(int root_id,
                                                 NodeTemplate* nodes_template,
                                                 int nodes_count) {
   ui::AXTreeUpdate update;
@@ -35,12 +35,12 @@ ui::AXTreeUpdate CreateAXTreeUpdateFromTemplate(const ui::AXNodeID& root_id,
   return update;
 }
 
-ui::AXNodeID GetAxNodeID(const ::screenai::UiElement& ui_element) {
+int GetAxNodeID(const ::screenai::UiElement& ui_element) {
   for (const auto& attribute : ui_element.attributes()) {
     if (attribute.name() == "/axnode/node_id")
-      return static_cast<ui::AXNodeID>(attribute.int_value());
+      return attribute.int_value();
   }
-  return ui::kInvalidAXNodeID;
+  return static_cast<int>(ui::kInvalidAXNodeID);
 }
 
 }  // namespace

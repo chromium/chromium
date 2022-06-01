@@ -322,7 +322,7 @@ struct AX_BASE_EXPORT AXNodeData {
       std::pair<ax::mojom::StringListAttribute, std::vector<std::string>>>
       stringlist_attributes;
   base::StringPairs html_attributes;
-  std::vector<AXNodeID> child_ids;
+  std::vector<int32_t> child_ids;
 
   AXRelativeBounds relative_bounds;
 };

@@ -8,7 +8,6 @@
 #include "components/services/screen_ai/proto/proto_convertor.h"
 #include "components/services/screen_ai/public/cpp/utilities.h"
 #include "ui/accessibility/accessibility_features.h"
-#include "ui/accessibility/ax_node_id_forward.h"
 
 namespace screen_ai {
 
@@ -71,13 +70,13 @@ void ScreenAIService::Annotate(const SkBitmap& image,
 void ScreenAIService::ExtractMainContent(const ui::AXTreeUpdate& snapshot,
                                          ContentExtractionCallback callback) {
   std::string serialized_snapshot = Screen2xSnapshotToViewHierarchy(snapshot);
-  std::vector<ui::AXNodeID> content_node_ids;
+  std::vector<int32_t> content_node_ids;
 
   if (!extract_main_content_function_(serialized_snapshot, content_node_ids)) {
     VLOG(1) << "Screen2x did not return main content.";
   } else {
     VLOG(2) << "Screen2x returned " << content_node_ids.size() << " node ids:";
-    for (const ui::AXNodeID& i : content_node_ids)
+    for (int32_t i : content_node_ids)
       VLOG(2) << i;
   }
   std::move(callback).Run(content_node_ids);
