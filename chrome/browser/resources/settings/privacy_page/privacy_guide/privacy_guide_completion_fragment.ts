@@ -84,7 +84,7 @@ export class PrivacyGuideCompletionFragmentElement extends
   }
 
   override focus() {
-    this.shadowRoot!.querySelector<HTMLElement>('[focus-element]')!.focus();
+    this.shadowRoot!.querySelector<HTMLElement>('.headline')!.focus();
   }
 
   private computeIsNoLinkLayout_() {

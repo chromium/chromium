@@ -30,7 +30,7 @@ export class PrivacyGuideWelcomeFragmentElement extends PolymerElement {
   }
 
   override focus() {
-    this.shadowRoot!.querySelector<HTMLElement>('.headline-container')!.focus();
+    this.shadowRoot!.querySelector<HTMLElement>('.headline')!.focus();
   }
 
   private onStartButtonClick_(e: Event) {

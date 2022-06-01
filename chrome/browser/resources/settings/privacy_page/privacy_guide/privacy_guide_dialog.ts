@@ -49,11 +49,6 @@ export class SettingsPrivacyGuideDialogElement extends PolymerElement {
 
     this.$.dialog.showModal();
 
-    // TODO(crbug/1215630): Instead of this focus code, it should be possible to
-    // use |autofocus| on the corresponding element in the cr-dialog to put the
-    // focus on it when the dialog is shown. For an unknown reason this does not
-    // work atm [1]. Use |autofocus| once this reason has been found and fixed.
-    // [1] https://crrev.com/c/3541986/comments/a3a6bdfb_3e1e0e29
     const elementToFocus =
         this.shadowRoot!.querySelector<HTMLElement>('#backToSettingsButton')!;
     afterNextRender(this, () => elementToFocus!.focus());
