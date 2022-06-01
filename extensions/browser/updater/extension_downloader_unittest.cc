@@ -55,6 +55,10 @@ class ExtensionDownloaderTest : public ExtensionsTest {
     fetch->AddExtension(kTestExtensionId, "1.0", &zero_days, "", "",
                         mojom::ManifestLocation::kInternal,
                         DownloadFetchPriority::kBackground);
+    fetch->AddAssociatedTask(ExtensionDownloaderTask(
+        kTestExtensionId, kUpdateUrl, mojom::ManifestLocation::kInternal,
+        false /* is_corrupt_reinstall */, 0 /* request_id */,
+        DownloadFetchPriority::kBackground));
     return fetch;
   }
 

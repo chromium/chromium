@@ -121,4 +121,28 @@ ExtensionDownloaderTestHelper::CreateDownloader() {
       &delegate_, test_shared_url_loader_factory_, GetTestVerifierFormat());
 }
 
+void AddExtensionToFetchDataForTesting(ManifestFetchData* fetch_data,
+                                       const ExtensionId& id,
+                                       const std::string& version,
+                                       const GURL& update_url,
+                                       DownloadPingData ping_data) {
+  fetch_data->AddExtension(id, version, &ping_data,
+                           ExtensionDownloaderTestHelper::kEmptyUpdateUrlData,
+                           std::string(), mojom::ManifestLocation::kInternal,
+                           DownloadFetchPriority::kBackground);
+  fetch_data->AddAssociatedTask(ExtensionDownloaderTask(
+      id, update_url, mojom::ManifestLocation::kInternal,
+      false /* is_corrupt_reinstall */, 0 /* request_id */,
+      DownloadFetchPriority::kBackground));
+}
+
+void AddExtensionToFetchDataForTesting(ManifestFetchData* fetch_data,
+                                       const ExtensionId& id,
+                                       const std::string& version,
+                                       const GURL& update_url) {
+  AddExtensionToFetchDataForTesting(
+      fetch_data, id, version, update_url,
+      ExtensionDownloaderTestHelper::kNeverPingedData);
+}
+
 }  // namespace extensions
