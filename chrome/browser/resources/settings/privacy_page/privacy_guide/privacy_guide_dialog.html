@@ -34,7 +34,8 @@
     min-width: 550px;
   }
 </style>
-<dialog id="dialog" on-cancel="onDialogCancel_" on-close="onDialogClose_">
+<dialog id="dialog" on-cancel="onDialogCancel_" on-close="onDialogClose_"
+    aria-label="$i18n{privacyGuideLabel}">
   <div class="cr-row first" id="headerLine" slot="title">
     <cr-icon-button class="icon-arrow-back" id="backToSettingsButton"
         on-click="onSettingsBackClick_"
