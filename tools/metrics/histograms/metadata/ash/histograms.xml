@@ -2221,7 +2221,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.DragWindowFromShelf.PresentationTime.MaxLatency"
-    units="ms" expires_after="2022-05-30">
+    units="ms" expires_after="2023-05-30">
   <owner>tbarzic@chromium.org</owner>
   <owner>xdai@chromium.org</owner>
   <summary>
@@ -2446,7 +2446,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Login.Login.AuthMethod.Switched"
-    enum="AuthMethodSwitchType" expires_after="2022-06-29">
+    enum="AuthMethodSwitchType" expires_after="2023-06-29">
   <owner>emaamari@google.com</owner>
   <owner>cros-lurs@google.com</owner>
   <summary>
@@ -2582,7 +2582,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Media.CameraPrivacySwitch.Event"
-    enum="CameraPrivacySwitchEvent" expires_after="2022-05-01">
+    enum="CameraPrivacySwitchEvent" expires_after="2023-05-01">
   <owner>tbarzic@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <summary>
@@ -2600,7 +2600,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Media.CameraPrivacySwitch.TimeFromNotificationToOff"
-    units="5 seconds" expires_after="2022-05-01">
+    units="5 seconds" expires_after="2023-05-01">
   <owner>tbarzic@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <summary>
@@ -2701,7 +2701,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.NightLight.AutoNightLightNotificationState"
-    enum="AshAutoNightLightNotificationState" expires_after="2022-05-01">
+    enum="AshAutoNightLightNotificationState" expires_after="2023-05-01">
   <owner>afakhry@chromium.org</owner>
   <owner>tclaiborne@chromium.org</owner>
   <summary>
@@ -3176,7 +3176,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Ash.Overview.WindowDrag.PresentationTime"
-    units="ms" expires_after="2022-05-30">
+    units="ms" expires_after="2023-05-30">
 <!-- Name completed by histogram_suffixes
      name="TabletOrClamshellMode" -->
 
@@ -3187,7 +3187,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram base="true"
     name="Ash.Overview.WindowDrag.PresentationTime.MaxLatency" units="ms"
-    expires_after="2022-05-30">
+    expires_after="2023-05-30">
 <!-- Name completed by histogram_suffixes
      name="TabletOrClamshellMode" -->
 
@@ -3602,7 +3602,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Shelf.Palette.Assistant.GestureType"
-    enum="AssistantGestureType" expires_after="2022-05-01">
+    enum="AssistantGestureType" expires_after="2023-05-01">
   <owner>amehfooz@chromium.org</owner>
   <owner>cros-status-area@google.com</owner>
   <owner>gzadina@chromium.org</owner>
@@ -4098,7 +4098,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.SwipeDownDrag.Tab.PresentationTime.MaxLatency.TabletMode"
-    units="ms" expires_after="2022-06-30">
+    units="ms" expires_after="2023-06-30">
   <owner>xdai@chromium.org</owner>
   <owner>omrilio@chromium.org</owner>
   <summary>
@@ -4116,7 +4116,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.SwipeDownDrag.Window.PresentationTime.MaxLatency.TabletMode"
-    units="ms" expires_after="2022-06-30">
+    units="ms" expires_after="2023-06-30">
   <owner>xdai@chromium.org</owner>
   <owner>omrilio@chromium.org</owner>
   <summary>
@@ -4126,7 +4126,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.SwipeDownDrag.Window.PresentationTime.TabletMode"
-    units="ms" expires_after="2022-06-30">
+    units="ms" expires_after="2023-06-30">
   <owner>xdai@chromium.org</owner>
   <owner>omrilio@chromium.org</owner>
   <summary>
@@ -4135,7 +4135,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.SwipeHomeToOverviewGesture"
-    enum="SwipeHomeToOverviewResult" expires_after="2022-05-01">
+    enum="SwipeHomeToOverviewResult" expires_after="2023-05-01">
   <owner>andrewxu@chromium.org</owner>
   <owner>tbarzic@chromium.org</owner>
   <summary>
@@ -4456,7 +4456,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Wallpaper.Collection" enum="WallpaperCollection"
-    expires_after="2022-05-17">
+    expires_after="2023-05-17">
   <owner>jasontt@chromium.org</owner>
   <owner>assistive-eng@google.com</owner>
   <summary>
