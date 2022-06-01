@@ -19,7 +19,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
@@ -122,8 +121,7 @@ public class PictureInPictureControllerTest {
     @Test
     @MediumTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.O)
-    @DisableIf.Build(supported_abis_includes = "x86", sdk_is_greater_than = Build.VERSION_CODES.P,
-            message = "https://crbug.com/1330630")
+    @DisabledTest(message = "crbug.com/1330630")
     public void testExitOnLeaveFullscreen() throws Throwable {
         testExitOn(() -> DOMUtils.exitFullscreen(getWebContents()));
     }
