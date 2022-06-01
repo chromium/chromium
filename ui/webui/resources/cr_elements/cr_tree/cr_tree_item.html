@@ -45,12 +45,12 @@
     visibility: hidden;
   }
 
-  :host([may-have-children]) .tree-row .expand-icon {
-    visibility: visible;
-  }
-
   :host(:not([has-children])) .tree-row .expand-icon {
     visibility: hidden;
+  }
+
+  :host([may-have-children]) .tree-row .expand-icon {
+    visibility: visible;
   }
 
   .tree-row:hover {
@@ -95,6 +95,7 @@
   }
 
   .tree-label {
+    user-select: var(--cr-tree-label-user-select, none);
     white-space: pre;
   }
 
