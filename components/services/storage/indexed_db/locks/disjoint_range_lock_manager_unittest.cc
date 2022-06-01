@@ -138,9 +138,15 @@ TEST_F(DisjointRangeLockManagerTest, Shared) {
   base::RunLoop loop;
   {
     BarrierBuilder barrier(loop.QuitClosure());
+    EXPECT_EQ(DisjointRangeLockManager::TestLockResult::kFree,
+              lock_manager.TestLock(
+                  {0, range, LeveledLockManager::LockType::kShared}));
     EXPECT_TRUE(lock_manager.AcquireLocks(
         {{0, range, LeveledLockManager::LockType::kShared}},
         locks_holder1.AsWeakPtr(), barrier.AddClosure()));
+    EXPECT_EQ(DisjointRangeLockManager::TestLockResult::kFree,
+              lock_manager.TestLock(
+                  {0, range, LeveledLockManager::LockType::kShared}));
     EXPECT_TRUE(lock_manager.AcquireLocks(
         {{0, range, LeveledLockManager::LockType::kShared}},
         locks_holder2.AsWeakPtr(), barrier.AddClosure()));
@@ -180,6 +186,14 @@ TEST_F(DisjointRangeLockManagerTest, SharedAndExclusiveQueuing) {
   EXPECT_EQ(2ll, lock_manager.LocksHeldForTesting());
   EXPECT_EQ(0ll, lock_manager.RequestsWaitingForTesting());
 
+  // Exclusive request is blocked, shared is free.
+  EXPECT_EQ(DisjointRangeLockManager::TestLockResult::kLocked,
+            lock_manager.TestLock(
+                {0, range, LeveledLockManager::LockType::kExclusive}));
+  EXPECT_EQ(
+      DisjointRangeLockManager::TestLockResult::kFree,
+      lock_manager.TestLock({0, range, LeveledLockManager::LockType::kShared}));
+
   // Both of the following locks should be queued - the exclusive is next in
   // line, then the shared lock will come after it.
   EXPECT_TRUE(lock_manager.AcquireLocks(
@@ -217,6 +231,14 @@ TEST_F(DisjointRangeLockManagerTest, SharedAndExclusiveQueuing) {
   EXPECT_EQ(1ll, lock_manager.LocksHeldForTesting());
   EXPECT_EQ(1ll, lock_manager.RequestsWaitingForTesting());
 
+  // Both exclusive and shared requests are blocked.
+  EXPECT_EQ(DisjointRangeLockManager::TestLockResult::kLocked,
+            lock_manager.TestLock(
+                {0, range, LeveledLockManager::LockType::kExclusive}));
+  EXPECT_EQ(
+      DisjointRangeLockManager::TestLockResult::kLocked,
+      lock_manager.TestLock({0, range, LeveledLockManager::LockType::kShared}));
+
   exclusive_lock3_holder.locks.clear();
 
   // Flush the task queue to propagate the lock releases and grant the exclusive
@@ -240,9 +262,15 @@ TEST_F(DisjointRangeLockManagerTest, LevelsOperateSeparately) {
   {
     BarrierBuilder barrier(loop.QuitClosure());
     LeveledLockRange range = {IntegerKey(0), IntegerKey(1)};
+    EXPECT_EQ(DisjointRangeLockManager::TestLockResult::kFree,
+              lock_manager.TestLock(
+                  {0, range, LeveledLockManager::LockType::kExclusive}));
     EXPECT_TRUE(lock_manager.AcquireLocks(
         {{0, range, LeveledLockManager::LockType::kExclusive}},
         l0_lock_holder.AsWeakPtr(), barrier.AddClosure()));
+    EXPECT_EQ(DisjointRangeLockManager::TestLockResult::kFree,
+              lock_manager.TestLock(
+                  {1, range, LeveledLockManager::LockType::kExclusive}));
     EXPECT_TRUE(lock_manager.AcquireLocks(
         {{1, range, LeveledLockManager::LockType::kExclusive}},
         l1_lock_holder.AsWeakPtr(), barrier.AddClosure()));
@@ -276,6 +304,9 @@ TEST_F(DisjointRangeLockManagerTest, InvalidRequests) {
   EXPECT_FALSE(lock_manager.AcquireLocks(
       {{-1, range1, LeveledLockManager::LockType::kShared}},
       locks_holder.AsWeakPtr(), base::DoNothing()));
+  EXPECT_EQ(DisjointRangeLockManager::TestLockResult::kInvalid,
+            lock_manager.TestLock(
+                {-1, range1, LeveledLockManager::LockType::kShared}));
   EXPECT_TRUE(locks_holder.locks.empty());
   EXPECT_EQ(0ll, lock_manager.LocksHeldForTesting());
   EXPECT_EQ(0ll, lock_manager.RequestsWaitingForTesting());
@@ -284,6 +315,9 @@ TEST_F(DisjointRangeLockManagerTest, InvalidRequests) {
   EXPECT_FALSE(lock_manager.AcquireLocks(
       {{4, range1, LeveledLockManager::LockType::kShared}},
       locks_holder.AsWeakPtr(), base::DoNothing()));
+  EXPECT_EQ(DisjointRangeLockManager::TestLockResult::kInvalid,
+            lock_manager.TestLock(
+                {4, range1, LeveledLockManager::LockType::kShared}));
   EXPECT_TRUE(locks_holder.locks.empty());
   EXPECT_EQ(0ll, lock_manager.LocksHeldForTesting());
   EXPECT_EQ(0ll, lock_manager.RequestsWaitingForTesting());
@@ -293,6 +327,9 @@ TEST_F(DisjointRangeLockManagerTest, InvalidRequests) {
   EXPECT_FALSE(lock_manager.AcquireLocks(
       {{0, range3, LeveledLockManager::LockType::kShared}},
       locks_holder.AsWeakPtr(), base::DoNothing()));
+  EXPECT_EQ(DisjointRangeLockManager::TestLockResult::kInvalid,
+            lock_manager.TestLock(
+                {0, range3, LeveledLockManager::LockType::kShared}));
   EXPECT_TRUE(locks_holder.locks.empty());
   EXPECT_EQ(0ll, lock_manager.LocksHeldForTesting());
   EXPECT_EQ(0ll, lock_manager.RequestsWaitingForTesting());

@@ -58,6 +58,10 @@ class COMPONENT_EXPORT(LOCK_MANAGER) DisjointRangeLockManager
                     base::WeakPtr<LeveledLockHolder> locks_holder,
                     LocksAcquiredCallback callback) override;
 
+  enum class TestLockResult { kInvalid, kLocked, kFree };
+  // Tests to see if the given lock request can be acquired.
+  TestLockResult TestLock(LeveledLockRequest lock_requests);
+
   // Remove the given lock range at the given level. The lock range must not be
   // in use. Use this if the lock will never be used again.
   void RemoveLockRange(int level, const LeveledLockRange& range);
