@@ -341,8 +341,7 @@ void WaitforPDFExtensionView() {
 
 // Tests that the header is shown when a native page is loaded from a page where
 // the header was not seen before.
-// TODO(crbug.com/1329265): failing on waterfall
-- (void)DISABLED_testShowHeaderOnNativePageLoad {
+- (void)testShowHeaderOnNativePageLoad {
   std::map<GURL, std::string> responses;
   const GURL URL = web::test::HttpServer::MakeUrl("http://origin");
 
