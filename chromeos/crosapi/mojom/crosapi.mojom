@@ -1091,6 +1091,19 @@ struct OpenUrlParams {
   WindowOpenDisposition disposition@0;
 
   [MinVersion=1] OpenUrlFrom from@1;
+
+  // Decides how the URL's path is to be considered when WindowOpenDisposition
+  // is kSwitchToTab, i.e. a search is performed for an existing tab that
+  // matches a given URL.
+  [Stable, Extensible]
+  enum SwitchToTabPathBehavior {
+    // If the two paths are different, the URLs do not match.
+    [Default] kRespect = 0,
+
+    // Path is ignored when testing two URLs for a match.
+    kIgnore = 1,
+  };
+  [MinVersion=2] SwitchToTabPathBehavior path_behavior@2;
 };
 
 // BrowserService defines the APIs that live in a browser (such as

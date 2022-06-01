@@ -31,6 +31,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/process/launch.h"
@@ -66,10 +67,12 @@
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
+#include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
 #include "chromeos/crosapi/cpp/lacros_startup_state.h"
+#include "chromeos/crosapi/mojom/crosapi.mojom-shared.h"
 #include "chromeos/startup/startup_switches.h"
 #include "components/crash/core/app/crashpad.h"
 #include "components/nacl/common/buildflags.h"
@@ -393,6 +396,16 @@ ui::mojom::WindowShowState ConvertWindowShowState(ui::WindowShowState state) {
   }
 }
 
+crosapi::mojom::OpenUrlParams_SwitchToTabPathBehavior ConvertPathBehavior(
+    NavigateParams::PathBehavior path_behavior) {
+  switch (path_behavior) {
+    case NavigateParams::RESPECT:
+      return crosapi::mojom::OpenUrlParams_SwitchToTabPathBehavior::kRespect;
+    case NavigateParams::IGNORE_AND_NAVIGATE:
+      return crosapi::mojom::OpenUrlParams_SwitchToTabPathBehavior::kIgnore;
+  }
+}
+
 }  // namespace
 
 BrowserManager::RestoreFromDeskTemplate::RestoreFromDeskTemplate(
@@ -650,13 +663,14 @@ void BrowserManager::OpenUrl(const GURL& url,
   OpenUrlImpl(
       url,
       crosapi::mojom::OpenUrlParams::WindowOpenDisposition::kNewForegroundTab,
-      from);
+      from, NavigateParams::RESPECT);
 }
 
-void BrowserManager::SwitchToTab(const GURL& url) {
+void BrowserManager::SwitchToTab(const GURL& url,
+                                 NavigateParams::PathBehavior path_behavior) {
   OpenUrlImpl(
       url, crosapi::mojom::OpenUrlParams::WindowOpenDisposition::kSwitchToTab,
-      crosapi::mojom::OpenUrlFrom::kUnspecified);
+      crosapi::mojom::OpenUrlFrom::kUnspecified, path_behavior);
 }
 
 void BrowserManager::RestoreTab() {
@@ -1560,7 +1574,8 @@ void BrowserManager::RecordLacrosLaunchMode() {
 void BrowserManager::OpenUrlImpl(
     const GURL& url,
     crosapi::mojom::OpenUrlParams::WindowOpenDisposition disposition,
-    crosapi::mojom::OpenUrlFrom from) {
+    crosapi::mojom::OpenUrlFrom from,
+    NavigateParams::PathBehavior path_behavior) {
   auto result = MaybeStart(browser_util::InitialBrowserAction(
       mojom::InitialBrowserAction::kOpenWindowWithUrls, {url}, from));
   if (result != MaybeStartResult::kRunning)
@@ -1580,6 +1595,7 @@ void BrowserManager::OpenUrlImpl(
   auto params = OpenUrlParams::New();
   params->disposition = disposition;
   params->from = from;
+  params->path_behavior = ConvertPathBehavior(path_behavior);
   browser_service_->service->OpenUrl(url, std::move(params), base::DoNothing());
 }
 

@@ -42,6 +42,7 @@
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/managed_ui.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
@@ -173,15 +174,21 @@ bool IsAppInstalled(std::string app_id) {
 }
 
 void OpenInBrowser(const GURL& event_url) {
-  ash::NewWindowDelegate* primary_delegate =
-      ash::NewWindowDelegate::GetPrimary();
-  if (!primary_delegate) {
-    LOG(ERROR) << __FUNCTION__ << " failed to get primary window delegate";
+  if (crosapi::browser_util::IsLacrosPrimaryBrowser()) {
+    auto* browser_manager = crosapi::BrowserManager::Get();
+    browser_manager->SwitchToTab(
+        event_url,
+        /*path_behavior=*/NavigateParams::IGNORE_AND_NAVIGATE);
     return;
   }
 
-  primary_delegate->OpenUrl(event_url,
-                            ash::NewWindowDelegate::OpenUrlFrom::kUnspecified);
+  // Lacros is not the primary browser, so use this workaround.
+  chrome::ScopedTabbedBrowserDisplayer displayer(
+      ProfileManager::GetActiveUserProfile());
+  NavigateParams params(
+      GetSingletonTabNavigateParams(displayer.browser(), event_url));
+  params.path_behavior = NavigateParams::IGNORE_AND_NAVIGATE;
+  ShowSingletonTabOverwritingNTP(displayer.browser(), &params);
 }
 
 ash::ManagementDeviceMode GetManagementDeviceMode(
@@ -510,7 +517,8 @@ void SystemTrayClientImpl::ShowGestureEducationHelp() {
 void SystemTrayClientImpl::ShowPaletteHelp() {
   if (crosapi::browser_util::IsLacrosPrimaryBrowser()) {
     crosapi::BrowserManager::Get()->SwitchToTab(
-        GURL(chrome::kChromePaletteHelpURL));
+        GURL(chrome::kChromePaletteHelpURL),
+        /*path_behavior=*/NavigateParams::RESPECT);
     return;
   }
 
@@ -536,7 +544,8 @@ void SystemTrayClientImpl::ShowEnterpriseInfo() {
   // Otherwise show enterprise management info page.
   if (crosapi::browser_util::IsLacrosPrimaryBrowser()) {
     crosapi::BrowserManager::Get()->SwitchToTab(
-        GURL(chrome::kChromeUIManagementURL));
+        GURL(chrome::kChromeUIManagementURL),
+        /*path_behavior=*/NavigateParams::RESPECT);
     return;
   }
 

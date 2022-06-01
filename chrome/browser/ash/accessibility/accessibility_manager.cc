@@ -273,7 +273,8 @@ AccessibilityManager* AccessibilityManager::Get() {
 void AccessibilityManager::ShowAccessibilityHelp() {
   if (crosapi::browser_util::IsLacrosPrimaryBrowser()) {
     crosapi::BrowserManager::Get()->SwitchToTab(
-        GURL(chrome::kChromeAccessibilityHelpURL));
+        GURL(chrome::kChromeAccessibilityHelpURL),
+        /*path_behavior=*/NavigateParams::RESPECT);
     return;
   }
 

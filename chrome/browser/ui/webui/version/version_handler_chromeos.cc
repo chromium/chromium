@@ -83,7 +83,8 @@ void VersionHandlerChromeOS::HandleCrosUrlVersionRedirect(
   // Note: This will only be called by the UI when Lacros is available.
   DCHECK(crosapi::BrowserManager::Get());
   crosapi::BrowserManager::Get()->SwitchToTab(
-      GURL(chrome::kChromeUIVersionURL));
+      GURL(chrome::kChromeUIVersionURL),
+      /*path_behavior=*/NavigateParams::RESPECT);
 #endif
 }
 

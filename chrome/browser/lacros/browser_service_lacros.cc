@@ -129,6 +129,16 @@ void LoadMainProfile(base::OnceCallback<void(Profile*)> callback,
                           can_trigger_fre));
 }
 
+NavigateParams::PathBehavior ConvertPathBehavior(
+    crosapi::mojom::OpenUrlParams_SwitchToTabPathBehavior path_behavior) {
+  switch (path_behavior) {
+    case crosapi::mojom::OpenUrlParams_SwitchToTabPathBehavior::kRespect:
+      return NavigateParams::RESPECT;
+    case crosapi::mojom::OpenUrlParams_SwitchToTabPathBehavior::kIgnore:
+      return NavigateParams::IGNORE_AND_NAVIGATE;
+  }
+}
+
 }  // namespace
 
 // A struct to keep the pending OpenUrl task.
@@ -429,6 +439,8 @@ void BrowserServiceLacros::OpenUrlImpl(Profile* profile,
       break;
     case OpenUrlParams::WindowOpenDisposition::kSwitchToTab:
       navigate_params.disposition = WindowOpenDisposition::SWITCH_TO_TAB;
+      navigate_params.path_behavior =
+          ConvertPathBehavior(params->path_behavior);
       break;
   }
 
