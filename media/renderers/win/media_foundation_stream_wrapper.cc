@@ -227,15 +227,17 @@ void MediaFoundationStreamWrapper::SetEnabled(bool enabled) {
   ProcessRequestsIfPossible();
 }
 
-void MediaFoundationStreamWrapper::SetFlushed(bool flushed) {
-  DVLOG_FUNC(2) << "flushed=" << flushed;
+void MediaFoundationStreamWrapper::SetFlushing(bool flushing) {
+  DVLOG_FUNC(2) << "flushing=" << flushing;
 
   base::AutoLock auto_lock(lock_);
-  flushed_ = flushed;
-  if (flushed_) {
-    while (!post_flush_buffers_.empty()) {
-      post_flush_buffers_.pop();
+  flushing_ = flushing;
+  if (flushing_) {
+    while (!queued_buffers_.empty()) {
+      queued_buffers_.pop();
     }
+  } else {
+    seek_awaiting_key_frame_ = true;
   }
 }
 
@@ -293,7 +295,6 @@ void MediaFoundationStreamWrapper::ProcessRequestsIfPossible() {
 
   {
     base::AutoLock auto_lock(lock_);
-
     if (state_ == State::kPaused || !enabled_)
       return;
 
@@ -303,7 +304,7 @@ void MediaFoundationStreamWrapper::ProcessRequestsIfPossible() {
   }
 
   if (ServicePostFlushSampleRequest()) {
-    // A sample has been consumed from the |post_flush_buffers_|.
+    // A sample has been consumed from the |queued_buffers_|.
     return;
   }
 
@@ -316,16 +317,47 @@ void MediaFoundationStreamWrapper::ProcessRequestsIfPossible() {
   pending_stream_read_ = true;
 }
 
-HRESULT MediaFoundationStreamWrapper::ServiceSampleRequest(
-    IUnknown* token,
-    DecoderBuffer* buffer) {
+// If servicing the request fails, we'll end up re-attempting to service the
+// buffer(s) from queued_buffers_ after the demuxer read. There is an
+// assumption here that a failure to process a specific buffer from
+// queued_buffers_ is recoverable.
+HRESULT MediaFoundationStreamWrapper::ServiceSampleRequest() {
   DVLOG_FUNC(3);
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
   lock_.AssertAcquired();
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  DCHECK(!queued_buffers_.empty());
+  DCHECK(!pending_sample_request_tokens_.empty());
+
+  DecoderBuffer* buffer = queued_buffers_.front().get();
+  IUnknown* token = pending_sample_request_tokens_.front().Get();
+
+  // Drain all non-key and non-EOS frames in a loop. Then if there are no
+  // frames left, return E_FAIL to trigger a new demuxer read; otherwise, use
+  // the new key frame to service the sample request or handle the EOS frame.
+  if (seek_awaiting_key_frame_) {
+    while (!queued_buffers_.empty()) {
+      buffer = queued_buffers_.front().get();
+
+      if (buffer->is_key_frame() || buffer->end_of_stream()) {
+        seek_awaiting_key_frame_ = false;
+        break;
+      } else {
+        queued_buffers_.pop();
+      }
+    }
+
+    if (seek_awaiting_key_frame_) {
+      DCHECK(queued_buffers_.empty());
+      return E_FAIL;
+    }
+
+    DCHECK(buffer->is_key_frame() || buffer->end_of_stream());
+  }
 
   if (buffer->end_of_stream()) {
     if (!enabled_) {
       DVLOG_FUNC(2) << "Ignoring EOS for disabled stream";
+      queued_buffers_.pop();
       // token not dropped to reflect an outstanding request that stream wrapper
       // should service when the stream is enabled
       return S_OK;
@@ -333,6 +365,7 @@ HRESULT MediaFoundationStreamWrapper::ServiceSampleRequest(
     DVLOG_FUNC(2) << "End of stream";
     RETURN_IF_FAILED(mf_media_event_queue_->QueueEventParamUnk(
         MEEndOfStream, GUID_NULL, S_OK, nullptr));
+
     stream_ended_ = true;
     if (parent_source_) {
       static_cast<MediaFoundationSourceWrapper*>(parent_source_.Get())
@@ -343,6 +376,10 @@ HRESULT MediaFoundationStreamWrapper::ServiceSampleRequest(
                   << ", is_key_frame=" << buffer->is_key_frame();
     ComPtr<IMFSample> mf_sample;
     RETURN_IF_FAILED(GenerateSampleFromDecoderBuffer(buffer, &mf_sample));
+
+    // The MF pipeline should usually provide a token when requesting a sample,
+    // but the API contract doesn't guarantee it and this could change. (see
+    // https://docs.microsoft.com/en-us/windows/win32/api/mfidl/nf-mfidl-imfmediastream-requestsample)
     if (token) {
       RETURN_IF_FAILED(mf_sample->SetUnknown(MFSampleExtension_Token, token));
     }
@@ -352,6 +389,7 @@ HRESULT MediaFoundationStreamWrapper::ServiceSampleRequest(
   }
 
   pending_sample_request_tokens_.pop();
+  queued_buffers_.pop();
 
   return S_OK;
 }
@@ -361,20 +399,16 @@ bool MediaFoundationStreamWrapper::ServicePostFlushSampleRequest() {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
   base::AutoLock auto_lock(lock_);
-  if ((flushed_ && state_ != State::kStarted) || post_flush_buffers_.empty()) {
+  if ((flushing_ && state_ != State::kStarted) || queued_buffers_.empty()) {
     return false;
   }
 
-  DCHECK(!pending_sample_request_tokens_.empty());
-  ComPtr<IUnknown> request_token = pending_sample_request_tokens_.front();
-  HRESULT hr = ServiceSampleRequest(request_token.Get(),
-                                    post_flush_buffers_.front().get());
+  HRESULT hr = ServiceSampleRequest();
   if (FAILED(hr)) {
     DLOG(WARNING) << "Failed to service post flush sample: " << PrintHr(hr);
     return false;
   }
 
-  post_flush_buffers_.pop();
   return true;
 }
 
@@ -400,7 +434,6 @@ void MediaFoundationStreamWrapper::OnDemuxerStreamRead(
     DCHECK(pending_stream_read_);
     pending_stream_read_ = false;
 
-    ComPtr<IUnknown> token = pending_sample_request_tokens_.front();
     HRESULT hr = S_OK;
 
     if (status == DemuxerStream::Status::kOk) {
@@ -409,19 +442,10 @@ void MediaFoundationStreamWrapper::OnDemuxerStreamRead(
         ReportEncryptionType(buffer);
       }
 
-      // Push |buffer| to process later if needed. Otherwise, process it
-      // immediately.
-      if (flushed_ || !post_flush_buffers_.empty()) {
-        DVLOG_FUNC(3) << "push buffer.";
-        post_flush_buffers_.push(buffer);
-      } else {
-        hr = ServiceSampleRequest(token.Get(), buffer.get());
-        if (FAILED(hr)) {
-          DLOG(ERROR) << __func__
-                      << ": ServiceSampleRequest failed: " << PrintHr(hr);
-          return;
-        }
-      }
+      // Push |buffer| to process later.
+      DCHECK(buffer != nullptr);
+      DVLOG_FUNC(3) << "push buffer.";
+      queued_buffers_.push(buffer);
     } else if (status == DemuxerStream::Status::kConfigChanged) {
       DVLOG_FUNC(2) << "Stream config changed, AreFormatChangesEnabled="
                     << AreFormatChangesEnabled();
