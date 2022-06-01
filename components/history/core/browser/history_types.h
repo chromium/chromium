@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/containers/flat_map.h"
 #include "base/containers/stack_container.h"
 #include "base/time/time.h"
 #include "components/favicon_base/favicon_types.h"
@@ -881,13 +882,29 @@ struct ClusterVisit {
   bool hidden = false;
 };
 
+// Additional data for a cluster keyword.
+struct ClusterKeywordData {
+  ClusterKeywordData();
+  explicit ClusterKeywordData(
+      const std::vector<std::string>& entity_collections);
+  ClusterKeywordData(const ClusterKeywordData&);
+  ClusterKeywordData(ClusterKeywordData&&);
+  ClusterKeywordData& operator=(const ClusterKeywordData&);
+  ClusterKeywordData& operator=(ClusterKeywordData&&);
+  ~ClusterKeywordData();
+
+  // Entity collections associated with the keyword this is attached to.
+  std::vector<std::string> entity_collections;
+};
+
 // A cluster of `ClusterVisit`s with associated metadata (i.e. `keywords` and
 // `should_show_on_prominent_ui_surfaces`).
 struct Cluster {
   Cluster();
   Cluster(int64_t cluster_id,
           const std::vector<ClusterVisit>& visits,
-          const std::vector<std::u16string>& keywords,
+          const base::flat_map<std::u16string, ClusterKeywordData>&
+              keyword_to_data_map,
           bool should_show_on_prominent_ui_surfaces = true,
           absl::optional<std::u16string> label = absl::nullopt);
   Cluster(const Cluster&);
@@ -896,11 +913,16 @@ struct Cluster {
   Cluster& operator=(Cluster&&);
   ~Cluster();
 
+  std::vector<std::u16string> GetKeywords() const;
+
   int64_t cluster_id = 0;
   std::vector<ClusterVisit> visits;
-  // TODO(manukh): retrieve and persist `keywords`,
+  // TODO(manukh): retrieve and persist `keyword_to_data_map`,
   // `should_show_on_prominent_ui_surfaces, and `label`.
-  std::vector<std::u16string> keywords;
+
+  // A map of keywords to additional data.
+  base::flat_map<std::u16string, ClusterKeywordData> keyword_to_data_map;
+
   // Whether the cluster should be shown prominently on UI surfaces.
   bool should_show_on_prominent_ui_surfaces = true;
 

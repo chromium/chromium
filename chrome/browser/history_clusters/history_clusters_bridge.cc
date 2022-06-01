@@ -131,7 +131,7 @@ void HistoryClustersBridge::ClustersQueryDone(
             env,
             base::android::ToTypedJavaArrayOfObjects(env, cluster_visits,
                                                      cluster_visit_type),
-            base::android::ToJavaArrayOfStrings(env, cluster.keywords),
+            base::android::ToJavaArrayOfStrings(env, cluster.GetKeywords()),
             base::android::ConvertUTF16ToJavaString(env, label),
             base::android::ToJavaIntArray(env, label_match_starts),
             base::android::ToJavaIntArray(env, label_match_ends),

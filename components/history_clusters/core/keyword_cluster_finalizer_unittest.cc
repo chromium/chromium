@@ -23,6 +23,7 @@ class KeywordClusterFinalizerTest : public ::testing::Test {
   void SetUp() override {
     optimization_guide::EntityMetadata github_md;
     github_md.human_readable_aliases = {"git hub", "github llc"};
+    github_md.collections = {"/collection/computer"};
     base::flat_map<std::string, optimization_guide::EntityMetadata>
         entity_metadata_map;
     entity_metadata_map["github"] = github_md;
@@ -81,8 +82,13 @@ TEST_F(KeywordClusterFinalizerTest, IncludesKeywordsBasedOnFeatureParameters) {
   history::Cluster cluster;
   cluster.visits = {visit2, visit3};
   FinalizeCluster(cluster);
-  EXPECT_THAT(cluster.keywords,
-              UnorderedElementsAre(u"github", u"otherentity"));
+
+  ASSERT_TRUE(cluster.keyword_to_data_map.contains(u"github"));
+  EXPECT_EQ(cluster.keyword_to_data_map[u"github"].entity_collections,
+            std::vector<std::string>{"/collection/computer"});
+  ASSERT_TRUE(cluster.keyword_to_data_map.contains(u"otherentity"));
+  EXPECT_TRUE(
+      cluster.keyword_to_data_map[u"otherentity"].entity_collections.empty());
 }
 
 class KeywordClusterFinalizerIncludeAllTest
@@ -137,10 +143,27 @@ TEST_F(KeywordClusterFinalizerIncludeAllTest,
   history::Cluster cluster;
   cluster.visits = {visit2, visit3};
   FinalizeCluster(cluster);
-  EXPECT_THAT(
-      cluster.keywords,
-      UnorderedElementsAre(u"github", u"category", u"onlyinnoisyvisit",
-                           u"otherentity", u"git hub", u"search", u"baz"));
+
+  ASSERT_TRUE(cluster.keyword_to_data_map.contains(u"github"));
+  EXPECT_EQ(cluster.keyword_to_data_map[u"github"].entity_collections,
+            std::vector<std::string>{"/collection/computer"});
+  ASSERT_TRUE(cluster.keyword_to_data_map.contains(u"git hub"));
+  EXPECT_EQ(cluster.keyword_to_data_map[u"git hub"].entity_collections,
+            std::vector<std::string>{"/collection/computer"});
+  ASSERT_TRUE(cluster.keyword_to_data_map.contains(u"category"));
+  EXPECT_TRUE(
+      cluster.keyword_to_data_map[u"category"].entity_collections.empty());
+  ASSERT_TRUE(cluster.keyword_to_data_map.contains(u"onlyinnoisyvisit"));
+  EXPECT_TRUE(cluster.keyword_to_data_map[u"onlyinnoisyvisit"]
+                  .entity_collections.empty());
+  ASSERT_TRUE(cluster.keyword_to_data_map.contains(u"otherentity"));
+  EXPECT_TRUE(
+      cluster.keyword_to_data_map[u"otherentity"].entity_collections.empty());
+  ASSERT_TRUE(cluster.keyword_to_data_map.contains(u"search"));
+  EXPECT_TRUE(
+      cluster.keyword_to_data_map[u"search"].entity_collections.empty());
+  ASSERT_TRUE(cluster.keyword_to_data_map.contains(u"baz"));
+  EXPECT_TRUE(cluster.keyword_to_data_map[u"baz"].entity_collections.empty());
 }
 
 }  // namespace

@@ -84,10 +84,10 @@ TEST_F(QueryClustersStateTest, PostProcessingOccursAndLogsHistograms) {
 
   std::vector<history::Cluster> raw_clusters;
   raw_clusters.push_back(
-      history::Cluster(1, {}, {u"keyword_one"},
+      history::Cluster(1, {}, {{u"keyword_one", history::ClusterKeywordData()}},
                        /*should_show_on_prominent_ui_surfaces=*/false));
   raw_clusters.push_back(
-      history::Cluster(2, {}, {u"keyword_two"},
+      history::Cluster(2, {}, {{u"keyword_two", history::ClusterKeywordData()}},
                        /*should_show_on_prominent_ui_surfaces=*/true));
 
   auto result =
@@ -114,12 +114,13 @@ TEST_F(QueryClustersStateTest, CrossBatchDeduplication) {
   {
     std::vector<history::Cluster> raw_clusters;
     // Verify that non-matching prominent clusters are filtered out.
-    raw_clusters.push_back(
-        history::Cluster(1, {}, {u"keyword_one"},
-                         /*should_show_on_prominent_ui_surfaces=*/true));
+    raw_clusters.push_back(history::Cluster(
+        1, {}, {{u"keyword_one", history::ClusterKeywordData()}},
+        /*should_show_on_prominent_ui_surfaces=*/true));
     // Verify that matching non-prominent clusters still are shown.
     raw_clusters.push_back(
-        history::Cluster(2, {GetHardcodedClusterVisit(1)}, {u"myquery"},
+        history::Cluster(2, {GetHardcodedClusterVisit(1)},
+                         {{u"myquery", history::ClusterKeywordData()}},
                          /*should_show_on_prominent_ui_surfaces=*/false));
 
     auto result =
@@ -144,17 +145,20 @@ TEST_F(QueryClustersStateTest, CrossBatchDeduplication) {
     // Verify that a matching non-prominent non-duplicate cluster is still
     // allowed.
     raw_clusters.push_back(
-        history::Cluster(3, {GetHardcodedClusterVisit(2)}, {u"myquery"},
+        history::Cluster(3, {GetHardcodedClusterVisit(2)},
+                         {{u"myquery", history::ClusterKeywordData()}},
                          /*should_show_on_prominent_ui_surfaces=*/false));
 
     // Verify that a matching non-prominent duplicate cluster is filtered out.
     raw_clusters.push_back(
-        history::Cluster(4, {GetHardcodedClusterVisit(1)}, {u"myquery"},
+        history::Cluster(4, {GetHardcodedClusterVisit(1)},
+                         {{u"myquery", history::ClusterKeywordData()}},
                          /*should_show_on_prominent_ui_surfaces=*/false));
 
     // Verify that a matching prominent duplicate cluster is still allowed.
     raw_clusters.push_back(
-        history::Cluster(5, {GetHardcodedClusterVisit(1)}, {u"myquery"},
+        history::Cluster(5, {GetHardcodedClusterVisit(1)},
+                         {{u"myquery", history::ClusterKeywordData()}},
                          /*should_show_on_prominent_ui_surfaces=*/true));
 
     auto result =

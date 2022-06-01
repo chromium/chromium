@@ -219,7 +219,7 @@ TEST_F(OnDeviceClusteringWithoutContentBackendTest,
               ElementsAre(ElementsAre(testing::VisitResult(1, 1.0),
                                       testing::VisitResult(2, 1.0))));
   ASSERT_EQ(result_clusters.size(), 1u);
-  EXPECT_THAT(result_clusters.at(0).keywords,
+  EXPECT_THAT(result_clusters.at(0).GetKeywords(),
               UnorderedElementsAre(std::u16string(u"google-category"),
                                    std::u16string(u"com"),
                                    std::u16string(u"google-entity")));
@@ -660,7 +660,7 @@ TEST_F(OnDeviceClusteringWithAllTheBackendsTest,
               FloatEq(0.5));
   // Cluster should have 3 keywords.
   EXPECT_THAT(
-      cluster.keywords,
+      cluster.GetKeywords(),
       UnorderedElementsAre(u"rewritten-foo", u"category-foo", u"alias-foo"));
 
   history::Cluster cluster2 = result_clusters.at(1);
@@ -674,7 +674,7 @@ TEST_F(OnDeviceClusteringWithAllTheBackendsTest,
                   .model_annotations.entities.empty());
   EXPECT_TRUE(third_result_visit.annotated_visit.content_annotations
                   .model_annotations.categories.empty());
-  EXPECT_TRUE(cluster2.keywords.empty());
+  EXPECT_TRUE(cluster2.keyword_to_data_map.empty());
 
   histogram_tester.ExpectUniqueSample(
       "History.Clusters.Backend.ClusterSize.Min", 1, 1);

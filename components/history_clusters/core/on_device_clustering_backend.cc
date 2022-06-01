@@ -406,7 +406,7 @@ OnDeviceClusteringBackend::ClusterVisitsOnBackgroundThread(
       finalizer->FinalizeCluster(cluster);
     }
     visits_in_clusters.emplace_back(cluster.visits.size());
-    keyword_sizes.emplace_back(cluster.keywords.size());
+    keyword_sizes.emplace_back(cluster.keyword_to_data_map.size());
   }
 
   // It's a bit strange that this is essentially a `ClusterProcessor` but has

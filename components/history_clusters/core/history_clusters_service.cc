@@ -303,8 +303,8 @@ void HistoryClustersService::PopulateClusterKeywordCache(
     // Lowercase the keywords for case insensitive matching while adding to the
     // accumulator.
     if (keyword_accumulator->size() < max_keyword_phrases) {
-      for (auto& keyword : cluster.keywords) {
-        keyword_accumulator->insert(base::i18n::ToLower(keyword));
+      for (const auto& keyword_data : cluster.keyword_to_data_map) {
+        keyword_accumulator->insert(base::i18n::ToLower(keyword_data.first));
       }
     }
 

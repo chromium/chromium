@@ -61,7 +61,8 @@ TEST(HistoryClustersUtilTest, FilterClustersMatchingQuery) {
                            GetHardcodedClusterVisit(2),
                            GetHardcodedClusterVisit(1),
                        },
-                       {u"apples", u"Red Oranges"},
+                       {{u"apples", history::ClusterKeywordData()},
+                        {u"Red Oranges", history::ClusterKeywordData()}},
                        /*should_show_on_prominent_ui_surfaces=*/false,
                        /*label=*/u"LabelOne"));
   all_clusters.push_back(
@@ -144,7 +145,8 @@ TEST(HistoryClustersUtilTest, PromoteMatchingVisitsAboveNonMatchingVisits) {
                            GetHardcodedClusterVisit(1),
                            GetHardcodedClusterVisit(2),
                        },
-                       {u"apples", u"Red Oranges"},
+                       {{u"apples", history::ClusterKeywordData()},
+                        {u"Red Oranges", history::ClusterKeywordData()}},
                        /*should_show_on_prominent_ui_surfaces=*/false));
 
   // No promotion when we match a keyword.
@@ -180,14 +182,15 @@ TEST(HistoryClustersUtilTest, SortClustersWithinBatchForQuery) {
                            GetHardcodedClusterVisit(1),
                            GetHardcodedClusterVisit(2),
                        },
-                       {u"apples", u"Red Oranges"},
+                       {{u"apples", history::ClusterKeywordData()},
+                        {u"Red Oranges", history::ClusterKeywordData()}},
                        /*should_show_on_prominent_ui_surfaces=*/false));
   all_clusters.push_back(
       history::Cluster(2,
                        {
                            GetHardcodedClusterVisit(1),
                        },
-                       {u"search"},
+                       {{u"search", history::ClusterKeywordData()}},
                        /*should_show_on_prominent_ui_surfaces=*/false));
 
   // When the flag is off, leave the initial ordering alone.
@@ -248,7 +251,7 @@ TEST(HistoryClustersUtilTest, HideAndCullLowScoringVisits) {
   cluster1.visits.push_back(GetHardcodedClusterVisit(1, .5));
   cluster1.visits.push_back(GetHardcodedClusterVisit(1, .5));
   cluster1.visits.push_back(GetHardcodedClusterVisit(1, .5));
-  cluster1.keywords.push_back(u"keyword");
+  cluster1.keyword_to_data_map = {{u"keyword", history::ClusterKeywordData()}};
 
   // Low scoring visits should be above the fold only if they're one of top 4.
   history::Cluster cluster2;
@@ -258,14 +261,14 @@ TEST(HistoryClustersUtilTest, HideAndCullLowScoringVisits) {
   cluster2.visits.push_back(GetHardcodedClusterVisit(1, .4));
   cluster2.visits.push_back(GetHardcodedClusterVisit(1, .4));
   cluster2.visits.push_back(GetHardcodedClusterVisit(1, .4));
-  cluster2.keywords.push_back(u"keyword");
+  cluster2.keyword_to_data_map = {{u"keyword", history::ClusterKeywordData()}};
 
   // 0 scoring visits should be above the fold only if they're 1st.
   history::Cluster cluster3;
   cluster3.cluster_id = 8;
   cluster3.visits.push_back(GetHardcodedClusterVisit(1, 0.0));
   cluster3.visits.push_back(GetHardcodedClusterVisit(1, 0.0));
-  cluster3.keywords.push_back(u"keyword");
+  cluster3.keyword_to_data_map = {{u"keyword", history::ClusterKeywordData()}};
 
   all_clusters.push_back(cluster1);
   all_clusters.push_back(cluster2);

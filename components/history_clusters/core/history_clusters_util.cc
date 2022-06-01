@@ -214,7 +214,8 @@ void ApplySearchQuery(const std::string& query,
     }
 
     cluster.search_match_score = total_matching_visit_score;
-    if (DoesQueryMatchClusterKeywords(find_nodes, cluster.keywords)) {
+
+    if (DoesQueryMatchClusterKeywords(find_nodes, cluster.GetKeywords())) {
       // Arbitrarily chosen that cluster keyword matches are worth three points.
       // TODO(crbug.com/1307071): Use relevancy score for each cluster keyword
       // once support for that is added to the backend.

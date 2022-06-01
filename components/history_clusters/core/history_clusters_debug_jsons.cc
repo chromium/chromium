@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/json/json_writer.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 
 namespace history_clusters {
@@ -55,11 +56,19 @@ std::string GetDebugJSONForClusters(
     base::DictionaryValue debug_cluster;
 
     debug_cluster.SetStringKey("label", cluster.label.value_or(u""));
-    base::ListValue debug_keywords;
-    for (const auto& keyword : cluster.keywords) {
-      debug_keywords.Append(keyword);
+    base::DictionaryValue debug_keyword_to_data_map;
+    for (const auto& keyword_data_p : cluster.keyword_to_data_map) {
+      base::ListValue debug_collection;
+      for (const auto& collection : keyword_data_p.second.entity_collections) {
+        debug_collection.Append(collection);
+      }
+      base::DictionaryValue debug_keyword_data;
+      debug_keyword_data.SetKey("collections", std::move(debug_collection));
+      debug_keyword_to_data_map.SetKey(base::UTF16ToUTF8(keyword_data_p.first),
+                                       std::move(debug_keyword_data));
     }
-    debug_cluster.SetKey("keywords", std::move(debug_keywords));
+    debug_cluster.SetKey("keyword_to_data_map",
+                         std::move(debug_keyword_to_data_map));
     debug_cluster.SetBoolKey("should_show_on_prominent_ui_surfaces",
                              cluster.should_show_on_prominent_ui_surfaces);
 

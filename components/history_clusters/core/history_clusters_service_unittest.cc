@@ -418,9 +418,9 @@ TEST_F(HistoryClustersServiceTest, EndToEndWithBackend) {
                              .is_existing_part_of_tab_group);
             EXPECT_FLOAT_EQ(visits[1].score, 0.5);
 
-            ASSERT_EQ(cluster.keywords.size(), 2u);
-            EXPECT_EQ(cluster.keywords[0], u"apples");
-            EXPECT_EQ(cluster.keywords[1], u"Red Oranges");
+            ASSERT_EQ(cluster.keyword_to_data_map.size(), 2u);
+            EXPECT_TRUE(cluster.keyword_to_data_map.contains(u"apples"));
+            EXPECT_TRUE(cluster.keyword_to_data_map.contains(u"Red Oranges"));
 
             cluster = clusters[1];
             visits = cluster.visits;
@@ -431,7 +431,7 @@ TEST_F(HistoryClustersServiceTest, EndToEndWithBackend) {
                       GetHardcodedTestVisits()[1].visit_row.visit_time);
             EXPECT_EQ(visits[0].annotated_visit.url_row.title(),
                       u"Code Storage Title");
-            EXPECT_TRUE(cluster.keywords.empty());
+            EXPECT_TRUE(cluster.keyword_to_data_map.empty());
 
             run_loop_quit.Run();
           }));
@@ -445,7 +445,8 @@ TEST_F(HistoryClustersServiceTest, EndToEndWithBackend) {
                            test_clustering_backend_->GetVisitById(2),
                            test_clustering_backend_->GetVisitById(5),
                        },
-                       {u"apples", u"Red Oranges"},
+                       {{u"apples", history::ClusterKeywordData()},
+                        {u"Red Oranges", history::ClusterKeywordData()}},
                        /*should_show_on_prominent_ui_surfaces=*/true));
   clusters.push_back(
       history::Cluster(0,
@@ -618,7 +619,10 @@ TEST_F(HistoryClustersServiceTest, DoesQueryMatchAnyCluster) {
                              test_clustering_backend_->GetVisitById(5),
                              test_clustering_backend_->GetVisitById(2),
                          },
-                         {u"apples", u"oranges", u"z", u"apples bananas"},
+                         {{u"apples", history::ClusterKeywordData()},
+                          {u"oranges", history::ClusterKeywordData()},
+                          {u"z", history::ClusterKeywordData()},
+                          {u"apples bananas", history::ClusterKeywordData()}},
                          /*should_show_on_prominent_ui_surfaces=*/true));
     clusters.push_back(
         history::Cluster(0,
@@ -626,14 +630,14 @@ TEST_F(HistoryClustersServiceTest, DoesQueryMatchAnyCluster) {
                              test_clustering_backend_->GetVisitById(5),
                              test_clustering_backend_->GetVisitById(2),
                          },
-                         {u"sensitive"},
+                         {{u"sensitive", history::ClusterKeywordData()}},
                          /*should_show_on_prominent_ui_surfaces=*/false));
     clusters.push_back(
         history::Cluster(0,
                          {
                              test_clustering_backend_->GetVisitById(5),
                          },
-                         {u"singlevisit"},
+                         {{u"singlevisit", history::ClusterKeywordData()}},
                          /*should_show_on_prominent_ui_surfaces=*/true));
 
     test_clustering_backend_->FulfillCallback(clusters);
@@ -738,7 +742,8 @@ TEST_F(HistoryClustersServiceTest, DoesQueryMatchAnyClusterSecondaryCache) {
                            test_clustering_backend_->GetVisitById(1),
                            test_clustering_backend_->GetVisitById(2),
                        },
-                       {u"peach", u""},
+                       {{u"peach", history::ClusterKeywordData()},
+                        {u"", history::ClusterKeywordData()}},
                        /*should_show_on_prominent_ui_surfaces=*/true));
   test_clustering_backend_->FulfillCallback(clusters2);
   history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
@@ -774,7 +779,10 @@ TEST_F(HistoryClustersServiceTest, DoesURLMatchAnyClusterWithNoisyURLs) {
             test_clustering_backend_->GetVisitById(
                 /*visit_id=*/2, /*score=*/0.0, /*engagement_score=*/20.0),
         },
-        {u"apples", u"oranges", u"z", u"apples bananas"},
+        {{u"apples", history::ClusterKeywordData()},
+         {u"oranges", history::ClusterKeywordData()},
+         {u"z", history::ClusterKeywordData()},
+         {u"apples bananas", history::ClusterKeywordData()}},
         /*should_show_on_prominent_ui_surfaces=*/true));
     clusters.push_back(
         history::Cluster(0,
@@ -782,14 +790,14 @@ TEST_F(HistoryClustersServiceTest, DoesURLMatchAnyClusterWithNoisyURLs) {
                              test_clustering_backend_->GetVisitById(5),
                              test_clustering_backend_->GetVisitById(2),
                          },
-                         {u"sensitive"},
+                         {{u"sensitive", history::ClusterKeywordData()}},
                          /*should_show_on_prominent_ui_surfaces=*/false));
     clusters.push_back(
         history::Cluster(0,
                          {
                              test_clustering_backend_->GetVisitById(2),
                          },
-                         {u"singlevisit"},
+                         {{u"singlevisit", history::ClusterKeywordData()}},
                          /*should_show_on_prominent_ui_surfaces=*/true));
 
     test_clustering_backend_->FulfillCallback(clusters);
@@ -862,7 +870,10 @@ TEST_F(HistoryClustersServiceTest, DoesURLMatchAnyClusterNoNoisyURLs) {
             test_clustering_backend_->GetVisitById(
                 /*visit_id=*/2, /*score=*/0.0, /*engagement_score=*/20.0),
         },
-        {u"apples", u"oranges", u"z", u"apples bananas"},
+        {{u"apples", history::ClusterKeywordData()},
+         {u"oranges", history::ClusterKeywordData()},
+         {u"z", history::ClusterKeywordData()},
+         {u"apples bananas", history::ClusterKeywordData()}},
         /*should_show_on_prominent_ui_surfaces=*/true));
     clusters.push_back(
         history::Cluster(0,
@@ -870,14 +881,14 @@ TEST_F(HistoryClustersServiceTest, DoesURLMatchAnyClusterNoNoisyURLs) {
                              test_clustering_backend_->GetVisitById(5),
                              test_clustering_backend_->GetVisitById(2),
                          },
-                         {u"sensitive"},
+                         {{u"sensitive", history::ClusterKeywordData()}},
                          /*should_show_on_prominent_ui_surfaces=*/false));
     clusters.push_back(
         history::Cluster(0,
                          {
                              test_clustering_backend_->GetVisitById(2),
                          },
-                         {u"singlevisit"},
+                         {{u"singlevisit", history::ClusterKeywordData()}},
                          /*should_show_on_prominent_ui_surfaces=*/true));
 
     test_clustering_backend_->FulfillCallback(clusters);
@@ -1026,17 +1037,21 @@ TEST_F(HistoryClustersServiceMaxKeywordsTest,
                            test_clustering_backend_->GetVisitById(1),
                            test_clustering_backend_->GetVisitById(2),
                        },
-                       {u"one", u"two", u"three", u"four five six"},
+                       {{u"one", history::ClusterKeywordData()},
+                        {u"two", history::ClusterKeywordData()},
+                        {u"three", history::ClusterKeywordData()},
+                        {u"four five six", history::ClusterKeywordData()}},
                        /*should_show_on_prominent_ui_surfaces=*/true));
   // 2) The 2nd cluster has only 1 visit. Since it's keywords won't be cached,
   // they should not affect the max.
-  clusters.push_back(
-      history::Cluster(0,
-                       {
-                           test_clustering_backend_->GetVisitById(3),
-                       },
-                       {u"ignored not cached", u"elephant penguin kangaroo"},
-                       /*should_show_on_prominent_ui_surfaces=*/true));
+  clusters.push_back(history::Cluster(
+      0,
+      {
+          test_clustering_backend_->GetVisitById(3),
+      },
+      {{u"ignored not cached", history::ClusterKeywordData()},
+       {u"elephant penguin kangaroo", history::ClusterKeywordData()}},
+      /*should_show_on_prominent_ui_surfaces=*/true));
   // 3) With this 3rd cluster, we'll have 5 phrases and 7 words. Now that we've
   // reached 5 phrases, the next cluster's keywords should not be cached.
   clusters.push_back(
@@ -1045,7 +1060,7 @@ TEST_F(HistoryClustersServiceMaxKeywordsTest,
                            test_clustering_backend_->GetVisitById(4),
                            test_clustering_backend_->GetVisitById(5),
                        },
-                       {u"seven"},
+                       {{u"seven", history::ClusterKeywordData()}},
                        /*should_show_on_prominent_ui_surfaces=*/true));
   // 4) The 4th cluster's keywords should not be cached since we've reached 5
   // phrases.
@@ -1055,7 +1070,7 @@ TEST_F(HistoryClustersServiceMaxKeywordsTest,
                            test_clustering_backend_->GetVisitById(6),
                            test_clustering_backend_->GetVisitById(7),
                        },
-                       {u"eight"},
+                       {{u"eight", history::ClusterKeywordData()}},
                        /*should_show_on_prominent_ui_surfaces=*/true));
   test_clustering_backend_->FulfillCallback(clusters);
   history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
