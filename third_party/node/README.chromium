@@ -215,3 +215,36 @@ https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Polic
 
 Local Modifications:
 (none)
+
+
+Name: Type Definition for FileSystem API
+Short Name: @types/filesystem
+URL: https://www.npmjs.com/package/@types/filesystem
+Version: 0.0.32
+License: MIT
+Security Critical: No. The types are only used when type checking the Web
+FileSystem API.
+
+Description:
+This package contains type definitions for Web FileSystem API.
+https://developer.mozilla.org/en-US/docs/Web/API/FileSystem
+
+Local Modifications:
+(none)
+
+
+Name: Type Definition for FileWriter API
+Short Name: @types/filewriter
+URL: https://www.npmjs.com/package/@types/filewriter
+Version: 0.0.29
+License: MIT
+Security Critical: No. The types are only used when type checking the Web
+FileWriter API.
+
+Description:
+This package contains type definitions for Web FileWriter API. This is a
+dependency for the @types/filesystem.
+https://developer.mozilla.org/en-US/docs/Web/API/FileSystemFileEntry/createWriter
+
+Local Modifications:
+(none)
