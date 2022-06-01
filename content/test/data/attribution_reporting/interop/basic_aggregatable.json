@@ -75,6 +75,7 @@
       {
         "payload": {
           "attribution_destination": "https://destination.test",
+          "source_site": "https://source.test",
           "histograms": [
             {
               "key": "0x559",

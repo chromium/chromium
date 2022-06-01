@@ -201,6 +201,7 @@ base::Value::Dict AttributionReport::ReportBody() const {
       const CommonSourceInfo& common_info =
           report->attribution_info().source.common_info();
 
+      dict.Set("source_site", common_info.ImpressionSite().Serialize());
       dict.Set("attribution_destination",
                common_info.ConversionDestination().Serialize());
 

@@ -103,6 +103,7 @@ TEST(AttributionInteropParserTest, ValidOutput) {
         "report_url": "https://r.example/path",
         "report": {
           "attribution_destination": "https://d.test",
+          "source_site": "https://s.test"
         },
         "test_info": {
           "histograms": [{
@@ -130,6 +131,7 @@ TEST(AttributionInteropParserTest, ValidOutput) {
         "report_url": "https://r.example/path",
         "payload": {
           "attribution_destination": "https://d.test",
+          "source_site": "https://s.test",
           "histograms": [{
             "key": "key",
             "value": "0x159"
