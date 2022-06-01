@@ -114,21 +114,23 @@ void AccessibilityNotificationWaiter::ListenToFrame(
   }
 }
 
-void AccessibilityNotificationWaiter::WaitForNotification() {
+bool AccessibilityNotificationWaiter::WaitForNotification() {
+  notification_received_ = false;
   loop_runner_->Run();
 
   // Each loop runner can only be called once. Create a new one in case
   // the caller wants to call this again to wait for the next notification.
   loop_runner_ = std::make_unique<base::RunLoop>();
   loop_runner_quit_closure_ = loop_runner_->QuitClosure();
+  return notification_received_;
 }
 
-void AccessibilityNotificationWaiter::WaitForNotificationWithTimeout(
+bool AccessibilityNotificationWaiter::WaitForNotificationWithTimeout(
     base::TimeDelta timeout) {
   base::OneShotTimer quit_timer;
   quit_timer.Start(FROM_HERE, timeout, loop_runner_->QuitWhenIdleClosure());
 
-  WaitForNotification();
+  return WaitForNotification();
 }
 
 const ui::AXTree& AccessibilityNotificationWaiter::GetAXTree() const {
@@ -160,6 +162,8 @@ void AccessibilityNotificationWaiter::OnAccessibilityEvent(
       event_to_wait_for_ == event_type) {
     event_target_id_ = event_target_id;
     event_render_frame_host_ = rfhi;
+    notification_received_ = true;
+
     loop_runner_quit_closure_.Run();
   }
 }
@@ -189,12 +193,15 @@ void AccessibilityNotificationWaiter::OnGeneratedEvent(
     BrowserAccessibilityDelegate* delegate,
     ui::AXEventGenerator::Event event,
     int event_target_id) {
+  DCHECK(event_target_id);
+
   if (IsAboutBlank())
     return;
 
   if (generated_event_to_wait_for_ == event) {
     event_target_id_ = event_target_id;
     event_render_frame_host_ = static_cast<RenderFrameHostImpl*>(delegate);
+    notification_received_ = true;
     loop_runner_quit_closure_.Run();
   }
 }
@@ -203,6 +210,7 @@ void AccessibilityNotificationWaiter::OnLocationsChanged() {
   if (IsAboutBlank())
     return;
 
+  notification_received_ = true;
   loop_runner_quit_closure_.Run();
 }
 

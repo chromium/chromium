@@ -49,11 +49,14 @@ class AccessibilityNotificationWaiter : public WebContentsObserver {
 
   // Blocks until the specific accessibility notification registered in
   // AccessibilityNotificationWaiter is received. Ignores notifications for
-  // "about:blank".
-  void WaitForNotification();
+  // "about:blank". Returns true if an event was received, false if waiting
+  // ended for some other reason.
+  bool WaitForNotification();
 
   // Blocks until the notification is received, or the given timeout passes.
-  void WaitForNotificationWithTimeout(base::TimeDelta timeout);
+  // Returns true if an event was received, false if waiting ended for some
+  // other reason.
+  bool WaitForNotificationWithTimeout(base::TimeDelta timeout);
 
   // After WaitForNotification has returned, this will retrieve
   // the tree of accessibility nodes received from the renderer process.
@@ -127,6 +130,7 @@ class AccessibilityNotificationWaiter : public WebContentsObserver {
   base::RepeatingClosure loop_runner_quit_closure_;
   int event_target_id_ = 0;
   raw_ptr<RenderFrameHostImpl> event_render_frame_host_ = nullptr;
+  bool notification_received_ = false;
 
   base::WeakPtrFactory<AccessibilityNotificationWaiter> weak_factory_{this};
 };
