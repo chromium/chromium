@@ -21,10 +21,13 @@
 #include "chrome/browser/ash/crosapi/idle_service_ash.h"
 #include "chrome/browser/ash/crosapi/native_theme_service_ash.h"
 #include "chrome/browser/ash/crosapi/resource_manager_ash.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
+#include "chrome/browser/ash/policy/handlers/device_name_policy_handler.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -95,6 +98,7 @@
 #include "chromeos/crosapi/mojom/web_page_info.mojom.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
 #include "chromeos/startup/startup.h"
+#include "chromeos/system/statistics_provider.h"
 #include "components/account_manager_core/account_manager_util.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_service.h"
@@ -173,6 +177,21 @@ mojom::DevicePropertiesPtr GetDeviceProperties() {
 
   result->is_arc_available = arc::IsArcAvailable();
   result->is_tablet_form_factor = ash::switches::IsTabletFormFactor();
+
+  policy::BrowserPolicyConnectorAsh* policy_connector =
+      g_browser_process->platform_part()->browser_policy_connector_ash();
+  result->directory_device_id = policy_connector->GetDirectoryApiID();
+  result->serial_number = chromeos::system::StatisticsProvider::GetInstance()
+                              ->GetEnterpriseMachineID();
+  result->annotated_asset_id = policy_connector->GetDeviceAssetID();
+  result->annotated_location = policy_connector->GetDeviceAnnotatedLocation();
+  auto* device_name_policy_handler =
+      policy_connector->GetDeviceNamePolicyHandler();
+  if (device_name_policy_handler) {
+    result->hostname =
+        device_name_policy_handler->GetHostnameChosenByAdministrator();
+  }
+
   return result;
 }
 

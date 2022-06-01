@@ -261,6 +261,11 @@ void ShowDownloadReviewDialog(const std::u16string& filename,
                               base::OnceClosure keep_closure,
                               base::OnceClosure discard_closure);
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// Returns the single main profile, or nullptr if none is found.
+Profile* GetMainProfileLacros();
+#endif
+
 }  // namespace enterprise_connectors
 
 #endif  // CHROME_BROWSER_ENTERPRISE_CONNECTORS_COMMON_H_

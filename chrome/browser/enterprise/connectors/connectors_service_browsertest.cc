@@ -91,13 +91,13 @@ std::string ExpectedOsPlatform() {
   return "Windows";
 #elif BUILDFLAG(IS_MAC)
   return "Mac OS X";
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return "ChromeOS";
 #else
   return "ChromiumOS";
 #endif
-#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif BUILDFLAG(IS_LINUX)
   return "Linux";
 #endif
 #if BUILDFLAG(IS_FUCHSIA)

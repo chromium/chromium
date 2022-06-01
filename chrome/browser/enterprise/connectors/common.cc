@@ -18,6 +18,8 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "components/policy/core/common/policy_loader_lacros.h"
 #endif
 
@@ -274,5 +276,19 @@ void ShowDownloadReviewDialog(const std::u16string& filename,
       web_contents, safe_browsing::DeepScanAccessPoint::DOWNLOAD,
       /* file_count */ 1, state, download_item);
 }
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+Profile* GetMainProfileLacros() {
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  if (!profile_manager)
+    return nullptr;
+  auto profiles = g_browser_process->profile_manager()->GetLoadedProfiles();
+  const auto main_it = base::ranges::find_if(
+      profiles, [](Profile* profile) { return profile->IsMainProfile(); });
+  if (main_it == profiles.end())
+    return nullptr;
+  return *main_it;
+}
+#endif
 
 }  // namespace enterprise_connectors

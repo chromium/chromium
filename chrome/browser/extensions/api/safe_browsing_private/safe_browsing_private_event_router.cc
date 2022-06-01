@@ -1028,6 +1028,13 @@ SafeBrowsingPrivateEventRouter::InitBrowserReportingClient(
 #else
   std::string client_id =
       policy::BrowserDMTokenStorage::Get()->RetrieveClientId();
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  Profile* main_profile = enterprise_connectors::GetMainProfileLacros();
+  if (main_profile) {
+    // Prefer the user client id if available.
+    client_id = reporting::GetUserClientId(main_profile).value_or(client_id);
+  }
+#endif
 
   // Make sure DeviceManagementService has been initialized.
   device_management_service->ScheduleInitialization(0);

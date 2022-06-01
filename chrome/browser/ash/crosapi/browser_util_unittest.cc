@@ -24,6 +24,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
+#include "chromeos/system/fake_statistics_provider.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/policy_constants.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -76,6 +77,12 @@ class BrowserUtilTest : public testing::Test {
     scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
         base::WrapUnique(fake_user_manager_));
     browser_util::RegisterLocalStatePrefs(pref_service_.registry());
+    chromeos::system::StatisticsProvider::SetTestProvider(
+        &statistics_provider_);
+  }
+
+  void TearDown() override {
+    chromeos::system::StatisticsProvider::SetTestProvider(nullptr);
   }
 
   void AddRegularUser(const std::string& email) {
@@ -95,6 +102,7 @@ class BrowserUtilTest : public testing::Test {
   ash::FakeChromeUserManager* fake_user_manager_ = nullptr;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   TestingPrefServiceSimple pref_service_;
+  chromeos::system::FakeStatisticsProvider statistics_provider_;
 };
 
 class LacrosSupportBrowserUtilTest : public BrowserUtilTest {
@@ -829,6 +837,28 @@ TEST_F(BrowserUtilTest, IsTabletFormFactor) {
           /*is_keep_alive_enabled=*/false);
   EXPECT_FALSE(browser_init_params->device_properties->is_arc_available);
   EXPECT_TRUE(browser_init_params->device_properties->is_tablet_form_factor);
+}
+
+TEST_F(BrowserUtilTest, SerialNumber) {
+  IdleServiceAsh::DisableForTesting();
+  ScopedTestingLocalState local_state(TestingBrowserProcess::GetGlobal());
+  AddRegularUser("user@google.com");
+
+  std::string expected_serial_number = "fake-serial-number";
+  statistics_provider_.SetMachineStatistic("serial_number",
+                                           expected_serial_number);
+
+  EnvironmentProvider environment_provider;
+  mojom::BrowserInitParamsPtr browser_init_params =
+      browser_util::GetBrowserInitParams(
+          &environment_provider,
+          browser_util::InitialBrowserAction(
+              crosapi::mojom::InitialBrowserAction::kDoNotOpenWindow),
+          /*is_keep_alive_enabled=*/false);
+
+  auto serial_number = browser_init_params->device_properties->serial_number;
+  ASSERT_TRUE(serial_number.has_value());
+  EXPECT_EQ(serial_number.value(), expected_serial_number);
 }
 
 }  // namespace crosapi

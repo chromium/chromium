@@ -370,6 +370,7 @@ source_set("unit_tests") {
     "//chromeos/login/login_state",
     "//chromeos/printing",
     "//chromeos/startup:constants",
+    "//chromeos/system",
     "//components/component_updater:test_support",
     "//components/session_manager/core",
     "//printing/backend",

@@ -56,6 +56,10 @@
 #include "components/user_manager/user_manager.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/startup/browser_init_params.h"
+#endif
+
 #if BUILDFLAG(IS_WIN)
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -159,7 +163,7 @@ std::string GetOSArchitecture() {
 }
 
 std::string GetOSUsername() {
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_APPLE)
   struct passwd* creds = getpwuid(getuid());
   if (!creds || !creds->pw_name)
     return std::string();
@@ -185,6 +189,18 @@ std::string GetOSUsername() {
   if (!user)
     return std::string();
   return user->GetAccountId().GetUserEmail();
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  const crosapi::mojom::BrowserInitParams* init_params =
+      chromeos::BrowserInitParams::Get();
+  if (init_params && init_params->device_account) {
+    return init_params->device_account->raw_email;
+  }
+  // Fallback if init_params are missing.
+  struct passwd* creds = getpwuid(getuid());
+  if (!creds || !creds->pw_name)
+    return std::string();
+
+  return creds->pw_name;
 #elif BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
   // TODO(crbug.com/1257674): This should be fully implemented when there is
   // support in fuchsia.
@@ -214,6 +230,14 @@ std::string GetDeviceName() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return chromeos::system::StatisticsProvider::GetInstance()
       ->GetEnterpriseMachineID();
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  const crosapi::mojom::BrowserInitParams* init_params =
+      chromeos::BrowserInitParams::Get();
+  if (init_params && init_params->device_properties &&
+      init_params->device_properties->serial_number.has_value()) {
+    return init_params->device_properties->serial_number.value();
+  }
+  return GetMachineName();
 #else
   return GetMachineName();
 #endif
