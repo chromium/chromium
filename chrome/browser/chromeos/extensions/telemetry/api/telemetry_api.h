@@ -30,55 +30,19 @@ class TelemetryApiFunctionBase : public BaseTelemetryExtensionApiGuardFunction {
   ash::ProbeService probe_service_;
 };
 
-class OsTelemetryGetVpdInfoFunction : public TelemetryApiFunctionBase {
+class OsTelemetryGetBatteryInfoFunction : public TelemetryApiFunctionBase {
  public:
-  DECLARE_EXTENSION_FUNCTION("os.telemetry.getVpdInfo", OS_TELEMETRY_GETVPDINFO)
+  DECLARE_EXTENSION_FUNCTION("os.telemetry.getBatteryInfo",
+                             OS_TELEMETRY_GETBATTERYINFO)
 
-  OsTelemetryGetVpdInfoFunction();
-  OsTelemetryGetVpdInfoFunction(const OsTelemetryGetVpdInfoFunction&) = delete;
-  OsTelemetryGetVpdInfoFunction& operator=(
-      const OsTelemetryGetVpdInfoFunction&) = delete;
-
- private:
-  ~OsTelemetryGetVpdInfoFunction() override;
-
-  // BaseTelemetryExtensionApiGuardFunction:
-  void RunIfAllowed() override;
-
-  void OnResult(ash::health::mojom::TelemetryInfoPtr ptr);
-};
-
-class OsTelemetryGetOemDataFunction : public TelemetryApiFunctionBase {
- public:
-  DECLARE_EXTENSION_FUNCTION("os.telemetry.getOemData", OS_TELEMETRY_GETOEMDATA)
-
-  OsTelemetryGetOemDataFunction();
-  OsTelemetryGetOemDataFunction(const OsTelemetryGetOemDataFunction&) = delete;
-  OsTelemetryGetOemDataFunction& operator=(
-      const OsTelemetryGetOemDataFunction&) = delete;
-
- private:
-  ~OsTelemetryGetOemDataFunction() override;
-
-  // BaseTelemetryExtensionApiGuardFunction:
-  void RunIfAllowed() override;
-
-  void OnResult(ash::health::mojom::OemDataPtr ptr);
-};
-
-class OsTelemetryGetMemoryInfoFunction : public TelemetryApiFunctionBase {
- public:
-  DECLARE_EXTENSION_FUNCTION("os.telemetry.getMemoryInfo",
-                             OS_TELEMETRY_GETMEMORYINFO)
-
-  OsTelemetryGetMemoryInfoFunction();
-  OsTelemetryGetMemoryInfoFunction(const OsTelemetryGetMemoryInfoFunction&) =
+  OsTelemetryGetBatteryInfoFunction();
+  OsTelemetryGetBatteryInfoFunction(const OsTelemetryGetBatteryInfoFunction&) =
       delete;
-  OsTelemetryGetMemoryInfoFunction& operator=(
-      const OsTelemetryGetMemoryInfoFunction&) = delete;
+  OsTelemetryGetBatteryInfoFunction& operator=(
+      const OsTelemetryGetBatteryInfoFunction&) = delete;
 
  private:
-  ~OsTelemetryGetMemoryInfoFunction() override;
+  ~OsTelemetryGetBatteryInfoFunction() override;
 
   // BaseTelemetryExtensionApiGuardFunction:
   void RunIfAllowed() override;
@@ -104,19 +68,55 @@ class OsTelemetryGetCpuInfoFunction : public TelemetryApiFunctionBase {
   void OnResult(ash::health::mojom::TelemetryInfoPtr ptr);
 };
 
-class OsTelemetryGetBatteryInfoFunction : public TelemetryApiFunctionBase {
+class OsTelemetryGetMemoryInfoFunction : public TelemetryApiFunctionBase {
  public:
-  DECLARE_EXTENSION_FUNCTION("os.telemetry.getBatteryInfo",
-                             OS_TELEMETRY_GETBATTERYINFO)
+  DECLARE_EXTENSION_FUNCTION("os.telemetry.getMemoryInfo",
+                             OS_TELEMETRY_GETMEMORYINFO)
 
-  OsTelemetryGetBatteryInfoFunction();
-  OsTelemetryGetBatteryInfoFunction(const OsTelemetryGetBatteryInfoFunction&) =
+  OsTelemetryGetMemoryInfoFunction();
+  OsTelemetryGetMemoryInfoFunction(const OsTelemetryGetMemoryInfoFunction&) =
       delete;
-  OsTelemetryGetBatteryInfoFunction& operator=(
-      const OsTelemetryGetBatteryInfoFunction&) = delete;
+  OsTelemetryGetMemoryInfoFunction& operator=(
+      const OsTelemetryGetMemoryInfoFunction&) = delete;
 
  private:
-  ~OsTelemetryGetBatteryInfoFunction() override;
+  ~OsTelemetryGetMemoryInfoFunction() override;
+
+  // BaseTelemetryExtensionApiGuardFunction:
+  void RunIfAllowed() override;
+
+  void OnResult(ash::health::mojom::TelemetryInfoPtr ptr);
+};
+
+class OsTelemetryGetOemDataFunction : public TelemetryApiFunctionBase {
+ public:
+  DECLARE_EXTENSION_FUNCTION("os.telemetry.getOemData", OS_TELEMETRY_GETOEMDATA)
+
+  OsTelemetryGetOemDataFunction();
+  OsTelemetryGetOemDataFunction(const OsTelemetryGetOemDataFunction&) = delete;
+  OsTelemetryGetOemDataFunction& operator=(
+      const OsTelemetryGetOemDataFunction&) = delete;
+
+ private:
+  ~OsTelemetryGetOemDataFunction() override;
+
+  // BaseTelemetryExtensionApiGuardFunction:
+  void RunIfAllowed() override;
+
+  void OnResult(ash::health::mojom::OemDataPtr ptr);
+};
+
+class OsTelemetryGetVpdInfoFunction : public TelemetryApiFunctionBase {
+ public:
+  DECLARE_EXTENSION_FUNCTION("os.telemetry.getVpdInfo", OS_TELEMETRY_GETVPDINFO)
+
+  OsTelemetryGetVpdInfoFunction();
+  OsTelemetryGetVpdInfoFunction(const OsTelemetryGetVpdInfoFunction&) = delete;
+  OsTelemetryGetVpdInfoFunction& operator=(
+      const OsTelemetryGetVpdInfoFunction&) = delete;
+
+ private:
+  ~OsTelemetryGetVpdInfoFunction() override;
 
   // BaseTelemetryExtensionApiGuardFunction:
   void RunIfAllowed() override;

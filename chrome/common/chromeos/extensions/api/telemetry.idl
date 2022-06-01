@@ -5,37 +5,24 @@
 // Use the <code>chrome.os.telemetry</code> API to get telemetry data.
 [implemented_in = "chrome/browser/chromeos/extensions/telemetry/api/telemetry_api.h"]
 namespace os.telemetry {
-  dictionary VpdInfo {
-    // Device activate date. Format: YYYY-WW.
-    DOMString? activateDate;
-
-    // Device model name.
-    DOMString? modelName;
-
-    // Device serial number.
+  dictionary BatteryInfo {
+    double? cycleCount;
+    double? voltageNow;
+    DOMString? vendor;
     DOMString? serialNumber;
-
-    // Device SKU number, a.k.a. model number.
-    DOMString? skuNumber;
+    double? chargeFullDesign;
+    double? chargeFull;
+    double? voltageMinDesign;
+    DOMString? modelName;
+    double? chargeNow;
+    double? currentNow;
+    DOMString? technology;
+    DOMString? status;
+    DOMString? manufactureDate;
+    double? temperature;
   };
 
-  callback VpdInfoCallback = void (VpdInfo vpdInfo);
-
-  dictionary OemData {
-    // OEM data. This field used to store battery serial number by some OEMs.
-    DOMString? oemData;
-  };
-
-  callback OemDataCallback = void (OemData oemData);
-
-  dictionary MemoryInfo {
-    long? totalMemoryKiB;
-    long? freeMemoryKiB;
-    long? availableMemoryKiB;
-    double? pageFaultsSinceLastBoot;
-  };
-
-  callback MemoryInfoCallback = void (MemoryInfo cpuInfo);
+  callback BatteryInfoCallback = void (BatteryInfo batteryInfo);
 
   enum CpuArchitectureEnum {
     unknown,
@@ -77,37 +64,50 @@ namespace os.telemetry {
 
   callback CpuInfoCallback = void (CpuInfo cpuInfo);
 
-  dictionary BatteryInfo {
-    double? cycleCount;
-    double? voltageNow;
-    DOMString? vendor;
-    DOMString? serialNumber;
-    double? chargeFullDesign;
-    double? chargeFull;
-    double? voltageMinDesign;
-    DOMString? modelName;
-    double? chargeNow;
-    double? currentNow;
-    DOMString? technology;
-    DOMString? status;
-    DOMString? manufactureDate;
-    double? temperature;
+  dictionary MemoryInfo {
+    long? totalMemoryKiB;
+    long? freeMemoryKiB;
+    long? availableMemoryKiB;
+    double? pageFaultsSinceLastBoot;
   };
 
-  callback BatteryInfoCallback = void (BatteryInfo batteryInfo);
+  callback MemoryInfoCallback = void (MemoryInfo cpuInfo);
+
+  dictionary OemData {
+    // OEM data. This field used to store battery serial number by some OEMs.
+    DOMString? oemData;
+  };
+
+  callback OemDataCallback = void (OemData oemData);
+
+  dictionary VpdInfo {
+    // Device activate date. Format: YYYY-WW.
+    DOMString? activateDate;
+
+    // Device model name.
+    DOMString? modelName;
+
+    // Device serial number.
+    DOMString? serialNumber;
+
+    // Device SKU number, a.k.a. model number.
+    DOMString? skuNumber;
+  };
+
+  callback VpdInfoCallback = void (VpdInfo vpdInfo);
 
   interface Functions {
-    // Retrieves VPD info.
-    [supportsPromises] static void getVpdInfo(VpdInfoCallback callback);
+    // Retrieves battery info.
+    [supportsPromises] static void getBatteryInfo(BatteryInfoCallback callback);
+
+    [supportsPromises] static void getCpuInfo(CpuInfoCallback callback);
+
+    [supportsPromises] static void getMemoryInfo(MemoryInfoCallback callback);
 
     // Retrieves OEM data.
     [supportsPromises] static void getOemData(OemDataCallback callback);
 
-    [supportsPromises] static void getMemoryInfo(MemoryInfoCallback callback);
-
-    [supportsPromises] static void getCpuInfo(CpuInfoCallback callback);
-
-    // Retrieves battery info.
-    [supportsPromises] static void getBatteryInfo(BatteryInfoCallback callback);
+    // Retrieves VPD info.
+    [supportsPromises] static void getVpdInfo(VpdInfoCallback callback);
   };
 };

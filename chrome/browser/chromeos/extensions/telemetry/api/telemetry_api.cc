@@ -22,84 +22,81 @@ TelemetryApiFunctionBase::TelemetryApiFunctionBase()
     : probe_service_(remote_probe_service_.BindNewPipeAndPassReceiver()) {}
 TelemetryApiFunctionBase::~TelemetryApiFunctionBase() = default;
 
-// OsTelemetryGetVpdInfoFunction -----------------------------------------------
+// OsTelemetryGetBatteryInfoFunction -------------------------------------------
 
-OsTelemetryGetVpdInfoFunction::OsTelemetryGetVpdInfoFunction() = default;
-OsTelemetryGetVpdInfoFunction::~OsTelemetryGetVpdInfoFunction() = default;
+OsTelemetryGetBatteryInfoFunction::OsTelemetryGetBatteryInfoFunction() =
+    default;
+OsTelemetryGetBatteryInfoFunction::~OsTelemetryGetBatteryInfoFunction() =
+    default;
 
-void OsTelemetryGetVpdInfoFunction::RunIfAllowed() {
-  auto cb = base::BindOnce(&OsTelemetryGetVpdInfoFunction::OnResult, this);
+void OsTelemetryGetBatteryInfoFunction::RunIfAllowed() {
+  auto cb = base::BindOnce(&OsTelemetryGetBatteryInfoFunction::OnResult, this);
 
   remote_probe_service_->ProbeTelemetryInfo(
-      {ash::health::mojom::ProbeCategoryEnum::kCachedVpdData}, std::move(cb));
+      {ash::health::mojom::ProbeCategoryEnum::kBattery}, std::move(cb));
 }
 
-void OsTelemetryGetVpdInfoFunction::OnResult(
+void OsTelemetryGetBatteryInfoFunction::OnResult(
     ash::health::mojom::TelemetryInfoPtr ptr) {
-  if (!ptr || !ptr->vpd_result || !ptr->vpd_result->is_vpd_info()) {
+  if (!ptr || !ptr->battery_result || !ptr->battery_result->is_battery_info()) {
     Respond(Error("API internal error"));
     return;
   }
-
-  api::os_telemetry::VpdInfo result;
-
-  const auto& vpd_info = ptr->vpd_result->get_vpd_info();
-  if (vpd_info->first_power_date.has_value()) {
-    result.activate_date =
-        std::make_unique<std::string>(vpd_info->first_power_date.value());
-  }
-  if (vpd_info->model_name.has_value()) {
-    result.model_name =
-        std::make_unique<std::string>(vpd_info->model_name.value());
-  }
-  if (vpd_info->sku_number.has_value()) {
-    result.sku_number =
-        std::make_unique<std::string>(vpd_info->sku_number.value());
-  }
+  auto& battery_info = ptr->battery_result->get_battery_info();
 
   // Protect accessing the serial number by a permission.
+  std::unique_ptr<std::string> serial_number;
   if (extension()->permissions_data()->HasAPIPermission(
           extensions::mojom::APIPermissionID::kChromeOSTelemetrySerialNumber) &&
-      vpd_info->serial_number.has_value()) {
-    result.serial_number =
-        std::make_unique<std::string>(vpd_info->serial_number.value());
+      battery_info->serial_number.has_value()) {
+    serial_number = std::make_unique<std::string>(
+        std::move(battery_info->serial_number.value()));
   }
 
-  Respond(ArgumentList(api::os_telemetry::GetVpdInfo::Results::Create(result)));
-}
+  api::os_telemetry::BatteryInfo result =
+      converters::ConvertPtr<api::os_telemetry::BatteryInfo>(
+          std::move(battery_info));
 
-// OsTelemetryGetOemDataFunction -----------------------------------------------
-
-OsTelemetryGetOemDataFunction::OsTelemetryGetOemDataFunction() = default;
-OsTelemetryGetOemDataFunction::~OsTelemetryGetOemDataFunction() = default;
-
-void OsTelemetryGetOemDataFunction::RunIfAllowed() {
-  // Protect accessing the serial number by a permission.
-  if (!extension()->permissions_data()->HasAPIPermission(
-          extensions::mojom::APIPermissionID::kChromeOSTelemetrySerialNumber)) {
-    Respond(
-        Error("Unauthorized access to chrome.os.telemetry.getOemData. Extension"
-              " doesn't have the permission."));
-    return;
+  if (serial_number && !serial_number->empty()) {
+    result.serial_number = std::move(serial_number);
   }
 
-  auto cb = base::BindOnce(&OsTelemetryGetOemDataFunction::OnResult, this);
-
-  remote_probe_service_->GetOemData(std::move(cb));
+  Respond(
+      ArgumentList(api::os_telemetry::GetBatteryInfo::Results::Create(result)));
 }
 
-void OsTelemetryGetOemDataFunction::OnResult(
-    ash::health::mojom::OemDataPtr ptr) {
-  if (!ptr || !ptr->oem_data.has_value()) {
+// OsTelemetryGetCpuInfoFunction -----------------------------------------------
+
+OsTelemetryGetCpuInfoFunction::OsTelemetryGetCpuInfoFunction() = default;
+OsTelemetryGetCpuInfoFunction::~OsTelemetryGetCpuInfoFunction() = default;
+
+void OsTelemetryGetCpuInfoFunction::RunIfAllowed() {
+  auto cb = base::BindOnce(&OsTelemetryGetCpuInfoFunction::OnResult, this);
+
+  remote_probe_service_->ProbeTelemetryInfo(
+      {ash::health::mojom::ProbeCategoryEnum::kCpu}, std::move(cb));
+}
+
+void OsTelemetryGetCpuInfoFunction::OnResult(
+    ash::health::mojom::TelemetryInfoPtr ptr) {
+  if (!ptr || !ptr->cpu_result || !ptr->cpu_result->is_cpu_info()) {
     Respond(Error("API internal error"));
     return;
   }
 
-  api::os_telemetry::OemData result;
-  result.oem_data =
-      std::make_unique<std::string>(std::move(ptr->oem_data.value()));
+  const auto& cpu_info = ptr->cpu_result->get_cpu_info();
 
-  Respond(ArgumentList(api::os_telemetry::GetOemData::Results::Create(result)));
+  api::os_telemetry::CpuInfo result;
+  if (cpu_info->num_total_threads) {
+    result.num_total_threads =
+        std::make_unique<int32_t>(cpu_info->num_total_threads->value);
+  }
+  result.architecture = converters::Convert(cpu_info->architecture);
+  result.physical_cpus =
+      converters::ConvertPtrVector<api::os_telemetry::PhysicalCpuInfo>(
+          std::move(cpu_info->physical_cpus));
+
+  Respond(ArgumentList(api::os_telemetry::GetCpuInfo::Results::Create(result)));
 }
 
 // OsTelemetryGetMemoryInfoFunction --------------------------------------------
@@ -145,81 +142,84 @@ void OsTelemetryGetMemoryInfoFunction::OnResult(
       ArgumentList(api::os_telemetry::GetMemoryInfo::Results::Create(result)));
 }
 
-// OsTelemetryGetCpuInfoFunction -----------------------------------------------
+// OsTelemetryGetOemDataFunction -----------------------------------------------
 
-OsTelemetryGetCpuInfoFunction::OsTelemetryGetCpuInfoFunction() = default;
-OsTelemetryGetCpuInfoFunction::~OsTelemetryGetCpuInfoFunction() = default;
+OsTelemetryGetOemDataFunction::OsTelemetryGetOemDataFunction() = default;
+OsTelemetryGetOemDataFunction::~OsTelemetryGetOemDataFunction() = default;
 
-void OsTelemetryGetCpuInfoFunction::RunIfAllowed() {
-  auto cb = base::BindOnce(&OsTelemetryGetCpuInfoFunction::OnResult, this);
+void OsTelemetryGetOemDataFunction::RunIfAllowed() {
+  // Protect accessing the serial number by a permission.
+  if (!extension()->permissions_data()->HasAPIPermission(
+          extensions::mojom::APIPermissionID::kChromeOSTelemetrySerialNumber)) {
+    Respond(
+        Error("Unauthorized access to chrome.os.telemetry.getOemData. Extension"
+              " doesn't have the permission."));
+    return;
+  }
 
-  remote_probe_service_->ProbeTelemetryInfo(
-      {ash::health::mojom::ProbeCategoryEnum::kCpu}, std::move(cb));
+  auto cb = base::BindOnce(&OsTelemetryGetOemDataFunction::OnResult, this);
+
+  remote_probe_service_->GetOemData(std::move(cb));
 }
 
-void OsTelemetryGetCpuInfoFunction::OnResult(
-    ash::health::mojom::TelemetryInfoPtr ptr) {
-  if (!ptr || !ptr->cpu_result || !ptr->cpu_result->is_cpu_info()) {
+void OsTelemetryGetOemDataFunction::OnResult(
+    ash::health::mojom::OemDataPtr ptr) {
+  if (!ptr || !ptr->oem_data.has_value()) {
     Respond(Error("API internal error"));
     return;
   }
 
-  const auto& cpu_info = ptr->cpu_result->get_cpu_info();
+  api::os_telemetry::OemData result;
+  result.oem_data =
+      std::make_unique<std::string>(std::move(ptr->oem_data.value()));
 
-  api::os_telemetry::CpuInfo result;
-  if (cpu_info->num_total_threads) {
-    result.num_total_threads =
-        std::make_unique<int32_t>(cpu_info->num_total_threads->value);
-  }
-  result.architecture = converters::Convert(cpu_info->architecture);
-  result.physical_cpus =
-      converters::ConvertPtrVector<api::os_telemetry::PhysicalCpuInfo>(
-          std::move(cpu_info->physical_cpus));
-
-  Respond(ArgumentList(api::os_telemetry::GetCpuInfo::Results::Create(result)));
+  Respond(ArgumentList(api::os_telemetry::GetOemData::Results::Create(result)));
 }
 
-// OsTelemetryGetBatteryInfoFunction -------------------------------------------
+// OsTelemetryGetVpdInfoFunction -----------------------------------------------
 
-OsTelemetryGetBatteryInfoFunction::OsTelemetryGetBatteryInfoFunction() =
-    default;
-OsTelemetryGetBatteryInfoFunction::~OsTelemetryGetBatteryInfoFunction() =
-    default;
+OsTelemetryGetVpdInfoFunction::OsTelemetryGetVpdInfoFunction() = default;
+OsTelemetryGetVpdInfoFunction::~OsTelemetryGetVpdInfoFunction() = default;
 
-void OsTelemetryGetBatteryInfoFunction::RunIfAllowed() {
-  auto cb = base::BindOnce(&OsTelemetryGetBatteryInfoFunction::OnResult, this);
+void OsTelemetryGetVpdInfoFunction::RunIfAllowed() {
+  auto cb = base::BindOnce(&OsTelemetryGetVpdInfoFunction::OnResult, this);
 
   remote_probe_service_->ProbeTelemetryInfo(
-      {ash::health::mojom::ProbeCategoryEnum::kBattery}, std::move(cb));
+      {ash::health::mojom::ProbeCategoryEnum::kCachedVpdData}, std::move(cb));
 }
 
-void OsTelemetryGetBatteryInfoFunction::OnResult(
+void OsTelemetryGetVpdInfoFunction::OnResult(
     ash::health::mojom::TelemetryInfoPtr ptr) {
-  if (!ptr || !ptr->battery_result || !ptr->battery_result->is_battery_info()) {
+  if (!ptr || !ptr->vpd_result || !ptr->vpd_result->is_vpd_info()) {
     Respond(Error("API internal error"));
     return;
   }
-  auto& battery_info = ptr->battery_result->get_battery_info();
+
+  api::os_telemetry::VpdInfo result;
+
+  const auto& vpd_info = ptr->vpd_result->get_vpd_info();
+  if (vpd_info->first_power_date.has_value()) {
+    result.activate_date =
+        std::make_unique<std::string>(vpd_info->first_power_date.value());
+  }
+  if (vpd_info->model_name.has_value()) {
+    result.model_name =
+        std::make_unique<std::string>(vpd_info->model_name.value());
+  }
+  if (vpd_info->sku_number.has_value()) {
+    result.sku_number =
+        std::make_unique<std::string>(vpd_info->sku_number.value());
+  }
 
   // Protect accessing the serial number by a permission.
-  std::unique_ptr<std::string> serial_number;
   if (extension()->permissions_data()->HasAPIPermission(
           extensions::mojom::APIPermissionID::kChromeOSTelemetrySerialNumber) &&
-      battery_info->serial_number.has_value()) {
-    serial_number = std::make_unique<std::string>(
-        std::move(battery_info->serial_number.value()));
+      vpd_info->serial_number.has_value()) {
+    result.serial_number =
+        std::make_unique<std::string>(vpd_info->serial_number.value());
   }
 
-  api::os_telemetry::BatteryInfo result =
-      converters::ConvertPtr<api::os_telemetry::BatteryInfo>(
-          std::move(battery_info));
-
-  if (serial_number && !serial_number->empty()) {
-    result.serial_number = std::move(serial_number);
-  }
-
-  Respond(
-      ArgumentList(api::os_telemetry::GetBatteryInfo::Results::Create(result)));
+  Respond(ArgumentList(api::os_telemetry::GetVpdInfo::Results::Create(result)));
 }
 
 }  // namespace chromeos
