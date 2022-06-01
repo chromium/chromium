@@ -43,7 +43,7 @@ namespace {
 
 // The duration for the animation which changes the search icon.
 constexpr base::TimeDelta kSearchIconAnimationDuration =
-    base::Milliseconds(250);
+    base::Milliseconds(150);
 
 constexpr int kInnerPadding = 16;
 
@@ -61,7 +61,7 @@ constexpr base::TimeDelta kButtonFadeOutDuration = base::Milliseconds(50);
 constexpr base::TimeDelta kButtonFadeInDelay = base::Milliseconds(50);
 
 // The duration for the button fade in animation.
-constexpr base::TimeDelta kButtonFadeInDuration = base::Milliseconds(200);
+constexpr base::TimeDelta kButtonFadeInDuration = base::Milliseconds(100);
 
 }  // namespace
 
