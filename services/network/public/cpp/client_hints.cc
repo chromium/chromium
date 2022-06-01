@@ -67,7 +67,7 @@ const ClientHintToNameMap& GetClientHintToNameMap() {
 
 namespace {
 
-struct ClientHintNameCompator {
+struct ClientHintNameComparator {
   bool operator()(const std::string& lhs, const std::string& rhs) const {
     return base::CompareCaseInsensitiveASCII(lhs, rhs) < 0;
   }
@@ -75,7 +75,7 @@ struct ClientHintNameCompator {
 
 using DecodeMap = base::flat_map<std::string,
                                  network::mojom::WebClientHintsType,
-                                 ClientHintNameCompator>;
+                                 ClientHintNameComparator>;
 
 DecodeMap MakeDecodeMap() {
   DecodeMap result;
