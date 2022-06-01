@@ -711,10 +711,17 @@ TEST_F(AuthenticatorRequestDialogModelTest,
        ConditionalUINoRecognizedCredential) {
   AuthenticatorRequestDialogModel model(/*relying_party_id=*/"example.com");
 
-  int num_called = 0;
+  int preselect_num_called = 0;
+  model.SetAccountPreselectedCallback(base::BindRepeating(
+      [](int* i, std::vector<uint8_t> credential_id) {
+        EXPECT_EQ(credential_id, std::vector<uint8_t>({1, 2, 3, 4}));
+        ++(*i);
+      },
+      &preselect_num_called));
+  int request_num_called = 0;
   model.SetRequestCallback(base::BindRepeating(
       [](int* i, const std::string& authenticator_id) { ++(*i); },
-      &num_called));
+      &request_num_called));
   model.saved_authenticators().AddAuthenticator(
       AuthenticatorReference(/*device_id=*/"authenticator",
                              AuthenticatorTransport::kUsbHumanInterfaceDevice));
@@ -728,21 +735,29 @@ TEST_F(AuthenticatorRequestDialogModelTest,
   model.StartFlow(std::move(transports_info),
                   /*use_location_bar_bubble=*/true,
                   /*prefer_native_api=*/false);
+  task_environment_.FastForwardUntilNoTasksRemain();
   EXPECT_EQ(model.current_step(), Step::kLocationBarBubble);
   EXPECT_TRUE(model.should_dialog_be_hidden());
-  EXPECT_EQ(num_called, 0);
+  EXPECT_EQ(preselect_num_called, 0);
+  EXPECT_EQ(request_num_called, 0);
 }
 
 TEST_F(AuthenticatorRequestDialogModelTest, ConditionalUIRecognizedCredential) {
   AuthenticatorRequestDialogModel model(/*relying_party_id=*/"example.com");
-
-  int num_called = 0;
+  int preselect_num_called = 0;
+  model.SetAccountPreselectedCallback(base::BindRepeating(
+      [](int* i, std::vector<uint8_t> credential_id) {
+        EXPECT_EQ(credential_id, std::vector<uint8_t>({0}));
+        ++(*i);
+      },
+      &preselect_num_called));
+  int request_num_called = 0;
   model.SetRequestCallback(base::BindRepeating(
       [](int* i, const std::string& authenticator_id) {
         EXPECT_EQ(authenticator_id, "internal");
         ++(*i);
       },
-      &num_called));
+      &request_num_called));
   model.saved_authenticators().AddAuthenticator(AuthenticatorReference(
       /*device_id=*/"usb", AuthenticatorTransport::kUsbHumanInterfaceDevice));
   model.saved_authenticators().AddAuthenticator(AuthenticatorReference(
@@ -763,38 +778,12 @@ TEST_F(AuthenticatorRequestDialogModelTest, ConditionalUIRecognizedCredential) {
                   /*prefer_native_api=*/false);
   EXPECT_EQ(model.current_step(), Step::kLocationBarBubble);
   EXPECT_TRUE(model.should_dialog_be_hidden());
-  EXPECT_EQ(num_called, 0);
+  EXPECT_EQ(request_num_called, 0);
 
   // After preselecting an account, the request should be dispatched to the
   // platform authenticator.
   model.OnAccountPreselected({1, 2, 3, 4});
   task_environment_.FastForwardUntilNoTasksRemain();
-  EXPECT_EQ(num_called, 1);
-
-  static const uint8_t kAppParam[32] = {0};
-  static const uint8_t kSignatureCounter[4] = {0};
-  device::AuthenticatorData auth_data(kAppParam, /*flags=*/0, kSignatureCounter,
-                                      absl::nullopt);
-  device::AuthenticatorGetAssertionResponse response_1(
-      device::AuthenticatorData(kAppParam, /*flags=*/0, kSignatureCounter,
-                                absl::nullopt),
-      /*signature=*/{1});
-  response_1.user_entity = cred_1.user;
-  device::AuthenticatorGetAssertionResponse response_2(
-      device::AuthenticatorData(kAppParam, /*flags=*/0, kSignatureCounter,
-                                absl::nullopt),
-      /*signature=*/{2});
-  response_2.user_entity = cred_2.user;
-
-  uint8_t selected_id = -1;
-  std::vector<device::AuthenticatorGetAssertionResponse> responses;
-  responses.push_back(std::move(response_1));
-  responses.push_back(std::move(response_2));
-  model.SelectAccount(
-      std::move(responses),
-      base::BindLambdaForTesting(
-          [&](device::AuthenticatorGetAssertionResponse selected) {
-            selected_id = selected.signature[0];
-          }));
-  EXPECT_EQ(selected_id, 1);
+  EXPECT_EQ(preselect_num_called, 1);
+  EXPECT_EQ(request_num_called, 1);
 }

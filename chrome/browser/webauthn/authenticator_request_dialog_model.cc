@@ -501,6 +501,12 @@ void AuthenticatorRequestDialogModel::SetRequestCallback(
   request_callback_ = request_callback;
 }
 
+void AuthenticatorRequestDialogModel::SetAccountPreselectedCallback(
+    content::AuthenticatorRequestClientDelegate::AccountPreselectedCallback
+        callback) {
+  account_preselected_callback_ = callback;
+}
+
 void AuthenticatorRequestDialogModel::SetBluetoothAdapterPowerOnCallback(
     base::RepeatingClosure bluetooth_adapter_power_on_callback) {
   bluetooth_adapter_power_on_callback_ = bluetooth_adapter_power_on_callback;
@@ -561,18 +567,6 @@ void AuthenticatorRequestDialogModel::SelectAccount(
     std::vector<device::AuthenticatorGetAssertionResponse> responses,
     base::OnceCallback<void(device::AuthenticatorGetAssertionResponse)>
         callback) {
-  if (preselected_account_) {
-    for (auto& response : responses) {
-      if (response.user_entity == preselected_account_) {
-        std::move(callback).Run(std::move(response));
-        return;
-      }
-    }
-    // The user selected an account that was not part of the responses. This
-    // shouldn't really happen, cancel the request.
-    Cancel();
-    return;
-  }
   ephemeral_state_.responses_ = std::move(responses);
   ephemeral_state_.creds_ = {};
   for (const auto& response : ephemeral_state_.responses_) {
@@ -601,7 +595,7 @@ void AuthenticatorRequestDialogModel::OnAccountPreselected(
     const std::vector<uint8_t>& id) {
   for (const auto& cred : creds()) {
     if (cred.user.id == id) {
-      preselected_account_ = std::move(cred.user);
+      account_preselected_callback_.Run(cred.cred_id);
       ephemeral_state_.creds_.clear();
       if (transport_availability()->has_win_native_api_authenticator) {
         HideDialogAndDispatchToNativeWindowsApi();
@@ -772,11 +766,6 @@ std::vector<std::string> AuthenticatorRequestDialogModel::paired_phone_names()
 void AuthenticatorRequestDialogModel::ReplaceCredListForTesting(
     std::vector<device::DiscoverableCredentialMetadata> creds) {
   ephemeral_state_.creds_ = std::move(creds);
-}
-
-absl::optional<device::PublicKeyCredentialUserEntity>
-AuthenticatorRequestDialogModel::GetPreselectedAccountForTesting() {
-  return preselected_account_;
 }
 
 base::WeakPtr<AuthenticatorRequestDialogModel>

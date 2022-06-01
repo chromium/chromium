@@ -148,6 +148,7 @@ class ChromeAuthenticatorRequestDelegate
   void RegisterActionCallbacks(
       base::OnceClosure cancel_callback,
       base::RepeatingClosure start_over_callback,
+      AccountPreselectedCallback account_preselected_callback,
       device::FidoRequestHandlerBase::RequestCallback request_callback,
       base::RepeatingClosure bluetooth_adapter_power_on_callback) override;
   void ShouldReturnAttestation(
@@ -234,6 +235,7 @@ class ChromeAuthenticatorRequestDelegate
   raw_ptr<AuthenticatorRequestDialogModel> weak_dialog_model_ = nullptr;
   base::OnceClosure cancel_callback_;
   base::RepeatingClosure start_over_callback_;
+  AccountPreselectedCallback account_preselected_callback_;
   device::FidoRequestHandlerBase::RequestCallback request_callback_;
 
   // The next two fields are the same length and contain the names and public

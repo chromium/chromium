@@ -147,6 +147,10 @@ class CONTENT_EXPORT AuthenticatorCommon {
 
   bool IsFocused() const;
 
+  void DispatchGetAssertionRequest(
+      const std::string& authenticator_id,
+      absl::optional<std::vector<uint8_t>> credential_id);
+
   // Callback to handle the large blob being compressed before attempting to
   // start a request.
   void OnLargeBlobCompressed(
@@ -261,9 +265,10 @@ class CONTENT_EXPORT AuthenticatorCommon {
   blink::mojom::Authenticator::GetAssertionCallback
       get_assertion_response_callback_;
   std::string client_data_json_;
-  // empty_allow_list_ is true iff a GetAssertion is currently pending and the
-  // request did not list any credential IDs in the allow list.
-  bool empty_allow_list_ = false;
+  // maybe_show_account_picker_ is true iff a non conditional UI GetAssertion is
+  // currently pending and the request did not list any credential IDs in the
+  // allow list.
+  bool maybe_show_account_picker_ = false;
   bool disable_ui_ = false;
   url::Origin caller_origin_;
   std::string relying_party_id_;

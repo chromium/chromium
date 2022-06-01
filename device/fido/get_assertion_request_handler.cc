@@ -306,6 +306,18 @@ GetAssertionRequestHandler::GetAssertionRequestHandler(
 
 GetAssertionRequestHandler::~GetAssertionRequestHandler() = default;
 
+void GetAssertionRequestHandler::PreselectAccount(
+    std::vector<uint8_t> credential_id) {
+  request_.allow_list = {device::PublicKeyCredentialDescriptor(
+      CredentialType::kPublicKey, credential_id,
+      {FidoTransportProtocol::kInternal})};
+}
+
+base::WeakPtr<GetAssertionRequestHandler>
+GetAssertionRequestHandler::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 void GetAssertionRequestHandler::OnBluetoothAdapterEnumerated(
     bool is_present,
     bool is_powered_on,

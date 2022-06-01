@@ -11,7 +11,9 @@
 #include "base/base64.h"
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -234,11 +236,15 @@ TEST_F(ChromeWebAuthnCredentialsDelegateTest, SelectCredential) {
   SetCredList(users);
 
 #if !BUILDFLAG(IS_ANDROID)
+  base::RunLoop run_loop;
+  dialog_model()->SetAccountPreselectedCallback(
+      base::BindLambdaForTesting([&](std::vector<uint8_t> credential_id) {
+        EXPECT_EQ(credential_id, CredId2());
+        run_loop.Quit();
+      }));
+  // Select the credential for User2.
   credentials_delegate_->SelectWebAuthnCredential("5678");
-  auto account = dialog_model()->GetPreselectedAccountForTesting();
-
-  EXPECT_TRUE(account.has_value());
-  EXPECT_EQ(account->name, UserName2());
+  run_loop.Run();
 #else
   // On Android, the credential ID is the suggestion backend_id, whereas on
   // desktop it is the user ID.

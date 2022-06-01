@@ -591,13 +591,17 @@ bool ChromeAuthenticatorRequestDelegate::DoesBlockRequestOnFailure(
 void ChromeAuthenticatorRequestDelegate::RegisterActionCallbacks(
     base::OnceClosure cancel_callback,
     base::RepeatingClosure start_over_callback,
+    AccountPreselectedCallback account_preselected_callback,
     device::FidoRequestHandlerBase::RequestCallback request_callback,
     base::RepeatingClosure bluetooth_adapter_power_on_callback) {
   request_callback_ = request_callback;
   cancel_callback_ = std::move(cancel_callback);
   start_over_callback_ = std::move(start_over_callback);
+  account_preselected_callback_ = std::move(account_preselected_callback);
 
   weak_dialog_model_->SetRequestCallback(request_callback);
+  weak_dialog_model_->SetAccountPreselectedCallback(
+      account_preselected_callback_);
   weak_dialog_model_->SetBluetoothAdapterPowerOnCallback(
       bluetooth_adapter_power_on_callback);
 }

@@ -74,6 +74,12 @@ class COMPONENT_EXPORT(DEVICE_FIDO) GetAssertionRequestHandler
 
   ~GetAssertionRequestHandler() override;
 
+  // Filters the allow list of the get assertion request to the given
+  // |credential_id|. This is only valid to call for empty allow list requests.
+  void PreselectAccount(std::vector<uint8_t> credential_id);
+
+  base::WeakPtr<GetAssertionRequestHandler> GetWeakPtr();
+
  private:
   enum class State {
     kWaitingForTouch,
