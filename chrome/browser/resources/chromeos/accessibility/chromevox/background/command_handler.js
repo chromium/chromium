@@ -71,27 +71,7 @@ export class CommandHandler extends CommandHandlerInterface {
 
     // Check for loss of focus which results in us invalidating our current
     // range. Note this call is synchronous.
-    chrome.automation.getFocus((focusedNode) => {
-      const cur = ChromeVoxState.instance.currentRange;
-      if (cur && !cur.isValid()) {
-        ChromeVoxState.instance.setCurrentRange(
-            cursors.Range.fromNode(focusedNode));
-      }
-
-      if (!focusedNode ||
-
-          // This case detects when TalkBack (in ARC++) is enabled (which also
-          // covers when the ARC++ window is active). Clear the ChromeVox range
-          // so keys get passed through for ChromeVox commands.
-          (ChromeVoxState.instance.talkBackEnabled &&
-
-           // This additional check is not strictly necessary, but we use it to
-           // ensure we are never inadvertently losing focus. ARC++ windows set
-           // "focus" on a root view.
-           focusedNode.role === RoleType.CLIENT)) {
-        ChromeVoxState.instance.setCurrentRange(null);
-      }
-    });
+    chrome.automation.getFocus(focus => this.checkForLossOfFocus_(focus));
 
     // These commands don't require a current range.
     switch (command) {
@@ -1519,6 +1499,34 @@ export class CommandHandler extends CommandHandlerInterface {
     }
 
     return current;
+  }
+
+  /**
+   * @param {AutomationNode} focusedNode
+   * @private
+   */
+  checkForLossOfFocus_(focusedNode) {
+    const cur = ChromeVoxState.instance.currentRange;
+    if (cur && !cur.isValid()) {
+      ChromeVoxState.instance.setCurrentRange(
+          cursors.Range.fromNode(focusedNode));
+    }
+
+    if (!focusedNode) {
+      ChromeVoxState.instance.setCurrentRange(null);
+      return;
+    }
+
+    // This case detects when TalkBack (in ARC++) is enabled (which also
+    // covers when the ARC++ window is active). Clear the ChromeVox range
+    // so keys get passed through for ChromeVox commands.
+    if (ChromeVoxState.instance.talkBackEnabled &&
+        // This additional check is not strictly necessary, but we use it to
+        // ensure we are never inadvertently losing focus. ARC++ windows set
+        // "focus" on a root view.
+        focusedNode.role === RoleType.CLIENT) {
+      ChromeVoxState.instance.setCurrentRange(null);
+    }
   }
 
   /**
