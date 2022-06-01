@@ -490,6 +490,18 @@
       valid_type: "bool",
     },
 
+    // - valid_for_highlight_legacy: true
+    //
+    // Theoretically matches
+    // https://drafts.csswg.org/css-pseudo-4/#highlight-styling,
+    // but includes additional properties for compatibility reasons.
+    // Used when RuntimeEnabledFeatures::HighlightInheritanceEnabled()
+    // is not enabled.
+    valid_for_highlight_legacy: {
+      default: false,
+      valid_type: "bool",
+    },
+
     // - valid_for_highlight: true
     //
     // https://drafts.csswg.org/css-pseudo-4/#highlight-styling
@@ -887,6 +899,7 @@
       valid_for_first_line: true,
       valid_for_cue: true,
       valid_for_marker: true,
+      valid_for_highlight_legacy: true,
       valid_for_highlight: true,
       valid_for_canvas_formatted_text: true,
       valid_for_canvas_formatted_text_run: true,
@@ -1250,7 +1263,7 @@
       keywords: ["auto", "none", "preserve-parent-color"],
       typedom_types: ["Keyword"],
       default_value: "auto",
-      valid_for_highlight: true,
+      valid_for_highlight_legacy: true,
       computable: false,
     },
     {
@@ -1526,6 +1539,7 @@
       valid_for_first_letter: true,
       valid_for_first_line: true,
       valid_for_cue: true,
+      valid_for_highlight_legacy: true,
       valid_for_highlight: true,
       is_background: true,
       is_highlight_colors: true,
@@ -2169,7 +2183,7 @@
       style_builder_custom_functions: ["initial", "inherit", "value"],
       keywords: ["auto", "currentcolor"],
       typedom_types: ["Keyword"],
-      valid_for_highlight: true,
+      valid_for_highlight_legacy: true,
     },
     {
       name: "clear",
@@ -2267,7 +2281,7 @@
       type_name: "Vector<AtomicString>",
       default_value: "Vector<AtomicString, 0>()",
       field_template: "external",
-      valid_for_highlight: true,
+      valid_for_highlight_legacy: true,
       computable: false,
     },
     {
@@ -2410,7 +2424,7 @@
       default_value: "auto",
       style_builder_custom_functions: ["initial", "inherit", "value"],
       typedom_types: ["Keyword"],
-      valid_for_highlight: true,
+      valid_for_highlight_legacy: true,
     },
     {
       name: "cx",
@@ -2503,6 +2517,7 @@
       style_builder_template_args: {
         initial_color: "ComputedStyleInitialValues::InitialFillPaint",
       },
+      valid_for_highlight_legacy: true,
       valid_for_highlight: true,
     },
     {
@@ -4265,6 +4280,7 @@
       style_builder_template_args: {
         initial_color: "ComputedStyleInitialValues::InitialStrokePaint",
       },
+      valid_for_highlight_legacy: true,
       valid_for_highlight: true,
     },
     {
@@ -4358,6 +4374,7 @@
       default_value: "UnzoomedLength(Length::Fixed(1))",
       converter: "ConvertUnzoomedLength",
       typedom_types: ["Length", "Percentage"],
+      valid_for_highlight_legacy: true,
       valid_for_highlight: true,
     },
     {
@@ -4453,6 +4470,7 @@
       valid_for_first_letter: true,
       valid_for_first_line: true,
       valid_for_cue: true,
+      valid_for_highlight_legacy: true,
       valid_for_highlight: true,
       supports_incremental_style: true,
       valid_for_canvas_formatted_text: true,
@@ -4471,6 +4489,7 @@
       valid_for_first_letter: true,
       valid_for_first_line: true,
       valid_for_cue: true,
+      valid_for_highlight_legacy: true,
       valid_for_highlight: true,
       valid_for_canvas_formatted_text: true,
       valid_for_canvas_formatted_text_run: true,
@@ -4488,6 +4507,7 @@
       valid_for_first_line: true,
       valid_for_cue: true,
       valid_for_marker: true,
+      valid_for_highlight_legacy: true,
       valid_for_highlight: true,
       valid_for_canvas_formatted_text: true,
       valid_for_canvas_formatted_text_run: true,
@@ -4503,6 +4523,7 @@
       valid_for_first_letter: true,
       valid_for_first_line: true,
       valid_for_cue: true,
+      valid_for_highlight_legacy: true,
       valid_for_highlight: true,
       valid_for_canvas_formatted_text: true,
       valid_for_canvas_formatted_text_run: true,
@@ -4522,6 +4543,7 @@
       typedom_types: ["Keyword", "Length", "Percentage"],
       valid_for_first_letter: true,
       valid_for_first_line: true,
+      valid_for_highlight_legacy: true,
       valid_for_highlight: true,
       computable: false,
       valid_for_canvas_formatted_text: true,
@@ -4583,6 +4605,7 @@
       valid_for_first_line: true,
       valid_for_cue: true,
       valid_for_marker: true,
+      valid_for_highlight_legacy: true,
       valid_for_highlight: true,
       valid_for_canvas_formatted_text: true,
       valid_for_canvas_formatted_text_run: true,
@@ -5411,6 +5434,7 @@
       converter: "ConvertStyleColor",
       style_builder_template: "color",
       valid_for_marker: true,
+      valid_for_highlight_legacy: true,
       valid_for_highlight: true,
     },
     {
@@ -5444,7 +5468,8 @@
       computed_style_custom_functions: ["getter"],
       converter: "ConvertStyleColor",
       style_builder_template: "color",
-      valid_for_highlight: true,
+      valid_for_highlight_legacy: true,
+      valid_for_highlight: true
     },
     {
       name: "-webkit-text-security",
@@ -5468,7 +5493,7 @@
       computed_style_custom_functions: ["getter"],
       converter: "ConvertStyleColor",
       style_builder_template: "color",
-      valid_for_highlight: true,
+      valid_for_highlight_legacy: true,
     },
     {
       name: "-webkit-text-stroke-width",
@@ -5479,7 +5504,7 @@
       default_value: "0",
       type_name: "float",
       converter: "ConvertTextStrokeWidth",
-      valid_for_highlight: true,
+      valid_for_highlight_legacy: true,
     },
     {
       name: "-webkit-transform-origin-x",
@@ -6890,6 +6915,7 @@
       valid_for_first_line: true,
       valid_for_cue: true,
       valid_for_marker: true,
+      valid_for_highlight_legacy: true,
       valid_for_highlight: true,
       is_visited_highlight_colors: true,
     },
@@ -6909,7 +6935,7 @@
       style_builder_template_args: {
         initial_color: "StyleAutoColor::AutoColor",
       },
-      valid_for_highlight: true,
+      valid_for_highlight_legacy: true,
     },
     {
       name: "-internal-visited-column-rule-color",
@@ -6942,6 +6968,7 @@
       valid_for_first_letter: true,
       valid_for_first_line: true,
       valid_for_cue: true,
+      valid_for_highlight_legacy: true,
       valid_for_highlight: true,
       is_visited_highlight_colors: true,
     },
@@ -7073,6 +7100,7 @@
       style_builder_template_args: {
         initial_color: "ComputedStyleInitialValues::InitialFillPaint",
       },
+      valid_for_highlight_legacy: true,
       valid_for_highlight: true,
     },
     {
@@ -7105,6 +7133,7 @@
       style_builder_template_args: {
         initial_color: "ComputedStyleInitialValues::InitialStrokePaint",
       },
+      valid_for_highlight_legacy: true,
       valid_for_highlight: true,
     },
     {
@@ -7122,6 +7151,7 @@
       valid_for_first_letter: true,
       valid_for_first_line: true,
       valid_for_cue: true,
+      valid_for_highlight_legacy: true,
       valid_for_highlight: true,
     },
     {
@@ -7137,6 +7167,7 @@
       computed_style_custom_functions: ["getter", "setter"],
       converter: "ConvertStyleColor",
       style_builder_template: "visited_color",
+      valid_for_highlight_legacy: true,
       valid_for_highlight: true,
     },
     {
@@ -7152,6 +7183,7 @@
       computed_style_custom_functions: ["getter", "setter"],
       converter: "ConvertStyleColor",
       style_builder_template: "visited_color",
+      valid_for_highlight_legacy: true,
       valid_for_highlight: true,
     },
     {
@@ -7167,6 +7199,7 @@
       computed_style_custom_functions: ["getter", "setter"],
       converter: "ConvertStyleColor",
       style_builder_template: "visited_color",
+      valid_for_highlight_legacy: true,
       valid_for_highlight: true,
     },
 

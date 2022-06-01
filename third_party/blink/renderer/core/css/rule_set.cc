@@ -78,6 +78,13 @@ static inline ValidPropertyFilter DetermineValidPropertyFilter(
         return ValidPropertyFilter::kMarker;
       case CSSSelector::kPseudoSelection:
       case CSSSelector::kPseudoTargetText:
+      case CSSSelector::kPseudoGrammarError:
+      case CSSSelector::kPseudoSpellingError:
+        if (RuntimeEnabledFeatures::HighlightInheritanceEnabled())
+          return ValidPropertyFilter::kHighlight;
+        else
+          return ValidPropertyFilter::kHighlightLegacy;
+      case CSSSelector::kPseudoHighlight:
         return ValidPropertyFilter::kHighlight;
       default:
         break;

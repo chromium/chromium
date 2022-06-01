@@ -967,6 +967,10 @@ void StyleResolver::ApplyInheritance(Element& element,
 
     state.SetStyle(ComputedStyle::Clone(*state.ParentStyle()));
     state.Style()->SetInsideLink(state.ElementLinkState());
+    state.Style()->SetInForcedColorsMode(
+        style_request.originating_element_style->InForcedColorsMode());
+    state.Style()->SetForcedColorAdjust(
+        style_request.originating_element_style->ForcedColorAdjust());
   } else {
     scoped_refptr<ComputedStyle> style = CreateComputedStyle();
     style->InheritFrom(
@@ -1675,8 +1679,14 @@ bool StyleResolver::ApplyAnimatedStyle(StyleResolverState& state,
     CascadeFilter filter;
     if (state.Style()->StyleType() == kPseudoIdMarker)
       filter = filter.Add(CSSProperty::kValidForMarker, false);
-    if (IsHighlightPseudoElement(state.Style()->StyleType()))
-      filter = filter.Add(CSSProperty::kValidForHighlight, false);
+    if (IsHighlightPseudoElement(state.Style()->StyleType())) {
+      if (RuntimeEnabledFeatures::HighlightInheritanceEnabled() ||
+          state.Style()->StyleType() == PseudoId::kPseudoIdHighlight) {
+        filter = filter.Add(CSSProperty::kValidForHighlight, false);
+      } else {
+        filter = filter.Add(CSSProperty::kValidForHighlightLegacy, false);
+      }
+    }
     filter = filter.Add(CSSProperty::kAnimation, true);
 
     cascade.Apply(filter);

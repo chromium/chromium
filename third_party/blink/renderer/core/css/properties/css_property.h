@@ -25,7 +25,7 @@ class LayoutObject;
 
 class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
  public:
-  using Flags = uint32_t;
+  using Flags = uint64_t;
 
   static const CSSProperty& Get(CSSPropertyID);
 
@@ -65,7 +65,6 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
   bool IsValidForFirstLine() const { return flags_ & kValidForFirstLine; }
   bool IsValidForCue() const { return flags_ & kValidForCue; }
   bool IsValidForMarker() const { return flags_ & kValidForMarker; }
-  bool IsValidForHighlight() const { return flags_ & kValidForHighlight; }
   bool IsValidForCanvasFormattedText() const {
     return flags_ & kValidForCanvasFormattedText;
   }
@@ -167,8 +166,10 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
     kBorderRadius = 1 << 17,
     // Set if the property values are tree-scoped references.
     kTreeScopedValue = 1 << 18,
-    // https://drafts.csswg.org/css-pseudo-4/#highlight-styling
-    kValidForHighlight = 1 << 19,
+    // Similar to the list at
+    // https://drafts.csswg.org/css-pseudo-4/#highlight-styling, with some
+    // differences for compatibility reasons.
+    kValidForHighlightLegacy = 1 << 19,
     // https://drafts.csswg.org/css-logical/#logical-property-group
     kInLogicalPropertyGroup = 1 << 20,
     // https://drafts.csswg.org/css-pseudo-4/#first-line-styling
@@ -195,7 +196,9 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
     // See valid_for_keyframes in css_properties.json5
     kValidForKeyframe = 1 << 30,
     // See valid_for_position_fallback in css_properties.json5
-    kValidForPositionFallback = 1u << 31,
+    kValidForPositionFallback = 1ull << 31,
+    // https://drafts.csswg.org/css-pseudo-4/#highlight-styling
+    kValidForHighlight = 1ull << 32,
   };
 
   constexpr CSSProperty(CSSPropertyID property_id,

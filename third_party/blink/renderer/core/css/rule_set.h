@@ -68,6 +68,12 @@ enum class ValidPropertyFilter : unsigned {
   // https://drafts.csswg.org/css-pseudo-4/#marker-pseudo are valid.
   kMarker,
   // Defined in a highlight pseudo-element scope like ::selection and
+  // ::target-text. Theoretically only properties listed in
+  // https://drafts.csswg.org/css-pseudo-4/#highlight-styling should be valid,
+  // but when RuntimeEnabledFeatures::HighlightInheritanceEnabled() is disabled
+  // we allow a different set of rules for compatibility reasons.
+  kHighlightLegacy,
+  // Defined in a highlight pseudo-element scope like ::selection and
   // ::target-text. Only properties listed in
   // https://drafts.csswg.org/css-pseudo-4/#highlight-styling are valid.
   kHighlight,

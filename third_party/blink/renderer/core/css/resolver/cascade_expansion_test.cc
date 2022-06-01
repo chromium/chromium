@@ -479,13 +479,35 @@ TEST_F(CascadeExpansionTest, FilterMarker) {
   EXPECT_EQ(CSSPropertyID::kFontSize, e[0]->ref.GetProperty().PropertyID());
 }
 
+TEST_F(CascadeExpansionTest, FilterHighlightLegacy) {
+  MatchResult result;
+  result.FinishAddingUARules();
+  result.FinishAddingUserRules();
+  result.FinishAddingPresentationalHints();
+  result.AddMatchedProperties(
+      ParseDeclarationBlock("display:block;background-color:lime;forced-color-adjust:none"),
+      AddMatchedPropertiesOptions::Builder()
+          .SetValidPropertyFilter(ValidPropertyFilter::kHighlightLegacy)
+          .Build());
+  result.FinishAddingAuthorRulesForTreeScope(GetDocument());
+
+  auto e = ExpansionAt(result, 0);
+  ASSERT_EQ(3u, e.size());
+  EXPECT_EQ(CSSPropertyID::kBackgroundColor,
+            e[0]->ref.GetProperty().PropertyID());
+  EXPECT_EQ(CSSPropertyID::kInternalVisitedBackgroundColor,
+            e[1]->ref.GetProperty().PropertyID());
+  EXPECT_EQ(CSSPropertyID::kForcedColorAdjust,
+            e[2]->ref.GetProperty().PropertyID());
+}
+
 TEST_F(CascadeExpansionTest, FilterHighlight) {
   MatchResult result;
   result.FinishAddingUARules();
   result.FinishAddingUserRules();
   result.FinishAddingPresentationalHints();
   result.AddMatchedProperties(
-      ParseDeclarationBlock("display:block;background-color:lime;"),
+      ParseDeclarationBlock("display:block;background-color:lime;forced-color-adjust:none"),
       AddMatchedPropertiesOptions::Builder()
           .SetValidPropertyFilter(ValidPropertyFilter::kHighlight)
           .Build());
