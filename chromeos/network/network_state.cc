@@ -668,13 +668,10 @@ void NetworkState::UpdateCaptivePortalState(const base::Value& properties) {
 
   UMA_HISTOGRAM_ENUMERATION("CaptivePortal.NetworkStateResult", portal_state_);
   if (portal_state_ != PortalState::kOnline) {
-    portal_status_code_ = status_code;
     NET_LOG(EVENT) << "Network is in captive portal state: " << NetworkId(this)
-                   << " status_code=" << portal_status_code_;
+                   << " status_code=" << status_code;
     base::UmaHistogramSparse("CaptivePortal.NetworkStateStatusCode",
-                             std::abs(portal_status_code_));
-  } else {
-    portal_status_code_ = 0;
+                             std::abs(status_code));
   }
 }
 

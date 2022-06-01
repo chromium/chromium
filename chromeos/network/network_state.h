@@ -369,7 +369,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkState : public ManagedState {
 
   // Portal state is derived from connection_state_ and Shill portal properties.
   PortalState portal_state_ = PortalState::kUnknown;
-  int portal_status_code_ = 0;
 
   // Whether the current device has already connected to the tether host device
   // providing the hotspot corresponding to this NetworkState.
