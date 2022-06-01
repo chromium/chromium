@@ -42,14 +42,10 @@ class BackgroundHTMLScannerTest : public PageTestBase {
             {base::TaskPriority::USER_BLOCKING})) {}
 
  protected:
-  std::unique_ptr<BackgroundHTMLScanner> CreateScanner(int num_streamers,
-                                                       TestParser* parser) {
-    BackgroundHTMLScanner::InlineScriptStreamerVector streamers;
-    for (int i = 0; i < num_streamers; i++)
-      streamers.emplace_back(MakeGarbageCollected<InlineScriptStreamer>());
+  std::unique_ptr<BackgroundHTMLScanner> CreateScanner(TestParser* parser) {
     return std::make_unique<BackgroundHTMLScanner>(
-        std::make_unique<HTMLTokenizer>(HTMLParserOptions()),
-        std::move(streamers), parser, task_runner_);
+        std::make_unique<HTMLTokenizer>(HTMLParserOptions()), parser,
+        task_runner_);
   }
 
   void FlushTaskRunner() {
@@ -63,33 +59,33 @@ class BackgroundHTMLScannerTest : public PageTestBase {
 
 TEST_F(BackgroundHTMLScannerTest, SimpleScript) {
   auto* parser = MakeGarbageCollected<TestParser>(GetDocument());
-  auto scanner = CreateScanner(2, parser);
+  auto scanner = CreateScanner(parser);
   scanner->Scan("<script>foo</script>");
   FlushTaskRunner();
   EXPECT_NE(parser->TakeInlineScriptStreamer("foo"), nullptr);
 }
 
+TEST_F(BackgroundHTMLScannerTest, MultipleScripts) {
+  auto* parser = MakeGarbageCollected<TestParser>(GetDocument());
+  auto scanner = CreateScanner(parser);
+  scanner->Scan("<script>foo</script><script>bar</script><script>baz</script>");
+  FlushTaskRunner();
+  EXPECT_NE(parser->TakeInlineScriptStreamer("foo"), nullptr);
+  EXPECT_NE(parser->TakeInlineScriptStreamer("bar"), nullptr);
+  EXPECT_NE(parser->TakeInlineScriptStreamer("baz"), nullptr);
+}
+
 TEST_F(BackgroundHTMLScannerTest, ScriptWithScriptTag) {
   auto* parser = MakeGarbageCollected<TestParser>(GetDocument());
-  auto scanner = CreateScanner(2, parser);
+  auto scanner = CreateScanner(parser);
   scanner->Scan("<script>foo = '<script>'</script>");
   FlushTaskRunner();
   EXPECT_NE(parser->TakeInlineScriptStreamer("foo = '<script>'"), nullptr);
 }
 
-TEST_F(BackgroundHTMLScannerTest, TooManyScripts) {
-  auto* parser = MakeGarbageCollected<TestParser>(GetDocument());
-  auto scanner = CreateScanner(2, parser);
-  scanner->Scan("<script>foo</script><script>bar</script><script>baz</script>");
-  FlushTaskRunner();
-  EXPECT_NE(parser->TakeInlineScriptStreamer("foo"), nullptr);
-  EXPECT_NE(parser->TakeInlineScriptStreamer("bar"), nullptr);
-  EXPECT_EQ(parser->TakeInlineScriptStreamer("baz"), nullptr);
-}
-
 TEST_F(BackgroundHTMLScannerTest, ScriptAcrossMultipleScans) {
   auto* parser = MakeGarbageCollected<TestParser>(GetDocument());
-  auto scanner = CreateScanner(2, parser);
+  auto scanner = CreateScanner(parser);
   scanner->Scan("Some stuff<div></div><script>f");
   scanner->Scan("oo</script> and some other stuff");
   FlushTaskRunner();
@@ -98,7 +94,7 @@ TEST_F(BackgroundHTMLScannerTest, ScriptAcrossMultipleScans) {
 
 TEST_F(BackgroundHTMLScannerTest, String16Key) {
   auto* parser = MakeGarbageCollected<TestParser>(GetDocument());
-  auto scanner = CreateScanner(2, parser);
+  auto scanner = CreateScanner(parser);
   scanner->Scan("<script>foo</script>");
   FlushTaskRunner();
   String key = "foo";
@@ -108,12 +104,22 @@ TEST_F(BackgroundHTMLScannerTest, String16Key) {
 
 TEST_F(BackgroundHTMLScannerTest, String16Source) {
   auto* parser = MakeGarbageCollected<TestParser>(GetDocument());
-  auto scanner = CreateScanner(2, parser);
+  auto scanner = CreateScanner(parser);
   String source = "<script>foo</script>";
   source.Ensure16Bit();
   scanner->Scan(source);
   FlushTaskRunner();
   EXPECT_NE(parser->TakeInlineScriptStreamer("foo"), nullptr);
+}
+
+TEST_F(BackgroundHTMLScannerTest, UTF16Characters) {
+  auto* parser = MakeGarbageCollected<TestParser>(GetDocument());
+  auto scanner = CreateScanner(parser);
+  String source = u"<script>hello \u3042</script>";
+  EXPECT_FALSE(source.Is8Bit());
+  scanner->Scan(source);
+  FlushTaskRunner();
+  EXPECT_NE(parser->TakeInlineScriptStreamer(u"hello \u3042"), nullptr);
 }
 
 }  // namespace

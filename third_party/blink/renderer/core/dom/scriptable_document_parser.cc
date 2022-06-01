@@ -50,17 +50,17 @@ void ScriptableDocumentParser::Trace(Visitor* visitor) const {
 
 void ScriptableDocumentParser::AddInlineScriptStreamer(
     const String& source,
-    InlineScriptStreamer* streamer) {
+    scoped_refptr<BackgroundInlineScriptStreamer> streamer) {
   base::AutoLock lock(streamers_lock_);
-  inline_script_streamers_.insert(source, streamer);
+  inline_script_streamers_.insert(source, std::move(streamer));
 }
 
 InlineScriptStreamer* ScriptableDocumentParser::TakeInlineScriptStreamer(
     const String& source) {
-  InlineScriptStreamer* streamer;
+  scoped_refptr<BackgroundInlineScriptStreamer> streamer;
   {
     base::AutoLock lock(streamers_lock_);
-    streamer = inline_script_streamers_.Take(source).Get();
+    streamer = inline_script_streamers_.Take(source);
   }
   // If the streamer hasn't started yet, cancel and just compile on the main
   // thread.
@@ -68,7 +68,9 @@ InlineScriptStreamer* ScriptableDocumentParser::TakeInlineScriptStreamer(
     streamer->Cancel();
     streamer = nullptr;
   }
-  return streamer;
+  if (streamer)
+    return InlineScriptStreamer::From(std::move(streamer));
+  return nullptr;
 }
 
 }  // namespace blink

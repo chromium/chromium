@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/platform/testing/mock_context_lifecycle_notifier.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support_with_mock_scheduler.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "third_party/blink/renderer/platform/wtf/cross_thread_copier_base.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
 #include "v8/include/v8.h"
@@ -565,23 +566,31 @@ TEST_F(ScriptStreamingTest, ResourceSetRevalidatingRequest) {
             ScriptStreamer::NotStreamingReason::kRevalidate);
 }
 
-TEST_F(ScriptStreamingTest, InlineScript) {
+class InlineScriptStreamingTest
+    : public ScriptStreamingTest,
+      public ::testing::WithParamInterface<
+          std::pair<bool /* 16 bit source */,
+                    v8::ScriptCompiler::CompileOptions>> {};
+
+TEST_P(InlineScriptStreamingTest, InlineScript) {
   // Test that we can successfully compile an inline script.
   V8TestingScope scope;
 
-  String source = u"function foo() {return 5;} foo();";
-  source.Ensure16Bit();
-  auto* streamer = MakeGarbageCollected<InlineScriptStreamer>();
+  String source = "function foo() {return 5;} foo();";
+  if (GetParam().first)
+    source.Ensure16Bit();
+  auto streamer = base::MakeRefCounted<BackgroundInlineScriptStreamer>(
+      source, GetParam().second);
   worker_pool::PostTask(
       FROM_HERE, {},
-      CrossThreadBindOnce(&InlineScriptStreamer::Run,
-                          WrapCrossThreadPersistent(streamer), source));
+      CrossThreadBindOnce(&BackgroundInlineScriptStreamer::Run, streamer));
 
   ClassicScript* classic_script = ClassicScript::Create(
       source, KURL(), KURL(), ScriptFetchOptions(),
       ScriptSourceLocationType::kUnknown, SanitizeScriptErrors::kSanitize,
       nullptr, TextPosition::MinimumPosition(),
-      ScriptStreamer::NotStreamingReason::kInvalid, streamer);
+      ScriptStreamer::NotStreamingReason::kInvalid,
+      InlineScriptStreamer::From(streamer));
 
   DummyPageHolder holder;
   ScriptEvaluationResult result = classic_script->RunScriptAndReturnValue(
@@ -592,5 +601,18 @@ TEST_F(ScriptStreamingTest, InlineScript) {
   EXPECT_EQ(
       5, result.GetSuccessValue()->Int32Value(scope.GetContext()).FromJust());
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    InlineScriptStreamingTest,
+    testing::ValuesIn(
+        {std::make_pair(true,
+                        v8::ScriptCompiler::CompileOptions::kNoCompileOptions),
+         std::make_pair(false,
+                        v8::ScriptCompiler::CompileOptions::kNoCompileOptions),
+         std::make_pair(true,
+                        v8::ScriptCompiler::CompileOptions::kEagerCompile),
+         std::make_pair(false,
+                        v8::ScriptCompiler::CompileOptions::kEagerCompile)}));
 
 }  // namespace blink

@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/platform/text/segmented_string.h"
 #include "third_party/blink/renderer/platform/wtf/sequence_bound.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
-#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
@@ -44,14 +43,10 @@ class CORE_EXPORT BackgroundHTMLScanner {
   USING_FAST_MALLOC(BackgroundHTMLScanner);
 
  public:
-  using InlineScriptStreamerVector =
-      Vector<CrossThreadPersistent<InlineScriptStreamer>>;
-
   static WTF::SequenceBound<BackgroundHTMLScanner> Create(
       const HTMLParserOptions& options,
       ScriptableDocumentParser* parser);
   BackgroundHTMLScanner(std::unique_ptr<HTMLTokenizer> tokenizer,
-                        InlineScriptStreamerVector streamers,
                         ScriptableDocumentParser* parser,
                         scoped_refptr<base::SequencedTaskRunner> task_runner);
   ~BackgroundHTMLScanner();
@@ -67,12 +62,12 @@ class CORE_EXPORT BackgroundHTMLScanner {
   SegmentedString source_;
   HTMLToken token_;
   std::unique_ptr<HTMLTokenizer> tokenizer_;
-  InlineScriptStreamerVector streamers_;
   CrossThreadWeakPersistent<ScriptableDocumentParser> parser_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   StringBuilder script_builder_;
 
   bool in_script_ = false;
+  bool first_script_in_scan_ = false;
 };
 
 }  // namespace blink

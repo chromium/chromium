@@ -77,8 +77,9 @@ class CORE_EXPORT ScriptableDocumentParser : public DecodedDataDocumentParser {
 
   // Adds a script streamer for |source| which can be later retrieved with
   // TakeInlineScriptStreamer(). This may be called on any thread.
-  void AddInlineScriptStreamer(const String& source,
-                               InlineScriptStreamer* streamer);
+  void AddInlineScriptStreamer(
+      const String& source,
+      scoped_refptr<BackgroundInlineScriptStreamer> streamer);
 
   // Takes a script streamer previously added with AddInlineScriptStreamer().
   // The returned streamer is guaranteed to be correct for script text that
@@ -100,7 +101,7 @@ class CORE_EXPORT ScriptableDocumentParser : public DecodedDataDocumentParser {
   ParserContentPolicy parser_content_policy_;
 
   base::Lock streamers_lock_;
-  HashMap<String, CrossThreadPersistent<InlineScriptStreamer>>
+  HashMap<String, scoped_refptr<BackgroundInlineScriptStreamer>>
       inline_script_streamers_ GUARDED_BY(streamers_lock_);
 };
 

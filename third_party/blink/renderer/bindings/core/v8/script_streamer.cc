@@ -1050,18 +1050,11 @@ void ResourceScriptStreamer::CheckState() const {
   }
 }
 
-class InlineScriptStreamer::InlineSourceStream final
+class InlineSourceStream final
     : public v8::ScriptCompiler::ExternalSourceStream {
  public:
-  InlineSourceStream() = default;
+  explicit InlineSourceStream(const String& text) : text_(text) {}
   ~InlineSourceStream() override = default;
-
-  void SetText(const String& text) {
-    // The text should always be 16 bit since it comes from the HTML parser
-    // which defaults to 16 bit.
-    DCHECK(!text.Is8Bit());
-    text_ = text;
-  }
 
   size_t GetMoreData(const uint8_t** src) override {
     if (!text_)
@@ -1080,25 +1073,26 @@ class InlineScriptStreamer::InlineSourceStream final
   String text_;
 };
 
-InlineScriptStreamer::InlineScriptStreamer() {
-  DCHECK(IsMainThread());
-  auto stream = std::make_unique<InlineSourceStream>();
-  stream_ = stream.get();
-  // TODO(crbug.com/1328448): Use ONE_BYTE encoding when possible.
+BackgroundInlineScriptStreamer::BackgroundInlineScriptStreamer(
+    const String& text,
+    v8::ScriptCompiler::CompileOptions compile_options) {
+  auto stream = std::make_unique<InlineSourceStream>(text);
   source_ = std::make_unique<v8::ScriptCompiler::StreamedSource>(
-      std::move(stream), v8::ScriptCompiler::StreamedSource::TWO_BYTE);
+      std::move(stream), text.Is8Bit()
+                             ? v8::ScriptCompiler::StreamedSource::ONE_BYTE
+                             : v8::ScriptCompiler::StreamedSource::TWO_BYTE);
 
   task_ = base::WrapUnique(v8::ScriptCompiler::StartStreaming(
-      V8PerIsolateData::MainThreadIsolate(), source_.get()));
+      V8PerIsolateData::MainThreadIsolate(), source_.get(),
+      v8::ScriptType::kClassic, compile_options));
 }
 
-void InlineScriptStreamer::Run(const String& text) {
-  TRACE_EVENT0("blink", "InlineScriptStreamer::Run");
+void BackgroundInlineScriptStreamer::Run() {
+  TRACE_EVENT0("blink", "BackgroundInlineScriptStreamer::Run");
   if (cancelled_.IsSet())
     return;
 
   started_.Set();
-  stream_->SetText(text);
   task_->Run();
   task_.reset();
 
@@ -1112,9 +1106,9 @@ void InlineScriptStreamer::Run(const String& text) {
   event_.Signal();
 }
 
-v8::ScriptCompiler::StreamedSource* InlineScriptStreamer::Source(
+v8::ScriptCompiler::StreamedSource* BackgroundInlineScriptStreamer::Source(
     v8::ScriptType expected_type) {
-  TRACE_EVENT0("blink", "InlineScriptStreamer::Source");
+  TRACE_EVENT0("blink", "BackgroundInlineScriptStreamer::Source");
   DCHECK(IsMainThread());
   DCHECK_EQ(expected_type, v8::ScriptType::kClassic);
   // Make sure the script has finished compiling in the background. See comment
@@ -1123,8 +1117,10 @@ v8::ScriptCompiler::StreamedSource* InlineScriptStreamer::Source(
   return source_.get();
 }
 
-void InlineScriptStreamer::Trace(Visitor* visitor) const {
-  ScriptStreamer::Trace(visitor);
+// static
+InlineScriptStreamer* InlineScriptStreamer::From(
+    scoped_refptr<BackgroundInlineScriptStreamer> streamer) {
+  return MakeGarbageCollected<InlineScriptStreamer>(std::move(streamer));
 }
 
 }  // namespace blink

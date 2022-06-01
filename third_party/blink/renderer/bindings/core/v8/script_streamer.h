@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 #include "v8/include/v8.h"
 
 namespace mojo {
@@ -267,33 +268,59 @@ class CORE_EXPORT ResourceScriptStreamer final : public ScriptStreamer {
   v8::ScriptType script_type_;
 };
 
-// InlineScriptStreamer allows parsing and compiling inline scripts in the
-// background before they have been parsed by the HTML parser.
-class CORE_EXPORT InlineScriptStreamer final : public ScriptStreamer {
+// BackgroundInlineScriptStreamer allows parsing and compiling inline scripts in
+// the background before they have been parsed by the HTML parser. Use
+// InlineScriptStreamer::From() to create a ScriptStreamer from this class.
+class CORE_EXPORT BackgroundInlineScriptStreamer final
+    : public WTF::ThreadSafeRefCounted<BackgroundInlineScriptStreamer> {
  public:
-  InlineScriptStreamer();
+  BackgroundInlineScriptStreamer(
+      const String& text,
+      v8::ScriptCompiler::CompileOptions compile_options);
 
-  void Run(const String& text);
+  void Run();
   bool IsStarted() const { return started_.IsSet(); }
   void Cancel() { cancelled_.Set(); }
 
   // This may return false if V8 failed to create a background streaming task.
   bool CanStream() const { return task_.get(); };
 
-  // ScriptStreamer implementation:
-  v8::ScriptCompiler::StreamedSource* Source(
-      v8::ScriptType expected_type) override;
-  void Trace(Visitor* visitor) const override;
+  v8::ScriptCompiler::StreamedSource* Source(v8::ScriptType expected_type);
 
  private:
-  class InlineSourceStream;
-  InlineSourceStream* stream_ = nullptr;
+  friend class WTF::ThreadSafeRefCounted<BackgroundInlineScriptStreamer>;
+  ~BackgroundInlineScriptStreamer() = default;
 
   std::unique_ptr<v8::ScriptCompiler::StreamedSource> source_;
   std::unique_ptr<v8::ScriptCompiler::ScriptStreamingTask> task_;
   base::WaitableEvent event_;
   base::AtomicFlag started_;
   base::AtomicFlag cancelled_;
+};
+
+// ScriptStreamer is garbage collected so must be created on the main thread.
+// This class wraps a BackgroundInlineScriptStreamer to be used on the main
+// thread.
+class CORE_EXPORT InlineScriptStreamer final : public ScriptStreamer {
+ public:
+  static InlineScriptStreamer* From(
+      scoped_refptr<BackgroundInlineScriptStreamer> streamer);
+
+  explicit InlineScriptStreamer(
+      scoped_refptr<BackgroundInlineScriptStreamer> streamer)
+      : streamer_(std::move(streamer)) {}
+
+  v8::ScriptCompiler::StreamedSource* Source(
+      v8::ScriptType expected_type) override {
+    return streamer_->Source(expected_type);
+  }
+
+  void Trace(Visitor* visitor) const override {
+    ScriptStreamer::Trace(visitor);
+  }
+
+ private:
+  scoped_refptr<BackgroundInlineScriptStreamer> streamer_;
 };
 
 }  // namespace blink
