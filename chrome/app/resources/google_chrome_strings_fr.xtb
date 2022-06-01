@@ -226,7 +226,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="5727531838415286053">Si Chrome vous a intégré aléatoirement à un essai actif, votre historique de navigation influe sur les annonces que vous voyez et les centres d'intérêt estimés ci-dessous. Pour protéger votre confidentialité, Chrome supprime vos centres d'intérêt tous les mois. Les centres d'intérêt s'actualisent, sauf si vous les supprimez.</translation>
 <translation id="5736850870166430177">Si un site tente de voler votre mot de passe ou si vous téléchargez un fichier dangereux, Chrome peut également envoyer les URL concernées, y compris des extraits du contenu des pages, à la fonctionnalité de navigation sécurisée</translation>
 <translation id="5756509061973259733">Il existe déjà un profil Chrome associé à ce compte sur cet appareil</translation>
-<translation id="5763280521700030406">Chrome a bloqué ce fichier. Impossible de vérifier si ce fichier est sûr, car il est trop volumineux. Réessayez avec des fichiers de 50 Mo maximum</translation>
+<translation id="5763280521700030406">Chrome a bloqué ce fichier, car il est trop volumineux pour être analysé. Réessayez avec des fichiers de 50 Mo maximum.</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Impossible de lancer Chrome. Réessayez.</translation>
 <translation id="5867197326698922595">Google Chrome tente de modifier les mots de passe.</translation>
