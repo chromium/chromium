@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.android_webview.common.services.IMetricsBridgeService;
+import org.chromium.android_webview.common.services.ServiceHelper;
 import org.chromium.android_webview.common.services.ServiceNames;
 import org.chromium.android_webview.proto.MetricsBridgeRecords.HistogramRecord;
 import org.chromium.android_webview.proto.MetricsBridgeRecords.HistogramRecord.Metadata;
@@ -222,7 +223,8 @@ public class AwNonembeddedUmaRecorder implements UmaRecorder {
         final Context appContext = ContextUtils.getApplicationContext();
         final Intent intent = new Intent();
         intent.setClassName(appContext, mRecordingDelegate.getServiceName());
-        mIsBound = appContext.bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
+        mIsBound = ServiceHelper.bindService(
+                appContext, intent, mServiceConnection, Context.BIND_AUTO_CREATE);
         if (!mIsBound) {
             Log.w(TAG, "Could not bind to MetricsBridgeService " + intent);
         }
