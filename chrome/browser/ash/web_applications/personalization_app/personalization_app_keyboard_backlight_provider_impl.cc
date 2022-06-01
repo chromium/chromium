@@ -35,9 +35,7 @@ KeyboardBacklightColorController* GetKeyboardBacklightColorController() {
 
 PersonalizationAppKeyboardBacklightProviderImpl::
     PersonalizationAppKeyboardBacklightProviderImpl(content::WebUI* web_ui)
-    : profile_(Profile::FromWebUI(web_ui)) {
-  wallpaper_controller_observation_.Observe(WallpaperController::Get());
-}
+    : profile_(Profile::FromWebUI(web_ui)) {}
 
 PersonalizationAppKeyboardBacklightProviderImpl::
     ~PersonalizationAppKeyboardBacklightProviderImpl() = default;
@@ -61,6 +59,10 @@ void PersonalizationAppKeyboardBacklightProviderImpl::
   // Call it once to get the status of color preset.
   NotifyBacklightColorChanged();
 
+  // Bind wallpaper observer now that rgb keyboard section is ready and visible
+  // to users.
+  if (!wallpaper_controller_observation_.IsObserving())
+    wallpaper_controller_observation_.Observe(WallpaperController::Get());
   // Call it once to get the wallpaper extracted color.
   OnWallpaperColorsChanged();
 }
