@@ -249,6 +249,9 @@ bool ReadingListDistillerPage::IsGoogleCachedAMPPage() {
 
 void ReadingListDistillerPage::HandleGoogleCachedAMPPage() {
   web::WebFrame* web_frame = web::GetMainFrame(CurrentWebState());
+  if (!web_frame) {
+    return;
+  }
   web_frame->ExecuteJavaScript(
       kGetIframeURLJavaScript,
       base::BindOnce(
