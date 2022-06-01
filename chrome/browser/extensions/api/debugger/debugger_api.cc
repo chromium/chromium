@@ -85,11 +85,23 @@ void CopyDebuggee(Debuggee* dst, const Debuggee& src) {
     dst->target_id = std::make_unique<std::string>(*src.target_id);
 }
 
+bool ExtensionMayAttachToTargetProfile(Profile* extension_profile,
+                                       bool allow_incognito_access,
+                                       DevToolsAgentHost& agent_host) {
+  Profile* profile =
+      Profile::FromBrowserContext(agent_host.GetBrowserContext());
+  if (!profile)
+    return false;
+  if (!extension_profile->IsSameOrParent(profile))
+    return false;
+  return profile == extension_profile || allow_incognito_access;
+}
+
 // Returns true if the given |Extension| is allowed to attach to the specified
 // |url|.
 bool ExtensionMayAttachToURL(const Extension& extension,
+                             Profile* extension_profile,
                              const GURL& url,
-                             Profile* profile,
                              std::string* error) {
   // Allow the extension to attach to about:blank and empty URLs.
   if (url.is_empty() || url == "about:")
@@ -108,7 +120,8 @@ bool ExtensionMayAttachToURL(const Extension& extension,
   if (extension.permissions_data()->IsPolicyBlockedHost(url))
     return false;
 
-  if (url.SchemeIsFile() && !util::AllowFileAccess(extension.id(), profile)) {
+  if (url.SchemeIsFile() &&
+      !util::AllowFileAccess(extension.id(), extension_profile)) {
     *error = debugger_api_constants::kRestrictedError;
     return false;
   }
@@ -125,35 +138,43 @@ bool ExtensionMayAttachToBrowser(const Extension& extension) {
 }
 
 bool ExtensionMayAttachToWebContents(const Extension& extension,
+                                     Profile* extension_profile,
                                      WebContents& web_contents,
-                                     Profile* profile,
                                      std::string* error) {
   // This is *not* redundant to the checks below, as
   // web_contents.GetLastCommittedURL() may be different from
   // web_contents.GetMainFrame()->GetLastCommittedURL(), with the
   // former being a 'virtual' URL as obtained from NavigationEntry.
-  if (!ExtensionMayAttachToURL(extension, web_contents.GetLastCommittedURL(),
-                               profile, error)) {
+  if (!ExtensionMayAttachToURL(extension, extension_profile,
+                               web_contents.GetLastCommittedURL(), error)) {
     return false;
   }
 
   for (content::RenderFrameHost* rfh : web_contents.GetAllFrames()) {
-    if (!ExtensionMayAttachToURL(extension, rfh->GetLastCommittedURL(), profile,
-                                 error))
+    if (!ExtensionMayAttachToURL(extension, extension_profile,
+                                 rfh->GetLastCommittedURL(), error))
       return false;
   }
   return true;
 }
 
 bool ExtensionMayAttachToAgentHost(const Extension& extension,
+                                   bool allow_incognito_access,
+                                   Profile* extension_profile,
                                    DevToolsAgentHost& agent_host,
-                                   Profile* profile,
                                    std::string* error) {
-  if (WebContents* wc = agent_host.GetWebContents())
-    return ExtensionMayAttachToWebContents(extension, *wc, profile, error);
+  if (!ExtensionMayAttachToTargetProfile(extension_profile,
+                                         allow_incognito_access, agent_host)) {
+    *error = debugger_api_constants::kRestrictedError;
+    return false;
+  }
+  if (WebContents* wc = agent_host.GetWebContents()) {
+    return ExtensionMayAttachToWebContents(extension, extension_profile, *wc,
+                                           error);
+  }
 
-  return ExtensionMayAttachToURL(extension, agent_host.GetURL(), profile,
-                                 error);
+  return ExtensionMayAttachToURL(extension, extension_profile,
+                                 agent_host.GetURL(), error);
 }
 
 }  // namespace
@@ -408,12 +429,13 @@ bool ExtensionDevToolsClientHost::MayAttachToURL(const GURL& url,
   if (is_webui)
     return false;
   std::string error;
-  if (!ExtensionMayAttachToURL(*extension_, url, profile_, &error))
+
+  if (!ExtensionMayAttachToURL(*extension_, profile_, url, &error))
     return false;
   // For nested URLs, make sure ExtensionMayAttachToURL() allows both
   // the outer and the inner URLs.
-  if (url.inner_url() && !ExtensionMayAttachToURL(*extension_, *url.inner_url(),
-                                                  profile_, &error)) {
+  if (url.inner_url() && !ExtensionMayAttachToURL(*extension_, profile_,
+                                                  *url.inner_url(), &error)) {
     return false;
   }
   return true;
@@ -461,8 +483,8 @@ bool DebuggerFunction::InitAgentHost(std::string* error) {
         &web_contents);
     if (result && web_contents) {
       if (!ExtensionMayAttachToWebContents(
-              *extension(), *web_contents,
-              Profile::FromBrowserContext(browser_context()), error)) {
+              *extension(), Profile::FromBrowserContext(browser_context()),
+              *web_contents, error)) {
         return false;
       }
 
@@ -486,8 +508,9 @@ bool DebuggerFunction::InitAgentHost(std::string* error) {
         DevToolsAgentHost::GetForId(*debuggee_.target_id);
     if (agent_host) {
       if (!ExtensionMayAttachToAgentHost(
-              *extension(), *agent_host,
-              Profile::FromBrowserContext(browser_context()), error)) {
+              *extension(), include_incognito_information(),
+              Profile::FromBrowserContext(browser_context()), *agent_host,
+              error)) {
         return false;
       }
       agent_host_ = std::move(agent_host);
@@ -717,8 +740,14 @@ DebuggerGetTargetsFunction::~DebuggerGetTargetsFunction() = default;
 ExtensionFunction::ResponseAction DebuggerGetTargetsFunction::Run() {
   content::DevToolsAgentHost::List list = DevToolsAgentHost::GetOrCreateAll();
   std::unique_ptr<base::ListValue> result(new base::ListValue());
-  for (size_t i = 0; i < list.size(); ++i)
-    result->Append(SerializeTarget(list[i]));
+  Profile* profile = Profile::FromBrowserContext(browser_context());
+  for (auto& host : list) {
+    if (!ExtensionMayAttachToTargetProfile(
+            profile, include_incognito_information(), *host)) {
+      continue;
+    }
+    result->Append(SerializeTarget(host));
+  }
 
   return RespondNow(
       OneArgument(base::Value::FromUniquePtrValue(std::move(result))));
