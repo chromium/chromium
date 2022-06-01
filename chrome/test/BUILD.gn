@@ -6675,6 +6675,7 @@ test("unit_tests") {
       "../browser/ui/webui/signin/profile_picker_handler_unittest.cc",
       "../browser/ui/webui/signin/signin_url_utils_unittest.cc",
       "../browser/ui/webui/signin/sync_confirmation_handler_unittest.cc",
+      "../browser/ui/webui/support_tool/support_tool_ui_utils_unittest.cc",
       "../browser/ui/webui/sync_internals/sync_internals_message_handler_unittest.cc",
       "../browser/ui/webui/tab_search/tab_search_page_handler_unittest.cc",
       "../browser/ui/webui/theme_source_unittest.cc",

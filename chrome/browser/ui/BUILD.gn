@@ -1696,6 +1696,8 @@ static_library("ui") {
       "webui/signin/signin_utils.h",
       "webui/support_tool/support_tool_ui.cc",
       "webui/support_tool/support_tool_ui.h",
+      "webui/support_tool/support_tool_ui_utils.cc",
+      "webui/support_tool/support_tool_ui_utils.h",
       "webui/sync_file_system_internals/dump_database_handler.cc",
       "webui/sync_file_system_internals/dump_database_handler.h",
       "webui/sync_file_system_internals/extension_statuses_handler.cc",
