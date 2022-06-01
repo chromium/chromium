@@ -61,7 +61,7 @@ bool DiskCacheTest::CleanupCacheDir() {
 }
 
 void DiskCacheTest::TearDown() {
-  base::RunLoop().RunUntilIdle();
+  RunUntilIdle();
 }
 
 DiskCacheTestWithCache::TestIterator::TestIterator(

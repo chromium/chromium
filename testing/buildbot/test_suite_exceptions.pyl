@@ -2399,11 +2399,6 @@
           'shards': 14,
         },
       },
-      'fuchsia-fyi-x64-asan': {
-        'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.lsan.net_unittests.filter',
-        ],
-      },
       'linux-chromeos-dbg': {
         'swarming': {
           'shards': 2,
