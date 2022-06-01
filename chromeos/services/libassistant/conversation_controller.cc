@@ -10,8 +10,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/thread_annotations.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "build/buildflag.h"
-#include "chromeos/assistant/internal/buildflags.h"
 #include "chromeos/assistant/internal/internal_util.h"
 #include "chromeos/assistant/internal/libassistant/shared_headers.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/delegate/event_handler_interface.pb.h"

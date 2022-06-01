@@ -7,8 +7,6 @@
 #include <utility>
 
 #include "base/task/single_thread_task_runner.h"
-#include "build/buildflag.h"
-#include "chromeos/assistant/internal/buildflags.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace chromeos {
@@ -21,12 +19,10 @@ ChromiumApiDelegate::ChromiumApiDelegate(
 
 ChromiumApiDelegate::~ChromiumApiDelegate() = default;
 
-#if !BUILDFLAG(IS_PREBUILT_LIBASSISTANT)
 assistant_client::HttpConnectionFactory*
 ChromiumApiDelegate::GetHttpConnectionFactory() {
   return &http_connection_factory_;
 }
-#endif  // !BUILDFLAG(IS_PREBUILT_LIBASSISTANT)
 
 }  // namespace libassistant
 }  // namespace chromeos

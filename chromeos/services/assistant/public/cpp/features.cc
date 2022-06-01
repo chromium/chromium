@@ -6,12 +6,6 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
-#include "build/buildflag.h"
-#include "chromeos/ash/components/assistant/buildflags.h"
-
-#if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
-#include "chromeos/assistant/internal/buildflags.h"
-#endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 
 namespace chromeos {
 namespace assistant {
@@ -102,16 +96,7 @@ bool IsLibAssistantSandboxEnabled() {
 }
 
 bool IsLibAssistantV2Enabled() {
-// Enforce V2 when using the prebuilt library.
-#if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
-#if BUILDFLAG(IS_PREBUILT_LIBASSISTANT)
-  return true;
-#else
   return base::FeatureList::IsEnabled(kEnableLibAssistantV2);
-#endif  // BUILDFLAG(IS_PREBUILT_LIBASSISTANT)
-#else
-  return false;
-#endif  // BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
 }
 
 }  // namespace features
