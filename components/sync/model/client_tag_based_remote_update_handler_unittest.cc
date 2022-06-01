@@ -165,6 +165,62 @@ TEST_F(ClientTagBasedRemoteUpdateHandlerTest,
   EXPECT_EQ(0U, ProcessorEntityCount());
 }
 
+TEST_F(ClientTagBasedRemoteUpdateHandlerTest,
+       ShouldNotClearTrimmedSpecificsOnNoopRemoteUpdates) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kCacheBaseEntitySpecificsInMetadata);
+
+  const std::string kUnknownField = "unknown_field";
+
+  // Initial update containing unsupported fields.
+  UpdateResponseData update1 = GenerateUpdate(kKey1, kValue1);
+  *update1.entity.specifics.mutable_unknown_fields() = kUnknownField;
+  ProcessSingleUpdate(std::move(update1));
+  ASSERT_EQ(1U, ProcessorEntityCount());
+  ASSERT_EQ(1U, db()->data_change_count());
+  ASSERT_EQ(1U, db()->metadata_change_count());
+
+  // Redundant update should not clear trimmed specifics.
+  UpdateResponseData update2 = GenerateUpdate(kKey1, kValue1);
+  *update2.entity.specifics.mutable_unknown_fields() = kUnknownField;
+  ProcessSingleUpdate(std::move(update2));
+  EXPECT_EQ(1U, db()->data_change_count());
+  EXPECT_EQ(2U, db()->metadata_change_count());
+  EXPECT_EQ(kUnknownField, db()->GetMetadata(kKey1)
+                               .possibly_trimmed_base_specifics()
+                               .unknown_fields());
+}
+
+TEST_F(ClientTagBasedRemoteUpdateHandlerTest,
+       ShouldUpdateMetadataOnNoopRemoteUpdates) {
+  ProcessSingleUpdate(GenerateUpdate(kKey1, kValue1));
+  ASSERT_EQ(1U, ProcessorEntityCount());
+  ASSERT_EQ(1U, db()->data_change_count());
+  ASSERT_EQ(1U, db()->metadata_change_count());
+
+  // Redundant update from server doesn't write data but updates metadata.
+  const int64_t time_before_update =
+      db()->GetMetadata(kKey1).modification_time();
+  ProcessSingleUpdate(GenerateUpdate(kKey1, kValue1));
+  EXPECT_EQ(1U, db()->data_change_count());
+  EXPECT_EQ(2U, db()->metadata_change_count());
+  // Check that `modification_time` was updated.
+  EXPECT_NE(time_before_update, db()->GetMetadata(kKey1).modification_time());
+}
+
+TEST_F(ClientTagBasedRemoteUpdateHandlerTest,
+       ShouldIgnoreReflectionsOnRemoteUpdates) {
+  ProcessSingleUpdate(GenerateUpdate(kKey1, kValue1));
+  ASSERT_EQ(1U, ProcessorEntityCount());
+  ASSERT_EQ(1U, db()->data_change_count());
+  ASSERT_EQ(1U, db()->metadata_change_count());
+
+  // A reflection (update already received) is ignored completely.
+  ProcessSingleUpdate(GenerateUpdate(kKey1, kValue1, /*version_offset=*/0));
+  EXPECT_EQ(1U, db()->data_change_count());
+  EXPECT_EQ(1U, db()->metadata_change_count());
+}
+
 TEST_F(ClientTagBasedRemoteUpdateHandlerTest, ShouldProcessRemoteUpdates) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kCacheBaseEntitySpecificsInMetadata);
@@ -174,20 +230,10 @@ TEST_F(ClientTagBasedRemoteUpdateHandlerTest, ShouldProcessRemoteUpdates) {
   ASSERT_EQ(1U, db()->data_change_count());
   ASSERT_EQ(1U, db()->metadata_change_count());
 
-  // Redundant update from server doesn't write data but updates metadata.
-  ProcessSingleUpdate(GenerateUpdate(kKey1, kValue1));
-  EXPECT_EQ(1U, db()->data_change_count());
-  EXPECT_EQ(2U, db()->metadata_change_count());
-
-  // A reflection (update already received) is ignored completely.
-  ProcessSingleUpdate(GenerateUpdate(kKey1, kValue1, /*version_offset=*/0));
-  EXPECT_EQ(1U, db()->data_change_count());
-  EXPECT_EQ(2U, db()->metadata_change_count());
-
   // Should update both data and metadata.
   ProcessSingleUpdate(GenerateUpdate(kKey1, kValue2));
   ASSERT_EQ(2U, db()->data_change_count());
-  ASSERT_EQ(3U, db()->metadata_change_count());
+  ASSERT_EQ(2U, db()->metadata_change_count());
   EXPECT_EQ(1U, db()->data_count());
   EXPECT_EQ(1U, db()->metadata_count());
 
@@ -195,7 +241,7 @@ TEST_F(ClientTagBasedRemoteUpdateHandlerTest, ShouldProcessRemoteUpdates) {
   const sync_pb::EntityMetadata& metadata = db()->GetMetadata(kKey1);
   EXPECT_EQ(0, metadata.sequence_number());
   EXPECT_EQ(0, metadata.acked_sequence_number());
-  EXPECT_EQ(3, metadata.server_version());
+  EXPECT_EQ(2, metadata.server_version());
   EXPECT_TRUE(metadata.has_possibly_trimmed_base_specifics());
 }
 

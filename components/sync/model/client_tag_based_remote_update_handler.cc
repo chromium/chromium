@@ -176,8 +176,9 @@ ProcessorEntity* ClientTagBasedRemoteUpdateHandler::ProcessUpdate(
     entity_changes->push_back(
         EntityChange::CreateDelete(entity->storage_key()));
   } else if (entity->MatchesData(data)) {
-    // Remote update that is a no-op and can be ignored.
-    entity->RecordIgnoredRemoteUpdate(update);
+    // Remote update that is a no-op, metadata should still be updated.
+    entity->RecordAcceptedRemoteUpdate(
+        update, bridge_->TrimRemoteSpecificsForCaching(data.specifics));
   } else {
     // Remote update.
     entity->RecordAcceptedRemoteUpdate(
