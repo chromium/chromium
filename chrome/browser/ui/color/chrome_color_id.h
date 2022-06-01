@@ -137,7 +137,8 @@
   E(kColorNewTabPageHeader, ThemeProperties::COLOR_NTP_HEADER) \
   E(kColorNewTabPageLink, ThemeProperties::COLOR_NTP_LINK) \
   E(kColorNewTabPageLogo, ThemeProperties::COLOR_NTP_LOGO) \
-  E_CPONLY(kColorNewTabPageLogoUnthemed) \
+  E_CPONLY(kColorNewTabPageLogoUnthemedDark) \
+  E_CPONLY(kColorNewTabPageLogoUnthemedLight) \
   E(kColorNewTabPageMostVisitedTileBackground, \
     ThemeProperties::COLOR_NTP_SHORTCUT) \
   E_CPONLY(kColorNewTabPageMostVisitedTileBackgroundUnthemed) \

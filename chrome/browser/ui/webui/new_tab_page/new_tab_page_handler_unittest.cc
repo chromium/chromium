@@ -405,7 +405,7 @@ TEST_F(NewTabPageHandlerTest, SetCustomBackground) {
                                        SkColorSetRGB(0, 0, 1));
   mock_color_provider_source_.SetColor(kColorNewTabPageTextUnthemed,
                                        SkColorSetRGB(0, 0, 2));
-  mock_color_provider_source_.SetColor(kColorNewTabPageLogoUnthemed,
+  mock_color_provider_source_.SetColor(kColorNewTabPageLogoUnthemedLight,
                                        SkColorSetRGB(0, 0, 3));
   mock_color_provider_source_.SetColor(
       kColorNewTabPageMostVisitedTileBackgroundUnthemed,

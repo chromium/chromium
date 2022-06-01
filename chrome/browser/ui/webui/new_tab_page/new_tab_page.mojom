@@ -46,6 +46,8 @@ struct BackgroundImage {
   string? repeat_y;
   string? position_x;
   string? position_y;
+  // The CSS styling property set on the background image's scrim.
+  string? scrim_display;
 };
 
 // A generic theme.

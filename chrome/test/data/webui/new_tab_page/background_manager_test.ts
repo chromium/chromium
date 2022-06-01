@@ -90,6 +90,7 @@ suite('NewTabPageBackgroundManagerTest', () => {
       repeatY: 'repeat',
       positionX: 'left',
       positionY: 'top',
+      scrimDisplay: 'none',
       attributionUrl: undefined,
     });
 
@@ -99,7 +100,7 @@ suite('NewTabPageBackgroundManagerTest', () => {
         `url=${encodeURIComponent('https://example.com')}&` +
         `url2x=${encodeURIComponent('https://example2x.com')}&` +
         'size=cover&repeatX=no-repeat&repeatY=repeat&positionX=left&' +
-        'positionY=top';
+        'positionY=top&scrimDisplay=none';
     assertEquals(expected, backgroundImage.url);
   });
 
