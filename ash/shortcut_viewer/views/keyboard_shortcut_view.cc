@@ -73,6 +73,37 @@ constexpr SkColor kSearchIllustrationIconColorLight =
 constexpr SkColor kSearchIllustrationTextColorLight =
     SkColorSetARGB(0xFF, 0x20, 0x21, 0x24);
 
+constexpr SkColor kSearchIllustrationIconColorDark =
+    SkColorSetARGB(0xFF, 0x3C, 0x40, 0x43);
+
+// Custom No Results image view to handle color theme changes.
+class KSVNoResultsImageView : public views::ImageView {
+ public:
+  KSVNoResultsImageView() : color_provider_(ash::ColorProvider::Get()) {}
+
+  KSVNoResultsImageView(const KSVNoResultsImageView&) = delete;
+  KSVNoResultsImageView operator=(const KSVNoResultsImageView&) = delete;
+
+  ~KSVNoResultsImageView() override = default;
+
+ protected:
+  void OnThemeChanged() override {
+    ImageView::OnThemeChanged();
+
+    if (ash::features::IsDarkLightModeEnabled() &&
+        color_provider_->IsDarkModeEnabled()) {
+      SetImage(gfx::CreateVectorIcon(ash::kKsvSearchNoResultDarkIcon,
+                                     kSearchIllustrationIconColorDark));
+    } else {
+      SetImage(gfx::CreateVectorIcon(ash::kKsvSearchNoResultLightIcon,
+                                     kSearchIllustrationIconColorLight));
+    }
+  }
+
+ private:
+  ash::ColorProvider* const color_provider_;
+};
+
 // Creates the no search result view.
 std::unique_ptr<views::View> CreateNoSearchResultView() {
   constexpr int kSearchIllustrationIconSize = 150;
@@ -92,8 +123,8 @@ std::unique_ptr<views::View> CreateNoSearchResultView() {
           views::BoxLayout::Orientation::kVertical,
           gfx::Insets::TLBR(kTopPadding, 0, 0, 0)));
   layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kStart);
-  auto image_view = std::make_unique<views::ImageView>();
-  image_view->SetImage(gfx::CreateVectorIcon(ash::kKsvSearchNoResultIcon,
+  auto image_view = std::make_unique<KSVNoResultsImageView>();
+  image_view->SetImage(gfx::CreateVectorIcon(ash::kKsvSearchNoResultLightIcon,
                                              kSearchIllustrationIconColor));
   image_view->SetImageSize(
       gfx::Size(kSearchIllustrationIconSize, kSearchIllustrationIconSize));
