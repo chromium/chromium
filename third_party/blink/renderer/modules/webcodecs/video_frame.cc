@@ -475,7 +475,7 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
         break;
       case V8CanvasImageSource::ContentType::kHTMLVideoElement:
         if (auto* wmp = source->GetAsHTMLVideoElement()->GetWebMediaPlayer())
-          source_frame = wmp->GetCurrentFrame();
+          source_frame = wmp->GetCurrentFrameThenUpdate();
         break;
       default:
         NOTREACHED();

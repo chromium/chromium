@@ -118,7 +118,7 @@ ExternalTextureSource GetExternalTextureSource(
       }
 
       if (auto* wmp = video->GetWebMediaPlayer()) {
-        source.media_video_frame = wmp->GetCurrentFrame();
+        source.media_video_frame = wmp->GetCurrentFrameThenUpdate();
         source.video_renderer = wmp->GetPaintCanvasVideoRenderer();
       }
 

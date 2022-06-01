@@ -1034,7 +1034,7 @@ void WebMediaPlayerMS::Paint(cc::PaintCanvas* canvas,
                         GetFrameTransformation(frame), provider.get());
 }
 
-scoped_refptr<media::VideoFrame> WebMediaPlayerMS::GetCurrentFrame() {
+scoped_refptr<media::VideoFrame> WebMediaPlayerMS::GetCurrentFrameThenUpdate() {
   DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return compositor_->GetCurrentFrame();

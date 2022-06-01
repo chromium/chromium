@@ -93,7 +93,7 @@ class MockWebMediaPlayer : public WebMediaPlayer {
     return;
   }
 
-  scoped_refptr<media::VideoFrame> GetCurrentFrame() override {
+  scoped_refptr<media::VideoFrame> GetCurrentFrameThenUpdate() override {
     // We could fill in |canvas| with a meaningful pattern in ARGB and verify
     // that is correctly captured (as I420) by HTMLVideoElementCapturerSource
     // but I don't think that'll be easy/useful/robust, so just let go here.

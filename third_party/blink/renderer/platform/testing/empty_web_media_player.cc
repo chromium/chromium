@@ -37,7 +37,8 @@ WebString EmptyWebMediaPlayer::GetErrorMessage() const {
   return WebString();
 }
 
-scoped_refptr<media::VideoFrame> EmptyWebMediaPlayer::GetCurrentFrame() {
+scoped_refptr<media::VideoFrame>
+EmptyWebMediaPlayer::GetCurrentFrameThenUpdate() {
   return nullptr;
 }
 

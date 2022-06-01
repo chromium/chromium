@@ -2284,7 +2284,7 @@ class WebMediaPlayerImplBackgroundBehaviorTest
     }
 
     if (IsVideoBeingCaptured())
-      wmpi_->GetCurrentFrame();
+      wmpi_->GetCurrentFrameThenUpdate();
 
     BackgroundPlayer();
   }

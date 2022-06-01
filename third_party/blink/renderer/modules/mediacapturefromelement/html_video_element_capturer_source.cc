@@ -120,7 +120,7 @@ void HtmlVideoElementCapturerSource::sendNewFrame() {
   if (start_capture_time_.is_null())
     start_capture_time_ = current_time;
 
-  if (auto frame = web_media_player_->GetCurrentFrame()) {
+  if (auto frame = web_media_player_->GetCurrentFrameThenUpdate()) {
     auto new_frame = media::VideoFrame::WrapVideoFrame(
         frame, frame->format(), frame->visible_rect(), frame->natural_size());
     new_frame->set_timestamp(current_time - start_capture_time_);

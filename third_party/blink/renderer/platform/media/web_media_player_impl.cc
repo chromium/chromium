@@ -100,7 +100,6 @@
 #include "media/base/android/media_codec_util.h"
 #endif
 
-
 namespace blink {
 namespace {
 
@@ -1469,7 +1468,8 @@ void WebMediaPlayerImpl::Paint(cc::PaintCanvas* canvas,
       raster_context_provider_.get());
 }
 
-scoped_refptr<media::VideoFrame> WebMediaPlayerImpl::GetCurrentFrame() {
+scoped_refptr<media::VideoFrame>
+WebMediaPlayerImpl::GetCurrentFrameThenUpdate() {
   last_frame_request_time_ = tick_clock_->NowTicks();
   video_frame_readback_count_++;
   pipeline_controller_->OnExternalVideoFrameRequest();

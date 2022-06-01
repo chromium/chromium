@@ -260,7 +260,7 @@ class WebMediaPlayer {
   // to upload or convert it. Note: This may kick off a process to update the
   // current frame for a future call in some cases. Returns nullptr if no frame
   // is available.
-  virtual scoped_refptr<media::VideoFrame> GetCurrentFrame() = 0;
+  virtual scoped_refptr<media::VideoFrame> GetCurrentFrameThenUpdate() = 0;
 
   // Provides a PaintCanvasVideoRenderer instance owned by this WebMediaPlayer.
   // Useful for ensuring that the paint/texturing operation for current frame is
