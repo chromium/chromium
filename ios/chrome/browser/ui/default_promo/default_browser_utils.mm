@@ -177,8 +177,8 @@ NSTimeInterval ComputeCooldown() {
   // should be set only one time, so after the first run promo there is a short
   // cool down before the next promo and after it goes back to normal.
   if (DisplayedPromoCount() < 2 &&
-      fre_field_trial::
-          IsInFirstRunDefaultBrowserAndSmallDelayBeforeOtherPromosGroup() &&
+      fre_field_trial::GetFREDefaultBrowserScreenPromoFRE() ==
+          NewDefaultBrowserPromoFRE::kShortDelay &&
       HasUserInteractedWithFirstRunPromoBefore() &&
       !HasUserOpenedSettingsFromFirstRunPromo()) {
     return kPromosShortCoolDown;

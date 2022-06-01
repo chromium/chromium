@@ -7,6 +7,7 @@
 #import "base/test/ios/wait_util.h"
 #include "components/policy/core/common/policy_loader_ios_constants.h"
 #import "components/policy/policy_constants.h"
+#include "components/signin/ios/browser/features.h"
 #import "ios/chrome/browser/policy/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #include "ios/chrome/browser/pref_names.h"
@@ -203,6 +204,7 @@ std::unique_ptr<net::test_server::HttpResponse> PageHttpResponse(
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
+  config.features_disabled.push_back(signin::kNewMobileIdentityConsistencyFRE);
 
   // Configure the policy to force sign-in.
   config.additional_args.push_back(
@@ -571,6 +573,7 @@ std::unique_ptr<net::test_server::HttpResponse> PageHttpResponse(
 - (void)testSignInScreenOnModal {
   // Restart the app to reset the policies.
   AppLaunchConfiguration config;
+  config.features_disabled.push_back(signin::kNewMobileIdentityConsistencyFRE);
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
@@ -597,6 +600,7 @@ std::unique_ptr<net::test_server::HttpResponse> PageHttpResponse(
 - (void)testSignInScreenOnTabSwitcher {
   // Restart the app to reset the policies.
   AppLaunchConfiguration config;
+  config.features_disabled.push_back(signin::kNewMobileIdentityConsistencyFRE);
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
@@ -623,6 +627,7 @@ std::unique_ptr<net::test_server::HttpResponse> PageHttpResponse(
 - (void)testSignInScreenOnIncognito {
   // Restart the app to reset the policies.
   AppLaunchConfiguration config;
+  config.features_disabled.push_back(signin::kNewMobileIdentityConsistencyFRE);
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
@@ -649,6 +654,7 @@ std::unique_ptr<net::test_server::HttpResponse> PageHttpResponse(
 - (void)testSignInScreenDuringRegularSigninPrompt {
   // Restart the app to reset the policies.
   AppLaunchConfiguration config;
+  config.features_disabled.push_back(signin::kNewMobileIdentityConsistencyFRE);
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
@@ -685,6 +691,7 @@ std::unique_ptr<net::test_server::HttpResponse> PageHttpResponse(
 - (void)testNoSignInScreenWhenSigninFromRegularSigninPrompt {
   // Restart the app to reset the policies.
   AppLaunchConfiguration config;
+  config.features_disabled.push_back(signin::kNewMobileIdentityConsistencyFRE);
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
@@ -762,6 +769,7 @@ std::unique_ptr<net::test_server::HttpResponse> PageHttpResponse(
 
   // Restart the app to reset the policies.
   AppLaunchConfiguration config;
+  config.features_disabled.push_back(signin::kNewMobileIdentityConsistencyFRE);
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
@@ -818,6 +826,7 @@ std::unique_ptr<net::test_server::HttpResponse> PageHttpResponse(
 
   // Restart the app to reset the policies.
   AppLaunchConfiguration config;
+  config.features_disabled.push_back(signin::kNewMobileIdentityConsistencyFRE);
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
@@ -874,6 +883,7 @@ std::unique_ptr<net::test_server::HttpResponse> PageHttpResponse(
 
   // Restart the app to reset the policies.
   AppLaunchConfiguration config;
+  config.features_disabled.push_back(signin::kNewMobileIdentityConsistencyFRE);
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
@@ -1008,6 +1018,7 @@ std::unique_ptr<net::test_server::HttpResponse> PageHttpResponse(
 
   // Restart the app to reset the policies.
   AppLaunchConfiguration config;
+  config.features_disabled.push_back(signin::kNewMobileIdentityConsistencyFRE);
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
@@ -1052,6 +1063,7 @@ std::unique_ptr<net::test_server::HttpResponse> PageHttpResponse(
 
   // Restart the app to reset the policies.
   AppLaunchConfiguration config;
+  config.features_disabled.push_back(signin::kNewMobileIdentityConsistencyFRE);
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
@@ -1103,6 +1115,7 @@ std::unique_ptr<net::test_server::HttpResponse> PageHttpResponse(
 
   // Restart the app to reset the policies.
   AppLaunchConfiguration config;
+  config.features_disabled.push_back(signin::kNewMobileIdentityConsistencyFRE);
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
@@ -1156,6 +1169,7 @@ std::unique_ptr<net::test_server::HttpResponse> PageHttpResponse(
 
   // Restart the app to reset the policies.
   AppLaunchConfiguration config;
+  config.features_disabled.push_back(signin::kNewMobileIdentityConsistencyFRE);
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 

@@ -6,6 +6,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "components/policy/core/common/policy_loader_ios_constants.h"
 #include "components/policy/policy_constants.h"
+#include "components/signin/ios/browser/features.h"
 #import "ios/chrome/browser/policy/policy_app_interface.h"
 #import "ios/chrome/browser/policy/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/ui/authentication/authentication_constants.h"
@@ -135,6 +136,8 @@ GREYLayoutConstraint* BelowConstraint() {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.features_enabled.push_back(kEnableFREUIModuleIOS);
+  config.features_disabled.push_back(signin::kNewMobileIdentityConsistencyFRE);
+  config.features_disabled.push_back(kEnableFREDefaultBrowserPromoScreen);
 
   // Show the First Run UI at startup.
   config.additional_args.push_back("-FirstRunForceEnabled");
