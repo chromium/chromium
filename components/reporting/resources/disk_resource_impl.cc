@@ -30,11 +30,11 @@ void DiskResourceImpl::Discard(uint64_t size) {
   used_.fetch_sub(size);
 }
 
-uint64_t DiskResourceImpl::GetTotal() {
+uint64_t DiskResourceImpl::GetTotal() const {
   return total_;
 }
 
-uint64_t DiskResourceImpl::GetUsed() {
+uint64_t DiskResourceImpl::GetUsed() const {
   return used_.load();
 }
 

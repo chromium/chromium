@@ -29,10 +29,10 @@ class ResourceInterface : public base::RefCountedThreadSafe<ResourceInterface> {
   virtual void Discard(uint64_t size) = 0;
 
   // Returns total amount.
-  virtual uint64_t GetTotal() = 0;
+  virtual uint64_t GetTotal() const = 0;
 
   // Returns current used amount.
-  virtual uint64_t GetUsed() = 0;
+  virtual uint64_t GetUsed() const = 0;
 
   // Test only: Sets non-default usage limit.
   virtual void Test_SetTotal(uint64_t test_total) = 0;

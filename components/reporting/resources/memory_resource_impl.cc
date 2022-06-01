@@ -31,11 +31,11 @@ void MemoryResourceImpl::Discard(uint64_t size) {
   used_.fetch_sub(size);
 }
 
-uint64_t MemoryResourceImpl::GetTotal() {
+uint64_t MemoryResourceImpl::GetTotal() const {
   return total_;
 }
 
-uint64_t MemoryResourceImpl::GetUsed() {
+uint64_t MemoryResourceImpl::GetUsed() const {
   return used_.load();
 }
 

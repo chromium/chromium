@@ -22,8 +22,8 @@ class DiskResourceImpl : public ResourceInterface {
   // Implementation of ResourceInterface methods.
   bool Reserve(uint64_t size) override;
   void Discard(uint64_t size) override;
-  uint64_t GetTotal() override;
-  uint64_t GetUsed() override;
+  uint64_t GetTotal() const override;
+  uint64_t GetUsed() const override;
   void Test_SetTotal(uint64_t test_total) override;
 
  private:
