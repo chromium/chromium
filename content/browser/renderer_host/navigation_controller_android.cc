@@ -13,6 +13,7 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/containers/flat_map.h"
+#include "base/debug/crash_logging.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/public/android/content_jni_headers/NavigationControllerImpl_jni.h"
@@ -193,6 +194,8 @@ void NavigationControllerAndroid::ContinuePendingReload(
 void NavigationControllerAndroid::Reload(JNIEnv* env,
                                          const JavaParamRef<jobject>& obj,
                                          jboolean check_for_repost) {
+  SCOPED_CRASH_KEY_BOOL("nav_reentrancy_caller2", "Reload_check",
+                        (bool)check_for_repost);
   navigation_controller_->Reload(ReloadType::NORMAL, check_for_repost);
 }
 
@@ -200,6 +203,8 @@ void NavigationControllerAndroid::ReloadBypassingCache(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     jboolean check_for_repost) {
+  SCOPED_CRASH_KEY_BOOL("nav_reentrancy_caller2", "ReloadB_check",
+                        (bool)check_for_repost);
   navigation_controller_->Reload(ReloadType::BYPASSING_CACHE, check_for_repost);
 }
 
@@ -378,6 +383,8 @@ void NavigationControllerAndroid::SetUseDesktopUserAgent(
     const JavaParamRef<jobject>& obj,
     jboolean enabled,
     jboolean reload_on_state_change) {
+  SCOPED_CRASH_KEY_BOOL("nav_reentrancy_caller2", "SetUA_enabled",
+                        (bool)enabled);
   if (GetUseDesktopUserAgent(env, obj) == enabled)
     return;
 
