@@ -138,11 +138,15 @@ class GPUDevice final : public EventTargetWithInlineData,
   void InjectError(WGPUErrorType type, const char* message);
   void AddConsoleWarning(const char* message);
 
+  void EnsureExternalTextureDestroyed(GPUExternalTexture* externalTexture);
+
+  void AddActiveExternalTexture(GPUExternalTexture* external_texture);
+  void RemoveActiveExternalTexture(GPUExternalTexture* external_texture);
+
  private:
   using LostProperty =
       ScriptPromiseProperty<Member<GPUDeviceLostInfo>, ToV8UndefinedGenerator>;
 
-  void EnsureExternalTextureDestroyed(GPUExternalTexture* externalTexture);
   void DestroyExternalTexturesMicrotask();
 
   void DestroyAllExternalTextures();
@@ -192,6 +196,10 @@ class GPUDevice final : public EventTargetWithInlineData,
 
   bool has_destroy_external_texture_microtask_ = false;
   HeapVector<Member<GPUExternalTexture>> external_textures_pending_destroy_;
+
+  // Keep a list of all active GPUExternalTexture. Eagerly destroy them
+  // when the device is destroyed (via .destroy) to free the memory.
+  HeapHashSet<WeakMember<GPUExternalTexture>> active_external_textures_;
 
   // This attribute records that whether GPUDevice is destroyed (via destroy()).
   bool destroyed_ = false;

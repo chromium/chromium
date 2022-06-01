@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_queue_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_render_pipeline_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_uncaptured_error_event_init.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_htmlvideoelement_videoframe.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
@@ -314,14 +315,7 @@ GPUExternalTexture* GPUDevice::importExternalTexture(
   if (destroyed_)
     return GPUExternalTexture::CreateExpired(this, descriptor, exception_state);
 
-  GPUExternalTexture* externalTexture =
-      GPUExternalTexture::Create(this, descriptor, exception_state);
-
-  // No need to manage expired GPUExternalTexture in GPUDevice.
-  if (externalTexture && !externalTexture->expired()) {
-    EnsureExternalTextureDestroyed(externalTexture);
-  }
-  return externalTexture;
+  return GPUExternalTexture::Create(this, descriptor, exception_state);
 }
 
 GPUBindGroup* GPUDevice::createBindGroup(
@@ -486,6 +480,7 @@ void GPUDevice::Trace(Visitor* visitor) const {
   visitor->Trace(limits_);
   visitor->Trace(queue_);
   visitor->Trace(lost_property_);
+  visitor->Trace(active_external_textures_);
   visitor->Trace(external_textures_pending_destroy_);
   ExecutionContextClient::Trace(visitor);
   EventTargetWithInlineData::Trace(visitor);
@@ -520,12 +515,30 @@ void GPUDevice::DestroyExternalTexturesMicrotask() {
 void GPUDevice::DestroyAllExternalTextures() {
   has_destroy_external_texture_microtask_ = false;
 
+  // TODO(crbug.com/1318345): u-nit: fix casing issues in all GPUExternalTexture
+  // related codes. Using a_b instead of aB.
+  for (auto& externalTexture : active_external_textures_) {
+    externalTexture->Destroy();
+  }
+  active_external_textures_.clear();
+
   auto externalTexturesPendingDestroy =
       std::move(external_textures_pending_destroy_);
   for (Member<GPUExternalTexture> externalTexture :
        externalTexturesPendingDestroy) {
     externalTexture->Destroy();
   }
+}
+
+void GPUDevice::AddActiveExternalTexture(GPUExternalTexture* external_texture) {
+  DCHECK(external_texture);
+  active_external_textures_.insert(external_texture);
+}
+
+void GPUDevice::RemoveActiveExternalTexture(
+    GPUExternalTexture* external_texture) {
+  DCHECK(external_texture);
+  active_external_textures_.erase(external_texture);
 }
 
 }  // namespace blink

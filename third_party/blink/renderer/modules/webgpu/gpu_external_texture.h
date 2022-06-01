@@ -12,6 +12,8 @@ namespace blink {
 
 class ExceptionState;
 class GPUExternalTextureDescriptor;
+class HTMLVideoElement;
+class VideoFrame;
 class WebGPUMailboxTexture;
 
 class GPUExternalTexture : public DawnObject<WGPUExternalTexture> {
@@ -29,7 +31,8 @@ class GPUExternalTexture : public DawnObject<WGPUExternalTexture> {
   explicit GPUExternalTexture(
       GPUDevice* device,
       WGPUExternalTexture external_texture,
-      scoped_refptr<WebGPUMailboxTexture> mailbox_texture);
+      scoped_refptr<WebGPUMailboxTexture> mailbox_texture,
+      absl::optional<int> media_video_frame_unique_id);
 
   GPUExternalTexture(const GPUExternalTexture&) = delete;
   GPUExternalTexture& operator=(const GPUExternalTexture&) = delete;
@@ -38,13 +41,48 @@ class GPUExternalTexture : public DawnObject<WGPUExternalTexture> {
 
   bool expired() const { return expired_; }
 
+  void ListenToHTMLVideoElement(HTMLVideoElement* video);
+
+  // Check whether current VideoFrame is outdated informs
+  // ScriptAnimationController.
+  // Return true if current VideoFrame is latest and still need to trigger next
+  // check.
+  // Return false if current VideoFrame is outdated and the no need to trigger
+  // future checks.
+  bool ContinueCheckingCurrentVideoFrame();
+
+  void Trace(Visitor* visitor) const override;
+
  private:
+  static GPUExternalTexture* FromHTMLVideoElement(
+      GPUDevice* device,
+      HTMLVideoElement* video,
+      const GPUExternalTextureDescriptor* webgpu_desc,
+      ExceptionState& exception_state);
+  static GPUExternalTexture* FromVideoFrame(
+      GPUDevice* device,
+      VideoFrame* frame,
+      const GPUExternalTextureDescriptor* webgpu_desc,
+      ExceptionState& exception_state);
+  static GPUExternalTexture* CreateImpl(
+      GPUDevice* device,
+      const GPUExternalTextureDescriptor* webgpu_desc,
+      scoped_refptr<media::VideoFrame> media_video_frame,
+      media::PaintCanvasVideoRenderer* video_renderer,
+      absl::optional<int> media_video_frame_unique_id,
+      ExceptionState& exception_state);
+
   void setLabelImpl(const String& value) override {
     std::string utf8_label = value.Utf8();
     GetProcs().externalTextureSetLabel(GetHandle(), utf8_label.c_str());
   }
 
+  void DestroyActiveExternalTexture();
+
   scoped_refptr<WebGPUMailboxTexture> mailbox_texture_;
+
+  absl::optional<int> media_video_frame_unique_id_;
+  WeakMember<HTMLVideoElement> video_;
 
   // This attribute marks whether GPUExternalTexture will be destroyed.
   bool expired_ = false;

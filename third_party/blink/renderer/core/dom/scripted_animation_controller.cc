@@ -226,6 +226,9 @@ void ScriptedAnimationController::ServiceScriptedAnimations(
   if (!HasScheduledFrameTasks())
     return;
 
+  // https://gpuweb.github.io/gpuweb/#abstract-opdef-expire-stale-external-textures
+  WebGPUCheckStateToExpireVideoFrame();
+
   // https://html.spec.whatwg.org/C/#update-the-rendering
 
   // 10.5. For each fully active Document in docs, flush autofocus
@@ -316,6 +319,25 @@ void ScriptedAnimationController::ScheduleAnimationIfNeeded() {
 
 LocalDOMWindow* ScriptedAnimationController::GetWindow() const {
   return To<LocalDOMWindow>(GetExecutionContext());
+}
+
+void ScriptedAnimationController::WebGPURegisterVideoFrameStateCallback(
+    WebGPUVideoFrameStateCallback webgpu_video_frame_state_callback) {
+  webgpu_video_frame_state_callbacks_.push_back(
+      std::move(webgpu_video_frame_state_callback));
+}
+
+// If a callback |IsCancelled| or returns false, remove that callback
+// from the list. Otherwise, keep it to be checked again later.
+void ScriptedAnimationController::WebGPUCheckStateToExpireVideoFrame() {
+  for (auto* it = webgpu_video_frame_state_callbacks_.begin();
+       it != webgpu_video_frame_state_callbacks_.end();) {
+    if (it->IsCancelled() || !it->Run()) {
+      it = webgpu_video_frame_state_callbacks_.erase(it);
+    } else {
+      ++it;
+    }
+  }
 }
 
 }  // namespace blink
