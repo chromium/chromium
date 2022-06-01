@@ -30,7 +30,7 @@ Puffer::Puffer(bool exclude_bad_distance_caches)
 
 Puffer::Puffer() : Puffer(false) {}
 
-Puffer::~Puffer() {}
+Puffer::~Puffer() = default;
 
 bool Puffer::PuffDeflate(BitReaderInterface* br,
                          PuffWriterInterface* pw,
@@ -149,10 +149,10 @@ bool Puffer::PuffDeflate(BitReaderInterface* br,
       TEST_AND_RETURN_FALSE(br->CacheBits(max_bits));
       auto bits = br->ReadBits(max_bits);
       uint16_t lit_len_alphabet;
-      size_t nbits;
+      size_t dropNbits = 0;
       TEST_AND_RETURN_FALSE(
-          cur_ht->LitLenAlphabet(bits, &lit_len_alphabet, &nbits));
-      br->DropBits(nbits);
+          cur_ht->LitLenAlphabet(bits, &lit_len_alphabet, &dropNbits));
+      br->DropBits(dropNbits);
       if (lit_len_alphabet < 256) {
         pd.type = PuffData::Type::kLiteral;
         pd.byte = lit_len_alphabet;
@@ -193,11 +193,11 @@ bool Puffer::PuffDeflate(BitReaderInterface* br,
                        << " recognize happened. Nothing to worry about."
                        << " See crbug.com/915559";
         }
-        auto bits = br->ReadBits(bits_to_cache);
+        auto read_bits = br->ReadBits(bits_to_cache);
+        size_t nbits = 0;
         uint16_t distance_alphabet;
-        size_t nbits;
         TEST_AND_RETURN_FALSE(
-            cur_ht->DistanceAlphabet(bits, &distance_alphabet, &nbits));
+            cur_ht->DistanceAlphabet(read_bits, &distance_alphabet, &nbits));
         br->DropBits(nbits);
 
         // Reading distance.

@@ -19,7 +19,14 @@ Omaha, chrome's auto-updater client, to support puffin-generated diffs created
 by Omaha Server.
 
 Local Modifications:
-- Updated OWNERS to reflect the chromium/src owners and inherit the original AOSP owners as well.
+- Updated OWNERS to reflect our team as the owners.
 - Removed BUILD.gn taken from AOSP as it doesn't build in chromium.
 - removed PRESUBMIT.cfg and PREUPLOAD.cfg
 - Adding a DEPS file so we can pass presubmit checks.
+- removed BSDiff as we only require the zucchini version of puffdiff/puffpatch
+- rewrote the commandline usage for the puffin binary as we only need to support
+    and test puffdiff and puffpatch.
+- Replaced POSIX file IO with chromium/src's base::File/base::FilePath methods
+    so it will build and run cross-platform.
+- Removed dependence of libpuffpatch on libpuffdiff as the puffin patching
+    service we plant to implement only requires libpuffpatch.

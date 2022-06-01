@@ -81,11 +81,7 @@ class BufferBitReader : public BitReaderInterface {
   // |in_buf|  IN  The input buffer
   // |in_size| IN  The size of the input buffer
   BufferBitReader(const uint8_t* in_buf, size_t in_size)
-      : in_buf_(in_buf),
-        in_size_(in_size),
-        index_(0),
-        in_cache_(0),
-        in_cache_bits_(0) {}
+      : in_buf_(in_buf), in_size_(in_size) {}
 
   ~BufferBitReader() override = default;
 
@@ -103,11 +99,11 @@ class BufferBitReader : public BitReaderInterface {
   uint64_t BitsRemaining() const override;
 
  private:
-  const uint8_t* in_buf_;  // The input buffer.
-  uint64_t in_size_;       // The number of bytes in |in_buf_|.
-  uint64_t index_;         // The index to the next byte to be read.
-  uint32_t in_cache_;      // The temporary buffer to put input data into.
-  size_t in_cache_bits_;   // The number of bits available in |in_cache_|.
+  const uint8_t* in_buf_;    // The input buffer.
+  uint64_t in_size_;         // The number of bytes in |in_buf_|.
+  uint64_t index_{0};        // The index to the next byte to be read.
+  uint32_t in_cache_{0};     // The temporary buffer to put input data into.
+  size_t in_cache_bits_{0};  // The number of bits available in |in_cache_|.
 
   DISALLOW_COPY_AND_ASSIGN(BufferBitReader);
 };

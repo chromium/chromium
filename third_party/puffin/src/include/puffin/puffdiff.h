@@ -8,15 +8,13 @@
 #include <string>
 #include <vector>
 
-#include "bsdiff/constants.h"
-
 #include "puffin/common.h"
 #include "puffin/stream.h"
 
 namespace puffin {
 
 enum class PatchAlgorithm {
-  kBsdiff = 0,
+  kBsdiff = 0,  // Unsupported by chromium/src's Puffin implementation.
   kZucchini = 1,
 };
 
@@ -26,8 +24,7 @@ enum class PatchAlgorithm {
 // |dst|          IN   Destination deflate stream.
 // |src_deflates| IN   Deflate locations in |src|.
 // |dst_deflates| IN   Deflate locations in |dst|.
-// |compressors|  IN   Compressors to use in the underlying bsdiff, e.g.
-// bz2,
+// |compressors|  IN   Compressors to use in the underlying bsdiff, e.g. bz2,
 //                     brotli.
 // |patchAlgorithm|    IN   The patchAlgorithm used to create patches between
 //                     uncompressed bytes, e.g. bsdiff, zucchini.
@@ -39,7 +36,7 @@ bool PuffDiff(UniqueStreamPtr src,
               UniqueStreamPtr dst,
               const std::vector<BitExtent>& src_deflates,
               const std::vector<BitExtent>& dst_deflates,
-              const std::vector<bsdiff::CompressorType>& compressors,
+              const std::vector<puffin::CompressorType>& compressors,
               PatchAlgorithm patchAlgorithm,
               const std::string& tmp_filepath,
               Buffer* patch);
@@ -49,7 +46,7 @@ bool PuffDiff(UniqueStreamPtr src,
               UniqueStreamPtr dst,
               const std::vector<BitExtent>& src_deflates,
               const std::vector<BitExtent>& dst_deflates,
-              const std::vector<bsdiff::CompressorType>& compressors,
+              const std::vector<puffin::CompressorType>& compressors,
               const std::string& tmp_filepath,
               Buffer* patch);
 
@@ -59,7 +56,7 @@ bool PuffDiff(const Buffer& src,
               const Buffer& dst,
               const std::vector<BitExtent>& src_deflates,
               const std::vector<BitExtent>& dst_deflates,
-              const std::vector<bsdiff::CompressorType>& compressors,
+              const std::vector<puffin::CompressorType>& compressors,
               const std::string& tmp_filepath,
               Buffer* patch);
 

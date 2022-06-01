@@ -48,7 +48,7 @@ const uint8_t kDistanceExtraBits[30] = {0, 0, 0,  0,  1,  1,  2,  2,  3,  3,
 // 286 = 256 (coding a byte) +
 //         1 (coding the end of block symbole) +
 //        29 (coding the lengths)
-HuffmanTable::HuffmanTable() : codeindexpairs_(288), initialized_(false) {}
+HuffmanTable::HuffmanTable() : codeindexpairs_(288) {}
 
 bool HuffmanTable::InitHuffmanCodes(const Buffer& lens, size_t* max_bits) {
   // Temporary buffers used in |InitHuffmanCodes|.

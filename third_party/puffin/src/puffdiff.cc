@@ -4,15 +4,11 @@
 
 #include "puffin/src/include/puffin/puffdiff.h"
 
-#include <endian.h>
 #include <inttypes.h>
-#include <unistd.h>
-
 #include <string>
 #include <vector>
 
-#include "bsdiff/bsdiff.h"
-#include "bsdiff/patch_writer_factory.h"
+#include "base/big_endian.h"
 #include "zucchini/buffer_view.h"
 #include "zucchini/patch_writer.h"
 #include "zucchini/zucchini.h"
@@ -34,7 +30,6 @@ using std::vector;
 namespace puffin {
 
 namespace {
-const int kBrotliCompressionQuality = 11;
 
 template <typename T>
 void CopyVectorToRpf(
@@ -86,7 +81,9 @@ bool CreatePatch(const Buffer& raw_patch,
   offset += kMagicLength;
 
   // Read header size from big-endian mode.
-  uint32_t be_header_size = htobe32(header_size);
+  uint32_t be_header_size = 0;
+  base::ReadBigEndian(reinterpret_cast<const uint8_t*>(&header_size),
+                      &be_header_size);
   memcpy(patch->data() + offset, &be_header_size, sizeof(be_header_size));
   offset += 4;
 
@@ -108,7 +105,7 @@ bool PuffDiff(UniqueStreamPtr src,
               UniqueStreamPtr dst,
               const vector<BitExtent>& src_deflates,
               const vector<BitExtent>& dst_deflates,
-              const vector<bsdiff::CompressorType>& compressors,
+              const vector<puffin::CompressorType>& compressors,
               PatchAlgorithm patchAlgorithm,
               const string& tmp_filepath,
               Buffer* patch) {
@@ -136,29 +133,7 @@ bool PuffDiff(UniqueStreamPtr src,
                                             &src_puff_buffer, &src_puffs));
   TEST_AND_RETURN_FALSE(puff_deflate_stream(std::move(dst), dst_deflates,
                                             &dst_puff_buffer, &dst_puffs));
-
-  if (patchAlgorithm == PatchAlgorithm::kBsdiff) {
-    auto bsdiff_patch_writer = bsdiff::CreateBSDF2PatchWriter(
-        tmp_filepath, compressors, kBrotliCompressionQuality);
-
-    TEST_AND_RETURN_FALSE(
-        0 == bsdiff::bsdiff(src_puff_buffer.data(), src_puff_buffer.size(),
-                            dst_puff_buffer.data(), dst_puff_buffer.size(),
-                            bsdiff_patch_writer.get(), nullptr));
-
-    auto bsdiff_patch = FileStream::Open(tmp_filepath, true, false);
-    TEST_AND_RETURN_FALSE(bsdiff_patch);
-    uint64_t patch_size;
-    TEST_AND_RETURN_FALSE(bsdiff_patch->GetSize(&patch_size));
-    Buffer bsdiff_patch_buf(patch_size);
-    TEST_AND_RETURN_FALSE(
-        bsdiff_patch->Read(bsdiff_patch_buf.data(), bsdiff_patch_buf.size()));
-    TEST_AND_RETURN_FALSE(bsdiff_patch->Close());
-
-    TEST_AND_RETURN_FALSE(CreatePatch(
-        bsdiff_patch_buf, src_deflates, dst_deflates, src_puffs, dst_puffs,
-        src_puff_buffer.size(), dst_puff_buffer.size(), patchAlgorithm, patch));
-  } else if (patchAlgorithm == PatchAlgorithm::kZucchini) {
+  if (patchAlgorithm == PatchAlgorithm::kZucchini) {
     zucchini::ConstBufferView src_bytes(src_puff_buffer.data(),
                                         src_puff_buffer.size());
     zucchini::ConstBufferView dst_bytes(dst_puff_buffer.data(),
@@ -194,23 +169,23 @@ bool PuffDiff(UniqueStreamPtr src,
               UniqueStreamPtr dst,
               const std::vector<BitExtent>& src_deflates,
               const std::vector<BitExtent>& dst_deflates,
-              const std::vector<bsdiff::CompressorType>& compressors,
+              const std::vector<puffin::CompressorType>& compressors,
               const std::string& tmp_filepath,
               Buffer* patch) {
   return PuffDiff(std::move(src), std::move(dst), src_deflates, dst_deflates,
-                  compressors, PatchAlgorithm::kBsdiff, tmp_filepath, patch);
+                  compressors, PatchAlgorithm::kZucchini, tmp_filepath, patch);
 }
 
 bool PuffDiff(const Buffer& src,
               const Buffer& dst,
               const vector<BitExtent>& src_deflates,
               const vector<BitExtent>& dst_deflates,
-              const vector<bsdiff::CompressorType>& compressors,
+              const vector<puffin::CompressorType>& compressors,
               const string& tmp_filepath,
               Buffer* patch) {
   return PuffDiff(MemoryStream::CreateForRead(src),
                   MemoryStream::CreateForRead(dst), src_deflates, dst_deflates,
-                  compressors, PatchAlgorithm::kBsdiff, tmp_filepath, patch);
+                  compressors, PatchAlgorithm::kZucchini, tmp_filepath, patch);
 }
 
 bool PuffDiff(const Buffer& src,
@@ -219,10 +194,8 @@ bool PuffDiff(const Buffer& src,
               const vector<BitExtent>& dst_deflates,
               const string& tmp_filepath,
               Buffer* patch) {
-  return PuffDiff(
-      src, dst, src_deflates, dst_deflates,
-      {bsdiff::CompressorType::kBZ2, bsdiff::CompressorType::kBrotli},
-      tmp_filepath, patch);
+  return PuffDiff(src, dst, src_deflates, dst_deflates,
+                  {puffin::CompressorType::kBrotli}, tmp_filepath, patch);
 }
 
 }  // namespace puffin

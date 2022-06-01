@@ -63,10 +63,10 @@ class PuffinStream : public StreamInterface {
                                        const std::vector<BitExtent>& deflates,
                                        const std::vector<ByteExtent>& puffs);
 
-  bool GetSize(uint64_t* size) const override;
+  bool GetSize(uint64_t* size) override;
 
   // Returns the current offset in the imaginary puff stream.
-  bool GetOffset(uint64_t* offset) const override;
+  bool GetOffset(uint64_t* offset) override;
 
   // Sets the current offset in the imaginary puff stream.
   bool Seek(uint64_t offset) override;
@@ -126,30 +126,30 @@ class PuffinStream : public StreamInterface {
 
   // The current offset in the imaginary puff stream is |puff_pos_| +
   // |skip_bytes_|
-  uint64_t puff_pos_;
-  uint64_t skip_bytes_;
+  uint64_t puff_pos_{0};
+  uint64_t skip_bytes_{0};
 
   // The current bit offset in |stream_|.
-  uint64_t deflate_bit_pos_;
+  uint64_t deflate_bit_pos_{0};
 
   // This value caches the first or last byte of a deflate stream. This is
   // needed when two deflate stream end on the same byte (with greater than zero
   // bit offset difference) or a deflate starts from middle of the byte. We need
   // to cache the value in here before we have the rest of the puff buffer to
   // make the deflate.
-  uint8_t last_byte_;
+  uint8_t last_byte_{0};
 
   // We have to figure out if we need to cache an extra puff byte for the last
   // byte of the deflate. This is only needed if the last bit of the current
   // deflate is not in the same byte as the first bit of the next deflate. The
   // value is either 0 or 1. If 1.
-  size_t extra_byte_;
+  size_t extra_byte_{0};
 
   // True if the stream is only for puffing. False if for huffing.
   bool is_for_puff_;
 
   // True if the |Close()| is called.
-  bool closed_;
+  bool closed_{false};
 
   std::unique_ptr<Buffer> deflate_buffer_;
   std::shared_ptr<Buffer> puff_buffer_;
@@ -160,7 +160,7 @@ class PuffinStream : public StreamInterface {
   // this class.
   size_t max_cache_size_;
   // The current amount of memory (in bytes) used for caching puff buffers.
-  uint64_t cur_cache_size_;
+  uint64_t cur_cache_size_{0};
 
   DISALLOW_COPY_AND_ASSIGN(PuffinStream);
 };

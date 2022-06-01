@@ -4,11 +4,11 @@
 
 #include <numeric>
 
+#include "base/rand_util.h"
 #include "gtest/gtest.h"
 
 #include "puffin/file_stream.h"
 #include "puffin/memory_stream.h"
-#include "puffin/src/extent_stream.h"
 #include "puffin/src/include/puffin/huffer.h"
 #include "puffin/src/include/puffin/puffer.h"
 #include "puffin/src/puffin_stream.h"
@@ -42,6 +42,8 @@ class StreamTest : public ::testing::Test {
     ASSERT_FALSE(stream->Read(tmp.data(), 2));
     ASSERT_FALSE(stream->Read(tmp.data(), 3));
     ASSERT_FALSE(stream->Read(tmp.data(), 100));
+    ASSERT_FALSE(stream->Read(tmp.data(), -1));
+    ASSERT_FALSE(stream->Read(tmp.data(), -10));
 
     ASSERT_TRUE(stream->Seek(size - 1));
     ASSERT_TRUE(stream->Read(tmp.data(), 0));
@@ -71,16 +73,15 @@ class StreamTest : public ::testing::Test {
     // Read random lengths from random offsets.
     tmp.resize(buf.size());
     srand(time(nullptr));
-    uint32_t rand_seed;
     for (size_t idx = 0; idx < 10000; idx++) {
       // zero to full size available.
-      size_t size = rand_r(&rand_seed) % (buf.size() + 1);
-      uint64_t max_start = buf.size() - size;
-      uint64_t start = rand_r(&rand_seed) % (max_start + 1);
+      uint64_t rand_size = base::RandGenerator(buf.size() + 1);
+      uint64_t max_start = buf.size() - rand_size;
+      uint64_t start = base::RandGenerator(max_start + 1);
       ASSERT_TRUE(stream->Seek(start));
-      ASSERT_TRUE(stream->Read(tmp.data(), size));
-      for (size_t idx = 0; idx < size; idx++) {
-        ASSERT_EQ(tmp[idx], buf[start + idx]);
+      ASSERT_TRUE(stream->Read(tmp.data(), rand_size));
+      for (size_t idy = 0; idy < rand_size; idy++) {
+        ASSERT_EQ(tmp[idy], buf[start + idy]);
       }
     }
   }
@@ -96,17 +97,23 @@ class StreamTest : public ::testing::Test {
     ASSERT_TRUE(stream->Write(buf.data(), 2));
     ASSERT_TRUE(stream->Write(buf.data(), 3));
     ASSERT_TRUE(stream->Write(buf.data(), 10));
+    ASSERT_FALSE(stream->Write(buf.data(), -1));
+    ASSERT_FALSE(stream->Write(buf.data(), -10));
 
     ASSERT_TRUE(stream->GetSize(&size));
     ASSERT_TRUE(stream->Seek(size - 1));
     ASSERT_TRUE(stream->Write(buf.data(), 0));
     ASSERT_TRUE(stream->Write(buf.data(), 1));
+    ASSERT_FALSE(stream->Write(buf.data(), -1));
+    ASSERT_FALSE(stream->Write(buf.data(), -10));
 
     ASSERT_TRUE(stream->GetSize(&size));
     ASSERT_TRUE(stream->Seek(size - 1));
     ASSERT_TRUE(stream->Write(buf.data(), 2));
     ASSERT_TRUE(stream->Write(buf.data(), 3));
     ASSERT_TRUE(stream->Write(buf.data(), 10));
+    ASSERT_FALSE(stream->Write(buf.data(), -1));
+    ASSERT_FALSE(stream->Write(buf.data(), -10));
   }
 
   void TestWrite(StreamInterface* write_stream, StreamInterface* read_stream) {
@@ -123,12 +130,16 @@ class StreamTest : public ::testing::Test {
     ASSERT_TRUE(read_stream->Read(buf2.data(), buf2.size()));
     ASSERT_EQ(buf1, buf2);
 
+    // Make sure the write fails when expected.
+    ASSERT_FALSE(write_stream->Write(buf1.data(), -1));
+    ASSERT_FALSE(write_stream->Write(buf1.data(), -10));
+
     std::fill(buf2.begin(), buf2.end(), 0);
 
     // Write entire buffer one byte at a time. (all zeros).
     ASSERT_TRUE(write_stream->Seek(0));
-    for (size_t idx = 0; idx < buf2.size(); idx++) {
-      ASSERT_TRUE(write_stream->Write(&buf2[idx], 1));
+    for (const auto& byte : buf2) {
+      ASSERT_TRUE(write_stream->Write(&byte, 1));
     }
 
     ASSERT_TRUE(read_stream->Seek(0));
@@ -151,6 +162,9 @@ class StreamTest : public ::testing::Test {
     ASSERT_EQ(offset, 0);
     // Test end of stream offset.
     ASSERT_EQ(stream->Seek(size + 1), seek_end_is_fine);
+    // Test invalid negative seek offsets.
+    ASSERT_FALSE(stream->Seek(-1));
+    ASSERT_FALSE(stream->Seek(-10));
   }
 
   void TestClose(StreamInterface* stream) { ASSERT_TRUE(stream->Close()); }
@@ -175,10 +189,10 @@ TEST_F(StreamTest, MemoryStreamTest) {
 
 TEST_F(StreamTest, FileStreamTest) {
   string filepath;
-  ASSERT_TRUE(MakeTempFile(&filepath, nullptr));
+  ASSERT_TRUE(MakeTempFile(&filepath));
+
   ScopedPathUnlinker scoped_unlinker(filepath);
   ASSERT_FALSE(FileStream::Open(filepath, false, false));
-
   auto stream = FileStream::Open(filepath, true, true);
   ASSERT_TRUE(stream.get() != nullptr);
   // Doesn't matter if it is not initialized. I will be overridden.
@@ -186,12 +200,21 @@ TEST_F(StreamTest, FileStreamTest) {
   std::iota(buf.begin(), buf.end(), 0);
 
   ASSERT_TRUE(stream->Write(buf.data(), buf.size()));
-
   TestRead(stream.get(), buf);
   TestWrite(stream.get(), stream.get());
   TestWriteBoundary(stream.get());
   TestSeek(stream.get(), true);
   TestClose(stream.get());
+
+  // Make sure you can open and close a read only stream.
+  auto read_only_stream = FileStream::Open(filepath, true, false);
+  ASSERT_TRUE(read_only_stream != nullptr);
+  ASSERT_TRUE(read_only_stream->Close());
+
+  // Make sure you can open and close write only stream.
+  auto write_only_stream = FileStream::Open(filepath, false, true);
+  ASSERT_TRUE(write_only_stream != nullptr);
+  ASSERT_TRUE(write_only_stream->Close());
 }
 
 TEST_F(StreamTest, PuffinStreamTest) {
@@ -220,8 +243,8 @@ TEST_F(StreamTest, PuffinStreamTest) {
       kSubblockDeflateExtentsSample1, kPuffExtentsSample1);
 
   ASSERT_TRUE(write_stream->Seek(0));
-  for (size_t idx = 0; idx < kPuffsSample1.size(); idx++) {
-    ASSERT_TRUE(write_stream->Write(&kPuffsSample1[idx], 1));
+  for (const auto& byte : kPuffsSample1) {
+    ASSERT_TRUE(write_stream->Write(&byte, 1));
   }
   // Make sure the write works
   ASSERT_EQ(buf, kDeflatesSample1);
@@ -243,36 +266,6 @@ TEST_F(StreamTest, PuffinStreamTest) {
 
   // No TestSeek is needed as PuffinStream is not supposed to seek to anywhere
   // except 0.
-  TestClose(write_stream.get());
-}
-
-TEST_F(StreamTest, ExtentStreamTest) {
-  Buffer buf(100);
-  std::iota(buf.begin(), buf.end(), 0);
-
-  vector<ByteExtent> extents = {{10, 10}, {25, 0}, {30, 10}};
-  Buffer data = {10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
-                 30, 31, 32, 33, 34, 35, 36, 37, 38, 39};
-
-  auto read_stream =
-      ExtentStream::CreateForRead(MemoryStream::CreateForRead(buf), extents);
-  TestSeek(read_stream.get(), false);
-  TestRead(read_stream.get(), data);
-  TestClose(read_stream.get());
-
-  auto buf2 = buf;
-  std::fill(data.begin(), data.end(), 3);
-  for (const auto& extent : extents) {
-    std::fill(buf.begin() + extent.offset,
-              buf.begin() + (extent.offset + extent.length), 3);
-  }
-  auto write_stream = ExtentStream::CreateForWrite(
-      MemoryStream::CreateForWrite(&buf2), extents);
-  ASSERT_TRUE(write_stream->Seek(0));
-  ASSERT_TRUE(write_stream->Write(data.data(), data.size()));
-  EXPECT_EQ(buf2, buf);
-
-  TestSeek(write_stream.get(), false);
   TestClose(write_stream.get());
 }
 

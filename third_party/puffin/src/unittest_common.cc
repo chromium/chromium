@@ -4,27 +4,18 @@
 
 #include "puffin/src/unittest_common.h"
 
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+
 using std::string;
 using std::vector;
 
 namespace puffin {
 
-bool MakeTempFile(string* filename, int* fd) {
-#ifdef __ANDROID__
-  char tmp_template[] = "/data/local/tmp/puffin-XXXXXX";
-#else
-  char tmp_template[] = "/tmp/puffin-XXXXXX";
-#endif  // __ANDROID__
-  int mkstemp_fd = mkstemp(tmp_template);
-  TEST_AND_RETURN_FALSE(mkstemp_fd >= 0);
-  if (filename) {
-    *filename = tmp_template;
-  }
-  if (fd) {
-    *fd = mkstemp_fd;
-  } else {
-    close(mkstemp_fd);
-  }
+bool MakeTempFile(string* filename) {
+  base::FilePath tmp_file_path;
+  TEST_AND_RETURN_FALSE(base::CreateTemporaryFile(&tmp_file_path));
+  *filename = tmp_file_path.AsUTF8Unsafe();
   return true;
 }
 

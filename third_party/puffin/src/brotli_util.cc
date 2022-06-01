@@ -81,7 +81,7 @@ bool BrotliDecode(const uint8_t* input,
   while (available_in != 0 || !BrotliDecoderIsFinished(decoder.get())) {
     const uint8_t* next_in = input + input_size - available_in;
     // Set up the output buffer
-    uint8_t buffer[kBufferSize];
+    uint8_t buffer[kBufferSize] = {0};
     uint8_t* next_out = buffer;
     size_t available_out = kBufferSize;
 

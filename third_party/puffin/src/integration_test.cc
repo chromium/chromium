@@ -63,11 +63,11 @@ TEST_P(PuffinIntegrationTest, PuffinDiffPatchTest) {
   ASSERT_TRUE(LocateDeflatesInZipArchive(kTestZipB, &dst_deflates));
 
   std::string tmp_file;
-  ASSERT_TRUE(MakeTempFile(&tmp_file, nullptr));
+  ASSERT_TRUE(MakeTempFile(&tmp_file));
   Buffer patch;
   ASSERT_TRUE(PuffDiff(MemoryStream::CreateForRead(kTestZipA),
                        MemoryStream::CreateForRead(kTestZipB), src_deflates,
-                       dst_deflates, {bsdiff::CompressorType::kBrotli},
+                       dst_deflates, {puffin::CompressorType::kBrotli},
                        getPatchType(), tmp_file, &patch));
 
   Buffer patched;
@@ -80,9 +80,8 @@ TEST_P(PuffinIntegrationTest, PuffinDiffPatchTest) {
   ASSERT_EQ(kTestZipB, patched);
 }
 
-INSTANTIATE_TEST_CASE_P(TestWithPatchType,
-                        PuffinIntegrationTest,
-                        testing::Values(PatchAlgorithm::kBsdiff,
-                                        PatchAlgorithm::kZucchini));
+INSTANTIATE_TEST_SUITE_P(TestWithPatchType,
+                         PuffinIntegrationTest,
+                         testing::Values(PatchAlgorithm::kZucchini));
 
 }  // namespace puffin

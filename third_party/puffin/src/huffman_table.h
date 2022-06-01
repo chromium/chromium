@@ -286,7 +286,7 @@ class HuffmanTable {
   std::vector<uint16_t> code_rcodes_;
   size_t code_max_bits_;
 
-  bool initialized_;
+  bool initialized_{false};
 
   DISALLOW_COPY_AND_ASSIGN(HuffmanTable);
 };

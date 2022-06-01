@@ -224,6 +224,10 @@ puffin --help
 It can also be used as a library (currently used by update_engine) that provides
 different APIs.
 
+## Compute Patch
+To compute the diff between our current state and the original changes:
+`git diff 4180a65119ef2c333c4d33c9e39869da89a8faea -- .`
+
 ## References
 
 [RFC 1951]: https://www.ietf.org/rfc/rfc1951.txt

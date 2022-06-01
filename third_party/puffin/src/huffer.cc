@@ -23,7 +23,7 @@ namespace puffin {
 
 Huffer::Huffer() : dyn_ht_(new HuffmanTable()), fix_ht_(new HuffmanTable()) {}
 
-Huffer::~Huffer() {}
+Huffer::~Huffer() = default;
 
 bool Huffer::HuffDeflate(PuffReaderInterface* pr,
                          BitWriterInterface* bw) const {

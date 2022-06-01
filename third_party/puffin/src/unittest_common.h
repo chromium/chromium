@@ -8,6 +8,8 @@
 #include <string>
 #include <vector>
 
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "puffin/src/include/puffin/common.h"
 #include "puffin/src/logging.h"
 
@@ -18,8 +20,9 @@ class ScopedPathUnlinker {
  public:
   explicit ScopedPathUnlinker(const std::string& path) : path_(path) {}
   ~ScopedPathUnlinker() {
-    if (unlink(path_.c_str()) < 0) {
-      LOG(ERROR) << "Failed to unlink: " << path_;
+    base::FilePath path = base::FilePath::FromUTF8Unsafe(path_);
+    if (!base::DeleteFile(path)) {
+      LOG(ERROR) << "Failed to delete: " << path_;
     }
   }
 
@@ -32,7 +35,7 @@ class ScopedPathUnlinker {
 // Makes a temporary file as /tmp/puffin-XXXXXX. Both |filename| and |fd| are
 // optional, but if given, they will be populated with the new temporary file's
 // values.
-bool MakeTempFile(std::string* filename, int* fd);
+bool MakeTempFile(std::string* filename);
 
 extern const Buffer kDeflatesSample1;
 extern const Buffer kPuffsSample1;

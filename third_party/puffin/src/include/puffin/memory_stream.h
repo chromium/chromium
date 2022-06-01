@@ -5,9 +5,6 @@
 #ifndef SRC_MEMORY_STREAM_H_
 #define SRC_MEMORY_STREAM_H_
 
-#include <string>
-#include <utility>
-
 #include "puffin/common.h"
 #include "puffin/stream.h"
 
@@ -26,8 +23,8 @@ class MemoryStream : public StreamInterface {
   // the |memory|.
   static UniqueStreamPtr CreateForWrite(Buffer* memory);
 
-  bool GetSize(uint64_t* size) const override;
-  bool GetOffset(uint64_t* offset) const override;
+  bool GetSize(uint64_t* size) override;
+  bool GetOffset(uint64_t* offset) override;
   bool Seek(uint64_t offset) override;
   bool Read(void* buffer, size_t length) override;
   bool Write(const void* buffer, size_t length) override;
@@ -44,10 +41,10 @@ class MemoryStream : public StreamInterface {
   Buffer* write_memory_;
 
   // The current offset.
-  uint64_t offset_;
+  uint64_t offset_{0};
 
   // True if the stream is open.
-  bool open_;
+  bool open_{true};
 
   DISALLOW_COPY_AND_ASSIGN(MemoryStream);
 };

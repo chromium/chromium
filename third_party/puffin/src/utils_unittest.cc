@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <unistd.h>
-
 #include <vector>
 
 #include "gtest/gtest.h"
@@ -51,54 +49,6 @@ const uint8_t kZipEntryWithDataDescriptor[] = {
     0x2e, 0x00, 0xb4, 0xa0, 0xf2, 0x36, 0x06, 0x00, 0x00, 0x00, 0x07, 0x00,
     0x00, 0x00};
 
-// echo "0123456789" > test1.txt && echo "9876543210" > test2.txt &&
-// gzip -kf test1.txt test2.txt && cat test1.txt.gz test2.txt.gz |
-// hexdump -v -e '12/1 "0x%02x, " "\n"'
-const uint8_t kGzipEntryWithMultipleMembers[] = {
-    0x1f, 0x8b, 0x08, 0x08, 0x77, 0xd5, 0x84, 0x5a, 0x00, 0x03, 0x74, 0x65,
-    0x73, 0x74, 0x31, 0x2e, 0x74, 0x78, 0x74, 0x00, 0x33, 0x30, 0x34, 0x32,
-    0x36, 0x31, 0x35, 0x33, 0xb7, 0xb0, 0xe4, 0x02, 0x00, 0xd1, 0xe5, 0x76,
-    0x40, 0x0b, 0x00, 0x00, 0x00, 0x1f, 0x8b, 0x08, 0x08, 0x77, 0xd5, 0x84,
-    0x5a, 0x00, 0x03, 0x74, 0x65, 0x73, 0x74, 0x32, 0x2e, 0x74, 0x78, 0x74,
-    0x00, 0xb3, 0xb4, 0x30, 0x37, 0x33, 0x35, 0x31, 0x36, 0x32, 0x34, 0xe0,
-    0x02, 0x00, 0x20, 0x9c, 0x5f, 0x89, 0x0b, 0x00, 0x00, 0x00};
-
-// echo "0123456789" > test1.txt && gzip -kf test1.txt && cat test1.txt.gz |
-// hexdump -v -e '12/1 "0x%02x, " "\n"'
-// And manually insert extra field with two byte length (10) followed by:
-// echo "extrafield" | hexdump -v -e '12/1 "0x%02x, " "\n"'
-// Then change the forth byte of array to -x0c to enable the extra field.
-const uint8_t kGzipEntryWithExtraField[] = {
-    0x1f, 0x8b, 0x08, 0x0c, 0xcf, 0x0e, 0x86, 0x5a, 0x00, 0x03,
-    // Extra field begin
-    0x0A, 0x00, 0x65, 0x78, 0x74, 0x72, 0x61, 0x66, 0x69, 0x65, 0x6c, 0x64,
-    // Extra field end
-    0x74, 0x65, 0x73, 0x74, 0x31, 0x2e, 0x74, 0x78, 0x74, 0x00, 0x33, 0x30,
-    0x34, 0x32, 0x36, 0x31, 0x35, 0x33, 0xb7, 0xb0, 0xe4, 0x02, 0x00, 0xd1,
-    0xe5, 0x76, 0x40, 0x0b, 0x00, 0x00, 0x00};
-
-// echo "0123456789" | zlib-flate -compress |
-// hexdump -v -e '12/1 "0x%02x, " "\n"'
-const uint8_t kZlibEntry[] = {0x78, 0x9c, 0x33, 0x30, 0x34, 0x32, 0x36,
-                              0x31, 0x35, 0x33, 0xb7, 0xb0, 0xe4, 0x02,
-                              0x00, 0x0d, 0x17, 0x02, 0x18};
-
-void FindDeflatesInZlibBlocks(const Buffer& src,
-                              const vector<ByteExtent>& zlibs,
-                              const vector<BitExtent>& deflates) {
-  string tmp_file;
-  ASSERT_TRUE(MakeTempFile(&tmp_file, nullptr));
-  ScopedPathUnlinker unlinker(tmp_file);
-  auto src_stream = FileStream::Open(tmp_file, false, true);
-  ASSERT_TRUE(src_stream);
-  ASSERT_TRUE(src_stream->Write(src.data(), src.size()));
-  ASSERT_TRUE(src_stream->Close());
-
-  vector<BitExtent> deflates_out;
-  ASSERT_TRUE(LocateDeflatesInZlibBlocks(tmp_file, zlibs, &deflates_out));
-  ASSERT_EQ(deflates, deflates_out);
-}
-
 void CheckFindPuffLocation(const Buffer& compressed,
                            const vector<BitExtent>& deflates,
                            const vector<ByteExtent>& expected_puffs,
@@ -121,37 +71,6 @@ TEST(UtilsTest, FindPuffLocations1Test) {
 TEST(UtilsTest, FindPuffLocations2Test) {
   CheckFindPuffLocation(kDeflatesSample2, kSubblockDeflateExtentsSample2,
                         kPuffExtentsSample2, kPuffsSample2.size());
-}
-
-TEST(UtilsTest, LocateDeflatesInZlib) {
-  Buffer zlib_data(kZlibEntry, std::end(kZlibEntry));
-  vector<BitExtent> deflates;
-  vector<BitExtent> expected_deflates = {{16, 98}};
-  EXPECT_TRUE(LocateDeflatesInZlib(zlib_data, &deflates));
-  EXPECT_EQ(deflates, expected_deflates);
-}
-
-TEST(UtilsTest, LocateDeflatesInEmptyZlib) {
-  Buffer empty;
-  vector<ByteExtent> empty_zlibs;
-  vector<BitExtent> empty_deflates;
-  FindDeflatesInZlibBlocks(empty, empty_zlibs, empty_deflates);
-}
-
-TEST(UtilsTest, LocateDeflatesInZlibWithInvalidFields) {
-  Buffer zlib_data(kZlibEntry, std::end(kZlibEntry));
-  auto cmf = zlib_data[0];
-  auto flag = zlib_data[1];
-
-  vector<BitExtent> deflates;
-  zlib_data[0] = cmf & 0xF0;
-  EXPECT_FALSE(LocateDeflatesInZlib(zlib_data, &deflates));
-  zlib_data[0] = cmf | (8 << 4);
-  EXPECT_FALSE(LocateDeflatesInZlib(zlib_data, &deflates));
-  zlib_data[0] = cmf;  // Correct it.
-
-  zlib_data[1] = flag & 0xF0;
-  EXPECT_FALSE(LocateDeflatesInZlib(zlib_data, &deflates));
 }
 
 TEST(UtilsTest, LocateDeflatesInZipArchiveSmoke) {
@@ -184,42 +103,6 @@ TEST(UtilsTest, LocateDeflatesInZipArchiveErrorChecks) {
   vector<BitExtent> deflates_incomplete;
   EXPECT_TRUE(LocateDeflatesInZipArchive(zip_entries, &deflates_incomplete));
   EXPECT_TRUE(deflates_incomplete.empty());
-}
-
-TEST(UtilsTest, LocateDeflatesInGzip) {
-  Buffer gzip_data(kGzipEntryWithMultipleMembers,
-                   std::end(kGzipEntryWithMultipleMembers));
-  vector<BitExtent> deflates;
-  vector<BitExtent> expected_deflates = {{160, 98}, {488, 98}};
-  EXPECT_TRUE(LocateDeflatesInGzip(gzip_data, &deflates));
-  EXPECT_EQ(deflates, expected_deflates);
-}
-
-TEST(UtilsTest, LocateDeflatesInGzipFail) {
-  Buffer gzip_data(kGzipEntryWithMultipleMembers,
-                   std::end(kGzipEntryWithMultipleMembers));
-  gzip_data[0] ^= 1;
-  vector<BitExtent> deflates;
-  EXPECT_FALSE(LocateDeflatesInGzip(gzip_data, &deflates));
-}
-
-TEST(UtilsTest, LocateDeflatesInGzipWithPadding) {
-  Buffer gzip_data(kGzipEntryWithMultipleMembers,
-                   std::end(kGzipEntryWithMultipleMembers));
-  gzip_data.resize(gzip_data.size() + 100);
-  vector<BitExtent> deflates;
-  vector<BitExtent> expected_deflates = {{160, 98}, {488, 98}};
-  EXPECT_TRUE(LocateDeflatesInGzip(gzip_data, &deflates));
-  EXPECT_EQ(deflates, expected_deflates);
-}
-
-TEST(UtilsTest, LocateDeflatesInGzipWithExtraField) {
-  Buffer gzip_data(kGzipEntryWithExtraField,
-                   std::end(kGzipEntryWithExtraField));
-  vector<BitExtent> deflates;
-  vector<BitExtent> expected_deflates = {{256, 98}};
-  EXPECT_TRUE(LocateDeflatesInGzip(gzip_data, &deflates));
-  EXPECT_EQ(deflates, expected_deflates);
 }
 
 TEST(UtilsTest, RemoveEqualBitExtents) {

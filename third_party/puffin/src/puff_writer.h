@@ -44,12 +44,7 @@ class BufferPuffWriter : public PuffWriterInterface {
   //                 be valid during the lifetime of the object.
   // |puff_size| IN  The size of the puffed stream.
   BufferPuffWriter(uint8_t* puff_buf, size_t puff_size)
-      : puff_buf_out_(puff_buf),
-        puff_size_(puff_size),
-        index_(0),
-        len_index_(0),
-        cur_literals_length_(0),
-        state_(State::kWritingNonLiteral) {}
+      : puff_buf_out_(puff_buf), puff_size_(puff_size) {}
 
   ~BufferPuffWriter() override = default;
 
@@ -68,21 +63,21 @@ class BufferPuffWriter : public PuffWriterInterface {
   size_t puff_size_;
 
   // The offset to the next data in the buffer.
-  size_t index_;
+  size_t index_{0};
 
   // Marks where the length of data should be written after the |index_| has
   // moved forward.
-  size_t len_index_;
+  size_t len_index_{0};
 
   // The number of literals currently been written (or cached).
-  size_t cur_literals_length_;
+  size_t cur_literals_length_{0};
 
   // States when writing into the puffed buffer.
   enum class State {
     kWritingNonLiteral = 0,
     kWritingSmallLiteral,
     kWritingLargeLiteral,
-  } state_;
+  } state_{State::kWritingNonLiteral};
 
   DISALLOW_COPY_AND_ASSIGN(BufferPuffWriter);
 };

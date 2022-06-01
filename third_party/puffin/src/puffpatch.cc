@@ -4,16 +4,13 @@
 
 #include "puffin/src/include/puffin/puffpatch.h"
 
-#include <endian.h>
 #include <inttypes.h>
-#include <unistd.h>
 
 #include <algorithm>
 #include <string>
 #include <vector>
 
-#include "bsdiff/bspatch.h"
-#include "bsdiff/file_interface.h"
+#include "base/big_endian.h"
 #include "zucchini/patch_reader.h"
 #include "zucchini/zucchini.h"
 
@@ -49,53 +46,6 @@ void CopyRpfToVector(
   }
 }
 
-class BsdiffStream : public bsdiff::FileInterface {
- public:
-  ~BsdiffStream() override = default;
-
-  static unique_ptr<bsdiff::FileInterface> Create(UniqueStreamPtr stream) {
-    TEST_AND_RETURN_VALUE(stream, nullptr);
-    return unique_ptr<bsdiff::FileInterface>(
-        new BsdiffStream(std::move(stream)));
-  }
-
-  bool Read(void* buf, size_t count, size_t* bytes_read) override {
-    *bytes_read = 0;
-    if (stream_->Read(buf, count)) {
-      *bytes_read = count;
-      return true;
-    }
-    return false;
-  }
-
-  bool Write(const void* buf, size_t count, size_t* bytes_written) override {
-    *bytes_written = 0;
-    if (stream_->Write(buf, count)) {
-      *bytes_written = count;
-      return true;
-    }
-    return false;
-  }
-
-  bool Seek(off_t pos) override { return stream_->Seek(pos); }
-
-  bool Close() override { return stream_->Close(); }
-
-  bool GetSize(uint64_t* size) override {
-    uint64_t my_size;
-    TEST_AND_RETURN_FALSE(stream_->GetSize(&my_size));
-    *size = my_size;
-    return true;
-  }
-
- private:
-  explicit BsdiffStream(UniqueStreamPtr stream) : stream_(std::move(stream)) {}
-
-  UniqueStreamPtr stream_;
-
-  DISALLOW_COPY_AND_ASSIGN(BsdiffStream);
-};
-
 bool DecodePatch(const uint8_t* patch,
                  size_t patch_length,
                  size_t* bsdiff_patch_offset,
@@ -108,7 +58,7 @@ bool DecodePatch(const uint8_t* patch,
                  uint64_t* dst_puff_size,
                  metadata::PatchHeader_PatchType* patch_type) {
   size_t offset = 0;
-  uint32_t header_size;
+  uint32_t header_size = 0;
   TEST_AND_RETURN_FALSE(patch_length >= (kMagicLength + sizeof(header_size)));
 
   string patch_magic(reinterpret_cast<const char*>(patch), kMagicLength);
@@ -120,7 +70,7 @@ bool DecodePatch(const uint8_t* patch,
 
   // Read the header size from big-endian mode.
   memcpy(&header_size, patch + offset, sizeof(header_size));
-  header_size = be32toh(header_size);
+  base::WriteBigEndian(reinterpret_cast<char*>(&header_size), header_size);
   offset += sizeof(header_size);
   TEST_AND_RETURN_FALSE(header_size <= (patch_length - offset));
 
@@ -216,19 +166,7 @@ bool PuffPatch(UniqueStreamPtr src,
   auto dst_stream = PuffinStream::CreateForHuff(
       std::move(dst), huffer, dst_puff_size, dst_deflates, dst_puffs);
   TEST_AND_RETURN_FALSE(dst_stream);
-
-  if (patch_type == metadata::PatchHeader_PatchType_BSDIFF) {
-    // For reading from source.
-    auto reader = BsdiffStream::Create(std::move(src_stream));
-    TEST_AND_RETURN_FALSE(reader);
-    // For writing into destination.
-    auto writer = BsdiffStream::Create(std::move(dst_stream));
-    TEST_AND_RETURN_FALSE(writer);
-
-    // Running bspatch itself.
-    TEST_AND_RETURN_FALSE(
-        0 == bspatch(reader, writer, &patch[patch_offset], raw_patch_size));
-  } else if (patch_type == metadata::PatchHeader_PatchType_ZUCCHINI) {
+  if (patch_type == metadata::PatchHeader_PatchType_ZUCCHINI) {
     TEST_AND_RETURN_FALSE(ApplyZucchiniPatch(
         std::move(src_stream), src_puff_size, patch + patch_offset,
         raw_patch_size, std::move(dst_stream)));

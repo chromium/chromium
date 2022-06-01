@@ -67,11 +67,7 @@ class BufferBitWriter : public BitWriterInterface {
   // |out_buf|  IN  The output buffer
   // |out_size| IN  The size of the output buffer
   BufferBitWriter(uint8_t* out_buf, size_t out_size)
-      : out_buf_(out_buf),
-        out_size_(out_size),
-        index_(0),
-        out_holder_(0),
-        out_holder_bits_(0) {}
+      : out_buf_(out_buf), out_size_(out_size) {}
 
   ~BufferBitWriter() override = default;
 
@@ -91,13 +87,13 @@ class BufferBitWriter : public BitWriterInterface {
   uint64_t out_size_;
 
   // The index to the next byte to write into.
-  uint64_t index_;
+  uint64_t index_{0};
 
   // A temporary buffer to keep the bits going out.
-  uint32_t out_holder_;
+  uint32_t out_holder_{0};
 
   // The number of bits in |out_holder_|.
-  uint8_t out_holder_bits_;
+  uint8_t out_holder_bits_{0};
 
   DISALLOW_COPY_AND_ASSIGN(BufferBitWriter);
 };

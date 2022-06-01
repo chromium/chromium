@@ -39,10 +39,7 @@ class BufferPuffReader : public PuffReaderInterface {
   //                 be valid during the lifetime of the object.
   // |puff_size| IN  The size of the puffed stream.
   BufferPuffReader(const uint8_t* puff_buf, size_t puff_size)
-      : puff_buf_in_(puff_buf),
-        puff_size_(puff_size),
-        index_(0),
-        state_(State::kReadingBlockMetadata) {}
+      : puff_buf_in_(puff_buf), puff_size_(puff_size) {}
 
   ~BufferPuffReader() override = default;
 
@@ -57,13 +54,13 @@ class BufferPuffReader : public PuffReaderInterface {
   size_t puff_size_;
 
   // Index to the offset of the next data in the puff buffer.
-  size_t index_;
+  size_t index_{0};
 
   // State when reading from the puffed buffer.
   enum class State {
     kReadingLenDist = 0,
     kReadingBlockMetadata,
-  } state_;
+  } state_{State::kReadingBlockMetadata};
 
   DISALLOW_COPY_AND_ASSIGN(BufferPuffReader);
 };

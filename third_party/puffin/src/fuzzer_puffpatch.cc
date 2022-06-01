@@ -5,7 +5,6 @@
 #include <vector>
 
 #include "base/logging.h"
-#include "brillo/test_helpers.h"
 
 #include "puffin/memory_stream.h"
 #include "puffin/src/include/puffin/common.h"

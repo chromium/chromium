@@ -5,11 +5,14 @@
 #include "puffin/file_stream.h"
 
 #include <fcntl.h>
-#include <unistd.h>
 
 #include <algorithm>
+#include <cstdint>
 #include <utility>
 
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/numerics/safe_conversions.h"
 #include "puffin/src/include/puffin/common.h"
 #include "puffin/src/logging.h"
 
@@ -19,51 +22,52 @@ namespace puffin {
 
 UniqueStreamPtr FileStream::Open(const string& path, bool read, bool write) {
   TEST_AND_RETURN_VALUE(read || write, nullptr);
-  int flags = O_CLOEXEC;
+
+  uint32_t flags = 0;
+  base::FilePath file_path = base::FilePath::FromUTF8Unsafe(path.c_str());
   if (read && write) {
-    flags |= O_RDWR | O_CREAT;
+    flags |= base::File::Flags::FLAG_READ | base::File::Flags::FLAG_WRITE |
+             base::File::Flags::FLAG_OPEN_ALWAYS;
   } else if (read) {
-    flags |= O_RDONLY;
+    flags |= base::File::Flags::FLAG_READ | base::File::Flags::FLAG_OPEN;
+    TEST_AND_RETURN_VALUE(PathExists(file_path), nullptr);
   } else {
-    flags |= O_WRONLY | O_CREAT;
+    flags |=
+        base::File::Flags::FLAG_WRITE | base::File::Flags::FLAG_OPEN_ALWAYS;
   }
-
-  mode_t mode = 0644;  // -rw-r--r--
-  int fd = open(path.c_str(), flags, mode);
-  TEST_AND_RETURN_VALUE(fd >= 0, nullptr);
-  return UniqueStreamPtr(new FileStream(fd));
+  return UniqueStreamPtr(new FileStream(file_path, flags));
 }
 
-bool FileStream::GetSize(uint64_t* size) const {
-  auto cur_off = lseek(fd_, 0, SEEK_CUR);
-  TEST_AND_RETURN_FALSE(cur_off >= 0);
-  auto fsize = lseek(fd_, 0, SEEK_END);
-  TEST_AND_RETURN_FALSE(fsize >= 0);
-  cur_off = lseek(fd_, cur_off, SEEK_SET);
-  TEST_AND_RETURN_FALSE(cur_off >= 0);
-  *size = fsize;
+bool FileStream::GetSize(uint64_t* size) {
+  TEST_AND_RETURN_FALSE(file_.IsValid());
+  int64_t result = file_.GetLength();
+  TEST_AND_RETURN_FALSE(result >= 0);
+  *size = base::as_unsigned(result);
   return true;
 }
 
-bool FileStream::GetOffset(uint64_t* offset) const {
-  auto off = lseek(fd_, 0, SEEK_CUR);
+bool FileStream::GetOffset(uint64_t* offset) {
+  int64_t off = file_.Seek(base::File::Whence::FROM_CURRENT, 0);
   TEST_AND_RETURN_FALSE(off >= 0);
-  *offset = off;
+  *offset = base::as_unsigned(off);
   return true;
 }
 
-bool FileStream::Seek(uint64_t offset) {
-  auto off = lseek(fd_, offset, SEEK_SET);
-  TEST_AND_RETURN_FALSE(off == static_cast<off_t>(offset));
+bool FileStream::Seek(uint64_t u_offset) {
+  TEST_AND_RETURN_FALSE(base::IsValueInRangeForNumericType<int64_t>(u_offset));
+  int64_t offset = base::as_signed(u_offset);
+  int64_t off =
+      base::as_signed(file_.Seek(base::File::Whence::FROM_BEGIN, offset));
+  TEST_AND_RETURN_FALSE(off == offset);
   return true;
 }
 
 bool FileStream::Read(void* buffer, size_t length) {
-  auto c_bytes = static_cast<uint8_t*>(buffer);
+  auto c_bytes = static_cast<char*>(buffer);
   size_t total_bytes_read = 0;
   while (total_bytes_read < length) {
-    auto bytes_read =
-        read(fd_, c_bytes + total_bytes_read, length - total_bytes_read);
+    auto bytes_read = file_.ReadAtCurrentPos(c_bytes + total_bytes_read,
+                                             length - total_bytes_read);
     // if bytes_read is zero then EOF is reached and we should not be here.
     TEST_AND_RETURN_FALSE(bytes_read > 0);
     total_bytes_read += bytes_read;
@@ -72,11 +76,11 @@ bool FileStream::Read(void* buffer, size_t length) {
 }
 
 bool FileStream::Write(const void* buffer, size_t length) {
-  auto c_bytes = static_cast<const uint8_t*>(buffer);
+  auto c_bytes = static_cast<const char*>(buffer);
   size_t total_bytes_wrote = 0;
   while (total_bytes_wrote < length) {
-    auto bytes_wrote =
-        write(fd_, c_bytes + total_bytes_wrote, length - total_bytes_wrote);
+    auto bytes_wrote = file_.WriteAtCurrentPos(c_bytes + total_bytes_wrote,
+                                               length - total_bytes_wrote);
     TEST_AND_RETURN_FALSE(bytes_wrote >= 0);
     total_bytes_wrote += bytes_wrote;
   }
@@ -84,7 +88,11 @@ bool FileStream::Write(const void* buffer, size_t length) {
 }
 
 bool FileStream::Close() {
-  return close(fd_) == 0;
+  if (!file_.IsValid()) {
+    return false;
+  }
+  file_.Close();
+  return true;
 }
 
 }  // namespace puffin

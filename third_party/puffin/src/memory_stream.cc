@@ -5,10 +5,11 @@
 #include "puffin/memory_stream.h"
 
 #include <fcntl.h>
-#include <unistd.h>
-
 #include <algorithm>
 #include <utility>
+
+#include "base/files/file.h"
+#include "base/numerics/safe_conversions.h"
 
 #include "puffin/src/include/puffin/common.h"
 #include "puffin/src/logging.h"
@@ -24,18 +25,15 @@ UniqueStreamPtr MemoryStream::CreateForWrite(Buffer* memory) {
 }
 
 MemoryStream::MemoryStream(const Buffer* read_memory, Buffer* write_memory)
-    : read_memory_(read_memory),
-      write_memory_(write_memory),
-      offset_(0),
-      open_(true) {}
+    : read_memory_(read_memory), write_memory_(write_memory) {}
 
-bool MemoryStream::GetSize(uint64_t* size) const {
+bool MemoryStream::GetSize(uint64_t* size) {
   *size =
       read_memory_ != nullptr ? read_memory_->size() : write_memory_->size();
   return true;
 }
 
-bool MemoryStream::GetOffset(uint64_t* offset) const {
+bool MemoryStream::GetOffset(uint64_t* offset) {
   *offset = offset_;
   return true;
 }
@@ -52,6 +50,7 @@ bool MemoryStream::Seek(uint64_t offset) {
 bool MemoryStream::Read(void* buffer, size_t length) {
   TEST_AND_RETURN_FALSE(open_);
   TEST_AND_RETURN_FALSE(read_memory_ != nullptr);
+  TEST_AND_RETURN_FALSE(base::IsValueInRangeForNumericType<int64_t>(length));
   TEST_AND_RETURN_FALSE(offset_ + length <= read_memory_->size());
   memcpy(buffer, read_memory_->data() + offset_, length);
   offset_ += length;
@@ -62,6 +61,7 @@ bool MemoryStream::Write(const void* buffer, size_t length) {
   // TODO(ahassani): Add a maximum size limit to prevent malicious attacks.
   TEST_AND_RETURN_FALSE(open_);
   TEST_AND_RETURN_FALSE(write_memory_ != nullptr);
+  TEST_AND_RETURN_FALSE(base::IsValueInRangeForNumericType<int64_t>(length));
   if (offset_ + length > write_memory_->size()) {
     write_memory_->resize(offset_ + length);
   }

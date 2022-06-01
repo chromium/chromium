@@ -99,15 +99,8 @@ PuffinStream::PuffinStream(UniqueStreamPtr stream,
       puff_stream_size_(puff_size),
       deflates_(deflates),
       puffs_(puffs),
-      puff_pos_(0),
-      skip_bytes_(0),
-      deflate_bit_pos_(0),
-      last_byte_(0),
-      extra_byte_(0),
       is_for_puff_(puffer_ ? true : false),
-      closed_(false),
-      max_cache_size_(max_cache_size),
-      cur_cache_size_(0) {
+      max_cache_size_(max_cache_size) {
   // Building upper bounds for faster seek.
   upper_bounds_.reserve(puffs.size());
   for (const auto& puff : puffs) {
@@ -133,7 +126,7 @@ PuffinStream::PuffinStream(UniqueStreamPtr stream,
   for (const auto& puff : puffs) {
     max_puff_length = std::max(max_puff_length, puff.length);
   }
-  puff_buffer_.reset(new Buffer(max_puff_length + 1));
+  puff_buffer_ = std::make_shared<Buffer>(max_puff_length + 1);
   if (max_cache_size_ < max_puff_length) {
     max_cache_size_ = 0;  // It means we are not caching puffs.
   }
@@ -142,15 +135,15 @@ PuffinStream::PuffinStream(UniqueStreamPtr stream,
   for (const auto& deflate : deflates) {
     max_deflate_length = std::max(max_deflate_length, deflate.length * 8);
   }
-  deflate_buffer_.reset(new Buffer(max_deflate_length + 2));
+  deflate_buffer_ = std::make_unique<Buffer>(max_deflate_length + 2);
 }
 
-bool PuffinStream::GetSize(uint64_t* size) const {
+bool PuffinStream::GetSize(uint64_t* size) {
   *size = puff_stream_size_;
   return true;
 }
 
-bool PuffinStream::GetOffset(uint64_t* offset) const {
+bool PuffinStream::GetOffset(uint64_t* offset) {
   *offset = puff_pos_ + skip_bytes_;
   return true;
 }
@@ -466,7 +459,7 @@ bool PuffinStream::GetPuffCache(int puff_id,
     }
     // If we have not populated the cache yet, create one.
     if (!cache.second) {
-      cache.second.reset(new Buffer(puff_size));
+      cache.second = std::make_shared<Buffer>(puff_size);
     }
     cache.second->resize(puff_size);
 

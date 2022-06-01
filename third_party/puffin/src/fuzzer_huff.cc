@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/logging.h"
-#include "brillo/test_helpers.h"
 
 #include "puffin/src/bit_writer.h"
 #include "puffin/src/include/puffin/common.h"

@@ -8,6 +8,8 @@
 #include <string>
 #include <utility>
 
+#include "base/files/file.h"
+#include "base/files/file_path.h"
 #include "puffin/common.h"
 #include "puffin/stream.h"
 
@@ -16,13 +18,16 @@ namespace puffin {
 // A very simple class for reading and writing data into a file descriptor.
 class FileStream : public StreamInterface {
  public:
-  explicit FileStream(int fd) : fd_(fd) { Seek(0); }
+  FileStream(const base::FilePath& path, uint32_t flags) {
+    file_.Initialize(path, flags);
+    Seek(0);
+  }
   ~FileStream() override = default;
 
   static UniqueStreamPtr Open(const std::string& path, bool read, bool write);
 
-  bool GetSize(uint64_t* size) const override;
-  bool GetOffset(uint64_t* offset) const override;
+  bool GetSize(uint64_t* size) override;
+  bool GetOffset(uint64_t* offset) override;
   bool Seek(uint64_t offset) override;
   bool Read(void* buffer, size_t length) override;
   bool Write(const void* buffer, size_t length) override;
@@ -32,8 +37,7 @@ class FileStream : public StreamInterface {
   FileStream() = default;
 
  private:
-  // The file descriptor.
-  int fd_;
+  base::File file_;
 
   DISALLOW_COPY_AND_ASSIGN(FileStream);
 };
