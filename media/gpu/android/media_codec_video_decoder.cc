@@ -1060,6 +1060,12 @@ void MediaCodecVideoDecoder::ForwardVideoFrame(
                              base::Milliseconds(1), base::Milliseconds(100),
                              25);
 
+  // Attach the HDR metadata if the color space got this far and is still an HDR
+  // color space.  Note that it might be converted to something else along the
+  // way, often sRGB.  In that case, don't confuse things with HDR metadata.
+  if (frame->ColorSpace().IsHDR() && decoder_config_.hdr_metadata())
+    frame->set_hdr_metadata(decoder_config_.hdr_metadata());
+
   // No |frame| indicates an error creating it.
   if (!frame) {
     DLOG(ERROR) << __func__ << " |frame| is null";
