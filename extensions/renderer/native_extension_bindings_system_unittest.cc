@@ -1135,18 +1135,19 @@ TEST_F(NativeExtensionBindingsSystemUnittest, APIIsInitializedByOwningContext) {
   EXPECT_EQ(context, api_bridge.As<v8::Object>()->GetCreationContextChecked());
 }
 
-class ResponseValidationNativeExtensionBindingsSystemUnittest
+class SignatureValidationNativeExtensionBindingsSystemUnittest
     : public NativeExtensionBindingsSystemUnittest,
       public testing::WithParamInterface<bool> {
  public:
-  ResponseValidationNativeExtensionBindingsSystemUnittest() = default;
+  SignatureValidationNativeExtensionBindingsSystemUnittest() = default;
 
-  ResponseValidationNativeExtensionBindingsSystemUnittest(
-      const ResponseValidationNativeExtensionBindingsSystemUnittest&) = delete;
-  ResponseValidationNativeExtensionBindingsSystemUnittest& operator=(
-      const ResponseValidationNativeExtensionBindingsSystemUnittest&) = delete;
+  SignatureValidationNativeExtensionBindingsSystemUnittest(
+      const SignatureValidationNativeExtensionBindingsSystemUnittest&) = delete;
+  SignatureValidationNativeExtensionBindingsSystemUnittest& operator=(
+      const SignatureValidationNativeExtensionBindingsSystemUnittest&) = delete;
 
-  ~ResponseValidationNativeExtensionBindingsSystemUnittest() override = default;
+  ~SignatureValidationNativeExtensionBindingsSystemUnittest() override =
+      default;
 
   void SetUp() override {
     response_validation_override_ =
@@ -1163,7 +1164,7 @@ class ResponseValidationNativeExtensionBindingsSystemUnittest
   std::unique_ptr<base::AutoReset<bool>> response_validation_override_;
 };
 
-TEST_P(ResponseValidationNativeExtensionBindingsSystemUnittest,
+TEST_P(SignatureValidationNativeExtensionBindingsSystemUnittest,
        ResponseValidation) {
   // The APIResponseValidator should only be used if response validation is
   // enabled. Otherwise, it should be null.
@@ -1239,9 +1240,98 @@ TEST_P(ResponseValidationNativeExtensionBindingsSystemUnittest,
   }
 }
 
+TEST_P(SignatureValidationNativeExtensionBindingsSystemUnittest,
+       EventArgumentValidation) {
+  // The APIResponseValidator should only be used if response validation is
+  // enabled. Otherwise, it should be null.
+  EXPECT_EQ(GetParam(), bindings_system()
+                            ->api_system()
+                            ->request_handler()
+                            ->has_response_validator_for_testing());
+
+  absl::optional<std::string> validation_failure_method_name;
+  absl::optional<std::string> validation_failure_error;
+
+  auto on_validation_failure =
+      [&validation_failure_method_name, &validation_failure_error](
+          const std::string& method_name, const std::string& error) {
+        validation_failure_method_name = method_name;
+        validation_failure_error = error;
+      };
+  APIResponseValidator::TestHandler test_validation_failure_handler(
+      base::BindLambdaForTesting(on_validation_failure));
+
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("foo").AddPermissions({"idle"}).Build();
+  RegisterExtension(extension);
+
+  v8::HandleScope handle_scope(isolate());
+  v8::Local<v8::Context> context = MainContext();
+
+  ScriptContext* script_context = CreateScriptContext(
+      context, extension.get(), Feature::BLESSED_EXTENSION_CONTEXT);
+  script_context->set_url(extension->url());
+
+  bindings_system()->UpdateBindingsForContext(script_context);
+
+  const char kAddListenerFunction[] =
+      R"((function() {
+            chrome.idle.onStateChanged.addListener((state) => {
+              this.returnedState = state;
+            });
+          });)";
+  v8::Local<v8::Function> add_listener_function =
+      FunctionFromString(context, kAddListenerFunction);
+  RunFunctionOnGlobal(add_listener_function, context, 0, nullptr);
+
+  EXPECT_TRUE(bindings_system()->HasEventListenerInContext(
+      "idle.onStateChanged", script_context));
+
+  // Dispatch an event with an argument that matches the expected schema.
+  {
+    base::Value::List event_args;
+    event_args.Append("active");
+    bindings_system()->DispatchEventInContext("idle.onStateChanged", event_args,
+                                              nullptr, script_context);
+  }
+
+  // Validation should have succeeded.
+  std::string returned_state =
+      GetStringPropertyFromObject(context->Global(), context, "returnedState");
+  EXPECT_FALSE(validation_failure_method_name);
+  EXPECT_FALSE(validation_failure_error);
+  EXPECT_EQ(R"("active")", returned_state);
+
+  // Now, dispatch the event with an invalid argument.
+  {
+    base::Value::List event_args;
+    event_args.Append("bad enum");
+    bindings_system()->DispatchEventInContext("idle.onStateChanged", event_args,
+                                              nullptr, script_context);
+  }
+
+  // Event validation should have failed.
+  returned_state =
+      GetStringPropertyFromObject(context->Global(), context, "returnedState");
+
+  if (GetParam()) {
+    EXPECT_EQ(validation_failure_method_name, "idle.onStateChanged");
+    EXPECT_EQ(api_errors::ArgumentError(
+                  "newState",
+                  api_errors::InvalidEnumValue({"active", "idle", "locked"})),
+              validation_failure_error.value_or("no value"));
+  } else {
+    EXPECT_FALSE(validation_failure_method_name);
+    EXPECT_FALSE(validation_failure_error);
+  }
+
+  // Even though validation failed, we still dispatch the event.
+  EXPECT_EQ(R"("bad enum")", returned_state);
+}
+
 INSTANTIATE_TEST_SUITE_P(
     All,
-    ResponseValidationNativeExtensionBindingsSystemUnittest,
+    SignatureValidationNativeExtensionBindingsSystemUnittest,
     testing::Bool());
 
 }  // namespace extensions

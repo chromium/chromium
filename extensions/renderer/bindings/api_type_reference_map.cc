@@ -97,4 +97,18 @@ const APISignature* APITypeReferenceMap::GetCustomSignature(
   return iter != custom_signatures_.end() ? iter->second.get() : nullptr;
 }
 
+void APITypeReferenceMap::AddEventSignature(
+    const std::string& event_name,
+    std::unique_ptr<APISignature> signature) {
+  DCHECK(event_signatures_.find(event_name) == event_signatures_.end())
+      << "Cannot re-register signature for: " << event_name;
+  event_signatures_[event_name] = std::move(signature);
+}
+
+const APISignature* APITypeReferenceMap::GetEventSignature(
+    const std::string& event_name) const {
+  auto iter = event_signatures_.find(event_name);
+  return iter != event_signatures_.end() ? iter->second.get() : nullptr;
+}
+
 }  // namespace extensions

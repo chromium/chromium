@@ -312,9 +312,10 @@ TEST_F(OneTimeMessageHandlerTest, DeliverMessageToReceiverWithNoReply) {
   const PortId port_id(other_context_id, 0, false, SerializationFormat::kJson);
 
   EXPECT_FALSE(message_handler()->HasPort(script_context(), port_id));
-  v8::Local<v8::Object> sender = gin::DataObjectBuilder(isolate())
-                                     .Set("key", std::string("sender"))
-                                     .Build();
+  v8::Local<v8::Object> sender =
+      gin::DataObjectBuilder(isolate())
+          .Set("origin", std::string("https://example.com"))
+          .Build();
   message_handler()->AddReceiver(script_context(), port_id, sender,
                                  messaging_util::kOnMessageEvent);
   EXPECT_TRUE(message_handler()->HasPort(script_context(), port_id));
@@ -328,7 +329,8 @@ TEST_F(OneTimeMessageHandlerTest, DeliverMessageToReceiverWithNoReply) {
   message_handler()->DeliverMessage(script_context(), message, port_id);
 
   EXPECT_EQ("\"Hi\"", GetGlobalProperty(context, "eventMessage"));
-  EXPECT_EQ(R"({"key":"sender"})", GetGlobalProperty(context, "eventSender"));
+  EXPECT_EQ(R"({"origin":"https://example.com"})",
+            GetGlobalProperty(context, "eventSender"));
 
   // TODO(devlin): Right now, the port lives eternally. In JS bindings, we have
   // two ways of dealing with this:
