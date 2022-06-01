@@ -6,9 +6,13 @@
 
 #include "ash/clipboard/clipboard_history_util.h"
 #include "ash/clipboard/clipboard_nudge_controller.h"
+#include "ash/clipboard/scoped_clipboard_history_pause_impl.h"
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "ui/base/clipboard/clipboard.h"
+#include "ui/base/clipboard/clipboard_buffer.h"
+#include "ui/base/clipboard/clipboard_data.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
 #include "ui/base/clipboard/clipboard_non_backed.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
@@ -83,6 +87,7 @@ void ClipboardHistory::RemoveItemForId(const base::UnguessableToken& id) {
 
   auto removed = std::move(*iter);
   history_list_.erase(iter);
+  SyncClipboardToClipboardHistory();
   for (auto& observer : observers_)
     observer.OnClipboardHistoryItemRemoved(removed);
 }
@@ -94,17 +99,17 @@ void ClipboardHistory::OnClipboardDataChanged() {
   if (num_pause_ > 0)
     return;
 
+  // The clipboard may not exist in tests.
   auto* clipboard = ui::ClipboardNonBacked::GetForCurrentThread();
-  // Clipboard may not exist in tests.
   if (!clipboard)
     return;
 
   ui::DataTransferEndpoint data_dst(ui::EndpointType::kClipboardHistory);
   const auto* clipboard_data = clipboard->GetClipboardData(&data_dst);
   if (!clipboard_data) {
-    // `clipboard_data` is only empty when the Clipboard is cleared. This is
-    // done to prevent data leakage into or from locked forms(Locked Fullscreen
-    // state). Clear ClipboardHistory.
+    // `clipboard_data` is only empty when the clipboard is cleared. This is
+    // done to prevent data leakage into or from locked states (e.g., locked
+    // fullscreen). Clipboard history should also be cleared in this case.
     commit_data_weak_factory_.InvalidateWeakPtrs();
     Clear();
     return;
@@ -186,6 +191,32 @@ void ClipboardHistory::OnClipboardOperation(bool copy) {
 
 base::WeakPtr<ClipboardHistory> ClipboardHistory::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
+}
+
+void ClipboardHistory::SyncClipboardToClipboardHistory() {
+  // The clipboard may not exist in tests.
+  auto* clipboard = ui::ClipboardNonBacked::GetForCurrentThread();
+  if (!clipboard)
+    return;
+
+  ui::DataTransferEndpoint data_dst(ui::EndpointType::kClipboardHistory);
+  const auto* clipboard_data = clipboard->GetClipboardData(&data_dst);
+
+  // Only modify the clipboard if doing so would change its data, so as to avoid
+  // extraneous notifications to clipboard observers. If there is a change to
+  // make, pause clipboard history so that making the clipboard consistent with
+  // clipboard history does not cause clipboard history to update again.
+  ScopedClipboardHistoryPauseImpl scoped_pause(this);
+  if (history_list_.empty()) {
+    if (clipboard_data) {
+      static_cast<ui::Clipboard*>(clipboard)->Clear(
+          ui::ClipboardBuffer::kCopyPaste);
+    }
+  } else if (const auto& top_of_history_data = history_list_.front().data();
+             top_of_history_data != *clipboard_data) {
+    std::ignore = clipboard->WriteClipboardData(
+        std::make_unique<ui::ClipboardData>(top_of_history_data));
+  }
 }
 
 void ClipboardHistory::MaybeCommitData(ui::ClipboardData data) {
