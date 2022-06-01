@@ -768,6 +768,9 @@ bool ReadbackTexturePlaneToMemorySync(const VideoFrame& src_frame,
 EncoderStatus ConvertAndScaleFrame(const VideoFrame& src_frame,
                                    VideoFrame& dst_frame,
                                    std::vector<uint8_t>& tmp_buf) {
+  TRACE_EVENT2("media", "ConvertAndScaleFrame", "src_format",
+               VideoPixelFormatToString(src_frame.format()), "dst_format",
+               VideoPixelFormatToString(dst_frame.format()));
   constexpr auto kDefaultFiltering = libyuv::kFilterBox;
   if (!src_frame.IsMappable() || !dst_frame.IsMappable())
     return EncoderStatus::Codes::kUnsupportedFrameFormat;
