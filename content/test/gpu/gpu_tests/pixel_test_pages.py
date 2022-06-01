@@ -727,7 +727,7 @@ class PixelTestPages():
   # arguments.
   @staticmethod
   def MacSpecificPages(base_name: str) -> typing.List[PixelTestPage]:
-    iosurface_2d_canvas_args = ['--enable-accelerated-2d-canvas']
+    unaccelerated_2d_canvas_args = [cba.DISABLE_ACCELERATED_2D_CANVAS]
 
     non_chromium_image_args = ['--disable-webgl-image-chromium']
 
@@ -745,15 +745,9 @@ class PixelTestPages():
         max_different_pixels=57500, pixel_delta_threshold=15)
 
     return [
-        # On macOS, test the IOSurface 2D Canvas compositing path.
-        PixelTestPage('pixel_canvas2d_accelerated.html',
-                      base_name + '_IOSurface2DCanvas',
-                      test_rect=[0, 0, 400, 400],
-                      browser_args=iosurface_2d_canvas_args),
         PixelTestPage('pixel_canvas2d_webgl.html',
                       base_name + '_IOSurface2DCanvasWebGL',
-                      test_rect=[0, 0, 300, 300],
-                      browser_args=iosurface_2d_canvas_args),
+                      test_rect=[0, 0, 300, 300]),
 
         # On macOS, test WebGL non-Chromium Image compositing path.
         PixelTestPage('pixel_webgl_aa_alpha.html',
@@ -819,6 +813,13 @@ class PixelTestPages():
 
         # --enable-gpu-benchmarking is required to run this test. it's added to
         # the pixel tests by default.
+        PixelTestPage('canvas_uses_overlay.html',
+                      base_name + '_UnacceleratedCanvasUsesOverlay',
+                      test_rect=[0, 0, 200, 200],
+                      browser_args=unaccelerated_2d_canvas_args),
+
+        # --enable-gpu-benchmarking is required to run this test. it's added to
+        # the pixel tests by default.
         PixelTestPage(
             'offscreencanvas_imagebitmap_from_worker_uses_overlay.html',
             base_name + '_OffscreenCanvasImageBitmapWorkerUsesOverlay',
@@ -826,9 +827,26 @@ class PixelTestPages():
 
         # --enable-gpu-benchmarking is required to run this test. it's added to
         # the pixel tests by default.
+        PixelTestPage(
+            'offscreencanvas_imagebitmap_from_worker_uses_overlay.html',
+            base_name +
+            '_UnacceleratedOffscreenCanvasImageBitmapWorkerUsesOverlay',
+            test_rect=[0, 0, 100, 100],
+            browser_args=unaccelerated_2d_canvas_args),
+
+        # --enable-gpu-benchmarking is required to run this test. it's added to
+        # the pixel tests by default.
         PixelTestPage('offscreencanvas_imagebitmap_uses_overlay.html',
                       base_name + '_OffscreenCanvasImageBitmapUsesOverlay',
                       test_rect=[0, 0, 100, 100]),
+
+        # --enable-gpu-benchmarking is required to run this test. it's added to
+        # the pixel tests by default.
+        PixelTestPage('offscreencanvas_imagebitmap_uses_overlay.html',
+                      base_name +
+                      '_UnacceleratedOffscreenCanvasImageBitmapUsesOverlay',
+                      test_rect=[0, 0, 100, 100],
+                      browser_args=unaccelerated_2d_canvas_args),
     ]
 
   # Pages that should be run only on dual-GPU MacBook Pros (at the
