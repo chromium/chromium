@@ -119,6 +119,16 @@ extern const base::Feature kShareCrowButton;
 // Feature that when enabled completely removes all Feeds from chrome.
 extern const base::Feature kIsAblated;
 
+// When enabled, schedule a background refresh for a feed sometime after the
+// last user engagement with that feed.
+extern const base::Feature kFeedCloseRefresh;
+// On each qualifying user engagement, schedule a background refresh this many
+// minutes out.
+extern const base::FeatureParam<int> kFeedCloseRefreshDelayMinutes;
+// If true, schedule the refresh only when the user scrolls or interacts. If
+// false, schedule only when the feed surface is opened to content.
+extern const base::FeatureParam<bool> kFeedCloseRefreshRequireInteraction;
+
 }  // namespace feed
 
 #endif  // COMPONENTS_FEED_FEED_FEATURE_LIST_H_
