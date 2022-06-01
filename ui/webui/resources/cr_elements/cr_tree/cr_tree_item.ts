@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 import {assert, assertNotReached} from '../../js/assert_ts.js';
-import {getTrustedHTML} from '../../js/static_types.js';
 
 import {CrTreeBaseElement, EXPANDED_ATTR} from './cr_tree_base.js';
+import {getTemplate} from './cr_tree_item.html.js';
 
 /**
  * @fileoverview cr-tree-item represents a node in a tree structure. Child items
@@ -40,7 +40,7 @@ function hasDescendant(
 
 export class CrTreeItemElement extends CrTreeBaseElement {
   static override get template() {
-    return getTrustedHTML`{__html_template__}`;
+    return getTemplate();
   }
 
   static override get observedAttributes() {

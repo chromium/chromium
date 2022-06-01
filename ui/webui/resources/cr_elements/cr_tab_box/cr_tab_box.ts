@@ -5,11 +5,12 @@
 import {assert} from '../../js/assert_ts.js';
 import {FocusOutlineManager} from '../../js/cr/ui/focus_outline_manager.m.js';
 import {CustomElement} from '../../js/custom_element.js';
-import {getTrustedHTML} from '../../js/static_types.js';
+
+import {getTemplate} from './cr_tab_box.html.js';
 
 export class CrTabBoxElement extends CustomElement {
   static override get template() {
-    return getTrustedHTML`{__html_template__}`;
+    return getTemplate();
   }
 
   static get observedAttributes() {

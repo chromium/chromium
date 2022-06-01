@@ -4,8 +4,8 @@
 
 import {assert, assertNotReached} from '../../js/assert_ts.js';
 import {isMac} from '../../js/cr.m.js';
-import {getTrustedHTML} from '../../js/static_types.js';
 
+import {getTemplate} from './cr_tree.html.js';
 import {CrTreeBaseElement} from './cr_tree_base.js';
 import {SELECTED_ATTR} from './cr_tree_item.js';
 
@@ -75,7 +75,7 @@ function getLastHelper(item: CrTreeBaseElement): CrTreeBaseElement|null {
 
 export class CrTreeElement extends CrTreeBaseElement {
   static override get template() {
-    return getTrustedHTML`{__html_template__}`;
+    return getTemplate();
   }
 
   private selectedItem_: CrTreeBaseElement|null = null;
