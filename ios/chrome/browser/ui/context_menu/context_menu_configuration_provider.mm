@@ -290,7 +290,8 @@ NSString* const kContextMenuEllipsis = @"…";
   // Insert any provided menu items. Do after Link and/or Image to allow
   // inserting at beginning or adding to end.
   ios::provider::AddContextMenuElements(
-      menuElements, self.browser->GetBrowserState(), webState, params);
+      menuElements, self.browser->GetBrowserState(), webState, params,
+      self.baseViewController);
 
   if (menuElements.count == 0) {
     return nil;
