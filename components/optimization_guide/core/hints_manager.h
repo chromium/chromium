@@ -404,6 +404,10 @@ class HintsManager : public OptimizationHintsComponentObserver,
   // |optimization_guide_service_|.
   absl::optional<HintsComponentInfo> hints_component_info_;
 
+  // The component version that failed to process in the last session, if
+  // applicable.
+  const absl::optional<base::Version> failed_component_version_;
+
   // The version of the component that is currently being processed.
   absl::optional<base::Version> currently_processing_component_version_;
 

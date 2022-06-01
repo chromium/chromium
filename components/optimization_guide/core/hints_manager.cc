@@ -76,15 +76,8 @@ void MaybeRunUpdateClosure(base::OnceClosure update_closure) {
     std::move(update_closure).Run();
 }
 
-// Returns whether the particular component version can be processed, and if it
-// can be, locks the semaphore (in the form of a pref) to signal that the
-// processing of this particular version has started.
-bool CanProcessComponentVersion(PrefService* pref_service,
-                                const base::Version& version,
-                                ProcessHintsComponentResult* out_result) {
-  DCHECK(version.IsValid());
-  DCHECK(out_result);
-
+absl::optional<base::Version>
+GetPendingOptimizationHintsComponentVersionFromPref(PrefService* pref_service) {
   const std::string previous_attempted_version_string =
       pref_service->GetString(prefs::kPendingHintsProcessingVersion);
   if (!previous_attempted_version_string.empty()) {
@@ -94,21 +87,11 @@ bool CanProcessComponentVersion(PrefService* pref_service,
       DLOG(ERROR) << "Bad contents in hints processing pref";
       // Clear pref for fresh start next time.
       pref_service->ClearPref(prefs::kPendingHintsProcessingVersion);
-      *out_result =
-          ProcessHintsComponentResult::kFailedPreviouslyAttemptedVersionInvalid;
-      return false;
+      return absl::nullopt;
     }
-    if (previous_attempted_version.CompareTo(version) == 0) {
-      *out_result = ProcessHintsComponentResult::kFailedFinishProcessing;
-      // Previously attempted same version without completion.
-      return false;
-    }
+    return absl::make_optional(previous_attempted_version);
   }
-
-  // Write config version to pref.
-  pref_service->SetString(prefs::kPendingHintsProcessingVersion,
-                          version.GetString());
-  return true;
+  return absl::nullopt;
 }
 
 // Returns whether |optimization_type| is allowlisted by |optimizations|. If
@@ -306,7 +289,9 @@ HintsManager::HintsManager(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::unique_ptr<PushNotificationManager> push_notification_manager,
     OptimizationGuideLogger* optimization_guide_logger)
-    : is_off_the_record_(is_off_the_record),
+    : failed_component_version_(
+          GetPendingOptimizationHintsComponentVersionFromPref(pref_service)),
+      is_off_the_record_(is_off_the_record),
       application_locale_(application_locale),
       pref_service_(pref_service),
       hint_cache_(
@@ -405,16 +390,20 @@ void HintsManager::OnHintsComponentAvailable(const HintsComponentInfo& info) {
     return;
   }
 
-  ProcessHintsComponentResult out_result;
-  if (!CanProcessComponentVersion(pref_service_, info.version, &out_result)) {
+  if (failed_component_version_ &&
+      failed_component_version_->CompareTo(info.version) >= 0) {
     OPTIMIZATION_GUIDE_LOGGER(optimization_guide_logger_)
         << "Skipping processing OptimizationHints component version: "
         << info.version.GetString()
         << " as it had failed in a previous session";
-    RecordProcessHintsComponentResult(out_result);
+    RecordProcessHintsComponentResult(
+        ProcessHintsComponentResult::kFailedFinishProcessing);
     MaybeRunUpdateClosure(std::move(next_update_closure_));
     return;
   }
+  // Write version that we are currently processing to prefs.
+  pref_service_->SetString(prefs::kPendingHintsProcessingVersion,
+                           info.version.GetString());
 
   std::unique_ptr<StoreUpdateData> update_data =
       is_off_the_record_

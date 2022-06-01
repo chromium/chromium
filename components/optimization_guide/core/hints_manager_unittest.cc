@@ -288,6 +288,12 @@ class HintsManagerTest : public ProtoDatabaseProviderTestBase {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kOptimizationHints,
         GetOptimizationHintsDefaultFeatureParams());
+
+    pref_service_ =
+        std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
+    prefs::RegisterProfilePrefs(pref_service_->registry());
+    unified_consent::UnifiedConsentService::RegisterPrefs(
+        pref_service_->registry());
   }
   ~HintsManagerTest() override = default;
 
@@ -301,18 +307,13 @@ class HintsManagerTest : public ProtoDatabaseProviderTestBase {
 
   void TearDown() override {
     ResetHintsManager();
+    pref_service_.reset();
     ProtoDatabaseProviderTestBase::TearDown();
   }
 
   void CreateHintsManager(TopHostProvider* top_host_provider) {
     if (hints_manager_)
       ResetHintsManager();
-
-    pref_service_ =
-        std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
-    prefs::RegisterProfilePrefs(pref_service_->registry());
-    unified_consent::UnifiedConsentService::RegisterPrefs(
-        pref_service_->registry());
 
     url_loader_factory_ =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
@@ -341,7 +342,6 @@ class HintsManagerTest : public ProtoDatabaseProviderTestBase {
     hints_manager_.reset();
     tab_url_provider_.reset();
     hint_store_.reset();
-    pref_service_.reset();
     RunUntilIdle();
   }
 
@@ -731,6 +731,7 @@ TEST_F(HintsManagerTest, ComponentInfoDidNotContainConfig) {
 TEST_F(HintsManagerTest, ProcessHintsWithExistingPref) {
   // Write hints processing pref for version 2.0.0.
   pref_service()->SetString(prefs::kPendingHintsProcessingVersion, "2.0.0");
+  CreateHintsManager(/*top_host_provider=*/nullptr);
 
   // Verify config not processed for same version (2.0.0) and pref not cleared.
   {
@@ -761,6 +762,7 @@ TEST_F(HintsManagerTest,
        ProcessHintsWithExistingPrefDoesNotClearOrCountAsMidProcessing) {
   // Write hints processing pref for version 2.0.0.
   pref_service()->SetString(prefs::kPendingHintsProcessingVersion, "2.0.0");
+  CreateHintsManager(/*top_host_provider=*/nullptr);
 
   // Verify component for same version counts as "failed".
   base::HistogramTester histogram_tester;
@@ -782,22 +784,9 @@ TEST_F(HintsManagerTest,
 TEST_F(HintsManagerTest, ProcessHintsWithInvalidPref) {
   // Create pref file with invalid version.
   pref_service()->SetString(prefs::kPendingHintsProcessingVersion, "bad-2.0.0");
+  CreateHintsManager(/*top_host_provider=*/nullptr);
 
-  // Verify config not processed for existing pref with bad value but
-  // that the pref is cleared.
-  {
-    base::HistogramTester histogram_tester;
-    InitializeWithDefaultConfig("2.0.0");
-    EXPECT_TRUE(pref_service()
-                    ->GetString(prefs::kPendingHintsProcessingVersion)
-                    .empty());
-    histogram_tester.ExpectUniqueSample(
-        "OptimizationGuide.ProcessHintsResult",
-        ProcessHintsComponentResult::kFailedPreviouslyAttemptedVersionInvalid,
-        1);
-  }
-
-  // Now verify config is processed with pref cleared.
+  // Verify config is processed with pref cleared.
   {
     base::HistogramTester histogram_tester;
     InitializeWithDefaultConfig("2.0.0");
