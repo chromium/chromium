@@ -16,51 +16,13 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
 using ::testing::HasSubstr;
 
 namespace ash {
-namespace {
-
-class NudgeWigetObserver : public views::WidgetObserver {
- public:
-  NudgeWigetObserver(views::Widget* widget) : widget_(widget) {
-    if (!widget_)
-      return;
-
-    widget_->AddObserver(this);
-  }
-
-  ~NudgeWigetObserver() override { CleanupWidget(); }
-
-  void WaitForClose() {
-    if (!widget_)
-      return;
-    run_loop_ = std::make_unique<base::RunLoop>();
-    run_loop_->Run();
-  }
-
-  // views::WidgetObserver:
-  void OnWidgetClosing(views::Widget* widget) override {
-    CleanupWidget();
-    if (run_loop_)
-      run_loop_->Quit();
-  }
-
-  void CleanupWidget() {
-    if (!widget_)
-      return;
-    widget_->RemoveObserver(this);
-    widget_ = nullptr;
-  }
-
- private:
-  views::Widget* widget_;
-  std::unique_ptr<base::RunLoop> run_loop_;
-};
-}  // namespace
 
 // Tests for showing the Dictation Nudge from AccessibilityControllerImpl.
 class DictationNudgeControllerTest : public AshTestBase {
@@ -96,8 +58,8 @@ class DictationNudgeControllerTest : public AshTestBase {
     return nudge->CreateLabelView();
   }
 
-  void WaitForWidgetClose(DictationNudgeController* controller,
-                          SystemNudge* nudge) {
+  void WaitForWidgetDestruction(DictationNudgeController* controller,
+                                SystemNudge* nudge) {
     views::Widget* nudge_widget = nudge->widget();
     ASSERT_TRUE(nudge_widget);
     EXPECT_FALSE(nudge_widget->IsClosed());
@@ -107,12 +69,12 @@ class DictationNudgeControllerTest : public AshTestBase {
         ui::ScopedAnimationDurationScaleMode::SLOW_DURATION);
 
     // Pretend the hide nudge timer has elapsed.
-    NudgeWigetObserver widget_close_observer(nudge_widget);
+    views::test::WidgetDestroyedWaiter widget_destroyed_waiter(nudge_widget);
     controller->FireHideNudgeTimerForTesting();
 
     EXPECT_TRUE(nudge_widget->GetLayer()->GetAnimator()->is_animating());
 
-    widget_close_observer.WaitForClose();
+    widget_destroyed_waiter.Wait();
   }
 };
 
@@ -127,7 +89,7 @@ TEST_F(DictationNudgeControllerTest, ShowsAndHidesNudge) {
   SystemNudge* nudge = controller->GetSystemNudgeForTesting();
   ASSERT_TRUE(nudge);
 
-  WaitForWidgetClose(controller, nudge);
+  WaitForWidgetDestruction(controller, nudge);
 }
 
 TEST_F(DictationNudgeControllerTest, SetsLabelBasedOnApplicationLocale) {
@@ -156,7 +118,7 @@ TEST_F(DictationNudgeControllerTest, SetsLabelBasedOnApplicationLocale) {
     std::string text = base::UTF16ToUTF8(label->GetText());
     EXPECT_THAT(text, HasSubstr(testcase.label));
 
-    WaitForWidgetClose(controller, nudge);
+    WaitForWidgetDestruction(controller, nudge);
   }
 }
 
