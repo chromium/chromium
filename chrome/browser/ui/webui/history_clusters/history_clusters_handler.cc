@@ -21,6 +21,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/common/pref_names.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/config.h"
 #include "components/history_clusters/core/features.h"
@@ -259,6 +260,16 @@ void HistoryClustersHandler::LoadMoreClusters(const std::string& query) {
 void HistoryClustersHandler::RemoveVisits(
     std::vector<mojom::URLVisitPtr> visits,
     RemoveVisitsCallback callback) {
+  // TODO(crbug.com/1327743): Enforced here because enforcing at the UI level is
+  // too complicated to merge. We can consider removing this clause or turning
+  // it to a DCHECK after we enforce it at the UI level, but it's essentially
+  // harmless to keep it here too.
+  if (!profile_->GetPrefs()->GetBoolean(
+          ::prefs::kAllowDeletingBrowserHistory)) {
+    std::move(callback).Run(false);
+    return;
+  }
+
   // Reject the request if a pending task exists or the set of visits is empty.
   if (remove_task_tracker_.HasTrackedTasks() || visits.empty()) {
     std::move(callback).Run(false);
