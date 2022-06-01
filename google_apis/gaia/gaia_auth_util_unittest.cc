@@ -135,6 +135,18 @@ TEST(GaiaAuthUtilTest, AreEmailsSame) {
   EXPECT_FALSE(AreEmailsSame("user@gmail.com", "foo@gmail.com"));
 }
 
+TEST(GaiaAuthUtilTest, IsGoogleRobotAccountEmail) {
+  EXPECT_FALSE(IsGoogleRobotAccountEmail(""));
+  EXPECT_FALSE(IsGoogleRobotAccountEmail("foo"));
+  EXPECT_FALSE(IsGoogleRobotAccountEmail("1234567890"));
+  EXPECT_FALSE(IsGoogleRobotAccountEmail("foo@gmail.com"));
+  EXPECT_FALSE(IsGoogleRobotAccountEmail("system.gserviceaccount.com"));
+  EXPECT_TRUE(IsGoogleRobotAccountEmail("foo@system.gserviceaccount.com"));
+  EXPECT_TRUE(IsGoogleRobotAccountEmail("foo@system.googleusercontent.com"));
+  EXPECT_TRUE(IsGoogleRobotAccountEmail("foo@System.Gserviceaccount.com"));
+  EXPECT_TRUE(IsGoogleRobotAccountEmail("foo@System.Googleusercontent.com"));
+}
+
 TEST(GaiaAuthUtilTest, GmailAndGooglemailAreSame) {
   EXPECT_TRUE(AreEmailsSame("foo@gmail.com", "foo@googlemail.com"));
   EXPECT_FALSE(AreEmailsSame("bar@gmail.com", "foo@googlemail.com"));

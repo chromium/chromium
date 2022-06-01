@@ -5,6 +5,7 @@
 #include "google_apis/gaia/core_account_id.h"
 
 #include "base/check.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 
 namespace {
 // Returns whether the string looks like an email (the test is
@@ -37,6 +38,16 @@ CoreAccountId CoreAccountId::FromGaiaId(const std::string& gaia_id) {
 }
 
 // static
+CoreAccountId CoreAccountId::FromRobotEmail(const std::string& robot_email) {
+  if (robot_email.empty())
+    return CoreAccountId();
+  DCHECK(gaia::IsGoogleRobotAccountEmail(robot_email))
+      << "Not a valid robot email [robot_email = " << robot_email << "]";
+  return CoreAccountId::FromString(robot_email);
+}
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// static
 CoreAccountId CoreAccountId::FromEmail(const std::string& email) {
   if (email.empty())
     return CoreAccountId();
@@ -45,9 +56,10 @@ CoreAccountId CoreAccountId::FromEmail(const std::string& email) {
       << "Expected an email [actual = " << email << "]";
   return CoreAccountId::FromString(email);
 }
+#endif
 
 // static
-CoreAccountId CoreAccountId::FromString(const std::string value) {
+CoreAccountId CoreAccountId::FromString(const std::string& value) {
   CoreAccountId account_id;
   account_id.id_ = value;
   return account_id;

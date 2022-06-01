@@ -379,16 +379,7 @@ void MutableProfileOAuth2TokenServiceDelegate::LoadCredentials(
     return;
   }
 
-  // If |account_id| is an email address, then canonicalize it. This is needed
-  // to support legacy account IDs, and will not be needed after switching to
-  // gaia IDs.
-  if (primary_account_id.ToString().find('@') != std::string::npos) {
-    loading_primary_account_id_ = CoreAccountId::FromEmail(
-        gaia::CanonicalizeEmail(primary_account_id.ToString()));
-  } else {
-    loading_primary_account_id_ = primary_account_id;
-  }
-
+  loading_primary_account_id_ = primary_account_id;
   web_data_service_request_ = token_web_data_->GetAllTokens(this);
 }
 

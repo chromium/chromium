@@ -143,14 +143,15 @@ void DeviceOAuth2TokenService::OnRefreshTokenResponse(
 
 void DeviceOAuth2TokenService::OnGetTokenInfoResponse(
     std::unique_ptr<base::DictionaryValue> token_info) {
-  std::string gaia_robot_id;
+  std::string robot_email;
   // For robot accounts email id is the account id.
-  token_info->GetString("email", &gaia_robot_id);
+  token_info->GetString("email", &robot_email);
   gaia_oauth_client_.reset();
 
   store_->PrepareTrustedAccountId(base::BindRepeating(
       &DeviceOAuth2TokenService::OnPrepareTrustedAccountIdFinished,
-      weak_ptr_factory_.GetWeakPtr(), CoreAccountId::FromEmail(gaia_robot_id)));
+      weak_ptr_factory_.GetWeakPtr(),
+      CoreAccountId::FromRobotEmail(robot_email)));
 }
 
 void DeviceOAuth2TokenService::OnOAuthError() {
