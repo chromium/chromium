@@ -257,6 +257,8 @@ mojom::HidDeviceInfoPtr FakeHidManager::CreateAndAddDeviceWithTopLevelUsage(
       HidBlocklist::Get().GetProtectedReportIds(
           HidBlocklist::kReportTypeFeature, vendor_id, product_id,
           device->collections);
+  device->is_excluded_by_blocklist =
+      HidBlocklist::Get().IsVendorProductBlocked(vendor_id, product_id);
   AddDevice(device.Clone());
   return device;
 }

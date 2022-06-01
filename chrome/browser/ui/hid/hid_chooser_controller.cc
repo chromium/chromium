@@ -20,7 +20,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
-#include "services/device/public/cpp/hid/hid_blocklist.h"
 #include "services/device/public/cpp/hid/hid_switches.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -312,27 +311,15 @@ bool HidChooserController::DisplayDevice(
     return false;
   }
 
-  if (device::HidBlocklist::IsDeviceExcluded(device)) {
+  if (device.is_excluded_by_blocklist) {
     AddMessageToConsole(
         blink::mojom::ConsoleMessageLevel::kInfo,
         base::StringPrintf(
-            "Chooser dialog is not displaying a device blocked by "
+            "Chooser dialog is not displaying a device excluded by "
             "the HID blocklist: vendorId=%d, "
-            "productId=%d, name='%s', serial='%s', numberOfCollections=%zu, "
-            "numberOfProtectedInputReports=%zu, "
-            "numberOfProtectedOutputReports=%zu, "
-            "numberOfProtectedFeatureReports=%zu",
+            "productId=%d, name='%s', serial='%s'",
             device.vendor_id, device.product_id, device.product_name.c_str(),
-            device.serial_number.c_str(), device.collections.size(),
-            device.protected_input_report_ids
-                ? device.protected_input_report_ids->size()
-                : 0,
-            device.protected_output_report_ids
-                ? device.protected_output_report_ids->size()
-                : 0,
-            device.protected_feature_report_ids
-                ? device.protected_feature_report_ids->size()
-                : 0));
+            device.serial_number.c_str()));
     return false;
   }
 

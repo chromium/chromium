@@ -347,6 +347,10 @@ struct HidDeviceInfo {
   [MinVersion=1] array<uint8>? protected_input_report_ids@14;
   [MinVersion=1] array<uint8>? protected_output_report_ids@15;
   [MinVersion=1] array<uint8>? protected_feature_report_ids@16;
+
+  // True if the device is excluded from access by the HID blocklist. It is
+  // based solely on |vendor_id| and |product_id| information.
+  [MinVersion=3] bool is_excluded_by_blocklist@17;
 };
 
 // A client interface for receiving a notification when HID devices are
