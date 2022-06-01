@@ -27,83 +27,80 @@ NetworkProperties::NetworkProperties(const NetworkProperties& other) = default;
 NetworkProperties::~NetworkProperties() {
 }
 
-std::unique_ptr<base::DictionaryValue> NetworkProperties::ToValue(
-    bool network_list) const {
-  std::unique_ptr<base::DictionaryValue> value(new base::DictionaryValue());
+base::Value::Dict NetworkProperties::ToValue(bool network_list) const {
+  base::Value::Dict value;
 
-  value->SetStringPath(onc::network_config::kGUID, guid);
-  value->SetStringPath(onc::network_config::kName, name);
-  value->SetStringPath(onc::network_config::kConnectionState, connection_state);
+  value.Set(onc::network_config::kGUID, guid);
+  value.Set(onc::network_config::kName, name);
+  value.Set(onc::network_config::kConnectionState, connection_state);
   DCHECK(type == onc::network_type::kWiFi);
-  value->SetString(onc::network_config::kType, type);
+  value.Set(onc::network_config::kType, type);
 
   // For now, assume all WiFi services are connectable.
-  value->SetBoolPath(onc::network_config::kConnectable, true);
+  value.Set(onc::network_config::kConnectable, true);
 
-  base::DictionaryValue wifi;
-  wifi.SetStringPath(onc::wifi::kSecurity, security);
-  wifi.SetIntPath(onc::wifi::kSignalStrength, signal_strength);
+  base::Value::Dict wifi;
+  wifi.Set(onc::wifi::kSecurity, security);
+  wifi.Set(onc::wifi::kSignalStrength, static_cast<int>(signal_strength));
 
   // Network list expects subset of data.
   if (!network_list) {
     if (frequency != kFrequencyUnknown)
-      wifi.SetIntPath(onc::wifi::kFrequency, frequency);
-    base::ListValue frequency_list;
+      wifi.Set(onc::wifi::kFrequency, frequency);
+    base::Value::List frequency_list;
     for (FrequencySet::const_iterator it = this->frequency_set.begin();
          it != this->frequency_set.end();
          ++it) {
       frequency_list.Append(*it);
     }
-    if (!frequency_list.GetListDeprecated().empty())
-      wifi.SetPath(onc::wifi::kFrequencyList, std::move(frequency_list));
+    if (!frequency_list.empty()) {
+      wifi.Set(onc::wifi::kFrequencyList, std::move(frequency_list));
+    }
     if (!bssid.empty())
-      wifi.SetStringPath(onc::wifi::kBSSID, bssid);
-    wifi.SetStringPath(onc::wifi::kSSID, ssid);
-    wifi.SetStringPath(onc::wifi::kHexSSID,
-                       base::HexEncode(ssid.c_str(), ssid.size()));
+      wifi.Set(onc::wifi::kBSSID, bssid);
+    wifi.Set(onc::wifi::kSSID, ssid);
+    wifi.Set(onc::wifi::kHexSSID, base::HexEncode(ssid.c_str(), ssid.size()));
   }
-  value->SetPath(onc::network_type::kWiFi, std::move(wifi));
+  value.Set(onc::network_type::kWiFi, std::move(wifi));
 
   return value;
 }
 
-bool NetworkProperties::UpdateFromValue(const base::DictionaryValue& value) {
-  const base::DictionaryValue* wifi = nullptr;
-  std::string network_type;
+bool NetworkProperties::UpdateFromValue(const base::Value::Dict& value) {
+  const std::string* network_type =
+      value.FindString(onc::network_config::kType);
   // Get network type and make sure that it is WiFi (if specified).
-  if (value.GetString(onc::network_config::kType, &network_type)) {
-    if (network_type != onc::network_type::kWiFi)
+  if (network_type) {
+    if (*network_type != onc::network_type::kWiFi)
       return false;
-    type = network_type;
+    type = *network_type;
   }
-  if (value.GetDictionary(onc::network_type::kWiFi, &wifi)) {
-    const std::string* name_ptr =
-        value.FindStringPath(onc::network_config::kName);
+
+  const base::Value::Dict* wifi = value.FindDict(onc::network_type::kWiFi);
+  if (wifi) {
+    const std::string* name_ptr = value.FindString(onc::network_config::kName);
     if (name_ptr)
       name = *name_ptr;
-    const std::string* guid_ptr =
-        value.FindStringPath(onc::network_config::kGUID);
+    const std::string* guid_ptr = value.FindString(onc::network_config::kGUID);
     if (guid_ptr)
       guid = *guid_ptr;
     const std::string* connection_state_ptr =
-        value.FindStringPath(onc::network_config::kConnectionState);
+        value.FindString(onc::network_config::kConnectionState);
     if (connection_state_ptr)
       connection_state = *connection_state_ptr;
 
-    const std::string* security_ptr =
-        wifi->FindStringPath(onc::wifi::kSecurity);
+    const std::string* security_ptr = wifi->FindString(onc::wifi::kSecurity);
     if (security_ptr)
       security = *security_ptr;
-    const std::string* ssid_ptr = wifi->FindStringPath(onc::wifi::kSSID);
+    const std::string* ssid_ptr = wifi->FindString(onc::wifi::kSSID);
     if (ssid_ptr)
       ssid = *ssid_ptr;
-    const std::string* password_ptr =
-        wifi->FindStringPath(onc::wifi::kPassphrase);
+    const std::string* password_ptr = wifi->FindString(onc::wifi::kPassphrase);
     if (password_ptr)
       password = *password_ptr;
 
     absl::optional<bool> auto_connect_opt =
-        wifi->FindBoolKey(onc::wifi::kAutoConnect);
+        wifi->FindBool(onc::wifi::kAutoConnect);
     if (auto_connect_opt)
       auto_connect = *auto_connect_opt;
 

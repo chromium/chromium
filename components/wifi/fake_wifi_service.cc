@@ -54,53 +54,51 @@ void FakeWiFiService::UnInitialize() {
 }
 
 void FakeWiFiService::GetProperties(const std::string& network_guid,
-                                    base::DictionaryValue* properties,
+                                    base::Value::Dict* properties,
                                     std::string* error) {
   NetworkList::iterator network_properties = FindNetwork(network_guid);
   if (network_properties == networks_.end()) {
     *error = "Error.InvalidNetworkGuid";
     return;
   }
-  properties->Swap(network_properties->ToValue(false).get());
+  *properties = network_properties->ToValue(/*network_list=*/false);
 }
 
 void FakeWiFiService::GetManagedProperties(
     const std::string& network_guid,
-    base::DictionaryValue* managed_properties,
+    base::Value::Dict* managed_properties,
     std::string* error) {
   // Not implemented
   *error = kErrorWiFiService;
 }
 
 void FakeWiFiService::GetState(const std::string& network_guid,
-                               base::DictionaryValue* properties,
+                               base::Value::Dict* properties,
                                std::string* error) {
   NetworkList::iterator network_properties = FindNetwork(network_guid);
   if (network_properties == networks_.end()) {
     *error = "Error.InvalidNetworkGuid";
     return;
   }
-  properties->Swap(network_properties->ToValue(true).get());
+  *properties = network_properties->ToValue(/*network_list=*/true);
 }
 
-void FakeWiFiService::SetProperties(
-    const std::string& network_guid,
-    std::unique_ptr<base::DictionaryValue> properties,
-    std::string* error) {
+void FakeWiFiService::SetProperties(const std::string& network_guid,
+                                    base::Value::Dict properties,
+                                    std::string* error) {
   NetworkList::iterator network_properties = FindNetwork(network_guid);
   if (network_properties == networks_.end() ||
-      !network_properties->UpdateFromValue(*properties)) {
+      !network_properties->UpdateFromValue(properties)) {
     *error = "Error.DBusFailed";
   }
 }
 
-void FakeWiFiService::CreateNetwork(
-    bool shared,
-    std::unique_ptr<base::DictionaryValue> properties,
-    std::string* network_guid,
-    std::string* error) {
+void FakeWiFiService::CreateNetwork(bool shared,
+                                    base::Value::Dict properties,
+                                    std::string* network_guid,
+                                    std::string* error) {
   NetworkProperties network_properties;
-  if (network_properties.UpdateFromValue(*properties)) {
+  if (network_properties.UpdateFromValue(properties)) {
     network_properties.guid = network_properties.ssid;
     networks_.push_back(network_properties);
     *network_guid = network_properties.guid;
@@ -110,17 +108,14 @@ void FakeWiFiService::CreateNetwork(
 }
 
 void FakeWiFiService::GetVisibleNetworks(const std::string& network_type,
-                                         base::ListValue* network_list,
-                                         bool include_details) {
+                                         bool include_details,
+                                         base::Value::List* network_list) {
   for (NetworkList::const_iterator it = networks_.begin();
        it != networks_.end();
        ++it) {
     if (network_type.empty() || network_type == onc::network_type::kAllTypes ||
         it->type == network_type) {
-      std::unique_ptr<base::DictionaryValue> network(
-          it->ToValue(!include_details));
-      network_list->GetList().Append(
-          base::Value::FromUniquePtrValue(std::move(network)));
+      network_list->Append(it->ToValue(/*network_list=*/!include_details));
     }
   }
 }

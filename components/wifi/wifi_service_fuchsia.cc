@@ -24,35 +24,35 @@ class WifiServiceFuchsia : public WiFiService {
   void UnInitialize() override { NOTIMPLEMENTED_LOG_ONCE(); }
 
   void GetProperties(const std::string& network_guid,
-                     base::DictionaryValue* properties,
+                     base::Value::Dict* properties,
                      std::string* error) override {
     *error = kErrorNotImplemented;
     NOTIMPLEMENTED_LOG_ONCE();
   }
 
   void GetManagedProperties(const std::string& network_guid,
-                            base::DictionaryValue* managed_properties,
+                            base::Value::Dict* managed_properties,
                             std::string* error) override {
     *error = kErrorNotImplemented;
     NOTIMPLEMENTED_LOG_ONCE();
   }
 
   void GetState(const std::string& network_guid,
-                base::DictionaryValue* properties,
+                base::Value::Dict* properties,
                 std::string* error) override {
     *error = kErrorNotImplemented;
     NOTIMPLEMENTED_LOG_ONCE();
   }
 
   void SetProperties(const std::string& network_guid,
-                     std::unique_ptr<base::DictionaryValue> properties,
+                     base::Value::Dict properties,
                      std::string* error) override {
     *error = kErrorNotImplemented;
     NOTIMPLEMENTED_LOG_ONCE();
   }
 
   void CreateNetwork(bool shared,
-                     std::unique_ptr<base::DictionaryValue> properties,
+                     base::Value::Dict properties,
                      std::string* network_guid,
                      std::string* error) override {
     *error = kErrorNotImplemented;
@@ -60,8 +60,8 @@ class WifiServiceFuchsia : public WiFiService {
   }
 
   void GetVisibleNetworks(const std::string& network_type,
-                          base::ListValue* network_list,
-                          bool include_details) override {
+                          bool include_details,
+                          base::Value::List* network_list) override {
     NOTIMPLEMENTED_LOG_ONCE();
   }
 

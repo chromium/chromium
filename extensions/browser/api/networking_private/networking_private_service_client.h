@@ -140,11 +140,11 @@ class NetworkingPrivateServiceClient
   // Callback wrappers.
   void AfterGetProperties(PropertiesCallback callback,
                           const std::string& network_guid,
-                          std::unique_ptr<base::DictionaryValue> properties,
+                          std::unique_ptr<base::Value::Dict> properties,
                           const std::string* error);
   void AfterGetState(ServiceCallbacksID callback_id,
                      const std::string& network_guid,
-                     std::unique_ptr<base::DictionaryValue> properties,
+                     std::unique_ptr<base::Value::Dict> properties,
                      const std::string* error);
   void AfterSetProperties(ServiceCallbacksID callback_id,
                           const std::string* error);
@@ -152,7 +152,7 @@ class NetworkingPrivateServiceClient
                           const std::string* network_guid,
                           const std::string* error);
   void AfterGetVisibleNetworks(ServiceCallbacksID callback_id,
-                               std::unique_ptr<base::ListValue> networks);
+                               std::unique_ptr<base::Value::List> networks);
   void AfterStartConnect(ServiceCallbacksID callback_id,
                          const std::string* error);
   void AfterStartDisconnect(ServiceCallbacksID callback_id,

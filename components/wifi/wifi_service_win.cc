@@ -199,29 +199,29 @@ class WiFiServiceImpl : public WiFiService {
   void UnInitialize() override;
 
   void GetProperties(const std::string& network_guid,
-                     base::DictionaryValue* properties,
+                     base::Value::Dict* properties,
                      std::string* error) override;
 
   void GetManagedProperties(const std::string& network_guid,
-                            base::DictionaryValue* managed_properties,
+                            base::Value::Dict* managed_properties,
                             std::string* error) override;
 
   void GetState(const std::string& network_guid,
-                base::DictionaryValue* properties,
+                base::Value::Dict* properties,
                 std::string* error) override;
 
   void SetProperties(const std::string& network_guid,
-                     std::unique_ptr<base::DictionaryValue> properties,
+                     base::Value::Dict properties,
                      std::string* error) override;
 
   void CreateNetwork(bool shared,
-                     std::unique_ptr<base::DictionaryValue> properties,
+                     base::Value::Dict properties,
                      std::string* network_guid,
                      std::string* error) override;
 
   void GetVisibleNetworks(const std::string& network_type,
-                          base::ListValue* network_list,
-                          bool include_details) override;
+                          bool include_details,
+                          base::Value::List* network_list) override;
 
   void RequestNetworkScan() override;
 
@@ -467,14 +467,14 @@ class WiFiServiceImpl : public WiFiService {
   GUID interface_guid_;
   // Temporary storage of network properties indexed by |network_guid|. Persist
   // only in memory.
-  base::DictionaryValue connect_properties_;
+  base::Value::Dict connect_properties_;
   // Preserved WLAN profile xml.
   std::map<std::string, std::string> saved_profiles_xml_;
   // Created WLAN Profiles, indexed by |network_guid|. Contains xml with TKIP
   // encryption type saved by |CreateNetwork| if applicable. Profile has to be
   // deleted if connection fails. Implicitly created profiles have to be deleted
   // if connection succeeds. Persist only in memory.
-  base::DictionaryValue created_profiles_;
+  base::Value::Dict created_profiles_;
   // Observer to get notified when network(s) have changed (e.g. connect).
   NetworkGuidListCallback networks_changed_observer_;
   // Observer to get notified when network list has changed (scan complete).
@@ -528,7 +528,7 @@ void WiFiServiceImpl::UnInitialize() {
 }
 
 void WiFiServiceImpl::GetProperties(const std::string& network_guid,
-                                    base::DictionaryValue* properties,
+                                    base::Value::Dict* properties,
                                     std::string* error) {
   DWORD error_code = EnsureInitialized();
   if (CheckError(error_code, kErrorWiFiService, error))
@@ -538,7 +538,7 @@ void WiFiServiceImpl::GetProperties(const std::string& network_guid,
   error_code = GetCurrentProperties(&connected_properties);
   if (error_code == ERROR_SUCCESS &&
       connected_properties.guid == network_guid) {
-    properties->Swap(connected_properties.ToValue(false).get());
+    *properties = connected_properties.ToValue(/*network_list=*/false);
     return;
   }
 
@@ -549,7 +549,7 @@ void WiFiServiceImpl::GetProperties(const std::string& network_guid,
     if (it != network_list.end()) {
       DVLOG(1) << "Get Properties: " << network_guid << ":"
                   << it->connection_state;
-      properties->Swap(it->ToValue(false).get());
+      *properties = it->ToValue(/*network_list=*/false);
       return;
     }
     error_code = ERROR_NOT_FOUND;
@@ -560,53 +560,49 @@ void WiFiServiceImpl::GetProperties(const std::string& network_guid,
 
 void WiFiServiceImpl::GetManagedProperties(
     const std::string& network_guid,
-    base::DictionaryValue* managed_properties,
+    base::Value::Dict* managed_properties,
     std::string* error) {
   CheckError(ERROR_CALL_NOT_IMPLEMENTED, kErrorWiFiService, error);
 }
 
 void WiFiServiceImpl::GetState(const std::string& network_guid,
-                               base::DictionaryValue* properties,
+                               base::Value::Dict* properties,
                                std::string* error) {
   CheckError(ERROR_CALL_NOT_IMPLEMENTED, kErrorWiFiService, error);
 }
 
-void WiFiServiceImpl::SetProperties(
-    const std::string& network_guid,
-    std::unique_ptr<base::DictionaryValue> properties,
-    std::string* error) {
+void WiFiServiceImpl::SetProperties(const std::string& network_guid,
+                                    base::Value::Dict properties,
+                                    std::string* error) {
   // Temporary preserve WiFi properties (desired frequency, wifi password) to
   // use in StartConnect.
-  DCHECK(properties);
-  if (!properties->HasKey(onc::network_type::kWiFi)) {
-    DVLOG(0) << "Missing WiFi properties:" << *properties;
+  if (!properties.Find(onc::network_type::kWiFi)) {
+    DVLOG(0) << "Missing WiFi properties:" << properties;
     *error = kErrorWiFiService;
     return;
   }
 
-  base::DictionaryValue* existing_properties;
   // If the network properties already exist, don't override previously set
   // properties, unless they are set in |properties|.
-  if (connect_properties_.GetDictionaryWithoutPathExpansion(
-          network_guid, &existing_properties)) {
-    existing_properties->MergeDictionary(properties.get());
+  base::Value::Dict* existing_properties =
+      connect_properties_.FindDict(network_guid);
+  if (existing_properties) {
+    existing_properties->Merge(properties);
   } else {
-    connect_properties_.SetWithoutPathExpansion(network_guid,
-                                                std::move(properties));
+    connect_properties_.Set(network_guid, std::move(properties));
   }
 }
 
-void WiFiServiceImpl::CreateNetwork(
-    bool shared,
-    std::unique_ptr<base::DictionaryValue> properties,
-    std::string* network_guid,
-    std::string* error) {
+void WiFiServiceImpl::CreateNetwork(bool shared,
+                                    base::Value::Dict properties,
+                                    std::string* network_guid,
+                                    std::string* error) {
   DWORD error_code = EnsureInitialized();
   if (CheckError(error_code, kErrorWiFiService, error))
     return;
 
   NetworkProperties network_properties;
-  if (!network_properties.UpdateFromValue(*properties)) {
+  if (!network_properties.UpdateFromValue(properties)) {
     CheckError(ERROR_INVALID_DATA, kErrorWiFiService, error);
     return;
   }
@@ -636,18 +632,18 @@ void WiFiServiceImpl::CreateNetwork(
   }
 
   if (tkip_profile_xml != profile_xml) {
-    base::DictionaryValue tkip_profile;
-    tkip_profile.SetStringKey(kProfileXmlKey, tkip_profile_xml);
-    tkip_profile.SetBoolKey(kProfileSharedKey, shared);
-    created_profiles_.SetKey(network_properties.guid, std::move(tkip_profile));
+    base::Value::Dict tkip_profile;
+    tkip_profile.Set(kProfileXmlKey, tkip_profile_xml);
+    tkip_profile.Set(kProfileSharedKey, shared);
+    created_profiles_.Set(network_properties.guid, std::move(tkip_profile));
   }
 
   *network_guid = network_properties.guid;
 }
 
 void WiFiServiceImpl::GetVisibleNetworks(const std::string& network_type,
-                                         base::ListValue* network_list,
-                                         bool include_details) {
+                                         bool include_details,
+                                         base::Value::List* network_list) {
   if (!network_type.empty() &&
       network_type != onc::network_type::kAllTypes &&
       network_type != onc::network_type::kWiFi) {
@@ -663,10 +659,7 @@ void WiFiServiceImpl::GetVisibleNetworks(const std::string& network_type,
       for (NetworkList::const_iterator it = networks.begin();
            it != networks.end();
            ++it) {
-        std::unique_ptr<base::DictionaryValue> network(
-            it->ToValue(!include_details));
-        network_list->GetList().Append(
-            base::Value::FromUniquePtrValue(std::move(network)));
+        network_list->Append(it->ToValue(/*network_list=*/!include_details));
       }
     }
   }
@@ -883,19 +876,20 @@ void WiFiServiceImpl::WaitForNetworkConnect(const std::string& network_guid,
     LOG(ERROR) << kMaxAttempts << " attempts exceeded waiting for connect to "
                << network_guid;
 
-    base::Value* created_profile = created_profiles_.FindDictKey(network_guid);
+    base::Value::Dict* created_profile =
+        created_profiles_.FindDict(network_guid);
     // Check, whether this connection is using newly created profile.
     if (created_profile) {
       const std::string* tkip_profile_xml =
-          created_profile->FindStringKey(kProfileXmlKey);
+          created_profile->FindString(kProfileXmlKey);
       absl::optional<bool> shared =
-          created_profile->FindBoolKey(kProfileSharedKey);
+          created_profile->FindBool(kProfileSharedKey);
       // Check, if this connection there is alternative TKIP profile xml that
       // should be tried. If there is, then set it up and try to connect again.
       if (tkip_profile_xml && shared) {
         // Remove TKIP profile xml, so it will not be tried again.
-        created_profile->RemoveKey(kProfileXmlKey);
-        created_profile->RemoveKey(kProfileSharedKey);
+        created_profile->Remove(kProfileXmlKey);
+        created_profile->Remove(kProfileSharedKey);
         DWORD error_code = SetProfile(*shared, *tkip_profile_xml, true);
         if (error_code == ERROR_SUCCESS) {
           // Try to connect with new profile.
@@ -937,7 +931,7 @@ void WiFiServiceImpl::WaitForNetworkConnect(const std::string& network_guid,
     if (error != ERROR_SUCCESS)
       LOG(ERROR) << error;
     // There is no need to keep created profile as network is connected.
-    created_profiles_.RemoveKey(network_guid);
+    created_profiles_.Remove(network_guid);
     // Restore previously suppressed notifications.
     enable_notify_network_changed_ = true;
     RestoreNwCategoryWizard();
@@ -1482,14 +1476,15 @@ DWORD WiFiServiceImpl::GetCurrentSSID(std::string* ssid) {
 Frequency WiFiServiceImpl::GetFrequencyToConnect(
     const std::string& network_guid) const {
   // Check whether desired frequency is set in |connect_properties_|.
-  const base::DictionaryValue* properties;
-  if (connect_properties_.GetDictionaryWithoutPathExpansion(network_guid,
-                                                            &properties)) {
-    const base::DictionaryValue* wifi;
-    if (properties->GetDictionary(onc::network_type::kWiFi, &wifi)) {
-      int frequency;
-      if (wifi->GetInteger(onc::wifi::kFrequency, &frequency))
-        return GetNormalizedFrequency(frequency);
+  const base::Value::Dict* properties =
+      connect_properties_.FindDict(network_guid);
+  if (properties) {
+    const base::Value::Dict* wifi =
+        properties->FindDict(onc::network_type::kWiFi);
+    if (wifi) {
+      absl::optional<int> frequency = wifi->FindInt(onc::wifi::kFrequency);
+      if (frequency.has_value())
+        return GetNormalizedFrequency(*frequency);
     }
   }
   return kFrequencyAny;
@@ -1595,19 +1590,21 @@ DWORD WiFiServiceImpl::Connect(const std::string& network_guid,
     } else {
       // If network is available, but is not open security, then it cannot be
       // connected without profile, so return 'access denied' error.
-      std::unique_ptr<base::DictionaryValue> properties(
-          new base::DictionaryValue);
-      const base::DictionaryValue* wifi;
-      std::string wifi_security;
+      base::Value::Dict properties;
       std::string error_string;
-      GetProperties(network_guid, properties.get(), &error_string);
-      if (error_string.empty() &&
-          properties->GetDictionary(onc::network_type::kWiFi, &wifi) &&
-          wifi->GetString(onc::wifi::kSecurity, &wifi_security) &&
-          wifi_security != onc::wifi::kSecurityNone) {
-        error = ERROR_ACCESS_DENIED;
-        LOG(ERROR) << error;
-        return error;
+      GetProperties(network_guid, &properties, &error_string);
+      if (error_string.empty()) {
+        const base::Value::Dict* wifi =
+            properties.FindDict(onc::network_type::kWiFi);
+        if (wifi) {
+          const std::string* wifi_security =
+              wifi->FindString(onc::wifi::kSecurity);
+          if (wifi_security && *wifi_security != onc::wifi::kSecurityNone) {
+            error = ERROR_ACCESS_DENIED;
+            LOG(ERROR) << error;
+            return error;
+          }
+        }
       }
       WLAN_CONNECTION_PARAMETERS wlan_params = {
           wlan_connection_mode_discovery_unsecure,
@@ -1694,12 +1691,12 @@ bool WiFiServiceImpl::HaveProfile(const std::string& network_guid) {
 DWORD WiFiServiceImpl::DeleteCreatedProfile(const std::string& network_guid) {
   DWORD error_code = ERROR_SUCCESS;
   // Check, whether this connection is using new created profile, and remove it.
-  if (created_profiles_.HasKey(network_guid)) {
+  if (created_profiles_.contains(network_guid)) {
     // Connection has failed, so delete it.
     std::wstring profile_name = ProfileNameFromGUID(network_guid);
     error_code = WlanDeleteProfile_function_(client_, &interface_guid_,
                                              profile_name.c_str(), nullptr);
-    created_profiles_.RemoveKey(network_guid);
+    created_profiles_.Remove(network_guid);
   }
   return error_code;
 }

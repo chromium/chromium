@@ -121,10 +121,10 @@ void NetworkingPrivateServiceClient::RemoveServiceCallbacks(
 void NetworkingPrivateServiceClient::GetProperties(
     const std::string& guid,
     PropertiesCallback callback) {
-  std::unique_ptr<base::DictionaryValue> properties(new base::DictionaryValue);
+  auto properties = std::make_unique<base::Value::Dict>();
   std::string* error = new std::string;
 
-  base::DictionaryValue* properties_ptr = properties.get();
+  base::Value::Dict* properties_ptr = properties.get();
   task_runner_->PostTaskAndReply(
       FROM_HERE,
       base::BindOnce(&WiFiService::GetProperties,
@@ -138,10 +138,10 @@ void NetworkingPrivateServiceClient::GetProperties(
 void NetworkingPrivateServiceClient::GetManagedProperties(
     const std::string& guid,
     PropertiesCallback callback) {
-  std::unique_ptr<base::DictionaryValue> properties(new base::DictionaryValue);
+  auto properties = std::make_unique<base::Value::Dict>();
   std::string* error = new std::string;
 
-  base::DictionaryValue* properties_ptr = properties.get();
+  base::Value::Dict* properties_ptr = properties.get();
   task_runner_->PostTaskAndReply(
       FROM_HERE,
       base::BindOnce(&WiFiService::GetManagedProperties,
@@ -160,10 +160,10 @@ void NetworkingPrivateServiceClient::GetState(
   service_callbacks->failure_callback = std::move(failure_callback);
   service_callbacks->get_properties_callback = std::move(success_callback);
 
-  std::unique_ptr<base::DictionaryValue> properties(new base::DictionaryValue);
+  auto properties = std::make_unique<base::Value::Dict>();
   std::string* error = new std::string;
 
-  base::DictionaryValue* properties_ptr = properties.get();
+  base::Value::Dict* properties_ptr = properties.get();
   task_runner_->PostTaskAndReply(
       FROM_HERE,
       base::BindOnce(&WiFiService::GetState,
@@ -192,9 +192,7 @@ void NetworkingPrivateServiceClient::SetProperties(
       FROM_HERE,
       base::BindOnce(&WiFiService::SetProperties,
                      base::Unretained(wifi_service_.get()), guid,
-                     base::DictionaryValue::From(
-                         base::Value::ToUniquePtrValue(std::move(properties))),
-                     error),
+                     std::move(properties.GetDict()), error),
       base::BindOnce(&NetworkingPrivateServiceClient::AfterSetProperties,
                      weak_factory_.GetWeakPtr(), service_callbacks->id,
                      base::Owned(error)));
@@ -216,9 +214,7 @@ void NetworkingPrivateServiceClient::CreateNetwork(
       FROM_HERE,
       base::BindOnce(&WiFiService::CreateNetwork,
                      base::Unretained(wifi_service_.get()), shared,
-                     base::DictionaryValue::From(
-                         base::Value::ToUniquePtrValue(std::move(properties))),
-                     network_guid, error),
+                     std::move(properties.GetDict()), network_guid, error),
       base::BindOnce(&NetworkingPrivateServiceClient::AfterCreateNetwork,
                      weak_factory_.GetWeakPtr(), service_callbacks->id,
                      base::Owned(network_guid), base::Owned(error)));
@@ -245,16 +241,16 @@ void NetworkingPrivateServiceClient::GetNetworks(
   service_callbacks->get_visible_networks_callback =
       std::move(success_callback);
 
-  std::unique_ptr<base::ListValue> networks(new base::ListValue);
+  auto networks = std::make_unique<base::Value::List>();
 
   // TODO(stevenjb/mef): Apply filters (configured, visible, limit).
 
-  base::ListValue* networks_ptr = networks.get();
+  base::Value::List* networks_ptr = networks.get();
   task_runner_->PostTaskAndReply(
       FROM_HERE,
       base::BindOnce(&WiFiService::GetVisibleNetworks,
                      base::Unretained(wifi_service_.get()), network_type,
-                     networks_ptr, false),
+                     /*include_details=*/false, networks_ptr),
       base::BindOnce(&NetworkingPrivateServiceClient::AfterGetVisibleNetworks,
                      weak_factory_.GetWeakPtr(), service_callbacks->id,
                      std::move(networks)));
@@ -386,19 +382,19 @@ void NetworkingPrivateServiceClient::RequestScan(const std::string& /* type */,
 void NetworkingPrivateServiceClient::AfterGetProperties(
     PropertiesCallback callback,
     const std::string& network_guid,
-    std::unique_ptr<base::DictionaryValue> properties,
+    std::unique_ptr<base::Value::Dict> properties,
     const std::string* error) {
   if (!error->empty()) {
     std::move(callback).Run(absl::nullopt, *error);
     return;
   }
-  std::move(callback).Run(std::move(*properties), absl::nullopt);
+  std::move(callback).Run(base::Value(std::move(*properties)), absl::nullopt);
 }
 
 void NetworkingPrivateServiceClient::AfterGetState(
     ServiceCallbacksID callback_id,
     const std::string& network_guid,
-    std::unique_ptr<base::DictionaryValue> properties,
+    std::unique_ptr<base::Value::Dict> properties,
     const std::string* error) {
   ServiceCallbacks* service_callbacks = callbacks_map_.Lookup(callback_id);
   DCHECK(service_callbacks);
@@ -408,19 +404,21 @@ void NetworkingPrivateServiceClient::AfterGetState(
   } else {
     DCHECK(!service_callbacks->get_properties_callback.is_null());
     std::move(service_callbacks->get_properties_callback)
-        .Run(std::move(*properties));
+        .Run(base::Value(std::move(*properties)));
   }
   RemoveServiceCallbacks(callback_id);
 }
 
 void NetworkingPrivateServiceClient::AfterGetVisibleNetworks(
     ServiceCallbacksID callback_id,
-    std::unique_ptr<base::ListValue> networks) {
+    std::unique_ptr<base::Value::List> networks) {
   ServiceCallbacks* service_callbacks = callbacks_map_.Lookup(callback_id);
   DCHECK(service_callbacks);
   DCHECK(!service_callbacks->get_visible_networks_callback.is_null());
+  // TODO(https://crbug.com/1187001): Make callbacks take base::Value::List.
   std::move(service_callbacks->get_visible_networks_callback)
-      .Run(std::move(networks));
+      .Run(base::ListValue::From(
+          std::make_unique<base::Value>(std::move(*networks))));
   RemoveServiceCallbacks(callback_id);
 }
 
