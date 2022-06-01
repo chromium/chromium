@@ -61,7 +61,7 @@ struct StructTraits<autofill::mojom::FrameTokenWithPredecessorDataView,
 template <>
 struct StructTraits<autofill::mojom::FormRendererIdDataView,
                     autofill::FormRendererId> {
-  static uint32_t id(autofill::FormRendererId r) { return r.value(); }
+  static uint64_t id(autofill::FormRendererId r) { return r.value(); }
 
   static bool Read(autofill::mojom::FormRendererIdDataView data,
                    autofill::FormRendererId* out);
@@ -70,7 +70,7 @@ struct StructTraits<autofill::mojom::FormRendererIdDataView,
 template <>
 struct StructTraits<autofill::mojom::FieldRendererIdDataView,
                     autofill::FieldRendererId> {
-  static uint32_t id(autofill::FieldRendererId r) { return r.value(); }
+  static uint64_t id(autofill::FieldRendererId r) { return r.value(); }
 
   static bool Read(autofill::mojom::FieldRendererIdDataView data,
                    autofill::FieldRendererId* out);

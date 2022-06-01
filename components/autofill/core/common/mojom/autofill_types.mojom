@@ -121,12 +121,12 @@ struct FrameTokenWithPredecessor {
 
 // autofill::FormRendererId
 struct FormRendererId {
-  uint32 id;
+  uint64 id;
 };
 
 // autofill::FieldRendererId
 struct FieldRendererId {
-  uint32 id;
+  uint64 id;
 };
 
 // autofill::SelectOption
