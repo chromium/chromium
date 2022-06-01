@@ -34,7 +34,6 @@
 #include "components/autofill_assistant/browser/trigger_context.h"
 #include "components/autofill_assistant/browser/web/mock_web_controller.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/test_browser_context.h"
 #include "content/shell/browser/shell.h"
 #include "net/http/http_status_code.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -76,7 +75,12 @@ class MockJsFlowExecutorImplDelegate : public JsFlowExecutorImpl::Delegate {
 
 class JsFlowExecutorImplTest : public BaseBrowserTest {
  public:
-  void SetUpOnMainThread() override { BaseBrowserTest::SetUpOnMainThread(); }
+  void SetUpOnMainThread() override {
+    BaseBrowserTest::SetUpOnMainThread();
+
+    flow_executor_ = std::make_unique<JsFlowExecutorImpl>(
+        shell()->web_contents(), &mock_delegate_);
+  }
 
   // Overload, ignore result value, just return the client status.
   ClientStatus RunTest(const std::string& js_flow) {
@@ -89,12 +93,7 @@ class JsFlowExecutorImplTest : public BaseBrowserTest {
     ClientStatus status;
     base::RunLoop run_loop;
 
-    // Needs to be created inside the RunLoop since we are creating a dummy
-    // WebContents and navigating to a new url.
-    JsFlowExecutorImpl flow_executor = JsFlowExecutorImpl(
-        shell()->web_contents()->GetBrowserContext(), &mock_delegate_);
-
-    flow_executor.Start(
+    flow_executor_->Start(
         js_flow, base::BindOnce(&JsFlowExecutorImplTest::OnFlowFinished,
                                 base::Unretained(this), run_loop.QuitClosure(),
                                 &status, std::ref(result_value)));
@@ -114,6 +113,7 @@ class JsFlowExecutorImplTest : public BaseBrowserTest {
 
  protected:
   NiceMock<MockJsFlowExecutorImplDelegate> mock_delegate_;
+  std::unique_ptr<JsFlowExecutorImpl> flow_executor_;
 };
 
 IN_PROC_BROWSER_TEST_F(JsFlowExecutorImplTest, SmokeTest) {
@@ -388,6 +388,37 @@ IN_PROC_BROWSER_TEST_F(JsFlowExecutorImplTest,
   EXPECT_EQ(status.proto_status(), INVALID_ACTION);
 }
 
+IN_PROC_BROWSER_TEST_F(JsFlowExecutorImplTest, StartWhileAlreadyRunningFails) {
+  EXPECT_CALL(mock_delegate_, RunNativeAction)
+      .WillOnce(WithArg<2>([&](auto callback) {
+        // Starting a second flow while the first one is running should fail.
+        EXPECT_EQ(RunTest(std::string()).proto_status(), INVALID_ACTION);
+
+        // The first flow should be able to finish successfully.
+        std::move(callback).Run(ClientStatus(ACTION_APPLIED), nullptr);
+      }));
+
+  std::unique_ptr<base::Value> result;
+  ClientStatus status = RunTest(
+      R"(
+      let [status, result] = await runNativeAction(1, "dGVzdA==" /*test*/);
+      return status;
+      )",
+      result);
+  EXPECT_EQ(status.proto_status(), ACTION_APPLIED);
+  EXPECT_EQ(*result, base::Value(2));
+}
+
+IN_PROC_BROWSER_TEST_F(JsFlowExecutorImplTest,
+                       EnvironmentIsPreservedBetweenRuns) {
+  EXPECT_EQ(RunTest("globalFlowState.i = 5;").proto_status(), ACTION_APPLIED);
+
+  std::unique_ptr<base::Value> result;
+  EXPECT_EQ(RunTest("return globalFlowState.i;", result).proto_status(),
+            ACTION_APPLIED);
+  EXPECT_EQ(*result, base::Value(5));
+}
+
 class JsFlowExecutorImplScriptExecutorTest : public BaseBrowserTest {
  public:
   void SetUpOnMainThread() override {
@@ -401,14 +432,6 @@ class JsFlowExecutorImplScriptExecutorTest : public BaseBrowserTest {
     fake_script_executor_delegate_.SetWebController(web_controller_.get());
     fake_script_executor_delegate_.SetCurrentURL(GURL("http://example.com/"));
     fake_script_executor_delegate_.SetWebContents(shell()->web_contents());
-
-    script_executor_ = std::make_unique<ScriptExecutor>(
-        /* script_path= */ "",
-        /* additional_context= */ std::make_unique<TriggerContext>(),
-        /* global_payload= */ "",
-        /* script_payload= */ "",
-        /* listener= */ nullptr, &ordered_interrupts_,
-        &fake_script_executor_delegate_, &fake_script_executor_ui_delegate_);
   }
 
  protected:
@@ -436,7 +459,16 @@ class JsFlowExecutorImplScriptExecutorTest : public BaseBrowserTest {
                                      ServiceRequestSender::ResponseInfo{}));
 
     base::RunLoop run_loop;
-    script_executor_->Run(
+
+    ScriptExecutor script_executor = ScriptExecutor(
+        /* script_path= */ "",
+        /* additional_context= */ std::make_unique<TriggerContext>(),
+        /* global_payload= */ "",
+        /* script_payload= */ "",
+        /* listener= */ nullptr, &ordered_interrupts_,
+        &fake_script_executor_delegate_, &fake_script_executor_ui_delegate_);
+
+    script_executor.Run(
         &user_data_,
         base::BindOnce(&JsFlowExecutorImplScriptExecutorTest::OnFlowFinished,
                        base::Unretained(this), run_loop.QuitClosure()));
@@ -459,7 +491,6 @@ class JsFlowExecutorImplScriptExecutorTest : public BaseBrowserTest {
   UserData user_data_;
 
   NiceMock<MockService> mock_service_;
-  std::unique_ptr<ScriptExecutor> script_executor_;
 };
 
 IN_PROC_BROWSER_TEST_F(JsFlowExecutorImplScriptExecutorTest,

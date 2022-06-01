@@ -135,6 +135,7 @@ class MockActionDelegate : public ActionDelegate {
   MOCK_CONST_METHOD0(GetPasswordChangeSuccessTracker,
                      password_manager::PasswordChangeSuccessTracker*());
   MOCK_CONST_METHOD0(GetWebContents, content::WebContents*());
+  MOCK_METHOD0(GetWebContentsForJsExecution, content::WebContents*());
   MOCK_CONST_METHOD0(GetWebController, WebController*());
   MOCK_CONST_METHOD0(GetEmailAddressForAccessTokenAccount, std::string());
   MOCK_CONST_METHOD0(GetUkmRecorder, ukm::UkmRecorder*());

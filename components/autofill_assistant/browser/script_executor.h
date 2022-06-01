@@ -210,6 +210,7 @@ class ScriptExecutor : public ActionDelegate,
   password_manager::PasswordChangeSuccessTracker*
   GetPasswordChangeSuccessTracker() const override;
   content::WebContents* GetWebContents() const override;
+  content::WebContents* GetWebContentsForJsExecution() override;
   ElementStore* GetElementStore() const override;
   WebController* GetWebController() const override;
   std::string GetEmailAddressForAccessTokenAccount() const override;

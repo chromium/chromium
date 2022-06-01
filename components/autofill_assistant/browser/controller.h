@@ -124,6 +124,7 @@ class Controller : public ScriptExecutorDelegate,
   password_manager::PasswordChangeSuccessTracker*
   GetPasswordChangeSuccessTracker() override;
   content::WebContents* GetWebContents() override;
+  content::WebContents* GetWebContentsForJsExecution() override;
   std::string GetEmailAddressForAccessTokenAccount() override;
   ukm::UkmRecorder* GetUkmRecorder() override;
   void SetTouchableElementArea(const ElementAreaProto& area) override;
@@ -439,6 +440,9 @@ class Controller : public ScriptExecutorDelegate,
   // If instantiated, will start delivering the required model for annotating
   // DOM nodes. May be nullptr.
   const raw_ptr<AnnotateDomModelService> annotate_dom_model_service_;
+
+  // Lazily instantiated in GetWebContentsForJsExecution()
+  std::unique_ptr<content::WebContents> web_contents_for_js_execution_;
 
   base::WeakPtrFactory<Controller> weak_ptr_factory_{this};
 };

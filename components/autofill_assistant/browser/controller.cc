@@ -138,6 +138,22 @@ content::WebContents* Controller::GetWebContents() {
   return web_contents();
 }
 
+constexpr char kAboutBlankURL[] = "about:blank";
+content::WebContents* Controller::GetWebContentsForJsExecution() {
+  if (!web_contents_for_js_execution_) {
+    // To execute JS flows we create a new web contents that persists
+    // across navigations.
+    web_contents_for_js_execution_ =
+        content::WebContents::Create(content::WebContents::CreateParams(
+            GetWebContents()->GetBrowserContext()));
+    // Navigate to a blank page to connect to a frame tree.
+    web_contents_for_js_execution_->GetController().LoadURLWithParams(
+        content::NavigationController::LoadURLParams(GURL(kAboutBlankURL)));
+  }
+
+  return web_contents_for_js_execution_.get();
+}
+
 std::string Controller::GetEmailAddressForAccessTokenAccount() {
   return client_->GetEmailAddressForAccessTokenAccount();
 }

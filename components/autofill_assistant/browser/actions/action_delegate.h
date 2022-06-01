@@ -316,6 +316,10 @@ class ActionDelegate {
   // Get associated web contents.
   virtual content::WebContents* GetWebContents() const = 0;
 
+  // Get dummy web contents that can be used for JS execution. The web contents
+  // is created on the first call.
+  virtual content::WebContents* GetWebContentsForJsExecution() = 0;
+
   // Get the ElementStore.
   virtual ElementStore* GetElementStore() const = 0;
 

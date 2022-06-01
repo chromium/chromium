@@ -21,7 +21,7 @@ namespace autofill_assistant {
 class JsFlowExecutorImpl : public JsFlowExecutor {
  public:
   // |delegate| must outlive the JsFlowExecutorImpl.
-  JsFlowExecutorImpl(content::BrowserContext* browser_context,
+  JsFlowExecutorImpl(content::WebContents* web_contents_for_js_execution,
                      Delegate* delegate);
   ~JsFlowExecutorImpl() override;
   JsFlowExecutorImpl(const JsFlowExecutorImpl&) = delete;
@@ -120,7 +120,6 @@ class JsFlowExecutorImpl : public JsFlowExecutor {
   }
 
   Delegate* const delegate_;
-  std::unique_ptr<content::WebContents> dummy_web_contents_;
   std::unique_ptr<DevtoolsClient> devtools_client_;
   int isolated_world_context_id_ = -1;
 

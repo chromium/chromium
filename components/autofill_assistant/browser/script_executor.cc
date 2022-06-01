@@ -629,6 +629,10 @@ content::WebContents* ScriptExecutor::GetWebContents() const {
   return delegate_->GetWebContents();
 }
 
+content::WebContents* ScriptExecutor::GetWebContentsForJsExecution() {
+  return delegate_->GetWebContentsForJsExecution();
+}
+
 ElementStore* ScriptExecutor::GetElementStore() const {
   return element_store_.get();
 }

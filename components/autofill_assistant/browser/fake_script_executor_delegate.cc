@@ -61,6 +61,11 @@ content::WebContents* FakeScriptExecutorDelegate::GetWebContents() {
   return web_contents_;
 }
 
+content::WebContents*
+FakeScriptExecutorDelegate::GetWebContentsForJsExecution() {
+  return web_contents_;
+}
+
 std::string FakeScriptExecutorDelegate::GetEmailAddressForAccessTokenAccount() {
   return std::string();
 }

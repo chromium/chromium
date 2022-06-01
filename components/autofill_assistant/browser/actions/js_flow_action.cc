@@ -27,7 +27,7 @@ const char kJsFlowActionEnabledGroup[] = "Enabled";
 JsFlowAction::JsFlowAction(ActionDelegate* delegate, const ActionProto& proto)
     : Action(delegate, proto),
       js_flow_executor_(std::make_unique<JsFlowExecutorImpl>(
-          delegate->GetWebContents()->GetBrowserContext(),
+          delegate->GetWebContentsForJsExecution(),
           this)) {
   DCHECK(proto_.has_js_flow());
 }

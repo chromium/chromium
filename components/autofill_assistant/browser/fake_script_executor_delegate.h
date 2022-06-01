@@ -45,6 +45,7 @@ class FakeScriptExecutorDelegate : public ScriptExecutorDelegate {
   password_manager::PasswordChangeSuccessTracker*
   GetPasswordChangeSuccessTracker() override;
   content::WebContents* GetWebContents() override;
+  content::WebContents* GetWebContentsForJsExecution() override;
   std::string GetEmailAddressForAccessTokenAccount() override;
   ukm::UkmRecorder* GetUkmRecorder() override;
   bool EnterState(AutofillAssistantState state) override;

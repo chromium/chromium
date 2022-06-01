@@ -63,6 +63,10 @@ class ScriptExecutorDelegate {
   virtual password_manager::PasswordChangeSuccessTracker*
   GetPasswordChangeSuccessTracker() = 0;
   virtual content::WebContents* GetWebContents() = 0;
+
+  // Get dummy web contents that can be used for JS execution. The web contents
+  // is created on the first call.
+  virtual content::WebContents* GetWebContentsForJsExecution() = 0;
   virtual std::string GetEmailAddressForAccessTokenAccount() = 0;
   virtual ukm::UkmRecorder* GetUkmRecorder() = 0;
 

@@ -118,21 +118,16 @@ absl::optional<std::string> ConvertActionToBytes(const base::Value* action,
 
 }  // namespace
 
-JsFlowExecutorImpl::JsFlowExecutorImpl(content::BrowserContext* browser_context,
-                                       Delegate* delegate)
+JsFlowExecutorImpl::JsFlowExecutorImpl(
+    content::WebContents* web_contents_for_js_execution,
+    Delegate* delegate)
     : delegate_(delegate),
-      // To execute the JS flow we create a dummy WebContents.
-      dummy_web_contents_(content::WebContents::Create(
-          content::WebContents::CreateParams(browser_context))),
       devtools_client_(std::make_unique<DevtoolsClient>(
-          content::DevToolsAgentHost::GetOrCreateFor(dummy_web_contents_.get()),
+          content::DevToolsAgentHost::GetOrCreateFor(
+              web_contents_for_js_execution),
           base::FeatureList::IsEnabled(
               autofill_assistant::features::
-                  kAutofillAssistantFullJsFlowStackTraces))) {
-  // Navigate to a blank page to connect to a frame tree.
-  dummy_web_contents_->GetController().LoadURLWithParams(
-      content::NavigationController::LoadURLParams(GURL("about:blank")));
-}
+                  kAutofillAssistantFullJsFlowStackTraces))) {}
 
 JsFlowExecutorImpl::~JsFlowExecutorImpl() = default;
 
