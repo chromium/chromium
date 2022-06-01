@@ -2054,14 +2054,15 @@ void StyleEngine::ApplyRuleSetChanges(
     // - If new sheets were appended to existing ones, start appending after the
     //   common prefix, and rebuild CascadeLayerMap only if layers are changed.
     // - For other diffs, reset author style and re-add all sheets for the
-    //   TreeScope. If there is an existing CascadeLayerMap, rebuild it.
+    //   TreeScope. If new sheets need a CascadeLayerMap, rebuild it.
     if (new_style_sheets.IsEmpty()) {
       rebuild_cascade_layer_map = false;
       ResetAuthorStyle(tree_scope);
     } else if (change == kActiveSheetsAppended) {
       append_start_index = old_style_sheets.size();
     } else {
-      rebuild_cascade_layer_map = scoped_resolver->HasCascadeLayerMap();
+      rebuild_cascade_layer_map = (changed_rule_flags & kLayerRules) ||
+                                  scoped_resolver->HasCascadeLayerMap();
       scoped_resolver->ResetStyle();
     }
   }

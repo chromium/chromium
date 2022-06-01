@@ -1600,6 +1600,54 @@ TEST_F(StyleResolverTest, CascadeLayersAfterModifyingAnotherSheet) {
   EXPECT_EQ(properties[1].types_.origin, CascadeOrigin::kAuthor);
 }
 
+// https://crbug.com/1326791
+TEST_F(StyleResolverTest, CascadeLayersAddLayersWithImportantDeclarations) {
+  GetDocument().documentElement()->setInnerHTML(R"HTML(
+    <style id="addrule"></style>
+    <target></target>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  GetDocument().getElementById("addrule")->appendChild(
+      GetDocument().createTextNode(
+          "@layer { target { font-size: 20px !important; } }"
+          "@layer { target { font-size: 10px !important; } }"));
+
+  UpdateAllLifecyclePhasesForTest();
+
+  ASSERT_TRUE(GetDocument().GetScopedStyleResolver()->GetCascadeLayerMap());
+
+  StyleResolverState state(GetDocument(),
+                           *GetDocument().QuerySelector("target"));
+  SelectorFilter filter;
+  MatchResult match_result;
+  ElementRuleCollector collector(state.ElementContext(), StyleRecalcContext(),
+                                 filter, match_result, state.Style(),
+                                 EInsideLink::kNotInsideLink);
+  MatchAllRules(state, collector);
+  const auto& properties = match_result.GetMatchedProperties();
+  ASSERT_EQ(properties.size(), 2u);
+
+  // @layer { target { font-size: 20px !important } }
+  EXPECT_TRUE(properties[0].properties->HasProperty(CSSPropertyID::kFontSize));
+  EXPECT_TRUE(
+      properties[0].properties->PropertyIsImportant(CSSPropertyID::kFontSize));
+  EXPECT_EQ("20px", properties[0].properties->GetPropertyValue(
+                        CSSPropertyID::kFontSize));
+  EXPECT_EQ(0u, properties[0].types_.layer_order);
+  EXPECT_EQ(properties[0].types_.origin, CascadeOrigin::kAuthor);
+
+  // @layer { target { font-size: 10px !important } }
+  EXPECT_TRUE(properties[1].properties->HasProperty(CSSPropertyID::kFontSize));
+  EXPECT_TRUE(
+      properties[1].properties->PropertyIsImportant(CSSPropertyID::kFontSize));
+  EXPECT_EQ("10px", properties[1].properties->GetPropertyValue(
+                        CSSPropertyID::kFontSize));
+  EXPECT_EQ(1u, properties[1].types_.layer_order);
+  EXPECT_EQ(properties[1].types_.origin, CascadeOrigin::kAuthor);
+}
+
 // TODO(crbug.com/1095765): We should have a WPT for this test case, but
 // currently Blink web test runner can't test @page rules in WPT.
 TEST_F(StyleResolverTest, CascadeLayersAndPageRules) {

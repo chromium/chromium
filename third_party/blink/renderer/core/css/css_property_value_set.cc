@@ -322,8 +322,8 @@ bool CSSPropertyValueSet::PropertyIsImportant(const T& property) const {
     return PropertyAt(found_property_index).IsImportant();
   return ShorthandIsImportant(property);
 }
-template bool CSSPropertyValueSet::PropertyIsImportant<CSSPropertyID>(
-    const CSSPropertyID&) const;
+template CORE_EXPORT bool CSSPropertyValueSet::PropertyIsImportant<
+    CSSPropertyID>(const CSSPropertyID&) const;
 template bool CSSPropertyValueSet::PropertyIsImportant<AtomicString>(
     const AtomicString&) const;
 
