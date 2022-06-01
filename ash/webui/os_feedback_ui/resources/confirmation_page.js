@@ -92,6 +92,14 @@ export class ConfirmationPageElement extends PolymerElement {
       detail: {currentState: FeedbackFlowState.CONFIRMATION}
     }));
   }
+
+  /**
+   * Close the app when user clicks the done button.
+   * @protected
+   */
+  handleDoneButtonClicked_() {
+    window.close();
+  }
 }
 
 customElements.define(ConfirmationPageElement.is, ConfirmationPageElement);

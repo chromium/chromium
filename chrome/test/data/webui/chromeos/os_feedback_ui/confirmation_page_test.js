@@ -5,6 +5,7 @@
 import {ConfirmationPageElement} from 'chrome://os-feedback/confirmation_page.js';
 import {FeedbackFlowState} from 'chrome://os-feedback/feedback_flow.js';
 import {SendReportStatus} from 'chrome://os-feedback/feedback_types.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {eventToPromise, flushTasks, isVisible} from '../../test_util.js';
@@ -184,5 +185,24 @@ export function confirmationPageTest() {
     await clickPromise;
     assertTrue(!!actualCurrentState);
     assertEquals(FeedbackFlowState.CONFIRMATION, actualCurrentState);
+  });
+
+  // Test clicking done button should close the window.
+  test('ClickDoneButtonShouldCloseWindow', async () => {
+    await initializePage();
+    const resolver = new PromiseResolver();
+    let windowCloseCalled = 0;
+
+    const closeMock = () => {
+      windowCloseCalled++;
+      return resolver.promise;
+    };
+    window.close = closeMock;
+
+    const doneButton = getElement(page, '#buttonDone');
+    doneButton.click();
+    await flushTasks();
+
+    assertEquals(1, windowCloseCalled);
   });
 }
