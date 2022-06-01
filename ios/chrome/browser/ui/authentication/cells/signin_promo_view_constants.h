@@ -17,6 +17,20 @@ typedef NS_ENUM(NSInteger, SigninPromoViewMode) {
   SigninPromoViewModeSyncWithPrimaryAccount,
 };
 
+typedef NS_ENUM(NSInteger, SigninPromoViewStyle) {
+  // Standard style used for most surfaces. It contains user avatar/ chromium
+  // logo, text body, rounded corners colored button and an optional secondary
+  // plain button, all stacked vertically.
+  SigninPromoViewStyleStandard,
+  // Full card style, content stacked vertically. Contains same content as the
+  // standard style in addition to a text title and allows for non-chromium logo
+  // image.
+  SigninPromoViewStyleTitled,
+  // Compact style, same content as titled style but the image is on the
+  // leading side of the promo instead of the top of the promo.
+  SigninPromoViewStyleTitledCompact,
+};
+
 extern NSString* const kSigninPromoViewId;
 extern NSString* const kSigninPromoPrimaryButtonId;
 extern NSString* const kSigninPromoSecondaryButtonId;

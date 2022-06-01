@@ -78,3 +78,23 @@ TEST_F(SigninPromoViewTest, AccessibilityLabel) {
   EXPECT_TRUE(
       [view.accessibilityLabel isEqualToString:expectedAccessibilityLabel]);
 }
+
+// Tests that signin is created on non-compact layout and that setting compact
+// layout changes the primary button styling.
+TEST_F(SigninPromoViewTest, CompactLayout) {
+  UIWindow* currentWindow = GetAnyKeyWindow();
+  SigninPromoView* view =
+      [[SigninPromoView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
+  view.mode = SigninPromoViewModeNoAccounts;
+  [currentWindow.rootViewController.view addSubview:view];
+  // Ensure that default layout is not compact.
+  EXPECT_FALSE(view.compactLayout);
+  // In full layout, the primary button is rounded with background color.
+  EXPECT_TRUE(view.primaryButton.backgroundColor);
+  EXPECT_GT(view.primaryButton.layer.cornerRadius, 0.0);
+
+  [view setCompactLayout:YES];
+  // In compact layout, the primary button is plain.
+  EXPECT_FALSE(view.primaryButton.backgroundColor);
+  EXPECT_EQ(view.primaryButton.layer.cornerRadius, 0.0);
+}

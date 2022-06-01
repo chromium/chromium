@@ -105,4 +105,26 @@ using l10n_util::GetNSStringF;
   [signinPromoView setProfileImage:image];
 }
 
+- (void)configureSigninPromoView:(SigninPromoView*)signinPromoView
+                       withStyle:(SigninPromoViewStyle)promoViewStyle {
+  switch (promoViewStyle) {
+    case SigninPromoViewStyleStandard: {
+      signinPromoView.titleLabel.hidden = YES;
+      signinPromoView.compactLayout = NO;
+      [self configureSigninPromoView:signinPromoView];
+      return;
+    }
+    case SigninPromoViewStyleTitled: {
+      signinPromoView.titleLabel.hidden = NO;
+      signinPromoView.compactLayout = NO;
+      break;
+    }
+    case SigninPromoViewStyleTitledCompact: {
+      signinPromoView.titleLabel.hidden = NO;
+      signinPromoView.compactLayout = YES;
+      break;
+    }
+  }
+}
+
 @end
