@@ -393,8 +393,7 @@ public class AssistantVoiceSearchService implements TemplateUrlService.TemplateU
     boolean doesViolateMultiAccountCheck() {
         // In case of the accounts cannot be fetched -- we can't be sure so default to true.
         final Promise<List<Account>> promise = mAccountManagerFacade.getAccounts();
-        return !mExternalAuthUtils.canUseGooglePlayServices() || !promise.isFulfilled()
-                || promise.getResult().size() > 1;
+        return !promise.isFulfilled() || promise.getResult().size() > 1;
     }
 
     // TemplateUrlService.TemplateUrlServiceObserver implementation

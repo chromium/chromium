@@ -6,7 +6,6 @@ package org.chromium.device.geolocation;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 
@@ -33,13 +32,7 @@ public class LocationProviderFactory {
     public static LocationProvider create() {
         if (sProviderImpl != null) return sProviderImpl;
 
-        if (sUseGmsCoreLocationProvider
-                && LocationProviderGmsCore.isGooglePlayServicesAvailable(
-                           ContextUtils.getApplicationContext())) {
-            sProviderImpl = new LocationProviderGmsCore(ContextUtils.getApplicationContext());
-        } else {
-            sProviderImpl = new LocationProviderAndroid();
-        }
+        sProviderImpl = new LocationProviderAndroid();
         return sProviderImpl;
     }
 }

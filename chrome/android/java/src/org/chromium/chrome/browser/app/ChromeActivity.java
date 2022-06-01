@@ -70,7 +70,6 @@ import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.IntentHandler.IntentHandlerDelegate;
 import org.chromium.chrome.browser.IntentHandler.TabOpenType;
-import org.chromium.chrome.browser.PlayServicesVersionInfo;
 import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.app.flags.ChromeCachedFlags;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
@@ -1194,11 +1193,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             }
 
             recordDisplayDimensions();
-            int playServicesVersion = PlayServicesVersionInfo.getApkVersionNumber(this);
-            RecordHistogram.recordBooleanHistogram(
-                    "Android.PlayServices.Installed", playServicesVersion > 0);
-            RecordHistogram.recordSparseHistogram(
-                    "Android.PlayServices.Version", playServicesVersion);
 
             FontSizePrefs.getInstance(Profile.getLastUsedRegularProfile())
                     .recordUserFontPrefOnStartup();

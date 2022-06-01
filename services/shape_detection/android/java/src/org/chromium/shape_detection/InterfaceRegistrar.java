@@ -8,9 +8,7 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.mojo.system.MessagePipeHandle;
 import org.chromium.mojo.system.impl.CoreImpl;
-import org.chromium.shape_detection.mojom.BarcodeDetectionProvider;
 import org.chromium.shape_detection.mojom.FaceDetectionProvider;
-import org.chromium.shape_detection.mojom.TextDetection;
 
 @JNINamespace("shape_detection")
 class InterfaceRegistrar {
@@ -23,13 +21,7 @@ class InterfaceRegistrar {
         // Immediately wrap |nativeHandle| as it cannot be allowed to leak.
         MessagePipeHandle handle = messagePipeHandleFromNative(nativeHandle);
 
-        BarcodeDetectionProvider impl = BarcodeDetectionProviderImpl.create();
-        if (impl == null) {
-            handle.close();
-            return;
-        }
-
-        BarcodeDetectionProvider.MANAGER.bind(impl, handle);
+        handle.close();
     }
 
     @CalledByNative
@@ -43,12 +35,6 @@ class InterfaceRegistrar {
         // Immediately wrap |nativeHandle| as it cannot be allowed to leak.
         MessagePipeHandle handle = messagePipeHandleFromNative(nativeHandle);
 
-        TextDetection impl = TextDetectionImpl.create();
-        if (impl == null) {
-            handle.close();
-            return;
-        }
-
-        TextDetection.MANAGER.bind(impl, handle);
+        handle.close();
     }
 }

@@ -123,11 +123,7 @@ public final class AuthenticatorImpl implements Authenticator {
             return;
         }
 
-        Fido2ApiHandler.getInstance().makeCredential(options, mIntentSender, mRenderFrameHost,
-                mOrigin, mSupportLevel,
-                (status, response)
-                        -> onRegisterResponse(status, response),
-                status -> onError(status));
+        onError(AuthenticatorStatus.UNKNOWN_ERROR);
     }
 
     @Override
@@ -148,9 +144,7 @@ public final class AuthenticatorImpl implements Authenticator {
             return;
         }
 
-        Fido2ApiHandler.getInstance().getAssertion(options, mIntentSender, mRenderFrameHost,
-                mOrigin, mPayment, mSupportLevel,
-                (status, response) -> onSignResponse(status, response), status -> onError(status));
+        onError(AuthenticatorStatus.UNKNOWN_ERROR);
     }
 
     @Override
@@ -177,9 +171,7 @@ public final class AuthenticatorImpl implements Authenticator {
         }
 
         mIsUserVerifyingPlatformAuthenticatorAvailableCallbackQueue.add(decoratedCallback);
-        Fido2ApiHandler.getInstance().isUserVerifyingPlatformAuthenticatorAvailable(mIntentSender,
-                mRenderFrameHost, mSupportLevel,
-                isUvpaa -> onIsUserVerifyingPlatformAuthenticatorAvailableResponse(isUvpaa));
+        onIsUserVerifyingPlatformAuthenticatorAvailableResponse(false);
     }
 
     @Override

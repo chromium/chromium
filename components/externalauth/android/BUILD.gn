@@ -32,34 +32,11 @@ android_library("java") {
     "//base:base_java",
     "//components/embedder_support/android:util_java",
     "//content/public/android:content_java",
-    "//third_party/android_deps:chromium_play_services_availability_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
   sources = [
     "java/src/org/chromium/components/externalauth/ExternalAuthUtils.java",
     "java/src/org/chromium/components/externalauth/UserRecoverableErrorHandler.java",
     "java/src/org/chromium/components/externalauth/VerifiedHandler.java",
-  ]
-}
-
-android_library("junit") {
-  # Platform checks are broken for Robolectric. See https://crbug.com/1071638.
-  bypass_platform_checks = true
-  testonly = true
-
-  deps = [
-    ":java",
-    "$google_play_services_package:google_play_services_basement_java",
-    "//base:base_java",
-    "//base:base_java_test_support",
-    "//base:base_junit_test_support",
-    "//build/android:build_java",
-    "//third_party/android_deps:robolectric_all_java",
-    "//third_party/junit",
-    "//third_party/mockito:mockito_java",
-  ]
-
-  sources = [
-    "junit/src/org/chromium/components/externalauth/ExternalAuthUtilsTest.java",
   ]
 }

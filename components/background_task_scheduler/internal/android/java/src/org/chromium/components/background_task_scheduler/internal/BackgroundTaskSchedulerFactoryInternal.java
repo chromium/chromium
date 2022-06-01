@@ -4,6 +4,7 @@
 
 package org.chromium.components.background_task_scheduler.internal;
 
+import android.content.Context;
 import android.os.Build;
 
 import androidx.annotation.VisibleForTesting;
@@ -12,6 +13,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.components.background_task_scheduler.BackgroundTask;
 import org.chromium.components.background_task_scheduler.BackgroundTaskFactory;
 import org.chromium.components.background_task_scheduler.BackgroundTaskScheduler;
+import org.chromium.components.background_task_scheduler.TaskInfo;
 
 /**
  * A factory for {@link BackgroundTaskScheduler} that ensures there is only ever a single instance.
@@ -24,7 +26,17 @@ public final class BackgroundTaskSchedulerFactoryInternal {
         if (sdkInt >= Build.VERSION_CODES.M) {
             return new BackgroundTaskSchedulerJobService();
         } else {
-            return new BackgroundTaskSchedulerGcmNetworkManager();
+            return new BackgroundTaskSchedulerDelegate() {
+                @Override
+                public boolean schedule(Context context, TaskInfo taskInfo) {
+                    return false;
+                }
+
+                @Override
+                public void cancel(Context context, int taskId) {
+
+                }
+            };
         }
     }
 

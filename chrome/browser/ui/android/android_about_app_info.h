@@ -9,9 +9,6 @@
 
 class AndroidAboutAppInfo {
  public:
-  // Returns a string containing detailed info about the Google Play services
-  // status.
-  static std::string GetGmsInfo();
 
   // Returns a string containing detailed info about the os environment.
   static std::string GetOsInfo();

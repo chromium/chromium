@@ -716,26 +716,6 @@ by a child template that "extends" this file.
             android:exported="false">
         </service>
 
-        <!-- GcmTaskService for registration for Invalidations. Not actually implemented anymore. -->
-        <service android:name="com.google.ipc.invalidation.ticl.android2.channel.GcmRegistrationTaskService"
-            android:exported="true"
-            android:permission="com.google.android.gms.permission.BIND_NETWORK_TASK_SERVICE" >
-            <intent-filter>
-                <action android:name="com.google.android.gms.gcm.ACTION_TASK_READY"/>
-            </intent-filter>
-        </service>
-        <!-- GcmListenerService for messages from GCM. -->
-        <service android:name="org.chromium.chrome.browser.services.gcm.ChromeGcmListenerService"
-            android:exported="false" >
-            <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT" />
-            </intent-filter>
-        </service>
-        <service android:name="org.chromium.chrome.browser.services.gcm.GCMBackgroundService"
-            android:exported="false"/>
-        <service android:name="org.chromium.chrome.browser.services.gcm.InvalidationGcmUpstreamSender"
-            android:exported="false"/>
-
         <!-- Android Notification service listener -->
         <service android:name="org.chromium.chrome.browser.notifications.NotificationService"
             android:exported="false"/>
@@ -767,27 +747,9 @@ by a child template that "extends" this file.
             android:exported="false"
             android:permission="android.permission.BIND_JOB_SERVICE"/>
 
-        <!-- Background Task Scheduler GCM task service -->
-        <service android:name="org.chromium.components.background_task_scheduler.internal.BackgroundTaskGcmTaskService"
-            android:permission="com.google.android.gms.permission.BIND_NETWORK_TASK_SERVICE"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="com.google.android.gms.gcm.ACTION_TASK_READY" />
-            </intent-filter>
-        </service>
-
         <!-- Background Task Scheduler alarm receiver -->
         <receiver android:name="org.chromium.components.background_task_scheduler.internal.BackgroundTaskBroadcastReceiver"
             android:exported="false" />
-
-        <!-- GcmTaskService implementation to wake Chrome on scheduled events -->
-        <service android:name="org.chromium.chrome.browser.ChromeBackgroundService"
-            android:permission="com.google.android.gms.permission.BIND_NETWORK_TASK_SERVICE"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="com.google.android.gms.gcm.ACTION_TASK_READY" />
-            </intent-filter>
-        </service>
 
         <service android:name="org.chromium.chrome.browser.prerender.ChromePrerenderService"
             android:exported="true"

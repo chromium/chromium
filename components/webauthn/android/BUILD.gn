@@ -19,7 +19,6 @@ android_library("java") {
     "java/src/org/chromium/components/webauthn/Fido2ApiCall.java",
     "java/src/org/chromium/components/webauthn/Fido2ApiCallHelper.java",
     "java/src/org/chromium/components/webauthn/Fido2ApiHandler.java",
-    "java/src/org/chromium/components/webauthn/Fido2CredentialRequest.java",
     "java/src/org/chromium/components/webauthn/FidoErrorResponseCallback.java",
     "java/src/org/chromium/components/webauthn/GetAssertionResponseCallback.java",
     "java/src/org/chromium/components/webauthn/InternalAuthenticator.java",

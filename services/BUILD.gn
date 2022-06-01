@@ -141,36 +141,4 @@ if (is_android) {
       "//third_party/androidx:androidx_annotation_annotation_java",
     ]
   }
-
-  android_library("services_javatests") {
-    testonly = true
-    sources = [
-      "shape_detection/android/javatests/src/org/chromium/shape_detection/BarcodeDetectionImplTest.java",
-      "shape_detection/android/javatests/src/org/chromium/shape_detection/FaceDetectionImplTest.java",
-      "shape_detection/android/javatests/src/org/chromium/shape_detection/TestUtils.java",
-      "shape_detection/android/javatests/src/org/chromium/shape_detection/TextDetectionImplTest.java",
-    ]
-    deps = [
-      "$google_play_services_package:google_play_services_base_java",
-      "$google_play_services_package:google_play_services_basement_java",
-      "$google_play_services_package:google_play_services_vision_common_java",
-      "$google_play_services_package:google_play_services_vision_java",
-      "//base:base_java",
-      "//base:base_java_test_support",
-      "//build/android:build_java",
-      "//mojo/public/java:base_java",
-      "//mojo/public/java:bindings_java",
-      "//mojo/public/mojom/base:base_java",
-      "//services/shape_detection:shape_detection_java",
-      "//services/shape_detection/public/mojom:mojom_java",
-      "//skia/public/mojom:mojom_java",
-      "//third_party/android_deps:chromium_play_services_availability_java",
-      "//third_party/android_support_test_runner:runner_java",
-      "//third_party/androidx:androidx_test_monitor_java",
-      "//third_party/androidx:androidx_test_runner_java",
-      "//third_party/junit",
-      "//ui/gfx/geometry/mojom:mojom_java",
-    ]
-    data = [ "test/data/" ]
-  }
 }

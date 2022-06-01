@@ -25,7 +25,6 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/back_press/BackPressManagerUnitTest.java",
   "junit/src/org/chromium/chrome/browser/background_sync/BackgroundSyncBackgroundTaskSchedulerTest.java",
   "junit/src/org/chromium/chrome/browser/background_sync/BackgroundSyncBackgroundTaskTest.java",
-  "junit/src/org/chromium/chrome/browser/background_sync/BackgroundSyncGooglePlayServicesCheckerTest.java",
   "junit/src/org/chromium/chrome/browser/background_sync/PeriodicBackgroundSyncChromeWakeUpTaskTest.java",
   "junit/src/org/chromium/chrome/browser/background_task_scheduler/NativeBackgroundTaskTest.java",
   "junit/src/org/chromium/chrome/browser/base/DexFixerTest.java",

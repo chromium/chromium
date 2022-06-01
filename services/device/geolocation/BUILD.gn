@@ -159,7 +159,6 @@ if (is_android) {
       "android/java/src/org/chromium/device/geolocation/LocationProviderAdapter.java",
       "android/java/src/org/chromium/device/geolocation/LocationProviderAndroid.java",
       "android/java/src/org/chromium/device/geolocation/LocationProviderFactory.java",
-      "android/java/src/org/chromium/device/geolocation/LocationProviderGmsCore.java",
     ]
 
     deps = [
@@ -172,7 +171,6 @@ if (is_android) {
       "//build/android:build_java",
       "//components/location/android:location_java",
       "//services/device/public/java:geolocation_java",
-      "//third_party/android_deps:chromium_play_services_availability_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
     ]
     annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]

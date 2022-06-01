@@ -14,7 +14,6 @@ import org.chromium.chrome.browser.notifications.scheduler.NotificationScheduler
 import org.chromium.chrome.browser.offlinepages.OfflineBackgroundTask;
 import org.chromium.chrome.browser.offlinepages.prefetch.PrefetchBackgroundTask;
 import org.chromium.chrome.browser.omaha.OmahaService;
-import org.chromium.chrome.browser.services.gcm.GCMBackgroundTask;
 import org.chromium.chrome.browser.webapps.WebApkUpdateTask;
 import org.chromium.components.background_task_scheduler.BackgroundTask;
 import org.chromium.components.background_task_scheduler.BackgroundTaskFactory;
@@ -55,8 +54,6 @@ public class ChromeBackgroundTaskFactory implements BackgroundTaskFactory {
         switch (taskId) {
             case TaskIds.OMAHA_JOB_ID:
                 return new OmahaService();
-            case TaskIds.GCM_BACKGROUND_TASK_JOB_ID:
-                return new GCMBackgroundTask();
             case TaskIds.OFFLINE_PAGES_BACKGROUND_JOB_ID:
                 return new OfflineBackgroundTask();
             case TaskIds.OFFLINE_PAGES_PREFETCH_JOB_ID:

@@ -111,13 +111,11 @@ if (is_android) {
   android_library("shape_detection_java") {
     sources = [
       "android/java/src/org/chromium/shape_detection/BarcodeDetectionImpl.java",
-      "android/java/src/org/chromium/shape_detection/BarcodeDetectionProviderImpl.java",
       "android/java/src/org/chromium/shape_detection/BitmapUtils.java",
       "android/java/src/org/chromium/shape_detection/FaceDetectionImpl.java",
       "android/java/src/org/chromium/shape_detection/FaceDetectionImplGmsCore.java",
       "android/java/src/org/chromium/shape_detection/FaceDetectionProviderImpl.java",
       "android/java/src/org/chromium/shape_detection/InterfaceRegistrar.java",
-      "android/java/src/org/chromium/shape_detection/TextDetectionImpl.java",
     ]
 
     deps = [
@@ -133,7 +131,6 @@ if (is_android) {
       "//mojo/public/java/system:system_impl_java",
       "//services/shape_detection/public/mojom:mojom_java",
       "//skia/public/mojom:mojom_java",
-      "//third_party/android_deps:chromium_play_services_availability_java",
       "//ui/gfx/geometry/mojom:mojom_java",
     ]
   }
