@@ -134,7 +134,7 @@ ShellPlatformDelegate::ShellPlatformDelegate() = default;
 ShellPlatformDelegate::~ShellPlatformDelegate() = default;
 
 void ShellPlatformDelegate::Initialize(const gfx::Size& default_window_size) {
-  // |platform_| is unused on this platform.
+  screen_ = std::make_unique<display::ScopedNativeScreen>();
 }
 
 void ShellPlatformDelegate::CreatePlatformWindow(

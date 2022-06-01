@@ -71,6 +71,7 @@ source_set("test_support") {
     "//net",
     "//third_party/ocmock",
     "//ui/base",
+    "//ui/display",
   ]
 
   sources = [

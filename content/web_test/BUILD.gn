@@ -208,6 +208,14 @@ static_library("web_test_browser") {
       "//ppapi:blink_test_plugin",
     ]
   }
+
+  if (is_mac) {
+    deps += [ "//ui/display:test_support" ]
+  }
+
+  if (use_aura) {
+    deps += [ "//ui/aura:test_support" ]
+  }
 }
 
 static_library("web_test_renderer") {

@@ -9,8 +9,9 @@
 #include <set>
 #include <vector>
 
+#include "base/location.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "ui/display/display.h"
 #include "ui/display/display_export.h"
 #include "ui/display/screen_infos.h"
@@ -47,13 +48,20 @@ class DISPLAY_EXPORT Screen {
 
   virtual ~Screen();
 
-  // Retrieves the single Screen object; this may be null (e.g. in some tests).
+  // Retrieves the single Screen object; this may be null if it's not already
+  // created, except for IOS where it creates a native screen instance
+  // automatically.
   static Screen* GetScreen();
 
+  // Returns whether a Screen singleton exists or not.
+  static bool HasScreen();
+
+  // [Deprecated] as a public method. Do not use this.
   // Sets the global screen. Returns the previously installed screen, if any.
   // NOTE: this does not take ownership of |screen|. Tests must be sure to reset
   // any state they install.
-  static Screen* SetScreenInstance(Screen* instance);
+  static Screen* SetScreenInstance(Screen* instance,
+                                   const base::Location& location = FROM_HERE);
 
   // Returns the current absolute position of the mouse pointer.
   virtual gfx::Point GetCursorScreenPoint() = 0;
@@ -198,6 +206,8 @@ class DISPLAY_EXPORT Screen {
   virtual bool SetScreenSaverSuspended(bool suspend);
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
 
+  void set_shutdown(bool shutdown) { shutdown_ = shutdown; }
+
  private:
   friend class ScopedDisplayForNewWindows;
 
@@ -208,6 +218,9 @@ class DISPLAY_EXPORT Screen {
 
   static gfx::NativeWindow GetWindowForView(gfx::NativeView view);
 
+  // A flag indicates that the instance is a special one used during shutdown.
+  bool shutdown_ = false;
+
   int64_t display_id_for_new_windows_;
   int64_t scoped_display_id_for_new_windows_ = display::kInvalidDisplayId;
 
@@ -216,7 +229,41 @@ class DISPLAY_EXPORT Screen {
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
 };
 
-Screen* CreateNativeScreen();
+// TODO(crbug.com/1317416): Make this static private member of
+// ScopedNativeScreen.
+DISPLAY_EXPORT Screen* CreateNativeScreen();
+
+// Android does not have `CreateNativeScreen()`.
+#if !BUILDFLAG(IS_ANDROID)
+
+// ScopedNativeScreen creates a native screen if there is no screen created yet
+// (e.g. by a unit test).
+class DISPLAY_EXPORT ScopedNativeScreen {
+ public:
+  explicit ScopedNativeScreen(const base::Location& location = FROM_HERE);
+  ScopedNativeScreen(const ScopedNativeScreen&) = delete;
+  ScopedNativeScreen& operator=(const ScopedNativeScreen&) = delete;
+  virtual ~ScopedNativeScreen();
+
+  // Create and initialize the screen instance if the screen instance does not
+  // exist yet.
+  void MaybeInit(const base::Location& location = FROM_HERE);
+  void Shutdown();
+
+  Screen* screen() { return screen_.get(); }
+
+  virtual Screen* CreateScreen();
+
+ protected:
+  explicit ScopedNativeScreen(bool call_maybe_init,
+                              const base::Location& location = FROM_HERE);
+
+ private:
+  bool maybe_init_called_{false};
+  std::unique_ptr<Screen> screen_;
+};
+
+#endif
 
 }  // namespace display
 

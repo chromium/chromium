@@ -45,6 +45,8 @@ class DISPLAY_EXPORT ScreenBase : public Screen {
   void SetPanelRotationForTesting(int64_t display_id,
                                   Display::Rotation rotation) override;
 
+  bool HasDisplayObservers() const;
+
  protected:
   // Invoked when a display changed in some way, including being added.
   // If |is_primary| is true, |changed_display| is the primary display.

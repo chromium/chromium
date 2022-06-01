@@ -216,6 +216,7 @@ class FlingControllerTest : public FlingControllerEventSenderClient,
   bool first_wheel_event_sent_ = false;
   int sent_scroll_gesture_count_ = 0;
 #if BUILDFLAG(IS_WIN)
+  // This is necessary for static methods of `display::ScreenWin`.
   display::win::test::ScopedScreenWin scoped_screen_win_;
 #endif
 

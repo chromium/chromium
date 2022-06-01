@@ -151,6 +151,7 @@ source_set("x11_unittests") {
     "//ui/base/x",
     "//ui/base/x:test_support",
     "//ui/base/x:unittests",
+    "//ui/display:test_support",
     "//ui/events:test_support",
     "//ui/events/devices/x11",
     "//ui/events/platform/x11",
