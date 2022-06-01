@@ -42,4 +42,8 @@ EmptyWebMediaPlayer::GetCurrentFrameThenUpdate() {
   return nullptr;
 }
 
+absl::optional<int> EmptyWebMediaPlayer::CurrentFrameId() const {
+  return absl::nullopt;
+}
+
 }  // namespace blink

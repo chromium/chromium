@@ -262,6 +262,12 @@ class WebMediaPlayer {
   // is available.
   virtual scoped_refptr<media::VideoFrame> GetCurrentFrameThenUpdate() = 0;
 
+  // Return current video frame unique id from compositor. The query is readonly
+  // and should avoid any extra ops. Function returns absl::nullopt if current
+  // frame is invalid or fails to access current frame.
+  // TODO(crbug.com/1328005): Change the id into a 64 bit value.
+  virtual absl::optional<int> CurrentFrameId() const = 0;
+
   // Provides a PaintCanvasVideoRenderer instance owned by this WebMediaPlayer.
   // Useful for ensuring that the paint/texturing operation for current frame is
   // cached in cases of repainting/retexturing (since clients may not know that

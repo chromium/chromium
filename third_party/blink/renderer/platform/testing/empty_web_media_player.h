@@ -69,6 +69,7 @@ class EmptyWebMediaPlayer : public WebMediaPlayer,
   void SuspendForFrameClosed() override {}
   void Paint(cc::PaintCanvas*, const gfx::Rect&, cc::PaintFlags&) override {}
   scoped_refptr<media::VideoFrame> GetCurrentFrameThenUpdate() override;
+  absl::optional<int> CurrentFrameId() const override;
   bool HasAvailableVideoFrame() const override { return false; }
   base::WeakPtr<WebMediaPlayer> AsWeakPtr() override {
     return base::SupportsWeakPtr<EmptyWebMediaPlayer>::AsWeakPtr();

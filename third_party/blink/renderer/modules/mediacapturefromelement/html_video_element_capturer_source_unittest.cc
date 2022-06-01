@@ -101,6 +101,8 @@ class MockWebMediaPlayer : public WebMediaPlayer {
                             : media::VideoFrame::CreateTransparentFrame(size_);
   }
 
+  absl::optional<int> CurrentFrameId() const override { return absl::nullopt; }
+
   bool IsOpaque() const override { return is_video_opaque_; }
   bool HasAvailableVideoFrame() const override { return true; }
 

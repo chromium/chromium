@@ -1476,6 +1476,19 @@ WebMediaPlayerImpl::GetCurrentFrameThenUpdate() {
   return GetCurrentFrameFromCompositor();
 }
 
+absl::optional<int> WebMediaPlayerImpl::CurrentFrameId() const {
+  DCHECK(main_task_runner_->BelongsToCurrentThread());
+  TRACE_EVENT0("media", "WebMediaPlayerImpl::GetCurrentFrameID");
+
+  // We can't copy from protected frames.
+  if (cdm_context_ref_)
+    return absl::nullopt;
+
+  if (auto frame = compositor_->GetCurrentFrameOnAnyThread())
+    return frame->unique_id();
+  return absl::nullopt;
+}
+
 media::PaintCanvasVideoRenderer*
 WebMediaPlayerImpl::GetPaintCanvasVideoRenderer() {
   DCHECK(main_task_runner_->BelongsToCurrentThread());

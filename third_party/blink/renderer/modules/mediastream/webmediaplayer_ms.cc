@@ -1040,6 +1040,12 @@ scoped_refptr<media::VideoFrame> WebMediaPlayerMS::GetCurrentFrameThenUpdate() {
   return compositor_->GetCurrentFrame();
 }
 
+absl::optional<int> WebMediaPlayerMS::CurrentFrameId() const {
+  DVLOG(3) << __func__;
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  return compositor_->GetCurrentFrame()->unique_id();
+}
+
 bool WebMediaPlayerMS::WouldTaintOrigin() const {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   return false;
