@@ -144,7 +144,7 @@ async def main():
     #     "id": 1002,
     #     "result": {
     #         "result": {
-    #             "objectId": "__SOME_OBJECT_ID__",
+    #             "handle": "__SOME_OBJECT_ID__",
     #             "type": "array",
     #             "value": [
     #                 {

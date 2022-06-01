@@ -86,7 +86,7 @@ export class Context {
     return this.#contextId;
   }
 
-  public serializeToBidiValue(): BrowsingContext.BrowsingContextInfo {
+  public serializeToBidiValue(): BrowsingContext.Info {
     return {
       context: this.#targetInfo!.targetId,
       parent: this.#targetInfo!.openerId
@@ -142,14 +142,14 @@ export class Context {
   public async callFunction(
     functionDeclaration: string,
     _this: Script.ArgumentValue,
-    args: Script.ArgumentValue[],
+    _arguments: Script.ArgumentValue[],
     awaitPromise: boolean
   ): Promise<Script.CallFunctionResult> {
     return {
       result: await this.#scriptEvaluator.callFunction(
         functionDeclaration,
         _this,
-        args,
+        _arguments,
         awaitPromise
       ),
     };
@@ -161,7 +161,9 @@ export class Context {
     const functionDeclaration = String((resultsSelector: string) =>
       document.querySelector(resultsSelector)
     );
-    const args: Script.ArgumentValue[] = [{ type: 'string', value: selector }];
+    const _arguments: Script.ArgumentValue[] = [
+      { type: 'string', value: selector },
+    ];
 
     // TODO(sadym): handle not found exception.
     const result = await this.#scriptEvaluator.callFunction(
@@ -169,7 +171,7 @@ export class Context {
       {
         type: 'undefined',
       },
-      args,
+      _arguments,
       true
     );
 

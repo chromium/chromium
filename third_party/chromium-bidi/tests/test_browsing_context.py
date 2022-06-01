@@ -383,8 +383,8 @@ async def test_PROTO_browsingContext_findElement_findsElement(websocket,
                         "attributes": {
                             "class": "child_2"}}
                 }]
-            }, "objectId": "__SOME_OBJECT_ID_1__"
-        }}, result, ["objectId"])
+            }, "handle": "__SOME_handle_1__"
+        }}, result, ["handle"])
 
 
 @pytest.mark.asyncio

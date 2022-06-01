@@ -59,7 +59,7 @@ async def test_script_evaluateThrowingPrimitive_exceptionReturned(websocket,
                     "functionName": "",
                     "lineNumber": 1,
                     "columnNumber": 25}]}
-        }}, result, ["objectId"])
+        }}, result, ["handle"])
 
 
 @pytest.mark.asyncio
@@ -78,7 +78,7 @@ async def test_script_evaluateThrowingError_exceptionReturned(websocket,
             "lineNumber": 0,
             "exception": {
                 "type": "error",
-                "objectId": "__any_value__"
+                "handle": "__any_value__"
             },
             "stackTrace": {
                 "callFrames": [{
@@ -106,7 +106,7 @@ async def test_script_evaluateThrowingError_exceptionReturned(websocket,
                     "functionName": "",
                     "lineNumber": 1,
                     "columnNumber": 25}]}
-        }}, exception_details, ["objectId"])
+        }}, exception_details, ["handle"])
 
 
 @pytest.mark.asyncio
@@ -119,12 +119,12 @@ async def test_script_evaluateDontWaitPromise_promiseReturned(websocket,
             "awaitPromise": False,
             "target": {"context": context_id}}})
 
-    # Compare ignoring `objectId`.
+    # Compare ignoring `handle`.
     recursiveCompare({
         "result": {
             "type": "promise",
-            "objectId": "__any_value__"
-        }}, result, ["objectId"])
+            "handle": "__any_value__"
+        }}, result, ["handle"])
 
 
 # Uncomment after behaviour is clarified:
@@ -139,15 +139,15 @@ async def test_script_evaluateDontWaitPromise_promiseReturned(websocket,
 #             "awaitPromise": True,
 #             "target": {"context": context_id}}})
 #
-#     # Compare ignoring `objectId`.
+#     # Compare ignoring `handle`.
 #     recursiveCompare({
-#         "objectId": "6648989764296027.141631980526024.9376085393313653",
+#         "handle": "6648989764296027.141631980526024.9376085393313653",
 #         "type": "object",
 #         "value": [[
 #             "then", {
-#                 "objectId": "02303443180265008.08175681580349026.8281562053772789",
+#                 "handle": "02303443180265008.08175681580349026.8281562053772789",
 #                 "type": "function"}]]
-#     }, result, ["objectId"])
+#     }, result, ["handle"])
 
 
 @pytest.mark.asyncio
@@ -159,12 +159,12 @@ async def test_script_evaluateWaitPromise_resultReturned(websocket, context_id):
             "awaitPromise": True,
             "target": {"context": context_id}}})
 
-    # Compare ignoring `objectId`.
+    # Compare ignoring `handle`.
     recursiveCompare({
         "result": {
             "type": "string",
             "value": "SOME_RESULT"
-        }}, result, ["objectId"])
+        }}, result, ["handle"])
 
 
 @pytest.mark.asyncio
@@ -197,8 +197,8 @@ async def test_script_evaluateChangingObject_resultObjectDidNotChange(
                     "type": "number",
                     "value": 0
                 }]],
-            "objectId": "__any_value__"
-        }}, result, ["objectId"])
+            "handle": "__any_value__"
+        }}, result, ["handle"])
 
 
 @pytest.mark.asyncio
@@ -222,8 +222,8 @@ async def test_script_callFunctionWithArgs_resultReturn(websocket, context_id):
     result = await execute_command(websocket, {
         "method": "script.callFunction",
         "params": {
-            "functionDeclaration": "(...args)=>{return Promise.resolve(args);}",
-            "args": [{
+            "functionDeclaration": "(...arguments)=>{return Promise.resolve(arguments);}",
+            "arguments": [{
                 "type": "string",
                 "value": "ARGUMENT_STRING_VALUE"
             }, {
@@ -241,8 +241,8 @@ async def test_script_callFunctionWithArgs_resultReturn(websocket, context_id):
             }, {
                 "type": 'number',
                 "value": 42}],
-            "objectId": "__any_value__"
-        }}, result, ["objectId"])
+            "handle": "__any_value__"
+        }}, result, ["handle"])
 
 
 # Uncomment after behaviour is clarified:
@@ -253,8 +253,8 @@ async def test_script_callFunctionWithArgs_resultReturn(websocket, context_id):
 #     result = await execute_command(websocket, {
 #         "method": "script.callFunction",
 #         "params": {
-#             "functionDeclaration": "(...args)=>({then: (r)=>{r(args);}})",
-#             "args": [{
+#             "functionDeclaration": "(...arguments)=>({then: (r)=>{r(arguments);}})",
+#             "arguments": [{
 #                 "type": "string",
 #                 "value": "ARGUMENT_STRING_VALUE"
 #             }, {
@@ -265,12 +265,12 @@ async def test_script_callFunctionWithArgs_resultReturn(websocket, context_id):
 #             "target": {"context": context_id}}})
 #
 #     recursiveCompare({
-#         "objectId": "__any_value__",
+#         "handle": "__any_value__",
 #         "type": "object",
 #         "value": [[
 #             "then", {
 #                 "type": "function"}]]
-#     }, result, ["objectId"])
+#     }, result, ["handle"])
 
 
 @pytest.mark.asyncio
@@ -279,8 +279,8 @@ async def test_script_callFunctionWithArgsAndDoNotAwaitPromise_promiseReturn(
     result = await execute_command(websocket, {
         "method": "script.callFunction",
         "params": {
-            "functionDeclaration": "(...args)=>{return Promise.resolve(args);}",
-            "args": [{
+            "functionDeclaration": "(...arguments)=>{return Promise.resolve(arguments);}",
+            "arguments": [{
                 "type": "string",
                 "value": "ARGUMENT_STRING_VALUE"
             }, {
@@ -293,8 +293,8 @@ async def test_script_callFunctionWithArgsAndDoNotAwaitPromise_promiseReturn(
     recursiveCompare({
         "result": {
             "type": "promise",
-            "objectId": "__any_value__"
-        }}, result, ["objectId"])
+            "handle": "__any_value__"
+        }}, result, ["handle"])
 
 
 @pytest.mark.asyncio
@@ -307,14 +307,14 @@ async def test_script_callFunctionWithRemoteValueArgument_resultReturn(
             "awaitPromise": True,
             "target": {"context": context_id}}})
 
-    object_id = result["result"]["objectId"]
+    handle = result["result"]["handle"]
 
     result = await execute_command(websocket, {
         "method": "script.callFunction",
         "params": {
             "functionDeclaration": "(obj)=>{return obj.SOME_PROPERTY;}",
-            "args": [{
-                "objectId": object_id
+            "arguments": [{
+                "handle": handle
             }],
             "target": {"context": context_id}}})
 
@@ -361,8 +361,8 @@ async def test_script_callFunctionWithAsyncArrowFunctionAndAwaitPromiseFalse_pro
     recursiveCompare({
         "result": {
             "type": "promise",
-            "objectId": "__any_value__"
-        }}, result, ["objectId"])
+            "handle": "__any_value__"
+        }}, result, ["handle"])
 
 
 @pytest.mark.asyncio
@@ -402,8 +402,8 @@ async def test_script_callFunctionWithAsyncClassicFunctionAndAwaitPromiseFalse_p
     recursiveCompare({
         "result": {
             "type": "promise",
-            "objectId": "__any_value__"
-        }}, result, ["objectId"])
+            "handle": "__any_value__"
+        }}, result, ["handle"])
 
 
 @pytest.mark.asyncio
@@ -445,6 +445,26 @@ async def test_script_callFunctionWithClassicFunctionAndThisParameter_thisIsUsed
 
 
 @pytest.mark.asyncio
+# TODO(sadym): fix test. Serialize Number, String etc classes properly.
+async def _ignore_test_script_callFunctionWithClassicFunctionAndThisParameter_thisIsUsed(
+      websocket, context_id):
+    result = await execute_command(websocket, {
+        "method": "script.callFunction",
+        "params": {
+            "functionDeclaration": "function(){return this}",
+            "this": {
+                "type": "number",
+                "value": 42
+            },
+            "target": {"context": context_id}}})
+
+    assert result == {
+        "result": {
+            "type": "number",
+            "value": 42}}
+
+
+@pytest.mark.asyncio
 async def test_script_callFunctionWithNode_resultReceived(websocket,
       context_id):
     # 1. Get element.
@@ -459,15 +479,15 @@ async def test_script_callFunctionWithNode_resultReceived(websocket,
             "selector": "body > h2",
             "context": context_id}})
 
-    object_id = result["result"]["objectId"]
+    handle = result["result"]["handle"]
 
     # 2. Evaluate script on it.
     result = await execute_command(websocket, {
         "method": "script.callFunction",
         "params": {
             "functionDeclaration": "(element) => {return '!!@@##, ' + element.innerHTML}",
-            "args": [{
-                "objectId": object_id}],
+            "arguments": [{
+                "handle": handle}],
             "target": {"context": context_id}}})
 
     assert result == {
@@ -488,8 +508,8 @@ async def test_script_evaluate_windowOpen_windowOpened(websocket,
     recursiveCompare({
         "result": {
             "type": "window",
-            "objectId": "__any_value__"
-        }}, result, ["objectId"])
+            "handle": "__any_value__"
+        }}, result, ["handle"])
 
     result = await execute_command(websocket,
                                    {"method": "browsingContext.getTree",
@@ -510,7 +530,7 @@ async def test_script_evaluate_windowOpen_windowOpened(websocket,
 #         "method": "script.callFunction",
 #         "params": {
 #             "functionDeclaration": "(callback) => {callback('CALLBACK_ARGUMENT'); return 'SOME_RESULT';}",
-#             "args": [{
+#             "arguments": [{
 #                 "type": "PROTO.binding",
 #                 "id": "BINDING_NAME"}],
 #             "target": {"context": context_id}

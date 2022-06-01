@@ -188,7 +188,7 @@ async def test_consoleLog_logEntryAddedFormatOutput(websocket, context_id):
                 "type": "string",
                 "value": "abc"
             }, {
-                "objectId": "__any_value__",
+                "handle": "__any_value__",
                 "type": "object",
                 "value": [
                     ["id", {
@@ -196,7 +196,7 @@ async def test_consoleLog_logEntryAddedFormatOutput(websocket, context_id):
                         "value": 1
                     }]]
             }, {
-                "objectId": "__any_value__",
+                "handle": "__any_value__",
                 "type": "object",
                 "value": [[
                     "font-size", {
@@ -204,7 +204,7 @@ async def test_consoleLog_logEntryAddedFormatOutput(websocket, context_id):
                         "value": "20px"
                     }]]}]}},
         event_response,
-        ("timestamp", "objectId"))
+        ("timestamp", "handle"))
 
 
 @pytest.mark.asyncio

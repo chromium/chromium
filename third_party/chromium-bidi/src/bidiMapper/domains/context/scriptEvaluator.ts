@@ -89,7 +89,7 @@ export class ScriptEvaluator {
   public async callFunction(
     functionDeclaration: string,
     _this: Script.ArgumentValue,
-    args: Script.ArgumentValue[],
+    _arguments: Script.ArgumentValue[],
     awaitPromise: boolean
   ): Promise<Script.ScriptResult> {
     const callFunctionAndSerializeScript = `(...args)=>{ return _callFunction((\n${functionDeclaration}\n), args);
@@ -102,7 +102,7 @@ export class ScriptEvaluator {
     const thisAndArgumentsList = [await this.#deserializeToCdpArg(_this)];
     thisAndArgumentsList.push(
       ...(await Promise.all(
-        args.map(async (a) => {
+        _arguments.map(async (a) => {
           return await this.#deserializeToCdpArg(a);
         })
       ))
@@ -169,12 +169,15 @@ export class ScriptEvaluator {
       | Protocol.Runtime.CallFunctionOnResponse
       | Protocol.Runtime.EvaluateResponse
   ): CommonDataTypes.RemoteValue {
-    const bidiValue = cdpValue.result.webDriverValue!;
-    if (cdpValue.result.objectId) {
-      bidiValue.objectId = cdpValue.result.objectId;
-    }
     // This relies on the CDP to implement proper BiDi serialization, except
-    // objectIds.
+    // objectIds+handles.
+    const cdpWebDriverValue = cdpValue.result.webDriverValue!;
+    if (!cdpValue.result.objectId) {
+      return cdpWebDriverValue as CommonDataTypes.RemoteValue;
+    }
+
+    const bidiValue = cdpWebDriverValue as any;
+    bidiValue.handle = cdpValue.result.objectId;
     return bidiValue as CommonDataTypes.RemoteValue;
   }
 
@@ -208,12 +211,12 @@ export class ScriptEvaluator {
   }
 
   async #deserializeToCdpArg(
-    serializedValue: CommonDataTypes.LocalValue
+    argumentValue: Script.ArgumentValue
   ): Promise<Protocol.Runtime.CallArgument> {
-    if (`objectId` in serializedValue) {
-      return { objectId: serializedValue.objectId };
+    if ('handle' in argumentValue) {
+      return { objectId: argumentValue.handle };
     }
-    switch (serializedValue.type) {
+    switch (argumentValue.type) {
       // Primitive Protocol Value
       // https://w3c.github.io/webdriver-bidi/#data-types-protocolValue-primitiveProtocolValue
       case 'undefined': {
@@ -223,31 +226,31 @@ export class ScriptEvaluator {
         return { unserializableValue: 'null' };
       }
       case 'string': {
-        return { value: serializedValue.value };
+        return { value: argumentValue.value };
       }
       case 'number': {
-        if (serializedValue.value === 'NaN') {
+        if (argumentValue.value === 'NaN') {
           return { unserializableValue: 'NaN' };
-        } else if (serializedValue.value === '-0') {
+        } else if (argumentValue.value === '-0') {
           return { unserializableValue: '-0' };
-        } else if (serializedValue.value === '+Infinity') {
+        } else if (argumentValue.value === '+Infinity') {
           return { unserializableValue: '+Infinity' };
-        } else if (serializedValue.value === 'Infinity') {
+        } else if (argumentValue.value === 'Infinity') {
           return { unserializableValue: 'Infinity' };
-        } else if (serializedValue.value === '-Infinity') {
+        } else if (argumentValue.value === '-Infinity') {
           return { unserializableValue: '-Infinity' };
         } else {
           return {
-            value: serializedValue.value,
+            value: argumentValue.value,
           };
         }
       }
       case 'boolean': {
-        return { value: !!serializedValue.value };
+        return { value: !!argumentValue.value };
       }
       case 'bigint': {
         return {
-          unserializableValue: `BigInt(${serializedValue.value})`,
+          unserializableValue: `BigInt(${argumentValue.value})`,
         };
       }
 
@@ -256,22 +259,22 @@ export class ScriptEvaluator {
       case 'date': {
         return {
           unserializableValue: `new Date(Date.parse(${JSON.stringify(
-            serializedValue.value
+            argumentValue.value
           )}))`,
         };
       }
       case 'regexp': {
         return {
           unserializableValue: `new RegExp(${JSON.stringify(
-            serializedValue.value.pattern
-          )}, ${JSON.stringify(serializedValue.value.flags)})`,
+            argumentValue.value.pattern
+          )}, ${JSON.stringify(argumentValue.value.flags)})`,
         };
       }
       case 'map': {
         // TODO(sadym): if non of the nested keys and values has remote
         //  reference, serialize to `unserializableValue` without CDP roundtrip.
         const keyValueArray = await this.#flattenKeyValuePairs(
-          serializedValue.value
+          argumentValue.value
         );
         let argEvalResult = await this.#cdpClient.Runtime.callFunctionOn({
           functionDeclaration: String(function (
@@ -297,7 +300,7 @@ export class ScriptEvaluator {
         // TODO(sadym): if non of the nested keys and values has remote
         //  reference, serialize to `unserializableValue` without CDP roundtrip.
         const keyValueArray = await this.#flattenKeyValuePairs(
-          serializedValue.value
+          argumentValue.value
         );
 
         let argEvalResult = await this.#cdpClient.Runtime.callFunctionOn({
@@ -329,7 +332,7 @@ export class ScriptEvaluator {
       case 'array': {
         // TODO(sadym): if non of the nested items has remote reference,
         //  serialize to `unserializableValue` without CDP roundtrip.
-        const args = await this.#flattenValueList(serializedValue.value);
+        const args = await this.#flattenValueList(argumentValue.value);
 
         let argEvalResult = await this.#cdpClient.Runtime.callFunctionOn({
           functionDeclaration: String(function (...args: unknown[]) {
@@ -348,7 +351,7 @@ export class ScriptEvaluator {
       case 'set': {
         // TODO(sadym): if non of the nested items has remote reference,
         //  serialize to `unserializableValue` without CDP roundtrip.
-        const args = await this.#flattenValueList(serializedValue.value);
+        const args = await this.#flattenValueList(argumentValue.value);
 
         let argEvalResult = await this.#cdpClient.Runtime.callFunctionOn({
           functionDeclaration: String(function (...args: unknown[]) {
@@ -366,7 +369,7 @@ export class ScriptEvaluator {
 
       default:
         throw new Error(
-          `Value ${JSON.stringify(serializedValue)} is not deserializable.`
+          `Value ${JSON.stringify(argumentValue)} is not deserializable.`
         );
     }
   }

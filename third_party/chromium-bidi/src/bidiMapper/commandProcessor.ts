@@ -76,9 +76,7 @@ export class CommandProcessor {
   }
 
   // noinspection JSMethodCanBeStatic,JSUnusedLocalSymbols
-  async #process_session_status(
-    commandData: Session.StatusCommand
-  ): Promise<Session.StatusResult> {
+  async #process_session_status(): Promise<Session.StatusResult> {
     return { result: { ready: true, message: 'ready' } };
   }
 
@@ -104,63 +102,54 @@ export class CommandProcessor {
   ): Promise<Message.CommandResponseResult> {
     switch (commandData.method) {
       case 'session.status':
-        return await this.#process_session_status(
-          // TODO(sadym): add params parsing.
-          commandData as Session.StatusCommand
-        );
+        return await this.#process_session_status();
       case 'session.subscribe':
         return await this.#process_session_subscribe(
-          Session.parseSubscribeParameters(commandData.params)
+          Session.parseSubscribeParams(commandData.params)
         );
       case 'session.unsubscribe':
         return await this.#process_session_unsubscribe(
-          Session.parseSubscribeParameters(commandData.params)
+          Session.parseSubscribeParams(commandData.params)
         );
 
       case 'browsingContext.create':
         return await this.#contextProcessor.process_browsingContext_create(
-          BrowsingContext.parseCreateParameters(commandData.params)
+          BrowsingContext.parseCreateParams(commandData.params)
         );
       case 'browsingContext.close':
         return await this.#contextProcessor.process_browsingContext_close(
-          BrowsingContext.parseCloseParameters(commandData.params)
+          BrowsingContext.parseCloseParams(commandData.params)
         );
       case 'browsingContext.getTree':
         return await this.#contextProcessor.process_browsingContext_getTree(
-          // TODO(sadym): add params parsing.
-          commandData as BrowsingContext.GetTreeCommand
+          BrowsingContext.parseGetTreeParams(commandData.params)
         );
       case 'browsingContext.navigate':
         return await this.#contextProcessor.process_browsingContext_navigate(
-          // TODO(sadym): add params parsing.
-          commandData as BrowsingContext.NavigateCommand
+          BrowsingContext.parseNavigateParams(commandData.params)
         );
 
       case 'script.callFunction':
         return await this.#contextProcessor.process_script_callFunction(
-          // TODO(sadym): add params parsing.
-          commandData as Script.CallFunctionCommand
+          Script.parseCallFunctionParams(commandData.params)
         );
       case 'script.evaluate':
         return await this.#contextProcessor.process_script_evaluate(
-          Script.parseEvaluateParameters(commandData.params)
+          Script.parseEvaluateParams(commandData.params)
         );
 
       case 'PROTO.browsingContext.findElement':
         return await this.#contextProcessor.process_PROTO_browsingContext_findElement(
-          // TODO(sadym): add params parsing.
-          commandData as BrowsingContext.PROTO.FindElementCommand
+          BrowsingContext.PROTO.parseFindElementParams(commandData.params)
         );
 
       case 'PROTO.cdp.sendCommand':
         return await this.#contextProcessor.process_PROTO_cdp_sendCommand(
-          // TODO(sadym): add params parsing.
-          commandData as CDP.PROTO.SendCommandCommand
+          CDP.PROTO.parseSendCommandParams(commandData.params)
         );
       case 'PROTO.cdp.getSession':
         return await this.#contextProcessor.process_PROTO_cdp_getSession(
-          // TODO(sadym): add params parsing.
-          commandData as CDP.PROTO.GetSessionCommand
+          CDP.PROTO.parseGetSessionParams(commandData.params)
         );
 
       default:

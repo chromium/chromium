@@ -172,7 +172,7 @@ export class BrowsingContextProcessor {
 
   private static _targetToBiDiContext(
     target: Protocol.Target.TargetInfo
-  ): BrowsingContext.BrowsingContextInfo {
+  ): BrowsingContext.Info {
     return {
       context: target.targetId,
       parent: target.openerId ? target.openerId : null,
@@ -183,14 +183,14 @@ export class BrowsingContextProcessor {
   }
 
   async process_browsingContext_getTree(
-    commandData: BrowsingContext.GetTreeCommand
+    params: BrowsingContext.GetTreeParameters
   ): Promise<BrowsingContext.GetTreeResult> {
     // TODO sadym: consider replacing with known targets.
     const { targetInfos } = await this._cdpConnection
       .browserClient()
       .Target.getTargets();
     // TODO sadym: implement.
-    if (commandData.params.maxDepth) {
+    if (params.maxDepth) {
       throw new Error('not implemented yet');
     }
     const contexts = targetInfos
@@ -198,9 +198,7 @@ export class BrowsingContextProcessor {
       .filter((target) => this._isValidTarget(target))
       // Filter by `root`, if specified.
       .filter(
-        (target) =>
-          commandData.params.root === undefined ||
-          commandData.params.root === target.targetId
+        (target) => params.root === undefined || params.root === target.targetId
       )
       .map(BrowsingContextProcessor._targetToBiDiContext);
     return { result: { contexts } };
@@ -247,9 +245,8 @@ export class BrowsingContextProcessor {
   }
 
   async process_browsingContext_navigate(
-    commandData: BrowsingContext.NavigateCommand
+    params: BrowsingContext.NavigateParameters
   ): Promise<BrowsingContext.NavigateResult> {
-    const params = commandData.params;
     const context = await this._getKnownContext(params.context);
 
     return await context.navigate(
@@ -271,9 +268,8 @@ export class BrowsingContextProcessor {
   }
 
   async process_script_callFunction(
-    commandData: Script.CallFunctionCommand
+    params: Script.CallFunctionParameters
   ): Promise<Script.CallFunctionResult> {
-    const params = commandData.params;
     const context = await this._getKnownContext(
       (params.target as Script.ContextTarget).context
     );
@@ -281,19 +277,17 @@ export class BrowsingContextProcessor {
       params.functionDeclaration,
       params.this || {
         type: 'undefined',
-      }, // `_this` is `undefined` by default.
-      params.args || [], // `args` is `[]` by default.
-      params.awaitPromise !== false // `awaitPromise` by default is `true`.
+      }, // `this` is `undefined` by default.
+      params.arguments || [], // `arguments` is `[]` by default.
+      params.awaitPromise !== false // `awaitPromise` is `true` by default.
     );
   }
 
   async process_PROTO_browsingContext_findElement(
-    commandData: BrowsingContext.PROTO.FindElementCommand
+    params: BrowsingContext.PROTO.FindElementParameters
   ): Promise<BrowsingContext.PROTO.FindElementResult> {
-    const selector = commandData.params.selector;
-    const context = await this._getKnownContext(commandData.params.context);
-
-    return await context.findElement(selector);
+    const context = await this._getKnownContext(params.context);
+    return await context.findElement(params.selector);
   }
 
   async process_browsingContext_close(
@@ -344,19 +338,17 @@ export class BrowsingContextProcessor {
     return true;
   }
 
-  async process_PROTO_cdp_sendCommand(
-    commandData: CDP.PROTO.SendCommandCommand
-  ) {
+  async process_PROTO_cdp_sendCommand(params: CDP.PROTO.SendCommandParams) {
     const sendCdpCommandResult = await this._cdpConnection.sendCommand(
-      commandData.params.cdpMethod,
-      commandData.params.cdpParams,
-      commandData.params.cdpSession
+      params.cdpMethod,
+      params.cdpParams,
+      params.cdpSession ?? null
     );
     return { result: sendCdpCommandResult };
   }
 
-  async process_PROTO_cdp_getSession(commandData: CDP.PROTO.GetSessionCommand) {
-    const context = commandData.params.context;
+  async process_PROTO_cdp_getSession(params: CDP.PROTO.GetSessionParams) {
+    const context = params.context;
     const sessionId = (await this._getKnownContext(context))._sessionId;
     if (sessionId === undefined) {
       return { result: { session: null } };
