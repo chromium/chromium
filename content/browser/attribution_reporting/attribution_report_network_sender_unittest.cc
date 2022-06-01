@@ -619,8 +619,7 @@ TEST_F(AttributionReportNetworkSenderTest,
       R"({"aggregation_service_payloads":"not generated prior to send",)"
       R"("attribution_destination":"https://conversion.test",)"
       R"("shared_info":"not generated prior to send",)"
-      R"("source_registration_time":"1234483200",)"
-      R"("source_site":"https://impression.test"})";
+      R"("source_registration_time":"1234483200"})";
 
   AttributionReport report =
       ReportBuilder(AttributionInfoBuilder(
@@ -648,8 +647,7 @@ TEST_F(AttributionReportNetworkSenderTest,
       R"({"aggregation_service_payloads":"not generated prior to send",)"
       R"("attribution_destination":"https://conversion.test",)"
       R"("shared_info":"not generated prior to send",)"
-      R"("source_registration_time":"1234483200",)"
-      R"("source_site":"https://impression.test"})";
+      R"("source_registration_time":"1234483200"})";
 
   AttributionReport report =
       ReportBuilder(AttributionInfoBuilder(
