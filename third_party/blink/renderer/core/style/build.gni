@@ -61,8 +61,8 @@ blink_core_sources_style = [
   "shape_value.h",
   "style_aspect_ratio.cc",
   "style_aspect_ratio.h",
-  "style_base_data.h",
   "style_base_data.cc",
+  "style_base_data.h",
   "style_cached_data.h",
   "style_content_alignment_data.h",
   "style_crossfade_image.cc",
@@ -128,6 +128,6 @@ blink_core_tests_style = [
   "style_difference_test.cc",
   "style_name_or_keyword_test.cc",
   "style_name_test.cc",
-  "style_variables_test.cc",
   "style_pending_image_test.cc",
+  "style_variables_test.cc",
 ]
