@@ -20,4 +20,5 @@ ui::AXTreeUpdate ScreenAIVisualAnnotationToAXTreeUpdate(
 std::string Screen2xSnapshotToViewHierarchy(const ui::AXTreeUpdate& snapshot);
 
 }  // namespace screen_ai
+
 #endif  // COMPONENTS_SERVICES_SCREEN_AI_PROTO_PROTO_CONVERTOR_H_
