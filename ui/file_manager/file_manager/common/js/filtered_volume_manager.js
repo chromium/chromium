@@ -129,6 +129,15 @@ export class FilteredVolumeManager extends EventTarget {
   }
 
   /**
+   * Gets 'fusebox-only' filter state: true if enabled, false if disabled. This
+   * filter is only enabled by the SelectFileAsh (Lacros) file picker.
+   * @return {boolean}
+   */
+  get isFuseBoxOnlyFilterEnabled() {
+    return this.isFuseBoxOnly_;
+  }
+
+  /**
    * Checks if a volume type is allowed.
    *
    * Note that even if a volume type is allowed, a volume of that type might be
