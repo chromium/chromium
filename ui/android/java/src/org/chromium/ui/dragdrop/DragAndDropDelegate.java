@@ -8,12 +8,16 @@ import android.graphics.Bitmap;
 import android.view.View;
 
 /**
- * Delegate to re-route the call to {@link #startDragAndDrop(Bitmap, DropDataAndroid).}
+ * Delegate to perform drag and drop operations, for example re-routing the call to {@link
+ * #startDragAndDrop(Bitmap, DropDataAndroid).}
  */
 public interface DragAndDropDelegate {
     /** @see View#startDragAndDrop */
     boolean startDragAndDrop(View containerView, Bitmap shadowImage, DropDataAndroid dropData);
 
-    /** Enable or disable the data handling for drop in Chrome */
-    default void enableDropInChrome(boolean dropInChrome) {}
+    /**
+     * Set the {@link DragAndDropBrowserDelegate} that will be used to get DragAndDropPermissions.
+     * @param delegate The {@link DragAndDropBrowserDelegate} that will be used by this class.
+     */
+    default void setDragAndDropBrowserDelegate(DragAndDropBrowserDelegate delegate) {}
 }
