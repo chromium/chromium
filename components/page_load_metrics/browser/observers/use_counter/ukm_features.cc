@@ -232,6 +232,8 @@ UseCounterPageLoadMetricsObserver::GetAllowedUkmFeatures() {
           WebFeature::kScriptSchedulingType_ParserBlockingInline,
           WebFeature::kScriptSchedulingType_InOrder,
           WebFeature::kScriptSchedulingType_Async,
+          WebFeature::kClientHintsMetaHTTPEquivAcceptCH,
+          WebFeature::kClientHintsMetaNameAcceptCH,
       }));
   return *opt_in_features;
 }
