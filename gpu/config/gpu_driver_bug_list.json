@@ -4012,6 +4012,26 @@
       "features": [
           "disable_vp_super_resolution"
       ]
+    },
+    {
+      "id": 395,
+      "cr_bugs": [1327088],
+      "description": "Don't use MPO on Intel TigerLake GPUs with old drivers due to VideoProcessorBlt crash.",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x8086",
+      "intel_gpu_generation": {
+        "op": ">=",
+        "value": "12"
+      },
+      "driver_version": {
+        "op": "<=",
+        "value": "27.20.100.9168"
+      },
+      "features": [
+        "disable_direct_composition_video_overlays"
+      ]
     }
   ]
 }
