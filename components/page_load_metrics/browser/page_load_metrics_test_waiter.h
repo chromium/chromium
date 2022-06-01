@@ -40,6 +40,7 @@ class PageLoadMetricsTestWaiter : public MetricsLifecycleObserver {
     kFirstInputDelayAfterBackForwardCacheRestore = 1 << 10,
     kLayoutShift = 1 << 11,
     kRequestAnimationFrameAfterBackForwardCacheRestore = 1 << 12,
+    kFirstScrollDelay = 1 << 13,
   };
   using FrameTreeNodeId =
       page_load_metrics::PageLoadMetricsObserver::FrameTreeNodeId;
