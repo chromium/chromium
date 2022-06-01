@@ -153,6 +153,17 @@ std::unique_ptr<Config> GetConfigForQueryTiles() {
   return config;
 }
 
+std::unique_ptr<Config> GetConfigForPriceTracking() {
+  auto config = std::make_unique<Config>();
+  config->segmentation_key = kContextualPageActionsPriceTrackingKey;
+  config->segment_ids = {
+      SegmentId::CONTEXTUAL_PAGE_ACTIONS_PRICE_TRACKING,
+  };
+  config->on_demand_execution = true;
+  config->trigger = TriggerType::kPageLoad;
+  return config;
+}
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 std::unique_ptr<ModelProvider> GetLowEngagementDefaultModel() {
@@ -238,6 +249,11 @@ std::vector<std::unique_ptr<Config>> GetSegmentationPlatformConfig() {
   if (base::FeatureList::IsEnabled(
           chrome::android::kAdaptiveButtonInTopToolbarCustomizationV2)) {
     configs.emplace_back(GetConfigForAdaptiveToolbar());
+  }
+  if (base::FeatureList::IsEnabled(
+          segmentation_platform::features::
+              kContextualPageActionsWithPriceTracking)) {
+    configs.emplace_back(GetConfigForPriceTracking());
   }
   if (IsStartSurfaceBehaviouralTargetingEnabled()) {
     configs.emplace_back(GetConfigForChromeStartAndroid());

@@ -75,7 +75,8 @@ public class AdaptiveToolbarFeatures {
      */
     @IntDef({AdaptiveToolbarButtonVariant.UNKNOWN, AdaptiveToolbarButtonVariant.NONE,
             AdaptiveToolbarButtonVariant.NEW_TAB, AdaptiveToolbarButtonVariant.SHARE,
-            AdaptiveToolbarButtonVariant.VOICE, AdaptiveToolbarButtonVariant.AUTO})
+            AdaptiveToolbarButtonVariant.VOICE, AdaptiveToolbarButtonVariant.AUTO,
+            AdaptiveToolbarButtonVariant.PRICE_TRACKING})
     @Retention(RetentionPolicy.SOURCE)
     public @interface AdaptiveToolbarButtonVariant {
         int UNKNOWN = 0;
@@ -84,8 +85,9 @@ public class AdaptiveToolbarFeatures {
         int SHARE = 3;
         int VOICE = 4;
         int AUTO = 5;
+        int PRICE_TRACKING = 6;
 
-        int NUM_ENTRIES = 6;
+        int NUM_ENTRIES = 7;
     }
 
     /**

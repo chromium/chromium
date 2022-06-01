@@ -9,6 +9,7 @@
 
 #include "base/time/time.h"
 #include "components/segmentation_platform/public/proto/segmentation_platform.pb.h"
+#include "components/segmentation_platform/public/trigger.h"
 
 namespace segmentation_platform {
 
@@ -36,6 +37,11 @@ const char kChromeLowUserEngagementSegmentationKey[] =
 // The key is used to decide whether the user likes to use Feed.
 const char kFeedUserSegmentationKey[] = "feed_user_segment";
 
+// The key is used to decide whether price tracking should be shown as a
+// contextual page action.
+const char kContextualPageActionsPriceTrackingKey[] =
+    "contextual_page_actions_price_tracking";
+
 // The key provide a list of segment IDs, separated by commas, whose ML model
 // execution results are allowed to be uploaded through UKM.
 const char kSegmentIdsAllowedForReportingKey[] =
@@ -56,6 +62,10 @@ struct Config {
   // usages. Currently it is mainly used by the segment selector to find the
   // discrete mapping and writing results to prefs.
   std::string segmentation_key;
+
+  // The trigger event type that triggers segment selection. If trigger is
+  // non-none, |on_demand_execution| must be true.
+  TriggerType trigger = TriggerType::kNone;
 
   // Time to live for a segment selection. Segment selection can't be changed
   // before this duration.

@@ -53,4 +53,7 @@ enum SegmentId {
   // DO NOT add new entries here. This is under process of migration from
   // OptimizationTarget enum. New entries should start from a high value of 1000
   // if OptimizationTarget does not have a corresponding type.
+
+  // Target for price tracking action when shown as a contextual page action.
+  CONTEXTUAL_PAGE_ACTIONS_PRICE_TRACKING = 1000;
 };
