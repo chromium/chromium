@@ -1900,6 +1900,8 @@ component("ash") {
     "wm/gestures/back_gesture/back_gesture_event_handler.h",
     "wm/gestures/back_gesture/back_gesture_metrics.cc",
     "wm/gestures/back_gesture/back_gesture_metrics.h",
+    "wm/gestures/back_gesture/back_gesture_util.cc",
+    "wm/gestures/back_gesture/back_gesture_util.h",
     "wm/gestures/wm_fling_handler.cc",
     "wm/gestures/wm_fling_handler.h",
     "wm/gestures/wm_gesture_handler.cc",

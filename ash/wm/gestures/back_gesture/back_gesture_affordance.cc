@@ -10,6 +10,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/default_color_constants.h"
 #include "ash/style/default_colors.h"
+#include "ash/wm/gestures/back_gesture/back_gesture_util.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_divider.h"
 #include "ash/wm/window_util.h"
@@ -46,9 +47,9 @@ constexpr int kDistanceFromArrowToTouchPoint = 64;
 constexpr int kArrowSize = 20;
 constexpr int kBackgroundRadius = 20;
 
-// The background shadow for the circle. TODO(michelefan@): Clean up the shadows
-// after the `chromeos::features::IsDarkLightModeEnabled()` is enabled by
-// default.
+// The background shadow for the circle.
+// TODO(michelefan@): Clean up the shadows after the
+// `chromeos::features::IsDarkLightModeEnabled()` is enabled by default.
 constexpr int kBackNudgeShadowOffsetY1 = 1;
 constexpr int kBackNudgeShadowBlurRadius1 = 2;
 constexpr SkColor kBackNudgeShadowColor1 = SkColorSetA(SK_ColorBLACK, 0x4D);
@@ -156,35 +157,9 @@ class AffordanceView : public views::View {
         x_offset_ >= kDistanceForFullRadius ||
         state_ == BackGestureAffordance::State::COMPLETING;
 
-    if (chromeos::features::IsDarkLightModeEnabled()) {
+    if (chromeos::features::IsDarkLightModeEnabled())
       // Draw highlight border circles.
-      AshColorProvider* color_provider = AshColorProvider::Get();
-      const SkColor inner_color = color_provider->GetControlsLayerColor(
-          AshColorProvider::ControlsLayerType::kHighlightColor1);
-      const SkColor outer_color = color_provider->GetControlsLayerColor(
-          AshColorProvider::ControlsLayerType::kBorderColor1);
-
-      gfx::ScopedCanvas scoped_canvas(canvas);
-      const float dsf = canvas->UndoDeviceScaleFactor();
-      const float scaled_corner_radius = dsf * kBackgroundRadius;
-      gfx::PointF circle_center = center_point;
-      circle_center.Scale(dsf);
-
-      cc::PaintFlags hb_flags;
-      hb_flags.setStrokeWidth(views::kHighlightBorderThickness);
-      hb_flags.setColor(outer_color);
-      hb_flags.setStyle(cc::PaintFlags::kStroke_Style);
-      hb_flags.setAntiAlias(true);
-      canvas->DrawCircle(
-          circle_center,
-          scaled_corner_radius + 1.5 * views::kHighlightBorderThickness,
-          hb_flags);
-      hb_flags.setColor(inner_color);
-      canvas->DrawCircle(
-          circle_center,
-          scaled_corner_radius + views::kHighlightBorderThickness / 2.f,
-          hb_flags);
-    }
+      DrawCircleHighlightBorder(canvas, center_point, kBackgroundRadius);
 
     // Draw the arrow background circle.
     cc::PaintFlags bg_flags;
