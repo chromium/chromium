@@ -206,6 +206,10 @@ export class SiteListElement extends SiteListElementBase {
         (category: ContentSettingsTypes) =>
             this.siteWithinCategoryChanged_(category));
     this.addWebUIListener(
+        'contentSettingCategoryChanged',
+        (category: ContentSettingsTypes) =>
+            this.siteWithinCategoryChanged_(category));
+    this.addWebUIListener(
         'onIncognitoStatusChanged',
         (hasIncognito: boolean) =>
             this.onIncognitoStatusChanged_(hasIncognito));
