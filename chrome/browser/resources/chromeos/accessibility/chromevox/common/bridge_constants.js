@@ -14,7 +14,6 @@ goog.provide('BridgeTargets');
 /** @enum {string} */
 BridgeTargets = {
   EVENT_STREAM_LOGGER: 'EventStreamLogger',
-  PANEL: 'Panel',
   PANEL_BACKGROUND: 'PanelBackground',
   USER_ACTION_MONITOR: 'UserActionMonitor',
 };
@@ -110,13 +109,22 @@ BridgeConstants = {
       GET_LOGS: 'getLogs',
     },
   },
+
+  Panel: {
+    /** @public {BridgeTarget} */
+    TARGET: 'Panel',
+    /** @enum {string} */
+    Action: {
+      ADD_MENU_ITEM: 'addMenuItem',
+      ON_CURRENT_RANGE_CHANGED: 'onCurrentRangeChanged',
+    },
+  },
 };
 
 /**
  * @enum {string}
  */
 BridgeActions = {
-  ADD_MENU_ITEM: 'addMenuItem',
   CREATE: 'create',
   CREATE_ALL_NODE_MENU_BACKGROUNDS: 'createAllNodeMenuBackgrounds',
   CREATE_NEW_I_SEARCH: 'createNewISearch',
@@ -128,7 +136,6 @@ BridgeActions = {
   INCREMENTAL_SEARCH: 'incrementalSearch',
   NODE_MENU_CALLBACK: 'nodeMenuCallback',
   NOTIFY_EVENT_STREAM_FILTER_CHANGED: 'notifyEventStreamFilterChanged',
-  ON_CURRENT_RANGE_CHANGED: 'onCurrentRangeChanged',
   PERFORM_CUSTOM_ACTION_ON_CURRENT_NODE: 'performCustomActionOnCurrentNode',
   PERFORM_STANDARD_ACTION_ON_CURRENT_NODE: 'performStandardActionOnCurrentNode',
   SET_RANGE_TO_I_SEARCH_NODE: 'setRangeToISearchNode',
@@ -146,6 +153,7 @@ BridgeActions = {
  *           BridgeConstants.CommandHandler.Action |
  *           BridgeConstants.EventSourceState.Action |
  *           BridgeConstants.GestureCommandHandler.Action |
- *           BridgeConstants.LogStore.Action}
+ *           BridgeConstants.LogStore.Action |
+ *           BridgeConstants.Panel.Action}
  */
 BridgeAction;

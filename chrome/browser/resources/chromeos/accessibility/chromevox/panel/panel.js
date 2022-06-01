@@ -1269,8 +1269,9 @@ function $(id) {
 }
 
 BridgeHelper.registerHandler(
-    BridgeTargets.PANEL, BridgeActions.ADD_MENU_ITEM,
+    BridgeConstants.Panel.TARGET, BridgeConstants.Panel.Action.ADD_MENU_ITEM,
     (itemData) => Panel.addNodeMenuItem(itemData));
 BridgeHelper.registerHandler(
-    BridgeTargets.PANEL, BridgeActions.ON_CURRENT_RANGE_CHANGED,
+    BridgeConstants.Panel.TARGET,
+    BridgeConstants.Panel.Action.ON_CURRENT_RANGE_CHANGED,
     () => Panel.onCurrentRangeChanged());
