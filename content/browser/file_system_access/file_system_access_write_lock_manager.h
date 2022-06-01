@@ -124,14 +124,12 @@ class CONTENT_EXPORT FileSystemAccessWriteLockManager {
       FileSystemAccessWriteLockManager const&) = delete;
 
   // Attempts to take a lock on `url`. Returns the lock if successful.
-  absl::optional<scoped_refptr<WriteLock>> TakeLock(
-      const storage::FileSystemURL& url,
-      WriteLockType lock_type);
+  scoped_refptr<WriteLock> TakeLock(const storage::FileSystemURL& url,
+                                    WriteLockType lock_type);
 
  private:
-  absl::optional<scoped_refptr<WriteLock>> TakeLockImpl(
-      const EntryLocator& entry_locator,
-      WriteLockType lock_type);
+  scoped_refptr<WriteLock> TakeLockImpl(const EntryLocator& entry_locator,
+                                        WriteLockType lock_type);
 
   // Releases the lock on `entry_locator`. Called from the WriteLock destructor.
   void ReleaseLock(const EntryLocator& entry_locator);

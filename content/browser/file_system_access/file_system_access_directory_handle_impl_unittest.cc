@@ -361,9 +361,8 @@ TEST_F(FileSystemAccessDirectoryHandleImplTest, RemoveEntry) {
           EXPECT_FALSE(base::PathExists(file));
           // The write lock acquired during the operation should be released by
           // the time the callback runs.
-          auto write_lock =
-              manager_->TakeWriteLock(file_url, WriteLockType::kExclusive);
-          EXPECT_TRUE(write_lock.has_value());
+          EXPECT_TRUE(
+              manager_->TakeWriteLock(file_url, WriteLockType::kExclusive));
         }).Then(loop.QuitClosure()));
     loop.Run();
   }
@@ -377,7 +376,7 @@ TEST_F(FileSystemAccessDirectoryHandleImplTest, RemoveEntry) {
               base::File::Error::FILE_OK);
     auto write_lock =
         manager_->TakeWriteLock(file_url, WriteLockType::kExclusive);
-    EXPECT_TRUE(write_lock.has_value());
+    EXPECT_TRUE(write_lock);
 
     base::RunLoop loop;
     handle->RemoveEntry(base_name,
@@ -401,8 +400,8 @@ TEST_F(FileSystemAccessDirectoryHandleImplTest, RemoveEntry) {
     EXPECT_EQ(handle->GetChildURL(base_name, &file_url)->file_error,
               base::File::Error::FILE_OK);
     auto write_lock = manager_->TakeWriteLock(file_url, WriteLockType::kShared);
-    EXPECT_TRUE(write_lock.has_value());
-    EXPECT_TRUE(write_lock.value()->type() == WriteLockType::kShared);
+    ASSERT_TRUE(write_lock);
+    EXPECT_TRUE(write_lock->type() == WriteLockType::kShared);
 
     base::RunLoop loop;
     handle->RemoveEntry(

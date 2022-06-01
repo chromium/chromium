@@ -97,17 +97,16 @@ FileSystemAccessWriteLockManager::FileSystemAccessWriteLockManager(
 
 FileSystemAccessWriteLockManager::~FileSystemAccessWriteLockManager() = default;
 
-absl::optional<scoped_refptr<WriteLock>>
-FileSystemAccessWriteLockManager::TakeLock(const storage::FileSystemURL& url,
-                                           WriteLockType lock_type) {
+scoped_refptr<WriteLock> FileSystemAccessWriteLockManager::TakeLock(
+    const storage::FileSystemURL& url,
+    WriteLockType lock_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   EntryLocator entry_locator = EntryLocator::FromFileSystemURL(url);
   return TakeLockImpl(entry_locator, lock_type);
 }
 
-absl::optional<scoped_refptr<WriteLock>>
-FileSystemAccessWriteLockManager::TakeLockImpl(
+scoped_refptr<WriteLock> FileSystemAccessWriteLockManager::TakeLockImpl(
     const EntryLocator& entry_locator,
     WriteLockType lock_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -124,12 +123,9 @@ FileSystemAccessWriteLockManager::TakeLockImpl(
     if (parent_path != entry_locator.path) {
       EntryLocator parent_entry_locator{entry_locator.type, parent_path,
                                         entry_locator.bucket_locator};
-      auto maybe_parent_lock =
-          TakeLockImpl(parent_entry_locator, WriteLockType::kShared);
-      if (!maybe_parent_lock.has_value())
-        return absl::nullopt;
-
-      parent_lock = std::move(maybe_parent_lock.value());
+      parent_lock = TakeLockImpl(parent_entry_locator, WriteLockType::kShared);
+      if (!parent_lock)
+        return nullptr;
     }
 
     // There are no locks on the file, we can take any type of lock.
@@ -153,7 +149,7 @@ FileSystemAccessWriteLockManager::TakeLockImpl(
       existing_lock->type() == WriteLockType::kExclusive) {
     // There is an existing lock, and either it or the requested lock is
     // exclusive. Therefore it is not possible to take a new lock.
-    return absl::nullopt;
+    return nullptr;
   }
 
   // There is an existing shared lock, and the requested lock is also shared.

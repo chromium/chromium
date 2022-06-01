@@ -218,7 +218,7 @@ void FileSystemAccessFileHandleImpl::OpenAccessHandle(
   }
 
   auto lock = manager()->TakeWriteLock(url(), WriteLockType::kExclusive);
-  if (!lock.has_value()) {
+  if (!lock) {
     std::move(callback).Run(
         file_system_access_error::FromStatus(
             FileSystemAccessStatus::kNoModificationAllowedError,
@@ -232,9 +232,9 @@ void FileSystemAccessFileHandleImpl::OpenAccessHandle(
   auto open_file_callback =
       file_system_context()->is_incognito()
           ? base::BindOnce(&FileSystemAccessFileHandleImpl::DoOpenIncognitoFile,
-                           weak_factory_.GetWeakPtr(), std::move(lock.value()))
+                           weak_factory_.GetWeakPtr(), std::move(lock))
           : base::BindOnce(&FileSystemAccessFileHandleImpl::DoOpenFile,
-                           weak_factory_.GetWeakPtr(), std::move(lock.value()));
+                           weak_factory_.GetWeakPtr(), std::move(lock));
   RunWithWritePermission(
       std::move(open_file_callback),
       base::BindOnce([](blink::mojom::FileSystemAccessErrorPtr result,
@@ -494,7 +494,7 @@ void FileSystemAccessFileHandleImpl::DidVerifyHasWritePermissions(
   }
 
   auto lock = manager()->TakeWriteLock(url(), WriteLockType::kShared);
-  if (!lock.has_value()) {
+  if (!lock) {
     std::move(callback).Run(
         file_system_access_error::FromStatus(
             FileSystemAccessStatus::kNoModificationAllowedError,
@@ -513,7 +513,7 @@ void FileSystemAccessFileHandleImpl::DidVerifyHasWritePermissions(
   // Writer creation request owns the file and eliminates possible race
   // conditions.
   CreateSwapFile(
-      /*count=*/0, keep_existing_data, auto_close, std::move(lock.value()),
+      /*count=*/0, keep_existing_data, auto_close, std::move(lock),
       std::move(callback));
 }
 

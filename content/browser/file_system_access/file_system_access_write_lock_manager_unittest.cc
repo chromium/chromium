@@ -72,88 +72,68 @@ class FileSystemAccessWriteLockManagerTest : public testing::Test {
     {
       auto child_lock =
           manager_->TakeWriteLock(child_url, WriteLockType::kExclusive);
-      ASSERT_TRUE(child_lock.has_value());
-
-      auto parent_lock =
-          manager_->TakeWriteLock(parent_url, WriteLockType::kExclusive);
-      ASSERT_FALSE(parent_lock.has_value());
+      ASSERT_TRUE(child_lock);
+      ASSERT_FALSE(
+          manager_->TakeWriteLock(parent_url, WriteLockType::kExclusive));
     }
 
     // Parent can take shared lock if child is exclusively locked.
     {
       auto child_lock =
           manager_->TakeWriteLock(child_url, WriteLockType::kExclusive);
-      ASSERT_TRUE(child_lock.has_value());
-
-      auto parent_lock =
-          manager_->TakeWriteLock(parent_url, WriteLockType::kShared);
-      ASSERT_TRUE(parent_lock.has_value());
+      ASSERT_TRUE(child_lock);
+      ASSERT_TRUE(manager_->TakeWriteLock(parent_url, WriteLockType::kShared));
     }
 
     // Child cannot take exclusive lock if parent is exclusively locked.
     {
       auto parent_lock =
           manager_->TakeWriteLock(parent_url, WriteLockType::kExclusive);
-      ASSERT_TRUE(parent_lock.has_value());
-
-      auto child_lock =
-          manager_->TakeWriteLock(child_url, WriteLockType::kExclusive);
-      ASSERT_FALSE(child_lock.has_value());
+      ASSERT_TRUE(parent_lock);
+      ASSERT_FALSE(
+          manager_->TakeWriteLock(child_url, WriteLockType::kExclusive));
     }
 
     // Child cannot take shared lock if parent is exclusively locked.
     {
       auto parent_lock =
           manager_->TakeWriteLock(parent_url, WriteLockType::kExclusive);
-      ASSERT_TRUE(parent_lock.has_value());
-
-      auto child_lock =
-          manager_->TakeWriteLock(child_url, WriteLockType::kShared);
-      ASSERT_FALSE(child_lock.has_value());
+      ASSERT_TRUE(parent_lock);
+      ASSERT_FALSE(manager_->TakeWriteLock(child_url, WriteLockType::kShared));
     }
 
     // Parent cannot take exclusive lock if child holds a shared lock.
     {
       auto child_lock =
           manager_->TakeWriteLock(child_url, WriteLockType::kShared);
-      ASSERT_TRUE(child_lock.has_value());
-
-      auto parent_lock =
-          manager_->TakeWriteLock(parent_url, WriteLockType::kExclusive);
-      ASSERT_FALSE(parent_lock.has_value());
+      ASSERT_TRUE(child_lock);
+      ASSERT_FALSE(
+          manager_->TakeWriteLock(parent_url, WriteLockType::kExclusive));
     }
 
     // Parent can take shared lock if child holds a shared lock.
     {
       auto child_lock =
           manager_->TakeWriteLock(child_url, WriteLockType::kShared);
-      ASSERT_TRUE(child_lock.has_value());
-
-      auto parent_lock =
-          manager_->TakeWriteLock(parent_url, WriteLockType::kShared);
-      ASSERT_TRUE(parent_lock.has_value());
+      ASSERT_TRUE(child_lock);
+      ASSERT_TRUE(manager_->TakeWriteLock(parent_url, WriteLockType::kShared));
     }
 
     // Child can take exclusive lock if parent holds a shared lock.
     {
       auto parent_lock =
           manager_->TakeWriteLock(parent_url, WriteLockType::kShared);
-      ASSERT_TRUE(parent_lock.has_value());
-
-      auto child_lock =
-          manager_->TakeWriteLock(child_url, WriteLockType::kExclusive);
-      ASSERT_TRUE(child_lock.has_value());
+      ASSERT_TRUE(parent_lock);
+      ASSERT_TRUE(
+          manager_->TakeWriteLock(child_url, WriteLockType::kExclusive));
     }
 
     // Child can take shared lock if parent holds a shared lock.
     {
       auto parent_lock =
           manager_->TakeWriteLock(parent_url, WriteLockType::kShared);
-      ASSERT_TRUE(parent_lock.has_value());
-
-      auto child_lock =
-          manager_->TakeWriteLock(child_url, WriteLockType::kShared);
-      ASSERT_TRUE(child_lock.has_value());
+      ASSERT_TRUE(parent_lock);
+      ASSERT_TRUE(manager_->TakeWriteLock(child_url, WriteLockType::kShared));
     }
   }
 
@@ -177,20 +157,16 @@ TEST_F(FileSystemAccessWriteLockManagerTest, ExclusiveLock) {
   {
     auto exclusive_lock =
         manager_->TakeWriteLock(url, WriteLockType::kExclusive);
-    ASSERT_TRUE(exclusive_lock.has_value());
+    ASSERT_TRUE(exclusive_lock);
 
     // Cannot take another lock while the file is exclusively locked.
-    auto another_exclusive_lock =
-        manager_->TakeWriteLock(url, WriteLockType::kExclusive);
-    ASSERT_FALSE(another_exclusive_lock.has_value());
-    auto shared_lock = manager_->TakeWriteLock(url, WriteLockType::kShared);
-    ASSERT_FALSE(shared_lock.has_value());
+    ASSERT_FALSE(manager_->TakeWriteLock(url, WriteLockType::kExclusive));
+    ASSERT_FALSE(manager_->TakeWriteLock(url, WriteLockType::kShared));
   }
 
   // The exclusive lock has been released and should be available to be
   // re-acquired.
-  auto exclusive_lock = manager_->TakeWriteLock(url, WriteLockType::kExclusive);
-  ASSERT_TRUE(exclusive_lock.has_value());
+  ASSERT_TRUE(manager_->TakeWriteLock(url, WriteLockType::kExclusive));
 }
 
 TEST_F(FileSystemAccessWriteLockManagerTest, SharedLock) {
@@ -200,21 +176,16 @@ TEST_F(FileSystemAccessWriteLockManagerTest, SharedLock) {
 
   {
     auto shared_lock = manager_->TakeWriteLock(url, WriteLockType::kShared);
-    ASSERT_TRUE(shared_lock.has_value());
+    ASSERT_TRUE(shared_lock);
 
     // Can take another shared lock, but not an exclusive lock.
-    auto another_shared_lock =
-        manager_->TakeWriteLock(url, WriteLockType::kShared);
-    ASSERT_TRUE(another_shared_lock.has_value());
-    auto exclusive_lock =
-        manager_->TakeWriteLock(url, WriteLockType::kExclusive);
-    ASSERT_FALSE(exclusive_lock.has_value());
+    ASSERT_TRUE(manager_->TakeWriteLock(url, WriteLockType::kShared));
+    ASSERT_FALSE(manager_->TakeWriteLock(url, WriteLockType::kExclusive));
   }
 
   // The shared locks have been released and we should be available to acquire
   // an exclusive lock.
-  auto exclusive_lock = manager_->TakeWriteLock(url, WriteLockType::kExclusive);
-  ASSERT_TRUE(exclusive_lock.has_value());
+  ASSERT_TRUE(manager_->TakeWriteLock(url, WriteLockType::kExclusive));
 }
 
 TEST_F(FileSystemAccessWriteLockManagerTest, SandboxedFile) {
@@ -225,20 +196,16 @@ TEST_F(FileSystemAccessWriteLockManagerTest, SandboxedFile) {
   {
     auto exclusive_lock =
         manager_->TakeWriteLock(url, WriteLockType::kExclusive);
-    ASSERT_TRUE(exclusive_lock.has_value());
+    ASSERT_TRUE(exclusive_lock);
 
     // Cannot take another lock while the file is exclusively locked.
-    auto another_exclusive_lock =
-        manager_->TakeWriteLock(url, WriteLockType::kExclusive);
-    ASSERT_FALSE(another_exclusive_lock.has_value());
-    auto shared_lock = manager_->TakeWriteLock(url, WriteLockType::kShared);
-    ASSERT_FALSE(shared_lock.has_value());
+    ASSERT_FALSE(manager_->TakeWriteLock(url, WriteLockType::kExclusive));
+    ASSERT_FALSE(manager_->TakeWriteLock(url, WriteLockType::kShared));
   }
 
   // The exclusive lock has been released and should be available to be
   // re-acquired.
-  auto exclusive_lock = manager_->TakeWriteLock(url, WriteLockType::kExclusive);
-  ASSERT_TRUE(exclusive_lock.has_value());
+  ASSERT_TRUE(manager_->TakeWriteLock(url, WriteLockType::kExclusive));
 }
 
 TEST_F(FileSystemAccessWriteLockManagerTest, SandboxedFilesSamePath) {
@@ -256,18 +223,14 @@ TEST_F(FileSystemAccessWriteLockManagerTest, SandboxedFilesSamePath) {
   // Take a lock on the file in the first file system.
   auto exclusive_lock1 =
       manager_->TakeWriteLock(url1, WriteLockType::kExclusive);
-  ASSERT_TRUE(exclusive_lock1.has_value());
-  auto another_exclusive_lock1 =
-      manager_->TakeWriteLock(url1, WriteLockType::kExclusive);
-  ASSERT_FALSE(another_exclusive_lock1.has_value());
+  ASSERT_TRUE(exclusive_lock1);
+  ASSERT_FALSE(manager_->TakeWriteLock(url1, WriteLockType::kExclusive));
 
   // Can still take a lock on the file in the second file system.
   auto exclusive_lock2 =
       manager_->TakeWriteLock(url2, WriteLockType::kExclusive);
-  ASSERT_TRUE(exclusive_lock2.has_value());
-  auto another_exclusive_lock2 =
-      manager_->TakeWriteLock(url2, WriteLockType::kExclusive);
-  ASSERT_FALSE(another_exclusive_lock2.has_value());
+  ASSERT_TRUE(exclusive_lock2);
+  ASSERT_FALSE(manager_->TakeWriteLock(url2, WriteLockType::kExclusive));
 }
 
 TEST_F(FileSystemAccessWriteLockManagerTest, DifferentBackends) {
@@ -288,18 +251,15 @@ TEST_F(FileSystemAccessWriteLockManagerTest, DifferentBackends) {
   // Take a lock on the file in the local file system.
   auto local_exclusive_lock =
       manager_->TakeWriteLock(local_url, WriteLockType::kExclusive);
-  ASSERT_TRUE(local_exclusive_lock.has_value());
-  auto another_local_exclusive_lock =
-      manager_->TakeWriteLock(local_url, WriteLockType::kExclusive);
-  ASSERT_FALSE(another_local_exclusive_lock.has_value());
+  ASSERT_TRUE(local_exclusive_lock);
+  ASSERT_FALSE(manager_->TakeWriteLock(local_url, WriteLockType::kExclusive));
 
   // Can still take a lock on the file in the external file system.
   auto external_exclusive_lock =
       manager_->TakeWriteLock(external_url, WriteLockType::kExclusive);
-  ASSERT_TRUE(external_exclusive_lock.has_value());
-  auto another_external_exclusive_lock =
-      manager_->TakeWriteLock(external_url, WriteLockType::kExclusive);
-  ASSERT_FALSE(another_external_exclusive_lock.has_value());
+  ASSERT_TRUE(external_exclusive_lock);
+  ASSERT_FALSE(
+      manager_->TakeWriteLock(external_url, WriteLockType::kExclusive));
 }
 
 TEST_F(FileSystemAccessWriteLockManagerTest, LockAcrossSites) {
@@ -318,21 +278,16 @@ TEST_F(FileSystemAccessWriteLockManagerTest, LockAcrossSites) {
   {
     auto exclusive_lock =
         manager_->TakeWriteLock(url1, WriteLockType::kExclusive);
-    ASSERT_TRUE(exclusive_lock.has_value());
+    ASSERT_TRUE(exclusive_lock);
 
     // Other sites cannot access the file while it is exclusively locked.
-    auto another_exclusive_lock =
-        manager_->TakeWriteLock(url2, WriteLockType::kExclusive);
-    ASSERT_FALSE(another_exclusive_lock.has_value());
-    auto shared_lock = manager_->TakeWriteLock(url2, WriteLockType::kShared);
-    ASSERT_FALSE(shared_lock.has_value());
+    ASSERT_FALSE(manager_->TakeWriteLock(url2, WriteLockType::kExclusive));
+    ASSERT_FALSE(manager_->TakeWriteLock(url2, WriteLockType::kShared));
   }
 
   // The exclusive lock has been released and should be available to be
   // re-acquired.
-  auto exclusive_lock =
-      manager_->TakeWriteLock(url2, WriteLockType::kExclusive);
-  ASSERT_TRUE(exclusive_lock.has_value());
+  ASSERT_TRUE(manager_->TakeWriteLock(url2, WriteLockType::kExclusive));
 }
 
 TEST_F(FileSystemAccessWriteLockManagerTest, AncestorLocks) {

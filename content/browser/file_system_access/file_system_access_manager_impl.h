@@ -178,9 +178,9 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
                         const SharedHandleState& handle_state);
   // Attempts to take a write lock on `url`. The lock is released when the
   // returned object is destroyed.
-  absl::optional<scoped_refptr<FileSystemAccessWriteLockManager::WriteLock>>
-  TakeWriteLock(const storage::FileSystemURL& url,
-                FileSystemAccessWriteLockManager::WriteLockType lock_type);
+  scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> TakeWriteLock(
+      const storage::FileSystemURL& url,
+      FileSystemAccessWriteLockManager::WriteLockType lock_type);
 
   // Creates a new FileSystemAccessFileWriterImpl for a given target and
   // swap file URLs. Assumes the passed in URLs are valid and represent files.

@@ -949,7 +949,7 @@ FileSystemAccessManagerImpl::CreateDirectoryHandle(
       result.InitWithNewPipeAndPassReceiver());
   return result;
 }
-absl::optional<scoped_refptr<FileSystemAccessWriteLockManager::WriteLock>>
+scoped_refptr<FileSystemAccessWriteLockManager::WriteLock>
 FileSystemAccessManagerImpl::TakeWriteLock(
     const storage::FileSystemURL& url,
     FileSystemAccessWriteLockManager::WriteLockType lock_type) {
