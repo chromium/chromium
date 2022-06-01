@@ -70,6 +70,31 @@ TEST_F(CalendarUtilsUnittest, DateFormatter) {
   EXPECT_EQ(u"August 2021", calendar_utils::GetMonthNameAndYear(date));
 }
 
+TEST_F(CalendarUtilsUnittest, IntervalFormatter) {
+  base::Time date1;
+  base::Time date2;
+  base::Time date3;
+  ASSERT_TRUE(base::Time::FromString("1 Aug 2021 10:00 GMT", &date1));
+  ASSERT_TRUE(base::Time::FromString("1 Aug 2021 11:30 GMT", &date2));
+  ASSERT_TRUE(base::Time::FromString("1 Aug 2021 15:49 GMT", &date3));
+
+  ash::system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"GMT");
+
+  EXPECT_EQ(u"10:00 – 11:30 AM",
+            calendar_utils::FormatTwelveHourClockTimeInterval(date1, date2));
+
+  EXPECT_EQ(u"10:00 AM – 3:49 PM",
+            calendar_utils::FormatTwelveHourClockTimeInterval(date1, date3));
+
+  EXPECT_EQ(
+      u"10:00 – 11:30",
+      calendar_utils::FormatTwentyFourHourClockTimeInterval(date1, date2));
+
+  EXPECT_EQ(
+      u"10:00 – 15:49",
+      calendar_utils::FormatTwentyFourHourClockTimeInterval(date1, date3));
+}
+
 TEST_F(CalendarUtilsUnittest, TimezoneChanged) {
   // Create a date: Aug,1st 2021.
   base::Time date;

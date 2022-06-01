@@ -139,12 +139,26 @@ ASH_EXPORT std::u16string GetTimeZone(const base::Time date);
 ASH_EXPORT std::u16string GetDayOfWeek(const base::Time date);
 
 // Gets the `date`'s year.
-// (e.g 2022)
+// (e.g. 2022)
 ASH_EXPORT std::u16string GetYear(const base::Time date);
 
 // Gets the `date`'s month name and year.
 // (e.g. March 2022)
 ASH_EXPORT std::u16string GetMonthNameAndYear(const base::Time date);
+
+// Gets the formatted interval between `start_time` and `end_time` in twelve
+// hour clock format.
+// (e.g. 8:30 – 9:30 PM or 11:30 AM – 2:30 PM)
+ASH_EXPORT std::u16string FormatTwelveHourClockTimeInterval(
+    const base::Time& start_time,
+    const base::Time& end_time);
+
+// Gets the formatted interval between `start_time` and `end_time` in twenty
+// four hour clock format.
+// (e.g. 20:30 – 21:30)
+ASH_EXPORT std::u16string FormatTwentyFourHourClockTimeInterval(
+    const base::Time& start_time,
+    const base::Time& end_time);
 
 // Sets up the `TableLayout` to have 7 columns, which is one week row (7 days).
 void SetUpWeekColumns(views::TableLayout* layout);

@@ -79,6 +79,13 @@ std::u16string FormatDate(const icu::SimpleDateFormat& formatter,
   return DateHelper::GetInstance()->GetFormattedTime(&formatter, date);
 }
 
+std::u16string FormatInterval(const icu::DateIntervalFormat* formatter,
+                              const base::Time& start_time,
+                              const base::Time& end_time) {
+  return DateHelper::GetInstance()->GetFormattedInterval(formatter, start_time,
+                                                         end_time);
+}
+
 std::u16string GetMonthDayYear(const base::Time date) {
   return calendar_utils::FormatDate(
       DateHelper::GetInstance()->month_day_year_formatter(), date);
@@ -137,6 +144,21 @@ std::u16string GetYear(const base::Time date) {
 std::u16string GetMonthNameAndYear(const base::Time date) {
   return calendar_utils::FormatDate(
       DateHelper::GetInstance()->month_name_year_formatter(), date);
+}
+
+std::u16string FormatTwelveHourClockTimeInterval(const base::Time& start_time,
+                                                 const base::Time& end_time) {
+  return calendar_utils::FormatInterval(
+      DateHelper::GetInstance()->twelve_hour_clock_interval_formatter(),
+      start_time, end_time);
+}
+
+std::u16string FormatTwentyFourHourClockTimeInterval(
+    const base::Time& start_time,
+    const base::Time& end_time) {
+  return calendar_utils::FormatInterval(
+      DateHelper::GetInstance()->twenty_four_hour_clock_interval_formatter(),
+      start_time, end_time);
 }
 
 void SetUpWeekColumns(views::TableLayout* layout) {

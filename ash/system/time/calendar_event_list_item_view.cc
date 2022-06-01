@@ -154,18 +154,12 @@ CalendarEventListItemView::CalendarEventListItemView(
   summary_->SetBorder(
       views::CreateEmptyBorder(gfx::Insets::VH(0, kEntryHorizontalPadding)));
 
-  // When using AM/PM time format and the start time and end time are in the
-  // same meridiem, remove the first one and the space before it, which are the
-  // last 3 characters.
-  if (use_12_hour_clock &&
-      start_time_string.substr(start_time_string.size() - 2) ==
-          end_time_string.substr(end_time_string.size() - 2)) {
-    start_time_string =
-        start_time_string.substr(0, start_time_string.size() - 3);
-  }
-
-  auto time_range = start_time_string + u" - " + end_time_string;
-  time_range_->SetText(time_range);
+  auto formatted_interval =
+      use_12_hour_clock ? calendar_utils::FormatTwelveHourClockTimeInterval(
+                              start_time, end_time)
+                        : calendar_utils::FormatTwentyFourHourClockTimeInterval(
+                              start_time, end_time);
+  time_range_->SetText(formatted_interval);
   SetUpLabel(time_range_, gfx::NO_ELIDE,
              gfx::HorizontalAlignment::ALIGN_CENTER);
 
@@ -183,7 +177,7 @@ CalendarEventListItemView::CalendarEventListItemView(
   tri_view->AddView(TriView::Container::END, time_range_);
 
   auto tooltip_text = l10n_util::GetStringFUTF16(
-      IDS_ASH_CALENDAR_EVENT_ENTRY_TOOL_TIP, time_range,
+      IDS_ASH_CALENDAR_EVENT_ENTRY_TOOL_TIP, formatted_interval,
       base::UTF8ToUTF16(event.summary()));
   time_range_->SetTooltipText(tooltip_text);
   summary_->SetTooltipText(tooltip_text);

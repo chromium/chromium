@@ -207,12 +207,12 @@ TEST_F(CalendarViewEventListViewTest, CheckTimeFormat) {
   CreateEventListView(date);
 
   SetSelectedDate(date);
-  EXPECT_EQ(u"8:30 - 9:30 PM", GetTimeRange(0)->GetText());
-  EXPECT_EQ(u"11:30 - 11:59 PM", GetTimeRange(1)->GetText());
+  EXPECT_EQ(u"8:30 – 9:30 PM", GetTimeRange(0)->GetText());
+  EXPECT_EQ(u"11:30 – 11:59 PM", GetTimeRange(1)->GetText());
 
   // Select the second day of the multi-day event.
   SetSelectedDate(date_2);
-  EXPECT_EQ(u"12:00 - 12:30 AM", GetTimeRange(0)->GetText());
+  EXPECT_EQ(u"12:00 – 12:30 AM", GetTimeRange(0)->GetText());
 
   // Set the time in 24 hour format.
   Shell::Get()->system_tray_model()->SetUse24HourClock(true);
@@ -221,11 +221,11 @@ TEST_F(CalendarViewEventListViewTest, CheckTimeFormat) {
   CreateEventListView(date);
 
   SetSelectedDate(date);
-  EXPECT_EQ(u"20:30 - 21:30", GetTimeRange(0)->GetText());
-  EXPECT_EQ(u"23:30 - 23:59", GetTimeRange(1)->GetText());
+  EXPECT_EQ(u"20:30 – 21:30", GetTimeRange(0)->GetText());
+  EXPECT_EQ(u"23:30 – 23:59", GetTimeRange(1)->GetText());
 
   SetSelectedDate(date_2);
-  EXPECT_EQ(u"00:00 - 00:30", GetTimeRange(0)->GetText());
+  EXPECT_EQ(u"00:00 – 00:30", GetTimeRange(0)->GetText());
 }
 
 }  // namespace ash

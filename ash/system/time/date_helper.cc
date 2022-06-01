@@ -9,6 +9,9 @@
 #include "ash/system/time/calendar_utils.h"
 #include "base/i18n/unicodestring.h"
 #include "base/time/time.h"
+#include "third_party/icu/source/common/unicode/dtintrv.h"
+#include "third_party/icu/source/i18n/unicode/dtitvfmt.h"
+#include "third_party/icu/source/i18n/unicode/fieldpos.h"
 #include "third_party/icu/source/i18n/unicode/gregocal.h"
 
 namespace ash {
@@ -17,6 +20,11 @@ namespace {
 
 // Milliseconds per minute.
 constexpr int kMillisecondsPerMinute = 60000;
+
+UDate TimeToUDate(const base::Time& time) {
+  return static_cast<UDate>(time.ToDoubleT() *
+                            base::Time::kMillisecondsPerSecond);
+}
 
 }  // namespace
 
@@ -47,15 +55,36 @@ icu::SimpleDateFormat DateHelper::CreateSimpleDateFormatter(
   return formatter;
 }
 
+std::unique_ptr<icu::DateIntervalFormat>
+DateHelper::CreateDateIntervalFormatter(const char* pattern) {
+  UErrorCode status = U_ZERO_ERROR;
+  icu::DateIntervalFormat* formatter =
+      icu::DateIntervalFormat::createInstance(pattern, status);
+  DCHECK(U_SUCCESS(status));
+  return absl::WrapUnique(formatter);
+}
+
 std::u16string DateHelper::GetFormattedTime(const icu::DateFormat* formatter,
                                             const base::Time& time) {
   DCHECK(formatter);
   icu::UnicodeString date_string;
 
-  formatter->format(
-      static_cast<UDate>(time.ToDoubleT() * base::Time::kMillisecondsPerSecond),
-      date_string);
+  formatter->format(TimeToUDate(time), date_string);
   return base::i18n::UnicodeStringToString16(date_string);
+}
+
+std::u16string DateHelper::GetFormattedInterval(
+    const icu::DateIntervalFormat* formatter,
+    const base::Time& start_time,
+    const base::Time& end_time) {
+  DCHECK(formatter);
+  UErrorCode status = U_ZERO_ERROR;
+  icu::DateInterval interval(TimeToUDate(start_time), TimeToUDate(end_time));
+  icu::FieldPosition position = 0;
+  icu::UnicodeString interval_string;
+  formatter->format(&interval, interval_string, position, status);
+  DCHECK(U_SUCCESS(status));
+  return base::i18n::UnicodeStringToString16(interval_string);
 }
 
 base::TimeDelta DateHelper::GetTimeDifference(base::Time date) const {
@@ -70,8 +99,7 @@ base::TimeDelta DateHelper::GetTimeDifference(base::Time date) const {
   if (!gregorian_calendar_)
     return raw_time_diff;
 
-  UDate current_date =
-      static_cast<UDate>(date.ToDoubleT() * base::Time::kMillisecondsPerSecond);
+  UDate current_date = TimeToUDate(date);
   UErrorCode status = U_ZERO_ERROR;
   gregorian_calendar_->setTime(current_date, status);
   if (U_FAILURE(status))
@@ -107,7 +135,10 @@ DateHelper::DateHelper()
       twenty_four_hour_clock_formatter_(CreateSimpleDateFormatter("HH:mm")),
       day_of_week_formatter_(CreateSimpleDateFormatter("ee")),
       week_title_formatter_(CreateSimpleDateFormatter("EEEEE")),
-      year_formatter_(CreateSimpleDateFormatter("YYYY")) {
+      year_formatter_(CreateSimpleDateFormatter("YYYY")),
+      twelve_hour_clock_interval_formatter_(CreateDateIntervalFormatter("hm")),
+      twenty_four_hour_clock_interval_formatter_(
+          CreateDateIntervalFormatter("Hm")) {
   const icu::TimeZone& time_zone =
       system::TimezoneSettings::GetInstance()->GetTimezone();
 
@@ -134,6 +165,9 @@ void DateHelper::ResetFormatters() {
   day_of_week_formatter_ = CreateSimpleDateFormatter("ee");
   week_title_formatter_ = CreateSimpleDateFormatter("EEEEE");
   year_formatter_ = CreateSimpleDateFormatter("YYYY");
+  twelve_hour_clock_interval_formatter_ = CreateDateIntervalFormatter("hm");
+  twenty_four_hour_clock_interval_formatter_ =
+      CreateDateIntervalFormatter("Hm");
 }
 
 void DateHelper::CalculateLocalWeekTitles() {

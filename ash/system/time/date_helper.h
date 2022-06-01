@@ -12,6 +12,7 @@
 #include "base/memory/singleton.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "third_party/icu/source/i18n/unicode/dtitvfmt.h"
 #include "third_party/icu/source/i18n/unicode/dtptngen.h"
 #include "third_party/icu/source/i18n/unicode/gregocal.h"
 #include "third_party/icu/source/i18n/unicode/smpdtfmt.h"
@@ -19,10 +20,11 @@
 
 namespace ash {
 
-// A singleton class used to create and cache `GregorianCalendar ` and
-// `icu::SimpleDateFormat` objects, so that they don't have to be recreated each
-// time when querying the time difference or formating a time. This improves
-// performance since creating icu::SimpleDateFormat objects is expensive.
+// A singleton class used to create and cache `GregorianCalendar`,
+// `icu::SimpleDateFormat` and `icu::DateIntervalFormat` objects, so that they
+// don't have to be recreated each time when querying the time difference or
+// formatting a time. This improves performance since creating
+// `icu::SimpleDateFormat` and `icu::DateIntervalFormat` objects is expensive.
 class DateHelper : public system::TimezoneSettings::Observer {
  public:
   // Returns the singleton instance.
@@ -31,9 +33,26 @@ class DateHelper : public system::TimezoneSettings::Observer {
   // Creates a formatter object used to format dates from the given `pattern`.
   icu::SimpleDateFormat CreateSimpleDateFormatter(const char* pattern);
 
+  // Creates a date interval formatter object that formats a `DateInterval` into
+  // text as compactly as possible.
+  // Note that even if a pattern does not request a certain date part, it will
+  // be automatically included if that part is different between two dates (e.g.
+  // for `pattern=hm` (hours and minutes in twelve hour clock format),
+  // "18 Nov 2021 8:30"..."18 Nov 2021 9:30" => "8:30 – 9:30 AM", but
+  // "18 Nov 2021 8:30"..."19 Nov 2021 7:20" =>
+  // "11/18/2021, 8:30 AM – 11/19/2021, 7:20 AM").
+  std::unique_ptr<icu::DateIntervalFormat> CreateDateIntervalFormatter(
+      const char* pattern);
+
   // Returns a formatted string of a `time` using the given `formatter`.
   std::u16string GetFormattedTime(const icu::DateFormat* formatter,
                                   const base::Time& time);
+
+  // Returns a formatted interval string using the given `formatter`.
+  ASH_EXPORT std::u16string GetFormattedInterval(
+      const icu::DateIntervalFormat* formatter,
+      const base::Time& start_time,
+      const base::Time& end_time);
 
   // Get the time difference to UTC time based on the time passed in and the
   // system timezone. Daylight saving is considered.
@@ -86,6 +105,14 @@ class DateHelper : public system::TimezoneSettings::Observer {
   }
 
   icu::SimpleDateFormat& year_formatter() { return year_formatter_; }
+
+  const icu::DateIntervalFormat* twelve_hour_clock_interval_formatter() {
+    return twelve_hour_clock_interval_formatter_.get();
+  }
+
+  const icu::DateIntervalFormat* twenty_four_hour_clock_interval_formatter() {
+    return twenty_four_hour_clock_interval_formatter_.get();
+  }
 
   std::vector<std::u16string> week_titles() { return week_titles_; }
 
@@ -143,6 +170,16 @@ class DateHelper : public system::TimezoneSettings::Observer {
 
   // Formatter for getting the year.
   icu::SimpleDateFormat year_formatter_;
+
+  // Interval formatter for two dates. Formats time in twelve
+  // hour clock format (e.g. 8:30 – 9:30 PM or 11:30 AM – 2:30 PM).
+  std::unique_ptr<icu::DateIntervalFormat>
+      twelve_hour_clock_interval_formatter_;
+
+  // Interval formatter for two dates. Formats time in twenty
+  // four hour clock format (e.g. 20:30 – 21:30).
+  std::unique_ptr<icu::DateIntervalFormat>
+      twenty_four_hour_clock_interval_formatter_;
 
   // Week title list based on the language setting. e.g. SMTWTFS in English.
   std::vector<std::u16string> week_titles_;

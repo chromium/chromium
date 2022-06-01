@@ -21,6 +21,20 @@ class DateHelperUnittest : public AshTestBase {
     DateHelper::GetInstance()->ResetFormatters();
     DateHelper::GetInstance()->CalculateLocalWeekTitles();
   }
+
+  std::u16string Format12HrClockInterval(const base::Time& start_time,
+                                         const base::Time& end_time) {
+    return DateHelper::GetInstance()->GetFormattedInterval(
+        DateHelper::GetInstance()->twelve_hour_clock_interval_formatter(),
+        start_time, end_time);
+  }
+
+  std::u16string Format24HrClockInterval(const base::Time& start_time,
+                                         const base::Time& end_time) {
+    return DateHelper::GetInstance()->GetFormattedInterval(
+        DateHelper::GetInstance()->twenty_four_hour_clock_interval_formatter(),
+        start_time, end_time);
+  }
 };
 
 // Gets the calendar week titles in different language and order.
@@ -66,4 +80,35 @@ TEST_F(DateHelperUnittest, GetWeekTitle) {
   EXPECT_EQ(u"F", week_titles[5]);
   EXPECT_EQ(u"S", week_titles[6]);
 }
+
+// Formats the interval between two dates in different languages.
+TEST_F(DateHelperUnittest, GetFormattedInterval) {
+  ash::system::TimezoneSettings::GetInstance()->SetTimezoneFromID(u"GMT");
+
+  base::Time date1;  // Start date
+  base::Time date2;  // End date, same meridiem
+  base::Time date3;  // End date, different meridiem
+  ASSERT_TRUE(base::Time::FromString("22 Nov 2021 10:00 GMT", &date1));
+  ASSERT_TRUE(base::Time::FromString("22 Nov 2021 11:45 GMT", &date2));
+  ASSERT_TRUE(base::Time::FromString("22 Nov 2021 22:30 GMT", &date3));
+
+  SetDefaultLocale("en_US");
+  EXPECT_EQ(u"10:00 – 11:45 AM", Format12HrClockInterval(date1, date2));
+  EXPECT_EQ(u"10:00 AM – 10:30 PM", Format12HrClockInterval(date1, date3));
+  EXPECT_EQ(u"10:00 – 11:45", Format24HrClockInterval(date1, date2));
+  EXPECT_EQ(u"10:00 – 22:30", Format24HrClockInterval(date1, date3));
+
+  SetDefaultLocale("zh_Hant");
+  EXPECT_EQ(u"上午10:00至11:45", Format12HrClockInterval(date1, date2));
+  EXPECT_EQ(u"上午10:00至晚上10:30", Format12HrClockInterval(date1, date3));
+  EXPECT_EQ(u"10:00 – 11:45", Format24HrClockInterval(date1, date2));
+  EXPECT_EQ(u"10:00 – 22:30", Format24HrClockInterval(date1, date3));
+
+  SetDefaultLocale("ar");
+  EXPECT_EQ(u"10:00–11:45 ص", Format12HrClockInterval(date1, date2));
+  EXPECT_EQ(u"10:00 ص – 10:30 م", Format12HrClockInterval(date1, date3));
+  EXPECT_EQ(u"10:00–11:45", Format24HrClockInterval(date1, date2));
+  EXPECT_EQ(u"10:00–22:30", Format24HrClockInterval(date1, date3));
+}
+
 }  // namespace ash
