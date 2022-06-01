@@ -467,8 +467,7 @@ base::Value NetLogResults(const HostCache::Entry& results) {
   return dict;
 }
 
-base::Value ToLogStringValue(
-    const absl::variant<url::SchemeHostPort, HostPortPair>& host) {
+base::Value ToLogStringValue(const HostResolver::Host& host) {
   if (absl::holds_alternative<url::SchemeHostPort>(host))
     return base::Value(absl::get<url::SchemeHostPort>(host).Serialize());
 
@@ -493,8 +492,7 @@ base::StringPiece GetScheme(
   return base::StringPiece();
 }
 
-base::StringPiece GetHostname(
-    const absl::variant<url::SchemeHostPort, HostPortPair>& host) {
+base::StringPiece GetHostname(const HostResolver::Host& host) {
   if (absl::holds_alternative<url::SchemeHostPort>(host)) {
     base::StringPiece hostname = absl::get<url::SchemeHostPort>(host).host();
     if (hostname.size() >= 2 && hostname.front() == '[' &&
@@ -521,7 +519,7 @@ base::StringPiece GetHostname(
   return absl::get<std::string>(host);
 }
 
-uint16_t GetPort(const absl::variant<url::SchemeHostPort, HostPortPair>& host) {
+uint16_t GetPort(const HostResolver::Host& host) {
   if (absl::holds_alternative<url::SchemeHostPort>(host)) {
     return absl::get<url::SchemeHostPort>(host).port();
   }
@@ -533,7 +531,7 @@ uint16_t GetPort(const absl::variant<url::SchemeHostPort, HostPortPair>& host) {
 // (or the query is explicitly for HTTPS). Otherwise DNS will not give different
 // results for the same hostname.
 absl::variant<url::SchemeHostPort, std::string> CreateHostForJobKey(
-    const absl::variant<url::SchemeHostPort, HostPortPair>& input,
+    const HostResolver::Host& input,
     DnsQueryType query_type) {
   if ((base::FeatureList::IsEnabled(features::kUseDnsHttpsSvcb) ||
        query_type == DnsQueryType::HTTPS) &&
@@ -605,7 +603,7 @@ class HostResolverManager::RequestImpl
       public base::LinkNode<HostResolverManager::RequestImpl> {
  public:
   RequestImpl(NetLogWithSource source_net_log,
-              absl::variant<url::SchemeHostPort, HostPortPair> request_host,
+              HostResolver::Host request_host,
               NetworkIsolationKey network_isolation_key,
               absl::optional<ResolveHostParameters> optional_parameters,
               base::WeakPtr<ResolveContext> resolve_context,
@@ -780,9 +778,7 @@ class HostResolverManager::RequestImpl
   // NetLog for the source, passed in HostResolver::Resolve.
   const NetLogWithSource& source_net_log() { return source_net_log_; }
 
-  const absl::variant<url::SchemeHostPort, HostPortPair>& request_host() const {
-    return request_host_;
-  }
+  const HostResolver::Host& request_host() const { return request_host_; }
 
   const NetworkIsolationKey& network_isolation_key() const {
     return network_isolation_key_;
@@ -890,7 +886,7 @@ class HostResolverManager::RequestImpl
 
   const NetLogWithSource source_net_log_;
 
-  const absl::variant<url::SchemeHostPort, HostPortPair> request_host_;
+  const HostResolver::Host request_host_;
   const NetworkIsolationKey network_isolation_key_;
   ResolveHostParameters parameters_;
   base::WeakPtr<ResolveContext> resolve_context_;
@@ -3215,7 +3211,7 @@ HostResolverManager::CreateNetworkBoundHostResolverManager(
 
 std::unique_ptr<HostResolver::ResolveHostRequest>
 HostResolverManager::CreateRequest(
-    absl::variant<url::SchemeHostPort, HostPortPair> host,
+    HostResolver::Host host,
     NetworkIsolationKey network_isolation_key,
     NetLogWithSource net_log,
     absl::optional<ResolveHostParameters> optional_parameters,

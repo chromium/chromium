@@ -72,16 +72,14 @@ const unsigned kMaxCacheEntries = 100;
 // TTL for the successful resolutions. Failures are not cached.
 const unsigned kCacheEntryTTLSeconds = 60;
 
-base::StringPiece GetScheme(
-    const absl::variant<url::SchemeHostPort, HostPortPair>& endpoint) {
+base::StringPiece GetScheme(const HostResolver::Host& endpoint) {
   DCHECK(absl::holds_alternative<url::SchemeHostPort>(endpoint));
   return absl::get<url::SchemeHostPort>(endpoint).scheme();
 }
 
 // In HostPortPair format (no brackets around IPv6 literals) purely for
 // compatibility with IPAddress::AssignFromIPLiteral().
-base::StringPiece GetHostname(
-    const absl::variant<url::SchemeHostPort, HostPortPair>& endpoint) {
+base::StringPiece GetHostname(const HostResolver::Host& endpoint) {
   if (absl::holds_alternative<url::SchemeHostPort>(endpoint)) {
     base::StringPiece hostname =
         absl::get<url::SchemeHostPort>(endpoint).host();
@@ -96,8 +94,7 @@ base::StringPiece GetHostname(
   return absl::get<HostPortPair>(endpoint).host();
 }
 
-uint16_t GetPort(
-    const absl::variant<url::SchemeHostPort, HostPortPair>& endpoint) {
+uint16_t GetPort(const HostResolver::Host& endpoint) {
   if (absl::holds_alternative<url::SchemeHostPort>(endpoint))
     return absl::get<url::SchemeHostPort>(endpoint).port();
 
@@ -106,7 +103,7 @@ uint16_t GetPort(
 }
 
 absl::variant<url::SchemeHostPort, std::string> GetCacheHost(
-    const absl::variant<url::SchemeHostPort, HostPortPair>& endpoint) {
+    const HostResolver::Host& endpoint) {
   if (absl::holds_alternative<url::SchemeHostPort>(endpoint))
     return absl::get<url::SchemeHostPort>(endpoint);
 
@@ -136,7 +133,7 @@ int ParseAddressList(base::StringPiece host_list,
 class MockHostResolverBase::RequestImpl
     : public HostResolver::ResolveHostRequest {
  public:
-  RequestImpl(absl::variant<url::SchemeHostPort, HostPortPair> request_endpoint,
+  RequestImpl(Host request_endpoint,
               const NetworkIsolationKey& network_isolation_key,
               const absl::optional<ResolveHostParameters>& optional_parameters,
               base::WeakPtr<MockHostResolverBase> resolver)
@@ -314,10 +311,7 @@ class MockHostResolverBase::RequestImpl
     std::move(callback_).Run(error);
   }
 
-  const absl::variant<url::SchemeHostPort, HostPortPair>& request_endpoint()
-      const {
-    return request_endpoint_;
-  }
+  const Host& request_endpoint() const { return request_endpoint_; }
 
   const NetworkIsolationKey& network_isolation_key() const {
     return network_isolation_key_;
@@ -375,7 +369,7 @@ class MockHostResolverBase::RequestImpl
     return corrected;
   }
 
-  const absl::variant<url::SchemeHostPort, HostPortPair> request_endpoint_;
+  const Host request_endpoint_;
   const NetworkIsolationKey network_isolation_key_;
   const ResolveHostParameters parameters_;
   RequestPriority priority_;
@@ -519,7 +513,7 @@ MockHostResolverBase::RuleResolver::operator=(RuleResolver&&) = default;
 
 const MockHostResolverBase::RuleResolver::RuleResult&
 MockHostResolverBase::RuleResolver::Resolve(
-    const absl::variant<url::SchemeHostPort, HostPortPair>& request_endpoint,
+    const Host& request_endpoint,
     DnsQueryTypeSet request_types,
     HostResolverSource request_source) const {
   for (const auto& rule : rules_) {
@@ -749,7 +743,7 @@ HostCache* MockHostResolverBase::GetHostCache() {
 }
 
 int MockHostResolverBase::LoadIntoCache(
-    const absl::variant<url::SchemeHostPort, HostPortPair>& endpoint,
+    const Host& endpoint,
     const NetworkIsolationKey& network_isolation_key,
     const absl::optional<ResolveHostParameters>& optional_parameters) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -954,7 +948,7 @@ int MockHostResolverBase::Resolve(RequestImpl* request) {
 }
 
 int MockHostResolverBase::ResolveFromIPLiteralOrCache(
-    const absl::variant<url::SchemeHostPort, HostPortPair>& endpoint,
+    const Host& endpoint,
     const NetworkIsolationKey& network_isolation_key,
     DnsQueryType dns_query_type,
     HostResolverFlags flags,

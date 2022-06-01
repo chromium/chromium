@@ -154,11 +154,9 @@ class MockHostResolverBase
     RuleResolver(RuleResolver&&);
     RuleResolver& operator=(RuleResolver&&);
 
-    const RuleResult& Resolve(
-        const absl::variant<url::SchemeHostPort, HostPortPair>&
-            request_endpoint,
-        DnsQueryTypeSet request_types,
-        HostResolverSource request_source) const;
+    const RuleResult& Resolve(const Host& request_endpoint,
+                              DnsQueryTypeSet request_types,
+                              HostResolverSource request_source) const;
 
     void ClearRules();
 
@@ -286,7 +284,7 @@ class MockHostResolverBase
   // Preloads the cache with what would currently be the result of a request
   // with the given parameters. Returns the net error of the cached result.
   int LoadIntoCache(
-      const absl::variant<url::SchemeHostPort, HostPortPair>& endpoint,
+      const Host& endpoint,
       const NetworkIsolationKey& network_isolation_key,
       const absl::optional<ResolveHostParameters>& optional_parameters);
 
@@ -402,7 +400,7 @@ class MockHostResolverBase
   // Resolve as IP or from |cache_| return cached error or
   // DNS_CACHE_MISS if failed.
   int ResolveFromIPLiteralOrCache(
-      const absl::variant<url::SchemeHostPort, HostPortPair>& endpoint,
+      const Host& endpoint,
       const NetworkIsolationKey& network_isolation_key,
       DnsQueryType dns_query_type,
       HostResolverFlags flags,

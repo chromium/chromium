@@ -147,7 +147,7 @@ class NET_EXPORT HostResolverManager
   // TODO(crbug.com/1022059): Use the HostCache out of the ResolveContext
   // instead of passing it separately.
   std::unique_ptr<HostResolver::ResolveHostRequest> CreateRequest(
-      absl::variant<url::SchemeHostPort, HostPortPair> host,
+      HostResolver::Host host,
       NetworkIsolationKey network_isolation_key,
       NetLogWithSource net_log,
       absl::optional<ResolveHostParameters> optional_parameters,

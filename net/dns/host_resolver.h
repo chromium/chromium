@@ -56,6 +56,8 @@ class URLRequestContext;
 // See mock_host_resolver.h for test implementations.
 class NET_EXPORT HostResolver {
  public:
+  using Host = absl::variant<url::SchemeHostPort, HostPortPair>;
+
   // Handler for an individual host resolution request. Created by
   // HostResolver::CreateRequest().
   class ResolveHostRequest {
