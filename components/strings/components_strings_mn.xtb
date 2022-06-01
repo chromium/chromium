@@ -484,6 +484,7 @@
 <translation id="2215963164070968490">Нохой</translation>
 <translation id="2218879909401188352"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />-н халдагчид таны төхөөрөмжийг гэмтээж болзошгүй аюултай апп суулгах, таны мобайл тооцоонд нэмэлт төлбөр гаргах, таны хувийн мэдээллийг хулгайлах боломжтой. <ph name="BEGIN_LEARN_MORE_LINK" />Дэлгэрэнгүй үзэх<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2219658597883514593">Практик хичээлийг дахин эхлүүлэх</translation>
+<translation id="2219735899272417925">Төхөөрөмжийг шинэчлэх шаардлагатай</translation>
 <translation id="2224337661447660594">Интернэт алга</translation>
 <translation id="2230458221926704099">Та <ph name="BEGIN_LINK" />оношилгоо апп<ph name="END_LINK" /> ашиглан холболтоо засна уу</translation>
 <translation id="2239100178324503013">Одоо илгээх</translation>
@@ -883,9 +884,6 @@
 <translation id="3369192424181595722">Цагийн тохиргооны алдаа</translation>
 <translation id="3369459162151165748">Тээврийн хэрэгслийн сэлбэг, дагалдах хэрэгсэл</translation>
 <translation id="3371064404604898522">Chrome-г өгөгдмөл хөтөч болгон тохируулах</translation>
-<translation id="3371076217486966826"><ph name="URL" /> нь дараахад зөвшөөрөл хүсэж байна:
-      • Таны эргэн тойрны 3D газрын зургийг үүсгэж, камерын байршлыг хянах
-      • Таны камерыг ашиглах</translation>
 <translation id="337363190475750230">Хадгалагдаагүй</translation>
 <translation id="3375754925484257129">Chrome-н аюулгүй байдлын шалгалтыг ажиллуулах</translation>
 <translation id="3377144306166885718">Сервер TLS-н хуучирсан хувилбарыг ашигласан.</translation>

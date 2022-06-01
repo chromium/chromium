@@ -6687,6 +6687,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7559719679815339381">Kiosk ilovasi yangilanmoqda... Tashqi USB xotira qurilmasini chiqarib olmang.</translation>
 <translation id="7560756177962144929"><ph name="DEVICE_TYPE" /> qurilmangizni sinxronlang</translation>
 <translation id="7561196759112975576">Har doim</translation>
+<translation id="7561982940498449837">Menyuni yopish</translation>
 <translation id="756445078718366910">Brauzer oynasini ochish</translation>
 <translation id="7564847347806291057">Jarayonni yakunlash</translation>
 <translation id="756503097602602175">Google hisoblarini <ph name="LINK_BEGIN" />Sozlamalar<ph name="LINK_END" /> orqali boshqarishingiz mumkin. Sayt va ilovalarga berilgan ruxsatlar barcha hisoblarga tatbiq etiladi. Sayt va ilovalarni hisob axborotingizga kirishini istamasangiz, <ph name="DEVICE_TYPE" /> qurilmangizga mehmon sifatida kiring yoki internetda <ph name="LINK_2_BEGIN" />inkognito oynasida<ph name="LINK_2_END" /> ishlang.</translation>
@@ -7543,6 +7544,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8379156816349755485">Kirish vaqtida autentifikatsiya tokeni saqlanib qoladi va keyingi yuklab olishlar uchun ishlatiladi.</translation>
 <translation id="8379878387931047019">Bu qurilmada sayt so‘ragan kalit turi mavjud emas</translation>
 <translation id="8379991678458444070">Bu varaq bukmarkka olinsa, keyinchalik oson topiladi</translation>
+<translation id="8380266723152870797">Oyna nomi</translation>
 <translation id="8380941800586852976">Xavfli</translation>
 <translation id="8382715499079447151">Xavfsiz koʻrish</translation>
 <translation id="8382913212082956454">&amp;E-pochta manzilini nusxalash</translation>

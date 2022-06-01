@@ -1076,6 +1076,7 @@ Usaldusmärgid täiustavad veebis privaatsust ja neid ei saa kasutada teie isiku
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, vaheleht, valitud</translation>
 <translation id="6828070228333235514">Peata hinna jälgimine</translation>
 <translation id="6833996806551876956">Privaatsuse liivakasti prooviperiood</translation>
+<translation id="6836206421467243968">Vahelehegrupi <ph name="TITLE_OF_GROUP" /> taastamine uue taustal oleva vahelehegrupina.</translation>
 <translation id="6846298663435243399">Laadimine…</translation>
 <translation id="6850409657436465440">Allalaadimine on endiselt pooleli</translation>
 <translation id="6850830437481525139">Suleti <ph name="TAB_COUNT" /> vahelehte</translation>
@@ -1138,6 +1139,7 @@ Usaldusmärgid täiustavad veebis privaatsust ja neid ei saa kasutada teie isiku
 <translation id="7187993566681480880">Kaitseb teid Chrome'is ja seda võidakse kasutada teie turvalisuse suurendamiseks muudes Google'i rakendustes, kui olete sisse logitud.</translation>
 <translation id="7191430249889272776">Taustal on avatud vaheleht.</translation>
 <translation id="7196215469483532480">Privaatsusjuhendi selgitus on avatud täiskõrgusel</translation>
+<translation id="7207760545532569765"><ph name="TAB_COUNT" /> vahelehe taastamine uute taustal olevate vahelehtedena.</translation>
 <translation id="7208109991155904980">Reaktsioon teisaldati</translation>
 <translation id="7222235798733126207">Piiratud jagamine saitide vahel</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 allalaadimine on ootel}other{# allalaadimist on ootel}}</translation>
@@ -1516,6 +1518,7 @@ Usaldusmärgid täiustavad veebis privaatsust ja neid ei saa kasutada teie isiku
 <translation id="9148126808321036104">Logige uuesti sisse</translation>
 <translation id="9155898266292537608">Otsimiseks võite ka kiirelt sõna puudutada</translation>
 <translation id="9158770349521403363">Jagatakse vaid sisu</translation>
+<translation id="9159716826369098114"><ph name="TAB_COUNT" /> vahelehega vahelehegrupi taastamine uue taustal oleva vahelehegrupina.</translation>
 <translation id="916446198114569890">Teie külastatavad URL-id salvestatakse teie Google'i kontole</translation>
 <translation id="9169507124922466868">Navigeerimisajalugu on pooleldi avatud</translation>
 <translation id="9187955620966010988">Reaktsiooni kohandati</translation>

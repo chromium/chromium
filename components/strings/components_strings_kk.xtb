@@ -484,6 +484,7 @@
 <translation id="2215963164070968490">Иттер</translation>
 <translation id="2218879909401188352">Ағымдағы <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> сайтындағы шабуылдаушылар құрылғыңызға зақым келтіретін қауіпті қолданбаларды орнатуы, мобильді шотқа жасырын ақыларды қосуы немесе жеке ақпаратты ұрлауы мүмкін. <ph name="BEGIN_LEARN_MORE_LINK" />Толығырақ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2219658597883514593">Оқулықты қайта бастау</translation>
+<translation id="2219735899272417925">Құрылғыны бастапқы күйге қайтару қажет.</translation>
 <translation id="2224337661447660594">Интернет жоқ</translation>
 <translation id="2230458221926704099"><ph name="BEGIN_LINK" />Диагностика қолданбасы<ph name="END_LINK" /> көмегімен байланысты жөндеңіз</translation>
 <translation id="2239100178324503013">Қазір жіберу</translation>
@@ -881,9 +882,6 @@
 <translation id="3369192424181595722">Сағат қатесі</translation>
 <translation id="3369459162151165748">Автобөлшектер мен керек-жарақтар</translation>
 <translation id="3371064404604898522">Chrome-ды әдепкі браузер етіп орнату</translation>
-<translation id="3371076217486966826"><ph name="URL" /> үшін келесі рұқсаттар қажет:
-      • айналаңыздың 3D картасын жасау және камера қалпын қадағалау;
-      • камераны пайдалану.</translation>
 <translation id="337363190475750230">Өшірілді</translation>
 <translation id="3375754925484257129">Chrome қауіпсіздік тексерісін іске қосу</translation>
 <translation id="3377144306166885718">Сервер ескірген TLS нұсқасын пайдаланған.</translation>

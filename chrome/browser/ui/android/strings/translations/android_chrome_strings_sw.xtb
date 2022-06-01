@@ -1076,6 +1076,7 @@ Tokeni za uaminifu zinaboresha faragha kwenye wavuti na haziwezi kutumiwa kukuta
 <translation id="6824899148643461612">Umechagua kichupo cha <ph name="TAB_TITLE" /></translation>
 <translation id="6828070228333235514">Acha kufuatilia bei</translation>
 <translation id="6833996806551876956">Jaribio la kipengele cha Utaratibu wa Kuwekea Vikwazo vya Faragha</translation>
+<translation id="6836206421467243968">Rejesha kikundi cha vichupo cha <ph name="TITLE_OF_GROUP" /> kiwe kikundi kipya cha vichupo vinavyofanya kazi chinichini.</translation>
 <translation id="6846298663435243399">Inapakia…</translation>
 <translation id="6850409657436465440">Bado inapakua faili</translation>
 <translation id="6850830437481525139">Vichupo <ph name="TAB_COUNT" /> vimefungwa</translation>
@@ -1138,6 +1139,7 @@ Tokeni za uaminifu zinaboresha faragha kwenye wavuti na haziwezi kutumiwa kukuta
 <translation id="7187993566681480880">Hulinda usalama wako kwenye Chrome na inaweza kutumiwa kuboresha usalama wako kwenye programu nyingine za Google ukiwa umeingia katika akaunti.</translation>
 <translation id="7191430249889272776">Kichupo kimefunguliwa chini chini.</translation>
 <translation id="7196215469483532480">Maelezo kuhusu mwongozo wa faragha yamefunguliwa kwenye skrini nzima</translation>
+<translation id="7207760545532569765">Rejesha vichupo <ph name="TAB_COUNT" /> viwe vichupo vipya vinavyofanya kazi chinichini.</translation>
 <translation id="7208109991155904980">Maoni yamehamishwa</translation>
 <translation id="7222235798733126207">Ushiriki uliodhibitiwa kati ya tovuti</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{Inasubiri kupakua faili 1}other{Inasubri kupakua faili #}}</translation>
@@ -1516,6 +1518,7 @@ Tokeni za uaminifu zinaboresha faragha kwenye wavuti na haziwezi kutumiwa kukuta
 <translation id="9148126808321036104">Ingia tena</translation>
 <translation id="9155898266292537608">Unaweza pia kutafuta kwa kugusa haraka kwenye neno</translation>
 <translation id="9158770349521403363">Shiriki maudhui pekee</translation>
+<translation id="9159716826369098114">Rejesha kikundi cha vichupo <ph name="TAB_COUNT" /> kiwe kikundi kipya cha vichupo vinavyofanya kazi chinichini.</translation>
 <translation id="916446198114569890">URL unazotembelea huhifadhiwa kwenye akaunti yako ya Google</translation>
 <translation id="9169507124922466868">Historia ya uelekezaji imefunguliwa nusu</translation>
 <translation id="9187955620966010988">Maoni yamerekebishwa</translation>

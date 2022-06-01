@@ -6698,6 +6698,7 @@
 <translation id="7559719679815339381">請稍候…系統正在更新 Kiosk 應用程式。請勿移除 USB 記憶體。</translation>
 <translation id="7560756177962144929">同步處理 <ph name="DEVICE_TYPE" /></translation>
 <translation id="7561196759112975576">永遠使用</translation>
+<translation id="7561982940498449837">關閉選單</translation>
 <translation id="756445078718366910">開啟瀏覽器視窗</translation>
 <translation id="7564847347806291057">結束處理程序</translation>
 <translation id="756503097602602175">您可透過<ph name="LINK_BEGIN" />設定<ph name="LINK_END" />管理已登入的 Google 帳戶。您向網站和應用程式授予的權限，可能會套用到所有帳戶。如果您不想網站和應用程式存取您的帳戶資料，請以訪客身分登入您的 <ph name="DEVICE_TYPE" />，或透過<ph name="LINK_2_BEGIN" />無痕式視窗<ph name="LINK_2_END" />瀏覽網頁。</translation>
@@ -7556,6 +7557,7 @@
 <translation id="8379156816349755485">系統會在使用者登入時儲存對方獨特的驗證憑證，並用於日後所有符合資格的下載檔案。</translation>
 <translation id="8379878387931047019">此裝置不支援此網站要求的安全密鑰類型</translation>
 <translation id="8379991678458444070">將此分頁加入書籤，方便您快速返回此處</translation>
+<translation id="8380266723152870797">視窗名稱</translation>
 <translation id="8380941800586852976">不安全</translation>
 <translation id="8382715499079447151">檢視保護</translation>
 <translation id="8382913212082956454">複製電郵地址(&amp;E)</translation>

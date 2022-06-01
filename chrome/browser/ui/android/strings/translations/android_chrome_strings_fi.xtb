@@ -1076,6 +1076,7 @@ Luottamusmerkit parantavat yksityisyyttä verkossa, eikä sinua voi tunnistaa ni
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, välilehti, valittu</translation>
 <translation id="6828070228333235514">Lopeta hinnan seuranta</translation>
 <translation id="6833996806551876956">Tietosuojan hiekkalaatikko ‑kokeilu</translation>
+<translation id="6836206421467243968">Palauta välilehtiryhmä (<ph name="TITLE_OF_GROUP" />) uutena taustavälilehtiryhmänä.</translation>
 <translation id="6846298663435243399">Ladataan…</translation>
 <translation id="6850409657436465440">Latauksesi on vielä kesken.</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> välilehteä suljettiin.</translation>
@@ -1138,6 +1139,7 @@ Luottamusmerkit parantavat yksityisyyttä verkossa, eikä sinua voi tunnistaa ni
 <translation id="7187993566681480880">Pitää sinut turvassa Chromessa ja voi parantaa suojaustasi muissa Google-sovelluksissa, kun olet sisäänkirjautuneena.</translation>
 <translation id="7191430249889272776">Välilehti avattiin taustalla.</translation>
 <translation id="7196215469483532480">Yksityisyysoppaan selitys kokonaan avattuna</translation>
+<translation id="7207760545532569765">Palauta <ph name="TAB_COUNT" /> välilehteä uusina taustavälilehtinä.</translation>
 <translation id="7208109991155904980">Reaktio siirretty</translation>
 <translation id="7222235798733126207">Rajoitettu sivustojen välinen jakaminen</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 lataus odottaa}other{# latausta odottaa}}</translation>
@@ -1516,6 +1518,7 @@ Luottamusmerkit parantavat yksityisyyttä verkossa, eikä sinua voi tunnistaa ni
 <translation id="9148126808321036104">Kirjaudu sisään uudelleen</translation>
 <translation id="9155898266292537608">Voit hakea myös napauttamalla sanaa nopeasti.</translation>
 <translation id="9158770349521403363">Jaa vain sisältö</translation>
+<translation id="9159716826369098114">Palauta <ph name="TAB_COUNT" /> välilehden välilehtiryhmä uutena taustavälilehtiryhmänä.</translation>
 <translation id="916446198114569890">Avaamasi URL-osoitteet tallennetaan Google-tilillesi</translation>
 <translation id="9169507124922466868">Navigointihistoria on puoliksi auki</translation>
 <translation id="9187955620966010988">Reaktiota muutettu</translation>

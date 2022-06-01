@@ -2463,6 +2463,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3348038390189153836">Externes Gerät erkannt</translation>
 <translation id="3348131053948466246">Emoji vorgeschlagen. Drücke die Nach-oben- oder Nach-unten-Taste, um ein Emoji auszuwählen und bestätige die Auswahl mit der Eingabetaste.</translation>
 <translation id="3349933790966648062">Speicherbedarf</translation>
+<translation id="3353786022389205125">Aktiviere „Sperrbildschirm anzeigen, wenn der Ruhemodus beendet wird“ und versuch es noch einmal</translation>
 <translation id="3354972872297836698">Koppeln mit Gerät „<ph name="DEVICE_NAME" />“ fehlgeschlagen; Gerät auswählen und noch einmal versuchen</translation>
 <translation id="3355936511340229503">Verbindungsfehler</translation>
 <translation id="3356469410714175391">(virtuelle Karte aktiviert)</translation>
@@ -4940,6 +4941,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5827733057563115968">Vervollständigung des nächsten Wortes</translation>
 <translation id="5828545842856466741">Profil hinzufügen…</translation>
 <translation id="5828633471261496623">Wird gedruckt...</translation>
+<translation id="5830205393314753525"><ph name="APP_NAME" /> kann nicht geöffnet werden</translation>
 <translation id="5830720307094128296">Seite speichern &amp;unter...</translation>
 <translation id="5832813618714645810">Profile</translation>
 <translation id="583281660410589416">Unbekannt</translation>
@@ -6676,6 +6678,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="7559719679815339381">Die Kiosk-App wird gerade aktualisiert, bitte warten. Entferne den USB-Stick nicht.</translation>
 <translation id="7560756177962144929"><ph name="DEVICE_TYPE" /> synchronisieren</translation>
 <translation id="7561196759112975576">Immer</translation>
+<translation id="7561982940498449837">Menü schließen</translation>
 <translation id="756445078718366910">Browserfenster öffnen</translation>
 <translation id="7564847347806291057">Prozess beenden</translation>
 <translation id="756503097602602175">Angemeldete Google-Konten können in den <ph name="LINK_BEGIN" />Einstellungen<ph name="LINK_END" /> verwaltet werden. Berechtigungen, die du Websites und Anwendungen gewährt hast, gelten möglicherweise für alle Konten. Wenn du nicht möchtest, dass Websites oder Anwendungen Zugriff auf deine Kontoinformationen haben, kannst du dich auf <ph name="DEVICE_TYPE" /> als Gast anmelden oder in einem <ph name="LINK_2_BEGIN" />Inkognitofenster<ph name="LINK_2_END" /> im Web surfen.</translation>
@@ -7533,6 +7536,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8379156816349755485">Bei der Anmeldung wird ein eindeutiges Authentifizierungs-Token gespeichert, das für alle zukünftigen berechtigten Downloads verwendet wird.</translation>
 <translation id="8379878387931047019">Das Gerät ist nicht mit dem Sicherheitsschlüssel kompatibel, der von dieser Website angefordert wird</translation>
 <translation id="8379991678458444070">Du kannst diesen Tab als Lesezeichen speichern, um schnell wieder hierher zurückzukehren</translation>
+<translation id="8380266723152870797">Name des Fensters</translation>
 <translation id="8380941800586852976">Schädlich</translation>
 <translation id="8382715499079447151">Spionageschutz</translation>
 <translation id="8382913212082956454">E-Mail-Adr&amp;esse kopieren</translation>

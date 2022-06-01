@@ -849,6 +849,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1794051631868188691">Visa aldrig <ph name="MERCHANT" /></translation>
 <translation id="1794791083288629568">Skicka feedback som hjälper oss att åtgärda problemet.</translation>
 <translation id="1795214765651529549">Använd klassiskt</translation>
+<translation id="1796105431091975902">Välj en Ansible Playbook att lägga till</translation>
 <translation id="1796588414813960292">Funktioner som kräver ljud slutar fungera</translation>
 <translation id="1800502858278951817">Inga tillägg har begärt behörighet att läsa och ändra <ph name="SITE_NAME" /></translation>
 <translation id="1802624026913571222">Aktivera viloläge när fodralet stängs</translation>
@@ -2480,6 +2481,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="3348038390189153836">Flyttbar enhet upptäckt</translation>
 <translation id="3348131053948466246">Föreslagen emoji. Tryck upp eller ned för att navigera och retur för att infoga.</translation>
 <translation id="3349933790966648062">Minnesanvändning</translation>
+<translation id="3353786022389205125">Aktivera Visa låsskärm efter viloläge och försök igen</translation>
 <translation id="3354972872297836698">Det gick inte att koppla till enheten <ph name="DEVICE_NAME" /> – välj enheten och försök igen</translation>
 <translation id="3355936511340229503">Anslutningsfel</translation>
 <translation id="3356469410714175391">(Virtuellt kort aktiverat)</translation>
@@ -3054,6 +3056,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="389901847090970821">Välj tangentbord</translation>
 <translation id="3900966090527141178">Exportera lösenord</translation>
 <translation id="3903187154317825986">Inbyggt tangentbord</translation>
+<translation id="3903191712482985591">Lägg till Playbook</translation>
 <translation id="3904326018476041253">Platstjänster</translation>
 <translation id="3904849010307028014">En webbplats kan utfärda en förtroendetoken till din webbläsare utifrån dina interaktioner med webbplatsen, till exempel att du regelbundet loggar in på ett konto. Om andra webbplatser du besöker sedan söker efter och hittar en giltig förtroendetoken så ökar sannolikheten att du behandlas som en person och inte som en bot.</translation>
 <translation id="3905761538810670789">Reparera appen</translation>
@@ -3665,6 +3668,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="4510479820467554003">Lista över föräldrakonton</translation>
 <translation id="451102079304155829">kundvagnar</translation>
 <translation id="4513872120116766993">Skrivförslag</translation>
+<translation id="4513909579793564731">Tillämpa Playbook</translation>
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="451407183922382411">Tekniken kommer från <ph name="COMPANY_NAME" /></translation>
 <translation id="4514610446763173167">Växla mellan att spela upp och pausa video</translation>
@@ -4958,6 +4962,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5827733057563115968">Förslag på nästa ord</translation>
 <translation id="5828545842856466741">Lägg till profil …</translation>
 <translation id="5828633471261496623">Skriver ut...</translation>
+<translation id="5830205393314753525">Det går inte att öppna <ph name="APP_NAME" /></translation>
 <translation id="5830720307094128296">Spara &amp;sida som...</translation>
 <translation id="5832813618714645810">Profiler</translation>
 <translation id="583281660410589416">Okänd</translation>
@@ -5498,6 +5503,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="635609604405270300">Stäng inte av enheten</translation>
 <translation id="63566973648609420">Endast personer som har ditt lösenord kan läsa dina krypterade uppgifter. Lösenordet skickas inte till och sparas inte av Google. Om du glömmer lösenordet måste du <ph name="BEGIN_LINK" />återställa synkroniseringen<ph name="END_LINK" />.</translation>
 <translation id="6357305427698525450">Vissa länkar som stöds öppnas fortfarande i <ph name="APP_NAME" /> eller <ph name="APP_NAME_2" />.</translation>
+<translation id="6357794994761110294">Inga tillägg har behörighet att läsa och ändra <ph name="SITE_NAME" /></translation>
 <translation id="6358884629796491903">Drake</translation>
 <translation id="6361850914223837199">Information om felet:</translation>
 <translation id="6362853299801475928">&amp;Rapportera ett problem...</translation>
@@ -6694,6 +6700,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7559719679815339381">Vänta ... Kioskappen håller på att uppdateras. Ta inte bort USB-minnet.</translation>
 <translation id="7560756177962144929">Synkronisera <ph name="DEVICE_TYPE" /></translation>
 <translation id="7561196759112975576">Alltid</translation>
+<translation id="7561982940498449837">Stäng meny</translation>
 <translation id="756445078718366910">Öppna webbläsarfönster</translation>
 <translation id="7564847347806291057">Avsluta process</translation>
 <translation id="756503097602602175">Du kan hantera inloggade Google-konton i <ph name="LINK_BEGIN" />inställningarna<ph name="LINK_END" />. Behörigheter som du har gett webbplatser och appar kan gälla för alla konton. Om du inte vill ge webbplatser och appar åtkomst till information i ditt konto kan du logga in på <ph name="DEVICE_TYPE" /> som gäst eller surfa i ett <ph name="LINK_2_BEGIN" />inkognitofönster<ph name="LINK_2_END" />.</translation>
@@ -7552,6 +7559,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8379156816349755485">När du loggar in sparas en unik autentiseringstoken som används för alla kommande nedladdningar som uppfyller villkoren.</translation>
 <translation id="8379878387931047019">Enheten stöder inte den typ av säkerhetsnyckel som begärs av webbplatsen</translation>
 <translation id="8379991678458444070">Bokmärk fliken om du snabbt vill hitta tillbaka</translation>
+<translation id="8380266723152870797">Namn för fönstret</translation>
 <translation id="8380941800586852976">Farlig</translation>
 <translation id="8382715499079447151">Skydd mot smygtittare</translation>
 <translation id="8382913212082956454">Kopiera &amp;e-postadress</translation>

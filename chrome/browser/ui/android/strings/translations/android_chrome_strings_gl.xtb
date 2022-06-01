@@ -1076,6 +1076,7 @@ Os tokens de confianza melloran a privacidade na Web e non se poden usar para de
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, pestana, seleccionada</translation>
 <translation id="6828070228333235514">Deter seguimento do prezo</translation>
 <translation id="6833996806551876956">Proba de Privacy Sandbox</translation>
+<translation id="6836206421467243968">Restablecer grupo de pestanas <ph name="TITLE_OF_GROUP" /> como un novo grupo de pestanas en segundo plano.</translation>
 <translation id="6846298663435243399">Cargando…</translation>
 <translation id="6850409657436465440">A descarga aínda está en curso</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> pestanas pechadas</translation>
@@ -1138,6 +1139,7 @@ Os tokens de confianza melloran a privacidade na Web e non se poden usar para de
 <translation id="7187993566681480880">Protéxete en Chrome e pode utilizarse para mellorar a túa seguranza noutras aplicacións de Google cando teñas a sesión iniciada.</translation>
 <translation id="7191430249889272776">Abriuse a pestana en segundo plano.</translation>
 <translation id="7196215469483532480">A explicación sobre a Guía de privacidade está aberta a pantalla completa</translation>
+<translation id="7207760545532569765">Restablecer <ph name="TAB_COUNT" /> pestanas como novas pestanas en segundo plano.</translation>
 <translation id="7208109991155904980">Reacción movida</translation>
 <translation id="7222235798733126207">Uso compartido limitado entre sitios</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 descarga pendente}other{# descargas pendentes}}</translation>
@@ -1516,6 +1518,7 @@ Os tokens de confianza melloran a privacidade na Web e non se poden usar para de
 <translation id="9148126808321036104">Iniciar sesión de novo</translation>
 <translation id="9155898266292537608">Tamén podes realizar buscas con só tocar rapidamente unha palabra</translation>
 <translation id="9158770349521403363">Compartir só contido</translation>
+<translation id="9159716826369098114">Restablecer grupo de <ph name="TAB_COUNT" /> pestanas como un novo grupo de pestanas en segundo plano.</translation>
 <translation id="916446198114569890">Os URL que visitas gárdanse na túa conta de Google</translation>
 <translation id="9169507124922466868">O historial de navegación abriuse ata a metade</translation>
 <translation id="9187955620966010988">Reacción axustada</translation>

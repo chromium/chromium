@@ -838,6 +838,7 @@ Uygulamalara vermiş olduğunuz izinler bu hesap için geçerli olabilir. Androi
 <translation id="1794051631868188691"><ph name="MERCHANT" /> adlı satıcıyı asla gösterme</translation>
 <translation id="1794791083288629568">Bu sorunu düzeltmemize yardımcı olmak için geri bildirim gönderin.</translation>
 <translation id="1795214765651529549">Klasik Temayı Kullan</translation>
+<translation id="1796105431091975902">Eklenecek bir Ansible başucu kitabı seçme</translation>
 <translation id="1796588414813960292">Ses kullanılmasını gerektiren özellikler çalışmaz</translation>
 <translation id="1800502858278951817">Hiçbir uzantı <ph name="SITE_NAME" /> sitesini okuyup değiştirmek istemedi</translation>
 <translation id="1802624026913571222">Kapak kapatıldığında uyku moduna geç</translation>
@@ -3036,6 +3037,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="389901847090970821">Klavye seçin</translation>
 <translation id="3900966090527141178">Şifreleri dışa aktarın</translation>
 <translation id="3903187154317825986">Yerleşik klavye</translation>
+<translation id="3903191712482985591">Başucu kitabı ekleyin</translation>
 <translation id="3904326018476041253">Konum Hizmetleri</translation>
 <translation id="3904849010307028014">Bir siteyle olan etkileşiminize (ör. düzenli olarak bir hesapta oturum açmak) göre bu site, tarayıcınıza bir güven jetonu gönderebilir. Ziyaret ettiğiniz diğer siteler daha sonra geçerli bir güven jetonu arayıp bulursa bu sitelerin sizi bot yerine gerçek bir kişi olarak kabul etmesi daha olasıdır.</translation>
 <translation id="3905761538810670789">Uygulamayı onar</translation>
@@ -3646,6 +3648,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4510479820467554003">Ebeveyn hesap listesi</translation>
 <translation id="451102079304155829">alışveriş sepetleri</translation>
 <translation id="4513872120116766993">Tahmine dayalı yazım</translation>
+<translation id="4513909579793564731">Başucu kitabını uygula</translation>
 <translation id="4513946894732546136">Geri Bildirim</translation>
 <translation id="451407183922382411"><ph name="COMPANY_NAME" /> tarafından destekleniyor</translation>
 <translation id="4514610446763173167">Oynatmak veya duraklatmak için videoyu aç/kapat</translation>
@@ -5480,6 +5483,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="635609604405270300">Cihazı kapatmayın</translation>
 <translation id="63566973648609420">Yalnızca parolanızı bilen biri, şifrelenmiş verilerinizi okuyabilir. Parola Google'a gönderilmez veya Google tarafından saklanmaz. Parolanızı unutursanız veya bu ayarı değiştirmek isterseniz <ph name="BEGIN_LINK" />senkronizasyonu sıfırlamanız<ph name="END_LINK" /> gerekir.</translation>
 <translation id="6357305427698525450">Bazı desteklenen bağlantılar <ph name="APP_NAME" /> veya <ph name="APP_NAME_2" /> uygulamalarında açılmaya devam eder.</translation>
+<translation id="6357794994761110294">Hiçbir uzantının <ph name="SITE_NAME" /> sitesini okuyup değiştirmesine izin verilmez</translation>
 <translation id="6358884629796491903">Ejderha</translation>
 <translation id="6361850914223837199">Hata ayrıntıları:</translation>
 <translation id="6362853299801475928">&amp;Sorun bildir...</translation>
@@ -6676,6 +6680,7 @@ Güvenliği ihlal edilmiş # şifreniz daha var. Google Şifre Yöneticisi bu ş
 <translation id="7559719679815339381">Lütfen bekleyin....Kiosk uygulaması güncelleniyor. USB çubuğunu çıkarmayın.</translation>
 <translation id="7560756177962144929"><ph name="DEVICE_TYPE" /> cihazınızı senkronize edin</translation>
 <translation id="7561196759112975576">Her zaman</translation>
+<translation id="7561982940498449837">Menüyü kapat</translation>
 <translation id="756445078718366910">Tarayıcı Penceresini Aç</translation>
 <translation id="7564847347806291057">İşlemi bitir</translation>
 <translation id="756503097602602175">Oturum açılmış Google Hesaplarınızı <ph name="LINK_BEGIN" />Ayarlar<ph name="LINK_END" />'dan yönetebilirsiniz. Web sitelerine ve uygulamalara verdiğiniz izinler, tüm hesaplar için geçerli olabilir. Sitelerin veya uygulamaların hesap bilgilerinize erişmesini istemiyorsanız <ph name="DEVICE_TYPE" /> cihazınızda misafir olarak oturum açabilir ya da internette gezinmek için <ph name="LINK_2_BEGIN" />Gizli pencere<ph name="LINK_2_END" /> kullanabilirsiniz.</translation>
@@ -7533,6 +7538,7 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8379156816349755485">Oturum açıldığında benzersiz bir kimlik doğrulama jetonu saklanıp gelecekteki tüm uygun indirmeler için kullanılır.</translation>
 <translation id="8379878387931047019">Bu cihaz, bu web sitesi tarafından istenen türde güvenlik anahtarını desteklemiyor</translation>
 <translation id="8379991678458444070">Bu sekmeye yer işareti koyarak buraya hızlıca geri dönün</translation>
+<translation id="8380266723152870797">Pencere adı</translation>
 <translation id="8380941800586852976">Tehlikeli</translation>
 <translation id="8382715499079447151">Görüntüleme koruması</translation>
 <translation id="8382913212082956454">E-posta &amp;adresini kopyala</translation>

@@ -484,6 +484,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2215963164070968490">Suņi</translation>
 <translation id="2218879909401188352">Uzbrucēji vietnē <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> varētu instalēt bīstamas lietotnes, kas bojā jūsu ierīci, rada slēptas izmaksas mobilā tālruņa rēķinā vai zog jūsu personas informāciju. <ph name="BEGIN_LEARN_MORE_LINK" />Uzziniet vairāk<ph name="END_LEARN_MORE_LINK" />.</translation>
 <translation id="2219658597883514593">Atsākt pamācību</translation>
+<translation id="2219735899272417925">jāveic ierīces atiestatīšana</translation>
 <translation id="2224337661447660594">Nav interneta savienojuma</translation>
 <translation id="2230458221926704099">Labojiet savienojumu, izmantojot <ph name="BEGIN_LINK" />diagnostikas lietotni<ph name="END_LINK" /></translation>
 <translation id="2239100178324503013">Sūtīt tūlīt</translation>
@@ -882,9 +883,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3369192424181595722">Pulksteņa kļūda</translation>
 <translation id="3369459162151165748">Transportlīdzekļu detaļas un piederumi</translation>
 <translation id="3371064404604898522">Iestatīt Chrome kā noklusējuma pārlūku</translation>
-<translation id="3371076217486966826"><ph name="URL" /> vēlas:
-      • izveidot jūsu apkārtnes 3D karti un izsekot kameras pozīciju;
-      • izmantot jūsu kameru.</translation>
 <translation id="337363190475750230">Tika noņemta piekļuve</translation>
 <translation id="3375754925484257129">Veikt Chrome drošības pārbaudi</translation>
 <translation id="3377144306166885718">Serveris izmantoja novecojušu TLS versiju.</translation>

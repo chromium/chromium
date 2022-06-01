@@ -6700,6 +6700,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7559719679815339381">Please wait... Kiosk app is in the process of being updated. Do not remove the USB stick.</translation>
 <translation id="7560756177962144929">Sync your <ph name="DEVICE_TYPE" /></translation>
 <translation id="7561196759112975576">Always</translation>
+<translation id="7561982940498449837">Close menu</translation>
 <translation id="756445078718366910">Open Browser Window</translation>
 <translation id="7564847347806291057">End process</translation>
 <translation id="756503097602602175">You can manage signed-in Google Accounts from <ph name="LINK_BEGIN" />Settings<ph name="LINK_END" />. Permissions that you have granted to websites and apps may apply to all accounts. If you don't want sites or apps to access your account info, you can sign in to your <ph name="DEVICE_TYPE" /> as a guest or browse the web in an <ph name="LINK_2_BEGIN" />Incognito window<ph name="LINK_2_END" />.</translation>
@@ -7558,6 +7559,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8379156816349755485">Upon signing in, a unique authentication token will be stored and used for all future eligible downloads.</translation>
 <translation id="8379878387931047019">This device doesn't support the type of security key requested by this website</translation>
 <translation id="8379991678458444070">Get back here fast by bookmarking this tab</translation>
+<translation id="8380266723152870797">Window name</translation>
 <translation id="8380941800586852976">Dangerous</translation>
 <translation id="8382715499079447151">Viewing protection</translation>
 <translation id="8382913212082956454">Copy &amp;email address</translation>

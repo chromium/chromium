@@ -1076,6 +1076,7 @@ Privacy Sandbox տեխնոլոգիան դեռևս մշակման փուլում 
 <translation id="6824899148643461612">«<ph name="TAB_TITLE" />» ներդիրն ընտրված է</translation>
 <translation id="6828070228333235514">Դադարեցնել գների հետագծումը</translation>
 <translation id="6833996806551876956">Privacy Sandbox-ի փորձաշրջան</translation>
+<translation id="6836206421467243968">Վերականգնել «<ph name="TITLE_OF_GROUP" />» ներդիրների խումբը որպես ներդիրների նոր ֆոնային խումբ։</translation>
 <translation id="6846298663435243399">Բեռնում…</translation>
 <translation id="6850409657436465440">Ներբեռնումն ընթացքում է</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> փակված ներդիր</translation>
@@ -1138,6 +1139,7 @@ Privacy Sandbox տեխնոլոգիան դեռևս մշակման փուլում 
 <translation id="7187993566681480880">Ապահովում է ձեր անվտանգությունը Chrome-ում և Google հավելվածներում, երբ մտել եք ձեր հաշիվ։</translation>
 <translation id="7191430249889272776">Հետնաշերտում ներդիր է բացված:</translation>
 <translation id="7196215469483532480">Տվյալների պաշտպանության ուղեցույցի մասին տեղեկությունները բացված են ամբողջությամբ</translation>
+<translation id="7207760545532569765">Վերականգնել <ph name="TAB_COUNT" /> ներդիրները որպես նոր ֆոնային ներդիրներ։</translation>
 <translation id="7208109991155904980">Արձագանքը տեղափոխվել է</translation>
 <translation id="7222235798733126207">Կայքերի միջև տվյալների սահմանափակ փոխանակում</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{Կնեռբեռնվի 1 ֆայլ}one{Կներբեռնվի # ֆայլ}other{Կներբեռնվի # ֆայլ}}</translation>
@@ -1516,6 +1518,7 @@ Privacy Sandbox տեխնոլոգիան դեռևս մշակման փուլում 
 <translation id="9148126808321036104">Նորից մուտք գործել</translation>
 <translation id="9155898266292537608">Կարող եք նաև որոնել՝ սեղմելով բառի վրա</translation>
 <translation id="9158770349521403363">Կիսվել միայն բովանդակությամբ</translation>
+<translation id="9159716826369098114">Վերականգնել <ph name="TAB_COUNT" /> ներդիրից բաղկացած խումբը որպես ներդիրների նոր ֆոնային խումբ։</translation>
 <translation id="916446198114569890">Ձեր այցելած կայքերի URL-ները պահվում են ձեր Google հաշվում</translation>
 <translation id="9169507124922466868">Նավիգացիայի պատմության թերթը կիսաբացված է</translation>
 <translation id="9187955620966010988">Արձագանքը ճշգրտվեց</translation>

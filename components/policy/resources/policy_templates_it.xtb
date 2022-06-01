@@ -4264,6 +4264,13 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
 
           Il valore del criterio viene applicato solo se il criterio <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> viene attivato e non è applicabile in caso contrario.</translation>
 <translation id="5697306356229823047">Segnala utenti dispositivo</translation>
+<translation id="5698923148503075597">Se il criterio viene impostato su Enabled, in caso di conflitto il criterio relativo al cloud prevale sul criterio relativo alla piattaforma.
+
+      Se il criterio viene impostato su Disabled o se non viene configurato, in caso di conflitto il criterio relativo alla piattaforma prevale sul criterio relativo al cloud.
+
+      Questo criterio obbligatorio interessa i criteri relativi al cloud in ambito macchina.
+
+      Questo criterio è disponibile soltanto su <ph name="PRODUCT_NAME" /> e non ha effetto su <ph name="GOOGLE_UPDATE_NAME" />.</translation>
 <translation id="5699770471852263667">Se il criterio viene impostato su Attivato, il visualizzatore di PDF interno viene disattivato in <ph name="PRODUCT_NAME" />, i file PDF vengono considerati come file scaricati e gli utenti possono aprire i PDF con l'applicazione predefinita.
 
       Se il criterio viene impostato su Disattivato, i file PDF vengono aperti con il plug-in di PDF, a meno che disattivato dagli utenti.

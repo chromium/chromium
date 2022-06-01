@@ -251,6 +251,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="243878895369688216">Dün açıldı</translation>
 <translation id="2441427462554639370">Diskte depolama alanı kritik düzeyde olduğundan kayıt sonlandırıldı</translation>
 <translation id="24452542372838207">Bildirimi genişlet</translation>
+<translation id="2449089818483227734">Pil Seviyesi Düşük</translation>
 <translation id="2450205753526923158">Ekran görüntüsü modu</translation>
 <translation id="2456008742792828469">Takvim, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2473177541599297363">Çözünürlüğü Onayla</translation>
@@ -411,11 +412,13 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> dk.</translation>
 <translation id="3445925074670675829">USB-C cihaz</translation>
+<translation id="3455468639467374593">Şablon, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3465223694362104965">Açtığınız son oturumdan sonra bu cihaza başka bir klavye bağlandı. Kullanmadan önce bu klavyeye güvendiğinizden emin olun.</translation>
 <translation id="3465356146291925647">Yöneticiniz tarafından yönetiliyor</translation>
 <translation id="3477079411857374384">Control-Üst Karakter-Boşluk</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" /> Sinyal Gücü</translation>
 <translation id="348799646910989694">Raf otomatik olarak gizlenecek</translation>
+<translation id="3505066820268455558">Pil Şarj Oluyor</translation>
 <translation id="3509391053705095206">Telefonunuz bulunamıyor. Telefonunuzun Bluetooth'unun açık olduğundan emin olun.</translation>
 <translation id="3510164367642747937">Fare imlecini vurgula</translation>
 <translation id="3513798432020909783">Hesap <ph name="MANAGER_EMAIL" /> tarafından yönetiliyor</translation>
@@ -456,6 +459,8 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="3633097874324966332">Cihazınızı eşlemek için Bluetooth ayarlarını açın</translation>
 <translation id="3638400994746983214">Gizlilik ekranını aç/kapat. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Güncelleme zamanı geçti</translation>
+<translation id="3659814201068740063">Yaklaşık <ph name="TIME_LEFT" /> kaldı (%<ph name="PERCENTAGE" />).
+Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Yönetilen kullanıcı</translation>
 <translation id="36813544980941320">Kablosuz ağlar; telefonunuz ve <ph name="DEVICE_NAME" /> arasında paylaşılacak</translation>
 <translation id="3694122362646626770">Web siteleri</translation>
@@ -510,6 +515,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="3962859241508114581">Önceki Parça</translation>
 <translation id="3969043077941541451">Kapalı</translation>
 <translation id="397105322502079400">Hesaplanııyor...</translation>
+<translation id="397726367135689299">Pil şarjı güvenilir olmayabilir.</translation>
 <translation id="3977512764614765090">Pil %<ph name="PERCENTAGE" /> dolu ve şarj oluyor.</translation>
 <translation id="3986082989454912832">Cevapla</translation>
 <translation id="3995138139523574647">USB-C cihaz (sağ arka bağlantı noktası)</translation>
@@ -1037,6 +1043,7 @@ Yeni yüklenmiş</translation>
 <translation id="7130207228079676353">BÜYÜK İHTİMALLE</translation>
 <translation id="7131634465328662194">Oturumunuz otomatik olarak kapatılacak.</translation>
 <translation id="7143207342074048698">Bağlanıyor</translation>
+<translation id="7144942256906679589">Pil durumu</translation>
 <translation id="7165278925115064263">Alt+Üst Karakter+K</translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" /> saniye içinde eski çözünürlüğe dönülüyor</translation>
 <translation id="7180611975245234373">Yenile</translation>
@@ -1103,6 +1110,7 @@ Yeni yüklenmiş</translation>
 <translation id="7593891976182323525">Arama veya Üst Karakter</translation>
 <translation id="7600875258240007829">Tüm bildirimleri göster</translation>
 <translation id="7607002721634913082">Duraklatıldı</translation>
+<translation id="7609951632080598826">Takvim görünümü, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Kamera yeniden bağlandı.</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7633755430369750696">Yakındakilerle Paylaşım ayarlarını gösterir.</translation>
@@ -1228,6 +1236,7 @@ Yeni yüklenmiş</translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> penceresi seçildi</translation>
 <translation id="8351131234907093545">Not oluştur</translation>
 <translation id="8364673525741149932">Shelf Party'yi aç/kapat. <ph name="STATE_TEXT" /></translation>
+<translation id="8369166482916924789">Kayıtlı masa, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">Harf bazında ilerle</translation>
 <translation id="8371991222807690464">Çevre biriminin performansı, Misafir modunda sınırlı olabilir</translation>
 <translation id="8374601332003098278">Kısmi ekran kaydı için enter tuşuna basın</translation>
@@ -1340,6 +1349,7 @@ Yeni yüklenmiş</translation>
 <translation id="9000771174482730261">DEPOLAMA ALANINI YÖNET</translation>
 <translation id="9017320285115481645">Family Link ebeveyn erişim kodunu girin.</translation>
 <translation id="9024331582947483881">tam ekran</translation>
+<translation id="9029736946581028033">Cihaz yakında kapanacak</translation>
 <translation id="9030319654231318877">Gün batımına kadar kapalı</translation>
 <translation id="9034924485347205037">Linux dosyaları</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> ayarlarını aç</translation>
@@ -1369,6 +1379,7 @@ Yeni yüklenmiş</translation>
 <translation id="9168436347345867845">Daha sonra yap</translation>
 <translation id="9178475906033259337"><ph name="QUERY" /> için 1 sonuç gösteriliyor</translation>
 <translation id="9179259655489829027">Bu özellik oturum açmış tüm kullanıcılara şifre gerektirmeden hızlı bir şekilde erişmenize olanak verir. Bu özelliği sadece güvendiğiniz hesaplarda kullanın.</translation>
+<translation id="9180906851711123156">Kapatmak için Ctrl+W tuşlarına basın</translation>
 <translation id="9183456764293710005">Tam Ekran Büyüteci</translation>
 <translation id="9193626018745640770">Bilinmeyen bir alıcıya yayınlanıyor</translation>
 <translation id="9194617393863864469">Başka bir kullanıcı olarak oturum aç...</translation>

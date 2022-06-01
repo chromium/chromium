@@ -644,6 +644,7 @@
 <translation id="6423031066725912715">виетнамски со тастатура TCVN</translation>
 <translation id="6485131920355264772">Не успеа да вчита информации за простор</translation>
 <translation id="6495925982925244349">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" /> %, управувана од администраторот, детали</translation>
+<translation id="649877868557234318">Се извлекува <ph name="FILE_NAME" /> во <ph name="FOLDER_NAME" /></translation>
 <translation id="6499681088828539489">Не дозволувајте прокси за споделени мрежи</translation>
 <translation id="6509122719576673235">норвешки</translation>
 <translation id="6528513914570774834">Дозволи други корисници на уредов да ја користат мрежава</translation>

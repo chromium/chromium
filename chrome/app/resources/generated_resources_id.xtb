@@ -6700,6 +6700,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7559719679815339381">Harap tunggu....aplikasi Kios sedang diperbarui. Jangan lepaskan stik USB.</translation>
 <translation id="7560756177962144929">Sinkronkan <ph name="DEVICE_TYPE" /> Anda</translation>
 <translation id="7561196759112975576">Selalu</translation>
+<translation id="7561982940498449837">Tutup menu</translation>
 <translation id="756445078718366910">Buka Jendela Browser</translation>
 <translation id="7564847347806291057">Akhiri proses</translation>
 <translation id="756503097602602175">Dari <ph name="LINK_BEGIN" />Setelan<ph name="LINK_END" />, Anda dapat mengelola Akun Google yang digunakan untuk login. Izin yang Anda berikan ke situs dan aplikasi dapat berlaku untuk semua akun. Jika tidak ingin situs atau aplikasi mengakses info akun, Anda dapat login ke <ph name="DEVICE_TYPE" /> sebagai tamu atau menjelajahi web di <ph name="LINK_2_BEGIN" />jendela Samaran<ph name="LINK_2_END" />.</translation>
@@ -7558,6 +7559,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8379156816349755485">Saat login, token autentikasi unik akan disimpan dan digunakan untuk semua download valid berikutnya.</translation>
 <translation id="8379878387931047019">Perangkat ini tidak mendukung jenis kunci keamanan yang diminta oleh situs ini</translation>
 <translation id="8379991678458444070">Kembali ke halaman secara cepat dengan mem-bookmark tab ini</translation>
+<translation id="8380266723152870797">Nama jendela</translation>
 <translation id="8380941800586852976">Berbahaya</translation>
 <translation id="8382715499079447151">Perlindungan tampilan</translation>
 <translation id="8382913212082956454">Salin alamat &amp;email</translation>

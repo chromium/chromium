@@ -484,6 +484,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2215963164070968490">Šunys</translation>
 <translation id="2218879909401188352">Šiuo metu užpuolikai svetainėje <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> gali įdiegti pavojingų programų, kurios gali būti žalingos įrenginiui, atlikti nepageidaujamų veiksmų, dėl kurių padidės mobiliojo telefono sąskaita, arba pavogti asmens informaciją. <ph name="BEGIN_LEARN_MORE_LINK" />Sužinokite daugiau<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2219658597883514593">Leisti mokymo programą iš naujo</translation>
+<translation id="2219735899272417925">Būtina iš naujo nustatyti įrenginį</translation>
 <translation id="2224337661447660594">Nėra interneto ryšio</translation>
 <translation id="2230458221926704099">Išspręskite ryšio problemas naudodami <ph name="BEGIN_LINK" />diagnostikos programą<ph name="END_LINK" /></translation>
 <translation id="2239100178324503013">Siųsti dabar</translation>
@@ -883,9 +884,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3369192424181595722">Laikrodžio klaida</translation>
 <translation id="3369459162151165748">Transporto priemonių dalys ir priedai</translation>
 <translation id="3371064404604898522">Nustatyti „Chrome“ kaip numatytąją naršyklę</translation>
-<translation id="3371076217486966826"><ph name="URL" /> nori:
-      • kurti jūsų aplinkos 3D žemėlapį ir stebėti kameros padėtį;
-      • naudoti kamerą.</translation>
 <translation id="337363190475750230">Teikimas nutrauktas</translation>
 <translation id="3375754925484257129">Paleisti „Chrome“ saugos patikrą</translation>
 <translation id="3377144306166885718">Serveryje naudojama pasenusios versijos TLS.</translation>

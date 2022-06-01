@@ -251,6 +251,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="243878895369688216">Obert ahir</translation>
 <translation id="2441427462554639370">La gravació ha finalitzat perquè queda molt poc espai d'emmagatzematge.</translation>
 <translation id="24452542372838207">Desplega la notificació</translation>
+<translation id="2449089818483227734">Bateria baixa</translation>
 <translation id="2450205753526923158">Mode de captura de pantalla</translation>
 <translation id="2456008742792828469">Calendari, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2473177541599297363">Confirma la resolució</translation>
@@ -411,11 +412,13 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">Dispositiu USB-C</translation>
+<translation id="3455468639467374593">Plantilla <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3465223694362104965">Des del darrer inici de sessió, s'ha connectat un altre teclat a aquest dispositiu. Abans d'utilitzar-lo, assegura't que hi confiïs.</translation>
 <translation id="3465356146291925647">Gestionada per l'administrador</translation>
 <translation id="3477079411857374384">Control+Maj+espai</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, <ph name="SIGNAL_STRENGTH" /> d'intensitat del senyal</translation>
 <translation id="348799646910989694">El prestatge s'amaga automàticament</translation>
+<translation id="3505066820268455558">La bateria s'està carregant</translation>
 <translation id="3509391053705095206">No es troba el telèfon. Comprova que el Bluetooth del telèfon estigui activat.</translation>
 <translation id="3510164367642747937">Ressalta el cursor del ratolí</translation>
 <translation id="3513798432020909783">Compte gestionat per <ph name="MANAGER_EMAIL" /></translation>
@@ -456,6 +459,8 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3633097874324966332">Obre la configuració del Bluetooth per vincular el dispositiu</translation>
 <translation id="3638400994746983214">Commuta la pantalla de privadesa. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Actualització pendent</translation>
+<translation id="3659814201068740063">Queden <ph name="TIME_LEFT" /> (un <ph name="PERCENTAGE" />%) aproximadament.
+Connecta el dispositiu a l'alimentació.</translation>
 <translation id="366222428570480733">Usuari gestionat (<ph name="USER_EMAIL_ADDRESS" />)</translation>
 <translation id="36813544980941320">Les xarxes Wi-Fi es compartiran entre el teu telèfon i el dispositiu <ph name="DEVICE_NAME" /></translation>
 <translation id="3694122362646626770">Llocs web</translation>
@@ -510,6 +515,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3962859241508114581">Pista anterior</translation>
 <translation id="3969043077941541451">Desactivada</translation>
 <translation id="397105322502079400">S’està calculant...</translation>
+<translation id="397726367135689299">És possible que la càrrega de la bateria sigui poc fiable.</translation>
 <translation id="3977512764614765090">La bateria s'està carregant i està a un <ph name="PERCENTAGE" />%.</translation>
 <translation id="3986082989454912832">Respon</translation>
 <translation id="3995138139523574647">Dispositiu USB-C (port posterior dret)</translation>
@@ -1037,6 +1043,7 @@ Instal·lació nova</translation>
 <translation id="7130207228079676353">LES MÉS PROBABLES</translation>
 <translation id="7131634465328662194">La sessió es tancarà automàticament.</translation>
 <translation id="7143207342074048698">Connectant</translation>
+<translation id="7144942256906679589">Estat de la bateria</translation>
 <translation id="7165278925115064263">Alt+Maj+K</translation>
 <translation id="7168224885072002358">Es revertirà a la resolució anterior d'aquí a <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Actualitza</translation>
@@ -1103,6 +1110,7 @@ Instal·lació nova</translation>
 <translation id="7593891976182323525">Cerca o Maj</translation>
 <translation id="7600875258240007829">Mostra totes les notificacions</translation>
 <translation id="7607002721634913082">En pausa</translation>
+<translation id="7609951632080598826">Visualització de calendari, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">S'ha tornat a connectar la càmera.</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
 <translation id="7633755430369750696">Mostra la configuració de Compartició Nearby.</translation>
@@ -1228,6 +1236,7 @@ Instal·lació nova</translation>
 <translation id="8345019317483336363">S'ha seleccionat <ph name="WINDOW_TITLE" /> finestra</translation>
 <translation id="8351131234907093545">Crea una nota</translation>
 <translation id="8364673525741149932">Commutador Grup de prestatges.<ph name="STATE_TEXT" /></translation>
+<translation id="8369166482916924789">Escriptori desat <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">Endavant per lletra</translation>
 <translation id="8371991222807690464">El rendiment perifèric pot estar limitat en el mode de convidat</translation>
 <translation id="8374601332003098278">Prem Retorn per gravar una part de la pantalla</translation>
@@ -1340,6 +1349,7 @@ Instal·lació nova</translation>
 <translation id="9000771174482730261">GESTIONA L'EMMAGATZEMATGE</translation>
 <translation id="9017320285115481645">Introdueix el codi d'accés parental de Family Link.</translation>
 <translation id="9024331582947483881">pantalla completa</translation>
+<translation id="9029736946581028033">El dispositiu s'apagarà aviat</translation>
 <translation id="9030319654231318877">Desactivat fins al vespre</translation>
 <translation id="9034924485347205037">Fitxers de Linux</translation>
 <translation id="9047624247355796468">Obre la configuració de la xarxa <ph name="NETWORK_NAME" /></translation>
@@ -1369,6 +1379,7 @@ Instal·lació nova</translation>
 <translation id="9168436347345867845">Fes-ho més tard</translation>
 <translation id="9178475906033259337">S'està mostrant 1 resultat per a "<ph name="QUERY" />"</translation>
 <translation id="9179259655489829027">Aquesta funció et permet accedir ràpidament als usuaris que han iniciat la sessió sense haver d'introduir la contrasenya. Utilitza aquesta funció només amb comptes de confiança.</translation>
+<translation id="9180906851711123156">Prem Ctrl+W per tancar</translation>
 <translation id="9183456764293710005">Lupa de pantalla completa</translation>
 <translation id="9193626018745640770">S'està emetent contingut en un receptor desconegut</translation>
 <translation id="9194617393863864469">Inicia la sessió amb un altre usuari...</translation>

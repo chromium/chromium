@@ -838,6 +838,7 @@ Pots comprovar les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_
 <translation id="1794051631868188691">No mostris mai <ph name="MERCHANT" /></translation>
 <translation id="1794791083288629568">Envia suggeriments per ajudar-nos a solucionar el problema.</translation>
 <translation id="1795214765651529549">Utilitza el tema clàssic</translation>
+<translation id="1796105431091975902">Selecciona un manual d'estratègia d'Ansible per afegir</translation>
 <translation id="1796588414813960292">Les funcions que necessitin so no funcionaran</translation>
 <translation id="1800502858278951817">No s'ha sol·licitat cap extensió per llegir i canviar <ph name="SITE_NAME" /></translation>
 <translation id="1802624026913571222">Posa en repòs quan es tanqui la tapa</translation>
@@ -3039,6 +3040,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="389901847090970821">Selecciona el teclat</translation>
 <translation id="3900966090527141178">Exporta les contrasenyes</translation>
 <translation id="3903187154317825986">Teclat integrat</translation>
+<translation id="3903191712482985591">Afegeix un manual d'estratègia</translation>
 <translation id="3904326018476041253">Serveis d'ubicació</translation>
 <translation id="3904849010307028014">Un lloc web, en funció de com hi interaccionis (per exemple, si hi inicies la sessió habitualment en un compte), pot emetre un testimoni de confiança al teu navegador. Després, si altres llocs web que visitis cerquen i troben un testimoni de confiança vàlid, és més possible que et tractin com una persona i no com un bot.</translation>
 <translation id="3905761538810670789">Repara l'aplicació</translation>
@@ -3648,6 +3650,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="4510479820467554003">Llista de comptes parentals</translation>
 <translation id="451102079304155829">carretons</translation>
 <translation id="4513872120116766993">Escriptura predictiva</translation>
+<translation id="4513909579793564731">Aplica un manual d'estratègia</translation>
 <translation id="4513946894732546136">Comentaris</translation>
 <translation id="451407183922382411">Amb la tecnologia de: <ph name="COMPANY_NAME" /></translation>
 <translation id="4514610446763173167">Reprodueix o posa en pausa el vídeo</translation>
@@ -5480,6 +5483,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="635609604405270300">Mantén el dispositiu activat</translation>
 <translation id="63566973648609420">Només els usuaris que sàpiguen la teva frase de contrasenya poden llegir les dades que encriptis. La frase de contrasenya no s'envia a Google, ni Google l'emmagatzema. Si l'oblides o vols canviar aquesta configuració, hauràs de <ph name="BEGIN_LINK" />restablir la sincronització<ph name="END_LINK" />.</translation>
 <translation id="6357305427698525450">Alguns enllaços admesos es continuaran obrint a <ph name="APP_NAME" /> o <ph name="APP_NAME_2" />.</translation>
+<translation id="6357794994761110294">Cap extensió no té permís per llegir o canviar <ph name="SITE_NAME" /></translation>
 <translation id="6358884629796491903">Drac</translation>
 <translation id="6361850914223837199">Detalls de l'error:</translation>
 <translation id="6362853299801475928">&amp;Informa d'un problema...</translation>
@@ -6676,6 +6680,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7559719679815339381">Espereu... L'aplicació Quiosc s'està actualitzant. No extraieu la memòria USB.</translation>
 <translation id="7560756177962144929">Sincronitza el teu <ph name="DEVICE_TYPE" /></translation>
 <translation id="7561196759112975576">Sempre</translation>
+<translation id="7561982940498449837">Tanca el menú</translation>
 <translation id="756445078718366910">Obre una finestra del navegador</translation>
 <translation id="7564847347806291057">Finalitza el procés</translation>
 <translation id="756503097602602175">A <ph name="LINK_BEGIN" />Configuració<ph name="LINK_END" /> pots gestionar els Comptes de Google en què tens la sessió iniciada. És possible que els permisos que hagis concedit a llocs web i aplicacions s'apliquin a tots els comptes. Si no vols que els llocs web o les aplicacions accedeixin a la informació del teu compte, pots iniciar la sessió al <ph name="DEVICE_TYPE" /> com a convidat o navegar pel web en una <ph name="LINK_2_BEGIN" />finestra d'incògnit<ph name="LINK_2_END" />.</translation>
@@ -7535,6 +7540,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8379156816349755485">En iniciar la sessió, s'emmagatzemarà un testimoni d'autenticació únic i s'utilitzarà per a totes les baixades aptes que es facin en el futur.</translation>
 <translation id="8379878387931047019">Aquest dispositiu no admet el tipus de clau de seguretat sol·licitat per aquest lloc web</translation>
 <translation id="8379991678458444070">Afegeix aquesta pestanya a les adreces d'interès per poder-hi tornar ràpidament</translation>
+<translation id="8380266723152870797">Nom de la finestra</translation>
 <translation id="8380941800586852976">Perillós</translation>
 <translation id="8382715499079447151">Protecció de visualització</translation>
 <translation id="8382913212082956454">Copia l'&amp;adreça electrònica</translation>

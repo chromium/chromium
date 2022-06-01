@@ -484,6 +484,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2215963164070968490">Koirat</translation>
 <translation id="2218879909401188352">Sivustolla <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> tällä hetkellä olevat hyökkääjät voivat asentaa vaarallisia laitettasi vahingoittavia sovelluksia, lisätä piilomaksuja puhelinlaskuusi tai varastaa henkilökohtaisia tietojasi. <ph name="BEGIN_LEARN_MORE_LINK" />Lisätietoja<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2219658597883514593">Katso ohje uudelleen</translation>
+<translation id="2219735899272417925">Laitteen nollaaminen vaaditaan</translation>
 <translation id="2224337661447660594">Ei internetyhteyttä</translation>
 <translation id="2230458221926704099">Korjaa yhteytesi käyttämällä <ph name="BEGIN_LINK" />diagnostiikkasovellusta<ph name="END_LINK" />.</translation>
 <translation id="2239100178324503013">Lähetä nyt</translation>
@@ -883,9 +884,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3369192424181595722">Väärä kellonaika</translation>
 <translation id="3369459162151165748">Ajoneuvojen osat ja lisävarusteet</translation>
 <translation id="3371064404604898522">Valitse Chrome oletusselaimeksi</translation>
-<translation id="3371076217486966826"><ph name="URL" /> haluaa
-      • luoda 3D-kartan ympäristöstäsi ja seurata kameran asentoa
-      • käyttää kameraasi</translation>
 <translation id="337363190475750230">Poistettu käytöstä</translation>
 <translation id="3375754925484257129">Tee Chromen turvatarkistus</translation>
 <translation id="3377144306166885718">Palvelin käytti vanhentunutta TLS:n versiota.</translation>

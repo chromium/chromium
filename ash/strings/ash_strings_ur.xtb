@@ -251,6 +251,7 @@
 <translation id="243878895369688216">گزشتہ کل کھولا گیا</translation>
 <translation id="2441427462554639370">اسٹوریج کی جگہ انتہائی کم ہونے کی وجہ ریکارڈنگ ختم ہو گئی</translation>
 <translation id="24452542372838207">اطلاع پھیلائيں</translation>
+<translation id="2449089818483227734">بیٹری کم ہے</translation>
 <translation id="2450205753526923158">اسکرین شاٹ وضع</translation>
 <translation id="2456008742792828469">کیلنڈر، <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2473177541599297363">ریزولیوشن کی تصدیق کریں</translation>
@@ -411,11 +412,13 @@
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> منٹ</translation>
 <translation id="3445925074670675829">‏USB-C آلہ</translation>
+<translation id="3455468639467374593">تمثیل، <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3465223694362104965">آخری بار آپ کے سائن ان ہونے کے بعد سے اب تک ایک دوسرا کی بورڈ اس آلہ سے منسلک ہو گیا ہے۔ اس کا استعمال کرنے سے پہلے اس بات کو یقینی بنائیں کہ آپ کو اس کی بورڈ پر بھروسہ ہے۔</translation>
 <translation id="3465356146291925647">آپ کے منتظم کے زیر انتظام ہے</translation>
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />، <ph name="CONNECTION_STATUS" />، سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">شیلف خودکار طور پر پوشیدہ</translation>
+<translation id="3505066820268455558">بیٹری چارج ہو رہی ہے</translation>
 <translation id="3509391053705095206">آپ کا فون تلاش نہیں کیا جا سکا۔ یقینی بنائیں کہ آپ کے فون کا بلوٹوتھ آن ہے۔</translation>
 <translation id="3510164367642747937">ماؤس کا کرسر نمایاں کریں</translation>
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" /> کے زیر نظم اکاؤنٹ</translation>
@@ -456,6 +459,8 @@
 <translation id="3633097874324966332">اپنے آلے کا جوڑا بنانے کے لیے بلوٹوتھ ترتیبات کھولیں</translation>
 <translation id="3638400994746983214">رازداری کا اسکرین ٹوگل کریں۔ <ph name="STATE_TEXT" />۔</translation>
 <translation id="3649505501900178324">اپ ڈیٹ کرنا باقی ہے</translation>
+<translation id="3659814201068740063">تقریباً <ph name="TIME_LEFT" /> باقی ہے (%<ph name="PERCENTAGE" />)۔
+اپنے آلے کو پاور سے منسلک کریں۔</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> نظم کردہ صارف</translation>
 <translation id="36813544980941320">‏آپ کے فون اور <ph name="DEVICE_NAME" /> کے درمیان Wi-Fi نیٹ ورکس کا اشتراک کیا جائے گا</translation>
 <translation id="3694122362646626770">ویب سائٹس</translation>
@@ -510,6 +515,7 @@
 <translation id="3962859241508114581">پچھلا ٹریک</translation>
 <translation id="3969043077941541451">آف</translation>
 <translation id="397105322502079400">حساب لگایا جا رہا ہے…</translation>
+<translation id="397726367135689299">بیٹری کی چارجنگ ناقابل اعتبار ہو سکتی ہے۔</translation>
 <translation id="3977512764614765090">‏بیٹری ‎<ph name="PERCENTAGE" />%‎ ہے اور چارج ہو رہی ہے۔</translation>
 <translation id="3986082989454912832">جواب</translation>
 <translation id="3995138139523574647">‏USB-C آلہ (دائیں طرف کا پچھلا پورٹ)</translation>
@@ -1036,6 +1042,7 @@
 <translation id="7130207228079676353">غالبأ</translation>
 <translation id="7131634465328662194">آپ خود بخود سائن آؤٹ ہو جائیں گے۔</translation>
 <translation id="7143207342074048698">منسلک ہو رہا ہے</translation>
+<translation id="7144942256906679589">بیٹری کا اسٹیٹس</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" /> میں پرانی ریزولیوشن پر لوٹایا جا رہا ہے</translation>
 <translation id="7180611975245234373">ریفریش کریں</translation>
@@ -1102,6 +1109,7 @@
 <translation id="7593891976182323525">تلاش یا شفٹ</translation>
 <translation id="7600875258240007829">تمام اطلاعات دیکھیں</translation>
 <translation id="7607002721634913082">موقوف</translation>
+<translation id="7609951632080598826">کیلنڈر کا منظر، <ph name="DATE" />، <ph name="TIME" /></translation>
 <translation id="7611213136657090146">کیمرا دوبارہ منسلک ہو گیا۔</translation>
 <translation id="7624117708979618027">F °<ph name="TEMPERATURE_F" /></translation>
 <translation id="7633755430369750696">قریبی آلات کے ساتھ اشتراک کی ترتیبات کو دکھائیں۔</translation>
@@ -1227,6 +1235,7 @@
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> ونڈو کا انتخاب کیا گیا</translation>
 <translation id="8351131234907093545">نوٹ بنائیں</translation>
 <translation id="8364673525741149932">شیلف پارٹی کو ٹوگل کریں۔ <ph name="STATE_TEXT" /></translation>
+<translation id="8369166482916924789">محفوظ کردہ ڈیسک، <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">ایک حرف آگے جائیں</translation>
 <translation id="8371991222807690464">پیریفرل کی کارکردگی مہمان وضع میں محدود ہو سکتی ہے</translation>
 <translation id="8374601332003098278">جزوی اسکرین کو ریکارڈ کرنے کے لیے اینٹر دبائیں</translation>
@@ -1339,6 +1348,7 @@
 <translation id="9000771174482730261">اسٹوریج کا نظم کریں</translation>
 <translation id="9017320285115481645">‏Family Link کا والدین کا رسائی کا کوڈ درج کریں۔</translation>
 <translation id="9024331582947483881">پوری اسکرین</translation>
+<translation id="9029736946581028033">آلہ جلد ہی بند ہو جائے گا</translation>
 <translation id="9030319654231318877">غروب آفتاب تک آف کریں</translation>
 <translation id="9034924485347205037">‏Linux فائلز</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> کے لیے ترتیبات کھولیں</translation>
@@ -1368,6 +1378,7 @@
 <translation id="9168436347345867845">اسے بعد میں کریں</translation>
 <translation id="9178475906033259337"><ph name="QUERY" /> کا 1 نتیجہ دکھایا جا رہا ہے</translation>
 <translation id="9179259655489829027">یہ خصوصیت آپ کو کسی بھی سائن ان کردہ صارف تک پاس ورڈ کا تقاضہ کیے بغیر تیزی سے رسائی حاصل کرنے کی اجازت دیتی ہے۔ یہ خصوصیت صرف اپنے معتبر اکاؤنٹس کے ساتھ استعمال کریں۔</translation>
+<translation id="9180906851711123156">‏بند کرنے کے لیے Ctrl + W‎ دبائیں</translation>
 <translation id="9183456764293710005">فُل اسکرین میگنیفائر</translation>
 <translation id="9193626018745640770">کسی نامعلوم موصول کنندہ پر کاسٹ کیا جا رہا ہے</translation>
 <translation id="9194617393863864469">کسی دوسرے صارف کے بطور سائن ان کریں…</translation>

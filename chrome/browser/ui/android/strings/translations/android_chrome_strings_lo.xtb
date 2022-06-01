@@ -1076,6 +1076,7 @@
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, ແຖບ, ເລືອກແລ້ວ</translation>
 <translation id="6828070228333235514">ຢຸດການຕິດຕາມລາຄາ</translation>
 <translation id="6833996806551876956">ການທົດລອງໃຊ້ກ່ອງຊາຍຄວາມເປັນສ່ວນຕົວ</translation>
+<translation id="6836206421467243968">ກູ້ຄືນກຸ່ມແຖບຂອງ <ph name="TITLE_OF_GROUP" /> ເປັນກຸ່ມແຖບໃນພື້ນຫຼັງໃໝ່.</translation>
 <translation id="6846298663435243399">ກໍາລັງໂຫຼດ ...</translation>
 <translation id="6850409657436465440">ການດາວໂຫຼດຂອງທ່ານພວມດຳເນີນຢູ່</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> ​ແຖບປິດແລ້ວ</translation>
@@ -1138,6 +1139,7 @@
 <translation id="7187993566681480880">ຮັກສາໃຫ້ທ່ານປອດໄພໃນ Chrome ແລະ ອາດຈະຖືກໃຊ້ເພື່ອປັບປຸງຄວາມປອດໄພໃນແອັບອື່ນຂອງ Google ເມື່ອທ່ານເຂົ້າສູ່ລະບົບ.</translation>
 <translation id="7191430249889272776">ແຖບທີ່ເປີດຢູ່ໃນພື້ນຫຼັງ.</translation>
 <translation id="7196215469483532480">ເປີດຄຳອະທິບາຍຄູ່ມືຄວາມເປັນສ່ວນຕົວແບບເຕັມຄວາມສູງແລ້ວ</translation>
+<translation id="7207760545532569765">ກູ້ຄືນ <ph name="TAB_COUNT" /> ແຖບເປັນກຸ່ມແຖບໃນພື້ນຫຼັງໃໝ່.</translation>
 <translation id="7208109991155904980">ຍ້າຍຣີແອັກຊັນແລ້ວ</translation>
 <translation id="7222235798733126207">ການແບ່ງປັນທີ່ຈຳກັດລະຫວ່າງເວັບໄຊ</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 ການດາວໂຫຼດຍັງຄ້າງຢູ່}other{# ການດາວໂຫຼດຍັງຄ້າງຢູ່}}</translation>
@@ -1516,6 +1518,7 @@
 <translation id="9148126808321036104">ລົງຊື່ເຂົ້າ​ໃຊ້ອີກ</translation>
 <translation id="9155898266292537608">ທ່ານສາມາດຊອກຫາດ້ວຍການແຕະດ່ວນໃສ່ຄຳສັບໃດໜຶ່ງໄດ້ເຊັ່ນກັນ</translation>
 <translation id="9158770349521403363">ແບ່ງປັນເນື້ອຫາເທົ່ານັ້ນ</translation>
+<translation id="9159716826369098114">ກູ້ຄືນກຸ່ມແຖບຂອງ <ph name="TAB_COUNT" /> ແຖບເປັນກຸ່ມແຖບໃນພື້ນຫຼັງໃໝ່.</translation>
 <translation id="916446198114569890">URL ທີ່ທ່ານເຂົ້ານັ້ນຖືກບັນທຶກໄປໃສ່ບັນຊີ Google ທ່ານແລ້ວ</translation>
 <translation id="9169507124922466868">ປະຫວັດການນຳທາງເປີດຢູ່ເຄິ່ງໜຶ່ງ</translation>
 <translation id="9187955620966010988">ປັບແກ້ຣີແອັກຊັນແລ້ວ</translation>

@@ -484,6 +484,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2215963164070968490">Psi</translation>
 <translation id="2218879909401188352">Napadalci, ki so trenutno na spletnem mestu <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />, bi lahko namestili nevarne aplikacije, ki poškodujejo napravo, dodajo skrite stroške na račun za mobilno napravo ali ukradejo osebne podatke. <ph name="BEGIN_LEARN_MORE_LINK" />Več o tem<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2219658597883514593">Znova zaženi vadnico</translation>
+<translation id="2219735899272417925">Potrebna je ponastavitev naprave</translation>
 <translation id="2224337661447660594">Ni internetne povezave</translation>
 <translation id="2230458221926704099">Odpravite težave s povezavo z <ph name="BEGIN_LINK" />aplikacijo za diagnostiko<ph name="END_LINK" /></translation>
 <translation id="2239100178324503013">Pošlji</translation>
@@ -882,9 +883,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3369192424181595722">Napaka ure</translation>
 <translation id="3369459162151165748">Deli in oprema za vozila</translation>
 <translation id="3371064404604898522">Nastavi Chrome kot privzeti brskalnik</translation>
-<translation id="3371076217486966826"><ph name="URL" /> želi:
-      • Ustvariti 3D-zemljevid vaše okolice in spremljati položaj kamere.
-      • Uporabiti vašo kamero.</translation>
 <translation id="337363190475750230">Nepripravljen</translation>
 <translation id="3375754925484257129">Zaženi varnostno preverjanje v Chromu</translation>
 <translation id="3377144306166885718">Strežnik je uporabljal zastarelo različico standarda TLS.</translation>

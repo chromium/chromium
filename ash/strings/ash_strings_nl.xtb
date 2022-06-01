@@ -248,6 +248,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="243878895369688216">Gisteren geopend</translation>
 <translation id="2441427462554639370">Opname beëindigd omdat er zeer weinig opslagruimte beschikbaar is</translation>
 <translation id="24452542372838207">Melding uitvouwen</translation>
+<translation id="2449089818483227734">De batterij is bijna leeg</translation>
 <translation id="2450205753526923158">Screenshotmodus</translation>
 <translation id="2456008742792828469">Agenda, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2473177541599297363">Resolutie bevestigen</translation>
@@ -408,11 +409,13 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min.</translation>
 <translation id="3445925074670675829">USB-C-apparaat</translation>
+<translation id="3455468639467374593">Template, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3465223694362104965">Een ander toetsenbord heeft verbinding met dit apparaat gemaakt sinds de laatste keer dat je bent ingelogd. Controleer of je dit toetsenbord vertrouwt voordat je het gebruikt.</translation>
 <translation id="3465356146291925647">Beheerd door je beheerder</translation>
 <translation id="3477079411857374384">Ctrl-Shift-spatiebalk</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Plank automatisch verborgen</translation>
+<translation id="3505066820268455558">Batterij wordt opgeladen</translation>
 <translation id="3509391053705095206">Kan je telefoon niet vinden. Zorg dat bluetooth aanstaat op je telefoon.</translation>
 <translation id="3510164367642747937">Muisaanwijzer markeren</translation>
 <translation id="3513798432020909783">Account wordt beheerd door <ph name="MANAGER_EMAIL" /></translation>
@@ -453,6 +456,8 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3633097874324966332">Open de bluetooth-instellingen om je apparaat te koppelen</translation>
 <translation id="3638400994746983214">Privacyscherm aan/uit. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Update vereist</translation>
+<translation id="3659814201068740063">Ongeveer <ph name="TIME_LEFT" /> resterend (<ph name="PERCENTAGE" />%).
+Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="366222428570480733">Beheerde gebruiker <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="36813544980941320">Wifi-netwerken worden gedeeld tussen je telefoon en <ph name="DEVICE_NAME" /></translation>
 <translation id="3694122362646626770">Websites</translation>
@@ -507,6 +512,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3962859241508114581">Vorig nummer</translation>
 <translation id="3969043077941541451">Uit</translation>
 <translation id="397105322502079400">Berekenen...</translation>
+<translation id="397726367135689299">Het opladen van de batterij kan onbetrouwbaar zijn.</translation>
 <translation id="3977512764614765090">Batterij op <ph name="PERCENTAGE" />% en wordt opgeladen.</translation>
 <translation id="3986082989454912832">Beantwoorden</translation>
 <translation id="3995138139523574647">USB-C-apparaat (poort rechts aan de achterkant)</translation>
@@ -1035,6 +1041,7 @@ Nieuwe installatie</translation>
 <translation id="7130207228079676353">MEEST WAARSCHIJNLIJK</translation>
 <translation id="7131634465328662194">Je wordt automatisch uitgelogd.</translation>
 <translation id="7143207342074048698">Verbinden</translation>
+<translation id="7144942256906679589">Batterijstatus</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358">Terugzetten naar oude resolutie over <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Vernieuwen</translation>
@@ -1101,6 +1108,7 @@ Nieuwe installatie</translation>
 <translation id="7593891976182323525">Zoeken of Shift</translation>
 <translation id="7600875258240007829">Alle meldingen bekijken</translation>
 <translation id="7607002721634913082">Onderbroken</translation>
+<translation id="7609951632080598826">Agendaweergave, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Camera opnieuw verbonden.</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7633755430369750696">Instellingen bekijken voor Dichtbij delen.</translation>
@@ -1225,6 +1233,7 @@ Nieuwe installatie</translation>
 <translation id="8345019317483336363">Venster <ph name="WINDOW_TITLE" /> geselecteerd</translation>
 <translation id="8351131234907093545">Notitie maken</translation>
 <translation id="8364673525741149932">Shelf Party aan-/uitzetten. <ph name="STATE_TEXT" /></translation>
+<translation id="8369166482916924789">Opgeslagen bureau, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">Vooruit per letter</translation>
 <translation id="8371991222807690464">De prestaties van randapparaten kunnen beperkt zijn in de gastmodus</translation>
 <translation id="8374601332003098278">Druk op Enter om het scherm gedeeltelijk op te nemen</translation>
@@ -1337,6 +1346,7 @@ Nieuwe installatie</translation>
 <translation id="9000771174482730261">OPSLAG BEHEREN</translation>
 <translation id="9017320285115481645">Geef de Family Link-toegangscode voor ouders op.</translation>
 <translation id="9024331582947483881">volledig scherm</translation>
+<translation id="9029736946581028033">Apparaat gaat straks uit</translation>
 <translation id="9030319654231318877">Uit tot zonsondergang</translation>
 <translation id="9034924485347205037">Linux-bestanden</translation>
 <translation id="9047624247355796468">Instellingen openen voor <ph name="NETWORK_NAME" /></translation>
@@ -1366,6 +1376,7 @@ Nieuwe installatie</translation>
 <translation id="9168436347345867845">Later doen</translation>
 <translation id="9178475906033259337">1 resultaat bekijken voor <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Met deze functie kun je snel zonder wachtwoord toegang krijgen tot iedere ingelogde gebruiker. Gebruik deze functie alleen met accounts die je vertrouwt.</translation>
+<translation id="9180906851711123156">Druk op Ctrl + W om te sluiten</translation>
 <translation id="9183456764293710005">Vergrootglas voor volledig scherm</translation>
 <translation id="9193626018745640770">Casten naar een onbekende ontvanger</translation>
 <translation id="9194617393863864469">Als andere gebruiker inloggen...</translation>

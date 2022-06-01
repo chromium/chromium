@@ -251,6 +251,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="243878895369688216">Se abrió ayer</translation>
 <translation id="2441427462554639370">Finalizó la grabación porque hay muy poco espacio de almacenamiento disponible</translation>
 <translation id="24452542372838207">Expandir notificación</translation>
+<translation id="2449089818483227734">Batería baja</translation>
 <translation id="2450205753526923158">Modo de captura de pantalla</translation>
 <translation id="2456008742792828469">Calendario: <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2473177541599297363">Confirmar la resolución</translation>
@@ -411,11 +412,13 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">Dispositivo USB-C</translation>
+<translation id="3455468639467374593">Plantilla, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3465223694362104965">Se conectó otro teclado a este dispositivo desde la última vez que accediste. Asegúrate de que este teclado sea de confianza antes de usarlo.</translation>
 <translation id="3465356146291925647">Administrada por tu administrador</translation>
 <translation id="3477079411857374384">Control-Mayúscula-Espacio</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Se ocultará la biblioteca automáticamente</translation>
+<translation id="3505066820268455558">Carga de la batería</translation>
 <translation id="3509391053705095206">No podemos encontrar tu teléfono. Verifica si está activado el Bluetooth del teléfono.</translation>
 <translation id="3510164367642747937">Resaltar el cursor del mouse</translation>
 <translation id="3513798432020909783">Cuenta administrada por <ph name="MANAGER_EMAIL" /></translation>
@@ -456,6 +459,8 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="3633097874324966332">Abre la configuración de la conexión Bluetooth para vincular el dispositivo</translation>
 <translation id="3638400994746983214">Activa o desactiva la pantalla de privacidad. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Actualización pendiente</translation>
+<translation id="3659814201068740063">Quedan aproximadamente <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" />%).
+Conecta tu dispositivo a la corriente.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" />, usuario administrado</translation>
 <translation id="36813544980941320">Se compartirán las redes Wi-Fi entre tu teléfono y tu <ph name="DEVICE_NAME" /></translation>
 <translation id="3694122362646626770">Sitios web</translation>
@@ -511,6 +516,7 @@ Todos los usuarios deben salir de sus cuentas para continuar.</translation>
 <translation id="3962859241508114581">Pista anterior</translation>
 <translation id="3969043077941541451">No</translation>
 <translation id="397105322502079400">Calculando...</translation>
+<translation id="397726367135689299">Es posible que la carga de la batería no sea confiable.</translation>
 <translation id="3977512764614765090">Nivel de la batería: <ph name="PERCENTAGE" />% y cargando</translation>
 <translation id="3986082989454912832">Responder</translation>
 <translation id="3995138139523574647">Dispositivo USB-C (puerto lateral derecho trasero)</translation>
@@ -1038,6 +1044,7 @@ Nueva instalación</translation>
 <translation id="7130207228079676353">MUY PROBABLES</translation>
 <translation id="7131634465328662194">Tu sesión se cerrará automáticamente.</translation>
 <translation id="7143207342074048698">Conectando</translation>
+<translation id="7144942256906679589">Estado de la batería</translation>
 <translation id="7165278925115064263">Alt+mayúscula+K</translation>
 <translation id="7168224885072002358">Se revertirá a la resolución anterior en <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="7180611975245234373">Actualizar</translation>
@@ -1104,6 +1111,7 @@ Nueva instalación</translation>
 <translation id="7593891976182323525">Tecla de búsqueda o Mayús</translation>
 <translation id="7600875258240007829">Ver todas las notificaciones</translation>
 <translation id="7607002721634913082">Detenido</translation>
+<translation id="7609951632080598826">Vista del calendario, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Se volvió a conectar la cámara.</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
 <translation id="7633755430369750696">Mostrar la configuración de Compartir con Nearby</translation>
@@ -1229,6 +1237,7 @@ Nueva instalación</translation>
 <translation id="8345019317483336363">Ventana <ph name="WINDOW_TITLE" /> seleccionada</translation>
 <translation id="8351131234907093545">Crear nota</translation>
 <translation id="8364673525741149932">Activa o desactiva el modo Grupo de barras. <ph name="STATE_TEXT" /></translation>
+<translation id="8369166482916924789">Escritorio guardado, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">Avanzar letra por letra</translation>
 <translation id="8371991222807690464">Es posible que el rendimiento de los dispositivos periféricos sea limitado en el Modo de invitado.</translation>
 <translation id="8374601332003098278">Presiona intro para grabar la pantalla de forma parcial</translation>
@@ -1341,6 +1350,7 @@ Nueva instalación</translation>
 <translation id="9000771174482730261">ADMINISTRAR EL ALMACENAMIENTO</translation>
 <translation id="9017320285115481645">Ingresa el código de acceso parental de Family Link.</translation>
 <translation id="9024331582947483881">pantalla completa</translation>
+<translation id="9029736946581028033">El dispositivo se apagará pronto</translation>
 <translation id="9030319654231318877">Desactivado hasta el atardecer</translation>
 <translation id="9034924485347205037">Archivos de Linux</translation>
 <translation id="9047624247355796468">Abrir la configuración para <ph name="NETWORK_NAME" /></translation>
@@ -1370,6 +1380,7 @@ Nueva instalación</translation>
 <translation id="9168436347345867845">Hacerlo más tarde</translation>
 <translation id="9178475906033259337">Mostrando 1 resultado para <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Esta función te permite alternar de forma rápida entre los usuarios que hayan accedido a su cuenta, sin necesidad de escribir la contraseña. Usa esta función solo con cuentas de confianza.</translation>
+<translation id="9180906851711123156">Presiona Ctrl + W para cerrar</translation>
 <translation id="9183456764293710005">Lupa de pantalla completa</translation>
 <translation id="9193626018745640770">Transmitiendo en un receptor desconocido</translation>
 <translation id="9194617393863864469">Acceder con otro usuario…</translation>

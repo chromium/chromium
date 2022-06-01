@@ -646,6 +646,7 @@
 <translation id="6423031066725912715">‏الفيتنامية باستخدام لوحة مفاتيح TCVN</translation>
 <translation id="6485131920355264772">تعذّر جلب معلومات المساحة</translation>
 <translation id="6495925982925244349">الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، الشبكة <ph name="NETWORK_NAME" />، حالة الأمان <ph name="SECURITY_STATUS" />، حالة الاتصال <ph name="CONNECTION_STATUS" />، قوة الإشارة <ph name="SIGNAL_STRENGTH" />%، يديرها المشرف، التفاصيل</translation>
+<translation id="649877868557234318">جارٍ استخراج الملف <ph name="FILE_NAME" /> إلى المجلّد <ph name="FOLDER_NAME" /></translation>
 <translation id="6499681088828539489">عدم السماح بالخوادم الوكيلة للشبكات المشتركة</translation>
 <translation id="6509122719576673235">النرويجية</translation>
 <translation id="6528513914570774834">السماح للمستخدمين الآخرين لهذا الجهاز باستخدام هذه الشبكة</translation>

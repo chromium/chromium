@@ -480,6 +480,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2215963164070968490">Cães</translation>
 <translation id="2218879909401188352">Os invasores que estão em <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> no momento podem instalar apps perigosos que danificam seu dispositivo, acrescentam cobranças ocultas junto à operadora ou roubam suas informações pessoais. <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2219658597883514593">Reiniciar tutorial</translation>
+<translation id="2219735899272417925">É necessário redefinir o dispositivo</translation>
 <translation id="2224337661447660594">Sem Internet</translation>
 <translation id="2230458221926704099">Corrija sua conexão usando o <ph name="BEGIN_LINK" />app de diagnóstico<ph name="END_LINK" /></translation>
 <translation id="2239100178324503013">Enviar agora</translation>
@@ -878,9 +879,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3369192424181595722">Erro do relógio</translation>
 <translation id="3369459162151165748">Peças e acessórios de veículos</translation>
 <translation id="3371064404604898522">Definir o Chrome como navegador padrão</translation>
-<translation id="3371076217486966826"><ph name="URL" /> quer:
-      • criar um mapa 3D do ambiente a sua volta e acompanhar a posição da câmera;
-      • usar a câmera.</translation>
 <translation id="337363190475750230">Desprovisionado</translation>
 <translation id="3375754925484257129">Executar a confirmação de segurança do Chrome</translation>
 <translation id="3377144306166885718">Versão obsoleta do TLS usada no servidor.</translation>

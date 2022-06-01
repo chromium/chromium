@@ -251,6 +251,7 @@
 <translation id="243878895369688216">어제 열림</translation>
 <translation id="2441427462554639370">저장공간이 매우 부족하여 녹화가 종료되었습니다.</translation>
 <translation id="24452542372838207">알림 펼치기</translation>
+<translation id="2449089818483227734">배터리 부족</translation>
 <translation id="2450205753526923158">스크린샷 모드</translation>
 <translation id="2456008742792828469">캘린더, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2473177541599297363">해상도 확인</translation>
@@ -411,11 +412,13 @@
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" />분</translation>
 <translation id="3445925074670675829">USB-C 기기</translation>
+<translation id="3455468639467374593">템플릿, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3465223694362104965">마지막으로 로그인한 이후로 다른 키보드가 이 기기에 연결되었습니다. 사용하기 전에 이 키보드를 신뢰하는지 확인하세요.</translation>
 <translation id="3465356146291925647">관리자가 관리함</translation>
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, 신호 강도 <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">실행기 자동 숨김</translation>
+<translation id="3505066820268455558">배터리 충전 중</translation>
 <translation id="3509391053705095206">휴대전화를 찾을 수 없습니다. 휴대전화에서 블루투스가 켜져 있는지 확인하세요.</translation>
 <translation id="3510164367642747937">마우스 커서 강조표시</translation>
 <translation id="3513798432020909783">계정 관리자: <ph name="MANAGER_EMAIL" /></translation>
@@ -456,6 +459,8 @@
 <translation id="3633097874324966332">기기를 페어링하려면 블루투스 설정을 여세요.</translation>
 <translation id="3638400994746983214">개인정보 보호 화면을 켜거나 끕니다. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">업데이트 지연됨</translation>
+<translation id="3659814201068740063">약 <ph name="TIME_LEFT" /> 남았습니다(<ph name="PERCENTAGE" />%).
+기기를 전원에 연결하세요.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> 관리 사용자</translation>
 <translation id="36813544980941320">Wi-Fi 네트워크가 휴대전화와 <ph name="DEVICE_NAME" /> 간에 공유됩니다.</translation>
 <translation id="3694122362646626770">웹사이트</translation>
@@ -510,6 +515,7 @@
 <translation id="3962859241508114581">이전 트랙</translation>
 <translation id="3969043077941541451">사용 안함</translation>
 <translation id="397105322502079400">계산 중...</translation>
+<translation id="397726367135689299">배터리 충전 상태가 불안정한 것 같습니다.</translation>
 <translation id="3977512764614765090">배터리가 <ph name="PERCENTAGE" />%이며 현재 충전 중입니다.</translation>
 <translation id="3986082989454912832">답변</translation>
 <translation id="3995138139523574647">USB-C 기기(우측 후면 포트)</translation>
@@ -1037,6 +1043,7 @@
 <translation id="7130207228079676353">사용할 만한 앱</translation>
 <translation id="7131634465328662194">자동으로 로그아웃됩니다.</translation>
 <translation id="7143207342074048698">연결 중</translation>
+<translation id="7144942256906679589">배터리 상태</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" />초 후 기존 해상도로 돌아갑니다.</translation>
 <translation id="7180611975245234373">새로고침</translation>
@@ -1103,6 +1110,7 @@
 <translation id="7593891976182323525">검색 또는 Shift 키</translation>
 <translation id="7600875258240007829">모든 알림 보기</translation>
 <translation id="7607002721634913082">일시중지됨</translation>
+<translation id="7609951632080598826">캘린더 보기, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">카메라가 다시 연결되었습니다.</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />°F</translation>
 <translation id="7633755430369750696">Nearby Share 설정 표시</translation>
@@ -1228,6 +1236,7 @@
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> 창 선택됨</translation>
 <translation id="8351131234907093545">메모 만들기</translation>
 <translation id="8364673525741149932">Shelf Party를 전환합니다. <ph name="STATE_TEXT" /></translation>
+<translation id="8369166482916924789">저장된 데스크, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">한 글자 앞으로 이동</translation>
 <translation id="8371991222807690464">게스트 모드에서 주변기기 성능이 제한될 수 있습니다.</translation>
 <translation id="8374601332003098278">화면의 일부만 녹화하려면 Enter를 누르세요</translation>
@@ -1340,6 +1349,7 @@
 <translation id="9000771174482730261">저장용량 관리</translation>
 <translation id="9017320285115481645">Family Link 부모 액세스 코드를 입력하세요.</translation>
 <translation id="9024331582947483881">전체화면</translation>
+<translation id="9029736946581028033">기기가 곧 꺼짐</translation>
 <translation id="9030319654231318877">일몰까지 끄기</translation>
 <translation id="9034924485347205037">Linux 파일</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> 설정 열기</translation>
@@ -1369,6 +1379,7 @@
 <translation id="9168436347345867845">나중에</translation>
 <translation id="9178475906033259337"><ph name="QUERY" /> 검색결과 1개 표시 중</translation>
 <translation id="9179259655489829027">이 기능을 사용하면 로그인한 모든 사용자에게 비밀번호 없이 액세스할 수 있습니다. 이 기능은 신뢰할 수 있는 계정에만 사용하시기 바랍니다.</translation>
+<translation id="9180906851711123156">닫으려면 Ctrl + W를 누릅니다</translation>
 <translation id="9183456764293710005">전체 화면 돋보기</translation>
 <translation id="9193626018745640770">알 수 없는 수신기에 전송 중</translation>
 <translation id="9194617393863864469">다른 사용자 추가...</translation>

@@ -6664,6 +6664,7 @@
 <translation id="7559719679815339381">しばらくお待ちください....キオスクアプリを更新しています。USB スティックを取り外さないでください。</translation>
 <translation id="7560756177962144929"><ph name="DEVICE_TYPE" /> の同期</translation>
 <translation id="7561196759112975576">常に使用</translation>
+<translation id="7561982940498449837">メニューを閉じる</translation>
 <translation id="756445078718366910">ブラウザ ウィンドウを開く</translation>
 <translation id="7564847347806291057">プロセスを終了</translation>
 <translation id="756503097602602175">ログインする Google アカウントは、<ph name="LINK_BEGIN" />設定<ph name="LINK_END" />で管理できます。ウェブサイトとアプリに許可した権限はすべてのアカウントに適用されます。サイトやアプリがアカウント情報にアクセスしないようにするには、<ph name="DEVICE_TYPE" /> にゲストとしてログインするか、<ph name="LINK_2_BEGIN" />シークレット ウィンドウ<ph name="LINK_2_END" />でウェブ ブラウジングします。</translation>
@@ -7520,6 +7521,7 @@
 <translation id="8379156816349755485">ログインすると、固有の認証トークンが保存され、以降のすべての対象となるダウンロードで使用されます。</translation>
 <translation id="8379878387931047019">このデバイスでは、このウェブサイトからリクエストされているセキュリティ キーのタイプはサポートされていません。</translation>
 <translation id="8379991678458444070">このタブをブックマークに追加すると、すばやくこのタブに戻ることができます</translation>
+<translation id="8380266723152870797">ウィンドウ名</translation>
 <translation id="8380941800586852976">危険</translation>
 <translation id="8382715499079447151">表示保護機能</translation>
 <translation id="8382913212082956454">メール アドレスをコピー(&amp;E)</translation>

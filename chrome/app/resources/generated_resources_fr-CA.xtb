@@ -839,6 +839,7 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1794051631868188691">Ne jamais afficher <ph name="MERCHANT" /></translation>
 <translation id="1794791083288629568">Envoyer des commentaires pour nous aider à résoudre ce problème.</translation>
 <translation id="1795214765651529549">Utiliser le thème classique</translation>
+<translation id="1796105431091975902">Sélectionner un playbook Ansible à ajouter</translation>
 <translation id="1796588414813960292">Les fonctionnalités qui utilisent des sons ne fonctionneront pas</translation>
 <translation id="1800502858278951817">Aucune extension n'a demandé de lire et de modifier <ph name="SITE_NAME" /></translation>
 <translation id="1802624026913571222">Mettre en veille lorsque le couvercle est fermé</translation>
@@ -3041,6 +3042,7 @@ et sur Ctrl+Alt+diminuer la luminosité pour effectuer un zoom arrière.</transl
 <translation id="389901847090970821">Sélectionner un clavier</translation>
 <translation id="3900966090527141178">Exporter les mots de passe</translation>
 <translation id="3903187154317825986">Clavier intégré</translation>
+<translation id="3903191712482985591">Ajouter un playbook</translation>
 <translation id="3904326018476041253">Services de localisation</translation>
 <translation id="3904849010307028014">Un site peut envoyer un jeton de confiance à votre navigateur en fonction de votre interaction avec ce site, comme la connexion régulière à un compte. Ultérieurement, si d'autres sites que vous visitez recherchent et trouvent un jeton de confiance valide, ils seront plus susceptibles de vous traiter comme une personne et non comme un robot.</translation>
 <translation id="3905761538810670789">Réparer l'application</translation>
@@ -3651,6 +3653,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4510479820467554003">Liste des comptes parentaux</translation>
 <translation id="451102079304155829">paniers</translation>
 <translation id="4513872120116766993">Rédaction prédictive</translation>
+<translation id="4513909579793564731">Appliquer le playbook</translation>
 <translation id="4513946894732546136">Commentaires</translation>
 <translation id="451407183922382411">Optimisé par <ph name="COMPANY_NAME" /></translation>
 <translation id="4514610446763173167">Faire jouer la vidéo ou la mettre en pause</translation>
@@ -5484,6 +5487,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="635609604405270300">Laissez l'appareil allumé</translation>
 <translation id="63566973648609420">Seule une personne connaissant votre phrase de passe peut lire vos données chiffrées. Google ne reçoit pas la phrase de passe et ne la stocke pas. Si vous l'oubliez ou souhaitez modifier ce paramètre, vous devrez <ph name="BEGIN_LINK" />réinitialiser la synchronisation<ph name="END_LINK" />.</translation>
 <translation id="6357305427698525450">Certains liens pris en charge continueront de s'ouvrir dans <ph name="APP_NAME" /> ou <ph name="APP_NAME_2" />.</translation>
+<translation id="6357794994761110294">Aucune extension n'est autorisée à lire ou à modifier <ph name="SITE_NAME" /></translation>
 <translation id="6358884629796491903">Dragon</translation>
 <translation id="6361850914223837199">Information sur l'erreur :</translation>
 <translation id="6362853299801475928">Signale&amp;r un problème...</translation>
@@ -6682,6 +6686,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="7559719679815339381">Veuillez patienter....L'application de kiosque est en cours de mise à jour. Ne retirez pas la clé USB.</translation>
 <translation id="7560756177962144929">Synchroniser votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="7561196759112975576">Toujours</translation>
+<translation id="7561982940498449837">Fermer le menu</translation>
 <translation id="756445078718366910">Ouvrir une fenêtre du navigateur</translation>
 <translation id="7564847347806291057">Supprimer le processus</translation>
 <translation id="756503097602602175">Vous pouvez gérer les comptes Google auxquels vous êtes connecté dans le menu <ph name="LINK_BEGIN" />Paramètres<ph name="LINK_END" />. Les autorisations que vous avez accordées aux sites Web et aux applications peuvent s'appliquer à tous les comptes. Si vous ne souhaitez pas que les sites ou les applications accèdent aux données de votre compte, vous pouvez vous connecter à votre <ph name="DEVICE_TYPE" /> comme invité ou bien naviguer sur le Web dans une <ph name="LINK_2_BEGIN" />fenêtre de navigation privée<ph name="LINK_2_END" />.</translation>
@@ -7539,6 +7544,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8379156816349755485">Au moment de la connexion, un jeton d'authentification unique sera stocké et utilisé pour tous les futurs téléchargements admissibles.</translation>
 <translation id="8379878387931047019">Cet appareil ne prend pas en charge le type de clé de sécurité demandé par ce site Web</translation>
 <translation id="8379991678458444070">Revenez ici rapidement en ajoutant cet onglet aux favoris</translation>
+<translation id="8380266723152870797">Nom de la fenêtre</translation>
 <translation id="8380941800586852976">Dangereux</translation>
 <translation id="8382715499079447151">Protection de l'affichage</translation>
 <translation id="8382913212082956454">Copier l'adresse de courri&amp;el</translation>

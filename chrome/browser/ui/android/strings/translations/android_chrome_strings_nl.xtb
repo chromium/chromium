@@ -1076,6 +1076,7 @@ Trust Tokens verbeteren de privacy op internet en kunnen niet worden gebruikt om
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, tabblad, geselecteerd</translation>
 <translation id="6828070228333235514">Prijs volgen stoppen</translation>
 <translation id="6833996806551876956">Proef voor privacy-sandbox</translation>
+<translation id="6836206421467243968">Tabbladgroep <ph name="TITLE_OF_GROUP" /> herstellen als een nieuwe tabbladgroep op de achtergrond.</translation>
 <translation id="6846298663435243399">Laden…</translation>
 <translation id="6850409657436465440">Je download wordt nog uitgevoerd</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> tabbladen gesloten</translation>
@@ -1138,6 +1139,7 @@ Trust Tokens verbeteren de privacy op internet en kunnen niet worden gebruikt om
 <translation id="7187993566681480880">Beschermt je op Chrome en kan worden gebruikt om de beveiliging in andere Google-apps te verbeteren als je bent ingelogd.</translation>
 <translation id="7191430249889272776">Tabblad op de achtergrond geopend.</translation>
 <translation id="7196215469483532480">Uitleg over privacygids is op volledige hoogte geopend</translation>
+<translation id="7207760545532569765"><ph name="TAB_COUNT" /> tabbladen herstellen als nieuwe tabbladen op de achtergrond.</translation>
 <translation id="7208109991155904980">Reactie verplaatst</translation>
 <translation id="7222235798733126207">Beperkt delen tussen sites</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 download in behandeling}other{# downloads in behandeling}}</translation>
@@ -1516,6 +1518,7 @@ Trust Tokens verbeteren de privacy op internet en kunnen niet worden gebruikt om
 <translation id="9148126808321036104">Opnieuw inloggen</translation>
 <translation id="9155898266292537608">Je kunt ook zoeken door kort op een woord te tikken</translation>
 <translation id="9158770349521403363">Alleen content delen</translation>
+<translation id="9159716826369098114">Tabbladgroep van <ph name="TAB_COUNT" /> tabbladen herstellen als een nieuwe tabbladgroep op de achtergrond.</translation>
 <translation id="916446198114569890">De URL's die je bezoekt, worden opgeslagen in je Google-account.</translation>
 <translation id="9169507124922466868">Navigatiegeschiedenis is half geopend</translation>
 <translation id="9187955620966010988">Reactie aangepast</translation>

@@ -2482,6 +2482,7 @@ og tryk på Ctrl+Alt+lysstyrke ned for at zoome ud.</translation>
 <translation id="3348038390189153836">Der er registreret en flytbar enhed</translation>
 <translation id="3348131053948466246">Forslag til emojis. Tryk op eller ned for at navigere, og skriv for at indsætte.</translation>
 <translation id="3349933790966648062">Hukommelsesforbrug</translation>
+<translation id="3353786022389205125">Aktivér "Vis låseskærmen, når enheden vågner fra dvale", og prøv igen</translation>
 <translation id="3354972872297836698">Parringen med enheden <ph name="DEVICE_NAME" /> mislykkedes. Vælg en enhed for at prøve igen</translation>
 <translation id="3355936511340229503">Forbindelsesfejl</translation>
 <translation id="3356469410714175391">(Virtuelt kort er aktiveret)</translation>
@@ -4962,6 +4963,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5827733057563115968">Forudsigelse af næste ord</translation>
 <translation id="5828545842856466741">Tilføj profil...</translation>
 <translation id="5828633471261496623">Udskriver...</translation>
+<translation id="5830205393314753525"><ph name="APP_NAME" /> kan ikke åbnes</translation>
 <translation id="5830720307094128296">Gem side &amp;som...</translation>
 <translation id="5832813618714645810">Profiler</translation>
 <translation id="583281660410589416">Ukendt</translation>
@@ -6701,6 +6703,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="7559719679815339381">Vent et øjeblik....Terminalappen er ved at blive opdateret. Undlad at fjerne USB-stikket.</translation>
 <translation id="7560756177962144929">Synkroniser din <ph name="DEVICE_TYPE" /></translation>
 <translation id="7561196759112975576">Altid</translation>
+<translation id="7561982940498449837">Luk menu</translation>
 <translation id="756445078718366910">Åbn browservindue</translation>
 <translation id="7564847347806291057">Afslut proces</translation>
 <translation id="756503097602602175">I <ph name="LINK_BEGIN" />Indstillinger<ph name="LINK_END" /> kan du administrere de Google-konti, du er logget ind på. De tilladelser, du har givet til websites og apps, gælder muligvis for alle konti. Hvis du ikke vil have, at websites eller apps kan få adgang til dine kontooplysninger, kan du logge ind på <ph name="DEVICE_TYPE" /> som gæst eller gå på nettet i et <ph name="LINK_2_BEGIN" />inkognitovindue<ph name="LINK_2_END" />.</translation>
@@ -7558,6 +7561,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8379156816349755485">Når du logger ind, gemmes der et unikt godkendelsestoken, som anvendes ved alle fremtidige kvalificerede downloads.</translation>
 <translation id="8379878387931047019">Denne enhed understøtter ikke den type sikkerhedsnøgle, der anmodes om på dette website</translation>
 <translation id="8379991678458444070">Tilføj denne fane som bogmærke, så du hurtigt kan vende tilbage hertil</translation>
+<translation id="8380266723152870797">Navn på vindue</translation>
 <translation id="8380941800586852976">Farlig</translation>
 <translation id="8382715499079447151">Visningsbeskyttelse</translation>
 <translation id="8382913212082956454">Kopier mailadress&amp;e</translation>

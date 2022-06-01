@@ -1076,6 +1076,7 @@ Mã thông báo tin cậy giúp cải thiện quyền riêng tư trên web và 
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, thẻ, đã chọn</translation>
 <translation id="6828070228333235514">Dừng theo dõi giá</translation>
 <translation id="6833996806551876956">Dùng thử hộp cát bảo vệ quyền riêng tư</translation>
+<translation id="6836206421467243968">Khôi phục nhóm thẻ <ph name="TITLE_OF_GROUP" /> dưới dạng một nhóm thẻ nền mới.</translation>
 <translation id="6846298663435243399">Đang tải…</translation>
 <translation id="6850409657436465440">Vẫn đang tải xuống</translation>
 <translation id="6850830437481525139">Đã đóng <ph name="TAB_COUNT" /> thẻ</translation>
@@ -1138,6 +1139,7 @@ Mã thông báo tin cậy giúp cải thiện quyền riêng tư trên web và 
 <translation id="7187993566681480880">Giúp bạn an toàn trên Chrome và có thể dùng để tăng cường bảo mật cho bạn trong các ứng dụng khác của Google sau khi đăng nhập.</translation>
 <translation id="7191430249889272776">Thẻ được mở dưới nền.</translation>
 <translation id="7196215469483532480">Đã mở nội dung giải thích hướng dẫn về quyền riêng tư trên toàn màn hình</translation>
+<translation id="7207760545532569765">Khôi phục <ph name="TAB_COUNT" /> thẻ dưới dạng các thẻ nền mới.</translation>
 <translation id="7208109991155904980">Đã di chuyển phản ứng</translation>
 <translation id="7222235798733126207">Giới hạn hoạt động chia sẻ giữa các trang</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 tệp đang chờ tải xuống}other{# tệp đang chờ tải xuống}}</translation>
@@ -1516,6 +1518,7 @@ Mã thông báo tin cậy giúp cải thiện quyền riêng tư trên web và 
 <translation id="9148126808321036104">Đăng nhập lại</translation>
 <translation id="9155898266292537608">Bạn cũng có thể tìm kiếm bằng cách nhấn nhanh vào một từ</translation>
 <translation id="9158770349521403363">Chỉ chia sẻ nội dung</translation>
+<translation id="9159716826369098114">Khôi phục nhóm <ph name="TAB_COUNT" /> thẻ dưới dạng một nhóm thẻ nền mới.</translation>
 <translation id="916446198114569890">Các URL bạn truy cập sẽ được lưu vào tài khoản Google của bạn</translation>
 <translation id="9169507124922466868">Lịch sử di chuyển đang mở ở nửa dưới màn hình</translation>
 <translation id="9187955620966010988">Đã điều chỉnh phản ứng</translation>

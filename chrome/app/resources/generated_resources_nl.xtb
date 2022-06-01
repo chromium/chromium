@@ -838,6 +838,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1794051631868188691"><ph name="MERCHANT" /> nooit bekijken</translation>
 <translation id="1794791083288629568">Feedback sturen om ons te helpen dit probleem op te lossen.</translation>
 <translation id="1795214765651529549">Klassiek thema gebruiken</translation>
+<translation id="1796105431091975902">Selecteer een Ansible-playbook om toe te voegen</translation>
 <translation id="1796588414813960292">Functies die afhankelijk zijn van geluid, werken niet</translation>
 <translation id="1800502858278951817">Er zijn geen extensies die toestemming hebben gevraagd om <ph name="SITE_NAME" /> te lezen en te wijzigen</translation>
 <translation id="1802624026913571222">Slaapstand als de klep wordt gesloten</translation>
@@ -3039,6 +3040,7 @@ Foutcode: <ph name="ERROR_CODE" />.</translation>
 <translation id="389901847090970821">Toetsenbord selecteren</translation>
 <translation id="3900966090527141178">Wachtwoorden exporteren</translation>
 <translation id="3903187154317825986">Geïntegreerd toetsenbord</translation>
+<translation id="3903191712482985591">Playbook toevoegen</translation>
 <translation id="3904326018476041253">Locatieservices</translation>
 <translation id="3904849010307028014">Op basis van je interactie met een site, zoals vaak inloggen op een account, kan die site een Trust Token naar je browser sturen. Later kunnen andere bezochte sites checken op tokens. Als ze een geldig Trust Token vinden, is het waarschijnlijker dat je voor een persoon wordt aangezien dan voor een bot.</translation>
 <translation id="3905761538810670789">App repareren</translation>
@@ -3648,6 +3650,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4510479820467554003">Lijst met ouderaccounts</translation>
 <translation id="451102079304155829">winkelwagens</translation>
 <translation id="4513872120116766993">Voorspellend schrijven</translation>
+<translation id="4513909579793564731">Playbook toepassen</translation>
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="451407183922382411">Mogelijk gemaakt door <ph name="COMPANY_NAME" /></translation>
 <translation id="4514610446763173167">Video schakelen tussen afspelen en pauzeren</translation>
@@ -5477,6 +5480,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="635609604405270300">Apparaat aan laten</translation>
 <translation id="63566973648609420">Alleen iemand met je wachtwoordzin kan je versleutelde gegevens lezen. De wachtwoordzin wordt niet verzonden naar of opgeslagen door Google. Als je je wachtwoordzin vergeet of deze instelling wilt wijzigen, moet je de <ph name="BEGIN_LINK" />synchronisatie resetten<ph name="END_LINK" />.</translation>
 <translation id="6357305427698525450">Bepaalde ondersteunde links worden nog steeds geopend in <ph name="APP_NAME" /> of <ph name="APP_NAME_2" />.</translation>
+<translation id="6357794994761110294">Extensies mogen <ph name="SITE_NAME" /> niet lezen en wijzigen</translation>
 <translation id="6358884629796491903">Draak</translation>
 <translation id="6361850914223837199">Foutdetails:</translation>
 <translation id="6362853299801475928">&amp;Een probleem melden...</translation>
@@ -6673,6 +6677,7 @@ Als je later besluit dat je Voice Match niet wilt gebruiken, verwijder je dit ge
 <translation id="7559719679815339381">Een ogenblik geduld. De Kiosk-app wordt geüpdatet. Verwijder de USB-stick niet.</translation>
 <translation id="7560756177962144929">Je <ph name="DEVICE_TYPE" /> synchroniseren</translation>
 <translation id="7561196759112975576">Altijd</translation>
+<translation id="7561982940498449837">Menu sluiten</translation>
 <translation id="756445078718366910">Browservenster openen</translation>
 <translation id="7564847347806291057">Proces beëindigen</translation>
 <translation id="756503097602602175">Je kunt ingelogde Google-accounts beheren via <ph name="LINK_BEGIN" />Instellingen<ph name="LINK_END" />. Rechten die je hebt gegeven aan websites en apps kunnen van toepassing zijn op alle accounts. Als je niet wilt dat sites of apps toegang tot je accountgegevens hebben, kun je als gast inloggen op je <ph name="DEVICE_TYPE" /> of in een <ph name="LINK_2_BEGIN" />incognitovenster<ph name="LINK_2_END" /> op internet browsen.</translation>
@@ -7528,6 +7533,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8379156816349755485">Als je inlogt, wordt een uniek verificatietoken opgeslagen. Dit token wordt gebruikt voor alle toekomstige in aanmerking komende downloads.</translation>
 <translation id="8379878387931047019">Dit apparaat biedt geen ondersteuning voor het type beveiligingssleutel dat is vereist voor deze website</translation>
 <translation id="8379991678458444070">Je kunt hier snel terugkeren als je een bookmark voor dit tabblad maakt</translation>
+<translation id="8380266723152870797">Vensternaam</translation>
 <translation id="8380941800586852976">Gevaarlijk</translation>
 <translation id="8382715499079447151">Weergavebeveiliging</translation>
 <translation id="8382913212082956454">&amp;E-mailadres kopiëren</translation>

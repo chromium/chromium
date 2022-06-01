@@ -846,6 +846,7 @@ Huenda ruhusa ambazo tayari umezipa programu zikatumika kwenye akaunti hii. Unaw
 <translation id="1794051631868188691">Usionyeshe <ph name="MERCHANT" /> tena</translation>
 <translation id="1794791083288629568">Tuma maoni ili utusaidie kutatua tatizo hili.</translation>
 <translation id="1795214765651529549">Tumia ya Kawaida</translation>
+<translation id="1796105431091975902">Chagua Mwongozo wa Ansible ili uweke</translation>
 <translation id="1796588414813960292">Vipengele vinavyohitaji sauti havitafanya kazi</translation>
 <translation id="1800502858278951817">Hakuna viendelezi vilivyoomba kusoma na kubadilisha <ph name="SITE_NAME" /></translation>
 <translation id="1802624026913571222">Iwe katika hali tuli kifuniko kikifungwa</translation>
@@ -3051,6 +3052,7 @@ na vitufe vya Ctrl, Alt pamoja na kitufe cha kupunguza Mwangaza ili usogeze mbal
 <translation id="389901847090970821">Chagua kibodi</translation>
 <translation id="3900966090527141178">Hamisha manenosiri</translation>
 <translation id="3903187154317825986">Kibodi iliyojumuishwa</translation>
+<translation id="3903191712482985591">Weka mwongozo</translation>
 <translation id="3904326018476041253">Huduma za Mahali</translation>
 <translation id="3904849010307028014">Kulingana na matumizi yako ya tovuti, kama vile kuingia katika akaunti mara kwa mara, tovuti hiyo inaweza kutoa tokeni ya uaminifu kwenye kivinjari chako. Baadaye, iwapo tovuti nyingine unazotembelea zitakagua na kukuta tokeni halisi ya uaminifu, kuna uwezekano mkubwa zikakuchukulia kama mtu na si roboti.</translation>
 <translation id="3905761538810670789">Karabati programu</translation>
@@ -3660,6 +3662,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4510479820467554003">Orodha ya akaunti za mzazi</translation>
 <translation id="451102079304155829">vikapu</translation>
 <translation id="4513872120116766993">Utabiri wa maandishi</translation>
+<translation id="4513909579793564731">Tumia mwongozo</translation>
 <translation id="4513946894732546136">Mwitiko</translation>
 <translation id="451407183922382411">Inaendeshwa na <ph name="COMPANY_NAME" /></translation>
 <translation id="4514610446763173167">Geuza video ili ucheze au usimamishe</translation>
@@ -5493,6 +5496,7 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="635609604405270300">Usizime kifaa</translation>
 <translation id="63566973648609420">Ni mtu mwenye kauli yako ya siri tu anaweza kusoma data yako iliyosimbwa kwa njia fiche. Kauli ya siri haitumwi au kuhifadhiwa na Google. Ukisahau kauli yako ya siri, au unataka kubadilisha mipangilio hii, utahitaji <ph name="BEGIN_LINK" />kuweka upya usawazishaji<ph name="END_LINK" /></translation>
 <translation id="6357305427698525450">Baadhi ya viungo vinavyotumika bado vitafunguka kwenye <ph name="APP_NAME" /> au <ph name="APP_NAME_2" />.</translation>
+<translation id="6357794994761110294">Hakuna viendelezi vinavyoruhusiwa kusoma na kubadilisha <ph name="SITE_NAME" /></translation>
 <translation id="6358884629796491903">Joka</translation>
 <translation id="6361850914223837199">Maelezo ya hitilafu:</translation>
 <translation id="6362853299801475928">&amp;Ripoti matumizi mabaya...</translation>
@@ -6689,6 +6693,7 @@ Una manenosiri # zaidi yaliyoathiriwa. Kidhibiti cha Manenosiri cha Google kinap
 <translation id="7559719679815339381">Tafadhali subiri....Programu ya skrini nzima inasasishwa. Usiondoe hifadhi ya USB.</translation>
 <translation id="7560756177962144929">Sawazisha <ph name="DEVICE_TYPE" /> yako</translation>
 <translation id="7561196759112975576">Kila wakati</translation>
+<translation id="7561982940498449837">Funga menyu</translation>
 <translation id="756445078718366910">Fungua Dirisha la Kivinjari</translation>
 <translation id="7564847347806291057">Komesha shughuli</translation>
 <translation id="756503097602602175">Unaweza kudhibiti Akaunti za Google ulizotumia kuingia katika tovuti na programu, kwenye <ph name="LINK_BEGIN" />Mipangilio<ph name="LINK_END" />. Huenda ruhusa ulizozipa tovuti na programu zikatumika kwenye akaunti zote. Ikiwa hutaki tovuti au programu zifikie maelezo ya akaunti yako, unaweza kuingia katika akaunti kwenye <ph name="DEVICE_TYPE" /> yako kama mgeni au uvinjari wavuti katika <ph name="LINK_2_BEGIN" />dirisha fiche<ph name="LINK_2_END" />.</translation>
@@ -7548,6 +7553,7 @@ Sidhani tovuti hii inapaswa kuzuiwa!</translation>
 <translation id="8379156816349755485">Ukishaingia katika akaunti, tokeni ya uthibitishaji ya kipekee itahifadhiwa na kutumiwa kwa ajili ya vipakuliwa vyote vya baadaye vilivyotimiza masharti.</translation>
 <translation id="8379878387931047019">Kifaa hiki hakitumii aina hii ya ufunguo wa usalama ulioombwa na tovuti hii</translation>
 <translation id="8379991678458444070">Ili urudi katika sehemu hii kwa haraka, alamisha kichupo hiki</translation>
+<translation id="8380266723152870797">Jina la dirisha</translation>
 <translation id="8380941800586852976">Hatari</translation>
 <translation id="8382715499079447151">Ulinzi dhidi ya kuchungulia</translation>
 <translation id="8382913212082956454">Nakili barua p&amp;epe</translation>

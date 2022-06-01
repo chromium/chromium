@@ -2484,6 +2484,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3348038390189153836">Zaznane zamenljive naprave</translation>
 <translation id="3348131053948466246">Predlagan je bil emodži. Pritisnite tipko za navzdol ali navzdol in Enter, če ga želite vnesti.</translation>
 <translation id="3349933790966648062">Količina uporabljenega pomnilnika</translation>
+<translation id="3353786022389205125">Vklopite »Prikaži zaklenjen zaslon pri preklopu iz stanja pripravljenosti« in poskusite znova.</translation>
 <translation id="3354972872297836698">Seznanitve z napravo <ph name="DEVICE_NAME" /> ni bilo mogoče opraviti; izberite napravo, če želite poskusiti znova</translation>
 <translation id="3355936511340229503">Napaka povezave</translation>
 <translation id="3356469410714175391">(Virtualna kartica je omogočena)</translation>
@@ -4966,6 +4967,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="5827733057563115968">Predvidevanje naslednje besede</translation>
 <translation id="5828545842856466741">Dodajanje profila …</translation>
 <translation id="5828633471261496623">Tiskanje ...</translation>
+<translation id="5830205393314753525">Aplikacije <ph name="APP_NAME" /> ni mogoče odpreti</translation>
 <translation id="5830720307094128296">Shrani stran &amp;kot ...</translation>
 <translation id="5832813618714645810">Profili</translation>
 <translation id="583281660410589416">Neznano</translation>
@@ -6709,6 +6711,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7559719679815339381">Počakajte ... Aplikacija za kiosk se posodablja. Ne odstranite ključka USB.</translation>
 <translation id="7560756177962144929">Sinhroniziranje naprave <ph name="DEVICE_TYPE" /></translation>
 <translation id="7561196759112975576">Vedno</translation>
+<translation id="7561982940498449837">Zapri meni</translation>
 <translation id="756445078718366910">Odpri okno brskalnika</translation>
 <translation id="7564847347806291057">Končaj proces</translation>
 <translation id="756503097602602175">Račune Google, v katere ste prijavljeni, lahko upravljate v <ph name="LINK_BEGIN" />nastavitvah<ph name="LINK_END" />. Dovoljenja, ki ste jih odobrili spletnim mestom in aplikacijam, morda veljajo za vse račune. Če ne želite, da bi spletna mesta ali aplikacije dostopali do podatkov o vašem računu, se lahko prijavite v napravo <ph name="DEVICE_TYPE" /> kot gost ali brskate po spletu v <ph name="LINK_2_BEGIN" />anonimnem oknu<ph name="LINK_2_END" />.</translation>
@@ -7567,6 +7570,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8379156816349755485">Po prijavi se shrani enoznačni žeton za preverjanje pristnosti in uporablja za vse prihodnje primerne prenose.</translation>
 <translation id="8379878387931047019">Ta naprava ne podpira vrste varnostnega ključa, ki ga zahteva to spletno mesto</translation>
 <translation id="8379991678458444070">Hitro se vrnite na ta zavihek tako, da ga dodate med zaznamke</translation>
+<translation id="8380266723152870797">Ime okna</translation>
 <translation id="8380941800586852976">Nevarno</translation>
 <translation id="8382715499079447151">Zaščita pred ogledovanjem</translation>
 <translation id="8382913212082956454">Kopiraj &amp;e-poštni naslov</translation>

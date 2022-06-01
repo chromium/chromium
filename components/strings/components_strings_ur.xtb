@@ -485,6 +485,7 @@
 <translation id="2215963164070968490">کتے</translation>
 <translation id="2218879909401188352">حملہ آور فی الحال <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> پر آپ کے آلہ کو نقصان پہنچانے والی، آپ کے موبائل بل پر مخفی چارجز شامل کرنے والی یا آپ کی ذاتی معلومات کی چوری کرنے والی خطرناک ایپس انسٹال کر سکتے ہیں۔<ph name="BEGIN_LEARN_MORE_LINK" />مزید جانیں<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2219658597883514593">ٹیوٹوریل ری سٹارٹ کریں</translation>
+<translation id="2219735899272417925">آلے کو ری سیٹ کرنے کی ضرورت ہے</translation>
 <translation id="2224337661447660594">انٹرنیٹ نہیں ہے</translation>
 <translation id="2230458221926704099"><ph name="BEGIN_LINK" />تشخیصات ایپ<ph name="END_LINK" /> کا استعمال کر کے اپنا کنکشن درست کریں</translation>
 <translation id="2239100178324503013">ابھی بھیجیں</translation>
@@ -884,9 +885,6 @@
 <translation id="3369192424181595722">گھڑی کی خرابی</translation>
 <translation id="3369459162151165748">گاڑی کے پرزے اور لوازمات</translation>
 <translation id="3371064404604898522">‏Chrome کو ڈيفالٹ براؤزر کے بطور سیٹ کریں</translation>
-<translation id="3371076217486966826">‏<ph name="URL" /> درج ذیل چیزیں کرنا چاہتا ہے:
-      • اپنے اطراف کا ایک 3D نقشہ تخلیق کرنا اور کیمرے کی پوزیشن کو ٹریک کرنا
-      • اپنے کیمرے کا استعمال کرنا</translation>
 <translation id="337363190475750230">کالعدم کردہ</translation>
 <translation id="3375754925484257129">‏Chrome کا سیفٹی چیک چلائیں</translation>
 <translation id="3377144306166885718">‏سرور نے TLS کا متروک ورژن استعمال کیا۔</translation>

@@ -484,6 +484,7 @@
 <translation id="2215963164070968490">كلاب</translation>
 <translation id="2218879909401188352">يمكن للمهاجمين الموجودين حاليًا على <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> تثبيت تطبيقات خطيرة تضرّ جهازك أو تضيف رسومًا إلى فاتورة الجوّال أو تسرق معلوماتك الشخصية. <ph name="BEGIN_LEARN_MORE_LINK" />مزيد من المعلومات<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2219658597883514593">إعادة تشغيل البرنامج التعليمي</translation>
+<translation id="2219735899272417925">مطلوب إعادة ضبط الجهاز</translation>
 <translation id="2224337661447660594">الاتصال بالإنترنت مقطوع</translation>
 <translation id="2230458221926704099">إصلاح الاتصال باستخدام <ph name="BEGIN_LINK" />تطبيق بيانات التشخيص<ph name="END_LINK" /></translation>
 <translation id="2239100178324503013">إرسال الآن</translation>
@@ -882,9 +883,6 @@
 <translation id="3369192424181595722">خطأ في الساعة</translation>
 <translation id="3369459162151165748">إكسسوارات وقطع غيار مركبات</translation>
 <translation id="3371064404604898522">‏ضبط Chrome كمتصفِّح تلقائي</translation>
-<translation id="3371076217486966826">يريد <ph name="URL" /> إجراء ما يلي:
-      • إنشاء خريطة ثلاثية الأبعاد للبيئة المحيطة بك وتتبُّع موضع الكاميرا
-      • استخدام الكاميرا</translation>
 <translation id="337363190475750230">تم إلغاء التوفير</translation>
 <translation id="3375754925484257129">‏تشغيل ميزة "تأكيد السلامة" في Chrome</translation>
 <translation id="3377144306166885718">‏يستخدم الخادم إصدارًا قديمًا لطبقة النقل الآمنة (TLS).</translation>

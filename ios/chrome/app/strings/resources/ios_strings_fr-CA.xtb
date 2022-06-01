@@ -250,6 +250,7 @@ Les sites ne peuvent pas utiliser de témoins pour voir votre activité de navig
 Consultez les instructions de votre moteur de recherche pour supprimer votre historique de recherche, le cas échéant.</translation>
 <translation id="3080525922482950719">Vous pouvez enregistrer des pages afin de les lire plus tard ou hors ligne</translation>
 <translation id="3081338492074632642">Assurez-vous que le mot de passe que vous enregistrez correspond à celui pour <ph name="WEBSITE" /></translation>
+<translation id="3103603146121354983">Remplir automatiquement les mots de passe</translation>
 <translation id="3112556859945124369">Marquer…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Afficher ce que vous pouvez synchroniser<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">Tout bloquer</translation>
@@ -661,6 +662,7 @@ Les sites ne peuvent pas utiliser de témoins pour voir votre activité de navig
 
 Tâchez d'utiliser un mot de passe différent pour chaque site.</translation>
 <translation id="650279896687777322">En savoir plus…</translation>
+<translation id="6510072653668207258">Me le rappeler plus tard</translation>
 <translation id="651505212789431520">Annuler la synchronisation? Vous pouvez activer la synchronisation à tout moment dans les paramètres.</translation>
 <translation id="6524918542306337007">Le mode de navigation privée n'est pas offert</translation>
 <translation id="6530992499366869131">Vous envoyer un avertissement si des mots de passe sont exposés à la suite d'une violation de données</translation>

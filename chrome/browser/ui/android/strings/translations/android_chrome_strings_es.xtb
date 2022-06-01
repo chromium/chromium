@@ -1076,6 +1076,7 @@ Los tokens de confianza mejoran la privacidad en la Web y no se pueden usar para
 <translation id="6824899148643461612">Pestaña <ph name="TAB_TITLE" /> seleccionada</translation>
 <translation id="6828070228333235514">Dejar de seguir precio</translation>
 <translation id="6833996806551876956">Demostración del entorno aislado de privacidad</translation>
+<translation id="6836206421467243968">Restaurar grupo de pestañas <ph name="TITLE_OF_GROUP" /> como nuevo grupo de pestañas en segundo plano.</translation>
 <translation id="6846298663435243399">Cargando…</translation>
 <translation id="6850409657436465440">Tu descarga sigue en curso</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> pestañas cerradas</translation>
@@ -1138,6 +1139,7 @@ Los tokens de confianza mejoran la privacidad en la Web y no se pueden usar para
 <translation id="7187993566681480880">Te protege en Chrome y puede usarse para mejorar tu seguridad en otras aplicaciones de Google cuando has iniciado sesión.</translation>
 <translation id="7191430249889272776">Pestaña abierta en segundo plano.</translation>
 <translation id="7196215469483532480">Explicación de la guía de privacidad abierta a altura completa</translation>
+<translation id="7207760545532569765">Restaurar <ph name="TAB_COUNT" /> pestañas como nuevas pestañas en segundo plano.</translation>
 <translation id="7208109991155904980">Reacción movida</translation>
 <translation id="7222235798733126207">Limitación de lo que se comparte entre sitios</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 descarga pendiente}other{# descargas pendientes}}</translation>
@@ -1516,6 +1518,7 @@ Los tokens de confianza mejoran la privacidad en la Web y no se pueden usar para
 <translation id="9148126808321036104">Volver a iniciar sesión</translation>
 <translation id="9155898266292537608">También puedes tocar rápidamente una palabra para hacer búsquedas</translation>
 <translation id="9158770349521403363">Compartir solo contenido</translation>
+<translation id="9159716826369098114">Restaurar grupo de <ph name="TAB_COUNT" /> pestañas como nuevo grupo de pestañas en segundo plano.</translation>
 <translation id="916446198114569890">Las URLs que visitas se guardan en tu cuenta de Google</translation>
 <translation id="9169507124922466868">El historial de navegación está medio abierto</translation>
 <translation id="9187955620966010988">Reacción ajustada</translation>

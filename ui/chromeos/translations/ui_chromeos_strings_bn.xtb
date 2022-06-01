@@ -644,6 +644,7 @@
 <translation id="6423031066725912715">ভিয়েতনামি ভাষায় টিসিভিএন (TCVN) কীবোর্ড</translation>
 <translation id="6485131920355264772">স্থান তথ্য পুনরুদ্ধার করতে ব্যর্থ হয়েছে</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_COUNT" />টির মধ্যে <ph name="NETWORK_INDEX" /> নম্বর নেটওয়ার্ক, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" /> সিগন্যাল: <ph name="SIGNAL_STRENGTH" />%, আপনার অ্যাডমিনিস্ট্রেটর ম্যানেজ করে, বিবরণ</translation>
+<translation id="649877868557234318"><ph name="FOLDER_NAME" />-এ <ph name="FILE_NAME" /> এক্সট্যাক্ট করা হচ্ছে</translation>
 <translation id="6499681088828539489">শেয়ার করা নেটওয়ার্কগুলির জন্য প্রক্সির অনুমতি দেবেন না</translation>
 <translation id="6509122719576673235">নরওয়েয়ীয়</translation>
 <translation id="6528513914570774834">এই ডিভাইসের অন্যান্য ব্যবহারকারীদের এই নেটওয়ার্ক ব্যবহার করতে দিন</translation>

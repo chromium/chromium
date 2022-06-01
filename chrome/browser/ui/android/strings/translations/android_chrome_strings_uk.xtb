@@ -1076,6 +1076,7 @@
 <translation id="6824899148643461612">Вибрано вкладку "<ph name="TAB_TITLE" />"</translation>
 <translation id="6828070228333235514">Зупинити відстеження ціни</translation>
 <translation id="6833996806551876956">Пробна версія Privacy Sandbox</translation>
+<translation id="6836206421467243968">Відновити групу вкладок "<ph name="TITLE_OF_GROUP" />" як нову фонову групу вкладок.</translation>
 <translation id="6846298663435243399">Завантаження…</translation>
 <translation id="6850409657436465440">Завантаження ще триває</translation>
 <translation id="6850830437481525139">Закрито вкладок: <ph name="TAB_COUNT" /></translation>
@@ -1138,6 +1139,7 @@
 <translation id="7187993566681480880">Захищає вас у Chrome і може покращувати безпеку в інших додатках Google після входу в обліковий запис.</translation>
 <translation id="7191430249889272776">Вкладку відкрито у фоновому режимі.</translation>
 <translation id="7196215469483532480">Пояснення про посібник щодо конфіденційності відкрито на всю висоту</translation>
+<translation id="7207760545532569765">Відновити вкладки (<ph name="TAB_COUNT" />) як нові фонові вкладки.</translation>
 <translation id="7208109991155904980">Реакцію вилучено</translation>
 <translation id="7222235798733126207">Обмежений обмін даними між сайтами</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{Очікується 1 завантаження}one{Очікується # завантаження}few{Очікується # завантаження}many{Очікується # завантажень}other{Очікується # завантаження}}</translation>
@@ -1516,6 +1518,7 @@
 <translation id="9148126808321036104">Увійти знову</translation>
 <translation id="9155898266292537608">Можете також шукати, швидко торкнувшись слова</translation>
 <translation id="9158770349521403363">Поділитися лише контентом</translation>
+<translation id="9159716826369098114">Відновити групу вкладок (<ph name="TAB_COUNT" />) як нову фонову групу вкладок.</translation>
 <translation id="916446198114569890">URL-адреси, на які ви переходите, зберігаються в обліковому записі Google</translation>
 <translation id="9169507124922466868">Історію навігації відкрито на половину висоти</translation>
 <translation id="9187955620966010988">Реакцію відкориговано</translation>

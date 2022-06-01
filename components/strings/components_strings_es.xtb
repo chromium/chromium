@@ -484,6 +484,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2215963164070968490">Perros</translation>
 <translation id="2218879909401188352">Se ha detectado la presencia de atacantes en <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> que podrían instalar aplicaciones peligrosas que dañen tu dispositivo, añadir cargos ocultos a tu factura del móvil o robar tu información personal. <ph name="BEGIN_LEARN_MORE_LINK" />Más información<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2219658597883514593">Reiniciar tutorial</translation>
+<translation id="2219735899272417925">Es necesario restablecer el dispositivo</translation>
 <translation id="2224337661447660594">Sin conexión a Internet</translation>
 <translation id="2230458221926704099">Soluciona los problemas de tu conexión con la <ph name="BEGIN_LINK" />aplicación de diagnóstico<ph name="END_LINK" /></translation>
 <translation id="2239100178324503013">Enviar ahora</translation>
@@ -882,9 +883,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3369192424181595722">Error del reloj</translation>
 <translation id="3369459162151165748">Repuestos y accesorios para vehículos</translation>
 <translation id="3371064404604898522">Establecer Chrome como navegador predeterminado</translation>
-<translation id="3371076217486966826"><ph name="URL" /> quiere hacer lo siguiente:
-      • Crear un mapa 3D de tu entorno y hacer un seguimiento de la posición de la cámara.
-      • Usar tu cámara.</translation>
 <translation id="337363190475750230">Dado de baja</translation>
 <translation id="3375754925484257129">Realizar comprobación de seguridad de Chrome</translation>
 <translation id="3377144306166885718">El servidor utiliza una versión de TLS obsoleta.</translation>

@@ -6701,6 +6701,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7559719679815339381">Mangyaring maghintay....kasalukuyang ina-update ang Kiosk app. Huwag alisin ang USB stick.</translation>
 <translation id="7560756177962144929">I-sync ang iyong <ph name="DEVICE_TYPE" /></translation>
 <translation id="7561196759112975576">Palagi</translation>
+<translation id="7561982940498449837">Isara ang menu</translation>
 <translation id="756445078718366910">Magbukas ng Window ng Browser</translation>
 <translation id="7564847347806291057">Tapusin ang proseso</translation>
 <translation id="756503097602602175">Puwede mong pamahalaan ang mga naka-sign in na Google Account mula sa <ph name="LINK_BEGIN" />Mga Setting<ph name="LINK_END" />. Posibleng malapat sa lahat ng account ang mga pahintulot na ibinigay mo sa mga website at app. Kung ayaw mong ma-access ng mga site o app ang impormasyon ng iyong account, puwede kang mag-sign in sa iyong <ph name="DEVICE_TYPE" /> bilang bisita o mag-browse sa web sa isang <ph name="LINK_2_BEGIN" />Incognito window<ph name="LINK_2_END" />.</translation>
@@ -7559,6 +7560,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8379156816349755485">Kapag nag-sign in, may maso-store at magagamit na natatanging token sa pag-authenticate para sa lahat ng kwalipikadong download sa hinaharap.</translation>
 <translation id="8379878387931047019">Hindi sinusuportahan ng device na ito ang uri ng security key na hiniling ng website na ito</translation>
 <translation id="8379991678458444070">Makabalik kaagad dito sa pamamagitan ng pag-bookmark sa tab na ito</translation>
+<translation id="8380266723152870797">Pangalan ng Window</translation>
 <translation id="8380941800586852976">Mapanganib</translation>
 <translation id="8382715499079447151">Proteksyon sa pagtingin</translation>
 <translation id="8382913212082956454">Kopyahin ang &amp;email address</translation>

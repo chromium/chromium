@@ -484,6 +484,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2215963164070968490">Hunde</translation>
 <translation id="2218879909401188352">Hackere, der i øjeblikket er på <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />, kan installere farlige apps, som kan skade din enhed, føje skjulte gebyrer til din mobilregning eller stjæle dine personlige oplysninger. <ph name="BEGIN_LEARN_MORE_LINK" />Få flere oplysninger<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2219658597883514593">Genstart selvstudiet</translation>
+<translation id="2219735899272417925">Enheden skal nulstilles</translation>
 <translation id="2224337661447660594">Der er ingen internetforbindelse</translation>
 <translation id="2230458221926704099">Ret problemerne med din forbindelse ved hjælp af <ph name="BEGIN_LINK" />diagnoseappen<ph name="END_LINK" /></translation>
 <translation id="2239100178324503013">Send nu</translation>
@@ -882,9 +883,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3369192424181595722">Urfejl</translation>
 <translation id="3369459162151165748">Dele og tilbehør til biler</translation>
 <translation id="3371064404604898522">Angiv Chrome som standardbrowser</translation>
-<translation id="3371076217486966826"><ph name="URL" /> vil gerne:
-      • Oprette et 3D-kort over dine omgivelser og registrere kamerapositionen
-      • Anvende dit kamera</translation>
 <translation id="337363190475750230">Deprovisioneret</translation>
 <translation id="3375754925484257129">Kør Chrome-sikkerhedstjek</translation>
 <translation id="3377144306166885718">Serveren benyttede en forældet version af TSL.</translation>

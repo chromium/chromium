@@ -645,6 +645,7 @@
 <translation id="6423031066725912715">Wietnamski z klawiaturą TCVN</translation>
 <translation id="6485131920355264772">Pobieranie informacji o wolnym miejscu nie powiodło się</translation>
 <translation id="6495925982925244349">Sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, siła sygnału: <ph name="SIGNAL_STRENGTH" />%, zarządzana przez administratora, szczegóły</translation>
+<translation id="649877868557234318">Rozpakowuję plik <ph name="FILE_NAME" /> do folderu <ph name="FOLDER_NAME" /></translation>
 <translation id="6499681088828539489">Nie zezwalaj na serwery proxy w sieciach współdzielonych</translation>
 <translation id="6509122719576673235">Norweski</translation>
 <translation id="6528513914570774834">Zezwól innym użytkownikom tego urządzenia na używanie tej sieci</translation>

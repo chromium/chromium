@@ -645,6 +645,7 @@
 <translation id="6423031066725912715">Vietnamesisch mit TCVN-Tastatur</translation>
 <translation id="6485131920355264772">Angaben zum Speicherplatz konnten nicht abgerufen werden.</translation>
 <translation id="6495925982925244349">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" /> %, von deinem Administrator verwaltet, Details</translation>
+<translation id="649877868557234318"><ph name="FILE_NAME" /> wird in <ph name="FOLDER_NAME" /> extrahiert</translation>
 <translation id="6499681088828539489">Keine Proxys für freigegebene Netzwerke zulassen</translation>
 <translation id="6509122719576673235">Norwegisch</translation>
 <translation id="6528513914570774834">Anderen Nutzern des Geräts erlauben, dieses Netzwerk zu verwenden</translation>

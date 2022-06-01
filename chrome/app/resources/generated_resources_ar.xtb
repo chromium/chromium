@@ -2471,6 +2471,7 @@
 <translation id="3348038390189153836">تم اكتشاف جهاز قابل للإزالة</translation>
 <translation id="3348131053948466246">‏الرموز التعبيرية المُقترَحة. اضغط على السهم المتّجه للأعلى أو للأسفل للتنقُّل ثم اضغط على Enter للإدخال.</translation>
 <translation id="3349933790966648062">الذاكرة المستخدَمة</translation>
+<translation id="3353786022389205125">يُرجى تفعيل ميزة "عرض شاشة القفل عند التنشيط من وضع السكون" وإعادة المحاولة.</translation>
 <translation id="3354972872297836698">تعذّر الإقران بالجهاز <ph name="DEVICE_NAME" />، يرجى اختيار جهاز لإعادة المحاولة</translation>
 <translation id="3355936511340229503">خطأ الاتصال</translation>
 <translation id="3356469410714175391">(تم تفعيل البطاقة الافتراضية).</translation>
@@ -4947,6 +4948,7 @@
 <translation id="5827733057563115968">توقُّع الكلمة التالية</translation>
 <translation id="5828545842856466741">إضافة ملف شخصي...</translation>
 <translation id="5828633471261496623">الطباعة جارية...</translation>
+<translation id="5830205393314753525">يتعذّر فتح <ph name="APP_NAME" /></translation>
 <translation id="5830720307094128296">حفظ &amp;صفحة باسم...</translation>
 <translation id="5832813618714645810">الملفات الشخصية</translation>
 <translation id="583281660410589416">غير معروف</translation>
@@ -6693,6 +6695,7 @@
 <translation id="7559719679815339381">‏يُرجى الانتظار ...بينما يتم تحديث تطبيق Kiosk. لا تقم بإزالة جهاز USB.</translation>
 <translation id="7560756177962144929">مزامنة <ph name="DEVICE_TYPE" /></translation>
 <translation id="7561196759112975576">دومًا</translation>
+<translation id="7561982940498449837">إغلاق القائمة</translation>
 <translation id="756445078718366910">فتح نافذة المتصفح</translation>
 <translation id="7564847347806291057">إنهاء العملية</translation>
 <translation id="756503097602602175">‏يمكنك إدارة حسابات Google التي تم تسجيل الدخول إليها، وذلك من خلال الانتقال إلى <ph name="LINK_BEGIN" />الإعدادات<ph name="LINK_END" />. ويمكن أن تنطبق الأذونات التي منحتها إلى المواقع الإلكترونية والتطبيقات على جميع الحسابات. وإذا كنت لا تريد أن تصل المواقع الإلكترونية أو التطبيقات إلى معلومات حسابك، يمكنك تسجيل الدخول إلى <ph name="DEVICE_TYPE" /> بصفتك ضيفًا أو تصفُّح الويب في <ph name="LINK_2_BEGIN" />نافذة التصفُّح المتخفي<ph name="LINK_2_END" />.</translation>
@@ -7552,6 +7555,7 @@
 <translation id="8379156816349755485">عند تسجيل الدخول، سيتم تخزين رمز مصادقة فريد واستخدامه لجميع الملفات المؤهَّلة التي سيتم تنزيلها في المستقبل.</translation>
 <translation id="8379878387931047019">لا يدعم هذا الجهاز نوع مفتاح الأمان الذي يطلبه هذا الموقع الإلكتروني.</translation>
 <translation id="8379991678458444070">يمكنك الرجوع إلى هنا بسرعة من خلال وضع إشارة مرجعية على علامة التبويب هذه.</translation>
+<translation id="8380266723152870797">اسم النافذة</translation>
 <translation id="8380941800586852976">ضارة</translation>
 <translation id="8382715499079447151">Viewing Protection</translation>
 <translation id="8382913212082956454">نسخ عنوان البريد الإل&amp;كتروني</translation>

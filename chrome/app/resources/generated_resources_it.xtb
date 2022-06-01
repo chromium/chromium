@@ -6679,6 +6679,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7559719679815339381">Attendi... L'app kiosk è in fase di aggiornamento. Non rimuovere la chiavetta USB.</translation>
 <translation id="7560756177962144929">Sincronizza il tuo <ph name="DEVICE_TYPE" /></translation>
 <translation id="7561196759112975576">Sempre</translation>
+<translation id="7561982940498449837">Chiudi menu</translation>
 <translation id="756445078718366910">Apri finestra del browser</translation>
 <translation id="7564847347806291057">Termina processo</translation>
 <translation id="756503097602602175">Puoi gestire gli Account Google a cui hai eseguito l'accesso dalle <ph name="LINK_BEGIN" />Impostazioni<ph name="LINK_END" />. Le autorizzazioni concesse ai siti web e alle app potrebbero essere applicate a tutti gli account. Se non vuoi consentire a siti o app di accedere alle informazioni del tuo account, puoi accedere a <ph name="DEVICE_TYPE" /> come ospite oppure navigare sul Web in una <ph name="LINK_2_BEGIN" />finestra di navigazione in incognito<ph name="LINK_2_END" />.</translation>
@@ -7537,6 +7538,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8379156816349755485">Al momento dell'accesso, verrà memorizzato un token di autenticazione univoco che verrà usato per tutti i download idonei futuri.</translation>
 <translation id="8379878387931047019">Questo dispositivo non supporta il tipo di token di sicurezza richiesto da questo sito web</translation>
 <translation id="8379991678458444070">Aggiungi questa scheda ai preferiti per ritrovarla rapidamente</translation>
+<translation id="8380266723152870797">Nome della finestra</translation>
 <translation id="8380941800586852976">Pericolosa</translation>
 <translation id="8382715499079447151">Protezione di visualizzazione</translation>
 <translation id="8382913212082956454">Copia indirizzo &amp;email</translation>

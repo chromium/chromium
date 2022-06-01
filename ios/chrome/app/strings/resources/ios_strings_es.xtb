@@ -97,7 +97,7 @@ Usas el buscador <ph name="DSE_NAME" />. Consulta las instrucciones del buscador
 <translation id="1674504678466460478">De <ph name="SOURCE_LANGUAGE" /> a <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="168715261339224929">Activa la sincronización para ver tus marcadores en todos tus dispositivos.</translation>
 <translation id="1687475363370981210">Marcar todo como leído</translation>
-<translation id="1689333818294560261">Nombre</translation>
+<translation id="1689333818294560261">Apodo</translation>
 <translation id="1690731385917361335">No hay elementos</translation>
 <translation id="1692118695553449118">La sincronización está activada</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> seleccionados</translation>
@@ -250,6 +250,7 @@ Los sitios no pueden usar cookies para ver tu actividad de navegación en otros 
 Consulta las instrucciones del buscador para eliminar tu historial de búsqueda (si corresponde).</translation>
 <translation id="3080525922482950719">Puedes guardar páginas para leerlas más tarde o sin conexión</translation>
 <translation id="3081338492074632642">La contraseña que guardes debe coincidir con tu contraseña de <ph name="WEBSITE" />.</translation>
+<translation id="3103603146121354983">Autocompletar contraseñas</translation>
 <translation id="3112556859945124369">Marcar…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Consulta lo que puedes sincronizar<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">Bloquear todas</translation>
@@ -661,6 +662,7 @@ Los sitios no pueden usar cookies para ver tu actividad de navegación en otros 
 
 Se recomienda usar una contraseña única en cada sitio.</translation>
 <translation id="650279896687777322">Más información...</translation>
+<translation id="6510072653668207258">Recordar más tarde</translation>
 <translation id="651505212789431520">¿Cancelar sincronización? Puedes activar la sincronización en cualquier momento desde los Ajustes.</translation>
 <translation id="6524918542306337007">El modo Incógnito no está disponible</translation>
 <translation id="6530992499366869131">Avisarte si tus contraseñas se ven expuestas en una quiebra de seguridad de datos</translation>

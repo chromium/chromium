@@ -848,6 +848,7 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="1794051631868188691">Älä näytä koskaan: <ph name="MERCHANT" /></translation>
 <translation id="1794791083288629568">Lähetä palautetta, niin autat meitä korjaamaan ongelman.</translation>
 <translation id="1795214765651529549">Ota käyttöön perinteinen</translation>
+<translation id="1796105431091975902">Lisättävän Ansible-ohjekirjan valinta</translation>
 <translation id="1796588414813960292">Ääntä edellyttävät ominaisuudet eivät enää toimi</translation>
 <translation id="1800502858278951817">Laajennukset eivät ole pyytäneet lupaa lukea ja muuttaa tätä: <ph name="SITE_NAME" /></translation>
 <translation id="1802624026913571222">Lepotila, kun kansi suljetaan</translation>
@@ -2479,6 +2480,7 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="3348038390189153836">Havaittiin irrotettava laite</translation>
 <translation id="3348131053948466246">Emojia ehdotettiin. Siirry painamalla ala- tai ylänuolta ja lisää emoji painamalla Enter.</translation>
 <translation id="3349933790966648062">Käytetty muisti</translation>
+<translation id="3353786022389205125">Laita asetus "Näytä lukitusnäyttö, kun laite poistuu virransäästötilasta" päälle ja yritä uudelleen</translation>
 <translation id="3354972872297836698"><ph name="DEVICE_NAME" /> ei voinut muodostaa laiteparia, valitse laite ja yritä uudelleen</translation>
 <translation id="3355936511340229503">Yhteysvirhe</translation>
 <translation id="3356469410714175391">(Virtuaalikortti käytössä)</translation>
@@ -3053,6 +3055,7 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="389901847090970821">Valitse näppäimistö</translation>
 <translation id="3900966090527141178">Vie salasanat</translation>
 <translation id="3903187154317825986">Sisäänrakennettu näppäimistö</translation>
+<translation id="3903191712482985591">Lisää ohjekirja</translation>
 <translation id="3904326018476041253">Sijaintipalvelut</translation>
 <translation id="3904849010307028014">Sivusto voi myöntää selaimellesi luottamusmerkin sen perusteella, miten toimit sivulla, esim. jos kirjaudut säännöllisesti sisään tilille. Jos muut myöhemmin käyttämäsi sivustot löytävät kelvollisen luottamusmerkin, ne pitävät sinua todennäköisemmin ihmisenä.</translation>
 <translation id="3905761538810670789">Korjaa sovellus</translation>
@@ -3661,6 +3664,7 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="4510479820467554003">Vanhempien tilit</translation>
 <translation id="451102079304155829">ostoskoreja</translation>
 <translation id="4513872120116766993">Ennakoiva tekstinsyöttö</translation>
+<translation id="4513909579793564731">Lisää ohjekirja</translation>
 <translation id="4513946894732546136">Palaute</translation>
 <translation id="451407183922382411">Palvelun tarjoaa <ph name="COMPANY_NAME" />.</translation>
 <translation id="4514610446763173167">Valitse videon toisto tai keskeytys</translation>
@@ -4954,6 +4958,7 @@ Voit määrittää samalle toiminnolle useita kytkimiä.</translation>
 <translation id="5827733057563115968">Seuraavan sanan ennakointi</translation>
 <translation id="5828545842856466741">Lisää profiili…</translation>
 <translation id="5828633471261496623">Tulostetaan...</translation>
+<translation id="5830205393314753525"><ph name="APP_NAME" /> ei avaudu</translation>
 <translation id="5830720307094128296">Tallenn&amp;a sivu nimellä...</translation>
 <translation id="5832813618714645810">Profiilit</translation>
 <translation id="583281660410589416">Tuntematon</translation>
@@ -5494,6 +5499,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="635609604405270300">Pidä laite päällä</translation>
 <translation id="63566973648609420">Salattuja tietojasi voi lukea vain tunnuslauseesi avulla. Tunnuslausetta ei lähetetä Googlelle eikä Google tallenna sitä. Jos unohdat tunnuslauseesi tai haluat muokata tätä asetusta, <ph name="BEGIN_LINK" />synkronointi on nollattava<ph name="END_LINK" />.</translation>
 <translation id="6357305427698525450">Jotkin tuetut linkit avautuvat edelleen näissä sovelluksissa: <ph name="APP_NAME" /> tai <ph name="APP_NAME_2" />.</translation>
+<translation id="6357794994761110294">Laajennukset eivät voi lukea ja muuttaa sivustoa (<ph name="SITE_NAME" />)</translation>
 <translation id="6358884629796491903">Lohikäärme</translation>
 <translation id="6361850914223837199">Virheen tiedot:</translation>
 <translation id="6362853299801475928">&amp;Ilmoita ongelmasta...</translation>
@@ -6690,6 +6696,7 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7559719679815339381">Odota hetki, kioskisovellusta päivitetään. Älä irrota USB-tikkua.</translation>
 <translation id="7560756177962144929">Synkronoi <ph name="DEVICE_TYPE" /></translation>
 <translation id="7561196759112975576">Aina</translation>
+<translation id="7561982940498449837">Sulje valikko</translation>
 <translation id="756445078718366910">Avaa selainikkuna</translation>
 <translation id="7564847347806291057">Lopeta prosessi</translation>
 <translation id="756503097602602175">Voit ylläpitää sisäänkirjautuneita Google-tilejä <ph name="LINK_BEGIN" />asetuksista<ph name="LINK_END" />. Sivustoille ja sovelluksille antamasi luvat saattavat koskea kaikkia tilejä. Jos et halua, että sivustot ja sovellukset saavat pääsyn tilitietoihisi, voit kirjautua laitteelle (<ph name="DEVICE_TYPE" />) vieraana tai selata verkkoa <ph name="LINK_2_BEGIN" />incognito-ikkunassa<ph name="LINK_2_END" />.</translation>
@@ -7547,6 +7554,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8379156816349755485">Sisäänkirjautumisen yhteydessä tallennetaan yksilöllinen todennustunnus, jota käytetään jatkossa kaikissa kelvollisissa latauksissa.</translation>
 <translation id="8379878387931047019">Tämä laite ei tue tämän sivuston pyytämää suojausavaintyyppiä</translation>
 <translation id="8379991678458444070">Lisää välilehti kirjanmerkiksi, niin voit palata tähän nopeasti</translation>
+<translation id="8380266723152870797">Ikkunan nimi</translation>
 <translation id="8380941800586852976">Vaarallinen</translation>
 <translation id="8382715499079447151">Urkinnan esto</translation>
 <translation id="8382913212082956454">Kopioi s&amp;ähköpostiosoite</translation>

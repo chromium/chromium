@@ -251,6 +251,7 @@
 <translation id="243878895369688216">Кеше ашылды.</translation>
 <translation id="2441427462554639370">Жад көлемінің аз болуына байланысты жазу тоқтатылды.</translation>
 <translation id="24452542372838207">Хабарландыруды жаю</translation>
+<translation id="2449089818483227734">Батарея заряды аз</translation>
 <translation id="2450205753526923158">Скриншот режимі</translation>
 <translation id="2456008742792828469">Күнтізбе, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2473177541599297363">Ажыратымдылықты растаңыз</translation>
@@ -411,11 +412,13 @@
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> минут</translation>
 <translation id="3445925074670675829">USB-C құрылғысы</translation>
+<translation id="3455468639467374593">Үлгі: <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3465223694362104965">Аккаунтқа соңғы рет кіргеннен бері осы құрылғыға басқа пернетақта жалғанды. Оны пайдаланбас бұрын, бұл пернетақтаның сенімді екеніне көз жеткізіңіз.</translation>
 <translation id="3465356146291925647">Әкімшіңіз басқарады</translation>
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, сигнал күші: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Сөре автоматты түрде жасырылған.</translation>
+<translation id="3505066820268455558">Батарея зарядталуда</translation>
 <translation id="3509391053705095206">Телефон табылмады. Онда Bluetooth қосылып тұрғанына көз жеткізіңіз.</translation>
 <translation id="3510164367642747937">Тінтуір курсорын бөлектеу</translation>
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" /> басқаратын аккаунт</translation>
@@ -456,6 +459,8 @@
 <translation id="3633097874324966332">Құрылғыны жұптау үшін Bluetooth параметрлерін ашыңыз.</translation>
 <translation id="3638400994746983214">Құпиялылық экранын қосу немесе өшіру. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Жаңарту мерзімі өтіп кетті</translation>
+<translation id="3659814201068740063">Шамамен <ph name="TIME_LEFT" /> қалды (<ph name="PERCENTAGE" /> %).
+Құрылғыны қуат көзіне қосыңыз.</translation>
 <translation id="366222428570480733">Басқарылатын пайдаланушы: <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="36813544980941320">Телефоныңыз бен <ph name="DEVICE_NAME" /> құрылғысында бірдей Wi-Fi желілері пайдаланылатын болады.</translation>
 <translation id="3694122362646626770">Веб-сайттар</translation>
@@ -510,6 +515,7 @@
 <translation id="3962859241508114581">Алдыңғы аудиотрек</translation>
 <translation id="3969043077941541451">Өшіру</translation>
 <translation id="397105322502079400">Есептелуде…</translation>
+<translation id="397726367135689299">Батарея дұрыс зарядталмауы мүмкін.</translation>
 <translation id="3977512764614765090">Батарея қуаты – <ph name="PERCENTAGE" />%. Зарядталып жатыр.</translation>
 <translation id="3986082989454912832">Жауап беру</translation>
 <translation id="3995138139523574647">USB-C құрылғысы (оң жақ артқы порты)</translation>
@@ -1037,6 +1043,7 @@
 <translation id="7130207228079676353">ЕҢ ЫҚТИМАЛ</translation>
 <translation id="7131634465328662194">Аккаунттан автоматты түрде шығасыз.</translation>
 <translation id="7143207342074048698">Қосылып жатыр</translation>
+<translation id="7144942256906679589">Батарея күйі</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" /> уақыт ішінде ескі ажыратымдылыққа ауысады</translation>
 <translation id="7180611975245234373">Жаңарту</translation>
@@ -1103,6 +1110,7 @@
 <translation id="7593891976182323525">Search немесе Shift</translation>
 <translation id="7600875258240007829">Барлық хабарландыруды көру</translation>
 <translation id="7607002721634913082">Кідіртілген</translation>
+<translation id="7609951632080598826">Күнтізбе көрінісі: <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Камера қайта жалғанды.</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7633755430369750696">Nearby Share параметрлерін көрсету.</translation>
@@ -1228,6 +1236,7 @@
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> терезесі таңдалды</translation>
 <translation id="8351131234907093545">Ескертпе жасау</translation>
 <translation id="8364673525741149932">Shelf Party режимін қосу/өшіру. <ph name="STATE_TEXT" /></translation>
+<translation id="8369166482916924789">Сақталған жұмыс үстелі: <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">Бір әріпке алға жылжу</translation>
 <translation id="8371991222807690464">Қонақ режимінде перифериялық құрылғының өнімділігі шектеулі болуы мүмкін.</translation>
 <translation id="8374601332003098278">Экранды жартылай жазу үшін "Enter" пернесін басыңыз</translation>
@@ -1340,6 +1349,7 @@
 <translation id="9000771174482730261">ЖАДТЫ БАСҚАРУ</translation>
 <translation id="9017320285115481645">Family Link ата-ананың рұқсат кодын енгізіңіз.</translation>
 <translation id="9024331582947483881">толық экран</translation>
+<translation id="9029736946581028033">Құрылғы сәлден соң өшеді</translation>
 <translation id="9030319654231318877">Күн батқанға дейін өшірулі</translation>
 <translation id="9034924485347205037">Linux файлдары</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> желісіне арналған параметрлерді ашу</translation>
@@ -1369,6 +1379,7 @@
 <translation id="9168436347345867845">Кейінірек</translation>
 <translation id="9178475906033259337"><ph name="QUERY" /> бойынша 1 нәтиже көрсетілуде</translation>
 <translation id="9179259655489829027">Бұл функция аккаунтқа кірген кез келген пайдаланушыға құпия сөзсіз жылдам кіруге мүмкіндік береді. Оны тек сенімді аккаунттармен пайдаланыңыз.</translation>
+<translation id="9180906851711123156">Жабу үшін Ctrl+W басыңыз.</translation>
 <translation id="9183456764293710005">Толық экран ұлғайтқышы</translation>
 <translation id="9193626018745640770">Белгісіз қабылдағышта трансляциялауда</translation>
 <translation id="9194617393863864469">Басқа пайдаланушыны кіргізу…</translation>

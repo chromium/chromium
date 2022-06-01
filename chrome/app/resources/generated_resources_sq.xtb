@@ -835,6 +835,7 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1794051631868188691">Mos shfaq asnjëherë <ph name="MERCHANT" /></translation>
 <translation id="1794791083288629568">Dërgo komente për të na ndihmuar ta rregullojmë këtë problem.</translation>
 <translation id="1795214765651529549">Përdor temën klasike</translation>
+<translation id="1796105431091975902">Zgjidh një udhëzues të Ansible për ta shtuar</translation>
 <translation id="1796588414813960292">Veçoritë që kanë nevojë për tingujt nuk do të funksionojnë</translation>
 <translation id="1800502858278951817">Asnjë shtesë nuk ka kërkuar që të lexojë dhe të ndryshojë <ph name="SITE_NAME" /></translation>
 <translation id="1802624026913571222">Në gjumë kur mbyllet kapaku</translation>
@@ -3036,6 +3037,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="389901847090970821">Zgjidh tastierën</translation>
 <translation id="3900966090527141178">Eksporto fjalëkalimet</translation>
 <translation id="3903187154317825986">Tastiera e integruar</translation>
+<translation id="3903191712482985591">Shto udhëzuesin</translation>
 <translation id="3904326018476041253">Shërbimet e vendndodhjes</translation>
 <translation id="3904849010307028014">Bazuar në ndërveprimin tënd me një sajt, si p.sh. identifikimi i vazhdueshëm në një llogari, ai sajt mund të lëshojë një kod besimi për shfletuesin tënd. Më vonë, nëse sajtet e tjera që viziton kontrollojnë ose gjejnë një kod të vlefshëm besimi, ka më shumë gjasa që ato të të trajtojnë si një person dhe jo robot.</translation>
 <translation id="3905761538810670789">Riparo aplikacionin</translation>
@@ -3646,6 +3648,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4510479820467554003">Lista e llogarive të prindërve</translation>
 <translation id="451102079304155829">karroca</translation>
 <translation id="4513872120116766993">Parashikimi i shkrimit</translation>
+<translation id="4513909579793564731">Zbato udhëzuesin</translation>
 <translation id="4513946894732546136">Komente</translation>
 <translation id="451407183922382411">Mundësuar nga <ph name="COMPANY_NAME" /></translation>
 <translation id="4514610446763173167">Ndrysho videon për të luajtur ose vendosur në pauzë</translation>
@@ -5479,6 +5482,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="635609604405270300">Mbaje pajisjen të aktivizuar</translation>
 <translation id="63566973648609420">Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua të koduara. Kjo frazë kalimi nuk dërgohet te Google dhe as nuk ruhet nga ai. Nëse e harron frazën tënde të kalimit apo dëshiron të ndryshosh këtë cilësim, duhet që të <ph name="BEGIN_LINK" />rivendosësh sinkronizimin<ph name="END_LINK" />.</translation>
 <translation id="6357305427698525450">Disa lidhje të mbështetura do të vazhdojnë të hapen në <ph name="APP_NAME" /> ose <ph name="APP_NAME_2" />.</translation>
+<translation id="6357794994761110294">Asnjë shtesë nuk lejohet që të lexojë dhe të ndryshojë <ph name="SITE_NAME" /></translation>
 <translation id="6358884629796491903">Dragua</translation>
 <translation id="6361850914223837199">Detajet e gabimit:</translation>
 <translation id="6362853299801475928">&amp;Raporto një problem...</translation>
@@ -6675,6 +6679,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve"
 <translation id="7559719679815339381">Prit....Aplikacioni kioskë është në procesin e përditësimit. Mos e hiq memorien USB.</translation>
 <translation id="7560756177962144929">Sinkronizo <ph name="DEVICE_TYPE" /> tënde</translation>
 <translation id="7561196759112975576">Gjithmonë</translation>
+<translation id="7561982940498449837">Mbyll menynë</translation>
 <translation id="756445078718366910">Hap dritaren e shfletuesit</translation>
 <translation id="7564847347806291057">Përfundo procesin</translation>
 <translation id="756503097602602175">Mund t'i menaxhosh "Llogaritë e Google" ku je identifikuar nga <ph name="LINK_BEGIN" />Cilësimet<ph name="LINK_END" />. Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen për të gjitha llogaritë. Nëse nuk dëshiron që sajtet ose aplikacionet të kenë qasje tek informacionet e llogarisë sate, mund të identifikohesh në pajisjen <ph name="DEVICE_TYPE" /> si vizitor ose të shfletosh në ueb në një <ph name="LINK_2_BEGIN" />dritare të fshehtë<ph name="LINK_2_END" />.</translation>
@@ -7530,6 +7535,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8379156816349755485">Pas identifikimit, do të ruhet një kod unik vërtetimi dhe ai do të përdoret për të gjitha shkarkimet e përshtatshme në të ardhmen.</translation>
 <translation id="8379878387931047019">Kjo pajisje nuk e mbështet llojin e çelësit të sigurisë që kërkohet nga ky sajt uebi</translation>
 <translation id="8379991678458444070">Kthehu këtu shpejt duke e shtuar këtë skedë te faqeshënuesit</translation>
+<translation id="8380266723152870797">Emri i dritares</translation>
 <translation id="8380941800586852976">I rrezikshëm</translation>
 <translation id="8382715499079447151">Mbrojtja e shikimit</translation>
 <translation id="8382913212082956454">Kopjo &amp;adresën e mail-it</translation>

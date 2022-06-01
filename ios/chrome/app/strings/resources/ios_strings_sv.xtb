@@ -250,6 +250,7 @@ Webbplatser får inte se din webbaktivitet på olika webbplatser med hjälp av c
 Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</translation>
 <translation id="3080525922482950719">Du kan spara sidor som du vill läsa senare eller offline</translation>
 <translation id="3081338492074632642">Kontrollera att lösenordet som du sparar överensstämmer med lösenordet för <ph name="WEBSITE" /></translation>
+<translation id="3103603146121354983">Fyll i lösenord automatiskt</translation>
 <translation id="3112556859945124369">Markera …</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Se vad du kan synkronisera<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">Blockera alla</translation>
@@ -661,6 +662,7 @@ Webbplatser får inte se din webbaktivitet på olika webbplatser med hjälp av c
 
 Sträva efter att använda ett unikt lösenord för varje webbplats.</translation>
 <translation id="650279896687777322">Läs mer …</translation>
+<translation id="6510072653668207258">Påminn mig senare</translation>
 <translation id="651505212789431520">Vill du avbryta synkroniseringen? Du kan när som helst aktivera synkronisering i inställningarna.</translation>
 <translation id="6524918542306337007">Inkognitoläget är inte tillgängligt</translation>
 <translation id="6530992499366869131">En varning visas om lösenord har läckt ut vid ett dataintrång</translation>

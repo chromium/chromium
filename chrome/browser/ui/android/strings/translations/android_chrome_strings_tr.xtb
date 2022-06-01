@@ -1076,6 +1076,7 @@ Güven jetonları, web'deki gizliliği artırır ve kim olduğunuzu bulmak için
 <translation id="6824899148643461612"><ph name="TAB_TITLE" /> sekmesi seçildi</translation>
 <translation id="6828070228333235514">Fiyat takibini durdur</translation>
 <translation id="6833996806551876956">Privacy Sandbox denemesi</translation>
+<translation id="6836206421467243968"><ph name="TITLE_OF_GROUP" /> sekme grubunu, yeni bir arka plan sekme grubu olarak geri yükleyin.</translation>
 <translation id="6846298663435243399">Yükleniyor...</translation>
 <translation id="6850409657436465440">İndirme işleminiz hâlâ devam ediyor</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> sekme kapatıldı</translation>
@@ -1138,6 +1139,7 @@ Güven jetonları, web'deki gizliliği artırır ve kim olduğunuzu bulmak için
 <translation id="7187993566681480880">Chrome'da güvende kalmanızı sağlar ve oturum açtığınızda diğer Google uygulamalarındaki güvenliğinizi artırmak için kullanılabilir.</translation>
 <translation id="7191430249889272776">Sekme arka planda açıldı.</translation>
 <translation id="7196215469483532480">Gizlilik kılavuzu açıklaması tam ekranda açıldı</translation>
+<translation id="7207760545532569765"><ph name="TAB_COUNT" /> sekmeyi, yeni arka plan sekmeleri olarak geri yükleyin.</translation>
 <translation id="7208109991155904980">Tepki taşındı</translation>
 <translation id="7222235798733126207">Siteler arasında kısıtlı paylaşım</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 indirme işlemi beklemede}other{# indirme işlemi beklemede}}</translation>
@@ -1516,6 +1518,7 @@ Güven jetonları, web'deki gizliliği artırır ve kim olduğunuzu bulmak için
 <translation id="9148126808321036104">Tekrar oturum açın</translation>
 <translation id="9155898266292537608">Bir kelimeye hızlıca dokunarak da arama yapabilirsiniz</translation>
 <translation id="9158770349521403363">Yalnızca içerik paylaşılıyor</translation>
+<translation id="9159716826369098114"><ph name="TAB_COUNT" /> sekmeden oluşan sekme grubunu, yeni bir arka plan sekme grubu olarak geri yükleyin.</translation>
 <translation id="916446198114569890">Ziyaret ettiğiniz URL'ler Google hesabınıza kaydedilir</translation>
 <translation id="9169507124922466868">Gezinme geçmişi yarım açık</translation>
 <translation id="9187955620966010988">Tepki ayarlandı</translation>

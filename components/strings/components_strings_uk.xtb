@@ -484,6 +484,7 @@
 <translation id="2215963164070968490">Собаки</translation>
 <translation id="2218879909401188352">Зловмисники можуть використати сайт <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />, щоб установити небезпечні додатки, які шкодять пристроям, наприклад, додають приховані платежі за мобільний зв’язок або викрадають особисту інформацію. <ph name="BEGIN_LEARN_MORE_LINK" />Докладніше<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2219658597883514593">Переглянути навчальний посібник знову</translation>
+<translation id="2219735899272417925">Потрібно скинути налаштування пристрою</translation>
 <translation id="2224337661447660594">Немає Інтернету</translation>
 <translation id="2230458221926704099">Відновіть з’єднання за допомогою <ph name="BEGIN_LINK" />додатка для діагностики<ph name="END_LINK" /></translation>
 <translation id="2239100178324503013">Надіслати</translation>
@@ -882,9 +883,6 @@
 <translation id="3369192424181595722">Помилка годинника</translation>
 <translation id="3369459162151165748">Запасні частини й аксесуари для автомобілів</translation>
 <translation id="3371064404604898522">Зробити Chrome веб-переглядачем за умовчанням</translation>
-<translation id="3371076217486966826">URL-адресі потрібен дозвіл, щоб <ph name="URL" />:
-      • створити 3D-карту вашого оточення та відстежувати положення камери;
-      • використовувати вашу камеру.</translation>
 <translation id="337363190475750230">Деініціалізовано</translation>
 <translation id="3375754925484257129">Виконати перевірку безпеки Chrome</translation>
 <translation id="3377144306166885718">Сервер використовував застарілу версію TLS.</translation>

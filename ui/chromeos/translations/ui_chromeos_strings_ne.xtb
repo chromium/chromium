@@ -644,6 +644,7 @@
 <translation id="6423031066725912715">भियतनामी TCVN किबोर्ड</translation>
 <translation id="6485131920355264772">स्पेज जानकारी पुनर्प्राप्त गर्न असफल भयो</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /> <ph name="SECURITY_STATUS" /> <ph name="CONNECTION_STATUS" /> मध्ये नेटवर्क <ph name="NETWORK_INDEX" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%, तपाईंका प्रशासकले व्यवस्थित गर्नुभएको छ, विवरणहरू</translation>
+<translation id="649877868557234318"><ph name="FILE_NAME" /> <ph name="FOLDER_NAME" /> मा एक्स्ट्रयाक्ट गरिँदै छ</translation>
 <translation id="6499681088828539489">साझा नेटवर्कहरूमा प्रोक्सीलाई अनुमति नदिनुहोस्</translation>
 <translation id="6509122719576673235">नर्वेयन</translation>
 <translation id="6528513914570774834">यस डिभाइसका अन्य प्रयोगकर्ताहरूलाई यो नेटवर्क प्रयोग गर्न दिनुहोस्</translation>

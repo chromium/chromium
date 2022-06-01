@@ -4238,6 +4238,13 @@ Wenn die Richtlinie auf "True" gesetzt oder nicht konfiguriert ist, können Nutz
 
           Der Richtlinienwert wird ausschließlich angewendet, wenn die Richtlinie <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> aktiviert ist.</translation>
 <translation id="5697306356229823047">Gerätenutzer aufzeichnen</translation>
+<translation id="5698923148503075597">Ist die Richtlinie aktiviert, hat die Cloud-Richtlinie Vorrang, wenn sie mit der Plattformrichtlinie in Konflikt steht.
+
+      Ist die Richtlinie deaktiviert oder nicht konfiguriert, hat die Plattformrichtlinie Vorrang, wenn sie mit der Cloud-Richtlinie in Konflikt steht.
+
+      Diese obligatorische Richtlinie wirkt sich auf Cloud-Richtlinien auf Computern aus.
+
+      Diese Richtlinie ist nur in <ph name="PRODUCT_NAME" /> verfügbar und hat keine Auswirkungen auf <ph name="GOOGLE_UPDATE_NAME" />.</translation>
 <translation id="5699770471852263667">Wenn die Richtlinie auf „Enabled“ gesetzt ist, wird der interne PDF-Viewer in <ph name="PRODUCT_NAME" /> ausgeschaltet und PDF-Dateien werden als Download behandelt. Nutzer können sie dann mit der Standardanwendung öffnen.
 
       Ist die Richtlinie auf „Disabled“ gesetzt, werden PDF-Dateien mit dem PDF-Plug-in geöffnet, sofern es nicht von den Nutzern deaktiviert wird.

@@ -486,6 +486,7 @@
 <translation id="2215963164070968490">ឆ្កែ</translation>
 <translation id="2218879909401188352">ថ្មីៗនេះ​អ្នក​វាយ​ប្រហារ​នៅលើ <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> អាច​ដំឡើង​កម្មវិធី​ដែល​មាន​គ្រោះថ្នាក់​ដែល​អាច​ប៉ះពាល់​ដល់ឧបករណ៍របស់អ្នក បន្ថែម​ការចំណាយ​ទៅក្នុង​វិក្កយបត្រ​សេវា​ទូរសព្ទ​ចល័ត​ដោយ​មិន​ឲ្យ​អ្នកដឹង ឬ​លួច​ព័ត៌មាន​ផ្ទាល់ខ្លួន​របស់​អ្នក។ <ph name="BEGIN_LEARN_MORE_LINK" />ស្វែងយល់​បន្ថែម<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2219658597883514593">ចាប់ផ្ដើម​មេរៀន​ឡើងវិញ</translation>
+<translation id="2219735899272417925">តម្រូវ​ឱ្យ​កំណត់​ឧបករណ៍​ឡើងវិញ</translation>
 <translation id="2224337661447660594">គ្មាន​អ៊ីនធឺណិតទេ</translation>
 <translation id="2230458221926704099">សូមដោះស្រាយការតភ្ជាប់របស់អ្នកដោយប្រើ<ph name="BEGIN_LINK" />កម្មវិធីវិនិច្ឆ័យ<ph name="END_LINK" /></translation>
 <translation id="2239100178324503013">ផ្ញើឥឡូវនេះ</translation>
@@ -885,9 +886,6 @@
 <translation id="3369192424181595722">កំហុសម៉ោង</translation>
 <translation id="3369459162151165748">គ្រឿងបន្លាស់​យានជំនិះ និង​គ្រឿងបន្ថែម</translation>
 <translation id="3371064404604898522">កំណត់ Chrome ជាកម្មវិធីរុករកលំនាំដើម</translation>
-<translation id="3371076217486966826"><ph name="URL" /> ចង់៖
-      • បង្កើតផែនទី 3D នៃមជ្ឈដ្ឋានជុំវិញ​របស់អ្នក និងតាមដាន​ទីតាំងកាមេរ៉ា
-      • ប្រើកាមេរ៉ារបស់អ្នក</translation>
 <translation id="337363190475750230">បានផ្តាច់ការផ្តល់ជូន</translation>
 <translation id="3375754925484257129">ដំណើរការ​ការពិនិត្យ​សុវត្ថិភាព Chrome</translation>
 <translation id="3377144306166885718">ម៉ាស៊ីនមេបានប្រើ​កំណែ TLS ដែលលែងប្រើ។</translation>

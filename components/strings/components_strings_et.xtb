@@ -483,6 +483,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2215963164070968490">Koerad</translation>
 <translation id="2218879909401188352">Saidil <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> olevad ründajad võivad installida ohtlikke rakendusi, mis kahjustavad teie seadet, lisavad mobiiliarvele varjatud kulusid või varastavad teie isiklikke andmeid. <ph name="BEGIN_LEARN_MORE_LINK" />Lisateave<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2219658597883514593">Alusta õpetusi uuesti</translation>
+<translation id="2219735899272417925">Nõutav on seadme lähtestamine</translation>
 <translation id="2224337661447660594">Interneti-ühendus puudub</translation>
 <translation id="2230458221926704099">Parandage oma ühendus <ph name="BEGIN_LINK" />diagnostikarakenduse<ph name="END_LINK" /> abil</translation>
 <translation id="2239100178324503013">Saada kohe</translation>
@@ -881,9 +882,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3369192424181595722">Kella viga</translation>
 <translation id="3369459162151165748">Sõidukite osad ja tarvikud</translation>
 <translation id="3371064404604898522">Määra Chrome vaikebrauseriks</translation>
-<translation id="3371076217486966826"><ph name="URL" /> soovib:
-      • luua teid ümbritsevast 3D-kaardi ja jälgida kaamera asendit;
-      • kasutada teie kaamerat.</translation>
 <translation id="337363190475750230">Eraldatud</translation>
 <translation id="3375754925484257129">Käita Chrome'i ohutuskontroll</translation>
 <translation id="3377144306166885718">Server kasutas TLS-i aegunud versiooni.</translation>

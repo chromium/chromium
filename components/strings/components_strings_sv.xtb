@@ -484,6 +484,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2215963164070968490">Hundar</translation>
 <translation id="2218879909401188352">Angripare på <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> skulle kunna installera farliga appar som skadar enheten, lägger till dolda avgifter på din mobilfaktura eller stjäl personliga uppgifter. <ph name="BEGIN_LEARN_MORE_LINK" />Läs mer<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2219658597883514593">Starta om guiden</translation>
+<translation id="2219735899272417925">Enheten måste återställas</translation>
 <translation id="2224337661447660594">Inget internet</translation>
 <translation id="2230458221926704099">Åtgärda anslutningsproblemet med hjälp av <ph name="BEGIN_LINK" />diagnostiseringsappen<ph name="END_LINK" /></translation>
 <translation id="2239100178324503013">Skicka nu</translation>
@@ -882,9 +883,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3369192424181595722">Fel på klockan</translation>
 <translation id="3369459162151165748">Fordonsdelar och tillbehör</translation>
 <translation id="3371064404604898522">Ställ in Chrome som standardwebbläsare</translation>
-<translation id="3371076217486966826"><ph name="URL" /> vill
-      • skapa en 3D-karta över dina omgivningar och registrera kamerans position
-      • använda kameran.</translation>
 <translation id="337363190475750230">Tagen ur bruk</translation>
 <translation id="3375754925484257129">Kör säkerhetskontroll i Chrome</translation>
 <translation id="3377144306166885718">En föråldrad version av TLS används på servern.</translation>

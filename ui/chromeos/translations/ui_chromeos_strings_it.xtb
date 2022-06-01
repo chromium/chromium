@@ -644,6 +644,7 @@
 <translation id="6423031066725912715">Vietnamita con tastiera TCVN</translation>
 <translation id="6485131920355264772">Impossibile recuperare le informazioni sullo spazio</translation>
 <translation id="6495925982925244349">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensità del segnale <ph name="SIGNAL_STRENGTH" />%, gestita dall'amministratore, dettagli</translation>
+<translation id="649877868557234318">Estrazione del file <ph name="FILE_NAME" /> nella cartella <ph name="FOLDER_NAME" /> in corso…</translation>
 <translation id="6499681088828539489">Non consentire proxy per reti condivise</translation>
 <translation id="6509122719576673235">Norvegese</translation>
 <translation id="6528513914570774834">Consenti ad altri utenti del dispositivo di usare questa rete</translation>

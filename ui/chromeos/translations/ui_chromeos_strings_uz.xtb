@@ -644,6 +644,7 @@ Amal bajarilishini kuting va qurilmani “Fayllar” ilovasida chiqarib oling. A
 <translation id="6423031066725912715">Vyetnam (TCVN klaviaturasi)</translation>
 <translation id="6485131920355264772">Bo‘shliq ma’lumotini olib bo‘lmadi</translation>
 <translation id="6495925982925244349">Tarmoq: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, Nomi: <ph name="NETWORK_NAME" />, Himoyasi: <ph name="SECURITY_STATUS" />, Ulanish: <ph name="CONNECTION_STATUS" />, Signal darajasi: <ph name="SIGNAL_STRENGTH" />%, Administrator boshqaruvida, Batafsil</translation>
+<translation id="649877868557234318"><ph name="FILE_NAME" /> fayli <ph name="FOLDER_NAME" /> jildiga chiqarilmoqda</translation>
 <translation id="6499681088828539489">Umumiy tarmoqlarga proksi-serverlardan foydalanishni taqiqlash</translation>
 <translation id="6509122719576673235">Norvey tili</translation>
 <translation id="6528513914570774834">Bu tarmoqdan foydalanish uchun ushbu qurilmadagi boshqa foydalanuvchilarga ruxsat berish</translation>

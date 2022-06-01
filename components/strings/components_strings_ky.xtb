@@ -484,6 +484,7 @@
 <translation id="2215963164070968490">Иттер</translation>
 <translation id="2218879909401188352">Учурда <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> сайтындагы чабуулчулар түзмөгүңүзгө зыян келтирүүчү колдонмолорду орнотуп, мобилдик эсебиңизге жашыруун төлөмдөрдү кошуп же жеке маалыматыңызды уурдашы мүмкүн. <ph name="BEGIN_LEARN_MORE_LINK" />Кеңири маалымат<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2219658597883514593">Үйрөткүчтү кайра ачуу</translation>
+<translation id="2219735899272417925">Түзмөктү баштапкы абалга келтирүү керек</translation>
 <translation id="2224337661447660594">Интернет жок</translation>
 <translation id="2230458221926704099">Бузулууларды оңдоо үчүн туташуунун абалын <ph name="BEGIN_LINK" />текшериңиз<ph name="END_LINK" /></translation>
 <translation id="2239100178324503013">Азыр жөнөтүү</translation>
@@ -882,9 +883,6 @@
 <translation id="3369192424181595722">Саат катасы</translation>
 <translation id="3369459162151165748">Унаанын тетиктери жана аксессуарлары</translation>
 <translation id="3371064404604898522">Chrome'ду демейки серепчи катары коюу</translation>
-<translation id="3371076217486966826"><ph name="URL" /> төмөнкүнү аткарганы жатат:
-      • Айланаңыздын 3D картасын түзүү жана камераңыздын абалына көз салуу
-      • Камераны колдонуу</translation>
 <translation id="337363190475750230">Чыгарылды</translation>
 <translation id="3375754925484257129">Chrome'дун коопсуздугун текшерүү</translation>
 <translation id="3377144306166885718">Сервер TLS'тин жоюлган версиясын колдонду.</translation>

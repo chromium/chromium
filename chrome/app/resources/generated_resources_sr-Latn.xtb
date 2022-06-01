@@ -6687,6 +6687,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7559719679815339381">Sačekajte...Kiosk aplikacija se trenutno ažurira. Ne uklanjajte USB memoriju.</translation>
 <translation id="7560756177962144929">Sinhronizujte <ph name="DEVICE_TYPE" /></translation>
 <translation id="7561196759112975576">Uvek</translation>
+<translation id="7561982940498449837">Zatvori meni</translation>
 <translation id="756445078718366910">Otvori prozor pregledača</translation>
 <translation id="7564847347806291057">Završi proces</translation>
 <translation id="756503097602602175">Možete da upravljate Google nalozima na koje ste prijavljeni u <ph name="LINK_BEGIN" />Podešavanjima<ph name="LINK_END" />. Dozvole koje ste dali veb-sajtovima i aplikacijama mogu da važe za sve naloge. Ako ne želite da sajtovi ili aplikacije pristupaju informacijama o nalogu, možete da se prijavite na <ph name="DEVICE_TYPE" /> kao gost ili da pregledate veb u <ph name="LINK_2_BEGIN" />prozoru bez arhiviranja<ph name="LINK_2_END" />.</translation>
@@ -7544,6 +7545,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8379156816349755485">Kada se prijavite, jedinstveni token za potvrdu identiteta će se sačuvati i koristiti za sva buduća preuzimanja koja ispunjavaju uslove.</translation>
 <translation id="8379878387931047019">Ovaj uređaj ne podržava tip bezbednosnog ključa koji zahteva ovaj veb-sajt</translation>
 <translation id="8379991678458444070">Možete brzo da se vratite ovde ako obeležite ovu karticu</translation>
+<translation id="8380266723152870797">Naziv prozora</translation>
 <translation id="8380941800586852976">Opasno</translation>
 <translation id="8382715499079447151">Zaštita od pregleda</translation>
 <translation id="8382913212082956454">Kopiraj &amp;e-adresu</translation>

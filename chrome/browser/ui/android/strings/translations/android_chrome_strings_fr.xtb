@@ -1076,6 +1076,7 @@ Les jetons de confiance améliorent la confidentialité sur le Web et ne peuvent
 <translation id="6824899148643461612">"<ph name="TAB_TITLE" />", onglet, sélectionné</translation>
 <translation id="6828070228333235514">Arrêter le suivi du prix</translation>
 <translation id="6833996806551876956">Essai de Privacy Sandbox</translation>
+<translation id="6836206421467243968">Restaurer le groupe d'onglets "<ph name="TITLE_OF_GROUP" />" en tant que nouveau groupe d'onglets en arrière-plan.</translation>
 <translation id="6846298663435243399">Chargement…</translation>
 <translation id="6850409657436465440">Téléchargement toujours en cours</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> onglets ont été fermés.</translation>
@@ -1138,6 +1139,7 @@ Les jetons de confiance améliorent la confidentialité sur le Web et ne peuvent
 <translation id="7187993566681480880">Ce mode vous protège dans Chrome et peut servir à renforcer votre sécurité dans d'autres applications Google lorsque vous êtes connecté.</translation>
 <translation id="7191430249889272776">L'onglet a été ouvert en arrière-plan.</translation>
 <translation id="7196215469483532480">Explications du Guide sur la confidentialité ouvertes à pleine hauteur</translation>
+<translation id="7207760545532569765">Restaurer <ph name="TAB_COUNT" /> onglets en tant que nouveaux onglet en arrière-plan.</translation>
 <translation id="7208109991155904980">Réaction déplacée</translation>
 <translation id="7222235798733126207">Partage limité entre les sites</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 téléchargement en attente}one{# téléchargement en attente}other{# téléchargements en attente}}</translation>
@@ -1516,6 +1518,7 @@ Les jetons de confiance améliorent la confidentialité sur le Web et ne peuvent
 <translation id="9148126808321036104">Nouvelle connexion</translation>
 <translation id="9155898266292537608">Vous pouvez également effectuer une recherche en appuyant brièvement sur un mot</translation>
 <translation id="9158770349521403363">Partager uniquement le contenu</translation>
+<translation id="9159716826369098114">Restaurer le groupe d'onglets de <ph name="TAB_COUNT" /> onglets en tant que nouveau groupe d'onglets en arrière-plan.</translation>
 <translation id="916446198114569890">Les URL que vous consultez sont enregistrées dans votre compte Google</translation>
 <translation id="9169507124922466868">L'historique de navigation est ouvert à moitié</translation>
 <translation id="9187955620966010988">Réaction ajustée</translation>

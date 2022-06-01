@@ -480,6 +480,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2215963164070968490">Hunde</translation>
 <translation id="2218879909401188352">Angreifer auf der Website <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> könnten gefährliche Apps installieren, die dein Gerät beschädigen, deiner Mobilfunkrechnung versteckte Kosten hinzufügen oder deine personenbezogenen Daten stehlen könnten. <ph name="BEGIN_LEARN_MORE_LINK" />Weitere Informationen<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2219658597883514593">Anleitung neu starten</translation>
+<translation id="2219735899272417925">Gerät muss zurückgesetzt werden</translation>
 <translation id="2224337661447660594">Kein Internet</translation>
 <translation id="2230458221926704099">Behebe den Verbindungsfehler mithilfe der <ph name="BEGIN_LINK" />Diagnose-App<ph name="END_LINK" /></translation>
 <translation id="2239100178324503013">Jetzt senden</translation>
@@ -878,9 +879,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3369192424181595722">Fehler bei der Uhrzeit</translation>
 <translation id="3369459162151165748">Ersatz- und Zubehörteile für Kraftfahrzeuge</translation>
 <translation id="3371064404604898522">Google Chrome als Standardbrowser festlegen</translation>
-<translation id="3371076217486966826"><ph name="URL" /> möchte:
-      • eine dreidimensionale Karte deiner Umgebung erstellen und die Kameraposition verfolgen
-      • deine Kamera verwenden</translation>
 <translation id="337363190475750230">Bereitstellung aufgehoben</translation>
 <translation id="3375754925484257129">Chrome-Sicherheitscheck ausführen</translation>
 <translation id="3377144306166885718">Der Server hat eine veraltete TLS-Version verwendet.</translation>
@@ -2983,7 +2981,7 @@ Weitere Details:
 <translation id="950736567201356821">Dreifache Lochung oben</translation>
 <translation id="961663415146723894">Bindung unten</translation>
 <translation id="962484866189421427">Dieser Inhalt könnte betrügerische Apps installieren, die scheinbar einem anderen Zweck dienen oder Daten erfassen, um dich auszuspionieren. <ph name="BEGIN_LINK" />Trotzdem zeigen<ph name="END_LINK" /></translation>
-<translation id="96680173638229310">Autos und Fahrzeuge</translation>
+<translation id="96680173638229310">Fahrzeuge</translation>
 <translation id="969892804517981540">Offizieller Build</translation>
 <translation id="973773823069644502">Lieferadresse hinzufügen</translation>
 <translation id="975560348586398090">{COUNT,plural, =0{Keine}=1{1 Eintrag}other{# Einträge}}</translation>

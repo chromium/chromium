@@ -251,6 +251,7 @@
 <translation id="243878895369688216">Երեկ բացել եք</translation>
 <translation id="2441427462554639370">Ձայնագրումն ավարտվեց ոչ բավարար տարածքի պատճառով</translation>
 <translation id="24452542372838207">Ընդարձակել</translation>
+<translation id="2449089818483227734">Մարտկոցի լիցքը քիչ է</translation>
 <translation id="2450205753526923158">Սքրինշոթի ռեժիմ</translation>
 <translation id="2456008742792828469">Օրացույց, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2473177541599297363">Լուծաչափի հաստատում</translation>
@@ -411,11 +412,13 @@
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> րոպե</translation>
 <translation id="3445925074670675829">USB-C սարք</translation>
+<translation id="3455468639467374593">Ձևանմուշ, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3465223694362104965">Ձեր վերջին մուտքից հետո այս սարքին մեկ այլ ստեղնաշար է միացվել: Նախքան այդ ստեղնաշարն օգտագործելը համոզվեք, որ այն անվտանգ է:</translation>
 <translation id="3465356146291925647">Կառավարվում է ձեր ադմինիստրատորի կողմից</translation>
 <translation id="3477079411857374384">Ctrl+Shift+Բացատ</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Դարակն ավտոմատ թաքցվում է</translation>
+<translation id="3505066820268455558">Մարտկոցը լիցքավորվում է</translation>
 <translation id="3509391053705095206">Չհաջողվեց գտնել ձեր հեռախոսը։ Համոզվեք, որ հեռախոսի Bluetooth-ը միացված է։</translation>
 <translation id="3510164367642747937">Ընդգծել մկնիկի նշորդը</translation>
 <translation id="3513798432020909783">Հաշվի կառավարիչ՝ <ph name="MANAGER_EMAIL" /></translation>
@@ -456,6 +459,8 @@
 <translation id="3633097874324966332">Բացեք Bluetooth-ի կարգավորումները՝ սարքը զուգակցելու համար</translation>
 <translation id="3638400994746983214">Միացնել/անջատել գաղտնիության էկրանը։ <ph name="STATE_TEXT" />:</translation>
 <translation id="3649505501900178324">Թարմացման ժամկետը լրացել է</translation>
+<translation id="3659814201068740063">Մնացել է մոտ <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" />%)։
+Միացրեք սարքը հոսանքին։</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> կառավարվող օգտատեր</translation>
 <translation id="36813544980941320">Ձեր հեռախոսում և <ph name="DEVICE_NAME" />-ում կօգտագործվեն նույն Wi-Fi ցանցերը</translation>
 <translation id="3694122362646626770">Վեբկայքեր</translation>
@@ -510,6 +515,7 @@
 <translation id="3962859241508114581">Նախորդ կատարումը</translation>
 <translation id="3969043077941541451">Անջատված է</translation>
 <translation id="397105322502079400">Հաշվարկում…</translation>
+<translation id="397726367135689299">Մարտկոցի լիցքավորման աղբյուրը կարող է հուսալի չլինել։</translation>
 <translation id="3977512764614765090">Մարտկոցը լիցքավորվում է (լիցքը՝ <ph name="PERCENTAGE" />%)։</translation>
 <translation id="3986082989454912832">Պատասխանել</translation>
 <translation id="3995138139523574647">USB-C սարք (հետևի ձախակողմյան միացք)</translation>
@@ -1037,6 +1043,7 @@
 <translation id="7130207228079676353">ԱՌԱՎԵԼ ՀԱՎԱՆԱԿԱՆ</translation>
 <translation id="7131634465328662194">Դուք ավտոմատ դուրս կգաք համակարգից։</translation>
 <translation id="7143207342074048698">Միացում</translation>
+<translation id="7144942256906679589">Մարտկոցի կարգավիճակը</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358">Վերադարձ նախորդ լուծաչափին <ph name="TIMEOUT_SECONDS" /> վայրկյանից</translation>
 <translation id="7180611975245234373">Թարմացնել</translation>
@@ -1103,6 +1110,7 @@
 <translation id="7593891976182323525">Search կամ Shift</translation>
 <translation id="7600875258240007829">Տեսնել բոլոր ծանուցումները</translation>
 <translation id="7607002721634913082">Դադարեցված է</translation>
+<translation id="7609951632080598826">Օրացույցի դիտակերպ, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Տեսախցիկը նորից միացվեց։</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7633755430369750696">Ցուցադրել «Փոխանակում մոտակա սարքերի հետ» գործառույթի կարգավորումները։</translation>
@@ -1228,6 +1236,7 @@
 <translation id="8345019317483336363">Ընտրված է «<ph name="WINDOW_TITLE" />» պատուհանը</translation>
 <translation id="8351131234907093545">Գրառման ստեղծում</translation>
 <translation id="8364673525741149932">Միացնել/անջատել Shelf Party ռեժիմը։ <ph name="STATE_TEXT" /></translation>
+<translation id="8369166482916924789">Պահված աշխատասեղան, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">Մեկ տառով առաջ</translation>
 <translation id="8371991222807690464">Արտաքին սարքերի աշխատանքի արդյունավետությունը կարող է սահմանափակվել հյուրի ռեժիմում</translation>
 <translation id="8374601332003098278">Սեղմեք Enter՝ էկրանը մասնակի տեսագրելու համար</translation>
@@ -1340,6 +1349,7 @@
 <translation id="9000771174482730261">ԿԱՌԱՎԱՐԵԼ ՏԱՐԱԾՔԸ</translation>
 <translation id="9017320285115481645">Մուտքագրեք Family Link-ի ծնողի մուտքի կոդը։</translation>
 <translation id="9024331582947483881">լիաէկրան</translation>
+<translation id="9029736946581028033">Սարքը շուտով կանջատվի</translation>
 <translation id="9030319654231318877">Անջատված է մինչև մայրամուտ</translation>
 <translation id="9034924485347205037">Լինուքսի ֆայլեր</translation>
 <translation id="9047624247355796468">Բացել «<ph name="NETWORK_NAME" />» ցանցի կարգավորումները</translation>
@@ -1369,6 +1379,7 @@
 <translation id="9168436347345867845">Ավելի ուշ</translation>
 <translation id="9178475906033259337">Ցուցադրվում է «<ph name="QUERY" />»-ի որոնման 1 արդյունք</translation>
 <translation id="9179259655489829027">Այս գործառույթի օգնությամբ դուք կարող եք առանց գաղտնաբառի արագ կապ հաստատել ցանկացած մուտք գործած օգտատիրոջ հետ: Օգտագործեք այս գործառույթը միայն վստահելի հաշիվների հետ:</translation>
+<translation id="9180906851711123156">Փակելու համար սեղմեք Ctrl+W</translation>
 <translation id="9183456764293710005">Լիաէկրան խոշորացույց</translation>
 <translation id="9193626018745640770">Հեռարձակվում է անհայտ ստացողի</translation>
 <translation id="9194617393863864469">Մուտք գործել այլ հաշիվ...</translation>

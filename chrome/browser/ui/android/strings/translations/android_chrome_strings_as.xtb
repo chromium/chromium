@@ -1076,6 +1076,7 @@
 <translation id="6824899148643461612"><ph name="TAB_TITLE" /> টেবটো বাছনি কৰা হৈছে</translation>
 <translation id="6828070228333235514">মূল্য ট্ৰেক কৰাটো বন্ধ কৰক</translation>
 <translation id="6833996806551876956">গোপনীয়তা ছেণ্ডবক্সৰ ট্ৰায়েল</translation>
+<translation id="6836206421467243968"><ph name="TITLE_OF_GROUP" /> টেবৰ গোটক এটা নতুন নেপথ্যৰ টেবৰ গোট হিচাপে পুনৰুদ্ধাৰ কৰক।</translation>
 <translation id="6846298663435243399">ল’ড কৰি থকা হৈছে…</translation>
 <translation id="6850409657436465440">আপোনাৰ ডাউনল’ড প্ৰক্ৰিয়া চলি আছে</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" />টা টেব বন্ধ কৰা হ’ল</translation>
@@ -1138,6 +1139,7 @@
 <translation id="7187993566681480880">আপোনাক Chromeত সুৰক্ষিত কৰি ৰাখে আৰু আপুনি ছাইন ইন হৈ থকা অৱস্থাত Googleৰ অন্য এপ্‌সমূহত আপোনাৰ সুৰক্ষা উন্নত কৰিবলৈ ব্যৱহাৰ কৰা হ’ব পাৰে।</translation>
 <translation id="7191430249889272776">নেপথ্যত খোলা থকা টেব।</translation>
 <translation id="7196215469483532480">পূৰ্ণ উচ্চতাত খোলা গোপনীয়তা সম্পৰ্কীয় নিৰ্দেশনাৰ ব্যাখ্যা</translation>
+<translation id="7207760545532569765"><ph name="TAB_COUNT" /> টা টেবক নতুন নেপথ্যৰ টেব হিচাপে পুনৰুদ্ধাৰ কৰক।</translation>
 <translation id="7208109991155904980">প্ৰতিক্ৰিয়া আঁতৰাই নিয়া হৈছে</translation>
 <translation id="7222235798733126207">ছাইটসমূহৰ মাজত শ্বেয়াৰ কৰাটো সীমিত</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{১ টা ডাউনল’ড বাকী আছে}one{# টা ডাউনল’ড বাকী আছে}other{# টা ডাউনল’ড বাকী আছে}}</translation>
@@ -1516,6 +1518,7 @@
 <translation id="9148126808321036104">আকৌ ছাইন ইন কৰক</translation>
 <translation id="9155898266292537608">আপুনি কোনো এটা শব্দত এবাৰ টিপিও সন্ধান কৰিব পাৰে</translation>
 <translation id="9158770349521403363">কেৱল সমল শ্বেয়াৰ কৰক</translation>
+<translation id="9159716826369098114"><ph name="TAB_COUNT" /> টা টেব থকা টেবৰ গোটক এটা নতুন নেপথ্যৰ টেবৰ গোট হিচাপে পুনৰুদ্ধাৰ কৰক।</translation>
 <translation id="916446198114569890">আপুনি চোৱা URLসমূহ আপোনাৰ Google একাউণ্টত ছেভ কৰা হৈছে</translation>
 <translation id="9169507124922466868">নেভিগেশ্বন ইতিহাস আধা খোলা আছে</translation>
 <translation id="9187955620966010988">প্ৰতিক্ৰিয়া মিলোৱা হৈছে</translation>

@@ -484,6 +484,7 @@
 <translation id="2215963164070968490">Շներ</translation>
 <translation id="2218879909401188352">Հարձակվողները, որոնք ներկայումս <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> կայքում են, կարող են տեղադրել ձեր սարքը վնասող հավելվածներ, ավելացնել բջջային կապի ծախսերը կամ հափշտակել ձեր անձնական տվյալները։ <ph name="BEGIN_LEARN_MORE_LINK" />Իմանալ ավելին<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2219658597883514593">Նորից բացել ուղեցույցը</translation>
+<translation id="2219735899272417925">Պահանջվում է վերակայել սարքը</translation>
 <translation id="2224337661447660594">Ինտերնետ կապ չկա</translation>
 <translation id="2230458221926704099">Ստուգեք ձեր կապը <ph name="BEGIN_LINK" />ախտորոշիչ հավելվածի<ph name="END_LINK" /> օգնությամբ</translation>
 <translation id="2239100178324503013">Ուղարկել</translation>
@@ -882,9 +883,6 @@
 <translation id="3369192424181595722">Ժամացույցի սխալ</translation>
 <translation id="3369459162151165748">Ավտոպահեստամասեր և լրասարքեր</translation>
 <translation id="3371064404604898522">Դարձնել Chrome-ը կանխադրված դիտարկիչ</translation>
-<translation id="3371076217486966826"><ph name="URL" /> կայքն ուզում է՝
-      • Ստեղծել շրջակայքի եռաչափ քարտեզը և հետագծել տեսախցիկի դիրքը
-      • Օգտագործել ձեր տեսախցիկը</translation>
 <translation id="337363190475750230">Անջատված է</translation>
 <translation id="3375754925484257129">Անցնել Chrome-ի անվտանգության ստուգում</translation>
 <translation id="3377144306166885718">Սերվերն օգտագործում է TLS-ի հնացած տարբերակ։</translation>

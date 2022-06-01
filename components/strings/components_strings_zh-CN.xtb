@@ -480,6 +480,7 @@
 <translation id="2215963164070968490">狗</translation>
 <translation id="2218879909401188352"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> 上的现有攻击者可能会安装危险应用来损害您的设备、给您的手机帐单增添隐含费用或窃取您的个人信息。<ph name="BEGIN_LEARN_MORE_LINK" />了解详情<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2219658597883514593">重启教程</translation>
+<translation id="2219735899272417925">需要重置设备</translation>
 <translation id="2224337661447660594">未连接到互联网</translation>
 <translation id="2230458221926704099">请使用<ph name="BEGIN_LINK" />诊断应用<ph name="END_LINK" />修复网络连接</translation>
 <translation id="2239100178324503013">立即发送</translation>
@@ -876,9 +877,6 @@
 <translation id="3369192424181595722">时钟错误</translation>
 <translation id="3369459162151165748">车辆零部件与配件</translation>
 <translation id="3371064404604898522">将 Chrome 设置为默认浏览器</translation>
-<translation id="3371076217486966826"><ph name="URL" /> 想：
-      • 为您的周边环境创建 3D 地图并跟踪摄像头位置
-      • 使用您的摄像头</translation>
 <translation id="337363190475750230">已取消配置</translation>
 <translation id="3375754925484257129">运行 Chrome 安全检查</translation>
 <translation id="3377144306166885718">服务器使用的 TLS 版本已过时。</translation>

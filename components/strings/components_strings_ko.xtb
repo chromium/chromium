@@ -480,6 +480,7 @@
 <translation id="2215963164070968490">개</translation>
 <translation id="2218879909401188352">현재 <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />의 공격자가 기기를 손상시키거나, 모바일 요금에 몰래 추가 요금을 부과하거나, 개인정보를 도용하는 위험한 앱을 설치할 수도 있습니다. <ph name="BEGIN_LEARN_MORE_LINK" />자세히 알아보기<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2219658597883514593">가이드 다시 시작</translation>
+<translation id="2219735899272417925">기기 재설정 필요</translation>
 <translation id="2224337661447660594">인터넷 연결 없음</translation>
 <translation id="2230458221926704099"><ph name="BEGIN_LINK" />진단 앱<ph name="END_LINK" />을 사용하여 연결 문제를 해결하세요.</translation>
 <translation id="2239100178324503013">지금 보내기</translation>
@@ -878,9 +879,6 @@
 <translation id="3369192424181595722">시계 오류</translation>
 <translation id="3369459162151165748">자동차 부품 및 액세서리</translation>
 <translation id="3371064404604898522">Chrome을 기본 브라우저로 설정</translation>
-<translation id="3371076217486966826"><ph name="URL" />에서 다음 권한을 요청합니다.
-      • 주변의 3D 지도 만들기 및 카메라 위치 추적
-      • 카메라 사용</translation>
 <translation id="337363190475750230">사용 중단됨</translation>
 <translation id="3375754925484257129">Chrome 안전 확인 실행</translation>
 <translation id="3377144306166885718">서버에서 지원 중단된 TLS 버전을 사용했습니다.</translation>

@@ -850,6 +850,7 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="1794051631868188691">Sýna aldrei <ph name="MERCHANT" /></translation>
 <translation id="1794791083288629568">Sendu ábendingu til að hjálpa okkur að leysa þetta vandamál.</translation>
 <translation id="1795214765651529549">Nota hefðbundið þema</translation>
+<translation id="1796105431091975902">Veldu Ansible-handbók til að bæta við</translation>
 <translation id="1796588414813960292">Eiginleikar sem þarfnast hljóðs munu ekki virka</translation>
 <translation id="1800502858278951817">Engar viðbætur hafa beðið um að lesa og gera breytingar á <ph name="SITE_NAME" /></translation>
 <translation id="1802624026913571222">Svefn þegar hulstrið er lokað</translation>
@@ -3054,6 +3055,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="389901847090970821">Velja lyklaborð</translation>
 <translation id="3900966090527141178">Flytja út aðgangsorð</translation>
 <translation id="3903187154317825986">Innbyggt lyklaborð</translation>
+<translation id="3903191712482985591">Bæta við handbók</translation>
 <translation id="3904326018476041253">Staðsetningarþjónusta</translation>
 <translation id="3904849010307028014">Í samræmi við notkun þína á vefsvæði, til dæmis þegar þú skráir þig reglulega inn á reikning, getur viðkomandi vefsvæði úthlutað vafranum þínum traustum lykli. Þegar önnur vefsvæði sem þú opnar síðar leita að og finna gildan traustan lykil er líklegra að viðkomandi vefsvæði skilgreini þig sem manneskju en spjallara.</translation>
 <translation id="3905761538810670789">Gera við forrit</translation>
@@ -3665,6 +3667,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4510479820467554003">Listi foreldrareikninga</translation>
 <translation id="451102079304155829">körfur</translation>
 <translation id="4513872120116766993">Textatillögur</translation>
+<translation id="4513909579793564731">Nota handbók</translation>
 <translation id="4513946894732546136">Ábendingar</translation>
 <translation id="451407183922382411">Knúið af <ph name="COMPANY_NAME" /></translation>
 <translation id="4514610446763173167">Skipt á milli spilunar og hlés á myndskeiði</translation>
@@ -5498,6 +5501,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="635609604405270300">Hafðu kveikt á tækinu</translation>
 <translation id="63566973648609420">Aðeins þeir sem vita aðgangsorðið geta lesið dulkóðuðu gögnin þín. Aðgangsorðið er ekki sent til Google eða vistað þar. Ef þú gleymir aðgangsorðinu eða þig langar að breyta þessari stillingu þarftu að <ph name="BEGIN_LINK" />endurstilla samstillingu<ph name="END_LINK" />.</translation>
 <translation id="6357305427698525450">Sumir studdir tenglar munu áfram opnast í <ph name="APP_NAME" /> eða  <ph name="APP_NAME_2" />.</translation>
+<translation id="6357794994761110294">Engar viðbætur mega lesa og breyta <ph name="SITE_NAME" /></translation>
 <translation id="6358884629796491903">Dreki</translation>
 <translation id="6361850914223837199">Villuupplýsingar:</translation>
 <translation id="6362853299801475928">Tilkynna um vandamál...</translation>
@@ -6696,6 +6700,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="7559719679815339381">Augnablik....Verið er að uppfæra sjálfsalaforritið. Ekki fjarlægja USB-lykilinn.</translation>
 <translation id="7560756177962144929">Samstilla <ph name="DEVICE_TYPE" /></translation>
 <translation id="7561196759112975576">Alltaf</translation>
+<translation id="7561982940498449837">Loka valmynd</translation>
 <translation id="756445078718366910">Opna vafraglugga</translation>
 <translation id="7564847347806291057">Stöðva ferli</translation>
 <translation id="756503097602602175">Hægt er að hafa umsjón með innskráðum Google reikningum í <ph name="LINK_BEGIN" />stillingunum<ph name="LINK_END" />. Heimildir sem þú hefur veitt vefsvæðum og forritum gætu átt við alla reikningana. Ef þú vilt ekki að vefsvæði eða forrit fái aðgang að reikningsupplýsingunum þínum geturðu skráð þig inn í <ph name="DEVICE_TYPE" /> sem gestur eða vafrað um vefinn í <ph name="LINK_2_BEGIN" />huliðsglugga<ph name="LINK_2_END" />.</translation>
@@ -7553,6 +7558,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8379156816349755485">Við innskráningu verður einkvæmt auðkenningarmerki geymt og notað fyrir allt gjaldgengt niðurhal í framtíðinni.</translation>
 <translation id="8379878387931047019">Þetta tæki styður ekki þá gerð öryggislykils sem vefsíðan óskar eftir</translation>
 <translation id="8379991678458444070">Finndu þennan flipa aftur með því að bókamerkja hann</translation>
+<translation id="8380266723152870797">Gluggaheiti</translation>
 <translation id="8380941800586852976">Hættulegt</translation>
 <translation id="8382715499079447151">Gægjuvörn</translation>
 <translation id="8382913212082956454">Afrita n&amp;etfang</translation>

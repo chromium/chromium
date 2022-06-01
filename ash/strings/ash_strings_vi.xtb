@@ -251,6 +251,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="243878895369688216">Mở hôm qua</translation>
 <translation id="2441427462554639370">Quá trình ghi đã kết thúc do dung lượng lưu trữ còn quá thấp</translation>
 <translation id="24452542372838207">Mở rộng thông báo</translation>
+<translation id="2449089818483227734">Pin yếu</translation>
 <translation id="2450205753526923158">Chế độ chụp ảnh màn hình</translation>
 <translation id="2456008742792828469">Lịch, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2473177541599297363">Xác nhận độ phân giải</translation>
@@ -411,11 +412,13 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> phút</translation>
 <translation id="3445925074670675829">Thiết bị USB-C</translation>
+<translation id="3455468639467374593">Mẫu, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3465223694362104965">Một bàn phím khác đã kết nối với thiết bị này kể từ lần đăng nhập cuối của bạn. Hãy đảm bảo rằng bạn tin tưởng bàn phím này trước khi sử dụng.</translation>
 <translation id="3465356146291925647">Do quản trị viên của bạn quản lý</translation>
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Giá tự động ẩn</translation>
+<translation id="3505066820268455558">Đang sạc pin</translation>
 <translation id="3509391053705095206">Không tìm được điện thoại của bạn. Hãy đảm bảo bạn đã bật Bluetooth trên điện thoại.</translation>
 <translation id="3510164367642747937">Đánh dấu con trỏ chuột</translation>
 <translation id="3513798432020909783">Người quản lý tài khoản: <ph name="MANAGER_EMAIL" /></translation>
@@ -456,6 +459,8 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3633097874324966332">Mở phần cài đặt Bluetooth để ghép nối thiết bị</translation>
 <translation id="3638400994746983214">Bật/tắt màn hình bảo vệ quyền riêng tư. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Đã quá hạn cập nhật</translation>
+<translation id="3659814201068740063">Còn <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" />%).
+Hãy sạc thiết bị.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Người dùng được quản lý</translation>
 <translation id="36813544980941320">Điện thoại và <ph name="DEVICE_NAME" /> của bạn sẽ dùng chung mạng Wi-Fi</translation>
 <translation id="3694122362646626770">Trang web</translation>
@@ -510,6 +515,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="3962859241508114581">Bản nhạc trước</translation>
 <translation id="3969043077941541451">Đang tắt</translation>
 <translation id="397105322502079400">Đang tính...</translation>
+<translation id="397726367135689299">Quá trình sạc pin có thể không ổn định.</translation>
 <translation id="3977512764614765090">Pin ở mức <ph name="PERCENTAGE" />% và đang sạc.</translation>
 <translation id="3986082989454912832">Trả lời</translation>
 <translation id="3995138139523574647">Thiết bị USB-C (cổng phía sau, bên phải)</translation>
@@ -1038,6 +1044,7 @@ Mới cài đặt</translation>
 <translation id="7130207228079676353">RẤT CÓ THỂ</translation>
 <translation id="7131634465328662194">Bạn sẽ tự động bị đăng xuất.</translation>
 <translation id="7143207342074048698">Đang kết nối</translation>
+<translation id="7144942256906679589">Trạng thái pin</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358">Sẽ hoàn nguyên về độ phân giải cũ sau <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Làm mới</translation>
@@ -1104,6 +1111,7 @@ Mới cài đặt</translation>
 <translation id="7593891976182323525">Search hoặc Shift</translation>
 <translation id="7600875258240007829">Xem tất cả thông báo</translation>
 <translation id="7607002721634913082">Đã tạm dừng</translation>
+<translation id="7609951632080598826">Chế độ xem lịch, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Đã kết nối lại với máy ảnh.</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />°F</translation>
 <translation id="7633755430369750696">Hiện tùy chọn cài đặt Chia sẻ lân cận.</translation>
@@ -1229,6 +1237,7 @@ Mới cài đặt</translation>
 <translation id="8345019317483336363">Đã chọn cửa sổ <ph name="WINDOW_TITLE" /></translation>
 <translation id="8351131234907093545">Tạo ghi chú</translation>
 <translation id="8364673525741149932">Bật/tắt chế độ Shelf Party. <ph name="STATE_TEXT" /></translation>
+<translation id="8369166482916924789">Không gian làm việc đã lưu, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">Tiến một ký tự</translation>
 <translation id="8371991222807690464">Hiệu suất của thiết bị ngoại vi có thể bị hạn chế khi ở Chế độ khách</translation>
 <translation id="8374601332003098278">Nhấn phím Enter để ghi một phần màn hình</translation>
@@ -1341,6 +1350,7 @@ Mới cài đặt</translation>
 <translation id="9000771174482730261">QUẢN LÝ BỘ NHỚ</translation>
 <translation id="9017320285115481645">Nhập mã truy cập dành cho cha mẹ của Family Link.</translation>
 <translation id="9024331582947483881">toàn màn hình</translation>
+<translation id="9029736946581028033">Thiết bị sẽ sớm tắt nguồn</translation>
 <translation id="9030319654231318877">Tắt cho đến hoàng hôn</translation>
 <translation id="9034924485347205037">Tệp Linux</translation>
 <translation id="9047624247355796468">Mở tùy chọn cài đặt cho <ph name="NETWORK_NAME" /></translation>
@@ -1370,6 +1380,7 @@ Mới cài đặt</translation>
 <translation id="9168436347345867845">Thực hiện sau</translation>
 <translation id="9178475906033259337">Đang hiển thị 1 kết quả cho <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">Tính năng này cho phép bạn truy cập nhanh vào bất kỳ người dùng đã đăng nhập nào mà không cần mật khẩu. Chỉ sử dụng tính năng này với các tài khoản mà bạn tin tưởng.</translation>
+<translation id="9180906851711123156">Nhấn tổ hợp phím Ctrl+W để đóng</translation>
 <translation id="9183456764293710005">Phóng to toàn màn hình</translation>
 <translation id="9193626018745640770">Đang truyền trên bộ thu không xác định</translation>
 <translation id="9194617393863864469">Đăng nhập tài khoản khác...</translation>

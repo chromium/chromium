@@ -838,6 +838,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1794051631868188691">No mostrar nunca <ph name="MERCHANT" /></translation>
 <translation id="1794791083288629568">Envíanos un comentario para ayudarnos a solucionar el problema.</translation>
 <translation id="1795214765651529549">Utilizar tema clásico</translation>
+<translation id="1796105431091975902">Selecciona un playbook de Ansible para añadirlo</translation>
 <translation id="1796588414813960292">Las funciones que requieran reproducir sonido no funcionarán</translation>
 <translation id="1800502858278951817">Ninguna extensión ha solicitado leer y cambiar <ph name="SITE_NAME" /></translation>
 <translation id="1802624026913571222">Suspender cuando se cierre la tapa</translation>
@@ -2465,6 +2466,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3348038390189153836">Se ha detectado un dispositivo extraíble.</translation>
 <translation id="3348131053948466246">Emoji sugerido. Pulsa arriba o abajo para desplazarte, e Intro para insertarlo.</translation>
 <translation id="3349933790966648062">Uso de memoria</translation>
+<translation id="3353786022389205125">Activa "Mostrar la pantalla de bloqueo al activar el dispositivo" y vuelve a intentarlo</translation>
 <translation id="3354972872297836698">No se ha podido emparejar con el dispositivo <ph name="DEVICE_NAME" />; selecciona el dispositivo para volver a intentarlo</translation>
 <translation id="3355936511340229503">Error de conexión</translation>
 <translation id="3356469410714175391">(Tarjeta virtual habilitada)</translation>
@@ -3039,6 +3041,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="389901847090970821">Seleccionar teclado</translation>
 <translation id="3900966090527141178">Exportar contraseñas</translation>
 <translation id="3903187154317825986">Teclado integrado</translation>
+<translation id="3903191712482985591">Añade un playbook</translation>
 <translation id="3904326018476041253">Servicios de ubicación</translation>
 <translation id="3904849010307028014">En función de tu interacción con un sitio (por ejemplo, iniciar sesión de forma habitual con una cuenta), el sitio puede emitir un token de confianza a tu navegador. Después, si otros sitios que visites buscan y encuentran un token de confianza válido, es más probable que te traten como a una persona y no como a un bot.</translation>
 <translation id="3905761538810670789">Reparar aplicación</translation>
@@ -3648,6 +3651,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="4510479820467554003">Lista de cuentas parentales</translation>
 <translation id="451102079304155829">carritos</translation>
 <translation id="4513872120116766993">Escritura predictiva</translation>
+<translation id="4513909579793564731">Aplicar playbook</translation>
 <translation id="4513946894732546136">Comentarios</translation>
 <translation id="451407183922382411">Con la tecnología de <ph name="COMPANY_NAME" /></translation>
 <translation id="4514610446763173167">Reproducir o pausar el video</translation>
@@ -4941,6 +4945,7 @@ Puedes asignar esta acción a varios interruptores.</translation>
 <translation id="5827733057563115968">Sugerencia de siguiente palabra</translation>
 <translation id="5828545842856466741">Añadir perfil...</translation>
 <translation id="5828633471261496623">Imprimiendo...</translation>
+<translation id="5830205393314753525">No se puede abrir <ph name="APP_NAME" /></translation>
 <translation id="5830720307094128296">Guardar página &amp;como...</translation>
 <translation id="5832813618714645810">Perfiles</translation>
 <translation id="583281660410589416">Desconocido</translation>
@@ -5481,6 +5486,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="635609604405270300">No apagues el dispositivo</translation>
 <translation id="63566973648609420">Solo alguien que tenga tu frase de contraseña puede leer tus datos cifrados. Google no envía ni almacena la frase de contraseña. Si la olvidas o quieres cambiar estos ajustes, deberás <ph name="BEGIN_LINK" />restablecer la sincronización<ph name="END_LINK" />.</translation>
 <translation id="6357305427698525450">Algunos enlaces compatibles se seguirán abriendo en <ph name="APP_NAME" /> o <ph name="APP_NAME_2" />.</translation>
+<translation id="6357794994761110294">No se permite que ninguna extensión lea ni cambie <ph name="SITE_NAME" /></translation>
 <translation id="6358884629796491903">Dragón</translation>
 <translation id="6361850914223837199">Detalles del error:</translation>
 <translation id="6362853299801475928">&amp;Notificar un error...</translation>
@@ -6677,6 +6683,7 @@ Tienes # contraseñas vulneradas más. El gestor de contraseñas de Google te re
 <translation id="7559719679815339381">Por favor, espera... La aplicación de kiosco se está actualizando. No extraigas el dispositivo USB.</translation>
 <translation id="7560756177962144929">Sincronizar tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="7561196759112975576">Siempre</translation>
+<translation id="7561982940498449837">Cerrar menú</translation>
 <translation id="756445078718366910">Abrir ventana del navegador</translation>
 <translation id="7564847347806291057">Finalizar proceso</translation>
 <translation id="756503097602602175">Puedes gestionar las cuentas de Google con las que se haya iniciado sesión en <ph name="LINK_BEGIN" />Configuración<ph name="LINK_END" />. Es posible que los permisos que hayas dado a sitios web y aplicaciones se apliquen a todas las cuentas. Si no quieres que los sitios ni las aplicaciones accedan a la información de tu cuenta, puedes iniciar sesión en tu <ph name="DEVICE_TYPE" /> como invitado o navegar por Internet en una <ph name="LINK_2_BEGIN" />ventana de incógnito<ph name="LINK_2_END" />.</translation>
@@ -7535,6 +7542,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8379156816349755485">Al iniciar sesión, se almacenará un token de autenticación único que se usará en todas las futuras descargas (si son aptas).</translation>
 <translation id="8379878387931047019">Este dispositivo no es compatible con el tipo de llave de seguridad solicitado por el sitio web</translation>
 <translation id="8379991678458444070">Para volver aquí rápidamente, añade esta pestaña a marcadores</translation>
+<translation id="8380266723152870797">Nombre de la ventana</translation>
 <translation id="8380941800586852976">Peligroso</translation>
 <translation id="8382715499079447151">Protección frente a visualizaciones</translation>
 <translation id="8382913212082956454">Copiar dir&amp;ección de correo electrónico</translation>

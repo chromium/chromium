@@ -1518,7 +1518,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2392369802118427583">Ativar</translation>
 <translation id="2393136602862631930">Configure o <ph name="APP_NAME" /> no seu Chromebook</translation>
 <translation id="2393313392064891208">Conteúdo dos Termos do Google ChromeOS Flex</translation>
-<translation id="2395616325548404795">Seu <ph name="DEVICE_TYPE" /> foi registrado para o gerenciamento empresarial, mas as informações de localização e recurso não foram enviadas. Forneça essas informações manualmente no Admin Console do dispositivo.</translation>
+<translation id="2395616325548404795">Seu <ph name="DEVICE_TYPE" /> foi registrado para o gerenciamento corporativo, mas as informações de localização e recurso não foram enviadas. Forneça essas informações manualmente no Admin Console do dispositivo.</translation>
 <translation id="2396783860772170191">Insira o PIN de quatro dígitos (0000-9999)</translation>
 <translation id="2398546389094871088">O Powerwash do dispositivo não removerá seus perfis de eSIM. Para remover esses perfis manualmente, acesse <ph name="LINK_BEGIN" />Configurações do celular<ph name="LINK_END" />.</translation>
 <translation id="2399699884460174994">Notificações ativadas</translation>
@@ -2483,6 +2483,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="3348038390189153836">Dispositivo removível detectado</translation>
 <translation id="3348131053948466246">Emoji sugerido. Pressione a seta para cima ou para baixo para navegar e "Enter" para inserir.</translation>
 <translation id="3349933790966648062">Ocupação da memória</translation>
+<translation id="3353786022389205125">Ative a opção "Mostrar tela de bloqueio ao sair do modo de suspensão" e tente novamente.</translation>
 <translation id="3354972872297836698">Não foi possível parear com o dispositivo <ph name="DEVICE_NAME" />. Selecione o dispositivo para tentar novamente</translation>
 <translation id="3355936511340229503">Erro de conexão</translation>
 <translation id="3356469410714175391">(cartão virtual ativado)</translation>
@@ -4964,6 +4965,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5827733057563115968">Previsão da palavra seguinte</translation>
 <translation id="5828545842856466741">Adicionar perfil…</translation>
 <translation id="5828633471261496623">Imprimindo...</translation>
+<translation id="5830205393314753525">Não foi possível abrir o app <ph name="APP_NAME" /></translation>
 <translation id="5830720307094128296">Salvar página &amp;como...</translation>
 <translation id="5832813618714645810">Perfis</translation>
 <translation id="583281660410589416">Desconhecido</translation>
@@ -6648,7 +6650,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7506093026325926984">Essa senha será salva neste dispositivo</translation>
 <translation id="7506130076368211615">Configurar nova rede</translation>
 <translation id="7506242536428928412">Defina um novo PIN para usar sua nova chave de segurança</translation>
-<translation id="7506541170099744506">Seu <ph name="DEVICE_TYPE" /> foi inscrito para o gerenciamento empresarial.</translation>
+<translation id="7506541170099744506">O registro do dispositivo <ph name="DEVICE_TYPE" /> no gerenciamento corporativo foi concluído.</translation>
 <translation id="7507207699631365376">Consulte a <ph name="BEGIN_LINK" />política de privacidade<ph name="END_LINK" /> deste provedor</translation>
 <translation id="7509097596023256288">Configurando o gerenciamento</translation>
 <translation id="7509246181739783082">Verificar sua identidade</translation>
@@ -6703,6 +6705,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7559719679815339381">Aguarde. O aplicativo de quiosque está sendo atualizado. Não retire o pendrive.</translation>
 <translation id="7560756177962144929">Sincronizar seu <ph name="DEVICE_TYPE" /></translation>
 <translation id="7561196759112975576">Sempre</translation>
+<translation id="7561982940498449837">Fechar menu</translation>
 <translation id="756445078718366910">Abrir janela do navegador</translation>
 <translation id="7564847347806291057">Encerrar processo</translation>
 <translation id="756503097602602175">Acesse <ph name="LINK_BEGIN" />Configurações<ph name="LINK_END" /> para gerenciar as Contas do Google conectadas. As permissões concedidas a sites e apps podem ser aplicadas a todas as contas. Se você não quer que sites ou apps tenham acesso às informações da sua conta, faça login no <ph name="DEVICE_TYPE" /> como visitante ou navegue na Web usando uma <ph name="LINK_2_BEGIN" />janela anônima<ph name="LINK_2_END" />.</translation>
@@ -7561,6 +7564,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8379156816349755485">Após o login, um token de autenticação exclusivo será armazenado e usado para todos os futuros downloads qualificados.</translation>
 <translation id="8379878387931047019">Este dispositivo não é compatível com o tipo de chave de segurança solicitado por este site</translation>
 <translation id="8379991678458444070">Para voltar a esta guia rapidamente, adicione-a aos favoritos</translation>
+<translation id="8380266723152870797">Nome da janela</translation>
 <translation id="8380941800586852976">Perigoso</translation>
 <translation id="8382715499079447151">Proteção de visualização</translation>
 <translation id="8382913212082956454">Copiar &amp;endereço de e-mail</translation>

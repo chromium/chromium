@@ -835,6 +835,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1794051631868188691">No mostrar <ph name="MERCHANT" /></translation>
 <translation id="1794791083288629568">Enviar comentarios para ayudarnos a solucionar este problema</translation>
 <translation id="1795214765651529549">Usar el tema clásico</translation>
+<translation id="1796105431091975902">Elige un playbook de Ansible para agregar</translation>
 <translation id="1796588414813960292">No se habilitarán las funciones que necesitan sonido.</translation>
 <translation id="1800502858278951817">Ninguna extensión solicitó leer y modificar <ph name="SITE_NAME" /></translation>
 <translation id="1802624026913571222">Suspender cuando se cierra la tapa</translation>
@@ -2462,6 +2463,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="3348038390189153836">Se detectó un dispositivo removible.</translation>
 <translation id="3348131053948466246">Se sugirieron emojis. Presiona la flecha hacia arriba o abajo para seleccionar uno y, luego, Intro para insertarlo.</translation>
 <translation id="3349933790966648062">Espacio en memoria</translation>
+<translation id="3353786022389205125">Activa "Mostrar la pantalla bloqueada al salir del modo de suspensión" y vuelve a intentarlo.</translation>
 <translation id="3354972872297836698">No se pudo vincular con el dispositivo <ph name="DEVICE_NAME" />; selecciónalo y vuelve a intentarlo</translation>
 <translation id="3355936511340229503">Error de conexión</translation>
 <translation id="3356469410714175391">(Tarjeta virtual habilitada)</translation>
@@ -3036,6 +3038,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="389901847090970821">Seleccionar teclado</translation>
 <translation id="3900966090527141178">Exportar contraseñas</translation>
 <translation id="3903187154317825986">Teclado integrado</translation>
+<translation id="3903191712482985591">Agregar playbook</translation>
 <translation id="3904326018476041253">Servicios de ubicación</translation>
 <translation id="3904849010307028014">Un sitio puede emitir un token de confianza para tu navegador en función de tu interacción con ese sitio, por ejemplo, si accedes de manera regular a una cuenta. Más adelante, si otros sitios que visitas buscan y encuentran un token de confianza, es más probable que te traten como una persona y no como un bot.</translation>
 <translation id="3905761538810670789">Reparar aplicación</translation>
@@ -3646,6 +3649,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="4510479820467554003">Lista de cuentas parentales</translation>
 <translation id="451102079304155829">carritos</translation>
 <translation id="4513872120116766993">Escritura predictiva</translation>
+<translation id="4513909579793564731">Aplicar playbook</translation>
 <translation id="4513946894732546136">Comentario</translation>
 <translation id="451407183922382411">Con la tecnología de <ph name="COMPANY_NAME" /></translation>
 <translation id="4514610446763173167">Reproduce o pausa el video</translation>
@@ -4939,6 +4943,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="5827733057563115968">Predicción de la palabra siguiente</translation>
 <translation id="5828545842856466741">Agregar perfil…</translation>
 <translation id="5828633471261496623">Impresión...</translation>
+<translation id="5830205393314753525">No se puede abrir <ph name="APP_NAME" /></translation>
 <translation id="5830720307094128296">Guardar p&amp;ágina como...</translation>
 <translation id="5832813618714645810">Perfiles</translation>
 <translation id="583281660410589416">Desconocido</translation>
@@ -5479,6 +5484,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="635609604405270300">No apagues el dispositivo</translation>
 <translation id="63566973648609420">Solo las personas que tengan tu frase de contraseña pueden leer los datos encriptados. Google no envía ni almacena la frase de contraseña. Si la olvidas o quieres cambiar esta configuración, deberás <ph name="BEGIN_LINK" />restablecer la sincronización<ph name="END_LINK" />.</translation>
 <translation id="6357305427698525450">Algunos vínculos compatibles se seguirán abriendo en <ph name="APP_NAME" /> o <ph name="APP_NAME_2" />.</translation>
+<translation id="6357794994761110294">No se permite que ninguna extensión lea ni modifique <ph name="SITE_NAME" /></translation>
 <translation id="6358884629796491903">Dragón</translation>
 <translation id="6361850914223837199">Detalles del error:</translation>
 <translation id="6362853299801475928">&amp;Cómo informar de un problema...</translation>
@@ -6675,6 +6681,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7559719679815339381">Espera. La aplicación de kiosco se está actualizando. No desconectes el dispositivo USB.</translation>
 <translation id="7560756177962144929">Sincroniza tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="7561196759112975576">Siempre</translation>
+<translation id="7561982940498449837">Cerrar menú</translation>
 <translation id="756445078718366910">Abrir la ventana del navegador</translation>
 <translation id="7564847347806291057">Finalizar proceso</translation>
 <translation id="756503097602602175">Desde <ph name="LINK_BEGIN" />Configuración<ph name="LINK_END" />, puedes administrar las Cuentas de Google a las que se accedió. Es posible que se apliquen a todas las cuentas los permisos que otorgaste a sitios web y apps. Si no quieres que los sitios o las apps accedan a la información de tu cuenta, podrás acceder a tu <ph name="DEVICE_TYPE" /> como invitado o navegar en la Web desde una <ph name="LINK_2_BEGIN" />ventana de incógnito<ph name="LINK_2_END" />.</translation>
@@ -7533,6 +7540,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8379156816349755485">Después de acceder, se almacenará un token de autenticación único y se usará para todas las próximas descargas compatibles.</translation>
 <translation id="8379878387931047019">Este dispositivo no es compatible con el tipo de llave de seguridad que se solicita en este sitio web</translation>
 <translation id="8379991678458444070">Para regresar aquí rápidamente, agrega esta pestaña a favoritos</translation>
+<translation id="8380266723152870797">Nombre de la ventana</translation>
 <translation id="8380941800586852976">Peligrosa</translation>
 <translation id="8382715499079447151">Protección de visualización</translation>
 <translation id="8382913212082956454">Copiar dir&amp;ección de correo electrónico</translation>

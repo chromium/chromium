@@ -251,6 +251,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="243878895369688216">Eile avatud</translation>
 <translation id="2441427462554639370">Salvestamine lõppes liiga vähese salvestusruumi tõttu</translation>
 <translation id="24452542372838207">Laienda märguannet</translation>
+<translation id="2449089818483227734">Akutase on madal</translation>
 <translation id="2450205753526923158">Ekraanipildirežiim</translation>
 <translation id="2456008742792828469">Kalender, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2473177541599297363">Kinnitage eraldusvõime</translation>
@@ -411,11 +412,13 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="3445925074670675829">C-tüüpi USB-seade</translation>
+<translation id="3455468639467374593">Mall, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3465223694362104965">Pärast teie viimast sisselogimist lõi muu klaviatuur seadmega ühenduse. Enne klaviatuuri kasutamist veenduge, et see oleks usaldusväärne.</translation>
 <translation id="3465356146291925647">Võrku haldab teie administraator</translation>
 <translation id="3477079411857374384">Ctrl + Tõstuklahv + Tühik</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signaalitugevus: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Riiul on automaatselt peidetud</translation>
+<translation id="3505066820268455558">Akut laetakse</translation>
 <translation id="3509391053705095206">Teie telefoni ei õnnestu leida. Veenduge, et telefonis oleks Bluetooth sisse lülitatud.</translation>
 <translation id="3510164367642747937">Hiirekursori esiletõstmine</translation>
 <translation id="3513798432020909783">Kontohaldur: <ph name="MANAGER_EMAIL" /></translation>
@@ -456,6 +459,8 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="3633097874324966332">Avage oma seadme sidumiseks Bluetoothi seaded</translation>
 <translation id="3638400994746983214">Privaatsuskuvale lülitamine. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Värskendamise tähtaeg on möödas</translation>
+<translation id="3659814201068740063">Umbes <ph name="TIME_LEFT" /> jäänud (<ph name="PERCENTAGE" />%).
+Ühendage seade toiteallikaga.</translation>
 <translation id="366222428570480733">Kontoga <ph name="USER_EMAIL_ADDRESS" /> hallatav kasutaja</translation>
 <translation id="36813544980941320">WiFi-võrke jagatakse teie telefoni ja seadme <ph name="DEVICE_NAME" /> vahel</translation>
 <translation id="3694122362646626770">Veebisaidid</translation>
@@ -511,6 +516,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="3962859241508114581">Eelmine lugu</translation>
 <translation id="3969043077941541451">Väljas</translation>
 <translation id="397105322502079400">Arvutamine ...</translation>
+<translation id="397726367135689299">Aku laadimine võib olla ebausaldusväärne.</translation>
 <translation id="3977512764614765090">Aku laetuse tase on <ph name="PERCENTAGE" />% ja seda laetakse.</translation>
 <translation id="3986082989454912832">Vasta</translation>
 <translation id="3995138139523574647">C-tüüpi USB-seade (tagumine parempoolne port)</translation>
@@ -1038,6 +1044,7 @@ Uus installimine</translation>
 <translation id="7130207228079676353">KÕIGE TÕENÄOLISEMAD</translation>
 <translation id="7131634465328662194">Teid logitakse automaatselt välja.</translation>
 <translation id="7143207342074048698">Ühendamine</translation>
+<translation id="7144942256906679589">Aku olek</translation>
 <translation id="7165278925115064263">Alt + Tõstuklahv + K</translation>
 <translation id="7168224885072002358">Ekraan ennistatakse vanale eraldusvõimele <ph name="TIMEOUT_SECONDS" /> pärast</translation>
 <translation id="7180611975245234373">Värskenda</translation>
@@ -1104,6 +1111,7 @@ Uus installimine</translation>
 <translation id="7593891976182323525">Otsinguklahv või tõstuklahv</translation>
 <translation id="7600875258240007829">Kuva kõik märguanded</translation>
 <translation id="7607002721634913082">Peatatud</translation>
+<translation id="7609951632080598826">Kalendrivaade, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Kaamera ühendati uuesti.</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
 <translation id="7633755430369750696">Läheduses jagamise seadete kuvamine.</translation>
@@ -1229,6 +1237,7 @@ Uus installimine</translation>
 <translation id="8345019317483336363">Valitud on aken <ph name="WINDOW_TITLE" /></translation>
 <translation id="8351131234907093545">Märkme loomine</translation>
 <translation id="8364673525741149932">Režiimi Shelf Party sisse- ja väljalülitamine. <ph name="STATE_TEXT" /></translation>
+<translation id="8369166482916924789">Salvestatud töölaud, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">Tähe võrra edasi</translation>
 <translation id="8371991222807690464">Välisseadme jõudlus võib külalisrežiimis olla piiratud</translation>
 <translation id="8374601332003098278">Vajutage osalise ekraanikuva salvestamiseks sisestusklahvi</translation>
@@ -1341,6 +1350,7 @@ Uus installimine</translation>
 <translation id="9000771174482730261">HALLAKE SALVESTUSRUUMI</translation>
 <translation id="9017320285115481645">Sisestage Family Linki vanema pääsukood.</translation>
 <translation id="9024331582947483881">täisekraan</translation>
+<translation id="9029736946581028033">Seade lülitub peagi välja</translation>
 <translation id="9030319654231318877">Päikeseloojanguni väljas</translation>
 <translation id="9034924485347205037">Linuxi failid</translation>
 <translation id="9047624247355796468">Ava võrgu <ph name="NETWORK_NAME" /> seaded</translation>
@@ -1370,6 +1380,7 @@ Uus installimine</translation>
 <translation id="9168436347345867845">Teen seda hiljem</translation>
 <translation id="9178475906033259337">Kuvatud on 1 tulemus päringule <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">See funktsioon võimaldab teil parooli sisestamata pääseda kiirelt juurde kõigile sisselogitud kasutajatele. Kasutage seda funktsiooni vaid kontode puhul, mida usaldate.</translation>
+<translation id="9180906851711123156">Sulgemiseks vajutage klahve Ctrl + W</translation>
 <translation id="9183456764293710005">Täisekraani suurendus</translation>
 <translation id="9193626018745640770">Ülekandmine tundmatus vastuvõtjas</translation>
 <translation id="9194617393863864469">Logi sisse teine kasutaja ...</translation>

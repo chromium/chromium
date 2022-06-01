@@ -1076,6 +1076,7 @@
 <translation id="6824899148643461612">הכרטיסייה, <ph name="TAB_TITLE" />, נבחרה</translation>
 <translation id="6828070228333235514">הפסקת המעקב אחר מחירים</translation>
 <translation id="6833996806551876956">תקופת ניסיון של ארגז חול של הגדרות פרטיות</translation>
+<translation id="6836206421467243968">שחזור של קבוצת הכרטיסיות <ph name="TITLE_OF_GROUP" /> כקבוצת כרטיסיות חדשה ברקע.</translation>
 <translation id="6846298663435243399">הטעינה מתבצעת...</translation>
 <translation id="6850409657436465440">ההורדה עדיין מתבצעת</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> כרטיסיות נסגרו</translation>
@@ -1138,6 +1139,7 @@
 <translation id="7187993566681480880">‏מגינה עליך ב-Chrome ועשויה לשפר את האבטחה שלך באפליקציות אחרות של Google. ההגנה הזו פעילה רק אם נכנסים לחשבון.</translation>
 <translation id="7191430249889272776">הכרטיסייה נפתחה ברקע.</translation>
 <translation id="7196215469483532480">ההסבר על המדריך בנושא פרטיות נפתח בגובה מלא</translation>
+<translation id="7207760545532569765">שחזור של <ph name="TAB_COUNT" /> כרטיסיות ככרטיסיות חדשות ברקע.</translation>
 <translation id="7208109991155904980">התגובה הוזזה</translation>
 <translation id="7222235798733126207">הגבלה על השיתוף בין אתרים</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{הורדה אחת בהמתנה}two{# הורדות בהמתנה}many{# הורדות בהמתנה}other{# הורדות בהמתנה}}</translation>
@@ -1516,6 +1518,7 @@
 <translation id="9148126808321036104">כניסה חוזרת</translation>
 <translation id="9155898266292537608">אפשר גם להתחיל חיפוש על-ידי הקשה קצרה על מילה</translation>
 <translation id="9158770349521403363">שיתוף התוכן בלבד</translation>
+<translation id="9159716826369098114">שחזור של קבוצת כרטיסיות שמכילה <ph name="TAB_COUNT" /> כרטיסיות כקבוצת כרטיסיות חדשה ברקע.</translation>
 <translation id="916446198114569890">‏כתובות ה-URL שעברת אליהן נשמרות בחשבון Google שלך.</translation>
 <translation id="9169507124922466868">היסטוריית הניווט פתוחה למחצה</translation>
 <translation id="9187955620966010988">התגובה נערכה</translation>

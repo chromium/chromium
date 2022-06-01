@@ -250,6 +250,7 @@ Sivustot eivät näe selaustoimintaasi eri sivustoilla evästeiden kautta esim. 
 Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="3080525922482950719">Voit tallentaa sivuja myöhempää tai offline-tilassa lukemista varten</translation>
 <translation id="3081338492074632642">Varmista, että tallennettava salasana vastaa palvelun (<ph name="WEBSITE" />) salasanaa.</translation>
+<translation id="3103603146121354983">Salasanojen automaattinen täyttö</translation>
 <translation id="3112556859945124369">Merkitse…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />Katso, mitä voit synkronoida<ph name="END_LINK" /></translation>
 <translation id="3131206671572504478">Estä kaikki</translation>
@@ -661,6 +662,7 @@ Sivustot eivät näe selaustoimintaasi eri sivustoilla evästeiden kautta esim. 
 
 Yritä käyttää jokaisella sivustolla yksilöllistä salasanaa.</translation>
 <translation id="650279896687777322">Lue lisää…</translation>
+<translation id="6510072653668207258">Muistuta myöhemmin</translation>
 <translation id="651505212789431520">Perutaanko synkronointi? Voit ottaa synkronoinnin käyttöön milloin tahansa asetuksista.</translation>
 <translation id="6524918542306337007">Incognito-tila ei ole käytettävissä</translation>
 <translation id="6530992499366869131">Varoita, jos salasanoja vaarantuu tietosuojaloukkauksessa</translation>

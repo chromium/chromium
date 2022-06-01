@@ -1076,6 +1076,7 @@ Traustir lyklar bæta persónuvernd á netinu og ekki er hægt að nota þá til
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, flipi, valinn</translation>
 <translation id="6828070228333235514">Hætta að vakta verð</translation>
 <translation id="6833996806551876956">Prufuútgáfa persónuverndarafmörkunar</translation>
+<translation id="6836206421467243968">Endurheimta flipahópinn <ph name="TITLE_OF_GROUP" /> sem nýjan flipahóp í bakgrunni.</translation>
 <translation id="6846298663435243399">Hleður…</translation>
 <translation id="6850409657436465440">Enn er verið að sækja</translation>
 <translation id="6850830437481525139"><ph name="TAB_COUNT" /> flipum lokað</translation>
@@ -1138,6 +1139,7 @@ Traustir lyklar bæta persónuvernd á netinu og ekki er hægt að nota þá til
 <translation id="7187993566681480880">Tryggir öryggi þitt í Chrome og kann að vera notað til að auka öryggi þitt í öðrum Google forritum þegar þú hefur skráð þig inn.</translation>
 <translation id="7191430249889272776">Flipi opnaður í bakgrunni.</translation>
 <translation id="7196215469483532480">Útskýring á leiðbeiningum um persónuvernd opnuð á öllum skjánum</translation>
+<translation id="7207760545532569765">Endurheimta <ph name="TAB_COUNT" /> flipa sem nýja bakgrunnsflipa.</translation>
 <translation id="7208109991155904980">Viðbrögð færð</translation>
 <translation id="7222235798733126207">Takmörkuð deiling milli vefsvæða</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{Ein skrá bíður niðurhals}one{# skrá bíður niðurhals}other{# skrár bíða niðurhals}}</translation>
@@ -1516,6 +1518,7 @@ Traustir lyklar bæta persónuvernd á netinu og ekki er hægt að nota þá til
 <translation id="9148126808321036104">Skrá inn aftur</translation>
 <translation id="9155898266292537608">Þú getur einnig leitað með því að ýta á orð</translation>
 <translation id="9158770349521403363">Aðeins deila efni</translation>
+<translation id="9159716826369098114">Endurheimta flipahóp með <ph name="TAB_COUNT" /> flipum sem nýjan flipahóp í bakgrunni.</translation>
 <translation id="916446198114569890">Vefslóðirnar sem þú opnar eru vistaðar á Google reikningnum þínum</translation>
 <translation id="9169507124922466868">Ferill er hálfopinn</translation>
 <translation id="9187955620966010988">Viðbrögðum breytt</translation>

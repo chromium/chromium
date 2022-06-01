@@ -1076,6 +1076,7 @@ Uzticamības marķieri uzlabo konfidencialitāti tīmeklī. Tos nevar izmantot, 
 <translation id="6824899148643461612"><ph name="TAB_TITLE" />, cilne, atlasīta</translation>
 <translation id="6828070228333235514">Apturēt cenas izsekošanu</translation>
 <translation id="6833996806551876956">Privacy Sandbox izmēģinājuma periods</translation>
+<translation id="6836206421467243968">Atjaunot ciļņu grupu <ph name="TITLE_OF_GROUP" /> kā jaunu fona ciļņu grupu.</translation>
 <translation id="6846298663435243399">Notiek ielāde…</translation>
 <translation id="6850409657436465440">Joprojām notiek lejupielāde</translation>
 <translation id="6850830437481525139">Aizvērtas <ph name="TAB_COUNT" /> cilnes</translation>
@@ -1138,6 +1139,7 @@ Uzticamības marķieri uzlabo konfidencialitāti tīmeklī. Tos nevar izmantot, 
 <translation id="7187993566681480880">Tiek nodrošināta jūsu aizsardzība pārlūkprogrammā Chrome. Šis režīms var tikt izmantots jūsu drošības uzlabošanai citās Google lietotnēs, kad esat pierakstījies.</translation>
 <translation id="7191430249889272776">Cilne tika atvērta fonā.</translation>
 <translation id="7196215469483532480">Paskaidrojums par konfidencialitātes ceļvedi ir atvērts pilna ekrāna augstumā</translation>
+<translation id="7207760545532569765">Atjaunot cilnes kā jaunas fona cilnes. Ciļņu skaits ir <ph name="TAB_COUNT" />.</translation>
 <translation id="7208109991155904980">Reakcija ir noņemta</translation>
 <translation id="7222235798733126207">Ierobežota datu kopīgošana starp vietnēm</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{Tiek gaidīta 1 lejupielāde}zero{Tiek gaidītas # lejupielādes}one{Tiek gaidīta # lejupielāde}other{Tiek gaidītas # lejupielādes}}</translation>
@@ -1516,6 +1518,7 @@ Uzticamības marķieri uzlabo konfidencialitāti tīmeklī. Tos nevar izmantot, 
 <translation id="9148126808321036104">Pierakstieties vēlreiz</translation>
 <translation id="9155898266292537608">Varat arī meklēt, ātri pieskaroties vārdam</translation>
 <translation id="9158770349521403363">Kopīgot tikai saturu</translation>
+<translation id="9159716826369098114">Atjaunot ciļņu grupu kā jaunu fona ciļņu grupu. Ciļņu skaits šajā grupā ir <ph name="TAB_COUNT" />.</translation>
 <translation id="916446198114569890">Jūsu apmeklētie URL vietrāži tiek saglabāti Google kontā</translation>
 <translation id="9169507124922466868">Navigācijas vēsture ir atvērta līdz pusei.</translation>
 <translation id="9187955620966010988">Reakcija ir pielāgota</translation>

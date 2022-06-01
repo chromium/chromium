@@ -251,6 +251,7 @@
 <translation id="243878895369688216">נפתח אתמול</translation>
 <translation id="2441427462554639370">ההקלטה הסתיימה כי נפח האחסון כמעט נגמר</translation>
 <translation id="24452542372838207">הרחבת ההודעה</translation>
+<translation id="2449089818483227734">הסוללה חלשה</translation>
 <translation id="2450205753526923158">מצב צילום מסך</translation>
 <translation id="2456008742792828469">יומן, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2473177541599297363">אישור הרזולוציה</translation>
@@ -411,11 +412,13 @@
 <translation id="3441920967307853524"><ph name="TOTAL_BYTES" />/<ph name="RECEIVED_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> דק'</translation>
 <translation id="3445925074670675829">‏מכשיר עם יציאת USB-C</translation>
+<translation id="3455468639467374593">תבנית, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3465223694362104965">מקלדת אחרת חוברה למכשיר לאחר הכניסה האחרונה שלך. חשוב לוודא שזו מקלדת מהימנה לפני שמשתמשים בה.</translation>
 <translation id="3465356146291925647">הרשת מנוהלת על ידי מנהל המערכת שלך</translation>
 <translation id="3477079411857374384">‏Control+‏Shift+מקש הרווח</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />,‏ <ph name="CONNECTION_STATUS" />, עוצמת האות: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">המדף יוסתר באופן אוטומטי</translation>
+<translation id="3505066820268455558">הסוללה בתהליך טעינה</translation>
 <translation id="3509391053705095206">‏לא הצלחנו למצוא את הטלפון. צריך לוודא שה-Bluetooth שלו מופעל.</translation>
 <translation id="3510164367642747937">הדגשה של סמן העכבר</translation>
 <translation id="3513798432020909783">החשבון מנוהל על-ידי <ph name="MANAGER_EMAIL" /></translation>
@@ -456,6 +459,8 @@
 <translation id="3633097874324966332">‏צריך לפתוח את הגדרות Bluetooth כדי להתאים את המכשיר</translation>
 <translation id="3638400994746983214">הפעלה וכיבוי של מסך הפרטיות. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">צריך לבצע עדכון</translation>
+<translation id="3659814201068740063">הזמן שנותר: בערך <ph name="TIME_LEFT" />‏ (<ph name="PERCENTAGE" />%).
+יש לחבר את המכשיר למקור חשמל.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> משתמש מנוהל</translation>
 <translation id="36813544980941320">‏רשתות Wi-Fi ישותפו בין הטלפון שלך לבין <ph name="DEVICE_NAME" /></translation>
 <translation id="3694122362646626770">אתרים</translation>
@@ -510,6 +515,7 @@
 <translation id="3962859241508114581">הטראק הקודם</translation>
 <translation id="3969043077941541451">כבוי</translation>
 <translation id="397105322502079400">מתבצע חישוב...</translation>
+<translation id="397726367135689299">יכול להיות שטעינת הסוללה מבוצעת בצורה לא מהימנה.</translation>
 <translation id="3977512764614765090">‏שיעור הטעינה של הסוללה הוא ‎<ph name="PERCENTAGE" />%‎ והטעינה נמשכת.</translation>
 <translation id="3986082989454912832">מענה</translation>
 <translation id="3995138139523574647">‏מכשיר עם יציאת USB-C (יציאה ימנית-אחורית)</translation>
@@ -1037,6 +1043,7 @@
 <translation id="7130207228079676353">סבירות גבוהה</translation>
 <translation id="7131634465328662194">המערכת תוציא אותך מהחשבון באופן אוטומטי.</translation>
 <translation id="7143207342074048698">מתבצע חיבור</translation>
+<translation id="7144942256906679589">מצב הסוללה</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358">תבוצע חזרה לרזולוציה הקודמת בעוד <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">רענון</translation>
@@ -1105,6 +1112,7 @@
 <translation id="7593891976182323525">‏חיפוש או Shift</translation>
 <translation id="7600875258240007829">הצגת כל ההתראות</translation>
 <translation id="7607002721634913082">ההורדה בהשהיה</translation>
+<translation id="7609951632080598826">תצוגת היומן, <ph name="DATE" />,‏ <ph name="TIME" /></translation>
 <translation id="7611213136657090146">המצלמה מחוברת שוב.</translation>
 <translation id="7624117708979618027">‎<ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7633755430369750696">הצגה של הרשאות שיתוף בקרבת מקום.</translation>
@@ -1230,6 +1238,7 @@
 <translation id="8345019317483336363">נבחר החלון <ph name="WINDOW_TITLE" /></translation>
 <translation id="8351131234907093545">יצירת הערה</translation>
 <translation id="8364673525741149932">החלפת המצב של קבוצת המדפים. <ph name="STATE_TEXT" /></translation>
+<translation id="8369166482916924789">שולחן העבודה הווירטואלי נשמר, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">אות אחת קדימה</translation>
 <translation id="8371991222807690464">במצב אורח, ביצועי הציוד ההיקפי עשויים להיות מוגבלים.</translation>
 <translation id="8374601332003098278">‏כדי להקליט חלק מהמסך, מקישים על Enter</translation>
@@ -1342,6 +1351,7 @@
 <translation id="9000771174482730261">ניהול האחסון</translation>
 <translation id="9017320285115481645">‏יש להזין את קוד הגישה להורים עבור Family Link.</translation>
 <translation id="9024331582947483881">מסך מלא</translation>
+<translation id="9029736946581028033">המכשיר ייכבה בקרוב</translation>
 <translation id="9030319654231318877">התכונה כבויה עד השקיעה</translation>
 <translation id="9034924485347205037">‏קובצי Linux</translation>
 <translation id="9047624247355796468">פתיחת ההגדרות של <ph name="NETWORK_NAME" /></translation>
@@ -1373,6 +1383,7 @@
 <translation id="9179259655489829027">תכונה זו מאפשרת לך לגשת במהירות לכל משתמש המחובר לחשבון, בלי להזין סיסמה.
 
 יש להשתמש בתכונה הזו רק עם חשבונות מהימנים.</translation>
+<translation id="9180906851711123156">‏כדי לסגור, יש להקיש על Ctrl +‏ W.</translation>
 <translation id="9183456764293710005">הגדלת כל המסך</translation>
 <translation id="9193626018745640770">מתבצעת העברה במכשיר לא ידוע</translation>
 <translation id="9194617393863864469">הוספת משתמש אחר...</translation>

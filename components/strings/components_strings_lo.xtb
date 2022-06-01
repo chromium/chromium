@@ -484,6 +484,7 @@
 <translation id="2215963164070968490">ໝາ</translation>
 <translation id="2218879909401188352">ຜູ້ໂຈມຕີເຊິ່ງໃນປັດຈຸບັນຢູ່ໃນ <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> ສາມາດຕິດຕັ້ງແອັບອັນຕະລາຍທີ່ເຮັດໃຫ້ອຸປະກອນຂອງທ່ານເສຍຫາຍໄດ້, ເພີ່ມການຄິດຄ່າທີ່ເຊື່ອງໄວ້ໃສ່ໃບບິນມືຖືຂອງທ່ານ ຫຼື ລັກເອົາຂໍ້ມູນສ່ວນຂອງທ່ານ. <ph name="BEGIN_LEARN_MORE_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2219658597883514593">ຣີສະຕາດການສອນການນຳໃຊ້</translation>
+<translation id="2219735899272417925">ຕ້ອງຣີເຊັດອຸປະກອນ</translation>
 <translation id="2224337661447660594">ບໍ່ມີອິນເຕີເນັດ</translation>
 <translation id="2230458221926704099">ແກ້ໄຂການເຊື່ອມຕໍ່ຂອງທ່ານ ໂດຍໃຊ້ <ph name="BEGIN_LINK" />ແອັບກວດວິເຄາະ<ph name="END_LINK" /></translation>
 <translation id="2239100178324503013">ສົ່ງດຽວນີ້</translation>
@@ -882,9 +883,6 @@
 <translation id="3369192424181595722">ໂມງ​ຜິດ​ພາດ</translation>
 <translation id="3369459162151165748">ອາໄຫລ່ລົດ ແລະ ອຸປະກອນເສີມ</translation>
 <translation id="3371064404604898522">ຕັ້ງ Chrome ເປັນໂປຣແກຣມທ່ອງເວັບເລີ່ມຕົ້ນ</translation>
-<translation id="3371076217486966826"><ph name="URL" /> ຕ້ອງການ:
-      • ສ້າງແຜນທີ່ 3D ຂອງສິ່ງອ້ອມຂ້າງທ່ານ ແລະ ຕິດຕາມຕຳແໜ່ງກ້ອງ
-      • ໃຊ້ກ້ອງຂອງທ່ານ</translation>
 <translation id="337363190475750230">ຖອນການຈັດໃຫ້ແລ້ວ</translation>
 <translation id="3375754925484257129">ເປີດໃຊ້ການກວດສອບຄວາມປອດໄພ Chrome</translation>
 <translation id="3377144306166885718">ເຊີບເວີໃຊ້ TLS ເວີຊັນເກົ່າ.</translation>

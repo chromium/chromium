@@ -251,6 +251,7 @@
 <translation id="243878895369688216">Відкрито вчора</translation>
 <translation id="2441427462554639370">Запис завершився через критично малий обсяг пам’яті</translation>
 <translation id="24452542372838207">Розгорнути сповіщення</translation>
+<translation id="2449089818483227734">Низький заряд</translation>
 <translation id="2450205753526923158">Режим знімка екрана</translation>
 <translation id="2456008742792828469">Календар, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2473177541599297363">Підтвердьте роздільну здатність</translation>
@@ -411,11 +412,13 @@
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> хв</translation>
 <translation id="3445925074670675829">Пристрій із портом USB типу C</translation>
+<translation id="3455468639467374593">Шаблон, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3465223694362104965">Після вашого останнього входу до пристрою було підключено іншу клавіатуру. Переконайтеся, що вона безпечна, перш ніж користуватися нею.</translation>
 <translation id="3465356146291925647">Мережею керує адміністратор</translation>
 <translation id="3477079411857374384">Комбінація клавіш "Control-Shift-Space"</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Автоматичне ховання полиці</translation>
+<translation id="3505066820268455558">Заряджання акумулятора</translation>
 <translation id="3509391053705095206">Не вдається знайти телефон. Переконайтеся, що на ньому ввімкнено Bluetooth.</translation>
 <translation id="3510164367642747937">Підсвічувати курсор миші</translation>
 <translation id="3513798432020909783">Обліковим записом керує <ph name="MANAGER_EMAIL" /></translation>
@@ -456,6 +459,8 @@
 <translation id="3633097874324966332">Відкрийте налаштування Bluetooth, щоб створити пару з пристроєм</translation>
 <translation id="3638400994746983214">Перемикає екран конфіденційності. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Оновлення прострочено</translation>
+<translation id="3659814201068740063">Залишилося приблизно <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" />%).
+Підключіть пристрій до джерела живлення.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> – керований користувач</translation>
 <translation id="36813544980941320">Ваш телефон і пристрій <ph name="DEVICE_NAME" /> підключатимуться до однакових мереж Wi-Fi</translation>
 <translation id="3694122362646626770">Веб-сайти</translation>
@@ -510,6 +515,7 @@
 <translation id="3962859241508114581">Попередня композиція</translation>
 <translation id="3969043077941541451">Вимкнено</translation>
 <translation id="397105322502079400">Обчислення...</translation>
+<translation id="397726367135689299">Джерело для заряджання акумулятора ненадійне.</translation>
 <translation id="3977512764614765090">Акумулятор заряджений на <ph name="PERCENTAGE" />% і продовжує заряджатися.</translation>
 <translation id="3986082989454912832">Відповісти</translation>
 <translation id="3995138139523574647">пристрій, під’єднаний до порту USB-C (праворуч на задній панелі)</translation>
@@ -1037,6 +1043,7 @@
 <translation id="7130207228079676353">НАЙІМОВІРНІШЕ</translation>
 <translation id="7131634465328662194">Ви вийдете автоматично.</translation>
 <translation id="7143207342074048698">Під’єднання</translation>
+<translation id="7144942256906679589">Стан акумулятора</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358">Попередня роздільна здатність повернеться через <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Оновити</translation>
@@ -1103,6 +1110,7 @@
 <translation id="7593891976182323525">Клавіша пошуку або Shift</translation>
 <translation id="7600875258240007829">Переглянути всі сповіщення</translation>
 <translation id="7607002721634913082">Призупинено</translation>
+<translation id="7609951632080598826">Запис у календарі, <ph name="DATE" /> о <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Камеру знову підключено.</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7633755430369750696">Показати налаштування функції "Передавання поблизу".</translation>
@@ -1228,6 +1236,7 @@
 <translation id="8345019317483336363">Вибрано вікно "<ph name="WINDOW_TITLE" />"</translation>
 <translation id="8351131234907093545">Створити нотатку</translation>
 <translation id="8364673525741149932">Перемкнути режим Shelf Party. <ph name="STATE_TEXT" /></translation>
+<translation id="8369166482916924789">Збережений робочий стіл, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">Уперед на одну літеру</translation>
 <translation id="8371991222807690464">Ефективність периферійних пристроїв у режимі гостя може бути обмежена</translation>
 <translation id="8374601332003098278">Щоб записати частину екрана, натисніть клавішу Enter</translation>
@@ -1340,6 +1349,7 @@
 <translation id="9000771174482730261">КЕРУВАТИ СХОВИЩЕМ</translation>
 <translation id="9017320285115481645">Введіть батьківський код доступу Family Link.</translation>
 <translation id="9024331582947483881">усього екрана</translation>
+<translation id="9029736946581028033">Пристрій скоро розрядиться</translation>
 <translation id="9030319654231318877">Вимкнено до заходу сонця</translation>
 <translation id="9034924485347205037">Файли Linux</translation>
 <translation id="9047624247355796468">Відкрити налаштування <ph name="NETWORK_NAME" /></translation>
@@ -1369,6 +1379,7 @@
 <translation id="9168436347345867845">Пізніше</translation>
 <translation id="9178475906033259337">Показано 1 результат для запиту "<ph name="QUERY" />"</translation>
 <translation id="9179259655489829027">Ця функція дає змогу швидко й без пароля змінити авторизованого користувача. Використовуйте її лише з обліковими записами, яким довіряєте.</translation>
+<translation id="9180906851711123156">Щоб закрити, натисніть Ctrl + W</translation>
 <translation id="9183456764293710005">Повноекранна лупа</translation>
 <translation id="9193626018745640770">Трансляція на невідомий пристрій</translation>
 <translation id="9194617393863864469">Увійти як інший користувач…</translation>

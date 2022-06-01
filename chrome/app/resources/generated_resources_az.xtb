@@ -834,6 +834,7 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1794051631868188691"><ph name="MERCHANT" /> heç vaxt göstərilməsin</translation>
 <translation id="1794791083288629568">Problemin həllində köməklik üçün əks əlaqə göndərin.</translation>
 <translation id="1795214765651529549">Klassiki istifadə edin</translation>
+<translation id="1796105431091975902">Əlavə etmək üçün Ansible Təlimat Kitabçası seçin</translation>
 <translation id="1796588414813960292">Səs tələb edən funksiyalar işləməyəcək</translation>
 <translation id="1800502858278951817">Heç bir artırma <ph name="SITE_NAME" /> saytını oxumaq və ya dəyişmək üçün icazə istəməyib</translation>
 <translation id="1802624026913571222">Qapaq bağlandıqda yuxu rejiminə keçsin</translation>
@@ -3038,6 +3039,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="389901847090970821">Klaviatura seçin</translation>
 <translation id="3900966090527141178">Parolları eskport edin</translation>
 <translation id="3903187154317825986">Quraşdırılmış klaviatura</translation>
+<translation id="3903191712482985591">Təlimat kitabçası əlavə edin</translation>
 <translation id="3904326018476041253">Məkan Xidmətləri</translation>
 <translation id="3904849010307028014">Müntəzəm olaraq hesaba daxil olmaq kimi saytla qarşılıqlı əlaqəniz əsasında həmin sayt brauzerinizə güvən nişanı verə bilər. Daha sonra ziyarət etdiyiniz digər saytlar keçərli güvən nişanını yoxlayıb tapsalar, onlar sizə bot deyil, insan kimi yanaşacaqlar.</translation>
 <translation id="3905761538810670789">Tətbiqi bərpa edin</translation>
@@ -3646,6 +3648,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4510479820467554003">Valideyn hesabı siyahısı</translation>
 <translation id="451102079304155829">arabalar</translation>
 <translation id="4513872120116766993">Proqnozlaşdırıcı yazı</translation>
+<translation id="4513909579793564731">Təlimat kitabçasını tətbiq edin</translation>
 <translation id="4513946894732546136">Geri əlaqə</translation>
 <translation id="451407183922382411"><ph name="COMPANY_NAME" /> tərəfindən dəstəklənir</translation>
 <translation id="4514610446763173167">Oxutmaq və ya dayandırmaq üçün videonu aktiv edin</translation>
@@ -5478,6 +5481,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="635609604405270300">Cihazı aktiv saxlayın</translation>
 <translation id="63566973648609420">Yalnız parol sözünüzü bilən adam şifrələnmiş məlumatınızı oxuya bilər. Parol söz Google tərəfindən göndərilmir və yadda saxlanılmır. Əgər parol sözü unutmusunuzsa və ya bu ayarı dəyişmək istəyirsinizsə <ph name="BEGIN_LINK" />sinxronizasiyanı sıfırlamalısınız<ph name="END_LINK" />.</translation>
 <translation id="6357305427698525450">Bəzi dəstəklənən keçidlər hələ də <ph name="APP_NAME" /> və ya <ph name="APP_NAME_2" /> tətbiqində açılacaq.</translation>
+<translation id="6357794994761110294">Heç bir artırmaya <ph name="SITE_NAME" /> saytını oxumaq və ya dəyişmək üçün icazə verilməyib</translation>
 <translation id="6358884629796491903">Əjdaha</translation>
 <translation id="6361850914223837199">Xəta detalları:</translation>
 <translation id="6362853299801475928">Problemi xəbər verin...</translation>
@@ -6674,6 +6678,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="7559719679815339381">Lütfən, gözləyin... Köşk tətbiqi güncəlləşməkdədir. USB kartını çıxarmayın.</translation>
 <translation id="7560756177962144929"><ph name="DEVICE_TYPE" /> cihazınızı sinxronlaşdırın</translation>
 <translation id="7561196759112975576">Həmişə</translation>
+<translation id="7561982940498449837">Menyunu bağlayın</translation>
 <translation id="756445078718366910">Brauzer pəncərəsini açın</translation>
 <translation id="7564847347806291057">Prosesi bitirin</translation>
 <translation id="756503097602602175"><ph name="LINK_BEGIN" />Ayarlardan<ph name="LINK_END" /> daxil olmuş Google Hesablarını idarə edə bilərsiniz. Veb saytlar və tətbiqlərə verdiyiniz icazələr bütün hesablara tətbiq oluna bilər. Saytlar və ya tətbiqlərin hesab məlumatlarınıza giriş etməsini istəmirsinizsə, <ph name="DEVICE_TYPE" /> cihazınıza qonaq kimi daxil ola və ya <ph name="LINK_2_BEGIN" />Anonim pəncərədə<ph name="LINK_2_END" /> vebdə baxış keçirə bilərsiniz.</translation>
@@ -7530,6 +7535,7 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="8379156816349755485">Daxil olduqdan sonra vahid identifikasiya açarı saxlanılacaq və gələcəkdə bütün uyğun endirmələr üçün istifadə olunacaq.</translation>
 <translation id="8379878387931047019">Bu cihazda veb sayt tərəfindən tələb edilən təhlükəsizlik açarının növü dəstəklənmir</translation>
 <translation id="8379991678458444070">Tabı əlfəcinlərə əlavə etməklə asanlıqla geri qayıdın</translation>
+<translation id="8380266723152870797">Pəncərə adı</translation>
 <translation id="8380941800586852976">Təhlükəli</translation>
 <translation id="8382715499079447151">Baxış qoruması</translation>
 <translation id="8382913212082956454">E-poçt ünvanını kopyalayın</translation>

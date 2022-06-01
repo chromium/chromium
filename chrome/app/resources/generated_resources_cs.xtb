@@ -6685,6 +6685,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7559719679815339381">Čekejte prosím… Probíhá aktualizace terminálové aplikace. Nevyjímejte jednotku USB.</translation>
 <translation id="7560756177962144929">Synchronizujte svoje zařízení <ph name="DEVICE_TYPE" /></translation>
 <translation id="7561196759112975576">Vždy</translation>
+<translation id="7561982940498449837">Zavřít nabídku</translation>
 <translation id="756445078718366910">Otevřít okno prohlížeče</translation>
 <translation id="7564847347806291057">Ukončit proces</translation>
 <translation id="756503097602602175">Přihlášené účty Google můžete spravovat v <ph name="LINK_BEGIN" />Nastavení<ph name="LINK_END" />. Oprávnění, která jste udělili webům a aplikacím, se mohou vztahovat na všechny účty. Pokud nechcete, aby weby nebo aplikace měly přístup k informacím o vašem účtu, můžete se do zařízení <ph name="DEVICE_TYPE" /> přihlásit jako host nebo web procházet v <ph name="LINK_2_BEGIN" />anonymním okně<ph name="LINK_2_END" />.</translation>
@@ -7542,6 +7543,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8379156816349755485">Po registraci bude uložen unikátní ověřovací token a využíván při všech budoucích aktivních stahováních.</translation>
 <translation id="8379878387931047019">Toto zařízení typ bezpečnostního klíče požadovaný tímto webem nepodporuje</translation>
 <translation id="8379991678458444070">Přidejte si tuto kartu do záložek, abyste se sem mohli rychle vrátit</translation>
+<translation id="8380266723152870797">Název okna</translation>
 <translation id="8380941800586852976">Nebezpečné</translation>
 <translation id="8382715499079447151">Ochrana před špehováním</translation>
 <translation id="8382913212082956454">Kopírovat &amp;e-mailovou adresu</translation>

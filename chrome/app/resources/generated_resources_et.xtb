@@ -841,6 +841,7 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="1794051631868188691">Ära kunagi näita kaupmeest <ph name="MERCHANT" /></translation>
 <translation id="1794791083288629568">Saatke tagasisidet, et aidata meil see probleem lahendada.</translation>
 <translation id="1795214765651529549">Kasuta klassikalist</translation>
+<translation id="1796105431091975902">Valige lisatav Ansible'i juhend</translation>
 <translation id="1796588414813960292">Heli vajavad funktsioonid ei tööta</translation>
 <translation id="1800502858278951817">Ükski rakendus pole taotlenud saidi <ph name="SITE_NAME" /> lugemist ja muutmist</translation>
 <translation id="1802624026913571222">Lülita unerežiimi, kui kaas on suletud</translation>
@@ -2471,6 +2472,7 @@ väljasuumimiseks klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamine.</trans
 <translation id="3348038390189153836">Leiti irdseade</translation>
 <translation id="3348131053948466246">Soovitatakse emotikone. Navigeerimiseks vajutage üles- või allanoolt ja sisestamiseks sisestusklahvi.</translation>
 <translation id="3349933790966648062">Mälu jalajälg</translation>
+<translation id="3353786022389205125">Lülitage sisse valik „Kuva unerežiimist ärkamisel lukustuskuva“ ja proovige uuesti</translation>
 <translation id="3354972872297836698">Ei saanud seadmega <ph name="DEVICE_NAME" /> siduda; valige seade, et uuesti proovida</translation>
 <translation id="3355936511340229503">Ühenduse viga</translation>
 <translation id="3356469410714175391">(Virtuaalkaart on lubatud)</translation>
@@ -3045,6 +3047,7 @@ väljasuumimiseks klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamine.</trans
 <translation id="389901847090970821">Klaviatuuri valimine</translation>
 <translation id="3900966090527141178">Paroolide eksportimine</translation>
 <translation id="3903187154317825986">Sisseehitatud klaviatuur</translation>
+<translation id="3903191712482985591">Lisa juhend</translation>
 <translation id="3904326018476041253">Asukohateenused</translation>
 <translation id="3904849010307028014">Teie interaktsioonide põhjal saidiga (nt kontole regulaarselt sisse logimine) saab see sait teie brauserile väljastada usaldusmärgi. Hiljem, kui teised külastatavad saidid kontrollivad kehtivat usaldusmärki ja leiavad selle, kohtlevad nad teid suurema tõenäosusega inimesena, mitte robotina.</translation>
 <translation id="3905761538810670789">Paranda rakendust</translation>
@@ -3655,6 +3658,7 @@ kasutades juhtpaneeli funktsiooni <ph name="CONTROL_PANEL_APPLET_NAME" />.
 <translation id="4510479820467554003">Vanemakontode loend</translation>
 <translation id="451102079304155829">ostukorvid</translation>
 <translation id="4513872120116766993">Ennustamisega sisestamine</translation>
+<translation id="4513909579793564731">Rakenda juhend</translation>
 <translation id="4513946894732546136">Tagasiside</translation>
 <translation id="451407183922382411">Toetab <ph name="COMPANY_NAME" /></translation>
 <translation id="4514610446763173167">Käivitab/peatab video</translation>
@@ -4948,6 +4952,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="5827733057563115968">Järgmise sõna ennustamine</translation>
 <translation id="5828545842856466741">Lisa profiil …</translation>
 <translation id="5828633471261496623">Printimine ...</translation>
+<translation id="5830205393314753525">Rakendust <ph name="APP_NAME" /> ei saa avada</translation>
 <translation id="5830720307094128296">Salvesta leht &amp;nimega...</translation>
 <translation id="5832813618714645810">Profiilid</translation>
 <translation id="583281660410589416">Tundmatu</translation>
@@ -5488,6 +5493,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="635609604405270300">Hoidke seade sisselülitatuna</translation>
 <translation id="63566973648609420">Teie krüpteeritud andmeid saavad lugeda vaid need, kes teavad teie parooli – seda ei saadeta Google'ile ja Google ei talleta seda. Kui unustate parooli või soovite seda seadet muuta, tuleb teil <ph name="BEGIN_LINK" />sünkroonimine lähtestada<ph name="END_LINK" />.</translation>
 <translation id="6357305427698525450">Mõned toetatud lingid avanevad endiselt rakenduses <ph name="APP_NAME" /> või <ph name="APP_NAME_2" />.</translation>
+<translation id="6357794994761110294">Mitte ükski laiendus ei tohi saiti <ph name="SITE_NAME" /> lugeda ega muuta</translation>
 <translation id="6358884629796491903">Draakon</translation>
 <translation id="6361850914223837199">Vea üksikasjad:</translation>
 <translation id="6362853299801475928">&amp;Probleemidest teavitamine ...</translation>
@@ -6684,6 +6690,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7559719679815339381">Oodake ... kioski rakendust värskendatakse. Ärge eemaldage USB-mälupulka.</translation>
 <translation id="7560756177962144929">Sünkroonige <ph name="DEVICE_TYPE" /></translation>
 <translation id="7561196759112975576">Alati</translation>
+<translation id="7561982940498449837">Sule menüü</translation>
 <translation id="756445078718366910">Ava brauseri aken</translation>
 <translation id="7564847347806291057">Lõpeta toiming</translation>
 <translation id="756503097602602175">Saate sisselogitud Google'i kontosid hallata jaotises <ph name="LINK_BEGIN" />Seaded<ph name="LINK_END" />. Veebisaitidele ja rakendustele antud load võivad kehtida kõigi kontode puhul. Kui te ei soovi, et saidid või rakendused teie konto teabele juurde pääseksid, saate seadmesse <ph name="DEVICE_TYPE" /> sisse logida külalisena või sirvida veebi <ph name="LINK_2_BEGIN" />inkognito aknas<ph name="LINK_2_END" />.</translation>
@@ -7542,6 +7549,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8379156816349755485">Sisselogimisel salvestatakse kordumatu autentimismärk, mida kasutatakse kõigi tulevaste sobilike allalaadimiste puhul.</translation>
 <translation id="8379878387931047019">See seade ei toeta seda tüüpi turvavõtit, mida see veebisait nõuab</translation>
 <translation id="8379991678458444070">Lisage vaheleht järjehoidjatesse, et siia kiiresti naasta</translation>
+<translation id="8380266723152870797">Akna nimi</translation>
 <translation id="8380941800586852976">Ohtlik</translation>
 <translation id="8382715499079447151">Vaatamiskaitse</translation>
 <translation id="8382913212082956454">Kopeeri &amp;e-posti aadress</translation>

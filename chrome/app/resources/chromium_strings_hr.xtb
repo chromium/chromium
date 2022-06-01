@@ -185,6 +185,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="549669000822060376">Pričekajte da Chromium instalira najnovija ažuriranja sustava.</translation>
 <translation id="5496810170689441661">Chromium pokušava urediti zaporke. Upišite svoju zaporku za Windows da biste to dopustili.</translation>
 <translation id="5527463683072221100">Otvori PDF-ove u Chromiumu</translation>
+<translation id="5614091477838198795">Kad uključite tu opciju, odjavit ćete se i s Chromiuma</translation>
 <translation id="5623402015214259806">{0,plural, =0{Dostupno je ažuriranje Chromiuma}=1{Dostupno je ažuriranje Chromiuma}one{Ažuriranje Chromiuma dostupno je već # dan}few{Ažuriranje Chromiuma dostupno je već # dana}other{Ažuriranje Chromiuma dostupno je već # dana}}</translation>
 <translation id="5634636535844844681">Chromium zahtijeva Windows 7 ili noviju verziju.</translation>
 <translation id="5653831366781983928">Sada ponovo pokrenite Chromium</translation>

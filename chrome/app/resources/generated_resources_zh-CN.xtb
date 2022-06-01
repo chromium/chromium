@@ -2457,6 +2457,7 @@
 <translation id="3348038390189153836">检测到可移除的设备</translation>
 <translation id="3348131053948466246">建议的表情符号。按向上或向下箭头键即可浏览，按 Enter 键即可插入。</translation>
 <translation id="3349933790966648062">内存占用空间</translation>
+<translation id="3353786022389205125">开启“从休眠状态唤醒时显示锁定屏幕”，然后重试</translation>
 <translation id="3354972872297836698">无法与设备“<ph name="DEVICE_NAME" />”配对；请选择设备以重试</translation>
 <translation id="3355936511340229503">连接出错</translation>
 <translation id="3356469410714175391">（已启用虚拟卡）</translation>
@@ -4931,6 +4932,7 @@
 <translation id="5827733057563115968">下一字词预测</translation>
 <translation id="5828545842856466741">添加个人资料…</translation>
 <translation id="5828633471261496623">正在打印...</translation>
+<translation id="5830205393314753525">无法打开<ph name="APP_NAME" /></translation>
 <translation id="5830720307094128296">将页面存储为(&amp;A)...</translation>
 <translation id="5832813618714645810">个人资料</translation>
 <translation id="583281660410589416">未知</translation>
@@ -6667,6 +6669,7 @@
 <translation id="7559719679815339381">请稍候…自助服务终端应用正在更新。请不要拔下 U 盘。</translation>
 <translation id="7560756177962144929">同步您的 <ph name="DEVICE_TYPE" /></translation>
 <translation id="7561196759112975576">永远</translation>
+<translation id="7561982940498449837">关闭菜单</translation>
 <translation id="756445078718366910">打开浏览器窗口</translation>
 <translation id="7564847347806291057">结束进程</translation>
 <translation id="756503097602602175">您可从<ph name="LINK_BEGIN" />设置<ph name="LINK_END" />中管理已登录的 Google 帐号。您向网站和应用授予的权限可能会应用于所有帐号。如果不想让网站或应用获取您的帐号信息，您不妨以访客身份登录 <ph name="DEVICE_TYPE" />，或者在<ph name="LINK_2_BEGIN" />无痕式窗口<ph name="LINK_2_END" />中浏览网页。</translation>
@@ -7524,6 +7527,7 @@
 <translation id="8379156816349755485">一旦您登录，系统便会存储一个独一无二的身份验证令牌，并会使用它保存今后所有符合条件的下载内容。</translation>
 <translation id="8379878387931047019">此设备不支持该网站要求使用的安全密钥的类型</translation>
 <translation id="8379991678458444070">只需为此标签页添加书签，便可在需要时快速返回到此处</translation>
+<translation id="8380266723152870797">窗口名称</translation>
 <translation id="8380941800586852976">危险</translation>
 <translation id="8382715499079447151">窥探保护功能</translation>
 <translation id="8382913212082956454">复制电子邮件地址(&amp;E)</translation>

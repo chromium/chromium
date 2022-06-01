@@ -6711,6 +6711,7 @@ Mae gennych # cyfrinair arall sydd wedi'u darganfod. Mae Rheolwr Cyfrineiriau Go
 <translation id="7559719679815339381">Arhoswch....Mae'r ap Kiosk wrthi'n cael ei ddiweddaru. Peidiwch â thynnu'r ffon USB.</translation>
 <translation id="7560756177962144929">Cysoni eich <ph name="DEVICE_TYPE" /></translation>
 <translation id="7561196759112975576">Bob tro</translation>
+<translation id="7561982940498449837">Cau'r ddewislen</translation>
 <translation id="756445078718366910">Agor Ffenestr y Porwr</translation>
 <translation id="7564847347806291057">Dod â'r broses i ben</translation>
 <translation id="756503097602602175">Gallwch reoli Cyfrifon Google sydd wedi'u mewngofnodi yn y <ph name="LINK_BEGIN" />Gosodiadau<ph name="LINK_END" />. Mae'n bosib y bydd caniatadau rydych wedi'u rhoi i wefannau ac apiau yn berthnasol i bob cyfrif. Os nad ydych am i wefannau ac apiau gael mynediad at eich gwybodaeth cyfrif, gallwch fewngofnodi i'ch <ph name="DEVICE_TYPE" /> fel gwestai neu bori'r we mewn <ph name="LINK_2_BEGIN" />ffenestr Anhysbys<ph name="LINK_2_END" />.</translation>
@@ -7568,6 +7569,7 @@ Cadwch eich ffeil allwedd mewn man diogel. Bydd ei hangen arnoch i greu fersiyna
 <translation id="8379156816349755485">Wrth fewngofnodi, bydd tocyn dilysu unigryw yn cael ei storio a'i ddefnyddio ar gyfer pob lawrlwythiad cymwys yn y dyfodol.</translation>
 <translation id="8379878387931047019">Nid yw'r ddyfais hon yn cefnogi'r math o allwedd ddiogelwch y mae'r wefan hon yn gofyn amdani</translation>
 <translation id="8379991678458444070">Gallwch ddod yn ôl yma yn gyflym drwy roi nod tudalen ar y tab hwn</translation>
+<translation id="8380266723152870797">Enw'r ffenestr</translation>
 <translation id="8380941800586852976">Peryglus</translation>
 <translation id="8382715499079447151">Wrthi'n gweld amddiffyniad</translation>
 <translation id="8382913212082956454">Copi'r &amp;cyfeiriad e-bost</translation>

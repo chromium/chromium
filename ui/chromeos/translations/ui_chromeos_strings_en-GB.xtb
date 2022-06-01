@@ -645,6 +645,7 @@
 <translation id="6423031066725912715">Vietnamese with TCVN keyboard</translation>
 <translation id="6485131920355264772">Failed to retrieve space info</translation>
 <translation id="6495925982925244349">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />%, managed by your administrator, details</translation>
+<translation id="649877868557234318">Extracting <ph name="FILE_NAME" /> to <ph name="FOLDER_NAME" /></translation>
 <translation id="6499681088828539489">Disallow proxies for shared networks</translation>
 <translation id="6509122719576673235">Norwegian</translation>
 <translation id="6528513914570774834">Allow other users of this device to use this network</translation>

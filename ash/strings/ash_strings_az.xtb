@@ -251,6 +251,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="243878895369688216">Dünən açılıb</translation>
 <translation id="2441427462554639370">Yaddaşda yer çox az olduğuna görə çəkiliş dayandırıldı</translation>
 <translation id="24452542372838207">Bildirişi genişləndirin</translation>
+<translation id="2449089818483227734">Enerji azdır</translation>
 <translation id="2450205753526923158">Skrinşot rejimi</translation>
 <translation id="2456008742792828469">Təqvim, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2473177541599297363">Əksetmə qabiliyyətini təsdiq edin</translation>
@@ -411,11 +412,13 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> dəq</translation>
 <translation id="3445925074670675829">USB-C cihazı</translation>
+<translation id="3455468639467374593">Şablon, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3465223694362104965">Ən son girişdən etibarən bu cihaza başqa klaviatura qoşulub. Klaviatura işlətməzdən öncə təhlükəsizliyinə əmin olun.</translation>
 <translation id="3465356146291925647">Administratorunuz tərəfindən idarə olunur</translation>
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Siqnal Gücü <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">Rəf avtomatik olaraq gizlədilib</translation>
+<translation id="3505066820268455558">Batareya Şarj edilir</translation>
 <translation id="3509391053705095206">Telefonunuzu tapmaq olmur. Telefonda Bluetooth'un aktiv olduğuna əmin olun.</translation>
 <translation id="3510164367642747937">Maus kursorunu vurğulayın</translation>
 <translation id="3513798432020909783"><ph name="MANAGER_EMAIL" /> tərəfindən idarə edilən hesab</translation>
@@ -456,6 +459,8 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="3633097874324966332">Cihazı birləşdirmək üçün Bluetooth ayarlarını açın</translation>
 <translation id="3638400994746983214">Məxfilik ekranını dəyişdirin. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">Güncəlləmə vaxtı keçib</translation>
+<translation id="3659814201068740063">Təqribən <ph name="TIME_LEFT" /> qalıb (<ph name="PERCENTAGE" />%).
+Cihazınızı enerji mənbəyinə qoşun.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> İdarə edilən istifadəçi</translation>
 <translation id="36813544980941320">Wi-Fi şəbəkələri telefonunuz ilə <ph name="DEVICE_NAME" /> arasında paylaşılacaq</translation>
 <translation id="3694122362646626770">Veb Saytlar</translation>
@@ -510,6 +515,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="3962859241508114581">Əvvəlki trek</translation>
 <translation id="3969043077941541451">Deaktiv</translation>
 <translation id="397105322502079400">Hesablanır...</translation>
+<translation id="397726367135689299">Batareya şarjı etibarsız ola bilər.</translation>
 <translation id="3977512764614765090">Batareya <ph name="PERCENTAGE" /> faizdir və enerji yığır.</translation>
 <translation id="3986082989454912832">Cavab</translation>
 <translation id="3995138139523574647">USB-C cihazı (arxa sağ port)</translation>
@@ -1037,6 +1043,7 @@ Yeni quraşdırma</translation>
 <translation id="7130207228079676353">ƏN ÇOX BAXILAN TƏTBİQLƏR</translation>
 <translation id="7131634465328662194">Avtomatik hesabdan çıxacaqsınız.</translation>
 <translation id="7143207342074048698">Qoşulur</translation>
+<translation id="7144942256906679589">Batareyanın statusu</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" /> daxilində köhnə həllə qayıtma</translation>
 <translation id="7180611975245234373">Yeniləyin</translation>
@@ -1103,6 +1110,7 @@ Yeni quraşdırma</translation>
 <translation id="7593891976182323525">Axtarın və ya Dəyişin</translation>
 <translation id="7600875258240007829">Bütün bildirişlərə baxın</translation>
 <translation id="7607002721634913082">Durduruldu</translation>
+<translation id="7609951632080598826">Təqvim baxışı, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Kamera yenidən qoşuldu.</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7633755430369750696">Yaxındakılarla Paylaşma ayarlarını göstərin.</translation>
@@ -1228,6 +1236,7 @@ Yeni quraşdırma</translation>
 <translation id="8345019317483336363"><ph name="WINDOW_TITLE" /> pəncərəsi seçilib</translation>
 <translation id="8351131234907093545">Qeyd yaradın</translation>
 <translation id="8364673525741149932">Shelf Party rejimini keçirin. <ph name="STATE_TEXT" /></translation>
+<translation id="8369166482916924789">Yadda saxlanmış masa, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">Hərf üzrə irəli keçin</translation>
 <translation id="8371991222807690464">Qonaq rejimində periferik cihaz performansı məhdud ola bilər</translation>
 <translation id="8374601332003098278">Qismən ekranı qeydə almaq üçün enter düyməsini basın</translation>
@@ -1340,6 +1349,7 @@ Yeni quraşdırma</translation>
 <translation id="9000771174482730261">YADDAŞI İDARƏ EDİN</translation>
 <translation id="9017320285115481645">Family Link valideyn girişi kodunu daxil edin.</translation>
 <translation id="9024331582947483881">Tam ekran</translation>
+<translation id="9029736946581028033">Cihaz tezliklə sönəcək</translation>
 <translation id="9030319654231318877">Gün batanadək deaktiv olacaq</translation>
 <translation id="9034924485347205037">Linux faylları</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> üzrə ayarları açın</translation>
@@ -1369,6 +1379,7 @@ Yeni quraşdırma</translation>
 <translation id="9168436347345867845">Daha sonra edin</translation>
 <translation id="9178475906033259337"><ph name="QUERY" /> üzrə 1 nəticə göstərilir</translation>
 <translation id="9179259655489829027">Bu funksiya parol tələb etmədən hesaba daxil olmuş istənilən istifadəçiyə sürətli girişə imkan verir. Bu funksiyanı yalnız güvəndiyiniz hesablarla işlədin.</translation>
+<translation id="9180906851711123156">Bağlamaq üçün Ctrl + W düymələrinə basın</translation>
 <translation id="9183456764293710005">Tam Ekran Böyüdücüsü</translation>
 <translation id="9193626018745640770">Naməlum alıcı yayımı</translation>
 <translation id="9194617393863864469">Digər istifadəçi hesabına daxil olun...</translation>

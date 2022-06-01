@@ -251,6 +251,7 @@
 <translation id="243878895369688216">ເປີດມື້ວານນີ້</translation>
 <translation id="2441427462554639370">ການບັນທຶກສິ້ນສຸດລົງເນື່ອງຈາກພື້ນທີ່ຈັດເກັບຂໍ້ມູນເຫຼືອໜ້ອຍສຸດຂີດ</translation>
 <translation id="24452542372838207">ຂະຫຍາຍການແຈ້ງເຕືອນ</translation>
+<translation id="2449089818483227734">ແບັດເຕີຣີເຫຼືອໜ້ອຍ</translation>
 <translation id="2450205753526923158">ໂໝດຮູບໜ້າຈໍ</translation>
 <translation id="2456008742792828469">ປະຕິທິນ, <ph name="CURRENT_MONTH_YEAR" /></translation>
 <translation id="2473177541599297363">ຢືນຢັນຄວາມລະອຽດ</translation>
@@ -411,11 +412,13 @@
 <translation id="3441920967307853524"><ph name="RECEIVED_BYTES" />/<ph name="TOTAL_BYTES" /></translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> ນາທີ</translation>
 <translation id="3445925074670675829">ອຸ​ປະ​ກອນ USB-C</translation>
+<translation id="3455468639467374593">ແມ່ແບບ, <ph name="TEMPLATE_NAME" /></translation>
 <translation id="3465223694362104965">ແປ້ນພິມອື່ນໄດ້ເຊື່ອມຕໍ່ກັບອຸປະກອນນີ້ແລ້ວນັບແຕ່ທ່ານເຂົ້າສູ່ລະບົບຄັ້ງສຸດທ້າຍ. ກະລຸນາກວດໃຫ້ແນ່ໃຈວ່າທ່ານເຊື່ອຖືແປ້ນພິມນີ້ກ່ອນທີ່ທ່ານຈະໃຊ້ມັນ.</translation>
 <translation id="3465356146291925647">ຈັດການໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ</translation>
 <translation id="3477079411857374384">Control-Shift-Space</translation>
 <translation id="3485319357743610354"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ຄວາມແຮງສັນຍານ <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="348799646910989694">ເຊື່ອງຊັ້ນວາງໂດຍອັດຕະໂນມັດແລ້ວ</translation>
+<translation id="3505066820268455558">ກຳລັງສາກແບັດເຕີຣີ</translation>
 <translation id="3509391053705095206">ບໍ່ສາມາດຊອກເຫັນໂທລະສັບຂອງທ່ານໄດ້. ກະລຸນາກວດສອບວ່າ Bluetooth ຂອງໂທລະສັບທ່ານເປີດຢູ່.</translation>
 <translation id="3510164367642747937">ໝາຍເຄີເຊີເມົ້າ</translation>
 <translation id="3513798432020909783">ບັນຊີທີ່ຈັດການໂດຍ <ph name="MANAGER_EMAIL" /></translation>
@@ -456,6 +459,8 @@
 <translation id="3633097874324966332">ເປີດການຕັ້ງຄ່າ Bluetooth ເພື່ອຈັບຄູ່ອຸປະກອນຂອງທ່ານ</translation>
 <translation id="3638400994746983214">ສະຫຼັບໜ້າຈໍຄວາມເປັນສ່ວນຕົວ. <ph name="STATE_TEXT" />.</translation>
 <translation id="3649505501900178324">ກາຍກຳນົດການອັບເດດແລ້ວ</translation>
+<translation id="3659814201068740063">ເຫຼືອອີກປະມານ <ph name="TIME_LEFT" /> (<ph name="PERCENTAGE" />%).
+ກະລຸນາເຊື່ອມຕໍ່ອຸປະກອນຂອງທ່ານຫາແຫຼ່ງໄຟ.</translation>
 <translation id="366222428570480733">ຜູ້ໃຊ້ທີ່ມີການຈັດການ <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="36813544980941320">ຈະມີການແບ່ງປັນເຄືອຂ່າຍ Wi-Fi ລະຫວ່າງໂທລະສັບຂອງທ່ານກັບ <ph name="DEVICE_NAME" /></translation>
 <translation id="3694122362646626770">ເວັບໄຊທ໌</translation>
@@ -510,6 +515,7 @@
 <translation id="3962859241508114581">ເພງກ່ອນນີ້</translation>
 <translation id="3969043077941541451">ປິດ</translation>
 <translation id="397105322502079400">ກໍາລັງຄິດ​ໄລ່...</translation>
+<translation id="397726367135689299">ການສາກແບັດເຕີຣີອາດບໍ່ສະຖຽນ.</translation>
 <translation id="3977512764614765090">ແບັດເຕີຣີຢູ່ທີ່ <ph name="PERCENTAGE" />% ແລະ ກຳລັງສາກ.</translation>
 <translation id="3986082989454912832">ຮັບສາຍ</translation>
 <translation id="3995138139523574647">ອຸປະກອນ USB-C (ຊ່ອງທາງຫຼັງເບື້ອງຂວາ)</translation>
@@ -742,6 +748,7 @@
 <translation id="5344128444027639014"><ph name="BATTERY_PERCENTAGE" />% (ຂວາ)</translation>
 <translation id="5352250171825660495">ຮູບແບບສີສັນມືດເປີດຢູ່</translation>
 <translation id="5356963482258194581">ສະຫຼັບລະຫວ່າງຮູບແບບສີສັນມືດ ແລະ ແຈ້ງ. ຄລິກຂວາຢູ່ເດັສທັອບແລ້ວເລືອກຮູບພື້ນຫຼັງ ແລະ ຮູບແບບ.</translation>
+<translation id="5363163447017455357"><ph name="DELIMITER" /> ໄປຫາແຖບນີ້</translation>
 <translation id="5379115545237091094">ພະຍາຍາມຫຼາຍເທື່ອເກີນໄປ</translation>
 <translation id="5391307769715781764">ແທນທີ່ໂຕະທີ່ບັນທຶກໄວ້ບໍ?</translation>
 <translation id="5393156353051693207">ແຕະໃສ່ບ່ອນໃດກໍໄດ້ຄ້າງໄວ້ເພື່ອຈັດຮຽງແອັບຂອງທ່ານຄືນໃໝ່</translation>
@@ -1037,6 +1044,7 @@
 <translation id="7130207228079676353">ເປັນໄປໄດ້ທີ່ສຸດ</translation>
 <translation id="7131634465328662194">ທ່ານຈະຖືກນຳອອກຈາກລະບົບໂດຍອັດຕະໂນມັດ</translation>
 <translation id="7143207342074048698">ກຳ​ລັງ​ເຊື່ອມ​ຕໍ່</translation>
+<translation id="7144942256906679589">ສະຖານະແບັດເຕີຣີ</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358">ການກັບໄປຫາຄວາມລະອຽດເກົ່າໃນ <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">ຣີເຟຣຊ</translation>
@@ -1059,6 +1067,7 @@
 <translation id="7348093485538360975">ຄີບອດເທິງຫນ້າ​ຈໍ​</translation>
 <translation id="735745346212279324">VPN ຕັດເຊື່ອມຕໍ່ແລ້ວ</translation>
 <translation id="7360036564632145207">ການປ່ຽນການປົກປ້ອງການເຂົ້າເຖິງຂໍ້ມູນຂອງທ່ານສຳລັບການຕັ້ງຄ່າອຸປະກອນຕໍ່ພ່ວງສາມາດປັບປຸງປະສິດທິພາບໃຫ້ເໝາະສົມໄດ້</translation>
+<translation id="736045644501761622">ຕັ້ງຮູບພື້ນຫຼັງ ແລະ ຮູບແບບ</translation>
 <translation id="7371404428569700291">ບັນທຶກໜ້າຈໍ</translation>
 <translation id="7377169924702866686">Caps Lock ເປີດຢູ່.</translation>
 <translation id="7377481913241237033">ເຊື່ອມຕໍ່ດ້ວຍລະຫັດ</translation>
@@ -1102,6 +1111,7 @@
 <translation id="7593891976182323525">ຄົ້ນ​ຫາ ຫຼື Shift</translation>
 <translation id="7600875258240007829">ເບິ່ງການແຈ້ງເຕືອນທັງໝົດ</translation>
 <translation id="7607002721634913082">ຢຸດແລ້ວ</translation>
+<translation id="7609951632080598826">ມຸມມອງປະຕິທິນ, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">ເຊື່ອມຕໍ່ກ້ອງຖ່າຍຮູບຄືນໃໝ່ແລ້ວ.</translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7633755430369750696">ສະແດງການຕັ້ງຄ່າການແບ່ງປັນໃກ້ຄຽງ.</translation>
@@ -1227,6 +1237,7 @@
 <translation id="8345019317483336363">ເລືອກໜ້າຈໍ <ph name="WINDOW_TITLE" /> ແລ້ວ</translation>
 <translation id="8351131234907093545">ສ້າງບັນທຶກ</translation>
 <translation id="8364673525741149932">ສະຫຼັບ Shelf Party. <ph name="STATE_TEXT" /></translation>
+<translation id="8369166482916924789">ໂຕະທີ່ບັນທຶກໄວ້, <ph name="SAVE_AND_RECALL_DESK_NAME" /></translation>
 <translation id="8371779926711439835">ໄປໜ້າເທື່ອລະຕົວໜັງສື</translation>
 <translation id="8371991222807690464">ປະສິດທິພາບຂອງອຸປະກອນຕໍ່ພ່ວງອາດຖືກຈຳກັດໃນໂໝດແຂກ</translation>
 <translation id="8374601332003098278">ກົດ enter ເພື່ອບັນທຶກໜ້າຈໍບາງສ່ວນ</translation>
@@ -1293,6 +1304,7 @@
 <translation id="8721053961083920564">ເປີດລະດັບສຽງ. <ph name="STATE_TEXT" /></translation>
 <translation id="8724318433625452070">ການຖ່າຍຮູບໜ້າຈໍແບບເຕັມຈໍ</translation>
 <translation id="8734991477317290293">ມັນອາດຈະກຳລັງພະຍາຍາມລັກໃຊ້ການກົດແປ້ນພິມຂອງທ່ານຢູ່</translation>
+<translation id="8735678380411481005">ສີໄຟແປ້ນພິມ</translation>
 <translation id="8735953464173050365">ສະແດງການຕັ້ງຄ່າແປ້ນພິມ. ເລືອກ <ph name="KEYBOARD_NAME" /> ແລ້ວ</translation>
 <translation id="8755498163081687682">ຢັ້ງຢືນຕົວຕົນຂອງທ່ານ: <ph name="ORIGIN_NAME" /> ຕ້ອງການຢືນຢັນວ່າມັນແມ່ນທ່ານ</translation>
 <translation id="875593634123171288">ສະແດງການຕັ້ງຄ່າ VPN</translation>
@@ -1338,6 +1350,7 @@
 <translation id="9000771174482730261">ຈັດການບ່ອນເກັບຂໍ້ມູນ</translation>
 <translation id="9017320285115481645">ປ້ອນລະຫັດເຂົ້າເຖິງ Family Link ຂອງພໍ່ແມ່.</translation>
 <translation id="9024331582947483881">ເຕັມຫນ້າ​ຈໍ​</translation>
+<translation id="9029736946581028033">ອຸປະກອນຈະປິດໃນອີກບໍ່ດົນ</translation>
 <translation id="9030319654231318877">ປິດຈົນກວ່າຕາເວັນຕົກ</translation>
 <translation id="9034924485347205037">ໄຟລ໌ Linux</translation>
 <translation id="9047624247355796468">ເປີດການຕັ້ງຄ່າສຳລັບ <ph name="NETWORK_NAME" /></translation>
@@ -1367,6 +1380,7 @@
 <translation id="9168436347345867845">ເຮັດໃນພາຍຫຼັງ</translation>
 <translation id="9178475906033259337">ກຳລັງສະແດງຜົນການຊອກຫາ 1 ລາຍການສຳລັບ <ph name="QUERY" /></translation>
 <translation id="9179259655489829027">ຄຸນສົມບັດນີ້ອະນຸຍາດໃຫ້ທ່ານເຂົ້າເຖິງທຸກຜູ້ໃຊ້ທີ່ເຂົ້າສູ່ລະບົບໃດໆກໍຕາມໂດຍບໍ່ຈຳເປັນຕ້ອງມີລະຫັດຜ່ານ. ກະລຸນາໃຊ້ຄຸນສົມບັດນີ້ກັບບັນຊີທີ່ທ່ານເຊື່ອຖືເທົ່ານັ້ນ.</translation>
+<translation id="9180906851711123156">ກົດ Ctrl+W ເພື່ອປິດ</translation>
 <translation id="9183456764293710005">ແວ່ນຂະຫຍາຍເຕັມຈໍ</translation>
 <translation id="9193626018745640770">ກຳລັງສົ່ງສັນຍານໃນເຄື່ອງຮັບທີ່ບໍ່ຮູ້ຈັກ</translation>
 <translation id="9194617393863864469">ລົງຊື່ເຂົ້າ​ໃຊ້ຜູ້​ໃຊ້ອື່ນ...</translation>

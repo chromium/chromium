@@ -849,6 +849,7 @@
 <translation id="1794051631868188691"><ph name="MERCHANT" /> 표시 안함</translation>
 <translation id="1794791083288629568">이 문제를 해결하는 데 도움이 되도록 의견 전송</translation>
 <translation id="1795214765651529549">기본 테마 사용</translation>
+<translation id="1796105431091975902">추가할 Ansible Playbook 선택</translation>
 <translation id="1796588414813960292">소리가 필요한 기능이 작동하지 않습니다</translation>
 <translation id="1800502858278951817"><ph name="SITE_NAME" /> 사이트를 읽고 변경하도록 요청한 확장 프로그램이 없음</translation>
 <translation id="1802624026913571222">커버를 닫으면 절전 모드 진입</translation>
@@ -2481,6 +2482,7 @@
 <translation id="3348038390189153836">이동식 기기가 검색됨</translation>
 <translation id="3348131053948466246">추천 그림 이모티콘이 표시되어 있습니다. 위 또는 아래를 눌러 이동하고 Enter를 눌러 입력합니다.</translation>
 <translation id="3349933790966648062">메모리 사용량</translation>
+<translation id="3353786022389205125">'절전 모드가 해제될 때 잠금 화면 표시'를 사용 설정한 후 다시 시도해 주세요.</translation>
 <translation id="3354972872297836698"><ph name="DEVICE_NAME" /> 기기와 페어링할 수 없음, 기기를 선택하여 다시 시도</translation>
 <translation id="3355936511340229503">연결 오류</translation>
 <translation id="3356469410714175391">(가상 카드 사용 설정됨)</translation>
@@ -3055,6 +3057,7 @@
 <translation id="389901847090970821">키보드 선택</translation>
 <translation id="3900966090527141178">비밀번호 내보내기</translation>
 <translation id="3903187154317825986">내장 키보드</translation>
+<translation id="3903191712482985591">Playbook 추가</translation>
 <translation id="3904326018476041253">위치 서비스</translation>
 <translation id="3904849010307028014">사이트에서는 나와 사이트의 상호작용(예: 정기적인 계정 로그인)을 기반으로 브라우저에 신뢰 토큰을 발행할 수 있습니다. 나중에 방문하는 다른 사이트에서 유효한 신뢰 토큰이 있는지 확인하여 토큰을 찾으면 이 사이트에서도 나를 봇이 아닌 사람으로 여길 가능성이 큽니다.</translation>
 <translation id="3905761538810670789">앱 복구</translation>
@@ -3664,6 +3667,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4510479820467554003">부모 계정 목록</translation>
 <translation id="451102079304155829">장바구니</translation>
 <translation id="4513872120116766993">예측 입력</translation>
+<translation id="4513909579793564731">Playbook 적용</translation>
 <translation id="4513946894732546136">문제 신고</translation>
 <translation id="451407183922382411"><ph name="COMPANY_NAME" /> 제공</translation>
 <translation id="4514610446763173167">동영상 재생 또는 일시중지 전환</translation>
@@ -4957,6 +4961,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5827733057563115968">다음 예상 단어</translation>
 <translation id="5828545842856466741">프로필 추가...</translation>
 <translation id="5828633471261496623">인쇄 중...</translation>
+<translation id="5830205393314753525"><ph name="APP_NAME" /> 앱을 열 수 없습니다</translation>
 <translation id="5830720307094128296">페이지를 다른 이름으로 저장(&amp;A)...</translation>
 <translation id="5832813618714645810">프로필</translation>
 <translation id="583281660410589416">알 수 없음</translation>
@@ -5497,6 +5502,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="635609604405270300">기기를 계속 켜두세요.</translation>
 <translation id="63566973648609420">암호를 아는 사람만 암호화된 데이터를 읽을 수 있습니다. 암호는 Google로 전송되거나 Google에 저장되지 않습니다. 암호가 기억나지 않거나 이 설정을 변경하려면 <ph name="BEGIN_LINK" />동기화를 재설정<ph name="END_LINK" />해야 합니다.</translation>
 <translation id="6357305427698525450">지원되는 링크 일부는 <ph name="APP_NAME" /> 또는 <ph name="APP_NAME_2" />에서 계속 열 수 있습니다.</translation>
+<translation id="6357794994761110294"><ph name="SITE_NAME" /> 사이트를 읽고 변경하도록 허용된 확장 프로그램 없음</translation>
 <translation id="6358884629796491903">용</translation>
 <translation id="6361850914223837199">오류 세부정보:</translation>
 <translation id="6362853299801475928">문제 신고하기(&amp;R)...</translation>
@@ -6693,6 +6699,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7559719679815339381">잠시 기다려주세요. Kiosk 앱을 업데이트하는 중입니다. USB 메모리를 제거하지 마세요.</translation>
 <translation id="7560756177962144929"><ph name="DEVICE_TYPE" /> 동기화</translation>
 <translation id="7561196759112975576">항상</translation>
+<translation id="7561982940498449837">메뉴 닫기</translation>
 <translation id="756445078718366910">브라우저 창 열기</translation>
 <translation id="7564847347806291057">프로세스 종료</translation>
 <translation id="756503097602602175">로그인된 Google 계정을 <ph name="LINK_BEGIN" />설정<ph name="LINK_END" />에서 관리할 수 있습니다. 웹사이트와 앱에 부여한 권한이 모든 계정에 적용될 수 있습니다. 사이트나 앱에서 계정 정보에 액세스하기를 원하지 않으면 게스트로 <ph name="DEVICE_TYPE" />에 로그인하거나 <ph name="LINK_2_BEGIN" />시크릿 창<ph name="LINK_2_END" />에서 웹을 탐색하세요.</translation>
@@ -7552,6 +7559,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8379156816349755485">로그인하면 고유 인증 토큰이 저장되어 향후 자격을 갖춘 모든 다운로드에 사용됩니다.</translation>
 <translation id="8379878387931047019">이 기기는 이 웹사이트에서 요청하는 유형의 보안 키를 지원하지 않습니다.</translation>
 <translation id="8379991678458444070">이 탭을 북마크에 추가하여 간편하게 다시 방문하세요.</translation>
+<translation id="8380266723152870797">창 이름</translation>
 <translation id="8380941800586852976">위험</translation>
 <translation id="8382715499079447151">사생활 보호</translation>
 <translation id="8382913212082956454">이메일 주소 복사(&amp;E)</translation>

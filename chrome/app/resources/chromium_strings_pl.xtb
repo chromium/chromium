@@ -183,6 +183,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="549669000822060376">Poczekaj, aż Chromium zainstaluje najnowsze aktualizacje systemu.</translation>
 <translation id="5496810170689441661">Chromium próbuje edytować hasła. Aby na to zezwolić, podaj swoje hasło do systemu Windows.</translation>
 <translation id="5527463683072221100">Otwieranie plików PDF w Chromium</translation>
+<translation id="5614091477838198795">Jeśli ta opcja jest włączona, zostaniesz też wylogowany(-a) z Chromium</translation>
 <translation id="5623402015214259806">{0,plural, =0{Dostępna jest aktualizacja Chromium}=1{Dostępna jest aktualizacja Chromium}few{Aktualizacja Chromium jest dostępna od # dni}many{Aktualizacja Chromium jest dostępna od # dni}other{Aktualizacja Chromium jest dostępna od # dnia}}</translation>
 <translation id="5634636535844844681">Chromium wymaga systemu Windows 7 lub nowszego.</translation>
 <translation id="5653831366781983928">Uruchom Chromium ponownie</translation>
