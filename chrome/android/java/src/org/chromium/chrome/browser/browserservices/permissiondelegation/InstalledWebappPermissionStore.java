@@ -163,11 +163,6 @@ public class InstalledWebappPermissionStore {
         }
     }
 
-    /** Returns true if there's a registered TWA for the origin. */
-    public boolean isTwaInstalled(String origin) {
-        return getStoredOrigins().contains(origin);
-    }
-
     /**
      * Sets the permission state for the origin.
      * Returns whether {@code true} if state was changed, {@code false} if the provided state was

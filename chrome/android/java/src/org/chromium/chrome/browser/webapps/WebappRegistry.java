@@ -241,6 +241,15 @@ public class WebappRegistry {
     }
 
     /**
+     * Checks whether a TWA is installed for the origin, and no WebAPK.
+     */
+    public boolean isTwaInstalled(String origin) {
+        Set<String> webApkOrigins = getOriginsWithWebApk();
+        Set<String> installedWebappOrigins = mPermissionStore.getStoredOrigins();
+        return installedWebappOrigins.contains(origin) && !webApkOrigins.contains(origin);
+    }
+
+    /**
      * Returns all origins that have a WebAPK or TWA installed.
      */
     public Set<String> getOriginsWithInstalledApp() {
