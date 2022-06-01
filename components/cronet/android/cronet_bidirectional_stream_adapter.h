@@ -72,7 +72,6 @@ class CronetBidirectionalStreamAdapter
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jbidi_stream,
       bool jsend_request_headers_automatically,
-      bool enable_metrics,
       bool traffic_stats_tag_set,
       int32_t traffic_stats_tag,
       bool traffic_stats_uid_set,
@@ -174,8 +173,6 @@ class CronetBidirectionalStreamAdapter
   // Java object that owns this CronetBidirectionalStreamAdapter.
   base::android::ScopedJavaGlobalRef<jobject> owner_;
   const bool send_request_headers_automatically_;
-  // Whether metrics collection is enabled when |this| is created.
-  const bool enable_metrics_;
   // Whether |traffic_stats_tag_| should be applied.
   const bool traffic_stats_tag_set_;
   // TrafficStats tag to apply to URLRequest.
