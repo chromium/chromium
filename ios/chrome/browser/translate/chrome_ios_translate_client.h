@@ -23,6 +23,7 @@ namespace translate {
 class TranslateAcceptLanguages;
 class TranslatePrefs;
 class TranslateManager;
+class TranslateMetricsLogger;
 }  // namespace translate
 
 namespace web {
@@ -69,9 +70,26 @@ class ChromeIOSTranslateClient
  private:
   ChromeIOSTranslateClient(web::WebState* web_state);
   friend class web::WebStateUserData<ChromeIOSTranslateClient>;
+  FRIEND_TEST_ALL_PREFIXES(ChromeIOSTranslateClientTest,
+                           NewMetricsOnPageLoadCommits);
+  FRIEND_TEST_ALL_PREFIXES(ChromeIOSTranslateClientTest,
+                           NoNewMetricsOnErrorPage);
+  FRIEND_TEST_ALL_PREFIXES(ChromeIOSTranslateClientTest,
+                           PageTranslationCorrectlyUpdatesMetrics);
 
   // web::WebStateObserver implementation.
+  void DidStartNavigation(web::WebState* web_state,
+                          web::NavigationContext* navigation_context) override;
+  void DidFinishNavigation(web::WebState* web_state,
+                           web::NavigationContext* navigation_context) override;
+  void WasShown(web::WebState* web_state) override;
+  void WasHidden(web::WebState* web_state) override;
   void WebStateDestroyed(web::WebState* web_state) override;
+
+  // Triggered when the foreground page is changed by a new navigation (in
+  // DidStartNavigation) or is permanently closed (in WebStateDestroyed),
+  // similar to PageLoadMetricsObserver::OnComplete.
+  void DidPageLoadComplete();
 
   // The WebState this instance is observing. Will be null after
   // WebStateDestroyed has been called.
@@ -79,6 +97,9 @@ class ChromeIOSTranslateClient
 
   std::unique_ptr<translate::TranslateManager> translate_manager_;
   translate::IOSTranslateDriver translate_driver_;
+
+  // Metrics recorder for page load events.
+  std::unique_ptr<translate::TranslateMetricsLogger> translate_metrics_logger_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
 };
