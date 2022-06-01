@@ -490,6 +490,8 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   } else if ([self hasAutocompleteText]) {
     // Accept selection.
     [self acceptAutocompleteText];
+  } else {
+    [self becomeFirstResponder];
   }
 }
 
