@@ -2263,6 +2263,24 @@
             ]
         }
     ],
+    "ChromeOSMemoryPressureSignalStudy": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled12_20220512",
+                    "params": {
+                        "critical_threshold_percentage": "1200"
+                    },
+                    "enable_features": [
+                        "ChromeOSMemoryPressureSignalStudy"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromeOSRawPSIMetrics": [
         {
             "platforms": [
