@@ -6248,12 +6248,17 @@ crbug.com/1249176 [ Mac11-arm64 ] fast/dom/geometry-interfaces-dom-matrix-rotate
 crbug.com/1249176 [ Mac11-arm64 ] external/wpt/css/css-shapes/shape-outside/shape-image/shape-image-021.html [ Failure ]
 crbug.com/1249176 [ Mac11-arm64 ] external/wpt/css/css-shapes/shape-outside/shape-image/shape-image-025.html [ Failure ]
 crbug.com/1249176 [ Mac11-arm64 ] external/wpt/css/css-shapes/shape-outside/shape-image/shape-image-004.html [ Failure Pass ]
+crbug.com/1249176 [ Mac11-arm64 ] compositing/overflow/rotate-clip.html [ Failure ]
+crbug.com/1249176 [ Mac12-arm64 ] compositing/overflow/rotate-clip.html [ Failure ]
+crbug.com/1249176 [ Mac11-arm64 ] compositing/overflow/rotate-then-clip.html [ Failure ]
+crbug.com/1249176 [ Mac12-arm64 ] compositing/overflow/rotate-then-clip.html [ Failure ]
+crbug.com/1249176 [ Mac11-arm64 ] media/video-replaces-poster.html [ Skip ]
+crbug.com/1249176 [ Mac12-arm64 ] media/video-replaces-poster.html [ Skip ]
+crbug.com/1249176 [ Mac11-arm64 ] virtual/gpu-rasterization/images/color-jpeg-with-color-profile.html [ Failure ]
+crbug.com/1249176 [ Mac12-arm64 ] virtual/gpu-rasterization/images/color-jpeg-with-color-profile.html [ Failure ]
 
 # Failures that surfaced on the mac12-arm64 waterfall
-crbug.com/1249176 [ Mac12-arm64 ] compositing/overflow/rotate-clip.html [ Failure ]
-crbug.com/1249176 [ Mac12-arm64 ] compositing/overflow/rotate-then-clip.html [ Failure ]
 crbug.com/1249176 [ Mac12-arm64 ] media/color-profile-video-seek.html [ Failure ]
-crbug.com/1249176 [ Mac12-arm64 ] media/video-replaces-poster.html [ Failure ]
 crbug.com/1249176 [ Mac12-arm64 ] media/video-zoom.html [ Failure ]
 crbug.com/1249176 [ Mac12-arm64 ] paint/markers/suggestion-marker-basic.html [ Failure ]
 crbug.com/1249176 [ Mac12-arm64 ] virtual/exotic-color-space/images/color-profile-background-image-cover.html [ Failure ]
@@ -6270,7 +6275,6 @@ crbug.com/1249176 [ Mac12-arm64 ] virtual/exotic-color-space/images/yuv-decode-e
 crbug.com/1249176 [ Mac12-arm64 ] virtual/exotic-color-space/images/yuv-decode-eligible/color-profile-layer.html [ Failure ]
 crbug.com/1249176 [ Mac12-arm64 ] virtual/exotic-color-space/images/yuv-decode-eligible/webp-color-profile-lossy.html [ Failure ]
 crbug.com/1249176 [ Mac12-arm64 ] virtual/exotic-color-space/images/yuv-decode-eligible/webp-no-color-profile-lossy.html [ Failure ]
-crbug.com/1249176 [ Mac12-arm64 ] virtual/gpu-rasterization/images/color-jpeg-with-color-profile.html [ Failure ]
 
 # Flakes that surfaced on the mac12 and mac12-arm64 waterfall
 crbug.com/1249176 [ Mac12 ] external/wpt/html/browsers/browsing-the-web/back-forward-cache/service-worker-controlled-after-restore.https.html [ Failure Pass ]
