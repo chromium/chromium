@@ -115,7 +115,7 @@
 #include "third_party/re2/src/re2/re2.h"
 #include "url/url_constants.h"
 
-#if BUILDFLAG(FULL_SAFE_BROWSING)
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "third_party/blink/public/mojom/clipboard/clipboard.mojom.h"
@@ -1427,7 +1427,6 @@ void ChromePasswordManagerClient::WebContentsDestroyed() {
 #endif
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 void ChromePasswordManagerClient::OnPaste() {
   std::u16string text;
   bool used_crosapi_workaround = false;
@@ -1466,7 +1465,6 @@ void ChromePasswordManagerClient::OnPaste() {
   was_on_paste_called_ = true;
   password_reuse_detection_manager_.OnPaste(std::move(text));
 }
-#endif
 
 void ChromePasswordManagerClient::RenderFrameCreated(
     content::RenderFrameHost* render_frame_host) {
