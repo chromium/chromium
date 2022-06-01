@@ -907,7 +907,7 @@ GURL HistoryURLProvider::AsKnownIntranetURL(
   // input's text and parts between Parse() and here, it seems better to be
   // paranoid and check.
   if ((input.type() != metrics::OmniboxInputType::UNKNOWN) ||
-      !base::LowerCaseEqualsASCII(input.scheme(), url::kHttpScheme) ||
+      !base::EqualsCaseInsensitiveASCII(input.scheme(), url::kHttpScheme) ||
       !input.parts().host.is_nonempty())
     return GURL();
 
