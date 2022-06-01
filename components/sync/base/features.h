@@ -145,6 +145,9 @@ inline constexpr base::Feature
 bool IsSyncTrustedVaultPassphraseiOSRPCEnabled();
 #endif  // BUILDFLAG(IS_IOS)
 
+inline constexpr base::Feature kSyncEnableHistoryDataType = {
+    "SyncEnableHistoryDataType", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace syncer
 
 #endif  // COMPONENTS_SYNC_BASE_FEATURES_H_

@@ -34,8 +34,23 @@ const char kHistoryModelTypeStateKey[] = "history_model_type_state";
 //   value            Serialized sync EntityMetadata, which tracks the sync
 //                    state of each history entity.
 
-HistorySyncMetadataDatabase::HistorySyncMetadataDatabase() = default;
+HistorySyncMetadataDatabase::HistorySyncMetadataDatabase(
+    sql::Database* db,
+    sql::MetaTable* meta_table)
+    : db_(db), meta_table_(meta_table) {}
+
 HistorySyncMetadataDatabase::~HistorySyncMetadataDatabase() = default;
+
+bool HistorySyncMetadataDatabase::Init() {
+  if (!db_->DoesTableExist("history_sync_metadata")) {
+    if (!db_->Execute(
+            "CREATE TABLE history_sync_metadata "
+            "(storage_key INTEGER PRIMARY KEY NOT NULL, value BLOB)")) {
+      return false;
+    }
+  }
+  return true;
+}
 
 bool HistorySyncMetadataDatabase::GetAllSyncMetadata(
     syncer::MetadataBatch* metadata_batch) {
@@ -62,8 +77,8 @@ bool HistorySyncMetadataDatabase::UpdateSyncMetadata(
   DCHECK(!storage_key.empty());
 
   sql::Statement s(
-      GetDB().GetUniqueStatement("INSERT OR REPLACE INTO history_sync_metadata "
-                                 "(storage_key, value) VALUES(?, ?)"));
+      db_->GetUniqueStatement("INSERT OR REPLACE INTO history_sync_metadata "
+                              "(storage_key, value) VALUES(?, ?)"));
   s.BindInt64(0, StorageKeyToMicrosSinceWindowsEpoch(storage_key));
   s.BindString(1, metadata.SerializeAsString());
 
@@ -77,7 +92,7 @@ bool HistorySyncMetadataDatabase::ClearSyncMetadata(
       << "Only the HISTORY model type is supported";
   DCHECK(!storage_key.empty());
 
-  sql::Statement s(GetDB().GetUniqueStatement(
+  sql::Statement s(db_->GetUniqueStatement(
       "DELETE FROM history_sync_metadata WHERE storage_key=?"));
   s.BindInt64(0, StorageKeyToMicrosSinceWindowsEpoch(storage_key));
 
@@ -89,18 +104,18 @@ bool HistorySyncMetadataDatabase::UpdateModelTypeState(
     const sync_pb::ModelTypeState& model_type_state) {
   DCHECK_EQ(model_type, syncer::HISTORY)
       << "Only the HISTORY model type is supported";
-  DCHECK_GT(GetMetaTable().GetVersionNumber(), 0);
+  DCHECK_GT(meta_table_->GetVersionNumber(), 0);
 
   std::string serialized_state = model_type_state.SerializeAsString();
-  return GetMetaTable().SetValue(kHistoryModelTypeStateKey, serialized_state);
+  return meta_table_->SetValue(kHistoryModelTypeStateKey, serialized_state);
 }
 
 bool HistorySyncMetadataDatabase::ClearModelTypeState(
     syncer::ModelType model_type) {
   DCHECK_EQ(model_type, syncer::HISTORY)
       << "Only the HISTORY model type is supported";
-  DCHECK_GT(GetMetaTable().GetVersionNumber(), 0);
-  return GetMetaTable().DeleteKey(kHistoryModelTypeStateKey);
+  DCHECK_GT(meta_table_->GetVersionNumber(), 0);
+  return meta_table_->DeleteKey(kHistoryModelTypeStateKey);
 }
 
 // static
@@ -137,21 +152,10 @@ std::string HistorySyncMetadataDatabase::StorageKeyFromVisitTime(
       visit_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
 }
 
-bool HistorySyncMetadataDatabase::InitHistoryMetadataTable() {
-  if (!GetDB().DoesTableExist("history_sync_metadata")) {
-    if (!GetDB().Execute(
-            "CREATE TABLE history_sync_metadata "
-            "(storage_key INTEGER PRIMARY KEY NOT NULL, value BLOB)")) {
-      return false;
-    }
-  }
-  return true;
-}
-
 bool HistorySyncMetadataDatabase::GetAllEntityMetadata(
     syncer::MetadataBatch* metadata_batch) {
   DCHECK(metadata_batch);
-  sql::Statement s(GetDB().GetUniqueStatement(
+  sql::Statement s(db_->GetUniqueStatement(
       "SELECT storage_key, value FROM history_sync_metadata"));
 
   while (s.Step()) {
@@ -171,9 +175,9 @@ bool HistorySyncMetadataDatabase::GetAllEntityMetadata(
 
 bool HistorySyncMetadataDatabase::GetModelTypeState(
     sync_pb::ModelTypeState* state) {
-  DCHECK_GT(GetMetaTable().GetVersionNumber(), 0);
+  DCHECK_GT(meta_table_->GetVersionNumber(), 0);
   std::string serialized_state;
-  if (!GetMetaTable().GetValue(kHistoryModelTypeStateKey, &serialized_state)) {
+  if (!meta_table_->GetValue(kHistoryModelTypeStateKey, &serialized_state)) {
     *state = sync_pb::ModelTypeState();
     return true;
   }

@@ -31,15 +31,19 @@ namespace history {
 // overall state of the history sync datatype.
 class HistorySyncMetadataDatabase : public syncer::SyncMetadataStore {
  public:
-  // After construction, subclasses must call InitHistoryMetadataTable() before
-  // doing anything else to make sure the database is initialized.
-  HistorySyncMetadataDatabase();
+  // After construction, Init() must be called before doing anything else to
+  // make sure the database is initialized.
+  HistorySyncMetadataDatabase(sql::Database* db, sql::MetaTable* meta_table);
 
   HistorySyncMetadataDatabase(const HistorySyncMetadataDatabase&) = delete;
   HistorySyncMetadataDatabase& operator=(const HistorySyncMetadataDatabase&) =
       delete;
 
   ~HistorySyncMetadataDatabase() override;
+
+  // Makes sure the tables and indices are properly set up. Must be called
+  // before anything else.
+  bool Init();
 
   // Reads all stored metadata for History and fills `metadata_batch` with it.
   bool GetAllSyncMetadata(syncer::MetadataBatch* metadata_batch);
@@ -64,17 +68,6 @@ class HistorySyncMetadataDatabase : public syncer::SyncMetadataStore {
   static base::Time StorageKeyToVisitTime(const std::string& storage_key);
   static std::string StorageKeyFromVisitTime(base::Time visit_time);
 
- protected:
-  // Called by derived classes on initialization to make sure the tables and
-  // indices are properly set up. Must be called before anything else.
-  bool InitHistoryMetadataTable();
-
-  // Returns the underlying database to be used.
-  virtual sql::Database& GetDB() = 0;
-
-  // Returns the database's MetaTable, where the ModelTypeState will be stored.
-  virtual sql::MetaTable& GetMetaTable() = 0;
-
  private:
   // Reads all sync_pb::EntityMetadata for History and fills `metadata_batch`
   // with it.
@@ -82,6 +75,9 @@ class HistorySyncMetadataDatabase : public syncer::SyncMetadataStore {
 
   // Reads sync_pb::ModelTypeState for History and fills `state` with it.
   bool GetModelTypeState(sync_pb::ModelTypeState* state);
+
+  sql::Database* const db_;
+  sql::MetaTable* const meta_table_;
 };
 
 }  // namespace history

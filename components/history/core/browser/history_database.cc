@@ -22,6 +22,7 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/sync/base/features.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "sql/meta_table.h"
 #include "sql/statement.h"
@@ -93,7 +94,8 @@ HistoryDatabase::HistoryDatabase(
            // value, tells us how much memory the cache will use maximum.
            // 1000 * 4kB = 4MB
            .cache_size = 1000}),
-      typed_url_metadata_db_(&db_, &meta_table_) {}
+      typed_url_metadata_db_(&db_, &meta_table_),
+      history_metadata_db_(&db_, &meta_table_) {}
 
 HistoryDatabase::~HistoryDatabase() = default;
 
@@ -125,6 +127,10 @@ sql::InitStatus HistoryDatabase::Init(const base::FilePath& history_name) {
       !InitKeywordSearchTermsTable() || !InitDownloadTable() ||
       !InitSegmentTables() || !typed_url_metadata_db_.Init() ||
       !InitVisitAnnotationsTables()) {
+    return LogInitFailure(InitStep::CREATE_TABLES);
+  }
+  if (base::FeatureList::IsEnabled(syncer::kSyncEnableHistoryDataType) &&
+      !history_metadata_db_.Init()) {
     return LogInitFailure(InitStep::CREATE_TABLES);
   }
   CreateMainURLIndex();
@@ -377,6 +383,10 @@ void HistoryDatabase::UpdateEarlyExpirationThreshold(base::Time threshold) {
 
 TypedURLSyncMetadataDatabase* HistoryDatabase::GetTypedURLMetadataDB() {
   return &typed_url_metadata_db_;
+}
+
+HistorySyncMetadataDatabase* HistoryDatabase::GetHistoryMetadataDB() {
+  return &history_metadata_db_;
 }
 
 sql::Database& HistoryDatabase::GetDB() {

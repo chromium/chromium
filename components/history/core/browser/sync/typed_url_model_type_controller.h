@@ -6,6 +6,7 @@
 #define COMPONENTS_HISTORY_CORE_BROWSER_SYNC_TYPED_URL_MODEL_TYPE_CONTROLLER_H_
 
 #include "components/history/core/browser/sync/history_model_type_controller_helper.h"
+#include "components/sync/base/model_type.h"
 #include "components/sync/driver/model_type_controller.h"
 
 class PrefService;
@@ -18,9 +19,12 @@ namespace history {
 
 class HistoryService;
 
+// TODO(crbug.com/1318028): Rename to HistoryModelTypeController.
 class TypedURLModelTypeController : public syncer::ModelTypeController {
  public:
-  TypedURLModelTypeController(syncer::SyncService* sync_service,
+  // `model_type` must be either HISTORY or TYPED_URLS.
+  TypedURLModelTypeController(syncer::ModelType model_type,
+                              syncer::SyncService* sync_service,
                               HistoryService* history_service,
                               PrefService* pref_service);
 

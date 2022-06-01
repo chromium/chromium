@@ -65,6 +65,7 @@ class HistoryBackendTest;
 class HistoryDatabase;
 struct HistoryDatabaseParams;
 class HistoryDBTask;
+class HistorySyncBridge;
 class InMemoryHistoryBackend;
 class TypedURLSyncBridge;
 class URLDatabase;
@@ -539,6 +540,11 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   base::WeakPtr<syncer::ModelTypeControllerDelegate>
   GetTypedURLSyncControllerDelegate();
 
+  // Returns the sync controller delegate for syncing history. The returned
+  // delegate is owned by `this` object.
+  base::WeakPtr<syncer::ModelTypeControllerDelegate>
+  GetHistorySyncControllerDelegate();
+
   // Deleting ------------------------------------------------------------------
 
   void DeleteURLs(const std::vector<GURL>& urls);
@@ -866,9 +872,14 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   base::ObserverList<HistoryBackendObserver>::Unchecked observers_;
 
   // Used to manage syncing of the typed urls datatype. It will be null before
-  // HistoryBackend::Init is called. Defined after observers_ because
+  // HistoryBackend::Init() is called. Defined after `observers_` because
   // it unregisters itself as observer during destruction.
   std::unique_ptr<TypedURLSyncBridge> typed_url_sync_bridge_;
+
+  // Used to manage syncing of the history datatype. It will be null before
+  // HistoryBackend::Init() is called. Defined after `observers_` because
+  // it unregisters itself as observer during destruction.
+  std::unique_ptr<HistorySyncBridge> history_sync_bridge_;
 };
 
 }  // namespace history

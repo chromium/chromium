@@ -18,6 +18,7 @@
 #include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -50,8 +51,10 @@
 #include "components/history/core/browser/in_memory_history_backend.h"
 #include "components/history/core/browser/keyword_search_term.h"
 #include "components/history/core/browser/page_usage_data.h"
+#include "components/history/core/browser/sync/history_sync_bridge.h"
 #include "components/history/core/browser/sync/typed_url_sync_bridge.h"
 #include "components/history/core/browser/url_utils.h"
+#include "components/sync/base/features.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "components/url_formatter/url_formatter.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -318,6 +321,15 @@ void HistoryBackend::Init(
       std::make_unique<ClientTagBasedModelTypeProcessor>(
           syncer::TYPED_URLS, /*dump_stack=*/base::RepeatingClosure()));
   typed_url_sync_bridge_->Init();
+
+  if (base::FeatureList::IsEnabled(syncer::kSyncEnableHistoryDataType)) {
+    // TODO(crbug.com/1318028): Plumb in syncer::ReportUnrecoverableError as the
+    // dump_stack callback.
+    history_sync_bridge_ = std::make_unique<HistorySyncBridge>(
+        this, db_ ? db_->GetHistoryMetadataDB() : nullptr,
+        std::make_unique<ClientTagBasedModelTypeProcessor>(
+            syncer::HISTORY, /*dump_stack=*/base::RepeatingClosure()));
+  }
 
   memory_pressure_listener_ = std::make_unique<base::MemoryPressureListener>(
       FROM_HERE, base::BindRepeating(&HistoryBackend::OnMemoryPressure,
@@ -1353,6 +1365,12 @@ base::WeakPtr<syncer::ModelTypeControllerDelegate>
 HistoryBackend::GetTypedURLSyncControllerDelegate() {
   DCHECK(typed_url_sync_bridge_);
   return typed_url_sync_bridge_->change_processor()->GetControllerDelegate();
+}
+
+base::WeakPtr<syncer::ModelTypeControllerDelegate>
+HistoryBackend::GetHistorySyncControllerDelegate() {
+  DCHECK(history_sync_bridge_);
+  return history_sync_bridge_->change_processor()->GetControllerDelegate();
 }
 
 // Statistics ------------------------------------------------------------------
@@ -2538,10 +2556,12 @@ void HistoryBackend::KillHistoryDatabase() {
   if (!db_)
     return;
 
-  // Notify SyncBridge about storage error. It will report failure to sync
-  // engine and stop accepting remote updates.
+  // Notify the sync bridges about storage error. They'll report failures to the
+  // sync engine and stop accepting remote updates.
   if (typed_url_sync_bridge_)
     typed_url_sync_bridge_->OnDatabaseError();
+  if (history_sync_bridge_)
+    history_sync_bridge_->OnDatabaseError();
 
   // Rollback transaction because Raze() cannot be called from within a
   // transaction.

@@ -32,6 +32,7 @@
 #include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/send_tab_to_self_model_type_controller.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/legacy_directory_deletion.h"
 #include "components/sync/base/report_unrecoverable_error.h"
 #include "components/sync/base/sync_prefs.h"
@@ -254,7 +255,15 @@ SyncApiComponentFactoryImpl::CreateCommonDataTypeControllers(
     // provided by HistoryService.
     controllers.push_back(
         std::make_unique<history::TypedURLModelTypeController>(
-            sync_service, sync_client_->GetHistoryService(),
+            syncer::TYPED_URLS, sync_service, sync_client_->GetHistoryService(),
+            sync_client_->GetPrefService()));
+  }
+
+  if (!disabled_types.Has(syncer::HISTORY) &&
+      base::FeatureList::IsEnabled(syncer::kSyncEnableHistoryDataType)) {
+    controllers.push_back(
+        std::make_unique<history::TypedURLModelTypeController>(
+            syncer::HISTORY, sync_service, sync_client_->GetHistoryService(),
             sync_client_->GetPrefService()));
   }
 

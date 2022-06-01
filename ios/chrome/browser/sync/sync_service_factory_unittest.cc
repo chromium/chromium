@@ -9,9 +9,11 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "components/browser_sync/browser_sync_switches.h"
 #include "components/sync/base/command_line_switches.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/driver/data_type_controller.h"
@@ -66,7 +68,9 @@ class SyncServiceFactoryTest : public PlatformTest {
     datatypes.Put(syncer::AUTOFILL_WALLET_OFFER);
     datatypes.Put(syncer::BOOKMARKS);
     datatypes.Put(syncer::DEVICE_INFO);
-    // TODO(crbug.com/1318028): Add HISTORY once it has a Controller.
+    if (base::FeatureList::IsEnabled(syncer::kSyncEnableHistoryDataType)) {
+      datatypes.Put(syncer::HISTORY);
+    }
     datatypes.Put(syncer::HISTORY_DELETE_DIRECTIVES);
     datatypes.Put(syncer::PREFERENCES);
     datatypes.Put(syncer::PRIORITY_PREFERENCES);
