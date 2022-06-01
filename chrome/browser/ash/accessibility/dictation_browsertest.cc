@@ -44,7 +44,6 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/fake_speech_recognition_manager.h"
-#include "extensions/browser/browsertest_util.h"
 #include "extensions/browser/extension_host_test_helper.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -319,13 +318,7 @@ class DictationTest
   }
 
   // Routers to SpeechRecognitionTestHelper methods.
-  void WaitForRecognitionStarted() {
-    test_helper_.WaitForRecognitionStarted();
-    // Dictation initializes FocusHandler when speech recognition starts.
-    // Several tests require FocusHandler logic, so wait for it to initialize
-    // before proceeding.
-    WaitForFocusHandler();
-  }
+  void WaitForRecognitionStarted() { test_helper_.WaitForRecognitionStarted(); }
 
   void WaitForRecognitionStopped() { test_helper_.WaitForRecognitionStopped(); }
 
@@ -394,29 +387,6 @@ class DictationTest
     SuccessWaiter(base::BindLambdaForTesting(
                       [&]() { return value == GetTextAreaValue(); }),
                   error_message)
-        .Wait();
-  }
-
-  void WaitForFocusHandler() {
-    std::string error_message = "Still waiting for FocusHandler";
-    std::string script = R"(
-      if (accessibilityCommon.dictation_.focusHandler_.isReadyForTesting()) {
-        window.domAutomationController.send("ready");
-      } else {
-        window.domAutomationController.send("not ready");
-      }
-    )";
-    SuccessWaiter(
-        base::BindLambdaForTesting([&]() {
-          std::string result =
-              extensions::browsertest_util::ExecuteScriptInBackgroundPage(
-                  /*context=*/browser()->profile(),
-                  /*extension_id=*/
-                  extension_misc::kAccessibilityCommonExtensionId,
-                  /*script=*/script);
-          return result == "ready";
-        }),
-        error_message)
         .Wait();
   }
 
