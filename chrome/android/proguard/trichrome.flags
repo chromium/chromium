@@ -1,0 +1,8 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# TODO(agrieve): Once this -keep is removed, add a @CheckDiscard to LibraryLoaderConfig.java.
+# Currently the Trichrome library just contains NativeLibraries, which we keep.
+# https://crbug.com/901465
+-keep class org.chromium.build.NativeLibraries { *; }
