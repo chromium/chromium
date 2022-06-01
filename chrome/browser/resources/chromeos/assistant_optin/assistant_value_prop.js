@@ -367,21 +367,25 @@ class AssistantValueProp extends AssistantValuePropBase {
       for (const j in zippy_data[i]) {
         const data = zippy_data[i][j];
         const zippy = document.createElement('setting-zippy');
-        // TODO(crbug.com/1313994) - Remove hard coded colors in OOBE
-        const background = this.isMinorMode_ ?
-            getComputedStyle(document.body)
-                .getPropertyValue('--cros-highlight-color' /* gblue50 */) :
-            getComputedStyle(document.body).getPropertyValue('--cros-bg-color');
-        zippy.setAttribute(
-            'icon-src',
-            'data:text/html;charset=utf-8,' +
-                encodeURIComponent(zippy.getWrappedIcon(
-                    data['iconUri'], data['title'], background)));
-        zippy.setAttribute('step', i);
-        if (this.isMinorMode_) {
-          zippy.setAttribute('hide-line', true);
-          zippy.setAttribute('card-style', true);
+        if (data['useNativeIcons']) {
+          zippy.nativeIconType = data['nativeIconType'];
+          zippy.setAttribute('nativeIconLabel', data['title']);
+        } else {
+          // TODO(crbug.com/1313994) - Remove hard coded colors in OOBE
+          const background = this.isMinorMode_ ?
+              getComputedStyle(document.body)
+                  .getPropertyValue('--cros-highlight-color' /* gblue50 */) :
+              getComputedStyle(document.body)
+                  .getPropertyValue('--cros-bg-color');
+          zippy.setAttribute(
+              'icon-src',
+              'data:text/html;charset=utf-8,' +
+                  encodeURIComponent(zippy.getWrappedIcon(
+                      data['iconUri'], data['title'], background)));
         }
+        zippy.setAttribute('step', i);
+        zippy.hideLine = this.isMinorMode_;
+        zippy.cardStyle = this.isMinorMode_;
 
         const title = document.createElement('div');
         title.slot = 'title';

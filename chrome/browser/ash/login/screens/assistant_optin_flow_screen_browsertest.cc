@@ -31,6 +31,7 @@
 #include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
 #include "chromeos/services/assistant/public/cpp/assistant_settings.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
+#include "chromeos/services/assistant/public/proto/activity_control_settings_common.pb.h"
 #include "chromeos/services/assistant/public/proto/get_settings_ui.pb.h"
 #include "chromeos/services/assistant/public/proto/settings_ui.pb.h"
 #include "chromeos/services/assistant/service.h"
@@ -259,6 +260,7 @@ class ScopedAssistantSettings : public chromeos::assistant::AssistantSettings {
     setting->add_additional_info_paragraph();
     setting->set_additional_info_paragraph(0, "And it's really cool");
     setting->set_icon_uri("assistant_icon");
+    setting->set_setting_set_id(chromeos::assistant::SettingSetId::WAA);
   }
 
   void UpdateSettings(const std::string& update,

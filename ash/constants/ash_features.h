@@ -87,6 +87,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kAssistPersonalInfoName;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kAssistPersonalInfoPhoneNumber;
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kAssistantNativeIcons;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kAudioUrl;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kAutoNightLight;
@@ -631,6 +633,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAmbientModePhotoPreviewEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAppNotificationsPageEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsArcInputOverlayEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsArcNetworkDiagnosticsButtonEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAssistantNativeIconsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAssistiveMultiWordEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAudioSettingsPageEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsAutoNightLightEnabled();

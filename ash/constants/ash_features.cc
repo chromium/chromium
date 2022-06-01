@@ -185,6 +185,9 @@ const base::Feature kAssistPersonalInfoName{"AssistPersonalInfoName",
 const base::Feature kAssistPersonalInfoPhoneNumber{
     "AssistPersonalInfoPhoneNumber", base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kAssistantNativeIcons{"AssistantNativeIcons",
+                                          base::FEATURE_ENABLED_BY_DEFAULT};
+
 // Enables the Audio Settings Page in System Settings, which allows
 // audio configuration. crbug.com/1092970.
 const base::Feature kAudioSettingsPage{"AudioSettingsPage",
@@ -1651,6 +1654,10 @@ bool IsArcInputOverlayEnabled() {
 
 bool IsArcNetworkDiagnosticsButtonEnabled() {
   return IsNetworkingInDiagnosticsAppEnabled();
+}
+
+bool IsAssistantNativeIconsEnabled() {
+  return base::FeatureList::IsEnabled(kAssistantNativeIcons);
 }
 
 bool IsAssistiveMultiWordEnabled() {

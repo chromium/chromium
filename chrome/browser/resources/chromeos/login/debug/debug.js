@@ -11,6 +11,7 @@
 // #import {Oobe} from '../cr_ui.m.js'
 // #import {$} from 'chrome://resources/js/util.m.js';
 // #import './debug_util.js';
+// #import {AssistantNativeIconType} from '../../assistant_optin/utils.m.js';
 
 // #import {MessageType, ProblemType} from 'chrome://resources/cr_components/chromeos/quick_unlock/setup_pin_keyboard.m.js';
 
@@ -22,10 +23,13 @@ const createAssistantData = (isMinor) => {
   data['valuePropSkipButton'] = 'Value prop skip button';
   data['valuePropFooter'] = 'Value prop footer';
   data['equalWeightButtons'] = isMinor;
+  if (isMinor) {
+    data['childName'] = 'Child name';
+  }
   return data;
 };
 
-const createAssistantZippy = (type, isMinor) => {
+const createAssistantZippy = (type, isMinor, isNativeIcons) => {
   const zippy = {};
   zippy['isMinorMode'] = isMinor;
   zippy['title'] = 'Zippy ' + (isMinor ? 'minor ' : 'regular') + ' title';
@@ -33,28 +37,43 @@ const createAssistantZippy = (type, isMinor) => {
   zippy['intro'] = 'Zippy intro';
   zippy['name'] = 'Zippy ' + type + ' name';
   zippy['description'] = 'Zippy ' + type + ' description';
+  if (isMinor) {
+    zippy['additionalInfo'] = 'Zippy additional info';
+  }
   zippy['popupLink'] = 'Zippy popup link';
   zippy['learnMoreDialogTitle'] = 'Zippy learn more dialog title';
   zippy['learnMoreDialogContent'] = 'Zippy learn more dialog content';
   zippy['learnMoreDialogButton'] = 'Zippy learn more dialog button';
-  if (type === 'WAA') {
-    if (isMinor) {
-      zippy['iconUri'] =
-          'https://www.gstatic.com/myactivity/icon/icon_fp_history_blue.svg';
+  zippy['useNativeIcons'] = !!isNativeIcons;
+
+  if (isNativeIcons) {
+    if (type === 'WAA') {
+      zippy['nativeIconType'] = AssistantNativeIconType.WAA;
+    } else if (type == 'DA') {
+      zippy['nativeIconType'] = AssistantNativeIconType.DA;
     } else {
-      zippy['iconUri'] =
-          'https://ssl.gstatic.com/identity/boq/consentflowtexts/icon_web_and_app_activity_grey600_72-fb2e66730dca510849d22bee9f0f29ba.png';
-    }
-  } else if (type === 'DA') {
-    if (isMinor) {
-      zippy['iconUri'] =
-          'https://www.gstatic.com/myactivity/icon/icon_fp_chromebook_blue.svg';
-    } else {
-      zippy['iconUri'] =
-          'https://ssl.gstatic.com/identity/boq/consentflowtexts/icon_device_information_vertical_grey600_72-be6f9c8691213019712cfa4106a509e0.png';
+      console.error('### Uknown zippy type ' + type);
     }
   } else {
-    console.error('### Uknown zippy type ' + type);
+    if (type === 'WAA') {
+      if (isMinor) {
+        zippy['iconUri'] =
+            'https://www.gstatic.com/myactivity/icon/icon_fp_history_blue.svg';
+      } else {
+        zippy['iconUri'] =
+            'https://ssl.gstatic.com/identity/boq/consentflowtexts/icon_web_and_app_activity_grey600_72-fb2e66730dca510849d22bee9f0f29ba.png';
+      }
+    } else if (type === 'DA') {
+      if (isMinor) {
+        zippy['iconUri'] =
+            'https://www.gstatic.com/myactivity/icon/icon_fp_chromebook_blue.svg';
+      } else {
+        zippy['iconUri'] =
+            'https://ssl.gstatic.com/identity/boq/consentflowtexts/icon_device_information_vertical_grey600_72-be6f9c8691213019712cfa4106a509e0.png';
+      }
+    } else {
+      console.error('### Uknown zippy type ' + type);
+    }
   }
   return zippy;
 };
@@ -1319,8 +1338,10 @@ cr.define('cr.ui.login.debug', function() {
                 createAssistantData(/*isMinor=*/ false));
 
             const zippies = [[]];
-            zippies[0].push(createAssistantZippy('WAA', /*isMinor=*/ false));
-            zippies[0].push(createAssistantZippy('DA', /*isMinor=*/ false));
+            zippies[0].push(createAssistantZippy(
+                'WAA', /*isMinor=*/ false, /*isNativeIcons=*/ false));
+            zippies[0].push(createAssistantZippy(
+                'DA', /*isMinor=*/ false, /*isNativeIcons=*/ false));
 
             (screen.$).card.addSettingZippy('settings', zippies);
           },
@@ -1341,16 +1362,74 @@ cr.define('cr.ui.login.debug', function() {
           },
         },
         {
-          id: 'related_info skip_activity_control=true',
+          id: 'value_prop_native_icons',
           trigger: (screen) => {
-            ((screen.$).card.$).relatedInfo.skipActivityControl_ = true;
+            (screen.$).card.onReload();
+            (screen.$).card.showStep('value-prop');
+            (screen.$).card.reloadContent(
+                createAssistantData(/*isMinor=*/ false));
+
+            const zippies = [[]];
+            zippies[0].push(createAssistantZippy(
+                'WAA', /*isMinor=*/ false, /*isNativeIcons=*/ true));
+            zippies[0].push(createAssistantZippy(
+                'DA', /*isMinor=*/ false, /*isNativeIcons=*/ true));
+
+            (screen.$).card.addSettingZippy('settings', zippies);
+          },
+        },
+        {
+          id: 'value_prop_minor_native_icons',
+          trigger: (screen) => {
+            (screen.$).card.onReload();
+            (screen.$).card.showStep('value-prop');
+            (screen.$).card.reloadContent(
+                createAssistantData(/*isMinor=*/ false));
+
+            const zippies = [[]];
+            zippies[0].push(createAssistantZippy(
+                'WAA', /*isMinor=*/ true, /*isNativeIcons=*/ true));
+            zippies[0].push(createAssistantZippy(
+                'DA', /*isMinor=*/ true, /*isNativeIcons=*/ true));
+
+            (screen.$).card.addSettingZippy('settings', zippies);
+          },
+        },
+        {
+          id: 'related_info',
+          trigger: (screen) => {
+            const data = createAssistantData(/*isMinor=*/ false);
+            data['activityControlNeeded'] = false;
+            (screen.$).card.reloadContent(data);
             (screen.$).card.showStep('related-info');
           },
         },
         {
-          id: 'related_info skip_activity_control=false',
+          id: 'related_info activityControlNeeded',
           trigger: (screen) => {
-            ((screen.$).card.$).relatedInfo.skipActivityControl_ = false;
+            const data = createAssistantData(/*isMinor=*/ false);
+            data['activityControlNeeded'] = true;
+            (screen.$).card.reloadContent(data);
+            (screen.$).card.showStep('related-info');
+          },
+        },
+        {
+          id: 'related_info native icons',
+          trigger: (screen) => {
+            const data = createAssistantData(/*isMinor=*/ false);
+            data['activityControlNeeded'] = false;
+            data['useNativeIcons'] = true;
+            (screen.$).card.reloadContent(data);
+            (screen.$).card.showStep('related-info');
+          },
+        },
+        {
+          id: 'related_info isMinor nativeIcons',
+          trigger: (screen) => {
+            const data = createAssistantData(/*isMinor=*/ true);
+            data['activityControlNeeded'] = false;
+            data['useNativeIcons'] = true;
+            (screen.$).card.reloadContent(data);
             (screen.$).card.showStep('related-info');
           },
         },

@@ -259,17 +259,22 @@ class AssistantRelatedInfo extends AssistantRelatedInfoBase {
   reloadContent(data) {
     this.skipActivityControl_ = !data['activityControlNeeded'];
     this.childName_ = data['childName'];
-    const url = this.isDarkModeActive_ ? 'info_outline_gm_grey500_24dp.png' :
-                                         'info_outline_gm_grey600_24dp.png';
-    this.$.zippy.setAttribute(
-        'icon-src',
-        'data:text/html;charset=utf-8,' +
-            encodeURIComponent(this.$.zippy.getWrappedIcon(
-                'https://www.gstatic.com/images/icons/material/system/2x/' +
-                    url,
-                this.i18n('assistantScreenContextTitle'),
-                getComputedStyle(document.body)
-                    .getPropertyValue('--cros-bg-color'))));
+    if (!data['useNativeIcons']) {
+      const url = this.isDarkModeActive_ ? 'info_outline_gm_grey500_24dp.png' :
+                                           'info_outline_gm_grey600_24dp.png';
+      this.$.zippy.setAttribute(
+          'icon-src',
+          'data:text/html;charset=utf-8,' +
+              encodeURIComponent(this.$.zippy.getWrappedIcon(
+                  'https://www.gstatic.com/images/icons/material/system/2x/' +
+                      url,
+                  this.i18n('assistantScreenContextTitle'),
+                  getComputedStyle(document.body)
+                      .getPropertyValue('--cros-bg-color'))));
+      this.$.zippy.nativeIconType = AssistantNativeIconType.NONE;
+    } else {
+      this.$.zippy.nativeIconType = AssistantNativeIconType.INFO;
+    }
     this.equalWeightButtons_ = data['equalWeightButtons'];
 
     this.consentStringLoaded_ = true;

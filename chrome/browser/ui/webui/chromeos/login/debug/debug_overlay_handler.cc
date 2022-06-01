@@ -134,6 +134,10 @@ void DebugOverlayHandler::HandleCaptureScreenshot(const std::string& name) {
     if (add_resolution_to_filename_)
       filename.append("_" + rect.size().ToString());
 
+    if (ash::ColorProvider::Get()->IsDarkModeEnabled()) {
+      filename.append("_dark");
+    }
+
     filename.append(".png");
     ui::GrabWindowSnapshotAsyncPNG(
         root_window, rect,

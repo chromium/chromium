@@ -8,7 +8,10 @@
 
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/audio/cras_audio_handler.h"
+#include "ash/constants/ash_features.h"
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/grit/browser_resources.h"
@@ -27,6 +30,37 @@ using AssistantActivityControlConsent =
     sync_pb::UserConsentTypes::AssistantActivityControlConsent;
 
 namespace chromeos {
+
+namespace {
+
+// Possible native assistant icons
+// Must be in sync with the corresponding javascript enum.
+enum class AssistantNativeIconType {
+  kNone = 0,
+
+  // Web & App Activity.
+  kWAA = 1,
+
+  // Device Applications Information.
+  kDA = 2,
+
+  kInfo = 3,
+};
+
+AssistantNativeIconType SettingIdToIconType(
+    assistant::SettingSetId setting_set_id) {
+  switch (setting_set_id) {
+    case assistant::SettingSetId::WAA:
+      return AssistantNativeIconType::kWAA;
+    case assistant::SettingSetId::DA:
+      return AssistantNativeIconType::kDA;
+    case assistant::SettingSetId::UNKNOWN_SETTING_SET_ID:
+      NOTREACHED();
+      return AssistantNativeIconType::kNone;
+  }
+}
+
+}  // namespace
 
 void RecordAssistantOptInStatus(AssistantOptInFlowStatus status) {
   UMA_HISTOGRAM_ENUMERATION("Assistant.OptInFlowStatus", status, kMaxValue + 1);
@@ -104,6 +138,11 @@ base::Value CreateZippyData(const ActivityControlUi& activity_control_ui,
                   base::Value(setting_zippy.additional_info_paragraph(0)));
     }
     data.SetKey("iconUri", base::Value(setting_zippy.icon_uri()));
+    data.SetKey("nativeIconType",
+                base::Value(static_cast<int>(
+                    SettingIdToIconType(setting_zippy.setting_set_id()))));
+    data.SetKey("useNativeIcons",
+                base::Value(ash::features::IsAssistantNativeIconsEnabled()));
     data.SetKey("popupLink", base::Value(l10n_util::GetStringUTF16(
                                  IDS_ASSISTANT_ACTIVITY_CONTROL_POPUP_LINK)));
     if (is_minor_mode) {
