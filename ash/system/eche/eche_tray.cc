@@ -124,11 +124,6 @@ void EcheTray::EventInterceptor::OnKeyEvent(ui::KeyEvent* event) {
     event->StopPropagation();
     return;
   }
-  if (AcceleratorController::Get()->IsRegistered(accelerator)) {
-    views::ViewsDelegate::GetInstance()->ProcessAcceleratorWhileMenuShowing(
-        accelerator);
-    event->StopPropagation();
-  }
 }
 
 EcheTray::EcheTray(Shelf* shelf)
