@@ -42,8 +42,6 @@ class OESDrawBuffersIndexed final : public WebGLExtension {
                      GLboolean g,
                      GLboolean b,
                      GLboolean a);
-
-  GLboolean isEnablediOES(GLenum target, GLuint index);
 };
 
 }  // namespace blink

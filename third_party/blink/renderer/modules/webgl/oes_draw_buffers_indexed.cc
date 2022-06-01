@@ -88,11 +88,4 @@ void OESDrawBuffersIndexed::colorMaskiOES(GLuint buf,
   scoped.Context()->ContextGL()->ColorMaskiOES(buf, r, g, b, a);
 }
 
-GLboolean OESDrawBuffersIndexed::isEnablediOES(GLenum target, GLuint index) {
-  WebGLExtensionScopedContext scoped(this);
-  if (scoped.IsLost())
-    return 0;
-  return scoped.Context()->ContextGL()->IsEnablediOES(target, index);
-}
-
 }  // namespace blink
