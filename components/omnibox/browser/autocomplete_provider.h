@@ -198,7 +198,7 @@ class AutocompleteProvider
   //
   // |minimal_changes| is an optimization that lets the provider do less work
   // when the |input|'s text hasn't changed.  See the body of
-  // OmniboxPopupModel::StartAutocomplete().
+  // AutocompleteController::Start().
   virtual void Start(const AutocompleteInput& input, bool minimal_changes) = 0;
 
   // Similar to Start(), but used to perform prefetch requests. Providers can

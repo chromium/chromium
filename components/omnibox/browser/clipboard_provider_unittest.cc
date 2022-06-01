@@ -78,10 +78,8 @@ class ClipboardProviderTest : public testing::Test,
  public:
   ClipboardProviderTest()
       : client_(new MockAutocompleteProviderClient()),
-        provider_(new ClipboardProvider(client_.get(),
-                                        this,
-                                        nullptr,
-                                        &clipboard_content_)) {
+        provider_(
+            new ClipboardProvider(client_.get(), this, &clipboard_content_)) {
     SetClipboardUrl(GURL(kClipboardURL));
   }
 

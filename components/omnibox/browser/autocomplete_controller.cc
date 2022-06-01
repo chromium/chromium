@@ -323,10 +323,7 @@ AutocompleteController::AutocompleteController(
   // doing its thing by the time the HistoryURLProvider task runs.
   // (And hope that it completes before AutocompleteController::Start() is
   // called the next time.)
-  // ClipboardURLProvider take a reference to HistoryURLProvider. If we're going
-  // to need it, we should initialize history_url_provider_.
-  if (provider_types & (AutocompleteProvider::TYPE_HISTORY_URL |
-                        AutocompleteProvider::TYPE_CLIPBOARD)) {
+  if (provider_types & AutocompleteProvider::TYPE_HISTORY_URL) {
     history_url_provider_ =
         new HistoryURLProvider(provider_client_.get(), this);
     if (provider_types & AutocompleteProvider::TYPE_HISTORY_URL)
@@ -381,15 +378,12 @@ AutocompleteController::AutocompleteController(
     // create a ClipboardRecentContent as above (for both Chrome and tests).
     if (ClipboardRecentContent::GetInstance()) {
       clipboard_provider_ = new ClipboardProvider(
-          provider_client_.get(), this, history_url_provider_,
-          ClipboardRecentContent::GetInstance());
+          provider_client_.get(), this, ClipboardRecentContent::GetInstance());
       providers_.push_back(clipboard_provider_.get());
     }
   }
-
   if (provider_types & AutocompleteProvider::TYPE_QUERY_TILE)
     providers_.push_back(new QueryTileProvider(provider_client_.get(), this));
-
   if (provider_types & AutocompleteProvider::TYPE_VOICE_SUGGEST) {
     voice_suggest_provider_ =
         new VoiceSuggestProvider(provider_client_.get(), this);

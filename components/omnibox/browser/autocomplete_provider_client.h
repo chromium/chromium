@@ -168,7 +168,7 @@ class AutocompleteProviderClient : public OmniboxAction::Client {
   virtual void PrefetchImage(const GURL& url) = 0;
 
   // Sends a hint to the service worker context that navigation to
-  // |desination_url| is likely, unless the current profile is in incognito
+  // |destination_url| is likely, unless the current profile is in incognito
   // mode. On platforms where this is supported, the service worker lookup can
   // be expensive so this method should only be called once per input session.
   virtual void StartServiceWorker(const GURL& destination_url) {}
