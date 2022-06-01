@@ -513,6 +513,9 @@ void HTMLTextAreaElement::SetValueCommon(const String& new_value,
     // Set the caret to the end of the text value except for initialize.
     unsigned end_of_string = value_.length();
     SetSelectionRange(end_of_string, end_of_string);
+  } else if (selection == TextControlSetValueSelection::kSetSelectionToStart) {
+    // Set the caret to the start of the text value.
+    SetSelectionRange(0, 0);
   } else if (is_clamp) {
     const unsigned end_of_string = value_.length();
     SetSelectionRange(std::min(end_of_string, selection_start),
@@ -727,7 +730,7 @@ void HTMLTextAreaElement::CloneNonAttributePropertiesFrom(
   const auto& source_element = To<HTMLTextAreaElement>(source);
   SetValueCommon(source_element.Value(),
                  TextFieldEventBehavior::kDispatchNoEvent,
-                 TextControlSetValueSelection::kSetSelectionToEnd,
+                 TextControlSetValueSelection::kSetSelectionToStart,
                  source_element.GetAutofillState());
   is_dirty_ = source_element.is_dirty_;
   TextControlElement::CloneNonAttributePropertiesFrom(source, flag);

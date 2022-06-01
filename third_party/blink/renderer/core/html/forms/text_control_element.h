@@ -50,6 +50,7 @@ enum class TextFieldEventBehavior {
 };
 
 enum class TextControlSetValueSelection {
+  kSetSelectionToStart,
   kSetSelectionToEnd,
   kClamp,
   kDoNotSet,
