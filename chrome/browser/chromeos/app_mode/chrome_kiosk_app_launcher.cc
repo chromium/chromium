@@ -23,6 +23,10 @@
 #include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/lacros/app_mode/kiosk_session_service_lacros.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 namespace {
 
 void RecordKioskSecondaryAppsInstallResult(bool success) {
@@ -129,6 +133,11 @@ void ChromeKioskAppLauncher::MaybeUpdateAppData() {
 
 void ChromeKioskAppLauncher::ReportLaunchSuccess() {
   SYSLOG(INFO) << "App launch completed";
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  KioskSessionServiceLacros::Get()->InitChromeKioskSession(profile_, app_id_);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   std::move(on_ready_callback_)
       .Run(ChromeKioskAppLauncher::LaunchResult::kSuccess);
 }
