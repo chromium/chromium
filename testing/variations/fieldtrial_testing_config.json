@@ -1944,28 +1944,6 @@
             ]
         }
     ],
-    "CPSS-Geolocation": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20210817",
-                    "params": {
-                        "holdback_chance": "0.3"
-                    },
-                    "enable_features": [
-                        "PermissionGeolocationPredictions"
-                    ]
-                }
-            ]
-        }
-    ],
     "CPSS-OnDeviceNotificationPredictions": [
         {
             "platforms": [

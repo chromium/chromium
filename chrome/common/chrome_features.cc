@@ -762,13 +762,13 @@ const base::FeatureParam<double> kPermissionPredictionsHoldbackChance(
 
 // Enables using the prediction service for geolocation permission prompts.
 const base::Feature kPermissionGeolocationPredictions{
-    "PermissionGeolocationPredictions", base::FEATURE_DISABLED_BY_DEFAULT};
+    "PermissionGeolocationPredictions", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::FeatureParam<double>
     kPermissionGeolocationPredictionsHoldbackChance(
         &kPermissionGeolocationPredictions,
         "holdback_chance",
-        0.0);
+        0.3);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Enable support for "Plugin VMs" on Chrome OS.
