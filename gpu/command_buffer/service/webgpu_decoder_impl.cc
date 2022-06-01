@@ -1031,6 +1031,7 @@ bool WebGPUDecoderImpl::IsFeatureExposed(WGPUFeatureName feature) const {
   switch (feature) {
     case WGPUFeatureName_TimestampQuery:
     case WGPUFeatureName_PipelineStatisticsQuery:
+    case WGPUFeatureName_ChromiumExperimentalDp4a:
       return allow_unsafe_apis_;
     case WGPUFeatureName_Depth24UnormStencil8:
     case WGPUFeatureName_Depth32FloatStencil8:

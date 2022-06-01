@@ -14,7 +14,8 @@ enum GPUFeatureName {
     "depth-clamping",
     "depth24unorm-stencil8",
     "depth32float-stencil8",
-    "indirect-first-instance"
+    "indirect-first-instance",
+    "chromium-experimental-dp4a",
 };
 
 [
