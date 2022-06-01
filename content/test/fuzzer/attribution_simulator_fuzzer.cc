@@ -8,7 +8,10 @@
 #include <string>
 #include <utility>
 
+#include "base/command_line.h"
+#include "base/i18n/icu_util.h"
 #include "base/json/json_reader.h"
+#include "base/logging.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "content/test/attribution_simulator_input_parser.h"
@@ -19,7 +22,21 @@
 
 namespace content {
 
+namespace {
+
+struct Environment {
+  Environment() {
+    base::CommandLine::Init(0, nullptr);
+    base::i18n::InitializeICU();
+    logging::SetMinLogLevel(logging::LOG_FATAL);
+  }
+};
+
+}  // namespace
+
 DEFINE_PROTO_FUZZER(const json_proto::JsonValue& json_value) {
+  static Environment env;
+
   json_proto::JsonProtoConverter converter;
   std::string native_input = converter.Convert(json_value);
 
