@@ -151,6 +151,15 @@ def deploy(args):
         '--inplace',
         '--delete',
         '--mkpath',
+        # rsync by default use source file permission masked by target file
+        # system umask while transferring new files, and since workstation
+        # defaults to have file not readable by others, this makes deployed
+        # file not readable by Chrome.
+        # Set --chmod=+r to rsync to fix this, and set --perms so existing
+        # files that might have the wrong permission will have their permission
+        # fixed.
+        '--perms',
+        '--chmod=+r',
         f'{tsc_dir}/',
         f'{args.device}:{CCA_OVERRIDE_PATH}/js/',
     ]
@@ -163,6 +172,8 @@ def deploy(args):
             '--inplace',
             '--delete',
             '--mkpath',
+            '--perms',
+            '--chmod=+r',
             f'{os.path.join(cca_root, dir)}/',
             f'{args.device}:{CCA_OVERRIDE_PATH}/{dir}/',
         ]
