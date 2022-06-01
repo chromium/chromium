@@ -477,6 +477,8 @@ generated_dictionary_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_sampler_binding_layout.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_sampler_descriptor.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_sampler_descriptor.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_shader_module_compilation_hint.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_shader_module_compilation_hint.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_shader_module_descriptor.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_shader_module_descriptor.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gpu_stencil_face_state.cc",
