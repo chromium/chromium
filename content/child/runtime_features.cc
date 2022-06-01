@@ -412,7 +412,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"WindowPlacementFullscreenOnScreensChange",
            blink::features::kWindowPlacementFullscreenOnScreensChange},
           {"EventPath", blink::features::kEventPath},
-      };
+          {"MediaStreamTrackTransfer", features::kMediaStreamTrackTransfer}};
   for (const auto& mapping : runtimeFeatureNameToChromiumFeatureMapping) {
     SetRuntimeFeatureFromChromiumFeature(
         mapping.chromium_feature, mapping.option, [&mapping](bool enabled) {
