@@ -8788,6 +8788,14 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kNetworkServiceInProcess)},
 #endif
 
+    {"broker-file-operations-on-disk-cache-in-network-service",
+     flag_descriptions::kBrokerFileOperationsOnDiskCacheInNetworkServiceName,
+     flag_descriptions::
+         kBrokerFileOperationsOnDiskCacheInNetworkServiceDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         features::kBrokerFileOperationsOnDiskCacheInNetworkService)},
+
     {"autofill-remove-card-expiry-from-downstream-suggestion",
      flag_descriptions::kAutofillRemoveCardExpiryFromDownstreamSuggestionName,
      flag_descriptions::

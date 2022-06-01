@@ -103,7 +103,7 @@ class SandboxedHttpCacheBrowserTest : public ContentBrowserTest {
  public:
   SandboxedHttpCacheBrowserTest() {
     std::vector<base::Feature> enabled_features = {
-      net::features::kSandboxHttpCache,
+      features::kBrokerFileOperationsOnDiskCacheInNetworkService,
 #if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_FUCHSIA)
       // Network Service Sandboxing is unconditionally enabled on these
       // platforms.

@@ -95,6 +95,12 @@ const char kAriaElementReflectionDescription[] =
     "Enable setting ARIA relationship attributes that reference other elements "
     "directly without an IDREF";
 
+const char kBrokerFileOperationsOnDiskCacheInNetworkServiceName[] =
+    "Broker file operations on disk cache in the Network Service";
+const char kBrokerFileOperationsOnDiskCacheInNetworkServiceDescription[] =
+    "Broker file operations on disk cache running in the Network Service. This "
+    "is no-op when the Network Service is running in the browser process.";
+
 const char kCSSContainerQueriesName[] = "Enable CSS Container Queries";
 const char kCSSContainerQueriesDescription[] =
     "Enables support for @container, inline-size and block-size values for the "

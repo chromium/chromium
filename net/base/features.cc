@@ -286,9 +286,6 @@ const base::Feature kExtraCookieValidityChecks{
 const base::Feature kRecordRadioWakeupTrigger{
     "RecordRadioWakeupTrigger", base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kSandboxHttpCache("SandboxHttpCache",
-                                      base::FEATURE_DISABLED_BY_DEFAULT);
-
 const base::Feature kClampCookieExpiryTo400Days(
     "ClampCookieExpiryTo400Days",
     base::FEATURE_ENABLED_BY_DEFAULT);

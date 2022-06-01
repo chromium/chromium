@@ -2434,8 +2434,7 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
     } else {
       cache_params.path = params_->http_cache_directory->path();
       cache_params.type = network_session_configurator::ChooseCacheType();
-      if (base::FeatureList::IsEnabled(net::features::kSandboxHttpCache) &&
-          params_->http_cache_file_operations_factory) {
+      if (params_->http_cache_file_operations_factory) {
         cache_params.file_operations_factory =
             base::MakeRefCounted<MojoBackendFileOperationsFactory>(
                 std::move(params_->http_cache_file_operations_factory));

@@ -42,6 +42,7 @@
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/network_service_util.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -815,9 +816,14 @@ void CreateNetworkContextInNetworkService(
 
   MaybeCleanCacheDirectory(params.get());
 
-  if (params->http_cache_enabled && params->http_cache_directory &&
-      !params->http_cache_directory->path().empty() &&
-      base::FeatureList::IsEnabled(net::features::kSandboxHttpCache)) {
+  const bool has_valid_http_cache_path =
+      params->http_cache_enabled && params->http_cache_directory &&
+      !params->http_cache_directory->path().empty();
+  const bool brokering_is_enabled =
+      IsOutOfProcessNetworkService() &&
+      base::FeatureList::IsEnabled(
+          features::kBrokerFileOperationsOnDiskCacheInNetworkService);
+  if (has_valid_http_cache_path && brokering_is_enabled) {
     mojo::MakeSelfOwnedReceiver(
         std::make_unique<HttpCacheBackendFileOperationsFactory>(
             params->http_cache_directory->path()),

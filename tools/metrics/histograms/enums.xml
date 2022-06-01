@@ -54679,6 +54679,8 @@ from previous Chrome versions.
   <int value="-2075807193" label="enable-webusb-on-any-origin"/>
   <int value="-2075725205" label="disable-new-zip-unpacker"/>
   <int value="-2074080173" label="NightLight:disabled"/>
+  <int value="-2073402331"
+      label="BrokerFileOperationsOnDiskCacheInNetworkService:disabled"/>
   <int value="-2072471036" label="OobeHidDetectionRevamp:disabled"/>
   <int value="-2071515296" label="allow-sync-xhr-in-page-dismissal"/>
   <int value="-2071202821" label="CopyLinkToText:enabled"/>
@@ -57417,6 +57419,8 @@ from previous Chrome versions.
   <int value="-315333837" label="AutofillEnableCardNicknameUpstream:enabled"/>
   <int value="-314910380" label="disable-distance-field-text"/>
   <int value="-314605926" label="protect-sync-credential-on-reauth:enabled"/>
+  <int value="-314566497"
+      label="BrokerFileOperationsOnDiskCacheInNetworkService:enabled"/>
   <int value="-313812707" label="VideoTutorials:disabled"/>
   <int value="-312144677" label="TFLiteLanguageDetectionEnabled:disabled"/>
   <int value="-311148335" label="v8-pac-mojo-out-of-process"/>

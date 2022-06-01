@@ -167,6 +167,12 @@ const base::Feature kBlockInsecurePrivateNetworkRequestsForNavigations{
     base::FEATURE_DISABLED_BY_DEFAULT,
 };
 
+// Broker file operations on disk cache in the Network Service.
+// This is no-op if the network service is hosted in the browser process.
+const base::Feature kBrokerFileOperationsOnDiskCacheInNetworkService{
+    "BrokerFileOperationsOnDiskCacheInNetworkService",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Use ThreadPriority::DISPLAY for browser UI and IO threads.
 const base::Feature kBrowserUseDisplayThreadPriority {
   "BrowserUseDisplayThreadPriority",
