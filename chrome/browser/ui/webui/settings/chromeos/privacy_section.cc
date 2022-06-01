@@ -332,8 +332,8 @@ void PrivacySection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       "smartPrivacyDesc",
       ui::SubstituteChromeOSDeviceType(IDS_OS_SETTINGS_SMART_PRIVACY_DESC));
 
-  // TODO(1294649): update this to the real link.
-  html_source->AddString("smartPrivacyLearnMoreLink", "about:blank");
+  html_source->AddString("smartPrivacyLearnMoreURL",
+                         chrome::kSmartPrivacySettingsLearnMoreURL);
 
   html_source->AddString("suggestedContentLearnMoreURL",
                          chrome::kSuggestedContentLearnMoreURL);
