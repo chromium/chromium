@@ -160,8 +160,8 @@ void DIPSBounceDetector::DidFinishNavigation(
     if (!state->filter.Filter(navigation_handle->GetRedirectChain(),
                               &access_types)) {
       // We failed to map all the OnCookiesAccessed calls to the redirect chain.
-      // TODO(rtarpine): report metrics to see if this happens in practice
-      DCHECK(false) << "CookieAccessFilter failed to map all accesses";
+      // TODO(rtarpine): find out why this happens.
+      // TODO(rtarpine): report a metric to monitor.
       return;
     }
 
