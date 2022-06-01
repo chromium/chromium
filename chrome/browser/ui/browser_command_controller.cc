@@ -1240,11 +1240,13 @@ void BrowserCommandController::UpdateCommandsForTabState() {
 
   // Window management commands
   bool is_app = browser_->is_type_app() || browser_->is_type_app_popup();
+  bool is_normal = browser_->is_type_normal();
+
   command_updater_.UpdateCommandEnabled(IDC_DUPLICATE_TAB,
                                         !is_app && CanDuplicateTab(browser_));
   command_updater_.UpdateCommandEnabled(IDC_WINDOW_MUTE_SITE, !is_app);
-  command_updater_.UpdateCommandEnabled(IDC_WINDOW_PIN_TAB, !is_app);
-  command_updater_.UpdateCommandEnabled(IDC_WINDOW_GROUP_TAB, !is_app);
+  command_updater_.UpdateCommandEnabled(IDC_WINDOW_PIN_TAB, is_normal);
+  command_updater_.UpdateCommandEnabled(IDC_WINDOW_GROUP_TAB, is_normal);
   command_updater_.UpdateCommandEnabled(IDC_WINDOW_CLOSE_TABS_TO_RIGHT,
                                         CanCloseTabsToRight(browser_));
   command_updater_.UpdateCommandEnabled(IDC_WINDOW_CLOSE_OTHER_TABS,
