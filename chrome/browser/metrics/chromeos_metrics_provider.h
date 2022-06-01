@@ -122,6 +122,9 @@ class ChromeOSMetricsProvider : public metrics::MetricsProvider {
   void WriteCellularDeviceVariant(
       metrics::SystemProfileProto* system_profile_proto);
 
+  void WriteDemoModeDimensionMetrics(
+      metrics::SystemProfileProto* system_profile_proto);
+
   // For collecting systemwide performance data via the UMA channel.
   std::unique_ptr<metrics::ProfileProvider> profile_provider_;
 

@@ -13,6 +13,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/multidevice_setup/multidevice_setup_client_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -262,6 +263,25 @@ TEST_F(ChromeOSMetricsProviderTest, FullHardwareClass) {
       system_profile.hardware().full_hardware_class();
 
   EXPECT_EQ(expected_full_hw_class, proto_full_hw_class);
+}
+
+TEST_F(ChromeOSMetricsProviderTest, DemoModeDimensions) {
+  ash::DemoSession::SetDemoConfigForTesting(
+      ash::DemoSession::DemoModeConfig::kOnline);
+  const std::string expected_country = "CA";
+  g_browser_process->local_state()->SetString("demo_mode.country",
+                                              expected_country);
+
+  TestChromeOSMetricsProvider provider;
+  provider.OnDidCreateMetricsLog();
+  metrics::SystemProfileProto system_profile;
+  provider.ProvideSystemProfileMetrics(&system_profile);
+
+  ASSERT_TRUE(system_profile.has_demo_mode_dimensions());
+  ASSERT_TRUE(system_profile.demo_mode_dimensions().has_country());
+  std::string country = system_profile.demo_mode_dimensions().country();
+
+  EXPECT_EQ(country, expected_country);
 }
 
 TEST_F(ChromeOSMetricsProviderTest, TpmTypeRuntimeSelection) {

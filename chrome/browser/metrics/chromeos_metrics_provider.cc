@@ -29,6 +29,7 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/arc/arc_optin_uma.h"
+#include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
 #include "chrome/browser/ash/multidevice_setup/multidevice_setup_client_factory.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
@@ -218,6 +219,7 @@ void ChromeOSMetricsProvider::ProvideSystemProfileMetrics(
     metrics::SystemProfileProto* system_profile_proto) {
   WriteLinkedAndroidPhoneProto(system_profile_proto);
   UpdateMultiProfileUserCount(system_profile_proto);
+  WriteDemoModeDimensionMetrics(system_profile_proto);
 
   metrics::SystemProfileProto::Hardware* hardware =
       system_profile_proto->mutable_hardware();
@@ -302,6 +304,18 @@ void ChromeOSMetricsProvider::ProvideCurrentSessionData(
   }
   arc::UpdateEnabledStateByUserTypeUMA();
   UpdateUserTypeUMA();
+}
+
+void ChromeOSMetricsProvider::WriteDemoModeDimensionMetrics(
+    metrics::SystemProfileProto* system_profile_proto) {
+  if (!ash::DemoSession::IsDeviceInDemoMode()) {
+    return;
+  }
+  metrics::SystemProfileProto::DemoModeDimensions* demo_mode_dimensions =
+      system_profile_proto->mutable_demo_mode_dimensions();
+  PrefService* pref = g_browser_process->local_state();
+  std::string demo_country = pref->GetString(prefs::kDemoModeCountry);
+  demo_mode_dimensions->set_country(demo_country);
 }
 
 void ChromeOSMetricsProvider::WriteLinkedAndroidPhoneProto(
