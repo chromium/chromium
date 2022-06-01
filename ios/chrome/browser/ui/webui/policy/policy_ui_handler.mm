@@ -238,8 +238,7 @@ base::Value PolicyUIHandler::GetStatusValue(bool include_box_legend_key) const {
   // Given that it's usual for users to bring their own devices and the fact
   // that device names could expose personal information. We do not show
   // this field in Device Policy Box
-  if (machine_status->HasKey("machine"))
-    machine_status->RemoveKey("machine");
+  machine_status->RemoveKey("machine");
 
   base::DictionaryValue status;
   if (!machine_status->DictEmpty()) {
