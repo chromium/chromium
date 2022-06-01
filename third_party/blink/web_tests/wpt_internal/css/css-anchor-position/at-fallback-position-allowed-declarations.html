@@ -11,10 +11,9 @@ function cleanup() {
     style.sheet.deleteRule(0);
 }
 
-function test_allowed_property(property) {
+function test_allowed_property(property, value = '1px') {
   test(t => {
     t.add_cleanup(cleanup);
-    const value = '1px';
     const serialization = `${property}: ${value}`;
     const rule = `@position-fallback --foo { @try { ${property}: ${value}; } }`;
     const index = style.sheet.insertRule(rule);
@@ -60,6 +59,14 @@ test_allowed_property('max-width');
 test_allowed_property('max-height');
 test_allowed_property('max-block-size');
 test_allowed_property('max-inline-size');
+
+// Box alignment properties are allowed
+test_allowed_property('justify-content', 'normal');
+test_allowed_property('align-content', 'normal');
+test_allowed_property('justify-items', 'normal');
+test_allowed_property('align-items', 'normal');
+test_allowed_property('justify-self', 'normal');
+test_allowed_property('align-self', 'normal');
 
 // Custom properties are allowed
 test_allowed_property('--custom');
