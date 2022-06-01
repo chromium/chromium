@@ -34,6 +34,7 @@ public class ContextualSearchFieldTrial {
     static final String RELATED_SEARCHES_NEEDS_CONTENT_PARAM_NAME = "needs_content";
     // A comma-separated list of lower-case ISO 639 language codes.
     static final String RELATED_SEARCHES_LANGUAGE_ALLOWLIST_PARAM_NAME = "language_allowlist";
+    static final String RELATED_SEARCHES_LANGUAGE_DEFAULT_ALLOWLIST = "en";
     private static final String RELATED_SEARCHES_CONFIG_STAMP_PARAM_NAME = "stamp";
 
     static final String RELATED_SEARCHES_SHOW_DEFAULT_QUERY_CHIP_PARAM_NAME = "default_query_chip";

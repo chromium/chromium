@@ -162,6 +162,7 @@ public class RelatedSearchesStampTest {
         resetShadows();
         mPolicy = new ContextualSearchPolicy(null, null);
         mStamp = new RelatedSearchesStamp(mPolicy);
+        mStamp.disableDefaultAllowedLanguagesForTesting(true);
     }
 
     //====================================================================================
