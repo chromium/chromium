@@ -103,7 +103,19 @@
   cr-button {
     font-size: 12px;
     width: 111px;
+  }
 
+  .action-container.in-dialog-design {
+    padding: 0 24px 24px;
+  }
+
+  .in-dialog-design #doneButton {
+    width: 119px;
+  }
+
+  .in-dialog-design #skipButton {
+    margin-inline-end: 12px;
+    width: 76px;
   }
 </style>
 
@@ -133,11 +145,19 @@
     </cr-customize-themes>
   </div>
 
-  <div class="action-container">
+  <div
+    class$="[[getActionContainerClass_(profileCustomizationInDialogDesign_)]]">
     <cr-button id="doneButton" class="action-button"
         disabled="[[isDoneButtonDisabled_(profileName_)]]"
         on-click="onDoneCustomizationClicked_" autofocus>
       $i18n{profileCustomizationDoneLabel}
     </cr-button>
+    <template is="dom-if" if="[[profileCustomizationInDialogDesign_]]">
+      <!-- TODO: add action and i18n on Skip -->
+      <cr-button id="skipButton" class="cancel-button">
+        Skip
+      </cr-button>
+    </template>
   <div>
+
 </div>

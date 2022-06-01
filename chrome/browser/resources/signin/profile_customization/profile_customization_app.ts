@@ -110,6 +110,10 @@ export class ProfileCustomizationAppElement extends
     this.isManaged_ = profileInfo.isManaged;
     this.welcomeTitle_ = profileInfo.welcomeTitle;
   }
+
+  private getActionContainerClass_(inDialogDesign: boolean): string {
+    return 'action-container' + (inDialogDesign ? ' in-dialog-design' : '');
+  }
 }
 
 declare global {
