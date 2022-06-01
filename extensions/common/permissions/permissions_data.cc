@@ -552,10 +552,11 @@ bool PermissionsData::IsPolicyBlockedHostUnsafe(const GURL& url) const {
   // URLPatternSet.
   runtime_lock_.AssertAcquired();
   if (context_id_.has_value()) {
-    // TODO(devlin): Eek! Despite the comment above, this actually creates a
-    // copy. Anecdotally, these lists may be very, very large. Fix this.
-    return GetDefaultPolicyBlockedHosts(context_id_.value()).MatchesURL(url) &&
-           !GetDefaultPolicyAllowedHosts(context_id_.value()).MatchesURL(url);
+    base::AutoLock lock(GetContextPermissionsLock());
+    const URLPatternAccessSet& default_policy_restrictions =
+        GetContextPermissions(*context_id_).default_policy_restrictions;
+    return default_policy_restrictions.blocked_hosts.MatchesURL(url) &&
+           !default_policy_restrictions.allowed_hosts.MatchesURL(url);
   }
 
   return policy_blocked_hosts_unsafe_.MatchesURL(url) &&
