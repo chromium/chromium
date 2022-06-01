@@ -180,12 +180,9 @@ MEDIA_EXPORT extern const base::Feature kOpenscreenCastStreamingSession;
 MEDIA_EXPORT extern const base::Feature kOverlayFullscreenVideo;
 MEDIA_EXPORT extern const base::Feature kPictureInPicture;
 MEDIA_EXPORT extern const base::Feature kPlatformAudioEncoder;
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC) &&                                       \
-    (BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || \
-     BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX))
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
 MEDIA_EXPORT extern const base::Feature kPlatformHEVCDecoderSupport;
-#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC) && (IS_ANDROID || IS_WIN || IS_CROS
-        // || IS_MAC || IS_LINUX)
+#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
 MEDIA_EXPORT extern const base::Feature kPlaybackSpeedButton;
 MEDIA_EXPORT extern const base::Feature kPreloadMediaEngagementData;
 MEDIA_EXPORT extern const base::Feature kPreloadMetadataLazyLoad;

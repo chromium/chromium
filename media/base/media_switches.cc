@@ -274,14 +274,11 @@ const base::Feature kPictureInPicture {
 #endif
 };
 
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC) &&                                       \
-    (BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || \
-     BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX))
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
 // Enables HEVC hardware accelerated decoding.
 const base::Feature kPlatformHEVCDecoderSupport{
     "PlatformHEVCDecoderSupport", base::FEATURE_DISABLED_BY_DEFAULT};
-#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC) && (IS_ANDROID || IS_WIN || IS_CROS
-        // || IS_MAC || IS_LINUX)
+#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
 
 // Only decode preload=metadata elements upon visibility.
 // TODO(crbug.com/879406): Remove this after M76 ships to stable
