@@ -791,6 +791,19 @@ chromium-metrics-reviews@google.com.
   <summary>Whether a deferred script was streamed or not.</summary>
 </histogram>
 
+<histogram name="WebCore.Scripts.InlineStreamerWaitTime" units="microseconds"
+    expires_after="2023-05-31">
+  <owner>cduvall@chromium.org</owner>
+  <owner>leszeks@chromium.org</owner>
+  <summary>
+    Records the time the main thread is blocked while waiting for an inline
+    script to finish compiling on a background thread. Recorded for each inline
+    script that is compiled on a background thread.
+
+    This histogram only records metrics on machines with high-resolution clocks.
+  </summary>
+</histogram>
+
 <histogram name="WebCore.Scripts.Other.NotStreamingReason"
     enum="NotStreamingReason" expires_after="2023-06-01">
   <owner>leszeks@chromium.org</owner>

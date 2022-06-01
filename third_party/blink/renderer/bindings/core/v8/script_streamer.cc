@@ -1109,6 +1109,7 @@ void BackgroundInlineScriptStreamer::Run() {
 v8::ScriptCompiler::StreamedSource* BackgroundInlineScriptStreamer::Source(
     v8::ScriptType expected_type) {
   TRACE_EVENT0("blink", "BackgroundInlineScriptStreamer::Source");
+  SCOPED_UMA_HISTOGRAM_TIMER_MICROS("WebCore.Scripts.InlineStreamerWaitTime");
   DCHECK(IsMainThread());
   DCHECK_EQ(expected_type, v8::ScriptType::kClassic);
   // Make sure the script has finished compiling in the background. See comment
