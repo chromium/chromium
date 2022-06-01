@@ -51,10 +51,6 @@ bool CrowdDenyFakeSafeBrowsingDatabaseManager::CancelApiCheck(Client* client) {
   return true;
 }
 
-bool CrowdDenyFakeSafeBrowsingDatabaseManager::IsSupported() const {
-  return true;
-}
-
 bool CrowdDenyFakeSafeBrowsingDatabaseManager::ChecksAreAlwaysAsync() const {
   return false;
 }

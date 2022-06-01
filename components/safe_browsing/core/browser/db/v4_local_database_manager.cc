@@ -639,10 +639,6 @@ bool V4LocalDatabaseManager::IsDownloadProtectionEnabled() const {
   return true;
 }
 
-bool V4LocalDatabaseManager::IsSupported() const {
-  return true;
-}
-
 void V4LocalDatabaseManager::StartOnIOThread(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const V4ProtocolConfig& config) {

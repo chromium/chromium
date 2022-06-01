@@ -94,10 +94,6 @@ safe_browsing::ThreatSource FakeSafeBrowsingDatabaseManager::GetThreatSource()
   return safe_browsing::ThreatSource::LOCAL_PVER4;
 }
 
-bool FakeSafeBrowsingDatabaseManager::IsSupported() const {
-  return true;
-}
-
 // static
 void FakeSafeBrowsingDatabaseManager::CheckBrowseURLAsync(
     GURL url,

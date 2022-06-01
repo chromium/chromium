@@ -85,7 +85,6 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
   bool MatchMalwareIP(const std::string& ip_address) override;
   safe_browsing::ThreatSource GetThreatSource() const override;
   bool IsDownloadProtectionEnabled() const override;
-  bool IsSupported() const override;
 
   void StartOnIOThread(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,

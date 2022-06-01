@@ -54,8 +54,7 @@ class CrowdDenySafeBrowsingRequest::SafeBrowsingClient
     timeout_.Start(FROM_HERE, kSafeBrowsingCheckTimeout, this,
                    &SafeBrowsingClient::OnTimeout);
 
-    if (!database_manager_->IsSupported() ||
-        database_manager_->CheckApiBlocklistUrl(origin.GetURL(), this)) {
+    if (database_manager_->CheckApiBlocklistUrl(origin.GetURL(), this)) {
       timeout_.AbandonAndStop();
       SendResultToHandler(Verdict::kAcceptable);
     }

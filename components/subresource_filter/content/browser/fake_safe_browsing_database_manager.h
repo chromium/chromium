@@ -48,7 +48,6 @@ class FakeSafeBrowsingDatabaseManager
   // safe_browsing::TestSafeBrowsingDatabaseManager:
   bool CheckUrlForSubresourceFilter(const GURL& url, Client* client) override;
   bool CheckResourceUrl(const GURL& url, Client* client) override;
-  bool IsSupported() const override;
   void CancelCheck(Client* client) override;
   bool ChecksAreAlwaysAsync() const override;
   bool CanCheckRequestDestination(

@@ -36,7 +36,6 @@ class FakeSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
                          Client* client) override;
   bool CheckUrlForSubresourceFilter(const GURL& url, Client* client) override;
   safe_browsing::ThreatSource GetThreatSource() const override;
-  bool IsSupported() const override;
 
  private:
   ~FakeSafeBrowsingDatabaseManager() override;

@@ -233,10 +233,6 @@ class SafeBrowsingDatabaseManager
   // Returns whether download protection is enabled.
   virtual bool IsDownloadProtectionEnabled() const = 0;
 
-  // Returns true if URL-checking is supported on this build+device.
-  // If false, calls to CheckBrowseUrl may dcheck-fail.
-  virtual bool IsSupported() const = 0;
-
   //
   // Methods to indicate when to start or suspend the SafeBrowsing operations.
   // These functions are always called on the IO thread.

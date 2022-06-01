@@ -117,11 +117,6 @@ bool TestSafeBrowsingDatabaseManager::IsDownloadProtectionEnabled() const {
   return false;
 }
 
-bool TestSafeBrowsingDatabaseManager::IsSupported() const {
-  NOTIMPLEMENTED();
-  return false;
-}
-
 void TestSafeBrowsingDatabaseManager::StartOnIOThread(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const V4ProtocolConfig& config) {

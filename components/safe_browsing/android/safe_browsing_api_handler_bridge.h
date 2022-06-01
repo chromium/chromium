@@ -33,8 +33,8 @@ class SafeBrowsingApiHandlerBridge {
   SafeBrowsingApiHandlerBridge& operator=(const SafeBrowsingApiHandlerBridge&) =
       delete;
 
-  // Returns a pointer to the singleton.
-  static SafeBrowsingApiHandlerBridge* GetInstance();
+  // Returns a reference to the singleton.
+  static SafeBrowsingApiHandlerBridge& GetInstance();
 
   // Makes Native-to-Java call to check the URL against Safe Browsing lists.
   void StartURLCheck(std::unique_ptr<ResponseCallback> callback,

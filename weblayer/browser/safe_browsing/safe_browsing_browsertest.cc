@@ -178,12 +178,12 @@ class SafeBrowsingBrowserTest : public WebLayerBrowserTest {
 
   void TearDown() override {
     profile()->SetGoogleAccountAccessTokenFetchDelegate(nullptr);
-    SbBridge::GetInstance()->SetInterceptorForTesting(nullptr);
+    SbBridge::GetInstance().SetInterceptorForTesting(nullptr);
   }
 
   void InitializeOnMainThread() {
     NavigateAndWaitForCompletion(GURL("about:blank"), shell());
-    SbBridge::GetInstance()->SetInterceptorForTesting(
+    SbBridge::GetInstance().SetInterceptorForTesting(
         url_check_interceptor_.get());
 
     // Some tests need to be able to navigate to URLs on domains that are not

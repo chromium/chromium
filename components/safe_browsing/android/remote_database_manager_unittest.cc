@@ -35,7 +35,7 @@ class RemoteDatabaseManagerTest : public testing::Test {
   RemoteDatabaseManagerTest() {}
 
   void SetUp() override {
-    SafeBrowsingApiHandlerBridge::GetInstance()->SetInterceptorForTesting(
+    SafeBrowsingApiHandlerBridge::GetInstance().SetInterceptorForTesting(
         &url_interceptor_);
     db_ = new RemoteSafeBrowsingDatabaseManager();
   }

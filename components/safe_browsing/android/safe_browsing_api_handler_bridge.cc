@@ -18,7 +18,6 @@
 #include "base/trace_event/trace_event.h"
 #include "components/safe_browsing/android/jni_headers/SafeBrowsingApiBridge_jni.h"
 #include "components/safe_browsing/android/safe_browsing_api_handler_util.h"
-#include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -119,13 +118,9 @@ bool StartAllowlistCheck(const GURL& url, const SBThreatType& sb_threat_type) {
 }  // namespace
 
 // static
-SafeBrowsingApiHandlerBridge* SafeBrowsingApiHandlerBridge::GetInstance() {
-#if BUILDFLAG(SAFE_BROWSING_DB_REMOTE)
+SafeBrowsingApiHandlerBridge& SafeBrowsingApiHandlerBridge::GetInstance() {
   static base::NoDestructor<SafeBrowsingApiHandlerBridge> instance;
-  return instance.get();
-#else
-  return nullptr;
-#endif
+  return *instance.get();
 }
 
 // Respond to the URL reputation request by looking up the callback information

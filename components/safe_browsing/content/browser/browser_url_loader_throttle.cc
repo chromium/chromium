@@ -68,7 +68,6 @@ class BrowserURLLoaderThrottle::CheckerOnIO
         std::move(delegate_getter_).Run();
     skip_checks_ =
         !url_checker_delegate ||
-        !url_checker_delegate->GetDatabaseManager()->IsSupported() ||
         url_checker_delegate->ShouldSkipRequestCheck(
             url, frame_tree_node_id_,
             content::ChildProcessHost::kInvalidUniqueID /* render_process_id */,
