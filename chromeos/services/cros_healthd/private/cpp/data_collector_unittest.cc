@@ -33,15 +33,10 @@ class DataCollectorTest : public testing::Test {
  protected:
   void SetUp() override {
     ui::DeviceDataManager::CreateInstance();
-    DataCollector::InitializeWithDelegateForTesting(&delegate_);
-    DataCollector::Get()->BindReceiver(remote_.BindNewPipeAndPassReceiver());
+    remote_.Bind(data_collector_.BindNewPipeAndPassRemote());
   }
 
-  void TearDown() override {
-    remote_.reset();
-    DataCollector::Shutdown();
-    ui::DeviceDataManager::DeleteInstance();
-  }
+  void TearDown() override { ui::DeviceDataManager::DeleteInstance(); }
 
   // The test environment.
   content::BrowserTaskEnvironment env_;
@@ -49,6 +44,8 @@ class DataCollectorTest : public testing::Test {
   mojo::Remote<mojom::ChromiumDataCollector> remote_;
   // The fake delegate for DataCollector.
   FakeDataCollectorDelegate delegate_;
+  // The DataCollector.
+  DataCollector data_collector_{&delegate_};
 };
 
 TEST_F(DataCollectorTest, GetTouchscreenDevices) {

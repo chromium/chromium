@@ -1156,7 +1156,8 @@ void ChromeBrowserMainPartsAsh::PostProfileInit(Profile* profile,
     network_health::NetworkHealthService::GetInstance();
 
     // Create cros_healthd data collector.
-    cros_healthd::internal::DataCollector::Initialize();
+    cros_healthd_data_collector_ =
+        std::make_unique<cros_healthd::internal::DataCollector>();
 
     // Create the service connection to CrosHealthd platform service instance.
     auto* cros_healthd = cros_healthd::ServiceConnection::GetInstance();
@@ -1175,6 +1176,10 @@ void ChromeBrowserMainPartsAsh::PostProfileInit(Profile* profile,
           return network_health::NetworkHealthService::GetInstance()
               ->GetDiagnosticsRemoteAndBindReceiver();
         }));
+
+    // Sets up the connection of healthd data collector to cros_healthd.
+    cros_healthd->SendChromiumDataCollector(
+        cros_healthd_data_collector_->BindNewPipeAndPassRemote());
 
     if (features::IsTrafficCountersEnabled()) {
       // Initialize the TrafficCountersHandler instance.

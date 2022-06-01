@@ -41,6 +41,11 @@ namespace chromeos {
 namespace default_app_order {
 class ExternalLoader;
 }
+namespace cros_healthd {
+namespace internal {
+class DataCollector;
+}
+}  // namespace cros_healthd
 }  // namespace chromeos
 
 namespace crosapi {
@@ -247,6 +252,9 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
   std::unique_ptr<FwupdDownloadClientImpl> fwupd_download_client_;
 
   std::unique_ptr<SessionTerminationManager> session_termination_manager_;
+
+  std::unique_ptr<chromeos::cros_healthd::internal::DataCollector>
+      cros_healthd_data_collector_;
 
   // Set when PreProfileInit() is called. If PreMainMessageLoopRun() exits
   // early, this will be false during PostMainMessageLoopRun(), etc.

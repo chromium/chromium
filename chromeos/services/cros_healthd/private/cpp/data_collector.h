@@ -6,13 +6,13 @@
 #define CHROMEOS_SERVICES_CROS_HEALTHD_PRIVATE_CPP_DATA_COLLECTOR_H_
 
 #include "chromeos/services/cros_healthd/private/mojom/cros_healthd_internal.mojom.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 
 namespace chromeos {
 namespace cros_healthd {
 namespace internal {
 
-class DataCollector {
+class DataCollector : public mojom::ChromiumDataCollector {
  public:
   // Delegate class to be replaced for testing.
   class Delegate {
@@ -24,28 +24,24 @@ class DataCollector {
     virtual std::string GetTouchpadLibraryName() = 0;
   };
 
+  DataCollector();
+  DataCollector(Delegate* delegate);
   DataCollector(const DataCollector&) = delete;
   DataCollector& operator=(const DataCollector&) = delete;
+  ~DataCollector() override;
 
-  // Initialize a global instance.
-  static void Initialize();
+  // Binds new pipe and returns the mojo remote.
+  mojo::PendingRemote<mojom::ChromiumDataCollector> BindNewPipeAndPassRemote();
 
-  // Initialize a global instance with delegate for testing.
-  static void InitializeWithDelegateForTesting(Delegate* delegate);
+ private:
+  // mojom::ChromiumDataCollector overrides.
+  void GetTouchscreenDevices(GetTouchscreenDevicesCallback callback) override;
+  void GetTouchpadLibraryName(GetTouchpadLibraryNameCallback callback) override;
 
-  // Shutdown the global instance.
-  static void Shutdown();
-
-  // Returns the global instance. Check failed if this is not initialized.
-  static DataCollector* Get();
-
-  // Binds a mojo receiver to this.
-  virtual void BindReceiver(
-      mojo::PendingReceiver<mojom::ChromiumDataCollector> receiver) = 0;
-
- protected:
-  DataCollector();
-  virtual ~DataCollector();
+  // Pointer to the delegate.
+  Delegate* const delegate_;
+  // The mojo receiver.
+  mojo::Receiver<mojom::ChromiumDataCollector> receiver_{this};
 };
 
 }  // namespace internal

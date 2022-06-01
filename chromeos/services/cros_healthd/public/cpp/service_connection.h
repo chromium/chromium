@@ -12,6 +12,7 @@
 
 #include "base/callback_forward.h"
 #include "base/time/time.h"
+#include "chromeos/services/cros_healthd/private/mojom/cros_healthd_internal.mojom.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_events.mojom.h"
 #include "chromeos/services/network_health/public/mojom/network_diagnostics.mojom.h"
@@ -369,6 +370,12 @@ class ServiceConnection {
   // is set, and anytime the mojo connection to CrosHealthd is disconnected.
   virtual void SetBindNetworkDiagnosticsRoutinesCallback(
       BindNetworkDiagnosticsRoutinesCallback callback) = 0;
+
+  // Sends the ChromiumDataCollector interface to cros_healthd.
+  virtual void SendChromiumDataCollector(
+      mojo::PendingRemote<
+          chromeos::cros_healthd::internal::mojom::ChromiumDataCollector>
+          remote) = 0;
 
   // Fetch touchpad stack driver library name.
   virtual std::string FetchTouchpadLibraryName() = 0;

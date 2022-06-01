@@ -14,7 +14,6 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/ozone/evdev/event_device_info.h"
 
@@ -82,39 +81,6 @@ DataCollectorDelegateImpl* GetDataCollectorDelegate() {
   return delegate.get();
 }
 
-class DataCollectorImpl : public DataCollector,
-                          public mojom::ChromiumDataCollector {
- public:
-  explicit DataCollectorImpl(Delegate* delegate);
-  DataCollectorImpl(const DataCollectorImpl&) = delete;
-  DataCollectorImpl& operator=(const DataCollectorImpl&) = delete;
-  ~DataCollectorImpl() override;
-
-  // DataCollector overrides.
-  void BindReceiver(
-      mojo::PendingReceiver<mojom::ChromiumDataCollector> receiver) override;
-
- private:
-  // mojom::ChromiumDataCollector overrides.
-  void GetTouchscreenDevices(GetTouchscreenDevicesCallback callback) override;
-  void GetTouchpadLibraryName(GetTouchpadLibraryNameCallback callback) override;
-
-  // Pointer to the delegate.
-  Delegate* const delegate_;
-  // The receiver set to keep the mojo receivers.
-  mojo::ReceiverSet<mojom::ChromiumDataCollector> receiver_set_;
-};
-
-DataCollectorImpl::DataCollectorImpl(Delegate* delegate)
-    : delegate_(delegate) {}
-
-DataCollectorImpl::~DataCollectorImpl() = default;
-
-void DataCollectorImpl::BindReceiver(
-    mojo::PendingReceiver<mojom::ChromiumDataCollector> receiver) {
-  receiver_set_.Add(this, std::move(receiver));
-}
-
 mojom::InputDevice::ConnectionType GetInputDeviceConnectionType(
     ui::InputDeviceType type) {
   switch (type) {
@@ -131,7 +97,7 @@ mojom::InputDevice::ConnectionType GetInputDeviceConnectionType(
 
 void GetTouchscreenDevicesOnUIThread(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
-    DataCollectorImpl::GetTouchscreenDevicesCallback callback) {
+    DataCollector::GetTouchscreenDevicesCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   const std::vector<ui::TouchscreenDevice>& devices =
@@ -156,7 +122,20 @@ void GetTouchscreenDevicesOnUIThread(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(results)));
 }
 
-void DataCollectorImpl::GetTouchscreenDevices(
+};  // namespace
+
+DataCollector::DataCollector() : DataCollector(GetDataCollectorDelegate()) {}
+
+DataCollector::DataCollector(Delegate* delegate) : delegate_(delegate) {}
+
+DataCollector::~DataCollector() = default;
+
+mojo::PendingRemote<mojom::ChromiumDataCollector>
+DataCollector::BindNewPipeAndPassRemote() {
+  return receiver_.BindNewPipeAndPassRemote();
+}
+
+void DataCollector::GetTouchscreenDevices(
     GetTouchscreenDevicesCallback callback) {
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&GetTouchscreenDevicesOnUIThread,
@@ -164,45 +143,9 @@ void DataCollectorImpl::GetTouchscreenDevices(
                                 std::move(callback)));
 }
 
-void DataCollectorImpl::GetTouchpadLibraryName(
+void DataCollector::GetTouchpadLibraryName(
     GetTouchpadLibraryNameCallback callback) {
   std::move(callback).Run(delegate_->GetTouchpadLibraryName());
-}
-
-// The pointer to the global instance.
-DataCollector* g_instance = nullptr;
-
-};  // namespace
-
-DataCollector::DataCollector() {
-  CHECK(!g_instance) << "Can have only one instance";
-  g_instance = this;
-}
-
-DataCollector::~DataCollector() {
-  CHECK_EQ(g_instance, this);
-  g_instance = nullptr;
-}
-
-// static
-void DataCollector::Initialize() {
-  new DataCollectorImpl(GetDataCollectorDelegate());
-}
-
-// static
-void DataCollector::InitializeWithDelegateForTesting(Delegate* delegate) {
-  new DataCollectorImpl(delegate);
-}
-
-// static
-void DataCollector::Shutdown() {
-  delete g_instance;
-}
-
-// static
-DataCollector* DataCollector::Get() {
-  CHECK(g_instance) << "Not initialized.";
-  return g_instance;
 }
 
 }  // namespace internal

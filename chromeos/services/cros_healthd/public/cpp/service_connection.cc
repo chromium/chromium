@@ -191,6 +191,10 @@ class ServiceConnectionImpl : public ServiceConnection {
       BindNetworkHealthServiceCallback callback) override;
   void SetBindNetworkDiagnosticsRoutinesCallback(
       BindNetworkDiagnosticsRoutinesCallback callback) override;
+  void SendChromiumDataCollector(
+      mojo::PendingRemote<
+          chromeos::cros_healthd::internal::mojom::ChromiumDataCollector>
+          remote) override;
   std::string FetchTouchpadLibraryName() override;
   void FlushForTesting() override;
 
@@ -658,6 +662,15 @@ void ServiceConnectionImpl::SetBindNetworkDiagnosticsRoutinesCallback(
     BindNetworkDiagnosticsRoutinesCallback callback) {
   bind_network_diagnostics_callback_ = std::move(callback);
   BindAndSendNetworkDiagnosticsRoutines();
+}
+
+void ServiceConnectionImpl::SendChromiumDataCollector(
+    mojo::PendingRemote<
+        chromeos::cros_healthd::internal::mojom::ChromiumDataCollector>
+        remote) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  EnsureCrosHealthdServiceFactoryIsBound();
+  cros_healthd_service_factory_->SendChromiumDataCollector(std::move(remote));
 }
 
 // This is a short-term solution for ChromeOS Flex. We should remove this work
