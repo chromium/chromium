@@ -27,9 +27,6 @@
         'additional_compile_targets': [
           'chromiumos_preflight',
         ],
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
         'test_suites': {
           'gtest_tests': 'chromeos_browser_integration_tests',
         },
@@ -64,7 +61,6 @@
         },
         'mixins': [
           'chromeos-betty',
-          'has_native_resultdb_integration',
         ],
       },
       'chromeos-betty-pi-arc-chrome': {
@@ -73,7 +69,6 @@
         ],
         'mixins': [
           'chromeos-betty',
-          'has_native_resultdb_integration',
         ],
         'test_suites': {
           'gtest_tests': 'chromeos_vm_gtests',
@@ -83,9 +78,6 @@
       'chromeos-eve-arc-r-chrome': {
         'additional_compile_targets': [
           'chromiumos_preflight',
-        ],
-        'mixins': [
-          'has_native_resultdb_integration',
         ],
         'test_suites': {
           'gtest_tests': 'chromeos_device_gtests',
@@ -104,9 +96,6 @@
       'chromeos-eve-chrome': {
         'additional_compile_targets': [
           'chromiumos_preflight',
-        ],
-        'mixins': [
-          'has_native_resultdb_integration',
         ],
         'test_suites': {
           'gtest_tests': 'chromeos_device_gtests',
@@ -127,9 +116,6 @@
         'additional_compile_targets': [
           'chromiumos_preflight',
         ],
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
         'test_suites': {
           'gtest_tests': 'chromeos_device_only_gtests',
         },
@@ -147,9 +133,6 @@
       'chromeos-kevin-chrome': {
         'additional_compile_targets': [
           'chromiumos_preflight',
-        ],
-        'mixins': [
-          'has_native_resultdb_integration',
         ],
         'test_suites': {
           'gtest_tests': 'chromeos_device_gtests',
@@ -169,9 +152,6 @@
       'chromeos-octopus-chrome': {
         'additional_compile_targets': [
           'chromiumos_preflight',
-        ],
-        'mixins': [
-          'has_native_resultdb_integration',
         ],
         # TODO(crbug.com/1293222): Restore after octopus capacity has been
         # returned.
@@ -195,7 +175,6 @@
         ],
         'mixins': [
           'chromeos-reven',
-          'has_native_resultdb_integration',
         ],
         'test_suites': {
           'gtest_tests': 'chromeos_browser_integration_tests',
@@ -211,7 +190,6 @@
         ],
         'mixins': [
           'chrome-swarming-pool',
-          'has_native_resultdb_integration',
         ],
         'test_suites': {
           'gtest_tests': 'lacros_device_or_vm_tast_tests',
@@ -233,7 +211,6 @@
         ],
         'mixins': [
           'chrome-swarming-pool',
-          'has_native_resultdb_integration',
         ],
         'test_suites': {
           'skylab_tests': 'lacros_skylab_tests_amd64_generic',
@@ -268,7 +245,6 @@
         ],
         'mixins': [
           'chrome-swarming-pool',
-          'has_native_resultdb_integration',
         ],
         'test_suites': {
           'skylab_tests': 'lacros_skylab_arm',
@@ -1542,7 +1518,6 @@
         'browser_config': 'cros-chrome',
         'mixins': [
           'chromeos-amd64-generic',
-          'has_native_resultdb_integration',
         ],
         'os_type': 'chromeos',
         'test_suites': {
@@ -1572,7 +1547,6 @@
         ],
         'mixins': [
           'chromeos-kevin',
-          'has_native_resultdb_integration',
         ],
         'test_suites': {
           'gtest_tests': 'chromeos_device_gtests',
@@ -1590,9 +1564,6 @@
           'chrome',
           'browser_tests',
         ],
-        'mixins': [
-          'has_native_resultdb_integration',
-        ],
         'test_suites': {
           'gtest_tests': 'lacros_device_or_vm_tests',
         },
@@ -1601,9 +1572,6 @@
       'lacros-arm-generic-rel': {
         'additional_compile_targets': [
           'chrome',
-        ],
-        'mixins': [
-          'has_native_resultdb_integration',
         ],
         'os_type': 'chromeos'
       },
@@ -3041,7 +3009,6 @@
         'browser_config': 'cros-chrome',
         'mixins': [
           'chromeos-amd64-generic',
-          'has_native_resultdb_integration',
         ],
         'os_type': 'chromeos',
         'test_suites': {
@@ -3068,7 +3035,6 @@
         'browser_config': 'cros-chrome',
         'mixins': [
           'chromeos-amd64-generic',
-          'has_native_resultdb_integration',
         ],
         'os_type': 'chromeos',
         'test_suites': {
@@ -3405,9 +3371,6 @@
       'lacros-amd64-generic-rel-fyi': {
         'additional_compile_targets': [
           'chrome',
-        ],
-        'mixins': [
-          'has_native_resultdb_integration',
         ],
         'test_suites': {
           'gtest_tests': 'lacros_device_or_vm_tests_fyi',
@@ -6301,7 +6264,6 @@
         ],
         'mixins': [
           'chromeos-betty',
-          'has_native_resultdb_integration',
         ],
         'test_suites': {
           'gtest_tests': 'chromeos_vm_gtests',
