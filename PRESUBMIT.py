@@ -1008,6 +1008,15 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
           r'^base[\\/]win[\\/]scoped_winrt_initializer\.cc$',
       ),
     ),
+    BanRule(
+      r'base::Watchdog',
+      (
+        'base::Watchdog is deprecated because it creates its own thread.',
+        'Instead, manually start a timer on a SequencedTaskRunner.',
+      ),
+      False,
+      (),
+    ),
 )
 
 _BANNED_MOJOM_PATTERNS : Sequence[BanRule] = (
