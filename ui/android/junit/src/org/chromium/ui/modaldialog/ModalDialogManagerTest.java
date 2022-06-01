@@ -19,9 +19,11 @@ import static org.mockito.Mockito.verify;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.mockito.Spy;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -41,7 +43,7 @@ import java.util.List;
 public class ModalDialogManagerTest {
     private static final int MAX_DIALOGS = 4;
 
-    @Mock
+    @Spy
     private ModalDialogManager.Presenter mAppModalPresenter;
     @Mock
     private ModalDialogManager.Presenter mTabModalPresenter;
@@ -91,6 +93,12 @@ public class ModalDialogManagerTest {
         verify(mObserver, times(1)).onDialogAdded(mDialogModels.get(1));
 
         mModalDialogManager.dismissDialog(mDialogModels.get(1), DialogDismissalCause.UNKNOWN);
+
+        // Dialog view should be removed first before #onDialogDismissed; otherwise,
+        // Presenter#getCurrentModel inside #onDialogDismissed will not return null.
+        InOrder inOrder = Mockito.inOrder(mAppModalPresenter, mObserver);
+        inOrder.verify(mAppModalPresenter).removeDialogView(mDialogModels.get(1));
+        inOrder.verify(mObserver, times(1)).onDialogDismissed(mDialogModels.get(1));
         // Calling the same function again, as well as dismissDialogsOfType() should not trigger
         // notifying of empty (because onLastDialogDismissed() was already called once, and a new
         // dialog wasn't added).
