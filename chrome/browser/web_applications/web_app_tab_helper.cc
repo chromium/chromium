@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/unguessable_token.h"
-#include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/manifest_update_manager.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
@@ -86,16 +85,12 @@ void WebAppTabHelper::ReadyToCommitNavigation(
     SetAppId(FindAppWithUrlInScope(url));
   }
 
-  // If navigating to a System Web App (including navigation in sub frames), let
-  // ash::SystemWebAppManager perform tab-secific setup for navigations in
-  // System Web Apps.
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-  auto* swa_manager =
-      ash::SystemWebAppManager::GetForLocalAppsUnchecked(profile);
-  if (app_id_.has_value() && swa_manager &&
-      swa_manager->IsSystemWebApp(app_id_.value())) {
-    swa_manager->OnReadyToCommitNavigation(app_id_.value(), navigation_handle);
+  // If navigating to a Web App (including navigation in sub frames), let
+  // `WebAppUiManager` observers perform tab-secific setup for navigations in
+  // Web Apps.
+  if (app_id_.has_value()) {
+    provider_->ui_manager().NotifyReadyToCommitNavigation(app_id_.value(),
+                                                          navigation_handle);
   }
 }
 

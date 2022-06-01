@@ -304,8 +304,11 @@ void SystemWebAppManager::SetSubsystems(
   externally_managed_app_manager_ = externally_managed_app_manager;
   registrar_ = registrar;
   sync_bridge_ = sync_bridge;
-  ui_manager_ = ui_manager;
   web_app_policy_manager_ = web_app_policy_manager;
+
+  // `SetSubsystems` and `Start` can be called multiple times in tests.
+  ui_manager_observation_.Reset();
+  ui_manager_observation_.Observe(ui_manager);
 }
 
 void SystemWebAppManager::Start() {
@@ -420,6 +423,11 @@ const std::vector<std::string>* SystemWebAppManager::GetEnabledOriginTrials(
 void SystemWebAppManager::OnReadyToCommitNavigation(
     const web_app::AppId& app_id,
     content::NavigationHandle* navigation_handle) {
+  // Perform tab-specific setup when a navigation in a System Web App is about
+  // to be committed.
+  if (!IsSystemWebApp(app_id))
+    return;
+
   // No need to setup origin trials for intra-document navigation.
   if (navigation_handle->IsSameDocument())
     return;
@@ -476,6 +484,10 @@ SystemWebAppManager::GetCapturingSystemAppForURL(const GURL& url) const {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   return type;
+}
+
+void SystemWebAppManager::OnWebAppUiManagerDestroyed() {
+  ui_manager_observation_.Reset();
 }
 
 void SystemWebAppManager::SetSystemAppsForTesting(

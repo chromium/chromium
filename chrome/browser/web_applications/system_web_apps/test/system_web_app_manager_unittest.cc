@@ -117,6 +117,47 @@ class SystemWebAppWaiter {
   base::RunLoop run_loop_;
 };
 
+class TestUiManagerObserver : public WebAppUiManagerObserver {
+ public:
+  explicit TestUiManagerObserver(WebAppUiManager* ui_manager) {
+    ui_manager_observation_.Observe(ui_manager);
+  }
+
+  using ReadyToCommitNavigationCallback = base::RepeatingCallback<
+      void(const AppId& app_id, content::NavigationHandle* navigation_handle)>;
+
+  void SetReadyToCommitNavigationCallback(
+      ReadyToCommitNavigationCallback callback) {
+    ready_to_commit_navigation_callback_ = std::move(callback);
+  }
+
+  void OnReadyToCommitNavigation(
+      const AppId& app_id,
+      content::NavigationHandle* navigation_handle) override {
+    if (ready_to_commit_navigation_callback_)
+      ready_to_commit_navigation_callback_.Run(app_id, navigation_handle);
+  }
+
+  using UiManagerDestroyedCallback = base::RepeatingCallback<void()>;
+
+  void SetUiManagerDestroyedCallback(UiManagerDestroyedCallback callback) {
+    ui_manager_destroyed_callback_ = std::move(callback);
+  }
+
+  void OnWebAppUiManagerDestroyed() override {
+    if (ui_manager_destroyed_callback_)
+      ui_manager_destroyed_callback_.Run();
+    ui_manager_observation_.Reset();
+  }
+
+ private:
+  ReadyToCommitNavigationCallback ready_to_commit_navigation_callback_;
+  UiManagerDestroyedCallback ui_manager_destroyed_callback_;
+
+  base::ScopedObservation<WebAppUiManager, WebAppUiManagerObserver>
+      ui_manager_observation_{this};
+};
+
 }  // namespace
 
 class SystemWebAppManagerTest : public WebAppTest {
@@ -201,6 +242,8 @@ class SystemWebAppManagerTest : public WebAppTest {
     externally_installed_app_prefs_.reset();
     fake_registry_controller_.reset();
   }
+
+  void DestroyUiManager() { test_ui_manager_.reset(); }
 
  protected:
   FakeWebAppRegistryController& controller() {
@@ -1478,6 +1521,19 @@ TEST_F(SystemWebAppManagerTest,
       unsynced_system_web_app_manager->GetSystemAppTypeForAppId(*opt_app_id);
   EXPECT_FALSE(opt_type2.has_value());
   EXPECT_FALSE(unsynced_system_web_app_manager->IsSystemWebApp(*opt_app_id));
+}
+
+TEST_F(SystemWebAppManagerTest, DestroyUiManager) {
+  InitEmptyRegistrar();
+  StartAndWaitForAppsToSynchronize();
+
+  base::RunLoop run_loop;
+  TestUiManagerObserver observer{&ui_manager()};
+  observer.SetUiManagerDestroyedCallback(run_loop.QuitClosure());
+
+  // Should not crash.
+  DestroyUiManager();
+  run_loop.Run();
 }
 
 }  // namespace web_app

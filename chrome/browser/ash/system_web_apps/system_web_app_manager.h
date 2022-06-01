@@ -16,12 +16,14 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/one_shot_event.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_background_task.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate_map.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_type.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_url_loader.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/web_contents.h"
@@ -56,7 +58,7 @@ namespace ash {
 // Installs, uninstalls, and updates System Web Apps.
 // System Web Apps are built-in, highly-privileged Web Apps for Chrome OS. They
 // have access to more APIs and are part of the Chrome OS image.
-class SystemWebAppManager {
+class SystemWebAppManager : private web_app::WebAppUiManagerObserver {
  public:
   // Policy for when the SystemWebAppManager will update apps/install new apps.
   enum class UpdatePolicy {
@@ -77,7 +79,7 @@ class SystemWebAppManager {
   explicit SystemWebAppManager(Profile* profile);
   SystemWebAppManager(const SystemWebAppManager&) = delete;
   SystemWebAppManager& operator=(const SystemWebAppManager&) = delete;
-  virtual ~SystemWebAppManager();
+  ~SystemWebAppManager() override;
 
   // On Chrome OS: returns the SystemWebAppManager that hosts System Web Apps in
   // Ash; In Lacros, returns nullptr (unless
@@ -135,11 +137,6 @@ class SystemWebAppManager {
 
   // Returns whether |app_id| points to an installed System App.
   bool IsSystemWebApp(const web_app::AppId& app_id) const;
-
-  // Perform tab-specific setup when a navigation in a System Web App is about
-  // to be committed.
-  void OnReadyToCommitNavigation(const web_app::AppId& app_id,
-                                 content::NavigationHandle* navigation_handle);
 
   // Returns the SystemWebAppType that should capture the navigation to
   // |url|.
@@ -215,6 +212,12 @@ class SystemWebAppManager {
 
   void StartBackgroundTasks() const;
 
+  // web_app::WebAppUiManagerObserver:
+  void OnReadyToCommitNavigation(
+      const web_app::AppId& app_id,
+      content::NavigationHandle* navigation_handle) override;
+  void OnWebAppUiManagerDestroyed() override;
+
   raw_ptr<Profile> profile_;
 
   std::unique_ptr<base::OneShotEvent> on_apps_synchronized_;
@@ -238,11 +241,13 @@ class SystemWebAppManager {
 
   raw_ptr<web_app::WebAppSyncBridge> sync_bridge_ = nullptr;
 
-  raw_ptr<web_app::WebAppUiManager> ui_manager_ = nullptr;
-
   raw_ptr<web_app::WebAppPolicyManager> web_app_policy_manager_ = nullptr;
 
   std::vector<std::unique_ptr<SystemWebAppBackgroundTask>> tasks_;
+
+  base::ScopedObservation<web_app::WebAppUiManager,
+                          web_app::WebAppUiManagerObserver>
+      ui_manager_observation_{this};
 
   base::WeakPtrFactory<SystemWebAppManager> weak_ptr_factory_{this};
 };

@@ -172,6 +172,7 @@ source_set("web_applications") {
     "web_app_tab_helper.h",
     "web_app_translation_manager.cc",
     "web_app_translation_manager.h",
+    "web_app_ui_manager.cc",
     "web_app_ui_manager.h",
     "web_app_uninstall_job.cc",
     "web_app_uninstall_job.h",
