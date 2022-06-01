@@ -287,7 +287,11 @@ DialogModelTextfield::DialogModelTextfield(
     : DialogModelField(pass_key, model, kTextfield, id, params.accelerators_),
       label_(label),
       accessible_name_(params.accessible_name_),
-      text_(std::move(text)) {}
+      text_(std::move(text)) {
+  // Textfields need either an accessible name or label or the screenreader will
+  // not be able to announce anything sensible.
+  DCHECK(!label_.empty() || !accessible_name_.empty());
+}
 
 DialogModelTextfield::~DialogModelTextfield() = default;
 
