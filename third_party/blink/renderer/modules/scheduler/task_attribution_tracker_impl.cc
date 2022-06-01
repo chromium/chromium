@@ -67,7 +67,7 @@ TaskAttributionTrackerImpl::IsAncestorInternal(ScriptState* script_state,
 
   absl::optional<TaskId> current_task_id = RunningTaskId(script_state);
   if (!current_task_id) {
-    // TODO(yoav): This should not happen, but does. See crbug.com/132687
+    // TODO(yoav): This should not happen, but does. See crbug.com/1326872.
     return AncestorStatus::kNotAncestor;
   }
   if (is_ancestor(current_task_id.value())) {
