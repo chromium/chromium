@@ -37,6 +37,7 @@ ClientStatus ElementStore::RestoreElement(
     const DomObjectFrameStack& object,
     ElementFinderResult* out_element) const {
   out_element->SetObjectId(object.object_data.object_id);
+  out_element->SetBackendNodeId(object.object_data.backend_node_id);
   out_element->SetNodeFrameId(object.object_data.node_frame_id);
   out_element->SetFrameStack(object.frame_stack);
   auto* frame = FindCorrespondingRenderFrameHost(

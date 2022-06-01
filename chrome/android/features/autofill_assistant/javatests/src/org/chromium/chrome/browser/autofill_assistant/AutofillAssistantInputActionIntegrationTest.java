@@ -54,9 +54,11 @@ import org.chromium.chrome.browser.autofill_assistant.proto.SelectOptionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SelectorProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SendChangeEventProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SendClickEventProto;
+import org.chromium.chrome.browser.autofill_assistant.proto.SetNativeValueProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SupportedScriptProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.SupportedScriptProto.PresentationProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.TextFilter;
+import org.chromium.chrome.browser.autofill_assistant.proto.TextValue;
 import org.chromium.chrome.browser.autofill_assistant.proto.WaitForDocumentToBecomeInteractiveProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.WaitForDomProto;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
@@ -474,6 +476,45 @@ public class AutofillAssistantInputActionIntegrationTest {
 
         waitUntilViewMatchesCondition(withText("Done"), isCompletelyDisplayed());
         assertThat(getElementValue(mTestRule.getWebContents(), "select"), is("three"));
+    }
+
+    @Test
+    @MediumTest
+    public void fillTextFieldWithNativeMethod() throws Exception {
+        ArrayList<ActionProto> list = new ArrayList<>();
+
+        SelectorProto select = toCssSelector("#input2");
+        ClientIdProto selectId = toClientId("s");
+
+        list.add(ActionProto.newBuilder()
+                         .setWaitForDom(
+                                 WaitForDomProto.newBuilder().setTimeoutMs(1000).setWaitCondition(
+                                         ElementConditionProto.newBuilder()
+                                                 .setMatch(select)
+                                                 .setClientId(selectId)))
+                         .build());
+        list.add(ActionProto.newBuilder()
+                         .setSetNativeValue(
+                                 SetNativeValueProto.newBuilder().setClientId(selectId).setValue(
+                                         TextValue.newBuilder().setText("New Value")))
+                         .build());
+        list.add(ActionProto.newBuilder()
+                         .setPrompt(PromptProto.newBuilder()
+                                            .setMessage("Set Value")
+                                            .addChoices(Choice.newBuilder().setChip(
+                                                    ChipProto.newBuilder()
+                                                            .setType(ChipType.HIGHLIGHTED_ACTION)
+                                                            .setText("Continue"))))
+                         .build());
+
+        AutofillAssistantTestScript script = new AutofillAssistantTestScript(TEST_SCRIPT, list);
+
+        assertThat(getElementValue(mTestRule.getWebContents(), "input2"), is("helloworld2"));
+
+        runScript(script);
+
+        waitUntilViewMatchesCondition(withText("Set Value"), isCompletelyDisplayed());
+        assertThat(getElementValue(mTestRule.getWebContents(), "input2"), is("New Value"));
     }
 
     private void runScript(AutofillAssistantTestScript script) {

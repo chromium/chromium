@@ -18,6 +18,9 @@
 namespace autofill_assistant {
 namespace {
 
+using ::testing::IsEmpty;
+using ::testing::Not;
+
 class ElementStoreTest : public testing::Test {
  public:
   void SetUp() override {
@@ -60,12 +63,15 @@ TEST_F(ElementStoreTest, AddElementToStore) {
 
 TEST_F(ElementStoreTest, GetElementFromStore) {
   auto element = CreateElement("1");
+  element->SetBackendNodeId(1);
   AddElement("1", std::move(element));
 
   ElementFinderResult result;
   EXPECT_EQ(ACTION_APPLIED,
             element_store_->GetElement("1", &result).proto_status());
   EXPECT_EQ("1", result.object_id());
+  EXPECT_EQ(1, *result.backend_node_id());
+  EXPECT_THAT(result.node_frame_id(), Not(IsEmpty()));
 }
 
 TEST_F(ElementStoreTest, GetElementFromStoreWithBadFrameHost) {
