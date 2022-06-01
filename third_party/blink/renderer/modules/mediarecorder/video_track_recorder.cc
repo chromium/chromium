@@ -715,6 +715,8 @@ void VideoTrackRecorderImpl::InitializeEncoderOnEncoderSupportKnown(
   if (allow_vea_encoder &&
       CanUseAcceleratedEncoder(codec_profile.codec_id, input_size.width(),
                                input_size.height())) {
+    // TODO(b/227350897): remove once codec histogram is verified working
+    UMA_HISTOGRAM_BOOLEAN("Media.MediaRecorder.VEAUsed", true);
     UmaHistogramForCodec(true, codec_profile.codec_id);
 
     const auto vea_profile =
@@ -733,6 +735,8 @@ void VideoTrackRecorderImpl::InitializeEncoderOnEncoderSupportKnown(
         bits_per_second, vea_profile, codec_profile.level, input_size,
         use_import_mode, main_task_runner_);
   } else {
+    // TODO(b/227350897): remove once codec histogram is verified working
+    UMA_HISTOGRAM_BOOLEAN("Media.MediaRecorder.VEAUsed", false);
     UmaHistogramForCodec(false, codec_profile.codec_id);
     switch (codec_profile.codec_id) {
 #if BUILDFLAG(RTC_USE_H264)
