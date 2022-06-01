@@ -208,10 +208,10 @@ void SendDumpWithInfo(absl::optional<std::string> signon_realm,
       "PwdMgr.BackendError.origin");
 
   if (signon_realm.has_value()) {
-    signon_realm_key.Set(signon_realm->substr(1020));
+    signon_realm_key.Set(signon_realm->substr(0, 1020));
   }
   if (origin.has_value()) {
-    origin_key.Set(origin->substr(1020));
+    origin_key.Set(origin->substr(0, 1020));
   }
 
   base::debug::DumpWithoutCrashing();
