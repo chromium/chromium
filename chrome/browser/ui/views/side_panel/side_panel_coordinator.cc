@@ -220,8 +220,7 @@ void SidePanelCoordinator::Show(absl::optional<SidePanelEntry::Id> entry_id) {
 }
 
 void SidePanelCoordinator::Close() {
-  views::View* const content_view = GetContentView();
-  if (!content_view)
+  if (!GetContentView())
     return;
 
   if (GetLastActiveEntryId().has_value()) {
@@ -246,7 +245,10 @@ void SidePanelCoordinator::Close() {
   browser_view_->toolbar()->side_panel_button()->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_TOOLTIP_SIDE_PANEL_SHOW));
 
-  browser_view_->right_aligned_side_panel()->RemoveChildViewT(content_view);
+  // `OnEntryWillDeregister` (triggered by calling `OnEntryHidden`) may already
+  // have deleted the content view, so check that it still exists.
+  if (views::View* content_view = GetContentView())
+    browser_view_->right_aligned_side_panel()->RemoveChildViewT(content_view);
   header_combobox_ = nullptr;
   base::RecordAction(base::UserMetricsAction("SidePanel.Hide"));
 }
@@ -448,11 +450,14 @@ void SidePanelCoordinator::OnEntryRegistered(SidePanelEntry* entry) {
 }
 
 void SidePanelCoordinator::OnEntryWillDeregister(SidePanelEntry* entry) {
+  absl::optional<SidePanelEntry::Id> selected_id = GetSelectedId();
   combobox_model_->RemoveItem(entry->id());
+
   // Update the current entry to make sure we don't show an entry that is being
   // removed or close the panel if the entry being deregistered is the only one
   // that has been visible.
-  if (GetContentView()) {
+  if (GetContentView() && selected_id.has_value() &&
+      selected_id.value() == entry->id()) {
     if (global_registry_->active_entry().has_value()) {
       Show(GetLastActiveEntryId().value_or(kDefaultEntry));
     } else {
