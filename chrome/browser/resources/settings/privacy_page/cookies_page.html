@@ -135,8 +135,8 @@
     <settings-toggle-button id="clearOnExit" class="hr"
         pref="{{prefs.generated.cookie_session_only}}"
         label="$i18n{cookiePageClearOnExit}"
-<if expr="not chromeos_ash and not chromeos_lacros">
-        sub-label="$i18n{cookiePageClearOnExitDesc}"
+<if expr="not chromeos_ash">
+        sub-label="[[getClearOnExitSubLabel_()]]"
 </if>
         on-settings-boolean-control-change="onClearOnExitChange_">
     </settings-toggle-button>

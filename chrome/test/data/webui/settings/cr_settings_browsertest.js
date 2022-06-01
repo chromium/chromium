@@ -631,6 +631,12 @@ var CrSettingsRouteTest = class extends CrSettingsBrowserTest {
   }
 };
 
+GEN('#if BUILDFLAG(IS_CHROMEOS_LACROS)');
+TEST_F('CrSettingsCookiesPageTest', 'LacrosSecondaryProfile', function() {
+  runMochaSuite('CrSettingsCookiesPageTest_lacrosSecondaryProfile');
+});
+GEN('#endif');
+
 TEST_F('CrSettingsRouteTest', 'Basic', function() {
   runMochaSuite('route');
 });
