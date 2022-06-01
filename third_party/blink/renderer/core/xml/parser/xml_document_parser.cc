@@ -606,10 +606,16 @@ static bool ShouldAllowExternalLoad(const KURL& url) {
 }
 
 static void* OpenFunc(const char* uri) {
-  DCHECK(XMLDocumentParserScope::current_document_);
+  Document* document = XMLDocumentParserScope::current_document_;
+  DCHECK(document);
   DCHECK_EQ(CurrentThread(), g_libxml_loader_thread);
 
   KURL url(NullURL(), uri);
+
+  // If the document has no ExecutionContext, it's detached. Detached documents
+  // aren't allowed to fetch.
+  if (!document->GetExecutionContext())
+    return &g_global_descriptor;
 
   if (!ShouldAllowExternalLoad(url))
     return &g_global_descriptor;
@@ -618,7 +624,6 @@ static void* OpenFunc(const char* uri) {
   scoped_refptr<const SharedBuffer> data;
 
   {
-    Document* document = XMLDocumentParserScope::current_document_;
     XMLDocumentParserScope scope(nullptr);
     // FIXME: We should restore the original global error handler as well.
     ResourceLoaderOptions options(
