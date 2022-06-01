@@ -9,7 +9,7 @@
 <script src="/resources/testdriver-vendor.js"></script>
 
 <selectmenu id="selectMenu0">
-  <div popup=popup slot="listbox" behavior="listbox">
+  <div popup slot="listbox" behavior="listbox">
     <option id="selectMenu0-child1">one</option>
     <option id="selectMenu0-child2">two</option>
     <div behavior="option" id="selectMenu0-child3">three</div>
@@ -18,7 +18,7 @@
 </selectmenu>
 
 <selectmenu id="selectMenu1">
-  <div popup=popup slot="listbox" behavior="listbox" id="selectMenu1-popup">
+  <div popup slot="listbox" behavior="listbox" id="selectMenu1-popup">
     <div behavior="button" id="selectMenu1-button">
       Custom button
     </div>
@@ -30,7 +30,7 @@
 <selectmenu id="selectMenu2">
   <div slot="button" behavior="button" id="selectMenu2-button">
     Custom button
-    <div popup=popup behavior="listbox" id="selectMenu2-popup">
+    <div popup behavior="listbox" id="selectMenu2-popup">
       <option>one</option>
       <option id="selectMenu2-child2">two</option>
     </div>
@@ -53,7 +53,7 @@
 <selectmenu id="selectMenu4">
   <div slot="button" behavior="button" id="selectMenu4-button0">button0</div>
   <div slot="listbox" id="selectMenu4-listbox-slot">
-    <div popup=popup behavior="listbox" id="selectMenu4-listbox0">
+    <div popup behavior="listbox" id="selectMenu4-listbox0">
       <option>one</option>
       <option id="selectMenu4-option2">two</option>
     </div>
@@ -72,7 +72,7 @@
 <!-- No associated JS test -- just don't crash when parsing! -->
 <selectmenu id="selectMenu6">
   <div slot="button"></div>
-  <div popup=popup slot="listbox" behavior="listbox"></div>
+  <div popup slot="listbox" behavior="listbox"></div>
 </selectmenu>
 
 <!-- No associated JS test -- just don't crash when parsing! -->
@@ -89,7 +89,7 @@
 
 <selectmenu id="selectMenu9">
   <div slot="listbox" id="selectMenu9-listbox-slot">
-    <div popup=popup behavior="listbox" id="selectMenu9-originalListbox">
+    <div popup behavior="listbox" id="selectMenu9-originalListbox">
       <option>one</option>
       <option id="selectMenu9-option2">two</option>
     </div>
@@ -103,7 +103,7 @@
 </selectmenu>
 
 <selectmenu id="selectMenu11">
-  <div popup=popup slot="listbox" behavior="listbox">
+  <div popup slot="listbox" behavior="listbox">
     <option>one</option>
   </div>
   <div slot="button" behavior="listbox" id="selectMenu11-button">Test</div>
@@ -114,7 +114,7 @@
     <div behavior="button" id="selectMenu12-button0">button0</div>
   </div>
   <div slot="listbox" id="selectMenu12-listbox-slot">
-    <div popup=popup behavior="listbox" id="selectMenu12-originalListbox">
+    <div popup behavior="listbox" id="selectMenu12-originalListbox">
       <option id="selectMenu12-option1">one</option>
       <option>two</option>
     </div>
@@ -131,12 +131,12 @@
   </div>
   <div slot="listbox" id="selectMenu13-listbox-slot">
     <div id="selectMenu13-removeContent-listbox">
-      <div popup=popup behavior="listbox" id="selectMenu13-originalListbox">
+      <div popup behavior="listbox" id="selectMenu13-originalListbox">
         <option id="selectMenu13-option1">one</option>
         <option id="selectMenu13-option2">two</option>
       </div>
     </div>
-    <div popup=popup behavior="listbox" id="selectMenu13-newListbox">
+    <div popup behavior="listbox" id="selectMenu13-newListbox">
       <option>three</option>
       <option id="selectMenu13-option4">four</option>
     </div>
@@ -313,7 +313,7 @@ promise_test(async () => {
     assert_equals(selectMenu.value, "one", "Initial value should be the first option");
 
     let newListbox = document.createElement("div");
-    newListbox.setAttribute("popup", "popup");
+    newListbox.setAttribute("popup", "auto");
     newListbox.setAttribute("behavior", "listbox");
     let newOption = document.createElement("option");
     newOption.innerText = "three";
@@ -402,7 +402,7 @@ promise_test(async () => {
     assert_false(selectMenu.open);
 
     let newListbox = document.createElement("div");
-    newListbox.setAttribute("popup", "popup");
+    newListbox.setAttribute("popup", "auto");
     newListbox.setAttribute("behavior", "listbox");
     let newOption = document.createElement("option");
     newOption.innerText = "three";

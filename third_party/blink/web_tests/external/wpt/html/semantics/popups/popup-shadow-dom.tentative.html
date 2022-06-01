@@ -47,7 +47,7 @@
   <button onclick='showPopup("test1",0)'>Test1 Popup</button>
   <my-element>
     <template shadowroot=open>
-      <div popup=popup>
+      <div popup>
         <p>This should show, even though it is inside shadow DOM.</p>
       </div>
     </template>
@@ -66,13 +66,13 @@
 
 <div id=test2>
   <button id=t2b1 onclick='showPopup("test2",0)'>Test 2 Popup 1</button>
-  <div popup=popup anchor=t2b1 style="top: 400px;">
+  <div popup anchor=t2b1 style="top: 400px;">
     <p>Popup 1</p>
     <button id=t2b2 onclick='showPopup("test2",1)'>Test 2 Popup 2</button>
   </div>
   <my-element>
     <template shadowroot=open>
-      <div popup=popup anchor=t2b2 style="top: 400px;">
+      <div popup anchor=t2b2 style="top: 400px;">
         <p>Hiding this popup will hide *all* open popups,</p>
         <p>because t2b2 doesn't exist in this context.</p>
       </div>
@@ -99,14 +99,14 @@
   <my-element>
     <template shadowroot=open>
       <button id=t3b1 onclick='showPopup("test3",0)'>Test 3 Popup 1</button>
-      <div popup=popup anchor=t3b1>
+      <div popup anchor=t3b1>
         <p>This popup will stay open when popup2 shows.</p>
         <slot></slot>
       </div>
     </template>
     <button id=t3b2 onclick='showPopup("test3",1)'>Test 3 Popup 2</button>
   </my-element>
-  <div popup=popup anchor=t3b2>Popup 2</div>
+  <div popup anchor=t3b2>Popup 2</div>
 </div>
 
 <script>
@@ -131,12 +131,12 @@
 
 <div id=test4>
   <button id=t4b1 onclick='showPopup("test4",0)'>Test 4 Popup 1</button>
-  <div popup=popup anchor=t4b1>
+  <div popup anchor=t4b1>
     <p>This should not get hidden when popup2 opens.</p>
     <my-element>
       <template shadowroot=open>
         <button id=t4b2 onclick='showPopup("test4",1)'>Test 4 Popup 2</button>
-        <div popup=popup anchor=t4b2>
+        <div popup anchor=t4b2>
           <p>This should not hide popup1.</p>
         </div>
       </template>

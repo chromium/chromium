@@ -5,7 +5,7 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 
-<div id=popup popup=popup>Popup</div>
+<div id=popup popup>Popup</div>
 <div id=hint popup=hint>Hint</div>
 <div id=async popup=async>Async</div>
 <div id=async2 popup=async>Async</div>
@@ -58,10 +58,10 @@ test(() => {
 },'popups close hints but not asyncs');
 </script>
 
-<div id=popup1 popup=popup>Popup 1
-  <div id=popup2 popup=popup>Popup 2
+<div id=popup1 popup>Popup 1
+  <div id=popup2 popup>Popup 2
     <p id=anchorid>Anchor</p>
-    <div id=popup3 popup=popup>Popup 3</div>
+    <div id=popup3 popup>Popup 3</div>
   </div>
 </div>
 <div id=hint2 popup=hint anchor=anchorid>Hint anchored to popup</div>

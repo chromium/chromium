@@ -2399,8 +2399,9 @@ void Element::UpdatePopupAttribute(String value) {
   if (!RuntimeEnabledFeatures::HTMLPopupAttributeEnabled())
     return;
   PopupValueType type = PopupValueType::kNone;
-  if (EqualIgnoringASCIICase(value, kPopupTypeValuePopup)) {
-    type = PopupValueType::kPopup;
+  if (EqualIgnoringASCIICase(value, kPopupTypeValueAuto) ||
+      (!value.IsNull() && value.IsEmpty())) {
+    type = PopupValueType::kAuto;
   } else if (EqualIgnoringASCIICase(value, kPopupTypeValueHint)) {
     type = PopupValueType::kHint;
   } else if (EqualIgnoringASCIICase(value, kPopupTypeValueAsync)) {
@@ -2465,12 +2466,12 @@ void Element::showPopup(ExceptionState& exception_state) {
         "Invalid on already-showing or disconnected popup elements");
   }
   bool should_restore_focus = false;
-  if (PopupType() == PopupValueType::kPopup ||
+  if (PopupType() == PopupValueType::kAuto ||
       PopupType() == PopupValueType::kHint) {
     if (GetDocument().HintShowing()) {
       GetDocument().HideTopmostPopupOrHint(HidePopupFocusBehavior::kNone);
     }
-    if (PopupType() == PopupValueType::kPopup) {
+    if (PopupType() == PopupValueType::kAuto) {
       // Only hide other popups up to this popup's ancestral popup.
       GetDocument().HideAllPopupsUntil(NearestOpenAncestralPopup(this),
                                        HidePopupFocusBehavior::kNone);
@@ -2514,7 +2515,7 @@ void Element::hidePopupInternal(HidePopupFocusBehavior focus_behavior) {
   DCHECK(isConnected());
   DCHECK(HasValidPopupAttribute());
   DCHECK(popupOpen());
-  if (PopupType() == PopupValueType::kPopup ||
+  if (PopupType() == PopupValueType::kAuto ||
       PopupType() == PopupValueType::kHint) {
     // Hide any popups/hints above us in the stack.
     GetDocument().HideAllPopupsUntil(this, focus_behavior);
@@ -2635,7 +2636,7 @@ const Element* Element::NearestOpenAncestralPopup(Node* start_node) {
   int indx = 0;
   Document& document = start_node->GetDocument();
   for (auto popup : document.PopupAndHintStack()) {
-    DCHECK(popup->PopupType() == PopupValueType::kPopup ||
+    DCHECK(popup->PopupType() == PopupValueType::kAuto ||
            popup->PopupType() == PopupValueType::kHint);
     popup_position.Set(popup, indx++);
     if (const auto* anchor = popup->anchorElement())
@@ -2669,7 +2670,7 @@ const Element* Element::NearestOpenAncestralPopup(Node* start_node) {
       continue;
     if (current_element->HasValidPopupAttribute() &&
         current_element->GetPopupData()->open() &&
-        (current_element->PopupType() == PopupValueType::kPopup ||
+        (current_element->PopupType() == PopupValueType::kAuto ||
          current_element->PopupType() == PopupValueType::kHint)) {
       // Case #1: a showing popup.
       update_highest(current_element);

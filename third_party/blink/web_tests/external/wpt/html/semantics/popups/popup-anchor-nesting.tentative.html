@@ -15,11 +15,11 @@
      which contains a separate popup (p2) which is anchored
      by a separate anchor (b2). -->
 <button id=b1 onclick='p1.showPopup()'>Popup 1
-  <div popup=popup id=p2 anchor=b2>
+  <div popup id=p2 anchor=b2>
     <span id=inside2>Inside popup 2</span>
   </div>
 </button>
-<div popup=popup id=p1 anchor=b1>This is popup 1</div>
+<div popup id=p1 anchor=b1>This is popup 1</div>
 <button id=b2 onclick='p2.showPopup()'>Popup 2</button>
 
 <style>

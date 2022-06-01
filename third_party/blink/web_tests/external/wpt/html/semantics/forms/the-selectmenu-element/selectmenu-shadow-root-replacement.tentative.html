@@ -12,7 +12,7 @@
 <selectmenu id="selectmenu1">
   <template shadowroot=open>
     <button behavior="button">Custom button</button>
-    <div popup=popup behavior="listbox">
+    <div popup behavior="listbox">
       <slot></slot>
     </div>
   </template>
@@ -58,7 +58,7 @@
       </style>
       <button behavior="button">Open select!</button>
       <div id="value" behavior="selected-value"></div>
-      <div popup=popup behavior="listbox">
+      <div popup behavior="listbox">
         <input type="text" placeholder="Filter options">
         <option>Thing 1</option>
         <option>Thing 2</option>

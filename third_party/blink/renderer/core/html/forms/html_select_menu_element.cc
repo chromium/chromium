@@ -256,7 +256,7 @@ void HTMLSelectMenuElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
 
   Element* new_popup;
   new_popup = MakeGarbageCollected<HTMLDivElement>(document);
-  new_popup->setAttribute(html_names::kPopupAttr, kPopupTypeValuePopup);
+  new_popup->setAttribute(html_names::kPopupAttr, kPopupTypeValueAuto);
   new_popup->setAttribute(html_names::kPartAttr, kListboxPartName);
   new_popup->setAttribute(html_names::kBehaviorAttr, kListboxPartName);
   new_popup->SetShadowPseudoId(AtomicString("-internal-selectmenu-listbox"));

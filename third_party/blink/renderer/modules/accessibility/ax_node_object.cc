@@ -1843,7 +1843,7 @@ AccessibilityExpanded AXNodeObject::IsExpanded() const {
   // aria-expanded=true when it is showing.
   if (auto* form_control = DynamicTo<HTMLFormControlElement>(element)) {
     if (auto popup = form_control->togglePopupElement().element;
-        popup && popup->PopupType() == PopupValueType::kPopup) {
+        popup && popup->PopupType() == PopupValueType::kAuto) {
       return popup->popupOpen() ? kExpandedExpanded : kExpandedCollapsed;
     }
   }

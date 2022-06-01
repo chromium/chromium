@@ -160,11 +160,11 @@ enum class NamedItemType {
 
 enum class PopupValueType {
   kNone,
-  kPopup,
+  kAuto,
   kHint,
   kAsync,
 };
-constexpr const char* kPopupTypeValuePopup = "popup";
+constexpr const char* kPopupTypeValueAuto = "auto";
 constexpr const char* kPopupTypeValueHint = "hint";
 constexpr const char* kPopupTypeValueAsync = "async";
 

@@ -9,17 +9,17 @@
 
 <div class="example">
   <p>Direct DOM children</p>
-  <div popup=popup class=ancestor><p>Ancestor popup</p>
-    <div popup=popup class=child><p>Child popup</p></div>
+  <div popup class=ancestor><p>Ancestor popup</p>
+    <div popup class=child><p>Child popup</p></div>
   </div>
 </div>
 
 <div class="example">
   <p>Grandchildren</p>
-  <div popup=popup class=ancestor><p>Ancestor popup</p>
+  <div popup class=ancestor><p>Ancestor popup</p>
     <div>
       <div>
-        <div popup=popup class=child><p>Child popup</p></div>
+        <div popup class=child><p>Child popup</p></div>
       </div>
     </div>
   </div>
@@ -27,33 +27,33 @@
 
 <div class="example">
   <p>togglepopup attribute relationship</p>
-  <div popup=popup class=ancestor><p>Ancestor popup</p>
+  <div popup class=ancestor><p>Ancestor popup</p>
     <button togglepopup=trigger1 class=clickme>Button</button>
   </div>
-  <div id=trigger1 popup=popup class=child><p>Child popup</p></div>
+  <div id=trigger1 popup class=child><p>Child popup</p></div>
 </div>
 
 <div class="example">
   <p>nested togglepopup attribute relationship</p>
-  <div popup=popup class=ancestor><p>Ancestor popup</p>
+  <div popup class=ancestor><p>Ancestor popup</p>
     <div>
       <div>
         <button togglepopup=trigger2 class=clickme>Button</button>
       </div>
     </div>
   </div>
-  <div id=trigger2 popup=popup class=child><p>Child popup</p></div>
+  <div id=trigger2 popup class=child><p>Child popup</p></div>
 </div>
 
 <div class="example">
   <p>anchor attribute relationship</p>
-  <div id=anchor1 popup=popup class=ancestor><p>Ancestor popup</p></div>
-  <div anchor=anchor1 popup=popup class=child><p>Child popup</p></div>
+  <div id=anchor1 popup class=ancestor><p>Ancestor popup</p></div>
+  <div anchor=anchor1 popup class=child><p>Child popup</p></div>
 </div>
 
 <div class="example">
   <p>indirect anchor attribute relationship</p>
-  <div popup=popup class=ancestor>
+  <div popup class=ancestor>
     <p>Ancestor popup</p>
     <div>
       <div>
@@ -61,20 +61,20 @@
       </div>
     </div>
   </div>
-  <div anchor=anchor2 popup=popup class=child><p>Child popup</p></div>
+  <div anchor=anchor2 popup class=child><p>Child popup</p></div>
 </div>
 
 <!-- Other examples -->
 
-<div popup=popup id=p1 anchor=b1><p>This is popup #1</p>
+<div popup id=p1 anchor=b1><p>This is popup #1</p>
   <button id=b2 onclick='p2.showPopup()'>Popup 2</button>
   <button id=b4 onclick='p4.showPopup()'>Popup 4</button>
 </div>
-<div popup=popup id=p2 anchor=b2><p>This is popup #2</p>
+<div popup id=p2 anchor=b2><p>This is popup #2</p>
   <button id=b3 onclick='p3.showPopup()'>Popup 3</button>
 </div>
-<div popup=popup id=p3 anchor=b3><p>This is popup #3</p></div>
-<div popup=popup id=p4 anchor=b4><p>This is popup #4</p></div>
+<div popup id=p3 anchor=b3><p>This is popup #3</p></div>
+<div popup id=p4 anchor=b4><p>This is popup #4</p></div>
 <button id=b1 onclick='p1.showPopup()'>Popup 1</button>
 
 <dialog id=d1>This is a dialog<button onclick='this.parentElement.close()'>Close</button></dialog>

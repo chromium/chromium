@@ -5,11 +5,11 @@
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 
-<div popup=popup id=p1 defaultopen>This is a popup, which should be open upon load</div>
+<div popup id=p1 defaultopen>This is a popup, which should be open upon load</div>
 <script></script> <!-- Possibly yield the parser, just to double-check -->
-<div popup=popup id=p2 defaultopen>This is a second popup with defaultopen, which should NOT be open upon load</div>
+<div popup id=p2 defaultopen>This is a second popup with defaultopen, which should NOT be open upon load</div>
 <div popup=hint id=p2b defaultopen>This is a hint popup with defaultopen, which should NOT be open upon load</div>
-<div popup=popup id=p3>Also not visible</div>
+<div popup id=p3>Also not visible</div>
 
 <div popup=async id=p4 defaultopen>This is an async popup with defaultopen, which should be open upon load</div>
 <div popup=async id=p5 defaultopen>This is an async popup with defaultopen, which should be open upon load</div>

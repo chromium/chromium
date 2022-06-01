@@ -11,7 +11,6 @@
 <script src="/resources/testdriver-vendor.js"></script>
 
 <body>
-<iframe name="target"></iframe>
 <script>
 const buttonLogic = (t,s,h) => {
   // This mimics the expected logic for button invokers:
@@ -108,7 +107,7 @@ const invokers = [
     supported: false,
   },
 ];
-["popup","hint","async"].forEach(type => {
+["auto","hint","async"].forEach(type => {
   invokers.forEach(testcase => {
     let t_set = [1], s_set = [1], h_set = [1];
     if (testcase.supported) {
@@ -186,7 +185,7 @@ const invokers = [
 
 
 <button togglepopup=p1>Toggle Popup 1</button>
-<div popup=popup id=p1 style="border: 5px solid red;top: 100px;left: 100px;">This is popup #1</div>
+<div popup id=p1 style="border: 5px solid red;top: 100px;left: 100px;">This is popup #1</div>
 
 <script>
 function clickOn(element) {

@@ -11,79 +11,79 @@
 <script src="/resources/testdriver-vendor.js"></script>
 <script src="resources/popup-utils.js"></script>
 
-<div popup=popup data-test='default behavior - popup is not focused' data-no-focus>
+<div popup data-test='default behavior - popup is not focused' data-no-focus>
   <p>This is a popup</p>
   <button>first button</button>
 </div>
 
-<div popup=popup data-test='autofocus popup' autofocus tabindex=-1 class=should-be-focused>
+<div popup data-test='autofocus popup' autofocus tabindex=-1 class=should-be-focused>
   <p>This is a popup</p>
 </div>
 
-<div popup=popup data-test='autofocus empty popup' autofocus tabindex=-1 class=should-be-focused></div>
+<div popup data-test='autofocus empty popup' autofocus tabindex=-1 class=should-be-focused></div>
 
-<div popup=popup data-test='autofocus popup with button' autofocus tabindex=-1 class=should-be-focused>
+<div popup data-test='autofocus popup with button' autofocus tabindex=-1 class=should-be-focused>
   <p>This is a popup</p>
   <button>button</button>
 </div>
 
-<div popup=popup data-test='autofocus child'>
+<div popup data-test='autofocus child'>
   <p>This is a popup</p>
   <button autofocus class=should-be-focused>autofocus button</button>
 </div>
 
-<div popup=popup data-test='autofocus on tabindex=0 element'>
+<div popup data-test='autofocus on tabindex=0 element'>
   <p autofocus tabindex=0 class=should-be-focused>This is a popup with autofocus on a tabindex=0 element</p>
   <button>button</button>
 </div>
 
-<div popup=popup data-test='autofocus multiple children'>
+<div popup data-test='autofocus multiple children'>
   <p>This is a popup</p>
   <button autofocus class=should-be-focused>autofocus button</button>
   <button autofocus>second autofocus button</button>
 </div>
 
-<div popup=popup autofocus tabindex=-1 data-test='autofocus popup and multiple autofocus children' class=should-be-focused>
+<div popup autofocus tabindex=-1 data-test='autofocus popup and multiple autofocus children' class=should-be-focused>
   <p>This is a popup</p>
   <button autofocus>autofocus button</button>
   <button autofocus>second autofocus button</button>
 </div>
 
-<div popup=popup delegatesfocus data-test='delegatesfocus popup'>
+<div popup delegatesfocus data-test='delegatesfocus popup'>
   <p>This is a popup</p>
   <button class=should-be-focused>first button should be focused</button>
   <button>second button</button>
 </div>
 
-<div popup=popup delegatesfocus data-test='delegatesfocus takes precedence over autofocus'>
+<div popup delegatesfocus data-test='delegatesfocus takes precedence over autofocus'>
   <p>This is a popup</p>
   <button class=should-be-focused>first button</button>
   <button autofocus>autofocus button should NOT be focused</button>
 </div>
 
-<div popup=popup delegatesfocus autofocus data-test='delegatesfocus takes precedence over autofocus 2'>
+<div popup delegatesfocus autofocus data-test='delegatesfocus takes precedence over autofocus 2'>
   <p>This is a popup</p>
   <button class=should-be-focused>first button</button>
   <button>autofocus button should NOT be focused</button>
 </div>
 
-<div popup=popup delegatesfocus data-test='delegatesfocus on empty popup has no effect' data-no-focus></div>
+<div popup delegatesfocus data-test='delegatesfocus on empty popup has no effect' data-no-focus></div>
 
-<div popup=popup data-test='delegatesfocus on child has no effect' data-no-focus>
+<div popup data-test='delegatesfocus on child has no effect' data-no-focus>
   <p>This is a popup</p>
   <button delegatesfocus>first button</button>
 </div>
 
-<div popup=popup delegatesfocus data-test='delegatesfocus skips contained popups'>
+<div popup delegatesfocus data-test='delegatesfocus skips contained popups'>
   <p>This is a popup</p>
-  <div popup=popup>
+  <div popup>
     <button>Contained popup button</button>
   </div>
   <button class=should-be-focused>first button</button>
   <button>autofocus button should NOT be focused</button>
 </div>
 
-<div popup=popup delegatesfocus data-test='delegatesfocus skips contained dialogs'>
+<div popup delegatesfocus data-test='delegatesfocus skips contained dialogs'>
   <p>This is a popup</p>
   <dialog>
     <button>Contained dialog button</button>
@@ -154,11 +154,11 @@
       priorFocus.focus();
       popup.showPopup();
       assert_equals(document.activeElement, expectedFocusedElement, `${testName} activated by popup.showPopup()`);
-      assert_equals(popup.popup, 'popup', 'All popups in this test should start as popup=popup');
+      assert_equals(popup.popup, 'auto', 'All popups in this test should start as popup=auto');
       popup.popup = 'hint';
       assert_false(popup.matches(':top-layer'), 'Changing the popup type should hide the popup');
       assert_equals(document.activeElement, priorFocus, 'prior element should get focus when the type is changed');
-      popup.popup = 'popup';
+      popup.popup = 'auto';
 
       // Remove from the document:
       priorFocus.focus();

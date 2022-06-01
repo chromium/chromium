@@ -75,7 +75,7 @@
 
     // popup attribute (experimental)
     // https://github.com/openui/open-ui/blob/main/research/src/pages/popup/popup.research.explainer.mdx
-    "popup",
+    "auto",
     "hint",
     "async",
 
