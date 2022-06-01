@@ -141,6 +141,11 @@ class StartupObserver
   StartupObserver() = default;
 
   void OnStartupComplete() {
+    if (!performance_manager::PerformanceManagerImpl::IsAvailable()) {
+      // Already shutting down before startup finished. Do not notify.
+      return;
+    }
+
     // This should only be called once.
     if (!startup_complete_) {
       startup_complete_ = true;
