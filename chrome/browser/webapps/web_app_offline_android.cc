@@ -15,6 +15,8 @@
 #include "components/grit/components_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/webapps/browser/android/webapk/webapk_types.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
@@ -24,12 +26,15 @@ namespace {
 
 std::vector<std::string> GetOfflinePageInfoJava(
     const std::vector<int> requested_fields,
-    const std::string& url) {
+    const std::string& url,
+    content::BrowserContext* browser_context,
+    content::WebContents* web_contents) {
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jobjectArray> java_result =
       Java_WebApkDataProvider_getOfflinePageInfo(
           env, base::android::ToJavaIntArray(env, requested_fields),
-          base::android::ConvertUTF8ToJavaString(env, url));
+          base::android::ConvertUTF8ToJavaString(env, url),
+          web_contents->GetJavaWebContents());
   std::vector<std::string> resource_strings;
   base::android::AppendJavaStringArrayToStringVector(env, java_result,
                                                      &resource_strings);
@@ -42,6 +47,7 @@ namespace web_app {
 
 content::mojom::AlternativeErrorPageOverrideInfoPtr GetOfflinePageInfo(
     const GURL& url,
+    content::RenderFrameHost* render_frame_host,
     content::BrowserContext* browser_context) {
   using webapps::WebApkDetailsForDefaultOfflinePage;
   const std::vector<int> fields = {
@@ -51,8 +57,9 @@ content::mojom::AlternativeErrorPageOverrideInfoPtr GetOfflinePageInfo(
       (int)WebApkDetailsForDefaultOfflinePage::BACKGROUND_COLOR_DARK_MODE,
       (int)WebApkDetailsForDefaultOfflinePage::THEME_COLOR,
       (int)WebApkDetailsForDefaultOfflinePage::THEME_COLOR_DARK_MODE};
-  const std::vector<std::string> resource_strings =
-      GetOfflinePageInfoJava(fields, url.spec());
+  const std::vector<std::string> resource_strings = GetOfflinePageInfoJava(
+      fields, url.spec(), browser_context,
+      content::WebContents::FromRenderFrameHost(render_frame_host));
 
   if (fields.size() != resource_strings.size())
     return nullptr;

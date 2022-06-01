@@ -58,6 +58,7 @@ class URLLoaderThrottle;
 namespace content {
 class BrowserContext;
 class QuotaPermissionContext;
+class RenderFrameHost;
 enum class SmsFetchFailureType;
 struct ServiceWorkerVersionBaseInfo;
 }  // namespace content
@@ -794,9 +795,11 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       content::BrowserContext* browser_context) override;
 
   content::mojom::AlternativeErrorPageOverrideInfoPtr
-  GetAlternativeErrorPageOverrideInfo(const GURL& url,
-                                      content::BrowserContext* browser_context,
-                                      int32_t error_code) override;
+  GetAlternativeErrorPageOverrideInfo(
+      const GURL& url,
+      content::RenderFrameHost* render_frame_host,
+      content::BrowserContext* browser_context,
+      int32_t error_code) override;
 
  protected:
   static bool HandleWebUI(GURL* url, content::BrowserContext* browser_context);

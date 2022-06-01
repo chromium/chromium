@@ -54,7 +54,8 @@ class AlternativeErrorPageOverrideInfoBrowserTest
     content::BrowserContext* context = browser()->profile();
 
     return browser_client.GetAlternativeErrorPageOverrideInfo(
-        app_url, context, net::ERR_INTERNET_DISCONNECTED);
+        app_url, /*render_frame_host=*/nullptr, context,
+        net::ERR_INTERNET_DISCONNECTED);
   }
 
  private:
@@ -130,7 +131,8 @@ IN_PROC_BROWSER_TEST_F(AlternativeErrorPageOverrideInfoBrowserTest,
 
   content::mojom::AlternativeErrorPageOverrideInfoPtr info =
       browser_client.GetAlternativeErrorPageOverrideInfo(
-          app_url, context, net::ERR_INTERNET_DISCONNECTED);
+          app_url, /*render_frame_host=*/nullptr, context,
+          net::ERR_INTERNET_DISCONNECTED);
 
   // Expect mojom struct to be null.
   EXPECT_FALSE(info);
@@ -193,7 +195,8 @@ IN_PROC_BROWSER_TEST_F(AlternativeErrorPageOverrideInfoBrowserTest,
 
   content::mojom::AlternativeErrorPageOverrideInfoPtr info =
       browser_client.GetAlternativeErrorPageOverrideInfo(
-          app_url, context, net::ERR_INTERNET_DISCONNECTED);
+          app_url, /*render_frame_host=*/nullptr, context,
+          net::ERR_INTERNET_DISCONNECTED);
 
   // Expect mojom struct customized with HTML page title.
   EXPECT_TRUE(info);
@@ -273,7 +276,8 @@ IN_PROC_BROWSER_TEST_F(AlternativeErrorPageOverrideInfoBrowserTest,
   WebAppIconWaiter(profile, app_id.value()).Wait();
   content::mojom::AlternativeErrorPageOverrideInfoPtr info =
       browser_client.GetAlternativeErrorPageOverrideInfo(
-          app_url, profile, net::ERR_INTERNET_DISCONNECTED);
+          app_url, /*render_frame_host=*/nullptr, profile,
+          net::ERR_INTERNET_DISCONNECTED);
 
   // Expect mojom struct with icon url.
   EXPECT_TRUE(info);

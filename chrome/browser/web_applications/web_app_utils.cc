@@ -38,6 +38,7 @@
 #include "components/grit/components_resources.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/common/alternative_error_page_override_info.mojom-forward.h"
 #include "content/public/common/alternative_error_page_override_info.mojom.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
@@ -171,6 +172,7 @@ content::BrowserContext* GetBrowserContextForWebAppMetrics(
 
 content::mojom::AlternativeErrorPageOverrideInfoPtr GetOfflinePageInfo(
     const GURL& url,
+    content::RenderFrameHost* render_frame_host,
     content::BrowserContext* browser_context) {
   Profile* profile = Profile::FromBrowserContext(browser_context);
   web_app::WebAppProvider* web_app_provider =

@@ -38,6 +38,7 @@
 #include "content/public/browser/overlay_window.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/quota_permission_context.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/sms_fetcher.h"
 #include "content/public/browser/speculation_host_delegate.h"
 #include "content/public/browser/url_loader_request_interceptor.h"
@@ -1351,7 +1352,8 @@ base::Value::Dict ContentBrowserClient::GetFirstPartySetsOverrides() {
 mojom::AlternativeErrorPageOverrideInfoPtr
 ContentBrowserClient::GetAlternativeErrorPageOverrideInfo(
     const GURL& url,
-    BrowserContext* browser_context,
+    content::RenderFrameHost* render_frame_host,
+    content::BrowserContext* browser_context,
     int32_t error_code) {
   return nullptr;
 }

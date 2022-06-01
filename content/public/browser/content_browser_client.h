@@ -2255,9 +2255,11 @@ class CONTENT_EXPORT ContentBrowserClient {
   // `net/base/net_error_list.h`. Information is returned in a struct. Default
   // implementation returns nullptr.
   virtual mojom::AlternativeErrorPageOverrideInfoPtr
-  GetAlternativeErrorPageOverrideInfo(const GURL& url,
-                                      BrowserContext* browser_context,
-                                      int32_t error_code);
+  GetAlternativeErrorPageOverrideInfo(
+      const GURL& url,
+      content::RenderFrameHost* render_frame_host,
+      content::BrowserContext* browser_context,
+      int32_t error_code);
 };
 
 }  // namespace content

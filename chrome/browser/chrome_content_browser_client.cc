@@ -6553,6 +6553,7 @@ base::Value::Dict ChromeContentBrowserClient::GetFirstPartySetsOverrides() {
 content::mojom::AlternativeErrorPageOverrideInfoPtr
 ChromeContentBrowserClient::GetAlternativeErrorPageOverrideInfo(
     const GURL& url,
+    content::RenderFrameHost* render_frame_host,
     content::BrowserContext* browser_context,
     int32_t error_code) {
   if (error_code != net::ERR_INTERNET_DISCONNECTED)
@@ -6566,5 +6567,5 @@ ChromeContentBrowserClient::GetAlternativeErrorPageOverrideInfo(
     return nullptr;
   }
 
-  return web_app::GetOfflinePageInfo(url, browser_context);
+  return web_app::GetOfflinePageInfo(url, render_frame_host, browser_context);
 }
