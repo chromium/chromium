@@ -82625,6 +82625,15 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="4" label="Available"/>
 </enum>
 
+<enum name="SafeBrowsingTailoredSecurityNotificationResult">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Shown"/>
+  <int value="2" label="AccountNotConsented"/>
+  <int value="3" label="EnhancedProtectionAlreadyEnabled"/>
+  <int value="4" label="NoWebContentsAvailable"/>
+  <int value="5" label="SafeBrowsingControlledByPolicy"/>
+</enum>
+
 <enum name="SafeBrowsingTailoredSecurityOutcome">
   <int value="0" label="Accepted"/>
   <int value="1" label="Dismissed"/>
