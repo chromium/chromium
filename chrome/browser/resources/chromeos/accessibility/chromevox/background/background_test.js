@@ -3529,8 +3529,8 @@ TEST_F(
       const clearCurrentRange = ChromeVoxState.instance.setCurrentRange.bind(
           ChromeVoxState.instance, null);
       const toggleTalkBack = () => {
-        ChromeVoxState.instance.talkBackEnabled =
-            !ChromeVoxState.instance.talkBackEnabled;
+        ChromeVoxState.instance.talkBackEnabled_ =
+            !ChromeVoxState.instance.talkBackEnabled_;
       };
 
       mockFeedback

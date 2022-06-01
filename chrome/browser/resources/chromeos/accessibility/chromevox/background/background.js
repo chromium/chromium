@@ -62,8 +62,8 @@ export class Background extends ChromeVoxState {
     /** @private {cursors.Range} */
     this.previousRange_ = null;
 
-    /** @type {boolean} */
-    this.talkBackEnabled = false;
+    /** @private {boolean} */
+    this.talkBackEnabled_ = false;
 
     this.init_();
   }
@@ -105,7 +105,7 @@ export class Background extends ChromeVoxState {
           ChromeVox.tts.speak(announceText.join(' '), QueueMode.FLUSH);
         });
     chrome.accessibilityPrivate.onCustomSpokenFeedbackToggled.addListener(
-        (enabled) => this.talkBackEnabled = enabled);
+        (enabled) => this.talkBackEnabled_ = enabled);
     chrome.accessibilityPrivate.onShowChromeVoxTutorial.addListener(() => {
       (new PanelCommand(PanelCommandType.TUTORIAL)).send();
     });
@@ -136,6 +136,11 @@ export class Background extends ChromeVoxState {
   /** @override */
   get pageSel() {
     return this.pageSel_;
+  }
+
+  /** @override */
+  get talkBackEnabled() {
+    return this.talkBackEnabled_;
   }
 
   /** @override */

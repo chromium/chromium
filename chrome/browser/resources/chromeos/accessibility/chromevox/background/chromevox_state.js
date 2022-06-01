@@ -62,6 +62,11 @@ export class ChromeVoxState {
     return null;
   }
 
+  /** @return {boolean} */
+  get talkBackEnabled() {
+    return false;
+  }
+
   /**
    * Return the current range, but focus recovery is not applied to it.
    * @return {cursors.Range} The current range.
