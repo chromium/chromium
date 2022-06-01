@@ -898,6 +898,100 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
+                       BackPrefetchServedRefParam) {
+  // This test prefetches and serves two SRP responses. It then navigates back
+  // then forward, the back navigation should not be cached, due to cache limit
+  // size of 1, the second navigation should be cached.
+
+  base::HistogramTester histogram_tester;
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
+  EXPECT_NE(nullptr, search_prefetch_service);
+
+  // Disable back/forward cache to ensure that it doesn't get preserved in the
+  // back/forward cache.
+  content::DisableBackForwardCacheForTesting(
+      GetWebContents(), content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
+
+  std::string search_terms = "prefetch_content";
+  auto [prefetch_url, search_url] =
+      GetSearchPrefetchAndNonPrefetch(search_terms);
+  EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(prefetch_url));
+  WaitUntilStatusChangesTo(base::ASCIIToUTF16(search_terms),
+                           SearchPrefetchStatus::kComplete);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), search_url));
+
+  // Add a ref param onto the page before navigating away.
+  std::string script = R"(
+    const url = new URL(document.URL);
+    url.hash = "blah";
+    history.replaceState(null, "", url.toString());
+  )";
+
+  content::RenderFrameHost* frame = GetWebContents()->GetMainFrame();
+  EXPECT_TRUE(content::ExecuteScript(frame, script));
+
+  // The prefetch should be served, and only 1 request should be issued.
+  EXPECT_EQ(1u, search_server_requests().size());
+  auto inner_html = GetDocumentInnerHTML();
+  EXPECT_FALSE(base::Contains(inner_html, "regular"));
+  EXPECT_TRUE(base::Contains(inner_html, "prefetch"));
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.SearchPrefetch.ClickToNavigationIntercepted", 1);
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.SearchPrefetch.NavigationInterceptedToForwardingComplete", 1);
+
+  search_terms = "prefetch_content_2";
+  auto [prefetch_url_2, search_url_2] =
+      GetSearchPrefetchAndNonPrefetch(search_terms);
+  EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(prefetch_url_2));
+  WaitUntilStatusChangesTo(base::ASCIIToUTF16(search_terms),
+                           SearchPrefetchStatus::kComplete);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), search_url_2));
+
+  // The prefetch should be served, and only 1 request (now the second total
+  // request) should be issued.
+  EXPECT_EQ(2u, search_server_requests().size());
+  inner_html = GetDocumentInnerHTML();
+  EXPECT_FALSE(base::Contains(inner_html, "regular"));
+  EXPECT_TRUE(base::Contains(inner_html, "prefetch"));
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.SearchPrefetch.ClickToNavigationIntercepted", 2);
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.SearchPrefetch.NavigationInterceptedToForwardingComplete", 2);
+
+  content::TestNavigationObserver back_load_observer(GetWebContents());
+  GetWebContents()->GetController().GoBack();
+  back_load_observer.Wait();
+
+  // There should not be a cached prefetch request, so there should be a network
+  // request.
+  EXPECT_EQ(3u, search_server_requests().size());
+  inner_html = GetDocumentInnerHTML();
+  EXPECT_TRUE(base::Contains(inner_html, "regular"));
+  EXPECT_FALSE(base::Contains(inner_html, "prefetch"));
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.SearchPrefetch.ClickToNavigationIntercepted", 2);
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.SearchPrefetch.NavigationInterceptedToForwardingComplete", 2);
+
+  content::TestNavigationObserver forward_load_observer(GetWebContents());
+  GetWebContents()->GetController().GoForward();
+  forward_load_observer.Wait();
+
+  // There should be a cached prefetch request, so there should not be a new
+  // network request.
+  EXPECT_EQ(3u, search_server_requests().size());
+  inner_html = GetDocumentInnerHTML();
+  EXPECT_FALSE(base::Contains(inner_html, "regular"));
+  EXPECT_TRUE(base::Contains(inner_html, "prefetch"));
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.SearchPrefetch.ClickToNavigationIntercepted", 2);
+  histogram_tester.ExpectTotalCount(
+      "Omnibox.SearchPrefetch.NavigationInterceptedToForwardingComplete", 3);
+}
+
+IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
                        BackPrefetchServedAfterPrefs) {
   // This test prefetches and serves two SRP responses. It then navigates back
   // then forward, the back navigation should not be cached, due to cache limit
