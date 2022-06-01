@@ -104,9 +104,9 @@ inline constexpr size_t kOrderSubIndexMask[PA_BITS_PER_SIZE_T + 1] = {
 // The class used to generate the bucket lookup table at compile-time.
 class BucketIndexLookup final {
  public:
-  PA_ALWAYS_INLINE constexpr static uint16_t GetIndexForDenserBuckets(
+  PA_ALWAYS_INLINE constexpr static size_t GetIndexForDenserBuckets(
       size_t size);
-  PA_ALWAYS_INLINE constexpr static uint16_t GetIndex(size_t size);
+  PA_ALWAYS_INLINE constexpr static size_t GetIndex(size_t size);
 
   constexpr BucketIndexLookup() {
     constexpr uint16_t sentinel_bucket_index = kNumBuckets;
@@ -222,7 +222,7 @@ PA_ALWAYS_INLINE constexpr size_t RoundUpSize(size_t size) {
 }
 
 // static
-PA_ALWAYS_INLINE constexpr uint16_t BucketIndexLookup::GetIndex(size_t size) {
+PA_ALWAYS_INLINE constexpr size_t BucketIndexLookup::GetIndex(size_t size) {
   // For any order 2^N, under the denser bucket distribution ("Distribution A"),
   // we have 4 evenly distributed buckets: 2^N, 1.25*2^N, 1.5*2^N, and 1.75*2^N.
   // These numbers represent the maximum size of an allocation that can go into
@@ -243,11 +243,12 @@ PA_ALWAYS_INLINE constexpr uint16_t BucketIndexLookup::GetIndex(size_t size) {
   // Distribution A, but to the 2^11 bucket under Distribution B.
   if (1 << 8 < size && size < 1 << 19)
     return BucketIndexLookup::GetIndexForDenserBuckets(RoundUpSize(size));
-  return BucketIndexLookup::GetIndexForDenserBuckets(size);
+  else
+    return BucketIndexLookup::GetIndexForDenserBuckets(size);
 }
 
 // static
-PA_ALWAYS_INLINE constexpr uint16_t BucketIndexLookup::GetIndexForDenserBuckets(
+PA_ALWAYS_INLINE constexpr size_t BucketIndexLookup::GetIndexForDenserBuckets(
     size_t size) {
   // This forces the bucket table to be constant-initialized and immediately
   // materialized in the binary.

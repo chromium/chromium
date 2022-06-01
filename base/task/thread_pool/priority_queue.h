@@ -7,7 +7,6 @@
 
 #include <functional>
 #include <memory>
-#include <type_traits>
 
 #include "base/base_export.h"
 #include "base/containers/intrusive_heap.h"
@@ -67,8 +66,7 @@ class BASE_EXPORT PriorityQueue {
 
   // Returns the number of TaskSources with |priority|.
   size_t GetNumTaskSourcesWithPriority(TaskPriority priority) const {
-    return num_task_sources_per_priority_
-        [static_cast<std::underlying_type_t<TaskPriority>>(priority)];
+    return num_task_sources_per_priority_[static_cast<int>(priority)];
   }
 
   // Set the PriorityQueue to empty all its TaskSources of Tasks when it is

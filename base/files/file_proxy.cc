@@ -239,7 +239,7 @@ FileProxy::~FileProxy() {
 }
 
 bool FileProxy::CreateOrOpen(const FilePath& file_path,
-                             int file_flags,
+                             uint32_t file_flags,
                              StatusCallback callback) {
   DCHECK(!file_.IsValid());
   CreateOrOpenHelper* helper = new CreateOrOpenHelper(this, File());
