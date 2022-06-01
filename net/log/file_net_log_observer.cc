@@ -493,8 +493,9 @@ FileNetLogObserver::FileNetLogObserver(
   if (!constants)
     constants = base::Value::ToUniquePtrValue(GetNetConstants());
 
-  DCHECK(!constants->FindKey("logCaptureMode"));
-  constants->SetStringKey("logCaptureMode", CaptureModeToString(capture_mode));
+  DCHECK(constants->is_dict());
+  DCHECK(!constants->GetDict().Find("logCaptureMode"));
+  constants->GetDict().Set("logCaptureMode", CaptureModeToString(capture_mode));
   file_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&FileNetLogObserver::FileWriter::Initialize,
                                 base::Unretained(file_writer_.get()),

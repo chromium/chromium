@@ -129,7 +129,8 @@ absl::optional<std::string> GetOptionalStringValueFromParams(
   if (!entry.params.is_dict())
     return absl::nullopt;
 
-  const std::string* result = entry.params.FindStringPath(path);
+  const std::string* result =
+      entry.params.GetDict().FindStringByDottedPath(path);
   if (!result)
     return absl::nullopt;
 
@@ -140,14 +141,14 @@ absl::optional<bool> GetOptionalBooleanValueFromParams(const NetLogEntry& entry,
                                                        base::StringPiece path) {
   if (!entry.params.is_dict())
     return absl::nullopt;
-  return entry.params.FindBoolPath(path);
+  return entry.params.GetDict().FindBoolByDottedPath(path);
 }
 
 absl::optional<int> GetOptionalIntegerValueFromParams(const NetLogEntry& entry,
                                                       base::StringPiece path) {
   if (!entry.params.is_dict())
     return absl::nullopt;
-  return entry.params.FindIntPath(path);
+  return entry.params.GetDict().FindIntByDottedPath(path);
 }
 
 absl::optional<int> GetOptionalNetErrorCodeFromParams(

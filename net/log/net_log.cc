@@ -182,11 +182,11 @@ std::string NetLog::TimeToString(const base::Time& time) {
 
 // static
 base::Value NetLog::GetEventTypesAsValue() {
-  base::Value dict(base::Value::Type::DICTIONARY);
+  base::Value::Dict dict;
   for (int i = 0; i < static_cast<int>(NetLogEventType::COUNT); ++i) {
-    dict.SetIntKey(NetLogEventTypeToString(static_cast<NetLogEventType>(i)), i);
+    dict.Set(NetLogEventTypeToString(static_cast<NetLogEventType>(i)), i);
   }
-  return dict;
+  return base::Value(std::move(dict));
 }
 
 // static
@@ -205,11 +205,11 @@ const char* NetLog::SourceTypeToString(NetLogSourceType source) {
 
 // static
 base::Value NetLog::GetSourceTypesAsValue() {
-  base::Value dict(base::Value::Type::DICTIONARY);
+  base::Value::Dict dict;
   for (int i = 0; i < static_cast<int>(NetLogSourceType::COUNT); ++i) {
-    dict.SetIntKey(SourceTypeToString(static_cast<NetLogSourceType>(i)), i);
+    dict.Set(SourceTypeToString(static_cast<NetLogSourceType>(i)), i);
   }
-  return dict;
+  return base::Value(std::move(dict));
 }
 
 // static

@@ -32,9 +32,9 @@ base::Value CaptureModeToValue(NetLogCaptureMode capture_mode) {
 }
 
 base::Value NetCaptureModeParams(NetLogCaptureMode capture_mode) {
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetKey("capture_mode", CaptureModeToValue(capture_mode));
-  return dict;
+  base::Value::Dict dict;
+  dict.Set("capture_mode", CaptureModeToValue(capture_mode));
+  return base::Value(std::move(dict));
 }
 
 TEST(NetLogTest, BasicGlobalEvents) {
@@ -417,11 +417,11 @@ TEST(NetLogTest, NetLogTwoObservers) {
   absl::optional<int> param;
   AddEvent(NetLog::Get());
   ASSERT_EQ(1U, observer[0].GetNumValues());
-  param = observer[0].GetValue(0)->FindIntKey("params");
+  param = observer[0].GetValue(0)->GetDict().FindInt("params");
   ASSERT_TRUE(param);
   EXPECT_EQ(CaptureModeToInt(observer[0].capture_mode()), param.value());
   ASSERT_EQ(1U, observer[1].GetNumValues());
-  param = observer[1].GetValue(0)->FindIntKey("params");
+  param = observer[1].GetValue(0)->GetDict().FindInt("params");
   ASSERT_TRUE(param);
   EXPECT_EQ(CaptureModeToInt(observer[1].capture_mode()), param.value());
 
@@ -465,7 +465,7 @@ TEST(NetLogTest, NetLogEntryToValueEmptyParams) {
                      NetLogEventPhase::BEGIN, base::TimeTicks(), base::Value());
 
   ASSERT_TRUE(entry1.params.is_none());
-  ASSERT_FALSE(entry1.ToValue().FindKey("params"));
+  ASSERT_FALSE(entry1.ToValue().GetDict().Find("params"));
 }
 
 }  // namespace

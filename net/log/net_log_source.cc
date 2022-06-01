@@ -20,9 +20,9 @@ namespace {
 base::Value SourceEventParametersCallback(const NetLogSource source) {
   if (!source.IsValid())
     return base::Value();
-  base::Value event_params(base::Value::Type::DICTIONARY);
-  source.AddToEventParameters(&event_params);
-  return event_params;
+  base::Value::Dict event_params;
+  source.AddToEventParameters(event_params);
+  return base::Value(std::move(event_params));
 }
 
 }  // namespace
