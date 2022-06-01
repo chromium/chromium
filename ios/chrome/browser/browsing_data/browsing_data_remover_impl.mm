@@ -42,6 +42,7 @@
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/browsing_data/browsing_data_features.h"
 #include "ios/chrome/browser/browsing_data/browsing_data_remove_mask.h"
+#include "ios/chrome/browser/crash_report/crash_helper.h"
 #include "ios/chrome/browser/external_files/external_file_remover.h"
 #include "ios/chrome/browser/external_files/external_file_remover_factory.h"
 #include "ios/chrome/browser/history/history_service_factory.h"
@@ -418,6 +419,8 @@ void BrowsingDataRemoverImpl::RemoveImpl(base::Time delete_begin,
     if (language_histogram) {
       language_histogram->ClearHistory(delete_begin, delete_end);
     }
+
+    crash_helper::ClearReportsBetween(delete_begin, delete_end);
   }
 
   if (IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::REMOVE_PASSWORDS)) {
