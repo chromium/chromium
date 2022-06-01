@@ -126,8 +126,10 @@ suite('GooglePhotosAlbumsTest', function() {
                     PersonalizationActionName.SET_ERROR) as SetErrorAction;
 
             // Verify |error| expectations.
-            assertEquals(error.message, 'Something went wrong.');
-            assertEquals(error.dismiss?.message, 'Retry');
+            assertEquals(
+                error.message,
+                'Couldn’t load images. Check your network connection or try loading the images again.');
+            assertEquals(error.dismiss?.message, 'Try again');
             assertNotEquals(error.dismiss?.callback, undefined);
 
             wallpaperProvider.reset();

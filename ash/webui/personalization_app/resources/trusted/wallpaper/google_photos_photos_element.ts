@@ -358,7 +358,7 @@ export class GooglePhotosPhotos extends WithPersonalizationStore {
           id: ERROR_ID,
           message: this.i18n('googlePhotosError'),
           dismiss: {
-            message: this.i18n('googlePhotosRetry'),
+            message: this.i18n('googlePhotosTryAgain'),
             callback: (fromUser: boolean) => {
               if (fromUser) {
                 // Post the reattempt instead of performing it immediately to
