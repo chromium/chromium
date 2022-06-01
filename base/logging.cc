@@ -383,7 +383,7 @@ void WriteToFd(int fd, const char* data, size_t length) {
       // Give up, nothing we can do now.
       break;
     }
-    bytes_written += rv;
+    bytes_written += static_cast<size_t>(rv);
   }
 }
 

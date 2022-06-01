@@ -60,7 +60,7 @@ inline void WriteBigEndian<uint8_t>(char buf[], uint8_t val) {
 
 template <>
 inline void ReadBigEndian<int8_t>(const uint8_t buf[], int8_t* out) {
-  *out = buf[0];
+  *out = static_cast<int8_t>(buf[0]);
 }
 
 template <>
@@ -78,7 +78,7 @@ class BASE_EXPORT BigEndianReader {
   explicit BigEndianReader(base::span<const uint8_t> buf);
 
   const uint8_t* ptr() const { return ptr_; }
-  size_t remaining() const { return end_ - ptr_; }
+  size_t remaining() const { return static_cast<size_t>(end_ - ptr_); }
 
   bool Skip(size_t len);
   bool ReadBytes(void* out, size_t len);
@@ -123,7 +123,7 @@ class BASE_EXPORT BigEndianWriter {
   BigEndianWriter(char* buf, size_t len);
 
   char* ptr() const { return ptr_; }
-  size_t remaining() const { return end_ - ptr_; }
+  size_t remaining() const { return static_cast<size_t>(end_ - ptr_); }
 
   bool Skip(size_t len);
   bool WriteBytes(const void* buf, size_t len);

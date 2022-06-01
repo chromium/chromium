@@ -279,7 +279,7 @@ void CPU::Initialize(bool require_branding) {
     // This is checking for any hypervisor. Hypervisors may choose not to
     // announce themselves. Hypervisors trap CPUID and sometimes return
     // different results to underlying hardware.
-    is_running_in_vm_ = (cpu_info[2] & 0x80000000) != 0;
+    is_running_in_vm_ = (static_cast<uint32_t>(cpu_info[2]) & 0x80000000) != 0;
 
     // AVX instructions will generate an illegal instruction exception unless
     //   a) they are supported by the CPU,
@@ -302,20 +302,21 @@ void CPU::Initialize(bool require_branding) {
   }
 
   // Get the brand string of the cpu.
-  __cpuid(cpu_info, 0x80000000);
-  const int max_parameter = cpu_info[0];
+  __cpuid(cpu_info, static_cast<int>(0x80000000));
+  const uint32_t max_parameter = static_cast<uint32_t>(cpu_info[0]);
 
-  static constexpr int kParameterStart = 0x80000002;
-  static constexpr int kParameterEnd = 0x80000004;
-  static constexpr int kParameterSize = kParameterEnd - kParameterStart + 1;
+  static constexpr uint32_t kParameterStart = 0x80000002;
+  static constexpr uint32_t kParameterEnd = 0x80000004;
+  static constexpr uint32_t kParameterSize =
+      kParameterEnd - kParameterStart + 1;
   static_assert(kParameterSize * sizeof(cpu_info) + 1 == std::size(cpu_string),
                 "cpu_string has wrong size");
 
   if (max_parameter >= kParameterEnd) {
     size_t i = 0;
-    for (int parameter = kParameterStart; parameter <= kParameterEnd;
+    for (uint32_t parameter = kParameterStart; parameter <= kParameterEnd;
          ++parameter) {
-      __cpuid(cpu_info, parameter);
+      __cpuid(cpu_info, static_cast<int>(parameter));
       memcpy(&cpu_string[i], cpu_info, sizeof(cpu_info));
       i += sizeof(cpu_info);
     }
@@ -323,9 +324,11 @@ void CPU::Initialize(bool require_branding) {
     cpu_brand_ = cpu_string;
   }
 
-  static constexpr int kParameterContainingNonStopTimeStampCounter = 0x80000007;
+  static constexpr uint32_t kParameterContainingNonStopTimeStampCounter =
+      0x80000007;
   if (max_parameter >= kParameterContainingNonStopTimeStampCounter) {
-    __cpuid(cpu_info, kParameterContainingNonStopTimeStampCounter);
+    __cpuid(cpu_info,
+            static_cast<int>(kParameterContainingNonStopTimeStampCounter));
     has_non_stop_time_stamp_counter_ = (cpu_info[3] & (1 << 8)) != 0;
   }
 
