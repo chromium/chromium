@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarIntentMetadata;
 import org.chromium.chrome.browser.user_education.IPHCommand;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.url.GURL;
@@ -50,6 +51,7 @@ import java.util.Map;
 /** Unit tests for HomeButtonCoordinator. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {HomeButtonCoordinatorTest.ShadowChromeFeatureList.class})
+@DisableFeatures(ChromeFeatureList.ANDROID_SCROLL_OPTIMIZATIONS)
 @EnableFeatures(ChromeFeatureList.ENABLE_IPH)
 public class HomeButtonCoordinatorTest {
     private static final GURL NTP_URL = JUnitTestGURLs.getGURL(JUnitTestGURLs.NTP_URL);

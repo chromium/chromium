@@ -40,6 +40,7 @@ import org.chromium.chrome.test.util.browser.Features.JUnitProcessor;
 /** Unit test for {@link ReadLaterIPHController}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@DisableFeatures({ChromeFeatureList.ANDROID_SCROLL_OPTIMIZATIONS})
 @EnableFeatures({ChromeFeatureList.READ_LATER, ChromeFeatureList.ENABLE_IPH})
 public class ReadLaterIPHControllerUnitTest {
     @Rule

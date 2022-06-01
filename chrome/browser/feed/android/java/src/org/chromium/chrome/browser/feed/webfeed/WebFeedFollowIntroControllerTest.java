@@ -190,6 +190,8 @@ public final class WebFeedFollowIntroControllerTest {
         mBaseTestValues.addFeatureFlagOverride(ChromeFeatureList.SNOOZABLE_IPH, false);
         mBaseTestValues.addFeatureFlagOverride(ChromeFeatureList.ENABLE_AUTOMATIC_SNOOZE, false);
         mBaseTestValues.addFeatureFlagOverride(ChromeFeatureList.ENABLE_IPH, true);
+        mBaseTestValues.addFeatureFlagOverride(
+                ChromeFeatureList.ANDROID_SCROLL_OPTIMIZATIONS, false);
         FeatureList.setTestValues(mBaseTestValues);
         resetWebFeedFollowIntroController();
 

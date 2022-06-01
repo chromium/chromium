@@ -87,6 +87,8 @@ public final class WebFeedFollowIntroViewTest {
     @SmallTest
     public void showIPHTest() {
         FeatureList.TestValues baseTestValues = new FeatureList.TestValues();
+        baseTestValues.addFeatureFlagOverride(
+                ChromeFeatureList.ANDROID_SCROLL_OPTIMIZATIONS, false);
         baseTestValues.addFeatureFlagOverride(ChromeFeatureList.ENABLE_IPH, true);
         FeatureList.setTestValues(baseTestValues);
 
