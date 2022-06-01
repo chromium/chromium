@@ -54,9 +54,6 @@
 // directory of the build.
 // - To debug, append the following arguments to any updater command line:
 //    --enable-logging --vmodule=*/chrome/updater/*=2,*/components/winhttp/*=2.
-// - To run the `updater --install` from the `out` directory of the build,
-//   use --install-from-out-dir command line switch in addition to other
-//   arguments for --install.
 
 namespace updater {
 namespace {

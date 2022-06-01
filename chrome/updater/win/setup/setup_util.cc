@@ -328,27 +328,6 @@ std::wstring GetComTypeLibResourceIndex(REFIID iid) {
   return index != kTypeLibIndexes.end() ? index->second : L"";
 }
 
-std::vector<base::FilePath> ParseFilesFromDeps(const base::FilePath& deps) {
-  constexpr size_t kDepsFileSizeMax = 0x4000;  // 16KB.
-  std::string contents;
-  if (!base::ReadFileToStringWithMaxSize(deps, &contents, kDepsFileSizeMax))
-    return {};
-  const base::flat_set<const wchar_t*, CaseInsensitiveASCIICompare>
-      exclude_extensions = {L".pdb", L".js"};
-  std::vector<base::FilePath> result;
-  for (const auto& line :
-       base::SplitString(contents, "\r\n", base::TRIM_WHITESPACE,
-                         base::SPLIT_WANT_NONEMPTY)) {
-    const auto filename =
-        base::FilePath(base::ASCIIToWide(line)).NormalizePathSeparators();
-    if (!base::Contains(exclude_extensions,
-                        filename.FinalExtension().c_str())) {
-      result.push_back(filename);
-    }
-  }
-  return result;
-}
-
 void RegisterUserRunAtStartup(const std::wstring& run_value_name,
                               const base::CommandLine& command,
                               WorkItemList* list) {

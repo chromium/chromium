@@ -91,9 +91,6 @@ process is determined by command-line arguments:
         *   If --tag is specified, --install is assumed.
     *   --handoff=...
         *   As --tag.
-    *   --install-from-out-dir
-        *   If specified, the program searches for an updater.runtime_deps file
-        *   and copies all such files to the install directory.
     *  --offlinedir=...
         *   Performs offline install, which means no update check or file
             download is performed against the server during installation.

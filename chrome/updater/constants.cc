@@ -60,10 +60,6 @@ const char kBrowserVersionSwitch[] = "browser-version";
 const char kSessionIdSwitch[] = "sessionid";  // needs backward-compatibility
 const char kAppGuidSwitch[] = "appguid";
 
-#if BUILDFLAG(IS_WIN)
-const char kInstallFromOutDir[] = "install-from-out-dir";
-#endif  // BUILDFLAG(IS_WIN)
-
 const char kHealthCheckSwitch[] = "healthcheck";
 
 const char kHandoffSwitch[] = "handoff";        // needs backward-compatibility
