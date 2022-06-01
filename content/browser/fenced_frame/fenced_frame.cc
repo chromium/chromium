@@ -54,16 +54,10 @@ FencedFrame::FencedFrame(
                                       /*page_delegate=*/web_contents_,
                                       FrameTree::Type::kFencedFrame)),
       mode_(mode) {
-  scoped_refptr<SiteInstance> site_instance;
-  if (owner_render_frame_host->GetSiteInstance()->IsGuest()) {
-    site_instance = SiteInstance::CreateForGuest(
-        owner_render_frame_host->GetBrowserContext(),
-        owner_render_frame_host->GetSiteInstance()
-            ->GetStoragePartitionConfig());
-  } else {
-    site_instance =
-        SiteInstance::Create(owner_render_frame_host->GetBrowserContext());
-  }
+  scoped_refptr<SiteInstance> site_instance =
+      SiteInstanceImpl::CreateForFencedFrame(
+          owner_render_frame_host->GetSiteInstance());
+
   // Note that even though this is happening in response to an event in the
   // renderer (i.e., the creation of a <fencedframe> element), we are still
   // putting `renderer_initiated_creation` as false. This is because that

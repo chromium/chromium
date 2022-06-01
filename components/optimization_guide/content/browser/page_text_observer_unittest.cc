@@ -1226,6 +1226,7 @@ TEST_F(PageTextObserverFencedFramesTest, AMPRequestedOnOOPIFInFencedFrame) {
       content::NavigationSimulator::CreateRendererInitiated(kFencedFrameUrl,
                                                             fenced_frame_rfh);
   navigation_simulator->Commit();
+  fenced_frame_rfh = navigation_simulator->GetFinalRenderFrameHost();
 
   // Add an OOPIF subframe.
   content::RenderFrameHost* oopif_subframe =

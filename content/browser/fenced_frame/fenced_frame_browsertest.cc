@@ -18,6 +18,7 @@
 #include "content/public/browser/frame_type.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -943,6 +944,167 @@ IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest, UserInteractionForFencedFrame) {
   mouse_event.button = blink::WebPointerProperties::Button::kLeft;
   mouse_event.SetPositionInWidget(5, 5);
   fenced_frame_rfh->GetRenderWidgetHost()->ForwardMouseEvent(mouse_event);
+}
+
+IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest,
+                       ProcessAllocationWithFullSiteIsolation) {
+  ASSERT_TRUE(https_server()->Start());
+  IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
+  ASSERT_TRUE(AreAllSitesIsolatedForTesting());
+
+  const GURL main_url = https_server()->GetURL("a.test", "/title1.html");
+  const GURL same_site_fenced_frame_url =
+      https_server()->GetURL("a.test", "/fenced_frames/title1.html");
+  const GURL cross_site_fenced_frame_url =
+      https_server()->GetURL("b.test", "/fenced_frames/title1.html");
+
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // Empty fenced frame document should have a different site instance, but
+  // should be in the same process as embedder.
+  RenderFrameHost* fenced_frame_rfh =
+      fenced_frame_test_helper().CreateFencedFrame(primary_main_frame_host(),
+                                                   GURL());
+  EXPECT_NE(fenced_frame_rfh->GetSiteInstance(),
+            primary_main_frame_host()->GetSiteInstance());
+  EXPECT_FALSE(fenced_frame_rfh->GetSiteInstance()->IsRelatedSiteInstance(
+      primary_main_frame_host()->GetSiteInstance()));
+  EXPECT_EQ(fenced_frame_rfh->GetProcess(),
+            primary_main_frame_host()->GetProcess());
+
+  // Same-site fenced frame document should be in the same process as embedder.
+  fenced_frame_rfh = fenced_frame_test_helper().NavigateFrameInFencedFrameTree(
+      fenced_frame_rfh, same_site_fenced_frame_url);
+  EXPECT_NE(fenced_frame_rfh->GetSiteInstance(),
+            primary_main_frame_host()->GetSiteInstance());
+  EXPECT_FALSE(fenced_frame_rfh->GetSiteInstance()->IsRelatedSiteInstance(
+      primary_main_frame_host()->GetSiteInstance()));
+  EXPECT_EQ(fenced_frame_rfh->GetProcess(),
+            primary_main_frame_host()->GetProcess());
+
+  // Cross-site fenced frame document should be in a different process from its
+  // embedder.
+  fenced_frame_rfh = fenced_frame_test_helper().NavigateFrameInFencedFrameTree(
+      fenced_frame_rfh, cross_site_fenced_frame_url);
+  EXPECT_NE(fenced_frame_rfh->GetProcess(),
+            primary_main_frame_host()->GetProcess());
+}
+
+IN_PROC_BROWSER_TEST_F(FencedFrameBrowserTest,
+                       CrossSiteFencedFramesShareProcess) {
+  ASSERT_TRUE(https_server()->Start());
+  IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
+  ASSERT_TRUE(AreAllSitesIsolatedForTesting());
+
+  const GURL main_url = https_server()->GetURL("a.test", "/title1.html");
+  const GURL same_site_fenced_frame_url =
+      https_server()->GetURL("a.test", "/fenced_frames/title1.html");
+  const GURL cross_site_fenced_frame_url =
+      https_server()->GetURL("b.test", "/fenced_frames/title1.html");
+
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // Two fenced frames that are same-site with each other, and cross-site with
+  // the embedder should be in the same process. This happens due to the
+  // subframe process reuse policy which also applies to fenced frames (the
+  // second fenced frame will try to reuse an existing process that is locked to
+  // the same site).
+  RenderFrameHost* ff_rfh_1 = fenced_frame_test_helper().CreateFencedFrame(
+      primary_main_frame_host(), cross_site_fenced_frame_url);
+  RenderFrameHost* ff_rfh_2 = fenced_frame_test_helper().CreateFencedFrame(
+      primary_main_frame_host(), cross_site_fenced_frame_url);
+  EXPECT_NE(ff_rfh_1->GetSiteInstance(), ff_rfh_2->GetSiteInstance());
+  EXPECT_NE(ff_rfh_1->GetProcess(), primary_main_frame_host()->GetProcess());
+  EXPECT_EQ(ff_rfh_1->GetProcess(), ff_rfh_2->GetProcess());
+
+  // The cross-site fenced frame should be moved to the same process as embedder
+  // when navigated to same-site (similar to before).
+  ff_rfh_2 = fenced_frame_test_helper().NavigateFrameInFencedFrameTree(
+      ff_rfh_2, same_site_fenced_frame_url);
+  EXPECT_EQ(ff_rfh_2->GetProcess(), primary_main_frame_host()->GetProcess());
+}
+
+class FencedFrameWithSiteIsolationDisabledBrowserTest
+    : public FencedFrameBrowserTest {
+ public:
+  FencedFrameWithSiteIsolationDisabledBrowserTest() = default;
+  ~FencedFrameWithSiteIsolationDisabledBrowserTest() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    FencedFrameBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(switches::kDisableSiteIsolation);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(FencedFrameWithSiteIsolationDisabledBrowserTest,
+                       ProcessAllocationWithSiteIsolationDisabled) {
+  ASSERT_TRUE(https_server()->Start());
+  if (AreAllSitesIsolatedForTesting()) {
+    LOG(ERROR) << "Site isolation should be disabled for this test.";
+    return;
+  }
+
+  const GURL main_url = https_server()->GetURL("a.test", "/title1.html");
+  const GURL same_site_fenced_frame_url =
+      https_server()->GetURL("a.test", "/fenced_frames/title1.html");
+  const GURL cross_site_fenced_frame_url =
+      https_server()->GetURL("b.test", "/fenced_frames/title1.html");
+
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // Empty fenced frame document should be in the same process as embedder.
+  RenderFrameHost* fenced_frame_rfh =
+      fenced_frame_test_helper().CreateFencedFrame(primary_main_frame_host(),
+                                                   GURL());
+  EXPECT_NE(fenced_frame_rfh->GetSiteInstance(),
+            primary_main_frame_host()->GetSiteInstance());
+  EXPECT_EQ(fenced_frame_rfh->GetProcess(),
+            primary_main_frame_host()->GetProcess());
+
+  // Same-site fenced frame document should be in the same process as embedder.
+  fenced_frame_rfh = fenced_frame_test_helper().NavigateFrameInFencedFrameTree(
+      fenced_frame_rfh, same_site_fenced_frame_url);
+  EXPECT_EQ(fenced_frame_rfh->GetProcess(),
+            primary_main_frame_host()->GetProcess());
+
+  // Cross-site fenced frame document should be in the same process as the
+  // embedder (with site isolation disabled).
+  fenced_frame_rfh = fenced_frame_test_helper().NavigateFrameInFencedFrameTree(
+      fenced_frame_rfh, cross_site_fenced_frame_url);
+  EXPECT_EQ(fenced_frame_rfh->GetProcess(),
+            primary_main_frame_host()->GetProcess());
+}
+
+IN_PROC_BROWSER_TEST_F(FencedFrameWithSiteIsolationDisabledBrowserTest,
+                       ProcessAllocationWithDynamicIsolatedOrigin) {
+  ASSERT_TRUE(https_server()->Start());
+  if (AreAllSitesIsolatedForTesting()) {
+    LOG(ERROR) << "Site isolation should be disabled for this test.";
+    return;
+  }
+  const GURL main_url = https_server()->GetURL("a.test", "/title1.html");
+  const GURL isolated_cross_site_fenced_frame_url =
+      https_server()->GetURL("isolated.b.test", "/fenced_frames/title1.html");
+  const GURL cross_site_fenced_frame_url =
+      https_server()->GetURL("c.test", "/fenced_frames/title1.html");
+
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // Start isolating "isolated.b.test".
+  auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
+  policy->AddFutureIsolatedOrigins(
+      {url::Origin::Create(isolated_cross_site_fenced_frame_url)},
+      ChildProcessSecurityPolicy::IsolatedOriginSource::TEST);
+
+  RenderFrameHost* ff_rfh_1 = fenced_frame_test_helper().CreateFencedFrame(
+      primary_main_frame_host(), cross_site_fenced_frame_url);
+  RenderFrameHost* ff_rfh_2 = fenced_frame_test_helper().CreateFencedFrame(
+      primary_main_frame_host(), isolated_cross_site_fenced_frame_url);
+
+  // The c.test fenced frame should share a process with the embedder, but
+  // the isolated.b.test fenced frame should be in a different process.
+  EXPECT_EQ(ff_rfh_1->GetProcess(), primary_main_frame_host()->GetProcess());
+  EXPECT_NE(ff_rfh_2->GetProcess(), ff_rfh_1->GetProcess());
 }
 
 namespace {

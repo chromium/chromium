@@ -91,6 +91,8 @@ RenderFrameHost* FencedFrameTestHelper::CreateFencedFrame(
             ->child_at(fenced_frame_parent_rfh->child_count() - 1)
             ->current_frame_host());
   }
+  if (url.is_empty())
+    return fenced_frame_rfh;
   return NavigateFrameInFencedFrameTree(fenced_frame_rfh, url,
                                         expected_error_code);
 }
