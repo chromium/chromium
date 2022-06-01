@@ -2638,6 +2638,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.MojoServiceManager.BootstrapRetryTimes" units="count"
+    expires_after="2023-05-27">
+  <owner>chungsheng@google.com</owner>
+  <owner>chromeos-mojo-service-manager@google.com</owner>
+  <summary>
+    The retry times when try to bootstrap to mojo service manager.
+  </summary>
+</histogram>
+
+<histogram name="Ash.MojoServiceManager.IsConnectionLost" enum="BooleanShown"
+    expires_after="2023-05-27">
+  <owner>chungsheng@google.com</owner>
+  <owner>chromeos-mojo-service-manager@google.com</owner>
+  <summary>
+    Whether the connection to mojo service manager is lost before during ash
+    running.
+  </summary>
+</histogram>
+
 <histogram
     name="Ash.NavigationWidget.AnimationSmoothness{HotseatTransitionType}"
     units="%" expires_after="2023-04-20">

@@ -12,7 +12,10 @@
 namespace chromeos::mojo_service_manager {
 
 // Connects to the mojo service manager. Returns false if cannot connect.
-// This will will block until finishes.
+// This will will block until connects to the socket of service manager.
+// Note that the service manager also acts as the mojo broker process. Will
+// raise a |CHECK(false)| if the service manager disconnected unexpectedly,
+// because the mojo cannot work without a broker.
 COMPONENT_EXPORT(CHROMEOS_MOJO_SERVICE_MANAGER)
 bool BootstrapServiceManagerConnection();
 

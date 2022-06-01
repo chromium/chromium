@@ -19,7 +19,10 @@ namespace {
 namespace service_manager = chromeos::mojo_service_manager;
 
 base::ScopedClosureRunner CreateRealConnectionAndPassCloser() {
-  service_manager::BootstrapServiceManagerConnection();
+  CHECK(service_manager::BootstrapServiceManagerConnection())
+      << "Cannot connect to ChromeOS mojo service manager after retries. "
+         "This result in the ash don't have a mojo broker and will not be "
+         "able to bootstrap any mojo connection to other processes.";
   return base::ScopedClosureRunner{
       base::BindOnce(&service_manager::ResetServiceManagerConnection)};
 }
