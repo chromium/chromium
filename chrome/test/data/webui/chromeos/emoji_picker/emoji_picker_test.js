@@ -21,6 +21,8 @@ suite('<emoji-picker>', () => {
   let emojiPicker;
   /** @type {function(...!string): ?HTMLElement} */
   let findInEmojiPicker;
+  /** @type {function(...!string): ?HTMLElement} */
+  let findEmojiFirstButton;
 
   setup(() => {
     // Reset DOM state.
@@ -32,6 +34,14 @@ suite('<emoji-picker>', () => {
     emojiPicker.emojiDataUrl = '/emoji_test_ordering';
 
     findInEmojiPicker = (...path) => deepQuerySelector(emojiPicker, path);
+
+    findEmojiFirstButton = (...path) => {
+      const emojiElement = deepQuerySelector(emojiPicker, path);
+      if (emojiElement) {
+          return emojiElement.firstEmojiButton();
+      }
+      return null;
+    };
 
     // Wait until emoji data is loaded before executing tests.
     return new Promise((resolve) => {
@@ -78,8 +88,8 @@ suite('<emoji-picker>', () => {
 
     // wait so emoji-groups render and we have something to scroll to.
     await waitForCondition(
-        () => findInEmojiPicker(
-            '[data-group="2"] > emoji-group', 'emoji-button', 'button'));
+        () => findEmojiFirstButton(
+            '[data-group="2"] > emoji-group'));
     thirdButton.click();
 
     // wait while waiting for scroll to happen and update buttons.
@@ -108,15 +118,14 @@ suite('<emoji-picker>', () => {
             new Promise((resolve) => resolve({incognito: false}));
         // yield to allow emoji-group and emoji buttons to render.
         const emojiButton = await waitForCondition(
-            () => findInEmojiPicker(
-                '[data-group="0"] > emoji-group', 'emoji-button', 'button'));
+            () => findEmojiFirstButton(
+                '[data-group="0"] > emoji-group'));
         emojiButton.click();
 
         // wait until emoji exists in recently used section.
         const recentlyUsed = await waitForCondition(
-            () => findInEmojiPicker(
-                '[data-group=history] > emoji-group', 'emoji-button',
-                'button'));
+            () => findEmojiFirstButton(
+                '[data-group=history] > emoji-group'));
 
         // check text is correct.
         const recentText = recentlyUsed.innerText;
@@ -132,15 +141,14 @@ suite('<emoji-picker>', () => {
             new Promise((resolve) => resolve({incognito: false}));
         // yield to allow emoji-group and emoji buttons to render.
         const emojiButton = await waitForCondition(
-            () => findInEmojiPicker(
-                '[data-group="0"] > emoji-group', 'emoji-button', 'button'));
+            () => findEmojiFirstButton(
+                '[data-group="0"] > emoji-group'));
         emojiButton.click();
 
         // wait until emoji exists in recently used section.
         const recentlyUsed = await waitForCondition(
-            () => findInEmojiPicker(
-                '[data-group=history] > emoji-group', 'emoji-button',
-                'button'));
+            () => findEmojiFirstButton(
+                '[data-group=history] > emoji-group'));
 
         // check text is correct.
         await (waitForCondition(async () => {
@@ -155,17 +163,15 @@ suite('<emoji-picker>', () => {
     // yield to allow emoji-group and emoji buttons to render.
     const emojiButton = (await waitForCondition(
                              () => findInEmojiPicker(
-                                 '[data-group="0"] > emoji-group',
-                                 'emoji-button:nth-child(3)')))
-                            .shadowRoot.querySelector('button');
+                               '[data-group="0"] > emoji-group',
+                               'button[data-index="2"]')));
     emojiButton.click();
 
     // wait until emoji exists in recently used section.
     const recentlyUsed =
         (await waitForCondition(
-             () => findInEmojiPicker(
-                 '[data-group=history] > emoji-group', 'emoji-button')))
-            .shadowRoot.querySelector('button');
+             () => findEmojiFirstButton(
+                 '[data-group=history] > emoji-group')));
 
     // check variants class is applied
     assertTrue(recentlyUsed.classList.contains('has-variants'));
@@ -180,16 +186,14 @@ suite('<emoji-picker>', () => {
         const emojiButton = (await waitForCondition(
                                  () => findInEmojiPicker(
                                      '[data-group="0"] > emoji-group',
-                                     'emoji-button:nth-child(2)')))
-                                .shadowRoot.querySelector('button');
+                                     'button[data-index="0"]')));
         emojiButton.click();
 
         // wait until emoji exists in recently used section.
         const recentlyUsed =
             (await waitForCondition(
-                 () => findInEmojiPicker(
-                     '[data-group=history] > emoji-group', 'emoji-button')))
-                .shadowRoot.querySelector('button');
+                 () => findEmojiFirstButton(
+                     '[data-group=history] > emoji-group')));
 
         // check variants class is not applied
         assertFalse(recentlyUsed.classList.contains('has-variants'));
@@ -202,8 +206,7 @@ suite('<emoji-picker>', () => {
             new Promise((resolve) => resolve({incognito: true}));
         // yield to allow emoji-group and emoji buttons to render.
         const emojiButton = await waitForCondition(
-            () => findInEmojiPicker(
-                '[data-group="0"] > emoji-group', 'emoji-button', 'button'));
+            () => findEmojiFirstButton('[data-group="0"] > emoji-group'));
         emojiButton.click();
 
         // Wait to ensure recents has a chance to render if we have a bug.
@@ -222,16 +225,14 @@ suite('<emoji-picker>', () => {
     const emojiButton = (await waitForCondition(
                              () => findInEmojiPicker(
                                  '[data-group="0"] > emoji-group',
-                                 'emoji-button:nth-child(2)')))
-                            .shadowRoot.querySelector('button');
+                                 'button[data-index="1"]')));
     emojiButton.click();
 
     // wait until emoji exists in recently used section.
     const recentlyUsed =
         (await waitForCondition(
-             () => findInEmojiPicker(
-                 '[data-group=history] > emoji-group', 'emoji-button')))
-            .shadowRoot.querySelector('button');
+             () => findEmojiFirstButton(
+               '[data-group=history] > emoji-group')));
 
     // click show clear button
     findInEmojiPicker('.group', '#show-clear').click();
@@ -263,9 +264,7 @@ suite('<emoji-picker>', () => {
       firstEmojiButton = (await waitForCondition(
                               () => findInEmojiPicker(
                                   '[data-group="0"] > emoji-group',
-                                  'emoji-button:nth-child(3)')))
-                             .shadowRoot;
-
+                                  '.emoji-button-container:nth-child(3)')));
 
       // right click and wait for variants to appear.
       const variantsPromise = waitForEvent(emojiPicker, EMOJI_VARIANTS_SHOWN);
@@ -299,8 +298,8 @@ suite('<emoji-picker>', () => {
       const emojiButton2 = await waitForCondition(
           () =>
               findInEmojiPicker(
-                  '[data-group="0"] > emoji-group', 'emoji-button:nth-child(4)')
-                  .shadowRoot);
+                '[data-group="0"] > emoji-group',
+                '.emoji-button-container:nth-child(4)'));
 
       // right click on second emoji button
       dispatchMouseEvent(emojiButton2.querySelector('button'), 2);
@@ -327,8 +326,8 @@ suite('<emoji-picker>', () => {
       const coupleEmojiButton = await waitForCondition(
           () =>
               findInEmojiPicker(
-                  '[data-group="0"] > emoji-group', 'emoji-button:nth-child(5)')
-                  .shadowRoot);
+                  '[data-group="0"] > emoji-group',
+                  '.emoji-button-container:nth-child(5)'));
 
       // listen for emoji variants event.
       const variantsPromise = waitForEvent(emojiPicker, EMOJI_VARIANTS_SHOWN);

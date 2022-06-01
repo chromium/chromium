@@ -10,7 +10,7 @@ import './text_group_button.js';
 import 'chrome://resources/cr_elements/cr_icons_css.m.js';
 import {afterNextRender, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import * as constants from './constants.js';
-import {EmojiButton} from './emoji_button.js';
+import {EmojiGroupComponent} from './emoji_group.js';
 import {Feature} from './emoji_picker.mojom-webui.js';
 import {EmojiPickerApiProxy, EmojiPickerApiProxyImpl} from './emoji_picker_api_proxy.js';
 import * as events from './events.js';
@@ -115,7 +115,7 @@ export class EmojiPicker extends PolymerElement {
     /** @private {?number} */
     this.groupButtonScrollTimeout = null;
 
-    /** @private {?EmojiButton} */
+    /** @private {?EmojiGroupComponent} */
     this.activeVariant = null;
 
     /** @private {!EmojiPickerApiProxy} */
@@ -639,7 +639,7 @@ export class EmojiPicker extends PolymerElement {
 
   hideEmojiVariants() {
     if (this.activeVariant) {
-      this.activeVariant.variantsVisible = false;
+      this.activeVariant.hideEmojiVariants();
       this.activeVariant = null;
     }
   }
@@ -704,10 +704,19 @@ export class EmojiPicker extends PolymerElement {
    * @param {!events.EmojiVariantsShownEvent} ev
    */
   onShowEmojiVariants(ev) {
-    this.hideEmojiVariants();
-    this.activeVariant = /** @type {EmojiButton} */ (ev.detail.button);
-    if (this.activeVariant) {
-      this.$.message.textContent = this.activeVariant + ' variants shown.';
+
+    // Hide the currently shown emoji variants if the new one belongs
+    // to a different emoji group.
+    if (this.activeVariant && ev.detail.owner !== this.activeVariant) {
+      this.hideEmojiVariants();
+    }
+
+    this.activeVariant =
+        /** @type {EmojiGroupComponent} */ (ev.detail.owner);
+
+    // Updates the UI if a variant is shown.
+    if (ev.detail.variants) {
+      this.$.message.textContent = ev.detail.baseEmoji + ' variants shown.';
       this.positionEmojiVariants(ev.detail.variants);
     }
   }

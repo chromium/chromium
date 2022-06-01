@@ -59,12 +59,12 @@ suite('emoji-search', () => {
         emojiSearch.search = 'face';
         flush();
         const emojiResults = findInEmojiPicker('emoji-search', 'emoji-group')
-                                 .shadowRoot.querySelectorAll('emoji-button');
+                                 .shadowRoot.querySelectorAll('.emoji-button');
         assertGT(emojiResults.length, 0);
         const emoticonResults =
           findInEmojiPicker(
             'emoji-search', 'emoji-group[category="emoticon"]')
-              .shadowRoot.querySelectorAll('emoji-button');
+              .shadowRoot.querySelectorAll('.emoji-button');
         assertGT(emoticonResults.length, 0);
       });
 

@@ -25,7 +25,7 @@
     justify-items: center;
   }
 
-  :host(:not([use-flex-layout])) emoji-button {
+  :host(:not([use-flex-layout])) {
     --emoji-button-button-style: {
       background: var(--emoji-background);
       border: none;
@@ -53,7 +53,7 @@
     gap: 12px 20px;
   }
 
-  :host([use-flex-layout]) emoji-button {
+  :host([use-flex-layout]) {
     --emoji-button-button-style: {
       background: var(--emoji-background);
       border: none;
@@ -137,12 +137,88 @@
      * border.*/
     padding: 7px 11px 7px 11px;
   }
+
   #clear-recents-hover:hover {
     background-color: var(--cros-button-background-color-secondary-hover);
     border: 2px solid var(--cros-button-background-color-secondary-hover);
   }
+
+  .emoji-button-container {
+    --emoji-background: transparent;
+    /* Fixed height and width are required for buttons that have variants,
+     * Otherwise, when showing variants, buttons' positions will be moved.
+     */
+    height: var(--emoji-button-height);
+    position: relative;
+    width: var(--emoji-button-width);
+  }
+
+  .emoji-button {
+    /* TODO(b/233130994): Remove this CSS mixin and use classes instead. */
+    @apply --emoji-button-button-style;
+  }
+
+  .emoji-button:focus,
+  .emoji-button:active {
+    outline-color: var(--cros-focus-ring-color);
+    outline-style: solid;
+    outline-width: 2px;
+  }
+
+  .emoji-button:disabled {
+    /* chrome makes disabled buttons semitransparent.
+     * we set a solid colour here to prevent that
+     * (exactly which colour is not important).
+     */
+    color: red;
+    cursor: default;
+  }
+
+  .emoji-button:hover {
+    background-color: var(--emoji-hover-background);
+  }
+
+  /* Implement has-variants as ::after so that it still works with hover
+   * ripple.
+   */
+  .has-variants::after {
+    /* 4px grey triangle in bottom-right.
+     * 315 degrees means starting at bottom-right towards top-left.
+     * Manual color here because there isn't something easy to use, but fine
+     * for dark mode since dark mode is the same.
+     */
+    background: linear-gradient(
+        315deg, var(--google-grey-500) 4px,
+        var(--emoji-background) 4px, var(--emoji-background));
+    content: '';
+    display: block;
+    height: var(--emoji-size);
+    position: relative;
+    top: calc(0px - var(--emoji-size));
+    width: var(--emoji-size);
+  }
+
+  paper-tooltip {
+    --paper-tooltip-background: var(--cros-tooltip-background-color);
+    --paper-tooltip-delay-in: var(--emoji-tooltip-delay-in);
+    --paper-tooltip-delay-out: var(--emoji-tooltip-delay-out);
+    --paper-tooltip-duration-in: 0;
+    --paper-tooltip-duration-out: 0;
+    --paper-tooltip-opacity: 1;
+    --paper-tooltip-text-color: var(--cros-tooltip-label-color);
+  }
+
+  paper-tooltip::part(tooltip) {
+    box-shadow: var(--cr-elevation-1);
+    font-family: 'Roboto', sans-serif;
+    font-size: 12px;
+    margin: 4px;
+    padding: 4px 8px 4px 8px;
+    white-space: nowrap;
+  }
 </style>
 
+<!-- Add header section. -->
 <template is="dom-if" if="[[group]]">
   <div id="heading" role="heading" aria-level="2" tabindex="-1">
     <div id="heading-left">[[group]]</div>
@@ -160,13 +236,32 @@
     </div>
   </button>
 </template>
-<div id="emoji">
+
+<!-- Add emoji buttons.
+  Note that the click and context menu listeners are shared among all the
+  elements to improve efficiency and performance.
+  -->
+<div id="emoji" on-click="onEmojiClick" on-contextmenu="onEmojiContextMenu">
   <div id="fake-focus-target" tabindex="-1"></div>
   <template is="dom-repeat" items="[[data]]">
-    <!-- TODO(b/233130994): Replace emoji-button with button. -->
-    <emoji-button emoji="[[getDisplayEmojiForEmoji(item.base.string)]]"
-      variants="[[item.alternates]]" category="[[category]]"
-      tooltip="[[getTooltipForEmoji(item.base)]]">
-    </emoji-button>
+    <div class="emoji-button-container">
+      <button id="[[getEmojiButtonId(index)]]" data-index$="[[index]]"
+        class$="[[getEmojiButtonClassName(item)]]"
+        aria-label="[[getEmojiAriaLabel(item)]]">
+        [[getDisplayEmojiForEmoji(item.base.string)]]
+      </button>
+      <paper-tooltip for="[[getEmojiButtonId(index)]]"
+        fit-to-visible-bounds offset="8">
+        [[item.base.name]]
+      </paper-tooltip>
+      <template is="dom-if"
+        if="[[isEmojiVariantVisible(index,shownEmojiVariantIndex)]]">
+        <emoji-variants
+          id="[[getEmojiVariantId(index)]]"
+          variants="[[item.alternates]]"
+          tooltip="[[item.base.name]]">
+        </emoji-variants>
+      </template>
+    </div>
   </template>
 </div>

@@ -136,7 +136,7 @@ suite('emoji-picker-extension', () => {
               emojiPicker.emoticonData[idx].emoji.length;
           await waitForCondition(
               () => expectedNumberOfEmoticons ===
-                  group.shadowRoot.querySelectorAll('emoji-button').length);
+                  group.shadowRoot.querySelectorAll('.emoji-button').length);
         }
       });
 
@@ -224,7 +224,7 @@ suite('emoji-picker-extension', () => {
 
         const recentlyUsedEmoticons =
             findInEmojiPicker(emoticonHistoryGroupSelector
-                ).shadowRoot.querySelectorAll('emoji-button');
+                ).shadowRoot.querySelectorAll('.emoji-button');
         assertEquals(1, recentlyUsedEmoticons.length);
       });
 
