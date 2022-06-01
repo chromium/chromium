@@ -31,6 +31,7 @@ goog.require('Msgs');
 goog.require('NavBraille');
 goog.require('Output');
 goog.require('OutputEventType');
+goog.require('PanelBridge');
 goog.require('PanelCommand');
 goog.require('PanelCommandType');
 goog.require('PanelNodeMenuData');
