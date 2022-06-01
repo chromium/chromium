@@ -595,6 +595,6 @@ ci.builder(
     goma_backend = goma.backend.RBE_PROD,
     sheriff_rotations = args.ignore_default(sheriff_rotations.IOS),
     cores = None,
-    os = os.MAC_11,
+    os = os.MAC_12,
     xcode = xcode.x13main,
 )

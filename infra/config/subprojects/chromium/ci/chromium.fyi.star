@@ -1042,7 +1042,7 @@ fyi_mac_builder(
     # same with mac-arm64-on-arm64-rel
     cores = None,  # crbug.com/1245114
     cpu = cpu.ARM64,
-    os = os.MAC_11,
+    os = os.MAC_12,
     console_view_entry = consoles.console_view_entry(
         category = "mac",
         short_name = "re",
@@ -1383,7 +1383,7 @@ fyi_ios_builder(
         category = "cronet",
         short_name = "m1",
     ),
-    os = os.MAC_11,
+    os = os.MAC_12,
     cpu = cpu.ARM64,
     schedule = "0 1,5,9,13,17,21 * * *",
 )
@@ -1415,7 +1415,7 @@ fyi_ios_builder(
             short_name = "ios15",
         ),
     ],
-    os = os.MAC_11,
+    os = os.MAC_12,
 )
 
 fyi_ios_builder(
