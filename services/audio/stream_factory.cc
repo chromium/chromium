@@ -25,9 +25,8 @@
 
 namespace audio {
 
-#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
 namespace {
-
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
 std::unique_ptr<OutputDeviceMixerManager> MaybeCreateOutputDeviceMixerManager(
     media::AudioManager* audio_manager) {
   if (!media::IsChromeWideEchoCancellationEnabled())
@@ -36,9 +35,15 @@ std::unique_ptr<OutputDeviceMixerManager> MaybeCreateOutputDeviceMixerManager(
   return std::make_unique<OutputDeviceMixerManager>(
       audio_manager, base::BindRepeating(&OutputDeviceMixer::Create));
 }
-
-}  // namespace
 #endif  // BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+
+// Ideally, this would be based on the incoming audio's buffer durations.
+// However, we might deal with multiple streams, with multiple buffer durations.
+// Using a 10ms constant instead is acceptable (and better than the default)
+// since there are no super-strict realtime requirements (no system audio calls
+// waiting on these threads).
+constexpr base::TimeDelta kReatimeThreadPeriod = base::Milliseconds(10);
+}  // namespace
 
 StreamFactory::StreamFactory(media::AudioManager* audio_manager,
                              AecdumpRecordingManager* aecdump_recording_manager)
@@ -48,7 +53,7 @@ StreamFactory::StreamFactory(media::AudioManager* audio_manager,
       output_device_mixer_manager_(
           MaybeCreateOutputDeviceMixerManager(audio_manager)),
 #endif
-      loopback_worker_thread_("Loopback Worker") {
+      loopback_worker_thread_("Loopback Worker", kReatimeThreadPeriod) {
 }
 
 StreamFactory::~StreamFactory() {

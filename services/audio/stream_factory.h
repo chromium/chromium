@@ -15,7 +15,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/threading/thread.h"
 #include "media/media_buildflags.h"
 #include "media/mojo/mojom/audio_logging.mojom.h"
 #include "media/mojo/mojom/audio_output_stream.mojom.h"
@@ -24,6 +23,7 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/audio/concurrent_stream_metric_reporter.h"
 #include "services/audio/loopback_coordinator.h"
+#include "services/audio/realtime_audio_thread.h"
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
 #include "services/audio/output_device_mixer_manager.h"
@@ -131,7 +131,7 @@ class StreamFactory final : public media::mojom::AudioStreamFactory {
 #endif
   LoopbackCoordinator coordinator_;
   std::vector<std::unique_ptr<LocalMuter>> muters_;
-  base::Thread loopback_worker_thread_;
+  RealtimeAudioThread loopback_worker_thread_;
   std::vector<std::unique_ptr<LoopbackStream>> loopback_streams_;
   InputStreamSet input_streams_;
   OutputStreamSet output_streams_;

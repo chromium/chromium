@@ -13,7 +13,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
@@ -21,12 +20,20 @@
 #include "media/audio/audio_manager.h"
 #include "media/audio/audio_thread.h"
 #include "media/audio/audio_thread_hang_monitor.h"
+#include "services/audio/realtime_audio_thread.h"
 
 using HangAction = media::AudioThreadHangMonitor::HangAction;
 
 namespace audio {
 
 namespace {
+
+// Ideally, this would be based on the incoming audio's buffer durations.
+// However, we might deal with multiple streams, with multiple buffer durations.
+// Using a 10ms constant instead is acceptable (and better than the default)
+// since there are no super-strict realtime requirements (no system audio calls
+// waiting on these threads).
+constexpr base::TimeDelta kReatimeThreadPeriod = base::Milliseconds(10);
 
 absl::optional<base::TimeDelta> GetAudioThreadHangDeadline() {
   if (!base::FeatureList::IsEnabled(
@@ -75,7 +82,7 @@ class MainThread final : public media::AudioThread {
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   // This is not started until the first time GetWorkerTaskRunner() is called.
-  base::Thread worker_thread_;
+  RealtimeAudioThread worker_thread_;
   scoped_refptr<base::SingleThreadTaskRunner> worker_task_runner_;
 
   media::AudioThreadHangMonitor::Ptr hang_monitor_;
@@ -83,7 +90,7 @@ class MainThread final : public media::AudioThread {
 
 MainThread::MainThread()
     : task_runner_(base::ThreadTaskRunnerHandle::Get()),
-      worker_thread_("AudioWorkerThread"),
+      worker_thread_("AudioWorkerThread", kReatimeThreadPeriod),
       hang_monitor_(media::AudioThreadHangMonitor::Create(
           GetAudioThreadHangAction(),
           GetAudioThreadHangDeadline(),
