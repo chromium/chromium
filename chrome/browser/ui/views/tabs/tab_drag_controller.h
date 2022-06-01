@@ -491,15 +491,15 @@ class TabDragController : public views::WidgetObserver {
       views::Widget* widget,
       const gfx::Point& point_in_screen);
 
-  // Calculates scaled |drag_bounds| for dragged tabs and sets the tabs bounds.
+  // Calculates scaled `drag_bounds` for dragged tabs and sets the tabs bounds.
   // Layout of the tabstrip is performed and a new tabstrip width calculated.
-  // When |last_tabstrip_width| is larger than the new tabstrip width the tabs
-  // in the attached tabstrip are scaled and the attached browser is positioned
-  // such that the tab that was dragged remains under the |point_in_screen|.
-  // |drag_offset| is the offset of |point_in_screen| from the origin of the
-  // dragging browser window, and will be updated when this method ends up with
-  // changing the origin of the attached browser window.
-  void AdjustBrowserAndTabBoundsForDrag(int last_tabstrip_width,
+  // When `previous_tab_area_width` is larger than the new tab area width the
+  // tabs in the attached tabstrip are scaled and repositioned and the attached
+  // browser is positioned such that the tab that was dragged remains under the
+  // `point_in_screen`. `drag_offset` is the offset of `point_in_screen` from
+  // the origin of the dragging browser window, and will be updated when this
+  // method ends up with changing the origin of the attached browser window.
+  void AdjustBrowserAndTabBoundsForDrag(int previous_tab_area_width,
                                         const gfx::Point& point_in_screen,
                                         gfx::Vector2d* drag_offset,
                                         std::vector<gfx::Rect>* drag_bounds);

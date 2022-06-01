@@ -640,7 +640,8 @@ void TabDragController::Drag(const gfx::Point& point_in_screen) {
         did_restore_window_ = true;
         // When all tabs in a maximized browser are dragged the browser gets
         // restored during the drag and maximized back when the drag ends.
-        const int tab_area_width = attached_context_->GetTabDragAreaWidth();
+        const int previous_tab_area_width =
+            attached_context_->GetTabDragAreaWidth();
         std::vector<gfx::Rect> drag_bounds =
             attached_context_->CalculateBoundsForDraggedViews(attached_views_);
         OffsetX(GetAttachedDragPoint(point_in_screen).x(), &drag_bounds);
@@ -653,8 +654,9 @@ void TabDragController::Drag(const gfx::Point& point_in_screen) {
         widget->Restore();
         widget->SetBounds(new_bounds);
         drag_offset = GetWindowOffset(point_in_screen);
-        AdjustBrowserAndTabBoundsForDrag(tab_area_width, point_in_screen,
-                                         &drag_offset, &drag_bounds);
+        AdjustBrowserAndTabBoundsForDrag(previous_tab_area_width,
+                                         point_in_screen, &drag_offset,
+                                         &drag_bounds);
         widget->SetVisibilityChangedAnimationsEnabled(true);
       } else {
         new_bounds =
@@ -1477,7 +1479,7 @@ void TabDragController::DetachIntoNewBrowserAndRunMoveLoop(
     return;
   }
 
-  const int tab_area_width = attached_context_->GetTabDragAreaWidth();
+  const int previous_tab_area_width = attached_context_->GetTabDragAreaWidth();
   std::vector<gfx::Rect> drag_bounds =
       attached_context_->CalculateBoundsForDraggedViews(attached_views_);
   OffsetX(GetAttachedDragPoint(point_in_screen).x(), &drag_bounds);
@@ -1517,7 +1519,7 @@ void TabDragController::DetachIntoNewBrowserAndRunMoveLoop(
   DetachAndAttachToNewContext(
       release_capture, dragged_browser_view->tabstrip()->GetDragContext(),
       gfx::Point());
-  AdjustBrowserAndTabBoundsForDrag(tab_area_width, point_in_screen,
+  AdjustBrowserAndTabBoundsForDrag(previous_tab_area_width, point_in_screen,
                                    &drag_offset, &drag_bounds);
   browser->window()->Show();
   dragged_widget->SetVisibilityChangedAnimationsEnabled(true);
@@ -2226,51 +2228,54 @@ gfx::Rect TabDragController::CalculateNonMaximizedDraggedBrowserBounds(
 }
 
 void TabDragController::AdjustBrowserAndTabBoundsForDrag(
-    int tab_area_width,
+    int previous_tab_area_width,
     const gfx::Point& point_in_screen,
     gfx::Vector2d* drag_offset,
     std::vector<gfx::Rect>* drag_bounds) {
   attached_context_->ForceLayout();
-  const int dragged_context_width = attached_context_->GetTabDragAreaWidth();
+  const int current_tab_area_width = attached_context_->GetTabDragAreaWidth();
 
-  // If the new tabstrip region is smaller than the old, resize the tabs.
-  if (dragged_context_width < tab_area_width) {
+  // If the new tabstrip region is smaller than the old, resize and reposition
+  // the tabs to provide a sense of continuity.
+  if (current_tab_area_width < previous_tab_area_width) {
     // TODO(https://crbug.com/1324577): Fix the case where the source window
     // spans two monitors horizontally, and IsRTL is true.
+
+    // `leading_ratio` is the proportion of the previous tab area width which is
+    // ahead of the first dragged tab's previous position.
     const float leading_ratio =
-        drag_bounds->front().x() / static_cast<float>(tab_area_width);
+        drag_bounds->front().x() / static_cast<float>(previous_tab_area_width);
     *drag_bounds =
         attached_context_->CalculateBoundsForDraggedViews(attached_views_);
 
-    if (drag_bounds->back().right() < dragged_context_width) {
-      const int delta_x = std::min(
-          static_cast<int>(leading_ratio * dragged_context_width),
-          dragged_context_width -
-              (drag_bounds->back().right() - drag_bounds->front().x()));
-      OffsetX(delta_x, drag_bounds);
+    // If the tabs can fit within the new tab area with room to spare, align
+    // them within it so the leading tab is in the same position as it was in
+    // the previous tab area, proportionally speaking.
+    if (drag_bounds->back().right() < current_tab_area_width) {
+      // The tabs must stay within the tabstrip.
+      const int maximum_tab_x =
+          current_tab_area_width -
+          (drag_bounds->back().right() - drag_bounds->front().x());
+      const int leading_tab_x =
+          std::min(static_cast<int>(leading_ratio * current_tab_area_width),
+                   maximum_tab_x);
+      OffsetX(leading_tab_x, drag_bounds);
     }
 
     // Reposition the restored window such that the tab that was dragged remains
     // under the mouse cursor.
-    gfx::Rect tab_bounds = (*drag_bounds)[source_view_index_];
-    int tab_bounds_x = tab_bounds.x();
-    if (source_context_) {
-      tab_bounds_x =
-          source_context_->AsView()->GetMirroredXInView(tab_bounds.x());
-    }
-    // `source_context_` can be null, e.g., if you drag the only tab in a window
-    // into another window's tab strip and then back out, in one continuous
-    // drag.
-    if (!source_context_ && base::i18n::IsRTL())
-      tab_bounds_x = tab_area_width - tab_bounds.x();
+    gfx::Rect source_tab_bounds = (*drag_bounds)[source_view_index_];
 
-    int tab_width_offset =
-        base::ClampRound(tab_bounds.width() * offset_to_width_ratio_);
-    gfx::Point offset(
-        base::i18n::IsRTL() ? tab_bounds_x : tab_bounds_x + tab_width_offset,
+    int cursor_offset_within_tab =
+        base::ClampRound(source_tab_bounds.width() * offset_to_width_ratio_);
+    gfx::Point cursor_offset_in_widget(
+        attached_context_->AsView()->GetMirroredXInView(
+            source_tab_bounds.x() + cursor_offset_within_tab),
         0);
+    attached_context_->AsView()->ConvertPointToWidget(
+        attached_context_->AsView(), &cursor_offset_in_widget);
     gfx::Rect bounds = GetAttachedBrowserWidget()->GetWindowBoundsInScreen();
-    bounds.set_x(point_in_screen.x() - offset.x());
+    bounds.set_x(point_in_screen.x() - cursor_offset_in_widget.x());
     GetAttachedBrowserWidget()->SetBounds(bounds);
     *drag_offset = point_in_screen - bounds.origin();
   }
