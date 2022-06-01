@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/views/location_bar/permission_chip.h"
 #include "chrome/browser/ui/views/permission_bubble/permission_prompt_bubble_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_request_manager.h"
@@ -43,8 +44,19 @@ bool IsFullScreenMode(content::WebContents* web_contents, Browser* browser) {
   return !location_bar || !location_bar->IsDrawn();
 }
 
-bool IsLocationBarEditingOrEmpty(Browser* browser) {
+// A permission request should be auto-ignored if a user interacts with the
+// LocationBar. The only exception is the NTP page where the user needs to press
+// on a microphone icon to get a permission request.
+bool ShouldIgnorePermissionRequest(content::WebContents* web_contents,
+                                   Browser* browser) {
+  DCHECK(web_contents);
   DCHECK(browser);
+
+  // In case of the NTP, `WebContents::GetVisibleURL()` is equal to
+  // `chrome://newtab/`, but the `LocationBarView` will be empty.
+  if (web_contents->GetVisibleURL() == GURL(chrome::kChromeUINewTabURL)) {
+    return false;
+  }
 
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
   if (!browser_view)
@@ -106,7 +118,7 @@ std::unique_ptr<permissions::PermissionPrompt> CreatePermissionPrompt(
   }
 
   // Auto-ignore the permission request if a user is typing into location bar.
-  if (IsLocationBarEditingOrEmpty(browser)) {
+  if (ShouldIgnorePermissionRequest(web_contents, browser)) {
     return nullptr;
   }
 

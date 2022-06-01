@@ -22,6 +22,7 @@
 #include "components/embedder_support/switches.h"
 #include "components/permissions/permissions_client.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
+#include "components/permissions/test/permission_request_observer.h"
 #include "content/public/browser/disallow_activation_reason.h"
 #include "content/public/browser/notification_types.h"
 #include "content/public/browser/permission_controller.h"
@@ -957,9 +958,8 @@ IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
   content::WebContents::FromRenderFrameHost(main_rfh)->Focus();
 
   ASSERT_TRUE(main_rfh);
-  EXPECT_EQ(
-      GURL(chrome::kChromeUINewTabURL),
-      embedder_contents->GetLastCommittedURL().DeprecatedGetOriginAsURL());
+  EXPECT_EQ(GURL(chrome::kChromeUINewTabURL),
+            embedder_contents->GetLastCommittedURL());
   EXPECT_EQ(GURL(chrome::kChromeUINewTabPageURL),
             main_rfh->GetLastCommittedOrigin().GetURL());
 
@@ -999,9 +999,8 @@ IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
   content::WebContents::FromRenderFrameHost(main_rfh)->Focus();
 
   ASSERT_TRUE(main_rfh);
-  EXPECT_EQ(
-      GURL(chrome::kChromeUINewTabURL),
-      embedder_contents->GetLastCommittedURL().DeprecatedGetOriginAsURL());
+  EXPECT_EQ(GURL(chrome::kChromeUINewTabURL),
+            embedder_contents->GetLastCommittedURL());
   EXPECT_EQ(GURL(chrome::kChromeUINewTabPageURL),
             main_rfh->GetLastCommittedOrigin().GetURL());
 
@@ -1039,6 +1038,52 @@ IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
   // Media stream origin on NTP should equal to DSE.
   EXPECT_EQ(page_content_settings->media_stream_access_origin(),
             GURL("https://www.google.com"));
+}
+
+// Test that a permission prompt bubble will be shown on NTP despite the empty
+// address bar.
+IN_PROC_BROWSER_TEST_F(PermissionsSecurityModelInteractiveUITest,
+                       PermissionRequestOnNtpIsNotAutoIgnored) {
+  content::WebContents* embedder_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(embedder_contents);
+
+  content::RenderFrameHost* main_rfh =
+      ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
+          browser(), GURL(chrome::kChromeUINewTabURL), 1);
+  content::WebContents::FromRenderFrameHost(main_rfh)->Focus();
+
+  ASSERT_TRUE(main_rfh);
+  EXPECT_EQ(GURL(chrome::kChromeUINewTabURL),
+            embedder_contents->GetLastCommittedURL());
+  EXPECT_EQ(GURL(chrome::kChromeUINewTabPageURL),
+            main_rfh->GetLastCommittedOrigin().GetURL());
+
+  EXPECT_FALSE(content::EvalJs(main_rfh, kCheckMicrophone,
+                               content::EXECUTE_SCRIPT_DEFAULT_OPTIONS, 1)
+                   .value.GetBool());
+
+  auto* manager =
+      permissions::PermissionRequestManager::FromWebContents(embedder_contents);
+  permissions::PermissionRequestObserver observer(embedder_contents);
+
+  EXPECT_FALSE(manager->IsRequestInProgress());
+
+  EXPECT_TRUE(content::ExecJs(
+      main_rfh, kRequestMicrophone,
+      content::EvalJsOptions::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
+
+  // Wait until a permission request is shown.
+  observer.Wait();
+
+  EXPECT_TRUE(manager->IsRequestInProgress());
+  EXPECT_TRUE(observer.request_shown());
+
+  manager->Accept();
+
+  EXPECT_TRUE(content::EvalJs(main_rfh, kCheckMicrophone,
+                              content::EXECUTE_SCRIPT_DEFAULT_OPTIONS, 1)
+                  .value.GetBool());
 }
 
 class PermissionsSecurityModelHTTPS
