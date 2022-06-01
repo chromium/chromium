@@ -66,8 +66,7 @@ class SingleClientWebAppsSyncTest : public WebAppsSyncTestBase {
   }
 
   void AwaitWebAppQuiescence() {
-    ASSERT_TRUE(AwaitQuiescence());
-    apps_helper::AwaitWebAppQuiescence(GetAllProfiles());
+    ASSERT_TRUE(apps_helper::AwaitWebAppQuiescence(GetAllProfiles()));
     content::RunAllTasksUntilIdle();
     base::RunLoop run_loop;
     internals::GetShortcutIOTaskRunner()->PostTask(

@@ -414,6 +414,15 @@ void WebAppInstallFinalizer::SetSubsystems(
   translation_manager_ = translation_manager;
 }
 
+std::vector<AppId> WebAppInstallFinalizer::GetPendingUninstallsForTesting()
+    const {
+  std::vector<AppId> ids;
+  for (const auto& [key, _] : pending_uninstalls_) {
+    ids.push_back(key);
+  }
+  return ids;
+}
+
 void WebAppInstallFinalizer::UninstallWebAppInternal(
     const AppId& app_id,
     webapps::WebappUninstallSource uninstall_source,

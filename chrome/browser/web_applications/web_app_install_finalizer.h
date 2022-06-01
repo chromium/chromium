@@ -172,6 +172,8 @@ class WebAppInstallFinalizer {
                                   bool is_placeholder,
                                   GURL install_url);
 
+  std::vector<AppId> GetPendingUninstallsForTesting() const;
+
  private:
   using CommitCallback = base::OnceCallback<void(bool success)>;
 
