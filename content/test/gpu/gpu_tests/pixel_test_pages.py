@@ -390,16 +390,15 @@ class PixelTestPages():
       if mode == Mode.WEBGPU_SWIFTSHADER:
         base_name += '_WebGPUSwiftShader'
         webgpu_args += [
-            '--enable-features=UseSkiaRenderer,Vulkan',
-            '--use-webgpu-adapter=swiftshader'
+            '--enable-features=Vulkan', '--use-webgpu-adapter=swiftshader'
         ]
         video_frame_query_params = '?sourceType=sw_decoder'
       elif mode == Mode.VULKAN_SWIFTSHADER:
         base_name += '_VulkanSwiftShader'
         webgpu_args += [
-            '--enable-features=UseSkiaRenderer,Vulkan',
-            '--use-angle=swiftshader', '--use-vulkan=swiftshader',
-            '--use-webgpu-adapter=swiftshader', '--disable-vulkan-surface'
+            '--enable-features=Vulkan', '--use-angle=swiftshader',
+            '--use-vulkan=swiftshader', '--use-webgpu-adapter=swiftshader',
+            '--disable-vulkan-surface'
         ]
         video_frame_query_params = '?sourceType=sw_decoder'
 

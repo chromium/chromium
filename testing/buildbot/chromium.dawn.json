@@ -219,7 +219,7 @@
           "--flag-specific=webgpu",
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--no-xvfb",
-          "--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan",
+          "--additional-driver-flag=--enable-features=Vulkan",
           "--git-revision=${got_revision}"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -257,7 +257,7 @@
           "--timeout-ms=30000",
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--no-xvfb",
-          "--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan",
+          "--additional-driver-flag=--enable-features=Vulkan",
           "--git-revision=${got_revision}"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -296,7 +296,7 @@
           "--browser=release",
           "--passthrough",
           "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=UseSkiaRenderer,Vulkan",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=Vulkan",
           "--retry-limit=3"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
@@ -543,7 +543,7 @@
           "--flag-specific=webgpu",
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--no-xvfb",
-          "--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan",
+          "--additional-driver-flag=--enable-features=Vulkan",
           "--git-revision=${got_revision}"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -581,7 +581,7 @@
           "--timeout-ms=30000",
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--no-xvfb",
-          "--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan",
+          "--additional-driver-flag=--enable-features=Vulkan",
           "--git-revision=${got_revision}"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -620,7 +620,7 @@
           "--browser=release",
           "--passthrough",
           "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=UseSkiaRenderer,Vulkan",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=Vulkan",
           "--retry-limit=3"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
@@ -656,7 +656,7 @@
           "--browser=release",
           "--passthrough",
           "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=UseSkiaRenderer,Vulkan",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=Vulkan",
           "--enable-dawn-backend-validation",
           "--retry-limit=3"
         ],
@@ -904,7 +904,7 @@
           "--flag-specific=webgpu",
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--no-xvfb",
-          "--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan",
+          "--additional-driver-flag=--enable-features=Vulkan",
           "--git-revision=${got_revision}"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -942,7 +942,7 @@
           "--timeout-ms=30000",
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--no-xvfb",
-          "--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan",
+          "--additional-driver-flag=--enable-features=Vulkan",
           "--git-revision=${got_revision}"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -981,7 +981,7 @@
           "--browser=release",
           "--passthrough",
           "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=UseSkiaRenderer,Vulkan",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=Vulkan",
           "--retry-limit=3"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
@@ -1228,7 +1228,7 @@
           "--flag-specific=webgpu",
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--no-xvfb",
-          "--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan",
+          "--additional-driver-flag=--enable-features=Vulkan",
           "--git-revision=${got_revision}"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -1266,7 +1266,7 @@
           "--timeout-ms=30000",
           "--initialize-webgpu-adapter-at-startup-timeout-ms=60000",
           "--no-xvfb",
-          "--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan",
+          "--additional-driver-flag=--enable-features=Vulkan",
           "--git-revision=${got_revision}"
         ],
         "isolate_name": "webgpu_blink_web_tests",
@@ -1305,7 +1305,7 @@
           "--browser=release",
           "--passthrough",
           "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=UseSkiaRenderer,Vulkan",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=Vulkan",
           "--retry-limit=3"
         ],
         "isolate_name": "telemetry_gpu_integration_test",
@@ -1341,7 +1341,7 @@
           "--browser=release",
           "--passthrough",
           "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=UseSkiaRenderer,Vulkan",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_high_performance_gpu --enable-features=Vulkan",
           "--enable-dawn-backend-validation",
           "--retry-limit=3"
         ],

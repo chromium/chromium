@@ -1145,7 +1145,7 @@
       ],
       'linux_args': [
         '--no-xvfb',
-        '--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan',
+        '--additional-driver-flag=--enable-features=Vulkan',
       ],
     },
     'merge': {
