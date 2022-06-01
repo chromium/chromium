@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ui/webui/chromeos/login/quick_start_screen_handler.h"
 
@@ -22,7 +22,8 @@ class QuickStartScreen : public BaseScreen {
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
 
-  QuickStartScreen(TView* view, const ScreenExitCallback& exit_callback);
+  QuickStartScreen(base::WeakPtr<TView> view,
+                   const ScreenExitCallback& exit_callback);
 
   QuickStartScreen(const QuickStartScreen&) = delete;
   QuickStartScreen& operator=(const QuickStartScreen&) = delete;
@@ -31,19 +32,16 @@ class QuickStartScreen : public BaseScreen {
 
   static std::string GetResultString(Result result);
 
-  // This method is called when the view is being destroyed.
-  void OnViewDestroyed(TView* view);
-
  private:
   // BaseScreen:
   bool MaybeSkip(WizardContext* context) override;
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserActionDeprecated(const std::string& action_id) override;
+  void OnUserAction(const base::Value::List& args) override;
 
   void SendRandomFiguresForTesting() const;
 
-  base::raw_ptr<TView> view_;
+  base::WeakPtr<TView> view_;
   ScreenExitCallback exit_callback_;
 };
 

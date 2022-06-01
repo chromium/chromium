@@ -5,41 +5,16 @@
 #include "chrome/browser/ui/webui/chromeos/login/quick_start_screen_handler.h"
 
 #include "base/values.h"
-#include "chrome/browser/ash/login/screens/quick_start_screen.h"
 
 namespace chromeos {
 
-constexpr StaticOobeScreenId QuickStartView::kScreenId;
-
 QuickStartScreenHandler::QuickStartScreenHandler()
-    : BaseScreenHandler(kScreenId) {
-  set_user_acted_method_path_deprecated("login.QuickStartScreen.userActed");
-}
+    : BaseScreenHandler(kScreenId) {}
 
-QuickStartScreenHandler::~QuickStartScreenHandler() {
-  if (screen_)
-    screen_->OnViewDestroyed(this);
-}
+QuickStartScreenHandler::~QuickStartScreenHandler() = default;
 
 void QuickStartScreenHandler::Show() {
-  if (!IsJavascriptAllowed()) {
-    show_on_init_ = true;
-    return;
-  }
-
   ShowInWebUI();
-}
-
-void QuickStartScreenHandler::Bind(QuickStartScreen* screen) {
-  screen_ = screen;
-  BaseScreenHandler::SetBaseScreenDeprecated(screen_);
-  if (IsJavascriptAllowed())
-    InitializeDeprecated();
-}
-
-void QuickStartScreenHandler::Unbind() {
-  screen_ = nullptr;
-  BaseScreenHandler::SetBaseScreenDeprecated(nullptr);
 }
 
 std::vector<base::Value> ToValue(const ash::quick_start::ShapeList& list) {
@@ -56,14 +31,7 @@ std::vector<base::Value> ToValue(const ash::quick_start::ShapeList& list) {
 
 void QuickStartScreenHandler::SetShapes(
     const ash::quick_start::ShapeList& shape_list) {
-  CallJS("login.QuickStartScreen.setFigures", base::Value(ToValue(shape_list)));
-}
-
-void QuickStartScreenHandler::InitializeDeprecated() {
-  if (show_on_init_) {
-    Show();
-    show_on_init_ = false;
-  }
+  CallExternalAPI("setFigures", base::Value(ToValue(shape_list)));
 }
 
 void QuickStartScreenHandler::DeclareLocalizedValues(

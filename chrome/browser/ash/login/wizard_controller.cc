@@ -551,7 +551,7 @@ WizardController::CreateScreens() {
 
     if (ash::features::IsOobeQuickStartEnabled()) {
       append(std::make_unique<QuickStartScreen>(
-          oobe_ui->GetView<QuickStartScreenHandler>(),
+          oobe_ui->GetView<QuickStartScreenHandler>()->AsWeakPtr(),
           base::BindRepeating(&WizardController::OnQuickStartScreenExit,
                               weak_factory_.GetWeakPtr())));
     }
