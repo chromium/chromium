@@ -3901,7 +3901,6 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, Metrics) {
   constexpr int k1_7 = 8;
   histograms.ExpectUniqueSample("PDF.FormType", kAcroForm, 1);
   histograms.ExpectUniqueSample("PDF.Version", k1_7, 1);
-  histograms.ExpectUniqueSample("PDF.IsTagged", 0, 1);
   histograms.ExpectUniqueSample("PDF.HasAttachment", 0, 1);
 
   // Custom histograms.

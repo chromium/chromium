@@ -64,10 +64,6 @@ struct DocumentMetadata {
   // Attachment Annotations" of the ISO 32000-1:2008 spec).
   bool has_attachments = false;
 
-  // Whether the document is tagged (see section 14.8 "Tagged PDF" of the ISO
-  // 32000-1:2008 spec).
-  bool tagged = false;
-
   // The type of form contained in the document.
   FormType form_type = FormType::kNone;
 

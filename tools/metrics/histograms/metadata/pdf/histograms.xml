@@ -68,15 +68,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PDF.IsTagged" enum="BooleanIsTagged"
-    expires_after="2022-04-17">
-  <owner>nektar@chromium.org</owner>
-  <owner>thestig@chromium.org</owner>
-  <summary>
-    Tracks documents opened in the PDF viewer that are Tagged PDFs.
-  </summary>
-</histogram>
-
 <histogram name="PDF.LinkHighlightOverlapsInPage" units="overlaps"
     expires_after="2022-04-24">
   <obsolete>

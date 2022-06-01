@@ -1171,7 +1171,6 @@ class PdfViewWebPluginWithDocInfoTest : public PdfViewWebPluginTest {
       metadata().page_count = 13u;
       metadata().linearized = true;
       metadata().has_attachments = true;
-      metadata().tagged = true;
       metadata().form_type = FormType::kAcroForm;
       metadata().title = "Title";
       metadata().author = "Author";
