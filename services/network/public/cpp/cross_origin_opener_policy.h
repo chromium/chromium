@@ -43,8 +43,7 @@ const char* CoopAccessReportTypeToString(mojom::CoopAccessReportType type);
 
 COMPONENT_EXPORT(NETWORK_CPP_BASE)
 void AugmentCoopWithCoep(CrossOriginOpenerPolicy* coop,
-                         const CrossOriginEmbedderPolicy& coep,
-                         bool is_coop_soap_plus_coep_enabled);
+                         const CrossOriginEmbedderPolicy& coep);
 
 }  // namespace network
 

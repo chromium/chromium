@@ -391,14 +391,8 @@ void CrossOriginOpenerPolicyStatus::SanitizeCoopHeaders(
   network::CrossOriginOpenerPolicy& coop =
       response_head->parsed_headers->cross_origin_opener_policy;
 
-  // Base COOP class cannot include feature checking due to circular
-  // dependencies. Instead we check it from content and pass it back to the
-  // AugmentCoopWithCoep function.
-  bool is_coop_soap_plus_coep_enabled = base::FeatureList::IsEnabled(
-      network::features::kCoopSameOriginAllowPopupsPlusCoep);
   network::AugmentCoopWithCoep(
-      &coop, response_head->parsed_headers->cross_origin_embedder_policy,
-      is_coop_soap_plus_coep_enabled);
+      &coop, response_head->parsed_headers->cross_origin_embedder_policy);
 
   if (coop == network::CrossOriginOpenerPolicy())
     return;

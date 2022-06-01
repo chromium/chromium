@@ -3116,8 +3116,9 @@ bool NavigationRequest::ShouldRequestSiteIsolationForCOOP() {
     case network::mojom::CrossOriginOpenerPolicyValue::kSameOrigin:
     case network::mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep:
     case network::mojom::CrossOriginOpenerPolicyValue::kSameOriginAllowPopups:
+    case network::mojom::CrossOriginOpenerPolicyValue::kRestrictProperties:
     case network::mojom::CrossOriginOpenerPolicyValue::
-        kSameOriginAllowPopupsPlusCoep:
+        kRestrictPropertiesPlusCoep:
       should_header_value_trigger_isolation = true;
       break;
     case network::mojom::CrossOriginOpenerPolicyValue::kUnsafeNone:
@@ -7762,7 +7763,7 @@ NavigationRequest::ComputeWebExposedIsolationInfo() {
        network::mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep) &&
       (coop_status().current_coop().value !=
        network::mojom::CrossOriginOpenerPolicyValue::
-           kSameOriginAllowPopupsPlusCoep)) {
+           kRestrictPropertiesPlusCoep)) {
     return WebExposedIsolationInfo::CreateNonIsolated();
   }
 

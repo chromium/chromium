@@ -151,8 +151,9 @@ void AddUntrustedDataSource(
           break;
         case network::mojom::CrossOriginOpenerPolicyValue::
             kSameOriginAllowPopups:
+        case network::mojom::CrossOriginOpenerPolicyValue::kRestrictProperties:
         case network::mojom::CrossOriginOpenerPolicyValue::
-            kSameOriginAllowPopupsPlusCoep:
+            kRestrictPropertiesPlusCoep:
           NOTIMPLEMENTED();
           break;
       }

@@ -21,6 +21,7 @@ constexpr char kCrossOriginOpenerPolicyHeaderReportOnly[] =
     "Cross-Origin-Opener-Policy-Report-Only";
 constexpr char kSameOrigin[] = "same-origin";
 constexpr char kSameOriginAllowPopups[] = "same-origin-allow-popups";
+constexpr char kRestrictProperties[] = "restrict-properties";
 constexpr char kUnsafeNone[] = "unsafe-none";
 constexpr char kReportTo[] = "report-to";
 
@@ -50,6 +51,14 @@ void ParseHeader(base::StringPiece header_value,
       if (soap_by_default_value) {
         *soap_by_default_value =
             mojom::CrossOriginOpenerPolicyValue::kSameOriginAllowPopups;
+      }
+    }
+    if (base::FeatureList::IsEnabled(features::kCoopRestrictProperties) &&
+        policy_item == kRestrictProperties) {
+      *value = mojom::CrossOriginOpenerPolicyValue::kRestrictProperties;
+      if (soap_by_default_value) {
+        *soap_by_default_value =
+            mojom::CrossOriginOpenerPolicyValue::kRestrictProperties;
       }
     }
     if (policy_item == kUnsafeNone) {

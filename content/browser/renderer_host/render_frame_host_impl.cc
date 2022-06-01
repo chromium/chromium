@@ -7058,8 +7058,9 @@ void RenderFrameHostImpl::CreateNewWindow(
         case network::mojom::CrossOriginOpenerPolicyValue::kUnsafeNone:
         case network::mojom::CrossOriginOpenerPolicyValue::
             kSameOriginAllowPopups:
+        case network::mojom::CrossOriginOpenerPolicyValue::kRestrictProperties:
         case network::mojom::CrossOriginOpenerPolicyValue::
-            kSameOriginAllowPopupsPlusCoep:
+            kRestrictPropertiesPlusCoep:
           break;
 
         // See https://html.spec.whatwg.org/C/#browsing-context-names (step 8)

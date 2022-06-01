@@ -77,12 +77,13 @@ const base::Feature kCrossOriginOpenerPolicy{"CrossOriginOpenerPolicy",
 const base::Feature kCrossOriginOpenerPolicyByDefault{
     "CrossOriginOpenerPolicyByDefault", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Introduce a new COOP value, Same-Origin-Opener-Policy-Plus-Coep, which grants
-// cross-origin isolation. This used mainly for testing the process model and
-// should not be enabled in any production code.
-// See https://crbug.com/1221127.
-const base::Feature kCoopSameOriginAllowPopupsPlusCoep{
-    "CoopSameOriginAllowPopupsPlusCoep", base::FEATURE_DISABLED_BY_DEFAULT};
+// Introduce a new COOP value: restrict-properties. It restricts window
+// properties that can be accessed by other pages. This also grants
+// crossOriginIsolated if coupled with an appropriate COEP header.
+// This used solely for testing the process model and should not be enabled in
+// any production code. See https://crbug.com/1221127.
+const base::Feature kCoopRestrictProperties{"CoopRestrictProperties",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables or defaults splittup up server (not proxy) entries in the
 // HttpAuthCache.

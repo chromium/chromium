@@ -77,8 +77,10 @@ absl::optional<WebFeature> FeatureCoop(CrossOriginOpenerPolicyValue value) {
       return WebFeature::kCrossOriginOpenerPolicySameOrigin;
     case CrossOriginOpenerPolicyValue::kSameOriginAllowPopups:
       return WebFeature::kCrossOriginOpenerPolicySameOriginAllowPopups;
+    case CrossOriginOpenerPolicyValue::kRestrictProperties:
+      return WebFeature::kCrossOriginOpenerPolicyRestrictProperties;
     case CrossOriginOpenerPolicyValue::kSameOriginPlusCoep:
-    case CrossOriginOpenerPolicyValue::kSameOriginAllowPopupsPlusCoep:
+    case CrossOriginOpenerPolicyValue::kRestrictPropertiesPlusCoep:
       return WebFeature::kCoopAndCoepIsolated;
   }
 }
@@ -94,8 +96,10 @@ absl::optional<WebFeature> FeatureCoopRO(CrossOriginOpenerPolicyValue value) {
     case CrossOriginOpenerPolicyValue::kSameOriginAllowPopups:
       return WebFeature::
           kCrossOriginOpenerPolicySameOriginAllowPopupsReportOnly;
+    case CrossOriginOpenerPolicyValue::kRestrictProperties:
+      return WebFeature::kCrossOriginOpenerPolicyRestrictPropertiesReportOnly;
     case CrossOriginOpenerPolicyValue::kSameOriginPlusCoep:
-    case CrossOriginOpenerPolicyValue::kSameOriginAllowPopupsPlusCoep:
+    case CrossOriginOpenerPolicyValue::kRestrictPropertiesPlusCoep:
       return WebFeature::kCoopAndCoepIsolatedReportOnly;
   }
 }

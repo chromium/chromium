@@ -68,12 +68,21 @@ network::CrossOriginOpenerPolicy CoopSameOriginAllowPopups() {
   return coop;
 }
 
-network::CrossOriginOpenerPolicy CoopSameOriginAllowPopupsPlusCoep() {
+network::CrossOriginOpenerPolicy CoopRestrictProperties() {
   network::CrossOriginOpenerPolicy coop;
-  coop.value = network::mojom::CrossOriginOpenerPolicyValue::
-      kSameOriginAllowPopupsPlusCoep;
-  coop.soap_by_default_value = network::mojom::CrossOriginOpenerPolicyValue::
-      kSameOriginAllowPopupsPlusCoep;
+  coop.value =
+      network::mojom::CrossOriginOpenerPolicyValue::kRestrictProperties;
+  coop.soap_by_default_value =
+      network::mojom::CrossOriginOpenerPolicyValue::kRestrictProperties;
+  return coop;
+}
+
+network::CrossOriginOpenerPolicy CoopRestrictPropertiesPlusCoep() {
+  network::CrossOriginOpenerPolicy coop;
+  coop.value =
+      network::mojom::CrossOriginOpenerPolicyValue::kRestrictPropertiesPlusCoep;
+  coop.soap_by_default_value =
+      network::mojom::CrossOriginOpenerPolicyValue::kRestrictPropertiesPlusCoep;
   return coop;
 }
 
@@ -223,12 +232,12 @@ class NoSharedArrayBufferByDefault : public CrossOriginOpenerPolicyBrowserTest {
 
 // Same as CrossOriginOpenerPolicyBrowserTest, but enable COOP:SOAPPC.
 // See https://crbug.com/1221127.
-class SameOriginAllowPopupsPlusCoepBrowserTest
+class CoopRestrictPropertiesBrowserTest
     : public CrossOriginOpenerPolicyBrowserTest {
  public:
-  SameOriginAllowPopupsPlusCoepBrowserTest() {
-    feature_list_.InitWithFeatures(
-        {network::features::kCoopSameOriginAllowPopupsPlusCoep}, {});
+  CoopRestrictPropertiesBrowserTest() {
+    feature_list_.InitWithFeatures({network::features::kCoopRestrictProperties},
+                                   {});
   }
 
  private:
@@ -3659,7 +3668,7 @@ INSTANTIATE_TEST_SUITE_P(All,
                          kTestParams,
                          CrossOriginOpenerPolicyBrowserTest::DescribeParams);
 INSTANTIATE_TEST_SUITE_P(All,
-                         SameOriginAllowPopupsPlusCoepBrowserTest,
+                         CoopRestrictPropertiesBrowserTest,
                          kTestParams,
                          CrossOriginOpenerPolicyBrowserTest::DescribeParams);
 INSTANTIATE_TEST_SUITE_P(All,
@@ -4535,19 +4544,34 @@ IN_PROC_BROWSER_TEST_P(SoapByDefaultVirtualBrowsingContextGroupTest,
   EXPECT_NE(group_4, group_1);
 }
 
-IN_PROC_BROWSER_TEST_P(SameOriginAllowPopupsPlusCoepBrowserTest,
-                       CoopSameOriginAllowPopupsPlusCoepIsParsed) {
+IN_PROC_BROWSER_TEST_P(CoopRestrictPropertiesBrowserTest,
+                       CoopRestrictPropertiesIsParsed) {
   GURL starting_page(https_server()->GetURL(
       "a.test",
       "/set-header"
-      "?cross-origin-opener-policy: same-origin-allow-popups"
-      "&cross-origin-embedder-policy: require-corp"));
+      "?cross-origin-opener-policy: restrict-properties"));
   EXPECT_TRUE(NavigateToURL(shell(), starting_page));
 
-  // Verify that COOP:SOAPPC was parsed, and that it correctly enabled cross
-  // origin isolation.
+  // Verify that COOP: restrict-properties was parsed.
   EXPECT_EQ(current_frame_host()->cross_origin_opener_policy(),
-            CoopSameOriginAllowPopupsPlusCoep());
+            CoopRestrictProperties());
+  EXPECT_FALSE(
+      current_frame_host()->GetSiteInstance()->IsCrossOriginIsolated());
+}
+
+IN_PROC_BROWSER_TEST_P(CoopRestrictPropertiesBrowserTest,
+                       CoopRestrictPropertiesPlusCoepIsParsed) {
+  GURL starting_page(
+      https_server()->GetURL("a.test",
+                             "/set-header"
+                             "?cross-origin-opener-policy: restrict-properties"
+                             "&cross-origin-embedder-policy: require-corp"));
+  EXPECT_TRUE(NavigateToURL(shell(), starting_page));
+
+  // Verify that COOP: restrict-properties was parsed along COEP, and that it
+  // correctly enabled cross origin isolation.
+  EXPECT_EQ(current_frame_host()->cross_origin_opener_policy(),
+            CoopRestrictPropertiesPlusCoep());
   EXPECT_TRUE(current_frame_host()->GetSiteInstance()->IsCrossOriginIsolated());
 }
 

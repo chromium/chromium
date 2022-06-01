@@ -40232,6 +40232,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4251" label="CSSLegacyTransformOrigin"/>
   <int value="4252" label="CSSLegacyBorderImage"/>
   <int value="4253" label="CSSLegacyBorderImageWidth"/>
+  <int value="4254" label="CrossOriginOpenerPolicyRestrictProperties"/>
+  <int value="4255"
+      label="CrossOriginOpenerPolicyRestrictPropertiesReportOnly"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

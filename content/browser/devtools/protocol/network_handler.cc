@@ -2741,10 +2741,13 @@ makeCrossOriginOpenerPolicyValue(
     case network::mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep:
       return protocol::Network::CrossOriginOpenerPolicyValueEnum::
           SameOriginPlusCoep;
-    case network::mojom::CrossOriginOpenerPolicyValue::
-        kSameOriginAllowPopupsPlusCoep:
+    case network::mojom::CrossOriginOpenerPolicyValue::kRestrictProperties:
       return protocol::Network::CrossOriginOpenerPolicyValueEnum::
-          SameOriginAllowPopupsPlusCoep;
+          RestrictProperties;
+    case network::mojom::CrossOriginOpenerPolicyValue::
+        kRestrictPropertiesPlusCoep:
+      return protocol::Network::CrossOriginOpenerPolicyValueEnum::
+          RestrictPropertiesPlusCoep;
   }
 }
 protocol::Network::CrossOriginEmbedderPolicyValue
