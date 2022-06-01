@@ -24,8 +24,6 @@ TEST(DevToolsEndpoint, FromPort) {
   ASSERT_EQ(endpoint.GetListUrl(), "http://localhost:9999/json/list");
   ASSERT_EQ(endpoint.GetCloseUrl("xyz"),
             "http://localhost:9999/json/close/xyz");
-  ASSERT_EQ(endpoint.GetActivateUrl("xyz"),
-            "http://localhost:9999/json/activate/xyz");
 }
 
 TEST(DevToolsEndpoint, FromNetAddress) {
@@ -40,8 +38,6 @@ TEST(DevToolsEndpoint, FromNetAddress) {
   ASSERT_EQ(endpoint.GetListUrl(), "http://localhost:9222/json/list");
   ASSERT_EQ(endpoint.GetCloseUrl("xyz"),
             "http://localhost:9222/json/close/xyz");
-  ASSERT_EQ(endpoint.GetActivateUrl("xyz"),
-            "http://localhost:9222/json/activate/xyz");
 }
 
 TEST(DevToolsEndpoint, FromHttpUrl) {
@@ -58,8 +54,6 @@ TEST(DevToolsEndpoint, FromHttpUrl) {
   ASSERT_EQ(endpoint.GetListUrl(), "http://remote:9223/custom/path/json/list");
   ASSERT_EQ(endpoint.GetCloseUrl("xyz"),
             "http://remote:9223/custom/path/json/close/xyz");
-  ASSERT_EQ(endpoint.GetActivateUrl("xyz"),
-            "http://remote:9223/custom/path/json/activate/xyz");
 }
 
 TEST(DevToolsEndpoint, FromHttpsUrl) {
@@ -76,6 +70,4 @@ TEST(DevToolsEndpoint, FromHttpsUrl) {
   ASSERT_EQ(endpoint.GetListUrl(), "https://secure:9224/custom/path/json/list");
   ASSERT_EQ(endpoint.GetCloseUrl("xyz"),
             "https://secure:9224/custom/path/json/close/xyz");
-  ASSERT_EQ(endpoint.GetActivateUrl("xyz"),
-            "https://secure:9224/custom/path/json/activate/xyz");
 }

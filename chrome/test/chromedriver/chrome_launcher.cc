@@ -234,19 +234,12 @@ Status PrepareDesktopCommandLine(const Capabilities& capabilities,
 Status WaitForDevToolsAndCheckVersion(
     const DevToolsEndpoint& endpoint,
     network::mojom::URLLoaderFactory* factory,
-    const SyncWebSocketFactory& socket_factory,
     const Capabilities* capabilities,
     int wait_time,
     std::unique_ptr<DevToolsHttpClient>* user_client,
     bool* retry,
     ChromeType ct,
     std::string fp = "") {
-  std::unique_ptr<DeviceMetrics> device_metrics;
-  if (capabilities && capabilities->device_metrics) {
-    device_metrics =
-        std::make_unique<DeviceMetrics>(*capabilities->device_metrics);
-  }
-
   std::unique_ptr<std::set<WebViewInfo::Type>> window_types;
   if (capabilities && !capabilities->window_types.empty()) {
     window_types = std::make_unique<std::set<WebViewInfo::Type>>(
@@ -262,13 +255,10 @@ Status WaitForDevToolsAndCheckVersion(
         cmd_line->GetSwitchValueNative("devtools-replay");
     base::FilePath log_file_path(log_path);
     client = std::make_unique<ReplayHttpClient>(
-        endpoint, factory, socket_factory, std::move(device_metrics),
-        std::move(window_types), capabilities->page_load_strategy,
-        log_file_path);
+        endpoint, factory, std::move(window_types), log_file_path);
   } else {
-    client = std::make_unique<DevToolsHttpClient>(
-        endpoint, factory, socket_factory, std::move(device_metrics),
-        std::move(window_types), capabilities->page_load_strategy);
+    client = std::make_unique<DevToolsHttpClient>(endpoint, factory,
+                                                  std::move(window_types));
   }
 
   const base::TimeTicks initial = base::TimeTicks::Now();
@@ -387,8 +377,8 @@ Status LaunchRemoteChromeSession(
   std::unique_ptr<DevToolsHttpClient> devtools_http_client;
   bool retry = true;
   status = WaitForDevToolsAndCheckVersion(
-      DevToolsEndpoint(capabilities.debugger_address), factory, socket_factory,
-      &capabilities, 60, &devtools_http_client, &retry, ChromeType::Remote);
+      DevToolsEndpoint(capabilities.debugger_address), factory, &capabilities,
+      60, &devtools_http_client, &retry, ChromeType::Remote);
   if (status.IsError()) {
     return Status(
         kUnknownError,
@@ -409,9 +399,16 @@ Status LaunchRemoteChromeSession(
                  << status.message();
   }
 
+  std::unique_ptr<DeviceMetrics> device_metrics;
+  if (capabilities.device_metrics) {
+    device_metrics =
+        std::make_unique<DeviceMetrics>(*capabilities.device_metrics);
+  }
+
   *chrome = std::make_unique<ChromeRemoteImpl>(
       std::move(devtools_http_client), std::move(devtools_websocket_client),
-      std::move(devtools_event_listeners), capabilities.page_load_strategy);
+      std::move(devtools_event_listeners), std::move(device_metrics),
+      socket_factory, capabilities.page_load_strategy);
   return Status(kOk);
 }
 
@@ -592,9 +589,8 @@ Status LaunchDesktopChrome(network::mojom::URLLoaderFactory* factory,
       std::ostringstream oss;
       oss << command.GetProgram();
       status = WaitForDevToolsAndCheckVersion(
-          DevToolsEndpoint(devtools_port), factory, socket_factory,
-          &capabilities, 1, &devtools_http_client, &retry, ChromeType::Desktop,
-          oss.str());
+          DevToolsEndpoint(devtools_port), factory, &capabilities, 1,
+          &devtools_http_client, &retry, ChromeType::Desktop, oss.str());
       if (!retry) {
         break;
       }
@@ -668,11 +664,18 @@ Status LaunchDesktopChrome(network::mojom::URLLoaderFactory* factory,
                  << status.message();
   }
 
+  std::unique_ptr<DeviceMetrics> device_metrics;
+  if (capabilities.device_metrics) {
+    device_metrics =
+        std::make_unique<DeviceMetrics>(*capabilities.device_metrics);
+  }
+
   std::unique_ptr<ChromeDesktopImpl> chrome_desktop =
       std::make_unique<ChromeDesktopImpl>(
           std::move(devtools_http_client), std::move(devtools_websocket_client),
-          std::move(devtools_event_listeners), capabilities.page_load_strategy,
-          std::move(process), command, &user_data_dir_temp_dir, &extension_dir,
+          std::move(devtools_event_listeners), std::move(device_metrics),
+          socket_factory, capabilities.page_load_strategy, std::move(process),
+          command, &user_data_dir_temp_dir, &extension_dir,
           capabilities.network_emulation_enabled);
   if (!capabilities.extension_load_timeout.is_zero()) {
     for (size_t i = 0; i < extension_bg_pages.size(); ++i) {
@@ -737,8 +740,8 @@ Status LaunchAndroidChrome(network::mojom::URLLoaderFactory* factory,
   std::unique_ptr<DevToolsHttpClient> devtools_http_client;
   bool retry = true;
   status = WaitForDevToolsAndCheckVersion(
-      DevToolsEndpoint(devtools_port), factory, socket_factory, &capabilities,
-      60, &devtools_http_client, &retry, ChromeType::Android);
+      DevToolsEndpoint(devtools_port), factory, &capabilities, 60,
+      &devtools_http_client, &retry, ChromeType::Android);
   if (status.IsError()) {
     device->TearDown();
     return status;
@@ -755,10 +758,16 @@ Status LaunchAndroidChrome(network::mojom::URLLoaderFactory* factory,
                  << status.message();
   }
 
+  std::unique_ptr<DeviceMetrics> device_metrics;
+  if (capabilities.device_metrics) {
+    device_metrics =
+        std::make_unique<DeviceMetrics>(*capabilities.device_metrics);
+  }
+
   *chrome = std::make_unique<ChromeAndroidImpl>(
       std::move(devtools_http_client), std::move(devtools_websocket_client),
-      std::move(devtools_event_listeners), capabilities.page_load_strategy,
-      std::move(device));
+      std::move(devtools_event_listeners), std::move(device_metrics),
+      socket_factory, capabilities.page_load_strategy, std::move(device));
   return Status(kOk);
 }
 
@@ -792,8 +801,8 @@ Status LaunchReplayChrome(network::mojom::URLLoaderFactory* factory,
   std::unique_ptr<DevToolsHttpClient> devtools_http_client;
   bool retry = true;
   status = WaitForDevToolsAndCheckVersion(
-      DevToolsEndpoint(0), factory, socket_factory, &capabilities, 1,
-      &devtools_http_client, &retry, ChromeType::Replay);
+      DevToolsEndpoint(0), factory, &capabilities, 1, &devtools_http_client,
+      &retry, ChromeType::Replay);
   if (status.IsError())
     return status;
   std::unique_ptr<DevToolsClient> devtools_websocket_client;
@@ -806,11 +815,19 @@ Status LaunchReplayChrome(network::mojom::URLLoaderFactory* factory,
     LOG(WARNING) << "Browser-wide DevTools client failed to connect: "
                  << status.message();
   }
+
+  std::unique_ptr<DeviceMetrics> device_metrics;
+  if (capabilities.device_metrics) {
+    device_metrics =
+        std::make_unique<DeviceMetrics>(*capabilities.device_metrics);
+  }
+
   base::Process dummy_process;
   std::unique_ptr<ChromeDesktopImpl> chrome_impl =
       std::make_unique<ChromeReplayImpl>(
           std::move(devtools_http_client), std::move(devtools_websocket_client),
-          std::move(devtools_event_listeners), capabilities.page_load_strategy,
+          std::move(devtools_event_listeners), std::move(device_metrics),
+          socket_factory, capabilities.page_load_strategy,
           std::move(dummy_process), command, &user_data_dir_temp_dir,
           &extension_dir, capabilities.network_emulation_enabled);
 
