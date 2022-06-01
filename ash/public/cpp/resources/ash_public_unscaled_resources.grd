@@ -14,6 +14,9 @@
   </outputs>
   <release seq="1">
     <includes>
+      <!-- Capture Mode custom cursor images -->
+      <include name="IDR_CAPTURE_IMAGE_CURSOR" file="unscaled_resources/capture_image_cursor.png" type="BINDATA" />
+      <include name="IDR_CAPTURE_VIDEO_CURSOR" file="unscaled_resources/capture_video_cursor.png" type="BINDATA" />
       <!-- CrOS internal apps images -->
       <include name="IDR_SHORTCUT_VIEWER_LOGO_192" file="unscaled_resources/shortcut_viewer_logo_192.png" type="BINDATA" />
       <include name="IDR_SETTINGS_LOGO_192" file="unscaled_resources/settings_logo_192.png" type="BINDATA" />

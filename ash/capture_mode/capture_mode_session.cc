@@ -28,6 +28,7 @@
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/projector/projector_controller_impl.h"
+#include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
@@ -250,11 +251,10 @@ ui::Cursor GetCursorForFullscreenOrWindowCapture(bool capture_image) {
       display::Screen::GetScreen()->GetDisplayNearestWindow(
           GetPreferredRootWindow());
   const float device_scale_factor = display.device_scale_factor();
-  // TODO: Adjust the icon color after spec is updated.
-  const gfx::ImageSkia icon = gfx::CreateVectorIcon(
-      capture_image ? kCaptureModeImageIcon : kCaptureModeVideoIcon,
-      SK_ColorBLACK);
-  SkBitmap bitmap = *icon.bitmap();
+  const gfx::ImageSkia* icon =
+      ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+          capture_image ? IDR_CAPTURE_IMAGE_CURSOR : IDR_CAPTURE_VIDEO_CURSOR);
+  SkBitmap bitmap = *icon->bitmap();
   gfx::Point hotspot(bitmap.width() / 2, bitmap.height() / 2);
   aura::ScaleAndRotateCursorBitmapAndHotpoint(
       device_scale_factor, display.panel_rotation(), &bitmap, &hotspot);
@@ -1364,8 +1364,8 @@ void CaptureModeSession::UpdateCursor(const gfx::Point& location_in_screen,
   const CaptureModeSource source = controller_->source();
   if (source == CaptureModeSource::kWindow && !GetSelectedWindow()) {
     // If we're in window capture mode and there is no select window at the
-    // moment, we should use the original mouse.
-    cursor_setter_->ResetCursor();
+    // moment, we should use a pointer cursor.
+    cursor_setter_->UpdateCursor(ui::mojom::CursorType::kPointer);
     return;
   }
 

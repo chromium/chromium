@@ -1464,11 +1464,11 @@ TEST_F(CaptureModeTest, WindowCursorStates) {
   CaptureModeSessionTestApi test_api(controller->capture_mode_session());
   EXPECT_TRUE(test_api.IsUsingCustomCursor(CaptureModeType::kImage));
 
-  // If the mouse is not above the window, use the original mouse cursor.
+  // If the mouse is not above the window, use a pointer.
   event_generator->MoveMouseTo(gfx::Point(300, 300));
-  EXPECT_FALSE(cursor_manager->IsCursorLocked());
+  EXPECT_TRUE(cursor_manager->IsCursorLocked());
   EXPECT_TRUE(cursor_manager->IsCursorVisible());
-  EXPECT_EQ(original_cursor_type, cursor_manager->GetCursor().type());
+  EXPECT_EQ(CursorType::kPointer, cursor_manager->GetCursor().type());
 
   // Use pointer mouse if the event is on the capture bar.
   ClickOnView(GetVideoToggleButton(), event_generator);
@@ -1486,9 +1486,9 @@ TEST_F(CaptureModeTest, WindowCursorStates) {
 
   // If the mouse is not above the window, use the original mouse cursor.
   event_generator->MoveMouseTo(gfx::Point(300, 300));
-  EXPECT_FALSE(cursor_manager->IsCursorLocked());
+  EXPECT_TRUE(cursor_manager->IsCursorLocked());
   EXPECT_TRUE(cursor_manager->IsCursorVisible());
-  EXPECT_EQ(original_cursor_type, cursor_manager->GetCursor().type());
+  EXPECT_EQ(CursorType::kPointer, cursor_manager->GetCursor().type());
 
   // Move above the window again, the cursor should change back to the video
   // record icon.
@@ -1552,11 +1552,11 @@ TEST_F(CaptureModeTest, WindowDestruction) {
   EXPECT_TRUE(test_api.IsUsingCustomCursor(CaptureModeType::kImage));
 
   // Destroy the window while hovering. There is no window underneath, so it
-  // should revert back to the original cursor.
+  // should revert back to a pointer.
   window2.reset();
-  EXPECT_FALSE(cursor_manager->IsCursorLocked());
+  EXPECT_TRUE(cursor_manager->IsCursorLocked());
   EXPECT_TRUE(cursor_manager->IsCursorVisible());
-  EXPECT_EQ(original_cursor_type, cursor_manager->GetCursor().type());
+  EXPECT_EQ(CursorType::kPointer, cursor_manager->GetCursor().type());
 
   // Destroy the window while mouse is in a pressed state. Cursor should revert
   // back to the original cursor.
