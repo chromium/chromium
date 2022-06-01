@@ -328,7 +328,7 @@ ci.builder(
     cores = 4,
     executable = "recipe:chromium_libfuzzer",
     execution_timeout = 4 * time.hour,
-    os = os.MAC_11,
+    os = os.MAC_12,
     xcode = xcode.x13main,
 )
 
