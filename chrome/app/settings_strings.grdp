@@ -2815,11 +2815,6 @@
   <message name="IDS_SETTINGS_COOKIES_CLEAR_ON_EXIT" desc="Label for the toggle that allows the user to automatically delete their cookies and site data when they close all browser windows.">
     Clear cookies and site data when you close all windows
   </message>
-  <if expr="chromeos_lacros">
-    <message name="IDS_SETTINGS_COOKIES_CLEAR_ON_EXIT_DESC" desc="Secondary text for the toggle that allows the user to automatically delete their cookies and site data when they close all browser windows. This sublabel clarifies that when the toggle is enabled the user won't be signed out of Chrome each time they close all Chrome windows.">
-      Signs you out of most sites. You won't be signed out of your Google Account.
-    </message>
-  </if>
   <message name="IDS_SETTINGS_COOKIES_ALL_SITES_LINK" desc="Label for the link row which takes the user to the page listing all sites with storage and permissions">
     See all site data and permissions
   </message>
