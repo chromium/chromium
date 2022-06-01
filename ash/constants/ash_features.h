@@ -263,8 +263,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kEnableWireGuard;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kEnforceAshExtensionKeeplist;
 COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const base::Feature kExtendedOpenVpnSettings;
-COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kEolWarningNotifications;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kESimPolicy;
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -671,7 +669,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsEcheSWADebugModeEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsESimPolicyEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsExperimentalRgbKeyboardPatternsEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsExtendedOpenVpnSettingsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsExternalKeyboardInDiagnosticsAppEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFamilyLinkOnSchoolDeviceEnabled();

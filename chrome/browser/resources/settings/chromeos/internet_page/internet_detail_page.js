@@ -288,15 +288,6 @@ Polymer({
     },
 
     /** @private {boolean} */
-    isExtendedOpenVpnSettingsEnabled_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.valueExists('extendedOpenVpnSettingsEnabled') &&
-            loadTimeData.getBoolean('extendedOpenVpnSettingsEnabled');
-      }
-    },
-
-    /** @private {boolean} */
     isTrafficCountersEnabled_: {
       type: Boolean,
       value() {
@@ -2272,13 +2263,10 @@ Polymer({
         switch (vpnType) {
           case chromeos.networkConfig.mojom.VpnType.kOpenVPN:
             if (this.isManagedByPolicy_()) {
-              // TODO(b/215180522): Clean up the guard once this is launched.
-              if (this.isExtendedOpenVpnSettingsEnabled_) {
-                fields.push(
-                    'vpn.openVpn.auth', 'vpn.openVpn.cipher',
-                    'vpn.openVpn.compressionAlgorithm',
-                    'vpn.openVpn.tlsAuthContents', 'vpn.openVpn.keyDirection');
-              }
+              fields.push(
+                  'vpn.openVpn.auth', 'vpn.openVpn.cipher',
+                  'vpn.openVpn.compressionAlgorithm',
+                  'vpn.openVpn.tlsAuthContents', 'vpn.openVpn.keyDirection');
             }
             break;
         }

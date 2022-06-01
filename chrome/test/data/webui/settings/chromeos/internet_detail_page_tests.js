@@ -139,7 +139,6 @@ suite('InternetDetailPage', function() {
   setup(function() {
     loadTimeData.overrideValues({
       esimPolicyEnabled: true,
-      extendedOpenVpnSettingsEnabled: true,
       internetAddConnection: 'internetAddConnection',
       internetAddConnectionExpandA11yLabel:
           'internetAddConnectionExpandA11yLabel',
