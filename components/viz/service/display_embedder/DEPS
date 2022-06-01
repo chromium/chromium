@@ -45,14 +45,12 @@ include_rules = [
   "+ui/ozone/public",
 
   # TODO(danakj): Double check the layering for these dependencies.
-  "+components/viz/service/display/gl_renderer_copier.h",
   "+components/viz/service/display/overlay_processor.h",
   "+components/viz/service/display/overlay_processor_interface.h",
   "+components/viz/service/display/overlay_strategy_fullscreen.h",
   "+components/viz/service/display/overlay_strategy_single_on_top.h",
   "+components/viz/service/display/overlay_strategy_underlay_cast.h",
   "+components/viz/service/display/overlay_strategy_underlay.h",
-  "+components/viz/service/display/texture_deleter.h",
 ]
 
 specific_include_rules = {

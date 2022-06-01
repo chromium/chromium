@@ -20,14 +20,10 @@
 #include "components/viz/common/display/renderer_settings.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/service/display/display_compositor_memory_and_task_controller.h"
-#include "components/viz/service/display_embedder/gl_output_surface.h"
-#include "components/viz/service/display_embedder/gl_output_surface_buffer_queue.h"
-#include "components/viz/service/display_embedder/gl_output_surface_offscreen.h"
 #include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
 #include "components/viz/service/display_embedder/skia_output_surface_dependency_impl.h"
 #include "components/viz/service/display_embedder/skia_output_surface_impl.h"
 #include "components/viz/service/display_embedder/software_output_surface.h"
-#include "components/viz/service/display_embedder/viz_process_context_provider.h"
 #include "components/viz/service/gl/gpu_service_impl.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/client/shared_memory_limits.h"
@@ -40,15 +36,9 @@
 #include "gpu/ipc/service/gpu_channel_manager_delegate.h"
 #include "gpu/ipc/service/image_transport_surface.h"
 #include "ui/base/ui_base_switches.h"
-#include "ui/gl/gl_context.h"
-#include "ui/gl/init/gl_factory.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "components/viz/service/display_embedder/software_output_device_win.h"
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
-#include "components/viz/service/display_embedder/gl_output_surface_android.h"
 #endif
 
 #if BUILDFLAG(IS_APPLE)
@@ -66,7 +56,6 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "components/viz/service/display_embedder/gl_output_surface_chromeos.h"
 #include "components/viz/service/display_embedder/output_surface_unified.h"
 #endif
 
@@ -101,23 +90,15 @@ OutputSurfaceProviderImpl::~OutputSurfaceProviderImpl() = default;
 std::unique_ptr<DisplayCompositorMemoryAndTaskController>
 OutputSurfaceProviderImpl::CreateGpuDependency(
     bool gpu_compositing,
-    gpu::SurfaceHandle surface_handle,
-    const RendererSettings& renderer_settings) {
+    gpu::SurfaceHandle surface_handle) {
   if (!gpu_compositing)
     return nullptr;
 
-  if (renderer_settings.use_skia_renderer) {
-    gpu::ScopedAllowScheduleGpuTask allow_schedule_gpu_task;
-    auto skia_deps = std::make_unique<SkiaOutputSurfaceDependencyImpl>(
-        gpu_service_impl_, surface_handle);
-    return std::make_unique<DisplayCompositorMemoryAndTaskController>(
-        std::move(skia_deps));
-  } else {
-    DCHECK(task_executor_);
-    gpu::ScopedAllowScheduleGpuTask allow_schedule_gpu_task;
-    return std::make_unique<DisplayCompositorMemoryAndTaskController>(
-        task_executor_, image_factory_);
-  }
+  gpu::ScopedAllowScheduleGpuTask allow_schedule_gpu_task;
+  auto skia_deps = std::make_unique<SkiaOutputSurfaceDependencyImpl>(
+      gpu_service_impl_, surface_handle);
+  return std::make_unique<DisplayCompositorMemoryAndTaskController>(
+      std::move(skia_deps));
 }
 
 std::unique_ptr<OutputSurface> OutputSurfaceProviderImpl::CreateOutputSurface(
@@ -139,7 +120,7 @@ std::unique_ptr<OutputSurface> OutputSurfaceProviderImpl::CreateOutputSurface(
   if (!gpu_compositing) {
     output_surface = std::make_unique<SoftwareOutputSurface>(
         CreateSoftwareOutputDeviceForPlatform(surface_handle, display_client));
-  } else if (renderer_settings.use_skia_renderer) {
+  } else {
     DCHECK(gpu_dependency);
     {
       gpu::ScopedAllowScheduleGpuTask allow_schedule_gpu_task;
@@ -166,74 +147,6 @@ std::unique_ptr<OutputSurface> OutputSurfaceProviderImpl::CreateOutputSurface(
       gpu_service_impl_->DisableGpuCompositing();
 #endif
       return nullptr;
-    }
-  } else {
-    DCHECK(task_executor_);
-    DCHECK(gpu_dependency);
-
-    scoped_refptr<VizProcessContextProvider> context_provider;
-
-    // Retry creating and binding |context_provider| on transient failures.
-    gpu::ContextResult context_result = gpu::ContextResult::kTransientFailure;
-    while (context_result != gpu::ContextResult::kSuccess) {
-      // We are about to exit the GPU process so don't try to create a context.
-      // It will be recreated after the GPU process restarts. The same check
-      // also happens on the GPU thread before the context gets initialized
-      // there. If GPU process starts to exit after this check but before
-      // context initialization we'll encounter a transient error, loop and hit
-      // this check again.
-      if (gpu_channel_manager_delegate_->IsExiting())
-        return nullptr;
-
-      context_provider = base::MakeRefCounted<VizProcessContextProvider>(
-          task_executor_, surface_handle, gpu_memory_buffer_manager_.get(),
-          image_factory_, gpu_channel_manager_delegate_, gpu_dependency,
-          renderer_settings);
-      context_result = context_provider->BindToCurrentThread();
-
-#if BUILDFLAG(IS_ANDROID)
-      display_client->OnContextCreationResult(context_result);
-#endif
-
-      if (IsFatalOrSurfaceFailure(context_result)) {
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMECAST)
-        // GL compositing is expected to always work on Chrome OS so we should
-        // never encounter fatal context error. This could be an unrecoverable
-        // hardware error or a bug.
-        LOG(FATAL) << "Unexpected fatal context error";
-#elif !BUILDFLAG(IS_ANDROID)
-        gpu_service_impl_->DisableGpuCompositing();
-#endif
-        return nullptr;
-      }
-    }
-
-    if (surface_handle == gpu::kNullSurfaceHandle) {
-      output_surface = std::make_unique<GLOutputSurfaceOffscreen>(
-          std::move(context_provider));
-    } else if (context_provider->ContextCapabilities().surfaceless) {
-#if defined(USE_OZONE) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_ANDROID)
-      output_surface = std::make_unique<GLOutputSurfaceBufferQueue>(
-          std::move(context_provider), surface_handle,
-          std::make_unique<BufferQueue>(
-              context_provider->SharedImageInterface(), surface_handle));
-#else
-      NOTREACHED();
-#endif
-    } else {
-#if BUILDFLAG(IS_WIN)
-      output_surface = std::make_unique<GLOutputSurface>(
-          std::move(context_provider), surface_handle);
-#elif BUILDFLAG(IS_ANDROID)
-      output_surface = std::make_unique<GLOutputSurfaceAndroid>(
-          std::move(context_provider), surface_handle);
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
-      output_surface = std::make_unique<GLOutputSurfaceChromeOS>(
-          std::move(context_provider), surface_handle);
-#else
-      output_surface = std::make_unique<GLOutputSurface>(
-          std::move(context_provider), surface_handle);
-#endif
     }
   }
 

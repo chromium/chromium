@@ -89,8 +89,7 @@ FuzzerSoftwareOutputSurfaceProvider::~FuzzerSoftwareOutputSurfaceProvider() =
 std::unique_ptr<DisplayCompositorMemoryAndTaskController>
 FuzzerSoftwareOutputSurfaceProvider::CreateGpuDependency(
     bool gpu_compositing,
-    gpu::SurfaceHandle surface_handle,
-    const RendererSettings& renderer_settings) {
+    gpu::SurfaceHandle surface_handle) {
   return nullptr;
 }
 

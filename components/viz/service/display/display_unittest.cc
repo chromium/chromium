@@ -4333,10 +4333,7 @@ class SkiaDelegatedInkRendererTest : public DisplayTest {
   void SetUp() override { EnablePrediction(); }
 
   void SetUpRenderers() {
-    // First set up the display to use the Skia renderer.
-    RendererSettings settings;
-    settings.use_skia_renderer = true;
-    SetUpGpuDisplay(settings);
+    SetUpGpuDisplay(RendererSettings());
 
     // Initialize the renderer and create an ink renderer.
     display_->Initialize(&client_, manager_.surface_manager());
@@ -4859,9 +4856,7 @@ class DelegatedInkDisplayTest
           features::kUsePlatformDelegatedInk);
 
       // Set up the display to use the Skia renderer.
-      RendererSettings settings;
-      settings.use_skia_renderer = true;
-      SetUpGpuDisplaySkiaWithPlatformInk(settings);
+      SetUpGpuDisplaySkiaWithPlatformInk(RendererSettings());
 
       display_->Initialize(&client_, manager_.surface_manager());
     }

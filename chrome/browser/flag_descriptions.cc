@@ -2417,11 +2417,6 @@ extern const char kSimLockPolicyDescription[] =
     "Enable the support for policy controlled enabling or disabling of PIN "
     "Locking SIMs on managed devices.";
 
-const char kSkiaRendererName[] = "Skia API for compositing";
-const char kSkiaRendererDescription[] =
-    "If enabled, the display compositor will use Skia as the graphics API "
-    "instead of OpenGL ES.";
-
 const char kIsolateOriginsName[] = "Isolate additional origins";
 const char kIsolateOriginsDescription[] =
     "Requires dedicated processes for an additional set of origins, "

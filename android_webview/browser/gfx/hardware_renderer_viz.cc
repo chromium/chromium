@@ -360,7 +360,6 @@ HardwareRendererViz::HardwareRendererViz(
     AwVulkanContextProvider* context_provider)
     : HardwareRenderer(state), output_surface_provider_(context_provider) {
   DCHECK_CALLED_ON_VALID_THREAD(render_thread_checker_);
-  DCHECK(output_surface_provider_.renderer_settings().use_skia_renderer);
 
   VizCompositorThreadRunnerWebView::GetInstance()->ScheduleOnVizAndBlock(
       base::BindOnce(&HardwareRendererViz::InitializeOnViz,

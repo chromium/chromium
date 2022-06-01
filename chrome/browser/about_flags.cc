@@ -6327,10 +6327,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kLogJsConsoleMessages)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
-    {"enable-skia-renderer", flag_descriptions::kSkiaRendererName,
-     flag_descriptions::kSkiaRendererDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kUseSkiaRenderer)},
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"allow-disable-touchpad-haptic-feedback",
      flag_descriptions::kAllowDisableTouchpadHapticFeedbackName,

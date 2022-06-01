@@ -377,8 +377,6 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   bool initialized_ = false;
 #if DCHECK_IS_ON()
   bool overdraw_feedback_support_missing_logged_once_ = false;
-  bool overdraw_tracing_support_missing_logged_once_ = false;
-  bool supports_occlusion_query_ = false;
 #endif
   gfx::Rect last_root_render_pass_scissor_rect_;
   gfx::Size enlarge_pass_texture_amount_;

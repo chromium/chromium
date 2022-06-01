@@ -69,10 +69,6 @@ const base::Feature kVideoDetectorIgnoreNonVideos{
 const base::Feature kSimpleFrameRateThrottling{
     "SimpleFrameRateThrottling", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Use the SkiaRenderer.
-const base::Feature kUseSkiaRenderer{"UseSkiaRenderer",
-                                     base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Kill-switch to disable de-jelly, even if flags/properties indicate it should
 // be enabled.
 const base::Feature kDisableDeJelly{"DisableDeJelly",
@@ -84,10 +80,6 @@ const base::Feature kDisableDeJelly{"DisableDeJelly",
 const base::Feature kDynamicColorGamut{"DynamicColorGamut",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
-
-// Uses glClear to composite solid color quads whenever possible.
-const base::Feature kFastSolidColorDraw{"FastSolidColorDraw",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Submit CompositorFrame from SynchronousLayerTreeFrameSink directly to viz in
 // WebView.
@@ -218,8 +210,8 @@ bool IsSimpleFrameRateThrottlingEnabled() {
 }
 
 bool IsUsingSkiaRenderer() {
-  return base::FeatureList::IsEnabled(kUseSkiaRenderer) ||
-         features::IsUsingVulkan();
+  // TODO(crbug.com/1247756): Remove this when all callers are gone.
+  return true;
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -232,10 +224,6 @@ bool IsDynamicColorGamutEnabled() {
   return base::FeatureList::IsEnabled(kDynamicColorGamut);
 }
 #endif
-
-bool IsUsingFastPathForSolidColorQuad() {
-  return base::FeatureList::IsEnabled(kFastSolidColorDraw);
-}
 
 bool IsUsingVizFrameSubmissionForWebView() {
   return base::FeatureList::IsEnabled(kVizFrameSubmissionForWebView);

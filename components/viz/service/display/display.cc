@@ -24,6 +24,7 @@
 #include "components/viz/common/display/renderer_settings.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
+#include "components/viz/common/quads/aggregated_render_pass_draw_quad.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/quads/draw_quad.h"
 #include "components/viz/common/quads/shared_quad_state.h"
@@ -34,12 +35,10 @@
 #include "components/viz/service/display/delegated_ink_point_renderer_base.h"
 #include "components/viz/service/display/direct_renderer.h"
 #include "components/viz/service/display/display_client.h"
-#include "components/viz/service/display/display_resource_provider_gl.h"
 #include "components/viz/service/display/display_resource_provider_null.h"
 #include "components/viz/service/display/display_resource_provider_skia.h"
 #include "components/viz/service/display/display_resource_provider_software.h"
 #include "components/viz/service/display/display_scheduler.h"
-#include "components/viz/service/display/gl_renderer.h"
 #include "components/viz/service/display/null_renderer.h"
 #include "components/viz/service/display/output_surface.h"
 #include "components/viz/service/display/renderer_utils.h"
@@ -341,15 +340,6 @@ Display::~Display() {
   if (resource_provider_) {
     resource_provider_->SetAllowAccessToGPUThread(true);
   }
-#if BUILDFLAG(IS_ANDROID)
-  // In certain cases, drivers hang when tearing down the display. Finishing
-  // before teardown appears to address this. As we're during display teardown,
-  // an additional finish should have minimal impact.
-  // TODO(ericrk): Add a more robust workaround. crbug.com/899705
-  if (auto* context = output_surface_->context_provider()) {
-    context->ContextGL()->Finish();
-  }
-#endif
 
   if (no_pending_swaps_callback_)
     std::move(no_pending_swaps_callback_).Run();
@@ -364,8 +354,6 @@ Display::~Display() {
 
   // Only do this if Initialize() happened.
   if (client_) {
-    if (auto* context = output_surface_->context_provider())
-      context->RemoveObserver(this);
     if (skia_output_surface_)
       skia_output_surface_->RemoveContextLostObserver(this);
   }
@@ -407,9 +395,6 @@ void Display::Initialize(DisplayClient* client,
   // This depends on assumptions that Display::Initialize will happen on the
   // same callstack as the ContextProvider being created/initialized or else
   // it could miss a callback before setting this.
-  if (auto* context = output_surface_->context_provider())
-    context->AddObserver(this);
-
   if (skia_output_surface_)
     skia_output_surface_->AddContextLostObserver(this);
 }
@@ -489,8 +474,7 @@ void Display::DisableSwapUntilResize(
       scheduler_->ForceImmediateSwapIfPossible();
 
     if (no_pending_swaps_callback && pending_swaps_ > 0 &&
-        (output_surface_->context_provider() ||
-         output_surface_->AsSkiaOutputSurface())) {
+        output_surface_->AsSkiaOutputSurface()) {
       no_pending_swaps_callback_ = std::move(no_pending_swaps_callback);
     }
 
@@ -542,14 +526,6 @@ void Display::InitializeRenderer(bool enable_shared_images) {
         &settings_, debug_settings_, output_surface_.get(),
         resource_provider.get(), overlay_processor_.get(),
         skia_output_surface_);
-    resource_provider_ = std::move(resource_provider);
-  } else if (output_surface_->context_provider()) {
-    auto resource_provider = std::make_unique<DisplayResourceProviderGL>(
-        output_surface_->context_provider(), enable_shared_images);
-    renderer_ = std::make_unique<GLRenderer>(
-        &settings_, debug_settings_, output_surface_.get(),
-        resource_provider.get(), overlay_processor_.get(),
-        current_task_runner_);
     resource_provider_ = std::move(resource_provider);
   } else if (output_surface_->capabilities().skips_draw) {
     auto resource_provider = std::make_unique<DisplayResourceProviderNull>();

@@ -29,7 +29,6 @@
 #include "components/viz/common/quads/compositor_frame_metadata.h"
 #include "components/viz/common/resources/bitmap_allocation.h"
 #include "components/viz/common/resources/shared_bitmap.h"
-#include "components/viz/service/display/display_resource_provider_gl.h"
 #include "components/viz/service/display/display_resource_provider_skia.h"
 #include "components/viz/service/display/display_resource_provider_software.h"
 #include "components/viz/service/display/output_surface_client.h"

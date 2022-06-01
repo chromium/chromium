@@ -56,8 +56,7 @@ class VIZ_SERVICE_EXPORT OutputSurfaceProviderImpl
 
   std::unique_ptr<DisplayCompositorMemoryAndTaskController> CreateGpuDependency(
       bool gpu_compositing,
-      gpu::SurfaceHandle surface_handle,
-      const RendererSettings& renderer_settings) override;
+      gpu::SurfaceHandle surface_handle) override;
 
   // OutputSurfaceProvider implementation.
   std::unique_ptr<OutputSurface> CreateOutputSurface(

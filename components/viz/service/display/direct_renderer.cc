@@ -92,21 +92,10 @@ DirectRenderer::DirectRenderer(const RendererSettings* settings,
 DirectRenderer::~DirectRenderer() = default;
 
 void DirectRenderer::Initialize() {
-  auto* context_provider = output_surface_->context_provider();
-
   use_partial_swap_ = settings_->partial_swap_enabled && CanPartialSwap();
-  allow_empty_swap_ = use_partial_swap_;
-  if (context_provider) {
-    if (context_provider->ContextCapabilities().commit_overlay_planes)
-      allow_empty_swap_ = true;
-#if DCHECK_IS_ON()
-    supports_occlusion_query_ =
-        context_provider->ContextCapabilities().occlusion_query;
-#endif
-  } else {
-    allow_empty_swap_ |=
-        output_surface_->capabilities().supports_commit_overlay_planes;
-  }
+  allow_empty_swap_ =
+      use_partial_swap_ ||
+      output_surface_->capabilities().supports_commit_overlay_planes;
 
   initialized_ = true;
 }
@@ -225,16 +214,6 @@ void DirectRenderer::DrawFrame(
 
   auto* root_render_pass = render_passes_in_draw_order->back().get();
   DCHECK(root_render_pass);
-
-#if DCHECK_IS_ON()
-  bool overdraw_tracing_enabled;
-  TRACE_EVENT_CATEGORY_GROUP_ENABLED(TRACE_DISABLED_BY_DEFAULT("viz.overdraw"),
-                                     &overdraw_tracing_enabled);
-  DLOG_IF(WARNING, !overdraw_tracing_support_missing_logged_once_ &&
-                       overdraw_tracing_enabled && !supports_occlusion_query_)
-      << "Overdraw tracing enabled on platform without support.";
-  overdraw_tracing_support_missing_logged_once_ = true;
-#endif
 
   bool overdraw_feedback = debug_settings_->show_overdraw_feedback;
   if (overdraw_feedback && !output_surface_->capabilities().supports_stencil) {

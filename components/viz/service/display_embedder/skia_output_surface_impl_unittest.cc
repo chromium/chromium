@@ -75,15 +75,13 @@ SkiaOutputSurfaceImplTest::~SkiaOutputSurfaceImplTest() {
 }
 
 void SkiaOutputSurfaceImplTest::SetUpSkiaOutputSurfaceImpl() {
-  RendererSettings settings;
-  settings.use_skia_renderer = true;
   auto skia_deps = std::make_unique<SkiaOutputSurfaceDependencyImpl>(
       GetGpuService(), gpu::kNullSurfaceHandle);
   display_controller_ =
       std::make_unique<DisplayCompositorMemoryAndTaskController>(
           std::move(skia_deps));
-  output_surface_ = SkiaOutputSurfaceImpl::Create(display_controller_.get(),
-                                                  settings, &debug_settings_);
+  output_surface_ = SkiaOutputSurfaceImpl::Create(
+      display_controller_.get(), RendererSettings(), &debug_settings_);
   output_surface_->BindToClient(&output_surface_client_);
 }
 

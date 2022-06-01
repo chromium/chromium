@@ -18,7 +18,6 @@ struct RendererSettings {
   bool release_overlay_resources_after_gpu_query;
   bool should_clear_root_render_pass;
   int32 slow_down_compositing_scale_factor;
-  bool use_skia_renderer;
   bool auto_resize_output_surface;
   bool requires_alpha_channel;
 

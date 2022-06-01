@@ -30,8 +30,7 @@ class FuzzerSoftwareOutputSurfaceProvider : public OutputSurfaceProvider {
   // OutputSurfaceProvider implementation.
   std::unique_ptr<DisplayCompositorMemoryAndTaskController> CreateGpuDependency(
       bool gpu_compositing,
-      gpu::SurfaceHandle surface_handle,
-      const RendererSettings& renderer_settings) override;
+      gpu::SurfaceHandle surface_handle) override;
   std::unique_ptr<OutputSurface> CreateOutputSurface(
       gpu::SurfaceHandle surface_handle,
       bool gpu_compositing,

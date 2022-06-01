@@ -225,9 +225,6 @@ bool AwMainDelegate::BasicStartupComplete(int* exit_code) {
     features.DisableIfNotSet(::features::kWebPayments);
     features.DisableIfNotSet(::features::kServiceWorkerPaymentApps);
 
-    // WebView requires SkiaRenderer.
-    features.EnableIfNotSet(::features::kUseSkiaRenderer);
-
     // WebView does not support overlay fullscreen yet for video overlays.
     features.DisableIfNotSet(media::kOverlayFullscreenVideo);
 

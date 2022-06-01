@@ -90,16 +90,8 @@ OutputSurfaceProviderWebView::OutputSurfaceProviderWebView(
   // Webview does not own the surface so should not clear it.
   renderer_settings_.should_clear_root_render_pass = false;
 
-  renderer_settings_.use_skia_renderer = features::IsUsingSkiaRenderer();
-  LOG_IF(FATAL, !renderer_settings_.use_skia_renderer)
-      << "WebView requires skia renderer";
-
   enable_vulkan_ = features::IsUsingVulkan();
   DCHECK(!enable_vulkan_ || vulkan_context_provider_);
-
-  LOG_IF(FATAL, enable_vulkan_ && !renderer_settings_.use_skia_renderer)
-      << "--webview-enable-vulkan only works with skia renderer "
-         "(--enable-features=UseSkiaRenderer).";
 
   auto* command_line = base::CommandLine::ForCurrentProcess();
   debug_settings_.tint_composited_content =

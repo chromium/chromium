@@ -22,7 +22,6 @@ namespace features {
 VIZ_COMMON_EXPORT extern const base::Feature kAdpf;
 VIZ_COMMON_EXPORT extern const base::FeatureParam<int> kAdpfTargetDurationMs;
 VIZ_COMMON_EXPORT extern const base::Feature kEnableOverlayPrioritization;
-VIZ_COMMON_EXPORT extern const base::Feature kUseSkiaRenderer;
 VIZ_COMMON_EXPORT extern const base::Feature kDelegatedCompositing;
 VIZ_COMMON_EXPORT extern const base::Feature kRecordSkPicture;
 VIZ_COMMON_EXPORT extern const base::Feature kDisableDeJelly;
@@ -32,7 +31,6 @@ VIZ_COMMON_EXPORT extern const base::Feature kVideoDetectorIgnoreNonVideos;
 #if BUILDFLAG(IS_ANDROID)
 VIZ_COMMON_EXPORT extern const base::Feature kDynamicColorGamut;
 #endif
-VIZ_COMMON_EXPORT extern const base::Feature kFastSolidColorDraw;
 VIZ_COMMON_EXPORT extern const base::Feature kVizFrameSubmissionForWebView;
 VIZ_COMMON_EXPORT extern const base::Feature kUsePreferredIntervalForVideo;
 VIZ_COMMON_EXPORT extern const base::Feature kUseRealBuffersForPageFlipTest;
@@ -76,7 +74,6 @@ VIZ_COMMON_EXPORT bool IsDynamicColorGamutEnabled();
 VIZ_COMMON_EXPORT bool IsOverlayPrioritizationEnabled();
 VIZ_COMMON_EXPORT bool IsDelegatedCompositingEnabled();
 VIZ_COMMON_EXPORT bool IsSyncWindowDestructionEnabled();
-VIZ_COMMON_EXPORT bool IsUsingFastPathForSolidColorQuad();
 VIZ_COMMON_EXPORT bool IsUsingSkiaRenderer();
 VIZ_COMMON_EXPORT bool IsUsingVizFrameSubmissionForWebView();
 VIZ_COMMON_EXPORT bool IsUsingPreferredIntervalForVideo();

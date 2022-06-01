@@ -17,7 +17,6 @@
 #include "cc/cc_export.h"
 #include "components/viz/service/display/direct_renderer.h"
 #include "components/viz/service/display/display_resource_provider_skia.h"
-#include "components/viz/service/display/sync_query_collection.h"
 #include "components/viz/service/viz_service_export.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "ui/gfx/color_conversion_sk_filter_cache.h"
