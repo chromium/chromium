@@ -53,7 +53,6 @@ public class PageZoomMediator {
 
         mModel.set(PageZoomProperties.DECREASE_ZOOM_CALLBACK, this::handleDecreaseClicked);
         mModel.set(PageZoomProperties.INCREASE_ZOOM_CALLBACK, this::handleIncreaseClicked);
-        mModel.set(PageZoomProperties.MAXIMUM_ZOOM, AVAILABLE_ZOOM_FACTORS.length - 1);
     }
 
     /**

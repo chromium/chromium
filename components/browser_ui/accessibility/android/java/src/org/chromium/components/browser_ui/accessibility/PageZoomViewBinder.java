@@ -15,10 +15,7 @@ import org.chromium.ui.modelutil.PropertyModel;
  */
 class PageZoomViewBinder {
     public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
-        if (PageZoomProperties.MAXIMUM_ZOOM == propertyKey) {
-            ((SeekBar) view.findViewById(R.id.page_zoom_slider))
-                    .setMax(model.get(PageZoomProperties.MAXIMUM_ZOOM));
-        } else if (PageZoomProperties.CURRENT_ZOOM == propertyKey) {
+        if (PageZoomProperties.CURRENT_ZOOM == propertyKey) {
             ((SeekBar) view.findViewById(R.id.page_zoom_slider))
                     .setProgress(model.get(PageZoomProperties.CURRENT_ZOOM));
         } else if (PageZoomProperties.DECREASE_ZOOM_CALLBACK == propertyKey) {
