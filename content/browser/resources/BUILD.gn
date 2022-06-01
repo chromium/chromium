@@ -10,9 +10,6 @@ group("resources") {
 
 if (enable_js_type_check) {
   group("closure_compile") {
-    deps = [
-      "histograms:closure_compile",
-      "process:closure_compile",
-    ]
+    deps = [ "histograms:closure_compile" ]
   }
 }

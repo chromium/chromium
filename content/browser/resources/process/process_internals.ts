@@ -4,52 +4,29 @@
 
 import 'chrome://resources/cr_elements/cr_tree/cr_tree.js';
 
-import {MAY_HAVE_CHILDREN_ATTR} from 'chrome://resources/cr_elements/cr_tree/cr_tree_item.js';
+import {CrTreeElement} from 'chrome://resources/cr_elements/cr_tree/cr_tree.js';
+import {CrTreeItemElement, MAY_HAVE_CHILDREN_ATTR} from 'chrome://resources/cr_elements/cr_tree/cr_tree_item.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 
 import {FrameInfo, FrameInfo_Type, ProcessInternalsHandler, ProcessInternalsHandlerRemote, WebContentsInfo} from './process_internals.mojom-webui.js';
 
-
-
-// TODO (rbpotter): Remove these temporary definitions after migrating to TS.
-/**
- * @typedef {{
- *   detail: { children: Object, payload: (Object|undefined) },
- *   expanded: boolean,
- *   add: function(CrTreeItemElement): void,
- * }}
- */
-let CrTreeItemElement;
-
-/**
- * @typedef {{
- *   detail: { children: Object, payload: Object },
- *   add: function(CrTreeItemElement): void,
- *   removeTreeItem: function(CrTreeItemElement): void,
- *   expanded: boolean,
- *   items: Array<CrTreeItemElement>,
- *   selectedItem: CrTreeItemElement,
- * }}
- */
-let CrTreeElement;
-
 /**
  * Reference to the backend providing all the data.
- * @type {ProcessInternalsHandlerRemote}
  */
-let pageHandler = null;
+let pageHandler: ProcessInternalsHandlerRemote|null = null;
 
 /**
- * @param {string} id Tab id.
- * @return {boolean} True if successful.
+ * @return True if successful.
  */
-function selectTab(id) {
-  const tabContents = document.querySelectorAll('#content > div');
-  const navigation = document.querySelector('#navigation');
-  const tabHeaders = navigation.querySelectorAll('.tab-header');
+function selectTab(id: string): boolean {
+  const tabContents = document.querySelectorAll<HTMLElement>('#content > div');
+  const navigation = document.querySelector<HTMLElement>('#navigation');
+  assert(navigation);
+  const tabHeaders = navigation.querySelectorAll<HTMLElement>('.tab-header');
   let found = false;
   for (let i = 0; i < tabContents.length; i++) {
-    const tabContent = tabContents[i];
-    const tabHeader = tabHeaders[i];
+    const tabContent = tabContents[i]!;
+    const tabHeader = tabHeaders[i]!;
     const isTargetTab = tabContent.id === id;
 
     found = found || isTargetTab;
@@ -72,9 +49,11 @@ function onHashChange() {
 
 function setupTabs() {
   const tabContents = document.querySelectorAll('#content > div');
-  for (let i = 0; i < tabContents.length; i++) {
-    const tabContent = tabContents[i];
-    const tabName = tabContent.querySelector('.content-header').textContent;
+  for (const tabContent of tabContents) {
+    const contentHeader =
+        tabContent.querySelector<HTMLElement>('.content-header');
+    assert(contentHeader);
+    const tabName = contentHeader.textContent;
 
     const tabHeader = document.createElement('div');
     tabHeader.className = 'tab-header';
@@ -82,25 +61,25 @@ function setupTabs() {
     button.textContent = tabName;
     tabHeader.appendChild(button);
     tabHeader.addEventListener('click', selectTab.bind(null, tabContent.id));
-    document.querySelector('#navigation').appendChild(tabHeader);
+    const navigation = document.querySelector('#navigation');
+    assert(navigation);
+    navigation.appendChild(tabHeader);
   }
   onHashChange();
 }
 
 /**
  * Root of the WebContents tree.
- * @type {CrTreeElement|null}
  */
-let treeViewRoot = null;
+let treeViewRoot: CrTreeElement|null = null;
 
 /**
  * Initialize and return |treeViewRoot|.
- * @return {CrTreeElement} Initialized |treeViewRoot|.
  */
-function getTreeViewRoot() {
+function getTreeViewRoot(): CrTreeElement {
   if (!treeViewRoot) {
-    treeViewRoot =
-        /** @type {CrTreeElement} */ (document.querySelector('cr-tree'));
+    treeViewRoot = document.querySelector('cr-tree');
+    assert(treeViewRoot);
     treeViewRoot.detail = {payload: {}, children: {}};
   }
   return treeViewRoot;
@@ -109,13 +88,12 @@ function getTreeViewRoot() {
 /**
  * Initialize and return a tree item representing a FrameInfo object and
  * recursively creates its subframe objects.
- * @param {FrameInfo} frame
- * @return {{item: CrTreeItemElement, count: number}}
  */
-function frameToTreeItem(frame) {
+function frameToTreeItem(frame: FrameInfo):
+    {item: CrTreeItemElement, count: number} {
   // Compose the string which will appear in the entry for this frame.
   let itemLabel = `Frame[${frame.processId}:${frame.routingId}:${
-    frame.agentSchedulingGroupId}]:`;
+      frame.agentSchedulingGroupId}]:`;
   if (frame.type === FrameInfo_Type.kBackForwardCache) {
     itemLabel += ` bfcached`;
   } else if (frame.type === FrameInfo_Type.kPrerender) {
@@ -145,8 +123,7 @@ function frameToTreeItem(frame) {
     itemLabel += ` | url: ${frame.lastCommittedUrl.url}`;
   }
 
-  const item =
-      /** @type {CrTreeItemElement} */ (document.createElement('cr-tree-item'));
+  const item = document.createElement('cr-tree-item');
   item.label = itemLabel;
   item.detail = {payload: {}, children: {}};
   item.toggleAttribute(MAY_HAVE_CHILDREN_ATTR, true);
@@ -168,17 +145,15 @@ function frameToTreeItem(frame) {
 /**
  * Initialize and return a tree item representing the WebContentsInfo object
  * and contains all frames in it as a subtree.
- * @param {WebContentsInfo} webContents
- * @return {!CrTreeItemElement}
  */
-function webContentsToTreeItem(webContents) {
+function webContentsToTreeItem(webContents: WebContentsInfo):
+    CrTreeItemElement {
   let itemLabel = 'WebContents: ';
   if (webContents.title.length > 0) {
     itemLabel += webContents.title + ', ';
   }
 
-  const item =
-      /** @type {CrTreeItemElement} */ (document.createElement('cr-tree-item'));
+  const item = document.createElement('cr-tree-item');
   item.label = itemLabel;
   item.detail = {payload: {}, children: {}};
   item.toggleAttribute(MAY_HAVE_CHILDREN_ATTR, true);
@@ -209,7 +184,7 @@ function webContentsToTreeItem(webContents) {
   // buildCountString(0, 'frame') => "0 frames"
   // buildCountString(1, 'frame') => "1 frame"
   // buildCountString(2, 'frame') => "2 frames"
-  const buildCountString = ((count, name) => {
+  const buildCountString = ((count: number, name: string) => {
     return `${count} ${name}` + (count !== 1 ? 's' : '');
   });
 
@@ -228,9 +203,8 @@ function webContentsToTreeItem(webContents) {
 /**
  * This is a callback which is invoked when the data for WebContents
  * associated with the browser profile is received from the browser process.
- * @param {!Array<!WebContentsInfo>} infos
  */
-function populateWebContentsTab(infos) {
+function populateWebContentsTab(infos: WebContentsInfo[]) {
   const tree = getTreeViewRoot();
 
   // Clear the tree first before populating it with the new content.
@@ -247,6 +221,7 @@ function populateWebContentsTab(infos) {
  * current browser profile. The result is passed to populateWebContentsTab.
  */
 async function loadWebContentsInfo() {
+  assert(pageHandler);
   const {infos} = await pageHandler.getAllWebContentsInfo();
   populateWebContentsTab(infos);
 }
@@ -259,6 +234,7 @@ async function loadWebContentsInfo() {
  * profiles.
  */
 function loadIsolatedOriginInfo() {
+  assert(pageHandler);
   // Retrieve any persistent isolated origins for the current profile. Insert
   // them into a list on the page if there is at least one such origin.
   pageHandler.getUserTriggeredIsolatedOrigins().then((response) => {
@@ -268,7 +244,8 @@ function loadIsolatedOriginInfo() {
     }
 
     const userOrigins =
-        document.querySelector('#user-triggered-isolated-origins');
+        document.querySelector<HTMLElement>('#user-triggered-isolated-origins');
+    assert(userOrigins);
     userOrigins.textContent =
         'The following origins are isolated because you previously typed a ' +
         'password or logged in on these sites (' + originCount + ' total). ' +
@@ -292,7 +269,8 @@ function loadIsolatedOriginInfo() {
     }
 
     const webOrigins =
-        document.querySelector('#web-triggered-isolated-origins');
+        document.querySelector<HTMLElement>('#web-triggered-isolated-origins');
+    assert(webOrigins);
     webOrigins.textContent =
         'The following origins are isolated based on runtime heuristics ' +
         'triggered directly by web pages, such as Cross-Origin-Opener-Policy ' +
@@ -318,7 +296,9 @@ function loadIsolatedOriginInfo() {
       return;
     }
 
-    const globalOrigins = document.querySelector('#global-isolated-origins');
+    const globalOrigins =
+        document.querySelector<HTMLElement>('#global-isolated-origins');
+    assert(globalOrigins);
     globalOrigins.textContent =
         'The following origins are isolated by default for all users (' +
         originCount + ' total).  A description of how each origin was ' +
@@ -337,10 +317,14 @@ function loadIsolatedOriginInfo() {
 document.addEventListener('DOMContentLoaded', function() {
   // Setup Mojo interface to the backend.
   pageHandler = ProcessInternalsHandler.getRemote();
+  assert(pageHandler);
 
   // Get the Site Isolation mode and populate it.
   pageHandler.getIsolationMode().then((response) => {
-    document.querySelector('#isolation-mode').innerText = response.mode;
+    const isolationMode =
+        document.querySelector<HTMLElement>('#isolation-mode');
+    assert(isolationMode);
+    isolationMode.innerText = response.mode;
   });
 
   loadIsolatedOriginInfo();
@@ -351,6 +335,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // Start loading the information about WebContents.
   loadWebContentsInfo();
 
-  const refreshButton = document.querySelector('#refresh-button');
+  const refreshButton = document.querySelector<HTMLElement>('#refresh-button');
+  assert(refreshButton);
   refreshButton.addEventListener('click', loadWebContentsInfo);
 });
