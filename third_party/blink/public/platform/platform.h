@@ -827,10 +827,6 @@ class BLINK_PLATFORM_EXPORT Platform {
 
   virtual gfx::ColorSpace GetRenderingColorSpace() const;
 
-  // Renderer Memory Metrics ----------------------------------------------
-
-  virtual void RecordMetricsForBackgroundedRendererPurge() {}
-
   // V8 Metrics -----------------------------------------------------------
 
   // Called when adding a histogram entry. Allows customizing the name the

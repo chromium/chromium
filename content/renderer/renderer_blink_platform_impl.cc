@@ -1035,16 +1035,6 @@ void RendererBlinkPlatformImpl::CreateServiceWorkerSubresourceLoaderFactory(
 
 //------------------------------------------------------------------------------
 
-void RendererBlinkPlatformImpl::RecordMetricsForBackgroundedRendererPurge() {
-  auto* render_thread = RenderThreadImpl::current();
-  // RenderThreadImpl is null in some tests.
-  if (!render_thread)
-    return;
-  render_thread->RecordMetricsForBackgroundedRendererPurge();
-}
-
-//------------------------------------------------------------------------------
-
 // The returned BatchingMediaLog can be used on any thread, but must be
 // destroyed on |owner_task_runner|. The aggregated MediaLogRecords will be
 // sent back to the Browser via Mojo objects bound to |owner_task_runner|.

@@ -374,20 +374,6 @@ class CONTENT_EXPORT RenderThreadImpl
 
   mojom::RendererHost* GetRendererHost();
 
-  struct RendererMemoryMetrics {
-    size_t partition_alloc_kb;
-    size_t blink_gc_kb;
-    size_t malloc_mb;
-    size_t discardable_kb;
-    size_t v8_main_thread_isolate_mb;
-    size_t total_allocated_mb;
-    size_t non_discardable_total_allocated_mb;
-    size_t total_allocated_per_render_view_mb;
-  };
-  bool GetRendererMemoryMetrics(RendererMemoryMetrics* memory_metrics) const;
-
-  void RecordMetricsForBackgroundedRendererPurge();
-
   // Sets the current pipeline rendering color space.
   void SetRenderingColorSpace(const gfx::ColorSpace& color_space);
 
@@ -475,12 +461,6 @@ class CONTENT_EXPORT RenderThreadImpl
   bool RendererIsBackgrounded() const;
   void OnRendererBackgrounded();
   void OnRendererForegrounded();
-
-  void RecordMemoryUsageAfterBackgrounded(const char* suffix,
-                                          int foregrounded_count);
-  void OnRecordMetricsForBackgroundedRendererPurgeTimerExpired(
-      const char* suffix,
-      int foregrounded_count_when_purged);
 
   void ReleaseFreeMemory();
 
@@ -595,7 +575,6 @@ class CONTENT_EXPORT RenderThreadImpl
   std::set<std::unique_ptr<AgentSchedulingGroup>, base::UniquePtrComparator>
       agent_scheduling_groups_;
 
-  RendererMemoryMetrics purge_and_suspend_memory_metrics_;
   int process_foregrounded_count_;
 
   int32_t client_id_;
