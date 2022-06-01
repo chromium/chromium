@@ -40,7 +40,12 @@ std::unique_ptr<ui::DialogModel> CreateWindowNamePromptDialogModel(
           kWindowNameFieldId,
           // Deliberately use no label - the dialog contains only this
           // textfield, and its title serves as a label for the textfield.
-          {}, base::UTF8ToUTF16(browser->user_title()))
+          {}, base::UTF8ToUTF16(browser->user_title()),
+          // Despite what the above comment says, the textfield still needs an
+          // accessible name - otherwise a screenreader user with their focus on
+          // the field will have no context for what the field means.
+          ui::DialogModelTextfield::Params().SetAccessibleName(
+              l10n_util::GetStringUTF16(IDS_NAME_WINDOW_PROMPT_FIELD_LABEL)))
       .SetInitiallyFocusedField(kWindowNameFieldId)
       .Build();
 }
