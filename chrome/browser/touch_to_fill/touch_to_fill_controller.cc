@@ -199,7 +199,7 @@ void TouchToFillController::OnWebAuthnCredentialSelected(
                                 /*show_virtual_keyboard=*/false);
 
   password_client_->GetWebAuthnCredentialsDelegate()->SelectWebAuthnCredential(
-      credential.id());
+      credential.id().value());
 }
 
 void TouchToFillController::OnManagePasswordsSelected() {

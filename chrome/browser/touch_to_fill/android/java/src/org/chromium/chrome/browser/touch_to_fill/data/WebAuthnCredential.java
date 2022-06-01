@@ -12,20 +12,27 @@ import org.chromium.base.annotations.CalledByNative;
  */
 public class WebAuthnCredential {
     private final String mUsername;
+    private final String mDisplayName;
     private final String mId;
 
     /**
      * @param username Username shown to the user.
      * @param id Unique identifier for the credential.
      */
-    public WebAuthnCredential(String username, String id) {
+    public WebAuthnCredential(String username, String displayName, String id) {
         mUsername = username;
+        mDisplayName = displayName;
         mId = id;
     }
 
     @CalledByNative
     public String getUsername() {
         return mUsername;
+    }
+
+    @CalledByNative
+    public String getDisplayName() {
+        return mDisplayName;
     }
 
     @CalledByNative

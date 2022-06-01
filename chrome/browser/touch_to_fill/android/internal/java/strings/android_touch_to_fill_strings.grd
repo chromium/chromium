@@ -215,6 +215,9 @@
       <message name="IDS_TOUCH_TO_FILL_SIGNIN" desc="Title of the button that continues filling and submitting the only available credential.">
         Sign in
       </message>
+      <message name="IDS_TOUCH_TO_FILL_SHEET_GENERIC_TITLE" desc="Header for Touch To Fill sheet where users can pick a credential to sign in to a website. Generalizes for password credentials and WebAuthn credentials.">
+        Sign in to this site?
+      </message>
     </messages>
   </release>
 </grit>

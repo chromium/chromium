@@ -453,8 +453,11 @@ void ChromePasswordManagerClient::ShowTouchToFill(
     base::ranges::transform(
         suggestions, std::back_inserter(webauthn_credentials),
         [](const auto& suggestion) {
-          return TouchToFillWebAuthnCredential(suggestion.main_text.value,
-                                               suggestion.backend_id);
+          return TouchToFillWebAuthnCredential(
+              TouchToFillWebAuthnCredential::Username(suggestion.label),
+              TouchToFillWebAuthnCredential::DisplayName(
+                  suggestion.main_text.value),
+              TouchToFillWebAuthnCredential::BackendId(suggestion.backend_id));
         });
   }
 
