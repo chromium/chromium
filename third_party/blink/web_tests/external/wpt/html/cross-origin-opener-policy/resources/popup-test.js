@@ -77,6 +77,8 @@ async function popup_test(description, origin, coop_header, expected_opener_stat
                      'Popup has nulled opener?');
         break;
       }
+      default:
+        assert_unreached(true, "Unrecognized opener relationship: " + expected_opener_state);
     }
   }, description);
 }
