@@ -81,7 +81,8 @@ ProcessingAudioFifo::ProcessingAudioFifo(
     : fifo_size_(fifo_size),
       fifo_(fifo_size_),
       input_params_(input_params),
-      audio_processing_thread_("AudioProcessingThread"),
+      audio_processing_thread_("AudioProcessingThread",
+                               input_params_.GetBufferDuration()),
       processing_callback_(std::move(processing_callback)),
       new_data_captured_(base::WaitableEvent::ResetPolicy::AUTOMATIC),
       stats_reporter_(

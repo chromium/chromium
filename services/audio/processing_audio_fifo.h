@@ -12,8 +12,8 @@
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/thread_annotations.h"
-#include "base/threading/thread.h"
 #include "media/base/audio_parameters.h"
+#include "services/audio/realtime_audio_thread.h"
 
 namespace media {
 class AudioBus;
@@ -102,7 +102,7 @@ class ProcessingAudioFifo {
 
   // Real-time audio processing thread, on which |processing_callback_| is
   // called.
-  base::Thread audio_processing_thread_;
+  RealtimeAudioThread audio_processing_thread_;
 
   // Processes captured audio data. Only run on |audio_processing_thread_|.
   ProcessAudioCallback processing_callback_;
