@@ -34,15 +34,12 @@
 #include "base/time/time.h"
 #include "base/timer/wall_clock_timer.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_notification_types.h"
+#include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
-#include "content/public/browser/notification_details.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_source.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 #include "ui/base/user_activity/user_activity_detector.h"
 
@@ -160,8 +157,9 @@ AutomaticRebootManager::AutomaticRebootManager(
       prefs::kRebootAfterUpdate,
       base::BindRepeating(&AutomaticRebootManager::Reschedule,
                           base::Unretained(this)));
-  notification_registrar_.Add(this, chrome::NOTIFICATION_APP_TERMINATING,
-      content::NotificationService::AllSources());
+  on_app_terminating_subscription_ =
+      browser_shutdown::AddAppTerminatingCallback(base::BindOnce(
+          &AutomaticRebootManager::OnAppTerminating, base::Unretained(this)));
 
   PowerManagerClient::Get()->AddObserver(this);
   DBusThreadManager::Get()->GetUpdateEngineClient()->AddObserver(this);
@@ -268,18 +266,6 @@ void AutomaticRebootManager::OnUserSessionStarted(bool is_primary_user) {
     ui::UserActivityDetector::Get()->RemoveObserver(this);
   session_manager_observation_.Reset();
   login_screen_idle_timer_.reset();
-}
-
-void AutomaticRebootManager::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
-  DCHECK_EQ(type, chrome::NOTIFICATION_APP_TERMINATING);
-  if (session_manager::SessionManager::Get()->IsSessionStarted()) {
-    // The browser is terminating during a session, either because the session
-    // is ending or because the browser is being restarted.
-    MaybeReboot(true);
-  }
 }
 
 // static
@@ -427,6 +413,14 @@ void AutomaticRebootManager::Reboot() {
   VLOG(1) << "Rebooting immediately.";
   PowerManagerClient::Get()->RequestRestart(
       power_manager::REQUEST_RESTART_OTHER, "automatic reboot manager");
+}
+
+void AutomaticRebootManager::OnAppTerminating() {
+  if (session_manager::SessionManager::Get()->IsSessionStarted()) {
+    // The browser is terminating during a session, either because the session
+    // is ending or because the browser is being restarted.
+    MaybeReboot(true);
+  }
 }
 
 }  // namespace system

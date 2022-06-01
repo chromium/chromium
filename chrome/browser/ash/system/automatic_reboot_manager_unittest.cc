@@ -27,7 +27,6 @@
 #include "chrome/browser/ash/login/users/mock_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/system/automatic_reboot_manager_observer.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
@@ -40,9 +39,6 @@
 #include "components/session_manager/session_manager_types.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/notification_details.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_source.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -423,10 +419,7 @@ void AutomaticRebootManagerBasicTest::NotifyUpdateRebootNeeded() {
 }
 
 void AutomaticRebootManagerBasicTest::NotifyTerminating(bool expect_reboot) {
-  automatic_reboot_manager_->Observe(
-      chrome::NOTIFICATION_APP_TERMINATING,
-      content::Source<AutomaticRebootManagerBasicTest>(this),
-      content::NotificationService::NoDetails());
+  automatic_reboot_manager_->OnAppTerminating();
   task_runner_->RunUntilIdle();
   EXPECT_EQ(expect_reboot ? 1 : 0,
             FakePowerManagerClient::Get()->num_request_restart_calls());
