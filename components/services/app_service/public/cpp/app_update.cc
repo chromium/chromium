@@ -39,16 +39,6 @@ void CloneStrings(const std::vector<std::string>& clone_from,
   }
 }
 
-std::vector<apps::IntentFilterPtr> ConvertMojomIntentFiltersToIntentFilters(
-    const std::vector<apps::mojom::IntentFilterPtr>& mojom_intent_filters) {
-  std::vector<apps::IntentFilterPtr> intent_filters;
-  for (const auto& mojom_intent_filter : mojom_intent_filters) {
-    intent_filters.push_back(
-        apps::ConvertMojomIntentFilterToIntentFilter(mojom_intent_filter));
-  }
-  return intent_filters;
-}
-
 void CloneMojomIntentFilters(
     const std::vector<apps::mojom::IntentFilterPtr>& clone_from,
     std::vector<apps::mojom::IntentFilterPtr>* clone_to) {
@@ -885,10 +875,10 @@ apps::IntentFilters AppUpdate::IntentFilters() const {
   }
 
   if (mojom_delta_ && !mojom_delta_->intent_filters.empty()) {
-    return ::ConvertMojomIntentFiltersToIntentFilters(
+    return ConvertMojomIntentFiltersToIntentFilters(
         mojom_delta_->intent_filters);
   } else if (mojom_state_ && !mojom_state_->intent_filters.empty()) {
-    return ::ConvertMojomIntentFiltersToIntentFilters(
+    return ConvertMojomIntentFiltersToIntentFilters(
         mojom_state_->intent_filters);
   }
   return std::vector<IntentFilterPtr>{};

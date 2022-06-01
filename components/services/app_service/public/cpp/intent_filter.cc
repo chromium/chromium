@@ -538,4 +538,26 @@ apps::mojom::IntentFilterPtr ConvertIntentFilterToMojomIntentFilter(
   return mojom_intent_filter;
 }
 
+IntentFilters ConvertMojomIntentFiltersToIntentFilters(
+    const std::vector<apps::mojom::IntentFilterPtr>& mojom_intent_filters) {
+  IntentFilters intent_filters;
+  intent_filters.reserve(mojom_intent_filters.size());
+  for (const auto& mojom_intent_filter : mojom_intent_filters) {
+    intent_filters.push_back(
+        ConvertMojomIntentFilterToIntentFilter(mojom_intent_filter));
+  }
+  return intent_filters;
+}
+
+std::vector<apps::mojom::IntentFilterPtr>
+ConvertIntentFiltersToMojomIntentFilters(const IntentFilters& intent_filters) {
+  std::vector<apps::mojom::IntentFilterPtr> mojom_intent_filters;
+  mojom_intent_filters.reserve(intent_filters.size());
+  for (const auto& intent_filter : intent_filters) {
+    mojom_intent_filters.push_back(
+        ConvertIntentFilterToMojomIntentFilter(intent_filter));
+  }
+  return mojom_intent_filters;
+}
+
 }  // namespace apps
