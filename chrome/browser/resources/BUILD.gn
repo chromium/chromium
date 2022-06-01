@@ -155,9 +155,6 @@ if (enable_js_type_check) {
       ]
     }
 
-    if (is_linux || is_chromeos) {
-      deps += [ "certificate_viewer:closure_compile" ]
-    }
     if (is_chromeos) {
       deps += [ "chromeos/contact_center_insights:closure_compile" ]
     }

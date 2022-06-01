@@ -7628,6 +7628,10 @@ grit("resources") {
     }
   }
 
+  if (use_aura && use_nss_certs) {
+    deps += [ "//chrome/browser/resources/certificate_viewer:build_ts" ]
+  }
+
   if (is_win) {
     deps += [ "//chrome/browser/resources/conflicts:build_ts" ]
   }
