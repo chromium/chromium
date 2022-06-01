@@ -21,7 +21,7 @@
 #include "chrome/browser/ash/login/ui/login_display_webui.h"
 #include "chrome/browser/ash/login/ui/web_contents_forced_title.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/chrome_notification_types.h"
+#include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/renderer_preferences_util.h"
@@ -37,7 +37,6 @@
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
-#include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
@@ -94,8 +93,9 @@ class ScopedArrowKeyTraversal {
 WebUILoginView::WebUILoginView(const WebViewSettings& settings,
                                base::WeakPtr<LoginDisplayHostWebUI> controller)
     : settings_(settings), controller_(controller) {
-  registrar_.Add(this, chrome::NOTIFICATION_APP_TERMINATING,
-                 content::NotificationService::AllSources());
+  on_app_terminating_subscription_ =
+      browser_shutdown::AddAppTerminatingCallback(base::BindOnce(
+          &WebUILoginView::OnAppTerminating, base::Unretained(this)));
 
   session_observation_.Observe(session_manager::SessionManager::Get());
 
@@ -296,12 +296,7 @@ void WebUILoginView::AboutToRequestFocusFromTabTraversal(bool reverse) {
     view->FocusReturned(reverse);
 }
 
-void WebUILoginView::Observe(int type,
-                             const content::NotificationSource& source,
-                             const content::NotificationDetails& details) {
-  DCHECK_EQ(chrome::NOTIFICATION_APP_TERMINATING, type)
-      << "Unexpected notification " << type;
-
+void WebUILoginView::OnAppTerminating() {
   // In some tests, WebUILoginView remains after LoginScreenClientImpl gets
   // deleted on shutdown. It should unregister itself before the deletion
   // happens.
