@@ -907,6 +907,9 @@ extern const char kJourneysOmniboxActionDescription[];
 extern const char kJourneysOnDeviceClusteringBackendName[];
 extern const char kJourneysOnDeviceClusteringBackendDescription[];
 
+extern const char kJourneysOnDeviceClusteringKeywordFilteringName[];
+extern const char kJourneysOnDeviceClusteringKeywordFilteringDescription[];
+
 extern const char kLargeFaviconFromGoogleName[];
 extern const char kLargeFaviconFromGoogleDescription[];
 

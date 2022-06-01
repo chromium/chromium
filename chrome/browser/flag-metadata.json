@@ -3572,6 +3572,11 @@
     "expiry_milestone": 110
   },
   {
+    "name": "history-journeys-on-device-clustering-keyword-filtering",
+    "owners": [ "sophiechang", "chrome-journeys@google.com", "chrome-intelligence-core@google.com" ],
+    "expiry_milestone": 110
+  },
+  {
     "name": "http-cache-partitioning",
     "owners": [ "shivanisha" ],
     "expiry_milestone": 95

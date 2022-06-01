@@ -33,6 +33,7 @@ class KeywordClusterFinalizerTest : public ::testing::Test {
     config_.keyword_filter_on_categories = false;
     config_.keyword_filter_on_entity_aliases = false;
     config_.keyword_filter_on_search_terms = false;
+    config_.keyword_filter_on_visit_hosts = false;
     SetConfigForTesting(config_);
   }
 
@@ -72,7 +73,7 @@ TEST_F(KeywordClusterFinalizerTest, IncludesKeywordsBasedOnFeatureParameters) {
   visit3.duplicate_visits.push_back(visit);
   visit3.engagement_score = 1.0;
   visit3.annotated_visit.content_annotations.model_annotations.entities = {
-      {"github", 1}, {"otherentity", 1}};
+      {"github", 1}, {"otherentity", 1}, {"baz", 1}};
   visit3.annotated_visit.content_annotations.model_annotations.categories = {
       {"category", 1}};
   visit3.annotated_visit.content_annotations.search_terms = u"search";
@@ -95,6 +96,7 @@ class KeywordClusterFinalizerIncludeAllTest
     config_.keyword_filter_on_entity_aliases = true;
     config_.max_entity_aliases_in_keywords = 1;
     config_.keyword_filter_on_search_terms = true;
+    config_.keyword_filter_on_visit_hosts = true;
     SetConfigForTesting(config_);
   }
 
@@ -127,7 +129,7 @@ TEST_F(KeywordClusterFinalizerIncludeAllTest,
   visit3.duplicate_visits.push_back(visit);
   visit3.engagement_score = 1.0;
   visit3.annotated_visit.content_annotations.model_annotations.entities = {
-      {"github", 1}, {"otherentity", 1}};
+      {"github", 1}, {"otherentity", 1}, {"baz", 1}};
   visit3.annotated_visit.content_annotations.model_annotations.categories = {
       {"category", 1}};
   visit3.annotated_visit.content_annotations.search_terms = u"search";
@@ -135,9 +137,10 @@ TEST_F(KeywordClusterFinalizerIncludeAllTest,
   history::Cluster cluster;
   cluster.visits = {visit2, visit3};
   FinalizeCluster(cluster);
-  EXPECT_THAT(cluster.keywords,
-              UnorderedElementsAre(u"github", u"category", u"onlyinnoisyvisit",
-                                   u"otherentity", u"git hub", u"search"));
+  EXPECT_THAT(
+      cluster.keywords,
+      UnorderedElementsAre(u"github", u"category", u"onlyinnoisyvisit",
+                           u"otherentity", u"git hub", u"search", u"baz"));
 }
 
 }  // namespace

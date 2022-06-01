@@ -99,9 +99,6 @@ struct Config {
   // cluster.
   bool keyword_filter_on_entity_aliases = false;
 
-  // If enabled, adds the search terms of the visits that have them.
-  bool keyword_filter_on_search_terms = false;
-
   // If greater than 0, the max number of aliases to include in keywords. If <=
   // 0, all aliases will be included.
   size_t max_entity_aliases_in_keywords = 0;
@@ -113,6 +110,13 @@ struct Config {
   // If enabled, adds the keywords of detected entities from noisy visits to a
   // cluster.
   bool keyword_filter_on_noisy_visits = true;
+
+  // If enabled, adds the search terms of the visits that have them.
+  bool keyword_filter_on_search_terms = false;
+
+  // If enabled, adds the keywords of detected entities that may be for
+  // the visit's host.
+  bool keyword_filter_on_visit_hosts = true;
 
   // Enables debug info in non-user-visible surfaces, like Chrome Inspector.
   // Does nothing if `kJourneys` is disabled.

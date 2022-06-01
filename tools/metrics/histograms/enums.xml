@@ -56231,6 +56231,7 @@ from previous Chrome versions.
   <int value="-1096595907" label="disable-new-virtual-keyboard-behavior"/>
   <int value="-1095947169" label="ModalPermissionDialogView:disabled"/>
   <int value="-1093135462" label="DesktopPWAsAttentionBadgingCrOS:disabled"/>
+  <int value="-1092514142" label="JourneysKeywordFiltering:disabled"/>
   <int value="-1092211161" label="BluetoothWbsDogfood:disabled"/>
   <int value="-1089665395" label="HTMLParamElementUrlSupport:enabled"/>
   <int value="-1088804127" label="DuetTabStripIntegrationAndroid:disabled"/>
@@ -60693,6 +60694,7 @@ from previous Chrome versions.
   <int value="1880955305" label="enable-preconnect-to-search"/>
   <int value="1881036528" label="disable-multilingual-spellchecker"/>
   <int value="1881174782" label="disable-brotli"/>
+  <int value="1882177465" label="JourneysKeywordFiltering:enabled"/>
   <int value="1882197308" label="UseChromeOSDirectVideoDecoder:disabled"/>
   <int value="1883000826" label="IsolatedSandboxedIframesName:disabled"/>
   <int value="1883998150" label="WebAppsCrosapi:disabled"/>

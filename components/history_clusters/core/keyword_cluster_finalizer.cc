@@ -4,7 +4,10 @@
 
 #include "components/history_clusters/core/keyword_cluster_finalizer.h"
 
+#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
+#include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/config.h"
@@ -13,6 +16,24 @@
 #include "components/optimization_guide/core/entity_metadata.h"
 
 namespace history_clusters {
+
+namespace {
+
+bool IsKeywordSimilarToVisitHost(
+    const std::vector<std::u16string>& lowercase_host_parts,
+    const std::u16string& keyword) {
+  std::u16string lowercase_keyword = base::ToLowerASCII(keyword);
+  if (base::Contains(lowercase_host_parts, keyword))
+    return true;
+
+  // Now check if the whitespace-stripped keyword is part of the host.
+  std::u16string stripped_lowercase_keyword;
+  base::RemoveChars(lowercase_keyword, base::kWhitespaceASCIIAs16,
+                    &stripped_lowercase_keyword);
+  return base::Contains(lowercase_host_parts, stripped_lowercase_keyword);
+}
+
+}  // namespace
 
 KeywordClusterFinalizer::KeywordClusterFinalizer(
     const base::flat_map<std::string, optimization_guide::EntityMetadata>&
@@ -29,9 +50,14 @@ void KeywordClusterFinalizer::FinalizeCluster(history::Cluster& cluster) {
       continue;
     }
 
+    std::vector<std::u16string> lowercase_host_parts = base::SplitString(
+        base::ToLowerASCII(
+            base::UTF8ToUTF16(visit.annotated_visit.url_row.url().host())),
+        u".", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
     for (const auto& entity :
          visit.annotated_visit.content_annotations.model_annotations.entities) {
-      keywords_set.insert(base::UTF8ToUTF16(entity.id));
+      base::flat_set<std::u16string> entity_keywords;
+      entity_keywords.insert(base::UTF8ToUTF16(entity.id));
 
       if (GetConfig().keyword_filter_on_entity_aliases) {
         auto it = entity_metadata_map_.find(entity.id);
@@ -39,16 +65,41 @@ void KeywordClusterFinalizer::FinalizeCluster(history::Cluster& cluster) {
           for (size_t i = 0; i < it->second.human_readable_aliases.size() &&
                              i < GetConfig().max_entity_aliases_in_keywords;
                i++) {
-            keywords_set.insert(
+            entity_keywords.insert(
                 base::UTF8ToUTF16(it->second.human_readable_aliases[i]));
           }
         }
+      }
+
+      if (!GetConfig().keyword_filter_on_visit_hosts) {
+        // If we do not want any keywords associated with the visit host, make
+        // sure that none of the keywords associated with the entity look like
+        // they are for the visit host.
+        for (const auto& entity_keyword : entity_keywords) {
+          if (IsKeywordSimilarToVisitHost(lowercase_host_parts,
+                                          entity_keyword)) {
+            // One of the keywords is likely for the visit host, so clear out
+            // the keywords for the whole entity.
+            entity_keywords.clear();
+            break;
+          }
+        }
+      }
+
+      if (!entity_keywords.empty()) {
+        keywords_set.insert(entity_keywords.begin(), entity_keywords.end());
       }
     }
     if (GetConfig().keyword_filter_on_categories) {
       for (const auto& category : visit.annotated_visit.content_annotations
                                       .model_annotations.categories) {
-        keywords_set.insert(base::UTF8ToUTF16(category.id));
+        std::u16string category_u16string = base::UTF8ToUTF16(category.id);
+        if (!GetConfig().keyword_filter_on_visit_hosts &&
+            IsKeywordSimilarToVisitHost(lowercase_host_parts,
+                                        category_u16string)) {
+          continue;
+        }
+        keywords_set.insert(category_u16string);
       }
     }
 
