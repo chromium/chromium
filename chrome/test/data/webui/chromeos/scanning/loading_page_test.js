@@ -88,6 +88,7 @@ export function loadingPageTest() {
         loadingPage.$$('#noScannersDiv img')));
 
     // Setup UI to display no scanners div.
+    setIsDarkModeEnabled_(false);
     loadingPage.appState = AppState.NO_SCANNERS;
     await flushTasks();
     assertEquals(getNoScannersSvg().src, lightModeSvg);
@@ -106,6 +107,7 @@ export function loadingPageTest() {
         (/** @type {!HTMLImageElement} */ (loadingPage.$$('#loadingDiv img')));
 
     // Setup UI to display no scanners div.
+    setIsDarkModeEnabled_(false);
     loadingPage.appState = AppState.NO_SCANNERS;
     await flushTasks();
     assertEquals(getLoadingSvg().src, lightModeSvg);
