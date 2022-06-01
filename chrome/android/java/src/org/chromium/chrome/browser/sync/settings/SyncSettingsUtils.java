@@ -242,7 +242,7 @@ public class SyncSettingsUtils {
             return context.getString(R.string.sync_error_generic);
         }
 
-        if (!syncService.isSyncRequested()) {
+        if (!syncService.isSyncRequested() || syncService.getChosenDataTypes().isEmpty()) {
             return context.getString(R.string.sync_data_types_off);
         }
 
@@ -305,7 +305,8 @@ public class SyncSettingsUtils {
         }
 
         SyncService syncService = SyncService.get();
-        if (syncService == null || !syncService.isSyncRequested()) {
+        if (syncService == null || !syncService.isSyncRequested()
+                || syncService.getChosenDataTypes().isEmpty()) {
             return AppCompatResources.getDrawable(context, R.drawable.ic_sync_off_48dp);
         }
         if (syncService.isSyncDisabledByEnterprisePolicy()) {
