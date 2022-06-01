@@ -62,6 +62,9 @@ _UNCOMPRESSED_FILE_EXTS = [
     'xmf'
 ]
 
+_COMPONENT_TYPES = ('activity', 'provider', 'receiver', 'service')
+_DEDUPE_ENTRY_TYPES = _COMPONENT_TYPES + ('activity-alias', 'meta-data')
+
 
 def _ParseArgs(args):
   parser = argparse.ArgumentParser()
@@ -416,17 +419,10 @@ def _ClassesFromZip(module_zip):
   return classes
 
 
-def _MaybeCheckServicesAndProvidersPresentInBase(bundle_path, module_zips):
-  """Checks bundles with isolated splits define all services in the base module.
-
-  Due to b/169196314, service classes are not found if they are not present in
-  the base module. Providers are also checked because they are loaded early in
-  startup, and keeping them in the base module gives more time for the chrome
-  split to load.
-  """
+def _ValidateSplits(bundle_path, module_zips):
   logging.info('Reading manifests and running dexdump')
   base_zip = next(p for p in module_zips if os.path.basename(p) == 'base.zip')
-  module_names = [os.path.basename(p)[:-len('.zip')] for p in module_zips]
+  module_names = sorted(os.path.basename(p)[:-len('.zip')] for p in module_zips)
   # Using threads makes these step go from 7s -> 1s on my machine.
   with concurrent.futures.ThreadPoolExecutor() as executor:
     # Create list of classes from the base module's dex.
@@ -434,62 +430,65 @@ def _MaybeCheckServicesAndProvidersPresentInBase(bundle_path, module_zips):
 
     # Create xmltrees of all module manifests.
     manifest_futures = [
-        executor.submit(_GetManifestForModule, bundle_path, name)
-        for name in module_names
+        executor.submit(_GetManifestForModule, bundle_path, n)
+        for n in module_names
     ]
     manifests_by_name = dict(
         zip(module_names, (f.result() for f in manifest_futures)))
     base_classes = classes_future.result()
 
-  base_manifest = manifests_by_name['base']
-  isolated_splits = base_manifest.get('{%s}isolatedSplits' %
-                                      manifest_utils.ANDROID_NAMESPACE)
-  if isolated_splits != 'true':
-    return
-
   # Collect service names from all split manifests.
   logging.info('Performing checks')
-  base_zip = None
-  service_names = _GetComponentNames(base_manifest, 'service')
-  provider_names = _GetComponentNames(base_manifest, 'provider')
-  for module_zip in module_zips:
-    name = os.path.basename(module_zip)[:-len('.zip')]
-    if name == 'base':
-      base_zip = module_zip
-    else:
-      cur_manifest = manifests_by_name[name]
-      service_names += _GetComponentNames(cur_manifest, 'service')
-      module_providers = _GetComponentNames(cur_manifest, 'provider')
-      if module_providers:
-        raise Exception("Providers should all be declared in the base manifest."
-                        " '%s' module declared: %s" % (name, module_providers))
+  errors = []
 
-  ignored_service_names = {
-      # Defined in the chime DFM manifest, but unused.
-      # org.chromium.chrome.browser.chime.ScheduledTaskService is used instead.
-      ("com.google.android.libraries.notifications.entrypoints.scheduled."
-       "ScheduledTaskService"),
+  # Ensure there are no components defined in multiple splits.
+  splits_by_component = {}
+  for module_name, cur_manifest in manifests_by_name.items():
+    for kind in _DEDUPE_ENTRY_TYPES:
+      for component in _GetComponentNames(cur_manifest, kind):
+        owner_module_name = splits_by_component.setdefault((kind, component),
+                                                           module_name)
+        # Allow services that exist only to keep <meta-data> out of
+        # ApplicationInfo.
+        if (owner_module_name != module_name
+            and not component.endswith('HolderService')):
+          errors.append(f'The {kind} "{component}" appeared in both '
+                        f'{owner_module_name} and {module_name}.')
 
-      # Defined in the chime DFM manifest, only used pre-O (where isolated
-      # splits are not supported).
-      ("com.google.android.libraries.notifications.executor.impl.basic."
-       "ChimeExecutorApiService"),
-  }
+  # Ensure components defined in base manifest exist in base dex.
+  for (kind, component), module_name in splits_by_component.items():
+    if module_name == 'base' and kind in _COMPONENT_TYPES:
+      if component not in base_classes:
+        errors.append(f"{component} is defined in the base manfiest, "
+                      f"but the class does not exist in the base splits' dex")
 
-  # Ensure all services are present in base module.
-  for service_name in service_names:
-    if service_name not in base_classes:
-      if service_name in ignored_service_names:
-        continue
-      raise Exception("Service %s should be present in the base module's dex."
+  # Remaining checks apply only when isolatedSplits="true".
+  isolated_splits = manifests_by_name['base'].get(
+      f'{manifest_utils.ANDROID_NAMESPACE}isolatedSplits')
+  if isolated_splits != 'true':
+    return errors
+
+  # Ensure all providers are present in base module. We enforce this because
+  # providers are loaded early in startup, and keeping them in the base module
+  # gives more time for the chrome split to load.
+  for module_name, cur_manifest in manifests_by_name.items():
+    if module_name == 'base':
+      continue
+    provider_names = _GetComponentNames(cur_manifest, 'provider')
+    if provider_names:
+      errors.append('Providers should all be declared in the base manifest.'
+                    ' "%s" module declared: %s' % (module_name, provider_names))
+
+  # Ensure all services are present in base module because service classes are
+  # not found if they are not present in the base module. b/169196314
+  # It is fine if they are defined in split manifests though.
+  for cur_manifest in manifests_by_name.values():
+    for service_name in _GetComponentNames(cur_manifest, 'service'):
+      if service_name not in base_classes:
+        errors.append("Service %s should be present in the base module's dex."
                       " See b/169196314 for more details." % service_name)
 
-  # Ensure all providers are present in base module.
-  for provider_name in provider_names:
-    if provider_name not in base_classes:
-      raise Exception(
-          "Provider %s should be present in the base module's dex." %
-          provider_name)
+  return errors
 
 
 def main(args):
@@ -553,7 +552,12 @@ def main(args):
       # enabled.  Consider making this run in parallel or move into a separate
       # step before enabling isolated splits by default.
       logging.info('Validating isolated split manifests')
-      _MaybeCheckServicesAndProvidersPresentInBase(tmp_bundle, module_zips)
+      errors = _ValidateSplits(tmp_bundle, module_zips)
+      if errors:
+        sys.stderr.write('Bundle failed sanity checks:\n  ')
+        sys.stderr.write('\n  '.join(errors))
+        sys.stderr.write('\n')
+        sys.exit(1)
 
     logging.info('Writing final output artifacts')
     shutil.move(tmp_bundle, options.out_bundle)
