@@ -4,6 +4,9 @@
 -->
 <html lang="en">
   <meta charset="utf-8">
+  {%- if subtests|length > 10 %}
+  <meta name="timeout" content="long">
+  {%- endif %}
   <title>HTTP headers on request for HTTP "Refresh" header</title>
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
