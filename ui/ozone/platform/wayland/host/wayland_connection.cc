@@ -627,7 +627,7 @@ base::TimeTicks WaylandConnection::ConvertPresentationTime(uint32_t tv_sec_hi,
 const gfx::PointF WaylandConnection::MaybeConvertLocation(
     const gfx::PointF& location,
     const WaylandWindow* window) const {
-  if (!surface_submission_in_pixel_coordinates_)
+  if (!surface_submission_in_pixel_coordinates_ || !window)
     return location;
   gfx::PointF converted(location);
   converted.Scale(1.0f / window->window_scale());
