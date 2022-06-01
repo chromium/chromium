@@ -912,8 +912,10 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForHardwarePlanes(
           video_frame->metadata().allow_overlay);
       transfer_resource.color_space = resource_color_space;
       transfer_resource.hdr_metadata = video_frame->hdr_metadata();
-      transfer_resource.read_lock_fences_enabled =
-          video_frame->metadata().read_lock_fences_enabled;
+      if (video_frame->metadata().read_lock_fences_enabled) {
+        transfer_resource.synchronization_type = viz::TransferableResource::
+            SynchronizationType::kGpuCommandsCompleted;
+      }
       transfer_resource.format = viz::GetResourceFormat(buffer_formats[i]);
       transfer_resource.ycbcr_info = video_frame->ycbcr_info();
 

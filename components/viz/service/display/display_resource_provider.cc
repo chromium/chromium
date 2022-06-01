@@ -473,7 +473,8 @@ void DisplayResourceProvider::ScopedReadLockSharedImage::SetReleaseFence(
 bool DisplayResourceProvider::ScopedReadLockSharedImage::HasReadLockFence()
     const {
   DCHECK(resource_);
-  return resource_->transferable.read_lock_fences_enabled;
+  return resource_->transferable.synchronization_type ==
+         TransferableResource::SynchronizationType::kGpuCommandsCompleted;
 }
 
 void DisplayResourceProvider::ScopedReadLockSharedImage::Reset() {

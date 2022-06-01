@@ -557,18 +557,27 @@ TEST_F(VideoResourceUpdaterTest, CreateForHardwarePlanes) {
   EXPECT_EQ(VideoFrameResourceType::YUV, resources.type);
   EXPECT_EQ(3u, resources.resources.size());
   EXPECT_EQ(3u, resources.release_callbacks.size());
-  EXPECT_FALSE(resources.resources[0].read_lock_fences_enabled);
-  EXPECT_FALSE(resources.resources[1].read_lock_fences_enabled);
-  EXPECT_FALSE(resources.resources[2].read_lock_fences_enabled);
+  EXPECT_EQ(resources.resources[0].synchronization_type,
+            viz::TransferableResource::SynchronizationType::kSyncToken);
+  EXPECT_EQ(resources.resources[1].synchronization_type,
+            viz::TransferableResource::SynchronizationType::kSyncToken);
+  EXPECT_EQ(resources.resources[2].synchronization_type,
+            viz::TransferableResource::SynchronizationType::kSyncToken);
 
   video_frame = CreateTestYuvHardwareVideoFrame(PIXEL_FORMAT_I420, 3,
                                                 GL_TEXTURE_RECTANGLE_ARB);
   video_frame->metadata().read_lock_fences_enabled = true;
 
   resources = updater->CreateExternalResourcesFromVideoFrame(video_frame);
-  EXPECT_TRUE(resources.resources[0].read_lock_fences_enabled);
-  EXPECT_TRUE(resources.resources[1].read_lock_fences_enabled);
-  EXPECT_TRUE(resources.resources[2].read_lock_fences_enabled);
+  EXPECT_EQ(
+      resources.resources[0].synchronization_type,
+      viz::TransferableResource::SynchronizationType::kGpuCommandsCompleted);
+  EXPECT_EQ(
+      resources.resources[1].synchronization_type,
+      viz::TransferableResource::SynchronizationType::kGpuCommandsCompleted);
+  EXPECT_EQ(
+      resources.resources[2].synchronization_type,
+      viz::TransferableResource::SynchronizationType::kGpuCommandsCompleted);
 }
 
 TEST_F(VideoResourceUpdaterTest,

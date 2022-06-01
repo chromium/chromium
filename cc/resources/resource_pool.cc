@@ -339,7 +339,9 @@ bool ResourcePool::PrepareForExport(const InUsePoolResource& in_use_resource) {
         gpu_backing->mailbox, GL_LINEAR, gpu_backing->texture_target,
         gpu_backing->mailbox_sync_token, resource->size(),
         gpu_backing->overlay_candidate);
-    transferable.read_lock_fences_enabled = gpu_backing->wait_on_fence_required;
+    if (gpu_backing->wait_on_fence_required)
+      transferable.synchronization_type =
+          viz::TransferableResource::SynchronizationType::kGpuCommandsCompleted;
   } else {
     transferable = viz::TransferableResource::MakeSoftware(
         resource->software_backing()->shared_bitmap_id, resource->size(),

@@ -167,7 +167,8 @@ DisplayResourceProviderSkia::LockSetForExternalUse::LockResource(
     }
     resource.locked_for_external_use = true;
 
-    if (resource.transferable.read_lock_fences_enabled) {
+    if (resource.transferable.synchronization_type ==
+        TransferableResource::SynchronizationType::kGpuCommandsCompleted) {
       if (resource_provider_->current_read_lock_fence_.get())
         resource_provider_->current_read_lock_fence_->Set();
       resource.read_lock_fence = resource_provider_->current_read_lock_fence_;

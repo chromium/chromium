@@ -141,7 +141,8 @@ DisplayResourceProviderGL::LockForRead(ResourceId id, bool overlay_only) {
     resource->lock_for_overlay_count++;
   else
     resource->lock_for_read_count++;
-  if (resource->transferable.read_lock_fences_enabled) {
+  if (resource->transferable.synchronization_type ==
+      TransferableResource::SynchronizationType::kGpuCommandsCompleted) {
     if (current_read_lock_fence_.get())
       current_read_lock_fence_->Set();
     resource->read_lock_fence = current_read_lock_fence_;
@@ -396,7 +397,8 @@ void DisplayResourceProviderGL::ScopedOverlayLockGL::SetReleaseFence(
 bool DisplayResourceProviderGL::ScopedOverlayLockGL::HasReadLockFence() const {
   auto* resource = resource_provider_->GetResource(resource_id_);
   DCHECK(resource);
-  return resource->transferable.read_lock_fences_enabled;
+  return resource->transferable.synchronization_type ==
+         TransferableResource::SynchronizationType::kGpuCommandsCompleted;
 }
 
 DisplayResourceProviderGL::SynchronousFence::SynchronousFence(

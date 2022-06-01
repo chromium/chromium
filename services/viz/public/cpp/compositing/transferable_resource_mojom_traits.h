@@ -19,6 +19,16 @@
 namespace mojo {
 
 template <>
+struct EnumTraits<viz::mojom::SynchronizationType,
+                  viz::TransferableResource::SynchronizationType> {
+  static viz::mojom::SynchronizationType ToMojom(
+      viz::TransferableResource::SynchronizationType type);
+
+  static bool FromMojom(viz::mojom::SynchronizationType input,
+                        viz::TransferableResource::SynchronizationType* out);
+};
+
+template <>
 struct StructTraits<viz::mojom::TransferableResourceDataView,
                     viz::TransferableResource> {
   static const viz::ResourceId& id(const viz::TransferableResource& resource) {
@@ -42,9 +52,9 @@ struct StructTraits<viz::mojom::TransferableResourceDataView,
     return resource.mailbox_holder;
   }
 
-  static bool read_lock_fences_enabled(
+  static viz::TransferableResource::SynchronizationType synchronization_type(
       const viz::TransferableResource& resource) {
-    return resource.read_lock_fences_enabled;
+    return resource.synchronization_type;
   }
 
   static bool is_software(const viz::TransferableResource& resource) {

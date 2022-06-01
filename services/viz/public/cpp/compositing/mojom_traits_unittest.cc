@@ -1136,7 +1136,8 @@ TEST_F(StructTraitsTest, TransferableResource) {
       gpu::CommandBufferId::FromUnsafeValue(0xdeadbeef));
   const uint64_t release_count = 0xdeadbeefdeadL;
   const uint32_t texture_target = 1337;
-  const bool read_lock_fences_enabled = true;
+  const TransferableResource::SynchronizationType sync_type =
+      TransferableResource::SynchronizationType::kGpuCommandsCompleted;
   const bool is_software = false;
   const bool is_overlay_candidate = true;
 
@@ -1152,7 +1153,7 @@ TEST_F(StructTraitsTest, TransferableResource) {
   input.filter = filter;
   input.size = size;
   input.mailbox_holder = mailbox_holder;
-  input.read_lock_fences_enabled = read_lock_fences_enabled;
+  input.synchronization_type = sync_type;
   input.is_software = is_software;
   input.is_overlay_candidate = is_overlay_candidate;
 
@@ -1168,7 +1169,7 @@ TEST_F(StructTraitsTest, TransferableResource) {
   EXPECT_EQ(mailbox_holder.sync_token, output.mailbox_holder.sync_token);
   EXPECT_EQ(mailbox_holder.texture_target,
             output.mailbox_holder.texture_target);
-  EXPECT_EQ(read_lock_fences_enabled, output.read_lock_fences_enabled);
+  EXPECT_EQ(sync_type, output.synchronization_type);
   EXPECT_EQ(is_software, output.is_software);
   EXPECT_EQ(is_overlay_candidate, output.is_overlay_candidate);
 }

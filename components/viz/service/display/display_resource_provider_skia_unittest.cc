@@ -314,7 +314,8 @@ TEST_F(DisplayResourceProviderSkiaTest,
        ReadLockFenceStopsReturnToChildOrDelete) {
   MockReleaseCallback release;
   TransferableResource tran1 = CreateResource(RGBA_8888);
-  tran1.read_lock_fences_enabled = true;
+  tran1.synchronization_type =
+      TransferableResource::SynchronizationType::kGpuCommandsCompleted;
   ResourceId id1 = child_resource_provider_->ImportResource(
       tran1, base::BindOnce(&MockReleaseCallback::Released,
                             base::Unretained(&release)));
@@ -330,7 +331,8 @@ TEST_F(DisplayResourceProviderSkiaTest,
       static_cast<RasterContextProvider*>(child_context_provider_.get()));
   ASSERT_EQ(1u, list.size());
   EXPECT_TRUE(child_resource_provider_->InUseByConsumer(id1));
-  EXPECT_TRUE(list[0].read_lock_fences_enabled);
+  EXPECT_EQ(list[0].synchronization_type,
+            TransferableResource::SynchronizationType::kGpuCommandsCompleted);
 
   resource_provider_->ReceiveFromChild(child_id, list);
 
@@ -366,13 +368,15 @@ TEST_F(DisplayResourceProviderSkiaTest, ReadLockFenceDestroyChild) {
   MockReleaseCallback release;
 
   TransferableResource tran1 = CreateResource(RGBA_8888);
-  tran1.read_lock_fences_enabled = true;
+  tran1.synchronization_type =
+      TransferableResource::SynchronizationType::kGpuCommandsCompleted;
   ResourceId id1 = child_resource_provider_->ImportResource(
       tran1, base::BindOnce(&MockReleaseCallback::Released,
                             base::Unretained(&release)));
 
   TransferableResource tran2 = CreateResource(RGBA_8888);
-  tran2.read_lock_fences_enabled = false;
+  ASSERT_EQ(tran2.synchronization_type,
+            TransferableResource::SynchronizationType::kSyncToken);
   ResourceId id2 = child_resource_provider_->ImportResource(
       tran2, base::BindOnce(&MockReleaseCallback::Released,
                             base::Unretained(&release)));
