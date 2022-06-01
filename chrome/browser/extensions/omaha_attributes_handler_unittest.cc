@@ -251,4 +251,22 @@ TEST_F(OmahaAttributesHandlerUnitTest, KeepDisabledWhenMalwareRemoved) {
       kTestExtensionId, disable_reason::DISABLE_GREYLIST));
 }
 
+TEST_F(OmahaAttributesHandlerUnitTest, ExtensionUninstalledBeforeNotified) {
+  InitializeGoodInstalledExtensionService();
+  service()->Init();
+
+  ExtensionStateTester state_tester(profile());
+
+  EXPECT_TRUE(state_tester.ExpectEnabled(kTestExtensionId));
+
+  service()->UninstallExtension(kTestExtensionId, UNINSTALL_REASON_FOR_TESTING,
+                                nullptr);
+
+  base::Value attributes(base::Value::Type::DICTIONARY);
+  attributes.SetBoolKey("_malware", true);
+  // kTestExtensionId is already uninstalled. Performing action on it should
+  // not crash. Regression test for https://crbug.com/1305490.
+  service()->PerformActionBasedOnOmahaAttributes(kTestExtensionId, attributes);
+}
+
 }  // namespace extensions
