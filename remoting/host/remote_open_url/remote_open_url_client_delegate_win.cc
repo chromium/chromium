@@ -6,8 +6,6 @@
 
 #include <windows.h>
 
-#include <shlwapi.h>
-
 #include <ios>
 #include <string>
 
@@ -17,6 +15,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/current_module.h"
 #include "base/win/default_apps_util.h"
+#include "base/win/shlwapi.h"
 #include "remoting/base/logging.h"
 #include "remoting/base/user_settings.h"
 #include "remoting/host/remote_open_url/remote_open_url_constants.h"
