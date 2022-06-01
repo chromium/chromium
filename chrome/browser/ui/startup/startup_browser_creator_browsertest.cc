@@ -53,6 +53,7 @@
 #include "chrome/browser/sessions/exit_type_service.h"
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/sessions/session_restore_test_helper.h"
+#include "chrome/browser/sessions/session_restore_test_utils.h"
 #include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/signin/signin_promo.h"
@@ -293,44 +294,6 @@ AllBrowsersClosedWaiter::~AllBrowsersClosedWaiter() {
 
 void AllBrowsersClosedWaiter::OnBrowserRemoved(Browser* browser) {
   if (chrome::GetTotalBrowserCount() == 0)
-    std::move(quit_closure_).Run();
-}
-
-// This class waits for a specified number of sessions to be restored.
-class SessionsRestoredWaiter {
- public:
-  explicit SessionsRestoredWaiter(base::OnceClosure quit_closure,
-                                  int num_session_restores_expected);
-  SessionsRestoredWaiter(const SessionsRestoredWaiter&) = delete;
-  SessionsRestoredWaiter& operator=(const SessionsRestoredWaiter&) = delete;
-  ~SessionsRestoredWaiter();
-
- private:
-  // Callback for session restore notifications.
-  void OnSessionRestoreDone(Profile* profile, int num_tabs_restored);
-
-  // For automatically unsubscribing from callback-based notifications.
-  base::CallbackListSubscription callback_subscription_;
-  base::OnceClosure quit_closure_;
-  int num_session_restores_expected_;
-  int num_sessions_restored_ = 0;
-};
-
-SessionsRestoredWaiter::SessionsRestoredWaiter(
-    base::OnceClosure quit_closure,
-    int num_session_restores_expected)
-    : quit_closure_(std::move(quit_closure)),
-      num_session_restores_expected_(num_session_restores_expected) {
-  callback_subscription_ = SessionRestore::RegisterOnSessionRestoredCallback(
-      base::BindRepeating(&SessionsRestoredWaiter::OnSessionRestoreDone,
-                          base::Unretained(this)));
-}
-
-SessionsRestoredWaiter::~SessionsRestoredWaiter() = default;
-
-void SessionsRestoredWaiter::OnSessionRestoreDone(Profile* profile,
-                                                  int num_tabs_restored) {
-  if (++num_sessions_restored_ == num_session_restores_expected_)
     std::move(quit_closure_).Run();
 }
 
@@ -1252,7 +1215,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, UpdateWithTwoProfiles) {
   last_opened_profiles.push_back(profile2);
 
   base::RunLoop run_loop;
-  SessionsRestoredWaiter restore_waiter(run_loop.QuitClosure(), 2);
+  testing::SessionsRestoredWaiter restore_waiter(run_loop.QuitClosure(), 2);
   browser_creator.Start(dummy, profile_manager->user_data_dir(),
                         {profile1, StartupProfileMode::kBrowserWindow},
                         last_opened_profiles);
@@ -1355,7 +1318,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
 
   base::RunLoop run_loop;
   // Only profile_last should get its session restored.
-  SessionsRestoredWaiter restore_waiter(run_loop.QuitClosure(), 1);
+  testing::SessionsRestoredWaiter restore_waiter(run_loop.QuitClosure(), 1);
   browser_creator.Start(dummy, profile_manager->user_data_dir(),
                         {profile_home1, StartupProfileMode::kBrowserWindow},
                         last_opened_profiles);
@@ -1457,7 +1420,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, StartupPrefSetAsLastAndURLs) {
       dummy, profile_manager->user_data_dir(),
       {browser()->profile(), StartupProfileMode::kBrowserWindow},
       last_opened_profiles);
-  SessionsRestoredWaiter restore_waiter(run_loop.QuitClosure(), 1);
+  testing::SessionsRestoredWaiter restore_waiter(run_loop.QuitClosure(), 1);
   run_loop.Run();
 
   // |profile| restored the last open pages and opened the urls in an active new
@@ -1576,7 +1539,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
 
   base::CommandLine empty(base::CommandLine::NO_PROGRAM);
   base::RunLoop run_loop;
-  SessionsRestoredWaiter restore_waiter(run_loop.QuitClosure(), 2);
+  testing::SessionsRestoredWaiter restore_waiter(run_loop.QuitClosure(), 2);
 
   StartupBrowserCreator::ProcessCommandLineAlreadyRunning(
       empty, {}, {dest_path1, StartupProfileMode::kBrowserWindow});

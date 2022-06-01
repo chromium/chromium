@@ -18,6 +18,7 @@
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/sessions/exit_type_service.h"
 #include "chrome/browser/sessions/session_restore.h"
+#include "chrome/browser/sessions/session_restore_test_utils.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -48,47 +49,7 @@ using crosapi::mojom::CreationResult;
 using crosapi::mojom::SessionType;
 
 namespace {
-
 constexpr char kNavigationUrl[] = "https://www.google.com/";
-
-// This class waits for a specified number of sessions to be restored.
-class SessionsRestoredWaiter {
- public:
-  explicit SessionsRestoredWaiter(base::OnceClosure quit_closure,
-                                  int num_session_restores_expected);
-  SessionsRestoredWaiter(const SessionsRestoredWaiter&) = delete;
-  SessionsRestoredWaiter& operator=(const SessionsRestoredWaiter&) = delete;
-  ~SessionsRestoredWaiter();
-
- private:
-  // Callback for session restore notifications.
-  void OnSessionRestoreDone(Profile* profile, int num_tabs_restored);
-
-  // For automatically unsubscribing from callback-based notifications.
-  base::CallbackListSubscription callback_subscription_;
-  base::OnceClosure quit_closure_;
-  int num_session_restores_expected_;
-  int num_sessions_restored_ = 0;
-};
-
-SessionsRestoredWaiter::SessionsRestoredWaiter(
-    base::OnceClosure quit_closure,
-    int num_session_restores_expected)
-    : quit_closure_(std::move(quit_closure)),
-      num_session_restores_expected_(num_session_restores_expected) {
-  callback_subscription_ = SessionRestore::RegisterOnSessionRestoredCallback(
-      base::BindRepeating(&SessionsRestoredWaiter::OnSessionRestoreDone,
-                          base::Unretained(this)));
-}
-
-SessionsRestoredWaiter::~SessionsRestoredWaiter() = default;
-
-void SessionsRestoredWaiter::OnSessionRestoreDone(Profile* profile,
-                                                  int num_tabs_restored) {
-  if (++num_sessions_restored_ == num_session_restores_expected_)
-    std::move(quit_closure_).Run();
-}
-
 }  // namespace
 
 class BrowserServiceLacrosBrowserTest : public InProcessBrowserTest {
@@ -399,7 +360,7 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosWindowlessBrowserTest,
 
   // Trigger Lacros full restore.
   base::RunLoop run_loop;
-  SessionsRestoredWaiter restore_waiter(run_loop.QuitClosure(), 2);
+  testing::SessionsRestoredWaiter restore_waiter(run_loop.QuitClosure(), 2);
   browser_service()->OpenForFullRestore();
   run_loop.Run();
 
@@ -469,7 +430,7 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosWindowlessBrowserTest,
 
   // Trigger a new tab with session restore.
   base::RunLoop run_loop;
-  SessionsRestoredWaiter restore_waiter(run_loop.QuitClosure(), 1);
+  testing::SessionsRestoredWaiter restore_waiter(run_loop.QuitClosure(), 1);
   browser_service()->NewTab(
       /*should_trigger_session_restore=*/true,
       /*callback=*/base::DoNothing());
