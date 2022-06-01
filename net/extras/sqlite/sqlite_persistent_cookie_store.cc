@@ -53,9 +53,9 @@ base::Value CookieKeyedLoadNetLogParams(const std::string& key,
                                         net::NetLogCaptureMode capture_mode) {
   if (!net::NetLogCaptureIncludesSensitive(capture_mode))
     return base::Value();
-  base::DictionaryValue dict;
-  dict.SetString("key", key);
-  return std::move(dict);
+  base::Value::Dict dict;
+  dict.Set("key", key);
+  return base::Value(std::move(dict));
 }
 
 // Used to populate a histogram for problems when loading cookies.
