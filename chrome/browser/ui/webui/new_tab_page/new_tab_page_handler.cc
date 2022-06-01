@@ -236,7 +236,8 @@ new_tab_page::mojom::ThemePtr MakeTheme(
   // image. The first condition is necessary as a custom background image can be
   // set while a GWS theme with a bundled image is concurrently enabled (see
   // crbug.com/1329556 and crbug.com/1329552).
-  if (!custom_background.has_value() &&
+  if (base::FeatureList::IsEnabled(ntp_features::kCwsScrimRemoval) &&
+      !custom_background.has_value() &&
       theme_provider->HasCustomImage(IDR_THEME_NTP_BACKGROUND)) {
     if (ShouldForceDarkForegroundColorsForLogoAndOGB(theme_service)) {
       theme->is_dark = false;
