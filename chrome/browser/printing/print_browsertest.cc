@@ -319,7 +319,7 @@ class PrintPreviewObserver : PrintPreviewUI::TestDelegate {
       preview_dialog_ = preview_dialog;
 
       if (wait_for_loaded_) {
-        // Instantiate |queue| to listen for messages in |preview_dialog_|.
+        // Instantiate `queue_` to listen for messages in `preview_dialog_`.
         queue_.emplace(preview_dialog_);
         content::ExecuteScriptAsync(
             preview_dialog_.get(),

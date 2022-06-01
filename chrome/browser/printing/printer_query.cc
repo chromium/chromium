@@ -83,7 +83,7 @@ void PrinterQuery::PostSettingsDoneToIO(
     absl::optional<bool> maybe_is_modifiable,
     std::unique_ptr<PrintSettings> new_settings,
     mojom::ResultCode result) {
-  // |this| is owned by |callback|, so |base::Unretained()| is safe.
+  // `this` is owned by `callback`, so `base::Unretained()` is safe.
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&PrinterQuery::GetSettingsDone, base::Unretained(this),
@@ -161,7 +161,7 @@ void PrinterQuery::SetSettings(base::Value::Dict new_settings,
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
   StartWorker();
-  // |this| is owned by |callback|, so |base::Unretained()| is safe.
+  // `this` is owned by `callback`, so `base::Unretained()` is safe.
   worker_->PostTask(
       FROM_HERE,
       base::BindOnce(&PrintJobWorker::SetSettings,
@@ -178,7 +178,7 @@ void PrinterQuery::SetSettingsFromPOD(
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
   StartWorker();
-  // |this| is owned by |callback|, so |base::Unretained()| is safe.
+  // `this` is owned by `callback`, so `base::Unretained()` is safe.
   worker_->PostTask(
       FROM_HERE,
       base::BindOnce(&PrintJobWorker::SetSettingsFromPOD,

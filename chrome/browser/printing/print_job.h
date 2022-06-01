@@ -67,7 +67,7 @@ class PrintJob : public base::RefCountedThreadSafe<PrintJob> {
   // post-constructor initialization must be done with Initialize().
   // If PrintJob is created on Chrome OS, call SetSource() to set which
   // component initiated this print job.
-  // |print_job_manager| must outlive this object.
+  // `print_job_manager` must outlive this object.
   explicit PrintJob(PrintJobManager* print_job_manager);
 
   PrintJob(const PrintJob&) = delete;

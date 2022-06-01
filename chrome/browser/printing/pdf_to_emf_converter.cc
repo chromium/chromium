@@ -292,7 +292,7 @@ void PdfConverterImpl::OnPageDone(base::ReadOnlySharedMemoryRegion emf_region,
 
   base::WeakPtr<PdfConverterImpl> weak_this = weak_ptr_factory_.GetWeakPtr();
   data.callback().Run(data.page_number(), scale_factor, std::move(metafile));
-  // WARNING: the callback might have deleted |this|!
+  // WARNING: the callback might have deleted `this`!
   if (!weak_this)
     return;
   get_page_callbacks_.pop();
@@ -312,7 +312,7 @@ void PdfConverterImpl::OnFailed(const std::string& error_message) {
   if (!start_callback_.is_null()) {
     std::move(start_callback_).Run(/*page_count=*/0);
     if (!weak_this)
-      return;  // Protect against the |start_callback_| deleting |this|.
+      return;  // Protect against the `start_callback_` deleting `this`.
   }
 
   while (!get_page_callbacks_.empty()) {
