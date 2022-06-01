@@ -9,10 +9,10 @@
 #include <cstdint>
 
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/thread_annotations.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/time/time.h"
 #include "base/allocator/partition_allocator/partition_lock.h"
-#include "base/base_export.h"
 
 namespace partition_alloc::internal {
 
@@ -33,7 +33,7 @@ struct QuarantineData final {
   std::atomic<size_t> epoch{0u};
 };
 
-class BASE_EXPORT PCScanSchedulingBackend {
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PCScanSchedulingBackend {
  public:
   explicit inline constexpr PCScanSchedulingBackend(PCScanScheduler&);
   // No virtual destructor to allow constant initialization of PCScan as
@@ -77,7 +77,8 @@ class BASE_EXPORT PCScanSchedulingBackend {
 };
 
 // Scheduling backend that just considers a single hard limit.
-class BASE_EXPORT LimitBackend final : public PCScanSchedulingBackend {
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC) LimitBackend final
+    : public PCScanSchedulingBackend {
  public:
   static constexpr double kQuarantineSizeFraction = 0.1;
 
@@ -97,7 +98,7 @@ class BASE_EXPORT LimitBackend final : public PCScanSchedulingBackend {
 // workload.
 //
 // See constants below for trigger mechanisms.
-class BASE_EXPORT MUAwareTaskBasedBackend final
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC) MUAwareTaskBasedBackend final
     : public PCScanSchedulingBackend {
  public:
   using ScheduleDelayedScanFunc = void (*)(int64_t delay_in_microseconds);
@@ -139,7 +140,7 @@ class BASE_EXPORT MUAwareTaskBasedBackend final
 // path for freeing objects. The scheduler holds data needed to invoke a
 // `PCScanSchedulingBackend` upon hitting a limit. The backend implements
 // the actual scheduling strategy and is in charge of maintaining limits.
-class BASE_EXPORT PCScanScheduler final {
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PCScanScheduler final {
  public:
   inline constexpr PCScanScheduler();
 

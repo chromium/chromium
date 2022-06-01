@@ -9,7 +9,7 @@
 
 #include "base/allocator/partition_allocator/allocation_guard.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
-#include "base/base_export.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -22,12 +22,13 @@ namespace partition_alloc {
 // |size| is the size of the failed allocation, or 0 if not known.
 // Crash reporting classifies such crashes as OOM.
 // Must be allocation-safe.
-BASE_EXPORT void TerminateBecauseOutOfMemory(size_t size);
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+void TerminateBecauseOutOfMemory(size_t size);
 
 // Records the size of the allocation that caused the current OOM crash, for
 // consumption by Breakpad.
 // TODO: this can be removed when Breakpad is no longer supported.
-BASE_EXPORT extern size_t g_oom_size;
+PA_COMPONENT_EXPORT(PARTITION_ALLOC) extern size_t g_oom_size;
 
 #if BUILDFLAG(IS_WIN)
 namespace win {
@@ -48,7 +49,8 @@ namespace internal {
 // The crash is generated in a PA_NOINLINE function so that we can classify the
 // crash as an OOM solely by analyzing the stack trace. It is tagged as
 // PA_NOT_TAIL_CALLED to ensure that its parent function stays on the stack.
-[[noreturn]] BASE_EXPORT void PA_NOT_TAIL_CALLED OnNoMemory(size_t size);
+[[noreturn]] PA_COMPONENT_EXPORT(PARTITION_ALLOC) void PA_NOT_TAIL_CALLED
+    OnNoMemory(size_t size);
 
 // OOM_CRASH(size) - Specialization of IMMEDIATE_CRASH which will raise a custom
 // exception on Windows to signal this is OOM and not a normal assert.

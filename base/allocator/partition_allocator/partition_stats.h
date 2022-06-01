@@ -8,9 +8,9 @@
 #include <cstddef>
 #include <cstdint>
 
+#include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
-#include "base/base_export.h"
 
 namespace partition_alloc {
 
@@ -97,7 +97,7 @@ struct PartitionBucketMemoryStats {
 
 // Interface that is passed to PartitionDumpStats and
 // PartitionDumpStats for using the memory statistics.
-class BASE_EXPORT PartitionStatsDumper {
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionStatsDumper {
  public:
   // Called to dump total memory used by partition, once per partition.
   virtual void PartitionDumpTotals(const char* partition_name,
@@ -110,7 +110,8 @@ class BASE_EXPORT PartitionStatsDumper {
 
 // Simple version of PartitionStatsDumper, storing the returned stats in stats_.
 // Does not handle per-bucket stats.
-class BASE_EXPORT SimplePartitionStatsDumper : public PartitionStatsDumper {
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC) SimplePartitionStatsDumper
+    : public PartitionStatsDumper {
  public:
   SimplePartitionStatsDumper();
 

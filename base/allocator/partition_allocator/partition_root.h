@@ -44,6 +44,7 @@
 #include "base/allocator/partition_allocator/partition_alloc-inl.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/bits.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/thread_annotations.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/time/time.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
@@ -66,7 +67,6 @@
 #include "base/allocator/partition_allocator/starscan/state_bitmap.h"
 #include "base/allocator/partition_allocator/tagging.h"
 #include "base/allocator/partition_allocator/thread_cache.h"
-#include "base/base_export.h"
 #include "base/debug/debugging_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
@@ -106,7 +106,8 @@ namespace internal {
 // Avoid including partition_address_space.h from this .h file, by moving the
 // call to IsManagedByPartitionAllocBRPPool into the .cc file.
 #if BUILDFLAG(PA_DCHECK_IS_ON)
-BASE_EXPORT void DCheckIfManagedByPartitionAllocBRPPool(uintptr_t address);
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+void DCheckIfManagedByPartitionAllocBRPPool(uintptr_t address);
 #else
 PA_ALWAYS_INLINE void DCheckIfManagedByPartitionAllocBRPPool(
     uintptr_t address) {}
@@ -200,7 +201,7 @@ struct PartitionOptions {
 // Never instantiate a PartitionRoot directly, instead use
 // PartitionAllocator.
 template <bool thread_safe>
-struct PA_ALIGNAS(64) BASE_EXPORT PartitionRoot {
+struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   using SlotSpan = internal::SlotSpanMetadata<thread_safe>;
   using Page = internal::PartitionPage<thread_safe>;
   using Bucket = internal::PartitionBucket<thread_safe>;

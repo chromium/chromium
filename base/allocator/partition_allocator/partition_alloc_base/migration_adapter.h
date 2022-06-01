@@ -8,7 +8,6 @@
 #include <cstdint>
 #include <string>
 
-#include "base/base_export.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_MAC)

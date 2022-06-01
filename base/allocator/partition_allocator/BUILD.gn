@@ -8,9 +8,8 @@ import("//base/allocator/partition_allocator/partition_alloc.gni")
 # Add partition_alloc.gni and import it for partition_alloc configs.
 
 config("partition_alloc_implementation") {
-  # After introducing partition_alloc_export, replace BASE_IMPLEMENTATION with
-  # PARTITION_ALLOC_IMPLEMENTATION.
-  defines = [ "BASE_IMPLEMENTATION" ]
+  # See also: `partition_alloc_base/component_export.h`
+  defines = [ "IS_PARTITION_ALLOC_IMPL" ]
 }
 
 config("memory_tagging") {
@@ -78,6 +77,7 @@ target(partition_alloc_target_type, "partition_alloc") {
     "partition_alloc_base/check.cc",
     "partition_alloc_base/check.h",
     "partition_alloc_base/compiler_specific.h",
+    "partition_alloc_base/component_export.h",
     "partition_alloc_base/cpu.cc",
     "partition_alloc_base/cpu.h",
     "partition_alloc_base/cxx17_backports.h",

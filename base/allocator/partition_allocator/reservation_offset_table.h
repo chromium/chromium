@@ -14,10 +14,10 @@
 #include "base/allocator/partition_allocator/address_pool_manager.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/tagging.h"
-#include "base/base_export.h"
 #include "build/build_config.h"
 
 namespace partition_alloc::internal {
@@ -62,7 +62,7 @@ static constexpr uint16_t kOffsetTagNormalBuckets =
 //    further determine which part of the supe page is used by PartitionAlloc.
 //    This isn't a problem in 64-bit mode, where allocation granularity is
 //    kSuperPageSize.
-class BASE_EXPORT ReservationOffsetTable {
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ReservationOffsetTable {
  public:
 #if defined(PA_HAS_64_BITS_POINTERS)
   // There is one reservation offset table per Pool in 64-bit mode.

@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-#include "base/base_export.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 
 namespace partition_alloc {
 
@@ -17,14 +17,14 @@ namespace internal {
 // `base::RandUint64` which is very unpredictable, but which is expensive due to
 // the need to call into the kernel. Therefore this generator uses a fast,
 // entirely user-space function after initialization.
-BASE_EXPORT uint32_t RandomValue();
+PA_COMPONENT_EXPORT(PARTITION_ALLOC) uint32_t RandomValue();
 
 }  // namespace internal
 
 // Sets the seed for the random number generator to a known value, to cause the
 // RNG to generate a predictable sequence of outputs. May be called multiple
 // times.
-BASE_EXPORT void SetMmapSeedForTesting(uint64_t seed);
+PA_COMPONENT_EXPORT(PARTITION_ALLOC) void SetMmapSeedForTesting(uint64_t seed);
 
 }  // namespace partition_alloc
 

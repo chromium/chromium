@@ -10,11 +10,11 @@
 
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/thread_annotations.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/yield_processor.h"
-#include "base/base_export.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -65,7 +65,7 @@ namespace partition_alloc::internal {
 // any awareness of other threads' behavior. One exception: x86 macOS uses
 // os_unfair_lock() if available, which is the case for macOS >= 10.12, that is
 // most clients.
-class PA_LOCKABLE BASE_EXPORT SpinningMutex {
+class PA_LOCKABLE PA_COMPONENT_EXPORT(PARTITION_ALLOC) SpinningMutex {
  public:
   inline constexpr SpinningMutex();
   PA_ALWAYS_INLINE void Acquire() PA_EXCLUSIVE_LOCK_FUNCTION();

@@ -9,8 +9,8 @@
 
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/immediate_crash.h"
-#include "base/base_export.h"
 
 // This header defines the CHECK, DCHECK, and DPCHECK macros.
 //
@@ -62,12 +62,12 @@ class VoidifyStream {
   true ? (void)0                                                     \
        : ::partition_alloc::internal::logging::VoidifyStream(expr) & \
              (*::partition_alloc::internal::logging::g_swallow_stream)
-BASE_EXPORT extern std::ostream* g_swallow_stream;
+PA_COMPONENT_EXPORT(PARTITION_ALLOC) extern std::ostream* g_swallow_stream;
 
 class LogMessage;
 
 // Class used for raising a check error upon destruction.
-class BASE_EXPORT CheckError {
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC) CheckError {
  public:
   static CheckError Check(const char* file, int line, const char* condition);
 
@@ -165,8 +165,8 @@ class BASE_EXPORT CheckError {
 #endif
 
 // Async signal safe checking mechanism.
-BASE_EXPORT void RawCheck(const char* message);
-BASE_EXPORT void RawError(const char* message);
+PA_COMPONENT_EXPORT(PARTITION_ALLOC) void RawCheck(const char* message);
+PA_COMPONENT_EXPORT(PARTITION_ALLOC) void RawError(const char* message);
 #define PA_RAW_CHECK(condition)                       \
   do {                                                \
     if (!(condition))                                 \

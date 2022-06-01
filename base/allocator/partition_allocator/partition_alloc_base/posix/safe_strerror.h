@@ -9,8 +9,8 @@
 
 #include <string>
 
+#include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/migration_adapter.h"
-#include "base/base_export.h"
 
 namespace partition_alloc::internal::base {
 
@@ -30,7 +30,8 @@ namespace partition_alloc::internal::base {
 // result is always null-terminated. The value of errno is never changed.
 //
 // Use this instead of strerror_r().
-BASE_EXPORT void safe_strerror_r(int err, char* buf, size_t len);
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+void safe_strerror_r(int err, char* buf, size_t len);
 
 // Calls safe_strerror_r with a buffer of suitable size and returns the result
 // in a C++ string.
@@ -38,7 +39,7 @@ BASE_EXPORT void safe_strerror_r(int err, char* buf, size_t len);
 // Use this instead of strerror(). Note though that safe_strerror_r will be
 // more robust in the case of heap corruption errors, since it doesn't need to
 // allocate a string.
-BASE_EXPORT std::string safe_strerror(int err);
+PA_COMPONENT_EXPORT(PARTITION_ALLOC) std::string safe_strerror(int err);
 
 }  // namespace partition_alloc::internal::base
 

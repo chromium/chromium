@@ -9,8 +9,8 @@
 #include <zircon/types.h>
 
 #include "base/allocator/buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/logging.h"
-#include "base/base_export.h"
 #include "build/build_config.h"
 
 // Use the PA_ZX_LOG family of macros along with a zx_status_t containing a
@@ -19,7 +19,8 @@
 
 namespace partition_alloc::internal::logging {
 
-class BASE_EXPORT ZxLogMessage : public logging::LogMessage {
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ZxLogMessage
+    : public logging::LogMessage {
  public:
   ZxLogMessage(const char* file_path,
                int line,

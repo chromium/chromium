@@ -9,14 +9,14 @@
 
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
-#include "base/base_export.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 #include "build/build_config.h"
 
 namespace partition_alloc {
 
 // Calculates a random preferred mapping address. In calculating an address, we
 // balance good ASLR against not fragmenting the address space too badly.
-BASE_EXPORT uintptr_t GetRandomPageBase();
+PA_COMPONENT_EXPORT(PARTITION_ALLOC) uintptr_t GetRandomPageBase();
 
 namespace internal {
 

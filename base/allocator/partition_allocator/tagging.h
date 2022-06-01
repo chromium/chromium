@@ -12,8 +12,8 @@
 #include <cstdint>
 
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
-#include "base/base_export.h"
 #include "build/build_config.h"
 
 namespace partition_alloc {
@@ -32,8 +32,8 @@ enum class TagViolationReportingMode {
 };
 
 // Changes the memory tagging mode for the calling thread.
-BASE_EXPORT void ChangeMemoryTaggingModeForCurrentThread(
-    TagViolationReportingMode);
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+void ChangeMemoryTaggingModeForCurrentThread(TagViolationReportingMode);
 
 namespace internal {
 
@@ -46,17 +46,18 @@ constexpr uint64_t kMemTagUnmask = 0xffffffffffffffffuLL;
 
 #if BUILDFLAG(IS_ANDROID)
 // Changes the memory tagging mode for all threads in the current process.
-BASE_EXPORT void ChangeMemoryTaggingModeForAllThreadsPerProcess(
-    TagViolationReportingMode);
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+void ChangeMemoryTaggingModeForAllThreadsPerProcess(TagViolationReportingMode);
 #endif
 
 // Gets the memory tagging mode for the calling thread.
-BASE_EXPORT TagViolationReportingMode GetMemoryTaggingModeForCurrentThread();
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+TagViolationReportingMode GetMemoryTaggingModeForCurrentThread();
 
 // Called by the partition allocator after initial startup, this detects MTE
 // support in the current CPU and replaces the active tagging intrinsics with
 // MTE versions if needed.
-BASE_EXPORT void InitializeMTESupportIfNeeded();
+PA_COMPONENT_EXPORT(PARTITION_ALLOC) void InitializeMTESupportIfNeeded();
 
 // These global function pointers hold the implementations of the tagging
 // intrinsics (TagMemoryRangeRandomly, TagMemoryRangeIncrement, RemaskPtr).
@@ -74,11 +75,12 @@ using TagMemoryRangeIncrementInternalFn = void*(void* ptr, size_t size);
 using TagMemoryRangeRandomlyInternalFn = void*(void* ptr,
                                                size_t size,
                                                uint64_t mask);
-extern BASE_EXPORT TagMemoryRangeRandomlyInternalFn*
-    global_tag_memory_range_randomly_fn;
-extern BASE_EXPORT TagMemoryRangeIncrementInternalFn*
-    global_tag_memory_range_increment_fn;
-extern BASE_EXPORT RemaskPtrInternalFn* global_remask_void_ptr_fn;
+extern PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+    TagMemoryRangeRandomlyInternalFn* global_tag_memory_range_randomly_fn;
+extern PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+    TagMemoryRangeIncrementInternalFn* global_tag_memory_range_increment_fn;
+extern PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+    RemaskPtrInternalFn* global_remask_void_ptr_fn;
 
 // Increments the tag of the memory range ptr. Useful for provable revocations
 // (e.g. free). Returns the pointer with the new tag. Ensures that the entire

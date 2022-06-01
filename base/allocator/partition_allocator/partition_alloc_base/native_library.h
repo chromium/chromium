@@ -10,9 +10,9 @@
 
 #include <string>
 
+#include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/files/file_path.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/migration_adapter.h"
-#include "base/base_export.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -46,7 +46,7 @@ using NativeLibrary = NativeLibraryStruct*;
 using NativeLibrary = void*;
 #endif  // OS_*
 
-struct BASE_EXPORT NativeLibraryLoadError {
+struct PA_COMPONENT_EXPORT(PARTITION_ALLOC) NativeLibraryLoadError {
 #if BUILDFLAG(IS_WIN)
   NativeLibraryLoadError() : code(0) {}
 #endif  // BUILDFLAG(IS_WIN)
@@ -61,7 +61,7 @@ struct BASE_EXPORT NativeLibraryLoadError {
 #endif  // BUILDFLAG(IS_WIN)
 };
 
-struct BASE_EXPORT NativeLibraryOptions {
+struct PA_COMPONENT_EXPORT(PARTITION_ALLOC) NativeLibraryOptions {
   NativeLibraryOptions() = default;
   NativeLibraryOptions(const NativeLibraryOptions& options) = default;
 
@@ -76,20 +76,22 @@ struct BASE_EXPORT NativeLibraryOptions {
 // Loads a native library from disk.  Release it with UnloadNativeLibrary when
 // you're done.  Returns NULL on failure.
 // If |error| is not NULL, it may be filled in on load error.
-BASE_EXPORT NativeLibrary LoadNativeLibrary(const FilePath& library_path,
-                                            NativeLibraryLoadError* error);
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+NativeLibrary LoadNativeLibrary(const FilePath& library_path,
+                                NativeLibraryLoadError* error);
 
 // Loads a native library from disk.  Release it with UnloadNativeLibrary when
 // you're done.  Returns NULL on failure.
 // If |error| is not NULL, it may be filled in on load error.
-BASE_EXPORT NativeLibrary
-LoadNativeLibraryWithOptions(const FilePath& library_path,
-                             const NativeLibraryOptions& options,
-                             NativeLibraryLoadError* error);
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+NativeLibrary LoadNativeLibraryWithOptions(const FilePath& library_path,
+                                           const NativeLibraryOptions& options,
+                                           NativeLibraryLoadError* error);
 
 // Gets a function pointer from a native library.
-BASE_EXPORT void* GetFunctionPointerFromNativeLibrary(NativeLibrary library,
-                                                      const std::string& name);
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+void* GetFunctionPointerFromNativeLibrary(NativeLibrary library,
+                                          const std::string& name);
 
 }  // namespace partition_alloc::internal::base
 

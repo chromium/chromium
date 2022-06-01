@@ -13,10 +13,10 @@
 
 #include <iosfwd>
 
+#include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/migration_adapter.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/threading/platform_thread_ref.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/time/time.h"
-#include "base/base_export.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -73,7 +73,7 @@ const PlatformThreadId kInvalidThreadId(0);
 typedef void (*SetThreadNameProc)(const std::string&);
 
 // A namespace for low-level thread functions.
-class BASE_EXPORT PlatformThread {
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PlatformThread {
  public:
   PlatformThread() = delete;
   PlatformThread(const PlatformThread&) = delete;

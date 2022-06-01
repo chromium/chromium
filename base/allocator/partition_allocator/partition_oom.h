@@ -11,7 +11,7 @@
 #include <stddef.h>
 
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
-#include "base/base_export.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 #include "build/build_config.h"
 
 namespace partition_alloc {
@@ -23,8 +23,8 @@ namespace internal {
 // g_oom_handling_function is invoked when PartitionAlloc hits OutOfMemory.
 extern OomFunction g_oom_handling_function;
 
-[[noreturn]] BASE_EXPORT PA_NOINLINE void PartitionExcessiveAllocationSize(
-    size_t size);
+[[noreturn]] PA_COMPONENT_EXPORT(PARTITION_ALLOC) PA_NOINLINE
+    void PartitionExcessiveAllocationSize(size_t size);
 
 #if !defined(ARCH_CPU_64_BITS)
 [[noreturn]] PA_NOINLINE void PartitionOutOfMemoryWithLotsOfUncommitedPages(

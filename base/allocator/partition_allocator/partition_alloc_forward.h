@@ -10,7 +10,7 @@
 
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
-#include "base/base_export.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 
 namespace partition_alloc {
 
@@ -46,7 +46,8 @@ struct SlotSpanMetadata;
 #if (BUILDFLAG(PA_DCHECK_IS_ON) ||                    \
      BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)) && \
     BUILDFLAG(USE_BACKUP_REF_PTR)
-BASE_EXPORT void CheckThatSlotOffsetIsZero(uintptr_t address);
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+void CheckThatSlotOffsetIsZero(uintptr_t address);
 #endif
 
 }  // namespace internal

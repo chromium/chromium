@@ -17,6 +17,7 @@
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/bits.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/debug/alias.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/immediate_crash.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/thread_annotations.h"
@@ -1108,8 +1109,9 @@ void PartitionBucket<thread_safe>::SortSlotSpanFreelists() {
   }
 }
 
-BASE_EXPORT bool CompareSlotSpans(SlotSpanMetadata<ThreadSafe>* a,
-                                  SlotSpanMetadata<ThreadSafe>* b) {
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+bool CompareSlotSpans(SlotSpanMetadata<ThreadSafe>* a,
+                      SlotSpanMetadata<ThreadSafe>* b) {
   auto criteria_tuple = [](SlotSpanMetadata<ThreadSafe> const* a) {
     size_t freelist_length = a->GetFreelistLength();
     // The criteria are, in order (hence the lexicographic comparison below):

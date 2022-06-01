@@ -6,19 +6,21 @@
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_H_
 
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
 #include "base/allocator/partition_allocator/partition_oom.h"
 #include "base/allocator/partition_allocator/partition_root.h"
-#include "base/base_export.h"
 
 namespace partition_alloc {
 
-BASE_EXPORT void PartitionAllocGlobalInit(OomFunction on_out_of_memory);
-BASE_EXPORT void PartitionAllocGlobalUninitForTesting();
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+void PartitionAllocGlobalInit(OomFunction on_out_of_memory);
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+void PartitionAllocGlobalUninitForTesting();
 
 namespace internal {
 template <bool thread_safe>
-struct BASE_EXPORT PartitionAllocator {
+struct PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAllocator {
   PartitionAllocator() = default;
   ~PartitionAllocator();
 

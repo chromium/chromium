@@ -10,7 +10,7 @@
 #include <string>
 
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
-#include "base/base_export.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 #include "build/build_config.h"
 
 namespace partition_alloc::internal::base {
@@ -21,9 +21,8 @@ namespace partition_alloc::internal::base {
 static constexpr size_t kMaxLengthOfTruncatingStringPrintfResult = 255U;
 
 // Return a C++ string given printf-like input.
-[[nodiscard]] BASE_EXPORT std::string TruncatingStringPrintf(const char* format,
-                                                             ...)
-    PA_PRINTF_FORMAT(1, 2);
+[[nodiscard]] PA_COMPONENT_EXPORT(PARTITION_ALLOC) std::string
+    TruncatingStringPrintf(const char* format, ...) PA_PRINTF_FORMAT(1, 2);
 
 }  // namespace partition_alloc::internal::base
 

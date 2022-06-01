@@ -16,6 +16,7 @@
 #include "base/allocator/partition_allocator/partition_address_space.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/bits.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/thread_annotations.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
@@ -26,7 +27,6 @@
 #include "base/allocator/partition_allocator/reservation_offset_table.h"
 #include "base/allocator/partition_allocator/starscan/state_bitmap.h"
 #include "base/allocator/partition_allocator/tagging.h"
-#include "base/base_export.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
@@ -172,11 +172,13 @@ struct SlotSpanMetadata {
   // in PartitionPage which has 2B worth of fields and must fit in 32B.
 
  public:
-  BASE_EXPORT explicit SlotSpanMetadata(PartitionBucket<thread_safe>* bucket);
+  PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+  explicit SlotSpanMetadata(PartitionBucket<thread_safe>* bucket);
 
   // Public API
   // Note the matching Alloc() functions are in PartitionPage.
-  BASE_EXPORT PA_NOINLINE void FreeSlowPath(size_t number_of_freed);
+  PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+  PA_NOINLINE void FreeSlowPath(size_t number_of_freed);
   PA_ALWAYS_INLINE PartitionFreelistEntry* PopForAlloc(size_t size);
   PA_ALWAYS_INLINE void Free(uintptr_t ptr);
   // Appends the passed freelist to the slot-span's freelist. Please note that
@@ -280,7 +282,8 @@ struct SlotSpanMetadata {
   PA_ALWAYS_INLINE void Reset();
 
   // TODO(ajwong): Can this be made private?  https://crbug.com/787153
-  BASE_EXPORT static SlotSpanMetadata* get_sentinel_slot_span();
+  PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+  static SlotSpanMetadata* get_sentinel_slot_span();
 
   // Slot span state getters.
   PA_ALWAYS_INLINE bool is_active() const;

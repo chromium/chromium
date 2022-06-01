@@ -95,8 +95,16 @@ A non-exhaustive list of work items:
 * `OFFICIAL_BUILD` - influences crash macros and
   `PA_THREAD_CACHE_ALLOC_STATS`. These are conceptually distinct enough
   to be worth separating into dedicated build controls.
+* `IS_PARTITION_ALLOC_IMPL` - must be defined when PartitionAlloc is
+  built as a shared library. This is required to export symbols.
+* `COMPONENT_BUILD` - component builds (as per
+  `//docs/component_build.md`) must `#define COMPONENT_BUILD`.
+  Additionally, to build Win32, invoker must `#define WIN32`.
 * `MEMORY_TOOL_REPLACES_ALLOCATOR`
 * `*_SANITIZER` - mainly influences unit tests.
+
+TODO(crbug.com/1151236): don't `PA_COMPONENT_EXPORT()` functions defined
+under `partition_alloc_base/`.
 
 *** note
 Over time, the above list should evolve into a list of macros / GN args

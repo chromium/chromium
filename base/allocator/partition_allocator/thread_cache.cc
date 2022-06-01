@@ -11,13 +11,13 @@
 #include <cstdint>
 
 #include "base/allocator/buildflags.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/cxx17_backports.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/immediate_crash.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_root.h"
-#include "base/base_export.h"
 #include "build/build_config.h"
 
 namespace partition_alloc {
@@ -39,9 +39,9 @@ uintptr_t kThreadCacheNeedleArray[kThreadCacheNeedleArraySize] = {
 
 namespace internal {
 
-BASE_EXPORT PartitionTlsKey g_thread_cache_key;
+PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionTlsKey g_thread_cache_key;
 #if defined(PA_THREAD_CACHE_FAST_TLS)
-BASE_EXPORT
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
 thread_local ThreadCache* g_thread_cache;
 #endif
 

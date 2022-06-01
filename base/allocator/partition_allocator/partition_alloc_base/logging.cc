@@ -13,10 +13,10 @@
 #error "logging.h should not include check.h"
 #endif
 
+#include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/debug/alias.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/immediate_crash.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/strings/stringprintf.h"
-#include "base/base_export.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -88,7 +88,8 @@ void WriteToFd(int fd, const char* data, size_t length) {
 // In DCHECK-enabled Chrome builds, allow the meaning of LOGGING_DCHECK to be
 // determined at run-time. We default it to INFO, to avoid it triggering
 // crashes before the run-time has explicitly chosen the behaviour.
-BASE_EXPORT logging::LogSeverity LOGGING_DCHECK = LOGGING_INFO;
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+logging::LogSeverity LOGGING_DCHECK = LOGGING_INFO;
 #endif  // defined(DCHECK_IS_CONFIGURABLE)
 
 // This is never instantiated, it's just used for EAT_STREAM_PARAMETERS to have
@@ -188,7 +189,8 @@ SystemErrorCode GetLastSystemErrorCode() {
 #endif
 }
 
-BASE_EXPORT std::string SystemErrorCodeToString(SystemErrorCode error_code) {
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+std::string SystemErrorCodeToString(SystemErrorCode error_code) {
 #if BUILDFLAG(IS_WIN)
   const int kErrorMessageBufferSize = 256;
   char msgbuf[kErrorMessageBufferSize];

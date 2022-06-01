@@ -8,15 +8,15 @@
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/atomic_ref_count.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/memory/scoped_refptr.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
-#include "base/base_export.h"
 #include "build/build_config.h"
 
 namespace partition_alloc::internal::base {
 namespace subtle {
 
-class BASE_EXPORT RefCountedThreadSafeBase {
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC) RefCountedThreadSafeBase {
  public:
   RefCountedThreadSafeBase(const RefCountedThreadSafeBase&) = delete;
   RefCountedThreadSafeBase& operator=(const RefCountedThreadSafeBase&) = delete;

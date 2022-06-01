@@ -8,12 +8,12 @@
 #include <memory>
 #include <set>
 
+#include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/no_destructor.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/thread_annotations.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/time/time.h"
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
 #include "base/allocator/partition_allocator/partition_lock.h"
-#include "base/base_export.h"
 
 namespace partition_alloc {
 
@@ -26,7 +26,7 @@ namespace partition_alloc {
 //
 // Singleton as this runs as long as the process is alive, and
 // having multiple instances would be wasteful.
-class BASE_EXPORT MemoryReclaimer {
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC) MemoryReclaimer {
  public:
   static MemoryReclaimer* Instance();
 

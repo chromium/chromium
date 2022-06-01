@@ -6,9 +6,9 @@
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_TLS_H_
 
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/immediate_crash.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
-#include "base/base_export.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_POSIX)
@@ -85,8 +85,8 @@ PA_ALWAYS_INLINE void PartitionTlsSet(PartitionTlsKey key, void* value) {
 // be lifted.
 using PartitionTlsKey = unsigned long;
 
-BASE_EXPORT bool PartitionTlsCreate(PartitionTlsKey* key,
-                                    void (*destructor)(void*));
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+bool PartitionTlsCreate(PartitionTlsKey* key, void (*destructor)(void*));
 
 PA_ALWAYS_INLINE void* PartitionTlsGet(PartitionTlsKey key) {
   // Accessing TLS resets the last error, which then makes |GetLastError()|

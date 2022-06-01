@@ -68,10 +68,10 @@
 #include <iosfwd>
 #include <limits>
 
+#include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/migration_adapter.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/numerics/clamped_math.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
-#include "base/base_export.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
@@ -120,7 +120,7 @@ class PlatformThreadHandle;
 
 // TimeDelta ------------------------------------------------------------------
 
-class BASE_EXPORT TimeDelta {
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC) TimeDelta {
  public:
   constexpr TimeDelta() = default;
 
@@ -490,11 +490,11 @@ class TimeBase {
 // incrementing counter.
 #else
 // Returns true if the CPU support constant rate TSC.
-[[nodiscard]] BASE_EXPORT bool HasConstantRateTSC();
+[[nodiscard]] PA_COMPONENT_EXPORT(PARTITION_ALLOC) bool HasConstantRateTSC();
 
 // Returns the frequency of the TSC in ticks per second, or 0 if it hasn't
 // been measured yet. Needs to be guarded with a call to HasConstantRateTSC().
-[[nodiscard]] BASE_EXPORT double TSCTicksPerSecond();
+[[nodiscard]] PA_COMPONENT_EXPORT(PARTITION_ALLOC) double TSCTicksPerSecond();
 #endif
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -510,7 +510,8 @@ inline constexpr TimeClass operator+(TimeDelta delta, TimeClass t) {
 // Represents a wall clock time in UTC. Values are not guaranteed to be
 // monotonically non-decreasing and are subject to large amounts of skew.
 // Time is stored internally as microseconds since the Windows epoch (1601).
-class BASE_EXPORT Time : public time_internal::TimeBase<Time> {
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC) Time
+    : public time_internal::TimeBase<Time> {
  public:
   // Offset of UNIX epoch (1970-01-01 00:00:00 UTC) from Windows FILETIME epoch
   // (1601-01-01 00:00:00 UTC), in microseconds. This value is derived from the
@@ -831,7 +832,8 @@ constexpr Time Time::FromTimeT(time_t tt) {
 // TimeTicks ------------------------------------------------------------------
 
 // Represents monotonically non-decreasing clock time.
-class BASE_EXPORT TimeTicks : public time_internal::TimeBase<TimeTicks> {
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC) TimeTicks
+    : public time_internal::TimeBase<TimeTicks> {
  public:
   // The underlying clock used to generate new TimeTicks.
   enum class Clock {
@@ -969,7 +971,8 @@ class BASE_EXPORT TimeTicks : public time_internal::TimeBase<TimeTicks> {
 
 // Represents a clock, specific to a particular thread, than runs only while the
 // thread is running.
-class BASE_EXPORT ThreadTicks : public time_internal::TimeBase<ThreadTicks> {
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadTicks
+    : public time_internal::TimeBase<ThreadTicks> {
  public:
   constexpr ThreadTicks() : TimeBase(0) {}
 

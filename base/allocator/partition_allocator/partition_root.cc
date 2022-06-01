@@ -13,6 +13,7 @@
 #include "base/allocator/partition_allocator/partition_address_space.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/bits.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/thread_annotations.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
@@ -1316,7 +1317,8 @@ void PartitionRoot<internal::ThreadSafe>::EnableSortActiveSlotSpans() {
   sort_active_slot_spans_ = true;
 }
 
-template struct BASE_EXPORT PartitionRoot<internal::ThreadSafe>;
+template struct PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+    PartitionRoot<internal::ThreadSafe>;
 
 static_assert(offsetof(PartitionRoot<internal::ThreadSafe>, sentinel_bucket) ==
                   offsetof(PartitionRoot<internal::ThreadSafe>, buckets) +

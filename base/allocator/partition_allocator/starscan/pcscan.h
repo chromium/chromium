@@ -9,12 +9,12 @@
 
 #include "base/allocator/partition_allocator/page_allocator.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
 #include "base/allocator/partition_allocator/partition_direct_map_extent.h"
 #include "base/allocator/partition_allocator/partition_page.h"
 #include "base/allocator/partition_allocator/starscan/pcscan_scheduling.h"
 #include "base/allocator/partition_allocator/tagging.h"
-#include "base/base_export.h"
 
 // Double free detection comes with expensive cmpxchg (with the loop around it).
 // We currently disable it to improve the runtime.
@@ -26,8 +26,8 @@ class StatsReporter;
 
 namespace internal {
 
-[[noreturn]] BASE_EXPORT PA_NOINLINE PA_NOT_TAIL_CALLED void
-DoubleFreeAttempt();
+[[noreturn]] PA_COMPONENT_EXPORT(PARTITION_ALLOC) PA_NOINLINE PA_NOT_TAIL_CALLED
+    void DoubleFreeAttempt();
 
 // PCScan (Probabilistic Conservative Scanning) is the algorithm that eliminates
 // use-after-free bugs by verifying that there are no pointers in memory which
@@ -40,7 +40,7 @@ DoubleFreeAttempt();
 // unreachable and therefore can be safely reclaimed.
 //
 // The driver class encapsulates the entire PCScan infrastructure.
-class BASE_EXPORT PCScan final {
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PCScan final {
  public:
   using Root = PartitionRoot<ThreadSafe>;
   using SlotSpan = SlotSpanMetadata<ThreadSafe>;

@@ -2019,6 +2019,15 @@ mixed_component("base") {
     # partition_alloc code if use_partition_alloc = false because no code uses
     # partition_alloc.
     public_deps += [ "allocator/partition_allocator:partition_alloc" ]
+
+    # PartitionAlloc is not yet built as a standalone component, and
+    # "external" usage of some exported functions causes Win32 component
+    # builds to break (LNK4217). This statement properly belongs _only_
+    # in PA's BUILD.gn, but we need it here to ensure the rest of
+    # `//base` is also considered "inside" the PA implementation.
+    #
+    # TODO(crbug.com/1151236): Remove this when possible.
+    defines += [ "IS_PARTITION_ALLOC_IMPL" ]
   }
 
   # Windows.
@@ -3652,6 +3661,7 @@ test("base_unittests") {
       "allocator/partition_allocator/memory_reclaimer_unittest.cc",
       "allocator/partition_allocator/page_allocator_unittest.cc",
       "allocator/partition_allocator/partition_alloc_base/bits_pa_unittest.cc",
+      "allocator/partition_allocator/partition_alloc_base/component_export_pa_unittest.cc",
       "allocator/partition_allocator/partition_alloc_base/cpu_pa_unittest.cc",
       "allocator/partition_allocator/partition_alloc_base/cxx17_backports_pa_unittest.cc",
       "allocator/partition_allocator/partition_alloc_base/logging_pa_unittest.cc",

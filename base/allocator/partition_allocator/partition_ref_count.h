@@ -10,13 +10,13 @@
 
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/immediate_crash.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
 #include "base/allocator/partition_allocator/tagging.h"
-#include "base/base_export.h"
 #include "build/build_config.h"
 
 #if BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
@@ -48,7 +48,7 @@ DoubleFreeOrCorruptionDetected() {
 //
 // This protects against double-free's, as we check whether the reference count
 // is odd in |ReleaseFromAllocator()|, and if not we have a double-free.
-class BASE_EXPORT PartitionRefCount {
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRefCount {
  public:
   // This class holds an atomic bit field: `count_`. It holds up to 4 values:
   //

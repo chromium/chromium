@@ -7,8 +7,8 @@
 
 #include <errno.h>
 
+#include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/migration_adapter.h"
-#include "base/base_export.h"
 #include "build/build_config.h"
 
 namespace partition_alloc::internal::base {
@@ -20,7 +20,7 @@ namespace partition_alloc::internal::base {
 
 // Common implementation of ScopedClearLastError for all platforms. Use
 // ScopedClearLastError instead.
-class BASE_EXPORT ScopedClearLastErrorBase {
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ScopedClearLastErrorBase {
  public:
   ScopedClearLastErrorBase() : last_errno_(errno) { errno = 0; }
   ScopedClearLastErrorBase(const ScopedClearLastErrorBase&) = delete;
@@ -34,7 +34,8 @@ class BASE_EXPORT ScopedClearLastErrorBase {
 #if BUILDFLAG(IS_WIN)
 
 // Windows specific implementation of ScopedClearLastError.
-class BASE_EXPORT ScopedClearLastError : public ScopedClearLastErrorBase {
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ScopedClearLastError
+    : public ScopedClearLastErrorBase {
  public:
   ScopedClearLastError();
   ScopedClearLastError(const ScopedClearLastError&) = delete;

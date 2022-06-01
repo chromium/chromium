@@ -5,8 +5,8 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_ALLOCATION_GUARD_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_ALLOCATION_GUARD_H_
 
+#include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
-#include "base/base_export.h"
 #include "build/build_config.h"
 
 namespace partition_alloc {
@@ -14,14 +14,14 @@ namespace partition_alloc {
 #if defined(PA_HAS_ALLOCATION_GUARD)
 
 // Disallow allocations in the scope. Does not nest.
-class BASE_EXPORT ScopedDisallowAllocations {
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ScopedDisallowAllocations {
  public:
   ScopedDisallowAllocations();
   ~ScopedDisallowAllocations();
 };
 
 // Disallow allocations in the scope. Does not nest.
-class BASE_EXPORT ScopedAllowAllocations {
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ScopedAllowAllocations {
  public:
   ScopedAllowAllocations();
   ~ScopedAllowAllocations();

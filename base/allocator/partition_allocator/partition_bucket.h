@@ -9,23 +9,25 @@
 #include <cstdint>
 
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/thread_annotations.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
-#include "base/base_export.h"
 
 namespace partition_alloc::internal {
 
 constexpr inline int kPartitionNumSystemPagesPerSlotSpanBits = 8;
 
 // Visible for testing.
-BASE_EXPORT uint8_t
-ComputeSystemPagesPerSlotSpan(size_t slot_size, bool prefer_smaller_slot_spans);
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+uint8_t ComputeSystemPagesPerSlotSpan(size_t slot_size,
+                                      bool prefer_smaller_slot_spans);
 
 // Visible for testing.
-BASE_EXPORT bool CompareSlotSpans(SlotSpanMetadata<ThreadSafe>* a,
-                                  SlotSpanMetadata<ThreadSafe>* b);
+PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+bool CompareSlotSpans(SlotSpanMetadata<ThreadSafe>* a,
+                      SlotSpanMetadata<ThreadSafe>* b);
 
 template <bool thread_safe>
 struct PartitionBucket {
@@ -61,7 +63,7 @@ struct PartitionBucket {
   static constexpr size_t kMaxSlotSpansToSort = 200;
 
   // Public API.
-  BASE_EXPORT void Init(uint32_t new_slot_size);
+  PA_COMPONENT_EXPORT(PARTITION_ALLOC) void Init(uint32_t new_slot_size);
 
   // Sets |is_already_zeroed| to true if the allocation was satisfied by
   // requesting (a) new page(s) from the operating system, or false otherwise.
@@ -71,12 +73,13 @@ struct PartitionBucket {
   // |PartitionRoot::AllocFromBucket|.)
   //
   // Note the matching Free() functions are in SlotSpanMetadata.
-  BASE_EXPORT PA_NOINLINE uintptr_t SlowPathAlloc(
-      PartitionRoot<thread_safe>* root,
-      unsigned int flags,
-      size_t raw_size,
-      size_t slot_span_alignment,
-      bool* is_already_zeroed) PA_EXCLUSIVE_LOCKS_REQUIRED(root->lock_);
+  PA_COMPONENT_EXPORT(PARTITION_ALLOC)
+  PA_NOINLINE uintptr_t SlowPathAlloc(PartitionRoot<thread_safe>* root,
+                                      unsigned int flags,
+                                      size_t raw_size,
+                                      size_t slot_span_alignment,
+                                      bool* is_already_zeroed)
+      PA_EXCLUSIVE_LOCKS_REQUIRED(root->lock_);
 
   PA_ALWAYS_INLINE bool CanStoreRawSize() const {
     // For direct-map as well as single-slot slot spans (recognized by checking
@@ -137,7 +140,7 @@ struct PartitionBucket {
   // Walks the entire active slot span list, and perform regular maintenance,
   // where empty, decommitted and full slot spans are moved to their
   // steady-state place.
-  BASE_EXPORT void MaintainActiveList();
+  PA_COMPONENT_EXPORT(PARTITION_ALLOC) void MaintainActiveList();
 
   // Returns a slot number starting from the beginning of the slot span.
   PA_ALWAYS_INLINE size_t GetSlotNumber(size_t offset_in_slot_span) const {
@@ -155,7 +158,7 @@ struct PartitionBucket {
   // Sort the freelists of all slot spans.
   void SortSlotSpanFreelists();
   // Sort the active slot span list in ascending freelist length.
-  BASE_EXPORT void SortActiveSlotSpans();
+  PA_COMPONENT_EXPORT(PARTITION_ALLOC) void SortActiveSlotSpans();
 
  private:
   // Allocates a new slot span with size |num_partition_pages| from the

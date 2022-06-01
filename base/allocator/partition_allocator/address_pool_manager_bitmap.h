@@ -12,11 +12,11 @@
 
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_base/compiler_specific.h"
+#include "base/allocator/partition_allocator/partition_alloc_base/component_export.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_lock.h"
-#include "base/base_export.h"
 #include "build/build_config.h"
 
 #if !defined(PA_HAS_64_BITS_POINTERS)
@@ -30,7 +30,7 @@ namespace internal {
 // support it. All PartitionAlloc allocations must be in either of the pools.
 //
 // This code is specific to 32-bit systems.
-class BASE_EXPORT AddressPoolManagerBitmap {
+class PA_COMPONENT_EXPORT(PARTITION_ALLOC) AddressPoolManagerBitmap {
  public:
   static constexpr uint64_t kGiB = 1024 * 1024 * 1024ull;
   static constexpr uint64_t kAddressSpaceSize = 4ull * kGiB;
