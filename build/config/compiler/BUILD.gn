@@ -655,9 +655,11 @@ config("compiler") {
     # available disk space, 40GB and 100000 files.
     cache_policy = "cache_size=10%:cache_size_bytes=40g:cache_size_files=100000"
 
+    # An import limit of 30 has better performance (per speedometer) and lower
+    # binary size than the default setting of 100.
     # TODO(gbiv): We ideally shouldn't need to specify this; ThinLTO
     # should be able to better manage binary size increases on its own.
-    import_instr_limit = 5
+    import_instr_limit = 30
 
     if (is_win) {
       ldflags += [
@@ -694,21 +696,23 @@ config("compiler") {
       ldflags += [ "-Wl,--thinlto-cache-policy=$cache_policy" ]
 
       if (is_chromeos) {
-        # Not much performance difference was noted between the default (100)
-        # and these. ARM was originally set lower than x86 to keep the size
+        # ARM was originally set lower than x86 to keep the size
         # bloat of ThinLTO to <10%, but that's potentially no longer true.
         # FIXME(inglorion): maybe tune these?
         if (target_cpu == "arm" || target_cpu == "arm64") {
           import_instr_limit = 20
-        } else {
-          import_instr_limit = 30
         }
+      } else if (is_android) {
+        # TODO(crbug.com/1308318): Investigate if we can get the > 6% perf win
+        # of import_instr_limit 30 with a binary size hit smaller than ~2 MiB.
+        import_instr_limit = 5
       }
 
       ldflags += [ "-Wl,-mllvm,-import-instr-limit=$import_instr_limit" ]
     }
 
-    # TODO(https://crbug.com/1211155): investigate why this isn't effective on arm32.
+    # TODO(https://crbug.com/1211155): investigate why this isn't effective on
+    # arm32.
     if (!is_android || current_cpu == "arm64") {
       cflags += [ "-fwhole-program-vtables" ]
       if (!is_win) {
