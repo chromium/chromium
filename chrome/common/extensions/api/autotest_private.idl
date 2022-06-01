@@ -352,9 +352,22 @@ namespace autotestPrivate {
     boolean? showInSearch;
   };
 
-  dictionary SystemApp {
+  dictionary SystemWebApp {
+    // App's internal name. This isn't user-visible and should only be used
+    // for logging.
     DOMString internalName;
+
+    // App's install URL. This is a placeholder for installation pipeline,
+    // not used for anything else.
     DOMString url;
+
+    // App's visible name. This is defined in the Web App manifest, and shown
+    // in Shelf and Launcher. This matches App's name attribute (see above).
+    DOMString name;
+
+    // App's default start_url. This is the default URL that the App will be
+    // launched to.
+    DOMString startUrl;
   };
 
   callback GetAllInstalledAppsCallback = void (App[] apps);
@@ -617,7 +630,7 @@ namespace autotestPrivate {
   // Callback invoked to report the number of system web apps that should be
   // installed.
   callback GetRegisteredSystemWebAppsCallback = void
-      (SystemApp[] systemApps);
+      (SystemWebApp[] systemWebApps);
 
   callback IsSystemWebAppOpenCallback = void (boolean isOpen);
 

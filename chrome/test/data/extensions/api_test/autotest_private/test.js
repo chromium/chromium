@@ -1527,6 +1527,9 @@ var systemWebAppsTests = [
         chrome.test.assertEq(1, apps.length)
         chrome.test.assertEq('OSSettings', apps[0].internalName);
         chrome.test.assertEq('chrome://test-system-app/', apps[0].url);
+        chrome.test.assertEq('chrome://test-system-app/pwa.html',
+            apps[0].startUrl);
+        chrome.test.assertEq('Test System App', apps[0].name);
       })
     );
   },

@@ -378,6 +378,8 @@ class AutotestPrivateGetRegisteredSystemWebAppsFunction
  private:
   ~AutotestPrivateGetRegisteredSystemWebAppsFunction() override;
   ResponseAction Run() override;
+
+  void OnSystemWebAppsInstalled();
 };
 
 class AutotestPrivateIsSystemWebAppOpenFunction : public ExtensionFunction {
