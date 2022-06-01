@@ -171,11 +171,11 @@ void DisableInProcessGpuVulkan(GpuFeatureInfo* gpu_feature_info,
 }
 
 #if BUILDFLAG(ENABLE_VULKAN)
-bool MatchGLRenderer(const GPUInfo& gpu_info, const std::string& patterns) {
+bool MatchGLInfo(const std::string& field, const std::string& patterns) {
   auto pattern_strings = base::SplitString(patterns, "|", base::TRIM_WHITESPACE,
                                            base::SPLIT_WANT_ALL);
   for (const auto& pattern : pattern_strings) {
-    if (base::MatchPattern(gpu_info.gl_renderer, pattern))
+    if (base::MatchPattern(field, pattern))
       return true;
   }
   return false;
@@ -962,12 +962,25 @@ bool GpuInit::InitializeVulkan() {
   const base::FeatureParam<std::string> disable_patterns(
       &features::kVulkan, "disable_by_gl_renderer",
       "*Mali-G?? M*" /* https://crbug.com/1183702 */);
-  if (MatchGLRenderer(gpu_info_, disable_patterns.Get()))
+  if (MatchGLInfo(gpu_info_.gl_renderer, disable_patterns.Get()))
+    return false;
+
+  const base::FeatureParam<std::string> disable_driver_patterns(
+      &features::kVulkan, "disable_by_gl_driver",
+#if BUILDFLAG(IS_ANDROID)
+      "324.0|331.0|334.0|378.0|415.0|420.0|444.0" /* https://crbug.com/1246857
+                                                   */
+#else
+      ""
+#endif
+  );
+  if (MatchGLInfo(gpu_info_.gpu.driver_version, disable_driver_patterns.Get()))
     return false;
 
   const base::FeatureParam<std::string> force_enable_patterns(
       &features::kVulkan, "force_enable_by_gl_renderer", "");
-  forced_native |= MatchGLRenderer(gpu_info_, force_enable_patterns.Get());
+  forced_native |=
+      MatchGLInfo(gpu_info_.gl_renderer, force_enable_patterns.Get());
 
   const base::FeatureParam<std::string> enable_by_device_name(
       &features::kVulkan, "enable_by_device_name", "");
