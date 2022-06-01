@@ -48,12 +48,7 @@ class SVGForeignObjectElement final : public SVGGraphicsElement {
   void SvgAttributeChanged(const SvgAttributeChangedParams&) override;
 
   LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout) override;
-
-  // As long as the foreignObject element itself creates a legacy layout object,
-  // we need to use legacy layout for the entire block formatting context
-  // established by the foreignObject. For simplicity, just force legacy for the
-  // entire subtree.
-  bool TypeShouldForceLegacyLayout() const override { return true; }
+  bool TypeShouldForceLegacyLayout() const override;
 
   bool SelfHasRelativeLengths() const override;
 
